@@ -27,14 +27,7 @@ using namespace mrpt::serialization::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSetOfObjects, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CSetOfObjects::clear()
-{
-	m_objects.clear();  // clear the list and delete objects (if there are no
-	// more copies out there!)
-}
+void CSetOfObjects::clear() { m_objects.clear(); }
 
 void CSetOfObjects::renderUpdateBuffers() const
 {
@@ -88,25 +81,6 @@ void CSetOfObjects::serializeFrom(
 	};
 }
 
-/*---------------------------------------------------------------
-					initializeAllTextures
-  ---------------------------------------------------------------*/
-void CSetOfObjects::initializeAllTextures()
-{
-#if MRPT_HAS_OPENGL_GLUT
-	CListOpenGLObjects::iterator it;
-	for (auto& obj : m_objects)
-	{
-		if (IS_DERIVED(*obj, CTexturedObject))
-			dynamic_cast<CTexturedObject&>(*obj).loadTextureInOpenGL();
-		else if (IS_CLASS(*obj, CSetOfObjects))
-			dynamic_cast<CSetOfObjects&>(*obj).initializeAllTextures();
-	}
-#endif
-}
-
-CSetOfObjects::CSetOfObjects() = default;
-CSetOfObjects::~CSetOfObjects() { clear(); }
 void CSetOfObjects::insert(const CRenderizable::Ptr& newObject)
 {
 	ASSERTMSG_(

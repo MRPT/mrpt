@@ -190,3 +190,43 @@ void Program::declareAttribute(const std::string& name)
 	THROW_EXCEPTION("MRPT built without OpenGL support.");
 #endif
 }
+
+void Program::dumpProgramDescription(std::ostream& o) const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	ASSERT_(!empty());
+
+	GLint count;
+
+	GLint size;  // size of the variable
+	GLenum type;  // type of the variable (float, vec3 or mat4, etc)
+
+	const GLsizei bufSize = 32;  // maximum name length
+	GLchar name[bufSize];  // variable name in GLSL
+	GLsizei length;  // name length
+
+	// Attributes
+	glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &count);
+	o << mrpt::format("Active Attributes: %d\n", count);
+
+	for (GLint i = 0; i < count; i++)
+	{
+		glGetActiveAttrib(
+			m_program, (GLuint)i, bufSize, &length, &size, &type, name);
+
+		o << mrpt::format("Attribute #%d Type: %u Name: %s\n", i, type, name);
+	}
+
+	// Uniforms
+	glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &count);
+	printf("Active Uniforms: %d\n", count);
+
+	for (GLint i = 0; i < count; i++)
+	{
+		glGetActiveUniform(
+			m_program, (GLuint)i, bufSize, &length, &size, &type, name);
+
+		o << mrpt::format("Uniform #%d Type: %u Name: %s\n", i, type, name);
+	}
+#endif
+}

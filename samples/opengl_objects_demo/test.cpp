@@ -822,7 +822,7 @@ void TestOpenGLObjects()
 	// CPlanarLaserScan
 	{
 		auto obj = mrpt::opengl::CPlanarLaserScan::Create();
-		obj->setLocation(off_x, 0, 0);
+		obj->setPose(mrpt::poses::CPose3D(off_x, 0, 0, 90.0_deg, 0, 0));
 
 		mrpt::obs::CObservation2DRangeScan scan;
 		mrpt::obs::stock_observations::example2DRangeScan(scan);
@@ -832,6 +832,36 @@ void TestOpenGLObjects()
 		theScene->insert(obj);
 
 		auto gl_txt = opengl::CText::Create("CPlanarLaserScan");
+		gl_txt->setLocation(off_x, off_y_label, 0);
+		theScene->insert(gl_txt);
+	}
+	off_x += STEP_X;
+
+	// CTexturedPlane
+	{
+		mrpt::img::CImage pic, picAlpha;
+		pic.resize(256, 256, mrpt::img::CH_RGB);
+		picAlpha.resize(256, 256, mrpt::img::CH_GRAY);
+		pic.filledRectangle(0, 0, 255, 255, mrpt::img::TColor::black());
+		pic.filledRectangle(50, 20, 90, 150, mrpt::img::TColor::white());
+		picAlpha.filledRectangle(
+			0, 0, 255, 255, mrpt::img::TColor(0x55, 0x55, 0x55));
+
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 0, 0, 0, 90.0_deg, 0));
+			obj->assignImage(pic);
+			theScene->insert(obj);
+		}
+
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 4.0, 0, 0, 90.0_deg, 0));
+			obj->assignImage(pic, picAlpha);
+			theScene->insert(obj);
+		}
+
+		auto gl_txt = opengl::CText::Create("CTexturedPlane");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}

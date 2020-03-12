@@ -12,9 +12,8 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/TLine2D.h>
-#include <mrpt/math/TPlane.h>
-#include <mrpt/math/TPolygon2D.h>
 #include <mrpt/math/TPolygon3D.h>
+#include <mrpt/math/TPolygonWithPlane.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/epsilon.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
@@ -26,35 +25,6 @@ namespace mrpt::math
  * "lightweight" point & pose classes
  *  \ingroup mrpt_math_grp
  * @{ */
-
-/** Slightly heavyweight type to speed-up calculations with polygons in 3D
- * \sa TPolygon3D,TPlane
- */
-class TPolygonWithPlane
-{
-   public:
-	/** Actual polygon. */
-	TPolygon3D poly;
-	/** Plane containing the polygon. */
-	TPlane plane;
-	/** Plane's pose.  \sa inversePose */
-	mrpt::math::TPose3D pose;
-	/** Plane's inverse pose. \sa pose */
-	mrpt::math::TPose3D inversePose;
-	/** Polygon, after being projected to the plane using inversePose. \sa
-	 * inversePose */
-	TPolygon2D poly2D;
-	/** Constructor. Takes a polygon and computes each parameter. */
-	TPolygonWithPlane(const TPolygon3D& p);
-	/** Basic constructor. Needed to create containers  \sa
-	 * TPolygonWithPlane(const TPolygon3D &) */
-	TPolygonWithPlane() = default;
-	/** Static method for vectors. Takes a set of polygons and creates every
-	 * TPolygonWithPlane  */
-	static void getPlanes(
-		const std::vector<TPolygon3D>& oldPolys,
-		std::vector<TPolygonWithPlane>& newPolys);
-};
 
 /** @name Simple intersection operations, relying basically on geometrical
    operations.
@@ -1109,4 +1079,9 @@ CMatrixDouble33 generateAxisBaseFromDirection(double dx, double dy, double dz);
 
 /** @} */  // end of grouping
 
+namespace internal
+{
+void unsafeProjectPolygon(
+	const TPolygon3D& poly, const TPose3D& pose, TPolygon2D& newPoly);
+}
 }  // namespace mrpt::math

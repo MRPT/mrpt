@@ -35,6 +35,9 @@ class CSetOfObjects : public CRenderizable
 	CListOpenGLObjects m_objects;
 
    public:
+	CSetOfObjects() = default;
+	virtual ~CSetOfObjects() override = default;
+
 	using const_iterator = CListOpenGLObjects::const_iterator;
 	using iterator = CListOpenGLObjects::iterator;
 
@@ -79,6 +82,11 @@ class CSetOfObjects : public CRenderizable
 		for (auto& o : m_objects)
 			if (o) o->freeOpenGLResources();
 	}
+	void initializeTextures() override
+	{
+		for (auto& o : m_objects)
+			if (o) o->initializeTextures();
+	}
 
 	/** Clear the list of objects in the scene, deleting objects' memory.
 	 */
@@ -88,10 +96,6 @@ class CSetOfObjects : public CRenderizable
 	size_t size() { return m_objects.size(); }
 	/** Returns true if there are no objects.  */
 	inline bool empty() const { return m_objects.empty(); }
-	/** Initializes all textures in the scene (See
-	 * opengl::CTexturedPlane::loadTextureInOpenGL)
-	 */
-	void initializeAllTextures();
 
 	/** Returns the first object with a given name, or a nullptr pointer if not
 	 * found.
@@ -162,13 +166,6 @@ class CSetOfObjects : public CRenderizable
 		const mrpt::poses::CPose3DQuatPDF& o);
 
 	/** @} */
-
-	/** Default constructor
-	 */
-	CSetOfObjects();
-
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CSetOfObjects() override;
 };
 /** Inserts an object into the list. Allows call chaining.
  * \sa mrpt::opengl::CSetOfObjects::insert

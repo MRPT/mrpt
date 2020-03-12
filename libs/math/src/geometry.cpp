@@ -528,7 +528,7 @@ inline void unsafeProjectPoint(
 	newPoint.x = dummy.x;
 	newPoint.y = dummy.y;
 }
-void unsafeProjectPolygon(
+void mrpt::math::internal::unsafeProjectPolygon(
 	const TPolygon3D& poly, const TPose3D& pose, TPolygon2D& newPoly)
 {
 	size_t N = poly.size();
@@ -555,7 +555,8 @@ bool intersect(
 			TPolygon2D newPoly;
 			TPoint2D newP;
 			unsafeProjectPoint(p, p1.inversePose, newP);
-			unsafeProjectPolygon(p1.poly, p1.inversePose, newPoly);
+			mrpt::math::internal::unsafeProjectPolygon(
+				p1.poly, p1.inversePose, newPoly);
 			return newPoly.contains(newP);
 		}
 	return false;
@@ -612,24 +613,6 @@ bool intersect(
 	}
 }
 // End of auxiliary methods
-math::TPolygonWithPlane::TPolygonWithPlane(const TPolygon3D& p) : poly(p)
-{
-	poly.getBestFittingPlane(plane);
-	plane.getAsPose3D(pose);
-	// inversePose = -pose;
-	CMatrixDouble44 P_inv;
-	pose.getInverseHomogeneousMatrix(P_inv);
-	inversePose.fromHomogeneousMatrix(P_inv);
-
-	unsafeProjectPolygon(poly, inversePose, poly2D);
-}
-void math::TPolygonWithPlane::getPlanes(
-	const vector<TPolygon3D>& oldPolys, vector<TPolygonWithPlane>& newPolys)
-{
-	size_t N = oldPolys.size();
-	newPolys.resize(N);
-	for (size_t i = 0; i < N; i++) newPolys[i] = oldPolys[i];
-}
 
 bool math::intersect(const TSegment3D& s1, const TSegment3D& s2, TObject3D& obj)
 {

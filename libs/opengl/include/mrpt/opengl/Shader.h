@@ -122,6 +122,9 @@ class Program
 		return m_attribs.count(name) != 0;
 	}
 
+	/** Prints a textual summary of the program */
+	void dumpProgramDescription(std::ostream& o) const;
+
    private:
 	std::vector<Shader> m_shaders;
 	unsigned int m_program = 0;

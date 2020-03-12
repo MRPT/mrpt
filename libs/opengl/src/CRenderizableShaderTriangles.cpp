@@ -68,8 +68,8 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		3, /* size */
 		GL_FLOAT, /* type */
 		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::PointNormal), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::PointNormal, position.pt.x)));
+		sizeof(TTriangle::Vertex), /* stride */
+		BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
 	CHECK_OPENGL_ERROR();
 
 	// Set up the color array:
@@ -81,8 +81,8 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		4, /* size */
 		GL_UNSIGNED_BYTE, /* type */
 		GL_TRUE, /* normalized? */
-		sizeof(TTriangle::PointNormal), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::PointNormal, position.r)));
+		sizeof(TTriangle::Vertex), /* stride */
+		BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.r)));
 	CHECK_OPENGL_ERROR();
 
 	// Set up the normals array:
@@ -94,8 +94,8 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		3, /* size */
 		GL_FLOAT, /* type */
 		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::PointNormal), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::PointNormal, normal.x)));
+		sizeof(TTriangle::Vertex), /* stride */
+		BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
 	CHECK_OPENGL_ERROR();
 
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());

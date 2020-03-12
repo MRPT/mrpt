@@ -10,6 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/math/TLine3D.h>
+#include <mrpt/math/geometry.h>  // crossProduct3D()
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -21,7 +22,6 @@
 #include <mrpt/system/CTimeLogger.h>
 
 #include <mrpt/opengl/opengl_api.h>
-
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -681,22 +681,9 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 	return CRenderizable::Ptr();
 }
 
-/*---------------------------------------------------------------
-					initializeAllTextures
-  ---------------------------------------------------------------*/
-void COpenGLViewport::initializeAllTextures()
+void COpenGLViewport::initializeTextures()
 {
-#if MRPT_HAS_OPENGL_GLUT
-	for (auto& obj : m_objects)
-	{
-		if (IS_DERIVED(*obj, CTexturedObject))
-			std::dynamic_pointer_cast<CTexturedObject>(obj)
-				->loadTextureInOpenGL();
-		else if (IS_CLASS(*obj, CSetOfObjects))
-			std::dynamic_pointer_cast<CSetOfObjects>(obj)
-				->initializeAllTextures();
-	}
-#endif
+	for (auto& obj : m_objects) obj->initializeTextures();
 }
 
 void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
@@ -783,7 +770,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	// The camera real UP vector (in 3D) is the cross product:
 	//     X3d x pointing_dir:
 	TPoint3D cam_up_3d;
-	crossProduct3D(cam_x_3d, pointing_dir, cam_up_3d);
+	mrpt::math::crossProduct3D(cam_x_3d, pointing_dir, cam_up_3d);
 
 	if (!m_state.is_projective)
 	{

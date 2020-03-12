@@ -204,12 +204,9 @@ CRenderizable::Ptr COpenGLScene::getByName(
 	return obj;
 }
 
-/*---------------------------------------------------------------
-					initializeAllTextures
-  ---------------------------------------------------------------*/
-void COpenGLScene::initializeAllTextures()
+void COpenGLScene::initializeTextures()
 {
-	for (auto& m_viewport : m_viewports) m_viewport->initializeAllTextures();
+	for (auto& m_viewport : m_viewports) m_viewport->initializeTextures();
 }
 
 /*--------------------------------------------------------------

@@ -328,9 +328,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
    protected:
 	/** Initializes all textures in the scene (See
-	 * opengl::CTexturedPlane::loadTextureInOpenGL)
+	 * opengl::CTexturedPlane::initializeTextures)
 	 */
-	void initializeAllTextures();
+	void initializeTextures();
 
 	/** Retrieves a list of all objects in text form.
 	 */
@@ -432,14 +432,11 @@ inline COpenGLViewport::Ptr& operator<<(
  * viewport and setting the GL_PROJECTION matrix, and before calling the scene
  * OpenGL drawing primitives.
  *
- *  While handling this event you can call OpenGL glBegin(),glEnd(),gl*
- * functions or those in mrpt::opengl::gl_utils to draw stuff *in the back* of
- * the normal
- *   objects contained in the COpenGLScene.
+ * While handling this event you can call OpenGL glDraw(), etc.
  *
- *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely
- * be invoked from an internal GUI thread of MRPT,
- *    so all your code in the handler must be thread safe.
+ * IMPORTANTE NOTICE: Event handlers in your observer class will most likely be
+ * invoked from an internal GUI thread of MRPT, so all your code in the handler
+ * must be thread safe.
  */
 class mrptEventGLPreRender : public mrpt::system::mrptEvent
 {

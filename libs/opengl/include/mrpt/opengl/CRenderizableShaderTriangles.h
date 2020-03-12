@@ -45,7 +45,6 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	void freeOpenGLResources() override
 	{
 		m_trianglesBuffer.destroy();
-		m_colorBuffer.destroy();
 		m_vao.destroy();
 	}
 
@@ -54,7 +53,7 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
 
    private:
-	mutable COpenGLBuffer m_trianglesBuffer, m_colorBuffer;
+	mutable COpenGLBuffer m_trianglesBuffer;
 	mutable COpenGLVertexArrayObject m_vao;
 };
 

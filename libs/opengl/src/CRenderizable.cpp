@@ -28,26 +28,6 @@ using namespace mrpt::opengl;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizable, CSerializable, mrpt::opengl)
 
-#define MAX_GL_TEXTURE_IDS 0x10000
-#define MAX_GL_TEXTURE_IDS_MASK 0x0FFFF
-
-struct TOpenGLNameBooker
-{
-   private:
-	TOpenGLNameBooker() : freeTextureNames(MAX_GL_TEXTURE_IDS, false) {}
-
-   public:
-	std::vector<bool> freeTextureNames;
-	unsigned int next_free_texture{1};
-	std::recursive_mutex cs;
-
-	static TOpenGLNameBooker& instance()
-	{
-		static TOpenGLNameBooker dat;
-		return dat;
-	}
-};
-
 // Default constructor:
 CRenderizable::CRenderizable()
 	: m_name(),
@@ -60,46 +40,6 @@ CRenderizable::CRenderizable()
 
 // Destructor:
 CRenderizable::~CRenderizable() = default;
-/** Returns the lowest, free texture name.
- */
-unsigned int CRenderizable::getNewTextureNumber()
-{
-	MRPT_START
-
-	TOpenGLNameBooker& booker = TOpenGLNameBooker::instance();
-
-	std::lock_guard<std::recursive_mutex> lock(booker.cs);
-
-	unsigned int ret = booker.next_free_texture;
-	unsigned int tries = 0;
-	while (ret != 0 && booker.freeTextureNames[ret])
-	{
-		ret++;
-		ret = ret % MAX_GL_TEXTURE_IDS_MASK;
-
-		if (++tries >= MAX_GL_TEXTURE_IDS)
-			THROW_EXCEPTION_FMT(
-				"Maximum number of textures (%u) excedeed! (are you deleting "
-				"them?)",
-				(unsigned int)MAX_GL_TEXTURE_IDS);
-	}
-
-	booker.freeTextureNames[ret] = true;  // mark as used.
-	booker.next_free_texture = ret + 1;
-	return ret;
-	MRPT_END
-}
-
-void CRenderizable::releaseTextureName(unsigned int i)
-{
-	TOpenGLNameBooker& booker = TOpenGLNameBooker::instance();
-	std::lock_guard<std::recursive_mutex> lock(booker.cs);
-	booker.freeTextureNames[i] = false;
-	if (i < booker.next_free_texture)
-		booker.next_free_texture = i;  // try to reuse texture numbers.
-	// "glDeleteTextures" seems not to be neeeded, since we do the reservation
-	// of texture names by our own.
-}
 
 void CRenderizable::writeToStreamRender(
 	mrpt::serialization::CArchive& out) const

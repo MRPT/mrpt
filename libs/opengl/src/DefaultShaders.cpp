@@ -75,9 +75,10 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/textured-triangles.f.glsl"
 				;
-			uniforms = {"p_matrix",		 "mv_matrix",	  "light_diffuse",
-						"light_ambient", "light_specular", "light_direction"};
-			attribs = {"position", "vertexColor", "vertexNormal"};
+			uniforms = {"p_matrix",		   "mv_matrix",		 "pmv_matrix",
+						"light_diffuse",   "light_ambient",  "light_specular",
+						"light_direction", "textureSampler", "enableLight"};
+			attribs = {"position", "vertexUV", "vertexNormal"};
 			break;
 			// ==============================
 		case DefaultShaderID::TEXT:
@@ -96,7 +97,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 				"Unknown shader_id_t=%u", static_cast<unsigned>(id));
 	};
 
-	// Init GLEW if not already done: 
+			// Init GLEW if not already done:
 #ifdef _WIN32
 	glewInit();
 #endif
@@ -121,6 +122,13 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 		THROW_EXCEPTION_FMT(
 			"Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
 	}
+
+#if 0
+	// Debug:
+	std::cout << "Built Shader program #" << int(id) << "\n";
+	shader->dumpProgramDescription(std::cout);
+	std::cout << "\n";
+#endif
 
 	// Uniforms:
 	for (const auto& name : uniforms) shader->declareUniform(name);

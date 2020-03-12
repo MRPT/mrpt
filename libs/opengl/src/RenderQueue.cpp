@@ -148,16 +148,23 @@ void mrpt::opengl::processRenderQueue(
 			const RenderQueueElement& rqe = it->second;
 
 			// Load matrices in shader:
-			const GLint u_pmat = shader.uniformId("p_matrix");
-			const GLint u_mvmat = shader.uniformId("mv_matrix");
-
 			const auto IS_TRANSPOSED = GL_TRUE;
+			glUniformMatrix4fv(
+				shader.uniformId("p_matrix"), 1, IS_TRANSPOSED,
+				rqe.renderState.p_matrix.data());
 
 			glUniformMatrix4fv(
-				u_pmat, 1, IS_TRANSPOSED, rqe.renderState.p_matrix.data());
+				shader.uniformId("mv_matrix"), 1, IS_TRANSPOSED,
+				rqe.renderState.mv_matrix.data());
 
-			glUniformMatrix4fv(
-				u_mvmat, 1, IS_TRANSPOSED, rqe.renderState.mv_matrix.data());
+			if (shader.hasUniform("pmv_matrix"))
+				glUniformMatrix4fv(
+					shader.uniformId("pmv_matrix"), 1, IS_TRANSPOSED,
+					rqe.renderState.pmv_matrix.data());
+
+			// Use Texture0:
+			if (shader.hasUniform("textureSampler"))
+				glUniform1i(shader.uniformId("textureSampler"), 0);
 
 			CRenderizable::RenderContext rc;
 			rc.shader = &shader;
