@@ -232,7 +232,7 @@ Files: libs/core/include/mrpt/3rdparty/spimpl.h
 Copyright: Copyright (c) 2015 Andrey Upadyshev (oliora@gmail.com)
 License: Boost
 
-Files: 3rdparty/libcvd/*
+Files: libs/opengl/src/gltext.cpp
 Copyright: Copyright (c) 2005--2013, The Authors
  The Authors are:
  .
