@@ -55,13 +55,8 @@ void CPointCloudColoured::onUpdateBuffers_Points()
 	// "CRenderizableShaderPoints::m_vertex_buffer_data" is already done, since
 	// "m_points" is an alias for it.
 
-	// color buffer:
-	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
-	cbd.clear();
-	cbd.reserve(N);
-
-	// Point colors:
-	cbd.assign(N, m_color);
+	// color buffer: idem. "m_point_colors" is an alias for
+	// CRenderizableShaderPoints::m_color_buffer_data.
 
 	m_last_rendered_count = m_last_rendered_count_ongoing;
 }
@@ -143,6 +138,7 @@ void CPointCloudColoured::serializeFrom(
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	markAllPointsAsNew();
+	CRenderizable::notifyChange();
 }
 
 /** Write an individual point (checks for "i" in the valid range only in Debug).
@@ -162,6 +158,7 @@ void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
 	markAllPointsAsNew();
+	CRenderizable::notifyChange();
 }
 
 /** Inserts a new point into the point cloud. */
@@ -174,6 +171,7 @@ void CPointCloudColoured::push_back(
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
 	markAllPointsAsNew();
+	CRenderizable::notifyChange();
 }
 
 // Do needed internal work if all points are new (octree rebuilt,...)

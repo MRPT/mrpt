@@ -89,6 +89,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 		m_points.resize(N);
 		m_point_colors.resize(N);
 		markAllPointsAsNew();
+		CRenderizable::notifyChange();
 	}
 
 	/** Like STL std::vector's reserve */
@@ -169,6 +170,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 		m_points.clear();
 		m_point_colors.clear();
 		markAllPointsAsNew();
+		CRenderizable::notifyChange();
 	}
 
 	/** Load the points from any other point map class supported by the adapter
@@ -364,6 +366,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 template <class POINTSMAP>
 void CPointCloudColoured::loadFromPointsMap(const POINTSMAP* themap)
 {
+	CRenderizable::notifyChange();
 	mrpt::opengl::PointCloudAdapter<CPointCloudColoured> pc_dst(*this);
 	const mrpt::opengl::PointCloudAdapter<POINTSMAP> pc_src(*themap);
 	const size_t N = pc_src.size();
