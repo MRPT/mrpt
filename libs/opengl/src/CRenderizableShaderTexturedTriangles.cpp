@@ -14,6 +14,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <memory>  // std::align
+#include <thread>
 
 #include <mrpt/opengl/opengl_api.h>
 
@@ -26,9 +27,6 @@ using mrpt::img::CImage;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 	CRenderizableShaderTexturedTriangles, CRenderizable, mrpt::opengl)
-
-// Use custom texture number allocation vs. OpenGL standard functions?
-//#define USE_CUSTOM_TEXTURE_NAME_BOOKING
 
 // Whether to profile memory allocations:
 //#define TEXTUREOBJ_PROFILE_MEM_ALLOC
@@ -541,65 +539,18 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 	CRenderizable::notifyChange();
 }
 
-#if defined(USE_CUSTOM_TEXTURE_NAME_BOOKING)
-namespace mrpt::opengl::internal
-{
-#define MAX_GL_TEXTURE_IDS 0x10000
-#define MAX_GL_TEXTURE_IDS_MASK 0x0FFFF
-
-struct TOpenGLNameBooker
-{
-   private:
-	TOpenGLNameBooker() : freeTextureNames(MAX_GL_TEXTURE_IDS, false) {}
-
-   public:
-	std::vector<bool> freeTextureNames;
-	unsigned int next_free_texture{1};
-	std::recursive_mutex cs;
-
-	static TOpenGLNameBooker& instance()
-	{
-		static TOpenGLNameBooker dat;
-		return dat;
-	}
-};
-}  // namespace mrpt::opengl::internal
-#endif
+static std::map<unsigned int, std::thread::id> textureReservedFrom;
 
 unsigned int CRenderizableShaderTexturedTriangles::getNewTextureNumber()
 {
 	MRPT_START
-#if defined(USE_CUSTOM_TEXTURE_NAME_BOOKING)
-
-	auto& booker = internal::TOpenGLNameBooker::instance();
-
-	std::lock_guard<std::recursive_mutex> lock(booker.cs);
-
-	unsigned int ret = booker.next_free_texture;
-	unsigned int tries = 0;
-	while (ret != 0 && booker.freeTextureNames[ret])
-	{
-		ret++;
-		ret = ret % MAX_GL_TEXTURE_IDS_MASK;
-
-		if (++tries >= MAX_GL_TEXTURE_IDS)
-			THROW_EXCEPTION_FMT(
-				"Maximum number of textures (%u) excedeed! (are you deleting "
-				"them?)",
-				(unsigned int)MAX_GL_TEXTURE_IDS);
-	}
-
-	booker.freeTextureNames[ret] = true;  // mark as used.
-	booker.next_free_texture = ret + 1;
-	return ret;
-
-#else
 #if MRPT_HAS_OPENGL_GLUT
 	// Create one OpenGL texture
 	GLuint textureID;
 	glGenTextures(1, &textureID);
+
+	textureReservedFrom[textureID] = std::this_thread::get_id();
 	return textureID;
-#endif
 #endif
 	MRPT_END
 }
@@ -607,21 +558,19 @@ unsigned int CRenderizableShaderTexturedTriangles::getNewTextureNumber()
 void CRenderizableShaderTexturedTriangles::releaseTextureName(unsigned int i)
 {
 	MRPT_START
-#if defined(USE_CUSTOM_TEXTURE_NAME_BOOKING)
-
-	auto& booker = internal::TOpenGLNameBooker::instance();
-	std::lock_guard<std::recursive_mutex> lock(booker.cs);
-	booker.freeTextureNames[i] = false;
-	if (i < booker.next_free_texture)
-		booker.next_free_texture = i;  // try to reuse texture numbers.
-// "glDeleteTextures" seems not to be neeeded, since we do the reservation
-// of texture names by our own.
-#else
 #if MRPT_HAS_OPENGL_GLUT
-	GLuint t = i;
-	glDeleteTextures(1, &t);
-	CHECK_OPENGL_ERROR();
-#endif
+
+	auto it = textureReservedFrom.find(i);
+	if (it == textureReservedFrom.end()) return;
+
+	if (std::this_thread::get_id() == it->second)
+	{
+		GLuint t = i;
+		glDeleteTextures(1, &t);
+		CHECK_OPENGL_ERROR();
+	}
+
+	textureReservedFrom.erase(it);
 #endif
 	MRPT_END
 }

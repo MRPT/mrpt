@@ -9,6 +9,7 @@
 #pragma once
 
 #include <memory>
+#include <thread>
 
 namespace mrpt::opengl
 {
@@ -57,6 +58,7 @@ class COpenGLVertexArrayObject
 
 		bool created = false;
 		unsigned int buffer_id = 0;
+		std::thread::id created_from;
 	};
 	std::shared_ptr<RAII_Impl> m_impl;
 };
