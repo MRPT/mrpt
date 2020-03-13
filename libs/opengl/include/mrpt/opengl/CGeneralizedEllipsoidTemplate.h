@@ -78,11 +78,6 @@ class CGeneralizedEllipsoidTemplate
 			}
 		}
 
-		// Only if all the eigenvalues are !=0
-		bool eig_ok = true;
-		for (int i = 0; i < DIM; i++)
-			if (m_U.coeff(i, i) == 0) eig_ok = false;
-
 		// 2) Generate "standard" ellipsoid:
 		std::vector<array_parameter_t> params_pts;
 		cov_matrix_t Uscaled = m_U;
@@ -109,21 +104,8 @@ class CGeneralizedEllipsoidTemplate
 		m_pose.composePoint(m_bb_min, m_bb_min);
 		m_pose.composePoint(m_bb_max, m_bb_max);
 
-		if (!eig_ok)
-		{
-			std::cerr << "[CGeneralizedEllipsoidTemplate<" << DIM
-					  << ">] Warning: invalid covariance matrix: "
-					  << m_cov.inMatlabFormat() << "\n";
-
-			CRenderizableShaderTriangles::m_triangles.clear();
-			CRenderizableShaderWireFrame::m_vertex_buffer_data.clear();
-			CRenderizableShaderWireFrame::m_color_buffer_data.clear();
-		}
-		else
-		{
-			CRenderizableShaderTriangles::renderUpdateBuffers();
-			CRenderizableShaderWireFrame::renderUpdateBuffers();
-		}
+		CRenderizableShaderTriangles::renderUpdateBuffers();
+		CRenderizableShaderWireFrame::renderUpdateBuffers();
 	}
 	virtual shader_list_t requiredShaders() const override
 	{

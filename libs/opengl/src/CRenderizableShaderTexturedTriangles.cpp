@@ -347,195 +347,100 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		}
 #endif
 
-		r_width = width;  // round2up( width );
-		r_height = height;  // round2up( height );
-
-		// Padding pixels:
-		m_pad_x_right = (r_width - width);
-		m_pad_y_bottom = (r_height - height);
-
-		// Compute the exact texture coordinates:
-		m_tex_x_min = .0;
-		m_tex_x_max = 1.0f - ((float)m_pad_x_right) / r_width;
-		m_tex_y_min = .0f;
-		m_tex_y_max = 1.0f - ((float)m_pad_y_bottom) / r_height;
-
 		if (m_enableTransparency)
 		{
 			ASSERT_(!m_textureImageAlpha.isColor());
-			ASSERT_(
-				m_textureImageAlpha.getWidth() == m_textureImage.getWidth());
-			ASSERT_(
-				m_textureImageAlpha.getHeight() == m_textureImage.getHeight());
+			ASSERT_EQUAL_(
+				m_textureImageAlpha.getWidth(), m_textureImage.getWidth());
+			ASSERT_EQUAL_(
+				m_textureImageAlpha.getHeight(), m_textureImage.getHeight());
 		}
 
-		if (m_textureImage.isColor())
+		// GL_LUMINANCE and GL_LUMINANCE_ALPHA were removed in OpenGL 3.1
+		// Convert grayscale images into color:
+		if (!m_textureImage.isColor())
+			m_textureImage = m_textureImage.colorImage();
+
+		// Color texture:
+		if (m_enableTransparency)
 		{
-			// Color texture:
-			if (m_enableTransparency)
-			{
 // Color texture WITH trans.
 // --------------------------------------
 #ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-				const std::string sSec = mrpt::format(
-					"opengl_texture_alloc %ix%i (color,trans)", width, height);
-				tim.enter(sSec.c_str());
+			const std::string sSec = mrpt::format(
+				"opengl_texture_alloc %ix%i (color,trans)", width, height);
+			tim.enter(sSec.c_str());
 #endif
 
-				dataAligned = reserveDataBuffer(height * width * 4 + 512, data);
+			dataAligned = reserveDataBuffer(height * width * 4 + 512, data);
 
 #ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-				tim.leave(sSec.c_str());
+			tim.leave(sSec.c_str());
 #endif
 
-				for (int y = 0; y < height; y++)
-				{
-					unsigned char* ptrSrcCol = m_textureImage(0, y, 0);
-					unsigned char* ptrSrcAlfa = m_textureImageAlpha(0, y);
-					unsigned char* ptr = dataAligned + y * width * 4;
-
-					for (int x = 0; x < width; x++)
-					{
-						*ptr++ = *ptrSrcCol++;
-						*ptr++ = *ptrSrcCol++;
-						*ptr++ = *ptrSrcCol++;
-						*ptr++ = *ptrSrcAlfa++;
-					}
-				}
-
-				// Prepare image data types:
-				const GLenum img_type = GL_UNSIGNED_BYTE;
-				// Reverse RGB <-> BGR order?
-				const bool is_RGB_order =
-					(m_textureImage.getChannelsOrder() == std::string("RGB"));
-				const GLenum img_format = (is_RGB_order ? GL_RGBA : GL_BGRA);
-
-				// Send image data to OpenGL:
-				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-				glTexImage2D(
-					GL_TEXTURE_2D, 0 /*level*/, GL_RGBA8 /* RGB components */,
-					width, height, 0 /*border*/, img_format, img_type,
-					dataAligned);
-				CHECK_OPENGL_ERROR();
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
-				CHECK_OPENGL_ERROR();
-
-				// No need to hide a fill border:
-				m_pad_x_right = 0;
-				m_pad_y_bottom = 0;
-
-			}  // End of color texture WITH trans.
-			else
+			for (int y = 0; y < height; y++)
 			{
-				// Color texture WITHOUT trans.
-				// --------------------------------------
-				// Prepare image data types:
-				const GLenum img_type = GL_UNSIGNED_BYTE;
-				const int nBytesPerPixel = m_textureImage.isColor() ? 3 : 1;
-				// Reverse RGB <-> BGR order?
-				const bool is_RGB_order =
-					(m_textureImage.getChannelsOrder() == std::string("RGB"));
-				const GLenum img_format = nBytesPerPixel == 3
-											  ? (is_RGB_order ? GL_RGB : GL_BGR)
-											  : GL_LUMINANCE;
+				unsigned char* ptrSrcCol = m_textureImage(0, y, 0);
+				unsigned char* ptrSrcAlfa = m_textureImageAlpha(0, y);
+				unsigned char* ptr = dataAligned + y * width * 4;
 
-				// Send image data to OpenGL:
-				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-				CHECK_OPENGL_ERROR();
-				glPixelStorei(
-					GL_UNPACK_ROW_LENGTH,
-					m_textureImage.getRowStride() / nBytesPerPixel);
-				CHECK_OPENGL_ERROR();
-				glTexImage2D(
-					GL_TEXTURE_2D, 0 /*level*/, GL_RGB8 /* RGB components */,
-					width, height, 0 /*border*/, img_format, img_type,
-					m_textureImage.ptrLine<uint8_t>(0));
-				CHECK_OPENGL_ERROR();
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
-				CHECK_OPENGL_ERROR();
+				for (int x = 0; x < width; x++)
+				{
+					*ptr++ = *ptrSrcCol++;
+					*ptr++ = *ptrSrcCol++;
+					*ptr++ = *ptrSrcCol++;
+					*ptr++ = *ptrSrcAlfa++;
+				}
+			}
 
-				// No need to hide a fill border:
-				m_pad_x_right = 0;
-				m_pad_y_bottom = 0;
+			// Prepare image data types:
+			const GLenum img_type = GL_UNSIGNED_BYTE;
+			// Reverse RGB <-> BGR order?
+			const bool is_RGB_order =
+				(m_textureImage.getChannelsOrder() == std::string("RGB"));
+			const GLenum img_format = (is_RGB_order ? GL_RGBA : GL_BGRA);
 
-			}  // End of color texture WITHOUT trans.
-		}
+			// Send image data to OpenGL:
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
+			glTexImage2D(
+				GL_TEXTURE_2D, 0 /*level*/, GL_RGBA8 /* RGB components */,
+				width, height, 0 /*border*/, img_format, img_type, dataAligned);
+			CHECK_OPENGL_ERROR();
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
+			CHECK_OPENGL_ERROR();
+
+		}  // End of color texture WITH trans.
 		else
 		{
-			// Gray-scale texture:
-			if (m_enableTransparency)
-			{
-#ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-				const std::string sSec = mrpt::format(
-					"opengl_texture_alloc %ix%i (gray,transp)", width, height);
-				tim.enter(sSec.c_str());
-#endif
+			// Color texture WITHOUT trans.
+			// --------------------------------------
+			// Prepare image data types:
+			const GLenum img_type = GL_UNSIGNED_BYTE;
+			const int nBytesPerPixel = m_textureImage.isColor() ? 3 : 1;
+			// Reverse RGB <-> BGR order?
+			const bool is_RGB_order =
+				(m_textureImage.getChannelsOrder() == std::string("RGB"));
+			const GLenum img_format = nBytesPerPixel == 3
+										  ? (is_RGB_order ? GL_RGB : GL_BGR)
+										  : GL_LUMINANCE;
 
-				dataAligned =
-					reserveDataBuffer(height * width * 2 + 1024, data);
+			// Send image data to OpenGL:
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			CHECK_OPENGL_ERROR();
+			glPixelStorei(
+				GL_UNPACK_ROW_LENGTH,
+				m_textureImage.getRowStride() / nBytesPerPixel);
+			CHECK_OPENGL_ERROR();
+			glTexImage2D(
+				GL_TEXTURE_2D, 0 /*level*/, GL_RGB8 /* RGB components */, width,
+				height, 0 /*border*/, img_format, img_type,
+				m_textureImage.ptrLine<uint8_t>(0));
+			CHECK_OPENGL_ERROR();
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
+			CHECK_OPENGL_ERROR();
 
-#ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-				tim.leave(sSec.c_str());
-#endif
-
-				for (int y = 0; y < height; y++)
-				{
-					unsigned char* ptrSrcCol = m_textureImage(0, y);
-					unsigned char* ptrSrcAlfa = m_textureImageAlpha(0, y);
-					unsigned char* ptr = dataAligned + y * width * 2;
-					for (int x = 0; x < width; x++)
-					{
-						*ptr++ = *ptrSrcCol++;
-						*ptr++ = *ptrSrcAlfa++;
-					}
-				}
-
-				// Prepare image data types:
-				const GLenum img_type = GL_UNSIGNED_BYTE;
-				const GLenum img_format = GL_LUMINANCE_ALPHA;
-
-				// Send image data to OpenGL:
-				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-				CHECK_OPENGL_ERROR();
-				glTexImage2D(
-					GL_TEXTURE_2D, 0 /*level*/, GL_RG8 /* channels */, width,
-					height, 0 /*border*/, img_format, img_type, dataAligned);
-				CHECK_OPENGL_ERROR();
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
-				CHECK_OPENGL_ERROR();
-
-				// No need to hide a fill border:
-				m_pad_x_right = 0;
-				m_pad_y_bottom = 0;
-
-			}  // End of gray-scale texture WITH trans.
-			else
-			{
-				// Prepare image data types:
-				const GLenum img_type = GL_UNSIGNED_BYTE;
-				const GLenum img_format = GL_LUMINANCE;
-
-				// Send image data to OpenGL:
-				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-				glPixelStorei(
-					GL_UNPACK_ROW_LENGTH, m_textureImage.getRowStride());
-				CHECK_OPENGL_ERROR();
-				glTexImage2D(
-					GL_TEXTURE_2D, 0 /*level*/,
-					GL_R8 /* 1 grayscale component */, width, height,
-					0 /*border*/, img_format, img_type, m_textureImage(0, 0));
-				CHECK_OPENGL_ERROR();
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
-				CHECK_OPENGL_ERROR();
-
-				// No need to hide a fill border:
-				m_pad_x_right = 0;
-				m_pad_y_bottom = 0;
-
-			}  // End of gray-scale texture WITHOUT trans.
-		}
+		}  // End of color texture WITHOUT trans.
 
 		m_texture_is_loaded = true;
 
@@ -701,6 +606,7 @@ unsigned int CRenderizableShaderTexturedTriangles::getNewTextureNumber()
 
 void CRenderizableShaderTexturedTriangles::releaseTextureName(unsigned int i)
 {
+	MRPT_START
 #if defined(USE_CUSTOM_TEXTURE_NAME_BOOKING)
 
 	auto& booker = internal::TOpenGLNameBooker::instance();
@@ -714,6 +620,8 @@ void CRenderizableShaderTexturedTriangles::releaseTextureName(unsigned int i)
 #if MRPT_HAS_OPENGL_GLUT
 	GLuint t = i;
 	glDeleteTextures(1, &t);
+	CHECK_OPENGL_ERROR();
 #endif
 #endif
+	MRPT_END
 }

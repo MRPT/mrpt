@@ -13,7 +13,6 @@
 #include <mrpt/graphslam/misc/CWindowObserver.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/opengl/COpenGLViewport.h>
-#include <mrpt/opengl/gl_utils.h>
 
 using namespace mrpt::graphslam;
 
@@ -138,5 +137,4 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 
 		// was: show m_help_msg.c_str()
 	}
-}
 }

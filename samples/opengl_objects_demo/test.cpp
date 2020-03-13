@@ -391,7 +391,7 @@ void TestOpenGLObjects()
 		auto obj = opengl::CMesh3D::Create();
 		obj->enableShowEdges(false);
 		obj->enableShowFaces(true);
-		obj->enableShowVertices(true);
+		obj->enableShowVertices(false);
 		obj->setLocation(off_x, 0, 0);
 
 		const unsigned int rows = 200, cols = 200;
@@ -840,12 +840,16 @@ void TestOpenGLObjects()
 	// CTexturedPlane
 	{
 		mrpt::img::CImage pic, picAlpha;
-		pic.resize(256, 256, mrpt::img::CH_RGB);
-		picAlpha.resize(256, 256, mrpt::img::CH_GRAY);
-		pic.filledRectangle(0, 0, 255, 255, mrpt::img::TColor::black());
-		pic.filledRectangle(50, 20, 90, 150, mrpt::img::TColor::white());
+		const size_t W = 256, H = 256;
+		pic.resize(W, H, mrpt::img::CH_RGB);
+		picAlpha.resize(W, H, mrpt::img::CH_GRAY);
+		pic.filledRectangle(0, 0, W - 1, H - 1, mrpt::img::TColor::black());
+		pic.filledRectangle(0, 0, W / 4, H / 2, mrpt::img::TColor::white());
+
 		picAlpha.filledRectangle(
-			0, 0, 255, 255, mrpt::img::TColor(0x55, 0x55, 0x55));
+			0, 0, W - 1, H - 1, mrpt::img::TColor(0x55, 0x55, 0x55));
+		picAlpha.filledRectangle(
+			0, 0, W / 4, H / 2, mrpt::img::TColor(0xa0, 0xa0, 0xa0));
 
 		{
 			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
