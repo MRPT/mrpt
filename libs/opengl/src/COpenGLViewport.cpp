@@ -133,67 +133,28 @@ void COpenGLViewport::renderImageMode() const
 		glv_timlog, "COpenGLViewport::render imageview");
 #endif
 
-	MRPT_TODO("Port to opengl3");
-	return;
-
 	// Do we have an actual image to render?
-	if (!m_imageview_img) return;
+	if (!m_imageview_plane) return;
 
-	// Note: The following code is inspired in the implementations:
-	//  - libcvd, by Edward Rosten http://www.edwardrosten.com/cvd/
-	//  - PTAM, by Klein & Murray
-	//  http://www.robots.ox.ac.uk/~gk/PTAM/
-	mrpt::img::CImage* img = m_imageview_img.get();
-	const int img_w = img->getWidth();
-	const int img_h = img->getHeight();
+	auto _ = m_state;
 
-	// Empty image?
-	if (img_w == 0 || img_h == 0) return;
+	_.mv_matrix.setIdentity();
+	_.p_matrix.setIdentity();
+	_.pmv_matrix.setIdentity();
 
-	// Need to adjust the aspect ratio?
-	const auto vw = m_state.viewport_width, vh = m_state.viewport_height;
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	const double ratio = vw * img_h / double(vh * img_w);
-	double ortho_w = img_w;
-	double ortho_h = img_h;
-	if (ratio > 1)
-		ortho_w *= ratio;
-	else if (ratio != 0)
-		ortho_h /= ratio;
+	// Pass 1: Process all objects (recursively for sets of objects):
+	CListOpenGLObjects lst;
+	lst.push_back(m_imageview_plane);
+	mrpt::opengl::RenderQueue rq;
+	mrpt::opengl::enqueForRendering(lst, _, rq);
 
-	glOrtho(-0.5, ortho_h - 0.5, ortho_w - 0.5, -0.5, -1, 1);
+	// pass 2: render, sorted by shader program:
+	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
 
-	// Prepare raster pos & pixel copy direction in -Y.
-	glRasterPos2f(-0.5f, -0.5f);
-	glPixelZoom(vw / float(ortho_w), vh / float(-ortho_h));
-
-	// Prepare image data types:
-	const GLenum img_type = GL_UNSIGNED_BYTE;
-	const int nBytesPerPixel = img->isColor() ? 3 : 1;
-	// Reverse RGB <-> BGR order?
-	const bool is_RGB_order = (img->getChannelsOrder() == std::string("RGB"));
-	const GLenum img_format =
-		nBytesPerPixel == 3 ? (is_RGB_order ? GL_RGB : GL_BGR) : GL_LUMINANCE;
-
-	// autodetect image row alignment, if any:
-	const auto row_stride = img->getRowStride();
-	const auto row_bytes = img->getWidth() * nBytesPerPixel;
-
-	ASSERT_ABOVEEQ_(row_stride, row_bytes);
-
-	// Alignment in bytes. Refer to OpenGL docs for
-	// GL_UNPACK_ALIGNMENT
-	const int img_store_alignment = (row_stride - row_bytes) + 1;
-	ASSERT_(
-		img_store_alignment == 1 || img_store_alignment == 2 ||
-		img_store_alignment == 4 || img_store_alignment == 8);
-
-	// Send image data to OpenGL:
-	glPixelStorei(GL_UNPACK_ALIGNMENT, img_store_alignment);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, img->getWidth());
-	glDrawPixels(img_w, img_h, img_format, img_type, img->ptrLine<uint8_t>(0));
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
-	CHECK_OPENGL_ERROR();
 #endif
 }
 
@@ -226,9 +187,6 @@ void COpenGLViewport::renderNormalSceneMode() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
-
-	// Prepare shaders upon first invokation:
-	if (m_shaders.empty()) loadDefaultShaders();
 
 	// Prepare camera (projection matrix):
 	const CListOpenGLObjects* objectsToRender = nullptr;
@@ -371,28 +329,37 @@ void COpenGLViewport::renderViewportBorder() const
 	MRPT_START
 	if (m_borderWidth < 1) return;
 
-	MRPT_TODO("Port to opengl3");
-	return;
+	auto _ = m_state;
 
-	glLineWidth(2 * m_borderWidth);
-	glColor4f(0, 0, 0, 1);
+	_.mv_matrix.setIdentity();
+	_.p_matrix.setIdentity();
+	_.pmv_matrix.setIdentity();
+
 	glDisable(GL_DEPTH_TEST);
-	CHECK_OPENGL_ERROR();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	//
+	if (!m_borderLines)
+	{
+		m_borderLines = mrpt::opengl::CSetOfLines::Create();
+		m_borderLines->appendLine(-1, -1, 0, -1, 1, 0);
+		m_borderLines->appendLine(-1, 1, 0, 1, 1, 0);
+		m_borderLines->appendLine(1, 1, 0, 1, -1, 0);
+		m_borderLines->appendLine(1, -1, 0, -1, -1, 0);
+	}
+	m_borderLines->setLineWidth(m_borderWidth);
+	m_borderLines->setColor_u8(m_borderColor);
 
-	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-	glBegin(GL_LINE_LOOP);
-	glVertex2f(-1, -1);
-	glVertex2f(-1, 1);
-	glVertex2f(1, 1);
-	glVertex2f(1, -1);
-	glEnd();
+	CListOpenGLObjects lst;
+	lst.push_back(m_borderLines);
 
-	glEnable(GL_DEPTH_TEST);
+	// Pass 1: Process all objects (recursively for sets of objects):
+	mrpt::opengl::RenderQueue rq;
+	mrpt::opengl::enqueForRendering(lst, _, rq);
+
+	// pass 2: render, sorted by shader program:
+	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
 	MRPT_END
 #endif
 }
@@ -532,6 +499,9 @@ void COpenGLViewport::render(
 	}
 	glDisable(GL_SCISSOR_TEST);
 	CHECK_OPENGL_ERROR();
+
+	// Prepare shaders upon first invokation:
+	if (m_shaders.empty()) loadDefaultShaders();
 
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
@@ -867,7 +837,7 @@ void COpenGLViewport::getCurrentCameraPose(
 void COpenGLViewport::setNormalMode()
 {
 	// If this was a m_isImageView, remove the quad object:
-	if (m_isImageView && m_imageview_img) m_imageview_img.reset();
+	m_imageview_plane.reset();
 
 	m_isCloned = false;
 	m_isClonedCamera = false;
@@ -877,19 +847,23 @@ void COpenGLViewport::setNormalMode()
 void COpenGLViewport::setImageView(const mrpt::img::CImage& img)
 {
 	internal_enableImageView();
-	*m_imageview_img = img;
+	m_imageview_plane->assignImage(img);
 }
 void COpenGLViewport::setImageView(mrpt::img::CImage&& img)
 {
 	internal_enableImageView();
-	*m_imageview_img = std::move(img);
+	m_imageview_plane->assignImage(img);
 }
 
 void COpenGLViewport::internal_enableImageView()
 {
 	// If this is the first time, we have to create the quad object:
-	if (!m_isImageView || !m_imageview_img)
-		m_imageview_img = mrpt::img::CImage::Create();
+	if (!m_imageview_plane)
+	{
+		m_imageview_plane = mrpt::opengl::CTexturedPlane::Create();
+		// Flip vertically:
+		m_imageview_plane->setPlaneCorners(-1, 1, 1, -1);
+	}
 	m_isImageView = true;
 }
 

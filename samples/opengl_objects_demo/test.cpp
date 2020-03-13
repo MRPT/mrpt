@@ -12,6 +12,7 @@
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/random.h>
+#include <mrpt/system/filesystem.h>
 #include <iostream>
 
 using namespace std;
@@ -19,6 +20,7 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
+using namespace std::string_literals;
 
 // ------------------------------------------------------
 //				TestOpenGLObjects
@@ -875,7 +877,24 @@ void TestOpenGLObjects()
 
 	MRPT_TODO("ADD: CMeshFast");
 
-	win.setCameraZoom(150);
+	// Add image-mode viewport:
+	{
+		const std::string img_file = mrpt::system::getShareMRPTDir() +
+									 "datasets/stereo-calib/0_left.jpg"s;
+
+		mrpt::img::CImage im;
+		if (im.loadFromFile(img_file))
+		{
+			auto glView = theScene->createViewport("image1");
+			glView->setViewportPosition(0.7, 0, 0.3, 0.3);
+			glView->setImageView(im);
+
+			glView->setBorderSize(1);
+		}
+	}
+
+	// Zoom out:
+	win.setCameraZoom(250);
 
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 	win.unlockAccess3DScene();

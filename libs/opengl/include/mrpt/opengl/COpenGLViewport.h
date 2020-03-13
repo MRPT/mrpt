@@ -11,8 +11,10 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
+#include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
@@ -180,12 +182,15 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 */
 	void getViewportClipDistances(float& clip_min, float& clip_max) const;
 
-	/** Set the border size ("frame") of the viewport (default=0).
-	 */
+	/** Set the border size ("frame") of the viewport (default=0) */
 	inline void setBorderSize(unsigned int lineWidth)
 	{
 		m_borderWidth = lineWidth;
 	}
+	inline unsigned int getBorderSize() const { return m_borderWidth; }
+
+	void setBorderColor(const mrpt::img::TColor& c) { m_borderColor = c; }
+	const mrpt::img::TColor& getBorderColor() const { return m_borderColor; }
 
 	/** Return whether the viewport will be rendered transparent over previous
 	 * viewports.
@@ -361,6 +366,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	bool m_isTransparent{false};
 	/** Default=0, the border around the viewport. */
 	uint32_t m_borderWidth{0};
+
+	mrpt::img::TColor m_borderColor{255, 255, 255, 255};
+
 	/** The viewport position [0,1] */
 	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
 	/** The min/max clip depth distances (default: 0.1 - 10000) */
@@ -372,7 +380,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	bool m_isImageView{false};
 
 	/** The image to display, after calling \a setImageView() */
-	mrpt::img::CImage::Ptr m_imageview_img;
+	mrpt::opengl::CTexturedPlane::Ptr m_imageview_plane;
+
+	mutable mrpt::opengl::CSetOfLines::Ptr m_borderLines;
 
 	/** Info updated with each "render()" and used in "get3DRayForPixelCoord" */
 	mutable TRenderMatrices m_state;
