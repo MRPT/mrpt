@@ -314,7 +314,7 @@ void ICP_SLAM_App_Base::run()
 				cam.setElevationDegrees(90);
 				cam.setPointingAt(robotPose);
 				cam.setZoomDistance(20);
-				cam.setOrthogonal();
+				// cam.setOrthogonal();
 			}
 
 			// The ground:

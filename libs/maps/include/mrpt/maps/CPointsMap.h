@@ -322,7 +322,7 @@ class CPointsMap : public CMetricMap,
 		/** Binary dump to stream - used in derived classes' serialization */
 		void readFromStream(mrpt::serialization::CArchive& in);
 
-		float point_size{3.0f};
+		float point_size{1.0f};
 		/** Color of points. Superseded by colormap if the latter is set. */
 		mrpt::img::TColorf color{.0f, .0f, 1.0f};
 		/** Colormap for points (index is "z" coordinates) */
