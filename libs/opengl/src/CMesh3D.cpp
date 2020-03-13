@@ -76,10 +76,10 @@ void CMesh3D::loadMesh(
 
 		for (unsigned int f = 0; f < num_faces; f++)
 		{
-			const unsigned int v1 = m_face_verts[f][0];
-			const unsigned int v2 = m_face_verts[f][1];
-			const unsigned int v3 = m_face_verts[f][2];
-			const unsigned int v4 = m_face_verts[f][3];
+			const unsigned int v1 = m_face_verts[f][3];
+			const unsigned int v2 = m_face_verts[f][2];
+			const unsigned int v3 = m_face_verts[f][1];
+			const unsigned int v4 = m_face_verts[f][0];
 
 			if (m_is_quad[f])
 			{
@@ -194,7 +194,7 @@ void CMesh3D::render(const RenderContext& rc) const
 			if (m_showEdges) CRenderizableShaderWireFrame::render(rc);
 			break;
 		case DefaultShaderID::POINTS:
-			if (m_showVertices) CRenderizableShaderWireFrame::render(rc);
+			if (m_showVertices) CRenderizableShaderPoints::render(rc);
 			break;
 	};
 }
