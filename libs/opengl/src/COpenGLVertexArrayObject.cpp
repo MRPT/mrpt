@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/opengl/COpenGLVertexArrayObject.h>
 #include <mrpt/opengl/opengl_api.h>
-
+#include <thread>
 
 using namespace mrpt::opengl;
 
@@ -34,6 +34,7 @@ void COpenGLVertexArrayObject::RAII_Impl::create()
 	GLuint buffer;
 	glGenVertexArrays(1, &buffer);
 	this->buffer_id = buffer;
+	this->created_from = std::this_thread::get_id();
 	created = true;
 #endif
 }
@@ -42,14 +43,11 @@ void COpenGLVertexArrayObject::RAII_Impl::destroy()
 {
 	if (!created) return;
 #if MRPT_HAS_OPENGL_GLUT
-	try
+
+	if (created_from == std::this_thread::get_id())
 	{
 		release();
 		glDeleteVertexArrays(1, &buffer_id);
-	}
-	catch (...)
-	{
-		// For Windows: ignore errors if GLEW was already unloaded...
 	}
 #endif
 	buffer_id = 0;
@@ -67,14 +65,9 @@ void COpenGLVertexArrayObject::RAII_Impl::bind()
 void COpenGLVertexArrayObject::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	try
-	{
-		if (!created) return;
-		glBindVertexArray(0);
-	}
-	catch (...)
-	{
-		// For Windows: ignore errors if GLEW was already unloaded...
-	}
+	if (!created) return;
+	if (created_from != std::this_thread::get_id()) return;
+
+	glBindVertexArray(0);
 #endif
 }

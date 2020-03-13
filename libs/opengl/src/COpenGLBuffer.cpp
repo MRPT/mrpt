@@ -34,6 +34,7 @@ void COpenGLBuffer::RAII_Impl::create()
 	GLuint buffer;
 	glGenBuffers(1, &buffer);
 	this->buffer_id = buffer;
+	this->created_from = std::this_thread::get_id();
 	created = true;
 #endif
 }
@@ -42,14 +43,10 @@ void COpenGLBuffer::RAII_Impl::destroy()
 {
 	if (!created) return;
 #if MRPT_HAS_OPENGL_GLUT
-	try
+	if (created_from == std::this_thread::get_id())
 	{
 		release();
 		glDeleteBuffers(1, &buffer_id);
-	}
-	catch (...)
-	{
-		// For Windows: ignore errors if GLEW was already unloaded...
 	}
 #endif
 	buffer_id = 0;
@@ -68,14 +65,9 @@ void COpenGLBuffer::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (!created) return;
-	try
-	{
-		glBindBuffer(static_cast<GLenum>(type), 0);
-	}
-	catch (...)
-	{
-		// For Windows: ignore errors if GLEW was already unloaded...
-	}
+	if (created_from != std::this_thread::get_id()) return;
+
+	glBindBuffer(static_cast<GLenum>(type), 0);
 #endif
 }
 
