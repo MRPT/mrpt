@@ -113,6 +113,7 @@ void CPlanarLaserScan::onUpdateBuffers_Points()
 {
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	vbd.clear();
 
 	size_t n;
 	const float *x, *y, *z;

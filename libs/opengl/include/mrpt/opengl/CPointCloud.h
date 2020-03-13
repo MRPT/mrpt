@@ -157,6 +157,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 		m_points.swap(pts);
 		m_minmax_valid = false;
 		markAllPointsAsNew();
+		CRenderizable::notifyChange();
 	}
 
 	/** Get a const reference to the internal array of points */
@@ -218,6 +219,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 		for (idx = 0, it = pointsList.begin(); idx < N; ++idx, ++it)
 			m_points[idx] = {it->x, it->y, it->z};
 		markAllPointsAsNew();
+		CRenderizable::notifyChange();
 		MRPT_END
 	}
 
@@ -231,19 +233,23 @@ class CPointCloud : public CRenderizableShaderPoints,
 	inline void enableColorFromX(bool v = true)
 	{
 		m_colorFromDepth = v ? CPointCloud::colX : CPointCloud::colNone;
+		CRenderizable::notifyChange();
 	}
 	inline void enableColorFromY(bool v = true)
 	{
 		m_colorFromDepth = v ? CPointCloud::colY : CPointCloud::colNone;
+		CRenderizable::notifyChange();
 	}
 	inline void enableColorFromZ(bool v = true)
 	{
 		m_colorFromDepth = v ? CPointCloud::colZ : CPointCloud::colNone;
+		CRenderizable::notifyChange();
 	}
 
 	inline void enablePointSmooth(bool enable = true)
 	{
 		m_pointSmooth = enable;
+		CRenderizable::notifyChange();
 	}
 	inline void disablePointSmooth() { m_pointSmooth = false; }
 	inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
@@ -337,6 +343,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 template <class POINTSMAP>
 void CPointCloud::loadFromPointsMap(const POINTSMAP* themap)
 {
+	CRenderizable::notifyChange();
 	ASSERT_(themap != nullptr);
 	mrpt::opengl::PointCloudAdapter<CPointCloud> pc_dst(*this);
 	const mrpt::opengl::PointCloudAdapter<POINTSMAP> pc_src(*themap);

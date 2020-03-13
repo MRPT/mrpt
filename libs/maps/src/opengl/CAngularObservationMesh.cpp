@@ -235,6 +235,7 @@ bool CAngularObservationMesh::setScanSet(
 	}
 	scanSet = scans;
 	meshUpToDate = false;
+	CRenderizable::notifyChange();
 	return true;
 }
 
@@ -247,6 +248,7 @@ void CAngularObservationMesh::setPitchBounds(
 	pitchBounds.push_back(initial);
 	pitchBounds.push_back(final);
 	meshUpToDate = false;
+	CRenderizable::notifyChange();
 }
 void CAngularObservationMesh::setPitchBounds(const std::vector<double>& bounds)
 {
@@ -254,6 +256,7 @@ void CAngularObservationMesh::setPitchBounds(const std::vector<double>& bounds)
 
 	pitchBounds = bounds;
 	meshUpToDate = false;
+	CRenderizable::notifyChange();
 }
 void CAngularObservationMesh::getPitchBounds(
 	double& initial, double& final) const
@@ -276,8 +279,6 @@ void CAngularObservationMesh::generateSetOfTriangles(
 {
 	if (!meshUpToDate) updateMesh();
 	res->insertTriangles(triangles.begin(), triangles.end());
-	// for (vector<mrpt::opengl::TTriangle>::iterator
-	// it=triangles.begin();it!=triangles.end();++it) res->insertTriangle(*it);
 }
 
 struct CAngularObservationMesh_fnctr
@@ -332,6 +333,7 @@ void CAngularObservationMesh::serializeFrom(
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	meshUpToDate = false;
+	CRenderizable::notifyChange();
 }
 
 void CAngularObservationMesh::TDoubleRange::values(

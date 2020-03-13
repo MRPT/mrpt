@@ -96,7 +96,7 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 
 	float m_pointSize = 1.0f;
 	bool m_variablePointSize = true;
-	float m_variablePointSize_K = 1.0f;
+	float m_variablePointSize_K = 0.1f;
 	float m_variablePointSize_DepthScale = 0.1f;
 
 	void params_serialize(mrpt::serialization::CArchive& out) const;

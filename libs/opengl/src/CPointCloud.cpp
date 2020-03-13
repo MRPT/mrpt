@@ -353,12 +353,14 @@ void CPointCloud::serializeFrom(
 	};
 
 	markAllPointsAsNew();
+	CRenderizable::notifyChange();
 }
 
 void CPointCloud::clear()
 {
 	m_points.clear();
 	markAllPointsAsNew();
+	CRenderizable::notifyChange();
 }
 
 void CPointCloud::insertPoint(float x, float y, float z)
@@ -370,6 +372,7 @@ void CPointCloud::insertPoint(float x, float y, float z)
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
 	markAllPointsAsNew();
+	CRenderizable::notifyChange();
 }
 
 /** Write an individual point (checks for "i" in the valid range only in
@@ -385,6 +388,7 @@ void CPointCloud::setPoint(
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
 	markAllPointsAsNew();
+	CRenderizable::notifyChange();
 }
 
 /*---------------------------------------------------------------
@@ -446,4 +450,5 @@ void CPointCloud::setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts)
 	for (size_t i = 0; i < N; i++) m_points[i] = pts[i];
 	m_minmax_valid = false;
 	markAllPointsAsNew();
+	CRenderizable::notifyChange();
 }
