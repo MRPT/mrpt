@@ -46,9 +46,9 @@ void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 		t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
 		t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
 
-		t.vertices[0].uv = P2f(m_tex_x_min, m_tex_y_min);
-		t.vertices[1].uv = P2f(m_tex_x_max, m_tex_y_min);
-		t.vertices[2].uv = P2f(m_tex_x_max, m_tex_y_max);
+		t.vertices[0].uv = P2f(0, 0);
+		t.vertices[1].uv = P2f(1, 0);
+		t.vertices[2].uv = P2f(1, 1);
 
 		tris.emplace_back(t);
 	}
@@ -58,9 +58,9 @@ void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 		t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
 		t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
 
-		t.vertices[0].uv = P2f(m_tex_x_min, m_tex_y_min);
-		t.vertices[1].uv = P2f(m_tex_x_max, m_tex_y_max);
-		t.vertices[2].uv = P2f(m_tex_x_min, m_tex_y_max);
+		t.vertices[0].uv = P2f(0, 0);
+		t.vertices[1].uv = P2f(1, 1);
+		t.vertices[2].uv = P2f(0, 1);
 
 		tris.emplace_back(t);
 	}

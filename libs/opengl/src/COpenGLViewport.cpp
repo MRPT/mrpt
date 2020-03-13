@@ -202,6 +202,7 @@ void COpenGLViewport::unloadShaders() { m_shaders.clear(); }
 void COpenGLViewport::loadDefaultShaders() const
 {
 #if MRPT_HAS_OPENGL_GLUT
+	MRPT_START
 
 	std::vector<shader_id_t> lstShaderIDs = {
 		DefaultShaderID::POINTS, DefaultShaderID::WIREFRAME,
@@ -216,6 +217,7 @@ void COpenGLViewport::loadDefaultShaders() const
 		ASSERT_(!m_shaders[id]->empty());
 	}
 
+	MRPT_END
 #endif
 }
 
@@ -223,6 +225,8 @@ void COpenGLViewport::loadDefaultShaders() const
 void COpenGLViewport::renderNormalSceneMode() const
 {
 #if MRPT_HAS_OPENGL_GLUT
+	MRPT_START
+
 	// Prepare shaders upon first invokation:
 	if (m_shaders.empty()) loadDefaultShaders();
 
@@ -356,12 +360,15 @@ void COpenGLViewport::renderNormalSceneMode() const
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
 
+	MRPT_END
+
 #endif
 }
 
 void COpenGLViewport::renderViewportBorder() const
 {
 #if MRPT_HAS_OPENGL_GLUT
+	MRPT_START
 	if (m_borderWidth < 1) return;
 
 	MRPT_TODO("Port to opengl3");
@@ -386,12 +393,14 @@ void COpenGLViewport::renderViewportBorder() const
 	glEnd();
 
 	glEnable(GL_DEPTH_TEST);
+	MRPT_END
 #endif
 }
 
 void COpenGLViewport::renderTextMessages() const
 {
 #if MRPT_HAS_OPENGL_GLUT
+	MRPT_START
 
 	// Ensure GL objects are up-to-date:
 	m_2D_texts.regenerateGLobjects();
@@ -459,7 +468,7 @@ void COpenGLViewport::renderTextMessages() const
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
-
+	MRPT_END
 #endif
 }
 
@@ -467,102 +476,84 @@ void COpenGLViewport::render(
 	const int render_width, const int render_height) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	// Declared here for usage in the "catch"
-	const CRenderizable* it = nullptr;
-	try
-	{
-		// Change viewport:
-		// -------------------------------------------
-		const GLint vx = startFromRatio(m_view_x, render_width);
-		const GLint vy = startFromRatio(m_view_y, render_height);
-		const GLint vw = sizeFromRatio(vx, m_view_width, render_width);
-		const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
+	MRPT_START
 
-		glViewport(vx, vy, vw, vh);
-		CHECK_OPENGL_ERROR();
+	// Change viewport:
+	// -------------------------------------------
+	const GLint vx = startFromRatio(m_view_x, render_width);
+	const GLint vy = startFromRatio(m_view_y, render_height);
+	const GLint vw = sizeFromRatio(vx, m_view_width, render_width);
+	const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
 
-		// Clear depth&/color buffers:
-		// -------------------------------------------
-		m_state.viewport_width = vw;
-		m_state.viewport_height = vh;
+	glViewport(vx, vy, vw, vh);
+	CHECK_OPENGL_ERROR();
 
-		glScissor(vx, vy, vw, vh);
-		CHECK_OPENGL_ERROR();
+	// Clear depth&/color buffers:
+	// -------------------------------------------
+	m_state.viewport_width = vw;
+	m_state.viewport_height = vh;
 
-		glEnable(GL_SCISSOR_TEST);
-		CHECK_OPENGL_ERROR();
+	glScissor(vx, vy, vw, vh);
+	CHECK_OPENGL_ERROR();
 
-		if (!m_isTransparent)
-		{  // Clear color & depth buffers:
-			// Save?
-			GLclampf prevCol[4];
-			if (m_custom_backgb_color)
-			{
-				glGetFloatv(GL_COLOR_CLEAR_VALUE, prevCol);
-				CHECK_OPENGL_ERROR();
-				glClearColor(
-					m_background_color.R, m_background_color.G,
-					m_background_color.B, m_background_color.A);
-				CHECK_OPENGL_ERROR();
-			}
+	glEnable(GL_SCISSOR_TEST);
+	CHECK_OPENGL_ERROR();
 
-			glClear(
-				GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
-				GL_STENCIL_BUFFER_BIT);
-			CHECK_OPENGL_ERROR();
+	if (!m_isTransparent)
+	{  // Clear color & depth buffers:
+		// Save?
 
-			// Restore old colors:
-			if (m_custom_backgb_color)
-			{
-				glClearColor(prevCol[0], prevCol[1], prevCol[2], prevCol[3]);
-				CHECK_OPENGL_ERROR();
-			}
-		}
-		else
-		{  // Clear depth buffer only:
-			glClear(GL_DEPTH_BUFFER_BIT);
-			CHECK_OPENGL_ERROR();
-		}
-		glDisable(GL_SCISSOR_TEST);
-		CHECK_OPENGL_ERROR();
-
-		// If we are in "image mode", rendering is much simpler: just set
-		//  ortho projection and render the image quad:
-		if (m_isImageView)
-			renderImageMode();
-		else
-			renderNormalSceneMode();
-
-		// Draw text messages, if any:
-		renderTextMessages();
-
-		// Finally, draw the border:
-		renderViewportBorder();
-
-		// Optional post-Render user code:
-		if (hasSubscribers())
+		GLclampf prevCol[4];
+		if (m_custom_backgb_color)
 		{
-			mrptEventGLPostRender ev(this);
-			this->publishEvent(ev);
+			glGetFloatv(GL_COLOR_CLEAR_VALUE, prevCol);
+			CHECK_OPENGL_ERROR();
+			glClearColor(
+				m_background_color.R, m_background_color.G,
+				m_background_color.B, m_background_color.A);
+			CHECK_OPENGL_ERROR();
+		}
+
+		glClear(
+			GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		CHECK_OPENGL_ERROR();
+
+		// Restore old colors:
+		if (m_custom_backgb_color)
+		{
+			glClearColor(prevCol[0], prevCol[1], prevCol[2], prevCol[3]);
+			CHECK_OPENGL_ERROR();
 		}
 	}
-	catch (const exception& e)
-	{
-		const auto sErr = mrpt::exception_to_str(e);
-		string msg;
-		if (it != nullptr)
-			msg = format(
-				"Exception while rendering a class '%s'\n%s",
-				it->GetRuntimeClass()->className, sErr.c_str());
-		else
-			msg = format("Exception while rendering:\n%s", sErr.c_str());
+	else
+	{  // Clear depth buffer only:
+		glClear(GL_DEPTH_BUFFER_BIT);
+		CHECK_OPENGL_ERROR();
+	}
+	glDisable(GL_SCISSOR_TEST);
+	CHECK_OPENGL_ERROR();
 
-		THROW_EXCEPTION(msg);
-	}
-	catch (...)
+	// If we are in "image mode", rendering is much simpler: just set
+	//  ortho projection and render the image quad:
+	if (m_isImageView)
+		renderImageMode();
+	else
+		renderNormalSceneMode();
+
+	// Draw text messages, if any:
+	renderTextMessages();
+
+	// Finally, draw the border:
+	renderViewportBorder();
+
+	// Optional post-Render user code:
+	if (hasSubscribers())
 	{
-		THROW_EXCEPTION("Runtime error!");
+		mrptEventGLPostRender ev(this);
+		this->publishEvent(ev);
 	}
+
+	MRPT_END
 #else
 	MRPT_UNUSED_PARAM(render_width);
 	MRPT_UNUSED_PARAM(render_height);

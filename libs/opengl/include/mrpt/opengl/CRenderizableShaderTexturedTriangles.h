@@ -86,11 +86,6 @@ class CRenderizableShaderTexturedTriangles : public CRenderizable
 	void writeToStreamTexturedObject(mrpt::serialization::CArchive& out) const;
 	void readFromStreamTexturedObject(mrpt::serialization::CArchive& in);
 
-	/** These are updated in initializeTextures() when uploading a texture to
-	 * opengl memory. */
-	mutable float m_tex_x_min = .0, m_tex_x_max = 1.0f, m_tex_y_min = .0f,
-				  m_tex_y_max = 1.0f;
-
    private:
 	bool m_enableLight = false;
 
@@ -101,13 +96,6 @@ class CRenderizableShaderTexturedTriangles : public CRenderizable
 
 	/** Of the texture using "m_textureImageAlpha" */
 	mutable bool m_enableTransparency{false};
-
-	/** Size of the texture image, rounded up to next power of 2 */
-	mutable int r_width{1}, r_height{1};
-
-	/** The size of the fill in pixels in the textured image, w.r.t the image
-	 * passed by the user. */
-	mutable int m_pad_x_right{0}, m_pad_y_bottom{0};
 
 	void unloadTexture();
 
