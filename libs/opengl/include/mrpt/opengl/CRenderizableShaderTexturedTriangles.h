@@ -79,6 +79,13 @@ class CRenderizableShaderTexturedTriangles : public CRenderizable
 	 */
 	void initializeTextures() const;
 
+	const mrpt::img::CImage& getTextureImage() const { return m_textureImage; }
+
+	const mrpt::img::CImage& getTextureAlphaImage() const
+	{
+		return m_textureImageAlpha;
+	}
+
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
