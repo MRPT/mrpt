@@ -910,7 +910,8 @@ void TestOpenGLObjects()
 	while (win.isOpen())
 	{
 		win.updateTextMessage(
-			0 /*id*/, format("%.02fFPS", win.getRenderingFPS()));
+			0 /*id*/,
+			format("Render time=%.03fms", 1e3 / win.getRenderingFPS()));
 		std::this_thread::sleep_for(2ms);
 		win.repaint();
 	}

@@ -20,6 +20,7 @@
 #include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTimeLogger.h>
+#include <Eigen/Dense>
 
 #include <mrpt/opengl/opengl_api.h>
 
@@ -138,13 +139,36 @@ void COpenGLViewport::renderImageMode() const
 
 	auto _ = m_state;
 
-	_.mv_matrix.setIdentity();
-	_.p_matrix.setIdentity();
-	_.pmv_matrix.setIdentity();
-
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Adjust the aspect ratio:
+	const auto img_w = m_imageview_plane->getTextureImage().getWidth();
+	const auto img_h = m_imageview_plane->getTextureImage().getHeight();
+	const double img_ratio = double(img_w) / img_h;
+	const double vw_ratio = double(_.viewport_width) / _.viewport_height;
+	const double ratio = vw_ratio / img_ratio;
+
+	_.mv_matrix.setIdentity();
+	_.p_matrix.setIdentity();
+
+	if (img_ratio > 1)
+		_.p_matrix(1, 1) /= img_ratio;
+	else if (img_ratio > 0)
+		_.p_matrix(0, 0) /= img_ratio;
+
+	if (ratio > 0) _.p_matrix(0, 0) /= ratio;
+
+	auto &p00 = _.p_matrix(0, 0), &p11 = _.p_matrix(1, 1);
+	if (p00 > 0 && p11 > 0)
+	{
+		const double s = (p00 > p11) ? p00 : p11;
+		p00 /= s;
+		p11 /= s;
+	}
+
+	_.pmv_matrix.asEigen() = _.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	CListOpenGLObjects lst;
