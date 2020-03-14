@@ -217,7 +217,9 @@ class CPointCloud : public CRenderizableShaderPoints,
 		size_t idx;
 		typename LISTOFPOINTS::const_iterator it;
 		for (idx = 0, it = pointsList.begin(); idx < N; ++idx, ++it)
-			m_points[idx] = {it->x, it->y, it->z};
+			m_points[idx] = {static_cast<float>(it->x),
+							 static_cast<float>(it->y),
+							 static_cast<float>(it->z)};
 		markAllPointsAsNew();
 		CRenderizable::notifyChange();
 		MRPT_END
