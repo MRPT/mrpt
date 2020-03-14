@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/graphslam/levmarq.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -292,8 +293,7 @@ struct ExampleDemoGraphSLAM
 		// ----------------------------
 		//  Display results:
 		// ----------------------------
-		CDisplayWindow3D win("graph-slam demo results");
-		CDisplayWindow3D win2("graph-slam demo initial state");
+		CDisplayWindow3D win("graph-slam demo");
 
 		// The final optimized graph:
 		TParametersDouble graph_render_params1;
@@ -344,13 +344,6 @@ struct ExampleDemoGraphSLAM
 			5, 5 + 30, "Final graph: Small corners & thin edges",
 			1002 /* arbitrary, unique text label ID */);
 
-		win2.addTextMessage(
-			5, 5, "Ground truth: Big corners & thick edges",
-			1000 /* arbitrary, unique text label ID */);
-		win2.addTextMessage(
-			5, 5 + 15, "Initial graph: Small corners & thin edges",
-			1001 /* arbitrary, unique text label ID */);
-
 		{
 			COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
 			scene->insert(gl_graph1);
@@ -361,14 +354,6 @@ struct ExampleDemoGraphSLAM
 			win.repaint();
 		}
 
-		{
-			COpenGLScene::Ptr& scene = win2.get3DSceneAndLock();
-			scene->insert(gl_graph3);
-			scene->insert(gl_graph4);
-			win2.unlockAccess3DScene();
-			win2.repaint();
-		}
-
 		// Show progress of error:
 		CDisplayWindowPlots win_err("Evolution of log(sq. error)");
 		win_err.plot(log_sq_err_evolution, "-b");
@@ -376,8 +361,7 @@ struct ExampleDemoGraphSLAM
 
 		// wait end:
 		cout << "Close any window to end...\n";
-		while (win.isOpen() && win2.isOpen() && win_err.isOpen() &&
-			   !mrpt::system::os::kbhit())
+		while (win.isOpen() && win_err.isOpen() && !mrpt::system::os::kbhit())
 		{
 			std::this_thread::sleep_for(10ms);
 		}
