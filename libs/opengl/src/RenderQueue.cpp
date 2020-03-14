@@ -184,15 +184,15 @@ void mrpt::opengl::processRenderQueue(
 #endif
 }
 
+#if MRPT_HAS_OPENGL_GLUT
 void mrpt::opengl::checkOpenGLErr_impl(
 	unsigned int glErrorCode, const char* filename, int lineno)
 {
-#if MRPT_HAS_OPENGL_GLUT
 	if (glErrorCode == GL_NO_ERROR) return;
 	const std::string sErr = mrpt::format(
 		"[%s:%i] OpenGL error: %s", filename, lineno,
 		reinterpret_cast<const char*>(gluErrorString(glErrorCode)));
 	std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
 	THROW_EXCEPTION(sErr);
-#endif
 }
+#endif

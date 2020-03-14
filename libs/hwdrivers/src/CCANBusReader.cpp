@@ -141,10 +141,10 @@ void CCANBusReader::doProcessSimple(
 	outObservation.m_pgn = out_pgn;
 	outObservation.m_data_length = out_data_length;
 	outObservation.m_data.resize(out_data.size());
-	for (uint8_t k = 0; k < out_data.size(); ++k)
+	for (size_t k = 0; k < out_data.size(); ++k)
 		outObservation.m_data[k] = out_data[k];
 	outObservation.m_raw_frame.resize(out_raw_frame.size());
-	for (uint8_t k = 0; k < out_raw_frame.size(); ++k)
+	for (size_t k = 0; k < out_raw_frame.size(); ++k)
 		outObservation.m_raw_frame[k] = out_raw_frame[k];
 
 	// we've got a new observation
@@ -158,15 +158,6 @@ void CCANBusReader::loadConfig_sensorSpecific(
 	const mrpt::config::CConfigFileBase& configSource,
 	const std::string& iniSection)
 {
-	//	m_sensorPose = CPose3D(
-	//		configSource.read_float(iniSection,"pose_x",0),
-	//		configSource.read_float(iniSection,"pose_y",0),
-	//		configSource.read_float(iniSection,"pose_z",0),
-	//		DEG2RAD( configSource.read_float(iniSection,"pose_yaw",0) ),
-	//		DEG2RAD( configSource.read_float(iniSection,"pose_pitch",0) ),
-	//		DEG2RAD( configSource.read_float(iniSection,"pose_roll",0) )
-	//		);  // irrelevant
-
 	m_canbus_speed =
 		configSource.read_int(iniSection, "CANBusSpeed", m_canbus_speed);
 	m_canreader_timestamp = configSource.read_bool(

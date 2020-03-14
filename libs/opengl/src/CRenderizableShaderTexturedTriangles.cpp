@@ -563,6 +563,8 @@ unsigned int CRenderizableShaderTexturedTriangles::getNewTextureNumber()
 
 	textureReservedFrom[textureID] = std::this_thread::get_id();
 	return textureID;
+#else
+	THROW_EXCEPTION("This function needs OpenGL");
 #endif
 	MRPT_END
 }
