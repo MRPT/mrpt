@@ -12,7 +12,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
 
 namespace mrpt::opengl
 {
@@ -35,62 +35,42 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CMeshFast : public CRenderizable
+class CMeshFast : public CRenderizableShaderPoints
 {
 	DEFINE_SERIALIZABLE(CMeshFast, mrpt::opengl)
 
-   protected:
-	mrpt::img::CImage m_textureImage;
-
-	bool m_enableTransparency;
-	bool m_colorFromZ{false};
-	bool m_isImage{false};
-
-	/** X(x,y): X-coordinate of the point (x,y) */
-	mutable math::CMatrixF X;
-	/** Y(x,y): Y-coordinate of the point (x,y) */
-	mutable math::CMatrixF Y;
-	/** Z(x,y): Z-coordinate of the point (x,y) */
-	mutable math::CMatrixF Z;
-
-	/** Grayscale Color [0,1] for each cell, updated by updateColorsMatrix */
-	mutable math::CMatrixF C;
-	/** Red Component of the Color [0,1] for each cell, updated by
-	 * updateColorsMatrix */
-	mutable math::CMatrixF C_r;
-	/** Green Component of the  Color [0,1] for each cell, updated by
-	 * updateColorsMatrix */
-	mutable math::CMatrixF C_g;
-	/** Blue Component of the  Color [0,1] for each cell, updated by
-	 * updateColorsMatrix */
-	mutable math::CMatrixF C_b;
-
-	/** Used when m_colorFromZ is true */
-	mrpt::img::TColormap m_colorMap{mrpt::img::cmJET};
-	/** By default is 1.0 */
-	float m_pointSize;
-	/** Default: false */
-	bool m_pointSmooth;
-
-	/** Whether C is not up-to-date wrt to Z */
-	mutable bool m_modified_Z{true};
-	/** Whether C is not up-to-date wrt to the texture image */
-	mutable bool m_modified_Image{false};
-
-	/** Called internally to assure C is updated. */
-	void updateColorsMatrix() const;
-	void updatePoints() const;
-
-	/** Mesh bounds */
-	float xMin, xMax, yMin, yMax;
-
-	/**Whether the coordinates of the points needs to be recalculated */
-	mutable bool pointsUpToDate{false};
-
    public:
-	/** By default is 1.0 */
-	inline void setPointSize(float p) { m_pointSize = p; }
-	inline float getPointSize() const { return m_pointSize; }
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void onUpdateBuffers_Points() override;
+	/** @} */
+
+	/** Constructor
+	 */
+	CMeshFast(
+		bool enableTransparency = false, float xMin_p = -1.0f,
+		float xMax_p = 1.0f, float yMin_p = -1.0f, float yMax_p = 1.0f)
+		: m_textureImage(0, 0),
+		  m_enableTransparency(enableTransparency),
+		  X(0, 0),
+		  Y(0, 0),
+		  Z(0, 0),
+		  C(0, 0),
+		  C_r(0, 0),
+		  C_g(0, 0),
+		  C_b(0, 0),
+		  xMin(xMin_p),
+		  xMax(xMax_p),
+		  yMin(yMin_p),
+		  yMax(yMax_p)
+	{
+		m_color.A = 255;
+		m_color.R = 0;
+		m_color.G = 0;
+		m_color.B = 150;
+	}
+	virtual ~CMeshFast() override = default;
+
 	void setGridLimits(float xmin, float xmax, float ymin, float ymax)
 	{
 		xMin = xmin;
@@ -181,10 +161,6 @@ class CMeshFast : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
-	void freeOpenGLResources() override {}
-
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -214,32 +190,41 @@ class CMeshFast : public CRenderizable
 		CRenderizable::notifyChange();
 	}
 
-	/** Constructor
-	 */
-	CMeshFast(
-		bool enableTransparency = false, float xMin_p = -1.0f,
-		float xMax_p = 1.0f, float yMin_p = -1.0f, float yMax_p = 1.0f)
-		: m_textureImage(0, 0),
-		  m_enableTransparency(enableTransparency),
-		  X(0, 0),
-		  Y(0, 0),
-		  Z(0, 0),
-		  C(0, 0),
-		  C_r(0, 0),
-		  C_g(0, 0),
-		  C_b(0, 0),
-		  xMin(xMin_p),
-		  xMax(xMax_p),
-		  yMin(yMin_p),
-		  yMax(yMax_p)
-	{
-		m_color.A = 255;
-		m_color.R = 0;
-		m_color.G = 0;
-		m_color.B = 150;
-	}
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CMeshFast() override = default;
+   protected:
+	mrpt::img::CImage m_textureImage;
+
+	bool m_enableTransparency;
+	bool m_colorFromZ{false};
+	bool m_isImage{false};
+
+	/** X(x,y): X-coordinate of the point (x,y) */
+	mutable math::CMatrixF X;
+	/** Y(x,y): Y-coordinate of the point (x,y) */
+	mutable math::CMatrixF Y;
+	/** Z(x,y): Z-coordinate of the point (x,y) */
+	mutable math::CMatrixF Z;
+
+	/** Grayscale or RGB components [0,255] for each cell, updated by
+	 * updateColorsMatrix */
+	mutable math::CMatrix_u8 C, C_r, C_g, C_b;
+
+	/** Used when m_colorFromZ is true */
+	mrpt::img::TColormap m_colorMap{mrpt::img::cmJET};
+
+	/** Whether C is not up-to-date wrt to Z */
+	mutable bool m_modified_Z{true};
+	/** Whether C is not up-to-date wrt to the texture image */
+	mutable bool m_modified_Image{false};
+
+	/** Called internally to assure C is updated. */
+	void updateColorsMatrix() const;
+	void updatePoints() const;
+
+	/** Mesh bounds */
+	float xMin, xMax, yMin, yMax;
+
+	/**Whether the coordinates of the points needs to be recalculated */
+	mutable bool pointsUpToDate{false};
 };
 
 }  // namespace mrpt::opengl

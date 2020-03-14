@@ -278,7 +278,7 @@ inline void minimum_maximum(
 template <class CONTAINER, typename Scalar>
 void normalize(CONTAINER& c, Scalar valMin, Scalar valMax)
 {
-	if (c.empty()) return;
+	if (!c.size()) return;  // empty() is not defined for Eigen classes
 	const Scalar curMin = c.minCoeff();
 	const Scalar curMax = c.maxCoeff();
 	Scalar minMaxDelta = curMax - curMin;
