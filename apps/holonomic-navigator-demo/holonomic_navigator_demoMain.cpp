@@ -430,7 +430,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 
 	gl_scan3D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan3D->enableLine(false);
-	gl_scan3D->setPointsWidth(3.0);
+	gl_scan3D->setPointSize(2.0);
 	gl_robot->insert(gl_scan3D);
 
 	gl_robot_sensor_range = mrpt::opengl::CDisk::Create(0, 0);
@@ -520,7 +520,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	gl_scan2D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan2D->enableLine(false);
 	gl_scan2D->enableSurface(false);
-	gl_scan2D->setPointsWidth(3.0);
+	gl_scan2D->setPointSize(2.0);
 	openGLScanRef->insert(gl_scan2D);
 
 	gl_line_direction = mrpt::opengl::CSimpleLine::Create();

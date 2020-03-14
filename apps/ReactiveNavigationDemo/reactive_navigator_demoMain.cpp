@@ -920,7 +920,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	gl_scan3D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan3D->enableLine(false);
 	gl_scan3D->enableSurface(true);
-	gl_scan3D->setPointsWidth(3.0);
+	gl_scan3D->setPointSize(2.0);
 	gl_robot->insert(gl_scan3D);
 
 	gl_robot_sensor_range = mrpt::opengl::CDisk::Create(0, 0);
