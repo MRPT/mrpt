@@ -331,9 +331,11 @@ void COpenGLViewport::renderNormalSceneMode() const
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Enable point sizes>1
+// Enable point sizes>1
+#if defined(GL_PROGRAM_POINT_SIZE)  // it seems it's undefined in OSX (?)
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	CHECK_OPENGL_ERROR();
+#endif
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
