@@ -41,29 +41,25 @@ void COctoMapVoxels::setBoundingBox(
 
 void COctoMapVoxels::render(const RenderContext& rc) const
 {
-	//
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::POINTS:
+			if (m_showVoxelsAsPoints) CRenderizableShaderPoints::render(rc);
+			break;
+		case DefaultShaderID::TRIANGLES:
+			if (m_showVoxelsAsPoints) CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			if (m_show_grids) CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
 }
 void COctoMapVoxels::renderUpdateBuffers() const
 {
+	CRenderizableShaderPoints::renderUpdateBuffers();
 	CRenderizableShaderTriangles::renderUpdateBuffers();
 	CRenderizableShaderWireFrame::renderUpdateBuffers();
 }
-void COctoMapVoxels::onUpdateBuffers_Wireframe()
-{
-	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
-	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
-	vbd.clear();
-}
-
-void COctoMapVoxels::onUpdateBuffers_Triangles()
-{
-	auto& tris = CRenderizableShaderTriangles::m_triangles;
-	tris.clear();
-
-	using P3 = mrpt::math::TPoint3D;
-}
-
-#if MRPT_HAS_OPENGL_GLUT
 
 // See: http://www.songho.ca/opengl/gl_vertexarray.html
 
@@ -78,15 +74,15 @@ void COctoMapVoxels::onUpdateBuffers_Triangles()
 // ----------------------> +Y
 //
 
-const GLubyte grid_line_indices[] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
+const uint8_t grid_line_indices[] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
 									 6, 7, 7, 4, 0, 5, 1, 6, 2, 7, 3, 4};
 
-const GLubyte cube_indices[36] = {0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0,
+const uint8_t cube_indices[36] = {0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0,
 								  0, 5, 6, 6, 1, 0, 1, 6, 7, 7, 2, 1,
 								  7, 4, 3, 3, 2, 7, 4, 7, 6, 6, 5, 4};
 
 // normal array
-const GLfloat normals_cube[3 * 6 * 4] = {
+const float normals_cube[3 * 6 * 4] = {
 	1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  // v0,v1,v2,v3 (front)
 	0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  // v0,v3,v4,v5 (right)
 	0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  // v0,v5,v6,v1 (top)
@@ -94,7 +90,45 @@ const GLfloat normals_cube[3 * 6 * 4] = {
 	0,  0,  -1, 0,  0,  -1, 0,  0,  -1, 0,  0,  -1,  // v7,v4,v3,v2 (bottom)
 	-1, 0,  0,  -1, 0,  0,  -1, 0,  0,  -1, 0,  0};  // v4,v7,v6,v5 (back)
 
-#endif
+void COctoMapVoxels::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+	MRPT_TODO("Implement me!");
+}
+
+void COctoMapVoxels::onUpdateBuffers_Triangles()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+
+	using P3 = mrpt::math::TPoint3D;
+
+	MRPT_TODO("Implement me!");
+}
+
+void COctoMapVoxels::onUpdateBuffers_Points()
+{
+	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+
+	for (const auto& m_voxel_set : m_voxel_sets)
+	{
+		if (!m_voxel_set.visible) continue;
+
+		const std::vector<TVoxel>& voxels = m_voxel_set.voxels;
+		const size_t N = voxels.size();
+		for (size_t j = 0; j < N; j++)
+		{
+			const mrpt::img::TColor& vx_j_col = voxels[j].color;
+			const mrpt::math::TPoint3D& c = voxels[j].coords;
+
+			vbd.emplace_back(c);
+			cbd.emplace_back(vx_j_col);
+		}
+	}
+}
 
 #if 0
 void COctoMapVoxels::render(const RenderContext& rc) const

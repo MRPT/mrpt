@@ -41,12 +41,12 @@ void CPointCloudColoured::onUpdateBuffers_Points()
 			&tst[1].z == (&tst[0].z + 3), "memory layout not as expected");
 	}
 
-	const auto N = m_points.size();
+	// const auto N = m_points.size();
 
 	octree_assure_uptodate();  // Rebuild octree if needed
 	m_last_rendered_count_ongoing = 0;
 
-	MRPT_TODO("Restore rendering using octrees");
+	// TODO: Restore rendering using octrees?
 	// octree_render(*rc.state);  // Render all points recursively:
 
 	// ------------------------------
