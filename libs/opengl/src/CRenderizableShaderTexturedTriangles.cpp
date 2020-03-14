@@ -13,6 +13,7 @@
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTimeLogger.h>
+#include <iostream>
 #include <memory>  // std::align
 #include <thread>
 
@@ -307,7 +308,9 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		// rendering
 		//  occupancy grid maps, such as we want those "big pixels" to be
 		//  clearly visible ;-)
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(
+			GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+			m_textureInterpolate ? GL_LINEAR : GL_NEAREST);
 		CHECK_OPENGL_ERROR();
 
 		// if wrap is true, the texture wraps over at the edges (repeat)
@@ -485,7 +488,16 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 
 CRenderizableShaderTexturedTriangles::~CRenderizableShaderTexturedTriangles()
 {
-	unloadTexture();
+	try
+	{
+		unloadTexture();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr
+			<< "[~CRenderizableShaderTexturedTriangles] Ignoring exception: "
+			<< mrpt::exception_to_str(e);
+	}
 }
 void CRenderizableShaderTexturedTriangles::unloadTexture()
 {
@@ -503,7 +515,7 @@ void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
 	uint8_t ver = 0;
 
 	out << ver;
-	out << m_enableTransparency;
+	out << m_enableTransparency << m_textureInterpolate;
 	out << m_textureImage;
 	if (m_enableTransparency) out << m_textureImageAlpha;
 }
@@ -520,7 +532,7 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 	{
 		case 0:
 		{
-			in >> m_enableTransparency;
+			in >> m_enableTransparency >> m_textureInterpolate;
 			in >> m_textureImage;
 			if (m_enableTransparency)
 			{
