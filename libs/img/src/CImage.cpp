@@ -1254,32 +1254,75 @@ void CImage::getAsMatrix(
 	if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx)
 		outMatrix.setSize(y_max - y_min + 1, x_max - x_min + 1);
 
-	if (isColor())
+	const bool is_color = isColor();
+
+	// Luminance: Y = 0.3R + 0.59G + 0.11B
+	for (int y = 0; y < ly; y++)
 	{
-		// Luminance: Y = 0.3R + 0.59G + 0.11B
-		for (int y = 0; y < ly; y++)
+		const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
+		for (int x = 0; x < lx; x++)
 		{
-			const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
-			for (int x = 0; x < lx; x++)
+			float aux;
+			if (is_color)
 			{
-				float aux = *pixels++ * 0.3f;
+				aux = *pixels++ * 0.3f;
 				aux += *pixels++ * 0.59f;
 				aux += *pixels++ * 0.11f;
-				if (normalize_01) aux *= (1.0f / 255);
-				outMatrix.coeffRef(y, x) = aux;
 			}
+			else
+			{
+				aux = (*pixels++);
+			}
+			outMatrix.coeffRef(y, x) = aux;
 		}
 	}
-	else
+	if (normalize_01) outMatrix *= (1.0f / 255);
+
+	MRPT_END
+#endif
+}
+
+void CImage::getAsMatrix(
+	CMatrix_u8& outMatrix, bool doResize, int x_min, int y_min, int x_max,
+	int y_max) const
+{
+#if MRPT_HAS_OPENCV
+	MRPT_START
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+
+	const auto& img = m_impl->img;
+
+	// Set sizes:
+	if (x_max == -1) x_max = img.cols - 1;
+	if (y_max == -1) y_max = img.rows - 1;
+
+	ASSERT_(x_min >= 0 && x_min < img.cols && x_min < x_max);
+	ASSERT_(y_min >= 0 && y_min < img.rows && y_min < y_max);
+
+	int lx = (x_max - x_min + 1);
+	int ly = (y_max - y_min + 1);
+
+	if (doResize || outMatrix.rows() < ly || outMatrix.cols() < lx)
+		outMatrix.setSize(y_max - y_min + 1, x_max - x_min + 1);
+
+	const bool is_color = isColor();
+
+	// Luminance: Y = 0.3R + 0.59G + 0.11B
+	for (int y = 0; y < ly; y++)
 	{
-		for (int y = 0; y < ly; y++)
+		const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
+		for (int x = 0; x < lx; x++)
 		{
-			const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
-			for (int x = 0; x < lx; x++)
+			if (is_color)
 			{
-				float aux = (*pixels++);
-				if (normalize_01) aux *= (1.0f / 255);
-				outMatrix.coeffRef(y, x) = aux;
+				unsigned int aux = *pixels++ * 3000;  // 0.3f;
+				aux += *pixels++ * 5900;  // 0.59f;
+				aux += *pixels++ * 1100;  // 0.11f;
+				outMatrix.coeffRef(y, x) = static_cast<uint8_t>(aux / 1000);
+			}
+			else
+			{
+				outMatrix.coeffRef(y, x) = (*pixels++);
 			}
 		}
 	}
@@ -1287,7 +1330,6 @@ void CImage::getAsMatrix(
 	MRPT_END
 #endif
 }
-
 void CImage::getAsRGBMatrices(
 	mrpt::math::CMatrixFloat& R, mrpt::math::CMatrixFloat& G,
 	mrpt::math::CMatrixFloat& B, bool doResize, int x_min, int y_min, int x_max,
@@ -1313,32 +1355,71 @@ void CImage::getAsRGBMatrices(
 	if (doResize || G.rows() < ly || G.cols() < lx) G.setSize(ly, lx);
 	if (doResize || B.rows() < ly || B.cols() < lx) B.setSize(ly, lx);
 
-	if (isColor())
+	const bool is_color = isColor();
+	for (int y = 0; y < ly; y++)
 	{
-		for (int y = 0; y < ly; y++)
+		const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
+		for (int x = 0; x < lx; x++)
 		{
-			const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
-			for (int x = 0; x < lx; x++)
+			if (is_color)
 			{
-				float aux = *pixels++ * (1.0f / 255);
-				R.coeffRef(y, x) = aux;
-				aux = *pixels++ * (1.0f / 255);
-				G.coeffRef(y, x) = aux;
-				aux = *pixels++ * (1.0f / 255);
-				B.coeffRef(y, x) = aux;
+				R.coeffRef(y, x) = u8tof(*pixels++);
+				G.coeffRef(y, x) = u8tof(*pixels++);
+				B.coeffRef(y, x) = u8tof(*pixels++);
+			}
+			else
+			{
+				R.coeffRef(y, x) = G.coeffRef(y, x) = B.coeffRef(y, x) =
+					u8tof(*pixels++);
 			}
 		}
 	}
-	else
+
+	MRPT_END
+#endif
+}
+
+void CImage::getAsRGBMatrices(
+	mrpt::math::CMatrix_u8& R, mrpt::math::CMatrix_u8& G,
+	mrpt::math::CMatrix_u8& B, bool doResize, int x_min, int y_min, int x_max,
+	int y_max) const
+{
+#if MRPT_HAS_OPENCV
+	MRPT_START
+
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+	const auto& img = m_impl->img;
+
+	// Set sizes:
+	if (x_max == -1) x_max = img.cols - 1;
+	if (y_max == -1) y_max = img.rows - 1;
+
+	ASSERT_(x_min >= 0 && x_min < img.cols && x_min < x_max);
+	ASSERT_(y_min >= 0 && y_min < img.rows && y_min < y_max);
+
+	int lx = (x_max - x_min + 1);
+	int ly = (y_max - y_min + 1);
+
+	if (doResize || R.rows() < ly || R.cols() < lx) R.setSize(ly, lx);
+	if (doResize || G.rows() < ly || G.cols() < lx) G.setSize(ly, lx);
+	if (doResize || B.rows() < ly || B.cols() < lx) B.setSize(ly, lx);
+
+	const bool is_color = isColor();
+	for (int y = 0; y < ly; y++)
 	{
-		for (int y = 0; y < ly; y++)
+		const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
+		for (int x = 0; x < lx; x++)
 		{
-			const uint8_t* pixels = ptr<uint8_t>(x_min, y_min + y);
-			for (int x = 0; x < lx; x++)
+			if (is_color)
 			{
-				R.coeffRef(y, x) = (*pixels) * (1.0f / 255);
-				G.coeffRef(y, x) = (*pixels) * (1.0f / 255);
-				B.coeffRef(y, x) = (*pixels++) * (1.0f / 255);
+				R.coeffRef(y, x) = *pixels++;
+				G.coeffRef(y, x) = *pixels++;
+				B.coeffRef(y, x) = *pixels++;
+			}
+			else
+			{
+				R.coeffRef(y, x) = G.coeffRef(y, x) = B.coeffRef(y, x) =
+					*pixels++;
 			}
 		}
 	}
