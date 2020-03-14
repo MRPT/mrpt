@@ -14,7 +14,6 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CObserver.h>
 #include <mrpt/system/CTicTac.h>
@@ -46,7 +45,7 @@ struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 			// e.getAs<mrptEventGLPostRender>();
 		}
 	}
-}
+};
 
 // ------------------------------------------------------
 //				TestDisplay3D
@@ -178,9 +177,8 @@ int main()
 	try
 	{
 		TestDisplay3D();
-
-		std::this_thread::sleep_for(
-			50ms);  // leave time for the window to close
+		// leave time for the window to close
+		std::this_thread::sleep_for(50ms);
 		return 0;
 	}
 	catch (const std::exception& e)

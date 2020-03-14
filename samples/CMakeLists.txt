@@ -147,7 +147,6 @@ if(BUILD_EXAMPLES)
 		opengl_offscreen_render_example
 		opengl_octree_render_huge_pointcloud
 		opengl_texture_sizes_test
-		opengl_textured_triangles_example
 		# -------
 		img_basic_example
 		img_convolution_fft

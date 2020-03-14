@@ -171,7 +171,7 @@ void Test_SwissRanger()
 			mrpt::img::CImage img = obs.rangeImage_getAsImage();
 
 			win3D.get3DSceneAndLock();
-			gl_img_range->assignImage_fast(img);
+			gl_img_range->assignImage(std::move(img));
 			win3D.unlockAccess3DScene();
 		}
 
