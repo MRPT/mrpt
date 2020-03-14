@@ -359,34 +359,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#if 0
-	// CMesh
-	{
-		auto obj = opengl::CMesh::Create();
-		obj->setLocation(off_x, 0, 0);
-
-		mrpt::math::CMatrixFloat Zs(40, 40);  // Height
-		for (size_t i = 0; i < Zs.rows(); i++)
-			for (size_t j = 0; j < Zs.cols(); j++)
-			{
-				double x = i * 0.25;
-				double y = j * 0.25;
-				Zs(i, j) = 4 * cos((x + y) * 0.6) +
-						   sin((x - 0.5) * (y + 1.2) * 0.3) * 3;
-			}
-
-		obj->setGridLimits(-10, 10, -10, 10);
-		obj->setZ(Zs);
-		// obj->enableWireFrame(true);
-		obj->enableColorFromZ(true, mrpt::img::cmJET);
-		theScene->insert(obj);
-
-		auto gl_txt = opengl::CText::Create("CMesh");
-		gl_txt->setLocation(off_x, off_y_label, 0);
-		theScene->insert(gl_txt);
-	}
-	off_x += STEP_X;
-#endif
 
 	// CMesh3D
 	{
@@ -448,45 +420,72 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-	// CMeshFast
+	// CMeshFast, CMesh:
 	{
 		opengl::CMeshFast::Ptr obj1 = opengl::CMeshFast::Create();
 		opengl::CMeshFast::Ptr obj2 = opengl::CMeshFast::Create();
+		opengl::CMesh::Ptr obj3 = opengl::CMesh::Create();
+		opengl::CMesh::Ptr obj4 = opengl::CMesh::Create();
 
 		obj1->setXBounds(-1, 1);
 		obj1->setYBounds(-1, 1);
 
-		const int W = 200, H = 200;
+		const int W = 128, H = 128;
 
-		mrpt::img::CImage im(W, H, mrpt::img::CH_GRAY);
 		mrpt::math::CMatrixDynamic<float> Z(H, W);
 
 		for (int r = 0; r < H; r++)
-		{
 			for (int c = 0; c < W; c++)
-			{
 				Z(r, c) = sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r);
-				im.setPixel(c, r, 0.2 * r + 0.5 * c);
-			}
-		}
 
-		// option 1:
+		const std::string texture_file = mrpt::system::getShareMRPTDir() +
+										 "datasets/sample-texture-terrain.jpg"s;
+
+		mrpt::img::CImage im;
+
+		// obj1:
 		obj1->setZ(Z);
 		obj1->enableColorFromZ(true);
 		obj1->setPointSize(2.0);
 		obj1->setLocation(off_x, 0, 0);
-
-		// option 2:
-		obj2->assignImageAndZ(im, Z);
-		obj2->setPointSize(2.0);
-		obj2->setLocation(off_x, 3, 0);
-
 		theScene->insert(obj1);
-		theScene->insert(obj2);
 
-		auto gl_txt = opengl::CText::Create("CMeshFast");
-		gl_txt->setLocation(off_x, off_y_label, 0);
-		theScene->insert(gl_txt);
+		// obj 2:
+		if (im.loadFromFile(texture_file))
+		{
+			obj2->assignImageAndZ(im, Z);
+			obj2->setPointSize(2.0);
+			obj2->setLocation(off_x, 3, 0);
+			theScene->insert(obj2);
+		}
+		{
+			auto gl_txt = opengl::CText::Create("CMeshFast");
+			gl_txt->setLocation(off_x, off_y_label, 0);
+			theScene->insert(gl_txt);
+		}
+
+		off_x += STEP_X;
+
+		// obj 3:
+		obj3->setZ(Z);
+		obj3->enableColorFromZ(true, mrpt::img::cmJET);
+		obj3->enableWireFrame(true);
+		obj3->setLocation(off_x, 0, 0);
+		theScene->insert(obj3);
+
+		// obj 4:
+		if (im.getWidth() > 1)
+		{
+			obj4->assignImageAndZ(im, Z);
+			obj4->setLocation(off_x, 3, 0);
+			theScene->insert(obj4);
+		}
+
+		{
+			auto gl_txt = opengl::CText::Create("CMesh");
+			gl_txt->setLocation(off_x, off_y_label, 0);
+			theScene->insert(gl_txt);
+		}
 	}
 	off_x += STEP_X;
 

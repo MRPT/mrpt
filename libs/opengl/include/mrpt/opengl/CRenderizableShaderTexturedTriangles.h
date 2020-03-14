@@ -22,7 +22,7 @@ namespace mrpt::opengl
  *  \sa CTexturedPlane, opengl::CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
-class CRenderizableShaderTexturedTriangles : public CRenderizable
+class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizableShaderTexturedTriangles)
 
@@ -86,6 +86,13 @@ class CRenderizableShaderTexturedTriangles : public CRenderizable
 		return m_textureImageAlpha;
 	}
 
+	/** Enable linear interpolation of textures (default=false, use nearest
+	 * pixel) */
+	void enableTextureLinearInterpolation(bool enable)
+	{
+		m_textureInterpolate = enable;
+	}
+
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
@@ -103,6 +110,8 @@ class CRenderizableShaderTexturedTriangles : public CRenderizable
 
 	/** Of the texture using "m_textureImageAlpha" */
 	mutable bool m_enableTransparency{false};
+
+	bool m_textureInterpolate = false;
 
 	void unloadTexture();
 
