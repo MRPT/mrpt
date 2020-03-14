@@ -926,24 +926,31 @@ void TestOpenGLObjects()
 
 		auto gl_map1 = mrpt::opengl::COctoMapVoxels::Create();
 		auto gl_map2 = mrpt::opengl::COctoMapVoxels::Create();
+		auto gl_map3 = mrpt::opengl::COctoMapVoxels::Create();
+
+		map.getAsOctoMapVoxels(*gl_map1);
+
+		map.getAsOctoMapVoxels(*gl_map2);
 
 		// map.renderingOptions.generateGridLines = true;
-		map.getAsOctoMapVoxels(*gl_map1);
-		map.getAsOctoMapVoxels(*gl_map2);
+		map.getAsOctoMapVoxels(*gl_map3);
 
 		gl_map1->showGridLines(false);
 		gl_map1->showVoxelsAsPoints(true);
 		gl_map1->setPointSize(3.0);
-
-		gl_map2->showVoxelsAsPoints(false);
-
-		gl_map1->showVoxels(VOXEL_SET_OCCUPIED, true);
-		gl_map1->showVoxels(VOXEL_SET_FREESPACE, true);
 		gl_map1->setLocation(off_x, 0, 0);
 		theScene->insert(gl_map1);
 
+		gl_map2->showVoxelsAsPoints(false);
+		gl_map2->showVoxels(VOXEL_SET_OCCUPIED, true);
+		gl_map2->showVoxels(VOXEL_SET_FREESPACE, true);
 		gl_map2->setLocation(off_x, 4, 0);
 		theScene->insert(gl_map2);
+
+		gl_map3->showVoxelsAsPoints(true);
+		gl_map3->showGridLines(true);
+		gl_map3->setLocation(off_x, 8, 0);
+		theScene->insert(gl_map3);
 
 		auto gl_txt = opengl::CText::Create("COctoMapVoxels");
 		gl_txt->setLocation(off_x, off_y_label, 0);

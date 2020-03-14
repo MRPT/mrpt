@@ -266,6 +266,9 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 
 	try
 	{
+		// Flush & swap buffers to disply new image:
+		glFinish();
+		swapBuffers();
 		CHECK_OPENGL_ERROR();
 
 		// Call PreRender user code:
@@ -307,10 +310,6 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 		}  // end if "m_openGLScene!=nullptr"
 
 		postRender();
-
-		// Flush & swap buffers to disply new image:
-		glFlush();
-		swapBuffers();
 
 		At = tictac.Tac();
 	}

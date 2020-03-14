@@ -14,7 +14,6 @@
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 
-
 using namespace mrpt;
 using namespace mrpt::io;
 using namespace std;
