@@ -12,6 +12,7 @@
 #include <wx/string.h>
 #include <wx/textctrl.h>
 #include <wx/thread.h>
+
 #include <cstdio>
 #include <functional>
 #include <iostream>
@@ -61,7 +62,7 @@ class CMyRedirector : public std::streambuf
 		if (bufferSize)
 		{
 			m_buf.resize(bufferSize);
-			setp(&m_buf[0], &m_buf[bufferSize]);
+			setp(m_buf.data(), m_buf.data() + bufferSize);
 		}
 		else
 			setp(nullptr, nullptr);
@@ -93,7 +94,7 @@ class CMyRedirector : public std::streambuf
 		{
 			const auto s = wxString(str);
 
-#if wxCHECK_VERSION(3, 0, 0) && !defined(__APPLE__)  // OSX build error?
+#if wxCHECK_VERSION(3, 0, 0) && !defined(__APPLE__)	 // OSX build error?
 			m_txt->GetEventHandler()->CallAfter(&wxTextCtrl::WriteText, s);
 #else
 			m_txt->WriteText(s);  // bad solution, but at least compiles (and
@@ -107,7 +108,7 @@ class CMyRedirector : public std::streambuf
 		}
 		if (m_also_to_cout_cerr) ::printf("%s", str.c_str());
 		if (m_yieldApplication && wxThread::IsMain())
-			wxTheApp->Yield(true);  // Let the app. process messages
+			wxTheApp->Yield(true);	// Let the app. process messages
 	}
 
 	/** Writes all the stored strings to the text control (only for threadSafe
