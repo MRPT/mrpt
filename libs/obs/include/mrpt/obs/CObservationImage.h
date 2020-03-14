@@ -72,6 +72,8 @@ class CObservationImage : public CObservation
 	}
 	void getDescriptionAsText(std::ostream& o) const override;
 
+	void load() const override;
+
 };  // End of class def.
 
 }  // namespace mrpt::obs

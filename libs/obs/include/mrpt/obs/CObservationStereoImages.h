@@ -119,6 +119,8 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 	/** Do an efficient swap of all data members of this object with "o". */
 	void swap(CObservationStereoImages& o);
 
+	void load() const override;
+
 };  // End of class def.
 
 }  // namespace mrpt::obs
