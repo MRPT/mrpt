@@ -112,7 +112,8 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 #if wxCHECK_VERSION(2, 9, 5)
 		wxTheApp->SafeYieldFor(nullptr, wxEVT_CATEGORY_TIMER);
 #endif
-		Refresh(false);
+		Refresh();
+		Update();
 	}
 
 	// ensure we have the focus so we get keyboard events:

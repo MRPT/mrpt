@@ -98,13 +98,13 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 	/** The info of each of the voxels */
 	struct TVoxel
 	{
-		mrpt::math::TPoint3D coords;
+		mrpt::math::TPoint3Df coords;
 		double side_length;
 		mrpt::img::TColor color;
 
 		TVoxel() = default;
 		TVoxel(
-			const mrpt::math::TPoint3D& coords_, const double side_length_,
+			const mrpt::math::TPoint3Df& coords_, const double side_length_,
 			mrpt::img::TColor color_)
 			: coords(coords_), side_length(side_length_), color(color_)
 		{
@@ -115,11 +115,12 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 	struct TGridCube
 	{
 		/** opposite corners of the cube */
-		mrpt::math::TPoint3D min, max;
+		mrpt::math::TPoint3Df min, max;
 
 		TGridCube() = default;
 		TGridCube(
-			const mrpt::math::TPoint3D& min_, const mrpt::math::TPoint3D& max_)
+			const mrpt::math::TPoint3Df& min_,
+			const mrpt::math::TPoint3Df& max_)
 			: min(min_), max(max_)
 		{
 		}

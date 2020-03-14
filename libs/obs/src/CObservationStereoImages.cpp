@@ -90,12 +90,12 @@ void CObservationStereoImages::serializeFrom(
 				rightCamera.intrinsicParams = intParams;
 			}
 
-			in >> imageLeft >> imageRight;	// For all the versions
+			in >> imageLeft >> imageRight;  // For all the versions
 
 			if (version >= 1)
 				in >> timestamp;
 			else
-				timestamp = INVALID_TIMESTAMP;	// For version 1 to 5
+				timestamp = INVALID_TIMESTAMP;  // For version 1 to 5
 			if (version >= 2)
 			{
 				if (version < 5)
@@ -116,13 +116,13 @@ void CObservationStereoImages::serializeFrom(
 			if (version >= 3 && version < 5)  // For versions 3 & 4
 			{
 				double foc;
-				in >> foc;	// Get the focal length in meters
+				in >> foc;  // Get the focal length in meters
 				leftCamera.focalLengthMeters = rightCamera.focalLengthMeters =
 					foc;  // ... and set it to both cameras
 			}
 			else if (version < 3)
 				leftCamera.focalLengthMeters = rightCamera.focalLengthMeters =
-					0.002;	// For version 0, 1 & 2 (from version 5, this
+					0.002;  // For version 0, 1 & 2 (from version 5, this
 			// parameter is included in the TCamera objects)
 
 			if (version >= 4)
@@ -148,7 +148,7 @@ mxArray* CObservationStereoImages::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
 	const char* fields[] = {"class",   "ts",	 "sensorLabel", "imageL",
-							"imageR",  "poseL",	 "poseLR",		"poseR",
+							"imageR",  "poseL",  "poseLR",		"poseR",
 							"paramsL", "paramsR"};
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
