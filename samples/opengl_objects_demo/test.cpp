@@ -448,6 +448,48 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+	// CMeshFast
+	{
+		opengl::CMeshFast::Ptr obj1 = opengl::CMeshFast::Create();
+		opengl::CMeshFast::Ptr obj2 = opengl::CMeshFast::Create();
+
+		obj1->setXBounds(-1, 1);
+		obj1->setYBounds(-1, 1);
+
+		const int W = 200, H = 200;
+
+		mrpt::img::CImage im(W, H, mrpt::img::CH_GRAY);
+		mrpt::math::CMatrixDynamic<float> Z(H, W);
+
+		for (int r = 0; r < H; r++)
+		{
+			for (int c = 0; c < W; c++)
+			{
+				Z(r, c) = sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r);
+				im.setPixel(c, r, 0.2 * r + 0.5 * c);
+			}
+		}
+
+		// option 1:
+		obj1->setZ(Z);
+		obj1->enableColorFromZ(true);
+		obj1->setPointSize(2.0);
+		obj1->setLocation(off_x, 0, 0);
+
+		// option 2:
+		obj2->assignImageAndZ(im, Z);
+		obj2->setPointSize(2.0);
+		obj2->setLocation(off_x, 3, 0);
+
+		theScene->insert(obj1);
+		theScene->insert(obj2);
+
+		auto gl_txt = opengl::CText::Create("CMeshFast");
+		gl_txt->setLocation(off_x, off_y_label, 0);
+		theScene->insert(gl_txt);
+	}
+	off_x += STEP_X;
+
 	// CPointCloud
 	{
 		auto obj = opengl::CPointCloud::Create();
@@ -633,8 +675,8 @@ void TestOpenGLObjects()
 			obj->setLocation(off_x, 0, 0);
 
 			CMatrixFloat x(16, 16), y(16, 16);
-			for (unsigned int i = 0; i < x.rows(); i++)
-				for (unsigned int j = 0; j < x.cols(); j++)
+			for (int i = 0; i < x.rows(); i++)
+				for (int j = 0; j < x.cols(); j++)
 				{
 					x(i, j) = sin(0.3 * i);
 					y(i, j) = cos(0.3 * i);
@@ -665,8 +707,8 @@ void TestOpenGLObjects()
 
 			CMatrixFloat x(num, num), y(num, num), z(num, num);
 			CMatrixFloat vx(num, num), vy(num, num), vz(num, num);
-			for (unsigned int i = 0; i < x.rows(); i++)
-				for (unsigned int j = 0; j < x.cols(); j++)
+			for (int i = 0; i < x.rows(); i++)
+				for (int j = 0; j < x.cols(); j++)
 				{
 					x(i, j) = (i - 0.5 * num) * scale;
 					y(i, j) = j * scale;
@@ -874,8 +916,6 @@ void TestOpenGLObjects()
 	off_x += STEP_X;
 
 	MRPT_TODO("ADD: COctoMapVoxels");
-
-	MRPT_TODO("ADD: CMeshFast");
 
 	// Add image-mode viewport:
 	{
