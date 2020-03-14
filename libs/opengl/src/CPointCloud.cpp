@@ -108,7 +108,7 @@ void CPointCloud::onUpdateBuffers_Points()
 	m_col_slop_inv.G = m_col_slop.G != 0 ? 1.0f / m_col_slop.G : 0;
 	m_col_slop_inv.B = m_col_slop.B != 0 ? 1.0f / m_col_slop.B : 0;
 
-	MRPT_TODO("Restore rendering using octrees");
+	// TODO: Restore rendering using octrees?
 	// octree_render(*rc.state);  // Render all points recursively:
 
 	// ------------------------------

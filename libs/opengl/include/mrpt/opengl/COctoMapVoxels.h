@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
@@ -66,7 +67,8 @@ enum predefined_voxel_sets_t
  * \ingroup mrpt_opengl_grp
  */
 class COctoMapVoxels : public CRenderizableShaderTriangles,
-					   public CRenderizableShaderWireFrame
+					   public CRenderizableShaderWireFrame,
+					   public CRenderizableShaderPoints
 {
 	DEFINE_SERIALIZABLE(COctoMapVoxels, mrpt::opengl)
    public:
@@ -156,14 +158,17 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::POINTS,
+				DefaultShaderID::TRIANGLES};
 	}
+	void onUpdateBuffers_Points() override;
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;
 	void freeOpenGLResources() override
 	{
 		CRenderizableShaderTriangles::freeOpenGLResources();
 		CRenderizableShaderWireFrame::freeOpenGLResources();
+		CRenderizableShaderPoints::freeOpenGLResources();
 	}
 	/** @} */
 
