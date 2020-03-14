@@ -14,6 +14,7 @@
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 
+
 using namespace mrpt;
 using namespace mrpt::io;
 using namespace std;
@@ -70,7 +71,9 @@ bool mrpt::io::loadTextFile(
 std::string mrpt::io::file_get_contents(const std::string& fileName)
 {
 	// Credits: https://stackoverflow.com/a/2602258/1631514
-	std::ifstream t(fileName);
+	// Note: Add "binary" to make sure the "tellg" file size matches the actual
+	// number of read bytes afterwards:
+	std::ifstream t(fileName, ios::binary);
 	if (!t.is_open())
 		THROW_EXCEPTION_FMT(
 			"file_get_contents(): Error opening for read file `%s`",
