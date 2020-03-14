@@ -9,11 +9,13 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/ops_vectors.h>  // << of std::vector()
+#include <mrpt/math/ops_vectors.h>	// << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <Eigen/Dense>
 #include <iostream>
+
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
 #endif
@@ -101,7 +103,7 @@ IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationImage)
 mxArray* CObservationImage::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-	const char* fields[] = {"class", "ts",   "sensorLabel",
+	const char* fields[] = {"class", "ts",	 "sensorLabel",
 							"image", "pose", "params"};
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
@@ -161,3 +163,5 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 			image.isOriginTopLeft() ? "YES" : "NO");
 	}
 }
+
+void CObservationImage::load() const { image.forceLoad(); }
