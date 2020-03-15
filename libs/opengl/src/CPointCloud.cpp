@@ -264,7 +264,8 @@ void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 	// out << m_xs << m_ys << m_zs;// was: v4
 	out.WriteAs<uint32_t>(m_points.size());
 	if (!m_points.empty())
-		out.WriteBufferFixEndianness(m_points.data(), m_points.size());
+		out.WriteBufferFixEndianness(
+			&m_points[0].x, sizeof(m_points[0]) * m_points.size());
 
 	// New in version 2:
 	out << m_colorFromDepth_min.R << m_colorFromDepth_min.G
@@ -317,7 +318,9 @@ void CPointCloud::serializeFrom(
 				// New in v5:
 				auto N = in.ReadAs<uint32_t>();
 				m_points.resize(N);
-				if (N) in.ReadBufferFixEndianness(m_points.data(), N);
+				if (N)
+					in.ReadBufferFixEndianness(
+						&m_points[0].x, N * sizeof(m_points[0]));
 			}
 
 			if (version >= 1 && version < 6)
