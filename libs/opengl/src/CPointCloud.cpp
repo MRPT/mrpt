@@ -198,7 +198,7 @@ void CPointCloud::serializeTo(
 	out["colorFromDepth"] = static_cast<int32_t>(m_colorFromDepth);
 	out["pointSize"] = m_pointSize;
 	const auto N = m_points.size();
-	out["N"] = N;
+	out["N"] = static_cast<uint64_t>(N);
 	for (size_t i = 0; i < N; i++)
 	{
 		out["xs"][i] = m_points[i].x;
@@ -227,7 +227,7 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			 */
 			// m_colorFromDepth = static_cast<float>(in["colorDepth"]);
 			m_pointSize = static_cast<float>(in["pointSize"]);
-			const size_t N = static_cast<size_t>(in["N"]);
+			const size_t N = static_cast<uint64_t>(in["N"]);
 			m_points.resize(N);
 			for (size_t i = 0; i < N; i++)
 			{
