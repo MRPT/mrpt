@@ -921,6 +921,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	gl_scan3D->enableLine(false);
 	gl_scan3D->enableSurface(true);
 	gl_scan3D->setPointSize(2.0);
+	gl_scan3D->setLocation(0, 0, 0.01);
 	gl_robot->insert(gl_scan3D);
 
 	gl_robot_sensor_range = mrpt::opengl::CDisk::Create(0, 0);
@@ -931,6 +932,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	gl_robot_path = mrpt::opengl::CSetOfLines::Create();
 	gl_robot_path->setLineWidth(1);
 	gl_robot_path->setColor_u8(TColor(40, 40, 40, 200));
+	gl_robot_path->setLocation(0, 0, 0.01);
 	openGLSceneRef->insert(gl_robot_path);
 
 	gl_target = mrpt::opengl::CSetOfObjects::Create();

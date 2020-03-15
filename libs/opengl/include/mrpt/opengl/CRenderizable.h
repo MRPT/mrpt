@@ -338,7 +338,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 * (Default=[0,0,0]) */
 	virtual mrpt::math::TPoint3Df getLocalRepresentativePoint() const
 	{
-		return mrpt::math::TPoint3Df(0, 0, 0);
+		return m_representativePoint;
+	}
+
+	/** See getLocalRepresentativePoint() */
+	void setLocalRepresentativePoint(const mrpt::math::TPoint3Df &p)
+	{
+		m_representativePoint = p;
 	}
 
 	/** Returns or constructs (in its first invokation) the associated
@@ -358,6 +364,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
 
 	bool m_outdatedBuffers = true;
+	mrpt::math::TPoint3Df m_representativePoint{0, 0, 0};
 
 	/** Optional pointer to a mrpt::opengl::CText */
 	mutable std::shared_ptr<mrpt::opengl::CText> m_label_obj;

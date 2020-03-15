@@ -40,6 +40,8 @@ void CArrow::onUpdateBuffers_Triangles()
 	// Unit vector:
 	p *= (1.0f / P10_norm);
 
+	setLocalRepresentativePoint((p0 + p1) * 0.5f);
+
 	// each column is a unit vector:
 	const CMatrixDouble44 HM = mrpt::math::generateAxisBaseFromDirectionAndAxis(
 		p, 2 /* provided vector is "z"*/);
