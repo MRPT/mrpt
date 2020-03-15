@@ -157,7 +157,7 @@ int main(int num_arg, char* argv[])
 						// Move an object to the position picked by the user:
 						ReactInterface.scene->getByClass<CDisk>(0)->setLocation(
 							last_Target_Pos.x, last_Target_Pos.y,
-							last_Target_Pos.z);
+							last_Target_Pos.z + 0.01);
 					}
 				}
 			}

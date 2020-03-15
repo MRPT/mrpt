@@ -758,7 +758,7 @@ class CMyReactInterface
 		// The target is inserted
 		{
 			auto obj = opengl::CDisk::Create(0.4f, 0.3f);
-			obj->setLocation(0, 0, 0);
+			obj->setLocation(0, 0, 0.02);
 			obj->setColor(0.2, 0.3, 0.9);
 			scene->insert(obj);
 		}

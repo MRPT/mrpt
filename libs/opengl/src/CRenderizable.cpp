@@ -54,8 +54,8 @@ void CRenderizable::writeToStreamRender(
 	// (float)(m_color.B) << (float)(m_color.A);
 	// ...
 
-	const uint8_t serialization_version =
-		0;  // can't be >31 (but it would be mad geting to that situation!)
+	// can't be >31 (but it would be mad geting to that situation!)
+	const uint8_t serialization_version = 1;
 
 	const bool all_scales_equal =
 		(m_scale_x == m_scale_y && m_scale_z == m_scale_x);
@@ -93,6 +93,7 @@ void CRenderizable::writeToStreamRender(
 	}
 
 	out << m_show_name << m_visible;
+	out << m_representativePoint;  // v1
 }
 
 void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
@@ -128,6 +129,7 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 		switch (serialization_version)
 		{
 			case 0:
+			case 1:
 			{
 				// "m_name"
 				uint16_t nameLen;
@@ -160,6 +162,10 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 				}
 
 				in >> m_show_name >> m_visible;
+				if (serialization_version >= 1)
+					in >> m_representativePoint;
+				else
+					m_representativePoint = mrpt::math::TPoint3Df(0, 0, 0);
 			}
 			break;
 			default:

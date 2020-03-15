@@ -34,60 +34,71 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	ret->setName("theRobot");
 
 	CSetOfTriangles::Ptr obj = std::make_shared<CSetOfTriangles>();
+	obj->setLocalRepresentativePoint({0.0f, 0.0f, 0.15f});
 
 	// Add triangles:
 	mrpt::opengl::TTriangle t;
 
-	t.r(0) = t.r(1) = t.r(2) = 1;
+	t.r(0) = t.r(1) = t.r(2) = 255;
 	t.g(0) = t.g(1) = t.g(2) = 0;
 	t.b(0) = t.b(1) = t.b(2) = 0;
-	t.a(0) = t.a(1) = t.a(2) = 1;
+	t.a(0) = t.a(1) = t.a(2) = 255;
 
 	t.vertex(0) = {0.10f, -0.10f, 0.20f};
 	t.vertex(1) = {-0.20f, 0.10f, 0.25f};
 	t.vertex(2) = {-0.20f, -0.10f, 0.25f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 0
 	t.vertex(0) = {0.10f, -0.10f, 0.20f};
 	t.vertex(1) = {0.10f, 0.10f, 0.20f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 1
 
 	t.vertex(0) = {0.10f, -0.10f, 0.05f};
 	t.vertex(1) = {0.10f, 0.10f, 0.20f};
 	t.vertex(2) = {0.10f, -0.10f, 0.20f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 2
 	t.vertex(0) = {0.10f, -0.10f, 0.05f};
 	t.vertex(1) = {0.10f, 0.10f, 0.05f};
 	t.vertex(2) = {0.10f, 0.10f, 0.20f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 3
 
 	t.vertex(0) = {-0.20f, -0.10f, 0.05f};
 	t.vertex(1) = {-0.20f, -0.10f, 0.25f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 2b
 	t.vertex(0) = {-0.20f, -0.10f, 0.05f};
 	t.vertex(1) = {-0.20f, 0.10f, 0.25f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.05f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 3b
 
 	t.vertex(0) = {0.10f, -0.10f, 0.20f};
 	t.vertex(1) = {-0.20f, -0.10f, 0.25f};
 	t.vertex(2) = {-0.20f, -0.10f, 0.05f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 4
 
 	t.vertex(0) = {0.10f, -0.10f, 0.20f};
 	t.vertex(1) = {-0.20f, -0.10f, 0.05f};
 	t.vertex(2) = {0.10f, -0.10f, 0.05f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 5
 
 	t.vertex(0) = {0.10f, 0.10f, 0.20f};
 	t.vertex(1) = {-0.20f, 0.10f, 0.05f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 6
 
 	t.vertex(0) = {0.10f, 0.10f, 0.20f};
 	t.vertex(1) = {0.10f, 0.10f, 0.05f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.05f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 7
 
 	t.setColor(mrpt::img::TColorf(0.05f, 0.05f, 0.05f, 1));
@@ -95,19 +106,23 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	t.vertex(0) = {0.00f, 0.11f, 0.00f};
 	t.vertex(1) = {0.00f, 0.11f, 0.10f};
 	t.vertex(2) = {0.05f, 0.11f, 0.05f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 8
 	t.vertex(0) = {0.00f, 0.11f, 0.00f};
 	t.vertex(1) = {0.00f, 0.11f, 0.10f};
 	t.vertex(2) = {-0.05f, 0.11f, 0.05f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 9
 
 	t.vertex(0) = {0.00f, -0.11f, 0.00f};
 	t.vertex(1) = {0.00f, -0.11f, 0.10f};
 	t.vertex(2) = {0.05f, -0.11f, 0.05f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 10
 	t.vertex(0) = {0.00f, -0.11f, 0.00f};
 	t.vertex(1) = {0.00f, -0.11f, 0.10f};
 	t.vertex(2) = {-0.05f, -0.11f, 0.05f};
+	t.computeNormals();
 	obj->insertTriangle(t);  // 11
 
 	ret->insert(obj);
@@ -126,7 +141,6 @@ CSetOfObjects::Ptr stock_objects::CornerXYZ(float scale)
 		0, 0, 0, scale, 0, 0, 0.25f * scale, 0.02f * scale, 0.05f * scale);
 
 	obj->setColor(1, 0, 0);
-
 	ret->insert(obj);
 
 	obj = CArrow::Create(
