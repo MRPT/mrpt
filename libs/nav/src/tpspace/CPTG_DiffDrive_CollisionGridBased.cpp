@@ -396,8 +396,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile(
 
 		// and standard PTG data:
 		*f << m_parent->getDescription() << m_parent->getAlphaValuesCount()
-		   << static_cast<float>(m_parent->getMax_V())
-		   << static_cast<float>(m_parent->getMax_W());
+		   << d2f(m_parent->getMax_V()) << d2f(m_parent->getMax_W());
 
 		*f << m_x_min << m_x_max << m_y_min << m_y_max;
 		*f << m_resolution;

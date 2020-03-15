@@ -47,7 +47,7 @@ void TestDisplay3D()
 	{
 		opengl::CGridPlaneXY::Ptr obj =
 			opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
-		obj->setColor(0.4, 0.4, 0.4);
+		obj->setColor(0.4f, 0.4f, 0.4f);
 		theScene->insert(obj);
 	}
 
@@ -71,7 +71,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0, 0, 1);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(0, 0, 1);
 		obj->setName("ball_1");
 		theScene->insert(obj);
@@ -79,7 +79,7 @@ void TestDisplay3D()
 	{
 		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(1, 0, 0);
-		obj->setRadius(0.3);
+		obj->setRadius(0.3f);
 		obj->setLocation(-1, -1, 1);
 		obj->setName("ball_2");
 		theScene->insert(obj);
@@ -113,6 +113,9 @@ void TestDisplay3D()
 
 	bool end = false;
 
+	mrpt::opengl::TFontParams fp;
+	fp.color = mrpt::img::TColorf(0, 0, 1);
+
 	while (!end && win.isOpen())
 	{
 		// Move the scene:
@@ -132,13 +135,11 @@ void TestDisplay3D()
 
 		win.addTextMessage(
 			0.02, 0.98,
-			format(
+			mrpt::format(
 				"ball#1 pos: %.02f %.02f %.02f ", obj1->getPoseX(),
 				obj1->getPoseY(), obj1->getPoseZ()),
-			mrpt::img::TColorf(0, 0, 1),
-			10,  // An arbitrary ID to always overwrite the same, previous 2D
-			// text message
-			MRPT_GLUT_BITMAP_HELVETICA_12);
+			10,  // An arbitrary ID
+			fp);
 
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 		win.unlockAccess3DScene();

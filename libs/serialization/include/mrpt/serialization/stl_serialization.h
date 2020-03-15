@@ -30,7 +30,7 @@ namespace mrpt::serialization
 	CArchive& operator<<(CArchive& out, const CONTAINER<T, _Ax>& obj)          \
 	{                                                                          \
 		out << std::string(#CONTAINER) << mrpt::typemeta::TTypeName<T>::get(); \
-		out << static_cast<uint32_t>(obj.size());                              \
+		out.WriteAs<uint32_t>(obj.size());                                     \
 		std::for_each(                                                         \
 			obj.begin(), obj.end(),                                            \
 			metaprogramming::ObjectWriteToStream(&out));                       \
@@ -56,8 +56,7 @@ namespace mrpt::serialization
 				"Error: serialized container %s< %s != %s >", #CONTAINER,      \
 				stored_T.c_str(),                                              \
 				mrpt::typemeta::TTypeName<T>::get().c_str());                  \
-		uint32_t n;                                                            \
-		in >> n;                                                               \
+		const uint32_t n = in.ReadAs<uint32_t>();                              \
 		obj.resize(n);                                                         \
 		std::for_each(                                                         \
 			obj.begin(), obj.end(),                                            \
@@ -101,7 +100,7 @@ CArchive& operator<<(CArchive& out, const T& obj)
 		<< mrpt::typemeta::TTypeName<typename T::key_type>::get()
 		<< mrpt::typemeta::TTypeName<
 			   std::decay_t<typename T::mapped_type>>::get();
-	out << static_cast<uint32_t>(obj.size());
+	out.WriteAs<uint32_t>(obj.size());
 	for (typename T::const_iterator it = obj.begin(); it != obj.end(); ++it)
 		out << it->first << it->second;
 	return out;
@@ -137,8 +136,7 @@ CArchive& operator>>(CArchive& in, T& obj)
 			"Error: serialized container %s value type %s != %s",
 			containerName<T>().c_str(), stored_V.c_str(),
 			mrpt::typemeta::TTypeName<typename T::mapped_type>::get().c_str()));
-	uint32_t n;
-	in >> n;
+	const uint32_t n = in.ReadAs<uint32_t>();
 	for (uint32_t i = 0; i < n; i++)
 	{
 		typename T::key_type key_obj;
@@ -158,7 +156,7 @@ CArchive& operator>>(CArchive& in, T& obj)
 	CArchive& operator<<(CArchive& out, const CONTAINER<K, _Pr, _Alloc>& obj)  \
 	{                                                                          \
 		out << std::string(#CONTAINER) << mrpt::typemeta::TTypeName<K>::get(); \
-		out << static_cast<uint32_t>(obj.size());                              \
+		out.WriteAs<uint32_t>(obj.size());                                     \
 		for (typename CONTAINER<K, _Pr, _Alloc>::const_iterator it =           \
 				 obj.begin();                                                  \
 			 it != obj.end(); ++it)                                            \
@@ -185,8 +183,7 @@ CArchive& operator>>(CArchive& in, T& obj)
 				"Error: serialized container %s key type %s != %s",            \
 				#CONTAINER, stored_K.c_str(),                                  \
 				mrpt::typemeta::TTypeName<K>::get().c_str()));                 \
-		uint32_t n;                                                            \
-		in >> n;                                                               \
+		const uint32_t n = in.ReadAs<uint32_t>();                              \
 		for (uint32_t i = 0; i < n; i++)                                       \
 		{                                                                      \
 			K key_obj;                                                         \

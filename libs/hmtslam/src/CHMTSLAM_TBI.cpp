@@ -61,9 +61,6 @@ void CHMTSLAM::thread_TBI()
 
 		// Finish thread:
 		// -------------------------
-		MRPT_TODO("Fix thread times");
-		//		try { mrpt::system::getCurrentThreadTimes(
-		// timCreat,timExit,timCPU); } catch(...) {};
 		obj->logFmt(mrpt::system::LVL_DEBUG, "[thread_TBI] Thread finished");
 		obj->m_terminationFlag_TBI = true;
 	}

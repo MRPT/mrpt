@@ -151,11 +151,11 @@ class Pose3DTests : public ::testing::Test
 
 		const CPose2D p2d_bis = CPose2D(p3d);
 
-		EXPECT_FLOAT_EQ(p2d.x(), p2d_bis.x()) << "p2d: " << p2d << endl;
-		EXPECT_FLOAT_EQ(p2d.y(), p2d_bis.y()) << "p2d: " << p2d << endl;
-		EXPECT_FLOAT_EQ(p2d.phi(), p2d_bis.phi()) << "p2d: " << p2d << endl;
+		EXPECT_DOUBLE_EQ(p2d.x(), p2d_bis.x()) << "p2d: " << p2d << endl;
+		EXPECT_DOUBLE_EQ(p2d.y(), p2d_bis.y()) << "p2d: " << p2d << endl;
+		EXPECT_DOUBLE_EQ(p2d.phi(), p2d_bis.phi()) << "p2d: " << p2d << endl;
 
-		EXPECT_FLOAT_EQ(p2d.phi(), p3d.yaw()) << "p2d: " << p2d << endl;
+		EXPECT_DOUBLE_EQ(p2d.phi(), p3d.yaw()) << "p2d: " << p2d << endl;
 	}
 
 	void test_composeFrom(const CPose3D& p1, const CPose3D& p2)

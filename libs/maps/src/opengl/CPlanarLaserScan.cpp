@@ -12,55 +12,36 @@
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/serialization/CArchive.h>
 
-#if MRPT_HAS_OPENGL_GLUT
-#ifdef _WIN32
-// Windows:
-#include <windows.h>
-#endif
-
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-#endif
-
-// Include libraries in linking:
-#if MRPT_HAS_OPENGL_GLUT && defined(_WIN32)
-// WINDOWS:
-#if defined(_MSC_VER)
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "GlU32.lib")
-#endif
-#endif  // MRPT_HAS_OPENGL_GLUT
-
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(
-	CPlanarLaserScan, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CPlanarLaserScan, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-				Constructor
-  ---------------------------------------------------------------*/
-CPlanarLaserScan::CPlanarLaserScan() : m_scan(), m_cache_points() {}
-/*---------------------------------------------------------------
-							clear
-  ---------------------------------------------------------------*/
 void CPlanarLaserScan::clear()
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	m_scan.resizeScan(0);
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CPlanarLaserScan::render_dl() const
+void CPlanarLaserScan::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::TRIANGLES:
+			if (m_enable_surface) CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			if (m_enable_line) CRenderizableShaderWireFrame::render(rc);
+			break;
+		case DefaultShaderID::POINTS:
+			if (m_enable_points) CRenderizableShaderPoints::render(rc);
+			break;
+	};
+}
+void CPlanarLaserScan::renderUpdateBuffers() const
+{
 	// Load into cache:
 	if (!m_cache_valid)
 	{
@@ -72,86 +53,89 @@ void CPlanarLaserScan::render_dl() const
 		m_cache_points.insertObservation(m_scan);
 	}
 
-	size_t i, n;
-	const float *x, *y, *z;
-
-	m_cache_points.getPointsBuffer(n, x, y, z);
-	if (!n || !x) return;
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// LINES
-	// ----------------------------
-	if (n > 1 && m_enable_line)
-	{
-		glLineWidth(m_line_width);
-		checkOpenGLError();
-
-		glBegin(GL_LINES);
-		glColor4f(m_line_R, m_line_G, m_line_B, m_line_A);
-
-		for (i = 0; i < n - 1; i++)
-		{
-			glVertex3f(x[i], y[i], z[i]);
-			glVertex3f(x[i + 1], y[i + 1], z[i + 1]);
-		}
-		glEnd();
-		checkOpenGLError();
-	}
-
-	// POINTS
-	// ----------------------------
-	if (n > 0 && m_enable_points)
-	{
-		glPointSize(m_points_width);
-		checkOpenGLError();
-
-		glBegin(GL_POINTS);
-		glColor4f(m_points_R, m_points_G, m_points_B, m_points_A);
-
-		for (i = 0; i < n; i++)
-		{
-			glVertex3f(x[i], y[i], z[i]);
-		}
-		glEnd();
-		checkOpenGLError();
-	}
-
-	// SURFACE:
-	// ------------------------------
-	if (n > 1 && m_enable_surface)
-	{
-		glBegin(GL_TRIANGLES);
-
-		glColor4f(m_plane_R, m_plane_G, m_plane_B, m_plane_A);
-
-		for (i = 0; i < n - 1; i++)
-		{
-			glVertex3f(
-				m_scan.sensorPose.x(), m_scan.sensorPose.y(),
-				m_scan.sensorPose.z());
-			glVertex3f(x[i], y[i], z[i]);
-			glVertex3f(x[i + 1], y[i + 1], z[i + 1]);
-		}
-		glEnd();
-		checkOpenGLError();
-	}
-
-	glDisable(GL_BLEND);
-
-#endif
+	CRenderizableShaderPoints::renderUpdateBuffers();
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
 }
 
-uint8_t CPlanarLaserScan::serializeGetVersion() const { return 1; }
+void CPlanarLaserScan::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+	cbd.clear();
+
+	size_t n;
+	const float *x, *y, *z;
+	m_cache_points.getPointsBuffer(n, x, y, z);
+	if (!n) return;
+
+	for (size_t i = 0; i < n - 1; i++)
+	{
+		vbd.emplace_back(x[i], y[i], z[i]);
+		vbd.emplace_back(x[i + 1], y[i + 1], z[i + 1]);
+	}
+
+	cbd.assign(
+		vbd.size(),
+		mrpt::img::TColorf(m_line_R, m_line_G, m_line_B, m_line_A).asTColor());
+}
+
+void CPlanarLaserScan::onUpdateBuffers_Triangles()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+
+	size_t n;
+	const float *x, *y, *z;
+	m_cache_points.getPointsBuffer(n, x, y, z);
+	if (!n) return;
+
+	using P3f = mrpt::math::TPoint3Df;
+
+	for (size_t i = 0; i < n - 1; i++)
+	{
+		tris.emplace_back(
+			P3f(m_scan.sensorPose.x(), m_scan.sensorPose.y(),
+				m_scan.sensorPose.z()),
+			P3f(x[i], y[i], z[i]), P3f(x[i + 1], y[i + 1], z[i + 1]));
+	}
+
+	for (auto& t : tris)
+	{
+		t.computeNormals();
+		t.setColor(
+			mrpt::img::TColorf(m_plane_R, m_plane_G, m_plane_B, m_plane_A));
+	}
+}
+
+void CPlanarLaserScan::onUpdateBuffers_Points()
+{
+	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	vbd.clear();
+
+	size_t n;
+	const float *x, *y, *z;
+	m_cache_points.getPointsBuffer(n, x, y, z);
+
+	for (size_t i = 0; i < n; i++) vbd.emplace_back(x[i], y[i], z[i]);
+
+	cbd.assign(
+		vbd.size(),
+		mrpt::img::TColorf(m_points_R, m_points_G, m_points_B, m_points_A)
+			.asTColor());
+}
+
+uint8_t CPlanarLaserScan::serializeGetVersion() const { return 2; }
 void CPlanarLaserScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_scan;
-	out << m_line_width << m_line_R << m_line_G << m_line_B << m_line_A
-		<< m_points_width << m_points_R << m_points_G << m_points_B
-		<< m_points_A << m_plane_R << m_plane_G << m_plane_B << m_plane_A
-		<< m_enable_points << m_enable_line << m_enable_surface;  // new in v1
+	out << m_line_R << m_line_G << m_line_B << m_line_A << m_points_R
+		<< m_points_G << m_points_B << m_points_A << m_plane_R << m_plane_G
+		<< m_plane_B << m_plane_A << m_enable_points << m_enable_line
+		<< m_enable_surface;  // new in v1
 }
 
 void CPlanarLaserScan::serializeFrom(
@@ -164,10 +148,22 @@ void CPlanarLaserScan::serializeFrom(
 		{
 			readFromStreamRender(in);
 			in >> m_scan;
-			in >> m_line_width >> m_line_R >> m_line_G >> m_line_B >>
-				m_line_A >> m_points_width >> m_points_R >> m_points_G >>
-				m_points_B >> m_points_A >> m_plane_R >> m_plane_G >>
-				m_plane_B >> m_plane_A;
+
+			if (version >= 2)
+			{  //  m_line_width
+				float dummy;
+				in >> dummy;
+			}
+
+			in >> m_line_R >> m_line_G >> m_line_B >> m_line_A;
+
+			if (version >= 2)
+			{  // m_points_width
+				float dummy;
+				in >> dummy;
+			}
+			in >> m_points_R >> m_points_G >> m_points_B >> m_points_A >>
+				m_plane_R >> m_plane_G >> m_plane_B >> m_plane_A;
 
 			if (version >= 1)
 			{
@@ -226,4 +222,10 @@ void CPlanarLaserScan::getBoundingBox(
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
+}
+
+mrpt::math::TPoint3Df CPlanarLaserScan::getLocalRepresentativePoint() const
+{
+	return {d2f(m_scan.sensorPose.x()), d2f(m_scan.sensorPose.y()),
+			d2f(m_scan.sensorPose.z())};
 }

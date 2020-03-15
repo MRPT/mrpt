@@ -46,7 +46,7 @@ void TestKMeans()
 
 		for (size_t cl = 0; cl < nClusters; cl++)
 		{
-			const size_t nPts = getRandomGenerator().drawUniform(5, 50);
+			const size_t nPts = getRandomGenerator().drawUniform<size_t>(5, 50);
 
 			TPoint2D clCenter;
 			clCenter.x = getRandomGenerator().drawUniform(0, 10);

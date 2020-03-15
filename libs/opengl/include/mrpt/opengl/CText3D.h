@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizableShaderText.h>
 
 namespace mrpt::opengl
 {
@@ -39,22 +39,24 @@ namespace mrpt::opengl
  * http://www.edwardrosten.com/cvd/ )
  * \ingroup mrpt_opengl_grp
  */
-class CText3D : public CRenderizableDisplayList
+class CText3D : public CRenderizableShaderText
 {
 	DEFINE_SERIALIZABLE(CText3D, mrpt::opengl)
    protected:
 	std::string m_str;
-	std::string m_fontName;
+	std::string m_fontName = "sans";
 	TOpenGLFontStyle m_text_style;
-	double m_text_spacing;
-	double m_text_kerning;
+	double m_text_spacing = 1.5;
+	double m_text_kerning = 0.1;
+
+	void onUpdateBuffers_Text() override;
 
    public:
 	/** Sets the displayed string */
 	inline void setString(const std::string& s)
 	{
 		m_str = s;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Returns the currently text associated to this object */
 	inline const std::string& getString() const { return m_str; }
@@ -62,7 +64,7 @@ class CText3D : public CRenderizableDisplayList
 	inline void setFont(const std::string& font)
 	{
 		m_fontName = font;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Returns the text font  */
 	inline const std::string& getFont() const { return m_fontName; }
@@ -70,40 +72,34 @@ class CText3D : public CRenderizableDisplayList
 	void setTextStyle(const mrpt::opengl::TOpenGLFontStyle text_style)
 	{
 		m_text_style = text_style;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Gets the current drawing style */
 	mrpt::opengl::TOpenGLFontStyle getTextStyle() const { return m_text_style; }
 	void setTextSpacing(const double text_spacing)
 	{
 		m_text_spacing = text_spacing;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	double setTextSpacing() const { return m_text_spacing; }
 	void setTextKerning(const double text_kerning)
 	{
 		m_text_kerning = text_kerning;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	double setTextKerning() const { return m_text_kerning; }
-	/** Render */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Constructor */
 	CText3D(
 		const std::string& str = std::string(""),
 		const std::string& fontName = std::string("sans"),
-		const double scale = 1.0,
+		const float scale = 1.0,
 		const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::NICE,
 		const double text_spacing = 1.5, const double text_kerning = 0.1);
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
 	~CText3D() override;
 };
 

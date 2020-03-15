@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -26,7 +26,7 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CGridPlaneXY : public CRenderizableDisplayList
+class CGridPlaneXY : public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CGridPlaneXY, mrpt::opengl)
 
@@ -35,29 +35,15 @@ class CGridPlaneXY : public CRenderizableDisplayList
 	float m_yMin, m_yMax;
 	float m_plane_z;
 	float m_frequency;
-	float m_lineWidth;
-	bool m_antiAliasing;
 
    public:
-	void setLineWidth(float w)
-	{
-		m_lineWidth = w;
-		CRenderizableDisplayList::notifyChange();
-	}
-	float getLineWidth() const { return m_lineWidth; }
-	void enableAntiAliasing(bool enable = true)
-	{
-		m_antiAliasing = enable;
-		CRenderizableDisplayList::notifyChange();
-	}
-	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	void setPlaneLimits(float xmin, float xmax, float ymin, float ymax)
 	{
 		m_xMin = xmin;
 		m_xMax = xmax;
 		m_yMin = ymin;
 		m_yMax = ymax;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	void getPlaneLimits(
@@ -71,7 +57,7 @@ class CGridPlaneXY : public CRenderizableDisplayList
 
 	void setPlaneZcoord(float z)
 	{
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		m_plane_z = z;
 	}
 	float getPlaneZcoord() const { return m_plane_z; }
@@ -79,14 +65,12 @@ class CGridPlaneXY : public CRenderizableDisplayList
 	{
 		ASSERT_(freq > 0);
 		m_frequency = freq;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getGridFrequency() const { return m_frequency; }
-	/** Render */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	void onUpdateBuffers_Wireframe() override;
+
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

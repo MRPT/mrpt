@@ -291,8 +291,8 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
 				// Initially there may come repetetive values till
 				// m_antiNoise_window is full populated.
 				last_Obs.estimation =
-					((reading - last_Obs.reading) * last_Obs.tau / incT) +
-					reading;
+					d2f(((reading - last_Obs.reading) * last_Obs.tau / incT) +
+						reading);
 			else
 				last_Obs.estimation = reading;
 

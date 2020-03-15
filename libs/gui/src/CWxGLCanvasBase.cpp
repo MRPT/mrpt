@@ -54,7 +54,14 @@ void CWxGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
 	if (!m_gl_context) m_gl_context = std::make_unique<wxGLContext>(this);
 }
 
-void CWxGLCanvasBase::swapBuffers() { SwapBuffers(); }
+void CWxGLCanvasBase::swapBuffers()
+{
+	if (m_gl_context)
+	{
+		SetCurrent(*m_gl_context);
+		SwapBuffers();
+	}
+}
 void CWxGLCanvasBase::preRender() { OnPreRender(); }
 void CWxGLCanvasBase::postRender() { OnPostRender(); }
 void CWxGLCanvasBase::renderError(const string& err_msg)
@@ -105,7 +112,15 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 #if wxCHECK_VERSION(2, 9, 5)
 		wxTheApp->SafeYieldFor(nullptr, wxEVT_CATEGORY_TIMER);
 #endif
-		Refresh(false);
+
+		// Decimate the update rate of the window, to avoid flicker:
+		static int cnt = 0;
+		if (cnt++ == 0)
+		{
+			Refresh();
+			Update();
+		}
+		if (cnt == 10) cnt = 0;
 	}
 
 	// ensure we have the focus so we get keyboard events:
@@ -123,8 +138,16 @@ void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 	this->SetFocus();
 }
 
-static int WX_GL_ATTR_LIST[] = {WX_GL_DOUBLEBUFFER, WX_GL_RGBA,
-								WX_GL_DEPTH_SIZE, 24, 0};
+// clang-format off
+static int WX_GL_ATTR_LIST[] = {
+	WX_GL_DOUBLEBUFFER,    WX_GL_RGBA,
+	WX_GL_DEPTH_SIZE,     24,
+	WX_GL_MAJOR_VERSION,  3,
+	WX_GL_MINOR_VERSION,  1,
+	WX_GL_CORE_PROFILE, // do not allow using opengl 1.x deprecated stuff
+	0
+};
+// clang-format on
 
 CWxGLCanvasBase::CWxGLCanvasBase(
 	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,

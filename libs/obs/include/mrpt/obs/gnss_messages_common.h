@@ -134,7 +134,7 @@ struct gnss_message_ptr
 	void internal_writeToStream(mrpt::serialization::CArchive& out)          \
 		const override                                                       \
 	{                                                                        \
-		out << static_cast<uint32_t>(DATA_LEN);                              \
+		out.WriteAs<uint32_t>(DATA_LEN);                                     \
 		auto nonconst_this = const_cast<std::remove_const<                   \
 			std::remove_reference<decltype(*this)>::type>::type*>(this);     \
 		/* Temporarily switch to little endian for serialization only */     \
@@ -144,8 +144,7 @@ struct gnss_message_ptr
 	}                                                                        \
 	void internal_readFromStream(mrpt::serialization::CArchive& in) override \
 	{                                                                        \
-		uint32_t nBytesInStream;                                             \
-		in >> nBytesInStream;                                                \
+		const uint32_t nBytesInStream = in.ReadAs<uint32_t>();               \
 		ASSERT_EQUAL_(nBytesInStream, DATA_LEN);                             \
 		in.ReadBuffer(DATA_PTR, DATA_LEN);                                   \
 		fixEndianness();                                                     \

@@ -186,9 +186,8 @@ class KDTreeCapable
 		const TPoint2D& p0, TPoint2D& pOut, float& outDistSqr) const
 	{
 		float dmy1, dmy2;
-		size_t res = kdTreeClosestPoint2D(
-			static_cast<float>(p0.x), static_cast<float>(p0.y), dmy1, dmy2,
-			outDistSqr);
+		size_t res =
+			kdTreeClosestPoint2D(d2f(p0.x), d2f(p0.y), dmy1, dmy2, outDistSqr);
 		pOut.x = dmy1;
 		pOut.y = dmy2;
 		return res;
@@ -206,8 +205,7 @@ class KDTreeCapable
 
 	inline float kdTreeClosestPoint2DsqrError(const TPoint2D& p0) const
 	{
-		return kdTreeClosestPoint2DsqrError(
-			static_cast<float>(p0.x), static_cast<float>(p0.y));
+		return kdTreeClosestPoint2DsqrError(d2f(p0.x), d2f(p0.y));
 	}
 
 	/** KD Tree-based search for the TWO closest point to some given 2D
@@ -331,8 +329,7 @@ class KDTreeCapable
 	{
 		std::vector<float> dmy1, dmy2;
 		std::vector<size_t> res = kdTreeNClosestPoint2D(
-			static_cast<float>(p0.x), static_cast<float>(p0.y), N, dmy1, dmy2,
-			outDistSqr);
+			d2f(p0.x), d2f(p0.y), N, dmy1, dmy2, outDistSqr);
 		pOut.resize(dmy1.size());
 		for (size_t i = 0; i < dmy1.size(); i++)
 		{
@@ -383,8 +380,7 @@ class KDTreeCapable
 		std::vector<float>& outDistSqr) const
 	{
 		return kdTreeNClosestPoint2DIdx(
-			static_cast<float>(p0.x), static_cast<float>(p0.y), N, outIdx,
-			outDistSqr);
+			d2f(p0.x), d2f(p0.y), N, outIdx, outDistSqr);
 	}
 
 	/** KD Tree-based search for the closest point (only ONE) to some given 3D
@@ -461,8 +457,7 @@ class KDTreeCapable
 	{
 		float dmy1, dmy2, dmy3;
 		size_t res = kdTreeClosestPoint3D(
-			static_cast<float>(p0.x), static_cast<float>(p0.y),
-			static_cast<float>(p0.z), dmy1, dmy2, dmy3, outDistSqr);
+			d2f(p0.x), d2f(p0.y), d2f(p0.z), dmy1, dmy2, dmy3, outDistSqr);
 		pOut.x = static_cast<double>(dmy1);
 		pOut.y = static_cast<double>(dmy2);
 		pOut.z = static_cast<double>(dmy3);
@@ -584,8 +579,7 @@ class KDTreeCapable
 	{
 		std::vector<float> dmy1, dmy2, dmy3;
 		kdTreeNClosestPoint3D(
-			static_cast<float>(p0.x), static_cast<float>(p0.y),
-			static_cast<float>(p0.z), N, dmy1, dmy2, dmy3, outDistSqr);
+			d2f(p0.x), d2f(p0.y), d2f(p0.z), N, dmy1, dmy2, dmy3, outDistSqr);
 		pOut.resize(dmy1.size());
 		for (size_t i = 0; i < dmy1.size(); i++)
 		{
@@ -707,8 +701,7 @@ class KDTreeCapable
 		std::vector<float>& outDistSqr) const
 	{
 		kdTreeNClosestPoint3DIdx(
-			static_cast<float>(p0.x), static_cast<float>(p0.y),
-			static_cast<float>(p0.z), N, outIdx, outDistSqr);
+			d2f(p0.x), d2f(p0.y), d2f(p0.z), N, outIdx, outDistSqr);
 	}
 
 	inline void kdTreeEnsureIndexBuilt3D() { rebuild_kdTree_3D(); }

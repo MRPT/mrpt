@@ -13,6 +13,7 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
 
 // Forwards decls:
@@ -700,6 +701,11 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		int x_min = 0, int y_min = 0, int x_max = -1, int y_max = -1,
 		bool normalize_01 = true) const;
 
+	/** \overload For uint8_t matrices [0, 255]. */
+	void getAsMatrix(
+		mrpt::math::CMatrix_u8& outMatrix, bool doResize = true, int x_min = 0,
+		int y_min = 0, int x_max = -1, int y_max = -1) const;
+
 	/**	Returns the image as RGB matrices with pixel values in the range [0,1].
 	 * Matrix indexes in this order: M(row,column)
 	 *  \param doResize If set to true (default), the output matrix will be
@@ -721,6 +727,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		mrpt::math::CMatrixFloat& outMatrixG,
 		mrpt::math::CMatrixFloat& outMatrixB, bool doResize = true,
 		int x_min = 0, int y_min = 0, int x_max = -1, int y_max = -1) const;
+
+	/** \overload For uint8_t matrices [0, 255]. */
+	void getAsRGBMatrices(
+		mrpt::math::CMatrix_u8& outMatrixR, mrpt::math::CMatrix_u8& outMatrixG,
+		mrpt::math::CMatrix_u8& outMatrixB, bool doResize = true, int x_min = 0,
+		int y_min = 0, int x_max = -1, int y_max = -1) const;
 
 	/**	Returns the image as a matrix, where the image is "tiled" (repeated)
 	 * the required number of times to fill the entire size of the matrix on

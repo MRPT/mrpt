@@ -12,6 +12,7 @@
 #include <wx/string.h>
 #include <wx/textctrl.h>
 #include <wx/thread.h>
+
 #include <cstdio>
 #include <functional>
 #include <iostream>
@@ -61,7 +62,7 @@ class CMyRedirector : public std::streambuf
 		if (bufferSize)
 		{
 			m_buf.resize(bufferSize);
-			setp(&m_buf[0], &m_buf[bufferSize]);
+			setp(m_buf.data(), m_buf.data() + bufferSize);
 		}
 		else
 			setp(nullptr, nullptr);

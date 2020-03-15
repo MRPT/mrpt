@@ -14,7 +14,6 @@
 
 using namespace mrpt;
 using namespace std;
-
 using namespace mrpt::nav;
 
 IMPLEMENTS_SERIALIZABLE(CLogFileRecord_VFF, CHolonomicLogFileRecord, mrpt::nav)

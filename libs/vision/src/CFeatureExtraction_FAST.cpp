@@ -60,8 +60,8 @@ void CFeatureExtraction::extractFeaturesFAST(
 		const unsigned int max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
 		for (size_t i = 0; i < N; i++)
 		{
-			const unsigned int x = cv_feats[i].pt.x;
-			const unsigned int y = cv_feats[i].pt.y;
+			const unsigned int x = mrpt::round(cv_feats[i].pt.x);
+			const unsigned int y = mrpt::round(cv_feats[i].pt.y);
 			if (x > KLT_half_win && y > KLT_half_win && x <= max_x &&
 				y <= max_y)
 				cv_feats[i].response =
@@ -97,8 +97,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 
 	// Used half the min-distance since we'll later mark as occupied the ranges
 	// [i-1,i+1] for a feature at "i"
-	const unsigned int occupied_grid_cell_size =
-		options.FASTOptions.min_distance / 2.0;
+	const float occupied_grid_cell_size = options.FASTOptions.min_distance / 2;
 	const float occupied_grid_cell_size_inv = 1.0f / occupied_grid_cell_size;
 
 	unsigned int grid_lx =

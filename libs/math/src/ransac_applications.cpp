@@ -202,7 +202,7 @@ void ransac2Dline_fit(
 		CMatrixDynamic<T>& M = fitModels[0];
 
 		M.setSize(1, 3);
-		for (size_t i = 0; i < 3; i++) M(0, i) = line.coefs[i];
+		for (size_t i = 0; i < 3; i++) M(0, i) = static_cast<T>(line.coefs[i]);
 	}
 	catch (exception&)
 	{

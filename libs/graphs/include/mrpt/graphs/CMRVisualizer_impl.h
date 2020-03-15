@@ -139,7 +139,6 @@ void CMRVisualizer<
 			CPointCloud::Ptr& curr_cloud = strid_to_cloud.at(curr_strid);
 			curr_cloud->setColor(strid_to_color.at(curr_strid));
 			curr_cloud->setPointSize(nodes_point_size);
-			curr_cloud->enablePointSmooth();
 
 		}  // end of (is CPointCloud/Color registered)
 

@@ -111,19 +111,19 @@ double CVehicleVelCmd_DiffDriven::cmdVel_limits(
 
 	double speed_scale = filter_max_vw(lin_vel, ang_vel, params);
 
-	if (std::abs(lin_vel) <
-		0.01)  // i.e. new behavior is nearly a pure rotation
+	// i.e. new behavior is nearly a pure rotation
+	if (std::abs(lin_vel) < 0.01)
 	{  // thus, it's OK to blend the rotational component
 		ang_vel = beta * ang_vel + (1 - beta) * prevcmd->ang_vel;
 	}
 	else  // there is a non-zero translational component
 	{
 		// must maintain the ratio of w to v (while filtering v)
-		float ratio = ang_vel / lin_vel;
-		lin_vel = beta * lin_vel +
-				  (1 - beta) * prevcmd->lin_vel;  // blend new v value
-		ang_vel =
-			ratio * lin_vel;  // ensure new w implements expected path curvature
+		double ratio = ang_vel / lin_vel;
+		// blend new v value
+		lin_vel = beta * lin_vel + (1 - beta) * prevcmd->lin_vel;
+		// ensure new w implements expected path curvature
+		ang_vel = ratio * lin_vel;
 
 		speed_scale *= filter_max_vw(lin_vel, ang_vel, params);
 	}

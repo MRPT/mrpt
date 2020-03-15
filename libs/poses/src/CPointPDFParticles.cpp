@@ -205,9 +205,9 @@ void CPointPDFParticles::changeCoordinatesReference(
 			m_particle.d->x, m_particle.d->y, m_particle.d->z,  // In
 			pt.x, pt.y, pt.z  // Out
 		);
-		m_particle.d->x = pt.x;
-		m_particle.d->y = pt.y;
-		m_particle.d->z = pt.z;
+		m_particle.d->x = d2f(pt.x);
+		m_particle.d->y = d2f(pt.y);
+		m_particle.d->z = d2f(pt.z);
 	}
 }
 

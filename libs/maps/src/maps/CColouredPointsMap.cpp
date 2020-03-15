@@ -576,13 +576,11 @@ bool CColouredPointsMap::save3D_and_colour_to_text_file(
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (unsigned int i = 0; i < m_x.size(); i++)
+	for (size_t i = 0; i < m_x.size(); i++)
 		os::fprintf(
 			f, "%f %f %f %d %d %d\n", m_x[i], m_y[i], m_z[i],
 			(uint8_t)(255 * m_color_R[i]), (uint8_t)(255 * m_color_G[i]),
 			(uint8_t)(255 * m_color_B[i]));
-	//	os::fprintf(f,"%f %f %f %f %f %f
-	//%f\n",x[i],y[i],z[i],m_color_R[i],m_color_G[i],m_color_B[i],m_min_dist[i]);
 
 	os::fclose(f);
 	return true;

@@ -159,9 +159,10 @@ class CArchive
 		return var;
 	}
 	template <typename TYPE_TO_STORE, typename TYPE_FROM_ACTUAL>
-	void WriteAs(const TYPE_FROM_ACTUAL& value)
+	CArchive& WriteAs(const TYPE_FROM_ACTUAL& value)
 	{
 		(*this) << static_cast<TYPE_TO_STORE>(value);
+		return *this;
 	}
 	/** Writes an object to the stream.
 	 */

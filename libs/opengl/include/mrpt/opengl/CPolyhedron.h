@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt
 {
@@ -40,10 +41,30 @@ class CPolyhedron;
  *
  * \ingroup mrpt_opengl_grp
  */
-class CPolyhedron : public CRenderizableDisplayList
+class CPolyhedron : public CRenderizableShaderWireFrame,
+					public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CPolyhedron, mrpt::opengl)
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+	}
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (triangles and lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
 	/**
 	 * Struct used to store a polyhedron edge. The struct consists only of two
 	 * vertex indices, used to access the polyhedron vertex list.
@@ -86,7 +107,7 @@ class CPolyhedron : public CRenderizableDisplayList
 		/** Vector of indices to the vertex list. */
 		std::vector<uint32_t> vertices;
 		/** Normal vector. */
-		double normal[3];
+		mrpt::math::TVector3D normal;
 		/** Fast default constructor. Initializes to garbage. */
 		TPolyhedronFace() : vertices() {}
 		/** Destructor.  */
@@ -103,25 +124,20 @@ class CPolyhedron : public CRenderizableDisplayList
 	/**
 	 * List of vertices presents in the polyhedron.
 	 */
-	std::vector<mrpt::math::TPoint3D> mVertices;
+	std::vector<mrpt::math::TPoint3D> m_Vertices;
 	/**
 	 * List of polyhedron's edges.
 	 */
-	std::vector<TPolyhedronEdge> mEdges;
+	std::vector<TPolyhedronEdge> m_Edges;
 	/**
 	 * List of polyhedron's faces.
 	 */
-	std::vector<TPolyhedronFace> mFaces;
+	std::vector<TPolyhedronFace> m_Faces;
 	/**
 	 * This flag determines whether the polyhedron will be displayed as a solid
 	 * object or as a set of edges.
 	 */
-	bool mWireframe{false};
-	/**
-	 * When displaying as wireframe object, this variable stores the width of
-	 * the edges.
-	 */
-	double mLineWidth{1};
+	bool m_Wireframe{false};
 	/**
 	 * Mutable list of actual polygons, maintained for speed.
 	 */
@@ -642,49 +658,41 @@ class CPolyhedron : public CRenderizableDisplayList
 	/** @}
 	 */
 
-	/**
-	 * Render
-	 * \sa CRenderizable
-	 */
-	void render_dl() const override;
-	/**
-	 * Ray trace
-	 * \sa CRenderizable
-	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+
 	/**
 	 * Gets a list with the polyhedron's vertices.
 	 */
 	inline void getVertices(std::vector<mrpt::math::TPoint3D>& vertices) const
 	{
-		vertices = mVertices;
+		vertices = m_Vertices;
 	}
 	/**
 	 * Gets a list with the polyhedron's edges.
 	 */
 	inline void getEdges(std::vector<TPolyhedronEdge>& edges) const
 	{
-		edges = mEdges;
+		edges = m_Edges;
 	}
 	/**
 	 * Gets a list with the polyhedron's faces.
 	 */
 	inline void getFaces(std::vector<TPolyhedronFace>& faces) const
 	{
-		faces = mFaces;
+		faces = m_Faces;
 	}
 	/**
 	 * Gets the amount of vertices.
 	 */
-	inline uint32_t getNumberOfVertices() const { return mVertices.size(); }
+	inline uint32_t getNumberOfVertices() const { return m_Vertices.size(); }
 	/**
 	 * Gets the amount of edges.
 	 */
-	inline uint32_t getNumberOfEdges() const { return mEdges.size(); }
+	inline uint32_t getNumberOfEdges() const { return m_Edges.size(); }
 	/**
 	 * Gets the amount of faces.
 	 */
-	inline uint32_t getNumberOfFaces() const { return mFaces.size(); }
+	inline uint32_t getNumberOfFaces() const { return m_Faces.size(); }
 	/**
 	 * Gets a vector with each edge's length.
 	 */
@@ -702,27 +710,14 @@ class CPolyhedron : public CRenderizableDisplayList
 	/**
 	 * Returns whether the polyhedron will be rendered as a wireframe object.
 	 */
-	inline bool isWireframe() const { return mWireframe; }
+	inline bool isWireframe() const { return m_Wireframe; }
 	/**
 	 * Sets whether the polyhedron will be rendered as a wireframe object.
 	 */
 	inline void setWireframe(bool enabled = true)
 	{
-		mWireframe = enabled;
-		CRenderizableDisplayList::notifyChange();
-	}
-	/**
-	 * Gets the wireframe lines width.
-	 */
-	inline double getLineWidth() const { return mLineWidth; }
-	/**
-	 * Sets the width used to render lines, when wireframe rendering is
-	 * activated.
-	 */
-	inline void setLineWidth(double lineWidth)
-	{
-		mLineWidth = lineWidth;
-		CRenderizableDisplayList::notifyChange();
+		m_Wireframe = enabled;
+		CRenderizable::notifyChange();
 	}
 	/**
 	 * Gets the polyhedron as a set of polygons.
@@ -747,7 +742,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	 */
 	inline bool isClosed() const
 	{
-		for (size_t i = 0; i < mVertices.size(); i++)
+		for (size_t i = 0; i < m_Vertices.size(); i++)
 			if (edgesInVertex(i) != facesInVertex(i)) return false;
 		return true;
 	}
@@ -887,7 +882,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	/**
 	 * Basic empty constructor.
 	 */
-	inline CPolyhedron() : mVertices(), mEdges(), mFaces() {}
+	inline CPolyhedron() : m_Vertices(), m_Edges(), m_Faces() {}
 	/**
 	 * Basic constructor with a list of vertices and another of faces, checking
 	 * for correctness.
@@ -895,11 +890,10 @@ class CPolyhedron : public CRenderizableDisplayList
 	inline CPolyhedron(
 		const std::vector<mrpt::math::TPoint3D>& vertices,
 		const std::vector<TPolyhedronFace>& faces, bool doCheck = true)
-		: mVertices(vertices),
-		  mEdges(),
-		  mFaces(faces),
-		  mWireframe(false),
-		  mLineWidth(1),
+		: m_Vertices(vertices),
+		  m_Edges(),
+		  m_Faces(faces),
+		  m_Wireframe(false),
 		  polygonsUpToDate(false)
 	{
 		InitFromVertAndFaces(vertices, faces, doCheck);
@@ -910,7 +904,7 @@ class CPolyhedron : public CRenderizableDisplayList
 	{
 		if (doCheck && !checkConsistence(vertices, faces))
 			throw std::logic_error("Face list accesses a vertex out of range");
-		for (auto& mFace : mFaces)
+		for (auto& mFace : m_Faces)
 		{
 			if (!setNormal(mFace, doCheck))
 				throw std::logic_error("Bad face specification");

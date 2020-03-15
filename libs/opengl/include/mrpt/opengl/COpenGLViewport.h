@@ -11,20 +11,24 @@
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>
-#include <mrpt/opengl/CLight.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CTextMessageCapable.h>
+#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TLightParameters.h>
+#include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
+#include <map>
 
-namespace mrpt
-{
-namespace img
+namespace mrpt::img
 {
 class CImage;
 }
-namespace opengl
+namespace mrpt::opengl
 {
 /** A viewport within a COpenGLScene, containing a set of OpenGL objects to
  *render.
@@ -48,22 +52,20 @@ namespace opengl
  *
  * Two directional light sources at infinity are created by default, with
  *directions (-1,-1,-1) and (1,2,1), respectively.
- * All OpenGL properties of light sources are accesible via the methods:
- *setNumberOfLights(), lightsClearAll(), addLight(), and getLight().
- * Please, refer to mrpt::opengl::CLight and the standard OpenGL documentation
- *for the meaning of all light properties.
+ *
+ * Lighting parameters are accessible via lightParameters().
  *
  *  Refer to mrpt::opengl::COpenGLScene for further details.
  * \ingroup mrpt_opengl_grp
  */
 class COpenGLViewport : public mrpt::serialization::CSerializable,
-						public mrpt::system::CObservable
+						public mrpt::system::CObservable,
+						public mrpt::opengl::CTextMessageCapable
 {
 	DEFINE_SERIALIZABLE(COpenGLViewport, mrpt::opengl)
 	friend class COpenGLScene;
 
    public:
-	// -------------------------------------------------------------------
 	/** @name Set the viewport "modes"
 		@{ */
 
@@ -103,8 +105,8 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * setImageView */
 	void setNormalMode();
 
-	/** @} */  // end of Set the "viewport mode"
-	// ------------------------------------------------------
+	/** @} */
+	// end of Set the "viewport mode"
 
 	/** @name OpenGL global settings that affect rendering all objects in the
 	   scene/viewport
@@ -117,28 +119,12 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		m_OpenGL_enablePolygonNicest = enable;
 	}
 	bool isPolygonNicestEnabled() const { return m_OpenGL_enablePolygonNicest; }
-	/** Removes all lights (and disables the global "GL_LIGHTING") */
-	void lightsClearAll() { m_lights.clear(); }
-	/** Append a new light to the scene. By default there are two lights.
-	 * "GL_LIGHTING" is disabled if all lights are removed */
-	void addLight(const CLight& l) { m_lights.push_back(l); }
-	/** Allocates a number of lights, which must be correctly defined via
-	 * getLight(i), etc. */
-	void setNumberOfLights(const size_t N) { m_lights.resize(N); }
-	CLight& getLight(const size_t i)
-	{
-		ASSERT_BELOW_(i, m_lights.size());
-		return m_lights[i];
-	}
-	const CLight& getLight(const size_t i) const
-	{
-		ASSERT_BELOW_(i, m_lights.size());
-		return m_lights[i];
-	}
 
-	/** @} */  // end of OpenGL settings
+	const TLightParameters& lightParameters() const { return m_lights; }
+	TLightParameters& lightParameters() { return m_lights; }
 
-	// -------------------------------------------------------------------
+	/** @} */
+
 	/** @name Change or read viewport properties (except "viewport modes")
 		@{ */
 
@@ -188,20 +174,23 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * 0.1 - 10000)
 	 * \sa getViewportClipDistances
 	 */
-	void setViewportClipDistances(const double clip_min, const double clip_max);
+	void setViewportClipDistances(const float clip_min, const float clip_max);
 
 	/** Get the current min/max clip depth distances of the rendering frustum
 	 * (default: 0.1 - 10000)
 	 * \sa setViewportClipDistances
 	 */
-	void getViewportClipDistances(double& clip_min, double& clip_max) const;
+	void getViewportClipDistances(float& clip_min, float& clip_max) const;
 
-	/** Set the border size ("frame") of the viewport (default=0).
-	 */
+	/** Set the border size ("frame") of the viewport (default=0) */
 	inline void setBorderSize(unsigned int lineWidth)
 	{
 		m_borderWidth = lineWidth;
 	}
+	inline unsigned int getBorderSize() const { return m_borderWidth; }
+
+	void setBorderColor(const mrpt::img::TColor& c) { m_borderColor = c; }
+	const mrpt::img::TColor& getBorderColor() const { return m_borderColor; }
 
 	/** Return whether the viewport will be rendered transparent over previous
 	 * viewports.
@@ -339,18 +328,27 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		COpenGLScene* parent = nullptr,
 		const std::string& name = std::string(""));
 
+	/** Render the objects in this viewport (called from COpenGLScene) */
+	void render(const int render_width, const int render_height) const;
+
    protected:
 	/** Initializes all textures in the scene (See
-	 * opengl::CTexturedPlane::loadTextureInOpenGL)
+	 * opengl::CTexturedPlane::initializeTextures)
 	 */
-	void initializeAllTextures();
+	void initializeTextures();
 
 	/** Retrieves a list of all objects in text form.
 	 */
 	void dumpListOfObjects(std::vector<std::string>& lst);
 
-	/** Render the objects in this viewport (called from COpenGLScene only) */
-	void render(const int render_width, const int render_height) const;
+	/** Render in image mode */
+	void renderImageMode() const;
+
+	/** Render a normal scene with 3D objects */
+	void renderNormalSceneMode() const;
+
+	/** Render the viewport border, if enabled */
+	void renderViewportBorder() const;
 
 	/** The camera associated to the viewport */
 	opengl::CCamera m_camera;
@@ -368,44 +366,35 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	bool m_isTransparent{false};
 	/** Default=0, the border around the viewport. */
 	uint32_t m_borderWidth{0};
+
+	mrpt::img::TColor m_borderColor{255, 255, 255, 255};
+
 	/** The viewport position [0,1] */
 	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
 	/** The min/max clip depth distances (default: 0.1 - 10000) */
-	double m_clip_min{0.1}, m_clip_max{10000};
+	float m_clip_min = 0.1f, m_clip_max = 10000.0f;
 	bool m_custom_backgb_color{false};
 	/** used only if m_custom_backgb_color */
-	mrpt::img::TColorf m_background_color;
+	mrpt::img::TColorf m_background_color = {0.6f, 0.6f, 0.6f};
 	/** Set by setImageView */
 	bool m_isImageView{false};
-	// CRenderizable::Ptr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane
-	// used after setImageView() is called
+
 	/** The image to display, after calling \a setImageView() */
-	mrpt::img::CImage::Ptr m_imageview_img;
+	mrpt::opengl::CTexturedPlane::Ptr m_imageview_plane;
 
-	struct TLastProjectiveMatrixInfo
-	{
-		TLastProjectiveMatrixInfo()
-			: eye(0, 0, 0), pointing(0, 0, 0), up(0, 0, 0)
+	mutable mrpt::opengl::CSetOfLines::Ptr m_borderLines;
 
-		{
-		}
-		/** The camera is here. */
-		mrpt::math::TPoint3D eye;
-		/** The camera points to here */
-		mrpt::math::TPoint3D pointing;
-		/** Up vector of the camera. */
-		mrpt::math::TPoint3D up;
-		/** In pixels. This may be smaller than the total render window. */
-		size_t viewport_width{640}, viewport_height{480};
-		/** FOV in degrees. */
-		float FOV{30};
-		/** Camera elev & azimuth, in radians. */
-		float azimuth{0}, elev{0};
-		float zoom{1};
-		bool is_projective{true};  // true: projective, false: ortho
-	};
 	/** Info updated with each "render()" and used in "get3DRayForPixelCoord" */
-	mutable TLastProjectiveMatrixInfo m_lastProjMat;
+	mutable TRenderMatrices m_state;
+
+	/** Default shader program */
+	mutable std::map<shader_id_t, mrpt::opengl::Program::Ptr> m_shaders;
+
+	/** Load all MPRT predefined shader programs into m_shaders */
+	void loadDefaultShaders() const;
+
+	/** Unload shader programs in m_shaders */
+	void unloadShaders();
 
 	/** The list of objects that comprise the 3D scene.
 	 *  Objects are automatically deleted when calling "clear" or in the
@@ -418,8 +407,12 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	// OpenGL global settings:
 	bool m_OpenGL_enablePolygonNicest{true};
 
-	std::vector<CLight> m_lights;
+	TLightParameters m_lights;
+
+	/** Renders all messages in the underlying class CTextMessageCapable */
+	void renderTextMessages() const;
 };
+
 /**
  * Inserts an openGL object into a viewport. Allows call chaining.
  * \sa mrpt::opengl::COpenGLViewport::insert
@@ -449,21 +442,11 @@ inline COpenGLViewport::Ptr& operator<<(
  * viewport and setting the GL_PROJECTION matrix, and before calling the scene
  * OpenGL drawing primitives.
  *
- *  While handling this event you can call OpenGL glBegin(),glEnd(),gl*
- * functions or those in mrpt::opengl::gl_utils to draw stuff *in the back* of
- * the normal
- *   objects contained in the COpenGLScene.
+ * While handling this event you can call OpenGL glDraw(), etc.
  *
- *  After processing this event, COpenGLViewport will change the OpenGL matrix
- * mode into "GL_MODELVIEW" and load an identity matrix to continue
- *   rendering the scene objects as usual. Any change done to the GL_PROJECTION
- * will have effects, so do a glPushMatrix()/glPopMatrix() if that is not your
- * intention.
- *
- *
- *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely
- * be invoked from an internal GUI thread of MRPT,
- *    so all your code in the handler must be thread safe.
+ * IMPORTANTE NOTICE: Event handlers in your observer class will most likely be
+ * invoked from an internal GUI thread of MRPT, so all your code in the handler
+ * must be thread safe.
  */
 class mrptEventGLPreRender : public mrpt::system::mrptEvent
 {
@@ -507,6 +490,4 @@ class mrptEventGLPostRender : public mrpt::system::mrptEvent
 
 /** @} */
 
-}  // namespace opengl
-
-}  // namespace mrpt
+}  // namespace mrpt::opengl

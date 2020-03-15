@@ -9,7 +9,9 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -23,7 +25,7 @@ enum predefined_voxel_sets_t
  *mrpt::maps::COctoMap).
  *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap
  *package, but
- *  relying on MRPT's CRenderizableDisplayList so there's no need to manually
+ *  relying on MRPT's CRenderizable so there's no need to manually
  *cache the rendering of OpenGL primitives.
  *
  *  Normally users call mrpt::maps::COctoMap::getAs3DObject() to obtain a
@@ -64,7 +66,9 @@ enum predefined_voxel_sets_t
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
-class COctoMapVoxels : public CRenderizableDisplayList
+class COctoMapVoxels : public CRenderizableShaderTriangles,
+					   public CRenderizableShaderWireFrame,
+					   public CRenderizableShaderPoints
 {
 	DEFINE_SERIALIZABLE(COctoMapVoxels, mrpt::opengl)
    public:
@@ -94,13 +98,13 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	/** The info of each of the voxels */
 	struct TVoxel
 	{
-		mrpt::math::TPoint3D coords;
+		mrpt::math::TPoint3Df coords;
 		double side_length;
 		mrpt::img::TColor color;
 
 		TVoxel() = default;
 		TVoxel(
-			const mrpt::math::TPoint3D& coords_, const double side_length_,
+			const mrpt::math::TPoint3Df& coords_, const double side_length_,
 			mrpt::img::TColor color_)
 			: coords(coords_), side_length(side_length_), color(color_)
 		{
@@ -111,11 +115,12 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	struct TGridCube
 	{
 		/** opposite corners of the cube */
-		mrpt::math::TPoint3D min, max;
+		mrpt::math::TPoint3Df min, max;
 
 		TGridCube() = default;
 		TGridCube(
-			const mrpt::math::TPoint3D& min_, const mrpt::math::TPoint3D& max_)
+			const mrpt::math::TPoint3Df& min_,
+			const mrpt::math::TPoint3Df& max_)
 			: min(min_), max(max_)
 		{
 		}
@@ -146,6 +151,28 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	visualization_mode_t m_visual_mode{COctoMapVoxels::COLOR_FROM_OCCUPANCY};
 
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (triangles and lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::POINTS,
+				DefaultShaderID::TRIANGLES};
+	}
+	void onUpdateBuffers_Points() override;
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+		CRenderizableShaderPoints::freeOpenGLResources();
+	}
+	/** @} */
+
 	/** Clears everything */
 	void clear();
 
@@ -154,7 +181,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	inline void setVisualizationMode(visualization_mode_t mode)
 	{
 		m_visual_mode = mode;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline visualization_mode_t getVisualizationMode() const
 	{
@@ -165,7 +192,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	inline void enableLights(bool enable)
 	{
 		m_enable_lighting = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline bool areLightsEnabled() const { return m_enable_lighting; }
 	/** By default, the alpha (transparency) component of voxel cubes is taken
@@ -173,7 +200,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	inline void enableCubeTransparency(bool enable)
 	{
 		m_enable_cube_transparency = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline bool isCubeTransparencyEnabled() const
 	{
@@ -184,7 +211,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	inline void showGridLines(bool show)
 	{
 		m_show_grids = show;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline bool areGridLinesVisible() const { return m_show_grids; }
 	/** Shows/hides the voxels (voxel_set is a 0-based index for the set of
@@ -193,7 +220,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	{
 		ASSERT_(voxel_set < m_voxel_sets.size());
 		m_voxel_sets[voxel_set].visible = show;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline bool areVoxelsVisible(unsigned int voxel_set) const
 	{
@@ -206,14 +233,14 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	inline void showVoxelsAsPoints(const bool enable)
 	{
 		m_showVoxelsAsPoints = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline bool areVoxelsShownAsPoints() const { return m_showVoxelsAsPoints; }
 	/** Only used when showVoxelsAsPoints() is enabled.  */
 	inline void setVoxelAsPointsSize(float pointSize)
 	{
 		m_showVoxelsAsPointsSize = pointSize;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline float getVoxelAsPointsSize() const
 	{
@@ -224,14 +251,14 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	inline void setGridLinesWidth(float w)
 	{
 		m_grid_width = w;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	/** Gets the width of grid lines */
 	inline float getGridLinesWidth() const { return m_grid_width; }
 	inline void setGridLinesColor(const mrpt::img::TColor& color)
 	{
 		m_grid_color = color;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline const mrpt::img::TColor& getGridLinesColor() const
 	{
@@ -257,18 +284,18 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	inline void resizeGridCubes(const size_t nCubes)
 	{
 		m_grid_cubes.resize(nCubes);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void resizeVoxelSets(const size_t nVoxelSets)
 	{
 		m_voxel_sets.resize(nVoxelSets);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	inline void resizeVoxels(const size_t set_index, const size_t nVoxels)
 	{
 		ASSERT_(set_index < m_voxel_sets.size());
 		m_voxel_sets[set_index].voxels.resize(nVoxels);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	inline void reserveGridCubes(const size_t nCubes)
@@ -279,13 +306,13 @@ class COctoMapVoxels : public CRenderizableDisplayList
 	{
 		ASSERT_(set_index < m_voxel_sets.size());
 		m_voxel_sets[set_index].voxels.reserve(nVoxels);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	inline TGridCube& getGridCubeRef(const size_t idx)
 	{
 		ASSERTDEB_(idx < m_grid_cubes.size());
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		return m_grid_cubes[idx];
 	}
 	inline const TGridCube& getGridCube(const size_t idx) const
@@ -299,7 +326,7 @@ class COctoMapVoxels : public CRenderizableDisplayList
 		ASSERTDEB_(
 			set_index < m_voxel_sets.size() &&
 			idx < m_voxel_sets[set_index].voxels.size());
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		return m_voxel_sets[set_index].voxels[idx];
 	}
 	inline const TVoxel& getVoxel(
@@ -308,29 +335,24 @@ class COctoMapVoxels : public CRenderizableDisplayList
 		ASSERTDEB_(
 			set_index < m_voxel_sets.size() &&
 			idx < m_voxel_sets[set_index].voxels.size());
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		return m_voxel_sets[set_index].voxels[idx];
 	}
 
 	inline void push_back_GridCube(const TGridCube& c)
 	{
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		m_grid_cubes.push_back(c);
 	}
 	inline void push_back_Voxel(const size_t set_index, const TVoxel& v)
 	{
 		ASSERTDEB_(set_index < m_voxel_sets.size());
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 		m_voxel_sets[set_index].voxels.push_back(v);
 	}
 
 	void sort_voxels_by_z();
 
-	/** Render */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;

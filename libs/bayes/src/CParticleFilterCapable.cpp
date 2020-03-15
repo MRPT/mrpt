@@ -499,7 +499,7 @@ size_t CParticleFilterCapable::fastDrawSample(
 				"resamplingMethod must be 'prMultinomial' for a dynamic number "
 				"of particles!");
 
-		double draw = getRandomGenerator().drawUniform(0, 0.999999);
+		double draw = getRandomGenerator().drawUniform(0.0, 0.999999);
 		double CDF_next = -1.;
 		double CDF = -1.;
 

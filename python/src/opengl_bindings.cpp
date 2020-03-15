@@ -9,7 +9,8 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid2D.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizable.h>
@@ -93,18 +94,21 @@ CSetOfLines::Ptr CSetOfLines_Create()
 }
 // end of CSetOfLines
 
-// CEllipsoid
-CEllipsoid::Ptr CEllipsoid_Create() { return std::make_shared<CEllipsoid>(); }
-void CEllipsoid_setFromPosePDF(CEllipsoid& self, CPose3DPDF& posePDF)
+// CEllipsoid3D
+CEllipsoid3D::Ptr CEllipsoid3D_Create()
+{
+	return std::make_shared<CEllipsoid3D>();
+}
+void CEllipsoid3D_setFromPosePDF(CEllipsoid3D& self, CPose3DPDF& posePDF)
 {
 	CPose3D meanPose;
 	CMatrixDouble66 COV;
 	posePDF.getCovarianceAndMean(COV, meanPose);
 	CMatrixDouble33 COV3 = COV.extractMatrix<3, 3>(0, 0);
 	self.setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
-	self.setCovMatrix(COV3, COV3(2, 2) == 0 ? 2 : 3);
+	self.setCovMatrix(COV3);
 }
-// end of CEllipsoid
+// end of CEllipsoid3D
 
 // CGridPlaneXY
 CGridPlaneXY::Ptr CGridPlaneXY_Create(
@@ -123,7 +127,7 @@ MAKE_PTR_CTX(COpenGLScene)
 MAKE_PTR_CTX(CRenderizable)
 MAKE_PTR_CTX(CSetOfObjects)
 MAKE_PTR_CTX(CSetOfLines)
-MAKE_PTR_CTX(CEllipsoid)
+MAKE_PTR_CTX(CEllipsoid3D)
 MAKE_PTR_CTX(CGridPlaneXY)
 
 // exporter
@@ -227,20 +231,20 @@ void export_opengl()
 				"bounds.");
 	}
 
-	// CEllipsoid
+	// CEllipsoid3D
 	{
-		MAKE_PTR(CEllipsoid)
+		MAKE_PTR(CEllipsoid3D)
 
-		class_<CEllipsoid, boost::noncopyable, bases<CRenderizable>>(
-			"CEllipsoid",
+		class_<CEllipsoid3D, boost::noncopyable, bases<CRenderizable>>(
+			"CEllipsoid3D",
 			"A 2D ellipse or 3D ellipsoid, depending on the size of the m_cov "
 			"matrix (2x2 or 3x3).",
 			no_init)
 			.def(
-				"Create", &CEllipsoid_Create,
+				"Create", &CEllipsoid3D_Create,
 				"Create smart pointer from class.")
 			.staticmethod("Create")
-			.def("setFromPosePDF", CEllipsoid_setFromPosePDF);
+			.def("setFromPosePDF", CEllipsoid3D_setFromPosePDF);
 	}
 
 	// COpenGLScene

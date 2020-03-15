@@ -43,7 +43,7 @@ void CMyGLCanvas::OnPreRender()
 void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc) {}
 void CMyGLCanvas::OnPostRender()
 {
-	// Show credits on the screen? renderTextBitmap(20, 20, "" );
+	// Show credits on the screen?
 }
 
 #endif

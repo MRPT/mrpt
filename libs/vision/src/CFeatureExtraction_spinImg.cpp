@@ -52,7 +52,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 
 	// constant for passing distances in pixels [0,R] to histogram index
 	// [0,HIST_N_DIS-1]:
-	const float k_dis2idx = (HIST_N_DIS - 1) / static_cast<float>(R);
+	const float k_dis2idx = (HIST_N_DIS - 1) / d2f(R);
 	const float k_idx2dis = 1.0f / k_dis2idx;
 
 	// The Gaussian kernel used below is approximated up to a given distance

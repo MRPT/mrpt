@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CObserver.h>
 #include <mrpt/system/CTicTac.h>
@@ -30,8 +30,6 @@ using namespace mrpt::system;
 struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 {
 	opengl::CSphere::Ptr ball_obj;  // The ball moving in the scene
-	bool showing_help{false}, hiding_help{false};
-	mrpt::system::CTicTac tim_show_start, tim_show_end;
 
 	TMyExtraRenderingStuff() {}
 	void OnEvent(const mrptEvent& e) override
@@ -45,50 +43,6 @@ struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 		{
 			// const mrptEventGLPostRender* ev =
 			// e.getAs<mrptEventGLPostRender>();
-
-			// Show small message in the corner:
-			mrpt::opengl::gl_utils::renderMessageBox(
-				0.7f, 0.9f,  // x,y (in screen "ratios")
-				0.29f, 0.09f,  // width, height (in screen "ratios")
-				"Press 'h' for help",
-				0.02f  // text size
-			);
-
-			// Also showing help?
-			if (showing_help || hiding_help)
-			{
-				static const double TRANSP_ANIMATION_TIME_SEC = 0.5;
-
-				const double show_tim = tim_show_start.Tac();
-				const double hide_tim = tim_show_end.Tac();
-
-				const double tranparency =
-					hiding_help
-						? 1.0 - std::min(
-									1.0, hide_tim / TRANSP_ANIMATION_TIME_SEC)
-						: std::min(1.0, show_tim / TRANSP_ANIMATION_TIME_SEC);
-
-				mrpt::opengl::gl_utils::renderMessageBox(
-					0.05f, 0.05f,  // x,y (in screen "ratios")
-					0.90f, 0.90f,  // width, height (in screen "ratios")
-					"These are the supported commands:\n"
-					" - 'h': Toogle help view\n"
-					" - '<-' and '->': Rotate camera\n"
-					" - 'Alt+Enter': Toogle fullscreen\n"
-					" - 'ESC': Quit",
-					0.05f,  // text size
-					mrpt::img::TColor(
-						190, 190, 190, 200 * tranparency),  // background
-					mrpt::img::TColor(0, 0, 0, 200 * tranparency),  // border
-					mrpt::img::TColor(200, 0, 0, 150 * tranparency),  // text
-					6.0f,  // border width
-					"serif",  // text font
-					mrpt::opengl::NICE  // text style
-				);
-
-				if (hide_tim > TRANSP_ANIMATION_TIME_SEC && hiding_help)
-					hiding_help = false;
-			}
 		}
 	}
 };
@@ -114,7 +68,7 @@ void TestDisplay3D()
 	{
 		opengl::CGridPlaneXY::Ptr obj =
 			opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
-		obj->setColor(0.8, 0.8, 0.8);
+		obj->setColor(0.8f, 0.8f, 0.8f);
 		theScene->insert(obj);
 	}
 
@@ -145,12 +99,12 @@ void TestDisplay3D()
 	win.unlockAccess3DScene();
 
 	// Texts:
-	win.addTextMessage(
-		0.01, 0.85, "This is a 2D message", mrpt::img::TColorf(1, 1, 1), 0,
-		MRPT_GLUT_BITMAP_TIMES_ROMAN_10);
+	win.addTextMessage(0.01, 0.85, "This is a 2D message", 0 /*id */);
 
 	win.setCameraElevationDeg(25.0f);
 	// win.setCameraProjective(false);
+
+	win.addTextMessage(0.7, 0.9, "Press 'h' for help", 1 /*id*/);
 
 	cout << endl;
 	cout << "Control with mouse or keyboard. Valid keys:" << endl;
@@ -178,8 +132,7 @@ void TestDisplay3D()
 
 		// Update the texts on the gl display:
 		win.addTextMessage(
-			5, 5, mrpt::format("FPS=%5.02f", win.getRenderingFPS()),
-			mrpt::img::TColorf(1, 1, 1), 0, MRPT_GLUT_BITMAP_HELVETICA_18);
+			5, 5, mrpt::format("FPS=%5.02f", win.getRenderingFPS()), 0);
 
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 		win.unlockAccess3DScene();
@@ -200,17 +153,12 @@ void TestDisplay3D()
 
 			if (key == 'h' || key == 'H')
 			{
-				if (!my_extra_rendering.showing_help)
-				{
-					my_extra_rendering.tim_show_start.Tic();
-					my_extra_rendering.showing_help = true;
-				}
-				else
-				{
-					my_extra_rendering.tim_show_end.Tic();
-					my_extra_rendering.showing_help = false;
-					my_extra_rendering.hiding_help = true;
-				}
+				std::cout << "These are the supported commands:\n"
+							 " - 'h': Toogle help view\n"
+							 " - '<-' and '->': Rotate camera\n"
+							 " - 'Alt+Enter': Toogle fullscreen\n"
+							 " - 'ESC': Quit"
+							 "\n";
 			}
 
 			if (key == MRPTK_RIGHT)
@@ -229,9 +177,8 @@ int main()
 	try
 	{
 		TestDisplay3D();
-
-		std::this_thread::sleep_for(
-			50ms);  // leave time for the window to close
+		// leave time for the window to close
+		std::this_thread::sleep_for(50ms);
 		return 0;
 	}
 	catch (const std::exception& e)

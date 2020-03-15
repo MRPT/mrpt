@@ -15,26 +15,16 @@
 
 namespace mrpt::opengl
 {
-/** Existing fonts for 2D texts in mrpt::opengl methods.
- * \sa mrpt::opengl::CWxGLCanvasBase::renderTextBitmap
- * \ingroup mrpt_opengl_grp
- */
-enum TOpenGLFont
-{
-	MRPT_GLUT_BITMAP_NONE = -1,
-	MRPT_GLUT_BITMAP_TIMES_ROMAN_10 = 0,
-	MRPT_GLUT_BITMAP_TIMES_ROMAN_24 = 1,
-	MRPT_GLUT_BITMAP_HELVETICA_10 = 2,
-	MRPT_GLUT_BITMAP_HELVETICA_12 = 3,
-	MRPT_GLUT_BITMAP_HELVETICA_18 = 4
-};
-
 /** Different style for vectorized font rendering \sa T2DTextData */
 enum TOpenGLFontStyle
 {
 	FILL = 0,  ///< renders glyphs as filled polygons
 	OUTLINE = 1,  ///< renders glyphs as outlines with GL_LINES
-	NICE = 2  ///< renders glyphs filled with antialiased outlines
+
+	/** This was "renders glyphs filled with antialiased outlines", but since
+	   antialiased is not properly implemented in mrtp2 since the port to
+	   OpenGL3, NICE is for now an alias for FILL. */
+	NICE = 2
 };
 
 /** A description of a bitmapped or vectorized text font.
@@ -45,31 +35,27 @@ enum TOpenGLFontStyle
  */
 struct TFontParams
 {
-	TFontParams() : vfont_name("sans") {}
-	mrpt::img::TColorf color;
+	TFontParams() = default;
 
-	bool draw_shadow{false};
-	mrpt::img::TColorf shadow_color;
-
-	/** @name Bitmapped font params
-		@{ */
-	mrpt::opengl::TOpenGLFont font{MRPT_GLUT_BITMAP_NONE};
-	/** @} */
-
-	/** @name Vectorized font params - Applicable only if
-	   font==MRPT_GLUT_BITMAP_NONE
-		@{ */
 	/** Vectorized font name ("sans","mono","serif") */
-	std::string vfont_name;
-	/** Size of characters */
-	double vfont_scale{10};
-	/** (default: NICE) See TOpenGLFontStyle. */
-	TOpenGLFontStyle vfont_style{};
+	std::string vfont_name = "mono";
+
+	/** Size of characters [pixels] */
+	float vfont_scale = 10.0f;
+
+	mrpt::img::TColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+	bool draw_shadow = false;
+	mrpt::img::TColorf shadow_color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+	/** (default: FILL) See TOpenGLFontStyle. */
+	TOpenGLFontStyle vfont_style = opengl::FILL;
+
 	/** (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText */
-	double vfont_spacing{1.5};
+	double vfont_spacing = 1.5;
+
 	/** (default: 0.1) Refer to mrpt::opengl::gl_utils::glDrawText */
-	double vfont_kerning{0.1};
-	/** @} */
+	double vfont_kerning = 0.1;
 };
 
 /** An auxiliary struct for holding a list of text messages in some mrpt::opengl

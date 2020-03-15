@@ -409,12 +409,12 @@ void mrpt::topography::path_from_rtk_gps(
 					// Create the correspondence:
 					corrs.push_back(TMatchingPair(
 						k, k,  // Indices
-						P.x, P.y, P.z,  // "This"/Global coords
-						g_it->second->sensorPose.x(),
-						g_it->second->sensorPose.y(),
-						g_it->second->sensorPose
-							.z()  // "other"/local coordinates
-						));
+						// "This"/Global coords
+						d2f(P.x), d2f(P.y), d2f(P.z),
+						// "other"/local coordinates
+						d2f(g_it->second->sensorPose.x()),
+						d2f(g_it->second->sensorPose.y()),
+						d2f(g_it->second->sensorPose.z())));
 
 					X[k] = P.x;
 					Y[k] = P.y;

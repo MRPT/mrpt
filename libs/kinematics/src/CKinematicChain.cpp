@@ -217,7 +217,7 @@ void CKinematicChain::update3DObject(
 			mrpt::opengl::CCylinder::Ptr glCyl =
 				std::dynamic_pointer_cast<mrpt::opengl::CCylinder>(
 					gl_objs->getByName("cyl.d"));
-			const double d = m_links[i].d;
+			const float d = mrpt::d2f(m_links[i].d);
 			glCyl->setHeight(d);
 		}
 
@@ -226,8 +226,7 @@ void CKinematicChain::update3DObject(
 			mrpt::opengl::CCylinder::Ptr glCyl2 =
 				std::dynamic_pointer_cast<mrpt::opengl::CCylinder>(
 					gl_objs->getByName("cyl.a"));
-			const double a = m_links[i - 1].a;
-			// glCyl2->setPose( mrpt::poses::CPose3D(0,0,d, 0, 90.0_deg,0) );
+			const float a = mrpt::d2f(m_links[i - 1].a);
 			glCyl2->setHeight(-a);
 		}
 	}

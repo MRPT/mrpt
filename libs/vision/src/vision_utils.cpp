@@ -1896,25 +1896,6 @@ void vision::computeStereoRectificationMaps(
 #endif
 }  // end computeStereoRectificationMaps
 
-/*-------------------------------------------------------------
-					TROI Constructors
--------------------------------------------------------------*/
-vision::TROI::TROI(float x1, float x2, float y1, float y2, float z1, float z2)
-	: xMin(x1), xMax(x2), yMin(y1), yMax(y2), zMin(z1), zMax(z2)
-{
-}
-
-/*-------------------------------------------------------------
-					TImageROI Constructors
--------------------------------------------------------------*/
-vision::TImageROI::TImageROI(float x1, float x2, float y1, float y2)
-	: xMin(x1), xMax(x2), yMin(y1), yMax(y2)
-{
-}
-
-/*-------------------------------------------------------------
-			TStereoSystemParams: constructor
--------------------------------------------------------------*/
 TStereoSystemParams::TStereoSystemParams()
 
 {

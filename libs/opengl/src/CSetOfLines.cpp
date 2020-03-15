@@ -13,25 +13,48 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CSetOfLines, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CSetOfLines, CRenderizableShaderWireFrame, mrpt::opengl)
 
 /** Constructor */
-CSetOfLines::CSetOfLines() : mSegments() {}
+CSetOfLines::CSetOfLines()
+{
+	// Override default pointsize=1 in points shader:
+	CRenderizableShaderPoints::m_pointSize = 0;
+}
+
 /** Constructor with a initial set of lines. */
 CSetOfLines::CSetOfLines(const std::vector<TSegment3D>& sgms, bool antiAliasing)
-	: mSegments(sgms),
-	  mLineWidth(1.0),
-	  m_antiAliasing(antiAliasing),
-	  m_verticesPointSize(.0f)
+	: m_Segments(sgms)
 {
+	// Override default pointsize=1 in points shader:
+	CRenderizableShaderPoints::m_pointSize = 0;
+
+	m_lineWidth = 1;
+	m_antiAliasing = antiAliasing;
+}
+
+void CSetOfLines::render(const RenderContext& rc) const
+{
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::POINTS:
+			CRenderizableShaderPoints::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CSetOfLines::renderUpdateBuffers() const
+{
+	CRenderizableShaderPoints::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
 }
 
 /*---------------------------------------------------------------
@@ -41,88 +64,65 @@ void CSetOfLines::setLineByIndex(
 	size_t index, const mrpt::math::TSegment3D& segm)
 {
 	MRPT_START
-	if (index >= mSegments.size()) THROW_EXCEPTION("Index out of bounds");
-	CRenderizableDisplayList::notifyChange();
-	mSegments[index] = segm;
+	if (index >= m_Segments.size()) THROW_EXCEPTION("Index out of bounds");
+	CRenderizable::notifyChange();
+	m_Segments[index] = segm;
 	MRPT_END
 }
 
-float CSetOfLines::getVerticesPointSize() const { return m_verticesPointSize; }
+float CSetOfLines::getVerticesPointSize() const { return m_pointSize; }
 void CSetOfLines::setVerticesPointSize(const float size_points)
 {
-	m_verticesPointSize = size_points;
-	CRenderizableDisplayList::notifyChange();
+	m_pointSize = size_points;
+	CRenderizable::notifyChange();
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CSetOfLines::render_dl() const
+void CSetOfLines::onUpdateBuffers_Wireframe()
 {
-#if MRPT_HAS_OPENGL_GLUT
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+	vbd.reserve(m_Segments.size() * 2);
 
-	// Enable antialiasing:
-	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
-	if (m_antiAliasing || m_color.A != 255)
+	for (const auto& segment : m_Segments)
 	{
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-	}
-	if (m_antiAliasing) glEnable(GL_LINE_SMOOTH);
-	glLineWidth(mLineWidth);
-	checkOpenGLError();
-
-	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-	glBegin(GL_LINES);
-	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
-	for (const auto& mSegment : mSegments)
-	{
-		glVertex3d(mSegment.point1.x, mSegment.point1.y, mSegment.point1.z);
-		glVertex3d(mSegment.point2.x, mSegment.point2.y, mSegment.point2.z);
-	}
-	glEnd();
-	checkOpenGLError();
-
-	// Draw vertices?
-	if (m_verticesPointSize > 0)
-	{
-		glPointSize(m_verticesPointSize);
-		if (m_antiAliasing)
-			glEnable(GL_POINT_SMOOTH);
-		else
-			glDisable(GL_POINT_SMOOTH);
-
-		glBegin(GL_POINTS);
-		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
-		bool first = true;
-		for (const auto& seg : mSegments)
-		{
-			if (first)
-			{
-				glVertex3d(seg.point1.x, seg.point1.y, seg.point1.z);
-				first = false;
-			}
-			glVertex3d(seg.point2.x, seg.point2.y, seg.point2.z);
-		}
-
-		glEnd();
+		vbd.emplace_back(segment.point1);
+		vbd.emplace_back(segment.point2);
 	}
 
-	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
+	// The same color to all vertices:
+	cbd.assign(vbd.size(), m_color);
+}
 
-	// End of antialiasing:
-	glPopAttrib();
+void CSetOfLines::onUpdateBuffers_Points()
+{
+	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	vbd.clear();
+	cbd.clear();
 
-#endif
+	// Only draw points if they are enabled:
+	if (m_pointSize <= .0f) return;
+
+	vbd.reserve(m_Segments.size() * 2);
+
+	for (const auto& segment : m_Segments)
+	{
+		vbd.emplace_back(segment.point1);
+		vbd.emplace_back(segment.point2);
+	}
+
+	// The same color to all vertices:
+	cbd.assign(vbd.size(), m_color);
 }
 
 uint8_t CSetOfLines::serializeGetVersion() const { return 4; }
 void CSetOfLines::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-	out << mSegments << mLineWidth;
+	out << m_Segments << m_lineWidth;
 	out << m_antiAliasing;  // Added in v3
-	out << m_verticesPointSize;  // v4
+	CRenderizableShaderPoints::params_serialize(out);  // v4
 }
 
 void CSetOfLines::serializeFrom(
@@ -137,19 +137,19 @@ void CSetOfLines::serializeFrom(
 			CVectorFloat x0, y0, z0, x1, y1, z1;
 			in >> x0 >> y0 >> z0 >> x1 >> y1 >> z1;
 			if (version >= 1)
-				in >> mLineWidth;
+				in >> m_lineWidth;
 			else
-				mLineWidth = 1;
+				m_lineWidth = 1;
 			size_t N = x0.size();
-			mSegments.resize(N);
+			m_Segments.resize(N);
 			for (size_t i = 0; i < N; i++)
 			{
-				mSegments[i][0][0] = x0[i];
-				mSegments[i][0][1] = y0[i];
-				mSegments[i][0][2] = z0[i];
-				mSegments[i][1][0] = x1[i];
-				mSegments[i][1][1] = y1[i];
-				mSegments[i][1][2] = z1[i];
+				m_Segments[i][0][0] = x0[i];
+				m_Segments[i][0][1] = y0[i];
+				m_Segments[i][0][2] = z0[i];
+				m_Segments[i][1][0] = x1[i];
+				m_Segments[i][1][1] = y1[i];
+				m_Segments[i][1][2] = z1[i];
 			}
 		}
 		break;
@@ -158,22 +158,22 @@ void CSetOfLines::serializeFrom(
 		case 4:
 		{
 			readFromStreamRender(in);
-			in >> mSegments;
-			in >> mLineWidth;
+			in >> m_Segments;
+			in >> m_lineWidth;
 			if (version >= 3)
 				in >> m_antiAliasing;
 			else
 				m_antiAliasing = true;
 			if (version >= 4)
-				in >> m_verticesPointSize;
+				CRenderizableShaderPoints::params_deserialize(in);
 			else
-				m_verticesPointSize = .0f;
+				m_pointSize = .0f;
 		}
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CSetOfLines::getBoundingBox(
@@ -187,7 +187,7 @@ void CSetOfLines::getBoundingBox(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (const auto& s : mSegments)
+	for (const auto& s : m_Segments)
 	{
 		for (size_t p = 0; p < 2; p++)
 		{
@@ -209,9 +209,9 @@ void CSetOfLines::getLineByIndex(
 	size_t index, double& x0, double& y0, double& z0, double& x1, double& y1,
 	double& z1) const
 {
-	ASSERT_(index < mSegments.size());
-	const mrpt::math::TPoint3D& p0 = mSegments[index].point1;
-	const mrpt::math::TPoint3D& p1 = mSegments[index].point2;
+	ASSERT_(index < m_Segments.size());
+	const mrpt::math::TPoint3D& p0 = m_Segments[index].point1;
+	const mrpt::math::TPoint3D& p1 = m_Segments[index].point2;
 	x0 = p0.x;
 	y0 = p0.y;
 	z0 = p0.z;

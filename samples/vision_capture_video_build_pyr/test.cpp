@@ -99,11 +99,8 @@ void TestVideoBuildPyr()
 	win.addTextMessage(
 		0.51, 5,  // X,Y<=1 means coordinates are factors over the entire
 		// viewport area.
-		"Keys: 's'=Smoothing, 'g': Grayscale 'f': Features", TColorf(.8, .8, 0),
-		"sans", 10,  // font name & size
-		mrpt::opengl::FILL,
-		10  // An arbitrary ID to always overwrite the same, previous 2D text
-		// message
+		"Keys: 's'=Smoothing, 'g': Grayscale 'f': Features",
+		10  // An arbitrary ID
 	);
 
 	// The image pyramid: Initially empty
@@ -165,10 +162,7 @@ void TestVideoBuildPyr()
 						"Smooth=%i Grayscale=%i Features=%i",
 						int(do_smooth ? 1 : 0), int(do_grayscale ? 1 : 0),
 						int(do_features ? 1 : 0)),
-					TColorf(.8, .8, 0), "sans", 10,  // font name & size
-					mrpt::opengl::FILL,
-					11  // An arbitrary ID to always overwrite the same,
-					// previous 2D text message
+					11  // An arbitrary ID
 				);
 
 				win.unlockAccess3DScene();

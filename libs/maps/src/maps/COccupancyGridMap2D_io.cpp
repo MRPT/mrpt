@@ -141,8 +141,6 @@ void COccupancyGridMap2D::serializeFrom(
 			float new_x_min, new_x_max, new_y_min, new_y_max;
 			float new_resolution;
 
-			// resetFeaturesCache();
-
 			in >> new_size_x >> new_size_y >> new_x_min >> new_x_max >>
 				new_y_min >> new_y_max >> new_resolution;
 

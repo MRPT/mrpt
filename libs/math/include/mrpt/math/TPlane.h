@@ -51,8 +51,6 @@ struct TPlane
 	 */
 	double distance(const TLine3D& line) const;
 	/** Get plane's normal vector */
-	void getNormalVector(double (&vec)[3]) const;
-	/// \overload
 	TVector3D getNormalVector() const;
 	/**
 	 * Unitarize normal vector.
@@ -61,7 +59,7 @@ struct TPlane
 	void getAsPose3D(mrpt::math::TPose3D& outPose) const;
 	void getAsPose3DForcingOrigin(const TPoint3D& center, TPose3D& pose) const;
 	/** Get normal vector */
-	void getUnitaryNormalVector(double (&vec)[3]) const;
+	TVector3D getUnitaryNormalVector() const;
 	/** Defines a plane which contains these three points.
 	 * \throw std::logic_error if the points are linearly dependants.
 	 */

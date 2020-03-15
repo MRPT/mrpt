@@ -328,9 +328,9 @@ class CPose3D : public CPose<CPose3D, 6>,
 	{
 		double ggx, ggy, ggz;
 		composePoint(lx, ly, lz, ggx, ggy, ggz);
-		gx = static_cast<float>(ggx);
-		gy = static_cast<float>(ggy);
-		gz = static_cast<float>(ggz);
+		gx = d2f(ggx);
+		gy = d2f(ggy);
+		gz = d2f(ggz);
 	}
 
 	/** Rotates a vector (i.e. like composePoint(), but ignoring translation) */

@@ -14,63 +14,91 @@
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CCylinder, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CCylinder, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CCylinder::render_dl() const
+void CCylinder::onUpdateBuffers_Triangles()
 {
-#if MRPT_HAS_OPENGL_GLUT
-	glEnable(GL_BLEND);
-	checkOpenGLError();
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	checkOpenGLError();
-	GLUquadricObj* obj = gluNewQuadric();
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
 
-	// This is required to draw cylinders of negative height.
-	const float absHeight = std::abs(mHeight);
-	if (mHeight < 0)
+	// precomputed table:
+	ASSERT_ABOVE_(m_slices, 2);
+
+	const float dAng = 2 * M_PIf / m_slices;
+	float a = 0;
+	// unit circle points: cos(ang),sin(ang)
+	std::vector<mrpt::math::TPoint2Df> circle(m_slices);
+	for (unsigned int i = 0; i < m_slices; i++, a += dAng)
 	{
-		glPushMatrix();
-		glTranslatef(0, 0, mHeight);
+		circle[i].x = cos(a);
+		circle[i].y = sin(a);
 	}
 
-	gluCylinder(obj, mBaseRadius, mTopRadius, absHeight, mSlices, mStacks);
+	const float r0 = m_baseRadius, r1 = m_topRadius;
 
-	if (mHeight < 0) glPopMatrix();
+	const float wall_tilt = std::atan2(r0 - r1, m_height);
+	const float coswt = std::cos(wall_tilt), sinwt = std::sin(wall_tilt);
 
-	if (mHasBottomBase) gluDisk(obj, 0, mBaseRadius, mSlices, 1);
-	if (mHasTopBase && mTopRadius > 0)
+	// cylinder walls:
+	for (unsigned int i = 0; i < m_slices; i++)
 	{
-		glPushMatrix();
-		glTranslatef(0, 0, mHeight);
-		gluDisk(obj, 0, mTopRadius, mSlices, 1);
-		glPopMatrix();
-	}
-	gluDeleteQuadric(obj);
-	glDisable(GL_BLEND);
+		const auto ip = (i + 1) % m_slices;
 
-#endif
+		tris.emplace_back(
+			// Points:
+			TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
+			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
+			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
+			// Normals:
+			TVector3Df(-coswt * circle[i].y, coswt * circle[i].x, sinwt),
+			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
+			TVector3Df(-coswt * circle[i].y, coswt * circle[i].x, sinwt));
+
+		tris.emplace_back(
+			// Points:
+			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
+			TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, m_height),
+			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
+			// Normals:
+			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
+			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
+			TVector3Df(-coswt * circle[i].y, coswt * circle[i].x, sinwt));
+	}
+
+	// bottom & top disks:
+	for (unsigned int i = 0; i < m_slices; i++)
+	{
+		const auto ip = (i + 1) % m_slices;
+		tris.emplace_back(
+			TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
+			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
+			TPoint3Df(.0f, .0f, .0f));
+
+		tris.emplace_back(
+			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
+			TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, m_height),
+			TPoint3Df(.0f, .0f, m_height));
+	}
+
+	// All faces, same color:
+	for (auto& t : tris) t.setColor(m_color);
 }
+
 void CCylinder::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 {
 	SCHEMA_SERIALIZE_DATATYPE_VERSION(1);
-	out["baseRadius"] = mBaseRadius;
-	out["topRadius"] = mTopRadius;
-	out["height"] = mHeight;
-	out["slices"] = mSlices;
-	out["stacks"] = mStacks;
-	out["hasBottomBase"] = mHasBottomBase;
-	out["hasTopBase"] = mHasTopBase;
+	out["baseRadius"] = m_baseRadius;
+	out["topRadius"] = m_topRadius;
+	out["height"] = m_height;
+	out["slices"] = m_slices;
+	out["hasBottomBase"] = m_hasBottomBase;
+	out["hasTopBase"] = m_hasTopBase;
 }
 void CCylinder::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 {
@@ -80,26 +108,25 @@ void CCylinder::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 	{
 		case 1:
 		{
-			mBaseRadius = static_cast<float>(in["baseRadius"]);
-			mTopRadius = static_cast<float>(in["topRadius"]);
-			mHeight = static_cast<float>(in["height"]);
-			mSlices = static_cast<uint32_t>(in["slices"]);
-			mStacks = static_cast<uint32_t>(in["stacks"]);
-			mHasBottomBase = static_cast<bool>(in["hasBottomBase"]);
-			mHasTopBase = static_cast<bool>(in["hasTopBase"]);
+			m_baseRadius = static_cast<float>(in["baseRadius"]);
+			m_topRadius = static_cast<float>(in["topRadius"]);
+			m_height = static_cast<float>(in["height"]);
+			m_slices = static_cast<uint32_t>(in["slices"]);
+			m_hasBottomBase = static_cast<bool>(in["hasBottomBase"]);
+			m_hasTopBase = static_cast<bool>(in["hasTopBase"]);
 		}
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
-uint8_t CCylinder::serializeGetVersion() const { return 0; }
+uint8_t CCylinder::serializeGetVersion() const { return 1; }
 void CCylinder::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// version 0
-	out << mBaseRadius << mTopRadius << mHeight << mSlices << mStacks
-		<< mHasBottomBase << mHasTopBase;
+	out << m_baseRadius << m_topRadius << m_height << m_slices
+		<< m_hasBottomBase << m_hasTopBase;
 }
 void CCylinder::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -107,14 +134,22 @@ void CCylinder::serializeFrom(
 	switch (version)
 	{
 		case 0:
+		case 1:
 			readFromStreamRender(in);
-			in >> mBaseRadius >> mTopRadius >> mHeight >> mSlices >> mStacks >>
-				mHasBottomBase >> mHasTopBase;
+			in >> m_baseRadius >> m_topRadius >> m_height >> m_slices;
+
+			if (version < 1)
+			{
+				float old_mStacks;
+				in >> old_mStacks;
+			}
+
+			in >> m_hasBottomBase >> m_hasTopBase;
 			break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool solveEqn(double a, double b, double c, double& t)
@@ -159,12 +194,15 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	TLine3D lin;
 	mrpt::math::createFromPoseX((o - this->m_pose).asTPose(), lin);
 	lin.unitarize();  // By adding this line, distance from any point of the
+
+	const float zz = d2f(lin.pBase.z);
+
 	// line to its base is exactly equal to the "t".
 	if (std::abs(lin.director[2]) < getEpsilon())
 	{
-		if (!reachesHeight(lin.pBase.z)) return false;
+		if (!reachesHeight(zz)) return false;
 		float r;
-		return getRadius(static_cast<float>(lin.pBase.z), r)
+		return getRadius(zz, r)
 				   ? solveEqn(
 						 square(lin.director[0]) + square(lin.director[1]),
 						 lin.director[0] * lin.pBase.x +
@@ -175,38 +213,39 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	}
 	bool fnd = false;
 	double nDist, tZ0;
-	if (mHasBottomBase && (tZ0 = -lin.pBase.z / lin.director[2]) > 0)
+	if (m_hasBottomBase && (tZ0 = -lin.pBase.z / lin.director[2]) > 0)
 	{
 		nDist = sqrt(
 			square(lin.pBase.x + tZ0 * lin.director[0]) +
 			square(lin.pBase.y + tZ0 * lin.director[1]));
-		if (nDist <= mBaseRadius)
+		if (nDist <= m_baseRadius)
 		{
 			fnd = true;
 			dist = tZ0;
 		}
 	}
-	if (mHasTopBase)
+	if (m_hasTopBase)
 	{
-		tZ0 = (mHeight - lin.pBase.z) / lin.director[2];
+		tZ0 = (m_height - lin.pBase.z) / lin.director[2];
 		if (tZ0 > 0 && (!fnd || tZ0 < dist))
 		{
 			nDist = sqrt(
 				square(lin.pBase.x + tZ0 * lin.director[0]) +
 				square(lin.pBase.y + tZ0 * lin.director[1]));
-			if (nDist <= mTopRadius)
+			if (nDist <= m_topRadius)
 			{
 				fnd = true;
 				dist = tZ0;
 			}
 		}
 	}
-	if (mBaseRadius == mTopRadius)
+	if (m_baseRadius == m_topRadius)
 	{
 		if (solveEqn(
 				square(lin.director[0]) + square(lin.director[1]),
 				lin.director[0] * lin.pBase.x + lin.director[1] * lin.pBase.y,
-				square(lin.pBase.x) + square(lin.pBase.y) - square(mBaseRadius),
+				square(lin.pBase.x) + square(lin.pBase.y) -
+					square(m_baseRadius),
 				nDist))
 			if ((!fnd || nDist < dist) &&
 				reachesHeight(lin.pBase.z + nDist * lin.director[2]))
@@ -217,15 +256,15 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	}
 	else
 	{
-		double slope = (mTopRadius - mBaseRadius) / mHeight;
+		double slope = (m_topRadius - m_baseRadius) / m_height;
 		if (solveEqn(
 				square(lin.director[0]) + square(lin.director[1]) -
 					square(lin.director[2] * slope),
 				lin.pBase.x * lin.director[0] + lin.pBase.y * lin.director[1] -
-					(mBaseRadius + slope * lin.pBase.z) * slope *
+					(m_baseRadius + slope * lin.pBase.z) * slope *
 						lin.director[2],
 				square(lin.pBase.x) + square(lin.pBase.y) -
-					square(mBaseRadius + slope * lin.pBase.z),
+					square(m_baseRadius + slope * lin.pBase.z),
 				nDist))
 			if ((!fnd || nDist < dist) &&
 				reachesHeight(lin.pBase.z + nDist * lin.director[2]))
@@ -240,13 +279,13 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 void CCylinder::getBoundingBox(
 	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
 {
-	bb_min.x = -std::max(mBaseRadius, mTopRadius);
+	bb_min.x = -std::max(m_baseRadius, m_topRadius);
 	bb_min.y = bb_min.x;
 	bb_min.z = 0;
 
-	bb_max.x = std::max(mBaseRadius, mTopRadius);
+	bb_max.x = std::max(m_baseRadius, m_topRadius);
 	bb_max.y = bb_max.x;
-	bb_max.z = mHeight;
+	bb_max.z = m_height;
 
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);

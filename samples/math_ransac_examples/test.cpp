@@ -105,9 +105,9 @@ void TestRANSACPlanes()
 		glPlane->setPose(glPlanePose);
 
 		glPlane->setColor(
-			getRandomGenerator().drawUniform(0, 1),
-			getRandomGenerator().drawUniform(0, 1),
-			getRandomGenerator().drawUniform(0, 1), 0.6);
+			getRandomGenerator().drawUniform<float>(0, 1),
+			getRandomGenerator().drawUniform<float>(0, 1),
+			getRandomGenerator().drawUniform<float>(0, 1), 0.6f);
 
 		scene->insert(glPlane);
 	}

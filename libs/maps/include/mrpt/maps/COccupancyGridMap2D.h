@@ -115,7 +115,14 @@ class COccupancyGridMap2D
 	float voroni_free_threshold{};
 
 	/** Entropy computation internal function: */
-	static double H(double p);
+	template <typename T>
+	static T H(const T p)
+	{
+		if (p == 0 || p == 1)
+			return 0;
+		else
+			return -p * std::log(p);
+	}
 	/** Internally used to speed-up entropy calculation */
 	static std::vector<float> entropyTable;
 

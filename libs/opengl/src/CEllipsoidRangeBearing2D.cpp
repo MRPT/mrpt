@@ -14,12 +14,11 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(
-	CEllipsoidRangeBearing2D, CRenderizableDisplayList, mrpt::opengl)
+	CEllipsoidRangeBearing2D, CRenderizableShaderWireFrame, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							transformFromParameterSpace
@@ -35,10 +34,10 @@ void CEllipsoidRangeBearing2D::transformFromParameterSpace(
 	out_pts.resize(N);
 	for (size_t i = 0; i < N; i++)
 	{
-		const double range = in_pts[i][0];
-		const double bearing = in_pts[i][1];
-		out_pts[i][0] = range * cos(bearing);
-		out_pts[i][1] = range * sin(bearing);
+		const float range = in_pts[i][0];
+		const float bearing = in_pts[i][1];
+		out_pts[i][0] = range * cosf(bearing);
+		out_pts[i][1] = range * sinf(bearing);
 	}
 
 	MRPT_END
@@ -66,5 +65,5 @@ void CEllipsoidRangeBearing2D::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }

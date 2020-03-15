@@ -77,7 +77,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 			opengl::CGridPlaneXY::Ptr obj =
 				std::make_shared<opengl::CGridPlaneXY>(
 					-100, 100, -100, 100, 0, 5);
-			obj->setColor(0.4, 0.4, 0.4);
+			obj->setColor(0.4f, 0.4f, 0.4f);
 			objs->insert(obj);  // it will free the memory
 		}
 
@@ -191,8 +191,8 @@ void hmt_slam_guiFrame::updateLocalMapView()
 					if (refPoseThisArea.cov(0, 0) != 0 ||
 						refPoseThisArea.cov(1, 1) != 0)
 					{
-						opengl::CEllipsoid::Ptr ellip =
-							std::make_shared<opengl::CEllipsoid>();
+						opengl::CEllipsoid3D::Ptr ellip =
+							std::make_shared<opengl::CEllipsoid3D>();
 						ellip->setPose(refPoseThisArea.mean);
 						ellip->enableDrawSolid3D(false);
 

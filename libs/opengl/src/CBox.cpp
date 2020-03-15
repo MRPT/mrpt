@@ -11,193 +11,123 @@
 
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
-
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CBox, CRenderizableDisplayList, mrpt::opengl)
-
-CBox::CBox()
-	: m_corner_min(-1, -1, -1),
-	  m_corner_max(1, 1, 1),
-
-	  m_solidborder_color(0, 0, 0)
-{
-}
+IMPLEMENTS_SERIALIZABLE(CBox, CRenderizableShaderTriangles, mrpt::opengl)
 
 CBox::CBox(
 	const mrpt::math::TPoint3D& corner1, const mrpt::math::TPoint3D& corner2,
 	bool is_wireframe, float lineWidth)
 	: m_wireframe(is_wireframe),
-	  m_lineWidth(lineWidth),
 	  m_draw_border(false),
 	  m_solidborder_color(0, 0, 0)
 {
+	CRenderizableShaderWireFrame::setLineWidth(lineWidth);
 	setBoxCorners(corner1, corner2);
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CBox::render_dl() const
+void CBox::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
-	if (m_color.A != 255)
+	switch (rc.shader_id)
 	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else
+		case DefaultShaderID::TRIANGLES:
+			if (!m_wireframe) CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			if (m_draw_border || m_wireframe)
+				CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CBox::renderUpdateBuffers() const
+{
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
+
+void CBox::onUpdateBuffers_Wireframe()
+{
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
+
+	const std::array<mrpt::math::TPoint3D, 2> corner = {m_corner_min,
+														m_corner_max};
+
+	for (unsigned int i = 0; i < 2; i++)
 	{
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
-	}
+		vbd.emplace_back(corner[0].x, corner[0].y, corner[i].z);
+		vbd.emplace_back(corner[0].x, corner[1].y, corner[i].z);
 
-	if (!m_wireframe)
-	{
-		// solid:
-		glEnable(GL_NORMALIZE);
+		vbd.emplace_back(corner[0].x, corner[1].y, corner[i].z);
+		vbd.emplace_back(corner[1].x, corner[1].y, corner[i].z);
 
-		glBegin(GL_TRIANGLES);
-		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
+		vbd.emplace_back(corner[1].x, corner[1].y, corner[i].z);
+		vbd.emplace_back(corner[1].x, corner[0].y, corner[i].z);
 
-		// Front face:
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_max.z));
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_max.z),
-			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_max.z));
+		vbd.emplace_back(corner[1].x, corner[0].y, corner[i].z);
+		vbd.emplace_back(corner[0].x, corner[0].y, corner[i].z);
 
-		// Back face:
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_min.z),
-			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_min.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_max.z));
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_min.z),
-			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_max.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_max.z));
+		vbd.emplace_back(corner[i].x, corner[0].y, corner[0].z);
+		vbd.emplace_back(corner[i].x, corner[0].y, corner[1].z);
 
-		// Left face:
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_min.z),
-			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_max.z));
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_max.z),
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_max.z));
-
-		// Right face:
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_min.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_max.z));
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_max.z),
-			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_max.z));
-
-		// Bottom face:
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_min.z));
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_min.z),
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_min.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_min.z));
-		// Top face:
-
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_max.z),
-			TPoint3D(m_corner_max.x, m_corner_min.y, m_corner_max.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_max.z));
-		gl_utils::renderTriangleWithNormal(
-			TPoint3D(m_corner_min.x, m_corner_max.y, m_corner_max.z),
-			TPoint3D(m_corner_min.x, m_corner_min.y, m_corner_max.z),
-			TPoint3D(m_corner_max.x, m_corner_max.y, m_corner_max.z));
-
-		glEnd();
-		glDisable(GL_NORMALIZE);
+		vbd.emplace_back(corner[i].x, corner[1].y, corner[0].z);
+		vbd.emplace_back(corner[i].x, corner[1].y, corner[1].z);
 	}
 
-	if (m_wireframe || m_draw_border)
-	{
-		glDisable(GL_LIGHTING);
+	cbd.assign(vbd.size(), m_solidborder_color);
+}
+void CBox::onUpdateBuffers_Triangles()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
 
-		if (m_draw_border)
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
+	const auto &c0 = m_corner_min, &c1 = m_corner_max;
+	using P3 = mrpt::math::TPoint3D;
 
-		// wireframe:
-		glLineWidth(m_lineWidth);
-		checkOpenGLError();
+	// Front face:
+	tris.emplace_back(
+		P3(c1.x, c0.y, c0.z), P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z));
+	tris.emplace_back(
+		P3(c0.x, c0.y, c0.z), P3(c0.x, c0.y, c1.z), P3(c1.x, c0.y, c1.z));
 
-		mrpt::math::TPoint3D a = m_corner_min, b = m_corner_max;
+	// Back face:
+	tris.emplace_back(
+		P3(c1.x, c1.y, c0.z), P3(c0.x, c1.y, c0.z), P3(c1.x, c1.y, c1.z));
+	tris.emplace_back(
+		P3(c0.x, c1.y, c0.z), P3(c0.x, c1.y, c1.z), P3(c1.x, c1.y, c1.z));
 
-		if (m_wireframe)
-			glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
-		else
-		{
-			glColor4ub(
-				m_solidborder_color.R, m_solidborder_color.G,
-				m_solidborder_color.B, m_solidborder_color.A);
+	// Left face:
+	tris.emplace_back(
+		P3(c0.x, c0.y, c0.z), P3(c0.x, c1.y, c0.z), P3(c0.x, c1.y, c1.z));
+	tris.emplace_back(
+		P3(c0.x, c0.y, c1.z), P3(c0.x, c0.y, c0.z), P3(c0.x, c1.y, c1.z));
 
-			// Draw lines "a bit" far above the solid surface:
-			/*	mrpt::math::TPoint3D d = b-a;
-				d*=0.001;
-				a-=d; b+=d;*/
-		}
+	// Right face:
+	tris.emplace_back(
+		P3(c1.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z), P3(c1.x, c1.y, c1.z));
+	tris.emplace_back(
+		P3(c1.x, c0.y, c1.z), P3(c1.x, c0.y, c0.z), P3(c1.x, c1.y, c1.z));
 
-		glBegin(GL_LINE_STRIP);
-		glVertex3d(a.x, a.y, a.z);
-		glVertex3d(b.x, a.y, a.z);
-		glVertex3d(b.x, a.y, b.z);
-		glVertex3d(a.x, a.y, b.z);
-		glVertex3d(a.x, a.y, a.z);
-		glEnd();
+	// Bottom face:
+	tris.emplace_back(
+		P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z));
+	tris.emplace_back(
+		P3(c0.x, c1.y, c0.z), P3(c0.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z));
+	// Top face:
 
-		glBegin(GL_LINE_STRIP);
-		glVertex3d(a.x, b.y, a.z);
-		glVertex3d(b.x, b.y, a.z);
-		glVertex3d(b.x, b.y, b.z);
-		glVertex3d(a.x, b.y, b.z);
-		glVertex3d(a.x, b.y, a.z);
-		glEnd();
+	tris.emplace_back(
+		P3(c0.x, c0.y, c1.z), P3(c1.x, c0.y, c1.z), P3(c1.x, c1.y, c1.z));
+	tris.emplace_back(
+		P3(c0.x, c1.y, c1.z), P3(c0.x, c0.y, c1.z), P3(c1.x, c1.y, c1.z));
 
-		glBegin(GL_LINE_STRIP);
-		glVertex3d(a.x, a.y, a.z);
-		glVertex3d(a.x, b.y, a.z);
-		glVertex3d(a.x, b.y, b.z);
-		glVertex3d(a.x, a.y, b.z);
-		glEnd();
-
-		glBegin(GL_LINE_STRIP);
-		glVertex3d(b.x, a.y, a.z);
-		glVertex3d(b.x, b.y, a.z);
-		glVertex3d(b.x, b.y, b.z);
-		glVertex3d(b.x, a.y, b.z);
-		glEnd();
-
-		glEnable(GL_LIGHTING);
-	}
-
-	glDisable(GL_BLEND);
-
-#endif
+	// All faces, all vertices, same color:
+	for (auto& t : tris) t.setColor(m_color);
 }
 
 uint8_t CBox::serializeGetVersion() const { return 1; }
@@ -233,13 +163,13 @@ void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CBox::setBoxCorners(
 	const mrpt::math::TPoint3D& corner1, const mrpt::math::TPoint3D& corner2)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 
 	// Order the coordinates so we always have the min/max in their right
 	// position:

@@ -9,121 +9,72 @@
 #pragma once
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
 
 namespace mrpt::opengl
 {
-/** A set of colored triangles.
- *  This class can be used to draw any solid, arbitrarily complex object
- * (without textures).
- *  \sa opengl::COpenGLScene, CSetOfTexturedTriangles
+/** A set of colored triangles, able to draw any solid, arbitrarily complex
+ * object without textures. For textures, see CSetOfTexturedTriangles
+ *
+ * \sa opengl::COpenGLScene, CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
-class CSetOfTriangles : public CRenderizableDisplayList
+class CSetOfTriangles : public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CSetOfTriangles, mrpt::opengl)
    public:
-	/**
-	 * Triangle definition. Each vertex has three spatial coordinates and four
-	 * color values.
-	 */
-	struct TTriangle
-	{
-		inline TTriangle()
-		{
-			for (size_t i = 0; i < 3; i++)
-			{
-				r[i] = g[i] = b[i] = a[i] = 1.0f;
-			}
-		}
-		inline TTriangle(const mrpt::math::TPolygon3D& p)
-		{
-			ASSERT_(p.size() == 3);
-			for (size_t i = 0; i < 3; i++)
-			{
-				x[i] = p[i].x;
-				y[i] = p[i].y;
-				z[i] = p[i].z;
-				r[i] = g[i] = b[i] = a[i] = 1.0f;
-			}
-		}
-		float x[3], y[3], z[3];
-		float r[3], g[3], b[3], a[3];
-	};
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void onUpdateBuffers_Triangles() override;
+	/** @} */
+
 	using const_iterator = std::vector<TTriangle>::const_iterator;
 	using const_reverse_iterator =
 		std::vector<TTriangle>::const_reverse_iterator;
 
-   protected:
-	/**
-	 * List of triangles.
-	 * \sa TTriangle
-	 */
-	std::vector<TTriangle> m_triangles;
-	/**
-	 * Transparency enabling.
-	 */
-	bool m_enableTransparency;
-	/**
-	 * Mutable variable used to check whether polygons need to be recalculated.
-	 */
-	mutable bool polygonsUpToDate{false};
-	/**
-	 * Polygon cache.
-	 */
-	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolygons;
-
-   public:
-	/**
-	 * Polygon cache updating.
-	 */
+	/** Explicitly updates the internal polygon cache, with all triangles as
+	 * polygons. \sa getPolygons() */
 	void updatePolygons() const;
-	/**
-	 * Clear this object.
-	 */
-	inline void clearTriangles()
+
+	/** Clear this object, removing all triangles. */
+	void clearTriangles()
 	{
 		m_triangles.clear();
 		polygonsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
-	/**
-	 * Get triangle count.
-	 */
-	inline size_t getTrianglesCount() const { return m_triangles.size(); }
-	/**
-	 * Gets the triangle in a given position.
-	 */
-	inline void getTriangle(size_t idx, TTriangle& t) const
+
+	/** Get triangle count */
+	size_t getTrianglesCount() const { return m_triangles.size(); }
+
+	/** Gets the i-th triangle */
+	void getTriangle(size_t idx, TTriangle& t) const
 	{
-		ASSERT_(idx < m_triangles.size());
+		ASSERT_BELOW_(idx, m_triangles.size());
 		t = m_triangles[idx];
 	}
-	/**
-	 * Inserts a triangle into the set.
-	 */
-	inline void insertTriangle(const TTriangle& t)
+	/** Inserts a triangle into the set */
+	void insertTriangle(const TTriangle& t)
 	{
 		m_triangles.push_back(t);
 		polygonsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
-	/**
-	 * Inserts a set of triangles, bounded by iterators, into this set.
+
+	/** Inserts a set of triangles, bounded by iterators, into this set.
 	 * \sa insertTriangle
 	 */
 	template <class InputIterator>
-	inline void insertTriangles(
-		const InputIterator& begin, const InputIterator& end)
+	void insertTriangles(const InputIterator& begin, const InputIterator& end)
 	{
 		m_triangles.insert(m_triangles.end(), begin, end);
 		polygonsUpToDate = false;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
-	/**
-	 * Inserts an existing CSetOfTriangles into this one.
-	 */
+
+	/** Inserts an existing CSetOfTriangles into this one */
 	void insertTriangles(const CSetOfTriangles::Ptr& p);
+
 	/**
 	 * Reserves memory for certain number of triangles, avoiding multiple
 	 * memory allocation calls.
@@ -131,28 +82,20 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	inline void reserve(size_t t)
 	{
 		m_triangles.reserve(t);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
-	/** Enables or disables transparency. */
-	inline void enableTransparency(bool v)
-	{
-		m_enableTransparency = v;
-		CRenderizableDisplayList::notifyChange();
-	}
-
+	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
+	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColorR_u8(const uint8_t r) override;
+	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColorG_u8(const uint8_t g) override;
+	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColorB_u8(const uint8_t b) override;
+	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 
-	/** Render
-	 */
-	void render_dl() const override;
-
-	/** Ray tracing
-	 */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	/**
@@ -170,7 +113,7 @@ class CSetOfTriangles : public CRenderizableDisplayList
 	inline void insertTriangles(const CONTAINER& c)
 	{
 		this->insertTriangles(c.begin(), c.end());
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -200,16 +143,17 @@ class CSetOfTriangles : public CRenderizableDisplayList
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Constructor
+	CSetOfTriangles() = default;
+	virtual ~CSetOfTriangles() override = default;
+
+   protected:
+	/**
+	 * Mutable variable used to check whether polygons need to be recalculated.
 	 */
-	CSetOfTriangles(bool enableTransparency = false)
-		: m_triangles(), m_enableTransparency(enableTransparency)
+	mutable bool polygonsUpToDate{false};
 
-	{
-	}
-
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CSetOfTriangles() override = default;
+	/** Polygon cache, used for ray-tracing only */
+	mutable std::vector<mrpt::math::TPolygonWithPlane> m_polygons;
 };
 /** Inserts a set of triangles into the list; note that this method allows to
  * pass another CSetOfTriangles as argument. Allows call chaining.
@@ -226,7 +170,7 @@ inline CSetOfTriangles::Ptr& operator<<(CSetOfTriangles::Ptr& s, const T& t)
  */
 template <>
 inline CSetOfTriangles::Ptr& operator<<(
-	CSetOfTriangles::Ptr& s, const CSetOfTriangles::TTriangle& t)
+	CSetOfTriangles::Ptr& s, const mrpt::opengl::TTriangle& t)
 {
 	s->insertTriangle(t);
 	return s;

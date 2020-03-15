@@ -12,6 +12,7 @@
 #include <mrpt/config.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <fstream>
 

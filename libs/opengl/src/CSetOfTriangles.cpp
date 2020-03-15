@@ -11,108 +11,31 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CSetOfTriangles, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(
+	CSetOfTriangles, CRenderizableShaderTriangles, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CSetOfTriangles::render_dl() const
+void CSetOfTriangles::onUpdateBuffers_Triangles()
 {
-#if MRPT_HAS_OPENGL_GLUT
-
-	if (m_enableTransparency)
-	{
-		// glDisable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
-	}
-
-	vector<TTriangle>::const_iterator it;
-
-	glEnable(GL_NORMALIZE);  // Normalize normals
-	glBegin(GL_TRIANGLES);
-
-	for (it = m_triangles.begin(); it != m_triangles.end(); ++it)
-	{
-		// Compute the normal vector:
-		// ---------------------------------
-		float ax = it->x[1] - it->x[0];
-		float ay = it->y[1] - it->y[0];
-		float az = it->z[1] - it->z[0];
-
-		float bx = it->x[2] - it->x[0];
-		float by = it->y[2] - it->y[0];
-		float bz = it->z[2] - it->z[0];
-
-		glNormal3f(ay * bz - az * by, -ax * bz + az * bx, ax * by - ay * bx);
-
-		glColor4f(it->r[0], it->g[0], it->b[0], it->a[0]);
-		glVertex3f(it->x[0], it->y[0], it->z[0]);
-
-		glColor4f(it->r[1], it->g[1], it->b[1], it->a[1]);
-		glVertex3f(it->x[1], it->y[1], it->z[1]);
-
-		glColor4f(it->r[2], it->g[2], it->b[2], it->a[2]);
-		glVertex3f(it->x[2], it->y[2], it->z[2]);
-	}
-
-	glEnd();
-	glDisable(GL_NORMALIZE);
-
-	glDisable(GL_BLEND);
-#endif
+	// Nothing else to do, data is directly kept up-to-date in base class
+	// buffers.
 }
 
-static void triangle_writeToStream(
-	mrpt::serialization::CArchive& o, const CSetOfTriangles::TTriangle& t)
-{
-	o.WriteBufferFixEndianness(t.x, 3);
-	o.WriteBufferFixEndianness(t.y, 3);
-	o.WriteBufferFixEndianness(t.z, 3);
-
-	o.WriteBufferFixEndianness(t.r, 3);
-	o.WriteBufferFixEndianness(t.g, 3);
-	o.WriteBufferFixEndianness(t.b, 3);
-	o.WriteBufferFixEndianness(t.a, 3);
-}
-static void triangle_readFromStream(
-	mrpt::serialization::CArchive& i, CSetOfTriangles::TTriangle& t)
-{
-	i.ReadBufferFixEndianness(t.x, 3);
-	i.ReadBufferFixEndianness(t.y, 3);
-	i.ReadBufferFixEndianness(t.z, 3);
-
-	i.ReadBufferFixEndianness(t.r, 3);
-	i.ReadBufferFixEndianness(t.g, 3);
-	i.ReadBufferFixEndianness(t.b, 3);
-	i.ReadBufferFixEndianness(t.a, 3);
-}
-
-uint8_t CSetOfTriangles::serializeGetVersion() const { return 1; }
+uint8_t CSetOfTriangles::serializeGetVersion() const { return 0; }
 void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	auto n = (uint32_t)m_triangles.size();
 	out << n;
-	for (size_t i = 0; i < n; i++) triangle_writeToStream(out, m_triangles[i]);
-
-	// Version 1:
-	out << m_enableTransparency;
+	for (size_t i = 0; i < n; i++) m_triangles[i].writeTo(out);
 }
 void CSetOfTriangles::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -120,88 +43,64 @@ void CSetOfTriangles::serializeFrom(
 	switch (version)
 	{
 		case 0:
-		case 1:
 		{
 			readFromStreamRender(in);
 			uint32_t n;
 			in >> n;
 			m_triangles.assign(n, TTriangle());
-			for (size_t i = 0; i < n; i++)
-				triangle_readFromStream(in, m_triangles[i]);
-
-			if (version >= 1)
-				in >> m_enableTransparency;
-			else
-				m_enableTransparency = true;
+			for (size_t i = 0; i < n; i++) m_triangles[i].readFrom(in);
 		}
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	polygonsUpToDate = false;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool CSetOfTriangles::traceRay(
 	const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!polygonsUpToDate) updatePolygons();
-	return mrpt::math::traceRay(
-		tmpPolygons, (o - this->m_pose).asTPose(), dist);
+	return mrpt::math::traceRay(m_polygons, (o - this->m_pose).asTPose(), dist);
 }
 CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	m_color = c;
-	mrpt::img::TColorf col(c);
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++)
-		{
-			m_triangle.r[i] = col.R;
-			m_triangle.g[i] = col.G;
-			m_triangle.b[i] = col.B;
-			m_triangle.a[i] = col.A;
-		}
+	for (auto& t : m_triangles) t.setColor(c);
 	return *this;
 }
 
 CRenderizable& CSetOfTriangles::setColorR_u8(const uint8_t r)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	m_color.R = r;
-	const float col = r / 255.f;
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++) m_triangle.r[i] = col;
+	for (auto& t : m_triangles) t.setColor(m_color);
 	return *this;
 }
 
 CRenderizable& CSetOfTriangles::setColorG_u8(const uint8_t g)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	m_color.G = g;
-	const float col = g / 255.f;
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++) m_triangle.g[i] = col;
+	for (auto& t : m_triangles) t.setColor(m_color);
 	return *this;
 }
 
 CRenderizable& CSetOfTriangles::setColorB_u8(const uint8_t b)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	m_color.B = b;
-	const float col = b / 255.f;
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++) m_triangle.b[i] = col;
+	for (auto& t : m_triangles) t.setColor(m_color);
 	return *this;
 }
 
 CRenderizable& CSetOfTriangles::setColorA_u8(const uint8_t a)
 {
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 	m_color.A = a;
-	const float col = a / 255.f;
-	for (auto& m_triangle : m_triangles)
-		for (size_t i = 0; i < 3; i++) m_triangle.a[i] = col;
+	for (auto& t : m_triangles) t.setColor(m_color);
 	return *this;
 }
 
@@ -209,26 +108,26 @@ void CSetOfTriangles::getPolygons(
 	std::vector<mrpt::math::TPolygon3D>& polys) const
 {
 	if (!polygonsUpToDate) updatePolygons();
-	size_t N = tmpPolygons.size();
-	for (size_t i = 0; i < N; i++) polys[i] = tmpPolygons[i].poly;
+	size_t N = m_polygons.size();
+	for (size_t i = 0; i < N; i++) polys[i] = m_polygons[i].poly;
 }
 
 void CSetOfTriangles::updatePolygons() const
 {
 	TPolygon3D tmp(3);
 	size_t N = m_triangles.size();
-	tmpPolygons.resize(N);
+	m_polygons.resize(N);
 	for (size_t i = 0; i < N; i++)
 		for (size_t j = 0; j < 3; j++)
 		{
 			const TTriangle& t = m_triangles[i];
-			tmp[j].x = t.x[j];
-			tmp[j].y = t.y[j];
-			tmp[j].z = t.z[j];
-			tmpPolygons[i] = tmp;
+			tmp[j].x = t.x(j);
+			tmp[j].y = t.y(j);
+			tmp[j].z = t.z(j);
+			m_polygons[i] = tmp;
 		}
 	polygonsUpToDate = true;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CSetOfTriangles::getBoundingBox(
@@ -244,26 +143,26 @@ void CSetOfTriangles::getBoundingBox(
 
 	for (const auto& t : m_triangles)
 	{
-		keep_min(bb_min.x, t.x[0]);
-		keep_max(bb_max.x, t.x[0]);
-		keep_min(bb_min.y, t.y[0]);
-		keep_max(bb_max.y, t.y[0]);
-		keep_min(bb_min.z, t.z[0]);
-		keep_max(bb_max.z, t.z[0]);
+		keep_min(bb_min.x, t.x(0));
+		keep_max(bb_max.x, t.x(0));
+		keep_min(bb_min.y, t.y(0));
+		keep_max(bb_max.y, t.y(0));
+		keep_min(bb_min.z, t.z(0));
+		keep_max(bb_max.z, t.z(0));
 
-		keep_min(bb_min.x, t.x[1]);
-		keep_max(bb_max.x, t.x[1]);
-		keep_min(bb_min.y, t.y[1]);
-		keep_max(bb_max.y, t.y[1]);
-		keep_min(bb_min.z, t.z[1]);
-		keep_max(bb_max.z, t.z[1]);
+		keep_min(bb_min.x, t.x(1));
+		keep_max(bb_max.x, t.x(1));
+		keep_min(bb_min.y, t.y(1));
+		keep_max(bb_max.y, t.y(1));
+		keep_min(bb_min.z, t.z(1));
+		keep_max(bb_max.z, t.z(1));
 
-		keep_min(bb_min.x, t.x[2]);
-		keep_max(bb_max.x, t.x[2]);
-		keep_min(bb_min.y, t.y[2]);
-		keep_max(bb_max.y, t.y[2]);
-		keep_min(bb_min.z, t.z[2]);
-		keep_max(bb_max.z, t.z[2]);
+		keep_min(bb_min.x, t.x(2));
+		keep_max(bb_max.x, t.x(2));
+		keep_min(bb_min.y, t.y(2));
+		keep_max(bb_max.y, t.y(2));
+		keep_min(bb_min.z, t.z(2));
+		keep_max(bb_max.z, t.z(2));
 	}
 
 	// Convert to coordinates of my parent:
@@ -277,5 +176,5 @@ void CSetOfTriangles::insertTriangles(const CSetOfTriangles::Ptr& p)
 	m_triangles.insert(
 		m_triangles.end(), p->m_triangles.begin(), p->m_triangles.end());
 	polygonsUpToDate = false;
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }

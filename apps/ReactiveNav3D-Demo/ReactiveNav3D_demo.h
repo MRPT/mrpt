@@ -758,7 +758,7 @@ class CMyReactInterface
 		// The target is inserted
 		{
 			auto obj = opengl::CDisk::Create(0.4f, 0.3f);
-			obj->setLocation(0, 0, 0);
+			obj->setLocation(0, 0, 0.02);
 			obj->setColor(0.2, 0.3, 0.9);
 			scene->insert(obj);
 		}
@@ -831,7 +831,6 @@ class CMyReactInterface
 				scene->insert(obj[i]);
 				obj[i]->setColor(0, 0, 1);
 				obj[i]->setPointSize(4.0);
-				obj[i]->enablePointSmooth();
 				for (unsigned int j = 0; j < kinects[i].m_points.size(); j++)
 				{
 					kinects[i].m_points.getPoint(j, point);
@@ -846,24 +845,28 @@ class CMyReactInterface
 			obj->setPose(robotpose3d);
 			obj->setPointSize(5.0);
 			obj->setColor(0, 1, 0);
-			obj->enablePointSmooth();
 			obj->loadFromPointsMap<CSimplePointsMap>(&stm.grid_points);
 			scene->insert(obj);
 		}
 
 		window.unlockAccess3DScene();
-		std::string legend;
-		legend.append("--------------------------------------------\n");
-		legend.append("| m - Move the target \t|\n");
-		legend.append("| p - Pause navigation \t\t|\n");
-		legend.append("| r - Resume navigation \t|\n");
-		legend.append("| e - Exit \t\t\t\t|\n");
-		legend.append("--------------------------------------------\n");
-		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(
-			5, 180, legend, mrpt::img::TColorf(1, 1, 1), "Arial", 13);
+			5, 180, getLegendString(window.getRenderingFPS()));
 		window.repaint();
+	}
+
+	static std::string getLegendString(double fps)
+	{
+		std::string legend =
+			"--------------------------------------------\n"
+			"| m - Move the target \t|\n"
+			"| p - Pause navigation \t\t|\n"
+			"| r - Resume navigation \t|\n"
+			"| e - Exit \t\t\t\t|\n"
+			"--------------------------------------------\n";
+		legend += format("\n        %.02fFPS", fps);
+		return legend;
 	}
 
 	void updateScene()
@@ -936,17 +939,9 @@ class CMyReactInterface
 		}
 
 		window.unlockAccess3DScene();
-		std::string legend;
-		legend.append("--------------------------------------------\n");
-		legend.append("| m - Move the target \t|\n");
-		legend.append("| p - Pause navigation \t\t|\n");
-		legend.append("| r - Resume navigation \t|\n");
-		legend.append("| e - Exit \t\t\t\t|\n");
-		legend.append("--------------------------------------------\n");
-		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(
-			5, 180, legend, mrpt::img::TColorf(1, 1, 1), "Arial", 13);
+			5, 180, getLegendString(window.getRenderingFPS()));
 		window.repaint();
 	}
 

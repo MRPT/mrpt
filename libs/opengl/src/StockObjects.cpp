@@ -34,169 +34,96 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	ret->setName("theRobot");
 
 	CSetOfTriangles::Ptr obj = std::make_shared<CSetOfTriangles>();
+	obj->setLocalRepresentativePoint({0.0f, 0.0f, 0.15f});
 
 	// Add triangles:
-	CSetOfTriangles::TTriangle trian;
+	mrpt::opengl::TTriangle t;
 
-	trian.r[0] = trian.r[1] = trian.r[2] = 1;
-	trian.g[0] = trian.g[1] = trian.g[2] = 0;
-	trian.b[0] = trian.b[1] = trian.b[2] = 0;
-	trian.a[0] = trian.a[1] = trian.a[2] = 1;
+	t.r(0) = t.r(1) = t.r(2) = 255;
+	t.g(0) = t.g(1) = t.g(2) = 0;
+	t.b(0) = t.b(1) = t.b(2) = 0;
+	t.a(0) = t.a(1) = t.a(2) = 255;
 
-	trian.x[0] = 0.10f;
-	trian.x[1] = -0.20f;
-	trian.x[2] = -0.20f;
-	trian.y[0] = -0.10f;
-	trian.y[1] = 0.10f;
-	trian.y[2] = -0.10f;
-	trian.z[0] = 0.20f;
-	trian.z[1] = 0.25f;
-	trian.z[2] = 0.25f;
-	obj->insertTriangle(trian);  // 0
-	trian.x[0] = 0.10f;
-	trian.x[1] = 0.10f;
-	trian.x[2] = -0.20f;
-	trian.y[0] = -0.10f;
-	trian.y[1] = 0.10f;
-	trian.y[2] = 0.10f;
-	trian.z[0] = 0.20f;
-	trian.z[1] = 0.20f;
-	trian.z[2] = 0.25f;
-	obj->insertTriangle(trian);  // 1
+	t.vertex(0) = {0.10f, -0.10f, 0.20f};
+	t.vertex(1) = {-0.20f, 0.10f, 0.25f};
+	t.vertex(2) = {-0.20f, -0.10f, 0.25f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 0
+	t.vertex(0) = {0.10f, -0.10f, 0.20f};
+	t.vertex(1) = {0.10f, 0.10f, 0.20f};
+	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 1
 
-	// trian.r = 0.9f; trian.g = 0; trian.b = 0; trian.a = 1;
+	t.vertex(0) = {0.10f, -0.10f, 0.05f};
+	t.vertex(1) = {0.10f, 0.10f, 0.20f};
+	t.vertex(2) = {0.10f, -0.10f, 0.20f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 2
+	t.vertex(0) = {0.10f, -0.10f, 0.05f};
+	t.vertex(1) = {0.10f, 0.10f, 0.05f};
+	t.vertex(2) = {0.10f, 0.10f, 0.20f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 3
 
-	trian.x[0] = 0.10f;
-	trian.x[1] = 0.10f;
-	trian.x[2] = 0.10f;
-	trian.y[0] = -0.10f;
-	trian.y[1] = -0.10f;
-	trian.y[2] = 0.10f;
-	trian.z[0] = 0.05f;
-	trian.z[1] = 0.20f;
-	trian.z[2] = 0.20f;
-	obj->insertTriangle(trian);  // 2
-	trian.x[0] = 0.10f;
-	trian.x[1] = 0.10f;
-	trian.x[2] = 0.10f;
-	trian.y[0] = -0.10f;
-	trian.y[1] = 0.10f;
-	trian.y[2] = 0.10f;
-	trian.z[0] = 0.05f;
-	trian.z[1] = 0.05f;
-	trian.z[2] = 0.20f;
-	obj->insertTriangle(trian);  // 3
+	t.vertex(0) = {-0.20f, -0.10f, 0.05f};
+	t.vertex(1) = {-0.20f, -0.10f, 0.25f};
+	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 2b
+	t.vertex(0) = {-0.20f, -0.10f, 0.05f};
+	t.vertex(1) = {-0.20f, 0.10f, 0.25f};
+	t.vertex(2) = {-0.20f, 0.10f, 0.05f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 3b
 
-	trian.x[0] = -0.20f;
-	trian.x[1] = -0.20f;
-	trian.x[2] = -0.20f;
-	trian.y[0] = -0.10f;
-	trian.y[1] = -0.10f;
-	trian.y[2] = 0.10f;
-	trian.z[0] = 0.05f;
-	trian.z[1] = 0.25f;
-	trian.z[2] = 0.25f;
-	obj->insertTriangle(trian);  // 2b
-	trian.x[0] = -0.20f;
-	trian.x[1] = -0.20f;
-	trian.x[2] = -0.20f;
-	trian.y[0] = -0.10f;
-	trian.y[1] = 0.10f;
-	trian.y[2] = 0.10f;
-	trian.z[0] = 0.05f;
-	trian.z[1] = 0.05f;
-	trian.z[2] = 0.25f;
-	obj->insertTriangle(trian);  // 3b
+	t.vertex(0) = {0.10f, -0.10f, 0.20f};
+	t.vertex(1) = {-0.20f, -0.10f, 0.25f};
+	t.vertex(2) = {-0.20f, -0.10f, 0.05f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 4
 
-	// trian.r = 0.8f; trian.g = 0; trian.b = 0; trian.a = 1;
-	trian.x[0] = 0.10f;
-	trian.x[1] = -0.20f;
-	trian.x[2] = -0.20f;
-	trian.y[0] = -0.10f;
-	trian.y[1] = -0.10f;
-	trian.y[2] = -0.10f;
-	trian.z[0] = 0.20f;
-	trian.z[1] = 0.25f;
-	trian.z[2] = 0.05f;
-	obj->insertTriangle(trian);  // 4
-	trian.x[0] = 0.10f;
-	trian.x[1] = 0.10f;
-	trian.x[2] = -0.20f;
-	trian.y[0] = -0.10f;
-	trian.y[1] = -0.10f;
-	trian.y[2] = -0.10f;
-	trian.z[0] = 0.20f;
-	trian.z[1] = 0.05f;
-	trian.z[2] = 0.05f;
-	obj->insertTriangle(trian);  // 5
+	t.vertex(0) = {0.10f, -0.10f, 0.20f};
+	t.vertex(1) = {-0.20f, -0.10f, 0.05f};
+	t.vertex(2) = {0.10f, -0.10f, 0.05f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 5
 
-	trian.x[0] = 0.10f;
-	trian.x[1] = -0.20f;
-	trian.x[2] = -0.20f;
-	trian.y[0] = 0.10f;
-	trian.y[1] = 0.10f;
-	trian.y[2] = 0.10f;
-	trian.z[0] = 0.20f;
-	trian.z[1] = 0.25f;
-	trian.z[2] = 0.05f;
-	obj->insertTriangle(trian);  // 6
-	trian.x[0] = 0.10f;
-	trian.x[1] = 0.10f;
-	trian.x[2] = -0.20f;
-	trian.y[0] = 0.10f;
-	trian.y[1] = 0.10f;
-	trian.y[2] = 0.10f;
-	trian.z[0] = 0.20f;
-	trian.z[1] = 0.05f;
-	trian.z[2] = 0.05f;
-	obj->insertTriangle(trian);  // 7
+	t.vertex(0) = {0.10f, 0.10f, 0.20f};
+	t.vertex(1) = {-0.20f, 0.10f, 0.05f};
+	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 6
 
-	trian.r[0] = trian.r[1] = trian.r[2] = 0.05f;
-	trian.g[0] = trian.g[1] = trian.g[2] = 0.05f;
-	trian.b[0] = trian.b[1] = trian.b[2] = 0.05f;
-	trian.a[0] = trian.a[1] = trian.a[2] = 1;
+	t.vertex(0) = {0.10f, 0.10f, 0.20f};
+	t.vertex(1) = {0.10f, 0.10f, 0.05f};
+	t.vertex(2) = {-0.20f, 0.10f, 0.05f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 7
 
-	trian.x[0] = 0.00f;
-	trian.x[1] = 0.00f;
-	trian.x[2] = 0.05f;
-	trian.y[0] = 0.11f;
-	trian.y[1] = 0.11f;
-	trian.y[2] = 0.11f;
-	trian.z[0] = 0.00f;
-	trian.z[1] = 0.10f;
-	trian.z[2] = 0.05f;
-	obj->insertTriangle(trian);  // 8
-	trian.x[0] = 0.00f;
-	trian.x[1] = 0.00f;
-	trian.x[2] = -0.05f;
-	trian.y[0] = 0.11f;
-	trian.y[1] = 0.11f;
-	trian.y[2] = 0.11f;
-	trian.z[0] = 0.00f;
-	trian.z[1] = 0.10f;
-	trian.z[2] = 0.05f;
-	obj->insertTriangle(trian);  // 9
+	t.setColor(mrpt::img::TColorf(0.05f, 0.05f, 0.05f, 1));
 
-	trian.x[0] = 0.00f;
-	trian.x[1] = 0.00f;
-	trian.x[2] = 0.05f;
-	trian.y[0] = -0.11f;
-	trian.y[1] = -0.11f;
-	trian.y[2] = -0.11f;
-	trian.z[0] = 0.00f;
-	trian.z[1] = 0.10f;
-	trian.z[2] = 0.05f;
-	obj->insertTriangle(trian);  // 10
-	trian.x[0] = 0.00f;
-	trian.x[1] = 0.00f;
-	trian.x[2] = -0.05f;
-	trian.y[0] = -0.11f;
-	trian.y[1] = -0.11f;
-	trian.y[2] = -0.11f;
-	trian.z[0] = 0.00f;
-	trian.z[1] = 0.10f;
-	trian.z[2] = 0.05f;
-	obj->insertTriangle(trian);  // 11
+	t.vertex(0) = {0.00f, 0.11f, 0.00f};
+	t.vertex(1) = {0.00f, 0.11f, 0.10f};
+	t.vertex(2) = {0.05f, 0.11f, 0.05f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 8
+	t.vertex(0) = {0.00f, 0.11f, 0.00f};
+	t.vertex(1) = {0.00f, 0.11f, 0.10f};
+	t.vertex(2) = {-0.05f, 0.11f, 0.05f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 9
+
+	t.vertex(0) = {0.00f, -0.11f, 0.00f};
+	t.vertex(1) = {0.00f, -0.11f, 0.10f};
+	t.vertex(2) = {0.05f, -0.11f, 0.05f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 10
+	t.vertex(0) = {0.00f, -0.11f, 0.00f};
+	t.vertex(1) = {0.00f, -0.11f, 0.10f};
+	t.vertex(2) = {-0.05f, -0.11f, 0.05f};
+	t.computeNormals();
+	obj->insertTriangle(t);  // 11
 
 	ret->insert(obj);
 
@@ -214,7 +141,6 @@ CSetOfObjects::Ptr stock_objects::CornerXYZ(float scale)
 		0, 0, 0, scale, 0, 0, 0.25f * scale, 0.02f * scale, 0.05f * scale);
 
 	obj->setColor(1, 0, 0);
-
 	ret->insert(obj);
 
 	obj = CArrow::Create(
@@ -252,7 +178,7 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 		opengl::CPolyhedron::CreateCustomPrism(level1, 0.38);
 	obj1->setLocation(0, 0, height);
 	height += 0.38f;
-	obj1->setColor(0.6, 0.6, 0.6);
+	obj1->setColor(0.6f, 0.6f, 0.6f);
 	ret->insert(obj1);
 
 	vector<TPoint2D> level2;
@@ -265,7 +191,7 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 		opengl::CPolyhedron::CreateCustomPrism(level2, 0.35);
 	obj2->setLocation(0, 0, height);
 	height += 0.35f;
-	obj2->setColor(0.2, 0.2, 0.2);
+	obj2->setColor(0.2f, 0.2f, 0.2f);
 	ret->insert(obj2);
 
 	vector<TPoint2D> level3;
@@ -277,19 +203,19 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 	CPolyhedron::Ptr obj3 = opengl::CPolyhedron::CreateCustomPrism(level3, 1);
 	obj3->setLocation(0, 0, height);
 	// height+=1;
-	obj3->setColor(0.6, 0.6, 0.6);
+	obj3->setColor(0.6f, 0.6f, 0.6f);
 	ret->insert(obj3);
 
 	opengl::CCylinder::Ptr obj4 =
-		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
+		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20);
 	obj4->setLocation(0, 0, 0.73);
-	obj4->setColor(0, 0, 0.9);
+	obj4->setColor(0.0f, 0.0f, 0.9f);
 	ret->insert(obj4);
 
 	opengl::CCylinder::Ptr obj5 =
-		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
+		std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20);
 	obj5->setPose(CPose3D(0.32, 0, 0.89, 0, -1, 0));
-	obj5->setColor(0, 0, 0.9);
+	obj5->setColor(0.0f, 0.0f, 0.9f);
 	ret->insert(obj5);
 
 	return ret;
@@ -316,7 +242,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 		opengl::CPolyhedron::CreateCustomPrism(level1, 0.23);
 	obj1->setLocation(0, 0, height);
 	height += 0.23f;
-	obj1->setColor(1.0, 0.6, 0.0);
+	obj1->setColor(1.0f, 0.6f, 0.0f);
 	ret->insert(obj1);
 
 	// Electronic's cage
@@ -330,7 +256,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 		opengl::CPolyhedron::CreateCustomPrism(level2, 0.45);
 	obj2->setLocation(0, 0, height);
 	height += 0.45f;
-	obj2->setColor(1.0, 0.6, 0.2);
+	obj2->setColor(1.0f, 0.6f, 0.2f);
 	ret->insert(obj2);
 
 	// Neck
@@ -344,7 +270,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 		opengl::CPolyhedron::CreateCustomPrism(level3, 0.55);
 	obj3->setLocation(0, 0, height);
 	height += 0.55f;
-	obj3->setColor(0.6, 0.6, 0.6);
+	obj3->setColor(0.6f, 0.6f, 0.6f);
 	ret->insert(obj3);
 
 	// Screen
@@ -356,7 +282,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 
 	CPolyhedron::Ptr obj4 = opengl::CPolyhedron::CreateCustomPrism(level4, 0.4);
 	obj4->setLocation(0, 0, height);
-	obj4->setColor(1.0, 0.6, 0.0);
+	obj4->setColor(1.0f, 0.6f, 0.0f);
 	ret->insert(obj4);
 
 	return ret;
@@ -395,16 +321,16 @@ CSetOfObjects::Ptr stock_objects::BumblebeeCamera()
 
 	CPolyhedron::Ptr rect = opengl::CPolyhedron::CreateCubicPrism(
 		-0.02, 0.14, -0.02, 0.02, 0, -0.04);
-	rect->setColor(1, 0.8, 0);
+	rect->setColor(1.0f, 0.8f, 0.0f);
 
 	camera->insert(rect);
 
 	CCylinder::Ptr lCam =
-		std::make_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10, 10);
+		std::make_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10);
 	lCam->setColor(1, 0, 0);
 
 	CCylinder::Ptr rCam =
-		std::make_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10, 10);
+		std::make_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10);
 	rCam->setPose(CPose3D(0.12, 0, 0));
 	rCam->setColor(0, 0, 0);
 
@@ -418,25 +344,26 @@ CSetOfObjects::Ptr stock_objects::CornerXYZSimple(float scale, float lineWidth)
 {
 	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	// Using OpenGL shaders, it's more complicated to set line widths.
+	// So, let's use cylinders of a diameter proportional to "scale":
+	const float R = scale * 0.01f;
+	const int nSlices = 6;
+
+	{  // X:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(1, 0, 0);
-		lin->setLineCoords(0, 0, 0, scale, 0, 0);
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 90 0]"));
 		ret->insert(lin);
 	}
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	{  // Y:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(0, 1, 0);
-		lin->setLineCoords(0, 0, 0, 0, scale, 0);
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 90]"));
 		ret->insert(lin);
 	}
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	{  // Z:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(0, 0, 1);
-		lin->setLineCoords(0, 0, 0, 0, 0, scale);
 		ret->insert(lin);
 	}
 	return ret;
@@ -446,18 +373,21 @@ CSetOfObjects::Ptr stock_objects::CornerXYSimple(float scale, float lineWidth)
 {
 	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	// Using OpenGL shaders, it's more complicated to set line widths.
+	// So, let's use cylinders of a diameter proportional to "scale":
+	const float R = scale * 0.01f;
+	const int nSlices = 6;
+
+	{  // X:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(1, 0, 0);
-		lin->setLineCoords(0, 0, 0, scale, 0, 0);
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 90 0]"));
 		ret->insert(lin);
 	}
-	{
-		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
-		lin->setLineWidth(lineWidth);
+	{  // Y:
+		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(0, 1, 0);
-		lin->setLineCoords(0, 0, 0, 0, scale, 0);
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 90]"));
 		ret->insert(lin);
 	}
 	return ret;
@@ -470,7 +400,7 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_URG()
 	{
 		CBox::Ptr base = std::make_shared<CBox>(
 			TPoint3D(-0.025, -0.025, -0.0575), TPoint3D(0.025, 0.025, -0.0185));
-		base->setColor(0.7, 0.7, 0.7);
+		base->setColor(0.7f, 0.7f, 0.7f);
 		ret->insert(base);
 	}
 	{
@@ -517,7 +447,7 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_UTM()
 	{
 		CCylinder::Ptr cyl2 =
 			std::make_shared<CCylinder>(0.028f, 0.028f, 0.01f);
-		cyl2->setColor(1, 69 / 255.0, 0);
+		cyl2->setColor(1.0f, 69.0f / 255.0f, 0);
 		cyl2->setLocation(0, 0, 0.014);
 		ret->insert(cyl2);
 	}
@@ -539,7 +469,7 @@ CSetOfObjects::Ptr stock_objects::Househam_Sprayer()
 	{
 		CBox::Ptr cabin = std::make_shared<CBox>(
 			TPoint3D(0.878, 0.723, -0.12), TPoint3D(-0.258, -0.723, -1.690));
-		cabin->setColor(0.7, 0.7, 0.7);
+		cabin->setColor(0.7f, 0.7f, 0.7f);
 		ret->insert(cabin);
 	}
 	{

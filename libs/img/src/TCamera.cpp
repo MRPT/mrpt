@@ -43,7 +43,7 @@ void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << focalLengthMeters;
 	// v3: from 5 to 8 dist params:
-	for (unsigned int k = 0; k < dist.size(); k++) out << dist[k];
+	for (size_t k = 0; k < dist.size(); k++) out << dist[k];
 	// v4: only store the 4 relevant values:
 	out << fx() << fy() << cx() << cy();
 	// version 0 did serialize here a "CMatrixDouble15"

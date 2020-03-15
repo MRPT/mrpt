@@ -8,7 +8,9 @@
 project(kinect-stereo-calib)
 
 mrpt_return_if_not_wxwidgets()
-
+if (NOT CMAKE_MRPT_HAS_OPENGL_GLUT)
+	return()
+endif()
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------

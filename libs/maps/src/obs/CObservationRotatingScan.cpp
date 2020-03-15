@@ -390,8 +390,8 @@ void RotScan::fromScan2D(const mrpt::obs::CObservation2DRangeScan& o)
 
 		// Convert range into discrete units:
 		const float r = o.getScanRange(i);
-		const uint16_t r_discr = static_cast<uint16_t>(
-			(r / static_cast<float>(rangeResolution)) + 0.5f);
+		const uint16_t r_discr =
+			static_cast<uint16_t>((r / d2f(rangeResolution)) + 0.5f);
 
 		if (!o.getScanRangeValidity(i) || r <= 0 || r >= o.maxRange) continue;
 

@@ -386,7 +386,7 @@ void CReflectivityGridMap2D::getAs3DObject(
 		}
 	}
 
-	outObj->assignImage_fast(imgColor, imgTrans);
+	outObj->assignImage(imgColor, imgTrans);
 	outSetOfObj->insert(outObj);
 
 	MRPT_END

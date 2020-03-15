@@ -138,9 +138,7 @@ void CSkeletonTracker::processPreviewNone()
 		{
 			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
 			{
-				m_win->addTextMessage(
-					0.35, 0.9, "Please, adopt this position", TColorf(1, 1, 1),
-					"mono", 10, mrpt::opengl::FILL, 0);
+				m_win->addTextMessage(0.35, 0.9, "Please, adopt this position");
 
 				// insert translucid dummy and help text (it will go away when
 				// measurements are taken)

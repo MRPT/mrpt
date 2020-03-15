@@ -4,8 +4,7 @@
 # -------------------------------------------------
 
 # Glext headers only (for Windows)
-include_directories(${CVD_DIR})
-
+#include_directories(${CVD_DIR})
 
 # Assimp:
 if (CMAKE_MRPT_HAS_ASSIMP)
@@ -39,9 +38,6 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-opengl)
-	add_dependencies(opengl libcvd)
-	include_directories(${CVD_INCLUDE_DIRS})
-
 	# https://developer.apple.com/macos/whats-new/#deprecationofopenglandopencl
  	if (APPLE)
 		target_compile_definitions(opengl PRIVATE GL_SILENCE_DEPRECATION)
@@ -50,7 +46,6 @@ if(BUILD_mrpt-opengl)
 	# Link against gl, glu, glut:
 	target_link_libraries(opengl PRIVATE
 		${MRPT_OPENGL_LIBS}
-		${CVD_LIB}
 		)
 	if (TARGET mrpt_glew) # Basically, for Windows
 		target_link_libraries(opengl PRIVATE mrpt_glew)

@@ -199,8 +199,8 @@ bool mrpt::obs::carmen_log_parse_line(
 								 "laser_rear_laser_resolution", "0.5"s)
 							 .c_str());
 			}
-			obsLaser->maxRange = maxRange;
-			obsLaser->aperture = DEG2RAD(resolutionDeg) * nRanges;
+			obsLaser->maxRange = d2f(maxRange);
+			obsLaser->aperture = d2f(DEG2RAD(resolutionDeg) * nRanges);
 		}
 
 		obsLaser->resizeScan(nRanges);

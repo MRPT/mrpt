@@ -16,8 +16,7 @@ using namespace std;
 CMyGLCanvas::CMyGLCanvas(
 	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
 	long style, const wxString& name)
-	: CWxGLCanvasBase(parent, id, pos, size, style, name),
-	  last_timestamp(INVALID_TIMESTAMP)
+	: CWxGLCanvasBase(parent, id, pos, size, style, name)
 {
 	setCameraPointing(0.0f, 0.0f, 0.0f);
 	setZoomDistance(20.0f);
@@ -30,12 +29,6 @@ CMyGLCanvas::~CMyGLCanvas() = default;
 void CMyGLCanvas::OnRenderError(const wxString& str) {}
 void CMyGLCanvas::OnPreRender() {}
 void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc) {}
-void CMyGLCanvas::OnPostRender()
-{
-	// Show credits on the screen??
-	if (last_timestamp != INVALID_TIMESTAMP)
-		mrpt::opengl::CRenderizable::renderTextBitmap(
-			20, 20, mrpt::system::dateTimeLocalToString(last_timestamp));
-}
+void CMyGLCanvas::OnPostRender() {}
 
 #endif

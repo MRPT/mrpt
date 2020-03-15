@@ -9,8 +9,11 @@
 
 #pragma once
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -29,7 +32,9 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  */
 
-class CVectorField2D : public CRenderizableDisplayList
+class CVectorField2D : public CRenderizableShaderPoints,
+					   public CRenderizableShaderTriangles,
+					   public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CVectorField2D, mrpt::opengl)
    protected:
@@ -39,18 +44,33 @@ class CVectorField2D : public CRenderizableDisplayList
 	mrpt::math::CMatrixF ycomp;
 
 	/** Grid bounds */
-	float xMin{-1.0}, xMax{1.0}, yMin{-1.0}, yMax{1.0};
-	/** By default is 1.0 */
-	float m_LineWidth{1.0};
-	/** By default is 1.0 */
-	float m_pointSize{1.0};
-	/** By default is true */
-	bool m_antiAliasing{true};
+	float xMin{-1.0f}, xMax{1.0f}, yMin{-1.0f}, yMax{1.0f};
 
 	mrpt::img::TColor m_point_color;
 	mrpt::img::TColor m_field_color;
 
    public:
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+		CRenderizableShaderPoints::freeOpenGLResources();
+	}
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+				DefaultShaderID::POINTS};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	void onUpdateBuffers_Points() override;
+	/** @} */
+
 	/**
 	 * Clear the matrices
 	 */
@@ -58,7 +78,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	{
 		xcomp.resize(0, 0);
 		ycomp.resize(0, 0);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -67,8 +87,8 @@ class CVectorField2D : public CRenderizableDisplayList
 	inline void setPointColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_point_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
-		CRenderizableDisplayList::notifyChange();
+		m_point_color = mrpt::img::TColor(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -85,8 +105,8 @@ class CVectorField2D : public CRenderizableDisplayList
 	inline void setVectorFieldColor(
 		const float R, const float G, const float B, const float A = 1)
 	{
-		m_field_color = mrpt::img::TColor(R * 255, G * 255, B * 255, A * 255);
-		CRenderizableDisplayList::notifyChange();
+		m_field_color = mrpt::img::TColor(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -98,32 +118,6 @@ class CVectorField2D : public CRenderizableDisplayList
 	}
 
 	/**
-	 * Set the size with which points will be drawn. By default 1.0
-	 */
-	inline void setPointSize(const float p)
-	{
-		m_pointSize = p;
-		CRenderizableDisplayList::notifyChange();
-	}
-
-	/**
-	 * Get the size with which points are drawn. By default 1.0
-	 */
-	inline float getPointSize() const { return m_pointSize; }
-	/**
-	 * Set the width with which lines will be drawn.
-	 */
-	inline void setLineWidth(const float w)
-	{
-		m_LineWidth = w;
-		CRenderizableDisplayList::notifyChange();
-	}
-
-	/**
-	 * Get the width with which lines are drawn.
-	 */
-	float getLineWidth() const { return m_LineWidth; }
-	/**
 	 * Set the coordinates of the grid on where the vector field will be drawn
 	 * by setting its center and the cell size.
 	 * The number of cells is marked by the content of xcomp and ycomp.
@@ -133,11 +127,11 @@ class CVectorField2D : public CRenderizableDisplayList
 		const float center_x, const float center_y, const float cellsize_x,
 		const float cellsize_y)
 	{
-		xMin = center_x - 0.5 * cellsize_x * (xcomp.cols() - 1);
-		xMax = center_x + 0.5 * cellsize_x * (xcomp.cols() - 1);
-		yMin = center_y - 0.5 * cellsize_y * (xcomp.rows() - 1);
-		yMax = center_y + 0.5 * cellsize_y * (xcomp.rows() - 1);
-		CRenderizableDisplayList::notifyChange();
+		xMin = center_x - 0.5f * cellsize_x * (xcomp.cols() - 1);
+		xMax = center_x + 0.5f * cellsize_x * (xcomp.cols() - 1);
+		yMin = center_y - 0.5f * cellsize_y * (xcomp.rows() - 1);
+		yMax = center_y + 0.5f * cellsize_y * (xcomp.rows() - 1);
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -151,7 +145,7 @@ class CVectorField2D : public CRenderizableDisplayList
 		xMax = xmax;
 		yMin = ymin;
 		yMax = ymax;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -206,7 +200,7 @@ class CVectorField2D : public CRenderizableDisplayList
 			(Matrix_x.cols() == Matrix_y.cols()));
 		xcomp = Matrix_x;
 		ycomp = Matrix_y;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/**
@@ -221,7 +215,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	{
 		xcomp.resize(rows, cols);
 		ycomp.resize(rows, cols);
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
 	/** Returns the total count of rows used to represent the vector field. */
@@ -229,12 +223,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	/** Returns the total count of columns used to represent the vector field.
 	 */
 	inline size_t rows() const { return xcomp.rows(); }
-	/** Render
-	 */
-	void render_dl() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
 	void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
@@ -242,7 +231,7 @@ class CVectorField2D : public CRenderizableDisplayList
 	void enableAntiAliasing(bool enable = true)
 	{
 		m_antiAliasing = enable;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 	/** Constructor */
