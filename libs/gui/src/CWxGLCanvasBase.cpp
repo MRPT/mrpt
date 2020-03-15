@@ -112,8 +112,15 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 #if wxCHECK_VERSION(2, 9, 5)
 		wxTheApp->SafeYieldFor(nullptr, wxEVT_CATEGORY_TIMER);
 #endif
-		Refresh();
-		Update();
+
+		// Decimate the update rate of the window, to avoid flicker:
+		static int cnt = 0;
+		if (cnt++ == 0)
+		{
+			Refresh();
+			Update();
+		}
+		if (cnt == 10) cnt = 0;
 	}
 
 	// ensure we have the focus so we get keyboard events:
