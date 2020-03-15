@@ -1,4 +1,4 @@
-/* +------------------------------------------------------------------------+
+﻿/* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
@@ -28,7 +28,6 @@
 #endif
 #endif
 
-#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
@@ -40,60 +39,95 @@ using mrpt::img::CImage;
 
 IMPLEMENTS_SERIALIZABLE(CAssimpModel, CRenderizable, mrpt::opengl)
 
+struct RenderElements
+{
+	std::vector<mrpt::math::TPoint3Df>* lines_vbd = nullptr;
+	std::vector<mrpt::img::TColor>* lines_cbd = nullptr;
+	std::vector<mrpt::math::TPoint3Df>* pts_vbd = nullptr;
+	std::vector<mrpt::img::TColor>* pts_cbd = nullptr;
+	std::vector<mrpt::opengl::TTriangle>* tris = nullptr;
+};
+
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-void recursive_render(
-	const aiScene* sc, const aiNode* nd,
-	const std::vector<unsigned int>& textureIds,
-	const std::map<std::string, CAssimpModel::TInfoPerTexture>& textureIdMap);
-void apply_material(
-	const aiMaterial* mtl, const std::vector<unsigned int>& textureIds,
-	const std::map<std::string, CAssimpModel::TInfoPerTexture>& textureIdMap);
-void set_float4(float f[4], float a, float b, float c, float d);
-void color4_to_float4(const aiColor4D* c, float f[4]);
-void get_bounding_box(const aiScene* sc, aiVector3D* min, aiVector3D* max);
-void get_bounding_box_for_node(
+// Note: Look at older git versions to see pre-OpenGL3 version with more texture
+// supports, etc. load_textures(), etc.
+static void recursive_render(
+	const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
+	RenderElements& re);
+
+// Just return the diffuse color:
+static mrpt::img::TColor apply_material(const aiMaterial* mtl);
+static void get_bounding_box(
+	const aiScene* sc, aiVector3D* min, aiVector3D* max);
+static void get_bounding_box_for_node(
 	const aiScene* sc, const aiNode* nd, aiVector3D* min, aiVector3D* max,
 	aiMatrix4x4* trafo);
-void load_textures(
-	const aiScene* scene, std::vector<unsigned int>& textureIds,
-	std::map<std::string, CAssimpModel::TInfoPerTexture>& textureIdMap,
-	const std::string& modelPath);
 #endif  // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 
-void CAssimpModel::renderUpdateBuffers() const
-{
-	//
-	MRPT_TODO("Implement me!");
-}
 void CAssimpModel::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-	MRPT_START
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::POINTS:
+			CRenderizableShaderPoints::render(rc);
+			break;
+		case DefaultShaderID::TRIANGLES:
+			CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CAssimpModel::renderUpdateBuffers() const
+{
+	// Process all elements at once:
+	const_cast<CAssimpModel&>(*this).onUpdateBuffers_all();
+
+	CRenderizableShaderPoints::renderUpdateBuffers();
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
+
+// special case for assimp: update all buffers within one run over the scene
+// structure.
+void CAssimpModel::onUpdateBuffers_all()
+{
+	auto& lines_vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& lines_cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	lines_vbd.clear();
+	lines_cbd.clear();
+
+	auto& pts_vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& pts_cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	pts_vbd.clear();
+	pts_cbd.clear();
+
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
 
 	if (!m_assimp_scene->scene) return;  // No scene
 
-	auto* scene = (aiScene*)m_assimp_scene->scene;
+	RenderElements re;
+	re.lines_vbd = &lines_vbd;
+	re.lines_cbd = &lines_cbd;
+	re.pts_vbd = &pts_vbd;
+	re.pts_cbd = &pts_cbd;
+	re.tris = &tris;
 
-	glDisable(GL_CULL_FACE);
-	// glFrontFace(GL_CW);
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+	auto* scene = reinterpret_cast<aiScene*>(m_assimp_scene->scene);
 
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	glEnable(GL_NORMALIZE);
+	const auto transf = mrpt::poses::CPose3D();
 
-	if (!m_textures_loaded)
-	{
-		load_textures(scene, m_textureIds, m_textureIdMap, m_modelPath);
-		m_textures_loaded = true;
-	}
-
-	recursive_render(scene, scene->mRootNode, m_textureIds, m_textureIdMap);
-
-	glDisable(GL_NORMALIZE);
-	glDisable(GL_TEXTURE_2D);
-
-	MRPT_END
+	recursive_render(scene, scene->mRootNode, transf, re);
 #endif
 }
+
+// These 3: already done in onUpdateBuffers_all()
+void CAssimpModel::onUpdateBuffers_Wireframe() {}
+void CAssimpModel::onUpdateBuffers_Points() {}
+void CAssimpModel::onUpdateBuffers_Triangles() {}
 
 uint8_t CAssimpModel::serializeGetVersion() const { return 0; }
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
@@ -148,15 +182,17 @@ void CAssimpModel::clear()
 	CRenderizable::notifyChange();
 	m_assimp_scene = std::make_shared<TImplAssimp>();
 	m_modelPath.clear();
-	m_textures_loaded = false;
+	// m_textures_loaded = false;
 
 #if MRPT_HAS_OPENGL_GLUT
+#if 0
 	if (!m_textureIds.empty())
 	{
 		glDeleteTextures(m_textureIds.size(), &m_textureIds[0]);
 		m_textureIds.clear();
 	}
 	m_textureIdMap.clear();
+#endif
 #endif
 }
 
@@ -187,17 +223,6 @@ void CAssimpModel::loadScene(const std::string& filepath)
 
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
-#endif
-}
-
-void CAssimpModel::evaluateAnimation(double time_anim)
-{
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-// if (m_assimp_scene->file)
-//{
-//	CRenderizable::notifyChange();
-//	lib3ds_file_eval( (Lib3dsFile*) m_assimp_scene->file, time_anim );
-//}
 #endif
 }
 
@@ -235,8 +260,7 @@ bool CAssimpModel::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 
-// ----------------------------------------------------------------------------
-void get_bounding_box_for_node(
+static void get_bounding_box_for_node(
 	const aiScene* scene, const aiNode* nd, aiVector3D* min, aiVector3D* max,
 	aiMatrix4x4* trafo)
 {
@@ -271,8 +295,8 @@ void get_bounding_box_for_node(
 	*trafo = prev;
 }
 
-// ----------------------------------------------------------------------------
-void get_bounding_box(const aiScene* scene, aiVector3D* min, aiVector3D* max)
+static void get_bounding_box(
+	const aiScene* scene, aiVector3D* min, aiVector3D* max)
 {
 	aiMatrix4x4 trafo;
 	aiIdentityMatrix4(&trafo);
@@ -282,359 +306,170 @@ void get_bounding_box(const aiScene* scene, aiVector3D* min, aiVector3D* max)
 	get_bounding_box_for_node(scene, scene->mRootNode, min, max, &trafo);
 }
 
-// ----------------------------------------------------------------------------
-void color4_to_float4(const aiColor4D* c, float f[4])
+static mrpt::img::TColor color4_to_TColor(const aiColor4D& c)
 {
-	f[0] = c->r;
-	f[1] = c->g;
-	f[2] = c->b;
-	f[3] = c->a;
+	return mrpt::img::TColorf(c.r, c.g, c.b, c.a).asTColor();
 }
 
-// ----------------------------------------------------------------------------
-void set_float4(float f[4], float a, float b, float c, float d)
+static mrpt::img::TColor apply_material(const aiMaterial* mtl)
 {
-	f[0] = a;
-	f[1] = b;
-	f[2] = c;
-	f[3] = d;
-}
-
-// ----------------------------------------------------------------------------
-void apply_material(
-	const aiMaterial* mtl, const std::vector<unsigned int>& textureIds,
-	const std::map<std::string, CAssimpModel::TInfoPerTexture>& textureIdMap)
-{
-	float c[4];
-
-	GLenum fill_mode;
-	int ret1, ret2;
 	aiColor4D diffuse;
-	aiColor4D specular;
-	aiColor4D ambient;
-	aiColor4D emission;
-	float shininess, strength;
-	int two_sided;
-	int wireframe;
-	unsigned int max;
-
-	int texIndex = 0;
-	aiString texPath;  // contains filename of texture
-
-	if (AI_SUCCESS ==
-		mtl->GetTexture(aiTextureType_DIFFUSE, texIndex, &texPath))
-	{
-		// bind texture
-		auto it = textureIdMap.find(texPath.data);
-		if (it == textureIdMap.end())
-		{
-			std::cerr << "[CAssimpModel] Error: using un-loaded texture '"
-					  << texPath.data << "'\n";
-		}
-		else
-		{
-			unsigned int texId = textureIds[it->second.id_idx];
-			glBindTexture(GL_TEXTURE_2D, texId);
-		}
-	}
-
-	set_float4(c, 0.8f, 0.8f, 0.8f, 1.0f);
 	if (AI_SUCCESS ==
 		aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
-		color4_to_float4(&diffuse, c);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c);
-
-	set_float4(c, 0.0f, 0.0f, 0.0f, 1.0f);
-	if (AI_SUCCESS ==
-		aiGetMaterialColor(mtl, AI_MATKEY_COLOR_SPECULAR, &specular))
-		color4_to_float4(&specular, c);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
-
-	set_float4(c, 0.2f, 0.2f, 0.2f, 1.0f);
-	if (AI_SUCCESS ==
-		aiGetMaterialColor(mtl, AI_MATKEY_COLOR_AMBIENT, &ambient))
-		color4_to_float4(&ambient, c);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c);
-
-	set_float4(c, 0.0f, 0.0f, 0.0f, 1.0f);
-	if (AI_SUCCESS ==
-		aiGetMaterialColor(mtl, AI_MATKEY_COLOR_EMISSIVE, &emission))
-		color4_to_float4(&emission, c);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, c);
-
-	max = 1;
-	ret1 = aiGetMaterialFloatArray(mtl, AI_MATKEY_SHININESS, &shininess, &max);
-	if (ret1 == AI_SUCCESS)
 	{
-		max = 1;
-		ret2 = aiGetMaterialFloatArray(
-			mtl, AI_MATKEY_SHININESS_STRENGTH, &strength, &max);
-		if (ret2 == AI_SUCCESS)
-			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess * strength);
-		else
-			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+		return color4_to_TColor(diffuse);
 	}
 	else
 	{
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.0f);
-		set_float4(c, 0.0f, 0.0f, 0.0f, 0.0f);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
+		// Default color:
+		return {0xa0, 0xa0, 0xa0, 0xff};
 	}
-
-	max = 1;
-	if (AI_SUCCESS == aiGetMaterialIntegerArray(
-						  mtl, AI_MATKEY_ENABLE_WIREFRAME, &wireframe, &max))
-		fill_mode = wireframe ? GL_LINE : GL_FILL;
-	else
-		fill_mode = GL_FILL;
-	glPolygonMode(GL_FRONT_AND_BACK, fill_mode);
-
-	max = 1;
-	if ((AI_SUCCESS == aiGetMaterialIntegerArray(
-						   mtl, AI_MATKEY_TWOSIDED, &two_sided, &max)) &&
-		two_sided)
-		glDisable(GL_CULL_FACE);
-	else
-		glEnable(GL_CULL_FACE);
 }
 
-// Can't send color down as a pointer to aiColor4D because AI colors are ABGR.
-void Color4f(const aiColor4D* color)
+static mrpt::math::CMatrixDouble44 aiMatrix_to_mrpt(const aiMatrix4x4& m)
 {
-	glColor4f(color->r, color->g, color->b, color->a);
+	mrpt::math::CMatrixDouble44 M;
+	M(0, 0) = m.a1;
+	M(0, 1) = m.a2;
+	M(0, 2) = m.a3;
+	M(0, 3) = m.a4;
+
+	M(1, 0) = m.b1;
+	M(1, 1) = m.b2;
+	M(1, 2) = m.b3;
+	M(1, 3) = m.b4;
+
+	M(2, 0) = m.c1;
+	M(2, 1) = m.c2;
+	M(2, 2) = m.c3;
+	M(2, 3) = m.c4;
+
+	M(3, 0) = m.d1;
+	M(3, 1) = m.d2;
+	M(3, 2) = m.d3;
+	M(3, 3) = m.d4;
+	return M;
 }
 
-// ----------------------------------------------------------------------------
-void recursive_render(
-	const aiScene* sc, const aiNode* nd,
-	const std::vector<unsigned int>& textureIds,
-	const std::map<std::string, CAssimpModel::TInfoPerTexture>& textureIdMap)
+static mrpt::math::TPoint3Df to_mrpt(const aiVector3D& v)
 {
-	unsigned int i;
-	unsigned int n = 0, t;
+	return {v.x, v.y, v.z};
+}
+
+static void recursive_render(
+	const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
+	RenderElements& re)
+{
 	aiMatrix4x4 m = nd->mTransformation;
 
 	// update transform
-	m.Transpose();
-	glPushMatrix();
-	glMultMatrixf((float*)&m);
+	const auto nodeTransf = mrpt::poses::CPose3D(aiMatrix_to_mrpt(m));
+	const mrpt::poses::CPose3D curTf = transf + nodeTransf;
 
 	// draw all meshes assigned to this node
-	for (; n < nd->mNumMeshes; ++n)
+	for (unsigned int n = 0; n < nd->mNumMeshes; ++n)
 	{
 		const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
 
-		apply_material(
-			sc->mMaterials[mesh->mMaterialIndex], textureIds, textureIdMap);
+		mrpt::img::TColor color =
+			apply_material(sc->mMaterials[mesh->mMaterialIndex]);
 
-		for (t = 0; t < mesh->mNumFaces; ++t)
+		for (unsigned int t = 0; t < mesh->mNumFaces; ++t)
 		{
 			const struct aiFace* face = &mesh->mFaces[t];
-			GLenum face_mode;
 
 			switch (face->mNumIndices)
 			{
 				case 1:
-					face_mode = GL_POINTS;
+					// GL_POINTS ================
+					for (unsigned int i = 0; i < face->mNumIndices; i++)
+					{
+						// get group index for current index
+						int vertexIndex = face->mIndices[i];
+						if (mesh->mColors[0] != nullptr)
+							color =
+								color4_to_TColor(mesh->mColors[0][vertexIndex]);
+
+						re.pts_vbd->emplace_back(curTf.composePoint(
+							to_mrpt(mesh->mVertices[vertexIndex])));
+						re.pts_cbd->emplace_back(color);
+					}
 					break;
+
 				case 2:
-					face_mode = GL_LINES;
+					// GL_LINES ================
+					for (unsigned int i = 0; i < face->mNumIndices; i++)
+					{
+						// get group index for current index
+						int vertexIndex = face->mIndices[i];
+						if (mesh->mColors[0] != nullptr)
+							color =
+								color4_to_TColor(mesh->mColors[0][vertexIndex]);
+
+						re.lines_vbd->emplace_back(curTf.composePoint(
+							to_mrpt(mesh->mVertices[vertexIndex])));
+						re.lines_cbd->emplace_back(color);
+					}
 					break;
+
 				case 3:
-					face_mode = GL_TRIANGLES;
-					break;
+				{
+					// GL_TRIANGLES ================
+					const unsigned int nTri = face->mNumIndices / 3;
+					ASSERT_EQUAL_(face->mNumIndices % 3, 0);
+
+					for (unsigned int iTri = 0; iTri < nTri; iTri++)
+					{
+						mrpt::opengl::TTriangle tri;
+						for (unsigned int v = 0; v < 3; v++)
+						{
+							unsigned int i = iTri * 3 + v;
+							// get group index for current index
+							int vertexIndex = face->mIndices[i];
+							if (mesh->mColors[0] != nullptr)
+								color = color4_to_TColor(
+									mesh->mColors[0][vertexIndex]);
+
+							tri.r(v) = color.R;
+							tri.g(v) = color.G;
+							tri.b(v) = color.B;
+							tri.a(v) = color.A;
+
+							// texture_coordinates_set=0
+							if (mesh->HasTextureCoords(0))
+							{
+								tri.vertices[v].uv.x =
+									mesh->mTextureCoords[0][vertexIndex].x;
+								tri.vertices[v].uv.y =
+									mesh->mTextureCoords[0][vertexIndex].y;
+							}
+
+							if (mesh->mNormals)
+								tri.vertices[v].normal = curTf.rotateVector(
+									to_mrpt(mesh->mNormals[vertexIndex]));
+
+							auto pt = curTf.composePoint(
+								to_mrpt(mesh->mVertices[vertexIndex]));
+							tri.x(v) = pt.x;
+							tri.y(v) = pt.y;
+							tri.z(v) = pt.z;
+						}
+
+						re.tris->emplace_back(std::move(tri));
+					}
+				}
+				break;
 				default:
-					face_mode = GL_POLYGON;
+					// GL_POLYGON ================
+					THROW_EXCEPTION("ASSIMP polygons not implemented yet.");
 					break;
 			}
-
-			glBegin(face_mode);
-
-			for (i = 0; i < face->mNumIndices;
-				 i++)  // go through all vertices in face
-			{
-				int vertexIndex =
-					face->mIndices[i];  // get group index for current index
-				if (mesh->mColors[0] != nullptr)
-					Color4f(&mesh->mColors[0][vertexIndex]);
-
-				if (mesh->HasTextureCoords(
-						0))  // HasTextureCoords(texture_coordinates_set)
-				{
-					glTexCoord2f(
-						mesh->mTextureCoords[0][vertexIndex].x,
-						1 - mesh->mTextureCoords[0][vertexIndex]
-								.y);  // mTextureCoords[channel][vertex]
-				}
-
-				if (mesh->mNormals)
-				{
-					glNormal3fv(&mesh->mNormals[vertexIndex].x);
-				}
-				glVertex3fv(&mesh->mVertices[vertexIndex].x);
-			}
-			glEnd();
 		}
 	}
 
 	// draw all children
-	for (n = 0; n < nd->mNumChildren; ++n)
-		recursive_render(sc, nd->mChildren[n], textureIds, textureIdMap);
-
-	glPopMatrix();
-}
-
-// http://stackoverflow.com/questions/3418231/replace-part-of-a-string-with-another-string
-void replaceAll(
-	std::string& str, const std::string& from, const std::string& to)
-{
-	if (from.empty()) return;
-	size_t start_pos = 0;
-	while ((start_pos = str.find(from, start_pos)) != std::string::npos)
-	{
-		str.replace(start_pos, from.length(), to);
-		start_pos += to.length();  // In case 'to' contains 'from', like
-		// replacing 'x' with 'yx'
-	}
-}
-
-void load_textures(
-	const aiScene* scene, std::vector<unsigned int>& textureIds,
-	std::map<std::string, CAssimpModel::TInfoPerTexture>& textureIdMap,
-	const std::string& modelPath)
-{
-	if (scene->HasTextures())
-		THROW_EXCEPTION(
-			"Support for meshes with embedded textures is not implemented");
-
-	textureIdMap.clear();
-
-	/* getTexture Filenames and no. of Textures */
-	for (unsigned int m = 0; m < scene->mNumMaterials; m++)
-	{
-		int texIndex = 0;
-		for (;;)
-		{
-			aiString path;  // filename
-			aiReturn texFound = scene->mMaterials[m]->GetTexture(
-				aiTextureType_DIFFUSE, texIndex, &path);
-			if (texFound == AI_SUCCESS)
-			{
-				CAssimpModel::TInfoPerTexture& ipt = textureIdMap[path.data];
-				ipt.id_idx = std::string::npos;  // fill map with textures,
-				// pointers still nullptr yet
-				texIndex++;
-			}
-			else
-				break;
-		}
-	}
-
-	int numTextures = textureIdMap.size();
-
-	/* create and fill array with GL texture ids */
-	textureIds.resize(numTextures);
-	if (numTextures)
-	{
-		glGenTextures(
-			numTextures, &textureIds[0]); /* Texture name generation */
-	}
-
-	/* get iterator */
-	auto itr = textureIdMap.begin();
-
-	std::string basepath = mrpt::system::filePathSeparatorsToNative(
-		mrpt::system::extractFileDirectory(modelPath));
-	for (int i = 0; i < numTextures; i++)
-	{
-		// save IL image ID
-		std::string filename = itr->first;  // get filename
-		CAssimpModel::TInfoPerTexture& ipt = itr->second;
-		ipt.id_idx = i;  // save texture id for filename in map
-		++itr;  // next texture
-
-		const std::string fileloc =
-			mrpt::system::filePathSeparatorsToNative(basepath + filename);
-
-		ipt.img_rgb = mrpt::img::CImage::Create();
-		ipt.img_alpha = mrpt::img::CImage::Create();
-		mrpt::img::CImage* img_rgb = ipt.img_rgb.get();
-		mrpt::img::CImage* img_a = ipt.img_alpha.get();
-
-		// Load images:
-		// TGA is handled specially since it's not supported by OpenCV:
-		bool load_ok;
-		if (mrpt::system::lowerCase(
-				mrpt::system::extractFileExtension(fileloc)) == string("tga"))
-		{
-			load_ok = CImage::loadTGA(fileloc, *img_rgb, *img_a);
-		}
-		else
-		{
-			load_ok = img_rgb->loadFromFile(fileloc);
-		}
-
-		if (load_ok)
-		{
-			// success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE); /* Convert
-			// every colour component into unsigned byte. If your image contains
-			// alpha channel you can replace IL_RGB with IL_RGBA */
-			glBindTexture(
-				GL_TEXTURE_2D, textureIds[i]); /* Binding of texture name */
-			// redefine standard texture values
-			glTexParameteri(
-				GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); /* We will use
-									  linear interpolation for magnification
-									  filter */
-			glTexParameteri(
-				GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); /* We will use
-									  linear interpolation for minifying filter
-									*/
-			// glTexImage2D(
-			//	GL_TEXTURE_2D,
-			//	0,
-			//	8 /*ilGetInteger(IL_IMAGE_BPP)*/,
-			//	/* ilGetInteger(IL_IMAGE_WIDTH)*/,
-			//	/*ilGetInteger(IL_IMAGE_HEIGHT)*/,
-			//	0,
-			//	/*ilGetInteger(IL_IMAGE_FORMAT)*/,
-			//	GL_UNSIGNED_BYTE,
-			//	ilGetData()); /* Texture specification */
-
-			const int width = img_rgb->getWidth();
-			const int height = img_rgb->getHeight();
-
-			// Prepare image data types:
-			const GLenum img_type = GL_UNSIGNED_BYTE;
-			const int nBytesPerPixel = img_rgb->isColor() ? 3 : 1;
-			// Reverse RGB <-> BGR order?
-			const bool is_RGB_order = (img_rgb->getChannelsOrder() == "RGB");
-			const GLenum img_format = nBytesPerPixel == 3
-										  ? (is_RGB_order ? GL_RGB : GL_BGR)
-										  : GL_LUMINANCE;
-
-			// Send image data to OpenGL:
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-			glPixelStorei(
-				GL_UNPACK_ROW_LENGTH, img_rgb->getRowStride() / nBytesPerPixel);
-			glTexImage2D(
-				GL_TEXTURE_2D, 0 /*level*/, 3 /* RGB components */, width,
-				height, 0 /*border*/, img_format, img_type,
-				img_rgb->ptrLine<uint8_t>(0));
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
-		}
-		else
-		{
-			/* Error occured */
-			const std::string sError = mrpt::format(
-				"[CAssimpModel] Couldn't load texture image: '%s'",
-				fileloc.c_str());
-			cout << sError << endl;
-#ifdef _MSC_VER
-			OutputDebugStringA(&sError[0]);
-#endif
-		}
-	}
+	for (unsigned int n = 0; n < nd->mNumChildren; ++n)
+		recursive_render(sc, nd->mChildren[n], curTf, re);
 }
 
 #endif  // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP

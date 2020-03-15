@@ -82,9 +82,9 @@ class CSetOfObjects : public CRenderizable
 		for (auto& o : m_objects)
 			if (o) o->freeOpenGLResources();
 	}
-	void initializeTextures() override
+	void initializeTextures() const override
 	{
-		for (auto& o : m_objects)
+		for (const auto& o : m_objects)
 			if (o) o->initializeTextures();
 	}
 

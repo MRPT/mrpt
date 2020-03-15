@@ -351,7 +351,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual void freeOpenGLResources() = 0;
 
 	/** Initializes all textures (loads them into opengl memory). */
-	virtual void initializeTextures() {}
+	virtual void initializeTextures() const {}
 
    protected:
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
