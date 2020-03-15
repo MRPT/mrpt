@@ -101,7 +101,14 @@ void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
 		setCameraParams(params);
 
 		updateCamerasParams();
-		update();
+
+		// Decimate the update rate of the window, to avoid flicker:
+		static int cnt = 0;
+		if (cnt++ == 0)
+		{
+			update();
+		}
+		if (cnt == 10) cnt = 0;
 	}
 
 	QOpenGLWidget::mouseMoveEvent(event);
