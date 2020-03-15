@@ -43,7 +43,7 @@ struct MonotonicToRealtimeEpoch
 static MonotonicToRealtimeEpoch m2r_epoch;
 static bool monotonic_epoch_init = false;
 
-static uint64_t getCurrentTime()
+static uint64_t getCurrentTime() noexcept
 {
 #ifdef _WIN32
 	FILETIME t;
@@ -121,7 +121,7 @@ void mrpt::Clock::setActiveClock(const Source s)
 
 mrpt::Clock::Source mrpt::Clock::getActiveClock() { return selectedClock; }
 
-int64_t mrpt::Clock::resetMonotonicToRealTimeEpoch()
+int64_t mrpt::Clock::resetMonotonicToRealTimeEpoch() noexcept
 {
 #if !defined(_WIN32)
 	timespec tim_rt{0, 0}, tim_mono{0, 0};
@@ -132,7 +132,14 @@ int64_t mrpt::Clock::resetMonotonicToRealTimeEpoch()
 
 	// Save the difference, which is what matters:
 	const auto old_diff = m2r_epoch.rt2mono_diff;
-	ASSERT_ABOVE_(m2r_epoch.realtime_ns, m2r_epoch.monotonic_ns);
+	if (m2r_epoch.realtime_ns < m2r_epoch.monotonic_ns)
+	{
+		std::cerr << "[mrpt::Clock::resetMonotonicToRealTimeEpoch] CRITICAL: "
+					 "Unreliable values: realtime_ns="
+				  << m2r_epoch.realtime_ns
+				  << " should be larger than monotonic_ns="
+				  << m2r_epoch.monotonic_ns << "\n";
+	}
 	m2r_epoch.rt2mono_diff = m2r_epoch.realtime_ns - m2r_epoch.monotonic_ns;
 
 	const int64_t err = monotonic_epoch_init

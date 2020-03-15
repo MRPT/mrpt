@@ -162,7 +162,7 @@ class CRandomFieldGridMap2D
 	// This method is just used for the ::saveToTextFile() method in base class.
 	float cell2float(const TRandomFieldCell& c) const override
 	{
-		return c.kf_mean;
+		return mrpt::d2f(c.kf_mean);
 	}
 
 	/** The type of map representation to be used, see CRandomFieldGridMap2D for

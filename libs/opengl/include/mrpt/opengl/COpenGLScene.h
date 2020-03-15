@@ -11,13 +11,11 @@
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CRenderizable.h>
 
-namespace mrpt
-{
 /** The namespace for 3D scene representation and rendering. See also the <a
  * href="mrpt-opengl.html" > summary page</a> of the mrpt-opengl library for
  * more info and thumbnails of many of the render primitive.
  */
-namespace opengl
+namespace mrpt::opengl
 {
 /** This class allows the user to create, load, save, and render 3D scenes using
  * OpenGL primitives.
@@ -59,20 +57,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(COpenGLScene, mrpt::opengl)
    public:
-	/** Constructor
-	 */
 	COpenGLScene();
-
-	/** Destructor:
-	 */
 	~COpenGLScene() override;
-
-	/** Copy operator:
-	 */
 	COpenGLScene& operator=(const COpenGLScene& obj);
-
-	/** Copy constructor:
-	 */
 	COpenGLScene(const COpenGLScene& obj);
 
 	/**
@@ -181,9 +168,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		const std::string& viewportName = std::string("main"));
 
 	/** Initializes all textures in the scene (See
-	 * opengl::CTexturedPlane::loadTextureInOpenGL)
+	 * opengl::CTexturedPlane::initializeTextures)
 	 */
-	void initializeAllTextures();
+	void initializeTextures();
 
 	/** Retrieves a list of all objects in text form.
 	 */
@@ -229,6 +216,12 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		MRPT_END
 	}
 
+	/** Ensure all shaders are unloaded in all viewports */
+	void unloadShaders();
+
+	/** Ensure all OpenGL buffers are destroyed. */
+	void freeOpenGLResources();
+
    protected:
 	bool m_followCamera{false};
 
@@ -269,6 +262,4 @@ inline COpenGLScene::Ptr& operator<<(
 	s->insert(v.begin(), v.end());
 	return s;
 }
-}  // namespace opengl
-
-}  // namespace mrpt
+}  // namespace mrpt::opengl

@@ -11,11 +11,17 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/format.h>
 #include <mrpt/math/TPoseOrPoint.h>
+#include <mrpt/math/math_frwds.h>  // CMatrixFixed
 #include <cmath>  // sqrt
 
 namespace mrpt::math
 {
-/** Trivially copiable underlying data for TPoint3D */
+// Ensure 1-byte memory alignment, no additional stride bytes.
+#pragma pack(push, 1)
+
+/** Trivially copiable underlying data for TPoint3D
+ * 1-byte memory packed, no padding]
+ */
 template <typename T>
 struct TPoint3D_data
 {
@@ -23,7 +29,8 @@ struct TPoint3D_data
 	T x, y, z;
 };
 
-/** Base template for TPoint3D and TPoint3Df
+/** Base template for TPoint3D and TPoint3Df.
+ * [1-byte memory packed, no padding]
  * \ingroup geometry_grp
  */
 template <typename T>
@@ -48,6 +55,15 @@ struct TPoint3D_ : public TPoseOrPoint,
 		TPoint3D_data<T>::x = static_cast<T>(p.x);
 		TPoint3D_data<T>::y = static_cast<T>(p.y);
 		TPoint3D_data<T>::z = static_cast<T>(p.z);
+	}
+
+	/** Constructor from column vector. */
+	template <typename U>
+	TPoint3D_(const mrpt::math::CMatrixFixed<U, 3, 1>& m)
+	{
+		TPoint3D_data<T>::x = static_cast<T>(m[0]);
+		TPoint3D_data<T>::y = static_cast<T>(m[1]);
+		TPoint3D_data<T>::z = static_cast<T>(m[2]);
 	}
 
 	/** Implicit constructor from TPoint2D. Zeroes the z.
@@ -132,6 +148,16 @@ struct TPoint3D_ : public TPoseOrPoint,
 
 	/** Point norm: |v| = sqrt(x^2+y^2+z^2) */
 	T norm() const { return std::sqrt(sqrNorm()); }
+
+	/** Returns this vector with unit length: v/norm(v) */
+	TPoint3D_<T> unitarize() const
+	{
+		const T n = norm();
+		ASSERT_ABOVE_(n, 0);
+		const T f = 1 / n;
+		return {TPoint3D_data<T>::x * f, TPoint3D_data<T>::y * f,
+				TPoint3D_data<T>::z * f};
+	}
 
 	/** Scale point/vector */
 	TPoint3D_<T>& operator*=(const T f)
@@ -235,19 +261,17 @@ struct TPoint3D_ : public TPoseOrPoint,
 	}
 };
 
-/**
- * Lightweight 3D point. Allows coordinate access using [] operator.
+/** Lightweight 3D point. Allows coordinate access using [] operator.
+ * (1-byte memory packed, no padding).
  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
  */
 using TPoint3D = TPoint3D_<double>;
 using TPoint3Df = TPoint3D_<float>;
 
-/** Useful type alias for 3-vectors */
+/** Useful type alias for 3-vectors.
+ * (1-byte memory packed, no padding) */
 using TVector3D = TPoint3D;
 using TVector3Df = TPoint3Df;
-
-/** Useful type alias for 2-vectors */
-using TVector2D = TPoint2D;
 
 /** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */
 struct TPointXYZIu8
@@ -264,12 +288,12 @@ struct TPointXYZIu8
 struct TPointXYZRGBu8
 {
 	mrpt::math::TPoint3D pt;
-	uint8_t R{0}, G{0}, B{0};
+	uint8_t r{0}, g{0}, b{0};
 	TPointXYZRGBu8() = default;
 	constexpr TPointXYZRGBu8(
 		double x, double y, double z, uint8_t R_val, uint8_t G_val,
 		uint8_t B_val)
-		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
+		: pt(x, y, z), r(R_val), g(G_val), b(B_val)
 	{
 	}
 };
@@ -288,14 +312,55 @@ struct TPointXYZfIu8
 struct TPointXYZfRGBu8
 {
 	mrpt::math::TPoint3Df pt;
-	uint8_t R{0}, G{0}, B{0};
+	uint8_t r{0}, g{0}, b{0};
 	TPointXYZfRGBu8() : pt() {}
 	constexpr TPointXYZfRGBu8(
 		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val)
-		: pt(x, y, z), R(R_val), G(G_val), B(B_val)
+		: pt(x, y, z), r(R_val), g(G_val), b(B_val)
 	{
 	}
 };
+
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBu8& p);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBu8& p);
+
+/** XYZ point (float) + RGBA(u8) \sa mrpt::math::TPoint3D */
+struct TPointXYZfRGBAu8
+{
+	mrpt::math::TPoint3Df pt;
+	uint8_t r{0}, g{0}, b{0}, a{0xff};
+	TPointXYZfRGBAu8() : pt() {}
+	constexpr TPointXYZfRGBAu8(
+		float x, float y, float z, uint8_t R_val, uint8_t G_val, uint8_t B_val,
+		uint8_t A_val = 0xff)
+		: pt(x, y, z), r(R_val), g(G_val), b(B_val), a(A_val)
+	{
+	}
+};
+
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, mrpt::math::TPointXYZfRGBAu8& p);
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const mrpt::math::TPointXYZfRGBAu8& p);
+
+/** XYZ point (float) + RGBA(float) [1-byte memory packed, no padding]
+ * \sa mrpt::math::TPoint3D */
+struct TPointXYZRGBAf
+{
+	mrpt::math::TPoint3Df pt;
+	float R{0}, G{0}, B{0}, A{0};
+	TPointXYZRGBAf() = default;
+
+	constexpr TPointXYZRGBAf(
+		float x, float y, float z, float R_val, float G_val, float B_val,
+		float A_val)
+		: pt(x, y, z), R(R_val), G(G_val), B(B_val), A(A_val)
+	{
+	}
+};
+#pragma pack(pop)
 
 /** Unary minus operator for 3D points. */
 template <typename T>

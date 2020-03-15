@@ -164,6 +164,9 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
 
 * David Serret
   - Small changes in Velodyne drivers
+  
+* Edward Rosten
+  - Part of his libCVD (Free BSD) has been used in libs/opengl/src/gltext.cpp
 
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.

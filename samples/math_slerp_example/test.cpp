@@ -46,7 +46,7 @@ void TestSLERP()
 	// ------------------------------------------------------
 	{
 		auto obj = opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
-		obj->setColor(0.4, 0.4, 0.4);
+		obj->setColor(0.4f, 0.4f, 0.4f);
 		theScene->insert(obj);
 	}
 
@@ -106,9 +106,7 @@ void TestSLERP()
 		obj1->setPose(pose_interp);
 
 		// Show text:
-		win.addTextMessage(
-			5, 5, format("t=%.03f", t), TColorf(1, 1, 1), 0,
-			MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
+		win.addTextMessage(5, 5, format("t=%.03f", t), 0 /*id*/);
 
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 		win.unlockAccess3DScene();

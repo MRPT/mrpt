@@ -312,7 +312,10 @@ struct TROI
 {
 	// Constructors
 	TROI() = default;
-	TROI(float x1, float x2, float y1, float y2, float z1, float z2);
+	TROI(float x1, float x2, float y1, float y2, float z1, float z2)
+		: xMin(x1), xMax(x2), yMin(y1), yMax(y2), zMin(z1), zMax(z2)
+	{
+	}
 
 	// Members
 	float xMin{0};
@@ -329,16 +332,16 @@ struct TImageROI
 {
 	// Constructors
 	TImageROI() = default;
-	TImageROI(float x1, float x2, float y1, float y2);
+	TImageROI(size_t x1, size_t x2, size_t y1, size_t y2)
+		: xMin(x1), xMax(x2), yMin(y1), yMax(y2)
+	{
+	}
 
-	// Members
-	/** X coordinate limits [0,imageWidth)
-	 */
-	float xMin{0}, xMax{0};
-	/** Y coordinate limits [0,imageHeight)
-	 */
-	float yMin{0}, yMax{0};
-};  // end struct TImageROI
+	/** X coordinate limits [0,imageWidth) */
+	size_t xMin{0}, xMax{0};
+	/** Y coordinate limits [0,imageHeight) */
+	size_t yMin{0}, yMax{0};
+};
 
 /** A structure containing options for the matching
  */

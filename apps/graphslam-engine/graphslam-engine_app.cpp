@@ -25,7 +25,6 @@ using namespace mrpt::graphslam;
 using namespace mrpt::graphslam::deciders;
 using namespace mrpt::graphslam::optimizers;
 using namespace mrpt::graphslam::apps;
-
 using namespace std;
 
 // command line arguments

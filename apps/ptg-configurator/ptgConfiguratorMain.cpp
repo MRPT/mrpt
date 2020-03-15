@@ -690,12 +690,10 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_view_TPSpace->insert(gl_TPSpace_clearance);
 	gl_view_TPSpace->insert(gl_TPSpace_clearance_interp);
 
-	m_plot->addTextMessage(
-		0.01, 5, "Workspace", mrpt::img::TColorf(1, 1, 1, 0.75), "sans", 15,
-		mrpt::opengl::NICE, 1);
-	m_plotTPSpace->addTextMessage(
-		0.01, 5, "TP-Space", mrpt::img::TColorf(1, 1, 1, 0.75), "sans", 15,
-		mrpt::opengl::NICE, 2);
+	m_plot->getOpenGLSceneRef()->getViewport()->addTextMessage(
+		0.01, 5, "Workspace", 1);
+	m_plotTPSpace->getOpenGLSceneRef()->getViewport()->addTextMessage(
+		0.01, 5, "TP-Space", 2);
 
 	gl_robot_ptg_prediction = mrpt::opengl::CSetOfLines::Create();
 	gl_robot_ptg_prediction->setName("ptg_prediction");

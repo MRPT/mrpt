@@ -9,7 +9,6 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-#include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/serialization/CArchive.h>
@@ -17,158 +16,118 @@
 
 #include <memory>
 
-#include "opengl_internals.h"
-
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CArrow, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CArrow, CRenderizableShaderTriangles, mrpt::opengl)
 
-void CArrow::render_dl() const
+void CArrow::onUpdateBuffers_Triangles()
 {
-#if MRPT_HAS_OPENGL_GLUT
+	using P3f = mrpt::math::TPoint3Df;
+	using V3f = mrpt::math::TVector3Df;
 
-	GLUquadricObj* obj1 = gluNewQuadric();
-	GLUquadricObj* obj2 = gluNewQuadric();
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
 
-	GLfloat mat[16];
+	// Compute the XYZ local frame of reference for the arrow:
+	// XY radial, Z from Point #0 -> point #1:
+	const P3f p0(m_x0, m_y0, m_z0), p1(m_x1, m_y1, m_z1);
+	auto p = p1 - p0;
+	const float P10_norm = p.norm();
+	ASSERT_ABOVE_(P10_norm, .0f);
+	// Unit vector:
+	p *= (1.0f / P10_norm);
 
-	// Compute the direction vector, which will become the transformed z-axis:
-	float vx = m_x1 - m_x0;
-	float vy = m_y1 - m_y0;
-	float vz = m_z1 - m_z0;
-	if ((m_arrow_roll != -1.0f) || (m_arrow_pitch != -1.0f) ||
-		(m_arrow_yaw != -1.0f))
+	setLocalRepresentativePoint((p0 + p1) * 0.5f);
+
+	// each column is a unit vector:
+	const CMatrixDouble44 HM = mrpt::math::generateAxisBaseFromDirectionAndAxis(
+		p, 2 /* provided vector is "z"*/);
+
+	// Transformation:
+	const mrpt::poses::CPose3D T(
+		HM.blockCopy<3, 3>(0, 0), mrpt::math::TPoint3D(m_x0, m_y0, m_z0));
+
+	// precomputed table:
+	ASSERT_ABOVE_(m_slices, 2);
+
+	const float dAng = 2 * M_PIf / m_slices;
+	float a = 0;
+	// unit cc points: cos(ang),sin(ang)
+	std::vector<mrpt::math::TPoint2Df> cc(m_slices);
+	for (unsigned int i = 0; i < m_slices; i++, a += dAng)
 	{
-		m_x0 = 0.0f;
-		m_x1 = 0.0f;
-		m_y0 = 0.0f;
-		m_y1 = 0.1f;
-		m_z0 = 0.0f;
-		m_z1 = 0.0f;
-
-		float cr = cos(m_arrow_roll);
-		float sr = sin(m_arrow_roll);
-		float cp = cos(m_arrow_pitch);
-		float sp = sin(m_arrow_pitch);
-		float cy = cos(m_arrow_yaw);
-		float sy = sin(m_arrow_yaw);
-
-		CMatrixFloat m(3, 3), xx(3, 1), out(1, 3);
-		m(0, 0) = cr * cp;
-		m(0, 1) = cr * sp * sy - sr * cy;
-		m(0, 2) = sr * sy + cr * sp * cy;
-		m(1, 0) = sr * cp;
-		m(1, 1) = sr * sp * sy + cr * cy;
-		m(1, 2) = sr * sp * cy - cr * sy;
-		m(2, 0) = -sp;
-		m(2, 1) = cp * sy;
-		m(2, 2) = cp * cy;
-		xx(0, 0) = 0.0f;
-		xx(1, 0) = 1.0f;
-		xx(2, 0) = 0.0f;
-
-		out = m * xx;
-		vx = out(0, 0);
-		vy = out(1, 0);
-		vz = out(2, 0);
+		cc[i].x = cos(a);
+		cc[i].y = sin(a);
 	}
 
-	// Normalize:
-	const float v_mod = sqrt(square(vx) + square(vy) + square(vz));
-	if (v_mod > 0)
+	ASSERT_ABOVEEQ_(m_headRatio, .0f);
+	ASSERT_BELOWEQ_(m_headRatio, 1.0f);
+
+	const float r0 = m_smallRadius, r1 = m_largeRadius,
+				h0 = P10_norm * (1.0f - m_headRatio), h1 = P10_norm;
+
+	const float wall_tilt = 0;
+	const float coswt = std::cos(wall_tilt), sinwt = std::sin(wall_tilt);
+
+	const float head_tilt = std::atan2(r1, P10_norm * m_headRatio);
+	const float cosht = std::cos(head_tilt), sinht = std::sin(head_tilt);
+
+	// cylinder walls:
+	for (unsigned int i = 0; i < m_slices; i++)
 	{
-		vx /= v_mod;
-		vy /= v_mod;
-		vz /= v_mod;
+		const auto ip = (i + 1) % m_slices;
+
+		tris.emplace_back(
+			// Points:
+			T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, .0f)),
+			T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, .0f)),
+			T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, h0)),
+			// Normals:
+			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)),
+			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
+			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)));
+
+		tris.emplace_back(
+			// Points:
+			T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, .0f)),
+			T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, h0)),
+			T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, h0)),
+			// Normals:
+			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
+			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
+			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)));
 	}
 
-	//  A homogeneous transformation matrix, in this order:
-	//
-	//     0  4  8  12
-	//     1  5  9  13
-	//     2  6  10 14
-	//     3  7  11 15
-	//
-
-	mat[3] = mat[7] = mat[11] = 0;
-	mat[15] = 1;
-	mat[12] = m_x0;
-	mat[13] = m_y0;
-	mat[14] = m_z0;
-
-	// New Z-axis
-	mat[8] = vx;
-	mat[9] = vy;
-	mat[10] = vz;
-
-	// New X-axis: Perp. to Z
-	if (vx != 0 || vy != 0)
+	// top cone:
+	for (unsigned int i = 0; i < m_slices; i++)
 	{
-		mat[0] = -vy;
-		mat[1] = vx;
-		mat[2] = 0;
-	}
-	else
-	{
-		mat[0] = 0;
-		mat[1] = vz;
-		mat[2] = -vy;
+		const auto ip = (i + 1) % m_slices;
+		tris.emplace_back(
+			// Points:
+			T.composePoint(P3f(r1 * cc[i].x, r1 * cc[i].y, h0)),
+			T.composePoint(P3f(r1 * cc[ip].x, r1 * cc[ip].y, h0)),
+			T.composePoint(P3f(.0f, .0f, h1)),
+			// Normals:
+			T.rotateVector(V3f(-cosht * cc[i].y, cosht * cc[i].x, sinht)),
+			T.rotateVector(V3f(-cosht * cc[ip].y, cosht * cc[ip].x, sinht)),
+			T.rotateVector(V3f(-cosht * cc[i].y, cosht * cc[i].x, sinht)));
 	}
 
-	// New Y-axis: Perp. to both: the cross product:
-	//  | i  j  k |     | i  j  k |
-	//  | x0 y0 z0| --> | 8  9  10|
-	//  | x1 y1 z1|     | 0  1  2 |
-	GLfloat* out_v3 = mat + 4;
-	math::crossProduct3D(
-		mat + 8,  // 1st vector
-		mat + 0,  // 2nd vector
-		out_v3  // Output cross product
-	);
-
-	glPushMatrix();
-
-	glMultMatrixf(mat);
-	// Scale Z to the size of the cylinder:
-	glScalef(1.0f, 1.0f, v_mod * (1.0f - m_headRatio));
-	gluCylinder(obj1, m_smallRadius, m_smallRadius, 1, 10, 1);
-
-	glPopMatrix();
-
-	// Draw the head of the arrow: a cone (built from a cylinder)
-	//-------------------------------------------------------------
-	mat[12] = m_x0 + vx * v_mod * (1.0f - m_headRatio);
-	mat[13] = m_y0 + vy * v_mod * (1.0f - m_headRatio);
-	mat[14] = m_z0 + vz * v_mod * (1.0f - m_headRatio);
-
-	glPushMatrix();
-
-	glMultMatrixf(mat);
-	// Scale Z to the size of the cylinder:
-	glScalef(1.0f, 1.0f, v_mod * m_headRatio);
-
-	gluCylinder(obj2, m_largeRadius, 0, 1, 10, 10);
-
-	glPopMatrix();
-
-	gluDeleteQuadric(obj1);
-	gluDeleteQuadric(obj2);
-
-#endif
+	// All faces, same color:
+	for (auto& t : tris) t.setColor(m_color);
 }
 
-uint8_t CArrow::serializeGetVersion() const { return 1; }
+uint8_t CArrow::serializeGetVersion() const { return 2; }
 void CArrow::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_x0 << m_y0 << m_z0;
 	out << m_x1 << m_y1 << m_z1;
 	out << m_headRatio << m_smallRadius << m_largeRadius;
-	out << m_arrow_roll << m_arrow_pitch << m_arrow_yaw;
+	out << m_slices;
 }
 
 void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -176,26 +135,25 @@ void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	switch (version)
 	{
 		case 0:
-		{
-			readFromStreamRender(in);
-			in >> m_x0 >> m_y0 >> m_z0;
-			in >> m_x1 >> m_y1 >> m_z1;
-			in >> m_headRatio >> m_smallRadius >> m_largeRadius;
-		}
-		break;
 		case 1:
+		case 2:
 		{
 			readFromStreamRender(in);
 			in >> m_x0 >> m_y0 >> m_z0;
 			in >> m_x1 >> m_y1 >> m_z1;
 			in >> m_headRatio >> m_smallRadius >> m_largeRadius;
-			in >> m_arrow_roll >> m_arrow_pitch >> m_arrow_yaw;
+			if (version == 1)
+			{
+				float arrow_roll, arrow_pitch, arrow_yaw;
+				in >> arrow_roll >> arrow_pitch >> arrow_yaw;
+			}
+			if (version >= 2) in >> m_slices;
 		}
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CArrow::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
@@ -210,6 +168,7 @@ void CArrow::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
 	out["headRatio"] = m_headRatio;
 	out["smallRadius"] = m_smallRadius;
 	out["largeRadius"] = m_largeRadius;
+	out["slices"] = m_slices;
 }
 
 void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
@@ -229,6 +188,7 @@ void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			m_headRatio = static_cast<float>(in["headRatio"]);
 			m_smallRadius = static_cast<float>(in["smallRadius"]);
 			m_largeRadius = static_cast<float>(in["largeRadius"]);
+			m_slices = static_cast<unsigned int>(in["slices"]);
 		}
 		break;
 		default:

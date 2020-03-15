@@ -210,8 +210,7 @@ class CPointsMap : public CMetricMap,
 	inline float squareDistanceToClosestCorrespondenceT(
 		const mrpt::math::TPoint2D& p0) const
 	{
-		return squareDistanceToClosestCorrespondence(
-			static_cast<float>(p0.x), static_cast<float>(p0.y));
+		return squareDistanceToClosestCorrespondence(d2f(p0.x), d2f(p0.y));
 	}
 
 	/** With this struct options are provided to the observation insertion
@@ -323,7 +322,7 @@ class CPointsMap : public CMetricMap,
 		/** Binary dump to stream - used in derived classes' serialization */
 		void readFromStream(mrpt::serialization::CArchive& in);
 
-		float point_size{3.0f};
+		float point_size{1.0f};
 		/** Color of points. Superseded by colormap if the latter is set. */
 		mrpt::img::TColorf color{.0f, .0f, 1.0f};
 		/** Colormap for points (index is "z" coordinates) */
@@ -499,12 +498,12 @@ class CPointsMap : public CMetricMap,
 	/// \overload
 	inline void setPoint(size_t index, const mrpt::math::TPoint2D& p)
 	{
-		setPoint(index, p.x, p.y, 0);
+		setPoint(index, d2f(p.x), d2f(p.y), 0);
 	}
 	/// \overload
 	inline void setPoint(size_t index, const mrpt::math::TPoint3D& p)
 	{
-		setPoint(index, p.x, p.y, p.z);
+		setPoint(index, d2f(p.x), d2f(p.y), d2f(p.z));
 	}
 	/// \overload
 	inline void setPoint(size_t index, float x, float y)
@@ -649,7 +648,7 @@ class CPointsMap : public CMetricMap,
 	/// \overload
 	inline void insertPoint(const mrpt::math::TPoint3D& p)
 	{
-		insertPoint(p.x, p.y, p.z);
+		insertPoint(d2f(p.x), d2f(p.y), d2f(p.z));
 	}
 	/// overload (RGB data is ignored in classes without color information)
 	virtual void insertPointRGB(

@@ -174,20 +174,7 @@ class CMyGLCanvas : public CWxGLCanvasBase
 void CMyGLCanvas::OnRenderError(const wxString& str) {}
 void CMyGLCanvas::OnPreRender() {}
 void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc) {}
-void CMyGLCanvas::OnPostRender()
-{
-	const mrpt::math::TPose2D p = the_robot.getCurrentGTPose();
-
-	string s = format("Pose: (%.03f,%.03f,%.02fdeg)", p.x, p.y, RAD2DEG(p.phi));
-	mrpt::opengl::CRenderizable::renderTextBitmap(
-		20, 20, s.c_str(), 1, 0, 0, MRPT_GLUT_BITMAP_HELVETICA_18);
-
-	const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
-	s = format(
-		"V=%.03fm/s  W=%.02fdeg/s", vel_local.vx, RAD2DEG(vel_local.omega));
-	mrpt::opengl::CRenderizable::renderTextBitmap(
-		20, 45, s.c_str(), 1, 0, 0, MRPT_GLUT_BITMAP_HELVETICA_18);
-}
+void CMyGLCanvas::OnPostRender() {}
 
 void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 {
@@ -1067,6 +1054,19 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				robot_path_GT.rbegin()->x(), robot_path_GT.rbegin()->y(), 0);
 			CPose2D this_odo = pose_start + *robot_path_ODO.rbegin();
 			gl_path_ODO->insertPoint(this_odo.x(), this_odo.y(), 0);
+		}
+
+		{
+			auto scene = m_canvas->getOpenGLSceneRef();
+			const mrpt::math::TPose2D p = the_robot.getCurrentGTPose();
+
+			scene->getViewport()->addTextMessage(
+				20, 20, string("Pose: ") + p.asString(), 0);
+
+			const mrpt::math::TTwist2D vel_local =
+				the_robot.getCurrentGTVelLocal();
+			scene->getViewport()->addTextMessage(
+				20, 45, string("Twist local: ") + vel_local.asString(), 1);
 		}
 
 		m_canvas->setCameraPointing(p.x, p.y, m_canvas->getCameraPointingZ());

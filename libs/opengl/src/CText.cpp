@@ -11,50 +11,87 @@
 
 #include <mrpt/opengl/CText.h>
 #include <mrpt/serialization/CArchive.h>
-#include "opengl_internals.h"
+
+#include <mrpt/opengl/opengl_api.h>
+#include "gltext.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CText, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							Constructor
-  ---------------------------------------------------------------*/
-CText::CText(const string& str)
-{
-	m_str = str;
+CText::~CText() = default;
 
-	m_fontName = "Arial";
-	m_fontHeight = 10;
-	m_fontWidth = 0;
+void CText::onUpdateBuffers_Text()
+{
+	const double text_spacing = 1.5;
+	const double text_kerning = 0.1;
+
+	auto& vbd = CRenderizableShaderText::m_vertex_buffer_data;
+	auto& tris = CRenderizableShaderText::m_triangles;
+	auto& cbd = CRenderizableShaderText::m_color_buffer_data;
+	vbd.clear();
+	tris.clear();
+	cbd.clear();
+
+	mrpt::opengl::internal::glSetFont(m_fontName);
+	mrpt::opengl::internal::glDrawText(
+		m_str, tris, vbd, mrpt::opengl::FILL, text_spacing, text_kerning);
+
+	// All lines & triangles, the same color:
+	cbd.assign(vbd.size(), m_color);
+	for (auto& tri : m_triangles) tri.setColor(m_color);
 }
 
-/*---------------------------------------------------------------
-							Destructor
-  ---------------------------------------------------------------*/
-CText::~CText() = default;
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CText::render() const
+void CText::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_LIGHTING);
 
-	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
-	// Set the "cursor" to the XYZ position:
-	glRasterPos3f(0, 0, 0);  // m_x,m_y,m_z);
+	// Compute pixel of (0,0,0) for this object:
+	// "px" will be given in the range:
+	//     [-1,-1] (left-bottom) - [+1,+1] (top-right)
+	//
+	const auto& pmv = rc.state->pmv_matrix;
+	if (std::abs(pmv(3, 3)) < 1e-10) return;
 
-	// Call the lists for drawing the text:
-	renderTextBitmap(m_str.c_str(), GLUT_BITMAP_TIMES_ROMAN_10);
+	const auto px =
+		mrpt::math::TPoint2Df(pmv(0, 3) / pmv(3, 3), pmv(1, 3) / pmv(3, 3));
 
-	glEnable(GL_LIGHTING);
-	glEnable(GL_DEPTH_TEST);
+	// Load matrices in shader:
+	const GLint u_pmat = rc.shader->uniformId("p_matrix");
+	const GLint u_mvmat = rc.shader->uniformId("mv_matrix");
+
+	// Projection: identity
+	static const auto eye4 = mrpt::math::CMatrixFloat44::Identity();
+	glUniformMatrix4fv(u_pmat, 1, true, eye4.data());
+
+	// Model-view: translate and scale
+	auto mv = mrpt::math::CMatrixFloat44::Identity();
+	mv(0, 3) = px.x;
+	mv(1, 3) = px.y;
+	mv(2, 3) = pmv(2, 3) / pmv(3, 3);  // depth
+
+	if (rc.state->viewport_height <= 0 || rc.state->viewport_width <= 0)
+	{
+		std::cerr << "[CText] Warning: invalid viewport size!\n";
+		return;
+	}
+
+	// Find scale according to font height in pixels:
+	const float scale =
+		this->m_fontHeight / static_cast<float>(rc.state->viewport_height);
+
+	const float aspect =
+		rc.state->viewport_width / double(rc.state->viewport_height);
+	mv(0, 0) *= scale / aspect;
+	mv(1, 1) *= scale;
+
+	glUniformMatrix4fv(u_mvmat, 1, true, mv.data());
+
+	CRenderizableShaderText::render(rc);
+
 #endif
 }
 

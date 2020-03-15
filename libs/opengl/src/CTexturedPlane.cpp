@@ -13,16 +13,13 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include "opengl_internals.h"
-
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CTexturedPlane, CTexturedObject, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CTexturedPlane, CRenderizable, mrpt::opengl)
 
 CTexturedPlane::CTexturedPlane(
 	float x_min, float x_max, float y_min, float y_max)
@@ -34,39 +31,41 @@ CTexturedPlane::CTexturedPlane(
 	m_yMax = y_max;
 }
 
-CTexturedPlane::~CTexturedPlane() = default;
-
-void CTexturedPlane::render_texturedobj() const
+void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 {
-#if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
+	using P2f = mrpt::math::TPoint2Df;
+	using P3f = mrpt::math::TPoint3Df;
 
-	// Compute the exact texture coordinates:
-	m_tex_x_min = 0;
-	m_tex_x_max = 1.0f - ((float)m_pad_x_right) / r_width;
-	m_tex_y_min = 0;
-	m_tex_y_max = 1.0f - ((float)m_pad_y_bottom) / r_height;
+	auto& tris = CRenderizableShaderTexturedTriangles::m_triangles;
+	tris.clear();
 
-	glDisable(GL_CULL_FACE);
-	glBegin(GL_QUADS);
+	{
+		TTriangle t;
+		t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+		t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
+		t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
 
-	glTexCoord2d(m_tex_x_min, m_tex_y_min);
-	glVertex3f(m_xMin, m_yMin, 0);
+		t.vertices[0].uv = P2f(0, 0);
+		t.vertices[1].uv = P2f(1, 0);
+		t.vertices[2].uv = P2f(1, 1);
 
-	glTexCoord2d(m_tex_x_max, m_tex_y_min);
-	glVertex3f(m_xMax, m_yMin, 0);
+		tris.emplace_back(t);
+	}
+	{
+		TTriangle t;
+		t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+		t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+		t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
 
-	glTexCoord2d(m_tex_x_max, m_tex_y_max);
-	glVertex3f(m_xMax, m_yMax, 0);
+		t.vertices[0].uv = P2f(0, 0);
+		t.vertices[1].uv = P2f(1, 1);
+		t.vertices[2].uv = P2f(0, 1);
 
-	glTexCoord2d(m_tex_x_min, m_tex_y_max);
-	glVertex3f(m_xMin, m_yMax, 0);
-
-	glEnd();
-	checkOpenGLError();
+		tris.emplace_back(t);
+	}
 
 	MRPT_END
-#endif
 }
 
 uint8_t CTexturedPlane::serializeGetVersion() const { return 2; }
@@ -86,47 +85,21 @@ void CTexturedPlane::serializeFrom(
 	switch (version)
 	{
 		case 0:
-		{
-			readFromStreamRender(in);
-			in >> m_textureImage >> m_textureImageAlpha;
-			in >> m_xMin >> m_xMax;
-			in >> m_yMin >> m_yMax;
-
-			assignImage(m_textureImage, m_textureImageAlpha);
-		}
-		break;
 		case 1:
+			THROW_EXCEPTION("Deserialization of old formats not supported.");
+			break;
 		case 2:
 		{
 			readFromStreamRender(in);
-
 			in >> m_xMin >> m_xMax;
 			in >> m_yMin >> m_yMax;
-
-			if (version >= 2)
-			{
-				readFromStreamTexturedObject(in);
-			}
-			else
-			{  // Old version.
-				in >> CTexturedObject::m_enableTransparency;
-				in >> CTexturedObject::m_textureImage;
-				if (CTexturedObject::m_enableTransparency)
-				{
-					in >> CTexturedObject::m_textureImageAlpha;
-					assignImage(
-						CTexturedObject::m_textureImage,
-						CTexturedObject::m_textureImageAlpha);
-				}
-				else
-					assignImage(CTexturedObject::m_textureImage);
-			}
+			readFromStreamTexturedObject(in);
 		}
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool CTexturedPlane::traceRay(const mrpt::poses::CPose3D& o, double& dist) const

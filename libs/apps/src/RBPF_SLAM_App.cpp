@@ -20,7 +20,8 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid2D.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -413,7 +414,7 @@ void RBPF_SLAM_App_Base::run()
 				mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
 					mrpt::opengl::CGridPlaneXY::Create(
 						-200, 200, -200, 200, 0, 5);
-				groundPlane->setColor(0.4, 0.4, 0.4);
+				groundPlane->setColor(0.4f, 0.4f, 0.4f);
 				scene->insert(groundPlane);
 
 				// The camera pointing to the current robot pose:
@@ -476,15 +477,28 @@ void RBPF_SLAM_App_Base::run()
 
 						minDistBtwPoses = 6 * sqrt(COV3(0, 0) + COV3(1, 1));
 
-						opengl::CEllipsoid::Ptr objEllip =
-							std::make_shared<opengl::CEllipsoid>();
-						objEllip->setLocation(
-							meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
-						objEllip->setCovMatrix(COV3, COV3(2, 2) == 0 ? 2 : 3);
-
-						objEllip->setColor(0, 0, 1);
-						objEllip->enableDrawSolid3D(false);
-						scene->insert(objEllip);
+						if (COV3(2, 2) == 0)
+						{
+							auto objEllip = opengl::CEllipsoid2D::Create();
+							objEllip->setLocation(
+								meanPose.x(), meanPose.y(),
+								meanPose.z() + 0.001);
+							objEllip->setCovMatrix(COV3.blockCopy<2, 2>());
+							objEllip->setColor(0, 0, 1);
+							objEllip->enableDrawSolid3D(false);
+							scene->insert(objEllip);
+						}
+						else
+						{
+							auto objEllip = opengl::CEllipsoid3D::Create();
+							objEllip->setLocation(
+								meanPose.x(), meanPose.y(),
+								meanPose.z() + 0.001);
+							objEllip->setCovMatrix(COV3);
+							objEllip->setColor(0, 0, 1);
+							objEllip->enableDrawSolid3D(false);
+							scene->insert(objEllip);
+						}
 
 						lastMeanPose = meanPose;
 					}

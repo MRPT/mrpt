@@ -10,7 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CFBORender.h>
-#include "opengl_internals.h"
+#include <mrpt/opengl/opengl_api.h>
 
 using namespace std;
 using namespace mrpt;
@@ -203,10 +203,6 @@ void CFBORender::getFrame2(const COpenGLScene& scene, CImage& buffer)
 	// Render opengl objects:
 	// ---------------------------
 	scene.render();
-
-	// If any, draw the 2D text messages:
-	// ----------------------------------
-	render_text_messages(m_width, m_height);
 
 	// TODO NOTE: This should fail if the image has padding bytes. See
 	// glPixelStore() etc.

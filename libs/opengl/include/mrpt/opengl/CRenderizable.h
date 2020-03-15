@@ -11,6 +11,10 @@
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/opengl/DefaultShaders.h>
+#include <mrpt/opengl/RenderQueue.h>
+#include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -18,22 +22,26 @@
 
 namespace mrpt::opengl
 {
+// Frwd decls:
 class COpenGLViewport;
 class CSetOfObjects;
+class CText;
+struct TLightParameters;
 
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
- *		- A name (m_name): A name that can be optionally asigned to objects for
+ * - A name (m_name): A name that can be optionally asigned to objects for
  *easing its reference.
- *		- 6D coordinates (x,y,z,yaw,pitch,roll), relative to the "current"
+ * - 6D coordinates (x,y,z,yaw,pitch,roll), relative to the "current"
  *reference framework. By default, any object is referenced to global scene
  *coordinates.
- *		- A RGB color: This field will be used in simple elements (points,
- *lines,
- *text,...) but is ignored in more complex objects that carry their own color
- *information (triangle sets,...)
- *  See the main class opengl::COpenGLScene
+ * - A RGB color: This field will be used in simple elements (points,
+ *lines, text,...) but is ignored in more complex objects that carry their own
+ *color information (triangle sets,...)
+ *
+ * See the main class opengl::COpenGLScene
+ *
  *  \sa opengl::COpenGLScene, mrpt::opengl
  * \ingroup mrpt_opengl_grp
  */
@@ -145,13 +153,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Rotation relative to parent coordinate origin, in radians. */
 	inline double getPoseRollRad() const { return m_pose.roll(); }
 	/** Color components in the range [0,1] */
-	inline double getColorR() const { return m_color.R / 255.; }
+	inline float getColorR() const { return u8tof(m_color.R); }
 	/** Color components in the range [0,1] */
-	inline double getColorG() const { return m_color.G / 255.; }
+	inline float getColorG() const { return u8tof(m_color.G); }
 	/** Color components in the range [0,1] */
-	inline double getColorB() const { return m_color.B / 255.; }
+	inline float getColorB() const { return u8tof(m_color.B); }
 	/** Color components in the range [0,1] */
-	inline double getColorA() const { return m_color.A / 255.; }
+	inline float getColorA() const { return u8tof(m_color.A); }
 	/** Color components in the range [0,255] */
 	inline uint8_t getColorR_u8() const { return m_color.R; }
 	/** Color components in the range [0,255] */
@@ -161,25 +169,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Color components in the range [0,255] */
 	inline uint8_t getColorA_u8() const { return m_color.A; }
 	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorR(const double r)
-	{
-		return setColorR_u8(static_cast<uint8_t>(255 * r));
-	}
+	CRenderizable& setColorR(const float r) { return setColorR_u8(f2u8(r)); }
 	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorG(const double g)
-	{
-		return setColorG_u8(static_cast<uint8_t>(255 * g));
-	}
+	CRenderizable& setColorG(const float g) { return setColorG_u8(f2u8(g)); }
 	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorB(const double b)
-	{
-		return setColorB_u8(static_cast<uint8_t>(255 * b));
-	}
+	CRenderizable& setColorB(const float b) { return setColorB_u8(f2u8(b)); }
 	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorA(const double a)
-	{
-		return setColorA_u8(static_cast<uint8_t>(255 * a));
-	}
+	CRenderizable& setColorA(const float a) { return setColorA_u8(f2u8(a)); }
 	/**Color components in the range [0,255] \return a ref to this */
 	virtual CRenderizable& setColorR_u8(const uint8_t r)
 	{
@@ -235,15 +231,15 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	/** Changes the default object color \return a ref to this */
 	CRenderizable& setColor(const mrpt::img::TColorf& c)
 	{
-		return setColor_u8(mrpt::img::TColor(
-			c.R * 255.f, c.G * 255.f, c.B * 255.f, c.A * 255.f));
+		return setColor_u8(
+			mrpt::img::TColor(f2u8(c.R), f2u8(c.G), f2u8(c.B), f2u8(c.A)));
 	}
 
 	/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)
 	 * \return a ref to this */
-	inline CRenderizable& setColor(double R, double G, double B, double A = 1)
+	inline CRenderizable& setColor(float R, float G, float B, float A = 1)
 	{
-		return setColor_u8(R * 255, G * 255, B * 255, A * 255);
+		return setColor_u8(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 	}
 
 	/** Returns the object color property as a TColor */
@@ -264,10 +260,66 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	CRenderizable();
 	~CRenderizable() override;
 
+	/** Context for calls to render() */
+	struct RenderContext
+	{
+		RenderContext() = default;
+
+		const mrpt::opengl::TRenderMatrices* state = nullptr;
+		const mrpt::opengl::Program* shader = nullptr;
+		mrpt::opengl::shader_id_t shader_id;
+		const mrpt::opengl::TLightParameters* lights = nullptr;
+	};
+
 	/** Implements the rendering of 3D objects in each class derived from
-	 * CRenderizable.
+	 * CRenderizable. This can be called more than once (one per required shader
+	 * program) if the object registered several shaders. \sa
+	 * renderUpdateBuffers
 	 */
-	virtual void render() const = 0;
+	virtual void render(const RenderContext& rc) const = 0;
+
+	/** Process all children objects recursively, if the object is a container
+	 */
+	virtual void enqueForRenderRecursive(
+		[[maybe_unused]] const mrpt::opengl::TRenderMatrices& state,
+		[[maybe_unused]] RenderQueue& rq) const
+	{
+		// do thing
+	}
+
+	/** Called whenever m_outdatedBuffers is true: used to re-generate
+	 * OpenGL vertex buffers, etc. before they are sent for rendering in
+	 * render() */
+	virtual void renderUpdateBuffers() const = 0;
+
+	/** Returns the ID of the OpenGL shader program required to render this
+	 * class. \sa DefaultShaderID
+	 */
+	virtual shader_list_t requiredShaders() const
+	{
+		THROW_EXCEPTION("Not implemented in derived class!");
+	}
+
+	/** Calls renderUpdateBuffers() and clear the flag that is set with
+	 * notifyChange() */
+	void updateBuffers() const
+	{
+		renderUpdateBuffers();
+		const_cast<CRenderizable&>(*this).m_outdatedBuffers = false;
+	}
+
+	/** Call to enable calling renderUpdateBuffers() before the next
+	 * render() rendering iteration. */
+	void notifyChange() const
+	{
+		const_cast<CRenderizable&>(*this).m_outdatedBuffers = true;
+	}
+
+	/** Returns whether notifyChange() has been invoked since the last call
+	 * to renderUpdateBuffers(), meaning the latter needs to be called again
+	 * before rendering.
+	 */
+	bool hasToUpdateBuffers() const { return m_outdatedBuffers; }
 
 	/** Simulation of ray-trace, given a pose. Returns true if the ray
 	 * effectively collisions with the object (returning the distance to the
@@ -276,62 +328,81 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	virtual bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const;
 
-	/** This method is safe for calling from within ::render() methods \sa
-	 * renderTextBitmap, mrpt::opengl::gl_utils */
-	static void renderTextBitmap(const char* str, void* fontStyle);
-
-	/** Return the exact width in pixels for a given string, as will be rendered
-	 * by renderTextBitmap().
-	 * \sa renderTextBitmap, mrpt::opengl::gl_utils
-	 */
-	static int textBitmapWidth(
-		const std::string& str,
-		mrpt::opengl::TOpenGLFont font =
-			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
-
-	/** Render a text message in the current rendering context, creating a
-	 * glViewport in the way (do not call within ::render() methods)
-	 *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the
-	 * viewport. Negative numbers will wrap to the opposite side of the viewport
-	 * (e.g. x=-10 means 10px fromt the right).
-	 *   - The text color is defined by (color_r,color_g,color_b), each float
-	 * numbers in the range [0,1].
-	 *  \sa renderTextBitmap, textBitmapWidth, mrpt::opengl::gl_utils
-	 */
-	static void renderTextBitmap(
-		int screen_x, int screen_y, const std::string& str, float color_r = 1,
-		float color_g = 1, float color_b = 1,
-		mrpt::opengl::TOpenGLFont font =
-			mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24);
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
+	/** Evaluates the bounding box of this object (including possible
+	 * children) in the coordinate frame of the object parent. */
 	virtual void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const = 0;
 
-   protected:
-	/** Checks glGetError and throws an exception if an error situation is found
-	 */
-	static void checkOpenGLError();
+	/** Provide a representative point (in object local coordinates), used to
+	 * sort objects by eye-distance while rendering with transparencies
+	 * (Default=[0,0,0]) */
+	virtual mrpt::math::TPoint3Df getLocalRepresentativePoint() const
+	{
+		return m_representativePoint;
+	}
 
+	/** See getLocalRepresentativePoint() */
+	void setLocalRepresentativePoint(const mrpt::math::TPoint3Df &p)
+	{
+		m_representativePoint = p;
+	}
+
+	/** Returns or constructs (in its first invokation) the associated
+	 * mrpt::opengl::CText object representing the label of the object.
+	 * \sa enableShowName()
+	 */
+	mrpt::opengl::CText& labelObject() const;
+
+	/** Free opengl buffers */
+	virtual void freeOpenGLResources() = 0;
+
+	/** Initializes all textures (loads them into opengl memory). */
+	virtual void initializeTextures() const {}
+
+   protected:
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
 
-	/** Returns the lowest next free texture name (avoid using OpenGL's own
-	 * function since we may call them from different threads and seem it's not
-	 * cool).  */
-	static unsigned int getNewTextureNumber();
-	static void releaseTextureName(unsigned int i);
+	bool m_outdatedBuffers = true;
+	mrpt::math::TPoint3Df m_representativePoint{0, 0, 0};
+
+	/** Optional pointer to a mrpt::opengl::CText */
+	mutable std::shared_ptr<mrpt::opengl::CText> m_label_obj;
 };
-/** A list of objects pointers, automatically managing memory free at
- * destructor, and managing copies correctly. */
+
+/** A list of smart pointers to renderizable objects */
 using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 
-/** Applies a mrpt::poses::CPose3D transformation to the object. Note that this
- * method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it
- * with the existing one.
- * \sa setPose */
-CRenderizable::Ptr& operator<<(
-	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p);
+/** @name Miscellaneous rendering methods
+@{ */
+
+/** Processes, recursively, all objects in the list, classifying them by shader
+ * programs into a list suitable to be used within processPendingRendering()
+ *
+ * For each object in the list:
+ *   - checks visibility of each object
+ *   - update the MODELVIEW matrix according to its coordinates
+ *   - call its ::render()
+ *   - shows its name (if enabled).
+ *
+ * \note Used by CSetOfObjects and COpenGLViewport
+ *
+ * \sa processPendingRendering
+ */
+void enqueForRendering(
+	const mrpt::opengl::CListOpenGLObjects& objs,
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq);
+
+/** After enqueForRendering(), actually executes the rendering tasks, grouped
+ * shader by shader.
+ *
+ *  \note Used by COpenGLViewport
+ */
+void processRenderQueue(
+	const RenderQueue& rq,
+	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
+	const mrpt::opengl::TLightParameters& lights);
+
+/** @} */
 
 }  // namespace mrpt::opengl

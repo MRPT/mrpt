@@ -52,7 +52,6 @@ using namespace std;
 #endif
 
 #include <mrpt/gui/CWxGLCanvasBase.h>
-#include <mrpt/opengl/CTextMessageCapable.h>
 
 namespace mrpt::gui
 {
@@ -68,19 +67,6 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 	~CMyGLCanvas_DisplayWindow3D() override;
 
 	CDisplayWindow3D* m_win3D = nullptr;
-
-	// The idea is that CMyGLCanvas_DisplayWindow3D was derived from
-	// CTextMessageCapable, but
-	//  that raises errors in MSVC when converting method pointers to
-	//  wxObjectEventFunction...
-	struct THubClass : public mrpt::opengl::CTextMessageCapable
-	{
-		void render_text_messages_public(const int w, const int h) const
-		{
-			render_text_messages(w, h);
-		}
-	};
-	THubClass m_text_msgs;
 
 	void OnCharCustom(wxKeyEvent& event) override;
 	void OnMouseDown(wxMouseEvent& event);
@@ -200,8 +186,12 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseMove(wxMouseEvent& event)
 
 CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 {
-	getOpenGLSceneRef().reset();  // Avoid the base class to free this object
-	// (it's freed by CDisplayWindow3D)
+	// Ensure all OpenGL resources are freed before the opengl context is gone:
+	if (getOpenGLSceneRef()) getOpenGLSceneRef()->unloadShaders();
+
+	// Unbind all objects, free all buffers:
+	auto& scene = getOpenGLSceneRef();
+	if (scene) scene->freeOpenGLResources();
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()
@@ -215,15 +205,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 {
-	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
-	getOpenGLSceneRef().reset();
 	m_win3D->unlockAccess3DScene();
-
-	// If any, draw the 2D text messages:
-	int w, h;
-	this->GetSize(&w, &h);
-
-	m_text_msgs.render_text_messages_public(w, h);
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(
@@ -387,39 +369,6 @@ void C3DWindowDialog::OnResize(wxSizeEvent& event)
 #endif
 }
 
-void C3DWindowDialog::clearTextMessages()
-{
-#if MRPT_HAS_OPENGL_GLUT
-	m_canvas->m_text_msgs.clearTextMessages();
-#endif
-}
-
-void C3DWindowDialog::addTextMessage(
-	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::img::TColorf& color, const size_t unique_index,
-	const mrpt::opengl::TOpenGLFont font)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	m_canvas->m_text_msgs.addTextMessage(
-		x_frac, y_frac, text, color, unique_index, font);
-#endif
-}
-
-void C3DWindowDialog::addTextMessage(
-	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::img::TColorf& color, const std::string& font_name,
-	const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
-	const size_t unique_index, const double font_spacing,
-	const double font_kerning, const bool has_shadow,
-	const mrpt::img::TColorf& shadow_color)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	m_canvas->m_text_msgs.addTextMessage(
-		x_frac, y_frac, text, color, font_name, font_size, font_style,
-		unique_index, font_spacing, font_kerning, has_shadow, shadow_color);
-#endif
-}
-
 #endif  // MRPT_HAS_WXWIDGETS
 
 /*---------------------------------------------------------------
@@ -448,10 +397,14 @@ CDisplayWindow3D::Ptr CDisplayWindow3D::Create(
 CDisplayWindow3D::~CDisplayWindow3D()
 {
 	// get lock so we make sure nobody else is touching the window right now.
-	m_csAccess3DScene.lock();
+	bool lock_ok = m_csAccess3DScene.try_lock_for(std::chrono::seconds(2));
 	m_csAccess3DScene.unlock();
 
 	CBaseGUIWindow::destroyWxWindow();
+
+	if (!lock_ok)
+		std::cerr
+			<< "[~CDisplayWindow3D] Warning: Timeout acquiring mutex lock.\n";
 }
 
 /*---------------------------------------------------------------
@@ -530,22 +483,14 @@ void CDisplayWindow3D::setWindowTitle(const std::string& str)
 #endif
 }
 
-/*---------------------------------------------------------------
-					get3DSceneAndLock
- ---------------------------------------------------------------*/
 opengl::COpenGLScene::Ptr& CDisplayWindow3D::get3DSceneAndLock()
 {
 	m_csAccess3DScene.lock();
 	return m_3Dscene;
 }
 
-/*---------------------------------------------------------------
-					unlockAccess3DScene
- ---------------------------------------------------------------*/
 void CDisplayWindow3D::unlockAccess3DScene() { m_csAccess3DScene.unlock(); }
-/*---------------------------------------------------------------
-					forceRepaint
- ---------------------------------------------------------------*/
+
 void CDisplayWindow3D::forceRepaint()
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
@@ -644,7 +589,7 @@ void CDisplayWindow3D::setCameraProjective(bool isProjective)
 #endif
 }
 
-void CDisplayWindow3D::setMinRange(double new_min)
+void CDisplayWindow3D::setMinRange(float new_min)
 {
 	if (m_3Dscene)
 	{
@@ -652,13 +597,13 @@ void CDisplayWindow3D::setMinRange(double new_min)
 			m_3Dscene->getViewport("main");
 		if (gl_view)
 		{
-			double m, M;
+			float m, M;
 			gl_view->getViewportClipDistances(m, M);
 			gl_view->setViewportClipDistances(new_min, M);
 		}
 	}
 }
-void CDisplayWindow3D::setMaxRange(double new_max)
+void CDisplayWindow3D::setMaxRange(float new_max)
 {
 	if (m_3Dscene)
 	{
@@ -666,7 +611,7 @@ void CDisplayWindow3D::setMaxRange(double new_max)
 			m_3Dscene->getViewport("main");
 		if (gl_view)
 		{
-			double m, M;
+			float m, M;
 			gl_view->getViewportClipDistances(m, M);
 			gl_view->setViewportClipDistances(m, new_max);
 		}
@@ -790,7 +735,7 @@ bool CDisplayWindow3D::getLastMousePositionRay(TLine3D& ray) const
 	int x, y;
 	if (getLastMousePosition(x, y))
 	{
-		std::lock_guard<std::recursive_mutex> lck(m_csAccess3DScene);
+		std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
 		m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x, y, ray);
 		return true;
 	}
@@ -875,122 +820,6 @@ CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
 	return m_last_captured_img;
 }
 
-/*---------------------------------------------------------------
-					addTextMessage
- ---------------------------------------------------------------*/
-void CDisplayWindow3D::addTextMessage(
-	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::img::TColorf& color, const size_t unique_index,
-	const TOpenGLFont font)
-{
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	auto* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win)
-	{
-		// Send request:
-		// Add a 2D text message:
-		//  vector_x: [0]:x, [1]:y, [2,3,4]:R G B, "x": enum of desired font.
-		//  "y": unique index, "str": String.
-		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
-		REQ->source3D = this;
-		REQ->OPCODE = 360;
-		REQ->str = text;
-		REQ->vector_x.resize(5);
-		REQ->vector_x[0] = x_frac;
-		REQ->vector_x[1] = y_frac;
-		REQ->vector_x[2] = color.R;
-		REQ->vector_x[3] = color.G;
-		REQ->vector_x[4] = color.B;
-		REQ->x = int(font);
-		REQ->y = int(unique_index);
-
-		WxSubsystem::pushPendingWxRequest(REQ);
-	}
-#else
-	MRPT_UNUSED_PARAM(x_frac);
-	MRPT_UNUSED_PARAM(y_frac);
-	MRPT_UNUSED_PARAM(text);
-	MRPT_UNUSED_PARAM(color);
-	MRPT_UNUSED_PARAM(unique_index);
-	MRPT_UNUSED_PARAM(font);
-#endif
-}
-
-/*---------------------------------------------------------------
-					addTextMessage
- ---------------------------------------------------------------*/
-void CDisplayWindow3D::addTextMessage(
-	const double x_frac, const double y_frac, const std::string& text,
-	const mrpt::img::TColorf& color, const std::string& font_name,
-	const double font_size, const mrpt::opengl::TOpenGLFontStyle font_style,
-	const size_t unique_index, const double font_spacing,
-	const double font_kerning, const bool draw_shadow,
-	const mrpt::img::TColorf& shadow_color)
-{
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	auto* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win)
-	{
-		// Send request:
-		// Add a 2D text message:
-		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
-		REQ->source3D = this;
-		REQ->OPCODE = 362;
-		REQ->str = text;
-		REQ->plotName = font_name;
-		REQ->vector_x.resize(12);
-		REQ->vector_x[0] = x_frac;
-		REQ->vector_x[1] = y_frac;
-		REQ->vector_x[2] = color.R;
-		REQ->vector_x[3] = color.G;
-		REQ->vector_x[4] = color.B;
-		REQ->vector_x[5] = font_size;
-		REQ->vector_x[6] = font_spacing;
-		REQ->vector_x[7] = font_kerning;
-		REQ->vector_x[8] = draw_shadow ? 1 : 0;
-		REQ->vector_x[9] = shadow_color.R;
-		REQ->vector_x[10] = shadow_color.G;
-		REQ->vector_x[11] = shadow_color.B;
-
-		REQ->x = int(font_style);
-		REQ->y = int(unique_index);
-
-		WxSubsystem::pushPendingWxRequest(REQ);
-	}
-#else
-	MRPT_UNUSED_PARAM(x_frac);
-	MRPT_UNUSED_PARAM(y_frac);
-	MRPT_UNUSED_PARAM(text);
-	MRPT_UNUSED_PARAM(color);
-	MRPT_UNUSED_PARAM(font_name);
-	MRPT_UNUSED_PARAM(font_size);
-	MRPT_UNUSED_PARAM(font_style);
-	MRPT_UNUSED_PARAM(unique_index);
-	MRPT_UNUSED_PARAM(font_spacing);
-	MRPT_UNUSED_PARAM(font_kerning);
-	MRPT_UNUSED_PARAM(draw_shadow);
-	MRPT_UNUSED_PARAM(shadow_color);
-#endif
-}
-
-/*---------------------------------------------------------------
-					clearTextMessages
- ---------------------------------------------------------------*/
-void CDisplayWindow3D::clearTextMessages()
-{
-#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	auto* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win)
-	{
-		// Send request:
-		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
-		REQ->source3D = this;
-		REQ->OPCODE = 361;
-		WxSubsystem::pushPendingWxRequest(REQ);
-	}
-#endif
-}
-
 void CDisplayWindow3D::internal_setRenderingFPS(double FPS)
 {
 	const double ALPHA = 0.99;
@@ -1007,26 +836,20 @@ void CDisplayWindow3D::internal_emitGrabImageEvent(const std::string& fil)
 // Returns the "main" viewport of the scene.
 mrpt::opengl::COpenGLViewport::Ptr CDisplayWindow3D::getDefaultViewport()
 {
-	m_csAccess3DScene.lock();
-	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
-	m_csAccess3DScene.unlock();
-	return view;
+	std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
+	return m_3Dscene->getViewport("main");
 }
 
 void CDisplayWindow3D::setImageView(const mrpt::img::CImage& img)
 {
-	m_csAccess3DScene.lock();
-	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
-	view->setImageView(img);
-	m_csAccess3DScene.unlock();
+	std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
+	m_3Dscene->getViewport("main")->setImageView(img);
 }
 
 void CDisplayWindow3D::setImageView(mrpt::img::CImage&& img)
 {
-	m_csAccess3DScene.lock();
-	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
-	view->setImageView(std::move(img));
-	m_csAccess3DScene.unlock();
+	std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
+	m_3Dscene->getViewport("main")->setImageView(std::move(img));
 }
 
 CDisplayWindow3DLocker::CDisplayWindow3DLocker(

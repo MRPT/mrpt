@@ -12,6 +12,7 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/serialization/CArchive.h>
+
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
 #endif
@@ -275,4 +276,11 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 			" Rows are stored in top-bottom order: %s\n",
 			imageLeft.isOriginTopLeft() ? "YES" : "NO");
 	}
+}
+
+void CObservationStereoImages::load() const
+{
+	imageLeft.forceLoad();
+	imageRight.forceLoad();
+	imageDisparity.forceLoad();
 }

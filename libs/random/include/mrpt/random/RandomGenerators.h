@@ -138,11 +138,12 @@ class CRandomGenerator
 
 	/** Generate a uniformly distributed pseudo-random number using the MT19937
 	 * algorithm, scaled to the selected range. */
-	double drawUniform(const double Min, const double Max)
+	template <typename return_t = double>
+	return_t drawUniform(const double Min, const double Max)
 	{
-		return Min +
-			   (Max - Min) * drawUniform32bit() *
-				   2.3283064370807973754314699618685e-10;  // 0xFFFFFFFF ^ -1
+		double k = 2.3283064370807973754314699618685e-10;  // 0xFFFFFFFF ^ -1
+		return static_cast<return_t>(
+			Min + (Max - Min) * drawUniform32bit() * k);
 	}
 
 	/** Fills the given matrix with independent, uniformly distributed samples.
@@ -189,9 +190,10 @@ class CRandomGenerator
 	 * \param mean The mean value of desired normal distribution
 	 * \param std  The standard deviation value of desired normal distribution
 	 */
-	double drawGaussian1D(const double mean, const double std)
+	template <typename return_t = double>
+	return_t drawGaussian1D(const double mean, const double std)
 	{
-		return mean + std * drawGaussian1D_normalized();
+		return static_cast<return_t>(mean + std * drawGaussian1D_normalized());
 	}
 
 	/** Fills the given matrix with independent, 1D-normally distributed

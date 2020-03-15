@@ -314,13 +314,13 @@ void ICP_SLAM_App_Base::run()
 				cam.setElevationDegrees(90);
 				cam.setPointingAt(robotPose);
 				cam.setZoomDistance(20);
-				cam.setOrthogonal();
+				// cam.setOrthogonal();
 			}
 
 			// The ground:
 			mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
 				mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
-			groundPlane->setColor(0.4, 0.4, 0.4);
+			groundPlane->setColor(0.4f, 0.4f, 0.4f);
 			view->insert(groundPlane);
 			view_map->insert(CRenderizable::Ptr(groundPlane));  // A copy
 

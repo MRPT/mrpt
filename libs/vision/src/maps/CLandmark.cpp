@@ -54,12 +54,12 @@ void CLandmark::setPose(const CPointPDFGaussian& pose)
 	pose_mean.y = pose.mean.y();
 	pose_mean.z = pose.mean.z();
 
-	pose_cov_11 = pose.cov(0, 0);
-	pose_cov_22 = pose.cov(1, 1);
-	pose_cov_33 = pose.cov(2, 2);
-	pose_cov_12 = pose.cov(0, 1);
-	pose_cov_13 = pose.cov(0, 2);
-	pose_cov_23 = pose.cov(1, 2);
+	pose_cov_11 = d2f(pose.cov(0, 0));
+	pose_cov_22 = d2f(pose.cov(1, 1));
+	pose_cov_33 = d2f(pose.cov(2, 2));
+	pose_cov_12 = d2f(pose.cov(0, 1));
+	pose_cov_13 = d2f(pose.cov(0, 2));
+	pose_cov_23 = d2f(pose.cov(1, 2));
 }
 
 uint8_t CLandmark::serializeGetVersion() const { return 4; }

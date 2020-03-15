@@ -76,7 +76,7 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	}
 
 	updateCamerasParams();
-	m_groundPlane->setColor(0.4, 0.4, 0.4);
+	m_groundPlane->setColor(0.4f, 0.4f, 0.4f);
 	setVisibleGrid(true);
 	setFocusPolicy(Qt::StrongFocus);
 }
@@ -107,18 +107,16 @@ void CGlWidget::fillMap(const CSetOfObjects::Ptr& renderizableMap)
 				auto* points = dynamic_cast<CPointCloud*>(ren);
 				if (points)
 				{
-					const std::vector<float>& arrayX = points->getArrayX();
-					const std::vector<float>& arrayY = points->getArrayY();
+					const std::vector<mrpt::math::TPoint3Df>& pts =
+						points->getArrayPoints();
 
-					for (auto& itX : arrayX)
+					for (const auto& pt : pts)
 					{
-						xMin = std::min(xMin, itX);
-						xMax = std::max(xMax, itX);
-					}
-					for (auto& itY : arrayY)
-					{
-						yMin = std::min(yMin, itY);
-						yMax = std::max(yMax, itY);
+						mrpt::keep_min(xMin, pt.x);
+						mrpt::keep_min(yMin, pt.y);
+
+						mrpt::keep_max(xMax, pt.x);
+						mrpt::keep_max(yMax, pt.y);
 					}
 				}
 			}

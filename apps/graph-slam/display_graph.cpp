@@ -15,7 +15,6 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
@@ -23,7 +22,6 @@
 
 using namespace mrpt;
 using namespace mrpt::graphs;
-// using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
@@ -127,17 +125,7 @@ void display_graph(const GRAPHTYPE& g)
 				{
 					case 'h':
 					case 'H':
-						if (!showing_help)
-						{
-							tim_show_start.Tic();
-							showing_help = true;
-						}
-						else
-						{
-							tim_show_end.Tic();
-							showing_help = false;
-							hiding_help = true;
-						}
+						std::cout << MSG_HELP_WINDOW << "\n";
 						break;
 					case 'q':
 					case 'Q':
@@ -220,54 +208,6 @@ void display_graph(const GRAPHTYPE& g)
 					request_to_refresh_3D_view = true;
 				}
 			}
-			else if (e.isOfType<mrptEventGLPostRender>())
-			{
-				// const mrptEventGLPostRender* ev =
-				// e.getAs<mrptEventGLPostRender>();
-				// Show small message in the corner:
-				mrpt::opengl::gl_utils::renderMessageBox(
-					0.8f, 0.94f,  // x,y (in screen "ratios")
-					0.19f, 0.05f,  // width, height (in screen "ratios")
-					"Press 'h' for help",
-					0.015f  // text size
-				);
-
-				// Also showing help?
-				if (showing_help || hiding_help)
-				{
-					static const double TRANSP_ANIMATION_TIME_SEC = 0.5;
-
-					const double show_tim = tim_show_start.Tac();
-					const double hide_tim = tim_show_end.Tac();
-
-					const double transparency =
-						hiding_help
-							? 1.0 -
-								  std::min(
-									  1.0, hide_tim / TRANSP_ANIMATION_TIME_SEC)
-							: std::min(
-								  1.0, show_tim / TRANSP_ANIMATION_TIME_SEC);
-
-					mrpt::opengl::gl_utils::renderMessageBox(
-						0.05f, 0.05f,  // x,y (in screen "ratios")
-						0.50f, 0.50f,  // width, height (in screen "ratios")
-						MSG_HELP_WINDOW,
-						0.02f,  // text size
-						mrpt::img::TColor(
-							190, 190, 190, 200 * transparency),  // background
-						mrpt::img::TColor(
-							0, 0, 0, 200 * transparency),  // border
-						mrpt::img::TColor(
-							200, 0, 0, 150 * transparency),  // text
-						5.0f,  // border width
-						"serif",  // text font
-						mrpt::opengl::NICE  // text style
-					);
-
-					if (hide_tim > TRANSP_ANIMATION_TIME_SEC && hiding_help)
-						hiding_help = false;
-				}
-			}
 		}
 	};
 	// Create an instance of the observer:
@@ -282,6 +222,8 @@ void display_graph(const GRAPHTYPE& g)
 		win_feedback.observeBegin(*the_main_view);
 		win.unlockAccess3DScene();
 	}
+
+	win.addTextMessage(0.8, 0.94, "Press 'h' for help");
 
 	cout << "Close the window to exit.\n";
 	while (win.isOpen())

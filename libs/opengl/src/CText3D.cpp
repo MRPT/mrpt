@@ -10,22 +10,18 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CText3D.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
-#include "opengl_internals.h"
+
+#include "gltext.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CText3D, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CText3D, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							Constructor
-  ---------------------------------------------------------------*/
 CText3D::CText3D(
-	const std::string& str, const std::string& fontName, const double scale,
+	const std::string& str, const std::string& fontName, const float scale,
 	const mrpt::opengl::TOpenGLFontStyle text_style, const double text_spacing,
 	const double text_kerning)
 	: m_str(str),
@@ -37,25 +33,24 @@ CText3D::CText3D(
 	this->setScale(scale);
 }
 
-/*---------------------------------------------------------------
-							Destructor
-  ---------------------------------------------------------------*/
 CText3D::~CText3D() = default;
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CText3D::render_dl() const
+
+void CText3D::onUpdateBuffers_Text()
 {
-#if MRPT_HAS_OPENGL_GLUT
-	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
+	auto& vbd = CRenderizableShaderText::m_vertex_buffer_data;
+	auto& tris = CRenderizableShaderText::m_triangles;
+	auto& cbd = CRenderizableShaderText::m_color_buffer_data;
+	vbd.clear();
+	tris.clear();
+	cbd.clear();
 
-	mrpt::opengl::gl_utils::glSetFont(m_fontName);
-	mrpt::opengl::gl_utils::glDrawText(
-		m_str,
-		1.0,  // Scale
-		m_text_style, m_text_spacing, m_text_kerning);
+	mrpt::opengl::internal::glSetFont(m_fontName);
+	mrpt::opengl::internal::glDrawText(
+		m_str, tris, vbd, m_text_style, m_text_spacing, m_text_kerning);
 
-#endif
+	// All lines & triangles, the same color:
+	cbd.assign(vbd.size(), m_color);
+	for (auto& tri : m_triangles) tri.setColor(m_color);
 }
 
 uint8_t CText3D::serializeGetVersion() const { return 0; }
@@ -83,7 +78,7 @@ void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CText3D::getBoundingBox(

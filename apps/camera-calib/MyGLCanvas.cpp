@@ -9,8 +9,6 @@
 
 #include "MyGLCanvas.h"
 
-//#include "mono_slamMain.h"
-
 using namespace std;
 
 CMyGLCanvas::CMyGLCanvas(

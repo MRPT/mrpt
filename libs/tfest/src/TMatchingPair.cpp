@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/tfest/TMatchingPair.h>
+#include <cmath>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -134,10 +135,10 @@ void TMatchingPairList::squareErrorVector(
 	out_sqErrs.resize(size());
 	// *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
 
-	const float ccos = cos(q.phi());
-	const float csin = sin(q.phi());
-	const float qx = q.x();
-	const float qy = q.y();
+	const float ccos = d2f(std::cos(q.phi()));
+	const float csin = d2f(std::sin(q.phi()));
+	const float qx = d2f(q.x());
+	const float qy = d2f(q.y());
 
 	const_iterator corresp;
 	vector<float>::iterator e_i;
@@ -163,10 +164,10 @@ void TMatchingPairList::squareErrorVector(
 
 	// *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
 
-	const float ccos = cos(q.phi());
-	const float csin = sin(q.phi());
-	const float qx = q.x();
-	const float qy = q.y();
+	const float ccos = d2f(cos(q.phi()));
+	const float csin = d2f(sin(q.phi()));
+	const float qx = d2f(q.x());
+	const float qy = d2f(q.y());
 
 	const_iterator corresp;
 	vector<float>::iterator e_i, xx, yy;

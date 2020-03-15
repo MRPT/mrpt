@@ -14,7 +14,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CText.h>
@@ -245,20 +245,19 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		break;
 		case pdfGauss:
 		{
-			opengl::CEllipsoid::Ptr obj =
-				std::make_shared<opengl::CEllipsoid>();
+			opengl::CEllipsoid3D::Ptr obj =
+				std::make_shared<opengl::CEllipsoid3D>();
 
 			obj->setPose(m_locationGauss.mean);
 			obj->setLineWidth(3);
 
 			CMatrixDouble C = CMatrixDouble(m_locationGauss.cov);
-			if (C(2, 2) == 0) C.setSize(2, 2);
 			obj->setCovMatrix(C);
 
 			obj->setQuantiles(3);
 			obj->enableDrawSolid3D(false);
 
-			obj->setColor(1, 0, 0, 0.85);
+			obj->setColor(1, 0, 0, 0.85f);
 			outObj->insert(obj);
 		}
 		break;
@@ -467,8 +466,10 @@ void CBeacon::generateRingSOG(
 	ASSERT_(myBeaconMap);
 
 	// Compute the number of Gaussians:
-	const float minEl = DEG2RAD(myBeaconMap->insertionOptions.minElevation_deg);
-	const float maxEl = DEG2RAD(myBeaconMap->insertionOptions.maxElevation_deg);
+	const double minEl =
+		DEG2RAD(myBeaconMap->insertionOptions.minElevation_deg);
+	const double maxEl =
+		DEG2RAD(myBeaconMap->insertionOptions.maxElevation_deg);
 	ASSERT_(
 		myBeaconMap->insertionOptions.minElevation_deg <=
 		myBeaconMap->insertionOptions.maxElevation_deg);

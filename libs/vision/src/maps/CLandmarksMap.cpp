@@ -21,7 +21,7 @@
 #include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
@@ -1265,8 +1265,7 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 			}  // end of other it., k
 
 			// Compute the corrs ratio:
-			correspondencesRatio =
-				correspondences.size() / static_cast<float>(nOther);
+			correspondencesRatio = correspondences.size() / d2f(nOther);
 			//		os::fclose(f);
 
 			break;
@@ -1347,8 +1346,7 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 
 			}  // end for k
 
-			correspondencesRatio =
-				correspondences.size() / static_cast<float>(nOther);
+			correspondencesRatio = correspondences.size() / d2f(nOther);
 
 			break;
 
@@ -2479,7 +2477,8 @@ void CLandmarksMap::getAs3DObject(
 	CPointPDFGaussian pointGauss;
 	for (const auto& landmark : landmarks)
 	{
-		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid3D::Ptr ellip =
+			std::make_shared<opengl::CEllipsoid3D>();
 
 		landmark.getPose(pointGauss);
 
@@ -2659,7 +2658,7 @@ float CLandmarksMap::compute3DMatchingRatio(
 						descrDist += square(*it1 - *it2);
 
 					float descrDist_f =
-						sqrt(static_cast<float>(descrDist)) /
+						sqrt(d2f(descrDist)) /
 						itThis->features[0].descriptors.SIFT->size();
 
 					if (descrDist_f < 1.5f)
@@ -2673,7 +2672,7 @@ float CLandmarksMap::compute3DMatchingRatio(
 
 	}  // for each in "other"
 
-	return static_cast<float>(otherLandmarkWithCorrespondence) / nOther;
+	return d2f(otherLandmarkWithCorrespondence) / nOther;
 
 	MRPT_END
 }

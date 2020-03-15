@@ -61,7 +61,7 @@ void TMultiResDescMatchOptions::loadFromConfigFile(
 	highScl1 = cfg.read_int(section, "highScl1", 6, false);
 	highScl2 = cfg.read_int(section, "highScl2", 6, false);
 
-	searchAreaSize = cfg.read_double(section, "searchAreaSize", 20, false);
+	searchAreaSize = cfg.read_uint64_t(section, "searchAreaSize", 20, false);
 }
 
 // --------------------------------------------------
@@ -150,7 +150,7 @@ void TMultiResDescMatchOptions::dumpToTextStream(std::ostream& out) const
 void TMultiResDescOptions::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 {
-	basePSize = cfg.read_double(section, "basePSize", 23, false);
+	basePSize = cfg.read_uint64_t(section, "basePSize", 23, false);
 	comLScl = cfg.read_int(section, "comLScl", 0, false);
 	comHScl = cfg.read_int(section, "comHScl", 6, false);
 	sg1 = cfg.read_double(section, "sg1", 0.5, false);
@@ -382,8 +382,8 @@ float CFeature::patchCorrelationTo(const CFeature& oFeature) const
 	mrpt::vision::openCV_cross_correlation(
 		*patch, *oFeature.patch, x_max, y_max, max_val);
 
-	return 0.5 -
-		   0.5 * max_val;  // Value as "distance" in the range [0,1], best = 0
+	// Value as "distance" in the range [0,1], best = 0
+	return d2f(0.5 - 0.5 * max_val);
 
 	MRPT_END
 }
@@ -536,7 +536,7 @@ float CFeature::descriptorSpinImgDistanceTo(
 		dist += square(*itDesc1 - *itDesc2);
 	}
 
-	if (normalize_by_vector_length) dist /= 0.25 * descriptors.SpinImg->size();
+	if (normalize_by_vector_length) dist /= 0.25f * descriptors.SpinImg->size();
 
 	return sqrt(dist);
 }  // end descriptorSpinImgDistanceTo
@@ -561,8 +561,8 @@ float CFeature::internal_distanceBetweenPolarImages(
 	//#define LM_CORR_METHOD_CORRELATION
 
 #if defined(LM_CORR_BIAS_MEAN) || defined(LM_CORR_METHOD_CORRELATION)
-	const float desc1_mean = desc1.sum() / static_cast<float>(width * height);
-	const float desc2_mean = desc2.sum() / static_cast<float>(width * height);
+	const float desc1_mean = desc1.sum() / d2f(width * height);
+	const float desc2_mean = desc2.sum() / d2f(width * height);
 #endif
 
 	CVectorFloat distances(height, 0);  // Distances for each shift
@@ -608,7 +608,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 		}
 
 		// Average:
-		if (normalize_distances) dist /= static_cast<float>(width * height);
+		if (normalize_distances) dist /= d2f(width * height);
 
 #ifdef LM_CORR_METHOD_EUCLID
 		dist = sqrt(dist);
@@ -650,7 +650,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 #endif
 
 	// Output:
-	minDistAngle = minDistIdx * M_2PI / static_cast<float>(width);
+	minDistAngle = minDistIdx * d2f(M_2PI / width);
 	return minDist;
 
 	MRPT_END
@@ -741,8 +741,8 @@ uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 		distance += count;
 	}
 
-	return float(distance);
-}  // end-descriptorORBDistanceTo
+	return distance;
+}
 
 // # added by Raghavender Sahdev
 // --------------------------------------------------

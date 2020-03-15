@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/round.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -368,8 +369,10 @@ void CObservation2DRangeScan::filterByExclusionAngles(
 	// For each forbiden angle range:
 	for (const auto& angle : angles)
 	{
-		int ap_idx_ini = mrpt::math::wrapTo2Pi(angle.first - Ang) / dA;
-		int ap_idx_end = mrpt::math::wrapTo2Pi(angle.second - Ang) / dA;
+		int ap_idx_ini =
+			mrpt::round(mrpt::math::wrapTo2Pi(angle.first - Ang) / dA);
+		int ap_idx_end =
+			mrpt::round(mrpt::math::wrapTo2Pi(angle.second - Ang) / dA);
 
 		if (ap_idx_ini < 0) ap_idx_ini = 0;
 		if (ap_idx_end < 0) ap_idx_end = 0;

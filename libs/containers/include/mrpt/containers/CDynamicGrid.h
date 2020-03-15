@@ -335,8 +335,8 @@ class CDynamicGrid
 	{
 		out << m_x_min << m_x_max << m_y_min << m_y_max;
 		out << m_resolution;
-		out << static_cast<uint32_t>(m_size_x)
-			<< static_cast<uint32_t>(m_size_y);
+		out.template WriteAs<uint32_t>(m_size_x).template WriteAs<uint32_t>(
+			m_size_y);
 	}
 	template <class STREAM>
 	void dyngridcommon_readFromStream(STREAM& in, bool cast_from_float = false)
@@ -356,11 +356,9 @@ class CDynamicGrid
 			m_y_max = ymax;
 			m_resolution = res;
 		}
-		uint32_t nX, nY;
-		in >> nX >> nY;
-		m_size_x = nX;
-		m_size_y = nY;
-		m_map.resize(nX * nY);
+		m_size_x = in.template ReadAs<uint32_t>();
+		m_size_y = in.template ReadAs<uint32_t>();
+		m_map.resize(m_size_x * m_size_y);
 	}
 
 };  // end of CDynamicGrid<>

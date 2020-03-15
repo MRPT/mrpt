@@ -9,7 +9,9 @@
 #pragma once
 
 #include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CRenderizableShaderPoints.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <map>
 
 namespace mrpt::opengl
@@ -36,20 +38,38 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  * \note Class introduced in MRPT 1.2.2
  */
-class CAssimpModel : public CRenderizableDisplayList
+class CAssimpModel : public CRenderizableShaderTriangles,
+					 public CRenderizableShaderWireFrame,
+					 public CRenderizableShaderPoints
 {
 	DEFINE_SERIALIZABLE(CAssimpModel, mrpt::opengl)
 
    public:
-	/** Render child objects */
-	void render_dl() const override;
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
 
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (triangles and lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+				DefaultShaderID::POINTS};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	void onUpdateBuffers_Points() override;
+	void onUpdateBuffers_all();  // special case for assimp
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+		CRenderizableShaderPoints::freeOpenGLResources();
+	}
+	/** @} */
 
+	CAssimpModel();
+	virtual ~CAssimpModel() override;
 	/**  Loads a scene from a file in any supported file.
 	 * \exception std::runtime_error On any error during loading or importing
 	 * the file.
@@ -59,24 +79,22 @@ class CAssimpModel : public CRenderizableDisplayList
 	/** Empty the object */
 	void clear();
 
-	/** Evaluates the scene at a given animation time */
-	void evaluateAnimation(double time_anim);
-
 	/* Simulation of ray-trace. */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
+	void getBoundingBox(
+		mrpt::math::TPoint3D& bb_min,
+		mrpt::math::TPoint3D& bb_max) const override;
+
+	/* Disabled for now (port to OpenGL3, March 2020)
 	struct TInfoPerTexture
 	{
-		/** indices in \a m_textureIds. string::npos for non-initialized ones.
-		 */
+		// indices in \a m_textureIds. string::npos for non-initialized ones
 		size_t id_idx;
 		mrpt::img::CImage::Ptr img_rgb, img_alpha;
 		TInfoPerTexture() : id_idx(std::string::npos) {}
 	};
-
-	CAssimpModel();
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CAssimpModel() override;
+	*/
 
    private:
 	/** A container for automatic deletion of assimp scene when the last
@@ -87,18 +105,19 @@ class CAssimpModel : public CRenderizableDisplayList
 		TImplAssimp();
 		~TImplAssimp();
 		/** aiScene* */
-		void* scene{nullptr};
+		void* scene = nullptr;
 	};
 	std::shared_ptr<TImplAssimp> m_assimp_scene;
 
 	/** Bounding box */
 	mrpt::math::TPoint3D m_bbox_min, m_bbox_max;
 
-	mutable bool m_textures_loaded{false};
 	std::string m_modelPath;
-	mutable std::vector<unsigned int> m_textureIds;
 
-	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
-};
+	// mutable std::vector<unsigned int> m_textureIds;
+	// mutable bool m_textures_loaded{false};
+	// mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
+
+};  // namespace mrpt::opengl
 
 }  // namespace mrpt::opengl

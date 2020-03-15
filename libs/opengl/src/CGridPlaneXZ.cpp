@@ -12,14 +12,12 @@
 #include <mrpt/opengl/CGridPlaneXZ.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include "opengl_internals.h"
-
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(
+	CGridPlaneXZ, CRenderizableShaderWireFrame, mrpt::opengl)
 
 /** Constructor */
 CGridPlaneXZ::CGridPlaneXZ(
@@ -30,57 +28,31 @@ CGridPlaneXZ::CGridPlaneXZ(
 	  m_zMin(zMin),
 	  m_zMax(zMax),
 	  m_plane_y(y),
-	  m_frequency(frequency),
-	  m_lineWidth(lineWidth),
-	  m_antiAliasing(antiAliasing)
+	  m_frequency(frequency)
 {
+	m_lineWidth = lineWidth;
+	m_antiAliasing = antiAliasing;
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CGridPlaneXZ::render_dl() const
+void CGridPlaneXZ::onUpdateBuffers_Wireframe()
 {
-#if MRPT_HAS_OPENGL_GLUT
-	ASSERT_(m_frequency >= 0);
-
-	// Enable antialiasing:
-	if (m_antiAliasing)
-	{
-		glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-		glEnable(GL_LINE_SMOOTH);
-	}
-	glLineWidth(m_lineWidth);
-
-	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
-	glBegin(GL_LINES);
-
-	ASSERT_(m_frequency >= 0);
+	// Generate vertices:
+	m_vertex_buffer_data.clear();
+	m_color_buffer_data.clear();
 
 	for (float z = m_zMin; z <= m_zMax; z += m_frequency)
 	{
-		glVertex3f(m_xMin, m_plane_y, z);
-		glVertex3f(m_xMax, m_plane_y, z);
+		m_vertex_buffer_data.emplace_back(m_xMin, m_plane_y, z);
+		m_vertex_buffer_data.emplace_back(m_xMax, m_plane_y, z);
 	}
 
 	for (float x = m_xMin; x <= m_xMax; x += m_frequency)
 	{
-		glVertex3f(x, m_plane_y, m_zMin);
-		glVertex3f(x, m_plane_y, m_zMax);
+		m_vertex_buffer_data.emplace_back(x, m_plane_y, m_zMin);
+		m_vertex_buffer_data.emplace_back(x, m_plane_y, m_zMax);
 	}
-
-	glEnd();
-	glEnable(GL_LIGHTING);
-
-	// End antialiasing:
-	if (m_antiAliasing)
-	{
-		glPopAttrib();
-		checkOpenGLError();
-	}
-#endif
+	// The same color to all vertices:
+	m_color_buffer_data.assign(m_vertex_buffer_data.size(), m_color);
 }
 
 uint8_t CGridPlaneXZ::serializeGetVersion() const { return 1; }
@@ -117,7 +89,7 @@ void CGridPlaneXZ::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void CGridPlaneXZ::getBoundingBox(

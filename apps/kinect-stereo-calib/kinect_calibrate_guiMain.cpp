@@ -1707,7 +1707,9 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 		// ------------------------------------------
 		case 5:
 		{
-			m_plot3D->last_timestamp = m_last_obs->timestamp;
+			m_plot3D->getOpenGLSceneRef()->getViewport()->addTextMessage(
+				20, 20,
+				mrpt::system::dateTimeLocalToString(m_last_obs->timestamp));
 
 			m_last_obs->cameraParams = m_calib_result.cam_params.leftCamera;
 			m_last_obs->cameraParamsIntensity =

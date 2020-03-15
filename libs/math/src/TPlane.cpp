@@ -46,10 +46,6 @@ double TPlane::distance(const TLine3D& line) const
 	else
 		return distance(line.pBase);
 }
-void TPlane::getNormalVector(double (&vector)[3]) const
-{
-	for (int i = 0; i < 3; i++) vector[i] = coefs[i];
-}
 TVector3D TPlane::getNormalVector() const
 {
 	TVector3D v;
@@ -57,12 +53,14 @@ TVector3D TPlane::getNormalVector() const
 	return v;
 }
 
-void TPlane::getUnitaryNormalVector(double (&vec)[3]) const
+TVector3D TPlane::getUnitaryNormalVector() const
 {
+	TVector3D vec;
 	const double s = sqrt(squareNorm<3, double>(coefs));
 	ASSERT_ABOVE_(s, getEpsilon());
 	const double k = 1.0 / s;
 	for (int i = 0; i < 3; i++) vec[i] = coefs[i] * k;
+	return vec;
 }
 
 void TPlane::unitarize()
@@ -74,10 +72,8 @@ void TPlane::unitarize()
 // Returns a 6D pose such as its XY plane coincides with the plane
 void TPlane::getAsPose3D(mrpt::math::TPose3D& outPose) const
 {
-	double normal[3];
-	getUnitaryNormalVector(normal);
-	CMatrixDouble44 AXIS;
-	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
+	const TVector3D normal = getUnitaryNormalVector();
+	CMatrixDouble44 AXIS = generateAxisBaseFromDirectionAndAxis(normal, 2);
 	for (size_t i = 0; i < 3; i++)
 		if (std::abs(coefs[i]) >= getEpsilon())
 		{
@@ -91,10 +87,8 @@ void TPlane::getAsPose3DForcingOrigin(
 {
 	if (!contains(center))
 		throw std::logic_error("Base point is not in the plane.");
-	double normal[3];
-	getUnitaryNormalVector(normal);
-	CMatrixDouble44 AXIS;
-	generateAxisBaseFromDirectionAndAxis(normal, 2, AXIS);
+	const TVector3D normal = getUnitaryNormalVector();
+	CMatrixDouble44 AXIS = generateAxisBaseFromDirectionAndAxis(normal, 2);
 	for (size_t i = 0; i < 3; i++) AXIS(i, 3) = center[i];
 	pose.fromHomogeneousMatrix(AXIS);
 }

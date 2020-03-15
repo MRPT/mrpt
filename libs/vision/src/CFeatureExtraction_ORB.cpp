@@ -129,7 +129,7 @@ void CFeatureExtraction::extractFeaturesORB(
 
 	const bool do_filter_min_dist = options.ORBOptions.min_distance > 1;
 	const unsigned int occupied_grid_cell_size =
-		options.ORBOptions.min_distance / 2.0;
+		options.ORBOptions.min_distance / 2;
 	const float occupied_grid_cell_size_inv = 1.0f / occupied_grid_cell_size;
 
 	unsigned int grid_lx =

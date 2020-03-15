@@ -139,16 +139,15 @@ bool mrpt::vision::pnp::posit::compute_pose(
 
 long mrpt::vision::pnp::posit::get_img_diff()
 {
-	int i, j;
-	long sumOfDiffs = 0;
+	double sumOfDiffs = 0;
 
-	for (i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
-		for (j = 0; j < 2; j++)
+		for (int j = 0; j < 2; j++)
 		{
 			sumOfDiffs += std::abs(
 				floor(0.5 + img_vecs(i, j)) - floor(0.5 + img_vecs_old(i, j)));
 		}
 	}
-	return sumOfDiffs;
+	return static_cast<long>(sumOfDiffs);
 }

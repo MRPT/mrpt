@@ -10,16 +10,16 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(COctoMapVoxels, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(COctoMapVoxels, CRenderizable, mrpt::opengl)
 
 /** Ctor */
 COctoMapVoxels::COctoMapVoxels() : m_grid_color(0xE0, 0xE0, 0xE0, 0x90) {}
@@ -29,7 +29,7 @@ void COctoMapVoxels::clear()
 	m_voxel_sets.clear();
 	m_grid_cubes.clear();
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void COctoMapVoxels::setBoundingBox(
@@ -39,7 +39,27 @@ void COctoMapVoxels::setBoundingBox(
 	m_bb_max = bb_max;
 }
 
-#if MRPT_HAS_OPENGL_GLUT
+void COctoMapVoxels::render(const RenderContext& rc) const
+{
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::POINTS:
+			if (m_showVoxelsAsPoints) CRenderizableShaderPoints::render(rc);
+			break;
+		case DefaultShaderID::TRIANGLES:
+			if (!m_showVoxelsAsPoints) CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			if (m_show_grids) CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void COctoMapVoxels::renderUpdateBuffers() const
+{
+	CRenderizableShaderPoints::renderUpdateBuffers();
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
 
 // See: http://www.songho.ca/opengl/gl_vertexarray.html
 
@@ -54,93 +74,68 @@ void COctoMapVoxels::setBoundingBox(
 // ----------------------> +Y
 //
 
-const GLubyte grid_line_indices[] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
-									 6, 7, 7, 4, 0, 5, 1, 6, 2, 7, 3, 4};
+static const uint8_t grid_line_indices[] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
+											6, 7, 7, 4, 0, 5, 1, 6, 2, 7, 3, 4};
 
-const GLubyte cube_indices[36] = {0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0,
-								  0, 5, 6, 6, 1, 0, 1, 6, 7, 7, 2, 1,
-								  7, 4, 3, 3, 2, 7, 4, 7, 6, 6, 5, 4};
+static const uint8_t cube_indices[2 * 6 * 3] = {
+	// front:
+	0, 1, 2, 0, 2, 3,
+	// right:
+	3, 4, 0, 4, 5, 0,
+	// top
+	0, 5, 6, 6, 1, 0,
+	// left
+	1, 6, 7, 7, 2, 1,
+	// bottom
+	7, 3, 4, 2, 3, 7,
+	// back
+	4, 7, 6, 5, 6, 4};
 
-// normal array
-const GLfloat normals_cube[3 * 6 * 4] = {
-	1,  0,  0,  1,  0,  0,  1,  0,  0,  0,  0,  0,  // v0,v1,v2,v3 (front)
-	0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  // v0,v3,v4,v5 (right)
-	0,  0,  1,  0,  0,  1,  0,  0,  1,  0,  0,  1,  // v0,v5,v6,v1 (top)
-	0,  -1, 0,  0,  -1, 0,  0,  -1, 0,  0,  -1, 0,  // v1,v6,v7,v2 (left)
-	0,  0,  -1, 0,  0,  -1, 0,  0,  -1, 0,  0,  -1,  // v7,v4,v3,v2 (bottom)
-	-1, 0,  0,  -1, 0,  0,  -1, 0,  0,  -1, 0,  0};  // v4,v7,v6,v5 (back)
+// normal array: one per triangle
+static const mrpt::math::TPoint3Df normals_cube[6 * 2] = {
+	{1, 0, 0},  {1, 0, 0},  // v0,v1,v2,v3 (front)
+	{0, 1, 0},  {0, 1, 0},  // v0,v3,v4,v5 (right)
+	{0, 0, 1},  {0, 0, 1},  // v0,v5,v6,v1 (top)
+	{0, -1, 0}, {0, -1, 0},  // v1,v6,v7,v2 (left)
+	{0, 0, -1}, {0, 0, -1},  // v7,v4,v3,v2 (bottom)
+	{-1, 0, 0}, {-1, 0, 0}};  // v4,v7,v6,v5 (back)
 
-#endif
-
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void COctoMapVoxels::render_dl() const
+void COctoMapVoxels::onUpdateBuffers_Wireframe()
 {
-#if MRPT_HAS_OPENGL_GLUT
+	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	vbd.clear();
 
-	glEnableClientState(GL_VERTEX_ARRAY);
+	CRenderizableShaderWireFrame::setLineWidth(m_grid_width);
 
-	// Draw grids ====================================
-	if (m_show_grids)
+	const size_t nGrids = m_grid_cubes.size();
+	for (size_t i = 0; i < nGrids; i++)
 	{
-		glLineWidth(m_grid_width);
-		checkOpenGLError();
+		const TGridCube& c = m_grid_cubes[i];
 
-		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+		const mrpt::math::TPoint3Df vs[8] = {
+			{c.max.x, c.max.y, c.max.z}, {c.max.x, c.min.y, c.max.z},
+			{c.max.x, c.min.y, c.min.z}, {c.max.x, c.max.y, c.min.z},
+			{c.min.x, c.max.y, c.min.z}, {c.min.x, c.max.y, c.max.z},
+			{c.min.x, c.min.y, c.max.z}, {c.min.x, c.min.y, c.min.z}};
 
-		// Antialiasing:
-		glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
-		glEnable(GL_LINE_SMOOTH);
-		if (m_grid_color.A != 255)
+		const auto& gli = grid_line_indices;
+
+		// glDrawElements(GL_LINES, , GL_UNSIGNED_BYTE, grid_line_indices);
+		for (size_t k = 0; k < sizeof(gli) / sizeof(gli[0]); k += 2)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			vbd.emplace_back(vs[gli[k]]);
+			vbd.emplace_back(vs[gli[k + 1]]);
 		}
-
-		glColor4ub(
-			m_grid_color.R, m_grid_color.G, m_grid_color.B, m_grid_color.A);
-
-		const size_t nGrids = m_grid_cubes.size();
-		for (size_t i = 0; i < nGrids; i++)
-		{
-			const TGridCube& c = m_grid_cubes[i];
-
-			const GLdouble vertices[8 * 3] = {
-				c.max.x, c.max.y, c.max.z, c.max.x, c.min.y, c.max.z,
-				c.max.x, c.min.y, c.min.z, c.max.x, c.max.y, c.min.z,
-				c.min.x, c.max.y, c.min.z, c.min.x, c.max.y, c.max.z,
-				c.min.x, c.min.y, c.max.z, c.min.x, c.min.y, c.min.z};
-			glVertexPointer(3, GL_DOUBLE, 0, vertices);
-			glDrawElements(
-				GL_LINES,
-				sizeof(grid_line_indices) / sizeof(grid_line_indices[0]),
-				GL_UNSIGNED_BYTE, grid_line_indices);
-		}
-
-		glEnable(GL_LIGHTING);  // Disable lights when drawing lines
-		// End of antialiasing:
-		glPopAttrib();
 	}
 
-	// Draw cubes ====================================
-	if (!m_enable_lighting) glDisable(GL_LIGHTING);
+	cbd.assign(vbd.size(), m_grid_color);
+}
 
-	glEnableClientState(GL_NORMAL_ARRAY);
-
-	glNormalPointer(GL_FLOAT, 0, normals_cube);
-
-	if (m_enable_cube_transparency)
-	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	if (m_showVoxelsAsPoints)
-	{
-		glPointSize(m_showVoxelsAsPointsSize);
-		glBegin(GL_POINTS);
-	}
+void COctoMapVoxels::onUpdateBuffers_Triangles()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
 
 	for (const auto& m_voxel_set : m_voxel_sets)
 	{
@@ -151,48 +146,68 @@ void COctoMapVoxels::render_dl() const
 		for (size_t j = 0; j < N; j++)
 		{
 			const mrpt::img::TColor& vx_j_col = voxels[j].color;
-			glColor4ub(vx_j_col.R, vx_j_col.G, vx_j_col.B, vx_j_col.A);
+			// Was: glColor4ub(vx_j_col.R, vx_j_col.G, vx_j_col.B, vx_j_col.A);
 
-			const mrpt::math::TPoint3D& c = voxels[j].coords;
-			const double L = voxels[j].side_length * 0.5;
+			const mrpt::math::TPoint3Df& c = voxels[j].coords;
+			const float L = voxels[j].side_length * 0.5f;
 
-			if (!m_showVoxelsAsPoints)
+			// Render as cubes:
+			const mrpt::math::TPoint3Df vs[8] = {
+				{c.x + L, c.y + L, c.z + L}, {c.x + L, c.y - L, c.z + L},
+				{c.x + L, c.y - L, c.z - L}, {c.x + L, c.y + L, c.z - L},
+				{c.x - L, c.y + L, c.z - L}, {c.x - L, c.y + L, c.z + L},
+				{c.x - L, c.y - L, c.z + L}, {c.x - L, c.y - L, c.z - L}};
+
+			// Was: glDrawElements(
+			// GL_TRIANGLES, sizeof(cube_indices) / sizeof(cube_indices[0]),
+			// GL_UNSIGNED_BYTE, cube_indices);
+			// glDrawElements(GL_LINES, , GL_UNSIGNED_BYTE, grid_line_indices);
+
+			const auto& ci = cube_indices;
+			const auto& ns = normals_cube;
+
+			for (size_t k = 0; k < sizeof(ci) / sizeof(ci[0]); k += 3)
 			{
-				// Render as cubes:
-				const GLdouble vertices[8 * 3] = {
-					c.x + L, c.y + L, c.z + L, c.x + L, c.y - L, c.z + L,
-					c.x + L, c.y - L, c.z - L, c.x + L, c.y + L, c.z - L,
-					c.x - L, c.y + L, c.z - L, c.x - L, c.y + L, c.z + L,
-					c.x - L, c.y - L, c.z + L, c.x - L, c.y - L, c.z - L};
-				glVertexPointer(3, GL_DOUBLE, 0, vertices);
-				glDrawElements(
-					GL_TRIANGLES,
-					sizeof(cube_indices) / sizeof(cube_indices[0]),
-					GL_UNSIGNED_BYTE, cube_indices);
-			}
-			else
-			{
-				// Render as simple points:
-				glVertex3f(c.x, c.y, c.z);
+				mrpt::opengl::TTriangle tri(
+					// vertices:
+					vs[ci[k]], vs[ci[k + 1]], vs[ci[k + 2]],
+					// normals:
+					ns[k / 3], ns[k / 3], ns[k / 3]);
+
+				for (int p = 0; p < 3; p++)
+				{
+					tri.vertices[p].xyzrgba.r = vx_j_col.R;
+					tri.vertices[p].xyzrgba.g = vx_j_col.G;
+					tri.vertices[p].xyzrgba.b = vx_j_col.B;
+					tri.vertices[p].xyzrgba.a = vx_j_col.A;
+				}
+
+				tris.emplace_back(std::move(tri));
 			}
 		}
 	}
+}
 
-	if (m_showVoxelsAsPoints)
+void COctoMapVoxels::onUpdateBuffers_Points()
+{
+	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
+	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+
+	for (const auto& m_voxel_set : m_voxel_sets)
 	{
-		glEnd();  // of  GL_POINTS
+		if (!m_voxel_set.visible) continue;
+
+		const std::vector<TVoxel>& voxels = m_voxel_set.voxels;
+		const size_t N = voxels.size();
+		for (size_t j = 0; j < N; j++)
+		{
+			const mrpt::img::TColor& vx_j_col = voxels[j].color;
+			const mrpt::math::TPoint3D& c = voxels[j].coords;
+
+			vbd.emplace_back(c);
+			cbd.emplace_back(vx_j_col);
+		}
 	}
-
-	if (m_enable_cube_transparency) glDisable(GL_BLEND);
-
-	glDisableClientState(GL_NORMAL_ARRAY);
-
-	if (!m_enable_lighting) glEnable(GL_LIGHTING);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	checkOpenGLError();
-
-#endif
 }
 
 DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TInfoPerVoxelSet)
@@ -283,7 +298,7 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 void COctoMapVoxels::getBoundingBox(

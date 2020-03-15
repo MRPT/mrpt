@@ -217,7 +217,7 @@ struct TKeyPointList_templ
 	}
 	inline float getScale(size_t i) const
 	{
-		return static_cast<float>(1 << m_feats[i].octave);
+		return d2f(1 << m_feats[i].octave);
 	}
 	inline TFeatureTrackStatus getTrackStatus(size_t i)
 	{

@@ -213,7 +213,8 @@ class CConfigFileBase
 			for (size_t i = 0; i < N; i++)
 			{
 				double val = std::stod(tokens[i]);
-				outValues[i] = val;
+				outValues[i] =
+					static_cast<typename VECTOR_TYPE::value_type>(val);
 			}
 		}
 	}
@@ -320,6 +321,12 @@ class CConfigFileBase
 	variableName, configFileObject, sectionNameStr)                       \
 	{                                                                     \
 		variableName = mrpt::DEG2RAD(configFileObject.read_double(        \
+			sectionNameStr, #variableName, mrpt::RAD2DEG(variableName))); \
+	}
+#define MRPT_LOAD_CONFIG_VAR_DEGREESf(                                    \
+	variableName, configFileObject, sectionNameStr)                       \
+	{                                                                     \
+		variableName = mrpt::DEG2RAD(configFileObject.read_float(         \
 			sectionNameStr, #variableName, mrpt::RAD2DEG(variableName))); \
 	}
 

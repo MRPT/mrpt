@@ -469,9 +469,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	// Message to be displayed on pause
 	if (m_enable_visuals)
 	{
-		this->m_win->addTextMessage(
-			0.5, 0.3, "", mrpt::img::TColorf(1.0, 0, 0),
-			m_text_index_paused_message);
+		this->m_win->addTextMessage(0.5, 0.3, "", m_text_index_paused_message);
 	}
 
 	MRPT_END;
@@ -2009,7 +2007,6 @@ void CGraphSlamEngine<GRAPH_T>::initGTVisualization()
 	// point cloud
 	CPointCloud::Ptr GT_cloud = std::make_shared<CPointCloud>();
 	GT_cloud->setPointSize(1.0);
-	GT_cloud->enablePointSmooth();
 	GT_cloud->enableColorFromX(false);
 	GT_cloud->enableColorFromY(false);
 	GT_cloud->enableColorFromZ(false);
@@ -2084,7 +2081,6 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization()
 	// point cloud
 	CPointCloud::Ptr odometry_poses_cloud = std::make_shared<CPointCloud>();
 	odometry_poses_cloud->setPointSize(1.0);
-	odometry_poses_cloud->enablePointSmooth();
 	odometry_poses_cloud->enableColorFromX(false);
 	odometry_poses_cloud->enableColorFromY(false);
 	odometry_poses_cloud->enableColorFromZ(false);

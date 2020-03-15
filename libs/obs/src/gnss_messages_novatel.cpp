@@ -28,15 +28,14 @@ void Message_NV_OEM6_GENERIC_FRAME::internal_writeToStream(
 	mrpt::serialization::CArchive& out) const
 {
 	out.WriteBuffer(&header, sizeof(header));
-	out << static_cast<uint32_t>(msg_body.size());
+	out.WriteAs<uint32_t>(msg_body.size());
 	if (!msg_body.empty()) out.WriteBuffer(&msg_body[0], msg_body.size());
 }
 void Message_NV_OEM6_GENERIC_FRAME::internal_readFromStream(
 	mrpt::serialization::CArchive& in)
 {
 	in.ReadBuffer(&header, sizeof(header));
-	uint32_t nBytesInStream;
-	in >> nBytesInStream;
+	const uint32_t nBytesInStream = in.ReadAs<uint32_t>();
 	msg_body.resize(nBytesInStream);
 	if (nBytesInStream) in.ReadBuffer(&msg_body[0], sizeof(nBytesInStream));
 	fixEndianness();
@@ -51,15 +50,14 @@ void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_writeToStream(
 	mrpt::serialization::CArchive& out) const
 {
 	out.WriteBuffer(&header, sizeof(header));
-	out << static_cast<uint32_t>(msg_body.size());
+	out.WriteAs<uint32_t>(msg_body.size());
 	if (!msg_body.empty()) out.WriteBuffer(&msg_body[0], msg_body.size());
 }
 void Message_NV_OEM6_GENERIC_SHORT_FRAME::internal_readFromStream(
 	mrpt::serialization::CArchive& in)
 {
 	in.ReadBuffer(&header, sizeof(header));
-	uint32_t nBytesInStream;
-	in >> nBytesInStream;
+	const uint32_t nBytesInStream = in.ReadAs<uint32_t>();
 	msg_body.resize(nBytesInStream);
 	if (nBytesInStream) in.ReadBuffer(&msg_body[0], sizeof(nBytesInStream));
 	fixEndianness();

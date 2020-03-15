@@ -19,10 +19,10 @@ namespace mrpt
  * @{ */
 
 /** Inline function for the square of a number. */
-template <class T>
-inline T square(const T x)
+template <typename num_t, typename return_t = num_t>
+inline return_t square(const num_t x)
 {
-	return x * x;
+	return static_cast<return_t>(x * x);
 }
 
 /** Faster version of std::hypot(), to use when overflow is not an issue and we
@@ -144,14 +144,14 @@ inline int fix(T x)
 template <typename T, typename K>
 inline void keep_min(T& var, const K test_val)
 {
-	if (test_val < var) var = test_val;
+	if (test_val < var) var = static_cast<T>(test_val);
 }
 /** If the second argument is above the first one, set the first argument to
  * this higher value. */
 template <typename T, typename K>
 inline void keep_max(T& var, const K test_val)
 {
-	if (test_val > var) var = test_val;
+	if (test_val > var) var = static_cast<T>(test_val);
 }
 /** Saturate the value of var (the variable gets modified) so it does not get
  * out of [min,max]. */
@@ -184,6 +184,16 @@ T round2up(T val)
 	}
 	return n;
 }
+
+/** shortcut for static_cast<float>(double) */
+inline float d2f(const double d) { return static_cast<float>(d); }
+
+/** converts a float [0,1] into an uint8_t [0,255] (without checking for out of
+ * bounds) \sa u8tof */
+inline uint8_t f2u8(const float f) { return static_cast<uint8_t>(f * 255); }
+
+/** converts a uint8_t [0,255] into a float [0,1] \sa f2u8 */
+inline float u8tof(const uint8_t v) { return v / 255.0f; }
 
 /** @} */
 

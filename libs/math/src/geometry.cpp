@@ -222,8 +222,8 @@ bool math::SegmentsIntersection(
 {
 	double x, y;
 	bool b = SegmentsIntersection(x1, y1, x2, y2, x3, y3, x4, y4, x, y);
-	ix = static_cast<float>(x);
-	iy = static_cast<float>(y);
+	ix = d2f(x);
+	iy = d2f(y);
 	return b;
 }
 
@@ -528,7 +528,7 @@ inline void unsafeProjectPoint(
 	newPoint.x = dummy.x;
 	newPoint.y = dummy.y;
 }
-void unsafeProjectPolygon(
+void mrpt::math::internal::unsafeProjectPolygon(
 	const TPolygon3D& poly, const TPose3D& pose, TPolygon2D& newPoly)
 {
 	size_t N = poly.size();
@@ -555,7 +555,8 @@ bool intersect(
 			TPolygon2D newPoly;
 			TPoint2D newP;
 			unsafeProjectPoint(p, p1.inversePose, newP);
-			unsafeProjectPolygon(p1.poly, p1.inversePose, newPoly);
+			mrpt::math::internal::unsafeProjectPolygon(
+				p1.poly, p1.inversePose, newPoly);
 			return newPoly.contains(newP);
 		}
 	return false;
@@ -612,24 +613,6 @@ bool intersect(
 	}
 }
 // End of auxiliary methods
-math::TPolygonWithPlane::TPolygonWithPlane(const TPolygon3D& p) : poly(p)
-{
-	poly.getBestFittingPlane(plane);
-	plane.getAsPose3D(pose);
-	// inversePose = -pose;
-	CMatrixDouble44 P_inv;
-	pose.getInverseHomogeneousMatrix(P_inv);
-	inversePose.fromHomogeneousMatrix(P_inv);
-
-	unsafeProjectPolygon(poly, inversePose, poly2D);
-}
-void math::TPolygonWithPlane::getPlanes(
-	const vector<TPolygon3D>& oldPolys, vector<TPolygonWithPlane>& newPolys)
-{
-	size_t N = oldPolys.size();
-	newPolys.resize(N);
-	for (size_t i = 0; i < N; i++) newPolys[i] = oldPolys[i];
-}
 
 bool math::intersect(const TSegment3D& s1, const TSegment3D& s2, TObject3D& obj)
 {
@@ -2074,9 +2057,10 @@ void math::createPlaneFromPoseAndNormal(
 	}
 }
 
-void math::generateAxisBaseFromDirectionAndAxis(
-	const double (&vec)[3], uint8_t coord, CMatrixDouble44& m)
+CMatrixDouble44 math::generateAxisBaseFromDirectionAndAxis(
+	const TVector3D& vec, uint8_t coord)
 {
+	CMatrixDouble44 m;
 	// Assumes vector is unitary.
 	// coord: 0=x, 1=y, 2=z.
 	const uint8_t coord1 = (coord + 1) % 3;
@@ -2099,6 +2083,7 @@ void math::generateAxisBaseFromDirectionAndAxis(
 	m(0, coord2) = m(1, coord) * m(2, coord1) - m(2, coord) * m(1, coord1);
 	m(1, coord2) = m(2, coord) * m(0, coord1) - m(0, coord) * m(2, coord1);
 	m(2, coord2) = m(0, coord) * m(1, coord1) - m(1, coord) * m(0, coord1);
+	return m;
 }
 
 double math::getRegressionLine(const vector<TPoint2D>& points, TLine2D& line)

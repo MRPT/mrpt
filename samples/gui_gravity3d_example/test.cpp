@@ -7,6 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
@@ -63,7 +64,7 @@ void GravityDemo()
 	{
 		opengl::CGridPlaneXY::Ptr obj =
 			opengl::CGridPlaneXY::Create(-2000, 2000, -2000, 2000, 0, 100);
-		obj->setColor(0.3, 0.3, 0.3);
+		obj->setColor(0.3f, 0.3f, 0.3f);
 		theScene->insert(obj);
 	}
 
@@ -92,12 +93,12 @@ void GravityDemo()
 		opengl::CSphere::Ptr& obj = masses[i].obj3d = opengl::CSphere::Create();
 
 		obj->setColor(
-			getRandomGenerator().drawUniform(0.1, 0.9),
-			getRandomGenerator().drawUniform(0.1, 0.9),
-			getRandomGenerator().drawUniform(0.1, 0.9));
+			getRandomGenerator().drawUniform<float>(0.1, 0.9),
+			getRandomGenerator().drawUniform<float>(0.1, 0.9),
+			getRandomGenerator().drawUniform<float>(0.1, 0.9));
 
 		masses[i].radius = M2R * pow(masses[i].mass, 1.0 / 3.0);
-		obj->setRadius(masses[i].radius);  // Guess why ^(1/3) ;-)
+		obj->setRadius(mrpt::d2f(masses[i].radius));  // Guess why ^(1/3) ;-)
 
 		obj->setLocation(masses[i].x, masses[i].y, masses[i].z);
 		theScene->insert(obj);
@@ -122,7 +123,7 @@ void GravityDemo()
 		// Update the 3D scene:
 		win.get3DSceneAndLock();
 
-		size_t n_steps = ceil(At / LARGEST_STEP) + 1;
+		size_t n_steps = mrpt::round(ceil(At / LARGEST_STEP) + 1);
 		double At_steps = At / n_steps;
 		n_steps = min(n_steps, size_t(3));
 		for (size_t j = 0; j < n_steps; j++) simulateGravity(masses, At_steps);
@@ -250,7 +251,7 @@ void simulateGravity(vector<TMass>& objs, double At)
 
 		objs[newObj].mass = newMass;
 		objs[newObj].radius = M2R * pow(newMass, 1.0 / 3.0);
-		objs[newObj].obj3d->setRadius(objs[newObj].radius);
+		objs[newObj].obj3d->setRadius(mrpt::d2f(objs[newObj].radius));
 
 		objs[i].obj3d->setVisibility(false);  // Hide sphere
 		objs.erase(objs.begin() + i);

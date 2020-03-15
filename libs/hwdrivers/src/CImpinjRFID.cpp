@@ -17,7 +17,6 @@
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-
 using namespace std::literals;
 
 IMPLEMENTS_GENERIC_SENSOR(CImpinjRFID, mrpt::hwdrivers)

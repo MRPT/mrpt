@@ -12,8 +12,10 @@
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <Eigen/Dense>
 #include <iostream>
+
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
 #endif
@@ -161,3 +163,5 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 			image.isOriginTopLeft() ? "YES" : "NO");
 	}
 }
+
+void CObservationImage::load() const { image.forceLoad(); }

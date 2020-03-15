@@ -406,8 +406,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 		if (m_enable_visuals)
 		{
 			this->m_win->addTextMessage(
-				0.3, 0.8, "", mrpt::img::TColorf(1.0, 0, 0),
-				m_text_index_paused_message);
+				0.3, 0.8, "", m_text_index_paused_message);
 		}
 	}
 
@@ -426,8 +425,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 		if (m_enable_visuals)
 		{
 			this->m_win->addTextMessage(
-				0.3, 0.8, m_paused_message, mrpt::img::TColorf(1.0, 0, 0),
-				m_text_index_paused_message);
+				0.3, 0.8, m_paused_message, m_text_index_paused_message);
 		}
 
 		while (this->isPaused())

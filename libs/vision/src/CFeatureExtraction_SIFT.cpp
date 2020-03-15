@@ -55,8 +55,8 @@ void CFeatureExtraction::extractFeaturesSIFT(
 	if (usingROI)
 	{
 		ASSERT_(
-			ROI.xMin >= 0 && ROI.xMin < ROI.xMax && ROI.xMax < img.getWidth() &&
-			ROI.yMin >= 0 && ROI.yMax < img.getHeight() && ROI.yMin < ROI.yMax);
+			ROI.xMin < ROI.xMax && ROI.xMax < img.getWidth() &&
+			ROI.yMax < img.getHeight() && ROI.yMin < ROI.yMax);
 		CImage auximg;
 		img_grayscale.extract_patch(
 			auximg, ROI.xMin, ROI.yMin, ROI.xMax - ROI.xMin + 1,

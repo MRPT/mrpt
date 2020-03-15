@@ -13,11 +13,10 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
 
-#include "opengl_internals.h"
+#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -36,7 +35,7 @@ using namespace std;
 #endif  // _WIN32
 #endif  // MRPT_HAS_OPENGL_GLUT
 
-IMPLEMENTS_SERIALIZABLE(COpenGLScene, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(COpenGLScene, CRenderizable, mrpt::opengl)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -51,6 +50,12 @@ COpenGLScene::COpenGLScene(const COpenGLScene& obj) : CSerializable()
 }
 
 COpenGLScene::~COpenGLScene() { m_viewports.clear(); }
+
+void COpenGLScene::unloadShaders()
+{
+	for (auto& v : m_viewports)
+		if (v) v->unloadShaders();
+}
 
 void COpenGLScene::clear(bool createMainViewport)
 {
@@ -91,12 +96,14 @@ void COpenGLScene::render() const
 	// window:
 	GLint win_dims[4];
 	glGetIntegerv(GL_VIEWPORT, win_dims);
+	CHECK_OPENGL_ERROR();
 
 	for (const auto& m_viewport : m_viewports)
 		m_viewport->render(win_dims[2], win_dims[3]);
 
 	// Assure we restore the original viewport:
 	glViewport(win_dims[0], win_dims[1], win_dims[2], win_dims[3]);
+	CHECK_OPENGL_ERROR();
 
 #else
 	THROW_EXCEPTION(
@@ -197,12 +204,9 @@ CRenderizable::Ptr COpenGLScene::getByName(
 	return obj;
 }
 
-/*---------------------------------------------------------------
-					initializeAllTextures
-  ---------------------------------------------------------------*/
-void COpenGLScene::initializeAllTextures()
+void COpenGLScene::initializeTextures()
 {
-	for (auto& m_viewport : m_viewports) m_viewport->initializeAllTextures();
+	for (auto& m_viewport : m_viewports) m_viewport->initializeTextures();
 }
 
 /*--------------------------------------------------------------
@@ -325,4 +329,13 @@ void COpenGLScene::getBoundingBox(
 	ASSERTMSG_(vp, "No opengl viewport exists with the given name");
 
 	return vp->getBoundingBox(bb_min, bb_max);
+}
+
+void COpenGLScene::freeOpenGLResources()
+{
+	auto do_free = [](const mrpt::opengl::CRenderizable::Ptr& o) {
+		o->freeOpenGLResources();
+	};
+
+	visitAllObjects(do_free);
 }

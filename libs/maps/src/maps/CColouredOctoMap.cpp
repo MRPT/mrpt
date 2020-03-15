@@ -228,8 +228,7 @@ bool CColouredOctoMap::internal_insertObservation(
 
 		for (size_t i = 0; i < sizeRangeScan; i++)
 		{
-			const mrpt::opengl::CPointCloudColoured::TPointColour& pt =
-				pts->getPoint(i);
+			const mrpt::math::TPoint3Df& pt = pts->getPoint3Df(i);
 
 			// Add to this map:
 			if (pt.x != 0 || pt.y != 0 || pt.z != 0)
@@ -253,17 +252,15 @@ bool CColouredOctoMap::internal_insertObservation(
 		}
 
 		// Update color -----------------------
-		const float colF2B = 255.0f;
 		for (size_t i = 0; i < sizeRangeScan; i++)
 		{
-			const mrpt::opengl::CPointCloudColoured::TPointColour& pt =
-				pts->getPoint(i);
+			const auto& pt = pts->getPoint3Df(i);
+			const auto pt_col = pts->getPointColor(i);
 
 			// Add to this map:
 			if (pt.x != 0 || pt.y != 0 || pt.z != 0)
 				this->updateVoxelColour(
-					pt.x, pt.y, pt.z, uint8_t(pt.R * colF2B),
-					uint8_t(pt.G * colF2B), uint8_t(pt.B * colF2B));
+					pt.x, pt.y, pt.z, pt_col.R, pt_col.G, pt_col.B);
 		}
 
 		// TODO: does pruning make sense if we used "lazy_eval"?

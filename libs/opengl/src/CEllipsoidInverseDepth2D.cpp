@@ -16,12 +16,11 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-
 using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(
-	CEllipsoidInverseDepth2D, CRenderizableDisplayList, mrpt::opengl)
+	CEllipsoidInverseDepth2D, CRenderizableShaderWireFrame, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							transformFromParameterSpace
@@ -42,8 +41,8 @@ void CEllipsoidInverseDepth2D::transformFromParameterSpace(
 		const double range = inv_range < 0
 								 ? m_underflowMaxRange
 								 : (inv_range != 0 ? 1. / inv_range : 0);
-		out_pts[i][0] = range * cos(yaw);
-		out_pts[i][1] = range * sin(yaw);
+		out_pts[i][0] = d2f(range * cos(yaw));
+		out_pts[i][1] = d2f(range * sin(yaw));
 	}
 
 	MRPT_END
@@ -74,5 +73,5 @@ void CEllipsoidInverseDepth2D::serializeFrom(
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }

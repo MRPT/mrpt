@@ -209,7 +209,7 @@ void CPhidgetInterfaceKitProximitySensors::initialize()
 	}
 	// set frame rate
 	/*int miliseconds =
-	static_cast<int>(1000./static_cast<float>(m_process_rate)); for(int i = 0 ;
+	static_cast<int>(1000./d2f(m_process_rate)); for(int i = 0 ;
 	i < 8 ; i++)
 	{
 		if(m_sensorIsPlugged[i])
@@ -308,12 +308,11 @@ void CPhidgetInterfaceKitProximitySensors::getObservation(
 					obsRange.sensedDistance = 1.0;
 					break;
 				case SHARP_30cm:
-					obsRange.sensedDistance =
-						2076. / (static_cast<float>(sensorValue) - 11.);
+					obsRange.sensedDistance = 2076. / (d2f(sensorValue) - 11.);
 					break;
 				case SHARP_80cm:
 					obsRange.sensedDistance =
-						4800. / (static_cast<float>(sensorValue) - 16.92);
+						4800. / (d2f(sensorValue) - 16.92);
 					break;
 				default:
 					obsRange.sensedDistance = -1;

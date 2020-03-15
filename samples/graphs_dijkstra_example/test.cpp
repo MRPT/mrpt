@@ -69,7 +69,7 @@ void TestDijkstra()
 	const double DIST_THRES = 10;
 	const double NODES_XY_MAX = 15;
 
-	vector<float> xs, ys;
+	vector<double> xs, ys;
 
 	for (size_t j = 0; j < N_VERTEX; j++)
 	{
@@ -168,8 +168,8 @@ void TestDijkstra()
 			const CPose2D& p1 = real_poses[e->first.first];
 			const CPose2D& p2 = real_poses[e->first.second];
 
-			vector<float> X(2);
-			vector<float> Y(2);
+			vector<double> X(2);
+			vector<double> Y(2);
 			X[0] = p1.x();
 			Y[0] = p1.y();
 			X[1] = p2.x();
@@ -184,8 +184,8 @@ void TestDijkstra()
 			const CPose2D& p1 = real_poses[a->first];
 			const CPose2D& p2 = real_poses[a->second];
 
-			vector<float> X(2);
-			vector<float> Y(2);
+			vector<double> X(2);
+			vector<double> Y(2);
 			X[0] = p1.x();
 			Y[0] = p1.y();
 			X[1] = p2.x();

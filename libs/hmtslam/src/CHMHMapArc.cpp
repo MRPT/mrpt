@@ -158,6 +158,6 @@ void TArcList::read(mrpt::serialization::CArchive& in)
 }
 void TArcList::write(mrpt::serialization::CArchive& out) const
 {
-	out << static_cast<uint32_t>(this->size());
+	out.WriteAs<uint32_t>(this->size());
 	for (const auto& i : *this) out << *i;
 }

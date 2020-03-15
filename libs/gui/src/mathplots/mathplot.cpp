@@ -552,10 +552,10 @@ void mpFXY::Plot(wxDC& dc, mpWindow& w)
 		// positioning
 		Rewind();
 		GetNextXY(x, y);
-		maxDrawX = x;
-		minDrawX = x;
-		maxDrawY = y;
-		minDrawY = y;
+		maxDrawX = static_cast<int>(x);
+		minDrawX = static_cast<int>(x);
+		maxDrawY = static_cast<int>(y);
+		minDrawY = static_cast<int>(y);
 		// drawnPoints = 0;
 		Rewind();
 
@@ -1549,8 +1549,8 @@ void mpWindow::OnMouseWheel(wxMouseEvent& event)
 		// Scroll vertically or horizontally (this is SHIFT is hold down).
 		int change =
 			-event.GetWheelRotation();  // Opposite direction (More intuitive)!
-		float changeUnitsX = change / m_scaleX;
-		float changeUnitsY = change / m_scaleY;
+		float changeUnitsX = change / static_cast<float>(m_scaleX);
+		float changeUnitsY = change / static_cast<float>(m_scaleY);
 
 		if (event.m_shiftDown)
 		{

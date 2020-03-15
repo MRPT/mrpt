@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderText.h>
 
 namespace mrpt::opengl
 {
@@ -32,28 +32,41 @@ namespace mrpt::opengl
  *  \sa CText3D
  * \ingroup mrpt_opengl_grp
  */
-class CText : public CRenderizable
+class CText : public CRenderizableShaderText
 {
 	DEFINE_SERIALIZABLE(CText, mrpt::opengl)
    protected:
 	std::string m_str;
-	std::string m_fontName;
-	int m_fontHeight, m_fontWidth;
+	std::string m_fontName = "sans";
+	int m_fontHeight = 20, m_fontWidth = 0;
+
+	void onUpdateBuffers_Text() override;
 
    public:
 	/** Sets the text to display */
-	void setString(const std::string& s) { m_str = s; }
+	void setString(const std::string& s)
+	{
+		if (m_str == s) return;
+		m_str = s;
+		CRenderizable::notifyChange();
+	}
 	/** Return the current text associated to this label */
 	std::string getString() const { return m_str; }
 	/** Sets the font (It has no effect yet!) */
 	void setFont(const std::string& s, int height)
 	{
+		if (m_fontName == s && m_fontHeight == height) return;
 		m_fontName = s;
 		m_fontHeight = height;
+		CRenderizable::notifyChange();
 	}
 	std::string getFont() const { return m_fontName; }
-	/** Render */
-	void render() const override;
+
+	shader_list_t requiredShaders() const override
+	{
+		return {DefaultShaderID::TEXT};
+	}
+	void render(const RenderContext& rc) const override;
 
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
@@ -62,10 +75,9 @@ class CText : public CRenderizable
 		mrpt::math::TPoint3D& bb_max) const override;
 
 	/** Constructor */
-	CText(const std::string& str = std::string(""));
+	CText(const std::string& str = std::string("")) : m_str(str) {}
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CText() override;
+	virtual ~CText() override;
 };
 
 }  // namespace mrpt::opengl

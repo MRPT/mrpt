@@ -29,16 +29,15 @@ class CObservationRange : public CObservation
 	DEFINE_SERIALIZABLE(CObservationRange, mrpt::obs)
 
    public:
-	/** Default constructor.
-	 */
-	CObservationRange();
+	CObservationRange() = default;
 
 	/** The data members
 	 */
 	float minSensorDistance{0};
 	float maxSensorDistance{5};
+
 	/** Cone aperture of each ultrasonic beam, in radians. */
-	float sensorConeApperture;
+	float sensorConeApperture = mrpt::d2f(20.0_deg);
 
 	struct TMeasurement
 	{

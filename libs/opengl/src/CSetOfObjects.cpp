@@ -11,16 +11,14 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <mrpt/opengl/opengl_api.h>
 #include <algorithm>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
@@ -29,22 +27,22 @@ using namespace mrpt::serialization::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSetOfObjects, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CSetOfObjects::clear()
+void CSetOfObjects::clear() { m_objects.clear(); }
+
+void CSetOfObjects::renderUpdateBuffers() const
 {
-	m_objects.clear();  // clear the list and delete objects (if there are no
-	// more copies out there!)
+	// Do nothing:
 }
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CSetOfObjects::render() const
+void CSetOfObjects::render(const RenderContext& rc) const
 {
-	// Render all the objects:
-	mrpt::opengl::gl_utils::renderSetOfObjects(m_objects);
+	// Do nothing: the enqueForRenderRecursive() does the actual job.
+}
+
+void CSetOfObjects::enqueForRenderRecursive(
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+{
+	mrpt::opengl::enqueForRendering(m_objects, state, rq);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }
@@ -83,25 +81,6 @@ void CSetOfObjects::serializeFrom(
 	};
 }
 
-/*---------------------------------------------------------------
-					initializeAllTextures
-  ---------------------------------------------------------------*/
-void CSetOfObjects::initializeAllTextures()
-{
-#if MRPT_HAS_OPENGL_GLUT
-	CListOpenGLObjects::iterator it;
-	for (auto& obj : m_objects)
-	{
-		if (IS_DERIVED(*obj, CTexturedObject))
-			dynamic_cast<CTexturedObject&>(*obj).loadTextureInOpenGL();
-		else if (IS_CLASS(*obj, CSetOfObjects))
-			dynamic_cast<CSetOfObjects&>(*obj).initializeAllTextures();
-	}
-#endif
-}
-
-CSetOfObjects::CSetOfObjects() = default;
-CSetOfObjects::~CSetOfObjects() { clear(); }
 void CSetOfObjects::insert(const CRenderizable::Ptr& newObject)
 {
 	ASSERTMSG_(

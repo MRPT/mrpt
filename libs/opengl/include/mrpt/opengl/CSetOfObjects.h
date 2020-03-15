@@ -35,6 +35,9 @@ class CSetOfObjects : public CRenderizable
 	CListOpenGLObjects m_objects;
 
    public:
+	CSetOfObjects() = default;
+	virtual ~CSetOfObjects() override = default;
+
 	using const_iterator = CListOpenGLObjects::const_iterator;
 	using iterator = CListOpenGLObjects::iterator;
 
@@ -61,9 +64,29 @@ class CSetOfObjects : public CRenderizable
 		for (T_it it = begin; it != end; it++) insert(*it);
 	}
 
-	/** Render child objects.
-	 */
-	void render() const override;
+	shader_list_t requiredShaders() const override
+	{
+		// For this container class, it actually doesn't matter the type of
+		// shader, since each children will register using the adequate shader
+		// ID. But the method is virtual, so we must provide an arbitrary one
+		// here anyway:
+		return {DefaultShaderID::WIREFRAME};
+	}
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+	void enqueForRenderRecursive(
+		const mrpt::opengl::TRenderMatrices& state,
+		RenderQueue& rq) const override;
+	void freeOpenGLResources() override
+	{
+		for (auto& o : m_objects)
+			if (o) o->freeOpenGLResources();
+	}
+	void initializeTextures() const override
+	{
+		for (const auto& o : m_objects)
+			if (o) o->initializeTextures();
+	}
 
 	/** Clear the list of objects in the scene, deleting objects' memory.
 	 */
@@ -73,10 +96,6 @@ class CSetOfObjects : public CRenderizable
 	size_t size() { return m_objects.size(); }
 	/** Returns true if there are no objects.  */
 	inline bool empty() const { return m_objects.empty(); }
-	/** Initializes all textures in the scene (See
-	 * opengl::CTexturedPlane::loadTextureInOpenGL)
-	 */
-	void initializeAllTextures();
 
 	/** Returns the first object with a given name, or a nullptr pointer if not
 	 * found.
@@ -147,13 +166,6 @@ class CSetOfObjects : public CRenderizable
 		const mrpt::poses::CPose3DQuatPDF& o);
 
 	/** @} */
-
-	/** Default constructor
-	 */
-	CSetOfObjects();
-
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CSetOfObjects() override;
 };
 /** Inserts an object into the list. Allows call chaining.
  * \sa mrpt::opengl::CSetOfObjects::insert

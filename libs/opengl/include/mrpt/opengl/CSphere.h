@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/CRenderizableDisplayList.h>
+#include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 
 namespace mrpt::opengl
 {
@@ -25,70 +25,66 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CSphere : public CRenderizableDisplayList
+class CSphere : public CGeneralizedEllipsoidTemplate<3>
 {
+	using BASE = CGeneralizedEllipsoidTemplate<3>;
 	DEFINE_SERIALIZABLE(CSphere, mrpt::opengl)
 
-   protected:
-	float m_radius;
-	int m_nDivsLongitude, m_nDivsLatitude;
-	bool m_keepRadiusIndependentEyeDistance{false};
-
    public:
+	void renderUpdateBuffers() const override;
+
 	void setRadius(float r)
 	{
 		m_radius = r;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 	float getRadius() const { return m_radius; }
 	void setNumberDivsLongitude(int N)
 	{
 		m_nDivsLongitude = N;
-		CRenderizableDisplayList::notifyChange();
+		BASE::setNumberOfSegments(m_nDivsLongitude);
 	}
 	void setNumberDivsLatitude(int N)
 	{
 		m_nDivsLatitude = N;
-		CRenderizableDisplayList::notifyChange();
-	}
-	void enableRadiusIndependentOfEyeDistance(bool v = true)
-	{
-		m_keepRadiusIndependentEyeDistance = v;
-		CRenderizableDisplayList::notifyChange();
+		CRenderizable::notifyChange();
 	}
 
-	/** \sa CRenderizableDisplayList */
-	bool should_skip_display_list_cache() const override
-	{
-		return m_keepRadiusIndependentEyeDistance;
-	}
-
-	/** Render */
-	void render_dl() const override;
-
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
-	void getBoundingBox(
+	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
+	virtual void getBoundingBox(
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/** Ray tracing
-	 */
-	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
-
-	/** Constructor
-	 */
+	/** Constructor */
 	CSphere(
 		float radius = 1.0f, int nDivsLongitude = 20, int nDivsLatitude = 20)
 		: m_radius(radius),
 		  m_nDivsLongitude(nDivsLongitude),
 		  m_nDivsLatitude(nDivsLatitude)
-
 	{
+		regenerateBaseParams();
+		BASE::enableDrawSolid3D(true);  // default
 	}
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
-	~CSphere() override = default;
+	virtual ~CSphere() override = default;
+
+   protected:
+	float m_radius;
+	int m_nDivsLongitude, m_nDivsLatitude;
+
+	void regenerateBaseParams()
+	{
+		BASE::setCovMatrix(mrpt::math::CMatrixDouble33::Identity());
+		BASE::setQuantiles(m_radius);
+		BASE::setNumberOfSegments(m_nDivsLongitude);
+	}
+
+	void transformFromParameterSpace(
+		const std::vector<BASE::array_parameter_t>& in_pts,
+		std::vector<BASE::array_point_t>& out_pts) const override
+	{
+		out_pts = in_pts;
+	}
 };
 
 }  // namespace mrpt::opengl

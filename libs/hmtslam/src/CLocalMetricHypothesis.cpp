@@ -10,7 +10,7 @@
 #include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/opengl/CArrow.h>
-#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/CSphere.h>
@@ -68,7 +68,7 @@ void CLocalMetricHypothesis::getAs3DScene(
 	{
 		opengl::CGridPlaneXY::Ptr obj =
 			std::make_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 5);
-		obj->setColor(0.4, 0.4, 0.4);
+		obj->setColor(0.4f, 0.4f, 0.4f);
 
 		objs->insert(obj);  // it will free the memory
 	}
@@ -124,7 +124,8 @@ void CLocalMetricHypothesis::getAs3DScene(
 
 	for (it = lstPoses.begin(); it != lstPoses.end(); it++)
 	{
-		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid3D::Ptr ellip =
+			std::make_shared<opengl::CEllipsoid3D>();
 		// Color depending on being into the current area:
 		if (m_nodeIDmemberships.find(it->first)->second ==
 			m_nodeIDmemberships.find(m_currentRobotPose)->second)

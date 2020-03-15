@@ -12,43 +12,75 @@
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include "opengl_internals.h"
-
 using namespace mrpt;
 using namespace mrpt::opengl;
-
-using mrpt::poses::CPose3D;
 using namespace std;
+using mrpt::poses::CPose3D;
 
-IMPLEMENTS_SERIALIZABLE(CDisk, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CDisk, CRenderizable, mrpt::opengl)
 
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void CDisk::render_dl() const
+void CDisk::onUpdateBuffers_Triangles()
 {
-#if MRPT_HAS_OPENGL_GLUT
-	glEnable(GL_BLEND);
-	checkOpenGLError();
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	checkOpenGLError();
+	using mrpt::math::TPoint3Df;
 
-	GLUquadricObj* obj = gluNewQuadric();
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
 
-	gluDisk(obj, m_radiusIn, m_radiusOut, m_nSlices, m_nLoops);
+	// precomputed table:
+	ASSERT_ABOVE_(m_nSlices, 2);
 
-	gluDeleteQuadric(obj);
+	const float dAng = 2 * M_PIf / m_nSlices;
+	float a = 0;
+	// unit circle points: cos(ang),sin(ang)
+	std::vector<mrpt::math::TPoint2Df> circle(m_nSlices);
+	for (unsigned int i = 0; i < m_nSlices; i++, a += dAng)
+	{
+		circle[i].x = cos(a);
+		circle[i].y = sin(a);
+	}
 
-	glDisable(GL_BLEND);
-#endif
+	const float r0 = m_radiusIn, r1 = m_radiusOut;
+
+	if (std::abs(r0) < 1e-6f)
+	{
+		// a filled disk:
+		for (unsigned int i = 0; i < m_nSlices; i++)
+		{
+			const auto ip = (i + 1) % m_nSlices;
+			tris.emplace_back(
+				TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, .0f),
+				TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, .0f),
+				TPoint3Df(.0f, .0f, .0f));
+		}
+	}
+	else
+	{
+		// A ring:
+		for (unsigned int i = 0; i < m_nSlices; i++)
+		{
+			const auto ip = (i + 1) % m_nSlices;
+			tris.emplace_back(
+				TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, .0f),
+				TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, .0f),
+				TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f));
+
+			tris.emplace_back(
+				TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, .0f),
+				TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
+				TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f));
+		}
+	}
+
+	// All faces, same color:
+	for (auto& t : tris) t.setColor(m_color);
 }
 
-uint8_t CDisk::serializeGetVersion() const { return 0; }
+uint8_t CDisk::serializeGetVersion() const { return 1; }
 void CDisk::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_radiusIn << m_radiusOut;
-	out << m_nSlices << m_nLoops;
+	out << m_nSlices;
 }
 
 void CDisk::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -56,17 +88,22 @@ void CDisk::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	switch (version)
 	{
 		case 0:
+		case 1:
 		{
 			readFromStreamRender(in);
 			in >> m_radiusIn >> m_radiusOut;
 			in >> m_nSlices;
-			in >> m_nLoops;
+			if (version < 1)
+			{
+				float dummy_loops;
+				in >> dummy_loops;
+			}
 		}
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const

@@ -74,17 +74,10 @@ class CLocalMetricHypothesis
 	DEFINE_SERIALIZABLE(CLocalMetricHypothesis, mrpt::hmtslam)
 
    public:
-	/** Constructor (Default param only used from STL classes)
-	 */
+	/** Constructor (Default param only used from STL classes)  */
 	CLocalMetricHypothesis(CHMTSLAM* parent = nullptr);
-
-	/** Destructor
-	 */
 	~CLocalMetricHypothesis() override;
 
-	MRPT_TODO(
-		"Separate the serializable class from this code, so we don't have to "
-		"worry about copying locks")
 	struct ThreadLocks
 	{
 		// Don't really copy mutexes

@@ -72,13 +72,13 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
 	 * \exception std::exception On invalid index value
 	 * \sa computeTraveledDistanceAfterAll
 	 */
-	float computeTraveledDistanceAfter(unsigned int n);
+	double computeTraveledDistanceAfter(size_t n);
 
 	/** Returns the traveled distance after ALL movements.
 	 *   A shortcut for "computeTraveledDistanceAfter( posesCount() )".
 	 * \sa computeTraveledDistanceAfter
 	 */
-	float computeTraveledDistanceAfterAll();
+	double computeTraveledDistanceAfterAll();
 
    private:
 	/** The internal sequence of poses, stored as relative, incremental poses,

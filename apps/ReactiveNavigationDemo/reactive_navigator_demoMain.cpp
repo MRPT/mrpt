@@ -920,7 +920,9 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	gl_scan3D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan3D->enableLine(false);
 	gl_scan3D->enableSurface(true);
-	gl_scan3D->setPointsWidth(3.0);
+	gl_scan3D->setSurfaceColor(1.0f, 0, 0, 0.2f);
+	gl_scan3D->setPointSize(2.0);
+	gl_scan3D->setLocation(0, 0, 0.01);
 	gl_robot->insert(gl_scan3D);
 
 	gl_robot_sensor_range = mrpt::opengl::CDisk::Create(0, 0);
@@ -931,6 +933,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	gl_robot_path = mrpt::opengl::CSetOfLines::Create();
 	gl_robot_path->setLineWidth(1);
 	gl_robot_path->setColor_u8(TColor(40, 40, 40, 200));
+	gl_robot_path->setLocation(0, 0, 0.01);
 	openGLSceneRef->insert(gl_robot_path);
 
 	gl_target = mrpt::opengl::CSetOfObjects::Create();
@@ -1424,7 +1427,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	if (sel_PTG >= 0 && sel_PTG < (int)lfr.infoPerPTG.size())
 	{
 		const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
-		if (lfr.infoPerPTG.size() > 0 &&
+		if (lfr.infoPerPTG.size() > 0 && lfr.infoPerPTG[sel_PTG].HLFR &&
 			IS_CLASS(*lfr.infoPerPTG[sel_PTG].HLFR, CLogFileRecord_ND))
 		{
 			CLogFileRecord_ND::Ptr log =

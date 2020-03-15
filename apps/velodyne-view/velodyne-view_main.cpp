@@ -299,7 +299,7 @@ int VelodyneView(int argc, char** argv)
 					mrpt::system::dateTimeLocalToString(last_obs_gps->timestamp)
 						.c_str(),
 					rmc_datum.c_str()),
-				TColorf(1, 1, 1), "mono", 10.0, mrpt::opengl::NICE, 102);
+				102);
 			win3D.unlockAccess3DScene();
 			do_view_refresh = true;
 		}
@@ -321,7 +321,7 @@ int VelodyneView(int argc, char** argv)
 							.c_str(),
 						static_cast<unsigned int>(
 							last_obs->scan_packets.size())),
-					TColorf(1, 1, 1), "mono", 10.0, mrpt::opengl::NICE, 103);
+					103);
 				win3D.unlockAccess3DScene();
 				do_view_refresh = true;
 			}
@@ -343,9 +343,7 @@ int VelodyneView(int argc, char** argv)
 
 			// Estimated grabbing rate:
 			win3D.get3DSceneAndLock();
-			win3D.addTextMessage(
-				-150, -20, format("%.02f Hz", thrPar.Hz), TColorf(1, 1, 1), 100,
-				MRPT_GLUT_BITMAP_HELVETICA_18);
+			win3D.addTextMessage(-150, -20, format("%.02f Hz", thrPar.Hz), 100);
 			win3D.unlockAccess3DScene();
 			do_view_refresh = true;
 		}  // end update visualization:
@@ -390,14 +388,14 @@ int VelodyneView(int argc, char** argv)
 		win3D.addTextMessage(
 			5, 10,
 			"'o'/'i'-zoom out/in, mouse: orbit 3D, spacebar: freeze, ESC: quit",
-			TColorf(1, 1, 1), "mono", 10.0, mrpt::opengl::NICE, 110);
+			110);
 		win3D.addTextMessage(
 			5, 25,
 			mrpt::format(
 				"'1'/'2': Toggle view dual last (%s)/strongest(%s) returns.",
 				pc_params.dualKeepLast ? "ON" : "OFF",
 				pc_params.dualKeepStrongest ? "ON" : "OFF"),
-			TColorf(1, 1, 1), "mono", 10.0, mrpt::opengl::NICE, 111);
+			111);
 		win3D.unlockAccess3DScene();
 
 		std::this_thread::sleep_for(50ms);

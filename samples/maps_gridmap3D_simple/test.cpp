@@ -113,8 +113,7 @@ void TestGridMap3D()
 					gl_map->areVoxelsVisible(mrpt::opengl::VOXEL_SET_OCCUPIED)
 						? "YES"
 						: "NO",
-					gl_map->areLightsEnabled() ? "YES" : "NO"),
-				mrpt::img::TColorf(1, 1, 1), "sans", 15);
+					gl_map->areLightsEnabled() ? "YES" : "NO"));
 
 			win.repaint();
 		}

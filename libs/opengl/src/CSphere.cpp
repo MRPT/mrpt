@@ -10,74 +10,22 @@
 #include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSphere.h>
-//#include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
-#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
-
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CSphere, CRenderizableDisplayList, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CSphere, CRenderizable, mrpt::opengl)
 
-void CSphere::render_dl() const
-{
-#if MRPT_HAS_OPENGL_GLUT
-	if (m_color.A != 255)
-	{
-		glDisable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	// Determine radius depending on eye distance?
-	float real_radius;
-	if (m_keepRadiusIndependentEyeDistance)
-	{
-		glRasterPos3f(0.0f, 0.0f, 0.0f);
-
-		GLfloat raster_pos[4];
-		glGetFloatv(GL_CURRENT_RASTER_POSITION, raster_pos);
-		float eye_distance = raster_pos[3];
-
-		eye_distance = max(eye_distance, 0.1f);
-
-		real_radius = 0.01 * m_radius * eye_distance;
-	}
-	else
-		real_radius = m_radius;
-
-	GLUquadricObj* obj = gluNewQuadric();
-	checkOpenGLError();
-
-	gluQuadricDrawStyle(obj, GLU_FILL);
-	gluQuadricNormals(obj, GLU_SMOOTH);
-
-	gluSphere(obj, real_radius, m_nDivsLongitude, m_nDivsLatitude);
-	checkOpenGLError();
-
-	gluDeleteQuadric(obj);
-	checkOpenGLError();
-
-	if (m_color.A != 255)
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_BLEND);
-	}
-
-#endif
-}
-
-uint8_t CSphere::serializeGetVersion() const { return 1; }
+uint8_t CSphere::serializeGetVersion() const { return 2; }
 void CSphere::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_radius;
-	out << (uint32_t)m_nDivsLongitude << (uint32_t)m_nDivsLatitude
-		<< m_keepRadiusIndependentEyeDistance;
+	out << (uint32_t)m_nDivsLongitude << (uint32_t)m_nDivsLatitude;
 }
 void CSphere::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -85,6 +33,7 @@ void CSphere::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			readFromStreamRender(in);
 			in >> m_radius;
@@ -92,16 +41,19 @@ void CSphere::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			in >> i >> j;
 			m_nDivsLongitude = i;
 			m_nDivsLatitude = j;
-			if (version >= 1)
-				in >> m_keepRadiusIndependentEyeDistance;
-			else
-				m_keepRadiusIndependentEyeDistance = false;
+			if (version == 1)
+			{
+				bool keepRadiusIndependentEyeDistance;
+				in >> keepRadiusIndependentEyeDistance;
+			}
+
+			regenerateBaseParams();
 		}
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-	CRenderizableDisplayList::notifyChange();
+	CRenderizable::notifyChange();
 }
 
 bool CSphere::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
@@ -148,4 +100,10 @@ void CSphere::getBoundingBox(
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
+}
+
+void CSphere::renderUpdateBuffers() const
+{
+	const_cast<CSphere*>(this)->regenerateBaseParams();
+	BASE::renderUpdateBuffers();
 }
