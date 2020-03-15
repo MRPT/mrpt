@@ -77,7 +77,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	 * thread, this method will be automatically called when rendering, so there
 	 * is no need to explicitly call it.
 	 */
-	void initializeTextures() const;
+	virtual void initializeTextures() const override;
 
 	const mrpt::img::CImage& getTextureImage() const { return m_textureImage; }
 
