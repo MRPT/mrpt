@@ -456,15 +456,16 @@ void COpenGLViewport::renderTextMessages() const
 }
 
 void COpenGLViewport::render(
-	const int render_width, const int render_height) const
+	const int render_width, const int render_height, const int render_offset_x,
+	const int render_offset_y) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
 
 	// Change viewport:
 	// -------------------------------------------
-	const GLint vx = startFromRatio(m_view_x, render_width);
-	const GLint vy = startFromRatio(m_view_y, render_height);
+	const GLint vx = render_offset_x + startFromRatio(m_view_x, render_width);
+	const GLint vy = render_offset_y + startFromRatio(m_view_y, render_height);
 	const GLint vw = sizeFromRatio(vx, m_view_width, render_width);
 	const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
 
