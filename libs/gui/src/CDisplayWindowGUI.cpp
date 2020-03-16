@@ -25,34 +25,51 @@ MRPTGLCanvas::~MRPTGLCanvas() = default;
 
 void MRPTGLCanvas::drawGL()
 {
+#if MRPT_HAS_OPENGL_GLUT
 	std::lock_guard<std::mutex> lck(scene_mtx);
-	if (!scene) return;  // No scene -> nothing to render
 
 	try
 	{
-		glPushAttrib(GL_ALL_ATTRIB_BITS);
+		// Set the viewport
+		// resizeViewport((GLsizei)width, (GLsizei)height);
 
+		// Set the background color:
+		mrpt::img::TColorf m_backgroundColor;
+		glClearColor(
+			m_backgroundColor.R, m_backgroundColor.G, m_backgroundColor.B,
+			m_backgroundColor.A);
+
+		if (!scene) return;  // No scene -> nothing to render
+
+		// We need the size of the viewport at the beginning: should be the
+		// whole window:
+		GLint win_dims[4];
+		glGetIntegerv(GL_VIEWPORT, win_dims);
+		// CHECK_OPENGL_ERROR();
+
+#if 0
 		// Set the camera params in the scene:
-		auto view = scene->getViewport("main");
-		ASSERTMSG_(view, "No 'main' viewport in the 3D scene!");
-
+		mrpt::opengl::COpenGLViewport::Ptr view =
+			m_openGLScene->getViewport("main");
+		if (!view)
+			THROW_EXCEPTION(
+				"Fatal error: there is no 'main' viewport in the 3D scene!");
 		mrpt::opengl::CCamera& cam = view->getCamera();
-		// updateCameraParams(cam);
+		updateCameraParams(cam);
+#endif
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+		for (const auto& m_viewport : scene->viewports())
+			m_viewport->render(
+				win_dims[2], win_dims[3], win_dims[0], win_dims[1]);
 
-		scene->render();
-
-		// m_text_msgs.render_text_messages_public(w, h);
-
-		glPopAttrib();
+		//	CHECK_OPENGL_ERROR();
 	}
 	catch (const std::exception& e)
 	{
-		glPopAttrib();
-		std::cerr << mrpt::exception_to_str(e);
+		std::cerr << "[MRPTGLCanvas::drawGL] Exception:\n"
+				  << mrpt::exception_to_str(e);
 	}
+#endif
 }
 
 // -------- CDisplayWindowGUI -----------

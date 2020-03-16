@@ -106,7 +106,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/** the pointer is owned by the parent class Screen, no need to delete
 	 * it */
-	nanogui::Window* m_window;
+	nanogui::Window* m_window = nullptr;
 };
 
 }  // namespace mrpt::gui
