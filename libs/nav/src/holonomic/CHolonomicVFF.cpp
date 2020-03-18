@@ -167,7 +167,7 @@ void CHolonomicVFF::TOptions::loadFromConfigFile(
 void CHolonomicVFF::TOptions::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-	MRPT_START;
+	MRPT_START
 
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		TARGET_SLOW_APPROACHING_DISTANCE, "For stopping gradually");
@@ -176,5 +176,5 @@ void CHolonomicVFF::TOptions::saveToConfigFile(
 		"Dimension-less (may have to be tuned depending on the density of "
 		"obstacle sampling)");
 
-	MRPT_END;
+	MRPT_END
 }

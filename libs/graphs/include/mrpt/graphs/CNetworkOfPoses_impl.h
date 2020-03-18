@@ -764,7 +764,7 @@ struct graph_ops
 	static void graph_of_poses_dijkstra_init(
 		graph_t* g, std::map<TNodeID, size_t>* topological_distances = nullptr)
 	{
-		MRPT_START;
+		MRPT_START
 		using namespace std;
 
 		// Do Dijkstra shortest path from "root" to all other nodes:

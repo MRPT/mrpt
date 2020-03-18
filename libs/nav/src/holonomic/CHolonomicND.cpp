@@ -690,7 +690,7 @@ void CHolonomicND::TOptions::loadFromConfigFile(
 void CHolonomicND::TOptions::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-	MRPT_START;
+	MRPT_START
 	const int WN = mrpt::config::MRPT_SAVE_NAME_PADDING(),
 			  WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
 

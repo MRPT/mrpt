@@ -713,7 +713,7 @@ class CNetworkOfPoses
 		const bool hypots_from_other_to_self = true,
 		std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings_out = nullptr)
 	{
-		MRPT_START;
+		MRPT_START
 		using namespace mrpt::graphs;
 		using namespace mrpt::graphs::detail;
 		using namespace std;
@@ -832,7 +832,7 @@ class CNetworkOfPoses
 		// run Dijkstra to update the node positions
 		this->dijkstra_nodes_estimate();
 
-		MRPT_END;
+		MRPT_END
 	}
 
 	/**\brief Add an edge between the last node of the group with the lower

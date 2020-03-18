@@ -673,7 +673,7 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(
 void CHolonomicFullEval::TOptions::saveToConfigFile(
 	mrpt::config::CConfigFileBase& c, const std::string& s) const
 {
-	MRPT_START;
+	MRPT_START
 
 	const int WN = mrpt::config::MRPT_SAVE_NAME_PADDING(),
 			  WV = mrpt::config::MRPT_SAVE_VALUE_PADDING();
@@ -733,7 +733,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(
 			"Indices of the factors above to be considered in this phase");
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 uint8_t CHolonomicFullEval::serializeGetVersion() const { return 4; }

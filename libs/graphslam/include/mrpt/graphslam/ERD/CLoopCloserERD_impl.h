@@ -43,7 +43,7 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 	mrpt::obs::CSensoryFrame::Ptr observations,
 	mrpt::obs::CObservation::Ptr observation)
 {
-	MRPT_START;
+	MRPT_START
 	MRPT_UNUSED_PARAM(action);
 	this->m_time_logger.enter("updateState");
 	using namespace std;
@@ -145,7 +145,7 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 
 	this->m_time_logger.leave("updateState");
 	return true;
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -173,7 +173,7 @@ template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 	const mrpt::graphs::TNodeID& curr_nodeID)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::obs;
@@ -229,7 +229,7 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 		}
 	}
 
-	MRPT_END;
+	MRPT_END
 }  // end of addScanMatchingEdges
 template <class GRAPH_T>
 bool CLoopCloserERD<GRAPH_T>::getICPEdge(
@@ -237,7 +237,7 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 	constraint_t* rel_edge, mrpt::slam::CICP::TReturnInfo* icp_info,
 	const TGetICPEdgeAdParams* ad_params)
 {
-	MRPT_START;
+	MRPT_START
 	ASSERTDEB_(rel_edge);
 	this->m_time_logger.enter("getICPEdge");
 
@@ -300,7 +300,7 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 
 	this->m_time_logger.leave("getICPEdge");
 	return true;
-	MRPT_END;
+	MRPT_END
 }  // end of getICPEdge
 
 template <class GRAPH_T>
@@ -405,7 +405,7 @@ template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::checkPartitionsForLC(
 	partitions_t* partitions_for_LC)
 {
-	MRPT_START;
+	MRPT_START
 	this->m_time_logger.enter("LoopClosureEvaluation");
 
 	using namespace std;
@@ -511,14 +511,14 @@ void CLoopCloserERD<GRAPH_T>::checkPartitionsForLC(
 	}
 
 	this->m_time_logger.leave("LoopClosureEvaluation");
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::evaluatePartitionsForLC(
 	const partitions_t& partitions)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace mrpt;
 	using namespace mrpt::graphslam::detail;
 	using namespace mrpt::math;
@@ -572,7 +572,7 @@ void CLoopCloserERD<GRAPH_T>::evaluatePartitionsForLC(
 	MRPT_LOG_DEBUG_STREAM("\n" << this->header_sep);
 	this->m_time_logger.leave("LoopClosureEvaluation");
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -580,7 +580,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 	const mrpt::math::CMatrixDouble& consist_matrix,
 	const hypotsp_t& hypots_pool, hypotsp_t* valid_hypots)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt::math;
 
@@ -646,7 +646,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 	}
 	// mrpt::system::pause();
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -654,7 +654,7 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 	std::vector<uint32_t>& partition, std::vector<uint32_t>* groupA,
 	std::vector<uint32_t>* groupB, int max_nodes_in_group)
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace mrpt;
 	using namespace mrpt::math;
@@ -712,7 +712,7 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 	}
 
 	// mrpt::system::pause();
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -720,7 +720,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	const std::vector<uint32_t>& groupA, const std::vector<uint32_t>& groupB,
 	hypotsp_t* generated_hypots, const TGenerateHypotsPoolAdParams* ad_params)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace mrpt;
 	using namespace mrpt::containers;
 
@@ -858,7 +858,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 			<< "\tinvalid hypotheses: " << invalid_hypots);
 	}
 
-	MRPT_END;
+	MRPT_END
 }  // end of generateHypotsPool
 
 template <class GRAPH_T>
@@ -866,7 +866,7 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	const mrpt::math::CMatrixDouble& consist_matrix,
 	mrpt::math::CVectorDouble* eigvec, bool use_power_method)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace mrpt;
 	using namespace mrpt::math;
 	using namespace std;
@@ -930,7 +930,7 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	this->m_time_logger.leave("DominantEigenvectorComputation");
 	return is_valid_lambda_ratio;
 
-	MRPT_END;
+	MRPT_END
 }  // end of computeDominantEigenVector
 
 template <class GRAPH_T>
@@ -939,7 +939,7 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 	const hypotsp_t& hypots_pool, mrpt::math::CMatrixDouble* consist_matrix,
 	const paths_t* groupA_opt_paths, const paths_t* groupB_opt_paths)
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace mrpt;
 	using namespace mrpt::math;
@@ -1074,7 +1074,7 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 	//<< this->header_sep << endl
 	//<< *consist_matrix << endl);
 
-	MRPT_END;
+	MRPT_END
 }  // end of generatePWConsistenciesMatrix
 
 template <class GRAPH_T>
@@ -1083,7 +1083,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	const mrpt::graphs::TNodeID& b1, const mrpt::graphs::TNodeID& b2,
 	const hypotsp_t& hypots, const paths_t* opt_paths)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::math;
@@ -1196,7 +1196,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	// mrpt::system::pause();
 
 	return consistency_elem;
-	MRPT_END;
+	MRPT_END
 }  // end of generatePWConsistencyElement
 
 template <class GRAPH_T>
@@ -1288,7 +1288,7 @@ template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 	mrpt::graphs::TNodeID starting_node, mrpt::graphs::TNodeID ending_node)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::math;
@@ -1428,7 +1428,7 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 
 	// MRPT_LOG_DEBUG_STREAM(dijkstra_end);
 	this->m_time_logger.leave("Dijkstra Projection");
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -1436,7 +1436,7 @@ void CLoopCloserERD<GRAPH_T>::addToPaths(
 	std::set<path_t*>* pool_of_paths, const path_t& current_path,
 	const std::set<mrpt::graphs::TNodeID>& neighbors) const
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt::graphslam;
 	using mrpt::graphs::TNodeID;
@@ -1465,7 +1465,7 @@ void CLoopCloserERD<GRAPH_T>::addToPaths(
 		pool_of_paths->insert(path_to_append);
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -1493,7 +1493,7 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
 	const mrpt::graphs::TNodeID from, const mrpt::graphs::TNodeID to,
 	path_t* path_between_nodes) const
 {
-	MRPT_START;
+	MRPT_START
 	using namespace mrpt::math;
 	using namespace std;
 
@@ -1595,14 +1595,14 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
 		}
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 TUncertaintyPath<GRAPH_T>* CLoopCloserERD<GRAPH_T>::popMinUncertaintyPath(
 	typename std::set<path_t*>* pool_of_paths) const
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 
 	// cout << "Determinants: ";
@@ -1624,7 +1624,7 @@ TUncertaintyPath<GRAPH_T>* CLoopCloserERD<GRAPH_T>::popMinUncertaintyPath(
 	pool_of_paths->erase(optimal_path);  // erase it from the pool
 
 	return optimal_path;
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -1632,7 +1632,7 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
 	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 	const constraint_t& rel_edge)
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace std;
 	using namespace mrpt::math;
@@ -1671,7 +1671,7 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
 	//<< " => " << (accept_edge? "ACCEPT": "REJECT") << endl;
 
 	return accept_edge;
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -1687,7 +1687,7 @@ void CLoopCloserERD<GRAPH_T>::registerNewEdge(
 	const mrpt::graphs::TNodeID& from, const mrpt::graphs::TNodeID& to,
 	const constraint_t& rel_edge)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace mrpt::math;
 	using namespace std;
 	parent_t::registerNewEdge(from, to, rel_edge);
@@ -1710,7 +1710,7 @@ void CLoopCloserERD<GRAPH_T>::registerNewEdge(
 	//  actuall registration
 	this->m_graph->insertEdge(from, to, rel_edge);
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -1741,7 +1741,7 @@ template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::notifyOfWindowEvents(
 	const std::map<std::string, bool>& events_occurred)
 {
-	MRPT_START;
+	MRPT_START
 	parent_t::notifyOfWindowEvents(events_occurred);
 
 	// laser scans
@@ -1755,7 +1755,7 @@ void CLoopCloserERD<GRAPH_T>::notifyOfWindowEvents(
 		this->toggleMapPartitionsVisualization();
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -1995,7 +1995,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::toggleMapPartitionsVisualization()
 {
-	MRPT_START;
+	MRPT_START
 	ASSERTDEBMSG_(this->m_win, "No CDisplayWindow3D* was provided");
 	ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* was provided");
 	using namespace mrpt::opengl;
@@ -2017,7 +2017,7 @@ void CLoopCloserERD<GRAPH_T>::toggleMapPartitionsVisualization()
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
 
-	MRPT_END;
+	MRPT_END
 }  // end of toggleMapPartitionsVisualization
 
 template <class GRAPH_T>
@@ -2025,7 +2025,7 @@ void CLoopCloserERD<GRAPH_T>::computeCentroidOfNodesVector(
 	const std::vector<uint32_t>& nodes_list,
 	std::pair<double, double>* centroid_coords) const
 {
-	MRPT_START;
+	MRPT_START
 
 	// get the poses and find the centroid so that we can place the baloon over
 	// and at their center
@@ -2044,13 +2044,13 @@ void CLoopCloserERD<GRAPH_T>::computeCentroidOfNodesVector(
 	centroid_coords->second =
 		centroid_y / static_cast<double>(nodes_list.size());
 
-	MRPT_END;
+	MRPT_END
 }  // end of computeCentroidOfNodesVector
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::initLaserScansVisualization()
 {
-	MRPT_START;
+	MRPT_START
 
 	// laser scan visualization
 	if (m_laser_params.visualize_laser_scans)
@@ -2076,13 +2076,13 @@ void CLoopCloserERD<GRAPH_T>::initLaserScansVisualization()
 		this->m_win->forceRepaint();
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization()
 {
-	MRPT_START;
+	MRPT_START
 
 	// update laser scan visual
 	if (m_laser_params.visualize_laser_scans && m_last_laser_scan2D)
@@ -2115,13 +2115,13 @@ void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization()
 		this->m_win->forceRepaint();
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::toggleLaserScansVisualization()
 {
-	MRPT_START;
+	MRPT_START
 	ASSERTDEBMSG_(this->m_win, "No CDisplayWindow3D* was provided");
 	ASSERTDEBMSG_(this->m_win_manager, "No CWindowManager* was provided");
 
@@ -2143,22 +2143,22 @@ void CLoopCloserERD<GRAPH_T>::toggleLaserScansVisualization()
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::getEdgesStats(
 	std::map<std::string, int>* edge_types_to_num) const
 {
-	MRPT_START;
+	MRPT_START
 	*edge_types_to_num = m_edge_types_to_nums;
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::initializeVisuals()
 {
-	MRPT_START;
+	MRPT_START
 	parent_t::initializeVisuals();
 	// MRPT_LOG_DEBUG_STREAM("Initializing visuals");
 	this->m_time_logger.enter("Visuals");
@@ -2181,12 +2181,12 @@ void CLoopCloserERD<GRAPH_T>::initializeVisuals()
 	}
 
 	this->m_time_logger.leave("Visuals");
-	MRPT_END;
+	MRPT_END
 }
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::updateVisuals()
 {
-	MRPT_START;
+	MRPT_START
 	parent_t::updateVisuals();
 	// MRPT_LOG_DEBUG_STREAM("Updating visuals");
 	this->m_time_logger.enter("Visuals");
@@ -2205,13 +2205,13 @@ void CLoopCloserERD<GRAPH_T>::updateVisuals()
 	}
 
 	this->m_time_logger.leave("Visuals");
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization()
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt::opengl;
 
@@ -2237,13 +2237,13 @@ void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization()
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt::math;
 	using namespace mrpt::opengl;
@@ -2280,14 +2280,14 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::dumpVisibilityErrorMsg(
 	std::string viz_flag, int sleep_time)
 {
-	MRPT_START;
+	MRPT_START
 
 	this->logFmt(
 		mrpt::system::LVL_ERROR,
@@ -2297,13 +2297,13 @@ void CLoopCloserERD<GRAPH_T>::dumpVisibilityErrorMsg(
 		viz_flag.c_str());
 	std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname)
 {
-	MRPT_START;
+	MRPT_START
 	parent_t::loadParams(source_fname);
 
 	m_partitioner.options.loadFromConfigFileName(
@@ -2327,12 +2327,12 @@ void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname)
 		"EdgeRegistrationDeciderParameters", "class_verbosity", 1, false);
 
 	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
-	MRPT_END;
+	MRPT_END
 }
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::printParams() const
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 
 	cout << "------------------[Pair-wise Consistency of ICP Edges - "
@@ -2350,14 +2350,14 @@ void CLoopCloserERD<GRAPH_T>::printParams() const
 		 << m_lc_icp_constraint_factor << endl;
 
 	MRPT_LOG_DEBUG_STREAM("Printed the relevant parameters");
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::getDescriptiveReport(
 	std::string* report_str) const
 {
-	MRPT_START;
+	MRPT_START
 
 	// Report on graph
 	std::stringstream class_props_ss;
@@ -2383,7 +2383,7 @@ void CLoopCloserERD<GRAPH_T>::getDescriptiveReport(
 	*report_str += output_res;
 	*report_str += this->report_sep;
 
-	MRPT_END;
+	MRPT_END
 }  // end of getDescriptiveReport
 
 template <class GRAPH_T>
@@ -2404,7 +2404,7 @@ template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 	bool full_update, bool is_first_time_node_reg)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace mrpt::math;
 	using namespace std;
 	this->m_time_logger.enter("updateMapPartitions");
@@ -2481,7 +2481,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 
 	MRPT_LOG_DEBUG_STREAM("Updated map partitions successfully.");
 	this->m_time_logger.leave("updateMapPartitions");
-	MRPT_END;
+	MRPT_END
 }  // end of updateMapPartitions
 
 // TLaserParams
@@ -2502,7 +2502,7 @@ template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::TLaserParams::dumpToTextStream(
 	std::ostream& out) const
 {
-	MRPT_START;
+	MRPT_START
 
 	out << "Use scan-matching constraints               = "
 		<< (use_scan_matching ? "TRUE" : "FALSE") << std::endl;
@@ -2511,13 +2511,13 @@ void CLoopCloserERD<GRAPH_T>::TLaserParams::dumpToTextStream(
 	out << "Visualize laser scans                       = "
 		<< (visualize_laser_scans ? "TRUE" : "FALSE") << std::endl;
 
-	MRPT_END;
+	MRPT_END
 }
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::TLaserParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
-	MRPT_START;
+	MRPT_START
 
 	use_scan_matching =
 		source.read_bool(section, "use_scan_matching", true, false);
@@ -2528,7 +2528,7 @@ void CLoopCloserERD<GRAPH_T>::TLaserParams::loadFromConfigFile(
 		"VisualizationParameters", "visualize_laser_scans", true, false);
 
 	has_read_config = true;
-	MRPT_END;
+	MRPT_END
 }
 // TLoopClosureParams
 // //////////////////////////////////
@@ -2551,7 +2551,7 @@ template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::dumpToTextStream(
 	std::ostream& out) const
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 
 	stringstream ss;
@@ -2570,13 +2570,13 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::dumpToTextStream(
 
 	out << mrpt::format("%s", ss.str().c_str());
 
-	MRPT_END;
+	MRPT_END
 }
 template <class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
-	MRPT_START;
+	MRPT_START
 	LC_min_nodeid_diff = source.read_int(
 		"GeneralConfiguration", "LC_min_nodeid_diff", 30, false);
 	LC_min_remote_nodes =
@@ -2591,6 +2591,6 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::loadFromConfigFile(
 		"VisualizationParameters", "visualize_map_partitions", true, false);
 
 	has_read_config = true;
-	MRPT_END;
+	MRPT_END
 }
 }  // namespace mrpt::graphslam::deciders

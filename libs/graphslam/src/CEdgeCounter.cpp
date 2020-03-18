@@ -17,14 +17,14 @@ CEdgeCounter::CEdgeCounter() { this->clearAllEdges(); }
 void CEdgeCounter::setWindowManagerPtr(
 	mrpt::graphslam::CWindowManager* win_manager)
 {
-	MRPT_START;
+	MRPT_START
 	ASSERTDEB_(win_manager);
 	ASSERTDEB_(win_manager->win);
 
 	m_win_manager = win_manager;
 	m_win = m_win_manager->win;
 
-	MRPT_END;
+	MRPT_END
 }
 
 void CEdgeCounter::setRemovedEdges(int removed_edges)

@@ -38,7 +38,7 @@ TUserOptionsChecker<GRAPH_t>::~TUserOptionsChecker()
 template <class GRAPH_t>
 void TUserOptionsChecker<GRAPH_t>::createDeciderOptimizerMappings()
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace mrpt::graphslam::deciders;
 	using namespace mrpt::graphslam::optimizers;
@@ -62,7 +62,7 @@ void TUserOptionsChecker<GRAPH_t>::createDeciderOptimizerMappings()
 	// create the decider optimizer, specific to the GRAPH_T template type
 	this->_createDeciderOptimizerMappings();
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_t>
@@ -109,7 +109,7 @@ template <class GRAPH_t>
 void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
 	std::string reg_type /*="all"*/) const
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt;
 
@@ -172,13 +172,13 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
 		dumpRegistrarsToConsole("edge");
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_t>
 void TUserOptionsChecker<GRAPH_t>::dumpOptimizersToConsole() const
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace std;
 
@@ -210,14 +210,14 @@ void TUserOptionsChecker<GRAPH_t>::dumpOptimizersToConsole() const
 				 << "3D" << endl;
 		}
 	}
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_t>
 bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 	std::string given_reg, std::string reg_type) const
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace std;
 	using namespace mrpt;
@@ -257,14 +257,14 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 	}
 
 	return found;
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_t>
 bool TUserOptionsChecker<GRAPH_t>::checkOptimizerExists(
 	std::string given_opt) const
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::poses;
@@ -292,13 +292,13 @@ bool TUserOptionsChecker<GRAPH_t>::checkOptimizerExists(
 	}
 
 	return found;
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_t>
 void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 {
-	MRPT_START;
+	MRPT_START
 
 	// reset the vectors - in case they contain any elements
 	regs_descriptions.clear();
