@@ -36,11 +36,11 @@ CMemoryStream::CMemoryStream(const void* data, const uint64_t nBytesInData)
 void CMemoryStream::assignMemoryNotOwn(
 	const void* data, const uint64_t nBytesInData)
 {
-	this->Clear();
+	this->clear();
 	m_memory.set(data);
 	m_size = nBytesInData;
 	m_position = 0;
-	m_bytesWritten = 0;
+	m_bytesWritten = nBytesInData;
 	m_read_only = true;
 }
 
@@ -145,7 +145,7 @@ uint64_t CMemoryStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 
 uint64_t CMemoryStream::getTotalBytesCount() const { return m_bytesWritten; }
 uint64_t CMemoryStream::getPosition() const { return m_position; }
-void CMemoryStream::Clear()
+void CMemoryStream::clear()
 {
 	if (!m_read_only)
 	{
@@ -163,7 +163,6 @@ void CMemoryStream::Clear()
 
 void* CMemoryStream::getRawBufferData() { return m_memory.get(); }
 const void* CMemoryStream::getRawBufferData() const { return m_memory.get(); }
-void CMemoryStream::changeSize(uint64_t newSize) { resize(newSize); }
 bool CMemoryStream::saveBufferToFile(const std::string& file_name)
 {
 	try
@@ -189,7 +188,7 @@ bool CMemoryStream::loadBufferFromFile(const std::string& file_name)
 		uint64_t N = fi.getTotalBytesCount();
 
 		// Read into the buffer:
-		Clear();
+		clear();
 		resize(N + 100);
 		uint64_t N_read = fi.Read(m_memory.get(), N);
 

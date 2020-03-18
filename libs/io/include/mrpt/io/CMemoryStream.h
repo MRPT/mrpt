@@ -61,11 +61,7 @@ class CMemoryStream : public CStream
 	~CMemoryStream() override;
 
 	/** Clears the memory buffer. */
-	void Clear();
-
-	/** Change size. This would be rarely used. Use ">>" operators for writing
-	 * to stream \sa Stream */
-	void changeSize(uint64_t newSize);
+	void clear();
 
 	// See docs in base class
 	uint64_t Seek(
