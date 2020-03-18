@@ -342,7 +342,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	}
 
 	/** See getLocalRepresentativePoint() */
-	void setLocalRepresentativePoint(const mrpt::math::TPoint3Df &p)
+	void setLocalRepresentativePoint(const mrpt::math::TPoint3Df& p)
 	{
 		m_representativePoint = p;
 	}

@@ -701,18 +701,10 @@ void export_obs()
 					"Returns the number of actions / observations object in "
 					"the sequence.")
 				.def(
-					"addAction", &CRawlog::addAction,
-					"Add an action to the sequence: a collection of just one "
-					"element is created. The object is duplicated, so the "
-					"original one can be free if desired.")
-				.def(
-					"addActions", &CRawlog::addActions,
-					"Add a set of actions to the sequence; the object is "
-					"duplicated, so the original one can be free if desired.")
-				.def(
-					"addObservations", &CRawlog::addObservations,
-					"Add a set of observations to the sequence; the object is "
-					"duplicated, so the original one can be free if desired.")
+					"insert",
+					static_cast<void (CRawlog::*)(const CSerializable::Ptr&)>(
+						&CRawlog::insert),
+					"Add an object to the sequence.")
 				.def(
 					"readActionObservationPair",
 					&CRawlog_readActionObservationPair,

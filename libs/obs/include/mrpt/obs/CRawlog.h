@@ -75,6 +75,9 @@ class CRawlog : public mrpt::serialization::CSerializable
 	CObservationComment m_commentTexts;
 
    public:
+	CRawlog() = default;
+	virtual ~CRawlog() override = default;
+
 	/** Returns the block of comment text for the rawlog */
 	void getCommentText(std::string& t) const;
 	/** Returns the block of comment text for the rawlog */
@@ -97,12 +100,6 @@ class CRawlog : public mrpt::serialization::CSerializable
 		etOther
 	};
 
-	/** Default constructor */
-	CRawlog();
-
-	/** Destructor: */
-	~CRawlog() override;
-
 	/** Clear the sequence of actions/observations. Smart pointers to objects
 	 * previously in the rawlog will remain being valid. */
 	void clear();
@@ -111,45 +108,22 @@ class CRawlog : public mrpt::serialization::CSerializable
 	 * created.
 	 *   The object is duplicated, so the original one can be freed if desired.
 	 */
-	void addAction(CAction& action);
+	void insert(CAction& action);
 
 	/** Add a set of actions to the sequence; the object is duplicated, so the
 	 * original one can be freed if desired.
-	 * \sa addObservations, addActionsMemoryReference
+	 * \sa insert, insert
 	 */
-	void addActions(CActionCollection& action);
+	void insert(CActionCollection& action);
 
 	/** Add a set of observations to the sequence; the object is duplicated, so
 	 * the original one can be free if desired.
-	 * \sa addActions, addObservationsMemoryReference
 	 */
-	void addObservations(CSensoryFrame& observations);
-
-	/** Add a set of actions to the sequence, using a smart pointer to the
-	 * object to add.
-	 * \sa addActions, addObservationsMemoryReference,
-	 * addObservationMemoryReference
-	 */
-	void addActionsMemoryReference(const CActionCollection::Ptr& action);
-
-	/** Add a set of observations to the sequence, using a smart pointer to the
-	 * object to add.
-	 * \sa addObservations, addActionsMemoryReference,
-	 * addObservationMemoryReference
-	 */
-	void addObservationsMemoryReference(const CSensoryFrame::Ptr& observations);
-
-	/** Add a single observation to the sequence, using a smart pointer to the
-	 * object to add.
-	 * \sa addObservations, addActionsMemoryReference
-	 */
-	void addObservationMemoryReference(const CObservation::Ptr& observation);
+	void insert(CSensoryFrame& observations);
 
 	/** Generic add for a smart pointer to a CSerializable object:
-	 * \sa addObservations, addActionsMemoryReference,
-	 * addObservationMemoryReference
 	 */
-	void addGenericObject(const mrpt::serialization::CSerializable::Ptr& obj);
+	void insert(const mrpt::serialization::CSerializable::Ptr& obj);
 
 	/** Load the contents from a file containing one of these possibilities:
 	 *  - A "CRawlog" object.

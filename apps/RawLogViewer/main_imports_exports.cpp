@@ -205,13 +205,13 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 			actions.clear();
 			actions.insert(actionMovement);
 
-			rawlog.addActions(actions);
+			rawlog.insert(actions);
 
 			// Add the SCAN to the log:
 			sf.clear();
 			sf.push_back(obsScan);
 
-			rawlog.addObservations(sf);
+			rawlog.insert(sf);
 		}
 
 		if ((i++ % 30) == 0)
@@ -344,12 +344,12 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 
 				sf->push_back(im);
 
-				rawlog.addObservationsMemoryReference(sf);
+				rawlog.insert(sf);
 
 				// Add emppty action:
 				CActionCollection::Ptr acts =
 					std::make_shared<CActionCollection>();
-				rawlog.addActionsMemoryReference(acts);
+				rawlog.insert(acts);
 
 				// for the next step:
 				fakeTimeStamp += At;
@@ -1724,13 +1724,12 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 			{
 				if (use_SF_format)
 				{
-					newRawlog.addObservations(set_of_obs);
+					newRawlog.insert(set_of_obs);
 				}
 				else
 				{
 					for (size_t i = 0; i < set_of_obs.size(); i++)
-						newRawlog.addObservationMemoryReference(
-							set_of_obs.getObservationByIndex(i));
+						newRawlog.insert(set_of_obs.getObservationByIndex(i));
 				}
 				set_of_obs.clear();
 			}
@@ -1799,13 +1798,13 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 			{
 				CActionCollection acts;
 				acts.insert(act_mov);
-				newRawlog.addActions(acts);
+				newRawlog.insert(acts);
 			}
 			else
 			{
 				obs_odo.timestamp = cur_timestamp;
 				obs_odo.odometry += odoIncr;
-				newRawlog.addObservationMemoryReference(
+				newRawlog.insert(
 					std::make_shared<CObservationOdometry>(obs_odo));
 			}
 		}
@@ -1898,13 +1897,12 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 	{
 		if (use_SF_format)
 		{
-			newRawlog.addObservations(set_of_obs);
+			newRawlog.insert(set_of_obs);
 		}
 		else
 		{
 			for (size_t i = 0; i < set_of_obs.size(); i++)
-				newRawlog.addObservationMemoryReference(
-					set_of_obs.getObservationByIndex(i));
+				newRawlog.insert(set_of_obs.getObservationByIndex(i));
 		}
 	}
 

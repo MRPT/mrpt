@@ -196,7 +196,7 @@ void do_simulation()
 		act.computeFromOdometry(CPose2D(0, 0, 0), odo_opts);
 		act.timestamp = mrpt::system::now();
 		acts.insert(act);
-		rawlog.addActions(acts);
+		rawlog.insert(acts);
 
 		// Create a rawlog from scratch:
 		for (size_t i = 1; i < N; i++)
@@ -214,7 +214,7 @@ void do_simulation()
 				*the_scan, real_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1,
 				LASER_BEARING_STD_ERROR);
 			sf->insert(the_scan);
-			rawlog.addObservationsMemoryReference(sf);
+			rawlog.insert(sf);
 
 			// Robot moves:
 			simulOdometry(real_pose, last_pose, Apose, odo_opts);
@@ -222,7 +222,7 @@ void do_simulation()
 			act.timestamp = mrpt::system::now();
 			acts.clear();
 			acts.insert(act);
-			rawlog.addActions(acts);
+			rawlog.insert(acts);
 		}
 	}
 

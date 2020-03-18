@@ -58,8 +58,8 @@ void CDetectorDoorCrossing::process(
 
 	// 1) Add new pair to the list:
 	// -----------------------------------------
-	lastObs.addAction(in_poseChange);
-	lastObs.addObservations(in_sf);
+	lastObs.insert(in_poseChange);
+	lastObs.insert(in_sf);
 
 	// 2) Remove oldest pair:
 	// -----------------------------------------
