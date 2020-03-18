@@ -267,7 +267,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 	for (auto& m_particle : mapPDF.m_particles)
 		m_particle.d->mapTillNow.auxParticleFilterCleanUp();
 
-	MRPT_END;
+	MRPT_END
 }
 
 MRPT_TODO(

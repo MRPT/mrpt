@@ -40,7 +40,7 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState(
 	mrpt::obs::CSensoryFrame::Ptr observations,
 	mrpt::obs::CObservation::Ptr observation)
 {
-	MRPT_START;
+	MRPT_START
 	MRPT_UNUSED_PARAM(action);
 	this->m_time_logger.enter("updateState");
 
@@ -111,14 +111,14 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState(
 	this->m_time_logger.leave("updateState");
 	return registered_new_node;
 
-	MRPT_END;
+	MRPT_END
 }  // end of updateState
 
 template <class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::updateState2D(
 	mrpt::obs::CObservation2DRangeScan::Ptr scan2d)
 {
-	MRPT_START;
+	MRPT_START
 	bool registered_new_node = false;
 
 	m_curr_laser_scan2D = scan2d;
@@ -134,13 +134,13 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState2D(
 	}
 
 	return registered_new_node;
-	MRPT_END;
+	MRPT_END
 }  // end of updateState2D
 
 template <class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace mrpt::math;
 
@@ -215,7 +215,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D()
 
 	MRPT_LOG_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 	return registered_new_node;
-	MRPT_END;
+	MRPT_END
 }  // end of checkRegistrationCondition2D
 
 template <class GRAPH_T>
@@ -236,7 +236,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition3D()
 template <class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition()
 {
-	MRPT_START;
+	MRPT_START
 	MRPT_LOG_DEBUG("In checkRegistrationCondition");
 	using namespace mrpt::math;
 
@@ -266,13 +266,13 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition()
 	}
 
 	return registered;
-	MRPT_END;
+	MRPT_END
 }  // end of checkRegistrationCondition
 
 template <class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 {
-	MRPT_START;
+	MRPT_START
 	parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(
@@ -287,7 +287,7 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname)
 		"NodeRegistrationDeciderParameters", "class_verbosity", 1, false);
 	this->setMinLoggingLevel(mrpt::system::VerbosityLevel(min_verbosity_level));
 	MRPT_LOG_DEBUG("Successfully loaded parameters.");
-	MRPT_END;
+	MRPT_END
 }  // end of loadParams
 
 template <class GRAPH_T>
@@ -301,7 +301,7 @@ template <class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::getDescriptiveReport(
 	std::string* report_str) const
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 
 	const std::string report_sep(2, '\n');
@@ -331,7 +331,7 @@ void CICPCriteriaNRD<GRAPH_T>::getDescriptiveReport(
 	*report_str += output_res;
 	*report_str += report_sep;
 
-	MRPT_END;
+	MRPT_END
 }  // end of getDescriptiveReport
 
 template <class GRAPH_T>
@@ -343,7 +343,7 @@ template <class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
 	std::ostream& out) const
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace mrpt::math;
 
@@ -357,13 +357,13 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
 
 	decider.range_ops_t::params.dumpToTextStream(out);
 
-	MRPT_END;
+	MRPT_END
 }
 template <class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace mrpt::math;
 
@@ -376,6 +376,6 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 	// load the icp parameters - from "ICP" section explicitly
 	decider.range_ops_t::params.loadFromConfigFile(source, "ICP");
 
-	MRPT_END;
+	MRPT_END
 }
 }  // namespace mrpt::graphslam::deciders

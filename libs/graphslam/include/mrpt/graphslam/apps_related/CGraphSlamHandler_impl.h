@@ -100,7 +100,7 @@ template <class GRAPH_T>
 void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 	const std::string& output_dir_fname)
 {
-	MRPT_START;
+	MRPT_START
 	using namespace std;
 	using namespace mrpt::system;
 	using namespace mrpt;
@@ -195,7 +195,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 	m_logger->logFmt(
 		mrpt::system::LVL_INFO, "Finished initializing output directory.");
 
-	MRPT_END;
+	MRPT_END
 }  // end of initOutputDir
 
 template <class GRAPH_T>

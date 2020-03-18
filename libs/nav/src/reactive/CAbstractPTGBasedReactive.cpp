@@ -1015,7 +1015,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	const mrpt::system::TTimeStamp tim_start_iteration,
 	const mrpt::nav::CHolonomicLogFileRecord::Ptr& hlfr)
 {
-	MRPT_START;
+	MRPT_START
 	mrpt::system::CTimeLoggerEntry tle(
 		m_navProfiler,
 		"CAbstractPTGBasedReactive::calc_move_candidate_scores()");
@@ -1408,7 +1408,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		}
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 double CAbstractPTGBasedReactive::generate_vel_cmd(
@@ -1464,7 +1464,7 @@ double CAbstractPTGBasedReactive::generate_vel_cmd(
 bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(
 	const mrpt::math::TPoint2D& wp) const
 {
-	MRPT_START;
+	MRPT_START
 
 	const size_t N = this->getPTG_count();
 	if (m_infoPerPTG.size() < N ||
@@ -1497,7 +1497,7 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(
 	}
 
 	return false;  // no way found
-	MRPT_END;
+	MRPT_END
 }
 
 /** \callergraph */
@@ -1783,7 +1783,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
-	MRPT_START;
+	MRPT_START
 
 	robot_absolute_speed_limits.loadConfigFile(c, s);
 
@@ -1801,7 +1801,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_CS(evaluate_clearance, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(max_dist_for_timebased_path_prediction, double);
 
-	MRPT_END;
+	MRPT_END
 }
 
 void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(
@@ -1891,7 +1891,7 @@ CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::
 void CAbstractPTGBasedReactive::loadConfigFile(
 	const mrpt::config::CConfigFileBase& c)
 {
-	MRPT_START;
+	MRPT_START
 	m_PTGsMustBeReInitialized = true;
 
 	// At this point, we have been called from the derived class, who must be
@@ -1930,7 +1930,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(
 
 	m_init_done =
 		true;  // If we reached this point without an exception, all is good.
-	MRPT_END;
+	MRPT_END
 }
 
 void CAbstractPTGBasedReactive::saveConfigFile(

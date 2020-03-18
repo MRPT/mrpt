@@ -14,22 +14,22 @@ template <class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 	const std::string& source_fname)
 {
-	MRPT_START;
+	MRPT_START
 
 	parent_t::loadParams(source_fname);
 	range_ops_t::params.loadFromConfigFileName(source_fname, "ICP");
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const
 {
-	MRPT_START;
+	MRPT_START
 
 	parent_t::printParams();
 	range_ops_t::params.dumpToConsole();
 
-	MRPT_END;
+	MRPT_END
 }
 }  // namespace mrpt::graphslam::deciders

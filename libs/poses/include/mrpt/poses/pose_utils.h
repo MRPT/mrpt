@@ -136,7 +136,7 @@ void readFileWithPoses(
 	std::vector<mrpt::system::TTimeStamp>* timestamps = NULL,
 	bool substract_init_offset = false)
 {
-	MRPT_START;
+	MRPT_START
 
 	using namespace std;
 	using namespace mrpt::system;
@@ -212,5 +212,5 @@ void readFileWithPoses(
 
 	file_GT.close();
 
-	MRPT_END;
+	MRPT_END
 }

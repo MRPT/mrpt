@@ -281,7 +281,7 @@ void CAbstractNavigator::onNavigateCommandReceived()
 
 void CAbstractNavigator::processNavigateCommand(const TNavigationParams* params)
 {
-	MRPT_START;
+	MRPT_START
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	ASSERT_(params != nullptr);
@@ -310,16 +310,16 @@ void CAbstractNavigator::processNavigateCommand(const TNavigationParams* params)
 	m_badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
 	m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
 
-	MRPT_END;
+	MRPT_END
 }
 
 void CAbstractNavigator::navigate(
 	const CAbstractNavigator::TNavigationParams* params)
 {
-	MRPT_START;
+	MRPT_START
 	this->onNavigateCommandReceived();
 	this->processNavigateCommand(params);
-	MRPT_END;
+	MRPT_END
 }
 
 void CAbstractNavigator::updateCurrentPoseAndSpeeds()

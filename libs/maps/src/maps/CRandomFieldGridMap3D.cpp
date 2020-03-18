@@ -44,14 +44,14 @@ void CRandomFieldGridMap3D::setSize(
 	const double resolution_xy, const double resolution_z,
 	const TRandomFieldVoxel* fill_value)
 {
-	MRPT_START;
+	MRPT_START
 
 	CDynamicGrid3D<TRandomFieldVoxel>::setSize(
 		x_min, x_max, y_min, y_max, z_min, z_max, resolution_xy, resolution_z,
 		fill_value);
 	this->internal_initialize();
 
-	MRPT_END;
+	MRPT_END
 }
 
 void CRandomFieldGridMap3D::resize(
@@ -60,14 +60,14 @@ void CRandomFieldGridMap3D::resize(
 	const TRandomFieldVoxel& defaultValueNewCells,
 	double additionalMarginMeters)
 {
-	MRPT_START;
+	MRPT_START
 
 	CDynamicGrid3D<TRandomFieldVoxel>::resize(
 		new_x_min, new_x_max, new_y_min, new_y_max, new_z_min, new_z_max,
 		defaultValueNewCells, additionalMarginMeters);
 	this->internal_initialize(false);
 
-	MRPT_END;
+	MRPT_END
 }
 
 void CRandomFieldGridMap3D::clear()
@@ -305,7 +305,7 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
 	   (algorithm-dependant) */
 	const bool update_map)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_ABOVE_(sensorVariance, .0);
 	ASSERTMSG_(
@@ -329,7 +329,7 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
 
 	return true;
 
-	MRPT_END;
+	MRPT_END
 }
 
 uint8_t CRandomFieldGridMap3D::serializeGetVersion() const { return 0; }

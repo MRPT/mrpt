@@ -100,7 +100,7 @@ Writes an object to the stream.
 ---------------------------------------------------------------*/
 void CArchive::WriteObject(const CSerializable* o)
 {
-	MRPT_START;
+	MRPT_START
 
 	// First, the "classname".
 	const char* className;
@@ -133,7 +133,7 @@ void CArchive::WriteObject(const CSerializable* o)
 	// In MRPT 0.5.5 a end flag is introduced:
 	(*this) << SERIALIZATION_END_FLAG;
 
-	MRPT_END;
+	MRPT_END
 }
 
 CArchive& CArchive::operator<<(const CSerializable::Ptr& pObj)

@@ -32,7 +32,7 @@ void CPointCloudFilterByDistance::filter(
 	using namespace mrpt::math;
 	using mrpt::square;
 
-	MRPT_START;
+	MRPT_START
 	ASSERT_(pc_timestamp != INVALID_TIMESTAMP);
 	ASSERT_(pc != nullptr);
 
@@ -197,7 +197,7 @@ void CPointCloudFilterByDistance::filter(
 		}
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 CPointCloudFilterByDistance::TOptions::TOptions()

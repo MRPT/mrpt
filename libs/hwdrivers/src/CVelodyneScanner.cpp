@@ -1004,7 +1004,7 @@ bool CVelodyneScanner::setLidarReturnType(return_type_t ret_type)
 		</select>
 		</form>
 	*/
-	MRPT_START;
+	MRPT_START
 	std::string strRet;
 	switch (ret_type)
 	{
@@ -1025,7 +1025,7 @@ bool CVelodyneScanner::setLidarReturnType(return_type_t ret_type)
 
 	const std::string cmd = mrpt::format("returns=%s", strRet.c_str());
 	return this->internal_send_http_post(cmd);
-	MRPT_END;
+	MRPT_END
 }
 
 bool CVelodyneScanner::setLidarRPM(int rpm)
@@ -1042,32 +1042,32 @@ bool CVelodyneScanner::setLidarRPM(int rpm)
 	</form>
 	*/
 
-	MRPT_START;
+	MRPT_START
 	const std::string cmd = mrpt::format("rpm=%i", rpm);
 	return this->internal_send_http_post(cmd);
-	MRPT_END;
+	MRPT_END
 }
 
 bool CVelodyneScanner::setLidarOnOff(bool on)
 {
 	// laser = on|off
-	MRPT_START;
+	MRPT_START
 	const std::string cmd = mrpt::format("laser=%s", on ? "on" : "off");
 	return this->internal_send_http_post(cmd);
-	MRPT_END;
+	MRPT_END
 }
 
 void CVelodyneScanner::setFramePublishing(bool on)
 {
 	// frame publishing | data packet publishing = on|off
-	MRPT_START;
+	MRPT_START
 	m_return_frames = on;
-	MRPT_END;
+	MRPT_END
 }
 
 bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERTMSG_(
 		!m_device_ip.empty(), "A device IP address must be specified first!");
@@ -1094,5 +1094,5 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 	return mrpt::comms::net::erOk == ret &&
 		   (http_rep_code == 200 || http_rep_code == 204);  // OK codes
 
-	MRPT_END;
+	MRPT_END
 }

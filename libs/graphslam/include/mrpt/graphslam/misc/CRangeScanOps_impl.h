@@ -19,7 +19,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	const mrpt::poses::CPose2D* initial_pose_in,
 	mrpt::slam::CICP::TReturnInfo* icp_info)
 {
-	MRPT_START;
+	MRPT_START
 
 	mrpt::maps::CSimplePointsMap m1, m2;
 	float running_time;
@@ -45,7 +45,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	// if given, fill the TReturnInfo Struct
 	if (icp_info) *icp_info = info;
 
-	MRPT_END;
+	MRPT_END
 }
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::getICPEdge(
@@ -54,14 +54,12 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	const mrpt::poses::CPose2D* initial_pose_in,
 	mrpt::slam::CICP::TReturnInfo* icp_info)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERTDEBMSG_(
-		from.hasRangeImage,
-		mrpt::format("Laser scan doesn't contain valid range image"));
+		from.hasRangeImage, "Laser scan doesn't contain valid range image");
 	ASSERTDEBMSG_(
-		to.hasRangeImage,
-		mrpt::format("Laser scan doesn't contain valid range image"));
+		to.hasRangeImage, "Laser scan doesn't contain valid range image");
 
 	// TODO - have this as a class member
 	mrpt::maps::CSimplePointsMap m1, m2;
@@ -102,14 +100,14 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	// if given, fill the TReturnInfo Struct
 	if (icp_info) *icp_info = info;
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 	mrpt::maps::CPointsMap* m, size_t keep_point_every, size_t low_lim)
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t map_size = m->size();
 
@@ -135,7 +133,7 @@ void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 	// std::cout << "Map size: " << map_size << " => " << m->size() <<
 	// std::endl;
 
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
@@ -143,7 +141,7 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 	mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
 	mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out)
 {
-	MRPT_START;
+	MRPT_START
 
 	bool success = false;
 	// if it doesn't exist, create it
@@ -164,13 +162,13 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 	}
 
 	return success;
-	MRPT_END;
+	MRPT_END
 }
 
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 {
-	MRPT_START;
+	MRPT_START
 
 	out << mrpt::format(
 		"3D=>2D LaserScan Conversion Sensor label       = %s\n",
@@ -190,13 +188,13 @@ void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(std::ostream& out) const
 
 	icp.options.dumpToTextStream(out);
 
-	MRPT_END;
+	MRPT_END
 }
 template <class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
 	const mrpt::config::CConfigFileBase& source, const std::string& section)
 {
-	MRPT_START;
+	MRPT_START
 
 	conversion_params.sensorLabel = source.read_string(
 		section, "conversion_sensor_label", "KINECT_TO_2D_SCAN", false);
@@ -214,6 +212,6 @@ void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
 
 	has_read_config = true;
 
-	MRPT_END;
+	MRPT_END
 }
 }  // namespace mrpt::graphslam::deciders
