@@ -45,8 +45,6 @@ namespace mrpt::vision
  *CFeatureExtraction::TOptions::SIFTOptions::implementation.
  *		- SURF: OpenCV's implementation of SURF detector and descriptor.
  *		- The FAST feature detector (OpenCV's implementation)
- *		- The FASTER (9,10,12) detectors (Edward Rosten's libcvd implementation
- *optimized for SSE2).
  *
  *  Additionally, given a list of interest points onto an image, the following
  *   <b>descriptors</b> can be computed for each point by calling
@@ -63,12 +61,6 @@ namespace mrpt::vision
  *the
  *2D log-polar image centered at the interest point.
  *
- *
- *  Apart from the normal entry point \a detectFeatures(), these other
- *low-level static methods are provided for convenience:
- *   - CFeatureExtraction::detectFeatures_SSE2_FASTER9()
- *   - CFeatureExtraction::detectFeatures_SSE2_FASTER10()
- *   - CFeatureExtraction::detectFeatures_SSE2_FASTER12()
  *
  * \note The descriptor "Intensity-domain spin images" is described in "A
  *sparse texture representation using affine-invariant regions", S Lazebnik, C
@@ -158,7 +150,7 @@ class CFeatureExtraction
 		{
 		} BCDOptions;
 
-		/** FAST and FASTER Options */
+		/** FAST Options */
 		struct TFASTOptions
 		{
 			/** default= 20 */
@@ -342,61 +334,6 @@ class CFeatureExtraction
 		const mrpt::img::CImage& in_img, CFeatureList& inout_features,
 		TDescriptorType in_descriptor_list);
 
-	/** @name Static methods with low-level detector functionality
-		@{ */
-
-	/** A SSE2-optimized implementation of FASTER-9 (requires img to be
-	 * grayscale). If SSE2 is not available, it gratefully falls back to a
-	 * non-optimized version.
-	 *
-	 *  Only the pt.{x,y} fields are filled out for each feature: the rest
-	 * of fields are left <b>uninitialized</b> and their content is
-	 * <b>undefined</b>.
-	 *  Note that (x,y) are already scaled to the 0-level image coordinates
-	 * if octave>0, by means of:
-	 *
-	 *  \code
-	 *    pt.x = detected.x << octave;
-	 *    pt.y = detected.y << octave;
-	 *  \endcode
-	 *
-	 * If \a append_to_list is true, the \a corners list is not cleared
-	 * before adding the newly detected feats.
-	 *
-	 * If a valid pointer is provided for \a out_feats_index_by_row, upon
-	 * return you will find a vector with
-	 *  as many entries as rows in the image (the real number of rows,
-	 * disregarding the value of \a octave).
-	 * The number in each entry is the 0-based index (in \a corners) of
-	 *  the first feature that falls in that line of the image. This index
-	 * can be used to fasten looking for correspondences.
-	 *
-	 * \ingroup mrptvision_features
-	 */
-	static void detectFeatures_SSE2_FASTER9(
-		const mrpt::img::CImage& img, TKeyPointList& corners,
-		const int threshold = 20, bool append_to_list = false,
-		uint8_t octave = 0,
-		std::vector<size_t>* out_feats_index_by_row = nullptr);
-
-	/** Just like \a detectFeatures_SSE2_FASTER9() for another version of
-	 * the detector. \ingroup mrptvision_features */
-	static void detectFeatures_SSE2_FASTER10(
-		const mrpt::img::CImage& img, TKeyPointList& corners,
-		const int threshold = 20, bool append_to_list = false,
-		uint8_t octave = 0,
-		std::vector<size_t>* out_feats_index_by_row = nullptr);
-
-	/** Just like \a detectFeatures_SSE2_FASTER9() for another version of
-	 * the detector. \ingroup mrptvision_features */
-	static void detectFeatures_SSE2_FASTER12(
-		const mrpt::img::CImage& img, TKeyPointList& corners,
-		const int threshold = 20, bool append_to_list = false,
-		uint8_t octave = 0,
-		std::vector<size_t>* out_feats_index_by_row = nullptr);
-
-	/** @} */
-
    private:
 	/** Compute the SIFT descriptor of the provided features into the input
 	image
@@ -554,12 +491,6 @@ class CFeatureExtraction
 	void extractFeaturesFAST(
 		const mrpt::img::CImage& img, CFeatureList& feats,
 		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0);
-
-	/** Edward's "FASTER & Better" detector, N=9,10,12. (libCVD impl.) */
-	void extractFeaturesFASTER_N(
-		const int N, const mrpt::img::CImage& img, CFeatureList& feats,
-		unsigned int init_ID = 0, unsigned int nDesiredFeatures = 0,
-		const TImageROI& ROI = TImageROI());
 
 	// # added by Raghavender Sahdev
 	//-------------------------------------------------------------------------------------

@@ -27,12 +27,6 @@ CLandmarksConfig::CLandmarksConfig()
 	m_ui->TKeyPointMethod->addItem("featSURF", TKeyPointMethod::featSURF);
 	m_ui->TKeyPointMethod->addItem("featBeacon", TKeyPointMethod::featBeacon);
 	m_ui->TKeyPointMethod->addItem("featFAST", TKeyPointMethod::featFAST);
-	m_ui->TKeyPointMethod->addItem("featFASTER9", TKeyPointMethod::featFASTER9);
-	m_ui->TKeyPointMethod->addItem(
-		"featFASTER10", TKeyPointMethod::featFASTER10);
-	m_ui->TKeyPointMethod->addItem(
-		"featFASTER12", TKeyPointMethod::featFASTER12);
-	m_ui->TKeyPointMethod->addItem("featORB", TKeyPointMethod::featORB);
 
 	m_ui->implementation->addItem("LoweBinary", CFeatureExtraction::LoweBinary);
 	m_ui->implementation->addItem("CSBinary", CFeatureExtraction::CSBinary);

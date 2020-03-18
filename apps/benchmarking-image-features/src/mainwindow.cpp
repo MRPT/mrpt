@@ -1267,14 +1267,7 @@ void MainWindow::fillDetectorInfo()
 
 		fast_opts.non_max_suppresion = param2_boolean->isChecked();
 
-		if (detector_selected == 4)
-			fext.options.featsType = featFAST;
-		else if (detector_selected == 5)
-			fext.options.featsType = featFASTER9;
-		else if (detector_selected == 6)
-			fext.options.featsType = featFASTER10;
-		else
-			fext.options.featsType = featFASTER12;
+		if (detector_selected == 4) fext.options.featsType = featFAST;
 
 		fext.options.FASTOptions.threshold = fast_opts.threshold;
 		fext.options.FASTOptions.min_distance = fast_opts.min_distance;

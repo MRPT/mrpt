@@ -64,9 +64,9 @@ bool DemoFeatures()
 			"3: SIFT\n"
 			"4: SURF\n"
 			"6: FAST\n"
-			"7: FASTER-9\n"
-			"8: FASTER-10\n"
-			"9: FASTER-12\n";
+			"10: ORB\n"
+			"11: AMAZE\n"
+			"12: LSD\n";
 
 	cout << endl << "Select the number for the desired method [8: FASTER-10]:";
 
@@ -74,7 +74,7 @@ bool DemoFeatures()
 	std::getline(cin, sel_method);
 
 	if (sel_method.empty())
-		fext.options.featsType = featFASTER10;
+		fext.options.featsType = featFAST;
 	else
 		fext.options.featsType = TKeyPointMethod(atoi(sel_method.c_str()));
 

@@ -172,7 +172,6 @@ struct TKeyPointList_templ
 	inline void resize(size_t N) { m_feats.resize(N); }
 	inline void reserve(size_t N) { m_feats.reserve(N); }
 	inline void push_back(const FEATURE& f) { m_feats.push_back(f); }
-	inline void push_back_fast(const FEATURE& f) { m_feats.push_back(f); }
 	inline void emplace_back(const int x, const int y)
 	{
 		m_feats.emplace_back(x, y);
