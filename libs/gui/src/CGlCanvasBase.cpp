@@ -12,6 +12,7 @@
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/system/CTicTac.h>
+#include <cstdlib>
 
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32
@@ -40,6 +41,18 @@ using namespace std;
 using mrpt::system::CTicTac;
 
 float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
+
+CGlCanvasBase::CGlCanvasBase()
+{
+#if defined(MRPT_OS_LINUX)
+	// Workaround to enfore wxWidgets to use GLSL>=3.3 even for wxWidgets<3.1
+	// See CWxGLCanvasBase::CWxGLCanvasBase.
+	if (!::getenv("MESA_GL_VERSION_OVERRIDE"))
+	{
+		::putenv("MESA_GL_VERSION_OVERRIDE=3.3");
+	}
+#endif
+}
 
 CGlCanvasBase::~CGlCanvasBase()
 {

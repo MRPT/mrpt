@@ -36,7 +36,7 @@ class CGlCanvasBase
 		float cameraFOV = 30.f;
 	};
 
-	CGlCanvasBase() = default;
+	CGlCanvasBase();
 	virtual ~CGlCanvasBase();
 	/** Sets the minimum of the zoom
 	 * See also setMaximumZoom(float) */
