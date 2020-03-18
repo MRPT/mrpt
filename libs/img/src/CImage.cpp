@@ -494,93 +494,91 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 	if (m_imgIsExternalStorage) out << m_externalFile;
 // Nothing else to serialize!
 #else
-	{
-		// Added in version 6: possibility of being stored offline:
-		out << m_imgIsExternalStorage;
 
-		if (m_imgIsExternalStorage)
+	// Added in version 6: possibility of being stored offline:
+	out << m_imgIsExternalStorage;
+
+	if (m_imgIsExternalStorage)
+	{
+		out << m_externalFile;
+		return;
+	}
+	// Normal image loaded in memory:
+	ASSERT_(m_impl);
+
+	const bool hasColor = m_impl->img.empty() ? false : isColor();
+
+	out << hasColor;
+
+	// Version >2: Color->JPEG, GrayScale->BYTE's array!
+	const int32_t width = m_impl->img.cols;
+	const int32_t height = m_impl->img.rows;
+	if (!hasColor)
+	{
+		// GRAY-SCALE: Raw bytes:
+		// Version 3: ZIP compression!
+		// Version 4: Skip zip if the image size <= 16Kb
+		int32_t origin = 0;  // not used mrpt v1.9.9
+		uint32_t imageSize = height * m_impl->img.step[0];
+		// Version 10: depth
+		int32_t depth = m_impl->img.depth();
+
+		out << width << height << origin << imageSize
+			<< int32_t(cvDepth2PixelDepth(depth));
+
+		// Version 5: Use CImage::DISABLE_ZIP_COMPRESSION
+		// Dec 2019: Remove this feature since it's not worth.
+		// We still spend 1 byte for this constant bool just not to
+		// bump the serialization number.
+		bool imageStoredAsZip = false;
+
+		out << imageStoredAsZip;
+
+		if (imageSize > 0 && m_impl->img.data != nullptr)
+			out.WriteBuffer(m_impl->img.data, imageSize);
+	}
+	else
+	{
+		// COLOR: High quality JPEG image
+
+		// v7: If size is 0xN or Nx0, don't call
+		// "saveToStreamAsJPEG"!!
+
+		// v8: If DISABLE_JPEG_COMPRESSION
+		if (!CImage::DISABLE_JPEG_COMPRESSION())
 		{
-			out << m_externalFile;
+			// normal behavior: compress images:
+			out << width << height;
+
+			if (width >= 1 && height >= 1)
+			{
+				// Save to temporary memory stream:
+				mrpt::io::CMemoryStream aux;
+				saveToStreamAsJPEG(aux, CImage::SERIALIZATION_JPEG_QUALITY());
+
+				const auto nBytes =
+					static_cast<uint32_t>(aux.getTotalBytesCount());
+
+				out << nBytes;
+				out.WriteBuffer(aux.getRawBufferData(), nBytes);
+			}
 		}
 		else
-		{  // Normal image loaded in memory:
-			ASSERT_(m_impl);
+		{  // (New in v8)
+			// Don't JPEG-compress behavior:
+			// Use negative image sizes to signal this behavior:
+			const int32_t neg_width = -width;
+			const int32_t neg_height = -height;
 
-			const bool hasColor = m_impl->img.empty() ? false : isColor();
+			out << neg_width << neg_height;
 
-			out << hasColor;
+			// Dump raw image data:
+			const auto bytes_per_row = width * 3;
 
-			// Version >2: Color->JPEG, GrayScale->BYTE's array!
-			const int32_t width = m_impl->img.cols;
-			const int32_t height = m_impl->img.rows;
-			if (!hasColor)
-			{
-				// GRAY-SCALE: Raw bytes:
-				// Version 3: ZIP compression!
-				// Version 4: Skip zip if the image size <= 16Kb
-				int32_t origin = 0;  // not used mrpt v1.9.9
-				uint32_t imageSize = height * m_impl->img.step[0];
-				// Version 10: depth
-				int32_t depth = m_impl->img.depth();
-
-				out << width << height << origin << imageSize
-					<< int32_t(cvDepth2PixelDepth(depth));
-
-				// Version 5: Use CImage::DISABLE_ZIP_COMPRESSION
-				// Dec 2019: Remove this feature since it's not worth.
-				// We still spend 1 byte for this constant bool just not to
-				// bump the serialization number.
-				bool imageStoredAsZip = false;
-
-				out << imageStoredAsZip;
-
-				if (imageSize > 0 && m_impl->img.data != nullptr)
-					out.WriteBuffer(m_impl->img.data, imageSize);
-			}
-			else
-			{
-				// COLOR: High quality JPEG image
-
-				// v7: If size is 0xN or Nx0, don't call
-				// "saveToStreamAsJPEG"!!
-
-				// v8: If DISABLE_JPEG_COMPRESSION
-				if (!CImage::DISABLE_JPEG_COMPRESSION())
-				{
-					// normal behavior: compress images:
-					out << width << height;
-
-					if (width >= 1 && height >= 1)
-					{
-						// Save to temporary memory stream:
-						mrpt::io::CMemoryStream aux;
-						saveToStreamAsJPEG(
-							aux, CImage::SERIALIZATION_JPEG_QUALITY());
-
-						const auto nBytes =
-							static_cast<uint32_t>(aux.getTotalBytesCount());
-
-						out << nBytes;
-						out.WriteBuffer(aux.getRawBufferData(), nBytes);
-					}
-				}
-				else
-				{  // (New in v8)
-					// Don't JPEG-compress behavior:
-					// Use negative image sizes to signal this behavior:
-					const int32_t neg_width = -width;
-					const int32_t neg_height = -height;
-
-					out << neg_width << neg_height;
-
-					// Dump raw image data:
-					const auto bytes_per_row = width * 3;
-
-					out.WriteBuffer(m_impl->img.data, bytes_per_row * height);
-				}
-			}
-		}  // end m_imgIsExternalStorage=false
+			out.WriteBuffer(m_impl->img.data, bytes_per_row * height);
+		}
 	}
+
 #endif
 }
 
@@ -625,11 +623,13 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 1:
 		{
 			// Version 1: High quality JPEG image
-			mrpt::io::CMemoryStream aux;
 			uint32_t nBytes;
 			in >> nBytes;
-			aux.changeSize(nBytes + 10);
-			in.ReadBuffer(aux.getRawBufferData(), nBytes);
+			std::vector<uint8_t> buf(nBytes);
+			in.ReadBuffer(buf.data(), nBytes);
+
+			mrpt::io::CMemoryStream aux;
+			aux.assignMemoryNotOwn(buf.data(), buf.size());
 			aux.Seek(0);
 			loadFromStreamAsJPEG(aux);
 		}
@@ -765,12 +765,16 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 					// COLOR IMAGE: JPEG
 					if (loadJPEG)
 					{
-						mrpt::io::CMemoryStream aux;
 						uint32_t nBytes;
 						in >> nBytes;
-						aux.changeSize(nBytes + 10);
-						in.ReadBuffer(aux.getRawBufferData(), nBytes);
+
+						std::vector<uint8_t> buf(nBytes);
+						in.ReadBuffer(buf.data(), nBytes);
+
+						mrpt::io::CMemoryStream aux;
+						aux.assignMemoryNotOwn(buf.data(), buf.size());
 						aux.Seek(0);
+
 						loadFromStreamAsJPEG(aux);
 					}
 				}

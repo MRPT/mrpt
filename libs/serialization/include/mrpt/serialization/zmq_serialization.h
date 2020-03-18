@@ -101,7 +101,7 @@ bool mrpt_recv_from_zmq_buf(
 {
 	if (rx_obj_length_in_bytes) *rx_obj_length_in_bytes = 0;
 	out_lst_msgs.clear();
-	target_buf.Clear();
+	target_buf.clear();
 	int64_t more;
 	size_t more_size = sizeof(more);
 	do
