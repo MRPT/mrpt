@@ -82,6 +82,7 @@
     - NMEA GPS parser: now also recognizes all existing talker IDs (GP, GN, GA, etc.)
   - \ref mrpt_opengl_grp
     - Update Assimp lib version 4.0.1 -> 4.1.0 (when built as ExternalProject)
+    - Rendering engine rewritten to work using OpenGL Core (GLSL 3.3) instead of Legacy fixed functions.
   - \ref mrpt_obs_grp
     - mrpt::obs::CObservation2DRangeScan: Deprecated access to scan data via proxy objects `obs->scan[i]`, `obs->validRange[i]`, `obs->intensity[i]` has been deleted. Please use the alternative getters/setters: `obs->getScanRange(i)`, etc.
     - mrpt::obs::T3DPointsProjectionParams and mrpt::obs::CObservation3DRangeScan::unprojectInto now together support organized PCL point clouds.
@@ -91,6 +92,8 @@
   - \ref mrpt_poses_grp  [NEW IN MRPT 2.0.0]
     - Reorganized all Lie Algebra methods into \ref mrpt_poses_lie_grp
     - Removed CPose3DRotVec, since its conceptual design is identical to Lie tangent space vectors.
+  - \ref mrpt_vision_grp
+    - Removed FASTER methods, and the libCVD 3rd party dependency.
 
 - BUG FIXES:
   - Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.

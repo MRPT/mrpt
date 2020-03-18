@@ -571,30 +571,20 @@ void CGenericFeatureTracker::internal_trackFeatures(
 		if (m_newly_detected_feats.empty())
 		{
 			// Do the detection
-			const int fast_v = extra_params.getWithDefaultVal(
-				"add_new_features_FAST_version", 10);
+			CFeatureExtraction fe;
+			fe.options.featsType = featFAST;
+			fe.options.FASTOptions.threshold = m_detector_adaptive_thres;
 
-			switch (fast_v)
+			CFeatureList new_feats;
+
+			fe.detectFeatures(cur_gray, new_feats);
+
+			m_newly_detected_feats.clear();
+			m_newly_detected_feats.reserve(new_feats.size());
+
+			for (const CFeature& f : new_feats)
 			{
-				case 9:
-					CFeatureExtraction::detectFeatures_SSE2_FASTER9(
-						cur_gray, m_newly_detected_feats,
-						m_detector_adaptive_thres);
-					break;
-				case 10:
-					CFeatureExtraction::detectFeatures_SSE2_FASTER10(
-						cur_gray, m_newly_detected_feats,
-						m_detector_adaptive_thres);
-					break;
-				case 12:
-					CFeatureExtraction::detectFeatures_SSE2_FASTER12(
-						cur_gray, m_newly_detected_feats,
-						m_detector_adaptive_thres);
-					break;
-				default:
-					THROW_EXCEPTION(
-						"Invalid value for `add_new_features_FAST_version`: "
-						"valid are 9,10,12");
+				m_newly_detected_feats.push_back(TKeyPoint(f.keypoint));
 			}
 		}
 

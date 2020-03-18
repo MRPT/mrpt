@@ -226,7 +226,6 @@ find_package(Threads) # Defines imported target Threads::Threads
 # ----------------------------------------------------------------------------
 include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
 include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
-include(cmakemodules/script_cvd.cmake REQUIRED)         # Check for CVD
 include(cmakemodules/script_duo3d.cmake REQUIRED)       # Support for DUO3D Camera
 include(cmakemodules/script_eigen.cmake REQUIRED)       # Eigen3
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale

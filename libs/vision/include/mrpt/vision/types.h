@@ -53,25 +53,19 @@ enum TKeyPointMethod : int8_t
 	/** Scale Invariant Feature Transform [LOWE'04] */
 	featSIFT = 3,
 	/** Speeded Up Robust Feature [BAY'06] */
-	featSURF,
+	featSURF = 4,
 	/** A especial case: this is not an image feature, but a 2D/3D beacon (used
 	   for range-only SLAM from mrpt::maps::CLandmark) */
-	featBeacon,
+	featBeacon = 5,
 	/** FAST feature detector, OpenCV's implementation ("Faster and better: A
 	   machine learning approach to corner detection", E. Rosten, R. Porter and
 	   T. Drummond, PAMI, 2009). */
-	featFAST,
-	/** FASTER-9 detector, Edward Rosten's libcvd, SSE2 optimized */
-	featFASTER9,
-	/** FASTER-9 detector, Edward Rosten's libcvd, SSE2 optimized */
-	featFASTER10,
-	/** FASTER-9 detector, Edward Rosten's libcvd, SSE2 optimized */
-	featFASTER12,
+	featFAST = 6,
 	/** ORB detector and descriptor, OpenCV's implementation */
-	featORB,
+	featORB = 10,
 	// #added by Raghavender Sahdev
-	featAKAZE,  //!< AKAZE detector, OpenCV's implementation
-	featLSD  //!< LSD detector, OpenCV's implementation
+	featAKAZE = 11,  //!< AKAZE detector, OpenCV's implementation
+	featLSD = 12  //!< LSD detector, OpenCV's implementation
 	// Remember: If new values are added, also update MRPT_FILL_ENUM below!
 };
 
@@ -695,9 +689,6 @@ MRPT_FILL_ENUM(featSIFT);
 MRPT_FILL_ENUM(featSURF);
 MRPT_FILL_ENUM(featBeacon);
 MRPT_FILL_ENUM(featFAST);
-MRPT_FILL_ENUM(featFASTER9);
-MRPT_FILL_ENUM(featFASTER10);
-MRPT_FILL_ENUM(featFASTER12);
 MRPT_FILL_ENUM(featORB);
 MRPT_FILL_ENUM(featAKAZE);
 MRPT_FILL_ENUM(featLSD);
