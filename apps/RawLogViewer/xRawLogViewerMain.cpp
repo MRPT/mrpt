@@ -2105,14 +2105,14 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 			if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
 			{
 				if (entryIndex >= first && (last == -1 || entryIndex <= last))
-					rawlog.addObservationsMemoryReference(
+					rawlog.insert(
 						std::dynamic_pointer_cast<CSensoryFrame>(newObj));
 				entryIndex++;
 			}
 			else if (newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
 			{
 				if (entryIndex >= first && (last == -1 || entryIndex <= last))
-					rawlog.addActionsMemoryReference(
+					rawlog.insert(
 						std::dynamic_pointer_cast<CActionCollection>(newObj));
 				entryIndex++;
 			}
@@ -2121,7 +2121,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 						 CLASS_ID(CObservation)))
 			{
 				if (entryIndex >= first && (last == -1 || entryIndex <= last))
-					rawlog.addObservationMemoryReference(
+					rawlog.insert(
 						std::dynamic_pointer_cast<CObservation>(newObj));
 				entryIndex++;
 			}
@@ -2141,7 +2141,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 					action.computeFromOdometry(*poseChange, options);
 					temp->insert(action);
 
-					rawlog.addActionsMemoryReference(temp);
+					rawlog.insert(temp);
 				}
 				entryIndex++;
 			}
@@ -2154,7 +2154,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 			{
 				// Unknown class:
 				// New in MRPT v1.5.0: Allow loading some other classes:
-				rawlog.addGenericObject(newObj);
+				rawlog.insert(newObj);
 			}
 
 			// Passed last?
@@ -3575,7 +3575,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 				SF_counter = 0;
 
 				// INSERT OBSERVATION:
-				newRawLog.addObservationsMemoryReference(last_sf);
+				newRawLog.insert(last_sf);
 				last_sf.reset();  // = nullptr;
 
 				// INSERT ACTIONS:
@@ -3589,7 +3589,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 					// Reset odometry accumulation:
 					accumMovement = CPose2D(0, 0, 0);
 				}
-				newRawLog.addActions(actsCol);
+				newRawLog.insert(actsCol);
 			}
 		}
 		else

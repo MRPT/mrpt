@@ -25,57 +25,36 @@ using namespace mrpt::serialization;
 
 IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable, mrpt::obs)
 
-// ctor
-CRawlog::CRawlog() : m_seqOfActObs(), m_commentTexts() {}
-// dtor
-CRawlog::~CRawlog() { clear(); }
 void CRawlog::clear()
 {
 	m_seqOfActObs.clear();
 	m_commentTexts.text.clear();
 }
 
-void CRawlog::addObservations(CSensoryFrame& observations)
+void CRawlog::insert(CSensoryFrame& observations)
 {
 	m_seqOfActObs.push_back(std::dynamic_pointer_cast<CSerializable>(
 		observations.duplicateGetSmartPtr()));
 }
 
-void CRawlog::addActions(CActionCollection& actions)
+void CRawlog::insert(CActionCollection& actions)
 {
 	m_seqOfActObs.push_back(std::dynamic_pointer_cast<CSerializable>(
 		actions.duplicateGetSmartPtr()));
 }
-
-void CRawlog::addActionsMemoryReference(const CActionCollection::Ptr& action)
+void CRawlog::insert(const CSerializable::Ptr& obj)
 {
-	m_seqOfActObs.push_back(action);
-}
-
-void CRawlog::addObservationsMemoryReference(
-	const CSensoryFrame::Ptr& observations)
-{
-	m_seqOfActObs.push_back(observations);
-}
-void CRawlog::addGenericObject(const CSerializable::Ptr& obj)
-{
-	m_seqOfActObs.push_back(obj);
-}
-
-void CRawlog::addObservationMemoryReference(
-	const CObservation::Ptr& observation)
-{
-	if (IS_CLASS(*observation, CObservationComment))
+	if (IS_CLASS(*obj, CObservationComment))
 	{
 		CObservationComment::Ptr o =
-			std::dynamic_pointer_cast<CObservationComment>(observation);
+			std::dynamic_pointer_cast<CObservationComment>(obj);
 		m_commentTexts = *o;
 	}
 	else
-		m_seqOfActObs.push_back(observation);
+		m_seqOfActObs.push_back(obj);
 }
 
-void CRawlog::addAction(CAction& action)
+void CRawlog::insert(CAction& action)
 {
 	CActionCollection::Ptr temp = std::make_shared<CActionCollection>();
 	temp->insert(action);
