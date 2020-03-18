@@ -86,8 +86,8 @@ void CMemoryStream::resize(uint64_t newSize)
 size_t CMemoryStream::Read(void* Buffer, size_t Count)
 {
 	// enough bytes?
-	long maxAvail = (((long)m_size)) - ((long)m_position);
-	size_t nToRead = (size_t)min(((long)Count), maxAvail);
+	long maxAvail = (((long)m_bytesWritten)) - ((long)m_position);
+	size_t nToRead = std::min<size_t>(Count, maxAvail);
 
 	// Copy the memory block:
 	if (nToRead > 0)
