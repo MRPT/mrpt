@@ -23,7 +23,7 @@ void main()
     gl_Position = p_matrix * eye_position;
     if (enableVariablePointSize!=0)
       gl_PointSize = vertexPointSize +
-		variablePointSize_K/(variablePointSize_DepthScale*gl_Position.z + 0.01);
+		variablePointSize_K/(variablePointSize_DepthScale*abs(gl_Position.z) + 0.01);
     else
 	  gl_PointSize = vertexPointSize;
 
