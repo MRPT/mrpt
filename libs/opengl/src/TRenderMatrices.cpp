@@ -26,9 +26,9 @@ void TRenderMatrices::computeOrthoProjectionMatrix(
 	p_matrix(0, 0) = 2.0f / (right - left);
 	p_matrix(1, 1) = 2.0f / (top - bottom);
 	p_matrix(2, 2) = -2.0f / (zfar - znear);
-	p_matrix(3, 0) = -(right + left) / (right - left);
-	p_matrix(3, 1) = -(top + bottom) / (top - bottom);
-	p_matrix(3, 2) = -(zfar + znear) / (zfar - znear);
+	p_matrix(0, 3) = -(right + left) / (right - left);
+	p_matrix(1, 3) = -(top + bottom) / (top - bottom);
+	p_matrix(2, 3) = -(zfar + znear) / (zfar - znear);
 }
 
 // Replacement for obsolete: gluPerspective() and glOrtho()
