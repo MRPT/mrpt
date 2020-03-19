@@ -371,7 +371,7 @@ class MatrixVectorBase
 	 *  "[1 0 2; 0 4 -1]"
 	 * The string must start with '[' and end with ']'. Rows are separated by
 	 * semicolons ';' and columns in each row by one or more whitespaces
-	 * ' ', tabs '\t' or commas ','.
+	 * ' ' or tabs '\t'. Commas ',' between elements are NOT allowed.
 	 *
 	 * This format is also used for CConfigFile::read_matrix.
 	 *
