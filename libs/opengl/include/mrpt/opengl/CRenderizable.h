@@ -111,9 +111,11 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Returns the 3D pose of the object as TPose3D */
 	mrpt::math::TPose3D getPose() const;
+
 	/** Returns a const ref to the 3D pose of the object as mrpt::poses::CPose3D
 	 * (which explicitly contains the 3x3 rotation matrix) */
 	inline const mrpt::poses::CPose3D& getPoseRef() const { return m_pose; }
+
 	/** Changes the location of the object, keeping untouched the orientation
 	 * \return a ref to this */
 	inline CRenderizable& setLocation(double x, double y, double z)
