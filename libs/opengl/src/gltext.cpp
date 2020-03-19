@@ -265,4 +265,40 @@ std::pair<double, double> glGetExtends(
 	return std::make_pair(max_total, (lines + 1) * spacing);
 }
 
+void glDrawTextTransformed(
+	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
+	std::vector<mrpt::math::TPoint3Df>& lines,
+	std::vector<mrpt::img::TColor>& line_colors,
+	const mrpt::poses::CPose3D& text_pose, float text_scale,
+	const mrpt::img::TColor& text_color, TEXT_STYLE style, double spacing,
+	double kerning)
+{
+	// Raw text primitives:
+	std::vector<mrpt::opengl::TTriangle> new_tris;
+	std::vector<mrpt::math::TPoint3Df> new_lines;
+	glDrawText(text, new_tris, new_lines, style, spacing, kerning);
+
+	// Transform triangles:
+	for (auto& t : new_tris)
+	{
+		t.setColor(text_color);
+
+		for (int i = 0; i < 3; i++)
+		{
+			text_pose.rotateVector(t.vertices[i].normal);
+			t.vertices[i].xyzrgba.pt =
+				text_pose.composePoint(t.vertices[i].xyzrgba.pt * text_scale);
+		}
+		t.computeNormals();
+		tris.emplace_back(t);
+	}
+
+	// Transform line vertices:
+	for (auto& v : new_lines)
+	{
+		lines.emplace_back(text_pose.composePoint(v * text_scale));
+		line_colors.emplace_back(text_color);
+	}
+}
+
 }  // namespace mrpt::opengl::internal
