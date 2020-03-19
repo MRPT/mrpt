@@ -233,9 +233,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		mrpt::poses::CPose3D* out_cameraPose = nullptr) const;
 
 	/** @} */  // end of Change or read viewport properties
-	// ------------------------------------------------------
 
-	// -------------------------------------------------------------------
 	/** @name Contained objects set/get/search
 		@{ */
 
@@ -260,6 +258,11 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * \sa get3DRayForPixelCoord
 	 */
 	void getCurrentCameraPose(mrpt::poses::CPose3D& out_cameraPose) const;
+
+	/** Changes the point of view of the camera, from a given pose.
+	 * \sa getCurrentCameraPose
+	 */
+	void setCurrentCameraFromPose(mrpt::poses::CPose3D& p);
 
 	/** Returns the first object with a given name, or nullptr if not found.
 	 */

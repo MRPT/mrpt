@@ -21,6 +21,12 @@ class CCamera;
  * used instead of the camera parameters set in COpenGLViewport::m_camera.
  *  A camera can be defined to provide a projective or orthogonal view of the
  * world by setting the member CCamera::m_projectiveModel.
+ *
+ * Alternatively, a camera pose and orientation can be given as a CPose3D object
+ * if set6DOFMode() is set to `true`, then the pose can be changed with
+ * `CRenderizable::setPose()`. Pose axis convention is +X pointing forwards, +Z
+ * up.
+ *
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */

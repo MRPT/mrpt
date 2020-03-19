@@ -260,9 +260,12 @@ void COpenGLViewport::renderNormalSceneMode() const
 		// positive Z axis
 		// Up is set as Y axis
 		mrpt::poses::CPose3D viewDirection, pose, at;
-		viewDirection.z(+1);
+		viewDirection.x(+1);
 		pose = mrpt::poses::CPose3D(myCamera->getPose());
 		at = pose + viewDirection;
+
+		std::cout << "pose: " << pose.asString() << "\n";
+		std::cout << "at  : " << at.asString() << "\n";
 
 		_.eye.x = d2f(pose.x());
 		_.eye.y = d2f(pose.y());
@@ -270,9 +273,9 @@ void COpenGLViewport::renderNormalSceneMode() const
 		_.pointing.x = d2f(at.x());
 		_.pointing.y = d2f(at.y());
 		_.pointing.z = d2f(at.z());
-		_.up.x = d2f(pose.getRotationMatrix()(0, 1));
-		_.up.y = d2f(pose.getRotationMatrix()(1, 1));
-		_.up.z = d2f(pose.getRotationMatrix()(2, 1));
+		_.up.x = d2f(pose.getRotationMatrix()(0, 2));
+		_.up.y = d2f(pose.getRotationMatrix()(1, 2));
+		_.up.z = d2f(pose.getRotationMatrix()(2, 2));
 	}
 	else
 	{
@@ -849,7 +852,11 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	}
 }
 
-MRPT_TODO("Implement a setCurrentCameraFromPose() method")
+void COpenGLViewport::setCurrentCameraFromPose(mrpt::poses::CPose3D& p)
+{
+	m_camera.set6DOFMode(true);
+	m_camera.setPose(p);
+}
 
 void COpenGLViewport::getCurrentCameraPose(
 	mrpt::poses::CPose3D& out_cameraPose) const
