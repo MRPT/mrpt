@@ -11,8 +11,7 @@
 
 #include <mrpt/opengl/CColorBar.h>
 #include <mrpt/serialization/CArchive.h>
-
-#include <mrpt/opengl/opengl_api.h>
+#include "gltext.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -43,7 +42,6 @@ CColorBar::CColorBar(
 	  m_min_value(min_value),
 	  m_max_value(max_value),
 	  m_label_font_size(label_font_size)
-
 {
 }
 
@@ -63,26 +61,36 @@ void CColorBar::setColorAndValueLimits(
 	CRenderizable::notifyChange();
 }
 
-void mrpt::opengl::CColorBar::enableDepthTest(bool enable)
-{
-	m_disable_depth_test = enable;
-	CRenderizable::notifyChange();
-}
-
-void CColorBar::renderUpdateBuffers() const
-{
-	//
-	MRPT_TODO("Implement me!");
-}
 void CColorBar::render(const RenderContext& rc) const
 {
-#if 0 && MRPT_HAS_OPENGL_GLUT
-	if (m_disable_depth_test)
-		glDisable(GL_DEPTH_TEST);  // colobars are typically displayed on-top of
-	// the rest of objects!
-	glDisable(GL_LIGHTING);
+	// colobars are typically displayed on-top
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::TRIANGLES:
+			CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::WIREFRAME:
+			CRenderizableShaderWireFrame::render(rc);
+			break;
+	};
+}
+void CColorBar::renderUpdateBuffers() const
+{
+	const_cast<CColorBar&>(*this).onUpdateBuffers_all();
 
-	// solid:
+	CRenderizableShaderTriangles::renderUpdateBuffers();
+	CRenderizableShaderWireFrame::renderUpdateBuffers();
+}
+
+void CColorBar::onUpdateBuffers_all()
+{
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	auto& lines_vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	auto& lines_cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	lines_vbd.clear();
+	lines_cbd.clear();
+
+	// precomputed params:
 	unsigned int num_divisions = 64;
 	unsigned int num_labels = 4;
 	unsigned int one_label_each_nth = num_divisions / num_labels;
@@ -90,39 +98,21 @@ void CColorBar::render(const RenderContext& rc) const
 	const double x0 = .0, x1 = m_width, x2 = m_width * 1.3;
 	const double Ay = m_height / (num_divisions - 1);
 
-	std::vector<mrpt::img::TColorf> cols(num_divisions);
+	std::vector<mrpt::img::TColor> colors(num_divisions);
 	for (unsigned int i = 0; i < num_divisions; i++)
 	{
 		const float col_idx =
 			m_min_col + i * (m_max_col - m_min_col) / (num_divisions - 1);
-		mrpt::img::colormap(
-			m_colormap, col_idx, cols[i].R, cols[i].G, cols[i].B);
+		mrpt::img::TColorf colf;
+		mrpt::img::colormap(m_colormap, col_idx, colf.R, colf.G, colf.B);
+		colors[i] = colf.asTColor();
 	}
 
-	for (unsigned int i = 0; i < num_divisions - 1; i++)
-	{
-		const double y0 = Ay * i, y1 = Ay * (i + 1);
-		const TPoint3D pt00(x0, y0, 0), pt10(x1, y0, 0);
-		const TPoint3D pt01(x0, y1, 0), pt11(x1, y1, 0);
+	// Text labels:
+	mrpt::opengl::internal::glSetFont("mono");
 
-		// Color quad:
-
-		glBegin(GL_TRIANGLES);
-		glColor3f(cols[i].R, cols[i].G, cols[i].B);
-		glVertex3d(pt00.x, pt00.y, pt00.z);
-		glVertex3d(pt10.x, pt10.y, pt10.z);
-		glColor3f(cols[i + 1].R, cols[i + 1].G, cols[i + 1].B);
-		glVertex3d(pt11.x, pt11.y, pt11.z);
-		//
-		glColor3f(cols[i].R, cols[i].G, cols[i].B);
-		glVertex3d(pt00.x, pt00.y, pt00.z);
-		glColor3f(cols[i + 1].R, cols[i + 1].G, cols[i + 1].B);
-		glVertex3d(pt11.x, pt11.y, pt11.z);
-		glVertex3d(pt01.x, pt01.y, pt01.z);
-		glEnd();
-	}
-
-	mrpt::opengl::gl_utils::glSetFont("mono");
+	const auto tickColor = mrpt::img::TColor::black();
+	const auto textColor = mrpt::img::TColor::white();
 
 	for (unsigned int i = 0; i < num_divisions; i++)
 	{
@@ -137,36 +127,74 @@ void CColorBar::render(const RenderContext& rc) const
 		if (draw_label)
 		{
 			// Line:
-			glLineWidth(1.0);
-			glBegin(GL_LINES);
-			glColor3b(0, 0, 0);
-			glVertex2d(x0, y0);
-			glVertex2d(x2, y0);
-			glEnd();
+			lines_vbd.emplace_back(x0, y0, 0);
+			lines_vbd.emplace_back(x2, y0, 0);
+			lines_cbd.emplace_back(tickColor);
+			lines_cbd.emplace_back(tickColor);
 
 			// Text:
-			glPushMatrix();
 
-			glTranslated(x2, y0, 0.0);
-			glColor3ub(0xff, 0xff, 0xff);
-			mrpt::opengl::gl_utils::glDrawText(
-				mrpt::format(m_label_format.c_str(), val), m_label_font_size);
+			// Size: m_label_font_size
+			// glTranslated(x2, y0, 0.0);
+			mrpt::poses::CPose3D p(x2, y0, 0.0, 0, 0, 0);
 
-			glPopMatrix();
+			mrpt::opengl::internal::glDrawTextTransformed(
+				mrpt::format(m_label_format.c_str(), val), tris, lines_vbd,
+				lines_cbd, p, m_label_font_size, textColor, FILL, 1.5, 0.1);
 		}
 	}
 
-#endif
+	// Color bar itself:
+	for (unsigned int i = 0; i < num_divisions - 1; i++)
+	{
+		const double y0 = Ay * i, y1 = Ay * (i + 1);
+		const TPoint3Df pt00(x0, y0, 0), pt10(x1, y0, 0);
+		const TPoint3Df pt01(x0, y1, 0), pt11(x1, y1, 0);
+
+		// Color quad:
+		// triangle 1/2
+		mrpt::opengl::TTriangle t;
+		t.vertices[0].xyzrgba.pt = pt00;
+		t.vertices[0].setColor(colors[i]);
+
+		t.vertices[1].xyzrgba.pt = pt10;
+		t.vertices[1].setColor(colors[i]);
+
+		t.vertices[2].xyzrgba.pt = pt11;
+		t.vertices[2].setColor(colors[i + 1]);
+		t.computeNormals();
+		tris.emplace_back(t);
+
+		// triangle 2/2
+		t.vertices[0].xyzrgba.pt = pt00;
+		t.vertices[0].setColor(colors[i]);
+
+		t.vertices[1].xyzrgba.pt = pt11;
+		t.vertices[1].setColor(colors[i + 1]);
+
+		t.vertices[2].xyzrgba.pt = pt01;
+		t.vertices[2].setColor(colors[i + 1]);
+		t.computeNormals();
+		tris.emplace_back(t);
+	}
 }
 
-uint8_t CColorBar::serializeGetVersion() const { return 0; }
+void CColorBar::onUpdateBuffers_Wireframe()
+{
+	// Already done in onUpdateBuffers_all()
+}
+void CColorBar::onUpdateBuffers_Triangles()
+{
+	// Already done in onUpdateBuffers_all()
+}
+
+uint8_t CColorBar::serializeGetVersion() const { return 1; }
 void CColorBar::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// version 0
 	out << uint32_t(m_colormap) << m_min_col << m_max_col << m_min_value
-		<< m_max_value << m_label_format << m_label_font_size
-		<< m_disable_depth_test;
+		<< m_max_value << m_label_format << m_label_font_size;
 }
 void CColorBar::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -174,11 +202,17 @@ void CColorBar::serializeFrom(
 	switch (version)
 	{
 		case 0:
+		case 1:
 			readFromStreamRender(in);
 
 			in.ReadAsAndCastTo<uint32_t, mrpt::img::TColormap>(m_colormap);
 			in >> m_min_col >> m_max_col >> m_min_value >> m_max_value >>
-				m_label_format >> m_label_font_size >> m_disable_depth_test;
+				m_label_format >> m_label_font_size;
+			if (version == 0)
+			{
+				bool old_disable_depth_test;
+				in >> old_disable_depth_test;
+			}
 			break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

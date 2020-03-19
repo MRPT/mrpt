@@ -10,7 +10,8 @@
 
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
 {
@@ -31,33 +32,12 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class CColorBar : public CRenderizable
+class CColorBar : public CRenderizableShaderTriangles,
+				  public CRenderizableShaderWireFrame
 {
 	DEFINE_SERIALIZABLE(CColorBar, mrpt::opengl)
 
-   protected:
-	mrpt::img::TColormap m_colormap;
-	double m_width, m_height;
-	std::string m_label_format;
-	float m_min_col, m_max_col, m_min_value, m_max_value;
-	float m_label_font_size;
-	bool m_disable_depth_test{true};
-
    public:
-	void render(const RenderContext& rc) const override;
-	void renderUpdateBuffers() const override;
-	void freeOpenGLResources() override {}
-
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
-
-	void setColormap(const mrpt::img::TColormap colormap);
-	void setColorAndValueLimits(
-		float col_min, float col_max, float value_min, float value_max);
-	void enableDepthTest(bool enable);
-
-	/** Basic empty constructor. Set all parameters to default. */
 	CColorBar(/** The colormap to represent. */
 			  const mrpt::img::TColormap colormap = mrpt::img::cmGRAYSCALE,
 			  /** size of the color bar */
@@ -70,5 +50,40 @@ class CColorBar : public CRenderizable
 			  const std::string& label_format = std::string("%7.02f"),
 			  /** Label text font size */
 			  float label_font_size = .05f);
+
+	/** @name Renderizable shader API virtual methods
+	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
+
+	virtual shader_list_t requiredShaders() const override
+	{
+		// May use up to two shaders (triangles and lines):
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+	}
+	void onUpdateBuffers_Wireframe() override;
+	void onUpdateBuffers_Triangles() override;
+	void onUpdateBuffers_all();
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderWireFrame::freeOpenGLResources();
+	}
+	/** @} */
+
+	void getBoundingBox(
+		mrpt::math::TPoint3D& bb_min,
+		mrpt::math::TPoint3D& bb_max) const override;
+
+	void setColormap(const mrpt::img::TColormap colormap);
+	void setColorAndValueLimits(
+		float col_min, float col_max, float value_min, float value_max);
+
+   protected:
+	mrpt::img::TColormap m_colormap;
+	double m_width, m_height;
+	std::string m_label_format;
+	float m_min_col, m_max_col, m_min_value, m_max_value;
+	float m_label_font_size;
 };
 }  // namespace mrpt::opengl

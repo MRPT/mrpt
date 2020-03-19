@@ -607,7 +607,6 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
-#if 0
 	// CColorMap
 	{
 		{
@@ -623,7 +622,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-#endif
 
 	// CSetOfLines
 	{

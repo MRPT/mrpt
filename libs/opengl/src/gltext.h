@@ -15,6 +15,7 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/TTriangle.h>
 #include <mrpt/opengl/opengl_fonts.h>
+#include <mrpt/poses/CPose3D.h>
 #include <iostream>
 #include <map>
 #include <string>
@@ -51,6 +52,18 @@ using TEXT_STYLE = TOpenGLFontStyle;
 std::pair<double, double> glDrawText(
 	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
 	std::vector<mrpt::math::TPoint3Df>& lines, TEXT_STYLE style = NICE,
+	double spacing = 1.5, double kerning = 0.1);
+
+/// Appends to {tris,lines} the entities representing a given text including a
+/// pose and scale transformation.
+///
+/// It calls glDrawText() and appends its results to the provided buffers.
+void glDrawTextTransformed(
+	const std::string& text, std::vector<mrpt::opengl::TTriangle>& tris,
+	std::vector<mrpt::math::TPoint3Df>& lines,
+	std::vector<mrpt::img::TColor>& line_colors,
+	const mrpt::poses::CPose3D& text_pose, float text_scale,
+	const mrpt::img::TColor& text_color, TEXT_STYLE style = NICE,
 	double spacing = 1.5, double kerning = 0.1);
 
 /// returns the size of the bounding box of a text to be rendered, similar to
