@@ -83,21 +83,24 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 // Replacement for deprecated OpenGL gluLookAt():
 void TRenderMatrices::applyLookAt()
 {
-	using mrpt::math::TVector3Df;
+	using mrpt::math::TVector3D;
 
-	TVector3Df forward = TVector3Df(pointing - eye);
-	const float fn = forward.norm();
+	// Note: Use double instead of float to avoid numerical innacuracies that
+	// are really noticeable with the naked eye when elevation is close to 90
+	// deg (!)
+	TVector3D forward = TVector3D(pointing - eye);
+	const double fn = forward.norm();
 	ASSERT_(fn != 0);
-	forward *= 1.0f / fn;
+	forward *= 1.0 / fn;
 
 	// Side = forward x up
-	TVector3Df side = mrpt::math::crossProduct3D(forward, up);
-	const float sn = side.norm();
+	TVector3D side = mrpt::math::crossProduct3D(forward, up);
+	const double sn = side.norm();
 	ASSERT_(sn != 0);
-	side *= 1.0f / sn;
+	side *= 1.0 / sn;
 
 	// Recompute up as: up = side x forward
-	const TVector3Df up2 = mrpt::math::crossProduct3D(side, forward);
+	const TVector3D up2 = mrpt::math::crossProduct3D(side, forward);
 
 	//  s.x   s.y   s.z  -dot(s, eye)
 	//  u.x   u.y   u.z  -dot(u, eye)
@@ -106,21 +109,21 @@ void TRenderMatrices::applyLookAt()
 
 	mrpt::math::CMatrixFloat44 m(mrpt::math::UNINITIALIZED_MATRIX);
 	// Axis X:
-	m(0, 0) = side[0];
-	m(0, 1) = side[1];
-	m(0, 2) = side[2];
+	m(0, 0) = d2f(side[0]);
+	m(0, 1) = d2f(side[1]);
+	m(0, 2) = d2f(side[2]);
 	// Axis Y:
-	m(1, 0) = up2[0];
-	m(1, 1) = up2[1];
-	m(1, 2) = up2[2];
+	m(1, 0) = d2f(up2[0]);
+	m(1, 1) = d2f(up2[1]);
+	m(1, 2) = d2f(up2[2]);
 	// Axis Z:
-	m(2, 0) = -forward[0];
-	m(2, 1) = -forward[1];
-	m(2, 2) = -forward[2];
+	m(2, 0) = d2f(-forward[0]);
+	m(2, 1) = d2f(-forward[1]);
+	m(2, 2) = d2f(-forward[2]);
 	// Translation:
-	m(0, 3) = -mrpt::math::dotProduct<3, float>(side, eye);
-	m(1, 3) = -mrpt::math::dotProduct<3, float>(up2, eye);
-	m(2, 3) = mrpt::math::dotProduct<3, float>(forward, eye);
+	m(0, 3) = d2f(-mrpt::math::dotProduct<3, double>(side, eye));
+	m(1, 3) = d2f(-mrpt::math::dotProduct<3, double>(up2, eye));
+	m(2, 3) = d2f(mrpt::math::dotProduct<3, double>(forward, eye));
 	// Last row:
 	m(3, 0) = .0f;
 	m(3, 1) = .0f;
