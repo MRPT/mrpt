@@ -264,24 +264,21 @@ void COpenGLViewport::renderNormalSceneMode() const
 		pose = mrpt::poses::CPose3D(myCamera->getPose());
 		at = pose + viewDirection;
 
-		std::cout << "pose: " << pose.asString() << "\n";
-		std::cout << "at  : " << at.asString() << "\n";
-
-		_.eye.x = d2f(pose.x());
-		_.eye.y = d2f(pose.y());
-		_.eye.z = d2f(pose.z());
-		_.pointing.x = d2f(at.x());
-		_.pointing.y = d2f(at.y());
-		_.pointing.z = d2f(at.z());
-		_.up.x = d2f(pose.getRotationMatrix()(0, 2));
-		_.up.y = d2f(pose.getRotationMatrix()(1, 2));
-		_.up.z = d2f(pose.getRotationMatrix()(2, 2));
+		_.eye.x = pose.x();
+		_.eye.y = pose.y();
+		_.eye.z = pose.z();
+		_.pointing.x = at.x();
+		_.pointing.y = at.y();
+		_.pointing.z = at.z();
+		_.up.x = pose.getRotationMatrix()(0, 2);
+		_.up.y = pose.getRotationMatrix()(1, 2);
+		_.up.z = pose.getRotationMatrix()(2, 2);
 	}
 	else
 	{
 		// Normal mode: use "camera orbit" parameters to compute pointing-to
 		// point:
-		const float dis = max(0.01f, myCamera->m_eyeDistance);
+		const double dis = std::max<double>(0.005, myCamera->m_eyeDistance);
 		_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
 		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
 		_.eye.z = _.pointing.z + dis * sin(_.elev);
@@ -290,19 +287,9 @@ void COpenGLViewport::renderNormalSceneMode() const
 		_.pointing.y = myCamera->m_pointingY;
 		_.pointing.z = myCamera->m_pointingZ;
 
-		if (fabs(fabs(myCamera->m_elevationDeg) - 90) > 1e-6)
-		{
-			_.up.x = 0;
-			_.up.y = 0;
-			_.up.z = 1;
-		}
-		else
-		{
-			float sgn = myCamera->m_elevationDeg > 0 ? 1 : -1;
-			_.up.x = -cos(_.azimuth) * sgn;
-			_.up.y = -sin(_.azimuth) * sgn;
-			_.up.z = 0;
-		}
+		_.up.x = -cos(_.azimuth) * sin(_.elev);
+		_.up.y = -sin(_.azimuth) * sin(_.elev);
+		_.up.z = cos(_.elev);
 	}
 
 	// Compute the projection matrix (p_matrix):
