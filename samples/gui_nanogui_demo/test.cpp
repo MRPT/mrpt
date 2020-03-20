@@ -9,6 +9,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <iostream>
 
@@ -19,31 +20,47 @@ void TestGUI()
 
 	{
 		// Create main window:
-		mrpt::gui::CDisplayWindowGUI win("CDisplayWindowGUI demo", 500, 400);
+		mrpt::gui::CDisplayWindowGUI win("CDisplayWindowGUI demo", 800, 600);
 
-		// Add controls:
-		auto window = new nanogui::Window(&win, "Main");
-		window->setPosition(Eigen::Vector2i(15, 15));
-		window->setLayout(new nanogui::GroupLayout());
+		nanogui::FormHelper* fh = new nanogui::FormHelper(&win);
 
-		nanogui::Widget* tools = new nanogui::Widget(window);
-		tools->setLayout(new nanogui::BoxLayout(
-			nanogui::Orientation::Horizontal, nanogui::Alignment::Middle, 0,
-			5));
+		// Add subwindow:
+		nanogui::ref<nanogui::Window> subWin2 =
+			fh->addWindow({300, 400}, "Test");
+		subWin2->setLayout(new nanogui::GroupLayout());
 
-		auto b0 = tools->add<nanogui::Button>("Do it");
-		b0->setCallback([]() { std::cout << "button0\n"; });
-
-		mrpt::gui::MRPTGLCanvas* glControl =
-			tools->add<mrpt::gui::MRPTGLCanvas>();
+		mrpt::gui::MRPT2NanoguiGLCanvas* glControl =
+			subWin2->add<mrpt::gui::MRPT2NanoguiGLCanvas>();
+		subWin2->setPosition({10, 300});
 
 		{
 			auto scene = mrpt::opengl::COpenGLScene::Create();
-			scene->insert(mrpt::opengl::stock_objects::CornerXYZEye());
+			scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple());
 
-			glControl->scene_mtx.lock();
+			std::lock_guard<std::mutex> lck(glControl->scene_mtx);
 			glControl->scene = std::move(scene);
-			glControl->scene_mtx.unlock();
+		}
+
+		// Add subwindow:
+		nanogui::ref<nanogui::Window> subWin =
+			fh->addWindow({300, 400}, "Test");
+		bool show_corner = true;
+
+		fh->addGroup("Visualization");
+		fh->addVariable("Show XYZ corner", show_corner)
+			->setCallback([&](const bool& c) { subWin2->setVisible(c); });
+
+		fh->addButton("Quit", [&]() { win.setVisible(false); });
+
+		subWin->setPosition({10, 10});
+
+		// add a background scene:
+		{
+			auto scene = mrpt::opengl::COpenGLScene::Create();
+			scene->insert(mrpt::opengl::CGridPlaneXY::Create());
+
+			std::lock_guard<std::mutex> lck(win.background_scene_mtx);
+			win.background_scene = std::move(scene);
 		}
 
 		win.performLayout();

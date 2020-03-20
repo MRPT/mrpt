@@ -11,68 +11,11 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
+#include <mrpt/gui/default_mrpt_glfw_icon.h>
 
 using namespace mrpt::gui;
 
 #if MRPT_HAS_NANOGUI
-
-// -------- MRPTGLCanvas -----------
-MRPTGLCanvas::MRPTGLCanvas(nanogui::Widget* parent) : nanogui::GLCanvas(parent)
-{
-}
-
-MRPTGLCanvas::~MRPTGLCanvas() = default;
-
-void MRPTGLCanvas::drawGL()
-{
-#if MRPT_HAS_OPENGL_GLUT
-	std::lock_guard<std::mutex> lck(scene_mtx);
-
-	try
-	{
-		// Set the viewport
-		// resizeViewport((GLsizei)width, (GLsizei)height);
-
-		// Set the background color:
-		mrpt::img::TColorf m_backgroundColor;
-		glClearColor(
-			m_backgroundColor.R, m_backgroundColor.G, m_backgroundColor.B,
-			m_backgroundColor.A);
-
-		if (!scene) return;  // No scene -> nothing to render
-
-		// We need the size of the viewport at the beginning: should be the
-		// whole window:
-		GLint win_dims[4];
-		glGetIntegerv(GL_VIEWPORT, win_dims);
-		// CHECK_OPENGL_ERROR();
-
-#if 0
-		// Set the camera params in the scene:
-		mrpt::opengl::COpenGLViewport::Ptr view =
-			m_openGLScene->getViewport("main");
-		if (!view)
-			THROW_EXCEPTION(
-				"Fatal error: there is no 'main' viewport in the 3D scene!");
-		mrpt::opengl::CCamera& cam = view->getCamera();
-		updateCameraParams(cam);
-#endif
-
-		for (const auto& m_viewport : scene->viewports())
-			m_viewport->render(
-				win_dims[2], win_dims[3], win_dims[0], win_dims[1]);
-
-		//	CHECK_OPENGL_ERROR();
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "[MRPTGLCanvas::drawGL] Exception:\n"
-				  << mrpt::exception_to_str(e);
-	}
-#endif
-}
-
-// -------- CDisplayWindowGUI -----------
 
 CDisplayWindowGUI::CDisplayWindowGUI(
 	const std::string& caption, unsigned int width, unsigned int height,
@@ -80,6 +23,13 @@ CDisplayWindowGUI::CDisplayWindowGUI(
 	: nanogui::Screen(
 		  Eigen::Vector2i(width, height), caption, resizable, fullscreen)
 {
+	// Set MRPT icon:
+	GLFWimage images;
+	images.width = 64;
+	images.height = 64;
+	images.pixels = default_mrpt_glfw_icon();
+
+	glfwSetWindowIcon(screen()->glfwWindow(), 1, &images);
 }
 
 CDisplayWindowGUI::~CDisplayWindowGUI()
@@ -96,16 +46,75 @@ bool CDisplayWindowGUI::keyboardEvent(
 	return false;
 }
 
-void CDisplayWindowGUI::draw(NVGcontext* ctx)
+void CDisplayWindowGUI::drawContents()
 {
-	// Draw the user interface
-	Screen::draw(ctx);
+	// Optional: render background scene.
+	std::lock_guard<std::mutex> lck(background_scene_mtx);
+	if (!background_scene) return;
+
+	try
+	{
+		// We need the size of the viewport:
+		GLint win_dims[4];
+		glGetIntegerv(GL_VIEWPORT, win_dims);
+
+		// Set the camera params in the scene:
+		mrpt::opengl::COpenGLViewport::Ptr view =
+			background_scene->getViewport("main");
+		if (!view)
+			THROW_EXCEPTION(
+				"Fatal error: there is no 'main' viewport in the 3D scene!");
+		mrpt::opengl::CCamera& cam = view->getCamera();
+		m_background_canvas.updateCameraParams(cam);
+
+		for (const auto& m_viewport : background_scene->viewports())
+			m_viewport->render(
+				win_dims[2], win_dims[3], win_dims[0], win_dims[1]);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[CDisplayWindowGUI::drawContents] Exception:\n"
+				  << mrpt::exception_to_str(e);
+	}
 }
 
-void CDisplayWindowGUI::resize(unsigned int width, unsigned int height) {}
+void CDisplayWindowGUI::resize(unsigned int width, unsigned int height)
+{
+	Screen::setSize({width, height});
+}
 
-void CDisplayWindowGUI::setPos(int x, int y) {}
+void CDisplayWindowGUI::setPos(int x, int y) { Screen::setPosition({x, y}); }
 
-void CDisplayWindowGUI::setWindowTitle(const std::string& str) {}
+void CDisplayWindowGUI::setWindowTitle(const std::string& str)
+{
+	Screen::setCaption(str);
+}
+
+bool CDisplayWindowGUI::mouseButtonEvent(
+	const nanogui::Vector2i& p, int button, bool down, int modifiers)
+{
+	if (!Screen::mouseButtonEvent(p, button, down, modifiers))
+		m_background_canvas.mouseButtonEvent(p, button, down, modifiers);
+
+	return true;
+}
+
+bool CDisplayWindowGUI::mouseMotionEvent(
+	const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button,
+	int modifiers)
+{
+	if (!Screen::mouseMotionEvent(p, rel, button, modifiers))
+		m_background_canvas.mouseMotionEvent(p, rel, button, modifiers);
+
+	return true;
+}
+
+bool CDisplayWindowGUI::scrollEvent(
+	const nanogui::Vector2i& p, const nanogui::Vector2f& rel)
+{
+	if (!Screen::scrollEvent(p, rel)) m_background_canvas.scrollEvent(p, rel);
+
+	return true;
+}
 
 #endif  // MRPT_HAS_NANOGUI
