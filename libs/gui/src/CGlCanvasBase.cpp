@@ -350,3 +350,9 @@ void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
 	else if (cameraElevationDeg > 90.0f)
 		cameraElevationDeg = 90.0f;
 }
+
+void CGlCanvasBaseHeadless::renderError(const std::string& e)
+{
+	std::cerr << "[CGlCanvasBaseHeadless::renderError] Error:" << e
+			  << std::endl;
+}

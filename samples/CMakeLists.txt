@@ -155,7 +155,6 @@ if(BUILD_EXAMPLES)
 		# -------
 		gui_capture_render_to_img_example
 		gui_display3D_example
-		gui_display3D_gui
 		gui_display3D_custom_render
 		gui_fbo_render_example
 		gui_display_plots
