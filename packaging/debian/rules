@@ -91,7 +91,7 @@ override_dh_install:
 	# JLBC Nov 2018: Due to what is explained in MRPT/cmakemodules/DeclareMRPTLibs.cmake, we need to make some "mv" here:
 
 	# Move all the ".so" files to the proper place: the -dev package:
-	tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -f $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
+	tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -vf $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
 
 	# Move cmake modules to the -dev packages:
 	tmpfil=$$(mktemp); find $(CURDIR)/debian/usr/share/ -name '*-config.cmake' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(dirname $$line); f=$$(basename $$f); echo "Processing cmake scripts: $$line, module name: $$f"; dir=$(CURDIR)/debian/lib$$f-dev/usr/share/; mkdir -p $$dir; mv -f $(CURDIR)/debian/usr/share/$$f $$dir; done
