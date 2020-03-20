@@ -144,7 +144,7 @@ void CICP::TConfigParams::saveToConfigFile(
 		"Initial threshold distance for two points to be a match");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		ALFA,
-		"The scale factor for thresholds everytime convergence is achieved");
+		"The scale factor for thresholds every time convergence is achieved");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
 		smallestThresholdDist,
 		"The size for threshold such that iterations will stop, "
