@@ -12,9 +12,10 @@
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 
 using namespace mrpt::gui;
-using namespace mrpt::gui::internal;
 
 #if MRPT_HAS_NANOGUI
+
+using namespace mrpt::gui::internal;
 
 void NanoGUICanvasHeadless::mouseMotionEvent(
 	const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button,

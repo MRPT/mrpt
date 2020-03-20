@@ -1,0 +1,3 @@
+[submodule "3rdparty/nanogui"]
+	path = 3rdparty/nanogui
+	url = https://github.com/MRPT/nanogui.git

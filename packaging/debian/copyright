@@ -78,6 +78,22 @@ Files: libs/opengl/src/PLY_import_export.cpp
 Copyright: 1994, The Board of Trustees of The Leland Stanford Junior University
 License: Expat
 
+Files: 3rdparty/nanogui/*
+Copyright: 2019, Wenzel Jakob
+License: BSD-3-clause
+
+Files: 3rdparty/nanogui/ext/coro/*
+Copyright: 2000-2009, Marc Alexander Lehmann <schmorp@schmorp.de>
+License: BSD-2-clause
+
+Files: 3rdparty/nanogui/ext/glad/*
+Copyright: 2008-2018, The Khronos Group Inc.
+License: Expat
+
+Files: 3rdparty/nanogui/ext/nanovg/*
+Copyright: 2013, Mikko Mononen memon@inside.org
+License: BSD-3-clause
+
 Files: libs/core/include/mrpt/3rdparty/llvm/*
 Copyright: 2009-2017 by the contributors listed below
  N: Saleem Abdulrasool
