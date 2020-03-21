@@ -12,7 +12,7 @@ if (PKG_CONFIG_FOUND)
 endif()
 
 if (BUILD_NANOGUI AND
-    ((NOT CMAKE_MRPT_HAS_OPENGL_GLUT) OR (NOT WIN32 AND (NOT GLFW_FOUND))))
+    (NOT CMAKE_MRPT_HAS_OPENGL_GLUT))
     message(STATUS "Warning: Disabling BUILD_NANOGUI since requirements were not found.")
     set(BUILD_NANOGUI OFF CACHE BOOL "" FORCE)
 endif()
