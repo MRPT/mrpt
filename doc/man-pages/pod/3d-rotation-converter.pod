@@ -1,0 +1,40 @@
+=head1 NAME
+
+3d-rotation-converter - A GUI tool to visualize SO(3) rotations
+
+=head1 SYNOPSIS
+
+3d-rotation-converter
+
+=head1 DESCRIPTION
+
+B<3d-rotation-converter> is a GUI application to help visualizing relative 
+3D poses (the mathematical group SO(3)) and to convert between different 
+common parameterizations of rotations.
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The application wiki page at https://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<3d-rotation-converter> is part of the Mobile Robot Programming Toolkit (MRPT), 
+and was originally written by the Jose Luis Blanco Claraco (University 
+of Almeria).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be 
+found in `/usr/share/common-licenses/BSD'.
+
+=cut
+
