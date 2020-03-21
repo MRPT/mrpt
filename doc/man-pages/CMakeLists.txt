@@ -83,5 +83,6 @@ if (PROG_GZIP AND PROG_POD2MAN)
 	CREATE_MANPAGE_PROJECT(ini2yaml)
 	CREATE_MANPAGE_PROJECT(rosbag2rawlog)
 	CREATE_MANPAGE_PROJECT(mrpt-performance)
+	CREATE_MANPAGE_PROJECT(3d-rotation-converter)
 
 endif()
