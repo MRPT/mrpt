@@ -25,7 +25,7 @@ set(TMP_TARGET_NAME "ReactiveNav3D-Demo")
 
 
 # Add the required libraries for linking:
-target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

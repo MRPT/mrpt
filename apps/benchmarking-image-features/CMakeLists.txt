@@ -36,7 +36,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENCV AND NOT "${MRPT_OPENCV_VERSION}"
         # Add the required libraries for linking:
         qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
 
-        target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS} ${OpenCV_LIBS})
+        target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
 
         # Dependencies on MRPT libraries:
         #  Just mention the top-level dependency, the rest will be detected automatically,
