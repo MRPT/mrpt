@@ -8,6 +8,12 @@ if(CMAKE_MRPT_HAS_WXWIDGETS)
 	list(APPEND gui_EXTRA_SRCS_NAME 	"mathplot" "mathplot")
 endif()
 
+if (CMAKE_MRPT_HAS_NANOGUI)
+	set(nanogui_dep mrpt-nanogui)
+else()
+	set(nanogui_dep "")
+endif()
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
@@ -16,6 +22,8 @@ define_mrpt_lib(
 	gui
 	# Dependencies: None
 	mrpt-opengl
+	# Other imported targets:
+	${nanogui_dep}
 	)
 
 if(BUILD_mrpt-gui)
@@ -51,6 +59,10 @@ if(BUILD_mrpt-gui)
 
 	if (TARGET mrpt_glew) # Basically, for Windows
 		target_link_libraries(gui PRIVATE mrpt_glew)
+	endif()
+
+	if (CMAKE_MRPT_HAS_NANOGUI)
+		target_link_libraries(gui PUBLIC mrpt::nanogui)
 	endif()
 
 endif()

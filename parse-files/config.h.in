@@ -78,6 +78,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 #define MRPT_HAS_Qt5              ${CMAKE_MRPT_HAS_Qt5}
 
+#define MRPT_HAS_NANOGUI          ${CMAKE_MRPT_HAS_NANOGUI}
+#define MRPT_HAS_NANOGUI_SYSTEM   ${CMAKE_MRPT_HAS_NANOGUI_SYSTEM}
+
 /** Has MRPT libjpeg? And whether it's in the system (Linux) or built-in (Windows, some rare cases in Linux). */
 #define MRPT_HAS_JPEG             ${CMAKE_MRPT_HAS_JPEG}
 #define MRPT_HAS_JPEG_SYSTEM      ${CMAKE_MRPT_HAS_JPEG_SYSTEM}

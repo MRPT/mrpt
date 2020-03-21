@@ -246,3 +246,8 @@ if(WIN32)
 	set_target_properties(mrpt_glew PROPERTIES FOLDER "3rd party")
 	unset(SRCS)
 endif()
+
+
+# nanogui: 
+# Already handled in cmakemodules/script_nanogui.cmake
+

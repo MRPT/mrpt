@@ -48,7 +48,10 @@ Build-Depends: debhelper (>= 9),
 	libtf2-dev,
 	libtf2-msgs-dev,
 	libbz2-dev,
-	g++-7
+	g++-7,
+	xorg-dev,
+	libglu1-mesa-dev,
+	libglfw3-dev
 Standards-Version: 4.3.0
 Homepage: https://www.mrpt.org/
 
@@ -232,12 +235,28 @@ Multi-Arch: same
 Description: Mobile Robot Programming Toolkit - gui library
  More about MRPT libraries in: https://www.mrpt.org/Libraries
 
+Package: libmrpt-nanogui@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - nanogui library
+ A custom version of the nanogui library.
+
 Package: libmrpt-gui-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},libmrpt-gui@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-common-dev, libmrpt-opengl-dev
+         libmrpt-common-dev, libmrpt-opengl-dev, libmrpt-nanogui-dev
 Description: Mobile Robot Programming Toolkit - gui development package
+ This package provides headers and libraries for development.
+
+Package: libmrpt-nanogui-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends},libmrpt-nanogui@MRPT_VER_MM@ (= ${binary:Version}),
+         libglfw3-dev
+Description: Mobile Robot Programming Toolkit - nanogui development package
  This package provides headers and libraries for development.
 
 Package: libmrpt-hmtslam@MRPT_VER_MM@
@@ -639,6 +658,7 @@ Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-graphs-dev (= ${binary:Version}),
          libmrpt-graphslam-dev (= ${binary:Version}),
          libmrpt-gui-dev (= ${binary:Version}),
+         libmrpt-nanogui-dev (= ${binary:Version}),
          libmrpt-hmtslam-dev (= ${binary:Version}),
          libmrpt-hwdrivers-dev (= ${binary:Version}),
          libmrpt-img-dev (= ${binary:Version}),

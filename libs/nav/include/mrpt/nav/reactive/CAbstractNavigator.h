@@ -198,7 +198,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	};
 
 	/** In case of state=NAV_ERROR, this returns the reason for the error.
-	 * Error state is reseted everytime a new navigation starts with
+	 * Error state is reseted every time a new navigation starts with
 	 * a call to navigate(), or when resetNavError() is called.
 	 */
 	inline const TErrorReason& getErrorReason() const

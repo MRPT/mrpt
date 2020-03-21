@@ -44,9 +44,18 @@ then
 	echo "# Exporting git source tree to ${OUT_DIR}"
 	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}
 
-	# Remove VCS control files:
-	find ${OUT_DIR} -name '.gitignore' | xargs rm
+	# Include external submodules:
+	cd ${MRPTSRC}/3rdparty/nanogui
+	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}/3rdparty/nanogui
+	
+	cd ${MRPTSRC}/3rdparty/nanogui/ext/nanovg/
+	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}/3rdparty/nanogui/ext/nanovg/
+	
+	cd ${MRPTSRC}
 
+	# Remove VCS control files:
+	find ${OUT_DIR} -name '.git*' | xargs rm -fr
+	
 	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
 	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 else
