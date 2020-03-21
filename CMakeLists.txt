@@ -12,6 +12,12 @@
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
+
+if (POLICY CMP0048)
+  # cmake warns if loaded from a min-3.x-required parent dir:
+  cmake_policy(SET CMP0048 NEW)
+endif()
+
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
 project(MRPT LANGUAGES C CXX)
 
