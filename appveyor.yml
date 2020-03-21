@@ -22,4 +22,4 @@ before_build:
   - git submodule update --init --recursive
   - mkdir build
   - cd build
-  - cmake -G "Visual Studio 15 2017 Win64" -DEIGEN_USE_EMBEDDED_VERSION=ON ..
+  - cmake -G "Visual Studio 15 2017 Win64" -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF ..
