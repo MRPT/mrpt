@@ -6,8 +6,13 @@ set(CMAKE_MRPT_HAS_NANOGUI_SYSTEM 0)
 
 set(BUILD_NANOGUI ON CACHE BOOL "Build an embedded version of nanogui (OpenGL GUIs)")
 
+find_package(PkgConfig QUIET)
+if (PKG_CONFIG_FOUND)
+  pkg_search_module(GLFW glfw3)
+endif()
+
 if (BUILD_NANOGUI AND
-    (NOT CMAKE_MRPT_HAS_OPENGL_GLUT))
+    ((NOT CMAKE_MRPT_HAS_OPENGL_GLUT) OR (NOT WIN32 AND (NOT GLFW_FOUND))))
     message(STATUS "Warning: Disabling BUILD_NANOGUI since requirements were not found.")
     set(BUILD_NANOGUI OFF CACHE BOOL "" FORCE)
 endif()
