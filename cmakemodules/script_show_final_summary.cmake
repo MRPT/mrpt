@@ -141,8 +141,9 @@ SHOW_CONFIG_LINE_SYSTEM("yamlcpp (YAML file format)          " CMAKE_MRPT_HAS_YA
 message(STATUS  "")
 
 message(STATUS " ______________________ GUI LIBRARIES ______________________")
-SHOW_CONFIG_LINE       ("wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS)
+SHOW_CONFIG_LINE       ("nanogui (OpenGL GUI)                " CMAKE_MRPT_HAS_NANOGUI)
 SHOW_CONFIG_LINE       ("Qt5                                 " CMAKE_MRPT_HAS_Qt5)
+SHOW_CONFIG_LINE       ("wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS)
 message(STATUS  "")
 
 message(STATUS " _______________________ WRAPPERS/BINDINGS ______________________")

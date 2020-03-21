@@ -19,6 +19,7 @@ namespace mrpt::gui
 {
 /** This base class implements a working with opengl::Camera and a OpenGL
  * canvas, and it's used in gui::CWxGLCanvasBase and gui::CQtGlCanvasBase.
+ * \ingroup mrpt_gui_grp
  */
 class CGlCanvasBase
 {
@@ -252,4 +253,22 @@ class CGlCanvasBase
 	float m_maxZoom = 3200.f;
 	CamaraParams m_cameraParams;
 };  // end of class
+
+/** A headless dummy implementation of CGlCanvasBase: can be used to keep track
+ * of user UI mouse events and update the camera parameters, with actual
+ * rendering being delegated to someone else. \ingroup mrpt_gui_grp
+ */
+class CGlCanvasBaseHeadless : public CGlCanvasBase
+{
+   public:
+	CGlCanvasBaseHeadless() = default;
+	virtual ~CGlCanvasBaseHeadless() override = default;
+
+   protected:
+	virtual void swapBuffers() override {}
+	virtual void preRender() override {}
+	virtual void postRender() override {}
+	virtual void renderError(const std::string& e) override;
+};
+
 }  // namespace mrpt::gui

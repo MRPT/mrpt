@@ -44,6 +44,8 @@
     - Removed the include file: `<mrpt/math/jacobians.h>`. Replace by `<mrpt/math/num_jacobian.h>` or individual methods in \ref mrpt_poses_grp classes.
   - \ref mrpt_config_grp  [NEW IN MRPT 2.0.0]
     - mrpt::config::CConfigFileBase::write() now supports enum types.
+  - \ref mrpt_gui_grp
+    - New class mrpt::gui::CDisplayWindowGUI exposing powerful GUI possibilities via the nanogui project.
   - \ref mrpt_img_grp  [NEW IN MRPT 2.0.0]
     - mrpt::img::TCamera distortion parameters now also supports the extra K4,K5,K6 distortion parameters.
   - \ref mrpt_serialization_grp  [NEW IN MRPT 2.0.0]

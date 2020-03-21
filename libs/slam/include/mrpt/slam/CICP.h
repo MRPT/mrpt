@@ -112,7 +112,7 @@ class CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		/** Initial threshold distance for two points to become a
 		 * correspondence. */
 		double thresholdDist{0.75}, thresholdAng{0.15 * M_PI / 180.0};
-		/** The scale factor for thresholds everytime convergence is achieved.
+		/** The scale factor for thresholds every time convergence is achieved.
 		 */
 		double ALFA{0.5};
 		/** The size for threshold such that iterations will stop, since it is

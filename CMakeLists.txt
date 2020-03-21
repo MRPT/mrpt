@@ -12,6 +12,12 @@
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
+
+if (POLICY CMP0048)
+  # cmake warns if loaded from a min-3.x-required parent dir:
+  cmake_policy(SET CMP0048 NEW)
+endif()
+
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
 project(MRPT LANGUAGES C CXX)
 
@@ -28,6 +34,13 @@ endif()
 if (POLICY CMP0075)
 	cmake_policy(SET CMP0075 NEW)
 endif()
+
+if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
+  message(FATAL_ERROR "Submodule NanoGUI is missing! "
+    "You probably did not clone the project with --recursive. It is possible to recover "
+    "by calling \"git submodule update --init --recursive\"")
+endif()
+
 
 # Display timing information for each compiler instance on screen
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
@@ -245,6 +258,7 @@ include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
+include(cmakemodules/script_nanogui.cmake REQUIRED)     # Check for nanogui
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
 include(cmakemodules/script_octomap.cmake REQUIRED)     # Check for the octomap library

@@ -88,7 +88,7 @@ const CObservation3DRangeScan::unproject_LUT_t&
 
 	LUTs_mtx.lock();
 	// Protect against infinite memory growth: imagine sensorPose gets changed
-	// everytime for a sweeping sensor, etc.
+	// every time for a sweeping sensor, etc.
 	// Unlikely, but "just in case" (TM)
 	if (LUTs.size() > 100) LUTs.clear();
 

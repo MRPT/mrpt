@@ -332,7 +332,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		const std::string& name = std::string(""));
 
 	/** Render the objects in this viewport (called from COpenGLScene) */
-	void render(const int render_width, const int render_height) const;
+	void render(
+		const int render_width, const int render_height,
+		const int render_offset_x = 0, const int render_offset_y = 0) const;
 
    protected:
 	/** Initializes all textures in the scene (See

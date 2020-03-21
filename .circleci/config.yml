@@ -5,6 +5,8 @@ jobs:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
       - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
@@ -16,6 +18,8 @@ jobs:
       - image: mrpt/mrpt-build-env:full-eoan
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
       - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
@@ -25,6 +29,8 @@ jobs:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
       - run:
           name: Generate cmake files
           command: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
@@ -39,6 +45,8 @@ jobs:
       - image: mrpt/mrpt-build-env:headless-bionic
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
       - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
@@ -48,6 +56,8 @@ jobs:
       - image: mrpt/mrpt-build-env:minimal-bionic
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
       - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
@@ -57,6 +67,8 @@ jobs:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
       - run: pip3 install --user -r travis/python_reqs.txt
       - run:
           name: Run lint task
@@ -69,6 +81,8 @@ jobs:
     working_directory: /Users/distiller/project
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
       - run: brew install cmake
       - run: brew install boost
       - run: brew install nasm

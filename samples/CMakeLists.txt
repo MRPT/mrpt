@@ -158,6 +158,7 @@ if(BUILD_EXAMPLES)
 		gui_display3D_custom_render
 		gui_fbo_render_example
 		gui_display_plots
+		gui_nanogui_demo
 		gui_text_fonts_example
 		gui_gravity3d_example
 		gui_windows_events

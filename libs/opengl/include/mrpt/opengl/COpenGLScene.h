@@ -57,6 +57,8 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(COpenGLScene, mrpt::opengl)
    public:
+	using TListViewports = std::vector<COpenGLViewport::Ptr>;
+
 	COpenGLScene();
 	~COpenGLScene() override;
 	COpenGLScene& operator=(const COpenGLScene& obj);
@@ -112,6 +114,8 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	 */
 	COpenGLViewport::Ptr getViewport(
 		const std::string& viewportName = std::string("main")) const;
+
+	const TListViewports& viewports() const { return m_viewports; }
 
 	/** Render this scene */
 	void render() const;
@@ -224,8 +228,6 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 
    protected:
 	bool m_followCamera{false};
-
-	using TListViewports = std::vector<COpenGLViewport::Ptr>;
 
 	/** The list of viewports, indexed by name. */
 	TListViewports m_viewports;
