@@ -107,6 +107,9 @@ class CMyGLCanvas_DisplayWindow3D;
  *  - <b>Move camera along Z axis</b>: SHIFT+Left-button pressed + move
  * left/right
  *
+ *
+ * ![mrpt::gui::CDisplayWindow3D screenshot](preview_CDisplayWindow3D.png)
+ *
  * \sa  The example /samples/display3D, the <a
  * href="http://www.mrpt.org/Tutorial_3D_Scenes" > tutorial only</a>.
  * \ingroup mrpt_gui_grp

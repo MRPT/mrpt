@@ -62,6 +62,9 @@ struct CDisplayWindowGUI_Params
  *    nanogui::shutdown();
  * \endrst
  *
+ *
+ * ![mrpt::gui::CDisplayWindowGUI screenshot](preview_CDisplayWindowGUI.png)
+ *
  * \ingroup mrpt_gui_grp
  */
 class CDisplayWindowGUI : public nanogui::Screen

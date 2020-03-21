@@ -23,6 +23,11 @@ namespace mrpt::gui
  * discussion in mrpt::gui::CBaseGUIWindow.
  *
  *   See CDisplayWindowPlots::plot
+ *
+ *
+ *
+ * ![mrpt::gui::CDisplayWindowPlots screenshot](preview_CDisplayWindowPlots.png)
+ *
  * \ingroup mrpt_gui_grp
  */
 class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
