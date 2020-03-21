@@ -19,7 +19,7 @@ using namespace mrpt::gui;
 
 CDisplayWindowGUI::CDisplayWindowGUI(
 	const std::string& caption, unsigned int width, unsigned int height,
-	const CDisplayWindowGUI::ConstructionParams& p)
+	const CDisplayWindowGUI_Params& p)
 	: nanogui::Screen(
 		  Eigen::Vector2i(width, height), caption, p.resizable, p.fullscreen,
 		  p.colorBits, p.alphaBits, p.depthBits, p.stencilBits, p.nSamples,
@@ -119,4 +119,4 @@ bool CDisplayWindowGUI::scrollEvent(
 	return true;
 }
 
-#endif	// MRPT_HAS_NANOGUI
+#endif  // MRPT_HAS_NANOGUI

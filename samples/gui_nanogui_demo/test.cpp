@@ -21,7 +21,7 @@ void TestGUI()
 
 	{
 		// Create main window:
-		mrpt::gui::CDisplayWindowGUI::ConstructionParams cp;
+		mrpt::gui::CDisplayWindowGUI_Params cp;
 		// cp.fullscreen = true;
 
 		mrpt::gui::CDisplayWindowGUI win(

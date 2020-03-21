@@ -22,6 +22,24 @@
 
 namespace mrpt::gui
 {
+/** Additional parameters to change the window behavior and OpenGL context
+ */
+struct CDisplayWindowGUI_Params
+{
+	CDisplayWindowGUI_Params() = default;
+
+	bool resizable = true;
+	bool fullscreen = false;
+	int colorBits = 8;
+	int alphaBits = 8;
+	int depthBits = 24;
+	int stencilBits = 8;
+	int nSamples = 0;
+	unsigned int glMajor = 3;
+	unsigned int glMinor = 3;
+	bool maximized = false;
+};
+
 /** A window with powerful GUI capabilities, via the nanogui library.
  *
  * You can add a background mrpt::opengl::COpenGLScene object rendered on the
@@ -54,28 +72,10 @@ class CDisplayWindowGUI : public nanogui::Screen
 	using Ptr = std::shared_ptr<CDisplayWindowGUI>;
 	using ConstPtr = std::shared_ptr<const CDisplayWindowGUI>;
 
-	/** Additional parameters to change the window behavior and OpenGL context
-	 */
-	struct ConstructionParams
-	{
-		ConstructionParams() = default;
-
-		bool resizable = true;
-		bool fullscreen = false;
-		int colorBits = 8;
-		int alphaBits = 8;
-		int depthBits = 24;
-		int stencilBits = 8;
-		int nSamples = 0;
-		unsigned int glMajor = 3;
-		unsigned int glMinor = 3;
-		bool maximized = false;
-	};
-
 	CDisplayWindowGUI(
 		const std::string& caption = std::string(), unsigned int width = 400,
 		unsigned int height = 300,
-		const ConstructionParams& p = ConstructionParams());
+		const CDisplayWindowGUI_Params& p = CDisplayWindowGUI_Params());
 
 	virtual ~CDisplayWindowGUI() override;
 
@@ -152,4 +152,4 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 }  // namespace mrpt::gui
 
-#endif	// MRPT_HAS_NANOGUI
+#endif  // MRPT_HAS_NANOGUI
