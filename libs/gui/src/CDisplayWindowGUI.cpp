@@ -19,9 +19,11 @@ using namespace mrpt::gui;
 
 CDisplayWindowGUI::CDisplayWindowGUI(
 	const std::string& caption, unsigned int width, unsigned int height,
-	bool resizable, bool fullscreen)
+	const CDisplayWindowGUI::ConstructionParams& p)
 	: nanogui::Screen(
-		  Eigen::Vector2i(width, height), caption, resizable, fullscreen)
+		  Eigen::Vector2i(width, height), caption, p.resizable, p.fullscreen,
+		  p.colorBits, p.alphaBits, p.depthBits, p.stencilBits, p.nSamples,
+		  p.glMajor, p.glMinor, p.maximized)
 {
 	// Set MRPT icon:
 	GLFWimage images;
@@ -117,4 +119,4 @@ bool CDisplayWindowGUI::scrollEvent(
 	return true;
 }
 
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI

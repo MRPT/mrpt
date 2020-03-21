@@ -11,6 +11,7 @@
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 #include <mrpt/opengl/COpenGLScene.h>
+
 #include <mutex>
 #include <string>
 
@@ -53,10 +54,28 @@ class CDisplayWindowGUI : public nanogui::Screen
 	using Ptr = std::shared_ptr<CDisplayWindowGUI>;
 	using ConstPtr = std::shared_ptr<const CDisplayWindowGUI>;
 
+	/** Additional parameters to change the window behavior and OpenGL context
+	 */
+	struct ConstructionParams
+	{
+		ConstructionParams() = default;
+
+		bool resizable = true;
+		bool fullscreen = false;
+		int colorBits = 8;
+		int alphaBits = 8;
+		int depthBits = 24;
+		int stencilBits = 8;
+		int nSamples = 0;
+		unsigned int glMajor = 3;
+		unsigned int glMinor = 3;
+		bool maximized = false;
+	};
+
 	CDisplayWindowGUI(
 		const std::string& caption = std::string(), unsigned int width = 400,
-		unsigned int height = 300, bool resizable = true,
-		bool fullscreen = false);
+		unsigned int height = 300,
+		const ConstructionParams& p = ConstructionParams());
 
 	virtual ~CDisplayWindowGUI() override;
 
@@ -83,6 +102,9 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	mrpt::opengl::COpenGLScene::Ptr background_scene;
 	std::mutex background_scene_mtx;
+
+	CGlCanvasBase& camera() { return m_background_canvas; }
+	const CGlCanvasBase& camera() const { return m_background_canvas; }
 
 	/** @} */
 
@@ -130,4 +152,4 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 }  // namespace mrpt::gui
 
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI
