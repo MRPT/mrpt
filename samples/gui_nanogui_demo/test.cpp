@@ -11,6 +11,7 @@
 #include <mrpt/gui/CDisplayWindowGUI.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
+
 #include <iostream>
 
 #if MRPT_HAS_NANOGUI
@@ -20,7 +21,11 @@ void TestGUI()
 
 	{
 		// Create main window:
-		mrpt::gui::CDisplayWindowGUI win("CDisplayWindowGUI demo", 800, 600);
+		mrpt::gui::CDisplayWindowGUI::ConstructionParams cp;
+		// cp.fullscreen = true;
+
+		mrpt::gui::CDisplayWindowGUI win(
+			"CDisplayWindowGUI demo", 800, 600, cp);
 
 		nanogui::FormHelper* fh = new nanogui::FormHelper(&win);
 
@@ -36,6 +41,8 @@ void TestGUI()
 		{
 			auto scene = mrpt::opengl::COpenGLScene::Create();
 			scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple());
+
+			glControl->camera().setZoomDistance(5.0f);
 
 			std::lock_guard<std::mutex> lck(glControl->scene_mtx);
 			glControl->scene = std::move(scene);
@@ -64,6 +71,8 @@ void TestGUI()
 		}
 
 		win.performLayout();
+
+		win.camera().setZoomDistance(10.0f);
 
 		// Update view and process events:
 		win.drawAll();

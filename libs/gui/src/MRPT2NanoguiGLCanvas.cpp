@@ -31,7 +31,7 @@ void MRPT2NanoguiGLCanvas::drawGL()
 	try
 	{
 		// Set the background color:
-		mrpt::img::TColorf m_backgroundColor = {0.7, 0.7, 0.7, 1};
+		mrpt::img::TColorf m_backgroundColor = {0.7f, 0.7f, 0.7f, 1.0f};
 		glClearColor(
 			m_backgroundColor.R, m_backgroundColor.G, m_backgroundColor.B,
 			m_backgroundColor.A);

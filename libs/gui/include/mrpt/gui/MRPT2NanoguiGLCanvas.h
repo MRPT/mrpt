@@ -10,6 +10,7 @@
 
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
+
 #include <mutex>
 
 // Expose nanogui API to mrpt users, for direct use of nanogui classes.
@@ -42,6 +43,9 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
 	mrpt::opengl::COpenGLScene::Ptr scene;
 	std::mutex scene_mtx;
 
+	CGlCanvasBase& camera() { return m_headless_canvas; }
+	const CGlCanvasBase& camera() const { return m_headless_canvas; }
+
    protected:
 	/** @name Internal virtual functions to handle GUI events
 	 * @{ */
@@ -61,4 +65,4 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
 
 }  // namespace mrpt::gui
 
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI
