@@ -25,6 +25,9 @@ namespace gui
  *
  *  For a list of supported events with the observer/observable pattern, see the
  * discussion in mrpt::gui::CBaseGUIWindow.
+ *
+ * ![mrpt::gui::CDisplayWindow screenshot](preview_CDisplayWindow.jpg)
+ *
  * \ingroup mrpt_gui_grp
  */
 class CDisplayWindow : public mrpt::gui::CBaseGUIWindow

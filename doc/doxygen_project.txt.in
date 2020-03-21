@@ -2051,11 +2051,10 @@ PREDEFINED             = _WIN32 \
                          MRPT_HAS_SSE2 \
                          MRPT_HAS_SSE3 \
                          MRPT_HAS_SSE4 \
-                         EIGEN_PARSED_BY_DOXYGEN \
-                         EIGEN_MATRIXBASE_PLUGIN=<mrpt/math/eigen_plugins.h> \
                          MRPT_HAS_MATLAB=1 \
                          MRPT_HAS_WXWIDGETS=1 \
-                         MRPT_HAS_OPENCV=1
+                         MRPT_HAS_OPENCV=1 \
+                         MRPT_HAS_NANOGUI=1
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
