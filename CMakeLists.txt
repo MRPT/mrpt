@@ -83,14 +83,6 @@ if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
 	set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
-# ---------------------------------------------------------------------------
-# Create the minimum list of libraries required by an application that
-#  uses the MRPT C++ library. This must be passed to "TARGET_LINK_LIBRARIES"
-# NOTE: For the compilers MSVC* & Borland most of the libraries are
-#        automatically included through "#pragma"'s ;-)
-# ---------------------------------------------------------------------------
-set(MRPT_LINKER_LIBS "")
-
 
 # ----- Useful macros ------
 include(cmakemodules/UtilsMacros.cmake REQUIRED)
