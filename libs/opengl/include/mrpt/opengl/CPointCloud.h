@@ -336,7 +336,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 	/** Set XYZ coordinates of i'th point */
 	inline void setInvalidPoint(const size_t idx)
 	{
-		THROW_EXCEPTION("mrpt::opengl::CPointCloud needs to be dense");
+		m_obj.setPoint_fast(idx, 0, 0, 0);
 	}
 
 };  // end of PointCloudAdapter<mrpt::opengl::CPointCloud>
