@@ -91,7 +91,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	# Add the required libraries for linking:
 	#qt5_use_modules(${PROJECT_NAME} Widgets OpenGL) # obsolete
 
-	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS} ${MRPT_OPENGL_LIBS})
+	target_link_libraries(${PROJECT_NAME} ${MRPT_OPENGL_LIBS})
 	target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL)
 
 	# Dependencies on MRPT libraries:

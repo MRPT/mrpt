@@ -18,7 +18,7 @@ const float frag_shininess = 1.0;
 
 void main()
 {
-    vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 0.0)).xyz,
+    vec3 mv_light_direction = light_direction,
          eye = normalize(frag_position),
          reflection = reflect(mv_light_direction, frag_normal);
 

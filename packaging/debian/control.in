@@ -738,9 +738,11 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - kinect-icp-slam: Example 3D mapping with Xbox Kinect
   - kinect-view: Example 3D mapping with Xbox Kinect
   - robotic-arm-kinematics: GUI for design of robot arms with
-                            Denavit-Hartenberg parameters.
+     Denavit-Hartenberg parameters.
   - velodyne-view: Live display/grabbing of Velodyne scanners.
   - rosbag2rawlog: Convert a ROS bag dataset into an MRPT Rawlog file.
+  - 3d-rotation-converter: A GUI tool to convert between different SO(3)
+     rotation parameterizations (quaternions, Euler angles, etc.)
 
 Package: python-mrpt
 Architecture: any

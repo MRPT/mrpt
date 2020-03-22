@@ -358,7 +358,7 @@ CSetOfObjects::Ptr stock_objects::CornerXYZSimple(float scale, float lineWidth)
 	{  // Y:
 		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(0, 1, 0);
-		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 90]"));
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 -90]"));
 		ret->insert(lin);
 	}
 	{  // Z:
@@ -387,7 +387,7 @@ CSetOfObjects::Ptr stock_objects::CornerXYSimple(float scale, float lineWidth)
 	{  // Y:
 		auto lin = CCylinder::Create(R, R, scale, nSlices);
 		lin->setColor(0, 1, 0);
-		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 90]"));
+		lin->setPose(mrpt::poses::CPose3D::FromString("[0 0 0 0 0 -90]"));
 		ret->insert(lin);
 	}
 	return ret;
