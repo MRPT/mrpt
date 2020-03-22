@@ -22,7 +22,7 @@ void main()
 {
     if (enableLight!=0)
     {
-        vec3 mv_light_direction = (mv_matrix * vec4(light_direction, 0.0)).xyz;
+        vec3 mv_light_direction = light_direction;
         vec3 eye = normalize(frag_position);
         vec3 reflection = reflect(mv_light_direction, frag_normal);
         vec4 diffuse_factor = max(-dot(frag_normal, mv_light_direction), 0.0) * light_diffuse;

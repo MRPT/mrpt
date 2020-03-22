@@ -27,7 +27,7 @@ void main()
         vec4 eye_position = mv_matrix * vec4(position, 1.0);
         gl_Position = p_matrix * eye_position;
         frag_position = eye_position.xyz;
-        frag_normal   = normalize((mv_matrix * vec4(vertexNormal, 0.0)).xyz);
+        frag_normal   = (mv_matrix * vec4(normalize(vertexNormal), 0.0)).xyz;
     }
     else
     {
