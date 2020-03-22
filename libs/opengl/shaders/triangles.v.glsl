@@ -23,6 +23,6 @@ void main()
 
     frag_position = eye_position.xyz;
     frag_materialColor = vertexColor;
-    frag_normal   = normalize((mv_matrix * vec4(vertexNormal, 0.0)).xyz);
+    frag_normal   = (mv_matrix * vec4(normalize(vertexNormal), 0.0)).xyz;
 }
 )XXX"
