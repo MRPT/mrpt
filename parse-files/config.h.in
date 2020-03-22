@@ -88,6 +88,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Matlab wrapper is available */
 #define MRPT_HAS_MATLAB           ${CMAKE_MRPT_HAS_MATLAB}
 
+/** MYNTEYE-Depth SDK is available */
+#define MRPT_HAS_MYNTEYE_D          ${CMAKE_MRPT_HAS_MYNTEYE_D}
+
 /** jsoncpp is present */
 #define MRPT_HAS_JSONCPP ${CMAKE_MRPT_HAS_JSONCPP}
 
