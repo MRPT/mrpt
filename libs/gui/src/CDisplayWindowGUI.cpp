@@ -50,6 +50,9 @@ bool CDisplayWindowGUI::keyboardEvent(
 
 void CDisplayWindowGUI::drawContents()
 {
+	// If provided, call the user loop code:
+	if (m_loopCallback) m_loopCallback();
+
 	// Optional: render background scene.
 	std::lock_guard<std::mutex> lck(background_scene_mtx);
 	if (!background_scene) return;
