@@ -92,7 +92,9 @@ static void AppRotationConverter()
 			// axis+angle
 			case 3:
 			{
-				mrpt::math::TVector3D v = in_axisangle_ax * in_axisangle_ang;
+				const double K = units_radians ? 1.0 : (M_PI / 180.0);
+				mrpt::math::TVector3D v =
+					in_axisangle_ax * (in_axisangle_ang * K);
 				mrpt::math::CVectorFixed<double, 3> vn;
 				for (int i = 0; i < 3; i++) vn[i] = v[i];
 
