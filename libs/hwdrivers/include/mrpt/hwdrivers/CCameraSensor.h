@@ -21,6 +21,7 @@
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/hwdrivers/CMyntEyeCamera.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
@@ -85,7 +86,8 @@ namespace mrpt::hwdrivers
  *   [supplied_section_name]
  *    # Select one of the grabber implementations -----------------------
  *    grabber_type       = opencv | dc1394 | bumblebee_dc1394 | ffmpeg | rawlog
- * | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d
+ * | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d |
+ * myntd
  *
  *    #  Options for any grabber_type ------------------------------------
  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0,
@@ -264,6 +266,9 @@ namespace mrpt::hwdrivers
  * Starting index for images
  *    end_index						= 100			// [int]	End index
  * for the images
+ *
+ *    # Options for grabber_type= myntd  ------------------------------------
+ *    myntd_xxx  =
  *
  *    # Options for grabber_type= duo3d
  *    Create a section like this:
@@ -482,6 +487,10 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	// -----------------------------------------
 	TCaptureOptions_FlyCapture2 m_flycap_options;
 
+	// Options for grabber type= myntd
+	// -----------------------------------------
+	TMyntEyeCameraParameters m_myntd_options;
+
 	// Options for grabber type= flycap_stereo
 	// -----------------------------------------
 	bool m_fcs_start_synch_capture{false};
@@ -538,6 +547,8 @@ class CCameraSensor : public mrpt::system::COutputLogger, public CGenericSensor
 	std::unique_ptr<std::string> m_cap_image_dir;
 	/** The DUO3D capture object */
 	std::unique_ptr<CDUO3DCamera> m_cap_duo3d;
+	/** The MYNT EYE capture object */
+	std::unique_ptr<CMyntEyeCamera> m_myntd;
 	// =========================
 
 	int m_camera_grab_decimator{0};

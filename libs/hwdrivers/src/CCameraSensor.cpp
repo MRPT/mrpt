@@ -11,6 +11,7 @@
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
@@ -343,6 +344,21 @@ void CCameraSensor::initialize()
 			throw e;
 		}
 	}
+	else if (m_grabber_type == "myntd")
+	{
+		cout << "[CCameraSensor::initialize] MYNTEYE-D camera ...\n";
+
+		// Open it:
+		try
+		{
+			m_myntd = std::make_unique<CMyntEyeCamera>(m_myntd_options);
+		}
+		catch (const std::exception& e)
+		{
+			m_state = CGenericSensor::ssError;
+			throw e;
+		}
+	}
 	else
 		THROW_EXCEPTION_FMT(
 			"Unknown 'grabber_type' found: %s", m_grabber_type.c_str());
@@ -615,6 +631,12 @@ void CCameraSensor::loadConfig_sensorSpecific(
 
 	// FlyCap:
 	m_flycap_options.loadOptionsFrom(configSource, iniSection, "flycap_");
+
+	// Myntd:
+	{
+		mrpt::config::CConfigFilePrefixer c(configSource, "", "myntd_");
+		m_myntd_options.loadFromConfigFile(c, iniSection);
+	}
 
 	// FlyCap stereo
 	m_fcs_start_synch_capture = configSource.read_bool(
@@ -1071,6 +1093,29 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		{
 			cout << "[CCamera, duo3d] Warning: There are no IMU data from the "
 					"device. Only images are being grabbed.";
+		}
+		capture_ok = true;
+	}
+	else if (m_myntd)
+	{
+		obs3D = std::make_shared<CObservation3DRangeScan>();
+
+		bool thereIsObs = m_myntd->getObservation(*obs3D);
+		static int noObsCnt = 0;
+
+		if (!thereIsObs)
+		{
+			// obs3D.reset();
+			if (noObsCnt++ > 100)
+			{
+				m_state = CGenericSensor::ssError;
+				THROW_EXCEPTION(
+					"Error getting observations from MYNTEYE-D camera.");
+			}
+		}
+		else
+		{
+			noObsCnt = 0;
 		}
 		capture_ok = true;
 	}

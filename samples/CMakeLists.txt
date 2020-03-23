@@ -314,6 +314,7 @@ if(BUILD_EXAMPLES)
 	# === Depending on: slam & hwdrivers ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		hwdrivers_kinect_online_offline_example
+		hwdrivers_mynteye_icp
 	)
     set(CMAKE_EXAMPLE_DEPS mrpt::slam mrpt::hwdrivers)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()

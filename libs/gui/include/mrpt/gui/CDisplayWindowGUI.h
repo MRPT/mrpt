@@ -98,6 +98,17 @@ class CDisplayWindowGUI : public nanogui::Screen
 	/**  Changes the window title. */
 	void setWindowTitle(const std::string& str);
 
+	/** Every time the window is about to be repainted, an optional callback can
+	 * be called, if provided via this method. */
+	void setLoopCallback(const std::function<void(void)>& callback)
+	{
+		m_loopCallback = callback;
+	}
+	const std::function<void(void)>& loopCallback() const
+	{
+		return m_loopCallback;
+	}
+
 	/** @} */
 
 	/** @name Access to full-window (background) GL scene
@@ -122,7 +133,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/** @} */
 
-   private:
+   protected:
 	CDisplayWindowGUI(const CDisplayWindowGUI&) = delete;
 	CDisplayWindowGUI& operator=(const CDisplayWindowGUI&) = delete;
 
@@ -151,6 +162,8 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/** Used to keep track of mouse events on the camera */
 	internal::NanoGUICanvasHeadless m_background_canvas;
+
+	std::function<void(void)> m_loopCallback;
 };
 
 }  // namespace mrpt::gui
