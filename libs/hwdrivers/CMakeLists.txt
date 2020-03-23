@@ -247,3 +247,7 @@ if(CMAKE_MRPT_HAS_WXWIDGETS)
 	endif()
 	target_link_libraries(hwdrivers PRIVATE imp_wxwidgets)
 endif()
+
+if (CMAKE_MRPT_HAS_MYNTEYE_D)
+	target_link_libraries(hwdrivers PRIVATE mynteye_depth)
+endif()

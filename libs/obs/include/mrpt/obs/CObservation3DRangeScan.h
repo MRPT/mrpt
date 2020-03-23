@@ -667,8 +667,9 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 	/** Set XYZ coordinates of i'th point */
 	inline void setInvalidPoint(const size_t idx)
 	{
-		THROW_EXCEPTION(
-			"mrpt::obs::CObservation3DRangeScan requires needs to be dense");
+		m_obj.points3D_x[idx] = 0;
+		m_obj.points3D_y[idx] = 0;
+		m_obj.points3D_z[idx] = 0;
 	}
 
 };  // end of PointCloudAdapter<CObservation3DRangeScan>

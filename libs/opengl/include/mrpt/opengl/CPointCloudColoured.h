@@ -280,7 +280,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 
 	inline void setInvalidPoint(const size_t idx)
 	{
-		THROW_EXCEPTION("mrpt::opengl::CPointCloudColoured needs to be dense");
+		m_obj.setPoint_fast(idx, 0, 0, 0);
 	}
 
 	/** Get XYZ_RGBf coordinates of i'th point */

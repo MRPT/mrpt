@@ -250,6 +250,7 @@ include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
+include(cmakemodules/script_mynteye.cmake REQUIRED)     # Support for MYNT EYE cameras
 include(cmakemodules/script_nanogui.cmake REQUIRED)     # Check for nanogui
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
