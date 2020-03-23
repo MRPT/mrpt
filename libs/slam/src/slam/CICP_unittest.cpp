@@ -39,7 +39,6 @@ class ICPTests : public ::testing::Test
 	void align2scans(const TICPAlgorithm icp_method)
 	{
 		CSimplePointsMap m1, m2;
-		float runningTime;
 		CICP::TReturnInfo info;
 		CICP ICP;
 
@@ -67,8 +66,7 @@ class ICPTests : public ::testing::Test
 		// -----------------------------------------------------
 		CPose2D initialPose(0.8f, 0.0f, (float)DEG2RAD(0.0f));
 
-		CPosePDF::Ptr pdf =
-			ICP.Align(&m1, &m2, initialPose, &runningTime, (void*)&info);
+		CPosePDF::Ptr pdf = ICP.Align(&m1, &m2, initialPose, info);
 
 		const CPose2D good_pose(0.820, 0.084, 8.73_deg);
 
@@ -195,7 +193,6 @@ TEST_F(ICPTests, RayTracingICP3D)
 	// --------------------------------------
 	// Do the ICP-3D
 	// --------------------------------------
-	float run_time;
 	CICP icp;
 	CICP::TReturnInfo icp_info;
 
@@ -206,7 +203,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 		&M2_noisy,  // Map to align
 		&M1,  // Reference map
 		CPose3D(),  // Initial gross estimate
-		&run_time, &icp_info);
+		icp_info);
 
 	CPose3D mean = pdf->getMeanVal();
 

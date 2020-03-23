@@ -70,7 +70,7 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 	// Do the map align:
 	CPosePDF::Ptr alignRes = gridAligner.Align(
 		hMapCur.get(),  // "ref" as seen from "cur"...The order is critical!!!
-		hMapRef.get(), initEstimate, nullptr, &info);
+		hMapRef.get(), initEstimate, info);
 
 #if 0
 	{

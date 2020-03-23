@@ -348,7 +348,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			{
 				CPosePDF::Ptr alignEst = icp.Align(
 					map_to_align_to, &localMapPoints,
-					CPose2D(initialPoseEstimation), nullptr, &icpInfo);
+					CPose2D(initialPoseEstimation), icpInfo);
 				icpEstimation.copyFrom(*alignEst);
 			}
 

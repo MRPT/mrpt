@@ -4393,7 +4393,6 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 	CActionCollection::Ptr act_between;  // = nullptr;
 
 	CPosePDF::Ptr poseEst;
-	float runTime;
 
 	// Load ICP options:
 	// ------------------------------------------
@@ -4485,8 +4484,7 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 						(CMetricMap*)&newMapPt, &newMapRobotPose);
 
 					poseEst = icp.Align(
-						refMap, (CMetricMap*)&newMapPt, initialEst, &runTime,
-						&icpInfo);
+						refMap, (CMetricMap*)&newMapPt, initialEst, icpInfo);
 
 					// The final estimation:
 					// --------------------------------------

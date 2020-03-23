@@ -39,25 +39,6 @@ namespace mrpt::slam
  */
 class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 {
-   private:
-	/** Private member, implements one the algorithms.
-	 */
-	mrpt::poses::CPosePDF::Ptr AlignPDF_correlation(
-		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
-		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
-		float* runningTime = nullptr, void* info = nullptr);
-
-	/** Private member, implements both, the "robustMatch" and the newer
-	 * "modifiedRANSAC" algorithms.
-	 */
-	mrpt::poses::CPosePDF::Ptr AlignPDF_robustMatch(
-		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
-		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
-		float* runningTime = nullptr, void* info = nullptr);
-
-	/** Grid map features extractor */
-	COccupancyGridMapFeatureExtractor m_grid_feat_extr;
-
    public:
 	CGridMapAligner() : options() {}
 	/** The type for selecting the grid-map alignment algorithm.
@@ -148,9 +129,11 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 
 	/** The ICP algorithm return information.
 	 */
-	struct TReturnInfo
+	struct TReturnInfo : public TMetricMapAlignmentResult
 	{
-		TReturnInfo() : noRobustEstimation() {}
+		TReturnInfo() = default;
+		virtual ~TReturnInfo() override = default;
+
 		/** A goodness measure for the alignment, it is a [0,1] range indicator
 		 * of percentage of correspondences.
 		 */
@@ -229,15 +212,34 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 	mrpt::poses::CPosePDF::Ptr AlignPDF(
 		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
 		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
-		float* runningTime = nullptr,
+		mrpt::optional_ref<TMetricMapAlignmentResult> outInfo =
+			std::nullopt) override;
 
-		void* info = nullptr) override;
-
-	/** Not applicable in this class, will launch an exception. */
+	/** Not applicable in this class, will launch an exception if used. */
 	mrpt::poses::CPose3DPDF::Ptr Align3DPDF(
 		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
 		const mrpt::poses::CPose3DPDFGaussian& initialEstimationPDF,
-		float* runningTime = nullptr, void* info = nullptr) override;
+		mrpt::optional_ref<TMetricMapAlignmentResult> outInfo =
+			std::nullopt) override;
+
+   private:
+	/** Private member, implements one the algorithms.
+	 */
+	mrpt::poses::CPosePDF::Ptr AlignPDF_correlation(
+		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
+		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
+		TReturnInfo& info);
+
+	/** Private member, implements both, the "robustMatch" and the newer
+	 * "modifiedRANSAC" algorithms.
+	 */
+	mrpt::poses::CPosePDF::Ptr AlignPDF_robustMatch(
+		const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
+		const mrpt::poses::CPosePDFGaussian& initialEstimationPDF,
+		TReturnInfo& info);
+
+	/** Grid map features extractor */
+	COccupancyGridMapFeatureExtractor m_grid_feat_extr;
 };
 
 }  // namespace mrpt::slam

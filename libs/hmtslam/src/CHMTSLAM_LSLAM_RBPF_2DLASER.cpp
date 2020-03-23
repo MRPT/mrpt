@@ -907,8 +907,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 			// Use ICP to align to each particle's map:
 			CPosePDF::Ptr alignEst = icp.Align(
-				mapalign, &localMapPoints, initialPoseEstimation, nullptr,
-				&icpInfo);
+				mapalign, &localMapPoints, initialPoseEstimation, icpInfo);
 
 			icpEstimation.copyFrom(*alignEst);
 

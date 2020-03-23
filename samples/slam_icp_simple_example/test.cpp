@@ -43,7 +43,6 @@ int ICP_method = (int)icpClassic;
 void TestICP()
 {
 	CSimplePointsMap m1, m2;
-	float runningTime;
 	CICP::TReturnInfo info;
 	CICP ICP;
 
@@ -92,14 +91,13 @@ void TestICP()
 	 */
 	CPose2D initialPose(0.8f, 0.0f, (float)DEG2RAD(0.0f));
 
-	CPosePDF::Ptr pdf =
-		ICP.Align(&m1, &m2, initialPose, &runningTime, (void*)&info);
+	CPosePDF::Ptr pdf = ICP.Align(&m1, &m2, initialPose, info);
 
 	printf(
 		"ICP run in %.02fms, %d iterations (%.02fms/iter), %.01f%% goodness\n "
 		"-> ",
-		runningTime * 1000, info.nIterations,
-		runningTime * 1000.0f / info.nIterations, info.goodness * 100);
+		info.executionTime * 1000, info.nIterations,
+		info.executionTime * 1000.0f / info.nIterations, info.goodness * 100);
 
 	cout << "Mean of estimation: " << pdf->getMeanVal() << endl << endl;
 

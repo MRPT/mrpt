@@ -306,21 +306,16 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 				// sensed points:
 				// ----------------------------------------------------------------------
 				CICP ICP;
-				float runningTime;
-
 				ICP.options = ICP_params;
+
+				// a first gross estimation of map 2 relative to map 1.
+				const auto firstGuess =
+					mrpt::poses::CPose2D(initialEstimatedRobotPose);
 
 				CPosePDF::Ptr pestPose = ICP.Align(
 					matchWith,  // Map 1
 					&sensedPoints,  // Map 2
-					mrpt::poses::CPose2D(
-						initialEstimatedRobotPose),  // a first gross
-													 // estimation
-					// of map 2 relative to map
-					// 1.
-					&runningTime,  // Running time
-					&icpReturn  // Returned information
-				);
+					firstGuess, icpReturn);
 
 				if (icpReturn.goodness > ICP_options.minICPgoodnessToAccept)
 				{
@@ -343,7 +338,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 						"[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In "
 						"%.02fms \n",
 						icpReturn.goodness * 100, icpReturn.nIterations,
-						1000 * runningTime));
+						1000 * icpReturn.executionTime));
 				}
 				else
 				{

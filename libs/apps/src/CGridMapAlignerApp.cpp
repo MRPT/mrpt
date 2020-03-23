@@ -295,7 +295,6 @@ void CGridMapAlignerApp::run()
 	gridAlign.setMinLoggingLevel(this->getMinLoggingLevel());
 
 	CGridMapAligner::TReturnInfo info;
-	float tim;
 
 	gridAlign.options.methodSelection = aligner_method;
 
@@ -482,7 +481,7 @@ void CGridMapAlignerApp::run()
 				//        DO ALIGN
 				// --------------------------
 				CPosePDF::Ptr parts = gridAlign.Align(
-					&the_map1, &the_map2, CPose2D(0, 0, 0), &tim, &info);
+					&the_map1, &the_map2, CPose2D(0, 0, 0), info);
 
 				// Get the mean, or the best Gassian mean in the case of a SOG:
 				if (IS_CLASS(*parts, CPosePDFSOG) && MOST_LIKELY_SOG_MODE_ONLY)
@@ -510,7 +509,8 @@ void CGridMapAlignerApp::run()
 				float AphiBrute = fabs(math::wrapToPi(
 					info.noRobustEstimation.phi() - GT_Aphi_rad));
 
-				MRPT_LOG_INFO_FMT("Done in %.03fms\n", 1000.0f * tim);
+				MRPT_LOG_INFO_FMT(
+					"Done in %.03fms\n", 1000.0f * info.executionTime);
 
 				MRPT_LOG_INFO_STREAM("Mean pose:\n\t " << estimateMean);
 				MRPT_LOG_INFO_STREAM("Estimate covariance::\n" << estimateCOV);

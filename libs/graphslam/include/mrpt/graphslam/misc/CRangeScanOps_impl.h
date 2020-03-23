@@ -22,7 +22,6 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	MRPT_START
 
 	mrpt::maps::CSimplePointsMap m1, m2;
-	float running_time;
 	mrpt::slam::CICP::TReturnInfo info;
 
 	// have them initialized prior - and then just clear them
@@ -37,7 +36,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	}
 
 	mrpt::poses::CPosePDF::Ptr pdf =
-		params.icp.Align(&m1, &m2, initial_pose, &running_time, (void*)&info);
+		params.icp.Align(&m1, &m2, initial_pose, info);
 
 	// return the edge regardless of the goodness of the alignment
 	rel_edge->copyFrom(*pdf);
@@ -63,16 +62,10 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 
 	// TODO - have this as a class member
 	mrpt::maps::CSimplePointsMap m1, m2;
-	float running_time;
 	mrpt::slam::CICP::TReturnInfo info;
 
 	m1.insertObservation(from);
 	m2.insertObservation(to);
-
-	// this->decimatePointsMap(&m1, [> keep every = */ 40, /* low_lim = <]
-	// 5000);
-	// this->decimatePointsMap(&m2, [> keep every = */ 40, /* low_lim = <]
-	// 5000);
 
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
@@ -82,7 +75,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	}
 
 	mrpt::poses::CPose3DPDF::Ptr pdf =
-		params.icp.Align3D(&m1, &m2, initial_pose, &running_time, (void*)&info);
+		params.icp.Align3D(&m1, &m2, initial_pose, info);
 
 	// return the edge regardless of the goodness of the alignment
 	// copy from the 3D PDF

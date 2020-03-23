@@ -54,6 +54,7 @@
   - \ref mrpt_slam_grp
     - rbpf-slam: Add support for simplemap continuation.
     - CICP: parameter `onlyClosestCorrespondences` deleted (always true now).
+    - mrpt::slam::CICP API: Simplified and modernized to use only one output parameter, using std::optional.
   - \ref mrpt_system_grp
     - functions to get timestamp as *local* time were removed, since they don't make sense. All timestamps in MRPT are UTC, and they can be formated as dates in either UTC or local time frames.
     - Added: mrpt::system::WorkerThreadsPool
