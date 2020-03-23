@@ -19,25 +19,21 @@ using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
-/*---------------------------------------------------------------
-					Align
-  ---------------------------------------------------------------*/
 CPosePDF::Ptr CMetricMapsAlignmentAlgorithm::Align(
 	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
-	const CPose2D& grossEst, float* runningTime, void* info)
+	const CPose2D& grossEst,
+	mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
 {
 	CPosePDFGaussian posePDF(grossEst, CMatrixDouble33());
-	return AlignPDF(m1, m2, posePDF, runningTime, info);
+	return AlignPDF(m1, m2, posePDF, outInfo);
 }
 
-/*---------------------------------------------------------------
-					Align3D
-  ---------------------------------------------------------------*/
 CPose3DPDF::Ptr CMetricMapsAlignmentAlgorithm::Align3D(
 	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
-	const CPose3D& grossEst, float* runningTime, void* info)
+	const CPose3D& grossEst,
+	mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
 {
 	CPose3DPDFGaussian posePDF;
 	posePDF.mean = grossEst;
-	return Align3DPDF(m1, m2, posePDF, runningTime, info);
+	return Align3DPDF(m1, m2, posePDF, outInfo);
 }

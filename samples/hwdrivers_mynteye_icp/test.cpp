@@ -267,8 +267,7 @@ void Test_3DCamICP()
 			}
 
 			icp_out = icp.Align3D(
-				prev_points.get(), cur_points.get(), lastIcpRelPose, nullptr,
-				&icp_res);
+				prev_points.get(), cur_points.get(), lastIcpRelPose, icp_res);
 
 			// Load local points map from 3D points + color:
 			cur_obs->unprojectInto(*gl_points);

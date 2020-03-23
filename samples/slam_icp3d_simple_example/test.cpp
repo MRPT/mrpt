@@ -151,7 +151,6 @@ void test_icp3D()
 	// --------------------------------------
 	// Do the ICP-3D
 	// --------------------------------------
-	float run_time;
 	CICP icp;
 	CICP::TReturnInfo icp_info;
 
@@ -168,11 +167,11 @@ void test_icp3D()
 		&M2_noisy,  // Map to align
 		&M1,  // Reference map
 		CPose3D(),  // Initial gross estimate
-		&run_time, &icp_info);
+		icp_info);
 
 	CPose3D mean = pdf->getMeanVal();
 
-	cout << "ICP run took " << run_time << " secs." << endl;
+	cout << "ICP run took " << icp_info.executionTime << " secs." << endl;
 	cout << "Goodness: " << 100 * icp_info.goodness
 		 << "% , # of iterations= " << icp_info.nIterations
 		 << " Quality: " << icp_info.quality << endl;

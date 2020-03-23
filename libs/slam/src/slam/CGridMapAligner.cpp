@@ -40,31 +40,39 @@ using namespace std;
 
 CPosePDF::Ptr CGridMapAligner::AlignPDF(
 	const mrpt::maps::CMetricMap* mm1, const mrpt::maps::CMetricMap* mm2,
-	const CPosePDFGaussian& initialEstimationPDF, float* runningTime,
-	void* info)
+	const CPosePDFGaussian& initialEstimationPDF,
+	mrpt::optional_ref<TMetricMapAlignmentResult> info)
 {
 	MRPT_START
+
+	TReturnInfo infoVal;
 
 	switch (options.methodSelection)
 	{
 		case CGridMapAligner::amCorrelation:
 			return AlignPDF_correlation(
-				mm1, mm2, initialEstimationPDF, runningTime, info);
+				mm1, mm2, initialEstimationPDF, infoVal);
 
 		case CGridMapAligner::amModifiedRANSAC:
 		case CGridMapAligner::amRobustMatch:
 			// The same function has an internal switch for the specific method:
 			return AlignPDF_robustMatch(
-				mm1, mm2, initialEstimationPDF, runningTime, info);
+				mm1, mm2, initialEstimationPDF, infoVal);
 
 		default:
 			THROW_EXCEPTION("Wrong value found in 'options.methodSelection'!!");
 	}
 
+	// Copy the output info if requested:
+	if (info)
+		if (auto* o = dynamic_cast<TReturnInfo*>(&info.value().get()); o)
+			*o = infoVal;
+
 	MRPT_END
 }
 
-bool myVectorOrder(const pair<size_t, float>& o1, const pair<size_t, float>& o2)
+static bool myVectorOrder(
+	const pair<size_t, float>& o1, const pair<size_t, float>& o2)
 {
 	return o1.second < o2.second;
 }
@@ -74,8 +82,7 @@ bool myVectorOrder(const pair<size_t, float>& o1, const pair<size_t, float>& o2)
 ---------------------------------------------------------------*/
 CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 	const mrpt::maps::CMetricMap* mm1, const mrpt::maps::CMetricMap* mm2,
-	const CPosePDFGaussian& initialEstimationPDF, float* runningTime,
-	void* info)
+	const CPosePDFGaussian& initialEstimationPDF, TReturnInfo& outInfo)
 {
 	MRPT_START
 
@@ -83,15 +90,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		options.methodSelection == CGridMapAligner::amRobustMatch ||
 		options.methodSelection == CGridMapAligner::amModifiedRANSAC);
 
-	TReturnInfo outInfo;
 	mrpt::tfest::TMatchingPairList& correspondences =
 		outInfo.correspondences;  // Use directly this placeholder to save 1
 	// variable & 1 copy.
 	mrpt::tfest::TMatchingPairList largestConsensusCorrs;
-
-	std::unique_ptr<CTicTac> tictac;
-
-	CPose2D grossEst = initialEstimationPDF.mean;
 
 	CLandmarksMap::Ptr lm1(new CLandmarksMap());
 	CLandmarksMap::Ptr lm2(new CLandmarksMap());
@@ -164,11 +166,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		*m2, *lm2, N2, options.feature_descriptor,
 		options.feature_detector_options);
 
-	if (runningTime)
-	{
-		tictac = std::make_unique<CTicTac>();
-		tictac->Tic();
-	}
+	mrpt::system::CTicTac tictac;
+	tictac.Tic();
 
 	const size_t nLM1 = lm1->size();
 	const size_t nLM2 = lm2->size();
@@ -891,8 +890,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				outInfo.icp_goodness_all_sog_modes.clear();
 				for (auto i = pdf_SOG->begin(); i != pdf_SOG->end(); ++cnt)
 				{
-					CPosePDF::Ptr icp_est = icp.Align(
-						pnts1.get(), pnts2.get(), (i)->mean, nullptr, &icpInfo);
+					CPosePDF::Ptr icp_est =
+						icp.Align(pnts1.get(), pnts2.get(), (i)->mean, icpInfo);
 
 					//(i)->cov(0,0) += square( 0.05 );
 					//(i)->cov(1,1) += square( 0.05 );
@@ -944,17 +943,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 	}  // end of: yes, there are landmarks in the grid maps!
 
-	// Copy the output info if requested:
-	// -------------------------------------------------
-	MRPT_TODO(
-		"Refactor `info` so it is polymorphic and can use dynamic_cast<> here");
-	if (info)
-	{
-		auto* info_ = static_cast<TReturnInfo*>(info);
-		*info_ = outInfo;
-	}
-
-	if (runningTime) *runningTime = tictac->Tac();
+	outInfo.executionTime = tictac.Tac();
 
 	return pdf_SOG;
 
@@ -966,17 +955,15 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 ---------------------------------------------------------------*/
 CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 	const mrpt::maps::CMetricMap* mm1, const mrpt::maps::CMetricMap* mm2,
-	const CPosePDFGaussian& initialEstimationPDF, float* runningTime,
-	void* info)
+	[[maybe_unused]] const CPosePDFGaussian& initialEstimationPDF,
+	TReturnInfo& outInfo)
 {
-	MRPT_UNUSED_PARAM(initialEstimationPDF);
-	MRPT_UNUSED_PARAM(info);
-
 	MRPT_START
 
 	//#define	CORRELATION_SHOW_DEBUG
 
-	std::unique_ptr<CTicTac> tictac;
+	mrpt::system::CTicTac tictac;
+	tictac.Tic();
 
 	// Asserts:
 	// -----------------
@@ -985,13 +972,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 	const auto* m1 = dynamic_cast<const COccupancyGridMap2D*>(mm1);
 	const auto* m2 = dynamic_cast<const COccupancyGridMap2D*>(mm2);
 
-	ASSERT_(m1->getResolution() == m2->getResolution());
-
-	if (runningTime)
-	{
-		tictac = std::make_unique<CTicTac>();
-		tictac->Tic();
-	}
+	ASSERT_EQUAL_(m1->getResolution(), m2->getResolution());
 
 	// The PDF to estimate:
 	// ------------------------------------------------------
@@ -1082,13 +1063,12 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 
 	}  // end for phi
 
-	if (runningTime) *runningTime = tictac->Tac();
+	outInfo.executionTime = tictac.Tac();
 
+#ifdef CORRELATION_SHOW_DEBUG
 	CImage aux;
 	aux.setFromMatrix(bestCrossCorr, false /* do normalization [0,1]*/);
 	aux.saveToFile("_debug_best_corr.png");
-
-#ifdef CORRELATION_SHOW_DEBUG
 	delete win;
 	delete win2;
 #endif
@@ -1179,14 +1159,10 @@ void CGridMapAligner::TConfigParams::loadFromConfigFile(
 }
 
 CPose3DPDF::Ptr CGridMapAligner::Align3DPDF(
-	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* m2,
-	const CPose3DPDFGaussian& initialEstimationPDF, float* runningTime,
-	void* info)
+	[[maybe_unused]] const mrpt::maps::CMetricMap* m1,
+	[[maybe_unused]] const mrpt::maps::CMetricMap* m2,
+	[[maybe_unused]] const CPose3DPDFGaussian& initialEstimationPDF,
+	[[maybe_unused]] mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
 {
-	MRPT_UNUSED_PARAM(m1);
-	MRPT_UNUSED_PARAM(m2);
-	MRPT_UNUSED_PARAM(initialEstimationPDF);
-	MRPT_UNUSED_PARAM(runningTime);
-	MRPT_UNUSED_PARAM(info);
-	THROW_EXCEPTION("Align3D method not applicable to gridmap-aligner");
+	THROW_EXCEPTION("Align3D method not applicable to CGridMapAligner");
 }

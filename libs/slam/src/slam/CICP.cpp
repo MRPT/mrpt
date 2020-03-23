@@ -35,25 +35,26 @@ using namespace std;
 
 CPosePDF::Ptr CICP::AlignPDF(
 	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* mm2,
-	const CPosePDFGaussian& initialEstimationPDF, float* runningTime,
-	void* info)
+	const CPosePDFGaussian& initialEstimationPDF,
+	mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
 {
 	MRPT_START
 
 	CTicTac tictac;
-	TReturnInfo outInfo;
+	TReturnInfo outInfoVal;
 	CPosePDF::Ptr resultPDF;
 
-	if (runningTime) tictac.Tic();
+	if (outInfo) tictac.Tic();
 
 	switch (options.ICP_algorithm)
 	{
 		case icpClassic:
 			resultPDF =
-				ICP_Method_Classic(m1, mm2, initialEstimationPDF, outInfo);
+				ICP_Method_Classic(m1, mm2, initialEstimationPDF, outInfoVal);
 			break;
 		case icpLevenbergMarquardt:
-			resultPDF = ICP_Method_LM(m1, mm2, initialEstimationPDF, outInfo);
+			resultPDF =
+				ICP_Method_LM(m1, mm2, initialEstimationPDF, outInfoVal);
 			break;
 		default:
 			THROW_EXCEPTION_FMT(
@@ -61,10 +62,12 @@ CPosePDF::Ptr CICP::AlignPDF(
 				static_cast<int>(options.ICP_algorithm));
 	}  // end switch
 
-	if (runningTime) *runningTime = tictac.Tac();
+	if (outInfo) outInfoVal.executionTime = tictac.Tac();
 
 	// Copy the output info if requested:
-	if (info) *static_cast<TReturnInfo*>(info) = outInfo;
+	if (outInfo)
+		if (auto* o = dynamic_cast<TReturnInfo*>(&outInfo.value().get()); o)
+			*o = outInfoVal;
 
 	return resultPDF;
 
@@ -913,22 +916,22 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
 CPose3DPDF::Ptr CICP::Align3DPDF(
 	const mrpt::maps::CMetricMap* m1, const mrpt::maps::CMetricMap* mm2,
-	const CPose3DPDFGaussian& initialEstimationPDF, float* runningTime,
-	void* info)
+	const CPose3DPDFGaussian& initialEstimationPDF,
+	mrpt::optional_ref<TMetricMapAlignmentResult> outInfo)
 {
 	MRPT_START
 
 	static CTicTac tictac;
-	TReturnInfo outInfo;
+	TReturnInfo outInfoVal;
 	CPose3DPDF::Ptr resultPDF;
 
-	if (runningTime) tictac.Tic();
+	if (outInfo) tictac.Tic();
 
 	switch (options.ICP_algorithm)
 	{
 		case icpClassic:
 			resultPDF =
-				ICP3D_Method_Classic(m1, mm2, initialEstimationPDF, outInfo);
+				ICP3D_Method_Classic(m1, mm2, initialEstimationPDF, outInfoVal);
 			break;
 		case icpLevenbergMarquardt:
 			THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D");
@@ -939,16 +942,12 @@ CPose3DPDF::Ptr CICP::Align3DPDF(
 				static_cast<int>(options.ICP_algorithm));
 	}  // end switch
 
-	if (runningTime) *runningTime = tictac.Tac();
+	if (outInfo) outInfoVal.executionTime = tictac.Tac();
 
 	// Copy the output info if requested:
-	if (info)
-	{
-		MRPT_TODO(
-			"Refactor `info` so it is polymorphic and can use dynamic_cast<> "
-			"here");
-		*static_cast<TReturnInfo*>(info) = outInfo;
-	}
+	if (outInfo)
+		if (auto* o = dynamic_cast<TReturnInfo*>(&outInfo.value().get()); o)
+			*o = outInfoVal;
 
 	return resultPDF;
 

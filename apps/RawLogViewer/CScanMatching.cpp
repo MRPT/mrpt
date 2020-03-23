@@ -605,7 +605,6 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	CSerializable::Ptr obj_new = rawlog.getAsGeneric(newIndx);
 
 	CPosePDF::Ptr poseEst;
-	float runTime;
 
 	// Load ICP options:
 	// ------------------------------------------
@@ -711,8 +710,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 
 			icp.options.maxIterations = curStep;
 
-			poseEst = icp.Align(
-				refMap, (CMetricMap*)&newMapPt, initialEst, &runTime, &icpInfo);
+			poseEst =
+				icp.Align(refMap, (CMetricMap*)&newMapPt, initialEst, icpInfo);
 
 			// Show the final graphs:
 			// --------------------------------------
@@ -730,7 +729,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 					"EXECUTING %i steps:\n---------------------------\n",
 					curStep);
 			}
-			cout << format("Time:%fms\n", runTime * 1e3f);
+			cout << format("Time:%fms\n", icpInfo.executionTime * 1e3f);
 			cout << format("Iterations executed: %i\n", icpInfo.nIterations);
 			cout << format("Goodness: %.02f%%\n", 100 * icpInfo.goodness);
 			cout << format("Quality: %.04f\n", icpInfo.quality);
