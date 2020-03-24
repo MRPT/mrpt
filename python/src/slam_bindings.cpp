@@ -55,16 +55,14 @@ tuple CICP_AlignPDF1(
 	CPosePDFGaussian& initialEstimationPDF)
 {
 	CPosePDFGaussian posePDF;
-	float runningTime;
 	CICP::TReturnInfo info;
 
 	CPosePDF::Ptr posePDFPtr =
-		self.AlignPDF(&m1, &m2, initialEstimationPDF, &runningTime, &info);
+		self.AlignPDF(&m1, &m2, initialEstimationPDF, info);
 	posePDF.copyFrom(*posePDFPtr);
 
 	boost::python::list ret_val;
 	ret_val.append(posePDF);
-	ret_val.append(runningTime);
 	ret_val.append(info);
 	return tuple(ret_val);
 }
@@ -74,16 +72,14 @@ tuple CICP_AlignPDF2(
 	CPosePDFGaussian& initialEstimationPDF)
 {
 	CPosePDFGaussian posePDF;
-	float runningTime;
 	CICP::TReturnInfo info;
 
 	CPosePDF::Ptr posePDFPtr =
-		self.AlignPDF(&m1, &m2, initialEstimationPDF, &runningTime, &info);
+		self.AlignPDF(&m1, &m2, initialEstimationPDF, info);
 	posePDF.copyFrom(*posePDFPtr);
 
 	boost::python::list ret_val;
 	ret_val.append(posePDF);
-	ret_val.append(runningTime);
 	ret_val.append(info);
 	return tuple(ret_val);
 }
