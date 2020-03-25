@@ -9,6 +9,8 @@
    */
 #include "CNode.h"
 
+#include <stdexcept>
+
 CNode::CNode(CNode* parent) : m_parent(parent) {}
 const CNode* CNode::parentItem() const { return m_parent; }
 void CNode::addNewChild()
