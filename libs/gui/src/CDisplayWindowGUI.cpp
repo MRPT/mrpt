@@ -31,7 +31,11 @@ CDisplayWindowGUI::CDisplayWindowGUI(
 	images.height = 64;
 	images.pixels = default_mrpt_glfw_icon();
 
+// glfwSetWindowIcon added in glfw 3.2
+#if GLFW_VERSION_MAJOR > 3 || \
+	(GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR >= 2)
 	glfwSetWindowIcon(screen()->glfwWindow(), 1, &images);
+#endif
 }
 
 CDisplayWindowGUI::~CDisplayWindowGUI()
