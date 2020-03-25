@@ -1241,6 +1241,11 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
 	{
 		m_obj.setPointFast(idx, x, y, z);
 	}
+	/** Set XYZ coordinates of i'th point */
+	inline void setInvalidPoint(const size_t idx)
+	{
+		m_obj.setPointFast(idx, 0, 0, 0);
+	}
 };  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
 }  // namespace opengl
 }  // namespace mrpt
