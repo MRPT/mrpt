@@ -23,5 +23,14 @@ endif()
 
 add_subdirectory(3rdparty/nanogui)
 
+set_target_properties(mrpt-nanogui PROPERTIES FOLDER "3rd party")
+if (TARGET glfw)
+  set_target_properties(glfw PROPERTIES FOLDER "3rd party")
+endif()
+if (TARGET glfw_objects)
+  set_target_properties(glfw_objects PROPERTIES FOLDER "3rd party")
+endif()
+
+
 set(CMAKE_MRPT_HAS_NANOGUI 1)
 set(CMAKE_MRPT_HAS_NANOGUI_SYSTEM 0)
