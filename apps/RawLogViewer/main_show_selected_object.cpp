@@ -276,7 +276,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		mrpt::maps::CPointsMap::Ptr pointMap;
 		mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
 
-		if (obs->hasRangeImage)
+		// Color from intensity image?
+		if (obs->hasRangeImage && obs->hasIntensityImage)
 		{
 			pointMapCol = mrpt::maps::CColouredPointsMap::Create();
 			pointMapCol->colorScheme.scheme =
@@ -298,6 +299,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 						obs->points3D_x[i], obs->points3D_y[i],
 						obs->points3D_z[i]);
 			}
+			else if (obs->hasRangeImage)
+			{
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = true;
+				obs->unprojectInto(*pointMap, pp);
+			}
 		}
 
 // Update 3D view ==========
@@ -305,15 +312,26 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
 		openGLSceneRef->clear();
 
-		openGLSceneRef->insert(
-			mrpt::opengl::CAxis::Create(-20, -20, -20, 20, 20, 20, 1, 2, true));
+		{
+			auto gl_axis = mrpt::opengl::CAxis::Create(
+				-20, -20, -20, 20, 20, 20, 1, 2, true);
+			gl_axis->setTextScale(0.075f);
+			gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
+			openGLSceneRef->insert(gl_axis);
+		}
 
 		auto gl_pnts = mrpt::opengl::CPointCloudColoured::Create();
 		// Load as RGB or grayscale points:
 		if (pointMapCol)
 			gl_pnts->loadFromPointsMap(pointMapCol.get());
 		else
+		{
 			gl_pnts->loadFromPointsMap(pointMap.get());
+			mrpt::math::TPoint3D bbmin, bbmax;
+			gl_pnts->getBoundingBox(bbmin, bbmax);
+			gl_pnts->recolorizeByCoordinate(
+				bbmin.z, bbmax.z, 2 /*color by z*/, mrpt::img::cmJET);
+		}
 
 		// No need to further transform 3D points
 		gl_pnts->setPose(mrpt::poses::CPose3D());
