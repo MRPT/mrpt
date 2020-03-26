@@ -44,14 +44,6 @@ CDisplayWindowGUI::~CDisplayWindowGUI()
 	nanogui::Screen::setVisible(false);
 }
 
-bool CDisplayWindowGUI::keyboardEvent(
-	int key, int scancode, int action, int modifiers)
-{
-	if (Screen::keyboardEvent(key, scancode, action, modifiers)) return true;
-	// Process special key events?
-	return false;
-}
-
 void CDisplayWindowGUI::drawContents()
 {
 	// If provided, call the user loop code:
@@ -124,6 +116,26 @@ bool CDisplayWindowGUI::scrollEvent(
 	if (!Screen::scrollEvent(p, rel)) m_background_canvas.scrollEvent(p, rel);
 
 	return true;
+}
+
+bool CDisplayWindowGUI::dropEvent(const std::vector<std::string>& filenames)
+{
+	if (m_dropFilesCallback)
+		return m_dropFilesCallback(filenames);
+	else
+		return false;
+}
+
+bool CDisplayWindowGUI::keyboardEvent(
+	int key, int scancode, int action, int modifiers)
+{
+	if (m_keyboardCallback)
+		if (m_keyboardCallback(key, scancode, action, modifiers)) return true;
+
+	if (Screen::keyboardEvent(key, scancode, action, modifiers)) return true;
+
+	// Process special key events?
+	return false;
 }
 
 #endif  // MRPT_HAS_NANOGUI
