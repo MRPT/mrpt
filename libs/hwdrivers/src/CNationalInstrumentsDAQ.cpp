@@ -916,8 +916,10 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 }
 
 void CNationalInstrumentsDAQ::writeAnalogOutputTask(
-	size_t task_index, size_t nSamplesPerChannel, const double* volt_values,
-	double timeout, bool groupedByChannel)
+	[[maybe_unused]] size_t task_index,
+	[[maybe_unused]] size_t nSamplesPerChannel,
+	[[maybe_unused]] const double* volt_values, [[maybe_unused]] double timeout,
+	[[maybe_unused]] bool groupedByChannel)
 {
 #if MRPT_HAS_SOME_NIDAQMX
 	ASSERT_(task_index < m_running_tasks.size());
@@ -936,17 +938,12 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(
 	{
 		MRPT_DAQmx_ErrChk(err)
 	}
-#else
-	MRPT_UNUSED_PARAM(task_index);
-	MRPT_UNUSED_PARAM(nSamplesPerChannel);
-	MRPT_UNUSED_PARAM(volt_values);
-	MRPT_UNUSED_PARAM(timeout);
-	MRPT_UNUSED_PARAM(groupedByChannel);
 #endif
 }
 
 void CNationalInstrumentsDAQ::writeDigitalOutputTask(
-	size_t task_index, bool line_value, double timeout)
+	[[maybe_unused]] size_t task_index, [[maybe_unused]] bool line_value,
+	[[maybe_unused]] double timeout)
 {
 #if MRPT_HAS_SOME_NIDAQMX
 	ASSERT_(task_index < m_running_tasks.size());
@@ -966,11 +963,6 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(
 	{
 		MRPT_DAQmx_ErrChk(err)
 	}
-
-#else
-	MRPT_UNUSED_PARAM(task_index);
-	MRPT_UNUSED_PARAM(line_value);
-	MRPT_UNUSED_PARAM(timeout);
 #endif
 }
 

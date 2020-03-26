@@ -512,28 +512,24 @@ class CPointsMap : public CMetricMap,
 	}
 	/// overload (RGB data is ignored in classes without color information)
 	virtual void setPointRGB(
-		size_t index, float x, float y, float z, float R, float G, float B)
+		size_t index, float x, float y, float z, [[maybe_unused]] float R,
+		[[maybe_unused]] float G, [[maybe_unused]] float B)
 	{
-		MRPT_UNUSED_PARAM(R);
-		MRPT_UNUSED_PARAM(G);
-		MRPT_UNUSED_PARAM(B);
 		setPoint(index, x, y, z);
 	}
 
 	/// Sets the point weight, which is ignored in all classes but those which
 	/// actually store that field (Note: No checks are done for out-of-bounds
 	/// index). \sa getPointWeight
-	virtual void setPointWeight(size_t index, unsigned long w)
+	virtual void setPointWeight(
+		[[maybe_unused]] size_t index, [[maybe_unused]] unsigned long w)
 	{
-		MRPT_UNUSED_PARAM(index);
-		MRPT_UNUSED_PARAM(w);
 	}
 	/// Gets the point weight, which is ignored in all classes (defaults to 1)
 	/// but in those which actually store that field (Note: No checks are done
 	/// for out-of-bounds index).  \sa setPointWeight
-	virtual unsigned int getPointWeight(size_t index) const
+	virtual unsigned int getPointWeight([[maybe_unused]] size_t index) const
 	{
-		MRPT_UNUSED_PARAM(index);
 		return 1;
 	}
 
@@ -652,11 +648,9 @@ class CPointsMap : public CMetricMap,
 	}
 	/// overload (RGB data is ignored in classes without color information)
 	virtual void insertPointRGB(
-		float x, float y, float z, float R, float G, float B)
+		float x, float y, float z, [[maybe_unused]] float R,
+		[[maybe_unused]] float G, [[maybe_unused]] float B)
 	{
-		MRPT_UNUSED_PARAM(R);
-		MRPT_UNUSED_PARAM(G);
-		MRPT_UNUSED_PARAM(B);
 		insertPoint(x, y, z);
 	}
 
@@ -1155,10 +1149,7 @@ class CPointsMap : public CMetricMap,
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	void PLY_import_set_face_count(const size_t N) override
-	{
-		MRPT_UNUSED_PARAM(N);
-	}
+	void PLY_import_set_face_count([[maybe_unused]] const size_t N) override {}
 
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.

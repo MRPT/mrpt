@@ -89,10 +89,9 @@ void ransac3Dplane_distance(
  */
 template <typename T>
 bool ransac3Dplane_degenerate(
-	const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices)
+	[[maybe_unused]] const CMatrixDynamic<T>& allData,
+	[[maybe_unused]] const std::vector<size_t>& useIndices)
 {
-	MRPT_UNUSED_PARAM(allData);
-	MRPT_UNUSED_PARAM(useIndices);
 	return false;
 }
 }  // namespace math
@@ -249,10 +248,9 @@ void ransac2Dline_distance(
  */
 template <typename T>
 bool ransac2Dline_degenerate(
-	const CMatrixDynamic<T>& allData, const std::vector<size_t>& useIndices)
+	[[maybe_unused]] const CMatrixDynamic<T>& allData,
+	[[maybe_unused]] const std::vector<size_t>& useIndices)
 {
-	MRPT_UNUSED_PARAM(allData);
-	MRPT_UNUSED_PARAM(useIndices);
 	return false;
 }
 }  // namespace math

@@ -714,9 +714,8 @@ void icvCleanFoundConnectedQuads(
 //===========================================================================
 void icvFindConnectedQuads(
 	std::vector<CvCBQuad::Ptr>& quad, std::vector<CvCBQuad::Ptr>& out_group,
-	const int group_idx, const int dilation)
+	const int group_idx, [[maybe_unused]] const int dilation)
 {
-	MRPT_UNUSED_PARAM(dilation);
 	// initializations
 	out_group.clear();
 
@@ -1877,9 +1876,9 @@ int mrAugmentBestRun(
 //===========================================================================
 int icvGenerateQuads(
 	vector<CvCBQuad::Ptr>& out_quads, vector<CvCBCorner::Ptr>& out_corners,
-	const CImage& image, int flags, int dilation, bool firstRun)
+	const CImage& image, int flags, [[maybe_unused]] int dilation,
+	bool firstRun)
 {
-	MRPT_UNUSED_PARAM(dilation);
 	// Initializations
 	int quad_count = 0;
 

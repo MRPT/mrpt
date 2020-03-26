@@ -304,9 +304,8 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
    ------------------------------------------------------- */
 void mrpt::vision::pinhole::projectPoint_with_distortion(
 	const mrpt::math::TPoint3D& P, const mrpt::img::TCamera& params,
-	mrpt::img::TPixelCoordf& pixel, bool accept_points_behind)
+	mrpt::img::TPixelCoordf& pixel, [[maybe_unused]] bool accept_points_behind)
 {
-	MRPT_UNUSED_PARAM(accept_points_behind);
 	// Pinhole model:
 	const double x = P.x / P.z;
 	const double y = P.y / P.z;

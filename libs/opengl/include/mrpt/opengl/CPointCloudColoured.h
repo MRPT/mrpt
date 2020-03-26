@@ -208,10 +208,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void PLY_import_set_vertex_count(const size_t N) override;
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	void PLY_import_set_face_count(const size_t N) override
-	{
-		MRPT_UNUSED_PARAM(N);
-	}
+	void PLY_import_set_face_count([[maybe_unused]] const size_t N) override {}
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.
 	 *  \param pt_color Will be nullptr if the loaded file does not provide

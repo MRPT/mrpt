@@ -69,9 +69,8 @@ double mrpt::slam::observationsOverlap(
  */
 double mrpt::slam::observationsOverlap(
 	const mrpt::obs::CSensoryFrame& sf1, const mrpt::obs::CSensoryFrame& sf2,
-	const mrpt::poses::CPose3D* pose_sf2_wrt_sf1)
+	[[maybe_unused]] const mrpt::poses::CPose3D* pose_sf2_wrt_sf1)
 {
-	MRPT_UNUSED_PARAM(pose_sf2_wrt_sf1);
 	// Return the average value:
 	size_t N = 0;
 	double accum = 0;

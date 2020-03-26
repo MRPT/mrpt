@@ -74,11 +74,9 @@ std::string CPTG_DiffDrive_CCS::getDescription() const
 }
 
 void CPTG_DiffDrive_CCS::ptgDiffDriveSteeringFunction(
-	float alpha, float t, float x, float y, float phi, float& v, float& w) const
+	float alpha, float t, [[maybe_unused]] float x, [[maybe_unused]] float y,
+	[[maybe_unused]] float phi, float& v, float& w) const
 {
-	MRPT_UNUSED_PARAM(phi);
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
 	float u = fabs(alpha) * 0.5f;  // 0.14758362f;  // u = atan(0.5)* alpha /
 	// PI;
 

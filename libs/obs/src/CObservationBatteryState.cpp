@@ -74,9 +74,9 @@ void CObservationBatteryState::getSensorPose(CPose3D& out_sensorPose) const
 }
 
 // See base class docs
-void CObservationBatteryState::setSensorPose(const CPose3D& newSensorPose)
+void CObservationBatteryState::setSensorPose([
+	[maybe_unused]] const CPose3D& newSensorPose)
 {
-	MRPT_UNUSED_PARAM(newSensorPose);
 }
 
 void CObservationBatteryState::getDescriptionAsText(std::ostream& o) const

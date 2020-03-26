@@ -760,12 +760,9 @@ float COccupancyGridMap2D::computePathCost(
 }
 
 float COccupancyGridMap2D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap* otherMap,
-	const mrpt::poses::CPose3D& otherMapPose,
-	const TMatchingRatioParams& params) const
+	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+	[[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
+	[[maybe_unused]] const TMatchingRatioParams& params) const
 {
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(params);
 	return 0;
 }

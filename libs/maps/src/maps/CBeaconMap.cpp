@@ -789,10 +789,10 @@ bool CBeaconMap::internal_insertObservation(
   ---------------------------------------------------------------*/
 void CBeaconMap::determineMatching2D(
 	const mrpt::maps::CMetricMap* otherMap, const CPose2D& otherMapPose,
-	TMatchingPairList& correspondences, const TMatchingParams& params,
+	TMatchingPairList& correspondences,
+	[[maybe_unused]] const TMatchingParams& params,
 	TMatchingExtraResults& extraResults) const
 {
-	MRPT_UNUSED_PARAM(params);
 	MRPT_START
 	extraResults = TMatchingExtraResults();
 
@@ -917,11 +917,9 @@ void CBeaconMap::computeMatchingWith3DLandmarks(
 						saveToMATLABScript3D
   ---------------------------------------------------------------*/
 bool CBeaconMap::saveToMATLABScript3D(
-	const string& file, const char* style, float confInterval) const
+	const string& file, [[maybe_unused]] const char* style,
+	[[maybe_unused]] float confInterval) const
 {
-	MRPT_UNUSED_PARAM(style);
-	MRPT_UNUSED_PARAM(confInterval);
-
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 

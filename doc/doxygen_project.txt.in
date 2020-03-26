@@ -2078,7 +2078,6 @@ EXPAND_AS_DEFINED      = DECLARE_COMMON_CONTAINERS_MEMBERS \
                          DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE \
                          DEFINE_SERIALIZABLE_CUSTOM_LINKAGE \
                          MRPT_DECLARE_DEPRECATED_FUNCTION \
-                         MRPT_DEPRECATED \
                          MAP_DEFINITION_START \
                          MAP_DEFINITION_END \
                          MAP_DEFINITION_REGISTER

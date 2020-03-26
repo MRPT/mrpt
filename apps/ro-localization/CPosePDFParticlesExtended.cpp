@@ -827,12 +827,9 @@ CPose2D CPosePDFParticlesExtended::getMostLikelyParticle() const
 					bayesianFusion
  ---------------------------------------------------------------*/
 void CPosePDFParticlesExtended::bayesianFusion(
-	const CPosePDF& p1, const CPosePDF& p2,
-	const double minMahalanobisDistToDrop)
+	[[maybe_unused]] const CPosePDF& p1, [[maybe_unused]] const CPosePDF& p2,
+	[[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(p2);
-
 	THROW_EXCEPTION("Not implemented yet!");
 }
 

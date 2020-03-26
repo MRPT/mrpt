@@ -219,10 +219,9 @@ class CGeneralizedEllipsoidTemplate
 
 	/** Ray tracing  */
 	virtual bool traceRay(
-		const mrpt::poses::CPose3D& o, double& dist) const override
+		[[maybe_unused]] const mrpt::poses::CPose3D& o,
+		[[maybe_unused]] double& dist) const override
 	{
-		MRPT_UNUSED_PARAM(o);
-		MRPT_UNUSED_PARAM(dist);
 		THROW_EXCEPTION("Not implemented ");
 	}
 

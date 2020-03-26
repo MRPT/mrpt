@@ -258,12 +258,10 @@ class PF_implementation : public mrpt::system::COutputLogger
 	}  // end of PF_SLAM_implementation_replaceByNewParticleSet
 
 	virtual bool PF_SLAM_implementation_doWeHaveValidObservations(
-		const typename mrpt::bayes::CParticleFilterData<
+		[[maybe_unused]] const typename mrpt::bayes::CParticleFilterData<
 			PARTICLE_TYPE, STORAGE>::CParticleList& particles,
-		const mrpt::obs::CSensoryFrame* sf) const
+		[[maybe_unused]] const mrpt::obs::CSensoryFrame* sf) const
 	{
-		MRPT_UNUSED_PARAM(particles);
-		MRPT_UNUSED_PARAM(sf);
 		return true;  // By default, always process the SFs.
 	}
 

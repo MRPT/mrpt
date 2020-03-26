@@ -254,9 +254,9 @@ class CGenericSensor
 	 * \exception std::exception If the directory doesn't exists and cannot be
 	 * created.
 	 */
-	virtual void setPathForExternalImages(const std::string& directory)
+	virtual void setPathForExternalImages([
+		[maybe_unused]] const std::string& directory)
 	{
-		MRPT_UNUSED_PARAM(directory);
 		// In this base class, the default is to ignore image paths.
 	}
 

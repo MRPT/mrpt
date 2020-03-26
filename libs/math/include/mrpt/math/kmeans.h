@@ -28,11 +28,10 @@ double internal_kmeans(
 // the user below.
 template <class LIST_OF_VECTORS1, class LIST_OF_VECTORS2>
 double stub_kmeans(
-	const bool use_kmeansplusplus_method, const size_t k,
+	[[maybe_unused]] const bool use_kmeansplusplus_method, const size_t k,
 	const LIST_OF_VECTORS1& points, std::vector<int>& assignments,
 	LIST_OF_VECTORS2* out_centers, const size_t attempts)
 {
-	MRPT_UNUSED_PARAM(use_kmeansplusplus_method);
 	MRPT_START
 	ASSERT_(k >= 1);
 	const size_t N = points.size();

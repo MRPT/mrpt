@@ -168,9 +168,9 @@ bool CPosePDFGrid::saveToTextFile(const std::string& dataFile) const
 /*---------------------------------------------------------------
 						changeCoordinatesReference
   ---------------------------------------------------------------*/
-void CPosePDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
+void CPosePDFGrid::changeCoordinatesReference([
+	[maybe_unused]] const CPose3D& newReferenceBase)
 {
-	MRPT_UNUSED_PARAM(newReferenceBase);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
@@ -178,30 +178,25 @@ void CPosePDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
 					bayesianFusion
  ---------------------------------------------------------------*/
 void CPosePDFGrid::bayesianFusion(
-	const CPosePDF& p1, const CPosePDF& p2,
-	const double minMahalanobisDistToDrop)
+	[[maybe_unused]] const CPosePDF& p1, [[maybe_unused]] const CPosePDF& p2,
+	[[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(p2);
-	MRPT_UNUSED_PARAM(minMahalanobisDistToDrop);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
 /*---------------------------------------------------------------
 					inverse
  ---------------------------------------------------------------*/
-void CPosePDFGrid::inverse(CPosePDF& o) const
+void CPosePDFGrid::inverse([[maybe_unused]] CPosePDF& o) const
 {
-	MRPT_UNUSED_PARAM(o);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
 /*---------------------------------------------------------------
 					drawSingleSample
  ---------------------------------------------------------------*/
-void CPosePDFGrid::drawSingleSample(CPose2D& outPart) const
+void CPosePDFGrid::drawSingleSample([[maybe_unused]] CPose2D& outPart) const
 {
-	MRPT_UNUSED_PARAM(outPart);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
@@ -209,11 +204,9 @@ void CPosePDFGrid::drawSingleSample(CPose2D& outPart) const
 					drawSingleSample
  ---------------------------------------------------------------*/
 void CPosePDFGrid::drawManySamples(
-	size_t N, std::vector<CVectorDouble>& outSamples) const
+	[[maybe_unused]] size_t N,
+	[[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
 {
-	MRPT_UNUSED_PARAM(N);
-	MRPT_UNUSED_PARAM(outSamples);
-
 	THROW_EXCEPTION("Not implemented yet!");
 }
 

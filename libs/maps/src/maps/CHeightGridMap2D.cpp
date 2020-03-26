@@ -156,11 +156,9 @@ bool CHeightGridMap2D::internal_insertObservation(
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CHeightGridMap2D::internal_computeObservationLikelihood(
-	const CObservation& obs, const CPose3D& takenFrom)
+	[[maybe_unused]] const CObservation& obs,
+	[[maybe_unused]] const CPose3D& takenFrom)
 {
-	MRPT_UNUSED_PARAM(obs);
-	MRPT_UNUSED_PARAM(takenFrom);
-
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
@@ -417,12 +415,9 @@ void CHeightGridMap2D::dem_update_map()
 }
 
 float CHeightGridMap2D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap* otherMap,
-	const mrpt::poses::CPose3D& otherMapPose,
-	const TMatchingRatioParams& params) const
+	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+	[[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
+	[[maybe_unused]] const TMatchingRatioParams& params) const
 {
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(params);
 	return 0;
 }

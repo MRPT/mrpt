@@ -74,10 +74,9 @@ void CObservationVisualLandmarks::serializeFrom(
  invalid class.
   ---------------------------------------------------------------*/
 float CObservationVisualLandmarks::likelihoodWith(
-	const CObservation* anotherObs, const CPosePDF* anotherObsPose) const
+	[[maybe_unused]] const CObservation* anotherObs,
+	[[maybe_unused]] const CPosePDF* anotherObsPose) const
 {
-	MRPT_UNUSED_PARAM(anotherObs);
-	MRPT_UNUSED_PARAM(anotherObsPose);
 	return 0;
 }
 

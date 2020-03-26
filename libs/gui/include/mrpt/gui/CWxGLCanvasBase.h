@@ -95,16 +95,15 @@ class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
 	void setCameraPose(const mrpt::poses::CPose3D& camPose);
 
 	/**  Methods that can be implemented in custom derived classes  */
-	virtual void OnCharCustom(wxKeyEvent& event) { MRPT_UNUSED_PARAM(event); }
+	virtual void OnCharCustom([[maybe_unused]] wxKeyEvent& event) {}
 	virtual void OnPreRender() {}
 	virtual void OnPostRender() {}
-	virtual void OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
+	virtual void OnPostRenderSwapBuffers(
+		[[maybe_unused]] double At, [[maybe_unused]] wxPaintDC& dc)
 	{
-		MRPT_UNUSED_PARAM(At);
-		MRPT_UNUSED_PARAM(dc);
 	}
 
-	virtual void OnRenderError(const wxString& str) { MRPT_UNUSED_PARAM(str); }
+	virtual void OnRenderError([[maybe_unused]] const wxString& str) {}
 
    protected:
 	std::unique_ptr<wxGLContext> m_gl_context;

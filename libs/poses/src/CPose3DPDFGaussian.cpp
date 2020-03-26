@@ -49,11 +49,10 @@ CPose3DPDFGaussian::CPose3DPDFGaussian() : mean(0, 0, 0), cov() {}
 /*---------------------------------------------------------------
 	Constructor
   ---------------------------------------------------------------*/
-CPose3DPDFGaussian::CPose3DPDFGaussian(
-	TConstructorFlags_Poses constructor_dummy_param)
+CPose3DPDFGaussian::CPose3DPDFGaussian([
+	[maybe_unused]] TConstructorFlags_Poses constructor_dummy_param)
 	: mean(UNINITIALIZED_POSE), cov(UNINITIALIZED_MATRIX)
 {
-	MRPT_UNUSED_PARAM(constructor_dummy_param);
 }
 
 /*---------------------------------------------------------------
@@ -104,10 +103,9 @@ void ffff(
 #endif
 
 static void aux_posequat2poseypr(
-	const CVectorFixedDouble<7>& x, const double& dummy,
+	const CVectorFixedDouble<7>& x, [[maybe_unused]] const double& dummy,
 	CVectorFixedDouble<6>& y)
 {
-	MRPT_UNUSED_PARAM(dummy);
 	y[0] = x[0];
 	y[1] = x[1];
 	y[2] = x[2];
@@ -365,10 +363,9 @@ void CPose3DPDFGaussian::drawManySamples(
 					bayesianFusion
  ---------------------------------------------------------------*/
 void CPose3DPDFGaussian::bayesianFusion(
-	const CPose3DPDF& p1_, const CPose3DPDF& p2_)
+	[[maybe_unused]] const CPose3DPDF& p1_,
+	[[maybe_unused]] const CPose3DPDF& p2_)
 {
-	MRPT_UNUSED_PARAM(p1_);
-	MRPT_UNUSED_PARAM(p2_);
 	MRPT_START
 
 	THROW_EXCEPTION("TO DO!!!");
@@ -504,9 +501,8 @@ void CPose3DPDFGaussian::operator-=(const CPose3DPDFGaussian& Ap)
 /*---------------------------------------------------------------
 						evaluatePDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussian::evaluatePDF(const CPose3D& x) const
+double CPose3DPDFGaussian::evaluatePDF([[maybe_unused]] const CPose3D& x) const
 {
-	MRPT_UNUSED_PARAM(x);
 	THROW_EXCEPTION("TO DO!!!");
 
 	/*	CMatrixD	X(6,1);
@@ -526,9 +522,9 @@ double CPose3DPDFGaussian::evaluatePDF(const CPose3D& x) const
 /*---------------------------------------------------------------
 						evaluateNormalizedPDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussian::evaluateNormalizedPDF(const CPose3D& x) const
+double CPose3DPDFGaussian::evaluateNormalizedPDF([
+	[maybe_unused]] const CPose3D& x) const
 {
-	MRPT_UNUSED_PARAM(x);
 	THROW_EXCEPTION("TO DO!!!");
 	/*	CMatrixD	X(3,1);
 		X(0,0) = x.x;

@@ -266,9 +266,9 @@ double CPointPDFParticles::computeKurtosis()
 /*---------------------------------------------------------------
 					drawSingleSample
   ---------------------------------------------------------------*/
-void CPointPDFParticles::drawSingleSample(CPoint3D& outSample) const
+void CPointPDFParticles::drawSingleSample([
+	[maybe_unused]] CPoint3D& outSample) const
 {
-	MRPT_UNUSED_PARAM(outSample);
 	THROW_EXCEPTION("TO DO!");
 }
 
@@ -276,12 +276,10 @@ void CPointPDFParticles::drawSingleSample(CPoint3D& outSample) const
 					bayesianFusion
  ---------------------------------------------------------------*/
 void CPointPDFParticles::bayesianFusion(
-	const CPointPDF& p1_, const CPointPDF& p2_,
-	const double minMahalanobisDistToDrop)
+	[[maybe_unused]] const CPointPDF& p1_,
+	[[maybe_unused]] const CPointPDF& p2_,
+	[[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-	MRPT_UNUSED_PARAM(p1_);
-	MRPT_UNUSED_PARAM(p2_);
-	MRPT_UNUSED_PARAM(minMahalanobisDistToDrop);
 	MRPT_START
 
 	THROW_EXCEPTION("TODO!!!");

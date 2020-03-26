@@ -215,7 +215,8 @@ void CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	}
 }
 
-bool CSwissRanger3DCamera::getMesaLibVersion(std::string& out_version) const
+bool CSwissRanger3DCamera::getMesaLibVersion([
+	[maybe_unused]] std::string& out_version) const
 {
 #if MRPT_HAS_SWISSRANGE
 	unsigned short version[4];
@@ -225,7 +226,6 @@ bool CSwissRanger3DCamera::getMesaLibVersion(std::string& out_version) const
 		format("%d.%d.%d.%d", version[3], version[2], version[1], version[0]);
 	return true;
 #else
-	MRPT_UNUSED_PARAM(out_version);
 	return false;
 #endif
 }
@@ -345,8 +345,8 @@ void CSwissRanger3DCamera::internal_resendParamsToCamera() const
  * \sa doProcess
  */
 void CSwissRanger3DCamera::getNextObservation(
-	mrpt::obs::CObservation3DRangeScan& m_out_obs, bool& there_is_obs,
-	bool& hardware_error)
+	[[maybe_unused]] mrpt::obs::CObservation3DRangeScan& m_out_obs,
+	[[maybe_unused]] bool& there_is_obs, [[maybe_unused]] bool& hardware_error)
 {
 	there_is_obs = false;
 	hardware_error = false;
@@ -581,18 +581,14 @@ void CSwissRanger3DCamera::getNextObservation(
 	}
 
 	return;
-#else
-	MRPT_UNUSED_PARAM(m_out_obs);
-	MRPT_UNUSED_PARAM(there_is_obs);
-	MRPT_UNUSED_PARAM(hardware_error);
 #endif
 }
 
 /* -----------------------------------------------------
 				setPathForExternalImages
 ----------------------------------------------------- */
-void CSwissRanger3DCamera::setPathForExternalImages(
-	const std::string& directory)
+void CSwissRanger3DCamera::setPathForExternalImages([
+	[maybe_unused]] const std::string& directory)
 {
 	return;
 	// Ignore for now. It seems performance is better grabbing everything

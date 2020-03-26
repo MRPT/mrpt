@@ -27,16 +27,15 @@ CFixedIntervalsNRD<GRAPH_T>::CFixedIntervalsNRD()
 template <class GRAPH_T>
 bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 	mrpt::obs::CActionCollection::Ptr action,
-	mrpt::obs::CSensoryFrame::Ptr observations,
+	[[maybe_unused]] mrpt::obs::CSensoryFrame::Ptr observations,
 	mrpt::obs::CObservation::Ptr observation)
 {
+	// don't use the measurements in this implementation
+
 	MRPT_START
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
-
-	// don't use the measurements in this implementation
-	MRPT_UNUSED_PARAM(observations);
 
 	if (observation)
 	{  // FORMAT #2 - observation-only format

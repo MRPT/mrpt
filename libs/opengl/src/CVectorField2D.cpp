@@ -29,15 +29,11 @@ CVectorField2D::CVectorField2D() : xcomp(0, 0), ycomp(0, 0)
 
 /** Constructor with a initial set of lines. */
 CVectorField2D::CVectorField2D(
-	CMatrixFloat Matrix_x, CMatrixFloat Matrix_y, float xmin, float xmax,
-	float ymin, float ymax)
+	[[maybe_unused]] CMatrixFloat Matrix_x,
+	[[maybe_unused]] CMatrixFloat Matrix_y, [[maybe_unused]] float xmin,
+	[[maybe_unused]] float xmax, [[maybe_unused]] float ymin,
+	[[maybe_unused]] float ymax)
 {
-	MRPT_UNUSED_PARAM(Matrix_x);
-	MRPT_UNUSED_PARAM(Matrix_y);
-	MRPT_UNUSED_PARAM(xmin);
-	MRPT_UNUSED_PARAM(xmax);
-	MRPT_UNUSED_PARAM(ymin);
-	MRPT_UNUSED_PARAM(ymax);
 	m_point_color = m_color;
 	m_field_color = m_color;
 }

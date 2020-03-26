@@ -458,7 +458,6 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 	nodes_to_optimize = nullptr;
 
 	this->m_time_logger.leave("CLevMarqGSO::_optimizeGraph");
-	MRPT_UNUSED_PARAM(elapsed_time);
 	MRPT_END
 }  // end of _optimizeGraph
 
