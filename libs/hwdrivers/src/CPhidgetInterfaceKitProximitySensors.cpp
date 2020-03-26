@@ -56,8 +56,8 @@ CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors()
 				loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+	[[maybe_unused]] const mrpt::config::CConfigFileBase& configSource,
+	[[maybe_unused]] const std::string& iniSection)
 {
 #if MRPT_HAS_PHIDGET
 	if (!configSource.sectionExists(iniSection))
@@ -181,9 +181,6 @@ void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 				"-----------------+"
 			 << endl;
 	}
-#else
-	MRPT_UNUSED_PARAM(configSource);
-	MRPT_UNUSED_PARAM(iniSection);
 #endif
 }
 
@@ -274,8 +271,8 @@ void CPhidgetInterfaceKitProximitySensors::doProcess()
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-void CPhidgetInterfaceKitProximitySensors::getObservation(
-	mrpt::obs::CObservationRange& obs)
+void CPhidgetInterfaceKitProximitySensors::getObservation([
+	[maybe_unused]] mrpt::obs::CObservationRange& obs)
 {
 #if MRPT_HAS_PHIDGET
 	obs.timestamp = mrpt::system::getCurrentTime();
@@ -326,7 +323,5 @@ void CPhidgetInterfaceKitProximitySensors::getObservation(
 			obs.sensedData.push_back(obsRange);
 		}
 	}
-#else
-	MRPT_UNUSED_PARAM(obs);
 #endif
 }

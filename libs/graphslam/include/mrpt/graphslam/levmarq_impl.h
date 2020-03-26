@@ -36,25 +36,24 @@ struct AuxErrorEval<CPose2D, gst>
 {
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJtLambdaJ(
-		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
+		const MAT& J1, MAT& JtJ, [[maybe_unused]] const EDGE_ITERATOR& edge)
 	{
-		MRPT_UNUSED_PARAM(edge);
 		JtJ.matProductOf_AtA(J1);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJ1tLambdaJ2(
-		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
+		const MAT& J1, const MAT& J2, MAT& JtJ,
+		[[maybe_unused]] const EDGE_ITERATOR& edge)
 	{
-		MRPT_UNUSED_PARAM(edge);
 		JtJ.asEigen() = J1.transpose() * J2.asEigen();
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
 	static inline void multiply_Jt_W_err(
-		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
+		const JAC& J, [[maybe_unused]] const EDGE_ITERATOR& edge,
+		const VEC1& ERR, VEC2& OUT)
 	{
-		MRPT_UNUSED_PARAM(edge);
 		const auto grad_incr = (J.transpose() * ERR.asEigen()).eval();
 		OUT.asEigen() += grad_incr;
 	}
@@ -66,25 +65,24 @@ struct AuxErrorEval<CPose3D, gst>
 {
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJtLambdaJ(
-		const MAT& J1, MAT& JtJ, const EDGE_ITERATOR& edge)
+		const MAT& J1, MAT& JtJ, [[maybe_unused]] const EDGE_ITERATOR& edge)
 	{
-		MRPT_UNUSED_PARAM(edge);
 		JtJ.matProductOf_AtA(J1);
 	}
 
 	template <class MAT, class EDGE_ITERATOR>
 	static inline void multiplyJ1tLambdaJ2(
-		const MAT& J1, const MAT& J2, MAT& JtJ, const EDGE_ITERATOR& edge)
+		const MAT& J1, const MAT& J2, MAT& JtJ,
+		[[maybe_unused]] const EDGE_ITERATOR& edge)
 	{
-		MRPT_UNUSED_PARAM(edge);
 		JtJ.asEigen() = J1.transpose() * J2.asEigen();
 	}
 
 	template <class JAC, class EDGE_ITERATOR, class VEC1, class VEC2>
 	static inline void multiply_Jt_W_err(
-		const JAC& J, const EDGE_ITERATOR& edge, const VEC1& ERR, VEC2& OUT)
+		const JAC& J, [[maybe_unused]] const EDGE_ITERATOR& edge,
+		const VEC1& ERR, VEC2& OUT)
 	{
-		MRPT_UNUSED_PARAM(edge);
 		OUT.asEigen() += J.transpose() * ERR.asEigen();
 	}
 };
@@ -152,13 +150,12 @@ struct AuxErrorEval<CPose3DPDFGaussianInf, gst>
 // "lstObservationData", returns the overall squared error.
 template <class GRAPH_T>
 double computeJacobiansAndErrors(
-	const GRAPH_T& graph,
+	[[maybe_unused]] const GRAPH_T& graph,
 	const std::vector<typename graphslam_traits<GRAPH_T>::observation_info_t>&
 		lstObservationData,
 	typename graphslam_traits<GRAPH_T>::map_pairIDs_pairJacobs_t& lstJacobians,
 	std::vector<typename graphslam_traits<GRAPH_T>::Array_O>& errs)
 {
-	MRPT_UNUSED_PARAM(graph);
 	using gst = graphslam_traits<GRAPH_T>;
 
 	lstJacobians.clear();

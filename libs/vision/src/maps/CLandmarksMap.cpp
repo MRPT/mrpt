@@ -559,19 +559,17 @@ bool CLandmarksMap::internal_insertObservation(
 				computeMatchingWith2D
   ---------------------------------------------------------------*/
 void CLandmarksMap::computeMatchingWith2D(
-	const mrpt::maps::CMetricMap* otherMap, const CPose2D& otherMapPose,
-	float maxDistForCorrespondence, float maxAngularDistForCorrespondence,
-	const CPose2D& angularDistPivotPoint, TMatchingPairList& correspondences,
-	float& correspondencesRatio, float* sumSqrDist, bool onlyKeepTheClosest,
-	bool onlyUniqueRobust) const
+	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+	[[maybe_unused]] const CPose2D& otherMapPose,
+	[[maybe_unused]] float maxDistForCorrespondence,
+	[[maybe_unused]] float maxAngularDistForCorrespondence,
+	[[maybe_unused]] const CPose2D& angularDistPivotPoint,
+	[[maybe_unused]] TMatchingPairList& correspondences,
+	[[maybe_unused]] float& correspondencesRatio,
+	[[maybe_unused]] float* sumSqrDist,
+	[[maybe_unused]] bool onlyKeepTheClosest,
+	[[maybe_unused]] bool onlyUniqueRobust) const
 {
-	MRPT_UNUSED_PARAM(onlyKeepTheClosest);
-	MRPT_UNUSED_PARAM(onlyUniqueRobust);
-	MRPT_UNUSED_PARAM(sumSqrDist);
-	MRPT_UNUSED_PARAM(angularDistPivotPoint);
-	MRPT_UNUSED_PARAM(maxDistForCorrespondence);
-	MRPT_UNUSED_PARAM(maxAngularDistForCorrespondence);
-
 	MRPT_START
 
 	CLandmarksMap auxMap;
@@ -1651,9 +1649,8 @@ void CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
 
   ---------------------------------------------------------------*/
 double CLandmarksMap::computeLikelihood_RSLC_2007(
-	const CLandmarksMap* s, const CPose2D& sensorPose)
+	const CLandmarksMap* s, [[maybe_unused]] const CPose2D& sensorPose)
 {
-	MRPT_UNUSED_PARAM(sensorPose);
 	MRPT_START
 
 	double lik = 1.0;

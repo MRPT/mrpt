@@ -570,11 +570,9 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
  ---------------------------------------------------------------*/
 double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-	const CParticleFilterCapable* obj, size_t index, const void* action,
-	const void* observation)
+	const CParticleFilterCapable* obj, size_t index,
+	[[maybe_unused]] const void* action, const void* observation)
 {
-	MRPT_UNUSED_PARAM(action);
-
 	MRPT_START
 
 	const auto* myObj = static_cast<const CLocalMetricHypothesis*>(obj);
@@ -662,11 +660,11 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 				auxiliarComputeObservationLikelihood
  ---------------------------------------------------------------*/
 double CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options,
+	[[maybe_unused]] const bayes::CParticleFilter::TParticleFilterOptions&
+		PF_options,
 	const CParticleFilterCapable* obj, size_t particleIndexForMap,
 	const CSensoryFrame* observation, const CPose2D* x)
 {
-	MRPT_UNUSED_PARAM(PF_options);
 	const auto* theObj = static_cast<const CLocalMetricHypothesis*>(obj);
 	auto* map = const_cast<CMultiMetricMap*>(
 		&theObj->m_particles[particleIndexForMap].d->metricMaps);

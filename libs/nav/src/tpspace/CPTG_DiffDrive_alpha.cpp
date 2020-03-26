@@ -81,11 +81,9 @@ void CPTG_DiffDrive_alpha::serializeTo(mrpt::serialization::CArchive& out) const
 						ptgDiffDriveSteeringFunction
   ---------------------------------------------------------------*/
 void CPTG_DiffDrive_alpha::ptgDiffDriveSteeringFunction(
-	float alpha, float t, float x, float y, float phi, float& v, float& w) const
+	float alpha, [[maybe_unused]] float t, [[maybe_unused]] float x,
+	[[maybe_unused]] float y, float phi, float& v, float& w) const
 {
-	MRPT_UNUSED_PARAM(t);
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
 	float At_a = alpha - phi;
 
 	while (At_a > M_PI) At_a -= (float)M_2PI;

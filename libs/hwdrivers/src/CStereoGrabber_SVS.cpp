@@ -28,7 +28,8 @@ using namespace mrpt::hwdrivers;
 					Constructor
  -------------------------------------------------------------*/
 CStereoGrabber_SVS::CStereoGrabber_SVS(
-	int cameraIndex, const TCaptureOptions_SVS& options)
+	[[maybe_unused]] int cameraIndex,
+	[[maybe_unused]] const TCaptureOptions_SVS& options)
 	: m_resolutionX(options.frame_width),
 	  m_resolutionY(options.frame_height),
 	  m_procesOnChip(options.m_procesOnChip),
@@ -159,7 +160,6 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 	m_status = false;
 
 #else
-	MRPT_UNUSED_PARAM(cameraIndex);
 	THROW_EXCEPTION("This class requires MRPT built with Videre SVS library.");
 #endif
 }
@@ -178,8 +178,8 @@ CStereoGrabber_SVS::~CStereoGrabber_SVS()
 /*-------------------------------------------------------------
 					get the image
  -------------------------------------------------------------*/
-bool CStereoGrabber_SVS::getStereoObservation(
-	mrpt::obs::CObservationStereoImages& out_observation)
+bool CStereoGrabber_SVS::getStereoObservation([
+	[maybe_unused]] mrpt::obs::CObservationStereoImages& out_observation)
 {
 #if MRPT_HAS_SVS
 	if ((m_stereoImage =
@@ -307,7 +307,6 @@ bool CStereoGrabber_SVS::getStereoObservation(
 	return false;
 // All ok
 #else
-	MRPT_UNUSED_PARAM(out_observation);
 	// No need to raise an exception on "#else" since it's already raised upon
 	// construction.
 	return false;  // This shouldn't actually be never reached, just to please

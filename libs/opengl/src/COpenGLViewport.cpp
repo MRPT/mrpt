@@ -456,8 +456,10 @@ void COpenGLViewport::renderTextMessages() const
 }
 
 void COpenGLViewport::render(
-	const int render_width, const int render_height, const int render_offset_x,
-	const int render_offset_y) const
+	[[maybe_unused]] const int render_width,
+	[[maybe_unused]] const int render_height,
+	[[maybe_unused]] const int render_offset_x,
+	[[maybe_unused]] const int render_offset_y) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
@@ -542,8 +544,6 @@ void COpenGLViewport::render(
 
 	MRPT_END
 #else
-	MRPT_UNUSED_PARAM(render_width);
-	MRPT_UNUSED_PARAM(render_height);
 	THROW_EXCEPTION(
 		"The MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL "
 		"functions are not implemented");

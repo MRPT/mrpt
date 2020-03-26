@@ -294,9 +294,8 @@ skip_input_data(j_decompress_ptr cinfo, long num_bytes)
  */
 
 METHODDEF(void)
-term_source(j_decompress_ptr cinfo)
+term_source([[maybe_unused]] j_decompress_ptr cinfo)
 {
-	MRPT_UNUSED_PARAM(cinfo);
 	/* no work necessary here */
 }
 

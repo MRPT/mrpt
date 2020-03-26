@@ -36,12 +36,11 @@ CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD()
 
 template <class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::updateState(
-	mrpt::obs::CActionCollection::Ptr action,
+	[[maybe_unused]] mrpt::obs::CActionCollection::Ptr action,
 	mrpt::obs::CSensoryFrame::Ptr observations,
 	mrpt::obs::CObservation::Ptr observation)
 {
 	MRPT_START
-	MRPT_UNUSED_PARAM(action);
 	this->m_time_logger.enter("updateState");
 
 	using namespace mrpt::obs;

@@ -124,20 +124,8 @@ void init_fonts_list()
 ---------------------------------------------------------------*/
 void CCanvas::line(
 	int x0, int y0, int x1, int y1, const mrpt::img::TColor color,
-	unsigned int width, TPenStyle penStyle)
+	[[maybe_unused]] unsigned int width, [[maybe_unused]] TPenStyle penStyle)
 {
-	MRPT_UNUSED_PARAM(width);
-	MRPT_UNUSED_PARAM(penStyle);
-
-	/*	// JL: worthy annoying so much?
-		static bool warningFirst = true;
-		if (warningFirst)
-		{
-			warningFirst=false;
-			printf("[CCanvas::line] WARNING: Using default drawing method,
-	   ignoring 'width' and 'penStyle'!!\n");
-		}*/
-
 	float x, y;
 
 	auto Ax = (float)(x1 - x0);
@@ -302,14 +290,10 @@ void CCanvas::drawImage(int x, int y, const mrpt::img::CImage& img)
 						drawImage
 ---------------------------------------------------------------*/
 void CCanvas::drawImage(
-	int x, int y, const mrpt::img::CImage& img, float rotation, float scale)
+	[[maybe_unused]] int x, [[maybe_unused]] int y,
+	[[maybe_unused]] const mrpt::img::CImage& img,
+	[[maybe_unused]] float rotation, [[maybe_unused]] float scale)
 {
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
-	MRPT_UNUSED_PARAM(img);
-	MRPT_UNUSED_PARAM(rotation);
-	MRPT_UNUSED_PARAM(scale);
-
 	MRPT_START
 
 	THROW_EXCEPTION("Not implemented yet!! Try yourself! ;-)");

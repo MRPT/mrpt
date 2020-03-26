@@ -79,7 +79,7 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 		if (iter % 2)
 		{
 			for (size_t i = 0; i < nWr; i++) ret = cb.peek(i);
-			MRPT_UNUSED_PARAM(ret);
+			(void)ret;
 		}
 		else
 		{
@@ -88,7 +88,7 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 		if (iter % 3)
 		{
 			for (size_t i = 0; i < nWr; i++) cb.pop(ret);
-			MRPT_UNUSED_PARAM(ret);
+			(void)ret;
 		}
 		else
 		{

@@ -40,10 +40,9 @@ CBaseGUIWindow::CBaseGUIWindow(
 					Create the wx Window
  ---------------------------------------------------------------*/
 void CBaseGUIWindow::createWxWindow(
-	unsigned int initialWidth, unsigned int initialHeight)
+	[[maybe_unused]] unsigned int initialWidth,
+	[[maybe_unused]] unsigned int initialHeight)
 {
-	MRPT_UNUSED_PARAM(initialWidth);
-	MRPT_UNUSED_PARAM(initialHeight);
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
 	// Create the main wxThread:

@@ -424,9 +424,8 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	PF_SLAM_particlesEvaluator_AuxPFOptimal(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		const mrpt::bayes::CParticleFilterCapable* obj, size_t index,
-		const void* action, const void* observation)
+		[[maybe_unused]] const void* action, const void* observation)
 {
-	MRPT_UNUSED_PARAM(action);
 	MRPT_START
 
 	// const PF_implementation<PARTICLE_TYPE,MYSELF> *myObj =

@@ -69,29 +69,27 @@ std::string CPTG_DiffDrive_C::getDescription() const
 }
 
 void CPTG_DiffDrive_C::ptgDiffDriveSteeringFunction(
-	float alpha, float t, float x, float y, float phi, float& v, float& w) const
+	[[maybe_unused]] float alpha, [[maybe_unused]] float t,
+	[[maybe_unused]] float x, [[maybe_unused]] float y,
+	[[maybe_unused]] float phi, [[maybe_unused]] float& v,
+	[[maybe_unused]] float& w) const
 {
-	MRPT_UNUSED_PARAM(t);
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
-	MRPT_UNUSED_PARAM(phi);
 	// (v,w)
 	v = V_MAX * sign(K);
 	// Use a linear mapping:  (Old was: w = tan( alpha/2 ) * W_MAX * sign(K))
 	w = (alpha / M_PI) * W_MAX * sign(K);
 }
 
-bool CPTG_DiffDrive_C::PTG_IsIntoDomain(double x, double y) const
+bool CPTG_DiffDrive_C::PTG_IsIntoDomain(
+	[[maybe_unused]] double x, [[maybe_unused]] double y) const
 {
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
 	return true;
 }
 
 bool CPTG_DiffDrive_C::inverseMap_WS2TP(
-	double x, double y, int& k_out, double& d_out, double tolerance_dist) const
+	double x, double y, int& k_out, double& d_out,
+	[[maybe_unused]] double tolerance_dist) const
 {
-	MRPT_UNUSED_PARAM(tolerance_dist);
 	bool is_exact = true;
 	if (y != 0)
 	{

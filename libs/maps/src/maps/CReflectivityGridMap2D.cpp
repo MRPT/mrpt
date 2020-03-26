@@ -287,10 +287,9 @@ void CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(
 					loadFromConfigFile
   ---------------------------------------------------------------*/
 void CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::config::CConfigFileBase& iniFile, const std::string& section)
+	[[maybe_unused]] const mrpt::config::CConfigFileBase& iniFile,
+	[[maybe_unused]] const std::string& section)
 {
-	MRPT_UNUSED_PARAM(iniFile);
-	MRPT_UNUSED_PARAM(section);
 	MRPT_LOAD_CONFIG_VAR(channel, int, iniFile, section);
 }
 
@@ -393,12 +392,9 @@ void CReflectivityGridMap2D::getAs3DObject(
 }
 
 float CReflectivityGridMap2D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap* otherMap,
-	const mrpt::poses::CPose3D& otherMapPose,
-	const TMatchingRatioParams& params) const
+	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+	[[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
+	[[maybe_unused]] const TMatchingRatioParams& params) const
 {
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(params);
 	return 0;
 }

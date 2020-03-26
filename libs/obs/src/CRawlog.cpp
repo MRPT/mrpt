@@ -411,9 +411,9 @@ bool CRawlog::getActionObservationPairOrObservation(
 void CRawlog::findObservationsByClassInRange(
 	mrpt::system::TTimeStamp time_start, mrpt::system::TTimeStamp time_end,
 	const mrpt::rtti::TRuntimeClassId* class_type,
-	TListTimeAndObservations& out_found, size_t guess_start_position) const
+	TListTimeAndObservations& out_found,
+	[[maybe_unused]] size_t guess_start_position) const
 {
-	MRPT_UNUSED_PARAM(guess_start_position);
 	MRPT_START
 
 	out_found.clear();

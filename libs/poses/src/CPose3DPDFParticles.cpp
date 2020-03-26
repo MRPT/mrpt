@@ -250,29 +250,26 @@ void CPose3DPDFParticles::changeCoordinatesReference(
 		p.d = (newReferenceBase + CPose3D(p.d)).asTPose();
 }
 
-void CPose3DPDFParticles::drawSingleSample(CPose3D& outPart) const
+void CPose3DPDFParticles::drawSingleSample([
+	[maybe_unused]] CPose3D& outPart) const
 {
-	MRPT_UNUSED_PARAM(outPart);
 	THROW_EXCEPTION("TO DO!");
 }
 
 void CPose3DPDFParticles::drawManySamples(
-	size_t N, std::vector<CVectorDouble>& outSamples) const
+	[[maybe_unused]] size_t N,
+	[[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
 {
-	MRPT_UNUSED_PARAM(N);
-	MRPT_UNUSED_PARAM(outSamples);
 	THROW_EXCEPTION("TO DO!");
 }
 
-void CPose3DPDFParticles::operator+=(const CPose3D& Ap)
+void CPose3DPDFParticles::operator+=([[maybe_unused]] const CPose3D& Ap)
 {
-	MRPT_UNUSED_PARAM(Ap);
 	THROW_EXCEPTION("TO DO!");
 }
 
-void CPose3DPDFParticles::append(CPose3DPDFParticles& o)
+void CPose3DPDFParticles::append([[maybe_unused]] CPose3DPDFParticles& o)
 {
-	MRPT_UNUSED_PARAM(o);
 	THROW_EXCEPTION("TO DO!");
 }
 
@@ -305,10 +302,9 @@ TPose3D CPose3DPDFParticles::getMostLikelyParticle() const
 }
 
 void CPose3DPDFParticles::bayesianFusion(
-	const CPose3DPDF& p1, const CPose3DPDF& p2)
+	[[maybe_unused]] const CPose3DPDF& p1,
+	[[maybe_unused]] const CPose3DPDF& p2)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(p2);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 

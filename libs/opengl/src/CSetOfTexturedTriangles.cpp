@@ -75,10 +75,9 @@ void CSetOfTexturedTriangles::serializeFrom(
 }
 
 bool CSetOfTexturedTriangles::traceRay(
-	const mrpt::poses::CPose3D& o, double& dist) const
+	[[maybe_unused]] const mrpt::poses::CPose3D& o,
+	[[maybe_unused]] double& dist) const
 {
-	MRPT_UNUSED_PARAM(o);
-	MRPT_UNUSED_PARAM(dist);
 	throw std::runtime_error(
 		"TODO: TraceRay not implemented in CSetOfTexturedTriangles");
 }

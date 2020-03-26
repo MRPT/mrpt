@@ -245,13 +245,10 @@ void CPosePDFSOG::rotateAllCovariances(double ang)
 /*---------------------------------------------------------------
 					drawSingleSample
  ---------------------------------------------------------------*/
-void CPosePDFSOG::drawSingleSample(CPose2D& outPart) const
+void CPosePDFSOG::drawSingleSample([[maybe_unused]] CPose2D& outPart) const
 {
 	MRPT_START
-	MRPT_UNUSED_PARAM(outPart);
-
 	THROW_EXCEPTION("Not implemented yet!!");
-
 	MRPT_END
 }
 
@@ -259,11 +256,10 @@ void CPosePDFSOG::drawSingleSample(CPose2D& outPart) const
 					drawManySamples
  ---------------------------------------------------------------*/
 void CPosePDFSOG::drawManySamples(
-	size_t N, std::vector<CVectorDouble>& outSamples) const
+	[[maybe_unused]] size_t N,
+	[[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
 {
 	MRPT_START
-	MRPT_UNUSED_PARAM(N);
-	MRPT_UNUSED_PARAM(outSamples);
 
 	THROW_EXCEPTION("Not implemented yet!!");
 
@@ -275,11 +271,9 @@ void CPosePDFSOG::drawManySamples(
  ---------------------------------------------------------------*/
 void CPosePDFSOG::bayesianFusion(
 	const CPosePDF& p1_, const CPosePDF& p2_,
-	const double minMahalanobisDistToDrop)
+	[[maybe_unused]] const double minMahalanobisDistToDrop)
 {
 	MRPT_START
-
-	MRPT_UNUSED_PARAM(minMahalanobisDistToDrop);
 
 	// p1: CPosePDFSOG, p2: CPosePDFGaussian:
 

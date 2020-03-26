@@ -209,10 +209,9 @@ void CAngularObservationMesh::onUpdateBuffers_Triangles()
 }
 
 bool CAngularObservationMesh::traceRay(
-	const mrpt::poses::CPose3D& o, double& dist) const
+	[[maybe_unused]] const mrpt::poses::CPose3D& o,
+	[[maybe_unused]] double& dist) const
 {
-	MRPT_UNUSED_PARAM(o);
-	MRPT_UNUSED_PARAM(dist);
 	// TODO: redo
 	return false;
 }

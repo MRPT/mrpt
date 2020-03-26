@@ -331,22 +331,21 @@ CDisplayWindow::CDisplayWindow(
 CDisplayWindow::~CDisplayWindow() { CBaseGUIWindow::destroyWxWindow(); }
 /** Set cursor style to default (cursorIsCross=false) or to a cross
  * (cursorIsCross=true) */
-void CDisplayWindow::setCursorCross(bool cursorIsCross)
+void CDisplayWindow::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const auto* win = (const CWindowDialog*)m_hwnd.get();
 	if (!win) return;
 	win->m_image->SetCursor(
 		*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
-#else
-	MRPT_UNUSED_PARAM(cursorIsCross);
 #endif
 }
 
 /*---------------------------------------------------------------
 					getLastMousePosition
  ---------------------------------------------------------------*/
-bool CDisplayWindow::getLastMousePosition(int& x, int& y) const
+bool CDisplayWindow::getLastMousePosition(
+	[[maybe_unused]] int& x, [[maybe_unused]] int& y) const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const auto* win = (const CWindowDialog*)m_hwnd.get();
@@ -355,8 +354,6 @@ bool CDisplayWindow::getLastMousePosition(int& x, int& y) const
 	y = win->m_image->m_last_mouse_point.y;
 	return true;
 #else
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
 	return false;
 #endif
 }
@@ -364,7 +361,7 @@ bool CDisplayWindow::getLastMousePosition(int& x, int& y) const
 /*---------------------------------------------------------------
 					showImage
  ---------------------------------------------------------------*/
-void CDisplayWindow::showImage(const CImage& img)
+void CDisplayWindow::showImage([[maybe_unused]] const CImage& img)
 {
 #if MRPT_HAS_WXWIDGETS
 	MRPT_START
@@ -381,8 +378,6 @@ void CDisplayWindow::showImage(const CImage& img)
 	WxSubsystem::pushPendingWxRequest(REQ);
 
 	MRPT_END
-#else
-	MRPT_UNUSED_PARAM(img);
 #endif
 }
 
@@ -400,8 +395,10 @@ void CDisplayWindow::showImageAndPoints(
 }
 
 void CDisplayWindow::showImageAndPoints(
-	const CImage& img, const std::vector<float>& x, const std::vector<float>& y,
-	const TColor& color, bool showNumbers)
+	[[maybe_unused]] const CImage& img,
+	[[maybe_unused]] const std::vector<float>& x,
+	[[maybe_unused]] const std::vector<float>& y,
+	[[maybe_unused]] const TColor& color, [[maybe_unused]] bool showNumbers)
 {
 #if MRPT_HAS_WXWIDGETS
 	MRPT_START
@@ -421,12 +418,6 @@ void CDisplayWindow::showImageAndPoints(
 	}  // end-for
 	showImage(imgColor);
 	MRPT_END
-#else
-	MRPT_UNUSED_PARAM(img);
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
-	MRPT_UNUSED_PARAM(color);
-	MRPT_UNUSED_PARAM(showNumbers);
 #endif
 }
 
@@ -537,7 +528,8 @@ void CDisplayWindow::plot(const CVectorFloat& y)
 /*---------------------------------------------------------------
 					resize
  ---------------------------------------------------------------*/
-void CDisplayWindow::resize(unsigned int width, unsigned int height)
+void CDisplayWindow::resize(
+	[[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height)
 {
 #if MRPT_HAS_WXWIDGETS
 	if (!isOpen())
@@ -554,16 +546,13 @@ void CDisplayWindow::resize(unsigned int width, unsigned int height)
 	REQ->x = width;
 	REQ->y = height;
 	WxSubsystem::pushPendingWxRequest(REQ);
-#else
-	MRPT_UNUSED_PARAM(width);
-	MRPT_UNUSED_PARAM(height);
 #endif
 }
 
 /*---------------------------------------------------------------
 					setPos
  ---------------------------------------------------------------*/
-void CDisplayWindow::setPos(int x, int y)
+void CDisplayWindow::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
 {
 #if MRPT_HAS_WXWIDGETS
 	if (!isOpen())
@@ -580,16 +569,13 @@ void CDisplayWindow::setPos(int x, int y)
 	REQ->x = x;
 	REQ->y = y;
 	WxSubsystem::pushPendingWxRequest(REQ);
-#else
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
 #endif
 }
 
 /*---------------------------------------------------------------
 					setWindowTitle
  ---------------------------------------------------------------*/
-void CDisplayWindow::setWindowTitle(const std::string& str)
+void CDisplayWindow::setWindowTitle([[maybe_unused]] const std::string& str)
 {
 #if MRPT_HAS_WXWIDGETS
 	if (!isOpen())
@@ -605,7 +591,5 @@ void CDisplayWindow::setWindowTitle(const std::string& str)
 	REQ->OPCODE = 204;
 	REQ->str = str;
 	WxSubsystem::pushPendingWxRequest(REQ);
-#else
-	MRPT_UNUSED_PARAM(str);
 #endif
 }

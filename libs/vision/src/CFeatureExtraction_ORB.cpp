@@ -24,9 +24,8 @@ using namespace std;
 void CFeatureExtraction::extractFeaturesORB(
 	const mrpt::img::CImage& inImg, CFeatureList& feats,
 	const unsigned int init_ID, const unsigned int nDesiredFeatures,
-	const TImageROI& ROI)
+	[[maybe_unused]] const TImageROI& ROI)
 {
-	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
 
 	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesORB");
