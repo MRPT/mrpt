@@ -11,7 +11,7 @@
 
 #include <mrpt/config.h>
 
-#if MRPT_HAS_SSE2
+#if MRPT_ARCH_INTEL_COMPATIBLE
 // ---------------------------------------------------------------------------
 //   This file contains the SSE2 optimized functions for mrpt::img::CImage
 //    See the sources and the doxygen documentation page "sse_optimizations" for
@@ -26,7 +26,7 @@
 #include <mrpt/core/SSE_types.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/memory.h>
-#include "CImage_SSEx.h"
+#include "CImage.SSEx.h"
 
 /** \addtogroup sse_optimizations
  *  SSE optimized functions
@@ -189,4 +189,4 @@ void image_SSE2_scale_half_smooth_1c8u(
 
 /**  @} */
 
-#endif  // end if MRPT_HAS_SSE2
+#endif  // end if MRPT_ARCH_INTEL_COMPATIBLE

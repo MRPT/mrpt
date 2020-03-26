@@ -48,6 +48,20 @@ function(mrpt_lib_target_requires_cpp17 _TARGET)
 	endif()
 endfunction()
 
+
+# handle_special_simd_flags(): Add custom flags to a set of source files
+# Only for Intel-compatible archs
+#-----------------------------------------------------------------------
+function(handle_special_simd_flags lst_files FILE_PATTERN FLAGS_TO_ADD)
+	if (MRPT_COMPILER_IS_GCC_OR_CLANG AND MRPT_ARCH_INTEL_COMPATIBLE)
+		set(_lst ${lst_files})
+		KEEP_MATCHING_FILES_FROM_LIST(${FILE_PATTERN} _lst)
+		if(NOT "${_lst}" STREQUAL "")
+			set_source_files_properties(${_lst} PROPERTIES COMPILE_FLAGS "${FLAGS_TO_ADD}")
+		endif()
+	endif()
+endfunction()
+
 # define_mrpt_lib(): Declares an MRPT library target:
 #-----------------------------------------------------------------------
 macro(define_mrpt_lib name)
@@ -180,14 +194,13 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	endif()
 
 
-	# Make a list of files matching: _SSE3
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG AND MRPT_ARCH_INTEL_COMPATIBLE)
-		set(_lst ${${name}_srcs})
-		KEEP_MATCHING_FILES_FROM_LIST(".*_SSE3.cpp" _lst)
-		if(NOT "${_lst}" STREQUAL "")
-			set_source_files_properties("${_lst}" PROPERTIES COMPILE_FLAGS "-msse3 -mssse3")
-		endif()
-	endif()
+	# Enable SIMD especial instructions in especialized source files, even if
+	# those instructions are NOT enabled globally for the entire build:
+	handle_special_simd_flags("${${name}_srcs}" ".*\.SSE2.cpp"  "-msse2")
+	handle_special_simd_flags("${${name}_srcs}" ".*\.SSSE3.cpp"  "-msse3 -mssse3")
+	handle_special_simd_flags("${${name}_srcs}" ".*\.AVX.cpp"  "-mavx")
+	handle_special_simd_flags("${${name}_srcs}" ".*\.AVX2.cpp"  "-mavx2")
+
 
 	# Don't include here the unit testing code:
 	REMOVE_MATCHING_FILES_FROM_LIST(".*_unittest.cpp" ${name}_srcs)

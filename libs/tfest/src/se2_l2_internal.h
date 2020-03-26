@@ -6,25 +6,24 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+
 #pragma once
 
 #include <mrpt/config.h>
-#include <cstdint>
+#include <mrpt/tfest/TMatchingPair.h>
 
-// See documentation in the .cpp files CImage_SSE*.cpp
+namespace mrpt::tfest::internal
+{
+template <typename T = float>
+struct se2_l2_impl_return_t
+{
+	T mean_x_a, mean_y_a, mean_x_b, mean_y_b;
+	T Ax, Ay;
+};
 
-void image_SSE2_scale_half_1c8u(
-	const uint8_t* in, uint8_t* out, int w, int h, size_t in_step,
-	size_t out_step);
-void image_SSSE3_scale_half_3c8u(
-	const uint8_t* in, uint8_t* out, int w, int h, size_t in_step,
-	size_t out_step);
-void image_SSE2_scale_half_smooth_1c8u(
-	const uint8_t* in, uint8_t* out, int w, int h, size_t in_step,
-	size_t out_step);
-void image_SSSE3_rgb_to_gray_8u(
-	const uint8_t* in, uint8_t* out, int w, int h, size_t in_step,
-	size_t out_step);
-void image_SSSE3_bgr_to_gray_8u(
-	const uint8_t* in, uint8_t* out, int w, int h, size_t in_step,
-	size_t out_step);
+#if MRPT_ARCH_INTEL_COMPATIBLE
+extern se2_l2_impl_return_t<float> se2_l2_impl_SSE2(
+	const TMatchingPairList& in_correspondences);
+#endif
+
+}  // namespace mrpt::tfest::internal
