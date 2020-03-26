@@ -42,17 +42,7 @@ using mrpt::system::CTicTac;
 
 float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
-CGlCanvasBase::CGlCanvasBase()
-{
-#if defined(MRPT_OS_LINUX)
-	// Workaround to enfore wxWidgets to use GLSL>=3.3 even for wxWidgets<3.1
-	// See CWxGLCanvasBase::CWxGLCanvasBase.
-	if (!::getenv("MESA_GL_VERSION_OVERRIDE"))
-	{
-		::putenv("MESA_GL_VERSION_OVERRIDE=3.3");
-	}
-#endif
-}
+CGlCanvasBase::CGlCanvasBase() {}
 
 CGlCanvasBase::~CGlCanvasBase()
 {

@@ -136,7 +136,7 @@ void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 static int WX_GL_ATTR_LIST[] = {
 	WX_GL_DOUBLEBUFFER,    WX_GL_RGBA,
 	WX_GL_DEPTH_SIZE,     24,
-#if wxCHECK_VERSION(3, 1, 0)
+#if wxCHECK_VERSION(3, 0, 3)
 	WX_GL_MAJOR_VERSION,  3,
 	WX_GL_MINOR_VERSION,  1,
     WX_GL_CORE_PROFILE, // do not allow using opengl 1.x deprecated stuff
