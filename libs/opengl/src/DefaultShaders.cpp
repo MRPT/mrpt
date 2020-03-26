@@ -20,6 +20,15 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 {
 #if MRPT_HAS_OPENGL_GLUT
 
+#if defined(MRPT_OS_LINUX)
+	// Workaround to enfore wxWidgets to use GLSL>=3.3 even for wxWidgets<3.0.4
+	// See CWxGLCanvasBase::CWxGLCanvasBase.
+	if (!::getenv("MESA_GL_VERSION_OVERRIDE"))
+	{
+		::putenv("MESA_GL_VERSION_OVERRIDE=3.3");
+	}
+#endif
+
 	// Vertex shader:
 	const char* vertex_shader = nullptr;
 	const char* fragment_shader = nullptr;
