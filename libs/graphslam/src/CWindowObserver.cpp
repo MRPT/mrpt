@@ -63,7 +63,7 @@ void CWindowObserver::OnEvent(const mrpt::system::mrptEvent& e)
 	{
 		const auto& ev =
 			dynamic_cast<const mrpt::system::mrptEventOnDestroy&>(e);
-		MRPT_UNUSED_PARAM(ev);
+		(void)ev;
 		std::cout << "Event received: mrptEventOnDestroy" << std::endl;
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventWindowResize>())

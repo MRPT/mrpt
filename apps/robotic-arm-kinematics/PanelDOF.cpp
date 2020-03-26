@@ -89,7 +89,4 @@ PanelDOF::~PanelDOF()
 	//*)
 }
 
-void PanelDOF::OnSlider1CmdScroll(wxScrollEvent& event)
-{
-	MRPT_UNUSED_PARAM(event);
-}
+void PanelDOF::OnSlider1CmdScroll([[maybe_unused]] wxScrollEvent& event) {}

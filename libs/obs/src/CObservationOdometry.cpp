@@ -44,7 +44,6 @@ void CObservationOdometry::serializeTo(mrpt::serialization::CArchive& out) const
 void CObservationOdometry::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
-	MRPT_UNUSED_PARAM(in);
 	switch (version)
 	{
 		case 0:

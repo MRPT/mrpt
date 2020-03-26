@@ -320,11 +320,10 @@ XsensResultValue Cmt1s::flushData(void)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Open a communication channel to the given serial port name.
 XsensResultValue Cmt1s::open(
-	const char* portName, const uint32_t baudRate, uint32_t readBufSize,
-	uint32_t writeBufSize)
+	const char* portName, const uint32_t baudRate,
+	[[maybe_unused]] uint32_t readBufSize,
+	[[maybe_unused]] uint32_t writeBufSize)
 {
-	MRPT_UNUSED_PARAM(readBufSize);
-	MRPT_UNUSED_PARAM(writeBufSize);
 	m_endTime = 0;
 
 	CMT1LOG("L1: Open port %s at %d baud\n", portName, baudRate);
@@ -827,7 +826,7 @@ XsensResultValue Cmt1f::create(const char* filename)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Create a new file.
-XsensResultValue Cmt1f::create(const wchar_t* filename)
+XsensResultValue Cmt1f::create([[maybe_unused]] const wchar_t* filename)
 {
 	if (m_isOpen) return m_lastResult = XRV_ALREADYOPEN;
 
@@ -852,7 +851,6 @@ XsensResultValue Cmt1f::create(const wchar_t* filename)
 	m_reading = true;
 	m_readOnly = false;
 #else
-	MRPT_UNUSED_PARAM(filename);
 	char tFilename[CMT_MAX_FILENAME_LENGTH * 2];
 	wcstombs(tFilename, m_filename_w, CMT_MAX_FILENAME_LENGTH);
 	XsensResultValue res = create(tFilename);

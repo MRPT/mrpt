@@ -161,7 +161,8 @@ void COpenNI2_RGBD360::loadConfig_sensorSpecific(
  * \sa doProcess
  */
 void COpenNI2_RGBD360::getNextObservation(
-	CObservationRGBD360& out_obs, bool& there_is_obs, bool& hardware_error)
+	[[maybe_unused]] CObservationRGBD360& out_obs,
+	[[maybe_unused]] bool& there_is_obs, [[maybe_unused]] bool& hardware_error)
 {
 #if MRPT_HAS_OPENNI2
 	CTicTac tictac;
@@ -243,10 +244,6 @@ void COpenNI2_RGBD360::getNextObservation(
 	}
 	cout << "getNextObservation took " << 1000 * tictac.Tac() << "ms\n";
 #else
-	MRPT_UNUSED_PARAM(out_obs);
-	MRPT_UNUSED_PARAM(there_is_obs);
-	MRPT_UNUSED_PARAM(hardware_error);
-	MRPT_UNUSED_PARAM(out_obs);
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
 #endif  // MRPT_HAS_OPENNI2
 }
@@ -254,9 +251,9 @@ void COpenNI2_RGBD360::getNextObservation(
 /* -----------------------------------------------------
 setPathForExternalImages
 ----------------------------------------------------- */
-void COpenNI2_RGBD360::setPathForExternalImages(const std::string& directory)
+void COpenNI2_RGBD360::setPathForExternalImages([
+	[maybe_unused]] const std::string& directory)
 {
-	MRPT_UNUSED_PARAM(directory);
 	// Ignore for now. It seems performance is better grabbing everything
 	// to a single big file than creating hundreds of smaller files per
 	// second...

@@ -122,10 +122,9 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_compose_point(
-		const CVectorFixedDouble<7 + 3>& x, const double& dummy,
-		CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x,
+		[[maybe_unused]] const double& dummy, CVectorFixedDouble<3>& Y)
 	{
-		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
 			x[0], x[1], x[2], CQuaternionDouble(x[3], x[4], x[5], x[6]));
 		q.quat().normalize();
@@ -231,10 +230,9 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_inv_compose_point(
-		const CVectorFixedDouble<7 + 3>& x, const double& dummy,
-		CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x,
+		[[maybe_unused]] const double& dummy, CVectorFixedDouble<3>& Y)
 	{
-		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
 			x[0], x[1], x[2], CQuaternionDouble(x[3], x[4], x[5], x[6]));
 		q.quat().normalize();
@@ -478,10 +476,9 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_spherical_coords(
-		const CVectorFixedDouble<7 + 3>& x, const double& dummy,
-		CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<7 + 3>& x,
+		[[maybe_unused]] const double& dummy, CVectorFixedDouble<3>& Y)
 	{
-		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat q(
 			x[0], x[1], x[2], CQuaternionDouble(x[3], x[4], x[5], x[6]));
 		q.quat().normalize();
@@ -556,10 +553,9 @@ class Pose3DQuatTests : public ::testing::Test
 	}
 
 	static void func_normalizeJacob(
-		const CVectorFixedDouble<4>& x, const double& dummy,
+		const CVectorFixedDouble<4>& x, [[maybe_unused]] const double& dummy,
 		CVectorFixedDouble<4>& Y)
 	{
-		MRPT_UNUSED_PARAM(dummy);
 		CQuaternionDouble q;
 		for (int i = 0; i < 4; i++) q[i] = x[i];
 		q.normalize();

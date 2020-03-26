@@ -35,8 +35,9 @@
     - Removed class std::vector<std::string>. Replace by STL containers of `std::string` and functions mrpt::system::stringListAsString() in \ref string_manage.
   - \ref mrpt_core_grp  [NEW IN MRPT 2.0.0]
     - Memory alignment of aligned_allocator_cpp11<> is set to 16,32 or 64 depending on whether AVX optimizations are enabled, to be compatible with Eigen.
-	- mrpt::cpu::supports(): a new cross-OS CPU feature detection function.
-	- mrpt::Clock allows users to select between Realtime or Monotonic sources.
+    - mrpt::cpu::supports(): a new cross-OS CPU feature detection function.
+    - mrpt::Clock allows users to select between Realtime or Monotonic sources.
+    - Removed custom macro MRPT_UNUSED_PARAM (replaced by c++17 attribute).
   - \ref mrpt_math_grp  [NEW IN MRPT 2.0.0]
     - Removed functions (replaced by C++11/14 standard library):
       - mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
@@ -59,7 +60,7 @@
     - functions to get timestamp as *local* time were removed, since they don't make sense. All timestamps in MRPT are UTC, and they can be formated as dates in either UTC or local time frames.
     - Added: mrpt::system::WorkerThreadsPool
   - \ref mrpt_rtti_grp  [NEW IN MRPT 2.0.0]
-	- All classes are now registered (and de/serialized) with their full name including namespaces. A backwards-compatible flag has been added to mrpt::rtti::findRegisteredClass().
+    - All classes are now registered (and de/serialized) with their full name including namespaces. A backwards-compatible flag has been added to mrpt::rtti::findRegisteredClass().
     - CLASS_INIT() macro for automatic registration of classes has been removed, since it is not well-defined in which order global objects will be initialized.
       Therefore, manual registration (as already done in registerAllClasses.cpp files) is left as the unique registration system.
       This fixes warning messages "[mrpt::rtti::registerClass] Warning: Invoked with a nullptr".

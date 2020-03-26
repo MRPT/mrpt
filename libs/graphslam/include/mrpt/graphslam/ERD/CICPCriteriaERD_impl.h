@@ -44,12 +44,11 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 
 template <class GRAPH_T>
 bool CICPCriteriaERD<GRAPH_T>::updateState(
-	mrpt::obs::CActionCollection::Ptr action,
+	[[maybe_unused]] mrpt::obs::CActionCollection::Ptr action,
 	mrpt::obs::CSensoryFrame::Ptr observations,
 	mrpt::obs::CObservation::Ptr observation)
 {
 	MRPT_START
-	MRPT_UNUSED_PARAM(action);
 	using namespace mrpt::obs;
 
 	// check possible prior node registration

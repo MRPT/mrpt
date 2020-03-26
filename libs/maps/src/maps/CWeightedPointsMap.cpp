@@ -245,32 +245,29 @@ struct pointmap_traits<CWeightedPointsMap>
 	 * points - this is the place to reserve memory in lric for extra working
 	 * variables. */
 	inline static void internal_loadFromRangeScan2D_init(
-		CWeightedPointsMap& me,
-		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
+		[[maybe_unused]] CWeightedPointsMap& me,
+		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext&
+			lric)
 	{
-		MRPT_UNUSED_PARAM(me);
-		MRPT_UNUSED_PARAM(lric);
 	}
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan2D_prepareOneRange(
-		CWeightedPointsMap& me, const float gx, const float gy, const float gz,
-		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
+		[[maybe_unused]] CWeightedPointsMap& me,
+		[[maybe_unused]] const float gx, [[maybe_unused]] const float gy,
+		[[maybe_unused]] const float gz,
+		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext&
+			lric)
 	{
-		MRPT_UNUSED_PARAM(me);
-		MRPT_UNUSED_PARAM(gx);
-		MRPT_UNUSED_PARAM(gy);
-		MRPT_UNUSED_PARAM(gz);
-		MRPT_UNUSED_PARAM(lric);
 	}
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called after each
 	 * "{x,y,z}.push_back(...);" */
 	inline static void internal_loadFromRangeScan2D_postPushBack(
 		CWeightedPointsMap& me,
-		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
+		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange2DInsertContext&
+			lric)
 	{
-		MRPT_UNUSED_PARAM(lric);
 		me.pointWeight.push_back(1);
 	}
 
@@ -279,43 +276,39 @@ struct pointmap_traits<CWeightedPointsMap>
 	 * points - this is the place to reserve memory in lric for extra working
 	 * variables. */
 	inline static void internal_loadFromRangeScan3D_init(
-		CWeightedPointsMap& me,
-		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
+		[[maybe_unused]] CWeightedPointsMap& me,
+		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext&
+			lric)
 	{
-		MRPT_UNUSED_PARAM(me);
-		MRPT_UNUSED_PARAM(lric);
 	}
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan3D_prepareOneRange(
-		CWeightedPointsMap& me, const float gx, const float gy, const float gz,
-		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
+		[[maybe_unused]] CWeightedPointsMap& me,
+		[[maybe_unused]] const float gx, [[maybe_unused]] const float gy,
+		[[maybe_unused]] const float gz,
+		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext&
+			lric)
 	{
-		MRPT_UNUSED_PARAM(me);
-		MRPT_UNUSED_PARAM(gx);
-		MRPT_UNUSED_PARAM(gy);
-		MRPT_UNUSED_PARAM(gz);
-		MRPT_UNUSED_PARAM(lric);
 	}
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called after each
 	 * "{x,y,z}.push_back(...);" */
 	inline static void internal_loadFromRangeScan3D_postPushBack(
 		CWeightedPointsMap& me,
-		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
+		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext&
+			lric)
 	{
-		MRPT_UNUSED_PARAM(lric);
 		me.pointWeight.push_back(1);
 	}
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data, at the
 	 * end */
 	inline static void internal_loadFromRangeScan3D_postOneRange(
-		CWeightedPointsMap& me,
-		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
+		[[maybe_unused]] CWeightedPointsMap& me,
+		[[maybe_unused]] mrpt::maps::CPointsMap::TLaserRange3DInsertContext&
+			lric)
 	{
-		MRPT_UNUSED_PARAM(me);
-		MRPT_UNUSED_PARAM(lric);
 	}
 };
 }  // namespace mrpt::maps::detail

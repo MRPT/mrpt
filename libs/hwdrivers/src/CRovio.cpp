@@ -366,9 +366,8 @@ bool CRovio::captureImageAsync(CImage& picture, bool rectified)
 /*-------------------------------------------------
 					 STATE
   -----------------------------------------------*/
-bool CRovio::getRovioState(CRovio::TRovioState& status)
+bool CRovio::getRovioState([[maybe_unused]] CRovio::TRovioState& status)
 {
-	MRPT_UNUSED_PARAM(status);
 	size_t x_pos, /*y_pos, theta_pos,*/ lenght;
 	string x_value, response, errormsg;
 	mrpt::math::TPose2D pose;
@@ -401,9 +400,9 @@ long convertToLong(char* sLong)
 	return strtol(result, &stop, 16);
 }
 
-bool CRovio::getEncoders(CRovio::TEncoders& encoders)  // Revisar esto
+bool CRovio::getEncoders([
+	[maybe_unused]] CRovio::TEncoders& encoders)  // Revisar esto
 {
-	MRPT_UNUSED_PARAM(encoders);
 	string resp, error, field;
 	// string field_name[12]={"Packet length","Not Used","Left Wheel:Dir
 	// Rotation","Left Wheel:Ticks","Right Wheel:Dir Rotation","Right

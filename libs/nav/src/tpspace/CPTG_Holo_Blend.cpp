@@ -307,11 +307,11 @@ void CPTG_Holo_Blend::serializeTo(mrpt::serialization::CArchive& out) const
 }
 
 bool CPTG_Holo_Blend::inverseMap_WS2TP(
-	double x, double y, int& out_k, double& out_d, double tolerance_dist) const
+	double x, double y, int& out_k, double& out_d,
+	[[maybe_unused]] double tolerance_dist) const
 {
 	PERFORMANCE_BENCHMARK;
 
-	MRPT_UNUSED_PARAM(tolerance_dist);
 	ASSERT_(x != 0 || y != 0);
 
 	const double err_threshold = 1e-3;

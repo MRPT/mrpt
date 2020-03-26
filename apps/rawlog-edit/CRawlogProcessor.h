@@ -144,12 +144,10 @@ class CRawlogProcessor
 	// This method can be reimplemented to save the modified object to an output
 	// stream.
 	virtual void OnPostProcess(
-		mrpt::obs::CActionCollection::Ptr& actions,
-		mrpt::obs::CSensoryFrame::Ptr& SF, mrpt::obs::CObservation::Ptr& obs)
+		[[maybe_unused]] mrpt::obs::CActionCollection::Ptr& actions,
+		[[maybe_unused]] mrpt::obs::CSensoryFrame::Ptr& SF,
+		[[maybe_unused]] mrpt::obs::CObservation::Ptr& obs)
 	{
-		MRPT_UNUSED_PARAM(actions);
-		MRPT_UNUSED_PARAM(SF);
-		MRPT_UNUSED_PARAM(obs);
 		// Default: Do nothing
 	}
 
@@ -170,11 +168,10 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 	}
 
 	bool processOneEntry(
-		mrpt::obs::CActionCollection::Ptr& actions,
+		[[maybe_unused]] mrpt::obs::CActionCollection::Ptr& actions,
 		mrpt::obs::CSensoryFrame::Ptr& SF,
 		mrpt::obs::CObservation::Ptr& obs) override
 	{
-		MRPT_UNUSED_PARAM(actions);
 		// Process each observation individually, either from "obs" or each
 		// within a "SF":
 		for (size_t idxObs = 0; true; idxObs++)

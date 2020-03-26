@@ -707,9 +707,8 @@ bool CCANBusReader::waitIncomingFrame(uint16_t timeout)
 }
 
 bool CCANBusReader::sendCommandToCANReader(
-	const uint8_t* cmd, const uint16_t cmd_len, bool wait)
+	const uint8_t* cmd, const uint16_t cmd_len, [[maybe_unused]] bool wait)
 {
-	MRPT_UNUSED_PARAM(wait);
 	uint8_t cmd_full[1024];
 	ASSERT_(sizeof(cmd_full) > cmd_len);
 

@@ -152,9 +152,8 @@ CAboutBox::~CAboutBox()
 	//*)
 }
 
-void CAboutBox::OnInit(wxInitDialogEvent& event)
+void CAboutBox::OnInit([[maybe_unused]] wxInitDialogEvent& event)
 {
-	MRPT_UNUSED_PARAM(event);
 	// Build strings:
 	wxString MRPTver(MRPT_getVersion().c_str(), wxConvLibc);
 	wxString wxVer(wxVERSION_STRING);
@@ -204,8 +203,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 	FlexGridSizer1->RecalcSizes();
 }
 
-void CAboutBox::OnButton1Click(wxCommandEvent& event)
+void CAboutBox::OnButton1Click([[maybe_unused]] wxCommandEvent& event)
 {
-	MRPT_UNUSED_PARAM(event);
 	Close();
 }

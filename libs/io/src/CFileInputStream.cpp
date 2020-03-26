@@ -76,10 +76,9 @@ size_t CFileInputStream::Read(void* Buffer, size_t Count)
 							Write
 			Writes a block of bytes to the stream.
  ---------------------------------------------------------------*/
-size_t CFileInputStream::Write(const void* Buffer, size_t Count)
+size_t CFileInputStream::Write(
+	[[maybe_unused]] const void* Buffer, [[maybe_unused]] size_t Count)
 {
-	MRPT_UNUSED_PARAM(Buffer);
-	MRPT_UNUSED_PARAM(Count);
 	THROW_EXCEPTION("Trying to write to a read file stream.");
 }
 

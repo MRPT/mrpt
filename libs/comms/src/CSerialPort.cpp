@@ -917,11 +917,11 @@ void CSerialPort::purgeBuffers()
 	MRPT_END
 }
 
-uint64_t CSerialPort::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
+uint64_t CSerialPort::Seek(
+	[[maybe_unused]] int64_t Offset,
+	[[maybe_unused]] CStream::TSeekOrigin Origin)
 {
 	MRPT_START
-	MRPT_UNUSED_PARAM(Origin);
-	MRPT_UNUSED_PARAM(Offset);
 	THROW_EXCEPTION(
 		"Method not applicable to serial communications port CStream!");
 	MRPT_END

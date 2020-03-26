@@ -63,8 +63,9 @@ void CPointCloudColoured::onUpdateBuffers_Points()
 
 /** Render a subset of points (required by octree renderer) */
 void CPointCloudColoured::render_subset(
-	const bool all, const std::vector<size_t>& idxs,
-	const float render_area_sqpixels) const
+	[[maybe_unused]] const bool all,
+	[[maybe_unused]] const std::vector<size_t>& idxs,
+	[[maybe_unused]] const float render_area_sqpixels) const
 {
 #if 0 && MRPT_HAS_OPENGL_GLUT
 	// Disabled for now... (Feb 2020)
@@ -97,10 +98,6 @@ void CPointCloudColoured::render_subset(
 			glVertex3f(p.pt.x, p.pt.y, p.pt.z);
 		}
 	}
-#else
-	MRPT_UNUSED_PARAM(all);
-	MRPT_UNUSED_PARAM(idxs);
-	MRPT_UNUSED_PARAM(render_area_sqpixels);
 #endif
 }
 

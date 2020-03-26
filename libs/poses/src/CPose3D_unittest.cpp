@@ -277,10 +277,9 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_compose_point(
-		const CVectorFixedDouble<6 + 3>& x, const double& dummy,
-		CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<6 + 3>& x,
+		[[maybe_unused]] const double& dummy, CVectorFixedDouble<3>& Y)
 	{
-		MRPT_UNUSED_PARAM(dummy);
 		CPose3D q(x[0], x[1], x[2], x[3], x[4], x[5]);
 		const CPoint3D p(x[6 + 0], x[6 + 1], x[6 + 2]);
 		const CPoint3D pp = q + p;
@@ -288,10 +287,9 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_inv_compose_point(
-		const CVectorFixedDouble<6 + 3>& x, const double& dummy,
-		CVectorFixedDouble<3>& Y)
+		const CVectorFixedDouble<6 + 3>& x,
+		[[maybe_unused]] const double& dummy, CVectorFixedDouble<3>& Y)
 	{
-		MRPT_UNUSED_PARAM(dummy);
 		CPose3D q(x[0], x[1], x[2], x[3], x[4], x[5]);
 		const CPoint3D p(x[6 + 0], x[6 + 1], x[6 + 2]);
 		const CPoint3D pp = p - q;
@@ -556,10 +554,9 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_expe_e(
-		const CVectorFixedDouble<6>& x, const double& dummy,
+		const CVectorFixedDouble<6>& x, [[maybe_unused]] const double& dummy,
 		CVectorFixedDouble<12>& Y)
 	{
-		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p = Lie::SE<3>::exp(x);
 		// const CMatrixDouble44 R =
 		// p.getHomogeneousMatrixVal<CMatrixDouble44>();
@@ -607,10 +604,9 @@ class Pose3DTests : public ::testing::Test
 	}
 
 	static void func_jacob_LnT_T(
-		const CVectorFixedDouble<12>& x, const double& dummy,
+		const CVectorFixedDouble<12>& x, [[maybe_unused]] const double& dummy,
 		CVectorFixedDouble<6>& Y)
 	{
-		MRPT_UNUSED_PARAM(dummy);
 		CPose3D p;
 
 		p.setFrom12Vector(x);

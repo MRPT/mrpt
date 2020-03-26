@@ -323,12 +323,10 @@ struct pointmap_traits<CPointsMapXYZI>
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan2D_prepareOneRange(
-		CPointsMapXYZI& me, const float gx, const float gy, const float gz,
+		CPointsMapXYZI& me, [[maybe_unused]] const float gx,
+		[[maybe_unused]] const float gy, [[maybe_unused]] const float gz,
 		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
 	{
-		MRPT_UNUSED_PARAM(gx);
-		MRPT_UNUSED_PARAM(gy);
-		MRPT_UNUSED_PARAM(gz);
 	}
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called after each
@@ -355,12 +353,10 @@ struct pointmap_traits<CPointsMapXYZI>
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan3D_prepareOneRange(
-		CPointsMapXYZI& me, const float gx, const float gy, const float gz,
+		CPointsMapXYZI& me, [[maybe_unused]] const float gx,
+		[[maybe_unused]] const float gy, [[maybe_unused]] const float gz,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
 	{
-		MRPT_UNUSED_PARAM(gx);
-		MRPT_UNUSED_PARAM(gy);
-		MRPT_UNUSED_PARAM(gz);
 	}
 
 	/** Helper method fot the generic implementation of

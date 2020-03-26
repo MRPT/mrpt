@@ -188,10 +188,10 @@ string mrpt::system::MRPT_getVersion() { return string(::MRPT_version_str); }
 /*---------------------------------------------------------------
 						sprintf
 ---------------------------------------------------------------*/
-int os::sprintf(char* buf, size_t bufSize, const char* format, ...) noexcept
+int os::sprintf(
+	char* buf, [[maybe_unused]] size_t bufSize, const char* format,
+	...) noexcept
 {
-	MRPT_UNUSED_PARAM(bufSize);
-
 	int result;
 	va_list ap;
 	va_start(ap, format);
@@ -212,9 +212,9 @@ int os::sprintf(char* buf, size_t bufSize, const char* format, ...) noexcept
 					vsprintf
 ---------------------------------------------------------------*/
 int os::vsprintf(
-	char* buf, size_t bufSize, const char* format, va_list args) noexcept
+	char* buf, [[maybe_unused]] size_t bufSize, const char* format,
+	va_list args) noexcept
 {
-	MRPT_UNUSED_PARAM(bufSize);
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 	// Use a secure version in Visual Studio 2005:
 	return ::vsprintf_s(buf, bufSize, format, args);
@@ -281,10 +281,9 @@ void os::fclose(FILE* f)
 /*---------------------------------------------------------------
 						strcat
 ---------------------------------------------------------------*/
-char* os::strcat(char* dest, size_t destSize, const char* source) noexcept
+char* os::strcat(
+	char* dest, [[maybe_unused]] size_t destSize, const char* source) noexcept
 {
-	MRPT_UNUSED_PARAM(destSize);
-
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 	::strcat_s(dest, destSize, source);
 #else
@@ -296,10 +295,9 @@ char* os::strcat(char* dest, size_t destSize, const char* source) noexcept
 /*---------------------------------------------------------------
 						strcpy
 ---------------------------------------------------------------*/
-char* os::strcpy(char* dest, size_t destSize, const char* source) noexcept
+char* os::strcpy(
+	char* dest, [[maybe_unused]] size_t destSize, const char* source) noexcept
 {
-	MRPT_UNUSED_PARAM(destSize);
-
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 	::strcpy_s(dest, destSize, source);
 #else
@@ -356,12 +354,12 @@ int os::_strnicmp(const char* str1, const char* str2, size_t count) noexcept
 						memcpy
 ---------------------------------------------------------------*/
 void os::memcpy(
-	void* dest, size_t destSize, const void* src, size_t copyCount) noexcept
+	void* dest, [[maybe_unused]] size_t destSize, const void* src,
+	size_t copyCount) noexcept
 {
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 	::memcpy_s(dest, destSize, src, copyCount);
 #else
-	MRPT_UNUSED_PARAM(destSize);
 	::memcpy(dest, src, copyCount);
 #endif
 }

@@ -151,18 +151,18 @@ void CPointCloud::onUpdateBuffers_Points()
 	m_last_rendered_count = m_last_rendered_count_ongoing;
 }
 
-inline void CPointCloud::internal_render_one_point(size_t i) const
+inline void CPointCloud::internal_render_one_point([
+	[maybe_unused]] size_t i) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-#else
-	MRPT_UNUSED_PARAM(i);
 #endif
 }
 
 /** Render a subset of points (required by octree renderer) */
 void CPointCloud::render_subset(
-	const bool all, const std::vector<size_t>& idxs,
-	const float render_area_sqpixels) const
+	[[maybe_unused]] const bool all,
+	[[maybe_unused]] const std::vector<size_t>& idxs,
+	[[maybe_unused]] const float render_area_sqpixels) const
 {
 #if 0 && MRPT_HAS_OPENGL_GLUT
 	// Disabled for now... (Feb 2020)
@@ -185,10 +185,6 @@ void CPointCloud::render_subset(
 		for (size_t i = 0; i < Np; i += decimation)
 			internal_render_one_point(idxs[i]);
 	}
-#else
-	MRPT_UNUSED_PARAM(all);
-	MRPT_UNUSED_PARAM(idxs);
-	MRPT_UNUSED_PARAM(render_area_sqpixels);
 #endif
 }
 void CPointCloud::serializeTo(
@@ -420,9 +416,8 @@ void CPointCloud::PLY_import_set_vertex_count(const size_t N)
  */
 void CPointCloud::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::img::TColorf* pt_color)
+	[[maybe_unused]] const mrpt::img::TColorf* pt_color)
 {
-	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx, pt.x, pt.y, pt.z);
 }
 
@@ -434,9 +429,8 @@ size_t CPointCloud::PLY_export_get_vertex_count() const { return this->size(); }
  */
 void CPointCloud::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::img::TColorf& pt_color) const
+	[[maybe_unused]] mrpt::img::TColorf& pt_color) const
 {
-	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color = false;
 
 	pt = m_points[idx];

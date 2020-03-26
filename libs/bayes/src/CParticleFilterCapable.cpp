@@ -305,13 +305,11 @@ void CParticleFilterCapable::prediction_and_update(
 					prediction_and_update_...
  ---------------------------------------------------------------*/
 void CParticleFilterCapable::prediction_and_update_pfStandardProposal(
-	const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+	[[maybe_unused]] const mrpt::obs::CActionCollection* action,
+	[[maybe_unused]] const mrpt::obs::CSensoryFrame* observation,
+	[[maybe_unused]] const bayes::CParticleFilter::TParticleFilterOptions&
+		PF_options)
 {
-	MRPT_UNUSED_PARAM(action);
-	MRPT_UNUSED_PARAM(observation);
-	MRPT_UNUSED_PARAM(PF_options);
 	THROW_EXCEPTION(
 		"Algorithm 'pfStandardProposal' is not implemented in inherited "
 		"class!");
@@ -320,13 +318,11 @@ void CParticleFilterCapable::prediction_and_update_pfStandardProposal(
 					prediction_and_update_...
  ---------------------------------------------------------------*/
 void CParticleFilterCapable::prediction_and_update_pfAuxiliaryPFStandard(
-	const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+	[[maybe_unused]] const mrpt::obs::CActionCollection* action,
+	[[maybe_unused]] const mrpt::obs::CSensoryFrame* observation,
+	[[maybe_unused]] const bayes::CParticleFilter::TParticleFilterOptions&
+		PF_options)
 {
-	MRPT_UNUSED_PARAM(action);
-	MRPT_UNUSED_PARAM(observation);
-	MRPT_UNUSED_PARAM(PF_options);
 	THROW_EXCEPTION(
 		"Algorithm 'pfAuxiliaryPFStandard' is not implemented in inherited "
 		"class!");
@@ -335,13 +331,11 @@ void CParticleFilterCapable::prediction_and_update_pfAuxiliaryPFStandard(
 					prediction_and_update_...
  ---------------------------------------------------------------*/
 void CParticleFilterCapable::prediction_and_update_pfOptimalProposal(
-	const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+	[[maybe_unused]] const mrpt::obs::CActionCollection* action,
+	[[maybe_unused]] const mrpt::obs::CSensoryFrame* observation,
+	[[maybe_unused]] const bayes::CParticleFilter::TParticleFilterOptions&
+		PF_options)
 {
-	MRPT_UNUSED_PARAM(action);
-	MRPT_UNUSED_PARAM(observation);
-	MRPT_UNUSED_PARAM(PF_options);
 	THROW_EXCEPTION(
 		"Algorithm 'pfOptimalProposal' is not implemented in inherited class!");
 }
@@ -349,13 +343,11 @@ void CParticleFilterCapable::prediction_and_update_pfOptimalProposal(
 					prediction_and_update_...
  ---------------------------------------------------------------*/
 void CParticleFilterCapable::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation,
-	const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
+	[[maybe_unused]] const mrpt::obs::CActionCollection* action,
+	[[maybe_unused]] const mrpt::obs::CSensoryFrame* observation,
+	[[maybe_unused]] const bayes::CParticleFilter::TParticleFilterOptions&
+		PF_options)
 {
-	MRPT_UNUSED_PARAM(action);
-	MRPT_UNUSED_PARAM(observation);
-	MRPT_UNUSED_PARAM(PF_options);
 	THROW_EXCEPTION(
 		"Algorithm 'pfAuxiliaryPFOptimal' is not implemented in inherited "
 		"class!");

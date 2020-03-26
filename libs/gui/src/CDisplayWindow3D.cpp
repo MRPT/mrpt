@@ -410,7 +410,8 @@ CDisplayWindow3D::~CDisplayWindow3D()
 /*---------------------------------------------------------------
 					resize
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::resize(unsigned int width, unsigned int height)
+void CDisplayWindow3D::resize(
+	[[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	if (!isOpen())
@@ -427,16 +428,13 @@ void CDisplayWindow3D::resize(unsigned int width, unsigned int height)
 	REQ->x = width;
 	REQ->y = height;
 	WxSubsystem::pushPendingWxRequest(REQ);
-#else
-	MRPT_UNUSED_PARAM(width);
-	MRPT_UNUSED_PARAM(height);
 #endif
 }
 
 /*---------------------------------------------------------------
 					setPos
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setPos(int x, int y)
+void CDisplayWindow3D::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	if (!isOpen())
@@ -453,16 +451,13 @@ void CDisplayWindow3D::setPos(int x, int y)
 	REQ->x = x;
 	REQ->y = y;
 	WxSubsystem::pushPendingWxRequest(REQ);
-#else
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
 #endif
 }
 
 /*---------------------------------------------------------------
 					setWindowTitle
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setWindowTitle(const std::string& str)
+void CDisplayWindow3D::setWindowTitle([[maybe_unused]] const std::string& str)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	if (!isOpen())
@@ -478,8 +473,6 @@ void CDisplayWindow3D::setWindowTitle(const std::string& str)
 	REQ->OPCODE = 304;
 	REQ->str = str;
 	WxSubsystem::pushPendingWxRequest(REQ);
-#else
-	MRPT_UNUSED_PARAM(str);
 #endif
 }
 
@@ -512,43 +505,39 @@ void CDisplayWindow3D::forceRepaint()
 /*---------------------------------------------------------------
 					setCameraElevationDeg
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setCameraElevationDeg(float deg)
+void CDisplayWindow3D::setCameraElevationDeg([[maybe_unused]] float deg)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setElevationDegrees(deg);
-#else
-	MRPT_UNUSED_PARAM(deg);
 #endif
 }
 
-void CDisplayWindow3D::useCameraFromScene(bool useIt)
+void CDisplayWindow3D::useCameraFromScene([[maybe_unused]] bool useIt)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setUseCameraFromScene(useIt);
-#else
-	MRPT_UNUSED_PARAM(useIt);
 #endif
 }
 
 /*---------------------------------------------------------------
 					setCameraAzimuthDeg
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setCameraAzimuthDeg(float deg)
+void CDisplayWindow3D::setCameraAzimuthDeg([[maybe_unused]] float deg)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setAzimuthDegrees(deg);
-#else
-	MRPT_UNUSED_PARAM(deg);
 #endif
 }
 
 /*---------------------------------------------------------------
 					setCameraPointingToPoint
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setCameraPointingToPoint(float x, float y, float z)
+void CDisplayWindow3D::setCameraPointingToPoint(
+	[[maybe_unused]] float x, [[maybe_unused]] float y,
+	[[maybe_unused]] float z)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	auto* win = (C3DWindowDialog*)m_hwnd.get();
@@ -556,36 +545,28 @@ void CDisplayWindow3D::setCameraPointingToPoint(float x, float y, float z)
 	{
 		win->m_canvas->setCameraPointing(x, y, z);
 	}
-#else
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
-	MRPT_UNUSED_PARAM(z);
 #endif
 }
 
 /*---------------------------------------------------------------
 					setCameraZoom
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setCameraZoom(float zoom)
+void CDisplayWindow3D::setCameraZoom([[maybe_unused]] float zoom)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setZoomDistance(zoom);
-#else
-	MRPT_UNUSED_PARAM(zoom);
 #endif
 }
 
 /*---------------------------------------------------------------
 					setCameraProjective
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setCameraProjective(bool isProjective)
+void CDisplayWindow3D::setCameraProjective([[maybe_unused]] bool isProjective)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	auto* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win) win->m_canvas->setCameraProjective(isProjective);
-#else
-	MRPT_UNUSED_PARAM(isProjective);
 #endif
 }
 
@@ -665,7 +646,8 @@ float CDisplayWindow3D::getCameraAzimuthDeg() const
 					getCameraPointingToPoint
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::getCameraPointingToPoint(
-	float& x, float& y, float& z) const
+	[[maybe_unused]] float& x, [[maybe_unused]] float& y,
+	[[maybe_unused]] float& z) const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
@@ -677,10 +659,6 @@ void CDisplayWindow3D::getCameraPointingToPoint(
 	}
 	else
 		x = y = z = 0;
-#else
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
-	MRPT_UNUSED_PARAM(z);
 #endif
 }
 
@@ -713,7 +691,8 @@ bool CDisplayWindow3D::isCameraProjective() const
 /*---------------------------------------------------------------
 					getLastMousePosition
  ---------------------------------------------------------------*/
-bool CDisplayWindow3D::getLastMousePosition(int& x, int& y) const
+bool CDisplayWindow3D::getLastMousePosition(
+	[[maybe_unused]] int& x, [[maybe_unused]] int& y) const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
@@ -721,8 +700,6 @@ bool CDisplayWindow3D::getLastMousePosition(int& x, int& y) const
 	win->m_canvas->getLastMousePosition(x, y);
 	return true;
 #else
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
 	return false;
 #endif
 }
@@ -746,15 +723,13 @@ bool CDisplayWindow3D::getLastMousePositionRay(TLine3D& ray) const
 /*---------------------------------------------------------------
 					setCursorCross
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::setCursorCross(bool cursorIsCross)
+void CDisplayWindow3D::setCursorCross([[maybe_unused]] bool cursorIsCross)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const auto* win = (const C3DWindowDialog*)m_hwnd.get();
 	if (!win) return;
 	win->m_canvas->SetCursor(
 		*(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR));
-#else
-	MRPT_UNUSED_PARAM(cursorIsCross);
 #endif
 }
 

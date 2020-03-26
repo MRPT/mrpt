@@ -59,10 +59,10 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,
 	unsigned int check_size_y, double check_squares_length_X_meters,
 	double check_squares_length_Y_meters, mrpt::img::TCamera& out_camera_params,
-	bool normalize_image, double* out_MSE, bool skipDrawDetectedImgs,
+	bool normalize_image, double* out_MSE,
+	[[maybe_unused]] bool skipDrawDetectedImgs,
 	bool useScaramuzzaAlternativeDetector)
 {
-	MRPT_UNUSED_PARAM(skipDrawDetectedImgs);
 #if MRPT_HAS_OPENCV
 	try
 	{

@@ -44,11 +44,10 @@ IMPLEMENTS_SERIALIZABLE(CPose3DQuatPDFGaussian, CPose3DQuatPDF, mrpt::poses)
 /** Default constructor - set all values to zero. */
 CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian() : mean(), cov() {}
 // Un-initialized constructor:
-CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian(
-	TConstructorFlags_Quaternions constructor_dummy_param)
+CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian([
+	[maybe_unused]] TConstructorFlags_Quaternions constructor_dummy_param)
 	: mean(UNINITIALIZED_QUATERNION), cov(UNINITIALIZED_MATRIX)
 {
-	MRPT_UNUSED_PARAM(constructor_dummy_param);
 }
 
 /** Constructor from a default mean value, covariance equals to zero. */
@@ -120,10 +119,9 @@ void CPose3DQuatPDFGaussian::copyFrom(const CPosePDF& o)
 }
 
 void aux_poseypr2posequat(
-	const CVectorFixedDouble<6>& x, const double& dummy,
+	const CVectorFixedDouble<6>& x, [[maybe_unused]] const double& dummy,
 	CVectorFixedDouble<7>& y)
 {
-	MRPT_UNUSED_PARAM(dummy);
 	y[0] = x[0];
 	y[1] = x[1];
 	y[2] = x[2];

@@ -816,11 +816,10 @@ void CPtuDPerception::nversion(double& nVersion)
 					   setLimits
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::setLimits(char axis, double& l, double& u)
+bool CPtuDPerception::setLimits(
+	[[maybe_unused]] char axis, [[maybe_unused]] double& l,
+	[[maybe_unused]] double& u)
 {
-	MRPT_UNUSED_PARAM(axis);
-	MRPT_UNUSED_PARAM(l);
-	MRPT_UNUSED_PARAM(u);
 	cout << "[ERROR] Function not defined for this PTU model";
 	return false;
 }

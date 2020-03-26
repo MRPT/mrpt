@@ -402,10 +402,10 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	/// Returns the distance between the vector "p1[0:size-1]" and the data
 	/// point with index "idx_p2" stored in the class:
 	inline float kdtree_distance(
-		const float* p1, const size_t idx_p2, size_t size) const
+		const float* p1, const size_t idx_p2,
+		[[maybe_unused]] size_t size) const
 	{
 		ASSERTDEB_(size == 2);
-		MRPT_UNUSED_PARAM(size);  // in release mode
 
 		const float d0 = p1[0] - m_feats[idx_p2].keypoint.pt.x;
 		const float d1 = p1[1] - m_feats[idx_p2].keypoint.pt.y;
@@ -419,9 +419,8 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3
 	//   for point clouds)
 	template <typename BBOX>
-	bool kdtree_get_bbox(BBOX& bb) const
+	bool kdtree_get_bbox([[maybe_unused]] BBOX& bb) const
 	{
-		MRPT_UNUSED_PARAM(bb);
 		return false;
 	}
 

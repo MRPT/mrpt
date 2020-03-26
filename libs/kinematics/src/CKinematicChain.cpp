@@ -94,9 +94,8 @@ void CKinematicChain::serializeFrom(
  * but anything else can be passed as the optional argument. */
 void CKinematicChain::recomputeAllPoses(
 	std::vector<mrpt::poses::CPose3D>& poses,
-	const mrpt::poses::CPose3D& pose0) const
+	[[maybe_unused]] const mrpt::poses::CPose3D& pose0) const
 {
-	MRPT_UNUSED_PARAM(pose0);
 	const size_t N = m_links.size();
 
 	poses.resize(N + 1);

@@ -164,11 +164,11 @@ void CMonteCarloLocalization2D::prediction_and_update_pfAuxiliaryPFOptimal(
  ---------------------------------------------------------------*/
 double
 	CMonteCarloLocalization2D::PF_SLAM_computeObservationLikelihoodForParticle(
-		const CParticleFilter::TParticleFilterOptions& PF_options,
+		[[maybe_unused]] const CParticleFilter::TParticleFilterOptions&
+			PF_options,
 		const size_t particleIndexForMap, const CSensoryFrame& observation,
 		const CPose3D& x) const
 {
-	MRPT_UNUSED_PARAM(PF_options);
 	ASSERT_(
 		options.metricMap || particleIndexForMap < options.metricMaps.size());
 
@@ -197,9 +197,8 @@ void CMonteCarloLocalization2D::
 void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
 	CParticleList& old_particles, const vector<TPose3D>& newParticles,
 	const vector<double>& newParticlesWeight,
-	const vector<size_t>& newParticlesDerivedFromIdx) const
+	[[maybe_unused]] const vector<size_t>& newParticlesDerivedFromIdx) const
 {
-	MRPT_UNUSED_PARAM(newParticlesDerivedFromIdx);
 	ASSERT_EQUAL_(
 		size_t(newParticlesWeight.size()), size_t(newParticles.size()));
 

@@ -1239,9 +1239,8 @@ bool Packet::updateSampleCounter(const uint16_t counter, const uint16_t index)
 	m_msg.setDataShort(counter, m_infoList[index].m_sc);
 	return true;
 }
-TimeStamp Packet::getRtc(const uint16_t index) const
+TimeStamp Packet::getRtc([[maybe_unused]] const uint16_t index) const
 {
-	MRPT_UNUSED_PARAM(index);
 	return m_rtc;
 }
 

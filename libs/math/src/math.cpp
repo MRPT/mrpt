@@ -461,9 +461,8 @@ double mrpt::math::interpolate2points(
 // template<typename VECTOR>
 void mrpt::math::medianFilter(
 	const std::vector<double>& inV, std::vector<double>& outV, int _winSize,
-	int numberOfSigmas)
+	[[maybe_unused]] int numberOfSigmas)
 {
-	MRPT_UNUSED_PARAM(numberOfSigmas);
 	ASSERT_((int)inV.size() >= _winSize);
 	ASSERT_(_winSize >= 2);  // The minimum window size is 3 elements
 	size_t winSize = _winSize;

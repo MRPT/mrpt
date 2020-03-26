@@ -1689,8 +1689,8 @@ void vision::StereoObs2BRObs(
 	// win2.showImageAndPoints( inObs.imageRight, rightList );
 
 	// Match features
-	size_t nMatches = vision::matchFeatures(leftList, rightList, matchList);
-	MRPT_UNUSED_PARAM(nMatches);
+	// size_t nMatches =
+	vision::matchFeatures(leftList, rightList, matchList);
 
 	// Compute the range and bearing
 	double f = inObs.leftCamera.fx();  // Focal length in pixels

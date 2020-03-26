@@ -169,10 +169,10 @@ void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-bool CFrustum::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
+bool CFrustum::traceRay(
+	[[maybe_unused]] const mrpt::poses::CPose3D& o,
+	[[maybe_unused]] double& dist) const
 {
-	MRPT_UNUSED_PARAM(o);
-	MRPT_UNUSED_PARAM(dist);
 	THROW_EXCEPTION("TO DO");
 }
 

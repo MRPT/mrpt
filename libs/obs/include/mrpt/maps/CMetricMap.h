@@ -68,10 +68,9 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) = 0;
 	/** Internal method called by canComputeObservationLikelihood() */
-	virtual bool internal_canComputeObservationLikelihood(
-		const mrpt::obs::CObservation& obs) const
+	virtual bool internal_canComputeObservationLikelihood([
+		[maybe_unused]] const mrpt::obs::CObservation& obs) const
 	{
-		MRPT_UNUSED_PARAM(obs);
 		return true;  // Unless implemented otherwise, assume we can always
 		// compute the likelihood.
 	}

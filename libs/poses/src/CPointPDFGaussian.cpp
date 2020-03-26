@@ -277,9 +277,8 @@ void CPointPDFGaussian::drawSingleSample(CPoint3D& outSample) const
  ---------------------------------------------------------------*/
 void CPointPDFGaussian::bayesianFusion(
 	const CPointPDF& p1_, const CPointPDF& p2_,
-	const double minMahalanobisDistToDrop)
+	[[maybe_unused]] const double minMahalanobisDistToDrop)
 {
-	MRPT_UNUSED_PARAM(minMahalanobisDistToDrop);
 	MRPT_START
 
 	// p1: CPointPDFGaussian, p2: CPosePDFGaussian:

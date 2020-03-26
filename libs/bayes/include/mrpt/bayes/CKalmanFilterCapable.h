@@ -325,9 +325,9 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * size of the whole state vector (for non-SLAM problems) or VEH_SIZE (for
 	 * SLAM problems).
 	 */
-	virtual void OnTransitionJacobian(KFMatrix_VxV& out_F) const
+	virtual void OnTransitionJacobian([
+		[maybe_unused]] KFMatrix_VxV& out_F) const
 	{
-		MRPT_UNUSED_PARAM(out_F);
 		m_user_didnt_implement_jacobian = true;
 	}
 
@@ -364,10 +364,9 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * \sa OnGetObservations, OnDataAssociation
 	 */
 	virtual void OnPreComputingPredictions(
-		const vector_KFArray_OBS& in_all_prediction_means,
+		[[maybe_unused]] const vector_KFArray_OBS& in_all_prediction_means,
 		std::vector<size_t>& out_LM_indices_to_predict) const
 	{
-		MRPT_UNUSED_PARAM(in_all_prediction_means);
 		// Default: all of them:
 		const size_t N = this->getNumberOfLandmarksInTheMap();
 		out_LM_indices_to_predict.resize(N);
@@ -436,12 +435,10 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * \f$.
 	 */
 	virtual void OnObservationJacobians(
-		size_t idx_landmark_to_predict, KFMatrix_OxV& Hx,
-		KFMatrix_OxF& Hy) const
+		[[maybe_unused]] size_t idx_landmark_to_predict,
+		[[maybe_unused]] KFMatrix_OxV& Hx,
+		[[maybe_unused]] KFMatrix_OxF& Hy) const
 	{
-		MRPT_UNUSED_PARAM(idx_landmark_to_predict);
-		MRPT_UNUSED_PARAM(Hx);
-		MRPT_UNUSED_PARAM(Hy);
 		m_user_didnt_implement_jacobian = true;
 	}
 
@@ -490,13 +487,11 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * method is preferred to allow a greater flexibility.
 	 */
 	virtual void OnInverseObservationModel(
-		const KFArray_OBS& in_z, KFArray_FEAT& out_yn,
-		KFMatrix_FxV& out_dyn_dxv, KFMatrix_FxO& out_dyn_dhn) const
+		[[maybe_unused]] const KFArray_OBS& in_z,
+		[[maybe_unused]] KFArray_FEAT& out_yn,
+		[[maybe_unused]] KFMatrix_FxV& out_dyn_dxv,
+		[[maybe_unused]] KFMatrix_FxO& out_dyn_dhn) const
 	{
-		MRPT_UNUSED_PARAM(in_z);
-		MRPT_UNUSED_PARAM(out_yn);
-		MRPT_UNUSED_PARAM(out_dyn_dxv);
-		MRPT_UNUSED_PARAM(out_dyn_dhn);
 		MRPT_START
 		THROW_EXCEPTION(
 			"Inverse sensor model required but not implemented in derived "
@@ -545,10 +540,9 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	virtual void OnInverseObservationModel(
 		const KFArray_OBS& in_z, KFArray_FEAT& out_yn,
 		KFMatrix_FxV& out_dyn_dxv, KFMatrix_FxO& out_dyn_dhn,
-		KFMatrix_FxF& out_dyn_dhn_R_dyn_dhnT,
+		[[maybe_unused]] KFMatrix_FxF& out_dyn_dhn_R_dyn_dhnT,
 		bool& out_use_dyn_dhn_jacobian) const
 	{
-		MRPT_UNUSED_PARAM(out_dyn_dhn_R_dyn_dhnT);
 		MRPT_START
 		OnInverseObservationModel(in_z, out_yn, out_dyn_dxv, out_dyn_dhn);
 		out_use_dyn_dhn_jacobian = true;
@@ -566,10 +560,9 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * \sa OnInverseObservationModel
 	 */
 	virtual void OnNewLandmarkAddedToMap(
-		const size_t in_obsIdx, const size_t in_idxNewFeat)
+		[[maybe_unused]] const size_t in_obsIdx,
+		[[maybe_unused]] const size_t in_idxNewFeat)
 	{
-		MRPT_UNUSED_PARAM(in_obsIdx);
-		MRPT_UNUSED_PARAM(in_idxNewFeat);
 		// Do nothing in this base class.
 	}
 

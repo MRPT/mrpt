@@ -27,10 +27,9 @@ void CLoadableOptions::loadFromConfigFileName(
 }
 
 void CLoadableOptions::saveToConfigFile(
-	CConfigFileBase& target, const std::string& section) const
+	[[maybe_unused]] CConfigFileBase& target,
+	[[maybe_unused]] const std::string& section) const
 {
-	MRPT_UNUSED_PARAM(target);
-	MRPT_UNUSED_PARAM(section);
 	throw std::logic_error("The child class does not implement this method.");
 }
 
