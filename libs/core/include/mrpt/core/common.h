@@ -94,22 +94,6 @@ need to account for this with an extra offset.
 #define __has_extension __has_feature  // Compatibility with pre-3.0 compilers.
 #endif
 
-// A cross-compiler definition for "deprecated"-warnings
-/** Usage: MRPT_DEPRECATED("Use XX instead") void myFunc(double); */
-#if defined(__clang__) && defined(__has_extension)
-#if __has_extension(attribute_deprecated_with_message)
-#define MRPT_DEPRECATED(msg) __attribute__((deprecated(msg)))
-#else
-#define MRPT_DEPRECATED(msg) __attribute__((deprecated))
-#endif
-#elif MRPT_CHECK_GCC_VERSION(4, 5)
-#define MRPT_DEPRECATED(msg) __attribute__((deprecated(msg)))
-#elif MRPT_CHECK_VISUALC_VERSION(8)
-#define MRPT_DEPRECATED(msg) __declspec(deprecated("deprecated: " msg))
-#else
-#define MRPT_DEPRECATED(msg)
-#endif
-
 /** Declare MRPT_TODO(message)  */
 #if defined(_MSC_VER)
 #define MRPT_DO_PRAGMA(x) __pragma(x)
