@@ -235,9 +235,8 @@ void CPose3DPDFSOG::normalizeWeights()
 /*---------------------------------------------------------------
 						drawSingleSample
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::drawSingleSample(CPose3D& outPart) const
+void CPose3DPDFSOG::drawSingleSample([[maybe_unused]] CPose3D& outPart) const
 {
-	MRPT_UNUSED_PARAM(outPart);
 	THROW_EXCEPTION("TO DO!");
 }
 
@@ -245,10 +244,9 @@ void CPose3DPDFSOG::drawSingleSample(CPose3D& outPart) const
 						drawManySamples
  ---------------------------------------------------------------*/
 void CPose3DPDFSOG::drawManySamples(
-	size_t N, std::vector<CVectorDouble>& outSamples) const
+	[[maybe_unused]] size_t N,
+	[[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
 {
-	MRPT_UNUSED_PARAM(N);
-	MRPT_UNUSED_PARAM(outSamples);
 	THROW_EXCEPTION("TO DO!");
 }
 

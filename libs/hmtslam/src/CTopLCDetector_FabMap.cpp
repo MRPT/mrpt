@@ -61,13 +61,11 @@ CTopLCDetector_FabMap::~CTopLCDetector_FabMap()
  * (can be a multi-modal PDF).
  */
 CPose3DPDF::Ptr CTopLCDetector_FabMap::computeTopologicalObservationModel(
-	const THypothesisID& hypID, const CHMHMapNode::Ptr& currentArea,
-	const CHMHMapNode::Ptr& refArea, double& out_log_lik)
+	[[maybe_unused]] const THypothesisID& hypID,
+	[[maybe_unused]] const CHMHMapNode::Ptr& currentArea,
+	[[maybe_unused]] const CHMHMapNode::Ptr& refArea,
+	[[maybe_unused]] double& out_log_lik)
 {
-	MRPT_UNUSED_PARAM(hypID);
-	MRPT_UNUSED_PARAM(currentArea);
-	MRPT_UNUSED_PARAM(refArea);
-	MRPT_UNUSED_PARAM(out_log_lik);
 	return CPose3DPDF::Ptr();
 }
 
@@ -76,7 +74,8 @@ CPose3DPDF::Ptr CTopLCDetector_FabMap::computeTopologicalObservationModel(
  *  This should be independent of hypothesis IDs.
  */
 void CTopLCDetector_FabMap::OnNewPose(
-	const TPoseID& poseID, const CSensoryFrame* SF)
+	[[maybe_unused]] const TPoseID& poseID,
+	[[maybe_unused]] const CSensoryFrame* SF)
 {
 #ifdef HTMSLAM_HAS_FABMAP
 
@@ -97,10 +96,6 @@ void CTopLCDetector_FabMap::OnNewPose(
 	cout << "[OnNewPose] Adding new pose: " << poseID
 		 << " # of images: " << lstObsImages.size() << endl;
 	THE_FABMAP->hmtslam_addNewPose(poseID, lstObsImages);
-
-#else
-	MRPT_UNUSED_PARAM(poseID);
-	MRPT_UNUSED_PARAM(SF);
 #endif
 }
 

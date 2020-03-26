@@ -102,9 +102,8 @@ void CSensoryFrame::serializeFrom(
 /*---------------------------------------------------------------
 						operator +=
   ---------------------------------------------------------------*/
-void CSensoryFrame::operator+=(const CSensoryFrame& sf)
+void CSensoryFrame::operator+=([[maybe_unused]] const CSensoryFrame& sf)
 {
-	MRPT_UNUSED_PARAM(sf);
 	m_cachedMap.reset();
 	for (auto it = begin(); it != end(); ++it)
 	{

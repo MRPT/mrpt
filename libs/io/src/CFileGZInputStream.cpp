@@ -89,10 +89,9 @@ size_t CFileGZInputStream::Read(void* Buffer, size_t Count)
 	return gzread(m_f->f, Buffer, Count);
 }
 
-size_t CFileGZInputStream::Write(const void* Buffer, size_t Count)
+size_t CFileGZInputStream::Write(
+	[[maybe_unused]] const void* Buffer, [[maybe_unused]] size_t Count)
 {
-	MRPT_UNUSED_PARAM(Buffer);
-	MRPT_UNUSED_PARAM(Count);
 	THROW_EXCEPTION("Trying to write to an input file stream.");
 }
 

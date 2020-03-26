@@ -1949,52 +1949,49 @@ double math::distance(const TPlane& p1, const TPlane& p2)
 		return 0;  // Planes cross in a line
 }
 
-double math::distance(const TPolygon2D& p1, const TPolygon2D& p2)
+double math::distance(
+	[[maybe_unused]] const TPolygon2D& p1,
+	[[maybe_unused]] const TPolygon2D& p2)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(p2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TPolygon2D)");
 }
 
-double math::distance(const TPolygon2D& p1, const TSegment2D& s2)
+double math::distance(
+	[[maybe_unused]] const TPolygon2D& p1,
+	[[maybe_unused]] const TSegment2D& s2)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(s2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TSegment)");
 }
 
-double math::distance(const TPolygon2D& p1, const TLine2D& l2)
+double math::distance(
+	[[maybe_unused]] const TPolygon2D& p1, [[maybe_unused]] const TLine2D& l2)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(l2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TLine2D)");
 }
 
-double math::distance(const TPolygon3D& p1, const TPolygon3D& p2)
+double math::distance(
+	[[maybe_unused]] const TPolygon3D& p1,
+	[[maybe_unused]] const TPolygon3D& p2)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(p2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TPolygon3D");
 }
 
-double math::distance(const TPolygon3D& p1, const TSegment3D& s2)
+double math::distance(
+	[[maybe_unused]] const TPolygon3D& p1,
+	[[maybe_unused]] const TSegment3D& s2)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(s2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TSegment3D");
 }
 
-double math::distance(const TPolygon3D& p1, const TLine3D& l2)
+double math::distance(
+	[[maybe_unused]] const TPolygon3D& p1, [[maybe_unused]] const TLine3D& l2)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(l2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TLine3D");
 }
 
-double math::distance(const TPolygon3D& po, const TPlane& pl)
+double math::distance(
+	[[maybe_unused]] const TPolygon3D& po, [[maybe_unused]] const TPlane& pl)
 {
-	MRPT_UNUSED_PARAM(po);
-	MRPT_UNUSED_PARAM(pl);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TPlane");
 }
 

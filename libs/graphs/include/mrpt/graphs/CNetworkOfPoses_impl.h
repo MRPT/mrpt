@@ -791,9 +791,8 @@ struct graph_ops
 				const TNodeID parent_id,
 				const typename dijkstra_t::tree_graph_t::Visitor::tree_t::
 					TEdgeInfo& edge_to_child,
-				const size_t depth_level) override
+				[[maybe_unused]] const size_t depth_level) override
 			{
-				MRPT_UNUSED_PARAM(depth_level);
 				const TNodeID child_id = edge_to_child.id;
 
 				// topological distance:

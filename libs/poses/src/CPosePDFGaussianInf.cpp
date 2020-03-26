@@ -281,11 +281,9 @@ void CPosePDFGaussianInf::drawManySamples(
  ---------------------------------------------------------------*/
 void CPosePDFGaussianInf::bayesianFusion(
 	const CPosePDF& p1_, const CPosePDF& p2_,
-	const double minMahalanobisDistToDrop)
+	[[maybe_unused]] const double minMahalanobisDistToDrop)
 {
 	MRPT_START
-
-	MRPT_UNUSED_PARAM(minMahalanobisDistToDrop);  // Not used in this class!
 
 	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf));
 	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf));

@@ -74,11 +74,9 @@ std::string CPTG_DiffDrive_CS::getDescription() const
 }
 
 void CPTG_DiffDrive_CS::ptgDiffDriveSteeringFunction(
-	float alpha, float t, float x, float y, float phi, float& v, float& w) const
+	float alpha, float t, [[maybe_unused]] float x, [[maybe_unused]] float y,
+	[[maybe_unused]] float phi, float& v, float& w) const
 {
-	MRPT_UNUSED_PARAM(x);
-	MRPT_UNUSED_PARAM(y);
-	MRPT_UNUSED_PARAM(phi);
 	const float T = 0.847f * std::sqrt(std::abs(alpha)) * R / V_MAX;
 
 	if (t < T)

@@ -531,10 +531,7 @@ THypothesisID CHMTSLAM::generateHypothesisID() { return m_nextHypID++; }
 /*---------------------------------------------------------------
 						getAs3DScene
   ---------------------------------------------------------------*/
-void CHMTSLAM::getAs3DScene(COpenGLScene& scene3D)
-{
-	MRPT_UNUSED_PARAM(scene3D);
-}
+void CHMTSLAM::getAs3DScene([[maybe_unused]] COpenGLScene& scene3D) {}
 
 /*---------------------------------------------------------------
 						abortedDueToErrors

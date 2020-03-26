@@ -465,7 +465,7 @@ void CKinect::close()
    change on the fly.
 	Default is RGB channel.
 */
-void CKinect::setVideoChannel(const TVideoChannel vch)
+void CKinect::setVideoChannel([[maybe_unused]] const TVideoChannel vch)
 {
 #if MRPT_HAS_KINECT_FREENECT
 	m_video_channel = vch;
@@ -489,8 +489,6 @@ void CKinect::setVideoChannel(const TVideoChannel vch)
 
 	freenect_start_video(f_dev);
 
-#else
-	MRPT_UNUSED_PARAM(vch);
 #endif  // MRPT_HAS_KINECT_FREENECT
 }
 
@@ -705,9 +703,9 @@ void CKinect::getNextObservation(
 /* -----------------------------------------------------
 				setPathForExternalImages
 ----------------------------------------------------- */
-void CKinect::setPathForExternalImages(const std::string& directory)
+void CKinect::setPathForExternalImages([
+	[maybe_unused]] const std::string& directory)
 {
-	MRPT_UNUSED_PARAM(directory);
 	// Ignore for now. It seems performance is better grabbing everything
 	// to a single big file than creating hundreds of smaller files per
 	// second...
@@ -723,14 +721,12 @@ void CKinect::setPathForExternalImages(const std::string& directory)
 }
 
 /** Change tilt angle \note Sensor must be open first. */
-void CKinect::setTiltAngleDegrees(double angle)
+void CKinect::setTiltAngleDegrees([[maybe_unused]] double angle)
 {
 	ASSERTMSG_(isOpen(), "Sensor must be open first");
 
 #if MRPT_HAS_KINECT_FREENECT
 	freenect_set_tilt_degs(f_dev, angle);
-#else
-	MRPT_UNUSED_PARAM(angle);
 #endif
 }
 

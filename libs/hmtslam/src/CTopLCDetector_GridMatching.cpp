@@ -130,10 +130,9 @@ CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
  *  This should be independent of hypothesis IDs.
  */
 void CTopLCDetector_GridMatching::OnNewPose(
-	const TPoseID& poseID, const CSensoryFrame* SF)
+	[[maybe_unused]] const TPoseID& poseID,
+	[[maybe_unused]] const CSensoryFrame* SF)
 {
-	MRPT_UNUSED_PARAM(poseID);
-	MRPT_UNUSED_PARAM(SF);
 }
 
 // Initialization

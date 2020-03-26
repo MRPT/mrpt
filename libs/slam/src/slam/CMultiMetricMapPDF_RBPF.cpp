@@ -941,11 +941,10 @@ bool CMultiMetricMapPDF::PF_SLAM_implementation_skipRobotMovement() const
    particle at a given location
  ---------------------------------------------------------------*/
 double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
-	const CParticleFilter::TParticleFilterOptions& PF_options,
+	[[maybe_unused]] const CParticleFilter::TParticleFilterOptions& PF_options,
 	const size_t particleIndexForMap, const CSensoryFrame& observation,
 	const CPose3D& x) const
 {
-	MRPT_UNUSED_PARAM(PF_options);
 	auto* map = const_cast<CMultiMetricMap*>(
 		&m_particles[particleIndexForMap].d->mapTillNow);
 	double ret = 0;

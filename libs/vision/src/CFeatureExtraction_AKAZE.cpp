@@ -30,9 +30,8 @@ using namespace std;
 
 void CFeatureExtraction::extractFeaturesAKAZE(
 	const mrpt::img::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
-	unsigned int nDesiredFeatures, const TImageROI& ROI)
+	unsigned int nDesiredFeatures, [[maybe_unused]] const TImageROI& ROI)
 {
-	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
 	mrpt::system::CTimeLoggerEntry tle(profiler, "extractFeaturesAKAZE");
 

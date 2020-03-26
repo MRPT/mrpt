@@ -195,9 +195,8 @@ void COpenGLScene::insert(
 							getByName
   ---------------------------------------------------------------*/
 CRenderizable::Ptr COpenGLScene::getByName(
-	const string& str, const string& viewportName)
+	const string& str, [[maybe_unused]] const string& viewportName)
 {
-	MRPT_UNUSED_PARAM(viewportName);
 	CRenderizable::Ptr obj;
 	for (auto& m_viewport : m_viewports)
 		if ((obj = m_viewport->getByName(str))) break;

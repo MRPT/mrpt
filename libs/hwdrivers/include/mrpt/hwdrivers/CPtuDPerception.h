@@ -191,11 +191,7 @@ class CPtuDPerception : public CPtuBase
 
 	/** Check if ptu is moving */
 
-	double status(double& rad) override
-	{
-		MRPT_UNUSED_PARAM(rad);
-		return 1;
-	}
+	double status([[maybe_unused]] double& rad) override { return 1; }
 
 	/** Set limits of movement */
 

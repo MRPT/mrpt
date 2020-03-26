@@ -1207,11 +1207,7 @@ struct CmtPortInfo
 		return strcmp(m_portName, p.m_portName) == 0;
 	}
 	//! equality operator, used for finding items in a list
-	bool operator==(const uint8_t port) const
-	{
-		MRPT_UNUSED_PARAM(port);
-		return false;
-	}
+	bool operator==([[maybe_unused]] const uint8_t port) const { return false; }
 #endif  // ifdef _WIN32/Linux
 #endif
 };

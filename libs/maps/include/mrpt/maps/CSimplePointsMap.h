@@ -99,10 +99,9 @@ class CSimplePointsMap : public CPointsMap
    protected:
 	void impl_copyFrom(const CPointsMap& obj) override;
 	void addFrom_classSpecific(
-		const CPointsMap& anotherMap, const size_t nPreviousPoints) override
+		[[maybe_unused]] const CPointsMap& anotherMap,
+		[[maybe_unused]] const size_t nPreviousPoints) override
 	{
-		MRPT_UNUSED_PARAM(anotherMap);
-		MRPT_UNUSED_PARAM(nPreviousPoints);
 		// No extra data.
 	}
 

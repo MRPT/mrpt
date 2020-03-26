@@ -117,53 +117,42 @@ bool CMetricMap::insertObservationPtr(
 }
 
 void CMetricMap::determineMatching2D(
-	const mrpt::maps::CMetricMap* otherMap, const CPose2D& otherMapPose,
-	TMatchingPairList& correspondences, const TMatchingParams& params,
-	TMatchingExtraResults& extraResults) const
+	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+	[[maybe_unused]] const CPose2D& otherMapPose,
+	[[maybe_unused]] TMatchingPairList& correspondences,
+	[[maybe_unused]] const TMatchingParams& params,
+	[[maybe_unused]] TMatchingExtraResults& extraResults) const
 {
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(correspondences);
-	MRPT_UNUSED_PARAM(params);
-	MRPT_UNUSED_PARAM(extraResults);
 	MRPT_START
 	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
 void CMetricMap::determineMatching3D(
-	const mrpt::maps::CMetricMap* otherMap, const CPose3D& otherMapPose,
-	TMatchingPairList& correspondences, const TMatchingParams& params,
-	TMatchingExtraResults& extraResults) const
+	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+	[[maybe_unused]] const CPose3D& otherMapPose,
+	[[maybe_unused]] TMatchingPairList& correspondences,
+	[[maybe_unused]] const TMatchingParams& params,
+	[[maybe_unused]] TMatchingExtraResults& extraResults) const
 {
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(correspondences);
-	MRPT_UNUSED_PARAM(params);
-	MRPT_UNUSED_PARAM(extraResults);
 	MRPT_START
 	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
 float CMetricMap::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap* otherMap,
-	const mrpt::poses::CPose3D& otherMapPose,
-	const TMatchingRatioParams& params) const
+	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+	[[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
+	[[maybe_unused]] const TMatchingRatioParams& params) const
 {
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(params);
 	MRPT_START
 	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END
 }
 
 float CMetricMap::squareDistanceToClosestCorrespondence(
-	float x0, float y0) const
+	[[maybe_unused]] float x0, [[maybe_unused]] float y0) const
 {
-	MRPT_UNUSED_PARAM(x0);
-	MRPT_UNUSED_PARAM(y0);
 	MRPT_START
 	THROW_EXCEPTION("Virtual method not implemented in derived class.");
 	MRPT_END

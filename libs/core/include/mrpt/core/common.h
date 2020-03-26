@@ -180,7 +180,3 @@ need to account for this with an extra offset.
 	defined(i386) || defined(_M_IX86) || defined(_X86_)
 #define MRPT_IS_X86_AMD64 1
 #endif
-
-/** Can be used to avoid "not used parameters" warnings from the compiler
- */
-#define MRPT_UNUSED_PARAM(a) (void)(a)

@@ -1254,12 +1254,12 @@ void CPointsMap::extractPoints(
 				compute3DDistanceToMesh
 ---------------------------------------------------------------*/
 void CPointsMap::compute3DDistanceToMesh(
-	const mrpt::maps::CMetricMap* otherMap2, const CPose3D& otherMapPose,
+	const mrpt::maps::CMetricMap* otherMap2,
+	[[maybe_unused]] const CPose3D& otherMapPose,
 	float maxDistForCorrespondence, TMatchingPairList& correspondences,
 	float& correspondencesRatio)
 {
 	MRPT_START
-	MRPT_UNUSED_PARAM(otherMapPose);
 
 	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
 
@@ -1613,9 +1613,8 @@ static TAuxLoadFunctor dummy_loader;
  */
 void CPointsMap::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
-	const mrpt::img::TColorf* pt_color)
+	[[maybe_unused]] const mrpt::img::TColorf* pt_color)
 {
-	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx, pt.x, pt.y, pt.z);
 }
 
@@ -1627,9 +1626,8 @@ size_t CPointsMap::PLY_export_get_vertex_count() const { return this->size(); }
  */
 void CPointsMap::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
-	mrpt::img::TColorf& pt_color) const
+	[[maybe_unused]] mrpt::img::TColorf& pt_color) const
 {
-	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color = false;
 
 	pt.x = m_x[idx];

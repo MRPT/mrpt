@@ -266,9 +266,8 @@ void CHMTSLAM::thread_LSLAM()
 /*---------------------------------------------------------------
 						LSLAM_process_message
   ---------------------------------------------------------------*/
-void CHMTSLAM::LSLAM_process_message(const CMessage& msg)
+void CHMTSLAM::LSLAM_process_message([[maybe_unused]] const CMessage& msg)
 {
-	MRPT_UNUSED_PARAM(msg);
 	MRPT_START
 
 	/*	switch(msg.type)

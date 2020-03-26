@@ -447,9 +447,8 @@ void CColouredPointsMap::getPointColor(
 //  a dependency on mrpt-vision.
 static void aux_projectPoint_with_distortion(
 	const mrpt::math::TPoint3D& P, const TCamera& params, TPixelCoordf& pixel,
-	bool accept_points_behind)
+	[[maybe_unused]] bool accept_points_behind)
 {
-	MRPT_UNUSED_PARAM(accept_points_behind);
 	// Pinhole model:
 	const double x = P.x / P.z;
 	const double y = P.y / P.z;
@@ -564,9 +563,8 @@ bool CColouredPointsMap::colourFromObservation(
 	return true;
 }  // end colourFromObservation
 
-void CColouredPointsMap::resetPointsMinDist(float defValue)
+void CColouredPointsMap::resetPointsMinDist([[maybe_unused]] float defValue)
 {
-	MRPT_UNUSED_PARAM(defValue);
 	// m_min_dist.assign(x.size(),defValue);
 }
 
@@ -683,11 +681,10 @@ struct pointmap_traits<CColouredPointsMap>
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan2D_prepareOneRange(
-		CColouredPointsMap& me, const float gx, const float gy, const float gz,
+		CColouredPointsMap& me, [[maybe_unused]] const float gx,
+		[[maybe_unused]] const float gy, const float gz,
 		mrpt::maps::CPointsMap::TLaserRange2DInsertContext& lric)
 	{
-		MRPT_UNUSED_PARAM(gx);
-		MRPT_UNUSED_PARAM(gy);
 		// Relative height of the point wrt the sensor:
 		const float rel_z = gz - lric.HM(2, 3);  // m23;
 
@@ -838,11 +835,10 @@ struct pointmap_traits<CColouredPointsMap>
 	/** Helper method fot the generic implementation of
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data */
 	inline static void internal_loadFromRangeScan3D_prepareOneRange(
-		CColouredPointsMap& me, const float gx, const float gy, const float gz,
+		CColouredPointsMap& me, [[maybe_unused]] const float gx,
+		[[maybe_unused]] const float gy, const float gz,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
 	{
-		MRPT_UNUSED_PARAM(gx);
-		MRPT_UNUSED_PARAM(gy);
 		// Rename variables:
 		float& pR = lric.fVars[0];
 		float& pG = lric.fVars[1];
@@ -966,10 +962,9 @@ struct pointmap_traits<CColouredPointsMap>
 	 * CPointsMap::loadFromRangeScan(), to be called once per range data, at the
 	 * end */
 	inline static void internal_loadFromRangeScan3D_postOneRange(
-		CColouredPointsMap& me,
+		[[maybe_unused]] CColouredPointsMap& me,
 		mrpt::maps::CPointsMap::TLaserRange3DInsertContext& lric)
 	{
-		MRPT_UNUSED_PARAM(me);
 		unsigned int& imgW = lric.uVars[0];
 		unsigned int& img_idx_x = lric.uVars[2];
 		unsigned int& img_idx_y = lric.uVars[3];

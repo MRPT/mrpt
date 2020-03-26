@@ -149,37 +149,33 @@ bool CPose3DPDFGrid::saveToTextFile(const std::string& dataFile) const
 	//	return true;  // Done!
 }
 
-void CPose3DPDFGrid::changeCoordinatesReference(const CPose3D& newReferenceBase)
+void CPose3DPDFGrid::changeCoordinatesReference([
+	[maybe_unused]] const CPose3D& newReferenceBase)
 {
-	MRPT_UNUSED_PARAM(newReferenceBase);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-void CPose3DPDFGrid::bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2)
+void CPose3DPDFGrid::bayesianFusion(
+	[[maybe_unused]] const CPose3DPDF& p1,
+	[[maybe_unused]] const CPose3DPDF& p2)
 {
-	MRPT_UNUSED_PARAM(p1);
-	MRPT_UNUSED_PARAM(p2);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-void CPose3DPDFGrid::inverse(CPose3DPDF& o) const
+void CPose3DPDFGrid::inverse([[maybe_unused]] CPose3DPDF& o) const
 {
-	MRPT_UNUSED_PARAM(o);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
-void CPose3DPDFGrid::drawSingleSample(CPose3D& outPart) const
+void CPose3DPDFGrid::drawSingleSample([[maybe_unused]] CPose3D& outPart) const
 {
-	MRPT_UNUSED_PARAM(outPart);
 	THROW_EXCEPTION("Not implemented yet!");
 }
 
 void CPose3DPDFGrid::drawManySamples(
-	size_t N, std::vector<CVectorDouble>& outSamples) const
+	[[maybe_unused]] size_t N,
+	[[maybe_unused]] std::vector<CVectorDouble>& outSamples) const
 {
-	MRPT_UNUSED_PARAM(N);
-	MRPT_UNUSED_PARAM(outSamples);
-
 	THROW_EXCEPTION("Not implemented yet!");
 }
 

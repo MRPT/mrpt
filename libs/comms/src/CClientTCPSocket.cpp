@@ -526,11 +526,10 @@ std::string CClientTCPSocket::getLastErrorStr()
 	return mrpt::comms::net::getLastSocketErrorStr();
 }
 
-uint64_t CClientTCPSocket::Seek(int64_t off, CStream::TSeekOrigin org)
+uint64_t CClientTCPSocket::Seek(
+	[[maybe_unused]] int64_t off, [[maybe_unused]] CStream::TSeekOrigin org)
 {
 	MRPT_START
-	MRPT_UNUSED_PARAM(off);
-	MRPT_UNUSED_PARAM(org);
 	THROW_EXCEPTION("This method has no effect in this class!");
 	MRPT_END
 }

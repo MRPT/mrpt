@@ -82,7 +82,8 @@ CInterfaceFTDI::~CInterfaceFTDI()
 #endif
 }
 
-void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
+void CInterfaceFTDI::OpenBySerialNumber([
+	[maybe_unused]] const std::string& serialNumber)
 {
 #if MRPT_HAS_FTDI
 	MRPT_TRY_START
@@ -130,15 +131,13 @@ void CInterfaceFTDI::OpenBySerialNumber(const std::string& serialNumber)
 	if (ret) THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 
 	MRPT_TRY_END
-#else
-	MRPT_UNUSED_PARAM(serialNumber);
 #endif
 }
 
 /*-------------------------------------------------------------
 					ListAllDevices
 -------------------------------------------------------------*/
-void CInterfaceFTDI::ListAllDevices(TFTDIDeviceList& outList)
+void CInterfaceFTDI::ListAllDevices([[maybe_unused]] TFTDIDeviceList& outList)
 {
 	MRPT_TRY_START
 #if MRPT_HAS_FTDI
@@ -220,14 +219,13 @@ void CInterfaceFTDI::ListAllDevices(TFTDIDeviceList& outList)
 				i->usb_idProduct, i->ftdi_serial.c_str());
 	}
 
-#else
-	MRPT_UNUSED_PARAM(outList);
 #endif
 	MRPT_TRY_END
 }
 
 void CInterfaceFTDI::recursive_fill_list_devices(
-	void* usb_device_structure, TFTDIDeviceList& outList)
+	[[maybe_unused]] void* usb_device_structure,
+	[[maybe_unused]] TFTDIDeviceList& outList)
 {
 #if MRPT_HAS_FTDI
 #if MRPT_FTDI_VERSION >= 0x120
@@ -312,9 +310,6 @@ void CInterfaceFTDI::recursive_fill_list_devices(
 			recursive_fill_list_devices((void*)dev->children[j], outList);
 	}
 #endif
-#else
-	MRPT_UNUSED_PARAM(usb_device_structure);
-	MRPT_UNUSED_PARAM(outList);
 #endif
 }
 
@@ -322,7 +317,8 @@ void CInterfaceFTDI::recursive_fill_list_devices(
 					ftdi_read
 -------------------------------------------------------------*/
 void CInterfaceFTDI::ftdi_read(
-	void* lpvBuffer, unsigned long dwBuffSize, unsigned long* lpdwBytesRead)
+	[[maybe_unused]] void* lpvBuffer, [[maybe_unused]] unsigned long dwBuffSize,
+	[[maybe_unused]] unsigned long* lpdwBytesRead)
 {
 #if MRPT_HAS_FTDI
 	MRPT_TRY_START
@@ -342,10 +338,6 @@ void CInterfaceFTDI::ftdi_read(
 	}
 
 	MRPT_TRY_END
-#else
-	MRPT_UNUSED_PARAM(lpvBuffer);
-	MRPT_UNUSED_PARAM(dwBuffSize);
-	MRPT_UNUSED_PARAM(lpdwBytesRead);
 #endif
 }
 
@@ -353,7 +345,9 @@ void CInterfaceFTDI::ftdi_read(
 					ftdi_write
 -------------------------------------------------------------*/
 void CInterfaceFTDI::ftdi_write(
-	const void* lpvBuffer, unsigned long dwBuffSize, unsigned long* lpdwBytes)
+	[[maybe_unused]] const void* lpvBuffer,
+	[[maybe_unused]] unsigned long dwBuffSize,
+	[[maybe_unused]] unsigned long* lpdwBytes)
 {
 #if MRPT_HAS_FTDI
 	MRPT_TRY_START
@@ -366,10 +360,6 @@ void CInterfaceFTDI::ftdi_write(
 		THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 
 	MRPT_TRY_END
-#else
-	MRPT_UNUSED_PARAM(lpvBuffer);
-	MRPT_UNUSED_PARAM(dwBuffSize);
-	MRPT_UNUSED_PARAM(lpdwBytes);
 #endif
 }
 
@@ -441,7 +431,7 @@ void CInterfaceFTDI::Purge()
 /*-------------------------------------------------------------
 					SetLatencyTimer
 -------------------------------------------------------------*/
-void CInterfaceFTDI::SetLatencyTimer(unsigned char latency_ms)
+void CInterfaceFTDI::SetLatencyTimer([[maybe_unused]] unsigned char latency_ms)
 {
 #if MRPT_HAS_FTDI
 	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
@@ -449,8 +439,6 @@ void CInterfaceFTDI::SetLatencyTimer(unsigned char latency_ms)
 
 	if (ftdi_set_latency_timer(ctx, latency_ms) < 0)
 		THROW_EXCEPTION("Error setting latency timer");
-#else
-	MRPT_UNUSED_PARAM(latency_ms);
 #endif
 }
 
@@ -458,7 +446,8 @@ void CInterfaceFTDI::SetLatencyTimer(unsigned char latency_ms)
 					SetTimeouts
 -------------------------------------------------------------*/
 void CInterfaceFTDI::SetTimeouts(
-	unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms)
+	[[maybe_unused]] unsigned long dwReadTimeout_ms,
+	[[maybe_unused]] unsigned long dwWriteTimeout_ms)
 {
 #if MRPT_HAS_FTDI
 	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
@@ -467,9 +456,6 @@ void CInterfaceFTDI::SetTimeouts(
 // JL: It seems it works worse with timeouts...
 //	ctx->usb_read_timeout  = dwReadTimeout_ms;
 //	ctx->usb_write_timeout = dwWriteTimeout_ms;
-#else
-	MRPT_UNUSED_PARAM(dwReadTimeout_ms);
-	MRPT_UNUSED_PARAM(dwWriteTimeout_ms);
 #endif
 }
 

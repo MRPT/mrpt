@@ -182,10 +182,10 @@ void CBox::setBoxCorners(
 	m_corner_max.z = std::max(corner1.z, corner2.z);
 }
 
-bool CBox::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
+bool CBox::traceRay(
+	[[maybe_unused]] const mrpt::poses::CPose3D& o,
+	[[maybe_unused]] double& dist) const
 {
-	MRPT_UNUSED_PARAM(o);
-	MRPT_UNUSED_PARAM(dist);
 	THROW_EXCEPTION("TO DO");
 }
 

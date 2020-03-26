@@ -46,10 +46,9 @@ using namespace mrpt::poses;
  */
 void mrpt::vision::ba_initial_estimate(
 	const TSequenceFeatureObservations& observations,
-	const TCamera& camera_params, TFramePosesMap& frame_poses,
+	[[maybe_unused]] const TCamera& camera_params, TFramePosesMap& frame_poses,
 	TLandmarkLocationsMap& landmark_points)
 {
-	MRPT_UNUSED_PARAM(camera_params);
 	MRPT_START
 	// VERY CRUDE APPROACH: All camera poses at the origin, all points at
 	// (0,0,1)
@@ -74,10 +73,9 @@ void mrpt::vision::ba_initial_estimate(
 
 void mrpt::vision::ba_initial_estimate(
 	const TSequenceFeatureObservations& observations,
-	const TCamera& camera_params, TFramePosesVec& frame_poses,
+	[[maybe_unused]] const TCamera& camera_params, TFramePosesVec& frame_poses,
 	TLandmarkLocationsVec& landmark_points)
 {
-	MRPT_UNUSED_PARAM(camera_params);
 	MRPT_START
 	// VERY CRUDE APPROACH: All camera poses at the origin, all points at
 	// (0,0,1)

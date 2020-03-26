@@ -203,13 +203,10 @@ void COccupancyGridMap3D::determineMatching2D(
 bool COccupancyGridMap3D::isEmpty() const { return m_is_empty; }
 
 float COccupancyGridMap3D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap* otherMap,
-	const mrpt::poses::CPose3D& otherMapPose,
-	const TMatchingRatioParams& params) const
+	[[maybe_unused]] const mrpt::maps::CMetricMap* otherMap,
+	[[maybe_unused]] const mrpt::poses::CPose3D& otherMapPose,
+	[[maybe_unused]] const TMatchingRatioParams& params) const
 {
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(params);
 	THROW_EXCEPTION("Implement me!");
 	return 0;
 }

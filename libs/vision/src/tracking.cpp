@@ -160,18 +160,16 @@ inline void trackFeatures_updatePatch<CFeatureList>(
 }  // end of trackFeatures_updatePatch<>
 template <>
 inline void trackFeatures_updatePatch<TKeyPointList>(
-	TKeyPointList& featureList, const CImage& cur_gray)
+	[[maybe_unused]] TKeyPointList& featureList,
+	[[maybe_unused]] const CImage& cur_gray)
 {
-	MRPT_UNUSED_PARAM(featureList);
-	MRPT_UNUSED_PARAM(cur_gray);
 	// This list type does not have patch stored explicitly
 }  // end of trackFeatures_updatePatch<>
 template <>
 inline void trackFeatures_updatePatch<TKeyPointfList>(
-	TKeyPointfList& featureList, const CImage& cur_gray)
+	[[maybe_unused]] TKeyPointfList& featureList,
+	[[maybe_unused]] const CImage& cur_gray)
 {
-	MRPT_UNUSED_PARAM(featureList);
-	MRPT_UNUSED_PARAM(cur_gray);
 	// This list type does not have patch stored explicitly
 }  // end of trackFeatures_updatePatch<>
 
@@ -245,11 +243,10 @@ inline void trackFeatures_addNewFeats_simple_list(
 	FEAT_LIST& featureList, const TKeyPointList& new_feats,
 	const std::vector<size_t>& sorted_indices, const size_t nNewToCheck,
 	const size_t maxNumFeatures, const float minimum_KLT_response_to_add,
-	const double threshold_sqr_dist_to_add_new, const size_t patchSize,
-	const CImage& cur_gray, TFeatureID& max_feat_ID_at_input)
+	const double threshold_sqr_dist_to_add_new,
+	[[maybe_unused]] const size_t patchSize,
+	[[maybe_unused]] const CImage& cur_gray, TFeatureID& max_feat_ID_at_input)
 {
-	MRPT_UNUSED_PARAM(patchSize);
-	MRPT_UNUSED_PARAM(cur_gray);
 	// Version with KD-tree
 	CFeatureListKDTree<typename FEAT_LIST::feature_t> kdtree(
 		featureList.getVector());
@@ -424,12 +421,10 @@ inline size_t trackFeatures_deleteOOB(
 // -------------------------------
 
 void CGenericFeatureTracker::trackFeatures_impl(
-	const CImage& old_img, const CImage& new_img,
-	TKeyPointfList& inout_featureList)
+	[[maybe_unused]] const CImage& old_img,
+	[[maybe_unused]] const CImage& new_img,
+	[[maybe_unused]] TKeyPointfList& inout_featureList)
 {
-	MRPT_UNUSED_PARAM(old_img);
-	MRPT_UNUSED_PARAM(new_img);
-	MRPT_UNUSED_PARAM(inout_featureList);
 	THROW_EXCEPTION("Method not implemented by derived class!");
 }
 
