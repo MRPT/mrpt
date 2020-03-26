@@ -104,10 +104,24 @@ class CDisplayWindowGUI : public nanogui::Screen
 	{
 		m_loopCallback = callback;
 	}
-	const std::function<void(void)>& loopCallback() const
+	const auto& loopCallback() const { return m_loopCallback; }
+
+	/** Sets a handle for file drop events */
+	void setDropFilesCallback(
+		const std::function<
+			bool(const std::vector<std::string>& /* filenames */)>& callback)
 	{
-		return m_loopCallback;
+		m_dropFilesCallback = callback;
 	}
+	const auto& dropFilesCallback() const { return m_dropFilesCallback; }
+
+	void setKeyboardCallback(const std::function<bool(
+								 int /*key*/, int /*scancode*/, int /*action*/,
+								 int /*modifiers*/)>& callback)
+	{
+		m_keyboardCallback = callback;
+	}
+	const auto& keyboardCallback() const { return m_keyboardCallback; }
 
 	/** @} */
 
@@ -158,12 +172,20 @@ class CDisplayWindowGUI : public nanogui::Screen
 		int modifiers) override;
 	virtual bool scrollEvent(
 		const nanogui::Vector2i& p, const nanogui::Vector2f& rel) override;
+	virtual bool dropEvent(const std::vector<std::string>& filenames) override;
 	/** @} */
 
 	/** Used to keep track of mouse events on the camera */
 	internal::NanoGUICanvasHeadless m_background_canvas;
 
 	std::function<void(void)> m_loopCallback;
+	// Returns true if handled
+	std::function<bool(const std::vector<std::string>& /* filenames */)>
+		m_dropFilesCallback;
+	// Returns true if handled
+	std::function<bool(
+		int /*key*/, int /*scancode*/, int /*action*/, int /*modifiers*/)>
+		m_keyboardCallback;
 };
 
 }  // namespace mrpt::gui
