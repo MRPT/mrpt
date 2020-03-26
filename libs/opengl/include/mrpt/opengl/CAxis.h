@@ -43,9 +43,9 @@ class CAxis : public CRenderizableShaderWireFrame
 	CAxis(
 		float xmin = -1.0f, float ymin = -1.0f, float zmin = -1.0f,
 		float xmax = 1.0f, float ymax = 1.0f, float zmax = 1.0f,
-		float frecuency = 1.f, float lineWidth = 3.0f, bool marks = false);
+		float frecuency = 1.f, float lineWidth = 3.0f, bool marks = true);
 
-	~CAxis() override = default;
+	virtual ~CAxis() override = default;
 
 	void setAxisLimits(
 		float xmin, float ymin, float zmin, float xmax, float ymax, float zmax);
@@ -78,7 +78,7 @@ class CAxis : public CRenderizableShaderWireFrame
 	float m_frequency;
 	/** draw marks for X,Y,Z */
 	std::array<bool, 3> m_marks = {false, false, false};
-	float m_textScale{0.25f};
+	float m_textScale{0.10f};
 	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
 	float m_markLen{0.07f};
 
