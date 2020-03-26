@@ -17,13 +17,13 @@
 //    See the sources and the doxygen documentation page "sse_optimizations" for
 //    more details.
 // ---------------------------------------------------------------------------
-#if MRPT_HAS_SSE3
+#if MRPT_ARCH_INTEL_COMPATIBLE
 
 #include <mrpt/core/SSE_macros.h>
 #include <mrpt/core/SSE_types.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/memory.h>
-#include "CImage_SSEx.h"
+#include "CImage.SSEx.h"
 
 /** \addtogroup sse_optimizations
  *  SSE optimized functions
@@ -319,4 +319,4 @@ void image_SSSE3_rgb_to_gray_8u(
 
 /**  @} */
 
-#endif  // end of MRPT_HAS_SSE3
+#endif  // end of MRPT_ARCH_INTEL_COMPATIBLE

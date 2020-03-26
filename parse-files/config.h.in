@@ -124,6 +124,10 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** The architecture is 32 or 64 bit wordsize:  */
 #define MRPT_WORD_SIZE	${CMAKE_MRPT_WORD_SIZE}
 
+
+/** True if we are in amd64 or i386 architectures */
+#define MRPT_ARCH_INTEL_COMPATIBLE ${MRPT_ARCH_INTEL_COMPATIBLE}
+
 /** Use optimized functions with the SSE2 machine instructions set */
 #if defined WIN32 && (!defined WIN64 || defined EM64T) && \
  (_MSC_VER >= 1400) || (defined __SSE2__ && defined __GNUC__ && __GNUC__ >= 4)

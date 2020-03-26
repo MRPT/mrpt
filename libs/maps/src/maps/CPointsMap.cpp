@@ -26,10 +26,8 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
 
-#if MRPT_HAS_SSE2
 #include <mrpt/core/SSE_macros.h>
 #include <mrpt/core/SSE_types.h>
-#endif
 
 #if MRPT_HAS_MATLAB
 #include <mexplus.h>

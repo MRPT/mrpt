@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/core/cpu.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
 #include <mrpt/random.h>
@@ -179,12 +180,19 @@ double image_test_2(int w, int h)
 	return R;
 }
 
-template <int IMG_CHANNELS>
+template <TImageChannels IMG_CHANNELS, bool DISABLE_SIMD = false>
 double image_halfsample(int w, int h)
 {
-	CImage img(w, h, mrpt::img::CH_RGB), img2;
-
+	CImage img(w, h, IMG_CHANNELS), img2;
 	CTicTac tictac;
+
+	const bool savedFeatSSE2 = mrpt::cpu::supports(mrpt::cpu::feature::SSE2);
+	const bool savedFeatSSSE3 = mrpt::cpu::supports(mrpt::cpu::feature::SSSE3);
+	if (DISABLE_SIMD)
+	{
+		mrpt::cpu::overrideDetectedFeature(mrpt::cpu::feature::SSE2, false);
+		mrpt::cpu::overrideDetectedFeature(mrpt::cpu::feature::SSSE3, false);
+	}
 
 	const size_t N = 300;
 
@@ -192,13 +200,28 @@ double image_halfsample(int w, int h)
 	for (size_t i = 0; i < N; i++)
 		img.scaleHalf(img2, mrpt::img::IMG_INTERP_NN);
 
+	if (DISABLE_SIMD)
+	{
+		mrpt::cpu::overrideDetectedFeature(
+			mrpt::cpu::feature::SSE2, savedFeatSSE2);
+		mrpt::cpu::overrideDetectedFeature(
+			mrpt::cpu::feature::SSSE3, savedFeatSSSE3);
+	}
 	return tictac.Tac() / N;
 }
 
-template <int IMG_CHANNELS>
+template <TImageChannels IMG_CHANNELS, bool DISABLE_SIMD = false>
 double image_halfsample_smooth(int w, int h)
 {
-	CImage img(w, h, mrpt::img::CH_RGB), img2;
+	CImage img(w, h, IMG_CHANNELS), img2;
+
+	const bool savedFeatSSE2 = mrpt::cpu::supports(mrpt::cpu::feature::SSE2);
+	const bool savedFeatSSSE3 = mrpt::cpu::supports(mrpt::cpu::feature::SSSE3);
+	if (DISABLE_SIMD)
+	{
+		mrpt::cpu::overrideDetectedFeature(mrpt::cpu::feature::SSE2, false);
+		mrpt::cpu::overrideDetectedFeature(mrpt::cpu::feature::SSSE3, false);
+	}
 
 	CTicTac tictac;
 
@@ -207,6 +230,14 @@ double image_halfsample_smooth(int w, int h)
 	tictac.Tic();
 	for (size_t i = 0; i < N; i++)
 		img.scaleHalf(img2, mrpt::img::IMG_INTERP_LINEAR);
+
+	if (DISABLE_SIMD)
+	{
+		mrpt::cpu::overrideDetectedFeature(
+			mrpt::cpu::feature::SSE2, savedFeatSSE2);
+		mrpt::cpu::overrideDetectedFeature(
+			mrpt::cpu::feature::SSSE3, savedFeatSSSE3);
+	}
 
 	return tictac.Tac() / N;
 }
@@ -434,9 +465,13 @@ void register_tests_image()
 	lstTests.emplace_back(
 		"images: Half sample GRAY (1024x768)", image_halfsample<CH_GRAY>, 1024,
 		768);
+
 	lstTests.emplace_back(
 		"images: Half sample GRAY (1280x1024)", image_halfsample<CH_GRAY>, 1280,
 		1024);
+	lstTests.emplace_back(
+		"images: Half sample GRAY (1280x1024) [SSE2 disabled]",
+		image_halfsample<CH_GRAY, true>, 1280, 1024);
 
 	lstTests.emplace_back(
 		"images: Half sample RGB (160x120)", image_halfsample<CH_RGB>, 160,
@@ -456,6 +491,9 @@ void register_tests_image()
 	lstTests.emplace_back(
 		"images: Half sample RGB (1280x1024)", image_halfsample<CH_RGB>, 1280,
 		1024);
+	lstTests.emplace_back(
+		"images: Half sample RGB (1280x1024) [SSSE3 disabled]",
+		image_halfsample<CH_RGB>, 1280, 1024);
 
 	lstTests.emplace_back(
 		"images: Half sample smooth GRAY (160x120)",
@@ -475,6 +513,9 @@ void register_tests_image()
 	lstTests.emplace_back(
 		"images: Half sample smooth GRAY (1280x1024)",
 		image_halfsample_smooth<CH_GRAY>, 1280, 1024);
+	lstTests.emplace_back(
+		"images: Half sample smooth GRAY (1280x1024) [SSSE3 disabled]",
+		image_halfsample_smooth<CH_GRAY, true>, 1280, 1024);
 
 	lstTests.emplace_back(
 		"images: Half sample smooth RGB (160x120)",

@@ -48,22 +48,12 @@ void CPU_analyzer::detect_impl() noexcept
 		feat(feature::MMX) = !!(info[3] & (1 << 23));
 		feat(feature::POPCNT) = !!(info[2] & (1 << 23));
 		feat(feature::SSE) = !!(info[3] & (1 << 25));
-#if MRPT_HAS_SSE2
 		feat(feature::SSE2) = !!(info[3] & (1 << 26));
-#endif
-#if MRPT_HAS_SSE3
 		feat(feature::SSE3) = !!(info[2] & (1 << 0));
 		feat(feature::SSSE3) = !!(info[2] & (1 << 9));
-#endif
-#if MRPT_HAS_SSE4_1
 		feat(feature::SSE4_1) = !!(info[2] & (1 << 19));
-#endif
-#if MRPT_HAS_SSE4_2
 		feat(feature::SSE4_2) = !!(info[2] & (1 << 20));
-#endif
-#if MRPT_HAS_AVX
 		feat(feature::AVX) = !!(info[2] & (1 << 28));
-#endif
 	}
 	if (nIds >= 0x00000007)
 	{
@@ -90,25 +80,13 @@ void CPU_analyzer::detect_impl() noexcept
 	feat(feature::MMX) = !!__builtin_cpu_supports("mmx");
 	feat(feature::POPCNT) = !!__builtin_cpu_supports("popcnt");
 	feat(feature::SSE) = !!__builtin_cpu_supports("sse");
-#if MRPT_HAS_SSE2
 	feat(feature::SSE2) = !!__builtin_cpu_supports("sse2");
-#endif
-#if MRPT_HAS_SSE3
 	feat(feature::SSE3) = !!__builtin_cpu_supports("sse3");
 	feat(feature::SSSE3) = !!__builtin_cpu_supports("ssse3");
-#endif
-#if MRPT_HAS_SSE4_1
 	feat(feature::SSE4_1) = !!__builtin_cpu_supports("sse4.1");
-#endif
-#if MRPT_HAS_SSE4_2
 	feat(feature::SSE4_2) = !!__builtin_cpu_supports("sse4.2");
-#endif
-#if MRPT_HAS_AVX
 	feat(feature::AVX) = __builtin_cpu_supports("avx");
-#endif
-#if MRPT_HAS_AVX2
 	feat(feature::AVX2) = __builtin_cpu_supports("avx2");
-#endif
 #endif
 }
 #endif
