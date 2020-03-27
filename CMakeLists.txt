@@ -452,24 +452,26 @@ if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		set(MRPT_EXES_CXX_FLAGS "${MRPT_EXES_CXX_FLAGS} -fwhole-program --combine")
 	endif()
 
-	# "-march=native" generates code optimized for the detected current processor.
-	set(MRPT_OPTIMIZE_NATIVE OFF CACHE BOOL "GCC/clang optimizations for current processor (-march=native)")
-	# "-mtune=native" generates code optimized for the detected current processor.
-	set(MRPT_TUNE_NATIVE ON CACHE BOOL "GCC/clang tune for current processor (-mtune=native)")
+    if (NOT CMAKE_CROSSCOMPILING)
+    	# "-march=native" generates code optimized for the detected current processor.
+    	set(MRPT_OPTIMIZE_NATIVE OFF CACHE BOOL "GCC/clang optimizations for current processor (-march=native)")
+    	# "-mtune=native" generates code optimized for the detected current processor.
+    	set(MRPT_TUNE_NATIVE ON CACHE BOOL "GCC/clang tune for current processor (-mtune=native)")
 
-	if(MRPT_TUNE_NATIVE)
-		add_compile_options(-mtune=native)
-	endif()
+    	if(MRPT_TUNE_NATIVE)
+    		add_compile_options(-mtune=native)
+    	endif()
 
-	if(MRPT_OPTIMIZE_NATIVE)
-		if ("${CMAKE_MRPT_ARCH}" MATCHES "ppc64.*")
-			# Special case: PowerPC does not have match=native:
-			add_compile_options(-mcpu=native -mtune=native)
-		else()
-			# amd64, arm64, etc.
-			add_compile_options(-march=native)
-		endif()
-	endif()
+    	if(MRPT_OPTIMIZE_NATIVE)
+    		if ("${CMAKE_MRPT_ARCH}" MATCHES "ppc64.*")
+    			# Special case: PowerPC does not have match=native:
+    			add_compile_options(-mcpu=native -mtune=native)
+    		else()
+    			# amd64, arm64, etc.
+    			add_compile_options(-march=native)
+    		endif()
+    	endif()
+    endif()
 
 	if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 		add_compile_options(-O3)
