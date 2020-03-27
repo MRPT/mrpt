@@ -9,6 +9,7 @@
 
 #include "slam-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -82,8 +83,7 @@ CMetricMapBuilderRBPF::~CMetricMapBuilderRBPF() = default;
   ---------------------------------------------------------------*/
 void CMetricMapBuilderRBPF::clear()
 {
-	std::lock_guard<std::mutex> csl(
-		critZoneChangingMap);  // Enter critical section (updating map)
+	auto lck = mrpt::lockHelper(critZoneChangingMap);
 
 	MRPT_LOG_DEBUG("CMetricMapBuilderRBPF::clear() called.");
 	static CPose2D nullPose(0, 0, 0);
@@ -104,8 +104,7 @@ void CMetricMapBuilderRBPF::processActionObservation(
 	CActionCollection& action, CSensoryFrame& observations)
 {
 	MRPT_START
-	std::lock_guard<std::mutex> csl(
-		critZoneChangingMap);  // Enter critical section (updating map)
+	auto lck = mrpt::lockHelper(critZoneChangingMap);
 
 	// Update the traveled distance estimations:
 	{
@@ -286,8 +285,7 @@ void CMetricMapBuilderRBPF::initialize(
 
 	this->clear();
 
-	std::lock_guard<std::mutex> csl(
-		critZoneChangingMap);  // Enter critical section (updating map)
+	auto lck = mrpt::lockHelper(critZoneChangingMap);
 
 	mrpt::poses::CPose3D curPose;
 	if (x0)

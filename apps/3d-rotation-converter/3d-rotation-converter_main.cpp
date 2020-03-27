@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -410,7 +411,7 @@ static void AppRotationConverter()
 		scene->insert(gl_corner_user);
 		scene->insert(gl_corner_reference);
 
-		std::lock_guard<std::mutex> lck(win.background_scene_mtx);
+		auto lck = mrpt::lockHelper(win.background_scene_mtx);
 		win.background_scene = std::move(scene);
 	}
 

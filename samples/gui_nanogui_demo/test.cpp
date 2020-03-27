@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -44,7 +45,7 @@ void TestGUI()
 
 			glControl->camera().setZoomDistance(5.0f);
 
-			std::lock_guard<std::mutex> lck(glControl->scene_mtx);
+			auto lck = mrpt::lockHelper(glControl->scene_mtx);
 			glControl->scene = std::move(scene);
 		}
 

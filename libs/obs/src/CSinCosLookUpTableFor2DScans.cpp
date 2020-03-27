@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 
@@ -36,7 +37,7 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues&
 	CSinCosLookUpTableFor2DScans::getSinCosForScan(
 		const T2DScanProperties& scan_prop) const
 {
-	std::lock_guard lck(m_cache_mtx);
+	auto lck = mrpt::lockHelper(m_cache_mtx);
 
 	auto it = m_cache.find(scan_prop);
 	if (it != m_cache.end())

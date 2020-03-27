@@ -10,6 +10,7 @@
 #include "slam-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -132,7 +133,7 @@ void CMetricMapBuilderICP::TConfigParams::dumpToTextStream(
   ---------------------------------------------------------------*/
 void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 {
-	std::lock_guard<std::mutex> lock_cs(critZoneChangingMap);
+	auto lck = mrpt::lockHelper(critZoneChangingMap);
 
 	MRPT_START
 
@@ -533,7 +534,7 @@ void CMetricMapBuilderICP::initialize(
 	m_there_has_been_an_odometry = false;
 
 	// Init path & map:
-	std::lock_guard<std::mutex> lock_cs(critZoneChangingMap);
+	auto lck = mrpt::lockHelper(critZoneChangingMap);
 
 	// Create metric maps:
 	metricMap.setListOfMaps(ICP_options.mapInitializers);
@@ -569,7 +570,7 @@ void CMetricMapBuilderICP::initialize(
 void CMetricMapBuilderICP::getCurrentMapPoints(
 	std::vector<float>& x, std::vector<float>& y)
 {
-	std::lock_guard<std::mutex> lck(critZoneChangingMap);
+	auto lck = mrpt::lockHelper(critZoneChangingMap);
 
 	auto pPts = metricMap.mapByClass<CPointsMap>(0);
 
