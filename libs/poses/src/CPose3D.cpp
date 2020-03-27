@@ -477,22 +477,6 @@ mrpt::math::TVector3D CPose3D::inverseRotateVector(
 	return l;
 }
 
-// TODO: Use SSE2? OTOH, this forces mem align...
-#if MRPT_HAS_SSE2 && defined(MRPT_USE_SSE2)
-/*static inline __m128 transformSSE(const __m128* matrix, const __m128& in)
-{
-	ASSERT_(((size_t)matrix & 15) == 0);
-	__m128 a0 = _mm_mul_ps(_mm_load_ps((float*)(matrix+0)),
-_mm_shuffle_ps(in,in,_MM_SHUFFLE(0,0,0,0)));
-	__m128 a1 = _mm_mul_ps(_mm_load_ps((float*)(matrix+1)),
-_mm_shuffle_ps(in,in,_MM_SHUFFLE(1,1,1,1)));
-	__m128 a2 = _mm_mul_ps(_mm_load_ps((float*)(matrix+2)),
-_mm_shuffle_ps(in,in,_MM_SHUFFLE(2,2,2,2)));
-
-	return _mm_add_ps(_mm_add_ps(a0,a1),a2);
-}*/
-#endif  // SSE2
-
 void CPose3D::asVector(vector_t& r) const
 {
 	updateYawPitchRoll();

@@ -12,7 +12,7 @@
 #include <mrpt/config.h>
 
 // SSE2 types:
-#if MRPT_HAS_SSE2
+#if MRPT_ARCH_INTEL_COMPATIBLE
 extern "C"
 {
 #include <emmintrin.h>
@@ -21,7 +21,7 @@ extern "C"
 #endif
 
 // SSE3/SSSE3 types:
-#if MRPT_HAS_SSE3
+#if MRPT_ARCH_INTEL_COMPATIBLE
 extern "C"
 {
 #include <pmmintrin.h>
@@ -33,14 +33,12 @@ extern "C"
 #endif
 
 // SSE4.1 types:
-#if MRPT_HAS_SSE4_1
 #if defined(__SSE4_2__) || defined(__SSE4_1__)
 #include <smmintrin.h>
 #endif
-#endif
 
 // Helpers:
-#if MRPT_HAS_SSE2
+#if MRPT_ARCH_INTEL_COMPATIBLE
 template <bool ALIGNED>
 __m128i mm_load_si128(__m128i const* ptr);
 
