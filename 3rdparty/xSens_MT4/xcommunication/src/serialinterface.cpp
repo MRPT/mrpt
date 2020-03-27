@@ -486,7 +486,7 @@ void makeFilenameUnique(char* filename)
 	if (doesFileExist(filename))  // if a file already exist with the same name,
 	{
 		// create a unique filename by adding a counter:
-		char filename2[XS_MAX_FILENAME_LENGTH];
+		char filename2[XS_MAX_FILENAME_LENGTH + 100];
 		char basename[XS_MAX_FILENAME_LENGTH];
 		strcpy(basename, filename);
 		basename[strlen(basename) - 4] = 0;  // remove .log extension

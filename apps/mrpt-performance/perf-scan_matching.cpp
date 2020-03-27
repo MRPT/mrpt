@@ -6,6 +6,7 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#include <mrpt/core/cpu.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -111,7 +112,7 @@ void generate_vector_of_points(
 // ------------------------------------------------------
 //				Benchmark: using CPose3DQuat
 // ------------------------------------------------------
-double scan_matching_test_1(int a1, int a2)
+double tfest_test_1(int a1, int a2)
 {
 	TPoints pA, pB;
 	generate_points(pA, pB);
@@ -135,7 +136,7 @@ double scan_matching_test_1(int a1, int a2)
 // ------------------------------------------------------
 //				Benchmark: using vectors
 // ------------------------------------------------------
-double scan_matching_test_3(int a1, int a2)
+double tfest_test_3(int a1, int a2)
 {
 	TPoints pA, pB;
 	generate_points(pA, pB);
@@ -160,8 +161,13 @@ double scan_matching_test_3(int a1, int a2)
 // ------------------------------------------------------
 //				Benchmark:  leastSquareErrorRigidTransformation
 // ------------------------------------------------------
-double scan_matching_test_4(int nCorrs, int nRepets)
+template <bool DISABLE_SIMD = false>
+double tfest_test_4(int nCorrs, int nRepets)
 {
+	const bool savedFeatSSE2 = mrpt::cpu::supports(mrpt::cpu::feature::SSE2);
+	if (DISABLE_SIMD)
+		mrpt::cpu::overrideDetectedFeature(mrpt::cpu::feature::SSE2, false);
+
 	TPoints pA, pB;
 	generate_points(pA, pB);
 
@@ -194,6 +200,11 @@ double scan_matching_test_4(int nCorrs, int nRepets)
 	}
 
 	const double T = tictac.Tac() / N;
+
+	if (DISABLE_SIMD)
+		mrpt::cpu::overrideDetectedFeature(
+			mrpt::cpu::feature::SSE2, savedFeatSSE2);
+
 	return T;
 }
 
@@ -202,15 +213,18 @@ double scan_matching_test_4(int nCorrs, int nRepets)
 // ------------------------------------------------------
 void register_tests_scan_matching()
 {
-	lstTests.emplace_back(
-		"tfest: se3_l2 [CPose3DQuat]", scan_matching_test_1, 1e4);
-	lstTests.emplace_back(
-		"tfest: se3_l2 [vector TPoint3D]", scan_matching_test_3, 1e4);
+	lstTests.emplace_back("tfest: se3_l2 [CPose3DQuat]", tfest_test_1, 1e4);
+	lstTests.emplace_back("tfest: se3_l2 [vector TPoint3D]", tfest_test_3, 1e4);
 
-	lstTests.emplace_back(
-		"tfest: se2_l2 [x10 corrs]", scan_matching_test_4, 10, 1e6);
-	lstTests.emplace_back(
-		"tfest: se2_l2 [x100 corrs]", scan_matching_test_4, 100, 1e6);
-	lstTests.emplace_back(
-		"tfest: se2_l2 [x1000 corrs]", scan_matching_test_4, 1000, 1e5);
+	// clang-format off
+	lstTests.emplace_back("tfest: se2_l2 [x10 corrs]", tfest_test_4<false>, 10, 1e6);
+	lstTests.emplace_back("tfest: se2_l2 [x100 corrs]", tfest_test_4<false>, 100, 1e6);
+	lstTests.emplace_back("tfest: se2_l2 [x1000 corrs]", tfest_test_4<false>, 1000, 1e5);
+	lstTests.emplace_back("tfest: se2_l2 [x10000 corrs]", tfest_test_4<false>, 10000, 1e4);
+
+	lstTests.emplace_back("tfest: se2_l2 [x10 corrs] [SSE2 disabled]", tfest_test_4<true>, 10, 1e6);
+	lstTests.emplace_back("tfest: se2_l2 [x100 corrs] [SSE2 disabled]", tfest_test_4<true>, 100, 1e6);
+	lstTests.emplace_back("tfest: se2_l2 [x1000 corrs] [SSE2 disabled]", tfest_test_4<true>, 1000, 1e5);
+	lstTests.emplace_back("tfest: se2_l2 [x10000 corrs] [SSE2 disabled]", tfest_test_4<true>, 10000, 1e4);
+	// clang-format on
 }

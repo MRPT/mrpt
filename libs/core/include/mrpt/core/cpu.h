@@ -69,15 +69,29 @@ class CPU_analyzer
 };
 }  // namespace internal
 
-/** Returns true if CPU (and OS) supports the given CPU feature, *and* that
- * instruction set or feature was also enabled by the compiler flags used while
- * building MRPT.
+/** Returns true if the current CPU (and OS) supports the given CPU feature.
  * \ingroup mrpt_core_grp
  */
 inline bool supports(feature f) noexcept
 {
 	const auto& o = internal::CPU_analyzer::Instance();
 	return o.feat(f);
+}
+
+/** Blindly enables/disables a CPU feature flag in the list
+ * of detected features to be reported in subsequent calls to
+ * mrpt::cpu::supports(). Could be used to disable a given CPU feature for
+ * benchmarking dynamically-dispatched functions.
+ *
+ * \note Enabling a feature that is not actually supported by the current CPU
+ * would probably lead to program crashes.
+ *
+ * \ingroup mrpt_core_grp
+ */
+inline void overrideDetectedFeature(feature f, bool newValue) noexcept
+{
+	auto& o = internal::CPU_analyzer::Instance();
+	o.feat(f) = newValue;
 }
 
 /** Returns a string with detected features: "MMX:1 SSE2:0 etc."

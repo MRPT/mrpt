@@ -9,14 +9,13 @@
 
 #include "tfest-precomp.h"  // Precompiled headers
 
+#include <mrpt/core/cpu.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
 #include <mrpt/tfest/se2.h>
 
-#if MRPT_HAS_SSE2
-#include <mrpt/core/SSE_types.h>
-#endif
+#include "se2_l2_internal.h"
 
 using namespace mrpt;
 using namespace mrpt::tfest;
@@ -33,6 +32,53 @@ bool tfest::se2_l2(
 	const bool ret =
 		tfest::se2_l2(in_correspondences, p, &out_transformation.cov);
 	out_transformation.mean = CPose2D(p);
+	return ret;
+}
+
+// Non-vectorized version
+static mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
+	const TMatchingPairList& in_correspondences)
+{
+	// SSE vectorized version:
+	const size_t N = in_correspondences.size();
+	ASSERT_(N >= 2);
+	const float N_inv = 1.0f / N;  // For efficiency, keep this value.
+
+	// Non vectorized version:
+	float SumXa = 0, SumXb = 0, SumYa = 0, SumYb = 0;
+	float Sxx = 0, Sxy = 0, Syx = 0, Syy = 0;
+
+	for (const auto& p : in_correspondences)
+	{
+		// Get the pair of points in the correspondence:
+		const float xa = p.this_x;
+		const float ya = p.this_y;
+		const float xb = p.other_x;
+		const float yb = p.other_y;
+
+		// Compute the terms:
+		SumXa += xa;
+		SumYa += ya;
+
+		SumXb += xb;
+		SumYb += yb;
+
+		Sxx += xa * xb;
+		Sxy += xa * yb;
+		Syx += ya * xb;
+		Syy += ya * yb;
+	}  // End of "for all correspondences"...
+
+	mrpt::tfest::internal::se2_l2_impl_return_t<float> ret;
+	ret.mean_x_a = SumXa * N_inv;
+	ret.mean_y_a = SumYa * N_inv;
+	ret.mean_x_b = SumXb * N_inv;
+	ret.mean_y_b = SumYb * N_inv;
+
+	// Auxiliary variables Ax,Ay:
+	ret.Ax = N * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
+	ret.Ay = SumXa * SumYb + N * (Syx - Sxy) - SumXb * SumYa;
+
 	return ret;
 }
 
@@ -55,154 +101,45 @@ bool tfest::se2_l2(
 
 	const float N_inv = 1.0f / N;  // For efficiency, keep this value.
 
-// ----------------------------------------------------------------------
-// Compute the estimated pose. Notation from the paper:
-// "Mobile robot motion estimation by 2d scan matching with genetic and
-// iterative
-// closest point algorithms", J.L. Martinez Rodriguez, A.J. Gonzalez, J. Morales
-// Rodriguez, A. Mandow Andaluz, A. J. Garcia Cerezo,
-// Journal of Field Robotics, 2006.
-// ----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
+	// Compute the estimated pose. Notation from the paper:
+	// "Mobile robot motion estimation by 2d scan matching with genetic and
+	// iterative
+	// closest point algorithms", J.L. Martinez Rodriguez, A.J. Gonzalez, J.
+	// Morales Rodriguez, A. Mandow Andaluz, A. J. Garcia Cerezo, Journal of
+	// Field Robotics, 2006.
+	// ----------------------------------------------------------------------
 
-// ----------------------------------------------------------------------
-//  For the formulas of the covariance, see:
-//   https://www.mrpt.org/Paper:Occupancy_Grid_Matching
-//   and Jose Luis Blanco's PhD thesis.
-// ----------------------------------------------------------------------
-#if MRPT_HAS_SSE2
-	// SSE vectorized version:
-
-	//{
-	//	TMatchingPair dumm;
-	//	static_assert(sizeof(dumm.this_x)==sizeof(float));
-	//	static_assert(sizeof(dumm.other_x)==sizeof(float));
-	//}
-
-	__m128 sum_a_xyz = _mm_setzero_ps();  // All 4 zeros (0.0f)
-	__m128 sum_b_xyz = _mm_setzero_ps();  // All 4 zeros (0.0f)
-
-	//   [ f0     f1      f2      f3  ]
-	//    xa*xb  ya*yb   xa*yb  xb*ya
-	__m128 sum_ab_xyz = _mm_setzero_ps();  // All 4 zeros (0.0f)
-
-	for (const auto& in_correspondence : in_correspondences)
+	// ----------------------------------------------------------------------
+	//  For the formulas of the covariance, see:
+	//   https://www.mrpt.org/Paper:Occupancy_Grid_Matching
+	//   and Jose Luis Blanco's PhD thesis.
+	// ----------------------------------------------------------------------
+	internal::se2_l2_impl_return_t<float> implRet;
+#if MRPT_ARCH_INTEL_COMPATIBLE
+	if (mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
 	{
-		// Get the pair of points in the correspondence:
-		//   a_xyyx = [   xa     ay   |   xa    ya ]
-		//   b_xyyx = [   xb     yb   |   yb    xb ]
-		//      (product)
-		//            [  xa*xb  ya*yb   xa*yb  xb*ya
-		//                LO0    LO1     HI2    HI3
-		// Note: _MM_SHUFFLE(hi3,hi2,lo1,lo0)
-		const __m128 a_xyz =
-			_mm_loadu_ps(&in_correspondence.this_x);  // *Unaligned* load
-		const __m128 b_xyz =
-			_mm_loadu_ps(&in_correspondence.other_x);  // *Unaligned* load
-
-		const auto a_xyxy =
-			_mm_shuffle_ps(a_xyz, a_xyz, _MM_SHUFFLE(1, 0, 1, 0));
-		const auto b_xyyx =
-			_mm_shuffle_ps(b_xyz, b_xyz, _MM_SHUFFLE(0, 1, 1, 0));
-
-		// Compute the terms:
-		sum_a_xyz = _mm_add_ps(sum_a_xyz, a_xyz);
-		sum_b_xyz = _mm_add_ps(sum_b_xyz, b_xyz);
-
-		//   [ f0     f1      f2      f3  ]
-		//    xa*xb  ya*yb   xa*yb  xb*ya
-		sum_ab_xyz = _mm_add_ps(sum_ab_xyz, _mm_mul_ps(a_xyxy, b_xyyx));
+		implRet = mrpt::tfest::internal::se2_l2_impl_SSE2(in_correspondences);
+	}
+	else
+#endif
+	{
+		implRet = se2_l2_impl(in_correspondences);
 	}
 
-	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float sums_a[4], sums_b[4];
-	_mm_store_ps(sums_a, sum_a_xyz);
-	_mm_store_ps(sums_b, sum_b_xyz);
-
-	float SumXa = sums_a[0];
-	float SumYa = sums_a[1];
-	float SumXb = sums_b[0];
-	float SumYb = sums_b[1];
-
-	// Compute all four means:
-	const __m128 Ninv_4val =
-		_mm_set1_ps(N_inv);  // load 4 copies of the same value
-	sum_a_xyz = _mm_mul_ps(sum_a_xyz, Ninv_4val);
-	sum_b_xyz = _mm_mul_ps(sum_b_xyz, Ninv_4val);
-
-	// means_a[0]: mean_x_a
-	// means_a[1]: mean_y_a
-	// means_b[0]: mean_x_b
-	// means_b[1]: mean_y_b
-	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float means_a[4], means_b[4];
-	_mm_store_ps(means_a, sum_a_xyz);
-	_mm_store_ps(means_b, sum_b_xyz);
-
-	float mean_x_a = means_a[0];
-	float mean_y_a = means_a[1];
-	float mean_x_b = means_b[0];
-	float mean_y_b = means_b[1];
-
-	//      Sxx   Syy     Sxy    Syx
-	//    xa*xb  ya*yb   xa*yb  xb*ya
-	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float cross_sums[4];
-	_mm_store_ps(cross_sums, sum_ab_xyz);
-
-	float Sxx = cross_sums[0];
-	float Syy = cross_sums[1];
-	float Sxy = cross_sums[2];
-	float Syx = cross_sums[3];
-
-	// Auxiliary variables Ax,Ay:
-	const float Ax = N * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
-	const float Ay = SumXa * SumYb + N * (Syx - Sxy) - SumXb * SumYa;
-
-#else
-	// Non vectorized version:
-	float SumXa = 0, SumXb = 0, SumYa = 0, SumYb = 0;
-	float Sxx = 0, Sxy = 0, Syx = 0, Syy = 0;
-
-	for (TMatchingPairList::const_iterator corrIt = in_correspondences.begin();
-		 corrIt != in_correspondences.end(); corrIt++)
-	{
-		// Get the pair of points in the correspondence:
-		const float xa = corrIt->this_x;
-		const float ya = corrIt->this_y;
-		const float xb = corrIt->other_x;
-		const float yb = corrIt->other_y;
-
-		// Compute the terms:
-		SumXa += xa;
-		SumYa += ya;
-
-		SumXb += xb;
-		SumYb += yb;
-
-		Sxx += xa * xb;
-		Sxy += xa * yb;
-		Syx += ya * xb;
-		Syy += ya * yb;
-	}  // End of "for all correspondences"...
-
-	const float mean_x_a = SumXa * N_inv;
-	const float mean_y_a = SumYa * N_inv;
-	const float mean_x_b = SumXb * N_inv;
-	const float mean_y_b = SumYb * N_inv;
-
-	// Auxiliary variables Ax,Ay:
-	const float Ax = N * (Sxx + Syy) - SumXa * SumXb - SumYa * SumYb;
-	const float Ay = SumXa * SumYb + N * (Syx - Sxy) - SumXb * SumYa;
-
-#endif
-
-	out_transformation.phi =
-		(Ax != 0 || Ay != 0)
-			? atan2(static_cast<double>(Ay), static_cast<double>(Ax))
-			: 0.0;
+	out_transformation.phi = (implRet.Ax != 0 || implRet.Ay != 0)
+								 ? atan2(
+									   static_cast<double>(implRet.Ay),
+									   static_cast<double>(implRet.Ax))
+								 : 0.0;
 
 	const double ccos = cos(out_transformation.phi);
 	const double csin = sin(out_transformation.phi);
 
-	out_transformation.x = mean_x_a - mean_x_b * ccos + mean_y_b * csin;
-	out_transformation.y = mean_y_a - mean_x_b * csin - mean_y_b * ccos;
+	out_transformation.x =
+		implRet.mean_x_a - implRet.mean_x_b * ccos + implRet.mean_y_b * csin;
+	out_transformation.y =
+		implRet.mean_y_a - implRet.mean_x_b * csin - implRet.mean_y_b * ccos;
 
 	if (out_estimateCovariance)
 	{
@@ -217,10 +154,10 @@ bool tfest::se2_l2(
 		// ----------------------------------------------------
 		for (const auto& in_correspondence : in_correspondences)
 		{
-			var_x_a += square(in_correspondence.this_x - mean_x_a);
-			var_y_a += square(in_correspondence.this_y - mean_y_a);
-			var_x_b += square(in_correspondence.other_x - mean_x_b);
-			var_y_b += square(in_correspondence.other_y - mean_y_b);
+			var_x_a += square(in_correspondence.this_x - implRet.mean_x_a);
+			var_y_a += square(in_correspondence.this_y - implRet.mean_y_a);
+			var_x_b += square(in_correspondence.other_x - implRet.mean_x_b);
+			var_y_b += square(in_correspondence.other_y - implRet.mean_y_b);
 		}
 		var_x_a *= N_1_inv;  //  /= (N-1)
 		var_y_a *= N_1_inv;
@@ -237,22 +174,33 @@ bool tfest::se2_l2(
 		//  (remember: this matrix has yet to be
 		//   multiplied by var_p to be the actual covariance!)
 		// -------------------------------------------------------
-		const double D = square(Ax) + square(Ay);
+		const double D = square(implRet.Ax) + square(implRet.Ay);
 
-		(*C)(0, 0) =
-			2.0 * N_inv + BETA * square((mean_x_b * Ay + mean_y_b * Ax) / D);
-		(*C)(1, 1) =
-			2.0 * N_inv + BETA * square((mean_x_b * Ax - mean_y_b * Ay) / D);
+		(*C)(0, 0) = 2.0 * N_inv + BETA * square(
+											  (implRet.mean_x_b * implRet.Ay +
+											   implRet.mean_y_b * implRet.Ax) /
+											  D);
+		(*C)(1, 1) = 2.0 * N_inv + BETA * square(
+											  (implRet.mean_x_b * implRet.Ax -
+											   implRet.mean_y_b * implRet.Ay) /
+											  D);
 		(*C)(2, 2) = BETA / D;
 
-		(*C)(0, 1) = (*C)(1, 0) = -BETA * (mean_x_b * Ay + mean_y_b * Ax) *
-								  (mean_x_b * Ax - mean_y_b * Ay) / square(D);
+		(*C)(0, 1) = (*C)(1, 0) =
+			-BETA *
+			(implRet.mean_x_b * implRet.Ay + implRet.mean_y_b * implRet.Ax) *
+			(implRet.mean_x_b * implRet.Ax - implRet.mean_y_b * implRet.Ay) /
+			square(D);
 
 		(*C)(0, 2) = (*C)(2, 0) =
-			BETA * (mean_x_b * Ay + mean_y_b * Ax) / pow(D, 1.5);
+			BETA *
+			(implRet.mean_x_b * implRet.Ay + implRet.mean_y_b * implRet.Ax) /
+			pow(D, 1.5);
 
 		(*C)(1, 2) = (*C)(2, 1) =
-			BETA * (mean_y_b * Ay - mean_x_b * Ax) / pow(D, 1.5);
+			BETA *
+			(implRet.mean_y_b * implRet.Ay - implRet.mean_x_b * implRet.Ax) /
+			pow(D, 1.5);
 	}
 
 	return true;
