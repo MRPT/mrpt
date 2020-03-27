@@ -38,6 +38,7 @@
     - mrpt::cpu::supports(): a new cross-OS CPU feature detection function.
     - mrpt::Clock allows users to select between Realtime or Monotonic sources.
     - Removed custom macro MRPT_UNUSED_PARAM (replaced by c++17 attribute).
+    - Add syntactic suggar mrpt::lockHelper()
   - \ref mrpt_math_grp  [NEW IN MRPT 2.0.0]
     - Removed functions (replaced by C++11/14 standard library):
       - mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
