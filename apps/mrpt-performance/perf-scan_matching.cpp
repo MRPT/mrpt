@@ -217,10 +217,10 @@ void register_tests_scan_matching()
 	lstTests.emplace_back("tfest: se3_l2 [vector TPoint3D]", tfest_test_3, 1e4);
 
 	// clang-format off
-	lstTests.emplace_back("tfest: se2_l2 [x10 corrs]", tfest_test_4, 10, 1e6);
-	lstTests.emplace_back("tfest: se2_l2 [x100 corrs]", tfest_test_4, 100, 1e6);
-	lstTests.emplace_back("tfest: se2_l2 [x1000 corrs]", tfest_test_4, 1000, 1e5);
-	lstTests.emplace_back("tfest: se2_l2 [x10000 corrs]", tfest_test_4, 10000, 1e4);
+	lstTests.emplace_back("tfest: se2_l2 [x10 corrs]", tfest_test_4<false>, 10, 1e6);
+	lstTests.emplace_back("tfest: se2_l2 [x100 corrs]", tfest_test_4<false>, 100, 1e6);
+	lstTests.emplace_back("tfest: se2_l2 [x1000 corrs]", tfest_test_4<false>, 1000, 1e5);
+	lstTests.emplace_back("tfest: se2_l2 [x10000 corrs]", tfest_test_4<false>, 10000, 1e4);
 
 	lstTests.emplace_back("tfest: se2_l2 [x10 corrs] [SSE2 disabled]", tfest_test_4<true>, 10, 1e6);
 	lstTests.emplace_back("tfest: se2_l2 [x100 corrs] [SSE2 disabled]", tfest_test_4<true>, 100, 1e6);
