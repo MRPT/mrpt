@@ -944,15 +944,17 @@ static bool my_img_to_grayscale(const cv::Mat& src, cv::Mat& dest)
 	if (dest.size() != src.size() || dest.type() != src.type())
 		dest = cv::Mat(src.rows, src.cols, CV_8UC1);
 
-	// If possible, use SSE optimized version:
+		// If possible, use SSE optimized version:
+#if MRPT_ARCH_INTEL_COMPATIBLE
 	if ((src.step[0] & 0x0f) == 0 && (dest.step[0] & 0x0f) == 0 &&
-		mrpt::cpu::supports(mrpt::cpu::feature::SSE3))
+		mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
 	{
 		image_SSSE3_bgr_to_gray_8u(
 			src.ptr<uint8_t>(), dest.ptr<uint8_t>(), src.cols, src.rows,
 			src.step[0], dest.step[0]);
 		return true;
 	}
+#endif
 
 	// OpenCV Method:
 	cv::cvtColor(src, dest, CV_BGR2GRAY);
@@ -996,14 +998,16 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 	out.resize(w >> 1, h >> 1, getChannelCount());
 	auto& img_out = out.m_impl->img;
 
-	// If possible, use SSE optimized version:
+// If possible, use SSE optimized version:
+#if MRPT_ARCH_INTEL_COMPATIBLE
 	if (img.channels() == 3 && interp == IMG_INTERP_NN &&
-		mrpt::cpu::supports(mrpt::cpu::feature::SSE3))
+		mrpt::cpu::supports(mrpt::cpu::feature::SSSE3))
 	{
 		image_SSSE3_scale_half_3c8u(
 			img.data, img_out.data, w, h, img.step[0], img_out.step[0]);
 		return true;
 	}
+
 	if (img.channels() == 1 && mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
 	{
 		if (interp == IMG_INTERP_NN)
@@ -1019,6 +1023,7 @@ bool CImage::scaleHalf(CImage& out, TInterpolationMethod interp) const
 			return true;
 		}
 	}
+#endif
 
 	// Fall back to slow method:
 	cv::resize(
