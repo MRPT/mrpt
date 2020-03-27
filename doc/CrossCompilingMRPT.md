@@ -9,7 +9,7 @@ For example:
 
 ## Create cmake toolchain file
 
-        # Save as toolchain.cmake
+        # Save as doc/toolchain-gcc8-arm.cmake
         set(CMAKE_SYSTEM_NAME Linux)
         set(CMAKE_SYSTEM_PROCESSOR arm)
 
@@ -35,19 +35,17 @@ You can enable/disable the modules that you will not need on your target system:
 cd MRPT_SOURCE_ROOT
 mkdir build-cross-arm
 cmake -S. -Bbuild-cross-arm \
-  -DCMAKE_TOOLCHAIN_FILE=cross.cmake \
+  -DCMAKE_TOOLCHAIN_FILE=doc/toolchain-gcc8-arm.cmake \
   -DEIGEN_USE_EMBEDDED_VERSION=ON \
+  -DDISABLE_ASSIMP=ON \
+  -DDISABLE_YAMLCPP=ON \
   -DDISABLE_ROS=ON \
   -DDISABLE_WXWIDGETS=ON \
   -DBUILD_APPLICATIONS=OFF \
   -DBUILD_EXAMPLES=OFF \
   -DMRPT_HAS_OPENNI2=OFF \
   -DBUILD_XSENS_MT3=OFF \
-  -DBUILD_XSENS_MT4=OFF \
-#          -DBUILD_mrpt-apps=OFF \
-#          -DBUILD_mrpt-graphslam=OFF \
-#          -DBUILD_mrpt-hmtslam=OFF \
-#-DBUILD_TESTING=OFF \
+  -DBUILD_XSENS_MT4=OFF
 
 # Build:
 cd build-cross-arm && make
