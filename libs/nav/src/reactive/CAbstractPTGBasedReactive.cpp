@@ -11,6 +11,7 @@
 
 #include <mrpt/containers/copy_container_typecasting.h>
 #include <mrpt/containers/printf_vector.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
@@ -100,7 +101,7 @@ CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 /** \callergraph */
 void CAbstractPTGBasedReactive::initialize()
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
 
 	m_infoPerPTG_timestamp = INVALID_TIMESTAMP;
 
@@ -116,7 +117,7 @@ void CAbstractPTGBasedReactive::initialize()
   ---------------------------------------------------------------*/
 void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
 
 	try
 	{
@@ -193,7 +194,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 
 void CAbstractPTGBasedReactive::getLastLogRecord(CLogFileRecord& o)
 {
-	std::lock_guard<std::recursive_mutex> lock(m_critZoneLastLog);
+	auto lck = mrpt::lockHelper(m_critZoneLastLog);
 	o = lastLogRecord;
 }
 
@@ -205,7 +206,7 @@ void CAbstractPTGBasedReactive::deleteHolonomicObjects()
 void CAbstractPTGBasedReactive::setHolonomicMethod(
 	const std::string& method, const mrpt::config::CConfigFileBase& ini)
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
 
 	this->deleteHolonomicObjects();
 	const size_t nPTGs = this->getPTG_count();
@@ -996,8 +997,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
 	}
 	// Set as last log record
 	{
-		std::lock_guard<std::recursive_mutex> lock_log(
-			m_critZoneLastLog);  // Lock
+		auto lck = mrpt::lockHelper(m_critZoneLastLog);
 		lastLogRecord = newLogRec;  // COPY
 	}
 }

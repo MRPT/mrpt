@@ -10,6 +10,7 @@
 #include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <limits>
@@ -98,7 +99,8 @@ CAbstractNavigator::~CAbstractNavigator() = default;
 /** \callergraph */
 void CAbstractNavigator::cancel()
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
+
 	MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
 	m_navigationState = IDLE;
 	this->stop(false /*not emergency*/);
@@ -107,7 +109,7 @@ void CAbstractNavigator::cancel()
 /** \callergraph */
 void CAbstractNavigator::resume()
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
 
 	MRPT_LOG_DEBUG("[CAbstractNavigator::resume() called.");
 	if (m_navigationState == SUSPENDED) m_navigationState = NAVIGATING;
@@ -116,7 +118,7 @@ void CAbstractNavigator::resume()
 /** \callergraph */
 void CAbstractNavigator::suspend()
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
 
 	// Issue an "stop" if we are moving:
 	// Update: do it *always*, even if the current velocity is zero, since
@@ -130,7 +132,7 @@ void CAbstractNavigator::suspend()
 /** \callergraph */
 void CAbstractNavigator::resetNavError()
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
 
 	MRPT_LOG_DEBUG("CAbstractNavigator::resetNavError() called.");
 	if (m_navigationState == NAV_ERROR)
@@ -175,7 +177,8 @@ void CAbstractNavigator::saveConfigFile(mrpt::config::CConfigFileBase& c) const
 /** \callergraph */
 void CAbstractNavigator::navigationStep()
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
+
 	mrpt::system::CTimeLoggerEntry tle(
 		m_navProfiler, "CAbstractNavigator::navigationStep()");
 
@@ -273,7 +276,7 @@ void CAbstractNavigator::doEmergencyStop(const std::string& msg)
 
 void CAbstractNavigator::onNavigateCommandReceived()
 {
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
 
 	m_navigationEndEventSent = false;
 	m_navigationParams.reset();
@@ -282,7 +285,7 @@ void CAbstractNavigator::onNavigateCommandReceived()
 void CAbstractNavigator::processNavigateCommand(const TNavigationParams* params)
 {
 	MRPT_START
-	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+	auto lck = mrpt::lockHelper(m_nav_cs);
 
 	ASSERT_(params != nullptr);
 	ASSERT_(
