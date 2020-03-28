@@ -10,18 +10,35 @@ configuration: Release
 
 environment:
   CTEST_OUTPUT_ON_FAILURE: 1
-
-build:
-  project: c:\projects\mrpt\build\MRPT.sln
+  VERBOSE: 1 # for MRPT cmake scripts to show more info
+  
+build_script:
+  # NSIS: install required script for Windows binary packages:
+  - cd c:\projects\mrpt
+  - copy cmakemodules\registerExtension.nsh "C:\Program Files (x86)\NSIS\Include\"
+  # Build debug libraries
+  - cd c:\projects\mrpt\build\
+  - cmake --build . --config Debug --target all_mrpt_libs
+  # re-call CMake to detect the debug libs and all them to the install package:
+  - cmake .
+  # Do unit tests:
+  - cmake --build . --config Release --target test_legacy
+  # All seem OK. Build all.
+  - cmake --build . --config Release
+  # Build package:
+  - cmake --build . --config Release --target PACKAGE
+  # Rename package:
+  - cd c:\projects\mrpt
+  - cmd: rename build\MRPT*.exe mrpt-%APPVEYOR_REPO_TAG_NAME%%APPVEYOR_REPO_BRANCH%.exe
 
 install:
-  # Install OpenCV
+  # ====== Install OpenCV
   - choco upgrade chocolatey
   - choco install opencv -y
-#  - tree c:\tools\opencv\build /F
+  - tree c:\tools\opencv\build /F
   - set OPENCVDIR=C:\tools\opencv\build\
   - set PATH=%PATH%;%OPENCVDIR%\bin;%OPENCVDIR%\x64\vc15\bin
-  # Install wxWidgets
+  # ====== Install wxWidgets
   - cd c:\
   - ps: Start-FileDownload 'https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.3/wxMSW-3.1.3_vc14x_x64_Dev.7z'
   - ps: Start-FileDownload 'https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.3/wxWidgets-3.1.3-headers.7z'
@@ -31,22 +48,71 @@ install:
   - 7z x wxMSW-3.1.3_vc14x_x64_ReleaseDLL.7z -oc:\wxWidgets -aoa
   - set WXWIDGETSDIR=C:\wxWidgets
   - set WXWIDGETSLIBDIR=%WXWIDGETSDIR%\lib\vc14x_x64_dll\
-#  - tree %WXWIDGETSDIR% /F
   - set PATH=%PATH%;%WXWIDGETSLIBDIR%
-  # Qt:
+  # ====== Qt
   - set QTDIR=C:\Qt\5.14.1\msvc2017_64
-#  - dir %QTDIR%\bin
   - set PATH=%PATH%;%QTDIR%\bin
+  # ====== NSIS for packaging
+  - choco install nsis
+  # ====== show final PATH
   - PATH
 
 before_build:
   - cd c:\projects\mrpt
   - git submodule update --init --recursive
   - mkdir build
-  - cd build
-  - set VERBOSE=1 # for MRPT cmake scripts to show more info
-  - cmake -G "Visual Studio 16 2019" -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% ..
+  - cmake -S. -Bbuild -G "Visual Studio 16 2019" -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% -DBUILD_APPLICATIONS=OFF
 
 on_failure:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+artifacts:
+  - path: 'mrpt*.exe'
+
+#---------------------------------#
+#     deployment configuration    #
+#---------------------------------#
+deploy:
+  - provider: BinTray
+    on:
+      branch: develop
+    username: jlblancoc
+    api_key:
+      secure: /wf8T+rsWefWakICQHmyXWaQUUufN3GD9c2zEfs1zHc2jU5kO1d/KocnxKRNSx1j
+    subject: mrpt
+    repo: mrpt-win-binaries
+    package: MRPT-nightly-builds
+    version: win64-develop
+    publish: true
+    override: true
+    explode: true
+  - provider: BinTray
+    on:
+      branch: master
+    username: jlblancoc
+    api_key:
+      secure: /wf8T+rsWefWakICQHmyXWaQUUufN3GD9c2zEfs1zHc2jU5kO1d/KocnxKRNSx1j
+    subject: mrpt
+    repo: mrpt-win-binaries
+    package: MRPT-nightly-builds
+    version: win64-stable
+    publish: true
+    override: true
+    explode: true
+  - provider: BinTray
+    on:
+      APPVEYOR_REPO_TAG: true
+    username: jlblancoc
+    api_key:
+      secure: /wf8T+rsWefWakICQHmyXWaQUUufN3GD9c2zEfs1zHc2jU5kO1d/KocnxKRNSx1j
+    subject: mrpt
+    repo: mrpt-win-binaries
+    package: MRPT-nightly-builds
+    version: win64-tags
+    publish: true
+    override: true
+    explode: true
 
