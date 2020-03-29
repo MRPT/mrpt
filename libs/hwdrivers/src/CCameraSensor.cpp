@@ -865,15 +865,32 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_ffmpeg)
 	{
-		obs = std::make_shared<CObservationImage>();
-
-		if (!m_cap_ffmpeg->retrieveFrame(obs->image))
+		static bool anyGood = false;
+		mrpt::img::CImage im;
+		if (!m_cap_ffmpeg->retrieveFrame(im))
 		{  // Error
 			m_state = CGenericSensor::ssError;
-			THROW_EXCEPTION("Error grabbing image");
+			if (!anyGood)
+			{
+				THROW_EXCEPTION("Error grabbing image");
+			}
+			else
+			{
+				MRPT_LOG_THROTTLE_WARN(
+					2.0,
+					"ffmpeg capture driver: Failed to get frame (temporary "
+					"error or EOF?)");
+				capture_ok = true;
+			}
 		}
 		else
+		{
+			obs = std::make_shared<CObservationImage>();
+			obs->image = std::move(im);
+
+			anyGood = true;
 			capture_ok = true;
+		}
 	}
 	else if (m_cap_image_dir)
 	{
@@ -1139,7 +1156,9 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	// Continue as normal:
 	m_camera_grab_decimator_counter = 0;
 
-	ASSERT_(obs || stObs || obs3D || obsIMU);
+	// Allow temporary failures to get any frame
+	// ASSERT_(obs || stObs || obs3D || obsIMU);
+
 	// If we grabbed an image: prepare it and add it to the internal queue:
 	if (obs)
 	{
