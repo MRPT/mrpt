@@ -18,13 +18,13 @@ build_script:
   - copy cmakemodules\registerExtension.nsh "C:\Program Files (x86)\NSIS\Include\"
   - cd c:\projects\mrpt\build\
   # Build debug libraries
-#  - cmake --build . --config Debug --target all_mrpt_libs
+  - cmake --build . --config Debug --target all_mrpt_libs
   # re-call CMake to detect the debug libs and all them to the install package:
-#  - cmake .
+  - cmake .
   # Do unit tests:
 #  - cmake --build . --config Release --target test_legacy
   # All seem OK. Build all.
-  - cmake --build . --config Release
+#  - cmake --build . --config Release
   # Build package:
   - cmake --build . --config Release --target PACKAGE
   # Rename package:
@@ -63,7 +63,19 @@ before_build:
   - cd c:\projects\mrpt
   - git submodule update --init --recursive
   - mkdir build
-  - cmake -S. -Bbuild -G "Visual Studio 16 2019" -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR%
+  # AppVeyor has a 90 minutes limit: disable some parts.
+  - cmake -S. -Bbuild -G "Visual Studio 16 2019" \
+    -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF \
+    -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_mrpt-hmtslam=OFF \
+    -DBUILD_APP_DifOdometry-Camera=OFF -DBUILD_APP_DifOdometry-Datasets=OFF \
+    -DBUILD_APP_benchmarking-image-features=OFF \
+    -DBUILD_APP_carmen2rawlog=OFF \
+    -DBUILD_APP_carmen2simplemap=OFF \
+    -DBUILD_APP_hmt-slam=OFF \
+    -DBUILD_APP_hmt-slam-gui=OFF \
+    -DBUILD_APP_hmtMapViewer=OFF
 
 on_failure:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
