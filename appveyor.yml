@@ -29,7 +29,9 @@ build_script:
   - cmake --build . --config Release --target PACKAGE
   # Rename package:
   - cd c:\projects\mrpt
-  - cmd: rename build\MRPT*.exe mrpt-%APPVEYOR_REPO_TAG_NAME%%APPVEYOR_REPO_BRANCH%.exe
+  - cmd: IF NOT DEFINED APPVEYOR_REPO_TAG_NAME SET APPVEYOR_REPO_TAG_NAME=build
+  - cmd: move c:\projects\mrpt\build\MRPT*.exe c:\projects\mrpt\mrpt-%APPVEYOR_REPO_TAG_NAME%-%APPVEYOR_REPO_BRANCH%.exe
+  - dir
 
 install:
   # ====== Install OpenCV
