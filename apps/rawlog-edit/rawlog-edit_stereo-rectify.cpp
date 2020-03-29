@@ -45,8 +45,8 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 		CRawlogProcessor_StereoRectify(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose)
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
 		{
 			m_changedCams = 0;
 			m_num_external_files_failures = 0;
@@ -105,7 +105,6 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 			string strResize;
 			if (getArgValue<string>(cmdline, "image-size", str))
 			{
-				vector<string> lstTokens;
 				tokenize(str, "x", lstTokens);
 				if (lstTokens.size() != 2)
 					throw std::runtime_error(

@@ -34,10 +34,8 @@ Tracker::Tracker()
 
 	// "CFeatureTracker_KL" is by  far the most robust implementation for now:
 	tracker = CGenericFeatureTrackerAutoPtr(new CFeatureTracker_KL);
-	CImage previous_image;
-	TSequenceFeatureObservations feat_track_history;
-	save_tracked_history =
-		true;  // Dump feat_track_history to a file at the end
+	// Dump feat_track_history to a file at the end
+	save_tracked_history = true;
 	curCamPoseId = 0;
 }
 

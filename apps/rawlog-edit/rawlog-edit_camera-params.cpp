@@ -42,8 +42,8 @@ DECLARE_OP_FUNCTION(op_camera_params)
 
 		CRawlogProcessor_CamParams(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose)
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
 		{
 			m_changedCams = 0;
 

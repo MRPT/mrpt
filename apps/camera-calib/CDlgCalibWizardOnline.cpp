@@ -479,8 +479,8 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 			{
 				try
 				{
-					wxCommandEvent dum;
-					this->OnbtnStopClick(dum);
+					wxCommandEvent dummy;
+					this->OnbtnStopClick(dummy);
 				}
 				catch (...)
 				{

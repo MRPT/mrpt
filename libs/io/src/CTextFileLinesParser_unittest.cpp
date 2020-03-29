@@ -27,17 +27,17 @@ TEST(CTextFileLinesParser, parse)
 	std::string line;
 	bool ret = parser.getNextLine(line);
 	EXPECT_TRUE(ret);
-	EXPECT_EQ(parser.getCurrentLineNumber(), 1);
+	EXPECT_EQ(parser.getCurrentLineNumber(), 1U);
 	EXPECT_EQ(line, "1st line");
 
 	ret = parser.getNextLine(line);
 	EXPECT_TRUE(ret);
-	EXPECT_EQ(parser.getCurrentLineNumber(), 2);
+	EXPECT_EQ(parser.getCurrentLineNumber(), 2U);
 	EXPECT_EQ(line, "2nd line");
 
 	ret = parser.getNextLine(line);
 	EXPECT_TRUE(ret);
-	EXPECT_EQ(parser.getCurrentLineNumber(), 4);
+	EXPECT_EQ(parser.getCurrentLineNumber(), 4U);
 
 	EXPECT_EQ(line, "3rd line");
 

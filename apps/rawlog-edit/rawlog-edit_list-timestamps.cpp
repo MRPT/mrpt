@@ -32,8 +32,8 @@ DECLARE_OP_FUNCTION(op_list_timestamps)
 	   public:
 		CRawlogProcessor_ListTimestamps(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose)
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
 		{
 			getArgValue<std::string>(cmdline, "text-file-output", m_out_file);
 			VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
