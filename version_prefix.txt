@@ -1,4 +1,4 @@
-1.9.9
+2.0.0
 # IMPORTANT: Only the first line of this file is parsed by CMake, don't add
 # any comment to it!
 # This file is used in both Windows and Linux scripts to automatically
