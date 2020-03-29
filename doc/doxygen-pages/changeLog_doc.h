@@ -13,7 +13,7 @@
  *
 
 ------
-# Version 2.0.0: (Under development)
+# Version 2.0.0: Released March 29th, 2020
 - **Most important changes:**
   - MRPT now requires **C++17** to build and use. See this page for a guide to port existing code to MRPT 2.0: \ref porting_mrpt2
   - Support for old namespaces `mrpt-scanmatching`, `mrpt-reactivenav` is over.
