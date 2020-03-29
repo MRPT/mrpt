@@ -1301,96 +1301,32 @@ struct T2ListsOfSegments
 	vector<TSegment2D> l1;
 	vector<TSegment2D> l2;
 };
-// TODO: Replace by std::variant
+
 struct TCommonRegion
 {
-	unsigned char type;  // 0 -> point, 1-> segment, any other-> empty
-	union {
-		TPoint2D* point = nullptr;
-		TSegment2D* segment;
-	} data;
-	void destroy()
+	std::shared_ptr<TPoint2D> point;
+	std::shared_ptr<TSegment2D> segment;
+
+	TCommonRegion(const TPoint2D& p) { point = std::make_shared<TPoint2D>(p); }
+	TCommonRegion(const TSegment2D& s)
 	{
-		switch (type)
-		{
-			case 0:
-				delete data.point;
-				break;
-			case 1:
-				delete data.segment;
-				break;
-		}
-		type = 255;
+		segment = std::make_shared<TSegment2D>(s);
 	}
-	TCommonRegion(const TPoint2D& p) : type(0) { data.point = new TPoint2D(p); }
-	TCommonRegion(const TSegment2D& s) : type(1)
-	{
-		data.segment = new TSegment2D(s);
-	}
-	~TCommonRegion() { destroy(); }
-	TCommonRegion& operator=(const TCommonRegion& r)
-	{
-		if (&r == this) return *this;
-		destroy();
-		switch (type = r.type)
-		{
-			case 0:
-				data.point = new TPoint2D(*(r.data.point));
-				break;
-			case 1:
-				data.segment = new TSegment2D(*(r.data.segment));
-				break;
-		}
-		return *this;
-	}
-	TCommonRegion(const TCommonRegion& r) : type(0) { operator=(r); }
 };
-// TODO: Replace by std::variant
+
 struct TTempIntersection
 {
-	unsigned char type;  // 0->two lists of segments, 1-> common region
-	union {
-		T2ListsOfSegments* segms = nullptr;
-		TCommonRegion* common;
-	} data;
-	void destroy()
+	std::shared_ptr<T2ListsOfSegments> segms;
+	std::shared_ptr<TCommonRegion> common;
+
+	TTempIntersection(const T2ListsOfSegments& s)
 	{
-		switch (type)
-		{
-			case 0:
-				delete data.segms;
-				break;
-			case 1:
-				delete data.common;
-				break;
-		}
-		type = 255;
-	};
-	TTempIntersection(const T2ListsOfSegments& segms) : type(0)
-	{
-		data.segms = new T2ListsOfSegments(segms);
+		segms = std::make_shared<T2ListsOfSegments>(s);
 	}
-	TTempIntersection(const TCommonRegion& common) : type(1)
+	TTempIntersection(const TCommonRegion& c)
 	{
-		data.common = new TCommonRegion(common);
+		common = std::make_shared<TCommonRegion>(c);
 	}
-	~TTempIntersection() { destroy(); }
-	TTempIntersection& operator=(const TTempIntersection& t)
-	{
-		if (&t == this) return *this;
-		destroy();
-		switch (type = t.type)
-		{
-			case 0:
-				data.segms = new T2ListsOfSegments(*(t.data.segms));
-				break;
-			case 1:
-				data.common = new TCommonRegion(*(t.data.common));
-				break;
-		}
-		return *this;
-	}
-	TTempIntersection(const TTempIntersection& t) : type(0) { operator=(t); }
 };
 struct TSegmentWithLine
 {

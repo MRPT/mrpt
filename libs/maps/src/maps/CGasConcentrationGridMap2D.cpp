@@ -305,7 +305,7 @@ void CGasConcentrationGridMap2D::serializeTo(
 #if MRPT_IS_BIG_ENDIAN
 	for (uint32_t i = 0; i < n; i++)
 	{
-		out << m_map[i].kf_mean << m_map[i].dm_mean << m_map[i].dmv_var_mean;
+		out << m_map[i].kf_mean() << m_map[i].dm_mean << m_map[i].dmv_var_mean;
 	}
 #else
 	// Little endian: just write all at once:
@@ -369,9 +369,9 @@ void CGasConcentrationGridMap2D::serializeFrom(
 				m_map.resize(n);
 				for (size_t k = 0; k < n; k++)
 				{
-					m_map[k].kf_mean =
+					m_map[k].kf_mean() =
 						(old_map[k].w != 0) ? old_map[k].wr : old_map[k].mean;
-					m_map[k].kf_std =
+					m_map[k].kf_std() =
 						(old_map[k].w != 0) ? old_map[k].w : old_map[k].std;
 				}
 			}
@@ -386,7 +386,7 @@ void CGasConcentrationGridMap2D::serializeFrom(
 // Read the note in writeToStream()
 #if MRPT_IS_BIG_ENDIAN
 				for (uint32_t i = 0; i < n; i++)
-					in >> m_map[i].kf_mean >> m_map[i].dm_mean >>
+					in >> m_map[i].kf_mean() >> m_map[i].dm_mean >>
 						m_map[i].dmv_var_mean;
 #else
 				// Little endian: just read all at once:
@@ -787,13 +787,14 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 			//--------
 			for (size_t it_j = 0; it_j < N; it_j++)
 			{
-				if (m_map[it_j].kf_mean != 0 && A(it_i, it_j) != 0)
+				if (m_map[it_j].kf_mean() != 0 && A(it_i, it_j) != 0)
 				{
 					if (row_sum[it_i] >= 1)
 						new_means[it_i] += (A(it_i, it_j) / row_sum[it_i]) *
-										   m_map[it_j].kf_mean;
+										   m_map[it_j].kf_mean();
 					else
-						new_means[it_i] += A(it_i, it_j) * m_map[it_j].kf_mean;
+						new_means[it_i] +=
+							A(it_i, it_j) * m_map[it_j].kf_mean();
 				}
 			}
 
@@ -814,12 +815,12 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 						new_variances[it_i] +=
 							(A(it_i, it_j) / row_sum[it_i]) *
 							(m_stackedCov(it_j, 0) +
-							 square(m_map[it_j].kf_mean - new_means[it_i]));
+							 square(m_map[it_j].kf_mean() - new_means[it_i]));
 					else
 						new_variances[it_i] +=
 							A(it_i, it_j) *
 							(m_stackedCov(it_j, 0) +
-							 square(m_map[it_j].kf_mean - new_means[it_i]));
+							 square(m_map[it_j].kf_mean() - new_means[it_i]));
 				}
 			}
 		}
@@ -827,7 +828,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 		// Update means and Cov of the Kalman filter state
 		for (size_t it_i = 0; it_i < N; it_i++)
 		{
-			m_map[it_i].kf_mean = new_means[it_i];  // means
+			m_map[it_i].kf_mean() = new_means[it_i];  // means
 
 			// Variances
 			// Scale the Current Covariances with the new variances
