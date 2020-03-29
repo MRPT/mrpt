@@ -16,13 +16,13 @@ build_script:
   # NSIS: install required script for Windows binary packages:
   - cd c:\projects\mrpt
   - copy cmakemodules\registerExtension.nsh "C:\Program Files (x86)\NSIS\Include\"
-  # Build debug libraries
   - cd c:\projects\mrpt\build\
-  - cmake --build . --config Debug --target all_mrpt_libs
+  # Build debug libraries
+#  - cmake --build . --config Debug --target all_mrpt_libs
   # re-call CMake to detect the debug libs and all them to the install package:
-  - cmake .
+#  - cmake .
   # Do unit tests:
-  - cmake --build . --config Release --target test_legacy
+#  - cmake --build . --config Release --target test_legacy
   # All seem OK. Build all.
   - cmake --build . --config Release
   # Build package:
