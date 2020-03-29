@@ -54,7 +54,7 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 
 		// Max. run time.
 		// Should end much sooner when the video file is entirely processed.
-		app.run_for_seconds = 35.0;
+		app.run_for_seconds = 10.0;
 
 		// Less verbose output in tests:
 		app.show_sensor_thread_exceptions = false;
@@ -63,6 +63,8 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 		app.run();
 
 		// Check expected results:
+		std::cout << "Rawlog grabbed objects: " << app.rawlog_saved_objects
+				  << std::endl;
 		EXPECT_GE(app.rawlog_saved_objects, 2U);
 	}
 	catch (const std::exception& e)

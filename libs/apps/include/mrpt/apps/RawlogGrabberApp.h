@@ -14,6 +14,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/system/COutputLogger.h>
+#include <atomic>
 
 namespace mrpt::apps
 {
@@ -68,7 +69,7 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	 * @{ */
 
 	std::string rawlog_filename;  //!< The generated .rawlog file
-	std::size_t rawlog_saved_objects;  //!< Counter of saved objects
+	std::size_t rawlog_saved_objects = 0;  //!< Counter of saved objects
 
 	/** @} */
 
@@ -90,7 +91,7 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	TListObservations m_global_list_obs;
 	std::mutex cs_m_global_list_obs;
 
-	bool allThreadsMustExit = false;
+	std::atomic_bool allThreadsMustExit = false;
 
 	/** Directory where to save externally stored images, only for
 	 * CCameraSensor's. */

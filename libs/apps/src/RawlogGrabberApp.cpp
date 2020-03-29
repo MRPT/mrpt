@@ -11,6 +11,7 @@
 
 #include <mrpt/apps/RawlogGrabberApp.h>
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/core/round.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/img/CImage.h>
@@ -164,34 +165,31 @@ void RawlogGrabberApp::run()
 	mrpt::system::CTicTac run_timer;
 	run_timer.Tic();
 
+	auto lambdaProcessPending = [&]() {
+		auto lock = mrpt::lockHelper(cs_m_global_list_obs);
+		copy_of_m_global_list_obs.clear();
+
+		if (!m_global_list_obs.empty())
+		{
+			auto itEnd = m_global_list_obs.begin();
+			std::advance(itEnd, m_global_list_obs.size() / 2);
+			copy_of_m_global_list_obs.insert(m_global_list_obs.begin(), itEnd);
+			m_global_list_obs.erase(m_global_list_obs.begin(), itEnd);
+		}
+
+		if (use_sensoryframes)
+			process_observations_for_sf(copy_of_m_global_list_obs);
+		else
+			process_observations_for_nonsf(copy_of_m_global_list_obs);
+	};
+
 	while (!os::kbhit() && !allThreadsMustExit)
 	{
 		// Check "run for X seconds" flag:
 		if (run_for_seconds > 0 && run_timer.Tac() > run_for_seconds) break;
 
 		// See if we have observations and process them:
-		{
-			std::lock_guard<std::mutex> lock(cs_m_global_list_obs);
-			copy_of_m_global_list_obs.clear();
-
-			if (!m_global_list_obs.empty())
-			{
-				auto itEnd = m_global_list_obs.begin();
-				std::advance(itEnd, m_global_list_obs.size() / 2);
-				copy_of_m_global_list_obs.insert(
-					m_global_list_obs.begin(), itEnd);
-				m_global_list_obs.erase(m_global_list_obs.begin(), itEnd);
-			}
-		}  // End of cs lock
-
-		if (use_sensoryframes)
-		{
-			process_observations_for_sf(copy_of_m_global_list_obs);
-		}
-		else
-		{
-			process_observations_for_nonsf(copy_of_m_global_list_obs);
-		}
+		lambdaProcessPending();
 
 		std::this_thread::sleep_for(
 			std::chrono::milliseconds(GRABBER_PERIOD_MS));
@@ -203,6 +201,9 @@ void RawlogGrabberApp::run()
 			"[main thread] Ended due to other thread signal to exit "
 			"application.");
 	}
+
+	// Final check of pending objects:
+	lambdaProcessPending();
 
 	// Flush file to disk:
 	out_file.close();
