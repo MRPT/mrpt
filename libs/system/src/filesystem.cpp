@@ -664,7 +664,9 @@ std::string mrpt::system::getShareMRPTDir()
 		sBufOk = (0 != GetModuleFileNameA(NULL, buf, sizeof(buf)));
 #endif
 #ifdef MRPT_OS_LINUX
-		sBufOk = (-1 != readlink("/proc/self/exe", buf, sizeof(buf)));
+		ssize_t nRead = readlink("/proc/self/exe", buf, sizeof(buf));
+		if (nRead >= 0) buf[nRead] = '\0';
+		sBufOk = (-1 != nRead);
 #endif
 
 		if (sBufOk)
