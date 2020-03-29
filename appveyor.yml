@@ -63,7 +63,7 @@ before_build:
   - cd c:\projects\mrpt
   - git submodule update --init --recursive
   - mkdir build
-  - cmake -S. -Bbuild -G "Visual Studio 16 2019" -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% -DBUILD_APPLICATIONS=OFF
+  - cmake -S. -Bbuild -G "Visual Studio 16 2019" -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR%
 
 on_failure:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
