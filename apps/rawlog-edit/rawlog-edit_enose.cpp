@@ -39,8 +39,8 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 		// Default Constructor
 		CRawlogProcessor_ExportENOSE_TXT(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose),
 			  m_entriesSaved(0)
 		{
 			getArgValue<string>(cmdline, "input", m_inFile);

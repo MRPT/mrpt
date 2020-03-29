@@ -40,8 +40,8 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 
 		CRawlogProcessor_RenameExternals(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose)
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
 		{
 			entries_converted = 0;
 			entries_skipped = 0;

@@ -38,8 +38,8 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 
 		CRawlogProcessor_ExportODO_TXT(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose),
 			  m_entriesSaved(0)
 		{
 			getArgValue<string>(cmdline, "input", m_inFile);
@@ -172,8 +172,8 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
 
 		CRawlogProcessor_RecalcODO(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose),
 			  m_odo_accum_valid(false),
 			  m_entriesSaved(0)
 		{

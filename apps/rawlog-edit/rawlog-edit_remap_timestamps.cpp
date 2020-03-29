@@ -33,8 +33,8 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 	   public:
 		CRawlogProcessor_RemapTimestamps(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose, double a, double b)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			bool Verbose, double a, double b)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose),
 			  m_a(a),
 			  m_b(b)
 		{

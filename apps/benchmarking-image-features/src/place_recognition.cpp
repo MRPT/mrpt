@@ -23,7 +23,6 @@ using mrpt::system::CTicTac;
  ************************************************************************************************/
 PlaceRecognition::PlaceRecognition(
 	vector<string> training_paths, vector<string> testing_paths,
-
 	TDescriptorType desc_to_compute, int descriptor_selected, int numFeats)
 {
 	this->testing_paths = testing_paths;
@@ -229,7 +228,7 @@ int PlaceRecognition::findMax(const std::vector<int>& labels)
 	int temp_labels[NUM_CLASSES];
 	for (int i = 0; i < NUM_CLASSES; i++) temp_labels[i] = 0;
 
-	for (int i = 0; i < feats_size; i++) temp_labels[labels[i] - 1]++;
+	for (unsigned int i = 0; i < feats_size; i++) temp_labels[labels[i] - 1]++;
 
 	/// find out maximum out of the temp_labels array
 	int max = 0, pos = 0;

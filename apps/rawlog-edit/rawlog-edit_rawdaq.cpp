@@ -90,8 +90,8 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
 
 		CRawlogProcessor_ExportRAWDAQ_TXT(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose),
 			  m_entriesSaved(0)
 		{
 			getArgValue<string>(cmdline, "input", m_inFile);

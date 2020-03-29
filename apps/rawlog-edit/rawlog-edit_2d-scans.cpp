@@ -38,8 +38,8 @@ DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 
 		CRawlogProcessor_Export2DSCANS_TXT(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose)
-			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose),
 			  m_entriesSaved(0)
 		{
 			getArgValue<string>(cmdline, "input", m_inFile);

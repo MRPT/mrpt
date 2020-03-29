@@ -1347,15 +1347,15 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						}
 					}
 
-					auto fp = getFontParams();
-					fp.draw_shadow = false;
+					auto fp2 = getFontParams();
+					fp2.draw_shadow = false;
 					win->addTextMessage(
 						4, -12,
 						format(
 							"TP_Target[0]=(%.02f,%.02f) k=%i ang=%.02f deg",
 							pI.TP_Targets[0].x, pI.TP_Targets[0].y, tp_target_k,
 							mrpt::RAD2DEG(ang)),
-						1 /*id*/, fp);
+						1 /*id*/, fp2);
 				}
 			}
 			if (cbList->IsChecked(m_cbIdx_ShowAllDebugFields))

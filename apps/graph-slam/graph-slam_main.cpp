@@ -56,9 +56,8 @@ using namespace std;
 	}                                                                        \
 	template <class GRAPHTYPE>                                               \
 	void _NAME##impl(                                                        \
-		const std::string& in_file, [[maybe_unused]] bool is3D,              \
-		[[maybe_unused]] TCLAP::CmdLine& cmdline,                            \
-		[[maybe_unused]] bool verbose)
+		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,      \
+		bool verbose)
 
 /**
  * http://stackoverflow.com/questions/3982470/what-does-typedef-void-something-mean
