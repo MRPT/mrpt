@@ -1,3 +1,21 @@
+# Mandatory modules for this module:
+set(lst_modules
+	mrpt-bayes
+	mrpt-hwdrivers
+	mrpt-gui
+	mrpt-obs
+	mrpt-slam
+	mrpt-tclap
+)
+
+# Optional modules:
+if (BUILD_mrpt-hmtslam)
+	list(APPEND lst_modules mrpt-hmtslam)
+endif()
+if (BUILD_mrpt-graphslam)
+	list(APPEND lst_modules mrpt-graphslam)
+endif()
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
@@ -5,14 +23,7 @@ define_mrpt_lib(
 	# Lib name
 	apps
 	# Dependencies
-	mrpt-bayes
-	mrpt-hwdrivers
-	mrpt-gui
-	mrpt-obs
-	mrpt-slam
-	mrpt-graphslam
-	mrpt-hmtslam
-	mrpt-tclap
+	${lst_modules}
 	)
 
 if(NOT BUILD_mrpt-apps)
@@ -20,4 +31,3 @@ if(NOT BUILD_mrpt-apps)
 endif()
 
 target_link_libraries(apps PRIVATE Threads::Threads)
-
