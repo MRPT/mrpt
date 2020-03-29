@@ -268,9 +268,9 @@ void CWirelessPowerGridMap2D::serializeFrom(
 				m_map.resize(n);
 				for (size_t k = 0; k < n; k++)
 				{
-					m_map[k].kf_mean =
+					m_map[k].kf_mean() =
 						(old_map[k].w != 0) ? old_map[k].wr : old_map[k].mean;
-					m_map[k].kf_std =
+					m_map[k].kf_std() =
 						(old_map[k].w != 0) ? old_map[k].w : old_map[k].std;
 				}
 			}

@@ -25,8 +25,6 @@ MAP_DEFINITION_REGISTER(
 	"mrpt::maps::CHeightGridMap2D_MRF,dem_mrf",
 	mrpt::maps::CHeightGridMap2D_MRF)
 
-MRPT_TODO("Improvement: Rewrite to avoid union -> variant");
-
 CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition() = default;
 
 void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(
@@ -115,9 +113,9 @@ bool CHeightGridMap2D_MRF::dem_get_z_by_cell(
 	const size_t cx, const size_t cy, double& z_out) const
 {
 	const TRandomFieldCell* cell = cellByIndex(cx, cy);
-	if (cell && cell->kf_mean)
+	if (cell && cell->kf_mean())
 	{
-		z_out = cell->kf_mean;
+		z_out = cell->kf_mean();
 		return true;
 	}
 	else
@@ -127,9 +125,9 @@ bool CHeightGridMap2D_MRF::dem_get_z(
 	const double x, const double y, double& z_out) const
 {
 	const TRandomFieldCell* cell = cellByPos(x, y);
-	if (cell && cell->kf_mean)
+	if (cell && cell->kf_mean())
 	{
-		z_out = cell->kf_mean;
+		z_out = cell->kf_mean();
 		return true;
 	}
 	else
