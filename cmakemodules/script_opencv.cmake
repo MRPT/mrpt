@@ -74,6 +74,7 @@ if(DEFINED ENV{OPENCV_DLLS_TO_INSTALL_DIRS})
 	message(STATUS "Collecting OpenCV DLLs to install from directories: $ENV{OPENCV_DLLS_TO_INSTALL_DIRS}")
 
 	foreach(DIR $ENV{OPENCV_DLLS_TO_INSTALL_DIRS})
+		file(TO_CMAKE_PATH "${DIR}" DIR) # fix backslashes
 		message(STATUS " Processing: ${DIR}")
 		file(GLOB_RECURSE EXTRA_DLLS "${DIR}/*.dll")
 		message(STATUS " Found DLLs: ${EXTRA_DLLS}")
