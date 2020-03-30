@@ -71,10 +71,10 @@ endif()
 
 # -- install DLLs for MRPT binary packages --
 if(WIN32)
-	if (EXISTS "${OpenCV_DIR}/bin/Release")
-		file(GLOB_RECURSE EXTRA_DLLS "${OpenCV_DIR}/bin/*.dll") # This includes debug & release DLLs
-		foreach(F ${EXTRA_DLLS})
-			install(FILES "${F}" DESTINATION bin)
-		endforeach()
+	if (EXISTS "${OpenCV_DIR}/bin/")
+		file(GLOB_RECURSE EXTRA_DLLS "${OpenCV_DIR}/*.dll") # This includes debug & release DLLs
 	endif()
+	foreach(F ${EXTRA_DLLS})
+		install(FILES "${F}" DESTINATION bin)
+	endforeach()
 endif()
