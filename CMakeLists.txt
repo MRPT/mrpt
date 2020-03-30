@@ -654,7 +654,7 @@ configure_file(
 write_basic_package_version_file(
 	"${CMAKE_BINARY_DIR}/mrpt-config-version.cmake"
 	VERSION ${CMAKE_MRPT_FULL_VERSION}
-	COMPATIBILITY SameMajorVersion
+	COMPATIBILITY AnyNewerVersion
 )
 
 # Build list of files to install, packages, etc.
