@@ -75,7 +75,14 @@ before_build:
     -DBUILD_APP_carmen2simplemap=OFF \
     -DBUILD_APP_hmt-slam=OFF \
     -DBUILD_APP_hmt-slam-gui=OFF \
-    -DBUILD_APP_hmtMapViewer=OFF
+    -DBUILD_APP_hmtMapViewer=OFF \
+    -DBUILD_APP_icp-slam-live=OFF \
+    -DBUILD_APP_map-partition=OFF \
+    -DBUILD_APP_rosbag2rawlog=OFF \
+    -DBUILD_APP_simul-landmarks=OFF \
+    -DBUILD_APP_simul-beacons=OFF \
+    -DBUILD_APP_simul-gridmap=OFF \
+    -DBUILD_APP_kinect-3d-slam=OFF
 
 on_failure:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
