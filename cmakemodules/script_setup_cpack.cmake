@@ -88,9 +88,9 @@ if(WIN32)
 	# Install to "Program files (x86)" or "Program files" correctly:
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	  set(CPACK_NSIS_PROGRAMFILES PROGRAMFILES64)
-	else(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	else()
 	  set(CPACK_NSIS_PROGRAMFILES PROGRAMFILES)
-	endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	endif()
 
 	# Allow installing VC redistributables:
 	set(INSTALL_MSVC_REDISTRIBUTABLE "" CACHE FILEPATH "Select an optional vcredist*.exe file to include in the installation")
@@ -104,18 +104,18 @@ if(WIN32)
 			set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
 				   ExecWait \\\"$INSTDIR\\\\tmp\\\\${INSTALL_MSVC_REDISTRIBUTABLE_FILENAME}\\\"
 				   ")
-		endif (EXISTS "${INSTALL_MSVC_REDISTRIBUTABLE}")
-	endif (NOT "${INSTALL_MSVC_REDISTRIBUTABLE}" STREQUAL "")
+		endif ()
+	endif ()
 
-endif(WIN32)
+endif()
 if(UNIX)
 	# ------------------------------------------------------------------
 	# Packages for linux: Not supported, use scritps/prepare_* instead
 	# ------------------------------------------------------------------
-endif(UNIX)
+endif()
 
 if(APPLE)
 	set(CPACK_GENERATOR "TGZ;TBZ2;OSXX11")
-Endif(APPLE)
+Endif()
 
 include(CPack)
