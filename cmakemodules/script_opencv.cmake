@@ -35,11 +35,11 @@ if(NOT CMAKE_MRPT_HAS_OPENCV)
 		endif (NOT "${BASEDIR}" STREQUAL "")
 		if($ENV{VERBOSE})
 			message(STATUS "OpenCV ${OpenCV_VERSION} found through OpenCVConfig.cmake")
-		endif($ENV{VERBOSE})
+		endif()
 
 		set(CMAKE_MRPT_HAS_OPENCV 1)
-	endif(OpenCV_FOUND)
-endif(NOT CMAKE_MRPT_HAS_OPENCV)
+	endif()
+endif()
 
 # Opencv version as Hex. number:
 VERSION_TO_HEXADECIMAL(MRPT_OPENCV_VERSION_HEX ${MRPT_OPENCV_VERSION})
@@ -54,7 +54,7 @@ if(CMAKE_MRPT_HAS_OPENCV)
 		message(STATUS "OpenCV:")
 		message(STATUS "        OpenCV_LIBRARIES:   ${OpenCV_LIBRARIES}")
 		message(STATUS "        OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
-	endif($ENV{VERBOSE})
+	endif()
 
 	set_target_properties(imp_opencv
 		PROPERTIES
@@ -70,11 +70,15 @@ if(CMAKE_MRPT_HAS_OPENCV)
 endif()
 
 # -- install DLLs for MRPT binary packages --
-if(WIN32)
-	if (EXISTS "${OpenCV_DIR}/bin/")
-		file(GLOB_RECURSE EXTRA_DLLS "${OpenCV_DIR}/*.dll") # This includes debug & release DLLs
-	endif()
-	foreach(F ${EXTRA_DLLS})
-		install(FILES "${F}" DESTINATION bin)
+if(DEFINED ENV{OPENCV_DLLS_TO_INSTALL_DIRS})
+	message(STATUS "Collecting OpenCV DLLs to install from directories: $ENV{OPENCV_DLLS_TO_INSTALL_DIRS}")
+
+	foreach(DIR $ENV{OPENCV_DLLS_TO_INSTALL_DIRS})
+		message(STATUS " Processing: ${DIR}")
+		file(GLOB_RECURSE EXTRA_DLLS "${DIR}/*.dll")
+		message(STATUS " Found DLLs: ${EXTRA_DLLS}")
+		foreach(F ${EXTRA_DLLS})
+			install(FILES "${F}" DESTINATION bin)
+		endforeach()
 	endforeach()
 endif()
