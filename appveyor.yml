@@ -18,11 +18,11 @@ build_script:
   - copy cmakemodules\registerExtension.nsh "C:\Program Files (x86)\NSIS\Include\"
   - cd c:\projects\mrpt\build\
   # Build debug libraries
-  - cmake --build . --config Debug --target all_mrpt_libs
+#  - cmake --build . --config Debug --target all_mrpt_libs
   # re-call CMake to detect the debug libs and all them to the install package:
-  - cmake .
+#  - cmake .
   # Do unit tests:
-#  - cmake --build . --config Release --target test_legacy
+  - cmake --build . --config Release --target test_legacy
   # All seem OK. Build all.
 #  - cmake --build . --config Release
   # Build package:
@@ -69,7 +69,6 @@ before_build:
   - cmake -S. -Bbuild -G "Visual Studio 16 2019" \
     -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF \
     -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% \
-    -DBUILD_TESTING=OFF \
     -DBUILD_mrpt-hmtslam=OFF \
     -DBUILD_APP_DifOdometry-Camera=OFF -DBUILD_APP_DifOdometry-Datasets=OFF \
     -DBUILD_APP_benchmarking-image-features=OFF \
@@ -78,21 +77,16 @@ before_build:
     -DBUILD_APP_hmt-slam=OFF \
     -DBUILD_APP_hmt-slam-gui=OFF \
     -DBUILD_APP_hmtMapViewer=OFF \
-    -DBUILD_APP_icp-slam-live=OFF \
     -DBUILD_APP_map-partition=OFF \
     -DBUILD_APP_rosbag2rawlog=OFF \
     -DBUILD_APP_simul-landmarks=OFF \
     -DBUILD_APP_simul-beacons=OFF \
     -DBUILD_APP_simul-gridmap=OFF \
     -DBUILD_APP_kinect-3d-slam=OFF \
-    -DBUILD_APP_graphslam-engine=OFF \
     -DBUILD_APP_mrpt-performance=OFF \
     -DBUILD_APP_yaml2ini=OFF \
     -DBUILD_APP_ini2yaml=OFF \
-    -DBUILD_ROBOPEAK_LIDAR=OFF \
-    -DBUILD_KINECT=OFF \
-    -DBUILD_XSENS_MT3=OFF \
-    -DBUILD_XSENS_MT4=OFF 
+    -DBUILD_KINECT=OFF 
 on_failure:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
