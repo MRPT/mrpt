@@ -88,7 +88,11 @@ before_build:
     -DBUILD_APP_graphslam-engine=OFF \
     -DBUILD_APP_mrpt-performance=OFF \
     -DBUILD_APP_yaml2ini=OFF \
-    -DBUILD_APP_ini2yaml=OFF
+    -DBUILD_APP_ini2yaml=OFF \
+    -DBUILD_ROBOPEAK_LIDAR=OFF \
+    -DBUILD_KINECT=OFF \
+    -DBUILD_XSENS_MT3=OFF \
+    -DBUILD_XSENS_MT4=OFF 
 on_failure:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
