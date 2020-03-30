@@ -448,7 +448,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	write_basic_package_version_file(
 		"${CMAKE_BINARY_DIR}/mrpt-${name}-config-version.cmake"
 		VERSION ${CMAKE_MRPT_FULL_VERSION}
-		COMPATIBILITY SameMajorVersion
+		COMPATIBILITY AnyNewerVersion
 	)
 
 	if(CMAKE_MRPT_USE_DEB_POSTFIXS)
