@@ -39,6 +39,8 @@ install:
   - choco install opencv -y
   - tree c:\tools\opencv\build /F
   - set OPENCVDIR=C:\tools\opencv\build\
+  # This variable is parsed by MRPT/cmakemodules/script_opencv.cmake:
+  - set OPENCV_DLLS_TO_INSTALL_DIRS=%OPENCVDIR%bin;%OPENCVDIR%x64\vc15\bin
   - set PATH=%PATH%;%OPENCVDIR%\bin;%OPENCVDIR%\x64\vc15\bin
   # ====== Install wxWidgets
   - cd c:\
