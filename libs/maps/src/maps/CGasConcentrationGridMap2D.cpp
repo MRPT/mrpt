@@ -306,7 +306,7 @@ void CGasConcentrationGridMap2D::serializeTo(
 	for (uint32_t i = 0; i < n; i++)
 	{
 		out << m_map[i].kf_mean() << m_map[i].dm_mean()
-			<< m_map[i].dmv_var_mean();
+			<< m_map[i].dmv_var_mean;
 	}
 #else
 	// Little endian: just write all at once:
@@ -388,7 +388,7 @@ void CGasConcentrationGridMap2D::serializeFrom(
 #if MRPT_IS_BIG_ENDIAN
 				for (uint32_t i = 0; i < n; i++)
 					in >> m_map[i].kf_mean() >> m_map[i].dm_mean() >>
-						m_map[i].dmv_var_mean();
+						m_map[i].dmv_var_mean;
 #else
 				// Little endian: just read all at once:
 				in.ReadBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
