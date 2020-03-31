@@ -1,3 +1,11 @@
+mrpt (1:2.0.0-1) unstable; urgency=medium
+
+  * New version of upstream sources.
+  * Fix build against OpenCV 4 (Closes: #922586)
+  * Do not use Python2 anymore (Closes: #943188)
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Tue, 31 Mar 2020 17:07:59 +0200
+
 mrpt (1:1.5.6-1) unstable; urgency=medium
 
   * New version of upstream sources.
