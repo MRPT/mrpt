@@ -48,7 +48,7 @@ override_dh_auto_build-arch:
 	dh_auto_build -O--buildsystem=cmake
 
 	# Python bindings:
-	dh_python3 --package=python-mrpt
+#	dh_python3 --package=python-mrpt
 
 
 override_dh_auto_build-indep:
@@ -100,8 +100,8 @@ override_dh_install:
 	cp -vr $(CURDIR)/debian/usr/libmrpt-*dev $(CURDIR)/debian/
 
 	# Move python stuff:
-	mkdir -p $(CURDIR)/debian/python-mrpt/usr/lib
-	mv -v $(CURDIR)/debian/usr/lib/* $(CURDIR)/debian/python-mrpt/usr/lib
+#	mkdir -p $(CURDIR)/debian/python-mrpt/usr/lib
+#	mv -v $(CURDIR)/debian/usr/lib/* $(CURDIR)/debian/python-mrpt/usr/lib
 
 	# Move mrpt-doc:
 	dir=$(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc; mkdir -p $$dir; mv -v $(CURDIR)/debian/usr/mrpt-doc/usr/share/doc/mrpt-doc/* $$dir

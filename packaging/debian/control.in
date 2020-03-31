@@ -26,8 +26,6 @@ Build-Depends: debhelper (>= 10),
 	libopenni2-dev,
 	gdb,
 	libsuitesparse-dev,
-	python3-numpy,
-	libpython3-dev,
 	libeigen3-dev,
 	libassimp-dev,
 	qtbase5-dev,
@@ -36,7 +34,6 @@ Build-Depends: debhelper (>= 10),
 	libjsoncpp-dev,
 	libyaml-cpp-dev,
 	libtinyxml2-dev,
-	dh-python,
 	libcv-bridge-dev,
 	libgeometry-msgs-dev,
 	libnav-msgs-dev,
@@ -50,7 +47,7 @@ Build-Depends: debhelper (>= 10),
 	xorg-dev,
 	libglu1-mesa-dev,
 	libglfw3-dev
-Standards-Version: 4.3.0
+Standards-Version: 4.5.0
 Homepage: https://www.mrpt.org/
 
 Package: mrpt-doc
@@ -744,8 +741,4 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - 3d-rotation-converter: A GUI tool to convert between different SO(3)
      rotation parameterizations (quaternions, Euler angles, etc.)
 
-Package: python-mrpt
-Architecture: any
-Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends},  python
-Description: Mobile Robot Programming Toolkit - Python bindings
- This package installs MRPT bindings for Python.
+
