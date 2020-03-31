@@ -33,10 +33,18 @@ if (EIGEN_USE_EMBEDDED_VERSION)
 		FILE "${MRPT_BINARY_DIR}/EP_eigen3-config.cmake"
 	)
 	install(TARGETS Eigen EXPORT Eigen-targets)
+	if (WIN32)
+    set(dstDir cmake)
+  else()
+    set(dstDir ${this_lib_dev_INSTALL_PREFIX}share/mrpt)
+  endif()
 	install(
 		EXPORT Eigen-targets
-		DESTINATION ${this_lib_dev_INSTALL_PREFIX}share/mrpt
+		DESTINATION ${dstDir}
 	)
+	# Dummy EP_eigen3-config.cmake file
+	install(FILES ${MRPT_SOURCE_DIR}/parse-files/EP_eigen3-config.cmake DESTINATION ${dstDir})
+
 	target_include_directories(Eigen
 		SYSTEM  # omit warnings for these hdrs
 		INTERFACE
