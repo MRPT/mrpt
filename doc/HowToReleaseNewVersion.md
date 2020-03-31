@@ -39,7 +39,7 @@ Now for windows binary packages (this is to be automated via AppVeyor)
 
 ```
 cd ~/mrpt_debian/
-gpg --armor --sign mrpt_*.tar.xz
+gpg --armor --detach-sign  mrpt_*.tar.xz
 cd mrpt-*
 debuild -S -sa
 cd ..
