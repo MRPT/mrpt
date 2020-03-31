@@ -35,10 +35,18 @@ Now for windows binary packages (this is to be automated via AppVeyor)
 
  * Go to `$HOME/mrpt_debian/mrpt-x.y.z./debian`
  * Edit changelog
- * Go to mrpt_debian
- * `debuild -S -sa`
- * Test with: `lintian *.changes`
- * Test build in Debian Unstable
+ * Build package:
+
+```
+cd ~/mrpt_debian/
+gpg --armor --sign mrpt_*.tar.xz
+cd mrpt-*
+debuild -S -sa
+cd ..
+lintian *.changes
+```
+
+ * Test build in Debian Unstable:
 
 ```
 sudo ARCH=amd64 DIST=sid pbuilder --update
