@@ -46,18 +46,19 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF(
 	MRPT_START
 
 	TReturnInfo infoVal;
+	CPosePDF::Ptr ret;
 
 	switch (options.methodSelection)
 	{
 		case CGridMapAligner::amCorrelation:
-			return AlignPDF_correlation(
-				mm1, mm2, initialEstimationPDF, infoVal);
+			ret = AlignPDF_correlation(mm1, mm2, initialEstimationPDF, infoVal);
+			break;
 
 		case CGridMapAligner::amModifiedRANSAC:
 		case CGridMapAligner::amRobustMatch:
 			// The same function has an internal switch for the specific method:
-			return AlignPDF_robustMatch(
-				mm1, mm2, initialEstimationPDF, infoVal);
+			ret = AlignPDF_robustMatch(mm1, mm2, initialEstimationPDF, infoVal);
+			break;
 
 		default:
 			THROW_EXCEPTION("Wrong value found in 'options.methodSelection'!!");
@@ -68,6 +69,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF(
 		if (auto* o = dynamic_cast<TReturnInfo*>(&info.value().get()); o)
 			*o = infoVal;
 
+	return ret;
 	MRPT_END
 }
 
