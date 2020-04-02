@@ -2,7 +2,7 @@ Source: mrpt
 Section: science
 Priority: optional
 Maintainer: José Luis Blanco Claraco <joseluisblancoc@gmail.com>
-Build-Depends: debhelper (>= 10),
+Build-Depends: debhelper (>= 12),
 	cmake,
 	perl,
 	zlib1g-dev,
@@ -740,5 +740,3 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - rosbag2rawlog: Convert a ROS bag dataset into an MRPT Rawlog file.
   - 3d-rotation-converter: A GUI tool to convert between different SO(3)
      rotation parameterizations (quaternions, Euler angles, etc.)
-
-
