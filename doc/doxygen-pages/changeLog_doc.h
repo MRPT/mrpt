@@ -12,6 +12,10 @@
 /** \page changelog Change Log
  *
 
+# Version 2.0.1: (Under development)
+- Changes in libraries:
+  - (...)
+
 ------
 # Version 2.0.0: Released March 29th, 2020
 - **Most important changes:**
