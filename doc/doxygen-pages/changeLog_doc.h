@@ -14,7 +14,8 @@
 
 # Version 2.0.1: (Under development)
 - Changes in libraries:
-  - (...)
+  - mrpt_obs_grp
+    - mrpt::obs::CObservationRobotPose: Fixed missing serialization of sensorPose
 
 ------
 # Version 2.0.0: Released March 29th, 2020
