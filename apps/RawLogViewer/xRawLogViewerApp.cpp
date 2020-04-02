@@ -14,7 +14,11 @@
 #include <wx/image.h>
 #include "xRawLogViewerMain.h"
 //*)
+#include <wx/cmdline.h>
 #include <wx/log.h>
+#ifdef MRPT_OS_LINUX
+#include <dlfcn.h>
+#endif
 
 #include <clocale>
 
@@ -42,8 +46,32 @@ bool xRawLogViewerApp::OnInit()
 	//  the default wxWidgets settings. (JL @ Sep-2009)
 	wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
 
-	// Process cmd line arguments (for the case of opening a file):
-	if (argc > 1) global_fileToOpen = wxString(wxApp::argv[1]).mb_str();
+	static const wxCmdLineEntryDesc cmdLineDesc[] = {
+#ifdef MRPT_OS_LINUX
+		{wxCMD_LINE_OPTION, wxT_2("l"), wxT_2("load"), wxT_2("load a library"),
+		 wxCMD_LINE_VAL_STRING, 0},
+#endif
+		{wxCMD_LINE_PARAM, nullptr, nullptr, wxT_2("Input File"),
+		 wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
+		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}};
+
+	wxCmdLineParser parser(cmdLineDesc, argc, argv);
+	parser.Parse(true);
+#ifdef MRPT_OS_LINUX
+	wxString libraryPath;
+	if (parser.Found(wxT_2("l"), &libraryPath))
+	{
+		const std::string sLib = std::string(libraryPath.mb_str());
+		std::cout << "Loading library: " << sLib << "...\n";
+		if (!dlopen(sLib.c_str(), RTLD_LAZY))
+		{
+			fprintf(
+				stderr, "Error loading '%s':\n%s\n", sLib.c_str(), dlerror());
+		}
+	}
+#endif
+	if (parser.GetParamCount() == 1)
+		global_fileToOpen = parser.GetParam().mb_str();
 
 	// Create the INI file:
 	wxString dataDir = wxStandardPaths::Get().GetUserDataDir();

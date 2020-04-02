@@ -13,6 +13,8 @@
  *
 
 # Version 2.0.1: (Under development)
+- Changes in applications: 
+  - RawLogViewer: new "-l xxx.so" flag to load datasets with types defined in external projects.
 - Changes in libraries:
   - mrpt_obs_grp
     - mrpt::obs::CObservationRobotPose: Fixed missing serialization of sensorPose
