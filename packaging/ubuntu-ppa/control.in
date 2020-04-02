@@ -51,8 +51,10 @@ Build-Depends: debhelper (>= 9),
 	g++-7,
 	xorg-dev,
 	libglu1-mesa-dev,
-	libglfw3-dev
-Standards-Version: 4.3.0
+	libglfw3-dev,
+	libxxf86vm-dev,
+	libxrandr-dev
+Standards-Version: 4.5.0
 Homepage: https://www.mrpt.org/
 
 Package: mrpt-doc
@@ -490,8 +492,9 @@ Package: libmrpt-ros1bridge-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},libmrpt-ros1bridge@MRPT_VER_MM@ (= ${binary:Version}),
-        libmrpt-maps-dev, libgeometry-msgs-dev, libroscpp-dev, libsensor-msgs-dev,
-        libstereo-msgs-dev, libtf2-msgs-dev
+        libmrpt-maps-dev, libgeometry-msgs-dev, libroscpp-dev,
+        libsensor-msgs-dev, libstereo-msgs-dev, libtf2-msgs-dev, librosbag-dev,
+        libcv-bridge-dev, libtf2-dev
 Description: Mobile Robot Programming Toolkit - ros1bridge development package
  This package provides headers and libraries for development.
 
@@ -739,9 +742,11 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - kinect-icp-slam: Example 3D mapping with Xbox Kinect
   - kinect-view: Example 3D mapping with Xbox Kinect
   - robotic-arm-kinematics: GUI for design of robot arms with
-                            Denavit-Hartenberg parameters.
+     Denavit-Hartenberg parameters.
   - velodyne-view: Live display/grabbing of Velodyne scanners.
   - rosbag2rawlog: Convert a ROS bag dataset into an MRPT Rawlog file.
+  - 3d-rotation-converter: A GUI tool to convert between different SO(3)
+     rotation parameterizations (quaternions, Euler angles, etc.)
 
 Package: python-mrpt
 Architecture: any
