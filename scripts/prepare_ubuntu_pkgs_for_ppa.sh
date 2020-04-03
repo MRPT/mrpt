@@ -14,7 +14,7 @@
 set -e
 
 # List of distributions to create PPA packages for:
-LST_DISTROS=(xenial bionic disco eoan focal)
+LST_DISTROS=(xenial bionic eoan focal)
 
 
 # Checks
