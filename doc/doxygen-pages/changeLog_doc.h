@@ -14,7 +14,8 @@
 
 # Version 2.0.2: (Under development)
 - Changes in libraries:
-  - (None)
+  - mrpt_gui_grp
+    - Fix mouse-motion rotation glitches if clicking inside a nanogui control.
 
 ------
 # Version 2.0.1: Released April 3rd, 2020
