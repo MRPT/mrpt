@@ -12,8 +12,13 @@
 /** \page changelog Change Log
  *
 
+# Version 2.0.2: (Under development)
+- Changes in libraries:
+  - (None)
+
+------
 # Version 2.0.1: Released April 3rd, 2020
-- Changes in applications: 
+- Changes in applications:
   - RawLogViewer: new "-l xxx.so" flag to load datasets with types defined in external projects.
 - Changes in libraries:
   - mrpt_obs_grp
