@@ -79,8 +79,20 @@ void CGlCanvasBase::updateZoom(CamaraParams& params, float delta) const
 	params.cameraZoomDistance = zoom;
 }
 
+// Required, for example, when missing "button down" events happen if
+// the mouse clicks on a nanogui component, *then* moves out of it
+// while still pressing a button:
+inline void mouseGlitchFilter(
+	const int x, const int y, const int& mouseClickX, const int& mouseClickY)
+{
+	if (std::abs(x - mouseClickX) > 60) const_cast<int&>(mouseClickX) = x;
+	if (std::abs(y - mouseClickY) > 60) const_cast<int&>(mouseClickY) = y;
+}
+
 void CGlCanvasBase::updateRotate(CamaraParams& params, int x, int y) const
 {
+	mouseGlitchFilter(x, y, m_mouseClickX, m_mouseClickY);
+
 	const float dis = max(0.01f, (params.cameraZoomDistance));
 	float eye_x =
 		params.cameraPointingX + dis * cos(DEG2RAD(params.cameraAzimuthDeg)) *
@@ -111,6 +123,8 @@ void CGlCanvasBase::updateRotate(CamaraParams& params, int x, int y) const
 
 void CGlCanvasBase::updateOrbitCamera(CamaraParams& params, int x, int y) const
 {
+	mouseGlitchFilter(x, y, m_mouseClickX, m_mouseClickY);
+
 	params.cameraAzimuthDeg -= 0.2f * (x - m_mouseClickX);
 	params.setElevationDeg(
 		params.cameraElevationDeg + 0.2f * (y - m_mouseClickY));
