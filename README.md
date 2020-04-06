@@ -36,15 +36,16 @@ and [much more](https://www.mrpt.org/list-of-mrpt-apps/).
 
 ### 3.1. Ubuntu
 
-See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 2.0 branch (for mrpt 1.5.* [read here](https://github.com/MRPT/mrpt/tree/mrpt-1.5#31-ubuntu-ppa)).
+See [this PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for nightly builds from the `develop` branch, or [this one](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable) for stable releases.
 
-        sudo add-apt-repository ppa:joseluisblancoc/mrpt
-        sudo apt-get update
-        sudo apt-get install libmrpt-dev mrpt-apps
+        sudo add-apt-repository ppa:joseluisblancoc/mrpt   # develop branch
+        #sudo add-apt-repository ppa:joseluisblancoc/mrpt-stable   # master (stable releases) branch
+        #sudo apt update # Only required for Ubuntu 16.04
+        sudo apt install libmrpt-dev mrpt-apps
 
 Supported distributions:
-  * Ubuntu 18.04 (Bionic), 18.10 (Cosmic), 19.04 (Disco), 19.10 (Eoan)
-  * Ubuntu 16.04LTS Xenial (EOL: April 2021)
+  * Ubuntu 20.04 LTS (Focal), Ubuntu 18.04 LTS (Bionic), 18.10 (Cosmic), 19.10 (Eoan)
+  * Ubuntu 16.04 LTS Xenial (EOL: April 2021)
   	* Using 16.04 requires installing gcc-7 due to some bugs in gcc-5:
 
           add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -55,24 +56,18 @@ Supported distributions:
 ### 3.2. Build from sources
 
 Minimum compiler requisites:
-  * mrpt >=2.0 (`master` branch):
-    * gcc-7 or newer.
-      * Ubuntu 16.04LTS Xenial: [Instructions](https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5) for installing gcc-7 in this version of Ubuntu.
-      * Ubuntu 18.04 or newer: default gcc version is ok.
-    * clang-4 or newer.
-    * Windows: Visual Studio 2017 version 15.3 or newer.
-    * cmake >= 3.3 required (>=3.4 for Windows).
-    * Eigen >= 3.3 required.
-  * mrpt 1.5.* and **maintenance** `mrpt-1.5` branch:
-    * Ubuntu 14.06LTS Xenial: default gcc/clang versions
-    * Windows: Visual Studio 2012
-    * cmake >= 3.1 required
-    * **EOL** for `mrpt-1.5.*`: EOL of Ubuntu Xenial (April 2021).
+  * gcc-7 or newer.
+    * Ubuntu 16.04LTS Xenial: [Instructions](https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5) for installing gcc-7 in this version of Ubuntu.
+    * Ubuntu 18.04 or newer: default gcc version is ok.
+  * clang-4 or newer.
+  * Windows: Visual Studio 2017 version 15.3 or newer.
+  * cmake >= 3.3 required (>=3.4 for Windows).
+  * Eigen >= 3.3 required.
 
 To build in Debian/Ubuntu follow the steps below. See [full build docs](http://www.mrpt.org/Building_and_Installing_Instructions) online
 for Windows instructions or to learn all the details.
 
-  * Install minimum recommended dependencies:
+  * Install **minimum** recommended dependencies:
 
 ```bash
 sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev libwxgtk3.0-gtk3-dev \
@@ -81,7 +76,7 @@ libopencv-dev libeigen3-dev libgtest-dev
   MRPT builds against OpenCV 2.4.x, 3.x, 4.x, but it is recommended to use 3.0 or later.
 
 
-  * Install additional dependencies to enable most MRPT features (except ROS bridges):
+  * **Recommended**: Install additional dependencies to enable most MRPT features (except ROS bridges):
 
 ```bash
 sudo apt install libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev \
@@ -105,6 +100,13 @@ mkdir build && cd build
 cmake ..
 make
 ```
+
+### 3.3. Windows precompiled versions
+
+Executables (`.exe`s and `.dll`s) and development libraries (`.h`s and `.lib`s) included:
+
+Last Win64 builds: <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-develop/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-develop'></a> <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-stable/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-stable'></a>
+
 
 ## 4. License
 MRPT is released under the [new BSD license](http://www.mrpt.org/License/).
