@@ -36,7 +36,7 @@ Build-Depends: debhelper (>= 12),
 	libcv-bridge-dev,
 	libgeometry-msgs-dev,
 	libnav-msgs-dev,
-	librosbag-dev,
+	librosbag-storage-dev,
 	libroscpp-dev,
 	libsensor-msgs-dev,
 	libstd-srvs-dev,
@@ -486,7 +486,7 @@ Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},libmrpt-ros1bridge@MRPT_VER_MM@ (= ${binary:Version}),
         libmrpt-maps-dev, libgeometry-msgs-dev, libroscpp-dev,
-        libsensor-msgs-dev, libstereo-msgs-dev, libtf2-msgs-dev, librosbag-dev,
+        libsensor-msgs-dev, libstereo-msgs-dev, libtf2-msgs-dev, librosbag-storage-dev,
         libcv-bridge-dev, libtf2-dev
 Description: Mobile Robot Programming Toolkit - ros1bridge development package
  This package provides headers and libraries for development.
