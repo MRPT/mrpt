@@ -34,7 +34,7 @@
 #include <mrpt/ros1bridge/point_cloud2.h>
 #include <mrpt/ros1bridge/time.h>
 
-#include <rosbag/bag.h>
+#include <rosbag/bag.h> // rosbag_storage C++ lib
 #include <rosbag/view.h>
 
 #include <cv_bridge/cv_bridge.h>
