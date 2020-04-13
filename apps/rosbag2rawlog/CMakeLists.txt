@@ -19,7 +19,7 @@ add_executable(${PROJECT_NAME}
 # Add the required libraries for linking:
 target_link_libraries(${PROJECT_NAME}
 	mrpt::ros1bridge
-	${rosbag_LIBRARIES}
+	${rosbag_storage_LIBRARIES}
 	${cv_bridge_LIBRARIES}
 	${tf2_LIBRARIES}
 	${LIBYAMLCPP_LIBRARIES}
@@ -29,7 +29,7 @@ target_include_directories(${PROJECT_NAME}
 	SYSTEM
 	PRIVATE
 	${roscpp_INCLUDE_DIRS}
-	${rosbag_INCLUDE_DIRS}
+	${rosbag_storage_INCLUDE_DIRS}
 	${cv_bridge_INCLUDE_DIRS}
 	${tf2_INCLUDE_DIRS}
 )

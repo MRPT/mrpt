@@ -8,7 +8,7 @@ if (NOT DISABLE_ROS)
 	# ROS libs:
 	find_package(roscpp QUIET)
 	find_package(cv_bridge QUIET)
-	find_package(rosbag QUIET)
+	find_package(rosbag_storage QUIET)
 	find_package(pcl_conversions QUIET)
 
 	# ROS libs for msgs:
