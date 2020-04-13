@@ -51,7 +51,7 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
 # Xenial:armhf does not have any version of liboctomap-dev:
-export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/MRPT/octomap/archive/devel.zip"
+export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/OctoMap/octomap/archive/v1.9.1.zip"
 export MRPT_RELEASE_EXTRA_OTHERLIBS_PATH="3rdparty/octomap.zip"
 
 count=${#LST_DISTROS[@]}
