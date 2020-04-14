@@ -37,6 +37,19 @@ void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 	using P2f = mrpt::math::TPoint2Df;
 	using P3f = mrpt::math::TPoint3Df;
 
+	// Note: if we are rendering and the user assigned us no texture image,
+	// let's create a dummy one with the uniform CRenderizable's color:
+	if (!textureImageHasBeenAssigned())
+	{
+		mrpt::img::CImage im_rgb(4, 4, mrpt::img::CH_RGB),
+			im_a(4, 4, mrpt::img::CH_GRAY);
+		im_rgb.filledRectangle(0, 0, 3, 3, m_color);
+		im_a.filledRectangle(
+			0, 0, 3, 3,
+			mrpt::img::TColor(m_color.A, m_color.A, m_color.A, m_color.A));
+		this->assignImage(std::move(im_rgb), std::move(im_a));
+	}
+
 	auto& tris = CRenderizableShaderTexturedTriangles::m_triangles;
 	tris.clear();
 

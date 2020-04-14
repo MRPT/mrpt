@@ -177,6 +177,7 @@ void CRenderizableShaderTexturedTriangles::assignImage(
 	// Make a copy:
 	m_textureImage = img;
 	m_textureImageAlpha = imgAlpha;
+	m_textureImageAssigned = true;
 
 	m_enableTransparency = true;
 
@@ -193,6 +194,7 @@ void CRenderizableShaderTexturedTriangles::assignImage(const CImage& img)
 
 	// Make a copy:
 	m_textureImage = img;
+	m_textureImageAssigned = true;
 
 	m_enableTransparency = false;
 
@@ -210,6 +212,7 @@ void CRenderizableShaderTexturedTriangles::assignImage(
 
 	m_textureImage = std::move(img);
 	m_textureImageAlpha = std::move(imgAlpha);
+	m_textureImageAssigned = true;
 
 	m_enableTransparency = true;
 
@@ -225,6 +228,7 @@ void CRenderizableShaderTexturedTriangles::assignImage(CImage&& img)
 	unloadTexture();
 
 	m_textureImage = std::move(img);
+	m_textureImageAssigned = true;
 
 	m_enableTransparency = false;
 
@@ -512,12 +516,13 @@ void CRenderizableShaderTexturedTriangles::unloadTexture()
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
 	mrpt::serialization::CArchive& out) const
 {
-	uint8_t ver = 0;
+	uint8_t ver = 1;
 
 	out << ver;
 	out << m_enableTransparency << m_textureInterpolate;
 	out << m_textureImage;
 	if (m_enableTransparency) out << m_textureImageAlpha;
+	out << m_textureImageAssigned;
 }
 
 void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
@@ -531,6 +536,7 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 	switch (version)
 	{
 		case 0:
+		case 1:
 		{
 			in >> m_enableTransparency >> m_textureInterpolate;
 			in >> m_textureImage;
@@ -543,6 +549,10 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 			{
 				assignImage(m_textureImage);
 			}
+			if (version >= 1)
+				in >> m_textureImageAssigned;
+			else
+				m_textureImageAssigned = true;
 		}
 		break;
 		default:
