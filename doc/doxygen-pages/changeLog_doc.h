@@ -17,6 +17,8 @@
   - mrpt_gui_grp
     - Fix mouse-motion rotation glitches if clicking inside a nanogui control.
     - Fix cmake errors building user programs in Windows (missing glfw dependency).
+  - mrpt_opengl_grp
+    - Fix displaying of uninitialized textured in mrpt::opengl::CTexturedPlane. It now uses the default solid color of the object.
   - mrpt_ros1bridge_grp
     - Narrower build and run time dependencies: rosbag -> rosbag_storage
 

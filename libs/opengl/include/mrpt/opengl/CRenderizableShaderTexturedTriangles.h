@@ -86,6 +86,8 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 		return m_textureImageAlpha;
 	}
 
+	bool textureImageHasBeenAssigned() const { return m_textureImageAssigned; }
+
 	/** Enable linear interpolation of textures (default=false, use nearest
 	 * pixel) */
 	void enableTextureLinearInterpolation(bool enable)
@@ -105,6 +107,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 
 	mutable unsigned int m_glTextureName{0};
 	mutable bool m_texture_is_loaded{false};
+	bool m_textureImageAssigned = false;
 	mutable mrpt::img::CImage m_textureImage{4, 4};
 	mutable mrpt::img::CImage m_textureImageAlpha;
 

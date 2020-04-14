@@ -131,7 +131,7 @@ void TestRANSAC()
 	// ------------------------------------
 	CMatrixDouble best_model;
 	std::vector<size_t> best_inliers;
-	const double DIST_THRESHOLD = 0.2;
+	const double DIST_THRESHOLD = 0.05;
 
 	CTicTac tictac;
 	const size_t TIMES = 100;
@@ -184,6 +184,8 @@ void TestRANSAC()
 
 	opengl::CTexturedPlane::Ptr glPlane =
 		opengl::CTexturedPlane::Create(-4, 4, -4, 4);
+
+	glPlane->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00, 0x80));  // RGBA
 
 	TPose3D glPlanePose;
 	plane.getAsPose3D(glPlanePose);
