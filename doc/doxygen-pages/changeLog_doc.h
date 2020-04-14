@@ -16,6 +16,7 @@
 - Changes in libraries:
   - mrpt_gui_grp
     - Fix mouse-motion rotation glitches if clicking inside a nanogui control.
+    - Fix cmake errors building user programs in Windows (missing glfw dependency).
   - mrpt_ros1bridge_grp
     - Narrower build and run time dependencies: rosbag -> rosbag_storage
 
