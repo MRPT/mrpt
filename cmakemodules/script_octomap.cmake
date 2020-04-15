@@ -39,7 +39,7 @@ IF (NOT OCTOMAP_FOUND)
 		IF (EXISTS "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
 			SET(OCTOMAP_EP_URL "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
 		ELSE()
-			SET(OCTOMAP_EP_URL "https://github.com/MRPT/octomap/archive/devel.zip")
+			SET(OCTOMAP_EP_URL "https://github.com/OctoMap/octomap/archive/v1.9.1.zip")
 		ENDIF()
 
 		ExternalProject_Add(EP_octomap

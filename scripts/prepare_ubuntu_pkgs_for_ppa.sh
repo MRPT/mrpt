@@ -49,7 +49,7 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 LST_DISTROS=(xenial trusty)
 
 # trusty does not have any version of liboctomap-dev
-export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/MRPT/octomap/archive/devel.zip"
+export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/OctoMap/octomap/archive/v1.9.1.zip"
 export MRPT_RELEASE_EXTRA_OTHERLIBS_PATH="otherlibs/octomap.zip"
 
 count=${#LST_DISTROS[@]}
