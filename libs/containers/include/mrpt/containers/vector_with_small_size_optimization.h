@@ -16,6 +16,8 @@
 
 namespace mrpt::containers
 {
+namespace internal
+{
 struct UnspecializedBool
 {
 	operator const bool&() const { return b; }
@@ -23,6 +25,7 @@ struct UnspecializedBool
 
 	bool b;
 };
+}  // namespace internal
 
 /** Container that transparently and dynamically switches between a std::array
  * and std::vector. Used to avoid heap allocations with small vectors.
@@ -34,18 +37,21 @@ template <typename VAL, size_t small_size, size_t alignment = 16>
 class vector_with_small_size_optimization
 {
    private:
-	using T =
-		std::conditional_t<std::is_same_v<VAL, bool>, UnspecializedBool, VAL>;
+	using T = std::conditional_t<
+		std::is_same_v<VAL, bool>, internal::UnspecializedBool, VAL>;
 	using ALLOC = mrpt::aligned_allocator_cpp11<T>;
 	using self_t =
 		vector_with_small_size_optimization<VAL, small_size, alignment>;
 	using large_vec = std::vector<T, ALLOC>;
 	using small_array = std::array<T, small_size>;
 
+	/** @name Data
+	 * @{ */
 	large_vec m_v;
 	alignas(alignment) small_array m_a;
 	bool m_is_small = true;
 	size_t m_size = 0;
+	/** @} */
 
    public:
 	using value_type = T;
@@ -55,19 +61,54 @@ class vector_with_small_size_optimization
 	using size_type = typename large_vec::size_type;
 
 	vector_with_small_size_optimization() = default;
+	~vector_with_small_size_optimization() = default;
+
 	vector_with_small_size_optimization(size_t n)
 		: m_is_small(n <= small_size), m_size(n)
 	{
 		if (!m_is_small) m_v.resize(n);
 	}
+
+	vector_with_small_size_optimization(
+		const vector_with_small_size_optimization& o)
+	{
+		*this = o;
+	}
+	vector_with_small_size_optimization(vector_with_small_size_optimization&& o)
+	{
+		*this = o;
+	}
+	vector_with_small_size_optimization& operator=(
+		const vector_with_small_size_optimization& o)
+	{
+		m_size = o.m_size;
+		m_is_small = o.m_is_small;
+		if (m_size > small_size)
+			m_v = o.m_v;
+		else if (m_size > 0)
+			m_a = o.m_a;
+		return *this;
+	}
+	vector_with_small_size_optimization& operator=(
+		vector_with_small_size_optimization&& o)
+	{
+		m_size = o.m_size;
+		m_is_small = o.m_is_small;
+		if (m_size > small_size)
+			m_v = std::move(o.m_v);
+		else if (m_size > 0)
+			m_a = std::move(o.m_a);
+		return *this;
+	}
+
 	template <typename TYPE, typename POINTER, typename REFERENCE>
 	class iteratorImpl
 	{
 		using STORAGE = std::conditional_t<
-			std::is_same_v<POINTER, bool*>, UnspecializedBool*,
+			std::is_same_v<POINTER, bool*>, internal::UnspecializedBool*,
 			std::conditional_t<
-				std::is_same_v<POINTER, const bool*>, const UnspecializedBool*,
-				POINTER>>;
+				std::is_same_v<POINTER, const bool*>,
+				const internal::UnspecializedBool*, POINTER>>;
 		using self = iteratorImpl<TYPE, POINTER, REFERENCE>;
 
 	   public:
