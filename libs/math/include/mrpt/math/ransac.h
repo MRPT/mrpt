@@ -19,36 +19,53 @@ namespace mrpt::math
  * \ingroup mrpt_math_grp
  * @{ */
 
-/** A generic RANSAC implementation with models as matrices.
- *  See \a RANSAC_Template::execute for more info on usage.
- *  \sa mrpt::math::ModelSearch, a more versatile RANSAC implementation where
- * models can be anything else, not only matrices.
+/** Define overloaded functions for user types as required.
+ * This default implementation assumes datasets in matrices, with each sample
+ * being a column, the dimensionality being the number of rows. */
+template <typename T>
+size_t ransacDatasetSize(const CMatrixDynamic<T>& dataset)
+{
+	return dataset.cols();
+}
+
+/** A generic RANSAC implementation. By default, the input "dataset" and output
+ * "model" are matrices, but this can be changed via template arguments to be
+ * any user-defined type. Define ransacDatasetSize() for your custom data types.
+ *
+ * See \a RANSAC_Template::execute for more info on usage, and examples under
+ * `[MRPT]/samples/math_ransac_*`.
+ *
+ * \sa mrpt::math::ModelSearch, another RANSAC implementation where
+ * models can be anything else, not only matrices, and capable of genetic
+ * algorithms.
+ *
+ * \note New in MRPT 2.0.2: The second and third template arguments.
  */
-template <typename NUMTYPE = double>
+template <
+	typename NUMTYPE = double, typename DATASET = CMatrixDynamic<NUMTYPE>,
+	typename MODEL = CMatrixDynamic<NUMTYPE>>
 class RANSAC_Template : public mrpt::system::COutputLogger
 {
    public:
 	RANSAC_Template() : mrpt::system::COutputLogger("RANSAC_Template") {}
+
 	/** The type of the function passed to mrpt::math::ransac - See the
 	 * documentation for that method for more info. */
 	using TRansacFitFunctor = std::function<void(
-		const CMatrixDynamic<NUMTYPE>& allData,
-		const std::vector<size_t>& useIndices,
-		std::vector<CMatrixDynamic<NUMTYPE>>& fitModels)>;
+		const DATASET& allData, const std::vector<size_t>& useIndices,
+		std::vector<MODEL>& fitModels)>;
 
 	/** The type of the function passed to mrpt::math::ransac  - See the
 	 * documentation for that method for more info. */
 	using TRansacDistanceFunctor = std::function<void(
-		const CMatrixDynamic<NUMTYPE>& allData,
-		const std::vector<CMatrixDynamic<NUMTYPE>>& testModels,
+		const DATASET& allData, const std::vector<MODEL>& testModels,
 		const NUMTYPE distanceThreshold, unsigned int& out_bestModelIndex,
 		std::vector<size_t>& out_inlierIndices)>;
 
 	/** The type of the function passed to mrpt::math::ransac  - See the
 	 * documentation for that method for more info. */
 	using TRansacDegenerateFunctor = std::function<bool(
-		const CMatrixDynamic<NUMTYPE>& allData,
-		const std::vector<size_t>& useIndices)>;
+		const DATASET& allData, const std::vector<size_t>& useIndices)>;
 
 	/** An implementation of the RANSAC algorithm for robust fitting of models
 	 * to data.
@@ -64,13 +81,12 @@ class RANSAC_Template : public mrpt::system::COutputLogger
 	 * COutputLogger settings.
 	 */
 	bool execute(
-		const CMatrixDynamic<NUMTYPE>& data, const TRansacFitFunctor& fit_func,
+		const DATASET& data, const TRansacFitFunctor& fit_func,
 		const TRansacDistanceFunctor& dist_func,
 		const TRansacDegenerateFunctor& degen_func,
 		const double distanceThreshold,
 		const unsigned int minimumSizeSamplesToFit,
-		std::vector<size_t>& out_best_inliers,
-		CMatrixDynamic<NUMTYPE>& out_best_model,
+		std::vector<size_t>& out_best_inliers, MODEL& out_best_model,
 		const double prob_good_sample = 0.999,
 		const size_t maxIter = 2000) const;
 
@@ -82,3 +98,5 @@ using RANSAC = RANSAC_Template<double>;
 /** @} */
 
 }  // namespace mrpt::math
+
+#include "ransac_impl.h"

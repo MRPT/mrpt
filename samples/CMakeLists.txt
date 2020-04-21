@@ -104,11 +104,12 @@ if(BUILD_EXAMPLES)
 		math_spline_interpolation
 		math_leastsquares_example
 		math_ransac_plane3d_example
+		math_ransac_plane3d_example2
 		math_ransac_examples
 		math_model_search_example
 		math_polygon_split
 		)
-	set(CMAKE_EXAMPLE_DEPS mrpt::math mrpt::random mrpt::gui)
+	set(CMAKE_EXAMPLE_DEPS mrpt::math mrpt::random mrpt::gui mrpt::maps)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	set(LIST_EXAMPLES_IN_THIS_DIR
