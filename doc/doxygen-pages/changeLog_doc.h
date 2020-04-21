@@ -14,6 +14,8 @@
 
 # Version 2.0.2: (Under development)
 - Changes in libraries:
+  - mrpt_containers_grp
+    - mrpt::containers::vector_with_small_size_optimization: Get rid of potential uninitialized usage GCC warnings.
   - mrpt_gui_grp
     - Fix mouse-motion rotation glitches if clicking inside a nanogui control.
     - Fix cmake errors building user programs in Windows (missing glfw dependency).
