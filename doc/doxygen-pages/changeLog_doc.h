@@ -14,9 +14,13 @@
 
 # Version 2.0.2: (Under development)
 - Changes in libraries:
+  - mrpt_containers_grp
+    - mrpt::containers::vector_with_small_size_optimization: Get rid of potential uninitialized usage GCC warnings.
   - mrpt_gui_grp
     - Fix mouse-motion rotation glitches if clicking inside a nanogui control.
     - Fix cmake errors building user programs in Windows (missing glfw dependency).
+  - mrpt_math_grp
+      - mrpt::math::RANSAC_Template made more generic to support custom dataset and model types.
   - mrpt_opengl_grp
     - Fix displaying of uninitialized textured in mrpt::opengl::CTexturedPlane. It now uses the default solid color of the object.
   - mrpt_ros1bridge_grp

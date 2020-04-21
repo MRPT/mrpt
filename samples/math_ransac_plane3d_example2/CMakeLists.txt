@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /math_kmeans_example
+# CMake file for the MRPT example:  /math_ransac_plane3d_example2
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-set(sampleName math_kmeans_example)
+set(sampleName math_ransac_plane3d_example2)
 project(EXAMPLE_${sampleName})
 
 cmake_minimum_required(VERSION 3.1)

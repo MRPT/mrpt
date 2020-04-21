@@ -6,46 +6,40 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#include "math-precomp.h"  // Precompiled headers
-
-#include <mrpt/math/ransac.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/random/RandomGenerators.h>
+#include <cstddef>
+#include <vector>
 
-using namespace mrpt;
-using namespace mrpt::random;
-using namespace mrpt::math;
-using namespace std;
+// To be included from ransac.h only
 
-/*---------------------------------------------------------------
-			ransac generic implementation
- ---------------------------------------------------------------*/
-template <typename NUMTYPE>
-bool RANSAC_Template<NUMTYPE>::execute(
-	const CMatrixDynamic<NUMTYPE>& data, const TRansacFitFunctor& fit_func,
+namespace mrpt::math
+{
+template <typename NUMTYPE, typename DATASET, typename MODEL>
+bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
+	const DATASET& data, const TRansacFitFunctor& fit_func,
 	const TRansacDistanceFunctor& dist_func,
 	const TRansacDegenerateFunctor& degen_func, const double distanceThreshold,
 	const unsigned int minimumSizeSamplesToFit,
-	std::vector<size_t>& out_best_inliers,
-	CMatrixDynamic<NUMTYPE>& out_best_model, const double p,
-	const size_t maxIter) const
+	std::vector<size_t>& out_best_inliers, MODEL& out_best_model,
+	const double p, const size_t maxIter) const
 {
+	// Highly inspired on http://www.csse.uwa.edu.au/~pk/
 	MRPT_START
 
-	ASSERT_(minimumSizeSamplesToFit >= 1);
+	ASSERT_ABOVEEQ_(minimumSizeSamplesToFit, 1U);
 
-	// Highly inspired on http://www.csse.uwa.edu.au/~pk/
-	const size_t D = data.rows();  //  dimensionality
-	const size_t Npts = data.cols();
+	const size_t Npts = ransacDatasetSize(data);
 
-	ASSERT_(D >= 1);
-	ASSERT_(Npts > 1);
+	ASSERT_ABOVE_(Npts, 1);
 
-	const size_t maxDataTrials =
-		100;  // Maximum number of attempts to select a non-degenerate data set.
+	// Maximum number of attempts to select a non-degenerate data set.
+	const size_t maxDataTrials = 100;
 
-	out_best_model.setSize(
-		0, 0);  // Sentinel value allowing detection of solution failure.
+	// Sentinel value allowing detection of solution failure.
+	out_best_model = MODEL();
 	out_best_inliers.clear();
 
 	size_t trialcount = 0;
@@ -61,7 +55,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 		// a degenerate configuration.
 		bool degenerate = true;
 		size_t count = 1;
-		std::vector<CMatrixDynamic<NUMTYPE>> MODELS;
+		std::vector<MODEL> MODELS;
 
 		while (degenerate)
 		{
@@ -70,7 +64,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 
 			// The +0.99... is due to the floor rounding afterwards when
 			// converting from random double samples to size_t
-			getRandomGenerator().drawUniformVector(
+			mrpt::random::getRandomGenerator().drawUniformVector(
 				ind, 0.0, Npts - 1 + 0.999999);
 
 			// Test that these points are not a degenerate configuration.
@@ -103,30 +97,29 @@ bool RANSAC_Template<NUMTYPE>::execute(
 		// array of possible models 'distfn' will return the model that has
 		// the most inliers.  After this call M will be a non-cell objec
 		// representing only one model.
-		unsigned int bestModelIdx = 1000;
+		unsigned int bestModelIdx = std::numeric_limits<unsigned int>::max();
 		std::vector<size_t> inliers;
 		if (!degenerate)
 		{
 			dist_func(
-				data, MODELS, NUMTYPE(distanceThreshold), bestModelIdx,
-				inliers);
-			ASSERT_(bestModelIdx < MODELS.size());
+				data, MODELS, static_cast<NUMTYPE>(distanceThreshold),
+				bestModelIdx, inliers);
+			ASSERT_BELOW_(bestModelIdx, MODELS.size());
 		}
 
 		// Find the number of inliers to this model.
 		const size_t ninliers = inliers.size();
-		bool update_estim_num_iters =
-			(trialcount == 0);  // Always update on the first iteration,
-		// regardless of the result (even for
-		// ninliers=0)
+		// Always update on the first iteration, regardless of the result (even
+		// for ninliers=0)
+		bool update_estim_num_iters = (trialcount == 0);
 
 		if (ninliers > bestscore ||
 			(bestscore == std::string::npos && ninliers != 0))
 		{
 			bestscore = ninliers;  // Record data for this model
 
-			out_best_model = MODELS[bestModelIdx];
-			out_best_inliers = inliers;
+			out_best_model = std::move(MODELS[bestModelIdx]);
+			out_best_inliers = std::move(inliers);
 			update_estim_num_iters = true;
 		}
 
@@ -147,44 +140,41 @@ bool RANSAC_Template<NUMTYPE>::execute(
 				pNoOutliers);  // Avoid division by 0.
 			// Number of
 			N = static_cast<size_t>(log(1 - p) / log(pNoOutliers));
-			MRPT_LOG_DEBUG(format(
+			MRPT_LOG_DEBUG_FMT(
 				"Iter #%u Estimated number of iters: %u  pNoOutliers = %f  "
-				"#inliers: %u\n",
+				"#inliers: %u",
 				(unsigned)trialcount, (unsigned)N, pNoOutliers,
-				(unsigned)ninliers));
+				(unsigned)ninliers);
 		}
 
 		++trialcount;
 
-		MRPT_LOG_DEBUG(format(
-			"trial %u out of %u \r", (unsigned int)trialcount,
-			(unsigned int)ceil(static_cast<double>(N))));
+		MRPT_LOG_DEBUG_FMT(
+			"trial %u out of %u", (unsigned int)trialcount,
+			(unsigned int)ceil(static_cast<double>(N)));
 
 		// Safeguard against being stuck in this loop forever
 		if (trialcount > maxIter)
 		{
-			MRPT_LOG_WARN(format(
+			MRPT_LOG_WARN_FMT(
 				"Warning: maximum number of trials (%u) reached\n",
-				(unsigned)maxIter));
+				(unsigned)maxIter);
 			break;
 		}
 	}
 
-	if (out_best_model.rows() > 0)
+	if (!out_best_inliers.empty())
 	{  // We got a solution
-		MRPT_LOG_INFO(
-			format("Finished in %u iterations.\n", (unsigned)trialcount));
+		MRPT_LOG_INFO_FMT("Finished in %u iterations.", (unsigned)trialcount);
 		return true;
 	}
 	else
 	{
-		MRPT_LOG_WARN("Finished without any proper solution!");
+		MRPT_LOG_WARN("Finished without any proper solution");
 		return false;
 	}
 
 	MRPT_END
 }
 
-// Template instantiation:
-template class mrpt::math::RANSAC_Template<float>;
-template class mrpt::math::RANSAC_Template<double>;
+}  // namespace mrpt::math
