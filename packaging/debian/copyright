@@ -44,7 +44,7 @@ Copyright: 2003, David Schalig
 		   2007 Jose Luis Blanco
 License: WXwindows
 
-Files: 3rdparty/xSens_*/*
+Files: 3rdparty/xSens_MT4/*
 Copyright: 2006-2012, Xsens Technologies B.V.
 License: mt-sdk-license
 Comment: Permission is granted by Xsens Technologies to distribute this code as

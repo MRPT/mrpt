@@ -16,6 +16,8 @@
 - Changes in libraries:
   - mrpt_containers_grp
     - mrpt::containers::vector_with_small_size_optimization: Get rid of potential uninitialized usage GCC warnings.
+  - mrtp_hwdrivers_grp
+    - Remove support for obsolete XSens MTi 3rd generation devices. Removed class mrpt::hwdrivers::CIMUXSens. 4th+ generation still supported.
   - mrpt_gui_grp
     - Fix mouse-motion rotation glitches if clicking inside a nanogui control.
     - Fix cmake errors building user programs in Windows (missing glfw dependency).

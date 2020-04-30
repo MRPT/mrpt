@@ -24,9 +24,6 @@ namespace mrpt::hwdrivers
  * <code> MRPT/scripts/52-xsens.rules </code> in <code>/etc/udev/rules.d/</code>
  * to allow access to all users.
  *
- *  For the older 3rd generation devices, see the class
- * mrpt::hwdrivers::CIMUXSens
- *
  *  \code
  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
  * -------------------------------------------------------
