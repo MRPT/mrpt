@@ -101,42 +101,44 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 endif()
 
 # ----------------------------------
-# Build xSens MT4
+# Build xSens IMU library
 # ----------------------------------
-if(CMAKE_MRPT_HAS_xSENS_MT4)
-	file(GLOB SRCS
-		xSens_MT4/xcommunication/src/*.cpp
-		xSens_MT4/xcommunication/src/*.c
-		xSens_MT4/xcommunication/include/xsens/*.h
-		xSens_MT4/xstypes/src/*.c
-		xSens_MT4/xstypes/include/xsens/*.h
+if(CMAKE_MRPT_HAS_xSENS)
+	file(GLOB_RECURSE SRCS
+		xspublic/*.cpp
+		xspublic/*.c
+		xspublic/*.h
 	)
 
-	add_library(mrpt_xsens_mt4 STATIC ${SRCS})
+	add_library(mrpt_xsens STATIC ${SRCS})
 
 	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrpt_xsens_mt4 PRIVATE
+		target_compile_options(mrpt_xsens PRIVATE
 			-fPIC
 			-fms-extensions  # Unnamed structs in unions
 			-Wno-variadic-macros
 			-Wno-parentheses
 		)
-		target_compile_definitions(mrpt_xsens_mt4 PRIVATE
+		target_compile_definitions(mrpt_xsens PRIVATE
 			_POSIX_C_SOURCE=200809L  # Needed to have CLOCK_REALTIME,... in gcc
 			_LOG_TO_STDOUT
 		)
 	endif()
 
 	# Embedded version:
-	target_include_directories(mrpt_xsens_mt4 SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include
-		${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include/xsens
-		${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include
-		${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include/xsens
+	target_include_directories(mrpt_xsens SYSTEM PUBLIC
+		${MRPT_SOURCE_DIR}/3rdparty/xspublic/
 	)
 
-	target_link_libraries(mrpt_xsens_mt4 PRIVATE mrpt::core)
-	set_target_properties(mrpt_xsens_mt4 PROPERTIES FOLDER "3rd party")
+#	target_compile_options(mrpt_xsens PRIVATE
+#		-include ${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscontroller/xscontrollerconfig.h
+#		-include ${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscommon/xscommon_config.h
+#		-include ${MRPT_SOURCE_DIR}/3rdparty/xspublic/xstypes/xsens_compat.h
+#	)
+
+	#target_link_libraries(mrpt_xsens PRIVATE mrpt::core)
+	target_compile_features(mrpt_xsens PRIVATE cxx_std_11)
+	set_target_properties(mrpt_xsens PROPERTIES FOLDER "3rd party")
 	unset(SRCS)
 endif()
 
