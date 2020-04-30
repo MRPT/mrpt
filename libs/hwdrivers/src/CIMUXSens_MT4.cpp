@@ -16,7 +16,7 @@
 #include <iostream>
 #include <thread>
 
-#if MRPT_HAS_xSENS_MT4
+#if MRPT_HAS_xSENS
 /* Copyright (c) Xsens Technologies B.V., 2006-2012. All rights reserved.
 
 	  This source code is provided under the MT SDK Software License Agreement
@@ -298,7 +298,7 @@ class DeviceClass
 #define my_xsens_devid (*static_cast<XsDeviceId*>(m_devid_ptr))
 
 // Include libraries in linking:
-#if MRPT_HAS_xSENS_MT4
+#if MRPT_HAS_xSENS
 #ifdef _WIN32
 // WINDOWS:
 #if defined(_MSC_VER)
@@ -306,7 +306,7 @@ class DeviceClass
 #pragma comment(lib, "WinUsb.lib")
 #endif
 #endif  // _WIN32
-#endif  // MRPT_HAS_xSENS_MT4
+#endif  // MRPT_HAS_xSENS
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4, mrpt::hwdrivers)
 
@@ -322,12 +322,12 @@ CIMUXSens_MT4::CIMUXSens_MT4() : m_portname(), m_timeStartTT(), m_sensorPose()
 {
 	m_sensorLabel = "XSensMTi_MT4";
 
-#if MRPT_HAS_xSENS_MT4
+#if MRPT_HAS_xSENS
 	m_dev_ptr = new DeviceClass;
 	m_devid_ptr = new XsDeviceId;
 #else
 	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class "
+		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
 		"cannot be used.");
 #endif
 }
@@ -337,7 +337,7 @@ CIMUXSens_MT4::CIMUXSens_MT4() : m_portname(), m_timeStartTT(), m_sensorPose()
 -------------------------------------------------------------*/
 CIMUXSens_MT4::~CIMUXSens_MT4()
 {
-#if MRPT_HAS_xSENS_MT4
+#if MRPT_HAS_xSENS
 	my_xsens_device.close();
 	delete static_cast<DeviceClass*>(m_dev_ptr);
 	m_dev_ptr = nullptr;
@@ -352,7 +352,7 @@ CIMUXSens_MT4::~CIMUXSens_MT4()
 -------------------------------------------------------------*/
 void CIMUXSens_MT4::doProcess()
 {
-#if MRPT_HAS_xSENS_MT4
+#if MRPT_HAS_xSENS
 	if (m_state == ssError)
 	{
 		std::this_thread::sleep_for(200ms);
@@ -577,7 +577,7 @@ void CIMUXSens_MT4::doProcess()
 	msgs.clear();
 #else
 	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class "
+		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
 		"cannot be used.");
 #endif
 }
@@ -587,7 +587,7 @@ void CIMUXSens_MT4::doProcess()
 -------------------------------------------------------------*/
 void CIMUXSens_MT4::initialize()
 {
-#if MRPT_HAS_xSENS_MT4
+#if MRPT_HAS_xSENS
 	m_state = ssInitializing;
 
 	try
@@ -740,7 +740,7 @@ void CIMUXSens_MT4::initialize()
 
 #else
 	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class "
+		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
 		"cannot be used.");
 #endif
 }

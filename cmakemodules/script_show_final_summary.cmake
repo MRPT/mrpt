@@ -179,9 +179,9 @@ SHOW_CONFIG_LINE("RoboPeak LIDAR                      " CMAKE_MRPT_HAS_ROBOPEAK_
 SHOW_CONFIG_LINE_SYSTEM("SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HAS_SWISSRANGE )
 SHOW_CONFIG_LINE_SYSTEM("Videre SVS stereo camera            " CMAKE_MRPT_HAS_SVS)
 if(UNIX)
-SHOW_CONFIG_LINE_SYSTEM("libudev (requisite for XSensMT4)    " CMAKE_MRPT_HAS_LIBUDEV)
+SHOW_CONFIG_LINE_SYSTEM("libudev (requisite for XSensMT)     " CMAKE_MRPT_HAS_LIBUDEV)
 endif(UNIX)
-SHOW_CONFIG_LINE_SYSTEM("xSENS MT 4th generation             " CMAKE_MRPT_HAS_xSENS_MT4)
+SHOW_CONFIG_LINE_SYSTEM("xSENS MT                            " CMAKE_MRPT_HAS_xSENS)
 SHOW_CONFIG_LINE_SYSTEM("Intersense sensors                  " CMAKE_MRPT_HAS_INTERSENSE)
 message(STATUS  "")
 

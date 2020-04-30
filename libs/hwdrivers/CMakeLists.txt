@@ -77,8 +77,8 @@ if(CMAKE_MRPT_HAS_NITE2)
 endif()
 
 # XSens libs:
-if(TARGET mrpt_xsens_mt4)
-	target_link_libraries(hwdrivers PRIVATE mrpt_xsens_mt4)
+if(TARGET mrpt_xsens)
+	target_link_libraries(hwdrivers PRIVATE mrpt_xsens)
 endif()
 
 if(CMAKE_MRPT_HAS_OPENCV)
@@ -96,7 +96,7 @@ if(CMAKE_MRPT_HAS_LIBPCAP)
 endif()
 
 # XSens MT4 required libs:
-if (BUILD_XSENS_MT4)
+if (BUILD_XSENS)
 	target_link_libraries(hwdrivers PRIVATE ${XSENS4_LIBS})
 endif ()
 

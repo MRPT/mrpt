@@ -44,7 +44,7 @@ cmake -S. -Bbuild-cross-arm \
   -DBUILD_APPLICATIONS=OFF \
   -DBUILD_EXAMPLES=OFF \
   -DMRPT_HAS_OPENNI2=OFF \
-  -DBUILD_XSENS_MT4=OFF
+  -DBUILD_XSENS=OFF
 
 # Build:
 cd build-cross-arm && make
