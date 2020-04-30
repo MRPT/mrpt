@@ -128,15 +128,21 @@ if(CMAKE_MRPT_HAS_xSENS)
 	# Embedded version:
 	target_include_directories(mrpt_xsens SYSTEM PUBLIC
 		${MRPT_SOURCE_DIR}/3rdparty/xspublic/
+		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xstypes/
+		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscommon/
+		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscontroller/
 	)
 
-#	target_compile_options(mrpt_xsens PRIVATE
-#		-include ${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscontroller/xscontrollerconfig.h
-#		-include ${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscommon/xscommon_config.h
-#		-include ${MRPT_SOURCE_DIR}/3rdparty/xspublic/xstypes/xsens_compat.h
-#	)
+	# Couldn't make this to work with a regular target_compile_options() cmd:
+	if (MSVC)
+		set(xsens_flag "/FI xscommon_config.h /FI xsens_compat.h /FI xscontrollerconfig.h ")
+	else()
+		set(xsens_flag "-include xscommon_config.h -include xsens_compat.h -include xscontrollerconfig.h ")
+	endif()
+	set_property(TARGET mrpt_xsens APPEND_STRING
+		PROPERTY COMPILE_FLAGS ${xsens_flag}
+	)
 
-	#target_link_libraries(mrpt_xsens PRIVATE mrpt::core)
 	target_compile_features(mrpt_xsens PRIVATE cxx_std_11)
 	set_target_properties(mrpt_xsens PROPERTIES FOLDER "3rd party")
 	unset(SRCS)
