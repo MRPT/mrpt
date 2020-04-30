@@ -24,7 +24,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 	CRoboPeakLidar::doRegister();
 	CGPSInterface::doRegister();
 	CBoardSonars::doRegister();
-	CIMUXSens::doRegister();
 	CIMUXSens_MT4::doRegister();
 	CCameraSensor::doRegister();
 	CWirelessPower::doRegister();

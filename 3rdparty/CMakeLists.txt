@@ -101,38 +101,6 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 endif()
 
 # ----------------------------------
-# Build xSens MT3
-# ----------------------------------
-if(CMAKE_MRPT_HAS_xSENS_MT3)
-	file(GLOB SRCS
-		xSens_MT3/*.cpp
-		xSens_MT3/*.h
-	)
-
-	add_library(mrpt_xsens_mt3 STATIC ${SRCS})
-
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrpt_xsens_mt3 PRIVATE
-			-fPIC
-			-Wno-variadic-macros
-			-Wno-parentheses
-			-Wno-ignored-qualifiers
-		)
-	endif()
-	target_compile_definitions(mrpt_xsens_mt3 PRIVATE
-		_LOG_TO_STDOUT
-	)
-	# Embedded version:
-	target_include_directories(mrpt_xsens_mt3 SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty
-	)
-
-	target_link_libraries(mrpt_xsens_mt3 PRIVATE mrpt::core)
-	set_target_properties(mrpt_xsens_mt3 PROPERTIES FOLDER "3rd party")
-	unset(SRCS)
-endif()
-
-# ----------------------------------
 # Build xSens MT4
 # ----------------------------------
 if(CMAKE_MRPT_HAS_xSENS_MT4)
@@ -248,6 +216,5 @@ if(WIN32)
 endif()
 
 
-# nanogui: 
+# nanogui:
 # Already handled in cmakemodules/script_nanogui.cmake
-

@@ -77,9 +77,6 @@ if(CMAKE_MRPT_HAS_NITE2)
 endif()
 
 # XSens libs:
-if(TARGET mrpt_xsens_mt3)
-	target_link_libraries(hwdrivers PRIVATE mrpt_xsens_mt3)
-endif()
 if(TARGET mrpt_xsens_mt4)
 	target_link_libraries(hwdrivers PRIVATE mrpt_xsens_mt4)
 endif()

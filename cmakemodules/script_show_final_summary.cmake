@@ -181,7 +181,6 @@ SHOW_CONFIG_LINE_SYSTEM("Videre SVS stereo camera            " CMAKE_MRPT_HAS_SV
 if(UNIX)
 SHOW_CONFIG_LINE_SYSTEM("libudev (requisite for XSensMT4)    " CMAKE_MRPT_HAS_LIBUDEV)
 endif(UNIX)
-SHOW_CONFIG_LINE_SYSTEM("xSENS MT 3rd generation             " CMAKE_MRPT_HAS_xSENS_MT3)
 SHOW_CONFIG_LINE_SYSTEM("xSENS MT 4th generation             " CMAKE_MRPT_HAS_xSENS_MT4)
 SHOW_CONFIG_LINE_SYSTEM("Intersense sensors                  " CMAKE_MRPT_HAS_INTERSENSE)
 message(STATUS  "")

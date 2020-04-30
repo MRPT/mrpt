@@ -1,7 +1,5 @@
 # Build the xSENS support in mrpt-hwdrivers?
 # ===================================================
-set(BUILD_XSENS_MT3 ON CACHE BOOL "Build xSens 3rd generation libraries (interface old xSens MTi devices)")
-
 # Default build MT4 only if we have libusb-1.0 & libudev
 set(CMAKE_MRPT_HAS_LIBUDEV 0)  # Declare these vars system-wide just in case other future classes depend on this lib
 set(CMAKE_MRPT_HAS_LIBUDEV_SYSTEM 0)
@@ -36,15 +34,7 @@ if ("${DEFAULT_BUILD_MT4}" STREQUAL "OFF" AND BUILD_XSENS_MT4)
 	message(STATUS "*Warning*: Disabling XSens MT4 due to lack of required libs (libusb1.0 & libudev)")
 endif ("${DEFAULT_BUILD_MT4}" STREQUAL "OFF" AND BUILD_XSENS_MT4)
 
-# Create config vars for MT3:
-set(CMAKE_MRPT_HAS_xSENS_MT3 0)
-set(CMAKE_MRPT_HAS_xSENS_MT3_SYSTEM 0)
-if(BUILD_XSENS_MT3)
-	set(CMAKE_MRPT_HAS_xSENS_MT3 1)
-	set(CMAKE_MRPT_HAS_xSENS_MT3_SYSTEM 0)
-endif()
-
-# Additional checks for MT4:
+# checks for MT4:
 if (BUILD_XSENS_MT4)
 	if (WIN32)
 		# In Windows: Library WinUsb
