@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/core/pimpl.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/poses/CPose3D.h>
 
@@ -35,13 +36,15 @@ namespace mrpt::hwdrivers
  *    pose_pitch=0
  *    pose_roll=0
  *    sensorLabel = <label>   // Label of the sensor
- *    ;sampleFreq  = 100  // The requested rate of sensor packets (default:
+ *    #sampleFreq  = 100  // The requested rate of sensor packets (default:
  * 100Hz)
- *    ; If a portname is not provided, the first found device will be opened:
- *    ;portname_LIN	= USB002:005
- *    ;portname_WIN	= \\?\usb#vid_2639&pid_0003#...
- *    ;baudRate	    = 115200             ; Baudrate for communicating, only
- * if the port is a COM port
+ *    # If a portname is not provided, the first found device will be opened:
+ *    #portname_LIN	= USB002:005
+ *    #portname_WIN	= \\?\usb#vid_2639&pid_0003#...
+ *    #baudRate	    = 115200   // Baudrate for communicating, only if
+ *                             // the port is a COM port
+ *    #deviceId     = xxxxx    // Device ID to open, or first one if empty.
+ *    #logFile      = xxxx     // If provided, will enable XSens SDK's own log
  *  \endcode
  *
  *  \note Set the environment variable "MRPT_HWDRIVERS_VERBOSE" to "1" to
@@ -52,33 +55,8 @@ namespace mrpt::hwdrivers
 class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
-   protected:
-	/** Baudrate, only for COM ports. */
-	int m_port_bauds{0};
-	/** The USB or COM port name (if blank -> autodetect) */
-	std::string m_portname;
-	int m_sampleFreq{100};
-
-	uint64_t m_timeStartUI{};
-	mrpt::system::TTimeStamp m_timeStartTT;
-
-	mrpt::poses::CPose3D m_sensorPose;
-
-	void* /*DeviceClass */ m_dev_ptr{nullptr};
-	void* /*XsDeviceId */ m_devid_ptr{nullptr};
-
-	/** See the class documentation at the top for expected parameters */
-	void loadConfig_sensorSpecific(
-		const mrpt::config::CConfigFileBase& configSource,
-		const std::string& iniSection) override;
-
    public:
-	/** Constructor
-	 */
 	CIMUXSens_MT4();
-
-	/** Destructor
-	 */
 	~CIMUXSens_MT4() override;
 
 	/** This method will be invoked at a minimum rate of "process_rate" (Hz)
@@ -90,6 +68,34 @@ class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 	/** Turns on the xSens device and configure it for getting orientation data
 	 */
 	void initialize() override;
+
+	void close();
+
+   protected:
+	/** The interface to the file: */
+	struct Impl;
+	mrpt::pimpl<Impl> m_impl;
+
+	/** Baudrate, only for COM ports. */
+	int m_port_bauds{0};
+	/** The USB or COM port name (if blank -> autodetect) */
+	std::string m_portname;
+
+	/** Device ID to open, or first one if empty string. */
+	std::string m_deviceId;
+
+	std::string m_xsensLogFile;
+
+	int m_sampleFreq{100};
+
+	mrpt::poses::CPose3D m_sensorPose;
+
+	/** See the class documentation at the top for expected parameters */
+	void loadConfig_sensorSpecific(
+		const mrpt::config::CConfigFileBase& configSource,
+		const std::string& iniSection) override;
+
+	friend class MyXSensCallback;
 
 };  // end of class
 
