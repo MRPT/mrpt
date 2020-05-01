@@ -371,9 +371,11 @@ void CIMUXSens_MT4::initialize()
 			}
 
 			if (mtPort.empty())
-				THROW_EXCEPTION(
+				THROW_EXCEPTION_FMT(
 					"CIMUXSens_MT4: No 'portname' was specified and no "
-					"compatible XSens device was found in the system");
+					"compatible XSens device was found in the system (%u "
+					"devices connected)",
+					portInfoArray.size());
 
 			if (m_verbose)
 				cout << "[CIMUXSens_MT4] Found " << portInfoArray.size()

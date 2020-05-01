@@ -29,6 +29,7 @@
 //  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
 //  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
 //  
+#ifndef WIN32
 
 #include "stackwalker_linux.h"
 
@@ -117,3 +118,5 @@ void StackWalker::ShowCallstack()
 	OnOutput("Stack trace is not available");
 #endif
 }
+
+#endif // WIN32
