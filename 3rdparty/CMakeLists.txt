@@ -135,13 +135,18 @@ if(CMAKE_MRPT_HAS_xSENS)
 
 	# Couldn't make this to work with a regular target_compile_options() cmd:
 	if (MSVC)
-		set(xsens_flag "/FI xscommon_config.h /FI xsens_compat.h /FI xscontrollerconfig.h ")
+		set(xsens_flag "/FI ${MRPT_SOURCE_DIR}/3rdparty/xspublic/msvc_include.h ")
 	else()
 		set(xsens_flag "-include xscommon_config.h -include xsens_compat.h -include xscontrollerconfig.h ")
 	endif()
 	set_property(TARGET mrpt_xsens APPEND_STRING
 		PROPERTY COMPILE_FLAGS ${xsens_flag}
 	)
+
+	if (MSVC)
+		target_compile_definitions(mrpt_xsens PRIVATE XDA_STATIC_LIB)
+	endif()
+	
 
 	target_compile_features(mrpt_xsens PRIVATE cxx_std_11)
 	set_target_properties(mrpt_xsens PROPERTIES FOLDER "3rd party")

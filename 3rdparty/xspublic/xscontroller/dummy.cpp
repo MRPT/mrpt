@@ -32,7 +32,7 @@
 
 // This exists just so the library isn't empty for the VS build
 #ifdef _WIN32
-#include <xscontroller.h>
+#include <xscontroller/xscontrollerconfig.h>
 #endif
 
 const int xsControllerDummy = 0;
