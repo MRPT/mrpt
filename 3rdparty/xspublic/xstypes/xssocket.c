@@ -1130,7 +1130,7 @@ XsResultValue XsSocket_setSocketOption(XsSocket *thisPtr, enum XsSocketOption op
 			nativeOption = SO_REUSEADDR;
 			break;
 
-#if !defined(_WIN32) && !defined(__ANDROID__)
+#if !defined(_WIN32) && !defined(__ANDROID__) && defined(SO_REUSEPORT)
 		case XSO_ReusePort:
 			nativeOption = SO_REUSEPORT;
 			break;
