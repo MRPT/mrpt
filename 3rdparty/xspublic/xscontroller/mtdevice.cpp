@@ -378,6 +378,9 @@ void MtDevice::fetchAvailableHardwareScenarios()
 {
 	m_hardwareFilterProfiles.clear();
 	m_hardwareFilterProfiles = readFilterProfilesFromDevice();
+	// JLBC for MSVC: This fails to build for latest (April 2020) MSVC 2019.
+	// Ugly workaround:
+#if !defined(_MSC_VER)
 	std::sort(m_hardwareFilterProfiles.begin(), m_hardwareFilterProfiles.end(),
 		[](XsFilterProfile const& left, XsFilterProfile const& right)
 		{
@@ -387,6 +390,7 @@ void MtDevice::fetchAvailableHardwareScenarios()
 				return left.type() < right.type();
 		}
 		);
+#endif
 }
 
 /*! \copybrief XsDevice::productCode
