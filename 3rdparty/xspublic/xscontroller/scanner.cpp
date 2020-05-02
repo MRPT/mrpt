@@ -314,7 +314,11 @@ bool Scanner::xsFilterResponsiveDevices(XsPortInfoArray& ports, XsBaudRate baudr
 	}
 
 	// Now sort the final list by ascending port nr
+	// JLBC for MSVC: This fails to build for latest (April 2020) MSVC 2019. Ugly workaround:
+#if !defined(_MSC_VER)
 	std::sort(ports.begin(), ports.end());
+#endif
+
 	abortPortScan = false;
 	return true;
 }
@@ -435,8 +439,12 @@ bool Scanner::xsEnumerateSerialPorts(XsPortInfoArray& ports, bool ignoreNonXsens
 
 	SetupDiDestroyDeviceInfoList(hDevInfo);
 
-	// Now sort the list by ascending port nr
+	// Now sort the final list by ascending port nr
+	// JLBC for MSVC: This fails to build for latest (April 2020) MSVC 2019.
+	// Ugly workaround:
+#if !defined(_MSC_VER)
 	std::sort(ports.begin(), ports.end());
+#endif
 
 #else // !_WIN32
 	Udev xsudev;
