@@ -16,383 +16,53 @@
 #include <iostream>
 #include <thread>
 
-#if MRPT_HAS_xSENS_MT4
-/* Copyright (c) Xsens Technologies B.V., 2006-2012. All rights reserved.
+#if !MRPT_HAS_xSENS
+namespace mrpt::hwdrivers
+{
+struct CIMUXSens_MT4::Impl
+{
+};
+}  // namespace mrpt::hwdrivers
+#else
 
-	  This source code is provided under the MT SDK Software License Agreement
-and is intended for use only by Xsens Technologies BV and
-	   those that have explicit written permission to use it from
-	   Xsens Technologies BV.
+// Tell MSVC that we are not using MTSDK as DLL:
+#define XDA_STATIC_LIB
 
-	  THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
-	   KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	   IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-	   PARTICULAR PURPOSE.
- */
-#include <xsens/enumerateusbdevices.h>
-#include <xsens/int_xsdatapacket.h>
-#include <xsens/legacydatapacket.h>
-#include <xsens/protocolhandler.h>
-#include <xsens/serialinterface.h>
-#include <xsens/streaminterface.h>
-#include <xsens/usbinterface.h>
-#include <xsens/xsbytearray.h>
-#include <xsens/xsdatapacket.h>
-#include <xsens/xsdeviceid.h>
-#include <xsens/xsmessagearray.h>
-#include <xsens/xsoutputconfigurationarray.h>
-#include <xsens/xsoutputmode.h>
-#include <xsens/xsoutputsettings.h>
-#include <xsens/xsportinfo.h>
-#include <xsens/xsportinfoarray.h>
-#include <xsens/xsresultvalue.h>
-#include <xsens/xsstatusflag.h>
-#include <xsens/xstime.h>
+#include <xscontroller/xscallback.h>
+#include <xscontroller/xscontrol_def.h>
+#include <xscontroller/xsdevice_def.h>
+#include <xscontroller/xsscanner.h>
+#include <xstypes/xsdatapacket.h>
+#include <xstypes/xsoutputconfigurationarray.h>
+#include <xstypes/xsportinfo.h>
+#include <xstypes/xsstatusflag.h>
 
-class DeviceClass
+// MTSDK expects this global symbol as "extern":
+Journaller* gJournal = 0;
+
+namespace mrpt::hwdrivers
+{
+class MyXSensCallback : public XsCallback
 {
    public:
-	DeviceClass() = default;
-	~DeviceClass() = default;
-
-	/*! \brief Open an IO device
-		\param portInfo The info to use for opening the port
-		\return True when successful
-	*/
-	bool openPort(const XsPortInfo& portInfo)
-	{
-		if (portInfo.isUsb())
-			m_streamInterface = std::make_unique<UsbInterface>();
-		else
-			m_streamInterface = std::make_unique<SerialInterface>();
-
-		if (m_streamInterface->open(portInfo) != XRV_OK) return false;
-		return true;
-	}
-
-	/*! \brief Close an IO device
-	 */
-	void close()
-	{
-		if (m_streamInterface) m_streamInterface->close();
-	}
-
-	/*! \brief Read available data from the open IO device
-		\details This function will attempt to read all available data from the
-	   open device (COM port
-		or USB port).
-		The function will read from the device, but it won't wait for data to
-	   become available.
-		\param raw A XsByteArray to where the read data will be stored.
-		\return Whether data has been read from the IO device
-	*/
-	XsResultValue readDataToBuffer(XsByteArray& raw)
-	{
-		// always read data and append it to the cache before doing analysis
-		const int maxSz = 8192;
-		XsResultValue res = m_streamInterface->readData(maxSz, raw);
-		if (raw.size()) return XRV_OK;
-
-		return res;
-	}
-
-	/*! \brief Read all messages from the buffered read data after adding new
-	   data supplied in \a rawIn
-		\details This function will read all present messages in the read
-	   buffer. In order for this function
-		to work, you need to call readDataToBuffer() first.
-		\param rawIn The buffered data in which to search for messages
-		\param messages The messages found in the data
-		\return The messages that were read.
-	*/
-	XsResultValue processBufferedData(
-		XsByteArray& rawIn, XsMessageArray& messages)
-	{
-		ProtocolHandler protocol;
-
-		if (rawIn.size()) m_dataBuffer.append(rawIn);
-
-		int popped = 0;
-		messages.clear();
-
-		for (;;)
-		{
-			XsByteArray raw(
-				m_dataBuffer.data() + popped, m_dataBuffer.size() - popped);
-			XsMessage message;
-			MessageLocation location = protocol.findMessage(message, raw);
-
-			if (location.isValid())
-			{
-				// message is valid, remove data from cache
-				popped += location.m_size + location.m_startPos;
-				messages.push_back(message);
-			}
-			else
-			{
-				if (popped) m_dataBuffer.pop_front(popped);
-
-				if (messages.empty()) return XRV_TIMEOUTNODATA;
-
-				return XRV_OK;
-			}
-		}
-	}
-
-	/*! \brief Wait for the requested XsXbusMessageId
-		\param xmid The message id to wait for
-		\param rcv  The received message
-		\return Whether the requested message was found
-	*/
-	bool waitForMessage(XsXbusMessageId xmid, XsMessage& rcv)
-	{
-		XsByteArray data;
-		XsMessageArray msgs;
-		bool foundAck = false;
-		do
-		{
-			readDataToBuffer(data);
-			processBufferedData(data, msgs);
-			for (XsMessageArray::iterator it = msgs.begin(); it != msgs.end();
-				 ++it)
-				if ((*it).getMessageId() == xmid)
-				{
-					foundAck = true;
-					rcv = *it;
-				}
-		} while (!foundAck);
-		return foundAck;
-	}
-
-	/*! \brief Write a message to the IO device
-		\param msg The message to write
-		\return Whether the message could be written
-	*/
-	bool writeMessage(const XsMessage& msg)
-	{
-		XsByteArray raw;
-		if (ProtocolHandler::composeMessage(raw, msg) < 0) return false;
-
-		return (m_streamInterface->writeData(raw) == XRV_OK);
-	}
-
-	/*! \brief Put a device in config mode
-		\return True when the device acknowledged config mode
-	*/
-	bool gotoConfig()
-	{
-		XsMessage snd(XMID_GotoConfig, 0), rcv;
-		writeMessage(snd);
-
-		return waitForMessage(XMID_GotoConfigAck, rcv);
-	}
-
-	/*! \brief Put a device in measurement mode
-		\return True when the device acknowledged measurement mode
-	*/
-	bool gotoMeasurement()
-	{
-		XsMessage snd(XMID_GotoMeasurement, 0), rcv;
-		writeMessage(snd);
-
-		return waitForMessage(XMID_GotoMeasurementAck, rcv);
-	}
-
-	/*! \brief Request the product code from a device
-		\return The product code when ok, otherwise an empty XsString
-	*/
-	XsString getProductCode()
-	{
-		XsMessage snd(XMID_ReqProductCode, 0), rcv;
-		writeMessage(snd);
-
-		if (waitForMessage(XMID_ProductCode, rcv))
-		{
-			const char* pc = (const char*)rcv.getDataBuffer(0);
-			std::string result(pc ? pc : "", rcv.getDataSize());
-			std::string::size_type thingy = result.find(" ");
-			if (thingy < 20)
-				result.erase(
-					result.begin() + thingy, result.end());  // lint !e534
-			return XsString(result);
-		}
-		else
-			return XsString();
-	}
-
-	/*! \brief Request the device id from a device
-		\return The device id (XsDeviceId) when ok, otherwise an empty
-	   XsDeviceId
-	*/
-	XsDeviceId getDeviceId()
-	{
-		XsMessage snd(XMID_ReqDid, 0), rcv;
-		writeMessage(snd);
-
-		if (waitForMessage(XMID_DeviceId, rcv))
-		{
-			return rcv.getDataLong();
-		}
-		else
-			return XsDeviceId();
-	}
-
-	/*! \brief Set the device mode of a device (outputmode and outputsettings)
-		\param outputMode The XsOutputMode to set
-		\param outputSettings The XsOutputSettings to set
-		\return True when successful
-	*/
-	bool setDeviceMode(
-		const XsOutputMode& outputMode, const XsOutputSettings& outputSettings)
-	{
-		XsMessage sndOM(XMID_SetOutputMode), sndOS(XMID_SetOutputSettings), rcv;
-
-		sndOM.resizeData(2);
-		sndOM.setDataShort((uint16_t)outputMode);
-		writeMessage(sndOM);
-		if (!waitForMessage(XMID_SetOutputModeAck, rcv)) return false;
-
-		XsMessage snd(XMID_SetOutputSettings);
-		snd.resizeData(4);
-		snd.setDataLong((uint32_t)outputSettings);
-		writeMessage(sndOS);
-		if (!waitForMessage(XMID_SetOutputSettingsAck, rcv)) return false;
-
-		return true;
-	}
-
-	/*! \brief Set the output configuration of a device
-		\param config An array XsOutputConfigurationArray) containing the one or
-	   multiple XsOutputConfigurations
-		\return True when successful
-	*/
-	bool setOutputConfiguration(XsOutputConfigurationArray& config)
-	{
-		XsMessage snd(XMID_SetOutputConfiguration, 4), rcv;
-		if (config.size() == 0)
-		{
-			snd.setDataShort((uint16_t)XDI_None, 0);
-			snd.setDataShort(0, 2);
-		}
-		else
-		{
-			for (XsSize i = 0; i < (XsSize)config.size(); ++i)
-			{
-				snd.setDataShort((uint16_t)config[i].m_dataIdentifier, i * 4);
-				snd.setDataShort(config[i].m_frequency, i * 4 + 2);
-			}
-		}
-		writeMessage(snd);
-
-		return waitForMessage(XMID_SetOutputConfigurationAck, rcv);
-	}
+	CIMUXSens_MT4* me = nullptr;
 
    private:
-	std::unique_ptr<StreamInterface> m_streamInterface;
-	XsByteArray m_dataBuffer;
-};
-#endif
+	//	uint64_t m_timeStartUI = 0;
+	mrpt::system::TTimeStamp m_timeStartTT;
 
-// Adaptors for the "void*" memory blocks:
-#define my_xsens_device (*static_cast<DeviceClass*>(m_dev_ptr))
-#define my_xsens_devid (*static_cast<XsDeviceId*>(m_devid_ptr))
-
-// Include libraries in linking:
-#if MRPT_HAS_xSENS_MT4
-#ifdef _WIN32
-// WINDOWS:
-#if defined(_MSC_VER)
-#pragma comment(lib, "SetupAPI.lib")
-#pragma comment(lib, "WinUsb.lib")
-#endif
-#endif  // _WIN32
-#endif  // MRPT_HAS_xSENS_MT4
-
-IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4, mrpt::hwdrivers)
-
-using namespace mrpt::obs;
-using namespace mrpt::hwdrivers;
-using namespace std;
-
-/*-------------------------------------------------------------
-					CIMUXSens_MT4
--------------------------------------------------------------*/
-CIMUXSens_MT4::CIMUXSens_MT4() : m_portname(), m_timeStartTT(), m_sensorPose()
-
-{
-	m_sensorLabel = "XSensMTi_MT4";
-
-#if MRPT_HAS_xSENS_MT4
-	m_dev_ptr = new DeviceClass;
-	m_devid_ptr = new XsDeviceId;
-#else
-	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class "
-		"cannot be used.");
-#endif
-}
-
-/*-------------------------------------------------------------
-					~CIMUXSens_MT4
--------------------------------------------------------------*/
-CIMUXSens_MT4::~CIMUXSens_MT4()
-{
-#if MRPT_HAS_xSENS_MT4
-	my_xsens_device.close();
-	delete static_cast<DeviceClass*>(m_dev_ptr);
-	m_dev_ptr = nullptr;
-
-	delete static_cast<XsDeviceId*>(m_devid_ptr);
-	m_devid_ptr = nullptr;
-#endif
-}
-
-/*-------------------------------------------------------------
-					doProcess
--------------------------------------------------------------*/
-void CIMUXSens_MT4::doProcess()
-{
-#if MRPT_HAS_xSENS_MT4
-	if (m_state == ssError)
+   protected:
+	void onLiveDataAvailable(XsDevice*, const XsDataPacket* ptrpacket) override
 	{
-		std::this_thread::sleep_for(200ms);
-		initialize();
-	}
+		using namespace mrpt::obs;
 
-	if (m_state == ssError) return;
-
-	XsByteArray data;
-	XsMessageArray msgs;
-
-	my_xsens_device.readDataToBuffer(data);
-	my_xsens_device.processBufferedData(data, msgs);
-	for (XsMessageArray::iterator it = msgs.begin(); it != msgs.end(); ++it)
-	{
-		// Retrieve a packet
-		XsDataPacket packet;
-		if ((*it).getMessageId() == XMID_MtData)
-		{
-			LegacyDataPacket lpacket(1, false);
-
-			lpacket.setMessage((*it));
-			lpacket.setXbusSystem(false, false);
-			lpacket.setDeviceId(my_xsens_devid, 0);
-			lpacket.setDataFormat(
-				XOM_Orientation,
-				XOS_OrientationMode_Euler | XOS_Timestamp_PacketCounter |
-					XOS_CalibratedMode_All /*XOS_OrientationMode_Quaternion*/,
-				0);  // lint !e534
-			XsDataPacket_assignFromXsLegacyDataPacket(&packet, &lpacket, 0);
-		}
-		else if ((*it).getMessageId() == XMID_MtData2)
-		{
-			packet.setMessage((*it));
-			packet.setDeviceId(my_xsens_devid);
-		}
+		if (!me) return;
+		if (!ptrpacket) return;
+		const XsDataPacket& packet = *ptrpacket;
 
 		// Data properly collected: extract data fields
 		// -------------------------------------------------
-		m_state = ssWorking;
+		me->m_state = mrpt::hwdrivers::CGenericSensor::ssWorking;
 		CObservationIMU::Ptr obs = std::make_shared<CObservationIMU>();
 
 		if (packet.containsOrientation())
@@ -473,9 +143,12 @@ void CIMUXSens_MT4::doProcess()
 		}
 
 		// TimeStamp
+#if 0  // I can't find a generic conversion between sample time and seconds!
 		if (packet.containsSampleTime64())
 		{
+		dev->getDataPacketByIndex()
 			const uint64_t nowUI = packet.sampleTime64();
+			std::cout << "nowUI: " << nowUI << "\n";
 
 			uint64_t AtUI = 0;
 			if (m_timeStartUI == 0)
@@ -488,9 +161,10 @@ void CIMUXSens_MT4::doProcess()
 
 			obs->timestamp = m_timeStartTT + std::chrono::milliseconds(AtUI);
 		}
-		else if (packet.containsUtcTime())
+		else
+		if (packet.containsUtcTime())
 		{
-			XsUtcTime utc = packet.utcTime();
+			XsTimeInfo utc = packet.utcTime();
 
 			mrpt::system::TTimeParts parts;
 
@@ -506,12 +180,13 @@ void CIMUXSens_MT4::doProcess()
 			obs->timestamp = mrpt::system::buildTimestampFromParts(parts);
 		}
 		else
-			obs->timestamp = mrpt::system::now();
+#endif
+		obs->timestamp = mrpt::system::now();
 
-		obs->sensorPose = m_sensorPose;
-		obs->sensorLabel = m_sensorLabel;
+		obs->sensorPose = me->m_sensorPose;
+		obs->sensorLabel = me->m_sensorLabel;
 
-		appendObservation(obs);
+		me->appendObservation(obs);
 
 		if (packet.containsLatitudeLongitude())
 		{
@@ -530,7 +205,7 @@ void CIMUXSens_MT4::doProcess()
 
 			if (packet.containsUtcTime())
 			{
-				XsUtcTime utc = packet.utcTime();
+				auto utc = packet.utcTime();
 				rGPS.UTCTime.hour = utc.m_hour;
 				rGPS.UTCTime.minute = utc.m_minute;
 				rGPS.UTCTime.sec = utc.m_second + (utc.m_nano * 1000000.0);
@@ -568,16 +243,100 @@ void CIMUXSens_MT4::doProcess()
 			obsGPS->timestamp = obs->timestamp;
 			obsGPS->originalReceivedTimestamp = obs->timestamp;
 			obsGPS->has_satellite_timestamp = false;
-			obsGPS->sensorPose = m_sensorPose;
-			obsGPS->sensorLabel = m_sensorLabel;
+			obsGPS->sensorPose = me->m_sensorPose;
+			obsGPS->sensorLabel = me->m_sensorLabel;
 
-			appendObservation(obsGPS);
+			me->appendObservation(obsGPS);
 		}
 	}
-	msgs.clear();
+};
+
+struct CIMUXSens_MT4::Impl
+{
+	Impl() = default;
+
+	XsControl* m_xscontrol = nullptr;
+	XsDevice* m_device = nullptr;
+	XsPortInfo m_port;
+	std::shared_ptr<MyXSensCallback> myCallback =
+		std::make_shared<MyXSensCallback>();
+};
+
+}  // namespace mrpt::hwdrivers
+
+#endif
+
+// Include libraries in linking:
+#if MRPT_HAS_xSENS
+#ifdef _WIN32
+// WINDOWS:
+#if defined(_MSC_VER)
+#pragma comment(lib, "SetupAPI.lib")
+#pragma comment(lib, "WinUsb.lib")
+#endif
+#endif  // _WIN32
+#endif  // MRPT_HAS_xSENS
+
+IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4, mrpt::hwdrivers)
+
+using namespace mrpt::obs;
+using namespace mrpt::hwdrivers;
+using namespace std;
+
+CIMUXSens_MT4::CIMUXSens_MT4() : m_impl(mrpt::make_impl<CIMUXSens_MT4::Impl>())
+{
+	m_sensorLabel = "XSensMTi_MT4";
+
+#if MRPT_HAS_xSENS
+	m_impl->m_xscontrol = XsControl::construct();
+	m_impl->myCallback->me = this;
+
 #else
 	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class "
+		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
+		"cannot be used.");
+#endif
+}
+
+CIMUXSens_MT4::~CIMUXSens_MT4()
+{
+#if MRPT_HAS_xSENS
+	close();
+	m_impl->m_xscontrol->destruct();
+#endif
+}
+
+void CIMUXSens_MT4::close()
+{
+#if MRPT_HAS_xSENS
+	if (m_impl->m_device != nullptr)
+	{
+		m_impl->m_device->stopRecording();
+		m_impl->m_device->closeLogFile();
+		m_impl->m_device->removeCallbackHandler(m_impl->myCallback.get());
+	}
+	m_impl->m_xscontrol->closePort(m_impl->m_port);
+
+#endif
+}
+
+/*-------------------------------------------------------------
+					doProcess
+-------------------------------------------------------------*/
+void CIMUXSens_MT4::doProcess()
+{
+#if MRPT_HAS_xSENS
+	if (m_state == ssError)
+	{
+		std::this_thread::sleep_for(200ms);
+		initialize();
+	}
+
+	// Main processing happens asynchronously via callbacks.
+
+#else
+	THROW_EXCEPTION(
+		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
 		"cannot be used.");
 #endif
 }
@@ -587,24 +346,36 @@ void CIMUXSens_MT4::doProcess()
 -------------------------------------------------------------*/
 void CIMUXSens_MT4::initialize()
 {
-#if MRPT_HAS_xSENS_MT4
+#if MRPT_HAS_xSENS
 	m_state = ssInitializing;
 
 	try
 	{
 		// Try to open a specified device, or scan the bus?
-		XsPortInfoArray portInfoArray;
+		XsPortInfo mtPort;
 
 		if (m_portname.empty())
 		{
 			if (m_verbose)
 				cout << "[CIMUXSens_MT4] Scanning for USB devices...\n";
-			xsEnumerateUsbDevices(portInfoArray);
 
-			if (portInfoArray.empty())
-				THROW_EXCEPTION(
-					"CIMUXSens_MT4: No 'portname' was specified and no XSens "
-					"device was found after scanning the system!");
+			XsPortInfoArray portInfoArray = XsScanner::scanPorts();
+
+			for (const auto& portInfo : portInfoArray)
+			{
+				if (portInfo.deviceId().isMti() || portInfo.deviceId().isMtig())
+				{
+					mtPort = portInfo;
+					break;
+				}
+			}
+
+			if (mtPort.empty())
+				THROW_EXCEPTION_FMT(
+					"CIMUXSens_MT4: No 'portname' was specified and no "
+					"compatible XSens device was found in the system (%u "
+					"devices connected)",
+					portInfoArray.size());
 
 			if (m_verbose)
 				cout << "[CIMUXSens_MT4] Found " << portInfoArray.size()
@@ -612,75 +383,56 @@ void CIMUXSens_MT4::initialize()
 		}
 		else
 		{
-			XsPortInfo portInfo(
-				m_portname, XsBaud::numericToRate(m_port_bauds));
-			if (m_verbose)
-				cout << "[CIMUXSens_MT4] Using user-supplied portname '"
-					 << m_portname << "' at " << m_port_bauds << " baudrate.\n";
-			portInfoArray.push_back(portInfo);
+			cout << "[CIMUXSens_MT4] Using user-supplied portname '"
+				 << m_portname << "' at " << m_port_bauds << " baudrate.\n";
+
+			mtPort = XsPortInfo(m_portname, XsBaud_numericToRate(m_port_bauds));
 		}
 
-		// Use the first detected device
-		XsPortInfo mtPort = portInfoArray.at(0);
+		if (mtPort.empty()) THROW_EXCEPTION("No MTi device found");
 
-		// Open the port with the detected device
-		cout << "[CIMUXSens_MT4] Opening port "
-			 << mtPort.portName().toStdString() << std::endl;
+		// Use the first detected device or the specified one:
+		if (!m_deviceId.empty())
+		{
+			if (mtPort.deviceId().toString().c_str() != m_deviceId)
+				THROW_EXCEPTION_FMT(
+					"Device with ID: %s not found", m_deviceId.c_str());
+		}
 
-		if (!my_xsens_device.openPort(mtPort))
-			throw std::runtime_error("Could not open port. Aborting.");
+		std::cout << mrpt::format(
+			"[CIMUXSens_MT4] Found a device with ID: %s @ port: %s, baudrate: "
+			"%d",
+			mtPort.deviceId().toString().toStdString().c_str(),
+			mtPort.portName().toStdString().c_str(), mtPort.baudrate());
+
+		if (!m_impl->m_xscontrol->openPort(
+				mtPort.portName().toStdString(), mtPort.baudrate()))
+			THROW_EXCEPTION("Could not open port");
+
+		m_impl->m_device = m_impl->m_xscontrol->device(mtPort.deviceId());
+		ASSERT_(m_impl->m_device != nullptr);
+
+		std::cout << mrpt::format(
+			"[CIMUXSens_MT4] Device: %s, with ID: %s opened.",
+			m_impl->m_device->productCode().toStdString().c_str(),
+			m_impl->m_device->deviceId().toString().c_str());
+
+		m_impl->m_device->addCallbackHandler(m_impl->myCallback.get());
 
 		// Put the device in configuration mode
 		if (m_verbose)
 			cout << "[CIMUXSens_MT4] Putting device into configuration "
 					"mode...\n";
-		if (!my_xsens_device.gotoConfig())  // Put the device into configuration
-			// mode before configuring the
-			// device
-			throw std::runtime_error(
-				"Could not put device into configuration mode. Aborting.");
 
-		// Request the device Id to check the device type
-		mtPort.setDeviceId(my_xsens_device.getDeviceId());
+		if (!m_impl->m_device->gotoConfig())
+			THROW_EXCEPTION("Could not go to config");
 
-		my_xsens_devid = mtPort.deviceId();
+		// read EMTS and device config stored in .mtb file header.
+		if (!m_impl->m_device->readEmtsAndDeviceConfiguration())
+			THROW_EXCEPTION("Could not read device configuration");
 
-		// Check if we have an MTi / MTx / MTmk4 device
-		if (!mtPort.deviceId().isMtix() && !mtPort.deviceId().isMtMk4())
-		{
-			throw std::runtime_error(
-				"No MTi / MTx / MTmk4 device found. Aborting.");
-		}
-		cout << "[CIMUXSens_MT4] Found a device with id: "
-			 << mtPort.deviceId().toString().toStdString()
-			 << " @ port: " << mtPort.portName().toStdString()
-			 << ", baudrate: " << mtPort.baudrate() << std::endl;
-
-		// Print information about detected MTi / MTx / MTmk4 device
-		if (m_verbose)
-			cout << "[CIMUXSens_MT4] Device: "
-				 << my_xsens_device.getProductCode().toStdString() << " opened."
-				 << std::endl;
-
-		// Configure the device. Note the differences between MTix and MTmk4
-		if (m_verbose)
-			cout << "[CIMUXSens_MT4] Configuring the device..." << std::endl;
-		if (mtPort.deviceId().isMtix())
-		{
-			XsOutputMode outputMode =
-				XOM_Orientation;  // output orientation data
-			XsOutputSettings outputSettings =
-				XOS_OrientationMode_Euler | XOS_Timestamp_PacketCounter |
-				XOS_CalibratedMode_All;  // XOS_OrientationMode_Quaternion; //
-			// output orientation data as
-			// quaternion
-
-			// set the device configuration
-			if (!my_xsens_device.setDeviceMode(outputMode, outputSettings))
-				throw std::runtime_error(
-					"Could not configure MT device. Aborting.");
-		}
-		else if (mtPort.deviceId().isMtMk4())
+		// Set configuration:
+		// if (mtPort.deviceId().isMti())
 		{
 			XsOutputConfigurationArray configArray;
 			configArray.push_back(
@@ -711,36 +463,47 @@ void CIMUXSens_MT4::initialize()
 			configArray.push_back(
 				XsOutputConfiguration(XDI_AltitudeEllipsoid, m_sampleFreq));
 
-			if (!my_xsens_device.setOutputConfiguration(configArray))
+			if (!m_impl->m_device->setOutputConfiguration(configArray))
 				throw std::runtime_error(
-					"Could not configure MTmk4 device. Aborting.");
-		}
-		else
-		{
-			throw std::runtime_error(
-				"Unknown device while configuring. Aborting.");
+					"Could not configure MTi device. Aborting.");
 		}
 
 		// Put the device in measurement mode
 		if (m_verbose)
 			cout << "[CIMUXSens_MT4] Putting device into measurement mode..."
 				 << std::endl;
-		if (!my_xsens_device.gotoMeasurement())
-			throw std::runtime_error(
-				"Could not put device into measurement mode. Aborting.");
+
+		if (!m_impl->m_device->gotoMeasurement())
+			THROW_EXCEPTION("Could not put device into measurement mode");
+
+		if (!m_xsensLogFile.empty())
+		{
+			if (m_impl->m_device->createLogFile(m_xsensLogFile) != XRV_OK)
+				THROW_EXCEPTION_FMT(
+					"Failed to create a log file! (%s)",
+					m_xsensLogFile.c_str());
+			else
+				printf(
+					"[CIMUXSens_MT4] Created a log file: %s",
+					m_xsensLogFile.c_str());
+
+			if (!m_impl->m_device->startRecording())
+				THROW_EXCEPTION("Could not start recording");
+		}
 
 		m_state = ssWorking;
 	}
 	catch (std::exception&)
 	{
 		m_state = ssError;
-		std::cerr << "Error Could not initialize the device" << std::endl;
+		std::cerr << "[CIMUXSens_MT4] Error Could not initialize the device"
+				  << std::endl;
 		throw;
 	}
 
 #else
 	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class "
+		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
 		"cannot be used.");
 #endif
 }
@@ -749,28 +512,24 @@ void CIMUXSens_MT4::initialize()
 					loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CIMUXSens_MT4::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
 	m_sensorPose.setFromValues(
-		configSource.read_float(iniSection, "pose_x", 0, false),
-		configSource.read_float(iniSection, "pose_y", 0, false),
-		configSource.read_float(iniSection, "pose_z", 0, false),
-		DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0, false)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0, false)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0, false)));
+		c.read_float(s, "pose_x", 0, false),
+		c.read_float(s, "pose_y", 0, false),
+		c.read_float(s, "pose_z", 0, false),
+		DEG2RAD(c.read_float(s, "pose_yaw", 0, false)),
+		DEG2RAD(c.read_float(s, "pose_pitch", 0, false)),
+		DEG2RAD(c.read_float(s, "pose_roll", 0, false)));
 
-	m_sampleFreq =
-		configSource.read_int(iniSection, "sampleFreq", m_sampleFreq, false);
-
-	m_port_bauds =
-		configSource.read_int(iniSection, "baudRate", m_port_bauds, false);
+	m_sampleFreq = c.read_int(s, "sampleFreq", m_sampleFreq, false);
+	m_port_bauds = c.read_int(s, "baudRate", m_port_bauds, false);
+	m_deviceId = c.read_string(s, "deviceId", m_deviceId, false);
+	m_xsensLogFile = c.read_string(s, "logFile", m_xsensLogFile, false);
 
 #ifdef _WIN32
-	m_portname =
-		configSource.read_string(iniSection, "portname_WIN", m_portname, false);
+	m_portname = c.read_string(s, "portname_WIN", m_portname, false);
 #else
-	m_portname =
-		configSource.read_string(iniSection, "portname_LIN", m_portname, false);
+	m_portname = c.read_string(s, "portname_LIN", m_portname, false);
 #endif
 }

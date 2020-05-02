@@ -101,74 +101,55 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 endif()
 
 # ----------------------------------
-# Build xSens MT3
+# Build xSens IMU library
 # ----------------------------------
-if(CMAKE_MRPT_HAS_xSENS_MT3)
-	file(GLOB SRCS
-		xSens_MT3/*.cpp
-		xSens_MT3/*.h
+if(CMAKE_MRPT_HAS_xSENS)
+	file(GLOB_RECURSE SRCS
+		xspublic/*.cpp
+		xspublic/*.c
+		xspublic/*.h
 	)
 
-	add_library(mrpt_xsens_mt3 STATIC ${SRCS})
+	add_library(mrpt_xsens STATIC ${SRCS})
 
 	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrpt_xsens_mt3 PRIVATE
-			-fPIC
-			-Wno-variadic-macros
-			-Wno-parentheses
-			-Wno-ignored-qualifiers
-		)
-	endif()
-	target_compile_definitions(mrpt_xsens_mt3 PRIVATE
-		_LOG_TO_STDOUT
-	)
-	# Embedded version:
-	target_include_directories(mrpt_xsens_mt3 SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty
-	)
-
-	target_link_libraries(mrpt_xsens_mt3 PRIVATE mrpt::core)
-	set_target_properties(mrpt_xsens_mt3 PROPERTIES FOLDER "3rd party")
-	unset(SRCS)
-endif()
-
-# ----------------------------------
-# Build xSens MT4
-# ----------------------------------
-if(CMAKE_MRPT_HAS_xSENS_MT4)
-	file(GLOB SRCS
-		xSens_MT4/xcommunication/src/*.cpp
-		xSens_MT4/xcommunication/src/*.c
-		xSens_MT4/xcommunication/include/xsens/*.h
-		xSens_MT4/xstypes/src/*.c
-		xSens_MT4/xstypes/include/xsens/*.h
-	)
-
-	add_library(mrpt_xsens_mt4 STATIC ${SRCS})
-
-	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrpt_xsens_mt4 PRIVATE
+		target_compile_options(mrpt_xsens PRIVATE
 			-fPIC
 			-fms-extensions  # Unnamed structs in unions
 			-Wno-variadic-macros
 			-Wno-parentheses
 		)
-		target_compile_definitions(mrpt_xsens_mt4 PRIVATE
+		target_compile_definitions(mrpt_xsens PRIVATE
 			_POSIX_C_SOURCE=200809L  # Needed to have CLOCK_REALTIME,... in gcc
 			_LOG_TO_STDOUT
 		)
 	endif()
 
 	# Embedded version:
-	target_include_directories(mrpt_xsens_mt4 SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include
-		${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xcommunication/include/xsens
-		${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include
-		${MRPT_SOURCE_DIR}/3rdparty/xSens_MT4/xstypes/include/xsens
+	target_include_directories(mrpt_xsens SYSTEM PUBLIC
+		${MRPT_SOURCE_DIR}/3rdparty/xspublic/
+		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xstypes/
+		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscommon/
+		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscontroller/
 	)
 
-	target_link_libraries(mrpt_xsens_mt4 PRIVATE mrpt::core)
-	set_target_properties(mrpt_xsens_mt4 PROPERTIES FOLDER "3rd party")
+	# Couldn't make this to work with a regular target_compile_options() cmd:
+	if (MSVC)
+		set(xsens_flag "/FI ${MRPT_SOURCE_DIR}/3rdparty/xspublic/msvc_include.h ")
+	else()
+		set(xsens_flag "-include xscommon_config.h -include xsens_compat.h -include xscontrollerconfig.h ")
+	endif()
+	set_property(TARGET mrpt_xsens APPEND_STRING
+		PROPERTY COMPILE_FLAGS ${xsens_flag}
+	)
+
+	if (MSVC)
+		target_compile_definitions(mrpt_xsens PRIVATE XDA_STATIC_LIB)
+	endif()
+	
+
+	target_compile_features(mrpt_xsens PRIVATE cxx_std_11)
+	set_target_properties(mrpt_xsens PROPERTIES FOLDER "3rd party")
 	unset(SRCS)
 endif()
 
@@ -248,6 +229,5 @@ if(WIN32)
 endif()
 
 
-# nanogui: 
+# nanogui:
 # Already handled in cmakemodules/script_nanogui.cmake
-
