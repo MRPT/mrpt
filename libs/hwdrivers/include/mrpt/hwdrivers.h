@@ -38,7 +38,6 @@ MRPT_WARNING(
 #include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/hwdrivers/CIMUIntersense.h>
-#include <mrpt/hwdrivers/CIMUXSens.h>
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
 #include <mrpt/hwdrivers/CIbeoLuxETH.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>

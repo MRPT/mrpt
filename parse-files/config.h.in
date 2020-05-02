@@ -156,8 +156,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_ROBOPEAK_LIDAR ${CMAKE_MRPT_HAS_ROBOPEAK_LIDAR}
 
 /** Whether to include the xSens MTi device interface: */
-#define MRPT_HAS_xSENS_MT3 ${CMAKE_MRPT_HAS_xSENS_MT3}
-#define MRPT_HAS_xSENS_MT4 ${CMAKE_MRPT_HAS_xSENS_MT4}
+#define MRPT_HAS_xSENS ${CMAKE_MRPT_HAS_xSENS}
+
 /** Whether to include the Intersense device interface: */
 #define MRPT_HAS_INTERSENSE ${CMAKE_MRPT_HAS_INTERSENSE}
 
