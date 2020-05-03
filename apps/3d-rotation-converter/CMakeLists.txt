@@ -3,11 +3,7 @@
 # ================================================
 project(3d-rotation-converter)
 
-if(NOT CMAKE_MRPT_HAS_NANOGUI)
-    message(STATUS "Skipping ${PROJECT_NAME} due to missing dependency NANOGUI")
-    return()
-endif()
-
+mrpt_return_if_not_nanogui()
 
 # Define the executable target:
 add_executable(${PROJECT_NAME}
