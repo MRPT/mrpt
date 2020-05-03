@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/exceptions.h>
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -188,6 +189,19 @@ class CDisplayWindowGUI : public nanogui::Screen
 		m_keyboardCallback;
 };
 
-}  // namespace mrpt::gui
+#define NANOGUI_START_TRY \
+	try                   \
+	{
+#define NANOGUI_END_TRY(_parentWindowRef_)                             \
+	}                                                                  \
+	catch (const std::exception& e)                                    \
+	{                                                                  \
+		const auto sErr = mrpt::exception_to_str(e);                   \
+		auto dlg = new nanogui::MessageDialog(                         \
+			&_parentWindowRef_, nanogui::MessageDialog::Type::Warning, \
+			"Exception", sErr);                                        \
+		dlg->setCallback([](int /*result*/) {});                       \
+	}
 
+}  // namespace mrpt::gui
 #endif  // MRPT_HAS_NANOGUI

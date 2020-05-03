@@ -10,6 +10,13 @@ macro(mrpt_return_if_not_wxwidgets)
 	endif()
 endmacro()
 
+macro(mrpt_return_if_not_nanogui)
+	if(NOT CMAKE_MRPT_HAS_NANOGUI)
+		message(STATUS "Build without nanogui: Skipping target `${PROJECT_NAME}`")
+		return()
+	endif()
+endmacro()
+
 macro(DeclareAppDependencies name)
 	add_dependencies(apps_all ${name})
 
