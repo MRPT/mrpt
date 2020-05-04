@@ -8,7 +8,7 @@ project(navlog-viewer)
 mrpt_return_if_not_nanogui()
 
 # Define the executable target:
-add_executable(${PROJECT_NAME} WIN32
+add_executable(${PROJECT_NAME}
 	main.cpp
 	navlog-viewer-ui.cpp
 	navlog-viewer-ui.h
