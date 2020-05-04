@@ -463,7 +463,7 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 
 	m_txtTimeIndex->setCaption(
 		"Time index: "s + std::to_string(log_idx) + " / "s +
-		std::to_string(std::max(1UL, m_logdata.size()) - 1));
+		std::to_string(std::max<size_t>(1U, m_logdata.size()) - 1));
 
 	const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
 	const int sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
