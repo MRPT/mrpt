@@ -1,11 +1,11 @@
-mrpt (1:2.0.1-1) unstable; urgency=medium
+mrpt (1:2.0.2-1) unstable; urgency=medium
 
   * New version of upstream sources.
   * Updated debian/control to fix missing libraries.
   * Fix build against OpenCV 4 (Closes: #922586)
   * Do not use Python2 anymore (Closes: #943188)
 
- -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Fri, 03 Apr 2020 01:19:17 +0200
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Mon, 04 May 2020 16:55:51 +0200
 
 mrpt (1:1.5.8-1) unstable; urgency=medium
 
