@@ -13,6 +13,8 @@
  *
 
 # Version 2.0.2: (Under development)
+- Changes in applications:
+  - navlog-viewer: Ported to the new nanogui UI system (fixes random OpenGL context errors in former version).
 - Changes in libraries:
   - mrpt_containers_grp
     - mrpt::containers::vector_with_small_size_optimization: Get rid of potential uninitialized usage GCC warnings.
