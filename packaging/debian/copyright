@@ -302,17 +302,6 @@ License: Expat
 License: LGPL
   See: /usr/share/common-licenses/LGPL
 
-License: mt-sdk-license
-  This source code is provided under the MT SDK Software License Agreement
-  and is intended for use only by Xsens Technologies BV and
-  those that have explicit written permission to use it from
-  Xsens Technologies BV.
-  .
-  THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
-  KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-  IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-  PARTICULAR PURPOSE.
-
 License: rsa-license
   License to copy and use this software is granted provided that it
   is identified as the "RSA Data Security, Inc. MD5 Message-Digest
