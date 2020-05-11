@@ -2,6 +2,8 @@
 # -*- makefile -*-
 # Makefile for MRPT Debian package.
 
+include /usr/share/dpkg/architecture.mk
+
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all,+fortify
 
 # default: dont build expensive caller graphs with dot in the documentation pkg
@@ -22,6 +24,11 @@ endif
 # Unit tests can be run with target "test_legacy", or "test_gdb", which shows stack
 # traces on failure:
 MRPT_TEST_TARGET = test_legacy
+
+# Avoid running out of memory on mipsel
+ifneq (,$(filter $(DEB_HOST_ARCH), mipsel))
+  export DEB_CXXFLAGS_MAINT_APPEND += -g1
+endif
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/usr/" \
