@@ -12,6 +12,10 @@
 /** \page changelog Change Log
  *
 
+# Version 2.0.3: (Under development)
+  - None yet
+
+------
 # Version 2.0.2: Released May 4th, 2020
 - Changes in applications:
   - navlog-viewer: Ported to the new nanogui UI system (fixes random OpenGL context errors in former version).
