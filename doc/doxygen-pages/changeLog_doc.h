@@ -13,7 +13,15 @@
  *
 
 # Version 2.0.3: (Under development)
-  - None yet
+  - \ref mrpt_maps_grp
+    - Point cloud classes mrpt::maps::CPointsMap: New methods:
+      - load2D_from_text_stream()
+      - load3D_from_text_stream()
+      - save2D_to_text_stream()
+      - save3D_to_text_stream()
+
+  - BUG FIXES:
+    - Incorrect number of points loaded when trying to load point clouds from incorrectly-formatted text files.
 
 ------
 # Version 2.0.2: Released May 4th, 2020
