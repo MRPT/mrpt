@@ -61,7 +61,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		// Convert back to a 6x6 representation:
 		CPose3DPDFGaussian p2ypr = CPose3DPDFGaussian(p1quat);
 
-		EXPECT_NEAR(0, (p2ypr.cov - p1ypr.cov).array().abs().mean(), 1e-2)
+		EXPECT_NEAR(0, (p2ypr.cov - p1ypr.cov).array().abs().maxCoeff(), 1e-6)
 			<< "p1ypr: " << endl
 			<< p1ypr << endl
 			<< "p1quat : " << endl
@@ -87,8 +87,9 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		const CVectorFixedDouble<2 * 7>& x,
 		[[maybe_unused]] const double& dummy, CVectorFixedDouble<7>& Y)
 	{
-		const CPose3DQuat p1(
-			x[0], x[1], x[2], CQuaternionDouble(x[3], x[4], x[5], x[6]));
+		CQuaternionDouble q(x[3], x[4], x[5], x[6]);
+		q.normalize();
+		const CPose3DQuat p1(x[0], x[1], x[2], q);
 		const CPose3DQuat p2(
 			x[7 + 0], x[7 + 1], x[7 + 2],
 			CQuaternionDouble(x[7 + 3], x[7 + 4], x[7 + 5], x[7 + 6]));
@@ -127,7 +128,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 				x_mean, x_cov, func_compose, DUMMY, y_mean, y_cov, x_incrs);
 		}
 		// Compare:
-		EXPECT_NEAR(0, (y_cov - p7_comp.cov).array().abs().mean(), 1e-2)
+		EXPECT_NEAR(0, (y_cov - p7_comp.cov).array().abs().maxCoeff(), 1e-3)
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "p2 mean: " << p7pdf2.mean << endl
 			<< "Numeric approximation of covariance: " << endl
@@ -140,8 +141,9 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		const CVectorFixedDouble<7>& x, [[maybe_unused]] const double& dummy,
 		CVectorFixedDouble<7>& Y)
 	{
-		const CPose3DQuat p1(
-			x[0], x[1], x[2], CQuaternionDouble(x[3], x[4], x[5], x[6]));
+		CQuaternionDouble q(x[3], x[4], x[5], x[6]);
+		q.normalize();
+		const CPose3DQuat p1(x[0], x[1], x[2], q);
 		const CPose3DQuat p1_inv(-p1);
 		for (int i = 0; i < 7; i++) Y[i] = p1_inv[i];
 	}
@@ -186,7 +188,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dx - num_df_dx).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(0, (df_dx - num_df_dx).array().abs().maxCoeff(), 1e-6)
 			<< "q1: " << q1 << endl
 			<< "q2: " << q2 << endl
 			<< "Numeric approximation of df_dx: " << endl
@@ -196,7 +198,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			<< "Error: " << endl
 			<< df_dx - num_df_dx << endl;
 
-		EXPECT_NEAR(0, (df_du - num_df_du).array().abs().sum(), 3e-3)
+		EXPECT_NEAR(0, (df_du - num_df_du).array().abs().maxCoeff(), 1e-6)
 			<< "q1: " << q1 << endl
 			<< "q2: " << q2 << endl
 			<< "Numeric approximation of df_du: " << endl
@@ -234,7 +236,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (y_cov - p7_inv.cov).array().abs().mean(), 1e-2)
+		EXPECT_NEAR(0, (y_cov - p7_inv.cov).array().abs().maxCoeff(), 1e-6)
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "inv mean: " << p7_inv.mean << endl
 			<< "Numeric approximation of covariance: " << endl
@@ -276,7 +278,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 				x_mean, x_cov, func_inv_compose, DUMMY, y_mean, y_cov, x_incrs);
 		}
 		// Compare:
-		EXPECT_NEAR(0, (y_cov - p7_comp.cov).array().abs().mean(), 1e-2)
+		EXPECT_NEAR(0, (y_cov - p7_comp.cov).array().abs().maxCoeff(), 1e-6)
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "p2 mean: " << p7pdf2.mean << endl
 			<< "Numeric approximation of covariance: " << endl
@@ -303,7 +305,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 
 		// Compare:
 		EXPECT_NEAR(
-			0, (p7_new_base_pdf.cov - p7pdf1.cov).array().abs().mean(), 1e-2)
+			0, (p7_new_base_pdf.cov - p7pdf1.cov).array().abs().maxCoeff(),
+			1e-2)
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "new_base: " << new_base << endl;
 		EXPECT_NEAR(
