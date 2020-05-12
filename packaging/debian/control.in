@@ -89,6 +89,8 @@ Description: Mobile Robot Programming Toolkit - bayes library
 Package: libmrpt-bayes-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-bayes@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-math-dev, libmrpt-config-dev
 Description: Mobile Robot Programming Toolkit - bayes development package
@@ -105,6 +107,8 @@ Description: Mobile Robot Programming Toolkit - comms library
 Package: libmrpt-comms-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-comms@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-io-dev
 Description: Mobile Robot Programming Toolkit - comms development package
@@ -121,6 +125,8 @@ Description: Mobile Robot Programming Toolkit - config library
 Package: libmrpt-config-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-config@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-core-dev,libmrpt-system-dev,libmrpt-expr-dev
 Description: Mobile Robot Programming Toolkit - config development package
@@ -137,6 +143,8 @@ Description: Mobile Robot Programming Toolkit - containers library
 Package: libmrpt-containers-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-containers@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-core-dev
 Description: Mobile Robot Programming Toolkit - containers development package
@@ -153,6 +161,8 @@ Description: Mobile Robot Programming Toolkit - core library
 Package: libmrpt-core-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-core@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - core development package
@@ -169,6 +179,8 @@ Description: Mobile Robot Programming Toolkit - detectors library
 Package: libmrpt-detectors-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-detectors@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-gui-dev,libmrpt-slam-dev
 Description: Mobile Robot Programming Toolkit - detectors development package
@@ -185,6 +197,8 @@ Description: Mobile Robot Programming Toolkit - expr library
 Package: libmrpt-expr-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-expr@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-core-dev
 Description: Mobile Robot Programming Toolkit - expr development package
@@ -201,6 +215,8 @@ Description: Mobile Robot Programming Toolkit - graphs library
 Package: libmrpt-graphs-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-opengl-dev,libmrpt-poses-dev
 Description: Mobile Robot Programming Toolkit - graphs development package
@@ -217,6 +233,8 @@ Description: Mobile Robot Programming Toolkit - graphslam library
 Package: libmrpt-graphslam-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-graphslam@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-gui-dev,libmrpt-slam-dev
 Description: Mobile Robot Programming Toolkit - graphslam development package
@@ -241,6 +259,8 @@ Description: Mobile Robot Programming Toolkit - nanogui library
 Package: libmrpt-gui-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-gui@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-opengl-dev, libmrpt-nanogui-dev
 Description: Mobile Robot Programming Toolkit - gui development package
@@ -249,6 +269,8 @@ Description: Mobile Robot Programming Toolkit - gui development package
 Package: libmrpt-nanogui-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-nanogui@MRPT_VER_MM@ (= ${binary:Version}),
          libglfw3-dev
 Description: Mobile Robot Programming Toolkit - nanogui development package
@@ -265,6 +287,8 @@ Description: Mobile Robot Programming Toolkit - hmtslam library
 Package: libmrpt-hmtslam-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-hmtslam@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-graphslam-dev
 Description: Mobile Robot Programming Toolkit - hmtslam development package
@@ -281,6 +305,8 @@ Description: Mobile Robot Programming Toolkit - hwdrivers library
 Package: libmrpt-hwdrivers-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-hwdrivers@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-comms-dev, libmrpt-gui-dev,
          libmrpt-maps-dev, libmrpt-vision-dev
@@ -298,6 +324,8 @@ Description: Mobile Robot Programming Toolkit - img library
 Package: libmrpt-img-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-img@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-io-dev, libmrpt-math-dev,
          libmrpt-config-dev
@@ -315,6 +343,8 @@ Description: Mobile Robot Programming Toolkit - io library
 Package: libmrpt-io-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-io@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-system-dev
 Description: Mobile Robot Programming Toolkit - io development package
@@ -331,6 +361,8 @@ Description: Mobile Robot Programming Toolkit - kinematics library
 Package: libmrpt-kinematics-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-kinematics@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-opengl-dev
 Description: Mobile Robot Programming Toolkit - kinematics development package
@@ -347,6 +379,8 @@ Description: Mobile Robot Programming Toolkit - maps library
 Package: libmrpt-maps-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-obs-dev, libmrpt-graphs-dev
 Description: Mobile Robot Programming Toolkit - maps development package
@@ -363,6 +397,8 @@ Description: Mobile Robot Programming Toolkit - math library
 Package: libmrpt-math-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version}),
          libsuitesparse-dev, libeigen3-dev, libmrpt-serialization-dev,
          libmrpt-random-dev, libmrpt-system-dev, libmrpt-nanoflann-dev,
@@ -373,6 +409,8 @@ Description: Mobile Robot Programming Toolkit - math development package
 Package: libmrpt-nanoflann-dev
 Section: libdevel
 Architecture: all
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends}, libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - nanoflann development package
  This package provides headers and libraries for development.
@@ -388,6 +426,8 @@ Description: Mobile Robot Programming Toolkit - nav library
 Package: libmrpt-nav-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-nav@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-kinematics-dev, libmrpt-maps-dev
 Description: Mobile Robot Programming Toolkit - nav development package
@@ -404,6 +444,8 @@ Description: Mobile Robot Programming Toolkit - obs library
 Package: libmrpt-obs-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version}),
         libmrpt-common-dev, libmrpt-opengl-dev, libmrpt-tfest-dev
 Description: Mobile Robot Programming Toolkit - obs development package
@@ -420,6 +462,8 @@ Description: Mobile Robot Programming Toolkit - opengl library
 Package: libmrpt-opengl-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-poses-dev, libmrpt-img-dev
 Description: Mobile Robot Programming Toolkit - opengl development package
@@ -436,6 +480,8 @@ Description: Mobile Robot Programming Toolkit - poses library
 Package: libmrpt-poses-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-poses@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-bayes-dev
 Description: Mobile Robot Programming Toolkit - poses development package
@@ -452,6 +498,8 @@ Description: Mobile Robot Programming Toolkit - random library
 Package: libmrpt-random-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-random@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - random development package
@@ -468,6 +516,8 @@ Description: Mobile Robot Programming Toolkit - rtti library
 Package: libmrpt-rtti-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-rtti@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-core-dev, libmrpt-typemeta-dev
 Description: Mobile Robot Programming Toolkit - rtti development package
@@ -484,6 +534,8 @@ Description: Mobile Robot Programming Toolkit - ros1bridge library
 Package: libmrpt-ros1bridge-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-ros1bridge@MRPT_VER_MM@ (= ${binary:Version}),
         libmrpt-maps-dev, libgeometry-msgs-dev, libroscpp-dev,
         libsensor-msgs-dev, libstereo-msgs-dev, libtf2-msgs-dev, librosbag-storage-dev,
@@ -502,6 +554,8 @@ Description: Mobile Robot Programming Toolkit - serialization library
 Package: libmrpt-serialization-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-serialization@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-rtti-dev
 Description: Mobile Robot Programming Toolkit - serialization development package
@@ -518,6 +572,8 @@ Description: Mobile Robot Programming Toolkit - slam library
 Package: libmrpt-slam-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version}),
         libmrpt-common-dev, libmrpt-maps-dev, libmrpt-vision-dev
 Description: Mobile Robot Programming Toolkit - slam development package
@@ -534,6 +590,8 @@ Description: Mobile Robot Programming Toolkit - system library
 Package: libmrpt-system-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-system@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-typemeta-dev, libmrpt-containers-dev
 Description: Mobile Robot Programming Toolkit - system development package
@@ -542,6 +600,8 @@ Description: Mobile Robot Programming Toolkit - system development package
 Package: libmrpt-tclap-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends}, libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - tclap development package
  This package provides headers and libraries for development.
@@ -557,6 +617,8 @@ Description: Mobile Robot Programming Toolkit - tfest library
 Package: libmrpt-tfest-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-tfest@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-poses-dev
 Description: Mobile Robot Programming Toolkit - tfest development package
@@ -573,6 +635,8 @@ Description: Mobile Robot Programming Toolkit - topography library
 Package: libmrpt-topography-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-obs-dev
 Description: Mobile Robot Programming Toolkit - topography development package
@@ -581,6 +645,8 @@ Description: Mobile Robot Programming Toolkit - topography development package
 Package: libmrpt-typemeta-dev
 Section: libdevel
 Architecture: all
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends}, libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - typemeta development package
  This package provides headers and libraries for development.
@@ -596,6 +662,8 @@ Description: Mobile Robot Programming Toolkit - vision library
 Package: libmrpt-vision-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-common-dev, libmrpt-obs-dev
 Description: Mobile Robot Programming Toolkit - vision development package
@@ -612,6 +680,8 @@ Description: Mobile Robot Programming Toolkit - vision-lgpl library
 Package: libmrpt-vision-lgpl-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-vision-dev
 Description: Mobile Robot Programming Toolkit - vision-lgpl development package
@@ -628,6 +698,8 @@ Description: Mobile Robot Programming Toolkit - apps library
 Package: libmrpt-apps-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-apps@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-slam-dev, libmrpt-gui-dev, libmrpt-tclap-dev
 Description: Mobile Robot Programming Toolkit - apps development package
@@ -636,6 +708,8 @@ Description: Mobile Robot Programming Toolkit - apps development package
 Package: libmrpt-common-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends}
 Description: Mobile Robot Programming Toolkit - common development files
  This package provides CMake configuration files and common headers.
@@ -643,6 +717,8 @@ Description: Mobile Robot Programming Toolkit - common development files
 Package: libmrpt-dev
 Section: libdevel
 Architecture: any
+Breaks: libmrpt-dev (<< 1:2)
+Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},
 Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-comms-dev (= ${binary:Version}),
@@ -678,7 +754,7 @@ Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-topography-dev (= ${binary:Version}),
          libmrpt-typemeta-dev (= ${binary:Version}),
          libmrpt-vision-dev (= ${binary:Version}),
-		 libmrpt-vision-lgpl-dev (= ${binary:Version})
+         libmrpt-vision-lgpl-dev (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - Metapackage: all dev packages
  This metapackage install all mrpt -dev packages.
 
