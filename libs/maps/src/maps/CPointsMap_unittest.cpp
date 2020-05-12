@@ -13,6 +13,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/poses/CPoint2D.h>
+#include <sstream>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -141,6 +142,66 @@ void do_test_clipOutOfRange()
 	}
 }
 
+template <class MAP>
+void do_tests_loadSaveStreams()
+{
+	MAP pts0;
+	load_demo_9pts_map(pts0);
+
+	EXPECT_EQ(pts0.size(), 9u);
+
+	auto lmb1 = [&]() -> std::string {
+		std::stringstream ss;
+		bool ret = pts0.save3D_to_text_stream(ss);
+		EXPECT_TRUE(ret);
+		return ss.str();
+	};
+
+	// Correct format:
+	{
+		MAP pts1;
+		std::stringstream ss;
+		ss.str(lmb1());
+		bool ret = pts1.load3D_from_text_stream(ss);
+		EXPECT_TRUE(ret);
+		EXPECT_EQ(pts0.size(), pts1.size());
+	}
+	{
+		MAP pts1;
+		std::stringstream ss;
+		ss.str("0 1\n1 2\n 3 4\n");
+		bool ret = pts1.load2D_from_text_stream(ss);
+		EXPECT_TRUE(ret);
+		EXPECT_EQ(pts1.size(), 3u);
+	}
+	// Incorrect format:
+	{
+		MAP pts1;
+		std::stringstream ss;
+		ss.str("0 1\n1 2\n 3 4\n");
+		std::string errMsg;
+		bool ret = pts1.load3D_from_text_stream(ss, errMsg);
+		EXPECT_FALSE(ret);
+		EXPECT_EQ(pts1.size(), 0u);
+	}
+	{
+		MAP pts1;
+		std::stringstream ss;
+		ss.str("0 1 3\n1 2 3 4\n3 4\n");
+		std::string errMsg;
+		bool ret = pts1.load3D_from_text_stream(ss, errMsg);
+		EXPECT_FALSE(ret);
+	}
+	{
+		MAP pts1;
+		std::stringstream ss;
+		ss.str("0 1\n1 2 3 4\n3 4\n");
+		std::string errMsg;
+		bool ret = pts1.load3D_from_text_stream(ss, errMsg);
+		EXPECT_FALSE(ret);
+	}
+}
+
 TEST(CSimplePointsMapTests, insertPoints)
 {
 	do_test_insertPoints<CSimplePointsMap>();
@@ -186,4 +247,19 @@ TEST(CWeightedPointsMapTests, clipOutOfRange)
 TEST(CColouredPointsMapTests, clipOutOfRange)
 {
 	do_test_clipOutOfRange<CColouredPointsMap>();
+}
+
+TEST(CSimplePointsMapTests, loadSaveStreams)
+{
+	do_tests_loadSaveStreams<CSimplePointsMap>();
+}
+
+TEST(CWeightedPointsMapTests, loadSaveStreams)
+{
+	do_tests_loadSaveStreams<CWeightedPointsMap>();
+}
+
+TEST(CColouredPointsMapTests, loadSaveStreams)
+{
+	do_tests_loadSaveStreams<CColouredPointsMap>();
 }

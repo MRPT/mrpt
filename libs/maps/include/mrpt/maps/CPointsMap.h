@@ -10,6 +10,7 @@
 
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/core/aligned_std_vector.h>
+#include <mrpt/core/optional_ref.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -21,6 +22,7 @@
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <iosfwd>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::maps::CPointsMap)
@@ -371,6 +373,12 @@ class CPointsMap : public CMetricMap,
 	{
 		return load2Dor3D_from_text_file(file, false);
 	}
+	inline bool load2D_from_text_stream(
+		std::istream& in,
+		mrpt::optional_ref<std::string> outErrorMsg = std::nullopt)
+	{
+		return load2Dor3D_from_text_stream(in, outErrorMsg, false);
+	}
 
 	/** Load from a text file. Each line should contain an "X Y Z" coordinate
 	 * tuple, separated by whitespaces.
@@ -380,20 +388,31 @@ class CPointsMap : public CMetricMap,
 	{
 		return load2Dor3D_from_text_file(file, true);
 	}
+	inline bool load3D_from_text_stream(
+		std::istream& in,
+		mrpt::optional_ref<std::string> outErrorMsg = std::nullopt)
+	{
+		return load2Dor3D_from_text_stream(in, outErrorMsg, true);
+	}
 
 	/** 2D or 3D generic implementation of \a load2D_from_text_file and
 	 * load3D_from_text_file */
 	bool load2Dor3D_from_text_file(const std::string& file, const bool is_3D);
+	bool load2Dor3D_from_text_stream(
+		std::istream& in, mrpt::optional_ref<std::string> outErrorMsg,
+		const bool is_3D);
 
 	/**  Save to a text file. Each line will contain "X Y" point coordinates.
 	 *		Returns false if any error occured, true elsewere.
 	 */
 	bool save2D_to_text_file(const std::string& file) const;
+	bool save2D_to_text_stream(std::ostream& out) const;
 
 	/**  Save to a text file. Each line will contain "X Y Z" point coordinates.
 	 *     Returns false if any error occured, true elsewere.
 	 */
 	bool save3D_to_text_file(const std::string& file) const;
+	bool save3D_to_text_stream(std::ostream& out) const;
 
 	/** This virtual method saves the map to a file "filNamePrefix"+<
 	 * some_file_extension >, as an image or in any other applicable way (Notice
