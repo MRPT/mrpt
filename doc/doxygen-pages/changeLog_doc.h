@@ -19,7 +19,8 @@
       - load3D_from_text_stream()
       - save2D_to_text_stream()
       - save3D_to_text_stream()
-
+  - \ref mrpt_poses_grp
+      - More accurate analytical Jacobians for CPose3DQuatPDFGaussian::inverse()  (Closes #1053)
   - BUG FIXES:
     - Incorrect number of points loaded when trying to load point clouds from incorrectly-formatted text files.
 

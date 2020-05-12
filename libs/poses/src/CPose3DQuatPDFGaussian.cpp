@@ -271,6 +271,10 @@ void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
 	jacob(5, 5) = -1;
 	jacob(6, 6) = -1;
 
+	CMatrixDouble44 norm_jacob(UNINITIALIZED_MATRIX);
+	this->mean.quat().normalizationJacobian(norm_jacob);
+	jacob.asEigen().block<4, 4>(3, 3) *= norm_jacob.asEigen();
+
 	// C(0:2,0:2): H C H^t
 	out.cov = mrpt::math::multiply_HCHt(jacob, this->cov);
 
