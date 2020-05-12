@@ -25,6 +25,8 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
+#include <fstream>
+#include <sstream>
 
 #include <mrpt/core/SSE_macros.h>
 #include <mrpt/core/SSE_types.h>
@@ -58,98 +60,102 @@ CPointsMap::CPointsMap()
 						Destructor
   ---------------------------------------------------------------*/
 CPointsMap::~CPointsMap() = default;
-/*---------------------------------------------------------------
-					save2D_to_text_file
-  Save to a text file. In each line there are a point coordinates.
-	Returns false if any error occured, true elsewere.
-  ---------------------------------------------------------------*/
+
 bool CPointsMap::save2D_to_text_file(const string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
-
-	for (unsigned int i = 0; i < m_x.size(); i++)
+	for (size_t i = 0; i < m_x.size(); i++)
 		os::fprintf(f, "%f %f\n", m_x[i], m_y[i]);
-
 	os::fclose(f);
 	return true;
 }
 
-/*---------------------------------------------------------------
-					save3D_to_text_file
-  Save to a text file. In each line there are a point coordinates.
-	Returns false if any error occured, true elsewere.
-  ---------------------------------------------------------------*/
 bool CPointsMap::save3D_to_text_file(const string& file) const
 {
 	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return false;
 
-	for (unsigned int i = 0; i < m_x.size(); i++)
+	for (size_t i = 0; i < m_x.size(); i++)
 		os::fprintf(f, "%f %f %f\n", m_x[i], m_y[i], m_z[i]);
 
 	os::fclose(f);
 	return true;
 }
 
-/*---------------------------------------------------------------
-					load2Dor3D_from_text_file
-  Load from a text file. In each line there are a point coordinates.
-	Returns false if any error occured, true elsewere.
-  ---------------------------------------------------------------*/
+bool CPointsMap::save2D_to_text_stream(std::ostream& out) const
+{
+	char lin[200];
+	for (size_t i = 0; i < m_x.size(); i++)
+	{
+		os::sprintf(lin, sizeof(lin), "%f %f\n", m_x[i], m_y[i]);
+		out << lin;
+	}
+	return true;
+}
+bool CPointsMap::save3D_to_text_stream(std::ostream& out) const
+{
+	char lin[220];
+	for (size_t i = 0; i < m_x.size(); i++)
+	{
+		os::sprintf(lin, sizeof(lin), "%f %f %f\n", m_x[i], m_y[i], m_z[i]);
+		out << lin;
+	}
+	return true;
+}
+
+bool CPointsMap::load2Dor3D_from_text_stream(
+	std::istream& in, mrpt::optional_ref<std::string> outErrorMsg,
+	const bool is_3D)
+{
+	MRPT_START
+
+	// Clear current map:
+	mark_as_modified();
+	this->clear();
+
+	size_t linIdx = 1;
+	for (std::string line; std::getline(in, line); ++linIdx)
+	{
+		float coords[3];
+		std::stringstream ss(line);
+		for (int idxCoord = 0; idxCoord < (is_3D ? 3 : 2); idxCoord++)
+		{
+			if (!(ss >> coords[idxCoord]))
+			{
+				std::stringstream sErr;
+				sErr << "[CPointsMap::load2Dor3D_from_text_stream] Unexpected "
+						"format on line "
+					 << linIdx << " for coordinate #" << (idxCoord + 1) << "\n";
+
+				if (outErrorMsg)
+					outErrorMsg.value().get() = sErr.str();
+				else
+					std::cerr << sErr.str();
+
+				return false;
+			}
+		}
+
+		this->insertPoint(coords[0], coords[1], coords[2]);
+	}
+	return true;
+	MRPT_END
+}
+
 bool CPointsMap::load2Dor3D_from_text_file(
 	const std::string& file, const bool is_3D)
 {
 	MRPT_START
 
-	mark_as_modified();
-
-	FILE* f = os::fopen(file.c_str(), "rt");
-	if (!f) return false;
-
-	char str[1024];
-	char *ptr, *ptr1, *ptr2, *ptr3;
-
 	// Clear current map:
+	mark_as_modified();
 	this->clear();
 
-	while (!feof(f))
-	{
-		// Read one string line:
-		str[0] = 0;
-		if (!fgets(str, sizeof(str), f)) break;
+	std::ifstream fi(file);
+	if (!fi.is_open()) return false;
 
-		// Find the first digit:
-		ptr = str;
-		while (ptr[0] && (ptr[0] == ' ' || ptr[0] == '\t' || ptr[0] == '\r' ||
-						  ptr[0] == '\n'))
-			ptr++;
-
-		// And try to parse it:
-		float xx = strtod(ptr, &ptr1);
-		if (ptr1 != str)
-		{
-			float yy = strtod(ptr1, &ptr2);
-			if (ptr2 != ptr1)
-			{
-				if (!is_3D)
-				{
-					this->insertPoint(xx, yy, 0);
-				}
-				else
-				{
-					float zz = strtod(ptr2, &ptr3);
-					if (ptr3 != ptr2)
-					{
-						this->insertPoint(xx, yy, zz);
-					}
-				}
-			}
-		}
-	}
-
-	os::fclose(f);
-	return true;
+	return load2Dor3D_from_text_stream(fi, std::nullopt, is_3D);
 
 	MRPT_END
 }
