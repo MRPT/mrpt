@@ -1,5 +1,9 @@
-Pending:
+mrpt (1:2.0.3-1) unstable; urgency=medium
+
   * Fix missing Breaks+Replaces in debian/control (Closes: #960349).
+  * New version of upstream sources.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Wed, 13 May 2020 17:46:04 +0200
 
 mrpt (1:2.0.2-1) unstable; urgency=medium
 
