@@ -717,8 +717,6 @@ Description: Mobile Robot Programming Toolkit - common development files
 Package: libmrpt-dev
 Section: libdevel
 Architecture: any
-Breaks: libmrpt-dev (<< 1:2)
-Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},
 Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-comms-dev (= ${binary:Version}),
