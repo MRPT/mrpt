@@ -75,6 +75,7 @@ class NavlogViewerApp
 	void OnmnuMatlabExportPaths();
 	void OnmnuSaveCurrentObstacles();
 	void OnMainIdleLoop();
+	bool OnKeyboardCallback(int key, int scancode, int action, int modifiers);
 
 	mrpt::system::CTicTac m_autoPlayTimer;
 	bool m_autoPlayEnabled = false;
