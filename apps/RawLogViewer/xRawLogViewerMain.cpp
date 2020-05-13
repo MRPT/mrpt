@@ -2256,7 +2256,6 @@ void xRawLogViewerFrame::rebuildTreeView()
 	// straightforward
 	//  implementation runs *very* slow.
 	map<const TRuntimeClassId*, wxString> mapStrings;
-	map<const TRuntimeClassId*, wxString>::iterator it;
 
 	size_t updateProgressBarSteps = (rawlog.size() / 20) + 1;
 
@@ -2413,10 +2412,10 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	if (experimentLenght == 0) experimentLenght = 1;
 
-	for (auto it = listOfObjects.begin(); it != listOfObjects.end(); ++it)
+	for (const auto& oc : listOfObjects)
 	{
-		const char* className = it->first->className;
-		size_t count = it->second;
+		const char* className = oc.first->className;
+		size_t count = oc.second;
 		memStats->AppendText(format(
 			" %8u %25s : %5.03f Hz\n", (unsigned)count, className,
 			double(count > 1 ? count - 1 : 1) / experimentLenght));
@@ -2427,12 +2426,11 @@ void xRawLogViewerFrame::rebuildTreeView()
 		"\nSummary of 'sensorLabels' found in the "
 		"rawlog:\n-----------------------------------------\n");
 
-	for (auto it = listOfSensorLabels.begin(); it != listOfSensorLabels.end();
-		 ++it)
+	for (const auto& ipsl : listOfSensorLabels)
 	{
-		size_t count = it->second.getOccurences();
-		TTimeStamp tf = it->second.first;
-		TTimeStamp tl = it->second.last;
+		size_t count = ipsl.second.getOccurences();
+		TTimeStamp tf = ipsl.second.first;
+		TTimeStamp tl = ipsl.second.last;
 		double Hz = 0, dur = 0;
 		if (tf != INVALID_TIMESTAMP && tl != INVALID_TIMESTAMP)
 		{
@@ -2443,8 +2441,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 		memStats->AppendText(format(
 			" %8u %25s : %5.03f Hz for %.04f s, with %.03f s max delay "
 			"btw readings.\n",
-			(unsigned)count, it->first.c_str(), Hz, dur,
-			it->second.max_ellapsed_tim_between_obs));
+			(unsigned)count, ipsl.first.c_str(), Hz, dur,
+			ipsl.second.max_ellapsed_tim_between_obs));
 	}
 
 	memStats->ShowPosition(0);
@@ -2498,8 +2496,9 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 // Selection has changed:
 void xRawLogViewerFrame::OntreeViewSelectionChanged(
-	wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent ev,
-	int item_index, const mrpt::serialization::CSerializable::Ptr& item_data)
+	wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent /*ev*/,
+	int /*item_index*/,
+	const mrpt::serialization::CSerializable::Ptr& item_data)
 {
 	auto* win = (xRawLogViewerFrame*)me;
 	win->SelectObjectInTreeView(item_data);
@@ -3658,11 +3657,11 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 							CObservation2DRangeScan::Ptr>(k);
 						bool thisValid = false;
 
-						for (size_t k = 0; k < obsScan->getScanSize(); k++)
+						for (size_t i = 0; i < obsScan->getScanSize(); i++)
 						{
-							if (obsScan->getScanRangeValidity(k))
+							if (obsScan->getScanRangeValidity(i))
 								thisValid = true;
-							if (std::isnan(obsScan->getScanRange(k)))
+							if (std::isnan(obsScan->getScanRange(i)))
 								thisValid = false;
 						}
 
@@ -3790,33 +3789,33 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 										obs_2->m_readings[j]
 											.readingsVoltage.size());
 
-									for (size_t k = 0;
-										 k < obs->m_readings[j]
+									for (size_t i = 0;
+										 i < obs->m_readings[j]
 												 .readingsVoltage.size();
-										 k++)
+										 i++)
 									{
 										nReadings++;
 										// Compute difference for "t-1":
 										if (fabs(
 												obs_1->m_readings[j]
-													.readingsVoltage[k] -
+													.readingsVoltage[i] -
 												obs->m_readings[j]
-													.readingsVoltage[k]) >
+													.readingsVoltage[i]) >
 												maxChange &&
 											fabs(
 												obs_1->m_readings[j]
-													.readingsVoltage[k] -
+													.readingsVoltage[i] -
 												obs_2->m_readings[j]
-													.readingsVoltage[k]) >
+													.readingsVoltage[i]) >
 												maxChange)
 										{
 											obs_1->m_readings[j]
-												.readingsVoltage[k] =
+												.readingsVoltage[i] =
 												0.5f *
 												(obs->m_readings[j]
-													 .readingsVoltage[k] +
+													 .readingsVoltage[i] +
 												 obs_2->m_readings[j]
-													 .readingsVoltage[k]);
+													 .readingsVoltage[i]);
 											nFilt++;
 										}
 									}
@@ -3960,7 +3959,6 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 	int nFilt = 0, nReadings = 0;
 	string errorMsg;
 	CObservationBeaconRanges::Ptr obs_1, obs_2;
-	CObservationBeaconRanges::Ptr obs;
 	size_t q;
 
 	for (i = start_filt; i <= end_filt; i++)
@@ -3970,7 +3968,8 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 			case CRawlog::etSensoryFrame:
 			{
 				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-				obs = sf->getObservationByClass<CObservationBeaconRanges>();
+				CObservationBeaconRanges::Ptr obs =
+					sf->getObservationByClass<CObservationBeaconRanges>();
 				if (obs)
 				{
 					ASSERT_(indx_filt < obs->sensedData.size());
@@ -4003,7 +4002,8 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 			case CRawlog::etSensoryFrame:
 			{
 				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
-				obs = sf->getObservationByClass<CObservationBeaconRanges>();
+				CObservationBeaconRanges::Ptr obs =
+					sf->getObservationByClass<CObservationBeaconRanges>();
 
 				if (obs)
 				{

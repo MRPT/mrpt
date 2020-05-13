@@ -705,13 +705,13 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 		defaultDir =
 			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str());
 		defaultFilename = _("IMPORTED.rawlog");
-		wxFileDialog dialog(
+		wxFileDialog dialog2(
 			this, caption, defaultDir, defaultFilename, wildcard,
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-		if (dialog.ShowModal() != wxID_OK) return;
+		if (dialog2.ShowModal() != wxID_OK) return;
 
-		target_filename = string(dialog.GetPath().mbc_str());
+		target_filename = string(dialog2.GetPath().mbc_str());
 	}
 
 	string dir_for_images(".");
@@ -960,13 +960,13 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 		defaultDir =
 			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str());
 		defaultFilename = _("IMPORTED.rawlog");
-		wxFileDialog dialog(
+		wxFileDialog dialog2(
 			this, caption, defaultDir, defaultFilename, wildcard,
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
-		if (dialog.ShowModal() != wxID_OK) return;
+		if (dialog2.ShowModal() != wxID_OK) return;
 
-		target_filename = string(dialog.GetPath().mbc_str());
+		target_filename = string(dialog2.GetPath().mbc_str());
 	}
 
 	// Ask for the directory of images:

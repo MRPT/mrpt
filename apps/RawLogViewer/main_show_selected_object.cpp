@@ -275,6 +275,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		mrpt::maps::CPointsMap::Ptr pointMap;
 		mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
+		mrpt::obs::T3DPointsProjectionParams pp;
+		pp.takeIntoAccountSensorPoseOnRobot = true;
 
 		// Color from intensity image?
 		if (obs->hasRangeImage && obs->hasIntensityImage)
@@ -283,8 +285,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			pointMapCol->colorScheme.scheme =
 				CColouredPointsMap::cmFromIntensityImage;
 
-			mrpt::obs::T3DPointsProjectionParams pp;
-			pp.takeIntoAccountSensorPoseOnRobot = true;
 			obs->unprojectInto(*pointMapCol, pp);
 			pointMap = pointMapCol;
 		}
@@ -301,8 +301,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			}
 			else if (obs->hasRangeImage)
 			{
-				mrpt::obs::T3DPointsProjectionParams pp;
-				pp.takeIntoAccountSensorPoseOnRobot = true;
 				obs->unprojectInto(*pointMap, pp);
 			}
 		}
@@ -330,7 +328,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			mrpt::math::TPoint3D bbmin, bbmax;
 			gl_pnts->getBoundingBox(bbmin, bbmax);
 			gl_pnts->recolorizeByCoordinate(
-				bbmin.z, bbmax.z, 2 /*color by z*/, mrpt::img::cmJET);
+				bbmax.x, bbmin.x, 0 /*color by x*/, mrpt::img::cmJET);
 		}
 
 		// No need to further transform 3D points
