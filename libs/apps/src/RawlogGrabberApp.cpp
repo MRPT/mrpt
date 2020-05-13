@@ -65,10 +65,8 @@ void RawlogGrabberApp::initialize(int argc, const char** argv)
 	MRPT_END
 }
 
-void RawlogGrabberApp::run()
+void RawlogGrabberApp::runImpl()
 {
-	MRPT_START
-
 	using namespace mrpt;
 	using namespace mrpt::system;
 	using namespace mrpt::hwdrivers;
@@ -216,8 +214,21 @@ void RawlogGrabberApp::run()
 	MRPT_LOG_INFO("Waiting for all threads to close...");
 
 	for (auto& lstThread : lstThreads) lstThread.join();
+}
 
-	MRPT_END
+void RawlogGrabberApp::run()
+{
+	try
+	{
+		m_isRunning = true;
+		runImpl();
+		m_isRunning = false;
+	}
+	catch (const std::exception& e)
+	{
+		m_isRunning = false;
+		throw;
+	}
 }
 
 void RawlogGrabberApp::dump_verbose_info(

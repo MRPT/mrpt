@@ -46,6 +46,8 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	/** Runs with the current parameter set. Throws on errors. */
 	void run();
 
+	bool isRunning() const { return m_isRunning; }
+
 	/** @} */
 
 	/** @name Parameters and options. See: initialize()
@@ -69,7 +71,7 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	 * @{ */
 
 	std::string rawlog_filename;  //!< The generated .rawlog file
-	std::size_t rawlog_saved_objects = 0;  //!< Counter of saved objects
+	std::atomic_size_t rawlog_saved_objects = 0;  //!< Counter of saved objects
 
 	/** @} */
 
@@ -88,10 +90,13 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	void process_observations_for_sf(const TListObservations& list_obs);
 	void process_observations_for_nonsf(const TListObservations& list_obs);
 
+	void runImpl();
+
 	TListObservations m_global_list_obs;
 	std::mutex cs_m_global_list_obs;
 
 	std::atomic_bool allThreadsMustExit = false;
+	std::atomic_bool m_isRunning = false;
 
 	/** Directory where to save externally stored images, only for
 	 * CCameraSensor's. */

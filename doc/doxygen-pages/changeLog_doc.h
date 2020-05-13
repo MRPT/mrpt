@@ -28,6 +28,7 @@
   - BUG FIXES:
     - Incorrect number of points loaded when trying to load point clouds from incorrectly-formatted text files.
     - Fix build error in riscv64 (gcc doesn't know mtune=native for that arch)
+    - Fix spurious unit test failures in mrpt::apps::RawlogGrabberApp due to system load.
 
 ------
 # Version 2.0.2: Released May 4th, 2020
