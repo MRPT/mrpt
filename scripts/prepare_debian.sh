@@ -108,6 +108,7 @@ mkdir -p $MRPT_DEB_DIR
 # Orig tarball:
 echo "Copying orig tarball: mrpt_${MRPT_VERSION_STR}.orig.tar.gz"
 cp $HOME/mrpt_release/mrpt*.tar.gz $MRPT_DEB_DIR/mrpt_${MRPT_VERSION_STR}.orig.tar.gz
+cp $HOME/mrpt_release/mrpt*.tar.gz.asc $MRPT_DEB_DIR/mrpt_${MRPT_VERSION_STR}.orig.tar.gz.asc
 cd ${MRPT_DEB_DIR}
 tar -xf mrpt_${MRPT_VERSION_STR}.orig.tar.gz
 
