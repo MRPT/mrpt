@@ -12,6 +12,7 @@
 #include <mrpt/config.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
+#include <thread>
 
 #if MRPT_HAS_FFMPEG && MRPT_HAS_OPENCV
 TEST(RawlogGrabberApp, CGenericCamera_AVI)
@@ -54,10 +55,25 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 
 		// Max. run time.
 		// Should end much sooner when the video file is entirely processed.
-		app.run_for_seconds = 6.0;
+		app.run_for_seconds = 45.0;
 
 		// Less verbose output in tests:
 		app.show_sensor_thread_exceptions = false;
+
+		const std::size_t REQUIRED_GRAB_OBS = 3U;
+
+		auto tWatchDog = std::thread([&]() {
+			for (;;)
+			{
+				if (!app.isRunning()) break;
+				if (app.rawlog_saved_objects > REQUIRED_GRAB_OBS)
+				{
+					app.run_for_seconds = 1.0;  // make it exit
+					break;
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			}
+		});
 
 		// Run:
 		app.run();
@@ -65,7 +81,9 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 		// Check expected results:
 		std::cout << "Rawlog grabbed objects: " << app.rawlog_saved_objects
 				  << std::endl;
-		EXPECT_GE(app.rawlog_saved_objects, 2U);
+		if (tWatchDog.joinable()) tWatchDog.join();
+
+		EXPECT_GE(app.rawlog_saved_objects, REQUIRED_GRAB_OBS);
 	}
 	catch (const std::exception& e)
 	{
