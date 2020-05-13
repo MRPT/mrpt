@@ -328,25 +328,8 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 {
 	WX_START_TRY
 
-	// Preprocess: make sure 3D observations are ready:
-	std::vector<CObservation3DRangeScan::Ptr> obs3D_to_clear;
-	for (auto& it : *sf)
-	{
-		it->load();
-		// force generate 3D point clouds:
-		if (IS_CLASS(*it, CObservation3DRangeScan))
-		{
-			CObservation3DRangeScan::Ptr o =
-				std::dynamic_pointer_cast<CObservation3DRangeScan>(it);
-			if (o->hasRangeImage && !o->hasPoints3D)
-			{
-				mrpt::obs::T3DPointsProjectionParams pp;
-				pp.takeIntoAccountSensorPoseOnRobot = false;
-				o->unprojectInto(*o, pp);
-				obs3D_to_clear.push_back(o);
-			}
-		}
-	}
+	// load from disk if needed:
+	for (auto& it : *sf) it->load();
 
 	// Mix?
 	if (!m_mixlasers)
@@ -408,31 +391,54 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			if (tim_last == INVALID_TIMESTAMP || tim_last < obs->timestamp)
 				tim_last = obs->timestamp;
 
-			CColouredPointsMap pointMap;
-			pointMap.colorScheme.scheme =
-				CColouredPointsMap::cmFromIntensityImage;
-			pointMap.insertionOptions.minDistBetweenLaserPoints = 0;
+			mrpt::maps::CPointsMap::Ptr pointMap;
+			mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
+			mrpt::obs::T3DPointsProjectionParams pp;
+			pp.takeIntoAccountSensorPoseOnRobot = true;
 
-			pointMap.insertObservation(*obs);
+			// Color from intensity image?
+			if (obs->hasRangeImage && obs->hasIntensityImage)
+			{
+				pointMapCol = mrpt::maps::CColouredPointsMap::Create();
+				pointMapCol->colorScheme.scheme =
+					CColouredPointsMap::cmFromIntensityImage;
+
+				obs->unprojectInto(*pointMapCol, pp);
+				pointMap = pointMapCol;
+			}
+			else
+			{
+				// Empty point set, or load from XYZ in observation:
+				pointMap = mrpt::maps::CSimplePointsMap::Create();
+				if (obs->hasPoints3D)
+				{
+					for (size_t i = 0; i < obs->points3D_x.size(); i++)
+						pointMap->insertPoint(
+							obs->points3D_x[i], obs->points3D_y[i],
+							obs->points3D_z[i]);
+				}
+				else if (obs->hasRangeImage)
+				{
+					obs->unprojectInto(*pointMap, pp);
+				}
+			}
 
 			// Already in the map with the same sensor label?
+			CPointCloudColoured::Ptr gl_obj;
+
 			auto it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl != m_gl_objects.end())
 			{
 				// Update existing object:
 				TRenderObject& ro = it_gl->second;
-				CPointCloudColoured::Ptr gl_obj =
-					std::dynamic_pointer_cast<CPointCloudColoured>(ro.obj);
-				gl_obj->loadFromPointsMap(&pointMap);
+				gl_obj = std::dynamic_pointer_cast<CPointCloudColoured>(ro.obj);
 				ro.timestamp = obs->timestamp;
 			}
 			else
 			{
 				// Create object:
-				CPointCloudColoured::Ptr gl_obj =
-					std::make_shared<CPointCloudColoured>();
+				gl_obj = std::make_shared<CPointCloudColoured>();
 				gl_obj->setPointSize(3.0);
-				gl_obj->loadFromPointsMap(&pointMap);
 
 				TRenderObject ro;
 				ro.obj = gl_obj;
@@ -440,6 +446,19 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 				m_gl_objects[sNameInMap] = ro;
 				m_plot3D->getOpenGLSceneRef()->insert(gl_obj);
 			}
+
+			// Load as RGB or grayscale points:
+			if (pointMapCol)
+				gl_obj->loadFromPointsMap(pointMapCol.get());
+			else
+			{
+				gl_obj->loadFromPointsMap(pointMap.get());
+				mrpt::math::TPoint3D bbmin, bbmax;
+				gl_obj->getBoundingBox(bbmin, bbmax);
+				gl_obj->recolorizeByCoordinate(
+					bbmax.x, bbmin.x, 0 /*color by x*/, mrpt::img::cmJET);
+			}
+
 			// Add to list:
 			//				m_lstScans[obs->sensorLabel] = obs;
 		}
@@ -550,11 +569,6 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 
 	// Post-process: unload 3D observations.
 	for (auto& o : *sf) o->unload();
-	for (auto& i : obs3D_to_clear)
-	{
-		i->resizePoints3DVectors(0);
-		i->hasPoints3D = false;
-	}
 
 	WX_END_TRY
 }

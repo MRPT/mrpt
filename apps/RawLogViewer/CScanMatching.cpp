@@ -683,8 +683,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	// Align:
 	// --------------------------------------
 	bool isAnimation = cbAnimate->GetValue();
-	int maxSteps = icp.options.maxIterations;
-	int curStep = isAnimation ? 0 : maxSteps;
+	unsigned int maxSteps = icp.options.maxIterations;
+	unsigned int curStep = isAnimation ? 0 : maxSteps;
 	CPose2D estMean;
 	CMatrixDouble33 estCov;
 
