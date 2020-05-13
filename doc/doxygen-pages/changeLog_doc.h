@@ -12,7 +12,7 @@
 /** \page changelog Change Log
  *
 
-# Version 2.0.3: (Under development)
+# Version 2.0.3: Released May 13, 2020
 - Changes in applications:
   - navlog-viewer: Can now navigate with keyboard arrows too.
   - RawLogViewer: better 3D pointcloud coloring in observation view and in "scan animation" view.
