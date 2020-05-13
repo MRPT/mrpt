@@ -13,6 +13,9 @@
  *
 
 # Version 2.0.3: (Under development)
+- Changes in applications:
+  - navlog-viewer: Can now navigate with keyboard arrows too.
+- Changes in libraries:
   - \ref mrpt_maps_grp
     - Point cloud classes mrpt::maps::CPointsMap: New methods:
       - load2D_from_text_stream()

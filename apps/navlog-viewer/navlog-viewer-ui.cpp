@@ -275,6 +275,10 @@ NavlogViewerApp::NavlogViewerApp()
 	// Setup idle loop code:
 	// -----------------------------
 	m_win->setLoopCallback([&]() { OnMainIdleLoop(); });
+	m_win->setKeyboardCallback(
+		[&](int key, int scancode, int action, int modifiers) {
+			return OnKeyboardCallback(key, scancode, action, modifiers);
+		});
 
 	// Update view and show window:
 	// -----------------------------
@@ -415,6 +419,39 @@ void NavlogViewerApp::OnMainIdleLoop()
 	{
 		OntimMouseXY();
 	}
+}
+
+bool NavlogViewerApp::OnKeyboardCallback(
+	int key, [[maybe_unused]] int scancode, int action,
+	[[maybe_unused]] int modifiers)
+{
+	if (action != GLFW_PRESS && action != GLFW_REPEAT) return false;
+
+	switch (key)
+	{
+		case GLFW_KEY_LEFT:
+		{
+			float p = slidLog->value();
+			if ((p - 1) >= slidLog->range().first)
+			{
+				slidLog->setValue(p - 1);
+				OnslidLogCmdScroll();
+			}
+		}
+		break;
+		case GLFW_KEY_RIGHT:
+		{
+			float p = slidLog->value();
+			if ((p + 1) <= slidLog->range().second)
+			{
+				slidLog->setValue(p + 1);
+				OnslidLogCmdScroll();
+			}
+		}
+		break;
+	};
+
+	return false;
 }
 
 void NavlogViewerApp::updateInfoFromLoadedLog()
@@ -914,8 +951,8 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 
 	// Draw TP-obstacles
 	// --------------------------------
-	// log.infoPerPTG.size() may be != nPTGs in the last entry is used for "NOP
-	// cmdvel"
+	// log.infoPerPTG.size() may be != nPTGs in the last entry is used for
+	// "NOP cmdvel"
 
 	bool mustPerformLayout = false;
 
