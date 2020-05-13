@@ -12,6 +12,10 @@
 /** \page changelog Change Log
  *
 
+# Version 2.0.4: (Under development)
+ - (None yet)
+
+------
 # Version 2.0.3: Released May 13, 2020
 - Changes in applications:
   - navlog-viewer: Can now navigate with keyboard arrows too.
