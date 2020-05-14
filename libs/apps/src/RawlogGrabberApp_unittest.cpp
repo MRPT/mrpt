@@ -60,13 +60,13 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 		// Less verbose output in tests:
 		app.show_sensor_thread_exceptions = false;
 
-		const std::size_t REQUIRED_GRAB_OBS = 3U;
+		const std::size_t REQUIRED_GRAB_OBS = 1U;
 
 		auto tWatchDog = std::thread([&]() {
 			for (;;)
 			{
 				if (!app.isRunning()) break;
-				if (app.rawlog_saved_objects > REQUIRED_GRAB_OBS)
+				if (app.rawlog_saved_objects >= REQUIRED_GRAB_OBS)
 				{
 					app.run_for_seconds = 1.0;  // make it exit
 					break;
