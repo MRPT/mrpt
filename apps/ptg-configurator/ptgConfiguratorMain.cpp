@@ -20,9 +20,7 @@
 #include <wx/settings.h>
 #include <wx/string.h>
 //*)
-#ifdef MRPT_OS_LINUX
-#include <dlfcn.h>
-#endif
+#include <mrpt/system/os.h>
 
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/wx28-fixes.h>
@@ -1220,15 +1218,15 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 void ptgConfiguratorframe::loadPlugin()
 {
-#ifdef MRPT_OS_LINUX
 	wxFileDialog openFileDialog(
 		this, _("Open library"), wxT(""), wxT(""),
-		wxT("so files (*.so)|*.so|so files (*.so.*)|*.so.*"),
+		wxT("so files (*.so)|*.so|so files (*.so.*)|*.so.*|*.dll"),
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (openFileDialog.ShowModal() == wxID_CANCEL) return;
 
-	dlopen(openFileDialog.GetPath().mb_str(), RTLD_LAZY);
+	const std::string sLib = std::string(openFileDialog.GetPath().mb_str());
+	mrpt::system::loadPluginModule(sLib);
 
 	// Populate list of existing PTGs:
 	{
@@ -1249,11 +1247,6 @@ void ptgConfiguratorframe::loadPlugin()
 		wxCommandEvent e;
 		OncbPTGClassSelect(e);
 	}
-#else
-	wxMessageBox(
-		wxT("This feature is only available in GNU/Linux!"), wxT("Error"), wxOK,
-		nullptr);
-#endif
 }
 
 void ptgConfiguratorframe::OnedPTGIndexChange(wxSpinEvent& event)

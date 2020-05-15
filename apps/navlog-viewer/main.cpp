@@ -9,13 +9,10 @@
 
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/system/os.h>
 #include <mrpt/version.h>
 #include <iostream>
 #include "navlog-viewer-ui.h"
-
-#ifdef MRPT_OS_LINUX
-#include <dlfcn.h>
-#endif
 
 int main(int argc, char** argv)
 {
@@ -34,19 +31,12 @@ int main(int argc, char** argv)
 
 		if (!cmd.parse(argc, argv)) throw std::runtime_error("");
 
-#ifdef MRPT_OS_LINUX
 		if (argExtraModuleToLoad.isSet())
 		{
 			const std::string sLib = argExtraModuleToLoad.getValue();
-			std::cout << "Loading library: " << sLib << "...\n";
-			if (!dlopen(sLib.c_str(), RTLD_LAZY))
-			{
-				fprintf(
-					stderr, "Error loading '%s':\n%s\n", sLib.c_str(),
-					dlerror());
-			}
+			std::cout << "Loading plugin modules: " << sLib << "...\n";
+			mrpt::system::loadPluginModules(sLib);
 		}
-#endif
 
 		// UI setup:
 		nanogui::init();

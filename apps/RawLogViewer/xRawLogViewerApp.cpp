@@ -16,9 +16,6 @@
 //*)
 #include <wx/cmdline.h>
 #include <wx/log.h>
-#ifdef MRPT_OS_LINUX
-#include <dlfcn.h>
-#endif
 
 #include <clocale>
 
@@ -29,6 +26,7 @@ std::string global_fileToOpen;
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -57,19 +55,13 @@ bool xRawLogViewerApp::OnInit()
 
 	wxCmdLineParser parser(cmdLineDesc, argc, argv);
 	parser.Parse(true);
-#ifdef MRPT_OS_LINUX
 	wxString libraryPath;
 	if (parser.Found(wxT_2("l"), &libraryPath))
 	{
 		const std::string sLib = std::string(libraryPath.mb_str());
-		std::cout << "Loading library: " << sLib << "...\n";
-		if (!dlopen(sLib.c_str(), RTLD_LAZY))
-		{
-			fprintf(
-				stderr, "Error loading '%s':\n%s\n", sLib.c_str(), dlerror());
-		}
+		std::cout << "Loading plugin libraries: " << sLib << "...\n";
+		mrpt::system::loadPluginModules(sLib);
 	}
-#endif
 	if (parser.GetParamCount() == 1)
 		global_fileToOpen = parser.GetParam().mb_str();
 

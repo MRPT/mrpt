@@ -13,7 +13,12 @@
  *
 
 # Version 2.0.4: (Under development)
- - (None yet)
+- Changes in applications:
+  - rawlog-edit, rawlog-grabber: Now allows loading external "plugin" modules (.so) with user-defined types.
+  - RawLogViewer, navlog-viewer, ptg-configurator allows more than one "plugin" modules to be loaded.
+- Changes in libraries:
+  - \ref mrpt_system_grp
+     - New functions: mrpt::system::loadPluginModule(), mrpt::system::loadPluginModules()
 
 ------
 # Version 2.0.3: Released May 13, 2020
