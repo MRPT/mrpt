@@ -4,20 +4,26 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
 
 =head1 SYNOPSIS
 
-   rawlog-edit  [--rename-externals] [--stereo-rectify <SENSOR_LABEL,0.5>]
-                [--camera-params <SENSOR_LABEL,file.ini>] [--sensors-pose
-                <file.ini>] [--generate-pcd] [--generate-3d-pointclouds]
-                [--cut] [--export-2d-scans-txt] [--export-imu-txt]
-                [--export-gps-txt] [--export-gps-kml] [--keep-label <label[
-                ,label...]>] [--remove-label <label[,label...]>]
+   rawlog-edit  [--undistort] [--rename-externals] [--stereo-rectify
+                <SENSOR_LABEL,0.5>] [--camera-params <SENSOR_LABEL
+                ,file.ini>] [--sensors-pose <file.ini>]
+                [--generate-3d-pointclouds] [--cut] [--export-2d-scans-txt]
+                [--export-rawdaq-txt] [--recalc-odometry]
+                [--export-anemometer-txt] [--export-enose-txt]
+                [--export-odometry-txt] [--export-imu-txt]
+                [--export-gps-all] [--export-gps-txt]
+                [--export-gps-gas-kml] [--export-gps-kml] [--keep-label
+                <label[,label...]>] [--remove-label <label[,label...]>]
                 [--list-range-bearing] [--remap-timestamps <a;b>]
-                [--list-timestamps] [--list-images] [--info]
-                [--externalize] [-q] [-w] [--to-time <T1>] [--from-time
-                <T0>] [--to-index <N1>] [--from-index <N0>]
-                [--text-file-output <out.txt>] [--image-size <COLSxROWS>]
-                [--image-format <jpg,png,pgm,...>] [--out-dir <.>] [-o
-                <dataset_out.rawlog>] -i <dataset.rawlog> [--] [--version]
-                [-h]
+                [--list-timestamps] [--list-poses] [--list-images] [--info]
+                [--de-externalize] [--externalize] [-q] [-w] [--odo-D <D>]
+                [--odo-KR <KR>] [--odo-KL <KL>] [--to-time <T1>]
+                [--from-time <T0>] [--to-index <N1>] [--from-index <N0>]
+                [--text-file-output <out.txt>] [--rectify-centers-coincide]
+                [--image-size <COLSxROWS>] [--txt-externals]
+                [--image-format <jpg,png,pgm,...>] [--out-dir <.>] [-p
+                <dataset.rawlog>] [-o <dataset_out.rawlog>] -i
+                <dataset.rawlog> [--] [--version] [-h]
 
 
 =head1 USAGE EXAMPLES
@@ -69,6 +75,10 @@ dataset files in the "rawlog" standardized format.
 
 These are the supported arguments and operations:
 
+   --undistort
+     Op: Undistort all images in the rawlog.
+
+
    --rename-externals
      Op: Renames all the external storage file names within the rawlog (it
      doesn't change the external files, which may even not exist).
@@ -84,10 +94,10 @@ These are the supported arguments and operations:
 
      Requires: -o (or --output)
 
-     Optional: --image-format to set image format (default=jpg),
+     Optional: --image-format to set image format (default=jpg), 
 
      --image-size to resize output images (example: --image-size 640x480)
-
+     
 
 
    --camera-params <SENSOR_LABEL,file.ini>
@@ -138,6 +148,46 @@ These are the supported arguments and operations:
      The generated .txt files will be saved in the same path than the input
      rawlog, with the same filename + each sensorLabel.
 
+   --export-rawdaq-txt
+     Op: Export raw DAQ readings to TXT files.
+
+     Generates one .txt file for each different sensor label + DAQ task.
+     The generated .txt files will be saved in the same path than the input
+     rawlog.
+
+   --recalc-odometry
+     Op: Recomputes odometry increments from new encoder-to-odometry
+     constants.
+
+     Requires: -o (or --output)
+
+     Requires: --odo-KL, --odo-KR and --odo-D.
+
+
+   --export-anemometer-txt
+     Op: Export anemometer readigns to TXT files.
+
+     Generates one .txt file for each different sensor label of an
+     anemometer observation in the dataset. The generated .txt files will
+     be saved in the same path than the input rawlog, with the same
+     filename + each sensorLabel.
+
+   --export-enose-txt
+     Op: Export e-nose readigns to TXT files.
+
+     Generates one .txt file for each different sensor label of an e-nose
+     observation in the dataset. The generated .txt files will be saved in
+     the same path than the input rawlog, with the same filename + each
+     sensorLabel.
+
+   --export-odometry-txt
+     Op: Export absolute odometry readings to TXT files.
+
+     Generates one .txt file for each different sensor label of an odometry
+     observation in the dataset. The generated .txt files will be saved in
+     the same path than the input rawlog, with the same filename + each
+     sensorLabel.
+
    --export-imu-txt
      Op: Export IMU readings to TXT files.
 
@@ -146,13 +196,30 @@ These are the supported arguments and operations:
      the same path than the input rawlog, with the same filename + each
      sensorLabel.
 
+   --export-gps-all
+     Op: Generic export all kinds of GPS/GNSS messages to separate TXT
+     files.
+
+     Generates one .txt file for each different sensor label and for each
+     message type in the dataset, with a first header line describing each
+     field.
+
    --export-gps-txt
-     Op: Export GPS readings to TXT files.
+     Op: Export GPS GPGGA messages to TXT files.
 
      Generates one .txt file for each different sensor label of GPS
      observations in the dataset. The generated .txt files will be saved in
      the same path than the input rawlog, with the same filename + each
      sensorLabel.
+
+   --export-gps-gas-kml
+     Op: Export GPS paths to Google Earth KML files coloured by the gas
+     concentration.
+
+     Generates one .kml file with different sections for each different
+     sensor label of GPS observations in the dataset. The generated .kml
+     files will be saved in the same path than the input rawlog, with the
+     same filename + each sensorLabel.
 
    --export-gps-kml
      Op: Export GPS paths to Google Earth KML files.
@@ -195,6 +262,13 @@ These are the supported arguments and operations:
      Optionally the output text file can be changed with
      --text-file-output.
 
+   --list-poses
+     Op: dump a list of all the poses of the observations in the
+     dataset.
+
+     Optionally the output text file can be changed with
+     --text-file-output.
+
    --list-images
      Op: dump a list of all external image files in the dataset.
 
@@ -204,18 +278,37 @@ These are the supported arguments and operations:
    --info
      Op: parse input file and dump information and statistics.
 
+   --de-externalize
+     Op: the opposite that --externalize: generates a monolitic rawlog file
+     with all external files integrated in one.
+
+     Requires: -o (or --output)
+
+
    --externalize
      Op: convert to external storage.
 
      Requires: -o (or --output)
 
-     Optional: --image-format
+     Optional: --image-format, --txt-externals
 
    -q,  --quiet
      Terse output
 
    -w,  --overwrite
      Force overwrite target file without prompting.
+
+   --odo-D <D>
+     Distance between left-right wheels (meters), used in
+     --recalc-odometry.
+
+   --odo-KR <KR>
+     Constant from encoder ticks to meters (right wheel), used in
+     --recalc-odometry.
+
+   --odo-KL <KL>
+     Constant from encoder ticks to meters (left wheel), used in
+     --recalc-odometry.
 
    --to-time <T1>
      End time for --cut, as UNIX timestamp, optionally with fractions of
@@ -234,14 +327,26 @@ These are the supported arguments and operations:
    --text-file-output <out.txt>
      Output for a text file
 
+   --rectify-centers-coincide
+     In stereo rectification, force that both image centers after coincide
+     after rectifying.
+
    --image-size <COLSxROWS>
      Resize output images
+
+   --txt-externals
+     When externalizing CObservation3DRangeScan objects, switched from
+     binary files (default) to plain text.
 
    --image-format <jpg,png,pgm,...>
      External image format
 
    --out-dir <.>
      Output directory (used by some commands only)
+
+   -p <mylib.so>,  --plugins <mylib.so>
+     Single or comma-separated list of .so/.dll plugins to load for
+     additional user-supplied classes
 
    -o <dataset_out.rawlog>,  --output <dataset_out.rawlog>
      Output dataset (*.rawlog)
@@ -257,6 +362,7 @@ These are the supported arguments and operations:
 
    -h,  --help
      Displays usage information and exits.
+
 
 --
 

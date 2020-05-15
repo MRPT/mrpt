@@ -15,11 +15,6 @@ add_executable(${PROJECT_NAME}
 	${MRPT_VERSION_RC_FILE}
 )
 
-# -ldl required by the plugin load mechanism of this app:
-if(UNIX)
-	target_link_libraries(${PROJECT_NAME} dl)
-endif()
-
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
