@@ -1,3 +1,15 @@
+mrpt (1:2.0.3-3) unstable; urgency=medium
+
+  * Add another patch to disable failing unit tests in builders.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Fri, 15 May 2020 16:25:55 +0200
+
+mrpt (1:2.0.3-2) unstable; urgency=medium
+
+  * Add patch to fix FTBFS due to failed unit tests in some architectures.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Thu, 14 May 2020 21:23:27 +0200
+
 mrpt (1:2.0.3-1) unstable; urgency=medium
 
   * Fix missing Breaks+Replaces in debian/control (Closes: #960349).
