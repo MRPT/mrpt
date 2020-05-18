@@ -27,6 +27,7 @@
 
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 
+#include <mrpt/system/os.h>
 #include <memory>
 
 using TOperationFunctor = void (*)(
@@ -84,6 +85,12 @@ TCLAP::ValueArg<std::string> arg_input_file(
 TCLAP::ValueArg<std::string> arg_output_file(
 	"o", "output", "Output dataset (*.rawlog)", false, "", "dataset_out.rawlog",
 	cmd);
+
+TCLAP::ValueArg<std::string> arg_plugins(
+	"p", "plugins",
+	"Single or comma-separated list of .so/.dll plugins to load for additional "
+	"user-supplied classes",
+	false, "", "mylib.so", cmd);
 
 TCLAP::ValueArg<std::string> arg_outdir(
 	"", "out-dir", "Output directory (used by some commands only)", false, ".",
@@ -440,6 +447,10 @@ int main(int argc, char** argv)
 
 		string input_rawlog = arg_input_file.getValue();
 		const bool verbose = !arg_quiet.getValue();
+
+		// Plugins:
+		if (arg_plugins.isSet())
+			mrpt::system::loadPluginModules(arg_plugins.getValue());
 
 		// Check the selected operation:
 		//  Only one of the ops should be selected:
