@@ -94,6 +94,13 @@ if(BUILD_EXAMPLES)
 	set(CMAKE_EXAMPLE_DEPS mrpt::system mrpt::poses mrpt::io)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+	# === Depending on: system+math+gui ===
+	set(LIST_EXAMPLES_IN_THIS_DIR
+		system_control_rate_timer_example
+		)
+	set(CMAKE_EXAMPLE_DEPS mrpt::system mrpt::math mrpt::gui mrpt::tclap)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
 	# === Depending on: mrpt::math mrpt::random mrpt::gui ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		math_csparse_example
