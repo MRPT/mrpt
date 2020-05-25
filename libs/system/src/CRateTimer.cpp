@@ -32,8 +32,8 @@ bool CRateTimer::sleep()
 	const double elapsed_tim = m_tictac.Tac();
 	const double period = 1.0 / m_rate_hz;
 	const int64_t wait_tim_ns =
-		static_cast<int64_t>(1000000000L * (period - elapsed_tim));
-	if (elapsed_tim > period)
+		static_cast<int64_t>(1.0e9 * (period - elapsed_tim));
+	if (elapsed_tim > period || wait_tim_ns <= 0)
 	{
 		m_tictac.Tic();
 		return false;
@@ -48,6 +48,10 @@ bool CRateTimer::sleep()
 
 	for (;;)
 	{
+		ASSERT_ABOVEEQ_(ts.tv_sec, 0);
+		ASSERT_ABOVE_(ts.tv_nsec, 0);
+		ASSERT_BELOWEQ_(ts.tv_nsec, 999999999);
+
 		int err = clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, &ts_remainer);
 		if (err == 0) break;  // all good
 		if (err == EINTR)
