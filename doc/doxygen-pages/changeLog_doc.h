@@ -19,7 +19,8 @@
 - Changes in libraries:
   - \ref mrpt_system_grp
      - New functions: mrpt::system::loadPluginModule(), mrpt::system::loadPluginModules()
-	 - mrpt::system::CRateTimer: enforce use of high-resolution monotonic clock.
+	 - mrpt::system::CRateTimer: enforce use of high-resolution monothonic clock.
+	 - mrpt::system::CTicTac: enforce use of nanosecond monothonic clock.
 
 ------
 # Version 2.0.3: Released May 13, 2020

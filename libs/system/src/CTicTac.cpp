@@ -13,6 +13,7 @@
 #include <windows.h>
 #else
 #include <sys/time.h>
+#include <time.h>
 #endif
 
 #include <mrpt/core/exceptions.h>
@@ -53,7 +54,7 @@ using namespace mrpt::system;
 #ifdef _WIN32
 #define LARGE_INTEGER_NUMS reinterpret_cast<LARGE_INTEGER*>(largeInts)
 #else
-#define TIMEVAL_NUMS reinterpret_cast<struct timeval*>(largeInts)
+#define TIMEVAL_NUMS reinterpret_cast<struct timespec*>(largeInts)
 #endif
 
 CTicTac::CTicTac() noexcept
@@ -66,8 +67,8 @@ CTicTac::CTicTac() noexcept
 		"sizeof(LARGE_INTEGER) failed!");
 #else
 	static_assert(
-		sizeof(largeInts) >= 2 * sizeof(struct timeval),
-		"sizeof(struct timeval) failed!");
+		sizeof(largeInts) >= 2 * sizeof(struct timespec),
+		"sizeof(struct timespec) failed!");
 #endif
 	Tic();
 }
@@ -79,7 +80,7 @@ void CTicTac::Tic() noexcept
 	QueryPerformanceCounter(&l[0]);
 #else
 	auto* ts = TIMEVAL_NUMS;
-	gettimeofday(&ts[0], nullptr);
+	clock_gettime(CLOCK_MONOTONIC, &ts[0]);
 #endif
 }
 
@@ -92,8 +93,8 @@ double CTicTac::Tac() noexcept
 		   AuxWindowsTicTac::GetInstance().dbl_period;
 #else
 	auto* ts = TIMEVAL_NUMS;
-	gettimeofday(&ts[1], nullptr);
+	clock_gettime(CLOCK_MONOTONIC, &ts[1]);
 	return static_cast<double>(ts[1].tv_sec - ts[0].tv_sec) +
-		   1e-6 * static_cast<double>(ts[1].tv_usec - ts[0].tv_usec);
+		   1e-9 * static_cast<double>(ts[1].tv_nsec - ts[0].tv_nsec);
 #endif
 }
