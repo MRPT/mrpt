@@ -788,10 +788,10 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage(
 	{
 		const size_t nPts = points3D_x.size();
 
-		CMatrixFloat M(3, nPts);
-		M.setRow(0, points3D_x);
-		M.setRow(1, points3D_y);
-		M.setRow(2, points3D_z);
+		CMatrixFloat M(nPts, 3);
+		M.setCol(0, points3D_x);
+		M.setCol(1, points3D_y);
+		M.setCol(2, points3D_z);
 
 		M.saveToTextFile(real_absolute_path, MATRIX_FORMAT_FIXED);
 	}
