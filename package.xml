@@ -25,6 +25,7 @@
   <depend>libudev-dev</depend>
   <depend>libusb-1.0-dev</depend>
   <depend>libglfw3-dev</depend>
+  <depend>libxrandr</depend>
   <depend>suitesparse</depend>
   <depend>wx-common</depend>
   <depend>wxwidgets</depend>
