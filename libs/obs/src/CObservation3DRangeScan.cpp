@@ -562,7 +562,7 @@ void CObservation3DRangeScan::serializeFrom(
 			}
 
 			// auto-fix wrong camera resolution in parameters:
-			if (hasRangeImage &&
+			if (hasRangeImage && !rangeImage_isExternallyStored() &&
 				(static_cast<int>(cameraParams.ncols) != rangeImage.cols() ||
 				 static_cast<int>(cameraParams.nrows) != rangeImage.rows()))
 			{
