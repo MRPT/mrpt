@@ -22,6 +22,8 @@
     - New functions: mrpt::system::loadPluginModule(), mrpt::system::loadPluginModules()
     - mrpt::system::CRateTimer: enforce use of high-resolution monothonic clock.
     - mrpt::system::CTicTac: enforce use of nanosecond monothonic clock.
+- BUG FIXES:
+    - mrpt::obs::CObservation3DRangeScan would try to (incorrectly) "autofix" camera resolution if loading an externally-stored observation.
 
 ------
 # Version 2.0.3: Released May 13, 2020
