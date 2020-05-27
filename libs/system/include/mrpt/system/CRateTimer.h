@@ -28,6 +28,10 @@ class CRateTimer
 
 	/** Changes the object loop rate (Hz) */
 	void setRate(const double rate_hz);
+
+	/** Gets current rate (Hz) */
+	double rate() const { return m_rate_hz; }
+
 	/** Sleeps for some time, such as the return of this method is 1/rate
 	 * (seconds)
 	 * after the return of the previous call.
