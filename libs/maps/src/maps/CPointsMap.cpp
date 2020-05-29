@@ -323,8 +323,8 @@ void CPointsMap::determineMatching2D(
 	correspondences.reserve(nLocalPoints);
 	extraResults.correspondencesRatio = 0;
 
-	TMatchingPairList _correspondences;
-	_correspondences.reserve(nLocalPoints);
+	TMatchingPairList tempCorrs;
+	tempCorrs.reserve(nLocalPoints);
 
 	// Nothing to do if we have an empty map!
 	if (!nGlobalPoints || !nLocalPoints) return;
@@ -485,9 +485,9 @@ void CPointsMap::determineMatching2D(
 		if (tentativ_err_sq < maxDistForCorrespondenceSquared)
 		{
 			// Save all the correspondences:
-			_correspondences.resize(_correspondences.size() + 1);
+			tempCorrs.resize(tempCorrs.size() + 1);
 
-			TMatchingPair& p = _correspondences.back();
+			TMatchingPair& p = tempCorrs.back();
 
 			p.this_idx = tentativ_this_idx;
 			p.this_x = m_x[tentativ_this_idx];
@@ -521,12 +521,11 @@ void CPointsMap::determineMatching2D(
 			params.onlyKeepTheClosest,
 			"ERROR: onlyKeepTheClosest must be also set to true when "
 			"onlyUniqueRobust=true.");
-		_correspondences.filterUniqueRobustPairs(
-			nGlobalPoints, correspondences);
+		tempCorrs.filterUniqueRobustPairs(nGlobalPoints, correspondences);
 	}
 	else
 	{
-		correspondences.swap(_correspondences);
+		correspondences.swap(tempCorrs);
 	}
 
 	// If requested, copy sum of squared distances to output pointer:
@@ -1077,8 +1076,8 @@ void CPointsMap::determineMatching3D(
 	correspondences.clear();
 	correspondences.reserve(nLocalPoints);
 
-	TMatchingPairList _correspondences;
-	_correspondences.reserve(nLocalPoints);
+	TMatchingPairList tempCorrs;
+	tempCorrs.reserve(nLocalPoints);
 
 	// Empty maps?  Nothing to do
 	if (!nGlobalPoints || !nLocalPoints) return;
@@ -1157,9 +1156,9 @@ void CPointsMap::determineMatching3D(
 			if (tentativ_err_sq < maxDistForCorrespondenceSquared)
 			{
 				// Save all the correspondences:
-				_correspondences.resize(_correspondences.size() + 1);
+				tempCorrs.resize(tempCorrs.size() + 1);
 
-				TMatchingPair& p = _correspondences.back();
+				TMatchingPair& p = tempCorrs.back();
 
 				p.this_idx = tentativ_this_idx;
 				p.this_x = m_x[tentativ_this_idx];
@@ -1194,12 +1193,11 @@ void CPointsMap::determineMatching3D(
 			params.onlyKeepTheClosest,
 			"ERROR: onlyKeepTheClosest must be also set to true when "
 			"onlyUniqueRobust=true.");
-		_correspondences.filterUniqueRobustPairs(
-			nGlobalPoints, correspondences);
+		tempCorrs.filterUniqueRobustPairs(nGlobalPoints, correspondences);
 	}
 	else
 	{
-		correspondences.swap(_correspondences);
+		correspondences = std::move(tempCorrs);
 	}
 
 	// If requested, copy sum of squared distances to output pointer:
@@ -1278,8 +1276,8 @@ void CPointsMap::compute3DDistanceToMesh(
 	correspondencesRatio = 0;
 
 	// aux correspondence vector
-	TMatchingPairList _correspondences;
-	_correspondences.reserve(nLocalPoints);
+	TMatchingPairList tempCorrs;
+	tempCorrs.reserve(nLocalPoints);
 
 	// Hay mapa global?
 	if (!nGlobalPoints) return;  // No
@@ -1346,9 +1344,9 @@ void CPointsMap::compute3DDistanceToMesh(
 			if (distanceForThisPoint < maxDistForCorrespondence)
 			{
 				// Save all the correspondences:
-				_correspondences.resize(_correspondences.size() + 1);
+				tempCorrs.resize(tempCorrs.size() + 1);
 
-				TMatchingPair& p = _correspondences.back();
+				TMatchingPair& p = tempCorrs.back();
 
 				p.this_idx = nOtherMapPointsWithCorrespondence++;  // insert a
 				// consecutive index
@@ -1378,7 +1376,7 @@ void CPointsMap::compute3DDistanceToMesh(
 	std::map<size_t, std::map<size_t, std::map<size_t, pair<size_t, float>>>>
 		best;  // 3D associative map
 	TMatchingPairList::iterator it;
-	for (it = _correspondences.begin(); it != _correspondences.end(); ++it)
+	for (it = tempCorrs.begin(); it != tempCorrs.end(); ++it)
 	{
 		const size_t i0 = vIdx[it->this_idx][0];
 		const size_t i1 = vIdx[it->this_idx][1];
@@ -1403,7 +1401,7 @@ void CPointsMap::compute3DDistanceToMesh(
 		}
 	}  // end it correspondences
 
-	for (it = _correspondences.begin(); it != _correspondences.end(); ++it)
+	for (it = tempCorrs.begin(); it != tempCorrs.end(); ++it)
 	{
 		const size_t i0 = vIdx[it->this_idx][0];
 		const size_t i1 = vIdx[it->this_idx][1];
