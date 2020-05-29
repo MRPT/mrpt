@@ -26,6 +26,7 @@
     - CObservation3DRangeScan::points3D_convertToExternalStorage() stores point clouds with points as rows (vs as columns as it did before). 
 - BUG FIXES:
     - mrpt::obs::CObservation3DRangeScan would try to (incorrectly) "autofix" camera resolution if loading an externally-stored observation.
+    - mrpt::maps::CPointsMap::determineMatching2D(): avoid potential multi-thread problems with a vector::swap()
 
 ------
 # Version 2.0.3: Released May 13, 2020
