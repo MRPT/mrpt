@@ -12,9 +12,11 @@
 
 namespace mrpt::opengl
 {
-/** \defgroup mrpt_adapters_grp Pointcloud adapter (wrapper) template classes
-   (in #include <mrpt/opengl/pointcloud_adapters.h>) \addtogroup mrpt_opengl_grp
-*/
+// clang-format off
+/** \defgroup mrpt_adapters_grp Pointcloud adapter (wrapper) template classes (in #include <mrpt/opengl/pointcloud_adapters.h>) 
+ * \addtogroup mrpt_opengl_grp
+ */
+// clang-format on
 
 /** \addtogroup mrpt_adapters_grp
  * @{ */
