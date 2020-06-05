@@ -16,7 +16,7 @@ namespace mrpt::hmtslam
  * instance of any CSerializable object.
  *  A multi-hypotheses version exists in CMHPropertiesValuesList.
  * \sa CSerializable, CMHPropertiesValuesList, mrpt::system::TParameters
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_hmtslam_grp
  */
 class CPropertiesValuesList : public mrpt::serialization::CSerializable
 {

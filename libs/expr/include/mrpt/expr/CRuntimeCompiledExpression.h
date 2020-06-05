@@ -54,7 +54,7 @@ namespace expr
  *
  * \note (New in MRPT 1.5.0)
  * \note (`MRPT_EXPR_VERBOSE` new in MRPT 1.5.7)
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_expr_grp
  */
 // Note: Leave the MRPT_EXPR_EXPORT macro in mrpt-expr, to avoid exporting ALL
 // symbols which would increase the lib size too much.

@@ -39,7 +39,7 @@ int MRPT_SAVE_VALUE_PADDING();
  * of the derived classes.
  *
  * See: \ref config_file_format
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_config_grp
  */
 class CConfigFileBase
 {

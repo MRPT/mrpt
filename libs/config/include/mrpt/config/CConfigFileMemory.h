@@ -30,7 +30,7 @@ namespace mrpt::config
  *
  * See: \ref config_file_format
  *
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_config_grp
  * \note YAML support was introduced in MRPT 1.9.9
  */
 class CConfigFileMemory : public CConfigFileBase

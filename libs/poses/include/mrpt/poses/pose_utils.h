@@ -95,9 +95,9 @@ inline void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
 
 }  // namespace mrpt::poses::internal
 
-/**\name Parsing of textfiles with poses */
-/**\{*/
-/**\brief Parse the textfile and fill in the corresponding \a poses vector.
+/** \name Parsing of textfiles with poses */
+/** \{ */
+/** \brief Parse the textfile and fill in the corresponding \a poses vector.
  *
  * The file to be parsed is to contain 2D or 3D poses along with their
  * corresponding timestamps, one line for each.
@@ -128,7 +128,7 @@ inline void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
  * \sa
  * https://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011
  *
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_poses_grp
  */
 template <class POSE_T>
 void readFileWithPoses(

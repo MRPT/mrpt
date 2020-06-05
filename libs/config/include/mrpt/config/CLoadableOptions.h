@@ -21,7 +21,7 @@ class CConfigFileBase;
  * and/or saved to configuration plain-text files.
  * \todo Automatize this class thru a proxy auxiliary class where variables are
  * registered from pointers, etc...
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_config_grp
  */
 class CLoadableOptions
 {
