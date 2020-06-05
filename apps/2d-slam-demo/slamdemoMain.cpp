@@ -27,13 +27,13 @@
 
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/vector_loadsave.h>
 
 #include <mrpt/serialization/CArchive.h>
 #include <memory>
@@ -2351,7 +2351,7 @@ void slamdemoFrame::OnmnuSaveLastDASelected(wxCommandEvent& event)
 		if (dialog.ShowModal() != wxID_OK) return;
 		string filName(dialog.GetPath().mb_str());
 
-		mrpt::system::vectorToTextFile(da.predictions_IDs, filName);
+		mrpt::io::vectorToTextFile(da.predictions_IDs, filName);
 	}
 	{
 		wxFileDialog dialog(

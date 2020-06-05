@@ -22,6 +22,7 @@
     - New functions: mrpt::system::loadPluginModule(), mrpt::system::loadPluginModules()
     - mrpt::system::CRateTimer: enforce use of high-resolution monothonic clock.
     - mrpt::system::CTicTac: enforce use of nanosecond monothonic clock.
+    - Misplaced functions moved to their proper namespace: mrpt::io::vectorToTextFile()
   - \ref mrpt_obs_grp
     - CObservation3DRangeScan::points3D_convertToExternalStorage() stores point clouds with points as rows (vs as columns as it did before). 
   - \ref mrpt_opengl_grp

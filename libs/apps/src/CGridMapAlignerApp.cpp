@@ -18,6 +18,7 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CFileStream.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -34,7 +35,6 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/vector_loadsave.h>
 
 using namespace mrpt::apps;
 
@@ -571,7 +571,7 @@ void CGridMapAlignerApp::run()
 
 					if (!SAVE_ICP_GOODNESS_FIL.empty())
 					{
-						mrpt::system::vectorToTextFile(
+						mrpt::io::vectorToTextFile(
 							info.icp_goodness_all_sog_modes,
 							SAVE_ICP_GOODNESS_FIL, true);  // append & as column
 					}

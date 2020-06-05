@@ -12,6 +12,7 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorFixed.h>
@@ -20,7 +21,6 @@
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/vector_loadsave.h>
 #include <mrpt/typemeta/TEnumType.h>
 #include <cstring>  // memcpy
 #include <vector>
