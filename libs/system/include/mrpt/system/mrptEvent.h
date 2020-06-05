@@ -61,7 +61,7 @@ class mrptEvent
 
 /**  An event sent by any CObservable object (automatically) just before being
  * destroyed and telling its observers to unsubscribe.
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_system_grp
  */
 class mrptEventOnDestroy : public mrptEvent
 {

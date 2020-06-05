@@ -31,7 +31,7 @@ struct TPropertyValueIDTriplet
  * associated to a given hypothesis ID.
  * A non multi-hypotheses version exists in CPropertiesValuesList.
  * \sa CSerializable, CPropertiesValuesList
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_hmtslam_grp
  */
 class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 {

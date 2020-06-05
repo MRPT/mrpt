@@ -19,7 +19,7 @@ namespace mrpt::opengl
  * clouds and faces from a file in the Stanford PLY format.
  * \sa https://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
  * \sa PLY_Exporter
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_opengl_grp
  */
 class PLY_Importer
 {

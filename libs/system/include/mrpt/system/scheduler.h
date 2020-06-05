@@ -12,7 +12,7 @@ namespace mrpt::system
 {
 // clang-format off
 /** \addtogroup mrpt_scheduler Scheduler helpers (in #include <mrpt/system/scheduler.h>)
- *  \ingroup mrpt_base_grp
+ *  \ingroup mrpt_system_grp
  * @{ */
 // clang-format on
 

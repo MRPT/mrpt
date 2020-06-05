@@ -19,7 +19,7 @@ namespace mrpt::system
  * std::cerr) will be redirected to a text file, and optionally also shown on
  * the console.
  *  Based on code from http://www.devmaster.net/forums/showthread.php?t=7037
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_system_grp
  */
 class CConsoleRedirector : public std::streambuf
 {

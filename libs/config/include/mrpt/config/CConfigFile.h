@@ -26,7 +26,7 @@ namespace mrpt::config
  *
  * See: \ref config_file_format
  *
- * \ingroup mrpt_base_grp
+ * \ingroup mrpt_config_grp
  */
 class CConfigFile : public CConfigFileBase
 {
