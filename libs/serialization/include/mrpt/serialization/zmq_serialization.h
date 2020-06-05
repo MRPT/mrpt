@@ -16,10 +16,11 @@ namespace mrpt
 {
 namespace serialization
 {
-/** \addtogroup noncstream_serialization_zmq Serialization functions for ZMQ (v3
- * or above) (in #include <mrpt/serialization/serialization_zmq.h>)
- * \ingroup noncstream_serialization
+// clang-format off
+/** \addtogroup noncstream_serialization_zmq Serialization functions for ZMQ (v3 or above) (in #include <mrpt/serialization/serialization_zmq.h>) \ingroup
+ * noncstream_serialization
  * @{ */
+//clang-format on
 
 /** Send an MRPT object to a ZMQ socket.
  * \param[in] obj The object to be serialized and sent to the socket.

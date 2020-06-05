@@ -13,10 +13,11 @@
 
 namespace mrpt::io
 {
-/** @defgroup vector_loadsave Load and save vectors to files (in #include
- * <mrpt/io/vector_loadsave.h>)
+// clang-format off
+/** @defgroup vector_loadsave Load and save vectors to files (in #include <mrpt/io/vector_loadsave.h>)
  * \ingroup mrpt_io_grp
  * @{ */
+// clang-format on
 
 /** Saves a vector directly as a binary dump to a file:
  * \return Returns false on any error, true on everything OK.
