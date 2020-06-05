@@ -872,7 +872,7 @@ void CKalmanFilterCapable<
 									if (m_pkk(k, k) < 0)
 									{
 										m_pkk.saveToTextFile("Pkk_err.txt");
-										mrpt::system::vectorToTextFile(
+										mrpt::io::vectorToTextFile(
 											Kij, "Kij.txt");
 										ASSERT_(m_pkk(k, k) > 0);
 									}

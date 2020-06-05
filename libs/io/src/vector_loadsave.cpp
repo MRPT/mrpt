@@ -13,10 +13,12 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::io;
 using namespace std;
+namespace os = mrpt::system::os;
 
 bool mrpt::io::loadBinaryFile(
 	std::vector<uint8_t>& out_data, const std::string& fileName)
@@ -84,4 +86,78 @@ std::string mrpt::io::file_get_contents(const std::string& fileName)
 	t.seekg(0);
 	t.read(&buffer[0], size);
 	return buffer;
+}
+
+bool mrpt::io::vectorToTextFile(
+	const vector<float>& vec, const string& fileName, bool append, bool byRows)
+{
+	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
+	if (!f) return false;
+
+	for (float it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
+
+	if (byRows) os::fprintf(f, "\n");
+
+	os::fclose(f);
+	return true;  // All ok.
+}
+
+bool mrpt::io::vectorToTextFile(
+	const vector<double>& vec, const string& fileName, bool append, bool byRows)
+{
+	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
+	if (!f) return false;
+
+	for (double it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
+
+	if (byRows) os::fprintf(f, "\n");
+
+	os::fclose(f);
+	return true;  // All ok.
+}
+
+bool mrpt::io::vectorToTextFile(
+	const vector<int>& vec, const string& fileName, bool append, bool byRows)
+{
+	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
+	if (!f) return false;
+
+	for (int it : vec) os::fprintf(f, byRows ? "%i " : "%i\n", it);
+
+	if (byRows) os::fprintf(f, "\n");
+
+	os::fclose(f);
+	return true;  // All ok.
+}
+
+bool mrpt::io::vectorToTextFile(
+	const vector<size_t>& vec, const string& fileName, bool append, bool byRows)
+{
+	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
+	if (!f) return false;
+
+	for (unsigned long it : vec)
+		os::fprintf(f, byRows ? "%u " : "%u\n", static_cast<unsigned int>(it));
+
+	if (byRows) os::fprintf(f, "\n");
+
+	os::fclose(f);
+	return true;  // All ok.
+}
+
+bool mrpt::io::vectorNumericFromTextFile(
+	std::vector<double>& vec, const std::string& fileName, bool byRows)
+{
+	FILE* f = os::fopen(fileName.c_str(), "r");
+	if (!f) return false;
+
+	double number = 0;
+
+	while (!feof(f))
+	{
+		size_t readed = fscanf(f, byRows ? "%lf" : "%lf\n", &number);
+		if ((!byRows) || (readed == 1)) vec.push_back(number);
+	}
+
+	return true;
 }

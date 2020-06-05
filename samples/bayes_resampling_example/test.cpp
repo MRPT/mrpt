@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/system/vector_loadsave.h>
 #include <iostream>
 #include <map>
 
@@ -21,6 +21,7 @@ using namespace mrpt::bayes;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
+using namespace mrpt::io;
 using namespace std;
 
 double MIN_LOG_WEIG = -1.0;
