@@ -81,8 +81,7 @@ void CAssimpModel::render(const RenderContext& rc) const
 }
 void CAssimpModel::renderUpdateBuffers() const
 {
-	// Process all elements at once:
-	const_cast<CAssimpModel&>(*this).onUpdateBuffers_all();
+	// onUpdateBuffers_all: already called upon loading of the model from file.
 
 	CRenderizableShaderPoints::renderUpdateBuffers();
 	CRenderizableShaderTriangles::renderUpdateBuffers();
@@ -220,6 +219,10 @@ void CAssimpModel::loadScene(const std::string& filepath)
 		m_bbox_max.y = scene_max.y;
 		m_bbox_max.z = scene_max.z;
 	}
+
+	// Process all elements at once:
+	// This populates the structures that will be attached to opengl buffers
+	const_cast<CAssimpModel&>(*this).onUpdateBuffers_all();
 
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
