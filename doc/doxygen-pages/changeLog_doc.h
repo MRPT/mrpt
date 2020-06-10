@@ -32,6 +32,7 @@
 - BUG FIXES:
     - mrpt::obs::CObservation3DRangeScan would try to (incorrectly) "autofix" camera resolution if loading an externally-stored observation.
     - mrpt::maps::CPointsMap::determineMatching2D(): avoid potential multi-thread problems with a vector::swap()
+	- Fix build against opencv 3.4.x
 
 ------
 # Version 2.0.3: Released May 13, 2020
