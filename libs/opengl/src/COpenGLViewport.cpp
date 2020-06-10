@@ -550,7 +550,7 @@ void COpenGLViewport::render(
 #endif
 }
 
-uint8_t COpenGLViewport::serializeGetVersion() const { return 3; }
+uint8_t COpenGLViewport::serializeGetVersion() const { return 4; }
 void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -573,6 +573,20 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// Added in v3: Lights
 	out << m_lights;
+
+	// Added in v4: text messages:
+	out.WriteAs<uint32_t>(m_2D_texts.messages.size());
+	for (auto& kv : m_2D_texts.messages)
+	{
+		out << kv.first;  // id
+		out << kv.second.x << kv.second.y << kv.second.text;
+
+		const auto& fp = kv.second;
+
+		out << fp.vfont_name << fp.vfont_scale << fp.color << fp.draw_shadow
+			<< fp.shadow_color << fp.vfont_spacing << fp.vfont_kerning;
+		out.WriteAs<uint8_t>(static_cast<uint8_t>(fp.vfont_style));
+	}
 }
 
 void COpenGLViewport::serializeFrom(
@@ -584,6 +598,7 @@ void COpenGLViewport::serializeFrom(
 		case 1:
 		case 2:
 		case 3:
+		case 4:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
@@ -629,6 +644,29 @@ void COpenGLViewport::serializeFrom(
 			{
 				// Default:
 				m_lights = TLightParameters();
+			}
+
+			// v4: text:
+			m_2D_texts.messages.clear();
+			uint32_t nTexts = 0;
+			if (version >= 4) nTexts = in.ReadAs<uint32_t>();
+
+			for (uint32_t i = 0; i < nTexts; i++)
+			{
+				const auto id = in.ReadAs<uint32_t>();
+				double x, y;
+				std::string text;
+				in >> x >> y >> text;
+
+				TFontParams fp;
+
+				in >> fp.vfont_name >> fp.vfont_scale >> fp.color >>
+					fp.draw_shadow >> fp.shadow_color >> fp.vfont_spacing >>
+					fp.vfont_kerning;
+				fp.vfont_style =
+					static_cast<TOpenGLFontStyle>(in.ReadAs<uint8_t>());
+
+				this->addTextMessage(x, y, text, id, fp);
 			}
 		}
 		break;
