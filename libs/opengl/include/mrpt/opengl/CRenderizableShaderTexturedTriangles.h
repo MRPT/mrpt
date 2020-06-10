@@ -95,6 +95,11 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 		m_textureInterpolate = enable;
 	}
 
+	/** @name Raw access to textured-triangle shader buffer data
+	 * @{ */
+	const auto& shaderTexturedTrianglesBuffer() const { return m_triangles; }
+	/** @} */
+
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;

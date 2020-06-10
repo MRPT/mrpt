@@ -61,6 +61,18 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
 		m_vao.destroy();
 	}
 
+	/** @name Raw access to wireframe shader buffer data
+	 * @{ */
+	const auto& shaderWireframeVertexPointBuffer() const
+	{
+		return m_vertex_buffer_data;
+	}
+	const auto& shaderWireframeVertexColorBuffer() const
+	{
+		return m_color_buffer_data;
+	}
+	/** @} */
+
    protected:
 	float m_lineWidth = 1.0f;
 	bool m_antiAliasing = false;

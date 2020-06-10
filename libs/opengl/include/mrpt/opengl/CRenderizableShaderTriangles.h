@@ -48,6 +48,11 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 		m_vao.destroy();
 	}
 
+	/** @name Raw access to triangle shader buffer data
+	 * @{ */
+	const auto& shaderTexturedTrianglesBuffer() const { return m_triangles; }
+	/** @} */
+
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;

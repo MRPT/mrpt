@@ -90,6 +90,18 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 		m_vao.destroy();
 	}
 
+	/** @name Raw access to point shader buffer data
+	 * @{ */
+	const auto& shaderPointsVertexPointBuffer() const
+	{
+		return m_vertex_buffer_data;
+	}
+	const auto& shaderPointsVertexColorBuffer() const
+	{
+		return m_color_buffer_data;
+	}
+	/** @} */
+
    protected:
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;

@@ -28,6 +28,7 @@
   - \ref mrpt_opengl_grp
     - Emit warnings to std::cerr whenever opengl memory is leaked due to OpenGL buffers being created and destroyed in different threads.
     - Overlaid text messages are now also (de)serialized in mrpt::opengl::COpenGLViewport, and hence in 3D scenes in general.
+    - All opengl shader base classes now expose their internal buffers as const ref. See children of mrpt::opengl::CRenderizable
 - BUG FIXES:
     - mrpt::obs::CObservation3DRangeScan would try to (incorrectly) "autofix" camera resolution if loading an externally-stored observation.
     - mrpt::maps::CPointsMap::determineMatching2D(): avoid potential multi-thread problems with a vector::swap()
