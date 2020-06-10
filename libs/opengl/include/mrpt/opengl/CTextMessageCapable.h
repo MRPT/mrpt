@@ -64,7 +64,7 @@ class CTextMessageCapable
 
 	struct TListTextMessages
 	{
-		std::map<size_t, DataPerText> messages;
+		std::map<uint32_t, DataPerText> messages;
 
 		/** (re)generate all CText objects in the gl_text fields */
 		void regenerateGLobjects() const;
