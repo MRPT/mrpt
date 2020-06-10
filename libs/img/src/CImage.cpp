@@ -7,7 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+//
 #include "img-precomp.h"  // Precompiled headers
+//
 
 #include <mrpt/core/cpu.h>
 #include <mrpt/core/round.h>  // for round()
@@ -23,6 +25,7 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
+
 #include <iostream>
 
 // Universal include for all versions of OpenCV
@@ -153,7 +156,7 @@ static PixelDepth cvDepth2PixelDepth(int64_t d)
 	return PixelDepth::D8U;
 }
 
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV
 
 // Default ctor
 CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>()) {}
@@ -256,17 +259,13 @@ void CImage::resize(
 	// legit for the img to be uninitialized.
 
 	// If we're resizing to exactly the current size, do nothing:
+	if (static_cast<unsigned>(m_impl->img.cols) == width &&
+		static_cast<unsigned>(m_impl->img.rows) == height &&
+		m_impl->img.channels() == nChannels &&
+		m_impl->img.depth() == static_cast<int>(pixelDepth2CvDepth(depth)))
 	{
-		IplImage ipl = cvIplImage(m_impl->img);
-
-		if (static_cast<unsigned>(ipl.width) == width &&
-			static_cast<unsigned>(ipl.height) == height &&
-			ipl.nChannels == nChannels &&
-			static_cast<unsigned>(ipl.depth) == pixelDepth2IPLCvDepth(depth))
-		{
-			// Nothing to do:
-			return;
-		}
+		// Nothing to do:
+		return;
 	}
 
 #if IMAGE_ALLOC_PERFLOG
@@ -372,15 +371,15 @@ void CImage::loadFromMemoryBuffer(
 	resize(width, height, color ? CH_RGB : CH_GRAY);
 	m_imgIsExternalStorage = false;
 
-	IplImage ii = cvIplImage(m_impl->img);
-	IplImage* img = &ii;
+	auto* imgData = m_impl->img.data;
+	const auto imgWidthStep = m_impl->img.step[0];
 
 	if (color && swapRedBlue)
 	{
 		// Do copy & swap at once:
 		unsigned char* ptr_src = rawpixels;
-		auto* ptr_dest = reinterpret_cast<unsigned char*>(img->imageData);
-		const int bytes_per_row_out = img->widthStep;
+		auto* ptr_dest = imgData;
+		const int bytes_per_row_out = imgWidthStep;
 
 		for (int h = height; h--;)
 		{
@@ -397,18 +396,19 @@ void CImage::loadFromMemoryBuffer(
 	}
 	else
 	{
-		if (img->widthStep == img->width * img->nChannels)
+		if (imgWidthStep ==
+			static_cast<size_t>(m_impl->img.cols * m_impl->img.channels()))
 		{
 			// Copy the image data:
-			memcpy(img->imageData, rawpixels, img->imageSize);
+			memcpy(imgData, rawpixels, m_impl->img.dataend - m_impl->img.data);
 		}
 		else
 		{
 			// Copy the image row by row:
 			unsigned char* ptr_src = rawpixels;
-			auto* ptr_dest = reinterpret_cast<unsigned char*>(img->imageData);
+			auto* ptr_dest = imgData;
 			int bytes_per_row = width * (color ? 3 : 1);
-			int bytes_per_row_out = img->widthStep;
+			int bytes_per_row_out = imgWidthStep;
 			for (unsigned int y = 0; y < height; y++)
 			{
 				memcpy(ptr_dest, ptr_src, bytes_per_row);
@@ -518,7 +518,7 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 		// GRAY-SCALE: Raw bytes:
 		// Version 3: ZIP compression!
 		// Version 4: Skip zip if the image size <= 16Kb
-		int32_t origin = 0;  // not used mrpt v1.9.9
+		int32_t origin = 0;	 // not used mrpt v1.9.9
 		uint32_t imageSize = height * m_impl->img.step[0];
 		// Version 10: depth
 		int32_t depth = m_impl->img.depth();
@@ -829,8 +829,14 @@ std::string CImage::getChannelsOrder() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	IplImage ipl = cvIplImage(m_impl->img);
-	return std::string(ipl.channelSeq);
+
+	// modern opencv versions used these fixed order (see opencv
+	// core/src/array.cpp)
+	const int chCount = m_impl->img.channels();
+	ASSERT_ABOVEEQ_(chCount, 1);
+	ASSERT_BELOWEQ_(chCount, 4);
+	const std::array<const char*, 4> orderNames = {"GRAY", "", "BGR", "BGRA"};
+	return std::string(orderNames.at(chCount - 1));
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
@@ -1200,7 +1206,7 @@ float CImage::correlate(
 				i + height_init);  //(double)(ipl1->imageData[i*ipl1->widthStep
 			//+ j ]);
 			m2 += *img2(
-				j, i);  //(double)(ipl2->imageData[i*ipl2->widthStep + j ]);
+				j, i);	//(double)(ipl2->imageData[i*ipl2->widthStep + j ]);
 		}  //[ row * ipl->widthStep +  col * ipl->nChannels +  channel ];
 	}
 	m1 /= n;
@@ -1213,7 +1219,7 @@ float CImage::correlate(
 			x1 = *(*this)(j + width_init, i + height_init) -
 				 m1;  //(double)(ipl1->imageData[i*ipl1->widthStep
 					  //+ j]) - m1;
-			x2 = *img2(j, i) - m2;  //(double)(ipl2->imageData[i*ipl2->widthStep
+			x2 = *img2(j, i) - m2;	//(double)(ipl2->imageData[i*ipl2->widthStep
 									//+ j]) - m2;
 			sxx += x1 * x1;
 			syy += x2 * x2;
@@ -1782,7 +1788,7 @@ void CImage::rotateImage(
 
 	// Apply rotation & scale:
 	double m[2 * 3] = {scale * cos(ang), -scale * sin(ang), 1.0 * cx,
-					   scale * sin(ang), scale * cos(ang),  1.0 * cy};
+					   scale * sin(ang), scale * cos(ang),	1.0 * cy};
 	cv::Mat M(2, 3, CV_64F, m);
 
 	double dx = (srcImg.cols - 1) * 0.5;
@@ -2081,8 +2087,8 @@ float MRPT_DISABLE_FULL_OPTIMIZATION CImage::KLT_response(
 	//    ( gxy  gyy )
 	// See, for example:
 	// mrpt::math::detail::eigenVectorsMatrix_special_2x2():
-	const float t = Gxx + Gyy;  // Trace
-	const float de = Gxx * Gyy - Gxy * Gxy;  // Det
+	const float t = Gxx + Gyy;	// Trace
+	const float de = Gxx * Gyy - Gxy * Gxy;	 // Det
 	// The smallest eigenvalue is:
 	return 0.5f * (t - std::sqrt(t * t - 4.0f * de));
 #else
@@ -2164,9 +2170,9 @@ bool CImage::loadTGA(
 
 		for (unsigned int c = 0; c < width; c++)
 		{
-			*data++ = bytes[idx++];  // R
-			*data++ = bytes[idx++];  // G
-			*data++ = bytes[idx++];  // B
+			*data++ = bytes[idx++];	 // R
+			*data++ = bytes[idx++];	 // G
+			*data++ = bytes[idx++];	 // B
 			*data_alpha++ = bytes[idx++];  // A
 		}
 	}
@@ -2174,7 +2180,7 @@ bool CImage::loadTGA(
 	return true;
 #else
 	return false;
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV
 }
 
 void CImage::getAsIplImage(IplImage* dest) const
@@ -2182,8 +2188,12 @@ void CImage::getAsIplImage(IplImage* dest) const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();
 
+#if MRPT_OPENCV_VERSION_NUM < 0x300
 	ASSERT_(dest != nullptr);
 	*dest = cvIplImage(m_impl->img);
+#else
+	THROW_EXCEPTION("Method not supported in OpenCV>=3.0");
+#endif
 #endif
 }
 
