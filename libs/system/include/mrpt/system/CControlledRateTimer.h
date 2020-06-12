@@ -38,7 +38,8 @@ namespace mrpt::system
  * All the parameters for the PI controller and low-pass filter (rate estimator)
  * are settable by the user to adapt them to specific needs.
  *
- * \note Control law by [Francisco Jose Mañas Alvarez](https://github.com/FranciscoJManasAlvarez)
+ * \note Control law by [Francisco Jose Mañas
+ * Alvarez](https://github.com/FranciscoJManasAlvarez)
  *
  * \note [New in MRPT 2.0.4]
  * \ingroup mrpt_system_grp
@@ -126,9 +127,9 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
 	double m_rate_hz = 1.0;
 	mrpt::system::CRateTimer m_ratetimer;  //!< the one control acts on
 
-	double m_lowPass_a0 = 0.9;
+	double m_lowPass_a0 = 0.99;
 	double m_Kp = 1.0;
-	double m_Ti = 0.0194;
+	double m_Ti = 0.1;
 
 	double m_followErrorRatioForWarning = 0.20;
 	double m_lastControlError = .0;
@@ -138,6 +139,6 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
 	double m_lastTic = 0;
 	mrpt::system::CTicTac m_tic;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::system
