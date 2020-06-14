@@ -13,13 +13,13 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/thread_name.h>
 
-#if defined(_WIN32)
+#if defined(MRPT_OS_WINDOWS)
 #include <windows.h>
 
 #include <cwchar>
 #include <vector>
 
-#else
+#elif defined(MRPT_OS_LINUX)
 #include <sys/prctl.h>
 
 static void SetThreadName(std::thread& thread, const char* threadName)
@@ -51,27 +51,27 @@ static std::string GetThreadName()
 
 void mrpt::system::thread_name(const std::string& name)
 {
-#if defined(_WIN32)
+#if defined(MRPT_OS_WINDOWS)
 	wchar_t wName[50];
 	std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
 	SetThreadDescription(GetCurrentThread(), wName);
-#else
+#elif defined(MRPT_OS_LINUX)
 	SetThreadName(name.c_str());
 #endif
 }
 
 void mrpt::system::thread_name(const std::string& name, std::thread& theThread)
 {
-#if defined(_WIN32)
+#if defined(MRPT_OS_WINDOWS)
 	wchar_t wName[50];
 	std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
 	SetThreadDescription(theThread.native_handle(), wName);
-#else
+#elif defined(MRPT_OS_LINUX)
 	SetThreadName(theThread, name.c_str());
 #endif
 }
 
-#if defined(_WIN32)
+#if defined(MRPT_OS_WINDOWS)
 static std::string w2cstr(wchar_t** wstrnc)
 {
 	const wchar_t** wstr = const_cast<const wchar_t**>(wstrnc);
@@ -82,12 +82,11 @@ static std::string w2cstr(wchar_t** wstrnc)
 	std::wcsrtombs(&mbstr[0], wstr, mbstr.size(), &state);
 	return std::string(mbstr.data());
 }
-
 #endif
 
 std::string mrpt::system::thread_name()
 {
-#if defined(_WIN32)
+#if defined(MRPT_OS_WINDOWS)
 	std::string ret = "NoName";
 	PWSTR str;
 	HRESULT hr = GetThreadDescription(GetCurrentThread(), &str);
@@ -97,14 +96,16 @@ std::string mrpt::system::thread_name()
 		LocalFree(str);
 	}
 	return ret;
-#else
+#elif defined(MRPT_OS_LINUX)
 	return GetThreadName();
+#else
+	return std::string("");
 #endif
 }
 
 std::string mrpt::system::thread_name(std::thread& theThread)
 {
-#if defined(_WIN32)
+#if defined(MRPT_OS_WINDOWS)
 	std::string ret = "NoName";
 	PWSTR str;
 	HRESULT hr = GetThreadDescription(theThread.native_handle(), &str);
@@ -114,7 +115,9 @@ std::string mrpt::system::thread_name(std::thread& theThread)
 		LocalFree(str);
 	}
 	return ret;
-#else
+#elif defined(MRPT_OS_LINUX)
 	return GetThreadName(theThread);
+#else
+	return std::string("");
 #endif
 }
