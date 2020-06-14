@@ -17,18 +17,19 @@
   - rawlog-edit, rawlog-grabber: Now allows loading external "plugin" modules (.so) with user-defined types.
   - RawLogViewer, navlog-viewer, ptg-configurator allows more than one "plugin" modules to be loaded.
 - Changes in libraries:
-  - \ref mrpt_system_grp
-    - New class: mrpt::system::CControlledRateTimer (+ associated example)
-    - New functions: mrpt::system::loadPluginModule(), mrpt::system::loadPluginModules()
-    - mrpt::system::CRateTimer: enforce use of high-resolution monothonic clock.
-    - mrpt::system::CTicTac: enforce use of nanosecond monothonic clock.
-    - Misplaced functions moved to their proper namespace: mrpt::io::vectorToTextFile()
   - \ref mrpt_obs_grp
     - CObservation3DRangeScan::points3D_convertToExternalStorage() stores point clouds with points as rows (vs as columns as it did before). 
   - \ref mrpt_opengl_grp
     - Emit warnings to std::cerr whenever opengl memory is leaked due to OpenGL buffers being created and destroyed in different threads.
     - Overlaid text messages are now also (de)serialized in mrpt::opengl::COpenGLViewport, and hence in 3D scenes in general.
     - All opengl shader base classes now expose their internal buffers as const ref. See children of mrpt::opengl::CRenderizable
+  - \ref mrpt_system_grp
+    - New class: mrpt::system::CControlledRateTimer (+ associated example)
+    - New functions: mrpt::system::loadPluginModule(), mrpt::system::loadPluginModules()
+    - mrpt::system::CRateTimer: enforce use of high-resolution monothonic clock.
+    - mrpt::system::CTicTac: enforce use of nanosecond monothonic clock.
+    - Misplaced functions moved to their proper namespace: mrpt::io::vectorToTextFile()
+	- New functions: mrpt::system::thread_name() to get and set thread names for debuggers.
 - BUG FIXES:
     - mrpt::obs::CObservation3DRangeScan would try to (incorrectly) "autofix" camera resolution if loading an externally-stored observation.
     - mrpt::maps::CPointsMap::determineMatching2D(): avoid potential multi-thread problems with a vector::swap()
