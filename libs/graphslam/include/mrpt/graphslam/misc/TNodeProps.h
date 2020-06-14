@@ -20,6 +20,7 @@ struct TNodeProps
 	typename GRAPH_T::global_pose_t pose;
 	mrpt::obs::CObservation2DRangeScan::Ptr scan;
 
+	TNodeProps() = default;
 	TNodeProps(const TNodeProps& o) { *this = o; }
 
 	TNodeProps operator=(const TNodeProps& other)
