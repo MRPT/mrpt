@@ -420,6 +420,8 @@ if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 	# Even more warnings:
 	add_compile_options(-Wreturn-type         -Werror=return-type)
 	add_compile_options(-Wformat              -Werror=format-security)
+	add_compile_options(-Wreturn-local-addr   -Werror=return-local-addr)
+
 #	add_compile_options(-Wfloat-conversion    -Werror=float-conversion)
 
 	add_compile_options(-Wextra -Wtype-limits -Wcast-align -Wparentheses)
