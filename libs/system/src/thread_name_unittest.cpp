@@ -8,11 +8,15 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/thread_name.h>
 
 #include <atomic>
 #include <condition_variable>
+
+// This functionality is not implemented in OSX
+#if !defined(MRPT_OS_APPLE)
 
 TEST(thread_name, set_get_current_thread)
 {
@@ -101,3 +105,5 @@ TEST(thread_name, set_get_other_thread)
 	for (auto& t : threads)
 		if (t.joinable()) t.join();
 }
+
+#endif

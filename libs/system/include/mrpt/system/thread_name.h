@@ -14,22 +14,26 @@
 namespace mrpt::system
 {
 /** Sets the name of the given thread; useful for debuggers.
- *  \ingroup mrpt_system_grp
+ * \ingroup mrpt_system_grp
+ * \note New in MRPT 2.0.4
  */
 void thread_name(const std::string& name, std::thread& theThread);
 
 /** Sets the name of the current thread; useful for debuggers.
- *  \ingroup mrpt_system_grp
+ * \ingroup mrpt_system_grp
+ * \note New in MRPT 2.0.4
  */
 void thread_name(const std::string& name);
 
 /** Gets the name of the given thread; useful for debuggers.
- *  \ingroup mrpt_system_grp
+ * \ingroup mrpt_system_grp
+ * \note New in MRPT 2.0.4
  */
 std::string thread_name(std::thread& theThread);
 
 /** Gets the name of the current thread; useful for debuggers.
- *  \ingroup mrpt_system_grp
+ * \ingroup mrpt_system_grp
+ * \note New in MRPT 2.0.4
  */
 std::string thread_name();
 
