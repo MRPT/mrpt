@@ -7,34 +7,36 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/vision/CVideoFileWriter.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
-
-#define M_WRITER                 \
-	(const_cast<CvVideoWriter*>( \
-		static_cast<const CvVideoWriter*>(m_video.get())))
-#define M_WRITER_PTR (reinterpret_cast<CvVideoWriter**>(m_video.getPtrToPtr()))
 
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
 using namespace mrpt::system;
 
-/* ----------------------------------------------------------
-						Ctor
-   ---------------------------------------------------------- */
-CVideoFileWriter::CVideoFileWriter() : m_video(), m_img_size(0, 0) {}
-/* ----------------------------------------------------------
-						Dtor
-   ---------------------------------------------------------- */
+/** cv::VideoWriter object */
+struct Impl;
+mrpt::pimpl<Impl> m_video;
+
+struct CVideoFileWriter::Impl
+{
+#if MRPT_HAS_OPENCV
+	cv::VideoWriter obj;
+#endif
+};
+
+CVideoFileWriter::CVideoFileWriter()
+	: m_video(mrpt::make_impl<CVideoFileWriter::Impl>())
+{
+}
+
 CVideoFileWriter::~CVideoFileWriter() { close(); }
-/* ----------------------------------------------------------
-						open
-   ---------------------------------------------------------- */
+
 bool CVideoFileWriter::open(
 	const std::string& out_file, double fps,
 	const mrpt::img::TImageSize& frameSize, const std::string& fourcc,
@@ -47,7 +49,7 @@ bool CVideoFileWriter::open(
 
 	if (fourcc.empty())
 	{
-		cc = CV_FOURCC_DEFAULT;  // Default
+		cc = CV_FOURCC_DEFAULT;	 // Default
 	}
 	else if (fourcc.size() == 4)
 	{
@@ -61,13 +63,11 @@ bool CVideoFileWriter::open(
 		return false;
 	}
 
-	m_video = cvCreateVideoWriter(
-		out_file.c_str(), cc, fps, cvSize(frameSize.x, frameSize.y),
-		isColor ? 1 : 0);
-
 	m_img_size = frameSize;
 
-	return m_video.get() != nullptr;
+	return m_video->obj.open(
+		out_file, cc, fps, cv::Size(frameSize.x, frameSize.y), isColor);
+
 #else
 	std::cerr << "[CVideoFileWriter::open] ERROR: MRPT was compiled without "
 				 "OpenCV support "
@@ -76,15 +76,10 @@ bool CVideoFileWriter::open(
 #endif
 }
 
-/* ----------------------------------------------------------
-						close
-   ---------------------------------------------------------- */
 void CVideoFileWriter::close()
 {
 #if MRPT_HAS_OPENCV
-	if (!M_WRITER) return;
-	cvReleaseVideoWriter(M_WRITER_PTR);
-	*M_WRITER_PTR = nullptr;
+	m_video->obj.release();
 #endif
 }
 
@@ -94,39 +89,20 @@ void CVideoFileWriter::close()
 bool CVideoFileWriter::isOpen() const
 {
 #if MRPT_HAS_OPENCV
-	return (M_WRITER != nullptr);
+	return m_video->obj.isOpened();
 #else
 	return false;
 #endif
 }
 
-/* ----------------------------------------------------------
-						operator <<
-   ---------------------------------------------------------- */
 const CVideoFileWriter& CVideoFileWriter::operator<<(
-	const mrpt::img::CImage& img) const
+	const mrpt::img::CImage& img)
 {
-	if (!m_video.get()) THROW_EXCEPTION("Call open first");
-
-	if ((size_t)m_img_size.x != img.getWidth() ||
-		(size_t)m_img_size.y != img.getHeight())
-		THROW_EXCEPTION(format(
-			"Video frame size is %ix%i but image is %ux%u", m_img_size.x,
-			m_img_size.y, (unsigned)img.getWidth(), (unsigned)img.getHeight()));
-
-#if MRPT_HAS_OPENCV
-	cv::Mat m = img.asCvMat<cv::Mat>(SHALLOW_COPY);
-	IplImage ipl = cvIplImage(m);
-	if (!cvWriteFrame(M_WRITER, &ipl))
-		THROW_EXCEPTION("Error writing image frame to video file");
-#endif
+	writeImage(img);
 	return *this;
 }
 
-/* ----------------------------------------------------------
-						writeImage
-   ---------------------------------------------------------- */
-bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img) const
+bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img)
 {
 	if (!m_video.get()) return false;
 
@@ -143,9 +119,9 @@ bool CVideoFileWriter::writeImage(const mrpt::img::CImage& img) const
 	}
 
 #if MRPT_HAS_OPENCV
-	cv::Mat m = img.asCvMat<cv::Mat>(SHALLOW_COPY);
-	IplImage ipl = cvIplImage(m);
-	return 0 != cvWriteFrame(M_WRITER, &ipl);
+	const cv::Mat& m = img.asCvMatRef();
+	m_video->obj.write(m);
+	return true;
 #else
 	return false;
 #endif
