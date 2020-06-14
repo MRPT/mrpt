@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/pimpl.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/vision/utils.h>
@@ -40,10 +41,12 @@ namespace mrpt::vision
 class CVideoFileWriter
 {
    private:
-	/** A pointer to CvVideoWriter */
-	mrpt::void_ptr_noncopy m_video;
+	/** cv::VideoWriter object */
+	struct Impl;
+	mrpt::pimpl<Impl> m_video;
+
 	/** A copy of the video size */
-	mrpt::img::TImageSize m_img_size;
+	mrpt::img::TImageSize m_img_size{0, 0};
 
    public:
 	/** Default constructor, which does not open any file */
@@ -82,14 +85,14 @@ class CVideoFileWriter
 	/** Write image to the video file.
 	 * \exception std::exception On any error
 	 */
-	const CVideoFileWriter& operator<<(const mrpt::img::CImage& img) const;
+	const CVideoFileWriter& operator<<(const mrpt::img::CImage& img);
 
 	/**  Write image to the video file (method function, alternative to the
 	 * operator <<).
 	 * \return false on any error
 	 */
-	bool writeImage(const mrpt::img::CImage& img) const;
+	bool writeImage(const mrpt::img::CImage& img);
 
-};  // end of class
+};	// end of class
 
 }  // namespace mrpt::vision
