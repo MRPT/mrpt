@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
+
 #include <string>
 
 namespace mrpt::graphslam::detail
@@ -18,6 +19,9 @@ struct TNodeProps
 {
 	typename GRAPH_T::global_pose_t pose;
 	mrpt::obs::CObservation2DRangeScan::Ptr scan;
+
+	TNodeProps() = default;
+	TNodeProps(const TNodeProps& o) { *this = o; }
 
 	TNodeProps operator=(const TNodeProps& other)
 	{

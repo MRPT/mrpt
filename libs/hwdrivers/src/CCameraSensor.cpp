@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
@@ -23,6 +23,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/thread_name.h>
 
 #include <memory>
 
@@ -185,7 +186,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_swissranger
-				->initialize();  // This will launch an exception if needed.
+				->initialize();	 // This will launch an exception if needed.
 		}
 		catch (std::exception&)
 		{
@@ -211,7 +212,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_kinect
-				->initialize();  // This will launch an exception if needed.
+				->initialize();	 // This will launch an exception if needed.
 		}
 		catch (std::exception&)
 		{
@@ -237,7 +238,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_openni2
-				->initialize();  // This will launch an exception if needed.
+				->initialize();	 // This will launch an exception if needed.
 		}
 		catch (const std::exception& e)
 		{
@@ -379,8 +380,13 @@ void CCameraSensor::initialize()
 		m_toSaveList.resize(m_external_image_saver_count);
 
 		for (unsigned int i = 0; i < m_external_image_saver_count; ++i)
+		{
 			m_threadImagesSaver[i] =
 				std::thread(&CCameraSensor::thread_save_images, this, i);
+
+			mrpt::system::thread_name(
+				"CameraSaveImages", m_threadImagesSaver[i]);
+		}
 	}
 }
 
@@ -739,7 +745,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	CObservationImage::Ptr obs;
 	CObservationStereoImages::Ptr stObs;
 	CObservation3DRangeScan::Ptr
-		obs3D;  // 3D range image, also with an intensity channel
+		obs3D;	// 3D range image, also with an intensity channel
 	CObservationIMU::Ptr obsIMU;  // IMU observation grabbed by DUO3D cameras
 
 	bool capture_ok = false;
@@ -1026,7 +1032,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 						stObs->imageDisparity
 							.getExternalStorageFileAbsolutePath());
 
-				CImage::setImagesPathBase(old_dir);  // Restore
+				CImage::setImagesPathBase(old_dir);	 // Restore
 			}
 			else
 				continue;  // Keep reading
@@ -1036,7 +1042,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	else if (m_cap_flycap)
 	{
 		bool ok;
-		if (!m_cap_flycap->isStereo())  // Mono image
+		if (!m_cap_flycap->isStereo())	// Mono image
 		{
 			obs = std::make_shared<CObservationImage>();
 			ok = m_cap_flycap->getObservation(*obs);
@@ -1227,7 +1233,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	bool delayed_insertion_in_obs_queue = false;
 	if (!m_path_for_external_images.empty())
 	{
-		if (stObs)  // If we have grabbed an stereo observation ...
+		if (stObs)	// If we have grabbed an stereo observation ...
 		{  // Stereo obs  -------
 			if (m_external_images_own_thread)
 			{
@@ -1491,7 +1497,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	if (!WxSubsystem::isConsoleApp())
 	{
 		std::this_thread::sleep_for(
-			20ms);  // Force at least 1-2 timer ticks for processing the event:
+			20ms);	// Force at least 1-2 timer ticks for processing the event:
 		wxApp::GetInstance()->Yield(true);
 	}
 
@@ -1528,12 +1534,12 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 
 	CCameraSensor::Ptr cam = std::make_shared<CCameraSensor>();
 	cam->loadConfig(selectedConfig, "CONFIG");
-	cam->initialize();  // This will raise an exception if neccesary
+	cam->initialize();	// This will raise an exception if neccesary
 
 	return cam;
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 }
 
 /* ------------------------------------------------------------------------
@@ -1565,7 +1571,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 	}
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 }
 
 /* ------------------------------------------------------------------------
@@ -1584,7 +1590,7 @@ void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
 
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 	MRPT_END
 }
 
@@ -1606,7 +1612,7 @@ void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
 
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 	MRPT_END
 }
 

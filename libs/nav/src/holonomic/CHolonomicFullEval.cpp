@@ -8,14 +8,15 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/nav/holonomic/CHolonomicFullEval.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include <Eigen/Dense>  // col(),...
+
+#include <Eigen/Dense>	// col(),...
 #include <cmath>
 
 using namespace mrpt;
@@ -27,8 +28,6 @@ IMPLEMENTS_SERIALIZABLE(
 	CLogFileRecord_FullEval, CHolonomicLogFileRecord, mrpt::nav)
 IMPLEMENTS_SERIALIZABLE(
 	CHolonomicFullEval, CAbstractHolonomicReactiveMethod, mrpt::nav)
-
-const unsigned int INVALID_K = std::numeric_limits<unsigned int>::max();
 
 const unsigned NUM_FACTORS = 7U;
 
@@ -107,7 +106,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
 	for (unsigned int i = 0; i < nDirs; i++)
 	{
-		double scores[NUM_FACTORS];  // scores for each criterion
+		double scores[NUM_FACTORS];	 // scores for each criterion
 
 		// Too close to obstacles? (unless target is in between obstacles and
 		// the robot)
@@ -299,7 +298,7 @@ void CHolonomicFullEval::evalSingleTarget(
 	eo.phase_scores = std::vector<std::vector<double>>(
 		NUM_PHASES, std::vector<double>(nDirs, .0));
 	auto& phase_scores = eo.phase_scores;  // shortcut
-	double last_phase_threshold = -1.0;  // don't threshold for the first phase
+	double last_phase_threshold = -1.0;	 // don't threshold for the first phase
 
 	for (unsigned int phase_idx = 0; phase_idx < NUM_PHASES; phase_idx++)
 	{
@@ -313,7 +312,7 @@ void CHolonomicFullEval::evalSingleTarget(
 					options.TOO_CLOSE_OBSTACLE ||  // Too close to obstacles ?
 				(phase_idx > 0 &&
 				 phase_scores[phase_idx - 1][i] <
-					 last_phase_threshold)  // thresholding of the previous
+					 last_phase_threshold)	// thresholding of the previous
 				// phase
 			)
 			{
@@ -741,11 +740,11 @@ void CHolonomicFullEval::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Params:
 	out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT
-		<< options.PHASE_FACTORS <<  // v3
+		<< options.PHASE_FACTORS <<	 // v3
 		options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE
-		<< options.PHASE_THRESHOLDS  // v3
-		<< options.OBSTACLE_SLOW_DOWN_DISTANCE  // v1
-		<< options.factorNormalizeOrNot  // v2
+		<< options.PHASE_THRESHOLDS	 // v3
+		<< options.OBSTACLE_SLOW_DOWN_DISTANCE	// v1
+		<< options.factorNormalizeOrNot	 // v2
 		<< options.clearance_threshold_ratio
 		<< options.gap_width_ratio_threshold  // v4:
 		;
