@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "apps-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/apps/RawlogGrabberApp.h>
 #include <mrpt/config/CConfigFile.h>
@@ -28,6 +28,8 @@
 #include <mrpt/system/CRateTimer.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/thread_name.h>
+
 #include <thread>
 
 using namespace mrpt::apps;
@@ -154,7 +156,10 @@ void RawlogGrabberApp::runImpl()
 			params.read_bool(section, "rawlog-grabber-ignore", false, false))
 			continue;  // This is not a sensor:
 
-		lstThreads.emplace_back(&RawlogGrabberApp::SensorThread, this, section);
+		std::thread& newThread = lstThreads.emplace_back(
+			&RawlogGrabberApp::SensorThread, this, section);
+
+		mrpt::system::thread_name(section, newThread);
 
 		std::this_thread::sleep_for(
 			std::chrono::milliseconds(time_between_launches));

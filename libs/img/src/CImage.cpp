@@ -1921,16 +1921,8 @@ void CImage::equalizeHist(CImage& out_img) const
 #endif
 }
 
-// See: https://github.com/MRPT/mrpt/issues/885
-// This seems a bug in GCC?
-#if defined(__GNUC__)
-#define MRPT_DISABLE_FULL_OPTIMIZATION __attribute__((optimize("O1")))
-#else
-#define MRPT_DISABLE_FULL_OPTIMIZATION
-#endif
-
 template <unsigned int HALF_WIN_SIZE>
-void MRPT_DISABLE_FULL_OPTIMIZATION image_KLT_response_template(
+void image_KLT_response_template(
 	const uint8_t* in, const int widthStep, unsigned int x, unsigned int y,
 	int32_t& _gxx, int32_t& _gyy, int32_t& _gxy)
 {
@@ -1964,7 +1956,7 @@ void MRPT_DISABLE_FULL_OPTIMIZATION image_KLT_response_template(
 	_gxy = gxy;
 }
 
-float MRPT_DISABLE_FULL_OPTIMIZATION CImage::KLT_response(
+float CImage::KLT_response(
 	const unsigned int x, const unsigned int y,
 	const unsigned int half_window_size) const
 {

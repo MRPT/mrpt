@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
@@ -19,8 +19,10 @@
 #include <mrpt/poses/SO_SE_average.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 #include <iostream>
+
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -109,7 +111,7 @@ void CPosePDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t N = m_modes.size();
 	out << N;
 
-	for (const auto m : m_modes)
+	for (const auto& m : m_modes)
 	{
 		out << m.log_w << m.mean;
 		mrpt::math::serializeSymmetricMatrixTo(m.cov, out);
@@ -158,7 +160,7 @@ void CPosePDFSOG::copyFrom(const CPosePDF& o)
 {
 	MRPT_START
 
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFSOG))
 	{
@@ -520,7 +522,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 	normalizeWeights();
 
 	size_t N = m_modes.size();
-	if (N < 2) return;  // Nothing to do
+	if (N < 2) return;	// Nothing to do
 
 	// Method described in:
 	// "Kullback-Leibler Approach to Gaussian Mixture Reduction", A.R. Runnalls.
@@ -529,7 +531,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 
 	for (size_t i = 0; i < (N - 1);)
 	{
-		N = m_modes.size();  // It might have changed.
+		N = m_modes.size();	 // It might have changed.
 		double sumW = 0;
 
 		// For getting linear weights:
@@ -563,7 +565,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 				mrpt::math::wrapToPiInPlace(MUij(2, 0));
 
 				CMatrixDouble33 AUX;
-				AUX.matProductOf_AAt(MUij);  // AUX = MUij * MUij^T
+				AUX.matProductOf_AAt(MUij);	 // AUX = MUij * MUij^T
 
 				AUX *= Wi * Wj * Wij_ * Wij_;
 				Pij += AUX;

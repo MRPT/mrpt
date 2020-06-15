@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "apps-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/apps/ICP_SLAM_App.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CFileGZOutputStream.h>
@@ -26,6 +26,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/thread_name.h>
 
 using namespace mrpt::apps;
 
@@ -521,6 +522,8 @@ void ICP_SLAM_App_Live::impl_initialize(int argc, const char** argv)
 		MRPT_LOG_INFO("Launching LIDAR grabbing thread...");
 		hSensorThread =
 			std::thread(&ICP_SLAM_App_Live::SensorThread, this, threParms);
+
+		mrpt::system::thread_name("icpLiveSensor", hSensorThread);
 	}
 	// Wait and check if the sensor is ready:
 	using namespace std::chrono_literals;
