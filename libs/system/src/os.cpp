@@ -7,16 +7,17 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "system-precomp.h"  // Precompiled headers
+//
+
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 
-#include "system-precomp.h"	 // Precompiled headers
-
 #ifndef HAVE_TIMEGM
-#endif	// HAVE_TIMEGM
+#endif  // HAVE_TIMEGM
 
 #include <algorithm>
 #include <cctype>
@@ -147,7 +148,7 @@ time_t mrpt::system::os::timegm(struct tm* tm)
 }
 
 #endif
-#endif	// HAVE_TIMEGM
+#endif  // HAVE_TIMEGM
 
 /*---------------------------------------------------------------
 					mrpt::system::MRPT_getCompilationDate
@@ -755,11 +756,11 @@ int mrpt::system::executeCommand(
 		// Create the child process.
 		bSuccess = CreateProcessA(
 			NULL,
-			(LPSTR)command.c_str(),	 // command line
+			(LPSTR)command.c_str(),  // command line
 			NULL,  // process security attributes
 			NULL,  // primary thread security attributes
 			TRUE,  // handles are inherited
-			0,	// creation flags
+			0,  // creation flags
 			NULL,  // use parent's environment
 			NULL,  // use parent's current directory
 			&siStartInfo,  // STARTUPINFO pointer
