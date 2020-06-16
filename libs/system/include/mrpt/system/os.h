@@ -9,9 +9,9 @@
 #pragma once
 
 #include <mrpt/config.h>
-
 #include <mrpt/core/common.h>
 #include <mrpt/core/optional_ref.h>
+
 #include <cstdarg>
 #include <cstdint>
 #include <cstdio>  // FILE
@@ -34,9 +34,8 @@ namespace os
  * ignored in some compilers)
  *  \sa mrpt::format
  */
-int sprintf(
-	char* buf, size_t bufSize, const char* format,
-	...) noexcept MRPT_printf_format_check(3, 4);
+int sprintf(char* buf, size_t bufSize, const char* format, ...) noexcept
+	MRPT_printf_format_check(3, 4);
 
 /** An OS-independent version of vsprintf (Notice the bufSize param, which may
  * be ignored in some compilers)
@@ -62,8 +61,8 @@ FILE* fopen(const std::string& fileName, const char* mode) noexcept;
 
 /** An OS-independent version of fprintf
  */
-int fprintf(
-	FILE* fil, const char* format, ...) noexcept MRPT_printf_format_check(2, 3);
+int fprintf(FILE* fil, const char* format, ...) noexcept
+	MRPT_printf_format_check(2, 3);
 
 /** An OS-independent version of fclose.
  * \exception std::exception On trying to close a nullptr file descriptor.
@@ -173,6 +172,10 @@ enum TConsoleColor
  *
  * By default the color of "cout" is changed, unless changeStdErr=true, in
  * which case "cerr" is changed.
+ *
+ * \note GNU/Linux: If stdout/stderr is not a real terminal with color support,
+ * calling this function will have no effect (i.e. no escape characters will be
+ * emitted).
  */
 void setConsoleColor(TConsoleColor color, bool changeStdErr = false);
 

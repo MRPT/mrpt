@@ -7,16 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 
+#include "system-precomp.h"	 // Precompiled headers
+
 #ifndef HAVE_TIMEGM
-#endif  // HAVE_TIMEGM
+#endif	// HAVE_TIMEGM
 
 #include <algorithm>
 #include <cctype>
@@ -28,13 +28,12 @@
 #include <mutex>
 
 #ifdef _WIN32
-#include <windows.h>
-
 #include <conio.h>
 #include <direct.h>
 #include <io.h>
 #include <sys/utime.h>
 #include <tlhelp32.h>
+#include <windows.h>
 #else
 #include <poll.h>
 #include <pthread.h>
@@ -43,6 +42,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <utime.h>
+
 #include <cerrno>
 #include <ctime>
 //	#include <signal.h>
@@ -54,6 +54,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include <map>
 
 #ifdef MRPT_OS_LINUX
@@ -146,12 +147,13 @@ time_t mrpt::system::os::timegm(struct tm* tm)
 }
 
 #endif
-#endif  // HAVE_TIMEGM
+#endif	// HAVE_TIMEGM
 
 /*---------------------------------------------------------------
 					mrpt::system::MRPT_getCompilationDate
 ---------------------------------------------------------------*/
 #include <mrpt/version.h>
+
 #include <cerrno>
 #include <climits>
 #include <cstdlib>
@@ -479,13 +481,6 @@ uint64_t mrpt::system::os::_strtoull(const char* nptr, char** endptr, int base)
 #endif
 }
 
-/** Changes the text color in the console for the text written from now on.
- * The parameter "color" can be:
- *  - 0 : Normal text color
- *  - 1 : Blue text color
- *  - 2 : Green text color
- *  - 4 : Red text color
- */
 void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
 {
 	static const int TS_NORMAL = 0;
@@ -515,16 +510,22 @@ void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
 								  FOREGROUND_INTENSITY)));
 #else
 	// *nix:
+	FILE* f = changeStdErr ? stdout : stderr;
+	const int fd = changeStdErr ? STDOUT_FILENO : STDERR_FILENO;
+
+	// No color support if it is not a real console:
+	if (!isatty(fd)) return;
+
 	static TConsoleColor last_color = mrpt::system::CONCOL_NORMAL;
 	if (color == last_color) return;
 	last_color = color;
 
 	static const uint8_t ansi_tab[] = {30, 34, 32, 36, 31, 35, 33, 37};
 	int code = 0;
-	fflush(changeStdErr ? stdout : stderr);
+	fflush(f);
 	if (color != TS_NORMAL)
 		code = ansi_tab[color & (TS_BLUE | TS_GREEN | TS_RED)];
-	fprintf(changeStdErr ? stdout : stderr, "\x1b[%dm", code);
+	fprintf(f, "\x1b[%dm", code);
 #endif
 }
 
@@ -754,11 +755,11 @@ int mrpt::system::executeCommand(
 		// Create the child process.
 		bSuccess = CreateProcessA(
 			NULL,
-			(LPSTR)command.c_str(),  // command line
+			(LPSTR)command.c_str(),	 // command line
 			NULL,  // process security attributes
 			NULL,  // primary thread security attributes
 			TRUE,  // handles are inherited
-			0,  // creation flags
+			0,	// creation flags
 			NULL,  // use parent's environment
 			NULL,  // use parent's current directory
 			&siStartInfo,  // STARTUPINFO pointer
