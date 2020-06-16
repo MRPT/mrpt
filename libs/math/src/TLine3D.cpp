@@ -22,6 +22,20 @@ static_assert(std::is_trivially_copyable_v<TLine3D>);
 
 void TLine3D::generate2DObject(TLine2D& l) const { l = TLine2D(*this); }
 
+TLine3D TLine3D::FromPointAndDirector(
+	const TPoint3D& basePoint, const TVector3D& directorVector)
+{
+	TLine3D l;
+	l.pBase = basePoint;
+	l.director = directorVector;
+	return l;
+}
+
+TLine3D TLine3D::FromTwoPoints(const TPoint3D& p1, const TPoint3D& p2)
+{
+	return TLine3D(p1, p2);
+}
+
 bool TLine3D::contains(const TPoint3D& point) const
 {
 	double dx = point.x - pBase.x;
@@ -55,8 +69,9 @@ double TLine3D::distance(const TPoint3D& point) const
 }
 void TLine3D::unitarize()
 {
-	double s = sqrt(squareNorm<3, double>(director));
-	for (double& i : director) i /= s;
+	const double norm = director.norm();
+	ASSERT_(norm > 0);
+	director *= 1.0 / norm;
 }
 TLine3D::TLine3D(const TPoint3D& p1, const TPoint3D& p2)
 {

@@ -19,10 +19,34 @@ namespace mrpt::math
 struct TLine3D
 {
    public:
+	/** Fast default constructor. Initializes to all zeros. */
+	TLine3D() = default;
+
+	/** Constructor from two points, through which the line will pass.
+	 * \throw std::logic_error if both points are the same.
+	 */
+	TLine3D(const TPoint3D& p1, const TPoint3D& p2);
+	/** Constructor from 3D segment  */
+	explicit TLine3D(const TSegment3D& s);
+
+	/** Constructor from 2D object. Zeroes the z. */
+	explicit TLine3D(const TLine2D& l);
+
+	/** Static constructor from a point and a director vector.
+	 * \note [New in MRPT 2.0.4]
+	 */
+	static TLine3D FromPointAndDirector(
+		const TPoint3D& basePoint, const TVector3D& directorVector);
+
+	/** Static constructor from two points.
+	 * \note [New in MRPT 2.0.4]
+	 */
+	static TLine3D FromTwoPoints(const TPoint3D& p1, const TPoint3D& p2);
+
 	/** Base point */
 	TPoint3D pBase;
 	/** Director vector */
-	std::array<double, 3> director{{.0, .0, .0}};
+	TVector3D director{.0, .0, .0};
 	/** Check whether a point is inside the line */
 	bool contains(const TPoint3D& point) const;
 	/**
@@ -38,13 +62,10 @@ struct TLine3D
 	{
 		for (size_t i = 0; i < 3; i++) vector[i] = director[i];
 	}
-	/** Get director vector */
-	inline TVector3D getDirectorVector() const
-	{
-		TVector3D v;
-		for (int i = 0; i < 3; i++) v[i] = director[i];
-		return v;
-	}
+	/** Get director vector (may be NOT unitary if not set so by the user) \sa
+	 * getUnitaryDirectorVector(), unitarize() */
+	inline const TVector3D& getDirectorVector() const { return director; }
+
 	/**
 	 * Unitarize and then get director vector.
 	 */
@@ -59,21 +80,6 @@ struct TLine3D
 	 * the XY plane.
 	 */
 	void generate2DObject(TLine2D& l) const;
-	/**
-	 * Constructor from two points, through which the line will pass.
-	 * \throw std::logic_error if both points are the same.
-	 */
-	TLine3D(const TPoint3D& p1, const TPoint3D& p2);
-	/**
-	 * Constructor from 3D segment.
-	 */
-	explicit TLine3D(const TSegment3D& s);
-	/**
-	 * Fast default constructor. Initializes to garbage.
-	 */
-	TLine3D() = default;
-	/** Constructor from 2D object. Zeroes the z. */
-	explicit TLine3D(const TLine2D& l);
 };
 
 mrpt::serialization::CArchive& operator>>(

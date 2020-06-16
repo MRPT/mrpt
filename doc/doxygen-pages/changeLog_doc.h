@@ -17,6 +17,12 @@
   - rawlog-edit, rawlog-grabber: Now allows loading external "plugin" modules (.so) with user-defined types.
   - RawLogViewer, navlog-viewer, ptg-configurator allows more than one "plugin" modules to be loaded.
 - Changes in libraries:
+  - \ref mrpt_math_grp
+    - New semantically-rich named static methods:
+      - mrpt::math::TLine3D::FromPointAndDirector()
+      - mrpt::math::TLine3D::FromTwoPoints()
+      - mrpt::math::TLine2D::FromCoefficientsABC()
+      - mrpt::math::TLine2D::FromTwoPoints()
   - \ref mrpt_obs_grp
     - CObservation3DRangeScan::points3D_convertToExternalStorage() stores point clouds with points as rows (vs as columns as it did before). 
   - \ref mrpt_opengl_grp

@@ -22,6 +22,16 @@ using namespace mrpt::math;
 
 static_assert(std::is_trivially_copyable_v<TLine2D>);
 
+TLine2D TLine2D::FromCoefficientsABC(double A, double B, double C)
+{
+	return TLine2D(A, B, C);
+}
+
+TLine2D TLine2D::FromTwoPoints(const TPoint2D& p1, const TPoint2D& p2)
+{
+	return TLine2D(p1, p2);
+}
+
 double TLine2D::evaluatePoint(const TPoint2D& point) const
 {
 	return coefs[0] * point.x + coefs[1] * point.y + coefs[2];
