@@ -146,9 +146,10 @@ if(CMAKE_MRPT_HAS_xSENS)
 	if (MSVC)
 		target_compile_definitions(mrpt_xsens PRIVATE XDA_STATIC_LIB)
 	endif()
-	
 
-	target_compile_features(mrpt_xsens PRIVATE cxx_std_11)
+
+  # Feature should be "cxx_std_11", but it's unknown to cmake 3.5.1 in Xenial:
+	target_compile_features(mrpt_xsens PRIVATE cxx_constexpr)
 	set_target_properties(mrpt_xsens PROPERTIES FOLDER "3rd party")
 	unset(SRCS)
 endif()
