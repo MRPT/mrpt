@@ -146,7 +146,7 @@ sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" debian/control
 # Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "debian/rules" file
 # with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
 RULES_FILE=debian/rules
-sed -i -e "s/REPLACE_HERE_EXTRA_CMAKE_PARAMS/${VALUE_EXTRA_CMAKE_PARAMS}/g" $RULES_FILE
+sed -i -e "s|REPLACE_HERE_EXTRA_CMAKE_PARAMS|${VALUE_EXTRA_CMAKE_PARAMS}|g" $RULES_FILE
 echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
 
 # To avoid timeout compiling in ARM build farms, skip building heavy docs:
