@@ -73,8 +73,7 @@ void TestPathPlanning()
 	cout.flush();
 	tictac.Tic();
 
-	pathPlanning.computePath(
-		gridmap, origin, target, thePath, notFound, 100.0f /* Max. distance */);
+	pathPlanning.computePath(gridmap, origin, target, thePath, notFound);
 
 	double t = tictac.Tac();
 	cout << "Done in " << t * 1000 << " ms" << endl;
