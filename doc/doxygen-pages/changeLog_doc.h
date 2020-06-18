@@ -40,8 +40,9 @@
 - BUG FIXES:
     - mrpt::obs::CObservation3DRangeScan would try to (incorrectly) "autofix" camera resolution if loading an externally-stored observation.
     - mrpt::maps::CPointsMap::determineMatching2D(): avoid potential multi-thread problems with a vector::swap()
-	- Fix build against opencv <3.4.4
-	- Fix potential pointer to local returned in CParticleFilterData
+    - Fix build against opencv <3.4.4
+    - Fix potential pointer to local returned in CParticleFilterData
+    - Fix: mrpt::maps::CPointsMapXYZI::setFromPCLPointCloudXYZI() was using a non-existing method.
 
 ------
 # Version 2.0.3: Released May 13, 2020
