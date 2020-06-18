@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/poses/CPose2D.h>
 
 namespace mrpt::nav
 {
@@ -30,10 +31,9 @@ namespace mrpt::nav
 class PlannerSimple2D
 {
    public:
-	/** Default constructor */
-	PlannerSimple2D();
-	/** Destructor */
+	PlannerSimple2D() = default;
 	virtual ~PlannerSimple2D() = default;
+
 	/** The maximum occupancy probability to consider a cell as an obstacle,
 	 * default=0.5  */
 	float occupancyThreshold{0.5f};
@@ -67,6 +67,9 @@ class PlannerSimple2D
 	 * in meters (-1 = no limit)
 	 *
 	 * \sa robotRadius
+	 *
+	 * \note If either the origin or the target are out of the gridmap
+	 * extensions, `notFound` will be returned as `true`.
 	 *
 	 * \exception std::exception On any error
 	 */

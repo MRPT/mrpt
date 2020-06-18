@@ -20,13 +20,6 @@ using namespace mrpt::nav;
 using namespace std;
 
 /*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-PlannerSimple2D::PlannerSimple2D()
-
-	= default;
-
-/*---------------------------------------------------------------
 						computePath
   ---------------------------------------------------------------*/
 void PlannerSimple2D::computePath(
@@ -34,10 +27,12 @@ void PlannerSimple2D::computePath(
 	const CPose2D& target_, std::deque<math::TPoint2D>& path, bool& notFound,
 	float maxSearchPathLength) const
 {
-#define CELL_ORIGIN 0x0000
-#define CELL_EMPTY 0x8000
-#define CELL_OBSTACLE 0xFFFF
-#define CELL_TARGET 0xFFFE
+	constexpr uint16_t CELL_ORIGIN = 0x0000;
+	constexpr uint16_t CELL_EMPTY = 0x8000;
+	constexpr uint16_t CELL_OBSTACLE = 0xFFFF;
+	constexpr uint16_t CELL_TARGET = 0xFFFE;
+
+	path.clear();
 
 	const TPoint2D origin = TPoint2D(origin_.asTPose());
 	const TPoint2D target = TPoint2D(target_.asTPose());
@@ -50,21 +45,22 @@ void PlannerSimple2D::computePath(
 	int passCellFound_x = -1, passCellFound_y = -1;
 	std::vector<uint16_t> pathcells_x, pathcells_y;
 
-	// Check that origin and target falls inside the grid theMap!!
+	// Check that origin and target falls inside the grid theMap
 	// -----------------------------------------------------------
-	ASSERT_(
-		origin.x > theMap.getXMin() && origin.x < theMap.getXMax() &&
-		origin.y > theMap.getYMin() && origin.y < theMap.getYMax());
-	ASSERT_(
-		target.x > theMap.getXMin() && target.x < theMap.getXMax() &&
-		target.y > theMap.getYMin() && target.y < theMap.getYMax());
+	if (!((origin.x > theMap.getXMin() && origin.x < theMap.getXMax() &&
+		   origin.y > theMap.getYMin() && origin.y < theMap.getYMax()) ||
+		  !(target.x > theMap.getXMin() && target.x < theMap.getXMax() &&
+			target.y > theMap.getYMin() && target.y < theMap.getYMax())))
+	{
+		notFound = true;
+		return;
+	}
 
 	// Check for the special case of origin and target in the same cell:
 	// -----------------------------------------------------------------
 	if (theMap.x2idx(origin.x) == theMap.x2idx(target.x) &&
 		theMap.y2idx(origin.y) == theMap.y2idx(target.y))
 	{
-		path.clear();
 		path.emplace_back(target.x, target.y);
 		notFound = false;
 		return;
@@ -94,9 +90,6 @@ void PlannerSimple2D::computePath(
 	int obsEnlargement = (int)(ceil(robotRadius / theMap.getResolution()));
 	for (int nEnlargements = 0; nEnlargements < obsEnlargement; nEnlargements++)
 	{
-		//		int					size_y_1 = size_y-1;
-		//		int					size_x_1 = size_x-1;
-
 		// For all cells(x,y)=EMPTY:
 		// -----------------------------
 		for (y = 2; y < size_y - 2; y++)
@@ -142,18 +135,17 @@ void PlannerSimple2D::computePath(
 
 	// The main path search loop:
 	// -----------------------------------------------------------
-	searching = true;  // Will become false on path found.
-	notFound =
-		false;  // Will be set true inside the loop if a path is not found.
+	searching = true;  // Will become false on path found
+	notFound = false;  // Will be true inside the loop if a path is not found
 
 	int range_x_min =
-		min(theMap.x2idx(origin.x) - 1, theMap.x2idx(target.x) - 1);
+		std::min(theMap.x2idx(origin.x) - 1, theMap.x2idx(target.x) - 1);
 	int range_x_max =
-		max(theMap.x2idx(origin.x) + 1, theMap.x2idx(target.x) + 1);
+		std::max(theMap.x2idx(origin.x) + 1, theMap.x2idx(target.x) + 1);
 	int range_y_min =
-		min(theMap.y2idx(origin.y) - 1, theMap.y2idx(target.y) - 1);
+		std::min(theMap.y2idx(origin.y) - 1, theMap.y2idx(target.y) - 1);
 	int range_y_max =
-		max(theMap.y2idx(origin.y) + 1, theMap.y2idx(target.y) + 1);
+		std::max(theMap.y2idx(origin.y) + 1, theMap.y2idx(target.y) + 1);
 
 	do
 	{
@@ -161,12 +153,11 @@ void PlannerSimple2D::computePath(
 		bool wave1Found = false, wave2Found = false;
 		int size_y_1 = size_y - 1;
 		int size_x_1 = size_x - 1;
-		int longestPathInCellsMetric = 0;
 
-		range_x_min = max(1, range_x_min - 1);
-		range_x_max = min(size_x_1, range_x_max + 1);
-		range_y_min = max(1, range_y_min - 1);
-		range_y_max = min(size_y_1, range_y_max + 1);
+		range_x_min = std::max(1, range_x_min - 1);
+		range_x_max = std::min(size_x_1, range_x_max + 1);
+		range_y_min = std::max(1, range_y_min - 1);
+		range_y_max = std::min(size_y_1, range_y_max + 1);
 
 		// For all cells(x,y)=EMPTY:
 		// -----------------------------
@@ -175,132 +166,119 @@ void PlannerSimple2D::computePath(
 			int row = y * size_x;
 			int row_1 = (y + 1) * size_x;
 			int row__1 = (y - 1) * size_x;
-			char metric;  // =2 horz.vert, =3 diagonal <-- Since 3/2 ~= sqrt(2)
+			// metric: 2 horz.vert, =3 diagonal <-- Since 3/2 ~= sqrt(2)
+			int16_t metric;
 
 			for (x = range_x_min; x < range_x_max; x++)
 			{
-				if (grid[x + row] == CELL_EMPTY)
+				if (grid[x + row] != CELL_EMPTY) continue;
+
+				//  Look in the neighboorhood:
+				// -----------------------------
+				minNeigh = maxNeigh = CELL_EMPTY;
+				metric = 2;
+				v = grid[x + row__1];
+				if (v + 2 < minNeigh) minNeigh = v + 2;
+				if (v - 2 > maxNeigh && v != CELL_OBSTACLE) maxNeigh = v - 2;
+				v = grid[x - 1 + row];
+				if (v + 2 < minNeigh) minNeigh = v + 2;
+				if (v - 2 > maxNeigh && v != CELL_OBSTACLE) maxNeigh = v - 2;
+				v = grid[x + 1 + row];
+				if (v + 2 < minNeigh) minNeigh = v + 2;
+				if (v - 2 > maxNeigh && v != CELL_OBSTACLE) maxNeigh = v - 2;
+				v = grid[x + row_1];
+				if (v + 2 < minNeigh) minNeigh = v + 2;
+				if (v - 2 > maxNeigh && v != CELL_OBSTACLE) maxNeigh = v - 2;
+
+				v = grid[x - 1 + row__1];
+				if ((v + 3) < minNeigh)
 				{
-					//  Look in the neighboorhood:
-					// -----------------------------
-					minNeigh = maxNeigh = CELL_EMPTY;
-					metric = 2;
-					v = grid[x + row__1];
-					if (v + 2 < minNeigh) minNeigh = v + 2;
-					if (v - 2 > maxNeigh && v != CELL_OBSTACLE)
-						maxNeigh = v - 2;
-					v = grid[x - 1 + row];
-					if (v + 2 < minNeigh) minNeigh = v + 2;
-					if (v - 2 > maxNeigh && v != CELL_OBSTACLE)
-						maxNeigh = v - 2;
-					v = grid[x + 1 + row];
-					if (v + 2 < minNeigh) minNeigh = v + 2;
-					if (v - 2 > maxNeigh && v != CELL_OBSTACLE)
-						maxNeigh = v - 2;
-					v = grid[x + row_1];
-					if (v + 2 < minNeigh) minNeigh = v + 2;
-					if (v - 2 > maxNeigh && v != CELL_OBSTACLE)
-						maxNeigh = v - 2;
+					metric = 3;
+					minNeigh = (v + 3);
+				}
+				if ((v - 3) > maxNeigh && v != CELL_OBSTACLE)
+				{
+					metric = 3;
+					maxNeigh = v - 3;
+				}
+				v = grid[x + 1 + row__1];
+				if ((v + 3) < minNeigh)
+				{
+					metric = 3;
+					minNeigh = (v + 3);
+				}
+				if ((v - 3) > maxNeigh && v != CELL_OBSTACLE)
+				{
+					metric = 3;
+					maxNeigh = v - 3;
+				}
+				v = grid[x - 1 + row_1];
+				if ((v + 3) < minNeigh)
+				{
+					metric = 3;
+					minNeigh = (v + 3);
+				}
+				if ((v - 3) > maxNeigh && v != CELL_OBSTACLE)
+				{
+					metric = 3;
+					maxNeigh = v - 3;
+				}
+				v = grid[x + 1 + row_1];
+				if ((v + 3) < minNeigh)
+				{
+					metric = 3;
+					minNeigh = (v + 3);
+				}
+				if ((v - 3) > maxNeigh && v != CELL_OBSTACLE)
+				{
+					metric = 3;
+					maxNeigh = v - 3;
+				}
 
-					v = grid[x - 1 + row__1];
-					if ((v + 3) < minNeigh)
-					{
-						metric = 3;
-						minNeigh = (v + 3);
-					}
-					if ((v - 3) > maxNeigh && v != CELL_OBSTACLE)
-					{
-						metric = 3;
-						maxNeigh = v - 3;
-					}
-					v = grid[x + 1 + row__1];
-					if ((v + 3) < minNeigh)
-					{
-						metric = 3;
-						minNeigh = (v + 3);
-					}
-					if ((v - 3) > maxNeigh && v != CELL_OBSTACLE)
-					{
-						metric = 3;
-						maxNeigh = v - 3;
-					}
-					v = grid[x - 1 + row_1];
-					if ((v + 3) < minNeigh)
-					{
-						metric = 3;
-						minNeigh = (v + 3);
-					}
-					if ((v - 3) > maxNeigh && v != CELL_OBSTACLE)
-					{
-						metric = 3;
-						maxNeigh = v - 3;
-					}
-					v = grid[x + 1 + row_1];
-					if ((v + 3) < minNeigh)
-					{
-						metric = 3;
-						minNeigh = (v + 3);
-					}
-					if ((v - 3) > maxNeigh && v != CELL_OBSTACLE)
-					{
-						metric = 3;
-						maxNeigh = v - 3;
-					}
+				//  Convergence cell found? = The shortest path found
+				// -----------------------------------------------------
+				if (minNeigh < CELL_EMPTY && maxNeigh > CELL_EMPTY)
+				{
+					// Stop the search:
+					passCellFound_x = x;
+					passCellFound_y = y;
+					searching = false;
+					break;
+				}
+				else if (minNeigh < CELL_EMPTY)
+				{
+					wave1Found = true;
 
-					//  Convergence cell found? = The shortest path found
-					// -----------------------------------------------------
-					if (minNeigh < CELL_EMPTY && maxNeigh > CELL_EMPTY)
-					{
-						// Stop the search:
-						passCellFound_x = x;
-						passCellFound_y = y;
-						searching = false;
-						longestPathInCellsMetric = 0;
-						break;
-					}
-					else if (minNeigh < CELL_EMPTY)
-					{
-						wave1Found = true;
+					// Cell in the expansion-wave from origin
+					grid[x + row] = minNeigh + metric;
+					ASSERT_(minNeigh + metric < CELL_EMPTY);
+				}
+				else if (maxNeigh > CELL_EMPTY)
+				{
+					wave2Found = true;
 
-						// Cell in the expansion-wave from origin
-						grid[x + row] = minNeigh + metric;
-						ASSERT_(minNeigh + metric < CELL_EMPTY);
-
-						longestPathInCellsMetric = max(
-							longestPathInCellsMetric, CELL_EMPTY - minNeigh);
-					}
-					else if (maxNeigh > CELL_EMPTY)
-					{
-						wave2Found = true;
-
-						// Cell in the expansion-wave from the target
-						grid[x + row] = maxNeigh - metric;
-						ASSERT_(maxNeigh - metric > CELL_EMPTY);
-
-						longestPathInCellsMetric = max(
-							longestPathInCellsMetric, maxNeigh - CELL_EMPTY);
-					}
-					else
-					{  // Nothing to do: A free cell inside of all also free
-					   // cells.
-					}
-				}  // if cell empty
+					// Cell in the expansion-wave from the target
+					grid[x + row] = maxNeigh - metric;
+					ASSERT_(maxNeigh - metric > CELL_EMPTY);
+				}
+				else
+				{  // Nothing to do: A free cell inside of all also free
+				   // cells.
+				}
 			}  // end for x
 		}  // end for y
 
 		notFound = !wave1Found && !wave2Found;
 
-		// Exceeded the max. desired search length??
-		if (maxSearchPathLength > 0)
-			if (theMap.getResolution() * longestPathInCellsMetric * 0.5f >
-				1.5f * maxSearchPathLength)
-			{
-				//				printf_debug("[PlannerSimple2D::computePath]
-				// Path
-				// exceeded desired length! (length=%f m)\n",
-				// theMap.getResolution() * longestPathInCellsMetric * 0.5f);
-				notFound = true;
-			}
+		// Check max. path:
+		const int estimPathLen = std::min(minNeigh + 1, CELL_TARGET - maxNeigh);
+
+		if (maxSearchPathLength > 0 &&
+			estimPathLen * theMap.getResolution() > maxSearchPathLength)
+		{
+			notFound = true;
+			break;
+		}
 
 	} while (!notFound && searching);
 
@@ -312,10 +290,8 @@ void PlannerSimple2D::computePath(
 
 	// STEP 1: Trace-back to origin
 	//-------------------------------------
-	pathcells_x.reserve(
-		(minNeigh + 1) +
-		(CELL_TARGET -
-		 maxNeigh));  // An (exact?) estimation of the final vector size:
+	// An (exact?) estimation of the final vector size:
+	pathcells_x.reserve((minNeigh + 1) + (CELL_TARGET - maxNeigh));
 	pathcells_y.reserve((minNeigh + 1) + (CELL_TARGET - maxNeigh));
 	x = passCellFound_x;
 	y = passCellFound_y;
@@ -483,6 +459,8 @@ void PlannerSimple2D::computePath(
 	n = pathcells_x.size();
 	float xx, yy;
 	float last_xx = origin.x, last_yy = origin.y;
+	const float minDistSqr = mrpt::square(minStepInReturnedPath);
+	float accumDist = 0;
 	for (i = 0; i < n; i++)
 	{
 		// Get cell coordinates:
@@ -490,8 +468,8 @@ void PlannerSimple2D::computePath(
 		yy = theMap.idx2y(pathcells_y[i]);
 
 		// Enough distance??
-		if (sqrt(square(xx - last_xx) + square(yy - last_yy)) >
-			minStepInReturnedPath)
+		const float distSqr = square(xx - last_xx) + square(yy - last_yy);
+		if (distSqr > minDistSqr)
 		{
 			// Add to the path:
 			path.emplace_back(xx, yy);
@@ -499,6 +477,15 @@ void PlannerSimple2D::computePath(
 			// For the next iteration:
 			last_xx = xx;
 			last_yy = yy;
+
+			accumDist += std::sqrt(distSqr);
+		}
+
+		if (maxSearchPathLength > 0 && accumDist > maxSearchPathLength)
+		{
+			notFound = true;
+			path.clear();
+			return;
 		}
 	}
 
