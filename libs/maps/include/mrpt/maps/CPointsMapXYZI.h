@@ -223,9 +223,14 @@ class CPointsMapXYZI : public CPointsMap
 		clear();
 		reserve(N);
 		for (size_t i = 0; i < N; ++i)
-			this->insertPoint(
-				cloud.points[i].x, cloud.points[i].y, cloud.points[i].z,
-				cloud.points[i].intensity);
+		{
+			const auto& pt = cloud.points[i];
+			m_x.push_back(pt.x);
+			m_y.push_back(pt.y);
+			m_z.push_back(pt.z);
+			m_intensity.push_back(pt.intensity);
+		}
+		mark_as_modified();
 	}
 
 	/** Like CPointsMap::getPCLPointCloud() but for PointCloud<PointXYZI> */
@@ -304,7 +309,7 @@ class PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
 	/** Set number of points (to uninitialized values) */
 	inline void resize(const size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
-	inline void setDimensions(size_t height, size_t width) {}
+	inline void setDimensions(size_t /*height*/, size_t /*width*/) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
 	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
