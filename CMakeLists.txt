@@ -547,21 +547,6 @@ else()
 	set(mrpt_common_INSTALL_PREFIX "")
 endif()
 
-# Remove /STACK:10000000 set by CMake. This value for stack size
-# is very high, limiting the number of threads we can spawn.
-# Default value used by Windows is 1MB which is good enough.
-# By: Sahn Lam, @ CMake mailing list
-string(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-string(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
-
-# We don't want -fPIE, prefer -fPIC. Leads to link errors in 3rdparty auxiliary 
-# static libraries.
-# (-fPIE may come from env vars while building debian packages)
-string(REPLACE "-fPIE" "-fPIC" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-string(REPLACE "-fPIE" "-fPIC" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
-string(REPLACE "-fPIE" "-fPIC" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
-string(REPLACE "-fPIE" "-fPIC" CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
-
 
 # This will become a list with all libraries to be built, and their
 #  dependencies stored in "mrpt-${name}_LIB_DEPS"
