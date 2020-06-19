@@ -147,7 +147,7 @@ XsResultValue Scanner::fetchBasicInfo(XsPortInfo &portInfo, uint32_t singleScanT
 			return port->lastResult();
 	}
 
-	LOGXSSCAN("Port " << portInfo.portName() << " opened succesfully, device is " << port->masterDeviceId());
+	LOGXSSCAN("Port " << portInfo.portName() << " opened successfully, device is " << port->masterDeviceId());
 	portInfo.setDeviceId(port->masterDeviceId());
 
 	// Enable flow control for Awinda2 stations/dongles which support this:
