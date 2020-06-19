@@ -44,29 +44,36 @@ static const std::string sNewName = "NewName";
 
 static void testerThread(const std::string& myName)
 {
-	thrCnt++;
-
-	// 1: wait for synchro point.
+	// Notify we started:
 	{
-		std::unique_lock<std::mutex> lk(cv_m);
+		std::lock_guard<std::mutex> lk(cv2_m);
+		thrCnt++;
 		cv2.notify_one();
-		cv.wait(lk);
 	}
 
-	// 2: check name matches:
-	EXPECT_EQ(myName, mrpt::system::thread_name());
-
-	// 3: change name:
-	mrpt::system::thread_name(sNewName);
-
-	// 4: signal:
-	thrDone++;
-	cv2.notify_one();
-
-	// 5: wait for final signal
+	// wait for synchro point before checking name:
 	{
 		std::unique_lock<std::mutex> lk(cv_m);
-		cv.wait(lk);
+		cv.wait(lk, [&]() { return thrCnt == 0; });
+	}
+
+	// check name matches:
+	EXPECT_EQ(myName, mrpt::system::thread_name());
+
+	// change name:
+	mrpt::system::thread_name(sNewName);
+
+	// signal:
+	{
+		std::lock_guard<std::mutex> lk(cv2_m);
+		thrDone++;
+		cv2.notify_one();
+	}
+
+	// wait for final signal
+	{
+		std::unique_lock<std::mutex> lk(cv_m);
+		cv.wait(lk, [&]() { return thrDone == 0; });
 	}
 }
 
@@ -84,11 +91,19 @@ TEST(thread_name, set_get_other_thread)
 
 		mrpt::system::thread_name(thName, t);
 	}
+
+	// Wait for all threads to start:
 	{
 		std::unique_lock<std::mutex> lk(cv2_m);
 		cv2.wait(lk, [&] { return thrCnt == N; });
 	}
-	cv.notify_all();
+
+	// Signal all that they can check their names:
+	{
+		std::lock_guard<std::mutex> lk(cv_m);
+		thrCnt = 0;
+		cv.notify_all();
+	}
 
 	{
 		std::unique_lock<std::mutex> lk(cv2_m);
@@ -100,7 +115,11 @@ TEST(thread_name, set_get_other_thread)
 		EXPECT_EQ(mrpt::system::thread_name(t), sNewName);
 	}
 
-	cv.notify_all();
+	{
+		std::lock_guard<std::mutex> lk(cv_m);
+		thrDone = 0;
+		cv.notify_all();
+	}
 
 	for (auto& t : threads)
 		if (t.joinable()) t.join();
