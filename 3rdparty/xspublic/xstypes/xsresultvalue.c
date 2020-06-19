@@ -78,7 +78,7 @@ const char* XsResultValue_toString(XsResultValue result)
 	case XRV_SAMPLESTREAMERROR:		return "Sample stream detected an error in ordering input data";
 	case XRV_POWER_DIP:				return "A power dip has been detected and recovered from";
 	case XRV_POWER_OVERCURRENT:		return "A current limiter has been activated";
-	case XRV_OVERHEATING:			return "Device temperature exceded operational limits";
+	case XRV_OVERHEATING:			return "Device temperature exceeded operational limits";
 	case XRV_BATTERYLOW:			return "Battery level reached lower limit";
 	case XRV_INVALIDFILTERPROFILE:	return "Specified filter profile ID is not available on the device or the user is trying to duplicate an existing filter profile type";
 	case XRV_INVALIDSTOREDSETTINGS:	return "The settings stored in the device's non volatile memory are invalid";
