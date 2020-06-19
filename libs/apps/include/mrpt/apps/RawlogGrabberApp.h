@@ -15,6 +15,7 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/system/COutputLogger.h>
 #include <atomic>
+#include <mutex>
 
 namespace mrpt::apps
 {
@@ -46,12 +47,20 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	/** Runs with the current parameter set. Throws on errors. */
 	void run();
 
-	bool isRunning() const { return m_isRunning; }
+	bool isRunning() const
+	{
+		m_isRunningMtx.lock();
+		const auto r = m_isRunning;
+		m_isRunningMtx.unlock();
+		return r;
+	}
 
 	/** @} */
 
 	/** @name Parameters and options. See: initialize()
 	 * @{ */
+	/** Acquire this mutex if changing parameters *while* the app is running */
+	std::mutex params_mtx;
 
 	/** If >0, run() will return after this period (in seconds) */
 	double run_for_seconds = 0;
@@ -69,9 +78,12 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 
 	/** @name Outputs and result variables
 	 * @{ */
+	/** Acquire this mutex if reading these output variables *while* the app is
+	 * running */
+	std::mutex results_mtx;
 
 	std::string rawlog_filename;  //!< The generated .rawlog file
-	std::atomic_size_t rawlog_saved_objects = 0;  //!< Counter of saved objects
+	std::size_t rawlog_saved_objects = 0;  //!< Counter of saved objects
 
 	/** @} */
 
@@ -96,7 +108,8 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	std::mutex cs_m_global_list_obs;
 
 	std::atomic_bool allThreadsMustExit = false;
-	std::atomic_bool m_isRunning = false;
+	mutable std::mutex m_isRunningMtx;
+	bool m_isRunning = false;
 
 	/** Directory where to save externally stored images, only for
 	 * CCameraSensor's. */

@@ -46,6 +46,7 @@
     - Fix potential pointer to local returned in CParticleFilterData
     - Fix: mrpt::maps::CPointsMapXYZI::setFromPCLPointCloudXYZI() was using a non-existing method.
     - Fix: mrpt::nav::PlannerSimple2D did not honored maximum path length correctly.
+    - Fix race condition in CGenericCamera_AVI unit test.
 
 ------
 # Version 2.0.3: Released May 13, 2020

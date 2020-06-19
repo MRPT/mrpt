@@ -10,13 +10,12 @@
 #include <gtest/gtest.h>
 #include <mrpt/apps/RawlogGrabberApp.h>
 #include <mrpt/config.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 #include <thread>
 
-// Test disabled: it fails to run in build servers for some unknown reason (!)
-// (JLBC May 2020, after debian package release 2:2.0.3-3)
-#if MRPT_HAS_FFMPEG && MRPT_HAS_OPENCV && 0
+#if MRPT_HAS_FFMPEG && MRPT_HAS_OPENCV
 TEST(RawlogGrabberApp, CGenericCamera_AVI)
 #else
 TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
@@ -62,14 +61,19 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 		// Less verbose output in tests:
 		app.show_sensor_thread_exceptions = false;
 
-		const std::size_t REQUIRED_GRAB_OBS = 1U;
+		const std::size_t REQUIRED_GRAB_OBS = 3U;
+		std::atomic_bool runEnded = false;
 
 		auto tWatchDog = std::thread([&]() {
-			for (;;)
+			while (!runEnded)
 			{
-				if (!app.isRunning()) break;
-				if (app.rawlog_saved_objects >= REQUIRED_GRAB_OBS)
+				const auto numSavedObjs = [&]() {
+					auto lk = mrpt::lockHelper(app.results_mtx);
+					return app.rawlog_saved_objects;
+				}();
+				if (numSavedObjs >= REQUIRED_GRAB_OBS)
 				{
+					auto lk = mrpt::lockHelper(app.params_mtx);
 					app.run_for_seconds = 1.0;  // make it exit
 					break;
 				}
@@ -79,6 +83,8 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 
 		// Run:
 		app.run();
+
+		runEnded = true;
 
 		// Check expected results:
 		std::cout << "Rawlog grabbed objects: " << app.rawlog_saved_objects

@@ -137,7 +137,9 @@ void RawlogGrabberApp::runImpl()
 	rawlog_postfix += string(".rawlog");
 	rawlog_postfix = fileNameStripInvalidChars(rawlog_postfix);
 
+	results_mtx.lock();
 	rawlog_filename = rawlog_prefix + rawlog_postfix;
+	results_mtx.unlock();
 
 	MRPT_LOG_INFO_STREAM("Output rawlog filename: " << rawlog_filename);
 	MRPT_LOG_INFO_STREAM("External image storage: " << m_rawlog_ext_imgs_dir);
@@ -202,7 +204,10 @@ void RawlogGrabberApp::runImpl()
 	while (!os::kbhit() && !allThreadsMustExit)
 	{
 		// Check "run for X seconds" flag:
-		if (run_for_seconds > 0 && run_timer.Tac() > run_for_seconds) break;
+		{
+			auto lk = mrpt::lockHelper(params_mtx);
+			if (run_for_seconds > 0 && run_timer.Tac() > run_for_seconds) break;
+		}
 
 		// See if we have observations and process them:
 		lambdaProcessPending();
@@ -238,13 +243,21 @@ void RawlogGrabberApp::run()
 {
 	try
 	{
+		m_isRunningMtx.lock();
 		m_isRunning = true;
+		m_isRunningMtx.unlock();
+
 		runImpl();
+
+		m_isRunningMtx.lock();
 		m_isRunning = false;
+		m_isRunningMtx.unlock();
 	}
 	catch (const std::exception& e)
 	{
+		m_isRunningMtx.lock();
 		m_isRunning = false;
+		m_isRunningMtx.unlock();
 		throw;
 	}
 }
@@ -471,7 +484,6 @@ void RawlogGrabberApp::process_observations_for_sf(
 			act->velocityLocal = odom->velocityLocal;
 
 			(*m_out_arch_ptr) << m_curSF;
-			rawlog_saved_objects++;
 
 			MRPT_LOG_INFO_STREAM(
 				"Saved SF with " << m_curSF.size() << " objects.");
@@ -482,7 +494,10 @@ void RawlogGrabberApp::process_observations_for_sf(
 			act.reset();
 
 			(*m_out_arch_ptr) << acts;
-			rawlog_saved_objects++;
+			{
+				auto lk = mrpt::lockHelper(results_mtx);
+				rawlog_saved_objects += 2;  // m_curSF + acts;
+			}
 		}
 		else if (IS_DERIVED(*it->second, CObservation))
 		{
@@ -500,7 +515,10 @@ void RawlogGrabberApp::process_observations_for_sf(
 
 				// Save and start a new one:
 				(*m_out_arch_ptr) << m_curSF;
-				rawlog_saved_objects++;
+				{
+					auto lk = mrpt::lockHelper(results_mtx);
+					rawlog_saved_objects++;
+				}
 
 				MRPT_LOG_INFO_STREAM(
 					"Saved SF with " << m_curSF.size() << " objects.");
@@ -527,7 +545,10 @@ void RawlogGrabberApp::process_observations_for_nonsf(
 	{
 		auto& obj_ptr = ob.second;
 		(*m_out_arch_ptr) << *obj_ptr;
-		rawlog_saved_objects++;
+		{
+			auto lk = mrpt::lockHelper(results_mtx);
+			rawlog_saved_objects++;
+		}
 
 		dump_verbose_info(obj_ptr);
 	}
