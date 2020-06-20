@@ -40,7 +40,11 @@ TEST(PlannerSimple2D, findPath)
 		pathPlanning.computePath(gridmap, origin, target, thePath, notFound);
 
 		EXPECT_FALSE(notFound);
-		EXPECT_EQ(thePath.size(), 450U);
+		EXPECT_EQ(thePath.size(), 416U);
+		EXPECT_NEAR(thePath.at(0).x, origin.x(), 1.0);
+		EXPECT_NEAR(thePath.at(0).y, origin.y(), 1.0);
+		EXPECT_NEAR(thePath.back().x, target.x(), 1.0);
+		EXPECT_NEAR(thePath.back().y, target.y(), 1.0);
 	}
 	{
 		std::deque<mrpt::math::TPoint2D> thePath;
@@ -51,7 +55,11 @@ TEST(PlannerSimple2D, findPath)
 			300.0f /* Max. distance */);
 
 		EXPECT_FALSE(notFound);
-		EXPECT_EQ(thePath.size(), 450U);
+		EXPECT_EQ(thePath.size(), 416U);
+		EXPECT_NEAR(thePath.at(0).x, origin.x(), 1.0);
+		EXPECT_NEAR(thePath.at(0).y, origin.y(), 1.0);
+		EXPECT_NEAR(thePath.back().x, target.x(), 1.0);
+		EXPECT_NEAR(thePath.back().y, target.y(), 1.0);
 	}
 
 	{

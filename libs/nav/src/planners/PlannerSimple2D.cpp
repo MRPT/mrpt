@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "nav-precomp.h"  // Precompiled headers
-
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/nav/planners/PlannerSimple2D.h>
+
+#include "nav-precomp.h"  // Precompiled headers
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -27,23 +27,25 @@ void PlannerSimple2D::computePath(
 	const CPose2D& target_, std::deque<math::TPoint2D>& path, bool& notFound,
 	float maxSearchPathLength) const
 {
-	constexpr uint16_t CELL_ORIGIN = 0x0000;
-	constexpr uint16_t CELL_EMPTY = 0x8000;
-	constexpr uint16_t CELL_OBSTACLE = 0xFFFF;
-	constexpr uint16_t CELL_TARGET = 0xFFFE;
+	using cell_t = int32_t;
+
+	constexpr cell_t CELL_ORIGIN = 0;
+	constexpr cell_t CELL_EMPTY = 0x8000000;
+	constexpr cell_t CELL_OBSTACLE = 0xfffffff;
+	constexpr cell_t CELL_TARGET = 0xffffffe;
 
 	path.clear();
 
 	const TPoint2D origin = TPoint2D(origin_.asTPose());
 	const TPoint2D target = TPoint2D(target_.asTPose());
 
-	std::vector<uint16_t> grid;
+	std::vector<cell_t> grid;
 	int size_x, size_y, i, n, m;
 	int x, y;
 	bool searching;
-	uint16_t minNeigh = CELL_EMPTY, maxNeigh = CELL_EMPTY, v = 0, c;
+	cell_t minNeigh = CELL_EMPTY, maxNeigh = CELL_EMPTY, v = 0, c;
 	int passCellFound_x = -1, passCellFound_y = -1;
-	std::vector<uint16_t> pathcells_x, pathcells_y;
+	std::vector<cell_t> pathcells_x, pathcells_y;
 
 	// Check that origin and target falls inside the grid theMap
 	// -----------------------------------------------------------
@@ -100,7 +102,7 @@ void PlannerSimple2D::computePath(
 
 			for (x = 2; x < size_x - 2; x++)
 			{
-				uint16_t val = (CELL_OBSTACLE - nEnlargements);
+				cell_t val = (CELL_OBSTACLE - nEnlargements);
 
 				//  A cell near an obstacle found??
 				// -----------------------------------------------------
@@ -109,22 +111,15 @@ void PlannerSimple2D::computePath(
 					grid[x + 1 + row] >= val || grid[x - 1 + row_1] >= val ||
 					grid[x + row_1] >= val || grid[x + 1 + row_1] >= val)
 				{
-					grid[x + row] =
-						max((uint16_t)grid[x + row], (uint16_t)(val - 1));
+					grid[x + row] = std::max(grid[x + row], val - 1);
 				}
 			}
 		}
 	}
 
 	// Definitevely set new obstacles as obstacles
-	for (y = 1; y < size_y - 1; y++)
-	{
-		int row = y * size_x;
-		for (x = 1; x < size_x - 1; x++)
-		{
-			if (grid[x + row] > CELL_EMPTY) grid[x + row] = CELL_OBSTACLE;
-		}
-	}
+	for (auto& cell : grid)
+		if (cell > CELL_EMPTY) cell = CELL_OBSTACLE;
 
 	// Put the special cell codes for the origin and target:
 	// -----------------------------------------------------------
@@ -167,7 +162,7 @@ void PlannerSimple2D::computePath(
 			int row_1 = (y + 1) * size_x;
 			int row__1 = (y - 1) * size_x;
 			// metric: 2 horz.vert, =3 diagonal <-- Since 3/2 ~= sqrt(2)
-			int16_t metric;
+			cell_t metric;
 
 			for (x = range_x_min; x < range_x_max; x++)
 			{
@@ -290,9 +285,6 @@ void PlannerSimple2D::computePath(
 
 	// STEP 1: Trace-back to origin
 	//-------------------------------------
-	// An (exact?) estimation of the final vector size:
-	pathcells_x.reserve((minNeigh + 1) + (CELL_TARGET - maxNeigh));
-	pathcells_y.reserve((minNeigh + 1) + (CELL_TARGET - maxNeigh));
 	x = passCellFound_x;
 	y = passCellFound_y;
 
@@ -304,7 +296,7 @@ void PlannerSimple2D::computePath(
 		pathcells_y.push_back(y);
 
 		// Follow the "negative gradient" toward the origin:
-		static signed char dx = 0, dy = 0;
+		int8_t dx = 0, dy = 0;
 		if ((c = grid[x - 1 + size_x * y]) < v)
 		{
 			v = c;
@@ -457,28 +449,36 @@ void PlannerSimple2D::computePath(
 	//-------------------------------------------------------------------------------
 	path.clear();
 	n = pathcells_x.size();
-	float xx, yy;
-	float last_xx = origin.x, last_yy = origin.y;
-	const float minDistSqr = mrpt::square(minStepInReturnedPath);
-	float accumDist = 0;
+	double last_xx = origin.x;
+	double last_yy = origin.y;
+	auto last_cx = theMap.x2idx(origin.x);
+	auto last_cy = theMap.y2idx(origin.y);
+
+	const auto minDistSqrCells = mrpt::round(
+		mrpt::square(minStepInReturnedPath / theMap.getResolution()));
+	double accumDist = 0;
 	for (i = 0; i < n; i++)
 	{
-		// Get cell coordinates:
-		xx = theMap.idx2x(pathcells_x[i]);
-		yy = theMap.idx2y(pathcells_y[i]);
-
 		// Enough distance??
-		const float distSqr = square(xx - last_xx) + square(yy - last_yy);
-		if (distSqr > minDistSqr)
+		const auto distSqrCells =
+			square(pathcells_x[i] - last_cx) + square(pathcells_y[i] - last_cy);
+
+		if (distSqrCells > minDistSqrCells)
 		{
+			// Get cell coordinates:
+			auto xx = theMap.idx2x(pathcells_x[i]);
+			auto yy = theMap.idx2y(pathcells_y[i]);
+
 			// Add to the path:
 			path.emplace_back(xx, yy);
 
+			accumDist += std::sqrt(square(xx - last_xx) + square(yy - last_yy));
+
 			// For the next iteration:
+			last_cx = pathcells_x[i];
+			last_cy = pathcells_y[i];
 			last_xx = xx;
 			last_yy = yy;
-
-			accumDist += std::sqrt(distSqr);
 		}
 
 		if (maxSearchPathLength > 0 && accumDist > maxSearchPathLength)
