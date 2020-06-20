@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "nav-precomp.h"  // Precompiled headers
+//
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/nav/planners/PlannerSimple2D.h>
 
-#include "nav-precomp.h"  // Precompiled headers
 
 using namespace mrpt;
 using namespace mrpt::maps;

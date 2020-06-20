@@ -12,12 +12,15 @@
 #include <mrpt/io/vector_loadsave.h>
 #include <test_mrpt_common.h>
 
+#include <regex>
+
 TEST(file_get_contents, readTestFile)
 {
 	const std::string fil = mrpt::format(
 		"%s/tests/sample_text_file.txt", mrpt::UNITTEST_BASEDIR.c_str());
 
-	const std::string contents = mrpt::io::file_get_contents(fil);
+	std::string contents = mrpt::io::file_get_contents(fil);
+	contents = std::regex_replace(contents, std::regex("\r\n"), "\n");
 
 	const std::string expectedContents = "0\n1\n2\n3\nhello\nworld!\n";
 
