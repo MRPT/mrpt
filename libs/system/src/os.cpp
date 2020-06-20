@@ -29,12 +29,13 @@
 #include <mutex>
 
 #ifdef _WIN32
+#include <windows.h>
+//
 #include <conio.h>
 #include <direct.h>
 #include <io.h>
 #include <sys/utime.h>
 #include <tlhelp32.h>
-#include <windows.h>
 #else
 #include <poll.h>
 #include <pthread.h>

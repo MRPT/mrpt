@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
@@ -18,7 +20,6 @@
 
 #include <Eigen/Dense>
 
-#include "poses-precomp.h"	// Precompiled headers
 
 using namespace mrpt;
 using namespace mrpt::math;
