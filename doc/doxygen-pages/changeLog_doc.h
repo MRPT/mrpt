@@ -12,7 +12,7 @@
 /** \page changelog Change Log
  *
 
-# Version 2.0.4: (Under development)
+# Version 2.0.4: Released Jun 20, 2020
 - Changes in applications:
   - rawlog-edit, rawlog-grabber: Now allows loading external "plugin" modules (.so) with user-defined types.
   - RawLogViewer, navlog-viewer, ptg-configurator allows more than one "plugin" modules to be loaded.
