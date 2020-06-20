@@ -9,17 +9,17 @@
 
 #if defined(__GNUC__)  // Needed for ffmpeg headers. Only allowed here when not
 // using precomp. headers
-#define __STDC_CONSTANT_MACROS  // Needed for having "UINT64_C" and so
+#define __STDC_CONSTANT_MACROS	// Needed for having "UINT64_C" and so
 #endif
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
 #include <mrpt/config.h>
+
+#include "hwdrivers-precomp.h"	// Precompiled headers
 
 #if MRPT_HAS_FFMPEG
 extern "C"
 {
-#define _MSC_STDINT_H_  // We already have pstdint.h in MRPT
+#define _MSC_STDINT_H_	// We already have pstdint.h in MRPT
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
@@ -34,6 +34,11 @@ using namespace mrpt::hwdrivers;
 
 // JLBC: This file takes portions of code from the example
 // "avcodec_sample.0.4.9.cpp"
+//
+// Minimum ffmpeg libs versions we want to support:
+// Ubuntu 16.04 LTS: avcodec 56.60.100, avutil 54.31.100, avformat 56.40.101
+// Ubuntu 20.04 LTS: avcodec 58.54.100, avutil 56.31.100, avformat 58.29.100
+//
 #if MRPT_HAS_FFMPEG
 namespace mrpt::hwdrivers
 {
@@ -42,7 +47,9 @@ struct TFFMPEGContext
 {
 	AVFormatContext* pFormatCtx{nullptr};
 	int videoStream{0};
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
 	AVCodecParameters* pCodecPars{nullptr};
+#endif
 	AVCodec* pCodec{nullptr};
 	AVCodecContext* pCodecCtx{nullptr};
 	AVFrame* pFrame{nullptr};
@@ -110,7 +117,7 @@ bool CFFMPEG_InputStream::openURL(
 	const std::string& url, bool grab_as_grayscale, bool verbose)
 {
 #if MRPT_HAS_FFMPEG
-	this->close();  // Close first
+	this->close();	// Close first
 
 	TFFMPEGContext* ctx = &m_impl->m_state;
 
@@ -146,8 +153,12 @@ bool CFFMPEG_InputStream::openURL(
 	ctx->videoStream = -1;
 	for (unsigned int i = 0; i < ctx->pFormatCtx->nb_streams; i++)
 	{
-		if (ctx->pFormatCtx->streams[i]->codecpar->codec_type ==
-			AVMEDIA_TYPE_VIDEO)
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+		auto codecType = ctx->pFormatCtx->streams[i]->codecpar->codec_type;
+#else
+		auto codecType = ctx->pFormatCtx->streams[i]->codec->codec_type;
+#endif
+		if (codecType == AVMEDIA_TYPE_VIDEO)
 		{
 			ctx->videoStream = (int)i;
 			break;
@@ -162,10 +173,15 @@ bool CFFMPEG_InputStream::openURL(
 	}
 
 	// Get a pointer to the codec context for the video stream
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
 	ctx->pCodecPars = ctx->pFormatCtx->streams[ctx->videoStream]->codecpar;
-
 	// Find the decoder for the video stream
 	ctx->pCodec = avcodec_find_decoder(ctx->pCodecPars->codec_id);
+#else
+	ctx->pCodecCtx = ctx->pFormatCtx->streams[ctx->videoStream]->codec;
+	// Find the decoder for the video stream
+	ctx->pCodec = avcodec_find_decoder(ctx->pCodecCtx->codec_id);
+#endif
 	if (ctx->pCodec == nullptr)
 	{
 		std::cerr << "[CFFMPEG_InputStream::openURL] Codec not found: " << url
@@ -173,6 +189,7 @@ bool CFFMPEG_InputStream::openURL(
 		return false;
 	}
 
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
 	ctx->pCodecCtx = avcodec_alloc_context3(nullptr /*ctx->pCodec*/);
 	if (!ctx->pCodecCtx)
 	{
@@ -195,6 +212,7 @@ bool CFFMPEG_InputStream::openURL(
 
 	// Make sure that Codecs are identical or  avcodec_open2 fails.
 	ctx->pCodecCtx->codec_id = ctx->pCodec->id;
+#endif
 
 	// Open codec
 	if (avcodec_open2(ctx->pCodecCtx, ctx->pCodec, nullptr) < 0)
@@ -219,9 +237,14 @@ bool CFFMPEG_InputStream::openURL(
 	}
 
 	// Determine required buffer size and allocate buffer
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+	const auto width = ctx->pCodecPars->width, height = ctx->pCodecPars->height;
+#else
+	const auto width = ctx->pCodecCtx->width, height = ctx->pCodecCtx->height;
+#endif
 	int numBytes = av_image_get_buffer_size(
-		m_grab_as_grayscale ? AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,
-		ctx->pCodecPars->width, ctx->pCodecPars->height, 1);
+		m_grab_as_grayscale ? AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24, width,
+		height, 1);
 	if (numBytes < 0)
 	{
 		std::cerr << "[CFFMPEG_InputStream::openURL] av_image_get_buffer_size "
@@ -236,8 +259,8 @@ bool CFFMPEG_InputStream::openURL(
 
 	av_image_fill_arrays(
 		ctx->pFrameRGB->data, ctx->pFrameRGB->linesize, &ctx->buffer[0],
-		m_grab_as_grayscale ? AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,
-		ctx->pCodecPars->width, ctx->pCodecPars->height, 1);
+		m_grab_as_grayscale ? AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24, width,
+		height, 1);
 
 	return true;  // OK.
 #else
@@ -304,66 +327,84 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 
 	AVPacket packet;
 
+#if LIBAVFORMAT_VERSION_MAJOR < 58
+	int frameFinished;
+#endif
+
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+	const auto width = ctx->pCodecPars->width, height = ctx->pCodecPars->height;
+#else
+	const auto width = ctx->pCodecCtx->width, height = ctx->pCodecCtx->height;
+#endif
+
 	while (av_read_frame(ctx->pFormatCtx, &packet) >= 0)
 	{
 		// Is this a packet from the video stream?
-		if (packet.stream_index == ctx->videoStream)
+		if (packet.stream_index != ctx->videoStream)
 		{
-			// Decode video frame
-			int ret = avcodec_send_packet(ctx->pCodecCtx, &packet);
-			if (ret < 0)
-			{
-				std::cerr
-					<< "[CFFMPEG_InputStream] avcodec_send_packet error code="
-					<< ret << std::endl;
-				return false;
-			}
+			av_packet_unref(&packet);
+			continue;
+		}
 
-			// while (ret >= 0)
-			ret = avcodec_receive_frame(ctx->pCodecCtx, ctx->pFrame);
-			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-				return false;
-			else if (ret < 0)
-			{
-				std::cerr << "[CFFMPEG_InputStream] avcodec_receive_frame "
-							 "error code="
-						  << ret << std::endl;
-				return false;
-			}
+		// Decode video frame
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+		int ret = avcodec_send_packet(ctx->pCodecCtx, &packet);
+		if (ret < 0)
+		{
+			std::cerr << "[CFFMPEG_InputStream] avcodec_send_packet error code="
+					  << ret << std::endl;
+			return false;
+		}
+		// while (ret >= 0)
+		ret = avcodec_receive_frame(ctx->pCodecCtx, ctx->pFrame);
+		if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+			return false;
+		else if (ret < 0)
+		{
+			std::cerr << "[CFFMPEG_InputStream] avcodec_receive_frame "
+						 "error code="
+					  << ret << std::endl;
+			return false;
+		}
 
-			// Convert the image from its native format to RGB:
-			ctx->img_convert_ctx = sws_getCachedContext(
-				ctx->img_convert_ctx, ctx->pCodecPars->width,
-				ctx->pCodecPars->height, ctx->pCodecCtx->pix_fmt,
-				ctx->pCodecPars->width, ctx->pCodecPars->height,
-				m_grab_as_grayscale ?  // BGR vs. RGB for OpenCV
-					AV_PIX_FMT_GRAY8
-									: AV_PIX_FMT_BGR24,
-				SWS_BICUBIC, nullptr, nullptr, nullptr);
-
-			sws_scale(
-				ctx->img_convert_ctx, ctx->pFrame->data, ctx->pFrame->linesize,
-				0, ctx->pCodecPars->height, ctx->pFrameRGB->data,
-				ctx->pFrameRGB->linesize);
-
-			// std::cout << "[retrieveFrame] Generating image: " <<
-			// ctx->pCodecPars->width << "x" << ctx->pCodecPars->height
-			// << std::endl; std::cout << "  linsize: " <<
-			// ctx->pFrameRGB->linesize[0] << std::endl;
-
-			if (ctx->pFrameRGB->linesize[0] !=
-				((m_grab_as_grayscale ? 1 : 3) * ctx->pCodecPars->width))
-				THROW_EXCEPTION("FIXME: linesize!=width case not handled yet.");
-
-			out_img.loadFromMemoryBuffer(
-				ctx->pCodecPars->width, ctx->pCodecPars->height,
-				!m_grab_as_grayscale,  // Color
-				ctx->pFrameRGB->data[0]);
-
+#else
+		avcodec_decode_video2(
+			ctx->pCodecCtx, ctx->pFrame, &frameFinished, &packet);
+		if (!frameFinished)
+		{
 			// Free the packet that was allocated by av_read_frame
 			av_packet_unref(&packet);
-			return true;
+			continue;
 		}
+#endif
+		// Convert the image from its native format to RGB:
+		ctx->img_convert_ctx = sws_getCachedContext(
+			ctx->img_convert_ctx, width, height, ctx->pCodecCtx->pix_fmt, width,
+			height,
+			m_grab_as_grayscale ?  // BGR vs. RGB for OpenCV
+				AV_PIX_FMT_GRAY8
+								: AV_PIX_FMT_BGR24,
+			SWS_BICUBIC, nullptr, nullptr, nullptr);
+
+		sws_scale(
+			ctx->img_convert_ctx, ctx->pFrame->data, ctx->pFrame->linesize, 0,
+			height, ctx->pFrameRGB->data, ctx->pFrameRGB->linesize);
+
+		// std::cout << "[retrieveFrame] Generating image: " <<
+		// ctx->pCodecPars->width << "x" << ctx->pCodecPars->height
+		// << std::endl; std::cout << "  linsize: " <<
+		// ctx->pFrameRGB->linesize[0] << std::endl;
+
+		if (ctx->pFrameRGB->linesize[0] !=
+			((m_grab_as_grayscale ? 1 : 3) * width))
+			THROW_EXCEPTION("FIXME: linesize!=width case not handled yet.");
+
+		out_img.loadFromMemoryBuffer(
+			width, height, !m_grab_as_grayscale, ctx->pFrameRGB->data[0]);
+
+		// Free the packet that was allocated by av_read_frame
+		av_packet_unref(&packet);
+		return true;
 
 		// Free the packet that was allocated by av_read_frame
 		av_packet_unref(&packet);
