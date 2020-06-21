@@ -11,7 +11,10 @@
 
 /** \page changelog Change Log
  *
+# Version 2.0.5: (Under development)
+- No changes yet.
 
+------
 # Version 2.0.4: Released Jun 20, 2020
 - Changes in applications:
   - rawlog-edit, rawlog-grabber: Now allows loading external "plugin" modules (.so) with user-defined types.
