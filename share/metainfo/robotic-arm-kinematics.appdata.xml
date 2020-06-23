@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>org.mrpt.robotic-arm-kinematics.desktop</id>
-  <metadata_license>MIT</metadata_license>
+  <metadata_license>bsd-3-clause</metadata_license>
   <name>robotic-arm-kinematics</name>
   <summary>GUI to practice and learn the Denavit-Hartenberg (DH) parameters or robotic arm manipulators</summary>
   <description>

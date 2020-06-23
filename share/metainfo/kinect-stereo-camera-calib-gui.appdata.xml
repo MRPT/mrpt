@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>org.mrpt.kinect-stereo-camera-calib-gui.desktop</id>
-  <metadata_license>MIT</metadata_license>
+  <metadata_license>bsd-3-clause</metadata_license>
   <name>kinect-stereo-calib</name>
   <summary>Stereo Camera and Kinect Calibration GUI</summary>
   <description>
