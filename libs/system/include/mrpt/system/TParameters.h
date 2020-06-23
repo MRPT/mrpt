@@ -49,6 +49,7 @@ namespace mrpt::system
  * "10.0".
  * \ingroup mrpt_system_grp
  * \sa the example in MRPT/samples/params-by-name
+ * \deprecated (Since mrpt 2.0.5) Prefer mrpt::containers::Parameters.
  */
 template <typename T>
 struct TParameters
@@ -59,9 +60,14 @@ struct TParameters
 	using const_iterator = typename BASE::const_iterator;
 
 	/** Default constructor (initializes empty) */
-	TParameters() {}
+	[[deprecated("Prefer mrpt::containers::Parameters [Since mrpt 2.0.5]")]]  //
+	TParameters()
+	{
+	}
+
 	/** Constructor with a list of initial values (see the description and use
 	 * example in mrpt::system::TParameters) */
+	[[deprecated("Prefer mrpt::containers::Parameters [Since mrpt 2.0.5]")]]  //
 	TParameters(std::initializer_list<typename BASE::value_type> init)
 		: base(init)
 	{
