@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>org.mrpt.navlog-viewer.desktop</id>
-  <metadata_license>MIT</metadata_license>
+  <metadata_license>bsd-3-clause</metadata_license>
   <name>navlog-viewer</name>
   <summary>Navigation log viewer</summary>
   <description>
