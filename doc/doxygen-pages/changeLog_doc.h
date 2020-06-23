@@ -12,7 +12,9 @@
 /** \page changelog Change Log
  *
 # Version 2.0.5: (Under development)
-- No changes yet.
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - New class mrpt::containers::Parameters for variant-based, nested, YAML-like configuration blocks.
 
 ------
 # Version 2.0.4: Released Jun 20, 2020
