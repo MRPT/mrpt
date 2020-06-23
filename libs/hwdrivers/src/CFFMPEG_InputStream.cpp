@@ -9,17 +9,17 @@
 
 #if defined(__GNUC__)  // Needed for ffmpeg headers. Only allowed here when not
 // using precomp. headers
-#define __STDC_CONSTANT_MACROS	// Needed for having "UINT64_C" and so
+#define __STDC_CONSTANT_MACROS  // Needed for having "UINT64_C" and so
 #endif
 
 #include <mrpt/config.h>
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 
 #if MRPT_HAS_FFMPEG
 extern "C"
 {
-#define _MSC_STDINT_H_	// We already have pstdint.h in MRPT
+#define _MSC_STDINT_H_  // We already have pstdint.h in MRPT
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
@@ -47,7 +47,7 @@ struct TFFMPEGContext
 {
 	AVFormatContext* pFormatCtx{nullptr};
 	int videoStream{0};
-#if LIBAVFORMAT_VERSION_MAJOR >= 58
+#if LIBAVFORMAT_VERSION_MAJOR >= 57
 	AVCodecParameters* pCodecPars{nullptr};
 #endif
 	AVCodec* pCodec{nullptr};
@@ -117,7 +117,7 @@ bool CFFMPEG_InputStream::openURL(
 	const std::string& url, bool grab_as_grayscale, bool verbose)
 {
 #if MRPT_HAS_FFMPEG
-	this->close();	// Close first
+	this->close();  // Close first
 
 	TFFMPEGContext* ctx = &m_impl->m_state;
 
@@ -153,7 +153,7 @@ bool CFFMPEG_InputStream::openURL(
 	ctx->videoStream = -1;
 	for (unsigned int i = 0; i < ctx->pFormatCtx->nb_streams; i++)
 	{
-#if LIBAVFORMAT_VERSION_MAJOR >= 58
+#if LIBAVFORMAT_VERSION_MAJOR >= 57
 		auto codecType = ctx->pFormatCtx->streams[i]->codecpar->codec_type;
 #else
 		auto codecType = ctx->pFormatCtx->streams[i]->codec->codec_type;
@@ -173,7 +173,7 @@ bool CFFMPEG_InputStream::openURL(
 	}
 
 	// Get a pointer to the codec context for the video stream
-#if LIBAVFORMAT_VERSION_MAJOR >= 58
+#if LIBAVFORMAT_VERSION_MAJOR >= 57
 	ctx->pCodecPars = ctx->pFormatCtx->streams[ctx->videoStream]->codecpar;
 	// Find the decoder for the video stream
 	ctx->pCodec = avcodec_find_decoder(ctx->pCodecPars->codec_id);
@@ -189,7 +189,7 @@ bool CFFMPEG_InputStream::openURL(
 		return false;
 	}
 
-#if LIBAVFORMAT_VERSION_MAJOR >= 58
+#if LIBAVFORMAT_VERSION_MAJOR >= 57
 	ctx->pCodecCtx = avcodec_alloc_context3(nullptr /*ctx->pCodec*/);
 	if (!ctx->pCodecCtx)
 	{
@@ -237,7 +237,7 @@ bool CFFMPEG_InputStream::openURL(
 	}
 
 	// Determine required buffer size and allocate buffer
-#if LIBAVFORMAT_VERSION_MAJOR >= 58
+#if LIBAVFORMAT_VERSION_MAJOR >= 57
 	const auto width = ctx->pCodecPars->width, height = ctx->pCodecPars->height;
 #else
 	const auto width = ctx->pCodecCtx->width, height = ctx->pCodecCtx->height;
@@ -331,7 +331,7 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 	int frameFinished;
 #endif
 
-#if LIBAVFORMAT_VERSION_MAJOR >= 58
+#if LIBAVFORMAT_VERSION_MAJOR >= 57
 	const auto width = ctx->pCodecPars->width, height = ctx->pCodecPars->height;
 #else
 	const auto width = ctx->pCodecCtx->width, height = ctx->pCodecCtx->height;
@@ -347,7 +347,7 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 		}
 
 		// Decode video frame
-#if LIBAVFORMAT_VERSION_MAJOR >= 58
+#if LIBAVFORMAT_VERSION_MAJOR >= 57
 		int ret = avcodec_send_packet(ctx->pCodecCtx, &packet);
 		if (ret < 0)
 		{
