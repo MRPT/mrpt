@@ -136,7 +136,7 @@ then
 fi
 
 # Export signing pub key:
-mkdir debian/upstream/
+mkdir debian/upstream/ || true
 gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
 
 # Parse debian/ control.in --> control
