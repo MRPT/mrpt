@@ -8,15 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/format.h>
 #include <cstdint>
 #include <iosfwd>
 #include <map>
 #include <stdexcept>
 #include <string>
-#include <vector>
-
-//
 #include <variant>
+#include <vector>
 
 namespace mrpt::containers
 {
@@ -33,6 +32,7 @@ template <typename T>
 const T& implAsGetter(const Parameters& p, const char* expectedType);
 template <typename T>
 const T& asGetter(const Parameters& p);
+const char* typeIdxToStr(const std::size_t idx);
 }  // namespace internal
 
 /** Powerful YAML-like container for possibly-nested blocks of parameters.
@@ -131,6 +131,30 @@ class Parameters
 	{
 		return operator[](key.c_str());
 	}
+	/** Read access for maps, with default value if key does not exist. */
+	template <typename T>
+	const T getOrDefault(const std::string& key, const T& defaultValue) const
+	{
+		const Parameters* p = internalMeOrValue();
+		if (p->empty()) return defaultValue;
+		if (!p->isMap())
+			throw std::logic_error("getOrDefault() is only for map nodes.");
+
+		const map_t& m = std::get<map_t>(p->data_);
+		auto it = m.find(key);
+		if (m.end() == it) return defaultValue;
+		try
+		{
+			return std::get<T>(it->second);
+		}
+		catch (const std::bad_variant_access&)
+		{
+			throw std::logic_error(mrpt::format(
+				"getOrDefault(): Trying to access key `%s` holding variant "
+				"type `%s` as the wrong type.",
+				key.c_str(), internal::typeIdxToStr(it->second.index())));
+		}
+	}
 
 	/** Write into an existing index of a sequence.
 	 * \throw std::out_of_range if index is out of range. */
@@ -138,6 +162,16 @@ class Parameters
 	/** Read from an existing index of a sequence.
 	 * \throw std::out_of_range if index is out of range. */
 	const Parameters operator()(int index) const;
+
+	/** Append a new value to a sequence.
+	 * \throw std::exception If this is not a sequence */
+	void push_back(const double v) { internalPushBack(v); }
+	/// \overload
+	void push_back(const std::string v) { internalPushBack(v); }
+	/// \overload
+	void push_back(const uint64_t v) { internalPushBack(v); }
+	/// \overload
+	void push_back(const Parameters& v) { internalPushBack(v); }
 
    private:
 	data_t data_;
@@ -211,6 +245,17 @@ class Parameters
 
 	static void internalPrintAsYAML(
 		const Parameters& p, std::ostream& o, int indent, bool first);
+
+	template <typename T>
+	void internalPushBack(const T& v)
+	{
+		Parameters* p = internalMeOrValue();
+		if (!p->isSequence())
+			throw std::logic_error(
+				"push_back() only available for sequence nodes.");
+		sequence_t& seq = std::get<sequence_t>(p->data_);
+		seq.emplace_back(v);
+	}
 
 	static void internalPrintAsYAML(
 		const std::monostate&, std::ostream& o, int indent, bool first);
