@@ -14,6 +14,11 @@
 #include <mrpt/core/exceptions.h>
 #include <iostream>
 
+#include <mrpt/config.h>
+#if MRPT_HAS_YAMLCPP
+#include <yaml-cpp/yaml.h>
+#endif
+
 using namespace mrpt::containers;
 
 const char* mrpt::containers::internal::typeIdxToStr(const std::size_t idx)
@@ -382,6 +387,81 @@ void Parameters::internalPrintAsYAML(
 			if (v.index() != i.value) return;
 			return internalPrintAsYAML(std::get<i.value>(v), o, indent, false);
 		});
+}
+
+Parameters Parameters::FromYAMLText(const std::string& yamlTextBlock)
+{
+#if MRPT_HAS_YAMLCPP
+	YAML::Node n = YAML::Load(yamlTextBlock);
+	return Parameters::FromYAML(n);
+#else
+	THROW_EXCEPTION("MRPT was built without yaml-cpp");
+#endif
+}
+
+Parameters Parameters::FromYAML(const YAML::Node& n)
+{
+#if MRPT_HAS_YAMLCPP
+	const auto invalidDbl = std::numeric_limits<double>::max();
+
+	if (n.IsSequence())
+	{
+		auto ret = Parameters::Sequence();
+
+		for (const auto& e : n)
+		{
+			if (e.IsScalar())
+			{
+				if (double v = e.as<double>(invalidDbl); v != invalidDbl)
+					ret.push_back(v);
+				else
+					ret.push_back(e.as<std::string>());
+			}
+			else
+			{
+				// Recursive:
+				ret.push_back(Parameters::FromYAML(e));
+			}
+		}
+		return ret;
+	}
+	else if (n.IsMap())
+	{
+		auto ret = Parameters::Map();
+
+		for (const auto& kv : n)
+		{
+			const auto& key = kv.first.as<std::string>();
+			const auto& val = kv.second;
+
+			if (val.IsScalar())
+			{
+				if (double v = val.as<double>(invalidDbl); v != invalidDbl)
+					ret[key] = v;
+				else
+					ret[key] = val.as<std::string>();
+			}
+			else
+			{
+				// Recursive:
+				ret[key] = Parameters::FromYAML(val);
+			}
+		}
+		return ret;
+	}
+	else
+	{
+		THROW_EXCEPTION("FromYAML only supports root YAML as sequence or map");
+	}
+
+#else
+	THROW_EXCEPTION("MRPT was built without yaml-cpp");
+#endif
+}
+
+void Parameters::loadFromYAML(const YAML::Node& n)
+{
+	*this = Parameters::FromYAML(n);
 }
 
 // ============================ internal  =====================================

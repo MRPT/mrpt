@@ -17,23 +17,17 @@
 #include <variant>
 #include <vector>
 
-namespace mrpt::containers
-{
-class Parameters;
-namespace internal
-{
-struct tag_as_proxy_t
-{
-};
-struct tag_as_const_proxy_t
-{
-};
-template <typename T>
-const T& implAsGetter(const Parameters& p, const char* expectedType);
-template <typename T>
-const T& asGetter(const Parameters& p);
-const char* typeIdxToStr(const std::size_t idx);
-}  // namespace internal
+// forward declarations
+// clang-format off
+namespace YAML { class Node; }
+namespace mrpt::containers { class Parameters; 
+namespace internal { 
+ struct tag_as_proxy_t {}; struct tag_as_const_proxy_t {};
+ template <typename T> const T& implAsGetter(const Parameters& p, const char* expectedType);
+ template <typename T> const T& asGetter(const Parameters& p);
+ const char* typeIdxToStr(const std::size_t idx);
+}
+// clang-format on
 
 /** Powerful YAML-like container for possibly-nested blocks of parameters.
  *
@@ -91,6 +85,37 @@ class Parameters
 	Parameters(std::initializer_list<sequence_t::value_type> init) : data_(init)
 	{
 	}
+
+	static Parameters Sequence(
+		std::initializer_list<sequence_t::value_type> init)
+	{
+		return Parameters(init);
+	}
+	static Parameters Sequence()
+	{
+		Parameters p;
+		p.data_.emplace<sequence_t>();
+		return p;
+	}
+
+	static Parameters Map(std::initializer_list<map_t::value_type> init)
+	{
+		return Parameters(init);
+	}
+	static Parameters Map()
+	{
+		Parameters p;
+		p.data_.emplace<map_t>();
+		return p;
+	}
+
+	/** Builds an object copying the structure and contents from an existing
+	 * YAML Node. Requires mrpt built against yamlcpp. */
+	static Parameters FromYAML(const YAML::Node& n);
+
+	/** Parses the text as a YAML document, then converts it into a Parameters
+	 * object */
+	static Parameters FromYAMLText(const std::string& yamlTextBlock);
 
 	/** For map nodes, checks if the given key name exists */
 	bool has(const std::string& key) const;
@@ -172,6 +197,10 @@ class Parameters
 	void push_back(const uint64_t v) { internalPushBack(v); }
 	/// \overload
 	void push_back(const Parameters& v) { internalPushBack(v); }
+
+	/** Copies the structure and contents from an existing
+	 * YAML Node. Requires mrpt built against yamlcpp. */
+	void loadFromYAML(const YAML::Node& n);
 
    private:
 	data_t data_;
