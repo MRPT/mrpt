@@ -9,7 +9,9 @@
 
 /** \example comms_nodelets_example/NodeletsTest_impl.cpp */
 
-bool nodelets_test_passed_ok = false;
+#include <atomic>
+
+std::atomic_bool nodelets_test_passed_ok = false;
 
 //! [example-nodelets]
 #include <mrpt/comms/nodelets.h>
@@ -117,7 +119,7 @@ void thread_subscriber()
 
 		// wait for messages to arrive.
 		// The nodelet is up and live until "sub" gets out of scope.
-		std::this_thread::sleep_for(1000ms);
+		std::this_thread::sleep_for(2000ms);
 
 #ifdef NODELETS_TEST_VERBOSE
 		printf("[subscriber] Finish\n");
