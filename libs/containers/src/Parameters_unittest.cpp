@@ -11,6 +11,8 @@
 #include <mrpt/containers/Parameters.h>
 #include <algorithm>  // count()
 
+#include <mrpt/config.h>
+
 TEST(Parameters, emptyCtor)
 {
 	{
@@ -208,3 +210,25 @@ TEST(Parameters, iterate)
 
 	EXPECT_EQ(testMap["mySequence"].asSequence().size(), 3U);
 }
+
+// clang-format off
+const auto sampleYamlBlock = std::string(R"xxx(
+# blah blah
+mySeq:
+  - "first"
+  - "second"
+  - "third"
+myMap:
+  K: 10.0
+  P: -5.0
+)xxx");
+// clang-format on
+
+#if MRPT_HAS_YAMLCPP
+TEST(Parameters, fromYAML)
+{
+	auto p = mrpt::containers::Parameters::FromYAMLText(sampleYamlBlock);
+	EXPECT_EQ(p["mySeq"](0).as<std::string>(), "first");
+	EXPECT_EQ(p["myMap"]["P"].as<double>(), -5.0);
+}
+#endif
