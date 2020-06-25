@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/format.h>
+
 #include <cstdint>
 #include <iosfwd>
 #include <map>
@@ -85,6 +86,7 @@ class Parameters
 	Parameters(std::initializer_list<sequence_t::value_type> init) : data_(init)
 	{
 	}
+	Parameters(const Parameters& v);
 
 	static Parameters Sequence(
 		std::initializer_list<sequence_t::value_type> init)
@@ -252,7 +254,7 @@ class Parameters
 	Parameters& operator=(const Parameters& v);
 
 	inline operator double() const { return as<double>(); }
-	inline operator const std::string&() const { return as<std::string>(); }
+	inline operator const std::string &() const { return as<std::string>(); }
 
    private:
 	const char* name_ = nullptr;
