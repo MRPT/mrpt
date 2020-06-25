@@ -16,7 +16,7 @@
 
 using namespace mrpt::containers;
 
-static const char* typeIdxToStr(const std::size_t idx)
+const char* mrpt::containers::internal::typeIdxToStr(const std::size_t idx)
 {
 	switch (idx)
 	{
@@ -127,7 +127,7 @@ std::string Parameters::typeOfChild(const std::string& name) const
 
 	auto it = m.find(name);
 	if (m.end() == it) return {};
-	return typeIdxToStr(it->second.index());
+	return internal::typeIdxToStr(it->second.index());
 }
 
 const Parameters* Parameters::internalValueAsSelf() const

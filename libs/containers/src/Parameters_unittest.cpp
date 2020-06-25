@@ -83,6 +83,9 @@ TEST(Parameters, initializerMap)
 	EXPECT_EQ(p.typeOfChild("K"), "double");
 	EXPECT_EQ(p["K"], 2.0);
 
+	EXPECT_EQ(p.getOrDefault("K", 1.0), 2.0);
+	EXPECT_EQ(p.getOrDefault("Q", 1.0), 1.0);
+
 	EXPECT_EQ(p.typeOfChild("book"), "std::string");
 	EXPECT_EQ(p["book"].as<std::string>(), "silmarillion");
 
@@ -121,6 +124,13 @@ TEST(Parameters, initializerSequence)
 
 	seq2(1) = mrpt::containers::Parameters({{"K", 1.0}});
 	EXPECT_EQ(seq2(1)["K"], 1.0);
+
+	seq2.push_back("foo2");
+	seq2.push_back(9.0);
+
+	EXPECT_EQ(seq2(3).as<std::string>(), std::string("foo2"));
+	EXPECT_EQ(seq2(4), 9.0);
+	EXPECT_EQ(seq2(4).as<double>(), 9.0);
 }
 
 TEST(Parameters, nested)
