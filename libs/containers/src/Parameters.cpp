@@ -7,19 +7,21 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
+#include "containers-precomp.h"	 // Precompiled headers
 //
+#include <mrpt/config.h>
 #include <mrpt/containers/Parameters.h>
 #include <mrpt/core/constexpr_for.h>
 #include <mrpt/core/exceptions.h>
-#include <iostream>
 
-#include <mrpt/config.h>
+#include <iostream>
 #if MRPT_HAS_YAMLCPP
 #include <yaml-cpp/yaml.h>
 #endif
 
 using namespace mrpt::containers;
+
+Parameters::Parameters(const Parameters& v) { *this = v; }
 
 const char* mrpt::containers::internal::typeIdxToStr(const std::size_t idx)
 {
