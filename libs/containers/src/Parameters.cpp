@@ -10,7 +10,9 @@
 #include "containers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/containers/Parameters.h>
+#include <mrpt/core/constexpr_for.h>
 #include <mrpt/core/exceptions.h>
+#include <iostream>
 
 using namespace mrpt::containers;
 
@@ -33,29 +35,98 @@ static const char* typeIdxToStr(const std::size_t idx)
 	};
 }
 
-bool Parameters::has(const std::string& s) const
+bool Parameters::isSequence() const
+{
+	if (isProxy_)
+	{
+		auto p = internalValueAsSelf();
+		ASSERTMSG_(p, "Cannot call isSequence() on a value (!)");
+		return p->isSequence();
+	}
+	return std::holds_alternative<sequence_t>(data_);
+}
+Parameters::sequence_t& Parameters::asSequence()
+{
+	if (isProxy_)
+	{
+		auto p = internalValueAsSelf();
+		ASSERTMSG_(p, "Cannot call asSequence() on a value (!)");
+		return p->asSequence();
+	}
+	return std::get<sequence_t>(data_);
+}
+const Parameters::sequence_t& Parameters::asSequence() const
+{
+	if (isProxy_)
+	{
+		auto p = internalValueAsSelf();
+		ASSERTMSG_(p, "Cannot call asSequence() on a value (!)");
+		return p->asSequence();
+	}
+	return std::get<sequence_t>(data_);
+}
+
+bool Parameters::isMap() const
+{
+	if (isProxy_)
+	{
+		auto p = internalValueAsSelf();
+		ASSERTMSG_(p, "Cannot call isMap() on a value (!)");
+		return p->isSequence();
+	}
+	return std::holds_alternative<map_t>(data_);
+}
+Parameters::map_t& Parameters::asMap()
+{
+	if (isProxy_)
+	{
+		auto p = internalValueAsSelf();
+		ASSERTMSG_(p, "Cannot call asMap() on a value (!)");
+		return p->asMap();
+	}
+	return std::get<map_t>(data_);
+}
+const Parameters::map_t& Parameters::asMap() const
+{
+	if (isProxy_)
+	{
+		auto p = internalValueAsSelf();
+		ASSERTMSG_(p, "Cannot call asMap() on a value (!)");
+		return p->asMap();
+	}
+	return std::get<map_t>(data_);
+}
+
+bool Parameters::has(const std::string& key) const
 {
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
 		ASSERTMSG_(p, "Cannot call has() on a value (!)");
-		return p->has(s);
+		return p->has(key);
 	}
+	if (!std::holds_alternative<map_t>(data_))
+		THROW_EXCEPTION("has() not applicable to non-map nodes.");
 
-	return data_.end() != data_.find(s);
+	const map_t& m = std::get<map_t>(data_);
+	return m.end() != m.find(key);
 }
 
-std::string Parameters::typeOf(const std::string& name) const
+std::string Parameters::typeOfChild(const std::string& name) const
 {
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
 		ASSERTMSG_(p, "Cannot call typeOf() on a value (!)");
-		return p->typeOf(name);
+		return p->typeOfChild(name);
 	}
+	if (!std::holds_alternative<map_t>(data_))
+		THROW_EXCEPTION("typeOfChild() not applicable to non-map nodes.");
 
-	auto it = data_.find(name);
-	if (data_.end() == it) return {};
+	const map_t& m = std::get<map_t>(data_);
+
+	auto it = m.find(name);
+	if (m.end() == it) return {};
 	return typeIdxToStr(it->second.index());
 }
 
@@ -94,7 +165,11 @@ bool Parameters::empty() const
 		ASSERTMSG_(p, "Cannot call empty() on a value (!)");
 		return p->empty();
 	}
-	return data_.empty();
+	if (std::holds_alternative<sequence_t>(data_))
+		return std::get<sequence_t>(data_).empty();
+	if (std::holds_alternative<map_t>(data_))
+		return std::get<map_t>(data_).empty();
+	return true;
 }
 void Parameters::clear()
 {
@@ -104,27 +179,212 @@ void Parameters::clear()
 		ASSERTMSG_(p, "Cannot call clear() on a value (!)");
 		p->clear();
 	}
-	data_.clear();
+	if (std::holds_alternative<sequence_t>(data_))
+	{
+		std::get<sequence_t>(data_).clear();
+		return;
+	}
+	if (std::holds_alternative<map_t>(data_))
+	{
+		std::get<map_t>(data_).clear();
+		return;
+	}
+}
+
+void Parameters::operator=(const double v)
+{
+	if (isConstProxy_)
+		throw std::logic_error("Trying to write into read-only proxy");
+	if (!isProxy_)
+		throw std::logic_error(
+			"Trying to write into a Parameter block. Use "
+			"`p[\"name\"]=value;` instead");
+	if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
+	valuenc_->emplace<double>(v);
+}
+void Parameters::operator=(const std::string& v)
+{
+	if (isConstProxy_)
+		throw std::logic_error("Trying to write into read-only proxy");
+	if (!isProxy_)
+		throw std::logic_error(
+			"Trying to write into a Parameter block. Use "
+			"`p[\"name\"]=value;` instead");
+	if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
+	*valuenc_ = v;
+}
+Parameters& Parameters::operator=(const Parameters& v)
+{
+	if (isConstProxy_)
+		throw std::logic_error("Trying to write into read-only proxy");
+
+	if (isProxy_)
+	{
+		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
+		valuenc_->emplace<Parameters>(v);
+		return std::get<Parameters>(*valuenc_);
+	}
+	else
+	{
+		data_ = v.data_;
+		isProxy_ = false;
+		isConstProxy_ = false;
+		return *this;
+	}
 }
 
 Parameters Parameters::operator[](const char* s)
 {
 	ASSERT_(s != nullptr);
 	Parameters* p = internalMeOrValue();
-	return Parameters(internal::tag_as_proxy_t(), p->data_[s], s);
+	// Init as map on first use:
+	if (p->empty()) p->data_.emplace<map_t>();
+
+	if (!p->isMap())
+		THROW_EXCEPTION("write operator[] not applicable to non-map nodes.");
+
+	return Parameters(
+		internal::tag_as_proxy_t(), std::get<map_t>(p->data_)[s], s);
 }
 
 const Parameters Parameters::operator[](const char* s) const
 {
 	ASSERT_(s != nullptr);
 	const Parameters* p = internalMeOrValue();
-	auto it = p->data_.find(s);
-	if (p->data_.end() == it)
-		THROW_EXCEPTION_FMT("Access non-existing parameter `%s`", s);
+	if (p->empty())
+		THROW_EXCEPTION("read operator[] not applicable to empty nodes.");
+	if (!p->isMap())
+		THROW_EXCEPTION("read operator[] only available for map nodes.");
+
+	const map_t& m = std::get<map_t>(p->data_);
+	auto it = m.find(s);
+	if (m.end() == it)
+		THROW_EXCEPTION_FMT("Access non-existing map key `%s`", s);
 
 	return Parameters(internal::tag_as_const_proxy_t(), it->second, s);
 }
 
+Parameters Parameters::operator()(int index)
+{
+	Parameters* p = internalMeOrValue();
+	if (p->empty())
+		THROW_EXCEPTION(
+			"write operator() not applicable to empty nodes or sequences.");
+
+	if (!p->isSequence())
+		THROW_EXCEPTION("write operator() only available for sequence nodes.");
+
+	sequence_t& seq = std::get<sequence_t>(p->data_);
+	if (index < 0 || index >= static_cast<int>(seq.size()))
+		throw std::out_of_range("Parameters::operator() out of range");
+
+	return Parameters(internal::tag_as_proxy_t(), seq.at(index), "");
+}
+const Parameters Parameters::operator()(int index) const
+{
+	const Parameters* p = internalMeOrValue();
+	if (p->empty())
+		THROW_EXCEPTION("read operator[] not applicable to empty nodes.");
+	if (!p->isSequence())
+		THROW_EXCEPTION("read operator() only available for sequence nodes.");
+
+	const sequence_t& seq = std::get<sequence_t>(p->data_);
+	if (index < 0 || index >= static_cast<int>(seq.size()))
+		throw std::out_of_range("Parameters::operator() out of range");
+
+	return Parameters(internal::tag_as_const_proxy_t(), seq.at(index), "");
+}
+
+void Parameters::printAsYAML() const { printAsYAML(std::cout); }
+
+void Parameters::printAsYAML(std::ostream& o) const
+{
+	const Parameters* p = internalMeOrValue();
+	internalPrintAsYAML(*p, o, 0, true);
+}
+
+void Parameters::internalPrintAsYAML(
+	const Parameters& p, std::ostream& o, int indent, bool first)
+{
+	if (std::holds_alternative<std::monostate>(p.data_))
+		return internalPrintAsYAML(std::monostate(), o, indent, first);
+	if (std::holds_alternative<map_t>(p.data_))
+		return internalPrintAsYAML(std::get<map_t>(p.data_), o, indent, first);
+	if (std::holds_alternative<sequence_t>(p.data_))
+		return internalPrintAsYAML(
+			std::get<sequence_t>(p.data_), o, indent, first);
+}
+
+void Parameters::internalPrintAsYAML(
+	const std::monostate&, std::ostream& o, [[maybe_unused]] int indent,
+	[[maybe_unused]] bool first)
+{
+	o << "~\n";
+}
+void Parameters::internalPrintAsYAML(
+	const double& v, std::ostream& o, [[maybe_unused]] int indent,
+	[[maybe_unused]] bool first)
+{
+	o << std::to_string(v) << "\n";
+}
+void Parameters::internalPrintAsYAML(
+	const std::string& v, std::ostream& o, [[maybe_unused]] int indent,
+	[[maybe_unused]] bool first)
+{
+	o << v << "\n";
+}
+void Parameters::internalPrintAsYAML(
+	const uint64_t& v, std::ostream& o, [[maybe_unused]] int indent,
+	[[maybe_unused]] bool first)
+{
+	const std::string sInd(indent, ' ');
+	o << sInd << std::to_string(v) << "\n";
+}
+void Parameters::internalPrintAsYAML(
+	const Parameters::sequence_t& v, std::ostream& o, int indent, bool first)
+{
+	if (!first)
+	{
+		o << "\n";
+		indent += 2;
+	}
+	const std::string sInd(indent, ' ');
+	for (const auto& e : v)
+	{
+		o << sInd << "- ";
+		const auto newIndent = indent;
+		internalPrintAsYAML(e, o, newIndent, first);
+	}
+}
+void Parameters::internalPrintAsYAML(
+	const Parameters::map_t& m, std::ostream& o, int indent, bool first)
+{
+	if (!first)
+	{
+		o << "\n";
+		indent += 2;
+	}
+	const std::string sInd(indent, ' ');
+	for (const auto& kv : m)
+	{
+		const value_t& v = kv.second;
+		o << sInd << kv.first << ": ";
+		internalPrintAsYAML(v, o, indent, false);
+	}
+}
+
+void Parameters::internalPrintAsYAML(
+	const Parameters::value_t& v, std::ostream& o, int indent,
+	[[maybe_unused]] bool first)
+{
+	mrpt::for_<std::variant_size_v<value_t>>(  //
+		[&](auto i) {  //
+			if (v.index() != i.value) return;
+			return internalPrintAsYAML(std::get<i.value>(v), o, indent, false);
+		});
+}
+
+// ============================ internal  =====================================
 template <typename T>
 const T& mrpt::containers::internal::implAsGetter(
 	const Parameters& p, const char* expectedType)

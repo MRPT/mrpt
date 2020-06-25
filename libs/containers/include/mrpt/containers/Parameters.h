@@ -9,9 +9,13 @@
 #pragma once
 
 #include <cstdint>
+#include <iosfwd>
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <vector>
+
+//
 #include <variant>
 
 namespace mrpt::containers
@@ -31,8 +35,19 @@ template <typename T>
 const T& asGetter(const Parameters& p);
 }  // namespace internal
 
-/** Container for (possibly-nested) blocks of parameters of type `std::string`
- * or `double`.
+/** Powerful YAML-like container for possibly-nested blocks of parameters.
+ *
+ * The class Parameters acts as a "node" in a YAML structure, and can be of one
+ *of these types:
+ * - Leaf nodes ("values"): of type `std::string`, `double`, `uint64_t`.
+ * - Sequential container.
+ * - Map ("dictionary"): pairs of `name: value`.
+ *
+ * Elements contained in either sequenties or dictionaries can be either plain
+ *leaf types, or another container.
+ *
+ * This class was designed as a lightweight but structured way to pass
+ *arbitrarialy-complex parameter blocks.
  *
  *  \code
  * 	mrpt::containers::Parameters p;
@@ -50,7 +65,7 @@ const T& asGetter(const Parameters& p);
  *  \endcode
  *
  * \ingroup mrpt_containers_grp
- * \note [new in MRPT 1.0.5]
+ * \note [new in MRPT 2.0.5]
  */
 class Parameters
 {
@@ -58,39 +73,71 @@ class Parameters
 	using value_t =
 		std::variant<std::monostate, double, uint64_t, std::string, Parameters>;
 	using parameter_name_t = std::string;
-	using data_t = std::map<parameter_name_t, value_t>;
+
+	using sequence_t = std::vector<value_t>;
+	using map_t = std::map<parameter_name_t, value_t>;
+
+	using data_t = std::variant<std::monostate, sequence_t, map_t>;
 
 	Parameters() = default;
 	~Parameters() = default;
 
-	/** Constructor from list of pairs of values. See examples in Parameters
-	 * above. */
-	Parameters(std::initializer_list<data_t::value_type> init) : data_(init) {}
+	/** Constructor for maps, from list of pairs of values. See examples in
+	 * Parameters above. */
+	Parameters(std::initializer_list<map_t::value_type> init) : data_(init) {}
 
-	bool has(const std::string& s) const;
+	/** Constructor for sequences, from list of values. See examples in
+	 * Parameters above. */
+	Parameters(std::initializer_list<sequence_t::value_type> init) : data_(init)
+	{
+	}
+
+	/** For map nodes, checks if the given key name exists */
+	bool has(const std::string& key) const;
 	bool empty() const;
 	void clear();
 
-	/** Returns the type of the given parameter, or an empty string if it does
-	 * not exist. Possible return values are: "uninitialized", "double",
-	 * "uint64_t", "std::string", "Parameters", "undefined" (should never
-	 * happen).
+	bool isSequence() const;
+	sequence_t& asSequence();
+	const sequence_t& asSequence() const;
+
+	bool isMap() const;
+	map_t& asMap();
+	const map_t& asMap() const;
+
+	void printAsYAML(std::ostream& o) const;
+	void printAsYAML() const;  //!< prints to std::cout
+
+	/** For map nodes, returns the type of the given child, or an empty
+	 * string if it does not exist. Possible return values are: "uninitialized",
+	 * "double", "uint64_t", "std::string", "Parameters", "undefined" (should
+	 * never happen).
 	 */
-	std::string typeOf(const std::string& name) const;
+	std::string typeOfChild(const std::string& key) const;
 
-	/** Write access. */
-	Parameters operator[](const char* s);
-	inline Parameters operator[](const std::string& s)
+	/** Write access for maps */
+	Parameters operator[](const char* key);
+	/// \overload
+	inline Parameters operator[](const std::string& key)
 	{
-		return operator[](s.c_str());
+		return operator[](key.c_str());
 	}
 
-	/** Read access \throw std::runtime_error if parameter does not exist. */
-	const Parameters operator[](const char* s) const;
-	inline const Parameters operator[](const std::string& s) const
+	/** Read access  for maps
+	 * \throw std::runtime_error if key does not exist. */
+	const Parameters operator[](const char* key) const;
+	/// \overload
+	inline const Parameters operator[](const std::string& key) const
 	{
-		return operator[](s.c_str());
+		return operator[](key.c_str());
 	}
+
+	/** Write into an existing index of a sequence.
+	 * \throw std::out_of_range if index is out of range. */
+	Parameters operator()(int index);
+	/** Read from an existing index of a sequence.
+	 * \throw std::out_of_range if index is out of range. */
+	const Parameters operator()(int index) const;
 
    private:
 	data_t data_;
@@ -137,47 +184,9 @@ class Parameters
 		return std::get<T>(*valuenc_);
 	}
 
-	void operator=(const double v)
-	{
-		if (isConstProxy_)
-			throw std::logic_error("Trying to write into read-only proxy");
-		if (!isProxy_)
-			throw std::logic_error(
-				"Trying to write into a Parameter block. Use "
-				"`p[\"name\"]=value;` instead");
-		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
-		*valuenc_ = v;
-	}
-	void operator=(const std::string& v)
-	{
-		if (isConstProxy_)
-			throw std::logic_error("Trying to write into read-only proxy");
-		if (!isProxy_)
-			throw std::logic_error(
-				"Trying to write into a Parameter block. Use "
-				"`p[\"name\"]=value;` instead");
-		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
-		*valuenc_ = v;
-	}
-	Parameters& operator=(const Parameters& v)
-	{
-		if (isConstProxy_)
-			throw std::logic_error("Trying to write into read-only proxy");
-
-		if (isProxy_)
-		{
-			if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
-			*valuenc_ = v;
-			return std::get<Parameters>(*valuenc_);
-		}
-		else
-		{
-			data_ = v.data_;
-			isProxy_ = false;
-			isConstProxy_ = false;
-			return *this;
-		}
-	}
+	void operator=(const double v);
+	void operator=(const std::string& v);
+	Parameters& operator=(const Parameters& v);
 
 	inline operator double() const { return as<double>(); }
 	inline operator const std::string&() const { return as<std::string>(); }
@@ -187,15 +196,36 @@ class Parameters
 	const value_t* value_ = nullptr;
 	value_t* valuenc_ = nullptr;
 
+	/** Returns the pointer to the referenced object, if a proxy, or nullptr
+	 * otherwise */
 	const Parameters* internalValueAsSelf() const;
 	Parameters* internalValueAsSelf();
 
+	/** Returns me or the pointer to the referenced object, if a proxy */
 	const Parameters* internalMeOrValue() const;
 	Parameters* internalMeOrValue();
 
 	template <typename T>
 	friend const T& internal::implAsGetter(
 		const Parameters& p, const char* expectedType);
+
+	static void internalPrintAsYAML(
+		const Parameters& p, std::ostream& o, int indent, bool first);
+
+	static void internalPrintAsYAML(
+		const std::monostate&, std::ostream& o, int indent, bool first);
+	static void internalPrintAsYAML(
+		const double& v, std::ostream& o, int indent, bool first);
+	static void internalPrintAsYAML(
+		const std::string& v, std::ostream& o, int indent, bool first);
+	static void internalPrintAsYAML(
+		const uint64_t& v, std::ostream& o, int indent, bool first);
+	static void internalPrintAsYAML(
+		const sequence_t& v, std::ostream& o, int indent, bool first);
+	static void internalPrintAsYAML(
+		const map_t& v, std::ostream& o, int indent, bool first);
+	static void internalPrintAsYAML(
+		const value_t& v, std::ostream& o, int indent, bool first);
 
 	/** @} */
 };
