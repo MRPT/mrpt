@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"	 // Precompiled headers
+#include "containers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/Parameters.h>
@@ -233,7 +233,7 @@ Parameters& Parameters::operator=(const Parameters& v)
 	}
 	else
 	{
-		data_ = v.data_;
+		data_ = v.internalMeOrValue()->data_;
 		isProxy_ = false;
 		isConstProxy_ = false;
 		return *this;
