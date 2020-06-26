@@ -27,18 +27,25 @@ TEST(Parameters, assignments)
 	p["K"] = 2.0;
 	p["N"].as<uint64_t>() = 10;
 	p["name"] = "Pepico";
+	p["enabled"] = true;
+	p["visible"] = false;
 
 	EXPECT_FALSE(p.empty());
 	EXPECT_TRUE(p.has("K"));
 
+	EXPECT_TRUE(p["enabled"]);
+	EXPECT_FALSE(p["visible"]);
+
 	EXPECT_EQ(p.typeOfChild("K"), "double");
-	EXPECT_EQ(p["K"], 2.0);
+	EXPECT_EQ(p["K"].as<double>(), 2.0);
 
 	EXPECT_EQ(p.typeOfChild("N"), "uint64_t");
 	EXPECT_EQ(p["N"].as<uint64_t>(), 10U);
 
 	EXPECT_EQ(p.typeOfChild("name"), "std::string");
 	EXPECT_EQ(p["name"].as<std::string>(), "Pepico");
+
+	EXPECT_EQ(p.typeOfChild("enabled"), "bool");
 
 	{
 		mrpt::containers::Parameters p2;
@@ -74,8 +81,8 @@ TEST(Parameters, initializers)
 
 TEST(Parameters, initializerMap)
 {
-	const auto p =
-		mrpt::containers::Parameters({{"K", 2.0}, {"book", "silmarillion"}});
+	const auto p = mrpt::containers::Parameters(
+		{{"K", 2.0}, {"book", std::string("silmarillion")}});
 
 	EXPECT_FALSE(p.isSequence());
 	EXPECT_TRUE(p.isMap());
@@ -83,7 +90,7 @@ TEST(Parameters, initializerMap)
 	EXPECT_TRUE(p.has("K"));
 
 	EXPECT_EQ(p.typeOfChild("K"), "double");
-	EXPECT_EQ(p["K"], 2.0);
+	EXPECT_EQ(p["K"].as<double>(), 2.0);
 
 	EXPECT_EQ(p.getOrDefault("K", 1.0), 2.0);
 	EXPECT_EQ(p.getOrDefault("Q", 1.0), 1.0);
@@ -107,31 +114,31 @@ TEST(Parameters, initializerSequence)
 	EXPECT_THROW(seq1.has("foo"), std::exception);
 	EXPECT_THROW(seq1["K"], std::exception);
 
-	EXPECT_EQ(seq1(0), 1.0);
+	EXPECT_TRUE(static_cast<double>(seq1(0)) == 1.0);
 	EXPECT_EQ(seq1(0).as<double>(), 1.0);
-	EXPECT_EQ(seq1(1), 2.0);
-	EXPECT_EQ(seq1(2), 3.0);
+	EXPECT_EQ(seq1(0).as<double>(), 1.0);
+	EXPECT_EQ(seq1(1).as<double>(), 2.0);
+	EXPECT_EQ(seq1(2).as<double>(), 3.0);
 
 	EXPECT_THROW(seq1(3), std::out_of_range);
 	EXPECT_THROW(seq1(-1), std::out_of_range);
 
 	auto seq2 = mrpt::containers::Parameters({1.0, 2.0, 3.0});
-	EXPECT_EQ(seq2(1), 2.0);
+	EXPECT_EQ(seq2(1).as<double>(), 2.0);
 
 	seq2(1) = 42.0;
-	EXPECT_EQ(seq2(1), 42.0);
+	EXPECT_EQ(seq2(1).as<double>(), 42.0);
 
 	seq2(1) = "foo";
 	EXPECT_EQ(seq2(1).as<std::string>(), std::string("foo"));
 
 	seq2(1) = mrpt::containers::Parameters({{"K", 1.0}});
-	EXPECT_EQ(seq2(1)["K"], 1.0);
+	EXPECT_EQ(seq2(1)["K"].as<double>(), 1.0);
 
-	seq2.push_back("foo2");
+	seq2.push_back(std::string("foo2"));
 	seq2.push_back(9.0);
 
 	EXPECT_EQ(seq2(3).as<std::string>(), std::string("foo2"));
-	EXPECT_EQ(seq2(4), 9.0);
 	EXPECT_EQ(seq2(4).as<double>(), 9.0);
 }
 
@@ -144,7 +151,7 @@ TEST(Parameters, nested)
 	EXPECT_FALSE(p["PID"].empty());
 
 	EXPECT_EQ(p["PID"].typeOfChild("Ti"), "double");
-	EXPECT_EQ(p["PID"]["Ti"], 10.0);
+	EXPECT_EQ(p["PID"]["Ti"].as<double>(), 10.0);
 
 	// empty() not valid for values:
 	EXPECT_THROW(p["PID"]["Ti"].empty(), std::exception);
@@ -160,15 +167,15 @@ TEST(Parameters, nested)
 TEST(Parameters, nested2)
 {
 	mrpt::containers::Parameters p;
-	p["N"] = 10;
+	p["N"].as<uint64_t>() = 10;
 	auto& pid = p["PID"] = mrpt::containers::Parameters();
 	pid["Kp"] = 0.5;
 	p["PID"]["Ti"] = 2.0;
 	p["PID"]["N"].as<uint64_t>() = 1000;
 	p["PID"]["name"] = "foo";
 
-	EXPECT_EQ(p["PID"]["Kp"], 0.5);
-	EXPECT_EQ(p["PID"]["Ti"], 2.0);
+	EXPECT_EQ(p["PID"]["Kp"].as<double>(), 0.5);
+	EXPECT_EQ(p["PID"]["Ti"].as<double>(), 2.0);
 	EXPECT_EQ(p["PID"]["N"].as<uint64_t>(), 1000U);
 	EXPECT_EQ(p["PID"]["name"].as<std::string>(), std::string("foo"));
 }

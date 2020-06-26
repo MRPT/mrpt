@@ -23,6 +23,7 @@ using namespace mrpt::containers;
 
 Parameters::Parameters(const Parameters& v) { *this = v; }
 
+// Types: std::monostate, double, uint64_t, std::string, bool, Parameters
 const char* mrpt::containers::internal::typeIdxToStr(const std::size_t idx)
 {
 	switch (idx)
@@ -36,6 +37,8 @@ const char* mrpt::containers::internal::typeIdxToStr(const std::size_t idx)
 		case 3:
 			return "std::string";
 		case 4:
+			return "bool";
+		case 5:
 			return "Parameters";
 		default:
 			return "undefined";
@@ -198,28 +201,9 @@ void Parameters::clear()
 	}
 }
 
-void Parameters::operator=(const double v)
-{
-	if (isConstProxy_)
-		throw std::logic_error("Trying to write into read-only proxy");
-	if (!isProxy_)
-		throw std::logic_error(
-			"Trying to write into a Parameter block. Use "
-			"`p[\"name\"]=value;` instead");
-	if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
-	valuenc_->emplace<double>(v);
-}
-void Parameters::operator=(const std::string& v)
-{
-	if (isConstProxy_)
-		throw std::logic_error("Trying to write into read-only proxy");
-	if (!isProxy_)
-		throw std::logic_error(
-			"Trying to write into a Parameter block. Use "
-			"`p[\"name\"]=value;` instead");
-	if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
-	*valuenc_ = v;
-}
+void Parameters::operator=(const double v) { implOpAssign(v); }
+void Parameters::operator=(const bool v) { implOpAssign(v); }
+void Parameters::operator=(const std::string& v) { implOpAssign(v); }
 Parameters& Parameters::operator=(const Parameters& v)
 {
 	if (isConstProxy_)
@@ -333,6 +317,12 @@ void Parameters::internalPrintAsYAML(
 	[[maybe_unused]] bool first)
 {
 	o << std::to_string(v) << "\n";
+}
+void Parameters::internalPrintAsYAML(
+	const bool& v, std::ostream& o, [[maybe_unused]] int indent,
+	[[maybe_unused]] bool first)
+{
+	o << (v ? "true" : "false") << "\n";
 }
 void Parameters::internalPrintAsYAML(
 	const std::string& v, std::ostream& o, [[maybe_unused]] int indent,
@@ -496,6 +486,11 @@ template <>
 const uint64_t& mrpt::containers::internal::asGetter(const Parameters& p)
 {
 	return implAsGetter<uint64_t>(p, "uint64_t");
+}
+template <>
+const bool& mrpt::containers::internal::asGetter(const Parameters& p)
+{
+	return implAsGetter<bool>(p, "bool");
 }
 template <>
 const std::string& mrpt::containers::internal::asGetter(const Parameters& p)
