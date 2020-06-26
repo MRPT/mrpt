@@ -35,7 +35,8 @@ namespace internal {
  *
  * The class Parameters acts as a "node" in a YAML structure, and can be of one
  *of these types:
- * - Leaf nodes ("values"): of type `std::string`, `double`, `uint64_t`.
+ * - Leaf nodes ("scalar values"): Types `std::string`, `double`, `uint64_t`,
+ *`bool`.
  * - Sequential container.
  * - Map ("dictionary"): pairs of `name: value`.
  *
@@ -71,8 +72,8 @@ namespace internal {
 class Parameters
 {
    public:
-	using value_t =
-		std::variant<std::monostate, double, uint64_t, std::string, Parameters>;
+	using value_t = std::variant<
+		std::monostate, double, uint64_t, std::string, bool, Parameters>;
 	using parameter_name_t = std::string;
 
 	using sequence_t = std::vector<value_t>;
@@ -143,8 +144,8 @@ class Parameters
 
 	/** For map nodes, returns the type of the given child, or an empty
 	 * string if it does not exist. Possible return values are: "uninitialized",
-	 * "double", "uint64_t", "std::string", "Parameters", "undefined" (should
-	 * never happen).
+	 * "double", "uint64_t", "std::string", "bool", "Parameters", "undefined"
+	 * (should never happen).
 	 */
 	std::string typeOfChild(const std::string& key) const;
 
@@ -204,6 +205,8 @@ class Parameters
 	/// \overload
 	void push_back(const uint64_t v) { internalPushBack(v); }
 	/// \overload
+	void push_back(const bool v) { internalPushBack(bool(v)); }
+	/// \overload
 	void push_back(const Parameters& v) { internalPushBack(v); }
 
 	/** Copies the structure and contents from an existing
@@ -255,10 +258,19 @@ class Parameters
 		return std::get<T>(*valuenc_);
 	}
 
+	void operator=(const bool v);
 	void operator=(const double v);
+	void operator=(const uint64_t v);
 	void operator=(const std::string& v);
+	inline void operator=(const char* v) { operator=(std::string(v)); }
+	inline void operator=(const std::string_view& v)
+	{
+		operator=(std::string(v));
+	}
 	Parameters& operator=(const Parameters& v);
 
+	inline operator bool() const { return as<bool>(); }
+	inline operator uint64_t() const { return as<uint64_t>(); }
 	inline operator double() const { return as<double>(); }
 	inline operator const std::string&() const { return as<std::string>(); }
 
@@ -303,11 +315,27 @@ class Parameters
 	static void internalPrintAsYAML(
 		const uint64_t& v, std::ostream& o, int indent, bool first);
 	static void internalPrintAsYAML(
+		const bool& v, std::ostream& o, int indent, bool first);
+	static void internalPrintAsYAML(
 		const sequence_t& v, std::ostream& o, int indent, bool first);
 	static void internalPrintAsYAML(
 		const map_t& v, std::ostream& o, int indent, bool first);
 	static void internalPrintAsYAML(
 		const value_t& v, std::ostream& o, int indent, bool first);
+
+	/** Impl of operator=() */
+	template <typename T>
+	void implOpAssign(const T& v)
+	{
+		if (isConstProxy_)
+			throw std::logic_error("Trying to write into read-only proxy");
+		if (!isProxy_)
+			throw std::logic_error(
+				"Trying to write into a Parameter block. Use "
+				"`p[\"name\"]=value;` instead");
+		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
+		valuenc_->emplace<T>(v);
+	}
 
 	/** @} */
 };
