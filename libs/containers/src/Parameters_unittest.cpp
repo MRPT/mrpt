@@ -36,16 +36,16 @@ TEST(Parameters, assignments)
 	EXPECT_TRUE(p["enabled"]);
 	EXPECT_FALSE(p["visible"]);
 
-	EXPECT_EQ(p.typeOfChild("K"), "double");
+	EXPECT_EQ(p.typeOfChild("K"), typeid(double));
 	EXPECT_EQ(p["K"].as<double>(), 2.0);
 
-	EXPECT_EQ(p.typeOfChild("N"), "uint64_t");
+	EXPECT_EQ(p.typeOfChild("N"), typeid(uint64_t));
 	EXPECT_EQ(p["N"].as<uint64_t>(), 10U);
 
-	EXPECT_EQ(p.typeOfChild("name"), "std::string");
+	EXPECT_EQ(p.typeOfChild("name"), typeid(std::string));
 	EXPECT_EQ(p["name"].as<std::string>(), "Pepico");
 
-	EXPECT_EQ(p.typeOfChild("enabled"), "bool");
+	EXPECT_EQ(p.typeOfChild("enabled"), typeid(bool));
 
 	{
 		mrpt::containers::Parameters p2;
@@ -89,13 +89,13 @@ TEST(Parameters, initializerMap)
 	EXPECT_FALSE(p.empty());
 	EXPECT_TRUE(p.has("K"));
 
-	EXPECT_EQ(p.typeOfChild("K"), "double");
+	EXPECT_EQ(p.typeOfChild("K"), typeid(double));
 	EXPECT_EQ(p["K"].as<double>(), 2.0);
 
 	EXPECT_EQ(p.getOrDefault("K", 1.0), 2.0);
 	EXPECT_EQ(p.getOrDefault("Q", 1.0), 1.0);
 
-	EXPECT_EQ(p.typeOfChild("book"), "std::string");
+	EXPECT_EQ(p.typeOfChild("book"), typeid(std::string));
 	EXPECT_EQ(p["book"].as<std::string>(), "silmarillion");
 
 	// non existing in const object:
@@ -150,7 +150,7 @@ TEST(Parameters, nested)
 	EXPECT_FALSE(p.empty());
 	EXPECT_FALSE(p["PID"].empty());
 
-	EXPECT_EQ(p["PID"].typeOfChild("Ti"), "double");
+	EXPECT_EQ(p["PID"].typeOfChild("Ti"), typeid(double));
 	EXPECT_EQ(p["PID"]["Ti"].as<double>(), 10.0);
 
 	// empty() not valid for values:
