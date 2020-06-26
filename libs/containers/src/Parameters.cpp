@@ -11,7 +11,6 @@
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/Parameters.h>
-#include <mrpt/core/constexpr_for.h>
 #include <mrpt/core/exceptions.h>
 
 #include <iostream>
@@ -22,28 +21,6 @@
 using namespace mrpt::containers;
 
 Parameters::Parameters(const Parameters& v) { *this = v; }
-
-// Types: std::monostate, double, uint64_t, std::string, bool, Parameters
-const char* mrpt::containers::internal::typeIdxToStr(const std::size_t idx)
-{
-	switch (idx)
-	{
-		case 0:
-			return "uninitialized";
-		case 1:
-			return "double";
-		case 2:
-			return "uint64_t";
-		case 3:
-			return "std::string";
-		case 4:
-			return "bool";
-		case 5:
-			return "Parameters";
-		default:
-			return "undefined";
-	};
-}
 
 bool Parameters::isSequence() const
 {
@@ -122,7 +99,7 @@ bool Parameters::has(const std::string& key) const
 	return m.end() != m.find(key);
 }
 
-std::string Parameters::typeOfChild(const std::string& name) const
+const std::type_info& Parameters::typeOfChild(const std::string& name) const
 {
 	if (isProxy_)
 	{
@@ -136,24 +113,24 @@ std::string Parameters::typeOfChild(const std::string& name) const
 	const map_t& m = std::get<map_t>(data_);
 
 	auto it = m.find(name);
-	if (m.end() == it) return {};
-	return internal::typeIdxToStr(it->second.index());
+	if (m.end() == it) return typeid(void);
+	return it->second.type();
 }
 
 const Parameters* Parameters::internalValueAsSelf() const
 {
 	const Parameters* p = nullptr;
-	if (valuenc_ && std::holds_alternative<Parameters>(*valuenc_))
-		p = &std::get<Parameters>(*valuenc_);
-	if (value_ && std::holds_alternative<Parameters>(*value_))
-		p = &std::get<Parameters>(*value_);
+	if (valuenc_ && valuenc_->type() == typeid(Parameters))
+		p = std::any_cast<Parameters>(valuenc_);
+	if (value_ && value_->type() == typeid(Parameters))
+		p = std::any_cast<Parameters>(value_);
 	return p;
 }
 Parameters* Parameters::internalValueAsSelf()
 {
 	Parameters* p = nullptr;
-	if (valuenc_ && std::holds_alternative<Parameters>(*valuenc_))
-		p = &std::get<Parameters>(*valuenc_);
+	if (valuenc_ && valuenc_->type() == typeid(Parameters))
+		p = std::any_cast<Parameters>(valuenc_);
 	return p;
 }
 const Parameters* Parameters::internalMeOrValue() const
@@ -213,7 +190,7 @@ Parameters& Parameters::operator=(const Parameters& v)
 	{
 		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
 		valuenc_->emplace<Parameters>(v);
-		return std::get<Parameters>(*valuenc_);
+		return *std::any_cast<Parameters>(valuenc_);
 	}
 	else
 	{
@@ -313,31 +290,6 @@ void Parameters::internalPrintAsYAML(
 	o << "~\n";
 }
 void Parameters::internalPrintAsYAML(
-	const double& v, std::ostream& o, [[maybe_unused]] int indent,
-	[[maybe_unused]] bool first)
-{
-	o << std::to_string(v) << "\n";
-}
-void Parameters::internalPrintAsYAML(
-	const bool& v, std::ostream& o, [[maybe_unused]] int indent,
-	[[maybe_unused]] bool first)
-{
-	o << (v ? "true" : "false") << "\n";
-}
-void Parameters::internalPrintAsYAML(
-	const std::string& v, std::ostream& o, [[maybe_unused]] int indent,
-	[[maybe_unused]] bool first)
-{
-	o << v << "\n";
-}
-void Parameters::internalPrintAsYAML(
-	const uint64_t& v, std::ostream& o, [[maybe_unused]] int indent,
-	[[maybe_unused]] bool first)
-{
-	const std::string sInd(indent, ' ');
-	o << sInd << std::to_string(v) << "\n";
-}
-void Parameters::internalPrintAsYAML(
 	const Parameters::sequence_t& v, std::ostream& o, int indent, bool first)
 {
 	if (!first)
@@ -374,11 +326,48 @@ void Parameters::internalPrintAsYAML(
 	const Parameters::value_t& v, std::ostream& o, int indent,
 	[[maybe_unused]] bool first)
 {
-	mrpt::for_<std::variant_size_v<value_t>>(  //
-		[&](auto i) {  //
-			if (v.index() != i.value) return;
-			return internalPrintAsYAML(std::get<i.value>(v), o, indent, false);
-		});
+	if (!v.has_value())
+	{
+		o << "~\n";
+		return;
+	}
+
+	if (v.type() == typeid(Parameters))
+		internalPrintAsYAML(std::any_cast<Parameters>(v), o, indent, false);
+	else if (v.type() == typeid(bool))
+		o << (std::any_cast<bool>(v) ? "true" : "false") << "\n";
+	else if (v.type() == typeid(uint64_t))
+		o << std::any_cast<uint64_t>(v) << "\n";
+	else if (v.type() == typeid(int64_t))
+		o << std::any_cast<int64_t>(v) << "\n";
+	else if (v.type() == typeid(uint32_t))
+		o << std::any_cast<uint32_t>(v) << "\n";
+	else if (v.type() == typeid(int32_t))
+		o << std::any_cast<int32_t>(v) << "\n";
+	else if (v.type() == typeid(int))
+		o << std::any_cast<int>(v) << "\n";
+	else if (v.type() == typeid(unsigned int))
+		o << std::any_cast<unsigned int>(v) << "\n";
+	else if (v.type() == typeid(const char*))
+		o << std::any_cast<const char*>(v) << "\n";
+	else if (v.type() == typeid(std::string))
+		o << std::any_cast<std::string>(v) << "\n";
+	else if (v.type() == typeid(float))
+		o << std::any_cast<float>(v) << "\n";
+	else if (v.type() == typeid(double))
+		o << std::any_cast<double>(v) << "\n";
+	else if (v.type() == typeid(uint16_t))
+		o << std::any_cast<uint16_t>(v) << "\n";
+	else if (v.type() == typeid(int16_t))
+		o << std::any_cast<int16_t>(v) << "\n";
+	else if (v.type() == typeid(uint8_t))
+		o << std::any_cast<uint8_t>(v) << "\n";
+	else if (v.type() == typeid(int8_t))
+		o << std::any_cast<int8_t>(v) << "\n";
+	else if (v.type() == typeid(char))
+		o << std::any_cast<char>(v) << "\n";
+	else
+		o << "(unknown type)\n";
 }
 
 Parameters Parameters::FromYAMLText(const std::string& yamlTextBlock)
@@ -462,18 +451,23 @@ const T& mrpt::containers::internal::implAsGetter(
 	const Parameters& p, const char* expectedType)
 {
 	ASSERT_(p.isProxy_);
-	try
+	if (p.isConstProxy_)
 	{
-		if (p.isConstProxy_)
-			return std::get<T>(*p.value_);
-		else
-			return std::get<T>(*p.valuenc_);
+		if (p.value_->type() != typeid(T))
+			THROW_EXCEPTION_FMT(
+				"Trying to read parameter `%s` of type `%s` as if it was `%s`",
+				p.name_, p.value_->type().name(), expectedType);
+
+		return *std::any_cast<const T>(p.value_);
 	}
-	catch (const std::bad_variant_access&)
+	else
 	{
-		THROW_EXCEPTION_FMT(
-			"Trying to read parameter `%s` of type `%s` as if it was `%s`",
-			p.name_, typeIdxToStr(p.value_->index()), expectedType);
+		if (p.valuenc_->type() != typeid(T))
+			THROW_EXCEPTION_FMT(
+				"Trying to read parameter `%s` of type `%s` as if it was `%s`",
+				p.name_, p.valuenc_->type().name(), expectedType);
+
+		return *std::any_cast<const T>(p.valuenc_);
 	}
 }
 

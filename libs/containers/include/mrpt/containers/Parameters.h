@@ -11,6 +11,7 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/format.h>
 
+#include <any>
 #include <cstdint>
 #include <iosfwd>
 #include <map>
@@ -27,7 +28,6 @@ namespace internal {
  struct tag_as_proxy_t {}; struct tag_as_const_proxy_t {};
  template <typename T> const T& implAsGetter(const Parameters& p, const char* expectedType);
  template <typename T> const T& asGetter(const Parameters& p);
- const char* typeIdxToStr(const std::size_t idx);
 }
 // clang-format on
 
@@ -35,8 +35,7 @@ namespace internal {
  *
  * The class Parameters acts as a "node" in a YAML structure, and can be of one
  *of these types:
- * - Leaf nodes ("scalar values"): Types `std::string`, `double`, `uint64_t`,
- *`bool`.
+ * - Leaf nodes ("scalar values"): Any type, stored as a C++17 std::any.
  * - Sequential container.
  * - Map ("dictionary"): pairs of `name: value`.
  *
@@ -72,8 +71,7 @@ namespace internal {
 class Parameters
 {
    public:
-	using value_t = std::variant<
-		std::monostate, double, uint64_t, std::string, bool, Parameters>;
+	using value_t = std::any;
 	using parameter_name_t = std::string;
 
 	using sequence_t = std::vector<value_t>;
@@ -142,12 +140,10 @@ class Parameters
 	void printAsYAML(std::ostream& o) const;
 	void printAsYAML() const;  //!< prints to std::cout
 
-	/** For map nodes, returns the type of the given child, or an empty
-	 * string if it does not exist. Possible return values are: "uninitialized",
-	 * "double", "uint64_t", "std::string", "bool", "Parameters", "undefined"
-	 * (should never happen).
+	/** For map nodes, returns the type of the given child, or typeid(void) if
+	 * empty.
 	 */
-	std::string typeOfChild(const std::string& key) const;
+	const std::type_info& typeOfChild(const std::string& key) const;
 
 	/** Write access for maps */
 	Parameters operator[](const char* key);
@@ -179,14 +175,14 @@ class Parameters
 		if (m.end() == it) return defaultValue;
 		try
 		{
-			return std::get<T>(it->second);
+			return std::any_cast<T>(it->second);
 		}
-		catch (const std::bad_variant_access&)
+		catch (const std::bad_any_cast& e)
 		{
 			throw std::logic_error(mrpt::format(
-				"getOrDefault(): Trying to access key `%s` holding variant "
-				"type `%s` as the wrong type.",
-				key.c_str(), internal::typeIdxToStr(it->second.index())));
+				"getOrDefault(): Trying to access key `%s` holding type `%s` "
+				"as the wrong type: `%e`",
+				key.c_str(), it->second.type().name(), e.what()));
 		}
 	}
 
@@ -254,8 +250,15 @@ class Parameters
 				"`p[\"name\"].as<T>();` instead");
 
 		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
-		if (!std::holds_alternative<T>(*valuenc_)) *valuenc_ = T();
-		return std::get<T>(*valuenc_);
+		try
+		{
+			std::any_cast<T>(*valuenc_);
+		}
+		catch (const std::bad_any_cast&)
+		{
+			valuenc_->emplace<T>();
+		}
+		return *std::any_cast<T>(valuenc_);
 	}
 
 	void operator=(const bool v);
@@ -308,14 +311,6 @@ class Parameters
 
 	static void internalPrintAsYAML(
 		const std::monostate&, std::ostream& o, int indent, bool first);
-	static void internalPrintAsYAML(
-		const double& v, std::ostream& o, int indent, bool first);
-	static void internalPrintAsYAML(
-		const std::string& v, std::ostream& o, int indent, bool first);
-	static void internalPrintAsYAML(
-		const uint64_t& v, std::ostream& o, int indent, bool first);
-	static void internalPrintAsYAML(
-		const bool& v, std::ostream& o, int indent, bool first);
 	static void internalPrintAsYAML(
 		const sequence_t& v, std::ostream& o, int indent, bool first);
 	static void internalPrintAsYAML(
