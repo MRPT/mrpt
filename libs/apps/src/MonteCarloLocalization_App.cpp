@@ -144,9 +144,11 @@ struct pf2gauss_t<CMonteCarloLocalization3D>
 	static constexpr bool PF_IS_3D = true;
 
 	static void resetOnFreeSpace(
-		CMonteCarloLocalization3D& pdf, mrpt::maps::CMultiMetricMap& metricMap,
-		size_t PARTICLE_COUNT, const mrpt::math::TPose3D& init_min,
-		const mrpt::math::TPose3D& init_max)
+		[[maybe_unused]] CMonteCarloLocalization3D& pdf,
+		[[maybe_unused]] mrpt::maps::CMultiMetricMap& metricMap,
+		[[maybe_unused]] size_t PARTICLE_COUNT,
+		[[maybe_unused]] const mrpt::math::TPose3D& init_min,
+		[[maybe_unused]] const mrpt::math::TPose3D& init_max)
 	{
 		THROW_EXCEPTION("init_PDF_mode=0 not supported for 3D particles");
 	}
@@ -466,8 +468,6 @@ void MonteCarloLocalization_Base::do_pf_localization()
 				metricMap.saveMetricMapRepresentationToFile(sOUT_DIR + "/map"s);
 			}
 
-			int M = PARTICLE_COUNT;
-
 			MONTECARLO_TYPE pdf;
 
 			// PDF Options:
@@ -501,7 +501,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			}
 
 			MRPT_LOG_INFO_FMT(
-				"PDF of %u particles initialized in %.03fms", M,
+				"PDF of %u particles initialized in %.03fms", PARTICLE_COUNT,
 				1000 * tictac.Tac());
 
 			pdf.saveToTextFile(
@@ -516,7 +516,6 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
 			PDF_MEAN_TYPE pdfEstimation;
 
-			CMatrixDouble cov;
 			bool end = false;
 
 			CFileOutputStream f_cov_est, f_pf_stats, f_odo_est;
@@ -532,7 +531,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			CPose2D last_used_abs_odo(0, 0, 0),
 				pending_most_recent_odo(0, 0, 0);
 
-			while (!end)
+			for (; !end; step++)
 			{
 				// Finish if ESC is pushed:
 				if (allow_quit_on_esc_key && os::kbhit())
@@ -633,445 +632,422 @@ void MonteCarloLocalization_Base::do_pf_localization()
 				else if (obs)
 					cur_obs_timestamp = obs->timestamp;
 
-				if (step >= rawlog_offset)
-				{
-					// Do not execute the PF at "step=0", to let the initial
-					// PDF to be reflected in the logs.
-					if (step > rawlog_offset)
-					{
-						// Show 3D?
-						if (SHOW_PROGRESS_3D_REAL_TIME)
-						{
-							const auto [cov, meanPose] =
-								pdf.getCovarianceAndMean();
-
-							if (rawlogEntry >= 2)
-								getGroundTruth(
-									expectedPose, rawlogEntry - 2, GT,
-									cur_obs_timestamp);
-
-							// The particles' cov:
-							{
-								CRenderizable::Ptr ellip =
-									scene.getByName("parts_cov");
-								if (!ellip)
-								{
-									if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
-									{
-										auto el = CEllipsoid3D::Create();
-										ellip =
-											mrpt::ptr_cast<CRenderizable>::from(
-												el);
-										el->setLineWidth(2);
-										el->setQuantiles(3);
-										el->enableDrawSolid3D(false);
-									}
-									else
-									{
-										auto el = CEllipsoid2D::Create();
-										ellip =
-											mrpt::ptr_cast<CRenderizable>::from(
-												el);
-										el->setLineWidth(2);
-										el->setQuantiles(3);
-										el->enableDrawSolid3D(false);
-									}
-									ellip->setName("parts_cov");
-									ellip->setColor(1, 0, 0, 0.6);
-									scene.insert(ellip);
-								}
-								else
-								{
-									if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
-									{
-										mrpt::ptr_cast<CEllipsoid3D>::from(
-											ellip)
-											->setCovMatrix(
-												cov.template blockCopy<3, 3>());
-									}
-									else
-									{
-										mrpt::ptr_cast<CEllipsoid2D>::from(
-											ellip)
-											->setCovMatrix(
-												cov.template blockCopy<2, 2>());
-									}
-								}
-								double ellipse_z =
-									mrpt::poses::CPose3D(meanPose).z() + 0.01;
-
-								ellip->setLocation(
-									meanPose.x(), meanPose.y(), ellipse_z);
-							}
-
-							COpenGLScene::Ptr ptrSceneWin =
-								win3D->get3DSceneAndLock();
-
-							win3D->setCameraPointingToPoint(
-								meanPose.x(), meanPose.y(), 0);
-
-							win3D->addTextMessage(
-								10, 10,
-								mrpt::format(
-									"timestamp: %s",
-									mrpt::system::dateTimeLocalToString(
-										cur_obs_timestamp)
-										.c_str()),
-								6001);
-
-							win3D->addTextMessage(
-								10, 33,
-								mrpt::format(
-									"#particles= %7u",
-									static_cast<unsigned int>(pdf.size())),
-								6002);
-
-							win3D->addTextMessage(
-								10, 55,
-								mrpt::format(
-									"mean pose (x y phi_deg)= %s",
-									meanPose.asString().c_str()),
-								6003);
-
-							*ptrSceneWin = scene;
-							win3D->unlockAccess3DScene();
-
-							// Update:
-							win3D->forceRepaint();
-
-							std::this_thread::sleep_for(
-								std::chrono::milliseconds(
-									SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
-						}  // end show 3D real-time
-
-						// ----------------------------------------
-						// RUN ONE STEP OF THE PARTICLE FILTER:
-						// ----------------------------------------
-						tictac.Tic();
-						if (!SAVE_STATS_ONLY)
-						{
-							MRPT_LOG_INFO_STREAM(
-								"Step "
-								<< step << ". Executing ParticleFilter on "
-								<< pdf.particlesCount() << " particles...");
-						}
-
-						PF.executeOn(
-							pdf,
-							action.get(),  // Action
-							observations.get(),  // Obs.
-							&PF_stats  // Output statistics
-						);
-
-						double run_time = tictac.Tac();
-						executionTimes.push_back(run_time);
-						if (!SAVE_STATS_ONLY)
-						{
-							MRPT_LOG_INFO_FMT(
-								"Done in %.03fms, ESS=%f", 1e3 * run_time,
-								pdf.ESS());
-						}
-					}
-
-					// Avrg. error:
-					// ----------------------------------------
-					CActionRobotMovement2D::Ptr best_mov_estim =
-						action->getBestMovementEstimation();
-					if (best_mov_estim)
-					{
-						odometryEstimation =
-							odometryEstimation +
-							best_mov_estim->poseChange->getMeanVal();
-					}
-
-					pdf.getMean(pdfEstimation);
-
-					// save estimated mean in history:
-					if (cur_obs_timestamp != INVALID_TIMESTAMP &&
-						fill_out_estimated_path)
-					{
-						out_estimated_path.insert(
-							cur_obs_timestamp,
-							mrpt::math::TPose3D(pdfEstimation.asTPose()));
-					}
-
-					getGroundTruth(
-						expectedPose, rawlogEntry, GT, cur_obs_timestamp);
-
-					if (expectedPose.x() != 0 || expectedPose.y() != 0 ||
-						expectedPose.phi() != 0)
-					{  // Averaged error to GT
-						double sumW = 0;
-						double locErr = 0;
-						for (size_t k = 0; k < pdf.size(); k++)
-							sumW += exp(pdf.getW(k));
-						for (size_t k = 0; k < pdf.size(); k++)
-						{
-							const auto pk = pdf.getParticlePose(k);
-							locErr += mrpt::hypot_fast(
-										  expectedPose.x() - pk.x,
-										  expectedPose.y() - pk.y) *
-									  exp(pdf.getW(k)) / sumW;
-						}
-						convergenceErrors_mtx.lock();
-						convergenceErrors.push_back(locErr);
-						convergenceErrors_mtx.unlock();
-
-						indivConvergenceErrors.push_back(locErr);
-						odoError.push_back(
-							expectedPose.distanceTo(odometryEstimation));
-					}
-
-					const auto [C, M] = pdf.getCovarianceAndMean();
-					const auto current_pdf_gaussian =
-						typename pf2gauss_t<MONTECARLO_TYPE>::type(M, C);
-
-					// Text output:
-					// ----------------------------------------
-					if (!SAVE_STATS_ONLY)
-					{
-						MRPT_LOG_INFO_STREAM(
-							"Odometry estimation: " << odometryEstimation);
-						MRPT_LOG_INFO_STREAM(
-							"PDF estimation: "
-							<< pdfEstimation << ", ESS (B.R.)= "
-							<< PF_stats.ESS_beforeResample << " tr(cov): "
-							<< std::sqrt(current_pdf_gaussian.cov.trace()));
-
-						if (GT.rows() > 0)
-							MRPT_LOG_INFO_STREAM(
-								"Ground truth: " << expectedPose);
-					}
-
-					// Evaluate the "reliability" of the pose estimation
-					// (for now, only for 2D laser scans + grid maps)
-					double obs_reliability_estim = .0;
-					if (DO_RELIABILITY_ESTIMATE)
-					{
-						// We need: a gridmap & a 2D LIDAR:
-						CObservation2DRangeScan::Ptr obs_scan;
-						if (observations)
-							obs_scan = observations->getObservationByClass<
-								CObservation2DRangeScan>(0);  // Get the 0'th
-						// scan, if
-						// several are
-						// present.
-						COccupancyGridMap2D::Ptr gridmap =
-							metricMap.mapByClass<COccupancyGridMap2D>();
-						if (obs_scan && gridmap)  // We have both, go on:
-						{
-							// Simulate scan + uncertainty:
-							COccupancyGridMap2D::TLaserSimulUncertaintyParams
-								ssu_params;
-							COccupancyGridMap2D::TLaserSimulUncertaintyResult
-								ssu_out;
-							ssu_params.method =
-								COccupancyGridMap2D::sumUnscented;
-							// ssu_params.UT_alpha = 0.99;
-							// obs_scan->stdError = 0.07;
-							// obs_scan->maxRange = 10.0;
-
-							ssu_params.robotPose =
-								CPosePDFGaussian(current_pdf_gaussian);
-							ssu_params.aperture = obs_scan->aperture;
-							ssu_params.rangeNoiseStd = obs_scan->stdError;
-							ssu_params.nRays = obs_scan->getScanSize();
-							ssu_params.rightToLeft = obs_scan->rightToLeft;
-							ssu_params.sensorPose = obs_scan->sensorPose;
-							ssu_params.maxRange = obs_scan->maxRange;
-
-							gridmap->laserScanSimulatorWithUncertainty(
-								ssu_params, ssu_out);
-
-							// Evaluate reliability:
-							CObservation2DRangeScanWithUncertainty::TEvalParams
-								evalParams;
-							// evalParams.prob_outliers = 0.40;
-							// evalParams.max_prediction_std_dev = 1.0;
-							obs_reliability_estim =
-								ssu_out.scanWithUncert.evaluateScanLikelihood(
-									*obs_scan, evalParams);
-
-							if (DO_SCAN_LIKELIHOOD_DEBUG)
-							{
-								static mrpt::gui::CDisplayWindowPlots win;
-
-								std::vector<float> ranges_mean, ranges_obs;
-								for (size_t i = 0; i < obs_scan->getScanSize();
-									 i++)
-								{
-									ranges_mean.push_back(
-										ssu_out.scanWithUncert.rangeScan
-											.getScanRange(i));
-									ranges_obs.push_back(
-										obs_scan->getScanRange(i));
-								}
-
-								win.plot(ranges_mean, "3k-", "mean");
-								win.plot(ranges_obs, "r-", "obs");
-
-								Eigen::VectorXd ci1 =
-									ssu_out.scanWithUncert.rangesMean
-										.asEigen() +
-									3 * ssu_out.scanWithUncert.rangesCovar
-											.asEigen()
-											.diagonal()
-											.array()
-											.sqrt()
-											.matrix();
-								Eigen::VectorXd ci2 =
-									ssu_out.scanWithUncert.rangesMean
-										.asEigen() -
-									3 * ssu_out.scanWithUncert.rangesCovar
-											.asEigen()
-											.diagonal()
-											.array()
-											.sqrt()
-											.matrix();
-								win.plot(ci1, "k-", "CI+");
-								win.plot(ci2, "k-", "CI-");
-
-								win.setWindowTitle(mrpt::format(
-									"obs_reliability_estim: %f",
-									obs_reliability_estim));
-								win.axis_fit();
-							}
-						}
-						MRPT_LOG_INFO_STREAM(
-							"Reliability measure [0-1]: "
-							<< obs_reliability_estim);
-					}
-
-					if (!SAVE_STATS_ONLY)
-					{
-						f_cov_est.printf("%e\n", sqrt(cov.det()));
-						f_pf_stats.printf(
-							"%u %e %e %f %f\n", (unsigned int)pdf.size(),
-							PF_stats.ESS_beforeResample,
-							PF_stats.weightsVariance_beforeResample,
-							obs_reliability_estim,
-							sqrt(current_pdf_gaussian.cov.det()));
-						f_odo_est.printf(
-							"%f %f %f\n", odometryEstimation.x(),
-							odometryEstimation.y(), odometryEstimation.phi());
-					}
-
-					const auto [cov, meanPose] = pdf.getCovarianceAndMean();
-
-					if ((!SAVE_STATS_ONLY && SCENE3D_FREQ > 0) ||
-						SHOW_PROGRESS_3D_REAL_TIME)
-					{
-						// Generate 3D scene:
-						// ------------------------------
-
-						// The Ground Truth (GT):
-						if (GT.rows() > 0)
-						{
-							CRenderizable::Ptr GTpt = scene.getByName("GT");
-							if (!GTpt)
-							{
-								GTpt = std::make_shared<CDisk>();
-								GTpt = std::make_shared<CDisk>();
-								GTpt->setName("GT");
-								GTpt->setColor(0, 0, 0, 0.9);
-
-								mrpt::ptr_cast<CDisk>::from(GTpt)
-									->setDiskRadius(0.04f);
-								scene.insert(GTpt);
-							}
-
-							GTpt->setPose(expectedPose);
-						}
-
-						// The particles:
-						{
-							CRenderizable::Ptr parts =
-								scene.getByName("particles");
-							if (parts) scene.removeObject(parts);
-
-							auto p = pdf.template getAs3DObject<
-								CSetOfObjects::Ptr>();
-							p->setName("particles");
-							scene.insert(p);
-						}
-
-						// The laser scan:
-						{
-							CRenderizable::Ptr scanPts =
-								scene.getByName("scan");
-							if (!scanPts)
-							{
-								scanPts = std::make_shared<CPointCloud>();
-								scanPts->setName("scan");
-								scanPts->setColor(1, 0, 0, 0.9);
-								mrpt::ptr_cast<CPointCloud>::from(scanPts)
-									->enableColorFromZ(false);
-								mrpt::ptr_cast<CPointCloud>::from(scanPts)
-									->setPointSize(4);
-								scene.insert(scanPts);
-							}
-
-							CSimplePointsMap map;
-
-							CPose3D robotPose3D(meanPose);
-
-							map.clear();
-							observations->insertObservationsInto(&map);
-
-							mrpt::ptr_cast<CPointCloud>::from(scanPts)
-								->loadFromPointsMap(&map);
-							mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPose(
-								robotPose3D);
-						}
-
-						// The camera:
-						scene.enableFollowCamera(SCENE3D_FOLLOW);
-
-						// Views:
-						COpenGLViewport::Ptr view1 = scene.getViewport("main");
-						{
-							CCamera& cam = view1->getCamera();
-							cam.setAzimuthDegrees(-90);
-							cam.setElevationDegrees(90);
-							cam.setPointingAt(meanPose);
-							cam.setZoomDistance(5);
-							cam.setOrthogonal();
-						}
-					}
-
-					if (!SAVE_STATS_ONLY && SCENE3D_FREQ != -1 &&
-						((step + 1) % SCENE3D_FREQ) == 0)
-					{
-						// Save 3D scene:
-						CFileGZOutputStream f(format(
-							"%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(),
-							(unsigned)step));
-						archiveFrom(f) << scene;
-
-						// Generate text files for matlab:
-						// ------------------------------------
-						pdf.saveToTextFile(format(
-							"%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(),
-							(unsigned)step));
-					}
-
-				}  // end if rawlog_offset
-
-				step++;
-
 				// Test for end condition if we are testing convergence:
 				if (step == testConvergenceAt)
 				{
 					nConvergenceTests++;
 
 					// Convergence??
-					if (sqrt(cov.det()) < 2)
+					if (sqrt(pdf.getCovariance().det()) < 2)
 					{
 						if (pdfEstimation.distanceTo(expectedPose) < 2)
 							nConvergenceOK++;
 					}
 					end = true;
 				}
+
+				if (step < rawlog_offset) continue;
+
+				// Do not execute the PF at "step=0", to let the initial
+				// PDF to be reflected in the logs.
+				if (step > rawlog_offset)
+				{
+					// Show 3D?
+					if (SHOW_PROGRESS_3D_REAL_TIME)
+					{
+						const auto [cov, meanPose] = pdf.getCovarianceAndMean();
+
+						if (rawlogEntry >= 2)
+							getGroundTruth(
+								expectedPose, rawlogEntry - 2, GT,
+								cur_obs_timestamp);
+
+						// The particles' cov:
+						{
+							CRenderizable::Ptr ellip =
+								scene.getByName("parts_cov");
+							if (!ellip)
+							{
+								if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
+								{
+									auto el = CEllipsoid3D::Create();
+									ellip =
+										mrpt::ptr_cast<CRenderizable>::from(el);
+									el->setLineWidth(2);
+									el->setQuantiles(3);
+									el->enableDrawSolid3D(false);
+								}
+								else
+								{
+									auto el = CEllipsoid2D::Create();
+									ellip =
+										mrpt::ptr_cast<CRenderizable>::from(el);
+									el->setLineWidth(2);
+									el->setQuantiles(3);
+									el->enableDrawSolid3D(false);
+								}
+								ellip->setName("parts_cov");
+								ellip->setColor(1, 0, 0, 0.6);
+								scene.insert(ellip);
+							}
+							else
+							{
+								if (pf2gauss_t<MONTECARLO_TYPE>::PF_IS_3D)
+								{
+									mrpt::ptr_cast<CEllipsoid3D>::from(ellip)
+										->setCovMatrix(
+											cov.template blockCopy<3, 3>());
+								}
+								else
+								{
+									mrpt::ptr_cast<CEllipsoid2D>::from(ellip)
+										->setCovMatrix(
+											cov.template blockCopy<2, 2>());
+								}
+							}
+							double ellipse_z =
+								mrpt::poses::CPose3D(meanPose).z() + 0.01;
+
+							ellip->setLocation(
+								meanPose.x(), meanPose.y(), ellipse_z);
+						}
+
+						COpenGLScene::Ptr ptrSceneWin =
+							win3D->get3DSceneAndLock();
+
+						win3D->setCameraPointingToPoint(
+							meanPose.x(), meanPose.y(), 0);
+
+						win3D->addTextMessage(
+							10, 10,
+							mrpt::format(
+								"timestamp: %s",
+								mrpt::system::dateTimeLocalToString(
+									cur_obs_timestamp)
+									.c_str()),
+							6001);
+
+						win3D->addTextMessage(
+							10, 33,
+							mrpt::format(
+								"#particles= %7u",
+								static_cast<unsigned int>(pdf.size())),
+							6002);
+
+						win3D->addTextMessage(
+							10, 55,
+							mrpt::format(
+								"mean pose (x y phi_deg)= %s",
+								meanPose.asString().c_str()),
+							6003);
+
+						*ptrSceneWin = scene;
+						win3D->unlockAccess3DScene();
+
+						// Update:
+						win3D->forceRepaint();
+
+						std::this_thread::sleep_for(std::chrono::milliseconds(
+							SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
+					}  // end show 3D real-time
+
+					// ----------------------------------------
+					// RUN ONE STEP OF THE PARTICLE FILTER:
+					// ----------------------------------------
+					tictac.Tic();
+					if (!SAVE_STATS_ONLY)
+					{
+						MRPT_LOG_INFO_STREAM(
+							"Step " << step << ". Executing ParticleFilter on "
+									<< pdf.particlesCount() << " particles...");
+					}
+
+					PF.executeOn(
+						pdf,
+						action.get(),  // Action
+						observations.get(),  // Obs.
+						&PF_stats  // Output statistics
+					);
+
+					double run_time = tictac.Tac();
+					executionTimes.push_back(run_time);
+					if (!SAVE_STATS_ONLY)
+					{
+						MRPT_LOG_INFO_FMT(
+							"Done in %.03fms, ESS=%f", 1e3 * run_time,
+							pdf.ESS());
+					}
+				}
+
+				// Avrg. error:
+				// ----------------------------------------
+				CActionRobotMovement2D::Ptr best_mov_estim =
+					action->getBestMovementEstimation();
+				if (best_mov_estim)
+				{
+					odometryEstimation =
+						odometryEstimation +
+						best_mov_estim->poseChange->getMeanVal();
+				}
+
+				pdf.getMean(pdfEstimation);
+
+				// save estimated mean in history:
+				if (cur_obs_timestamp != INVALID_TIMESTAMP &&
+					fill_out_estimated_path)
+				{
+					out_estimated_path.insert(
+						cur_obs_timestamp,
+						mrpt::math::TPose3D(pdfEstimation.asTPose()));
+				}
+
+				getGroundTruth(
+					expectedPose, rawlogEntry, GT, cur_obs_timestamp);
+
+				if (expectedPose.x() != 0 || expectedPose.y() != 0 ||
+					expectedPose.phi() != 0)
+				{  // Averaged error to GT
+					double sumW = 0;
+					double locErr = 0;
+					for (size_t k = 0; k < pdf.size(); k++)
+						sumW += exp(pdf.getW(k));
+					for (size_t k = 0; k < pdf.size(); k++)
+					{
+						const auto pk = pdf.getParticlePose(k);
+						locErr += mrpt::hypot_fast(
+									  expectedPose.x() - pk.x,
+									  expectedPose.y() - pk.y) *
+								  exp(pdf.getW(k)) / sumW;
+					}
+					convergenceErrors_mtx.lock();
+					convergenceErrors.push_back(locErr);
+					convergenceErrors_mtx.unlock();
+
+					indivConvergenceErrors.push_back(locErr);
+					odoError.push_back(
+						expectedPose.distanceTo(odometryEstimation));
+				}
+
+				const auto [cov, meanPose] = pdf.getCovarianceAndMean();
+				const auto current_pdf_gaussian =
+					typename pf2gauss_t<MONTECARLO_TYPE>::type(meanPose, cov);
+
+				// Text output:
+				// ----------------------------------------
+				if (!SAVE_STATS_ONLY)
+				{
+					MRPT_LOG_INFO_STREAM(
+						"Odometry estimation: " << odometryEstimation);
+					MRPT_LOG_INFO_STREAM(
+						"PDF estimation: "
+						<< pdfEstimation << ", ESS (B.R.)= "
+						<< PF_stats.ESS_beforeResample << " tr(cov): "
+						<< std::sqrt(current_pdf_gaussian.cov.trace()));
+
+					if (GT.rows() > 0)
+						MRPT_LOG_INFO_STREAM("Ground truth: " << expectedPose);
+				}
+
+				// Evaluate the "reliability" of the pose estimation
+				// (for now, only for 2D laser scans + grid maps)
+				double obs_reliability_estim = .0;
+				if (DO_RELIABILITY_ESTIMATE)
+				{
+					// We need: a gridmap & a 2D LIDAR:
+					CObservation2DRangeScan::Ptr obs_scan;
+					if (observations)
+						obs_scan = observations->getObservationByClass<
+							CObservation2DRangeScan>(0);  // Get the 0'th
+					// scan, if
+					// several are
+					// present.
+					COccupancyGridMap2D::Ptr gridmap =
+						metricMap.mapByClass<COccupancyGridMap2D>();
+					if (obs_scan && gridmap)  // We have both, go on:
+					{
+						// Simulate scan + uncertainty:
+						COccupancyGridMap2D::TLaserSimulUncertaintyParams
+							ssu_params;
+						COccupancyGridMap2D::TLaserSimulUncertaintyResult
+							ssu_out;
+						ssu_params.method = COccupancyGridMap2D::sumUnscented;
+						// ssu_params.UT_alpha = 0.99;
+						// obs_scan->stdError = 0.07;
+						// obs_scan->maxRange = 10.0;
+
+						ssu_params.robotPose =
+							CPosePDFGaussian(current_pdf_gaussian);
+						ssu_params.aperture = obs_scan->aperture;
+						ssu_params.rangeNoiseStd = obs_scan->stdError;
+						ssu_params.nRays = obs_scan->getScanSize();
+						ssu_params.rightToLeft = obs_scan->rightToLeft;
+						ssu_params.sensorPose = obs_scan->sensorPose;
+						ssu_params.maxRange = obs_scan->maxRange;
+
+						gridmap->laserScanSimulatorWithUncertainty(
+							ssu_params, ssu_out);
+
+						// Evaluate reliability:
+						CObservation2DRangeScanWithUncertainty::TEvalParams
+							evalParams;
+						// evalParams.prob_outliers = 0.40;
+						// evalParams.max_prediction_std_dev = 1.0;
+						obs_reliability_estim =
+							ssu_out.scanWithUncert.evaluateScanLikelihood(
+								*obs_scan, evalParams);
+
+						if (DO_SCAN_LIKELIHOOD_DEBUG)
+						{
+							static mrpt::gui::CDisplayWindowPlots win;
+
+							std::vector<float> ranges_mean, ranges_obs;
+							for (size_t i = 0; i < obs_scan->getScanSize(); i++)
+							{
+								ranges_mean.push_back(
+									ssu_out.scanWithUncert.rangeScan
+										.getScanRange(i));
+								ranges_obs.push_back(obs_scan->getScanRange(i));
+							}
+
+							win.plot(ranges_mean, "3k-", "mean");
+							win.plot(ranges_obs, "r-", "obs");
+
+							Eigen::VectorXd ci1 =
+								ssu_out.scanWithUncert.rangesMean.asEigen() +
+								3 * ssu_out.scanWithUncert.rangesCovar.asEigen()
+										.diagonal()
+										.array()
+										.sqrt()
+										.matrix();
+							Eigen::VectorXd ci2 =
+								ssu_out.scanWithUncert.rangesMean.asEigen() -
+								3 * ssu_out.scanWithUncert.rangesCovar.asEigen()
+										.diagonal()
+										.array()
+										.sqrt()
+										.matrix();
+							win.plot(ci1, "k-", "CI+");
+							win.plot(ci2, "k-", "CI-");
+
+							win.setWindowTitle(mrpt::format(
+								"obs_reliability_estim: %f",
+								obs_reliability_estim));
+							win.axis_fit();
+						}
+					}
+					MRPT_LOG_INFO_STREAM(
+						"Reliability measure [0-1]: " << obs_reliability_estim);
+				}
+
+				if (!SAVE_STATS_ONLY)
+				{
+					f_cov_est.printf("%e\n", sqrt(cov.det()));
+					f_pf_stats.printf(
+						"%u %e %e %f %f\n", (unsigned int)pdf.size(),
+						PF_stats.ESS_beforeResample,
+						PF_stats.weightsVariance_beforeResample,
+						obs_reliability_estim,
+						sqrt(current_pdf_gaussian.cov.det()));
+					f_odo_est.printf(
+						"%f %f %f\n", odometryEstimation.x(),
+						odometryEstimation.y(), odometryEstimation.phi());
+				}
+
+				if ((!SAVE_STATS_ONLY && SCENE3D_FREQ > 0) ||
+					SHOW_PROGRESS_3D_REAL_TIME)
+				{
+					// Generate 3D scene:
+					// ------------------------------
+
+					// The Ground Truth (GT):
+					if (GT.rows() > 0)
+					{
+						CRenderizable::Ptr GTpt = scene.getByName("GT");
+						if (!GTpt)
+						{
+							GTpt = std::make_shared<CDisk>();
+							GTpt = std::make_shared<CDisk>();
+							GTpt->setName("GT");
+							GTpt->setColor(0, 0, 0, 0.9);
+
+							mrpt::ptr_cast<CDisk>::from(GTpt)->setDiskRadius(
+								0.04f);
+							scene.insert(GTpt);
+						}
+
+						GTpt->setPose(expectedPose);
+					}
+
+					// The particles:
+					{
+						CRenderizable::Ptr parts = scene.getByName("particles");
+						if (parts) scene.removeObject(parts);
+
+						auto p =
+							pdf.template getAs3DObject<CSetOfObjects::Ptr>();
+						p->setName("particles");
+						scene.insert(p);
+					}
+
+					// The laser scan:
+					{
+						CRenderizable::Ptr scanPts = scene.getByName("scan");
+						if (!scanPts)
+						{
+							scanPts = std::make_shared<CPointCloud>();
+							scanPts->setName("scan");
+							scanPts->setColor(1, 0, 0, 0.9);
+							mrpt::ptr_cast<CPointCloud>::from(scanPts)
+								->enableColorFromZ(false);
+							mrpt::ptr_cast<CPointCloud>::from(scanPts)
+								->setPointSize(4);
+							scene.insert(scanPts);
+						}
+
+						CSimplePointsMap map;
+
+						CPose3D robotPose3D(meanPose);
+
+						map.clear();
+						observations->insertObservationsInto(&map);
+
+						mrpt::ptr_cast<CPointCloud>::from(scanPts)
+							->loadFromPointsMap(&map);
+						mrpt::ptr_cast<CPointCloud>::from(scanPts)->setPose(
+							robotPose3D);
+					}
+
+					// The camera:
+					scene.enableFollowCamera(SCENE3D_FOLLOW);
+
+					// Views:
+					COpenGLViewport::Ptr view1 = scene.getViewport("main");
+					{
+						CCamera& cam = view1->getCamera();
+						cam.setAzimuthDegrees(-90);
+						cam.setElevationDegrees(90);
+						cam.setPointingAt(meanPose);
+						cam.setZoomDistance(5);
+						cam.setOrthogonal();
+					}
+				}
+
+				if (!SAVE_STATS_ONLY && SCENE3D_FREQ != -1 &&
+					((step + 1) % SCENE3D_FREQ) == 0)
+				{
+					// Save 3D scene:
+					CFileGZOutputStream f(format(
+						"%s/progress_%05u.3Dscene", sOUT_DIR_3D.c_str(),
+						(unsigned)step));
+					archiveFrom(f) << scene;
+
+					// Generate text files for matlab:
+					// ------------------------------------
+					pdf.saveToTextFile(format(
+						"%s/particles_%05u.txt", sOUT_DIR_PARTS.c_str(),
+						(unsigned)step));
+				}
+
 			};  // while rawlogEntries
 
 			indivConvergenceErrors.saveToTextFile(sOUT_DIR + "/GT_error.txt");
