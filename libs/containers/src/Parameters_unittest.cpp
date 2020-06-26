@@ -211,6 +211,38 @@ TEST(Parameters, iterate)
 	EXPECT_EQ(testMap["mySequence"].asSequence().size(), 3U);
 }
 
+TEST(Parameters, macros)
+{
+	mrpt::containers::Parameters p;
+	p["K"] = 2.0;
+	p["Ang"] = 90.0;
+	p["N"].as<uint64_t>() = 10;
+	p["name"] = "Pepico";
+	p["PID"] = mrpt::containers::Parameters({{"Kp", 1.0}, {"Td", 0.8}});
+
+	double K, Td, Foo = 9.0, Bar, Ang, Ang2 = M_PI;
+	std::string name;
+	MCP_LOAD_REQ(p, K);
+	EXPECT_EQ(K, 2.0);
+
+	MCP_LOAD_REQ(p, name);
+	EXPECT_EQ(name, "Pepico");
+
+	MCP_LOAD_REQ(p["PID"], Td);
+	EXPECT_EQ(Td, 0.8);
+
+	MCP_LOAD_REQ_DEG(p, Ang);
+	EXPECT_NEAR(Ang, 0.5 * M_PI, 1e-6);
+
+	MCP_LOAD_OPT_DEG(p, Ang2);
+	EXPECT_NEAR(Ang2, M_PI, 1e-6);
+
+	MCP_LOAD_OPT(p, Foo);
+	EXPECT_EQ(Foo, 9.0);
+
+	EXPECT_THROW(MCP_LOAD_REQ(p, Bar), std::exception);
+}
+
 // clang-format off
 const auto sampleYamlBlock = std::string(R"xxx(
 # blah blah

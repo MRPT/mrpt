@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/bits_math.h>
 #include <mrpt/core/format.h>
 
 #include <cstdint>
@@ -44,20 +45,25 @@ namespace internal {
  * This class was designed as a lightweight but structured way to pass
  *arbitrarialy-complex parameter blocks.
  *
- *  \code
- * 	mrpt::containers::Parameters p;
- * 	p["N"] = 10;
- * 	auto& pid = p["PID"] = mrpt::containers::Parameters();
- * 	pid["Kp"] = 0.5;
- * 	p["PID"]["Ti"] = 2.0;
- * 	p["PID"]["N"].as<uint64_t>() = 1000;
- * 	p["PID"]["name"] = "foo";
+ *\code
+ * mrpt::containers::Parameters p;
+ * p["N"] = 10;
+ * auto& pid = p["PID"] = mrpt::containers::Parameters();
+ * pid["Kp"] = 0.5;
+ * p["PID"]["Ti"] = 2.0;
+ * p["PID"]["N"].as<uint64_t>() = 1000;
+ * p["PID"]["name"] = "foo";
  *
- * 	std::cout << p["PID"]["Kp"].as<double>() << "\n";
- *	std::cout << p["PID"]["Ti"].as<double>() << "\n";
- * 	std::cout << p["PID"]["N"].as<uint64_t>() << "\n";
- * 	std::cout << p["PID"]["name"].as<std::string>() << "\n";
- *  \endcode
+ * std::cout << p["PID"]["Kp"].as<double>() << "\n";
+ * std::cout << p["PID"]["Ti"].as<double>() << "\n";
+ * std::cout << p["PID"]["N"].as<uint64_t>() << "\n";
+ * std::cout << p["PID"]["name"].as<std::string>() << "\n";
+ *
+ * double Kp = p["PID"]["Kp"];
+ * double Ti;
+ * MCP_LOAD_REQ(p["PID"], Ti);
+ *
+ *\endcode
  *
  * \ingroup mrpt_containers_grp
  * \note [new in MRPT 2.0.5]
@@ -254,7 +260,7 @@ class Parameters
 	Parameters& operator=(const Parameters& v);
 
 	inline operator double() const { return as<double>(); }
-	inline operator const std::string &() const { return as<std::string>(); }
+	inline operator const std::string&() const { return as<std::string>(); }
 
    private:
 	const char* name_ = nullptr;
@@ -305,5 +311,51 @@ class Parameters
 
 	/** @} */
 };
+
+/** Macro to load a variable from a mrpt::containers::Parameters (initials MCP)
+ * dictionary, throwing an std::invalid_argument exception  if the value is not
+ * found (REQuired).
+ *
+ * Usage:
+ * \code
+ * mrpt::containers::Parameters p;
+ * double K;
+ *
+ * MCP_LOAD_REQ(p, K);
+ * \endcode
+ */
+#define MCP_LOAD_REQ(paramsVariable__, keyName__)                         \
+	if (!paramsVariable__.has(#keyName__))                                \
+		throw std::invalid_argument(mrpt::format(                         \
+			"Required parameter `%s` not an existing key in dictionary.", \
+			#keyName__));                                                 \
+	keyName__ = paramsVariable__[#keyName__].as<decltype(keyName__)>()
+
+/** Macro to load a variable from a mrpt::containers::Parameters (initials MCP)
+ * dictionary, leaving it with its former value if not found (OPTional).
+ *
+ * Usage:
+ * \code
+ * mrpt::containers::Parameters p;
+ * double K;
+ *
+ * MCP_LOAD_OPT(p, K);
+ * \endcode
+ */
+#define MCP_LOAD_OPT(paramsVariable__, keyName__) \
+	keyName__ = paramsVariable__.getOrDefault(#keyName__, keyName__)
+
+/** Just like MCP_LOAD_REQ(), but converts the read number from degrees to
+ * radians */
+#define MCP_LOAD_REQ_DEG(paramsVariable__, keyName__) \
+	MCP_LOAD_REQ(paramsVariable__, keyName__);        \
+	keyName__ = mrpt::DEG2RAD(keyName__)
+
+/** Just like MCP_LOAD_OPT(), but converts the read number from degrees to
+ * radians */
+#define MCP_LOAD_OPT_DEG(paramsVariable__, keyName__) \
+	keyName__ = mrpt::RAD2DEG(keyName__);             \
+	MCP_LOAD_OPT(paramsVariable__, keyName__);        \
+	keyName__ = mrpt::DEG2RAD(keyName__)
 
 }  // namespace mrpt::containers
