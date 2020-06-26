@@ -358,4 +358,25 @@ class Parameters
 	MCP_LOAD_OPT(paramsVariable__, keyName__);        \
 	keyName__ = mrpt::DEG2RAD(keyName__)
 
+/** Macro to store a variable into a mrpt::containers::Parameters (initials MCP)
+ * dictionary, using as "key" the name of the variable.
+ *
+ * Usage:
+ * \code
+ * mrpt::containers::Parameters p;
+ * double K = ...;
+ *
+ * MCP_SAVE(p, K);
+ *
+ * // If you want "K" to have degree units in the parameter block, radians when
+ * // loaded in memory:
+ * MCP_SAVE_DEG(p,K);
+ * \endcode
+ */
+#define MCP_SAVE(paramsVariable__, keyName__) \
+	paramsVariable__[#keyName__].as<decltype(keyName__)>() = keyName__;
+
+#define MCP_SAVE_DEG(paramsVariable__, keyName__) \
+	paramsVariable__[#keyName__].as<double>() = mrpt::RAD2DEG(keyName__);
+
 }  // namespace mrpt::containers
