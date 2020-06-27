@@ -13,6 +13,7 @@
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
+
 #include <thread>
 
 #if MRPT_HAS_FFMPEG && MRPT_HAS_OPENCV
@@ -56,12 +57,12 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 
 		// Max. run time.
 		// Should end much sooner when the video file is entirely processed.
-		app.run_for_seconds = 45.0;
+		app.run_for_seconds = 60.0;
 
 		// Less verbose output in tests:
 		app.show_sensor_thread_exceptions = false;
 
-		const std::size_t REQUIRED_GRAB_OBS = 3U;
+		const std::size_t REQUIRED_GRAB_OBS = 2U;
 		std::atomic_bool runEnded = false;
 
 		auto tWatchDog = std::thread([&]() {
@@ -74,7 +75,7 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 				if (numSavedObjs >= REQUIRED_GRAB_OBS)
 				{
 					auto lk = mrpt::lockHelper(app.params_mtx);
-					app.run_for_seconds = 1.0;  // make it exit
+					app.run_for_seconds = 1.0;	// make it exit
 					break;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(500));
