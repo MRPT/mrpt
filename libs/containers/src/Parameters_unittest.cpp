@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/containers/Parameters.h>
-#include <algorithm>  // count()
-
 #include <mrpt/config.h>
+#include <mrpt/containers/Parameters.h>
+
+#include <algorithm>  // count()
 
 TEST(Parameters, emptyCtor)
 {
@@ -32,6 +32,10 @@ TEST(Parameters, assignments)
 
 	EXPECT_FALSE(p.empty());
 	EXPECT_TRUE(p.has("K"));
+
+	EXPECT_FALSE(p.isScalar());
+	EXPECT_TRUE(p["K"].isScalar());
+	EXPECT_TRUE(p["N"].isScalar());
 
 	EXPECT_TRUE(p["enabled"]);
 	EXPECT_FALSE(p["visible"]);
@@ -153,6 +157,10 @@ TEST(Parameters, nested)
 	EXPECT_EQ(p["PID"].typeOfChild("Ti"), typeid(double));
 	EXPECT_EQ(p["PID"]["Ti"].as<double>(), 10.0);
 
+	EXPECT_FALSE(p.isScalar());
+	EXPECT_FALSE(p["PID"].isScalar());
+	EXPECT_TRUE(p["PID"]["Kp"].isScalar());
+
 	// empty() not valid for values:
 	EXPECT_THROW(p["PID"]["Ti"].empty(), std::exception);
 	EXPECT_THROW(p["PID"]["Ti"].clear(), std::exception);
@@ -183,7 +191,10 @@ TEST(Parameters, nested2)
 const auto testMap = mrpt::containers::Parameters(
 	{{"K", 2.0},
 	 {"book", "silmarillion"},
-	 {"mySequence", mrpt::containers::Parameters({1.0, 2.0, 3.0})},
+	 {"mySequence",
+	  mrpt::containers::Parameters::Sequence(
+		  {1.0, 2.0,
+		   mrpt::containers::Parameters::Map({{"P", 1.0}, {"Q", 2.0}})})},
 	 {"myEmptyVal", mrpt::containers::Parameters()},
 	 {"myDict",
 	  mrpt::containers::Parameters({{"A", 1.0}, {"B", 2.0}, {"C", 3.0}})}});
@@ -194,7 +205,7 @@ TEST(Parameters, printYAML)
 	std::stringstream ss;
 	testMap.printAsYAML(ss);
 	const auto s = ss.str();
-	EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 11U);
+	EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 13U);
 }
 
 TEST(Parameters, iterate)

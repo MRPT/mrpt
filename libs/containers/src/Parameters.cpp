@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
+#include "containers-precomp.h"	 // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/Parameters.h>
@@ -27,11 +27,12 @@ bool Parameters::isSequence() const
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call isSequence() on a value (!)");
+		if (!p) return false;
 		return p->isSequence();
 	}
 	return std::holds_alternative<sequence_t>(data_);
 }
+
 Parameters::sequence_t& Parameters::asSequence()
 {
 	if (isProxy_)
@@ -53,13 +54,19 @@ const Parameters::sequence_t& Parameters::asSequence() const
 	return std::get<sequence_t>(data_);
 }
 
+bool Parameters::isScalar() const
+{
+	auto p = internalMeOrValue();
+	return (p->isProxy_ || p->isConstProxy_);
+}
+
 bool Parameters::isMap() const
 {
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call isMap() on a value (!)");
-		return p->isSequence();
+		if (!p) return false;
+		return p->isMap();
 	}
 	return std::holds_alternative<map_t>(data_);
 }
@@ -104,7 +111,7 @@ const std::type_info& Parameters::typeOfChild(const std::string& name) const
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call typeOf() on a value (!)");
+		ASSERTMSG_(p, "Cannot call typeOf() on a scalar.");
 		return p->typeOfChild(name);
 	}
 	if (!std::holds_alternative<map_t>(data_))
@@ -115,6 +122,23 @@ const std::type_info& Parameters::typeOfChild(const std::string& name) const
 	auto it = m.find(name);
 	if (m.end() == it) return typeid(void);
 	return it->second.type();
+}
+
+const std::type_info& Parameters::type() const
+{
+	auto p = internalMeOrValue();
+
+	if (p->isConstProxy_)
+	{
+		ASSERT_(p->value_);
+		return p->value_->type();
+	}
+	if (p->isProxy_)
+	{
+		ASSERT_(p->valuenc_);
+		return p->valuenc_->type();
+	}
+	THROW_EXCEPTION("type() only applicable to scalar nodes");
 }
 
 const Parameters* Parameters::internalValueAsSelf() const
@@ -183,12 +207,11 @@ void Parameters::operator=(const bool v) { implOpAssign(v); }
 void Parameters::operator=(const std::string& v) { implOpAssign(v); }
 Parameters& Parameters::operator=(const Parameters& v)
 {
-	if (isConstProxy_)
-		throw std::logic_error("Trying to write into read-only proxy");
+	if (isConstProxy_) THROW_EXCEPTION("Trying to write into read-only proxy");
 
 	if (isProxy_)
 	{
-		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
+		if (!valuenc_) THROW_EXCEPTION("valuenc_ is nullptr");
 		valuenc_->emplace<Parameters>(v);
 		return *std::any_cast<Parameters>(valuenc_);
 	}
@@ -244,7 +267,8 @@ Parameters Parameters::operator()(int index)
 
 	sequence_t& seq = std::get<sequence_t>(p->data_);
 	if (index < 0 || index >= static_cast<int>(seq.size()))
-		throw std::out_of_range("Parameters::operator() out of range");
+		THROW_TYPED_EXCEPTION(
+			"Parameters::operator() out of range", std::out_of_range);
 
 	return Parameters(internal::tag_as_proxy_t(), seq.at(index), "");
 }
@@ -258,7 +282,8 @@ const Parameters Parameters::operator()(int index) const
 
 	const sequence_t& seq = std::get<sequence_t>(p->data_);
 	if (index < 0 || index >= static_cast<int>(seq.size()))
-		throw std::out_of_range("Parameters::operator() out of range");
+		THROW_TYPED_EXCEPTION(
+			"Parameters::operator() out of range", std::out_of_range);
 
 	return Parameters(internal::tag_as_const_proxy_t(), seq.at(index), "");
 }
@@ -271,25 +296,33 @@ void Parameters::printAsYAML(std::ostream& o) const
 	internalPrintAsYAML(*p, o, 0, true);
 }
 
-void Parameters::internalPrintAsYAML(
+bool Parameters::internalPrintAsYAML(
 	const Parameters& p, std::ostream& o, int indent, bool first)
 {
-	if (std::holds_alternative<std::monostate>(p.data_))
-		return internalPrintAsYAML(std::monostate(), o, indent, first);
+	if (p.isProxy_ && p.valuenc_)
+		return internalPrintAsYAML(*p.valuenc_, o, indent, first);
+	if (p.isConstProxy_ && p.value_)
+		return internalPrintAsYAML(*p.value_, o, indent, first);
+
 	if (std::holds_alternative<map_t>(p.data_))
 		return internalPrintAsYAML(std::get<map_t>(p.data_), o, indent, first);
 	if (std::holds_alternative<sequence_t>(p.data_))
 		return internalPrintAsYAML(
 			std::get<sequence_t>(p.data_), o, indent, first);
+	if (std::holds_alternative<std::monostate>(p.data_))
+		return internalPrintAsYAML(std::monostate(), o, indent, first);
+
+	THROW_EXCEPTION("Trying to print a node of unknown type (!)");
 }
 
-void Parameters::internalPrintAsYAML(
+bool Parameters::internalPrintAsYAML(
 	const std::monostate&, std::ostream& o, [[maybe_unused]] int indent,
 	[[maybe_unused]] bool first)
 {
-	o << "~\n";
+	o << "~";
+	return false;
 }
-void Parameters::internalPrintAsYAML(
+bool Parameters::internalPrintAsYAML(
 	const Parameters::sequence_t& v, std::ostream& o, int indent, bool first)
 {
 	if (!first)
@@ -301,11 +334,11 @@ void Parameters::internalPrintAsYAML(
 	for (const auto& e : v)
 	{
 		o << sInd << "- ";
-		const auto newIndent = indent;
-		internalPrintAsYAML(e, o, newIndent, first);
+		if (!internalPrintAsYAML(e, o, indent, false)) o << "\n";
 	}
+	return true;
 }
-void Parameters::internalPrintAsYAML(
+bool Parameters::internalPrintAsYAML(
 	const Parameters::map_t& m, std::ostream& o, int indent, bool first)
 {
 	if (!first)
@@ -316,58 +349,60 @@ void Parameters::internalPrintAsYAML(
 	const std::string sInd(indent, ' ');
 	for (const auto& kv : m)
 	{
-		const value_t& v = kv.second;
+		const scalar_t& v = kv.second;
 		o << sInd << kv.first << ": ";
-		internalPrintAsYAML(v, o, indent, false);
+		if (!internalPrintAsYAML(v, o, indent, false)) o << "\n";
 	}
+	return true;
 }
 
-void Parameters::internalPrintAsYAML(
-	const Parameters::value_t& v, std::ostream& o, int indent,
-	[[maybe_unused]] bool first)
+bool Parameters::internalPrintAsYAML(
+	const Parameters::scalar_t& v, std::ostream& o, int indent, bool first)
 {
 	if (!v.has_value())
 	{
-		o << "~\n";
-		return;
+		o << "~";
+		return false;
 	}
 
 	if (v.type() == typeid(Parameters))
-		internalPrintAsYAML(std::any_cast<Parameters>(v), o, indent, false);
+		return internalPrintAsYAML(
+			std::any_cast<Parameters>(v), o, indent, first);
 	else if (v.type() == typeid(bool))
-		o << (std::any_cast<bool>(v) ? "true" : "false") << "\n";
+		o << (std::any_cast<bool>(v) ? "true" : "false");
 	else if (v.type() == typeid(uint64_t))
-		o << std::any_cast<uint64_t>(v) << "\n";
+		o << std::any_cast<uint64_t>(v);
 	else if (v.type() == typeid(int64_t))
-		o << std::any_cast<int64_t>(v) << "\n";
+		o << std::any_cast<int64_t>(v);
 	else if (v.type() == typeid(uint32_t))
-		o << std::any_cast<uint32_t>(v) << "\n";
+		o << std::any_cast<uint32_t>(v);
 	else if (v.type() == typeid(int32_t))
-		o << std::any_cast<int32_t>(v) << "\n";
+		o << std::any_cast<int32_t>(v);
 	else if (v.type() == typeid(int))
-		o << std::any_cast<int>(v) << "\n";
+		o << std::any_cast<int>(v);
 	else if (v.type() == typeid(unsigned int))
-		o << std::any_cast<unsigned int>(v) << "\n";
+		o << std::any_cast<unsigned int>(v);
 	else if (v.type() == typeid(const char*))
-		o << std::any_cast<const char*>(v) << "\n";
+		o << std::any_cast<const char*>(v);
 	else if (v.type() == typeid(std::string))
-		o << std::any_cast<std::string>(v) << "\n";
+		o << std::any_cast<std::string>(v);
 	else if (v.type() == typeid(float))
-		o << std::any_cast<float>(v) << "\n";
+		o << std::any_cast<float>(v);
 	else if (v.type() == typeid(double))
-		o << std::any_cast<double>(v) << "\n";
+		o << std::any_cast<double>(v);
 	else if (v.type() == typeid(uint16_t))
-		o << std::any_cast<uint16_t>(v) << "\n";
+		o << std::any_cast<uint16_t>(v);
 	else if (v.type() == typeid(int16_t))
-		o << std::any_cast<int16_t>(v) << "\n";
+		o << std::any_cast<int16_t>(v);
 	else if (v.type() == typeid(uint8_t))
-		o << std::any_cast<uint8_t>(v) << "\n";
+		o << std::any_cast<uint8_t>(v);
 	else if (v.type() == typeid(int8_t))
-		o << std::any_cast<int8_t>(v) << "\n";
+		o << std::any_cast<int8_t>(v);
 	else if (v.type() == typeid(char))
-		o << std::any_cast<char>(v) << "\n";
+		o << std::any_cast<char>(v);
 	else
-		o << "(unknown type)\n";
+		o << "(unknown type)";
+	return false;
 }
 
 Parameters Parameters::FromYAMLText(const std::string& yamlTextBlock)
