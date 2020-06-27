@@ -201,7 +201,7 @@ void RawlogGrabberApp::runImpl()
 			process_observations_for_nonsf(copy_of_m_global_list_obs);
 	};
 
-	while (!os::kbhit() && !allThreadsMustExit)
+	while (!os::kbhit() && !allThreadsMustExit())
 	{
 		// Check "run for X seconds" flag:
 		{
@@ -216,7 +216,7 @@ void RawlogGrabberApp::runImpl()
 			std::chrono::milliseconds(GRABBER_PERIOD_MS));
 	}
 
-	if (allThreadsMustExit)
+	if (allThreadsMustExit())
 	{
 		MRPT_LOG_ERROR(
 			"[main thread] Ended due to other thread signal to exit "
@@ -231,11 +231,9 @@ void RawlogGrabberApp::runImpl()
 
 	// Wait all threads:
 	// ----------------------------
-	allThreadsMustExit = true;
-	std::this_thread::sleep_for(300ms);
-
+	allThreadsMustExit(true);
+	std::this_thread::sleep_for(100ms);
 	MRPT_LOG_INFO("Waiting for all threads to close...");
-
 	for (auto& lstThread : lstThreads) lstThread.join();
 }
 
@@ -370,7 +368,7 @@ void RawlogGrabberApp::SensorThread(std::string sensor_label)
 		mrpt::system::CRateTimer rate;
 		rate.setRate(sensor->getProcessRate());
 
-		while (!allThreadsMustExit)
+		while (!allThreadsMustExit())
 		{
 			// Process
 			sensor->doProcess();
@@ -402,7 +400,7 @@ void RawlogGrabberApp::SensorThread(std::string sensor_label)
 				"Exception in SensorThread:\n"
 				<< mrpt::exception_to_str(e));
 		}
-		allThreadsMustExit = true;
+		allThreadsMustExit(true);
 	}
 	catch (...)
 	{
@@ -410,7 +408,7 @@ void RawlogGrabberApp::SensorThread(std::string sensor_label)
 		{
 			MRPT_LOG_ERROR("Untyped exception in SensorThread.");
 		}
-		allThreadsMustExit = true;
+		allThreadsMustExit(true);
 	}
 }
 
@@ -496,7 +494,7 @@ void RawlogGrabberApp::process_observations_for_sf(
 			(*m_out_arch_ptr) << acts;
 			{
 				auto lk = mrpt::lockHelper(results_mtx);
-				rawlog_saved_objects += 2;  // m_curSF + acts;
+				rawlog_saved_objects += 2;	// m_curSF + acts;
 			}
 		}
 		else if (IS_DERIVED(*it->second, CObservation))

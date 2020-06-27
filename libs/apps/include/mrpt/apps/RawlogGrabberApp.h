@@ -14,6 +14,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/system/COutputLogger.h>
+
 #include <atomic>
 #include <mutex>
 
@@ -107,7 +108,23 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	TListObservations m_global_list_obs;
 	std::mutex cs_m_global_list_obs;
 
-	std::atomic_bool allThreadsMustExit = false;
+	bool m_allThreadsMustExit = false;
+	mutable std::mutex m_allThreadsMustExitMtx;
+
+	bool allThreadsMustExit() const
+	{
+		m_allThreadsMustExitMtx.lock();
+		bool r = m_allThreadsMustExit;
+		m_allThreadsMustExitMtx.unlock();
+		return r;
+	}
+	void allThreadsMustExit(bool v)
+	{
+		m_allThreadsMustExitMtx.lock();
+		m_allThreadsMustExit = v;
+		m_allThreadsMustExitMtx.unlock();
+	}
+
 	mutable std::mutex m_isRunningMtx;
 	bool m_isRunning = false;
 
@@ -118,7 +135,7 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	mrpt::serialization::CArchive* m_out_arch_ptr = nullptr;
 
 	mrpt::obs::CSensoryFrame m_curSF;
-	double SF_max_time_span = 0.25;  // Seconds
+	double SF_max_time_span = 0.25;	 // Seconds
 };
 
 }  // namespace mrpt::apps
