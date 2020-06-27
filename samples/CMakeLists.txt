@@ -69,11 +69,11 @@ if(BUILD_EXAMPLES)
 	set(CMAKE_EXAMPLE_DEPS mrpt::rtti)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-	# === Depending on: containers ===
+	# === Depending on: containers, systems ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		containers_parameters_example
 		)
-	set(CMAKE_EXAMPLE_DEPS mrpt::containers)
+	set(CMAKE_EXAMPLE_DEPS mrpt::containers mrpt::system)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 
