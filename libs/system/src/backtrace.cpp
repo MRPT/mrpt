@@ -7,22 +7,23 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/format.h>
 #include <mrpt/system/backtrace.h>
+#include <mrpt/system/demangle.h>
+
 #include <iostream>
 #include <sstream>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include <DbgHelp.h>
+#include <windows.h>
 #else
-#include <cxxabi.h>  // __cxa_demangle()
-#include <dlfcn.h>  // dladdr()
+#include <dlfcn.h>	// dladdr()
 #include <execinfo.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -32,8 +33,8 @@
 void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)
 {
 	out_bt.backtrace_levels.clear();
-	const unsigned int framesToSkip =
-		1;  // skip *this* function from the backtrace
+	// skip *this* function from the backtrace
+	const unsigned int framesToSkip = 1;
 	const unsigned int framesToCapture = 64;
 
 #ifdef _WIN32
@@ -72,17 +73,7 @@ void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)
 		SYMBOL_INFO& si = *pSymbol;
 
 		cse.symbolNameOriginal = si.Name;
-		char undecorated_name[1024];
-		if (!UnDecorateSymbolName(
-				si.Name, undecorated_name, sizeof(undecorated_name),
-				UNDNAME_COMPLETE))
-		{
-			cse.symbolName = cse.symbolNameOriginal;
-		}
-		else
-		{
-			cse.symbolName = std::string(undecorated_name);
-		}
+		cse.symbolName = mrpt::system::demangle(si.Name);
 
 		out_bt.backtrace_levels.emplace_back(cse);
 	}
@@ -101,18 +92,9 @@ void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)
 		Dl_info info;
 		if (dladdr(callstack[i], &info) && info.dli_sname)
 		{
-			char* demangled = nullptr;
-			int status = -1;
-			if (info.dli_sname[0] == '_')
-			{
-				demangled = abi::__cxa_demangle(
-					info.dli_sname, nullptr, nullptr, &status);
-			}
 			cse.symbolNameOriginal =
 				info.dli_sname == nullptr ? symbols[i] : info.dli_sname;
-			cse.symbolName =
-				status == 0 ? std::string(demangled) : cse.symbolNameOriginal;
-			free(demangled);
+			cse.symbolName = mrpt::system::demangle(cse.symbolNameOriginal);
 		}
 		out_bt.backtrace_levels.emplace_back(cse);
 	}
