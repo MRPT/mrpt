@@ -23,9 +23,9 @@
 // forward declarations
 // clang-format off
 namespace YAML { class Node; }
-namespace mrpt::containers { class Parameters; 
-namespace internal { 
- struct tag_as_proxy_t {}; struct tag_as_const_proxy_t {};
+namespace mrpt::containers { class Parameters;
+namespace internal {
+ enum tag_as_proxy_t {}; enum tag_as_const_proxy_t {};
  template <typename T> const T& implAsGetter(const Parameters& p, const char* expectedType);
  template <typename T> const T& asGetter(const Parameters& p);
 }
@@ -71,11 +71,11 @@ namespace internal {
 class Parameters
 {
    public:
-	using value_t = std::any;
+	using scalar_t = std::any;
 	using parameter_name_t = std::string;
 
-	using sequence_t = std::vector<value_t>;
-	using map_t = std::map<parameter_name_t, value_t>;
+	using sequence_t = std::vector<scalar_t>;
+	using map_t = std::map<parameter_name_t, scalar_t>;
 
 	using data_t = std::variant<std::monostate, sequence_t, map_t>;
 
@@ -137,13 +137,20 @@ class Parameters
 	map_t& asMap();
 	const map_t& asMap() const;
 
+	bool isScalar() const;
+
 	void printAsYAML(std::ostream& o) const;
 	void printAsYAML() const;  //!< prints to std::cout
 
 	/** For map nodes, returns the type of the given child, or typeid(void) if
 	 * empty.
+	 * \exception std::exception If called on a non-scalar.
 	 */
 	const std::type_info& typeOfChild(const std::string& key) const;
+
+	/** For scalar nodes, returns its type, or typeid(void) if an empty scalar.
+	 * \exception std::exception If called on a non-scalar. */
+	const std::type_info& type() const;
 
 	/** Write access for maps */
 	Parameters operator[](const char* key);
@@ -218,12 +225,12 @@ class Parameters
 	 * @{ */
    private:
 	explicit Parameters(
-		internal::tag_as_proxy_t, value_t& val, const char* name)
+		internal::tag_as_proxy_t, scalar_t& val, const char* name)
 		: isProxy_(true), isConstProxy_(false), name_(name), valuenc_(&val)
 	{
 	}
 	explicit Parameters(
-		internal::tag_as_const_proxy_t, const value_t& val, const char* name)
+		internal::tag_as_const_proxy_t, const scalar_t& val, const char* name)
 		: isProxy_(true), isConstProxy_(true), name_(name), value_(&val)
 	{
 	}
@@ -275,12 +282,12 @@ class Parameters
 	inline operator bool() const { return as<bool>(); }
 	inline operator uint64_t() const { return as<uint64_t>(); }
 	inline operator double() const { return as<double>(); }
-	inline operator const std::string&() const { return as<std::string>(); }
+	inline operator const std::string &() const { return as<std::string>(); }
 
    private:
 	const char* name_ = nullptr;
-	const value_t* value_ = nullptr;
-	value_t* valuenc_ = nullptr;
+	const scalar_t* value_ = nullptr;
+	scalar_t* valuenc_ = nullptr;
 
 	/** Returns the pointer to the referenced object, if a proxy, or nullptr
 	 * otherwise */
@@ -295,7 +302,8 @@ class Parameters
 	friend const T& internal::implAsGetter(
 		const Parameters& p, const char* expectedType);
 
-	static void internalPrintAsYAML(
+	// Return: true if the last printed char is a newline char
+	static bool internalPrintAsYAML(
 		const Parameters& p, std::ostream& o, int indent, bool first);
 
 	template <typename T>
@@ -309,14 +317,14 @@ class Parameters
 		seq.emplace_back(v);
 	}
 
-	static void internalPrintAsYAML(
+	static bool internalPrintAsYAML(
 		const std::monostate&, std::ostream& o, int indent, bool first);
-	static void internalPrintAsYAML(
+	static bool internalPrintAsYAML(
 		const sequence_t& v, std::ostream& o, int indent, bool first);
-	static void internalPrintAsYAML(
+	static bool internalPrintAsYAML(
 		const map_t& v, std::ostream& o, int indent, bool first);
-	static void internalPrintAsYAML(
-		const value_t& v, std::ostream& o, int indent, bool first);
+	static bool internalPrintAsYAML(
+		const scalar_t& v, std::ostream& o, int indent, bool first);
 
 	/** Impl of operator=() */
 	template <typename T>
@@ -331,9 +339,16 @@ class Parameters
 		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
 		valuenc_->emplace<T>(v);
 	}
-
 	/** @} */
 };
+
+/** Prints a scalar, a part of a Parameters tree, or the entire structure,
+ * in YAML-like format */
+inline std::ostream& operator<<(std::ostream& o, const Parameters& p)
+{
+	p.printAsYAML(o);
+	return o;
+}
 
 /** Macro to load a variable from a mrpt::containers::Parameters (initials MCP)
  * dictionary, throwing an std::invalid_argument exception  if the value is not

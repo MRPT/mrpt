@@ -69,6 +69,14 @@ if(BUILD_EXAMPLES)
 	set(CMAKE_EXAMPLE_DEPS mrpt::rtti)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+	# === Depending on: containers ===
+	set(LIST_EXAMPLES_IN_THIS_DIR
+		containers_parameters_example
+		)
+	set(CMAKE_EXAMPLE_DEPS mrpt::containers)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+
 	# === Depending on: serialization, io ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		# ----
