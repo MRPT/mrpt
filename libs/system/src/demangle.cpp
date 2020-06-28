@@ -13,8 +13,9 @@
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <DbgHelp.h>
 #include <windows.h>
+//
+#include <DbgHelp.h>
 #else
 #include <cxxabi.h>	 // __cxa_demangle()
 #include <dlfcn.h>	// dladdr()
