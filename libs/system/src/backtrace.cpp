@@ -18,8 +18,9 @@
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <DbgHelp.h>
 #include <windows.h>
+//
+#include <DbgHelp.h>
 #else
 #include <dlfcn.h>	// dladdr()
 #include <execinfo.h>
