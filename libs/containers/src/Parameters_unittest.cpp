@@ -25,8 +25,9 @@ TEST(Parameters, assignments)
 {
 	mrpt::containers::Parameters p;
 	p["K"] = 2.0;
-	p["N"].as<uint64_t>() = 10;
+	p["N"].asRef<uint64_t>() = 10;
 	p["name"] = "Pepico";
+	p["one"] = "1.0";
 	p["enabled"] = true;
 	p["visible"] = false;
 
@@ -59,6 +60,14 @@ TEST(Parameters, assignments)
 		EXPECT_FALSE(p2.empty());
 		EXPECT_TRUE(p2.has("K"));
 	}
+
+	// type conversions:
+	EXPECT_EQ(p["K"].as<int>(), 2);
+	EXPECT_EQ(p["N"].as<std::string>(), "10");
+	EXPECT_EQ(p["N"].as<double>(), 10.0);
+	EXPECT_EQ(p["one"].as<std::string>(), "1.0");
+	EXPECT_EQ(p["one"].as<unsigned int>(), 1U);
+	EXPECT_EQ(p["one"].as<int>(), 1);
 }
 
 TEST(Parameters, initializers)
@@ -105,7 +114,7 @@ TEST(Parameters, initializerMap)
 	// non existing in const object:
 	EXPECT_THROW(p["foo"], std::exception);
 	// Access wrong type in const object:
-	EXPECT_THROW(p["K"].as<std::string>(), std::exception);
+	EXPECT_THROW(p["K"].asRef<std::string>(), std::exception);
 }
 
 TEST(Parameters, initializerSequence)
@@ -175,11 +184,11 @@ TEST(Parameters, nested)
 TEST(Parameters, nested2)
 {
 	mrpt::containers::Parameters p;
-	p["N"].as<uint64_t>() = 10;
+	p["N"].asRef<uint64_t>() = 10;
 	auto& pid = p["PID"] = mrpt::containers::Parameters();
 	pid["Kp"] = 0.5;
 	p["PID"]["Ti"] = 2.0;
-	p["PID"]["N"].as<uint64_t>() = 1000;
+	p["PID"]["N"].asRef<uint64_t>() = 1000;
 	p["PID"]["name"] = "foo";
 
 	EXPECT_EQ(p["PID"]["Kp"].as<double>(), 0.5);
@@ -234,7 +243,7 @@ TEST(Parameters, macros)
 	mrpt::containers::Parameters p;
 	p["K"] = 2.0;
 	p["Ang"] = 90.0;
-	p["N"].as<uint64_t>() = 10;
+	p["N"].asRef<uint64_t>() = 10;
 	p["name"] = "Pepico";
 	p["PID"] = mrpt::containers::Parameters({{"Kp", 1.0}, {"Td", 0.8}});
 

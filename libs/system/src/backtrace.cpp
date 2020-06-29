@@ -7,11 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"	 // Precompiled headers
+#include "system-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/demangle.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/backtrace.h>
-#include <mrpt/system/demangle.h>
 
 #include <iostream>
 #include <sstream>
@@ -22,7 +22,7 @@
 //
 #include <DbgHelp.h>
 #else
-#include <dlfcn.h>	// dladdr()
+#include <dlfcn.h>  // dladdr()
 #include <execinfo.h>
 
 #include <cstdlib>
@@ -74,7 +74,7 @@ void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)
 		SYMBOL_INFO& si = *pSymbol;
 
 		cse.symbolNameOriginal = si.Name;
-		cse.symbolName = mrpt::system::demangle(si.Name);
+		cse.symbolName = mrpt::demangle(si.Name);
 
 		out_bt.backtrace_levels.emplace_back(cse);
 	}
@@ -95,7 +95,7 @@ void mrpt::system::getCallStackBackTrace(TCallStackBackTrace& out_bt)
 		{
 			cse.symbolNameOriginal =
 				info.dli_sname == nullptr ? symbols[i] : info.dli_sname;
-			cse.symbolName = mrpt::system::demangle(cse.symbolNameOriginal);
+			cse.symbolName = mrpt::demangle(cse.symbolNameOriginal);
 		}
 		out_bt.backtrace_levels.emplace_back(cse);
 	}

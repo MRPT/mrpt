@@ -9,14 +9,19 @@
 #pragma once
 
 #include <mrpt/core/bits_math.h>
+#include <mrpt/core/demangle.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
 
 #include <any>
 #include <cstdint>
 #include <iosfwd>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
+#include <typeinfo>
 #include <variant>
 #include <vector>
 
@@ -26,8 +31,7 @@ namespace YAML { class Node; }
 namespace mrpt::containers { class Parameters;
 namespace internal {
  enum tag_as_proxy_t {}; enum tag_as_const_proxy_t {};
- template <typename T> const T& implAsGetter(const Parameters& p, const char* expectedType);
- template <typename T> const T& asGetter(const Parameters& p);
+ template <typename T> T implAsGetter(const Parameters& p);
 }
 // clang-format on
 
@@ -42,28 +46,11 @@ namespace internal {
  * Elements contained in either sequenties or dictionaries can be either plain
  *leaf types, or another container.
  *
- * This class was designed as a lightweight but structured way to pass
+ * This class was designed as a lightweight, while structured, way to pass
  *arbitrarialy-complex parameter blocks.
  *
- *\code
- * mrpt::containers::Parameters p;
- * p["N"] = 10;
- * auto& pid = p["PID"] = mrpt::containers::Parameters();
- * pid["Kp"] = 0.5;
- * p["PID"]["Ti"] = 2.0;
- * p["PID"]["N"].as<uint64_t>() = 1000;
- * p["PID"]["name"] = "foo";
- *
- * std::cout << p["PID"]["Kp"].as<double>() << "\n";
- * std::cout << p["PID"]["Ti"].as<double>() << "\n";
- * std::cout << p["PID"]["N"].as<uint64_t>() << "\n";
- * std::cout << p["PID"]["name"].as<std::string>() << "\n";
- *
- * double Kp = p["PID"]["Kp"];
- * double Ti;
- * MCP_LOAD_REQ(p["PID"], Ti);
- *
- *\endcode
+ * See example in \ref containers_parameters_example/test.cpp
+ * \snippet containers_parameters_example/test.cpp example-parameters
  *
  * \ingroup mrpt_containers_grp
  * \note [new in MRPT 2.0.5]
@@ -236,37 +223,30 @@ class Parameters
 	}
 
    public:
-	/** Returns a const ref to the existing value of the given type.
-	 * \exception std::exception If the contained type does not match.
+	/** Returns a copy of the existing value of the given type, or tries to
+	 * convert it between easily-compatible types (e.g. double<->int,
+	 * string<->int).
+	 * \exception std::exception If the contained type does not  match and there
+	 * is no obvious conversion.
 	 */
 	template <typename T>
-	const T& as() const
+	T as() const
 	{
-		return internal::asGetter<T>(*this);
+		return internal::implAsGetter<T>(*this);
 	}
-	/** Returns a ref to the existing or new value of the given type.
+	/** Returns a ref to the existing or new value of the given type. If types
+	 * do not match, the old content will be discarded and a new variable
+	 * created into this scalar node.
+	 * \exception std::exception If accessing to a non-scalar node.
 	 */
 	template <typename T>
-	T& as()
-	{
-		if (isConstProxy_)
-			throw std::logic_error("Trying to write into read-only proxy");
-		if (!isProxy_)
-			throw std::logic_error(
-				"Trying to read from a Parameter block. Use "
-				"`p[\"name\"].as<T>();` instead");
+	T& asRef();
 
-		if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
-		try
-		{
-			std::any_cast<T>(*valuenc_);
-		}
-		catch (const std::bad_any_cast&)
-		{
-			valuenc_->emplace<T>();
-		}
-		return *std::any_cast<T>(valuenc_);
-	}
+	/** const version of asRef(). Unlike `as<T>()`, this version will NOT try to
+	 * convert between types if T does not match exactly the stored type, and
+	 * will raise an exception instead. */
+	template <typename T>
+	const T& asRef() const;
 
 	void operator=(const bool v);
 	void operator=(const double v);
@@ -282,7 +262,7 @@ class Parameters
 	inline operator bool() const { return as<bool>(); }
 	inline operator uint64_t() const { return as<uint64_t>(); }
 	inline operator double() const { return as<double>(); }
-	inline operator const std::string &() const { return as<std::string>(); }
+	inline operator std::string() const { return as<std::string>(); }
 
    private:
 	const char* name_ = nullptr;
@@ -299,23 +279,14 @@ class Parameters
 	Parameters* internalMeOrValue();
 
 	template <typename T>
-	friend const T& internal::implAsGetter(
-		const Parameters& p, const char* expectedType);
+	friend T internal::implAsGetter(const Parameters& p);
 
 	// Return: true if the last printed char is a newline char
 	static bool internalPrintAsYAML(
 		const Parameters& p, std::ostream& o, int indent, bool first);
 
 	template <typename T>
-	void internalPushBack(const T& v)
-	{
-		Parameters* p = internalMeOrValue();
-		if (!p->isSequence())
-			throw std::logic_error(
-				"push_back() only available for sequence nodes.");
-		sequence_t& seq = std::get<sequence_t>(p->data_);
-		seq.emplace_back(v);
-	}
+	void internalPushBack(const T& v);
 
 	static bool internalPrintAsYAML(
 		const std::monostate&, std::ostream& o, int indent, bool first);
@@ -412,9 +383,125 @@ inline std::ostream& operator<<(std::ostream& o, const Parameters& p)
  * \endcode
  */
 #define MCP_SAVE(paramsVariable__, keyName__) \
-	paramsVariable__[#keyName__].as<decltype(keyName__)>() = keyName__;
+	paramsVariable__[#keyName__].asRef<decltype(keyName__)>() = keyName__;
 
 #define MCP_SAVE_DEG(paramsVariable__, keyName__) \
-	paramsVariable__[#keyName__].as<double>() = mrpt::RAD2DEG(keyName__);
+	paramsVariable__[#keyName__].asRef<double>() = mrpt::RAD2DEG(keyName__);
 
 }  // namespace mrpt::containers
+
+namespace mrpt::containers
+{
+template <typename T>
+T& Parameters::asRef()
+{
+	if (isConstProxy_)
+		throw std::logic_error("Trying to write into read-only proxy");
+	if (!isProxy_)
+		throw std::logic_error(
+			"Trying to read from a non-scalar. Use `p[\"name\"].as<T>();` "
+			"instead");
+
+	if (!valuenc_) throw std::logic_error("valuenc_ is nullptr");
+	try
+	{
+		std::any_cast<T>(*valuenc_);
+	}
+	catch (const std::bad_any_cast&)
+	{
+		valuenc_->emplace<T>();
+	}
+	return *std::any_cast<T>(valuenc_);
+}
+
+template <typename T>
+const T& Parameters::asRef() const
+{
+	if (!isProxy_)
+		throw std::logic_error(
+			"Trying to read from a non-scalar. Use `p[\"name\"].as<T>();` "
+			"instead");
+	const auto& expectedType = typeid(T);
+	const auto& storedType = isConstProxy_ ? value_->type() : valuenc_->type();
+
+	if (storedType != expectedType)
+		THROW_EXCEPTION_FMT(
+			"Trying to read parameter `%s` of type `%s` as if it was "
+			"`%s` and no obvious conversion found.",
+			name_, mrpt::demangle(storedType.name()).c_str(),
+			mrpt::demangle(expectedType.name()).c_str());
+
+	if (isConstProxy_)
+		return *std::any_cast<const T>(value_);
+	else
+		return *std::any_cast<const T>(valuenc_);
+}
+
+template <typename T>
+void Parameters::internalPushBack(const T& v)
+{
+	Parameters* p = internalMeOrValue();
+	if (!p->isSequence())
+		throw std::logic_error(
+			"push_back() only available for sequence nodes.");
+	sequence_t& seq = std::get<sequence_t>(p->data_);
+	seq.emplace_back(v);
+}
+
+}  // namespace mrpt::containers
+
+namespace mrpt::containers::internal
+{
+template <typename T>
+T implAsGetter(const Parameters& p)
+{
+	ASSERT_(p.isProxy_);
+	const auto& expectedType = typeid(T);
+	const auto& storedType =
+		p.isConstProxy_ ? p.value_->type() : p.valuenc_->type();
+
+	if (storedType != expectedType)
+	{
+		if constexpr (std::is_convertible_v<double, T>)
+			if (storedType == typeid(double))
+				return static_cast<T>(p.as<double>());
+		if constexpr (std::is_convertible_v<T, double>)
+		{
+			std::stringstream ss;
+			p.printAsYAML(ss);
+			T ret;
+			ss >> ret;
+			if (!ss.fail()) return ret;
+		}
+
+		if (storedType == typeid(std::string))
+		{
+			std::stringstream ss(p.as<std::string>());
+			T ret;
+			ss >> ret;
+			if (!ss.fail()) return ret;
+		}
+		if constexpr (std::is_convertible_v<std::string, T>)
+		{
+			if (expectedType == typeid(std::string))
+			{
+				std::stringstream ss;
+				p.printAsYAML(ss);
+				return ss.str();
+			}
+		}
+
+		THROW_EXCEPTION_FMT(
+			"Trying to read parameter `%s` of type `%s` as if it was "
+			"`%s` and no obvious conversion found.",
+			p.name_, mrpt::demangle(storedType.name()).c_str(),
+			mrpt::demangle(expectedType.name()).c_str());
+	}
+
+	if (p.isConstProxy_)
+		return *std::any_cast<const T>(p.value_);
+	else
+		return *std::any_cast<const T>(p.valuenc_);
+}
+
+}  // namespace mrpt::containers::internal

@@ -7,11 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"	 // Precompiled headers
+#include "containers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/Parameters.h>
-#include <mrpt/core/exceptions.h>
 
 #include <iostream>
 #if MRPT_HAS_YAMLCPP
@@ -478,56 +477,4 @@ Parameters Parameters::FromYAML(const YAML::Node& n)
 void Parameters::loadFromYAML(const YAML::Node& n)
 {
 	*this = Parameters::FromYAML(n);
-}
-
-// ============================ internal  =====================================
-template <typename T>
-const T& mrpt::containers::internal::implAsGetter(
-	const Parameters& p, const char* expectedType)
-{
-	ASSERT_(p.isProxy_);
-	if (p.isConstProxy_)
-	{
-		if (p.value_->type() != typeid(T))
-			THROW_EXCEPTION_FMT(
-				"Trying to read parameter `%s` of type `%s` as if it was `%s`",
-				p.name_, p.value_->type().name(), expectedType);
-
-		return *std::any_cast<const T>(p.value_);
-	}
-	else
-	{
-		if (p.valuenc_->type() != typeid(T))
-			THROW_EXCEPTION_FMT(
-				"Trying to read parameter `%s` of type `%s` as if it was `%s`",
-				p.name_, p.valuenc_->type().name(), expectedType);
-
-		return *std::any_cast<const T>(p.valuenc_);
-	}
-}
-
-template <>
-const double& mrpt::containers::internal::asGetter(const Parameters& p)
-{
-	return implAsGetter<double>(p, "double");
-}
-template <>
-const uint64_t& mrpt::containers::internal::asGetter(const Parameters& p)
-{
-	return implAsGetter<uint64_t>(p, "uint64_t");
-}
-template <>
-const bool& mrpt::containers::internal::asGetter(const Parameters& p)
-{
-	return implAsGetter<bool>(p, "bool");
-}
-template <>
-const std::string& mrpt::containers::internal::asGetter(const Parameters& p)
-{
-	return implAsGetter<std::string>(p, "std::string");
-}
-template <>
-const Parameters& mrpt::containers::internal::asGetter(const Parameters& p)
-{
-	return implAsGetter<Parameters>(p, "Parameters");
 }
