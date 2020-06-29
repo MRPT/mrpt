@@ -473,7 +473,6 @@ T implAsGetter(const Parameters& p)
 			ss >> ret;
 			if (!ss.fail()) return ret;
 		}
-
 		if (storedType == typeid(std::string))
 		{
 			std::stringstream ss(p.as<std::string>());
@@ -488,6 +487,14 @@ T implAsGetter(const Parameters& p)
 				std::stringstream ss;
 				p.printAsYAML(ss);
 				return ss.str();
+			}
+		}
+		if constexpr (std::is_same_v<T, bool>)
+		{
+			if (storedType == typeid(std::string))
+			{
+				const auto s = p.as<std::string>();
+				return s == "true" || s == "True" || s == "T" || s == "TRUE";
 			}
 		}
 
