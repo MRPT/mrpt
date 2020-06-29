@@ -23,13 +23,8 @@ Parameters::Parameters(const Parameters& v) { *this = v; }
 
 bool Parameters::isSequence() const
 {
-	if (isProxy_)
-	{
-		auto p = internalValueAsSelf();
-		if (!p) return false;
-		return p->isSequence();
-	}
-	return std::holds_alternative<sequence_t>(data_);
+	auto p = internalMeOrValue();
+	return std::holds_alternative<sequence_t>(p->data_);
 }
 
 Parameters::sequence_t& Parameters::asSequence()
@@ -37,7 +32,7 @@ Parameters::sequence_t& Parameters::asSequence()
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call asSequence() on a value (!)");
+		ASSERTMSG_(p, "Cannot call asSequence() on a scalar");
 		return p->asSequence();
 	}
 	return std::get<sequence_t>(data_);
@@ -47,7 +42,7 @@ const Parameters::sequence_t& Parameters::asSequence() const
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call asSequence() on a value (!)");
+		ASSERTMSG_(p, "Cannot call asSequence() on a scalar");
 		return p->asSequence();
 	}
 	return std::get<sequence_t>(data_);
@@ -61,20 +56,15 @@ bool Parameters::isScalar() const
 
 bool Parameters::isMap() const
 {
-	if (isProxy_)
-	{
-		auto p = internalValueAsSelf();
-		if (!p) return false;
-		return p->isMap();
-	}
-	return std::holds_alternative<map_t>(data_);
+	auto p = internalMeOrValue();
+	return std::holds_alternative<map_t>(p->data_);
 }
 Parameters::map_t& Parameters::asMap()
 {
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call asMap() on a value (!)");
+		ASSERTMSG_(p, "Cannot call asMap() on a scalar");
 		return p->asMap();
 	}
 	return std::get<map_t>(data_);
@@ -84,7 +74,7 @@ const Parameters::map_t& Parameters::asMap() const
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call asMap() on a value (!)");
+		ASSERTMSG_(p, "Cannot call asMap() on a scalar");
 		return p->asMap();
 	}
 	return std::get<map_t>(data_);
@@ -95,7 +85,7 @@ bool Parameters::has(const std::string& key) const
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call has() on a value (!)");
+		ASSERTMSG_(p, "Cannot call has() on a scalar");
 		return p->has(key);
 	}
 	if (!std::holds_alternative<map_t>(data_))
@@ -172,7 +162,7 @@ bool Parameters::empty() const
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call empty() on a value (!)");
+		ASSERTMSG_(p, "Cannot call empty() on a scalar");
 		return p->empty();
 	}
 	if (std::holds_alternative<sequence_t>(data_))
@@ -186,7 +176,7 @@ void Parameters::clear()
 	if (isProxy_)
 	{
 		auto p = internalValueAsSelf();
-		ASSERTMSG_(p, "Cannot call clear() on a value (!)");
+		ASSERTMSG_(p, "Cannot call clear() on a scalar");
 		p->clear();
 	}
 	if (std::holds_alternative<sequence_t>(data_))
@@ -228,7 +218,8 @@ Parameters Parameters::operator[](const char* s)
 	ASSERT_(s != nullptr);
 	Parameters* p = internalMeOrValue();
 	// Init as map on first use:
-	if (p->empty()) p->data_.emplace<map_t>();
+	if (std::holds_alternative<std::monostate>(p->data_))
+		p->data_.emplace<map_t>();
 
 	if (!p->isMap())
 		THROW_EXCEPTION("write operator[] not applicable to non-map nodes.");
