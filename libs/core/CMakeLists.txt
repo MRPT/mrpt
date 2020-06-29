@@ -21,4 +21,8 @@ if(BUILD_mrpt-core)
 	if (MSVC)
 		target_compile_definitions(core PUBLIC -D_ENABLE_EXTENDED_ALIGNED_STORAGE)
 	endif()
+
+	if(WIN32)
+		target_link_libraries(core PRIVATE Dbghelp) # For mrpt::demangle()
+	endif()
 endif()
