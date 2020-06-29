@@ -13,7 +13,7 @@
 
 //! [example-parameters]
 #include <mrpt/containers/Parameters.h>
-#include <mrpt/system/demangle.h>  // demangle() utility
+#include <mrpt/core/demangle.h>  // demangle() utility
 
 #include <iostream>
 
@@ -21,7 +21,7 @@ void ParameterTest_1()
 {
 	mrpt::containers::Parameters p;
 	p["K"] = 2.0;
-	p["N"].as<uint64_t>() = 10;
+	p["N"].asRef<uint64_t>() = 10;
 	p["name"] = "Foo";
 	p["enabled"] = true;
 	p["books"] = mrpt::containers::Parameters::Sequence();
@@ -36,8 +36,9 @@ void ParameterTest_1()
 	// Iterate a dictionary:
 	for (const auto& kv : p.asMap())
 	{
-		std::cout << "key: `" << kv.first << "` type: "
-				  << mrpt::system::demangle(kv.second.type().name()) << "\n";
+		std::cout << "key: `" << kv.first
+				  << "` type: " << mrpt::demangle(kv.second.type().name())
+				  << "\n";
 		// Access value: kv.second.as<double>(), etc.
 	}
 
@@ -45,7 +46,7 @@ void ParameterTest_1()
 	for (const auto& item : p["books"].asSequence())
 	{
 		std::cout << "sequence item type: "
-				  << mrpt::system::demangle(item.type().name()) << "\n";
+				  << mrpt::demangle(item.type().name()) << "\n";
 		// Access value: kv.second.as<std::string>(), etc.
 	}
 }

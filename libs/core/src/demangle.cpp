@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"	 // Precompiled headers
+#include "core-precomp.h"  // Precompiled headers
 //
-#include <mrpt/system/demangle.h>
+#include <mrpt/core/demangle.h>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -17,8 +17,8 @@
 //
 #include <DbgHelp.h>
 #else
-#include <cxxabi.h>	 // __cxa_demangle()
-#include <dlfcn.h>	// dladdr()
+#include <cxxabi.h>  // __cxa_demangle()
+#include <dlfcn.h>  // dladdr()
 #include <execinfo.h>
 
 #include <cstdlib>
@@ -27,7 +27,7 @@
 #include <string>
 #endif
 
-std::string mrpt::system::demangle(const std::string& symbolName)
+std::string mrpt::demangle(const std::string& symbolName)
 {
 	if (symbolName.empty()) return {};
 

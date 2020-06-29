@@ -17,8 +17,8 @@
     - New mrpt::for_<> constexpr for loop helper function.
   - \ref mrpt_containers_grp
     - New class mrpt::containers::Parameters for variant-based, nested, YAML-like configuration blocks.
-  - \ref mrpt_system_grp
-    - New function mrpt::system::demangle()
+  - \ref mrpt_core_grp
+    - New function mrpt::demangle()
 
 ------
 # Version 2.0.4: Released Jun 20, 2020

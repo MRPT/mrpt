@@ -10,10 +10,10 @@
 
 #include <string>
 
-namespace mrpt::system
+namespace mrpt
 {
 /** Demangle a C++ symbol name (works on both Windows and Unices)
- * \ingroup mrpt_system_grp
+ * \ingroup mrpt_core_grp
  */
 std::string demangle(const std::string& symbolName);
 
