@@ -30,6 +30,7 @@ TEST(Parameters, assignments)
 	p["one"] = "1.0";
 	p["enabled"] = true;
 	p["visible"] = false;
+	p["hidden"] = "true";
 
 	EXPECT_FALSE(p.empty());
 	EXPECT_TRUE(p.has("K"));
@@ -40,6 +41,7 @@ TEST(Parameters, assignments)
 
 	EXPECT_TRUE(p["enabled"]);
 	EXPECT_FALSE(p["visible"]);
+	EXPECT_TRUE(p["hidden"]);
 
 	EXPECT_EQ(p.typeOfChild("K"), typeid(double));
 	EXPECT_EQ(p["K"].as<double>(), 2.0);
@@ -68,6 +70,8 @@ TEST(Parameters, assignments)
 	EXPECT_EQ(p["one"].as<std::string>(), "1.0");
 	EXPECT_EQ(p["one"].as<unsigned int>(), 1U);
 	EXPECT_EQ(p["one"].as<int>(), 1);
+	EXPECT_EQ(p["enabled"].as<std::string>(), "true");
+	EXPECT_EQ(p["visible"].as<std::string>(), "false");
 }
 
 TEST(Parameters, initializers)
