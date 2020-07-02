@@ -16,6 +16,7 @@
 */
 
 #include "kinect_calibrate_guiMain.h"
+
 #include <mrpt/gui/about_box.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
@@ -40,6 +41,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
+
 #include <fstream>
 
 using namespace mrpt;
@@ -1217,8 +1219,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	// Set std::cout/cerr out:
 	m_my_redirector = std::make_unique<CMyRedirector>(
 		edLogTest,
-		false,  // yieldApplication
-		0,  // bufferSize
+		false,	// yieldApplication
+		0,	// bufferSize
 		true,  // also_cerr
 		true,  // threadSafe -> we must call dumpNow()
 		true  // also_to_cout_cerr
@@ -1352,7 +1354,7 @@ void kinect_calibrate_guiDialog::OnbtnConnectClick(wxCommandEvent& event)
 
 	m_cap_thread_data.quit = false;
 	m_cap_thread_data.flag_grab_depth =
-		false;  // we don't need depth data for image registration.
+		false;	// we don't need depth data for image registration.
 	m_findcorners_thread_data.quit = false;
 
 	// Launch thread:
@@ -1382,7 +1384,7 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 		CKinect kinect;
 
 		// We only have to grab the intensity channel:
-		kinect.enableGrabRGB(true);  // RGB / IR channels:
+		kinect.enableGrabRGB(true);	 // RGB / IR channels:
 		kinect.enableGrabDepth(p.flag_grab_depth);
 		kinect.enableGrab3DPoints(false);
 		kinect.enableGrabAccelerometers(false);
@@ -1446,7 +1448,7 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 	{
 		cout << "[Kinect thread] Exception: " << mrpt::exception_to_str(e)
 			 << endl;
-		p.quit = true;  // Exit for some error
+		p.quit = true;	// Exit for some error
 	}
 	p.terminated = true;
 }
@@ -1498,14 +1500,14 @@ void kinect_calibrate_guiDialog::StopLiveGrabThreads()
 	{
 		m_cap_thread_data.quit = true;
 		cout << "Waiting for the grabbing thread to end...\n";
-		m_cap_thread.join();
+		if (m_cap_thread.joinable()) m_cap_thread.join();
 		cout << "Grabbing thread closed.\n";
 	}
 	if (m_findcorners_thread.joinable())
 	{
 		m_findcorners_thread_data.quit = true;
 		cout << "Waiting for the corner find thread to end...\n";
-		m_findcorners_thread.join();
+		if (m_findcorners_thread.joinable()) m_findcorners_thread.join();
 		cout << "Corner finding thread closed.\n";
 	}
 }
@@ -1658,7 +1660,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 						m_findcorners_thread_data.detected_corners;
 				}
 				m_findcorners_thread_data.detected_corners_done =
-					false;  // Signal that we've read the data.
+					false;	// Signal that we've read the data.
 			}
 
 			// Makes an RGB color even if it was grayscale so we can draw color
@@ -1931,7 +1933,7 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 
 			const double lRatio =
 				static_cast<double>(szL.x) /
-				szL.y;  // Don't assume both images have equal size
+				szL.y;	// Don't assume both images have equal size
 			const double rRatio = static_cast<double>(szR.x) / szR.y;
 
 			mrpt::img::TImageSize trg_sz_l, trg_sz_r;
@@ -2651,7 +2653,7 @@ void kinect_calibrate_guiDialog::LiveCalibGridInitialize()
 	// Build cells & labels:
 	m_grid_live_calib->AppendCols(1, false);
 	m_grid_live_calib->AppendRows(24, false);
-	m_grid_live_calib->SetColLabelSize(0);  // Hide
+	m_grid_live_calib->SetColLabelSize(0);	// Hide
 
 	m_grid_live_calib->EndBatch();
 }

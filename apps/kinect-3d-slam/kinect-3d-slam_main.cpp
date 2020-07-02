@@ -52,7 +52,7 @@ using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace std;
 
-const double KEYFRAMES_MIN_DISTANCE = 0.10;  // meters
+const double KEYFRAMES_MIN_DISTANCE = 0.10;	 // meters
 const double KEYFRAMES_MIN_ANG = 10.0_deg;
 
 // Thread for grabbing: Do this is another thread so we divide rendering and
@@ -199,18 +199,18 @@ void Test_Kinect()
 	// mrpt::vision::CGenericFeatureTracker
 	//  https://reference.mrpt.org/devel/structmrpt_1_1vision_1_1_c_generic_feature_tracker.html
 	tracker->extra_params["add_new_features"] =
-		1;  // track, AND ALSO, add new features
+		1;	// track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"] = 25;
 	tracker->extra_params["add_new_feat_max_features"] = 150;
 	tracker->extra_params["add_new_feat_patch_size"] = 21;
 
 	tracker->extra_params["minimum_KLT_response_to_add"] = 40;
 	tracker->extra_params["check_KLT_response_every"] =
-		5;  // Re-check the KLT-response to assure features are in good points.
+		5;	// Re-check the KLT-response to assure features are in good points.
 	tracker->extra_params["minimum_KLT_response"] =
-		25;  // Re-check the KLT-response to assure features are in good points.
+		25;	 // Re-check the KLT-response to assure features are in good points.
 
-	tracker->extra_params["update_patches_every"] = 0;  // Update patches
+	tracker->extra_params["update_patches_every"] = 0;	// Update patches
 
 	// Specific params for "CFeatureTracker_KL"
 	tracker->extra_params["window_width"] = 25;
@@ -248,7 +248,7 @@ void Test_Kinect()
 	gl_points_map->setPointSize(2.0);
 
 	const double aspect_ratio =
-		480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
+		480.0 / 640.0;	// kinect.rows() / double( kinect.cols() );
 
 	mrpt::opengl::CSetOfObjects::Ptr gl_cur_cam_corner =
 		mrpt::opengl::stock_objects::CornerXYZSimple(0.4f, 4);
@@ -284,7 +284,7 @@ void Test_Kinect()
 
 	map<TFeatureID, TPoint3D> lastVisibleFeats;
 	std::vector<TPose3D>
-		camera_key_frames_path;  // The 6D path of the Kinect camera.
+		camera_key_frames_path;	 // The 6D path of the Kinect camera.
 	CPose3D
 		currentCamPose_wrt_last;  // wrt last pose in "camera_key_frames_path"
 
@@ -306,7 +306,7 @@ void Test_Kinect()
 			// Feature tracking -------------------------------------------
 			ASSERT_(last_obs->hasIntensityImage);
 
-			CImage theImg;  // The grabbed image:
+			CImage theImg;	// The grabbed image:
 			theImg = last_obs->intensityImage;
 
 			// Do tracking:
@@ -457,7 +457,7 @@ void Test_Kinect()
 							gl_keyframes_must_refresh = true;
 
 							currentCamPose_wrt_last =
-								CPose3D();  // It's (0,0,0) since the last
+								CPose3D();	// It's (0,0,0) since the last
 							// key-frame is the current pose!
 							lastVisibleFeats = curVisibleFeats;
 
@@ -638,7 +638,7 @@ void Test_Kinect()
 
 	cout << "Waiting for grabbing thread to exit...\n";
 	thrPar.quit = true;
-	thHandle.join();
+	if (thHandle.joinable()) thHandle.join();
 	cout << "Bye!\n";
 }
 

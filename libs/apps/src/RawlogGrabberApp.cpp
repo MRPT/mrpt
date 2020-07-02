@@ -234,7 +234,8 @@ void RawlogGrabberApp::runImpl()
 	allThreadsMustExit(true);
 	std::this_thread::sleep_for(100ms);
 	MRPT_LOG_INFO("Waiting for all threads to close...");
-	for (auto& lstThread : lstThreads) lstThread.join();
+	for (auto& t : lstThreads)
+		if (t.joinable()) t.join();
 }
 
 void RawlogGrabberApp::run()

@@ -8,13 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmt_slam_guiMain.h"
+
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/serialization/CArchive.h>
-#include "MyArtProvider.h"
-
 #include <wx/msgdlg.h>
+
+#include "MyArtProvider.h"
 
 //(*InternalHeaders(hmt_slam_guiFrame)
 #include <wx/artprov.h>
@@ -840,7 +841,7 @@ hmt_slam_guiFrame::~hmt_slam_guiFrame()
 
 	// Stop thread:
 	m_thread_in_queue.push(new TThreadMsg(OP_QUIT_THREAD));
-	m_hThreadHMTSLAM.join();
+	if (m_hThreadHMTSLAM.joinable()) m_hThreadHMTSLAM.join();
 
 	//(*Destroy(hmt_slam_guiFrame)
 	//*)
