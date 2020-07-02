@@ -14,6 +14,7 @@
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
 
+#include <cstdlib>
 #include <thread>
 
 #if MRPT_HAS_FFMPEG && MRPT_HAS_OPENCV
@@ -22,6 +23,15 @@ TEST(RawlogGrabberApp, CGenericCamera_AVI)
 TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 #endif
 {
+	// This particular unit test is REALLY problematic for some reason on build
+	// farms. It's safer to just disable it in this case:
+	if (::getenv("DEB_BUILD_ARCH") || ::getenv("DEB_BUILD_MAINT_OPTIONS"))
+	{
+		std::cerr << "Warning: Disabling test since we are building a Debian "
+					 "package.\n";
+		return;
+	}
+
 	using namespace std::string_literals;
 
 	const std::string ini_fil =

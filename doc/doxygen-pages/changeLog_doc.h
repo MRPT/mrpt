@@ -19,6 +19,10 @@
     - New class mrpt::containers::Parameters for variant-based, nested, YAML-like configuration blocks.
   - \ref mrpt_core_grp
     - New function mrpt::demangle()
+- Deprecations:
+  - mrpt::system::TParameters is now deprecated.
+- BUG FIXES:
+  - Avoid crash in camera-calib app when clicking "Close" while capturing a live video.
 
 ------
 # Version 2.0.4: Released Jun 20, 2020
