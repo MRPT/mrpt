@@ -68,6 +68,8 @@ override_dh_auto_configure:
 	# Show CPU flags, to help debugging unit test crashes related to
 	# illegal instructions, etc.
 	cat /proc/cpuinfo
+	# Show env vars for debugging:
+	env
 	# Autoconfigure step:
 	dh_auto_configure -- $(CMAKE_FLAGS)
 
