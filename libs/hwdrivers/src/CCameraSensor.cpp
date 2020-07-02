@@ -415,7 +415,8 @@ void CCameraSensor::close()
 	if (!m_threadImagesSaver.empty())
 	{
 		m_threadImagesSaverShouldEnd = true;
-		for (auto& i : m_threadImagesSaver) i.join();
+		for (auto& i : m_threadImagesSaver)
+			if (i.joinable()) i.join();
 	}
 }
 

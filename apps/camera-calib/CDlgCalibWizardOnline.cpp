@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "CDlgCalibWizardOnline.h"
-#include "camera_calib_guiMain.h"
 
 #include <mrpt/vision/chessboard_find_corners.h>
+
+#include "camera_calib_guiMain.h"
 
 //(*InternalHeaders(CDlgCalibWizardOnline)
 #include <wx/font.h>
@@ -134,8 +135,8 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(
 		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = {_("OpenCV\'s default"),
-										 _("Scaramuzza et al.\'s")};
+	wxString __wxRadioBoxChoices_1[2] = {
+		_("OpenCV\'s default"), _("Scaramuzza et al.\'s")};
 	rbMethod = new wxRadioBox(
 		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
@@ -294,8 +295,9 @@ CDlgCalibWizardOnline::~CDlgCalibWizardOnline()
 
 void CDlgCalibWizardOnline::OnbtnCloseClick(wxCommandEvent& event)
 {
-	wxCommandEvent ev;
-	OnbtnStopClick(ev);
+	m_video.reset();
+	m_threadMustClose = true;
+	if (m_threadCorners.joinable()) m_threadCorners.join();
 
 	EndModal(wxID_CANCEL);
 }
@@ -313,7 +315,7 @@ void CDlgCalibWizardOnline::OnbtnStartClick(wxCommandEvent& event)
 	m_threadImgToProcess.reset();
 	m_threadMustClose = false;
 	m_threadResults.clear();
-	m_threadResultsComputed = true;  // To start a new detection
+	m_threadResultsComputed = true;	 // To start a new detection
 	m_threadIsClosed = false;
 
 	m_calibFrames.clear();
@@ -328,7 +330,7 @@ void CDlgCalibWizardOnline::OnbtnStartClick(wxCommandEvent& event)
 	this->m_panelCamera->Disable();
 
 	// start processing:
-	timCapture.Start(2, true);  // One shot
+	timCapture.Start(2, true);	// One shot
 }
 
 void CDlgCalibWizardOnline::OnbtnStopClick(wxCommandEvent& event)
@@ -340,7 +342,7 @@ void CDlgCalibWizardOnline::OnbtnStopClick(wxCommandEvent& event)
 	this->m_panelCamera->Enable();
 
 	m_threadMustClose = true;
-	m_threadCorners.join();
+	if (m_threadCorners.joinable()) m_threadCorners.join();
 }
 
 void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)

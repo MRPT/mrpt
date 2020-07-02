@@ -24,3 +24,4 @@ graphslam_results/
 #visual studio
 .vs/*
 .vscode
+.cmake
