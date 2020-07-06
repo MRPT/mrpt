@@ -11,6 +11,7 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/serialization/optional_serialization.h>
 
 using namespace mrpt::serialization;
 
@@ -20,7 +21,12 @@ class Foo : public CSerializable
 {
 	DEFINE_SERIALIZABLE(Foo, MyNS)
    public:
-	int16_t value;
+	Foo() = default;
+	Foo(uint16_t v) : value(v) {}
+
+	bool operator==(const Foo& o) const { return o.value == value; }
+
+	int16_t value = 0;
 };
 }  // namespace MyNS
 
@@ -65,4 +71,36 @@ TEST(Serialization, ArchiveSharedPtrs)
 	(*arch_ptr2) >> b;
 
 	EXPECT_EQ(a, b);
+}
+
+TEST(Serialization, optionalObjects)
+{
+	mrpt::rtti::registerClass(CLASS_ID(MyNS::Foo));
+
+	mrpt::io::CMemoryStream buf;
+	auto arch = mrpt::serialization::archiveFrom(buf);
+
+	std::optional<int> a = 42, b;
+	std::optional<MyNS::Foo> c(123), d;
+
+	arch << a << b << c << d;
+	buf.Seek(0);
+
+	std::optional<int> a2, b2;
+	std::optional<MyNS::Foo> c2, d2;
+	arch >> a2 >> b2 >> c2 >> d2;
+
+	EXPECT_TRUE(a2.has_value());
+	EXPECT_EQ(*a, *a2);
+
+	EXPECT_TRUE(c2.has_value());
+	EXPECT_EQ(*c, *c2);
+
+	EXPECT_FALSE(b2.has_value());
+	EXPECT_FALSE(d2.has_value());
+
+	EXPECT_EQ(a, a2);
+	EXPECT_EQ(b, b2);
+	EXPECT_EQ(c, c2);
+	EXPECT_EQ(d, d2);
 }
