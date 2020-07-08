@@ -51,7 +51,7 @@ override_dh_auto_build-arch:
 	dh_auto_build -O--buildsystem=cmake
 
 	# Python bindings:
-#	dh_python3 --package=python-mrpt
+#	dh_python3 --package=python3-mrpt
 
 
 override_dh_auto_build-indep:
@@ -120,3 +120,6 @@ override_dh_install:
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true
 	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js  || true
+
+override_dh_missing:
+	dh_missing --list-missing
