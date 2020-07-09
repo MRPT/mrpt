@@ -169,13 +169,14 @@ class Parameters
 		if (m.end() == it) return defaultValue;
 		try
 		{
-			return std::any_cast<T>(it->second);
+			return Parameters(internal::tag_as_const_proxy_t(), it->second, "")
+				.as<T>();
 		}
 		catch (const std::bad_any_cast& e)
 		{
 			throw std::logic_error(mrpt::format(
 				"getOrDefault(): Trying to access key `%s` holding type `%s` "
-				"as the wrong type: `%e`",
+				"as the wrong type: `%s`",
 				key.c_str(), it->second.type().name(), e.what()));
 		}
 	}

@@ -111,6 +111,7 @@ TEST(Parameters, initializerMap)
 
 	EXPECT_EQ(p.getOrDefault("K", 1.0), 2.0);
 	EXPECT_EQ(p.getOrDefault("Q", 1.0), 1.0);
+	EXPECT_EQ(p.getOrDefault<uint32_t>("K", 1), 2);
 
 	EXPECT_EQ(p.typeOfChild("book"), typeid(std::string));
 	EXPECT_EQ(p["book"].as<std::string>(), "silmarillion");
