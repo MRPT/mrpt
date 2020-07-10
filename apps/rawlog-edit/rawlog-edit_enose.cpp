@@ -9,6 +9,7 @@
 
 #include "rawlog-edit-declarations.h"
 
+#include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 
 using namespace mrpt;
@@ -122,12 +123,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 				::fprintf(f_this, "%3.4f ", temp);
 
 				// For each sensor on the E-nose
-				for (auto it = m_reading.readingsVoltage.begin();
-					 it != m_reading.readingsVoltage.end(); ++it)
-					::fprintf(f_this, "%5.5f ", *it);
-
-				// Separation between different e-noses in the observation
-				//::fprintf(f_this, "# ");
+				mrpt::containers::printSTLContainer(m_reading.readingsVoltage);
 			}
 
 			::fprintf(f_this, "\n");
