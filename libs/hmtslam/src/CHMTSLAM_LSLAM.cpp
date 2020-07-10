@@ -1589,8 +1589,6 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	{
 		std::lock_guard<std::mutex> lock(m_map_cs);
 
-		const CHMHMapNode::TNodeID curAreaID =
-			LMH->m_nodeIDmemberships[LMH->m_currentRobotPose];
 		currentArea = m_map.getNodeByID(curAreaID);
 
 		TPoseID refPoseCurArea_accordingAnnot;
@@ -2003,7 +2001,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 			//  2) Just keep the most likely one (***** CHOICE, FOR NOW!!!
 			//  *****)
 			// --------------------------------------------------------
-			static CTicTac tictac;
+			static CTicTac tictac2;
 			logFmt(
 				mrpt::system::LVL_INFO,
 				"[LSLAM_proc_msg_TBI] Accepting TLC of areas: %u <-> %u  with "
@@ -2011,7 +2009,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 				(unsigned)currentArea, (unsigned)candidate->first,
 				lstModesAndCompats.rbegin()->first);
 
-			tictac.Tic();
+			tictac2.Tic();
 			this->perform_TLC(
 				m_LMHs[myMsg.hypothesisID],
 				currentArea,  // Area in the LMH
@@ -2022,7 +2020,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 				"[LSLAM_proc_msg_TBI] TLC of areas %u <-> %u  - DONE in %.03f "
 				"ms\n",
 				(unsigned)currentArea, (unsigned)candidate->first,
-				1e3 * tictac.Tac());
+				1e3 * tictac2.Tac());
 
 			// The old area "myMsg.cur_area" is now "candidate->first"
 			alreadyClosedLoops[myMsg.cur_area] = candidate->first;

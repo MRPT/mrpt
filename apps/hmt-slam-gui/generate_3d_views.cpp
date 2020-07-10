@@ -74,11 +74,11 @@ void hmt_slam_guiFrame::updateLocalMapView()
 		// Draw a grid on the ground:
 		// -------------------------------------------
 		{
-			opengl::CGridPlaneXY::Ptr obj =
+			opengl::CGridPlaneXY::Ptr grid =
 				std::make_shared<opengl::CGridPlaneXY>(
 					-100, 100, -100, 100, 0, 5);
-			obj->setColor(0.4f, 0.4f, 0.4f);
-			objs->insert(obj);  // it will free the memory
+			grid->setColor(0.4f, 0.4f, 0.4f);
+			objs->insert(grid);  // it will free the memory
 		}
 
 		// Two passes: 1st draw the map on the ground, then the rest.
@@ -89,13 +89,13 @@ void hmt_slam_guiFrame::updateLocalMapView()
 
 			for (size_t nSelItem = 0; nSelItem < nSel; nSelItem++)
 			{
-				CItemData* data1 = static_cast<CItemData*>(
+				CItemData* datai = static_cast<CItemData*>(
 					treeView->GetItemData(lstSelect.Item(nSelItem)));
-				if (!data1) continue;
-				if (!data1->m_ptr) continue;
+				if (!datai) continue;
+				if (!datai->m_ptr) continue;
 
 				CHMHMapNode::Ptr area =
-					std::dynamic_pointer_cast<CHMHMapNode>(data1->m_ptr);
+					std::dynamic_pointer_cast<CHMHMapNode>(datai->m_ptr);
 				if (!area) continue;
 
 				// Is this the first rendered area??

@@ -33,9 +33,9 @@ DECLARE_OP_FUNCTION(op_undistort)
 	   public:
 		CRawlogProcessor_Undistort(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
+			bool Verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
 			: CRawlogProcessorFilterObservations(
-				  in_rawlog, cmdline, verbose, out_rawlog)
+				  in_rawlog, cmdline, Verbose, out_rawlog)
 		{
 		}
 

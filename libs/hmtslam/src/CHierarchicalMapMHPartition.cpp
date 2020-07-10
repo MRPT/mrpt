@@ -1471,7 +1471,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			}
 			else if (ann->name == ARC_ANNOTATION_DELTA_TRG_POSEID)
 			{
-				TPoseID refID;
+				TPoseID refID = 0;
 				m_arc->m_annotations.getElemental(
 					ARC_ANNOTATION_DELTA_TRG_POSEID, refID, ann->ID);
 				st.push_back(format("     VALUE: %i", (int)refID));

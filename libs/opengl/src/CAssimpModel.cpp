@@ -255,7 +255,9 @@ CAssimpModel::TImplAssimp::~TImplAssimp()
 #endif
 }
 
-bool CAssimpModel::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
+bool CAssimpModel::traceRay(
+	[[maybe_unused]] const mrpt::poses::CPose3D& o,
+	[[maybe_unused]] double& dist) const
 {
 	// TODO
 	return false;
@@ -363,7 +365,7 @@ static void recursive_render(
 	const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
 	RenderElements& re)
 {
-	aiMatrix4x4 m = nd->mTransformation;
+	const aiMatrix4x4& m = nd->mTransformation;
 
 	// update transform
 	const auto nodeTransf = mrpt::poses::CPose3D(aiMatrix_to_mrpt(m));
