@@ -77,12 +77,14 @@ jobs:
             TASK: lint_all
   macos:
     macos:
-      xcode: "10.2.0"
+      xcode: "11.5.0"
     working_directory: /Users/distiller/project
     steps:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
+      - run: brew update
+      - run: brew upgrade
       - run: brew install cmake
       - run: brew install boost
       - run: brew install nasm
