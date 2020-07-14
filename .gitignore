@@ -38,5 +38,4 @@ doc/source/page_*
 doc/source/union_*
 doc/source/global.rst
 doc/source/doxygen-index.rst
-
 .cmake
