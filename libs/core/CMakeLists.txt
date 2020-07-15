@@ -14,6 +14,8 @@ if(BUILD_mrpt-core)
 		$<INSTALL_INTERFACE:include>
 	)
 
+	target_link_libraries(core PRIVATE Threads::Threads) # for WorkerThreads
+
 	# Enforce C++17 in all dependent projects:
 	mrpt_lib_target_requires_cpp17(core)
 
