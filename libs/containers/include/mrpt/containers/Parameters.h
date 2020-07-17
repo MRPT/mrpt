@@ -116,15 +116,16 @@ class Parameters
 	bool empty() const;
 	void clear();
 
+	bool isEmptyNode() const;
+	bool isScalar() const;
 	bool isSequence() const;
+	bool isMap() const;
+
 	sequence_t& asSequence();
 	const sequence_t& asSequence() const;
 
-	bool isMap() const;
 	map_t& asMap();
 	const map_t& asMap() const;
-
-	bool isScalar() const;
 
 	void printAsYAML(std::ostream& o) const;
 	void printAsYAML() const;  //!< prints to std::cout
