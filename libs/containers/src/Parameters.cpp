@@ -416,7 +416,12 @@ Parameters Parameters::FromYAML(const YAML::Node& n)
 
 		for (const auto& e : n)
 		{
-			if (e.IsScalar())
+			if (e.IsNull())
+			{
+				sequence_t& seq = std::get<sequence_t>(ret.data_);
+				seq.emplace_back();
+			}
+			else if (e.IsScalar())
 			{
 				if (double v = e.as<double>(invalidDbl); v != invalidDbl)
 					ret.push_back(v);
@@ -440,7 +445,12 @@ Parameters Parameters::FromYAML(const YAML::Node& n)
 			const auto& key = kv.first.as<std::string>();
 			const auto& val = kv.second;
 
-			if (val.IsScalar())
+			if (val.IsNull())
+			{
+				map_t& m = std::get<map_t>(ret.data_);
+				m[key];
+			}
+			else if (val.IsScalar())
 			{
 				if (double v = val.as<double>(invalidDbl); v != invalidDbl)
 					ret[key] = v;
