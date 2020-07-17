@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
+#include "containers-precomp.h"	 // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/Parameters.h>
@@ -52,6 +52,22 @@ bool Parameters::isScalar() const
 {
 	auto p = internalMeOrValue();
 	return (p->isProxy_ || p->isConstProxy_);
+}
+bool Parameters::isEmptyNode() const
+{
+	auto p = internalMeOrValue();
+
+	if (p->isConstProxy_)
+	{
+		ASSERT_(p->value_);
+		return !p->value_->has_value();
+	}
+	if (p->isProxy_)
+	{
+		ASSERT_(p->valuenc_);
+		return !p->valuenc_->has_value();
+	}
+	return false;
 }
 
 bool Parameters::isMap() const

@@ -282,9 +282,11 @@ mySeq:
   - "first"
   - "second"
   - "third"
+  - ~
 myMap:
   K: 10.0
   P: -5.0
+  Q: ~
 )xxx");
 // clang-format on
 
@@ -294,5 +296,15 @@ TEST(Parameters, fromYAML)
 	auto p = mrpt::containers::Parameters::FromYAMLText(sampleYamlBlock);
 	EXPECT_EQ(p["mySeq"](0).as<std::string>(), "first");
 	EXPECT_EQ(p["myMap"]["P"].as<double>(), -5.0);
+	EXPECT_EQ(p["myMap"]["K"].as<double>(), 10.0);
+
+	EXPECT_TRUE(p["mySeq"](3).isScalar());
+	EXPECT_TRUE(p["mySeq"](3).isEmptyNode());
+	EXPECT_TRUE(p["myMap"]["Q"].isScalar());
+	EXPECT_TRUE(p["myMap"]["Q"].isEmptyNode());
+
+	EXPECT_FALSE(p.isEmptyNode());
+	EXPECT_FALSE(p["myMap"].isEmptyNode());
+	EXPECT_FALSE(p["myMap"]["K"].isEmptyNode());
 }
 #endif
