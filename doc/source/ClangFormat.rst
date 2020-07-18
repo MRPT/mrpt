@@ -88,10 +88,10 @@ ClangFormat configuration while concurrently modifying/adding code.
 The plugin of your choice should:
 
 - Format code based on the `.clang-format` file placed in the MRPT root
-    directory.
-- Use the ClangFormat version especified at the top of this page. This is 
-because part of the configuration directives are not compatible with 
-previous ClangFormat versions.
+  directory.
+- Use the ClangFormat version especified at the top of this page. This is
+  because part of the configuration directives are not compatible with
+  previous ClangFormat versions.
 
 Refer to the docs of the corresponding plugin for tweaking its behavior.
 Also, do check the `MRPT Coding style <https://github.com/MRPT/mrpt/blob/master/doc/MRPT_Coding_Style.md>`_
@@ -103,4 +103,3 @@ Past discussion links
 - `Discussion issue <https://github.com/MRPT/mrpt/issues/520>`_
 - `Pull-Request <https://github.com/MRPT/mrpt/pull/556>`_
 - `Pull-Request #2 <https://github.com/MRPT/mrpt/pull/559>`_
-
