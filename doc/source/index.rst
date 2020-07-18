@@ -5,9 +5,10 @@ MRPT
 .. toctree::
   :maxdepth: 2
   :hidden:
-  
+
   install
   compiling
+  download-mrpt
   modules
   tutorials
   contributing
@@ -27,10 +28,10 @@ employed in common robotics research areas.
 It is open source, released under the `BSD license <license.html>`_.
 
 
-Set it up
-------------
+Get it
+--------
 
-- :ref:`install`: for installing binaries for Linux or Windows.
+- :ref:`downloadmrpt`: for installing for Linux or Windows.
 - :ref:`compiling`: to build from sources.
 
 Where to start
@@ -42,7 +43,7 @@ Where to start
 - Ask questions at the mail list `mrpt-users@googlegroups.com <https://groups.google.com/forum/#!forum/mrpt-users>`_ or at `stackoverflow <https://stackoverflow.com/search?q=mrpt>`_  using the tag `mrpt`.
 - ROS packages: `mrpt_navigation <https://wiki.ros.org/mrpt_navigation>`_, `mrpt_slam <https://wiki.ros.org/mrpt_slam>`_.
 - `Bindings documentation <https://github.com/MRPT/mrpt/wiki>`_ (Python, Matlab)
-- Example configuration files for  MRPT applications can be found at: 
+- Example configuration files for  MRPT applications can be found at:
   `MRPT/share/mrpt/config_files <https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files>`_.
 - Some sample datasets are stored in:
   `MRPT/share/mrpt/datasets <https://github.com/MRPT/mrpt/tree/master/share/mrpt/datasets>`_.

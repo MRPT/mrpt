@@ -4,6 +4,8 @@
 Range-only Localization and Mapping Solutions
 =================================================
 
+.. contents:: :local:
+
 Range-only SLAM
 ====================
 
@@ -16,7 +18,7 @@ requires a decent odometry as input, which can comprise 2D or 3D robot motion
 actions.
 
 Range-only Localization
-====================
+==========================
 
 There are two implementations:
 
