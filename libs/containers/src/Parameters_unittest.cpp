@@ -299,12 +299,17 @@ TEST(Parameters, fromYAML)
 	EXPECT_EQ(p["myMap"]["K"].as<double>(), 10.0);
 
 	EXPECT_TRUE(p["mySeq"](3).isScalar());
-	EXPECT_TRUE(p["mySeq"](3).isEmptyNode());
 	EXPECT_TRUE(p["myMap"]["Q"].isScalar());
-	EXPECT_TRUE(p["myMap"]["Q"].isEmptyNode());
 
 	EXPECT_FALSE(p.isEmptyNode());
 	EXPECT_FALSE(p["myMap"].isEmptyNode());
+
+// Avoid a bug in yamlcpp < 0.6.2
+// see: https://github.com/jbeder/yaml-cpp/issues/590
+#if MRPT_YAMLCPP_VERSION >= 0x062
+	EXPECT_TRUE(p["mySeq"](3).isEmptyNode());
+	EXPECT_TRUE(p["myMap"]["Q"].isEmptyNode());
 	EXPECT_FALSE(p["myMap"]["K"].isEmptyNode());
+#endif
 }
 #endif
