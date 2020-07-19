@@ -6,13 +6,13 @@ MRPT
   :maxdepth: 2
   :hidden:
 
-  install
   compiling
   download-mrpt
   modules
   tutorials
   contributing
   doxygen-index
+  license
 
 .. image:: https://mrpt.github.io/imgs/mrpt-videos-mix2.gif
    :alt: MRPT demo usages
@@ -25,7 +25,7 @@ portable and well-tested `applications <applications.html>`_ and
 `libraries <modules.html>`_ covering data structures and algorithms
 employed in common robotics research areas.
 
-It is open source, released under the `BSD license <license.html>`_.
+It is open source, released under the `3-clause BSD license <license.html>`_.
 
 
 Get it
@@ -56,10 +56,10 @@ You may also want to see
 
 - The `ChangeLog <page_changelog.html>`_ for this version.
 - Performance benchmarks: Extensive performance tests are automated by means of the application `mrpt-performance`, which was moved (2018)
-to `its own Git repository <https://github.com/MRPT/mrpt-performance-tests>`_. The results on different platforms, as well as a comparison between different
-compilers and platforms are published in https://performance.mrpt.org/
+  to `its own Git repository <https://github.com/MRPT/mrpt-performance-tests>`_. The results on different platforms, as well as a comparison between different
+  compilers and platforms are published in https://performance.mrpt.org/
+- `Porting your code from MRPT 1.x to MRPT 2.x <porting_mrpt2.html>`_
 - MRPT is used in the `MOLA modular SLAM framework <https://github.com/MOLAorg/mola/>`_.
-
 
 Indices and tables
 ---------------------------

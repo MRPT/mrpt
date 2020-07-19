@@ -24,8 +24,8 @@ if compound.compoundKind == "namespace" or compound.compoundKind == "group" then
 	functionSectionName = "Global Functions"
 	indent = ""
 else
-	variableSectionName = "Fields"
-	functionSectionName = "Methods"
+	variableSectionName = "\nFields"
+	functionSectionName = "\nMethods"
 	indent = "\t"
 end
 
