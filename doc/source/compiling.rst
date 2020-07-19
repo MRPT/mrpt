@@ -13,7 +13,7 @@ binaries for your system or install via ``apt`` in Ubuntu.
 
 
 1. Dependencies
---------------
+-----------------
 
 Check out `this page <dependencies.html>`_ to find out what are needed for each
 of the MRPT build dependencies (opencv, wxWidgets,...) to decide if you need
@@ -22,7 +22,7 @@ them for your applications.
 
 
 2. Build using cmake
--------------------
+----------------------
 
 Using the console
 ~~~~~~~~~~~~~~~~~~~
@@ -48,7 +48,7 @@ Using cmake-gui
 - Click on "open project" and build as usual.
 
 3. CMake build options
----------------------
+------------------------
 For all platforms/compilers:
 
 - ``BUILD_APPLICATIONS`` : By default ON, if unchecked the applications won’t be built. Useful if you only want to build MRPT libraries. Notice that you can also always use the MRPT_BUILD_DIR/libs/MRPT_ALL_LIB.* solution (or Makefile) to achieve the same.

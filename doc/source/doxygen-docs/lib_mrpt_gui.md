@@ -18,22 +18,22 @@ specific specialized purpose:
 
  - mrpt::gui::CDisplayWindow: Displays 2D bitmap images, and
 optionally sets of points over them, etc.
-   ![mrpt::gui::CDisplayWindow screenshot](preview_CDisplayWindow.jpg)
+   ![mrpt::gui::CDisplayWindow screenshot](images/preview_CDisplayWindow.jpg)
 
  - mrpt::gui::CDisplayWindow3D: A powerful 3D rendering window capable of
 displaying a mrpt::opengl::COpenGLScene, or efficiently displaying 2D images
 using graphics card acceleration. It features mouse navigation, Alt+Enter
 fullscreen switching, multiple viewports, etc. See [this
 tutorial](https://www.mrpt.org/Tutorial_3D_Scenes).
-   ![mrpt::gui::CDisplayWindow3D screenshot](preview_CDisplayWindow3D.png)
+   ![mrpt::gui::CDisplayWindow3D screenshot](images/preview_CDisplayWindow3D.png)
 
  - mrpt::gui::CDisplayWindowPlots: Displays one or more 2D vectorial graphs,
 in a manner very similar to MATLAB "plot" commands.
-   ![mrpt::gui::CDisplayWindowPlots screenshot](preview_CDisplayWindowPlots.png)
+   ![mrpt::gui::CDisplayWindowPlots screenshot](images/preview_CDisplayWindowPlots.png)
 
  - mrpt::gui::CDisplayWindowGUI: UI capable of complex controls, subwindows,
 menus, etc. powered by the nanogui library.
- ![mrpt::gui::CDisplayWindowGUI screenshot](preview_CDisplayWindowGUI.png)
+ ![mrpt::gui::CDisplayWindowGUI screenshot](images/preview_CDisplayWindowGUI.png)
 
 
 All these window classes inherits from mrpt::gui::CBaseGUIWindow, which provides
