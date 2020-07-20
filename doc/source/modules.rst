@@ -16,17 +16,20 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
   :maxdepth: 2
 
   group_mrpt_core_grp.rst
-  group_mrpt_base_grp.rst
   group_mrpt_bayes_grp.rst
   group_mrpt_comms_grp.rst
+  group_mrpt_config_grp.rst
+  group_mrpt_containers_grp.rst
   group_mrpt_core_grp.rst
   group_mrpt_detectors_grp.rst
+  group_mrpt_expr_grp.rst
   group_mrpt_graphs_grp.rst
   group_mrpt_graphslam_grp.rst
   group_mrpt_gui_grp.rst
   group_mrpt_hmtslam_grp.rst
   group_mrpt_hwdrivers_grp.rst
   group_mrpt_img_grp.rst
+  group_mrpt_io_grp.rst
   group_mrpt_kinematics_grp.rst
   group_mrpt_maps_grp.rst
   group_mrpt_math_grp.rst

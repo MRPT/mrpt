@@ -15,10 +15,50 @@ binaries for your system or install via ``apt`` in Ubuntu.
 1. Dependencies
 -----------------
 
-Check out `this page <dependencies.html>`_ to find out what are needed for each
-of the MRPT build dependencies (opencv, wxWidgets,...) to decide if you need
-them for your applications.
+Minimum compiler requisites:
 
+- gcc-7 or newer. Only for Ubuntu 16.04LTS Xenial, you will have to
+  follow `these instructions <https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5>`_ for
+  installing gcc-7 in this version of Ubuntu.
+
+- clang-4 or newer.
+- Windows: Visual Studio 2017 version 15.3 or newer.
+- cmake >= 3.3 required (>=3.4 for Windows).
+- Eigen >= 3.3 required.
+
+Quick ``apt install`` lists
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Minimum** recommended requisites:
+
+.. code-block:: bash
+
+   sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev \
+        libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev libgtest-dev
+
+**Recommended additional** packages to enable most MRPT features
+(except ROS bridges):
+
+.. code-block:: bash
+
+   sudo apt install libftdi-dev freeglut3-dev zlib1g-dev \
+        libusb-1.0-0-dev libudev-dev libfreenect-dev libdc1394-22-dev \
+        libavformat-dev libswscale-dev libassimp-dev libjpeg-dev \
+        libsuitesparse-dev libpcap-dev liboctomap-dev libglfw3-dev
+
+
+Install additional dependencies for ros1bridge using official Ubuntu
+repositories. If you already have a ROS distribution installed,
+doing ``source /opt/ros/xxx/setup.bash`` is enough, no further packages
+must be installed. Do not install these packages if you do not need
+the `mrpt::ros1bridge <group_mrpt_ros1bridge_grp.html>`_ module.
+
+.. code-block:: bash
+
+   sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev \
+        librosbag-storage-dev libroscpp-dev libsensor-msgs-dev \
+		libstd-srvs-dev libstereo-msgs-dev libtf2-dev \
+		libtf2-msgs-dev libbz2-dev
 
 
 2. Build using cmake
@@ -36,6 +76,8 @@ The usual cmake stuff:
   cd build
   cmake ..
   cmake --build .
+  # To run tests:
+  make test_legacy  # or "make test" to see less details
 
 Using cmake-gui
 ~~~~~~~~~~~~~~~~~~~

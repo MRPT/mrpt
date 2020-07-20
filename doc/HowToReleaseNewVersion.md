@@ -12,7 +12,7 @@ After the new version seems good to go:
  * Do the final `git commit` to `develop` before the release.
  * Merge to `master`, then create the new tag. This follows the [git-flow pattern](https://nvie.com/posts/a-successful-git-branching-model/):
 
-![Git-flow pattern](design_of_images/git-flow-pattern.png)
+![Git-flow pattern](images/git-flow-pattern.png)
 
 ## 2) Create source packages
 
