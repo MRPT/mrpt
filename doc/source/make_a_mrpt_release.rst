@@ -33,10 +33,16 @@ via AppVeyor CI.
 
 - Go to mrpt_debian/debian
 - Edit changelog
-- Go to mrpt_debian
-- ``debuild -S -sa``
+- Build package:
 
-Test with: ``lintian *.changes``
+.. code-block: bash
+
+   cd ~/mrpt_debian/
+   gpg --armor --detach-sign  mrpt_*.tar.xz
+   cd mrpt-*
+   debuild -S -sa
+   cd ..
+   lintian *.changes
 
 3) Test build in Debian Unstable
 ---------------------------------------
