@@ -2,129 +2,129 @@ digraph MRPT_LIBS {
 
 	node [shape=box,style=filled, fillcolor="#D0D0D0"];
 
-	apps [label="mrpt-apps",URL="group__mrpt__bayes__grp.html"];
+	apps [label="mrpt-apps",URL="group_mrpt_bayes_grp.html"];
 	apps -> gui;
 	apps -> slam;
 	apps -> hwdrivers;
 	apps -> graphslam;
 	apps -> hmtslam;
 
-	bayes [label="mrpt-bayes",URL="group__mrpt__bayes__grp.html"];
+	bayes [label="mrpt-bayes",URL="group_mrpt_bayes_grp.html"];
 	bayes -> math;
 	bayes -> config;
 
-	comms [label="mrpt-comms",URL="group__mrpt__comms__grp.html"];
+	comms [label="mrpt-comms",URL="group_mrpt_comms_grp.html"];
 	comms -> io;
 
-	config   [label="mrpt-config",URL="group__mrpt__config__grp.html"];
+	config   [label="mrpt-config",URL="group_mrpt_config_grp.html"];
 	config -> expr;
 	config -> system;
 
-	containers  [label="mrpt-containers",URL="group__mrpt__containers__grp.html"];
+	containers  [label="mrpt-containers",URL="group_mrpt_containers_grp.html"];
 	containers -> core;
 
 	{ rank = sink;
-	core       [label="mrpt-core",URL="group__mrpt__core__grp.html"];
+	core       [label="mrpt-core",URL="group_mrpt_core_grp.html"];
 	}
 
-	detectors  [label="mrpt-detectors",URL="group__mrpt__detectors__grp.html"];
+	detectors  [label="mrpt-detectors",URL="group_mrpt_detectors_grp.html"];
 	detectors -> gui;
 	detectors -> slam;
 
-	expr       [label="mrpt-expr",URL="group__mrpt__expr__grp.html"];
+	expr       [label="mrpt-expr",URL="group_mrpt_expr_grp.html"];
 	expr -> system;
 
-	graphs     [label="mrpt-graphs",URL="group__mrpt__graphs__grp.html"];
+	graphs     [label="mrpt-graphs",URL="group_mrpt_graphs_grp.html"];
 	graphs -> opengl;
 
-	graphslam  [label="mrpt-graphslam",URL="group__mrpt__graphslam__grp.html"];
+	graphslam  [label="mrpt-graphslam",URL="group_mrpt_graphslam_grp.html"];
 	graphslam -> gui;
 	graphslam -> slam;
 
-	gui        [label="mrpt-gui",URL="group__mrpt__gui__grp.html"];
+	gui        [label="mrpt-gui",URL="group_mrpt_gui_grp.html"];
 	gui -> opengl;
 
-	hmtslam    [label="mrpt-hmtslam",URL="group__mrpt__hmtslam__grp.html"];
+	hmtslam    [label="mrpt-hmtslam",URL="group_mrpt_hmtslam_grp.html"];
 	hmtslam -> graphslam;
 
-	hwdrivers  [label="mrpt-hwdrivers",URL="group__mrpt__hwdrivers__grp.html"];
+	hwdrivers  [label="mrpt-hwdrivers",URL="group_mrpt_hwdrivers_grp.html"];
 	hwdrivers -> comms;
 	hwdrivers -> gui;
 	hwdrivers -> maps;
 	hwdrivers -> vision;
 
-	img [label="mrpt-img",URL="group__mrpt__img__grp.html"];
+	img [label="mrpt-img",URL="group_mrpt_img_grp.html"];
 	img  -> io;
 	img  -> math;
 	img  -> config;
 
-	io [label="mrpt-io",URL="group__mrpt__io__grp.html"];
+	io [label="mrpt-io",URL="group_mrpt_io_grp.html"];
 	io  -> system;
 
-	kinematics [label="mrpt-kinematics",URL="group__mrpt__kinematics__grp.html"];
+	kinematics [label="mrpt-kinematics",URL="group_mrpt_kinematics_grp.html"];
 	kinematics -> opengl;
 
-	maps       [label="mrpt-maps",URL="group__mrpt__maps__grp.html"];
+	maps       [label="mrpt-maps",URL="group_mrpt_maps_grp.html"];
 	maps -> graphs;
 	maps -> obs;
 
-	math       [label="mrpt-math",URL="group__mrpt__math__grp.html"];
+	math       [label="mrpt-math",URL="group_mrpt_math_grp.html"];
 	math -> serialization;
 	math -> random;
 	math -> system;
 	math -> nanoflann;
 
 	{ rank = sink;
-	nanoflann  [label="mrpt-nanoflann",URL="group__nanoflann__grp.html"];
+	nanoflann  [label="mrpt-nanoflann",URL="group_nanoflann_grp.html"];
 	}
 
-	nav        [label="mrpt-nav",URL="group__mrpt__nav__grp.html"];
+	nav        [label="mrpt-nav",URL="group_mrpt_nav_grp.html"];
 	nav -> kinematics;
 	nav -> maps;
 
-	obs        [label="mrpt-obs",URL="group__mrpt__obs__grp.html"];
+	obs        [label="mrpt-obs",URL="group_mrpt_obs_grp.html"];
 	obs -> opengl;
 	obs -> tfest;
 
-	opengl     [label="mrpt-opengl", URL="group__mrpt__opengl__grp.html"];
+	opengl     [label="mrpt-opengl", URL="group_mrpt_opengl_grp.html"];
 	opengl -> poses;
 	opengl -> img;
 
-	poses     [label="mrpt-poses",URL="group__mrpt__poses__grp.html"];
+	poses     [label="mrpt-poses",URL="group_mrpt_poses_grp.html"];
 	poses -> bayes;
 
 	{ rank = sink;
-	random     [label="mrpt-random",URL="group__mrpt__random__grp.html"];
+	random     [label="mrpt-random",URL="group_mrpt_random_grp.html"];
 	}
 
-	rtti     [label="mrpt-rtti",URL="group__mrpt__rtti__grp.html"];
+	rtti     [label="mrpt-rtti",URL="group_mrpt_rtti_grp.html"];
 	rtti -> core;
 	rtti -> typemeta;
 
-	ros1bridge   [label="mrpt-ros1bridge", URL="group__mrpt__ros1bridge__grp.html"];
+	ros1bridge   [label="mrpt-ros1bridge", URL="group_mrpt_ros1bridge_grp.html"];
 	ros1bridge -> maps;
 
-	serialization [label="mrpt-serialization",URL="group__mrpt__serialization__grp.html"];
+	serialization [label="mrpt-serialization",URL="group_mrpt_serialization_grp.html"];
 	serialization -> rtti;
 
-	slam       [label="mrpt-slam",URL="group__mrpt__slam__grp.html"];
+	slam       [label="mrpt-slam",URL="group_mrpt_slam_grp.html"];
 	slam -> maps;
 	slam -> vision;
 
-	system     [label="mrpt-system",URL="group__mrpt__system__grp.html"];
+	system     [label="mrpt-system",URL="group_mrpt_system_grp.html"];
 	system -> typemeta;
 	system -> containers;
 
-	tfest      [label="mrpt-tfest",URL="group__mrpt__tfest__grp.html"];
+	tfest      [label="mrpt-tfest",URL="group_mrpt_tfest_grp.html"];
 	tfest -> poses;
 
-	topography [label="mrpt-topography",URL="group__mrpt__topography__grp.html"];
+	topography [label="mrpt-topography",URL="group_mrpt_topography_grp.html"];
 	topography -> obs;
 
 	{ rank = sink;
-	typemeta [label="mrpt-typemeta (.h)",URL="group__mrpt__typemeta__grp.html"];
+	typemeta [label="mrpt-typemeta (.h)",URL="group_mrpt_typemeta_grp.html"];
 	}
 
-	vision     [label="mrpt-vision",URL="group__mrpt__vision__grp.html"];
+	vision     [label="mrpt-vision",URL="group_mrpt_vision_grp.html"];
 	vision -> obs;
 }
