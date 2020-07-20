@@ -10,7 +10,7 @@ export MRPT_DOX_INPUT_DIRS := $(shell for f in ../libs/*; do printf "$$(realpath
 
 # Use to quickly test the documentation scripts:
 ifeq ($(MRPT_DOCS_FAST_TEST),1)
-export MRPT_DOX_INPUT_DIRS := $(shell realpath ../libs/core)
+export MRPT_DOX_INPUT_DIRS := $(shell realpath ../libs/gui)
 endif
 
 
@@ -48,3 +48,7 @@ html:
 	rm source/page_index.rst 2>/dev/null || true
 	# 3) RST -> HTML with Sphinx
 	sphinx-build -b html source/ html/
+	# 4) Copy images:
+	# Doxygen has this limitation, images cannot be parsed into XML/HTML with
+	# a relative path, so we must copy them to the root directory.
+	cp source/images/* html/
