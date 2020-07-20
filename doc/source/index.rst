@@ -6,11 +6,11 @@ MRPT
   :maxdepth: 2
   :hidden:
 
+  tutorials
   compiling
+  applications
   download-mrpt
   modules
-  applications
-  tutorials
   contributing
   doxygen-index
   license

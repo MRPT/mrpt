@@ -29,11 +29,11 @@ tutorial](https://www.mrpt.org/Tutorial_3D_Scenes).
 
  - mrpt::gui::CDisplayWindowPlots: Displays one or more 2D vectorial graphs,
 in a manner very similar to MATLAB "plot" commands.
-   ![mrpt::gui::CDisplayWindowPlots screenshot](preview_CDisplayWindowPlots.png)
+   ![mrpt::gui::CDisplayWindowPlots screenshot](_static/preview_CDisplayWindowPlots.png)
 
  - mrpt::gui::CDisplayWindowGUI: UI capable of complex controls, subwindows,
 menus, etc. powered by the nanogui library.
- ![mrpt::gui::CDisplayWindowGUI screenshot](preview_CDisplayWindowGUI.png)
+ ![mrpt::gui::CDisplayWindowGUI screenshot](_static/preview_CDisplayWindowGUI.png)
 
 
 All these window classes inherits from mrpt::gui::CBaseGUIWindow, which provides
