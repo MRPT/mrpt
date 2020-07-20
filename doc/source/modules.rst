@@ -15,6 +15,7 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
 .. toctree::
   :maxdepth: 2
 
+  group_mrpt_apps_grp.rst
   group_mrpt_core_grp.rst
   group_mrpt_bayes_grp.rst
   group_mrpt_comms_grp.rst
