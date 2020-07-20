@@ -9,8 +9,7 @@ MRPT is split into a set of independent libraries for the sake of modularity.
 Click on a module name on the tree view to open its documentation.
 Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
 
-.. $MRPT_LIBS_DOT
-.. `This page <https://www.mrpt.org/Libraries_tree_layout>`_ explains the library directory layout.
+.. graphviz:: images/graph_mrpt_libs.dot
 
 .. toctree::
   :maxdepth: 2
