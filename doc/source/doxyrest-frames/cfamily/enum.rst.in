@@ -34,6 +34,7 @@ local hasDetails =
 
 if hasDetails then
 }
+
 Overview
 ~~~~~~~~
 
@@ -83,6 +84,7 @@ end -- if
 
 if enumStats.hasDocumentedEnumValues then
 }
+
 Enum Values
 -----------
 

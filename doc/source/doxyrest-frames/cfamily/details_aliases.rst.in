@@ -13,6 +13,7 @@
 local argArray = table.pack(...)
 local compound = argArray[1]
 }
+
 Aliases
 -------
 

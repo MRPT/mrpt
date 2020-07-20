@@ -38,7 +38,8 @@ release = u'v{VER}'.format(VER=os.environ['MRPT_VERSION_STR'])
 # ones.
 extensions = [
     'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig'
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.graphviz'
 ]
 
 extensions += ['doxyrest', 'cpplexer']
