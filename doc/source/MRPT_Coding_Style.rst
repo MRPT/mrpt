@@ -45,16 +45,16 @@ More specifically:
 
   .. code-block:: vim
 
-    set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<
-    set list
+     set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<
+     set list
 
 * Change the default editor settings so that you:
 
-  * Use 1 tab for indentation
+   * Use 1 tab for indentation
 
-    * Use an additional tab for *hanging indentation* (e.g. for open parenthesis
+      * Use an additional tab for *hanging indentation* (e.g. for open parenthesis
         cases)
-    * Use spaces for splitting words in the same line, aligning code snippets
+      * Use spaces for splitting words in the same line, aligning code snippets
         etc.
 
 In the following example `>.` designates a tab character. If the latter is not
@@ -83,9 +83,9 @@ Misc
 ======
 
 * **Never**, **ever**, put a `using namespace XXX;` in a header file, since it
-    will pollute without control user namespaces. An exception is its use
-    **inside** the scope of a function implementation in a header, e.g. an
-    inline function or method.
+  will pollute without control user namespaces. An exception is its use
+  **inside** the scope of a function implementation in a header, e.g. an
+  inline function or method.
 
 * Member variables of a `struct` should have **no** suffix or prefix, e.g:
 
@@ -96,8 +96,8 @@ Misc
     };
 
 * Public variable of a `class` should have **no** suffic or prefix.
-    Private/protected members should have the `m_` prefix or, alternatively, the
-    `_` suffix. For *methods*, use **lower camel case** or K&R style, e.g.
+  Private/protected members should have the `m_` prefix or, alternatively, the
+  `_` suffix. For *methods*, use **lower camel case** or K&R style, e.g.
 
     .. code-block:: cpp
 
@@ -111,7 +111,7 @@ Misc
       };
 
 * In general, `typedefs` and `using` will use lowercase with underscores, e.g.
-   `using vector_int = std::vector<int>;`
+  `using vector_int = std::vector<int>;`
 
 * If a packed structure is defined (i.e. `#pragma pack(push,1) ... #pragma pack(pop)`),
   it will be much safer to make all fields protected and offer accessor methods.

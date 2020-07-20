@@ -9,6 +9,7 @@ MRPT
   compiling
   download-mrpt
   modules
+  applications
   tutorials
   contributing
   doxygen-index
