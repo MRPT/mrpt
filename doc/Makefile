@@ -33,6 +33,11 @@ clean:
 all:
 	make html
 
+python-venv: requirements.txt
+	# Create virtual env for building the docs
+	virtualenv -p /usr/bin/python3 venv
+	bash -c "source venv/bin/activate && pip install -r requirements.txt"
+
 html-and-view:
 	make html
 	xdg-open html/index.html
@@ -43,11 +48,11 @@ html:
 	# 1) Build Doxygen
 	cd source && doxygen
 	# 2) Doxygen XML -> RST
-	cd source && doxyrest -c doxyrest-config.lua
+	cd source && bash -c "source ../venv/bin/activate && doxyrest -c doxyrest-config.lua"
 	# Remove main doc file created for nanoflann:
 	rm source/page_index.rst 2>/dev/null || true
 	# 3) RST -> HTML with Sphinx
-	sphinx-build -b html source/ html/
+	bash -c "source venv/bin/activate && sphinx-build -b html source/ html/"
 	# 4) Copy images:
 	# Doxygen has this limitation, images cannot be parsed into XML/HTML with
 	# a relative path, so we must copy them to the root directory.
