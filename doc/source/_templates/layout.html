@@ -1,9 +1,21 @@
 {% extends "!layout.html" %}
 
+{% block scripts %}
+{{ super() }}
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-21128561-10"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-21128561-10');
+</script>
+{% endblock %}
+
 {% block footer %}
 {{ super() }}
-<!-- Default Statcounter code for MRPT reference
-http://babel.isa.uma.es/mrpt/ -->
+<!-- Default Statcounter code for MRPT reference -->
 <script type="text/javascript">
 var sc_project=2835288;
 var sc_invisible=1;
@@ -12,10 +24,10 @@ var sc_security="862cd600";
 <script type="text/javascript"
 src="https://www.statcounter.com/counter/counter.js"
 async></script>
-<noscript><div class="statcounter"><a title="hit counter"
+<noscript><div class="statcounter"><a title="Web Analytics"
 href="https://statcounter.com/" target="_blank"><img
 class="statcounter"
 src="https://c.statcounter.com/2835288/0/862cd600/1/"
-alt="hit counter"></a></div></noscript>
+alt="Web Analytics"></a></div></noscript>
 <!-- End of Statcounter Code -->
 {% endblock %}

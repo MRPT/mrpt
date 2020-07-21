@@ -26,39 +26,44 @@ Minimum compiler requisites:
 - cmake >= 3.3 required (>=3.4 for Windows).
 - Eigen >= 3.3 required.
 
-Quick ``apt install`` lists
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Minimum** recommended requisites:
+.. dropdown:: Debian/Ubuntu
+    :open:
 
-.. code-block:: bash
+    **Minimum** recommended requisites:
 
-   sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev \
-        libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev libgtest-dev
+    .. code-block:: bash
 
-**Recommended additional** packages to enable most MRPT features
-(except ROS bridges):
+       sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev \
+            libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev libgtest-dev
 
-.. code-block:: bash
+    **Recommended additional** packages to enable most MRPT features
+    (except ROS bridges):
 
-   sudo apt install libftdi-dev freeglut3-dev zlib1g-dev \
-        libusb-1.0-0-dev libudev-dev libfreenect-dev libdc1394-22-dev \
-        libavformat-dev libswscale-dev libassimp-dev libjpeg-dev \
-        libsuitesparse-dev libpcap-dev liboctomap-dev libglfw3-dev
+    .. code-block:: bash
+
+       sudo apt install libftdi-dev freeglut3-dev zlib1g-dev \
+            libusb-1.0-0-dev libudev-dev libfreenect-dev libdc1394-22-dev \
+            libavformat-dev libswscale-dev libassimp-dev libjpeg-dev \
+            libsuitesparse-dev libpcap-dev liboctomap-dev libglfw3-dev
 
 
-Install additional dependencies for ros1bridge using official Ubuntu
-repositories. If you already have a ROS distribution installed,
-doing ``source /opt/ros/xxx/setup.bash`` is enough, no further packages
-must be installed. Do not install these packages if you do not need
-the `mrpt::ros1bridge <group_mrpt_ros1bridge_grp.html>`_ module.
+    Install additional dependencies for ros1bridge using official Ubuntu
+    repositories. If you already have a ROS distribution installed,
+    doing ``source /opt/ros/xxx/setup.bash`` is enough, no further packages
+    must be installed. Do not install these packages if you do not need
+    the `mrpt::ros1bridge <group_mrpt_ros1bridge_grp.html>`_ module.
 
-.. code-block:: bash
+    .. code-block:: bash
 
-   sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev \
-        librosbag-storage-dev libroscpp-dev libsensor-msgs-dev \
-		libstd-srvs-dev libstereo-msgs-dev libtf2-dev \
-		libtf2-msgs-dev libbz2-dev
+       sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev \
+            librosbag-storage-dev libroscpp-dev libsensor-msgs-dev \
+    		libstd-srvs-dev libstereo-msgs-dev libtf2-dev \
+    		libtf2-msgs-dev libbz2-dev
+
+.. dropdown:: Windows
+
+    Write me...
 
 
 2. Build using cmake
