@@ -5,6 +5,8 @@ Root directory for MRPT Sphinx documentation.
 ```
 # Install Sphinx & dependencies:
 pip install sphinx_rtd_theme
+
+pip install sphinx-panels
 ```
 
 Install doxyrest: [instructions](https://github.com/vovkos/doxyrest_b/blob/master/README.rst).

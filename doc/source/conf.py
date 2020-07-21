@@ -39,10 +39,11 @@ release = u'v{VER}'.format(VER=os.environ['MRPT_VERSION_STR'])
 extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
-    'sphinx.ext.graphviz'
+    'sphinx.ext.graphviz',
+    'doxyrest',
+    'cpplexer',
+    'sphinx_panels'
 ]
-
-extensions += ['doxyrest', 'cpplexer']
 
 # Show build time
 html_last_updated_fmt = '%H:%M, %b %d, %Y'
