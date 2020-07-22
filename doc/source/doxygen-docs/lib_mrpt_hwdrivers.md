@@ -20,4 +20,3 @@ handling specific proprietary protocols (SICK lasers, etc.).
 See the list of classes in mrpt::hwdrivers and the
 <b>list of supported sensors</b>
 in <a href="http://www.mrpt.org/Supported_hardware_and_sensors" >this page</a>.
-

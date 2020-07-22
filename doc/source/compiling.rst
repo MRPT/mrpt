@@ -25,7 +25,8 @@ Minimum compiler requisites:
 - Windows: Visual Studio 2017 version 15.3 or newer.
 - cmake >= 3.3 required (>=3.4 for Windows).
 - Eigen >= 3.3 required.
-
+- Other libraries: See :ref:`doxid-dependencies`
+- On SIMD optimizations, read: :ref:`doxid-simd`
 
 .. dropdown:: Debian/Ubuntu
     :open:

@@ -602,7 +602,7 @@ Demmel!)
 Application to parse raw dumps of a GPS (GNSS) receiver output.
       -
 [image2gridmap](http://www.mrpt.org/list-of-mrpt-apps/application-image2gridmap/):
-Small tool to import any image as an MRPT gridmap object file (*.gridmap).
+Small tool to import any image as an MRPT gridmap object file (`*.gridmap`).
       -
 [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/):
 Application to test, visualize and grab data from a live Velodyne sensor or from

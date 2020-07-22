@@ -127,4 +127,7 @@ digraph MRPT_LIBS {
 
 	vision     [label="mrpt-vision",URL="group_mrpt_vision_grp.html"];
 	vision -> obs;
+
+	visionlgpl     [label="mrpt-vision-lgpl",URL="group_mrpt_vision_lgpl_grp.html"];
+	visionlgpl -> vision;
 }
