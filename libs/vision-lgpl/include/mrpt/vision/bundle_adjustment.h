@@ -35,7 +35,7 @@
 namespace mrpt::vision
 {
 /** \defgroup bundle_adj Bundle-Adjustment methods
- * \ingroup mrpt_vision_grp
+ * \ingroup mrpt_vision_lgpl_grp
  */
 
 /** @name Bundle-Adjustment methods

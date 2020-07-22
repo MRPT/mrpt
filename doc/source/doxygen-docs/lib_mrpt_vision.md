@@ -7,8 +7,7 @@ Computer vision algorithms
 # Library `mrpt-vision`
 <small> [New in MRPT 2.0.0] </small>
 
-This library is part of MRPT but has no dependencies, so it can be installed
-in Debian-based systems with:
+This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-vision-dev
 

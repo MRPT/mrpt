@@ -12,6 +12,7 @@ MRPT
   download-mrpt
   modules
   contributing
+  page_changelog
   doxygen-index
   license
 
