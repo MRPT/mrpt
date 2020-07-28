@@ -5,16 +5,30 @@ MRPT
 .. toctree::
   :maxdepth: 2
   :hidden:
+  :caption: Get it
+
+  download-mrpt
+  compiling
+  license
+  page_changelog
+
+
+.. toctree::
+  :maxdepth: 2
+  :hidden:
+  :caption: Learn it
 
   tutorials
-  compiling
   applications
-  download-mrpt
+
+.. toctree::
+  :maxdepth: 2
+  :hidden:
+  :caption: Advanced
+
   modules
   contributing
-  page_changelog
   doxygen-index
-  license
 
 .. image:: https://mrpt.github.io/imgs/mrpt-videos-mix2.gif
    :alt: MRPT demo usages
