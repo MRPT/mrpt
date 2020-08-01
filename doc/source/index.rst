@@ -20,6 +20,7 @@ MRPT
 
   tutorials
   applications
+  supported-sensors
 
 .. toctree::
   :maxdepth: 2
