@@ -184,7 +184,7 @@ Derived MatrixBase<Scalar, Derived>::inverse() const
 {
 	ASSERT_EQUAL_(mbDerived().cols(), mbDerived().rows());
 	const auto N = mbDerived().cols();
-	const auto I = Derived::Identity(N);
+	const Derived I = Derived::Identity(N);
 	Derived inv(mrpt::math::UNINITIALIZED_MATRIX);
 	inv.resize(N, N);
 	inv.asEigen() = mbDerived().asEigen().lu().solve(I.asEigen()).eval();
@@ -196,7 +196,7 @@ Derived MatrixBase<Scalar, Derived>::inverse_LLt() const
 {
 	ASSERT_EQUAL_(mbDerived().cols(), mbDerived().rows());
 	const auto N = mbDerived().cols();
-	const auto I = Derived::Identity(N);
+	const Derived I = Derived::Identity(N);
 	Derived inv(mrpt::math::UNINITIALIZED_MATRIX);
 	inv.resize(N, N);
 	inv.asEigen() = mbDerived().asEigen().llt().solve(I.asEigen()).eval();
