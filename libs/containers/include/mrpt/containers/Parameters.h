@@ -250,9 +250,20 @@ class Parameters
 	template <typename T>
 	const T& asRef() const;
 
-	void operator=(const bool v);
-	void operator=(const double v);
-	void operator=(const uint64_t v);
+	void operator=(bool v);
+
+	void operator=(float v);
+	void operator=(double v);
+
+	void operator=(int8_t v);
+	void operator=(uint8_t v);
+	void operator=(int16_t v);
+	void operator=(uint16_t v);
+	void operator=(int32_t v);
+	void operator=(uint32_t v);
+	void operator=(int64_t v);
+	void operator=(uint64_t v);
+
 	void operator=(const std::string& v);
 	inline void operator=(const char* v) { operator=(std::string(v)); }
 	inline void operator=(const std::string_view& v)
@@ -262,8 +273,19 @@ class Parameters
 	Parameters& operator=(const Parameters& v);
 
 	inline operator bool() const { return as<bool>(); }
-	inline operator uint64_t() const { return as<uint64_t>(); }
+
 	inline operator double() const { return as<double>(); }
+	inline operator float() const { return as<float>(); }
+
+	inline operator int8_t() const { return as<int8_t>(); }
+	inline operator uint8_t() const { return as<uint8_t>(); }
+	inline operator int16_t() const { return as<int16_t>(); }
+	inline operator uint16_t() const { return as<uint16_t>(); }
+	inline operator int32_t() const { return as<int32_t>(); }
+	inline operator uint32_t() const { return as<uint32_t>(); }
+	inline operator int64_t() const { return as<int64_t>(); }
+	inline operator uint64_t() const { return as<uint64_t>(); }
+
 	inline operator std::string() const { return as<std::string>(); }
 
    private:

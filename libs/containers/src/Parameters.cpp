@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"	 // Precompiled headers
+#include "containers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/Parameters.h>
@@ -207,8 +207,23 @@ void Parameters::clear()
 	}
 }
 
-void Parameters::operator=(const double v) { implOpAssign(v); }
-void Parameters::operator=(const bool v) { implOpAssign(v); }
+void Parameters::operator=(bool v) { implOpAssign(v); }
+
+void Parameters::operator=(double v) { implOpAssign(v); }
+void Parameters::operator=(float v) { implOpAssign(v); }
+
+void Parameters::operator=(int8_t v) { implOpAssign(v); }
+void Parameters::operator=(uint8_t v) { implOpAssign(v); }
+
+void Parameters::operator=(int16_t v) { implOpAssign(v); }
+void Parameters::operator=(uint16_t v) { implOpAssign(v); }
+
+void Parameters::operator=(int32_t v) { implOpAssign(v); }
+void Parameters::operator=(uint32_t v) { implOpAssign(v); }
+
+void Parameters::operator=(int64_t v) { implOpAssign(v); }
+void Parameters::operator=(uint64_t v) { implOpAssign(v); }
+
 void Parameters::operator=(const std::string& v) { implOpAssign(v); }
 Parameters& Parameters::operator=(const Parameters& v)
 {
