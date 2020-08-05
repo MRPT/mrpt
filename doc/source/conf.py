@@ -53,7 +53,7 @@ html_context = {
     'display_github': True,
     'github_user': 'MRPT',
     'github_repo': 'mrpt',
-    'github_version': 'develop/docs/source/'
+    'github_version': 'develop/doc/source/'
 }
 
 # Add any paths that contain templates here, relative to this directory.
