@@ -12,6 +12,7 @@
   - mrpt::system::TParameters is now deprecated.
 - BUG FIXES:
   - Avoid crash in camera-calib app when clicking "Close" while capturing a live video.
+  - Fix potential Eigen crash in matrixes inverse() and inverse_LLt() if building mrpt and user code with different optimization flags.
 
 ------
 # Version 2.0.4: Released Jun 20, 2020
