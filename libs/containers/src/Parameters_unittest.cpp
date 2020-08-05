@@ -25,7 +25,7 @@ TEST(Parameters, assignments)
 {
 	mrpt::containers::Parameters p;
 	p["K"] = 2.0;
-	p["N"].asRef<uint64_t>() = 10;
+	p["N"] = uint64_t(10);
 	p["name"] = "Pepico";
 	p["one"] = "1.0";
 	p["enabled"] = true;
@@ -189,11 +189,11 @@ TEST(Parameters, nested)
 TEST(Parameters, nested2)
 {
 	mrpt::containers::Parameters p;
-	p["N"].asRef<uint64_t>() = 10;
+	p["N"] = 10;
 	auto& pid = p["PID"] = mrpt::containers::Parameters();
 	pid["Kp"] = 0.5;
 	p["PID"]["Ti"] = 2.0;
-	p["PID"]["N"].asRef<uint64_t>() = 1000;
+	p["PID"]["N"] = 1000;
 	p["PID"]["name"] = "foo";
 
 	EXPECT_EQ(p["PID"]["Kp"].as<double>(), 0.5);
@@ -273,6 +273,31 @@ TEST(Parameters, macros)
 	EXPECT_EQ(Foo, 9.0);
 
 	EXPECT_THROW(MCP_LOAD_REQ(p, Bar), std::exception);
+}
+
+void foo(mrpt::containers::Parameters& p)
+{
+	p["K"] = 2.0;
+	p["N"] = 2;
+}
+
+TEST(Parameters, assignmentsInCallee)
+{
+	mrpt::containers::Parameters p;
+
+	auto& pp = p["params"] = mrpt::containers::Parameters::Map();
+	foo(pp);
+
+	EXPECT_FALSE(p.empty());
+	EXPECT_TRUE(p["params"].isMap());
+
+	EXPECT_TRUE(p["params"].has("K"));
+	EXPECT_TRUE(p["params"].has("N"));
+
+	EXPECT_TRUE(p["params"]["K"].isScalar());
+	EXPECT_EQ(p["params"].typeOfChild("K"), typeid(double));
+	EXPECT_EQ(p["params"]["K"].as<double>(), 2.0);
+	EXPECT_EQ(p["params"]["N"].as<int>(), 2);
 }
 
 // clang-format off
