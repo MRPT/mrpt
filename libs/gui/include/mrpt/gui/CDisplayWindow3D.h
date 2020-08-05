@@ -248,14 +248,11 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	/** Start to save rendered images to disk.
 	 *  Images will be saved independently as png files, depending on
-	 *   the template path passed to this method. For example:
-	 *
-	 *  path_prefix: "./video_"
-	 *
-	 *  Will generate "./video_000001.png", etc.
+	 *  the template path passed to this method. For example, the
+	 *  path_prefix ``./video_`` will generate ``./video_000001.png``, etc.
 	 *
 	 *  If this feature is enabled, the window will emit events of the type
-	 * mrpt::gui::mrptEvent3DWindowGrabImageFile() which you can subscribe to.
+	 *  mrpt::gui::mrptEvent3DWindowGrabImageFile() which you can subscribe to.
 	 *
 	 *  \sa grabImagesStop
 	 */

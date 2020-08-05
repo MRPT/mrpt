@@ -24,4 +24,19 @@ graphslam_results/
 #visual studio
 .vs/*
 .vscode
+
+# doxygen files
+doc/source/dox_mrpt.tag
+doc/source/xml-dir/
+doc/html/
+doc/source/class_*
+doc/source/enum_*
+doc/source/namespace_*
+doc/source/group_*
+doc/source/struct_*
+doc/source/page_*
+doc/source/union_*
+doc/source/global.rst
+doc/source/doxygen-index.rst
 .cmake
+doc/venv
