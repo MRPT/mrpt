@@ -9,7 +9,8 @@
 
 #pragma once
 
-/** \file Usage: MRPT_INITIALIZER(func) { ... }
+/** \file initializer.h 
+ * Usage: MRPT_INITIALIZER(func) { ... }
  * MRPT_INITIALIZER() should be used only once per library in its present
  * cross-platform implementation.
  */
