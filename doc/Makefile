@@ -42,7 +42,7 @@ html-and-view:
 	make html
 	xdg-open html/index.html
 
-html:
+html: python-venv
 	echo "Building docs for these directories: ${MRPT_DOX_INPUT_DIRS}"
 	echo "Using MRPT_LIST_INCLUDE_DIRS: ${MRPT_LIST_INCLUDE_DIRS}"
 	# 1) Build Doxygen
