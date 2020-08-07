@@ -10,3 +10,4 @@ Tutorials
   range_only_localization_mapping
   page_porting_mrpt2
   env-vars
+  tutorial-icp-alignment
