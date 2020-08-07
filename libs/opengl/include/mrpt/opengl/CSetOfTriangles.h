@@ -50,7 +50,7 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	/** Gets the i-th triangle */
 	void getTriangle(size_t idx, TTriangle& t) const
 	{
-		ASSERT_BELOW_(idx, m_triangles.size());
+		ASSERT_LT_(idx, m_triangles.size());
 		t = m_triangles[idx];
 	}
 	/** Inserts a triangle into the set */

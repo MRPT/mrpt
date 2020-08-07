@@ -560,7 +560,7 @@ void CNationalInstrumentsDAQ::initialize()
 				tf.has_ci_lin_encoder || tf.has_ci_ang_encoder)
 			{
 				// sample rate:
-				ASSERT_ABOVE_(tf.samplesPerSecond, 0)
+				ASSERT_GT_(tf.samplesPerSecond, 0)
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCfgSampClkTiming(
 					taskHandle, tf.sampleClkSource.c_str(), tf.samplesPerSecond,
 					DAQmx_Val_Rising, DAQmx_Val_ContSamps,

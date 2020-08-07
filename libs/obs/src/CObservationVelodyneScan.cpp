@@ -257,7 +257,7 @@ static void velodyne_scan_to_pointcloud(
 					}
 				}
 
-				ASSERT_BELOW_(laserId, num_lasers);
+				ASSERT_LT_(laserId, num_lasers);
 				const mrpt::obs::VelodyneCalibration::PerLaserCalib& calib =
 					scan.calibration.laser_corrections[laserId];
 

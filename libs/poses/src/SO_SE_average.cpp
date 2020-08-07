@@ -38,7 +38,7 @@ void SO_average<2>::append(const double orientation_rad, const double weight)
 }
 double SO_average<2>::get_average() const
 {
-	ASSERT_ABOVE_(m_count, 0);
+	ASSERT_GT_(m_count, 0);
 	const double x = m_accum_x / m_count;
 	const double y = m_accum_y / m_count;
 	errno = 0;
@@ -75,7 +75,7 @@ void SO_average<3>::append(
 // MOAKHER, 2002.
 mrpt::math::CMatrixDouble33 SO_average<3>::get_average() const
 {
-	ASSERT_ABOVE_(m_count, 0);
+	ASSERT_GT_(m_count, 0);
 	const Eigen::Matrix3d MtM = m_accum_rot.transpose() * m_accum_rot.asEigen();
 
 	Eigen::JacobiSVD<Eigen::Matrix3d> svd(MtM, Eigen::ComputeFullU);
@@ -128,7 +128,7 @@ void SE_average<2>::append(const mrpt::math::TPose2D& p, const double weight)
 }
 void SE_average<2>::get_average(mrpt::poses::CPose2D& ret_mean) const
 {
-	ASSERT_ABOVE_(m_count, 0);
+	ASSERT_GT_(m_count, 0);
 	ret_mean.x(m_accum_x / m_count);
 	ret_mean.y(m_accum_y / m_count);
 	const_cast<SO_average<2>*>(&m_rot_part)->enable_exception_on_undeterminate =
@@ -159,7 +159,7 @@ void SE_average<3>::append(const mrpt::math::TPose3D& p, const double weight)
 }
 void SE_average<3>::get_average(mrpt::poses::CPose3D& ret_mean) const
 {
-	ASSERT_ABOVE_(m_count, 0);
+	ASSERT_GT_(m_count, 0);
 	ret_mean.x(m_accum_x / m_count);
 	ret_mean.y(m_accum_y / m_count);
 	ret_mean.z(m_accum_z / m_count);

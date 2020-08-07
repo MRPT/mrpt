@@ -1757,7 +1757,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 				set_of_obs.insert(obs);
 			}
 
-			ASSERT_ABOVEEQ_(words.size(), 11);
+			ASSERT_GE_(words.size(), 11);
 			// Process STEP entries (odometry increments)
 			//  STEP dlr-spatial_cognition-c.0000 -0.03752 -0.10467 -0.10807
 			//  0.000014396673 -0.000000184001 0.000013237216 0.000015157225
@@ -1810,7 +1810,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 		}
 		else if (words[0] == "LANDMARK_C")
 		{
-			ASSERT_ABOVEEQ_(words.size(), 8);
+			ASSERT_GE_(words.size(), 8);
 			// LANDMARK_C 0.67972 -2.87676 0.600235 0.00176143 -0.000314459
 			// 0.00334762 -1
 			// #  LANDMARK <pX> <pY> <quality> <cXX> <cXY> <cYY> <ID>

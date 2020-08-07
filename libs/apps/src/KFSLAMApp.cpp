@@ -320,7 +320,7 @@ void KFSLAMApp::Run_KF_SLAM()
 	{
 		CMatrixDouble mGT_DA;
 		mGT_DA.loadFromTextFile(ground_truth_data_association);
-		ASSERT_ABOVEEQ_(mGT_DA.cols(), 3);
+		ASSERT_GE_(mGT_DA.cols(), 3);
 		// Convert the loaded matrix into a std::map in GT_DA:
 		for (int i = 0; i < mGT_DA.rows(); i++)
 		{
@@ -512,7 +512,7 @@ void KFSLAMApp::Run_KF_SLAM()
 						if (itDA != GT_DA.end())
 						{
 							const std::vector<int>& vDA = itDA->second;
-							ASSERT_BELOW_(i, vDA.size());
+							ASSERT_LT_(i, vDA.size());
 							const int GT_ASSOC = vDA[i];
 
 							auto it = da.results.associations.find(i);

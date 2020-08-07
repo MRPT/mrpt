@@ -164,7 +164,7 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(
 void TSequenceFeatureObservations::decimateCameraFrames(
 	const size_t decimate_ratio)
 {
-	ASSERT_ABOVEEQ_(decimate_ratio, 1);
+	ASSERT_GE_(decimate_ratio, 1);
 	if (decimate_ratio == 1) return;  // =1 -> Delete no one!
 
 	// 1) Make sorted list of frame IDs:

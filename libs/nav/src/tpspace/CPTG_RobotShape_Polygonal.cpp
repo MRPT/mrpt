@@ -21,7 +21,7 @@ CPTG_RobotShape_Polygonal::~CPTG_RobotShape_Polygonal() = default;
 void CPTG_RobotShape_Polygonal::setRobotShape(
 	const mrpt::math::CPolygon& robotShape)
 {
-	ASSERT_ABOVEEQ_(robotShape.size(), 3u);
+	ASSERT_GE_(robotShape.size(), 3u);
 	m_robotShape = robotShape;
 
 	m_robotMaxRadius = .0;  // Default minimum

@@ -56,7 +56,7 @@ size_t find_descriptor_pairings(
 			typename DESCRIPTOR_KDTREE::kdtree_t::DistanceType>::max())
 {
 	MRPT_START
-	ASSERT_ABOVEEQ_(max_neighbors, 1);
+	ASSERT_GE_(max_neighbors, 1);
 	ASSERT_(pairings_1_to_multi_2 != nullptr || pairings_1_to_2 != nullptr);
 
 	/** The expected data type of elements for the kd-tree*/

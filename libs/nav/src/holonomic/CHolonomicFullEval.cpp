@@ -102,7 +102,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
 	// Sanity checks:
 	ASSERT_EQUAL_(options.factorWeights.size(), NUM_FACTORS);
-	ASSERT_ABOVE_(nDirs, 3);
+	ASSERT_GT_(nDirs, 3);
 
 	for (unsigned int i = 0; i < nDirs; i++)
 	{

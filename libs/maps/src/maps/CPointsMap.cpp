@@ -191,26 +191,26 @@ mxArray* CPointsMap::writeToMatlab() const
   ---------------------------------------------------------------*/
 void CPointsMap::getPoint(size_t index, float& x, float& y) const
 {
-	ASSERT_BELOW_(index, m_x.size());
+	ASSERT_LT_(index, m_x.size());
 	x = m_x[index];
 	y = m_y[index];
 }
 void CPointsMap::getPoint(size_t index, float& x, float& y, float& z) const
 {
-	ASSERT_BELOW_(index, m_x.size());
+	ASSERT_LT_(index, m_x.size());
 	x = m_x[index];
 	y = m_y[index];
 	z = m_z[index];
 }
 void CPointsMap::getPoint(size_t index, double& x, double& y) const
 {
-	ASSERT_BELOW_(index, m_x.size());
+	ASSERT_LT_(index, m_x.size());
 	x = m_x[index];
 	y = m_y[index];
 }
 void CPointsMap::getPoint(size_t index, double& x, double& y, double& z) const
 {
-	ASSERT_BELOW_(index, m_x.size());
+	ASSERT_LT_(index, m_x.size());
 	x = m_x[index];
 	y = m_y[index];
 	z = m_z[index];
@@ -287,8 +287,8 @@ void CPointsMap::determineMatching2D(
 
 	extraResults = TMatchingExtraResults();  // Clear output
 
-	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
-	ASSERT_BELOW_(
+	ASSERT_GT_(params.decimation_other_map_points, 0);
+	ASSERT_LT_(
 		params.offset_other_map_points, params.decimation_other_map_points);
 	ASSERT_(IS_DERIVED(*otherMap2, CPointsMap));
 	const auto* otherMap = static_cast<const CPointsMap*>(otherMap2);
@@ -1049,8 +1049,8 @@ void CPointsMap::determineMatching3D(
 
 	extraResults = TMatchingExtraResults();
 
-	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
-	ASSERT_BELOW_(
+	ASSERT_GT_(params.decimation_other_map_points, 0);
+	ASSERT_LT_(
 		params.offset_other_map_points, params.decimation_other_map_points);
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));

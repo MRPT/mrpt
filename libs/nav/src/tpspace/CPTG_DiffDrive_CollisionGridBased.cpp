@@ -593,7 +593,7 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 
 	if (at_least_one)  // Otherwise, don't even lose time checking...
 	{
-		ASSERT_BELOW_(k_max, m_trajectory.size());
+		ASSERT_LT_(k_max, m_trajectory.size());
 		for (int k = k_min; k <= k_max; k++)
 		{
 			const size_t n_real = m_trajectory[k].size();

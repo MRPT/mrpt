@@ -143,11 +143,11 @@ void COccupancyGridMap2D::setSize(
 {
 	MRPT_START
 
-	ASSERT_ABOVE_(res, 0.0f);
-	ASSERT_ABOVE_(xmax, xmin);
-	ASSERT_ABOVE_(ymax, ymin);
-	ASSERT_ABOVEEQ_(default_value, 0.0f);
-	ASSERT_BELOWEQ_(default_value, 1.0f);
+	ASSERT_GT_(res, 0.0f);
+	ASSERT_GT_(xmax, xmin);
+	ASSERT_GT_(ymax, ymin);
+	ASSERT_GE_(default_value, 0.0f);
+	ASSERT_LE_(default_value, 1.0f);
 
 	freeMap();
 	m_likelihoodCacheOutDated = true;
@@ -524,8 +524,8 @@ void COccupancyGridMap2D::determineMatching2D(
 
 	extraResults = TMatchingExtraResults();
 
-	ASSERT_ABOVE_(params.decimation_other_map_points, 0);
-	ASSERT_BELOW_(
+	ASSERT_GT_(params.decimation_other_map_points, 0);
+	ASSERT_LT_(
 		params.offset_other_map_points, params.decimation_other_map_points);
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));

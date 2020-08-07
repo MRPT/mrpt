@@ -73,7 +73,7 @@ void CVehicleSimul_Holo::internal_clear() { m_vel_ramp_cmd = TVelRampCmd(); }
 void CVehicleSimul_Holo::sendVelRampCmd(
 	double vel, double dir, double ramp_time, double rot_speed)
 {
-	ASSERT_ABOVE_(ramp_time, 0);
+	ASSERT_GT_(ramp_time, 0);
 
 	m_vel_ramp_cmd.issue_time = m_time;
 	m_vel_ramp_cmd.ramp_time = ramp_time;

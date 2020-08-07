@@ -82,8 +82,8 @@ CPose3D::CPose3D(const CPoint3D& p)
 CPose3D::CPose3D(const math::CMatrixDouble& m)
 	: m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 {
-	ASSERT_ABOVEEQ_(m.rows(), 3);
-	ASSERT_ABOVEEQ_(m.cols(), 4);
+	ASSERT_GE_(m.rows(), 3);
+	ASSERT_GE_(m.cols(), 4);
 	for (int r = 0; r < 3; r++)
 		for (int c = 0; c < 3; c++) m_ROT(r, c) = m(r, c);
 	for (int r = 0; r < 3; r++) m_coords[r] = m(r, 3);

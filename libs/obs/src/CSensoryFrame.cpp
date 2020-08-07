@@ -164,7 +164,7 @@ void CSensoryFrame::eraseByIndex(size_t idx)
 const CObservation::Ptr& CSensoryFrame::getObservationByIndex(size_t idx) const
 {
 	MRPT_START
-	ASSERT_BELOW_(idx, size());
+	ASSERT_LT_(idx, size());
 	auto it = begin() + idx;
 	return *it;
 	MRPT_END
@@ -172,7 +172,7 @@ const CObservation::Ptr& CSensoryFrame::getObservationByIndex(size_t idx) const
 CObservation::Ptr& CSensoryFrame::getObservationByIndex(size_t idx)
 {
 	MRPT_START
-	ASSERT_BELOW_(idx, size());
+	ASSERT_LT_(idx, size());
 	auto it = begin() + idx;
 	return *it;
 	MRPT_END

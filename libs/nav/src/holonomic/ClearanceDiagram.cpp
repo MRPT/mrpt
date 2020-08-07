@@ -135,7 +135,7 @@ double ClearanceDiagram::getClearance(
 		// fixed value:
 		return 0.0;
 
-	ASSERT_BELOW_(actual_k, m_actual_num_paths);
+	ASSERT_LT_(actual_k, m_actual_num_paths);
 
 	const size_t k = real_k_to_decimated_k(actual_k);
 
@@ -185,7 +185,7 @@ void mrpt::nav::ClearanceDiagram::resize(
 		this->clear();
 		return;
 	}
-	ASSERT_ABOVEEQ_(actual_num_paths, decimated_num_paths);
+	ASSERT_GE_(actual_num_paths, decimated_num_paths);
 
 	m_actual_num_paths = actual_num_paths;
 	m_raw_clearances.resize(decimated_num_paths);

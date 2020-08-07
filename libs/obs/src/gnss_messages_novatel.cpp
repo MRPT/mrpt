@@ -339,7 +339,7 @@ void Message_NV_OEM6_RANGECMP::internal_readFromStream(
 	in >> expected_msg_len;
 	in.ReadBuffer(&header, sizeof(header));
 	in >> num_obs;
-	ASSERT_BELOW_(num_obs, 2000);
+	ASSERT_LT_(num_obs, 2000);
 	obs_data.resize(num_obs);
 	if (num_obs)
 		in.ReadBuffer(&obs_data[0], sizeof(obs_data[0]) * obs_data.size());
@@ -402,7 +402,7 @@ void Message_NV_OEM6_VERSION::internal_readFromStream(
 	in >> expected_msg_len;
 	in.ReadBuffer(&header, sizeof(header));
 	in >> num_comps;
-	ASSERT_BELOW_(num_comps, 2000);
+	ASSERT_LT_(num_comps, 2000);
 	components.resize(num_comps);
 	if (num_comps)
 		in.ReadBuffer(

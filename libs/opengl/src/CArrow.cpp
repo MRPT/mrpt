@@ -36,7 +36,7 @@ void CArrow::onUpdateBuffers_Triangles()
 	const P3f p0(m_x0, m_y0, m_z0), p1(m_x1, m_y1, m_z1);
 	auto p = p1 - p0;
 	const float P10_norm = p.norm();
-	ASSERT_ABOVE_(P10_norm, .0f);
+	ASSERT_GT_(P10_norm, .0f);
 	// Unit vector:
 	p *= (1.0f / P10_norm);
 
@@ -51,7 +51,7 @@ void CArrow::onUpdateBuffers_Triangles()
 		HM.blockCopy<3, 3>(0, 0), mrpt::math::TPoint3D(m_x0, m_y0, m_z0));
 
 	// precomputed table:
-	ASSERT_ABOVE_(m_slices, 2);
+	ASSERT_GT_(m_slices, 2);
 
 	const float dAng = 2 * M_PIf / m_slices;
 	float a = 0;
@@ -63,8 +63,8 @@ void CArrow::onUpdateBuffers_Triangles()
 		cc[i].y = sin(a);
 	}
 
-	ASSERT_ABOVEEQ_(m_headRatio, .0f);
-	ASSERT_BELOWEQ_(m_headRatio, 1.0f);
+	ASSERT_GE_(m_headRatio, .0f);
+	ASSERT_LE_(m_headRatio, 1.0f);
 
 	const float r0 = m_smallRadius, r1 = m_largeRadius,
 				h0 = P10_norm * (1.0f - m_headRatio), h1 = P10_norm;

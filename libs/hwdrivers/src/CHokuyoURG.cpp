@@ -420,7 +420,7 @@ bool CHokuyoURG::setHighBaudrate()
 -------------------------------------------------------------*/
 bool CHokuyoURG::ensureBufferHasBytes(const size_t nDesiredBytes)
 {
-	ASSERT_BELOW_(nDesiredBytes, m_rx_buffer.capacity());
+	ASSERT_LT_(nDesiredBytes, m_rx_buffer.capacity());
 
 	if (m_rx_buffer.size() >= nDesiredBytes) return true;
 

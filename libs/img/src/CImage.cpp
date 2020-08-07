@@ -833,8 +833,8 @@ std::string CImage::getChannelsOrder() const
 	// modern opencv versions used these fixed order (see opencv
 	// core/src/array.cpp)
 	const int chCount = m_impl->img.channels();
-	ASSERT_ABOVEEQ_(chCount, 1);
-	ASSERT_BELOWEQ_(chCount, 4);
+	ASSERT_GE_(chCount, 1);
+	ASSERT_LE_(chCount, 4);
 	const std::array<const char*, 4> orderNames = {"GRAY", "", "BGR", "BGRA"};
 	return std::string(orderNames.at(chCount - 1));
 #else

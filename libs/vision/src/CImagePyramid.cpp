@@ -21,7 +21,7 @@ bool buildPyramid_templ(
 	CImagePyramid& obj, mrpt::img::CImage& img, const size_t nOctaves,
 	const bool smooth_halves, const bool convert_grayscale)
 {
-	ASSERT_ABOVE_(nOctaves, 0);
+	ASSERT_GT_(nOctaves, 0);
 
 	// TImageSize  img_size = img.getSize();
 	obj.images.resize(nOctaves);

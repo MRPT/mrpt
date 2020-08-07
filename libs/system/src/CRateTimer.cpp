@@ -24,7 +24,7 @@ using namespace mrpt::system;
 CRateTimer::CRateTimer(const double rate_hz) { setRate(rate_hz); }
 void CRateTimer::setRate(const double rate_hz)
 {
-	ASSERT_ABOVE_(rate_hz, 0.0);
+	ASSERT_GT_(rate_hz, 0.0);
 	m_rate_hz = rate_hz;
 }
 bool CRateTimer::sleep()
@@ -48,9 +48,9 @@ bool CRateTimer::sleep()
 
 	for (;;)
 	{
-		ASSERT_ABOVEEQ_(ts.tv_sec, 0);
-		ASSERT_ABOVE_(ts.tv_nsec, 0);
-		ASSERT_BELOWEQ_(ts.tv_nsec, 999999999);
+		ASSERT_GE_(ts.tv_sec, 0);
+		ASSERT_GT_(ts.tv_nsec, 0);
+		ASSERT_LE_(ts.tv_nsec, 999999999);
 
 		int err = clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, &ts_remainer);
 		if (err == 0) break;  // all good

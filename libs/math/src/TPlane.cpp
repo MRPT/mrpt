@@ -57,7 +57,7 @@ TVector3D TPlane::getUnitaryNormalVector() const
 {
 	TVector3D vec;
 	const double s = sqrt(squareNorm<3, double>(coefs));
-	ASSERT_ABOVE_(s, getEpsilon());
+	ASSERT_GT_(s, getEpsilon());
 	const double k = 1.0 / s;
 	for (int i = 0; i < 3; i++) vec[i] = coefs[i] * k;
 	return vec;
@@ -124,7 +124,7 @@ TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
 TPlane::TPlane(const TPoint3D& p1, const TVector3D& normal)
 {
 	const double normal_norm = normal.norm();
-	ASSERT_ABOVE_(normal_norm, getEpsilon());
+	ASSERT_GT_(normal_norm, getEpsilon());
 
 	// Ensure we have a unit vector:
 	const auto n = normal * (1. / normal_norm);

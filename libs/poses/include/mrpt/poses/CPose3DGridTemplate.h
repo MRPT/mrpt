@@ -164,9 +164,9 @@ class CPose3DGridTemplate
 		double resolution_XYZ, double resolution_YPR)
 	{
 		// Checks
-		for (int i = 0; i < 6; i++) ASSERT_ABOVE_(bb_max[i], bb_min[i]);
-		ASSERT_ABOVE_(resolution_XYZ, .0);
-		ASSERT_ABOVE_(resolution_YPR, .0);
+		for (int i = 0; i < 6; i++) ASSERT_GT_(bb_max[i], bb_min[i]);
+		ASSERT_GT_(resolution_XYZ, .0);
+		ASSERT_GT_(resolution_YPR, .0);
 
 		// Copy data:
 		m_bb_min = bb_min;
@@ -261,10 +261,10 @@ class CPose3DGridTemplate
 		outMat.setSize(m_sizeY, m_sizeX);
 		const auto cz = z2idx(z), cY = yaw2idx(yaw), cP = pitch2idx(pitch),
 				   cR = roll2idx(roll);
-		ASSERT_BELOW_(cz, m_sizeZ);
-		ASSERT_BELOW_(cY, m_sizeYaw);
-		ASSERT_BELOW_(cP, m_sizePitch);
-		ASSERT_BELOW_(cR, m_sizeRoll);
+		ASSERT_LT_(cz, m_sizeZ);
+		ASSERT_LT_(cY, m_sizeYaw);
+		ASSERT_LT_(cP, m_sizePitch);
+		ASSERT_LT_(cR, m_sizeRoll);
 		for (uint32_t cy = 0; cy < m_sizeY; cy++)
 			for (uint32_t cx = 0; cx < m_sizeX; cx++)
 				outMat(cy, cx) = *getByIndex(cx, cy, cz, cY, cP, cR);

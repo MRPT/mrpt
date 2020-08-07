@@ -218,7 +218,7 @@ void PlannerRRT_SE2_TPS::solve(
 			// obstacles around the
 			// current robot pose
 
-			ASSERT_ABOVE_(
+			ASSERT_GT_(
 				m_PTGs[idxPTG]->getRefDistance(),
 				1.1 * max_veh_radius);  // Make sure the PTG covers at least a
 			// bit more than the vehicle shape!!

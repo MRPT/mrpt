@@ -201,7 +201,7 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(
 double CParameterizedTrajectoryGenerator::index2alpha(
 	uint16_t k, const unsigned int num_paths)
 {
-	ASSERT_BELOW_(k, num_paths);
+	ASSERT_LT_(k, num_paths);
 	return M_PI * (-1.0 + 2.0 * (k + 0.5) / num_paths);
 }
 
@@ -591,7 +591,7 @@ mrpt::math::TTwist2D CParameterizedTrajectoryGenerator::getPathTwist(
 		const auto curPose = getPathPose(k, step);
 		const auto prevPose = getPathPose(k, step - 1);
 		const double dt = getPathStepDuration();
-		ASSERT_ABOVE_(dt, .0);
+		ASSERT_GT_(dt, .0);
 
 		auto vel = mrpt::math::TTwist2D(
 			curPose.x - prevPose.x, curPose.y - prevPose.y,

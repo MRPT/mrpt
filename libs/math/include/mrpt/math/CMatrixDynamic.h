@@ -454,7 +454,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	inline const T& operator[](size_t ith) const
 	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
-		ASSERT_BELOW_(ith, m_Rows * m_Cols);
+		ASSERT_LT_(ith, m_Rows * m_Cols);
 #endif
 		return m_data[ith];
 	}

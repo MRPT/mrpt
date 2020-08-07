@@ -36,7 +36,7 @@ CGridPlaneXY::CGridPlaneXY(
 
 void CGridPlaneXY::onUpdateBuffers_Wireframe()
 {
-	ASSERT_ABOVE_(m_frequency, 0);
+	ASSERT_GT_(m_frequency, 0);
 
 	m_vertex_buffer_data.clear();
 	m_color_buffer_data.clear();
