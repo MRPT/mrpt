@@ -42,7 +42,8 @@ extensions = [
     'sphinx.ext.graphviz',
     'doxyrest',
     'cpplexer',
-    'sphinx_panels'
+    'sphinx_panels',
+	'sphinxcontrib.bibtex'
 ]
 
 # Show build time
