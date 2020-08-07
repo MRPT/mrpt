@@ -165,3 +165,10 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
 {
 	return out << p.coefs[0] << p.coefs[1] << p.coefs[2] << p.coefs[3];
 }
+
+std::string TPlane::asString() const
+{
+	return mrpt::format(
+		"[%10.05f, %10.05f, %10.05f, %10.05f]", coefs[0], coefs[1], coefs[2],
+		coefs[3]);
+}

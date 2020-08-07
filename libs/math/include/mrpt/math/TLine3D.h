@@ -80,12 +80,24 @@ struct TLine3D
 	 * the XY plane.
 	 */
 	void generate2DObject(TLine2D& l) const;
+
+	/** Returns "P=[x,y,z] u=[ux,uy,uz]"
+	 * \note [New in MRPT 2.0.5]
+	 */
+	std::string asString() const;
 };
 
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TLine3D& l);
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TLine3D& l);
+
+/** Text streaming function */
+inline std::ostream& operator<<(std::ostream& o, const TLine3D& p)
+{
+	o << p.asString();
+	return o;
+}
 
 }  // namespace mrpt::math
 

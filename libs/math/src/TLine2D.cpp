@@ -116,6 +116,12 @@ TLine2D::TLine2D(const TLine3D& l)
 	coefs[2] = l.pBase.x * l.director[1] - l.pBase.y * l.director[0];
 }
 
+std::string TLine2D::asString() const
+{
+	return mrpt::format(
+		"[%10.05f, %10.05f, %10.05f]", coefs[0], coefs[1], coefs[2]);
+}
+
 mrpt::serialization::CArchive& mrpt::math::operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TLine2D& l)
 {
