@@ -8,6 +8,8 @@
     - New mrpt::for_<> constexpr for loop helper function.
     - New function mrpt::demangle()
     - New class mrpt::WorkerThreadsPool
+  - \ref mrpt_math_grp
+    - New static methods with semantic-rich names: mrpt::math::TPlane::From3Points(), mrpt::math::TPlane::FromPointAndLine(), ...
 - Deprecations:
   - mrpt::system::TParameters is now deprecated.
 - BUG FIXES:
