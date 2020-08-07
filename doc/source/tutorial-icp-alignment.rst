@@ -30,7 +30,7 @@ ICP algorithms in MRPT can take as input:
 
 For the case of point maps, a **KD-tree** is used to accelerate the
 search of nearest neighbours. The ICP method is implemented in the class
-`mrpt::slam::CICP <classmrpt_1_1slam_1_1_c_i_c_p.html>`__.
+`mrpt::slam::CICP <class_mrpt_slam_CICP.html>`__.
 The output is a pdf (probability density function) of the relative pose
 between the maps, that is, an uncertainty bound is also computed
 associated to the optimal registration. An example of typical usage is
@@ -126,7 +126,7 @@ best matches** those pairings. This is **repeated** **until
 convergence** and, if ``ALFA>0`` (which is the default) the **tresholds
 are reduced** and the entire process repeated. The above algorithm is
 controlled by means of the following parameters in
-`mrpt::slam::CICP <classmrpt_1_1slam_1_1_c_i_c_p.html>`__::options:
+`mrpt::slam::CICP <class_mrpt_slam_CICP.html>`__::options:
 
 -  ``TICPAlgorithm ICP_algorithm``: ...
 -  ``bool onlyClosestCorrespondences``: ...
