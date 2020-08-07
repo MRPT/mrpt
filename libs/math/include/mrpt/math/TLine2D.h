@@ -102,12 +102,24 @@ struct TLine2D
 	void getAsPose2D(TPose2D& outPose) const;
 	void getAsPose2DForcingOrigin(
 		const TPoint2D& origin, TPose2D& outPose) const;
+
+	/** Returns "[A, B, C]"
+	 * \note [New in MRPT 2.0.5]
+	 */
+	std::string asString() const;
 };
 
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TLine2D& l);
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TLine2D& l);
+
+/** Text streaming function */
+inline std::ostream& operator<<(std::ostream& o, const TLine2D& p)
+{
+	o << p.asString();
+	return o;
+}
 
 }  // namespace mrpt::math
 

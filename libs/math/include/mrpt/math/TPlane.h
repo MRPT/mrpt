@@ -12,6 +12,7 @@
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/TSegment3D.h>
 #include <array>
+#include <iosfwd>
 
 namespace mrpt::math
 {
@@ -65,6 +66,7 @@ struct TPlane
 	 */
 	TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3);
 
+	/** \note [New in MRPT 2.0.5] */
 	static TPlane From3Points(
 		const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
 	{
@@ -76,6 +78,7 @@ struct TPlane
 	 */
 	TPlane(const TPoint3D& p1, const TVector3D& normal);
 
+	/** \note [New in MRPT 2.0.5] */
 	static TPlane FromPointAndNormal(
 		const TPoint3D& p1, const TVector3D& normal)
 	{
@@ -89,6 +92,7 @@ struct TPlane
 
 	/** Defines a plane which contains this point and this line.
 	 * \throw std::logic_error if the point is inside the line.
+	 * \note [New in MRPT 2.0.5]
 	 */
 	static TPlane FromPointAndLine(const TPoint3D& p1, const TLine3D& r)
 	{
@@ -121,6 +125,11 @@ struct TPlane
 	{
 		for (size_t i = 0; i < 4; i++) coefs[i] = vec[i];
 	}
+
+	/** Returns "[A, B, C, D]"
+	 * \note [New in MRPT 2.0.5]
+	 */
+	std::string asString() const;
 };
 
 using TPlane3D = TPlane;
@@ -129,6 +138,13 @@ mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TPlane& p);
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TPlane& p);
+
+/** Text streaming function */
+inline std::ostream& operator<<(std::ostream& o, const TPlane& p)
+{
+	o << p.asString();
+	return o;
+}
 
 }  // namespace mrpt::math
 
