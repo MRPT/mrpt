@@ -253,8 +253,8 @@ void CGeneralizedEllipsoidTemplate<3>::generatePoints(
 {
 	MRPT_START
 	const auto slices = m_numSegments, stacks = m_numSegments;
-	ASSERT_ABOVEEQ_(slices, 3);
-	ASSERT_ABOVEEQ_(stacks, 3);
+	ASSERT_GE_(slices, 3);
+	ASSERT_GE_(stacks, 3);
 	// sin/cos cache --------
 	// Slices: [0,pi]
 	std::vector<double> slice_cos(slices), slice_sin(slices);

@@ -74,7 +74,7 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
 	double controllerParam_Kp() const { return m_Kp; }
 	void controllerParam_Kp(double v)
 	{
-		ASSERT_ABOVE_(v, .0);
+		ASSERT_GT_(v, .0);
 		m_Kp = v;
 	}
 
@@ -82,7 +82,7 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
 	double controllerParam_Ti() const { return m_Ti; }
 	void controllerParam_Ti(double v)
 	{
-		ASSERT_ABOVEEQ_(v, .0);
+		ASSERT_GE_(v, .0);
 		m_Ti = v;
 	}
 
@@ -91,8 +91,8 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
 	double lowPassParam_a0() const { return m_lowPass_a0; }
 	void lowPassParam_a0(double v)
 	{
-		ASSERT_ABOVE_(v, .0);
-		ASSERT_BELOWEQ_(v, 1.0);
+		ASSERT_GT_(v, .0);
+		ASSERT_LE_(v, 1.0);
 		m_lowPass_a0 = v;
 	}
 
@@ -106,8 +106,8 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
 	}
 	void followErrorRatioToRaiseWarning(double v)
 	{
-		ASSERT_ABOVE_(v, .0);
-		ASSERT_BELOWEQ_(v, 1.0);
+		ASSERT_GT_(v, .0);
+		ASSERT_LE_(v, 1.0);
 		m_followErrorRatioForWarning = v;
 	}
 

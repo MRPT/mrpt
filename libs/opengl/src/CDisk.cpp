@@ -27,7 +27,7 @@ void CDisk::onUpdateBuffers_Triangles()
 	tris.clear();
 
 	// precomputed table:
-	ASSERT_ABOVE_(m_nSlices, 2);
+	ASSERT_GT_(m_nSlices, 2);
 
 	const float dAng = 2 * M_PIf / m_nSlices;
 	float a = 0;

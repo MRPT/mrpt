@@ -358,7 +358,7 @@ void RawlogGrabberApp::SensorThread(std::string sensor_label)
 			"[thread_" << sensor_label << "] Starting at "
 					   << sensor->getProcessRate() << " Hz");
 
-		ASSERT_ABOVE_(sensor->getProcessRate(), 0);
+		ASSERT_GT_(sensor->getProcessRate(), 0);
 
 		// For imaging sensors, set external storage directory:
 		sensor->setPathForExternalImages(m_rawlog_ext_imgs_dir);

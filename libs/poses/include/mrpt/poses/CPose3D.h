@@ -383,7 +383,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 	{
 		double lz;
 		inverseComposePoint(g.x, g.y, 0, l.x, l.y, lz);
-		ASSERT_BELOW_(std::abs(lz), eps);
+		ASSERT_LT_(std::abs(lz), eps);
 	}
 
 	/**  Makes "this = A (+) B"; this method is slightly more efficient than
@@ -467,7 +467,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 	template <typename VECTORLIKE>
 	inline void setFromXYZQ(const VECTORLIKE& v, const size_t index_offset = 0)
 	{
-		ASSERT_ABOVEEQ_(v.size(), 7 + index_offset);
+		ASSERT_GE_(v.size(), 7 + index_offset);
 		// The 3x3 rotation part:
 		mrpt::math::CQuaternion<typename VECTORLIKE::value_type> q(
 			v[index_offset + 3], v[index_offset + 4], v[index_offset + 5],

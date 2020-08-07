@@ -495,46 +495,46 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
 
 const float& CObservation2DRangeScan::getScanRange(const size_t i) const
 {
-	ASSERT_BELOW_(i, m_scan.size());
+	ASSERT_LT_(i, m_scan.size());
 	return m_scan[i];
 }
 float& CObservation2DRangeScan::getScanRange(const size_t i)
 {
-	ASSERT_BELOW_(i, m_scan.size());
+	ASSERT_LT_(i, m_scan.size());
 	return m_scan[i];
 }
 
 void CObservation2DRangeScan::setScanRange(const size_t i, const float val)
 {
-	ASSERT_BELOW_(i, m_scan.size());
+	ASSERT_LT_(i, m_scan.size());
 	m_scan[i] = val;
 }
 
 const int32_t& CObservation2DRangeScan::getScanIntensity(const size_t i) const
 {
-	ASSERT_BELOW_(i, m_intensity.size());
+	ASSERT_LT_(i, m_intensity.size());
 	return m_intensity[i];
 }
 int32_t& CObservation2DRangeScan::getScanIntensity(const size_t i)
 {
-	ASSERT_BELOW_(i, m_intensity.size());
+	ASSERT_LT_(i, m_intensity.size());
 	return m_intensity[i];
 }
 void CObservation2DRangeScan::setScanIntensity(const size_t i, const int val)
 {
-	ASSERT_BELOW_(i, m_intensity.size());
+	ASSERT_LT_(i, m_intensity.size());
 	m_intensity[i] = val;
 }
 
 bool CObservation2DRangeScan::getScanRangeValidity(const size_t i) const
 {
-	ASSERT_BELOW_(i, m_validRange.size());
+	ASSERT_LT_(i, m_validRange.size());
 	return m_validRange[i] != 0;
 }
 void CObservation2DRangeScan::setScanRangeValidity(
 	const size_t i, const bool val)
 {
-	ASSERT_BELOW_(i, m_validRange.size());
+	ASSERT_LT_(i, m_validRange.size());
 	m_validRange[i] = val ? 1 : 0;
 }
 

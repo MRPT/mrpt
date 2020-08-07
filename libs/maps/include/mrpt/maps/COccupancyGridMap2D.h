@@ -412,10 +412,10 @@ class COccupancyGridMap2D
 	{
 		uint8_t* cell = m_basis_map.cellByIndex(x, y);
 #ifdef _DEBUG
-		ASSERT_ABOVEEQ_(x, 0);
-		ASSERT_ABOVEEQ_(y, 0);
-		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()));
-		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()));
+		ASSERT_GE_(x, 0);
+		ASSERT_GE_(y, 0);
+		ASSERT_LE_(x, int(m_basis_map.getSizeX()));
+		ASSERT_LE_(y, int(m_basis_map.getSizeY()));
 #endif
 		*cell = value;
 	}
@@ -425,10 +425,10 @@ class COccupancyGridMap2D
 	{
 		const uint8_t* cell = m_basis_map.cellByIndex(x, y);
 #ifdef _DEBUG
-		ASSERT_ABOVEEQ_(x, 0);
-		ASSERT_ABOVEEQ_(y, 0);
-		ASSERT_BELOWEQ_(x, int(m_basis_map.getSizeX()));
-		ASSERT_BELOWEQ_(y, int(m_basis_map.getSizeY()));
+		ASSERT_GE_(x, 0);
+		ASSERT_GE_(y, 0);
+		ASSERT_LE_(x, int(m_basis_map.getSizeX()));
+		ASSERT_LE_(y, int(m_basis_map.getSizeY()));
 #endif
 		return *cell;
 	}
@@ -673,10 +673,10 @@ class COccupancyGridMap2D
 	inline uint16_t getVoroniClearance(int cx, int cy) const
 	{
 #ifdef _DEBUG
-		ASSERT_ABOVEEQ_(cx, 0);
-		ASSERT_ABOVEEQ_(cy, 0);
-		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()));
-		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()));
+		ASSERT_GE_(cx, 0);
+		ASSERT_GE_(cy, 0);
+		ASSERT_LE_(cx, int(m_voronoi_diagram.getSizeX()));
+		ASSERT_LE_(cy, int(m_voronoi_diagram.getSizeY()));
 #endif
 		const uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
 		return *cell;
@@ -689,10 +689,10 @@ class COccupancyGridMap2D
 	{
 		uint16_t* cell = m_voronoi_diagram.cellByIndex(cx, cy);
 #ifdef _DEBUG
-		ASSERT_ABOVEEQ_(cx, 0);
-		ASSERT_ABOVEEQ_(cy, 0);
-		ASSERT_BELOWEQ_(cx, int(m_voronoi_diagram.getSizeX()));
-		ASSERT_BELOWEQ_(cy, int(m_voronoi_diagram.getSizeY()));
+		ASSERT_GE_(cx, 0);
+		ASSERT_GE_(cy, 0);
+		ASSERT_LE_(cx, int(m_voronoi_diagram.getSizeX()));
+		ASSERT_LE_(cy, int(m_voronoi_diagram.getSizeY()));
 #endif
 		*cell = dist;
 	}

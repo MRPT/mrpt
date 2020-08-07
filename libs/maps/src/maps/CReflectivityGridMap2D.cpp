@@ -209,8 +209,8 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 			return 0;  // out of the map..
 		else
 		{
-			ASSERT_ABOVEEQ_(o.reflectivityLevel, 0);
-			ASSERT_BELOWEQ_(o.reflectivityLevel, 1);
+			ASSERT_GE_(o.reflectivityLevel, 0);
+			ASSERT_LE_(o.reflectivityLevel, 1);
 			return -0.5 * square(
 							  (m_logodd_lut.l2p(*cell) - o.reflectivityLevel) /
 							  o.sensorStdNoise);

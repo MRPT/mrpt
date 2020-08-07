@@ -256,7 +256,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		const double sensorStd = likelihoodOptions.beaconRangesUseObservationStd
 									 ? o.stdError
 									 : likelihoodOptions.beaconRangesStd;
-		ASSERT_ABOVE_(sensorStd, .0);
+		ASSERT_GT_(sensorStd, .0);
 		const auto unif_val =
 			std::log(1.0 / (o.maxSensorDistance - o.minSensorDistance));
 

@@ -27,7 +27,7 @@ void CControlledRateTimer::setRate(const double rate_hz)
 {
 	if (rate_hz == m_rate_hz) return;
 
-	ASSERT_ABOVE_(rate_hz, 0.0);
+	ASSERT_GT_(rate_hz, 0.0);
 	m_rate_hz = rate_hz;
 	m_lastControlError = 0;
 	m_currentEstimatedRate = m_rate_hz;

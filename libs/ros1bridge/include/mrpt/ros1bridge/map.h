@@ -67,7 +67,7 @@ class MapHdl
 			// unobserved cells: no log-odds information
 			return 0;
 		}
-		ASSERT_BELOWEQ_(i, 100);
+		ASSERT_LE_(i, 100);
 		return lut_cellros2mrpt[i];
 	}
 

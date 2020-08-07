@@ -8,6 +8,7 @@
     - New mrpt::for_<> constexpr for loop helper function.
     - New function mrpt::demangle()
     - New class mrpt::WorkerThreadsPool
+    - New macro ASSERT_NEAR_(). Defined new macros with correct English names ASSERT_LT_(), etc. deprecating the former ones.
   - \ref mrpt_math_grp
     - New static methods with semantic-rich names: mrpt::math::TPlane::From3Points(), mrpt::math::TPlane::FromPointAndLine(), ...
 - Deprecations:

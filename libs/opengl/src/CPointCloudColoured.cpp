@@ -143,7 +143,7 @@ void CPointCloudColoured::serializeFrom(
 void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 {
 #ifdef _DEBUG
-	ASSERT_BELOW_(i, size());
+	ASSERT_LT_(i, size());
 #endif
 	m_points[i] = p.pt;
 	auto& c = m_point_colors[i];
@@ -225,8 +225,8 @@ void CPointCloudColoured::recolorizeByCoordinate(
 	const float coord_min, const float coord_max, const int coord_index,
 	const mrpt::img::TColormap color_map)
 {
-	ASSERT_ABOVEEQ_(coord_index, 0);
-	ASSERT_BELOW_(coord_index, 3);
+	ASSERT_GE_(coord_index, 0);
+	ASSERT_LT_(coord_index, 3);
 
 	const float coord_range = coord_max - coord_min;
 	const float coord_range_1 = coord_range != 0.0f ? 1.0f / coord_range : 1.0f;

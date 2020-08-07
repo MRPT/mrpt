@@ -262,8 +262,8 @@ bool fromROS(
 
 			const auto az_idx = lround(
 				(num_azimuth_divisions - 1) * (azimuth + M_PI) / (2 * M_PI));
-			ASSERT_ABOVEEQ_(az_idx, 0);
-			ASSERT_BELOWEQ_(az_idx, num_azimuth_divisions - 1);
+			ASSERT_GE_(az_idx, 0);
+			ASSERT_LE_(az_idx, num_azimuth_divisions - 1);
 
 			// Store in matrix form:
 			obj.rangeImage(ring_id, az_idx) =
@@ -273,7 +273,7 @@ bool fromROS(
 			{
 				float intensity;
 				get_float_from_field(i_field, msg_data, intensity);
-				ASSERT_BELOWEQ_(intensity, 255.0f);
+				ASSERT_LE_(intensity, 255.0f);
 				obj.intensityImage(ring_id, az_idx) = lround(intensity);
 			}
 		}

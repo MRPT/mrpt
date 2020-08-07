@@ -225,7 +225,7 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(
 	mrpt::system::CTimeLoggerEntry tle(
 		m_navProfiler, "CReactiveNavigationSystem::STEP3_WSpaceToTPSpace()");
 
-	ASSERT_BELOW_(ptg_idx, this->getPTG_count());
+	ASSERT_LT_(ptg_idx, this->getPTG_count());
 	CParameterizedTrajectoryGenerator* ptg = this->getPTG(ptg_idx);
 
 	const mrpt::poses::CPose2D rel_pose_PTG_origin_wrt_sense(

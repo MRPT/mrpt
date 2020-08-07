@@ -89,8 +89,8 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
 	clear();
 
 	const int nEnabled = get_xml_children_as_int(node_enabled_, "count");
-	ASSERT_ABOVE_(nEnabled, 0);
-	ASSERT_BELOW_(nEnabled, 10000);
+	ASSERT_GT_(nEnabled, 0);
+	ASSERT_LT_(nEnabled, 10000);
 
 	int enabledCount = 0;
 	const tinyxml2::XMLElement* node_enabled_ith = nullptr;
@@ -130,7 +130,7 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
 		auto node_px = get_xml_children(node_points_item, "px");
 		auto node_px_id = get_xml_children(node_px, "id_");
 		const int id = atoi(node_px_id->GetText());
-		ASSERT_ABOVEEQ_(id, 0);
+		ASSERT_GE_(id, 0);
 		if (id >= enabledCount) continue;  // ignore
 
 		PerLaserCalib& plc = laser_corrections[id];

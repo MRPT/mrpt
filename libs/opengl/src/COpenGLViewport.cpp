@@ -745,7 +745,7 @@ void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
 void COpenGLViewport::setViewportClipDistances(
 	const float clip_min, const float clip_max)
 {
-	ASSERT_ABOVE_(clip_max, clip_min);
+	ASSERT_GT_(clip_max, clip_min);
 
 	m_clip_min = clip_min;
 	m_clip_max = clip_max;

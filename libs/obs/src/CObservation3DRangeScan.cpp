@@ -1243,7 +1243,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 	// Now, we should create more "fake laser" points than columns in the image,
 	//  since laser scans are assumed to sample space at evenly-spaced angles,
 	//  while in images it is like ~tan(angle).
-	ASSERT_ABOVE_(
+	ASSERT_GT_(
 		sp.oversampling_ratio, (sp.use_origin_sensor_pose ? 0.0 : 1.0));
 	const auto nLaserRays = static_cast<size_t>(nCols * sp.oversampling_ratio);
 
@@ -1565,12 +1565,12 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImageAsImage(
 #if MRPT_HAS_OPENCV
 	if (val_max < 1e-4f) val_max = ri.maxCoeff() * rangeUnits;
 
-	ASSERT_ABOVE_(val_max, val_min);
+	ASSERT_GT_(val_max, val_min);
 
 	const float range_inv = rangeUnits / (val_max - val_min);
 
-	ASSERT_ABOVE_(ri.cols(), 0);
-	ASSERT_ABOVE_(ri.rows(), 0);
+	ASSERT_GT_(ri.cols(), 0);
+	ASSERT_GT_(ri.rows(), 0);
 
 	mrpt::img::CImage img;
 	const int cols = ri.cols(), rows = ri.rows();
@@ -1626,7 +1626,7 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImage_getAsImage(
 
 	const float val_min = normMinRange.value_or(.0f);
 	const float val_max = normMaxRange.value_or(this->maxRange);
-	ASSERT_ABOVE_(val_max, val_min);
+	ASSERT_GT_(val_max, val_min);
 
 	return rangeImageAsImage(*ri, val_min, val_max, rangeUnits, color);
 }

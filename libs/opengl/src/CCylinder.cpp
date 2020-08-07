@@ -28,7 +28,7 @@ void CCylinder::onUpdateBuffers_Triangles()
 	tris.clear();
 
 	// precomputed table:
-	ASSERT_ABOVE_(m_slices, 2);
+	ASSERT_GT_(m_slices, 2);
 
 	const float dAng = 2 * M_PIf / m_slices;
 	float a = 0;
