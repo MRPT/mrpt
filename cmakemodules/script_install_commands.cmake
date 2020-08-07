@@ -59,7 +59,6 @@ if(WIN32)
 
 else(WIN32)
 	if (NOT IS_DEBIAN_DBG_PKG)
-		install(DIRECTORY "${MRPT_SOURCE_DIR}/doc/html" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
 		install(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
 		if(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
 			install(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
