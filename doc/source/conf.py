@@ -43,7 +43,7 @@ extensions = [
     'doxyrest',
     'cpplexer',
     'sphinx_panels',
-	'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex'
 ]
 
 # Show build time
