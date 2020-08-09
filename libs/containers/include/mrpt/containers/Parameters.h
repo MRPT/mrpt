@@ -407,10 +407,10 @@ inline std::ostream& operator<<(std::ostream& o, const Parameters& p)
  * \endcode
  */
 #define MCP_SAVE(paramsVariable__, keyName__) \
-	paramsVariable__[#keyName__].asRef<decltype(keyName__)>() = keyName__;
+	paramsVariable__[#keyName__] = keyName__;
 
 #define MCP_SAVE_DEG(paramsVariable__, keyName__) \
-	paramsVariable__[#keyName__].asRef<double>() = mrpt::RAD2DEG(keyName__);
+	paramsVariable__[#keyName__] = mrpt::RAD2DEG(keyName__);
 
 }  // namespace mrpt::containers
 
