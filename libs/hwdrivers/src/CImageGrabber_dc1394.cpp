@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
@@ -562,7 +562,7 @@ bool CImageGrabber_dc1394::getObservation(
 
 		if ((err = dc1394_bayer_decoding_8bit(
 				 imageBuf, imageBufRGB, width, 2 * height,
-				 DC1394_COLOR_FILTER_GBRG,	// Has to be this value for
+				 DC1394_COLOR_FILTER_GBRG,  // Has to be this value for
 				 // Bumblebee!
 				 DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
 		{
@@ -573,7 +573,7 @@ bool CImageGrabber_dc1394::getObservation(
 		}
 
 		out_observation.image.loadFromMemoryBuffer(
-			width, height, true, imageBufRGB);	// Left cam.
+			width, height, true, imageBufRGB);  // Left cam.
 		// out_observation.image.loadFromMemoryBuffer(width,height,true,
 		// imageBufRGB+ width*height*3 ); // Right cam.
 
@@ -649,7 +649,7 @@ bool CImageGrabber_dc1394::getObservation(
 
 		if ((err = dc1394_bayer_decoding_8bit(
 				 imageBuf, imageBufRGB, width, 2 * height,
-				 DC1394_COLOR_FILTER_GBRG,	// Has to be this value for
+				 DC1394_COLOR_FILTER_GBRG,  // Has to be this value for
 				 // Bumblebee!
 				 DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
 		{
@@ -660,10 +660,10 @@ bool CImageGrabber_dc1394::getObservation(
 		}
 
 		out_observation.imageLeft.loadFromMemoryBuffer(
-			width, height, true, imageBufRGB);	// Left cam.
+			width, height, true, imageBufRGB);  // Left cam.
 		out_observation.imageRight.loadFromMemoryBuffer(
 			width, height, true,
-			imageBufRGB + width * height * 3);	// Right cam.
+			imageBufRGB + width * height * 3);  // Right cam.
 
 		delete[] imageBuf;
 		delete[] imageBufRGB;

@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"	 // Precompiled headers
+#include "vision-precomp.h"  // Precompiled headers
 //
 #include <stack>  // Precompiled headers
 
@@ -229,7 +229,7 @@ int cvFindChessboardCorners3(
 	// PART 0: INITIALIZATION
 	//-----------------------------------------------------------------------
 	// Initialize variables
-	int flags = 1;	// not part of the function call anymore!
+	int flags = 1;  // not part of the function call anymore!
 	size_t max_count = 0;
 	int max_dilation_run_ID = -1;
 	// const int min_dilations		=  0; // JL: was: 1
@@ -240,7 +240,7 @@ int cvFindChessboardCorners3(
 	vector<CvCBQuad::Ptr> quad_group;  // CvCBQuad **quad_group		=  0;
 	vector<CvCBCorner::Ptr> corners;  // CvCBCorner *corners			=  0;
 	vector<CvCBQuad::Ptr>
-		output_quad_group;	//	CvCBQuad **output_quad_group = 0;
+		output_quad_group;  //	CvCBQuad **output_quad_group = 0;
 
 	// debug trial. Martin Rufli, 28. Ocober, 2008
 	int block_size = 0;
@@ -395,7 +395,7 @@ int cvFindChessboardCorners3(
 				// overwritten during the next loop pass.
 				// "output_quad_group" is a true copy of "quad_group" and
 				// later used for output
-				output_quad_group = quad_group;	 // mrCopyQuadGroup( quad_group,
+				output_quad_group = quad_group;  // mrCopyQuadGroup( quad_group,
 				// output_quad_group, max_count
 				// );
 			}
@@ -557,7 +557,7 @@ void icvCleanFoundConnectedQuads(
 	// or ones which don't belong to the pattern rectangle. Else go to the end
 	// of the function
 	const size_t nQuads = quad_group.size();
-	if (nQuads <= expected_quads_count) return;	 // Nothing to be done.
+	if (nQuads <= expected_quads_count) return;  // Nothing to be done.
 
 	// Create an array of quadrangle centers
 	vector<CvPoint2D32f> centers(nQuads);
@@ -735,12 +735,12 @@ void icvFindConnectedQuads(
 		seqStack.push(q);  // cvSeqPush( stack, &q );
 
 		q->group_idx = group_idx;
-		out_group.push_back(q);	 // out_group[count++] = q;
+		out_group.push_back(q);  // out_group[count++] = q;
 
 		while (!seqStack.empty())
 		{
 			q = seqStack.top();
-			seqStack.pop();	 // cvSeqPop( stack, &q );
+			seqStack.pop();  // cvSeqPop( stack, &q );
 
 			for (size_t k = 0; k < 4; k++)
 			{
@@ -753,7 +753,7 @@ void icvFindConnectedQuads(
 					neighbor->group_idx = group_idx;
 					seqStack.push(neighbor);  // cvSeqPush( stack, &neighbor );
 					out_group.push_back(
-						neighbor);	// out_group[count++] = neighbor;
+						neighbor);  // out_group[count++] = neighbor;
 				}
 			}
 		}
@@ -2259,4 +2259,4 @@ void quadListMakeUnique(std::vector<CvCBQuad::Ptr>& quads)
 // END OF FILE  (Of "OCamCalib Toolbox" code)
 //===========================================================================
 
-#endif	// MRPT_HAS_OPENCV
+#endif  // MRPT_HAS_OPENCV

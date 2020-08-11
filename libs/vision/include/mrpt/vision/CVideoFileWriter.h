@@ -93,6 +93,6 @@ class CVideoFileWriter
 	 */
 	bool writeImage(const mrpt::img::CImage& img);
 
-};	// end of class
+};  // end of class
 
 }  // namespace mrpt::vision

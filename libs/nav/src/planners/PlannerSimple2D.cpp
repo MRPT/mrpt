@@ -12,7 +12,6 @@
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/nav/planners/PlannerSimple2D.h>
 
-
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::math;

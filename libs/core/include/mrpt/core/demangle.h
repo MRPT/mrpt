@@ -17,4 +17,4 @@ namespace mrpt
  */
 std::string demangle(const std::string& symbolName);
 
-}  // namespace mrpt::system
+}  // namespace mrpt

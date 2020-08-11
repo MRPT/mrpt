@@ -163,7 +163,7 @@ struct CParticleFilterDataImpl : public CParticleFilterCapable
 		MRPT_END
 	}
 
-};	// end CParticleFilterDataImpl<>
+};  // end CParticleFilterDataImpl<>
 
 /** This template class declares the array of particles and its internal data,
  * managing some memory-related issues and providing an easy implementation of
@@ -280,6 +280,6 @@ class CParticleFilterData
 		MRPT_END
 	}
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::bayes
