@@ -7,8 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "tfest-precomp.h"  // Precompiled headers
-
 #include <mrpt/core/round.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/geometry.h>
@@ -17,7 +15,10 @@
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/tfest/se2.h>
+
 #include <iostream>
+
+#include "tfest-precomp.h"	// Precompiled headers
 
 using namespace mrpt;
 using namespace mrpt::tfest;
@@ -216,7 +217,7 @@ bool tfest::se2_l2_robust(
 			params.probability_find_good_model > 0 &&
 			params.probability_find_good_model < 1);
 		// Set an initial # of iterations:
-		results.ransac_iters = 10;  // It doesn't matter actually, since will be
+		results.ransac_iters = 10;	// It doesn't matter actually, since will be
 		// changed in the first loop
 	}
 
@@ -281,8 +282,7 @@ bool tfest::se2_l2_robust(
 			 j < nCorrs && subSet.size() < params.ransac_maxSetSize; j++)
 		{
 			const size_t idx = corrsIdxsPermutation[j];
-
-			const TMatchingPair& corr_j = in_correspondences[idx];
+			const auto& corr_j = in_correspondences[idx];
 
 			// Don't pick the same features twice!
 			if (alreadySelectedThis[corr_j.this_idx] ||
@@ -583,7 +583,7 @@ bool tfest::se2_l2_robust(
 		if (subSet.size() >= params.ransac_minSetSize &&
 			this_subset_RMSE < MAX_RMSE_TO_END)
 		{
-			break;  // end RANSAC iterations.
+			break;	// end RANSAC iterations.
 		}
 
 #ifdef DO_PROFILING
