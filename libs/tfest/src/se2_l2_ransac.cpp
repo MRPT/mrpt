@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-#include "tfest-precomp.h"	// Precompiled headers
+#include "tfest-precomp.h"  // Precompiled headers
 
 using namespace mrpt;
 using namespace mrpt::tfest;
@@ -217,7 +217,7 @@ bool tfest::se2_l2_robust(
 			params.probability_find_good_model > 0 &&
 			params.probability_find_good_model < 1);
 		// Set an initial # of iterations:
-		results.ransac_iters = 10;	// It doesn't matter actually, since will be
+		results.ransac_iters = 10;  // It doesn't matter actually, since will be
 		// changed in the first loop
 	}
 
@@ -583,7 +583,7 @@ bool tfest::se2_l2_robust(
 		if (subSet.size() >= params.ransac_minSetSize &&
 			this_subset_RMSE < MAX_RMSE_TO_END)
 		{
-			break;	// end RANSAC iterations.
+			break;  // end RANSAC iterations.
 		}
 
 #ifdef DO_PROFILING

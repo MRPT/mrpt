@@ -63,7 +63,7 @@ END_EVENT_TABLE()
 CDlgPoseEst::CPNP_PTR pose_algos[9] = {
 	&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls,
 	&mrpt::vision::pnp::CPnP::upnp, &mrpt::vision::pnp::CPnP::p3p,
-	&mrpt::vision::pnp::CPnP::lhm,	&mrpt::vision::pnp::CPnP::posit,
+	&mrpt::vision::pnp::CPnP::lhm,  &mrpt::vision::pnp::CPnP::posit,
 	&mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp};
 
 CDlgPoseEst::CDlgPoseEst(
@@ -146,8 +146,8 @@ CDlgPoseEst::CDlgPoseEst(
 		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = {
-		_("OpenCV\'s default"), _("Scaramuzza et al.\'s")};
+	wxString __wxRadioBoxChoices_1[2] = {_("OpenCV\'s default"),
+										 _("Scaramuzza et al.\'s")};
 	rbMethod = new wxRadioBox(
 		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
@@ -374,7 +374,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 	m_threadImgToProcess.reset();
 	m_threadMustClose = false;
 	m_threadResults.clear();
-	m_threadResultsComputed = true;	 // To start a new detection
+	m_threadResultsComputed = true;  // To start a new detection
 	m_threadIsClosed = false;
 
 	m_calibFrames.clear();
@@ -388,7 +388,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 	this->m_panelCamera->Disable();
 
 	// start processing:
-	timCapture.Start(2, true);	// One shot
+	timCapture.Start(2, true);  // One shot
 }
 
 void CDlgPoseEst::OnbtnStopClick(wxCommandEvent& event)

@@ -85,7 +85,7 @@ TEST(RawlogGrabberApp, DISABLED_CGenericCamera_AVI)
 				if (numSavedObjs >= REQUIRED_GRAB_OBS)
 				{
 					auto lk = mrpt::lockHelper(app.params_mtx);
-					app.run_for_seconds = 1.0;	// make it exit
+					app.run_for_seconds = 1.0;  // make it exit
 					break;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(500));

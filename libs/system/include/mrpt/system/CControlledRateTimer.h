@@ -139,6 +139,6 @@ class CControlledRateTimer : public mrpt::system::COutputLogger
 	double m_lastTic = 0;
 	mrpt::system::CTicTac m_tic;
 
-};	// End of class def.
+};  // End of class def.
 
 }  // namespace mrpt::system

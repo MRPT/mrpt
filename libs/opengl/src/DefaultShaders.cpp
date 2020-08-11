@@ -7,11 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"	 // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 //
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/opengl_api.h>
-
 
 using namespace mrpt::opengl;
 
@@ -45,13 +44,12 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/points.f.glsl"
 				;
-			uniforms = {
-				"p_matrix",
-				"mv_matrix",
-				"vertexPointSize",
-				"enableVariablePointSize",
-				"variablePointSize_K",
-				"variablePointSize_DepthScale"};
+			uniforms = {"p_matrix",
+						"mv_matrix",
+						"vertexPointSize",
+						"enableVariablePointSize",
+						"variablePointSize_K",
+						"variablePointSize_DepthScale"};
 			attribs = {"position", "vertexColor"};
 			break;
 
@@ -75,7 +73,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles.f.glsl"
 				;
-			uniforms = {"p_matrix",		 "mv_matrix",	   "light_diffuse",
+			uniforms = {"p_matrix",		 "mv_matrix",	  "light_diffuse",
 						"light_ambient", "light_specular", "light_direction"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
@@ -88,7 +86,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 #include "../shaders/textured-triangles.f.glsl"
 				;
 			uniforms = {"p_matrix",		   "mv_matrix",		 "pmv_matrix",
-						"light_diffuse",   "light_ambient",	 "light_specular",
+						"light_diffuse",   "light_ambient",  "light_specular",
 						"light_direction", "textureSampler", "enableLight"};
 			attribs = {"position", "vertexUV", "vertexNormal"};
 			break;

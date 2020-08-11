@@ -495,7 +495,7 @@ void RawlogGrabberApp::process_observations_for_sf(
 			(*m_out_arch_ptr) << acts;
 			{
 				auto lk = mrpt::lockHelper(results_mtx);
-				rawlog_saved_objects += 2;	// m_curSF + acts;
+				rawlog_saved_objects += 2;  // m_curSF + acts;
 			}
 		}
 		else if (IS_DERIVED(*it->second, CObservation))

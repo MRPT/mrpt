@@ -33,7 +33,7 @@ namespace mrpt
 /** A thread pool.
  *
  * \note Partly based on: https://github.com/progschj/ThreadPool (ZLib license)
- * 
+ *
  * \note (New in MRPT 2.0.5)
  */
 class WorkerThreadsPool

@@ -24,7 +24,7 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>	 // MRPT_getVersion()
+#include <mrpt/system/os.h>  // MRPT_getVersion()
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -81,7 +81,7 @@ struct TThreadParam
 	volatile double tilt_ang_deg{0};
 	volatile double Hz{0};
 
-	CObservationVelodyneScan::Ptr new_obs;	// Raw scans
+	CObservationVelodyneScan::Ptr new_obs;  // Raw scans
 	CObservationGPS::Ptr new_obs_gps;  // GPS, if any
 };
 
@@ -109,7 +109,7 @@ void thread_grabbing(TThreadParam& p)
 								  name2value(arg_model.getValue()));
 		if (arg_ip_filter.isSet())
 			velodyne.setDeviceIP(
-				arg_ip_filter.getValue());	// Default: from any IP
+				arg_ip_filter.getValue());  // Default: from any IP
 		if (arg_in_pcap.isSet())
 			velodyne.setPCAPInputFile(arg_in_pcap.getValue());
 		if (arg_out_pcap.isSet())
@@ -414,7 +414,7 @@ int main(int argc, char** argv)
 	{
 		int ret = VelodyneView(argc, argv);
 		std::this_thread::sleep_for(
-			50ms);	// to allow GUI threads to end gracefully.
+			50ms);  // to allow GUI threads to end gracefully.
 		return ret;
 	}
 	catch (const std::exception& e)
