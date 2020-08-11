@@ -12,6 +12,9 @@
   - \ref mrpt_math_grp
     - New static methods with semantic-rich names: mrpt::math::TPlane::From3Points(), mrpt::math::TPlane::FromPointAndLine(), ...
     - New asString() methods in mrpt::math::TPlane, mrpt::math::TLine2D, mrpt::math::TLine3D
+  - \ref mrpt_tfest_grp
+    - New templatized mrpt::tfest::TMatchingPairTempl<> and mrpt::tfest::TMatchingPairListTempl<>
+    - New mrpt::tfest::se3_l2() for `double` precision.
 - Deprecations:
   - mrpt::system::TParameters is now deprecated.
 - BUG FIXES:
