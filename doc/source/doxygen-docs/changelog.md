@@ -9,6 +9,7 @@
     - New function mrpt::demangle()
     - New class mrpt::WorkerThreadsPool
     - New macro ASSERT_NEAR_(). Defined new macros with correct English names ASSERT_LT_(), etc. deprecating the former ones.
+    - mrpt::get_env() gets specialization for bool.
   - \ref mrpt_math_grp
     - New static methods with semantic-rich names: mrpt::math::TPlane::From3Points(), mrpt::math::TPlane::FromPointAndLine(), ...
     - New asString() methods in mrpt::math::TPlane, mrpt::math::TLine2D, mrpt::math::TLine3D
@@ -20,6 +21,7 @@
 - BUG FIXES:
   - Avoid crash in camera-calib app when clicking "Close" while capturing a live video.
   - Fix potential Eigen crash in matrixes inverse() and inverse_LLt() if building mrpt and user code with different optimization flags.
+  - Wrong parsing of env variables in mrpt::get_env() when called more than once.
 
 ------
 # Version 2.0.4: Released Jun 20, 2020
