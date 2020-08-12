@@ -34,6 +34,7 @@ inline T from_string(
 {
 	auto& iss(internal::get_istringstream());
 	iss.str(s);
+	iss.seekg(0);
 	T result = defValue;
 	if (!(iss >> result))
 	{
