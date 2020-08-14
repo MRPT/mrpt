@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /containers_parameters_example
+# CMake file for the MRPT example:  /containers_yaml_example
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-set(sampleName containers_parameters_example)
+set(sampleName containers_yaml_example)
 project(EXAMPLE_${sampleName})
 
 cmake_minimum_required(VERSION 3.1)
