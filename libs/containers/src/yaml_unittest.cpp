@@ -9,21 +9,21 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/config.h>
-#include <mrpt/containers/Parameters.h>
+#include <mrpt/containers/yaml.h>
 
 #include <algorithm>  // count()
 
-TEST(Parameters, emptyCtor)
+TEST(yaml, emptyCtor)
 {
 	{
-		mrpt::containers::Parameters p;
+		mrpt::containers::yaml p;
 		EXPECT_TRUE(p.empty());
 	}
 }
 
-TEST(Parameters, assignments)
+TEST(yaml, assignments)
 {
-	mrpt::containers::Parameters p;
+	mrpt::containers::yaml p;
 	p["K"] = 2.0;
 	p["N"] = uint64_t(10);
 	p["name"] = "Pepico";
@@ -43,19 +43,19 @@ TEST(Parameters, assignments)
 	EXPECT_FALSE(p["visible"]);
 	EXPECT_TRUE(p["hidden"]);
 
-	EXPECT_EQ(p.typeOfChild("K"), typeid(double));
+	EXPECT_EQ(p["K"].scalarType(), typeid(double));
 	EXPECT_EQ(p["K"].as<double>(), 2.0);
 
-	EXPECT_EQ(p.typeOfChild("N"), typeid(uint64_t));
+	EXPECT_EQ(p["N"].scalarType(), typeid(uint64_t));
 	EXPECT_EQ(p["N"].as<uint64_t>(), 10U);
 
-	EXPECT_EQ(p.typeOfChild("name"), typeid(std::string));
+	EXPECT_EQ(p["name"].scalarType(), typeid(std::string));
 	EXPECT_EQ(p["name"].as<std::string>(), "Pepico");
 
-	EXPECT_EQ(p.typeOfChild("enabled"), typeid(bool));
+	EXPECT_EQ(p["enabled"].scalarType(), typeid(bool));
 
 	{
-		mrpt::containers::Parameters p2;
+		mrpt::containers::yaml p2;
 		EXPECT_TRUE(p2.empty());
 
 		p2 = p;
@@ -74,31 +74,31 @@ TEST(Parameters, assignments)
 	EXPECT_EQ(p["visible"].as<std::string>(), "false");
 }
 
-TEST(Parameters, initializers)
+TEST(yaml, initializers)
 {
 	{
-		auto p = mrpt::containers::Parameters({"K", 1.0});
+		auto p = mrpt::containers::yaml::Sequence({"K", 1.0});
 		EXPECT_TRUE(p.isSequence());
 	}
 	{
-		auto p = mrpt::containers::Parameters({{"K", 1.0}});
+		auto p = mrpt::containers::yaml::Map({{"K", 1.0}});
 		EXPECT_TRUE(p.isMap());
 	}
 
 	{
-		auto p = mrpt::containers::Parameters({"K", 1.0, 10.0});
+		auto p = mrpt::containers::yaml({"K", 1.0, 10.0});
 		EXPECT_TRUE(p.isSequence());
 	}
 	{
-		auto p = mrpt::containers::Parameters(
+		auto p = mrpt::containers::yaml::Map(
 			{{"K", 1.0}, {"T", 10.0}, {"Name", "bar"}});
 		EXPECT_TRUE(p.isMap());
 	}
 }
 
-TEST(Parameters, initializerMap)
+TEST(yaml, initializerMap)
 {
-	const auto p = mrpt::containers::Parameters(
+	const auto p = mrpt::containers::yaml::Map(
 		{{"K", 2.0}, {"book", std::string("silmarillion")}});
 
 	EXPECT_FALSE(p.isSequence());
@@ -106,14 +106,14 @@ TEST(Parameters, initializerMap)
 	EXPECT_FALSE(p.empty());
 	EXPECT_TRUE(p.has("K"));
 
-	EXPECT_EQ(p.typeOfChild("K"), typeid(double));
+	EXPECT_EQ(p["K"].scalarType(), typeid(double));
 	EXPECT_EQ(p["K"].as<double>(), 2.0);
 
 	EXPECT_EQ(p.getOrDefault("K", 1.0), 2.0);
 	EXPECT_EQ(p.getOrDefault("Q", 1.0), 1.0);
 	EXPECT_EQ(p.getOrDefault<uint32_t>("K", 1), 2U);
 
-	EXPECT_EQ(p.typeOfChild("book"), typeid(std::string));
+	EXPECT_EQ(p["book"].scalarType(), typeid(std::string));
 	EXPECT_EQ(p["book"].as<std::string>(), "silmarillion");
 
 	// non existing in const object:
@@ -122,9 +122,9 @@ TEST(Parameters, initializerMap)
 	EXPECT_THROW(p["K"].asRef<std::string>(), std::exception);
 }
 
-TEST(Parameters, initializerSequence)
+TEST(yaml, initializerSequence)
 {
-	const auto seq1 = mrpt::containers::Parameters({1.0, 2.0, 3.0});
+	const auto seq1 = mrpt::containers::yaml({1.0, 2.0, 3.0});
 
 	EXPECT_FALSE(seq1.empty());
 	EXPECT_TRUE(seq1.isSequence());
@@ -141,7 +141,7 @@ TEST(Parameters, initializerSequence)
 	EXPECT_THROW(seq1(3), std::out_of_range);
 	EXPECT_THROW(seq1(-1), std::out_of_range);
 
-	auto seq2 = mrpt::containers::Parameters({1.0, 2.0, 3.0});
+	auto seq2 = mrpt::containers::yaml({1.0, 2.0, 3.0});
 	EXPECT_EQ(seq2(1).as<double>(), 2.0);
 
 	seq2(1) = 42.0;
@@ -150,7 +150,7 @@ TEST(Parameters, initializerSequence)
 	seq2(1) = "foo";
 	EXPECT_EQ(seq2(1).as<std::string>(), std::string("foo"));
 
-	seq2(1) = mrpt::containers::Parameters({{"K", 1.0}});
+	seq2(1) = mrpt::containers::yaml::Map({{"K", 1.0}});
 	EXPECT_EQ(seq2(1)["K"].as<double>(), 1.0);
 
 	seq2.push_back(std::string("foo2"));
@@ -160,15 +160,15 @@ TEST(Parameters, initializerSequence)
 	EXPECT_EQ(seq2(4).as<double>(), 9.0);
 }
 
-TEST(Parameters, nested)
+TEST(yaml, nested)
 {
-	auto p = mrpt::containers::Parameters({{"K", 2.0}});
-	p["PID"] = mrpt::containers::Parameters({{"Kp", 10.0}, {"Ti", 10.0}});
+	auto p = mrpt::containers::yaml::Map({{"K", 2.0}});
+	p["PID"] = mrpt::containers::yaml::Map({{"Kp", 10.0}, {"Ti", 10.0}});
 
 	EXPECT_FALSE(p.empty());
 	EXPECT_FALSE(p["PID"].empty());
 
-	EXPECT_EQ(p["PID"].typeOfChild("Ti"), typeid(double));
+	EXPECT_EQ(p["PID"]["Ti"].scalarType(), typeid(double));
 	EXPECT_EQ(p["PID"]["Ti"].as<double>(), 10.0);
 
 	EXPECT_FALSE(p.isScalar());
@@ -179,18 +179,18 @@ TEST(Parameters, nested)
 	EXPECT_THROW(p["PID"]["Ti"].empty(), std::exception);
 	EXPECT_THROW(p["PID"]["Ti"].clear(), std::exception);
 	EXPECT_THROW(p["PID"]["Ti"].has("xxx"), std::exception);
-	EXPECT_THROW(p["PID"]["Ti"].typeOfChild("xxx"), std::exception);
+	EXPECT_THROW(p["PID"]["Ti"]["xxx"].scalarType(), std::exception);
 
 	// clear and recheck;
 	p["PID"].clear();
 	EXPECT_TRUE(p["PID"].empty());
 }
 
-TEST(Parameters, nested2)
+TEST(yaml, nested2)
 {
-	mrpt::containers::Parameters p;
+	mrpt::containers::yaml p;
 	p["N"] = 10;
-	auto& pid = p["PID"] = mrpt::containers::Parameters();
+	auto& pid = p["PID"] = mrpt::containers::yaml();
 	pid["Kp"] = 0.5;
 	p["PID"]["Ti"] = 2.0;
 	p["PID"]["N"] = 1000;
@@ -202,32 +202,32 @@ TEST(Parameters, nested2)
 	EXPECT_EQ(p["PID"]["name"].as<std::string>(), std::string("foo"));
 }
 
-const auto testMap = mrpt::containers::Parameters(
+const auto testMap = mrpt::containers::yaml::Map(
 	{{"K", 2.0},
 	 {"book", "silmarillion"},
 	 {"mySequence",
-	  mrpt::containers::Parameters::Sequence(
-		  {1.0, 2.0,
-		   mrpt::containers::Parameters::Map({{"P", 1.0}, {"Q", 2.0}})})},
-	 {"myEmptyVal", mrpt::containers::Parameters()},
+	  mrpt::containers::yaml::Sequence(
+		  {1.0, 2.0, mrpt::containers::yaml::Map({{"P", 1.0}, {"Q", 2.0}})})},
+	 {"myEmptyVal", mrpt::containers::yaml()},
 	 {"myDict",
-	  mrpt::containers::Parameters({{"A", 1.0}, {"B", 2.0}, {"C", 3.0}})}});
+	  mrpt::containers::yaml::Map({{"A", 1.0}, {"B", 2.0}, {"C", 3.0}})}});
 
-TEST(Parameters, printYAML)
+TEST(yaml, printYAML)
 {
-	// testMap.printAsYAML();
+	testMap.printAsYAML();
 	std::stringstream ss;
 	testMap.printAsYAML(ss);
 	const auto s = ss.str();
 	EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 13U);
 }
 
-TEST(Parameters, iterate)
+TEST(yaml, iterate)
 {
 	std::set<std::string> foundKeys;
 	for (const auto& kv : testMap.asMap())
 	{
-		// std::cout << kv.first << ":" << kv.second.index() << "\n";
+		std::cout << kv.first << ":" << kv.second.typeName() << "\n";
+
 		foundKeys.insert(kv.first);
 	}
 	EXPECT_EQ(foundKeys.size(), 5U);
@@ -235,7 +235,7 @@ TEST(Parameters, iterate)
 	foundKeys.clear();
 	for (const auto& kv : testMap["myDict"].asMap())
 	{
-		// std::cout << kv.first << ":" << kv.second.index() << "\n";
+		std::cout << kv.first << ":" << kv.second.typeName() << "\n";
 		foundKeys.insert(kv.first);
 	}
 	EXPECT_EQ(foundKeys.size(), 3U);
@@ -243,14 +243,14 @@ TEST(Parameters, iterate)
 	EXPECT_EQ(testMap["mySequence"].asSequence().size(), 3U);
 }
 
-TEST(Parameters, macros)
+TEST(yaml, macros)
 {
-	mrpt::containers::Parameters p;
+	mrpt::containers::yaml p;
 	p["K"] = 2.0;
 	p["Ang"] = 90.0;
 	p["N"].asRef<uint64_t>() = 10;
 	p["name"] = "Pepico";
-	p["PID"] = mrpt::containers::Parameters({{"Kp", 1.0}, {"Td", 0.8}});
+	p["PID"] = mrpt::containers::yaml::Map({{"Kp", 1.0}, {"Td", 0.8}});
 
 	double K, Td, Foo = 9.0, Bar, Ang, Ang2 = M_PI;
 	std::string name;
@@ -275,17 +275,17 @@ TEST(Parameters, macros)
 	EXPECT_THROW(MCP_LOAD_REQ(p, Bar), std::exception);
 }
 
-void foo(mrpt::containers::Parameters& p)
+void foo(mrpt::containers::yaml& p)
 {
 	p["K"] = 2.0;
 	p["N"] = 2;
 }
 
-TEST(Parameters, assignmentsInCallee)
+TEST(yaml, assignmentsInCallee)
 {
-	mrpt::containers::Parameters p;
+	mrpt::containers::yaml p;
 
-	auto& pp = p["params"] = mrpt::containers::Parameters::Map();
+	auto& pp = p["params"] = mrpt::containers::yaml::Map();
 	foo(pp);
 
 	EXPECT_FALSE(p.empty());
@@ -295,7 +295,7 @@ TEST(Parameters, assignmentsInCallee)
 	EXPECT_TRUE(p["params"].has("N"));
 
 	EXPECT_TRUE(p["params"]["K"].isScalar());
-	EXPECT_EQ(p["params"].typeOfChild("K"), typeid(double));
+	EXPECT_EQ(p["params"]["K"].scalarType(), typeid(double));
 	EXPECT_EQ(p["params"]["K"].as<double>(), 2.0);
 	EXPECT_EQ(p["params"]["N"].as<int>(), 2);
 }
@@ -312,13 +312,17 @@ myMap:
   K: 10.0
   P: -5.0
   Q: ~
+  nestedMap:
+    a: 1
+    b: 2
+    c: 3
 )xxx");
 // clang-format on
 
 #if MRPT_HAS_YAMLCPP
-TEST(Parameters, fromYAML)
+TEST(yaml, fromYAML)
 {
-	auto p = mrpt::containers::Parameters::FromYAMLText(sampleYamlBlock);
+	auto p = mrpt::containers::yaml::FromYAMLText(sampleYamlBlock);
 	EXPECT_EQ(p["mySeq"](0).as<std::string>(), "first");
 	EXPECT_EQ(p["myMap"]["P"].as<double>(), -5.0);
 	EXPECT_EQ(p["myMap"]["K"].as<double>(), 10.0);
@@ -326,15 +330,15 @@ TEST(Parameters, fromYAML)
 	EXPECT_TRUE(p["mySeq"](3).isScalar());
 	EXPECT_TRUE(p["myMap"]["Q"].isScalar());
 
-	EXPECT_FALSE(p.isEmptyNode());
-	EXPECT_FALSE(p["myMap"].isEmptyNode());
+	EXPECT_FALSE(p.isNullNode());
+	EXPECT_FALSE(p["myMap"].isNullNode());
 
 // Avoid a bug in yamlcpp < 0.6.2
 // see: https://github.com/jbeder/yaml-cpp/issues/590
 #if MRPT_YAMLCPP_VERSION >= 0x062
-	EXPECT_TRUE(p["mySeq"](3).isEmptyNode());
-	EXPECT_TRUE(p["myMap"]["Q"].isEmptyNode());
-	EXPECT_FALSE(p["myMap"]["K"].isEmptyNode());
+	EXPECT_TRUE(p["mySeq"](3).isNullNode());
+	EXPECT_TRUE(p["myMap"]["Q"].isNullNode());
+	EXPECT_FALSE(p["myMap"]["K"].isNullNode());
 #endif
 }
 #endif
