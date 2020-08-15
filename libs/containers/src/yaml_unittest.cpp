@@ -239,6 +239,33 @@ TEST(yaml, ctorMap)
 	EXPECT_EQ(ss1.str(), ss2.str());
 }
 
+TEST(yaml, comments)
+{
+	// using mrpt::containers::make_vcp;
+
+	mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
+	c1["K"] = 2.0;
+	c1["K"].comment("Form factor");
+
+	c1["T"] = 27;
+	c1["T"].comment("Temperature [C]");
+
+	c1["v"] = 0;
+
+	EXPECT_TRUE(c1["K"].hasComment());
+	EXPECT_TRUE(c1["T"].hasComment());
+	EXPECT_FALSE(c1["v"].hasComment());
+
+	MRPT_TODO("vcp compact form");
+	// c1["L"] = make_vcp(2.0, "Arm length [meters]");
+
+	mrpt::containers::yaml c2 = mrpt::containers::yaml::Map();
+	c2["constants"] = c1;
+	c2["constants"].comment("Universal constant definitions:");
+
+	c2.printAsYAML(std::cout);
+}
+
 TEST(yaml, iterate)
 {
 	try

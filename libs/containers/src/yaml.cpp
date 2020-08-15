@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
+#include "containers-precomp.h"	 // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
@@ -334,6 +334,7 @@ bool yaml::internalPrintAsYAML(
 		o << "\n";
 		indent += 2;
 	}
+
 	const std::string sInd(indent, ' ');
 	for (const auto& e : v)
 	{
@@ -352,10 +353,17 @@ bool yaml::internalPrintAsYAML(
 		o << "\n";
 		indent += 2;
 	}
+
 	const std::string sInd(indent, ' ');
 	for (const auto& kv : m)
 	{
 		const node_t& v = kv.second;
+
+		if (v.comment.has_value())
+		{
+			o << sInd << "# ";
+			o << v.comment.value() << "\n";
+		}
 		o << sInd << kv.first << ": ";
 		if (!internalPrintNodeAsYAML(v, o, indent, false, di)) o << "\n";
 	}
@@ -499,4 +507,23 @@ yaml yaml::FromYAMLCPP(const YAML::Node& n)
 void yaml::loadFromYAMLCPP(const YAML::Node& n)
 {
 	*this = yaml::FromYAMLCPP(n);
+}
+
+bool yaml::hasComment() const
+{
+	const node_t* n = dereferenceProxy();
+	return n->comment.has_value();
+}
+
+const std::string& yaml::comment()
+{
+	node_t* n = dereferenceProxy();
+	ASSERTMSG_(n->comment.has_value(), "");
+	return n->comment.value();
+}
+
+void yaml::comment(const std::string_view& c)
+{
+	node_t* n = dereferenceProxy();
+	n->comment.emplace(c);
 }
