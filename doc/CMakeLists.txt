@@ -5,11 +5,12 @@ project(documentation)
 # Dummy documentation target for showing grouped files in IDEs:
 # ----------------------------------------------------------------------------
 file(GLOB_RECURSE RST_FILES "${CMAKE_SOURCE_DIR}/doc/*.rst")
+file(GLOB_RECURSE MD_FILES "${CMAKE_SOURCE_DIR}/doc/*.md")
 file(GLOB_RECURSE H_FILES "${CMAKE_SOURCE_DIR}/doc/sources/*.h")
 set(DOC_INDIV_FILES
 	"${CMAKE_SOURCE_DIR}/README.md"
 	)
-set(all_docs_files ${RST_FILES} ${H_FILES} ${DOC_INDIV_FILES})
+set(all_docs_files ${RST_FILES} ${H_FILES} ${DOC_INDIV_FILES} ${MD_FILES})
 add_custom_target(DocumentationFiles DEPENDS ${all_docs_files} SOURCES ${all_docs_files})
 set_target_properties(DocumentationFiles PROPERTIES FOLDER "documentation")
 

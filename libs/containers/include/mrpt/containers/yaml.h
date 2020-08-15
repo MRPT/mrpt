@@ -20,6 +20,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <typeinfo>
 #include <variant>
@@ -38,8 +39,14 @@ namespace internal {
 }
 // clang-format on
 
+/** \defgroup mrpt_containers_yaml YAML C++ API
+ * Header: `#include <mrpt/containers/yaml.h>`.
+ * Library: \ref mrpt_containers_grp
+ * \ingroup mrpt_containers_grp */
+
 /** Powerful YAML-like container for possibly-nested blocks of parameters or any
- * arbitrary structured data contents.
+ * arbitrary structured data contents, including documentation in the form of
+ *comments attached to each node.
  *
  * This class holds the root "node" in a YAML-like tree structure.
  * Each tree node can be of one of these types:
@@ -58,7 +65,7 @@ namespace internal {
  * See example in \ref containers_yaml_example/test.cpp
  * \snippet containers_yaml_example/test.cpp example-yaml
  *
- * \ingroup mrpt_containers_grp
+ * \ingroup mrpt_containers_yaml
  * \note [new in MRPT 2.0.5]
  */
 class yaml
@@ -77,17 +84,19 @@ class yaml
 
 	struct node_t
 	{
+		/** Node data */
 		std::variant<std::monostate, sequence_t, map_t, scalar_t> d;
+
+		/** Optional comment block */
+		std::optional<std::string> comment;
 
 		node_t() = default;
 		~node_t() = default;
-		node_t(const node_t& s) = default;
-		node_t& operator=(const node_t& s) = default;
 
 		template <
-			typename T,  //
+			typename T,	 //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,  //
+				std::initializer_list<map_t::value_type>, T>>,	//
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -407,6 +416,21 @@ class yaml
 	inline operator uint64_t() const { return as<uint64_t>(); }
 
 	inline operator std::string() const { return as<std::string>(); }
+
+	/** Returns true if the proxied node has an associated comment block */
+	bool hasComment() const;
+
+	/** Gets the comment associated to the proxied node.
+	 * \exception std::exception If there is no comment attached.
+	 * \sa hasComment()
+	 */
+	const std::string& comment();
+
+	/** Sets the comment attached to a given proxied node.
+	 * \exception std::exception If there is no comment attached.
+	 * \sa hasComment()
+	 */
+	void comment(const std::string_view& c);
 
    private:
 	template <typename T>

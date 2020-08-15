@@ -16,7 +16,4 @@ Find below some examples of use.
 
 ## YAML-like parameter container
 
-See mrpt::containers::Parameters, and the examples below.
-
-See: \ref containers_yaml_example/test.cpp
-\snippet containers_yaml_example/test.cpp example-yaml
+See mrpt::containers::yaml, and the examples therein.
