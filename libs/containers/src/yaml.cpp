@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"	 // Precompiled headers
+#include "containers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
@@ -289,40 +289,46 @@ const yaml yaml::operator()(int index) const
 
 void yaml::printAsYAML() const { printAsYAML(std::cout); }
 
-void yaml::printAsYAML(std::ostream& o) const
+void yaml::printAsYAML(std::ostream& o, bool di) const
 {
 	const node_t* n = dereferenceProxy();
-	yaml::internalPrintNodeAsYAML(*n, o, 0, true);
+	yaml::internalPrintNodeAsYAML(*n, o, 0, true, di);
 }
 
 bool yaml::internalPrintNodeAsYAML(
-	const node_t& p, std::ostream& o, int indent, bool first)
+	const node_t& p, std::ostream& o, int indent, bool first, bool di)
 {
+	if (di) o << "[printNode] type=`" << p.typeName() << "`\n";
+
 	if (p.isScalar())
-		return internalPrintAsYAML(std::get<scalar_t>(p.d), o, indent, first);
+		return internalPrintAsYAML(
+			std::get<scalar_t>(p.d), o, indent, first, di);
 
 	if (p.isMap())
-		return internalPrintAsYAML(std::get<map_t>(p.d), o, indent, first);
+		return internalPrintAsYAML(std::get<map_t>(p.d), o, indent, first, di);
 
 	if (p.isSequence())
-		return internalPrintAsYAML(std::get<sequence_t>(p.d), o, indent, first);
+		return internalPrintAsYAML(
+			std::get<sequence_t>(p.d), o, indent, first, di);
 
 	if (p.isNullNode())
-		return internalPrintAsYAML(std::monostate(), o, indent, first);
+		return internalPrintAsYAML(std::monostate(), o, indent, first, di);
 
 	THROW_EXCEPTION("Should never reach here");
 }
 
 bool yaml::internalPrintAsYAML(
 	const std::monostate&, std::ostream& o, [[maybe_unused]] int indent,
-	[[maybe_unused]] bool first)
+	[[maybe_unused]] bool first, [[maybe_unused]] bool di)
 {
 	o << "~";
 	return false;
 }
 bool yaml::internalPrintAsYAML(
-	const yaml::sequence_t& v, std::ostream& o, int indent, bool first)
+	const yaml::sequence_t& v, std::ostream& o, int indent, bool first, bool di)
 {
+	if (di) o << "[printSequence] size=" << v.size() << "\n";
+
 	if (!first)
 	{
 		o << "\n";
@@ -332,13 +338,15 @@ bool yaml::internalPrintAsYAML(
 	for (const auto& e : v)
 	{
 		o << sInd << "- ";
-		if (!internalPrintNodeAsYAML(e, o, indent, false)) o << "\n";
+		if (!internalPrintNodeAsYAML(e, o, indent, false, di)) o << "\n";
 	}
 	return true;
 }
 bool yaml::internalPrintAsYAML(
-	const yaml::map_t& m, std::ostream& o, int indent, bool first)
+	const yaml::map_t& m, std::ostream& o, int indent, bool first, bool di)
 {
+	if (di) o << "[printMap] size=" << m.size() << "\n";
+
 	if (!first)
 	{
 		o << "\n";
@@ -349,14 +357,17 @@ bool yaml::internalPrintAsYAML(
 	{
 		const node_t& v = kv.second;
 		o << sInd << kv.first << ": ";
-		if (!internalPrintNodeAsYAML(v, o, indent, false)) o << "\n";
+		if (!internalPrintNodeAsYAML(v, o, indent, false, di)) o << "\n";
 	}
 	return true;
 }
 
 bool yaml::internalPrintAsYAML(
-	const yaml::scalar_t& v, std::ostream& o, int indent, bool first)
+	const yaml::scalar_t& v, std::ostream& o, int indent, bool first, bool di)
 {
+	if (di)
+		o << "[printScalar] type=`" << mrpt::demangle(v.type().name()) << "`\n";
+
 	if (!v.has_value())
 	{
 		o << "~";
@@ -365,7 +376,7 @@ bool yaml::internalPrintAsYAML(
 
 	if (v.type() == typeid(yaml))
 		return internalPrintNodeAsYAML(
-			*std::any_cast<yaml>(v).dereferenceProxy(), o, indent, first);
+			*std::any_cast<yaml>(v).dereferenceProxy(), o, indent, first, di);
 	else if (v.type() == typeid(bool))
 		o << (std::any_cast<bool>(v) ? "true" : "false");
 	else if (v.type() == typeid(uint64_t))
@@ -420,7 +431,7 @@ yaml yaml::FromYAMLCPP(const YAML::Node& n)
 
 	if (n.IsSequence())
 	{
-		auto ret = yaml::Sequence();
+		yaml ret = yaml(Sequence());
 
 		for (const auto& e : n)
 		{
@@ -447,7 +458,7 @@ yaml yaml::FromYAMLCPP(const YAML::Node& n)
 	}
 	else if (n.IsMap())
 	{
-		auto ret = yaml::Map();
+		yaml ret = yaml(yaml::Map());
 
 		for (const auto& kv : n)
 		{

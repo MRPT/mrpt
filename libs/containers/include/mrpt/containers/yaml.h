@@ -34,6 +34,7 @@ namespace mrpt::containers { class yaml;
 namespace internal {
  enum tag_as_proxy_t {}; enum tag_as_const_proxy_t {};
  template <typename T> T implAsGetter(const yaml& p);
+ template <typename T> T implAnyAsGetter(const std::any& p);
 }
 // clang-format on
 
@@ -84,9 +85,9 @@ class yaml
 		node_t& operator=(const node_t& s) = default;
 
 		template <
-			typename T,	 //
+			typename T,  //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,	//
+				std::initializer_list<map_t::value_type>, T>>,  //
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -115,6 +116,24 @@ class yaml
 
 		/** Returns: "null", "sequence", "map", "scalar(<TYPE>)" */
 		std::string typeName() const;
+
+		/** Returns a copy of the existing value of the given type, or tries to
+		 * convert it between easily-compatible types (e.g. double<->int,
+		 * string<->int).
+		 * \exception std::exception If the contained type does not  match and
+		 * there is no obvious conversion.
+		 */
+		template <typename T>
+		T as() const
+		{
+			ASSERTMSG_(
+				std::holds_alternative<scalar_t>(d),
+				mrpt::format(
+					"Trying to use as() on a node of type `%s`, but only "
+					"available for `scalar` nodes.",
+					typeName().c_str()));
+			return internal::implAnyAsGetter<T>(std::get<scalar_t>(d));
+		}
 	};
 
 	/** @} */
@@ -134,26 +153,28 @@ class yaml
 	yaml(std::initializer_list<sequence_t::value_type> init) : root_(init) {}
 	yaml(const yaml& v);
 
-	static yaml Sequence(std::initializer_list<sequence_t::value_type> init)
+	yaml(const node_t& s) : root_(s) {}
+
+	static node_t Sequence(std::initializer_list<sequence_t::value_type> init)
 	{
-		return yaml(init);
+		return node_t(init);
 	}
-	static yaml Sequence()
+	static node_t Sequence()
 	{
-		yaml p;
-		p.root_.d.emplace<sequence_t>();
-		return p;
+		node_t n;
+		n.d.emplace<sequence_t>();
+		return n;
 	}
 
-	static yaml Map(std::initializer_list<map_t::value_type> init)
+	static node_t Map(std::initializer_list<map_t::value_type> init)
 	{
-		return yaml(init);
+		return node_t(init);
 	}
-	static yaml Map()
+	static node_t Map()
 	{
-		yaml p;
-		p.root_.d.emplace<map_t>();
-		return p;
+		node_t n;
+		n.d.emplace<map_t>();
+		return n;
 	}
 
 	/** Builds an object copying the structure and contents from an existing
@@ -214,7 +235,7 @@ class yaml
 
 	/** @name Print and export
 	 * @{ */
-	void printAsYAML(std::ostream& o) const;
+	void printAsYAML(std::ostream& o, bool debugInfo = false) const;
 	void printAsYAML() const;  //!< prints to std::cout
 	/** @} */
 
@@ -390,22 +411,29 @@ class yaml
    private:
 	template <typename T>
 	friend T internal::implAsGetter(const yaml& p);
+	template <typename T>
+	friend T internal::implAnyAsGetter(const scalar_t& p);
 
 	// Return: true if the last printed char is a newline char
 	static bool internalPrintNodeAsYAML(
-		const node_t& p, std::ostream& o, int indent, bool first);
+		const node_t& p, std::ostream& o, int indent, bool first,
+		bool debugInfo);
 
 	template <typename T>
 	void internalPushBack(const T& v);
 
 	static bool internalPrintAsYAML(
-		const std::monostate&, std::ostream& o, int indent, bool first);
+		const std::monostate&, std::ostream& o, int indent, bool first,
+		bool debugInfo);
 	static bool internalPrintAsYAML(
-		const sequence_t& v, std::ostream& o, int indent, bool first);
+		const sequence_t& v, std::ostream& o, int indent, bool first,
+		bool debugInfo);
 	static bool internalPrintAsYAML(
-		const map_t& v, std::ostream& o, int indent, bool first);
+		const map_t& v, std::ostream& o, int indent, bool first,
+		bool debugInfo);
 	static bool internalPrintAsYAML(
-		const scalar_t& v, std::ostream& o, int indent, bool first);
+		const scalar_t& v, std::ostream& o, int indent, bool first,
+		bool debugInfo);
 
 	/** Impl of operator=() */
 	template <typename T>
@@ -560,32 +588,29 @@ void yaml::internalPushBack(const T& v)
 namespace mrpt::containers::internal
 {
 template <typename T>
-T implAsGetter(const yaml& p)
+T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 {
-	ASSERTMSG_(
-		p.isProxy_,
-		"Trying to read from a non-scalar. Use `p[\"name\"].asRef<T>();` "
-		"instead");
 	const auto& expectedType = typeid(T);
-	const yaml::scalar_t& s = p.asScalar();
 	const auto& storedType = s.type();
 
 	if (storedType != expectedType)
 	{
 		if constexpr (std::is_convertible_v<double, T>)
+		{
 			if (storedType == typeid(double))
-				return static_cast<T>(p.as<double>());
+				return static_cast<T>(implAnyAsGetter<double>(s));
+		}
 		if constexpr (std::is_convertible_v<T, double>)
 		{
 			std::stringstream ss;
-			p.printAsYAML(ss);
+			yaml::internalPrintAsYAML(s, ss, 0, true, false);
 			T ret;
 			ss >> ret;
 			if (!ss.fail()) return ret;
 		}
 		if (storedType == typeid(std::string))
 		{
-			std::stringstream ss(p.as<std::string>());
+			std::stringstream ss(implAnyAsGetter<std::string>(s));
 			T ret;
 			ss >> ret;
 			if (!ss.fail()) return ret;
@@ -595,7 +620,7 @@ T implAsGetter(const yaml& p)
 			if (expectedType == typeid(std::string))
 			{
 				std::stringstream ss;
-				p.printAsYAML(ss);
+				yaml::internalPrintAsYAML(s, ss, 0, true, false);
 				return ss.str();
 			}
 		}
@@ -603,20 +628,32 @@ T implAsGetter(const yaml& p)
 		{
 			if (storedType == typeid(std::string))
 			{
-				const auto str = p.as<std::string>();
+				const auto str = implAnyAsGetter<std::string>(s);
 				return str == "true" || str == "True" || str == "T" ||
 					   str == "TRUE";
 			}
 		}
 
 		THROW_EXCEPTION_FMT(
-			"Trying to read parameter `%s` of type `%s` as if it was "
+			"Trying to access scalar of type `%s` as if it was "
 			"`%s` and no obvious conversion found.",
-			p.proxiedMapEntryName_, mrpt::demangle(storedType.name()).c_str(),
+			mrpt::demangle(storedType.name()).c_str(),
 			mrpt::demangle(expectedType.name()).c_str());
 	}
 
 	return std::any_cast<const T&>(s);
+}
+
+template <typename T>
+T implAsGetter(const yaml& p)
+{
+	ASSERTMSG_(
+		p.isProxy_,
+		"Trying to read from a non-scalar. Use `p[\"name\"].asRef<T>();` "
+		"instead");
+	const yaml::scalar_t& s = p.asScalar();
+
+	return implAnyAsGetter<T>(s);
 }
 
 }  // namespace mrpt::containers::internal
