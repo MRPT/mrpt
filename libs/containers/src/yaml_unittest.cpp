@@ -356,12 +356,10 @@ myMap:
 TEST(yaml, fromYAML)
 {
 	auto p = mrpt::containers::yaml::FromYAMLText(sampleYamlBlock);
+
 	EXPECT_EQ(p["mySeq"](0).as<std::string>(), "first");
 	EXPECT_EQ(p["myMap"]["P"].as<double>(), -5.0);
 	EXPECT_EQ(p["myMap"]["K"].as<double>(), 10.0);
-
-	EXPECT_TRUE(p["mySeq"](3).isScalar());
-	EXPECT_TRUE(p["myMap"]["Q"].isScalar());
 
 	EXPECT_FALSE(p.isNullNode());
 	EXPECT_FALSE(p["myMap"].isNullNode());
