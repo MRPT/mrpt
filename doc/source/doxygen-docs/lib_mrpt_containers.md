@@ -18,5 +18,5 @@ Find below some examples of use.
 
 See mrpt::containers::Parameters, and the examples below.
 
-See: \ref containers_parameters_example/test.cpp
-\snippet containers_parameters_example/test.cpp example-parameters
+See: \ref containers_yaml_example/test.cpp
+\snippet containers_yaml_example/test.cpp example-yaml

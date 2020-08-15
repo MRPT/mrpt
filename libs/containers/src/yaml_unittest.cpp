@@ -98,7 +98,7 @@ TEST(yaml, initializers)
 
 TEST(yaml, initializerMap)
 {
-	const auto p = mrpt::containers::yaml::Map(
+	const mrpt::containers::yaml p = mrpt::containers::yaml::Map(
 		{{"K", 2.0}, {"book", std::string("silmarillion")}});
 
 	EXPECT_FALSE(p.isSequence());
@@ -162,7 +162,7 @@ TEST(yaml, initializerSequence)
 
 TEST(yaml, nested)
 {
-	auto p = mrpt::containers::yaml::Map({{"K", 2.0}});
+	mrpt::containers::yaml p = mrpt::containers::yaml::Map({{"K", 2.0}});
 	p["PID"] = mrpt::containers::yaml::Map({{"Kp", 10.0}, {"Ti", 10.0}});
 
 	EXPECT_FALSE(p.empty());
@@ -202,7 +202,7 @@ TEST(yaml, nested2)
 	EXPECT_EQ(p["PID"]["name"].as<std::string>(), std::string("foo"));
 }
 
-const auto testMap = mrpt::containers::yaml::Map(
+const mrpt::containers::yaml testMap = mrpt::containers::yaml::Map(
 	{{"K", 2.0},
 	 {"book", "silmarillion"},
 	 {"mySequence",
@@ -214,65 +214,98 @@ const auto testMap = mrpt::containers::yaml::Map(
 
 TEST(yaml, printYAML)
 {
-	testMap.printAsYAML();
+	// testMap.printAsYAML();
 	std::stringstream ss;
 	testMap.printAsYAML(ss);
 	const auto s = ss.str();
 	EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 13U);
 }
 
+TEST(yaml, ctorMap)
+{
+	mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
+	c1["K"] = 2.0;
+	auto& m = c1["myDict"] = mrpt::containers::yaml::Map();
+	m["A"] = 1.0;
+	m["B"] = 2.0;
+
+	const mrpt::containers::yaml c2 = mrpt::containers::yaml::Map(
+		{{"K", 2.0},
+		 {"myDict", mrpt::containers::yaml::Map({{"A", 1.0}, {"B", 2.0}})}});
+
+	std::stringstream ss1, ss2;
+	c1.printAsYAML(ss1);
+	c2.printAsYAML(ss2);
+	EXPECT_EQ(ss1.str(), ss2.str());
+}
+
 TEST(yaml, iterate)
 {
-	std::set<std::string> foundKeys;
-	for (const auto& kv : testMap.asMap())
+	try
 	{
-		std::cout << kv.first << ":" << kv.second.typeName() << "\n";
+		std::set<std::string> foundKeys;
+		for (const auto& kv : testMap.asMap())
+		{
+			std::cout << kv.first << ":" << kv.second.typeName() << "\n";
 
-		foundKeys.insert(kv.first);
+			foundKeys.insert(kv.first);
+		}
+		EXPECT_EQ(foundKeys.size(), 5U);
+
+		foundKeys.clear();
+		for (const auto& kv : testMap["myDict"].asMap())
+		{
+			std::cout << kv.first << ":" << kv.second.typeName() << "\n";
+			foundKeys.insert(kv.first);
+		}
+		EXPECT_EQ(foundKeys.size(), 3U);
+
+		EXPECT_EQ(testMap["mySequence"].asSequence().size(), 3U);
 	}
-	EXPECT_EQ(foundKeys.size(), 5U);
-
-	foundKeys.clear();
-	for (const auto& kv : testMap["myDict"].asMap())
+	catch (const std::exception& e)
 	{
-		std::cout << kv.first << ":" << kv.second.typeName() << "\n";
-		foundKeys.insert(kv.first);
+		std::cerr << mrpt::exception_to_str(e);
+		GTEST_FAIL();
 	}
-	EXPECT_EQ(foundKeys.size(), 3U);
-
-	EXPECT_EQ(testMap["mySequence"].asSequence().size(), 3U);
 }
 
 TEST(yaml, macros)
 {
-	mrpt::containers::yaml p;
-	p["K"] = 2.0;
-	p["Ang"] = 90.0;
-	p["N"].asRef<uint64_t>() = 10;
-	p["name"] = "Pepico";
-	p["PID"] = mrpt::containers::yaml::Map({{"Kp", 1.0}, {"Td", 0.8}});
+	try
+	{
+		mrpt::containers::yaml p;
+		p["K"] = 2.0;
+		p["Ang"] = 90.0;
+		p["name"] = "Pepico";
+		p["PID"] = mrpt::containers::yaml::Map({{"Kp", 1.0}, {"Td", 0.8}});
 
-	double K, Td, Foo = 9.0, Bar, Ang, Ang2 = M_PI;
-	std::string name;
-	MCP_LOAD_REQ(p, K);
-	EXPECT_EQ(K, 2.0);
+		double K, Td, Foo = 9.0, Bar, Ang, Ang2 = M_PI;
+		std::string name;
+		MCP_LOAD_REQ(p, K);
+		EXPECT_EQ(K, 2.0);
 
-	MCP_LOAD_REQ(p, name);
-	EXPECT_EQ(name, "Pepico");
+		MCP_LOAD_REQ(p, name);
+		EXPECT_EQ(name, "Pepico");
 
-	MCP_LOAD_REQ(p["PID"], Td);
-	EXPECT_EQ(Td, 0.8);
+		MCP_LOAD_REQ(p["PID"], Td);
+		EXPECT_EQ(Td, 0.8);
 
-	MCP_LOAD_REQ_DEG(p, Ang);
-	EXPECT_NEAR(Ang, 0.5 * M_PI, 1e-6);
+		MCP_LOAD_REQ_DEG(p, Ang);
+		EXPECT_NEAR(Ang, 0.5 * M_PI, 1e-6);
 
-	MCP_LOAD_OPT_DEG(p, Ang2);
-	EXPECT_NEAR(Ang2, M_PI, 1e-6);
+		MCP_LOAD_OPT_DEG(p, Ang2);
+		EXPECT_NEAR(Ang2, M_PI, 1e-6);
 
-	MCP_LOAD_OPT(p, Foo);
-	EXPECT_EQ(Foo, 9.0);
+		MCP_LOAD_OPT(p, Foo);
+		EXPECT_EQ(Foo, 9.0);
 
-	EXPECT_THROW(MCP_LOAD_REQ(p, Bar), std::exception);
+		EXPECT_THROW(MCP_LOAD_REQ(p, Bar), std::exception);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << mrpt::exception_to_str(e);
+		GTEST_FAIL();
+	}
 }
 
 void foo(mrpt::containers::yaml& p)
