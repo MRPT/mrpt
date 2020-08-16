@@ -9,22 +9,22 @@
 
 #include <mrpt/core/exceptions.h>
 
-/** \example containers_parameters_example/test.cpp */
+/** \example containers_yaml_example/test.cpp */
 
-//! [example-parameters]
-#include <mrpt/containers/Parameters.h>
+//! [example-yaml]
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/demangle.h>  // demangle() utility
 
 #include <iostream>
 
-void ParameterTest_1()
+void YamlTest_1()
 {
-	mrpt::containers::Parameters p;
+	mrpt::containers::yaml p;
 	p["K"] = 2.0;
-	p["N"].asRef<uint64_t>() = 10;
+	p["N"] = 10;
 	p["name"] = "Foo";
 	p["enabled"] = true;
-	p["books"] = mrpt::containers::Parameters::Sequence();
+	p["books"] = mrpt::containers::yaml::Sequence();
 	p["books"].push_back("The Hobbit");
 	p["books"].push_back(10.0);
 
@@ -37,46 +37,61 @@ void ParameterTest_1()
 	for (const auto& kv : p.asMap())
 	{
 		std::cout << "key: `" << kv.first
-				  << "` type: " << mrpt::demangle(kv.second.type().name())
+				  << "` type: " << mrpt::demangle(kv.second.typeName()) << "\n";
+	}
+
+	// Iterate a dictionary bis:
+	mrpt::containers::yaml p2;
+	p2["a"] = 1.0;
+	p2["b"] = 10;
+	p2["c"] = -1;
+
+	for (const auto& kv : p2.asMap())
+	{
+		// This will raise an exception if stored type cannot be converted to
+		// double:
+		std::cout << "key: `" << kv.first << "` val: " << kv.second.as<double>()
 				  << "\n";
-		// Access value: kv.second.as<double>(), etc.
 	}
 
 	// Iterate sequence:
 	for (const auto& item : p["books"].asSequence())
 	{
-		std::cout << "sequence item type: "
-				  << mrpt::demangle(item.type().name()) << "\n";
+		std::cout << "sequence item type: " << mrpt::demangle(item.typeName())
+				  << "\n";
 		// Access value: kv.second.as<std::string>(), etc.
 	}
+
+	// Print:
+	std::cout << "\n\nPrint as YAML:\n";
+	p.printAsYAML();
 }
 
-void ParameterTest_2()
+void YamlTest_2()
 {
 	// You can use {} to initialize mappings (dictionaries):
-	const auto p = mrpt::containers::Parameters::Map(
+	const mrpt::containers::yaml p = mrpt::containers::yaml::Map(
 		{{"K", 2.0}, {"book", std::string("silmarillion")}});
 
 	ASSERT_(!p.isSequence());
 	ASSERT_(p.isMap());
-	ASSERT_(!p.empty());
+	ASSERT_(!p.isNullNode());
 	ASSERT_(p.has("K"));
 	ASSERT_(p["K"].isScalar());
 
 	// or a sequence (each element may have a different type)
-	const auto p2 =
-		mrpt::containers::Parameters::Sequence({1.0, 2.0, "foo", true});
+	const auto p2 = mrpt::containers::yaml::Sequence({1.0, 2.0, "foo", true});
 
 	ASSERT_(p2.isSequence());
 }
-//! [example-parameters]
+//! [example-yaml]
 
 int main()
 {
 	try
 	{
-		ParameterTest_1();
-		ParameterTest_2();
+		YamlTest_1();
+		YamlTest_2();
 		return 0;
 	}
 	catch (const std::exception& e)

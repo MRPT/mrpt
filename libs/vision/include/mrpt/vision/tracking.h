@@ -11,9 +11,9 @@
 
 #include <mrpt/vision/types.h>
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/TParameters.h>
 #include <mrpt/vision/TKeyPoint.h>
 #include <memory>  // for unique_ptr
 
@@ -141,21 +141,20 @@ namespace mrpt::vision
 struct CGenericFeatureTracker
 {
 	/** Optional list of extra parameters to the algorithm. */
-	mrpt::system::TParametersDouble extra_params;
+	mrpt::containers::yaml extra_params;
 
 	/** Default ctor */
-	inline CGenericFeatureTracker() : m_timlog(false) {}
+	inline CGenericFeatureTracker() {}
+
 	/** Ctor with extra parameters */
-	inline CGenericFeatureTracker(mrpt::system::TParametersDouble extraParams)
-		: extra_params(extraParams),
-		  m_timlog(false),
-		  m_update_patches_counter(0),
-		  m_check_KLT_counter(0),
-		  m_detector_adaptive_thres(10)
+	inline CGenericFeatureTracker(const mrpt::containers::yaml& extraParams)
+		: extra_params(extraParams)
 	{
 	}
+
 	/** Dtor */
 	virtual ~CGenericFeatureTracker() = default;
+
 	/** Perform feature tracking from "old_img" to "new_img", with a (possibly
 	 *empty) list of previously tracked features "inout_featureList".
 	 *  This is a list of parameters (in "extraParams") accepted by ALL
@@ -225,7 +224,7 @@ struct CGenericFeatureTracker
 		TKeyPointList& inout_featureList) = 0;
 
 	/** the internal time logger, disabled by default. */
-	mrpt::system::CTimeLogger m_timlog;
+	mrpt::system::CTimeLogger m_timlog{false};
 
 	/** This field is clared by \a trackFeatures() before calling \a
 	 * trackFeatures_impl(), and
@@ -284,7 +283,7 @@ struct CFeatureTracker_KL : public CGenericFeatureTracker
 	/** Default ctor */
 	inline CFeatureTracker_KL() = default;
 	/** Ctor with extra parameters */
-	inline CFeatureTracker_KL(mrpt::system::TParametersDouble extraParams)
+	inline CFeatureTracker_KL(const mrpt::containers::yaml& extraParams)
 		: CGenericFeatureTracker(extraParams)
 	{
 	}

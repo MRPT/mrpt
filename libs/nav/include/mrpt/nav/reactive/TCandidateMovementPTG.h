@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/system/TParameters.h>
+#include <map>
+#include <string>
 
 namespace mrpt::nav
 {
@@ -36,7 +37,7 @@ struct TCandidateMovementPTG
 	 * See list of available variable names in docs for
 	 * mrpt::nav::CAbstractPTGBasedReactive
 	 */
-	mrpt::system::TParameters<double> props;
+	std::map<std::string, double> props;
 
 	TCandidateMovementPTG();
 };

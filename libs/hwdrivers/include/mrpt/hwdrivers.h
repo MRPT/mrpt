@@ -59,7 +59,6 @@ MRPT_WARNING(
 #include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/hwdrivers/CRoboPeakLidar.h>
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
-#include <mrpt/hwdrivers/CRovio.h>
 #include <mrpt/hwdrivers/CSICKTim561Eth_2050101.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/hwdrivers/CSickLaserSerial.h>

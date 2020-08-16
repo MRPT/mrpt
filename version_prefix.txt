@@ -1,4 +1,4 @@
-2.0.5
+2.1.0
 # IMPORTANT: Only the first line of this file is parsed by CMake, don't add
 # any comment to it!
 # This file is used in both Windows and Linux scripts to automatically
@@ -9,4 +9,4 @@
 # IMPORTANT: Whenever this version gets bumped, also remember to update it in:
 # - appveyor.yml
 # - package.xml
-# - doc/doxygen-pages/changelog_doc.h
+# - doc/source/doxygen-docs/changelog.md

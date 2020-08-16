@@ -9,10 +9,10 @@
 #pragma once
 
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector()
+#include <mrpt/containers/yaml.h>
 #include <mrpt/graphslam/types.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/TParameters.h>
 #include <map>
 #include <memory>
 
@@ -79,8 +79,7 @@ template <
 void optimize_graph_spa_levmarq(
 	GRAPH_T& graph, TResultInfoSpaLevMarq& out_info,
 	const std::set<mrpt::graphs::TNodeID>* in_nodes_to_optimize = nullptr,
-	const mrpt::system::TParametersDouble& extra_params =
-		mrpt::system::TParametersDouble(),
+	const mrpt::containers::yaml& extra_params = {},
 	FEEDBACK_CALLABLE functor_feedback = FEEDBACK_CALLABLE())
 {
 	using namespace mrpt;
@@ -99,17 +98,18 @@ void optimize_graph_spa_levmarq(
 	constexpr auto DIMS_POSE = gst::SE_TYPE::DOFs;
 
 	// Read extra params:
-	const bool verbose = 0 != extra_params.getWithDefaultVal("verbose", 0);
+	const bool verbose = extra_params.getOrDefault<bool>("verbose", false);
 	const size_t max_iters =
-		extra_params.getWithDefaultVal("max_iterations", 100);
+		extra_params.getOrDefault<size_t>("max_iterations", 100);
 	const bool enable_profiler =
-		0 != extra_params.getWithDefaultVal("profiler", 0);
+		extra_params.getOrDefault<bool>("profiler", false);
 	// LM params:
-	const double initial_lambda = extra_params.getWithDefaultVal(
-		"initial_lambda", 0);  // <=0: means auto guess
-	const double tau = extra_params.getWithDefaultVal("tau", 1e-3);
-	const double e1 = extra_params.getWithDefaultVal("e1", 1e-6);
-	const double e2 = extra_params.getWithDefaultVal("e2", 1e-6);
+	// <=0: means auto guess
+	const double initial_lambda =
+		extra_params.getOrDefault<double>("initial_lambda", 0);
+	const double tau = extra_params.getOrDefault<double>("tau", 1e-3);
+	const double e1 = extra_params.getOrDefault<double>("e1", 1e-6);
+	const double e2 = extra_params.getOrDefault<double>("e2", 1e-6);
 
 	mrpt::system::CTimeLogger profiler(enable_profiler);
 	profiler.enter("optimize_graph_spa_levmarq (entire)");

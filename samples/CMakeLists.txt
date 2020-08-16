@@ -71,7 +71,8 @@ if(BUILD_EXAMPLES)
 
 	# === Depending on: containers, systems ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
-		containers_parameters_example
+		containers_yaml_example
+		containers_params_by_name
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::containers mrpt::system)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
@@ -97,7 +98,6 @@ if(BUILD_EXAMPLES)
 		system_file_system_watcher
 		system_backtrace_example
 		system_dirs_files_manipulation
-		system_params_by_name
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::system mrpt::poses mrpt::io)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()

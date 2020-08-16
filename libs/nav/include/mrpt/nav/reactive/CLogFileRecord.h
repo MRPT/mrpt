@@ -9,15 +9,14 @@
 #pragma once
 
 #include <mrpt/io/CMemoryStream.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/serialization/CSerializable.h>
-#include <mrpt/system/TParameters.h>
-#include <vector>
-
 #include <mrpt/kinematics/CVehicleVelCmd.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <map>
+#include <vector>
 
 namespace mrpt::nav
 {
@@ -56,7 +55,7 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 		/** Final score of this candidate */
 		double evaluation;
 		/** Evaluation factors */
-		mrpt::system::TParametersDouble evalFactors;
+		std::map<std::string, double> evalFactors;
 		/** Other useful info about holonomic method execution. */
 		CHolonomicLogFileRecord::Ptr HLFR;
 		/** Only for the FIRST entry in a log file, this will contain a copy of

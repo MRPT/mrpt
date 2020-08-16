@@ -15,7 +15,7 @@ namespace mrpt::hmtslam
 /** An arbitrary list of "annotations", or named attributes, each being an
  * instance of any CSerializable object.
  *  A multi-hypotheses version exists in CMHPropertiesValuesList.
- * \sa CSerializable, CMHPropertiesValuesList, mrpt::system::TParameters
+ * \sa CSerializable, CMHPropertiesValuesList
  * \ingroup mrpt_hmtslam_grp
  */
 class CPropertiesValuesList : public mrpt::serialization::CSerializable
@@ -70,5 +70,5 @@ class CPropertiesValuesList : public mrpt::serialization::CSerializable
 	 */
 	std::vector<std::string> getPropertyNames() const;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::hmtslam

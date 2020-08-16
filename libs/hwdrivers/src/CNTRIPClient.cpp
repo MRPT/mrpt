@@ -324,17 +324,23 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 	int port, const string& auth_user, const string& auth_pass)
 {
 	string content;
-	int http_code;
-	TParameters<string> my_headers;
+	net::HttpRequestOptions httpOptions;
+	net::HttpRequestOutput httpOut;
 
 	out_list.clear();
 
-	net::ERRORCODE_HTTP ret = net::http_get(
-		string("http://") + server, content, out_errmsg, port, auth_user,
-		auth_pass, &http_code, &my_headers, nullptr, 6000);
+	httpOptions.port = port;
+	httpOptions.auth_user = auth_user;
+	httpOptions.auth_pass = auth_pass;
+	httpOptions.timeout_ms = 6000;
+
+	net::http_errorcode ret = net::http_get(
+		string("http://") + server, content, httpOptions, httpOut);
+
+	out_errmsg = httpOut.errormsg;
 
 	// Parse contents:
-	if (ret != net::erOk) return false;
+	if (ret != net::http_errorcode::Ok) return false;
 
 	std::stringstream ss(content);
 	string lin;
