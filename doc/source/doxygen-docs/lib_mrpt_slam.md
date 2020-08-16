@@ -7,14 +7,14 @@ SLAM and PF-localization algorithms
 
 [TOC]
 
-# Library `mrpt-slam`
+# Library mrpt-slam
 <small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-slam-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Interesting stuff in this library:
 
@@ -36,3 +36,5 @@ on. However, in you set mrpt-slam as a dependence of your project, you can be sa
 all mrpt::slam classes will be available to you.
 
 See also: For Graph-SLAM, see the namespace mrpt::graphslam in the library mrpt-graphslam.
+
+# Library contents

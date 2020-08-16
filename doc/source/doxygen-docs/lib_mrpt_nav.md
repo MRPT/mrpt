@@ -2,13 +2,13 @@
 
 Autonomous navigation, path planning
 
-# Library `mrpt-nav`
+# Library mrpt-nav
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-nav-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 This library implements:
 
@@ -25,3 +25,5 @@ working application (see MRPT/apps/ReactiveNavigationDemo).
 
 * Planned / hybrid navigation:
   * See mrpt::nav
+
+# Library contents

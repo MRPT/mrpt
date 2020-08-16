@@ -7,7 +7,7 @@ complex STL compound types.
 
 [TOC]
 
-# Library `mrpt-typemeta`
+# Library mrpt-typemeta
 <small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT but has no dependencies, so it can be installed
@@ -15,7 +15,7 @@ in Debian-based systems with:
 
 		sudo apt install libmrpt-typemeta-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 
 ## Example #1: compile-time type/struct/class names to strings
@@ -46,3 +46,5 @@ See: \ref typemeta_TEnumType/test.cpp
 \snippet typemeta_TEnumType/test.cpp example
 Output:
 \include typemeta_TEnumType/console.out
+
+# Library contents

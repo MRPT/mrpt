@@ -4,14 +4,14 @@ Computer vision algorithms
 
 [TOC]
 
-# Library `mrpt-vision`
+# Library mrpt-vision
 <small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-vision-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 This library includes some extensions to OpenCV functionality, plus some
 original classes:
@@ -52,3 +52,5 @@ efficient for sequences of images all with the same distortion parameters.
 based on depth images and the "range flow constraint equation".
 
 See all the classes in mrpt::vision
+
+# Library contents

@@ -4,14 +4,14 @@ Serialization (marshalling) portable library for C++ objects persistence.
 
 [TOC]
 
-# Library `mrpt-serialization`
+# Library mrpt-serialization
 <small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-serialization-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 ## Binary serialization (most efficient)
 
@@ -97,3 +97,5 @@ to MRPT serialization:
 
 See: \ref serialization_json_example/test.cpp
 \snippet serialization_json_example/test.cpp example_raw
+
+# Library contents

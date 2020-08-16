@@ -10,7 +10,7 @@
 
 namespace mrpt::containers
 {
-/** \addtogroup containers_grp
+/** \addtogroup mrpt_containers_grp
  * @{ */
 
 /** Copy all the elements in a container (vector, deque, list) into a different

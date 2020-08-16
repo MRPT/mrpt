@@ -4,7 +4,7 @@ Computer-vision detectors
 
 
 
-# Library `mrpt-detectors`
+# Library mrpt-detectors
 
 A set of generic computer-vision-based detectors. There is a hierarchy of
 generic detectors and objects:
@@ -12,3 +12,5 @@ generic detectors and objects:
 - mrpt::detectors::CDetectableObject
 
 See mrpt::detectors
+
+# Library contents

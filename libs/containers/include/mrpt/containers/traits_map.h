@@ -12,7 +12,7 @@
 
 namespace mrpt::containers
 {
-/** \addtogroup stlext_grp
+/** \addtogroup mrpt_containers_stlext_grp
  *  @{ */
 
 /** @name Trait helper classes for templatized selection of a std::map

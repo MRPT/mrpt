@@ -13,7 +13,7 @@ with:
 
 		sudo apt install libmrpt-comms-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Find below some examples of use.
 
@@ -53,3 +53,5 @@ requiring the POST method.
 
 See: \ref comms_http_client/test.cpp
 \snippet comms_http_client/test.cpp example-http-get
+
+# Library contents

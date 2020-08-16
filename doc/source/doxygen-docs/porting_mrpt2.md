@@ -8,7 +8,7 @@ Existing user applications may need to be adapted to continue compiling and
 working as usual after updating to MRPT 2.*:
 
 **Mandatory changes**
- - Your project must use C++17. Using CMake this is now done automatically when linking your targets against MRPT imported targes. See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html)..
+ - Your project must use C++17. Using CMake this is now done automatically when linking your targets against MRPT imported targes. Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html)..
 
  - Matrices and classes no longer inherits from Eigen classes. See: \ref mrpt_math_vectors_matrices_grp
     - `mrpt::math::CMatrix` -->  `mrpt::math::CMatrixF`

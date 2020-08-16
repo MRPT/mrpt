@@ -12,7 +12,8 @@
 
 namespace mrpt::serialization::metaprogramming
 {
-/** \addtogroup stlext_grp
+/** \addtogroup mrpt_serialization_stlext_grp Serialization STL extensions
+ *  \ingroup mrpt_serialization_grp
  * @{ */
 
 /** An object for reading objects from a stream, intended for being used in STL

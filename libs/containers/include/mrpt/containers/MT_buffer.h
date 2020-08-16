@@ -17,7 +17,7 @@ namespace mrpt::containers
 {
 /** This class is a bulk sequence of bytes with MultiThread (MT)-safe read and
  * write operations.
- * \ingroup stlext_grp
+ * \ingroup mrpt_containers_stlext_grp
  */
 class MT_buffer
 {

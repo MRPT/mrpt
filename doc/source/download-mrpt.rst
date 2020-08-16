@@ -37,14 +37,14 @@ Install the `official version <https://packages.ubuntu.com/source/groovy/mrpt>`_
 Debian/Ubuntu PPA
 ----------------------
 
-Last **stable release** (`PPA status <https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable>`_) (from the ``master`` branch), for Ubuntu >=18.04:
+Last **stable release** (`mrpt-stable PPA status <https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable>`_) (from the ``master`` branch), for Ubuntu >=18.04:
 
 .. code-block:: bash
 
    sudo add-apt-repository ppa:joseluisblancoc/mrpt-stable   # master (stable releases) branch
    sudo apt install libmrpt-dev mrpt-apps
 
-**Nightly builds** (`PPA status <https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt>`_) (from the ``develop`` branch) for Ubuntu >=18.04:
+**Nightly builds** (`mrpt-nightly PPA status <https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt>`_) (from the ``develop`` branch) for Ubuntu >=18.04:
 
 .. code-block:: bash
 
@@ -56,7 +56,7 @@ Last **stable release** (`PPA status <https://launchpad.net/~joseluisblancoc/+ar
    a PPA, you must upgrade your gcc compiler to version >=7.
    See `instructions here <https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5>`_.
 
-Last **stable release** (`PPA status <https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable-xenial>`_), for Ubuntu 16.04 LTS Xenial (EOL: April 2021):
+Last **stable release** (`mrpt-stable-xenial PPA status <https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable-xenial>`_), for Ubuntu 16.04 LTS Xenial (EOL: April 2021):
 
 .. code-block:: bash
 
@@ -66,7 +66,7 @@ Last **stable release** (`PPA status <https://launchpad.net/~joseluisblancoc/+ar
    sudo apt-get update
    sudo apt-get install libmrpt-dev mrpt-apps
 
-**Nightly builds** (`PPA status <https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-unstable-xenial>`_), for Ubuntu 16.04 LTS Xenial (EOL: April 2021):
+**Nightly builds** (`mrpt-nightly-xenial PPA status <https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-unstable-xenial>`_), for Ubuntu 16.04 LTS Xenial (EOL: April 2021):
 
 .. code-block:: bash
 

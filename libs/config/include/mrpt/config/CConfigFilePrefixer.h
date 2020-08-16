@@ -21,7 +21,7 @@ namespace mrpt::config
  *     bar = /dev/ttyUSB0
  *   \endcode
  *
- *  Using this class with key entries prefix "s1_" will enable the same
+ *  Using this class with key entries prefix `s1_` will enable the same
  * existing code to transparently parse this file content:
  *
  *   \code

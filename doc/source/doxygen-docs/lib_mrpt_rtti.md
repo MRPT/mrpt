@@ -5,14 +5,14 @@ registry, class factory, and inheritance information.
 
 [TOC]
 
-# Library `mrpt-rtti`
+# Library mrpt-rtti
 <small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-rtti-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Any class with RTTI support has to be derived from mrpt::rtti::CObject, either
 directly or via a hierarchy of inheriting classes.
@@ -37,3 +37,5 @@ See: \ref rtti_example1/test.cpp
 \snippet rtti_example1/test.cpp example-factory
 Output:
 \include rtti_example1/console-ex2.out
+
+# Library contents
