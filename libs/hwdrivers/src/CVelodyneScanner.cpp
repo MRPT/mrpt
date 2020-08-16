@@ -16,6 +16,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>  // timeDifference
 #include <mrpt/system/filesystem.h>
+#include <iostream>
 #include <thread>
 
 // socket's hdrs:
@@ -1075,23 +1076,24 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 	using namespace mrpt::comms::net;
 
 	std::vector<uint8_t> post_out;
-	string post_err_str;
 
-	int http_rep_code;
-	mrpt::system::TParameters<string> extra_headers, out_headers;
+	HttpRequestOutput httpOut;
+	HttpRequestOptions ho;
 
-	extra_headers["Origin"] = mrpt::format("http://%s", m_device_ip.c_str());
-	extra_headers["Referer"] = mrpt::format("http://%s", m_device_ip.c_str());
-	extra_headers["Upgrade-Insecure-Requests"] = "1";
-	extra_headers["Content-Type"] = "application/x-www-form-urlencoded";
+	ho.extra_headers["Origin"] = mrpt::format("http://%s", m_device_ip.c_str());
+	ho.extra_headers["Referer"] =
+		mrpt::format("http://%s", m_device_ip.c_str());
+	ho.extra_headers["Upgrade-Insecure-Requests"] = "1";
+	ho.extra_headers["Content-Type"] = "application/x-www-form-urlencoded";
 
 	http_errorcode ret = http_request(
 		"POST", post_data,
 		mrpt::format("http://%s/cgi/setting", m_device_ip.c_str()), post_out,
-		post_err_str, 80 /* port */, string(), string(),  // user,pass
-		&http_rep_code, &extra_headers, &out_headers);
+		ho, httpOut);
 
-	return mrpt::comms::net::erOk == ret &&
+	const int http_rep_code = httpOut.http_responsecode;
+
+	return mrpt::comms::net::http_errorcode::Ok == ret &&
 		   (http_rep_code == 200 || http_rep_code == 204);  // OK codes
 
 	MRPT_END

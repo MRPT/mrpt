@@ -15,6 +15,7 @@
 
 #include <iostream>
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/graphs/THypothesis.h>
@@ -28,7 +29,6 @@
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include <mrpt/system/TParameters.h>
 #include <mrpt/system/os.h>
 
 #include <algorithm>
@@ -317,7 +317,7 @@ class CNetworkOfPoses
 	 */
 	inline void getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr object,
-		const mrpt::system::TParametersDouble& viz_params) const
+		const mrpt::containers::yaml& viz_params) const
 	{
 		using visualizer_t = mrpt::graphs::detail::CVisualizer<
 			CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;

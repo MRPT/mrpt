@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/graphs/CMRVisualizer.h>
 #include <mrpt/img/TColorManager.h>
 
 namespace mrpt::graphs::detail
@@ -43,7 +44,7 @@ void CMRVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 }
 
@@ -54,7 +55,7 @@ void CMRVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 }
 
@@ -83,7 +84,7 @@ void CMRVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
 	using namespace mrpt::graphs;
@@ -91,7 +92,7 @@ void CMRVisualizer<
 	using namespace std;
 
 	const double nodes_point_size =
-		viz_params->getWithDefaultVal("nodes_point_size", 0.);
+		viz_params->getOrDefault<double>("nodes_point_size", 0.);
 
 	// in case this is a combination of graphs like in multiple-robot
 	// graphSLAM applications, use a unique color for all the nodes that
@@ -99,7 +100,7 @@ void CMRVisualizer<
 
 	TColorManager nodes_color_mngr;
 	// map of agent string identifier to its corresponding point cloud
-	map<string, CPointCloud::Ptr> strid_to_cloud;
+	std::map<string, CPointCloud::Ptr> strid_to_cloud;
 	// map of agent string identifier to its corresponding CPointCloud color
 	map<string, TColorf> strid_to_color;
 
@@ -165,7 +166,7 @@ void CMRVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
 	using namespace mrpt::img;
@@ -181,12 +182,13 @@ void CMRVisualizer<
 	// map of agent string identifier to its corresponding CPointCloud color
 	map<string, TColorf> strid_to_color;
 
-	const double edge_width = viz_params->getWithDefaultVal("edge_width", 2.);
+	const double edge_width =
+		viz_params->getOrDefault<double>("edge_width", 2.);
 	// width of the edges connecting different the nodes registered by two
 	// different agents
 	// They are of outmost importance
 	const double interconnecting_edge_width =
-		viz_params->getWithDefaultVal("interconnecting_edge_width", 4.);
+		viz_params->getOrDefault<double>("interconnecting_edge_width", 4.);
 
 	// traverse all edges
 	for (typename GRAPH_T::const_iterator edge_it = this->m_graph.begin();

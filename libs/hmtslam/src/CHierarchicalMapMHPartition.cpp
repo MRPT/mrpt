@@ -1332,7 +1332,7 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 
 	// 3) Optimize with graph-slam:
 	graphslam::TResultInfoSpaLevMarq out_info;
-	TParametersDouble graphslam_params;
+	mrpt::containers::yaml graphslam_params;
 	graphslam_params["max_iterations"] = numberOfIterations;
 
 	graphslam::optimize_graph_spa_levmarq(

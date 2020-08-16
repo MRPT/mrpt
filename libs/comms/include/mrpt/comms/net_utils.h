@@ -45,7 +45,7 @@ struct HttpRequestOptions
 
 	/** Send a basic HTTP authorization request with the given user & password
 	 */
-	const string auth_user, auth_pass;
+	string auth_user, auth_pass;
 
 	/** Additional HTTP headers to send */
 	std::map<std::string, std::string> extra_headers;
