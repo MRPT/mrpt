@@ -7,12 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"  // Precompiled headers
-
+#include "comms-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/core/exceptions.h>
+
 #include <cstring>
+#include <iostream>
 
 #ifdef _WIN32
 // Windows
@@ -34,6 +36,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <cerrno>
 #endif
 
@@ -182,7 +185,7 @@ void CClientTCPSocket::connect(
 #else
 	int oldflags = fcntl(m_hSock, F_GETFL, 0);
 	if (oldflags == -1) THROW_EXCEPTION("Error retrieving fcntl();of socket.");
-	oldflags |= O_NONBLOCK;  // Set NON-BLOCKING
+	oldflags |= O_NONBLOCK;	 // Set NON-BLOCKING
 	if (-1 == fcntl(m_hSock, F_SETFL, oldflags))
 		THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
 #endif
@@ -215,8 +218,8 @@ void CClientTCPSocket::connect(
 	int sel_ret = select(
 		m_hSock + 1,
 		nullptr,  // For read
-		&ss_write,  // For write or *connect done*
-		&ss_errors,  // For errors
+		&ss_write,	// For write or *connect done*
+		&ss_errors,	 // For errors
 		timeout_ms == 0 ? nullptr : &timer);
 
 	if (sel_ret == 0)
