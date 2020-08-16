@@ -1,9 +1,12 @@
 \page changelog Change Log
 
-# Version 2.0.5: (Under development)
+# Version 2.1.0: (Under development)
+- Incompatible API changes:
+  - mrpt::system::TParameters has been removed, superseded by mrpt::containers::yaml.
+  - Remove mrpt::hwdrivers::CRovio
 - Changes in libraries:
   - \ref mrpt_containers_grp
-    - New class mrpt::containers::Parameters for variant-based, nested, YAML-like configuration blocks.
+    - New class mrpt::containers::yaml for nested, YAML-like data structures.
   - \ref mrpt_core_grp
     - New mrpt::for_<> constexpr for loop helper function.
     - New function mrpt::demangle()
@@ -16,8 +19,6 @@
   - \ref mrpt_tfest_grp
     - New templatized mrpt::tfest::TMatchingPairTempl<> and mrpt::tfest::TMatchingPairListTempl<>
     - New mrpt::tfest::se3_l2() for `double` precision.
-- Deprecations:
-  - mrpt::system::TParameters is now deprecated.
 - BUG FIXES:
   - Avoid crash in camera-calib app when clicking "Close" while capturing a live video.
   - Fix potential Eigen crash in matrixes inverse() and inverse_LLt() if building mrpt and user code with different optimization flags.

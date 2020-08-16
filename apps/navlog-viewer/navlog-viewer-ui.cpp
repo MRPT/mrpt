@@ -920,9 +920,14 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 		else
 			col = mrpt::img::TColorf(.8f, .8f, .8f);
 
-		auto sFactors = pI.evalFactors.getAsString();
-		std::replace(sFactors.begin(), sFactors.end(), '\r', ' ');
-		std::replace(sFactors.begin(), sFactors.end(), '\n', ' ');
+		std::string sFactors;
+		for (const auto& kv : pI.evalFactors)
+		{
+			sFactors += kv.first;
+			sFactors += ": ";
+			sFactors += std::to_string(kv.second);
+			sFactors += " ";
+		}
 
 		ADD_WIN_TEXTMSG_COL(
 			mrpt::format(

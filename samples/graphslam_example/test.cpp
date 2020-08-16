@@ -7,6 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
@@ -15,7 +16,6 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/random.h>
-#include <mrpt/system/TParameters.h>
 #include <iostream>
 
 using namespace mrpt;
@@ -252,9 +252,9 @@ struct ExampleDemoGraphSLAM
 		// ----------------------------
 		//  Run graph slam:
 		// ----------------------------
-		TParametersDouble params;
+		mrpt::containers::yaml params;
 		// params["verbose"]  = 1;
-		params["profiler"] = 1;
+		params["profiler"] = true;
 		params["max_iterations"] = 500;
 		params["scale_hessian"] = 0.1;  // If <1, will "exagerate" the scale of
 		// the gradient and, normally, will
@@ -296,8 +296,8 @@ struct ExampleDemoGraphSLAM
 		CDisplayWindow3D win("graph-slam demo");
 
 		// The final optimized graph:
-		TParametersDouble graph_render_params1;
-		graph_render_params1["show_edges"] = 1;
+		mrpt::containers::yaml graph_render_params1;
+		graph_render_params1["show_edges"] = true;
 		graph_render_params1["edge_width"] = 1;
 		graph_render_params1["nodes_corner_scale"] = 1;
 		CSetOfObjects::Ptr gl_graph1 =
@@ -305,10 +305,10 @@ struct ExampleDemoGraphSLAM
 				graph, graph_render_params1);
 
 		// The initial noisy graph:
-		TParametersDouble graph_render_params2;
-		graph_render_params2["show_ground_grid"] = 0;
-		graph_render_params2["show_edges"] = 0;
-		graph_render_params2["show_node_corners"] = 0;
+		mrpt::containers::yaml graph_render_params2;
+		graph_render_params2["show_ground_grid"] = false;
+		graph_render_params2["show_edges"] = false;
+		graph_render_params2["show_node_corners"] = false;
 		graph_render_params2["nodes_point_size"] = 7;
 
 		CSetOfObjects::Ptr gl_graph2 =
@@ -321,10 +321,10 @@ struct ExampleDemoGraphSLAM
 				graph, graph_render_params2);
 
 		// The ground truth graph:
-		TParametersDouble graph_render_params3;
-		graph_render_params3["show_ground_grid"] = 0;
-		graph_render_params3["show_ID_labels"] = 1;
-		graph_render_params3["show_edges"] = 1;
+		mrpt::containers::yaml graph_render_params3;
+		graph_render_params3["show_ground_grid"] = false;
+		graph_render_params3["show_ID_labels"] = true;
+		graph_render_params3["show_edges"] = true;
 		graph_render_params3["edge_width"] = 3;
 		graph_render_params3["nodes_corner_scale"] = 2;
 		CSetOfObjects::Ptr gl_graph3 =
