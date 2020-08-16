@@ -52,9 +52,7 @@ template <class GRAPHTYPE>
 void display_graph(const GRAPHTYPE& g)
 {
 	// Convert into a 3D representation:
-	TParametersDouble params;
-	CSetOfObjects::Ptr objGraph =
-		mrpt::opengl::graph_tools::graph_visualize(g, params);
+	CSetOfObjects::Ptr objGraph = mrpt::opengl::graph_tools::graph_visualize(g);
 
 	// Show in a window:
 	mrpt::gui::CDisplayWindow3D win(
@@ -91,7 +89,7 @@ void display_graph(const GRAPHTYPE& g)
 	{
 		const GRAPHTYPE& m_graph;
 		CSetOfObjects::Ptr m_new_3dobj;
-		TParametersDouble params;  // for "graph_visualize()"
+		mrpt::containers::yaml params;  // for "graph_visualize()"
 
 		bool request_to_refresh_3D_view;
 		bool request_to_quit;
@@ -106,8 +104,8 @@ void display_graph(const GRAPHTYPE& g)
 			  showing_help(false),
 			  hiding_help(false)
 		{
-			params["show_edges"] = 1;
-			params["show_node_corners"] = 1;
+			params["show_edges"] = true;
+			params["show_node_corners"] = true;
 			params["nodes_corner_scale"] = 0.7;
 			params["nodes_edges_corner_scale"] = 0.4;
 		}
@@ -133,20 +131,18 @@ void display_graph(const GRAPHTYPE& g)
 						break;
 					case 'i':
 					case 'I':
-						params["show_ID_labels"] =
-							params["show_ID_labels"] != 0 ? 0 : 1;
+						params["show_ID_labels"] = !params["show_ID_labels"];
 						rebuild_3d_obj = true;
 						break;
 					case 'e':
 					case 'E':
-						params["show_edges"] =
-							params["show_edges"] != 0 ? 0 : 1;
+						params["show_edges"] = !params["show_edges"];
 						rebuild_3d_obj = true;
 						break;
 					case 'c':
 					case 'C':
 						params["show_node_corners"] =
-							params["show_node_corners"] != 0 ? 0 : 1;
+							!params["show_node_corners"];
 						rebuild_3d_obj = true;
 						break;
 					case 's':
@@ -167,36 +163,50 @@ void display_graph(const GRAPHTYPE& g)
 					case 'v':
 					case 'V':
 						params["show_edge_rel_poses"] =
-							params["show_edge_rel_poses"] != 0 ? 0 : 1;
+							!params["show_edge_rel_poses"];
 						rebuild_3d_obj = true;
 						break;
 					case '+':
-						params["nodes_point_size"] += 1.0;
+						params["nodes_point_size"] =
+							params["nodes_point_size"].template as<double>() +
+							1.0;
 						rebuild_3d_obj = true;
 						break;
 					case '-':
-						params["nodes_point_size"] =
-							std::max(0.0, params["nodes_point_size"] - 1.0);
+						params["nodes_point_size"] = std::max(
+							0.0,
+							params["nodes_point_size"].template as<double>() -
+								1.0);
 						rebuild_3d_obj = true;
 						break;
 					case 'o':
 					case 'O':
-						params["nodes_corner_scale"] *= 1.2;
+						params["nodes_corner_scale"] =
+							params["nodes_corner_scale"].template as<double>() *
+							1.2;
 						rebuild_3d_obj = true;
 						break;
 					case 'p':
 					case 'P':
-						params["nodes_corner_scale"] *= 1.0 / 1.2;
+						params["nodes_corner_scale"] =
+							params["nodes_corner_scale"].template as<double>() *
+							1.0 / 1.2;
 						rebuild_3d_obj = true;
 						break;
 					case 'k':
 					case 'K':
-						params["nodes_edges_corner_scale"] *= 1.2;
+						params["nodes_edges_corner_scale"] =
+							params["nodes_edges_corner_scale"]
+								.template as<double>() *
+							1.2;
 						rebuild_3d_obj = true;
 						break;
 					case 'l':
 					case 'L':
-						params["nodes_edges_corner_scale"] *= 1.0 / 1.2;
+						params["nodes_edges_corner_scale"] =
+							params["nodes_edges_corner_scale"]
+								.template as<double>() *
+							1.0 / 1.2;
 						rebuild_3d_obj = true;
 						break;
 				};

@@ -94,9 +94,9 @@ class yaml
 		~node_t() = default;
 
 		template <
-			typename T,	 //
+			typename T,  //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,	//
+				std::initializer_list<map_t::value_type>, T>>,  //
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -617,56 +617,65 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 	const auto& expectedType = typeid(T);
 	const auto& storedType = s.type();
 
-	if (storedType != expectedType)
+	if (storedType == expectedType) return std::any_cast<const T&>(s);
+
+	if constexpr (std::is_convertible_v<int, T>)
 	{
-		if constexpr (std::is_convertible_v<double, T>)
+		if (storedType == typeid(std::string))
 		{
-			if (storedType == typeid(double))
-				return static_cast<T>(implAnyAsGetter<double>(s));
+			const std::string str = implAnyAsGetter<std::string>(s);
+			// Recognize hex or octal prefixes:
+			try
+			{
+				std::size_t processed = 0;
+				T ret = static_cast<T>(
+					std::stol(str, &processed, 0 /*auto detect base*/));
+				if (processed > 0) return ret;
+			}
+			catch (...)
+			{ /*Invalid number*/
+			}
 		}
-		if constexpr (std::is_convertible_v<T, double>)
+	}
+	if constexpr (std::is_convertible_v<double, T>)
+	{
+		if (storedType == typeid(double))
+			return static_cast<T>(implAnyAsGetter<double>(s));
+	}
+	if constexpr (std::is_convertible_v<T, double>)
+	{
+		std::stringstream ss;
+		yaml::internalPrintAsYAML(s, ss, 0, true, false);
+		T ret;
+		ss >> ret;
+		if (!ss.fail()) return ret;
+	}
+	if constexpr (std::is_convertible_v<std::string, T>)
+	{
+		if (expectedType == typeid(std::string))
 		{
 			std::stringstream ss;
 			yaml::internalPrintAsYAML(s, ss, 0, true, false);
-			T ret;
-			ss >> ret;
-			if (!ss.fail()) return ret;
+			return ss.str();
 		}
+	}
+	if constexpr (std::is_same_v<T, bool>)
+	{
 		if (storedType == typeid(std::string))
 		{
-			std::stringstream ss(implAnyAsGetter<std::string>(s));
-			T ret;
-			ss >> ret;
-			if (!ss.fail()) return ret;
+			const auto str = implAnyAsGetter<std::string>(s);
+			return str == "true" || str == "True" || str == "T" ||
+				   str == "TRUE";
 		}
-		if constexpr (std::is_convertible_v<std::string, T>)
-		{
-			if (expectedType == typeid(std::string))
-			{
-				std::stringstream ss;
-				yaml::internalPrintAsYAML(s, ss, 0, true, false);
-				return ss.str();
-			}
-		}
-		if constexpr (std::is_same_v<T, bool>)
-		{
-			if (storedType == typeid(std::string))
-			{
-				const auto str = implAnyAsGetter<std::string>(s);
-				return str == "true" || str == "True" || str == "T" ||
-					   str == "TRUE";
-			}
-		}
-
-		THROW_EXCEPTION_FMT(
-			"Trying to access scalar of type `%s` as if it was "
-			"`%s` and no obvious conversion found.",
-			mrpt::demangle(storedType.name()).c_str(),
-			mrpt::demangle(expectedType.name()).c_str());
 	}
 
-	return std::any_cast<const T&>(s);
-}
+	THROW_EXCEPTION_FMT(
+		"Trying to access scalar of type `%s` as if it was "
+		"`%s` and no obvious conversion found.",
+		mrpt::demangle(storedType.name()).c_str(),
+		mrpt::demangle(expectedType.name()).c_str());
+
+}  // namespace mrpt::containers::internal
 
 template <typename T>
 T implAsGetter(const yaml& p)

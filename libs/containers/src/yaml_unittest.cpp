@@ -45,6 +45,7 @@ TEST(yaml, assignments)
 
 	EXPECT_EQ(p["K"].scalarType(), typeid(double));
 	EXPECT_EQ(p["K"].as<double>(), 2.0);
+	EXPECT_EQ(p["K"].as<float>(), 2.0f);
 
 	EXPECT_EQ(p["N"].scalarType(), typeid(uint64_t));
 	EXPECT_EQ(p["N"].as<uint64_t>(), 10U);
@@ -333,6 +334,17 @@ TEST(yaml, macros)
 		std::cerr << mrpt::exception_to_str(e);
 		GTEST_FAIL();
 	}
+}
+
+TEST(yaml, hexadecimal)
+{
+	mrpt::containers::yaml p;
+	p["color"] = "0x112233";
+
+	const int c1 = 0x112233;
+	const int c2 = p["color"].as<int>();
+
+	EXPECT_EQ(c1, c2);
 }
 
 void foo(mrpt::containers::yaml& p)

@@ -3,6 +3,7 @@
 # Version 2.1.0: (Under development)
 - Incompatible API changes:
   - mrpt::system::TParameters has been removed, superseded by mrpt::containers::yaml.
+  - Remove mrpt::hwdrivers::CRovio
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - New class mrpt::containers::yaml for nested, YAML-like data structures.
