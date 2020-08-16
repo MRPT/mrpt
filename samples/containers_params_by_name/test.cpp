@@ -7,20 +7,21 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
-#include <mrpt/system/TParameters.h>
 #include <iostream>
 
-using namespace std;
-using namespace mrpt::system;
+using std::cout;
+using std::endl;
 
-void MyCoolFunction(const TParametersDouble& params)
+void MyCoolFunction(const mrpt::containers::yaml& params)
 {
 	cout << "'threshold' is " << params["threshold"] << endl;
 	cout << "Is 'altitude' set? " << params.has("altitude") << endl;
 	cout << "Is 'level' set? " << params.has("level") << endl;
-	cout << "Level is : " << params.getWithDefaultVal("level", 666.0) << endl;
-	cout << "Dump of all params:\n" << params.getAsString() << endl;
+	cout << "Level is : " << params.getOrDefault("level", 666.0) << endl;
+	cout << "Dump of all params:\n";
+	params.printAsYAML(cout);
 	cout << endl;
 }
 
@@ -32,7 +33,7 @@ void TestParameters()
 	{
 		// Call #1
 		cout << "CALL #1 ================================\n";
-		TParametersDouble p;
+		mrpt::containers::yaml p;
 		p["threshold"] = 3.05;
 		p["altitude"] = 100;
 
@@ -43,7 +44,7 @@ void TestParameters()
 		// Call #2
 		cout << "CALL #2 ================================\n";
 		// clang-format off
-		TParametersDouble p(
+		mrpt::containers::yaml p = mrpt::containers::yaml::Map(
 			{
 				{"threshold", 3.05},
 				{"altitude", 100.0},
