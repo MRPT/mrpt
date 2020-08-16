@@ -2,15 +2,13 @@
 
 Bayesian filtering algorithms
 
-[TOC]
-
 # Library mrpt-bayes
 
 This C++ library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-bayes-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Refer to classes in the namespace mrpt::bayes and these examples:
  - [bayes_tracking_example](https://github.com/MRPT/mrpt/tree/master/samples/bayes_tracking_example)
@@ -29,3 +27,5 @@ are not as generic as in Kalman filtering, but the classes serve to organize and
 of different PF algorithms in MRPT.
 
 See mrpt::bayes::CParticleFilter.
+
+# Library contents

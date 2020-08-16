@@ -49,10 +49,10 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 
 	/** Set the SSID and GUID of the target network.
 	 * \exception std::exception In case there is a failure
-	 * \param ssid_ SSID of the target network
-	 * \param guid_ GUID of the network interface
+	 * \param ssid SSID of the target network
+	 * \param guid GUID of the network interface
 	 */
-	void setNet(std::string ssid_, std::string guid_);
+	void setNet(std::string ssid, std::string guid);
 
 	void doProcess() override;
 	void loadConfig_sensorSpecific(

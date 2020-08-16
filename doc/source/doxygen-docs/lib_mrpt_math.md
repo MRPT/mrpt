@@ -5,14 +5,14 @@ geometry, etc.
 
 [TOC]
 
-# Library `mrpt-math`
+# Library mrpt-math
 <small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-math-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 The main classes and concepts associated with this library:
 
@@ -31,3 +31,5 @@ Other important elements:
  - \ref polynomial_roots
  - \ref ransac_grp
  - \ref stats_grp
+
+# Library contents

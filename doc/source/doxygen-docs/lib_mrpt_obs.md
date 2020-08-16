@@ -3,13 +3,13 @@
 Observation classes for all kinds of robot sensors.
 
 
-# Library `mrpt-obs`
+# Library mrpt-obs
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-obs-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Key concepts:
 
@@ -39,4 +39,4 @@ carmen2simplemap. </li>
 
 </ul>
 
-See the list of classes in mrpt::obs
+# Library contents

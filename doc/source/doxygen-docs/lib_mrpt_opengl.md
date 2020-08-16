@@ -5,13 +5,13 @@ Visualization helpers for 3D rendering of all kind of primitives
 <small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
 <br>
 
-# Library `mrpt-opengl`
+# Library mrpt-opengl
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-opengl-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 This library includes several data classes that represent objects that can be
 inserted into a 3D scene, which can be then rendered or streamed to disk or whatever.
@@ -86,3 +86,5 @@ Note: The following extra OpenGL classes are provided by other libraries:
 <tr> <td> mrpt::opengl::CPlanarLaserScan <br> (In mrpt-maps) </td> <td> \image html preview_CPlanarLaserScan.png </td> </tr>
 </table>
 </div>
+
+# Library contents

@@ -30,7 +30,7 @@ namespace mrpt::hwdrivers
  *
  * Configuration file format is a combination of the original parameters for
  * both classes, each with
- * a prefix: "gps_" for CGPSInterface params and "ntrip_" for CNTRIPEmitter.
+ * a prefix: `"gps_` for CGPSInterface params and `ntrip_` for CNTRIPEmitter.
  *
  *  \code
  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:

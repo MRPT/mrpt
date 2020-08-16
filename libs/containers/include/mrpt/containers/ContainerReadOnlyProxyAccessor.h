@@ -13,7 +13,8 @@
 
 namespace mrpt::containers
 {
-/** \addtogroup stlext_grp
+/** \addtogroup mrpt_containers_stlext_grp STL containers extensions
+ *  \ingroup mrpt_containers_grp
  * @{ */
 
 /** A generic proxy accessor template that only allows read-only access to the

@@ -2,16 +2,14 @@
 
 GUI support: 2D plots (Matlab-like), 3D rendering viewports, etc.
 
-
-
-# Library `mrpt-gui`
+# Library mrpt-gui
 
 This C++ library is part of MRPT and can be installed in Debian-based systems
 with:
 
 		sudo apt install libmrpt-gui-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 This library provides these classes that represent GUI windows, each having a
 specific specialized purpose:
@@ -44,3 +42,5 @@ mrpt::system::CObservable pattern, emitting events as described in the
 description of mrpt::gui::CBaseGUIWindow.
 
 All the classes in this library are in the namespace mrpt::gui
+
+# Library contents

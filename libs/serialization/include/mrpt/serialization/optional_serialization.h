@@ -14,7 +14,7 @@
 
 namespace mrpt::serialization
 {
-/** \addtogroup stlext_grp
+/** \addtogroup mrpt_serialization_stlext_grp
  * @{ */
 
 /** Template to serialize a std::optional<T> */

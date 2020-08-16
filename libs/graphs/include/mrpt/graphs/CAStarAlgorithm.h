@@ -25,8 +25,10 @@ namespace mrpt::graphs
  * generateChildren, getHeuristic and getCost.
  * Once both classes are generated, each object of the class inheriting from
  * CAStarAlgorithm represents a problem who can be solved by calling
- * getOptimalSolution. See http://en.wikipedia.org/wiki/A*_search_algorithm for
- * details about how this algorithm works.
+ * getOptimalSolution. See this
+ * [A* Wikipedia article](https://en.wikipedia.org/wiki/A*_search_algorithm)
+ * for details about how this algorithm works.
+ *
  * \sa CAStarAlgorithm::isSolutionEnded
  * \sa CAStarAlgorithm::isSolutionValid
  * \sa CAStarAlgorithm::generateChildren

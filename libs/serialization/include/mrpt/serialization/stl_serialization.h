@@ -21,7 +21,7 @@
 
 namespace mrpt::serialization
 {
-/** \addtogroup stlext_grp
+/** \addtogroup mrpt_serialization_stlext_grp
  * @{ */
 
 #define MRPTSTL_SERIALIZABLE_SEQ_CONTAINER(CONTAINER)                          \

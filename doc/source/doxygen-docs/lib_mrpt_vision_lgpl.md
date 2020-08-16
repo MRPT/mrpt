@@ -1,15 +1,13 @@
-\defgroup mrpt_nanoflann_grp [mrpt-nanoflann]
+\defgroup mrpt_vision_lgpl_grp [mrpt-vision-lgpl]
 
-Embedded copy of the nanoflann C++11 library for KD-trees
+Computer vision algorithms (LGPL module)
 
-
-
-# Library mrpt-nanoflann
+# Library mrpt-vision-lgpl
 <small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
-		sudo apt install libmrpt-nanoflann-dev
+		sudo apt install libmrpt-vision-lgpl-dev
 
 Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 

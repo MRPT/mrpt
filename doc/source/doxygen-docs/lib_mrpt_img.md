@@ -5,7 +5,7 @@ maps, and pinhole camera models.
 
 [TOC]
 
-# Library `mrpt-img`
+# Library mrpt-img
 <small> [New in MRPT 2.0.0] </small>
 
 This C++ library is part of MRPT and can be installed in Debian-based systems
@@ -13,7 +13,7 @@ with:
 
 		sudo apt install libmrpt-img-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 
 Find below some examples of use.
@@ -26,3 +26,4 @@ first usage. The `cv::Mat` object is always available so
 OpenCV's functions can be still used to operate on MRPT images.
 
 
+# Library contents

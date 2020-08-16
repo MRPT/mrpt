@@ -4,14 +4,14 @@ Graphs data structures (directed graphs, trees, graphs of pose constraints),
 graphs algorithms
 
 
-# Library `mrpt-graphs`
+# Library mrpt-graphs
 
 This C++ library is part of MRPT and can be installed in Debian-based systems
 with:
 
 		sudo apt install libmrpt-graphs-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 Graph-related stuff: generic directed graphs (mrpt::graphs::CDirectedGraph) and
 trees (mrpt::graphs::CDirectedTree).
@@ -30,3 +30,5 @@ uncertainty.
 inverse covariance (information) matrix.
  - mrpt::graphs::CNetworkOfPoses3DInf  -> Edges are 3D graphs
 (x,y,z,yaw,pitch,roll), with an inverse covariance (information) matrix.
+
+# Library contents

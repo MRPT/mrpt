@@ -17,8 +17,8 @@ namespace mrpt
 namespace serialization
 {
 // clang-format off
-/** \addtogroup noncstream_serialization_zmq Serialization functions for ZMQ (v3 or above) (in #include <mrpt/serialization/serialization_zmq.h>) \ingroup
- * noncstream_serialization
+/** \addtogroup mrpt_serialization_zmq Serialization functions for ZMQ (v3 or above) (in #include <mrpt/serialization/serialization_zmq.h>)
+ * \ingroup  mrpt_serialization_grp
  * @{ */
 //clang-format on
 

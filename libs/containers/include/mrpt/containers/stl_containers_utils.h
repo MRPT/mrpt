@@ -16,7 +16,7 @@
 
 namespace mrpt::containers
 {
-/** \addtogroup stlext_grp
+/** \addtogroup mrpt_containers_stlext_grp
  * @{ */
 
 /** Returns the index of the value "T" in the container "vect"

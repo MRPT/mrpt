@@ -3,13 +3,13 @@
 Map representations for localization and SLAM.
 
 
-# Library `mrpt-maps`
+# Library mrpt-maps
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
 		sudo apt install libmrpt-maps-dev
 
-See also: [Import MRPT into your CMake scripts](mrpt_from_cmake.html).
+Read also [how to import MRPT into your CMake scripts](mrpt_from_cmake.html).
 
 This library includes (almost) all the maps usable for localization or mapping
 in the rest of MRPT classes.
@@ -33,4 +33,4 @@ maps, that behaves as if they were a single metric map. This includes updating
 the map contents from observations, fusing the information from all maps while
 evaluating an observation likelihood, etc.
 
-See the list of classes in mrpt::maps
+# Library contents
