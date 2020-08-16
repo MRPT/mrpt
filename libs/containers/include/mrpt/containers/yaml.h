@@ -94,9 +94,9 @@ class yaml
 		~node_t() = default;
 
 		template <
-			typename T,  //
+			typename T,	 //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,  //
+				std::initializer_list<map_t::value_type>, T>>,	//
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -125,6 +125,20 @@ class yaml
 
 		/** Returns: "null", "sequence", "map", "scalar(<TYPE>)" */
 		std::string typeName() const;
+
+		/** Use: `for (auto &kv: n.asSequence()) {...}`
+		 * \exception std::exception If called on a non-sequence node. */
+		sequence_t& asSequence();
+		const sequence_t& asSequence() const;
+
+		/** Use: `for (auto &kv: n.asMap()) {...}`
+		 * \exception std::exception If called on a non-map node. */
+		map_t& asMap();
+		const map_t& asMap() const;
+
+		/** \exception std::exception If called on a non-scalar node. */
+		scalar_t& asScalar();
+		const scalar_t& asScalar() const;
 
 		/** Returns a copy of the existing value of the given type, or tries to
 		 * convert it between easily-compatible types (e.g. double<->int,
