@@ -331,7 +331,11 @@ class yaml
 	/// \overload
 	void push_back(const bool v) { internalPushBack(bool(v)); }
 	/// \overload
-	void push_back(const yaml& v) { internalPushBack(v); }
+	void push_back(const yaml& v)
+	{
+		sequence_t& seq = asSequence();
+		seq.emplace_back(v.root_);
+	}
 
    private:
 	node_t root_;
