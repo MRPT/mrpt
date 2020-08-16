@@ -13,37 +13,38 @@
 
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/core/exceptions.h>
+
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::comms;
 using namespace mrpt::comms::net;
-using namespace std;
 
-string url = "http://www.google.es/";
+std::string url = "http://www.google.es/";
 
 void Test_HTTP_get()
 {
-	string content;
-	string errmsg;
-	mrpt::system::TParameters<string> out_headers;
+	std::string content;
 
-	cout << "Retrieving " << url << "..." << endl;
+	mrpt::comms::net::HttpRequestOptions httpOptions;
+	mrpt::comms::net::HttpRequestOutput httpOut;
 
-	ERRORCODE_HTTP ret = http_get(
-		url, content, errmsg, 80, "", "", nullptr, nullptr, &out_headers);
+	std::cout << "Retrieving " << url << "..." << std::endl;
 
-	if (ret != net::erOk)
+	http_errorcode ret = http_get(url, content, httpOptions, httpOut);
+
+	if (ret != net::http_errorcode::Ok)
 	{
-		cout << " Error: " << errmsg << endl;
+		std::cout << " Error: " << httpOut.errormsg << std::endl;
 		return;
 	}
 
-	string typ = out_headers.has("Content-Type") ? out_headers["Content-Type"]
-												 : string("???");
+	string typ = httpOut.out_headers.count("Content-Type")
+					 ? httpOut.out_headers.at("Content-Type")
+					 : string("???");
 
-	cout << "Ok: " << content.size() << " bytes of type: " << typ << endl;
-	// cout << content << endl;
+	std::cout << "Ok: " << content.size() << " bytes of type: " << typ
+			  << std::endl;
 }
 //! [example-http-get]
 

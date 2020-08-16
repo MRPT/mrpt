@@ -1085,7 +1085,7 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 	extra_headers["Upgrade-Insecure-Requests"] = "1";
 	extra_headers["Content-Type"] = "application/x-www-form-urlencoded";
 
-	ERRORCODE_HTTP ret = http_request(
+	http_errorcode ret = http_request(
 		"POST", post_data,
 		mrpt::format("http://%s/cgi/setting", m_device_ip.c_str()), post_out,
 		post_err_str, 80 /* port */, string(), string(),  // user,pass

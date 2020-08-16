@@ -329,7 +329,7 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 
 	out_list.clear();
 
-	net::ERRORCODE_HTTP ret = net::http_get(
+	net::http_errorcode ret = net::http_get(
 		string("http://") + server, content, out_errmsg, port, auth_user,
 		auth_pass, &http_code, &my_headers, nullptr, 6000);
 
