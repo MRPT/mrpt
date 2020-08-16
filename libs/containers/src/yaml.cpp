@@ -48,6 +48,62 @@ std::string yaml::node_t::typeName() const
 	MRPT_END
 }
 
+yaml::sequence_t& yaml::node_t::asSequence()
+{
+	MRPT_START
+	return const_cast<sequence_t&>(
+		const_cast<const node_t*>(this)->asSequence());
+	MRPT_END
+}
+const yaml::sequence_t& yaml::node_t::asSequence() const
+{
+	MRPT_START
+	ASSERTMSG_(
+		std::holds_alternative<sequence_t>(d),
+		mrpt::format(
+			"Trying to access node of type `%s` as a sequence",
+			typeName().c_str()));
+
+	return std::get<sequence_t>(d);
+	MRPT_END
+}
+
+yaml::map_t& yaml::node_t::asMap()
+{
+	MRPT_START
+	return const_cast<map_t&>(const_cast<const node_t*>(this)->asMap());
+	MRPT_END
+}
+const yaml::map_t& yaml::node_t::asMap() const
+{
+	MRPT_START
+	ASSERTMSG_(
+		std::holds_alternative<map_t>(d),
+		mrpt::format(
+			"Trying to access node of type `%s` as a map", typeName().c_str()));
+	return std::get<map_t>(d);
+	MRPT_END
+}
+
+yaml::scalar_t& yaml::node_t::asScalar()
+{
+	MRPT_START
+	return const_cast<scalar_t&>(const_cast<const node_t*>(this)->asScalar());
+	MRPT_END
+}
+const yaml::scalar_t& yaml::node_t::asScalar() const
+{
+	MRPT_START
+	ASSERTMSG_(
+		std::holds_alternative<scalar_t>(d),
+		mrpt::format(
+			"Trying to access node of type `%s` as a scalar",
+			typeName().c_str()));
+
+	return std::get<scalar_t>(d);
+	MRPT_END
+}
+
 // ============ class: yaml =======
 yaml::yaml(const yaml& v) { *this = v; }
 
@@ -65,14 +121,7 @@ yaml::sequence_t& yaml::asSequence()
 const yaml::sequence_t& yaml::asSequence() const
 {
 	MRPT_START
-	auto n = dereferenceProxy();
-	ASSERTMSG_(
-		std::holds_alternative<sequence_t>(n->d),
-		mrpt::format(
-			"Trying to access node of type `%s` as a sequence",
-			n->typeName().c_str()));
-
-	return std::get<sequence_t>(n->d);
+	return dereferenceProxy()->asSequence();
 	MRPT_END
 }
 
@@ -85,14 +134,7 @@ yaml::map_t& yaml::asMap()
 const yaml::map_t& yaml::asMap() const
 {
 	MRPT_START
-	auto n = dereferenceProxy();
-	ASSERTMSG_(
-		std::holds_alternative<map_t>(n->d),
-		mrpt::format(
-			"Trying to access node of type `%s` as a map",
-			n->typeName().c_str()));
-
-	return std::get<map_t>(n->d);
+	return dereferenceProxy()->asMap();
 	MRPT_END
 }
 
@@ -106,14 +148,7 @@ yaml::scalar_t& yaml::asScalar()
 const yaml::scalar_t& yaml::asScalar() const
 {
 	MRPT_START
-	auto n = dereferenceProxy();
-	ASSERTMSG_(
-		std::holds_alternative<scalar_t>(n->d),
-		mrpt::format(
-			"Trying to access node of type `%s` as a scalar",
-			n->typeName().c_str()));
-
-	return std::get<scalar_t>(n->d);
+	return dereferenceProxy()->asScalar();
 	MRPT_END
 }
 
