@@ -27,7 +27,7 @@ namespace mrpt::graphs::detail
  */
 template <
 	class CPOSE,  // Type of edges
-	class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
+	class MAPS_IMPLEMENTATION,	// Use std::map<> vs. std::vector<>
 	class NODE_ANNOTATIONS = mrpt::graphs::detail::TNodeAnnotations,
 	class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
 class CVisualizer
@@ -56,10 +56,8 @@ class CVisualizer
 	 * \brief Smaller functions that do add very specific parts to the visual
 	 * representation
 	 *
-	 * Following functions take an optional TParametersDouble instance
-	 * containing
-	 * visualization parameters
-	 *
+	 * Following functions take an optional mrpt::containers::yaml instance
+	 * containing visualization parameters
 	 */
 	/**\{ */
 	virtual void drawGroundGrid(
