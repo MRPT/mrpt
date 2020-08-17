@@ -8,6 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/config.h>  // HAVE_ALLOCA
+
 #include <cstring>
 #include <type_traits>
 
