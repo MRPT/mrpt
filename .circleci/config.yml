@@ -1,8 +1,8 @@
 version: 2
 jobs:
-  full-u18.04-bionic-codecov:
+  full-u20.04-focal-codecov:
     docker:
-      - image: mrpt/mrpt-build-env:full-bionic
+      - image: mrpt/mrpt-build-env:full-focal
     steps:
       - checkout
       - run: git submodule sync
@@ -13,9 +13,9 @@ jobs:
       - run: make gcov -C build
       - run: make -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
-  full-u19.10-eoan:
+  full-u18.04-bionic:
     docker:
-      - image: mrpt/mrpt-build-env:full-eoan
+      - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
       - run: git submodule sync
@@ -75,9 +75,26 @@ jobs:
           command: bash .circleci/check_style.sh
           environment:
             TASK: lint_all
-  macos:
+  macos-10.3.0:
     macos:
       xcode: "10.3.0"
+    working_directory: /Users/distiller/project
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
+      - run: brew update
+      - run: brew upgrade
+      - run: brew install cmake
+      - run: brew install boost
+      - run: brew install nasm
+      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DCMAKE_VERBOSE_MAKEFILE=ON -DMRPT_ALLOW_LGPLV3=ON -H. -Bbuild
+      - run: make -j2 -C build tests_build_all
+      - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build
+      - run: make -j2 -C build
+  macos-12.0.0:
+    macos:
+      xcode: "12.0.0"
     working_directory: /Users/distiller/project
     steps:
       - checkout
@@ -96,10 +113,11 @@ workflows:
   version: 2
   build:
     jobs:
+      - full-u20.04-focal-codecov
       - full-u18.04-bionic
-      - full-u19.10-eoan
+      - clang-u18.04-bionic
       - headless-u18.04-bionic
       - minimal-u18.04-bionic
-      - clang-u18.04-bionic
       - clang-format-lint
-      - macos
+      - macos-10.3.0
+      - macos-12.0.0
