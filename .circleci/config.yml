@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  full-u18.04-bionic:
+  full-u18.04-bionic-codecov:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
@@ -69,10 +69,10 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
-      - run: pip3 install --user -r travis/python_reqs.txt
+      - run: pip3 install --user -r .circleci/python_reqs.txt
       - run:
           name: Run lint task
-          command: bash travis/check_style.sh
+          command: bash .circleci/check_style.sh
           environment:
             TASK: lint_all
   macos:
