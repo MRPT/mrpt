@@ -82,7 +82,7 @@ struct TLine3D
 	void generate2DObject(TLine2D& l) const;
 
 	/** Returns "P=[x,y,z] u=[ux,uy,uz]"
-	 * \note [New in MRPT 2.0.5]
+	 * \note [New in MRPT 2.1.0]
 	 */
 	std::string asString() const;
 };

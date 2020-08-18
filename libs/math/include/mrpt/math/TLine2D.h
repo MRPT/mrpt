@@ -104,7 +104,7 @@ struct TLine2D
 		const TPoint2D& origin, TPose2D& outPose) const;
 
 	/** Returns "[A, B, C]"
-	 * \note [New in MRPT 2.0.5]
+	 * \note [New in MRPT 2.1.0]
 	 */
 	std::string asString() const;
 };
