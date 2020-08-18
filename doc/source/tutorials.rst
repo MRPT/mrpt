@@ -3,6 +3,8 @@
 Tutorials
 ===============
 
+Note: This page is in the process of being imported from https://www.mrpt.org/tutorials/
+
 .. toctree::
   :maxdepth: 2
 
