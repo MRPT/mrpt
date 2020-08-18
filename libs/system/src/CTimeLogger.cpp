@@ -178,7 +178,7 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 		else
 		{
 			const auto parent_pos = line.find(last_parent);
-			if (parent_pos != std::string::npos)
+			if (parent_pos != std::string::npos && !last_parent.empty())
 			{
 				line = "+-> "s + line.substr(dot_pos);
 			}
