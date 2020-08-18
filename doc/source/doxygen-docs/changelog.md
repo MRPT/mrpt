@@ -23,6 +23,7 @@
   - Avoid crash in camera-calib app when clicking "Close" while capturing a live video.
   - Fix potential Eigen crash in matrixes inverse() and inverse_LLt() if building mrpt and user code with different optimization flags.
   - Wrong parsing of env variables in mrpt::get_env() when called more than once.
+  - mrpt::system::CTimeLogger: Fix wrong formatting (parent entry prefix collapse) in summary stats table.
 
 ------
 # Version 2.0.4: Released Jun 20, 2020

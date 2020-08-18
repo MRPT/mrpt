@@ -75,3 +75,23 @@ TEST(CTimeLogger, printStats)
 	tl.clear(true);
 	EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 12U);
 }
+
+// Used to fix a bug in results table generation (Aug/2020)
+TEST(CTimeLogger, printStatsFaulty)
+{
+	mrpt::system::CTimeLogger tl;
+	doTimLogEntry(tl, "foo", 1);
+	doTimLogEntry(tl, "foo.1", 1);
+	doTimLogEntry(tl, "foo.2", 1);
+	doTimLogEntry(tl, "foo.3", 1);
+	doTimLogEntry(tl, "bar.1", 1);
+	doTimLogEntry(tl, "bar.2", 1);
+	doTimLogEntry(tl, "bar.3", 1);
+	doTimLogEntry(tl, "zoo.1", 1);
+	doTimLogEntry(tl, "zoo.2", 1);
+	doTimLogEntry(tl, "zoo.3", 1);
+
+	const std::string s = tl.getStatsAsText();
+	tl.clear(true);
+	EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 14U);
+}
