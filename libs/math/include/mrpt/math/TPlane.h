@@ -66,7 +66,7 @@ struct TPlane
 	 */
 	TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3);
 
-	/** \note [New in MRPT 2.0.5] */
+	/** \note [New in MRPT 2.1.0] */
 	static TPlane From3Points(
 		const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
 	{
@@ -78,7 +78,7 @@ struct TPlane
 	 */
 	TPlane(const TPoint3D& p1, const TVector3D& normal);
 
-	/** \note [New in MRPT 2.0.5] */
+	/** \note [New in MRPT 2.1.0] */
 	static TPlane FromPointAndNormal(
 		const TPoint3D& p1, const TVector3D& normal)
 	{
@@ -92,7 +92,7 @@ struct TPlane
 
 	/** Defines a plane which contains this point and this line.
 	 * \throw std::logic_error if the point is inside the line.
-	 * \note [New in MRPT 2.0.5]
+	 * \note [New in MRPT 2.1.0]
 	 */
 	static TPlane FromPointAndLine(const TPoint3D& p1, const TLine3D& r)
 	{
@@ -127,7 +127,7 @@ struct TPlane
 	}
 
 	/** Returns "[A, B, C, D]"
-	 * \note [New in MRPT 2.0.5]
+	 * \note [New in MRPT 2.1.0]
 	 */
 	std::string asString() const;
 };

@@ -34,7 +34,7 @@ namespace mrpt
  *
  * \note Partly based on: https://github.com/progschj/ThreadPool (ZLib license)
  *
- * \note (New in MRPT 2.0.5)
+ * \note (New in MRPT 2.1.0)
  */
 class WorkerThreadsPool
 {

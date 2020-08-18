@@ -66,7 +66,7 @@ namespace internal {
  * \snippet containers_yaml_example/test.cpp example-yaml
  *
  * \ingroup mrpt_containers_yaml
- * \note [new in MRPT 2.0.5]
+ * \note [New in MRPT 2.1.0]
  */
 class yaml
 {

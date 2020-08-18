@@ -32,7 +32,7 @@ void for_(F func, std::index_sequence<Is...>)
  * mrpt::for_<10>( [&](auto i) { std::cout << i.value << " "; } );
  * \endcode
  * \ingroup mrpt_core_grp
- * \note (New in MRPT 2.0.5)
+ * \note (New in MRPT 2.1.0)
  * \note Credits to [SO](https://stackoverflow.com/a/26912970/1631514).
  */
 template <std::size_t N, typename F>
