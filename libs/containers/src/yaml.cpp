@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"	 // Precompiled headers
+#include "containers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
@@ -229,24 +229,24 @@ void yaml::clear()
 		n->typeName().c_str());
 }
 
-void yaml::operator=(bool v) { implOpAssign(v); }
+yaml& yaml::operator=(bool v) { return implOpAssign(v); }
 
-void yaml::operator=(double v) { implOpAssign(v); }
-void yaml::operator=(float v) { implOpAssign(v); }
+yaml& yaml::operator=(double v) { return implOpAssign(v); }
+yaml& yaml::operator=(float v) { return implOpAssign(v); }
 
-void yaml::operator=(int8_t v) { implOpAssign(v); }
-void yaml::operator=(uint8_t v) { implOpAssign(v); }
+yaml& yaml::operator=(int8_t v) { return implOpAssign(v); }
+yaml& yaml::operator=(uint8_t v) { return implOpAssign(v); }
 
-void yaml::operator=(int16_t v) { implOpAssign(v); }
-void yaml::operator=(uint16_t v) { implOpAssign(v); }
+yaml& yaml::operator=(int16_t v) { return implOpAssign(v); }
+yaml& yaml::operator=(uint16_t v) { return implOpAssign(v); }
 
-void yaml::operator=(int32_t v) { implOpAssign(v); }
-void yaml::operator=(uint32_t v) { implOpAssign(v); }
+yaml& yaml::operator=(int32_t v) { return implOpAssign(v); }
+yaml& yaml::operator=(uint32_t v) { return implOpAssign(v); }
 
-void yaml::operator=(int64_t v) { implOpAssign(v); }
-void yaml::operator=(uint64_t v) { implOpAssign(v); }
+yaml& yaml::operator=(int64_t v) { return implOpAssign(v); }
+yaml& yaml::operator=(uint64_t v) { return implOpAssign(v); }
 
-void yaml::operator=(const std::string& v) { implOpAssign(v); }
+yaml& yaml::operator=(const std::string& v) { return implOpAssign(v); }
 yaml& yaml::operator=(const yaml& v)
 {
 	MRPT_START
@@ -552,9 +552,13 @@ bool yaml::hasComment() const
 
 const std::string& yaml::comment()
 {
+	MRPT_START
 	node_t* n = dereferenceProxy();
-	ASSERTMSG_(n->comment.has_value(), "");
+	ASSERTMSG_(
+		n->comment.has_value(),
+		"Trying to access comment but this node has none.");
 	return n->comment.value();
+	MRPT_END
 }
 
 void yaml::comment(const std::string_view& c)
