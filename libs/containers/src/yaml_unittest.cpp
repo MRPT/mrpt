@@ -242,29 +242,40 @@ TEST(yaml, ctorMap)
 
 TEST(yaml, comments)
 {
-	// using mrpt::containers::make_vcp;
+	try
+	{
+		mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
+		c1["K"] = 2.0;
+		c1["K"].comment("Form factor");
 
-	mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
-	c1["K"] = 2.0;
-	c1["K"].comment("Form factor");
+		c1["T"] = 27;
+		c1["T"].comment("Temperature [C]");
 
-	c1["T"] = 27;
-	c1["T"].comment("Temperature [C]");
+		c1["v"] = 0;
 
-	c1["v"] = 0;
+		EXPECT_TRUE(c1["K"].hasComment());
+		EXPECT_EQ(c1["K"].comment(), "Form factor");
 
-	EXPECT_TRUE(c1["K"].hasComment());
-	EXPECT_TRUE(c1["T"].hasComment());
-	EXPECT_FALSE(c1["v"].hasComment());
+		EXPECT_TRUE(c1["T"].hasComment());
+		EXPECT_FALSE(c1["v"].hasComment());
 
-	MRPT_TODO("vcp compact form");
-	// c1["L"] = make_vcp(2.0, "Arm length [meters]");
+		using mrpt::containers::vcp;
 
-	mrpt::containers::yaml c2 = mrpt::containers::yaml::Map();
-	c2["constants"] = c1;
-	c2["constants"].comment("Universal constant definitions:");
+		c1["L"] = vcp(2.0, "Arm length [meters]");
+		EXPECT_TRUE(c1["L"].hasComment());
+		EXPECT_EQ(c1["L"].comment(), "Arm length [meters]");
 
-	c2.printAsYAML(std::cout);
+		mrpt::containers::yaml c2 = mrpt::containers::yaml::Map();
+		c2["constants"] = c1;
+		c2["constants"].comment("Universal constant definitions:");
+
+		c2.printAsYAML(std::cout);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << mrpt::exception_to_str(e);
+		GTEST_FAIL();
+	}
 }
 
 TEST(yaml, iterate)

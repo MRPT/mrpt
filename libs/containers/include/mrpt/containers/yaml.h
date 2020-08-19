@@ -13,6 +13,8 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
 
+#include <mrpt/containers/ValueCommentPair.h>
+
 #include <any>
 #include <cstdint>
 #include <iosfwd>
@@ -45,9 +47,9 @@ namespace internal {
  * Library: \ref mrpt_containers_grp
  * \ingroup mrpt_containers_grp */
 
-/** Powerful YAML-like container for possibly-nested blocks of parameters or any
- * arbitrary structured data contents, including documentation in the form of
- *comments attached to each node.
+/** Powerful YAML-like container for possibly-nested blocks of parameters or
+ *any arbitrary structured data contents, including documentation in the
+ *form of comments attached to each node.
  *
  * This class holds the root "node" in a YAML-like tree structure.
  * Each tree node can be of one of these types:
@@ -56,12 +58,13 @@ namespace internal {
  * - Map ("dictionary"): pairs of `name: value`.
  * - Null (empty).
  *
- * Elements contained in sequences or dictionaries can be, in turn, of any of
- *the four types above, leading to arbitrarialy-complex nested structures.
+ * Elements contained in sequences or dictionaries can be, in turn, of any
+ *of the four types above, leading to arbitrarialy-complex nested
+ *structures.
  *
  * This class was designed as a lightweight, while structured, way to pass
- *arbitrarialy-complex parameter blocks but can be used to load and save YAML
- *files or as a database.
+ *arbitrarialy-complex parameter blocks but can be used to load and save
+ *YAML files or as a database.
  *
  * See example in \ref containers_yaml_example/test.cpp
  * \snippet containers_yaml_example/test.cpp example-yaml
@@ -398,27 +401,35 @@ class yaml
 	template <typename T>
 	const T& asRef() const;
 
-	void operator=(bool v);
+	yaml& operator=(bool v);
 
-	void operator=(float v);
-	void operator=(double v);
+	yaml& operator=(float v);
+	yaml& operator=(double v);
 
-	void operator=(int8_t v);
-	void operator=(uint8_t v);
-	void operator=(int16_t v);
-	void operator=(uint16_t v);
-	void operator=(int32_t v);
-	void operator=(uint32_t v);
-	void operator=(int64_t v);
-	void operator=(uint64_t v);
+	yaml& operator=(int8_t v);
+	yaml& operator=(uint8_t v);
+	yaml& operator=(int16_t v);
+	yaml& operator=(uint16_t v);
+	yaml& operator=(int32_t v);
+	yaml& operator=(uint32_t v);
+	yaml& operator=(int64_t v);
+	yaml& operator=(uint64_t v);
 
-	void operator=(const std::string& v);
-	inline void operator=(const char* v) { operator=(std::string(v)); }
-	inline void operator=(const std::string_view& v)
+	yaml& operator=(const std::string& v);
+	inline yaml& operator=(const char* v) { return operator=(std::string(v)); }
+	inline yaml& operator=(const std::string_view& v)
 	{
-		operator=(std::string(v));
+		return operator=(std::string(v));
 	}
 	yaml& operator=(const yaml& v);
+
+	/** vcp (value-comment) wrapper */
+	template <typename T>
+	yaml& operator=(const ValueCommentPair<T>& vc)
+	{
+		this->comment(vc.comment);
+		return operator=(vc.value);
+	}
 
 	inline operator bool() const { return as<bool>(); }
 
@@ -480,7 +491,7 @@ class yaml
 
 	/** Impl of operator=() */
 	template <typename T>
-	void implOpAssign(const T& v)
+	yaml& implOpAssign(const T& v)
 	{
 		ASSERTMSG_(
 			isProxy_,
@@ -491,6 +502,7 @@ class yaml
 
 		scalar_t& s = const_cast<node_t*>(proxiedNode_)->d.emplace<scalar_t>();
 		s.emplace<T>(v);
+		return *this;
 	}
 };
 
