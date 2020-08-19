@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <iosfwd>
 #include <map>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -94,9 +95,9 @@ class yaml
 		~node_t() = default;
 
 		template <
-			typename T,	 //
+			typename T,  //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,	//
+				std::initializer_list<map_t::value_type>, T>>,  //
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
