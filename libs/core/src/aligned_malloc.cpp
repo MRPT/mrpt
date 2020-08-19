@@ -45,13 +45,3 @@ void mrpt::aligned_free(void* ptr)
 	return ::free(ptr);
 #endif
 }
-void* mrpt::aligned_realloc(void* ptr, size_t size, size_t alignment)
-{
-	// size must be an integral multiple of alignment:
-	if ((size % alignment) != 0) size = ((size / alignment) + 1) * alignment;
-#ifdef _MSC_VER
-	return _aligned_realloc(ptr, size, alignment);
-#else
-	return std::realloc(ptr, size);
-#endif
-}

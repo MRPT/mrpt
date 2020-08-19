@@ -52,14 +52,3 @@ TEST(aligned_allocator, aligned_calloc)
 
 	mrpt::aligned_free(p);
 }
-
-TEST(aligned_allocator, aligned_realloc)
-{
-	void* p = mrpt::aligned_malloc(100, 32);
-	EXPECT_TRUE(my_is_aligned<32>(p));
-
-	p = mrpt::aligned_realloc(p, 1000, 32);
-	EXPECT_TRUE(my_is_aligned<32>(p));
-
-	mrpt::aligned_free(p);
-}

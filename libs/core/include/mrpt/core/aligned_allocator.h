@@ -16,7 +16,6 @@
 namespace mrpt
 {
 void* aligned_malloc(size_t size, size_t alignment);
-void* aligned_realloc(void* ptr, size_t size, size_t alignment);
 void aligned_free(void* ptr);
 /** Identical to aligned_malloc, but it zeroes the reserved memory block. */
 void* aligned_calloc(size_t bytes, size_t alignment);
