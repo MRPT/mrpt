@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
+#include "containers-precomp.h"	 // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
@@ -16,6 +16,10 @@
 #include <iostream>
 #if MRPT_HAS_YAMLCPP
 #include <yaml-cpp/yaml.h>
+#endif
+
+#if defined(MRPT_HAVE_LIBFYAML)
+#include <libfyaml.h>
 #endif
 
 using namespace mrpt::containers;
@@ -459,12 +463,44 @@ bool yaml::internalPrintAsYAML(
 
 yaml yaml::FromYAMLText(const std::string& yamlTextBlock)
 {
-#if MRPT_HAS_YAMLCPP
-	YAML::Node n = YAML::Load(yamlTextBlock);
-	return yaml::FromYAMLCPP(n);
+	MRPT_START
+	yaml doc;
+	doc.loadFromYAMLText(yamlTextBlock);
+	return doc;
+	MRPT_END
+}
+
+void yaml::loadFromYAMLText(const std::string& yamlTextBlock)
+{
+	MRPT_START
+	std::stringstream ss(yamlTextBlock);
+	loadFromYAMLStream(ss);
+	MRPT_END
+}
+
+yaml yaml::FromYAMLStream(const std::istream& i)
+{
+	MRPT_START
+	yaml doc;
+	doc.loadFromYAMLStream(i);
+	return doc;
+	MRPT_END
+}
+
+void yaml::loadFromYAMLStream(const std::istream& i)
+{
+	MRPT_START
+#if defined(MRPT_HAVE_LIBFYAML)
+
+	struct fy_parse_cfg cfg;
+	struct fy_parser* parser = fy_parser_create(&cfg);
+	ASSERT_(parser);
+
+	fy_parser_destroy(parser);
 #else
-	THROW_EXCEPTION("MRPT was built without yaml-cpp");
+	THROW_EXCEPTION("MRPT was built without libfyaml");
 #endif
+	MRPT_END
 }
 
 yaml yaml::FromYAMLCPP(const YAML::Node& n)

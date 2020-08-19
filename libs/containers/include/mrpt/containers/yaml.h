@@ -8,12 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/ValueCommentPair.h>
 #include <mrpt/core/bits_math.h>  // mrpt::RAD2DEG
 #include <mrpt/core/demangle.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
-
-#include <mrpt/containers/ValueCommentPair.h>
 
 #include <any>
 #include <cstdint>
@@ -66,6 +65,9 @@ namespace internal {
  *arbitrarialy-complex parameter blocks but can be used to load and save
  *YAML files or as a database.
  *
+ * `yaml` can be used to parse and emit YAML streams.
+ * It does not support event-based parsing.
+ *
  * See example in \ref containers_yaml_example/test.cpp
  * \snippet containers_yaml_example/test.cpp example-yaml
  *
@@ -98,9 +100,9 @@ class yaml
 		~node_t() = default;
 
 		template <
-			typename T,  //
+			typename T,	 //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,  //
+				std::initializer_list<map_t::value_type>, T>>,	//
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -204,17 +206,34 @@ class yaml
 		return n;
 	}
 
+	/** Parses the text as a YAML document
+	 * \exception std::exception Upon format errors
+	 */
+	static yaml FromYAMLText(const std::string& yamlTextBlock);
+
+	/** Parses the text into this YAML document.
+	 * \exception std::exception Upon format errors
+	 */
+	void loadFromYAMLText(const std::string& yamlTextBlock);
+
+	/** Parses the stream as a YAML document
+	 * \exception std::exception Upon format errors
+	 */
+	static yaml FromYAMLStream(const std::istream& i);
+
+	/** Parses the stream into this YAML document.
+	 * \exception std::exception Upon format errors
+	 */
+	void loadFromYAMLStream(const std::istream& i);
+
 	/** Builds an object copying the structure and contents from an existing
-	 * YAML Node. Requires mrpt built against yamlcpp. */
+	 * YAMLCPP Node. Requires mrpt built against yamlcpp. */
 	static yaml FromYAMLCPP(const YAML::Node& n);
 
 	/** Imports the structure and contents from an existing
 	 * YAMLCPP Node. Requires mrpt built against yamlcpp. */
 	void loadFromYAMLCPP(const YAML::Node& n);
 
-	/** Parses the text as a YAML document, then converts it into a yaml
-	 * object */
-	static yaml FromYAMLText(const std::string& yamlTextBlock);
 	/** @} */
 
 	/** @name Content and type checkers

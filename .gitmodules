@@ -1,3 +1,6 @@
 [submodule "3rdparty/nanogui"]
 	path = 3rdparty/nanogui
 	url = https://github.com/MRPT/nanogui.git
+[submodule "3rdparty/libfyaml"]
+	path = 3rdparty/libfyaml
+	url = https://github.com/MRPT/libfyaml.git
