@@ -1,4 +1,4 @@
-/* +------------------------------------------------------------------------+
+﻿/* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
@@ -7,18 +7,21 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"	 // Precompiled headers
+#include "containers-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
 
 #include <iostream>
+#include <istream>
+#include <stack>
+
 #if MRPT_HAS_YAMLCPP
 #include <yaml-cpp/yaml.h>
 #endif
 
-#if defined(MRPT_HAVE_LIBFYAML)
+#if MRPT_HAS_FYAML
 #include <libfyaml.h>
 #endif
 
@@ -27,7 +30,9 @@ using namespace mrpt::containers;
 // ============ class: yaml::node_t =======
 bool yaml::node_t::isNullNode() const
 {
-	return std::holds_alternative<std::monostate>(d);
+	return std::holds_alternative<std::monostate>(d) ||
+		   (std::holds_alternative<scalar_t>(d) &&
+			!std::get<scalar_t>(d).has_value());
 }
 bool yaml::node_t::isScalar() const
 {
@@ -398,13 +403,25 @@ bool yaml::internalPrintAsYAML(
 	{
 		const node_t& v = kv.second;
 
-		if (v.comment.has_value())
+		if (const auto& c =
+				v.comments[static_cast<size_t>(CommentPosition::TOP)];
+			c.has_value())
 		{
-			o << sInd << "# ";
-			o << v.comment.value() << "\n";
+			o << sInd << "# " << c.value() << "\n";
 		}
 		o << sInd << kv.first << ": ";
-		if (!internalPrintNodeAsYAML(v, o, indent, false, di)) o << "\n";
+		bool r = internalPrintNodeAsYAML(v, o, indent, false, di);
+
+		if (const auto& c =
+				v.comments[static_cast<size_t>(CommentPosition::RIGHT)];
+			c.has_value())
+		{
+			o << sInd << "# " << c.value() << "\n";
+		}
+		else
+		{
+			if (!r) o << "\n";
+		}
 	}
 	return true;
 }
@@ -461,45 +478,256 @@ bool yaml::internalPrintAsYAML(
 	return false;
 }
 
-yaml yaml::FromYAMLText(const std::string& yamlTextBlock)
+yaml yaml::FromText(const std::string& yamlTextBlock)
 {
 	MRPT_START
 	yaml doc;
-	doc.loadFromYAMLText(yamlTextBlock);
+	doc.loadFromText(yamlTextBlock);
 	return doc;
 	MRPT_END
 }
 
-void yaml::loadFromYAMLText(const std::string& yamlTextBlock)
+// TODO: Allow users to add custom filters?
+static yaml::scalar_t textToScalar(const std::string& s)
 {
-	MRPT_START
-	std::stringstream ss(yamlTextBlock);
-	loadFromYAMLStream(ss);
-	MRPT_END
+	// tag:yaml.org,2002:null
+	// https://yaml.org/spec/1.2/spec.html#id2803362
+	if (s == "~" || s == "null" || s == "Null" || s == "NULL") return {};
+
+	// TODO: Try to parse to int or double?
+
+	return {s};
 }
 
-yaml yaml::FromYAMLStream(const std::istream& i)
+#if MRPT_HAS_FYAML
+static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p);
+
+static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 {
 	MRPT_START
-	yaml doc;
-	doc.loadFromYAMLStream(i);
-	return doc;
+
+#if 0  // debug
+#define PARSER_DBG_OUT(STR_) std::cout << ">> " << STR_ << "\n"
+#else
+#define PARSER_DBG_OUT(STR) while (0)
+#endif
+
+	struct fy_event* event = fy_parser_parse(p);
+	if (!event) return {};
+
+	// process event:
+	switch (event->type)
+	{
+		case FYET_NONE:
+		{
+			PARSER_DBG_OUT("Event: None");
+			fy_parser_event_free(p, event);  // free event
+			return recursiveParse(p);  // Keep going
+		}
+		break;
+		case FYET_STREAM_START:
+		{
+			PARSER_DBG_OUT("Event: Stream start");
+			fy_parser_event_free(p, event);  // free event
+			return recursiveParse(p);  // Keep going
+		}
+		break;
+		case FYET_STREAM_END:
+		{
+			PARSER_DBG_OUT("Event: Stream end");
+			fy_parser_event_free(p, event);  // free event
+			return recursiveParse(p);  // Keep going
+		}
+		break;
+		case FYET_DOCUMENT_START:
+		{
+			PARSER_DBG_OUT("Event: Doc start");
+			fy_parser_event_free(p, event);  // free event
+			return recursiveParse(p);  // Keep going
+		}
+		break;
+		case FYET_DOCUMENT_END:
+		{
+			PARSER_DBG_OUT("Event: Doc end");
+			fy_parser_event_free(p, event);  // free event
+			return recursiveParse(p);  // Keep going
+		}
+		break;
+		case FYET_MAPPING_START:
+		{
+			PARSER_DBG_OUT("Event: MAP START");
+			fy_parser_event_free(p, event);  // free event
+
+			yaml::node_t n;
+			yaml::map_t& m = n.d.emplace<yaml::map_t>();
+
+			for (;;)
+			{
+				// Next event is map key:
+				auto nKey = recursiveParse(p);
+				// end of map reached?
+				if (!nKey.has_value()) break;
+
+				ASSERT_(nKey->isScalar());
+
+				yaml::node_t& val = m[nKey->as<std::string>()];
+
+				// and next event is mapped content:
+				auto nVal = recursiveParse(p);
+				ASSERT_(nVal.has_value());
+
+				val = std::move(nVal.value());
+			}
+
+			return n;
+		}
+		break;
+		case FYET_MAPPING_END:
+		{
+			PARSER_DBG_OUT("Event: MAP END");
+			fy_parser_event_free(p, event);  // free event
+			return {};
+		}
+		break;
+		case FYET_SEQUENCE_START:
+		{
+			PARSER_DBG_OUT("Event: SEQ START");
+			fy_parser_event_free(p, event);  // free event
+			yaml::node_t n;
+			yaml::sequence_t& s = n.d.emplace<yaml::sequence_t>();
+
+			for (;;)
+			{
+				auto entry = recursiveParse(p);
+				if (!entry.has_value()) break;  // end of sequence reached?
+				s.push_back(std::move(entry.value()));
+			}
+
+			return std::move(n);
+		}
+		break;
+		case FYET_SEQUENCE_END:
+		{
+			PARSER_DBG_OUT("Event: SEQ END");
+			fy_parser_event_free(p, event);  // free event
+			return {};
+		}
+		break;
+		case FYET_SCALAR:
+		{
+			size_t strValueLen = 0;
+			const char* strValue =
+				fy_token_get_text(event->scalar.value, &strValueLen);
+			const std::string sValue(strValue, strValueLen);
+
+			PARSER_DBG_OUT(
+				">> Scalar: implicit="
+				<< (event->scalar.tag_implicit ? "1" : "0")
+				<< " tag: " << ((void*)event->scalar.tag)
+				<< " anchor: " << ((void*)event->scalar.anchor)
+				<< fy_token_get_text0(event->scalar.anchor)
+				<< " value: " << sValue);
+
+			if (event->scalar.value)
+			{
+				yaml::node_t n;
+				n.d.emplace<yaml::scalar_t>(textToScalar(sValue));
+
+				char buf[2048];
+				if (buf != fy_token_get_comment(
+							   event->scalar.value, buf, sizeof(buf), fycp_top))
+				{
+					std::string c = buf;
+					if (c.size() >= 2 && c[0] == '#' && isblank(c[1]))
+						c.erase(0, 2);
+					n.comments[static_cast<size_t>(CommentPosition::TOP)] =
+						std::move(c);
+				}
+				if (buf !=
+					fy_token_get_comment(
+						event->scalar.value, buf, sizeof(buf), fycp_right))
+				{
+					std::string c = buf;
+					if (c.size() >= 2 && c[0] == '#' && isblank(c[1]))
+						c.erase(0, 2);
+					n.comments[static_cast<size_t>(CommentPosition::RIGHT)] =
+						std::move(c);
+				}
+
+				fy_parser_event_free(p, event);  // free event
+				return n;
+			}
+			else
+			{
+				THROW_EXCEPTION("Unexpected empty scalar?!");
+			}
+		}
+		break;
+		case FYET_ALIAS:
+			fy_parser_event_free(p, event);  // free event
+			return recursiveParse(p);  // Keep going
+	};
+
+	THROW_EXCEPTION_FMT("Unexpected parser event type %i", event->type);
+
+#undef PARSER_DBG_OUT
 	MRPT_END
 }
+#endif
 
-void yaml::loadFromYAMLStream(const std::istream& i)
+void yaml::loadFromText(const std::string& yamlTextBlock)
 {
 	MRPT_START
-#if defined(MRPT_HAVE_LIBFYAML)
+#if MRPT_HAS_FYAML
+
+	// Reset:
+	*this = yaml();
 
 	struct fy_parse_cfg cfg;
+	cfg.search_path = "";
+	cfg.diag = nullptr;
+	cfg.flags = FYPCF_PARSE_COMMENTS;
+
 	struct fy_parser* parser = fy_parser_create(&cfg);
 	ASSERT_(parser);
 
+	if (fy_parser_set_string(
+			parser, yamlTextBlock.data(), yamlTextBlock.size()))
+		THROW_EXCEPTION("Error in fy_parser_set_string()");
+
+	auto optNode = recursiveParse(parser);
+	if (optNode.has_value()) root_ = std::move(optNode.value());
+
 	fy_parser_destroy(parser);
+
 #else
 	THROW_EXCEPTION("MRPT was built without libfyaml");
 #endif
+
+	MRPT_END
+}
+
+yaml yaml::FromStream(std::istream& i)
+{
+	MRPT_START
+	yaml doc;
+	doc.loadFromStream(i);
+	return doc;
+	MRPT_END
+}
+
+void yaml::loadFromStream(std::istream& i)
+{
+	MRPT_START
+	std::string str;
+
+	i.seekg(0, std::ios::end);
+	str.reserve(i.tellg());
+	i.seekg(0, std::ios::beg);
+	str.assign(
+		(std::istreambuf_iterator<char>(i)), std::istreambuf_iterator<char>());
+
+	this->loadFromText(str);
 	MRPT_END
 }
 
@@ -567,7 +795,8 @@ yaml yaml::FromYAMLCPP(const YAML::Node& n)
 	else
 	{
 		THROW_EXCEPTION(
-			"FromYAMLCPP only supports root YAML as sequence or map");
+			"FromYAMLCPP only supports root YAML as sequence "
+			"or map");
 	}
 
 #else
@@ -583,22 +812,56 @@ void yaml::loadFromYAMLCPP(const YAML::Node& n)
 bool yaml::hasComment() const
 {
 	const node_t* n = dereferenceProxy();
-	return n->comment.has_value();
+	for (const auto& c : n->comments)
+		if (c.has_value()) return true;
+	return false;
 }
 
-const std::string& yaml::comment()
+bool yaml::hasComment(CommentPosition pos) const
 {
 	MRPT_START
-	node_t* n = dereferenceProxy();
-	ASSERTMSG_(
-		n->comment.has_value(),
-		"Trying to access comment but this node has none.");
-	return n->comment.value();
+	int posIndex = static_cast<int>(pos);
+	ASSERT_GE_(posIndex, 0);
+	ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+
+	const node_t* n = dereferenceProxy();
+	return n->comments[posIndex].has_value();
 	MRPT_END
 }
 
-void yaml::comment(const std::string_view& c)
+const std::string& yaml::comment() const
 {
+	MRPT_START
+	const node_t* n = dereferenceProxy();
+	for (const auto& c : n->comments)
+		if (c.has_value()) return c.value();
+
+	THROW_EXCEPTION("Trying to access comment but this node has none.");
+	MRPT_END
+}
+
+const std::string& yaml::comment(CommentPosition pos) const
+{
+	MRPT_START
+	const node_t* n = dereferenceProxy();
+
+	int posIndex = static_cast<int>(pos);
+	ASSERT_GE_(posIndex, 0);
+	ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+
+	ASSERTMSG_(
+		n->comments[posIndex].has_value(),
+		"Trying to access comment but this node has none.");
+	return n->comments[posIndex].value();
+	MRPT_END
+}
+
+void yaml::comment(const std::string_view& c, CommentPosition position)
+{
+	int posIndex = static_cast<int>(position);
+	ASSERT_GE_(posIndex, 0);
+	ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+
 	node_t* n = dereferenceProxy();
-	n->comment.emplace(c);
+	n->comments[posIndex].emplace(c);
 }

@@ -18,7 +18,6 @@ if(BUILD_mrpt-containers)
 
 	if (TARGET mrpt_libfyaml)
 		target_link_libraries(containers PRIVATE mrpt_libfyaml)
-		target_compile_definitions(containers PRIVATE MRPT_HAVE_LIBFYAML)
 	endif()
 
 endif( )

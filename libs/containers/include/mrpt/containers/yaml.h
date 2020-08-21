@@ -41,35 +41,37 @@ namespace internal {
 }
 // clang-format on
 
-/** \defgroup mrpt_containers_yaml YAML C++ API
+/** \defgroup mrpt_containers_yaml YAML/JSON C++ API
  * Header: `#include <mrpt/containers/yaml.h>`.
  * Library: \ref mrpt_containers_grp
  * \ingroup mrpt_containers_grp */
 
 /** Powerful YAML-like container for possibly-nested blocks of parameters or
  *any arbitrary structured data contents, including documentation in the
- *form of comments attached to each node.
+ *form of comments attached to each node. Supports parsing from YAML or JSON
+ *streams or text blocks.
  *
  * This class holds the root "node" in a YAML-like tree structure.
  * Each tree node can be of one of these types:
- * - Leaf nodes ("scalar values"): Any type, stored as a C++17 std::any.
- * - Sequential container.
+ * - Scalar values ("leaf nodes"): Can hold any type, stored as C++17 std::any.
+ * - Sequence container.
  * - Map ("dictionary"): pairs of `name: value`.
- * - Null (empty).
+ * - Null, empty nodes: yaml `~` or `null`.
  *
- * Elements contained in sequences or dictionaries can be, in turn, of any
- *of the four types above, leading to arbitrarialy-complex nested
- *structures.
+ * Sequences and dictionaries can hold, in turn, any of the four types above,
+ * leading to arbitrarialy-complex nested structures.
  *
  * This class was designed as a lightweight, while structured, way to pass
  *arbitrarialy-complex parameter blocks but can be used to load and save
  *YAML files or as a database.
  *
- * `yaml` can be used to parse and emit YAML streams.
+ * `yaml` can be used to parse and emit YAML or JSON streams.
  * It does not support event-based parsing.
  *
  * See example in \ref containers_yaml_example/test.cpp
  * \snippet containers_yaml_example/test.cpp example-yaml
+ * Output:
+ *  \include core_exceptions_example/console.out
  *
  * \ingroup mrpt_containers_yaml
  * \note [New in MRPT 2.1.0]
@@ -94,15 +96,18 @@ class yaml
 		std::variant<std::monostate, sequence_t, map_t, scalar_t> d;
 
 		/** Optional comment block */
-		std::optional<std::string> comment;
+		std::array<
+			std::optional<std::string>,
+			static_cast<size_t>(CommentPosition::MAX)>
+			comments;
 
 		node_t() = default;
 		~node_t() = default;
 
 		template <
-			typename T,	 //
+			typename T,  //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,	//
+				std::initializer_list<map_t::value_type>, T>>,  //
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -206,25 +211,29 @@ class yaml
 		return n;
 	}
 
-	/** Parses the text as a YAML document
+	/** Parses a text as YAML or JSON (autodetected) and returns a document.
 	 * \exception std::exception Upon format errors
 	 */
-	static yaml FromYAMLText(const std::string& yamlTextBlock);
+	static yaml FromText(const std::string& yamlTextBlock);
 
-	/** Parses the text into this YAML document.
+	/** Parses a text as YAML or JSON (autodetected) and stores the contents
+	 * into this document.
+	 *
 	 * \exception std::exception Upon format errors
 	 */
-	void loadFromYAMLText(const std::string& yamlTextBlock);
+	void loadFromText(const std::string& yamlTextBlock);
 
-	/** Parses the stream as a YAML document
+	/** Parses the stream as YAML or JSON (autodetected) and returns a document.
 	 * \exception std::exception Upon format errors
 	 */
-	static yaml FromYAMLStream(const std::istream& i);
+	static yaml FromStream(std::istream& i);
 
-	/** Parses the stream into this YAML document.
+	/** Parses the stream as YAML or JSON (autodetected) and stores the contents
+	 * into this document.
+	 *
 	 * \exception std::exception Upon format errors
 	 */
-	void loadFromYAMLStream(const std::istream& i);
+	void loadFromStream(std::istream& i);
 
 	/** Builds an object copying the structure and contents from an existing
 	 * YAMLCPP Node. Requires mrpt built against yamlcpp. */
@@ -446,7 +455,7 @@ class yaml
 	template <typename T>
 	yaml& operator=(const ValueCommentPair<T>& vc)
 	{
-		this->comment(vc.comment);
+		this->comment(vc.comment, vc.position);
 		return operator=(vc.value);
 	}
 
@@ -466,20 +475,37 @@ class yaml
 
 	inline operator std::string() const { return as<std::string>(); }
 
-	/** Returns true if the proxied node has an associated comment block */
+	/** Returns true if the proxied node has an associated comment block, at any
+	 * location */
 	bool hasComment() const;
 
-	/** Gets the comment associated to the proxied node.
+	/** Returns true if the proxied node has an associated comment block at a
+	 * particular position */
+	bool hasComment(CommentPosition pos) const;
+
+	/** Gets the comment associated to the proxied node. This version returns
+	 * the first comment, of all possible (top, right,...).
+	 *
 	 * \exception std::exception If there is no comment attached.
 	 * \sa hasComment()
 	 */
-	const std::string& comment();
+	const std::string& comment() const;
+
+	/** Gets the comment associated to the proxied node, at the particular
+	 * position.
+	 *
+	 * \exception std::exception If there is no comment attached.
+	 * \sa hasComment()
+	 */
+	const std::string& comment(CommentPosition pos) const;
 
 	/** Sets the comment attached to a given proxied node.
 	 * \exception std::exception If there is no comment attached.
 	 * \sa hasComment()
 	 */
-	void comment(const std::string_view& c);
+	void comment(
+		const std::string_view& c,
+		CommentPosition position = CommentPosition::TOP);
 
    private:
 	template <typename T>
@@ -724,19 +750,16 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		"`%s` and no obvious conversion found.",
 		mrpt::demangle(storedType.name()).c_str(),
 		mrpt::demangle(expectedType.name()).c_str());
-
-}  // namespace mrpt::containers::internal
+}
 
 template <typename T>
 T implAsGetter(const yaml& p)
 {
-	ASSERTMSG_(
-		p.isProxy_,
-		"Trying to read from a non-scalar. Use `p[\"name\"].asRef<T>();` "
-		"instead");
+	MRPT_START
+	ASSERTMSG_(p.isScalar(), "Trying to read from a non-scalar");
 	const yaml::scalar_t& s = p.asScalar();
-
 	return implAnyAsGetter<T>(s);
+	MRPT_END
 }
 
 }  // namespace mrpt::containers::internal
