@@ -8,35 +8,23 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/containers/CommentPosition.h>
-#include <string_view>
+#include <cstdint>
 
 namespace mrpt::containers
 {
-/** Storage for value-comment pairs \ingroup mrpt_containers_yaml
+/** Defines possible positions for a comment in a document (INI file, YAML).
+ * Valid positions are: Top (normally the default), right, and bottom.
+ *
+ * \ingroup mrpt_containers_yaml
  * \note [New in MRPT 2.1.0]
  */
-template <typename T>
-struct ValueCommentPair
+enum class CommentPosition : uint8_t
 {
-	ValueCommentPair(const T& v, const std::string_view& c, CommentPosition pos)
-		: value(v), comment(c), position(pos)
-	{
-	}
-	const T& value;
-	const std::string_view& comment;
-	const CommentPosition position;
+	TOP = 0,
+	RIGHT,
+	BOTTOM,
+	//
+	MAX
 };
-
-/** Helper syntax sugar for ValueCommentPair
- * \ingroup mrpt_containers_yaml
- * \note [New in MRPT 2.1.0]*/
-template <typename T>
-struct ValueCommentPair<T> vcp(
-	const T& v, const std::string_view& c,
-	const CommentPosition pos = CommentPosition::TOP)
-{
-	return {v, c, pos};
-}
 
 }  // namespace mrpt::containers

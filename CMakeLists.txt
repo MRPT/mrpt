@@ -248,6 +248,7 @@ include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
 include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 include(cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
+include(cmakemodules/script_libfyaml.cmake REQUIRED)    # Defines embedded version of libfyaml
 include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
