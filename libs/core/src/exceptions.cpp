@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/exceptions.h>
-
 #include "core-precomp.h"  // Precompiled headers
+//
+#include <mrpt/core/exceptions.h>
 
 namespace mrpt::internal
 {
