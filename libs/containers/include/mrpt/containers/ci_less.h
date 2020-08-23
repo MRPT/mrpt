@@ -14,7 +14,6 @@ namespace mrpt::containers
 {
 /** A case-insensitive comparator class for use within STL containers, etc.
  * \note Credits: https://stackoverflow.com/a/1801913/1631514
- * \note This is the C++11 updated version of mrpt-1.x <mrpt/utils/ci_less.h>
  * \ingroup mrpt_containers_grp
  */
 struct ci_less
