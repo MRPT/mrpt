@@ -91,9 +91,6 @@ void COutputLogger::logStr(
 void COutputLogger::logFmt(
 	const VerbosityLevel level, const char* fmt, ...) const
 {
-	// see MRPT/libs/base/src/utils/CDeugOutputCapable.cpp for the iniitial
-	// implementtion
-
 	// check for nullptr pointer
 	if (!fmt) return;
 
