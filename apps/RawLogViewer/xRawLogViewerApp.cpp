@@ -45,10 +45,8 @@ bool xRawLogViewerApp::OnInit()
 	wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
 
 	static const wxCmdLineEntryDesc cmdLineDesc[] = {
-#ifdef MRPT_OS_LINUX
 		{wxCMD_LINE_OPTION, wxT_2("l"), wxT_2("load"), wxT_2("load a library"),
 		 wxCMD_LINE_VAL_STRING, 0},
-#endif
 		{wxCMD_LINE_PARAM, nullptr, nullptr, wxT_2("Input File"),
 		 wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
 		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}};
