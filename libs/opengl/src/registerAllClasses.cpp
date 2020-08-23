@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "opengl-precomp.h"  // Precompiled header
-
+//
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
 #include <mrpt/opengl.h>
@@ -27,6 +27,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 	registerClass(CLASS_ID(CColorBar));
 	registerClass(CLASS_ID(CCylinder));
 	registerClass(CLASS_ID(CDisk));
+	registerClass(CLASS_ID(CEllipsoid2D));
 	registerClass(CLASS_ID(CEllipsoid3D));
 	registerClass(CLASS_ID(CEllipsoidInverseDepth2D));
 	registerClass(CLASS_ID(CEllipsoidInverseDepth3D));
