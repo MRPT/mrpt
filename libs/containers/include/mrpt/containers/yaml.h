@@ -67,11 +67,15 @@ namespace internal {
  *
  * `yaml` can be used to parse and emit YAML or JSON streams.
  * It does not support event-based parsing.
+ * Parsing YAML 1.2 is supported thanks to
+ *[libfyaml](https://github.com/pantoniou/libfyaml), which
+ *[passes](http://matrix.yaml.io/) the full [YAML
+ *testsuite](https://github.com/yaml/yaml-test-suite).
  *
  * See example in \ref containers_yaml_example/test.cpp
  * \snippet containers_yaml_example/test.cpp example-yaml
  * Output:
- *  \include core_exceptions_example/console.out
+ *  \include containers_yaml_example/console.out
  *
  * \ingroup mrpt_containers_yaml
  * \note [New in MRPT 2.1.0]
