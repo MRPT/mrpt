@@ -13,3 +13,6 @@
 [submodule "3rdparty/rplidar_sdk"]
 	path = 3rdparty/rplidar_sdk
 	url = https://github.com/MRPT/rplidar_sdk.git
+[submodule "3rdparty/zlib"]
+	path = 3rdparty/zlib
+	url = https://github.com/madler/zlib.git
