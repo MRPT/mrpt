@@ -99,10 +99,7 @@ std::string exception_to_str(const std::exception& e);
 		"Cannot parse object: unknown serialization version number: '%i'", \
 		static_cast<int>(__V)))
 
-/** Defines an assertion mechanism.
- * \note Do NOT put code that must be always executed inside this statement, but
- * just comparisons. This is because users might require ASSERT_'s to be ignored
- * for optimized releases.
+/** Throws a stacked exception if condition "f" is false; with custom message.
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
 #define ASSERTMSG_(f, __ERROR_MSG)                             \
@@ -111,10 +108,7 @@ std::string exception_to_str(const std::exception& e);
 		if (!(f)) THROW_EXCEPTION(::std::string(__ERROR_MSG)); \
 	} while (0)
 
-/** Defines an assertion mechanism.
- * \note Do NOT put code that must be always executed inside this statement, but
- * just comparisons. This is because users might require ASSERT_'s to be ignored
- * for optimized releases.
+/** Throws a stacked exception if condition "f" is false.
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
 #define ASSERT_(f) \
@@ -190,12 +184,6 @@ std::string exception_to_str(const std::exception& e);
 #define ASSERT_ABOVEEQ_(__A, __B) ASSERT_GE_(__A, __B)
 // ------- End deprecated -----
 
-/** Defines an assertion mechanism - only when compiled in debug.
- * \note Do NOT put code that must be always executed inside this
- * statement, but just comparisons. This is because users might require
- * ASSERT_'s to be ignored for optimized releases. \sa MRPT_TRY_START,
- * MRPT_TRY_END
- */
 #ifdef _DEBUG
 #define ASSERTDEB_(f) ASSERT_(f)
 #define ASSERTDEBMSG_(f, __ERROR_MSG) ASSERTMSG_(f, __ERROR_MSG)
