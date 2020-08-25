@@ -15,6 +15,7 @@
 #include <mrpt/core/format.h>
 
 #include <any>
+#include <array>
 #include <cstdint>
 #include <iosfwd>
 #include <map>
