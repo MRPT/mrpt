@@ -254,3 +254,34 @@ endif()
 # libfyaml
 # ----------------------------------
 # already handled in cmakemodules/script_libfyaml.cmake
+
+
+# ----------------------------------
+# googletest
+# ----------------------------------
+if (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
+	add_library(mrptgtest
+		STATIC
+		${MRPT_SOURCE_DIR}/3rdparty/googletest/googletest/src/gtest-all.cc
+		)
+
+	target_include_directories(mrptgtest PRIVATE
+		${MRPT_SOURCE_DIR}/3rdparty/googletest/googletest/src/
+		${MRPT_SOURCE_DIR}/3rdparty/googletest/googletest/
+	)
+	target_include_directories(mrptgtest PUBLIC
+		${MRPT_SOURCE_DIR}/3rdparty/googletest/googletest/include/
+	)
+
+	mrpt_lib_target_requires_cpp17(mrptgtest)
+
+	if (UNIX AND MRPT_COMPILER_IS_GCC_OR_CLANG)
+		target_compile_options(mrptgtest PRIVATE "-fPIC")
+	endif()
+	# Fix a "bug" in VS11 (MSVC 2012):
+	if(MSVC)
+		target_compile_definitions(_VARIADIC_MAX=10)
+	endif()
+
+	set_target_properties(mrptgtest PROPERTIES FOLDER "3rd party")
+endif()
