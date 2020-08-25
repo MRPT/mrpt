@@ -7,3 +7,6 @@
 [submodule "3rdparty/libfreenect"]
 	path = 3rdparty/libfreenect
 	url = https://github.com/OpenKinect/libfreenect.git
+[submodule "3rdparty/googletest"]
+	path = 3rdparty/googletest
+	url = https://github.com/google/googletest.git
