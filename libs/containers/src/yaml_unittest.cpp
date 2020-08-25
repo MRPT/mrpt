@@ -242,29 +242,40 @@ TEST(yaml, ctorMap)
 
 TEST(yaml, comments)
 {
-	// using mrpt::containers::make_vcp;
+	try
+	{
+		mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
+		c1["K"] = 2.0;
+		c1["K"].comment("Form factor");
 
-	mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
-	c1["K"] = 2.0;
-	c1["K"].comment("Form factor");
+		c1["T"] = 27;
+		c1["T"].comment("Temperature [C]");
 
-	c1["T"] = 27;
-	c1["T"].comment("Temperature [C]");
+		c1["v"] = 0;
 
-	c1["v"] = 0;
+		EXPECT_TRUE(c1["K"].hasComment());
+		EXPECT_EQ(c1["K"].comment(), "Form factor");
 
-	EXPECT_TRUE(c1["K"].hasComment());
-	EXPECT_TRUE(c1["T"].hasComment());
-	EXPECT_FALSE(c1["v"].hasComment());
+		EXPECT_TRUE(c1["T"].hasComment());
+		EXPECT_FALSE(c1["v"].hasComment());
 
-	MRPT_TODO("vcp compact form");
-	// c1["L"] = make_vcp(2.0, "Arm length [meters]");
+		using mrpt::containers::vcp;
 
-	mrpt::containers::yaml c2 = mrpt::containers::yaml::Map();
-	c2["constants"] = c1;
-	c2["constants"].comment("Universal constant definitions:");
+		c1["L"] = vcp(2.0, "Arm length [meters]");
+		EXPECT_TRUE(c1["L"].hasComment());
+		EXPECT_EQ(c1["L"].comment(), "Arm length [meters]");
 
-	c2.printAsYAML(std::cout);
+		mrpt::containers::yaml c2 = mrpt::containers::yaml::Map();
+		c2["constants"] = c1;
+		c2["constants"].comment("Universal constant definitions:");
+
+		c2.printAsYAML(std::cout);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << mrpt::exception_to_str(e);
+		GTEST_FAIL();
+	}
 }
 
 TEST(yaml, iterate)
@@ -372,8 +383,19 @@ TEST(yaml, assignmentsInCallee)
 	EXPECT_EQ(p["params"]["N"].as<int>(), 2);
 }
 
+#if MRPT_HAS_FYAML
+
 // clang-format off
-const auto sampleYamlBlock = std::string(R"xxx(
+const auto sampleYamlBlock_1 = std::string(R"xxx(
+~
+)xxx");
+
+const auto sampleYamlBlock_2 = std::string(R"xxx(
+---
+foo  # comment 
+)xxx");
+
+const auto sampleYamlBlock_3 = std::string(R"xxx(
 # blah blah
 mySeq:
   - "first"
@@ -385,30 +407,90 @@ myMap:
   P: -5.0
   Q: ~
   nestedMap:
-    a: 1
+    a: 1  # comment for a
     b: 2
     c: 3
 )xxx");
 // clang-format on
 
-#if MRPT_HAS_YAMLCPP
 TEST(yaml, fromYAML)
 {
-	auto p = mrpt::containers::yaml::FromYAMLText(sampleYamlBlock);
+	try
+	{
+		{
+			auto p = mrpt::containers::yaml::FromText("");
+			EXPECT_TRUE(p.isNullNode());
+		}
 
-	EXPECT_EQ(p["mySeq"](0).as<std::string>(), "first");
-	EXPECT_EQ(p["myMap"]["P"].as<double>(), -5.0);
-	EXPECT_EQ(p["myMap"]["K"].as<double>(), 10.0);
+		{
+			auto p = mrpt::containers::yaml::FromText(sampleYamlBlock_1);
+			EXPECT_TRUE(p.isScalar());
+			EXPECT_TRUE(p.isNullNode());
+		}
+		{
+			auto p = mrpt::containers::yaml::FromText(sampleYamlBlock_2);
 
-	EXPECT_FALSE(p.isNullNode());
-	EXPECT_FALSE(p["myMap"].isNullNode());
+			EXPECT_TRUE(p.isScalar());
+			EXPECT_TRUE(p.as<std::string>() == "foo");
+		}
 
-// Avoid a bug in yamlcpp < 0.6.2
-// see: https://github.com/jbeder/yaml-cpp/issues/590
-#if MRPT_YAMLCPP_VERSION >= 0x062
-	EXPECT_TRUE(p["mySeq"](3).isNullNode());
-	EXPECT_TRUE(p["myMap"]["Q"].isNullNode());
-	EXPECT_FALSE(p["myMap"]["K"].isNullNode());
-#endif
+		{
+			auto p = mrpt::containers::yaml::FromText(sampleYamlBlock_3);
+
+			EXPECT_EQ(p["mySeq"](0).as<std::string>(), "first");
+			EXPECT_EQ(p["myMap"]["P"].as<double>(), -5.0);
+			EXPECT_EQ(p["myMap"]["K"].as<double>(), 10.0);
+
+			EXPECT_FALSE(p.isNullNode());
+			EXPECT_FALSE(p["myMap"].isNullNode());
+
+			EXPECT_TRUE(p["mySeq"](3).isNullNode());
+			EXPECT_TRUE(p["myMap"]["Q"].isNullNode());
+			EXPECT_FALSE(p["myMap"]["K"].isNullNode());
+
+			const auto& e = p["myMap"]["nestedMap"]["a"];
+			EXPECT_TRUE(e.hasComment());
+
+			using mrpt::containers::CommentPosition;
+			EXPECT_FALSE(e.hasComment(CommentPosition::TOP));
+			EXPECT_TRUE(e.hasComment(CommentPosition::RIGHT));
+
+			EXPECT_EQ(e.comment(), "comment for a");
+			EXPECT_EQ(e.comment(CommentPosition::RIGHT), "comment for a");
+			EXPECT_THROW(e.comment(CommentPosition::TOP), std::exception);
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << mrpt::exception_to_str(e);
+		GTEST_FAIL();
+	}
 }
-#endif
+
+// clang-format off
+
+const auto sampleJSONBlock_1 = std::string(R"xxx(
+{"store":{"book":[{"category":"reference","author":"Nigel Rees","title":"Sayings of the Century","price":8.95},{"category":"fiction","author":"Evelyn Waugh","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}],"bicycle":{"color":"red","price":19.95}}}
+)xxx");
+
+// clang-format on
+
+TEST(yaml, fromJSON)
+{
+	try
+	{
+		{
+			const auto p = mrpt::containers::yaml::FromText(sampleJSONBlock_1);
+			// p.printAsYAML(std::cout);
+
+			EXPECT_TRUE(p.has("store"));
+			EXPECT_EQ(p["store"]["bicycle"]["color"].as<std::string>(), "red");
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << mrpt::exception_to_str(e);
+		GTEST_FAIL();
+	}
+}
+#endif  // MRPT_HAS_FYAML

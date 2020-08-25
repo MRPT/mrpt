@@ -35,12 +35,13 @@ if (POLICY CMP0075)
 	cmake_policy(SET CMP0075 NEW)
 endif()
 
-if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
-  message(FATAL_ERROR "Submodule NanoGUI is missing! "
+if ((NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
+    OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libfyaml/include")
+   )
+  message(FATAL_ERROR "git submodules missing! "
     "You probably did not clone the project with --recursive. It is possible to recover "
     "by calling \"git submodule update --init --recursive\"")
 endif()
-
 
 # Display timing information for each compiler instance on screen
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
@@ -247,6 +248,7 @@ include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
 include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 include(cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
+include(cmakemodules/script_libfyaml.cmake REQUIRED)    # Defines embedded version of libfyaml
 include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation

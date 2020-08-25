@@ -92,6 +92,10 @@ Files: 3rdparty/nanogui/ext/nanovg/*
 Copyright: 2013, Mikko Mononen memon@inside.org
 License: BSD-3-clause
 
+Files: 3rdparty/libfyaml/*
+Copyright: 2019, Pantelis Antoniou
+License: Expat
+
 Files: libs/core/include/mrpt/3rdparty/llvm/*
 Copyright: 2009-2017 by the contributors listed below
  N: Saleem Abdulrasool

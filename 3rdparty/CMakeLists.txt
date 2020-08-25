@@ -229,6 +229,12 @@ if(WIN32)
 	unset(SRCS)
 endif()
 
-
+# ----------------------------------
 # nanogui:
+# ----------------------------------
 # Already handled in cmakemodules/script_nanogui.cmake
+
+# ----------------------------------
+# libfyaml
+# ----------------------------------
+# already handled in cmakemodules/script_libfyaml.cmake

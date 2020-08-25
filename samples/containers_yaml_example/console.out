@@ -1,0 +1,47 @@
+==== YamlTest_1 ====
+
+K=2 N=10
+name=Foo bar=default
+key: `K` type: scalar(double)
+key: `N` type: scalar(int)
+key: `books` type: sequence
+key: `enabled` type: scalar(bool)
+key: `name` type: scalar(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+key: `a` val: 1
+key: `b` val: 10
+key: `c` val: -1
+sequence item type: scalar(bool)
+sequence item type: scalar(double)
+
+
+Print as YAML:
+K: 2
+N: 10
+books: 
+  - true
+  - 10
+enabled: true
+name: Foo
+
+
+==== YamlTest_2 ====
+
+K: 2
+book: silmarillion
+
+
+==== YamlTest_3 ====
+
+Comment: 'comment for a'
+myMap: 
+  K: 10.0
+  P: -5.0
+  Q: ~
+  # Another constant
+  foo: 1
+  nestedMap: 
+    a: 1    # comment for a
+    # This is a comment for b
+    b: 2
+    c: 3
+
