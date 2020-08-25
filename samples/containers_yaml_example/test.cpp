@@ -19,6 +19,8 @@
 
 void YamlTest_1()
 {
+	std::cout << "==== YamlTest_1 ====\n\n";
+
 	mrpt::containers::yaml p;
 	p["K"] = 2.0;
 	p["N"] = 10;
@@ -69,6 +71,8 @@ void YamlTest_1()
 
 void YamlTest_2()
 {
+	std::cout << "\n\n==== YamlTest_2 ====\n\n";
+
 	// You can use {} to initialize mappings (dictionaries):
 	const mrpt::containers::yaml p = mrpt::containers::yaml::Map(
 		{{"K", 2.0}, {"book", std::string("silmarillion")}});
@@ -83,6 +87,39 @@ void YamlTest_2()
 	const auto p2 = mrpt::containers::yaml::Sequence({1.0, 2.0, "foo", true});
 
 	ASSERT_(p2.isSequence());
+
+	p.printAsYAML(std::cout);
+}
+
+const auto sData = std::string(R"xxx(
+myMap:
+  K: 10.0
+  P: -5.0
+  Q: ~
+  nestedMap:
+    a: 1  # comment for a
+    b: 2
+    c: 3
+)xxx");
+
+void YamlTest_3()
+{
+	std::cout << "\n\n==== YamlTest_3 ====\n\n";
+
+	// Parse a YAML or JSON text:
+	mrpt::containers::yaml p = mrpt::containers::yaml::FromText(sData);
+
+	// Get comments:
+	std::cout << "Comment: '" << p["myMap"]["nestedMap"]["a"].comment()
+			  << "'\n";
+
+	// Manipulate comments:
+	p["myMap"]["nestedMap"]["b"].comment("This is a comment for b");
+
+	// Add values and comments at once:
+	p["myMap"]["foo"] = mrpt::containers::vcp(1.0, "Another constant");
+
+	p.printAsYAML(std::cout);
 }
 //! [example-yaml]
 
@@ -92,6 +129,7 @@ int main()
 	{
 		YamlTest_1();
 		YamlTest_2();
+		YamlTest_3();
 		return 0;
 	}
 	catch (const std::exception& e)
