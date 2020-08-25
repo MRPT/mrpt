@@ -80,15 +80,16 @@ endif()
 # Build RPLIDAR?
 # ----------------------------------
 if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
+	set(RPLIDAR_ROOT ${MRPT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/sdk/)
 	set(SRCS_LIST
-		rplidar/src/*.cpp
-		rplidar/src/hal/*.cpp
-		rplidar/include/*.h
+		${RPLIDAR_ROOT}/src/*.cpp
+		${RPLIDAR_ROOT}/src/hal/*.cpp
+		${RPLIDAR_ROOT}/include/*.h
 	)
 	if (WIN32)
-		list(APPEND SRCS_LIST rplidar/src/arch/win32/*.cpp)
+		list(APPEND SRCS_LIST ${RPLIDAR_ROOT}/src/arch/win32/*.cpp)
 	else()
-		list(APPEND SRCS_LIST rplidar/src/arch/linux/*.cpp)
+		list(APPEND SRCS_LIST ${RPLIDAR_ROOT}/src/arch/linux/*.cpp)
 	endif()
 	file(GLOB SRCS ${SRCS_LIST})
 
@@ -105,8 +106,8 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 
 	# Embedded version:
 	target_include_directories(mrpt_rplidar SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/rplidar/include/
-		${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/
+		${RPLIDAR_ROOT}/include/
+		${RPLIDAR_ROOT}/src/
 	)
 	set_target_properties(mrpt_rplidar PROPERTIES FOLDER "3rd party")
 
@@ -114,6 +115,7 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 
 	unset(SRCS_LIST)
 	unset(SRCS)
+	unset(RPLIDAR_ROOT)
 endif()
 
 # ----------------------------------
