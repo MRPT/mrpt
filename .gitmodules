@@ -10,3 +10,6 @@
 [submodule "3rdparty/googletest"]
 	path = 3rdparty/googletest
 	url = https://github.com/google/googletest.git
+[submodule "3rdparty/rplidar_sdk"]
+	path = 3rdparty/rplidar_sdk
+	url = https://github.com/MRPT/rplidar_sdk.git
