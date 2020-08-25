@@ -4,3 +4,6 @@
 [submodule "3rdparty/libfyaml"]
 	path = 3rdparty/libfyaml
 	url = https://github.com/MRPT/libfyaml.git
+[submodule "3rdparty/libfreenect"]
+	path = 3rdparty/libfreenect
+	url = https://github.com/OpenKinect/libfreenect.git

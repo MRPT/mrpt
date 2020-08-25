@@ -13,12 +13,18 @@ endif()
 # ----------------------------------
 if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 
+	find_package(libusb-1.0)
+
 	# Special stuff for windows:
 	set(SRCS
-		libfreenect/cameras.c
-		libfreenect/core.c
-		libfreenect/tilt.c
-		libfreenect/usb_libusb10.c
+		libfreenect/src/cameras.c
+		libfreenect/src/core.c
+		libfreenect/src/flags.c
+		libfreenect/src/loader.c
+		libfreenect/src/registration.c
+		libfreenect/src/audio.c
+		libfreenect/src/tilt.c
+		libfreenect/src/usb_libusb10.c
 	)
 
 	if (WIN32)
@@ -34,7 +40,6 @@ if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 		target_include_directories(mrpt_freenect SYSTEM PUBLIC
 			${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows
 			${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows/libusb10emu
-			${LIBUSB_1_INCLUDE_DIRS} # libfreenect.h includes libusb.h:
 		)
 	endif()
 
@@ -53,8 +58,19 @@ if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 
 	# Embedded version:
 	target_include_directories(mrpt_freenect SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/libfreenect/
+		${MRPT_SOURCE_DIR}/3rdparty/libfreenect/include
 	)
+	# libfreenect.h includes libusb.h:
+	if (LIBUSB_1_INCLUDE_DIRS)
+		target_include_directories(mrpt_freenect SYSTEM PUBLIC
+			${LIBUSB_1_INCLUDE_DIRS}
+			${LIBUSB_1_INCLUDE_DIRS}/libusb-1.0
+		)
+	endif()
+	if (LIBUSB_1_LIBRARIES)
+		message(STATUS "LIBUSB_1_LIBRARIES: ${LIBUSB_1_LIBRARIES}")
+		target_link_libraries(mrpt_freenect PUBLIC ${LIBUSB_1_LIBRARIES})
+	endif()
 	set_target_properties(mrpt_freenect PROPERTIES FOLDER "3rd party")
 
 	unset(SRCS)
