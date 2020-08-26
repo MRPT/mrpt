@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random/RandomGenerators.h>
 
 TEST(Random, Randomize)
@@ -85,4 +86,22 @@ TEST(Random, KnownSequence)
 				<< "seed=" << seed << " i=" << i << "\n";
 		}
 	}
+}
+
+TEST(Random, drawGaussianMultivariateMany)
+{
+	using namespace mrpt::random;
+
+	CRandomGenerator rnd;
+	rnd.randomize(1);
+	std::vector<std::vector<double>> samples;
+	const size_t nSamples = 1000;
+	mrpt::math::CMatrixDouble33 cov = mrpt::math::CMatrixDouble33::Zero();
+	cov(0, 0) = 1.0;
+	cov(1, 1) = cov(2, 2) = 2.0;
+
+	rnd.drawGaussianMultivariateMany(samples, nSamples, cov);
+
+	EXPECT_EQ(samples.size(), nSamples);
+	EXPECT_EQ(samples.at(0).size(), static_cast<size_t>(cov.rows()));
 }
