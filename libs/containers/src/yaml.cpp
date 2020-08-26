@@ -502,6 +502,19 @@ static yaml::scalar_t textToScalar(const std::string& s)
 #if MRPT_HAS_FYAML
 static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p);
 
+static std::optional<std::string> extractComment(
+	struct fy_token* t, enum fy_comment_placement cp)
+{
+	std::array<char, 2048> str;
+	const char* strEnd = fy_token_get_comment(t, str.data(), str.size(), cp);
+	if (strEnd == str.data()) return {};
+
+	std::string c(str.data(), strEnd - str.data());
+	if (c.size() >= 2 && c[0] == '#' && isblank(c[1])) c.erase(0, 2);
+
+	return c;
+}
+
 static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 {
 	MRPT_START
@@ -633,25 +646,17 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 				yaml::node_t n;
 				n.d.emplace<yaml::scalar_t>(textToScalar(sValue));
 
-				char buf[2048];
-				if (buf != fy_token_get_comment(
-							   event->scalar.value, buf, sizeof(buf), fycp_top))
 				{
-					std::string c = buf;
-					if (c.size() >= 2 && c[0] == '#' && isblank(c[1]))
-						c.erase(0, 2);
-					n.comments[static_cast<size_t>(CommentPosition::TOP)] =
-						std::move(c);
+					auto cT = extractComment(event->scalar.value, fycp_top);
+					if (cT)
+						n.comments[static_cast<size_t>(CommentPosition::TOP)] =
+							std::move(cT.value());
 				}
-				if (buf !=
-					fy_token_get_comment(
-						event->scalar.value, buf, sizeof(buf), fycp_right))
 				{
-					std::string c = buf;
-					if (c.size() >= 2 && c[0] == '#' && isblank(c[1]))
-						c.erase(0, 2);
-					n.comments[static_cast<size_t>(CommentPosition::RIGHT)] =
-						std::move(c);
+					auto cR = extractComment(event->scalar.value, fycp_right);
+					if (cR)
+						n.comments[static_cast<size_t>(
+							CommentPosition::RIGHT)] = std::move(cR.value());
 				}
 
 				fy_parser_event_free(p, event);  // free event
