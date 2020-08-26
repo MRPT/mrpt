@@ -126,3 +126,9 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
 {
 	return out << l.pBase << l.director[0] << l.director[1] << l.director[2];
 }
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TLine3D& p)
+{
+	o << p.asString();
+	return o;
+}

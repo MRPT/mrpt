@@ -38,6 +38,7 @@
 
 #ifdef _WIN32
 #include <winsock.h>
+#include <iostream>
 #endif
 
 using namespace mrpt;

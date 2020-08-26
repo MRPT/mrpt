@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "tfest-precomp.h"  // Precompiled headers
+//
 #include <mrpt/core/round.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/geometry.h>
@@ -18,7 +20,6 @@
 
 #include <iostream>
 
-#include "tfest-precomp.h"  // Precompiled headers
 
 using namespace mrpt;
 using namespace mrpt::tfest;

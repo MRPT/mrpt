@@ -558,11 +558,7 @@ class yaml
 
 /** Prints a scalar, a part of a yaml tree, or the entire structure,
  * in YAML-like format */
-inline std::ostream& operator<<(std::ostream& o, const yaml& p)
-{
-	p.printAsYAML(o);
-	return o;
-}
+std::ostream& operator<<(std::ostream& o, const yaml& p);
 
 /** Macro to load a variable from a mrpt::containers::yaml (initials MCP)
  * dictionary, throwing an std::invalid_argument exception  if the value is not
