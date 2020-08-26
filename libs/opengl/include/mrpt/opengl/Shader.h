@@ -11,11 +11,17 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/optional_ref.h>
 #include <memory>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
 namespace mrpt::opengl
 {
+namespace internal
+{
+void clearPendingIfPossible();
+}
+
 /** Type for IDs of shaders.
  * \sa DefaultShaderID, LoadDefaultShader()
  * \ingroup mrpt_opengl_grp
@@ -82,7 +88,7 @@ class Program
 
 	using Ptr = std::shared_ptr<Program>;
 
-	bool empty() const { return m_program == 0; }
+	bool empty() const { return m_data && m_data->program == 0; }
 	/** Frees the shader program in OpenGL. */
 	void clear();
 
@@ -106,8 +112,8 @@ class Program
 
 	unsigned int programId() const
 	{
-		ASSERT_(m_program != 0);
-		return m_program;
+		ASSERT_(m_data && m_data->program != 0);
+		return m_data->program;
 	}
 
 	int uniformId(const char* name) const { return m_uniforms.at(name); }
@@ -126,14 +132,23 @@ class Program
 	void dumpProgramDescription(std::ostream& o) const;
 
    private:
-	std::vector<Shader> m_shaders;
-	unsigned int m_program = 0;
+	struct Data
+	{
+		std::vector<Shader> shaders;
+		unsigned int program = 0;
+		std::thread::id linkedThread{};
+	};
+	std::unique_ptr<Data> m_data = std::make_unique<Data>();
 
 	/** OpenGL Uniforms/attribs defined by the user as inputs/outputs in shader
 	 * code.
 	 * \sa declareUniform(), declareAttribute();
 	 */
 	std::unordered_map<std::string, int> m_uniforms, m_attribs;
+
+	void internal_clear();
+
+	friend void mrpt::opengl::internal::clearPendingIfPossible();
 };
 
 }  // namespace mrpt::opengl
