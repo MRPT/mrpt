@@ -10,6 +10,7 @@
 #include "maps-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -322,14 +323,16 @@ mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx) const
 	MRPT_END
 }
 
-CMultiMetricMap::CMultiMetricMap(const CMultiMetricMap& o)
-{
-	*this = o;
-}
+CMultiMetricMap::CMultiMetricMap(const CMultiMetricMap& o) { *this = o; }
 CMultiMetricMap& CMultiMetricMap::operator=(const CMultiMetricMap& o)
 {
-	CMultiMetricMap* nO = dynamic_cast<CMultiMetricMap*>(o.clone());
-	ASSERT_(nO);
-	*this = std::move(*nO);
+	if (&o == this) return *this;
+
+	mrpt::io::CMemoryStream buf;
+	auto ar = mrpt::serialization::archiveFrom(buf);
+	ar << o;
+	buf.Seek(0);
+	ar.ReadObject(this);
+
 	return *this;
 }
