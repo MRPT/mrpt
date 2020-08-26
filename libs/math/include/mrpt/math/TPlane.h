@@ -140,11 +140,7 @@ mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TPlane& p);
 
 /** Text streaming function */
-inline std::ostream& operator<<(std::ostream& o, const TPlane& p)
-{
-	o << p.asString();
-	return o;
-}
+std::ostream& operator<<(std::ostream& o, const TPlane& p);
 
 }  // namespace mrpt::math
 

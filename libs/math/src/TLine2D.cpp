@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TLine2D.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TPoint2D.h>
@@ -16,7 +16,9 @@
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/math/epsilon.h>
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
+
 #include <cmath>
+#include <iostream>
 
 using namespace mrpt::math;
 
@@ -131,4 +133,10 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TLine2D& l)
 {
 	return out << l.coefs[0] << l.coefs[1] << l.coefs[2];
+}
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TLine2D& p)
+{
+	o << p.asString();
+	return o;
 }

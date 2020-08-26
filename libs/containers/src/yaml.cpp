@@ -870,3 +870,9 @@ void yaml::comment(const std::string_view& c, CommentPosition position)
 	node_t* n = dereferenceProxy();
 	n->comments[posIndex].emplace(c);
 }
+
+std::ostream& mrpt::containers::operator<<(std::ostream& o, const yaml& p)
+{
+	p.printAsYAML(o);
+	return o;
+}

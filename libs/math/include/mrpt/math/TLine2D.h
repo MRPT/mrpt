@@ -115,11 +115,7 @@ mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TLine2D& l);
 
 /** Text streaming function */
-inline std::ostream& operator<<(std::ostream& o, const TLine2D& p)
-{
-	o << p.asString();
-	return o;
-}
+std::ostream& operator<<(std::ostream& o, const TLine2D& p);
 
 }  // namespace mrpt::math
 

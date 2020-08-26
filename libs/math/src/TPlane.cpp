@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TPlane.h>
 #include <mrpt/math/TPoint3D.h>
@@ -16,6 +16,7 @@
 #include <mrpt/math/geometry.h>  // getAngle()
 #include <mrpt/math/ops_containers.h>  // dotProduct()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
+#include <iostream>
 
 using namespace mrpt::math;
 
@@ -164,6 +165,12 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TPlane& p)
 {
 	return out << p.coefs[0] << p.coefs[1] << p.coefs[2] << p.coefs[3];
+}
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TPlane& p)
+{
+	o << p.asString();
+	return o;
 }
 
 std::string TPlane::asString() const

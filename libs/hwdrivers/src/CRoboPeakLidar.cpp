@@ -7,12 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CRoboPeakLidar.h>
 #include <mrpt/system/os.h>
 
-#include "hwdrivers-precomp.h"	// Precompiled headers
 
 IMPLEMENTS_GENERIC_SENSOR(CRoboPeakLidar, mrpt::hwdrivers)
 
