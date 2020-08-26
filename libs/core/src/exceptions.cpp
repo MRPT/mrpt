@@ -69,9 +69,6 @@ void impl_excep_to_str(const std::exception& e, std::string& ret, int lvl = 0)
 		// It's nested: recursive call
 		impl_excep_to_str(er, ret, lvl + 1);
 	}
-	catch (...)
-	{
-	}
 }
 }  // namespace mrpt::internal
 

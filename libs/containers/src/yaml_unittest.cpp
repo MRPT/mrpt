@@ -78,12 +78,29 @@ TEST(yaml, assignments)
 TEST(yaml, initializers)
 {
 	{
-		auto p = mrpt::containers::yaml::Sequence({"K", 1.0});
+		mrpt::containers::yaml p = mrpt::containers::yaml::Sequence({"K", 1.0});
 		EXPECT_TRUE(p.isSequence());
+
+		EXPECT_THROW(p(-1), std::exception);
+		EXPECT_THROW(p(2), std::exception);
+
+		EXPECT_TRUE(p(0).as<std::string>() == "K");
+		EXPECT_TRUE(p(1).as<double>() == 1.0);
+
+		const auto& seq = p.asSequence();
+		EXPECT_TRUE(seq.size() == 2U);
 	}
 	{
-		auto p = mrpt::containers::yaml::Map({{"K", 1.0}});
+		mrpt::containers::yaml p = mrpt::containers::yaml::Map({{"K", 1.0}});
 		EXPECT_TRUE(p.isMap());
+		for (const auto& kv : p.asMap())
+		{
+			EXPECT_TRUE(kv.first == "K");
+			EXPECT_TRUE(kv.second.isScalar());
+			EXPECT_TRUE(
+				std::any_cast<double>(&kv.second.asScalar()) != nullptr);
+			EXPECT_TRUE(kv.second.as<double>() == 1.0);
+		}
 	}
 
 	{
@@ -91,7 +108,7 @@ TEST(yaml, initializers)
 		EXPECT_TRUE(p.isSequence());
 	}
 	{
-		auto p = mrpt::containers::yaml::Map(
+		mrpt::containers::yaml p = mrpt::containers::yaml::Map(
 			{{"K", 1.0}, {"T", 10.0}, {"Name", "bar"}});
 		EXPECT_TRUE(p.isMap());
 	}
@@ -215,11 +232,18 @@ const mrpt::containers::yaml testMap = mrpt::containers::yaml::Map(
 
 TEST(yaml, printYAML)
 {
-	// testMap.printAsYAML();
-	std::stringstream ss;
-	testMap.printAsYAML(ss);
-	const auto s = ss.str();
-	EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 13U);
+	{
+		std::stringstream ss;
+		testMap.printAsYAML(ss);
+		const auto s = ss.str();
+		EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 13U);
+	}
+	{
+		std::stringstream ss;
+		ss << testMap;
+		const auto s = ss.str();
+		EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 13U);
+	}
 }
 
 TEST(yaml, ctorMap)
@@ -392,7 +416,7 @@ const auto sampleYamlBlock_1 = std::string(R"xxx(
 
 const auto sampleYamlBlock_2 = std::string(R"xxx(
 ---
-foo  # comment 
+foo  # comment
 )xxx");
 
 const auto sampleYamlBlock_3 = std::string(R"xxx(

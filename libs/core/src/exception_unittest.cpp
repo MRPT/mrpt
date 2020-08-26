@@ -17,17 +17,19 @@ TEST(exception, stackedExceptionBasic)
 	EXPECT_THROW({ THROW_STACKED_EXCEPTION; }, std::logic_error);
 }
 
-void test_except_3rd_lvl()
+template <typename T>
+void test_except_3rd_lvl(T val)
 {
 	MRPT_START
 	THROW_EXCEPTION("Aw!");
+	val++;
 	MRPT_END
 }
 
 void test_except_2nd_lvl()
 {
 	MRPT_START
-	test_except_3rd_lvl();
+	test_except_3rd_lvl<int>(10);
 	MRPT_END
 }
 
