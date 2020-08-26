@@ -13,12 +13,18 @@ endif()
 # ----------------------------------
 if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 
+	find_package(libusb-1.0)
+
 	# Special stuff for windows:
 	set(SRCS
-		libfreenect/cameras.c
-		libfreenect/core.c
-		libfreenect/tilt.c
-		libfreenect/usb_libusb10.c
+		libfreenect/src/cameras.c
+		libfreenect/src/core.c
+		libfreenect/src/flags.c
+		libfreenect/src/loader.c
+		libfreenect/src/registration.c
+		libfreenect/src/audio.c
+		libfreenect/src/tilt.c
+		libfreenect/src/usb_libusb10.c
 	)
 
 	if (WIN32)
@@ -34,7 +40,6 @@ if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 		target_include_directories(mrpt_freenect SYSTEM PUBLIC
 			${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows
 			${MRPT_SOURCE_DIR}/3rdparty/libfreenect/platform/windows/libusb10emu
-			${LIBUSB_1_INCLUDE_DIRS} # libfreenect.h includes libusb.h:
 		)
 	endif()
 
@@ -53,8 +58,19 @@ if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 
 	# Embedded version:
 	target_include_directories(mrpt_freenect SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/libfreenect/
+		${MRPT_SOURCE_DIR}/3rdparty/libfreenect/include
 	)
+	# libfreenect.h includes libusb.h:
+	if (LIBUSB_1_INCLUDE_DIRS)
+		target_include_directories(mrpt_freenect SYSTEM PUBLIC
+			${LIBUSB_1_INCLUDE_DIRS}
+			${LIBUSB_1_INCLUDE_DIRS}/libusb-1.0
+		)
+	endif()
+	if (LIBUSB_1_LIBRARIES)
+		message(STATUS "LIBUSB_1_LIBRARIES: ${LIBUSB_1_LIBRARIES}")
+		target_link_libraries(mrpt_freenect PUBLIC ${LIBUSB_1_LIBRARIES})
+	endif()
 	set_target_properties(mrpt_freenect PROPERTIES FOLDER "3rd party")
 
 	unset(SRCS)
@@ -64,15 +80,16 @@ endif()
 # Build RPLIDAR?
 # ----------------------------------
 if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
+	set(RPLIDAR_ROOT ${MRPT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/sdk/)
 	set(SRCS_LIST
-		rplidar/src/*.cpp
-		rplidar/src/hal/*.cpp
-		rplidar/include/*.h
+		${RPLIDAR_ROOT}/src/*.cpp
+		${RPLIDAR_ROOT}/src/hal/*.cpp
+		${RPLIDAR_ROOT}/include/*.h
 	)
 	if (WIN32)
-		list(APPEND SRCS_LIST rplidar/src/arch/win32/*.cpp)
+		list(APPEND SRCS_LIST ${RPLIDAR_ROOT}/src/arch/win32/*.cpp)
 	else()
-		list(APPEND SRCS_LIST rplidar/src/arch/linux/*.cpp)
+		list(APPEND SRCS_LIST ${RPLIDAR_ROOT}/src/arch/linux/*.cpp)
 	endif()
 	file(GLOB SRCS ${SRCS_LIST})
 
@@ -86,11 +103,14 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 	if(MSVC)
 		target_compile_options(mrpt_rplidar PRIVATE /DWIN64)
 	endif()
+	if (MRPT_COMPILER_IS_CLANG)
+		target_compile_options(mrpt_rplidar PRIVATE -Wno-c++11-narrowing)
+	endif()
 
 	# Embedded version:
 	target_include_directories(mrpt_rplidar SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/rplidar/include/
-		${MRPT_SOURCE_DIR}/3rdparty/rplidar/src/
+		${RPLIDAR_ROOT}/include/
+		${RPLIDAR_ROOT}/src/
 	)
 	set_target_properties(mrpt_rplidar PROPERTIES FOLDER "3rd party")
 
@@ -98,6 +118,7 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 
 	unset(SRCS_LIST)
 	unset(SRCS)
+	unset(RPLIDAR_ROOT)
 endif()
 
 # ----------------------------------
@@ -238,3 +259,37 @@ endif()
 # libfyaml
 # ----------------------------------
 # already handled in cmakemodules/script_libfyaml.cmake
+
+
+# ----------------------------------
+# googletest
+# ----------------------------------
+if (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
+	add_library(mrptgtest
+		STATIC
+		${MRPT_SOURCE_DIR}/3rdparty/googletest/googletest/src/gtest-all.cc
+		)
+
+	target_include_directories(mrptgtest PRIVATE
+		${MRPT_SOURCE_DIR}/3rdparty/googletest/googletest/src/
+		${MRPT_SOURCE_DIR}/3rdparty/googletest/googletest/
+	)
+	target_include_directories(mrptgtest PUBLIC
+		${MRPT_SOURCE_DIR}/3rdparty/googletest/googletest/include/
+	)
+
+	mrpt_lib_target_requires_cpp17(mrptgtest)
+
+	if (UNIX AND MRPT_COMPILER_IS_GCC_OR_CLANG)
+		target_compile_options(mrptgtest PRIVATE -fPIC)
+	endif()
+	# Fix a "bug" in VS11 (MSVC 2012):
+	if(MSVC)
+		target_compile_definitions(mrptgtest PUBLIC _VARIADIC_MAX=10)
+	endif()
+	if(MRPT_COMPILER_IS_CLANG AND APPLE)
+		target_compile_definitions(mrptgtest PUBLIC GTEST_USE_OWN_TR1_TUPLE=1)
+	endif()
+
+	set_target_properties(mrptgtest PROPERTIES FOLDER "3rd party")
+endif()
