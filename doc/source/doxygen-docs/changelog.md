@@ -26,6 +26,7 @@
   - Wrong parsing of env variables in mrpt::get_env() when called more than once.
   - mrpt::system::CTimeLogger: Fix wrong formatting (parent entry prefix collapse) in summary stats table.
   - mrpt::opengl::CEllipsoid2D was not RTTI registered.
+  - Fix wrong copy of internal parameters while copying mrpt::maps::CMultiMetricMap objects.
 
 ------
 # Version 2.0.4: Released Jun 20, 2020

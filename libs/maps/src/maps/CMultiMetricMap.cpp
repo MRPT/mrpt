@@ -125,7 +125,7 @@ void CMultiMetricMap::setListOfMaps(const TSetOfMetricMapInitializers& inits)
 		auto* theMap = mmr.factoryMapObjectFromDefinition(*i.get());
 		ASSERT_(theMap);
 		// Add to the list of maps:
-		this->maps.push_back(mrpt::maps::CMetricMap::Ptr(theMap));
+		this->maps.emplace_back(theMap);
 	}
 	MRPT_END
 }
@@ -318,6 +318,18 @@ const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
 mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx) const
 {
 	MRPT_START
-	return maps.at(idx).get_ptr();
+	return maps.at(idx);
 	MRPT_END
+}
+
+CMultiMetricMap::CMultiMetricMap(const CMultiMetricMap& o)
+{
+	*this = o;
+}
+CMultiMetricMap& CMultiMetricMap::operator=(const CMultiMetricMap& o)
+{
+	CMultiMetricMap* nO = dynamic_cast<CMultiMetricMap*>(o.clone());
+	ASSERT_(nO);
+	*this = std::move(*nO);
+	return *this;
 }
