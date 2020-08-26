@@ -1138,8 +1138,8 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 			// Compute the mean pose:
 			CPose3D meanSFs(0, 0, 0);
 
-			for (auto it = posesGraph->begin(); it != posesGraph->end(); ++it)
-				meanSFs.addComponents(it->second.pdf.getMeanVal());
+			for (auto n : *posesGraph)
+				meanSFs.addComponents(n.second.pdf.getMeanVal());
 
 			meanSFs *= 1.0f / (posesGraph->size());
 			meanSFs.normalizeAngles();
@@ -1221,10 +1221,10 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 		if (posesGraph)
 		{
-			for (auto it = posesGraph->begin(); it != posesGraph->end(); ++it)
+			for (auto& n : *posesGraph)
 			{
 				CPose3D SF_pose;
-				it->second.pdf.getMean(SF_pose);
+				n.second.pdf.getMean(SF_pose);
 
 				CPose3D auxPose(pose + SF_pose);
 

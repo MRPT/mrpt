@@ -327,7 +327,7 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 
 	AVPacket packet;
 
-#if LIBAVFORMAT_VERSION_MAJOR < 58
+#if LIBAVFORMAT_VERSION_MAJOR < 57
 	int frameFinished;
 #endif
 
