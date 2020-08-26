@@ -281,11 +281,14 @@ if (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	mrpt_lib_target_requires_cpp17(mrptgtest)
 
 	if (UNIX AND MRPT_COMPILER_IS_GCC_OR_CLANG)
-		target_compile_options(mrptgtest PRIVATE "-fPIC")
+		target_compile_options(mrptgtest PRIVATE -fPIC)
 	endif()
 	# Fix a "bug" in VS11 (MSVC 2012):
 	if(MSVC)
-		target_compile_definitions(_VARIADIC_MAX=10)
+		target_compile_definitions(mrptgtest PUBLIC _VARIADIC_MAX=10)
+	endif()
+	if(MRPT_COMPILER_IS_CLANG AND APPLE)
+		target_compile_definitions(mrptgtest PUBLIC GTEST_USE_OWN_TR1_TUPLE=1)
 	endif()
 
 	set_target_properties(mrptgtest PROPERTIES FOLDER "3rd party")
