@@ -12,6 +12,9 @@
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <iostream>
+#include <list>
+#include <mutex>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;
@@ -82,28 +85,90 @@ bool Shader::compile(
 }
 
 // ========= Program =============
+namespace mrpt::opengl::internal
+{
+static std::list<Program> pendingToClear;
+static std::mutex pendingToClear_mtx;
+
+// Frees those programs that were still waiting since they were attempted to
+// delete from a wrong thread. If we are now at that thread, clean up:
+void clearPendingIfPossible()
+{
+	std::lock_guard<std::mutex> lck(pendingToClear_mtx);
+	for (auto it = pendingToClear.begin(); it != pendingToClear.end();)
+	{
+		if (!it->m_data)
+		{
+			it = pendingToClear.erase(it);
+			continue;
+		}
+		if (it->m_data->linkedThread == std::this_thread::get_id())
+		{
+			it->internal_clear();
+			it = pendingToClear.erase(it);
+			continue;
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+}  // namespace mrpt::opengl::internal
+
+namespace mrpt::opengl::internal
+{
+void clearPendingIfPossible();
+}
+
 Program::~Program() { clear(); }
 
 void Program::clear()
 {
-	if (!m_program) return;
+	if (!m_data->program) return;
 
+	// If we are in the same thread that created us, ok, clean up.
+	// Otherwise, postpone it for later on:
+	if (m_data->linkedThread == std::this_thread::get_id())
+	{
+		internal_clear();
+	}
+	else
+	{
+		// Postpone:
+		{
+			std::lock_guard<std::mutex> lck(internal::pendingToClear_mtx);
+			internal::pendingToClear.emplace_back().m_data = std::move(m_data);
+		}
+		m_data = std::make_unique<Data>();
+	}
+	internal::clearPendingIfPossible();
+}
+
+void Program::internal_clear()
+{
+	if (!m_data->program) return;
 #if MRPT_HAS_OPENGL_GLUT
+
+	// See clear() comments
+	ASSERT_(m_data->linkedThread == std::this_thread::get_id());
+
 	// 1) Detach shaders from program.
-	for (const Shader& s : m_shaders) glDetachShader(m_program, s.handle());
+	for (const Shader& s : m_data->shaders)
+		glDetachShader(m_data->program, s.handle());
 
 	// 2) Delete program.
-	glDeleteProgram(m_program);
+	glDeleteProgram(m_data->program);
 
 	// 3) Delete shaders.
-	m_shaders.clear();
+	m_data->shaders.clear();
 
 	// 4) Delete all variables:
 	m_uniforms.clear();
 	m_attribs.clear();
 #endif
 
-	m_program = 0;
+	m_data->program = 0;
 }
 
 bool Program::linkProgram(
@@ -113,27 +178,28 @@ bool Program::linkProgram(
 #if MRPT_HAS_OPENGL_GLUT
 	clear();
 
-	m_program = glCreateProgram();
-	ASSERT_(m_program != 0);
+	m_data->program = glCreateProgram();
+	ASSERT_(m_data->program != 0);
 
 	// Take ownership of shaders:
-	m_shaders = std::move(shaders);
+	m_data->shaders = std::move(shaders);
+	m_data->linkedThread = std::this_thread::get_id();
 
-	for (const auto& shader : m_shaders)
-		glAttachShader(m_program, shader.handle());
+	for (const auto& shader : m_data->shaders)
+		glAttachShader(m_data->program, shader.handle());
 
-	glLinkProgram(m_program);
+	glLinkProgram(m_data->program);
 	CHECK_OPENGL_ERROR();
 
 	GLint program_ok;
-	glGetProgramiv(m_program, GL_LINK_STATUS, &program_ok);
+	glGetProgramiv(m_data->program, GL_LINK_STATUS, &program_ok);
 	if (!program_ok)
 	{
 		GLint log_length;
 		std::string log;
-		glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &log_length);
+		glGetProgramiv(m_data->program, GL_INFO_LOG_LENGTH, &log_length);
 		log.resize(log_length);
-		glGetProgramInfoLog(m_program, log_length, NULL, &log[0]);
+		glGetProgramInfoLog(m_data->program, log_length, NULL, &log[0]);
 
 		if (outErrorMessages)
 			outErrorMessages.value().get() = std::move(log);
@@ -159,7 +225,7 @@ void Program::declareUniform(const std::string& name)
 			"declareUniform: Name `%s` already registered", name.c_str());
 
 	const auto ret = glGetUniformLocation(
-		m_program, static_cast<const GLchar*>(name.c_str()));
+		m_data->program, static_cast<const GLchar*>(name.c_str()));
 	if (ret < 0)
 		THROW_EXCEPTION_FMT(
 			"declareUniform: glGetUniformLocation() returned error for `%s`",
@@ -179,7 +245,7 @@ void Program::declareAttribute(const std::string& name)
 			"declareAttribute: Name `%s` already registered", name.c_str());
 
 	const auto ret = glGetAttribLocation(
-		m_program, static_cast<const GLchar*>(name.c_str()));
+		m_data->program, static_cast<const GLchar*>(name.c_str()));
 	if (ret < 0)
 		THROW_EXCEPTION_FMT(
 			"declareAttribute: glGetAttribLocation() returned error for `%s`",
@@ -206,25 +272,25 @@ void Program::dumpProgramDescription(std::ostream& o) const
 	GLsizei length;  // name length
 
 	// Attributes
-	glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &count);
+	glGetProgramiv(m_data->program, GL_ACTIVE_ATTRIBUTES, &count);
 	o << mrpt::format("Active Attributes: %d\n", count);
 
 	for (GLint i = 0; i < count; i++)
 	{
 		glGetActiveAttrib(
-			m_program, (GLuint)i, bufSize, &length, &size, &type, name);
+			m_data->program, (GLuint)i, bufSize, &length, &size, &type, name);
 
 		o << mrpt::format("Attribute #%d Type: %u Name: %s\n", i, type, name);
 	}
 
 	// Uniforms
-	glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &count);
+	glGetProgramiv(m_data->program, GL_ACTIVE_UNIFORMS, &count);
 	printf("Active Uniforms: %d\n", count);
 
 	for (GLint i = 0; i < count; i++)
 	{
 		glGetActiveUniform(
-			m_program, (GLuint)i, bufSize, &length, &size, &type, name);
+			m_data->program, (GLuint)i, bufSize, &length, &size, &type, name);
 
 		o << mrpt::format("Uniform #%d Type: %u Name: %s\n", i, type, name);
 	}

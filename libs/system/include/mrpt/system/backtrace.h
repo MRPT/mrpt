@@ -47,4 +47,11 @@ struct TCallStackBackTrace
  */
 void getCallStackBackTrace(TCallStackBackTrace& out_bt);
 
+inline TCallStackBackTrace getCallStackBackTrace()
+{
+	TCallStackBackTrace bt;
+	getCallStackBackTrace(bt);
+	return bt;
+}
+
 }  // namespace mrpt::system
