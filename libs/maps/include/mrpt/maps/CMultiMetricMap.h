@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/containers/deepcopy_poly_ptr.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -121,10 +120,24 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 {
 	DEFINE_SERIALIZABLE(CMultiMetricMap, mrpt::maps)
    public:
+	/** Default ctor: empty list of maps */
+	CMultiMetricMap() = default;
+
+	/** Constructor with a list of map initializers.
+	 * \param initializers One internal map will be created for each entry in
+	 * this "TSetOfMetricMapInitializers" struct.
+	 */
+	CMultiMetricMap(const TSetOfMetricMapInitializers& initializers);
+
+	CMultiMetricMap(const CMultiMetricMap& o);
+	CMultiMetricMap& operator=(const CMultiMetricMap& o);
+
+	CMultiMetricMap(CMultiMetricMap&&) = default;
+	CMultiMetricMap& operator=(CMultiMetricMap&&) = default;
+
 	/** @name Access to list of maps
 		@{ */
-	using TListMaps = std::deque<
-		mrpt::containers::deepcopy_poly_ptr<mrpt::maps::CMetricMap::Ptr>>;
+	using TListMaps = std::deque<mrpt::maps::CMetricMap::Ptr>;
 
 	/** The list of metric maps in this object. Use dynamic_cast or smart
 	 * pointer-based downcast to access maps by their actual type.
@@ -157,10 +170,9 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	{
 		size_t foundCount = 0;
 		const auto* class_ID = &T::GetRuntimeClassIdStatic();
-		for (const auto& it : *this)
-			if (it->GetRuntimeClass()->derivedFrom(class_ID))
-				if (foundCount++ == ith)
-					return std::dynamic_pointer_cast<T>(it.get_ptr());
+		for (const auto& m : maps)
+			if (m && m->GetRuntimeClass()->derivedFrom(class_ID))
+				if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(m);
 		return typename T::Ptr();  // Not found: return empty smart pointer
 	}
 
@@ -170,20 +182,11 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	{
 		size_t foundCount = 0;
 		const auto* class_ID = &T::GetRuntimeClassIdStatic();
-		for (const auto& it : *this)
-			if (it->GetRuntimeClass()->derivedFrom(class_ID)) foundCount++;
+		for (const auto& m : maps)
+			if (m->GetRuntimeClass()->derivedFrom(class_ID)) foundCount++;
 		return foundCount;
 	}
 	/** @} */
-
-	/** Default ctor: empty list of maps */
-	CMultiMetricMap() = default;
-
-	/** Constructor with a list of map initializers.
-	 * \param initializers One internal map will be created for each entry in
-	 * this "TSetOfMetricMapInitializers" struct.
-	 */
-	CMultiMetricMap(const TSetOfMetricMapInitializers& initializers);
 
 	/** Sets the list of internal map according to the passed list of map
 	 * initializers (current maps will be deleted) */
