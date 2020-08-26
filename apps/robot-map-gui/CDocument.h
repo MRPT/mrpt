@@ -10,23 +10,21 @@
 #pragma once
 #include <string>
 
+#include "TypeOfConfig.h"
+#include "gui/configWidget/CConfigWidget.h"
 #include "mrpt/config/CConfigFile.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 #include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/opengl/CRenderizable.h"
-
-#include "TypeOfConfig.h"
-#include "gui/configWidget/CConfigWidget.h"
 
 /** This class gets *.simplemap and *.ini, and convert it to name of the map -
 CSetOfObjects.
 Also, it provides work with *.simplemap.
 */
 
-using MetricPolyPtr =
-	mrpt::containers::deepcopy_poly_ptr<mrpt::maps::CMetricMap::Ptr>;
+using MetricPtr = mrpt::maps::CMetricMap::Ptr;
 using RenderizableMaps = std::map<SType, mrpt::opengl::CSetOfObjects::Ptr>;
-using TypeConfig = std::map<TypeOfConfig, std::vector<MetricPolyPtr>>;
+using TypeConfig = std::map<TypeOfConfig, std::vector<MetricPtr>>;
 
 class CDocument
 {
