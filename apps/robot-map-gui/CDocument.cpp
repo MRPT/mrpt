@@ -15,6 +15,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include "mrpt/config/CConfigFile.h"
 #include "mrpt/io/CFileGZInputStream.h"
 #include "mrpt/io/CFileGZOutputStream.h"
@@ -54,7 +55,7 @@ void CDocument::saveMetricMapRepresentationToFile(
 	if (iter == m_typeConfigs.end() || iter->second.empty()) return;
 
 	auto mapIter = iter->second.begin() + index;
-	mapIter->get_ptr()->saveMetricMapRepresentationToFile(fileName);
+	(*mapIter)->saveMetricMapRepresentationToFile(fileName);
 }
 
 void CDocument::saveMetricmapInBinaryFormat(
@@ -72,7 +73,7 @@ void CDocument::saveMetricmapInBinaryFormat(
 	auto mapIter = iter->second.begin() + index;
 
 	mrpt::io::CFileGZOutputStream fil(fileName);
-	mrpt::serialization::archiveFrom(fil) << *mapIter->get_ptr();
+	mrpt::serialization::archiveFrom(fil) << **mapIter;
 }
 
 void CDocument::saveAsPng(const std::string& fileName) const
@@ -84,10 +85,10 @@ void CDocument::saveAsPng(const std::string& fileName) const
 bool CDocument::hasPointsMap() const { return m_hasPointsMap; }
 void CDocument::saveAsText(const std::string& fileName) const
 {
-	for (auto iter = m_metricmap.begin(); iter != m_metricmap.end(); ++iter)
+	for (auto& m : m_metricmap)
 	{
-		auto ptr = std::dynamic_pointer_cast<CSimplePointsMap>(iter->get_ptr());
-		if (ptr.get())
+		auto ptr = std::dynamic_pointer_cast<CSimplePointsMap>(m);
+		if (ptr)
 		{
 			ptr->save3D_to_text_file(fileName);
 			break;
@@ -230,8 +231,7 @@ void CDocument::addMapToRenderizableMaps(
 		int index = 0;
 		for (auto& map : iter->second)
 		{
-			CMetricMap::Ptr ptr =
-				std::dynamic_pointer_cast<CMetricMap>(map.get_ptr());
+			CMetricMap::Ptr ptr = std::dynamic_pointer_cast<CMetricMap>(map);
 			if (ptr.get())
 			{
 				auto obj = std::make_shared<CSetOfObjects>();
@@ -248,22 +248,18 @@ void CDocument::updateMetricMap()
 	m_metricmap.loadFromProbabilisticPosesAndObservations(m_simplemap);
 
 	m_typeConfigs.clear();
-	m_typeConfigs.emplace(
-		TypeOfConfig::PointsMap, std::vector<MetricPolyPtr>());
-	m_typeConfigs.emplace(
-		TypeOfConfig::Occupancy, std::vector<MetricPolyPtr>());
-	m_typeConfigs.emplace(
-		TypeOfConfig::Landmarks, std::vector<MetricPolyPtr>());
-	m_typeConfigs.emplace(TypeOfConfig::Beacon, std::vector<MetricPolyPtr>());
-	m_typeConfigs.emplace(TypeOfConfig::GasGrid, std::vector<MetricPolyPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::PointsMap, std::vector<MetricPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::Occupancy, std::vector<MetricPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::Landmarks, std::vector<MetricPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::Beacon, std::vector<MetricPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::GasGrid, std::vector<MetricPtr>());
 
 	bool addedPointsMap = false;
-	for (auto iter = m_metricmap.begin(); iter != m_metricmap.end(); ++iter)
+	for (auto& m : m_metricmap)
 	{
 		TypeOfConfig type = TypeOfConfig::None;
 		{
-			CSimplePointsMap::Ptr ptr =
-				std::dynamic_pointer_cast<CSimplePointsMap>(iter->get_ptr());
+			auto ptr = std::dynamic_pointer_cast<CSimplePointsMap>(m);
 			if (ptr.get())
 			{
 				type = TypeOfConfig::PointsMap;
@@ -272,32 +268,27 @@ void CDocument::updateMetricMap()
 		}
 		if (type == TypeOfConfig::None)
 		{
-			COccupancyGridMap2D::Ptr ptr =
-				std::dynamic_pointer_cast<COccupancyGridMap2D>(iter->get_ptr());
+			auto ptr = std::dynamic_pointer_cast<COccupancyGridMap2D>(m);
 			if (ptr.get()) type = TypeOfConfig::Occupancy;
 		}
 		if (type == TypeOfConfig::None)
 		{
-			CGasConcentrationGridMap2D::Ptr ptr =
-				std::dynamic_pointer_cast<CGasConcentrationGridMap2D>(
-					iter->get_ptr());
+			auto ptr = std::dynamic_pointer_cast<CGasConcentrationGridMap2D>(m);
 			if (ptr.get()) type = TypeOfConfig::GasGrid;
 		}
 		if (type == TypeOfConfig::None)
 		{
-			CBeaconMap::Ptr ptr =
-				std::dynamic_pointer_cast<CBeaconMap>(iter->get_ptr());
+			auto ptr = std::dynamic_pointer_cast<CBeaconMap>(m);
 			if (ptr.get()) type = TypeOfConfig::Beacon;
 		}
 		if (type == TypeOfConfig::None)
 		{
-			CLandmarksMap::Ptr ptr =
-				std::dynamic_pointer_cast<CLandmarksMap>(iter->get_ptr());
+			auto ptr = std::dynamic_pointer_cast<CLandmarksMap>(m);
 			if (ptr.get()) type = TypeOfConfig::Landmarks;
 		}
 		if (type != TypeOfConfig::None)
 		{
-			m_typeConfigs.find(type)->second.push_back(iter->get_ptr());
+			m_typeConfigs.find(type)->second.push_back(m);
 		}
 	}
 
