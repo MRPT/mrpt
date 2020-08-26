@@ -603,7 +603,7 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 				s.push_back(std::move(entry.value()));
 			}
 
-			return std::move(n);
+			return n;
 		}
 		break;
 		case FYET_SEQUENCE_END:

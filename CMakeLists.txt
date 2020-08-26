@@ -37,10 +37,11 @@ endif()
 
 if ((NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
     OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libfyaml/include")
+    OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/sdk")
    )
   message(FATAL_ERROR "git submodules missing! "
     "You probably did not clone the project with --recursive. It is possible to recover "
-    "by calling \"git submodule update --init --recursive\"")
+    "by calling:\n  git submodule update --init --recursive\n")
 endif()
 
 # Display timing information for each compiler instance on screen
@@ -605,7 +606,7 @@ endif()
 
 # Generate .h to locate MRPT sources:
 configure_file(
-    "${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in"
+	"${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in"
 	"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
 	)
 
@@ -616,11 +617,6 @@ add_subdirectory(doc)
 # ----------------------------------------------------------------------------
 set(BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
 if(BUILD_TESTING)
-	# Try using libgtest (Google testing library) from the system, if available
-	if(MRPT_COMPILER_IS_CLANG AND APPLE)
-		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-	endif()
-	add_subdirectory(${CMAKE_MRPT_GTEST_SRC_DIR})  # Build gtest from sources
 	add_subdirectory(tests)  # Build my tests
 endif()
 
