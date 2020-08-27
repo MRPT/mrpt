@@ -106,6 +106,9 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 	if (MRPT_COMPILER_IS_CLANG)
 		target_compile_options(mrpt_rplidar PRIVATE -Wno-c++11-narrowing)
 	endif()
+	if (CMAKE_COMPILER_IS_GNUCXX)
+		target_compile_options(mrpt_rplidar PRIVATE -Wno-narrowing)
+	endif()
 
 	# Embedded version:
 	target_include_directories(mrpt_rplidar SYSTEM PUBLIC
