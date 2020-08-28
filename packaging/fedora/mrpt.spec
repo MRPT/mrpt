@@ -267,7 +267,6 @@ with Doxygen.
 # The flag CMAKE_MRPT_IS_RPM_PACKAGE disables global "-march=native"
 %cmake . -DCMAKE_MRPT_IS_RPM_PACKAGE=1
 make VERBOSE=1 %{?_smp_mflags}
-make documentation_html
 make man_pages_all
 
 %check

@@ -57,7 +57,6 @@ override_dh_auto_build-arch:
 override_dh_auto_build-indep:
 	# Build doc targets:
 	dh_auto_build -O--buildsystem=cmake -- \
-		documentation_html \
 		man_pages_all \
 		documentation_psgz_guides
 
@@ -116,10 +115,6 @@ override_dh_install:
 
 	# Move mrpt-common:
 	dir=$(CURDIR)/debian/mrpt-common/usr/; mkdir -p $$dir; cp -vr $(CURDIR)/debian/usr/mrpt-common/* $$dir/..
-
-	# Fix Doxygen's embedded JQuery lib:
-	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true
-	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js  || true
 
 override_dh_missing:
 	dh_missing --list-missing

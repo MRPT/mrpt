@@ -152,7 +152,6 @@ echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
 # To avoid timeout compiling in ARM build farms, skip building heavy docs:
 if [ ${SKIP_HEAVY_DOCS} == "1" ];
 then
-	sed -i "/documentation_html/d" $RULES_FILE
 	sed -i "/documentation_performance_html/d" $RULES_FILE
 	sed -i "/documentation_psgz_guides/d" $RULES_FILE
 fi
