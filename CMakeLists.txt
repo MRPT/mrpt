@@ -145,9 +145,12 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
 # Build the RoboPeak Lidar library?
 set(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
-if (${CMAKE_MRPT_KERNEL} MATCHES "GNU" OR APPLE)   # Unless in HURD
+if ((${CMAKE_MRPT_KERNEL} MATCHES "GNU") # It doesnt build in hurd
+    OR APPLE # and macos
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64el") # fails: termios2
+    )
 	set(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
-endif ()
+endif()
 # Decl option:
 set(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
 if(BUILD_ROBOPEAK_LIDAR)
