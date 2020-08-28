@@ -198,9 +198,11 @@ TEST(yaml, nested)
 
 	// empty() not valid for values:
 	EXPECT_THROW(p["PID"]["Ti"].empty(), std::exception);
-	EXPECT_THROW(p["PID"]["Ti"].clear(), std::exception);
 	EXPECT_THROW(p["PID"]["Ti"].has("xxx"), std::exception);
 	EXPECT_THROW(p["PID"]["Ti"]["xxx"].scalarType(), std::exception);
+
+	p["PID"]["Ti"].clear();
+	EXPECT_TRUE(p["PID"]["Ti"].isNullNode());
 
 	// clear and recheck;
 	p["PID"].clear();
