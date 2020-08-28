@@ -20,6 +20,8 @@
   - \ref mrpt_tfest_grp
     - New templatized mrpt::tfest::TMatchingPairTempl<> and mrpt::tfest::TMatchingPairListTempl<>
     - New mrpt::tfest::se3_l2() for `double` precision.
+- Build:
+    - yamlcpp is no longer a build dependency.
 - BUG FIXES:
   - Avoid crash in camera-calib app when clicking "Close" while capturing a live video.
   - Fix potential Eigen crash in matrixes inverse() and inverse_LLt() if building mrpt and user code with different optimization flags.
