@@ -319,9 +319,9 @@ class yaml
 
 	/** For a master yaml document, returns the root node; otherwise, the
 	 * referenced node. */
-	node_t& node() { return root_; }
+	node_t& node() { return *dereferenceProxy(); }
 	/** \overload */
-	const node_t& node() const { return root_; }
+	const node_t& node() const { return *dereferenceProxy(); }
 
 	/** @} */
 
@@ -870,7 +870,11 @@ template <typename T>
 T implAsGetter(const yaml& p)
 {
 	MRPT_START
-	ASSERTMSG_(p.isScalar(), "Trying to read from a non-scalar");
+	ASSERTMSG_(
+		p.isScalar(),
+		mrpt::format(
+			"Trying to read from a non-scalar. Actual node type: `%s`",
+			p.node().typeName().c_str()));
 	const yaml::scalar_t& s = p.asScalar();
 	return implAnyAsGetter<T>(s);
 	MRPT_END
