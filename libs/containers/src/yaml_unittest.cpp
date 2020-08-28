@@ -10,18 +10,20 @@
 #include <gtest/gtest.h>
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
+#include "test_mrpt_common.h"
 
 #include <algorithm>  // count()
 
-TEST(yaml, emptyCtor)
+MRPT_TEST(yaml, emptyCtor)
 {
 	{
 		mrpt::containers::yaml p;
 		EXPECT_TRUE(p.empty());
 	}
 }
+MRPT_TEST_END()
 
-TEST(yaml, assignments)
+MRPT_TEST(yaml, assignments)
 {
 	mrpt::containers::yaml p;
 	p["K"] = 2.0;
@@ -74,8 +76,9 @@ TEST(yaml, assignments)
 	EXPECT_EQ(p["enabled"].as<std::string>(), "true");
 	EXPECT_EQ(p["visible"].as<std::string>(), "false");
 }
+MRPT_TEST_END()
 
-TEST(yaml, initializers)
+MRPT_TEST(yaml, initializers)
 {
 	{
 		mrpt::containers::yaml p = mrpt::containers::yaml::Sequence({"K", 1.0});
@@ -113,8 +116,9 @@ TEST(yaml, initializers)
 		EXPECT_TRUE(p.isMap());
 	}
 }
+MRPT_TEST_END()
 
-TEST(yaml, initializerMap)
+MRPT_TEST(yaml, initializerMap)
 {
 	const mrpt::containers::yaml p = mrpt::containers::yaml::Map(
 		{{"K", 2.0}, {"book", std::string("silmarillion")}});
@@ -139,8 +143,9 @@ TEST(yaml, initializerMap)
 	// Access wrong type in const object:
 	EXPECT_THROW(p["K"].asRef<std::string>(), std::exception);
 }
+MRPT_TEST_END()
 
-TEST(yaml, initializerSequence)
+MRPT_TEST(yaml, initializerSequence)
 {
 	const auto seq1 = mrpt::containers::yaml({1.0, 2.0, 3.0});
 
@@ -180,17 +185,25 @@ TEST(yaml, initializerSequence)
 	EXPECT_EQ(seq2(3).as<std::string>(), std::string("foo2"));
 	EXPECT_EQ(seq2(4).as<double>(), 9.0);
 }
+MRPT_TEST_END()
 
-TEST(yaml, nested)
+MRPT_TEST(yaml, nested)
 {
 	mrpt::containers::yaml p = mrpt::containers::yaml::Map({{"K", 2.0}});
-	p["PID"] = mrpt::containers::yaml::Map({{"Kp", 10.0}, {"Ti", 10.0}});
+	p["PID"] = mrpt::containers::yaml::Map(
+		{{"Kp", 10.0}, {"Ti", 10.0}, {"Kd", "-3.5"}});
 
 	EXPECT_FALSE(p.empty());
 	EXPECT_FALSE(p["PID"].empty());
 
 	EXPECT_EQ(p["PID"]["Ti"].scalarType(), typeid(double));
 	EXPECT_EQ(p["PID"]["Ti"].as<double>(), 10.0);
+
+	EXPECT_EQ(p["PID"]["Kd"].as<double>(), -3.5);
+	EXPECT_EQ(p["PID"]["Kd"].as<float>(), -3.5f);
+
+	EXPECT_EQ(p["PID"].getOrDefault("Kd", 0.0), -3.5);
+	EXPECT_EQ(p["PID"].getOrDefault("Kd", 0.0f), -3.5f);
 
 	EXPECT_FALSE(p.isScalar());
 	EXPECT_FALSE(p["PID"].isScalar());
@@ -208,8 +221,9 @@ TEST(yaml, nested)
 	p["PID"].clear();
 	EXPECT_TRUE(p["PID"].empty());
 }
+MRPT_TEST_END()
 
-TEST(yaml, nested2)
+MRPT_TEST(yaml, nested2)
 {
 	mrpt::containers::yaml p;
 	p["N"] = 10;
@@ -227,6 +241,7 @@ TEST(yaml, nested2)
 	EXPECT_EQ(p.size(), 2U);
 	EXPECT_EQ(p["PID"].size(), 4U);
 }
+MRPT_TEST_END()
 
 const mrpt::containers::yaml testMap = mrpt::containers::yaml::Map(
 	{{"K", 2.0},
@@ -238,7 +253,7 @@ const mrpt::containers::yaml testMap = mrpt::containers::yaml::Map(
 	 {"myDict",
 	  mrpt::containers::yaml::Map({{"A", 1.0}, {"B", 2.0}, {"C", 3.0}})}});
 
-TEST(yaml, printYAML)
+MRPT_TEST(yaml, printYAML)
 {
 	{
 		std::stringstream ss;
@@ -253,8 +268,9 @@ TEST(yaml, printYAML)
 		EXPECT_EQ(std::count(s.begin(), s.end(), '\n'), 13U);
 	}
 }
+MRPT_TEST_END()
 
-TEST(yaml, ctorMap)
+MRPT_TEST(yaml, ctorMap)
 {
 	mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
 	c1["K"] = 2.0;
@@ -271,129 +287,108 @@ TEST(yaml, ctorMap)
 	c2.printAsYAML(ss2);
 	EXPECT_EQ(ss1.str(), ss2.str());
 }
+MRPT_TEST_END()
 
-TEST(yaml, comments)
+MRPT_TEST(yaml, comments)
 {
 	using mrpt::containers::CommentPosition;
 
-	try
-	{
-		mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
-		c1["K"] = 2.0;
-		c1["K"].comment("Form factor");
+	mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
+	c1["K"] = 2.0;
+	c1["K"].comment("Form factor");
 
-		c1["T"] = 27;
-		c1["T"].comment("Temperature [C]");
+	c1["T"] = 27;
+	c1["T"].comment("Temperature [C]");
 
-		c1["v"] = 0;
+	c1["v"] = 0;
 
-		EXPECT_TRUE(c1["K"].hasComment());
-		EXPECT_EQ(c1["K"].comment(), "Form factor");
+	EXPECT_TRUE(c1["K"].hasComment());
+	EXPECT_EQ(c1["K"].comment(), "Form factor");
 
-		EXPECT_TRUE(c1["T"].hasComment());
-		EXPECT_FALSE(c1["v"].hasComment());
+	EXPECT_TRUE(c1["T"].hasComment());
+	EXPECT_FALSE(c1["v"].hasComment());
 
-		using mrpt::containers::vcp;
+	using mrpt::containers::vcp;
 
-		c1["L"] = vcp(2.0, "Arm length [meters]");
-		EXPECT_TRUE(c1["L"].hasComment());
-		EXPECT_EQ(c1["L"].comment(), "Arm length [meters]");
+	c1["L"] = vcp(2.0, "Arm length [meters]");
+	EXPECT_TRUE(c1["L"].hasComment());
+	EXPECT_EQ(c1["L"].comment(), "Arm length [meters]");
 
-		c1["D"] = vcp(3.0, "Distance [meters]", CommentPosition::RIGHT);
-		EXPECT_TRUE(c1["D"].hasComment());
-		EXPECT_EQ(c1["D"].comment(CommentPosition::RIGHT), "Distance [meters]");
+	c1["D"] = vcp(3.0, "Distance [meters]", CommentPosition::RIGHT);
+	EXPECT_TRUE(c1["D"].hasComment());
+	EXPECT_EQ(c1["D"].comment(CommentPosition::RIGHT), "Distance [meters]");
 
-		mrpt::containers::yaml c2 = mrpt::containers::yaml::Map();
-		c2["constants"] = c1;
-		c2["constants"].comment("Universal constant definitions:");
-		c2["constants"].comment("Another comment", CommentPosition::RIGHT);
+	mrpt::containers::yaml c2 = mrpt::containers::yaml::Map();
+	c2["constants"] = c1;
+	c2["constants"].comment("Universal constant definitions:");
+	c2["constants"].comment("Another comment", CommentPosition::RIGHT);
 
-		EXPECT_TRUE(
-			c2["constants"].comment(CommentPosition::RIGHT) ==
-			"Another comment");
-		EXPECT_TRUE(
-			c2["constants"].comment(CommentPosition::TOP) ==
-			"Universal constant definitions:");
+	EXPECT_TRUE(
+		c2["constants"].comment(CommentPosition::RIGHT) == "Another comment");
+	EXPECT_TRUE(
+		c2["constants"].comment(CommentPosition::TOP) ==
+		"Universal constant definitions:");
 
-		c2.printAsYAML(std::cout);
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		GTEST_FAIL();
-	}
+	c2.printAsYAML(std::cout);
 }
+MRPT_TEST_END()
 
-TEST(yaml, iterate)
+MRPT_TEST(yaml, iterate)
 {
-	try
+	std::set<std::string> foundKeys;
+	for (const auto& kv : testMap.asMap())
 	{
-		std::set<std::string> foundKeys;
-		for (const auto& kv : testMap.asMap())
-		{
-			std::cout << kv.first << ":" << kv.second.typeName() << "\n";
+		std::cout << kv.first << ":" << kv.second.typeName() << "\n";
 
-			foundKeys.insert(kv.first);
-		}
-		EXPECT_EQ(foundKeys.size(), 5U);
-
-		foundKeys.clear();
-		for (const auto& kv : testMap["myDict"].asMap())
-		{
-			std::cout << kv.first << ":" << kv.second.typeName() << "\n";
-			foundKeys.insert(kv.first);
-		}
-		EXPECT_EQ(foundKeys.size(), 3U);
-
-		EXPECT_EQ(testMap["mySequence"].asSequence().size(), 3U);
+		foundKeys.insert(kv.first);
 	}
-	catch (const std::exception& e)
+	EXPECT_EQ(foundKeys.size(), 5U);
+
+	foundKeys.clear();
+	for (const auto& kv : testMap["myDict"].asMap())
 	{
-		std::cerr << mrpt::exception_to_str(e);
-		GTEST_FAIL();
+		std::cout << kv.first << ":" << kv.second.typeName() << "\n";
+		foundKeys.insert(kv.first);
 	}
+	EXPECT_EQ(foundKeys.size(), 3U);
+
+	EXPECT_EQ(testMap["mySequence"].asSequence().size(), 3U);
 }
+MRPT_TEST_END()
 
-TEST(yaml, macros)
+MRPT_TEST(yaml, macros)
 {
-	try
-	{
-		mrpt::containers::yaml p;
-		p["K"] = 2.0;
-		p["Ang"] = 90.0;
-		p["name"] = "Pepico";
-		p["PID"] = mrpt::containers::yaml::Map({{"Kp", 1.0}, {"Td", 0.8}});
+	mrpt::containers::yaml p;
+	p["K"] = 2.0;
+	p["Ang"] = 90.0;
+	p["name"] = "Pepico";
+	p["PID"] = mrpt::containers::yaml::Map({{"Kp", 1.0}, {"Td", 0.8}});
 
-		double K, Td, Foo = 9.0, Bar, Ang, Ang2 = M_PI;
-		std::string name;
-		MCP_LOAD_REQ(p, K);
-		EXPECT_EQ(K, 2.0);
+	double K, Td, Foo = 9.0, Bar, Ang, Ang2 = M_PI;
+	std::string name;
+	MCP_LOAD_REQ(p, K);
+	EXPECT_EQ(K, 2.0);
 
-		MCP_LOAD_REQ(p, name);
-		EXPECT_EQ(name, "Pepico");
+	MCP_LOAD_REQ(p, name);
+	EXPECT_EQ(name, "Pepico");
 
-		MCP_LOAD_REQ(p["PID"], Td);
-		EXPECT_EQ(Td, 0.8);
+	MCP_LOAD_REQ(p["PID"], Td);
+	EXPECT_EQ(Td, 0.8);
 
-		MCP_LOAD_REQ_DEG(p, Ang);
-		EXPECT_NEAR(Ang, 0.5 * M_PI, 1e-6);
+	MCP_LOAD_REQ_DEG(p, Ang);
+	EXPECT_NEAR(Ang, 0.5 * M_PI, 1e-6);
 
-		MCP_LOAD_OPT_DEG(p, Ang2);
-		EXPECT_NEAR(Ang2, M_PI, 1e-6);
+	MCP_LOAD_OPT_DEG(p, Ang2);
+	EXPECT_NEAR(Ang2, M_PI, 1e-6);
 
-		MCP_LOAD_OPT(p, Foo);
-		EXPECT_EQ(Foo, 9.0);
+	MCP_LOAD_OPT(p, Foo);
+	EXPECT_EQ(Foo, 9.0);
 
-		EXPECT_THROW(MCP_LOAD_REQ(p, Bar), std::exception);
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e);
-		GTEST_FAIL();
-	}
+	EXPECT_THROW(MCP_LOAD_REQ(p, Bar), std::exception);
 }
+MRPT_TEST_END()
 
-TEST(yaml, hexadecimal)
+MRPT_TEST(yaml, hexadecimal)
 {
 	mrpt::containers::yaml p;
 	p["color"] = "0x112233";
@@ -403,6 +398,7 @@ TEST(yaml, hexadecimal)
 
 	EXPECT_EQ(c1, c2);
 }
+MRPT_TEST_END()
 
 void foo(mrpt::containers::yaml& p)
 {
@@ -410,7 +406,7 @@ void foo(mrpt::containers::yaml& p)
 	p["N"] = 2;
 }
 
-TEST(yaml, assignmentsInCallee)
+MRPT_TEST(yaml, assignmentsInCallee)
 {
 	mrpt::containers::yaml p;
 
@@ -428,6 +424,7 @@ TEST(yaml, assignmentsInCallee)
 	EXPECT_EQ(p["params"]["K"].as<double>(), 2.0);
 	EXPECT_EQ(p["params"]["N"].as<int>(), 2);
 }
+MRPT_TEST_END()
 
 #if MRPT_HAS_FYAML
 
@@ -543,30 +540,24 @@ const auto sampleJSONBlock_2 = std::string(R"xxx(
 
 // clang-format on
 
-TEST(yaml, fromJSON)
+MRPT_TEST(yaml, fromJSON)
 {
-	try
 	{
-		{
-			const auto p = mrpt::containers::yaml::FromText(sampleJSONBlock_1);
-			// p.printAsYAML(std::cout);
+		const auto p = mrpt::containers::yaml::FromText(sampleJSONBlock_1);
+		// p.printAsYAML(std::cout);
 
-			EXPECT_TRUE(p.has("store"));
-			EXPECT_EQ(p["store"]["bicycle"]["color"].as<std::string>(), "red");
-		}
-		{
-			const auto p = mrpt::containers::yaml::FromText(sampleJSONBlock_2);
-			// p.printAsYAML(std::cout);
-
-			EXPECT_TRUE(p.has("data"));
-			EXPECT_EQ(p["data"](0)["id"].as<std::string>(), "1");
-			EXPECT_EQ(p["included"](0)["id"].as<int>(), 42);
-		}
+		EXPECT_TRUE(p.has("store"));
+		EXPECT_EQ(p["store"]["bicycle"]["color"].as<std::string>(), "red");
 	}
-	catch (const std::exception& e)
 	{
-		std::cerr << mrpt::exception_to_str(e);
-		GTEST_FAIL();
+		const auto p = mrpt::containers::yaml::FromText(sampleJSONBlock_2);
+		// p.printAsYAML(std::cout);
+
+		EXPECT_TRUE(p.has("data"));
+		EXPECT_EQ(p["data"](0)["id"].as<std::string>(), "1");
+		EXPECT_EQ(p["included"](0)["id"].as<int>(), 42);
 	}
 }
+MRPT_TEST_END()
+
 #endif  // MRPT_HAS_FYAML
