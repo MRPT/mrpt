@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
-#include "test_mrpt_common.h"
+#include "mrpt_test.h"
 
 #include <algorithm>  // count()
 
