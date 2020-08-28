@@ -53,10 +53,6 @@ if(wxWidgets_FOUND)
 		endif()
 	endif()
 
-	# Include wxWidgets macros
-
-	# *** include(${wxWidgets_USE_FILE})
-
 	mrpt_split_lib_list(wxWidgets_LIBRARIES wxWidgets_LIBRARIES_RELEASE optimized debug)
 	mrpt_split_lib_list(wxWidgets_LIBRARIES wxWidgets_LIBRARIES_DEBUG debug optimized)
 

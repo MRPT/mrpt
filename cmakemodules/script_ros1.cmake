@@ -5,6 +5,13 @@ option(DISABLE_ROS "Disable detection/usage of ROS libraries" "OFF")
 mark_as_advanced(DISABLE_ROS)
 
 if (NOT DISABLE_ROS)
+
+	# Save flag:
+	get_directory_property(FORMER_DEFS "COMPILE_DEFINITIONS")
+	if (NOT "${FORMER_DEFS}" STREQUAL "")
+	  message(FATAL_ERROR "Expected: empty COMPILE_DEFINITIONS at this point")
+	endif()
+
 	# ROS libs:
 	find_package(roscpp QUIET)
 	find_package(cv_bridge QUIET)
@@ -42,10 +49,16 @@ if (NOT DISABLE_ROS)
 	else()
 		set(nav_msgs_FOUND 0)
 	endif()
+	
+	# Compare flag:
+	get_directory_property(ROS_DEFINITIONS "COMPILE_DEFINITIONS")
+	set_directory_properties(PROPERTIES "COMPILE_DEFINITIONS" "")
+	
 
 	if ($ENV{VERBOSE})
 		message(STATUS "Found ROS1:")
 		message(STATUS "  roscpp_INCLUDE_DIRS :${roscpp_INCLUDE_DIRS}")
 		message(STATUS "  roscpp_LIBRARIES    :${roscpp_LIBRARIES}")
+		message(STATUS "  ROS definitions     :${ROS_DEFINITIONS}")
 	endif()
 endif()
