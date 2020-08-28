@@ -156,6 +156,10 @@ class yaml
 		scalar_t& asScalar();
 		const scalar_t& asScalar() const;
 
+		/** Returns 1 for null or scalar nodes, the number of children for
+		 * sequence or map nodes. */
+		size_t size() const;
+
 		/** Returns a copy of the existing value of the given type, or tries to
 		 * convert it between easily-compatible types (e.g. double<->int,
 		 * string<->int).
@@ -290,6 +294,10 @@ class yaml
 	/** \exception std::exception If called on a non-scalar node. */
 	scalar_t& asScalar();
 	const scalar_t& asScalar() const;
+
+	/** Returns 1 for null or scalar nodes, the number of children for sequence
+	 * or map nodes. */
+	size_t size() const;
 
 	/** @} */
 
@@ -521,23 +529,26 @@ class yaml
 	// Return: true if the last printed char is a newline char
 	static bool internalPrintNodeAsYAML(
 		const node_t& p, std::ostream& o, int indent, bool first,
-		bool debugInfo);
+		bool debugInfo, bool needsSpace);
 
 	template <typename T>
 	void internalPushBack(const T& v);
 
 	static bool internalPrintAsYAML(
 		const std::monostate&, std::ostream& o, int indent, bool first,
-		bool debugInfo);
+		bool debugInfo, const std::optional<std::string>& rightComment,
+		bool needsSpace);
 	static bool internalPrintAsYAML(
 		const sequence_t& v, std::ostream& o, int indent, bool first,
-		bool debugInfo);
+		bool debugInfo, const std::optional<std::string>& rightComment,
+		bool needsSpace);
 	static bool internalPrintAsYAML(
-		const map_t& v, std::ostream& o, int indent, bool first,
-		bool debugInfo);
+		const map_t& v, std::ostream& o, int indent, bool first, bool debugInfo,
+		const std::optional<std::string>& rightComment, bool needsSpace);
 	static bool internalPrintAsYAML(
 		const scalar_t& v, std::ostream& o, int indent, bool first,
-		bool debugInfo);
+		bool debugInfo, const std::optional<std::string>& rightComment,
+		bool needsSpace);
 
 	/** Impl of operator=() */
 	template <typename T>
@@ -722,7 +733,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 	if constexpr (std::is_convertible_v<T, double>)
 	{
 		std::stringstream ss;
-		yaml::internalPrintAsYAML(s, ss, 0, true, false);
+		yaml::internalPrintAsYAML(s, ss, 0, true, false, {}, false);
 		T ret;
 		ss >> ret;
 		if (!ss.fail()) return ret;
@@ -732,7 +743,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		if (expectedType == typeid(std::string))
 		{
 			std::stringstream ss;
-			yaml::internalPrintAsYAML(s, ss, 0, true, false);
+			yaml::internalPrintAsYAML(s, ss, 0, true, false, {}, false);
 			return ss.str();
 		}
 	}
