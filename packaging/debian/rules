@@ -11,8 +11,8 @@ export MRPT_genCALLERGRAPHS=NO
 
 # For multiarch support:
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
-DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
-DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+DEB_TARGET_MULTIARCH ?= $(shell dpkg-architecture -qDEB_TARGET_MULTIARCH)
+#DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 
 # SSE options
 ifeq ($(DEB_HOST_ARCH),amd64)
@@ -32,7 +32,7 @@ endif
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/usr/" \
-	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_HOST_MULTIARCH)" \
+	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_TARGET_MULTIARCH)" \
 	-DCMAKE_VERBOSE_MAKEFILE=ON \
 	-DCMAKE_BUILD_TYPE=Release  \
 	-DMRPT_ALLOW_LGPLV3=ON \
@@ -90,12 +90,12 @@ override_dh_install:
 
 	# Move all the ".so.x.y" files to the corresponding binary packages:
 	# libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/...
-	VERSION=$$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so.?.*" > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir=$(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_HOST_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
+	VERSION=$$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so.?.*" > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir=$(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_TARGET_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
 
 	# JLBC Nov 2018: Due to what is explained in MRPT/cmakemodules/DeclareMRPTLibs.cmake, we need to make some "mv" here:
 
 	# Move all the ".so" files to the proper place: the -dev package:
-	tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -vf $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
+	tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_TARGET_MULTIARCH); mv -vf $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_TARGET_MULTIARCH); done
 
 	# Move cmake modules to the -dev packages:
 	tmpfil=$$(mktemp); find $(CURDIR)/debian/usr/share/ -name '*-config.cmake' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(dirname $$line); f=$$(basename $$f); echo "Processing cmake scripts: $$line, module name: $$f"; dir=$(CURDIR)/debian/lib$$f-dev/usr/share/; mkdir -p $$dir; mv -f $(CURDIR)/debian/usr/share/$$f $$dir; done
