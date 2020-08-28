@@ -13,13 +13,10 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
 
+#include <fstream>
 #include <iostream>
 #include <istream>
 #include <stack>
-
-#if MRPT_HAS_YAMLCPP
-#include <yaml-cpp/yaml.h>
-#endif
 
 #if MRPT_HAS_FYAML
 #include <libfyaml.h>
@@ -238,16 +235,7 @@ bool yaml::empty() const
 void yaml::clear()
 {
 	auto n = dereferenceProxy();
-	if (std::holds_alternative<map_t>(n->d))
-		return std::get<map_t>(n->d).clear();
-
-	if (std::holds_alternative<sequence_t>(n->d))
-		return std::get<sequence_t>(n->d).clear();
-
-	THROW_EXCEPTION_FMT(
-		"clear() called on a node of type '%s': only available for maps or "
-		"sequences.",
-		n->typeName().c_str());
+	*n = node_t();
 }
 
 yaml& yaml::operator=(bool v) { return implOpAssign(v); }
@@ -400,7 +388,8 @@ bool yaml::internalPrintAsYAML(
 }
 bool yaml::internalPrintAsYAML(
 	const yaml::sequence_t& v, std::ostream& o, int indent, bool first, bool di,
-	const std::optional<std::string>& rightComment, bool needsSpace)
+	const std::optional<std::string>& rightComment,
+	[[maybe_unused]] bool needsSpace)
 {
 	if (di) o << "[printSequence] size=" << v.size() << "\n";
 
@@ -412,7 +401,7 @@ bool yaml::internalPrintAsYAML(
 			o << "\n";
 
 		indent += 2;
-		needsSpace = false;
+		// needsSpace = false;
 	}
 
 	const std::string sInd(indent, ' ');
@@ -425,7 +414,8 @@ bool yaml::internalPrintAsYAML(
 }
 bool yaml::internalPrintAsYAML(
 	const yaml::map_t& m, std::ostream& o, int indent, bool first, bool di,
-	const std::optional<std::string>& rightComment, bool needsSpace)
+	const std::optional<std::string>& rightComment,
+	[[maybe_unused]] bool needsSpace)
 {
 	if (di) o << "[printMap] size=" << m.size() << "\n";
 
@@ -764,6 +754,43 @@ yaml yaml::FromStream(std::istream& i)
 	MRPT_END
 }
 
+// Replicated from mrpt::io to avoid dependency to that module:
+static std::string local_file_get_contents(const std::string& fileName)
+{
+	// Credits: https://stackoverflow.com/a/2602258/1631514
+	// Note: Add "binary" to make sure the "tellg" file size matches the actual
+	// number of read bytes afterwards:
+	std::ifstream t(fileName, std::ios::binary);
+	if (!t.is_open())
+		THROW_EXCEPTION_FMT(
+			"file_get_contents(): Error opening for read file `%s`",
+			fileName.c_str());
+
+	t.seekg(0, std::ios::end);
+	std::size_t size = t.tellg();
+	std::string buffer(size, ' ');
+	t.seekg(0);
+	t.read(&buffer[0], size);
+	return buffer;
+}
+
+void yaml::loadFromFile(const std::string& fileName)
+{
+	MRPT_START
+	clear();
+	this->loadFromText(local_file_get_contents(fileName));
+	MRPT_END
+}
+
+yaml yaml::FromFile(const std::string& fileName)
+{
+	MRPT_START
+	yaml doc;
+	doc.loadFromFile(fileName);
+	return doc;
+	MRPT_END
+}
+
 void yaml::loadFromStream(std::istream& i)
 {
 	MRPT_START
@@ -777,84 +804,6 @@ void yaml::loadFromStream(std::istream& i)
 
 	this->loadFromText(str);
 	MRPT_END
-}
-
-yaml yaml::FromYAMLCPP(const YAML::Node& n)
-{
-#if MRPT_HAS_YAMLCPP
-	const auto invalidDbl = std::numeric_limits<double>::max();
-
-	if (n.IsSequence())
-	{
-		yaml ret = yaml(Sequence());
-
-		for (const auto& e : n)
-		{
-			if (e.IsNull())
-			{
-				sequence_t& seq =
-					std::get<sequence_t>(ret.dereferenceProxy()->d);
-				seq.push_back(node_t());
-			}
-			else if (e.IsScalar())
-			{
-				if (double v = e.as<double>(invalidDbl); v != invalidDbl)
-					ret.push_back(v);
-				else
-					ret.push_back(e.as<std::string>());
-			}
-			else
-			{
-				// Recursive:
-				ret.push_back(yaml::FromYAMLCPP(e));
-			}
-		}
-		return ret;
-	}
-	else if (n.IsMap())
-	{
-		yaml ret = yaml(yaml::Map());
-
-		for (const auto& kv : n)
-		{
-			const auto& key = kv.first.as<std::string>();
-			const auto& val = kv.second;
-
-			if (val.IsNull())
-			{
-				map_t& m = std::get<map_t>(ret.dereferenceProxy()->d);
-				m[key];
-			}
-			else if (val.IsScalar())
-			{
-				if (double v = val.as<double>(invalidDbl); v != invalidDbl)
-					ret[key] = v;
-				else
-					ret[key] = val.as<std::string>();
-			}
-			else
-			{
-				// Recursive:
-				ret[key] = yaml::FromYAMLCPP(val);
-			}
-		}
-		return ret;
-	}
-	else
-	{
-		THROW_EXCEPTION(
-			"FromYAMLCPP only supports root YAML as sequence "
-			"or map");
-	}
-
-#else
-	THROW_EXCEPTION("MRPT was built without yaml-cpp");
-#endif
-}
-
-void yaml::loadFromYAMLCPP(const YAML::Node& n)
-{
-	*this = yaml::FromYAMLCPP(n);
 }
 
 bool yaml::hasComment() const

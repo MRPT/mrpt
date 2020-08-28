@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/obs/VelodyneCalibration.h>
@@ -19,9 +20,6 @@
 #include <sstream>
 
 #include <mrpt/config.h>
-#if MRPT_HAS_YAMLCPP
-#include <yaml-cpp/yaml.h>
-#endif
 #if MRPT_HAS_TINYXML2
 #include <tinyxml2.h>
 #endif
@@ -239,15 +237,15 @@ bool VelodyneCalibration::loadFromXMLFile(
 
 bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
 {
-#if MRPT_HAS_YAMLCPP
 	try
 	{
-		YAML::Node root = YAML::Load(str);
+		mrpt::containers::yaml root = mrpt::containers::yaml::FromFile(str);
 
 		// Clear previous contents:
 		clear();
 
-		const auto num_lasers = root["num_lasers"].as<unsigned int>(0);
+		const auto num_lasers =
+			root.getOrDefault<unsigned int>("num_lasers", 0);
 		ASSERT_(num_lasers > 0);
 
 		this->laser_corrections.resize(num_lasers);
@@ -255,9 +253,11 @@ bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
 		auto lasers = root["lasers"];
 		ASSERT_EQUAL_(lasers.size(), num_lasers);
 
-		for (auto item : lasers)
+		for (auto it : lasers.asSequence())
 		{
-			const auto id = item["laser_id"].as<unsigned int>(9999999);
+			auto& item = it.asMap();
+
+			const auto id = item["laser_id"].as<unsigned int>();
 			ASSERT_(id < num_lasers);
 
 			PerLaserCalib& plc = laser_corrections[id];
@@ -288,14 +288,10 @@ bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
 				  << "\n";
 		return false;
 	}
-#else
-	THROW_EXCEPTION("This method requires building MRPT with YAML-CPP.");
-#endif
 }
 
 bool VelodyneCalibration::loadFromYAMLFile(const std::string& filename)
 {
-#if MRPT_HAS_YAMLCPP
 	try
 	{
 		std::ifstream f(filename);
@@ -315,9 +311,6 @@ bool VelodyneCalibration::loadFromYAMLFile(const std::string& filename)
 				  << "\n";
 		return false;
 	}
-#else
-	THROW_EXCEPTION("This method requires building MRPT with YAML-CPP.");
-#endif
 }
 
 bool VelodyneCalibration::empty() const { return laser_corrections.empty(); }

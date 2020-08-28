@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config.h>
-#if MRPT_HAS_YAMLCPP
 
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFileMemory.h>
@@ -71,5 +70,3 @@ TEST(ini2yaml, parse)
 	// Note: we don't compare the exact strings since order of keys may vary (?)
 	EXPECT_EQ(sampleCfgTxt_as_yaml_correct.size(), c.getContentAsYAML().size());
 }
-
-#endif  // MRPT_HAS_YAMLCPP

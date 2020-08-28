@@ -18,6 +18,7 @@
 #include <array>
 #include <cstdint>
 #include <iosfwd>
+#include <limits>
 #include <map>
 #include <optional>
 #include <sstream>
@@ -31,8 +32,6 @@
 
 // forward declarations
 // clang-format off
-// For YAMLCPP import:
-namespace YAML { class Node; }
 // For auxiliary proxies:
 namespace mrpt::containers { class yaml;
 namespace internal {
@@ -237,6 +236,19 @@ class yaml
 	 */
 	static yaml FromStream(std::istream& i);
 
+	/** Parses a text as YAML or JSON (autodetected) and stores the contents
+	 * into this document.
+	 *
+	 * \exception std::exception Upon I/O or format errors
+	 */
+	void loadFromFile(const std::string& fileName);
+
+	/** Parses the filename as YAML or JSON (autodetected) and returns a
+	 * document.
+	 * \exception std::exception Upon I/O or format errors.
+	 */
+	static yaml FromFile(const std::string& fileName);
+
 	/** Parses the stream as YAML or JSON (autodetected) and stores the contents
 	 * into this document.
 	 *
@@ -245,12 +257,18 @@ class yaml
 	void loadFromStream(std::istream& i);
 
 	/** Builds an object copying the structure and contents from an existing
-	 * YAMLCPP Node. Requires mrpt built against yamlcpp. */
-	static yaml FromYAMLCPP(const YAML::Node& n);
+	 * YAMLCPP Node. Requires user to #include yamlcpp from your calling program
+	 * (does NOT requires yamlcpp while compiling mrpt itself).
+	 *
+	 * \tparam YAML_NODE Must be `YAML::Node`. Made a template just to avoid
+	 * build-time depedencies.
+	 */
+	template <typename YAML_NODE>
+	static yaml FromYAMLCPP(const YAML_NODE& n);
 
-	/** Imports the structure and contents from an existing
-	 * YAMLCPP Node. Requires mrpt built against yamlcpp. */
-	void loadFromYAMLCPP(const YAML::Node& n);
+	/** \overload (loads an existing YAMLCPP into this) */
+	template <typename YAML_NODE>
+	void loadFromYAMLCPP(const YAML_NODE& n);
 
 	/** @} */
 
@@ -263,8 +281,8 @@ class yaml
 	 * returns true for null(empty) nodes. */
 	bool empty() const;
 
-	/** For map or sequence nodes, clears all elements.
-	 * \exception std::exception If called on a null or scalar node. */
+	/** Resets to empty (can be called on a root node or any other node to clear
+	 * that subtree only). */
 	void clear();
 
 	bool isNullNode() const;
@@ -428,6 +446,7 @@ class yaml
 	{
 		return internal::implAsGetter<T>(*this);
 	}
+
 	/** Returns a ref to the existing or new value of the given type. If types
 	 * do not match, the old content will be discarded and a new variable
 	 * created into this scalar node.
@@ -693,6 +712,83 @@ void yaml::internalPushBack(const T& v)
 	ASSERT_(this->isSequence());
 	sequence_t& seq = asSequence();
 	seq.emplace_back().d.emplace<scalar_t>().emplace<T>(v);
+}
+
+template <typename YAML_NODE>
+yaml yaml::FromYAMLCPP(const YAML_NODE& n)
+{
+	const auto invalidDbl = std::numeric_limits<double>::max();
+
+	if (n.IsSequence())
+	{
+		yaml ret = yaml(Sequence());
+
+		for (const auto& e : n)
+		{
+			if (e.IsNull())
+			{
+				sequence_t& seq =
+					std::get<sequence_t>(ret.dereferenceProxy()->d);
+				seq.push_back(node_t());
+			}
+			else if (e.IsScalar())
+			{
+				if (double v = e.template as<double>(invalidDbl);
+					v != invalidDbl)
+					ret.push_back(v);
+				else
+					ret.push_back(e.template as<std::string>());
+			}
+			else
+			{
+				// Recursive:
+				ret.push_back(yaml::FromYAMLCPP(e));
+			}
+		}
+		return ret;
+	}
+	else if (n.IsMap())
+	{
+		yaml ret = yaml(yaml::Map());
+
+		for (const auto& kv : n)
+		{
+			const auto& key = kv.first.template as<std::string>();
+			const auto& val = kv.second;
+
+			if (val.IsNull())
+			{
+				map_t& m = std::get<map_t>(ret.dereferenceProxy()->d);
+				m[key];
+			}
+			else if (val.IsScalar())
+			{
+				if (double v = val.template as<double>(invalidDbl);
+					v != invalidDbl)
+					ret[key] = v;
+				else
+					ret[key] = val.template as<std::string>();
+			}
+			else
+			{
+				// Recursive:
+				ret[key] = yaml::FromYAMLCPP(val);
+			}
+		}
+		return ret;
+	}
+	else
+	{
+		THROW_EXCEPTION(
+			"FromYAMLCPP only supports root YAML as sequence "
+			"or map");
+	}
+}
+
+template <typename YAML_NODE>
+void yaml::loadFromYAMLCPP(const YAML_NODE& n)
+{
+	*this = yaml::FromYAMLCPP(n);
 }
 
 }  // namespace mrpt::containers

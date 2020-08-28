@@ -31,9 +31,11 @@ void YamlTest_1()
 	p["books"].push_back(10.0);
 
 	std::cout << "K=" << p["K"] << " N=" << p["N"] << "\n";
-	std::cout << "name=" << p["name"]
-			  << " bar=" << p.getOrDefault<std::string>("bar", "default")
-			  << "\n";
+	std::cout << "name=" << p["name"] << "\n";
+
+	// Get a value, or default if not found.
+	// YAMLCPP equivalent: p["bar"].as<std::string>("none")
+	std::cout << "bar=" << p.getOrDefault<std::string>("bar", "none") << "\n";
 
 	// Iterate a dictionary:
 	for (const auto& kv : p.asMap())
