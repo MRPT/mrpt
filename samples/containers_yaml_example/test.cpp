@@ -19,8 +19,14 @@
 
 void YamlTest_1()
 {
-	std::cout << "==== YamlTest_1 ====\n\n";
+	std::cout << "==== YamlTest_1 ====\n";
 
+	// Load from file:
+	// const auto p = mrpt::containers::yaml::FromFile("xxx.yaml");
+	// or load from text block:
+	// const auto p = mrpt::containers::yaml::FromText(txt);
+
+	// or build a document programatically:
 	mrpt::containers::yaml p;
 	p["K"] = 2.0;
 	p["N"] = 10;
@@ -30,8 +36,14 @@ void YamlTest_1()
 	p["books"].push_back("The Hobbit");
 	p["books"].push_back(10.0);
 
+	// You can use {}-initializers as well:
+	p["movies"] = mrpt::containers::yaml::Sequence(
+		{mrpt::containers::yaml::Map({{"title", "xxx"}, {"year", 2001}}),
+		 mrpt::containers::yaml::Map({{"title", "yyy"}, {"year", 1986}})});
+
 	std::cout << "K=" << p["K"] << " N=" << p["N"] << "\n";
 	std::cout << "name=" << p["name"] << "\n";
+	std::cout << "Movie year=" << p["movies"](1)["year"] << "\n";
 
 	// Get a value, or default if not found.
 	// YAMLCPP equivalent: p["bar"].as<std::string>("none")
@@ -40,8 +52,10 @@ void YamlTest_1()
 	// Iterate a dictionary:
 	for (const auto& kv : p.asMap())
 	{
-		std::cout << "key: `" << kv.first
-				  << "` type: " << mrpt::demangle(kv.second.typeName()) << "\n";
+		const std::string key = kv.first.as<std::string>();
+		const auto& valueNode = kv.second;
+		std::cout << "`" << key << "`: " << mrpt::demangle(valueNode.typeName())
+				  << "\n";
 	}
 
 	// Iterate a dictionary bis:
@@ -73,23 +87,32 @@ void YamlTest_1()
 
 void YamlTest_2()
 {
-	std::cout << "\n\n==== YamlTest_2 ====\n\n";
+	std::cout << "\n\n==== YamlTest_2 ====\n";
 
 	// You can use {} to initialize mappings (dictionaries):
-	const mrpt::containers::yaml p = mrpt::containers::yaml::Map(
-		{{"K", 2.0}, {"book", std::string("silmarillion")}});
+	using mrpt::containers::CommentPosition;
+	using mrpt::containers::vcp;
+	using mrpt::containers::vkcp;
 
-	ASSERT_(!p.isSequence());
+	mrpt::containers::yaml p;
+
+	// Insert a key in a map with a "comment" block.
+	p << vkcp("L", 5.5, "Arm length [meters]")
+	  << vkcp("D", 1.0, "Distance [meters]") << vkcp("Y", -5, "Comment for Y");
+
 	ASSERT_(p.isMap());
-	ASSERT_(!p.isNullNode());
-	ASSERT_(p.has("K"));
-	ASSERT_(p["K"].isScalar());
+	ASSERT_(p.has("L"));
+	ASSERT_(p["L"].isScalar());
+	ASSERT_(p.keyHasComment("D"));
 
-	// or a sequence (each element may have a different type)
-	const auto p2 = mrpt::containers::yaml::Sequence({1.0, 2.0, "foo", true});
+	// Add comment associated to value (not key):
+	p["X"] = vcp(1.0, "Default value");
 
-	ASSERT_(p2.isSequence());
+	std::cout << "D key comment: " << p.keyComment("D") << "\n";
+	std::cout << "X value comment: " << p["X"].comment() << "\n";
 
+	// Print:
+	std::cout << "\n\nPrint as YAML:\n";
 	p.printAsYAML(std::cout);
 }
 
@@ -106,7 +129,7 @@ myMap:
 
 void YamlTest_3()
 {
-	std::cout << "\n\n==== YamlTest_3 ====\n\n";
+	std::cout << "\n\n==== YamlTest_3 ====\n";
 
 	// Parse a YAML or JSON text:
 	mrpt::containers::yaml p = mrpt::containers::yaml::FromText(sData);
@@ -121,6 +144,7 @@ void YamlTest_3()
 	// Add values and comments at once:
 	p["myMap"]["foo"] = mrpt::containers::vcp(1.0, "Another constant");
 
+	std::cout << "\n\nPrint as YAML:\n";
 	p.printAsYAML(std::cout);
 }
 //! [example-yaml]

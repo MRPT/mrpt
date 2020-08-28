@@ -42,11 +42,15 @@ add_executable(${PROJECT_NAME}
 	perf-CObservation3DRangeScan.cpp
 	perf-atan2lut.cpp
 	perf-strings.cpp
+	perf-yaml.cpp
 	${MRPT_VERSION_RC_FILE}
 	)
 
-# Add the required libraries for linking:
-
+# Testing.
+if (0)
+	target_link_libraries(${PROJECT_NAME} yaml-cpp)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE RUN_YAMLCPP_COMPARISON)
+endif()
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
