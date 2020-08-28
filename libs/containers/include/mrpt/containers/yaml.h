@@ -742,7 +742,7 @@ yaml yaml::FromYAMLCPP(const YAML_NODE& n)
 			else
 			{
 				// Recursive:
-				ret.push_back(yaml::FromYAMLCPP(e));
+				ret.push_back(yaml::FromYAMLCPP(YAML_NODE(e)));
 			}
 		}
 		return ret;
@@ -772,7 +772,7 @@ yaml yaml::FromYAMLCPP(const YAML_NODE& n)
 			else
 			{
 				// Recursive:
-				ret[key] = yaml::FromYAMLCPP(val);
+				ret[key] = yaml::FromYAMLCPP(YAML_NODE(val));
 			}
 		}
 		return ret;
