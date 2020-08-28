@@ -15,7 +15,6 @@
 
 #include <Eigen/Dense>
 
-
 using namespace mrpt;
 using namespace mrpt::tfest;
 using namespace mrpt::poses;

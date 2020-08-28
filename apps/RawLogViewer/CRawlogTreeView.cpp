@@ -106,7 +106,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 	{
 		CRawlog::iterator end_it = m_rawlog->end();
 		size_t rawlog_index = 0;
-		for (const auto &entry : *m_rawlog)
+		for (const auto& entry : *m_rawlog)
 		{
 			m_tree_nodes.emplace_back();
 			TNodeData& dEntry = m_tree_nodes.back();
@@ -117,8 +117,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			// For containers, go recursively:
 			if (entry->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
 			{
-				auto sf =
-					std::dynamic_pointer_cast<CSensoryFrame>(entry);
+				auto sf = std::dynamic_pointer_cast<CSensoryFrame>(entry);
 				for (auto& o : *sf)
 				{
 					m_tree_nodes.emplace_back();
@@ -136,8 +135,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			}
 			else if (entry->GetRuntimeClass() == CLASS_ID(CActionCollection))
 			{
-				auto acts =
-					std::dynamic_pointer_cast<CActionCollection>(entry);
+				auto acts = std::dynamic_pointer_cast<CActionCollection>(entry);
 				for (auto& a : *acts)
 				{
 					m_tree_nodes.emplace_back();
@@ -156,8 +154,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			else if (entry->GetRuntimeClass()->derivedFrom(
 						 CLASS_ID(CObservation)))
 			{
-				auto o =
-					std::dynamic_pointer_cast<CObservation>(entry);
+				auto o = std::dynamic_pointer_cast<CObservation>(entry);
 				if (o->timestamp != INVALID_TIMESTAMP)
 				{
 					m_rawlog_last = o->timestamp;

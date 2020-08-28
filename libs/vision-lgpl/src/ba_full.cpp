@@ -57,8 +57,8 @@ double mrpt::vision::bundle_adj_full(
 	MRPT_START
 
 	// Generic BA problem dimension numbers:
-	static const unsigned int FrameDof = 6;	 // Poses: x y z yaw pitch roll
-	static const unsigned int PointDof = 3;	 // Landmarks: x y z
+	static const unsigned int FrameDof = 6;  // Poses: x y z yaw pitch roll
+	static const unsigned int PointDof = 3;  // Landmarks: x y z
 	static const unsigned int ObsDim = 2;  // Obs: x y (pixels)
 
 	// Typedefs for this specific BA problem:
@@ -133,7 +133,7 @@ double mrpt::vision::bundle_adj_full(
 	profiler.enter("reprojectionResiduals");
 	double res = mrpt::vision::reprojectionResiduals(
 		observations, camera_params, frame_poses, landmark_points, residual_vec,
-		INV_POSES_BOOL,	 // are poses inverse?
+		INV_POSES_BOOL,  // are poses inverse?
 		use_robust_kernel, kernel_param,
 		use_robust_kernel ? &kernel_1st_deriv : nullptr);
 	profiler.leave("reprojectionResiduals");
@@ -166,7 +166,7 @@ double mrpt::vision::bundle_adj_full(
 	profiler.leave("build_gradient_Hessians");
 
 	double nu = 2;
-	double eps = 1e-16;	 // 0.000000000000001;
+	double eps = 1e-16;  // 0.000000000000001;
 	bool stop = false;
 	double mu = initial_mu;
 
@@ -267,7 +267,7 @@ double mrpt::vision::bundle_adj_full(
 				YW_map[std::pair<TCameraPoseID, TLandmarkID>(i, i)] = U_star[i];
 
 			CVectorDouble delta(
-				len_free_frames + len_free_points);	 // The optimal step
+				len_free_frames + len_free_points);  // The optimal step
 			CVectorDouble e(len_free_frames);
 
 			profiler.enter("Schur.build.reduced.frames");
@@ -283,7 +283,7 @@ double mrpt::vision::bundle_adj_full(
 				const size_t i =
 					Y_ij->first.second - num_fix_points;  // point index
 				const size_t j =
-					Y_ij->first.first - num_fix_frames;	 // frame index
+					Y_ij->first.first - num_fix_frames;  // frame index
 
 				const vector<WMap::iterator>& iters =
 					W_entries[point_id];  //->second;
@@ -303,7 +303,7 @@ double mrpt::vision::bundle_adj_full(
 
 					auto it = YW_map.find(ids_jk);
 					if (it != YW_map.end())
-						it->second -= YWt;	// += (-YWt);
+						it->second -= YWt;  // += (-YWt);
 					else
 						YW_map[ids_jk] = -YWt;
 				}
@@ -347,7 +347,7 @@ double mrpt::vision::bundle_adj_full(
 
 				profiler.enter("sS:backsub");
 				CVectorDouble bck_res;
-				ptrCh->backsub(e, bck_res);	 // Ax = b -->  delta= x*
+				ptrCh->backsub(e, bck_res);  // Ax = b -->  delta= x*
 				::memcpy(
 					&delta[0], &bck_res[0],
 					bck_res.size() * sizeof(bck_res[0]));  // delta.slice(0,...)
@@ -372,7 +372,7 @@ double mrpt::vision::bundle_adj_full(
 				&g[0], &e[0],
 				len_free_frames *
 					sizeof(
-						g[0]));	 // g.slice(0,FrameDof*(num_frames-num_fix_frames))
+						g[0]));  // g.slice(0,FrameDof*(num_frames-num_fix_frames))
 			// = e;
 
 			for (size_t i = 0; i < num_free_points; ++i)
@@ -426,7 +426,7 @@ double mrpt::vision::bundle_adj_full(
 			double res_new = mrpt::vision::reprojectionResiduals(
 				observations, camera_params, new_frame_poses,
 				new_landmark_points, new_residual_vec,
-				INV_POSES_BOOL,	 // are poses inverse?
+				INV_POSES_BOOL,  // are poses inverse?
 				use_robust_kernel, kernel_param,
 				use_robust_kernel ? &new_kernel_1st_deriv : nullptr);
 			profiler.leave("reprojectionResiduals");
