@@ -49,4 +49,6 @@ if(BUILD_mrpt-ros1bridge)
 		${pcl_conversions_INCLUDE_DIRS}
 		${tf2_INCLUDE_DIRS}
 	)
+	target_compile_definitions(ros1bridge PRIVATE ${ROS_DEFINITIONS})
+
 endif()
