@@ -807,39 +807,43 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 	const auto& expectedType = typeid(T);
 	const auto& storedType = s.type();
 
+	// 1) Exact match?
 	if (storedType == expectedType) return std::any_cast<const T&>(s);
 
-	if constexpr (std::is_convertible_v<int, T>)
-	{
-		if (storedType == typeid(std::string))
-		{
-			const std::string str = implAnyAsGetter<std::string>(s);
-			// Recognize hex or octal prefixes:
-			try
-			{
-				std::size_t processed = 0;
-				T ret = static_cast<T>(
-					std::stol(str, &processed, 0 /*auto detect base*/));
-				if (processed > 0) return ret;
-			}
-			catch (...)
-			{ /*Invalid number*/
-			}
-		}
-	}
-	if constexpr (std::is_convertible_v<double, T>)
+	// 2) Recognize double/float:
+	if constexpr (std::is_same_v<T, double> || std::is_same_v<T, float>)
 	{
 		if (storedType == typeid(double))
 			return static_cast<T>(implAnyAsGetter<double>(s));
-	}
-	if constexpr (std::is_convertible_v<T, double>)
-	{
+		else if (storedType == typeid(float))
+			return static_cast<T>(implAnyAsGetter<float>(s));
+
 		std::stringstream ss;
 		yaml::internalPrintAsYAML(s, ss, 0, true, false, {}, false);
 		T ret;
 		ss >> ret;
 		if (!ss.fail()) return ret;
 	}
+
+	// 3) Integers. Recognize hex or octal prefixes with stol()
+	if constexpr (std::is_convertible_v<int, T>)
+	{
+		std::stringstream ss;
+		yaml::internalPrintAsYAML(s, ss, 0, true, false, {}, false);
+		const std::string str = ss.str();
+		try
+		{
+			std::size_t processed = 0;
+			T ret = static_cast<T>(
+				std::stol(str, &processed, 0 /*auto detect base*/));
+			if (processed > 0) return ret;
+		}
+		catch (...)
+		{ /*Invalid number*/
+		}
+	}
+
+	// 4) Strings:
 	if constexpr (std::is_convertible_v<std::string, T>)
 	{
 		if (expectedType == typeid(std::string))
@@ -849,6 +853,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 			return ss.str();
 		}
 	}
+	// 5) bool:
 	if constexpr (std::is_same_v<T, bool>)
 	{
 		if (storedType == typeid(std::string))
@@ -859,6 +864,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		}
 	}
 
+	// No known way to convert it:
 	THROW_EXCEPTION_FMT(
 		"Trying to access scalar of type `%s` as if it was "
 		"`%s` and no obvious conversion found.",
