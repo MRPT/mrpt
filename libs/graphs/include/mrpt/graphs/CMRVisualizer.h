@@ -48,12 +48,10 @@ class CMRVisualizer
 	~CMRVisualizer() override;
 	void drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::containers::yaml* viz_params =
-			nullptr) const override;
+		const mrpt::containers::yaml* viz_params = nullptr) const override;
 	void drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::containers::yaml* viz_params =
-			nullptr) const override;
+		const mrpt::containers::yaml* viz_params = nullptr) const override;
 
    private:
 };

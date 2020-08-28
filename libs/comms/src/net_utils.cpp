@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"	// Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 //
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CServerTCPSocket.h>
@@ -441,14 +441,14 @@ bool net::DNS_resolve_async(
 			hostent* he = gethostbyname(server_name.c_str());
 			if (!he)
 			{
-				dns_result.clear();	 // empty string -> error.
+				dns_result.clear();  // empty string -> error.
 			}
 			else
 			{
 				struct in_addr ADDR;
 				std::memcpy(
 					&ADDR, he->h_addr,
-					sizeof(ADDR));	// Was: *((struct in_addr *)he->h_addr);
+					sizeof(ADDR));  // Was: *((struct in_addr *)he->h_addr);
 				// Convert address to text:
 				dns_result = string(inet_ntoa(ADDR));
 			}
