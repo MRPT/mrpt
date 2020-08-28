@@ -14,6 +14,5 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-config)
-	target_link_libraries(config PRIVATE ${LIBYAMLCPP_LIBRARIES})
-	target_include_directories(config PRIVATE ${LIBYAMLCPP_INCLUDE_DIRS})
+
 endif()

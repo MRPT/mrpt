@@ -13,9 +13,6 @@ set_property(GLOBAL PROPERTY mrpt_containers_UNIT_TEST_EXTRA_DEPS mrpt-random mr
 
 if(BUILD_mrpt-containers)
 
-	target_link_libraries(containers PRIVATE ${LIBYAMLCPP_LIBRARIES})
-	target_include_directories(containers PRIVATE ${LIBYAMLCPP_INCLUDE_DIRS})
-
 	if (TARGET mrpt_libfyaml)
 		target_link_libraries(containers PRIVATE mrpt_libfyaml)
 	endif()

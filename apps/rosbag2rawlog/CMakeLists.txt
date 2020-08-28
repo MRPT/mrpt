@@ -1,6 +1,5 @@
 
-
-if(NOT (CMAKE_MRPT_HAS_YAMLCPP AND TARGET ros1bridge))
+if(NOT TARGET ros1bridge)
 	return()
 endif()
 
@@ -22,7 +21,6 @@ target_link_libraries(${PROJECT_NAME}
 	${rosbag_storage_LIBRARIES}
 	${cv_bridge_LIBRARIES}
 	${tf2_LIBRARIES}
-	${LIBYAMLCPP_LIBRARIES}
 )
 
 target_include_directories(${PROJECT_NAME}

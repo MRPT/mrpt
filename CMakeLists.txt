@@ -272,7 +272,6 @@ include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyRes
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
-include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 
 # ---------------------------------------------------------------------------
