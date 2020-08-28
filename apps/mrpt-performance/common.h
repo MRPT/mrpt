@@ -15,6 +15,7 @@
 #include <mrpt/obs/obs_frwds.h>  // CObservation2DRangeScan
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
+
 #include <functional>
 #include <list>
 
@@ -45,6 +46,7 @@ void register_tests_CObservation3DRangeScan();
 void register_tests_atan2lut();
 void register_tests_strings();
 void register_tests_octomaps();
+void register_tests_yaml();
 // -------------------------------------------------
 
 using TestFunctor =
