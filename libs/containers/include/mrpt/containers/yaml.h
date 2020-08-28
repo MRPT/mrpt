@@ -264,11 +264,11 @@ class yaml
 	 * build-time depedencies.
 	 */
 	template <typename YAML_NODE>
-	static yaml FromYAMLCPP(const YAML_NODE& n);
+	inline static yaml FromYAMLCPP(const YAML_NODE& n);
 
 	/** \overload (loads an existing YAMLCPP into this) */
 	template <typename YAML_NODE>
-	void loadFromYAMLCPP(const YAML_NODE& n);
+	inline void loadFromYAMLCPP(const YAML_NODE& n);
 
 	/** @} */
 
@@ -316,6 +316,12 @@ class yaml
 	/** Returns 1 for null or scalar nodes, the number of children for sequence
 	 * or map nodes. */
 	size_t size() const;
+
+	/** For a master yaml document, returns the root node; otherwise, the
+	 * referenced node. */
+	node_t& node() { return root_; }
+	/** \overload */
+	const node_t& node() const { return root_; }
 
 	/** @} */
 
@@ -715,7 +721,7 @@ void yaml::internalPushBack(const T& v)
 }
 
 template <typename YAML_NODE>
-yaml yaml::FromYAMLCPP(const YAML_NODE& n)
+inline yaml yaml::FromYAMLCPP(const YAML_NODE& n)
 {
 	const auto invalidDbl = std::numeric_limits<double>::max();
 
@@ -786,7 +792,7 @@ yaml yaml::FromYAMLCPP(const YAML_NODE& n)
 }
 
 template <typename YAML_NODE>
-void yaml::loadFromYAMLCPP(const YAML_NODE& n)
+inline void yaml::loadFromYAMLCPP(const YAML_NODE& n)
 {
 	*this = yaml::FromYAMLCPP(n);
 }
