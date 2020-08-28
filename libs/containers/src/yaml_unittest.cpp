@@ -159,6 +159,9 @@ TEST(yaml, initializerSequence)
 	EXPECT_THROW(seq1(3), std::out_of_range);
 	EXPECT_THROW(seq1(-1), std::out_of_range);
 
+	EXPECT_EQ(seq1.size(), 3U);
+	EXPECT_EQ(seq1(0).size(), 1U);
+
 	auto seq2 = mrpt::containers::yaml({1.0, 2.0, 3.0});
 	EXPECT_EQ(seq2(1).as<double>(), 2.0);
 
@@ -208,7 +211,7 @@ TEST(yaml, nested2)
 {
 	mrpt::containers::yaml p;
 	p["N"] = 10;
-	auto& pid = p["PID"] = mrpt::containers::yaml();
+	auto& pid = p["PID"] = mrpt::containers::yaml::Map();
 	pid["Kp"] = 0.5;
 	p["PID"]["Ti"] = 2.0;
 	p["PID"]["N"] = 1000;
@@ -218,6 +221,9 @@ TEST(yaml, nested2)
 	EXPECT_EQ(p["PID"]["Ti"].as<double>(), 2.0);
 	EXPECT_EQ(p["PID"]["N"].as<uint64_t>(), 1000U);
 	EXPECT_EQ(p["PID"]["name"].as<std::string>(), std::string("foo"));
+
+	EXPECT_EQ(p.size(), 2U);
+	EXPECT_EQ(p["PID"].size(), 4U);
 }
 
 const mrpt::containers::yaml testMap = mrpt::containers::yaml::Map(
@@ -266,6 +272,8 @@ TEST(yaml, ctorMap)
 
 TEST(yaml, comments)
 {
+	using mrpt::containers::CommentPosition;
+
 	try
 	{
 		mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
@@ -289,9 +297,21 @@ TEST(yaml, comments)
 		EXPECT_TRUE(c1["L"].hasComment());
 		EXPECT_EQ(c1["L"].comment(), "Arm length [meters]");
 
+		c1["D"] = vcp(3.0, "Distance [meters]", CommentPosition::RIGHT);
+		EXPECT_TRUE(c1["D"].hasComment());
+		EXPECT_EQ(c1["D"].comment(CommentPosition::RIGHT), "Distance [meters]");
+
 		mrpt::containers::yaml c2 = mrpt::containers::yaml::Map();
 		c2["constants"] = c1;
 		c2["constants"].comment("Universal constant definitions:");
+		c2["constants"].comment("Another comment", CommentPosition::RIGHT);
+
+		EXPECT_TRUE(
+			c2["constants"].comment(CommentPosition::RIGHT) ==
+			"Another comment");
+		EXPECT_TRUE(
+			c2["constants"].comment(CommentPosition::TOP) ==
+			"Universal constant definitions:");
 
 		c2.printAsYAML(std::cout);
 	}
@@ -497,6 +517,28 @@ const auto sampleJSONBlock_1 = std::string(R"xxx(
 {"store":{"book":[{"category":"reference","author":"Nigel Rees","title":"Sayings of the Century","price":8.95},{"category":"fiction","author":"Evelyn Waugh","title":"Sword of Honour","price":12.99},{"category":"fiction","author":"J. R. R. Tolkien","title":"The Lord of the Rings","isbn":"0-395-19395-8","price":22.99}],"bicycle":{"color":"red","price":19.95}}}
 )xxx");
 
+const auto sampleJSONBlock_2 = std::string(R"xxx(
+{
+  "data": [{
+    "type": "articles",
+    "id": "1",
+    "attributes": {
+      "title": "JSON:API paints my bikeshed!",
+      "body": "The shortest article. Ever."
+    }
+  }],
+  "included": [
+    {
+      "type": "people",
+      "id": "42",
+      "attributes": {
+        "name": "John"
+      }
+    }
+  ]
+}
+)xxx");
+
 // clang-format on
 
 TEST(yaml, fromJSON)
@@ -509,6 +551,14 @@ TEST(yaml, fromJSON)
 
 			EXPECT_TRUE(p.has("store"));
 			EXPECT_EQ(p["store"]["bicycle"]["color"].as<std::string>(), "red");
+		}
+		{
+			const auto p = mrpt::containers::yaml::FromText(sampleJSONBlock_2);
+			// p.printAsYAML(std::cout);
+
+			EXPECT_TRUE(p.has("data"));
+			EXPECT_EQ(p["data"](0)["id"].as<std::string>(), "1");
+			EXPECT_EQ(p["included"](0)["id"].as<int>(), 42);
 		}
 	}
 	catch (const std::exception& e)
