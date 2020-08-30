@@ -15,7 +15,9 @@
 //  Started: HL @ SEPT-2018
 // ===========================================================================
 
+#include <cv_bridge/cv_bridge.h>
 #include <mrpt/3rdparty/tclap/CmdLine.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -25,19 +27,15 @@
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/ros1bridge/imu.h>
+#include <mrpt/ros1bridge/point_cloud2.h>
+#include <mrpt/ros1bridge/time.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/ros1bridge/imu.h>
-#include <mrpt/ros1bridge/point_cloud2.h>
-#include <mrpt/ros1bridge/time.h>
-
-#include <rosbag/bag.h>  // rosbag_storage C++ lib
+#include <rosbag/bag.h>	 // rosbag_storage C++ lib
 #include <rosbag/view.h>
-
-#include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/Imu.h>
@@ -46,8 +44,6 @@
 #include <tf2/buffer_core.h>
 #include <tf2/exceptions.h>
 #include <tf2_msgs/TFMessage.h>
-
-#include <mrpt/containers/yaml.h>
 
 #include <memory>
 
@@ -359,7 +355,7 @@ class Transcriber
 
 		for (auto& sensorNode : config["sensors"].asMap())
 		{
-			auto sensorName = sensorNode.first;
+			auto sensorName = sensorNode.first.as<std::string>();
 			auto& sensor = sensorNode.second.asMap();
 			const auto sensorType = sensor.at("type").as<std::string>();
 
