@@ -12,6 +12,8 @@
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFileMemory.h>
 
+#if MRPT_HAS_FYAML
+
 // clang-format off
 const auto sampleYamlTxt = std::string(R"xxx(
 # example YAML config file from a std::string
@@ -70,3 +72,4 @@ TEST(ini2yaml, parse)
 	// Note: we don't compare the exact strings since order of keys may vary (?)
 	EXPECT_EQ(sampleCfgTxt_as_yaml_correct.size(), c.getContentAsYAML().size());
 }
+#endif

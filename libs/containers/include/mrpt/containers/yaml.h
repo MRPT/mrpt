@@ -9,6 +9,8 @@
 #pragma once
 
 #include <mrpt/containers/ValueCommentPair.h>
+#include <mrpt/containers/YamlEmitOptions.h>
+#include <mrpt/containers/internal_yaml_fwrds.h>
 #include <mrpt/core/bits_math.h>  // mrpt::RAD2DEG
 #include <mrpt/core/demangle.h>
 #include <mrpt/core/exceptions.h>
@@ -30,26 +32,17 @@
 #include <variant>
 #include <vector>
 
-// forward declarations
-// clang-format off
-// For auxiliary proxies:
-namespace mrpt::containers { class yaml;
-namespace internal {
- enum tag_as_proxy_t {}; enum tag_as_const_proxy_t {};
- template <typename T> T implAsGetter(const yaml& p);
- template <typename T> T implAnyAsGetter(const std::any& p);
-}
-// clang-format on
-
 /** \defgroup mrpt_containers_yaml YAML/JSON C++ API
  * Header: `#include <mrpt/containers/yaml.h>`.
  * Library: \ref mrpt_containers_grp
  * \ingroup mrpt_containers_grp */
 
+namespace mrpt::containers
+{
 /** Powerful YAML-like container for possibly-nested blocks of parameters or
  *any arbitrary structured data contents, including documentation in the
  *form of comments attached to each node. Supports parsing from YAML or JSON
- *streams or text blocks.
+ *streams, files, or text strings.
  *
  * This class holds the root "node" in a YAML-like tree structure.
  * Each tree node can be of one of these types:
@@ -65,12 +58,15 @@ namespace internal {
  *arbitrarialy-complex parameter blocks but can be used to load and save
  *YAML files or as a database.
  *
- * `yaml` can be used to parse and emit YAML or JSON streams.
+ * yaml can be used to parse YAML (v1.2) or JSON streams, and to emit YAML.
  * It does not support event-based parsing.
- * Parsing YAML 1.2 is supported thanks to
- *[libfyaml](https://github.com/pantoniou/libfyaml), which
+ * The parser uses [libfyaml](https://github.com/pantoniou/libfyaml), which
  *[passes](http://matrix.yaml.io/) the full [YAML
  *testsuite](https://github.com/yaml/yaml-test-suite).
+ *
+ * Known limitations:
+ * - *Parsing* comments is limited to right-hand comments for *sequence* or
+ **map* entries.
  *
  * See example in \ref containers_yaml_example/test.cpp
  * \snippet containers_yaml_example/test.cpp example-yaml
@@ -86,13 +82,13 @@ class yaml
 	/** @name Types
 	 * @{ */
 
-	using scalar_t = std::any;
-	using parameter_proxiedMapEntryName_t = std::string;
-
 	struct node_t;
-
+	using scalar_t = std::any;
 	using sequence_t = std::vector<node_t>;
-	using map_t = std::map<parameter_proxiedMapEntryName_t, node_t>;
+	using map_t = std::map<node_t, node_t, std::less<> /*transparent comp*/>;
+
+	using comments_t = std::array<
+		std::optional<std::string>, static_cast<size_t>(CommentPosition::MAX)>;
 
 	struct node_t
 	{
@@ -100,10 +96,7 @@ class yaml
 		std::variant<std::monostate, sequence_t, map_t, scalar_t> d;
 
 		/** Optional comment block */
-		std::array<
-			std::optional<std::string>,
-			static_cast<size_t>(CommentPosition::MAX)>
-			comments;
+		comments_t comments;
 
 		node_t() = default;
 		~node_t() = default;
@@ -121,7 +114,9 @@ class yaml
 		/** Specialization for literals */
 		node_t(const char* str)
 		{
-			d.emplace<scalar_t>().emplace<const char*>(str);
+			// Storing char* is not safe if it points to temporary
+			// memory or a stack zone (!):
+			d.emplace<scalar_t>().emplace<std::string>(str);
 		}
 
 		node_t(std::initializer_list<map_t::value_type> init)
@@ -175,6 +170,31 @@ class yaml
 					"available for `scalar` nodes.",
 					typeName().c_str()));
 			return internal::implAnyAsGetter<T>(std::get<scalar_t>(d));
+		}
+
+		const std::string_view internalAsStr() const
+		{
+			ASSERT_(isScalar());
+			if (const char* const* s = std::any_cast<const char*>(&asScalar());
+				s != nullptr)
+			{
+				return {*s};
+			}
+			if (const std::string* s = std::any_cast<std::string>(&asScalar());
+				s != nullptr)
+			{
+				return {*s};
+			}
+			if (const std::string_view* s =
+					std::any_cast<std::string_view>(&asScalar());
+				s != nullptr)
+			{
+				return {*s};
+			}
+			THROW_EXCEPTION_FMT(
+				"Used node_t as map key with a type non-convertible to string: "
+				"'%s'",
+				typeName().c_str());
 		}
 	};
 
@@ -323,34 +343,54 @@ class yaml
 	/** \overload */
 	const node_t& node() const { return *dereferenceProxy(); }
 
+	/** Maps only: returns a reference to the key node of a key-value pair.
+	 * \exception std::exception If called on a non-map node or key does not
+	 * exist.
+	 */
+	const node_t& keyNode(const std::string& keyName) const;
+	node_t& keyNode(const std::string& keyName);
+
 	/** @} */
 
 	/** @name Print and export
 	 * @{ */
-	void printAsYAML(std::ostream& o, bool debugInfo = false) const;
-	void printAsYAML() const;  //!< prints to std::cout
+
+	/** Prints the document in YAML format to the given stream. */
+	void printAsYAML(std::ostream& o, const YamlEmitOptions& eo = {}) const;
+
+	/// \overload (prints to std::cout)
+	void printAsYAML() const;
+
+	/** Prints a tree-like representation of all nodes in the document in a
+	 * custom format (nor YAML neither JSON). */
+	void printDebugStructure(std::ostream& o) const;
+
 	/** @} */
 
 	/** @name Read/write to maps (dictionaries)
 	 * @{ */
 
 	/** Write access for maps */
-	yaml operator[](const char* key);
+	yaml operator[](const std::string& key);
 	/// \overload
-	inline yaml operator[](const std::string& key)
+	inline yaml operator[](const char* key)
 	{
-		return operator[](key.c_str());
+		ASSERT_(key != nullptr);
+		return operator[](std::string(key));
 	}
 
 	/** Read access  for maps
 	 * \throw std::runtime_error if key does not exist. */
-	const yaml operator[](const char* key) const;
+	const yaml operator[](const std::string& key) const;
 	/// \overload
-	inline const yaml operator[](const std::string& key) const
+	inline const yaml operator[](const char* key) const
 	{
-		return operator[](key.c_str());
+		ASSERT_(key != nullptr);
+		return operator[](std::string(key));
 	}
-	/** Scalar read access for maps, with default value if key does not exist.
+
+	/** Scalar read access for maps, with default value if key does not
+	 * exist.
 	 */
 	template <typename T>
 	const T getOrDefault(const std::string& key, const T& defaultValue) const
@@ -412,7 +452,7 @@ class yaml
 	bool isConstProxy_ = false;
 
 	// Proxy members:
-	const char* proxiedMapEntryName_ = nullptr;
+	const std::string proxiedMapEntryName_;
 	const node_t* proxiedNode_ = nullptr;
 
 	/** @name Internal proxy
@@ -423,7 +463,8 @@ class yaml
 	const node_t* dereferenceProxy() const;
 	node_t* dereferenceProxy();
 
-	explicit yaml(internal::tag_as_proxy_t, node_t& val, const char* name)
+	explicit yaml(
+		internal::tag_as_proxy_t, node_t& val, const std::string& name)
 		: isProxy_(true),
 		  isConstProxy_(false),
 		  proxiedMapEntryName_(name),
@@ -431,7 +472,8 @@ class yaml
 	{
 	}
 	explicit yaml(
-		internal::tag_as_const_proxy_t, const node_t& val, const char* name)
+		internal::tag_as_const_proxy_t, const node_t& val,
+		const std::string& name)
 		: isProxy_(true),
 		  isConstProxy_(true),
 		  proxiedMapEntryName_(name),
@@ -441,6 +483,9 @@ class yaml
 	/** @} */
 
    public:
+	/** @name Getters / setters
+	 * @{ */
+
 	/** Returns a copy of the existing value of the given type, or tries to
 	 * convert it between easily-compatible types (e.g. double<->int,
 	 * string<->int).
@@ -494,7 +539,28 @@ class yaml
 	yaml& operator=(const ValueCommentPair<T>& vc)
 	{
 		this->comment(vc.comment, vc.position);
-		return operator=(vc.value);
+		operator=(vc.value);
+		return *this;
+	}
+
+	/** vkcp (value-keyComment) wrapper */
+	template <typename T>
+	yaml& operator<<(const ValueKeyCommentPair<T>& vc)
+	{
+		// Init as map on first use:
+		if (isNullNode()) node().d.emplace<map_t>();
+		ASSERTMSG_(
+			isMap(),
+			"<< operator with ValueKeyCommentPair requires a map (dictionary) "
+			"on the left hand.");
+		operator[](vc.keyname) = vc.value;
+		// keyComment:
+		int posIndex = static_cast<int>(vc.position);
+		ASSERT_GE_(posIndex, 0);
+		ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+		auto& n = keyNode(vc.keyname);
+		n.comments[posIndex].emplace(vc.comment);
+		return *this;
 	}
 
 	inline operator bool() const { return as<bool>(); }
@@ -512,6 +578,10 @@ class yaml
 	inline operator uint64_t() const { return as<uint64_t>(); }
 
 	inline operator std::string() const { return as<std::string>(); }
+	/** @} */
+
+	/** @name Leaf node comments API
+	 * @{ */
 
 	/** Returns true if the proxied node has an associated comment block, at any
 	 * location */
@@ -522,7 +592,7 @@ class yaml
 	bool hasComment(CommentPosition pos) const;
 
 	/** Gets the comment associated to the proxied node. This version returns
-	 * the first comment, of all possible (top, right,...).
+	 * the first comment, of all possible (top, right).
 	 *
 	 * \exception std::exception If there is no comment attached.
 	 * \sa hasComment()
@@ -530,7 +600,7 @@ class yaml
 	const std::string& comment() const;
 
 	/** Gets the comment associated to the proxied node, at the particular
-	 * position.
+	 * position. See code examples in mrpt::containers::yaml.
 	 *
 	 * \exception std::exception If there is no comment attached.
 	 * \sa hasComment()
@@ -538,12 +608,60 @@ class yaml
 	const std::string& comment(CommentPosition pos) const;
 
 	/** Sets the comment attached to a given proxied node.
-	 * \exception std::exception If there is no comment attached.
+	 * See code examples in mrpt::containers::yaml
 	 * \sa hasComment()
 	 */
 	void comment(
-		const std::string_view& c,
+		const std::string& c,
+		CommentPosition position = CommentPosition::RIGHT);
+
+	/** @} */
+
+	/** @name Map key node comments API
+	 * @{ */
+
+	/** Maps only: returns true if the given key node has an associated comment
+	 * block, at any location.
+	 * \exception std::exception If called on a non-map or key does not exist.
+	 */
+	bool keyHasComment(const std::string& key) const;
+
+	/** Maps only: Returns true if the given key has an associated comment block
+	 * at a particular position.
+	 * \exception std::exception If called on a non-map or key does not exist.
+	 */
+	bool keyHasComment(const std::string& key, CommentPosition pos) const;
+
+	/** Maps only: Gets the comment associated to the given key. This version
+	 * returns the first comment, of all possible (top, right).
+	 *
+	 * \exception std::exception If called on a non-map or key does not exist.
+	 * \exception std::exception If there is no comment attached.
+	 * \sa hasComment()
+	 */
+	const std::string& keyComment(const std::string& key) const;
+
+	/** Maps only: Gets the comment associated to the given key, at the
+	 * particular position. See code examples in mrpt::containers::yaml.
+	 *
+	 * \exception std::exception If called on a non-map or key does not exist.
+	 * \exception std::exception If there is no comment attached.
+	 * \sa hasComment()
+	 */
+	const std::string& keyComment(
+		const std::string& key, CommentPosition pos) const;
+
+	/** Maps only: Sets the comment attached to a given key.
+	 * See code examples in mrpt::containers::yaml
+	 *
+	 * \exception std::exception If called on a non-map or key does not exist.
+	 * \sa hasComment()
+	 */
+	void keyComment(
+		const std::string& key, const std::string& c,
 		CommentPosition position = CommentPosition::TOP);
+
+	/** @} */
 
    private:
 	template <typename T>
@@ -551,29 +669,40 @@ class yaml
 	template <typename T>
 	friend T internal::implAnyAsGetter(const scalar_t& p);
 
+	struct InternalPrintState
+	{
+		YamlEmitOptions eo;
+
+		int indent = 0;
+		bool needsNL = false;
+		bool needsSpace = false;
+	};
+
 	// Return: true if the last printed char is a newline char
 	static bool internalPrintNodeAsYAML(
-		const node_t& p, std::ostream& o, int indent, bool first,
-		bool debugInfo, bool needsSpace);
+		const node_t& p, std::ostream& o, const InternalPrintState& ps);
+
+	static void internalPrintDebugStructure(
+		const node_t& p, std::ostream& o, int indent);
 
 	template <typename T>
 	void internalPushBack(const T& v);
 
 	static bool internalPrintAsYAML(
-		const std::monostate&, std::ostream& o, int indent, bool first,
-		bool debugInfo, const std::optional<std::string>& rightComment,
-		bool needsSpace);
+		const std::monostate&, std::ostream& o, const InternalPrintState& ps,
+		const comments_t& cs);
 	static bool internalPrintAsYAML(
-		const sequence_t& v, std::ostream& o, int indent, bool first,
-		bool debugInfo, const std::optional<std::string>& rightComment,
-		bool needsSpace);
+		const sequence_t& v, std::ostream& o, const InternalPrintState& ps,
+		const comments_t& cs);
 	static bool internalPrintAsYAML(
-		const map_t& v, std::ostream& o, int indent, bool first, bool debugInfo,
-		const std::optional<std::string>& rightComment, bool needsSpace);
+		const map_t& v, std::ostream& o, const InternalPrintState& ps,
+		const comments_t& cs);
 	static bool internalPrintAsYAML(
-		const scalar_t& v, std::ostream& o, int indent, bool first,
-		bool debugInfo, const std::optional<std::string>& rightComment,
-		bool needsSpace);
+		const scalar_t& v, std::ostream& o, const InternalPrintState& ps,
+		const comments_t& cs);
+	static bool internalPrintStringScalar(
+		const std::string& s, std::ostream& o, const InternalPrintState& ps,
+		const comments_t& cs);
 
 	/** Impl of operator=() */
 	template <typename T>
@@ -593,7 +722,11 @@ class yaml
 };
 
 /** Prints a scalar, a part of a yaml tree, or the entire structure,
- * in YAML-like format */
+ * in YAML-like format. This version does NOT emit neither the YAML header nor
+ * the final end line.
+ *
+ * \sa yaml::PrintAsYAML
+ */
 std::ostream& operator<<(std::ostream& o, const yaml& p);
 
 /** Macro to load a variable from a mrpt::containers::yaml (initials MCP)
@@ -706,7 +839,8 @@ const T& yaml::asRef() const
 		THROW_EXCEPTION_FMT(
 			"Trying to read parameter `%s` of type `%s` as if it was "
 			"`%s` and no obvious conversion found.",
-			proxiedMapEntryName_, mrpt::demangle(storedType.name()).c_str(),
+			proxiedMapEntryName_.c_str(),
+			mrpt::demangle(storedType.name()).c_str(),
 			mrpt::demangle(expectedType.name()).c_str());
 
 	return *std::any_cast<T>(&s);
@@ -797,6 +931,14 @@ inline void yaml::loadFromYAMLCPP(const YAML_NODE& n)
 	*this = yaml::FromYAMLCPP(n);
 }
 
+/** Sort operator required for std::map with node_t as key */
+inline bool operator<(const yaml::node_t& lhs, const yaml::node_t& rhs)
+{
+	const auto lStr = lhs.internalAsStr();
+	const auto rStr = rhs.internalAsStr();
+	return lStr < rStr;
+}
+
 }  // namespace mrpt::containers
 
 namespace mrpt::containers::internal
@@ -819,7 +961,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 			return static_cast<T>(implAnyAsGetter<float>(s));
 
 		std::stringstream ss;
-		yaml::internalPrintAsYAML(s, ss, 0, true, false, {}, false);
+		yaml::internalPrintAsYAML(s, ss, {}, {});
 		T ret;
 		ss >> ret;
 		if (!ss.fail()) return ret;
@@ -829,7 +971,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 	if constexpr (std::is_convertible_v<int, T>)
 	{
 		std::stringstream ss;
-		yaml::internalPrintAsYAML(s, ss, 0, true, false, {}, false);
+		yaml::internalPrintAsYAML(s, ss, {}, {});
 		const std::string str = ss.str();
 		try
 		{
@@ -849,7 +991,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		if (expectedType == typeid(std::string))
 		{
 			std::stringstream ss;
-			yaml::internalPrintAsYAML(s, ss, 0, true, false, {}, false);
+			yaml::internalPrintAsYAML(s, ss, {}, {});
 			return ss.str();
 		}
 	}
