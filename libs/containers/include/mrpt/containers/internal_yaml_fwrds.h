@@ -8,22 +8,16 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdint>
+#include <any>
 
-namespace mrpt::containers
-{
-/** Defines possible positions for a comment in a document (INI file, YAML).
- * Valid positions are: Top, right.
- *
- * \ingroup mrpt_containers_yaml
- * \note [New in MRPT 2.1.0]
- */
-enum class CommentPosition : uint8_t
-{
-	TOP = 0,
-	RIGHT,
-	//
-	MAX
-};
-
+// forward declarations
+// clang-format off
+// For auxiliary proxies:
+namespace mrpt::containers { class yaml;
+namespace internal {
+ enum tag_as_proxy_t {}; enum tag_as_const_proxy_t {};
+ template <typename T> T implAsGetter(const yaml& p);
+ template <typename T> T implAnyAsGetter(const std::any& p);
+}
+// clang-format on
 }  // namespace mrpt::containers

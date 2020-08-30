@@ -8,22 +8,22 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstdint>
-
 namespace mrpt::containers
 {
-/** Defines possible positions for a comment in a document (INI file, YAML).
- * Valid positions are: Top, right.
+/** See mrpt::containers::yaml::PrintAsYaml
  *
  * \ingroup mrpt_containers_yaml
  * \note [New in MRPT 2.1.0]
  */
-enum class CommentPosition : uint8_t
+struct YamlEmitOptions
 {
-	TOP = 0,
-	RIGHT,
-	//
-	MAX
+	/** Emit the `%YAML 1.2\n---\n` at the beginning. */
+	bool emitHeader = true;
+
+	bool emitComments = true;
+	bool endWithNewLine = true;
+
+	bool indentSequences = true;
 };
 
 }  // namespace mrpt::containers

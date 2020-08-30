@@ -234,7 +234,7 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
 
 	for (const auto& sect : root.asMap())
 	{
-		const auto sectName = sect.first;
+		const auto sectName = sect.first.as<std::string>();
 		// YAML Type: sect.first.Type()
 
 		if (sect.second.size() > 1)
@@ -242,7 +242,7 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
 			// A section:
 			for (const auto& kv : sect.second.asMap())
 			{
-				const auto key = kv.first;
+				const auto key = kv.first.as<std::string>();
 				const auto val = kv.second.as<std::string>();
 				sections[sectName].emplace(key, val);
 			}
@@ -250,7 +250,7 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
 		else
 		{
 			// an unscoped key-value:
-			const auto key = sect.first;
+			const auto key = sect.first.as<std::string>();
 			const auto val = sect.second.as<std::string>();
 			unscoped.emplace(key, val);
 		}

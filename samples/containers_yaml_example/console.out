@@ -1,12 +1,14 @@
 ==== YamlTest_1 ====
-
 K=2 N=10
-name=Foo bar=default
-key: `K` type: scalar(double)
-key: `N` type: scalar(int)
-key: `books` type: sequence
-key: `enabled` type: scalar(bool)
-key: `name` type: scalar(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+name=Foo
+Movie year=1986
+bar=none
+`K`: scalar(double)
+`N`: scalar(int)
+`books`: sequence
+`enabled`: scalar(bool)
+`movies`: sequence
+`name`: scalar(std::string)
 key: `a` val: 1
 key: `b` val: 10
 key: `c` val: -1
@@ -15,33 +17,54 @@ sequence item type: scalar(double)
 
 
 Print as YAML:
+%YAML 1.2
+---
 K: 2
 N: 10
-books: 
+books:
   - true
   - 10
 enabled: true
+movies:
+  -
+    title: xxx
+    year: 2001
+  -
+    title: yyy
+    year: 1986
 name: Foo
 
 
 ==== YamlTest_2 ====
+D key comment: Distance [meters]
+X value comment: Default value
 
-K: 2
-book: silmarillion
+
+Print as YAML:
+%YAML 1.2
+---
+#  Distance [meters]
+D: 1
+#  Arm length [meters]
+L: 5.5
+X: 1  # Default value
+#  Comment for Y
+Y: -5
 
 
 ==== YamlTest_3 ====
-
 Comment: 'comment for a'
-myMap: 
+
+
+Print as YAML:
+%YAML 1.2
+---
+myMap:
   K: 10.0
   P: -5.0
   Q: ~
-  # Another constant
-  foo: 1
-  nestedMap: 
-    a: 1    # comment for a
-    # This is a comment for b
-    b: 2
+  foo: 1  # Another constant
+  nestedMap:
+    a: 1  # comment for a
+    b: 2  # This is a comment for b
     c: 3
-

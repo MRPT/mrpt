@@ -5,26 +5,25 @@ import os
 import sys
 import threading
 import subprocess
+import logging
 
-from .config import (CLANG_FORMAT_VERSION, CLANG_FORMAT_SHORT_VERSION, PROGNAME)
+from .config import (CLANG_FORMAT_VERSION, CLANG_FORMAT_SHORT_VERSION)
+from .config import (PROGNAME)
 
 from .utils import (
     callo,
     get_clang_format_from_linux_cache,
     get_clang_format_from_darwin_cache, )
 
-import logging
 logger = logging.getLogger("clang-format")
 
 
-class ClangFormat(object):
-    """Class encapsulates finding a suitable copy of clang-format,
-    and linting/formating an individual file
+class ClangFormat:
+    """Find clang-format and linting/formating individual files.
     """
 
     def __init__(self, clang_path, cache_dir):
         """Initializataion method.
-
         """
         self.clang_path = None
         self.clang_format_progname_ext = ""
@@ -81,16 +80,16 @@ class ClangFormat(object):
                 os.makedirs(cache_dir)
 
             self.clang_path = os.path.join(cache_dir,
-                                           PROGNAME + "-" + CLANG_FORMAT_VERSION
+                                           PROGNAME + "-" +
+                                           CLANG_FORMAT_VERSION
                                            + self.clang_format_progname_ext)
-
 
             # Download a new version if the cache is empty or stale
             if not os.path.isfile(self.clang_path) \
                     or not self._validate_version():
 
-                logger.warn("Haven't found a valid clang version in PATH. "
-                            "Downloading a valid version...")
+                logger.warning("Haven't found a valid clang version in PATH. "
+                               "Downloading a valid version...")
 
                 if sys.platform.startswith("linux"):
                     get_clang_format_from_linux_cache(self.clang_path)
@@ -98,9 +97,9 @@ class ClangFormat(object):
                     get_clang_format_from_darwin_cache(self.clang_path)
                 else:
                     logger.error("clang-format.py does not support "
-                                 "downloading clang-format " +
+                                 "downloading clang-format "
                                  " on this platform, please install "
-                                 "clang-format " + CLANG_FORMAT_VERSION)
+                                 "clang-format %s ", CLANG_FORMAT_VERSION)
 
         # Validate we have the correct version
         # We only can fail here if the user specified a clang-format binary and
@@ -115,7 +114,7 @@ class ClangFormat(object):
         """Validate clang-format is the expected version
         """
         cf_version = callo([self.clang_path, "--version"])
-        logger.warn("Using clang-format version: %s" % cf_version)
+        logger.warning("Using clang-format version: %s", cf_version)
 
         # JLBC: Disable version checks and just use the version we find:
         return True
@@ -138,10 +137,10 @@ class ClangFormat(object):
                 # Take a lock to ensure diffs do not get mixed when printed to
                 # the screen
                 with self.print_lock:
-                    logger.error("Found diff for " + file_name)
+                    logger.error("Found diff for %s", file_name)
                     logger.info("To fix formatting errors, run %s "
-                                "--style=file -i %s" % (self.clang_path,
-                                                        file_name))
+                                "--style=file -i %s", self.clang_path,
+                                file_name)
                     for line in result:
                         logger.info(line.rstrip())
 
