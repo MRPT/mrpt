@@ -839,7 +839,8 @@ const T& yaml::asRef() const
 		THROW_EXCEPTION_FMT(
 			"Trying to read parameter `%s` of type `%s` as if it was "
 			"`%s` and no obvious conversion found.",
-			proxiedMapEntryName_, mrpt::demangle(storedType.name()).c_str(),
+			proxiedMapEntryName_.c_str(),
+			mrpt::demangle(storedType.name()).c_str(),
 			mrpt::demangle(expectedType.name()).c_str());
 
 	return *std::any_cast<T>(&s);
