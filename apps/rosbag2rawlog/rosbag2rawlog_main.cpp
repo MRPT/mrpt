@@ -34,7 +34,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <rosbag/bag.h>	 // rosbag_storage C++ lib
+#include <rosbag/bag.h>  // rosbag_storage C++ lib
 #include <rosbag/view.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
