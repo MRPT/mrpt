@@ -1001,8 +1001,10 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		if (storedType == typeid(std::string))
 		{
 			const auto str = implAnyAsGetter<std::string>(s);
-			return str == "true" || str == "True" || str == "T" ||
-				   str == "TRUE";
+			return str == "y" || str == "Y" || 
+				   str == "yes" || str == "Yes" || str == "YES" ||
+				   str == "true" || str == "True" || str == "TRUE" ||
+				   str == "on" || str == "ON" || str == "On";
 		}
 	}
 
