@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.1.0: (Under development)
+# Version 2.1.0: Released Aug 31st, 2020
 - Incompatible API changes:
   - mrpt::system::TParameters has been removed, superseded by mrpt::containers::yaml.
   - Remove mrpt::hwdrivers::CRovio

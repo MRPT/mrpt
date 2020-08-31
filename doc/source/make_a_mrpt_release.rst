@@ -13,7 +13,6 @@ useful to someone else maintaining MRPT in the future... ;-)
 
 - Go to MRPT dir.
 - Edit ``doc/source/doxygen-docs/changelog.md`` and set the release date.
-- ``bash scripts/build_docs.sh``
 - Do the final ``git commit`` before the release.
 - ``bash scripts/prepare_release.sh``
 - ``bash scripts/prepare_debian.sh``
