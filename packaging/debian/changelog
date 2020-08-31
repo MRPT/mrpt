@@ -1,3 +1,25 @@
+mrpt (1:2.1.0-1) unstable; urgency=medium
+
+  * New version of upstream sources.
+  * Update debian/copyright.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Mon, 31 Aug 2020 10:22:44 +0200
+
+mrpt (1:2.0.4-2) unstable; urgency=medium
+
+  * Team upload
+  * debian/patches/e84511500276d38d3eeff0b220e8d45e0d74fc93.patch:
+    - cherry-pick upstream "fix" for a failing test (Closes: #964044).
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Fri, 17 Jul 2020 08:14:20 +0200
+
+mrpt (1:2.0.4-1) unstable; urgency=medium
+
+  * New version of upstream sources.
+  * Fix AppStream metadata hints in package tracker page.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Sat, 20 Jun 2020 17:24:00 +0200
+
 mrpt (1:2.0.3-3) unstable; urgency=medium
 
   * Add another patch to disable failing unit tests in builders.
