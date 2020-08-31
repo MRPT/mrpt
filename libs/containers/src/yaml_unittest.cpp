@@ -311,7 +311,7 @@ MRPT_TEST(yaml, ctorMap)
 	mrpt::containers::yaml c1 = mrpt::containers::yaml::Map();
 	c1["K"] = 2.0;
 	c1["myDict"] = mrpt::containers::yaml::Map();
-	auto& m = c1["myDict"];
+	auto m = c1["myDict"];
 	m["A"] = 1.0;
 	m["B"] = 2.0;
 
