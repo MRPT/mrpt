@@ -60,15 +60,16 @@ namespace mrpt::containers
  *
  * yaml can be used to parse YAML (v1.2) or JSON streams, and to emit YAML.
  * It does not support event-based parsing.
- * The parser uses [libfyaml](https://github.com/pantoniou/libfyaml), which
+ * The parser uses Pantelis Antoniou's awesome
+ *[libfyaml](https://github.com/pantoniou/libfyaml), which
  *[passes](http://matrix.yaml.io/) the full [YAML
  *testsuite](https://github.com/yaml/yaml-test-suite).
  *
  * Known limitations:
  * - *Parsing* comments is limited to right-hand comments for *sequence* or
- **map* entries.
+ *   *map* entries.
  *
- * See example in \ref containers_yaml_example/test.cpp
+ * See examples below (\ref containers_yaml_example/test.cpp):
  * \snippet containers_yaml_example/test.cpp example-yaml
  * Output:
  *  \include containers_yaml_example/console.out
@@ -1001,10 +1002,9 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		if (storedType == typeid(std::string))
 		{
 			const auto str = implAnyAsGetter<std::string>(s);
-			return str == "y" || str == "Y" || 
-				   str == "yes" || str == "Yes" || str == "YES" ||
-				   str == "true" || str == "True" || str == "TRUE" ||
-				   str == "on" || str == "ON" || str == "On";
+			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
+				   str == "YES" || str == "true" || str == "True" ||
+				   str == "TRUE" || str == "on" || str == "ON" || str == "On";
 		}
 	}
 
