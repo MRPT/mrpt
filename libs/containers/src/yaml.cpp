@@ -13,6 +13,7 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <istream>
@@ -380,7 +381,7 @@ bool yaml::internalPrintNodeAsYAML(
 
 			const size_t lineLen = nextLN - i;
 			std::string_view line(comment.data() + i, lineLen);
-			o << "#  " << line << "\n";
+			o << "# " << line << "\n";
 
 			i += lineLen + 1;
 		}
@@ -488,6 +489,19 @@ void yaml::internalPrintDebugStructure(
 	THROW_EXCEPTION("Should never reach here");
 }
 
+static void internalPrintRightComment(std::ostream& o, const std::string& c)
+{
+	if (c.find('\n') == std::string::npos)
+	{
+		o << "  # " << c << "\n";
+		return;
+	}
+	// We don't handle multiline right comment at present:
+	auto s = c;
+	s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
+	o << "  # " << s << "\n";
+}
+
 bool yaml::internalPrintAsYAML(
 	const std::monostate&, std::ostream& o, const InternalPrintState& ps,
 	const comments_t& cs)
@@ -499,7 +513,7 @@ bool yaml::internalPrintAsYAML(
 	if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)];
 		rc.has_value())
 	{
-		o << "  # " << rc.value() << "\n";
+		internalPrintRightComment(o, rc.value());
 		return true;  // \n already emitted.
 	}
 	else
@@ -595,7 +609,7 @@ bool yaml::internalPrintStringScalar(
 						cs[static_cast<size_t>(CommentPosition::RIGHT)];
 					rc.has_value())
 				{
-					o << "  # " << rc.value() << "\n";
+					internalPrintRightComment(o, rc.value());
 					return true;  // \n already emitted
 				}
 				else
@@ -616,7 +630,7 @@ bool yaml::internalPrintStringScalar(
 					cs[static_cast<size_t>(CommentPosition::RIGHT)];
 				rc.has_value())
 			{
-				o << "  # " << rc.value() << "\n";
+				internalPrintRightComment(o, rc.value());
 			}
 			else
 				o << "\n";
@@ -692,7 +706,7 @@ bool yaml::internalPrintAsYAML(
 	if (const auto& rc = cs[static_cast<size_t>(CommentPosition::RIGHT)];
 		rc.has_value())
 	{
-		o << "  # " << rc.value() << "\n";
+		internalPrintRightComment(o, rc.value());
 		return true;  // \n already emitted
 	}
 	else
