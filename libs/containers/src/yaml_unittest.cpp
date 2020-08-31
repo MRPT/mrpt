@@ -563,8 +563,8 @@ MRPT_TEST_END()
 
 // clang-format off
 const auto testYamlParseEmit_1 = std::string(//
-R"xxx(#  comment line 1, and
-#  comment line 2
+R"xxx(# comment line 1, and
+# comment line 2
 1.0
 )xxx");
 
@@ -723,7 +723,7 @@ MRPT_TEST(yaml, parseAndEmit)
 		// Test with yamllint
 		if (hasYamlLint)
 		{
-			const std::string tmpFil("/tmp/aaa.yaml");
+			const auto tmpFil = mrpt::format("/tmp/aaa_%i.yaml", idx);
 
 			std::ofstream f(tmpFil);
 			if (f.is_open())
