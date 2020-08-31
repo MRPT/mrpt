@@ -48,6 +48,19 @@ function(mrpt_lib_target_requires_cpp17 _TARGET)
 	endif()
 endfunction()
 
+# Minimize the time and memory required to build and load debug info:
+#-----------------------------------------------------------------------
+function(mrpt_reduced_debug_symbols TARGET_)
+	get_property(CUR_FLAGS_ TARGET ${TARGET_} PROPERTY COMPILE_OPTIONS)
+	if ("-g" IN_LIST CUR_FLAGS_)
+		if (MRPT_COMPILER_IS_GCC)
+			target_compile_options(${TARGET_} PRIVATE -g1)
+		elseif(MRPT_COMPILER_IS_CLANG)
+			target_compile_options(${TARGET_} PRIVATE -gline-tables-only)
+		endif()
+	endif()
+endfunction()
+
 
 # handle_special_simd_flags(): Add custom flags to a set of source files
 # Only for Intel-compatible archs
@@ -496,6 +509,5 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	endif()
 
 	# --- End of conditional build of module ---
-	endif(BUILD_mrpt-${name})
-
-endmacro(internal_define_mrpt_lib)
+	endif()
+endmacro()
