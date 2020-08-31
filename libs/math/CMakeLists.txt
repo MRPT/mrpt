@@ -88,4 +88,7 @@ if(BUILD_mrpt-math)
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
 		target_include_directories(math PUBLIC ${SuiteSparse_INCLUDE_DIRS})
 	endif ()
+
+	# Minimize debug info for this module:
+	mrpt_reduced_debug_symbols(math)
 endif()
