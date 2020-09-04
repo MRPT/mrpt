@@ -2049,12 +2049,12 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 	bool alreadyWarnedTooLargeFile = false;
 	string errorMsg;
 
+	double last_ratio = -1;
 	while (keepLoading)
 	{
 		if (countLoop++ % 10 == 0)
 		{
 			uint64_t fil_pos = fil.getPosition();
-			static double last_ratio = -1;
 			double ratio = fil_pos / (1.0 * filSize);
 
 			if (ratio - last_ratio >= 0.006)

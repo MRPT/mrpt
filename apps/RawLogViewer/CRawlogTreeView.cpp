@@ -102,6 +102,12 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 	m_tree_nodes.emplace_back();
 	m_tree_nodes.back().level = 0;
 
+	auto lambdaCheckTimestamp = [this](const mrpt::Clock::time_point& t) {
+		if (t == INVALID_TIMESTAMP) return;
+		m_rawlog_last = t;
+		if (m_rawlog_start == INVALID_TIMESTAMP) m_rawlog_start = t;
+	};
+
 	if (m_rawlog)
 	{
 		CRawlog::iterator end_it = m_rawlog->end();
@@ -115,27 +121,21 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			dEntry.index = rawlog_index;
 
 			// For containers, go recursively:
-			if (entry->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
+			if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(entry); sf)
 			{
-				auto sf = std::dynamic_pointer_cast<CSensoryFrame>(entry);
 				for (auto& o : *sf)
 				{
 					m_tree_nodes.emplace_back();
 					TNodeData& dSF = m_tree_nodes.back();
 					dSF.level = 2;
 					dSF.data = o;
-
-					if (o->timestamp != INVALID_TIMESTAMP)
-					{
-						m_rawlog_last = o->timestamp;
-						if (m_rawlog_start == INVALID_TIMESTAMP)
-							m_rawlog_start = o->timestamp;
-					}
+					lambdaCheckTimestamp(o->timestamp);
 				}
 			}
-			else if (entry->GetRuntimeClass() == CLASS_ID(CActionCollection))
+			else if (auto acts =
+						 std::dynamic_pointer_cast<CActionCollection>(entry);
+					 acts)
 			{
-				auto acts = std::dynamic_pointer_cast<CActionCollection>(entry);
 				for (auto& a : *acts)
 				{
 					m_tree_nodes.emplace_back();
@@ -143,25 +143,15 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 					dAC.level = 2;
 					dAC.data = a.get_ptr();
 
-					if (a->timestamp != INVALID_TIMESTAMP)
-					{
-						m_rawlog_last = a->timestamp;
-						if (m_rawlog_start == INVALID_TIMESTAMP)
-							m_rawlog_start = a->timestamp;
-					}
+					lambdaCheckTimestamp(a->timestamp);
 				}
 			}
-			else if (entry->GetRuntimeClass()->derivedFrom(
-						 CLASS_ID(CObservation)))
+			else if (auto o = std::dynamic_pointer_cast<CObservation>(entry); o)
 			{
-				auto o = std::dynamic_pointer_cast<CObservation>(entry);
-				if (o->timestamp != INVALID_TIMESTAMP)
-				{
-					m_rawlog_last = o->timestamp;
-					if (m_rawlog_start == INVALID_TIMESTAMP)
-						m_rawlog_start = o->timestamp;
-				}
+				lambdaCheckTimestamp(o->timestamp);
 			}
+
+			rawlog_index++;
 		}
 	}
 
@@ -287,7 +277,7 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 				// Text:
 				if (d.level == 1)
 				{
-					s << (format("[%i] ", (int)d.index).c_str());
+					s << "[" << std::to_string(d.index) << "] ";
 				}
 
 				s << d.data->GetRuntimeClass()->className;
