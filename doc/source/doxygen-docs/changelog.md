@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.1.1: (Under development)
-- (No changes yet)
+- BUG FIXES:
+  - RawLogViewer: Fix wrong indices in tree view. Fix freezed progress bar loading a second rawlog.
 
 ------
 # Version 2.1.0: Released Aug 31st, 2020
