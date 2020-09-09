@@ -140,11 +140,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 	/** @name Direct access to underlying nanogui API
 	 * @{ */
 
-	nanogui::Window* nanogui_win()
-	{
-		ASSERT_(m_window);
-		return m_window;
-	}
+	nanogui::Screen* nanogui_screen() { return this; }
 
 	/** @} */
 
@@ -157,8 +153,6 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/** the pointer is owned by the parent class Screen, no need to delete
 	 * it */
-	nanogui::Window* m_window = nullptr;
-
 	virtual bool keyboardEvent(
 		int key, int scancode, int action, int modifiers) override;
 	virtual void drawContents() override;

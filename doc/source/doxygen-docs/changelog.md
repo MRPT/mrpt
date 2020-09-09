@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.1.1: (Under development)
+- Changes in libraries:
+  - \ref mrpt_gui_grp
+    - Useless nanogui_win() converted into mrpt::gui::CDisplayWindowGUI::nanogui_screen()
 - BUG FIXES:
   - RawLogViewer: Fix wrong indices in tree view. Fix freezed progress bar loading a second rawlog.
 
