@@ -11,6 +11,7 @@
 #define RAWLOG_PROCESSOR_H
 
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
@@ -195,12 +196,21 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 			if (!processOneObservation(*obs_indiv)) return false;
 		}
 
+		if (actions)
+		{
+			for (auto& act : *actions)
+			{
+				if (!processOneAction(act.get_ptr())) return false;
+			}
+		}
+
 		return true;  // No error.
 	}
 
 	// To be implemented by the user. Return false on any error to abort
 	// processing.
 	virtual bool processOneObservation(mrpt::obs::CObservation::Ptr& obs) = 0;
+	virtual bool processOneAction(mrpt::obs::CAction::Ptr&) { return true; }
 
 };  // end CRawlogProcessorOnEachObservation
 
@@ -230,8 +240,11 @@ class CRawlogProcessorFilterObservations
 	{
 	}
 
-	/** To be implemented by users: return false means the observation is  */
+	/** To be implemented by users: return false means entry must be removed */
 	virtual bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) = 0;
+
+	/** To be implemented by users: return false means entry must be removed */
+	virtual bool tellIfThisActPasses(mrpt::obs::CAction::Ptr&) { return true; }
 
 	// Process each entry. Return false on any error to abort processing.
 	bool processOneObservation(mrpt::obs::CObservation::Ptr& obs) override
@@ -248,6 +261,23 @@ class CRawlogProcessorFilterObservations
 
 		return true;
 	}
+
+	// Process each entry. Return false on any error to abort processing.
+	bool processOneAction(mrpt::obs::CAction::Ptr& act) override
+	{
+		if (!tellIfThisActPasses(act))
+		{
+			act.reset();  // Free object (all aliases)
+			m_entries_removed++;
+		}
+		m_entries_parsed++;
+
+		if (m_we_are_done_with_this_rawlog)
+			return false;  // We are done, finish execution.
+
+		return true;
+	}
+
 	// Save those entries which are not nullptr.
 	void OnPostProcess(
 		mrpt::obs::CActionCollection::Ptr& actions,
@@ -258,16 +288,23 @@ class CRawlogProcessorFilterObservations
 		{
 			ASSERT_(actions && SF);
 			// Remove from SF those observations freed:
-			auto it = SF->begin();
-			while (it != SF->end())
+			for (auto it = SF->begin(); it != SF->end();)
 			{
 				if (*it)
 					it++;
 				else
 					it = SF->erase(it);
 			}
-			// Save:
-			mrpt::serialization::archiveFrom(m_out_rawlog) << actions << SF;
+			for (auto it = actions->begin(); it != actions->end();)
+			{
+				if (*it)
+					it++;
+				else
+					it = actions->erase(it);
+			}
+			// Save if not empty:
+			if (actions->size() > 0 || SF->size() > 0)
+				mrpt::serialization::archiveFrom(m_out_rawlog) << actions << SF;
 		}
 		else
 		{

@@ -73,16 +73,31 @@ DECLARE_OP_FUNCTION(op_cut)
 			}
 		}
 
+		/** To be implemented by users: return false means entry must be removed
+		 */
+		bool tellIfThisActPasses(mrpt::obs::CAction::Ptr& act) override
+		{
+			ASSERT_(act);
+			return tellIfThisOnePasses(act->timestamp);
+		}
+
 		/** To be implemented by users: return false means the observation is */
 		bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override
+		{
+			ASSERT_(obs);
+			return tellIfThisOnePasses(obs->timestamp);
+		}
+
+		/** To be implemented by users: return false means the observation
+		   is */
+		bool tellIfThisOnePasses(mrpt::system::TTimeStamp t)
 		{
 			if (has_from_index && m_rawlogEntry < m_from_index) return false;
 
 			if (has_from_time)
 			{
-				ASSERT_(obs->timestamp != INVALID_TIMESTAMP);
-				if (timestampToDouble(obs->timestamp) < m_from_time)
-					return false;
+				ASSERT_(t != INVALID_TIMESTAMP);
+				if (timestampToDouble(t) < m_from_time) return false;
 			}
 			if (has_to_index && m_rawlogEntry > m_to_index)
 			{
@@ -93,8 +108,8 @@ DECLARE_OP_FUNCTION(op_cut)
 
 			if (has_to_time)
 			{
-				ASSERT_(obs->timestamp != INVALID_TIMESTAMP);
-				if (timestampToDouble(obs->timestamp) > m_to_time)
+				ASSERT_(t != INVALID_TIMESTAMP);
+				if (timestampToDouble(t) > m_to_time)
 				{
 					// say not to read anymore...
 					m_we_are_done_with_this_rawlog = true;
