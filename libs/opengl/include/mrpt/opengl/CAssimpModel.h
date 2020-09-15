@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/pimpl.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
@@ -97,20 +98,12 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	*/
 
    private:
-	/** A container for automatic deletion of assimp scene when the last
-	 * reference of the smart_ptr's is destroyed.
-	 */
-	struct TImplAssimp
-	{
-		TImplAssimp();
-		~TImplAssimp();
-		/** aiScene* */
-		void* scene = nullptr;
-	};
-	std::shared_ptr<TImplAssimp> m_assimp_scene;
+	/** The interface to the file: */
+	struct Impl;
+	mrpt::pimpl<Impl> m_assimp_scene;
 
 	/** Bounding box */
-	mrpt::math::TPoint3D m_bbox_min, m_bbox_max;
+	mrpt::math::TPoint3D m_bbox_min{0, 0, 0}, m_bbox_max{0, 0, 0};
 
 	std::string m_modelPath;
 
