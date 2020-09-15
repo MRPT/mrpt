@@ -20,11 +20,14 @@
 #include <aiScene.h>
 #include <assimp.h>
 #else
+#include <assimp/types.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/LogStream.hpp>
+
 #include <assimp/cimport.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/LogStream.hpp>
 #endif
 #endif
 
@@ -46,6 +49,25 @@ struct RenderElements
 	std::vector<mrpt::math::TPoint3Df>* pts_vbd = nullptr;
 	std::vector<mrpt::img::TColor>* pts_cbd = nullptr;
 	std::vector<mrpt::opengl::TTriangle>* tris = nullptr;
+};
+
+struct CAssimpModel::Impl
+{
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+	Impl() = default;
+	~Impl() = default;
+
+	Impl(const Impl& o) { *this = o; }
+	Impl& operator=(const Impl&)
+	{
+		THROW_EXCEPTION(
+			"Copying CAssimpModel objects via operator= not allowed.");
+		return *this;
+	}
+
+	Assimp::Importer importer;
+	const aiScene* scene = nullptr;  // Memory owned by "importer"
+#endif
 };
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
@@ -115,11 +137,12 @@ void CAssimpModel::onUpdateBuffers_all()
 	re.tris = &tris;
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-	auto* scene = reinterpret_cast<aiScene*>(m_assimp_scene->scene);
+	ASSERT_(m_assimp_scene->scene);
 
 	const auto transf = mrpt::poses::CPose3D();
 
-	recursive_render(scene, scene->mRootNode, transf, re);
+	recursive_render(
+		m_assimp_scene->scene, m_assimp_scene->scene->mRootNode, transf, re);
 #endif
 }
 
@@ -167,19 +190,18 @@ void CAssimpModel::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-CAssimpModel::CAssimpModel() : m_bbox_min(0, 0, 0), m_bbox_max(0, 0, 0)
+CAssimpModel::CAssimpModel()
+	: m_assimp_scene(mrpt::make_impl<CAssimpModel::Impl>())
 {
-	m_assimp_scene = std::make_shared<TImplAssimp>();
 }
 
 CAssimpModel::~CAssimpModel() { clear(); }
-/*---------------------------------------------------------------
-							clear
-  ---------------------------------------------------------------*/
+
 void CAssimpModel::clear()
 {
 	CRenderizable::notifyChange();
-	m_assimp_scene = std::make_shared<TImplAssimp>();
+
+	m_assimp_scene->importer.FreeScene();
 	m_modelPath.clear();
 	// m_textures_loaded = false;
 
@@ -201,17 +223,22 @@ void CAssimpModel::loadScene(const std::string& filepath)
 	clear();
 	CRenderizable::notifyChange();
 
-	// we are taking one of the postprocessing presets to avoid
-	// spelling out 20+ single postprocessing flags here.
-	m_assimp_scene->scene = (void*)aiImportFile(
+	// aiProcess_EmbedTextures: Only available in most recent versions of assimp
+	m_assimp_scene->scene = m_assimp_scene->importer.ReadFile(
 		filepath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+
+	if (!m_assimp_scene->scene)
+	{
+		THROW_EXCEPTION_FMT(
+			"Error importing '%s': %s", filepath.c_str(),
+			m_assimp_scene->importer.GetErrorString());
+	}
 	m_modelPath = filepath;
 
-	if (m_assimp_scene->scene)
+	// Evaluate overall bbox:
 	{
 		aiVector3D scene_min, scene_max;
-		auto* scene = (aiScene*)m_assimp_scene->scene;
-		get_bounding_box(scene, &scene_min, &scene_max);
+		get_bounding_box(m_assimp_scene->scene, &scene_min, &scene_max);
 		m_bbox_min.x = scene_min.x;
 		m_bbox_min.y = scene_min.y;
 		m_bbox_min.z = scene_min.z;
@@ -238,21 +265,6 @@ void CAssimpModel::getBoundingBox(
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
-}
-
-CAssimpModel::TImplAssimp::TImplAssimp() = default;
-CAssimpModel::TImplAssimp::~TImplAssimp()
-{
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-	if (scene)
-	{
-		// cleanup - calling 'aiReleaseImport' is important, as the library
-		// keeps internal resources until the scene is freed again. Not
-		// doing so can cause severe resource leaking.
-		aiReleaseImport((aiScene*)scene);
-		scene = nullptr;
-	}
-#endif
 }
 
 bool CAssimpModel::traceRay(
