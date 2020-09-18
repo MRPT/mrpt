@@ -75,23 +75,6 @@ jobs:
           command: bash .circleci/check_style.sh
           environment:
             TASK: lint_all
-  macos-10.3.0:
-    macos:
-      xcode: "10.3.0"
-    working_directory: /Users/distiller/project
-    steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init --recursive
-      - run: brew update
-      - run: brew upgrade
-      - run: brew install cmake
-      - run: brew install boost
-      - run: brew install nasm
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DCMAKE_VERBOSE_MAKEFILE=ON -DMRPT_ALLOW_LGPLV3=ON -H. -Bbuild
-      - run: make -j2 -C build tests_build_all
-      - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -j2 -C build
   macos-12.0.0:
     macos:
       xcode: "12.0.0"
@@ -119,5 +102,4 @@ workflows:
       - headless-u18.04-bionic
       - minimal-u18.04-bionic
       - clang-format-lint
-      - macos-10.3.0
       - macos-12.0.0
