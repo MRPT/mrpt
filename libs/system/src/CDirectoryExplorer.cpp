@@ -79,7 +79,9 @@ void CDirectoryExplorer::explore(
 
 	HANDLE h = FindFirstFileA(searchPath_mask.c_str(), &f);
 	if (h == INVALID_HANDLE_VALUE)
-		THROW_EXCEPTION("Error starting exploration! (does path exist?)");
+		THROW_EXCEPTION_FMT(
+			"Error starting exploration of '%s' (does path exist?)",
+			searchPath.c_str());
 
 	// Include the FILE_ATTRIB_ARCHIVE flag for files:
 	if (mask & FILE_ATTRIB_ARCHIVE) mask |= FILE_ATTRIBUTE_NORMAL;
@@ -132,7 +134,10 @@ void CDirectoryExplorer::explore(
 	struct dirent* ent;
 
 	DIR* dir = opendir(searchPath.c_str());
-	if (!dir) THROW_EXCEPTION("Error starting exploration! (does path exist?)");
+	if (!dir)
+		THROW_EXCEPTION_FMT(
+			"Error starting exploration of '%s' (does path exist?)",
+			searchPath.c_str());
 
 	while ((ent = readdir(dir)) != nullptr)
 	{
