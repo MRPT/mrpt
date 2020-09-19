@@ -34,6 +34,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
+#include <mrpt/opengl/opengl_api.h>
+
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
@@ -49,6 +51,7 @@ struct RenderElements
 	std::vector<mrpt::math::TPoint3Df>* pts_vbd = nullptr;
 	std::vector<mrpt::img::TColor>* pts_cbd = nullptr;
 	std::vector<mrpt::opengl::TTriangle>* tris = nullptr;
+	std::vector<mrpt::opengl::TTriangle>* texturedTris = nullptr;
 };
 
 struct CAssimpModel::Impl
@@ -71,11 +74,13 @@ struct CAssimpModel::Impl
 };
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-// Note: Look at older git versions to see pre-OpenGL3 version with more texture
-// supports, etc. load_textures(), etc.
 static void recursive_render(
 	const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
 	RenderElements& re);
+static void process_textures(
+	const aiScene* scene, std::vector<unsigned int>& textureIds,
+	std::map<std::string, CAssimpModel::TInfoPerTexture>& textureIdMap,
+	const std::string& modelPath);
 
 // Just return the diffuse color:
 static mrpt::img::TColor apply_material(const aiMaterial* mtl);
@@ -99,6 +104,9 @@ void CAssimpModel::render(const RenderContext& rc) const
 		case DefaultShaderID::WIREFRAME:
 			CRenderizableShaderWireFrame::render(rc);
 			break;
+		case DefaultShaderID::TEXTURED_TRIANGLES:
+			CRenderizableShaderTexturedTriangles::render(rc);
+			break;
 	};
 }
 void CAssimpModel::renderUpdateBuffers() const
@@ -108,6 +116,7 @@ void CAssimpModel::renderUpdateBuffers() const
 	CRenderizableShaderPoints::renderUpdateBuffers();
 	CRenderizableShaderTriangles::renderUpdateBuffers();
 	CRenderizableShaderWireFrame::renderUpdateBuffers();
+	CRenderizableShaderTexturedTriangles::renderUpdateBuffers();
 }
 
 // special case for assimp: update all buffers within one run over the scene
@@ -127,6 +136,9 @@ void CAssimpModel::onUpdateBuffers_all()
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 
+	auto& texturedTris = CRenderizableShaderTexturedTriangles::m_triangles;
+	texturedTris.clear();
+
 	if (!m_assimp_scene->scene) return;  // No scene
 
 	RenderElements re;
@@ -135,21 +147,25 @@ void CAssimpModel::onUpdateBuffers_all()
 	re.pts_vbd = &pts_vbd;
 	re.pts_cbd = &pts_cbd;
 	re.tris = &tris;
+	re.texturedTris = &texturedTris;
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	ASSERT_(m_assimp_scene->scene);
 
-	const auto transf = mrpt::poses::CPose3D();
+	process_textures(
+		m_assimp_scene->scene, m_textureIds, m_textureIdMap, m_modelPath);
 
+	const auto transf = mrpt::poses::CPose3D();
 	recursive_render(
 		m_assimp_scene->scene, m_assimp_scene->scene->mRootNode, transf, re);
 #endif
 }
 
-// These 3: already done in onUpdateBuffers_all()
+// These ones: already done in onUpdateBuffers_all()
 void CAssimpModel::onUpdateBuffers_Wireframe() {}
 void CAssimpModel::onUpdateBuffers_Points() {}
 void CAssimpModel::onUpdateBuffers_Triangles() {}
+void CAssimpModel::onUpdateBuffers_TexturedTriangles() {}
 
 uint8_t CAssimpModel::serializeGetVersion() const { return 0; }
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
@@ -487,6 +503,132 @@ static void recursive_render(
 	// draw all children
 	for (unsigned int n = 0; n < nd->mNumChildren; ++n)
 		recursive_render(sc, nd->mChildren[n], curTf, re);
+}
+
+static void process_textures(
+	const aiScene* scene, std::vector<unsigned int>& textureIds,
+	std::map<std::string, CAssimpModel::TInfoPerTexture>& textureIdMap,
+	const std::string& modelPath)
+{
+	if (scene->HasTextures())
+		THROW_EXCEPTION(
+			"Support for meshes with embedded textures is not implemented");
+
+	textureIdMap.clear();
+
+	/* getTexture Filenames and no. of Textures */
+	for (unsigned int m = 0; m < scene->mNumMaterials; m++)
+	{
+		for (int texIndex = 0;; texIndex++)
+		{
+			aiString path;  // filename
+			aiReturn texFound = scene->mMaterials[m]->GetTexture(
+				aiTextureType_DIFFUSE, texIndex, &path);
+			if (texFound != AI_SUCCESS) break;
+
+			CAssimpModel::TInfoPerTexture& ipt = textureIdMap[path.data];
+			ipt.id_idx = std::string::npos;  // pending
+		}
+	}
+	int numTextures = textureIdMap.size();
+
+	/* create and fill array with GL texture ids */
+	textureIds.resize(numTextures);
+	if (numTextures)
+	{
+		/* Texture name generation */
+		glGenTextures(numTextures, &textureIds[0]);
+	}
+
+	/* get iterator */
+	std::map<std::string, CAssimpModel::TInfoPerTexture>::iterator itr =
+		textureIdMap.begin();
+
+	std::string basepath = mrpt::system::filePathSeparatorsToNative(
+		mrpt::system::extractFileDirectory(modelPath));
+	for (int i = 0; i < numTextures; i++)
+	{
+		// save IL image ID
+		std::string filename = itr->first;  // get filename
+		CAssimpModel::TInfoPerTexture& ipt = itr->second;
+		ipt.id_idx = i;  // save texture id for filename in map
+		++itr;  // next texture
+
+		const std::string fileloc =
+			mrpt::system::filePathSeparatorsToNative(basepath + filename);
+
+		ipt.img_rgb = mrpt::img::CImage::Create();
+		ipt.img_alpha = mrpt::img::CImage::Create();
+
+		// Load images:
+		// TGA is handled specially since it's not supported by OpenCV:
+		bool load_ok;
+		if (mrpt::system::lowerCase(
+				mrpt::system::extractFileExtension(fileloc)) == string("tga"))
+		{
+			load_ok = mrpt::img::CImage::loadTGA(
+				fileloc, *ipt.img_rgb, *ipt.img_alpha);
+		}
+		else
+		{
+			load_ok = ipt.img_rgb->loadFromFile(fileloc);
+		}
+
+		if (load_ok)
+		{
+			std::cout << "[CAssimpModel] Loaded texture: " << fileloc << "\n";
+
+			glBindTexture(GL_TEXTURE_2D, textureIds[i]);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			// Ensure images do not overpass the maximum dimensions allowed by
+			// OpenGL
+			GLint texSize;
+			glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
+			while (ipt.img_rgb->getHeight() > (unsigned int)texSize ||
+				   ipt.img_rgb->getWidth() > (unsigned int)texSize)
+			{
+				*ipt.img_rgb =
+					ipt.img_rgb->scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
+				*ipt.img_alpha =
+					ipt.img_alpha->scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
+			}
+
+			const int width = ipt.img_rgb->getWidth();
+			const int height = ipt.img_rgb->getHeight();
+
+			// Prepare image data types:
+			const GLenum img_type = GL_UNSIGNED_BYTE;
+			const int nBytesPerPixel = ipt.img_rgb->isColor() ? 3 : 1;
+			const bool is_RGB_order =
+				(ipt.img_rgb->getChannelsOrder() == std::string("RGB"));
+			const GLenum img_format = nBytesPerPixel == 3
+										  ? (is_RGB_order ? GL_RGB : GL_BGR)
+										  : GL_LUMINANCE;
+
+			// Send image data to OpenGL:
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			glPixelStorei(
+				GL_UNPACK_ROW_LENGTH,
+				ipt.img_rgb->getRowStride() / nBytesPerPixel);
+			glTexImage2D(
+				GL_TEXTURE_2D, 0 /*level*/, 3 /* RGB components */, width,
+				height, 0 /*border*/, img_format, img_type,
+				ipt.img_rgb->ptrLine<uint8_t>(0));
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
+		}
+		else
+		{
+			/* Error occured */
+			const std::string sError = mrpt::format(
+				"[CAssimpModel] Couldn't load texture image: '%s'",
+				fileloc.c_str());
+			cout << sError << endl;
+		}
+	}
 }
 
 #endif  // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
