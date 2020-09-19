@@ -11,6 +11,7 @@
 #include <mrpt/core/pimpl.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
+#include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <map>
@@ -40,6 +41,7 @@ namespace mrpt::opengl
  * \note Class introduced in MRPT 1.2.2
  */
 class CAssimpModel : public CRenderizableShaderTriangles,
+					 public CRenderizableShaderTexturedTriangles,
 					 public CRenderizableShaderWireFrame,
 					 public CRenderizableShaderPoints
 {
@@ -55,11 +57,12 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	{
 		// May use up to two shaders (triangles and lines):
 		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
-				DefaultShaderID::POINTS};
+				DefaultShaderID::POINTS, DefaultShaderID::TEXTURED_TRIANGLES};
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;
 	void onUpdateBuffers_Points() override;
+	void onUpdateBuffers_TexturedTriangles() override;
 	void onUpdateBuffers_all();  // special case for assimp
 	void freeOpenGLResources() override
 	{
@@ -87,15 +90,12 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/* Disabled for now (port to OpenGL3, March 2020)
 	struct TInfoPerTexture
 	{
 		// indices in \a m_textureIds. string::npos for non-initialized ones
-		size_t id_idx;
+		size_t id_idx{std::string::npos};
 		mrpt::img::CImage::Ptr img_rgb, img_alpha;
-		TInfoPerTexture() : id_idx(std::string::npos) {}
 	};
-	*/
 
    private:
 	/** The interface to the file: */
@@ -107,9 +107,9 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 
 	std::string m_modelPath;
 
-	// mutable std::vector<unsigned int> m_textureIds;
-	// mutable bool m_textures_loaded{false};
-	// mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
+	mutable std::vector<unsigned int> m_textureIds;
+	mutable bool m_textures_loaded{false};
+	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
 
 };  // namespace mrpt::opengl
 
