@@ -1,1 +1,2 @@
   - Fix build in ppc64.
+  - Moving from libdc1394-22-dev to libdc1394-dev (Closes #970837).
