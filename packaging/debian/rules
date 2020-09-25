@@ -25,8 +25,8 @@ endif
 # traces on failure:
 MRPT_TEST_TARGET = test_legacy
 
-# Avoid running out of memory on mipsel
-ifneq (,$(filter $(DEB_HOST_ARCH), mipsel))
+# Avoid running out of memory on mipsel,mips64el
+ifneq (,$(findstring mips,$(DEB_HOST_ARCH)))
   export DEB_CXXFLAGS_MAINT_APPEND += -g1
 endif
 
