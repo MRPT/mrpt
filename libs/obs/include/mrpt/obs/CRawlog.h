@@ -361,10 +361,10 @@ class CRawlog : public mrpt::serialization::CSerializable
 
 	/** Reads a consecutive pair action / observation from the rawlog opened at
 	 * some input stream.
-	 *   Previous contents of action and observations are discarded (using
-	 * stlplus::smart_ptr::reset), and
-	 *    at exit they contain the new objects read from the rawlog file.
-	 *  The input/output variable "rawlogEntry" is just a counter of the last
+	 * Previous contents of action and observations are discarded, and
+	 * upon exit they contain smart pointers to the new objects read from the
+	 * rawlog file.
+	 * The input/output variable "rawlogEntry" is just a counter of the last
 	 * rawlog entry read, for logging or monitoring purposes.
 	 * \return false if there was some error, true otherwise.
 	 * \sa getActionObservationPair, getActionObservationPairOrObservation
@@ -374,20 +374,18 @@ class CRawlog : public mrpt::serialization::CSerializable
 		CSensoryFrame::Ptr& observations, size_t& rawlogEntry);
 
 	/** Reads a consecutive pair action/sensory_frame OR an observation,
-	 *depending of the rawlog format, from the rawlog opened at some input
-	 *stream.
-	 *   Previous contents of action and observations are discarded (using
-	 *stlplus::smart_ptr::reset), and
-	 *    at exit they contain the new objects read from the rawlog file.
+	 * depending of the rawlog format, from the rawlog opened at some input
+	 * stream.
+	 * Previous contents of action and observations are discarded, and
+	 * upon return they contain smart pointers to the new objects read from
+	 * the rawlog file.
 	 *
-	 *  At return, one of this will happen:
-	 *		- action/observations contain objects (i.e. action() evaluates as
-	 *true).
-	 *		- observation contains an object (i.e. observation evaluates as
-	 *true).
+	 * Depending on the rawlog file format, at return either:
+	 *  - action/observations contain objects, or
+	 *  - observation contains an object.
 	 *
-	 *  The input/output variable "rawlogEntry" is just a counter of the last
-	 *rawlog entry read, for logging or monitoring purposes.
+	 * The input/output variable "rawlogEntry" is just a counter of the last
+	 * rawlog entry read, for logging or monitoring purposes.
 	 * \return false if there was some error, true otherwise.
 	 * \sa getActionObservationPair
 	 */
@@ -398,10 +396,10 @@ class CRawlog : public mrpt::serialization::CSerializable
 
 	/** Gets the next consecutive pair action / observation from the rawlog
 	 * loaded into this object.
-	 *   Previous contents of action and observations are discarded (using
-	 * stlplus::smart_ptr::reset), and
-	 *    at exit they contain the new objects read from the rawlog file.
-	 *  The input/output variable "rawlogEntry" is just a counter of the last
+	 * Previous contents of action and observations are discarded, and
+	 * upon return they contain smart pointers to the next objects read from
+	 * the rawlog dataset.
+	 * The input/output variable "rawlogEntry" is just a counter of the last
 	 * rawlog entry read, for logging or monitoring purposes.
 	 * \return false if there was some error, true otherwise.
 	 * \sa readActionObservationPair
