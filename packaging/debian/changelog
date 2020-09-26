@@ -1,3 +1,9 @@
+mrpt (1:2.1.0-2) unstable; urgency=medium
+
+  * debian/rules: add -g1 to mips builds (Closes: #970818).
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Sat, 26 Sep 2020 08:10:00 +0200
+
 mrpt (1:2.1.0-1) unstable; urgency=medium
 
   * New version of upstream sources.
