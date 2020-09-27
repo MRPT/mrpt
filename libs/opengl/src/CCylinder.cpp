@@ -72,18 +72,23 @@ void CCylinder::onUpdateBuffers_Triangles()
 	}
 
 	// bottom & top disks:
-	for (unsigned int i = 0; i < m_slices; i++)
+	if (m_hasTopBase || m_hasBottomBase)
 	{
-		const auto ip = (i + 1) % m_slices;
-		tris.emplace_back(
-			TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
-			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
-			TPoint3Df(.0f, .0f, .0f));
+		for (unsigned int i = 0; i < m_slices; i++)
+		{
+			const auto ip = (i + 1) % m_slices;
+			if (m_hasBottomBase)
+				tris.emplace_back(
+					TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
+					TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
+					TPoint3Df(.0f, .0f, .0f));
 
-		tris.emplace_back(
-			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
-			TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, m_height),
-			TPoint3Df(.0f, .0f, m_height));
+			if (m_hasTopBase)
+				tris.emplace_back(
+					TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
+					TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, m_height),
+					TPoint3Df(.0f, .0f, m_height));
+		}
 	}
 
 	// All faces, same color:
