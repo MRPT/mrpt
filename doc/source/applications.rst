@@ -11,6 +11,7 @@ also provides many ready-to-use applications:
   :maxdepth: 2
 
   app_carmen2rawlog.rst
+  app_GridmapNavSimul.rst
   app_icp-slam.rst
 
 
