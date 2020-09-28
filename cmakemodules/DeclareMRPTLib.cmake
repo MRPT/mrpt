@@ -52,7 +52,9 @@ endfunction()
 #-----------------------------------------------------------------------
 function(mrpt_reduced_debug_symbols TARGET_)
 	get_property(CUR_FLAGS_ TARGET ${TARGET_} PROPERTY COMPILE_OPTIONS)
-	if ("-g" IN_LIST CUR_FLAGS_)
+	set(cxxflags_ "$ENV{CXXFLAGS}")
+	separate_arguments(cxxflags_)
+	if (("-g" IN_LIST CUR_FLAGS_) OR ("-g" IN_LIST cxxflags_))
 		if (MRPT_COMPILER_IS_GCC)
 			target_compile_options(${TARGET_} PRIVATE -g1)
 		elseif(MRPT_COMPILER_IS_CLANG)
@@ -60,7 +62,6 @@ function(mrpt_reduced_debug_symbols TARGET_)
 		endif()
 	endif()
 endfunction()
-
 
 # handle_special_simd_flags(): Add custom flags to a set of source files
 # Only for Intel-compatible archs
