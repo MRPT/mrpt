@@ -22,6 +22,11 @@ include(CMakeFindDependencyMacro)
 
 set(MRPT_LIBRARIES "")
 foreach(_comp ${MRPT_FIND_COMPONENTS})
+  # If not set, use current directory as guess:
+  if (NOT mrpt-${_comp}_DIR)
+    set(mrpt-${_comp}_DIR  ${CMAKE_CURRENT_LIST_DIR})
+  endif()
+
   if (MRPT_FIND_REQUIRED_${_comp})
     find_dependency(mrpt-${_comp})
   else()
