@@ -8,7 +8,7 @@ macro(SHOW_CONFIG_LINE MSG_TEXT VALUE_BOOL)
 		set(VAL_TEXT " No")
 	endif(${VALUE_BOOL})
 	message(STATUS " ${MSG_TEXT} : ${VAL_TEXT} ${ARGV2}")
-endmacro(SHOW_CONFIG_LINE)
+endmacro()
 
 macro(SHOW_CONFIG_LINE_SYSTEM MSG_TEXT VALUE_BOOL)
 	if(${VALUE_BOOL})
@@ -21,7 +21,7 @@ macro(SHOW_CONFIG_LINE_SYSTEM MSG_TEXT VALUE_BOOL)
 		set(VAL_TEXT " No")
 	endif(${VALUE_BOOL})
 	message(STATUS " ${MSG_TEXT} : ${VAL_TEXT} ${ARGV2}")
-endmacro(SHOW_CONFIG_LINE_SYSTEM)
+endmacro()
 
 # ----------------------------------------------------------------------------
 #   Summary:
@@ -72,13 +72,13 @@ message(STATUS " CMake generator             : "  ${CMAKE_GENERATOR})
 message(STATUS " CMake build tool            : " ${CMAKE_BUILD_TOOL})
 if (UNIX)
   execute_process(COMMAND "date" "-u" "-d" "@${CMAKE_SOURCE_DATE_EPOCH}" "+%Y-%m-%d" OUTPUT_VARIABLE MRPT_BUILD_DATE OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif(UNIX)
+endif()
 message(STATUS " MRPT SOURCE_DATE_EPOCH      : ${CMAKE_SOURCE_DATE_EPOCH} (${MRPT_BUILD_DATE})")
 
 message(STATUS " Compiler                    : ${CMAKE_CXX_COMPILER} Version: ${CMAKE_CXX_COMPILER_VERSION}")
 if(NOT CMAKE_GENERATOR MATCHES "Xcode|Visual Studio")
 	message(STATUS " Configuration               : "  ${CMAKE_BUILD_TYPE})
-endif(NOT CMAKE_GENERATOR MATCHES "Xcode|Visual Studio")
+endif()
 
 message(STATUS " C++ flags                   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
 message(STATUS " clang-tidy checks           : ${CLANG_TIDY_CHECKS}")
@@ -118,6 +118,7 @@ message(STATUS " _____________________ MANDATORY LIBRARIES _____________________
 SHOW_CONFIG_LINE_SYSTEM("eigen3                              " CMAKE_MRPT_HAS_EIGEN "[Version: ${MRPT_EIGEN_VERSION}]")
 message(STATUS " - Assumed max. EIGEN_MAX_ALIGN_BYTES         : ${EIGEN_MAX_ALIGN_BYTES}")
 message(STATUS " - Assumed max. EIGEN_MAX_STATIC_ALIGN_BYTES  : ${EIGEN_MAX_STATIC_ALIGN_BYTES}")
+SHOW_CONFIG_LINE_SYSTEM("simpleini                           " CMAKE_MRPT_HAS_SIMPLEINI)
 SHOW_CONFIG_LINE_SYSTEM("zlib (compression)                  " CMAKE_MRPT_HAS_ZLIB)
 message(STATUS "")
 
