@@ -9,6 +9,17 @@
 
 #include "config-precomp.h"  // Precompiled headers
 
+// Fix to SimpleIni bug: not able to build with C++17
+#include <functional>
+#ifdef _MSC_VER
+namespace std
+{
+template <
+	typename T1, typename T2, typename RET>
+	using binary_function = std::function<RET(T1,T2)>;
+}
+#endif
+
 #include <SimpleIni.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/os.h>
