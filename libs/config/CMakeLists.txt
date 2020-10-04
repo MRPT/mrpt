@@ -17,5 +17,4 @@ define_mrpt_lib(
 
 if(BUILD_mrpt-config)
 	target_include_directories(config PRIVATE "${SIMPLEINI_INCLUDE_DIRS}")
-
 endif()
