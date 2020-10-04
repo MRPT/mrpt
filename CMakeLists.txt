@@ -270,8 +270,8 @@ include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget In
 include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
 include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS1
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
-include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
 include(cmakemodules/script_simpleini.cmake REQUIRED)   # SimpleINI lib
+include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
 include(cmakemodules/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
 include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library

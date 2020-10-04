@@ -5,6 +5,7 @@ set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 0)
 
 # 1st) Try to locate the pkg via pkg-config:
 find_path(SIMPLEINI_INCLUDE_DIRS SimpleIni.h)
+mark_as_advanced(SIMPLEINI_INCLUDE_DIRS)
 
 if(SIMPLEINI_INCLUDE_DIRS)
 		if ($ENV{VERBOSE})
