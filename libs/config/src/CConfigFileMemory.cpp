@@ -9,20 +9,30 @@
 
 #include "config-precomp.h"  // Precompiled headers
 
+// Fix to SimpleIni bug: not able to build with C++17
+#include <functional>
+#ifdef _MSC_VER
+namespace std
+{
+template <typename T1, typename T2, typename RET>
+using binary_function = std::function<RET(T1, T2)>;
+}
+#endif
+
+#include <SimpleIni.h>
+
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/system/string_utils.h>
-#include "simpleini/SimpleIni.h"
+#include "MRPT_SimpleIni.h"
 
 using namespace mrpt;
 using namespace mrpt::config;
 using namespace mrpt::config::simpleini;
 using namespace std;
 
-#define THE_INI m_impl->m_ini
-
 struct CConfigFileMemory::Impl
 {
-	MRPT_CSimpleIni m_ini;
+	std::shared_ptr<MRPT_CSimpleIni> ini = std::make_shared<MRPT_CSimpleIni>();
 };
 
 CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList)
@@ -31,14 +41,14 @@ CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList)
 	// Load the strings:
 	std::string aux;
 	mrpt::system::stringListAsString(stringList, aux);
-	THE_INI.Load(aux.c_str(), aux.size());
+	m_impl->ini->LoadData(aux.c_str(), aux.size());
 }
 
 CConfigFileMemory::CConfigFileMemory(const std::string& str)
 	: m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
 	// Load the strings:
-	THE_INI.Load(str.c_str(), str.size());
+	m_impl->ini->LoadData(str.c_str(), str.size());
 }
 
 /*---------------------------------------------------------------
@@ -54,17 +64,17 @@ void CConfigFileMemory::setContent(const std::vector<std::string>& stringList)
 	// Load the strings:
 	std::string aux;
 	mrpt::system::stringListAsString(stringList, aux);
-	THE_INI.Load(aux.c_str(), aux.size());
+	m_impl->ini->LoadData(aux.c_str(), aux.size());
 }
 
 void CConfigFileMemory::setContent(const std::string& str)
 {
-	THE_INI.Load(str.c_str(), str.size());
+	m_impl->ini->LoadData(str.c_str(), str.size());
 }
 
 void CConfigFileMemory::getContent(std::string& str) const
 {
-	m_impl->m_ini.Save(str);
+	m_impl->ini->Save(str);
 }
 
 CConfigFileMemory::~CConfigFileMemory() = default;
@@ -73,8 +83,8 @@ void CConfigFileMemory::writeString(
 {
 	MRPT_START
 
-	SI_Error ret =
-		THE_INI.SetValue(section.c_str(), name.c_str(), str.c_str(), nullptr);
+	SI_Error ret = m_impl->ini->SetValue(
+		section.c_str(), name.c_str(), str.c_str(), nullptr);
 	if (ret < 0) THROW_EXCEPTION("Error changing value in INI-style file!");
 
 	MRPT_END
@@ -87,7 +97,7 @@ std::string CConfigFileMemory::readString(
 	MRPT_START
 	const char* defVal = failIfNotFound ? nullptr : defaultStr.c_str();
 
-	const char* aux = m_impl->m_ini.GetValue(
+	const char* aux = m_impl->ini->GetValue(
 		section.c_str(), name.c_str(), defVal,
 		nullptr);  // The memory is managed by the SimpleIni object
 
@@ -113,7 +123,7 @@ std::string CConfigFileMemory::readString(
 void CConfigFileMemory::getAllSections(std::vector<std::string>& sections) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
-	m_impl->m_ini.GetAllSections(names);
+	m_impl->ini->GetAllSections(names);
 
 	MRPT_CSimpleIni::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
@@ -126,7 +136,7 @@ void CConfigFileMemory::getAllKeys(
 	const string& section, std::vector<std::string>& keys) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
-	m_impl->m_ini.GetAllKeys(section.c_str(), names);
+	m_impl->ini->GetAllKeys(section.c_str(), names);
 
 	MRPT_CSimpleIni::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
@@ -135,4 +145,4 @@ void CConfigFileMemory::getAllKeys(
 		*s = n->pItem;
 }
 
-void CConfigFileMemory::clear() { m_impl->m_ini.Reset(); }
+void CConfigFileMemory::clear() { m_impl->ini->Reset(); }

@@ -9,9 +9,21 @@
 
 #include "config-precomp.h"  // Precompiled headers
 
+// Fix to SimpleIni bug: not able to build with C++17
+#include <functional>
+#ifdef _MSC_VER
+namespace std
+{
+template <
+	typename T1, typename T2, typename RET>
+	using binary_function = std::function<RET(T1,T2)>;
+}
+#endif
+
+#include <SimpleIni.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/system/os.h>
-#include "simpleini/SimpleIni.h"
+#include "MRPT_SimpleIni.h"
 
 using namespace mrpt;
 using namespace mrpt::config;
@@ -20,7 +32,7 @@ using namespace std;
 
 struct CConfigFile::Impl
 {
-	MRPT_CSimpleIni m_ini;
+	std::shared_ptr<MRPT_CSimpleIni> ini = std::make_shared<MRPT_CSimpleIni>();
 };
 
 /*---------------------------------------------------------------
@@ -33,7 +45,7 @@ CConfigFile::CConfigFile(const std::string& fileName)
 
 	m_file = fileName;
 	m_modified = false;
-	m_impl->m_ini.LoadFile(fileName.c_str());
+	m_impl->ini->LoadFile(fileName.c_str());
 
 	MRPT_END
 }
@@ -61,7 +73,7 @@ void CConfigFile::setFileName(const std::string& fil_path)
 	m_file = fil_path;
 	m_modified = false;
 
-	m_impl->m_ini.LoadFile(fil_path.c_str());
+	m_impl->ini->LoadFile(fil_path.c_str());
 	MRPT_END
 }
 
@@ -73,7 +85,7 @@ void CConfigFile::writeNow()
 	MRPT_START
 	if (m_modified && !m_file.empty())
 	{
-		m_impl->m_ini.SaveFile(m_file.c_str());
+		m_impl->ini->SaveFile(m_file.c_str());
 		m_modified = false;
 	}
 	MRPT_END
@@ -100,7 +112,7 @@ void CConfigFile::writeString(
 
 	m_modified = true;
 
-	if (0 > m_impl->m_ini.SetValue(
+	if (0 > m_impl->ini->SetValue(
 				section.c_str(), name.c_str(), str.c_str(), nullptr))
 		THROW_EXCEPTION("Error changing value in INI-style file!");
 
@@ -117,7 +129,7 @@ std::string CConfigFile::readString(
 	MRPT_START
 	const char* defVal = failIfNotFound ? nullptr : defaultStr.c_str();
 
-	const char* aux = m_impl->m_ini.GetValue(
+	const char* aux = m_impl->ini->GetValue(
 		section.c_str(), name.c_str(), defVal,
 		nullptr);  // The memory is managed by the SimpleIni object
 
@@ -147,7 +159,7 @@ std::string CConfigFile::readString(
 void CConfigFile::getAllSections(std::vector<std::string>& sections) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
-	m_impl->m_ini.GetAllSections(names);
+	m_impl->ini->GetAllSections(names);
 
 	MRPT_CSimpleIni::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
@@ -163,7 +175,7 @@ void CConfigFile::getAllKeys(
 	const string& section, std::vector<std::string>& keys) const
 {
 	MRPT_CSimpleIni::TNamesDepend names;
-	m_impl->m_ini.GetAllKeys(section.c_str(), names);
+	m_impl->ini->GetAllKeys(section.c_str(), names);
 
 	MRPT_CSimpleIni::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
@@ -172,4 +184,4 @@ void CConfigFile::getAllKeys(
 		*s = n->pItem;
 }
 
-void CConfigFile::clear() { m_impl->m_ini.Reset(); }
+void CConfigFile::clear() { m_impl->ini->Reset(); }

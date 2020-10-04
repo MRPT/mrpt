@@ -263,6 +263,10 @@ endif()
 # ----------------------------------
 # already handled in cmakemodules/script_libfyaml.cmake
 
+# ----------------------------------
+# simpleini
+# ----------------------------------
+# already handled in cmakemodules/script_simpleini.cmake
 
 # ----------------------------------
 # googletest
