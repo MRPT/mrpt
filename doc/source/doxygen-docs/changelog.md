@@ -4,6 +4,7 @@
 - Changes in libraries:
   - \ref mrpt_gui_grp
     - Useless nanogui_win() converted into mrpt::gui::CDisplayWindowGUI::nanogui_screen()
+    - nanogui: New methods: nanogui::Screen::mouseState(), nanogui::Screen::mouseModifiers()
 - BUG FIXES:
   - RawLogViewer: Fix wrong indices in tree view. Fix freezed progress bar loading a second rawlog.
   - RawLogViewer: Fix wrong rendering if font is missing in the system (Ubuntu 20.04)
