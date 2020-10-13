@@ -960,11 +960,40 @@ void _DSceneViewerFrame::updateTitle()
 				  .c_str()));
 }
 
-void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent& event)
+void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 {
 	timLoadFileCmdLine.Stop();  // One shot only.
 	// Open file if passed by the command line:
-	if (global_fileToOpen.size()) loadFromFile(global_fileToOpen);
+	if (!global_fileToOpen.empty())
+	{
+		if (mrpt::system::strCmpI(
+				"3Dscene", mrpt::system::extractFileExtension(
+							   global_fileToOpen, true /*ignore .gz*/)))
+		{
+			loadFromFile(global_fileToOpen);
+		}
+		else
+		{
+			std::cout << "Filename extension does not match `3Dscene`, "
+						 "importing as an ASSIMP model...\n";
+			try
+			{
+				auto obj3D = mrpt::opengl::CAssimpModel::Create();
+				obj3D->loadScene(global_fileToOpen);
+				// obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
+				// 0._deg, 90.0_deg));
+				m_canvas->getOpenGLSceneRef()->insert(obj3D);
+
+				m_canvas->Refresh();
+			}
+			catch (const std::exception& e)
+			{
+				std::cerr << mrpt::exception_to_str(e) << std::endl;
+				wxMessageBox(
+					mrpt::exception_to_str(e), _("Exception"), wxOK, this);
+			}
+		}
+	}
 }
 
 void _DSceneViewerFrame::OnbtnAutoplayClicked(wxCommandEvent& event)
@@ -1118,7 +1147,8 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 		mrpt::opengl::CAssimpModel::Ptr obj3D =
 			mrpt::opengl::CAssimpModel::Create();
 		obj3D->loadScene(fil);
-		obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg, 0._deg, 90.0_deg));
+		// obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
+		// 0._deg, 90.0_deg));
 		m_canvas->getOpenGLSceneRef()->insert(obj3D);
 
 		m_canvas->Refresh();
@@ -1821,7 +1851,8 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			this, _("Choose target image file"),
 			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 			_("render.png"),
-			_("Image files (*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All "
+			_("Image files "
+			  "(*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All "
 			  "files (*.*)|*.*"),
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 		if (dialog.ShowModal() != wxID_OK) return;
