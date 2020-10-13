@@ -135,6 +135,7 @@ void CAssimpModel::onUpdateBuffers_all()
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	if (!m_assimp_scene->scene) return;  // No scene
 
 	RenderElements re;
@@ -146,7 +147,6 @@ void CAssimpModel::onUpdateBuffers_all()
 	re.ipt = &m_textureIdMap;
 	re.textObjs = &m_texturedObjects;
 
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	ASSERT_(m_assimp_scene->scene);
 
 	process_textures(
