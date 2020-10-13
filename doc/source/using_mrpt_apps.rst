@@ -7,3 +7,4 @@ Using MRPT applications
   :maxdepth: 2
 
   app_GridmapNavSimul.rst
+  tutorial-3d-navigation-cheatsheet.rst
