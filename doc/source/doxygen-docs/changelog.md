@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.1.1: (Under development)
+- Changes in applications:
+  - SceneViewer3D: Command-line argument is now interpreted as ASSIMP model to open if it is not a 3Dscene.
 - Changes in libraries:
   - \ref mrpt_gui_grp
     - Useless nanogui_win() converted into mrpt::gui::CDisplayWindowGUI::nanogui_screen()
