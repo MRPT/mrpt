@@ -866,7 +866,17 @@ bool CImage::isColor() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	return m_impl->img.channels() == 3;
+	return m_impl->img.channels() >= 3;
+#else
+	THROW_EXCEPTION("MRPT built without OpenCV support");
+#endif
+}
+
+int CImage::channelCount() const
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+	return m_impl->img.channels();
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif

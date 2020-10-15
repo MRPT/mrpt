@@ -333,6 +333,21 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		while (m_textureImage.getHeight() > (unsigned int)texSize ||
 			   m_textureImage.getWidth() > (unsigned int)texSize)
 		{
+			static bool warningEmitted = false;
+			if (!warningEmitted)
+			{
+				warningEmitted = true;
+				std::cerr
+					<< "[mrpt::opengl::CRenderizableShaderTexturedTriangles] "
+					   "**PERFORMACE WARNING**:\n"
+					<< " Downsampling texture image of size "
+					<< m_textureImage.getWidth() << "x"
+					<< m_textureImage.getHeight()
+					<< " since maximum allowed OpenGL texture size "
+					   "(GL_MAX_TEXTURE_SIZE) is "
+					<< texSize << "\n";
+			}
+
 			m_textureImage =
 				m_textureImage.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
 			m_textureImageAlpha =
@@ -418,17 +433,27 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		}  // End of color texture WITH trans.
 		else
 		{
-			// Color texture WITHOUT trans.
+			// Color texture without transparency,
+			// or with integrated RGBA alpha channel
 			// --------------------------------------
 			// Prepare image data types:
 			const GLenum img_type = GL_UNSIGNED_BYTE;
-			const int nBytesPerPixel = m_textureImage.isColor() ? 3 : 1;
+			const int nBytesPerPixel = m_textureImage.channelCount();
 			// Reverse RGB <-> BGR order?
 			const bool is_RGB_order =
 				(m_textureImage.getChannelsOrder() == std::string("RGB"));
-			const GLenum img_format = nBytesPerPixel == 3
-										  ? (is_RGB_order ? GL_RGB : GL_BGR)
-										  : GL_LUMINANCE;
+			const GLenum img_format = [=]() {
+				switch (nBytesPerPixel)
+				{
+					case 1:
+						return GL_LUMINANCE;
+					case 3:
+						return (is_RGB_order ? GL_RGB : GL_BGR);
+					case 4:
+						return GL_BGRA;
+				};
+				THROW_EXCEPTION("Invalid texture image channel count.");
+			}();
 
 			// Send image data to OpenGL:
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -438,8 +463,9 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 				m_textureImage.getRowStride() / nBytesPerPixel);
 			CHECK_OPENGL_ERROR();
 			glTexImage2D(
-				GL_TEXTURE_2D, 0 /*level*/, GL_RGB8 /* RGB components */, width,
-				height, 0 /*border*/, img_format, img_type,
+				GL_TEXTURE_2D, 0 /*level*/,
+				nBytesPerPixel == 3 ? GL_RGB8 : GL_RGBA8 /* RGB components */,
+				width, height, 0 /*border*/, img_format, img_type,
 				m_textureImage.ptrLine<uint8_t>(0));
 			CHECK_OPENGL_ERROR();
 			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset

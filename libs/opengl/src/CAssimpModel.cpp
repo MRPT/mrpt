@@ -465,21 +465,20 @@ void CAssimpModel::recursive_render(
 						ASSERT_LT_(mesh->mMaterialIndex, sc->mNumMaterials);
 						const int texIndex = 0;
 						aiString path;  // filename
-						aiReturn texFound =
+						if (AI_SUCCESS ==
 							sc->mMaterials[mesh->mMaterialIndex]->GetTexture(
-								aiTextureType_DIFFUSE, texIndex, &path);
-						if (texFound != AI_SUCCESS)
-							THROW_EXCEPTION_FMT(
-								"Inconsistent texture information for "
-								"material id=%u in file '%s'",
-								mesh->mMaterialIndex, m_modelPath.c_str());
+								aiTextureType_DIFFUSE, texIndex, &path))
+						{
+							auto itIpt = re.ipt->find(path.data);
+							ASSERTMSG_(
+								itIpt != re.ipt->end(),
+								mrpt::format(
+									"Inconsistent texture data structure for "
+									"texture with path: '%s'",
+									path.data));
 
-						auto itIpt = re.ipt->find(path.data);
-						ASSERTMSG_(
-							itIpt != re.ipt->end(),
-							"Inconsistent texture data structure.");
-
-						textureIdIndex = itIpt->second.id_idx;
+							textureIdIndex = itIpt->second.id_idx;
+						}
 					}
 
 					for (unsigned int iTri = 0; iTri < nTri; iTri++)
