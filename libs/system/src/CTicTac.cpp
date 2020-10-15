@@ -90,7 +90,7 @@ void CTicTac::Tic() noexcept
 double CTicTac::Tac() const noexcept
 {
 #ifdef _WIN32
-	LARGE_INTEGER* l = LARGE_INTEGER_NUMS_CONST;
+	const LARGE_INTEGER* l = LARGE_INTEGER_NUMS_CONST;
 	LARGE_INTEGER l1;
 	QueryPerformanceCounter(&l1);
 	return (l1.QuadPart - l[0].QuadPart) *
