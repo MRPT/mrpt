@@ -68,3 +68,28 @@ TEST(clock, checkSynchEpoch)
 		EXPECT_LT(std::abs(err), 70000);
 	}
 }
+
+TEST(clock, simulatedTime)
+{
+	const auto t0 = mrpt::Clock::now();
+	const auto prevSrc = mrpt::Clock::getActiveClock();
+	// Enable simulated time:
+	mrpt::Clock::setActiveClock(mrpt::Clock::Simulated);
+
+	// Check that time is stopped:
+	mrpt::Clock::setSimulatedTime(t0);
+	const auto t1 = mrpt::Clock::now();
+	EXPECT_EQ(t0, t1);
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	const auto t2 = mrpt::Clock::now();
+	EXPECT_EQ(t0, t2);
+
+	// Check time moving forward:
+	auto tset2 = t0 + std::chrono::milliseconds(1000);
+	mrpt::Clock::setSimulatedTime(tset2);
+	const auto t3 = mrpt::Clock::now();
+	EXPECT_EQ(tset2, t3);
+
+	// Restore
+	mrpt::Clock::setActiveClock(prevSrc);
+}
