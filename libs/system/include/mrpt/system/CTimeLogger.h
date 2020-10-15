@@ -153,6 +153,8 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	/** Return the last execution time of the given "section", or 0 if it hasn't
 	 * ever been called "enter" with that section name */
 	double getLastTime(const std::string& name) const;
+
+	friend struct CTimeLoggerEntry;
 };  // End of class def.
 
 /** A safe way to call enter() and leave() of a mrpt::system::CTimeLogger upon
@@ -198,7 +200,7 @@ struct CTimeLoggerEntry
 	// Note we cannot store the string_view since we have no guarantees of the
 	// life-time of the provided string buffer.
 	const std::string m_section_name;
-	mrpt::Clock::time_point m_entry;
+	double m_entry = 0;
 	bool stopped_{false};
 };
 

@@ -60,7 +60,14 @@ class Clock
 
 	/** Changes the selected clock to get time from when calling now().
 	 * Default: Realtime.
-	 * Ignored in non-Linux systems.
+	 *
+	 * Monotonic is only available on Linux systems.
+	 * RealTime and Simulated are available on any platform.
+	 *
+	 * It is strongly recommended to call setSimulatedTime()
+	 * before setting the clock source to Simulated to ensure that any
+	 * subsequent call to now(), perhaps in a parallel thread, does not
+	 * return an undefined time_point value.
 	 */
 	static void setActiveClock(const Source s);
 
