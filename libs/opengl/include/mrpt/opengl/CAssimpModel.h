@@ -16,6 +16,13 @@
 #include <map>
 #include <optional>
 
+// Forward decls:
+// clang-format off
+struct aiScene;
+struct aiNode;
+namespace mrpt::opengl::internal { struct RenderElements; }
+// clang-format on
+
 namespace mrpt::opengl
 {
 /** This class can load & render 3D models in a number of different formats
@@ -75,11 +82,33 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 
 	CAssimpModel();
 	virtual ~CAssimpModel() override;
+
+	/** Import flags for loadScene */
+	struct LoadFlags
+	{
+		enum flags_t : uint32_t
+		{
+			/** See: aiProcessPreset_TargetRealtime_Fast */
+			RealTimeFast = 0x0001,
+			/** See: aiProcessPreset_TargetRealtime_Quality */
+			RealTimeQuality = 0x0002,
+			/** See: aiProcessPreset_TargetRealtime_MaxQuality */
+			RealTimeMaxQuality = 0x0004,
+			/** See: aiProcess_FlipUVs */
+			FlipUVs = 0x0010,
+			/** Displays messages on loaded textures, etc. */
+			Verbose = 0x1000
+		};
+	};
+
 	/**  Loads a scene from a file in any supported file.
 	 * \exception std::runtime_error On any error during loading or importing
 	 * the file.
 	 */
-	void loadScene(const std::string& file_name);
+	void loadScene(
+		const std::string& file_name,
+		const int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs |
+						  LoadFlags::Verbose);
 
 	/** Empty the object */
 	void clear();
@@ -116,6 +145,12 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	// We define a textured object per texture image, and delegate texture
 	// handling to that class:
 	mutable std::vector<CSetOfTexturedTriangles::Ptr> m_texturedObjects;
+	bool m_verboseLoad = true;
+
+	void recursive_render(
+		const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
+		mrpt::opengl::internal::RenderElements& re);
+	void process_textures(const aiScene* scene);
 
 };  // namespace mrpt::opengl
 
