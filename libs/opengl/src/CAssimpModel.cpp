@@ -20,25 +20,31 @@
 #include <aiScene.h>
 #include <assimp.h>
 #else
+#include <assimp/types.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/LogStream.hpp>
+
 #include <assimp/cimport.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/LogStream.hpp>
 #endif
 #endif
 
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
+#include <mrpt/opengl/opengl_api.h>
+
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-using namespace std;
 using mrpt::img::CImage;
 
 IMPLEMENTS_SERIALIZABLE(CAssimpModel, CRenderizable, mrpt::opengl)
 
+namespace mrpt::opengl::internal
+{
 struct RenderElements
 {
 	std::vector<mrpt::math::TPoint3Df>* lines_vbd = nullptr;
@@ -46,14 +52,33 @@ struct RenderElements
 	std::vector<mrpt::math::TPoint3Df>* pts_vbd = nullptr;
 	std::vector<mrpt::img::TColor>* pts_cbd = nullptr;
 	std::vector<mrpt::opengl::TTriangle>* tris = nullptr;
+
+	// textures:
+	const std::map<std::string, CAssimpModel::TInfoPerTexture>* ipt = nullptr;
+	const std::vector<CSetOfTexturedTriangles::Ptr>* textObjs = nullptr;
+};
+}  // namespace mrpt::opengl::internal
+
+struct CAssimpModel::Impl
+{
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+	Impl() = default;
+	~Impl() = default;
+
+	Impl(const Impl& o) { *this = o; }
+	Impl& operator=(const Impl&)
+	{
+		THROW_EXCEPTION(
+			"Copying CAssimpModel objects via operator= not allowed.");
+		return *this;
+	}
+
+	Assimp::Importer importer;
+	const aiScene* scene = nullptr;  // Memory owned by "importer"
+#endif
 };
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-// Note: Look at older git versions to see pre-OpenGL3 version with more texture
-// supports, etc. load_textures(), etc.
-static void recursive_render(
-	const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
-	RenderElements& re);
 
 // Just return the diffuse color:
 static mrpt::img::TColor apply_material(const aiMaterial* mtl);
@@ -105,46 +130,60 @@ void CAssimpModel::onUpdateBuffers_all()
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	if (!m_assimp_scene->scene) return;  // No scene
 
-	RenderElements re;
+	mrpt::opengl::internal::RenderElements re;
 	re.lines_vbd = &lines_vbd;
 	re.lines_cbd = &lines_cbd;
 	re.pts_vbd = &pts_vbd;
 	re.pts_cbd = &pts_cbd;
 	re.tris = &tris;
+	re.ipt = &m_textureIdMap;
+	re.textObjs = &m_texturedObjects;
 
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-	auto* scene = reinterpret_cast<aiScene*>(m_assimp_scene->scene);
+	ASSERT_(m_assimp_scene->scene);
+
+	process_textures(m_assimp_scene->scene);
 
 	const auto transf = mrpt::poses::CPose3D();
-
-	recursive_render(scene, scene->mRootNode, transf, re);
+	recursive_render(
+		m_assimp_scene->scene, m_assimp_scene->scene->mRootNode, transf, re);
 #endif
 }
 
-// These 3: already done in onUpdateBuffers_all()
+// These ones: already done in onUpdateBuffers_all()
 void CAssimpModel::onUpdateBuffers_Wireframe() {}
 void CAssimpModel::onUpdateBuffers_Points() {}
 void CAssimpModel::onUpdateBuffers_Triangles() {}
+
+void CAssimpModel::enqueForRenderRecursive(
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+{
+	// Enque rendering all textured meshes:
+	mrpt::opengl::CListOpenGLObjects lst;
+	for (const auto& o : m_texturedObjects)
+		lst.emplace_back(
+			std::dynamic_pointer_cast<mrpt::opengl::CRenderizable>(o));
+
+	mrpt::opengl::enqueForRendering(lst, state, rq);
+}
 
 uint8_t CAssimpModel::serializeGetVersion() const { return 0; }
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	const bool empty = m_assimp_scene->scene != nullptr;
 	out << empty;
-
 	if (!empty)
 	{
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 		// aiScene *scene = (aiScene *) m_assimp_scene->scene;
 		THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
-#else
-		THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
-#endif
 	}
+#else
+	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
+#endif
 }
 
 void CAssimpModel::serializeFrom(
@@ -167,51 +206,62 @@ void CAssimpModel::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-CAssimpModel::CAssimpModel() : m_bbox_min(0, 0, 0), m_bbox_max(0, 0, 0)
+CAssimpModel::CAssimpModel()
+	: m_assimp_scene(mrpt::make_impl<CAssimpModel::Impl>())
 {
-	m_assimp_scene = std::make_shared<TImplAssimp>();
 }
 
 CAssimpModel::~CAssimpModel() { clear(); }
-/*---------------------------------------------------------------
-							clear
-  ---------------------------------------------------------------*/
+
 void CAssimpModel::clear()
 {
 	CRenderizable::notifyChange();
-	m_assimp_scene = std::make_shared<TImplAssimp>();
-	m_modelPath.clear();
-	// m_textures_loaded = false;
 
-#if MRPT_HAS_OPENGL_GLUT
-#if 0
-	if (!m_textureIds.empty())
-	{
-		glDeleteTextures(m_textureIds.size(), &m_textureIds[0]);
-		m_textureIds.clear();
-	}
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+	m_assimp_scene->importer.FreeScene();
+#endif
+	m_modelPath.clear();
+	m_textures_loaded = false;
 	m_textureIdMap.clear();
-#endif
-#endif
+	m_texturedObjects.clear();
 }
 
-void CAssimpModel::loadScene(const std::string& filepath)
+void CAssimpModel::loadScene(const std::string& filepath, int flags)
 {
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	clear();
 	CRenderizable::notifyChange();
 
-	// we are taking one of the postprocessing presets to avoid
-	// spelling out 20+ single postprocessing flags here.
-	m_assimp_scene->scene = (void*)aiImportFile(
-		filepath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+	// Assimp flags:
+	const std::vector<std::pair<uint32_t, unsigned int>> flagMap = {
+		{LoadFlags::RealTimeFast, aiProcessPreset_TargetRealtime_Fast},
+		{LoadFlags::RealTimeQuality, aiProcessPreset_TargetRealtime_Quality},
+		{LoadFlags::RealTimeMaxQuality,
+		 aiProcessPreset_TargetRealtime_MaxQuality},
+		{LoadFlags::FlipUVs, aiProcess_FlipUVs}};
+
+	unsigned int pFlags = 0;
+	for (const auto& p : flagMap)
+		if (flags & p.first) pFlags |= p.second;
+
+	// Own flags:
+	m_verboseLoad = !!(flags & LoadFlags::Verbose);
+
+	m_assimp_scene->scene =
+		m_assimp_scene->importer.ReadFile(filepath.c_str(), pFlags);
+
+	if (!m_assimp_scene->scene)
+	{
+		THROW_EXCEPTION_FMT(
+			"Error importing '%s': %s", filepath.c_str(),
+			m_assimp_scene->importer.GetErrorString());
+	}
 	m_modelPath = filepath;
 
-	if (m_assimp_scene->scene)
+	// Evaluate overall bbox:
 	{
 		aiVector3D scene_min, scene_max;
-		auto* scene = (aiScene*)m_assimp_scene->scene;
-		get_bounding_box(scene, &scene_min, &scene_max);
+		get_bounding_box(m_assimp_scene->scene, &scene_min, &scene_max);
 		m_bbox_min.x = scene_min.x;
 		m_bbox_min.y = scene_min.y;
 		m_bbox_min.z = scene_min.z;
@@ -221,7 +271,8 @@ void CAssimpModel::loadScene(const std::string& filepath)
 	}
 
 	// Process all elements at once:
-	// This populates the structures that will be attached to opengl buffers
+	// This populates the structures that will be attached to opengl
+	// buffers
 	const_cast<CAssimpModel&>(*this).onUpdateBuffers_all();
 
 #else
@@ -238,21 +289,6 @@ void CAssimpModel::getBoundingBox(
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
-}
-
-CAssimpModel::TImplAssimp::TImplAssimp() = default;
-CAssimpModel::TImplAssimp::~TImplAssimp()
-{
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-	if (scene)
-	{
-		// cleanup - calling 'aiReleaseImport' is important, as the library
-		// keeps internal resources until the scene is freed again. Not
-		// doing so can cause severe resource leaking.
-		aiReleaseImport((aiScene*)scene);
-		scene = nullptr;
-	}
-#endif
 }
 
 bool CAssimpModel::traceRay(
@@ -361,9 +397,9 @@ static mrpt::math::TPoint3Df to_mrpt(const aiVector3D& v)
 	return {v.x, v.y, v.z};
 }
 
-static void recursive_render(
+void CAssimpModel::recursive_render(
 	const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
-	RenderElements& re)
+	mrpt::opengl::internal::RenderElements& re)
 {
 	const aiMatrix4x4& m = nd->mTransformation;
 
@@ -423,6 +459,29 @@ static void recursive_render(
 					const unsigned int nTri = face->mNumIndices / 3;
 					ASSERT_EQUAL_(face->mNumIndices % 3, 0);
 
+					size_t textureIdIndex = std::string::npos;
+					if (mesh->HasTextureCoords(0))
+					{
+						ASSERT_LT_(mesh->mMaterialIndex, sc->mNumMaterials);
+						const int texIndex = 0;
+						aiString path;  // filename
+						aiReturn texFound =
+							sc->mMaterials[mesh->mMaterialIndex]->GetTexture(
+								aiTextureType_DIFFUSE, texIndex, &path);
+						if (texFound != AI_SUCCESS)
+							THROW_EXCEPTION_FMT(
+								"Inconsistent texture information for "
+								"material id=%u",
+								mesh->mMaterialIndex);
+
+						auto itIpt = re.ipt->find(path.data);
+						ASSERTMSG_(
+							itIpt != re.ipt->end(),
+							"Inconsistent texture data structure.");
+
+						textureIdIndex = itIpt->second.id_idx;
+					}
+
 					for (unsigned int iTri = 0; iTri < nTri; iTri++)
 					{
 						mrpt::opengl::TTriangle tri;
@@ -460,7 +519,17 @@ static void recursive_render(
 							tri.z(v) = pt.z;
 						}
 
-						re.tris->emplace_back(std::move(tri));
+						if (textureIdIndex == std::string::npos)
+						{
+							// Append to default non-textured mesh:
+							re.tris->emplace_back(std::move(tri));
+						}
+						else
+						{
+							// Append to its corresponding textured object:
+							re.textObjs->at(textureIdIndex)
+								->insertTriangle(tri);
+						}
 					}
 				}
 				break;
@@ -475,6 +544,100 @@ static void recursive_render(
 	// draw all children
 	for (unsigned int n = 0; n < nd->mNumChildren; ++n)
 		recursive_render(sc, nd->mChildren[n], curTf, re);
+}
+
+void CAssimpModel::process_textures(const aiScene* scene)
+{
+	using namespace std::string_literals;
+
+	if (scene->HasTextures())
+		THROW_EXCEPTION(
+			"Support for meshes with *embedded* textures is not implemented. "
+			"Please, use external texture files or contribute a PR to mrpt "
+			"with this feature.");
+
+	m_textureIdMap.clear();
+	m_texturedObjects.clear();
+
+	/* getTexture Filenames and no. of Textures */
+	for (unsigned int m = 0; m < scene->mNumMaterials; m++)
+	{
+		for (int texIndex = 0;; texIndex++)
+		{
+			bool anyFound = false;
+			const std::vector<aiTextureType> texTypes = {
+				aiTextureType_DIFFUSE, aiTextureType_AMBIENT,
+				aiTextureType_SPECULAR};
+
+			for (const auto texType : texTypes)
+			{
+				aiString path;  // filename
+				aiReturn texFound =
+					scene->mMaterials[m]->GetTexture(texType, texIndex, &path);
+				if (texFound != AI_SUCCESS) break;
+
+				CAssimpModel::TInfoPerTexture& ipt = m_textureIdMap[path.data];
+				ipt.id_idx = std::string::npos;  // pending
+				anyFound = true;
+			}
+			if (!anyFound) break;
+		}
+	}
+
+	const auto basepath = mrpt::system::filePathSeparatorsToNative(
+		mrpt::system::extractFileDirectory(m_modelPath));
+
+	for (auto& kv : m_textureIdMap)
+	{
+		// save image ID
+		std::string filename = kv.first;  // get filename
+		CAssimpModel::TInfoPerTexture& ipt = kv.second;
+		ipt.id_idx =
+			m_texturedObjects.size();  // save texture id for filename in map
+
+		// Create "children" textured objects:
+		auto& texturedObj =
+			m_texturedObjects.emplace_back(CSetOfTexturedTriangles::Create());
+
+		const std::string fileloc =
+			mrpt::system::filePathSeparatorsToNative(basepath + filename);
+
+		// Load images:
+		// TGA is handled specially since it's not supported by OpenCV:
+		bool load_ok;
+		if (mrpt::system::lowerCase(
+				mrpt::system::extractFileExtension(fileloc)) == "tga"s)
+		{
+			ipt.img_alpha.emplace();
+
+			load_ok = mrpt::img::CImage::loadTGA(
+				fileloc, ipt.img_rgb, *ipt.img_alpha);
+		}
+		else
+		{
+			load_ok = ipt.img_rgb.loadFromFile(fileloc);
+		}
+
+		if (load_ok)
+		{
+			if (m_verboseLoad)
+				std::cout << "[CAssimpModel] Loaded texture: " << fileloc
+						  << "\n";
+
+			if (ipt.img_alpha.has_value())
+				texturedObj->assignImage(ipt.img_rgb, *ipt.img_alpha);
+			else
+				texturedObj->assignImage(ipt.img_rgb);
+		}
+		else
+		{
+			/* Error occured */
+			const std::string sError = mrpt::format(
+				"[CAssimpModel] Couldn't load texture image: '%s'",
+				fileloc.c_str());
+			std::cerr << sError << std::endl;
+		}
+	}
 }
 
 #endif  // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP

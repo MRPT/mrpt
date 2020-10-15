@@ -1,10 +1,14 @@
 \page changelog Change Log
 
 # Version 2.1.1: (Under development)
+- Changes in applications:
+  - SceneViewer3D: Command-line argument is now interpreted as ASSIMP model to open if it is not a 3Dscene.
 - Changes in libraries:
   - \ref mrpt_gui_grp
     - Useless nanogui_win() converted into mrpt::gui::CDisplayWindowGUI::nanogui_screen()
     - nanogui: New methods: nanogui::Screen::mouseState(), nanogui::Screen::mouseModifiers()
+  - \ref mrpt_opengl_grp
+    - New load flags in mrpt::opengl::CAssimpModel::loadScene()
 - BUG FIXES:
   - navlog-viewer: Crash when clicking "play" (Closes #1103)
   - RawLogViewer: Fix wrong indices in tree view. Fix freezed progress bar loading a second rawlog.
@@ -12,6 +16,7 @@
   - rawlog-edit: Fix --cut operation leaving empty sensory frames/action collections.
   - mrpt::opengl::CCylinder::setHasBases() was ignored since last OpenGL3 refactor.
   - Fix building against OpenCV 4.4
+  - Correct texture loading in mrpt::opengl::CAssimpModel.
 
 ------
 # Version 2.1.0: Released Aug 31st, 2020
