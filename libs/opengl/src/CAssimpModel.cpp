@@ -471,8 +471,8 @@ void CAssimpModel::recursive_render(
 						if (texFound != AI_SUCCESS)
 							THROW_EXCEPTION_FMT(
 								"Inconsistent texture information for "
-								"material id=%u",
-								mesh->mMaterialIndex);
+								"material id=%u in file '%s'",
+								mesh->mMaterialIndex, m_modelPath.c_str());
 
 						auto itIpt = re.ipt->find(path.data);
 						ASSERTMSG_(
