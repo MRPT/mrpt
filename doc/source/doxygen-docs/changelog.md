@@ -4,6 +4,8 @@
 - Changes in applications:
   - SceneViewer3D: Command-line argument is now interpreted as ASSIMP model to open if it is not a 3Dscene.
 - Changes in libraries:
+  - \ref mrpt_core_grp
+    - mrpt::Clock now has a simulated time mode. See mrpt::Clock::setSimulatedTime()
   - \ref mrpt_gui_grp
     - Useless nanogui_win() converted into mrpt::gui::CDisplayWindowGUI::nanogui_screen()
     - nanogui: New methods: nanogui::Screen::mouseState(), nanogui::Screen::mouseModifiers()
