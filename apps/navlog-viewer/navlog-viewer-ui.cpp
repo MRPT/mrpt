@@ -94,7 +94,7 @@ NavlogViewerApp::NavlogViewerApp()
 			5 /*margin*/));
 
 		panel->add<nanogui::Button>("Load...", ENTYPO_ICON_UPLOAD)
-			->setCallback([&]() { this->OnbtnLoadClick(); });
+			->setCallback([this]() { this->OnbtnLoadClick(); });
 
 		m_btnPlay =
 			panel->add<nanogui::Button>("Play", ENTYPO_ICON_CONTROLLER_PLAY);
@@ -107,7 +107,7 @@ NavlogViewerApp::NavlogViewerApp()
 		edPlayInterval->setEditable(true);
 		edPlayInterval->setFormat("[0-9.e+\\-]*");
 
-		m_btnPlay->setCallback([&]() {
+		m_btnPlay->setCallback([edPlayInterval, this]() {
 			// Rewind if we are at the end:
 			if (std::abs(slidLog->value() - slidLog->range().second) < 1e-6)
 				slidLog->setValue(0);
@@ -119,7 +119,7 @@ NavlogViewerApp::NavlogViewerApp()
 			m_btnStop->setPushed(false);
 			m_autoPlayInterval = std::stod(edPlayInterval->value());
 		});
-		m_btnStop->setCallback([&]() {
+		m_btnStop->setCallback([this]() {
 			m_autoPlayEnabled = false;
 			m_btnPlay->setEnabled(true);
 			m_btnStop->setEnabled(false);
@@ -130,13 +130,13 @@ NavlogViewerApp::NavlogViewerApp()
 		m_btnStop->setEnabled(false);
 
 		panel->add<nanogui::Button>("Quit", ENTYPO_ICON_ARROW_RIGHT)
-			->setCallback([&]() { m_win->setVisible(false); });
+			->setCallback([this]() { m_win->setVisible(false); });
 	}
 
 	// ===== Time slider:
 	m_txtTimeIndex = m_winMain->add<nanogui::Label>("Time index:");
 	slidLog = m_winMain->add<nanogui::Slider>();
-	slidLog->setCallback([&](float /*v*/) { OnslidLogCmdScroll(); });
+	slidLog->setCallback([this](float /*v*/) { OnslidLogCmdScroll(); });
 
 	m_tabWidget = m_winMain->add<nanogui::TabWidget>();
 
@@ -168,35 +168,37 @@ NavlogViewerApp::NavlogViewerApp()
 
 		m_cbUseOdometryCoords =
 			layer->add<nanogui::CheckBox>("Use raw odometry");
-		m_cbUseOdometryCoords->setCallback([&](bool) { OnslidLogCmdScroll(); });
+		m_cbUseOdometryCoords->setCallback(
+			[this](bool) { OnslidLogCmdScroll(); });
 
 		m_cbGlobalFrame =
 			layer->add<nanogui::CheckBox>("In global coordinates");
 		m_cbGlobalFrame->setChecked(true);
-		m_cbGlobalFrame->setCallback([&](bool) { OnslidLogCmdScroll(); });
+		m_cbGlobalFrame->setCallback([this](bool) { OnslidLogCmdScroll(); });
 
 		m_cbShowDelays =
 			layer->add<nanogui::CheckBox>("Show delays model-based poses");
 		m_cbShowDelays->setChecked(true);
-		m_cbShowDelays->setCallback([&](bool) { OnslidLogCmdScroll(); });
+		m_cbShowDelays->setCallback([this](bool) { OnslidLogCmdScroll(); });
 
 		m_cbDrawShape =
 			layer->add<nanogui::CheckBox>("Draw robot shape on trajectories");
 		m_cbDrawShape->setChecked(true);
-		m_cbDrawShape->setCallback([&](bool) { OnslidLogCmdScroll(); });
+		m_cbDrawShape->setCallback([this](bool) { OnslidLogCmdScroll(); });
 
 		m_cbShowAllDebugFields =
 			layer->add<nanogui::CheckBox>("Show all debug fields");
 		m_cbShowAllDebugFields->setCallback(
-			[&](bool) { OnslidLogCmdScroll(); });
+			[this](bool) { OnslidLogCmdScroll(); });
 
 		m_cbShowCursor = layer->add<nanogui::CheckBox>("Mouse coordinates");
 		m_cbShowCursor->setChecked(m_showCursorXY);
-		m_cbShowCursor->setCallback([&](bool v) { m_showCursorXY = v; });
+		m_cbShowCursor->setCallback([this](bool v) { m_showCursorXY = v; });
 
 		m_ClearanceOverPath =
 			layer->add<nanogui::CheckBox>("Clearance: path/!pointwise");
-		m_ClearanceOverPath->setCallback([&](bool) { OnslidLogCmdScroll(); });
+		m_ClearanceOverPath->setCallback(
+			[this](bool) { OnslidLogCmdScroll(); });
 
 		{
 			auto* panel = layer->add<nanogui::Widget>();
@@ -212,7 +214,7 @@ NavlogViewerApp::NavlogViewerApp()
 		const auto lst = std::vector<std::string>(
 			{"TP-Obstacles only", "+ final scores", "+ preliminary scores"});
 		m_rbPerPTGPlots = layer->add<nanogui::ComboBox>(lst, lst);
-		m_rbPerPTGPlots->setCallback([&](int) { OnslidLogCmdScroll(); });
+		m_rbPerPTGPlots->setCallback([this](int) { OnslidLogCmdScroll(); });
 		m_rbPerPTGPlots->setSelectedIndex(2);
 	}
 
@@ -224,25 +226,26 @@ NavlogViewerApp::NavlogViewerApp()
 		layer->setLayout(layout);
 
 		auto lambdaAddSmallFontBtn =
-			[&](nanogui::Widget* parent, const std::string& caption,
-				const std::function<void(void)>& callback, int icon = 0) {
+			[](nanogui::Widget* parent, const std::string& caption,
+			   const std::function<void(void)>& callback, int icon = 0) {
 				auto btn = parent->add<nanogui::Button>(caption, icon);
 				btn->setCallback(callback);
 				btn->setFontSize(16);
 			};
 
-		lambdaAddSmallFontBtn(
-			layer, "See PTGs details", [&]() { OnmnuSeePTGParamsSelected(); });
-		lambdaAddSmallFontBtn(layer, "Save current obstacle map...", [&]() {
+		lambdaAddSmallFontBtn(layer, "See PTGs details", [this]() {
+			OnmnuSeePTGParamsSelected();
+		});
+		lambdaAddSmallFontBtn(layer, "Save current obstacle map...", [this]() {
 			OnmnuSaveCurrentObstacles();
 		});
-		lambdaAddSmallFontBtn(layer, "Export map plot to MATLAB...", [&]() {
+		lambdaAddSmallFontBtn(layer, "Export map plot to MATLAB...", [this]() {
 			OnmnuMatlabPlotsSelected();
 		});
-		lambdaAddSmallFontBtn(layer, "Export paths info to MATLAB...", [&]() {
-			OnmnuMatlabExportPaths();
-		});
-		lambdaAddSmallFontBtn(layer, "Save score matrices...", [&]() {
+		lambdaAddSmallFontBtn(
+			layer, "Export paths info to MATLAB...",
+			[this]() { OnmnuMatlabExportPaths(); });
+		lambdaAddSmallFontBtn(layer, "Save score matrices...", [this]() {
 			OnmnuSaveScoreMatrixSelected();
 		});
 	}
@@ -274,9 +277,9 @@ NavlogViewerApp::NavlogViewerApp()
 
 	// Setup idle loop code:
 	// -----------------------------
-	m_win->setLoopCallback([&]() { OnMainIdleLoop(); });
+	m_win->setLoopCallback([this]() { OnMainIdleLoop(); });
 	m_win->setKeyboardCallback(
-		[&](int key, int scancode, int action, int modifiers) {
+		[this](int key, int scancode, int action, int modifiers) {
 			return OnKeyboardCallback(key, scancode, action, modifiers);
 		});
 
@@ -984,21 +987,21 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 
 			viz.win->buttonPanel()
 				->add<nanogui::Button>("", ENTYPO_ICON_MINUS)
-				->setCallback([&]() {
+				->setCallback([this, viz]() {
 					// viz.win->setFixedSize({W, 1});
 					viz.glCanvas->setFixedSize({W, 1});
 					m_win->performLayout();
 				});
 			viz.win->buttonPanel()
 				->add<nanogui::Button>("", ENTYPO_ICON_PLUS)
-				->setCallback([&]() {
+				->setCallback([this, viz]() {
 					// viz.win->setFixedSize({W, H});
 					viz.glCanvas->setFixedSize({W, H});
 					m_win->performLayout();
 				});
 			viz.win->buttonPanel()
 				->add<nanogui::Button>("", ENTYPO_ICON_POPUP)
-				->setCallback([&]() {
+				->setCallback([this, viz]() {
 					// viz.win->setFixedSize({2 * W, 2 * H});
 					viz.glCanvas->setFixedSize({2 * W, 2 * H});
 					m_win->performLayout();
