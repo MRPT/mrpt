@@ -664,7 +664,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * \sa getAsFloat */
 	float getMaxAsFloat() const;
 
-	/** Returns true if the image is RGB, false if it is grayscale */
+	/** Returns 1 (grayscale), 3 (RGB) or 4 (RGBA) [New in MRPT 2.1.1] */
+	int channelCount() const;
+
+	/** Returns true if the image is RGB or RGBA, false if it is grayscale */
 	bool isColor() const;
 
 	/** Returns true if the object is in the state after default constructor */
