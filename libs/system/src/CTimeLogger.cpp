@@ -415,13 +415,13 @@ CTimeLoggerEntry::CTimeLoggerEntry(
 	const CTimeLogger& logger, const std::string_view& section_name)
 	: m_logger(const_cast<CTimeLogger&>(logger)), m_section_name(section_name)
 {
-	m_entry = mrpt::Clock::now();
+	m_entry = logger.m_tictac.Tac();
 }
 void CTimeLoggerEntry::stop()
 {
 	if (stopped_) return;
-	const auto leave = mrpt::Clock::now();
-	const double dt = mrpt::system::timeDifference(m_entry, leave);
+	const double leave = m_logger.m_tictac.Tac();
+	const double dt = leave - m_entry;
 
 	m_logger.registerUserMeasure(m_section_name, dt, true);
 	stopped_ = true;

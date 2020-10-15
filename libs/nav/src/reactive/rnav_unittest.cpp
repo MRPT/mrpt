@@ -19,7 +19,7 @@
 using mrpt::math::TPoint2D;
 
 template <typename RNAVCLASS>
-void run_rnav_test(
+void run_rnav_test_impl(
 	const std::string& sFilename, const std::string& sHoloMethod,
 	const TPoint2D& nav_target, const TPoint2D& world_topleft,
 	const TPoint2D& world_rightbottom,
@@ -150,6 +150,16 @@ void run_rnav_test(
 
 	rnav.navigate(&np);
 
+	const auto savedClockSrc = mrpt::Clock::getActiveClock();
+
+	// Start simulated time with current time:
+	mrpt::Clock::setSimulatedTime(mrpt::Clock::now());
+
+	// Switch to simulated time:
+	mrpt::Clock::setActiveClock(mrpt::Clock::Simulated);
+
+	const auto simulTimeStep = std::chrono::milliseconds(200);
+
 	unsigned int MAX_ITERS = 200;
 	for (unsigned int i = 0; i < MAX_ITERS; i++)
 	{
@@ -161,17 +171,44 @@ void run_rnav_test(
 		EXPECT_TRUE(rnav.getCurrentState() != CAbstractNavigator::NAV_ERROR);
 		if (rnav.getCurrentState() == CAbstractNavigator::IDLE) break;
 
-		robot_simul.simulateOneTimeStep(0.2 /*sec*/);
+		robot_simul.simulateOneTimeStep(simulTimeStep.count() * 1e-3 /*sec*/);
+
+		// advance simulated time:
+		mrpt::Clock::setSimulatedTime(mrpt::Clock::now() + simulTimeStep);
 	}
 
 	EXPECT_LT(
 		(TPoint2D(robot_simul.getCurrentGTPose()) - nav_target).norm(), 0.4);
 	EXPECT_TRUE(rnav.getCurrentState() == CAbstractNavigator::IDLE);
 
-	const_cast<mrpt::system::CTimeLogger&>(rnav.getTimeLogger())
-		.clear(true);  // do not show timelog table to console
-	const_cast<mrpt::system::CTimeLogger&>(rnav.getDelaysTimeLogger())
-		.clear(true);
+	// do not show timelog table to console
+	using mrpt::system::CTimeLogger;
+	const_cast<CTimeLogger&>(rnav.getTimeLogger()).clear(true);
+	const_cast<CTimeLogger&>(rnav.getDelaysTimeLogger()).clear(true);
+
+	// Restore real-time clock:
+	mrpt::Clock::setActiveClock(savedClockSrc);
+}
+
+template <typename RNAVCLASS>
+void run_rnav_test(
+	const std::string& sFilename, const std::string& sHoloMethod,
+	const TPoint2D& nav_target, const TPoint2D& world_topleft,
+	const TPoint2D& world_rightbottom,
+	const TPoint2D& block_obstacle_topleft = TPoint2D(0, 0),
+	const TPoint2D& block_obstacle_rightbottom = TPoint2D(0, 0))
+{
+	try
+	{
+		run_rnav_test_impl<RNAVCLASS>(
+			sFilename, sHoloMethod, nav_target, world_topleft,
+			world_rightbottom, block_obstacle_topleft,
+			block_obstacle_rightbottom);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << mrpt::exception_to_str(e);
+	}
 }
 
 const TPoint2D no_obs_trg(2.0, 0.4), no_obs_topleft(-10, 10),
