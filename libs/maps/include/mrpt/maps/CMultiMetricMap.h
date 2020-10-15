@@ -129,10 +129,14 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	 */
 	CMultiMetricMap(const TSetOfMetricMapInitializers& initializers);
 
+	/** Creates a deep copy */
 	CMultiMetricMap(const CMultiMetricMap& o);
+	/** Creates a deep copy */
 	CMultiMetricMap& operator=(const CMultiMetricMap& o);
 
+	/** Move ctor */
 	CMultiMetricMap(CMultiMetricMap&&) = default;
+	/** Move operator */
 	CMultiMetricMap& operator=(CMultiMetricMap&&) = default;
 
 	/** @name Access to list of maps
