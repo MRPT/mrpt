@@ -16,13 +16,14 @@
   - \ref mrpt_opengl_grp
     - New load flags in mrpt::opengl::CAssimpModel::loadScene()
 - BUG FIXES:
-  - navlog-viewer: Crash when clicking "play" (Closes #1103)
+  - navlog-viewer: Crash when clicking "play" (Closes [#1103](https://github.com/MRPT/mrpt/issues/1103)).
   - RawLogViewer: Fix wrong indices in tree view. Fix freezed progress bar loading a second rawlog.
   - RawLogViewer: Fix wrong rendering if font is missing in the system (Ubuntu 20.04)
   - rawlog-edit: Fix --cut operation leaving empty sensory frames/action collections.
   - mrpt::opengl::CCylinder::setHasBases() was ignored since last OpenGL3 refactor.
   - Fix building against OpenCV 4.4
   - Correct texture loading in mrpt::opengl::CAssimpModel.
+  - Fix wrong aspect ratio of image-mode opengl viewports (Closes [#1101](https://github.com/MRPT/mrpt/issues/1101)).
 
 ------
 # Version 2.1.0: Released Aug 31st, 2020

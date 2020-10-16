@@ -135,7 +135,7 @@ void COpenGLViewport::renderImageMode() const
 #endif
 
 	// Do we have an actual image to render?
-	if (!m_imageview_plane) return;
+	if (!m_imageViewPlane) return;
 
 	auto _ = m_state;
 
@@ -144,8 +144,8 @@ void COpenGLViewport::renderImageMode() const
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Adjust the aspect ratio:
-	const auto img_w = m_imageview_plane->getTextureImage().getWidth();
-	const auto img_h = m_imageview_plane->getTextureImage().getHeight();
+	const auto img_w = m_imageViewPlane->getTextureImage().getWidth();
+	const auto img_h = m_imageViewPlane->getTextureImage().getHeight();
 	const double img_ratio = double(img_w) / img_h;
 	const double vw_ratio = double(_.viewport_width) / _.viewport_height;
 	const double ratio = vw_ratio / img_ratio;
@@ -153,12 +153,10 @@ void COpenGLViewport::renderImageMode() const
 	_.mv_matrix.setIdentity();
 	_.p_matrix.setIdentity();
 
-	if (img_ratio > 1)
-		_.p_matrix(1, 1) /= img_ratio;
-	else if (img_ratio > 0)
-		_.p_matrix(0, 0) /= img_ratio;
-
-	if (ratio > 0) _.p_matrix(0, 0) /= ratio;
+	if (ratio > 1)
+		_.p_matrix(1, 1) *= ratio;
+	else if (ratio > 0)
+		_.p_matrix(0, 0) /= ratio;
 
 	auto &p00 = _.p_matrix(0, 0), &p11 = _.p_matrix(1, 1);
 	if (p00 > 0 && p11 > 0)
@@ -172,7 +170,7 @@ void COpenGLViewport::renderImageMode() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	CListOpenGLObjects lst;
-	lst.push_back(m_imageview_plane);
+	lst.push_back(m_imageViewPlane);
 	mrpt::opengl::RenderQueue rq;
 	mrpt::opengl::enqueForRendering(lst, _, rq);
 
@@ -524,7 +522,7 @@ void COpenGLViewport::render(
 
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
-	if (m_isImageView)
+	if (isImageViewMode())
 		renderImageMode();
 	else
 		renderNormalSceneMode();
@@ -895,35 +893,33 @@ void COpenGLViewport::getCurrentCameraPose(
  */
 void COpenGLViewport::setNormalMode()
 {
-	// If this was a m_isImageView, remove the quad object:
-	m_imageview_plane.reset();
+	// If this was an image-mode viewport, remove the quad object to disable it.
+	m_imageViewPlane.reset();
 
 	m_isCloned = false;
 	m_isClonedCamera = false;
-	m_isImageView = false;
 }
 
 void COpenGLViewport::setImageView(const mrpt::img::CImage& img)
 {
 	internal_enableImageView();
-	m_imageview_plane->assignImage(img);
+	m_imageViewPlane->assignImage(img);
 }
 void COpenGLViewport::setImageView(mrpt::img::CImage&& img)
 {
 	internal_enableImageView();
-	m_imageview_plane->assignImage(img);
+	m_imageViewPlane->assignImage(img);
 }
 
 void COpenGLViewport::internal_enableImageView()
 {
 	// If this is the first time, we have to create the quad object:
-	if (!m_imageview_plane)
+	if (!m_imageViewPlane)
 	{
-		m_imageview_plane = mrpt::opengl::CTexturedPlane::Create();
+		m_imageViewPlane = mrpt::opengl::CTexturedPlane::Create();
 		// Flip vertically:
-		m_imageview_plane->setPlaneCorners(-1, 1, 1, -1);
+		m_imageViewPlane->setPlaneCorners(-1, 1, 1, -1);
 	}
-	m_isImageView = true;
 }
 
 /** Evaluates the bounding box of this object (including possible children) in
