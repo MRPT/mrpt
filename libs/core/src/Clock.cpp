@@ -85,7 +85,7 @@ inline void from_nanoseconds(const uint64_t ns, struct timespec& ts)
 #endif
 
 // Convert to TTimeStamp 100-nanoseconds representation:
-#if !defined(_WIN32) && !defined(__APPLE__)
+#if !defined(_WIN32)
 static uint64_t to100ns(const timespec& tim)
 {
 	return uint64_t(tim.tv_sec) * UINT64_C(10000000) +
@@ -111,6 +111,7 @@ static uint64_t getCurrentTime() noexcept
 			gettimeofday(&tv, nullptr);
 			tim.tv_sec = tv.tv_sec;
 			tim.tv_nsec = tv.tv_usec * 1000;
+			return to100ns(tim);
 #else
 			timespec tim{0, 0};
 			// Just get the time and that is it:
@@ -132,6 +133,7 @@ static uint64_t getCurrentTime() noexcept
 			gettimeofday(&tv, nullptr);
 			tim.tv_sec = tv.tv_sec;
 			tim.tv_nsec = tv.tv_usec * 1000;
+			return to100ns(tim);
 #else
 			timespec tim{0, 0};
 			// Get the realtime clock reference timepoint, the first time we run
