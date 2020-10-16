@@ -2,7 +2,9 @@
 
 # Version 2.1.1: (Under development)
 - Changes in applications:
-  - SceneViewer3D: Command-line argument is now interpreted as ASSIMP model to open if it is not a 3Dscene.
+  - SceneViewer3D: 
+    - Command-line argument is now interpreted as ASSIMP model to open if it is not a 3Dscene.
+    - New menu: "File -> Import -> Show image" useful to test image-mode viewport rendering.
 - Changes in libraries:
   - \ref mrpt_core_grp
     - mrpt::Clock now has a simulated time mode. See mrpt::Clock::setSimulatedTime()

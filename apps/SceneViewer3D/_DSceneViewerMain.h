@@ -95,8 +95,8 @@ class _DSceneViewerFrame : public wxFrame
 	void OnmnuSelectByClassSelected(wxCommandEvent& event);
 	void OnmnuSelectNoneSelected(wxCommandEvent& event);
 	void OnmnuImportLASSelected(wxCommandEvent& event);
-	void OnmnuImportLASSelected1(wxCommandEvent& event);
 	//*)
+	void OnmnuImportImageView(wxCommandEvent& event);
 
 	void OntimAutoplay(wxTimerEvent& event);
 
@@ -120,6 +120,7 @@ class _DSceneViewerFrame : public wxFrame
 	static const long ID_MENUITEM5;
 	static const long ID_MENUITEM7;
 	static const long ID_MENUITEM6;
+	static const long ID_MENUITEM_ImportImage;
 	static const long ID_MENUITEM20;
 	static const long ID_MENUITEM25;
 	static const long ID_MENUITEM19;
@@ -156,6 +157,7 @@ class _DSceneViewerFrame : public wxFrame
 
 	//(*Declarations(_DSceneViewerFrame)
 	wxMenuItem* MenuItem8;
+	wxMenuItem* MenuItemImportImage;
 	wxMenuItem* mnuSelectionDelete;
 	wxMenuItem* MenuItem7;
 	wxCustomButton* btnCapture;
