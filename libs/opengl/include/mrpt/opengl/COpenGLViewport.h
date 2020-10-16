@@ -66,7 +66,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	friend class COpenGLScene;
 
    public:
-	/** @name Set the viewport "modes"
+	/** @name Viewport "modes"
 		@{ */
 
 	/** Set this viewport as a clone of some other viewport, given its name - as
@@ -92,6 +92,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * \sa setImageView
 	 */
 	void setImageView(mrpt::img::CImage&& img);
+
+	/** Returns true if setImageView() has been called on this viewport */
+	bool isImageViewMode() const { return !!m_imageViewPlane; }
 
 	/** Reset the viewport to normal mode: rendering its own objects.
 	 * \sa setCloneView, setNormalMode
@@ -320,7 +323,6 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const;
 
 	/** @} */  // end of Contained objects set/get/search
-	// ------------------------------------------------------
 
 	/** Destructor: clears all objects. */
 	~COpenGLViewport() override;
@@ -381,11 +383,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	bool m_custom_backgb_color{false};
 	/** used only if m_custom_backgb_color */
 	mrpt::img::TColorf m_background_color = {0.6f, 0.6f, 0.6f};
-	/** Set by setImageView */
-	bool m_isImageView{false};
 
 	/** The image to display, after calling \a setImageView() */
-	mrpt::opengl::CTexturedPlane::Ptr m_imageview_plane;
+	mrpt::opengl::CTexturedPlane::Ptr m_imageViewPlane;
 
 	mutable mrpt::opengl::CSetOfLines::Ptr m_borderLines;
 

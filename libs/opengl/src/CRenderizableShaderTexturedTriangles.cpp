@@ -456,7 +456,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 			}();
 
 			// Send image data to OpenGL:
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			CHECK_OPENGL_ERROR();
 			glPixelStorei(
 				GL_UNPACK_ROW_LENGTH,
