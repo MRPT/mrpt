@@ -25,8 +25,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 	// See CWxGLCanvasBase::CWxGLCanvasBase.
 	if (!::getenv("MESA_GL_VERSION_OVERRIDE"))
 	{
-		std::string s = "MESA_GL_VERSION_OVERRIDE=3.3";
-		::putenv(s.data());
+		::setenv("MESA_GL_VERSION_OVERRIDE", "3.3", 1 /*overwrite*/);
 	}
 #endif
 
