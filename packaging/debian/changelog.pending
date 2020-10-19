@@ -1,4 +1,2 @@
-  - Fix build in ppc64.
-  - Moving from libdc1394-22-dev to libdc1394-dev (Closes #970837).
-  - Add -g1 flag in mips* builds to reduce required RAM (Closes #970818).
-  - Use system library libsimpleini-dev (Closes #902488).
+  * xxx
+
