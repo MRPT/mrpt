@@ -64,14 +64,18 @@ if [ -f version_prefix.txt ];
 then
 	MRPTSRC=`pwd`
 
-  if [ -f $HOME/mrpt_release/mrpt*.tar.gz ];
-  then
-    echo "## release file already exists. Reusing it."
-  else
+  # Do not reuse the sources since each Ubuntu version may require different sources...
+  # Re-add after Bionic 18.04 EOL, which right now (2020) is a special case since
+  # it misses libsimpleini-dev
+  #
+  #if [ -f $HOME/mrpt_release/mrpt*.tar.gz ];
+  #then
+  #  echo "## release file already exists. Reusing it."
+  #else
     source scripts/prepare_release.sh
     echo
     echo "## Done prepare_release.sh"
-  fi
+  #fi
 else
 	echo "ERROR: Run this script from the MRPT root directory."
 	exit 1
