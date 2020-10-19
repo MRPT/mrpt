@@ -19,6 +19,9 @@ LST_DISTROS=(xenial bionic eoan focal groovy)
 # Special case for Xenial: enforce g++7
 export MRPT_PKG_CUSTOM_CMAKE_PARAMS_xenial="-DCMAKE_C_COMPILER=/usr/bin/gcc-7 -DCMAKE_CXX_COMPILER=/usr/bin/g++-7"
 
+# Special case for Bionic: use embedded version of simpleini
+export MRPT_PKG_EXPORTED_SUBMODULES_bionic="simpleini"
+
 
 # Checks
 # --------------------------------
@@ -72,6 +75,10 @@ do
 	cd ${MRPTSRC}
 	auxVarName=MRPT_PKG_CUSTOM_CMAKE_PARAMS_${DEBIAN_DIST}
 	auxVarName=${!auxVarName} # Replace by variable contents
+
+	auxVarName2=MRPT_PKG_EXPORTED_SUBMODULES_${DEBIAN_DIST}
+	export MRPT_PKG_EXPORTED_SUBMODULES=${!auxVarName2} # Replace by variable contents
+
 	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG}  -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}${auxVarName}"
 
 	CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

@@ -45,8 +45,7 @@ then
 	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}
 
 	# Include external submodules:
-	# TODO: Remove "simpleini" when bionic 18.04 is EOL.
-	EXTERNAL_MODS="nanogui nanogui/ext/nanovg googletest libfyaml rplidar_sdk simpleini"
+	EXTERNAL_MODS="nanogui nanogui/ext/nanovg googletest libfyaml rplidar_sdk ${MRPT_PKG_EXPORTED_SUBMODULES}"
 	for MOD in $EXTERNAL_MODS;
 	do
 		cd ${MRPTSRC}/3rdparty/$MOD
