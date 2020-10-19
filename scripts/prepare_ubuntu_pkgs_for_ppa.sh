@@ -14,14 +14,17 @@
 set -e
 
 # List of distributions to create PPA packages for:
-LST_DISTROS=(xenial bionic eoan focal groovy)
+LST_DISTROS=(xenial bionic focal groovy)
 
 # Special case for Xenial: enforce g++7
 export MRPT_PKG_CUSTOM_CMAKE_PARAMS_xenial="-DCMAKE_C_COMPILER=/usr/bin/gcc-7 -DCMAKE_CXX_COMPILER=/usr/bin/g++-7"
 
 # Special case for Bionic: use embedded version of simpleini
+# (Remove these lines after xenial and bionic EOL)
+export MRPT_PKG_EXPORTED_SUBMODULES_xenial="simpleini"
 export MRPT_PKG_EXPORTED_SUBMODULES_bionic="simpleini"
-
+export MRPT_PKG_EXPORTED_SUBMODULES_focal="simpleini"
+export MRPT_PKG_EXPORTED_SUBMODULES_groovy="simpleini"
 
 # Checks
 # --------------------------------
