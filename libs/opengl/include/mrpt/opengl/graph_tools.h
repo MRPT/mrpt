@@ -45,7 +45,7 @@ namespace graph_tools
  * | nodes_point_size          | double  | If set to !=0, draw a point of the given size (glPointSize) at each node.                                                                           | 0.0        |
  * | nodes_corner_scale        | double  | If show_node_corners==true, the size (length) of the corner lines.                                                                                  | 0.7        |
  * | nodes_edges_corner_scale  | double  | If show_edge_rel_poses==true, the size of the corners at the end of each drawn edge                                                                 | 0.4        |
- * | nodes_point_color         | int     | If nodes_point_size>0, set this value to a hexadecimal int value 0xRRGGBB with the desired RGB+Alpha color of points.                               | 0xA0A0A0FF |
+ * | nodes_point_color         | int     | If nodes_point_size>0, set this value to a hexadecimal int value 0xRRGGBBAA with the desired RGB+Alpha color of points.                             | 0xA0A0A0FF |
  * | edge_color                | int     | If show_edges==true, the color of those edges as a hexadecimal int value 0xRRGGBBAA with RGB+Alpha color.                                           | 0x0000FF40 |
  * | edge_rel_poses_color      | int     | If show_edge_rel_poses==true, the color of those edges as a hexadecimal int value 0xRRGGBBAA with RGB+Alpha color.                                  | 0xFF800040 |
  * | edge_width                | double  | If show_edges==true, the width of edge lines.                                                                                                       | 1          |
