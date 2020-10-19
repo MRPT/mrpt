@@ -183,7 +183,7 @@ CSetOfObjects::Ptr graph_visualize(
 	{
 		CSetOfLines::Ptr gl_edges = std::make_shared<CSetOfLines>();
 		const mrpt::img::TColor col8bit(
-			edge_color & 0xffffff, edge_color >> 24);
+			edge_color >> 8, edge_color & 0x000000ff);
 
 		gl_edges->setColor_u8(col8bit);
 		gl_edges->setLineWidth(edge_width);
