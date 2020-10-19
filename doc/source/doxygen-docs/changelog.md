@@ -1,8 +1,8 @@
 \page changelog Change Log
 
-# Version 2.1.1: (Under development)
+# Version 2.1.1: Released Oct 19th, 2020
 - Changes in applications:
-  - SceneViewer3D: 
+  - SceneViewer3D:
     - Command-line argument is now interpreted as ASSIMP model to open if it is not a 3Dscene.
     - New menu: "File -> Import -> Show image" useful to test image-mode viewport rendering.
 - Changes in libraries:
