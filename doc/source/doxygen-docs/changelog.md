@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.1.3: (Under development)
+- (none)
+
+------
 # Version 2.1.2: Released Oct 20th, 2020
 - BUG FIXES:
   - Fix wrong coloring of graph edges in mrpt::opengl::graph_visualize() (Closes [#1111](https://github.com/MRPT/mrpt/issues/1111)).
