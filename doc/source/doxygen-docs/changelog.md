@@ -11,6 +11,7 @@
   - \ref mrpt_gui_grp
     - Useless nanogui_win() converted into mrpt::gui::CDisplayWindowGUI::nanogui_screen()
     - nanogui: New methods: nanogui::Screen::mouseState(), nanogui::Screen::mouseModifiers()
+    - Managed subwindows with minimize/restore capability. See mrpt::gui::CDisplayWindowGUI::createManagedSubWindow()
   - \ref mrpt_img_grp
     - New method mrpt::img::CImage::channelCount()
   - \ref mrpt_opengl_grp

@@ -82,7 +82,7 @@ NavlogViewerApp::NavlogViewerApp()
 
 	// Add main control window:
 	// -----------------------------
-	m_winMain = new nanogui::Window(m_win.get(), "Control");
+	m_winMain = m_win->createManagedSubWindow("Control");
 	m_winMain->setPosition(nanogui::Vector2i(10, 10));
 	m_winMain->setLayout(new nanogui::GroupLayout(5 /*margin*/, 5 /*spacing*/));
 	m_winMain->setFixedWidth(540);
@@ -975,8 +975,8 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 			const static int W = 270;
 			const static int H = 270;
 
-			viz.win = new nanogui::Window(
-				m_win.get(), format("%u|TP-Obstacles", nPTG));
+			viz.win =
+				m_win->createManagedSubWindow(format("%u|TP-Obstacles", nPTG));
 			viz.win->setLayout(new nanogui::GroupLayout(0, 0, 0, 0));
 
 			viz.win->setSize({W, H});
@@ -985,13 +985,6 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 			viz.glCanvas = viz.win->add<mrpt::gui::MRPT2NanoguiGLCanvas>();
 			viz.glCanvas->setFixedSize({W, H});
 
-			viz.win->buttonPanel()
-				->add<nanogui::Button>("", ENTYPO_ICON_MINUS)
-				->setCallback([this, viz]() {
-					// viz.win->setFixedSize({W, 1});
-					viz.glCanvas->setFixedSize({W, 1});
-					m_win->performLayout();
-				});
 			viz.win->buttonPanel()
 				->add<nanogui::Button>("", ENTYPO_ICON_PLUS)
 				->setCallback([this, viz]() {
