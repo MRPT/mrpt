@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.1.1: (Under development)
+- (No changes yet)
+
+------
 # Version 2.1.1: Released Oct 19th, 2020
 - Changes in applications:
   - SceneViewer3D:
