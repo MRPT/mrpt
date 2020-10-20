@@ -107,8 +107,8 @@ CFBORender::CFBORender(
 
 	MRPT_END
 
-//#else
-//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!");
+#else
+	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!");
 #endif
 }
 

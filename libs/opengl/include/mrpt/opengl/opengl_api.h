@@ -29,6 +29,7 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 #include <OpenGL/glext.h>
 // From: https://stackoverflow.com/a/22119409/1631514
 #define glGenVertexArrays glGenVertexArraysAPPLE
