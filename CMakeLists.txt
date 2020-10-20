@@ -233,6 +233,22 @@ set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads) # Defines imported target Threads::Threads
 
+# ccache:
+if(NOT MSVC AND NOT XCODE_VERSION)
+    option(MRPT_BUILD_WITH_CCACHE "Use ccache compiler cache" ON)
+    find_program(CCACHE_FOUND ccache)
+	mark_as_advanced(CCACHE_FOUND)
+    if(CCACHE_FOUND)
+        if(MRPT_BUILD_WITH_CCACHE)
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+        else()
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "")
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "")
+        endif()
+    endif()
+endif()
+
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------

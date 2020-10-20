@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.1.3: (Under development)
-- (none)
+- Build system:
+  - Support for ccache, enabled by default if found.
 
 ------
 # Version 2.1.2: Released Oct 20th, 2020
