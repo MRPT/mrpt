@@ -7,6 +7,8 @@
 - Build system:
   - Support for ccache, enabled by default if found.
   - Fix build with system libsimpleini-dev.
+- BUG FIXES:
+  - Fix mrpt::opengl::CFBORender requiring images with origin at the bottom-left corner.
 
 ------
 # Version 2.1.2: Released Oct 20th, 2020
