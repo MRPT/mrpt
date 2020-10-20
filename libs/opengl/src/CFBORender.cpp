@@ -191,7 +191,6 @@ void CFBORender::getFrame2(
 	ASSERT_EQUAL_(buffer.getWidth(), static_cast<size_t>(m_width));
 	ASSERT_EQUAL_(buffer.getHeight(), static_cast<size_t>(m_height));
 	ASSERT_EQUAL_(buffer.getChannelCount(), 3);
-	ASSERT_EQUAL_(buffer.isOriginTopLeft(), false);
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
 
@@ -207,6 +206,12 @@ void CFBORender::getFrame2(
 	// glPixelStore() etc.
 	glReadPixels(
 		0, 0, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, buffer(0, 0));
+
+	// Flip vertically if needed:
+	if (buffer.isOriginTopLeft())
+	{
+		buffer.flipVertical();
+	}
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not drawn
 	// into the FBO.
