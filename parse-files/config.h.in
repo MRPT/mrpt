@@ -95,7 +95,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_JSONCPP ${CMAKE_MRPT_HAS_JSONCPP}
 
 #define MRPT_HAS_SIMPLEINI ${CMAKE_MRPT_HAS_SIMPLEINI}
-#define MRPT_HAS_SIMPLEINI_SYSTEM ${CMAKE_MRPT_HAS_SIMPLEINI_SYSEM}
+#define MRPT_HAS_SIMPLEINI_SYSTEM ${CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM}
 
 /** These two values are detected in Eigen when building MRPT, so we have
   the same settings given the user-provided flags  */
