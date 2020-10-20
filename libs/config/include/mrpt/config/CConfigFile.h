@@ -54,7 +54,9 @@ class CConfigFile : public CConfigFileBase
 		bool failIfNotFound = false) const override;
 
    public:
-	/** Constructor that opens a configuration file. */
+	/** Constructor that opens a configuration file.
+	 * \exception std::runtime_error If the file does not exist
+	 */
 	CConfigFile(const std::string& fileName);
 
 	/** Constructor, does not open any file. You should call "setFileName"

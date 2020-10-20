@@ -19,39 +19,31 @@ using binary_function = std::function<RET(T1, T2)>;
 }
 #endif
 
-// SimpleIni: Use Debian icu package instead of copyrighted ConvertUTF.h
-#define SI_CONVERT_ICU 1
-
 #include <SimpleIni.h>
-
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/config/config_parser.h>
 #include <mrpt/system/string_utils.h>
-#include "MRPT_SimpleIni.h"
 
 using namespace mrpt;
 using namespace mrpt::config;
-using namespace mrpt::config::simpleini;
 using namespace std;
 
 struct CConfigFileMemory::Impl
 {
-	std::shared_ptr<MRPT_CSimpleIni> ini = std::make_shared<MRPT_CSimpleIni>();
+	std::shared_ptr<CSimpleIniA> ini = std::make_shared<CSimpleIniA>();
 };
 
 CConfigFileMemory::CConfigFileMemory(const std::vector<std::string>& stringList)
 	: m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
 	// Load the strings:
-	std::string aux;
-	mrpt::system::stringListAsString(stringList, aux);
-	m_impl->ini->LoadData(aux.c_str(), aux.size());
+	setContent(stringList);
 }
 
 CConfigFileMemory::CConfigFileMemory(const std::string& str)
 	: m_impl(mrpt::make_impl<CConfigFileMemory::Impl>())
 {
-	// Load the strings:
-	m_impl->ini->LoadData(str.c_str(), str.size());
+	setContent(str);
 }
 
 /*---------------------------------------------------------------
@@ -67,12 +59,14 @@ void CConfigFileMemory::setContent(const std::vector<std::string>& stringList)
 	// Load the strings:
 	std::string aux;
 	mrpt::system::stringListAsString(stringList, aux);
-	m_impl->ini->LoadData(aux.c_str(), aux.size());
+	const auto sOut = mrpt::config::config_parser(aux);
+	m_impl->ini->LoadData(sOut);
 }
 
 void CConfigFileMemory::setContent(const std::string& str)
 {
-	m_impl->ini->LoadData(str.c_str(), str.size());
+	const auto sOut = mrpt::config::config_parser(str);
+	m_impl->ini->LoadData(sOut);
 }
 
 void CConfigFileMemory::getContent(std::string& str) const
@@ -125,10 +119,10 @@ std::string CConfigFileMemory::readString(
 
 void CConfigFileMemory::getAllSections(std::vector<std::string>& sections) const
 {
-	MRPT_CSimpleIni::TNamesDepend names;
+	CSimpleIniA::TNamesDepend names;
 	m_impl->ini->GetAllSections(names);
 
-	MRPT_CSimpleIni::TNamesDepend::iterator n;
+	CSimpleIniA::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
 	sections.resize(names.size());
 	for (n = names.begin(), s = sections.begin(); n != names.end(); ++n, ++s)
@@ -138,10 +132,10 @@ void CConfigFileMemory::getAllSections(std::vector<std::string>& sections) const
 void CConfigFileMemory::getAllKeys(
 	const string& section, std::vector<std::string>& keys) const
 {
-	MRPT_CSimpleIni::TNamesDepend names;
+	CSimpleIniA::TNamesDepend names;
 	m_impl->ini->GetAllKeys(section.c_str(), names);
 
-	MRPT_CSimpleIni::TNamesDepend::iterator n;
+	CSimpleIniA::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
 	keys.resize(names.size());
 	for (n = names.begin(), s = keys.begin(); n != names.end(); ++n, ++s)
