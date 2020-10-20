@@ -1,9 +1,12 @@
 \page changelog Change Log
 
 # Version 2.1.3: (Under development)
+- Changes in libraries:
+  - \ref mrpt_config_grp
+    - Refactor parsing functionality as new exposed method mrpt::config::config_parser()
 - Build system:
   - Support for ccache, enabled by default if found.
-  - Fix build with system libsimpleini-dev with libicu instead of ConvertUTF.
+  - Fix build with system libsimpleini-dev.
 
 ------
 # Version 2.1.2: Released Oct 20th, 2020
