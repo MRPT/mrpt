@@ -144,9 +144,10 @@ nanogui::Window* CDisplayWindowGUI::createManagedSubWindow(
 	constexpr std::size_t MAX_MINIMIZED_TITLE_LEN = 20;
 
 	// Create subwindow:
-	auto w = new nanogui::Window(this, title);
+	const int thisWinIndex = m_subWindows.windows.size();
+
+	auto w = new SubWindow(*this, thisWinIndex, this, title);
 	m_subWindows.windows.push_back(w);
-	const int thisWinIndex = m_subWindows.windows.size() - 1;
 
 	// Create UI on first call:
 	createSubWindowsControlUI();
@@ -285,6 +286,12 @@ void CDisplayWindowGUI::SubWindows::setFocused(int index)
 {
 	const int n = static_cast<int>(windows.size());
 	if (index >= 0 && index < n) windows.at(index)->requestFocus();
+}
+
+void CDisplayWindowGUI::SubWindows::onSubWindowFocused(int index)
+{
+	const int n = static_cast<int>(uiCombo->items().size());
+	if (index >= 0 && index < n) uiCombo->setSelectedIndex(index);
 }
 
 #endif  // MRPT_HAS_NANOGUI

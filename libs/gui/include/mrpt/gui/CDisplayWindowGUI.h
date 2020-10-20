@@ -214,17 +214,43 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	void createSubWindowsControlUI();
 
+	class SubWindow : public nanogui::Window
+	{
+	   public:
+		SubWindow(
+			CDisplayWindowGUI& parentGui, int myIndex, Widget* parent,
+			const std::string& title)
+			: nanogui::Window(parent, title),
+			  m_parentGui(parentGui),
+			  m_subWindowIndex(myIndex)
+		{
+		}
+		CDisplayWindowGUI& m_parentGui;
+		const int m_subWindowIndex = 0;
+
+		/// Handle a focus change event (default implementation: record the
+		/// focus status, but do nothing)
+		bool focusEvent(bool focused) override
+		{
+			if (focused)
+				m_parentGui.m_subWindows.onSubWindowFocused(m_subWindowIndex);
+			return nanogui::Window::focusEvent(focused);
+		}
+	};
+
 	struct SubWindows
 	{
 		SubWindows(CDisplayWindowGUI& p) : parent(p) {}
 
-		std::vector<nanogui::Window*> windows;
+		std::vector<SubWindow*> windows;
 		nanogui::Window* ui = nullptr;
 		nanogui::ComboBox* uiCombo = nullptr;
 
 		void minimize(int index);
 		void restore(int index);
 		void setFocused(int index);
+
+		void onSubWindowFocused(int index);
 
 		CDisplayWindowGUI& parent;
 	};

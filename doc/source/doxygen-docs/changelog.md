@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_config_grp
     - Refactor parsing functionality as new exposed method mrpt::config::config_parser()
+  - \ref mrpt_gui_grp
+    - mrpt::gui::CDisplayWindowGUI subwindows control UI automatically keep tracks of focused subwindows.
 - Build system:
   - Support for ccache, enabled by default if found.
   - Fix build with system libsimpleini-dev.
