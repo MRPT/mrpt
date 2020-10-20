@@ -137,9 +137,6 @@ void CFBORender::setCamera(const COpenGLScene& scene, const CCamera& camera)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					Get the scene camera
- ---------------------------------------------------------------*/
 CCamera& CFBORender::getCamera(const COpenGLScene& scene)
 {
 	MRPT_START
@@ -149,10 +146,6 @@ CCamera& CFBORender::getCamera(const COpenGLScene& scene)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-		Render the scene and get the rendered rgb image. This
-		function resizes the image buffer if it is necessary
- ---------------------------------------------------------------*/
 void CFBORender::getFrame(
 	[[maybe_unused]] const COpenGLScene& scene, [[maybe_unused]] CImage& buffer)
 {
@@ -163,23 +156,18 @@ void CFBORender::getFrame(
 	// resize the buffer if it is necessary
 	if (buffer.getWidth() != static_cast<size_t>(m_width) ||
 		buffer.getHeight() != static_cast<size_t>(m_height) ||
-		buffer.getChannelCount() != 3 || buffer.isOriginTopLeft() != false)
+		buffer.getChannelCount() != 3)
 	{
 		buffer.resize(m_width, m_height, mrpt::img::CH_RGB);
 	}
 
 	// Go on.
 	getFrame2(scene, buffer);
-	;
 
 	MRPT_END
 #endif
 }
 
-/*---------------------------------------------------------------
-		Render the scene and get the rendered rgb image. This
-		function does not resize the image buffer.
- ---------------------------------------------------------------*/
 void CFBORender::getFrame2(
 	[[maybe_unused]] const COpenGLScene& scene, [[maybe_unused]] CImage& buffer)
 {
@@ -222,9 +210,6 @@ void CFBORender::getFrame2(
 #endif
 }
 
-/*---------------------------------------------------------------
-					Resize the image size
- ---------------------------------------------------------------*/
 void CFBORender::resize(
 	[[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height)
 {
@@ -269,36 +254,20 @@ void CFBORender::resize(
 #endif
 }
 
-/*---------------------------------------------------------------
-		Provide information on Framebuffer object extension
- ---------------------------------------------------------------*/
-int CFBORender::isExtensionSupported([[maybe_unused]] const char* extension)
+bool CFBORender::isExtensionSupported([
+	[maybe_unused]] const std::string& extension)
 {
 #if MRPT_HAS_OPENGL_GLUT
-
 	MRPT_START
-
-	/* Extension names should not have spaces. */
-	auto where = strchr(extension, ' ');
-	if (where || *extension == '\0') return 0;
-	const auto extensions = glGetString(GL_EXTENSIONS);
-
-	/* It takes a bit of care to be fool-proof about parsing the
-	OpenGL extensions string. Don't be fooled by sub-strings,
-	etc. */
-	auto start = reinterpret_cast<const char*>(extensions);
-	for (;;)
+	for (int index = 0;; index++)
 	{
-		where = strstr(start, extension);
-		if (!where) break;
-		auto terminator = where + strlen(extension);
-		if (where == start || *(where - 1) == ' ')
-			if (*terminator == ' ' || *terminator == '\0') return 1;
-		start = terminator;
-	}
+		const auto extName = glGetStringi(GL_EXTENSIONS, index);
+		if (!extName) break;
 
+		if (std::string(reinterpret_cast<const char*>(extName)) == extension)
+			return true;
+	}
 	MRPT_END
 #endif
-
-	return 0;
+	return false;
 }
