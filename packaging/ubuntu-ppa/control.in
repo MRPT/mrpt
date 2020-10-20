@@ -51,7 +51,8 @@ Build-Depends: debhelper (>= 9),
 	libglu1-mesa-dev,
 	libglfw3-dev,
 	libxxf86vm-dev,
-	libxrandr-dev
+	libxrandr-dev,
+	libicu-dev
 Standards-Version: 4.5.0
 Homepage: https://www.mrpt.org/
 
