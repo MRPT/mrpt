@@ -19,6 +19,9 @@ using binary_function = std::function<RET(T1, T2)>;
 }
 #endif
 
+// SimpleIni: Use Debian icu package instead of copyrighted ConvertUTF.h
+#define SI_CONVERT_ICU 1
+
 #include <SimpleIni.h>
 
 #include <mrpt/config/CConfigFileMemory.h>
