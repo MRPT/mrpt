@@ -3,6 +3,7 @@
 # Version 2.1.3: (Under development)
 - Build system:
   - Support for ccache, enabled by default if found.
+  - Fix build with system libsimpleini-dev with libicu instead of ConvertUTF.
 
 ------
 # Version 2.1.2: Released Oct 20th, 2020
