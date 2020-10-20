@@ -45,7 +45,8 @@ Build-Depends: debhelper (>= 12),
 	libglfw3-dev,
 	libxxf86vm-dev,
 	libxrandr-dev,
-	libsimpleini-dev
+	libsimpleini-dev,
+	libicu-dev
 Standards-Version: 4.5.0
 Homepage: https://www.mrpt.org/
 

@@ -19,7 +19,10 @@ using binary_function = std::function<RET(T1, T2)>;
 }
 #endif
 
+// Enforce using libuci instead of copyrighted ConvertUTF.h
+#define SI_CONVERT_ICU 1
 #include <SimpleIni.h>
+
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/config_parser.h>
 #include <mrpt/system/os.h>
