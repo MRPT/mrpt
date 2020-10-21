@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.1.3: (Under development)
+# Version 2.1.3: Released Oct 21st, 2020
 - Changes in libraries:
   - \ref mrpt_config_grp
     - Refactor parsing functionality as new exposed method mrpt::config::config_parser()
