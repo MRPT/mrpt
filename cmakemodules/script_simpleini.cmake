@@ -28,7 +28,7 @@ if(LIBUCI_INCLUDE_DIR AND
 		set(CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM 1)
 endif()
 
-if (NOT SIMPLEINI_FOUND)
+if (NOT CMAKE_MRPT_HAS_SIMPLEINI)
 	# Set to use embedded copy:
 	set(SIMPLEINI_INCLUDE_DIRS ${MRPT_SOURCE_DIR}/3rdparty/simpleini)
 
