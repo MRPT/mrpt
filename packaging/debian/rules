@@ -25,6 +25,9 @@ endif
 # traces on failure:
 MRPT_TEST_TARGET = test_legacy
 
+# Debug info from the cmake scripts
+export VERBOSE = 1
+
 # Avoid running out of memory on mipsel,mips64el
 ifneq (,$(findstring mips,$(DEB_HOST_ARCH)))
   export DEB_CXXFLAGS_MAINT_APPEND += -g1
