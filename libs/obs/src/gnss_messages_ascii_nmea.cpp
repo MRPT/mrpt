@@ -234,9 +234,8 @@ bool Message_NMEA_GSA::getAllFieldDescriptions(std::ostream& o) const
 bool Message_NMEA_GSA::getAllFieldValues(std::ostream& o) const
 {
 	o << mrpt::format(
-		"%04c %02c %07.2s %07.2s  %07.2s %07.2s %07.2s %07.2s %07.2s %07.2s "
-		"%07.2s %07.2s %07.2s "
-		"%07.2s %.05f %.05f %.05f",
+		"%4c %2c %7.2s %7.2s  %7.2s %7.2s %7.2s %7.2s %7.2s %7.2s %7.2s %7.2s "
+		"%7.2s %7.2s %.05f %.05f %.05f",
 		fields.auto_selection_fix, fields.fix_2D_3D, fields.PRNs[0],
 		fields.PRNs[1], fields.PRNs[2], fields.PRNs[3], fields.PRNs[4],
 		fields.PRNs[5], fields.PRNs[6], fields.PRNs[7], fields.PRNs[8],
