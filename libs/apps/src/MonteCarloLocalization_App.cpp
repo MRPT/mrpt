@@ -440,8 +440,8 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			// The experiment directory is:
 			string sOUT_DIR_PARTS, sOUT_DIR_3D;
 			const auto sOUT_DIR = format(
-				"%s_%03u_%07i", OUT_DIR_PREFIX.c_str(), repetition,
-				PARTICLE_COUNT);
+				"%s_%03u_%07i", OUT_DIR_PREFIX.c_str(),
+				static_cast<unsigned int>(repetition), PARTICLE_COUNT);
 			MRPT_LOG_INFO_FMT("Creating directory: %s", sOUT_DIR.c_str());
 			deleteFilesInDirectory(sOUT_DIR);
 			createDirectory(sOUT_DIR);

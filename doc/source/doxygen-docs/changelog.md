@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.1.4: (Under development)
-- (none)
+- Changes in libraries:
+  - \ref mrpt_core_grp
+    - mrpt::format() is no longer a template but a function, to use GCC automated printf-format warnings.
 
 ------
 # Version 2.1.3: Released Oct 21st, 2020
