@@ -461,7 +461,7 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
 	o << format(
 		"Samples direction: %s\n",
 		(rightToLeft) ? "Right->Left" : "Left->Right");
-	o << format("Points in the scan: %u\n", m_scan.size());
+	o << "Points in the scan: " << m_scan.size() << "\n";
 	o << format("Estimated sensor 'sigma': %f\n", stdError);
 	o << format(
 		"Increment in pitch during the scan: %f deg\n", RAD2DEG(deltaPitch));
