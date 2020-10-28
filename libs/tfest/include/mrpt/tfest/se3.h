@@ -98,8 +98,6 @@ struct TSE3RobustParams
 	 * \return Must return true if the pair is a potential match, false
 	 * otherwise.
 	 */
-	// std::function<bool(TPotentialMatch)>  user_individual_compat_callback; //
-	// This could be used in the future when we enforce C++11 to users...
 	TFunctorCheckPotentialMatch user_individual_compat_callback;
 };
 
