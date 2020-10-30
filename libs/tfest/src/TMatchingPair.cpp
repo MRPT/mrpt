@@ -46,27 +46,29 @@ void TMatchingPairListTempl<T>::saveAsMATLABScript(
 	const std::string& filName) const
 {
 	FILE* f = os::fopen(filName.c_str(), "wt");
+	if (!f) return;
 
 	fprintf(f, "%% ----------------------------------------------------\n");
-	fprintf(f, "%%  File generated automatically by the MRPT method:\n");
-	fprintf(f, "%%   saveAsMATLABScript  \n");
-	fprintf(
-		f, "%%  Before calling this script, define the color of lines, eg:\n");
-	fprintf(f, "%%     colorLines=[1 1 1]");
+	fprintf(f, "%%  File generated automatically by the MRPT method:   \n");
+	fprintf(f, "%%   saveAsMATLABScript                                \n");
+	fprintf(f, "%%  Before calling this script, define line color:     \n");
+	fprintf(f, "%%     colorLines=[0.5 0.5 0.5]                        \n");
 	fprintf(f, "%% ----------------------------------------------------\n\n");
 
 	fprintf(f, "axis equal; hold on;\n");
 	for (const auto& it : *this)
 	{
 		fprintf(
-			f, "line([%f %f],[%f %f],'Color',colorLines);\n", it.this_x,
-			it.other_x, it.this_y, it.other_y);
+			f, "line([%f %f %f],[%f %f %f],'Color',colorLines);\n", it.this_x,
+			it.other_x, it.other_z, it.this_y, it.other_y, it.other_z);
 		fprintf(
 			f,
-			"set(plot([%f %f],[%f "
+			"set(plot([%f %f %f],[%f %f "
 			"%f],'.'),'Color',colorLines,'MarkerSize',15);\n",
-			it.this_x, it.other_x, it.this_y, it.other_y);
+			it.this_x, it.other_x, it.other_z, it.this_y, it.other_y,
+			it.other_z);
 	}
+	fprintf(f, "view(3); grid on; xlabel('x'); ylabel('y'); zlabel('z');");
 	os::fclose(f);
 }
 
