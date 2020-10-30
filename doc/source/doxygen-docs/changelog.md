@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_core_grp
     - mrpt::format() is no longer a template but a function, to use GCC automated printf-format warnings.
+  - \ref mrpt_tfest_grp
+    - mrpt::tfest::TMatchingPairListTempl<T>::saveAsMATLABScript() now draws 3D correspondences too.
 
 ------
 # Version 2.1.3: Released Oct 21st, 2020
