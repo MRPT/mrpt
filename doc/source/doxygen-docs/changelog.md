@@ -6,6 +6,8 @@
     - mrpt::format() is no longer a template but a function, to use GCC automated printf-format warnings.
   - \ref mrpt_tfest_grp
     - mrpt::tfest::TMatchingPairListTempl<T>::saveAsMATLABScript() now draws 3D correspondences too.
+  - BUG FIXES:
+    - Fix wrong Debian dependencies of libmrpt-dev
 
 ------
 # Version 2.1.3: Released Oct 21st, 2020
