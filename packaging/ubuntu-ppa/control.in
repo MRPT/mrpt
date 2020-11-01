@@ -650,7 +650,7 @@ Package: libmrpt-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
-Recommends: libmrpt-bayes-dev (= ${binary:Version}),
+         libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-comms-dev (= ${binary:Version}),
          libmrpt-config-dev (= ${binary:Version}),
          libmrpt-containers-dev (= ${binary:Version}),
