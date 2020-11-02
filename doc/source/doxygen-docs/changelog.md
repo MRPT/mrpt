@@ -6,8 +6,13 @@
     - mrpt::format() is no longer a template but a function, to use GCC automated printf-format warnings.
   - \ref mrpt_containers_grp
     - mrpt::containers::yaml avoids throwing internal exceptions as part of regular valid conversions, and better support and report of out-of-range integers.
+  - \ref mrpt_math_grp
+    - mrpt::math::linspace() added overload returning by value.
+  - \ref mrpt_random_grp
+    - mrpt::random::CRandomGenerator::permuteVector() added overload returning by value.
   - \ref mrpt_tfest_grp
     - mrpt::tfest::TMatchingPairListTempl<T>::saveAsMATLABScript() now draws 3D correspondences too.
+    - RANSAC method mrpt::tfest::se3_l2_ransac() now uses more correct SO(3) metric for angular distance threshold instead of independent yaw/pitch/roll angles.
   - BUG FIXES:
     - Fix wrong Debian dependencies of libmrpt-dev
 

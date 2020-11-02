@@ -397,6 +397,16 @@ class CRandomGenerator
 		if (N > 1) mrpt::random::shuffle(&out_result[0], &out_result[N - 1]);
 	}
 
+	/** \overload  \note [New in MRPT 2.1.4] */
+	template <class VEC>
+	VEC permuteVector(const VEC& in_vector)
+	{
+		VEC out_result = in_vector;
+		const size_t N = out_result.size();
+		if (N > 1) mrpt::random::shuffle(&out_result[0], &out_result[N - 1]);
+		return out_result;
+	}
+
 	/** @} */
 
 };  // end of CRandomGenerator

@@ -97,6 +97,18 @@ void linspace(T first, T last, size_t count, VECTOR& out_vector)
 	}
 }
 
+/** Generates an equidistant sequence of numbers given the first one, the last
+ * one and the desired number of points. \sa sequence
+ * \note [New in MRPT 2.1.4]
+ */
+template <typename T, typename VECTOR = std::vector<T>>
+VECTOR linspace(T first, T last, size_t count)
+{
+	VECTOR v;
+	linspace(first, last, count, v);
+	return v;
+}
+
 /** Generates a sequence of values [first,first+STEP,first+2*STEP,...]   \sa
  * linspace, sequence */
 template <class T, T STEP>
