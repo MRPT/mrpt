@@ -562,6 +562,21 @@ MRPT_TEST(yaml, fromYAML)
 }
 MRPT_TEST_END()
 
+MRPT_TEST(yaml, outOfRangeIntegers)
+{
+	mrpt::containers::yaml p;
+	p["N1"] = "1292889";
+	p["N2"] = "1171717171717171771782288282822129288118189";
+	p["N3"] = "65535";
+	p["N4"] = "65536";
+
+	EXPECT_EQ(p["N1"].as<int>(), 1292889);
+	EXPECT_THROW(p["N2"].as<int>(), std::exception);
+	EXPECT_EQ(p["N3"].as<uint16_t>(), 65535);
+	EXPECT_THROW(p["N4"].as<uint16_t>(), std::exception);
+}
+MRPT_TEST_END()
+
 // clang-format off
 const auto testYamlParseEmit_1 = std::string(//
 R"xxx(# comment line 1, and

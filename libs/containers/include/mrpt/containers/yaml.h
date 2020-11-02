@@ -968,21 +968,35 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		if (!ss.fail()) return ret;
 	}
 
-	// 3) Integers. Recognize hex or octal prefixes with stol()
+	// 3) Integers. Recognize hex or octal prefixes with strtol()
 	if constexpr (std::is_convertible_v<int, T>)
 	{
 		std::stringstream ss;
 		yaml::internalPrintAsYAML(s, ss, {}, {});
 		const std::string str = ss.str();
-		try
+
+		char* retStr = nullptr;
+		const long long ret =
+			std::strtoll(str.c_str(), &retStr, 0 /*auto base*/);
+		if (retStr != 0 && retStr != str.c_str())
 		{
-			std::size_t processed = 0;
-			T ret = static_cast<T>(
-				std::stol(str, &processed, 0 /*auto detect base*/));
-			if (processed > 0) return ret;
-		}
-		catch (...)
-		{ /*Invalid number*/
+			const auto minVal =
+				static_cast<long long>(std::numeric_limits<T>::min());
+			auto maxVal = static_cast<long long>(std::numeric_limits<T>::max());
+			// Handle the case of unsigned long long:
+			if (maxVal < 0) maxVal = std::numeric_limits<long long>::max();
+
+			if ((ret == 0 && errno == ERANGE) || ret < minVal || ret > maxVal)
+			{
+				std::stringstream sError;
+				sError << "yaml: Out of range integer: '" << str
+					   << "' (Valid range [" << minVal << "," << maxVal
+					   << "], parsed=" << ret;
+				if (errno == ERANGE) sError << " errno=ERANGE";
+				sError << "')";
+				THROW_EXCEPTION(sError.str());
+			}
+			return static_cast<T>(ret);
 		}
 	}
 
