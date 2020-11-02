@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_core_grp
     - mrpt::format() is no longer a template but a function, to use GCC automated printf-format warnings.
+  - \ref mrpt_containers_grp
+    - mrpt::containers::yaml avoids throwing internal exceptions as part of regular valid conversions, and better support and report of out-of-range integers.
   - \ref mrpt_tfest_grp
     - mrpt::tfest::TMatchingPairListTempl<T>::saveAsMATLABScript() now draws 3D correspondences too.
   - BUG FIXES:
