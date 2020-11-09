@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.1.5: (Under development)
+- BUG FIXES:
+  - Fix error rendering an opengl scene with mrpt::opengl::CCamera objects in it.
 
 ------
 # Version 2.1.4: Released Nov 8th, 2020
@@ -16,8 +18,8 @@
   - \ref mrpt_tfest_grp
     - mrpt::tfest::TMatchingPairListTempl<T>::saveAsMATLABScript() now draws 3D correspondences too.
     - RANSAC method mrpt::tfest::se3_l2_ransac() now uses more correct SO(3) metric for angular distance threshold instead of independent yaw/pitch/roll angles.
-  - BUG FIXES:
-    - Fix wrong Debian dependencies of libmrpt-dev
+- BUG FIXES:
+  - Fix wrong Debian dependencies of libmrpt-dev
 
 ------
 # Version 2.1.3: Released Oct 21st, 2020

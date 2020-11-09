@@ -38,6 +38,12 @@ class CCamera : public CRenderizable
 	CCamera() = default;
 	~CCamera() override = default;
 
+	virtual shader_list_t requiredShaders() const override
+	{
+		// None: a camera is a non-visual element.
+		return {};
+	}
+
 	void setPointingAt(float x, float y, float z)
 	{
 		m_pointingX = x;
