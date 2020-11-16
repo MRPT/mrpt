@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/round.h>
+
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -349,10 +350,14 @@ class CDynamicGrid3D
 	}
 	inline coord_t idx2z(int cz) const { return m_z_min + (cz)*m_resolution_z; }
 
+	/** @name Direct and range-based access to data
+	 * @{ */
+	inline const grid_data_t& data() const { return m_map; }
 	inline iterator begin() { return m_map.begin(); }
 	inline iterator end() { return m_map.end(); }
 	inline const_iterator begin() const { return m_map.begin(); }
 	inline const_iterator end() const { return m_map.end(); }
+	/** @} */
 
    protected:
 	/** The cells */
@@ -390,6 +395,6 @@ class CDynamicGrid3D
 		m_map.resize(m_size_x * m_size_y * m_size_z);
 	}
 
-};  // end of CDynamicGrid3D<>
+};	// end of CDynamicGrid3D<>
 
 }  // namespace mrpt::containers
