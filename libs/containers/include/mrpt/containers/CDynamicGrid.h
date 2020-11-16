@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/round.h>
+
 #include <cmath>
 #include <cstddef>
 #include <string>
@@ -37,20 +38,11 @@ struct dynamic_grid_txt_saver
 template <class T>
 class CDynamicGrid
 {
-   protected:
-	/** The cells  */
-	std::vector<T> m_map;
-	/** Used only from logically const method that really need to modify the
-	 * object */
-	inline std::vector<T>& m_map_castaway_const() const
-	{
-		return const_cast<std::vector<T>&>(m_map);
-	}
-
-	double m_x_min{0}, m_x_max{0}, m_y_min{0}, m_y_max{0}, m_resolution{0};
-	size_t m_size_x{0}, m_size_y{0};
-
    public:
+	using grid_data_t = std::vector<T>;
+	using iterator = typename grid_data_t::iterator;
+	using const_iterator = typename grid_data_t::const_iterator;
+
 	/** Constructor */
 	CDynamicGrid(
 		double x_min = -10., double x_max = 10., double y_min = -10.,
@@ -164,12 +156,12 @@ class CDynamicGrid
 		unsigned int new_size_y = round((new_y_max - new_y_min) / m_resolution);
 
 		// Reserve new memory:
-		typename std::vector<T> new_map;
+		grid_data_t new_map;
 		new_map.resize(new_size_x * new_size_y, defaultValueNewCells);
 
 		// Copy previous rows:
 		unsigned int x, y;
-		typename std::vector<T>::iterator itSrc, itDst;
+		iterator itSrc, itDst;
 		for (y = 0; y < m_size_y; y++)
 		{
 			for (x = 0, itSrc = (m_map.begin() + y * m_size_x),
@@ -329,6 +321,15 @@ class CDynamicGrid
 		return aux.saveToTextFile(fileName);
 	}
 
+	/** @name Direct and range-based access to data
+	 * @{ */
+	inline const grid_data_t& data() const { return m_map; }
+	inline iterator begin() { return m_map.begin(); }
+	inline iterator end() { return m_map.end(); }
+	inline const_iterator begin() const { return m_map.begin(); }
+	inline const_iterator end() const { return m_map.end(); }
+	/** @} */
+
    protected:
 	template <class STREAM>
 	void dyngridcommon_writeToStream(STREAM& out) const
@@ -361,7 +362,20 @@ class CDynamicGrid
 		m_map.resize(m_size_x * m_size_y);
 	}
 
-};  // end of CDynamicGrid<>
+   protected:
+	/** The cells  */
+	grid_data_t m_map;
+	/** Used only from logically const method that really need to modify the
+	 * object */
+	inline grid_data_t& m_map_castaway_const() const
+	{
+		return const_cast<grid_data_t&>(m_map);
+	}
+
+	double m_x_min{0}, m_x_max{0}, m_y_min{0}, m_y_max{0}, m_resolution{0};
+	size_t m_size_x{0}, m_size_y{0};
+
+};	// end of CDynamicGrid<>
 
 }  // namespace containers
 }  // namespace mrpt
