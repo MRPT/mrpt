@@ -764,6 +764,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 #if wxCHECK_VERSION(2, 9, 0)
 	m_canvas->SetMinClientSize(wxSize(100, 100));
 #endif
+	m_canvas->setMinimumZoom(0.1);
 	FlexGridSizer1->Add(
 		m_canvas, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 
