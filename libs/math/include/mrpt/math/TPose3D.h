@@ -165,6 +165,16 @@ struct TPose3D : public TPoseOrPoint,
 	void inverseComposePoint(const TPoint3D& g, TPoint3D& l) const;
 	TPoint3D inverseComposePoint(const TPoint3D& g) const;
 	void composePose(const TPose3D other, TPose3D& result) const;
+
+	/** Operator "oplus" pose composition: "ret=this \oplus b"  \sa CPose3D
+	 * \note [Added in MRPT 2.1.5] */
+	mrpt::math::TPose3D operator+(const mrpt::math::TPose3D& b) const
+	{
+		mrpt::math::TPose3D ret;
+		this->composePose(b, ret);
+		return ret;
+	}
+
 	void getRotationMatrix(mrpt::math::CMatrixDouble33& R) const;
 	inline mrpt::math::CMatrixDouble33 getRotationMatrix() const
 	{
