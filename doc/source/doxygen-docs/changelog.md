@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - Both mrpt::containers::CDynamicGrid and mrpt::containers::CDynamicGrid3D are now compatible with range-based for loops, and also have a data() method.
+  - \ref mrpt_core_grp
+    - Added mrpt::LockHelper::unlock()
   - \ref mrpt_math_grp
     - Added missing method for consistent API across pose classes: mrpt::math::TPose3D::operator+()
 - BUG FIXES:

@@ -39,6 +39,16 @@ class LockHelper
 		return *this;
 	}
 
+	/** Can be used to unlock the mutex before this object dtor
+	 * \note [New in MRPT 2.1.5]
+	 */
+	void unlock()
+	{
+		if (!l_) return;
+		l_->unlock();
+		l_ = nullptr;
+	}
+
    private:
 	Tnc* l_{nullptr};
 };
