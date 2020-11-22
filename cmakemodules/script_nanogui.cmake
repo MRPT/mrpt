@@ -4,7 +4,13 @@
 set(CMAKE_MRPT_HAS_NANOGUI 0)
 set(CMAKE_MRPT_HAS_NANOGUI_SYSTEM 0)
 
-set(BUILD_NANOGUI ON CACHE BOOL "Build an embedded version of nanogui (OpenGL GUIs)")
+if (APPLE)
+  set(def_ OFF)
+else()
+  set(def_ ON)
+endif()
+set(BUILD_NANOGUI ${def_} CACHE BOOL "Build an embedded version of nanogui (OpenGL GUIs)")
+unset(def_)
 
 find_package(PkgConfig QUIET)
 if (PKG_CONFIG_FOUND)
