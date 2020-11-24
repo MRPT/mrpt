@@ -10,6 +10,7 @@
     - Added missing method for consistent API across pose classes: mrpt::math::TPose3D::operator+()
 - BUG FIXES:
   - Fix error rendering an opengl scene with mrpt::opengl::CCamera objects in it.
+  - rawlog-edit silently ignored when more than one operation was requested.
 
 ------
 # Version 2.1.4: Released Nov 8th, 2020
