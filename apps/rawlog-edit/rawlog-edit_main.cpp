@@ -23,12 +23,12 @@
 //  Started: JLBC @ Jul-2010
 // ===========================================================================
 
-#include "rawlog-edit-declarations.h"
-
 #include <mrpt/3rdparty/tclap/CmdLine.h>
-
 #include <mrpt/system/os.h>
+
 #include <memory>
+
+#include "rawlog-edit-declarations.h"
 
 using TOperationFunctor = void (*)(
 	mrpt::io::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
@@ -444,6 +444,18 @@ int main(int argc, char** argv)
 		// Parse arguments:
 		if (!cmd.parse(argc, argv))
 			throw std::runtime_error("");  // should exit.
+
+		// sanity check: one and only one operation is allowed:
+		if (unsigned int nOps = std::count_if(
+				arg_ops.begin(), arg_ops.end(),
+				[](const auto& op) { return op->isSet(); });
+			nOps != 1)
+		{
+			THROW_EXCEPTION_FMT(
+				"One and only one operation must be selected by command line "
+				"arguments, but %u provided. Use --help for further details.",
+				nOps);
+		}
 
 		string input_rawlog = arg_input_file.getValue();
 		const bool verbose = !arg_quiet.getValue();
