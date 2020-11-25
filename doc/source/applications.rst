@@ -8,7 +8,7 @@ MRPT comprises a set of :ref:`modules` to create your own programs, but it
 also provides many ready-to-use applications:
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
 
   app_2d-slam-demo.rst
   app_camera-calib.rst
