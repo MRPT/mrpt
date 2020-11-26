@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/system/CTicTac.h>
@@ -353,6 +353,22 @@ void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
 		cameraElevationDeg = -90.0f;
 	else if (cameraElevationDeg > 90.0f)
 		cameraElevationDeg = 90.0f;
+}
+
+CGlCanvasBase::CamaraParams CGlCanvasBase::CamaraParams::FromCamera(
+	const mrpt::opengl::CCamera& c)
+{
+	CGlCanvasBase::CamaraParams p;
+	p.cameraAzimuthDeg = c.getAzimuthDegrees();
+	p.cameraElevationDeg = c.getElevationDegrees();
+	p.cameraFOV = c.getProjectiveFOVdeg();
+	p.cameraIsProjective = c.isProjective();
+	p.cameraPointingX = c.getPointingAtX();
+	p.cameraPointingY = c.getPointingAtY();
+	p.cameraPointingZ = c.getPointingAtZ();
+	p.cameraZoomDistance = c.getZoomDistance();
+
+	return p;
 }
 
 void CGlCanvasBaseHeadless::renderError(const std::string& e)

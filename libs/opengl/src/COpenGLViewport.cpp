@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "opengl-precomp.h"  // Precompiled header
-
+//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>  // crossProduct3D()
 #include <mrpt/opengl/COpenGLScene.h>
