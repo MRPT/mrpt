@@ -8,7 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "_DSceneViewerMain.h"
+
 #include <wx/app.h>
+
 #include "CDlgCamTracking.h"
 #include "CDlgPLYOptions.h"
 
@@ -22,8 +24,6 @@
 #include <wx/tglbtn.h>
 //*)
 
-#include "CDialogOptions.h"
-
 #include <wx/busyinfo.h>
 #include <wx/choicdlg.h>
 #include <wx/colordlg.h>
@@ -36,6 +36,8 @@
 #include <wx/numdlg.h>
 #include <wx/progdlg.h>
 #include <wx/textdlg.h>
+
+#include "CDialogOptions.h"
 
 #if defined(__WXMSW__)
 const std::string iniFileSect("CONF_WIN");
@@ -55,6 +57,8 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>  // It's in lib mrpt-maps
 #include <mrpt/opengl/CAssimpModel.h>
 #include <mrpt/opengl/CFBORender.h>
@@ -69,14 +73,11 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
-
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/maps/CPointsMap.h>
 #if MRPT_HAS_LIBLAS
 #include <mrpt/maps/CPointsMap_liblas.h>
 #endif
 
-const mrpt::maps::CColouredPointsMap dummy_map;  // this is to enforce to load
+const mrpt::maps::CColouredPointsMap dummy_map;	 // this is to enforce to load
 // the mrpt-maps DLL, then
 // register all OpenGL classes
 // defined there.
@@ -690,8 +691,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	SetMenuBar(MenuBar1);
 	StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
 	int __wxStatusBarWidths_1[4] = {-10, -10, -4, -5};
-	int __wxStatusBarStyles_1[4] = {wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL,
-									wxSB_NORMAL};
+	int __wxStatusBarStyles_1[4] = {
+		wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL};
 	StatusBar1->SetFieldsCount(4, __wxStatusBarWidths_1);
 	StatusBar1->SetStatusStyles(4, __wxStatusBarStyles_1);
 	SetStatusBar(StatusBar1);
@@ -870,6 +871,8 @@ void _DSceneViewerFrame::loadFromFile(
 
 		CFileGZInputStream f(fil);
 
+		const auto oldCanvasCamera = m_canvas->cameraParams();
+
 		static mrpt::system::CTicTac tictac;
 		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
 		{
@@ -927,6 +930,10 @@ void _DSceneViewerFrame::loadFromFile(
 			// Remove the camera from the object:
 			if (camIsCCameraObj) openGLSceneRef->removeObject(cam);
 		}
+		else
+		{
+			m_canvas->setCameraParams(oldCanvasCamera);
+		}
 
 		loadedFileName = fil;
 
@@ -969,7 +976,7 @@ void _DSceneViewerFrame::updateTitle()
 
 void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 {
-	timLoadFileCmdLine.Stop();  // One shot only.
+	timLoadFileCmdLine.Stop();	// One shot only.
 	// Open file if passed by the command line:
 	if (!global_fileToOpen.empty())
 	{
@@ -1017,7 +1024,7 @@ void _DSceneViewerFrame::OntimAutoplay(wxTimerEvent& event)
 
 	// Continue?
 	if (btnAutoplay->GetValue())
-		m_autoplayTimer->Start(delayBetweenAutoplay, true);  // One-shot:
+		m_autoplayTimer->Start(delayBetweenAutoplay, true);	 // One-shot:
 }
 
 void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
@@ -1354,7 +1361,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 
 			maxv = azimuth + max_value;
 
-			m_travelling_is_arbitrary = false;  // Circular
+			m_travelling_is_arbitrary = false;	// Circular
 			m_tTravelling.Start(100);
 
 			Refresh(false);
