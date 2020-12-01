@@ -21,6 +21,12 @@
 
 #include <iostream>
 
+// for SetThreadDescription()
+#if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 using namespace mrpt;
 
 void WorkerThreadsPool::clear()
