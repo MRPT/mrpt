@@ -2,7 +2,7 @@
 
 gcc/clang: <a href="https://circleci.com/gh/MRPT/mrpt/tree/develop"><img src="https://circleci.com/gh/MRPT/mrpt/tree/develop.svg?style=svg"></a> MSVC: <a href="https://ci.appveyor.com/project/jlblancoc/mrpt" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg/branch/develop?svg=true" /></a> Last stable release: <a href="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a> <a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a>
 
-<a href="https://repology.org/project/mrpt/versions"> <img src="https://repology.org/badge/tiny-repos/mrpt.svg" alt="Packaging status"> </a> <a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/develop/graph/badge.svg" /></a>  GH downloads: <a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a> SF downloads (datasets): <a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a>
+<a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/develop/graph/badge.svg" /></a>  GH downloads: <a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a> SF downloads (datasets): <a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a>
 
 Last Win64 builds: <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-develop/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-develop'></a> <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-stable/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-stable'></a>
 
@@ -33,6 +33,10 @@ and [much more](https://www.mrpt.org/list-of-mrpt-apps/).
   * MRPT is used in the [MOLA modular SLAM framework](https://github.com/MOLAorg/mola/).
 
 ## 3. Install
+
+<a href="https://repology.org/project/mrpt/versions"> 
+  <img align="right" src="https://repology.org/badge/vertical-allrepos/mrpt.svg" alt="Packaging status">
+</a>
 
 ### 3.1. Ubuntu
 
