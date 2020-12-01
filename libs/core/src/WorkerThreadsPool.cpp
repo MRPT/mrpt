@@ -32,10 +32,10 @@ void WorkerThreadsPool::clear()
 	condition_.notify_all();
 
 	if (!tasks_.empty())
-		std::cerr
-			<< "[WorkerThreadsPool] Warning: clear() called (probably from a "
-			   "dtor) while having "
-			<< tasks_.size() << " pending tasks. Aborting them.\n";
+		std::cerr << "[WorkerThreadsPool name=`" << name_
+				  << "`] Warning: clear() called (probably from a "
+					 "dtor) while having "
+				  << tasks_.size() << " pending tasks. Aborting them.\n";
 
 	for (auto& t : threads_)
 		if (t.joinable()) t.join();
@@ -70,7 +70,8 @@ void WorkerThreadsPool::resize(std::size_t num_threads)
 				}
 				catch (std::exception& e)
 				{
-					std::cerr << "[WorkerThreadsPool] Exception:\n"
+					std::cerr << "[WorkerThreadsPool name=`" << name_
+							  << "`] Exception:\n"
 							  << mrpt::exception_to_str(e) << "\n";
 				}
 			}
@@ -93,6 +94,8 @@ static void mySetThreadName(const std::string& name, std::thread& theThread)
 void WorkerThreadsPool::name(const std::string& name)
 {
 	using namespace std::string_literals;
+
+	name_ = name;
 
 	for (std::size_t i = 0; i < threads_.size(); ++i)
 	{
