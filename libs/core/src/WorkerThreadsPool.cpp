@@ -15,8 +15,10 @@
 
 #include "core-precomp.h"  // Precompiled headers
 //
+#include <mrpt/config.h>
 #include <mrpt/core/WorkerThreadsPool.h>
 #include <mrpt/core/exceptions.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -73,4 +75,28 @@ void WorkerThreadsPool::resize(std::size_t num_threads)
 				}
 			}
 		});
+}
+
+// code partially replicated from mrpt::system for convenience (avoid dep)
+static void mySetThreadName(const std::string& name, std::thread& theThread)
+{
+#if defined(MRPT_OS_WINDOWS)
+	wchar_t wName[50];
+	std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
+	SetThreadDescription(theThread.native_handle(), wName);
+#elif defined(MRPT_OS_LINUX)
+	auto handle = theThread.native_handle();
+	pthread_setname_np(handle, name.c_str());
+#endif
+}
+
+void WorkerThreadsPool::name(const std::string& name)
+{
+	using namespace std::string_literals;
+
+	for (std::size_t i = 0; i < threads_.size(); ++i)
+	{
+		const std::string str = name + "["s + std::to_string(i) + "]"s;
+		mySetThreadName(str, threads_.at(i));
+	}
 }
