@@ -49,10 +49,13 @@ class WorkerThreadsPool
 	};
 
 	WorkerThreadsPool() = default;
-	WorkerThreadsPool(std::size_t num_threads, queue_policy_t p = POLICY_FIFO)
+	WorkerThreadsPool(
+		std::size_t num_threads, queue_policy_t p = POLICY_FIFO,
+		const std::string& threadsName = "WorkerThreadsPool")
 		: policy_(p)
 	{
 		resize(num_threads);
+		name(threadsName);
 	}
 	~WorkerThreadsPool() { clear(); }
 	void resize(std::size_t num_threads);
@@ -69,6 +72,16 @@ class WorkerThreadsPool
 	 * working thread to process them.  */
 	std::size_t pendingTasks() const noexcept;
 
+	/** Sets the private thread names of threads in this pool.
+	 * Names can be seen from debuggers, profilers, etc. and will follow
+	 * the format `${name}[i]` with `${name}` the value supplied in this method
+	 * \note (Method new in MRPT 2.1.5)
+	 */
+	void name(const std::string& name);
+
+	/** Returns the base name of threads in this pool */
+	std::string name() const { return name_; }
+
    private:
 	std::vector<std::thread> threads_;
 	std::atomic_bool do_stop_{false};
@@ -76,6 +89,7 @@ class WorkerThreadsPool
 	std::condition_variable condition_;
 	std::queue<std::function<void()>> tasks_;
 	queue_policy_t policy_{POLICY_FIFO};
+	std::string name_{"WorkerThreadsPool"};
 };
 
 template <class F, class... Args>
