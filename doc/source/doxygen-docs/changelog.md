@@ -6,6 +6,7 @@
     - Both mrpt::containers::CDynamicGrid and mrpt::containers::CDynamicGrid3D are now compatible with range-based for loops, and also have a data() method.
   - \ref mrpt_core_grp
     - Added mrpt::LockHelper::unlock()
+    - Added mrpt::Clock::nowDouble()
 	- New method mrpt::WorkerThreadsPool::name()
   - \ref mrpt_gui_grp
     - New method mrpt::gui::CGlCanvasBase::CamaraParams::FromCamera()

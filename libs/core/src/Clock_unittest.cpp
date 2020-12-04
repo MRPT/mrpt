@@ -9,16 +9,17 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/core/Clock.h>
+
 #include <chrono>
 #include <thread>
 
 static void test_delay()
 {
-	const double t0 = mrpt::Clock::toDouble(mrpt::Clock::now());
+	const double t0 = mrpt::Clock::nowDouble();
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	const double t1 = mrpt::Clock::toDouble(mrpt::Clock::now());
+	const double t1 = mrpt::Clock::nowDouble();
 
-	EXPECT_GT(t1 - t0, 0.008);  // ideally, near 0.010
+	EXPECT_GT(t1 - t0, 0.008);	// ideally, near 0.010
 	EXPECT_LT(t1 - t0, 5.0);  // just detect it's not a crazy number
 }
 
@@ -38,20 +39,20 @@ TEST(clock, delay_Realtime)
 
 TEST(clock, changeSource)
 {
-	const double t0 = mrpt::Clock::toDouble(mrpt::Clock::now());
+	const double t0 = mrpt::Clock::nowDouble();
 	mrpt::Clock::setActiveClock(mrpt::Clock::Source::Monotonic);
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	const double t1 = mrpt::Clock::toDouble(mrpt::Clock::now());
+	const double t1 = mrpt::Clock::nowDouble();
 	mrpt::Clock::setActiveClock(mrpt::Clock::Source::Realtime);
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	const double t2 = mrpt::Clock::toDouble(mrpt::Clock::now());
+	const double t2 = mrpt::Clock::nowDouble();
 
-	EXPECT_GT(t1 - t0, 0.008);  // ideally, near 0.010
+	EXPECT_GT(t1 - t0, 0.008);	// ideally, near 0.010
 	EXPECT_LT(t1 - t0, 5.0);  // just detect it's not a crazy number
 
-	EXPECT_GT(t2 - t1, 0.008);  // ideally, near 0.010
+	EXPECT_GT(t2 - t1, 0.008);	// ideally, near 0.010
 	EXPECT_LT(t2 - t1, 5.0);  // just detect it's not a crazy number
 }
 
