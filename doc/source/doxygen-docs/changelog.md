@@ -7,7 +7,8 @@
   - \ref mrpt_core_grp
     - Added mrpt::LockHelper::unlock()
     - Added mrpt::Clock::nowDouble()
-	- New method mrpt::WorkerThreadsPool::name()
+    - New method mrpt::WorkerThreadsPool::name()
+    - Function mrpt::system::callStackBackTrace() moved to mrpt::callStackBackTrace()
   - \ref mrpt_gui_grp
     - New method mrpt::gui::CGlCanvasBase::CamaraParams::FromCamera()
   - \ref mrpt_math_grp
