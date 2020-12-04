@@ -1,9 +1,10 @@
 # ---------------------------------------------------------------
 #   "Clasic" function & headers detection:
 # ---------------------------------------------------------------
-include (CheckFunctionExists)
-include (CheckIncludeFile)
-include (CheckTypeSize)
+include(CheckFunctionExists)
+include(CheckIncludeFile)
+include(CheckIncludeFiles)
+include(CheckTypeSize)
 
 
 set(CMAKE_REQUIRED_INCLUDES "math.h")
@@ -18,11 +19,6 @@ CHECK_FUNCTION_EXISTS(gettid HAVE_GETTID)
 CHECK_FUNCTION_EXISTS(sincos HAVE_SINCOS)
 CHECK_FUNCTION_EXISTS(strtok_r HAVE_STRTOK_R)
 CHECK_FUNCTION_EXISTS(_aligned_malloc HAVE_ALIGNED_MALLOC)
-
-#  This seems not to work and is more complex than it looks at first sight... :-(
-#set(CMAKE_REQUIRED_INCLUDES "windows.h")
-#set(CMAKE_REQUIRED_LIBRARIES kernel32)
-#CHECK_FUNCTION_EXISTS(OpenThread HAVE_OPENTHREAD)
 
 if(MSVC AND NOT MSVC6 AND NOT MSVC7)
 	set(HAVE_OPENTHREAD 1)
@@ -56,8 +52,8 @@ CHECK_INCLUDE_FILE("stdint.h" HAVE_STDINT_H)
 CHECK_INCLUDE_FILE("inttypes.h" HAVE_INTTYPES_H)
 CHECK_INCLUDE_FILE("winsock2.h" HAVE_WINSOCK2_H)
 
-# Yes: This is god damn of a hack, but seems to be the only way to properly detect winusb.h (Windows SDK) from CMake:
-CHECK_INCLUDE_FILE("windows.h>\n#include <winusb.h" HAVE_WINUSB_H)
+
+CHECK_INCLUDE_FILES("windows.h;winusb.h" HAVE_WINUSB_H)
 
 # If we want SSE2, check for the expected headers:
 if (CMAKE_MRPT_HAS_SSE2)
@@ -72,7 +68,6 @@ endif()
 
 # If we want SSE3, check for the expected headers:
 if (CMAKE_MRPT_HAS_SSE3)
-
 	# JL: Before the CHECK_INCLUDE_FILE() we need to temporarily enable
 	#  the -msse3 flag in GCC or the test program that CMake builds will
 	#  always fail even if the header is present:
@@ -94,10 +89,8 @@ if (CMAKE_MRPT_HAS_SSE3)
 	endif (NOT )
 endif()
 
-
 # Compiler type sizes:
 check_type_size("long double"  HAVE_LONG_DOUBLE)
-
 
 # ---------------------------------------------------------------
 #   detect endian-ness

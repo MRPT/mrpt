@@ -127,6 +127,7 @@ message(STATUS "")
 
 message(STATUS " ______________________ OPTIONAL LIBRARIES ______________________")
 SHOW_CONFIG_LINE_SYSTEM("Assimp (3D models)                  " CMAKE_MRPT_HAS_ASSIMP "[Version: ${ASSIMP_VERSION}]")
+SHOW_CONFIG_LINE_SYSTEM("BFD (Binary File Descriptor lib.)   " CMAKE_MRPT_HAS_BFD)
 SHOW_CONFIG_LINE_SYSTEM("ffmpeg libs (Video streaming)       " CMAKE_MRPT_HAS_FFMPEG "[avcodec ${LIBAVCODEC_VERSION}, avutil ${LIBAVUTIL_VERSION}, avformat ${LIBAVFORMAT_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("fyaml (YAML/JSON parsing)           " CMAKE_MRPT_HAS_LIBFYAML)
 SHOW_CONFIG_LINE_SYSTEM("gtest (Google unit testing library) " CMAKE_MRPT_HAS_GTEST )

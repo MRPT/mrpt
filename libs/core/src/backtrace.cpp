@@ -9,6 +9,7 @@
 
 #include "core-precomp.h"  // Precompiled headers
 //
+#include <mrpt/config.h>  // MRPT_HAS_BFD, etc.
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/demangle.h>
 #include <mrpt/core/format.h>
@@ -23,7 +24,7 @@
 #include <DbgHelp.h>
 #else
 #include <bfd.h>  // in deb package: binutils-dev
-#include <dlfcn.h>  // dladdr()
+#include <dlfcn.h>	// dladdr()
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <link.h>
@@ -37,10 +38,35 @@
 #include <string>
 #endif
 
-#ifndef _WIN32
-
+#if MRPT_HAS_BFD
 // Partially based on code from:
 // https://webcache.googleusercontent.com/search?q=cache:MXn9tpmIK5QJ:https://oroboro.com/printing-stack-traces-file-line/+&cd=2&hl=es&ct=clnk&gl=es
+
+#if HAVE_DECL_BFD_GET_SECTION_FLAGS
+#define mrpt_debug_bfd_section_flags(_abfd, _section) \
+	bfd_get_section_flags(_abfd, _section)
+#elif HAVE_DECL_BFD_SECTION_FLAGS
+#define mrpt_debug_bfd_section_flags(_abfd, _section) \
+	bfd_section_flags(_section)
+#else
+#error "Unsupported BFD API"
+#endif
+
+#if HAVE_DECL_BFD_GET_SECTION_VMA
+#define mrpt_debug_bfd_section_vma(_abfd, _section) \
+	bfd_get_section_vma(_abfd, _section)
+#elif HAVE_DECL_BFD_SECTION_VMA
+#define mrpt_debug_bfd_section_vma(_abfd, _section) bfd_section_vma(_section)
+#else
+#error "Unsupported BFD API"
+#endif
+
+#if HAVE_1_ARG_BFD_SECTION_SIZE
+#define mrpt_debug_bfd_section_size(_abfd, _section) bfd_section_size(_section)
+#else
+#define mrpt_debug_bfd_section_size(_abfd, _section) \
+	bfd_section_size(_abfd, _section);
+#endif
 
 using u32 = uint32_t;
 using s32 = int32_t;
@@ -48,13 +74,14 @@ using s32 = int32_t;
 class FileMatch
 {
    public:
-	FileMatch(void* addr) : mAddress(addr), mFile(NULL), mBase(NULL) {}
+	FileMatch(void* addr) noexcept : mAddress(addr) {}
 
 	void* mAddress;
-	const char* mFile;
-	void* mBase;
+	const char* mFile = nullptr;
+	void* mBase = nullptr;
 };
-static int findMatchingFile(struct dl_phdr_info* info, size_t size, void* data)
+static int findMatchingFile(
+	struct dl_phdr_info* info, size_t /*size*/, void* data) noexcept
 {
 	FileMatch* match = (FileMatch*)data;
 
@@ -77,13 +104,13 @@ static int findMatchingFile(struct dl_phdr_info* info, size_t size, void* data)
 	return 0;
 }
 
-static asymbol** kstSlurpSymtab(bfd* abfd, const char* fileName)
+static asymbol** kstSlurpSymtab(bfd* abfd, const char* fileName) noexcept
 {
 	if (!(bfd_get_file_flags(abfd) & HAS_SYMS))
 	{
 		printf(
 			"Error bfd file \"%s\" flagged as having no symbols.\n", fileName);
-		return NULL;
+		return nullptr;
 	}
 
 	asymbol** syms;
@@ -96,7 +123,7 @@ static asymbol** kstSlurpSymtab(bfd* abfd, const char* fileName)
 	if (symcount < 0)
 	{
 		printf("Error bfd file \"%s\", found no symbols.\n", fileName);
-		return NULL;
+		return nullptr;
 	}
 
 	return syms;
@@ -105,63 +132,28 @@ static asymbol** kstSlurpSymtab(bfd* abfd, const char* fileName)
 class FileLineDesc
 {
    public:
-	FileLineDesc(asymbol** syms, bfd_vma pc)
-		: mPc(pc), mFound(false), mSyms(syms)
-	{
-	}
+	FileLineDesc(asymbol** syms, bfd_vma pc) noexcept : mPc(pc), mSyms(syms) {}
 
-	void findAddressInSection(bfd* abfd, asection* section);
+	void findAddressInSection(bfd* abfd, asection* section) noexcept;
 
 	bfd_vma mPc;
 	char* mFilename;
 	char* mFunctionname;
 	unsigned int mLine;
-	int mFound;
+	bool mFound = false;
 	asymbol** mSyms;
 };
 
-MRPT_TODO("Move to config.h!");
-
-#define HAVE_DECL_BFD_GET_SECTION_FLAGS 1
-#define HAVE_DECL_BFD_SECTION_VMA 1
-#define HAVE_DECL_BFD_GET_SECTION_VMA 1
-#define HAVE_1_ARG_BFD_SECTION_SIZE 0
-
-#if HAVE_DECL_BFD_GET_SECTION_FLAGS
-#define ucs_debug_bfd_section_flags(_abfd, _section) \
-	bfd_get_section_flags(_abfd, _section)
-#elif HAVE_DECL_BFD_SECTION_FLAGS
-#define ucs_debug_bfd_section_flags(_abfd, _section) bfd_section_flags(_section)
-#else
-#error "Unsupported BFD API"
-#endif
-
-#if HAVE_DECL_BFD_GET_SECTION_VMA
-#define ucs_debug_bfd_section_vma(_abfd, _section) \
-	bfd_get_section_vma(_abfd, _section)
-#elif HAVE_DECL_BFD_SECTION_VMA
-#define ucs_debug_bfd_section_vma(_abfd, _section) bfd_section_vma(_section)
-#else
-#error "Unsupported BFD API"
-#endif
-
-#if HAVE_1_ARG_BFD_SECTION_SIZE
-#define ucs_debug_bfd_section_size(_abfd, _section) bfd_section_size(_section)
-#else
-#define ucs_debug_bfd_section_size(_abfd, _section) \
-	bfd_section_size(_abfd, _section);
-#endif
-
-void FileLineDesc::findAddressInSection(bfd* abfd, asection* section)
+void FileLineDesc::findAddressInSection(bfd* abfd, asection* section) noexcept
 {
 	if (mFound) return;
 
-	if ((ucs_debug_bfd_section_flags(abfd, section) & SEC_ALLOC) == 0) return;
+	if ((mrpt_debug_bfd_section_flags(abfd, section) & SEC_ALLOC) == 0) return;
 
-	bfd_vma vma = ucs_debug_bfd_section_vma(abfd, section);
+	bfd_vma vma = mrpt_debug_bfd_section_vma(abfd, section);
 	if (mPc < vma) return;
 
-	bfd_size_type size = ucs_debug_bfd_section_size(abfd, section);
+	bfd_size_type size = mrpt_debug_bfd_section_size(abfd, section);
 	if (mPc >= (vma + size)) return;
 
 	mFound = bfd_find_nearest_line(
@@ -169,15 +161,21 @@ void FileLineDesc::findAddressInSection(bfd* abfd, asection* section)
 		(const char**)&mFunctionname, &mLine);
 }
 
-static void findAddressInSection(bfd* abfd, asection* section, void* data)
+static void findAddressInSection(
+	bfd* abfd, asection* section, void* data) noexcept
 {
 	FileLineDesc* desc = (FileLineDesc*)data;
-	if (!desc) throw std::runtime_error("Cannot find debug symbol!");
+	if (!desc)
+	{
+		std::cerr << "[mrpt::callStackBackTrace()] ERROR: Cannot find debug "
+					 "symbol.\n";
+		return;
+	}
 	return desc->findAddressInSection(abfd, section);
 }
 
 std::vector<mrpt::TCallStackEntry> translateAddressesBuf(
-	bfd* abfd, bfd_vma* addr, int numAddr, asymbol** syms)
+	bfd* abfd, bfd_vma* addr, int numAddr, asymbol** syms) noexcept
 {
 	std::vector<mrpt::TCallStackEntry> ret;
 	ret.resize(numAddr);
@@ -185,7 +183,6 @@ std::vector<mrpt::TCallStackEntry> translateAddressesBuf(
 	for (int i = 0; i < numAddr; i++)
 	{
 		auto& e = ret.at(i);
-		e.address = reinterpret_cast<void*>(addr[i]);
 
 		FileLineDesc desc(syms, addr[i]);
 
@@ -202,10 +199,11 @@ std::vector<mrpt::TCallStackEntry> translateAddressesBuf(
 			if (!e.symbolNameOriginal.empty())
 				e.symbolName = mrpt::demangle(e.symbolNameOriginal);
 
-			if (desc.mFilename != NULL)
+			if (desc.mFilename != nullptr)
 			{
 				char* h = strrchr(desc.mFilename, '/');
-				if (h != NULL) e.sourceFileName = h + 1;
+				if (h != nullptr) e.sourceFileName = h + 1;
+				e.sourceFileFullPath = desc.mFilename;
 			}
 			e.sourceFileNumber = desc.mLine;
 		}
@@ -215,9 +213,10 @@ std::vector<mrpt::TCallStackEntry> translateAddressesBuf(
 }
 
 static std::vector<mrpt::TCallStackEntry> processFile(
-	const char* fileName, bfd_vma* addr, int naddr)
+	const char* fileName, bfd_vma* addr, int naddr,
+	void* const PC_addr) noexcept
 {
-	bfd* abfd = bfd_openr(fileName, NULL);
+	bfd* abfd = bfd_openr(fileName, nullptr);
 	if (!abfd)
 	{
 		printf("Error opening bfd file \"%s\"\n", fileName);
@@ -247,7 +246,8 @@ static std::vector<mrpt::TCallStackEntry> processFile(
 		return {};
 	}
 
-	const auto retBuf = translateAddressesBuf(abfd, addr, naddr, syms);
+	auto retBuf = translateAddressesBuf(abfd, addr, naddr, syms);
+	for (auto& e : retBuf) e.address = PC_addr;
 
 	free(syms);
 
@@ -255,11 +255,9 @@ static std::vector<mrpt::TCallStackEntry> processFile(
 	return retBuf;
 }
 
-std::vector<mrpt::TCallStackEntry> backtraceSymbols(
-	void* const* addrList, int numAddr)
+static std::vector<mrpt::TCallStackEntry> backtraceSymbols(
+	void* const* addrList, int numAddr) noexcept
 {
-	//	char*** locations = (char***)alloca(sizeof(char**) * numAddr);
-
 	// initialize the bfd library
 	bfd_init();
 
@@ -267,7 +265,8 @@ std::vector<mrpt::TCallStackEntry> backtraceSymbols(
 	for (int idx = 0; idx < numAddr; idx++)
 	{
 		// find which executable, or library the symbol is from
-		FileMatch match(addrList[idx]);
+		void* const PC_addr = addrList[idx];
+		FileMatch match(PC_addr);
 		dl_iterate_phdr(findMatchingFile, &match);
 
 		// adjust the address in the global space of your binary to an
@@ -280,7 +279,7 @@ std::vector<mrpt::TCallStackEntry> backtraceSymbols(
 							  ? match.mFile
 							  : "/proc/self/exe";
 
-		auto newVals = processFile(fil, &addr, 1);
+		auto newVals = processFile(fil, &addr, 1, PC_addr);
 		for (auto& v : newVals) ret.emplace_back(std::move(v));
 	}
 
@@ -341,16 +340,31 @@ void mrpt::callStackBackTrace(TCallStackBackTrace& out_bt) noexcept
 	int nFrames = ::backtrace(callstack, nMaxFrames);
 	char** symbols = ::backtrace_symbols(callstack, nFrames);
 
+#if MRPT_HAS_BFD
+	// Use BFD to solve for symbol names and line numbers.
 	std::vector<void*> addrs;
 	for (int i = (int)framesToSkip; i < nFrames; i++)
-	{
 		addrs.push_back(callstack[i]);
-	}
-	const auto ret = backtraceSymbols(addrs.data(), addrs.size());
 
-	out_bt.backtrace_levels = ret;
-	for (size_t i = 0; i < ret.size(); i++)
-		out_bt.backtrace_levels[i].address = addrs[i];
+	out_bt.backtrace_levels = backtraceSymbols(addrs.data(), addrs.size());
+
+#else
+	// If BFD is not available, solve for symbol names only:
+	for (int i = (int)framesToSkip; i < nFrames; i++)
+	{
+		TCallStackEntry cse;
+		cse.address = callstack[i];
+
+		Dl_info info;
+		if (dladdr(callstack[i], &info) && info.dli_sname)
+		{
+			cse.symbolNameOriginal =
+				info.dli_sname == nullptr ? symbols[i] : info.dli_sname;
+			cse.symbolName = mrpt::demangle(cse.symbolNameOriginal);
+		}
+		out_bt.backtrace_levels.emplace_back(cse);
+	}
+#endif
 
 	free(symbols);
 #endif
@@ -359,15 +373,35 @@ void mrpt::callStackBackTrace(TCallStackBackTrace& out_bt) noexcept
 mrpt::TCallStackBackTrace::TCallStackBackTrace() = default;
 std::string mrpt::TCallStackBackTrace::asString() const noexcept
 {
-	std::ostringstream trace_buf;
-	for (std::size_t i = 0; i < this->backtrace_levels.size(); i++)
+	std::string trace_buf;
+	for (std::size_t i = 0; i < backtrace_levels.size(); i++)
 	{
-		trace_buf << mrpt::format(
-						 "[%-2d] %*p %s", static_cast<int>(i),
-						 int(2 + sizeof(void*) * 2),
-						 backtrace_levels[i].address,
-						 backtrace_levels[i].symbolName.c_str())
-				  << "\n";
+		const auto& bt = backtrace_levels[i];
+
+		trace_buf += mrpt::format("[%-2d] ", static_cast<int>(i));
+
+		if (bt.symbolName.empty())
+		{
+			trace_buf +=
+				mrpt::format("%*p", int(2 + sizeof(void*) * 2), bt.address);
+		}
+		else
+		{
+			if (!bt.sourceFileName.empty())
+			{
+				trace_buf += bt.sourceFileFullPath;
+				trace_buf += ":";
+				trace_buf += std::to_string(bt.sourceFileNumber);
+				trace_buf += " ";
+			}
+			else
+			{
+				trace_buf += "(unknown file) ";
+			}
+
+			trace_buf += bt.symbolName;
+		}
+		trace_buf += "\n";
 	}
-	return trace_buf.str();
+	return trace_buf;
 }
