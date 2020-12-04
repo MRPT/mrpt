@@ -20,6 +20,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
+
 #include <memory>  // unique_ptr
 
 namespace mrpt::nav
@@ -236,7 +237,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
 	void saveConfigFile(mrpt::config::CConfigFileBase& c)
-		const override;  // See base class docs!
+		const override;	 // See base class docs!
 
 	/** Enables/disables the detailed time logger (default:disabled upon
 	 * construction)
@@ -306,10 +307,11 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	bool m_enableConsoleOutput;
 	/** Whether \a loadConfigFile() has been called or not. */
 	bool m_init_done{false};
-	mrpt::system::CTicTac timerForExecutionPeriod;
+	/** Used to estimate the period at which we are being called */
+	double m_lastExecutionTimestamp = 0;
 
 	/** A complete time logger \sa enableTimeLog() */
-	mrpt::system::CTimeLogger m_timelogger{false};  // default: disabled
+	mrpt::system::CTimeLogger m_timelogger{false};	// default: disabled
 	bool m_PTGsMustBeReInitialized{true};
 
 	/** @name Variables for CReactiveNavigationSystem::performNavigationStep
@@ -326,7 +328,7 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 
 	bool impl_waypoint_is_reachable(
 		const mrpt::math::TPoint2D& wp_local_wrt_robot)
-		const override;  // See docs in base class
+		const override;	 // See docs in base class
 
 	// Steps for the reactive navigation sytem.
 	// ----------------------------------------------------------------------------
@@ -472,5 +474,5 @@ class CAbstractPTGBasedReactive : public CWaypointsNavigator
 	/** A copy of last-iteration navparams, used to detect changes */
 	std::unique_ptr<TNavigationParams> m_copy_prev_navParams;
 
-};  // end of CAbstractPTGBasedReactive
+};	// end of CAbstractPTGBasedReactive
 }  // namespace mrpt::nav
