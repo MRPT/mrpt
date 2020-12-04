@@ -67,7 +67,7 @@ void COpenGLBuffer::RAII_Impl::destroy()
 			tLast = tNow;
 
 			mrpt::system::TCallStackBackTrace bt;
-			mrpt::system::getCallStackBackTrace(bt);
+			mrpt::system::callStackBackTrace(bt);
 
 			std::cerr << "[COpenGLBuffer::RAII_Impl] *Warning* Leaking memory "
 						 "since Buffer was acquired from a different thread "

@@ -8,8 +8,9 @@
    +---------------------------------------------------------------------------+
    */
 
+#include <mrpt/core/backtrace.h>
 #include <mrpt/core/exceptions.h>
-#include <mrpt/system/backtrace.h>
+
 #include <iostream>
 
 class Foo
@@ -17,8 +18,8 @@ class Foo
    public:
 	static int func1(int a, int b)
 	{
-		mrpt::system::TCallStackBackTrace bt;
-		mrpt::system::getCallStackBackTrace(bt);
+		mrpt::TCallStackBackTrace bt;
+		mrpt::callStackBackTrace(bt);
 		std::cout << bt.asString();
 		return a + b;
 	}
