@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
+#include "opengl-precomp.h"	 // Precompiled header
 //
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/exceptions.h>
@@ -61,7 +61,7 @@ void COpenGLBuffer::RAII_Impl::destroy()
 	{
 		// at least, emit a warning:
 		static double tLast = 0;
-		auto tNow = mrpt::Clock::toDouble(mrpt::Clock::now());
+		auto tNow = mrpt::Clock::nowDouble();
 		if (tNow - tLast > 2.0)
 		{
 			tLast = tNow;
