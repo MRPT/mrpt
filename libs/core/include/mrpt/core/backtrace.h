@@ -29,7 +29,7 @@ struct TCallStackEntry
 	/** Original (before demangle) symbol name  (empty if not available) */
 	std::string symbolNameOriginal;
 
-	std::string sourceFileName;
+	std::string sourceFileName, sourceFileFullPath;
 	int sourceFileNumber = 0;
 };
 

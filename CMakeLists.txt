@@ -8,7 +8,7 @@
 #  For compiling instructions for all compilers and platforms, see
 #   https://www.mrpt.org/Building_and_Installing_Instructions
 #
-#  2007-2018, Jose Luis Blanco <jlblanco@ual.es>
+#  2007-2020, Jose Luis Blanco <jlblanco@ual.es>
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
@@ -54,9 +54,6 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmakemodules/custom_output.sh")
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
-# Require C++17
-# This is now defined as a PUBLIC interface feature of mrpt-core.
-
 # Detect wordsize:
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
 	set(CMAKE_MRPT_WORD_SIZE 64)
@@ -93,8 +90,8 @@ include(cmakemodules/FilterFileLists.cmake REQUIRED)
 include(cmakemodules/DeclareMRPTLib.cmake REQUIRED)
 include(cmakemodules/DeclareMEXLib.cmake REQUIRED)
 include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
-# --------------------------
 include(cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine architecture, on UNIX
+# --------------------------
 
 # Avoid the need for DLL export/import macros in Windows:
 if (WIN32)
@@ -253,6 +250,7 @@ endif()
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
 include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
+include(cmakemodules/script_bfd.cmake REQUIRED)      # BFD library for debug symbols for stack backtraces
 include(cmakemodules/script_clang_tidy.cmake REQUIRED)  # Clang tidy
 include(cmakemodules/script_duo3d.cmake REQUIRED)       # Support for DUO3D Camera
 include(cmakemodules/script_eigen.cmake REQUIRED)       # Eigen3
