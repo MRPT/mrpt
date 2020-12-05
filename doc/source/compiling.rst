@@ -46,7 +46,8 @@ Minimum compiler requisites:
        sudo apt install libftdi-dev freeglut3-dev zlib1g-dev \
             libusb-1.0-0-dev libudev-dev libfreenect-dev libdc1394-22-dev \
             libavformat-dev libswscale-dev libassimp-dev libjpeg-dev \
-            libsuitesparse-dev libpcap-dev liboctomap-dev libglfw3-dev
+            libsuitesparse-dev libpcap-dev liboctomap-dev libglfw3-dev \
+            binutils-dev
 
 
     Install additional dependencies for ros1bridge using official Ubuntu

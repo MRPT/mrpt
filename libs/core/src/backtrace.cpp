@@ -15,7 +15,6 @@
 #include <mrpt/core/format.h>
 
 #include <iostream>
-#include <sstream>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -23,8 +22,7 @@
 //
 #include <DbgHelp.h>
 #else
-#include <bfd.h>  // in deb package: binutils-dev
-#include <dlfcn.h>	// dladdr()
+#include <dlfcn.h>  // dladdr()
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <link.h>
@@ -41,6 +39,8 @@
 #if MRPT_HAS_BFD
 // Partially based on code from:
 // https://webcache.googleusercontent.com/search?q=cache:MXn9tpmIK5QJ:https://oroboro.com/printing-stack-traces-file-line/+&cd=2&hl=es&ct=clnk&gl=es
+
+#include <bfd.h>  // in deb package: binutils-dev
 
 #if HAVE_DECL_BFD_GET_SECTION_FLAGS
 #define mrpt_debug_bfd_section_flags(_abfd, _section) \
