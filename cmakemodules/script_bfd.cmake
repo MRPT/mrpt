@@ -12,6 +12,7 @@ endif()
 include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckPrototypeDefinition)
+include(CheckCSourceCompiles)
 
 CHECK_INCLUDE_FILE("bfd.h" HAVE_BFD_H)
 find_library(BFD_LIBRARY NAMES bfd)
@@ -35,7 +36,7 @@ set(CMAKE_REQUIRED_LINK_OPTIONS ${BFD_LIBRARY})
 check_c_source_compiles("\
 #include <stddef.h>\n\
 #include <bfd.h>\n\
-int main(int ac, char**av){ 
+int main(int ac, char**av){
 const asection *sec = NULL; \
 bfd_size_type a = bfd_section_size(sec); \
 (void)a;\
