@@ -192,13 +192,6 @@ mark_as_advanced(MRPT_ENABLE_PRECOMPILED_HDRS)
 # ===================================================
 set(MRPT_HAS_STACKED_EXCEPTIONS ON CACHE BOOL "Enable MRPT_TRY_START/END blocks (disable it for speed up).")
 
-# Optional MRPT embedded profiler:
-# ===================================================
-set(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER OFF CACHE BOOL "Enable MRPT embedded profiler.")
-if (MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
-	add_definitions(-DMRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
-endif()
-
 # ASSERT_ blocks
 set(MRPT_HAS_ASSERT ON CACHE BOOL "Enable ASSERT_ statements (disable it for speed up).")
 
