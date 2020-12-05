@@ -11,19 +11,6 @@
 //
 #include <mrpt/core/exceptions.h>
 
-mrpt::ExceptionWithCallBack::ExceptionWithCallBack(
-	const std::exception& originalException)
-	: originalWhat(originalException.what()),
-	  callStack(mrpt::callStackBackTrace(2 /*skip 2 frames*/))
-{
-}
-
-const char* mrpt::ExceptionWithCallBack::what() const noexcept
-{
-	if (m_what.empty()) m_what = mrpt::exception_to_str(*this);
-	return m_what.c_str();
-}
-
 namespace mrpt::internal
 {
 std::string exception_line_msg(
@@ -70,7 +57,8 @@ void impl_excep_to_str(const std::exception& e, std::string& ret, int lvl = 0)
 		// We traversed the entire call stack,
 		// show just the original error message: "file:line: [func] MSG"
 
-		if (const auto* ecb = dynamic_cast<const ExceptionWithCallBack*>(&e);
+		if (const auto* ecb =
+				dynamic_cast<const ExceptionWithCallBackBase*>(&e);
 			ecb != nullptr)
 		{
 			std::string err = ecb->originalWhat;

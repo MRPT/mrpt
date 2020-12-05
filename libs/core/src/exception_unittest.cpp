@@ -15,7 +15,7 @@
 
 TEST(exception, stackedExceptionBasic)
 {
-	EXPECT_THROW({ THROW_EXCEPTION("wtf"); }, mrpt::ExceptionWithCallBack);
+	EXPECT_THROW({ THROW_EXCEPTION("wtf"); }, mrpt::ExceptionWithCallBackBase);
 }
 
 template <typename T>
@@ -65,5 +65,6 @@ TEST(exception, assertException)
 	bool trueValue = true;
 	bool falseValue = false;
 	EXPECT_THROW(
-		{ ASSERT_EQUAL_(trueValue, falseValue); }, mrpt::ExceptionWithCallBack);
+		{ ASSERT_EQUAL_(trueValue, falseValue); },
+		mrpt::ExceptionWithCallBackBase);
 }
