@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /core_backtrace_example
+# CMake file for the MRPT example:  /system_datetime_example
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-set(sampleName core_backtrace_example)
+set(sampleName system_datetime_example)
 project(EXAMPLE_${sampleName})
 
 cmake_minimum_required(VERSION 3.1)
@@ -19,7 +19,7 @@ set(EXECUTABLE_OUTPUT_PATH ".")
 #  https://www.mrpt.org/Libraries
 # Add the top-level dependencies only.
 # --------------------------------------------------------------------------
-foreach(dep core)
+foreach(dep system;poses;io)
 	# if not building from inside MRPT source tree, find it as a cmake
 	# imported project:
 	if (NOT TARGET mrpt::${dep})
@@ -46,7 +46,7 @@ if(MY_DEFS) # If not empty
 endif()
 
 # Add the required libraries for linking:
-foreach(dep core)
+foreach(dep system;poses;io)
 	target_link_libraries(${sampleName} mrpt::${dep})
 endforeach()
 
@@ -58,5 +58,5 @@ endif()
 # This part can be removed if you are compiling this program outside of
 #  the MRPT tree:
 if(DEFINED MRPT_LIBS_ROOT) # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt::core) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt::system;mrpt::poses;mrpt::io) # Dependencies
 endif()
