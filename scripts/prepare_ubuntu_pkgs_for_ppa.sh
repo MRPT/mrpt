@@ -14,7 +14,12 @@
 set -e
 
 # List of distributions to create PPA packages for:
-LST_DISTROS=(xenial bionic focal groovy)
+#  - Xenial LTS EOL: Apr 2021
+#  - Groovy     EOL: Jul 2021
+#  - Hirsute    EOL: Jan 2022
+#  - Bionic LTS EOL: Apr 2023
+#  - Focal  LTS EOL: Apr 2025
+LST_DISTROS=(xenial bionic focal groovy hirsute)
 
 # Special case for Xenial: enforce g++7
 export MRPT_PKG_CUSTOM_CMAKE_PARAMS_xenial="-DCMAKE_C_COMPILER=/usr/bin/gcc-7 -DCMAKE_CXX_COMPILER=/usr/bin/g++-7"
