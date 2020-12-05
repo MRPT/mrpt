@@ -25,7 +25,6 @@
 #include <dlfcn.h>  // dladdr()
 #include <dlfcn.h>
 #include <execinfo.h>
-#include <link.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,6 +40,7 @@
 // https://webcache.googleusercontent.com/search?q=cache:MXn9tpmIK5QJ:https://oroboro.com/printing-stack-traces-file-line/+&cd=2&hl=es&ct=clnk&gl=es
 
 #include <bfd.h>  // in deb package: binutils-dev
+#include <link.h> // in deb package: libc6-dev
 
 #if HAVE_DECL_BFD_GET_SECTION_FLAGS
 #define mrpt_debug_bfd_section_flags(_abfd, _section) \
