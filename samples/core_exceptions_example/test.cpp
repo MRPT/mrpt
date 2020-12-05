@@ -12,6 +12,7 @@
 //! [example-nested-exceptions]
 
 #include <mrpt/core/exceptions.h>
+
 #include <iostream>
 
 void test_except_3rd_lvl()
@@ -35,6 +36,17 @@ void test_except_toplevel()
 	MRPT_END
 }
 
+void test_except_2nd_lvl_bis()
+{
+	MRPT_START
+	std::vector<int> x;
+	x.resize(2);
+	x.at(10);  // throws
+	MRPT_END
+}
+
+void test_except_toplevel_bis() { test_except_2nd_lvl_bis(); }
+
 int main()
 {
 	try
@@ -44,8 +56,19 @@ int main()
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << mrpt::exception_to_str(e);
-		return -1;
+		std::cerr << e.what();
 	}
+
+	try
+	{
+		test_except_toplevel_bis();
+		return 0;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what();
+	}
+
+	return 0;
 }
 //! [example-nested-exceptions]

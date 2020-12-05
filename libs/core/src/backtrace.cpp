@@ -287,12 +287,11 @@ static std::vector<mrpt::TCallStackEntry> backtraceSymbols(
 }
 #endif
 
-void mrpt::callStackBackTrace(TCallStackBackTrace& out_bt) noexcept
+void mrpt::callStackBackTrace(
+	TCallStackBackTrace& out_bt, const unsigned int framesToSkip,
+	const unsigned int framesToCapture) noexcept
 {
 	out_bt.backtrace_levels.clear();
-	// skip *this* function from the backtrace
-	const unsigned int framesToSkip = 1;
-	const unsigned int framesToCapture = 64;
 
 #ifdef _WIN32
 	void* backTrace[framesToCapture]{};

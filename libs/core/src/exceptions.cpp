@@ -11,6 +11,19 @@
 //
 #include <mrpt/core/exceptions.h>
 
+mrpt::ExceptionWithCallBack::ExceptionWithCallBack(
+	const std::exception& originalException)
+	: originalWhat(originalException.what()),
+	  callStack(mrpt::callStackBackTrace(2 /*skip 2 frames*/))
+{
+}
+
+const char* mrpt::ExceptionWithCallBack::what() const noexcept
+{
+	if (m_what.empty()) m_what = mrpt::exception_to_str(*this);
+	return m_what.c_str();
+}
+
 namespace mrpt::internal
 {
 std::string exception_line_msg(
@@ -51,18 +64,33 @@ static size_t findClosingBracket(
 void impl_excep_to_str(const std::exception& e, std::string& ret, int lvl = 0)
 {
 	using namespace std::string_literals;
-	std::string err{e.what()};
-	if (!err.empty() && *err.rbegin() != '\n') err += "\n"s;
-	ret = "["s + std::to_string(lvl) + "] "s + err + ret;
 	try
 	{
 		std::rethrow_if_nested(e);
 		// We traversed the entire call stack,
 		// show just the original error message: "file:line: [func] MSG"
-		if (const auto idx = findClosingBracket(']', '[', err);
-			idx != std::string::npos)
-			err = "Exception message:"s + err.substr(idx + 1);
-		ret = err + std::string("==== MRPT exception backtrace ====\n") + ret;
+
+		if (const auto* ecb = dynamic_cast<const ExceptionWithCallBack*>(&e);
+			ecb != nullptr)
+		{
+			std::string err = ecb->originalWhat;
+			if (!err.empty() && *err.rbegin() != '\n') err += "\n"s;
+
+			if (const auto idx = findClosingBracket(']', '[', err);
+				idx != std::string::npos)
+				err = "Message: "s + err.substr(idx + 1);
+
+			ret += "==== MRPT exception ====\n";
+			ret += err;
+			ret += "Call stack backtrace:\n";
+			ret += ecb->callStack.asString();
+		}
+		else
+		{
+			ret = "==== non-MRPT exception ====\n";
+			ret += e.what();
+			ret += "\n";
+		}
 	}
 	catch (const std::exception& er)
 	{

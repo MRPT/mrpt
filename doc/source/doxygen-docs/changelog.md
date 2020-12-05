@@ -9,6 +9,11 @@
     - Added mrpt::Clock::nowDouble()
     - New method mrpt::WorkerThreadsPool::name()
     - Function mrpt::system::callStackBackTrace() moved to mrpt::callStackBackTrace()
+    - mrpt::callStackBackTrace() now uses BFD to find out line numbers if debug info (at least -g1) is available.
+    - Stacked exceptions changes:
+      - Line numbers will be now shown if built with debug info (>= -g1).
+      - Exceptions in STL or any other 3rd-party library will be also reported with exact call point line number, as long as MRPT_START/MRPT_END is used in the user function.
+      - No further need to call mrpt::exception_to_str(), just calling what() will return a detailed stack backtrace.
   - \ref mrpt_gui_grp
     - New method mrpt::gui::CGlCanvasBase::CamaraParams::FromCamera()
   - \ref mrpt_math_grp
