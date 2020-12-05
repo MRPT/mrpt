@@ -148,8 +148,8 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
 	// Normalize:
 	d_out = d_out / refDistance;
 
-	ASSERT_ABOVEEQ_(k_out, 0);
-	ASSERT_BELOW_(k_out, m_alphaValuesCount);
+	ASSERT_GE_(k_out, 0);
+	ASSERT_LT_(k_out, m_alphaValuesCount);
 
 	return is_exact;
 }

@@ -36,6 +36,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/vision/pinhole.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -81,14 +82,14 @@ void bundle_adj_full_demo(
 {
 	cout << "Optimizing " << allObs.size() << " feature observations.\n";
 
-	TParametersDouble extra_params;
-	// extra_params["verbose"] = 1;
+	mrpt::containers::yaml extra_params;
+	// extra_params["verbose"] = true;
 	extra_params["max_iterations"] = 2000;  // 250;
 	// extra_params["num_fix_frames"] = 1;
 	// extra_params["num_fix_points"] = 0;
-	extra_params["robust_kernel"] = 0;
+	extra_params["robust_kernel"] = false;
 	extra_params["kernel_param"] = 5.0;
-	extra_params["profiler"] = 1;
+	extra_params["profiler"] = true;
 
 	mrpt::vision::bundle_adj_full(
 		allObs, camera_params, frame_poses, landmark_points, extra_params,

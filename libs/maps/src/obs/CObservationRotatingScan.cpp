@@ -165,7 +165,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 
 	// column count:
 	const size_t num_lasers = o.calibration.laser_corrections.size();
-	ASSERT_ABOVE_(num_lasers, 2);
+	ASSERT_GT_(num_lasers, 2);
 	rowCount = num_lasers;
 
 	// row count:
@@ -182,7 +182,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 	rangeResolution = Velo::DISTANCE_RESOLUTION;
 	azimuthSpan = 0;
 
-	ASSERT_ABOVEEQ_(o.scan_packets.size(), 1);
+	ASSERT_GE_(o.scan_packets.size(), 1);
 
 	for (size_t pktIdx = 0; pktIdx < o.scan_packets.size(); pktIdx++)
 	{
@@ -195,7 +195,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 		if (last_pkt_tim != std::numeric_limits<uint32_t>::max())
 		{
 			// Estimate rot speed:
-			ASSERT_ABOVE_(pkt.gps_timestamp(), last_pkt_tim);
+			ASSERT_GT_(pkt.gps_timestamp(), last_pkt_tim);
 			const double dT = 1e-6 * (pkt.gps_timestamp() - last_pkt_tim);
 			const auto dAzimuth = 1e-2 * (pkt_azimuth - last_pkt_az);
 			const auto estRotVel = dAzimuth / dT;
@@ -213,8 +213,8 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 			// sanity checks: rot speed should be fairly stable:
 			const double maxRotSpeed = *rotspeed.rbegin(),
 						 minRotSpeed = *rotspeed.begin();
-			ASSERT_ABOVE_(maxRotSpeed, 0);
-			ASSERT_BELOW_((maxRotSpeed - minRotSpeed) / maxRotSpeed, 0.01);
+			ASSERT_GT_(maxRotSpeed, 0);
+			ASSERT_LT_((maxRotSpeed - minRotSpeed) / maxRotSpeed, 0.01);
 
 			// Median speed:
 			const double rotVel_degps = [&]() {
@@ -272,7 +272,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 					}
 				}
 
-				ASSERT_BELOW_(laserId, num_lasers);
+				ASSERT_LT_(laserId, num_lasers);
 				const auto& calib = o.calibration.laser_corrections[laserId];
 
 				// In dual return, if the distance is equal in both ranges,
@@ -304,7 +304,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 					};
 				}();
 
-				ASSERT_BELOW_(columnIdx, columnCount);
+				ASSERT_LT_(columnIdx, columnCount);
 				if (pkt.laser_return_mode != Velo::RETMODE_DUAL ||
 					block_is_dual_strongest_range)
 				{

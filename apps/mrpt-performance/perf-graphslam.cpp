@@ -33,9 +33,9 @@ double graphslam_levmarq_solve(int nVertices, int N)
 	// cout << graph.nodeCount() << " nodes, " << graph.edgeCount() << "
 	// edges\n";
 
-	mrpt::system::TParametersDouble params;
-	// params["verbose"]  = 1;
-	// params["profiler"] = 1;
+	mrpt::containers::yaml params;
+	// params["verbose"]  = true;
+	// params["profiler"] = true;
 	params["max_iterations"] = 1000;
 
 	CTimeLogger timer;

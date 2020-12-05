@@ -19,7 +19,7 @@ using namespace mrpt::opengl;
 void TRenderMatrices::computeOrthoProjectionMatrix(
 	float left, float right, float bottom, float top, float znear, float zfar)
 {
-	ASSERT_ABOVE_(zfar, znear);
+	ASSERT_GT_(zfar, znear);
 
 	p_matrix.setIdentity();
 
@@ -34,10 +34,10 @@ void TRenderMatrices::computeOrthoProjectionMatrix(
 // Replacement for obsolete: gluPerspective() and glOrtho()
 void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 {
-	ASSERT_ABOVE_(FOV, .0f);
-	ASSERT_ABOVE_(zfar, znear);
-	ASSERT_ABOVE_(zfar, .0f);
-	ASSERT_ABOVEEQ_(znear, .0f);
+	ASSERT_GT_(FOV, .0f);
+	ASSERT_GT_(zfar, znear);
+	ASSERT_GT_(zfar, .0f);
+	ASSERT_GE_(znear, .0f);
 
 	if (is_projective)
 	{
@@ -45,7 +45,7 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 		// Based on GLM's perspective (MIT license).
 
 		const float aspect = viewport_width / (1.0f * viewport_height);
-		ASSERT_ABOVE_(
+		ASSERT_GT_(
 			std::abs(aspect - std::numeric_limits<float>::epsilon()), .0f);
 
 		const float f = 1.0f / std::tan(mrpt::DEG2RAD(FOV) / 2.0f);

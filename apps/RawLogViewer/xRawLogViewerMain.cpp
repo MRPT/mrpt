@@ -675,8 +675,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 			wxVSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	wxFont memoFont(
-		10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		_T("Courier 10 Pitch"), wxFONTENCODING_DEFAULT);
+		wxSize(10, 10), wxFontFamily::wxFONTFAMILY_TELETYPE,
+		wxFontStyle::wxFONTSTYLE_NORMAL, wxFontWeight::wxFONTWEIGHT_NORMAL);
 	memo->SetFont(memoFont);
 	BoxSizer2->Add(memo, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel3->SetSizer(BoxSizer2);
@@ -2049,12 +2049,12 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 	bool alreadyWarnedTooLargeFile = false;
 	string errorMsg;
 
+	double last_ratio = -1;
 	while (keepLoading)
 	{
 		if (countLoop++ % 10 == 0)
 		{
 			uint64_t fil_pos = fil.getPosition();
-			static double last_ratio = -1;
 			double ratio = fil_pos / (1.0 * filSize);
 
 			if (ratio - last_ratio >= 0.006)

@@ -7,6 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
+#include <mrpt/graphs/CVisualizer.h>
 
 namespace mrpt::graphs::detail
 {
@@ -38,22 +39,22 @@ void CVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	getAs3DObject(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		mrpt::system::TParametersDouble viz_params) const
+		const mrpt::containers::yaml& viz_params) const
 {
 	using namespace mrpt::opengl;
 
 	// graph visualization parameters
 	const bool show_ID_labels =
-		0 != viz_params.getWithDefaultVal("show_ID_labels", 0);
+		viz_params.getOrDefault<bool>("show_ID_labels", false);
 	const bool show_ground_grid =
-		0 != viz_params.getWithDefaultVal("show_ground_grid", 1);
-	const bool show_edges = 0 != viz_params.getWithDefaultVal("show_edges", 1);
+		viz_params.getOrDefault<bool>("show_ground_grid", true);
+	const bool show_edges = viz_params.getOrDefault<bool>("show_edges", true);
 	const bool show_node_corners =
-		0 != viz_params.getWithDefaultVal("show_node_corners", 1);
+		viz_params.getOrDefault<bool>("show_node_corners", true);
 	const bool show_edge_rel_poses =
-		0 != viz_params.getWithDefaultVal("show_edge_rel_poses", 0);
+		viz_params.getOrDefault<bool>("show_edge_rel_poses", false);
 	const double nodes_point_size =
-		viz_params.getWithDefaultVal("nodes_point_size", 0.);
+		viz_params.getOrDefault<double>("nodes_point_size", 0.);
 
 	if (show_ground_grid)
 	{
@@ -88,7 +89,7 @@ void CVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawGroundGrid(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
@@ -125,7 +126,7 @@ void CVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawNodePoints(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
@@ -133,9 +134,10 @@ void CVisualizer<
 	using namespace mrpt::img;
 
 	const double nodes_point_size =
-		viz_params->getWithDefaultVal("nodes_point_size", 0.);
-	const unsigned int nodes_point_color = viz_params->getWithDefaultVal(
-		"nodes_point_color", (unsigned int)0xA0A0A0);
+		viz_params->getOrDefault<double>("nodes_point_size", 0.);
+	const unsigned int nodes_point_color =
+		viz_params->getOrDefault<unsigned int>(
+			"nodes_point_color", (unsigned int)0xA0A0A0);
 
 	CPointCloud::Ptr pnts = std::make_shared<CPointCloud>();
 	pnts->setColor(TColorf(TColor(nodes_point_color)));
@@ -144,8 +146,8 @@ void CVisualizer<
 	// Add all nodesnodes:
 	for (auto n_it = m_graph.nodes.begin(); n_it != m_graph.nodes.end(); ++n_it)
 	{
-		const CPose3D p = CPose3D(
-			n_it->second);  // Convert to 3D from whatever its real type.
+		// Convert to 3D from whatever its real type.
+		const CPose3D p = CPose3D(n_it->second);
 		pnts->insertPoint(p.x(), p.y(), p.z());
 	}
 
@@ -159,7 +161,7 @@ void CVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawNodeCorners(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
 	using mrpt::poses::CPose3D;
@@ -167,11 +169,11 @@ void CVisualizer<
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	const bool show_node_corners =
-		0 != viz_params->getWithDefaultVal("show_node_corners", 1);
+		viz_params->getOrDefault<bool>("show_node_corners", true);
 	const bool show_ID_labels =
-		0 != viz_params->getWithDefaultVal("show_ID_labels", 0);
+		viz_params->getOrDefault<bool>("show_ID_labels", false);
 	const double nodes_corner_scale =
-		viz_params->getWithDefaultVal("nodes_corner_scale", 0.7);
+		viz_params->getOrDefault<double>("nodes_corner_scale", 0.7);
 
 	for (auto n_it = m_graph.nodes.begin(); n_it != m_graph.nodes.end(); ++n_it)
 	{
@@ -203,7 +205,7 @@ void CVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawEdgeRelPoses(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
 	using namespace mrpt::img;
@@ -211,12 +213,14 @@ void CVisualizer<
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	const double nodes_edges_corner_scale =
-		viz_params->getWithDefaultVal("nodes_edges_corner_scale", 0.4);
-	const unsigned int edge_rel_poses_color = viz_params->getWithDefaultVal(
-		"edge_rel_poses_color", (unsigned int)0x40FF8000);
+		viz_params->getOrDefault<double>("nodes_edges_corner_scale", 0.4);
+	const unsigned int edge_rel_poses_color =
+		viz_params->getOrDefault<unsigned int>(
+			"edge_rel_poses_color", (unsigned int)0x40FF8000);
 	const TColor col8bit(
 		edge_rel_poses_color & 0xffffff, edge_rel_poses_color >> 24);
-	const double edge_width = viz_params->getWithDefaultVal("edge_width", 2.);
+	const double edge_width =
+		viz_params->getOrDefault<double>("edge_width", 2.);
 
 	for (auto edge_it = m_graph.begin(); edge_it != m_graph.end(); ++edge_it)
 	{
@@ -272,7 +276,7 @@ void CVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>::
 	drawEdges(
 		mrpt::opengl::CSetOfObjects::Ptr& object,
-		const mrpt::system::TParametersDouble* viz_params /*=NULL*/) const
+		const mrpt::containers::yaml* viz_params /*=NULL*/) const
 {
 	using namespace mrpt::opengl;
 	using namespace mrpt::img;
@@ -280,9 +284,10 @@ void CVisualizer<
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
 	CSetOfLines::Ptr gl_edges = std::make_shared<CSetOfLines>();
-	const unsigned int edge_color =
-		viz_params->getWithDefaultVal("edge_color", (unsigned int)0x400000FF);
-	const double edge_width = viz_params->getWithDefaultVal("edge_width", 2.);
+	const unsigned int edge_color = viz_params->getOrDefault<unsigned int>(
+		"edge_color", (unsigned int)0x400000FF);
+	const double edge_width =
+		viz_params->getOrDefault<double>("edge_width", 2.);
 
 	const TColor col8bit(edge_color & 0xffffff, edge_color >> 24);
 

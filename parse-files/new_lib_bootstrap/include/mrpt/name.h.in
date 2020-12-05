@@ -11,7 +11,7 @@
 #define _mrpt_@name@_H
 
 #ifndef MRPT_NO_WARN_BIG_HDR
-#include <mrpt/utils/core_defs.h>
+#include <mrpt/core/macros.h>
 MRPT_WARNING("Including <mrpt/@name@.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
 #endif
 

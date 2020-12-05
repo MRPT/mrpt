@@ -333,6 +333,7 @@ const long _DSceneViewerFrame::ID_MENUITEM2 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM5 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM7 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM6 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM_ImportImage = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM20 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM25 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM19 = wxNewId();
@@ -581,6 +582,10 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 		MenuItem18, ID_MENUITEM25, _("a LAS LiDAR file..."), wxEmptyString,
 		wxITEM_NORMAL);
 	MenuItem18->Append(mnuImportLAS);
+	MenuItemImportImage = new wxMenuItem(
+		MenuItem18, ID_MENUITEM_ImportImage, _("an image..."), wxEmptyString,
+		wxITEM_NORMAL);
+	MenuItem18->Append(MenuItemImportImage);
 	Menu1->Append(ID_MENUITEM19, _("Import"), MenuItem18, wxEmptyString);
 	MenuItem20 = new wxMenu();
 	MenuItem21 = new wxMenuItem(
@@ -722,6 +727,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	Bind(wxEVT_MENU, &svf::OnInsert3DS, this, ID_MENUITEM6);
 	Bind(wxEVT_MENU, &svf::OnMenuItemImportPLYPointCloud, this, ID_MENUITEM20);
 	Bind(wxEVT_MENU, &svf::OnmnuImportLASSelected, this, ID_MENUITEM25);
+	Bind(wxEVT_MENU, &svf::OnmnuImportImageView, this, ID_MENUITEM_ImportImage);
 	Bind(wxEVT_MENU, &svf::OnMenuItemExportPointsPLY, this, ID_MENUITEM22);
 	Bind(wxEVT_MENU, &svf::OnPrevious, this, ID_MENUITEM29);
 	Bind(wxEVT_MENU, &svf::OnNext, this, ID_MENUITEM30);
@@ -960,11 +966,40 @@ void _DSceneViewerFrame::updateTitle()
 				  .c_str()));
 }
 
-void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent& event)
+void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 {
 	timLoadFileCmdLine.Stop();  // One shot only.
 	// Open file if passed by the command line:
-	if (global_fileToOpen.size()) loadFromFile(global_fileToOpen);
+	if (!global_fileToOpen.empty())
+	{
+		if (mrpt::system::strCmpI(
+				"3Dscene", mrpt::system::extractFileExtension(
+							   global_fileToOpen, true /*ignore .gz*/)))
+		{
+			loadFromFile(global_fileToOpen);
+		}
+		else
+		{
+			std::cout << "Filename extension does not match `3Dscene`, "
+						 "importing as an ASSIMP model...\n";
+			try
+			{
+				auto obj3D = mrpt::opengl::CAssimpModel::Create();
+				obj3D->loadScene(global_fileToOpen);
+				// obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
+				// 0._deg, 90.0_deg));
+				m_canvas->getOpenGLSceneRef()->insert(obj3D);
+
+				m_canvas->Refresh();
+			}
+			catch (const std::exception& e)
+			{
+				std::cerr << mrpt::exception_to_str(e) << std::endl;
+				wxMessageBox(
+					mrpt::exception_to_str(e), _("Exception"), wxOK, this);
+			}
+		}
+	}
 }
 
 void _DSceneViewerFrame::OnbtnAutoplayClicked(wxCommandEvent& event)
@@ -1118,7 +1153,8 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 		mrpt::opengl::CAssimpModel::Ptr obj3D =
 			mrpt::opengl::CAssimpModel::Create();
 		obj3D->loadScene(fil);
-		obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg, 0._deg, 90.0_deg));
+		// obj3D->setPose(mrpt::math::TPose3D(0, 0, 0, .0_deg,
+		// 0._deg, 90.0_deg));
 		m_canvas->getOpenGLSceneRef()->insert(obj3D);
 
 		m_canvas->Refresh();
@@ -1821,7 +1857,8 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			this, _("Choose target image file"),
 			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
 			_("render.png"),
-			_("Image files (*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All "
+			_("Image files "
+			  "(*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All "
 			  "files (*.*)|*.*"),
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 		if (dialog.ShowModal() != wxID_OK) return;
@@ -2161,4 +2198,36 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 	}
 }
 
-void _DSceneViewerFrame::OnmnuImportLASSelected1(wxCommandEvent& event) {}
+void _DSceneViewerFrame::OnmnuImportImageView(wxCommandEvent&)
+{
+	try
+	{
+		auto scene = std::make_shared<opengl::COpenGLScene>();
+		m_canvas->setOpenGLSceneRef(scene);
+		wxFileDialog dialog(
+			this, _("Choose the LAS file to import"),
+			(iniFile->read_string(iniFileSect, "LastDir", ".").c_str()),
+			_("*.png"),
+			_("Image files (*.png, "
+			  "*.jpg, *.bmp)|*.png;*.jpg;*.jpeg;*.bmp|All files (*.*)|*.*"),
+			wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+		if (dialog.ShowModal() != wxID_OK) return;
+
+		const std::string fil = string(dialog.GetPath().mb_str());
+		saveLastUsedDirectoryToCfgFile(fil);
+
+		mrpt::img::CImage im;
+		if (!im.loadFromFile(fil))
+			THROW_EXCEPTION_FMT("Error loading image file: '%s'", fil.c_str());
+
+		COpenGLViewport::Ptr gl_view = scene->getViewport();
+		gl_view->setImageView(im);
+
+		Refresh();
+	}
+	catch (const std::exception& e)
+	{
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
+	}
+}

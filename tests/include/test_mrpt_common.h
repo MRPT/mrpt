@@ -14,5 +14,5 @@
 
 namespace mrpt
 {
-    extern std::string UNITTEST_BASEDIR;
+extern std::string UNITTEST_BASEDIR;
 }

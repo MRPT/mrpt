@@ -42,11 +42,6 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-obs)
-	if (CMAKE_MRPT_HAS_YAMLCPP)
-		# ${LIBYAMLCPP_INCLUDE_DIRS}
-		target_link_libraries(obs PRIVATE ${LIBYAMLCPP_LIBRARIES})
-	endif()
-
 	# tinyxml2 as system lib:
 	if (TARGET imp_tinyxml2)
 		target_link_libraries(obs PRIVATE imp_tinyxml2)

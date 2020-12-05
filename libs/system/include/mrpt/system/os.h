@@ -34,8 +34,9 @@ namespace os
  * ignored in some compilers)
  *  \sa mrpt::format
  */
-int sprintf(char* buf, size_t bufSize, const char* format, ...) noexcept
-	MRPT_printf_format_check(3, 4);
+int sprintf(
+	char* buf, size_t bufSize, const char* format,
+	...) noexcept MRPT_printf_format_check(3, 4);
 
 /** An OS-independent version of vsprintf (Notice the bufSize param, which may
  * be ignored in some compilers)
@@ -61,8 +62,8 @@ FILE* fopen(const std::string& fileName, const char* mode) noexcept;
 
 /** An OS-independent version of fprintf
  */
-int fprintf(FILE* fil, const char* format, ...) noexcept
-	MRPT_printf_format_check(2, 3);
+int fprintf(
+	FILE* fil, const char* format, ...) noexcept MRPT_printf_format_check(2, 3);
 
 /** An OS-independent version of fclose.
  * \exception std::exception On trying to close a nullptr file descriptor.

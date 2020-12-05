@@ -847,7 +847,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 							  selectedHolonomicMovement->direction)
 						: 0;
 				m_lastSentVelCmd.original_holo_eval =
-					selectedHolonomicMovement->props["holo_stage_eval"];
+					selectedHolonomicMovement->props.at("holo_stage_eval");
 
 				m_lastSentVelCmd.colfreedist_move_k =
 					best_ptg_idx >= 0
@@ -855,7 +855,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 							  .TP_Obstacles[m_lastSentVelCmd.ptg_alpha_index]
 						: .0;
 				m_lastSentVelCmd.was_slowdown =
-					(selectedHolonomicMovement->props["is_slowdown"] != 0.0);
+					(selectedHolonomicMovement->props.at("is_slowdown") != 0.0);
 
 				m_lastSentVelCmd.poseVel = m_curPoseVel;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;

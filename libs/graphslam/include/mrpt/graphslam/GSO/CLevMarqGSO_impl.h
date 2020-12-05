@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
+#include <mrpt/graphslam/GSO/CLevMarqGSO.h>
 
 namespace mrpt::graphslam::optimizers
 {
@@ -719,7 +720,7 @@ void CLevMarqGSO<GRAPH_T>::OptimizationParams::dumpToTextStream(
 		<< (optimization_on_second_thread ? "TRUE" : "FALSE") << std::endl;
 	out << "Optimize nodes in distance     = " << optimization_distance << "\n";
 	out << "Min. node difference for LC    = " << LC_min_nodeid_diff << "\n";
-	out << cfg.getAsString() << std::endl;
+	// out << cfg.getAsString() << std::endl;
 	MRPT_END
 }
 template <class GRAPH_T>
@@ -771,7 +772,7 @@ void CLevMarqGSO<GRAPH_T>::GraphVisualizationParams::dumpToTextStream(
 		"Visualize optimized graph = %s\n",
 		visualize_optimized_graph ? "TRUE" : "FALSE");
 
-	out << mrpt::format("%s", cfg.getAsString().c_str());
+	// out << mrpt::format("%s", cfg.getAsString().c_str());
 
 	std::cout << std::endl;
 

@@ -15,7 +15,7 @@
 
 namespace mrpt::containers
 {
-/** \addtogroup
+/** \addtogroup mrpt_containers_stlext_grp
  * @{ */
 
 /** Generates a string for a vector in the format [A,B,C,...] to std::cout, and

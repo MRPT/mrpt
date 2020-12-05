@@ -10,6 +10,7 @@
 #include "maps-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/io/CMemoryStream.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -125,7 +126,7 @@ void CMultiMetricMap::setListOfMaps(const TSetOfMetricMapInitializers& inits)
 		auto* theMap = mmr.factoryMapObjectFromDefinition(*i.get());
 		ASSERT_(theMap);
 		// Add to the list of maps:
-		this->maps.push_back(mrpt::maps::CMetricMap::Ptr(theMap));
+		this->maps.emplace_back(theMap);
 	}
 	MRPT_END
 }
@@ -318,6 +319,20 @@ const CSimplePointsMap* CMultiMetricMap::getAsSimplePointsMap() const
 mrpt::maps::CMetricMap::Ptr CMultiMetricMap::mapByIndex(size_t idx) const
 {
 	MRPT_START
-	return maps.at(idx).get_ptr();
+	return maps.at(idx);
 	MRPT_END
+}
+
+CMultiMetricMap::CMultiMetricMap(const CMultiMetricMap& o) { *this = o; }
+CMultiMetricMap& CMultiMetricMap::operator=(const CMultiMetricMap& o)
+{
+	if (&o == this) return *this;
+
+	mrpt::io::CMemoryStream buf;
+	auto ar = mrpt::serialization::archiveFrom(buf);
+	ar << o;
+	buf.Seek(0);
+	ar.ReadObject(this);
+
+	return *this;
 }

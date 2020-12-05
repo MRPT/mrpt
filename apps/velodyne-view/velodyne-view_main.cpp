@@ -403,7 +403,7 @@ int VelodyneView(int argc, char** argv)
 
 	cout << "Waiting for grabbing thread to exit...\n";
 	thrPar.quit = true;
-	thHandle.join();
+	if (thHandle.joinable()) thHandle.join();
 	cout << "Bye!\n";
 	return 0;
 }

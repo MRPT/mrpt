@@ -174,7 +174,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	inline const mrpt::math::TPoint3Df& operator[](size_t i) const
 	{
 #ifdef _DEBUG
-		ASSERT_BELOW_(i, size());
+		ASSERT_LT_(i, size());
 #endif
 		return m_points[i];
 	}

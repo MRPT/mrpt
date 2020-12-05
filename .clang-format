@@ -14,11 +14,7 @@
 # https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
 Language:        Cpp
-#BasedOnStyle:  LLVM
 BasedOnStyle: Google
-#BasedOnStyle: Chromium
-#BasedOnStyle: Mozilla
-#BasedOnStyle: WebKit
 # ---
 #AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak # Values: Align, DontAlign, AlwaysBreak
@@ -60,7 +56,7 @@ ColumnLimit: 80
 #ConstructorInitializerAllOnOneLineOrOnePerLine: true
 #ConstructorInitializerIndentWidth: 4
 #ContinuationIndentWidth: 4
-#Cpp11BracedListStyle: true
+Cpp11BracedListStyle: true
 #DerivePointerAlignment: false
 #DisableFormat:   false
 #ExperimentalAutoDetectBinPacking: false
@@ -100,5 +96,4 @@ SpaceBeforeAssignmentOperators: true
 Standard:        Cpp11
 TabWidth:        4
 UseTab:          Always # Available options are Never, Always, ForIndentation
-# UseTab:        ForIndentationAndAlignment # Not applicable in >= 3.8
 #---

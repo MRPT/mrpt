@@ -13,9 +13,9 @@
 #include <cstdarg>
 
 // A sprintf-like function for std::string
-std::string mrpt::format_impl(const char* fmt, ...)
+std::string mrpt::format(const char* fmt, ...)
 {
-	if (!fmt) return std::string();
+	if (!fmt) return {};
 
 	int result = -1, length = 2048;
 	std::string buffer;

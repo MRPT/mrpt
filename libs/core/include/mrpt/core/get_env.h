@@ -25,4 +25,16 @@ inline T get_env(const std::string& varname, const T& defValue = T())
 	return mrpt::from_string<T>(s, defValue, false /*dont throw*/);
 }
 
+/** Specialization for bool: understands "true", "True", number!=0 as `true` */
+template <>
+inline bool get_env(const std::string& varname, const bool& defValue)
+{
+	auto s = ::getenv(varname.c_str());
+	if (!s) return defValue;
+	const std::string str(s);
+	if (str == "true" || str == "TRUE" || str == "True") return true;
+	if (0 != mrpt::from_string<int>(s, 0, false /*dont throw*/)) return true;
+	return false;
+}
+
 }  // namespace mrpt

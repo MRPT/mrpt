@@ -35,12 +35,14 @@ if (POLICY CMP0075)
 	cmake_policy(SET CMP0075 NEW)
 endif()
 
-if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
-  message(FATAL_ERROR "Submodule NanoGUI is missing! "
+if ((NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
+    OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libfyaml/include")
+    OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/sdk")
+   )
+  message(FATAL_ERROR "git submodules missing! "
     "You probably did not clone the project with --recursive. It is possible to recover "
-    "by calling \"git submodule update --init --recursive\"")
+    "by calling:\n  git submodule update --init --recursive\n")
 endif()
-
 
 # Display timing information for each compiler instance on screen
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
@@ -143,9 +145,14 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 
 # Build the RoboPeak Lidar library?
 set(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
-if (${CMAKE_MRPT_KERNEL} MATCHES "GNU" OR APPLE)   # Unless in HURD
+if ((${CMAKE_MRPT_KERNEL} MATCHES "GNU") # It doesnt build in hurd
+    OR APPLE # and macos
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64")   # fails: termios2
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64el") # fails: termios2
+    OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "powerpc") # fails: termios2
+    )
 	set(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
-endif ()
+endif()
 # Decl option:
 set(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
 if(BUILD_ROBOPEAK_LIDAR)
@@ -226,6 +233,22 @@ set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads) # Defines imported target Threads::Threads
 
+# ccache:
+if(NOT MSVC AND NOT XCODE_VERSION)
+    option(MRPT_BUILD_WITH_CCACHE "Use ccache compiler cache" ON)
+    find_program(CCACHE_FOUND ccache)
+	mark_as_advanced(CCACHE_FOUND)
+    if(CCACHE_FOUND)
+        if(MRPT_BUILD_WITH_CCACHE)
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+        else()
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "")
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "")
+        endif()
+    endif()
+endif()
+
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
@@ -247,6 +270,7 @@ include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
 include(cmakemodules/script_jsoncpp.cmake REQUIRED)     # Check for jsoncpp
 include(cmakemodules/script_kinect.cmake REQUIRED)      # Kinect support in a set of different ways
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
+include(cmakemodules/script_libfyaml.cmake REQUIRED)    # Defines embedded version of libfyaml
 include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
@@ -262,6 +286,7 @@ include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget In
 include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
 include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS1
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
+include(cmakemodules/script_simpleini.cmake REQUIRED)   # SimpleINI lib
 include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
 include(cmakemodules/script_tinyxml2.cmake REQUIRED)    # tinyxml2 lib
@@ -269,7 +294,6 @@ include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyRes
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
-include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 
 # ---------------------------------------------------------------------------
@@ -603,7 +627,7 @@ endif()
 
 # Generate .h to locate MRPT sources:
 configure_file(
-    "${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in"
+	"${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in"
 	"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
 	)
 
@@ -614,11 +638,6 @@ add_subdirectory(doc)
 # ----------------------------------------------------------------------------
 set(BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
 if(BUILD_TESTING)
-	# Try using libgtest (Google testing library) from the system, if available
-	if(MRPT_COMPILER_IS_CLANG AND APPLE)
-		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-	endif()
-	add_subdirectory(${CMAKE_MRPT_GTEST_SRC_DIR})  # Build gtest from sources
 	add_subdirectory(tests)  # Build my tests
 endif()
 

@@ -18,7 +18,7 @@
 #include <opencv2/nonfree/nonfree.hpp>
 #endif
 #ifdef HAVE_OPENCV_FEATURES2D
-#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/features2d.hpp>
 #endif
 #ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
@@ -117,7 +117,13 @@ void CFeatureExtraction::extractFeaturesSIFT(
 			using namespace cv;
 			vector<KeyPoint> cv_feats;
 
-			auto sift = cv::xfeatures2d::SIFT::create(
+#if MRPT_OPENCV_VERSION_NUM >= 0x440
+			using sift_t = cv::SIFT;
+#else
+			using sift_t cv::xfeatures2d::SIFT;
+#endif
+
+			auto sift = sift_t::create(
 				nDesiredFeatures, options.SIFTOptions.octaveLayers,
 				options.SIFTOptions.threshold,
 				options.SIFTOptions.edgeThreshold, 1.6);

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "core-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/exceptions.h>
 
 namespace mrpt::internal
@@ -29,6 +29,24 @@ std::string exception_line_msg(
 	return s;
 }
 
+static size_t findClosingBracket(
+	const char chClosing, const char chOpening, const std::string& str)
+{
+	const size_t N = str.size();
+	int nestedLevel = 0;
+	for (size_t p = 0; p < N; p++)
+	{
+		if (str[p] == chClosing)
+		{
+			if (nestedLevel == 1) return p;
+			nestedLevel--;
+		}
+		else if (str[p] == chOpening)
+			nestedLevel++;
+	}
+	return std::string::npos;
+}
+
 /** Recursive implementation for mrpt::exception_to_str() */
 void impl_excep_to_str(const std::exception& e, std::string& ret, int lvl = 0)
 {
@@ -41,17 +59,15 @@ void impl_excep_to_str(const std::exception& e, std::string& ret, int lvl = 0)
 		std::rethrow_if_nested(e);
 		// We traversed the entire call stack,
 		// show just the original error message: "file:line: [func] MSG"
-		if (const auto idx = err.find("]"); idx != std::string::npos)
-			err = "Exception message: "s + err.substr(idx + 1);
+		if (const auto idx = findClosingBracket(']', '[', err);
+			idx != std::string::npos)
+			err = "Exception message:"s + err.substr(idx + 1);
 		ret = err + std::string("==== MRPT exception backtrace ====\n") + ret;
 	}
 	catch (const std::exception& er)
 	{
 		// It's nested: recursive call
 		impl_excep_to_str(er, ret, lvl + 1);
-	}
-	catch (...)
-	{
 	}
 }
 }  // namespace mrpt::internal

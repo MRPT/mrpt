@@ -69,6 +69,15 @@ if(BUILD_EXAMPLES)
 	set(CMAKE_EXAMPLE_DEPS mrpt::rtti)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+	# === Depending on: containers, systems ===
+	set(LIST_EXAMPLES_IN_THIS_DIR
+		containers_yaml_example
+		containers_params_by_name
+		)
+	set(CMAKE_EXAMPLE_DEPS mrpt::containers mrpt::system)
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+
 	# === Depending on: serialization, io ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		# ----
@@ -89,7 +98,6 @@ if(BUILD_EXAMPLES)
 		system_file_system_watcher
 		system_backtrace_example
 		system_dirs_files_manipulation
-		system_params_by_name
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::system mrpt::poses mrpt::io)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()

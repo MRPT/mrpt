@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/obs/VelodyneCalibration.h>
@@ -19,9 +20,6 @@
 #include <sstream>
 
 #include <mrpt/config.h>
-#if MRPT_HAS_YAMLCPP
-#include <yaml-cpp/yaml.h>
-#endif
 #if MRPT_HAS_TINYXML2
 #include <tinyxml2.h>
 #endif
@@ -89,8 +87,8 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
 	clear();
 
 	const int nEnabled = get_xml_children_as_int(node_enabled_, "count");
-	ASSERT_ABOVE_(nEnabled, 0);
-	ASSERT_BELOW_(nEnabled, 10000);
+	ASSERT_GT_(nEnabled, 0);
+	ASSERT_LT_(nEnabled, 10000);
 
 	int enabledCount = 0;
 	const tinyxml2::XMLElement* node_enabled_ith = nullptr;
@@ -130,7 +128,7 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
 		auto node_px = get_xml_children(node_points_item, "px");
 		auto node_px_id = get_xml_children(node_px, "id_");
 		const int id = atoi(node_px_id->GetText());
-		ASSERT_ABOVEEQ_(id, 0);
+		ASSERT_GE_(id, 0);
 		if (id >= enabledCount) continue;  // ignore
 
 		PerLaserCalib& plc = laser_corrections[id];
@@ -239,15 +237,15 @@ bool VelodyneCalibration::loadFromXMLFile(
 
 bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
 {
-#if MRPT_HAS_YAMLCPP
 	try
 	{
-		YAML::Node root = YAML::Load(str);
+		mrpt::containers::yaml root = mrpt::containers::yaml::FromFile(str);
 
 		// Clear previous contents:
 		clear();
 
-		const auto num_lasers = root["num_lasers"].as<unsigned int>(0);
+		const auto num_lasers =
+			root.getOrDefault<unsigned int>("num_lasers", 0);
 		ASSERT_(num_lasers > 0);
 
 		this->laser_corrections.resize(num_lasers);
@@ -255,9 +253,11 @@ bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
 		auto lasers = root["lasers"];
 		ASSERT_EQUAL_(lasers.size(), num_lasers);
 
-		for (auto item : lasers)
+		for (auto it : lasers.asSequence())
 		{
-			const auto id = item["laser_id"].as<unsigned int>(9999999);
+			auto& item = it.asMap();
+
+			const auto id = item["laser_id"].as<unsigned int>();
 			ASSERT_(id < num_lasers);
 
 			PerLaserCalib& plc = laser_corrections[id];
@@ -288,14 +288,10 @@ bool VelodyneCalibration::loadFromYAMLText(const std::string& str)
 				  << "\n";
 		return false;
 	}
-#else
-	THROW_EXCEPTION("This method requires building MRPT with YAML-CPP.");
-#endif
 }
 
 bool VelodyneCalibration::loadFromYAMLFile(const std::string& filename)
 {
-#if MRPT_HAS_YAMLCPP
 	try
 	{
 		std::ifstream f(filename);
@@ -315,9 +311,6 @@ bool VelodyneCalibration::loadFromYAMLFile(const std::string& filename)
 				  << "\n";
 		return false;
 	}
-#else
-	THROW_EXCEPTION("This method requires building MRPT with YAML-CPP.");
-#endif
 }
 
 bool VelodyneCalibration::empty() const { return laser_corrections.empty(); }

@@ -310,7 +310,8 @@ void CPose3DPDFGaussian::changeCoordinatesReference(
 		df_dx, df_du);
 
 	// this->cov = H1*this->cov*H1' + H2* 0 *H2';
-	cov = mrpt::math::multiply_HCHt(df_du, OLD_COV);
+	const CMatrixDouble66 covNew = mrpt::math::multiply_HCHt(df_du, OLD_COV);
+	cov = covNew;
 
 	// MEAN:
 	this->mean.composeFrom(newReferenceBase, this->mean);

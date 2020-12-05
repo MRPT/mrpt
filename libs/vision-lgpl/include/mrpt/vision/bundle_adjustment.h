@@ -23,10 +23,11 @@
 
 #pragma once
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/system/TParameters.h>
 #include <mrpt/vision/types.h>
+
 #include <array>
 #include <functional>
 
@@ -35,7 +36,7 @@
 namespace mrpt::vision
 {
 /** \defgroup bundle_adj Bundle-Adjustment methods
- * \ingroup mrpt_vision_grp
+ * \ingroup mrpt_vision_lgpl_grp
  */
 
 /** @name Bundle-Adjustment methods
@@ -111,8 +112,7 @@ double bundle_adj_full(
 	const mrpt::img::TCamera& camera_params,
 	mrpt::vision::TFramePosesVec& frame_poses,
 	mrpt::vision::TLandmarkLocationsVec& landmark_points,
-	const mrpt::system::TParametersDouble& extra_params =
-		mrpt::system::TParametersDouble(),
+	const mrpt::containers::yaml& extra_params = {},
 	const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback =
 		mrpt::vision::TBundleAdjustmentFeedbackFunctor());
 

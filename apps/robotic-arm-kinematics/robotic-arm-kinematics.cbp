@@ -873,9 +873,6 @@
       <Unit filename="/home/jlblanco/code/mrpt/cmakemodules/script_nite2.cmake">
           <Option virtualFolder="CMake Files\cmakemodules\" />
       </Unit>
-      <Unit filename="/home/jlblanco/code/mrpt/cmakemodules/script_yamlcpp.cmake">
-          <Option virtualFolder="CMake Files\cmakemodules\" />
-      </Unit>
       <Unit filename="/home/jlblanco/code/mrpt/cmakemodules/script_pcap.cmake">
           <Option virtualFolder="CMake Files\cmakemodules\" />
       </Unit>

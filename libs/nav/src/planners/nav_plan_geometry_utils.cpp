@@ -28,7 +28,7 @@ bool mrpt::nav::collision_free_dist_segment_circ_robot(
 	// Unit vector from start -> end:
 	mrpt::math::TPoint2D u = (p1 - p0);
 	const double L = u.norm();
-	ASSERT_ABOVE_(L, 1e-10);
+	ASSERT_GT_(L, 1e-10);
 	u *= 1.0 / L;
 
 	/*
@@ -79,7 +79,7 @@ bool mrpt::nav::collision_free_dist_arc_circ_robot(
 	const double arc_radius, const double R, const mrpt::math::TPoint2D& o,
 	double& out_col_dist)
 {
-	ASSERT_ABOVE_(std::abs(arc_radius), 1e-10);
+	ASSERT_GT_(std::abs(arc_radius), 1e-10);
 	out_col_dist = -1.0;
 
 	const mrpt::math::TPoint2D ptArcCenter(.0, arc_radius);

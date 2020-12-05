@@ -8,11 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "comms-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/core/exceptions.h>
+
 #include <cstring>
+#include <iostream>
 
 #ifdef _WIN32
 // Windows
@@ -34,6 +36,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <cerrno>
 #endif
 

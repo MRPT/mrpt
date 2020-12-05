@@ -307,7 +307,7 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
 {
 	MRPT_START
 
-	ASSERT_ABOVE_(sensorVariance, .0);
+	ASSERT_GT_(sensorVariance, .0);
 	ASSERTMSG_(
 		m_mrf_factors_activeObs.size() == m_map.size(),
 		"Trying to insert observation in uninitialized map (!)");

@@ -8,10 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include "CDlgPoseEst.h"
-#include <fstream>
-#include "camera_calib_guiMain.h"
 
 #include <mrpt/vision/chessboard_find_corners.h>
+
+#include <fstream>
+
+#include "camera_calib_guiMain.h"
 
 //(*InternalHeaders(CDlgPoseEst)
 #include <wx/font.h>
@@ -398,7 +400,7 @@ void CDlgPoseEst::OnbtnStopClick(wxCommandEvent& event)
 	this->m_panelCamera->Enable();
 
 	m_threadMustClose = true;
-	m_threadCorners.join();
+	if (m_threadCorners.joinable()) m_threadCorners.join();
 }
 
 void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)

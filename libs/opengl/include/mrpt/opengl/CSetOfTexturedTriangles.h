@@ -45,12 +45,12 @@ class CSetOfTexturedTriangles : public CRenderizableShaderTexturedTriangles
 	size_t getTrianglesCount() const { return m_triangles.size(); }
 	const TTriangle& getTriangle(size_t idx) const
 	{
-		ASSERT_BELOW_(idx, m_triangles.size());
+		ASSERT_LT_(idx, m_triangles.size());
 		return m_triangles[idx];
 	}
 	void getTriangle(size_t idx, TTriangle& t) const
 	{
-		ASSERT_BELOW_(idx, m_triangles.size());
+		ASSERT_LT_(idx, m_triangles.size());
 		t = m_triangles[idx];
 		CRenderizable::notifyChange();
 	}

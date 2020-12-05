@@ -100,83 +100,60 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 
 	// Root:
 	m_tree_nodes.emplace_back();
-	TNodeData& d = m_tree_nodes.back();
-	d.level = 0;
+	m_tree_nodes.back().level = 0;
 
-	//	CVectorDouble	tims;
+	auto lambdaCheckTimestamp = [this](const mrpt::Clock::time_point& t) {
+		if (t == INVALID_TIMESTAMP) return;
+		m_rawlog_last = t;
+		if (m_rawlog_start == INVALID_TIMESTAMP) m_rawlog_start = t;
+	};
 
 	if (m_rawlog)
 	{
 		CRawlog::iterator end_it = m_rawlog->end();
 		size_t rawlog_index = 0;
-		for (CRawlog::iterator it = m_rawlog->begin(); it != end_it;
-			 it++, rawlog_index++)
+		for (const auto& entry : *m_rawlog)
 		{
 			m_tree_nodes.emplace_back();
-			TNodeData& d = m_tree_nodes.back();
-			d.level = 1;
-			d.data = (*it);
-			d.index = rawlog_index;
+			TNodeData& dEntry = m_tree_nodes.back();
+			dEntry.level = 1;
+			dEntry.data = entry;
+			dEntry.index = rawlog_index;
 
 			// For containers, go recursively:
-			if ((*it)->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
+			if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(entry); sf)
 			{
-				CSensoryFrame::Ptr sf =
-					std::dynamic_pointer_cast<CSensoryFrame>(*it);
 				for (auto& o : *sf)
 				{
 					m_tree_nodes.emplace_back();
-					TNodeData& d = m_tree_nodes.back();
-					d.level = 2;
-					d.data = o;
-
-					if (o->timestamp != INVALID_TIMESTAMP)
-					{
-						m_rawlog_last = o->timestamp;
-						if (m_rawlog_start == INVALID_TIMESTAMP)
-							m_rawlog_start = o->timestamp;
-					}
+					TNodeData& dSF = m_tree_nodes.back();
+					dSF.level = 2;
+					dSF.data = o;
+					lambdaCheckTimestamp(o->timestamp);
 				}
 			}
-			else if ((*it)->GetRuntimeClass() == CLASS_ID(CActionCollection))
+			else if (auto acts =
+						 std::dynamic_pointer_cast<CActionCollection>(entry);
+					 acts)
 			{
-				CActionCollection::Ptr acts =
-					std::dynamic_pointer_cast<CActionCollection>(*it);
 				for (auto& a : *acts)
 				{
 					m_tree_nodes.emplace_back();
-					TNodeData& d = m_tree_nodes.back();
-					d.level = 2;
-					d.data = a.get_ptr();
+					TNodeData& dAC = m_tree_nodes.back();
+					dAC.level = 2;
+					dAC.data = a.get_ptr();
 
-					if (a->timestamp != INVALID_TIMESTAMP)
-					{
-						m_rawlog_last = a->timestamp;
-						if (m_rawlog_start == INVALID_TIMESTAMP)
-							m_rawlog_start = a->timestamp;
-					}
+					lambdaCheckTimestamp(a->timestamp);
 				}
 			}
-			else if ((*it)->GetRuntimeClass()->derivedFrom(
-						 CLASS_ID(CObservation)))
+			else if (auto o = std::dynamic_pointer_cast<CObservation>(entry); o)
 			{
-				CObservation::Ptr o =
-					std::dynamic_pointer_cast<CObservation>(*it);
-				if (o->timestamp != INVALID_TIMESTAMP)
-				{
-					m_rawlog_last = o->timestamp;
-					if (m_rawlog_start == INVALID_TIMESTAMP)
-						m_rawlog_start = o->timestamp;
-
-					// tims.push_back(
-					// mrpt::system::timeDifference(m_rawlog_start,
-					// o->timestamp));
-				}
+				lambdaCheckTimestamp(o->timestamp);
 			}
+
+			rawlog_index++;
 		}
 	}
-
-	//	mrpt::io::vectorToTextFile(tims,"tims.txt");
 
 	// Set new size:
 	int ly = m_tree_nodes.size();
@@ -300,7 +277,7 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 				// Text:
 				if (d.level == 1)
 				{
-					s << (format("[%i] ", (int)d.index).c_str());
+					s << "[" << std::to_string(d.index) << "] ";
 				}
 
 				s << d.data->GetRuntimeClass()->className;

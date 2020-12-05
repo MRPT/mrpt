@@ -77,8 +77,8 @@ void CMesh::updateTriangles() const
 	if (cols == 0 && rows == 0) return;  // empty mesh
 
 	ASSERT_(cols > 0 && rows > 0);
-	ASSERT_ABOVE_(m_xMax, m_xMin);
-	ASSERT_ABOVE_(m_yMax, m_yMin);
+	ASSERT_GT_(m_xMax, m_xMin);
+	ASSERT_GT_(m_yMax, m_yMin);
 
 	// we have 1 more row & col of vertices than of triangles:
 	vertex_normals.assign(

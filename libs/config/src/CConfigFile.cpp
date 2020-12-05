@@ -9,19 +9,57 @@
 
 #include "config-precomp.h"  // Precompiled headers
 
+// Fix to SimpleIni bug: not able to build with C++17
+#include <functional>
+#ifdef _MSC_VER
+namespace std
+{
+template <typename T1, typename T2, typename RET>
+using binary_function = std::function<RET(T1, T2)>;
+}
+#endif
+
+#include <mrpt/config.h>
+#if MRPT_HAS_SIMPLEINI_SYSTEM
+// Enforce using libuci instead of copyrighted ConvertUTF.h
+#define SI_CONVERT_ICU 1
+#endif
+#include <SimpleIni.h>
+
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/config/config_parser.h>
 #include <mrpt/system/os.h>
-#include "simpleini/SimpleIni.h"
+#include <fstream>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::config;
-using namespace mrpt::config::simpleini;
 using namespace std;
 
 struct CConfigFile::Impl
 {
-	MRPT_CSimpleIni m_ini;
+	std::shared_ptr<CSimpleIniA> ini = std::make_shared<CSimpleIniA>();
 };
+
+// copied from mrpt-io to avoid lib dependency:
+static std::string local_file_get_contents(const std::string& fileName)
+{
+	// Credits: https://stackoverflow.com/a/2602258/1631514
+	// Note: Add "binary" to make sure the "tellg" file size matches the actual
+	// number of read bytes afterwards:
+	std::ifstream t(fileName, ios::binary);
+	if (!t.is_open())
+		THROW_EXCEPTION_FMT(
+			"file_get_contents(): Error opening for read file `%s`",
+			fileName.c_str());
+
+	t.seekg(0, std::ios::end);
+	std::size_t size = t.tellg();
+	std::string buffer(size, ' ');
+	t.seekg(0);
+	t.read(&buffer[0], size);
+	return buffer;
+}
 
 /*---------------------------------------------------------------
 					Constructor
@@ -33,7 +71,10 @@ CConfigFile::CConfigFile(const std::string& fileName)
 
 	m_file = fileName;
 	m_modified = false;
-	m_impl->m_ini.LoadFile(fileName.c_str());
+
+	const auto sIn = local_file_get_contents(fileName);
+	const auto sOut = mrpt::config::config_parser(sIn);
+	m_impl->ini->LoadData(sOut);
 
 	MRPT_END
 }
@@ -61,7 +102,7 @@ void CConfigFile::setFileName(const std::string& fil_path)
 	m_file = fil_path;
 	m_modified = false;
 
-	m_impl->m_ini.LoadFile(fil_path.c_str());
+	m_impl->ini->LoadFile(fil_path.c_str());
 	MRPT_END
 }
 
@@ -73,7 +114,7 @@ void CConfigFile::writeNow()
 	MRPT_START
 	if (m_modified && !m_file.empty())
 	{
-		m_impl->m_ini.SaveFile(m_file.c_str());
+		m_impl->ini->SaveFile(m_file.c_str());
 		m_modified = false;
 	}
 	MRPT_END
@@ -100,7 +141,7 @@ void CConfigFile::writeString(
 
 	m_modified = true;
 
-	if (0 > m_impl->m_ini.SetValue(
+	if (0 > m_impl->ini->SetValue(
 				section.c_str(), name.c_str(), str.c_str(), nullptr))
 		THROW_EXCEPTION("Error changing value in INI-style file!");
 
@@ -117,7 +158,7 @@ std::string CConfigFile::readString(
 	MRPT_START
 	const char* defVal = failIfNotFound ? nullptr : defaultStr.c_str();
 
-	const char* aux = m_impl->m_ini.GetValue(
+	const char* aux = m_impl->ini->GetValue(
 		section.c_str(), name.c_str(), defVal,
 		nullptr);  // The memory is managed by the SimpleIni object
 
@@ -146,10 +187,10 @@ std::string CConfigFile::readString(
  ---------------------------------------------------------------*/
 void CConfigFile::getAllSections(std::vector<std::string>& sections) const
 {
-	MRPT_CSimpleIni::TNamesDepend names;
-	m_impl->m_ini.GetAllSections(names);
+	CSimpleIniA::TNamesDepend names;
+	m_impl->ini->GetAllSections(names);
 
-	MRPT_CSimpleIni::TNamesDepend::iterator n;
+	CSimpleIniA::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
 	sections.resize(names.size());
 	for (n = names.begin(), s = sections.begin(); n != names.end(); ++n, ++s)
@@ -162,14 +203,14 @@ void CConfigFile::getAllSections(std::vector<std::string>& sections) const
 void CConfigFile::getAllKeys(
 	const string& section, std::vector<std::string>& keys) const
 {
-	MRPT_CSimpleIni::TNamesDepend names;
-	m_impl->m_ini.GetAllKeys(section.c_str(), names);
+	CSimpleIniA::TNamesDepend names;
+	m_impl->ini->GetAllKeys(section.c_str(), names);
 
-	MRPT_CSimpleIni::TNamesDepend::iterator n;
+	CSimpleIniA::TNamesDepend::iterator n;
 	std::vector<std::string>::iterator s;
 	keys.resize(names.size());
 	for (n = names.begin(), s = keys.begin(); n != names.end(); ++n, ++s)
 		*s = n->pItem;
 }
 
-void CConfigFile::clear() { m_impl->m_ini.Reset(); }
+void CConfigFile::clear() { m_impl->ini->Reset(); }

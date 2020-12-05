@@ -8,10 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include "tfest-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/tfest/se3.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -66,7 +67,7 @@ using namespace std;
 /*---------------------------------------------------------------
 					se3_l2  (old "HornMethod()")
   ---------------------------------------------------------------*/
-bool se3_l2_internal(
+static bool se3_l2_internal(
 	std::vector<mrpt::math::TPoint3D>&
 		points_this,  // IN/OUT: It gets modified!
 	std::vector<mrpt::math::TPoint3D>&
@@ -218,6 +219,27 @@ bool tfest::se3_l2(
 
 bool tfest::se3_l2(
 	const mrpt::tfest::TMatchingPairList& corrs,
+	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
+	bool forceScaleToUnity)
+{
+	// Transform data types:
+	const size_t N = corrs.size();
+	std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
+	for (size_t i = 0; i < N; i++)
+	{
+		points_this[i].x = corrs[i].this_x;
+		points_this[i].y = corrs[i].this_y;
+		points_this[i].z = corrs[i].this_z;
+		points_other[i].x = corrs[i].other_x;
+		points_other[i].y = corrs[i].other_y;
+		points_other[i].z = corrs[i].other_z;
+	}
+	return se3_l2_internal(
+		points_this, points_other, out_transform, out_scale, forceScaleToUnity);
+}
+
+bool tfest::se3_l2(
+	const mrpt::tfest::TMatchingPairList_d& corrs,
 	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
 	bool forceScaleToUnity)
 {

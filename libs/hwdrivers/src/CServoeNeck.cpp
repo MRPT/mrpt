@@ -24,24 +24,13 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::serialization;
 using namespace std::literals;
 
-/*-------------------------------------------------------------
-					default constructor
--------------------------------------------------------------*/
-CServoeNeck::CServoeNeck()
-	: m_usbSerialNumber("eNeck001"),
-
-	  m_PrevAngles(0)
-
+CServoeNeck::CServoeNeck() : m_usbSerialNumber("eNeck001"), m_PrevAngles(0)
 {
 	m_offsets.resize(3, 0);
-}  // end-constructor
-/*-------------------------------------------------------------
-					default destructor
--------------------------------------------------------------*/
+}
+
 CServoeNeck::~CServoeNeck() = default;
-/*-------------------------------------------------------------
-					queryFirmwareVersion
--------------------------------------------------------------*/
+
 bool CServoeNeck::queryFirmwareVersion(std::string& out_firmwareVersion)
 {
 	try
@@ -273,7 +262,6 @@ bool CServoeNeck::setAngle(double angle, const uint8_t servo, bool fast)
 
 	unsigned int reg = angle2RegValue(m_offsets[servo] + angle);
 
-	std::cout << "Angle: " << RAD2DEG(angle) << " - Reg: " << reg << std::endl;
 	return setRegisterValue(reg, servo, fast);
 
 }  // end-getCurrentAngle

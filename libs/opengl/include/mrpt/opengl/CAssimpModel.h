@@ -8,11 +8,20 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/core/pimpl.h>
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
+#include <mrpt/opengl/CSetOfTexturedTriangles.h>
 #include <map>
+#include <optional>
+
+// Forward decls:
+// clang-format off
+struct aiScene;
+struct aiNode;
+namespace mrpt::opengl::internal { struct RenderElements; }
+// clang-format on
 
 namespace mrpt::opengl
 {
@@ -66,15 +75,40 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		CRenderizableShaderWireFrame::freeOpenGLResources();
 		CRenderizableShaderPoints::freeOpenGLResources();
 	}
+	void enqueForRenderRecursive(
+		const mrpt::opengl::TRenderMatrices& state,
+		RenderQueue& rq) const override;
 	/** @} */
 
 	CAssimpModel();
 	virtual ~CAssimpModel() override;
+
+	/** Import flags for loadScene */
+	struct LoadFlags
+	{
+		enum flags_t : uint32_t
+		{
+			/** See: aiProcessPreset_TargetRealtime_Fast */
+			RealTimeFast = 0x0001,
+			/** See: aiProcessPreset_TargetRealtime_Quality */
+			RealTimeQuality = 0x0002,
+			/** See: aiProcessPreset_TargetRealtime_MaxQuality */
+			RealTimeMaxQuality = 0x0004,
+			/** See: aiProcess_FlipUVs */
+			FlipUVs = 0x0010,
+			/** Displays messages on loaded textures, etc. */
+			Verbose = 0x1000
+		};
+	};
+
 	/**  Loads a scene from a file in any supported file.
 	 * \exception std::runtime_error On any error during loading or importing
 	 * the file.
 	 */
-	void loadScene(const std::string& file_name);
+	void loadScene(
+		const std::string& file_name,
+		const int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs |
+						  LoadFlags::Verbose);
 
 	/** Empty the object */
 	void clear();
@@ -86,37 +120,37 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		mrpt::math::TPoint3D& bb_min,
 		mrpt::math::TPoint3D& bb_max) const override;
 
-	/* Disabled for now (port to OpenGL3, March 2020)
 	struct TInfoPerTexture
 	{
-		// indices in \a m_textureIds. string::npos for non-initialized ones
-		size_t id_idx;
-		mrpt::img::CImage::Ptr img_rgb, img_alpha;
-		TInfoPerTexture() : id_idx(std::string::npos) {}
+		// indices in \a m_texturedObjects. string::npos for non-initialized
+		// ones
+		size_t id_idx{std::string::npos};
+		mrpt::img::CImage img_rgb;
+		std::optional<mrpt::img::CImage> img_alpha;
 	};
-	*/
 
    private:
-	/** A container for automatic deletion of assimp scene when the last
-	 * reference of the smart_ptr's is destroyed.
-	 */
-	struct TImplAssimp
-	{
-		TImplAssimp();
-		~TImplAssimp();
-		/** aiScene* */
-		void* scene = nullptr;
-	};
-	std::shared_ptr<TImplAssimp> m_assimp_scene;
+	/** The interface to the file: */
+	struct Impl;
+	mrpt::pimpl<Impl> m_assimp_scene;
 
 	/** Bounding box */
-	mrpt::math::TPoint3D m_bbox_min, m_bbox_max;
+	mrpt::math::TPoint3D m_bbox_min{0, 0, 0}, m_bbox_max{0, 0, 0};
 
 	std::string m_modelPath;
 
-	// mutable std::vector<unsigned int> m_textureIds;
-	// mutable bool m_textures_loaded{false};
-	// mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
+	mutable bool m_textures_loaded{false};
+	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
+
+	// We define a textured object per texture image, and delegate texture
+	// handling to that class:
+	mutable std::vector<CSetOfTexturedTriangles::Ptr> m_texturedObjects;
+	bool m_verboseLoad = true;
+
+	void recursive_render(
+		const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
+		mrpt::opengl::internal::RenderElements& re);
+	void process_textures(const aiScene* scene);
 
 };  // namespace mrpt::opengl
 

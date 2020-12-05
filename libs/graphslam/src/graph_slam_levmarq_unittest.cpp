@@ -54,8 +54,8 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 		// ----------------------------
 		//  Run graph slam:
 		// ----------------------------
-		mrpt::system::TParametersDouble params;
-		// params["verbose"] = 1;
+		mrpt::containers::yaml params;
+		// params["verbose"] = true;
 		params["max_iterations"] = 100;
 
 		graphslam::TResultInfoSpaLevMarq levmarq_info;
@@ -181,7 +181,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 
 			// Optimize:
 			const my_graph_t graph_initial = graph;
-			mrpt::system::TParametersDouble params;
+			mrpt::containers::yaml params;
 			params["max_iterations"] = 100;
 
 			graphslam::TResultInfoSpaLevMarq levmarq_info;

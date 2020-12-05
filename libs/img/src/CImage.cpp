@@ -156,7 +156,7 @@ static PixelDepth cvDepth2PixelDepth(int64_t d)
 	return PixelDepth::D8U;
 }
 
-#endif	// MRPT_HAS_OPENCV
+#endif  // MRPT_HAS_OPENCV
 
 // Default ctor
 CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>()) {}
@@ -518,7 +518,7 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 		// GRAY-SCALE: Raw bytes:
 		// Version 3: ZIP compression!
 		// Version 4: Skip zip if the image size <= 16Kb
-		int32_t origin = 0;	 // not used mrpt v1.9.9
+		int32_t origin = 0;  // not used mrpt v1.9.9
 		uint32_t imageSize = height * m_impl->img.step[0];
 		// Version 10: depth
 		int32_t depth = m_impl->img.depth();
@@ -833,8 +833,8 @@ std::string CImage::getChannelsOrder() const
 	// modern opencv versions used these fixed order (see opencv
 	// core/src/array.cpp)
 	const int chCount = m_impl->img.channels();
-	ASSERT_ABOVEEQ_(chCount, 1);
-	ASSERT_BELOWEQ_(chCount, 4);
+	ASSERT_GE_(chCount, 1);
+	ASSERT_LE_(chCount, 4);
 	const std::array<const char*, 4> orderNames = {"GRAY", "", "BGR", "BGRA"};
 	return std::string(orderNames.at(chCount - 1));
 #else
@@ -866,7 +866,17 @@ bool CImage::isColor() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
-	return m_impl->img.channels() == 3;
+	return m_impl->img.channels() >= 3;
+#else
+	THROW_EXCEPTION("MRPT built without OpenCV support");
+#endif
+}
+
+int CImage::channelCount() const
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+	return m_impl->img.channels();
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
@@ -1206,7 +1216,7 @@ float CImage::correlate(
 				i + height_init);  //(double)(ipl1->imageData[i*ipl1->widthStep
 			//+ j ]);
 			m2 += *img2(
-				j, i);	//(double)(ipl2->imageData[i*ipl2->widthStep + j ]);
+				j, i);  //(double)(ipl2->imageData[i*ipl2->widthStep + j ]);
 		}  //[ row * ipl->widthStep +  col * ipl->nChannels +  channel ];
 	}
 	m1 /= n;
@@ -1219,7 +1229,7 @@ float CImage::correlate(
 			x1 = *(*this)(j + width_init, i + height_init) -
 				 m1;  //(double)(ipl1->imageData[i*ipl1->widthStep
 					  //+ j]) - m1;
-			x2 = *img2(j, i) - m2;	//(double)(ipl2->imageData[i*ipl2->widthStep
+			x2 = *img2(j, i) - m2;  //(double)(ipl2->imageData[i*ipl2->widthStep
 									//+ j]) - m2;
 			sxx += x1 * x1;
 			syy += x2 * x2;
@@ -1788,7 +1798,7 @@ void CImage::rotateImage(
 
 	// Apply rotation & scale:
 	double m[2 * 3] = {scale * cos(ang), -scale * sin(ang), 1.0 * cx,
-					   scale * sin(ang), scale * cos(ang),	1.0 * cy};
+					   scale * sin(ang), scale * cos(ang),  1.0 * cy};
 	cv::Mat M(2, 3, CV_64F, m);
 
 	double dx = (srcImg.cols - 1) * 0.5;
@@ -2087,8 +2097,8 @@ float MRPT_DISABLE_FULL_OPTIMIZATION CImage::KLT_response(
 	//    ( gxy  gyy )
 	// See, for example:
 	// mrpt::math::detail::eigenVectorsMatrix_special_2x2():
-	const float t = Gxx + Gyy;	// Trace
-	const float de = Gxx * Gyy - Gxy * Gxy;	 // Det
+	const float t = Gxx + Gyy;  // Trace
+	const float de = Gxx * Gyy - Gxy * Gxy;  // Det
 	// The smallest eigenvalue is:
 	return 0.5f * (t - std::sqrt(t * t - 4.0f * de));
 #else
@@ -2170,9 +2180,9 @@ bool CImage::loadTGA(
 
 		for (unsigned int c = 0; c < width; c++)
 		{
-			*data++ = bytes[idx++];	 // R
-			*data++ = bytes[idx++];	 // G
-			*data++ = bytes[idx++];	 // B
+			*data++ = bytes[idx++];  // R
+			*data++ = bytes[idx++];  // G
+			*data++ = bytes[idx++];  // B
 			*data_alpha++ = bytes[idx++];  // A
 		}
 	}
@@ -2180,7 +2190,7 @@ bool CImage::loadTGA(
 	return true;
 #else
 	return false;
-#endif	// MRPT_HAS_OPENCV
+#endif  // MRPT_HAS_OPENCV
 }
 
 void CImage::getAsIplImage(IplImage* dest) const

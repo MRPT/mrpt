@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "tfest-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/round.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/geometry.h>
@@ -17,6 +17,7 @@
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/tfest/se2.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -281,8 +282,7 @@ bool tfest::se2_l2_robust(
 			 j < nCorrs && subSet.size() < params.ransac_maxSetSize; j++)
 		{
 			const size_t idx = corrsIdxsPermutation[j];
-
-			const TMatchingPair& corr_j = in_correspondences[idx];
+			const auto& corr_j = in_correspondences[idx];
 
 			// Don't pick the same features twice!
 			if (alreadySelectedThis[corr_j.this_idx] ||

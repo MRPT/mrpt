@@ -16,6 +16,7 @@
 */
 
 #include "kinect_calibrate_guiMain.h"
+
 #include <mrpt/gui/about_box.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
@@ -40,6 +41,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
+
 #include <fstream>
 
 using namespace mrpt;
@@ -1498,14 +1500,14 @@ void kinect_calibrate_guiDialog::StopLiveGrabThreads()
 	{
 		m_cap_thread_data.quit = true;
 		cout << "Waiting for the grabbing thread to end...\n";
-		m_cap_thread.join();
+		if (m_cap_thread.joinable()) m_cap_thread.join();
 		cout << "Grabbing thread closed.\n";
 	}
 	if (m_findcorners_thread.joinable())
 	{
 		m_findcorners_thread_data.quit = true;
 		cout << "Waiting for the corner find thread to end...\n";
-		m_findcorners_thread.join();
+		if (m_findcorners_thread.joinable()) m_findcorners_thread.join();
 		cout << "Corner finding thread closed.\n";
 	}
 }

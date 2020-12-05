@@ -29,11 +29,11 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
 	// Highly inspired on http://www.csse.uwa.edu.au/~pk/
 	MRPT_START
 
-	ASSERT_ABOVEEQ_(minimumSizeSamplesToFit, 1U);
+	ASSERT_GE_(minimumSizeSamplesToFit, 1U);
 
 	const size_t Npts = ransacDatasetSize(data);
 
-	ASSERT_ABOVE_(Npts, 1);
+	ASSERT_GT_(Npts, 1);
 
 	// Maximum number of attempts to select a non-degenerate data set.
 	const size_t maxDataTrials = 100;
@@ -104,7 +104,7 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
 			dist_func(
 				data, MODELS, static_cast<NUMTYPE>(distanceThreshold),
 				bestModelIdx, inliers);
-			ASSERT_BELOW_(bestModelIdx, MODELS.size());
+			ASSERT_LT_(bestModelIdx, MODELS.size());
 		}
 
 		// Find the number of inliers to this model.

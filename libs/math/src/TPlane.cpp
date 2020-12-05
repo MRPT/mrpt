@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TPlane.h>
 #include <mrpt/math/TPoint3D.h>
@@ -16,6 +16,7 @@
 #include <mrpt/math/geometry.h>  // getAngle()
 #include <mrpt/math/ops_containers.h>  // dotProduct()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
+#include <iostream>
 
 using namespace mrpt::math;
 
@@ -57,7 +58,7 @@ TVector3D TPlane::getUnitaryNormalVector() const
 {
 	TVector3D vec;
 	const double s = sqrt(squareNorm<3, double>(coefs));
-	ASSERT_ABOVE_(s, getEpsilon());
+	ASSERT_GT_(s, getEpsilon());
 	const double k = 1.0 / s;
 	for (int i = 0; i < 3; i++) vec[i] = coefs[i] * k;
 	return vec;
@@ -124,7 +125,7 @@ TPlane::TPlane(const TPoint3D& p1, const TLine3D& r2)
 TPlane::TPlane(const TPoint3D& p1, const TVector3D& normal)
 {
 	const double normal_norm = normal.norm();
-	ASSERT_ABOVE_(normal_norm, getEpsilon());
+	ASSERT_GT_(normal_norm, getEpsilon());
 
 	// Ensure we have a unit vector:
 	const auto n = normal * (1. / normal_norm);
@@ -164,4 +165,17 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TPlane& p)
 {
 	return out << p.coefs[0] << p.coefs[1] << p.coefs[2] << p.coefs[3];
+}
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TPlane& p)
+{
+	o << p.asString();
+	return o;
+}
+
+std::string TPlane::asString() const
+{
+	return mrpt::format(
+		"[%10.05f, %10.05f, %10.05f, %10.05f]", coefs[0], coefs[1], coefs[2],
+		coefs[3]);
 }

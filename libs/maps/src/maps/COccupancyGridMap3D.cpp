@@ -101,12 +101,12 @@ void COccupancyGridMap3D::setSize(
 {
 	MRPT_START
 
-	ASSERT_ABOVE_(res, 0.0);
-	ASSERT_ABOVE_(cmax.x, cmin.x);
-	ASSERT_ABOVE_(cmax.y, cmin.y);
-	ASSERT_ABOVE_(cmax.z, cmin.z);
-	ASSERT_ABOVEEQ_(default_value, 0.0f);
-	ASSERT_BELOWEQ_(default_value, 1.0f);
+	ASSERT_GT_(res, 0.0);
+	ASSERT_GT_(cmax.x, cmin.x);
+	ASSERT_GT_(cmax.y, cmin.y);
+	ASSERT_GT_(cmax.z, cmin.z);
+	ASSERT_GE_(default_value, 0.0f);
+	ASSERT_LE_(default_value, 1.0f);
 
 	const auto def_value = p2l(default_value);
 	m_grid.setSize(

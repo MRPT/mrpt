@@ -10,16 +10,12 @@
 #include "config-precomp.h"  // Precompiled headers
 
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 #include <cmath>  // abs()
-
-#include <mrpt/config.h>
-#if MRPT_HAS_YAMLCPP
-#include <yaml-cpp/yaml.h>
-#endif
 
 using namespace std;
 using namespace mrpt::config;
@@ -225,10 +221,10 @@ bool CConfigFileBase::keyExists(
 void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
 {
 	MRPT_START
-#if MRPT_HAS_YAMLCPP
 	this->clear();
 
-	YAML::Node root = YAML::Load(yaml_block);
+	mrpt::containers::yaml root;
+	root.loadFromText(yaml_block);
 
 	// Prepare all data here, then insert into the actual INI file at the end,
 	// to ensure that unscoped variables get first.
@@ -236,15 +232,15 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
 	key_values_t unscoped;
 	std::map<std::string, key_values_t> sections;
 
-	for (const auto& sect : root)
+	for (const auto& sect : root.asMap())
 	{
 		const auto sectName = sect.first.as<std::string>();
 		// YAML Type: sect.first.Type()
 
-		if (sect.second.size() >= 1)
+		if (sect.second.size() > 1)
 		{
 			// A section:
-			for (const auto& kv : sect.second)
+			for (const auto& kv : sect.second.asMap())
 			{
 				const auto key = kv.first.as<std::string>();
 				const auto val = kv.second.as<std::string>();
@@ -267,18 +263,14 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
 		for (const auto& kv : sect.second)
 			this->write(sect.first, kv.first, kv.second);
 
-#else
-	THROW_EXCEPTION(
-		"This method requires building MRPT with yaml-cpp support.");
-#endif
 	MRPT_END
 }
 
 std::string CConfigFileBase::getContentAsYAML() const
 {
 	MRPT_START
-#if MRPT_HAS_YAMLCPP
-	YAML::Node n;
+
+	mrpt::containers::yaml n;
 
 	// Sections:
 	std::vector<std::string> lstSects;
@@ -306,9 +298,6 @@ std::string CConfigFileBase::getContentAsYAML() const
 	std::stringstream ss;
 	ss << n;
 	return ss.str();
-#else
-	THROW_EXCEPTION(
-		"This method requires building MRPT with yaml-cpp support.");
-#endif
+
 	MRPT_END
 }

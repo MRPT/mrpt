@@ -7,17 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-lgpl-precomp.h"  // Precompiled headers
-
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/bundle_adjustment.h>
-#include <map>
 
+#include <map>
 #include <memory>  // unique_ptr
 
 #include "ba_internals.h"
+#include "vision-lgpl-precomp.h"  // Precompiled headers
 
 using namespace std;
 using namespace mrpt;
@@ -52,7 +51,7 @@ double mrpt::vision::bundle_adj_full(
 	const TSequenceFeatureObservations& observations,
 	const TCamera& camera_params, TFramePosesVec& frame_poses,
 	TLandmarkLocationsVec& landmark_points,
-	const mrpt::system::TParametersDouble& extra_params,
+	const mrpt::containers::yaml& extra_params,
 	const TBundleAdjustmentFeedbackFunctor user_feedback)
 {
 	MRPT_START
@@ -75,20 +74,20 @@ double mrpt::vision::bundle_adj_full(
 
 	// Extra params:
 	const bool use_robust_kernel =
-		0 != extra_params.getWithDefaultVal("robust_kernel", 1);
-	const bool verbose = 0 != extra_params.getWithDefaultVal("verbose", 0);
-	const double initial_mu = extra_params.getWithDefaultVal("mu", -1);
+		extra_params.getOrDefault<bool>("robust_kernel", true);
+	const bool verbose = extra_params.getOrDefault<bool>("verbose", false);
+	const double initial_mu = extra_params.getOrDefault<double>("mu", -1);
 	const size_t max_iters =
-		extra_params.getWithDefaultVal("max_iterations", 50);
+		extra_params.getOrDefault<size_t>("max_iterations", 50);
 	const size_t num_fix_frames =
-		extra_params.getWithDefaultVal("num_fix_frames", 1);
+		extra_params.getOrDefault<size_t>("num_fix_frames", 1);
 	const size_t num_fix_points =
-		extra_params.getWithDefaultVal("num_fix_points", 0);
+		extra_params.getOrDefault<size_t>("num_fix_points", 0);
 	const double kernel_param =
-		extra_params.getWithDefaultVal("kernel_param", 3.0);
+		extra_params.getOrDefault<double>("kernel_param", 3.0);
 
 	const bool enable_profiler =
-		0 != extra_params.getWithDefaultVal("profiler", 0);
+		extra_params.getOrDefault<bool>("profiler", false);
 
 	mrpt::system::CTimeLogger profiler(enable_profiler);
 

@@ -12,6 +12,7 @@
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/TSegment3D.h>
 #include <array>
+#include <iosfwd>
 
 namespace mrpt::math
 {
@@ -64,18 +65,53 @@ struct TPlane
 	 * \throw std::logic_error if the points are linearly dependants.
 	 */
 	TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3);
+
+	/** \note [New in MRPT 2.1.0] */
+	static TPlane From3Points(
+		const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
+	{
+		return {p1, p2, p3};
+	}
+
 	/** Defines a plane given a point and a normal vector (must not be unit).
 	 * \throw std::logic_error if the normal vector is null
 	 */
 	TPlane(const TPoint3D& p1, const TVector3D& normal);
+
+	/** \note [New in MRPT 2.1.0] */
+	static TPlane FromPointAndNormal(
+		const TPoint3D& p1, const TVector3D& normal)
+	{
+		return {p1, normal};
+	}
+
 	/** Defines a plane which contains this point and this line.
 	 * \throw std::logic_error if the point is inside the line.
 	 */
 	TPlane(const TPoint3D& p1, const TLine3D& r2);
+
+	/** Defines a plane which contains this point and this line.
+	 * \throw std::logic_error if the point is inside the line.
+	 * \note [New in MRPT 2.1.0]
+	 */
+	static TPlane FromPointAndLine(const TPoint3D& p1, const TLine3D& r)
+	{
+		return {p1, r};
+	}
+
 	/** Defines a plane which contains the two lines.
 	 * \throw std::logic_error if the lines do not cross.
 	 */
 	TPlane(const TLine3D& r1, const TLine3D& r2);
+
+	/** Defines a plane which contains the two lines.
+	 * \throw std::logic_error if the lines do not cross.
+	 */
+	static TPlane FromTwoLines(const TLine3D& r1, const TLine3D& r2)
+	{
+		return {r1, r2};
+	}
+
 	/** Fast default constructor. Initializes to garbage. */
 	TPlane() = default;
 	/** Constructor from plane coefficients */
@@ -89,6 +125,11 @@ struct TPlane
 	{
 		for (size_t i = 0; i < 4; i++) coefs[i] = vec[i];
 	}
+
+	/** Returns "[A, B, C, D]"
+	 * \note [New in MRPT 2.1.0]
+	 */
+	std::string asString() const;
 };
 
 using TPlane3D = TPlane;
@@ -97,6 +138,9 @@ mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TPlane& p);
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TPlane& p);
+
+/** Text streaming function */
+std::ostream& operator<<(std::ostream& o, const TPlane& p);
 
 }  // namespace mrpt::math
 

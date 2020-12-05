@@ -45,17 +45,18 @@ then
 	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}
 
 	# Include external submodules:
-	cd ${MRPTSRC}/3rdparty/nanogui
-	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}/3rdparty/nanogui
-	
-	cd ${MRPTSRC}/3rdparty/nanogui/ext/nanovg/
-	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}/3rdparty/nanogui/ext/nanovg/
-	
+	EXTERNAL_MODS="nanogui nanogui/ext/nanovg googletest libfyaml rplidar_sdk ${MRPT_PKG_EXPORTED_SUBMODULES}"
+	for MOD in $EXTERNAL_MODS;
+	do
+		cd ${MRPTSRC}/3rdparty/$MOD
+		git archive --format=tar HEAD | tar -x -C ${OUT_DIR}/3rdparty/$MOD
+	done
+
 	cd ${MRPTSRC}
 
 	# Remove VCS control files:
 	find ${OUT_DIR} -name '.git*' | xargs rm -fr
-	
+
 	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
 	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 else

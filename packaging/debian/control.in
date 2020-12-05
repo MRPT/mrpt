@@ -17,10 +17,9 @@ Build-Depends: debhelper (>= 12),
 	graphviz,
 	texlive, latexmk, texlive-latex-extra, texlive-science,
 	doxygen-latex,
-	libdc1394-22-dev [linux-any],
+	libdc1394-dev [linux-any] | libdc1394-22-dev [linux-any],
 	libusb-1.0-0-dev [linux-any],
 	libudev-dev [linux-any],
-	libjs-jquery,
 	libfreenect-dev,
 	libpcap-dev,
 	libopenni2-dev,
@@ -31,7 +30,6 @@ Build-Depends: debhelper (>= 12),
 	liboctomap-dev,
 	libqt5opengl5-dev,
 	libjsoncpp-dev,
-	libyaml-cpp-dev,
 	libtinyxml2-dev,
 	libcv-bridge-dev,
 	libgeometry-msgs-dev,
@@ -46,7 +44,9 @@ Build-Depends: debhelper (>= 12),
 	libglu1-mesa-dev,
 	libglfw3-dev,
 	libxxf86vm-dev,
-	libxrandr-dev
+	libxrandr-dev,
+	libsimpleini-dev,
+	libicu-dev
 Standards-Version: 4.5.0
 Homepage: https://www.mrpt.org/
 
@@ -719,7 +719,7 @@ Section: libdevel
 Architecture: all
 Multi-Arch: foreign
 Depends: ${misc:Depends},
-Recommends: libmrpt-bayes-dev (= ${binary:Version}),
+         libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-comms-dev (= ${binary:Version}),
          libmrpt-config-dev (= ${binary:Version}),
          libmrpt-containers-dev (= ${binary:Version}),
@@ -753,7 +753,8 @@ Recommends: libmrpt-bayes-dev (= ${binary:Version}),
          libmrpt-topography-dev (= ${binary:Version}),
          libmrpt-typemeta-dev (= ${binary:Version}),
          libmrpt-vision-dev (= ${binary:Version}),
-         libmrpt-vision-lgpl-dev (= ${binary:Version})
+         libmrpt-vision-lgpl-dev (= ${binary:Version}),
+         libmrpt-apps-dev (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - Metapackage: all dev packages
  This metapackage install all mrpt -dev packages.
 

@@ -16,10 +16,9 @@
 namespace mrpt
 {
 void* aligned_malloc(size_t size, size_t alignment);
-void* aligned_realloc(void* ptr, size_t size, size_t alignment);
 void aligned_free(void* ptr);
 /** Identical to aligned_malloc, but it zeroes the reserved memory block. */
-inline void* aligned_calloc(size_t bytes, size_t alignment);
+void* aligned_calloc(size_t bytes, size_t alignment);
 
 /** Aligned allocator that is compatible with C++11.
  * Default alignment can be 16 (default), 32 (if __AVX__ is defined) or 64

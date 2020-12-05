@@ -15,7 +15,9 @@
 //  Started: HL @ SEPT-2018
 // ===========================================================================
 
+#include <cv_bridge/cv_bridge.h>
 #include <mrpt/3rdparty/tclap/CmdLine.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -25,19 +27,15 @@
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/ros1bridge/imu.h>
+#include <mrpt/ros1bridge/point_cloud2.h>
+#include <mrpt/ros1bridge/time.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/ros1bridge/imu.h>
-#include <mrpt/ros1bridge/point_cloud2.h>
-#include <mrpt/ros1bridge/time.h>
-
 #include <rosbag/bag.h>  // rosbag_storage C++ lib
 #include <rosbag/view.h>
-
-#include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/Imu.h>
@@ -46,8 +44,6 @@
 #include <tf2/buffer_core.h>
 #include <tf2/exceptions.h>
 #include <tf2_msgs/TFMessage.h>
-
-#include <yaml-cpp/yaml.h>
 
 #include <memory>
 
@@ -342,7 +338,8 @@ Obs toTf(tf2::BufferCore& tfBuffer, const rosbag::MessageInstance& rosmsg)
 class Transcriber
 {
    public:
-	Transcriber(std::string_view rootFrame, const YAML::Node& config)
+	Transcriber(
+		std::string_view rootFrame, const mrpt::containers::yaml& config)
 		: m_rootFrame(rootFrame)
 	{
 		auto tfBuffer = std::make_shared<tf2::BufferCore>();
@@ -356,15 +353,17 @@ class Transcriber
 				return toTf<true>(*tfBuffer, rosmsg);
 			});
 
-		for (auto& sensorNode : config["sensors"])
+		for (auto& sensorNode : config["sensors"].asMap())
 		{
 			auto sensorName = sensorNode.first.as<std::string>();
-			auto& sensor = sensorNode.second;
-			const auto sensorType = sensor["type"].as<std::string>();
+			auto& sensor = sensorNode.second.asMap();
+			const auto sensorType = sensor.at("type").as<std::string>();
 
 			if (sensorType == "CObservation3DRangeScan")
 			{
-				bool rangeIsDepth = sensor["rangeIsDepth"].as<bool>(true);
+				bool rangeIsDepth = sensor.count("rangeIsDepth")
+										? sensor.at("rangeIsDepth").as<bool>()
+										: true;
 				auto callback = [=](const sensor_msgs::Image::Ptr& image,
 									const sensor_msgs::CameraInfo::Ptr& info) {
 					return toRangeImage(sensorName, image, info, rangeIsDepth);
@@ -373,10 +372,10 @@ class Transcriber
 					sensor_msgs::Image, sensor_msgs::CameraInfo>;
 				auto sync = std::make_shared<Synchronizer>(
 					rootFrame, tfBuffer, callback);
-				m_lookup[sensor["depth"].as<std::string>()].emplace_back(
+				m_lookup[sensor.at("depth").as<std::string>()].emplace_back(
 					sync->bind<0>());
-				m_lookup[sensor["cameraInfo"].as<std::string>()].emplace_back(
-					sync->bind<1>());
+				m_lookup[sensor.at("cameraInfo").as<std::string>()]
+					.emplace_back(sync->bind<1>());
 				m_lookup["/tf"].emplace_back(sync->bindTfSync());
 			}
 			else if (sensorType == "CObservationPointCloud")
@@ -384,7 +383,7 @@ class Transcriber
 				auto callback = [=](const rosbag::MessageInstance& m) {
 					return toPointCloud2(sensorName, m);
 				};
-				m_lookup[sensor["topic"].as<std::string>()].emplace_back(
+				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
 				// m_lookup["/tf"].emplace_back(sync->bindTfSync());
 			}
@@ -393,7 +392,7 @@ class Transcriber
 				auto callback = [=](const rosbag::MessageInstance& m) {
 					return toIMU(sensorName, m);
 				};
-				m_lookup[sensor["topic"].as<std::string>()].emplace_back(
+				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
 				// m_lookup["/tf"].emplace_back(sync->bindTfSync());
 			}
@@ -436,7 +435,8 @@ int main(int argc, char** argv)
 		if (!cmd.parse(argc, argv))
 			throw std::runtime_error("");  // should exit.
 
-		YAML::Node config = YAML::LoadFile(arg_config_file.getValue());
+		auto config =
+			mrpt::containers::yaml::FromFile(arg_config_file.getValue());
 
 		auto input_bag_files = arg_input_files.getValue();
 		string output_rawlog_file = arg_output_file.getValue();

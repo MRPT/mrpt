@@ -368,7 +368,7 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
 
 	// Executes the optimization:
 	// --------------------------------
-	TParametersDouble params;
+	mrpt::containers::yaml params;
 	params["verbose"] = verbose;
 	params["profiler"] = verbose;
 	params["max_iterations"] = arg_max_iters.getValue();

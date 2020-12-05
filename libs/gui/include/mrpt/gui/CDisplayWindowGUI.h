@@ -66,6 +66,11 @@ struct CDisplayWindowGUI_Params
  *
  * ![mrpt::gui::CDisplayWindowGUI screenshot](preview_CDisplayWindowGUI.png)
  *
+ * Create managed subwindows with createManagedSubWindow(), with built-in
+ * support for minimize and restore.
+ * See demo video in: https://www.youtube.com/watch?v=QKMzdlZRW50
+ *
+ *
  * \ingroup mrpt_gui_grp
  */
 class CDisplayWindowGUI : public nanogui::Screen
@@ -126,6 +131,31 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/** @} */
 
+	/** @name Managed subwindows subsystem
+	 * @{ */
+
+	/** Creates and return a nanogui::Window, adds to it basic minimize/restore
+	 * tool buttons and add it to the list of handled subwindows so it gets
+	 * listed in the subwindows control UI.
+	 * User should set a layout manager, width, height, etc. in the returned
+	 * window as desired.
+	 *
+	 * The returned object is owned by the nanogui system, you should NOT delete
+	 * it.
+	 *
+	 * The first time this is called, an additional subWindow will be created
+	 * (default position:bottom left corner) to hold minimized windows.
+	 * You can access and modify this windows via getSubWindowsUI().
+	 *
+	 * \note [New in MRPT 2.1.1]
+	 */
+	nanogui::Window* createManagedSubWindow(const std::string& title);
+
+	nanogui::Window* getSubWindowsUI() { return m_subWindows.ui; }
+	const nanogui::Window* getSubWindowsUI() const { return m_subWindows.ui; }
+
+	/** @} */
+
 	/** @name Access to full-window (background) GL scene
 	 * @{ */
 
@@ -140,11 +170,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 	/** @name Direct access to underlying nanogui API
 	 * @{ */
 
-	nanogui::Window* nanogui_win()
-	{
-		ASSERT_(m_window);
-		return m_window;
-	}
+	nanogui::Screen* nanogui_screen() { return this; }
 
 	/** @} */
 
@@ -157,8 +183,6 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/** the pointer is owned by the parent class Screen, no need to delete
 	 * it */
-	nanogui::Window* m_window = nullptr;
-
 	virtual bool keyboardEvent(
 		int key, int scancode, int action, int modifiers) override;
 	virtual void drawContents() override;
@@ -187,6 +211,51 @@ class CDisplayWindowGUI : public nanogui::Screen
 	std::function<bool(
 		int /*key*/, int /*scancode*/, int /*action*/, int /*modifiers*/)>
 		m_keyboardCallback;
+
+	void createSubWindowsControlUI();
+
+	class SubWindow : public nanogui::Window
+	{
+	   public:
+		SubWindow(
+			CDisplayWindowGUI& parentGui, int myIndex, Widget* parent,
+			const std::string& title)
+			: nanogui::Window(parent, title),
+			  m_parentGui(parentGui),
+			  m_subWindowIndex(myIndex)
+		{
+		}
+		CDisplayWindowGUI& m_parentGui;
+		const int m_subWindowIndex = 0;
+
+		/// Handle a focus change event (default implementation: record the
+		/// focus status, but do nothing)
+		bool focusEvent(bool focused) override
+		{
+			if (focused)
+				m_parentGui.m_subWindows.onSubWindowFocused(m_subWindowIndex);
+			return nanogui::Window::focusEvent(focused);
+		}
+	};
+
+	struct SubWindows
+	{
+		SubWindows(CDisplayWindowGUI& p) : parent(p) {}
+
+		std::vector<SubWindow*> windows;
+		nanogui::Window* ui = nullptr;
+		nanogui::ComboBox* uiCombo = nullptr;
+
+		void minimize(int index);
+		void restore(int index);
+		void setFocused(int index);
+
+		void onSubWindowFocused(int index);
+
+		CDisplayWindowGUI& parent;
+	};
+
+	SubWindows m_subWindows{*this};
 };
 
 #define NANOGUI_START_TRY \

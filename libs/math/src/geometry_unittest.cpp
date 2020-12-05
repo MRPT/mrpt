@@ -378,3 +378,27 @@ TEST(Geometry, RectanglesIntersection)
 			t[3] != 0.0);
 	}
 }
+
+TEST(TLine2D, asString)
+{
+	const auto l = TLine2D::FromTwoPoints({1, 1}, {2, 2});
+	const auto s = l.asString();
+	EXPECT_EQ(s, "[   1.00000,   -1.00000,    0.00000]");
+}
+
+TEST(TLine3D, asString)
+{
+	const auto l = TLine3D::FromTwoPoints({1, 1, 1}, {2, 0, 0});
+	const auto s = l.asString();
+	EXPECT_EQ(
+		s,
+		"P=[   1.00000,    1.00000,    1.00000] u=[   1.00000,   -1.00000,   "
+		"-1.00000]");
+}
+
+TEST(TPlane, asString)
+{
+	const auto p = TPlane::From3Points({1, 1, 1}, {2, 0, 0}, {0, 0, 5});
+	const auto s = p.asString();
+	EXPECT_EQ(s, "[  -5.00000,   -3.00000,   -2.00000,   10.00000]");
+}

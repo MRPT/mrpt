@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -21,7 +22,7 @@ namespace mrpt::opengl::graph_tools
 {
 template <class GRAPH_T>
 CSetOfObjects::Ptr graph_visualize(
-	const GRAPH_T& g, const mrpt::system::TParametersDouble& extra_params)
+	const GRAPH_T& g, const mrpt::containers::yaml& ep)
 {
 	MRPT_TRY_START
 
@@ -37,29 +38,27 @@ CSetOfObjects::Ptr graph_visualize(
 	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 	// graph visualization parameters
-	const bool show_ID_labels =
-		0 != extra_params.getWithDefaultVal("show_ID_labels", 0);
+	const bool show_ID_labels = ep.getOrDefault<bool>("show_ID_labels", false);
 	const bool show_ground_grid =
-		0 != extra_params.getWithDefaultVal("show_ground_grid", 1);
-	const bool show_edges =
-		0 != extra_params.getWithDefaultVal("show_edges", 1);
+		ep.getOrDefault<bool>("show_ground_grid", true);
+	const bool show_edges = ep.getOrDefault<bool>("show_edges", true);
 	const bool show_node_corners =
-		0 != extra_params.getWithDefaultVal("show_node_corners", 1);
+		ep.getOrDefault<bool>("show_node_corners", true);
 	const bool show_edge_rel_poses =
-		0 != extra_params.getWithDefaultVal("show_edge_rel_poses", 0);
+		ep.getOrDefault<bool>("show_edge_rel_poses", false);
 	const double nodes_point_size =
-		extra_params.getWithDefaultVal("nodes_point_size", 0.);
+		ep.getOrDefault<double>("nodes_point_size", 0.);
 	const double nodes_corner_scale =
-		extra_params.getWithDefaultVal("nodes_corner_scale", 0.7);
+		ep.getOrDefault<double>("nodes_corner_scale", 0.7);
 	const double nodes_edges_corner_scale =
-		extra_params.getWithDefaultVal("nodes_edges_corner_scale", 0.4);
-	const unsigned int nodes_point_color = extra_params.getWithDefaultVal(
+		ep.getOrDefault<double>("nodes_edges_corner_scale", 0.4);
+	const unsigned int nodes_point_color = ep.getOrDefault<unsigned int>(
 		"nodes_point_color", (unsigned int)0xA0A0A0);
 	const unsigned int edge_color =
-		extra_params.getWithDefaultVal("edge_color", (unsigned int)0x400000FF);
-	const unsigned int edge_rel_poses_color = extra_params.getWithDefaultVal(
-		"edge_rel_poses_color", (unsigned int)0x40FF8000);
-	const double edge_width = extra_params.getWithDefaultVal("edge_width", 2.);
+		ep.getOrDefault<unsigned int>("edge_color", (unsigned int)0x0000FF40);
+	const unsigned int edge_rel_poses_color = ep.getOrDefault<unsigned int>(
+		"edge_rel_poses_color", (unsigned int)0xFF800040);
+	const double edge_width = ep.getOrDefault<double>("edge_width", 2.);
 
 	if (show_ground_grid)
 	{
@@ -184,7 +183,7 @@ CSetOfObjects::Ptr graph_visualize(
 	{
 		CSetOfLines::Ptr gl_edges = std::make_shared<CSetOfLines>();
 		const mrpt::img::TColor col8bit(
-			edge_color & 0xffffff, edge_color >> 24);
+			edge_color >> 8, edge_color & 0x000000ff);
 
 		gl_edges->setColor_u8(col8bit);
 		gl_edges->setLineWidth(edge_width);

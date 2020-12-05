@@ -1138,8 +1138,8 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 			// Compute the mean pose:
 			CPose3D meanSFs(0, 0, 0);
 
-			for (auto it = posesGraph->begin(); it != posesGraph->end(); ++it)
-				meanSFs.addComponents(it->second.pdf.getMeanVal());
+			for (auto n : *posesGraph)
+				meanSFs.addComponents(n.second.pdf.getMeanVal());
 
 			meanSFs *= 1.0f / (posesGraph->size());
 			meanSFs.normalizeAngles();
@@ -1221,10 +1221,10 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 
 		if (posesGraph)
 		{
-			for (auto it = posesGraph->begin(); it != posesGraph->end(); ++it)
+			for (auto& n : *posesGraph)
 			{
 				CPose3D SF_pose;
-				it->second.pdf.getMean(SF_pose);
+				n.second.pdf.getMean(SF_pose);
 
 				CPose3D auxPose(pose + SF_pose);
 
@@ -1332,7 +1332,7 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 
 	// 3) Optimize with graph-slam:
 	graphslam::TResultInfoSpaLevMarq out_info;
-	TParametersDouble graphslam_params;
+	mrpt::containers::yaml graphslam_params;
 	graphslam_params["max_iterations"] = numberOfIterations;
 
 	graphslam::optimize_graph_spa_levmarq(
@@ -1471,7 +1471,7 @@ void CHierarchicalMapMHPartition::dumpAsText(std::vector<std::string>& st) const
 			}
 			else if (ann->name == ARC_ANNOTATION_DELTA_TRG_POSEID)
 			{
-				TPoseID refID;
+				TPoseID refID = 0;
 				m_arc->m_annotations.getElemental(
 					ARC_ANNOTATION_DELTA_TRG_POSEID, refID, ann->ID);
 				st.push_back(format("     VALUE: %i", (int)refID));

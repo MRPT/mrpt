@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CRoboPeakLidar.h>
@@ -67,12 +67,13 @@ void CRoboPeakLidar::doProcessSimple(
 		return;
 	}
 
-	rplidar_response_measurement_node_t nodes[360 * 2];
+	rplidar_response_measurement_node_hq_t nodes[360 * 2];
 	size_t count = sizeof(nodes) / sizeof(nodes[0]);
 
 	// Scan:
 	const mrpt::system::TTimeStamp tim_scan_start = mrpt::system::now();
-	u_result op_result = RPLIDAR_DRV->grabScanData(nodes, count);
+	u_result op_result = RPLIDAR_DRV->grabScanDataHq(nodes, count);
+
 	// const mrpt::system::TTimeStamp tim_scan_end = mrpt::system::now();
 	// const double scan_duration =
 	// mrpt::system::timeDifference(tim_scan_start,tim_scan_end);
@@ -86,22 +87,22 @@ void CRoboPeakLidar::doProcessSimple(
 			const size_t angle_compensate_nodes_count = 360;
 			const size_t angle_compensate_multiple = 1;
 			int angle_compensate_offset = 0;
-			rplidar_response_measurement_node_t
+			rplidar_response_measurement_node_hq_t
 				angle_compensate_nodes[angle_compensate_nodes_count];
 			memset(
 				angle_compensate_nodes, 0,
 				angle_compensate_nodes_count *
-					sizeof(rplidar_response_measurement_node_t));
+					sizeof(angle_compensate_nodes[0]));
 
 			outObservation.resizeScanAndAssign(
 				angle_compensate_nodes_count, 0, false);
 
 			for (size_t i = 0; i < count; i++)
 			{
-				if (nodes[i].distance_q2 != 0)
+				if (nodes[i].dist_mm_q2 != 0)
 				{
 					auto angle =
-						(float)((nodes[i].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
+						(float)((nodes[i].angle_z_q14 >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
 					int angle_value = (int)(angle * angle_compensate_multiple);
 					if ((angle_value - angle_compensate_offset) < 0)
 						angle_compensate_offset = angle_value;
@@ -117,7 +118,7 @@ void CRoboPeakLidar::doProcessSimple(
 			for (size_t i = 0; i < angle_compensate_nodes_count; i++)
 			{
 				const float read_value =
-					(float)angle_compensate_nodes[i].distance_q2 / 4.0f / 1000;
+					(float)angle_compensate_nodes[i].dist_mm_q2 / 4.0f / 1000;
 				outObservation.setScanRange(i, read_value);
 				outObservation.setScanRangeValidity(i, (read_value > 0));
 			}
@@ -263,8 +264,7 @@ bool CRoboPeakLidar::checkCOMMs()
 	if (RPLIDAR_DRV) return true;
 
 	// create the driver instance
-	m_rplidar_drv =
-		RPlidarDriver::CreateDriver(RPlidarDriver::DRIVER_TYPE_SERIALPORT);
+	m_rplidar_drv = RPlidarDriver::CreateDriver(DRIVER_TYPE_SERIALPORT);
 	ASSERTMSG_(m_rplidar_drv, "Create Driver failed.");
 
 	// Is it COMX, X>4? ->  "\\.\COMX"
@@ -317,7 +317,7 @@ bool CRoboPeakLidar::checkCOMMs()
 	if (!getDeviceHealth()) return false;
 
 	// start scan...
-	u_result res = RPLIDAR_DRV->startScan();
+	u_result res = RPLIDAR_DRV->startScan(false, true);
 	if (IS_FAIL(res))
 	{
 		fprintf(

@@ -64,14 +64,18 @@ if [ -f version_prefix.txt ];
 then
 	MRPTSRC=`pwd`
 
-  if [ -f $HOME/mrpt_release/mrpt*.tar.gz ];
-  then
-    echo "## release file already exists. Reusing it."
-  else
+  # Do not reuse the sources since each Ubuntu version may require different sources...
+  # Re-add after Bionic 18.04 EOL, which right now (2020) is a special case since
+  # it misses libsimpleini-dev
+  #
+  #if [ -f $HOME/mrpt_release/mrpt*.tar.gz ];
+  #then
+  #  echo "## release file already exists. Reusing it."
+  #else
     source scripts/prepare_release.sh
     echo
     echo "## Done prepare_release.sh"
-  fi
+  #fi
 else
 	echo "ERROR: Run this script from the MRPT root directory."
 	exit 1
@@ -136,7 +140,7 @@ then
 fi
 
 # Export signing pub key:
-mkdir debian/upstream/
+mkdir debian/upstream/ || true
 gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
 
 # Parse debian/ control.in --> control
@@ -152,7 +156,6 @@ echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
 # To avoid timeout compiling in ARM build farms, skip building heavy docs:
 if [ ${SKIP_HEAVY_DOCS} == "1" ];
 then
-	sed -i "/documentation_html/d" $RULES_FILE
 	sed -i "/documentation_performance_html/d" $RULES_FILE
 	sed -i "/documentation_psgz_guides/d" $RULES_FILE
 fi

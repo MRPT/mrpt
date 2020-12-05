@@ -8,10 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config.h>
-#if MRPT_HAS_YAMLCPP
 
 #include <gtest/gtest.h>
 #include <mrpt/config/CConfigFileMemory.h>
+
+#if MRPT_HAS_FYAML
 
 // clang-format off
 const auto sampleYamlTxt = std::string(R"xxx(
@@ -40,19 +41,27 @@ const std::string sampleCfgTxt =
 const std::string sampleCfgTxt_as_yaml_correct =
 	"test:\n"
 	"  key_num: 4\n"
-	"  key_str: pepe";
+	"  key_str: pepe\n";
 
 TEST(yaml2ini, parse)
 {
-	mrpt::config::CConfigFileMemory c;
-	c.setContentFromYAML(sampleYamlTxt);
+	try
+	{
+		mrpt::config::CConfigFileMemory c;
+		c.setContentFromYAML(sampleYamlTxt);
 
-	// std::cout << "INI-liKe:\n" << c.getContent() << "\n";
+		// std::cout << "INI-liKe:\n" << c.getContent() << "\n";
 
-	EXPECT_EQ(1, c.read_int("maps", "pointMaps", 0));
-	EXPECT_EQ(2, c.read_int("maps", "gridMaps", 0));
-	EXPECT_EQ(25.0, c.read_int("gridmap_00", "max_x", 0));
-	EXPECT_EQ(42, c.read_int("", "unscoped_key1", 0));
+		EXPECT_EQ(1, c.read_int("maps", "pointMaps", 0));
+		EXPECT_EQ(2, c.read_int("maps", "gridMaps", 0));
+		EXPECT_EQ(25.0, c.read_int("gridmap_00", "max_x", 0));
+		EXPECT_EQ(42, c.read_int("", "unscoped_key1", 0));
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << mrpt::exception_to_str(e);
+		GTEST_FAIL();
+	}
 }
 
 TEST(ini2yaml, parse)
@@ -63,5 +72,4 @@ TEST(ini2yaml, parse)
 	// Note: we don't compare the exact strings since order of keys may vary (?)
 	EXPECT_EQ(sampleCfgTxt_as_yaml_correct.size(), c.getContentAsYAML().size());
 }
-
-#endif  // MRPT_HAS_YAMLCPP
+#endif

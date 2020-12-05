@@ -873,13 +873,13 @@ class CMyReactInterface
 	{
 		scene = window.get3DSceneAndLock();
 		CPose3D robotpose3d = CPose3D(CPose2D(robotSim.getCurrentGTPose()));
-		CRenderizable::Ptr obj;
 
 		// The robot pose is updated
 		{
 			float h = 0;
 			for (unsigned int i = 0; i < robotShape.size(); i++)
 			{
+				CRenderizable::Ptr obj;
 				obj = scene->getByName(format("Level%d", i + 1));
 
 				if (i == 0)
@@ -913,18 +913,18 @@ class CMyReactInterface
 		{
 			robotpose3d.z(0);
 			mrpt::math::TPoint3D point;
-			CPointCloud::Ptr obj;
+			CPointCloud::Ptr pc;
 
 			for (unsigned int i = 0; i < kinects.size(); i++)
 			{
-				obj = scene->getByClass<CPointCloud>(i);
-				obj->clear();
-				obj->setPose(robotpose3d);
+				pc = scene->getByClass<CPointCloud>(i);
+				pc->clear();
+				pc->setPose(robotpose3d);
 
 				for (unsigned int j = 0; j < kinects[i].m_points.size(); j++)
 				{
 					kinects[i].m_points.getPoint(j, point);
-					obj->insertPoint(point.x, point.y, point.z);
+					pc->insertPoint(point.x, point.y, point.z);
 				}
 			}
 		}

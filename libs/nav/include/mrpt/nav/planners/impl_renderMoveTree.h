@@ -129,7 +129,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 			if (it->edge_to_parent) edges_best_path.insert(it->edge_to_parent);
 
 		// Decimate the path (always keeping the first and last entry):
-		ASSERT_ABOVE_(options.draw_shape_decimation, 0);
+		ASSERT_GT_(options.draw_shape_decimation, 0);
 		for (auto it = best_path.begin(); it != it_end;)
 		{
 			if (it->edge_to_parent)

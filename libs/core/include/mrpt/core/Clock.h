@@ -12,7 +12,10 @@
 
 namespace mrpt
 {
-/** Clock that is compatible with MRPT TTimeStamp representation
+/** C++11-clock that is compatible with MRPT TTimeStamp representation
+ *
+ * State-aware methods in this class are thread-safe.
+ *
  * \ingroup mrpt_core_grp
  */
 class Clock
@@ -47,12 +50,24 @@ class Clock
 
 		/** Monotonic: POSIX `CLOCK_MONOTONIC`. Only available in Linux systems.
 		 */
-		Monotonic
+		Monotonic,
+
+		/** Simulated time: Manual control of time via setSimulatedTime()
+		 * [New in MRPT 2.1.1]
+		 */
+		Simulated
 	};
 
 	/** Changes the selected clock to get time from when calling now().
 	 * Default: Realtime.
-	 * Ignored in non-Linux systems.
+	 *
+	 * Monotonic is only available on Linux systems.
+	 * RealTime and Simulated are available on any platform.
+	 *
+	 * It is strongly recommended to call setSimulatedTime()
+	 * before setting the clock source to Simulated to ensure that any
+	 * subsequent call to now(), perhaps in a parallel thread, does not
+	 * return an undefined time_point value.
 	 */
 	static void setActiveClock(const Source s);
 
@@ -80,5 +95,11 @@ class Clock
 	 * POSIX `CLOCK_MONOTONIC` to make timestamps match the epoch of POSIX
 	 * `CLOCK_REALTIME`. */
 	static uint64_t getMonotonicToRealtimeOffset();
+
+	/** When setActiveClock() is set to `Simulated`, sets the simulated time
+	 * that will be returned in subsequent calls to now().
+	 * [New in MRPT 2.1.1]
+	 */
+	static void setSimulatedTime(const time_point& t);
 };
 }  // namespace mrpt

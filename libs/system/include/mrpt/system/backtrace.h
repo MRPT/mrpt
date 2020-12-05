@@ -43,7 +43,15 @@ struct TCallStackBackTrace
 /** Returns a list of strings representing the current call stack
  * backtrace. If possible, human-readable names are used for
  * functions.
+ * \ingroup mrpt_system_grp
  */
 void getCallStackBackTrace(TCallStackBackTrace& out_bt);
+
+inline TCallStackBackTrace getCallStackBackTrace()
+{
+	TCallStackBackTrace bt;
+	getCallStackBackTrace(bt);
+	return bt;
+}
 
 }  // namespace mrpt::system

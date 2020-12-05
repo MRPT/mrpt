@@ -1,6 +1,5 @@
 
-
-if(NOT (CMAKE_MRPT_HAS_YAMLCPP AND TARGET ros1bridge))
+if(NOT TARGET ros1bridge)
 	return()
 endif()
 
@@ -22,7 +21,6 @@ target_link_libraries(${PROJECT_NAME}
 	${rosbag_storage_LIBRARIES}
 	${cv_bridge_LIBRARIES}
 	${tf2_LIBRARIES}
-	${LIBYAMLCPP_LIBRARIES}
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -32,6 +30,11 @@ target_include_directories(${PROJECT_NAME}
 	${rosbag_storage_INCLUDE_DIRS}
 	${cv_bridge_INCLUDE_DIRS}
 	${tf2_INCLUDE_DIRS}
+)
+
+target_compile_definitions(${PROJECT_NAME}
+  PRIVATE
+  ${ROS_DEFINITIONS}
 )
 
 DeclareAppForInstall(${PROJECT_NAME})

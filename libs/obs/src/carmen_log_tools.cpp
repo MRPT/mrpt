@@ -9,11 +9,11 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/carmen_log_tools.h>
-#include <mrpt/system/TParameters.h>
 #include <mrpt/system/string_utils.h>
 
 using namespace mrpt;
@@ -29,7 +29,7 @@ bool mrpt::obs::carmen_log_parse_line(
 	const mrpt::system::TTimeStamp& time_start_log)
 {
 	/** global parameters loaded in previous calls. */
-	static TParametersString global_log_params;
+	static mrpt::containers::yaml global_log_params;
 
 	out_observations.clear();  // empty output container
 
@@ -177,27 +177,17 @@ bool mrpt::obs::carmen_log_parse_line(
 
 			if (line[0] == 'F')
 			{  // front:
-				maxRange = atof(
-					global_log_params
-						.getWithDefaultVal("robot_front_laser_max", "81.0"s)
-						.c_str());
-				resolutionDeg =
-					atof(global_log_params
-							 .getWithDefaultVal(
-								 "laser_front_laser_resolution", "0.5"s)
-							 .c_str());
+				maxRange = global_log_params.getOrDefault<double>(
+					"robot_front_laser_max", 81.0);
+				resolutionDeg = global_log_params.getOrDefault<double>(
+					"laser_front_laser_resolution", 0.5);
 			}
 			else if (line[0] == 'R')
 			{  // rear:
-				maxRange =
-					atof(global_log_params
-							 .getWithDefaultVal("robot_rear_laser_max", "81.0"s)
-							 .c_str());
-				resolutionDeg =
-					atof(global_log_params
-							 .getWithDefaultVal(
-								 "laser_rear_laser_resolution", "0.5"s)
-							 .c_str());
+				maxRange = global_log_params.getOrDefault<double>(
+					"robot_rear_laser_max", 81.0);
+				resolutionDeg = global_log_params.getOrDefault<double>(
+					"laser_rear_laser_resolution", 0.5);
 			}
 			obsLaser->maxRange = d2f(maxRange);
 			obsLaser->aperture = d2f(DEG2RAD(resolutionDeg) * nRanges);

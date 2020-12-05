@@ -478,11 +478,11 @@ void CGenericFeatureTracker::internal_trackFeatures(
 	// (2nd STEP) For successfully followed features, check their KLT response??
 	// ========================================================
 	const int check_KLT_response_every =
-		extra_params.getWithDefaultVal("check_KLT_response_every", 1);
+		extra_params.getOrDefault<int>("check_KLT_response_every", 1);
 	const float minimum_KLT_response =
-		extra_params.getWithDefaultVal("minimum_KLT_response", 30.f);
+		extra_params.getOrDefault<float>("minimum_KLT_response", 30.f);
 	const unsigned int KLT_response_half_win =
-		extra_params.getWithDefaultVal("KLT_response_half_win", 8U);
+		extra_params.getOrDefault<unsigned int>("KLT_response_half_win", 8U);
 
 	if (check_KLT_response_every > 0 &&
 		++m_check_KLT_counter >= size_t(check_KLT_response_every))
@@ -506,7 +506,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 	//   or those marked as "bad" by their low KLT response
 	// ============================================================
 	const bool remove_lost_features =
-		extra_params.getWithDefaultVal("remove_lost_features", 0) != 0;
+		extra_params.getOrDefault<bool>("remove_lost_features", false);
 
 	if (remove_lost_features)
 	{
@@ -531,7 +531,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 	// (4th STEP) For successfully followed features, update its patch:
 	// ========================================================
 	const int update_patches_every =
-		extra_params.getWithDefaultVal("update_patches_every", 0);
+		extra_params.getOrDefault<int>("update_patches_every", 0);
 
 	if (update_patches_every > 0 &&
 		++m_update_patches_counter >= size_t(update_patches_every))
@@ -550,9 +550,9 @@ void CGenericFeatureTracker::internal_trackFeatures(
 	// (5th STEP) Do detection of new features??
 	// ========================================================
 	const bool add_new_features =
-		extra_params.getWithDefaultVal("add_new_features", 1) != 0;
+		extra_params.getOrDefault<bool>("add_new_features", true);
 	const double threshold_dist_to_add_new =
-		extra_params.getWithDefaultVal("add_new_feat_min_separation", 15);
+		extra_params.getOrDefault<double>("add_new_feat_min_separation", 15.0);
 
 	// Additional operation: if "add_new_features==true", find new features and
 	// add them in areas spare of valid features:
@@ -588,7 +588,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 		last_execution_extra_info.raw_FAST_feats_detected = N;
 
 		// Update the adaptive threshold.
-		const size_t desired_num_features = extra_params.getWithDefaultVal(
+		const size_t desired_num_features = extra_params.getOrDefault<size_t>(
 			"desired_num_features_adapt",
 			size_t((img_width * img_height) >> 9));
 		updateAdaptiveNewFeatsThreshold(N, desired_num_features);
@@ -627,12 +627,13 @@ void CGenericFeatureTracker::internal_trackFeatures(
 		const size_t nNewToCheck = std::min(size_t(1500), N);
 		const double threshold_sqr_dist_to_add_new =
 			square(threshold_dist_to_add_new);
-		const size_t maxNumFeatures =
-			extra_params.getWithDefaultVal("add_new_feat_max_features", 100U);
+		const size_t maxNumFeatures = extra_params.getOrDefault<size_t>(
+			"add_new_feat_max_features", 100U);
 		const size_t patchSize =
-			extra_params.getWithDefaultVal("add_new_feat_patch_size", 0U);
+			extra_params.getOrDefault<size_t>("add_new_feat_patch_size", 0U);
 		const float minimum_KLT_response_to_add =
-			extra_params.getWithDefaultVal("minimum_KLT_response_to_add", 70.f);
+			extra_params.getOrDefault<float>(
+				"minimum_KLT_response_to_add", 70.f);
 
 		// Do it:
 		detail::trackFeatures_addNewFeats(

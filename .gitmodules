@@ -1,3 +1,21 @@
 [submodule "3rdparty/nanogui"]
 	path = 3rdparty/nanogui
 	url = https://github.com/MRPT/nanogui.git
+[submodule "3rdparty/libfyaml"]
+	path = 3rdparty/libfyaml
+	url = https://github.com/MRPT/libfyaml.git
+[submodule "3rdparty/libfreenect"]
+	path = 3rdparty/libfreenect
+	url = https://github.com/OpenKinect/libfreenect.git
+[submodule "3rdparty/googletest"]
+	path = 3rdparty/googletest
+	url = https://github.com/google/googletest.git
+[submodule "3rdparty/rplidar_sdk"]
+	path = 3rdparty/rplidar_sdk
+	url = https://github.com/MRPT/rplidar_sdk.git
+[submodule "3rdparty/zlib"]
+	path = 3rdparty/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "3rdparty/simpleini"]
+	path = 3rdparty/simpleini
+	url = https://github.com/brofield/simpleini.git

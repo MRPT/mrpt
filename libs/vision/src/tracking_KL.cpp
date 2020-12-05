@@ -40,15 +40,15 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-	const int window_width = extra_params.getWithDefaultVal("window_width", 15);
+	const int window_width = extra_params.getOrDefault<int>("window_width", 15);
 	const int window_height =
-		extra_params.getWithDefaultVal("window_height", 15);
+		extra_params.getOrDefault<int>("window_height", 15);
 
-	const int LK_levels = extra_params.getWithDefaultVal("LK_levels", 3);
-	const int LK_max_iters = extra_params.getWithDefaultVal("LK_max_iters", 10);
-	const int LK_epsilon = extra_params.getWithDefaultVal("LK_epsilon", 0.1);
+	const int LK_levels = extra_params.getOrDefault<int>("LK_levels", 3);
+	const int LK_max_iters = extra_params.getOrDefault<int>("LK_max_iters", 10);
+	const int LK_epsilon = extra_params.getOrDefault<int>("LK_epsilon", 0.1);
 	const float LK_max_tracking_error =
-		extra_params.getWithDefaultVal("LK_max_tracking_error", 150.0f);
+		extra_params.getOrDefault<float>("LK_max_tracking_error", 150.0f);
 
 	// Both images must be of the same size
 	ASSERT_(

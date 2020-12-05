@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "CDlgCalibWizardOnline.h"
-#include "camera_calib_guiMain.h"
 
 #include <mrpt/vision/chessboard_find_corners.h>
+
+#include "camera_calib_guiMain.h"
 
 //(*InternalHeaders(CDlgCalibWizardOnline)
 #include <wx/font.h>
@@ -294,8 +295,9 @@ CDlgCalibWizardOnline::~CDlgCalibWizardOnline()
 
 void CDlgCalibWizardOnline::OnbtnCloseClick(wxCommandEvent& event)
 {
-	wxCommandEvent ev;
-	OnbtnStopClick(ev);
+	m_video.reset();
+	m_threadMustClose = true;
+	if (m_threadCorners.joinable()) m_threadCorners.join();
 
 	EndModal(wxID_CANCEL);
 }
@@ -340,7 +342,7 @@ void CDlgCalibWizardOnline::OnbtnStopClick(wxCommandEvent& event)
 	this->m_panelCamera->Enable();
 
 	m_threadMustClose = true;
-	m_threadCorners.join();
+	if (m_threadCorners.joinable()) m_threadCorners.join();
 }
 
 void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)

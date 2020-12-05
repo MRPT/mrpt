@@ -109,6 +109,13 @@ TLine3D::TLine3D(const TLine2D& l)
 	pBase.z = 0;
 }
 
+std::string TLine3D::asString() const
+{
+	return mrpt::format(
+		"P=[%10.05f, %10.05f, %10.05f] u=[%10.05f, %10.05f, %10.05f]", pBase.x,
+		pBase.y, pBase.z, director.x, director.y, director.z);
+}
+
 mrpt::serialization::CArchive& mrpt::math::operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TLine3D& l)
 {
@@ -118,4 +125,10 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TLine3D& l)
 {
 	return out << l.pBase << l.director[0] << l.director[1] << l.director[2];
+}
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TLine3D& p)
+{
+	o << p.asString();
+	return o;
 }

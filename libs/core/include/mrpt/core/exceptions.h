@@ -99,10 +99,7 @@ std::string exception_to_str(const std::exception& e);
 		"Cannot parse object: unknown serialization version number: '%i'", \
 		static_cast<int>(__V)))
 
-/** Defines an assertion mechanism.
- * \note Do NOT put code that must be always executed inside this statement, but
- * just comparisons. This is because users might require ASSERT_'s to be ignored
- * for optimized releases.
+/** Throws a stacked exception if condition "f" is false; with custom message.
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
 #define ASSERTMSG_(f, __ERROR_MSG)                             \
@@ -111,10 +108,7 @@ std::string exception_to_str(const std::exception& e);
 		if (!(f)) THROW_EXCEPTION(::std::string(__ERROR_MSG)); \
 	} while (0)
 
-/** Defines an assertion mechanism.
- * \note Do NOT put code that must be always executed inside this statement, but
- * just comparisons. This is because users might require ASSERT_'s to be ignored
- * for optimized releases.
+/** Throws a stacked exception if condition "f" is false.
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
 #define ASSERT_(f) \
@@ -146,79 +140,93 @@ std::string exception_to_str(const std::exception& e);
 		if (__A == __B) ASRT_FAIL("ASSERT_NOT_EQUAL_", __A, __B, #__A, #__B) \
 	} while (0)
 
-#define ASSERT_BELOW_(__A, __B)                                          \
-	do                                                                   \
-	{                                                                    \
-		if (__A >= __B) ASRT_FAIL("ASSERT_BELOW_", __A, __B, #__A, #__B) \
+/** Checks two float/double values, reporting their values upon failure */
+#define ASSERT_NEAR_(__A, __B, __TOLERANCE)                 \
+	do                                                      \
+	{                                                       \
+		const auto diff = std::abs(__A - __B);              \
+		if (diff > __TOLERANCE)                             \
+			ASRT_FAIL("ASSERT_NEAR_", __A, __B, #__A, #__B) \
 	} while (0)
 
-#define ASSERT_ABOVE_(__A, __B)                                          \
-	do                                                                   \
-	{                                                                    \
-		if (__A <= __B) ASRT_FAIL("ASSERT_ABOVE_", __A, __B, #__A, #__B) \
+/** Checks A<B */
+#define ASSERT_LT_(__A, __B)                                          \
+	do                                                                \
+	{                                                                 \
+		if (__A >= __B) ASRT_FAIL("ASSERT_LT_", __A, __B, #__A, #__B) \
 	} while (0)
 
-#define ASSERT_BELOWEQ_(__A, __B)                                         \
-	do                                                                    \
-	{                                                                     \
-		if (__A > __B) ASRT_FAIL("ASSERT_BELOWEQ_", __A, __B, #__A, #__B) \
+/** Checks A<=B */
+#define ASSERT_LE_(__A, __B)                                         \
+	do                                                               \
+	{                                                                \
+		if (__A > __B) ASRT_FAIL("ASSERT_LE_", __A, __B, #__A, #__B) \
 	} while (0)
 
-#define ASSERT_ABOVEEQ_(__A, __B)                                         \
-	do                                                                    \
-	{                                                                     \
-		if (__A < __B) ASRT_FAIL("ASSERT_ABOVEEQ_", __A, __B, #__A, #__B) \
+/** Checks A>B */
+#define ASSERT_GT_(__A, __B)                                          \
+	do                                                                \
+	{                                                                 \
+		if (__A <= __B) ASRT_FAIL("ASSERT_GT_", __A, __B, #__A, #__B) \
 	} while (0)
 
-/** Defines an assertion mechanism - only when compiled in debug.
- * \note Do NOT put code that must be always executed inside this statement, but
- * just comparisons. This is because users might require ASSERT_'s to be ignored
- * for optimized releases.
- * \sa MRPT_TRY_START, MRPT_TRY_END
- */
+/** Checks A>=B */
+#define ASSERT_GE_(__A, __B)                                         \
+	do                                                               \
+	{                                                                \
+		if (__A < __B) ASRT_FAIL("ASSERT_GE_", __A, __B, #__A, #__B) \
+	} while (0)
+
+// ------- Deprecated ---------
+#define ASSERT_BELOW_(__A, __B) ASSERT_LT_(__A, __B)
+#define ASSERT_ABOVE_(__A, __B) ASSERT_GT_(__A, __B)
+#define ASSERT_BELOWEQ_(__A, __B) ASSERT_LE_(__A, __B)
+#define ASSERT_ABOVEEQ_(__A, __B) ASSERT_GE_(__A, __B)
+// ------- End deprecated -----
+
 #ifdef _DEBUG
 #define ASSERTDEB_(f) ASSERT_(f)
 #define ASSERTDEBMSG_(f, __ERROR_MSG) ASSERTMSG_(f, __ERROR_MSG)
 #define ASSERTDEB_EQUAL_(__A, __B) ASSERT_EQUAL_(__A, __B)
 #define ASSERTDEB_NOT_EQUAL_(__A, __B) ASSERT_NOT_EQUAL_(__A, __B)
-#define ASSERTDEB_BELOW_(__A, __B) ASSERT_BELOW_(__A, __B)
-#define ASSERTDEB_ABOVE_(__A, __B) ASSERT_ABOVE_(__A, __B)
-#define ASSERTDEB_BELOWEQ_(__A, __B) ASSERT_BELOWEQ_(__A, __B)
-#define ASSERTDEB_ABOVEEQ_(__A, __B) ASSERT_ABOVEEQ_(__A, __B)
+#define ASSERTDEB_LT_(__A, __B) ASSERT_LT_(__A, __B)
+#define ASSERTDEB_GT_(__A, __B) ASSERT_GT_(__A, __B)
+#define ASSERTDEB_LE_(__A, __B) ASSERT_LE_(__A, __B)
+#define ASSERTDEB_GE_(__A, __B) ASSERT_GE_(__A, __B)
 #else
 // clang-format off
 #define ASSERTDEB_(f) while (0){}
 #define ASSERTDEBMSG_(f, __ERROR_MSG) while (0){}
 #define ASSERTDEB_EQUAL_(__A, __B) while (0){}
 #define ASSERTDEB_NOT_EQUAL_(__A, __B) while (0){}
-#define ASSERTDEB_BELOW_(__A, __B) while (0){}
-#define ASSERTDEB_ABOVE_(__A, __B) while (0){}
-#define ASSERTDEB_BELOWEQ_(__A, __B) while (0){}
-#define ASSERTDEB_ABOVEEQ_(__A, __B) while (0){}
+#define ASSERTDEB_LT_(__A, __B) while (0){}
+#define ASSERTDEB_GT_(__A, __B) while (0){}
+#define ASSERTDEB_LE_(__A, __B) while (0){}
+#define ASSERTDEB_GE_(__A, __B) while (0){}
 // clang-format on
 
 #endif
 
-/** The start of a standard MRPT "try...catch()" block that allows tracing throw
- * the call stack after an exception.
- * \sa MRPT_TRY_END,MRPT_TRY_END_WITH_CLEAN_UP
+/** The start of a standard MRPT "try...catch()" block that allows
+ * tracing throw the call stack after an exception. \sa
+ * MRPT_TRY_END,MRPT_TRY_END_WITH_CLEAN_UP
  */
 #define MRPT_TRY_START \
 	try                \
 	{
-/** The end of a standard MRPT "try...catch()" block that allows tracing throw
- * the call stack after an exception.
- * \sa MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
+/** The end of a standard MRPT "try...catch()" block that allows tracing
+ * throw the call stack after an exception. \sa
+ * MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
  */
 #define MRPT_TRY_END                   \
 	}                                  \
 	catch (std::bad_alloc&) { throw; } \
 	catch (...) { THROW_STACKED_EXCEPTION; }
 
-/** The end of a standard MRPT "try...catch()" block that allows tracing throw
- * the call stack after an exception, including a "clean up" piece of code to be
- * run before throwing the exceptions.
- * \sa MRPT_TRY_END,MRPT_TRY_START
+/** The end of a standard MRPT "try...catch()" block that allows tracing
+ * throw the call stack after an exception, including a "clean up" piece
+ * of code to be run before throwing the exceptions. \sa
+ * MRPT_TRY_END,MRPT_TRY_START
  *
  */
 #define MRPT_TRY_END_WITH_CLEAN_UP(stuff) \
@@ -234,7 +242,8 @@ std::string exception_to_str(const std::exception& e);
 #define MRPT_PROFILE_FUNC_START
 #endif
 
-// General macros for use within each MRPT method/function. They provide:
+// General macros for use within each MRPT method/function. They
+// provide:
 //  - Nested exception handling
 //  - Automatic profiling stats (in Debug only)
 // ---------------------------------------------------------

@@ -215,11 +215,6 @@ void CPose3DPDFParticles::serializeFrom(
 	};
 }
 
-/*---------------------------------------------------------------
-						saveToTextFile
-   Save PDF's m_particles to a text file. In each line it
-	  will go: "x y phi weight"
- ---------------------------------------------------------------*/
 bool CPose3DPDFParticles::saveToTextFile(const std::string& file) const
 {
 	using namespace mrpt::system;

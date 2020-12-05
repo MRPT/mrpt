@@ -11,8 +11,8 @@ export MRPT_genCALLERGRAPHS=NO
 
 # For multiarch support:
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
-DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
-DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+DEB_TARGET_MULTIARCH ?= $(shell dpkg-architecture -qDEB_TARGET_MULTIARCH)
+#DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 
 # SSE options
 ifeq ($(DEB_HOST_ARCH),amd64)
@@ -25,14 +25,17 @@ endif
 # traces on failure:
 MRPT_TEST_TARGET = test_legacy
 
-# Avoid running out of memory on mipsel
-ifneq (,$(filter $(DEB_HOST_ARCH), mipsel))
+# Debug info from the cmake scripts
+export VERBOSE = 1
+
+# Avoid running out of memory on mipsel,mips64el
+ifneq (,$(findstring mips,$(DEB_HOST_ARCH)))
   export DEB_CXXFLAGS_MAINT_APPEND += -g1
 endif
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/usr/" \
-	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_HOST_MULTIARCH)" \
+	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_TARGET_MULTIARCH)" \
 	-DCMAKE_VERBOSE_MAKEFILE=ON \
 	-DCMAKE_BUILD_TYPE=Release  \
 	-DMRPT_ALLOW_LGPLV3=ON \
@@ -51,13 +54,12 @@ override_dh_auto_build-arch:
 	dh_auto_build -O--buildsystem=cmake
 
 	# Python bindings:
-#	dh_python3 --package=python-mrpt
+#	dh_python3 --package=python3-mrpt
 
 
 override_dh_auto_build-indep:
 	# Build doc targets:
 	dh_auto_build -O--buildsystem=cmake -- \
-		documentation_html \
 		man_pages_all \
 		documentation_psgz_guides
 
@@ -68,6 +70,8 @@ override_dh_auto_configure:
 	# Show CPU flags, to help debugging unit test crashes related to
 	# illegal instructions, etc.
 	cat /proc/cpuinfo
+	# Show env vars for debugging:
+	env
 	# Autoconfigure step:
 	dh_auto_configure -- $(CMAKE_FLAGS)
 
@@ -89,12 +93,12 @@ override_dh_install:
 
 	# Move all the ".so.x.y" files to the corresponding binary packages:
 	# libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/...
-	VERSION=$$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so.?.*" > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir=$(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_HOST_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
+	VERSION=$$(head version_prefix.txt -n1 | cut -f 1-2 -d . ); tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so.?.*" > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line | cut -f 1 -d '.'); echo "Processing so file: $$line, basename: $$f"; dir=$(CURDIR)/debian/$$f$${VERSION}/usr/lib/$(DEB_TARGET_MULTIARCH); mkdir -p $$dir; mv -f $$line $$dir; done
 
 	# JLBC Nov 2018: Due to what is explained in MRPT/cmakemodules/DeclareMRPTLibs.cmake, we need to make some "mv" here:
 
 	# Move all the ".so" files to the proper place: the -dev package:
-	tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); mv -vf $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_HOST_MULTIARCH); done
+	tmpfil=$$(mktemp); find $(CURDIR)/debian/ -name "*.so" | grep -v 'dev' | grep -v 'pymrpt' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(basename $$line .so); echo "Processing so file: $$line, basename: $f"; mkdir -p $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_TARGET_MULTIARCH); mv -vf $$line $(CURDIR)/debian/$$f-dev/usr/lib/$(DEB_TARGET_MULTIARCH); done
 
 	# Move cmake modules to the -dev packages:
 	tmpfil=$$(mktemp); find $(CURDIR)/debian/usr/share/ -name '*-config.cmake' > $$tmpfil; cat $$tmpfil | while read line; do f=$$(dirname $$line); f=$$(basename $$f); echo "Processing cmake scripts: $$line, module name: $$f"; dir=$(CURDIR)/debian/lib$$f-dev/usr/share/; mkdir -p $$dir; mv -f $(CURDIR)/debian/usr/share/$$f $$dir; done
@@ -115,6 +119,5 @@ override_dh_install:
 	# Move mrpt-common:
 	dir=$(CURDIR)/debian/mrpt-common/usr/; mkdir -p $$dir; cp -vr $(CURDIR)/debian/usr/mrpt-common/* $$dir/..
 
-	# Fix Doxygen's embedded JQuery lib:
-	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true
-	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js  || true
+override_dh_missing:
+	dh_missing --list-missing

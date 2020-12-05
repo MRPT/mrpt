@@ -48,6 +48,12 @@ bool se3_l2(
 	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
 	bool forceScaleToUnity = false);
 
+/// \overload (for double precision points)
+bool se3_l2(
+	const mrpt::tfest::TMatchingPairList_d& in_correspondences,
+	mrpt::poses::CPose3DQuat& out_transform, double& out_scale,
+	bool forceScaleToUnity = false);
+
 /** \overload
  *
  * This version accepts corresponding points as two vectors of TPoint3D (must
@@ -92,8 +98,6 @@ struct TSE3RobustParams
 	 * \return Must return true if the pair is a potential match, false
 	 * otherwise.
 	 */
-	// std::function<bool(TPotentialMatch)>  user_individual_compat_callback; //
-	// This could be used in the future when we enforce C++11 to users...
 	TFunctorCheckPotentialMatch user_individual_compat_callback;
 };
 

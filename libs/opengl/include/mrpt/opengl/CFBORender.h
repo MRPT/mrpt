@@ -47,14 +47,12 @@ class CFBORender
 	CCamera& getCamera(const COpenGLScene& scene);
 
 	/** Render the scene and get the rendered rgb image. Resizes the image
-	   buffer if it
-		is necessary.
+	   buffer if it is necessary.
 	  */
 	void getFrame(const COpenGLScene& scene, mrpt::img::CImage& image);
 
 	/** Render the scene and get the rendered rgb image. Does not resize the
 	   image buffer.
-		MANDATORY: The image origin must be bottom left.
 	  */
 	void getFrame2(const COpenGLScene& scene, mrpt::img::CImage& image);
 
@@ -83,6 +81,6 @@ class CFBORender
 
 	/** Provide information on Framebuffer object extension.
 	 */
-	int isExtensionSupported(const char* extension);
+	bool isExtensionSupported(const std::string& extension);
 };
 }  // namespace mrpt::opengl
