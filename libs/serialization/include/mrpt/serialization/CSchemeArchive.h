@@ -71,12 +71,6 @@ class CSchemeArchive : public mrpt::serialization::CSchemeArchiveBase_impl
 		return *m_parent;
 	}
 	mrpt::serialization::CSchemeArchiveBase& operator=(
-		const std::nullptr_t val) override
-	{
-		m_val = val;
-		return *m_parent;
-	}
-	mrpt::serialization::CSchemeArchiveBase& operator=(
 		const std::string val) override
 	{
 		m_val = val;
