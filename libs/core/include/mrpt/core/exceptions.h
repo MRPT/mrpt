@@ -245,24 +245,10 @@ struct ExceptionWithCallBack : public std::exception
 		throw;                            \
 	}
 
-#if MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER
-#define MRPT_PROFILE_FUNC_START                \
-	::mrpt::system::CProfilerProxy BOOST_JOIN( \
-		__dum_var, __LINE__)(__CURRENT_FUNCTION_NAME__);
-#else
-#define MRPT_PROFILE_FUNC_START
-#endif
-
 // General macros for use within each MRPT method/function. They
-// provide:
-//  - Nested exception handling
-//  - Automatic profiling stats (in Debug only)
-// ---------------------------------------------------------
-#define MRPT_START          \
-	MRPT_PROFILE_FUNC_START \
-	MRPT_TRY_START
-
+// provide nested exception handling
+#define MRPT_START MRPT_TRY_START
 #define MRPT_END MRPT_TRY_END
-
 #define MRPT_END_WITH_CLEAN_UP(stuff) MRPT_TRY_END_WITH_CLEAN_UP(stuff)
+
 }  // namespace mrpt
