@@ -54,12 +54,16 @@ struct TCallStackBackTrace
  *
  * \note (Moved from mrpt-system to mrpt-core in MRPT 2.1.5)
  */
-void callStackBackTrace(TCallStackBackTrace& out_bt) noexcept;
+void callStackBackTrace(
+	TCallStackBackTrace& out_bt, const unsigned int framesToSkip = 1,
+	const unsigned int framesToCapture = 64) noexcept;
 
-inline TCallStackBackTrace callStackBackTrace() noexcept
+inline TCallStackBackTrace callStackBackTrace(
+	const unsigned int framesToSkip = 1,
+	const unsigned int framesToCapture = 64) noexcept
 {
 	TCallStackBackTrace bt;
-	callStackBackTrace(bt);
+	callStackBackTrace(bt, framesToSkip, framesToCapture);
 	return bt;
 }
 
