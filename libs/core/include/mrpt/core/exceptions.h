@@ -60,15 +60,37 @@ namespace mrpt
  */
 std::string exception_to_str(const std::exception& e);
 
-/** A wrapper around an std::exception */
-struct ExceptionWithCallBack : public std::exception
+struct ExceptionWithCallBackBase
 {
-	ExceptionWithCallBack(const std::exception& originalException);
+	ExceptionWithCallBackBase(
+		const std::string original_what, const TCallStackBackTrace call_stack)
+		: originalWhat(original_what), callStack(call_stack)
+	{
+	}
+
 	const std::string originalWhat;
 	const TCallStackBackTrace callStack;
+};
+
+/** A wrapper around an std::exception */
+template <class BASE_EXCEPTION>
+struct ExceptionWithCallBack : public BASE_EXCEPTION,
+							   public ExceptionWithCallBackBase
+{
+	ExceptionWithCallBack(const BASE_EXCEPTION& originalException)
+		: BASE_EXCEPTION(originalException),
+		  ExceptionWithCallBackBase(
+			  originalException.what(),
+			  mrpt::callStackBackTrace(2 /*skip 2 frames*/))
+	{
+	}
 
 	/** Use this pointer only before this object is destroyed */
-	const char* what() const noexcept override;
+	const char* what() const noexcept override
+	{
+		if (m_what.empty()) m_what = mrpt::exception_to_str(*this);
+		return m_what.c_str();
+	}
 
    private:
 	mutable std::string m_what;
@@ -76,7 +98,7 @@ struct ExceptionWithCallBack : public std::exception
 
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
 #define THROW_TYPED_EXCEPTION(msg, exceptionClass)         \
-	throw mrpt::ExceptionWithCallBack(                     \
+	throw mrpt::ExceptionWithCallBack<exceptionClass>(     \
 		exceptionClass(mrpt::internal::exception_line_msg( \
 			msg, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__)))
 
@@ -219,13 +241,13 @@ struct ExceptionWithCallBack : public std::exception
  * throw the call stack after an exception. \sa
  * MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
  */
-#define MRPT_TRY_END                                      \
-	}                                                     \
-	catch (std::bad_alloc&) { throw; }                    \
-	catch (const mrpt::ExceptionWithCallBack&) { throw; } \
-	catch (const std::exception& __e)                     \
-	{                                                     \
-		throw mrpt::ExceptionWithCallBack(__e);           \
+#define MRPT_TRY_END                                          \
+	}                                                         \
+	catch (std::bad_alloc&) { throw; }                        \
+	catch (const mrpt::ExceptionWithCallBackBase&) { throw; } \
+	catch (const std::exception& __e)                         \
+	{                                                         \
+		throw mrpt::ExceptionWithCallBack(__e);               \
 	}
 
 /** The end of a standard MRPT "try...catch()" block that allows tracing
