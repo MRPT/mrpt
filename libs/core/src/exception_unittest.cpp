@@ -55,7 +55,7 @@ TEST(exception, stackedExceptionComplex)
 		EXPECT_GT(num_lines, 10);
 
 		EXPECT_TRUE(sExc.find("Message:  Aw!") != std::string::npos) << sExc;
-		EXPECT_TRUE(sExc.find("test_except_2nd_lvl") != std::string::npos)
+		EXPECT_TRUE(sExc.find("test_except_toplevel") != std::string::npos)
 			<< sExc;
 	}
 }
