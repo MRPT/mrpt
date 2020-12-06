@@ -6,6 +6,13 @@ Environment variables that MRPT looks for
 
 The following environment variables may be set to alter some MRPT functionality:
 
+- ``MRPT_BACKTRACE_PRINT_ADDRESS``: Set to ``1`` to show PC (program pointer)
+  addresses in mrpt::TCallStackBackTrace::asString() (e.g. in exception backtraces).
+
+- ``MRPT_BACKTRACE_DISABLE_BFD``: Set to ``1`` to disable using BFD while
+  generating stack backtraces in mrpt::callStackBackTrace(), falling back to
+  ``dladdr()``.
+
 - ``MRPT_EXPR_VERBOSE``: Set to ``1`` to enable extra verbose debug traces for
   mrpt::math::CRuntimeCompiledExpression::eval().
 

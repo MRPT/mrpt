@@ -13,6 +13,7 @@
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/demangle.h>
 #include <mrpt/core/format.h>
+#include <mrpt/core/get_env.h>
 
 #include <iostream>
 
@@ -22,7 +23,7 @@
 //
 #include <DbgHelp.h>
 #else
-#include <dlfcn.h>	// dladdr()
+#include <dlfcn.h>  // dladdr()
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <stdio.h>
@@ -346,31 +347,46 @@ void mrpt::callStackBackTrace(
 	int nFrames = ::backtrace(callstack.data(), nMaxFrames);
 	char** symbols = ::backtrace_symbols(callstack.data(), nFrames);
 
+	static const bool MRPT_BACKTRACE_DISABLE_BFD =
+		mrpt::get_env<bool>("MRPT_BACKTRACE_DISABLE_BFD", false);
+
 #if MRPT_HAS_BFD
-	// Use BFD to solve for symbol names and line numbers.
-	std::vector<void*> addrs;
-	for (int i = (int)framesToSkip; i < nFrames; i++)
-		addrs.push_back(callstack[i]);
-
-	out_bt.backtrace_levels = backtraceSymbols(addrs.data(), addrs.size());
-
+	const bool use_bfd = !MRPT_BACKTRACE_DISABLE_BFD;
 #else
-	// If BFD is not available, solve for symbol names only:
-	for (int i = (int)framesToSkip; i < nFrames; i++)
-	{
-		TCallStackEntry cse;
-		cse.address = callstack[i];
-
-		Dl_info info;
-		if (dladdr(callstack[i], &info) && info.dli_sname)
-		{
-			cse.symbolNameOriginal =
-				info.dli_sname == nullptr ? symbols[i] : info.dli_sname;
-			cse.symbolName = mrpt::demangle(cse.symbolNameOriginal);
-		}
-		out_bt.backtrace_levels.emplace_back(cse);
-	}
+	const bool use_bfd = false;
 #endif
+
+	if (use_bfd)
+	{
+		// Use BFD to solve for symbol names and line numbers.
+		std::vector<void*> addrs;
+		for (int i = (int)framesToSkip; i < nFrames; i++)
+			addrs.push_back(callstack[i]);
+
+#if MRPT_HAS_BFD
+		out_bt.backtrace_levels = backtraceSymbols(addrs.data(), addrs.size());
+#else
+		std::cerr << "[mrpt::callStackBackTrace] Should never reach here!!"\n;
+#endif
+	}
+	else
+	{
+		// If BFD is not available, solve for symbol names only:
+		for (int i = (int)framesToSkip; i < nFrames; i++)
+		{
+			TCallStackEntry cse;
+			cse.address = callstack[i];
+
+			Dl_info info;
+			if (dladdr(callstack[i], &info) && info.dli_sname)
+			{
+				cse.symbolNameOriginal =
+					info.dli_sname == nullptr ? symbols[i] : info.dli_sname;
+				cse.symbolName = mrpt::demangle(cse.symbolNameOriginal);
+			}
+			out_bt.backtrace_levels.emplace_back(cse);
+		}
+	}
 
 	free(symbols);
 #endif
@@ -379,6 +395,9 @@ void mrpt::callStackBackTrace(
 mrpt::TCallStackBackTrace::TCallStackBackTrace() = default;
 std::string mrpt::TCallStackBackTrace::asString() const noexcept
 {
+	static const bool MRPT_BACKTRACE_PRINT_ADDRESS =
+		mrpt::get_env<bool>("MRPT_BACKTRACE_PRINT_ADDRESS", false);
+
 	std::string trace_buf;
 	for (std::size_t i = 0; i < backtrace_levels.size(); i++)
 	{
@@ -386,12 +405,13 @@ std::string mrpt::TCallStackBackTrace::asString() const noexcept
 
 		trace_buf += mrpt::format("[%-2d] ", static_cast<int>(i));
 
-		if (bt.symbolName.empty())
+		if (MRPT_BACKTRACE_PRINT_ADDRESS || bt.symbolName.empty())
 		{
 			trace_buf +=
-				mrpt::format("%*p", int(2 + sizeof(void*) * 2), bt.address);
+				mrpt::format("%*p ", int(2 + sizeof(void*) * 2), bt.address);
 		}
-		else
+
+		if (!bt.symbolName.empty())
 		{
 			if (!bt.sourceFileName.empty())
 			{
