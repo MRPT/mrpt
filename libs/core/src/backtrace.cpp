@@ -309,7 +309,7 @@ void mrpt::callStackBackTrace(
 	out_bt.backtrace_levels.clear();
 
 #ifdef _WIN32
-	void* backTrace[framesToCapture]{};
+	std::vector<void*> backTrace(framesToCapture + 4);
 
 	SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
 	const HANDLE hProcess = GetCurrentProcess();
@@ -327,7 +327,7 @@ void mrpt::callStackBackTrace(
 	pSymbol->MaxNameLen = MAX_SYM_NAME;
 
 	const USHORT nFrames = CaptureStackBackTrace(
-		framesToSkip, framesToCapture, backTrace, nullptr);
+		framesToSkip, framesToCapture, backTrace.data(), nullptr);
 	for (unsigned int i = 0; i < nFrames; i++)
 	{
 		TCallStackEntry cse;
@@ -349,10 +349,10 @@ void mrpt::callStackBackTrace(
 	}
 #else
 	// Based on: https://gist.github.com/fmela/591333
-	void* callstack[framesToCapture];
-	const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
-	int nFrames = ::backtrace(callstack, nMaxFrames);
-	char** symbols = ::backtrace_symbols(callstack, nFrames);
+	std::vector<void*> callstack(framesToCapture + 4);
+	const int nMaxFrames = framesToCapture;
+	int nFrames = ::backtrace(callstack.data(), nMaxFrames);
+	char** symbols = ::backtrace_symbols(callstack.data(), nFrames);
 
 #if MRPT_HAS_BFD
 	// Use BFD to solve for symbol names and line numbers.
