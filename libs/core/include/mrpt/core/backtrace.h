@@ -44,13 +44,19 @@ struct TCallStackBackTrace
 	std::vector<TCallStackEntry> backtrace_levels;
 
 	/** Prints all backtrace entries, one per line in a human-readable format.
+	 * See [environment variables](env-vars.html) that can change the output
+	 * format.
 	 */
 	std::string asString() const noexcept;
 };
 
 /** Returns a list of strings representing the current call stack
  * backtrace. If possible, human-readable names are used for
- * functions.
+ * functions. Source code line numbers will be also recovered
+ * if code has symbols (`-g` or `-g1` in GCC).
+ *
+ * See [environment variables](env-vars.html) that can modify the behavior
+ * of this function.
  *
  * \note (Moved from mrpt-system to mrpt-core in MRPT 2.1.5)
  */
@@ -58,6 +64,7 @@ void callStackBackTrace(
 	TCallStackBackTrace& out_bt, const unsigned int framesToSkip = 1,
 	const unsigned int framesToCapture = 64) noexcept;
 
+/// \overload
 inline TCallStackBackTrace callStackBackTrace(
 	const unsigned int framesToSkip = 1,
 	const unsigned int framesToCapture = 64) noexcept
