@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "serialization-precomp.h"> -----  // Precompiled headers
+//
 #include <mrpt/core/byte_manip.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/CArchive.h>
@@ -16,8 +18,6 @@
 
 #include <array>
 #include <cstring>	// strlen()
-
-#include "serialization-precomp.h"	// Precompiled headers
 
 using namespace mrpt::serialization;
 
