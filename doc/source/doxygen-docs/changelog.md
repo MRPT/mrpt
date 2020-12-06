@@ -22,6 +22,7 @@
   - Fix error rendering an opengl scene with mrpt::opengl::CCamera objects in it.
   - rawlog-edit silently ignored when more than one operation was requested.
   - Fix FTBFS against libjsoncpp 1.9.4 (Closes [#1118](https://github.com/MRPT/mrpt/issues/1118))
+  - Fix AppStream errors and warnings in Debian Tracker.
 
 ------
 # Version 2.1.4: Released Nov 8th, 2020
