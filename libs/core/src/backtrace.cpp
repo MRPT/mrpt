@@ -22,7 +22,7 @@
 //
 #include <DbgHelp.h>
 #else
-#include <dlfcn.h>  // dladdr()
+#include <dlfcn.h>	// dladdr()
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <stdio.h>
@@ -40,7 +40,7 @@
 // https://webcache.googleusercontent.com/search?q=cache:MXn9tpmIK5QJ:https://oroboro.com/printing-stack-traces-file-line/+&cd=2&hl=es&ct=clnk&gl=es
 
 #include <bfd.h>  // in deb package: binutils-dev
-#include <link.h> // in deb package: libc6-dev
+#include <link.h>  // in deb package: libc6-dev
 
 #if HAVE_DECL_BFD_GET_SECTION_FLAGS
 #define mrpt_debug_bfd_section_flags(_abfd, _section) \
@@ -255,11 +255,26 @@ static std::vector<mrpt::TCallStackEntry> processFile(
 	return retBuf;
 }
 
+static void mrpt_bfd_error_handler_type(const char*, va_list)
+{
+	// do nothing?
+}
+
 static std::vector<mrpt::TCallStackEntry> backtraceSymbols(
 	void* const* addrList, int numAddr) noexcept
 {
 	// initialize the bfd library
-	bfd_init();
+	const int bfdRet = bfd_init();
+	if (bfdRet != BFD_INIT_MAGIC)
+	{
+		std::cerr << "[mrpt::backtraceSymbols] Error initializing BFD: "
+					 "BFD_INIT_MAGIC="
+				  << BFD_INIT_MAGIC << " bfd_init() returned " << bfdRet
+				  << " instead." << std::endl;
+		return {};
+	}
+
+	bfd_set_error_handler(&mrpt_bfd_error_handler_type);
 
 	std::vector<mrpt::TCallStackEntry> ret;
 	for (int idx = 0; idx < numAddr; idx++)
