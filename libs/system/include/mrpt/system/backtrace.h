@@ -6,52 +6,29 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+
 #pragma once
 
-#include <string>
-#include <vector>
+#include <mrpt/core/backtrace.h>
+
+// Deprecated header, replace with <mrpt/core/backtrace.h>
 
 namespace mrpt::system
 {
-/** Used in getCallStackBackTrace() */
-struct TCallStackEntry
+using TCallStackBackTrace = mrpt::TCallStackBackTrace;
+
+[[deprecated("Use mrpt::callStackBackTrace() instead")]]  //
+inline void
+	getCallStackBackTrace(TCallStackBackTrace& bt)
 {
-	inline TCallStackEntry() : address(nullptr) {}
-	/** Address of the calling point */
-	void* address;
-	/** Demangled symbol name */
-	std::string symbolName;
-	/** Original (before demangle) symbol name */
-	std::string symbolNameOriginal;
-};
-
-#ifdef _MSC_VER
-template class std::vector<TCallStackEntry>;
-#endif
-
-/** See: getCallStackBackTrace() */
-struct TCallStackBackTrace
-{
-	TCallStackBackTrace();
-	std::vector<TCallStackEntry> backtrace_levels;
-
-	/** Prints all backtrace entries, one per line in a human-readable format.
-	 */
-	std::string asString() const;
-};
-
-/** Returns a list of strings representing the current call stack
- * backtrace. If possible, human-readable names are used for
- * functions.
- * \ingroup mrpt_system_grp
- */
-void getCallStackBackTrace(TCallStackBackTrace& out_bt);
-
-inline TCallStackBackTrace getCallStackBackTrace()
-{
-	TCallStackBackTrace bt;
-	getCallStackBackTrace(bt);
-	return bt;
+	mrpt::callStackBackTrace(bt);
 }
 
-}  // namespace mrpt::system
+[[deprecated("Use mrpt::callStackBackTrace() instead")]]  //
+inline TCallStackBackTrace
+	getCallStackBackTrace()
+{
+	return mrpt::callStackBackTrace();
+}
+
+};	// namespace mrpt::system

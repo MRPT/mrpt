@@ -13,24 +13,24 @@ endif()
 
 if (PKG_CONFIG_FOUND)
 	pkg_check_modules(PC_OPENNI QUIET libopenni2)
-endif (PKG_CONFIG_FOUND)
+endif ()
 
 # Build the expected names of the environment variables (Windows only) where OpenNI2 can be found:
 if (CMAKE_MRPT_WORD_SIZE EQUAL 64)
 	set(ENV_OPNI2_INCLUDE "OPENNI2_INCLUDE64")
 	set(ENV_OPNI2_LIB     "OPENNI2_LIB64")
 	set(ENV_OPNI2_REDIST  "OPENNI2_REDIST64")
-else (CMAKE_MRPT_WORD_SIZE EQUAL 64)
+else ()
 	set(ENV_OPNI2_INCLUDE "OPENNI2_INCLUDE")
 	set(ENV_OPNI2_LIB     "OPENNI2_LIB")
 	set(ENV_OPNI2_REDIST  "OPENNI2_REDIST")
-endif (CMAKE_MRPT_WORD_SIZE EQUAL 64)
+endif ()
 
 # Create option for OpenNI2 and guess its default value: 
 set(DEFAULT_MRPT_HAS_OPENNI2 0)
 if(PC_OPENNI_FOUND OR NOT "$ENV{${ENV_OPNI2_INCLUDE}}" STREQUAL "")
 	set(DEFAULT_MRPT_HAS_OPENNI2 1)
-endif(PC_OPENNI_FOUND OR NOT "$ENV{${ENV_OPNI2_INCLUDE}}" STREQUAL "")
+endif()
 
 option(MRPT_HAS_OPENNI2 "Support for the OpenNI2 library" ${DEFAULT_MRPT_HAS_OPENNI2})
 
