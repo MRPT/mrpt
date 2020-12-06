@@ -1,15 +1,17 @@
 ==== MRPT exception ====
-Message:  Called from here.
+Message:  Aw!
 Call stack backtrace:
-[0 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:29 test_except_2nd_lvl()
-[1 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:35 test_except_toplevel()
-[2 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:54 main
-[3 ] (unknown file) __libc_start_main
-[4 ] (unknown file) _start
+[0 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:21 test_except_3rd_lvl()
+[1 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:28 test_except_2nd_lvl()
+[2 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:35 test_except_toplevel()
+[3 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:54 main
+[4 ] (unknown file) __libc_start_main
+[5 ] (unknown file) _start
 ==== MRPT exception ====
 vector::_M_range_check: __n (which is 10) >= this->size() (which is 2)
 Call stack backtrace:
 [0 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:45 test_except_2nd_lvl_bis()
-[1 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:73 main
+[1 ] /home/jlblanco/code/mrpt/samples/core_exceptions_example/test.cpp:48 test_except_toplevel_bis()
 [2 ] (unknown file) __libc_start_main
 [3 ] (unknown file) _start
+
