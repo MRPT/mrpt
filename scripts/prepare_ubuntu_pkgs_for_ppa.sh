@@ -30,6 +30,7 @@ export MRPT_PKG_EXPORTED_SUBMODULES_xenial="simpleini"
 export MRPT_PKG_EXPORTED_SUBMODULES_bionic="simpleini"
 export MRPT_PKG_EXPORTED_SUBMODULES_focal="simpleini"
 export MRPT_PKG_EXPORTED_SUBMODULES_groovy="simpleini"
+export MRPT_PKG_EXPORTED_SUBMODULES_hirsute="simpleini"
 
 # Checks
 # --------------------------------
