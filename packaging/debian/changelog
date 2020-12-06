@@ -1,4 +1,4 @@
-mrpt (1:2.1.5) unstable; urgency=medium
+mrpt (1:2.1.5-1) unstable; urgency=medium
 
   * New version of upstream sources.
   * Fix build against newer libjsoncpp (Closes #976420).
