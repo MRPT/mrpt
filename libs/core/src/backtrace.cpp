@@ -366,7 +366,7 @@ void mrpt::callStackBackTrace(
 #if MRPT_HAS_BFD
 		out_bt.backtrace_levels = backtraceSymbols(addrs.data(), addrs.size());
 #else
-		std::cerr << "[mrpt::callStackBackTrace] Should never reach here!!"\n;
+		std::cerr << "[mrpt::callStackBackTrace] Should never reach here!!\n";
 #endif
 	}
 	else
