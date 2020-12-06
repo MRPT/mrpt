@@ -32,7 +32,6 @@ class CSchemeArchiveBase_impl
 	virtual CSchemeArchiveBase& operator=(const uint64_t) = 0;
 	virtual CSchemeArchiveBase& operator=(const float) = 0;
 	virtual CSchemeArchiveBase& operator=(const double) = 0;
-	virtual CSchemeArchiveBase& operator=(const std::nullptr_t) = 0;
 	virtual CSchemeArchiveBase& operator=(const std::string) = 0;
 	virtual CSchemeArchiveBase& operator=(bool) = 0;
 
