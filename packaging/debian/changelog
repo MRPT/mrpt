@@ -1,3 +1,11 @@
+mrpt (1:2.1.5) unstable; urgency=medium
+
+  * New version of upstream sources.
+  * Fix build against newer libjsoncpp (Closes #976420).
+  * Fix AppStream warnings and errors (metainfo files licensed as MIT).
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Sun, 06 Dec 2020 18:49:18 +0100
+
 mrpt (1:2.1.4-1) unstable; urgency=medium
 
   * New version of upstream sources.
