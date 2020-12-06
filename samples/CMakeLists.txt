@@ -49,6 +49,7 @@ if(BUILD_EXAMPLES)
 	# === Depending on: core ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		core_exceptions_example
+		core_backtrace_example
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::core)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
@@ -96,7 +97,6 @@ if(BUILD_EXAMPLES)
 		system_datetime_example
 		system_directory_explorer_example
 		system_file_system_watcher
-		system_backtrace_example
 		system_dirs_files_manipulation
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::system mrpt::poses mrpt::io)

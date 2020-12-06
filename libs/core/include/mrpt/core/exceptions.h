@@ -9,8 +9,10 @@
 
 #pragma once
 
+#include <mrpt/core/backtrace.h>
 #include <mrpt/core/common.h>
 #include <mrpt/core/format.h>
+
 #include <stdexcept>  // logic_error
 #include <string>  // std::string, to_string()
 #include <string_view>
@@ -44,20 +46,61 @@ inline std::string asrt_fail(
 
 namespace mrpt
 {
-/** Builds a nice textual representation of a nested exception, which if
+/** Builds a nice textual representation of an exception, which if
  * generated using MRPT macros (THROW_EXCEPTION,...) in between
  * MRPT_START/MRPT_END macros, will contain function names and line numbers
  * across the call stack at the original throw point.
- * See example of use in \ref mrpt_core_grp
- * Uses C++11 throw_with_nested(), rethrow_if_nested().
+ * Since MRPT 2.1.5 this will also print line numbers of any other exception
+ * (even if generated in non-mrpt code, like inside STL headers)
+ * as long as MRPT was built with BFD support and sources built with, at least,
+ * -g1 debug symbols.
+ *
+ * See examples of use in \ref mrpt_core_grp
  * \ingroup mrpt_core_grp
  */
 std::string exception_to_str(const std::exception& e);
 
+struct ExceptionWithCallBackBase
+{
+	ExceptionWithCallBackBase(
+		const std::string original_what, const TCallStackBackTrace call_stack)
+		: originalWhat(original_what), callStack(call_stack)
+	{
+	}
+
+	const std::string originalWhat;
+	const TCallStackBackTrace callStack;
+};
+
+/** A wrapper around an std::exception */
+template <class BASE_EXCEPTION>
+struct ExceptionWithCallBack : public BASE_EXCEPTION,
+							   public ExceptionWithCallBackBase
+{
+	ExceptionWithCallBack(const BASE_EXCEPTION& originalException)
+		: BASE_EXCEPTION(originalException),
+		  ExceptionWithCallBackBase(
+			  originalException.what(),
+			  mrpt::callStackBackTrace(2 /*skip 2 frames*/))
+	{
+	}
+
+	/** Use this pointer only before this object is destroyed */
+	const char* what() const noexcept override
+	{
+		if (m_what.empty()) m_what = mrpt::exception_to_str(*this);
+		return m_what.c_str();
+	}
+
+   private:
+	mutable std::string m_what;
+};
+
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
-#define THROW_TYPED_EXCEPTION(msg, exceptionClass)           \
-	throw exceptionClass(mrpt::internal::exception_line_msg( \
-		msg, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__))
+#define THROW_TYPED_EXCEPTION(msg, exceptionClass)         \
+	throw mrpt::ExceptionWithCallBack<exceptionClass>(     \
+		exceptionClass(mrpt::internal::exception_line_msg( \
+			msg, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__)))
 
 /** \def THROW_EXCEPTION(msg);
  * \param msg This can be a char*, a std::string, or a literal string.
@@ -73,31 +116,11 @@ std::string exception_to_str(const std::exception& e);
 	THROW_TYPED_EXCEPTION(                                             \
 		mrpt::format(_FORMAT_STRING, __VA_ARGS__), exceptionClass)
 
-/** \def THROW_STACKED_EXCEPTION
- * \sa MRPT_TRY_START, MRPT_TRY_END
- */
-#define THROW_STACKED_EXCEPTION                              \
-	std::throw_with_nested(                                  \
-		std::logic_error(mrpt::internal::exception_line_msg( \
-			"Called from here.", __FILE__, __LINE__,         \
-			__CURRENT_FUNCTION_NAME__)))
-
-/** \def THROW_STACKED_EXCEPTION_CUSTOM_MSG
- * \param e The caught exception.
- *	\param stuff Is a printf-like sequence of params, e.g: "The error happens
- *for x=%i",x
- */
-#define THROW_STACKED_EXCEPTION_CUSTOM_MSG2(stuff, param1)   \
-	std::throw_with_nested(                                  \
-		std::logic_error(mrpt::internal::exception_line_msg( \
-			mrpt::format(stuff, param1), __FILE__, __LINE__, \
-			__CURRENT_FUNCTION_NAME__)))
-
 /** For use in CSerializable implementations */
 #define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(__V)                      \
-	THROW_EXCEPTION(mrpt::format(                                          \
+	THROW_EXCEPTION_FMT(                                                   \
 		"Cannot parse object: unknown serialization version number: '%i'", \
-		static_cast<int>(__V)))
+		static_cast<int>(__V))
 
 /** Throws a stacked exception if condition "f" is false; with custom message.
  * \sa MRPT_TRY_START, MRPT_TRY_END
@@ -218,10 +241,14 @@ std::string exception_to_str(const std::exception& e);
  * throw the call stack after an exception. \sa
  * MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
  */
-#define MRPT_TRY_END                   \
-	}                                  \
-	catch (std::bad_alloc&) { throw; } \
-	catch (...) { THROW_STACKED_EXCEPTION; }
+#define MRPT_TRY_END                                          \
+	}                                                         \
+	catch (std::bad_alloc&) { throw; }                        \
+	catch (const mrpt::ExceptionWithCallBackBase&) { throw; } \
+	catch (const std::exception& __e)                         \
+	{                                                         \
+		throw mrpt::ExceptionWithCallBack(__e);               \
+	}
 
 /** The end of a standard MRPT "try...catch()" block that allows tracing
  * throw the call stack after an exception, including a "clean up" piece
@@ -232,26 +259,18 @@ std::string exception_to_str(const std::exception& e);
 #define MRPT_TRY_END_WITH_CLEAN_UP(stuff) \
 	}                                     \
 	catch (std::bad_alloc&) { throw; }    \
-	catch (...) { {stuff} THROW_STACKED_EXCEPTION; }
-
-#if MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER
-#define MRPT_PROFILE_FUNC_START                \
-	::mrpt::system::CProfilerProxy BOOST_JOIN( \
-		__dum_var, __LINE__)(__CURRENT_FUNCTION_NAME__);
-#else
-#define MRPT_PROFILE_FUNC_START
-#endif
+	catch (...)                           \
+	{                                     \
+		{                                 \
+			stuff                         \
+		}                                 \
+		throw;                            \
+	}
 
 // General macros for use within each MRPT method/function. They
-// provide:
-//  - Nested exception handling
-//  - Automatic profiling stats (in Debug only)
-// ---------------------------------------------------------
-#define MRPT_START          \
-	MRPT_PROFILE_FUNC_START \
-	MRPT_TRY_START
-
+// provide nested exception handling
+#define MRPT_START MRPT_TRY_START
 #define MRPT_END MRPT_TRY_END
-
 #define MRPT_END_WITH_CLEAN_UP(stuff) MRPT_TRY_END_WITH_CLEAN_UP(stuff)
+
 }  // namespace mrpt

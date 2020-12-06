@@ -25,6 +25,13 @@ if(BUILD_mrpt-core)
 	endif()
 
 	if(WIN32)
-		target_link_libraries(core PRIVATE Dbghelp) # For mrpt::demangle()
+		target_link_libraries(core PRIVATE Dbghelp) # For mrpt::demangle(), mrpt::callStackBackTrace()
+	else()
+		target_link_libraries(core PRIVATE ${CMAKE_DL_LIBS}) # For mrpt::callStackBackTrace()
 	endif()
+
+	if (CMAKE_MRPT_HAS_BFD)
+		target_link_libraries(core PRIVATE ${BFD_LIBRARY})
+	endif()
+
 endif()
