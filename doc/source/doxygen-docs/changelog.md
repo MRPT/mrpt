@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.1.5: (Under development)
+# Version 2.1.5: Released Dec 6th, 2020
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - Both mrpt::containers::CDynamicGrid and mrpt::containers::CDynamicGrid3D are now compatible with range-based for loops, and also have a data() method.

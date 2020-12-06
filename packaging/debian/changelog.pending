@@ -1,2 +1,0 @@
-  * Fix build against newer libjsoncpp (Closes #976420).
-  * Fix AppStream warnings and errors (metainfo files licensed as MIT).
