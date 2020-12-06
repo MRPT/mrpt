@@ -264,15 +264,7 @@ static std::vector<mrpt::TCallStackEntry> backtraceSymbols(
 	void* const* addrList, int numAddr) noexcept
 {
 	// initialize the bfd library
-	const int bfdRet = bfd_init();
-	if (bfdRet != BFD_INIT_MAGIC)
-	{
-		std::cerr << "[mrpt::backtraceSymbols] Error initializing BFD: "
-					 "BFD_INIT_MAGIC="
-				  << BFD_INIT_MAGIC << " bfd_init() returned " << bfdRet
-				  << " instead." << std::endl;
-		return {};
-	}
+	bfd_init();
 
 	bfd_set_error_handler(&mrpt_bfd_error_handler_type);
 
