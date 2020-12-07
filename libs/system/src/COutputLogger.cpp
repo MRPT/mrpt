@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "system-precomp.h"  // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/system/COutputLogger.h>
@@ -20,7 +22,6 @@
 #include <sstream>
 #include <vector>
 
-#include "system-precomp.h"	 // Precompiled headers
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
