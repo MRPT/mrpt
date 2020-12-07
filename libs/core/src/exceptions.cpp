@@ -66,7 +66,10 @@ void impl_excep_to_str(const std::exception& e, std::string& ret, int lvl = 0)
 
 			if (const auto idx = findClosingBracket(']', '[', err);
 				idx != std::string::npos)
-				err = "Message: "s + err.substr(idx + 1);
+			{
+				err = "Message: "s + err.substr(idx + 1) + "Location: "s +
+					  err.substr(0, idx) + "\n"s;
+			}
 
 			ret += "==== MRPT exception ====\n";
 			ret += err;
