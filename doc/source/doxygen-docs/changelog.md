@@ -19,6 +19,8 @@
     - New method mrpt::gui::CGlCanvasBase::CamaraParams::FromCamera()
   - \ref mrpt_math_grp
     - Added missing method for consistent API across pose classes: mrpt::math::TPose3D::operator+()
+  - \ref mrpt_system_grp
+    - mrpt::system::COutputLogger::writeLogToFile() will now save *all* messages despite the runtime log verbosity level.
 - BUG FIXES:
   - Fix error rendering an opengl scene with mrpt::opengl::CCamera objects in it.
   - rawlog-edit silently ignored when more than one operation was requested.

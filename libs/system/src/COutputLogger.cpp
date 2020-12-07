@@ -7,17 +7,20 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/datetime.h>
-#include <cstdarg>  // for logFmt
+#include <mrpt/system/filesystem.h>
+
+#include <cstdarg>	// for logFmt
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
+
+#include "system-precomp.h"	 // Precompiled headers
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
@@ -38,9 +41,9 @@ using namespace std;
 static std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>
 	logging_levels_to_colors = {
 		CONCOL_BLUE,  // LVL_DEBUG
-		CONCOL_NORMAL,  // LVL_INFO
+		CONCOL_NORMAL,	// LVL_INFO
 		CONCOL_GREEN,  // LVL_WARN
-		CONCOL_RED  // LVL_ERROR
+		CONCOL_RED	// LVL_ERROR
 };
 
 std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>&
@@ -54,7 +57,7 @@ static std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>
 		"DEBUG",  // LVL_DEBUG
 		"INFO ",  // LVL_INFO
 		"WARN ",  // LVL_WARN
-		"ERROR"  // LVL_ERROR
+		"ERROR"	 // LVL_ERROR
 };
 std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>&
 	COutputLogger::logging_levels_to_names()
@@ -62,30 +65,27 @@ std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>&
 	return ::logging_levels_to_names;
 }
 
-COutputLogger::COutputLogger(std::string_view name)
-{
-	this->loggerReset();
-	m_logger_name = name;
-}
-COutputLogger::COutputLogger() { this->loggerReset(); }
 COutputLogger::~COutputLogger() = default;
+
 void COutputLogger::logStr(
 	const VerbosityLevel level, std::string_view msg_str) const
 {
-	if (level < m_min_verbosity_level) return;
-
 	// initialize a TMsg object
 	TMsg msg(level, msg_str, *this);
-	if (logging_enable_keep_record) m_history.push_back(msg);
-
-	if (logging_enable_console_output)
+	if (logging_enable_keep_record)
 	{
-		msg.dumpToConsole();
+		auto lck = mrpt::lockHelper(*m_historyMtx);
+		m_history.push_back(msg);
 	}
 
-	// User callbacks:
-	for (const auto& c : m_listCallbacks)
-		c(msg.body, msg.level, msg.name, msg.timestamp);
+	if (level >= m_min_verbosity_level && logging_enable_console_output)
+	{
+		msg.dumpToConsole();
+
+		// User callbacks:
+		for (const auto& c : m_listCallbacks)
+			c(msg.body, msg.level, msg.name, msg.timestamp);
+	}
 }
 
 void COutputLogger::logFmt(
@@ -151,6 +151,7 @@ void COutputLogger::setVerbosityLevel(const VerbosityLevel level)
 void COutputLogger::getLogAsString(std::string& fname) const
 {
 	fname.clear();
+	auto lck = mrpt::lockHelper(*m_historyMtx);
 	for (const auto& h : m_history) fname += h.getAsString();
 }
 std::string COutputLogger::getLogAsString() const
@@ -159,23 +160,20 @@ std::string COutputLogger::getLogAsString() const
 	this->getLogAsString(str);
 	return str;
 }
-void COutputLogger::writeLogToFile(
-	const std::string* fname_in /* = nullptr */) const
+void COutputLogger::writeLogToFile(const std::optional<string> fname_in) const
 {
+	using namespace std::string_literals;
+
 	// determine the filename - open it
-	std::string fname;
-	if (fname_in)
-	{
-		fname = *fname_in;
-	}
-	else
-	{
-		fname = m_logger_name + ".log";
-	}
+	std::string fname =
+		fname_in.has_value()
+			? fname_in.value()
+			: mrpt::system::fileNameStripInvalidChars(m_logger_name) + ".log"s;
+
 	std::ofstream f(fname);
 	ASSERTMSG_(
 		f.is_open(), mrpt::format(
-						 "[%s:] Could not open external file: %s",
+						 "[%s] Could not open external file: %s",
 						 m_logger_name.c_str(), fname.c_str()));
 
 	std::string hist_str;
@@ -186,11 +184,13 @@ void COutputLogger::writeLogToFile(
 
 void COutputLogger::dumpLogToConsole() const
 {
+	auto lck = mrpt::lockHelper(*m_historyMtx);
 	for (const auto& h : m_history) h.dumpToConsole();
 }
 
 std::string COutputLogger::getLoggerLastMsg() const
 {
+	auto lck = mrpt::lockHelper(*m_historyMtx);
 	TMsg last_msg = m_history.back();
 	return last_msg.getAsString();
 }
@@ -200,18 +200,7 @@ void COutputLogger::getLoggerLastMsg(std::string& msg_str) const
 	msg_str = this->getLoggerLastMsg();
 }
 
-void COutputLogger::loggerReset()
-{
-	m_logger_name = "log";  // just the default name
-
-	m_history.clear();
-	logging_enable_console_output = true;
-	logging_enable_keep_record = false;
-
-	// set the minimum logging level allowed for printing. By default its
-	// LVL_INFO
-	m_min_verbosity_level = LVL_INFO;
-}
+void COutputLogger::loggerReset() { *this = COutputLogger(); }
 
 // TMsg Struct
 // ////////////////////////////////////////////////////////////
@@ -254,7 +243,7 @@ void COutputLogger::TMsg::dumpToConsole() const
 {
 	const std::string str = getAsString();
 
-	const bool dump_to_cerr = (level == LVL_ERROR);  // LVL_ERROR alternatively
+	const bool dump_to_cerr = (level == LVL_ERROR);	 // LVL_ERROR alternatively
 	// dumped to stderr instead
 	// of stdout
 
