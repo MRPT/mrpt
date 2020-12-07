@@ -14,6 +14,7 @@
 #include <mrpt/core/demangle.h>
 #include <mrpt/core/format.h>
 #include <mrpt/core/get_env.h>
+#include <mrpt/core/winerror2str.h>
 
 #include <iostream>
 
@@ -23,7 +24,7 @@
 //
 #include <DbgHelp.h>
 #else
-#include <dlfcn.h>  // dladdr()
+#include <dlfcn.h>	// dladdr()
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <stdio.h>
@@ -295,6 +296,48 @@ static std::vector<mrpt::TCallStackEntry> backtraceSymbols(
 }
 #endif
 
+#ifdef _WIN32
+class WindowsSymResources
+{
+   public:
+	static WindowsSymResources& Instance()
+	{
+		static WindowsSymResources inst;
+		return inst;
+	}
+
+	bool initialized() const { return m_init_ok; }
+	HANDLE processHandle() const { return m_hProcess; }
+
+   private:
+	const HANDLE m_hProcess = GetCurrentProcess();
+	bool m_init_ok = false;
+
+	WindowsSymResources()
+	{
+		SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
+
+		if (!SymInitialize(
+				m_hProcess, nullptr /* UserSearchPath  */,
+				TRUE /*fInvadeProcess*/))
+		{
+			std::cerr << mrpt::winerror2str(
+							 "mrpt::callStackBackTrace",
+							 " Error in SymInitialize(): ")
+					  << std::endl;
+			return;
+		}
+		m_init_ok = true;
+	}
+	~WindowsSymResources()
+	{
+		m_init_ok = false;
+		SymCleanup(m_hProcess);
+	}
+};
+
+#endif
+
 void mrpt::callStackBackTrace(
 	TCallStackBackTrace& out_bt, const unsigned int framesToSkip,
 	const unsigned int framesToCapture) noexcept
@@ -304,15 +347,10 @@ void mrpt::callStackBackTrace(
 #ifdef _WIN32
 	std::vector<void*> backTrace(framesToCapture + 4);
 
-	SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
-	const HANDLE hProcess = GetCurrentProcess();
-	if (!SymInitialize(
-			hProcess, nullptr /* UserSearchPath  */, TRUE /*fInvadeProcess*/))
-	{
-		std::cerr << "[mrpt::callStackBackTrace] Error in SymInitialize()!"
-				  << std::endl;
-		return;
-	}
+	// Auto initialize Sym system on first call, auto free at program end.
+	auto& sym = WindowsSymResources::Instance();
+	if (!sym.initialized())
+		return;	 // error already dumped to std::cerr inside the ctor
 
 	char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
 	PSYMBOL_INFO pSymbol = (PSYMBOL_INFO)buffer;
@@ -326,7 +364,8 @@ void mrpt::callStackBackTrace(
 		TCallStackEntry cse;
 		cse.address = backTrace[i];
 
-		if (!SymFromAddr(hProcess, (DWORD64)cse.address, nullptr, pSymbol))
+		if (!SymFromAddr(
+				sym.processHandle(), (DWORD64)cse.address, nullptr, pSymbol))
 		{
 			cse.symbolName = "???";
 			cse.symbolNameOriginal = "???";
