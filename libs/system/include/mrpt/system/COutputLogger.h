@@ -11,13 +11,16 @@
 
 #include <mrpt/core/Clock.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>  // for console color constants
+#include <mrpt/system/os.h>	 // for console color constants
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <array>
 #include <deque>
 #include <functional>
 #include <iosfwd>
+#include <memory>
+#include <mutex>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -97,13 +100,16 @@ using output_logger_callback_t = std::function<void(
  *
  *   Default logging level is LVL_INFO.
  *
- * User may receive callbacks whenever a message is displayed to console by
- * using
- * logRegisterCallback(). If for some reason the callbacks are not needed any
- * more,
- * use logDeregisterCallback() to stop receiving calls. This mechanism is useful
- * in case of showing the messages to a GUI, transmiting them to a remote
- * machine, etc.
+ * User may receive callbacks whenever a message is *displayed to console* by
+ * using logRegisterCallback(). If for some reason the callbacks are not needed
+ * any more, use logDeregisterCallback() to stop receiving calls. This mechanism
+ * is useful in case of showing the messages to a GUI, transmiting them to a
+ * remote machine, etc.
+ *
+ * Note that only those messages whose "importance level" will be printed and
+ * sent to user callbacks. However, *all* messages will be stored and saved to a
+ * file with writeLogToFile() despite the current filter, if
+ * `logging_enable_keep_record` is set to `true` (Default=`false`).
  *
  * \note By default every logged message is going to be dumped to the standard
  * output as well (if VerbosityLevel > m_min_verbosity_level). Unset \b
@@ -143,17 +149,18 @@ class COutputLogger
 	 * a_logger.setLoggerName("logger_name");
 	 * \endcode
 	 */
-	COutputLogger(std::string_view name);
-	/** Default class constructor. Name of the logger is initialized to "logStr"
-	 */
-	COutputLogger();
+	COutputLogger(std::string_view name) : m_logger_name(name) {}
+
+	/** Default constructor	*/
+	COutputLogger() = default;
+
 	/** virtual dtor (so we can derive classes from this one) */
 	virtual ~COutputLogger();
 
 	/** \brief Main method to add the specified message string to the logger.
 	 * \sa logCond, logFmt */
 	void logStr(const VerbosityLevel level, std::string_view msg_str)
-		const;  // renamed from log() to avoid conflict with math ::log()
+		const;	// renamed from log() to avoid conflict with math ::log()
 
 	/** \brief Alternative logging method, which mimics the printf behavior.
 	 *
@@ -171,7 +178,7 @@ class COutputLogger
 	 * \sa logStr, logCond
 	 */
 	void logFmt(const VerbosityLevel level, const char* fmt, ...) const
-		MRPT_printf_format_check(3, 4);  // arg 1=this
+		MRPT_printf_format_check(3, 4);	 // arg 1=this
 
 	/** \brief Log the given message only if the condition is satisfied.
 	 *
@@ -220,7 +227,8 @@ class COutputLogger
 	 *
 	 * \sa dumpToConsole, getAsString
 	 */
-	void writeLogToFile(const std::string* fname_in = nullptr) const;
+	void writeLogToFile(
+		const std::optional<std::string> fname_in = std::nullopt) const;
 	/** \brief Dump the current contents of the COutputLogger instance in the
 	 * terminal window.
 	 *
@@ -307,9 +315,10 @@ class COutputLogger
 	std::string generateStringFromFormat(
 		std::string_view fmt, va_list argp) const;
 
-	std::string m_logger_name;
-	mutable std::deque<TMsg>
-		m_history;  // deque is better than vector to avoid memory reallocs
+	std::string m_logger_name = "COutputLogger";
+	// deque is better than vector to avoid memory reallocs
+	mutable std::deque<TMsg> m_history;
+	std::shared_ptr<std::mutex> m_historyMtx = std::make_shared<std::mutex>();
 
 	std::deque<output_logger_callback_t> m_listCallbacks;
 };
