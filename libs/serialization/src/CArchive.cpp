@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "serialization-precomp.h"> -----  // Precompiled headers
+#include "serialization-precomp.h"	// Precompiled headers
 //
 #include <mrpt/core/byte_manip.h>
 #include <mrpt/core/exceptions.h>
