@@ -137,6 +137,12 @@ cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* debian
 if [ $IS_FOR_UBUNTU == "1" ];
 then
 	cp ${MRPT_EXTERN_UBUNTU_PPA_DIR}/control.in debian/
+
+  # TL/DR: Remove this line far in the future (now: Dec 2020)
+  # This is needed until Ubuntu uses the now (Dec 2020) experimental dh feature
+  # of describing dh compat levels by means of a build-depends entry instead of
+  # the old file debian/compat:
+  echo "10" > debian/compat
 fi
 
 # Export signing pub key:

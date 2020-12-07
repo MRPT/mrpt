@@ -19,7 +19,7 @@ set -e
 #  - Hirsute    EOL: Jan 2022
 #  - Bionic LTS EOL: Apr 2023
 #  - Focal  LTS EOL: Apr 2025
-LST_DISTROS=(xenial bionic focal groovy hirsute)
+LST_DISTROS=${LST_DISTROS:-(xenial bionic focal groovy hirsute)}
 
 # Special case for Xenial: enforce g++7
 export MRPT_PKG_CUSTOM_CMAKE_PARAMS_xenial="-DCMAKE_C_COMPILER=/usr/bin/gcc-7 -DCMAKE_CXX_COMPILER=/usr/bin/g++-7"
