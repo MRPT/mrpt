@@ -21,14 +21,6 @@ struct TNodeProps
 	mrpt::obs::CObservation2DRangeScan::Ptr scan;
 
 	TNodeProps() = default;
-	TNodeProps(const TNodeProps& o) { *this = o; }
-
-	TNodeProps operator=(const TNodeProps& other)
-	{
-		this->pose = other.pose;
-		this->scan = other.scan;
-		return *this;
-	}
 
 	void getAsString(std::string* str) const
 	{
