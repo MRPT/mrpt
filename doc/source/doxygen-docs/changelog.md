@@ -14,6 +14,7 @@
       - Line numbers will be now shown if built with debug info (>= -g1).
       - Exceptions in STL or any other 3rd-party library will be also reported with exact call point line number, as long as MRPT_START/MRPT_END is used in the user function.
       - No further need to call mrpt::exception_to_str(), just calling what() will return a detailed stack backtrace.
+      - New function mrpt::winerror2str()
   - \ref mrpt_gui_grp
     - New method mrpt::gui::CGlCanvasBase::CamaraParams::FromCamera()
   - \ref mrpt_math_grp

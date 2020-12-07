@@ -9,8 +9,8 @@
 
 #include "system-precomp.h"  // Precompiled headers
 //
-
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/winerror2str.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -29,6 +29,7 @@
 #include <mutex>
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 //
 #include <conio.h>
@@ -569,21 +570,6 @@ const std::string& mrpt::system::getMRPTLicense()
 	}
 	return sLicenseText;
 }
-
-#ifdef _WIN32
-std::string winerror2str(const char* errorPlaceName)
-{
-	char str[700];
-	DWORD e = GetLastError();
-	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, 0, e, 0, str, sizeof(str), NULL);
-	std::string s;
-	s = "[";
-	s += errorPlaceName;
-	s += "] Error: ";
-	s += str;
-	return s;
-}
-#endif
 
 /*---------------------------------------------------------------
 launchProcess
