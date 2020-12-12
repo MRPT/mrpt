@@ -31,7 +31,7 @@ if(BUILD_mrpt-core)
 	endif()
 
 	if (CMAKE_MRPT_HAS_BFD)
-		target_link_libraries(core PRIVATE ${BFD_LIBRARY})
+		target_link_libraries(core PRIVATE ${BFD_LIBRARIES})
 	endif()
 
 endif()

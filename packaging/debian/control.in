@@ -48,7 +48,8 @@ Build-Depends: debhelper (>= 12),
 	libxrandr-dev,
 	libsimpleini-dev,
 	libicu-dev,
-	binutils-dev
+	binutils-dev,
+	libiberty-dev
 Standards-Version: 4.5.0
 Homepage: https://www.mrpt.org/
 
