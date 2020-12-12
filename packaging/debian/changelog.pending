@@ -1,0 +1,2 @@
+.
+  * Fix mrpt uses private shared bfd library (Closes: #976803).

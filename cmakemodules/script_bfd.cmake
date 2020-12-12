@@ -15,13 +15,23 @@ include(CheckPrototypeDefinition)
 include(CheckCSourceCompiles)
 
 CHECK_INCLUDE_FILE("bfd.h" HAVE_BFD_H)
-find_library(BFD_LIBRARY NAMES bfd)
+# Prefer static libraries, per:
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=976803
+find_library(BFD_LIBRARY NAMES libbfd.a)
 mark_as_advanced(BFD_LIBRARY)
 
 if ((NOT HAVE_BFD_H) OR (NOT BFD_LIBRARY))
 	# We need both, the .h and the .a to consider we have bfd available
 	return()
 endif()
+
+# Other Deps of BFD (needed since we are enforced to use static linking)
+find_library(Z_LIBRARY NAMES z libz.so libz)
+mark_as_advanced(Z_LIBRARY)
+
+find_library(IBERTY_LIBRARY NAMES iberty libiberty.a) 
+
+set(BFD_LIBRARIES ${BFD_LIBRARY} ${Z_LIBRARY} ${CMAKE_DL_LIBS} ${IBERTY_LIBRARY})
 
 # Ok, we have the library, now detect different API versions:
 set(CMAKE_MRPT_HAS_BFD 1)

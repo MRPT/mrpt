@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.1.6: (Under development)
-- (No changes yet).
+- BUG FIXES:
+  - Fix [Debian bug #976803](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=976803): mrpt uses private binutils shared library.
 
 ------
 # Version 2.1.5: Released Dec 6th, 2020
