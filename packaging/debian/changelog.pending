@@ -1,2 +1,3 @@
-.
+
   * Fix mrpt uses private shared bfd library (Closes: #976803).
+  * Fix building mrpt against OpenCV 4.5.0 (Closes: #977247).
