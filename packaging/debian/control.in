@@ -49,8 +49,8 @@ Build-Depends: debhelper (>= 12),
 	libsimpleini-dev,
 	libicu-dev,
 	binutils-dev,
-	libiberty-dev
-Standards-Version: 4.5.0
+	ibiberty-dev
+Standards-Version: 4.5.1
 Homepage: https://www.mrpt.org/
 
 Package: mrpt-doc

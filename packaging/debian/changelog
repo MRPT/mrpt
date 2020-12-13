@@ -1,3 +1,10 @@
+mrpt (1:2.1.5-2) unstable; urgency=medium
+
+  * Fix using binutils private shared library (Closes: #976803).
+  * Update standards version to 4.5.1.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Sun, 13 Dec 2020 07:30:00 +0100
+
 mrpt (1:2.1.5-1) unstable; urgency=medium
 
   * New version of upstream sources.
