@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.1.6: (Under development)
+# Version 2.1.6: Released Dec 14th, 2020
 - Changes in libraries:
   - \ref mrpt_core_grp
     - Disable the use of BFD for symbols in stack traces by default in Debian builds. It is still used if found in the system and in Ubuntu PPAs.
