@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.1.6: (Under development)
+- Changes in libraries:
+  - \ref mrpt_core_grp
+    - Disable the use of BFD for symbols in stack traces by default in Debian builds. It is still used if found in the system and in Ubuntu PPAs.
 - BUG FIXES:
   - Fix [Debian bug #976803](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=976803): mrpt uses private binutils shared library.
   - Fix [Debian bug #977247](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=977247]): fail to link pymrpt against opencv.
