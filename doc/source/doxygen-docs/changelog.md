@@ -3,6 +3,7 @@
 # Version 2.1.6: (Under development)
 - BUG FIXES:
   - Fix [Debian bug #976803](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=976803): mrpt uses private binutils shared library.
+  - Fix [Debian bug #977247](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=977247]): fail to link pymrpt against opencv.
 
 ------
 # Version 2.1.5: Released Dec 6th, 2020
