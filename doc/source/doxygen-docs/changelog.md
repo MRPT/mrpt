@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.1.7: (Under development)
+- (No changes yet)
+
+------
 # Version 2.1.6: Released Dec 14th, 2020
 - Changes in libraries:
   - \ref mrpt_core_grp
