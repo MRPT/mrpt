@@ -120,8 +120,8 @@
 							<bitmap stock_id="wxART_TICK_MARK" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="wxART_TICK_MARK" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
-							<tooltip>Toogle projective/orthogonal view...</tooltip>
-							<help>Toogle projective/orthogonal view...</help>
+							<tooltip>Toggle projective/orthogonal view...</tooltip>
+							<help>Toggle projective/orthogonal view...</help>
 							<handler function="OnbtnOrthoClicked" entry="EVT_TOGGLEBUTTON" />
 						</object>
 						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>

@@ -30,7 +30,7 @@ using namespace std;
 
 const char* MSG_HELP_WINDOW =
 	"These are the supported commands:\n"
-	" - h: Toogle help view\n"
+	" - h: Toggle help view\n"
 	" - i: Switch view/hide node IDs\n"
 	" - +/-: Increase/reduce size of node points\n"
 	" - e: Switch view/hide edges\n"
@@ -39,7 +39,7 @@ const char* MSG_HELP_WINDOW =
 	" - v: Switch view/hide edge pose values\n"
 	" - k/l: Inc/red. length of edge pose corners\n"
 	" - s: Save 3D scene to file\n"
-	" - Alt+Enter: Toogle fullscreen\n"
+	" - Alt+Enter: Toggle fullscreen\n"
 	" - q: Quit\n";
 
 /**

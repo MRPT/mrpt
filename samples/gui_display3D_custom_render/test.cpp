@@ -154,9 +154,9 @@ void TestDisplay3D()
 			if (key == 'h' || key == 'H')
 			{
 				std::cout << "These are the supported commands:\n"
-							 " - 'h': Toogle help view\n"
+							 " - 'h': Toggle help view\n"
 							 " - '<-' and '->': Rotate camera\n"
-							 " - 'Alt+Enter': Toogle fullscreen\n"
+							 " - 'Alt+Enter': Toggle fullscreen\n"
 							 " - 'ESC': Quit"
 							 "\n";
 			}
