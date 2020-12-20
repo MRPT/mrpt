@@ -51,6 +51,12 @@ CMAKE_FLAGS = \
 %:
 	dh $@ --buildsystem=cmake
 
+override_dh_auto_clean:
+	dh_auto_clean -O--buildsystem=cmake
+	# Clean possible leftover from a former build:
+	rm -fr debian/usr
+	find doc/graphslam-engine-guide/ -maxdepth 1  -type f ! -name '*.tex' ! -name 'Makefile' -delete
+
 override_dh_auto_build-arch:
 	dh_auto_build -O--buildsystem=cmake
 
