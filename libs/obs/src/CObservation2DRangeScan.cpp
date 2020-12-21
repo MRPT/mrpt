@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"  // Precompiled headers
-
 #include <mrpt/core/round.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>
+
+#include "obs-precomp.h"  // Precompiled headers
 #if MRPT_HAS_MATLAB
 #include <mexplus.h>
 #endif
@@ -199,20 +199,21 @@ IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
 mxArray* CObservation2DRangeScan::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-	const char* fields[] = {"class",  // Data common to any MRPT class
-							"ts",
-							"sensorLabel",  // Data common to any observation
-							"scan",
-							"validRange",
-							"intensity"  // Received raw data
-							"aperture",
-							"rightToLeft",
-							"maxRange",  // Scan plane geometry and properties
-							"stdError",
-							"beamAperture",
-							"deltaPitch",  // Ray properties
-							"pose",  // Sensor pose
-							"map"};  // Points map
+	const char* fields[] = {
+		"class",  // Data common to any MRPT class
+		"ts",
+		"sensorLabel",	// Data common to any observation
+		"scan",
+		"validRange",
+		"intensity"	 // Received raw data
+		"aperture",
+		"rightToLeft",
+		"maxRange",	 // Scan plane geometry and properties
+		"stdError",
+		"beamAperture",
+		"deltaPitch",  // Ray properties
+		"pose",	 // Sensor pose
+		"map"};	 // Points map
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
 
@@ -309,7 +310,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 				(Gz >= area.second.first && Gz <= area.second.second))
 			{
 				*valid_it = false;
-				break;  // Go for next point
+				break;	// Go for next point
 			}
 		}  // for each area
 	}  // for each point
@@ -455,8 +456,8 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
 	CObservation::getDescriptionAsText(o);
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << sensorPose
-	  << endl;
+	o << sensorPose.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n"
+	  << sensorPose << "\n";
 
 	o << format(
 		"Samples direction: %s\n",

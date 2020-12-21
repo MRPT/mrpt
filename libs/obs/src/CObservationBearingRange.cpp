@@ -7,14 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"  // Precompiled headers
-
-#include <mrpt/math/matrix_serialization.h>  // for << ops
+#include <mrpt/math/matrix_serialization.h>	 // for << ops
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <set>
+
+#include "obs-precomp.h"  // Precompiled headers
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -168,8 +169,8 @@ void CObservationBearingRange::getDescriptionAsText(std::ostream& o) const
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
 	o << sensorLocationOnRobot.getHomogeneousMatrixVal<CMatrixDouble44>()
-	  << sensorLocationOnRobot << endl
-	  << endl;
+	  << "\n"
+	  << sensorLocationOnRobot << "\n\n";
 
 	o << "Do observations have individual covariance matrices? "
 	  << (validCovariances ? "YES" : "NO") << endl

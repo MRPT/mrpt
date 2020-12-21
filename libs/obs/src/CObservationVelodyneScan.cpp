@@ -7,15 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"  // Precompiled headers
-
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/core/round.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+
 #include <iostream>
+
+#include "obs-precomp.h"  // Precompiled headers
 
 using namespace std;
 using namespace mrpt::obs;
@@ -29,11 +30,11 @@ IMPLEMENTS_SERIALIZABLE(CObservationVelodyneScan, CObservation, mrpt::obs)
 static CSinCosLookUpTableFor2DScans velodyne_sincos_tables;
 
 const float VLP16_BLOCK_TDURATION = 110.592f;  // [us]
-const float VLP16_DSR_TOFFSET = 2.304f;  // [us]
-const float VLP16_FIRING_TOFFSET = 55.296f;  // [us]
+const float VLP16_DSR_TOFFSET = 2.304f;	 // [us]
+const float VLP16_FIRING_TOFFSET = 55.296f;	 // [us]
 
-const double HDR32_DSR_TOFFSET = 1.152;  // [us]
-const double HDR32_FIRING_TOFFSET = 46.08;  // [us]
+const double HDR32_DSR_TOFFSET = 1.152;	 // [us]
+const double HDR32_FIRING_TOFFSET = 46.08;	// [us]
 
 mrpt::system::TTimeStamp Velo::getOriginalReceivedTimeStamp() const
 {
@@ -57,7 +58,7 @@ void Velo::serializeTo(mrpt::serialization::CArchive& out) const
 				calibration.laser_corrections.size());
 	out << point_cloud.x << point_cloud.y << point_cloud.z
 		<< point_cloud.intensity;
-	out << has_satellite_timestamp;  // v1
+	out << has_satellite_timestamp;	 // v1
 	// v2:
 	out << point_cloud.timestamp << point_cloud.azimuth << point_cloud.laser_id
 		<< point_cloud.pointsForLaserID;
@@ -117,7 +118,7 @@ void Velo::getDescriptionAsText(std::ostream& o) const
 	o << "Homogeneous matrix for the sensor 3D pose, relative to robot base:\n";
 	o << sensorPose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
 	  << "\n"
-	  << sensorPose << endl;
+	  << sensorPose << "\n";
 	o << format("Sensor min/max range: %.02f / %.02f m\n", minRange, maxRange);
 	o << "Raw packet count: " << scan_packets.size() << "\n";
 }
@@ -303,7 +304,7 @@ static void velodyne_scan_to_pointcloud(
 								isolatedPointsFilterDistance_units)
 							pass_filter = false;
 					}
-					if (!pass_filter) continue;  // Filter out this point
+					if (!pass_filter) continue;	 // Filter out this point
 				}
 
 				// Azimuth correction: correct for the laser rotation as a
@@ -391,7 +392,7 @@ static void velodyne_scan_to_pointcloud(
 				// Compute raw position
 				const mrpt::math::TPoint3Df pt(
 					xy_distance * cos_azimuth +
-						horz_offset * sin_azimuth,  // MRPT +X = Velodyne +Y
+						horz_offset * sin_azimuth,	// MRPT +X = Velodyne +Y
 					-(xy_distance * sin_azimuth -
 					  horz_offset * cos_azimuth),  // MRPT +Y = Velodyne -X
 					distance * sin_vert_angle + vert_offset);
