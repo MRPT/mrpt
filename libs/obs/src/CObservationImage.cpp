@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"  // Precompiled headers
-
-#include <mrpt/math/ops_vectors.h>  // << of std::vector()
+#include <mrpt/math/ops_vectors.h>	// << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
 #include <iostream>
+
+#include "obs-precomp.h"  // Precompiled headers
 
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
@@ -103,7 +103,7 @@ IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationImage)
 mxArray* CObservationImage::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-	const char* fields[] = {"class", "ts",   "sensorLabel",
+	const char* fields[] = {"class", "ts",	 "sensorLabel",
 							"image", "pose", "params"};
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
@@ -132,8 +132,8 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << cameraPose
-	  << "\n";
+	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n"
+	  << cameraPose << "\n";
 
 	o << format(
 		"Focal length: %.03f mm\n", cameraParams.focalLengthMeters * 1000);

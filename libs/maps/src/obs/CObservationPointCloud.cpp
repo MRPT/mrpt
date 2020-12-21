@@ -45,7 +45,8 @@ void CObservationPointCloud::getDescriptionAsText(std::ostream& o) const
 	CObservation::getDescriptionAsText(o);
 	o << "Homogeneous matrix for the sensor pose wrt vehicle:\n";
 	o << sensorPose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>()
-	  << sensorPose << std::endl;
+	  << "\n"
+	  << sensorPose << "\n";
 
 	o << "Pointcloud class: ";
 	if (!this->pointcloud)

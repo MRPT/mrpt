@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"  // Precompiled headers
-
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <fstream>
+
+#include "obs-precomp.h"  // Precompiled headers
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -104,8 +105,8 @@ void CObservationStereoImagesFeatures::getDescriptionAsText(
 
 	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot "
 		 "base:\n";
-	o << cameraPoseOnRobot.getHomogeneousMatrixVal<CMatrixDouble44>()
-	  << cameraPoseOnRobot << endl;
+	o << cameraPoseOnRobot.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n"
+	  << cameraPoseOnRobot << "\n";
 
 	o << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT "
 		 "camera reference system:\n";
