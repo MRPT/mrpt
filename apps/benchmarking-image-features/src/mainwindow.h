@@ -215,8 +215,8 @@ class MainWindow : public QMainWindow
 	//! monocular single dataset
 	int tracking_image_counter;  //!< counter for moving forward in the dataset
 
-	Tracker tracker_obj;  //<! tracker oject which calls the tracking method to
-	// perform tracking
+	/** tracker oject which calls the tracking method to perform tracking */
+	::Tracker tracker_obj;
 
 	/// tracker parameter variables
 	QCheckBox* tracker_param1;  //! Checkbox for tracking parameter 1
