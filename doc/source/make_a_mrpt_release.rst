@@ -34,11 +34,9 @@ via AppVeyor CI.
 - Edit changelog
 - Build package:
 
-.. code-block: bash
+.. code-block:: bash
 
-   cd ~/mrpt_debian/
-   gpg --armor --detach-sign  mrpt_*.tar.xz
-   cd mrpt-*
+   cd ~/mrpt_debian/mrpt-*
    debuild -S -sa
    cd ..
    lintian *.changes
