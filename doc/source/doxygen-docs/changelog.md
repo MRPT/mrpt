@@ -5,6 +5,7 @@
   - (No changes yet)
 - BUG FIXES:
   - Fix bash syntax error in PPA release scripts.
+  - Fix [Debian bug #978209](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=978209): FTBFS: mainwindow.h:218:2: error: reference to Tracker is ambiguous
 
 ------
 # Version 2.1.6: Released Dec 14th, 2020
