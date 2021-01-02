@@ -16,34 +16,28 @@
 
 #include "place_recognition.h"
 
+using namespace mrpt::vision;
+using namespace std;
 using mrpt::system::CTicTac;
 
 /************************************************************************************************
  *								Place Recognition Constructor *
  ************************************************************************************************/
 PlaceRecognition::PlaceRecognition(
-	vector<string> training_paths, vector<string> testing_paths,
-	TDescriptorType desc_to_compute, int descriptor_selected, int numFeats)
+	std::vector<std::string> TrainingPaths,
+	std::vector<std::string> TestingPaths,
+	mrpt::vision::TDescriptorType DescToCompute, int DescriptorSelected,
+	int NumFeats)
+	: training_paths(TrainingPaths),
+	  testing_paths(TestingPaths),
+	  numFeats(NumFeats),
+	  desc_to_compute(DescToCompute),
+	  descriptor_selected(DescriptorSelected),
+	  len_training(training_paths.size()),
+	  len_testing(testing_paths.size())
 {
-	this->testing_paths = testing_paths;
-	this->training_paths = training_paths;
-	// this->fext = fext ;
-	this->desc_to_compute = desc_to_compute;
-	this->numFeats = numFeats;
-	this->descriptor_selected = descriptor_selected;
-
-	current_index_test_image = 0;
-	trained_flag = false;
-	training_file_written_flag = false;
-
-	len_training = training_paths.size();
-	len_testing = testing_paths.size();
-
-	correct = 0;
-	incorrect = 0;
-
-	feats_training = new CFeatureList[len_training];
-	feats_testing = new CFeatureList[len_testing];
+	feats_training = new mrpt::vision::CFeatureList[len_training];
+	feats_testing = new mrpt::vision::CFeatureList[len_testing];
 
 	training = new CImage[len_training];
 	testing = new CImage[len_testing];
@@ -53,7 +47,7 @@ PlaceRecognition::PlaceRecognition(
  *								Compute Labels function *
  ************************************************************************************************/
 void PlaceRecognition::computeLabels(
-	vector<string> file_paths, int counts[NUM_CLASSES],
+	std::vector<std::string> file_paths, int counts[NUM_CLASSES],
 	std::vector<int>& labels)
 {
 	// initialize all labels to zero.
@@ -95,7 +89,7 @@ void PlaceRecognition::computeLabels(
  *								Predict Label2 function *
  ************************************************************************************************/
 int PlaceRecognition::predictLabel2(
-	CFeatureList* feats_testingAll, vector<uint8_t>* training_words,
+	CFeatureList* feats_testingAll, std::vector<uint8_t>* training_words,
 	std::vector<int>& training_word_labels, int total_vocab_size,
 	int current_image)
 {
@@ -161,7 +155,7 @@ int PlaceRecognition::predictLabel2(
  *								Predict Label function *
  ************************************************************************************************/
 int PlaceRecognition::predictLabel(
-	CFeatureList* feats_testingAll, vector<float>* training_words,
+	CFeatureList* feats_testingAll, std::vector<float>* training_words,
 	std::vector<int>& training_word_labels, int total_vocab_size,
 	int current_image)
 {

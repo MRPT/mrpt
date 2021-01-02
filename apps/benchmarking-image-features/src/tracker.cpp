@@ -33,7 +33,7 @@ Tracker::Tracker()
 	DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
 
 	// "CFeatureTracker_KL" is by  far the most robust implementation for now:
-	tracker = CGenericFeatureTrackerAutoPtr(new CFeatureTracker_KL);
+	tracker = std::make_unique<mrpt::vision::CFeatureTracker_KL>();
 	// Dump feat_track_history to a file at the end
 	save_tracked_history = true;
 	curCamPoseId = 0;
@@ -43,9 +43,9 @@ Tracker::Tracker()
  *					    Track Them All tracker *
  ************************************************************************************************/
 cv::Mat Tracker::trackThemAll(
-	vector<string> files_fullpath_tracking, int tracking_image_counter,
-	int remove_lost_feats, int add_new_feats, int max_feats, int patch_size,
-	int window_width, int window_height)
+	std::vector<std::string> files_fullpath_tracking,
+	int tracking_image_counter, int remove_lost_feats, int add_new_feats,
+	int max_feats, int patch_size, int window_width, int window_height)
 {
 	tracker->enableTimeLogger(true);  // Do time profiling.
 
@@ -108,15 +108,14 @@ cv::Mat Tracker::trackThemAll(
 
 	for (size_t i = 0; i < trackedFeats.size(); ++i)
 	{
-		TKeyPoint& f = trackedFeats[i];
+		auto& f = trackedFeats[i];
 
 		const TPixelCoordf pxRaw(f.pt.x, f.pt.y);
 		TPixelCoordf pxUndist;
 		// mrpt::vision::pinhole::undistort_point(pxRaw,pxUndist, cameraParams);
 		pxUndist = pxRaw;
 
-		feat_track_history.push_back(
-			TFeatureObservation(f.ID, curCamPoseId, pxUndist));
+		feat_track_history.emplace_back(f.ID, curCamPoseId, pxUndist);
 	}
 	curCamPoseId++;
 
@@ -148,12 +147,12 @@ cv::Mat Tracker::trackThemAll(
 		// Update new feature coords:
 		tracker->getProfiler().enter("drawFeatureTracks");
 
-		std::set<TFeatureID> observed_IDs;
+		std::set<mrpt::vision::TFeatureID> observed_IDs;
 
 		// cout << "tracked feats size" << trackedFeats.size() << endl;
 		for (size_t i = 0; i < trackedFeats.size(); ++i)
 		{
-			const TKeyPoint& ft = trackedFeats[i];
+			const auto& ft = trackedFeats[i];
 			std::list<TPixelCoord>& seq = feat_tracks[ft.ID];
 
 			// drawMarker(cvImg1, Point(trackedFeats.getFeatureX(i),
