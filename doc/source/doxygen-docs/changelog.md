@@ -1,8 +1,6 @@
 \page changelog Change Log
 
-# Version 2.1.7: (Under development)
-- Changes in libraries:
-  - (No changes yet)
+# Version 2.1.7: Released Jan 2nd, 2021
 - BUG FIXES:
   - Fix bash syntax error in PPA release scripts.
   - Fix [Debian bug #978209](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=978209): FTBFS: mainwindow.h:218:2: error: reference to Tracker is ambiguous
