@@ -1,3 +1,10 @@
+mrpt (1:2.1.7-1) unstable; urgency=medium
+
+  * Fix FTBFS: reference to ‘Tracker’ is ambiguous (Closes: #978209).
+  * New version of upstream sources.
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Sat, 02 Jan 2021 06:46:41 +0100
+
 mrpt (1:2.1.6-1) unstable; urgency=medium
 
   * Drop dependencies on binutils-dev to avoid problems (see bug #976803).
