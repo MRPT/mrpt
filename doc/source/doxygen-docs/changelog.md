@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.1.8: (Under development)
+- (No changes yet)
+
+------
 # Version 2.1.7: Released Jan 2nd, 2021
 - BUG FIXES:
   - Fix bash syntax error in PPA release scripts.
