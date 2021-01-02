@@ -47,20 +47,14 @@
 #include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/vision/tracking.h>
 
-using namespace mrpt::vision;
-using namespace mrpt::math;
-using namespace mrpt::img;
-using namespace mrpt;
-using namespace cv;
-using namespace std;
-
 class Tracker
 {
    public:
 	bool hasResolution;
-	TCamera cameraParams;  // For now, will only hold the image resolution on
-	// the arrive of the first frame.
-	TKeyPointList trackedFeats;
+	// For now, will only hold the image resolution on the arrive of the first
+	// frame.
+	mrpt::img::TCamera cameraParams;
+	mrpt::vision::TKeyPointList trackedFeats;
 	unsigned int step_num;
 	bool SHOW_FEAT_IDS;
 	bool SHOW_RESPONSES;
@@ -69,13 +63,14 @@ class Tracker
 	const double MAX_FPS = 5000;  // 5.0;  // Hz (to slow down visualization).
 
 	// "CFeatureTracker_KL" is by  far the most robust implementation for now:
-	CGenericFeatureTrackerAutoPtr tracker;
-	CImage previous_image;
-	TSequenceFeatureObservations feat_track_history;
+	mrpt::vision::CGenericFeatureTrackerAutoPtr tracker;
+	mrpt::img::CImage previous_image;
+	mrpt::vision::TSequenceFeatureObservations feat_track_history;
 	bool save_tracked_history;  // Dump feat_track_history to a file at the end
-	TCameraPoseID curCamPoseId;
+	mrpt::vision::TCameraPoseID curCamPoseId;
 	static const size_t FEATS_TRACK_LEN = 10;
-	std::map<TFeatureID, std::list<TPixelCoord>> feat_tracks;
+	std::map<mrpt::vision::TFeatureID, std::list<mrpt::img::TPixelCoord>>
+		feat_tracks;
 
    public:
 	/**
@@ -103,7 +98,7 @@ class Tracker
 	 * @return
 	 */
 	cv::Mat trackThemAll(
-		vector<string> files_fullpath_tracking, int tracking_image_counter,
-		int remove_lost_feats, int add_new_feats, int max_feats, int patch_size,
-		int window_width, int window_height);
+		std::vector<std::string> files_fullpath_tracking,
+		int tracking_image_counter, int remove_lost_feats, int add_new_feats,
+		int max_feats, int patch_size, int window_width, int window_height);
 };
