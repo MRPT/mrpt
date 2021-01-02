@@ -50,7 +50,7 @@ By the way: You could also simultaneously grab any other set of sensors by addin
 
 Execute rawlog-grabber to actually record your dataset, invoking it with your config file as the only argument
 
-.. code-block: bash
+.. code-block:: bash
 
    rawlog-grabber <YOUR_CONFIG_FILE>
 
@@ -68,7 +68,7 @@ needing GBs of RAM, you can inspect the images with any other standard tool, etc
 
 To do so, execute this command:
 
-.. code-block: bash
+.. code-block:: bash
 
    rawlog-edit -i INPUT.rawlog -o OUTPUT.rawlog --externalize
 
