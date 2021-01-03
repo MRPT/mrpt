@@ -112,30 +112,24 @@ CArchive& operator>>(CArchive& in, T& obj)
 	obj.clear();
 	std::string pref, stored_K, stored_V;
 	in >> pref;
+	const auto kType = mrpt::typemeta::TTypeName<typename T::key_type>::get();
+	const auto mTp = mrpt::typemeta::TTypeName<typename T::mapped_type>::get();
 	if (pref != containerName<T>())
 		THROW_EXCEPTION(format(
 			"Error: serialized container %s<%s,%s>'s preamble is "
 			"wrong: '%s'",
-			containerName<T>().c_str(),
-			mrpt::typemeta::TTypeName<typename T::key_type>::get().c_str(),
-			mrpt::typemeta::TTypeName<typename T::mapped_type>::get().c_str(),
+			containerName<T>().c_str(), kType.c_str(), mTp.c_str(),
 			pref.c_str()));
 	in >> stored_K;
-	if (stored_K !=
-		std::string(
-			mrpt::typemeta::TTypeName<typename T::key_type>::get().c_str()))
+	if (stored_K != std::string(kType.c_str()))
 		THROW_EXCEPTION(format(
 			"Error: serialized container %s key type %s != %s",
-			containerName<T>().c_str(), stored_K.c_str(),
-			mrpt::typemeta::TTypeName<typename T::key_type>::get().c_str()));
+			containerName<T>().c_str(), stored_K.c_str(), kType.c_str()));
 	in >> stored_V;
-	if (stored_V !=
-		std::string(
-			mrpt::typemeta::TTypeName<typename T::mapped_type>::get().c_str()))
+	if (stored_V != std::string(mTp.c_str()))
 		THROW_EXCEPTION(format(
 			"Error: serialized container %s value type %s != %s",
-			containerName<T>().c_str(), stored_V.c_str(),
-			mrpt::typemeta::TTypeName<typename T::mapped_type>::get().c_str()));
+			containerName<T>().c_str(), stored_V.c_str(), mTp.c_str()));
 	const uint32_t n = in.ReadAs<uint32_t>();
 	for (uint32_t i = 0; i < n; i++)
 	{
@@ -157,10 +151,7 @@ CArchive& operator>>(CArchive& in, T& obj)
 	{                                                                          \
 		out << std::string(#CONTAINER) << mrpt::typemeta::TTypeName<K>::get(); \
 		out.WriteAs<uint32_t>(obj.size());                                     \
-		for (typename CONTAINER<K, _Pr, _Alloc>::const_iterator it =           \
-				 obj.begin();                                                  \
-			 it != obj.end(); ++it)                                            \
-			out << *it;                                                        \
+		for (const auto& e : obj) out << e;                                    \
 		return out;                                                            \
 	}                                                                          \
 	/** Template method to deserialize an associative STL container */         \
@@ -169,20 +160,18 @@ CArchive& operator>>(CArchive& in, T& obj)
 	{                                                                          \
 		obj.clear();                                                           \
 		std::string pref, stored_K;                                            \
+		const auto kType = mrpt::typemeta::TTypeName<K>::get();                \
 		in >> pref;                                                            \
 		if (pref != #CONTAINER)                                                \
-			THROW_EXCEPTION(format(                                            \
+			THROW_EXCEPTION_FMT(                                               \
 				"Error: serialized container %s<%s>'s preamble is wrong: "     \
 				"'%s'",                                                        \
-				#CONTAINER, mrpt::typemeta::TTypeName<K>::get().c_str(),       \
-				pref.c_str()));                                                \
+				#CONTAINER, kType.c_str(), pref.c_str());                      \
 		in >> stored_K;                                                        \
-		if (stored_K !=                                                        \
-			std::string(mrpt::typemeta::TTypeName<K>::get().c_str()))          \
-			THROW_EXCEPTION(format(                                            \
+		if (stored_K != std::string(kType.c_str()))                            \
+			THROW_EXCEPTION_FMT(                                               \
 				"Error: serialized container %s key type %s != %s",            \
-				#CONTAINER, stored_K.c_str(),                                  \
-				mrpt::typemeta::TTypeName<K>::get().c_str()));                 \
+				#CONTAINER, stored_K.c_str(), kType.c_str());                  \
 		const uint32_t n = in.ReadAs<uint32_t>();                              \
 		for (uint32_t i = 0; i < n; i++)                                       \
 		{                                                                      \
