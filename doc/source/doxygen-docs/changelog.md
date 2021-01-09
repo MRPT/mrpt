@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.1.8: (Under development)
-- (No changes yet)
+- Changes in libraries:
+  - \ref mrpt_math_grp
+    - New class mrpt::math::TBoundingBox
 
 ------
 # Version 2.1.7: Released Jan 2nd, 2021
