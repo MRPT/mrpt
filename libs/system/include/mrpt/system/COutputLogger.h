@@ -11,7 +11,7 @@
 
 #include <mrpt/core/Clock.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>	 // for console color constants
+#include <mrpt/system/os.h>  // for console color constants
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <array>
@@ -160,7 +160,7 @@ class COutputLogger
 	/** \brief Main method to add the specified message string to the logger.
 	 * \sa logCond, logFmt */
 	void logStr(const VerbosityLevel level, std::string_view msg_str)
-		const;	// renamed from log() to avoid conflict with math ::log()
+		const;  // renamed from log() to avoid conflict with math ::log()
 
 	/** \brief Alternative logging method, which mimics the printf behavior.
 	 *
@@ -178,7 +178,7 @@ class COutputLogger
 	 * \sa logStr, logCond
 	 */
 	void logFmt(const VerbosityLevel level, const char* fmt, ...) const
-		MRPT_printf_format_check(3, 4);	 // arg 1=this
+		MRPT_printf_format_check(3, 4);  // arg 1=this
 
 	/** \brief Log the given message only if the condition is satisfied.
 	 *

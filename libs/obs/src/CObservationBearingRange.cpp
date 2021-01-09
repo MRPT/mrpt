@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/matrix_serialization.h>	 // for << ops
+#include <mrpt/math/matrix_serialization.h>  // for << ops
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/serialization/CArchive.h>

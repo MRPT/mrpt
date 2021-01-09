@@ -375,7 +375,7 @@ class CDynamicGrid
 	double m_x_min{0}, m_x_max{0}, m_y_min{0}, m_y_max{0}, m_resolution{0};
 	size_t m_size_x{0}, m_size_y{0};
 
-};	// end of CDynamicGrid<>
+};  // end of CDynamicGrid<>
 
 }  // namespace containers
 }  // namespace mrpt

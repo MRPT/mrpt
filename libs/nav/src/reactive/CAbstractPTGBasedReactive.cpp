@@ -96,7 +96,7 @@ void CAbstractPTGBasedReactive::preDestructor()
 
 CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 {
-	this->preDestructor();	// ensure the robot is stopped; free dynamic objects
+	this->preDestructor();  // ensure the robot is stopped; free dynamic objects
 }
 
 /** \callergraph */
@@ -131,15 +131,15 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 				MRPT_LOG_DEBUG(
 					"[CAbstractPTGBasedReactive::enableLogFile] Stopping "
 					"logging.");
-				m_logFile.reset();	// Close file:
+				m_logFile.reset();  // Close file:
 			}
 			else
-				return;	 // Already disabled.
+				return;  // Already disabled.
 		}
 		else
 		{  // Enable
 			// -------------------------------
-			if (m_logFile) return;	// Already enabled:
+			if (m_logFile) return;  // Already enabled:
 
 			// Open file, find the first free file-name.
 			MRPT_LOG_DEBUG_FMT(
@@ -224,7 +224,7 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(
 				method.c_str());
 
 		m_holonomicMethod[i]->setAssociatedPTG(this->getPTG(i));
-		m_holonomicMethod[i]->initialize(ini);	// load params
+		m_holonomicMethod[i]->initialize(ini);  // load params
 	}
 }
 
@@ -254,7 +254,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	// which PTGs are we using:
 	{
 		if (m_logFile &&
-			m_logFile.get() != m_prev_logfile)	// Only the first time
+			m_logFile.get() != m_prev_logfile)  // Only the first time
 		{
 			m_prev_logfile = m_logFile.get();
 			for (size_t i = 0; i < nPTGs; i++)
@@ -310,7 +310,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				targets.push_back(m_navigationParams->target);
 			}
 		}
-		const size_t nTargets = targets.size();	 // Normally = 1, will be >1 if
+		const size_t nTargets = targets.size();  // Normally = 1, will be >1 if
 		// we want the robot local
 		// planner to be "smarter" in
 		// skipping dynamic obstacles.
@@ -343,13 +343,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				STEP8_GenerateLogRecord(
 					newLogRec,
 					std::vector<mrpt::math::TPose2D>() /*no targets*/,
-					-1,	 // best_ptg_idx,
+					-1,  // best_ptg_idx,
 					m_robot.getEmergencyStopCmd(), nPTGs,
-					false,	// best_is_NOP_cmdvel,
+					false,  // best_is_NOP_cmdvel,
 					rel_cur_pose_wrt_last_vel_cmd_NOP.asTPose(),
 					rel_pose_PTG_origin_wrt_sense_NOP.asTPose(),
-					0,	// executionTimeValue,
-					0,	// tim_changeSpeed,
+					0,  // executionTimeValue,
+					0,  // tim_changeSpeed,
 					tim_start_iteration);
 			}
 			return;
@@ -475,7 +475,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 				t.target_coords = robot_frame2map_frame + t.target_coords;
 				t.target_frame_id =
-					m_curPoseVel.pose_frame_id;	 // Now the coordinates are in
+					m_curPoseVel.pose_frame_id;  // Now the coordinates are in
 				// the same frame than robot
 				// pose
 			}
@@ -484,8 +484,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		std::vector<TPose2D> relTargets;
 		const auto curPoseExtrapol = (m_curPoseVel.pose + relPoseVelCmd);
 		std::transform(
-			targets.begin(), targets.end(),	 // in
-			std::back_inserter(relTargets),	 // out
+			targets.begin(), targets.end(),  // in
+			std::back_inserter(relTargets),  // out
 			[curPoseExtrapol](const CAbstractNavigator::TargetInfo& e) {
 				return e.target_coords - curPoseExtrapol;
 			});
@@ -515,10 +515,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				getPTG(i)->updateNavDynamicState(ptg_dynState);
 		}
 
-		m_infoPerPTG.assign(nPTGs + 1, TInfoPerPTG());	// reset contents
+		m_infoPerPTG.assign(nPTGs + 1, TInfoPerPTG());  // reset contents
 		m_infoPerPTG_timestamp = tim_start_iteration;
 		vector<TCandidateMovementPTG> candidate_movs(
-			nPTGs + 1);	 // the last extra one is for the evaluation of "NOP
+			nPTGs + 1);  // the last extra one is for the evaluation of "NOP
 		// motion command" choice.
 
 		for (size_t indexPTG = 0; indexPTG < nPTGs; indexPTG++)
@@ -664,7 +664,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 				std::vector<TPose2D> relTargets_NOPs;
 				std::transform(
-					targets.begin(), targets.end(),	 // in
+					targets.begin(), targets.end(),  // in
 					std::back_inserter(relTargets_NOPs),  // out
 					[robot_pose_at_send_cmd](
 						const CAbstractNavigator::TargetInfo& e) {
@@ -710,7 +710,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			{
 				// Can't interpolate pose, hence can't evaluate NOP:
 				candidate_movs[nPTGs].speed =
-					-0.01;	// <0 means inviable movement
+					-0.01;  // <0 means inviable movement
 			}
 		}  // end can_do_NOP_motion
 
@@ -770,8 +770,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						m_robot.getEmergencyStopCmd(), nPTGs,
 						best_is_NOP_cmdvel, rel_cur_pose_wrt_last_vel_cmd_NOP,
 						rel_pose_PTG_origin_wrt_sense_NOP,
-						0,	// executionTimeValue,
-						0,	// tim_changeSpeed,
+						0,  // executionTimeValue,
+						0,  // tim_changeSpeed,
 						tim_start_iteration);
 				}
 				return;
@@ -832,8 +832,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 								new_vel_cmd, nPTGs, best_is_NOP_cmdvel,
 								rel_cur_pose_wrt_last_vel_cmd_NOP,
 								rel_pose_PTG_origin_wrt_sense_NOP,
-								0,	// executionTimeValue,
-								0,	// tim_changeSpeed,
+								0,  // executionTimeValue,
+								0,  // tim_changeSpeed,
 								tim_start_iteration);
 						}
 						return;
@@ -1002,7 +1002,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(
 	// Set as last log record
 	{
 		auto lck = mrpt::lockHelper(m_critZoneLastLog);
-		lastLogRecord = newLogRec;	// COPY
+		lastLogRecord = newLogRec;  // COPY
 	}
 }
 
@@ -1075,7 +1075,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	if (m_navigationParams &&
 		m_navigationParams->target.targetDesiredRelSpeed < 1.0 &&
 		!m_holonomicMethod.empty() && getHoloMethod(0) != nullptr &&
-		!cm.PTG->supportSpeedAtTarget()	 // If the PTG is able to handle the
+		!cm.PTG->supportSpeedAtTarget()  // If the PTG is able to handle the
 		// slow-down on its own, dont change
 		// speed here
 	)
@@ -1107,7 +1107,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["target_d_norm"] = target_d_norm;
 	cm.props["move_k"] = move_k;
 	double& move_cur_d = cm.props["move_cur_d"] =
-		0;	// current robot path normalized distance over path (0 unless in a
+		0;  // current robot path normalized distance over path (0 unless in a
 	// NOP cmd)
 	cm.props["is_PTG_cont"] = this_is_PTG_continuation ? 1 : 0;
 	cm.props["num_paths"] = in_TPObstacles.size();
@@ -1257,7 +1257,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 					 (target_d_norm - cur_norm_d) * ref_dist > 2.0 /*meters*/))
 				{
 					cm.speed =
-						-0.01;	// this enforces a 0 global evaluation score
+						-0.01;  // this enforces a 0 global evaluation score
 					newLogRec.additional_debug_msgs["PTG_eval"] =
 						"PTG-continuation not allowed, mismatchDistance above "
 						"threshold.";
@@ -1312,7 +1312,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		for (int i = 0; i < num_steps; i++)
 		{
 			pathDists[i / double(num_steps)] =
-				100.0;	// default normalized distance to target (a huge value)
+				100.0;  // default normalized distance to target (a huge value)
 		}
 
 		cm.PTG->evalClearanceSingleObstacle(
@@ -1660,10 +1660,10 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			CAbstractHolonomicReactiveMethod::NavInput ni;
 			ni.clearance = &ipf.clearance;
 			ni.maxObstacleDist = 1.0;
-			ni.maxRobotSpeed = 1.0;	 // So, we use a normalized max speed here.
+			ni.maxRobotSpeed = 1.0;  // So, we use a normalized max speed here.
 			ni.obstacles = ipf.TP_Obstacles;  // Normalized [0,1]
 
-			ni.targets.clear();	 // Normalized [0,1]
+			ni.targets.clear();  // Normalized [0,1]
 			for (const auto& t : ipf.targets)
 			{
 				ni.targets.push_back(t.TP_Target);
@@ -1705,7 +1705,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			{
 				if (obsFreeNormalizedDistance <=
 					params_abstract_ptg_navigator.secure_distance_start)
-					velScale = 0.0;	 // security stop
+					velScale = 0.0;  // security stop
 				else
 					velScale =
 						(obsFreeNormalizedDistance -
@@ -1728,7 +1728,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			// "NOP cmdvel" case: don't need to re-run holo algorithm, just keep
 			// the last selection:
 			cm.direction = ptg->index2alpha(m_lastSentVelCmd.ptg_alpha_index);
-			cm.speed = 1.0;	 // Not used.
+			cm.speed = 1.0;  // Not used.
 		}
 
 		// STEP5: Evaluate each movement to assign them a "evaluation" value.
@@ -1930,7 +1930,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(
 	// Holo method:
 	this->setHolonomicMethod(params_abstract_ptg_navigator.holonomic_method, c);
 	ASSERT_(!m_holonomicMethod.empty());
-	CWaypointsNavigator::loadConfigFile(c);	 // Load parent params
+	CWaypointsNavigator::loadConfigFile(c);  // Load parent params
 
 	m_init_done =
 		true;  // If we reached this point without an exception, all is good.

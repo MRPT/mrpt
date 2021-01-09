@@ -42,19 +42,18 @@ using TTimeStamp = mrpt::Clock::time_point;
 /** Represents an invalid timestamp, where applicable. */
 #define INVALID_TIMESTAMP mrpt::Clock::time_point()
 
-/** The parts of a date/time (it's like the standard 'tm' but with fractions of
- * seconds).
- * \sa TTimeStamp, timestampToParts, buildTimestampFromParts
+/** The parts of a date/time, like the standard `tm` but with fractional
+ * (`double`) seconds. \sa TTimeStamp, timestampToParts, buildTimestampFromParts
  */
 struct TTimeParts
 {
-	uint16_t year{0}; /** The year */
-	uint8_t month{0}; /** Month (1-12) */
-	uint8_t day{0}; /** Day (1-31) */
-	uint8_t hour{0}; /** Hour (0-23) */
-	uint8_t minute{0}; /** Minute (0-59) */
-	double second{0}; /** Seconds (0.0000-59.9999) */
-	uint8_t day_of_week{0}; /** Day of week (1:Sunday, 7:Saturday) */
+	uint16_t year{0};  //!< The year (e.g. 2021)
+	uint8_t month{0};  //!< Month (1-12)
+	uint8_t day{0};  //!<  Day (1-31)
+	uint8_t hour{0};  //!<  Hour (0-23)
+	uint8_t minute{0};  //!<  Minute (0-59)
+	double second{0};  //!<  Seconds (0.0000-59.9999)
+	uint8_t day_of_week{0};  //!< Day of week (1:Sunday, 7:Saturday)
 	int daylight_saving{0};
 };
 

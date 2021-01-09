@@ -9,7 +9,7 @@
 
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/config/CConfigFileMemory.h>
-#include <mrpt/core/bits_mem.h>	 // vector_strong_clear
+#include <mrpt/core/bits_mem.h>  // vector_strong_clear
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
@@ -323,7 +323,7 @@ void CObservation3DRangeScan::serializeTo(
 	}
 
 	out << hasRangeImage;
-	out << rangeUnits;	// new in v9
+	out << rangeUnits;  // new in v9
 	if (hasRangeImage)
 	{
 		out.WriteAs<uint32_t>(rangeImage.rows());
@@ -413,7 +413,7 @@ void CObservation3DRangeScan::serializeFrom(
 
 					if (version == 0)
 					{
-						vector<char> validRange(N);	 // for v0.
+						vector<char> validRange(N);  // for v0.
 						in.ReadBuffer(
 							&validRange[0], sizeof(validRange[0]) * N);
 					}
@@ -435,7 +435,7 @@ void CObservation3DRangeScan::serializeFrom(
 				if (version >= 9)
 					in >> rangeUnits;
 				else
-					rangeUnits = 1e-3f;	 // default units
+					rangeUnits = 1e-3f;  // default units
 
 				if (hasRangeImage)
 				{
@@ -912,7 +912,7 @@ static void cost_func(
 	const size_t nC = obs.rangeImage.cols();
 	const size_t nR = obs.rangeImage.rows();
 
-	err = CVectorDouble();	// .resize( nC*nR/square(CALIB_DECIMAT) );
+	err = CVectorDouble();  // .resize( nC*nR/square(CALIB_DECIMAT) );
 
 	for (size_t r = 0; r < nR; r += CALIB_DECIMAT)
 	{

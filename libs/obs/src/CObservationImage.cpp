@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/ops_vectors.h>	// << of std::vector()
+#include <mrpt/math/ops_vectors.h>  // << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -103,7 +103,7 @@ IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationImage)
 mxArray* CObservationImage::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-	const char* fields[] = {"class", "ts",	 "sensorLabel",
+	const char* fields[] = {"class", "ts",   "sensorLabel",
 							"image", "pose", "params"};
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));

@@ -24,7 +24,7 @@
 //
 #include <DbgHelp.h>
 #else
-#include <dlfcn.h>	// dladdr()
+#include <dlfcn.h>  // dladdr()
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <stdio.h>
@@ -350,7 +350,7 @@ void mrpt::callStackBackTrace(
 	// Auto initialize Sym system on first call, auto free at program end.
 	auto& sym = WindowsSymResources::Instance();
 	if (!sym.initialized())
-		return;	 // error already dumped to std::cerr inside the ctor
+		return;  // error already dumped to std::cerr inside the ctor
 
 	char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
 	PSYMBOL_INFO pSymbol = (PSYMBOL_INFO)buffer;
