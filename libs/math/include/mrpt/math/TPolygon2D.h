@@ -17,6 +17,7 @@ namespace mrpt::math
 /**
  * 2D polygon, inheriting from std::vector<TPoint2D>.
  * \sa TPolygon3D,TSegment2D,TLine2D,TPoint2D, CPolygon
+ * \ingroup geometry_grp
  */
 class TPolygon2D : public std::vector<TPoint2D>
 {

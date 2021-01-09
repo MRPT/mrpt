@@ -15,6 +15,7 @@ namespace mrpt::math
 {
 /** 2D twist: 2D velocity vector (vx,vy) + planar angular velocity (omega)
  * \sa mrpt::math::TTwist3D, mrpt::math::TPose2D
+ * \ingroup geometry_grp
  */
 struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 {

@@ -13,6 +13,9 @@
 
 namespace mrpt::math
 {
+/** \addtogroup  geometry_grp
+ * @{ */
+
 /** 2D line without bounds, represented by its equation \f$Ax+By+C=0\f$.
  * \sa TLine3D,TSegment2D,TPolygon2D,TPoint2D
  */
@@ -116,6 +119,8 @@ mrpt::serialization::CArchive& operator<<(
 
 /** Text streaming function */
 std::ostream& operator<<(std::ostream& o, const TLine2D& p);
+
+/** @} */
 
 }  // namespace mrpt::math
 

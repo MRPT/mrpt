@@ -16,6 +16,9 @@
 
 namespace mrpt::math
 {
+/** \addtogroup  geometry_grp
+ * @{ */
+
 // Ensure 1-byte memory alignment, no additional stride bytes.
 #pragma pack(push, 1)
 
@@ -381,6 +384,8 @@ constexpr bool operator!=(const TPoint3D_<T>& p1, const TPoint3D_<T>& p2)
 {
 	return (p1.x != p2.x) || (p1.y != p2.y) || (p1.z != p2.z);  //-V550
 }
+
+/** @} */
 
 }  // namespace mrpt::math
 

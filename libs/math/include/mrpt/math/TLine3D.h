@@ -13,6 +13,9 @@
 
 namespace mrpt::math
 {
+/** \addtogroup  geometry_grp
+ * @{ */
+
 /** 3D line, represented by a base point and a director vector.
  * \sa TLine2D,TSegment3D,TPlane,TPolygon3D,TPoint3D
  */
@@ -94,6 +97,8 @@ mrpt::serialization::CArchive& operator<<(
 
 /** Text streaming function */
 std::ostream& operator<<(std::ostream& o, const TLine3D& p);
+
+/** @} */
 
 }  // namespace mrpt::math
 

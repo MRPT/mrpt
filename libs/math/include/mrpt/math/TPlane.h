@@ -16,6 +16,9 @@
 
 namespace mrpt::math
 {
+/** \addtogroup  geometry_grp
+ * @{ */
+
 /**
  * 3D Plane, represented by its equation \f$Ax+By+Cz+D=0\f$
  * \sa TSegment3D,TLine3D,TPolygon3D,TPoint3D
@@ -141,6 +144,8 @@ mrpt::serialization::CArchive& operator<<(
 
 /** Text streaming function */
 std::ostream& operator<<(std::ostream& o, const TPlane& p);
+
+/** @} */
 
 }  // namespace mrpt::math
 

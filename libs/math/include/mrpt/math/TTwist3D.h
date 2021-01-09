@@ -14,6 +14,7 @@ namespace mrpt::math
 {
 /** 3D twist: 3D velocity vector (vx,vy,vz) + angular velocity (wx,wy,wz)
  * \sa mrpt::math::TTwist2D, mrpt::math::TPose3D
+ * \ingroup geometry_grp
  */
 struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 {

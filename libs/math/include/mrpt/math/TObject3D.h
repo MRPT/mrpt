@@ -17,6 +17,9 @@
 
 namespace mrpt::math
 {
+/** \addtogroup  geometry_grp
+ * @{ */
+
 /**
  * Standard object for storing any 3D lightweight object. Do not inherit from
  * this class.
@@ -337,6 +340,8 @@ mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TObject3D& o);
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TObject3D& o);
+
+/** @} */
 
 }  // namespace mrpt::math
 

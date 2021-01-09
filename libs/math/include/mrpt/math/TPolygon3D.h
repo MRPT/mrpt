@@ -16,6 +16,7 @@ namespace mrpt::math
 {
 /** 3D polygon, inheriting from std::vector<TPoint3D>
  * \sa TPolygon2D,TSegment3D,TLine3D,TPlane,TPoint3D
+ * \ingroup geometry_grp
  */
 class TPolygon3D : public std::vector<TPoint3D>
 {
