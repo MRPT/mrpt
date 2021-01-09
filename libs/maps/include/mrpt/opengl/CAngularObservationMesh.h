@@ -292,9 +292,7 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 		}
 	};
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	auto getBoundingBox() const -> mrpt::math::TBoundingBox override;
 
    protected:
 	/** Updates the mesh, if needed. It's a const method, but modifies mutable
