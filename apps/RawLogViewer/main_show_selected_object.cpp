@@ -325,10 +325,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		else
 		{
 			gl_pnts->loadFromPointsMap(pointMap.get());
-			mrpt::math::TPoint3D bbmin, bbmax;
-			gl_pnts->getBoundingBox(bbmin, bbmax);
+			const auto bb = gl_pnts->getBoundingBox();
 			gl_pnts->recolorizeByCoordinate(
-				bbmax.x, bbmin.x, 0 /*color by x*/, mrpt::img::cmJET);
+				bb.max.x, bb.min.x, 0 /*color by x*/, mrpt::img::cmJET);
 		}
 
 		// No need to further transform 3D points

@@ -453,10 +453,9 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			else
 			{
 				gl_obj->loadFromPointsMap(pointMap.get());
-				mrpt::math::TPoint3D bbmin, bbmax;
-				gl_obj->getBoundingBox(bbmin, bbmax);
+				const auto bb = gl_obj->getBoundingBox();
 				gl_obj->recolorizeByCoordinate(
-					bbmax.x, bbmin.x, 0 /*color by x*/, mrpt::img::cmJET);
+					bb.max.x, bb.min.x, 0 /*color by x*/, mrpt::img::cmJET);
 			}
 
 			// Add to list:

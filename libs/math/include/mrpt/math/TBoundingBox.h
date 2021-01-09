@@ -25,23 +25,41 @@ namespace mrpt::math
 template <typename T>
 struct TBoundingBox_
 {
+	enum class CTOR_FLAGS
+	{
+		None = 0,
+		AllowUnordered
+	};
+
 	TBoundingBox_() = default;
 
 	/** Ctor from min-max corners.
 	 * A bounding box may have a zero volume if max==min.
 	 * It is ilegal for a coordinate of the `max` vector to be smaller than its
-	 * `min` counterpart, in which case an exception will be thrown.
+	 * `min` counterpart, in which case an exception will be thrown, except if
+	 * the flag CTOR_FLAGS::AllowUnordered is passed.
 	 */
 	TBoundingBox_(
 		const mrpt::math::TPoint3D_<T>& Min,
-		const mrpt::math::TPoint3D_<T>& Max)
+		const mrpt::math::TPoint3D_<T>& Max,
+		const CTOR_FLAGS f = CTOR_FLAGS::None)
 		: min(Min), max(Max)
 	{
-		ASSERT_(max.x >= min.x && max.y >= min.y && max.z >= min.z);
+		if (f != CTOR_FLAGS::AllowUnordered)
+			ASSERT_(max.x >= min.x && max.y >= min.y && max.z >= min.z);
 	}
 
 	/** The corners of the bounding box */
 	mrpt::math::TPoint3D_<T> min, max;
+
+	/** Initialize with min=+Infinity, max=-Infinity. This is useful as an
+	 * initial value before processing a list of points to keep their
+	 * minimum/maximum. */
+	static TBoundingBox_<T> PlusMinusInfinity()
+	{
+		const T i = std::numeric_limits<T>::max();
+		return {{i, i, i}, {-i, -i, -i}, CTOR_FLAGS::AllowUnordered};
+	}
 
 	/** Returns the volume of the box */
 	T volume() const
@@ -74,6 +92,18 @@ struct TBoundingBox_
 			 std::min(min.z, b.min.z)},
 			{std::max(max.x, b.max.x), std::max(max.y, b.max.y),
 			 std::max(max.z, b.max.z)})};
+	}
+
+	/** Expands the box limits to include the given point */
+	void updateWithPoint(const mrpt::math::TPoint3D_<T>& p)
+	{
+		mrpt::keep_min(min.x, p.x);
+		mrpt::keep_min(min.y, p.y);
+		mrpt::keep_min(min.z, p.z);
+
+		mrpt::keep_max(max.x, p.x);
+		mrpt::keep_max(max.y, p.y);
+		mrpt::keep_max(max.z, p.z);
 	}
 
 	/** Returns a new bounding box, transforming `this` from local coordinates
