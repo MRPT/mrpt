@@ -2087,22 +2087,22 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 			return;
 		}
 
-		mrpt::math::TPoint3D bb_min, bb_max;
+		mrpt::math::TBoundingBox bb;
 		{
 			wxBusyCursor busy;
 			if (gl_points_col)
 			{
 				gl_points_col->loadFromPointsMap(&pts_map);
-				gl_points_col->getBoundingBox(bb_min, bb_max);
+				bb = gl_points_col->getBoundingBox();
 			}
 			else
 			{
 				gl_points->loadFromPointsMap(&pts_map);
-				gl_points->getBoundingBox(bb_min, bb_max);
+				bb = gl_points->getBoundingBox();
 			}
 		}
 
-		const double scene_size = bb_min.distanceTo(bb_max);
+		const double scene_size = bb.min.distanceTo(bb.max);
 
 		// Set the point cloud as the only object in scene:
 		auto scene = std::make_shared<opengl::COpenGLScene>();
@@ -2112,7 +2112,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		{
 			mrpt::opengl::CGridPlaneXY::Ptr obj =
 				mrpt::opengl::CGridPlaneXY::Create(
-					bb_min.x, bb_max.x, bb_min.y, bb_max.y, 0,
+					bb.min.x, bb.max.x, bb.min.y, bb.max.y, 0,
 					scene_size * 0.02);
 			obj->setColor(0.3f, 0.3f, 0.3f);
 			scene->insert(obj);
@@ -2159,8 +2159,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		if (gl_points_col) scene->insert(gl_points_col);
 
 		m_canvas->setCameraPointing(
-			(bb_min.x + bb_max.x) * 0.5, (bb_min.y + bb_max.y) * 0.5,
-			(bb_min.z + bb_max.z) * 0.5);
+			(bb.min.x + bb.max.x) * 0.5, (bb.min.y + bb.max.y) * 0.5,
+			(bb.min.z + bb.max.z) * 0.5);
 
 		m_canvas->setZoomDistance(2 * scene_size);
 		m_canvas->setAzimuthDegrees(45);
