@@ -48,8 +48,10 @@ static size_t findClosingBracket(
 }
 
 /** Recursive implementation for mrpt::exception_to_str() */
-void impl_excep_to_str(const std::exception& e, std::string& ret, int lvl = 0)
+void impl_excep_to_str(
+	const std::exception& e, std::string& ret, [[maybe_unused]] int lvl = 0)
 {
+#if defined(MRPT_EXCEPTIONS_WITH_CALL_STACK)
 	using namespace std::string_literals;
 	try
 	{
@@ -88,6 +90,10 @@ void impl_excep_to_str(const std::exception& e, std::string& ret, int lvl = 0)
 		// It's nested: recursive call
 		impl_excep_to_str(er, ret, lvl + 1);
 	}
+#else
+	// Basic version:
+	ret = e.what();
+#endif
 }
 }  // namespace mrpt::internal
 

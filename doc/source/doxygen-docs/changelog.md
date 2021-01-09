@@ -2,6 +2,8 @@
 
 # Version 2.1.8: (Under development)
 - Changes in libraries:
+  - \ref mrpt_core_grp
+    - New CMake build flag `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions.
   - \ref mrpt_math_grp
     - New class mrpt::math::TBoundingBox
 
