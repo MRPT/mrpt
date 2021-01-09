@@ -303,14 +303,7 @@ void CPointsMap::determineMatching2D(
 	size_t nOtherMapPointsWithCorrespondence =
 		0;  // Number of points with one corrs. at least
 
-	float local_x_min = std::numeric_limits<float>::max(),
-		  local_x_max = -std::numeric_limits<float>::max();
-	float global_x_min = std::numeric_limits<float>::max(),
-		  global_x_max = -std::numeric_limits<float>::max();
-	float local_y_min = std::numeric_limits<float>::max(),
-		  local_y_max = -std::numeric_limits<float>::max();
-	float global_y_min = std::numeric_limits<float>::max(),
-		  global_y_max = -std::numeric_limits<float>::max();
+	auto bbLocal = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	double maxDistForCorrespondenceSquared;
 	float x_local, y_local;
@@ -384,16 +377,16 @@ void CPointsMap::determineMatching2D(
 	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float temp_nums[4];
 
 	_mm_store_ps(temp_nums, x_mins);
-	local_x_min =
+	bbLocal.min.x =
 		min(min(temp_nums[0], temp_nums[1]), min(temp_nums[2], temp_nums[3]));
 	_mm_store_ps(temp_nums, y_mins);
-	local_y_min =
+	bbLocal.min.y =
 		min(min(temp_nums[0], temp_nums[1]), min(temp_nums[2], temp_nums[3]));
 	_mm_store_ps(temp_nums, x_maxs);
-	local_x_max =
+	bbLocal.max.x =
 		max(max(temp_nums[0], temp_nums[1]), max(temp_nums[2], temp_nums[3]));
 	_mm_store_ps(temp_nums, y_maxs);
-	local_y_max =
+	bbLocal.max.y =
 		max(max(temp_nums[0], temp_nums[1]), max(temp_nums[2], temp_nums[3]));
 
 	// transform extra pts & update BBox
@@ -404,11 +397,11 @@ void CPointsMap::determineMatching2D(
 		float out_x = otherMapPose.x + cos_phi * x - sin_phi * y;
 		float out_y = otherMapPose.y + sin_phi * x + cos_phi * y;
 
-		local_x_min = std::min(local_x_min, out_x);
-		local_x_max = std::max(local_x_max, out_x);
+		bbLocal.min.x = std::min(bbLocal.min.x, out_x);
+		bbLocal.max.x = std::max(bbLocal.max.x, out_x);
 
-		local_y_min = std::min(local_y_min, out_y);
-		local_y_max = std::max(local_y_max, out_y);
+		bbLocal.min.y = std::min(bbLocal.min.y, out_y);
+		bbLocal.max.y = std::max(bbLocal.max.y, out_y);
 
 		ptr_out_x[k] = out_x;
 		ptr_out_y[k] = out_y;
@@ -426,22 +419,19 @@ void CPointsMap::determineMatching2D(
 	Eigen::Array<float, Eigen::Dynamic, 1> y_locals =
 		otherMapPose.y + sin_phi * x_org.array() + cos_phi * y_org.array();
 
-	local_x_min = x_locals.minCoeff();
-	local_y_min = y_locals.minCoeff();
-	local_x_max = x_locals.maxCoeff();
-	local_y_max = y_locals.maxCoeff();
+	bbLocal.min.x = x_locals.minCoeff();
+	bbLocal.min.y = y_locals.minCoeff();
+	bbLocal.max.x = x_locals.maxCoeff();
+	bbLocal.max.y = y_locals.maxCoeff();
 #endif
 
 	// Find the bounding box:
-	float global_z_min, global_z_max;
-	this->boundingBox(
-		global_x_min, global_x_max, global_y_min, global_y_max, global_z_min,
-		global_z_max);
+	const auto bbGlobal = this->boundingBox();
 
 	// Only try doing a matching if there exist any chance of both maps
 	// touching/overlaping:
-	if (local_x_min > global_x_max || local_x_max < global_x_min ||
-		local_y_min > global_y_max || local_y_max < global_y_min)
+	if (bbLocal.min.x > bbGlobal.max.x || bbLocal.max.x < bbGlobal.min.x ||
+		bbLocal.min.y > bbGlobal.max.y || bbLocal.max.y < bbGlobal.min.y)
 		return;  // We know for sure there is no matching at all
 
 	// Loop for each point in local map:
@@ -788,10 +778,11 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		auto obj = opengl::CPointCloudColoured::Create();
 		obj->loadFromPointsMap(this);
 		obj->setPointSize(renderOptions.point_size);
-		mrpt::math::TPoint3D pMin, pMax;
-		this->boundingBox(pMin, pMax);
+
+		const auto bb = this->boundingBox();
+
 		obj->recolorizeByCoordinate(
-			pMin.z, pMax.z, 2 /*z*/, renderOptions.colormap);
+			bb.min.z, bb.max.z, 2 /*z*/, renderOptions.colormap);
 		outObj->insert(obj);
 	}
 	MRPT_END
@@ -913,12 +904,7 @@ float CPointsMap::squareDistanceToClosestCorrespondence(
 #endif
 }
 
-/*---------------------------------------------------------------
-				boundingBox
----------------------------------------------------------------*/
-void CPointsMap::boundingBox(
-	float& min_x, float& max_x, float& min_y, float& max_y, float& min_z,
-	float& max_z) const
+mrpt::math::TBoundingBoxf CPointsMap::boundingBox() const
 {
 	MRPT_START
 
@@ -928,8 +914,8 @@ void CPointsMap::boundingBox(
 	{
 		if (!nPoints)
 		{
-			m_bb_min_x = m_bb_max_x = m_bb_min_y = m_bb_max_y = m_bb_min_z =
-				m_bb_max_z = 0;
+			m_boundingBox.min = {0, 0, 0};
+			m_boundingBox.max = {0, 0, 0};
 		}
 		else
 		{
@@ -969,71 +955,58 @@ void CPointsMap::boundingBox(
 			alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float temp_nums[4];
 
 			_mm_store_ps(temp_nums, x_mins);
-			m_bb_min_x =
+			m_boundingBox.min.x =
 				min(min(temp_nums[0], temp_nums[1]),
 					min(temp_nums[2], temp_nums[3]));
 			_mm_store_ps(temp_nums, y_mins);
-			m_bb_min_y =
+			m_boundingBox.min.y =
 				min(min(temp_nums[0], temp_nums[1]),
 					min(temp_nums[2], temp_nums[3]));
 			_mm_store_ps(temp_nums, z_mins);
-			m_bb_min_z =
+			m_boundingBox.min.z =
 				min(min(temp_nums[0], temp_nums[1]),
 					min(temp_nums[2], temp_nums[3]));
 			_mm_store_ps(temp_nums, x_maxs);
-			m_bb_max_x =
+			m_boundingBox.max.x =
 				max(max(temp_nums[0], temp_nums[1]),
 					max(temp_nums[2], temp_nums[3]));
 			_mm_store_ps(temp_nums, y_maxs);
-			m_bb_max_y =
+			m_boundingBox.max.y =
 				max(max(temp_nums[0], temp_nums[1]),
 					max(temp_nums[2], temp_nums[3]));
 			_mm_store_ps(temp_nums, z_maxs);
-			m_bb_max_z =
+			m_boundingBox.max.z =
 				max(max(temp_nums[0], temp_nums[1]),
 					max(temp_nums[2], temp_nums[3]));
 
 			// extra
 			for (size_t k = 0; k < nPoints % 4; k++)
-			{
-				m_bb_min_x = std::min(m_bb_min_x, ptr_in_x[k]);
-				m_bb_max_x = std::max(m_bb_max_x, ptr_in_x[k]);
-
-				m_bb_min_y = std::min(m_bb_min_y, ptr_in_y[k]);
-				m_bb_max_y = std::max(m_bb_max_y, ptr_in_y[k]);
-
-				m_bb_min_z = std::min(m_bb_min_z, ptr_in_z[k]);
-				m_bb_max_z = std::max(m_bb_max_z, ptr_in_z[k]);
-			}
+				m_boundingBox.updateWithPoint(
+					{ptr_in_x[k], ptr_in_y[k], ptr_in_z[k]});
 #else
 			// Non vectorized version:
-			m_bb_min_x = m_bb_min_y = m_bb_min_z =
+			m_boundingBox.min.x = m_boundingBox.min.y = m_boundingBox.min.z =
 				(std::numeric_limits<float>::max)();
 
-			m_bb_max_x = m_bb_max_y = m_bb_max_z =
+			m_boundingBox.max.x = m_boundingBox.max.y = m_boundingBox.max.z =
 				-(std::numeric_limits<float>::max)();
 
 			for (auto xi = m_x.begin(), yi = m_y.begin(), zi = m_z.begin();
 				 xi != m_x.end(); xi++, yi++, zi++)
 			{
-				m_bb_min_x = min(m_bb_min_x, *xi);
-				m_bb_max_x = max(m_bb_max_x, *xi);
-				m_bb_min_y = min(m_bb_min_y, *yi);
-				m_bb_max_y = max(m_bb_max_y, *yi);
-				m_bb_min_z = min(m_bb_min_z, *zi);
-				m_bb_max_z = max(m_bb_max_z, *zi);
+				m_boundingBox.min.x = min(m_boundingBox.min.x, *xi);
+				m_boundingBox.max.x = max(m_boundingBox.max.x, *xi);
+				m_boundingBox.min.y = min(m_boundingBox.min.y, *yi);
+				m_boundingBox.max.y = max(m_boundingBox.max.y, *yi);
+				m_boundingBox.min.z = min(m_boundingBox.min.z, *zi);
+				m_boundingBox.max.z = max(m_boundingBox.max.z, *zi);
 			}
 #endif
 		}
 		m_boundingBoxIsUpdated = true;
 	}
 
-	min_x = m_bb_min_x;
-	max_x = m_bb_max_x;
-	min_y = m_bb_min_y;
-	max_y = m_bb_max_y;
-	min_z = m_bb_min_z;
-	max_z = m_bb_max_z;
+	return m_boundingBox;
 	MRPT_END
 }
 
@@ -1063,12 +1036,7 @@ void CPointsMap::determineMatching3D(
 	size_t nOtherMapPointsWithCorrespondence =
 		0;  // Number of points with one corrs. at least
 
-	float local_x_min = std::numeric_limits<float>::max(),
-		  local_x_max = -std::numeric_limits<float>::max();
-	float local_y_min = std::numeric_limits<float>::max(),
-		  local_y_max = -std::numeric_limits<float>::max();
-	float local_z_min = std::numeric_limits<float>::max(),
-		  local_z_max = -std::numeric_limits<float>::max();
+	auto bbLocal = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	double maxDistForCorrespondenceSquared;
 
@@ -1101,25 +1069,15 @@ void CPointsMap::determineMatching3D(
 		z_locals[localIdx] = z_local;
 
 		// Find the bounding box:
-		local_x_min = min(local_x_min, x_local);
-		local_x_max = max(local_x_max, x_local);
-		local_y_min = min(local_y_min, y_local);
-		local_y_max = max(local_y_max, y_local);
-		local_z_min = min(local_z_min, z_local);
-		local_z_max = max(local_z_max, z_local);
+		bbLocal.updateWithPoint({x_local, y_local, z_local});
 	}
 
 	// Find the bounding box:
-	float global_x_min, global_x_max, global_y_min, global_y_max, global_z_min,
-		global_z_max;
-	this->boundingBox(
-		global_x_min, global_x_max, global_y_min, global_y_max, global_z_min,
-		global_z_max);
+	const auto bbGlobal = this->boundingBox();
 
 	// Solo hacer matching si existe alguna posibilidad de que
 	//  los dos mapas se toquen:
-	if (local_x_min > global_x_max || local_x_max < global_x_min ||
-		local_y_min > global_y_max || local_y_max < global_y_min)
+	if (!bbLocal.intersection(bbGlobal).has_value())
 		return;  // No need to compute: matching is ZERO.
 
 	// Loop for each point in local map:
@@ -1286,25 +1244,14 @@ void CPointsMap::compute3DDistanceToMesh(
 	if (!nLocalPoints) return;  // No
 
 	// we'll assume by now both reference systems are the same
-	float local_x_min, local_x_max, local_y_min, local_y_max, local_z_min,
-		local_z_max;
-	otherMap->boundingBox(
-		local_x_min, local_x_max, local_y_min, local_y_max, local_z_min,
-		local_z_max);
+	const auto bbLocal = otherMap->boundingBox();
 
 	// Find the bounding box:
-	float global_x_min, global_x_max, global_y_min, global_y_max, global_z_min,
-		global_z_max;
-	this->boundingBox(
-		global_x_min, global_x_max, global_y_min, global_y_max, global_z_min,
-		global_z_max);
+	const auto bbGlobal = this->boundingBox();
 
 	// Solo hacer matching si existe alguna posibilidad de que
 	//  los dos mapas se toquen:
-	if (local_x_min > global_x_max || local_x_max < global_x_min ||
-		local_y_min > global_y_max || local_y_max < global_y_min)
-		return;  // No hace falta hacer matching,
-	//   porque es de CERO.
+	if (!bbLocal.intersection(bbGlobal).has_value()) return;
 
 	std::vector<std::vector<size_t>> vIdx;
 

@@ -417,20 +417,18 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			COpenGLScene scene;
 			if (SCENE3D_FREQ > 0 || SHOW_PROGRESS_3D_REAL_TIME)
 			{
-				mrpt::math::TPoint3D bbox_max(50, 50, 0), bbox_min(-50, -50, 0);
+				mrpt::math::TBoundingBoxf bbox({-50, -50, 0}, {50, 50, 0});
 				if (auto pts = metricMap.getAsSimplePointsMap(); pts)
-				{
-					pts->boundingBox(bbox_min, bbox_max);
-				}
+					bbox = pts->boundingBox();
 
 				scene.insert(mrpt::opengl::CGridPlaneXY::Create(
-					bbox_min.x, bbox_max.x, bbox_min.y, bbox_max.y, 0, 5));
+					bbox.min.x, bbox.max.x, bbox.min.y, bbox.max.y, 0, 5));
 
 				if (win3D)
 					win3D->setCameraZoom(
 						2 *
 						std::max(
-							bbox_max.x - bbox_min.x, bbox_max.y - bbox_min.y));
+							bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y));
 
 				CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
 				metricMap.getAs3DObject(gl_obj);
