@@ -16,6 +16,7 @@ namespace mrpt::math
 /**
  * 2D segment, consisting of two points.
  * \sa TSegment3D,TLine2D,TPolygon2D,TPoint2D
+ * \ingroup geometry_grp
  */
 struct TSegment2D
 {

@@ -16,6 +16,9 @@
 
 namespace mrpt::math
 {
+/** \addtogroup  geometry_grp
+ * @{ */
+
 /**
  * Standard type for storing any lightweight 2D type. Do not inherit from this
  * class.
@@ -282,6 +285,8 @@ mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TObject2D& o);
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TObject2D& o);
+
+/** @} */
 
 }  // namespace mrpt::math
 

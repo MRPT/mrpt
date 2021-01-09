@@ -20,6 +20,7 @@ namespace mrpt::math
  * Lightweight 3D pose (three spatial coordinates, plus three angular
  * coordinates). Allows coordinate access using [] operator.
  * \sa mrpt::poses::CPose3D
+ * \ingroup geometry_grp
  */
 struct TPose3D : public TPoseOrPoint,
 				 public internal::ProvideStaticResize<TPose3D>

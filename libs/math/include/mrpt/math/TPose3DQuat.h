@@ -15,6 +15,7 @@ namespace mrpt::math
 /** Lightweight 3D pose (three spatial coordinates, plus a quaternion ). Allows
  * coordinate access using [] operator.
  * \sa mrpt::poses::CPose3DQuat
+ * \ingroup geometry_grp
  */
 struct TPose3DQuat : public TPoseOrPoint,
 					 public internal::ProvideStaticResize<TPose3DQuat>

@@ -16,6 +16,7 @@ namespace mrpt::math
 {
 /** 3D segment, consisting of two points.
  * \sa TSegment2D,TLine3D,TPlane,TPolygon3D,TPoint3D
+ * \ingroup geometry_grp
  */
 struct TSegment3D
 {

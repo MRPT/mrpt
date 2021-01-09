@@ -17,7 +17,9 @@
 
 namespace mrpt::math
 {
-/** \ingroup geometry_grp */
+/** \addtogroup  geometry_grp
+ * @{ */
+
 template <typename T>
 struct TPoint2D_data
 {
@@ -26,7 +28,6 @@ struct TPoint2D_data
 };
 
 /** Base template for TPoint2D and TPoint2Df
- * \ingroup geometry_grp
  */
 template <typename T>
 struct TPoint2D_ : public TPoseOrPoint,
@@ -231,6 +232,8 @@ constexpr bool operator!=(const TPoint2D_<T>& p1, const TPoint2D_<T>& p2)
 {
 	return (p1.x != p2.x) || (p1.y != p2.y);  //-V550
 }
+
+/** @} */
 
 }  // namespace mrpt::math
 

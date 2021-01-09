@@ -17,9 +17,11 @@
 
 namespace mrpt::math
 {
+/** \addtogroup  geometry_grp
+ * @{ */
+
 /** Base type of all TPoseXX and TPointXX classes in mrpt::math.
  * Useful for type traits. No virtual methods at all.
- * \ingroup geometry_grp
  */
 struct TPoseOrPoint
 {
@@ -133,5 +135,6 @@ static constexpr unsigned char GEOMETRIC_TYPE_PLANE = 4;
  * \sa TObject2D,TObject3D
  */
 static constexpr unsigned char GEOMETRIC_TYPE_UNDEFINED = 255;
+/** @} */
 
 }  // namespace mrpt::math
