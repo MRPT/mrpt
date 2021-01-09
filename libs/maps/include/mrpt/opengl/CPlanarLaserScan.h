@@ -140,9 +140,7 @@ class CPlanarLaserScan : public CRenderizableShaderPoints,
 		m_scan = scan;
 	}
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	auto getBoundingBox() const -> mrpt::math::TBoundingBox override;
 
    protected:
 	mrpt::obs::CObservation2DRangeScan m_scan;
