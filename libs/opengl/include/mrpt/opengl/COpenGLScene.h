@@ -200,8 +200,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 
 	/** Evaluates the bounding box of the scene in the given viewport (default:
 	 * "main"). */
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max,
+	mrpt::math::TBoundingBox getBoundingBox(
 		const std::string& vpn = std::string("main")) const;
 
 	/** Recursive depth-first visit all objects in all viewports of the scene,

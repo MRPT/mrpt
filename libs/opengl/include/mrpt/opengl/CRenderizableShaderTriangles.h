@@ -57,6 +57,9 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
 
+	/** Returns the bounding box of m_triangles, or (0,0,0)-(0,0,0) if empty. */
+	const mrpt::math::TBoundingBox trianglesBoundingBox() const;
+
    private:
 	mutable COpenGLBuffer m_trianglesBuffer;
 	mutable COpenGLVertexArrayObject m_vao;

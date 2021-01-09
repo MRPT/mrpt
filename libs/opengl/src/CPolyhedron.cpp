@@ -1966,20 +1966,9 @@ void CPolyhedron::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-void CPolyhedron::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CPolyhedron::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min.x = 0;
-	bb_min.y = 0;
-	bb_min.z = 0;
-
-	bb_max.x = 0;
-	bb_max.y = 0;
-	bb_max.z = 0;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return mrpt::math::TBoundingBox({0, 0, 0}, {0, 0, 0}).compose(m_pose);
 }
 
 /*CPolyhedron::Ptr CPolyhedron::CreateCuboctahedron(double radius)	{

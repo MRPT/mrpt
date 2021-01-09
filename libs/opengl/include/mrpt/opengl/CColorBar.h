@@ -71,9 +71,7 @@ class CColorBar : public CRenderizableShaderTriangles,
 	}
 	/** @} */
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	void setColormap(const mrpt::img::TColormap colormap);
 	void setColorAndValueLimits(

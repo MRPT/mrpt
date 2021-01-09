@@ -51,9 +51,7 @@ class CSphere : public CGeneralizedEllipsoidTemplate<3>
 	}
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
-	virtual void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	virtual mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	/** Constructor */
 	CSphere(

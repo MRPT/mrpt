@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/math/TBoundingBox.h>
+#include <mrpt/math/TPose3D.h>
 
 template <typename T>
 void testDefaultCtor()
@@ -98,4 +99,23 @@ TEST(TBoundingBox, intersections)
 {
 	testIntersections<float>();
 	testIntersections<double>();
+}
+
+TEST(TBoundingBox, compose)
+{
+	mrpt::math::TBoundingBox bb1({0, 1, 2}, {3, 4, 5});
+	const auto bb2 = bb1.compose(mrpt::math::TPose3D(10, 20, 30, 0, 0, 0));
+
+	EXPECT_EQ(bb2.min, mrpt::math::TPoint3D(10, 21, 32));
+	EXPECT_EQ(bb2.max, mrpt::math::TPoint3D(13, 24, 35));
+}
+
+TEST(TBoundingBox, inverseCompose)
+{
+	mrpt::math::TBoundingBox bb1({0, 1, 2}, {3, 4, 5});
+	const auto bb2 =
+		bb1.inverseCompose(mrpt::math::TPose3D(10, 20, 30, 0, 0, 0));
+
+	EXPECT_EQ(bb2.min, mrpt::math::TPoint3D(-10, -19, -28));
+	EXPECT_EQ(bb2.max, mrpt::math::TPoint3D(-7, -16, -25));
 }

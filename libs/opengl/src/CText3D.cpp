@@ -81,18 +81,9 @@ void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-void CText3D::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CText3D::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min.x = 0;
-	bb_min.y = 0;
-	bb_min.z = 0;
-
-	bb_max.x = m_str.size() * m_scale_x;
-	bb_max.y = 1;
-	bb_max.z = 0;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return mrpt::math::TBoundingBox(
+			   {0, 0, 0}, {m_str.size() * m_scale_x, 1.0 * m_scale_y, 0})
+		.compose(m_pose);
 }

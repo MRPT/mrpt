@@ -293,38 +293,7 @@ void CMesh3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			m_face_verts.size() * m_face_verts[0].size());
 }
 
-void CMesh3D::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CMesh3D::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	if (m_vertices.empty())
-	{
-		bb_max = TPoint3D(0, 0, 0);
-		bb_min = TPoint3D(0, 0, 0);
-	}
-	else
-	{
-		bb_min.x = std::numeric_limits<double>::max();
-		bb_min.y = std::numeric_limits<double>::max();
-		bb_min.z = std::numeric_limits<double>::max();
-		bb_max.x = -std::numeric_limits<double>::max();
-		bb_max.y = -std::numeric_limits<double>::max();
-		bb_max.z = -std::numeric_limits<double>::max();
-
-		for (size_t i = 0; i < m_vertices.size(); i++)
-		{
-			// Max
-			mrpt::keep_max(bb_max.x, m_vertices[i][0]);
-			mrpt::keep_max(bb_max.y, m_vertices[i][1]);
-			mrpt::keep_max(bb_max.z, m_vertices[i][2]);
-
-			// Min
-			mrpt::keep_min(bb_min.x, m_vertices[i][0]);
-			mrpt::keep_min(bb_min.y, m_vertices[i][1]);
-			mrpt::keep_min(bb_min.z, m_vertices[i][2]);
-		}
-	}
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return trianglesBoundingBox().compose(m_pose);
 }

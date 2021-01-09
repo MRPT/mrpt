@@ -65,9 +65,7 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles
 	}
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 };
 
 }  // namespace mrpt::opengl

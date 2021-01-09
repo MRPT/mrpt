@@ -105,11 +105,11 @@ class CPointCloud : public CRenderizableShaderPoints,
    public:
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override
+	mrpt::math::TBoundingBox getBoundingBox() const override
 	{
-		this->octree_getBoundingBox(bb_min, bb_max);
+		auto bb = this->octree_getBoundingBox();
+		ASSERT_(bb);
+		return *bb;
 	}
 
 	/** @name Read/Write of the list of points to render
@@ -146,8 +146,8 @@ class CPointCloud : public CRenderizableShaderPoints,
 	/// \overload Prefer setAllPointsFast() instead
 	void setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts);
 
-	/** Set the list of (X,Y,Z) point coordinates, DESTROYING the contents of
-	 * the input vectors (via swap) */
+	/** Set the list of (X,Y,Z) point coordinates, DESTROYING the contents
+	 * of the input vectors (via swap) */
 	void setAllPointsFast(std::vector<mrpt::math::TPoint3Df>& pts)
 	{
 		this->clear();
@@ -169,8 +169,8 @@ class CPointCloud : public CRenderizableShaderPoints,
 	/** Adds a new point to the cloud */
 	void insertPoint(float x, float y, float z);
 
-	/** Read access to each individual point (checks for "i" in the valid range
-	 * only in Debug). */
+	/** Read access to each individual point (checks for "i" in the valid
+	 * range only in Debug). */
 	inline const mrpt::math::TPoint3Df& operator[](size_t i) const
 	{
 #ifdef _DEBUG
@@ -188,7 +188,8 @@ class CPointCloud : public CRenderizableShaderPoints,
 	 * Debug). */
 	void setPoint(size_t i, const float x, const float y, const float z);
 
-	/** Write an individual point (without checking validity of the index). */
+	/** Write an individual point (without checking validity of the index).
+	 */
 	inline void setPoint_fast(
 		size_t i, const float x, const float y, const float z)
 	{
@@ -197,8 +198,8 @@ class CPointCloud : public CRenderizableShaderPoints,
 		markAllPointsAsNew();
 	}
 
-	/** Load the points from any other point map class supported by the adapter
-	 * mrpt::opengl::PointCloudAdapter. */
+	/** Load the points from any other point map class supported by the
+	 * adapter mrpt::opengl::PointCloudAdapter. */
 	template <class POINTSMAP>
 	void loadFromPointsMap(const POINTSMAP* themap);
 	// Must be implemented at the end of the header.
@@ -222,7 +223,8 @@ class CPointCloud : public CRenderizableShaderPoints,
 		MRPT_END
 	}
 
-	/** Get the number of elements actually rendered in the last render event.
+	/** Get the number of elements actually rendered in the last render
+	 * event.
 	 */
 	size_t getActuallyRendered() const { return m_last_rendered_count; }
 	/** @} */
@@ -268,7 +270,8 @@ class CPointCloud : public CRenderizableShaderPoints,
 	/** Constructor */
 	CPointCloud();
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
+	/** Private, virtual destructor: only can be deleted from smart pointers
+	 */
 	~CPointCloud() override = default;
 
    private:

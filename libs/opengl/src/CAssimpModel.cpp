@@ -280,15 +280,9 @@ void CAssimpModel::loadScene(const std::string& filepath, int flags)
 #endif
 }
 
-void CAssimpModel::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CAssimpModel::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min = m_bbox_min;
-	bb_max = m_bbox_max;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return mrpt::math::TBoundingBox(m_bbox_min, m_bbox_max).compose(m_pose);
 }
 
 bool CAssimpModel::traceRay(

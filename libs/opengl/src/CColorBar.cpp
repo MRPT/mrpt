@@ -220,18 +220,8 @@ void CColorBar::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-void CColorBar::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CColorBar::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min.x = 0;
-	bb_min.y = 0;
-	bb_min.z = 0;
-
-	bb_max.x = m_width;
-	bb_max.y = m_height;
-	bb_max.z = 0;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return mrpt::math::TBoundingBox({0, 0, 0}, {m_width, m_height, .0})
+		.compose(m_pose);
 }

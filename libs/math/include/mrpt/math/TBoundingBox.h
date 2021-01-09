@@ -64,6 +64,53 @@ struct TBoundingBox_
 			{std::min(max.x, b.max.x), std::min(max.y, b.max.y),
 			 std::min(max.z, b.max.z)})};
 	}
+
+	/** Returns the union of this bounding box with "b", i.e. a new bounding box
+	 * comprising both `this` and `b` */
+	TBoundingBox_<T> unionWith(const TBoundingBox_<T>& b) const
+	{
+		return {TBoundingBox_<T>(
+			{std::min(min.x, b.min.x), std::min(min.y, b.min.y),
+			 std::min(min.z, b.min.z)},
+			{std::max(max.x, b.max.x), std::max(max.y, b.max.y),
+			 std::max(max.z, b.max.z)})};
+	}
+
+	/** Returns a new bounding box, transforming `this` from local coordinates
+	 * to global coordinates, as if `this` was given with respect to `pose`, ie:
+	 *
+	 * \code
+	 *  return.min = pose \oplus this->min
+	 *  return.max = pose \oplus this->max
+	 * \endcode
+	 * \tparam POSE_T Can be mrpt::poses::CPose3D, or mrpt::math::TPose3D
+	 *
+	 * \note If a rotation exists, the output bounding box will no longer be an
+	 * accurate representation of the actual 3D box.
+	 */
+	template <typename POSE_T>
+	TBoundingBox_<T> compose(const POSE_T& pose) const
+	{
+		return {pose.composePoint(min), pose.composePoint(max)};
+	}
+
+	/** Returns a new bounding box, transforming `this` from global coordinates
+	 * to local coordinates with respect to `pose`, ie:
+	 *
+	 * \code
+	 *  return.min = this->min \ominus pose
+	 *  return.max = this->max \ominus pose
+	 * \endcode
+	 * \tparam POSE_T Can be mrpt::poses::CPose3D, or mrpt::math::TPose3D
+	 *
+	 * \note If a rotation exists, the output bounding box will no longer be an
+	 * accurate representation of the actual 3D box.
+	 */
+	template <typename POSE_T>
+	TBoundingBox_<T> inverseCompose(const POSE_T& pose) const
+	{
+		return {pose.inverseComposePoint(min), pose.inverseComposePoint(max)};
+	}
 };
 
 /** A bounding box defined by the 3D points at each minimum-maximum corner.

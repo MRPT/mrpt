@@ -189,13 +189,7 @@ bool CBox::traceRay(
 	THROW_EXCEPTION("TO DO");
 }
 
-void CBox::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CBox::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min = m_corner_min;
-	bb_max = m_corner_max;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return mrpt::math::TBoundingBox(m_corner_min, m_corner_max).compose(m_pose);
 }

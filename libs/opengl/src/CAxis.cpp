@@ -211,20 +211,11 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-void CAxis::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CAxis::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min.x = m_xmin;
-	bb_min.y = m_ymin;
-	bb_min.z = m_zmin;
-
-	bb_max.x = m_xmax;
-	bb_max.y = m_ymax;
-	bb_max.z = m_zmax;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return mrpt::math::TBoundingBox(
+			   {m_xmin, m_ymin, m_zmin}, {m_xmax, m_ymax, m_zmax})
+		.compose(m_pose);
 }
 
 void CAxis::setFrequency(float f)
