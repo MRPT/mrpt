@@ -590,20 +590,9 @@ void CMesh::updatePolygons() const
 	CRenderizable::notifyChange();
 }
 
-void CMesh::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CMesh::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min.x = m_xMin;
-	bb_min.y = m_yMin;
-	bb_min.z = Z.minCoeff();
-
-	bb_max.x = m_xMax;
-	bb_max.y = m_yMax;
-	bb_max.z = Z.maxCoeff();
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return trianglesBoundingBox().compose(m_pose);
 }
 
 void CMesh::adjustGridToImageAR()

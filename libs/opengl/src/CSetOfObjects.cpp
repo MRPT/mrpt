@@ -224,39 +224,21 @@ CRenderizable::Ptr CSetOfObjects::getByName(const string& str)
 
 /** Evaluates the bounding box of this object (including possible children) in
  * the coordinate frame of the object parent. */
-void CSetOfObjects::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CSetOfObjects::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min = TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb_max = TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	mrpt::math::TBoundingBox bb;
+	bool first = true;
 
-	for (const auto& m_object : m_objects)
+	for (const auto& o : m_objects)
 	{
-		TPoint3D child_bbmin(
-			std::numeric_limits<double>::max(),
-			std::numeric_limits<double>::max(),
-			std::numeric_limits<double>::max());
-		TPoint3D child_bbmax(
-			-std::numeric_limits<double>::max(),
-			-std::numeric_limits<double>::max(),
-			-std::numeric_limits<double>::max());
-		m_object->getBoundingBox(child_bbmin, child_bbmax);
-
-		keep_min(bb_min.x, child_bbmin.x);
-		keep_min(bb_min.y, child_bbmin.y);
-		keep_min(bb_min.z, child_bbmin.z);
-
-		keep_max(bb_max.x, child_bbmax.x);
-		keep_max(bb_max.y, child_bbmax.y);
-		keep_max(bb_max.z, child_bbmax.z);
+		if (first)
+		{
+			bb = o->getBoundingBox();
+			first = false;
+		}
+		else
+			bb.unionWith(o->getBoundingBox());
 	}
 
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return bb.compose(m_pose);
 }

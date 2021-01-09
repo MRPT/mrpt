@@ -224,9 +224,7 @@ class CVectorField2D : public CRenderizableShaderPoints,
 	 */
 	inline size_t rows() const { return xcomp.rows(); }
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	void enableAntiAliasing(bool enable = true)
 	{

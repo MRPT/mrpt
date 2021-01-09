@@ -624,3 +624,44 @@ void CRenderizableShaderTexturedTriangles::releaseTextureName(unsigned int i)
 #endif
 	MRPT_END
 }
+
+const mrpt::math::TBoundingBox
+	CRenderizableShaderTexturedTriangles::trianglesBoundingBox() const
+{
+	mrpt::math::TBoundingBox bb;
+
+	if (m_triangles.empty()) return bb;
+
+	bb.min = mrpt::math::TPoint3D(
+		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+		std::numeric_limits<double>::max());
+	bb.max = mrpt::math::TPoint3D(
+		-std::numeric_limits<double>::max(),
+		-std::numeric_limits<double>::max(),
+		-std::numeric_limits<double>::max());
+
+	for (const auto& t : m_triangles)
+	{
+		keep_min(bb.min.x, t.x(0));
+		keep_max(bb.max.x, t.x(0));
+		keep_min(bb.min.y, t.y(0));
+		keep_max(bb.max.y, t.y(0));
+		keep_min(bb.min.z, t.z(0));
+		keep_max(bb.max.z, t.z(0));
+
+		keep_min(bb.min.x, t.x(1));
+		keep_max(bb.max.x, t.x(1));
+		keep_min(bb.min.y, t.y(1));
+		keep_max(bb.max.y, t.y(1));
+		keep_min(bb.min.z, t.z(1));
+		keep_max(bb.max.z, t.z(1));
+
+		keep_min(bb.min.x, t.x(2));
+		keep_max(bb.max.x, t.x(2));
+		keep_min(bb.min.y, t.y(2));
+		keep_max(bb.max.y, t.y(2));
+		keep_min(bb.min.z, t.z(2));
+		keep_max(bb.max.z, t.z(2));
+	}
+	return bb;
+}

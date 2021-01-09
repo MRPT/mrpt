@@ -104,6 +104,9 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
 
+	/** Returns the bounding box of m_triangles, or (0,0,0)-(0,0,0) if empty. */
+	const mrpt::math::TBoundingBox trianglesBoundingBox() const;
+
 	void writeToStreamTexturedObject(mrpt::serialization::CArchive& out) const;
 	void readFromStreamTexturedObject(mrpt::serialization::CArchive& in);
 

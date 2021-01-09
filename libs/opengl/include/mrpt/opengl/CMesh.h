@@ -174,9 +174,7 @@ class CMesh : public CRenderizableShaderTexturedTriangles,
 		CRenderizable::notifyChange();
 	}
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	/** Assigns a texture image.
 	 */

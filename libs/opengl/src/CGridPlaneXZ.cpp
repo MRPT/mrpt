@@ -92,18 +92,8 @@ void CGridPlaneXZ::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-void CGridPlaneXZ::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CGridPlaneXZ::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min.x = m_xMin;
-	bb_min.y = 0;
-	bb_min.z = m_zMin;
-
-	bb_max.x = m_xMax;
-	bb_max.y = 0;
-	bb_max.z = m_zMax;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return mrpt::math::TBoundingBox({m_xMin, 0, m_zMin}, {m_xMax, 0, m_zMax})
+		.compose(m_pose);
 }

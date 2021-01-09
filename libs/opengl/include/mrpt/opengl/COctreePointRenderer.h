@@ -112,15 +112,14 @@ class COctreePointRenderer
 		}
 	}
 
-	void octree_getBoundingBox(
-		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+	std::optional<mrpt::math::TBoundingBox> octree_getBoundingBox() const
 	{
 		octree_assure_uptodate();
 		if (!m_octree_nodes.empty())
-		{
-			bb_min = mrpt::math::TPoint3D(m_octree_nodes[0].bb_min);
-			bb_max = mrpt::math::TPoint3D(m_octree_nodes[0].bb_max);
-		}
+			return {{mrpt::math::TPoint3D(m_octree_nodes[0].bb_min),
+					 mrpt::math::TPoint3D(m_octree_nodes[0].bb_max)}};
+		else
+			return {};
 	}
 
    private:
@@ -788,7 +787,7 @@ class COctreePointRenderer
 		o << "Total elements in all nodes: " << total_elements << std::endl;
 	}  // end of octree_debug_dump_tree
 
-};  // end of class COctreePointRenderer
+};  // namespace opengl
 
 }  // namespace opengl
 }  // namespace mrpt

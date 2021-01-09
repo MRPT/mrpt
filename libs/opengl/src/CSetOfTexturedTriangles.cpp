@@ -82,33 +82,7 @@ bool CSetOfTexturedTriangles::traceRay(
 		"TODO: TraceRay not implemented in CSetOfTexturedTriangles");
 }
 
-void CSetOfTexturedTriangles::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CSetOfTexturedTriangles::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb_max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
-
-	for (const auto& t : m_triangles)
-	{
-		for (size_t i = 0; i < 3; i++)
-		{
-			keep_min(bb_min.x, t.x(i));
-			keep_max(bb_max.x, t.x(i));
-
-			keep_min(bb_min.y, t.y(i));
-			keep_max(bb_max.y, t.y(i));
-
-			keep_min(bb_min.z, t.z(i));
-			keep_max(bb_max.z, t.z(i));
-		}
-	}
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return trianglesBoundingBox().compose(m_pose);
 }

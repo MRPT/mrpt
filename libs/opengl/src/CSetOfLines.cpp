@@ -176,13 +176,14 @@ void CSetOfLines::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-void CSetOfLines::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CSetOfLines::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min = mrpt::math::TPoint3D(
+	mrpt::math::TBoundingBox bb;
+
+	bb.min = mrpt::math::TPoint3D(
 		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
 		std::numeric_limits<double>::max());
-	bb_max = mrpt::math::TPoint3D(
+	bb.max = mrpt::math::TPoint3D(
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
@@ -194,15 +195,14 @@ void CSetOfLines::getBoundingBox(
 			const TPoint3D& pt = s[p];
 			for (size_t j = 0; j < 3; j++)
 			{
-				keep_min(bb_min[j], pt[j]);
-				keep_max(bb_max[j], pt[j]);
+				keep_min(bb.min[j], pt[j]);
+				keep_max(bb.max[j], pt[j]);
 			}
 		}
 	}
 
 	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return bb.compose(m_pose);
 }
 
 void CSetOfLines::getLineByIndex(

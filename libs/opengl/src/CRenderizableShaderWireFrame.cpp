@@ -95,3 +95,30 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR();
 #endif
 }
+
+const mrpt::math::TBoundingBox
+	CRenderizableShaderWireFrame::wireframeVerticesBoundingBox() const
+{
+	mrpt::math::TBoundingBox bb;
+
+	if (m_vertex_buffer_data.empty()) return bb;
+
+	bb.min = mrpt::math::TPoint3D(
+		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+		std::numeric_limits<double>::max());
+	bb.max = mrpt::math::TPoint3D(
+		-std::numeric_limits<double>::max(),
+		-std::numeric_limits<double>::max(),
+		-std::numeric_limits<double>::max());
+
+	for (const auto& p : m_vertex_buffer_data)
+	{
+		keep_min(bb.min.x, p.x);
+		keep_max(bb.max.x, p.x);
+		keep_min(bb.min.y, p.y);
+		keep_max(bb.max.y, p.y);
+		keep_min(bb.min.z, p.z);
+		keep_max(bb.max.z, p.z);
+	}
+	return bb;
+}

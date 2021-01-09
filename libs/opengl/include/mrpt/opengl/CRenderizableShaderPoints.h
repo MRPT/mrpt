@@ -106,6 +106,10 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
 
+	/** Returns the bounding box of m_vertex_buffer_data, or (0,0,0)-(0,0,0) if
+	 * empty. */
+	const mrpt::math::TBoundingBox verticesBoundingBox() const;
+
 	float m_pointSize = 1.0f;
 	bool m_variablePointSize = true;
 	float m_variablePointSize_K = 0.1f;

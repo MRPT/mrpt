@@ -72,9 +72,7 @@ class CArrow : public CRenderizableShaderTriangles
 	/** Number of radial divisions  */
 	inline uint32_t getSlicesCount() const { return m_slices; }
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	/** Constructor */
 	CArrow(

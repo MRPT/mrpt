@@ -129,9 +129,7 @@ class CSetOfObjects : public CRenderizable
 	CRenderizable& setColorB_u8(const uint8_t b) override;
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 	bool contains(const CRenderizable::Ptr& obj) const;
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	/** @name pose_pdf -> 3d objects auxiliary templates
 		@{ */

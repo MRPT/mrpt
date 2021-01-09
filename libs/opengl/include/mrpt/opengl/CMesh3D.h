@@ -130,9 +130,7 @@ class CMesh3D : public CRenderizableShaderTriangles,
 		vert_color = mrpt::img::TColorf(r, g, b, a);
 	}
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
    protected:
 	using vertex_indices_t = mrpt::math::CMatrixFixed<uint32_t, 1, 4>;

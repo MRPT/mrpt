@@ -301,15 +301,9 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-void COctoMapVoxels::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto COctoMapVoxels::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min = m_bb_min;
-	bb_max = m_bb_max;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return mrpt::math::TBoundingBox(m_bb_min, m_bb_max).compose(m_pose);
 }
 
 bool sort_voxels_z(

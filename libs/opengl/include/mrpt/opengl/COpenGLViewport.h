@@ -317,10 +317,8 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	opengl::CCamera& getCamera() { return m_camera; }
 	/** Get a reference to the camera associated with this viewport. */
 	const opengl::CCamera& getCamera() const { return m_camera; }
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const;
+
+	mrpt::math::TBoundingBox getBoundingBox() const;
 
 	/** @} */  // end of Contained objects set/get/search
 

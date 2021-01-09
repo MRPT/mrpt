@@ -253,18 +253,7 @@ void CMeshFast::setZ(const mrpt::math::CMatrixDynamic<float>& in_Z)
 	CRenderizable::notifyChange();
 }
 
-void CMeshFast::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CMeshFast::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min.x = xMin;
-	bb_min.y = yMin;
-	bb_min.z = Z.minCoeff();
-
-	bb_max.x = xMax;
-	bb_max.y = yMax;
-	bb_max.z = Z.maxCoeff();
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	return verticesBoundingBox().compose(m_pose);
 }

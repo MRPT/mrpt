@@ -54,14 +54,12 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 }
 
 /** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
-void CCamera::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CCamera::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb_max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	return {
+		{std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+		 std::numeric_limits<double>::max()},
+		{-std::numeric_limits<double>::max(),
+		 -std::numeric_limits<double>::max(),
+		 -std::numeric_limits<double>::max()}};
 }

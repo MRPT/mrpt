@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/img/TColor.h>
+#include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/opengl/DefaultShaders.h>
@@ -332,8 +333,17 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Evaluates the bounding box of this object (including possible
 	 * children) in the coordinate frame of the object parent. */
-	virtual void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const = 0;
+	virtual auto getBoundingBox() const -> mrpt::math::TBoundingBox = 0;
+
+	[[deprecated(
+		"Use getBoundingBox() const -> mrpt::math::TBoundingBox instead.")]]  //
+	void getBoundingBox(
+		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+	{
+		const auto bb = getBoundingBox();
+		bb_min = bb.min;
+		bb_max = bb.max;
+	}
 
 	/** Provide a representative point (in object local coordinates), used to
 	 * sort objects by eye-distance while rendering with transparencies

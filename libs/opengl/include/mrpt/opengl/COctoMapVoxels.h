@@ -353,9 +353,7 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 
 	void sort_voxels_by_z();
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	/** Sets the contents of the object from a mrpt::maps::COctoMap object.
 	 * \tparam Typically, an mrpt::maps::COctoMap object

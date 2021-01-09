@@ -335,9 +335,7 @@ class CVectorField3D : public CRenderizableShaderPoints,
 	 */
 	inline size_t rows() const { return x_vf.rows(); }
 
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	void enableColorFromModule(bool enable = true)
 	{

@@ -102,9 +102,7 @@ class CCamera : public CRenderizable
 	void renderUpdateBuffers() const override {}
 
 	/** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	void freeOpenGLResources() override {}
 

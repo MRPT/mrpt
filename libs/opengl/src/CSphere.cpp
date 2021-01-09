@@ -86,20 +86,10 @@ bool CSphere::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 		return false;
 }
 
-void CSphere::getBoundingBox(
-	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+auto CSphere::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	bb_min.x = -m_radius;
-	bb_min.y = -m_radius;
-	bb_min.z = -m_radius;
-
-	bb_max.x = m_radius;
-	bb_max.y = m_radius;
-	bb_max.z = m_radius;
-
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
+	const double R = m_radius;
+	return mrpt::math::TBoundingBox({-R, -R, -R}, {R, R, R}).compose(m_pose);
 }
 
 void CSphere::renderUpdateBuffers() const

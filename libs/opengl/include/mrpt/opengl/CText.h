@@ -70,9 +70,7 @@ class CText : public CRenderizableShaderText
 
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	void getBoundingBox(
-		mrpt::math::TPoint3D& bb_min,
-		mrpt::math::TPoint3D& bb_max) const override;
+	mrpt::math::TBoundingBox getBoundingBox() const override;
 
 	/** Constructor */
 	CText(const std::string& str = std::string("")) : m_str(str) {}
