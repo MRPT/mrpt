@@ -77,7 +77,7 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/maps/CPointsMap_liblas.h>
 #endif
 
-const mrpt::maps::CColouredPointsMap dummy_map;	 // this is to enforce to load
+const mrpt::maps::CColouredPointsMap dummy_map;  // this is to enforce to load
 // the mrpt-maps DLL, then
 // register all OpenGL classes
 // defined there.
@@ -691,8 +691,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	SetMenuBar(MenuBar1);
 	StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
 	int __wxStatusBarWidths_1[4] = {-10, -10, -4, -5};
-	int __wxStatusBarStyles_1[4] = {
-		wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL};
+	int __wxStatusBarStyles_1[4] = {wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL,
+									wxSB_NORMAL};
 	StatusBar1->SetFieldsCount(4, __wxStatusBarWidths_1);
 	StatusBar1->SetStatusStyles(4, __wxStatusBarStyles_1);
 	SetStatusBar(StatusBar1);
@@ -976,7 +976,7 @@ void _DSceneViewerFrame::updateTitle()
 
 void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 {
-	timLoadFileCmdLine.Stop();	// One shot only.
+	timLoadFileCmdLine.Stop();  // One shot only.
 	// Open file if passed by the command line:
 	if (!global_fileToOpen.empty())
 	{
@@ -1024,7 +1024,7 @@ void _DSceneViewerFrame::OntimAutoplay(wxTimerEvent& event)
 
 	// Continue?
 	if (btnAutoplay->GetValue())
-		m_autoplayTimer->Start(delayBetweenAutoplay, true);	 // One-shot:
+		m_autoplayTimer->Start(delayBetweenAutoplay, true);  // One-shot:
 }
 
 void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
@@ -1361,7 +1361,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 
 			maxv = azimuth + max_value;
 
-			m_travelling_is_arbitrary = false;	// Circular
+			m_travelling_is_arbitrary = false;  // Circular
 			m_tTravelling.Start(100);
 
 			Refresh(false);

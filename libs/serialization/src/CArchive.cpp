@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "serialization-precomp.h"	// Precompiled headers
+#include "serialization-precomp.h"  // Precompiled headers
 //
 #include <mrpt/core/byte_manip.h>
 #include <mrpt/core/exceptions.h>
@@ -17,7 +17,7 @@
 #include <mrpt/serialization/aligned_serialization.h>
 
 #include <array>
-#include <cstring>	// strlen()
+#include <cstring>  // strlen()
 
 using namespace mrpt::serialization;
 
@@ -541,7 +541,7 @@ void CArchive::sendMessage(const CMessage& msg)
 	else
 	{
 		buf[nBytesTx++] = msg.content.size() & 0xff;  // lo
-		buf[nBytesTx++] = (msg.content.size() >> 8) & 0xff;	 // hi
+		buf[nBytesTx++] = (msg.content.size() >> 8) & 0xff;  // hi
 	}
 
 	if (!msg.content.empty())
@@ -550,7 +550,7 @@ void CArchive::sendMessage(const CMessage& msg)
 	buf[nBytesTx++] = 0x96;
 
 	// Send buffer -------------------------------------
-	WriteBuffer(&buf[0], nBytesTx);	 // Exceptions will be raised on errors here
+	WriteBuffer(&buf[0], nBytesTx);  // Exceptions will be raised on errors here
 
 	MRPT_END
 }
@@ -579,7 +579,7 @@ bool CArchive::receiveMessage(CMessage& msg)
 			else if (buf[0] == 0x79)
 			{
 				payload_len = MAKEWORD16B(
-					buf[3] /*low*/, buf[2] /*hi*/);	 // Length of the content
+					buf[3] /*low*/, buf[2] /*hi*/);  // Length of the content
 				expectedLen = payload_len + 5;
 			}
 			nBytesToRx = expectedLen - nBytesInFrame;

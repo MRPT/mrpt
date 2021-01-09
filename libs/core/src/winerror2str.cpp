@@ -20,7 +20,7 @@ std::string mrpt::winerror2str(const char* caller, const char* errorPrefix)
 {
 #ifdef _WIN32
 	DWORD e = GetLastError();
-	if (!e) return {};	// no error
+	if (!e) return {};  // no error
 
 	char s[2048];
 	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, 0, e, 0, s, sizeof(s), nullptr);

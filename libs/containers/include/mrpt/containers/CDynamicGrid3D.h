@@ -395,6 +395,6 @@ class CDynamicGrid3D
 		m_map.resize(m_size_x * m_size_y * m_size_z);
 	}
 
-};	// end of CDynamicGrid3D<>
+};  // end of CDynamicGrid3D<>
 
 }  // namespace mrpt::containers

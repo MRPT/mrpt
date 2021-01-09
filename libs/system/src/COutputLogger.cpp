@@ -15,13 +15,12 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 
-#include <cstdarg>	// for logFmt
+#include <cstdarg>  // for logFmt
 #include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
-
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
@@ -42,9 +41,9 @@ using namespace std;
 static std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>
 	logging_levels_to_colors = {
 		CONCOL_BLUE,  // LVL_DEBUG
-		CONCOL_NORMAL,	// LVL_INFO
+		CONCOL_NORMAL,  // LVL_INFO
 		CONCOL_GREEN,  // LVL_WARN
-		CONCOL_RED	// LVL_ERROR
+		CONCOL_RED  // LVL_ERROR
 };
 
 std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>&
@@ -58,7 +57,7 @@ static std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>
 		"DEBUG",  // LVL_DEBUG
 		"INFO ",  // LVL_INFO
 		"WARN ",  // LVL_WARN
-		"ERROR"	 // LVL_ERROR
+		"ERROR"  // LVL_ERROR
 };
 std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>&
 	COutputLogger::logging_levels_to_names()
@@ -244,7 +243,7 @@ void COutputLogger::TMsg::dumpToConsole() const
 {
 	const std::string str = getAsString();
 
-	const bool dump_to_cerr = (level == LVL_ERROR);	 // LVL_ERROR alternatively
+	const bool dump_to_cerr = (level == LVL_ERROR);  // LVL_ERROR alternatively
 	// dumped to stderr instead
 	// of stdout
 
