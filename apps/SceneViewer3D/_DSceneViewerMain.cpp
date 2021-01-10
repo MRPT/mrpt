@@ -2182,9 +2182,9 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		std::stringstream ss;
 		ss << pts_map.size() << " points loaded.\n"
 		   << "Bounding box:\n"
-		   << " X: " << bb_min.x << " <=> " << bb_max.x << "\n"
-		   << " Y: " << bb_min.y << " <=> " << bb_max.y << "\n"
-		   << " Z: " << bb_min.z << " <=> " << bb_max.z << "\n"
+		   << " X: " << bb.min.x << " <=> " << bb.max.x << "\n"
+		   << " Y: " << bb.min.y << " <=> " << bb.max.y << "\n"
+		   << " Z: " << bb.min.z << " <=> " << bb.max.z << "\n"
 		   << "LAS header info:\n"
 		   << "---------------------------------\n"
 		   << "FileSignature      : " << las_hdr.FileSignature << endl
