@@ -594,8 +594,14 @@ endif()
 #	string(REGEX MATCH "[0-9]+" EIGEN_MAX_STATIC_ALIGN_BYTES "${EIGEN_MAX_STATIC_ALIGN_BYTES}")
 #else()
 #message(STATUS "Test Eigen build failed, falling back to default alignment (BUILD_EIGEN_SUCCESS=${BUILD_EIGEN_SUCCESS} RUN_EIGEN_RETVAL=${RUN_EIGEN_RETVAL} BUILD_EIGEN_OUT=${EIGEN_TEST_OUT})")
-	set(EIGEN_MAX_ALIGN_BYTES 32)
-	set(EIGEN_MAX_STATIC_ALIGN_BYTES 32)
+if (MRPT_ARCH_INTEL_COMPATIBLE)
+    set(EIGEN_MAX_ALIGN_BYTES 32)
+    set(EIGEN_MAX_STATIC_ALIGN_BYTES 32)
+else()
+    # for aarch64, etc.
+    set(EIGEN_MAX_ALIGN_BYTES 16)
+    set(EIGEN_MAX_STATIC_ALIGN_BYTES 16)
+endif()
 #endif()
 
 include(cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h

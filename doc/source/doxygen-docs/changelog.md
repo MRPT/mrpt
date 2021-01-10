@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.1.8: (Under development)
+- General build changes:
+  - Fix excessive alignment in aarch64 (32->16 bytes).
 - Changes in libraries:
   - \ref mrpt_core_grp
     - New CMake build flag `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions.
