@@ -22,6 +22,7 @@
     <p>Precompiled binaries of this application can be found in the Windows packages and Linux repositories.</p>
 
   </description>
+  <launchable type="desktop-id">cameracalib.desktop</launchable>
   <screenshots>
     <screenshot type="default">https://static.mrpt.org/screenshots/cameracalib.png</screenshot>
   </screenshots>

@@ -7,6 +7,7 @@
   <description>
     <p>Viewer of MRPT 3D scene files.</p>
   </description>
+  <launchable type="desktop-id">sceneviewer.desktop</launchable>
   <screenshots>
     <screenshot type="default">https://static.mrpt.org/screenshots/sceneviewer.png</screenshot>
   </screenshots>

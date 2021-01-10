@@ -10,6 +10,7 @@
     <p>Paper explaining the Matching Likelihood criteron for data association (one of the two choices offered in this program):</p>
     <p>J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, “An alternative to the Mahalanobis distance for determining optimal correspondences in data association“, IEEE Transactions on Robotics (T-RO), DOI: 10.1109/TRO.2012.2193706 (2012).</p>
   </description>
+  <launchable type="desktop-id">2dslamdemo.desktop</launchable>
   <screenshots>
     <screenshot type="default">https://static.mrpt.org/screenshots/2dslamdemo.png</screenshot>
   </screenshots>

@@ -7,6 +7,7 @@
   <description>
     <p>GUI to practice and learn the Denavit-Hartenberg (DH) parameters or robotic arm manipulators.</p>
   </description>
+  <launchable type="desktop-id">robotic-arm-kinematics.desktop</launchable>
   <screenshots>
     <screenshot type="default">https://static.mrpt.org/screenshots/robotic-arm-kinematics.png</screenshot>
   </screenshots>

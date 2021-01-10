@@ -7,6 +7,7 @@
   <description>
     <p>GUI to visualize and manipulate robotics datasets.</p>
   </description>
+  <launchable type="desktop-id">rawlogviewer.desktop</launchable>
   <screenshots>
     <screenshot type="default">https://static.mrpt.org/screenshots/rawlogviewer.png</screenshot>
   </screenshots>
