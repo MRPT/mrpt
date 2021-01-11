@@ -16,9 +16,9 @@ MRPT code is to be wrapped at **80** lines. This has the following consequences:
 - Long(er) inline doxygen comments `//!< ...` are to be automatically wrapped 
   up and indented at the same line. This is most likely not what the developer
   wants. To get around this replace them with the standard `/** ... */`
-  comments or any other alternative outlined in the [doxygen docs](https://www.stack.nl/~dimitri/doxygen/manual/docblocks.html).
+  comments or any other alternative outlined in the `doxygen docs <https://www.stack.nl/~dimitri/doxygen/manual/docblocks.html>`_.
   
-  For bulk reformatting of these comments you may use `sed` as in [this script](https://github.com/bergercookie/clang_git_format/blob/master/scripts/convert_inline_doxygen_comments.sh).
+  For bulk reformatting of these comments you may use `sed` as in `this script <https://github.com/bergercookie/clang_git_format/blob/master/scripts/convert_inline_doxygen_comments.sh>`_.
   
   **WARNING:** The `/**...*/` snippet should be placed on the **previous**
   line from the variable, directive that is for. This is **opposite** to the
@@ -57,8 +57,7 @@ To format your changes according to the `.clang-format` configuration, either:
     `clang_git_format/config.py <https://github.com/MRPT/mrpt/blob/master/scripts/clang_git_format/clang_git_format/config.py>`_:
 
 - Run ClangFormat on the whole codebase. To do that use the
-    [clang_format_codebase.sh
-    script](https://github.com/MRPT/mrpt/blob/master/scripts/clang_format_codebase.sh)
+    `clang_format_codebase.sh script <https://github.com/MRPT/mrpt/blob/master/scripts/clang_format_codebase.sh>`_
     from the MRPT root directory. Since the MRPT codebase is already formatted,
     (assuming that your work off a commit after the codebase reformat) only your
     changes are going to be modified. Do check the results of ClangFormat before
