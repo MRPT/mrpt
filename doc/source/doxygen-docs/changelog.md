@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.1.8: (Under development)
+- Changes in applications:
+  - RawLogViewer:
+    - "Scan animation" window: now also shows the timestamp of observations.
 - General build changes:
   - Fix excessive alignment in aarch64 (32->16 bytes).
 - Changes in libraries:
