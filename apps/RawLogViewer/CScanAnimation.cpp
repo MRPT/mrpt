@@ -562,6 +562,15 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 		m_gl_objects.erase(s);  // and from my list
 	}
 
+	// Show timestamp:
+	m_plot3D->getOpenGLSceneRef()->getViewport()->addTextMessage(
+		5, 5,
+		mrpt::format(
+			"Timestamp (UTC): %s (%.06f)",
+			mrpt::system::dateTimeToString(tim_last).c_str(),
+			mrpt::Clock::toDouble(tim_last)),
+		0 /*id*/);
+
 	// Force refresh view:
 	m_plot3D->setCameraProjective(!cbViewOrtho->IsChecked());
 	m_plot3D->Refresh();
