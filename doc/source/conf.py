@@ -46,6 +46,9 @@ extensions = [
     'sphinxcontrib.bibtex'
 ]
 
+# Required in sphinx-bibtex>=2.0
+bibtex_bibfiles = ['bibliography.bib']
+
 # Show build time
 html_last_updated_fmt = '%H:%M, %b %d, %Y'
 
