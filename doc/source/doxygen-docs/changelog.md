@@ -11,6 +11,8 @@
     - New CMake build flag `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions.
   - \ref mrpt_math_grp
     - New class mrpt::math::TBoundingBox
+- BUG FIXES:
+  - Log `*_THROTTLE_*` macros (e.g. MRPT_LOG_THROTTLE_DEBUG) did not report the message the first time they were called, which seems a safer behavior.
 
 ------
 # Version 2.1.7: Released Jan 2nd, 2021

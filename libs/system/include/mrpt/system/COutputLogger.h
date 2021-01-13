@@ -394,8 +394,10 @@ struct COutputLoggerStreamWrapper
 		if (this->isLoggingLevelVisible(_LVL))                     \
 		{                                                          \
 			static mrpt::system::CTicTac tim;                      \
-			if (tim.Tac() > _PERIOD_SECONDS)                       \
+			static bool first = true;                              \
+			if (first || tim.Tac() > _PERIOD_SECONDS)              \
 			{                                                      \
+				first = false;                                     \
 				tim.Tic();                                         \
 				this->logStr(_LVL, _STRING);                       \
 			}                                                      \
@@ -408,8 +410,10 @@ struct COutputLoggerStreamWrapper
 		if (this->isLoggingLevelVisible(_LVL))                               \
 		{                                                                    \
 			static mrpt::system::CTicTac tim;                                \
-			if (tim.Tac() > _PERIOD_SECONDS)                                 \
+			static bool first = true;                                        \
+			if (first || tim.Tac() > _PERIOD_SECONDS)                        \
 			{                                                                \
+				first = false;                                               \
 				tim.Tic();                                                   \
 				::mrpt::system::COutputLoggerStreamWrapper(_LVL, *this)      \
 					<< __CONTENTS;                                           \
@@ -424,8 +428,10 @@ struct COutputLoggerStreamWrapper
 		if (this->isLoggingLevelVisible(_LVL))                \
 		{                                                     \
 			static mrpt::system::CTicTac tim;                 \
-			if (tim.Tac() > _PERIOD_SECONDS)                  \
+			static bool first = true;                         \
+			if (first || tim.Tac() > _PERIOD_SECONDS)         \
 			{                                                 \
+				first = false;                                \
 				tim.Tic();                                    \
 				this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__); \
 			}                                                 \
