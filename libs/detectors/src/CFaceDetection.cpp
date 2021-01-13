@@ -549,10 +549,12 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 	// can have a lateral area without to use)
 	//
 
-	size_t start = faceWidth, end = 0;
+	unsigned int start = faceWidth, end = 0;
+	const unsigned int rrows = region.rows();
+	const unsigned int rcols = region.cols();
 
-	for (size_t r = 0; r < region.rows(); r++)
-		for (size_t c = 1; c < region.cols(); c++)
+	for (unsigned int r = 0; r < rrows; r++)
+		for (unsigned int c = 1; c < rcols; c++)
 		{
 			if ((!(region(r, c - 1))) && (region(r, c)))
 			{
