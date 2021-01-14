@@ -54,8 +54,10 @@ class CConfigFile : public CConfigFileBase
 		bool failIfNotFound = false) const override;
 
    public:
-	/** Constructor that opens a configuration file.
-	 * \exception std::runtime_error If the file does not exist
+	/** Constructor associating with a given configuration filename.
+	 * If the file exists, it loads and parses its contents; otherwise, it
+	 * silently just start with an empty configuration file in memory. The file
+	 * will be written upon destruction, or at any time using writeNow()
 	 */
 	CConfigFile(const std::string& fileName);
 
@@ -67,13 +69,15 @@ class CConfigFile : public CConfigFileBase
 	 */
 	CConfigFile();
 
-	/** Associate this object with the given file, so future read/write
-	 * operations will be applied to that file (it's synchronized at
-	 * destruction) */
+	/** Associate this object with the given file, reading its contents right
+	 * now. Upon destruction, the updated contents will be written to that file.
+	 */
 	void setFileName(const std::string& fil_path);
 
 	/** Dumps the changes to the physical configuration file now, not waiting
-	 * until destruction. */
+	 * until destruction.
+	 * \exception std::runtime_error Upon error writing.
+	 */
 	void writeNow();
 
 	/** Discard saving (current) changes to physical file upon destruction */

@@ -386,7 +386,6 @@ void mrpt::callStackBackTrace(
 	int nFrames = ::backtrace(callstack.data(), nMaxFrames);
 	char** symbols = ::backtrace_symbols(callstack.data(), nFrames);
 
-
 #if MRPT_HAS_BFD
 	static const bool MRPT_BACKTRACE_DISABLE_BFD =
 		mrpt::get_env<bool>("MRPT_BACKTRACE_DISABLE_BFD", false);

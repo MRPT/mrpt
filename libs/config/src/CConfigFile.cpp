@@ -48,10 +48,7 @@ static std::string local_file_get_contents(const std::string& fileName)
 	// Note: Add "binary" to make sure the "tellg" file size matches the actual
 	// number of read bytes afterwards:
 	std::ifstream t(fileName, ios::binary);
-	if (!t.is_open())
-		THROW_EXCEPTION_FMT(
-			"file_get_contents(): Error opening for read file `%s`",
-			fileName.c_str());
+	if (!t.is_open()) return {};
 
 	t.seekg(0, std::ios::end);
 	std::size_t size = t.tellg();
@@ -114,7 +111,12 @@ void CConfigFile::writeNow()
 	MRPT_START
 	if (m_modified && !m_file.empty())
 	{
-		m_impl->ini->SaveFile(m_file.c_str());
+		if (SI_Error err = m_impl->ini->SaveFile(m_file.c_str()); err != SI_OK)
+		{
+			THROW_EXCEPTION_FMT(
+				"SimpleIni error %i for file='%s'", static_cast<int>(err),
+				m_file.c_str());
+		}
 		m_modified = false;
 	}
 	MRPT_END
