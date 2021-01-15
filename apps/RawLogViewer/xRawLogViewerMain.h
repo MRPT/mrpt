@@ -121,7 +121,7 @@ class MyArtProvider : public wxArtProvider
 struct TAlogRecord
 {
 	std::string label;
-	char type;  // 0: odo, 1: 2d laser, 2:3d laser, 3: image
+	int8_t type;  // 0: odo, 1: 2d laser, 2:3d laser, 3: image
 	std::vector<float> data;
 	std::string imgFile;
 	double startElev, endElev;
