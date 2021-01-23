@@ -137,7 +137,7 @@ class CFrustum : public CRenderizableShaderTriangles,
 	 * \note (New in MRPT 2.1.8)
 	 */
 	CFrustum(
-		const mrpt::img::TCamera& intrinsics, double focalDistScale = 20e-3);
+		const mrpt::img::TCamera& intrinsics, double focalDistScale = 5e-3);
 
 	/** Destructor  */
 	~CFrustum() override = default;

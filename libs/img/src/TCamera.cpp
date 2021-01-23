@@ -8,11 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include "img-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config/CConfigFileMemory.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
+#include <mrpt/math/matrix_serialization.h>	 // For "<<" ">>" operators.
 #include <mrpt/math/utils_matlab.h>
 
 using namespace mrpt::img;
@@ -38,7 +39,7 @@ std::string TCamera::dumpAsText() const
 	return cfg.getContent();
 }
 
-uint8_t TCamera::serializeGetVersion() const { return 4; }
+uint8_t TCamera::serializeGetVersion() const { return 5; }
 void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << focalLengthMeters;
@@ -47,7 +48,8 @@ void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 	// v4: only store the 4 relevant values:
 	out << fx() << fy() << cx() << cy();
 	// version 0 did serialize here a "CMatrixDouble15"
-	out << nrows << ncols;  // New in v2
+	out << nrows << ncols;	// New in v2
+	out << cameraName;	// v5
 }
 void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -58,6 +60,7 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 2:
 		case 3:
 		case 4:
+		case 5:
 		{
 			in >> focalLengthMeters;
 
@@ -96,6 +99,7 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				nrows = 480;
 				ncols = 640;
 			}
+			if (version >= 5) in >> cameraName;
 		}
 		break;
 		default:
@@ -143,6 +147,7 @@ mxArray* TCamera::writeToMatlab() const
 void TCamera::saveToConfigFile(
 	const std::string& section, mrpt::config::CConfigFileBase& cfg) const
 {
+	cfg.write(section, "camera_name", cameraName);
 	cfg.write(
 		section, "resolution",
 		format("[%u %u]", (unsigned int)ncols, (unsigned int)nrows));
@@ -195,6 +200,9 @@ void TCamera::loadFromConfigFile(
 
 	focalLengthMeters =
 		cfg.read_double(section, "focal_length", 0, false /* optional value */);
+
+	cameraName = cfg.read_string(
+		section, "camera_name", cameraName, false /* optional value */);
 }
 
 /** Rescale all the parameters for a new camera resolution (it raises an
@@ -233,10 +241,81 @@ bool mrpt::img::operator==(
 {
 	return a.ncols == b.ncols && a.nrows == b.nrows &&
 		   a.intrinsicParams == b.intrinsicParams && a.dist == b.dist &&
-		   a.focalLengthMeters == b.focalLengthMeters;
+		   a.focalLengthMeters == b.focalLengthMeters &&
+		   a.cameraName == b.cameraName;
 }
 bool mrpt::img::operator!=(
 	const mrpt::img::TCamera& a, const mrpt::img::TCamera& b)
 {
 	return !(a == b);
+}
+
+TCamera TCamera::FromYAML(const mrpt::containers::yaml& p)
+{
+	TCamera c;
+
+	c.ncols = p["image_width"].as<uint32_t>();
+	c.nrows = p["image_height"].as<uint32_t>();
+
+	c.cameraName = p["camera_name"].as<std::string>();
+	p["camera_matrix"].toMatrix(c.intrinsicParams);
+
+	ASSERT_EQUAL_(p["distortion_model"].as<std::string>(), "plumb_bob");
+
+	mrpt::math::CMatrixDouble15 v;
+	p["distortion_coefficients"].toMatrix(v);
+	c.setDistortionParamsVector(v);
+
+	c.focalLengthMeters = p.getOrDefault<double>("focal_length_meters", 0.0);
+
+	return c;
+}
+
+/* Example:
+ ( From: http://wiki.ros.org/camera_calibration_parsers#YAML )
+
+image_width: 2448
+image_height: 2050
+camera_name: prosilica
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [4827.94, 0, 1223.5, 0, 4835.62, 1024.5, 0, 0, 1]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [-0.41527, 0.31874, -0.00197, 0.00071, 0]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [4827.94, 0, 1223.5, 0, 0, 4835.62, 1024.5, 0, 0, 0, 1, 0]
+
+*/
+mrpt::containers::yaml TCamera::asYAML() const
+{
+	mrpt::containers::yaml p = mrpt::containers::yaml::Map();
+
+	p["image_width"] = ncols;
+	p["image_height"] = nrows;
+	p["camera_name"] = cameraName;
+	p["camera_matrix"] = mrpt::containers::yaml::FromMatrix(intrinsicParams);
+	p["distortion_model"] = "plumb_bob";
+	p["distortion_coefficients"] =
+		mrpt::containers::yaml::FromMatrix(getDistortionParamsVector());
+	p["rectification_matrix"] = mrpt::containers::yaml::FromMatrix(
+		mrpt::math::CMatrixDouble33::Identity());
+
+	mrpt::math::CMatrixDouble proj(3, 4);
+	proj.setZero();
+	proj.insertMatrix(0, 0, intrinsicParams);
+	p["projection_matrix"] = mrpt::containers::yaml::FromMatrix(proj);
+
+	p["focal_length_meters"] = focalLengthMeters;
+
+	return p;
 }

@@ -7,6 +7,8 @@
 - General build changes:
   - Fix excessive alignment in aarch64 (32->16 bytes).
 - Changes in libraries:
+  - \ref mrpt_containers_grp
+    - New YAML to/from matrix methods: mrpt::containers::yaml::FromMatrix(), mrpt::containers::yaml::toMatrix()
   - \ref mrpt_core_grp
     - New CMake build flag `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions.
   - \ref mrpt_math_grp
