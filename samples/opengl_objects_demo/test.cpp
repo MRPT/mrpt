@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
+
 #include <iostream>
 
 using namespace std;
@@ -152,6 +153,17 @@ void TestOpenGLObjects()
 		obj2->setColor_u8(0xff, 0x00, 0x00, 0x80);
 		theScene->insert(obj2);
 
+		// Default camera params:
+		mrpt::img::TCamera c;
+		c.nrows = 800;
+		c.ncols = 600;
+		c.setIntrinsicParamsFromValues(700, 700, 400, 300);
+
+		auto obj3 = opengl::CFrustum::Create(c);
+		obj3->setLocation(off_x, 12, 0);
+		obj3->setColor_u8(0xff, 0x00, 0x00, 0x80);
+		theScene->insert(obj3);
+
 		auto gl_txt = opengl::CText::Create("CFrustum");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -205,7 +217,7 @@ void TestOpenGLObjects()
 
 	// CEllipsoid3D
 	{
-		const double cov3d_dat[] = {0.9,  0.7,  -0.4, 0.7, 1.6,
+		const double cov3d_dat[] = {0.9,  0.7,	-0.4, 0.7, 1.6,
 									-0.6, -0.4, -0.6, 1.5};
 		const double cov2d_dat[] = {0.9, 0.7, 0.7, 1.6};
 		mrpt::math::CMatrixDouble22 cov2d(cov2d_dat);
@@ -302,8 +314,8 @@ void TestOpenGLObjects()
 		const double rho_mean = 0.5 * (1. / min_dist + 1. / max_dist);
 		const double rho_std = (1. / 6.) * (1. / min_dist - 1. / max_dist);
 
-		const double cov_params_dat[] = {square(rho_std), 0, 0,
-										 square(2.0_deg)};
+		const double cov_params_dat[] = {
+			square(rho_std), 0, 0, square(2.0_deg)};
 		const double mean_params_dat[] = {rho_mean, 70.0_deg};
 		mrpt::math::CMatrixFixed<double, 2, 2> cov_params(cov_params_dat);
 		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
@@ -701,7 +713,7 @@ void TestOpenGLObjects()
 			const unsigned int num = 20;
 			const float scale = 0.8 * STEP_X / num;
 			auto obj = opengl::CVectorField3D::Create();
-			obj->setLocation(off_x, -0.5 * scale * num, 0);  //
+			obj->setLocation(off_x, -0.5 * scale * num, 0);	 //
 
 			CMatrixFloat x(num, num), y(num, num), z(num, num);
 			CMatrixFloat vx(num, num), vy(num, num), vz(num, num);

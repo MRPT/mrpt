@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -228,4 +228,12 @@ void CFrustum::setVertFOVAsymmetric(
 auto CFrustum::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
 	return trianglesBoundingBox().compose(m_pose);
+}
+
+CFrustum::CFrustum(const mrpt::img::TCamera& i, double focalScale)
+	: CFrustum(
+		  i.fx() * focalScale * 0.1f, i.fx() * focalScale,
+		  2 * mrpt::RAD2DEG(std::atan2(i.ncols, 2 * i.fx())),
+		  2 * mrpt::RAD2DEG(std::atan2(i.nrows, 2 * i.fy())), 1.0f, true, false)
+{
 }

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/img/TCamera.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
@@ -125,6 +126,18 @@ class CFrustum : public CRenderizableShaderTriangles,
 		float near_distance, float far_distance, float horz_FOV_degrees,
 		float vert_FOV_degrees, float lineWidth, bool draw_lines,
 		bool draw_planes);
+
+	/** Constructor from camera intrinsic parameters: creates a frustrum with
+	 * the correct vertical and horizontal FOV angles for the given camera
+	 * model, in wireframe.
+	 *
+	 * \param intrinsics Camera intrinsics. Distortion is ignored here.
+	 * \param focalDistScale Scale for the far plane, in meters/pixels.
+	 *
+	 * \note (New in MRPT 2.1.8)
+	 */
+	CFrustum(
+		const mrpt::img::TCamera& intrinsics, double focalDistScale = 20e-3);
 
 	/** Destructor  */
 	~CFrustum() override = default;
