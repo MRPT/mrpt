@@ -11,6 +11,8 @@
     - New CMake build flag `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions.
   - \ref mrpt_math_grp
     - New class mrpt::math::TBoundingBox
+  - \ref mrpt_opengl_grp
+    - mrpt::opengl::CFrustum() new constructor from mrpt::img::TCamera()
 - BUG FIXES:
   - Log `*_THROTTLE_*` macros (e.g. MRPT_LOG_THROTTLE_DEBUG) did not report the message the first time they were called, which seems a safer behavior.
   - Reverted changed behavior: mrpt::config::CConfigFile did not throw if a non-existing file was passed to its constructor, but it throws in MRPT 2.1.{0-7}.
