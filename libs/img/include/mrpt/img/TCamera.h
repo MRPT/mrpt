@@ -11,8 +11,14 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <array>
 #include <functional>  // hash
+
+namespace mrpt::containers
+{
+class yaml;
+}
 
 namespace mrpt::img
 {
@@ -31,7 +37,20 @@ class TCamera : public mrpt::serialization::CSerializable
 	DECLARE_MEX_CONVERSION
 
    public:
+	/** Default ctor: all intrinsic parameters set to zero. */
 	TCamera();
+
+	/** Parse from yaml, in OpenCV calibration model.
+	 * Refer to
+	 * [this example](http://wiki.ros.org/camera_calibration_parsers#YAML).
+	 */
+	static TCamera FromYAML(const mrpt::containers::yaml& params);
+
+	/** Stores as yaml, in OpenCV calibration model.
+	 * Refer to
+	 * [this example](http://wiki.ros.org/camera_calibration_parsers#YAML).
+	 */
+	mrpt::containers::yaml asYAML() const;
 
 	/** @name Camera parameters
 		@{ */
@@ -55,6 +74,9 @@ class TCamera : public mrpt::serialization::CSerializable
 	 * 'intrinsicParams' to determine the pixel size). */
 	double focalLengthMeters{.0};
 
+	/** Optional camera name. \note (New in MRPT 2.1.8) */
+	std::string cameraName = "camera1";
+
 	/** @} */
 
 	/** Rescale all the parameters for a new camera resolution (it raises an
@@ -72,6 +94,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	 *  fy         = FY
 	 *  dist       = [K1 K2 T1 T2 K3]
 	 *  focal_length = FOCAL_LENGTH
+	 *  camera_name = camera1
 	 *  \endcode
 	 */
 	void saveToConfigFile(
@@ -88,7 +111,8 @@ class TCamera : public mrpt::serialization::CSerializable
 	 *  fx         = FX
 	 *  fy         = FY
 	 *  dist       = [K1 K2 T1 T2 K3]
-	 *  focal_length = FOCAL_LENGTH  [optional field]
+	 *  focal_length = FOCAL_LENGTH  [optional]
+	 *  camera_name = camera1 [optional]
 	 *  \endcode
 	 *  \exception std::exception on missing fields
 	 */
@@ -125,6 +149,13 @@ class TCamera : public mrpt::serialization::CSerializable
 	{
 		for (size_t i = 0; i < distParVector.size(); i++)
 			distParVector(0, i) = dist[i];
+	}
+	/** Get the vector of distortion params of the camera  */
+	inline mrpt::math::CMatrixDouble15 getDistortionParamsVector() const
+	{
+		mrpt::math::CMatrixDouble15 d;
+		getDistortionParamsVector(d);
+		return d;
 	}
 
 	/** Get a vector with the distortion params of the camera  */
@@ -217,7 +248,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	/** Set the value of the k6 distortion parameter.  */
 	inline void k6(double val) { dist[7] = val; }
 
-};  // end class TCamera
+};	// end class TCamera
 
 bool operator==(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 bool operator!=(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
@@ -242,6 +273,8 @@ struct hash<mrpt::img::TCamera>
 		res = res * 31 + hash<uint32_t>()(k.nrows);
 		for (unsigned int i = 0; i < k.dist.size(); i++)
 			res = res * 31 + hash<double>()(k.dist[i]);
+		res = res * 31 + hash<std::string>()(k.cameraName);
+		res = res * 31 + hash<double>()(k.focalLengthMeters);
 		return res;
 	}
 };

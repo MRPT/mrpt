@@ -99,13 +99,17 @@ class yaml
 		/** Optional comment block */
 		comments_t comments;
 
+		/** Optional flag to print collections in short form (e.g. [A,B] for
+		 * sequences) \note (New in MRPT 2.1.8) */
+		bool printInShortFormat = false;
+
 		node_t() = default;
 		~node_t() = default;
 
 		template <
-			typename T,  //
+			typename T,	 //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,  //
+				std::initializer_list<map_t::value_type>, T>>,	//
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -290,6 +294,31 @@ class yaml
 	/** \overload (loads an existing YAMLCPP into this) */
 	template <typename YAML_NODE>
 	inline void loadFromYAMLCPP(const YAML_NODE& n);
+
+	/** Creates a yaml dictionary node from an Eigen or mrpt::math matrix.
+	 * Example (compatible with OpenCV & ROS YAML formats):
+	 * \code
+	 * rows: 2
+	 * cols: 3
+	 * data: [11, 12, 13, 21, 22, 23]
+	 * \endcode
+	 * \sa toMatrix()
+	 */
+	template <typename MATRIX>
+	inline static yaml FromMatrix(const MATRIX& m);
+
+	/** Fills in a matrix from a yaml dictionary node.
+	 * The matrix can be either an Eigen or mrpt::math matrix.
+	 * Example yaml node (compatible with OpenCV & ROS YAML formats):
+	 * \code
+	 * rows: 2
+	 * cols: 3
+	 * data: [11, 12, 13, 21, 22, 23]
+	 * \endcode
+	 * \sa FromMatrix()
+	 */
+	template <typename MATRIX>
+	inline void toMatrix(MATRIX& m) const;
 
 	/** @} */
 
@@ -677,6 +706,7 @@ class yaml
 		int indent = 0;
 		bool needsNL = false;
 		bool needsSpace = false;
+		bool shortFormat = false;
 	};
 
 	// Return: true if the last printed char is a newline char
@@ -930,6 +960,53 @@ template <typename YAML_NODE>
 inline void yaml::loadFromYAMLCPP(const YAML_NODE& n)
 {
 	*this = yaml::FromYAMLCPP(n);
+}
+
+template <typename MATRIX>
+inline yaml yaml::FromMatrix(const MATRIX& m)
+{
+	yaml r = mrpt::containers::yaml::Map();
+	r["rows"] = m.rows();
+	r["cols"] = m.cols();
+	auto& data = r["data"] = mrpt::containers::yaml::Sequence();
+	data.node().printInShortFormat = true;
+	for (int iRow = 0; iRow < m.rows(); iRow++)
+		for (int iCol = 0; iCol < m.cols(); iCol++)
+			data.push_back(m(iRow, iCol));
+	return r;
+}
+
+template <typename MATRIX>
+inline void yaml::toMatrix(MATRIX& m) const
+{
+	ASSERT_(isMap());
+	ASSERT_(has("rows") && has("cols") && has("data"));
+	const int nRows = (*this)["rows"].as<int>();
+	const int nCols = (*this)["cols"].as<int>();
+	ASSERT_((nRows > 0 && nCols > 0) || (nRows == 0 && nCols == 0));
+
+	const auto& data = (*this)["data"];
+	ASSERT_(data.isSequence());
+	ASSERT_EQUAL_(static_cast<int>(data.size()), nRows * nCols);
+
+	using entry_t = std::decay_t<decltype(m(0, 0))>;
+
+	if (m.cols() <= 0 || m.rows() <= 0)
+	{
+		try
+		{
+			m.resize(nRows, nCols);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	ASSERT_EQUAL_(m.cols(), nCols);
+	ASSERT_EQUAL_(m.rows(), nRows);
+
+	for (int r = 0, idx = 0; r < nRows; r++)
+		for (int c = 0; c < nCols; c++, idx++)
+			m(r, c) = data.operator()(idx).as<entry_t>();
 }
 
 /** Sort operator required for std::map with node_t as key */
