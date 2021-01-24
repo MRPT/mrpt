@@ -9,11 +9,6 @@ import subprocess
 from .custom_exceptions import CalledProcessError
 import tarfile
 
-from .config import (CLANG_FORMAT_VERSION,
-                    CLANG_FORMAT_HTTP_LINUX_CACHE,
-                    CLANG_FORMAT_HTTP_DARWIN_CACHE,
-                    CLANG_FORMAT_SOURCE_TAR_BASE, )
-
 import logging
 logger = logging.getLogger("clang-format")
 
@@ -30,53 +25,6 @@ def get_base_dir():
     except:
         # We are not in a valid git directory. Use the script path instead.
         return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-
-
-def get_clang_format_from_linux_cache(dest_file):
-    """Get clang-format from mongodb's cache
-    """
-    get_clang_format_from_cache_and_extract(
-        CLANG_FORMAT_HTTP_LINUX_CACHE,
-        ".gz")
-
-    # Destination Path
-    shutil.move("build/bin/clang-format", dest_file)
-
-
-def get_clang_format_from_darwin_cache(dest_file):
-    """Download clang-format from llvm.org, unpack the tarball,
-    and put clang-format in the specified place
-    """
-    get_clang_format_from_cache_and_extract(
-        CLANG_FORMAT_HTTP_DARWIN_CACHE,
-        ".xz")
-
-    # Destination Path
-    shutil.move(get_tar_path(CLANG_FORMAT_VERSION, "x86_64-apple-darwin"),
-                dest_file)
-
-
-def get_clang_format_from_cache_and_extract(url, tarball_ext):
-    """Get clang-format from mongodb's cache
-    and extract the tarball
-    """
-    dest_dir = tempfile.gettempdir()
-    temp_tar_file = os.path.join(dest_dir, "temp.tar" + tarball_ext)
-
-    # Download from file
-    logger.info("Downloading clang-format (Version = %s) from %s, saving to \"%s\""
-                % (CLANG_FORMAT_VERSION, url, temp_tar_file))
-    urllib.urlretrieve(url, temp_tar_file)
-
-    extract_clang_format(temp_tar_file)
-
-
-def get_tar_path(version, tar_path):
-    """ Get the path to clang-format in the llvm tarball
-    """
-    return CLANG_FORMAT_SOURCE_TAR_BASE.substitute(
-        version=version,
-        tar_path=tar_path)
 
 
 # Copied from python 2.7 version of subprocess.py
