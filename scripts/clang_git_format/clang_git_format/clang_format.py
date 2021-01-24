@@ -141,8 +141,6 @@ class ClangFormat:
                     logger.info("To fix formatting errors, run %s "
                                 "--style=file -i %s", self.clang_path,
                                 file_name)
-                    for line in result:
-                        logger.info(line.rstrip())
 
             return False
 
