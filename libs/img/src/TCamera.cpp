@@ -13,7 +13,7 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/matrix_serialization.h>	 // For "<<" ">>" operators.
+#include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
 #include <mrpt/math/utils_matlab.h>
 
 using namespace mrpt::img;
@@ -48,8 +48,8 @@ void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 	// v4: only store the 4 relevant values:
 	out << fx() << fy() << cx() << cy();
 	// version 0 did serialize here a "CMatrixDouble15"
-	out << nrows << ncols;	// New in v2
-	out << cameraName;	// v5
+	out << nrows << ncols;  // New in v2
+	out << cameraName;  // v5
 }
 void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {

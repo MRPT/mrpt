@@ -248,7 +248,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	/** Set the value of the k6 distortion parameter.  */
 	inline void k6(double val) { dist[7] = val; }
 
-};	// end class TCamera
+};  // end class TCamera
 
 bool operator==(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 bool operator!=(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
