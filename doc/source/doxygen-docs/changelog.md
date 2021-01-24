@@ -4,6 +4,8 @@
 - Changes in applications:
   - RawLogViewer:
     - "Scan animation" window: now also shows the timestamp of observations.
+  - camera-calib and kinect-stereo-calib:
+    - New option to save camera calibration results as YAML files.
 - General build changes:
   - Fix excessive alignment in aarch64 (32->16 bytes).
 - Changes in libraries:
