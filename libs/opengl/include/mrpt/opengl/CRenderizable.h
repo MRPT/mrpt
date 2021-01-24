@@ -337,13 +337,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	[[deprecated(
 		"Use getBoundingBox() const -> mrpt::math::TBoundingBox instead.")]]  //
-		void
-		getBoundingBox(
-			mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const {
-			const auto bb = getBoundingBox();
-			bb_min = bb.min;
-			bb_max = bb.max;
-		}
+	void getBoundingBox(
+		mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
+	{
+		const auto bb = getBoundingBox();
+		bb_min = bb.min;
+		bb_max = bb.max;
+	}
 
 	/** Provide a representative point (in object local coordinates), used to
 	 * sort objects by eye-distance while rendering with transparencies
