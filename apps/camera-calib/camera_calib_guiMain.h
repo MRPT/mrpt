@@ -30,8 +30,6 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 
-#define CAMERA_CALIB_GUI_VERSION "2.0"
-
 class camera_calib_guiDialog : public wxDialog
 {
    public:

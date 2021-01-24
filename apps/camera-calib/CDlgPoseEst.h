@@ -41,8 +41,6 @@
 #include <mrpt/vision/pnp_algos.h>
 #include <fstream>
 
-#define CAMERA_CALIB_GUI_VERSION "2.0"
-
 class CDlgPoseEst : public wxDialog
 {
    public:

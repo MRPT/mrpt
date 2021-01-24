@@ -28,8 +28,8 @@ static TCamera getSampleCameraParams()
 	c1.k1(1e-3);
 	c1.k2(2e-3);
 	c1.k3(3e-3);
-	c1.k4(4e-3);
-	c1.k5(5e-3);
+	c1.p1(4.5e-3);
+	c1.p2(5.6e-9);
 	return c1;
 }
 
@@ -58,8 +58,8 @@ TEST(TCamera, CopyCtor)
 	EXPECT_EQ(c2.k1(), 1e-3);
 	EXPECT_EQ(c2.k2(), 2e-3);
 	EXPECT_EQ(c2.k3(), 3e-3);
-	EXPECT_EQ(c2.k4(), 4e-3);
-	EXPECT_EQ(c2.k5(), 5e-3);
+	EXPECT_EQ(c2.p1(), 4.5e-3);
+	EXPECT_EQ(c2.p2(), 5.6e-9);
 }
 
 TEST(TCamera, FromYAML)
@@ -101,8 +101,6 @@ TEST(TCamera, ToFromYAML)
 	const auto c1 = getSampleCameraParams();
 	std::stringstream ss;
 	ss << c1.asYAML();
-
-	std::cout << ss.str();
 
 	const auto c2 =
 		TCamera::FromYAML(mrpt::containers::yaml::FromText(ss.str()));

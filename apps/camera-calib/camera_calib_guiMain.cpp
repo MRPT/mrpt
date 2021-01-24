@@ -27,6 +27,7 @@
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -153,7 +154,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	Create(
 		parent, id, _("Camera calibration GUI - Part of the MRPT project"),
 		wxDefaultPosition, wxDefaultSize,
-		wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMAXIMIZE_BOX, _T("id"));
+		wxDEFAULT_DIALOG_STYLE | wxDEFAULT_FRAME_STYLE, _T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer1->AddGrowableCol(1);
 	FlexGridSizer1->AddGrowableRow(0);
@@ -286,7 +287,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 										 _("Scaramuzza et al.\'s")};
 	rbMethod = new wxRadioBox(
 		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
-		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
+		wxDefaultSize, 2, __wxRadioBoxChoices_1, 0, 0, wxDefaultValidator,
 		_T("ID_RADIOBOX1"));
 	FlexGridSizer6->Add(
 		rbMethod, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
@@ -521,10 +522,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	this->show3Dview();  // Empty 3D scene
 
 	Center();
-	this->SetTitle(format(
-					   "Camera calibration %s - Part of the MRPT project",
-					   CAMERA_CALIB_GUI_VERSION)
-					   .c_str());
+	this->SetTitle("Camera calibration - Part of the MRPT project");
 	Maximize();
 }
 
@@ -687,30 +685,15 @@ void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 
 	{
 		wxFileDialog dlg(
-			this, _("Save intrinsic parameters matrix"), _("."),
-			_("intrinsic_matrix.txt"),
-			_("Text files (*.txt)|*.txt|All files (*.*)|*.*"),
+			this, _("Save camera calibration"), _("."), _("calibration.yml"),
+			_("YAML files (*.yml)|*.yml|All files (*.*)|*.*"),
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 		if (wxID_OK != dlg.ShowModal()) return;
 
-		camera_params.intrinsicParams.saveToTextFile(
-			string(dlg.GetPath().mb_str()));
-	}
-
-	{
-		wxFileDialog dlg(
-			this, _("Save distortion parameters"), _("."),
-			_("distortion_matrix.txt"),
-			_("Text files (*.txt)|*.txt|All files (*.*)|*.*"),
-			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-
-		if (wxID_OK != dlg.ShowModal()) return;
-
-		CMatrixDouble M(1, 5);
-		for (unsigned i = 0; i < 5; i++) M(0, i) = camera_params.dist[i];
-
-		M.saveToTextFile(string(dlg.GetPath().mb_str()));
+		std::ofstream f(string(dlg.GetPath().mb_str()));
+		ASSERT_(f.is_open());
+		camera_params.asYAML().printAsYAML(f);
 	}
 }
 

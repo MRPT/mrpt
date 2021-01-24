@@ -32,6 +32,7 @@
 //*)
 
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/io/CMemoryStream.h>
@@ -2206,8 +2207,35 @@ void kinect_calibrate_guiDialog::OnbtnSaveCalibClick(wxCommandEvent& event)
 	wxString startPath;
 	m_config.Read(_("last_path"), &startPath);
 
+	wxFileDialog dialog2(
+		this, _("Save calibration file (YAML format)"), startPath,
+		_("calib.yml"),
+		_("Configuration files (*.yml)|*.yml|All files (*.*)|*.*"),
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	if (dialog2.ShowModal() == wxID_OK)
+	{
+		std::ofstream f(dialog2.GetPath());
+		ASSERT_(f.is_open());
+
+		mrpt::containers::yaml c = mrpt::containers::yaml::Map();
+
+		c["right"] = m_calib_result.cam_params.rightCamera.asYAML();
+		c["left"] = m_calib_result.cam_params.leftCamera.asYAML();
+
+		c["right_camera_pose"] =
+			m_calib_result.cam_params.rightCameraPose.asString();
+
+		auto& r = c["calibration_results"] = mrpt::containers::yaml::Map();
+		r["iters"] = m_calib_result.final_iters;
+		r["good_image_pairs"] = m_calib_result.final_number_good_image_pairs;
+		r["final_rmse"] = m_calib_result.final_rmse;
+
+		c.printAsYAML(f);
+	}
+
 	wxFileDialog dialog(
-		this, _("Save calibration file"), startPath, _("calib.ini"),
+		this, _("Save calibration file (INI format)"), startPath,
+		_("calib.ini"),
 		_("Configuration files (*.ini,*.cfg)|*.ini;*.cfg|All files (*.*)|*.*"),
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (dialog.ShowModal() == wxID_OK)
