@@ -2203,7 +2203,7 @@ void kinect_calibrate_guiDialog::OnbtnSaveCalibClick(wxCommandEvent& event)
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (dialog2.ShowModal() == wxID_OK)
 	{
-		std::ofstream f(dialog2.GetPath());
+		std::ofstream f(dialog2.GetPath().mbc_str());
 		ASSERT_(f.is_open());
 
 		mrpt::containers::yaml c = mrpt::containers::yaml::Map();
