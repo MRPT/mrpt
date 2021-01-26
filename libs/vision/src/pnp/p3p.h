@@ -11,6 +11,7 @@
 //#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to
 // enable the plugin system
 #include <mrpt/3rdparty/do_opencv_includes.h>
+
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <vector>
@@ -203,15 +204,15 @@ class p3p
 	 */
 	bool jacobi_4x4(double* A, double* D, double* U);
 
-	double fx;  //! Focal length x
-	double fy;  //! Focal length y
-	double cx;  //! Image center x
-	double cy;  //! Image center y
-	double inv_fx;  //! Inverse of focal length x
-	double inv_fy;  //! Inverse of focal length y
+	double fx;	//! Focal length x
+	double fy;	//! Focal length y
+	double cx;	//! Image center x
+	double cy;	//! Image center y
+	double inv_fx;	//! Inverse of focal length x
+	double inv_fy;	//! Inverse of focal length y
 	double cx_fx;  //! Inverse of image center point x
 	double cy_fy;  //! Inverse of image center point y
 };
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision::pnp

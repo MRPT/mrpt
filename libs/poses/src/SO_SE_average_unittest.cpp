@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/SO_SE_average.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -21,7 +22,8 @@ void run_test_so2_avrg(
 	const double* angs, const size_t N, const double ang_correct_avr)
 {
 	SO_average<2> so_avr;
-	for (size_t i = 0; i < N; i++) so_avr.append(angs[i]);
+	for (size_t i = 0; i < N; i++)
+		so_avr.append(angs[i]);
 	const double calc_avr = so_avr.get_average();
 	EXPECT_NEAR(mrpt::math::wrapToPi(ang_correct_avr - calc_avr), .0, 1e-6);
 }

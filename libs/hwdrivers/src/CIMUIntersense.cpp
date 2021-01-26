@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CIMUIntersense.h>
 #include <mrpt/obs/CObservationIMU.h>
+
 #include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUIntersense, mrpt::hwdrivers)
@@ -34,8 +35,8 @@ using namespace std;
 #if defined(_MSC_VER)
 #pragma comment(lib, "isense.dll")
 #endif
-#endif  // _WIN32
-#endif  // MRPT_HAS_INTERSENSE
+#endif	// _WIN32
+#endif	// MRPT_HAS_INTERSENSE
 #endif
 /*-------------------------------------------------------------
 					CIMUIntersense
@@ -46,7 +47,7 @@ CIMUIntersense::CIMUIntersense()
 
 #if MRPT_HAS_INTERSENSE
 	m_handles_ptr =
-		new ISD_TRACKER_HANDLE[ISD_MAX_TRACKERS]();  // initialized to zeros
+		new ISD_TRACKER_HANDLE[ISD_MAX_TRACKERS]();	 // initialized to zeros
 #else
 	THROW_EXCEPTION(
 		"MRPT has been compiled with 'BUILD_INTERSENSE'=OFF, so this class "
@@ -108,24 +109,24 @@ void CIMUIntersense::doProcess()
 
 		// angular velocity
 		obs->rawMeasurements[IMU_YAW_VEL] =
-			data.Station[0].AngularVelBodyFrame[0];  // rad/s
+			data.Station[0].AngularVelBodyFrame[0];	 // rad/s
 		obs->dataIsPresent[IMU_YAW_VEL] = true;
 		obs->rawMeasurements[IMU_PITCH_VEL] =
-			data.Station[0].AngularVelBodyFrame[1];  // rad/s
+			data.Station[0].AngularVelBodyFrame[1];	 // rad/s
 		obs->dataIsPresent[IMU_PITCH_VEL] = true;
 		obs->rawMeasurements[IMU_ROLL_VEL] =
-			data.Station[0].AngularVelBodyFrame[2];  // rad/s
+			data.Station[0].AngularVelBodyFrame[2];	 // rad/s
 		obs->dataIsPresent[IMU_ROLL_VEL] = true;
 
 		// angular velocity	2
 		obs->rawMeasurements[IMU_YAW_VEL_GLOBAL] =
-			data.Station[0].AngularVelNavFrame[0];  // rad/s
+			data.Station[0].AngularVelNavFrame[0];	// rad/s
 		obs->dataIsPresent[IMU_YAW_VEL_GLOBAL] = true;
 		obs->rawMeasurements[IMU_PITCH_VEL_GLOBAL] =
-			data.Station[0].AngularVelNavFrame[1];  // rad/s
+			data.Station[0].AngularVelNavFrame[1];	// rad/s
 		obs->dataIsPresent[IMU_PITCH_VEL_GLOBAL] = true;
 		obs->rawMeasurements[IMU_ROLL_VEL_GLOBAL] =
-			data.Station[0].AngularVelNavFrame[2];  // rad/s
+			data.Station[0].AngularVelNavFrame[2];	// rad/s
 		obs->dataIsPresent[IMU_ROLL_VEL_GLOBAL] = true;
 
 		// angular velocity 3 --> x,y,z velocity
@@ -193,7 +194,7 @@ void CIMUIntersense::doProcess()
 		n_data_ok++;
 	}  // end-for
 
-	if (n_data_ok == 0)  // none of the sensors yielded data
+	if (n_data_ok == 0)	 // none of the sensors yielded data
 		m_toutCounter++;
 
 	if (m_toutCounter > 3)
@@ -221,8 +222,7 @@ void CIMUIntersense::initialize()
 	cout << "Opening trackers... ";
 	openSuccess =
 		ISD_OpenAllTrackers((Hwnd) nullptr, isense_handles, FALSE, TRUE);
-	if (openSuccess < 1)
-		cout << "ERROR" << endl;
+	if (openSuccess < 1) cout << "ERROR" << endl;
 	else
 	{
 		cout << "DONE" << endl;

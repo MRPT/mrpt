@@ -150,5 +150,5 @@ class CPointPDFGaussian : public CPointPDF
 	double mahalanobisDistanceTo(
 		const CPointPDFGaussian& other, bool only_2D = false) const;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

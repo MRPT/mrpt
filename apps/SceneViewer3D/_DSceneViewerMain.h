@@ -26,6 +26,7 @@
 #include <wx/things/toggle.h>
 #include <wx/timer.h>
 #include <wx/toolbar.h>
+
 #include <optional>
 
 class CDlgCamTracking;
@@ -224,4 +225,4 @@ class _DSceneViewerFrame : public wxFrame
 	DECLARE_EVENT_TABLE()
 };
 
-#endif  // _DSCENEVIEWERMAIN_H
+#endif	// _DSCENEVIEWERMAIN_H

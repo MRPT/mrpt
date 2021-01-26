@@ -19,7 +19,7 @@
 
 #define NUM_DETECTORS 11
 #define NUM_DESCRIPTORS 8
-#define IMAGE_WIDTH 600  // 400
+#define IMAGE_WIDTH 600	 // 400
 #define IMAGE_HEIGHT 600  // 400
 #define WIDGET_HEIGHT 30
 #define PARAMS_HEIGHT 30
@@ -68,6 +68,7 @@
 
 /// standard c++ includes
 #include <dirent.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -104,9 +105,9 @@ class MainWindow : public QMainWindow
 
 	QPushButton* button_generate;  //!< this is the button for visualize
 	//! descriptor option
-	QPushButton* button_close;  //!< this is button for closing the gui,
+	QPushButton* button_close;	//!< this is button for closing the gui,
 	//! currently not being used
-	QPushButton* next_desc;  //!< unsued variable
+	QPushButton* next_desc;	 //!< unsued variable
 
 	QPushButton* prev_button;  //!< previous button to go back to previous image
 	//! when loading image datasets
@@ -116,61 +117,61 @@ class MainWindow : public QMainWindow
 	//! readFilesFromFolder function
 
 	QPushButton*
-		browse_button;  //!< browse button to load image/folder for first image
+		browse_button;	//!< browse button to load image/folder for first image
 	QPushButton* browse_button2;  //!< browse button to load image/folder for
 	//! second image
 	QPushButton* generateVisualOdometry;  //!< button which generates visual
 	//! odometry for monocular datasets
 	QGridLayout* layout_grid;  //!< main layut for the GUI app
 
-	int currentInputIndex;  //!< stores the users selected choice among single
+	int currentInputIndex;	//!< stores the users selected choice among single
 	//! image, stereo image, rawlog, single dataset or
 	//! stereo dataset
-	int detector_selected;  //!< stores the users selection for the chosen
+	int detector_selected;	//!< stores the users selection for the chosen
 	//! detector
 	int descriptor_selected;  //!< stores the users selection for the chosen
 	//! descriptor
 
 	QGroupBox*
-		groupBox1;  //!< stores detector, descriptor comboboxes and buttons
+		groupBox1;	//!< stores detector, descriptor comboboxes and buttons
 	QGroupBox* groupBox2;
-	QGroupBox* groupBox_images;  //!< stores the images
+	QGroupBox* groupBox_images;	 //!< stores the images
 
 	QComboBox*
-		inputs;  //!< combobox contains type of input data specified by the user
+		inputs;	 //!< combobox contains type of input data specified by the user
 	QLineEdit* inputFilePath;  //!< text field which takes the input for the
 	//! first image / dataset file path
-	QLineEdit* inputFilePath2;  //!< text field which takes the input for the
+	QLineEdit* inputFilePath2;	//!< text field which takes the input for the
 	//! second image / dataset file path
-	string file_path1;  //!< string reads from inputFilePath to store file path
+	string file_path1;	//!< string reads from inputFilePath to store file path
 	//! entered by used
-	string file_path2;  //!< string reads from inputFilePath2 to store file path
+	string file_path2;	//!< string reads from inputFilePath2 to store file path
 	//! entered by used
 
 	QLineEdit*
 		numFeaturesLineEdit;  //!< Text field to ask user for number of features
 
 	QComboBox* detectors_select;  //! asks type of detector from the user
-	QComboBox* descriptors_select;  //!< asks type of descriptor from the user
+	QComboBox* descriptors_select;	//!< asks type of descriptor from the user
 
-	my_qlabel* image1;  //!< QLabel which stores the first image which can be
+	my_qlabel* image1;	//!< QLabel which stores the first image which can be
 	//! clicked to select the keypoint from it
-	QLabel* image2;  //!< QLabel to hold the second image
-	QImage qimage1;  //!< stores the first image
-	QImage qimage2;  //!< store the second image
-	int resolution_x, resolution_y;  //!< stores the resolution of the image
+	QLabel* image2;	 //!< QLabel to hold the second image
+	QImage qimage1;	 //!< stores the first image
+	QImage qimage2;	 //!< store the second image
+	int resolution_x, resolution_y;	 //!< stores the resolution of the image
 
-	QLabel* param1;  //!< QLabel for detector parameter 1
-	QLabel* param2;  //!< QLabel for detector parameter 2
-	QLabel* param3;  //!< QLabel for detector parameter 3
-	QLabel* param4;  //!< QLabel for detector parameter 4
-	QLabel* param5;  //!< QLabel for detector parameter 5
+	QLabel* param1;	 //!< QLabel for detector parameter 1
+	QLabel* param2;	 //!< QLabel for detector parameter 2
+	QLabel* param3;	 //!< QLabel for detector parameter 3
+	QLabel* param4;	 //!< QLabel for detector parameter 4
+	QLabel* param5;	 //!< QLabel for detector parameter 5
 
-	QLineEdit* param1_edit;  //!< TextField for detector parameter 1
-	QLineEdit* param2_edit;  //!< TextField for detector parameter 2
-	QLineEdit* param3_edit;  //!< TextField for detector parameter 3
-	QLineEdit* param4_edit;  //!< TextField for detector parameter 4
-	QLineEdit* param5_edit;  //!< TextField for detector parameter 5
+	QLineEdit* param1_edit;	 //!< TextField for detector parameter 1
+	QLineEdit* param2_edit;	 //!< TextField for detector parameter 2
+	QLineEdit* param3_edit;	 //!< TextField for detector parameter 3
+	QLineEdit* param4_edit;	 //!< TextField for detector parameter 4
+	QLineEdit* param5_edit;	 //!< TextField for detector parameter 5
 
 	QLabel* param1_desc;  //!< QLabel for descriptor parameter 1
 	QLabel* param2_desc;  //!< QLabel for descriptor parameter 2
@@ -196,75 +197,75 @@ class MainWindow : public QMainWindow
 	//! repeatability
 	QLineEdit*
 		inputHomogrpahyPath;  //!< Text field for the homographies folder path
-	string homography_path;  //!< string which stores the folder path of the
+	string homography_path;	 //!< string which stores the folder path of the
 	//! homographies from the text field
-	QPushButton* browseHomography;  //!< button to browse for the homography
+	QPushButton* browseHomography;	//!< button to browse for the homography
 	//! containing folder
-	bool homography_activated;  //!< indicates if homography based repeatability
+	bool homography_activated;	//!< indicates if homography based repeatability
 	//! is activated or not
 
 	/// widgets / options for tracking vision task
-	QCheckBox* tracking_enable;  //!< Checkbox to activate tracking of keypoints
+	QCheckBox* tracking_enable;	 //!< Checkbox to activate tracking of keypoints
 	bool tracking_activated;  //!< indicates if tracking is activated or not
 	//!(currently not used)
 	// int current_imageIndex_tracking;
 	QPushButton*
 		trackIt;  //!< button which tracks the key-points in subseuent frames
-	vector<string> files_fullpath_tracking;  //!< vector which stores all
+	vector<string> files_fullpath_tracking;	 //!< vector which stores all
 	//! files_paths for the selected
 	//! monocular single dataset
-	int tracking_image_counter;  //!< counter for moving forward in the dataset
+	int tracking_image_counter;	 //!< counter for moving forward in the dataset
 
 	/** tracker oject which calls the tracking method to perform tracking */
 	::Tracker tracker_obj;
 
 	/// tracker parameter variables
-	QCheckBox* tracker_param1;  //! Checkbox for tracking parameter 1
-	QCheckBox* tracker_param2;  //! Checkbox for tracking parameter 2
-	QLabel* tracker_param3;  //! Label for tracking parameter 3
-	QLabel* tracker_param4;  //! Label for tracking parameter 4
-	QLabel* tracker_param5;  //! Label for tracking parameter 5
-	QLabel* tracker_param6;  //! Label for tracking parameter 6
+	QCheckBox* tracker_param1;	//! Checkbox for tracking parameter 1
+	QCheckBox* tracker_param2;	//! Checkbox for tracking parameter 2
+	QLabel* tracker_param3;	 //! Label for tracking parameter 3
+	QLabel* tracker_param4;	 //! Label for tracking parameter 4
+	QLabel* tracker_param5;	 //! Label for tracking parameter 5
+	QLabel* tracker_param6;	 //! Label for tracking parameter 6
 
-	QLineEdit* tracker_param1_edit;  //!< not used
-	QLineEdit* tracker_param2_edit;  //!< not used
-	QLineEdit* tracker_param3_edit;  //!< Text field for tracking parameter 3
-	QLineEdit* tracker_param4_edit;  //!< Text field for tracking parameter 4
-	QLineEdit* tracker_param5_edit;  //!< Text field for tracking parameter 5
-	QLineEdit* tracker_param6_edit;  //!< Text field for tracking parameter 6
+	QLineEdit* tracker_param1_edit;	 //!< not used
+	QLineEdit* tracker_param2_edit;	 //!< not used
+	QLineEdit* tracker_param3_edit;	 //!< Text field for tracking parameter 3
+	QLineEdit* tracker_param4_edit;	 //!< Text field for tracking parameter 4
+	QLineEdit* tracker_param5_edit;	 //!< Text field for tracking parameter 5
+	QLineEdit* tracker_param6_edit;	 //!< Text field for tracking parameter 6
 
 	/// image decimation options
-	QLineEdit* decimateFactor;  //!< Text field to enter Decimation factor from
+	QLineEdit* decimateFactor;	//!< Text field to enter Decimation factor from
 	//! the user
 
 	/// visual odom parameters
 
-	VisualOdometry visual_odom;  //!< visual odometry object to perform the
+	VisualOdometry visual_odom;	 //!< visual odometry object to perform the
 	//! vision task of estimating camera trajector
 	//! for Monocular Datasets like KITTI
-	QCheckBox* visual_odom_enable;  //!< Checkbox to activate/deactivate VO
+	QCheckBox* visual_odom_enable;	//!< Checkbox to activate/deactivate VO
 	QLineEdit*
-		inputFilePath3;  //!< Text field to store ground truth for VO task
+		inputFilePath3;	 //!< Text field to store ground truth for VO task
 	QPushButton* browse_button3;  //!< browse button to look for the ground
 	//! truth Odometry file
-	string file_path3;  //!< stores the ground truth for poses
+	string file_path3;	//!< stores the ground truth for poses
 
 	string calibration_file;  //!< string which stores the calibration fil path
 	QLineEdit* inputCalibration;  //!< textbox which has the input calibration
 	//! file path to be entered from the user
-	QPushButton* browseCalibration;  //!< browse button to browse the
+	QPushButton* browseCalibration;	 //!< browse button to browse the
 	//! calibration file path
 
-	QLabel* visualOdom;  //!< Label which stores and displays the image for the
+	QLabel* visualOdom;	 //!< Label which stores and displays the image for the
 	//! VO output
 
 	QFutureWatcher<cv::Mat>
-		FutureWatcher;  //!< FutureWatcher for showing progress bar
-	QProgressBar* progressBar;  //!< progress bar to show VO progress
-	QDialog* vo_message_dialog;  //!< vo_message dialog to handle error case
-	QGridLayout* vo_layout;  //!< gridlayout to hold widgets like buttons,
+		FutureWatcher;	//!< FutureWatcher for showing progress bar
+	QProgressBar* progressBar;	//!< progress bar to show VO progress
+	QDialog* vo_message_dialog;	 //!< vo_message dialog to handle error case
+	QGridLayout* vo_layout;	 //!< gridlayout to hold widgets like buttons,
 	//! textfields specific forVO task
-	QLabel* vo_message_running;  //!< show the message to user to indicate that
+	QLabel* vo_message_running;	 //!< show the message to user to indicate that
 	//! VO is currently running
 	QLabel* VO_progress;  //!< Label to show VO progress
 
@@ -272,7 +273,7 @@ class MainWindow : public QMainWindow
 	// VisualOdometry visual_odom;         //!< visual odometry object to
 	// perform the vision task of estimating camera trajector for Monocular
 	// Datasets like KITTI
-	QCheckBox* place_recog_enable;  //!< checkbox to enable Place Recognition
+	QCheckBox* place_recog_enable;	//!< checkbox to enable Place Recognition
 	//! vision task
 	QLineEdit*
 		training_set;  //!< text box to enter training dataset folder path
@@ -280,7 +281,7 @@ class MainWindow : public QMainWindow
 	//! has the training dataset
 	string training_set_path;  //!< string which has the folder path for
 	//! training dataset
-	QLineEdit* testing_set;  //!< textbox for he user to enter the folder path
+	QLineEdit* testing_set;	 //!< textbox for he user to enter the folder path
 	//! for the testing dataset
 	QPushButton* browse_testing;  //!< button to browse for the folder which has
 	//! the testing dataset
@@ -298,20 +299,20 @@ class MainWindow : public QMainWindow
 
 	QLabel* placeRecognition_results;  //!< label which displays the Place
 	//! Recognition result
-	PlaceRecognition* place_recog_obj;  //!< the main object which is reponsible
+	PlaceRecognition* place_recog_obj;	//!< the main object which is reponsible
 	//! for performing the PLace Recognition
 
-	QLabel* place_recog_image;  //!< holds the place recognition image,
+	QLabel* place_recog_image;	//!< holds the place recognition image,
 	//! currently NOT used
-	QImage place_recog_qimage;  //!< image which has the current testing image
+	QImage place_recog_qimage;	//!< image which has the current testing image
 	//! which dispayed in GUI
 	QLabel* place_recog_label;
-	QGroupBox* placeRecogGroupBox;  //!< groupBox to hold the output widgets for
+	QGroupBox* placeRecogGroupBox;	//!< groupBox to hold the output widgets for
 	//! the Place Recognition task
 
 	bool placeRecog_clicked_flag;  //!< flag to check if the user pressed place
 	//! recognition button
-	int current_place_recog_index;  //!< counter to iterate over the testing
+	int current_place_recog_index;	//!< counter to iterate over the testing
 	//! dataset
 
 	bool placeRecog_checked_flag;
@@ -337,17 +338,17 @@ class MainWindow : public QMainWindow
 	struct FASTOptions
 	{
 		float threshold;  //!< default value = 20
-		float min_distance;  //!< default value = 5
+		float min_distance;	 //!< default value = 5
 		bool non_max_suppresion;  //!< default value = true
-		bool use_KLT_response;  //!< default value = true
+		bool use_KLT_response;	//!< default value = true
 	} fast_opts;
 
 	/** KLT Options */
 	struct KLTOptions
 	{
 		float threshold;  //!< default value = 0.1
-		int radius;  //!< default value = 7
-		float min_distance;  //!< default value = 7
+		int radius;	 //!< default value = 7
+		float min_distance;	 //!< default value = 7
 		bool tile_image;  //!< default value = true
 	} klt_opts;
 
@@ -358,7 +359,7 @@ class MainWindow : public QMainWindow
 		float k;  //!< default value = 0.04
 		float sigma;  //!< default value = 1.5
 		float radius;  //!< default value = 3
-		float min_distance;  //!< default value = 100, not asked from user
+		float min_distance;	 //!< default value = 100, not asked from user
 	} harris_opts;
 
 	/** SIFT Options */
@@ -382,8 +383,8 @@ class MainWindow : public QMainWindow
 	{
 		int min_distance;  //!< default value = 0
 		int n_levels;  //!< default value = 8
-		float scale_factor;  //!< default value = 1.2
-		bool extract_patch;  //!< default value = false
+		float scale_factor;	 //!< default value = 1.2
+		bool extract_patch;	 //!< default value = false
 	} ORB_opts;
 
 	// not providing option to choose descriptor_type and diffusivity, using
@@ -396,14 +397,14 @@ class MainWindow : public QMainWindow
 		int descriptor_channels;  //!< default value = 3
 		float threshold;  //!< default value = 0.001
 		int nOctaves;  //!< default value = 4
-		int nOctaveLayers;  //!< default value = 4
+		int nOctaveLayers;	//!< default value = 4
 		// int  	diffusivity;
 	} AKAZE_opts;
 
 	/** LSD Options */
 	struct LSDOptions
 	{
-		int scale;  //!< default value = 2
+		int scale;	//!< default value = 2
 		int nOctaves;  //!< default value = 1
 	} LSD_opts;
 
@@ -412,10 +413,10 @@ class MainWindow : public QMainWindow
 	 */
 	struct SpinImageOptions
 	{
-		int radius;  //!< default value = 20
+		int radius;	 //!< default value = 20
 		int hist_size_intensity;  //!< default value = 10
-		int hist_size_distance;  //!< default value = 10
-		float std_dist;  //!< default value = 0.4
+		int hist_size_distance;	 //!< default value = 10
+		float std_dist;	 //!< default value = 0.4
 		float std_intensity;  //!< default value = 20
 	} spin_opts;
 
@@ -423,17 +424,17 @@ class MainWindow : public QMainWindow
 	 */
 	struct PolarImageOptions
 	{
-		int radius;  //!< default value = 20
-		int bins_angle;  //!< default value = 8
-		int bins_distance;  //!< default value = 6
+		int radius;	 //!< default value = 20
+		int bins_angle;	 //!< default value = 8
+		int bins_distance;	//!< default value = 6
 	} polar_opts;
 
 	/** LogPolarImagesOptions Options
 	 */
 	struct LogPolarOptions
 	{
-		int radius;  //!< default value = 30
-		int num_angles;  //!< default value = 16
+		int radius;	 //!< default value = 30
+		int num_angles;	 //!< default value = 16
 		float rho_scale;  //!< default value = 5
 
 	} log_polar_opts;
@@ -442,8 +443,8 @@ class MainWindow : public QMainWindow
 	 */
 	struct BLDOptions
 	{
-		int ksize_;  //!< default value = 1
-		int reductionRatio;  //!< default value = 2
+		int ksize_;	 //!< default value = 1
+		int reductionRatio;	 //!< default value = 2
 		int numOfOctave;  //!< default value = 7
 		int widthOfBand;  //!< default value = 1
 	} BLD_opts;
@@ -452,21 +453,21 @@ class MainWindow : public QMainWindow
 	 */
 	struct LATCHOptions
 	{
-		int bytes;  //!< default value = 32
+		int bytes;	//!< default value = 32
 		bool rotationInvariance;  //!< default value = true
-		int half_ssd_size;  //!< default value = 3
+		int half_ssd_size;	//!< default value = 3
 	} LATCH_opts;
 
 	/// FOR THE VISUALIZE DESCRIPTOR PART
    public:
-	QLabel* images_static;  //!< For Image1, stores the image associated with
+	QLabel* images_static;	//!< For Image1, stores the image associated with
 	//! the first class of descriptors (Spin, Polar, Log
 	//! polar images, etc.)
 	QLabel* images_static_sift_surf;  //!< For Image1, stores the image
 	//! associated with the second class of
 	//! descriptors (SIFT, SURF, ORB, etc.)
 
-	QLabel* images_static2;  //!< For Image2, stores the image associated with
+	QLabel* images_static2;	 //!< For Image2, stores the image associated with
 	//! the first class of descriptors (Spin, Polar, Log
 	//! polar images, etc.)
 	QLabel* images_static_sift_surf2;  //!< For Image2, stores the image
@@ -484,29 +485,29 @@ class MainWindow : public QMainWindow
 	int cnt;  //!< counter to iterate over all the descriptors
 
 	QLabel* images_label_coordinates;  //!< NOT USED
-	QLabel* images_label_coordinates_sift_surf;  //!< NOT USED
+	QLabel* images_label_coordinates_sift_surf;	 //!< NOT USED
 
-	QLabel* featureMatched;  //!< Label to show feature matches information
+	QLabel* featureMatched;	 //!< Label to show feature matches information
 
-	QLabel* images_plots_sift_surf;  //!< Label which holds the image to show
+	QLabel* images_plots_sift_surf;	 //!< Label which holds the image to show
 	//! the descriptor distance splot
 
 	double mouse_x, mouse_y;  //!< stores the coordinates of the mouse click
 
-	bool flag_descriptor_match;  //!< this is used to fix the overlaying of
+	bool flag_descriptor_match;	 //!< this is used to fix the overlaying of
 	//! labels on top of each other.
 	bool flag_read_files_bug;  //!< used to get rid of a bug while reading files
 
 	/// variables for bug fixes
 
-	bool evaluate_detector_clicked;  //!< variable to see if user pressed
+	bool evaluate_detector_clicked;	 //!< variable to see if user pressed
 	//! detector button
 	bool evaluate_descriptor_clicked;  //!< variable to see if user pressed
 	//! descriptor button
-	bool visualize_descriptor_clicked;  //!< variable to see if user pressed
+	bool visualize_descriptor_clicked;	//!< variable to see if user pressed
 	//! visualize descriptor button
 
-	bool activate_homogrphy_repeatability;  //!< variable to store if user has
+	bool activate_homogrphy_repeatability;	//!< variable to store if user has
 	//! currently activated homography
 	//! based repeatability or not
 
@@ -514,9 +515,9 @@ class MainWindow : public QMainWindow
 
 	double elapsedTime_detector;  //!< stores the time taken to compute detector
 	//! key-points
-	double elapsedTime_descriptor;  //!< stores the time taken to compute the
+	double elapsedTime_descriptor;	//!< stores the time taken to compute the
 	//! descriptors around the key-points
-	QLabel* detector_info;  //!< Label to show detector evaluation info
+	QLabel* detector_info;	//!< Label to show detector evaluation info
 	QLabel* descriptor_info;  //!< Label to show descriptor evaluation info
 	QLabel* descriptor_info2;  //!< Label to show descriptor evaluaiton info2
 	QLabel* descriptor_info3;  //!< Label to show descriptor evaluation info3
@@ -1042,4 +1043,4 @@ class MainWindow : public QMainWindow
 	void slot_finished();
 };
 
-#endif  // MAINWINDOW_H
+#endif	// MAINWINDOW_H

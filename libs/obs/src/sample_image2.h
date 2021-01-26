@@ -13,6 +13,7 @@
 	buf.assignMemoryNotOwn(sample_image2,sizeof(sample_image2));
 	buf >> img;
 */
+// clang-format off
 static const unsigned char sample_image2[] = {
 	138, 67,  77,  82,  80,  84,  73,  109, 97,  103, 101, 7,   0,   1,   128,
 	2,   0,   0,   224, 1,   0,   0,   164, 105, 1,   0,   255, 216, 255, 224,
@@ -6189,3 +6190,4 @@ static const unsigned char sample_image2[] = {
 	117, 58,  46,  172, 176, 18,  178, 77,  244, 172, 235, 205, 78,  46,  45,
 	19,  70,  53,  161, 37,  39,  45,  59,  31,  255, 217, 136,
 };
+// clang-format on

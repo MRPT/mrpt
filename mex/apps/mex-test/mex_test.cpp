@@ -44,7 +44,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	allThreadsMustExit = false;
 
 	// Create independent thread
-	if (thre.idThread == 0)  // Unitialized
+	if (thre.idThread == 0)	 // Unitialized
 	{
 		printf("Thread was unitialized, launching new timerThread\n");
 		thre = std::thread(timerThread);

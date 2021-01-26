@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
@@ -66,8 +66,9 @@ CMetricMapBuilderICP::TConfigParams::TConfigParams(
 {
 }
 
-CMetricMapBuilderICP::TConfigParams& CMetricMapBuilderICP::TConfigParams::
-	operator=(const CMetricMapBuilderICP::TConfigParams& other)
+CMetricMapBuilderICP::TConfigParams&
+	CMetricMapBuilderICP::TConfigParams::operator=(
+		const CMetricMapBuilderICP::TConfigParams& other)
 {
 	matchAgainstTheGrid = other.matchAgainstTheGrid;
 	insertionLinDistance = other.insertionLinDistance;
@@ -221,8 +222,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 		//  - We had some odometry since the last pose correction
 		//  (m_there_has_been_an_odometry=true).
 		//  - AND, the traversed distance is small enough:
-		const bool we_skip_ICP_pose_correction =
-			m_there_has_been_an_odometry &&
+		const bool we_skip_ICP_pose_correction = m_there_has_been_an_odometry &&
 			m_distSinceLastICP.lin < std::min(
 										 ICP_options.localizationLinDistance,
 										 ICP_options.insertionLinDistance) &&
@@ -298,7 +298,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 			if (IS_DERIVED(*matchWith, CPointsMap) &&
 				static_cast<CPointsMap*>(matchWith)->empty())
-				can_do_icp = false;  // The reference map is empty!
+				can_do_icp = false;	 // The reference map is empty!
 
 			if (can_do_icp)
 			{
@@ -314,8 +314,8 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 					mrpt::poses::CPose2D(initialEstimatedRobotPose);
 
 				CPosePDF::Ptr pestPose = ICP.Align(
-					matchWith,  // Map 1
-					&sensedPoints,  // Map 2
+					matchWith,	// Map 1
+					&sensedPoints,	// Map 2
 					firstGuess, icpReturn);
 
 				if (icpReturn.goodness > ICP_options.minICPgoodnessToAccept)
@@ -344,8 +344,8 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 				else
 				{
 					MRPT_LOG_WARN_STREAM(
-						"Ignoring ICP of low quality: "
-						<< icpReturn.goodness * 100 << std::endl);
+						"Ignoring ICP of low quality: " << icpReturn.goodness *
+							100 << std::endl);
 				}
 
 				// Compute the transversed length:
@@ -353,7 +353,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 				m_lastPoseEst.getLatestRobotPose(currentKnownRobotPose);
 
 				this->accumulateRobotDisplacementCounters(
-					currentKnownRobotPose);  // currentKnownRobotPose -
+					currentKnownRobotPose);	 // currentKnownRobotPose -
 				// previousKnownRobotPose);
 
 			}  // end we can do ICP.
@@ -376,8 +376,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 		const bool firstTimeForThisSensor =
 			m_distSinceLastInsertion.find(obs->sensorLabel) ==
 			m_distSinceLastInsertion.end();
-		bool update =
-			firstTimeForThisSensor ||
+		bool update = firstTimeForThisSensor ||
 			((!can_do_icp ||
 			  icpReturn.goodness > ICP_options.minICPgoodnessToAccept) &&
 			 (m_distSinceLastInsertion[obs->sensorLabel].lin >=
@@ -484,7 +483,8 @@ void CMetricMapBuilderICP::processActionObservation(
 	}
 
 	// 2) Process observations one by one:
-	for (auto& i : in_SF) this->processObservation(i);
+	for (auto& i : in_SF)
+		this->processObservation(i);
 }
 
 /*---------------------------------------------------------------
@@ -655,14 +655,16 @@ void CMetricMapBuilderICP::accumulateRobotDisplacementCounters(
 	const CPose2D& new_pose)
 {
 	m_distSinceLastICP.updateDistances(new_pose);
-	for (auto& m : m_distSinceLastInsertion) m.second.updateDistances(new_pose);
+	for (auto& m : m_distSinceLastInsertion)
+		m.second.updateDistances(new_pose);
 }
 
 void CMetricMapBuilderICP::resetRobotDisplacementCounters(
 	const CPose2D& new_pose)
 {
 	m_distSinceLastICP.updatePose(new_pose);
-	for (auto& m : m_distSinceLastInsertion) m.second.updatePose(new_pose);
+	for (auto& m : m_distSinceLastInsertion)
+		m.second.updatePose(new_pose);
 }
 
 void CMetricMapBuilderICP::TDist::updateDistances(const mrpt::poses::CPose2D& p)

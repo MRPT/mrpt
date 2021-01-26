@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/serialization/CArchive.h>
@@ -89,7 +89,6 @@ void CLandmark::serializeFrom(
 				pose_cov_23 >> ID >> timestampLastSeen >> seenTimesCount;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }

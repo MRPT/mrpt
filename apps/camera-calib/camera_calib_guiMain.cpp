@@ -13,6 +13,7 @@
   ---------------------------------------------------------------*/
 
 #include "camera_calib_guiMain.h"
+
 #include "CDlgCalibWizardOnline.h"
 #include "CDlgPoseEst.h"
 
@@ -23,21 +24,19 @@
 #include <wx/string.h>
 //*)
 
-#include <wx/filedlg.h>
-#include <wx/msgdlg.h>
-#include <wx/progdlg.h>
-
 #include <mrpt/containers/yaml.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/vision/pnp_algos.h>
+#include <wx/filedlg.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
 
+#include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
-
-#include <mrpt/vision/pnp_algos.h>
-#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -283,8 +282,8 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = {_("OpenCV\'s default"),
-										 _("Scaramuzza et al.\'s")};
+	wxString __wxRadioBoxChoices_1[2] = {
+		_("OpenCV\'s default"), _("Scaramuzza et al.\'s")};
 	rbMethod = new wxRadioBox(
 		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 0, 0, wxDefaultValidator,
@@ -519,7 +518,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	icon.CopyFromBitmap(wxBitmap(wxImage(icono_main_xpm)));
 	this->SetIcon(icon);
 
-	this->show3Dview();  // Empty 3D scene
+	this->show3Dview();	 // Empty 3D scene
 
 	Center();
 	this->SetTitle("Camera calibration - Part of the MRPT project");
@@ -553,12 +552,12 @@ void camera_calib_guiDialog::OnAddImage(wxCommandEvent& event)
 
 		wxProgressDialog progDia(
 			wxT("Adding image files"), wxT("Processing..."),
-			files.Count(),  // range
+			files.Count(),	// range
 			this,  // parent
 			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();  // Let the app. process messages
+		wxTheApp->Yield();	// Let the app. process messages
 
 		int counter_loops = 0;
 
@@ -567,7 +566,7 @@ void camera_calib_guiDialog::OnAddImage(wxCommandEvent& event)
 			if (counter_loops++ % 5 == 0)
 			{
 				if (!progDia.Update(i)) break;
-				wxTheApp->Yield();  // Let the app. process messages
+				wxTheApp->Yield();	// Let the app. process messages
 			}
 
 			const string fil = string(files[i].mb_str());

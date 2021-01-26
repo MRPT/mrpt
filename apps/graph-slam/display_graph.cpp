@@ -89,7 +89,7 @@ void display_graph(const GRAPHTYPE& g)
 	{
 		const GRAPHTYPE& m_graph;
 		CSetOfObjects::Ptr m_new_3dobj;
-		mrpt::containers::yaml params;  // for "graph_visualize()"
+		mrpt::containers::yaml params;	// for "graph_visualize()"
 
 		bool request_to_refresh_3D_view;
 		bool request_to_quit;
@@ -122,13 +122,9 @@ void display_graph(const GRAPHTYPE& g)
 				switch (ev->char_code)
 				{
 					case 'h':
-					case 'H':
-						std::cout << MSG_HELP_WINDOW << "\n";
-						break;
+					case 'H': std::cout << MSG_HELP_WINDOW << "\n"; break;
 					case 'q':
-					case 'Q':
-						request_to_quit = true;
-						break;
+					case 'Q': request_to_quit = true; break;
 					case 'i':
 					case 'I':
 						params["show_ID_labels"] = !params["show_ID_labels"];
@@ -242,7 +238,7 @@ void display_graph(const GRAPHTYPE& g)
 		{
 			// Replace 3D representation:
 			win.get3DSceneAndLock();
-			*objGraph = *win_feedback.m_new_3dobj;  // This overwrites the
+			*objGraph = *win_feedback.m_new_3dobj;	// This overwrites the
 			// object POINTER BY the
 			// smart pointer "objGraph".
 			win.unlockAccess3DScene();
@@ -251,9 +247,7 @@ void display_graph(const GRAPHTYPE& g)
 		}
 		if (win_feedback.request_to_quit) break;
 		if (win_feedback.showing_help || win_feedback.hiding_help)
-		{
-			win.repaint();
-		}
+		{ win.repaint(); }
 		std::this_thread::sleep_for(10ms);
 	}
 }

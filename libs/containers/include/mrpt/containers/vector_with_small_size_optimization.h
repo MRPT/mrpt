@@ -9,9 +9,10 @@
 #pragma once
 
 #include <mrpt/core/aligned_allocator.h>  // aligned_allocator_cpp11
+
 #include <array>
-#include <cstddef>  // size_t
-#include <type_traits>  // conditional_t, ...
+#include <cstddef>	// size_t
+#include <type_traits>	// conditional_t, ...
 #include <vector>
 
 namespace mrpt::containers
@@ -83,8 +84,7 @@ class vector_with_small_size_optimization
 	{
 		m_size = o.m_size;
 		m_is_small = o.m_is_small;
-		if (m_size > small_size)
-			m_v = o.m_v;
+		if (m_size > small_size) m_v = o.m_v;
 		else if (m_size > 0)
 			m_a = o.m_a;
 		return *this;
@@ -94,8 +94,7 @@ class vector_with_small_size_optimization
 	{
 		m_size = o.m_size;
 		m_is_small = o.m_is_small;
-		if (m_size > small_size)
-			m_v = std::move(o.m_v);
+		if (m_size > small_size) m_v = std::move(o.m_v);
 		else if (m_size > 0)
 			m_a = std::move(o.m_a);
 		return *this;
@@ -186,9 +185,7 @@ class vector_with_small_size_optimization
 		if (m_size)
 		{
 			if (m_is_small && n > small_size)
-			{
-				m_v.assign(m_a.begin(), m_a.begin() + m_size);
-			}
+			{ m_v.assign(m_a.begin(), m_a.begin() + m_size); }
 			else if (!m_is_small && n <= small_size)
 			{
 				std::copy(m_v.begin(), m_v.begin() + n, m_a.begin());
@@ -196,16 +193,12 @@ class vector_with_small_size_optimization
 		}
 		m_size = n;
 		m_is_small = (n <= small_size);
-		if (!m_is_small)
-		{
-			m_v.resize(m_size);
-		}
+		if (!m_is_small) { m_v.resize(m_size); }
 	}
 
 	void fill(const T& v)
 	{
-		if (m_is_small)
-			m_a.fill(v);
+		if (m_is_small) m_a.fill(v);
 		else
 			m_v.assign(m_v.size(), v);
 	}
@@ -234,10 +227,7 @@ class vector_with_small_size_optimization
 
 	void swap(self_t& x)
 	{
-		if (m_is_small && x.m_is_small)
-		{
-			m_a.swap(x.m_a);
-		}
+		if (m_is_small && x.m_is_small) { m_a.swap(x.m_a); }
 		else if (!m_is_small && !x.m_is_small)
 		{
 			m_v.swap(x.m_v);

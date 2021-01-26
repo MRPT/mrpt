@@ -177,10 +177,7 @@ int main(int argc, char** argv)
 	try
 	{
 		skip_window = (argc > 2);
-		if (argc > 1)
-		{
-			ICP_method = atoi(argv[1]);
-		}
+		if (argc > 1) { ICP_method = atoi(argv[1]); }
 
 		TestICP();
 

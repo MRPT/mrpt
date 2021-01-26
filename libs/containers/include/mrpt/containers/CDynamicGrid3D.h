@@ -223,7 +223,8 @@ class CDynamicGrid3D
 	 */
 	inline void fill(const T& value)
 	{
-		for (auto it = m_map.begin(); it != m_map.end(); ++it) *it = value;
+		for (auto it = m_map.begin(); it != m_map.end(); ++it)
+			*it = value;
 	}
 
 	static const size_t INVALID_VOXEL_IDX = size_t(-1);
@@ -231,8 +232,8 @@ class CDynamicGrid3D
 	inline bool isOutOfBounds(const int cx, const int cy, const int cz) const
 	{
 		return (cx < 0 || cx >= static_cast<int>(m_size_x)) ||
-			   (cy < 0 || cy >= static_cast<int>(m_size_y)) ||
-			   (cz < 0 || cz >= static_cast<int>(m_size_z));
+			(cy < 0 || cy >= static_cast<int>(m_size_y)) ||
+			(cz < 0 || cz >= static_cast<int>(m_size_z));
 	}
 
 	/** Gets the absolute index of a voxel in the linear container m_map[] from
@@ -395,6 +396,6 @@ class CDynamicGrid3D
 		m_map.resize(m_size_x * m_size_y * m_size_z);
 	}
 
-};  // end of CDynamicGrid3D<>
+};	// end of CDynamicGrid3D<>
 
 }  // namespace mrpt::containers

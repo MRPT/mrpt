@@ -10,6 +10,7 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt::gui;

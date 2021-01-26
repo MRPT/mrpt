@@ -15,6 +15,7 @@
 #include <mrpt/vision/CImagePyramid.h>
 #include <mrpt/vision/TKeyPoint.h>
 #include <mrpt/vision/types.h>
+
 #include <iostream>
 
 using namespace std;
@@ -99,7 +100,7 @@ void TestVideoBuildPyr()
 		0.51, 5,  // X,Y<=1 means coordinates are factors over the entire
 		// viewport area.
 		"Keys: 's'=Smoothing, 'g': Grayscale 'f': Features",
-		10  // An arbitrary ID
+		10	// An arbitrary ID
 	);
 
 	// The image pyramid: Initially empty
@@ -141,7 +142,7 @@ void TestVideoBuildPyr()
 					format(
 						"Smooth=%i Grayscale=%i", int(do_smooth ? 1 : 0),
 						int(do_grayscale ? 1 : 0)),
-					11  // An arbitrary ID
+					11	// An arbitrary ID
 				);
 
 				win.unlockAccess3DScene();

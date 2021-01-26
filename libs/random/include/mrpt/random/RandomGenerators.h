@@ -9,13 +9,14 @@
 #pragma once
 
 #include <mrpt/random/random_shuffle.h>
+
 #include <algorithm>
 #include <cstddef>
 #include <limits>
 #include <limits>  // numeric_limits
 #include <random>
 #include <stdexcept>
-#include <type_traits>  // remove_reference
+#include <type_traits>	// remove_reference
 #include <vector>
 
 // Frwd decl:
@@ -227,7 +228,7 @@ class CRandomGenerator
 		cov.resize(dim, dim);
 		cov.matProductOf_AAt(r);  // random semi-definite positive matrix:
 		for (size_t i = 0; i < dim; i++)
-			cov(i, i) += diagonal_epsilon;  // make sure it's definite-positive
+			cov(i, i) += diagonal_epsilon;	// make sure it's definite-positive
 		return cov;
 	}
 
@@ -279,10 +280,12 @@ class CRandomGenerator
 		for (size_t i = 0; i < dim; i++)
 		{
 			T rnd = this->drawGaussian1D_normalized();
-			for (size_t d = 0; d < dim; d++) out_result[d] += (Z(d, i) * rnd);
+			for (size_t d = 0; d < dim; d++)
+				out_result[d] += (Z(d, i) * rnd);
 		}
 		if (mean)
-			for (size_t d = 0; d < dim; d++) out_result[d] += (*mean)[d];
+			for (size_t d = 0; d < dim; d++)
+				out_result[d] += (*mean)[d];
 	}
 
 	/** Generate multidimensional random samples according to a given covariance
@@ -328,7 +331,8 @@ class CRandomGenerator
 				out_result[d] += eigVecs.coeff(d, i) * rnd;
 		}
 		if (mean)
-			for (size_t d = 0; d < N; d++) out_result[d] += (*mean)[d];
+			for (size_t d = 0; d < N; d++)
+				out_result[d] += (*mean)[d];
 	}
 
 	/** Generate a given number of multidimensional random samples according to
@@ -377,7 +381,8 @@ class CRandomGenerator
 					ret[k][d] += eigVecs.coeff(d, i) * rnd;
 			}
 			if (mean)
-				for (size_t d = 0; d < N; d++) ret[k][d] += (*mean)[d];
+				for (size_t d = 0; d < N; d++)
+					ret[k][d] += (*mean)[d];
 		}
 	}
 
@@ -409,7 +414,7 @@ class CRandomGenerator
 
 	/** @} */
 
-};  // end of CRandomGenerator
+};	// end of CRandomGenerator
 // --------------------------------------------------------------
 
 /** A static instance of a CRandomGenerator class, for use in single-thread

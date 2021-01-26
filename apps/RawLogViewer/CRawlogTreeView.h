@@ -10,6 +10,7 @@
 #ifndef CRawlogTreeView_H
 #define CRawlogTreeView_H
 
+#include <mrpt/obs/CRawlog.h>
 #include <wx/button.h>
 #include <wx/notebook.h>
 #include <wx/scrolwin.h>
@@ -19,7 +20,6 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
-#include <mrpt/obs/CRawlog.h>
 #include <atomic>
 
 enum TRawlogTreeViewEvent

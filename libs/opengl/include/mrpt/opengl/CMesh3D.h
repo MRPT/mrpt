@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
+
 #include <array>
 
 namespace mrpt::opengl
@@ -52,8 +53,9 @@ class CMesh3D : public CRenderizableShaderTriangles,
 
 	virtual shader_list_t requiredShaders() const override
 	{
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
-				DefaultShaderID::POINTS};
+		return {
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;

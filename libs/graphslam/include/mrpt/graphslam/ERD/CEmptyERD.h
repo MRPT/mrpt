@@ -9,9 +9,8 @@
 
 #pragma once
 
-#include <mrpt/obs/CSensoryFrame.h>
-
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 namespace mrpt::graphslam::deciders
 {

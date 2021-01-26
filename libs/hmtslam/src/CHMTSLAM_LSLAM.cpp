@@ -8,16 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
+#include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
-
-#include <mrpt/io/CFileOutputStream.h>
-
-#include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/system/os.h>
 
 #include <limits>
@@ -48,7 +46,7 @@ void CHMTSLAM::thread_LSLAM()
 {
 	CHMTSLAM* obj = this;
 	CTicTac tictac;
-	unsigned int nIter = 0;  // For logging purposes only
+	unsigned int nIter = 0;	 // For logging purposes only
 
 	// Seems that must be called in each thread??
 	if (obj->m_options.random_seed)
@@ -139,7 +137,7 @@ void CHMTSLAM::thread_LSLAM()
 						// 2) Invoke Area Abstraction (AA) method
 						// ----------------------------------------------
 						if (it->second.m_posesPendingAddPartitioner.size() >
-							5)  // Option: Do this only one out of N new added
+							5)	// Option: Do this only one out of N new added
 						// poses:
 						{
 							CTicTac tictac2;
@@ -234,7 +232,7 @@ void CHMTSLAM::thread_LSLAM()
 				// Wait for new data:
 				std::this_thread::sleep_for(5ms);
 			}
-		};  // end while execute thread
+		};	// end while execute thread
 
 		// Finish thread:
 		// -------------------------
@@ -326,7 +324,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		for (auto itA = LMH->m_nodeIDmemberships.begin();
 			 itA != LMH->m_nodeIDmemberships.end(); ++itA)
 		{
-			if (LMH->m_currentRobotPose != itA->first)  // The current pose is
+			if (LMH->m_currentRobotPose != itA->first)	// The current pose is
 			// not included in the
 			// AA method
 			{
@@ -419,7 +417,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		myMsg.partitions.size(), AREAID_INVALID);
 
 	map<CHMHMapNode::TNodeID, pair<size_t, unsigned int>>
-		mostVotedFrom;  // ID -> (index, votes)
+		mostVotedFrom;	// ID -> (index, votes)
 	ASSERT_(votes.size() == myMsg.partitions.size());
 
 	// 1) For partitions voting for just one area, assign them that area if they
@@ -476,7 +474,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	}
 
 	// Fill out "partIdx2Areas" from "mostVotedFrom":
-	for (auto& it : mostVotedFrom) partIdx2Areas[it.second.first] = it.first;
+	for (auto& it : mostVotedFrom)
+		partIdx2Areas[it.second.first] = it.first;
 
 	// Create new area IDs for new areas (ie, partIdx2Areas[] still unassigned):
 	for (i = 0; i < partIdx2Areas.size(); i++)
@@ -532,7 +531,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 		for (unsigned long it : myMsg.partitions[i])
 			LMH->m_nodeIDmemberships[it] =
-				nodeId;  // Bind robot poses -> area IDs.
+				nodeId;	 // Bind robot poses -> area IDs.
 	}  // end for i
 
 	// ------------------------------------------------------------------------
@@ -651,9 +650,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					}
 
 					bool inNeib = LMH->m_neighbors.find(nodeB->getID()) !=
-								  LMH->m_neighbors.end();
+						LMH->m_neighbors.end();
 					bool inBefNeib = neighbors_before.find(nodeB->getID()) !=
-									 neighbors_before.end();
+						neighbors_before.end();
 
 					if (inNeib && inBefNeib)
 						lstWithinLMH[nodeB] = *a;  // Add to list:
@@ -680,9 +679,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 					}
 
 					bool inNeib = LMH->m_neighbors.find(nodeB->getID()) !=
-								  LMH->m_neighbors.end();
+						LMH->m_neighbors.end();
 					bool inBefNeib = neighbors_before.find(nodeB->getID()) !=
-									 neighbors_before.end();
+						neighbors_before.end();
 
 					if (inNeib && inBefNeib)
 					{
@@ -818,7 +817,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 							//  Delta_b_c = Delta_b_a (+) Delta_a_c
 							CPose3DPDFGaussian Delta_b_c(Delta_b_a + Delta_a_c);
 							Delta_b_c.cov
-								.setZero();  // *********** DEBUG !!!!!!!!!!!
+								.setZero();	 // *********** DEBUG !!!!!!!!!!!
 							Delta_b_c.cov(0, 0) = Delta_b_c.cov(1, 1) =
 								square(0.04);
 							Delta_b_c.cov(3, 3) = square(1.0_deg);
@@ -837,19 +836,19 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 							bool arcDeltaIsInverted;
 							CHMHMapArc::Ptr newArc =
 								m_map.findArcOfTypeBetweenNodes(
-									nodeB->getID(),  // Source
+									nodeB->getID(),	 // Source
 									node_c->getID(),  // Target
-									LMH->m_ID,  // Hypos
+									LMH->m_ID,	// Hypos
 									"RelativePose", arcDeltaIsInverted);
 
 							if (!newArc)
 							{
 								// Create a new one:
 								newArc = std::make_shared<CHMHMapArc>(
-									nodeB,  // Source
-									node_c,  // Target
-									LMH->m_ID,  // Hypos
-									&m_map  // The graph
+									nodeB,	// Source
+									node_c,	 // Target
+									LMH->m_ID,	// Hypos
+									&m_map	// The graph
 								);
 								newArc->m_arcType = "RelativePose";
 								arcDeltaIsInverted = false;
@@ -904,10 +903,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 						// Remove arc data for this hypothesis:
 						arc->m_annotations.removeAll(LMH->m_ID);
 
-						if (!arc->m_annotations.size())
-						{
-							arc.reset();
-						}
+						if (!arc->m_annotations.size()) { arc.reset(); }
 
 					}  // end of adjust arcs
 
@@ -917,7 +913,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				{
 					TArcList al;
 					node->getArcs(al);
-					for (auto& arc : al) arc.reset();
+					for (auto& arc : al)
+						arc.reset();
 				}
 
 				node.reset();  // And finally, delete the node.
@@ -980,7 +977,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		// THypothesisIDSet   theArcHypos( LMH->m_ID );
 
 		set<CHMHMapNode::TNodeID>
-			areasWithLink;  // All the areas with at least one internal arc.
+			areasWithLink;	// All the areas with at least one internal arc.
 
 		// The closest distance between areas (only when above the threshold)
 		map<CHMHMapNode::TNodeID, pair<CHMHMapNode::TNodeID, float>>
@@ -1101,7 +1098,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 											false);
 
 								newDelta = Anew_old + *oldDelta;
-								newDelta.cov.setZero();  // *********** DEBUG
+								newDelta.cov.setZero();	 // *********** DEBUG
 														 // !!!!!!!!!!!
 								newDelta.cov(0, 0) = newDelta.cov(1, 1) =
 									square(0.04);
@@ -1151,7 +1148,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 								newDelta = *oldDelta + Aold_new;
 
-								newDelta.cov.setZero();  // *********** DEBUG
+								newDelta.cov.setZero();	 // *********** DEBUG
 														 // !!!!!!!!!!!
 								newDelta.cov(0, 0) = newDelta.cov(1, 1) =
 									square(0.04);
@@ -1199,7 +1196,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 				for (auto itP0 = myMsg.partitions[idx_area_a].begin();
 					 itP0 != myMsg.partitions[idx_area_a].end(); itP0++)
 				{
-					const CPose3D& pose_trg = lstPoses[*itP0];  // Get its pose
+					const CPose3D& pose_trg = lstPoses[*itP0];	// Get its pose
 
 					for (unsigned long itP : myMsg.partitions[idx_area_b])
 					{
@@ -1363,7 +1360,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			CPose3DPDFGaussian relPoseGauss;
 			relPoseGauss.copyFrom(relPoseParts);
 
-			relPoseGauss.cov.setZero();  // *********** DEBUG !!!!!!!!!!!
+			relPoseGauss.cov.setZero();	 // *********** DEBUG !!!!!!!!!!!
 			relPoseGauss.cov(0, 0) = relPoseGauss.cov(1, 1) = square(0.04);
 			relPoseGauss.cov(3, 3) = square(1.0_deg);
 
@@ -1386,10 +1383,10 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			if (!newArc)
 			{
 				newArc = std::make_shared<CHMHMapArc>(
-					area_a_ID,  // Source
-					area_b_ID,  // Target
+					area_a_ID,	// Source
+					area_b_ID,	// Target
 					theArcHypos,  // Hypos
-					&m_map  // The graph
+					&m_map	// The graph
 				);
 				newArc->m_arcType = "RelativePose";
 				arcDeltaIsInverted = false;
@@ -1622,7 +1619,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 
 				// Find the coordinate transformation between areas
 				// "currentArea"->"area" = Delta_c2a
-				CPose3D Delta_c2a;  // We are just interested in the mean
+				CPose3D Delta_c2a;	// We are just interested in the mean
 				{
 					CPose3DPDFGaussian::Ptr pdf =
 						arc->m_annotations.getAs<CPose3DPDFGaussian>(
@@ -1959,7 +1956,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI(const TMessageLSLAMfromTBI& myMsg)
 			mrpt::math::chi2inv(0.999, CPose3DPDFGaussian::state_length);
 
 		map<double, CPose3DPDFGaussian>
-			lstModesAndCompats;  // first=log(e^-0.5*maha_dist)+log(likelihood);
+			lstModesAndCompats;	 // first=log(e^-0.5*maha_dist)+log(likelihood);
 		// The list only contains those chi2 compatible
 
 		for (const auto& itSOG : candidate->second.delta_new_cur)

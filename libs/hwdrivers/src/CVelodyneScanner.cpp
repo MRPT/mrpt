@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
@@ -16,6 +16,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>  // timeDifference
 #include <mrpt/system/filesystem.h>
+
 #include <iostream>
 #include <thread>
 
@@ -24,7 +25,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x600)
 #undef _WIN32_WINNT
-#define _WIN32_WINNT 0x600  // Minimum: Windows Vista (required to pollfd)
+#define _WIN32_WINNT 0x600	// Minimum: Windows Vista (required to pollfd)
 #endif
 
 #include <winsock2.h>
@@ -47,12 +48,13 @@ using socklen_t = int;
 #include <sys/time.h>  // gettimeofday()
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <cerrno>
 #endif
 
 #if MRPT_HAS_LIBPCAP
 #include <pcap.h>
-#if !defined(PCAP_NETMASK_UNKNOWN)  // for older pcap versions
+#if !defined(PCAP_NETMASK_UNKNOWN)	// for older pcap versions
 #define PCAP_NETMASK_UNKNOWN 0xffffffff
 #endif
 #endif
@@ -460,10 +462,10 @@ void CVelodyneScanner::initialize()
 
 		bindAddr.sin_port = htons(VELODYNE_POSITION_UDP_PORT);
 
-		if (int(INVALID_SOCKET) == ::bind(
-									   m_hPositionSock,
-									   (struct sockaddr*)(&bindAddr),
-									   sizeof(sockaddr)))
+		if (int(INVALID_SOCKET) ==
+			::bind(
+				m_hPositionSock, (struct sockaddr*)(&bindAddr),
+				sizeof(sockaddr)))
 			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
 #ifdef _WIN32
@@ -490,9 +492,7 @@ void CVelodyneScanner::initialize()
 				m_pcap_input_file.c_str());
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf)) ==
 			nullptr)
-		{
-			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'", errbuf);
-		}
+		{ THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'", errbuf); }
 
 		// Build PCAP filter:
 		{
@@ -504,7 +504,7 @@ void CVelodyneScanner::initialize()
 				filter_str += "&& src host " + m_device_ip;
 
 			static std::string sMsgError =
-				"[CVelodyneScanner] Error calling pcap_compile: ";  // This is
+				"[CVelodyneScanner] Error calling pcap_compile: ";	// This is
 			// to avoid
 			// the
 			// ill-formed
@@ -586,16 +586,16 @@ void CVelodyneScanner::close()
 
 // Fixed Ethernet headers for PCAP capture --------
 #if MRPT_HAS_LIBPCAP
-const uint16_t LidarPacketHeader[21] = {0xffff, 0xffff, 0xffff, 0x7660, 0x0088,
-										0x0000, 0x0008, 0x0045, 0xd204, 0x0000,
-										0x0040, 0x11ff, 0xaab4, 0xa8c0, 0xc801,
-										0xffff,  // checksum 0xa9b4 //source ip
-										// 0xa8c0, 0xc801 is
-										// 192.168.1.200
-										0xffff, 0x4009, 0x4009, 0xbe04, 0x0000};
+const uint16_t LidarPacketHeader[21] = {
+	0xffff, 0xffff, 0xffff, 0x7660, 0x0088, 0x0000, 0x0008, 0x0045, 0xd204,
+	0x0000, 0x0040, 0x11ff, 0xaab4, 0xa8c0, 0xc801,
+	0xffff,	 // checksum 0xa9b4 //source ip
+	// 0xa8c0, 0xc801 is
+	// 192.168.1.200
+	0xffff, 0x4009, 0x4009, 0xbe04, 0x0000};
 const uint16_t PositionPacketHeader[21] = {
 	0xffff, 0xffff, 0xffff, 0x7660, 0x0088, 0x0000, 0x0008, 0x0045, 0xd204,
-	0x0000, 0x0040, 0x11ff, 0xaab4, 0xa8c0, 0xc801, 0xffff,  // checksum 0xa9b4
+	0x0000, 0x0040, 0x11ff, 0xaab4, 0xa8c0, 0xc801, 0xffff,	 // checksum 0xa9b4
 	// //source ip
 	// 0xa8c0, 0xc801
 	// is 192.168.1.200
@@ -666,8 +666,7 @@ bool CVelodyneScanner::receivePackets(
 			(unsigned int)parts.month, (unsigned int)parts.day,
 			(unsigned int)parts.hour, (unsigned int)parts.minute,
 			(unsigned int)parts.second);
-		const string sFileName =
-			m_pcap_output_file +
+		const string sFileName = m_pcap_output_file +
 			mrpt::system::fileNameStripInvalidChars(sFilePostfix) +
 			string(".pcap");
 
@@ -779,7 +778,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 	struct pollfd fds[1];
 	fds[0].fd = hSocket;
 	fds[0].events = POLLIN;
-	static const int POLL_TIMEOUT = 1;  // (ms)
+	static const int POLL_TIMEOUT = 1;	// (ms)
 
 	sockaddr_in sender_address;
 	socklen_t sender_address_len = sizeof(sender_address);
@@ -814,7 +813,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 				WSAPoll
 #endif
 				(fds, 1, POLL_TIMEOUT);
-			if (retval < 0)  // poll() error?
+			if (retval < 0)	 // poll() error?
 			{
 				if (errno != EINTR)
 					THROW_EXCEPTION(format(
@@ -822,9 +821,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 						mrpt::comms::net::getLastSocketErrorStr().c_str()));
 			}
 			if (retval == 0)  // poll() timeout?
-			{
-				return INVALID_TIMESTAMP;
-			}
+			{ return INVALID_TIMESTAMP; }
 			if ((fds[0].revents & POLLERR) || (fds[0].revents & POLLHUP) ||
 				(fds[0].revents & POLLNVAL))  // device error?
 			{
@@ -852,7 +849,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 				sender_address.sin_addr.s_addr != devip_addr)
 				continue;
 			else
-				break;  // done
+				break;	// done
 		}
 
 		std::cerr
@@ -919,7 +916,7 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 				memcpy(
 					out_pos_buffer, pkt_data + 42,
 					CObservationVelodyneScan::POS_PACKET_SIZE);
-				pos_pkt_time = tim;  // success
+				pos_pkt_time = tim;	 // success
 				return true;
 			}
 			else if (udp_dst_port == CVelodyneScanner::VELODYNE_DATA_UDP_PORT)
@@ -943,7 +940,7 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 			}
 		}
 
-		if (m_pcap_file_empty)  // no data in file?
+		if (m_pcap_file_empty)	// no data in file?
 		{
 			fprintf(
 				stderr,
@@ -982,9 +979,7 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 		pcap_close(reinterpret_cast<pcap_t*>(m_pcap));
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf)) ==
 			nullptr)
-		{
-			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'", errbuf);
-		}
+		{ THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'", errbuf); }
 		m_pcap_file_empty = true;  // maybe the file disappeared?
 	}  // loop back and try again
 #else
@@ -1009,19 +1004,11 @@ bool CVelodyneScanner::setLidarReturnType(return_type_t ret_type)
 	std::string strRet;
 	switch (ret_type)
 	{
-		case STRONGEST:
-			strRet = "Strongest";
-			break;
-		case DUAL:
-			strRet = "Dual";
-			break;
-		case LAST:
-			strRet = "Last";
-			break;
-		case UNCHANGED:
-			return true;
-		default:
-			THROW_EXCEPTION("Invalid value for return type!");
+		case STRONGEST: strRet = "Strongest"; break;
+		case DUAL: strRet = "Dual"; break;
+		case LAST: strRet = "Last"; break;
+		case UNCHANGED: return true;
+		default: THROW_EXCEPTION("Invalid value for return type!");
 	};
 
 	const std::string cmd = mrpt::format("returns=%s", strRet.c_str());
@@ -1094,7 +1081,7 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 	const int http_rep_code = httpOut.http_responsecode;
 
 	return mrpt::comms::net::http_errorcode::Ok == ret &&
-		   (http_rep_code == 200 || http_rep_code == 204);  // OK codes
+		(http_rep_code == 200 || http_rep_code == 204);	 // OK codes
 
 	MRPT_END
 }

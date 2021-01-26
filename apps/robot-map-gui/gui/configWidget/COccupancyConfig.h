@@ -8,10 +8,11 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
-#include "CBaseConfig.h"
-
 #include <mrpt/maps/COccupancyGridMap2D.h>
+
 #include <memory>
+
+#include "CBaseConfig.h"
 
 namespace Ui
 {

@@ -70,7 +70,7 @@ void impl_excep_to_str(
 				idx != std::string::npos)
 			{
 				err = "Message: "s + err.substr(idx + 1) + "Location: "s +
-					  err.substr(0, idx) + "\n"s;
+					err.substr(0, idx) + "\n"s;
 			}
 
 			ret += "==== MRPT exception ====\n";

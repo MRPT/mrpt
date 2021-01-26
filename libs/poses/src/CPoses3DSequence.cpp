@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/CPoses3DSequence.h>
 #include <mrpt/serialization/CArchive.h>
@@ -24,7 +24,8 @@ uint8_t CPoses3DSequence::serializeGetVersion() const { return 0; }
 void CPoses3DSequence::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_poses.size());
-	for (const auto& p : m_poses) out << p;
+	for (const auto& p : m_poses)
+		out << p;
 }
 void CPoses3DSequence::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -34,11 +35,11 @@ void CPoses3DSequence::serializeFrom(
 		case 0:
 		{
 			m_poses.resize(in.ReadAs<uint32_t>());
-			for (auto& p : m_poses) in >> p;
+			for (auto& p : m_poses)
+				in >> p;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -92,7 +93,8 @@ CPose3D CPoses3DSequence::absolutePoseOf(unsigned int n)
 	if (n > m_poses.size())
 		THROW_EXCEPTION("absolutePoseOf: Index out of range!!");
 
-	for (i = 0; i < n; i++) ret = ret + CPose3D(m_poses[i]);
+	for (i = 0; i < n; i++)
+		ret = ret + CPose3D(m_poses[i]);
 
 	return ret;
 }
@@ -112,7 +114,8 @@ double CPoses3DSequence::computeTraveledDistanceAfter(size_t n)
 	if (n > m_poses.size())
 		THROW_EXCEPTION("computeTraveledDistanceAfter: Index out of range!!");
 
-	for (size_t i = 0; i < n; i++) dist += m_poses[i].norm();
+	for (size_t i = 0; i < n; i++)
+		dist += m_poses[i].norm();
 	return dist;
 }
 

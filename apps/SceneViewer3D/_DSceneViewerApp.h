@@ -19,4 +19,4 @@ class _DSceneViewerApp : public wxApp
 	int OnExit() override;
 };
 
-#endif  // _DSCENEVIEWERAPP_H
+#endif	// _DSCENEVIEWERAPP_H

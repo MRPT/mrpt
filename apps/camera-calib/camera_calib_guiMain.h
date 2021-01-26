@@ -25,6 +25,7 @@
 #include <wx/spinctrl.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+
 #include "MyGLCanvas.h"
 //*)
 
@@ -139,4 +140,4 @@ class camera_calib_guiDialog : public wxDialog
 	void clearListImages();
 };
 
-#endif  // CAMERA_CALIB_GUIMAIN_H
+#endif	// CAMERA_CALIB_GUIMAIN_H

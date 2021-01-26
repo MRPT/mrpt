@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -46,7 +47,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			r, 0, std_scale);
 		CMatrixDouble66 cov;
 		cov.matProductOf_AAt(r);  // random semi-definite positive matrix:
-		for (int i = 0; i < 6; i++) cov(i, i) += 1e-7;
+		for (int i = 0; i < 6; i++)
+			cov(i, i) += 1e-7;
 		CPose3DPDFGaussian p6pdf(CPose3D(x, y, z, yaw, pitch, roll), cov);
 		return p6pdf;
 	}
@@ -80,7 +82,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			x[7 + 0], x[7 + 1], x[7 + 2],
 			CQuaternionDouble(x[7 + 3], x[7 + 4], x[7 + 5], x[7 + 6]));
 		const CPose3DQuat p = p1 + p2;
-		for (int i = 0; i < 7; i++) Y[i] = p[i];
+		for (int i = 0; i < 7; i++)
+			Y[i] = p[i];
 	}
 
 	static void func_inv_compose(
@@ -94,7 +97,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			x[7 + 0], x[7 + 1], x[7 + 2],
 			CQuaternionDouble(x[7 + 3], x[7 + 4], x[7 + 5], x[7 + 6]));
 		const CPose3DQuat p = p1 - p2;
-		for (int i = 0; i < 7; i++) Y[i] = p[i];
+		for (int i = 0; i < 7; i++)
+			Y[i] = p[i];
 	}
 
 	void testPoseComposition(
@@ -114,8 +118,10 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		CMatrixFixed<double, 7, 7> y_cov;
 		{
 			CVectorFixedDouble<2 * 7> x_mean;
-			for (int i = 0; i < 7; i++) x_mean[i] = p7pdf1.mean[i];
-			for (int i = 0; i < 7; i++) x_mean[7 + i] = p7pdf2.mean[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[i] = p7pdf1.mean[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[7 + i] = p7pdf2.mean[i];
 
 			CMatrixFixed<double, 14, 14> x_cov;
 			x_cov.insertMatrix(0, 0, p7pdf1.cov);
@@ -145,7 +151,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		q.normalize();
 		const CPose3DQuat p1(x[0], x[1], x[2], q);
 		const CPose3DQuat p1_inv(-p1);
-		for (int i = 0; i < 7; i++) Y[i] = p1_inv[i];
+		for (int i = 0; i < 7; i++)
+			Y[i] = p1_inv[i];
 	}
 
 	void testCompositionJacobian(
@@ -160,8 +167,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX),
 			df_du(UNINITIALIZED_MATRIX);
 		CPose3DQuatPDF::jacobiansPoseComposition(
-			q1,  // x
-			q2,  // u
+			q1,	 // x
+			q2,	 // u
 			df_dx, df_du);
 
 		// Numerical approximation:
@@ -169,8 +176,10 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			num_df_du(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<2 * 7> x_mean;
-			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
-			for (int i = 0; i < 7; i++) x_mean[7 + i] = q2[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[i] = q1[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[7 + i] = q2[i];
 
 			double DUMMY = 0;
 			CVectorFixedDouble<2 * 7> x_incrs;
@@ -223,7 +232,8 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		CMatrixFixed<double, 7, 7> y_cov;
 		{
 			CVectorFixedDouble<7> x_mean;
-			for (int i = 0; i < 7; i++) x_mean[i] = p7pdf1.mean[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[i] = p7pdf1.mean[i];
 
 			CMatrixFixed<double, 7, 7> x_cov;
 			x_cov.insertMatrix(0, 0, p7pdf1.cov);
@@ -264,8 +274,10 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		CMatrixFixed<double, 7, 7> y_cov;
 		{
 			CVectorFixedDouble<2 * 7> x_mean;
-			for (int i = 0; i < 7; i++) x_mean[i] = p7pdf1.mean[i];
-			for (int i = 0; i < 7; i++) x_mean[7 + i] = p7pdf2.mean[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[i] = p7pdf1.mean[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[7 + i] = p7pdf2.mean[i];
 
 			CMatrixFixed<double, 14, 14> x_cov;
 			x_cov.insertMatrix(0, 0, p7pdf1.cov);

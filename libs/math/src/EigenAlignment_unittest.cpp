@@ -11,6 +11,7 @@
 #include <mrpt/core/alignment_req.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/system/memory.h>
+
 #include <Eigen/Dense>
 #include <iostream>
 
@@ -75,7 +76,8 @@ template <unsigned int INTER_SPACE>
 void do_test_AlignedMemInSTL()
 {
 	std::map<int, Foo<INTER_SPACE>> d;
-	for (int i = 0; i < 100; i++) d[i * 3 + i * i * 4 + 1];
+	for (int i = 0; i < 100; i++)
+		d[i * 3 + i * i * 4 + 1];
 
 	checkAlignedFoo(d.rbegin()->second, "do_test_AlignedMemInSTL");
 }

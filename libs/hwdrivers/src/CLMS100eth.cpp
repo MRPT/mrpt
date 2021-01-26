@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CLMS100eth.h>
 #include <mrpt/system/string_utils.h>
 
@@ -16,7 +16,7 @@
 #include <iostream>
 #include <sstream>
 
-#define APPERTURE 4.712385  // in radian <=> 270°
+#define APPERTURE 4.712385	// in radian <=> 270°
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -81,8 +81,7 @@ void CLMS100Eth::loadConfig_sensorSpecific(
 
 bool CLMS100Eth::checkIsConnected()
 {
-	if (m_connected)
-		return true;
+	if (m_connected) return true;
 	else
 	{
 		try
@@ -208,7 +207,7 @@ bool CLMS100Eth::turnOn()
 void CLMS100Eth::sendCommand(const char* cmd)
 {
 	generateCmd(cmd);
-	if (!m_cmd.empty())  // one never knows...
+	if (!m_cmd.empty())	 // one never knows...
 		m_client.writeAsync(&m_cmd[0], m_cmd.size());
 }
 
@@ -249,9 +248,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 				break;
 			case 6:
 				if (!strcmp(next, "1"))
-				{
-					MRPT_LOG_ERROR_FMT("STATUS error on LMS100: '%s'", next);
-				}
+				{ MRPT_LOG_ERROR_FMT("STATUS error on LMS100: '%s'", next); }
 				else if (!strcmp(next, "4"))
 				{
 					MRPT_LOG_ERROR_FMT(
@@ -278,8 +275,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 				scanCount = strtoul(next, nullptr, 16);
 				MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
 				break;
-			default:
-				break;
+			default: break;
 		}
 		next = strtok(nullptr, " ", &tmp);
 	}
@@ -355,15 +351,11 @@ void CLMS100Eth::doProcess()
 	{
 		bool isThereObservation, hwError;
 		doProcessSimple(isThereObservation, *obs, hwError);
-		if (hwError)
-			m_state = ssError;
+		if (hwError) m_state = ssError;
 		else
 			m_state = ssWorking;
 		// if at least one data have been sensed :
-		if (isThereObservation)
-		{
-			appendObservation(obs);
-		}
+		if (isThereObservation) { appendObservation(obs); }
 	}
 	catch (...)
 	{

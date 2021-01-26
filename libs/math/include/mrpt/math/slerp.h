@@ -59,17 +59,21 @@ void slerp(
 	if (std::abs(sinHalfTheta) < 0.001)
 	{
 		if (!reverse_q1)
-			for (int i = 0; i < 4; i++) q[i] = (1 - t) * q0[i] + t * q1[i];
+			for (int i = 0; i < 4; i++)
+				q[i] = (1 - t) * q0[i] + t * q1[i];
 		else
-			for (int i = 0; i < 4; i++) q[i] = (1 - t) * q0[i] - t * q1[i];
+			for (int i = 0; i < 4; i++)
+				q[i] = (1 - t) * q0[i] - t * q1[i];
 		return;
 	}
 	const double A = sin((1 - t) * halfTheta) / sinHalfTheta;
 	const double B = sin(t * halfTheta) / sinHalfTheta;
 	if (!reverse_q1)
-		for (int i = 0; i < 4; i++) q[i] = A * q0[i] + B * q1[i];
+		for (int i = 0; i < 4; i++)
+			q[i] = A * q0[i] + B * q1[i];
 	else
-		for (int i = 0; i < 4; i++) q[i] = A * q0[i] - B * q1[i];
+		for (int i = 0; i < 4; i++)
+			q[i] = A * q0[i] - B * q1[i];
 }
 
 /** SLERP interpolation between two 6D poses - like mrpt::math::slerp for

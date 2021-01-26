@@ -103,7 +103,7 @@ class CHeightGridMap2D
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** Whether to perform filtering by z-coordinate (default=false):
 		 * coordinates are always RELATIVE to the robot for this filter.vvv */
@@ -122,7 +122,7 @@ class CHeightGridMap2D
 		const TMatchingRatioParams& params) const override;
 
 	void saveMetricMapRepresentationToFile(const std::string& filNamePrefix)
-		const override;  // See base class docs
+		const override;	 // See base class docs
 
 	/** Returns a 3D object representing the map: by default, it will be a
 	 * mrpt::opengl::CMesh object, unless

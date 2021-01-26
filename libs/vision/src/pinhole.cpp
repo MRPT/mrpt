@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/vision/pinhole.h>
 
@@ -65,7 +65,7 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	const size_t N = in_points_3D.size();
 	projectedPoints.resize(N);
 
-	if (!N) return;  // Nothing to do
+	if (!N) return;	 // Nothing to do
 
 	vector<CvPoint3D64f> objPoints(N);
 
@@ -138,7 +138,8 @@ void mrpt::vision::pinhole::undistort_points(
 	TCamera cam;
 	cam.intrinsicParams = A;
 	ASSERT_(Dk.size() <= cam.dist.size());
-	for (size_t i = 0; i < cam.dist.size(); i++) cam.dist[i] = Dk[i];
+	for (size_t i = 0; i < cam.dist.size(); i++)
+		cam.dist[i] = Dk[i];
 	undistort_points(in_dist_pixels, out_pixels, cam);
 }
 
@@ -175,15 +176,15 @@ void mrpt::vision::pinhole::undistort_points(
 		for (unsigned int j = 0; j < 5; j++)
 		{
 			double r2 = x * x + y * y;
-			double icdist =
-				1. /
-				(1 + ((cameraModel.dist[4] * r2 + cameraModel.dist[1]) * r2 +
-					  cameraModel.dist[0]) *
-						 r2);
+			double icdist = 1. /
+				(1 +
+				 ((cameraModel.dist[4] * r2 + cameraModel.dist[1]) * r2 +
+				  cameraModel.dist[0]) *
+					 r2);
 			double deltaX = 2 * cameraModel.dist[2] * x * y +
-							cameraModel.dist[3] * (r2 + 2 * x * x);
+				cameraModel.dist[3] * (r2 + 2 * x * x);
 			double deltaY = cameraModel.dist[2] * (r2 + 2 * y * y) +
-							2 * cameraModel.dist[3] * x * y;
+				2 * cameraModel.dist[3] * x * y;
 			x = (x0 - deltaX) * icdist;
 			y = (y0 - deltaY) * icdist;
 		}
@@ -228,14 +229,15 @@ void mrpt::vision::pinhole::undistort_point(
 	for (unsigned int j = 0; j < 5; j++)
 	{
 		double r2 = x * x + y * y;
-		double icdist =
-			1. / (1 + ((cameraModel.dist[4] * r2 + cameraModel.dist[1]) * r2 +
-					   cameraModel.dist[0]) *
-						  r2);
+		double icdist = 1. /
+			(1 +
+			 ((cameraModel.dist[4] * r2 + cameraModel.dist[1]) * r2 +
+			  cameraModel.dist[0]) *
+				 r2);
 		double deltaX = 2 * cameraModel.dist[2] * x * y +
-						cameraModel.dist[3] * (r2 + 2 * x * x);
+			cameraModel.dist[3] * (r2 + 2 * x * x);
 		double deltaY = cameraModel.dist[2] * (r2 + 2 * y * y) +
-						2 * cameraModel.dist[3] * x * y;
+			2 * cameraModel.dist[3] * x * y;
 		x = (x0 - deltaX) * icdist;
 		y = (y0 - deltaY) * icdist;
 	}
@@ -282,12 +284,14 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 		{
 			itPixels->x =
 				d2f(params.cx() +
-					params.fx() * (x * A + params.dist[2] * B +
-								   params.dist[3] * (r2 + 2 * square(x))));
+					params.fx() *
+						(x * A + params.dist[2] * B +
+						 params.dist[3] * (r2 + 2 * square(x))));
 			itPixels->y =
 				d2f(params.cy() +
-					params.fy() * (y * A + params.dist[3] * B +
-								   params.dist[2] * (r2 + 2 * square(y))));
+					params.fy() *
+						(y * A + params.dist[3] * B +
+						 params.dist[2] * (r2 + 2 * square(y))));
 		}
 		else
 		{
@@ -317,16 +321,20 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 
 	pixel.x =
 		d2f(params.cx() +
-			params.fx() * (x * (1 + params.dist[0] * r2 + params.dist[1] * r4 +
-								params.dist[4] * r6) +
-						   2 * params.dist[2] * x * y +
-						   params.dist[3] * (r2 + 2 * square(x))));
+			params.fx() *
+				(x *
+					 (1 + params.dist[0] * r2 + params.dist[1] * r4 +
+					  params.dist[4] * r6) +
+				 2 * params.dist[2] * x * y +
+				 params.dist[3] * (r2 + 2 * square(x))));
 	pixel.y =
 		d2f(params.cy() +
-			params.fy() * (y * (1 + params.dist[0] * r2 + params.dist[1] * r4 +
-								params.dist[4] * r6) +
-						   2 * params.dist[3] * x * y +
-						   params.dist[2] * (r2 + 2 * square(y))));
+			params.fy() *
+				(y *
+					 (1 + params.dist[0] * r2 + params.dist[1] * r4 +
+					  params.dist[4] * r6) +
+				 2 * params.dist[3] * x * y +
+				 params.dist[2] * (r2 + 2 * square(y))));
 }
 
 /* -------------------------------------------------------

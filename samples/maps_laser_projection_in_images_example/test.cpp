@@ -27,6 +27,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -64,7 +65,7 @@ void TestLaser2Imgs()
 	// Set relative path for externally-stored images in rawlogs:
 	string rawlog_images_path = extractFileDirectory(RAWLOG_FILE);
 	rawlog_images_path += "/Images";
-	CImage::setImagesPathBase(rawlog_images_path);  // Set it.
+	CImage::setImagesPathBase(rawlog_images_path);	// Set it.
 
 	mrpt::io::CFileGZInputStream rawlogFile(RAWLOG_FILE);
 
@@ -82,7 +83,7 @@ void TestLaser2Imgs()
 		auto arch = mrpt::serialization::archiveFrom(rawlogFile);
 		if (!CRawlog::readActionObservationPair(
 				arch, action, observations, rawlogEntry))
-			break;  // file EOF
+			break;	// file EOF
 
 		// CAMERA............
 		// Get CObservationStereoImages
@@ -96,8 +97,8 @@ void TestLaser2Imgs()
 			if (!Img) continue;
 		}
 
-		CPose3D cameraPose;  // Get Camera Pose (B) (CPose3D)
-		CMatrixDouble33 K;  // Get Calibration matrix (K)
+		CPose3D cameraPose;	 // Get Camera Pose (B) (CPose3D)
+		CMatrixDouble33 K;	// Get Calibration matrix (K)
 
 		sImgs ? sImgs->getSensorPose(cameraPose)
 			  : Img->getSensorPose(cameraPose);
@@ -122,7 +123,7 @@ void TestLaser2Imgs()
 		CSimplePointsMap mapa;
 		mapa.insertionOptions.minDistBetweenLaserPoints = 0;
 		observations->insertObservationsInto(
-			&mapa);  // <- The map contains the pose of the points (P1)
+			&mapa);	 // <- The map contains the pose of the points (P1)
 
 		// Get the points into the map
 		vector<float> X, Y, Z;
@@ -172,7 +173,7 @@ void TestLaser2Imgs()
 		wind.showImage(image);
 
 		std::this_thread::sleep_for(50ms);
-	};  // end for
+	};	// end for
 
 	mrpt::system::pause();
 }
@@ -184,10 +185,7 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		if (argc > 1)
-		{
-			RAWLOG_FILE = std::string(argv[1]);
-		}
+		if (argc > 1) { RAWLOG_FILE = std::string(argv[1]); }
 
 		TestLaser2Imgs();
 		return 0;

@@ -14,6 +14,7 @@
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/system/COutputLogger.h>
+
 #include <functional>
 
 namespace mrpt::math
@@ -114,15 +115,15 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 		this->setMinLoggingLevel(verbosity);
 
-		VECTORTYPE& x = out_optimal_x;  // Var rename
+		VECTORTYPE& x = out_optimal_x;	// Var rename
 
 		// Asserts:
 		ASSERT_(increments.size() == x0.size());
 
-		x = x0;  // Start with the starting point
-		VECTORTYPE f_x;  // The vector error from the user function
+		x = x0;	 // Start with the starting point
+		VECTORTYPE f_x;	 // The vector error from the user function
 		matrix_t AUX;
-		matrix_t J;  // The Jacobian of "f"
+		matrix_t J;	 // The Jacobian of "f"
 		VECTORTYPE g;  // The gradient
 
 		// Compute the jacobian and the Hessian:
@@ -158,16 +159,18 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 		if (returnPath)
 		{
 			out_info.path.setSize(maxIter, N + 1);
-			for (size_t i = 0; i < N; i++) out_info.path(iter, i) = x[i];
+			for (size_t i = 0; i < N; i++)
+				out_info.path(iter, i) = x[i];
 		}
 		else
-			out_info.path = matrix_t();  // Empty matrix
+			out_info.path = matrix_t();	 // Empty matrix
 
 		while (!found && ++iter < maxIter)
 		{
 			// H_lm = -( H + \lambda I ) ^-1 * g
 			matrix_t H = out_info.H;
-			for (size_t k = 0; k < H_len; k++) H(k, k) += lambda;
+			for (size_t k = 0; k < H_len; k++)
+				H(k, k) += lambda;
 
 			AUX = H.inverse_LLt();
 			// AUX.matProductOf_Ab(g,h_lm);	h_lm <- AUX*g
@@ -207,7 +210,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 				const double denom = tmp.dot(h_lm);
 				const double l = (F_x - F_xnew) / denom;
 
-				if (l > 0)  // There is an improvement:
+				if (l > 0)	// There is an improvement:
 				{
 					// Accept new point:
 					x = xnew;
@@ -254,7 +257,7 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 		MRPT_END
 	}
 
-};  // End of class def.
+};	// End of class def.
 
 /** The default name for the LM class is an instantiation for "double" */
 using CLevenbergMarquardt = CLevenbergMarquardtTempl<mrpt::math::CVectorDouble>;

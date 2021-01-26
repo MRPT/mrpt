@@ -18,6 +18,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "kinect_calibrate_guiMain.h"
 //*)
 

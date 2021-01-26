@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
@@ -134,9 +134,9 @@ void CGPSInterface::loadConfig_sensorSpecific(
 
 	m_topcon_useAIMMode = configSource.read_bool(
 		iniSection, "JAVAD_useAIMMode", m_topcon_useAIMMode);
-	m_topcon_data_period =
-		1.0 / configSource.read_double(
-				  iniSection, "outputRate", m_topcon_data_period);
+	m_topcon_data_period = 1.0 /
+		configSource.read_double(
+			iniSection, "outputRate", m_topcon_data_period);
 }
 
 CGPSInterface::~CGPSInterface() { OnConnectionShutdown(); }
@@ -235,7 +235,7 @@ bool CGPSInterface::tryToOpenTheCOM()
 	{
 		{
 			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
-			if (serial->isOpen()) return true;  // Already open
+			if (serial->isOpen()) return true;	// Already open
 
 			if (m_verbose)
 				cout << "[CGPSInterface] Opening " << m_COMname << " @ "
@@ -300,9 +300,7 @@ void CGPSInterface::doProcess()
 		{
 			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
 			if (stream_tcpip)
-			{
-				nRead = stream_tcpip->readAsync(buf, to_read, 100, 10);
-			}
+			{ nRead = stream_tcpip->readAsync(buf, to_read, 100, 10); }
 			else if (stream_serial)
 			{
 				nRead = stream_serial->Read(buf, to_read);
@@ -328,8 +326,7 @@ void CGPSInterface::doProcess()
 				(unsigned int)parts.month, (unsigned int)parts.day,
 				(unsigned int)parts.hour, (unsigned int)parts.minute,
 				(unsigned int)parts.second);
-			const string sFileName =
-				m_raw_dump_file_prefix +
+			const string sFileName = m_raw_dump_file_prefix +
 				mrpt::system::fileNameStripInvalidChars(sFilePostfix) +
 				string(".gps");
 
@@ -339,9 +336,7 @@ void CGPSInterface::doProcess()
 			m_raw_output_file.open(sFileName);
 		}
 		if (nRead && m_raw_output_file.fileOpenCorrectly())
-		{
-			m_raw_output_file.Write(buf, nRead);
-		}
+		{ m_raw_output_file.Write(buf, nRead); }
 	}
 	catch (std::exception&)
 	{
@@ -466,10 +461,8 @@ void CGPSInterface::parseBuffer()
 		case CGPSInterface::NOVATEL_OEM6:
 			parser_ptr = &CGPSInterface::implement_parser_NOVATEL_OEM6;
 			break;
-		case CGPSInterface::AUTO:
-			break;  // Leave it as NULL
-		default:
-			throw std::runtime_error("[CGPSInterface] Unknown parser!");
+		case CGPSInterface::AUTO: break;  // Leave it as NULL
+		default: throw std::runtime_error("[CGPSInterface] Unknown parser!");
 	};
 	if (parser_ptr)
 	{
@@ -480,7 +473,7 @@ void CGPSInterface::parseBuffer()
 			if (!(*this.*parser_ptr)(min_bytes))
 			{
 				if (m_rx_buffer.size() != 0)
-					m_rx_buffer.pop();  // Not the start of a frame, skip 1 byte
+					m_rx_buffer.pop();	// Not the start of a frame, skip 1 byte
 			}
 			if (m_customInit.empty() /* If we are not in old legacy mode */ &&
 				!m_just_parsed_messages.messages.empty())
@@ -507,7 +500,7 @@ void CGPSInterface::parseBuffer()
 			}
 
 			if (all_parsers_want_to_skip && m_rx_buffer.size() != 0)
-				m_rx_buffer.pop();  // Not the start of a frame, skip 1 byte
+				m_rx_buffer.pop();	// Not the start of a frame, skip 1 byte
 
 			if (m_customInit.empty() /* If we are not in old legacy mode */ &&
 				!m_just_parsed_messages.messages.empty())
@@ -562,8 +555,7 @@ void CGPSInterface::JAVAD_sendMessage(const char* str, bool waitForAnswer)
 			throw std::runtime_error(format(
 				"ERROR: Invalid response '%s' for command '%s'", buf, str));
 
-		if (nRead >= 3 && buf[0] == 'R' && buf[1] == 'E')
-			return;  // Ok!
+		if (nRead >= 3 && buf[0] == 'R' && buf[1] == 'E') return;  // Ok!
 		else
 			++bad_counter;
 	}
@@ -607,15 +599,13 @@ bool CGPSInterface::OnConnectionShutdown()
 ----------------------------------------------------- */
 bool CGPSInterface::OnConnectionEstablished()
 {
-	m_last_GGA.clear();  // On comms reset, empty this cache
+	m_last_GGA.clear();	 // On comms reset, empty this cache
 	m_just_parsed_messages.clear();
 
 	// Legacy behavior:
 	if (!os::_strcmpi(m_customInit.c_str(), "JAVAD") ||
 		!os::_strcmpi(m_customInit.c_str(), "TOPCON"))
-	{
-		return legacy_topcon_setup_commands();
-	}
+	{ return legacy_topcon_setup_commands(); }
 
 	// Purge input:
 	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream.get());
@@ -678,7 +668,7 @@ bool CGPSInterface::unsetJAVAD_AIM_mode()
 			stream_serial->purgeBuffers();
 		}
 
-		JAVAD_sendMessage("%%set,/par/cur/term/imode,cmd\r\n");  // set the
+		JAVAD_sendMessage("%%set,/par/cur/term/imode,cmd\r\n");	 // set the
 		// current port
 		// in command
 		// mode
@@ -697,9 +687,9 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 	{
 		JAVAD_sendMessage(
 			format("%%%%set,/par%s/imode,cmd\r\n", m_JAVAD_rtk_src_port.c_str())
-				.c_str());  // set the port in command mode
+				.c_str());	// set the port in command mode
 		JAVAD_sendMessage(
-			"%%set,/par/cur/term/jps/0,{nscmd,37,n,\"\"}\r\n");  // any command
+			"%%set,/par/cur/term/jps/0,{nscmd,37,n,\"\"}\r\n");	 // any command
 		// starting
 		// with % will
 		// be treated
@@ -714,7 +704,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 				format(
 					"%%%%set,/par/cur/term/jps/1,{cmr,-1,y,%s}\r\n",
 					m_JAVAD_rtk_src_port.c_str())
-					.c_str());  // set corrections type CMR or CMR+
+					.c_str());	// set corrections type CMR or CMR+
 			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
 			JAVAD_sendMessage(format(
 								  "%%%%set,/par%s/imode,cmr\r\n",
@@ -727,7 +717,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 				format(
 					"%%%%set,/par/cur/term/jps/1,{rtcm,-1,y,%s}\r\n",
 					m_JAVAD_rtk_src_port.c_str())
-					.c_str());  // set corrections type RTCM
+					.c_str());	// set corrections type RTCM
 			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
 			JAVAD_sendMessage(format(
 								  "%%%%set,/par%s/imode,rtcm\r\n",
@@ -740,7 +730,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 				format(
 					"%%%%set,/par/cur/term/jps/1,{rtcm3,-1,y,%s}\r\n",
 					m_JAVAD_rtk_src_port.c_str())
-					.c_str());  // set corrections type RTCM 3.x
+					.c_str());	// set corrections type RTCM 3.x
 			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
 			JAVAD_sendMessage(format(
 								  "%%%%set,/par%s/imode,rtcm3\r\n",
@@ -754,7 +744,7 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 				 << endl;
 			return false;
 		}
-		JAVAD_sendMessage("%%set,/par/cur/term/imode,jps\r\n");  // sets current
+		JAVAD_sendMessage("%%set,/par/cur/term/imode,jps\r\n");	 // sets current
 		// port into
 		// "JPS" mode
 
@@ -798,10 +788,10 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 
 		JAVAD_sendMessage(
 			format("%%%%set,/par/lock/elm,%i\r\n", elevation_mask)
-				.c_str());  // Set elevation mask to track satellites
+				.c_str());	// Set elevation mask to track satellites
 		JAVAD_sendMessage(
 			"%%set,/par/base/mode/,off\r\n");  // Set Base Mode off
-		JAVAD_sendMessage("%%set,/par/pos/pd/period,1.0\r\n");  // Differential
+		JAVAD_sendMessage("%%set,/par/pos/pd/period,1.0\r\n");	// Differential
 		// Correction
 		// Interval
 		// JAVAD_sendMessage("%%set,hd/mode,off\r\n");  // fixed distance to rtk
@@ -812,16 +802,16 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 		JAVAD_sendMessage(
 			"%%set,/par/pos/pd/qcheck,off\r\n");  // Set Quality Checks Off
 		JAVAD_sendMessage(
-			"%%set,/par/pos/mode/cur,pd\r\n");  // Pos Mode Phase Diff
+			"%%set,/par/pos/mode/cur,pd\r\n");	// Pos Mode Phase Diff
 		JAVAD_sendMessage(
-			"%%set,/par/pos/pd/textr,10\r\n");  // RTK Extrapolation Limit
+			"%%set,/par/pos/pd/textr,10\r\n");	// RTK Extrapolation Limit
 		JAVAD_sendMessage(
-			"%%set,/par/pos/pd/inuse,-1\r\n");  // Set Rovers Reference Station
-		JAVAD_sendMessage("%%set,/par/pos/pd/nrs/mode,y\r\n");  // Enable
+			"%%set,/par/pos/pd/inuse,-1\r\n");	// Set Rovers Reference Station
+		JAVAD_sendMessage("%%set,/par/pos/pd/nrs/mode,y\r\n");	// Enable
 		// Nearest
 		// Reference
 		// Station Mode
-		JAVAD_sendMessage("%%set,/par/pos/pd/mode,extrap\r\n");  // Enable
+		JAVAD_sendMessage("%%set,/par/pos/pd/mode,extrap\r\n");	 // Enable
 		// EXTRAPOLATED
 		// mode in RTK
 		// corrections
@@ -865,7 +855,7 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 		format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_topcon_data_period).c_str());
 	JAVAD_sendMessage(
 		format("%%%%em,,/msg/nmea/RMC:%.1f\r\n", m_topcon_data_period)
-			.c_str());  // FAMD: 10 Hz
+			.c_str());	// FAMD: 10 Hz
 
 	if (m_topcon_useAIMMode)
 	{

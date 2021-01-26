@@ -25,4 +25,4 @@ class kinect_calibrate_guiApp : public wxApp
 	bool OnInit() override;
 };
 
-#endif  // KINECT_CALIBRATE_GUIAPP_H
+#endif	// KINECT_CALIBRATE_GUIAPP_H

@@ -16,7 +16,6 @@ MRPT_WARNING(
 #endif
 
 #include <mrpt/config.h>
-
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/maps/CColouredOctoMap.h>
@@ -24,6 +23,7 @@ MRPT_WARNING(
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D_MRF.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/COctoMap.h>
@@ -34,8 +34,6 @@ MRPT_WARNING(
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
-
-#include <mrpt/maps/CMultiMetricMap.h>
 
 //#include <mrpt/maps/PCL_adapters.h>  // NOTE: This file must be included from
 // the user code only if he has already #include'd PCL headers.

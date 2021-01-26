@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/metric_map_types.h>
@@ -52,7 +52,6 @@ void TMapGenericParams::serializeFrom(
 				enableObservationInsertion;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }

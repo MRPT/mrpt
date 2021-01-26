@@ -10,6 +10,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/random/RandomGenerators.h>
+
 #include <cstddef>
 #include <vector>
 
@@ -128,8 +129,7 @@ bool RANSAC_Template<NUMTYPE, DATASET, MODEL>::execute(
 			// Update estimate of N, the number of trials to ensure we pick,
 			// with probability p, a data set with no outliers.
 			double fracinliers = ninliers / static_cast<double>(Npts);
-			double pNoOutliers =
-				1 -
+			double pNoOutliers = 1 -
 				pow(fracinliers, static_cast<double>(minimumSizeSamplesToFit));
 
 			pNoOutliers = std::max(

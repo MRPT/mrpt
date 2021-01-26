@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "img-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config.h>
 
 // ---------------------------------------------------------------------------
@@ -23,6 +23,7 @@
 #include <mrpt/core/SSE_types.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/memory.h>
+
 #include "CImage.SSEx.h"
 
 /** \addtogroup sse_optimizations
@@ -47,7 +48,7 @@ void impl_image_SSSE3_scale_half_3c8u(
 	// clang-format on
 	SSE_RESTORE_SIGN_WARNINGS
 
-	const int sw = w / 16;  // This are the number of 3*16 blocks in each row
+	const int sw = w / 16;	// This are the number of 3*16 blocks in each row
 	const int sh = h / 2;
 	const int rest_w = w - (16 * w);
 
@@ -97,7 +98,7 @@ void impl_image_SSSE3_scale_half_3c8u(
 			}
 		}
 
-		in += 2 * step_in;  // Skip one row
+		in += 2 * step_in;	// Skip one row
 		out += step_out;
 	}
 }
@@ -187,7 +188,7 @@ void impl_image_SSSE3_rgb_or_bgr_to_gray_8u(
 	const __m128i m10 = IS_RGB ? mask6 : mask10;
 	const __m128i m11 = IS_RGB ? mask7 : mask11;
 
-	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
+	const int sw = w >> 4;	// This are the number of 3*16 blocks in each row
 	const int sh = h;
 
 	for (int i = 0; i < sh; i++)
@@ -319,4 +320,4 @@ void image_SSSE3_rgb_to_gray_8u(
 
 /**  @} */
 
-#endif  // end of MRPT_ARCH_INTEL_COMPATIBLE
+#endif	// end of MRPT_ARCH_INTEL_COMPATIBLE

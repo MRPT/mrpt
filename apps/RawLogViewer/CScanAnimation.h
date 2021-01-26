@@ -19,13 +19,13 @@
 #include <wx/spinctrl.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+
 #include "MyGLCanvas.h"
 //*)
 
 // The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
 //  See http://sourceforge.net/projects/wxmathplot
 #include <mrpt/3rdparty/mathplot/mathplot.h>
-
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 

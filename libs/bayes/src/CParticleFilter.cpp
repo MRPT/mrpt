@@ -7,15 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "bayes-precomp.h"  // Precompiled headers
-
-#include <mrpt/bayes/CParticleFilter.h>  // for CParticleFilter::TPar...
-#include <mrpt/bayes/CParticleFilterCapable.h>  // for CParticleFilterCapable
+#include "bayes-precomp.h"	// Precompiled headers
+//
+#include <mrpt/bayes/CParticleFilter.h>	 // for CParticleFilter::TPar...
+#include <mrpt/bayes/CParticleFilterCapable.h>	// for CParticleFilterCapable
 #include <mrpt/config/CConfigFileBase.h>  // for CConfigFileBase, MRPT...
 #include <mrpt/core/bits_math.h>  // square()
-#include <mrpt/system/COutputLogger.h>  // for COutputLogger, MRPT_L...
+#include <mrpt/system/COutputLogger.h>	// for COutputLogger, MRPT_L...
+
 #include <cmath>  // for exp
-#include <cstddef>  // for size_t
+#include <cstddef>	// for size_t
 #include <exception>  // for exception
 #include <string>  // for string, allocator
 
@@ -69,7 +70,8 @@ void CParticleFilter::executeOn(
 		if (M > 1)
 		{
 			double weightsMean = 0, var = 0;
-			for (size_t i = 0; i < M; i++) weightsMean += exp(obj.getW(i));
+			for (size_t i = 0; i < M; i++)
+				weightsMean += exp(obj.getW(i));
 			weightsMean /= M;
 			for (size_t i = 0; i < M; i++)
 				var += square(exp(obj.getW(i)) - weightsMean);

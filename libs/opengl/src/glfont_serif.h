@@ -10,6 +10,7 @@
 // Font header file
 #pragma once
 
+// clang-format off
 Point serif_vertices[] = {
 
 	{0.3682f, 0.3318f},   {0.3373f, 0.4689f},   {0.3108f, 0.4810f},
@@ -3052,8 +3053,10 @@ Font::Char serif_chars[] = {
 	{4308, 12486, 8616, 141, 98, 0.7667f},
 	{4357, 12627, 8714, 225, 154, 0.6833f},
 };
+// clang-format on
 
-Font serif_font = {serif_vertices, serif_triangles, serif_lines, serif_chars,
-				   " $(,048<@DHLPTX\\`dhlptx|#'+/"
-				   "37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
-				   "AEIMQUY]aeimquy}"};
+Font serif_font = {
+	serif_vertices, serif_triangles, serif_lines, serif_chars,
+	" $(,048<@DHLPTX\\`dhlptx|#'+/"
+	"37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
+	"AEIMQUY]aeimquy}"};

@@ -18,7 +18,7 @@ void do_test_insertCheckMapBounds()
 	pt_params.update_map_after_insertion = false;
 
 	MAP dem;  // mrpt::maps::CHeightGridMap2D dem;
-	dem.setSize(-4.0, 4.0, 0.0, 4.0, 1.0);  // x:[-10,10] * y:[0,5]
+	dem.setSize(-4.0, 4.0, 0.0, 4.0, 1.0);	// x:[-10,10] * y:[0,5]
 	// Inside:
 	EXPECT_TRUE(dem.insertIndividualPoint(2.0, 3.0, 56.0, pt_params));
 	EXPECT_TRUE(dem.insertIndividualPoint(-3.0, 0.4, 56.0, pt_params));

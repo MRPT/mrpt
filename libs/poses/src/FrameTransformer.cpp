@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/core/exceptions.h>  // for ASSERTMSG_
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/FrameTransformer.h>  // for FrameTransformer, FrameTran...
 #include <mrpt/system/datetime.h>  // for TTimeStamp, INVALID_TIMESTAMP
+
 #include <string>  // for string
 
 using namespace mrpt::poses;
@@ -68,16 +69,10 @@ FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
 		"`query_time` different than 'latest' not supported yet!");
 
 	const auto& it_src = m_pose_edges_buffer.find(source_frame);
-	if (it_src == m_pose_edges_buffer.end())
-	{
-		return LKUP_UNKNOWN_FRAME;
-	}
+	if (it_src == m_pose_edges_buffer.end()) { return LKUP_UNKNOWN_FRAME; }
 
 	const auto& it_dst = it_src->second.find(target_frame);
-	if (it_dst == it_src->second.end())
-	{
-		return LKUP_NO_CONNECTIVITY;
-	}
+	if (it_dst == it_src->second.end()) { return LKUP_NO_CONNECTIVITY; }
 
 	const TF_TreeEdge& te = it_dst->second;
 	child_wrt_parent = te.pose.asTPose();

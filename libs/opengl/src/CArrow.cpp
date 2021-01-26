@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/serialization/CArchive.h>
@@ -117,7 +117,8 @@ void CArrow::onUpdateBuffers_Triangles()
 	}
 
 	// All faces, same color:
-	for (auto& t : tris) t.setColor(m_color);
+	for (auto& t : tris)
+		t.setColor(m_color);
 }
 
 uint8_t CArrow::serializeGetVersion() const { return 2; }
@@ -150,8 +151,7 @@ void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			if (version >= 2) in >> m_slices;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }
@@ -191,8 +191,7 @@ void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			m_slices = static_cast<unsigned int>(in["slices"]);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 auto CArrow::getBoundingBox() const -> mrpt::math::TBoundingBox

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "img-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CCanvas.h>
@@ -17,8 +17,9 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+
 #include <Eigen/Dense>
-#include <cstring>  // memcpy
+#include <cstring>	// memcpy
 #include <map>
 
 // Include the MRPT bitmap fonts:
@@ -63,17 +64,17 @@ void init_fonts_list()
 
 // This was used only once
 #if 0
-#define SAVE_COMPRESSED(ARR)                                                  \
-	{                                                                         \
-		list_registered_fonts[#ARR].resize(sizeof(mrpt_font_##ARR));          \
-		memcpy(                                                               \
-			&list_registered_fonts[#ARR][0], mrpt_font_##ARR,                 \
-			sizeof(mrpt_font_##ARR));                                         \
-		cout << #ARR << " -> " << sizeof(mrpt_font_##ARR) << endl;            \
-		CFileGZOutputStream f(                                                \
-			string("mrpt_font_") + string(#ARR) + string(".gz"));             \
-		f.WriteBuffer(mrpt_font_##ARR, sizeof(mrpt_font_##ARR));              \
-		/*mrpt::compress::zip::compress( list_registered_fonts[#ARR], f ); */ \
+#define SAVE_COMPRESSED(ARR)                                                   \
+	{                                                                          \
+		list_registered_fonts[#ARR].resize(sizeof(mrpt_font_##ARR));           \
+		memcpy(                                                                \
+			&list_registered_fonts[#ARR][0], mrpt_font_##ARR,                  \
+			sizeof(mrpt_font_##ARR));                                          \
+		cout << #ARR << " -> " << sizeof(mrpt_font_##ARR) << endl;             \
+		CFileGZOutputStream f(                                                 \
+			string("mrpt_font_") + string(#ARR) + string(".gz"));              \
+		f.WriteBuffer(mrpt_font_##ARR, sizeof(mrpt_font_##ARR));               \
+		/*mrpt::compress::zip::compress( list_registered_fonts[#ARR], f ); */  \
 	}
 
     	SAVE_COMPRESSED(5x7)
@@ -92,14 +93,14 @@ void init_fonts_list()
 
 #if 1  // Normal operation: Load fonts and uncompress them:
 
-#define LOAD_FONT(FONTNAME)                                           \
-	{                                                                 \
-		std::vector<uint8_t> tmpBuf(sizeof(mrpt_font_gz_##FONTNAME)); \
-		memcpy(                                                       \
-			&tmpBuf[0], mrpt_font_gz_##FONTNAME,                      \
-			sizeof(mrpt_font_gz_##FONTNAME));                         \
-		mrpt::io::zip::decompress_gz_data_block(                      \
-			tmpBuf, list_registered_fonts[#FONTNAME].data);           \
+#define LOAD_FONT(FONTNAME)                                                    \
+	{                                                                          \
+		std::vector<uint8_t> tmpBuf(sizeof(mrpt_font_gz_##FONTNAME));          \
+		memcpy(                                                                \
+			&tmpBuf[0], mrpt_font_gz_##FONTNAME,                               \
+			sizeof(mrpt_font_gz_##FONTNAME));                                  \
+		mrpt::io::zip::decompress_gz_data_block(                               \
+			tmpBuf, list_registered_fonts[#FONTNAME].data);                    \
 	}
 
 		LOAD_FONT(5x7)
@@ -211,7 +212,8 @@ void CCanvas::filledRectangle(
 	int y_max = min(y1, (int)getHeight() - 1);
 
 	for (int y = y_min; y <= y_max; y++)
-		for (int x = x_min; x <= x_max; x++) setPixel(x, y, color);
+		for (int x = x_min; x <= x_max; x++)
+			setPixel(x, y, color);
 }
 
 /*---------------------------------------------------------------
@@ -327,8 +329,7 @@ void CCanvas::drawMark(
 			line(x0, y0 - size, x0, y0 - 2, color, width);
 			line(x0, y0 + 2, x0, y0 + size, color, width);
 			break;
-		default:
-			THROW_EXCEPTION("Unexpected 'type' of cross to be drawn");
+		default: THROW_EXCEPTION("Unexpected 'type' of cross to be drawn");
 	}
 }
 
@@ -343,10 +344,7 @@ void CCanvas::drawCircle(
 
 	int nSegments;
 
-	if (radius == 0)
-	{
-		nSegments = 2;
-	}
+	if (radius == 0) { nSegments = 2; }
 	else
 	{
 		nSegments = int(M_2PI * radius);
@@ -376,7 +374,7 @@ void CCanvas::textOut(
 {
 	MRPT_START
 
-	if (!m_selectedFontBitmaps)  // First call: load fonts
+	if (!m_selectedFontBitmaps)	 // First call: load fonts
 		this->selectTextFont("9x15");
 
 	// Am I an image?

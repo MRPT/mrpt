@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
@@ -33,8 +33,8 @@ using namespace std;
   ---------------------------------------------------------------*/
 void CHMTSLAM::perform_TLC(
 	CLocalMetricHypothesis& LMH,
-	const CHMHMapNode::TNodeID Ai,  // areaInLMH,
-	const CHMHMapNode::TNodeID Ae,  // areaLoopClosure,
+	const CHMHMapNode::TNodeID Ai,	// areaInLMH,
+	const CHMHMapNode::TNodeID Ae,	// areaLoopClosure,
 	const mrpt::poses::CPose3DPDFGaussian& pose_i_wrt_e)
 {
 	MRPT_START
@@ -132,10 +132,10 @@ void CHMTSLAM::perform_TLC(
 		TArcList lstArcs;
 		m_map.getNodeByID(Ai)->getArcs(lstArcs);
 		for (auto& lstArc : lstArcs)
-			lstArc.reset();  // The "delete" will automatically remove the entry
+			lstArc.reset();	 // The "delete" will automatically remove the entry
 		// in "m_map". Other smrtpnts will be cleared too.
 
-		m_map.getNodeByID(Ai).reset();  // The "delete" will automatically
+		m_map.getNodeByID(Ai).reset();	// The "delete" will automatically
 		// remove the entry in "m_map"
 	}
 

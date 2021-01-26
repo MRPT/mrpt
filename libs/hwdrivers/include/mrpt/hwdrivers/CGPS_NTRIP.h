@@ -84,7 +84,7 @@ class CGPS_NTRIP : public CGenericSensor
 	/** Destructor */
 	~CGPS_NTRIP() override;
 
-	void doProcess() override;  // See docs in parent class
+	void doProcess() override;	// See docs in parent class
 
 	void initialize() override;
 
@@ -93,6 +93,6 @@ class CGPS_NTRIP : public CGenericSensor
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection) override;
-};  // end class
+};	// end class
 
 }  // namespace mrpt::hwdrivers

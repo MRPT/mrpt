@@ -61,6 +61,6 @@ class CMyGLCanvas : public wxPanel
 	}
 };
 
-#endif  // Have glut
+#endif	// Have glut
 
-#endif  // MYGLCANVAS_H
+#endif	// MYGLCANVAS_H

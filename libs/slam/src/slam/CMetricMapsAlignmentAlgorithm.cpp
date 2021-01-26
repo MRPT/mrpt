@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>

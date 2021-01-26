@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/math_frwds.h>
+
 #include <vector>
 
 namespace mrpt::math
@@ -69,7 +70,8 @@ class CHistogram
 	inline void add(const MAT_VECTOR_LIKE& x)
 	{
 		const size_t N = x.size();
-		for (size_t i = 0; i < N; i++) this->add(static_cast<double>(x[i]));
+		for (size_t i = 0; i < N; i++)
+			this->add(static_cast<double>(x[i]));
 	}
 
 	//! \overload
@@ -77,7 +79,8 @@ class CHistogram
 	inline void add(const std::vector<T>& x)
 	{
 		const size_t N = x.size();
-		for (size_t i = 0; i < N; i++) this->add(static_cast<double>(x[i]));
+		for (size_t i = 0; i < N; i++)
+			this->add(static_cast<double>(x[i]));
 	}
 
 	/** Retuns the elements count into the selected bin index, where first one
@@ -105,6 +108,6 @@ class CHistogram
 	void getHistogramNormalized(
 		std::vector<double>& x, std::vector<double>& hits) const;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::math

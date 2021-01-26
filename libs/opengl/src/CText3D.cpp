@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CText3D.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -50,7 +50,8 @@ void CText3D::onUpdateBuffers_Text()
 
 	// All lines & triangles, the same color:
 	cbd.assign(vbd.size(), m_color);
-	for (auto& tri : m_triangles) tri.setColor(m_color);
+	for (auto& tri : m_triangles)
+		tri.setColor(m_color);
 }
 
 uint8_t CText3D::serializeGetVersion() const { return 0; }
@@ -75,8 +76,7 @@ void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			m_text_style = TOpenGLFontStyle(i);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

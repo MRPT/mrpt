@@ -39,8 +39,8 @@ documentation and/or software.
 
 */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/common.h>  // MSVC warnings
 #include <mrpt/core/exceptions.h>  // ASSERT_
 #include <mrpt/system/md5.h>
@@ -67,7 +67,7 @@ using namespace std;
 class MD5
 {
    public:
-	using size_type = uint32_t;  // must be 32bit
+	using size_type = uint32_t;	 // must be 32bit
 
 	MD5() = default;
 	MD5(const std::string& text);
@@ -80,11 +80,11 @@ class MD5
    private:
 	void init();
 	using uint1 = unsigned char;  //  8bit
-	using uint4 = unsigned int;  // 32bit
+	using uint4 = unsigned int;	 // 32bit
 	enum
 	{
 		blocksize = 64
-	};  // VC6 won't eat a const static int here
+	};	// VC6 won't eat a const static int here
 
 	void transform(const uint1 block[blocksize]);
 	static void decode(uint4 output[], const uint1 input[], size_type len);
@@ -96,7 +96,7 @@ class MD5
 	uint4 count[2] = {0, 0};  // 64bit counter for number of bits (lo, hi)
 	// load magic initialization constants:
 	uint4 state[4] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
-	uint1 digest[16]{};  // the result
+	uint1 digest[16]{};	 // the result
 
 	// low level logic operations
 	static inline uint4 F(uint4 x, uint4 y, uint4 z);
@@ -201,8 +201,7 @@ void MD5::decode(uint4 output[], const uint1 input[], size_type len)
 {
 	for (unsigned int i = 0, j = 0; j < len; i++, j += 4)
 		output[i] = ((uint4)input[j]) | (((uint4)input[j + 1]) << 8) |
-					(((uint4)input[j + 2]) << 16) |
-					(((uint4)input[j + 3]) << 24);
+			(((uint4)input[j + 2]) << 16) | (((uint4)input[j + 3]) << 24);
 }
 
 //////////////////////////////
@@ -363,8 +362,8 @@ MD5& MD5::finalize()
 {
 	static unsigned char padding[64] = {
 		0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0,	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0,	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		0,	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0,	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 	if (!finalized)
 	{
@@ -401,7 +400,8 @@ std::string MD5::hexdigest() const
 	if (!finalized) return "";
 
 	char buf[33];
-	for (int i = 0; i < 16; i++) sprintf(buf + i * 2, "%02x", digest[i]);
+	for (int i = 0; i < 16; i++)
+		sprintf(buf + i * 2, "%02x", digest[i]);
 	buf[32] = 0;
 
 	return std::string(buf);

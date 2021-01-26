@@ -79,5 +79,5 @@ class CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 		size_t N,
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

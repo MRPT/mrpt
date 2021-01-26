@@ -8,16 +8,16 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
-#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
-
+//
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt::nav;
@@ -113,7 +113,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 	// Reserve the size in the buffers:
 	m_trajectory.resize(m_alphaValuesCount);
 
-	const float radio_max_robot = 1.0f;  // Arbitrary "robot radius", only to
+	const float radio_max_robot = 1.0f;	 // Arbitrary "robot radius", only to
 	// determine the spacing of points
 	// under pure rotation
 
@@ -386,7 +386,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile(
 		if (!f) return false;
 
 		const uint8_t serialize_version =
-			2;  // v1: As of jun 2012, v2: As of dec-2013
+			2;	// v1: As of jun 2012, v2: As of dec-2013
 
 		// Save magic signature && serialization version:
 		*f << COLGRID_FILE_MAGIC << serialize_version;
@@ -475,23 +475,23 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile(
 		if (desc != expected_desc) return false;
 
 // and standard PTG data:
-#define READ_UINT16_CHECK_IT_MATCHES_STORED(_VAR) \
-	{                                             \
-		uint16_t ff;                              \
-		*f >> ff;                                 \
-		if (ff != _VAR) return false;             \
+#define READ_UINT16_CHECK_IT_MATCHES_STORED(_VAR)                              \
+	{                                                                          \
+		uint16_t ff;                                                           \
+		*f >> ff;                                                              \
+		if (ff != _VAR) return false;                                          \
 	}
-#define READ_FLOAT_CHECK_IT_MATCHES_STORED(_VAR)       \
-	{                                                  \
-		float ff;                                      \
-		*f >> ff;                                      \
-		if (std::abs(ff - _VAR) > 1e-4f) return false; \
+#define READ_FLOAT_CHECK_IT_MATCHES_STORED(_VAR)                               \
+	{                                                                          \
+		float ff;                                                              \
+		*f >> ff;                                                              \
+		if (std::abs(ff - _VAR) > 1e-4f) return false;                         \
 	}
-#define READ_DOUBLE_CHECK_IT_MATCHES_STORED(_VAR)     \
-	{                                                 \
-		double ff;                                    \
-		*f >> ff;                                     \
-		if (std::abs(ff - _VAR) > 1e-6) return false; \
+#define READ_DOUBLE_CHECK_IT_MATCHES_STORED(_VAR)                              \
+	{                                                                          \
+		double ff;                                                             \
+		*f >> ff;                                                              \
+		if (std::abs(ff - _VAR) > 1e-6) return false;                          \
 	}
 
 		READ_UINT16_CHECK_IT_MATCHES_STORED(m_parent->getAlphaValuesCount())
@@ -603,7 +603,7 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 			for (uint32_t n = n_min; n <= n_max_this; n++)
 			{
 				const float dist_a_punto = square(m_trajectory[k][n].x - x) +
-										   square(m_trajectory[k][n].y - y);
+					square(m_trajectory[k][n].y - y);
 				if (dist_a_punto < selected_dist)
 				{
 					selected_dist = dist_a_punto;
@@ -633,8 +633,7 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(
 	{
 		const int n = int(m_trajectory[k].size()) - 1;
 		const float dist_a_punto = square(m_trajectory[k][n].dist) +
-								   square(m_trajectory[k][n].x - x) +
-								   square(m_trajectory[k][n].y - y);
+			square(m_trajectory[k][n].x - x) + square(m_trajectory[k][n].y - y);
 
 		if (dist_a_punto < selected_dist)
 		{
@@ -769,11 +768,11 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 
 				for (size_t m = 0; m < nVerts; m++)
 				{
-					transf_shape[m].x =
-						p.x + cos(p.phi) * m_robotShape.GetVertex_x(m) -
+					transf_shape[m].x = p.x +
+						cos(p.phi) * m_robotShape.GetVertex_x(m) -
 						sin(p.phi) * m_robotShape.GetVertex_y(m);
-					transf_shape[m].y =
-						p.y + sin(p.phi) * m_robotShape.GetVertex_x(m) +
+					transf_shape[m].y = p.y +
+						sin(p.phi) * m_robotShape.GetVertex_x(m) +
 						cos(p.phi) * m_robotShape.GetVertex_y(m);
 					mrpt::keep_max(bb_max.x, transf_shape[m].x);
 					mrpt::keep_max(bb_max.y, transf_shape[m].y);
@@ -920,8 +919,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(
 			in >> V_MAX >> W_MAX >> turningRadiusReference >> m_robotShape >>
 				m_resolution >> m_trajectory;
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

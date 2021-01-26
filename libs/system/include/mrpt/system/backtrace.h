@@ -31,4 +31,4 @@ inline TCallStackBackTrace
 	return mrpt::callStackBackTrace();
 }
 
-};  // namespace mrpt::system
+};	// namespace mrpt::system

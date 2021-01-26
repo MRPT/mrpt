@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
@@ -63,8 +63,7 @@ void CNavigatorManualSequence::loadConfigFile(
 			case 4:
 				krc.cmd_vel = mrpt::kinematics::CVehicleVelCmd_Holo::Create();
 				break;
-			default:
-				THROW_EXCEPTION("Expected 2 or 4 velocity components!");
+			default: THROW_EXCEPTION("Expected 2 or 4 velocity components!");
 		};
 
 		for (size_t j = 0; j < nComps; j++)

@@ -10,8 +10,8 @@
 // This file contains portions of code from Assimp's example:
 // "Sample_SimpleOpenGL.c"
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CAssimpModel.h>
 
 #if MRPT_HAS_ASSIMP
@@ -20,21 +20,20 @@
 #include <aiScene.h>
 #include <assimp.h>
 #else
-#include <assimp/types.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/Importer.hpp>
-#include <assimp/LogStream.hpp>
-
 #include <assimp/cimport.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#endif
-#endif
+#include <assimp/types.h>
 
-#include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/filesystem.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/LogStream.hpp>
+#endif
+#endif
 
 #include <mrpt/opengl/opengl_api.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -74,7 +73,7 @@ struct CAssimpModel::Impl
 	}
 
 	Assimp::Importer importer;
-	const aiScene* scene = nullptr;  // Memory owned by "importer"
+	const aiScene* scene = nullptr;	 // Memory owned by "importer"
 #endif
 };
 
@@ -87,7 +86,7 @@ static void get_bounding_box(
 static void get_bounding_box_for_node(
 	const aiScene* sc, const aiNode* nd, aiVector3D* min, aiVector3D* max,
 	aiMatrix4x4* trafo);
-#endif  // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#endif	// MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 
 void CAssimpModel::render(const RenderContext& rc) const
 {
@@ -131,7 +130,7 @@ void CAssimpModel::onUpdateBuffers_all()
 	tris.clear();
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-	if (!m_assimp_scene->scene) return;  // No scene
+	if (!m_assimp_scene->scene) return;	 // No scene
 
 	mrpt::opengl::internal::RenderElements re;
 	re.lines_vbd = &lines_vbd;
@@ -200,8 +199,7 @@ void CAssimpModel::serializeFrom(
 			clear();
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }
@@ -351,9 +349,7 @@ static mrpt::img::TColor apply_material(const aiMaterial* mtl)
 	aiColor4D diffuse;
 	if (AI_SUCCESS ==
 		aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
-	{
-		return color4_to_TColor(diffuse);
-	}
+	{ return color4_to_TColor(diffuse); }
 	else
 	{
 		// Default color:
@@ -458,7 +454,7 @@ void CAssimpModel::recursive_render(
 					{
 						ASSERT_LT_(mesh->mMaterialIndex, sc->mNumMaterials);
 						const int texIndex = 0;
-						aiString path;  // filename
+						aiString path;	// filename
 						if (AI_SUCCESS ==
 							sc->mMaterials[mesh->mMaterialIndex]->GetTexture(
 								aiTextureType_DIFFUSE, texIndex, &path))
@@ -564,13 +560,13 @@ void CAssimpModel::process_textures(const aiScene* scene)
 
 			for (const auto texType : texTypes)
 			{
-				aiString path;  // filename
+				aiString path;	// filename
 				aiReturn texFound =
 					scene->mMaterials[m]->GetTexture(texType, texIndex, &path);
 				if (texFound != AI_SUCCESS) break;
 
 				CAssimpModel::TInfoPerTexture& ipt = m_textureIdMap[path.data];
-				ipt.id_idx = std::string::npos;  // pending
+				ipt.id_idx = std::string::npos;	 // pending
 				anyFound = true;
 			}
 			if (!anyFound) break;
@@ -633,4 +629,4 @@ void CAssimpModel::process_textures(const aiScene* scene)
 	}
 }
 
-#endif  // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#endif	// MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP

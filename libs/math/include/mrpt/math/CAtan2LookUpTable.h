@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/containers/CDynamicGrid.h>
+
 #include <map>
 
 namespace mrpt::math
@@ -43,8 +44,8 @@ class CAtan2LookUpTable
 
 	/** Returns the precomputed value for atan2() of the corresponding cell
 	 * with indices (ix,iy). \return false if out of grid bounds. */
-	bool atan2ByIndex(unsigned int iy, unsigned int ix, double& out_atan2) const
-		noexcept
+	bool atan2ByIndex(
+		unsigned int iy, unsigned int ix, double& out_atan2) const noexcept
 	{
 		const double* cp = m_grid.cellByIndex(ix, iy);
 		if (!cp) return false;

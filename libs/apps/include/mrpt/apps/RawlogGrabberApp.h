@@ -135,7 +135,7 @@ class RawlogGrabberApp : public mrpt::system::COutputLogger
 	mrpt::serialization::CArchive* m_out_arch_ptr = nullptr;
 
 	mrpt::obs::CSensoryFrame m_curSF;
-	double SF_max_time_span = 0.25;  // Seconds
+	double SF_max_time_span = 0.25;	 // Seconds
 };
 
 }  // namespace mrpt::apps

@@ -10,6 +10,10 @@
 #pragma once
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
+#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/CEdgeCounter.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/img/TColor.h>
@@ -26,11 +30,6 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/system/COutputLogger.h>
-
-#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
-#include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
-#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
-#include <mrpt/graphslam/misc/CEdgeCounter.h>
 
 #include <map>
 #include <memory>
@@ -385,10 +384,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	bool isPaused() const { return m_is_paused; }
 	void togglePause()
 	{
-		if (isPaused())
-		{
-			this->resumeExec();
-		}
+		if (isPaused()) { this->resumeExec(); }
 		else
 		{
 			this->pauseExec();
@@ -396,10 +392,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	}
 	void resumeExec() const
 	{
-		if (!isPaused())
-		{
-			return;
-		}
+		if (!isPaused()) { return; }
 		MRPT_LOG_INFO_STREAM("Program resumed.");
 		m_is_paused = false;
 
@@ -412,10 +405,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 
 	void pauseExec()
 	{
-		if (isPaused())
-		{
-			return;
-		}
+		if (isPaused()) { return; }
 		MRPT_LOG_WARN_STREAM(
 			"Program is paused. "
 			<< "Press \"" << m_keystroke_pause_exec << " or \""

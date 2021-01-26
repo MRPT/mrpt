@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/system/mrptEvent.h>
+
 #include <set>
 
 namespace mrpt::system
@@ -59,6 +60,6 @@ class CObserver
 	 */
 	virtual void OnEvent(const mrptEvent& e) = 0;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::system

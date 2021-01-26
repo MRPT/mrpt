@@ -8,13 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #define MRPT_NO_WARN_BIG_HDR  // Yes, we really want to include all classes.
-#include <mrpt/maps.h>
-#include <mrpt/obs/CObservationPointCloud.h>
-#include <mrpt/obs/CObservationRotatingScan.h>
-
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/maps.h>
+#include <mrpt/obs/CObservationPointCloud.h>
+#include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
@@ -24,7 +23,7 @@ using namespace mrpt::io;
 using namespace mrpt::serialization;
 using namespace std;
 
-#define TEST_CLASS_MOVE_COPY_CTORS(_classname) \
+#define TEST_CLASS_MOVE_COPY_CTORS(_classname)                                 \
 	template class mrpt::CTraitsTest<_classname>
 
 TEST_CLASS_MOVE_COPY_CTORS(CBeacon);

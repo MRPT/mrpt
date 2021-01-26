@@ -46,13 +46,14 @@ double VisualOdometry::computeOdomError()
 	double total = 0;
 	for (int i = 2; i < MAX_FRAME - 1; i++)
 	{
-		error = error + sqrt(
-							(pow((predicted_x[i] - predicted_x[i + 1]), 2) +
-							 pow((predicted_y[i] - predicted_y[i + 1]), 2)));
-		total =
-			total + sqrt(
-						(pow((ground_truth_x[i] - ground_truth_x[i + 1]), 2) +
-						 pow((ground_truth_y[i] - ground_truth_y[i + 1]), 2)));
+		error = error +
+			sqrt(
+					(pow((predicted_x[i] - predicted_x[i + 1]), 2) +
+					 pow((predicted_y[i] - predicted_y[i + 1]), 2)));
+		total = total +
+			sqrt(
+					(pow((ground_truth_x[i] - ground_truth_x[i + 1]), 2) +
+					 pow((ground_truth_y[i] - ground_truth_y[i + 1]), 2)));
 	}
 	double percentage = std::abs(error - total) / (double)total * 100.00;
 
@@ -147,10 +148,7 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 					point_x = std::stod(z);
 					// ground_truth_x[i] = x;
 				}
-				if (j == 1)
-				{
-					focal = std::stod(z);
-				}
+				if (j == 1) { focal = std::stod(z); }
 			}
 			i++;
 		}
@@ -302,7 +300,7 @@ Mat VisualOdometry::generateVO(
 	vector<Point2f> points1,
 		points2;  // vectors to store the coordinates of the feature points
 
-	featureDetection(img1, points1, feat_type);  // detect features in img_1
+	featureDetection(img1, points1, feat_type);	 // detect features in img_1
 
 	vector<uchar> status;
 	featureTracking(
@@ -313,7 +311,7 @@ Mat VisualOdometry::generateVO(
 	// intrinsic/extrinsic parameters
 	vector<double> cameraParams = getCalibrationParams(calibration_file);
 
-	double focal = cameraParams.at(0);  // 718.8560;
+	double focal = cameraParams.at(0);	// 718.8560;
 	cv::Point2d pp(
 		cameraParams.at(1), cameraParams.at(2));  // pp(607.1928, 185.2157);
 
@@ -536,10 +534,7 @@ void VisualOdometry::featureTracking(
 		Point2f pt = points2.at(i - indexCorrection);
 		if ((status.at(i) == 0) || (pt.x < 0) || (pt.y < 0))
 		{
-			if ((pt.x < 0) || (pt.y < 0))
-			{
-				status.at(i) = 0;
-			}
+			if ((pt.x < 0) || (pt.y < 0)) { status.at(i) = 0; }
 			points1.erase(points1.begin() + (i - indexCorrection));
 			points2.erase(points2.begin() + (i - indexCorrection));
 			indexCorrection++;

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/serialization/CArchive.h>
@@ -89,8 +89,7 @@ void CObservationIMU::serializeFrom(
 				}
 			}
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -117,12 +116,12 @@ void CObservationIMU::getDescriptionAsText(std::ostream& o) const
 		"rad/s",  //	IMU_YAW_VEL,
 		"rad/s",  //	IMU_PITCH_VEL,
 		"rad/s",  //	IMU_ROLL_VEL,
-		"m/s",  //	IMU_X_VEL,
-		"m/s",  //	IMU_Y_VEL,
-		"m/s",  //	IMU_Z_VEL,
-		"rad",  //	IMU_YAW,
-		"rad",  //	IMU_PITCH,
-		"rad",  //	IMU_ROLL,
+		"m/s",	//	IMU_X_VEL,
+		"m/s",	//	IMU_Y_VEL,
+		"m/s",	//	IMU_Z_VEL,
+		"rad",	//	IMU_YAW,
+		"rad",	//	IMU_PITCH,
+		"rad",	//	IMU_ROLL,
 		"m",  //	IMU_X,
 		"m",  //	IMU_Y,
 		"m",  //	IMU_Z
@@ -131,7 +130,7 @@ void CObservationIMU::getDescriptionAsText(std::ostream& o) const
 		"gauss",  // IMU_MAG_Z,
 		"Pa",  // IMU_PRESSURE,
 		"m",  // IMU_ALTITUDE,
-		"deg.",  // IMU_TEMPERATURE,
+		"deg.",	 // IMU_TEMPERATURE,
 		"qx",  // IMU_ORI_QUAT_X,
 		"qy",  // IMU_ORI_QUAT_Y,
 		"qz",  // IMU_ORI_QUAT_Z,
@@ -141,14 +140,14 @@ void CObservationIMU::getDescriptionAsText(std::ostream& o) const
 		"rad/s",  //	IMU_ROLL_VEL_GLOBAL
 		"m/s^2",  //	IMU_X_ACC_GLOBAL
 		"m/s^2",  //	IMU_Y_ACC_GLOBAL
-		"m/s^2"  //	IMU_Z_ACC_GLOBAL
+		"m/s^2"	 //	IMU_Z_ACC_GLOBAL
 	};
 
-#define DUMP_IMU_DATA(x)                                            \
-	o << format("%15s = ", #x);                                     \
-	if (dataIsPresent[x])                                           \
-		o << format("%10f %s\n", rawMeasurements[x], imu_units[x]); \
-	else                                                            \
+#define DUMP_IMU_DATA(x)                                                       \
+	o << format("%15s = ", #x);                                                \
+	if (dataIsPresent[x])                                                      \
+		o << format("%10f %s\n", rawMeasurements[x], imu_units[x]);            \
+	else                                                                       \
 		o << "(not present)\n";
 
 	DUMP_IMU_DATA(IMU_X_ACC)

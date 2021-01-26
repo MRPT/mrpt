@@ -12,7 +12,8 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/TMetricMapTypesRegistry.h>
 #include <mrpt/maps/metric_map_types.h>
-#include <mrpt/rtti/CObject.h>  // For TRuntimeClassId
+#include <mrpt/rtti/CObject.h>	// For TRuntimeClassId
+
 #include <deque>
 
 namespace mrpt::maps
@@ -48,7 +49,7 @@ struct TMetricMapInitializer : public mrpt::config::CLoadableOptions
 	 */
 	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& source,
-		const std::string& sectionNamePrefix) override;  // See base docs
+		const std::string& sectionNamePrefix) override;	 // See base docs
 	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& target,
 		const std::string& section) const override;
@@ -76,7 +77,7 @@ struct TMetricMapInitializer : public mrpt::config::CLoadableOptions
 		const mrpt::config::CConfigFileBase& source,
 		const std::string& sectionNamePrefix) = 0;
 	virtual void dumpToTextStream_map_specific(std::ostream& out) const = 0;
-};  // end TMetricMapInitializer
+};	// end TMetricMapInitializer
 
 /** A set of TMetricMapInitializer structures, passed to the constructor
  * CMultiMetricMap::CMultiMetricMap

@@ -88,6 +88,6 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 	 */
 	std::vector<std::string> ListNetworks();
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::hwdrivers

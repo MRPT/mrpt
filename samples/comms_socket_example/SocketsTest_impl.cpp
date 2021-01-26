@@ -11,7 +11,8 @@
 #include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CMessage.h>
-#include <mrpt/system/scheduler.h>  // changeCurrentThreadPriority()
+#include <mrpt/system/scheduler.h>	// changeCurrentThreadPriority()
+
 #include <chrono>
 #include <cstdio>  // printf()
 #include <iostream>
@@ -101,10 +102,7 @@ void thread_client()
 		CMessage msg;
 		bool ok = sock.receiveMessage(msg, 2000, 2000);
 
-		if (!ok)
-		{
-			printf("[Client] Error receiving message!!\n");
-		}
+		if (!ok) { printf("[Client] Error receiving message!!\n"); }
 		else
 		{
 #ifdef SOCKET_TEST_VERBOSE

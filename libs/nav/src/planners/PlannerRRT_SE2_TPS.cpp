@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/random.h>
@@ -89,9 +89,7 @@ void PlannerRRT_SE2_TPS::solve(
 			 elap_tim >= end_criteria.minComputationTime)  // Reach closer than
 			// this to target
 		)
-		{
-			break;
-		}
+		{ break; }
 
 		// [Algo `tp_space_rrt`: Line 3]: sample random state (with goal
 		// biasing)
@@ -116,13 +114,13 @@ void PlannerRRT_SE2_TPS::solve(
 		// [Algo `tp_space_rrt`: Line 4]: Init empty solution set
 		// -----------------------------------------
 		using sorted_solution_list_t = std::map<double, TMoveEdgeSE2_TP>;
-		sorted_solution_list_t candidate_new_nodes;  // Map: cost -> info. Pick
+		sorted_solution_list_t candidate_new_nodes;	 // Map: cost -> info. Pick
 		// begin() to select the
 		// lowest-cose one.
 
 		const PoseDistanceMetric<TNodeSE2>
-			distance_evaluator_se2;  // Plain distances in SE(2), not along PTGs
-		bool is_new_best_solution = false;  // Just for logging purposes
+			distance_evaluator_se2;	 // Plain distances in SE(2), not along PTGs
+		bool is_new_best_solution = false;	// Just for logging purposes
 
 		//#define DO_LOG_TXTS
 		std::string sLogTxt;
@@ -157,7 +155,7 @@ void PlannerRRT_SE2_TPS::solve(
 					 params.save_3d_log_freq))
 				{
 					SAVE_3D_TREE_LOG_DECIMATION_CNT =
-						0;  // Reset decimation counter
+						0;	// Reset decimation counter
 					TRenderPlannedPathOptions render_options;
 					render_options.highlight_path_to_node_id =
 						result.best_goal_node_id;
@@ -193,15 +191,15 @@ void PlannerRRT_SE2_TPS::solve(
 			const double D_max =
 				std::min(params.maxLength, m_PTGs[idxPTG]->getRefDistance());
 
-			double d_rand;  // Coordinates in TP-space
-			int k_rand;  // k_rand is the index of target_alpha in PTGs
+			double d_rand;	// Coordinates in TP-space
+			int k_rand;	 // k_rand is the index of target_alpha in PTGs
 			// corresponding to a specific d_rand
 			// bool tp_point_is_exact =
 			m_PTGs[idxPTG]->inverseMap_WS2TP(
 				x_rand_rel.x(), x_rand_rel.y(), k_rand, d_rand);
 			d_rand *=
 				m_PTGs[idxPTG]
-					->getRefDistance();  // distance to target, in "real meters"
+					->getRefDistance();	 // distance to target, in "real meters"
 
 			float d_free;
 			// bool local_obs_ok = false; // Just for 3D log files: indicates
@@ -212,7 +210,7 @@ void PlannerRRT_SE2_TPS::solve(
 			// Transform obstacles as seen from x_nearest_node -> TP_obstacles
 			double TP_Obstacles_k_rand = .0;  // vector<double> TP_Obstacles;
 			const double MAX_DIST_FOR_OBSTACLES =
-				1.5 * m_PTGs[idxPTG]->getRefDistance();  // Maximum Euclidean
+				1.5 * m_PTGs[idxPTG]->getRefDistance();	 // Maximum Euclidean
 			// distance (radius)
 			// for considering
 			// obstacles around the
@@ -220,7 +218,7 @@ void PlannerRRT_SE2_TPS::solve(
 
 			ASSERT_GT_(
 				m_PTGs[idxPTG]->getRefDistance(),
-				1.1 * max_veh_radius);  // Make sure the PTG covers at least a
+				1.1 * max_veh_radius);	// Make sure the PTG covers at least a
 			// bit more than the vehicle shape!!
 			// (should be much, much higher)
 
@@ -276,7 +274,7 @@ void PlannerRRT_SE2_TPS::solve(
 				mrpt::math::TPose2D rel_pose;
 				m_PTGs[idxPTG]->getPathPose(k_rand, nStep, rel_pose);
 
-				mrpt::math::wrapToPiInPlace(rel_pose.phi);  // wrap to [-pi,pi]
+				mrpt::math::wrapToPiInPlace(rel_pose.phi);	// wrap to [-pi,pi]
 				// -->avoid out of
 				// bounds errors
 
@@ -284,7 +282,7 @@ void PlannerRRT_SE2_TPS::solve(
 				// ------------------------------------------------------------
 				const mrpt::poses::CPose2D new_state_rel(rel_pose);
 				mrpt::poses::CPose2D new_state =
-					x_nearest_pose + new_state_rel;  // compose the new_motion
+					x_nearest_pose + new_state_rel;	 // compose the new_motion
 				// as the last nmotion and
 				// the new state
 				// log_new_state_ptr = &new_state;
@@ -320,9 +318,10 @@ void PlannerRRT_SE2_TPS::solve(
 						// Also check angular distance:
 						const double new_nearest_ang =
 							std::abs(mrpt::math::angDistance(
-								new_state.phi(), result.move_tree.getAllNodes()
-													 .find(new_nearest_id)
-													 ->second.state.phi));
+								new_state.phi(),
+								result.move_tree.getAllNodes()
+									.find(new_nearest_id)
+									->second.state.phi));
 						accept_this_node =
 							(new_nearest_dist >=
 								 params.minDistanceBetweenNewNodes ||
@@ -398,7 +397,7 @@ void PlannerRRT_SE2_TPS::solve(
 
 			// Total path length:
 			double this_path_cost = std::numeric_limits<double>::max();
-			if (is_acceptable_goal)  // Don't waste time computing path length
+			if (is_acceptable_goal)	 // Don't waste time computing path length
 			// if it doesn't matter anyway
 			{
 				TMoveTreeSE2_TP::path_t candidate_solution_path;

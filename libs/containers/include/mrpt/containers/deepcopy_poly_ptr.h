@@ -68,15 +68,13 @@ class deepcopy_poly_ptr
 	~deepcopy_poly_ptr() = default;
 	typename T::element_type* get()
 	{
-		if (m_smartptr)
-			return m_smartptr.get();
+		if (m_smartptr) return m_smartptr.get();
 		else
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}
 	const typename T::element_type* get() const
 	{
-		if (m_smartptr)
-			return m_smartptr.get();
+		if (m_smartptr) return m_smartptr.get();
 		else
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}

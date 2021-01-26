@@ -83,7 +83,7 @@ class CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 				relative_heading_radians,  // local_dir
 				0.5,  // ramp_time
 				mrpt::signWithZero(relative_heading_radians) *
-					mrpt::DEG2RAD(40.0)  // rotvel
+					mrpt::DEG2RAD(40.0)	 // rotvel
 				));
 	}
 

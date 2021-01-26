@@ -69,10 +69,7 @@ int main(int argc, char** argv)
 		string inputFile = std::string(argv[2]);
 		string outprefix = std::string(argv[3]);
 
-		if (argc > 4)
-		{
-			METRIC_MAP_CONFIG_SECTION = string(argv[5]);
-		}
+		if (argc > 4) { METRIC_MAP_CONFIG_SECTION = string(argv[5]); }
 
 		// Load simplemap:
 		cout << "Loading simplemap...";
@@ -106,7 +103,7 @@ int main(int argc, char** argv)
 		{
 			using namespace std::string_literals;
 			const auto str = outprefix + "_gridmap_no"s +
-							 mrpt::format("%02u", i) + ".gridmap"s;
+				mrpt::format("%02u", i) + ".gridmap"s;
 			cout << "Saving gridmap #" << i << " to " << str << endl;
 
 			CFileGZOutputStream fo(str);

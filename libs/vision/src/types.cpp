@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/vision/types.h>
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -53,7 +54,7 @@ void TSequenceFeatureObservations::loadFromTextFile(const std::string& filName)
 {
 	MRPT_START
 
-	BASE::clear();  // Erase previous contents
+	BASE::clear();	// Erase previous contents
 
 	ifstream f(filName.c_str());
 	if (!f.is_open())
@@ -142,7 +143,8 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(
 
 	// 1st pass: Count total views
 	map<TLandmarkID, size_t> numViews;
-	for (auto& it : *this) numViews[it.id_feature]++;
+	for (auto& it : *this)
+		numViews[it.id_feature]++;
 
 	// 2nd pass: Remove selected ones:
 	for (size_t idx = 0; idx < BASE::size();)
@@ -210,7 +212,7 @@ void TSequenceFeatureObservations::compressIDs(
 
 		if (lmIDs.find(f_ID) == lmIDs.end())
 		{
-			TLandmarkID nextID = lmIDs.size();  // *IMPORTANT* Separate in 2
+			TLandmarkID nextID = lmIDs.size();	// *IMPORTANT* Separate in 2
 			// lines, otherwise lmIDs[] is
 			// called first (!?)
 			lmIDs[f_ID] = nextID;

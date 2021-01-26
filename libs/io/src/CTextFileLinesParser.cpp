@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-
+#include "io-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/CTextFileLinesParser.h>
 #include <mrpt/system/string_utils.h>
+
 #include <sstream>
 
 using namespace mrpt::io;
@@ -79,7 +80,7 @@ bool CTextFileLinesParser::getNextLine(std::istringstream& buf)
 		std::getline(*m_in, lin);
 		m_curLineNum++;
 		lin = mrpt::system::trim(lin);
-		if (lin.empty()) continue;  // Ignore empty lines.
+		if (lin.empty()) continue;	// Ignore empty lines.
 		// Ignore comments lines, starting with "#" or "//".
 		if ((m_filter_SH_comments && mrpt::system::strStarts(lin, "#")) ||
 			(m_filter_C_comments && mrpt::system::strStarts(lin, "//")) ||

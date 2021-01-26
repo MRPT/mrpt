@@ -45,12 +45,13 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
-#include "opengl-precomp.h"  // Precompiled headers
-
+#include "opengl-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/system/string_utils.h>
+
 #include <cstdio>
 
 using namespace std;
@@ -133,9 +134,9 @@ struct PlyFile
 };
 
 const std::string type_names[] = {
-	string("invalid"), string("char"),  string("short"),
-	string("int"),	 string("uchar"), string("ushort"),
-	string("uint"),	string("float"), string("double"),
+	string("invalid"), string("char"),	string("short"),
+	string("int"),	   string("uchar"), string("ushort"),
+	string("uint"),	   string("float"), string("double"),
 };
 const int ply_type_size[] = {0, 1, 2, 4, 1, 2, 4, 4, 8};
 
@@ -176,7 +177,7 @@ double get_item_value(const char*, int);
 /* get binary or ascii item and store it according to ptr and type */
 void get_ascii_item(const char*, int, int*, unsigned int*, double*);
 int get_binary_item(
-	FILE*, int, int, int*, unsigned int*, double*);  // return 0 on error
+	FILE*, int, int, int*, unsigned int*, double*);	 // return 0 on error
 
 /* get a bunch of elements from a file */
 void ascii_get_element(PlyFile*, char*);
@@ -248,10 +249,7 @@ PlyFile* ply_open_for_writing(
 	/* open the file for writing */
 
 	fp = fopen(name, "w");
-	if (fp == nullptr)
-	{
-		return (nullptr);
-	}
+	if (fp == nullptr) { return (nullptr); }
 
 	/* create the actual PlyFile structure */
 
@@ -370,9 +368,7 @@ void ply_header_complete(PlyFile* plyfile)
 
 	switch (plyfile->file_type)
 	{
-		case PLY_ASCII:
-			fprintf(fp, "format ascii 1.0\n");
-			break;
+		case PLY_ASCII: fprintf(fp, "format ascii 1.0\n"); break;
 		case PLY_BINARY_BE:
 			fprintf(fp, "format binary_big_endian 1.0\n");
 			break;
@@ -391,7 +387,8 @@ void ply_header_complete(PlyFile* plyfile)
 
 	/* write out object information */
 
-	for (auto& i : plyfile->obj_info) fprintf(fp, "obj_info %s\n", i.c_str());
+	for (auto& i : plyfile->obj_info)
+		fprintf(fp, "obj_info %s\n", i.c_str());
 
 	/* write out information about each element */
 
@@ -480,8 +477,7 @@ void ply_put_element(PlyFile* plyfile, void* elem_ptr)
 		for (size_t j = 0; j < elem->props.size(); j++)
 		{
 			const PlyProperty* prop = &elem->props[j];
-			if (elem->store_prop[j] == OTHER_PROP)
-				elem_data = *other_ptr;
+			if (elem->store_prop[j] == OTHER_PROP) elem_data = *other_ptr;
 			else
 				elem_data = (char*)elem_ptr;
 			if (prop->is_list)
@@ -527,8 +523,7 @@ void ply_put_element(PlyFile* plyfile, void* elem_ptr)
 		for (size_t j = 0; j < elem->props.size(); j++)
 		{
 			const PlyProperty* prop = &elem->props[j];
-			if (elem->store_prop[j] == OTHER_PROP)
-				elem_data = *other_ptr;
+			if (elem->store_prop[j] == OTHER_PROP) elem_data = *other_ptr;
 			else
 				elem_data = (char*)elem_ptr;
 			if (prop->is_list)
@@ -635,8 +630,7 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 		if (words[0] == "format")
 		{
 			if (words.size() != 3) return (nullptr);
-			if (words[1] == "ascii")
-				plyfile->file_type = PLY_ASCII;
+			if (words[1] == "ascii") plyfile->file_type = PLY_ASCII;
 			else if (words[1] == "binary_big_endian")
 				plyfile->file_type = PLY_BINARY_BE;
 			else if (words[1] == "binary_little_endian")
@@ -673,7 +667,8 @@ PlyFile* ply_read(FILE* fp, vector<string>& elem_names)
 
 	/* set return values about the elements */
 	elem_names.clear();
-	for (auto& elem : plyfile->elems) elem_names.push_back(elem.name);
+	for (auto& elem : plyfile->elems)
+		elem_names.push_back(elem.name);
 
 	/* return a pointer to the file's information */
 
@@ -981,8 +976,7 @@ void ascii_get_element(PlyFile* plyfile, char* elem_ptr)
 		store_it = (elem->store_prop[j] | other_flag);
 
 		/* store either in the user's structure or in other_props */
-		if (elem->store_prop[j])
-			elem_data = elem_ptr;
+		if (elem->store_prop[j]) elem_data = elem_ptr;
 		else
 			elem_data = other_data;
 
@@ -1102,8 +1096,7 @@ void binary_get_element(PlyFile* plyfile, char* elem_ptr)
 		store_it = (elem->store_prop[j] | other_flag);
 
 		/* store either in the user's structure or in other_props */
-		if (elem->store_prop[j])
-			elem_data = elem_ptr;
+		if (elem->store_prop[j]) elem_data = elem_ptr;
 		else
 			elem_data = other_data;
 
@@ -1135,10 +1128,7 @@ void binary_get_element(PlyFile* plyfile, char* elem_ptr)
 			 * so that zipper won't crash reading plies that have additional
 			 * properties.
 			 */
-			if (store_it)
-			{
-				item_size = ply_type_size[prop->internal_type];
-			}
+			if (store_it) { item_size = ply_type_size[prop->internal_type]; }
 			store_array = (char**)(elem_data + prop->offset);
 			if (list_count == 0)
 			{
@@ -1354,9 +1344,7 @@ void write_binary_item(
 			short_val = int_val;
 			fwrite(&short_val, 2, 1, fp);
 			break;
-		case PLY_INT:
-			fwrite(&int_val, 4, 1, fp);
-			break;
+		case PLY_INT: fwrite(&int_val, 4, 1, fp); break;
 		case PLY_UCHAR:
 			uchar_val = uint_val;
 			fwrite(&uchar_val, 1, 1, fp);
@@ -1365,16 +1353,12 @@ void write_binary_item(
 			ushort_val = uint_val;
 			fwrite(&ushort_val, 2, 1, fp);
 			break;
-		case PLY_UINT:
-			fwrite(&uint_val, 4, 1, fp);
-			break;
+		case PLY_UINT: fwrite(&uint_val, 4, 1, fp); break;
 		case PLY_FLOAT:
 			float_val = d2f(double_val);
 			fwrite(&float_val, 4, 1, fp);
 			break;
-		case PLY_DOUBLE:
-			fwrite(&double_val, 8, 1, fp);
-			break;
+		case PLY_DOUBLE: fwrite(&double_val, 8, 1, fp); break;
 		default:
 			throw std::runtime_error(
 				format("write_binary_item: bad type = %d", type));
@@ -1399,18 +1383,12 @@ void write_ascii_item(
 	{
 		case PLY_CHAR:
 		case PLY_SHORT:
-		case PLY_INT:
-			fprintf(fp, "%d ", int_val);
-			break;
+		case PLY_INT: fprintf(fp, "%d ", int_val); break;
 		case PLY_UCHAR:
 		case PLY_USHORT:
-		case PLY_UINT:
-			fprintf(fp, "%u ", uint_val);
-			break;
+		case PLY_UINT: fprintf(fp, "%u ", uint_val); break;
 		case PLY_FLOAT:
-		case PLY_DOUBLE:
-			fprintf(fp, "%g ", double_val);
-			break;
+		case PLY_DOUBLE: fprintf(fp, "%g ", double_val); break;
 		default:
 			throw std::runtime_error(
 				format("write_ascii_item: bad type = %d", type));
@@ -1661,9 +1639,7 @@ void store_item(
 
 	switch (type)
 	{
-		case PLY_CHAR:
-			*item = int_val;
-			break;
+		case PLY_CHAR: *item = int_val; break;
 		case PLY_UCHAR:
 			puchar = (unsigned char*)item;
 			*puchar = uint_val;
@@ -1994,7 +1970,7 @@ bool PLY_Exporter::saveToPlyFile(
 
 			if (pt_has_color)
 				ply_describe_property(
-					ply, "vertex", &vert_props[3]);  // intensity
+					ply, "vertex", &vert_props[3]);	 // intensity
 		}
 
 		ply_element_count(ply, "face", nfaces);
@@ -2005,7 +1981,8 @@ bool PLY_Exporter::saveToPlyFile(
 		for (const auto& file_comment : file_comments)
 			ply_put_comment(ply, file_comment.c_str());
 
-		for (const auto& k : file_obj_info) ply_put_obj_info(ply, k.c_str());
+		for (const auto& k : file_obj_info)
+			ply_put_obj_info(ply, k.c_str());
 
 		/* we have described exactly what we will put in the file, so */
 		/* we are now done with the header info */

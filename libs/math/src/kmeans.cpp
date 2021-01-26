@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/kmeans.h>
 
 // This file is just a stub for the k-means++ library so MRPT users don't need
@@ -46,7 +46,8 @@ double internal_kmeans<float>(
 	std::vector<double> points_d(nPoints * dims);
 	std::vector<double> centers_d(k * dims);
 	// Convert: float -> double
-	for (size_t i = 0; i < nPoints * dims; i++) points_d[i] = double(points[i]);
+	for (size_t i = 0; i < nPoints * dims; i++)
+		points_d[i] = double(points[i]);
 
 	const double ret = RunKMeans(
 		nPoints, k, dims, &points_d[0], attempts, &centers_d[0],

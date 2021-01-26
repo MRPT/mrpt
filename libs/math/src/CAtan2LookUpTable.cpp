@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CAtan2LookUpTable.h>
+
 #include <cmath>
 #include <vector>
 
@@ -40,8 +41,10 @@ void CAtan2LookUpTable::resize(
 
 	std::vector<double> idx2x(nx), idx2y(ny);
 
-	for (size_t ix = 0; ix < nx; ix++) idx2x[ix] = m_grid.idx2x(ix);
-	for (size_t iy = 0; iy < ny; iy++) idx2y[iy] = m_grid.idx2y(iy);
+	for (size_t ix = 0; ix < nx; ix++)
+		idx2x[ix] = m_grid.idx2x(ix);
+	for (size_t iy = 0; iy < ny; iy++)
+		idx2y[iy] = m_grid.idx2y(iy);
 
 	for (size_t ix = 0; ix < nx; ix++)
 	{
@@ -77,8 +80,10 @@ void CAtan2LookUpTableMultiRes::resize(
 		const size_t nx = dg.getSizeX(), ny = dg.getSizeY();
 		std::vector<double> idx2x(nx), idx2y(ny);
 
-		for (size_t ix = 0; ix < nx; ix++) idx2x[ix] = dg.idx2x(ix);
-		for (size_t iy = 0; iy < ny; iy++) idx2y[iy] = dg.idx2y(iy);
+		for (size_t ix = 0; ix < nx; ix++)
+			idx2x[ix] = dg.idx2x(ix);
+		for (size_t iy = 0; iy < ny; iy++)
+			idx2y[iy] = dg.idx2y(iy);
 
 		for (size_t ix = 0; ix < nx; ix++)
 		{

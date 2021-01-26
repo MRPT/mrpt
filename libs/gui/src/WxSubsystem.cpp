@@ -130,7 +130,7 @@ class CDialogAskUserForCamera : public wxDialog
 		SetSizer(f1);
 		Fit();
 
-		btnOk->SetFocus();  // So the default params can be accepted by just
+		btnOk->SetFocus();	// So the default params can be accepted by just
 		// pressing ENTER.
 	}
 
@@ -156,13 +156,11 @@ WxSubsystem::CWXMainFrame::CWXMainFrame(wxWindow* parent, wxWindowID id)
 	Create(
 		parent, id, _("MRPT-dummy frame window"), wxDefaultPosition,
 		wxSize(1, 1),
-		0,  // wxDEFAULT_FRAME_STYLE,
+		0,	// wxDEFAULT_FRAME_STYLE,
 		_T("id"));
 
 	if (oneInstance)
-	{
-		cerr << "[CWXMainFrame] More than one instance running!" << endl;
-	}
+	{ cerr << "[CWXMainFrame] More than one instance running!" << endl; }
 	oneInstance = this;
 
 	// ------------------------------------------------------------------------------------------
@@ -187,7 +185,8 @@ WxSubsystem::CWXMainFrame::~CWXMainFrame()
 
 	// Purge all pending requests:
 	TRequestToWxMainThread* msg;
-	while (nullptr != (msg = popPendingWxRequest())) delete[] msg;
+	while (nullptr != (msg = popPendingWxRequest()))
+		delete[] msg;
 }
 
 int WxSubsystem::CWXMainFrame::notifyWindowCreation()
@@ -261,7 +260,7 @@ void WxSubsystem::pushPendingWxRequest(
 				"app seems already closed.\n";
 #endif
 		delete[] data;
-		return;  // wx subsystem already closed, ignore.
+		return;	 // wx subsystem already closed, ignore.
 	}
 
 	if (!cs_listPendingWxRequests)
@@ -326,7 +325,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						if (!img) break;
 
 						wnd->m_image->AssignImage(new wxBitmap(
-							*img));  // Memory will be freed by the object.
+							*img));	 // Memory will be freed by the object.
 
 						if (wnd->m_image->GetSize().GetX() != img->GetWidth() &&
 							wnd->m_image->GetSize().GetY() != img->GetHeight())
@@ -443,10 +442,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 					{
 						auto* wnd =
 							(C3DWindowDialog*)msg->source3D->getWxObject();
-						if (wnd)
-						{
-							wnd->Refresh(false);
-						}
+						if (wnd) { wnd->Refresh(false); }
 					}
 					break;
 
@@ -701,7 +697,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 #ifdef WXSUBSYSTEM_VERBOSE
 					cout << "[WxSubsystem:999] Shutdown" << endl;
 #endif
-					app_closed = true;  // Do NOT launch a timer again
+					app_closed = true;	// Do NOT launch a timer again
 					if (WxSubsystem::CWXMainFrame::oneInstance)
 						((WxSubsystem::CWXMainFrame*)(WxSubsystem::
 														  CWXMainFrame::
@@ -729,41 +725,42 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 // ---------------------------------------------------------------------------------------
 // MRPT Icons
 // ---------------------------------------------------------------------------------------
-const char* mrpt_default_icon_xpm[] = {"32 32 2 1",
-									   " 	c None",
-									   ".	c #000000",
-									   "                                ",
-									   "                                ",
-									   "                                ",
-									   " .....     ..... .........      ",
-									   "  ....     ....   ...   ....    ",
-									   "  .....    ....   ...    ...    ",
-									   "  . ...   . ...   ...    ...    ",
-									   "  . ...   . ...   ...    ...    ",
-									   "  .  ... .  ...   ...   ...     ",
-									   "  .  ... .  ...   ........      ",
-									   "  .  .....  ...   ... ....      ",
-									   "  .   ...   ...   ...  ....     ",
-									   "  .   ...   ...   ...   ....    ",
-									   "  .   ..    ...   ...    ....   ",
-									   " ...   .   ..... .....    ..... ",
-									   "                                ",
-									   "                                ",
-									   "    ........     ...........    ",
-									   "     ...  ....   ..  ...  ..    ",
-									   "     ...   ...   .   ...   .    ",
-									   "     ...   ...       ...        ",
-									   "     ...   ...       ...        ",
-									   "     ...  ...        ...        ",
-									   "     .......         ...        ",
-									   "     ...             ...        ",
-									   "     ...             ...        ",
-									   "     ...             ...        ",
-									   "     ...             ...        ",
-									   "    .....           .....       ",
-									   "                                ",
-									   "                                ",
-									   "                                "};
+const char* mrpt_default_icon_xpm[] = {
+	"32 32 2 1",
+	" 	c None",
+	".	c #000000",
+	"                                ",
+	"                                ",
+	"                                ",
+	" .....     ..... .........      ",
+	"  ....     ....   ...   ....    ",
+	"  .....    ....   ...    ...    ",
+	"  . ...   . ...   ...    ...    ",
+	"  . ...   . ...   ...    ...    ",
+	"  .  ... .  ...   ...   ...     ",
+	"  .  ... .  ...   ........      ",
+	"  .  .....  ...   ... ....      ",
+	"  .   ...   ...   ...  ....     ",
+	"  .   ...   ...   ...   ....    ",
+	"  .   ..    ...   ...    ....   ",
+	" ...   .   ..... .....    ..... ",
+	"                                ",
+	"                                ",
+	"    ........     ...........    ",
+	"     ...  ....   ..  ...  ..    ",
+	"     ...   ...   .   ...   .    ",
+	"     ...   ...       ...        ",
+	"     ...   ...       ...        ",
+	"     ...  ...        ...        ",
+	"     .......         ...        ",
+	"     ...             ...        ",
+	"     ...             ...        ",
+	"     ...             ...        ",
+	"     ...             ...        ",
+	"    .....           .....       ",
+	"                                ",
+	"                                ",
+	"                                "};
 
 wxBitmap WxSubsystem::getMRPTDefaultIcon()
 {
@@ -907,7 +904,7 @@ int mrpt_wxEntryReal(int argc, char** argv)
 	{
 		// app initialization
 		if (!wxTheApp->CallOnInit())
-			return -1;  // don't call OnExit() if OnInit() failed
+			return -1;	// don't call OnExit() if OnInit() failed
 
 		// app execution
 		int ret = wxTheApp->OnRun();
@@ -915,7 +912,7 @@ int mrpt_wxEntryReal(int argc, char** argv)
 		{
 			wxLogNull logNo;  // Skip any warning in this scope.
 
-			wxTheApp->OnExit();  // This replaces the above callOnExit class
+			wxTheApp->OnExit();	 // This replaces the above callOnExit class
 			wxEntryCleanup();
 		}
 
@@ -1080,4 +1077,4 @@ bool WxSubsystem::createOneInstanceMainThread()
 	return true;  // OK
 }
 
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS

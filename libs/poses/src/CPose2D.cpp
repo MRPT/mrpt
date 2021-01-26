@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config.h>  // HAVE_SINCOS
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/wrap2pi.h>
@@ -18,6 +18,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+
 #include <Eigen/Dense>
 #include <limits>
 
@@ -78,8 +79,7 @@ void CPose2D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			m_cossin_uptodate = false;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -103,8 +103,7 @@ void CPose2D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			m_phi = static_cast<double>(in["phi"]);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
@@ -278,9 +277,9 @@ void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B)
 	B.update_cached_cos_sin();
 
 	m_coords[0] = (A.m_coords[0] - B.m_coords[0]) * B.m_cosphi +
-				  (A.m_coords[1] - B.m_coords[1]) * B.m_sinphi;
+		(A.m_coords[1] - B.m_coords[1]) * B.m_sinphi;
 	m_coords[1] = -(A.m_coords[0] - B.m_coords[0]) * B.m_sinphi +
-				  (A.m_coords[1] - B.m_coords[1]) * B.m_cosphi;
+		(A.m_coords[1] - B.m_coords[1]) * B.m_cosphi;
 	m_phi = math::wrapToPi(A.m_phi - B.m_phi);
 	m_cossin_uptodate = false;
 }

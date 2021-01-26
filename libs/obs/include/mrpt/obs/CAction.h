@@ -42,6 +42,6 @@ class CAction : public mrpt::serialization::CSerializable
 	/** Return by value version of getDescriptionAsText(std::ostream&) */
 	std::string getDescriptionAsTextValue() const;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

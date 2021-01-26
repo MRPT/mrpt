@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/vision/CFeatureExtraction.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
 
-#ifdef HAVE_OPENCV_NONFREE  // MRPT_HAS_OPENCV_NONFREE
+#ifdef HAVE_OPENCV_NONFREE	// MRPT_HAS_OPENCV_NONFREE
 #include <opencv2/nonfree/nonfree.hpp>
 #endif
 #ifdef HAVE_OPENCV_FEATURES2D
@@ -32,7 +32,7 @@ using namespace mrpt::system;
 using namespace std;
 
 // Was: MRPT_HAS_OPENCV_NONFREE
-#if defined(HAVE_OPENCV_XFEATURES2D) || \
+#if defined(HAVE_OPENCV_XFEATURES2D) ||                                        \
 	(MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240)
 #define HAVE_OPENCV_WITH_SURF 1
 #else
@@ -51,7 +51,7 @@ void CFeatureExtraction::extractFeaturesSURF(
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 	const Mat& img = img_grayscale.asCvMatRef();
 
-	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
+	vector<KeyPoint> cv_feats;	// OpenCV keypoint output vector
 	Mat cv_descs;  // OpenCV descriptor output
 
 // gb redesign start -make sure that the Algorithm::create is used only for
@@ -97,10 +97,9 @@ void CFeatureExtraction::extractFeaturesSURF(
 	unsigned int imgH = inImg.getHeight();
 	unsigned int imgW = inImg.getWidth();
 
-	const size_t n_feats =
-		(nDesiredFeatures == 0)
-			? cv_feats.size()
-			: std::min((size_t)nDesiredFeatures, cv_feats.size());
+	const size_t n_feats = (nDesiredFeatures == 0)
+		? cv_feats.size()
+		: std::min((size_t)nDesiredFeatures, cv_feats.size());
 
 	for (size_t i = 0; i < n_feats; i++)
 	{
@@ -118,11 +117,11 @@ void CFeatureExtraction::extractFeaturesSURF(
 			 (yBorderSup < (int)imgH) && (yBorderInf > 0)))
 		{
 			ft.type = featSURF;
-			ft.keypoint.pt.x = point.pt.x;  // X position
-			ft.keypoint.pt.y = point.pt.y;  // Y position
+			ft.keypoint.pt.x = point.pt.x;	// X position
+			ft.keypoint.pt.y = point.pt.y;	// Y position
 			ft.orientation = point.angle;  // Orientation
-			ft.keypoint.octave = point.size * 1.2 / 9;  // Scale
-			ft.keypoint.ID = nCFeats++;  // Feature ID into extraction
+			ft.keypoint.octave = point.size * 1.2 / 9;	// Scale
+			ft.keypoint.ID = nCFeats++;	 // Feature ID into extraction
 			ft.patchSize = options.patchSize;  // The size of the feature patch
 
 			// Image patch?
@@ -152,7 +151,7 @@ void CFeatureExtraction::extractFeaturesSURF(
 	THROW_EXCEPTION(
 		"Method not available: MRPT compiled without OpenCV, or against a "
 		"version of OpenCV without SURF");
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV
 }  // end extractFeaturesSURF
 
 void CFeatureExtraction::internal_computeSurfDescriptors(
@@ -168,7 +167,7 @@ void CFeatureExtraction::internal_computeSurfDescriptors(
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 	const Mat& img = img_grayscale.asCvMatRef();
 
-	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
+	vector<KeyPoint> cv_feats;	// OpenCV keypoint output vector
 	Mat cv_descs;  // OpenCV descriptor output
 
 	// Fill in the desired key-points:
@@ -195,7 +194,7 @@ void CFeatureExtraction::internal_computeSurfDescriptors(
 
 	surf->compute(
 		img, cv_feats,
-		cv_descs);  // is that correct? the version from above is:
+		cv_descs);	// is that correct? the version from above is:
 // surf->operator()(img, Mat(), cv_feats, cv_descs);
 #else
 
@@ -239,5 +238,5 @@ void CFeatureExtraction::internal_computeSurfDescriptors(
 	THROW_EXCEPTION(
 		"Method not available: MRPT compiled without OpenCV, or against a "
 		"version of OpenCV without SURF");
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV
 }  // end internal_computeSurfDescriptors

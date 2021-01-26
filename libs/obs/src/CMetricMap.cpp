@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -55,7 +55,7 @@ void CMetricMap::loadFromProbabilisticPosesAndObservations(
 
 		sf->insertObservationsInto(
 			this,  // Insert into THIS map.
-			&robotPose  // At this pose.
+			&robotPose	// At this pose.
 		);
 	}
 }
@@ -108,10 +108,7 @@ bool CMetricMap::insertObservationPtr(
 	const CObservation::Ptr& obs, const CPose3D* robotPose)
 {
 	MRPT_START
-	if (!obs)
-	{
-		THROW_EXCEPTION("Trying to pass a null pointer.");
-	}
+	if (!obs) { THROW_EXCEPTION("Trying to pass a null pointer."); }
 	return insertObservation(*obs, robotPose);
 	MRPT_END
 }

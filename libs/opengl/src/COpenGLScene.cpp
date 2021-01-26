@@ -7,16 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
-
-#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -32,8 +31,8 @@ using namespace std;
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "GlU32.lib")
 #endif
-#endif  // _WIN32
-#endif  // MRPT_HAS_OPENGL_GLUT
+#endif	// _WIN32
+#endif	// MRPT_HAS_OPENGL_GLUT
 
 IMPLEMENTS_SERIALIZABLE(COpenGLScene, CRenderizable, mrpt::opengl)
 
@@ -121,7 +120,8 @@ void COpenGLScene::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t n;
 	n = (uint32_t)m_viewports.size();
 	out << n;
-	for (const auto& m_viewport : m_viewports) out << *m_viewport;
+	for (const auto& m_viewport : m_viewports)
+		out << *m_viewport;
 }
 
 void COpenGLScene::serializeFrom(
@@ -166,8 +166,7 @@ void COpenGLScene::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -205,7 +204,8 @@ CRenderizable::Ptr COpenGLScene::getByName(
 
 void COpenGLScene::initializeTextures()
 {
-	for (auto& m_viewport : m_viewports) m_viewport->initializeTextures();
+	for (auto& m_viewport : m_viewports)
+		m_viewport->initializeTextures();
 }
 
 /*--------------------------------------------------------------

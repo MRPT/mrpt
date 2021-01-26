@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "poses-precomp.h"
-
+//
+#include <mrpt/core/initializer.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDF.h>
@@ -37,8 +38,6 @@
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPoses3DSequence.h>
-
-#include <mrpt/core/initializer.h>
 
 using namespace mrpt::poses;
 

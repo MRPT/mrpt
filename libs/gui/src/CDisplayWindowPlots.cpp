@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxSubsystem.h>
@@ -16,6 +16,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/system/os.h>
+
 #include <cstring>
 
 using namespace mrpt;
@@ -335,10 +336,7 @@ void CWindowDialogPlots::plot(
 	wxPenStyle lineStyle = wxPENSTYLE_SOLID;
 
 	// parse string:
-	if (string::npos != lineFormat.find("."))
-	{
-		isContinuous = false;
-	}
+	if (string::npos != lineFormat.find(".")) { isContinuous = false; }
 	if (string::npos != lineFormat.find("-"))
 	{
 		isContinuous = true;
@@ -387,42 +385,15 @@ void CWindowDialogPlots::plot(
 		lineColor[2] = 192;
 	}
 
-	if (string::npos != lineFormat.find("1"))
-	{
-		lineWidth = 1;
-	}
-	if (string::npos != lineFormat.find("2"))
-	{
-		lineWidth = 2;
-	}
-	if (string::npos != lineFormat.find("3"))
-	{
-		lineWidth = 3;
-	}
-	if (string::npos != lineFormat.find("4"))
-	{
-		lineWidth = 4;
-	}
-	if (string::npos != lineFormat.find("5"))
-	{
-		lineWidth = 5;
-	}
-	if (string::npos != lineFormat.find("6"))
-	{
-		lineWidth = 6;
-	}
-	if (string::npos != lineFormat.find("7"))
-	{
-		lineWidth = 7;
-	}
-	if (string::npos != lineFormat.find("8"))
-	{
-		lineWidth = 8;
-	}
-	if (string::npos != lineFormat.find("9"))
-	{
-		lineWidth = 9;
-	}
+	if (string::npos != lineFormat.find("1")) { lineWidth = 1; }
+	if (string::npos != lineFormat.find("2")) { lineWidth = 2; }
+	if (string::npos != lineFormat.find("3")) { lineWidth = 3; }
+	if (string::npos != lineFormat.find("4")) { lineWidth = 4; }
+	if (string::npos != lineFormat.find("5")) { lineWidth = 5; }
+	if (string::npos != lineFormat.find("6")) { lineWidth = 6; }
+	if (string::npos != lineFormat.find("7")) { lineWidth = 7; }
+	if (string::npos != lineFormat.find("8")) { lineWidth = 8; }
+	if (string::npos != lineFormat.find("9")) { lineWidth = 9; }
 
 	theLayer->SetContinuity(isContinuous);
 
@@ -497,10 +468,7 @@ void CWindowDialogPlots::plotEllipse(
 	wxPenStyle lineStyle = wxPENSTYLE_SOLID;
 
 	// parse string:
-	if (string::npos != lineFormat.find("."))
-	{
-		isContinuous = false;
-	}
+	if (string::npos != lineFormat.find(".")) { isContinuous = false; }
 	if (string::npos != lineFormat.find("-"))
 	{
 		isContinuous = true;
@@ -549,42 +517,15 @@ void CWindowDialogPlots::plotEllipse(
 		lineColor[2] = 192;
 	}
 
-	if (string::npos != lineFormat.find("1"))
-	{
-		lineWidth = 1;
-	}
-	if (string::npos != lineFormat.find("2"))
-	{
-		lineWidth = 2;
-	}
-	if (string::npos != lineFormat.find("3"))
-	{
-		lineWidth = 3;
-	}
-	if (string::npos != lineFormat.find("4"))
-	{
-		lineWidth = 4;
-	}
-	if (string::npos != lineFormat.find("5"))
-	{
-		lineWidth = 5;
-	}
-	if (string::npos != lineFormat.find("6"))
-	{
-		lineWidth = 6;
-	}
-	if (string::npos != lineFormat.find("7"))
-	{
-		lineWidth = 7;
-	}
-	if (string::npos != lineFormat.find("8"))
-	{
-		lineWidth = 8;
-	}
-	if (string::npos != lineFormat.find("9"))
-	{
-		lineWidth = 9;
-	}
+	if (string::npos != lineFormat.find("1")) { lineWidth = 1; }
+	if (string::npos != lineFormat.find("2")) { lineWidth = 2; }
+	if (string::npos != lineFormat.find("3")) { lineWidth = 3; }
+	if (string::npos != lineFormat.find("4")) { lineWidth = 4; }
+	if (string::npos != lineFormat.find("5")) { lineWidth = 5; }
+	if (string::npos != lineFormat.find("6")) { lineWidth = 6; }
+	if (string::npos != lineFormat.find("7")) { lineWidth = 7; }
+	if (string::npos != lineFormat.find("8")) { lineWidth = 8; }
+	if (string::npos != lineFormat.find("9")) { lineWidth = 9; }
 
 	theLayer->SetContinuity(isContinuous);
 

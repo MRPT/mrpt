@@ -29,12 +29,12 @@ class CObservationRobotPose : public CObservation
 	mrpt::poses::CPose3D sensorPose;
 
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
-		const override;  // See base class docs.
+		const override;	 // See base class docs.
 	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
 		override;  // See base class docs.
 	void getDescriptionAsText(
 		std::ostream& o) const override;  // See base class docs
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

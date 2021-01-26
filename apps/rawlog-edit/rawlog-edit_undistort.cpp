@@ -10,6 +10,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;

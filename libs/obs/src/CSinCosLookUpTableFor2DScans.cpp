@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
@@ -70,7 +70,7 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues&
 			double Ang =
 				(scan_prop.rightToLeft ? -0.5 : +0.5) * scan_prop.aperture;
 			const double dA = (scan_prop.rightToLeft ? 1.0 : -1.0) *
-							  (scan_prop.aperture / (scan_prop.nRays - 1));
+				(scan_prop.aperture / (scan_prop.nRays - 1));
 
 			for (size_t i = 0; i < scan_prop.nRays; i++)
 			{

@@ -9,8 +9,6 @@
 #pragma once
 
 #include <mrpt/containers/CThreadSafeQueue.h>
-#include <mrpt/system/COutputLogger.h>
-
 #include <mrpt/hmtslam/CHierarchicalMHMap.h>
 #include <mrpt/hmtslam/CLocalMetricHypothesis.h>
 #include <mrpt/hmtslam/CTopLCDetector_FabMap.h>
@@ -22,8 +20,9 @@
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/TKLDParams.h>
-#include <map>
+#include <mrpt/system/COutputLogger.h>
 
+#include <map>
 #include <queue>
 #include <thread>
 
@@ -440,7 +439,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** [LOGGING] If it is not an empty string (""), a directory with that
 		 * name will be created and log files save there. */
@@ -509,7 +508,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 
 	} m_options;
 
-};  // End of class CHMTSLAM.
+};	// End of class CHMTSLAM.
 
 /** Virtual base for local SLAM methods, used in mrpt::slam::CHMTSLAM.
  */
@@ -557,7 +556,7 @@ class CLSLAMAlgorithmBase
 		const mrpt::obs::CSensoryFrame* observation,
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options) = 0;
 
-};  // end of class CLSLAMAlgorithmBase
+};	// end of class CLSLAMAlgorithmBase
 
 /** Implements a 2D local SLAM method based on a RBPF over an occupancy grid
  * map.
@@ -653,7 +652,7 @@ class CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 		size_t particleIndexForMap, const mrpt::obs::CSensoryFrame* observation,
 		const mrpt::poses::CPose2D* x);
 
-};  // end class CLSLAM_RBPF_2DLASER
+};	// end class CLSLAM_RBPF_2DLASER
 
 }  // namespace hmtslam
 }  // namespace mrpt

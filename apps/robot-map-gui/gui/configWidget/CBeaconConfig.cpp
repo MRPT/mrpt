@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+
    */
 #include "CBeaconConfig.h"
+
 #include "ui_CBeaconConfig.h"
 
 using namespace mrpt;

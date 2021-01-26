@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
-#include "vision-precomp.h"  // Precompiled headers
-
 // Universal include for all versions of OpenCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
-#ifdef HAVE_OPENCV_NONFREE  // MRPT_HAS_OPENCV_NONFREE
+#ifdef HAVE_OPENCV_NONFREE	// MRPT_HAS_OPENCV_NONFREE
 #include <opencv2/nonfree/nonfree.hpp>
 #endif
 #ifdef HAVE_OPENCV_FEATURES2D
@@ -55,7 +55,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 	// use a smart pointer so we just copy the pointer if the image is
 	// grayscale, or we'll create a new one if it was RGB:
 	CImage img_grayscale(
-		img, FAST_REF_OR_CONVERT_TO_GRAY);  // Was: auxImg::Ptr;
+		img, FAST_REF_OR_CONVERT_TO_GRAY);	// Was: auxImg::Ptr;
 	if (usingROI)
 	{
 		ASSERT_(
@@ -91,7 +91,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 				"Use `OpenCV` version");
 			break;
 		}  // end case Binary by Lowe
-		case Hess:  // Implementation by Robert Hess
+		case Hess:	// Implementation by Robert Hess
 		{
 			THROW_EXCEPTION(
 				"Hess SIFT not available since MRPT 1.9.9: "
@@ -111,7 +111,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 				options.SIFTOptions.edgeThreshold);
 
 			SiftDescriptorExtractor SIFTDescriptor;
-			vector<KeyPoint> cv_feats;  // The OpenCV output feature list
+			vector<KeyPoint> cv_feats;	// The OpenCV output feature list
 			const Mat& theImg = img_grayscale.asCvMatRef();
 			SIFTDetector.detect(theImg, cv_feats);
 			Mat desc;
@@ -138,8 +138,8 @@ void CFeatureExtraction::extractFeaturesSIFT(
 			const size_t N = cv_feats.size();
 			// std::cout << "N:" << N << "\n";
 			unsigned int nMax = nDesiredFeatures != 0 && N > nDesiredFeatures
-									? nDesiredFeatures
-									: N;
+				? nDesiredFeatures
+				: N;
 			const int offset = (int)this->options.patchSize / 2 + 1;
 			const size_t size_2 = options.patchSize / 2;
 			const size_t imgH = img.getHeight();

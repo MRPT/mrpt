@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/wrap2pi.h>
@@ -18,8 +18,8 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
-#include <Eigen/Dense>
 
+#include <Eigen/Dense>
 #include <sstream>
 
 using namespace mrpt;
@@ -150,7 +150,8 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		// Test Jacob:
 		{
 			CVectorDouble x(4);
-			for (int i = 0; i < 4; i++) x[i] = o.mean.quat()[i];
+			for (int i = 0; i < 4; i++)
+				x[i] = o.mean.quat()[i];
 			CVectorDouble Ax(4);
 			Ax.assign(1e-7);
 			CMatrixDouble H;
@@ -208,7 +209,7 @@ void CPose3DPDFGaussian::copyFrom(const CPose3DQuatPDFGaussian& o)
 		const CVectorFixedDouble<7> x_mean(o.mean);
 		CVectorFixedDouble<6> y_mean;
 		static const bool elements_do_wrapPI[6] = {
-			false, false, false, true, true, true};  // xyz yaw pitch roll
+			false, false, false, true, true, true};	 // xyz yaw pitch roll
 
 		const double dummy = 0;
 		mrpt::math::transform_gaussian_unscented(
@@ -237,14 +238,13 @@ void CPose3DPDFGaussian::serializeFrom(
 			mrpt::math::deserializeSymmetricMatrixFrom(cov, in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
 void CPose3DPDFGaussian::copyFrom(const CPose3DPDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	// Convert to gaussian pdf:
 	o.getCovarianceAndMean(cov, mean);
@@ -306,7 +306,7 @@ void CPose3DPDFGaussian::changeCoordinatesReference(
 
 	CPose3DPDF::jacobiansPoseComposition(
 		newReferenceBase,  // x
-		this->mean,  // u
+		this->mean,	 // u
 		df_dx, df_du);
 
 	// this->cov = H1*this->cov*H1' + H2* 0 *H2';
@@ -414,7 +414,7 @@ void CPose3DPDFGaussian::inverse(CPose3DPDF& o) const
 	// This is like: b=(0,0,0)
 	//  OUT = b - THIS
 	CPose3DPDFGaussian p_zero(
-		CPose3D(0, 0, 0, 0, 0, 0), CMatrixDouble66());  // COV=All zeros
+		CPose3D(0, 0, 0, 0, 0, 0), CMatrixDouble66());	// COV=All zeros
 
 	out = p_zero - *this;
 }
@@ -429,8 +429,8 @@ void CPose3DPDFGaussian::operator+=(const CPose3D& Ap)
 	CMatrixDouble66 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
 	CPose3DPDF::jacobiansPoseComposition(
-		this->mean,  // x
-		Ap,  // u
+		this->mean,	 // x
+		Ap,	 // u
 		df_dx, df_du);
 
 	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
@@ -547,7 +547,8 @@ void CPose3DPDFGaussian::enforceCovSymmetry()
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
 	for (int i = 0; i < cov.rows() - 1; i++)
-		for (int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
+		for (int j = i + 1; j < cov.rows(); j++)
+			cov(i, j) = cov(j, i);
 }
 
 /*---------------------------------------------------------------
@@ -565,10 +566,9 @@ double CPose3DPDFGaussian::mahalanobisDistanceTo(
 	{
 		if (COV_(i, i) == 0)
 		{
-			if (MU(i, 0) != 0)
-				return std::numeric_limits<double>::infinity();
+			if (MU(i, 0) != 0) return std::numeric_limits<double>::infinity();
 			else
-				COV_(i, i) = 1;  // Any arbitrary value since
+				COV_(i, i) = 1;	 // Any arbitrary value since
 			// MU(i)=0, and this value doesn't
 			// affect the result.
 		}

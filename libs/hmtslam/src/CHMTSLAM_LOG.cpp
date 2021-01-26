@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/serialization/CArchive.h>
@@ -66,10 +66,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			// Look for the most likely LMH:
 			for (auto& m : m_LMHs)
 			{
-				if (!bestLMH)
-				{
-					bestLMH = &m.second;
-				}
+				if (!bestLMH) { bestLMH = &m.second; }
 				else if (m.second.m_log_w > bestLMH->m_log_w)
 				{
 					bestLMH = &m.second;
@@ -173,9 +170,9 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 									  << m_map.arcCount() << " arcs");
 
 				m_map.getAs3DScene(
-					sceneGlobalHMTMAP,  // Scene
-					m_map.getFirstNode()->getID(),  // Reference node
-					bestHypoID,  // Hypothesis to get
+					sceneGlobalHMTMAP,	// Scene
+					m_map.getFirstNode()->getID(),	// Reference node
+					bestHypoID,	 // Hypothesis to get
 					3  // iterations
 				);
 			}

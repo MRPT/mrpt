@@ -22,6 +22,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
+
 #include <map>
 
 namespace mrpt::img
@@ -292,8 +293,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		// If not found directly, search recursively:
 		for (const auto& o : m_objects)
 		{
-			if (o && o->GetRuntimeClass() ==
-						 CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+			if (o &&
+				o->GetRuntimeClass() ==
+					CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 			{
 				typename T::Ptr obj = std::dynamic_pointer_cast<T>(
 					std::dynamic_pointer_cast<CSetOfObjects>(o)
@@ -434,7 +436,8 @@ inline COpenGLViewport::Ptr& operator<<(
 inline COpenGLViewport::Ptr& operator<<(
 	COpenGLViewport::Ptr& s, const std::vector<CRenderizable::Ptr>& v)
 {
-	for (const auto& it : v) s->insert(it);
+	for (const auto& it : v)
+		s->insert(it);
 	return s;
 }
 
@@ -463,7 +466,7 @@ class mrptEventGLPreRender : public mrpt::system::mrptEvent
 	{
 	}
 	const COpenGLViewport* const source_viewport;
-};  // End of class def.
+};	// End of class def.
 
 /**  An event sent by an mrpt::opengl::COpenGLViewport after calling the scene
  * OpenGL drawing primitives and before doing a glSwapBuffers
@@ -489,7 +492,7 @@ class mrptEventGLPostRender : public mrpt::system::mrptEvent
 	{
 	}
 	const COpenGLViewport* const source_viewport;
-};  // End of class def.
+};	// End of class def.
 
 /** @} */
 

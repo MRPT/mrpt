@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TLine2D.h>
 #include <mrpt/math/TPlane.h>
 #include <mrpt/math/TPolygon2D.h>
@@ -16,7 +16,8 @@
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/math/epsilon.h>
-#include <mrpt/math/geometry.h>  // project3D()
+#include <mrpt/math/geometry.h>	 // project3D()
+
 #include "polygons_utils.h"
 
 using namespace mrpt::math;
@@ -97,7 +98,8 @@ TPolygon3D::TPolygon3D(const TPolygon2D& p) : std::vector<TPoint3D>()
 {
 	size_t N = p.size();
 	resize(N);
-	for (size_t i = 0; i < N; i++) operator[](i) = p[i];
+	for (size_t i = 0; i < N; i++)
+		operator[](i) = p[i];
 }
 void TPolygon3D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon3D& poly)
@@ -116,5 +118,6 @@ void TPolygon3D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon3D& poly, const TPose3D& pose)
 {
 	createRegularPolygon(numEdges, radius, poly);
-	for (size_t i = 0; i < numEdges; i++) pose.composePoint(poly[i], poly[i]);
+	for (size_t i = 0; i < numEdges; i++)
+		pose.composePoint(poly[i], poly[i]);
 }

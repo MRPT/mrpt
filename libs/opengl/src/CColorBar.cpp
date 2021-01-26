@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CColorBar.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include "gltext.h"
 
 using namespace mrpt;
@@ -214,8 +215,7 @@ void CColorBar::serializeFrom(
 				in >> old_disable_depth_test;
 			}
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

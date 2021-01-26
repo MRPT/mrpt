@@ -8,12 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "MyArtProvider.h"
-#include "hmt_slam_guiMain.h"  // Needed to avoid UNICODE WX build errors sometimes
 
 #include "../wx-common/mrpt_logo.xpm"
-
-#include "imgs/main_icon.xpm"
-
+#include "hmt_slam_guiMain.h"  // Needed to avoid UNICODE WX build errors sometimes
 #include "imgs/icon_about.xpm"
 #include "imgs/icon_exit.xpm"
 #include "imgs/icon_load.xpm"
@@ -22,6 +19,7 @@
 #include "imgs/icon_save.xpm"
 #include "imgs/icon_step.xpm"
 #include "imgs/icon_stop.xpm"
+#include "imgs/main_icon.xpm"
 
 // CreateBitmap function
 wxBitmap CMyArtProvider::CreateBitmap(

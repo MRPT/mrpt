@@ -7,10 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-//
 #include "img-precomp.h"  // Precompiled headers
 //
-
 #include <mrpt/core/cpu.h>
 #include <mrpt/core/round.h>  // for round()
 #include <mrpt/img/CImage.h>
@@ -156,7 +154,7 @@ static PixelDepth cvDepth2PixelDepth(int64_t d)
 	return PixelDepth::D8U;
 }
 
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV
 
 // Default ctor
 CImage::CImage() : m_impl(mrpt::make_impl<CImage::Impl>()) {}
@@ -188,8 +186,7 @@ CImage::CImage(const cv::Mat& img, copy_type_t copy_type) : CImage()
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
-	if (copy_type == DEEP_COPY)
-		m_impl->img = img.clone();
+	if (copy_type == DEEP_COPY) m_impl->img = img.clone();
 	else
 		m_impl->img = img;
 	MRPT_END
@@ -220,8 +217,7 @@ CImage CImage::makeDeepCopy() const
 void CImage::asCvMat(cv::Mat& out_img, copy_type_t copy_type) const
 {
 #if MRPT_HAS_OPENCV
-	if (copy_type == DEEP_COPY)
-		out_img = m_impl->img.clone();
+	if (copy_type == DEEP_COPY) out_img = m_impl->img.clone();
 	else
 		out_img = m_impl->img;
 #endif
@@ -518,7 +514,7 @@ void CImage::serializeTo(mrpt::serialization::CArchive& out) const
 		// GRAY-SCALE: Raw bytes:
 		// Version 3: ZIP compression!
 		// Version 4: Skip zip if the image size <= 16Kb
-		int32_t origin = 0;  // not used mrpt v1.9.9
+		int32_t origin = 0;	 // not used mrpt v1.9.9
 		uint32_t imageSize = height * m_impl->img.step[0];
 		// Version 10: depth
 		int32_t depth = m_impl->img.depth();
@@ -588,8 +584,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	if (version == 100)
 	{
 		in >> m_imgIsExternalStorage;
-		if (m_imgIsExternalStorage)
-			in >> m_externalFile;
+		if (m_imgIsExternalStorage) in >> m_externalFile;
 		else
 		{
 			THROW_EXCEPTION(
@@ -644,8 +639,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 9:
 		{
 			// Version 6: 	m_imgIsExternalStorage ??
-			if (version >= 6)
-				in >> m_imgIsExternalStorage;
+			if (version >= 6) in >> m_imgIsExternalStorage;
 			else
 				m_imgIsExternalStorage = false;
 
@@ -725,10 +719,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 						int32_t width, height;
 						in >> width >> height;
 
-						if (width >= 1 && height >= 1)
-						{
-							loadJPEG = true;
-						}
+						if (width >= 1 && height >= 1) { loadJPEG = true; }
 						else
 						{
 							loadJPEG = false;
@@ -781,8 +772,7 @@ void CImage::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 #endif
 }
@@ -922,7 +912,7 @@ float CImage::getAsFloat(unsigned int col, unsigned int row) const
 		// Luminance: Y = 0.3R + 0.59G + 0.11B
 		unsigned char* pixels = (*this)(col, row, 0);
 		return (pixels[0] * 0.3f + pixels[1] * 0.59f + pixels[2] * 0.11f) /
-			   255.0f;
+			255.0f;
 	}
 	else
 	{
@@ -941,7 +931,8 @@ float CImage::getMaxAsFloat() const
 	float maxPixel = 0;
 
 	for (x = 0; x < cx; x++)
-		for (y = 0; y < cy; y++) maxPixel = max(maxPixel, getAsFloat(x, y));
+		for (y = 0; y < cy; y++)
+			maxPixel = max(maxPixel, getAsFloat(x, y));
 
 	return maxPixel;
 }
@@ -1106,9 +1097,7 @@ void CImage::setPixel(int x, int y, size_t color)
 	{
 		// The pixel coordinates is valid:
 		if (img.channels() == 1)
-		{
-			img.ptr<uint8_t>(y)[x] = static_cast<uint8_t>(color);
-		}
+		{ img.ptr<uint8_t>(y)[x] = static_cast<uint8_t>(color); }
 		else
 		{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
@@ -1216,7 +1205,7 @@ float CImage::correlate(
 				i + height_init);  //(double)(ipl1->imageData[i*ipl1->widthStep
 			//+ j ]);
 			m2 += *img2(
-				j, i);  //(double)(ipl2->imageData[i*ipl2->widthStep + j ]);
+				j, i);	//(double)(ipl2->imageData[i*ipl2->widthStep + j ]);
 		}  //[ row * ipl->widthStep +  col * ipl->nChannels +  channel ];
 	}
 	m1 /= n;
@@ -1227,9 +1216,9 @@ float CImage::correlate(
 		for (size_t j = 0; j < img2.getWidth(); j++)
 		{
 			x1 = *(*this)(j + width_init, i + height_init) -
-				 m1;  //(double)(ipl1->imageData[i*ipl1->widthStep
-					  //+ j]) - m1;
-			x2 = *img2(j, i) - m2;  //(double)(ipl2->imageData[i*ipl2->widthStep
+				m1;	 //(double)(ipl1->imageData[i*ipl1->widthStep
+					 //+ j]) - m1;
+			x2 = *img2(j, i) - m2;	//(double)(ipl2->imageData[i*ipl2->widthStep
 									//+ j]) - m2;
 			sxx += x1 * x1;
 			syy += x2 * x2;
@@ -1641,9 +1630,7 @@ void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 	if (m_externalFile[0] == '/' ||
 		(m_externalFile[1] == ':' &&
 		 (m_externalFile[2] == '\\' || m_externalFile[2] == '/')))
-	{
-		out_path = m_externalFile;
-	}
+	{ out_path = m_externalFile; }
 	else
 	{
 		out_path = IMAGES_PATH_BASE;
@@ -1719,7 +1706,8 @@ void CImage::undistort(
 	cv::Mat inMat(3, 3, CV_64F);
 
 	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) inMat.at<double>(i, j) = intrMat(i, j);
+		for (int j = 0; j < 3; j++)
+			inMat.at<double>(i, j) = intrMat(i, j);
 
 	cv::undistort(srcImg, out_img.m_impl->img, inMat, distM);
 #endif
@@ -1731,8 +1719,7 @@ void CImage::filterMedian(CImage& out_img, int W) const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
 	auto srcImg = const_cast<cv::Mat&>(m_impl->img);
-	if (this == &out_img)
-		srcImg = srcImg.clone();
+	if (this == &out_img) srcImg = srcImg.clone();
 	else
 		out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
 
@@ -1745,8 +1732,7 @@ void CImage::filterGaussian(CImage& out_img, int W, int H, double sigma) const
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	auto srcImg = const_cast<cv::Mat&>(m_impl->img);
-	if (this == &out_img)
-		srcImg = srcImg.clone();
+	if (this == &out_img) srcImg = srcImg.clone();
 	else
 		out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
 
@@ -1798,7 +1784,7 @@ void CImage::rotateImage(
 
 	// Apply rotation & scale:
 	double m[2 * 3] = {scale * cos(ang), -scale * sin(ang), 1.0 * cx,
-					   scale * sin(ang), scale * cos(ang),  1.0 * cy};
+					   scale * sin(ang), scale * cos(ang),	1.0 * cy};
 	cv::Mat M(2, 3, CV_64F, m);
 
 	double dx = (srcImg.cols - 1) * 0.5;
@@ -1924,8 +1910,7 @@ void CImage::equalizeHist(CImage& out_img) const
 		out_img.resize(srcImg.cols, srcImg.rows, getChannelCount());
 	auto outImg = out_img.m_impl->img;
 
-	if (srcImg.channels() == 1)
-		cv::equalizeHist(srcImg, outImg);
+	if (srcImg.channels() == 1) cv::equalizeHist(srcImg, outImg);
 	else
 		THROW_EXCEPTION("Operation only supported for grayscale images");
 #endif
@@ -1963,7 +1948,7 @@ void MRPT_DISABLE_FULL_OPTIMIZATION image_KLT_response_template(
 			const int32_t dx =
 				static_cast<int32_t>(ptr[+1]) - static_cast<int32_t>(ptr[-1]);
 			const int32_t dy = static_cast<int32_t>(ptr[+widthStep]) -
-							   static_cast<int32_t>(ptr[-widthStep]);
+				static_cast<int32_t>(ptr[-widthStep]);
 			gxx += dx * dx;
 			gxy += dx * dy;
 			gyy += dy * dy;
@@ -2097,8 +2082,8 @@ float MRPT_DISABLE_FULL_OPTIMIZATION CImage::KLT_response(
 	//    ( gxy  gyy )
 	// See, for example:
 	// mrpt::math::detail::eigenVectorsMatrix_special_2x2():
-	const float t = Gxx + Gyy;  // Trace
-	const float de = Gxx * Gyy - Gxy * Gxy;  // Det
+	const float t = Gxx + Gyy;	// Trace
+	const float de = Gxx * Gyy - Gxy * Gxy;	 // Det
 	// The smallest eigenvalue is:
 	return 0.5f * (t - std::sqrt(t * t - 4.0f * de));
 #else
@@ -2180,9 +2165,9 @@ bool CImage::loadTGA(
 
 		for (unsigned int c = 0; c < width; c++)
 		{
-			*data++ = bytes[idx++];  // R
-			*data++ = bytes[idx++];  // G
-			*data++ = bytes[idx++];  // B
+			*data++ = bytes[idx++];	 // R
+			*data++ = bytes[idx++];	 // G
+			*data++ = bytes[idx++];	 // B
 			*data_alpha++ = bytes[idx++];  // A
 		}
 	}
@@ -2190,7 +2175,7 @@ bool CImage::loadTGA(
 	return true;
 #else
 	return false;
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV
 }
 
 void CImage::getAsIplImage(IplImage* dest) const

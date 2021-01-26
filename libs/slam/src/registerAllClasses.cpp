@@ -8,11 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #define MRPT_NO_WARN_BIG_HDR
-#include <mrpt/slam.h>
-
 #include <mrpt/core/initializer.h>
+#include <mrpt/slam.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;

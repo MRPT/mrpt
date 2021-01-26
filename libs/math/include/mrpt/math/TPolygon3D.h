@@ -10,6 +10,7 @@
 
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPoseOrPoint.h>
+
 #include <vector>
 
 namespace mrpt::math

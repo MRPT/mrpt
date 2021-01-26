@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/config.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/img/CEnhancedMetaFile.h>
@@ -17,6 +17,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -131,11 +132,10 @@ void COccupancyGridMap2D::serializeFrom(
 			uint8_t bitsPerCellStream;
 
 			// Version 2: OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS/16BITS
-			if (version >= 2)
-				in >> bitsPerCellStream;
+			if (version >= 2) in >> bitsPerCellStream;
 			else
 				bitsPerCellStream =
-					MyBitsPerCell;  // Old versinons: hope it's the same...
+					MyBitsPerCell;	// Old versinons: hope it's the same...
 
 			uint32_t new_size_x, new_size_y;
 			float new_x_min, new_x_max, new_y_min, new_y_max;
@@ -171,7 +171,8 @@ void COccupancyGridMap2D::serializeFrom(
 				size_t i, N = map.size();
 				auto* ptrTrg = (uint8_t*)&map[0];
 				const auto* ptrSrc = (const uint16_t*)&auxMap[0];
-				for (i = 0; i < N; i++) *ptrTrg++ = (*ptrSrc++) >> 8;
+				for (i = 0; i < N; i++)
+					*ptrTrg++ = (*ptrSrc++) >> 8;
 #else
 				// We are 16-bit, stream is 8-bit
 				ASSERT_(bitsPerCellStream == 8);
@@ -181,7 +182,8 @@ void COccupancyGridMap2D::serializeFrom(
 				size_t i, N = map.size();
 				uint16_t* ptrTrg = (uint16_t*)&map[0];
 				const uint8_t* ptrSrc = (const uint8_t*)&auxMap[0];
-				for (i = 0; i < N; i++) *ptrTrg++ = (*ptrSrc++) << 8;
+				for (i = 0; i < N; i++)
+					*ptrTrg++ = (*ptrSrc++) << 8;
 #endif
 			}
 
@@ -237,8 +239,7 @@ void COccupancyGridMap2D::serializeFrom(
 					likelihoodOptions.enableLikelihoodCache;
 
 				// Insertion as 3D:
-				if (version >= 6)
-					in >> genericMapParams;
+				if (version >= 6) in >> genericMapParams;
 				else
 				{
 					bool disableSaveAs3DObject;
@@ -255,13 +256,10 @@ void COccupancyGridMap2D::serializeFrom(
 			}
 
 			if (version >= 5)
-			{
-				in >> insertionOptions.wideningBeamsWithDistance;
-			}
+			{ in >> insertionOptions.wideningBeamsWithDistance; }
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

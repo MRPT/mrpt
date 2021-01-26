@@ -13,21 +13,21 @@
 		  Disable some warnings
    ------------------------------------ */
 #if defined(_MSC_VER)
-#pragma warning(disable : 4127)  // Disable conditional expression is constant
+#pragma warning(disable : 4127)	 // Disable conditional expression is constant
 // (it shows up in templates where it's
 // correct)
-#pragma warning(disable : 4244)  // argument conversion "possible loss of data"
-#pragma warning(disable : 4503)  // (Compiler: Visual C++ 2010) Disable warning
+#pragma warning(disable : 4244)	 // argument conversion "possible loss of data"
+#pragma warning(disable : 4503)	 // (Compiler: Visual C++ 2010) Disable warning
 // for too long decorated name
-#pragma warning(disable : 4714)  // force inlined -> not inlined (in Eigen3)
-#pragma warning(disable : 4267)  // truncation size_t -> type
-#pragma warning(disable : 4290)  // Visual C++ does not implement decl.
+#pragma warning(disable : 4714)	 // force inlined -> not inlined (in Eigen3)
+#pragma warning(disable : 4267)	 // truncation size_t -> type
+#pragma warning(disable : 4290)	 // Visual C++ does not implement decl.
 // specifiers: throw(A,B,...)
-#pragma warning(disable : 4251)  // Visual C++ 2003+ warnings on STL classes
+#pragma warning(disable : 4251)	 // Visual C++ 2003+ warnings on STL classes
 // when exporting to DLL...
-#pragma warning(disable : 4275)  // DLL export class derived from STL
-#pragma warning( \
-	disable : 4251)  // Warnings are emited even if a DLL export class
+#pragma warning(disable : 4275)	 // DLL export class derived from STL
+#pragma warning(                                                               \
+	disable : 4251)	 // Warnings are emited even if a DLL export class
 // contains a *private* STL field (?)
 #if (_MSC_VER >= 1400)
 // MS believes they have the right to deprecate functions in the C++ Standard
@@ -55,7 +55,7 @@
 // ---------------------------------------------------------
 // M_PI: Rely on standard <cmath>
 #ifndef M_2PI
-#define M_2PI 6.283185307179586476925286766559  // The 2*PI constant
+#define M_2PI 6.283185307179586476925286766559	// The 2*PI constant
 #endif
 
 #define M_PIf 3.14159265358979f
@@ -63,7 +63,7 @@
 
 /**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
-#define MRPT_CHECK_GCC_VERSION(major, minor) \
+#define MRPT_CHECK_GCC_VERSION(major, minor)                                   \
 	((__GNUC__ > (major)) || (__GNUC__ == (major) && __GNUC_MINOR__ >= (minor)))
 #else
 #define MRPT_CHECK_GCC_VERSION(major, minor) 0
@@ -81,14 +81,14 @@ increasing in lock step, but _MSC_VER value of 1900 is VC14 and not the
 non existing (presumably for the superstitious reasons) VC13, so we now
 need to account for this with an extra offset.
 */
-#define MRPT_VISUALC_VERSION(major) \
+#define MRPT_VISUALC_VERSION(major)                                            \
 	((6 + (major >= 14 ? (-1) : 0) + major) * 100)
-#define MRPT_CHECK_VISUALC_VERSION(major) \
+#define MRPT_CHECK_VISUALC_VERSION(major)                                      \
 	(_MSC_VER >= MRPT_VISUALC_VERSION(major))
 #endif
 
 #ifndef __has_feature
-#define __has_feature(x) 0  // Compatibility with non-clang compilers.
+#define __has_feature(x) 0	// Compatibility with non-clang compilers.
 #endif
 #ifndef __has_extension
 #define __has_extension __has_feature  // Compatibility with pre-3.0 compilers.
@@ -114,14 +114,14 @@ need to account for this with an extra offset.
 
 // Define a decl. modifier for printf-like format checks at compile time:
 #ifdef __GNUC__
-#define MRPT_printf_format_check(_FMT_, _VARARGS_) \
+#define MRPT_printf_format_check(_FMT_, _VARARGS_)                             \
 	__attribute__((__format__(__printf__, _FMT_, _VARARGS_)))
 #else
 #define MRPT_printf_format_check(_FMT_, _VARARGS_)
 #endif
 // Define a decl. modifier for scanf-like format checks at compile time:
 #ifdef __GNUC__
-#define MRPT_scanf_format_check(_FMT_, _VARARGS_) \
+#define MRPT_scanf_format_check(_FMT_, _VARARGS_)                              \
 	__attribute__((__format__(__scanf__, _FMT_, _VARARGS_)))
 #else
 #define MRPT_scanf_format_check(_FMT_, _VARARGS_)
@@ -136,7 +136,7 @@ need to account for this with an extra offset.
 
 // Define a decl. modifier for printf-like format checks at compile time:
 #ifdef __GNUC__
-#define MRPT_printf_format_check(_FMT_, _VARARGS_) \
+#define MRPT_printf_format_check(_FMT_, _VARARGS_)                             \
 	__attribute__((__format__(__printf__, _FMT_, _VARARGS_)))
 #else
 #define MRPT_printf_format_check(_FMT_, _VARARGS_)
@@ -144,7 +144,7 @@ need to account for this with an extra offset.
 
 // Define a decl. modifier for scanf-like format checks at compile time:
 #ifdef __GNUC__
-#define MRPT_scanf_format_check(_FMT_, _VARARGS_) \
+#define MRPT_scanf_format_check(_FMT_, _VARARGS_)                              \
 	__attribute__((__format__(__scanf__, _FMT_, _VARARGS_)))
 #else
 #define MRPT_scanf_format_check(_FMT_, _VARARGS_)
@@ -158,9 +158,9 @@ need to account for this with an extra offset.
 #endif
 
 /** Determines whether this is an X86 or AMD64 platform */
-#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || \
-	defined(__x86_64) || defined(_M_AMD64) || defined(_M_X64) ||     \
-	defined(__i386__) || defined(__i386) || defined(_M_I86) ||       \
+#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) ||           \
+	defined(__x86_64) || defined(_M_AMD64) || defined(_M_X64) ||               \
+	defined(__i386__) || defined(__i386) || defined(_M_I86) ||                 \
 	defined(i386) || defined(_M_IX86) || defined(_X86_)
 #define MRPT_IS_X86_AMD64 1
 #endif

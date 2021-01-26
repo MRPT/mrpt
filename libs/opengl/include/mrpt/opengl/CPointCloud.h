@@ -137,8 +137,9 @@ class CPointCloud : public CRenderizableShaderPoints,
 		const auto N = x.size();
 		m_points.resize(N);
 		for (size_t i = 0; i < N; i++)
-			m_points[i] = {static_cast<float>(x[i]), static_cast<float>(y[i]),
-						   static_cast<float>(z[i])};
+			m_points[i] = {
+				static_cast<float>(x[i]), static_cast<float>(y[i]),
+				static_cast<float>(z[i])};
 		m_minmax_valid = false;
 		markAllPointsAsNew();
 	}
@@ -215,9 +216,9 @@ class CPointCloud : public CRenderizableShaderPoints,
 		size_t idx;
 		typename LISTOFPOINTS::const_iterator it;
 		for (idx = 0, it = pointsList.begin(); idx < N; ++idx, ++it)
-			m_points[idx] = {static_cast<float>(it->x),
-							 static_cast<float>(it->y),
-							 static_cast<float>(it->z)};
+			m_points[idx] = {
+				static_cast<float>(it->x), static_cast<float>(it->y),
+				static_cast<float>(it->z)};
 		markAllPointsAsNew();
 		CRenderizable::notifyChange();
 		MRPT_END
@@ -339,7 +340,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 		m_obj.setPoint_fast(idx, 0, 0, 0);
 	}
 
-};  // end of PointCloudAdapter<mrpt::opengl::CPointCloud>
+};	// end of PointCloudAdapter<mrpt::opengl::CPointCloud>
 
 // After declaring the adapter we can here implement this method:
 template <class POINTSMAP>

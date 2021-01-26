@@ -18,19 +18,16 @@ bool CIncrementalNodeRegistrationDecider<GRAPH_T>::checkRegistrationCondition()
 
 	// check that a node has already been registered - if not, default to
 	// (0,0,0)
-	pose_t last_pose_inserted =
-		this->m_prev_registered_nodeID != INVALID_NODEID
-			? this->m_graph->nodes.at(this->m_prev_registered_nodeID)
-			: pose_t();
+	pose_t last_pose_inserted = this->m_prev_registered_nodeID != INVALID_NODEID
+		? this->m_graph->nodes.at(this->m_prev_registered_nodeID)
+		: pose_t();
 
 	// odometry criterion
 	bool registered = false;
 
 	if (this->checkRegistrationConditionPose(
 			last_pose_inserted, this->getCurrentRobotPosEstimation()))
-	{
-		registered = this->registerNewNodeAtEnd();
-	}
+	{ registered = this->registerNewNodeAtEnd(); }
 
 	return registered;
 	MRPT_END
@@ -46,9 +43,7 @@ bool CIncrementalNodeRegistrationDecider<GRAPH_T>::
 	bool res = false;
 	if ((p1.distanceTo(p2) > params.registration_max_distance) ||
 		(fabs(wrapToPi(p1.phi() - p2.phi())) > params.registration_max_angle))
-	{
-		res = true;
-	}
+	{ res = true; }
 
 	return res;
 }  // end of checkRegistrationConditionPose
@@ -70,9 +65,7 @@ bool CIncrementalNodeRegistrationDecider<GRAPH_T>::
 		(fabs(wrapToPi(p1.pitch() - p2.pitch())) >
 		 params.registration_max_angle) ||
 		(fabs(wrapToPi(p1.yaw() - p2.yaw())) > params.registration_max_angle))
-	{
-		res = true;
-	}
+	{ res = true; }
 
 	return res;
 }  // end of checkRegistrationConditionPose

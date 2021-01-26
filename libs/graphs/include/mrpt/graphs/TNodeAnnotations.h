@@ -12,6 +12,7 @@
 #include <mrpt/graphs/TNodeID.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/stl_serialization.h>
+
 #include <cstdint>
 #include <iostream>
 #include <string>

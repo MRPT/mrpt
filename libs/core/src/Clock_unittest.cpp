@@ -19,7 +19,7 @@ static void test_delay()
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	const double t1 = mrpt::Clock::nowDouble();
 
-	EXPECT_GT(t1 - t0, 0.008);  // ideally, near 0.010
+	EXPECT_GT(t1 - t0, 0.008);	// ideally, near 0.010
 	EXPECT_LT(t1 - t0, 5.0);  // just detect it's not a crazy number
 }
 
@@ -49,10 +49,10 @@ TEST(clock, changeSource)
 	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	const double t2 = mrpt::Clock::nowDouble();
 
-	EXPECT_GT(t1 - t0, 0.008);  // ideally, near 0.010
+	EXPECT_GT(t1 - t0, 0.008);	// ideally, near 0.010
 	EXPECT_LT(t1 - t0, 5.0);  // just detect it's not a crazy number
 
-	EXPECT_GT(t2 - t1, 0.008);  // ideally, near 0.010
+	EXPECT_GT(t2 - t1, 0.008);	// ideally, near 0.010
 	EXPECT_LT(t2 - t1, 5.0);  // just detect it's not a crazy number
 }
 

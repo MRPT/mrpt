@@ -8,11 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
-
-#include <mrpt/gui/CDisplayWindow.h>
 
 namespace mrpt::hwdrivers
 {
@@ -289,6 +288,6 @@ class CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 	mrpt::img::TCamera m_cameraParams;
 
    private:
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

@@ -8,10 +8,9 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
-#include "CNode.h"
-
 #include <string>
 
+#include "CNode.h"
 #include "mrpt/maps/CSimpleMap.h"
 
 class CObservationsNode;

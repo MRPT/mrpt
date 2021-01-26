@@ -315,5 +315,5 @@ class PF_implementation : public mrpt::system::COutputLogger
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
 		mrpt::poses::CPose3D& out_newPose, double& out_newParticleLogWeight);
 
-};  // end PF_implementation
+};	// end PF_implementation
 }  // namespace mrpt::slam

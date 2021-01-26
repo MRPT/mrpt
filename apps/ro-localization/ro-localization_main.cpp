@@ -148,8 +148,7 @@ void TestParticlesLocalization()
 	pfOptions.dumpToConsole();
 
 	// Init PSRNG:
-	if (random_seed)
-		getRandomGenerator().randomize(random_seed);
+	if (random_seed) getRandomGenerator().randomize(random_seed);
 	else
 		getRandomGenerator().randomize();
 
@@ -221,9 +220,7 @@ void TestParticlesLocalization()
 			size_t real_offsets_rows = 0;
 			double accum_xy_err_sqr = 0;
 			if (Pc_range_ini != Pc_range_end)
-			{
-				pdf.options.probabilityChangingBias = range_Pc;
-			}
+			{ pdf.options.probabilityChangingBias = range_Pc; }
 
 			pdf.options.metricMap = &metricMap;
 
@@ -287,10 +284,7 @@ void TestParticlesLocalization()
 
 			window.setCameraProjective(false);
 
-			if (SAVE_3D_TO_VIDEO)
-			{
-				window.grabImagesStart();
-			}
+			if (SAVE_3D_TO_VIDEO) { window.grabImagesStart(); }
 
 			COpenGLScene::Ptr sceneTR = window.get3DSceneAndLock();
 #endif
@@ -383,7 +377,7 @@ void TestParticlesLocalization()
 
 				if (!rawlog.getActionObservationPair(
 						action, observations, rawlogEntry))
-					break;  // end of rawlog.
+					break;	// end of rawlog.
 
 				//-------------------FRANCO DATA--------------------
 				{
@@ -422,7 +416,7 @@ void TestParticlesLocalization()
 				PF.executeOn(
 					pdf,
 					action.get(),  // Action
-					observations.get(),  // Obs.
+					observations.get(),	 // Obs.
 					&PF_stats  // Output statistics
 				);
 				printf(
@@ -431,9 +425,9 @@ void TestParticlesLocalization()
 
 				// Text output:
 				// ----------------------------------------
-				odometryEstimation =
-					odometryEstimation + action->getBestMovementEstimation()
-											 ->poseChange->getMeanVal();
+				odometryEstimation = odometryEstimation +
+					action->getBestMovementEstimation()
+						->poseChange->getMeanVal();
 				pdf.getMean(pdfEstimation);
 
 				CPose2D GT_Pose;
@@ -548,8 +542,7 @@ void TestParticlesLocalization()
 					opengl::CRenderizable::Ptr obj = sceneTR->getByName("part");
 					opengl::CPointCloud::Ptr parts;
 
-					if (!obj)
-						parts = opengl::CPointCloud::Create();
+					if (!obj) parts = opengl::CPointCloud::Create();
 					else
 						parts = std::dynamic_pointer_cast<CPointCloud>(obj);
 #else
@@ -581,8 +574,7 @@ void TestParticlesLocalization()
 #ifdef SHOW_REAL_TIME_3D
 					obj = sceneTR->getByName("cov");
 					opengl::CEllipsoid2D::Ptr ellip;
-					if (!obj)
-						ellip = std::make_shared<opengl::CEllipsoid2D>();
+					if (!obj) ellip = std::make_shared<opengl::CEllipsoid2D>();
 					else
 						ellip = std::dynamic_pointer_cast<CEllipsoid2D>(obj);
 #else
@@ -610,8 +602,7 @@ void TestParticlesLocalization()
 					// The laser scan:
 					obj = sceneTR->getByName("laser");
 					opengl::CPointCloud::Ptr scanPts;
-					if (!obj)
-						scanPts = opengl::CPointCloud::Create();
+					if (!obj) scanPts = opengl::CPointCloud::Create();
 					else
 						scanPts = std::dynamic_pointer_cast<CPointCloud>(obj);
 
@@ -669,12 +660,10 @@ void TestParticlesLocalization()
 									lm->pose_mean.x, lm->pose_mean.y, 0.05);
 
 								float R = square(k.sensedDistance) -
-										  square(
-											  k.sensorLocationOnRobot.z() -
-											  lm->pose_mean.z);
+									square(k.sensorLocationOnRobot.z() -
+										   lm->pose_mean.z);
 
-								if (R > 0)
-									R = sqrt(R);
+								if (R > 0) R = sqrt(R);
 								else
 									R = 0.08f;
 								sphere->setDiskRadius(R + 0.08f, R - 0.08f);
@@ -698,8 +687,7 @@ void TestParticlesLocalization()
 							sceneTR->getByName("franc");
 						opengl::CSphere::Ptr sphere;
 
-						if (!obj)
-							sphere = std::make_shared<opengl::CSphere>();
+						if (!obj) sphere = std::make_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
@@ -732,8 +720,7 @@ void TestParticlesLocalization()
 							sceneTR->getByName("mean_parts");
 						opengl::CSphere::Ptr sphere;
 
-						if (!obj)
-							sphere = std::make_shared<opengl::CSphere>();
+						if (!obj) sphere = std::make_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
@@ -766,8 +753,7 @@ void TestParticlesLocalization()
 							sceneTR->getByName("GT");
 						opengl::CSphere::Ptr sphere;
 
-						if (!obj)
-							sphere = std::make_shared<opengl::CSphere>();
+						if (!obj) sphere = std::make_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
@@ -829,15 +815,19 @@ void TestParticlesLocalization()
 											 .latitude)) *
 									6371000 * 1.15;
 								sphere->setLocation(
-									(x * cos(beacMap->likelihoodOptions
+									(x *
+										 cos(beacMap->likelihoodOptions
 												 .GPSOrigin.ang) +
-									 y * sin(beacMap->likelihoodOptions
+									 y *
+										 sin(beacMap->likelihoodOptions
 												 .GPSOrigin.ang) +
 									 beacMap->likelihoodOptions.GPSOrigin
 										 .x_shift),
-									(-x * sin(beacMap->likelihoodOptions
-												  .GPSOrigin.ang) +
-									 y * cos(beacMap->likelihoodOptions
+									(-x *
+										 sin(beacMap->likelihoodOptions
+												 .GPSOrigin.ang) +
+									 y *
+										 cos(beacMap->likelihoodOptions
 												 .GPSOrigin.ang) +
 									 beacMap->likelihoodOptions.GPSOrigin
 										 .y_shift),
@@ -883,22 +873,26 @@ void TestParticlesLocalization()
 										(gga.fields.longitude_degrees -
 										 beacMap->likelihoodOptions.GPSOrigin
 											 .longitude)) *
-									6371000 * 1.03;  //*9000000;
+									6371000 * 1.03;	 //*9000000;
 								y = DEG2RAD(
 										(gga.fields.latitude_degrees -
 										 beacMap->likelihoodOptions.GPSOrigin
 											 .latitude)) *
-									6371000 * 1.15;  //*12000000;
+									6371000 * 1.15;	 //*12000000;
 								sphere->setLocation(
-									(x * cos(beacMap->likelihoodOptions
+									(x *
+										 cos(beacMap->likelihoodOptions
 												 .GPSOrigin.ang) +
-									 y * sin(beacMap->likelihoodOptions
+									 y *
+										 sin(beacMap->likelihoodOptions
 												 .GPSOrigin.ang) +
 									 beacMap->likelihoodOptions.GPSOrigin
 										 .x_shift),
-									(-x * sin(beacMap->likelihoodOptions
-												  .GPSOrigin.ang) +
-									 y * cos(beacMap->likelihoodOptions
+									(-x *
+										 sin(beacMap->likelihoodOptions
+												 .GPSOrigin.ang) +
+									 y *
+										 cos(beacMap->likelihoodOptions
 												 .GPSOrigin.ang) +
 									 beacMap->likelihoodOptions.GPSOrigin
 										 .y_shift),

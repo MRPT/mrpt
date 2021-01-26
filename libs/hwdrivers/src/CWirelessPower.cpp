@@ -7,9 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CWirelessPower.h>
+
 #include <iostream>
 
 #ifdef MRPT_OS_LINUX
@@ -22,9 +23,8 @@
 // MinGW: Nothing to do here (yet)
 #else
 
-#include <windows.h>
-
 #include <objbase.h>
+#include <windows.h>
 #include <wlanapi.h>
 #include <wtypes.h>
 #pragma comment(lib, "Wlanapi.lib")
@@ -57,7 +57,7 @@ void* ConnectWlanServerW()
 {
 	DWORD dwMaxClient = 2;
 	DWORD dwCurVersion = 0;
-	DWORD dwResult = 0;  // Result of the API call
+	DWORD dwResult = 0;	 // Result of the API call
 	HANDLE hClient;
 	// open connection to server
 	dwResult = WlanOpenHandle(dwMaxClient, nullptr, &dwCurVersion, &hClient);
@@ -87,7 +87,7 @@ std::vector<PWLAN_INTERFACE_INFO> ListInterfacesW(HANDLE hClient)
 {
 	// Get a list of the available interfaces
 
-	std::vector<PWLAN_INTERFACE_INFO> outputVector;  // start the output vector
+	std::vector<PWLAN_INTERFACE_INFO> outputVector;	 // start the output vector
 	PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;  // list of WLAN interfaces
 	PWLAN_INTERFACE_INFO pIfInfo =
 		nullptr;  // information element for one interface
@@ -151,17 +151,12 @@ std::string GUID2Str(const GUID& ifaceGuid)
 	//     sizeof(GuidString)/sizeof(*GuidString));
 
 	// translate from a WCHAR to string if no error happened
-	if (iRet == 0)
-	{
-		THROW_EXCEPTION("StringFromGUID2 failed\n");
-	}
+	if (iRet == 0) { THROW_EXCEPTION("StringFromGUID2 failed\n"); }
 	else
 	{
 		wctostr = wcstombs_s(&sizeGUID, GuidChar, 100, GuidString, 100);
 		if ((wctostr == EINVAL) || (wctostr == ERANGE))
-		{
-			THROW_EXCEPTION("wcstombs_s failed\n");
-		}
+		{ THROW_EXCEPTION("wcstombs_s failed\n"); }
 		else
 		{
 			outputString = std::string(GuidChar);
@@ -188,8 +183,8 @@ PWLAN_INTERFACE_INFO GetInterfaceW(std::string guid, HANDLE hClient)
 	// object)
 
 	std::vector<PWLAN_INTERFACE_INFO> ifaceList;  // interface list
-	std::vector<PWLAN_INTERFACE_INFO>::iterator ifaceIter;  // iterator
-	PWLAN_INTERFACE_INFO output = nullptr;  // interface info element
+	std::vector<PWLAN_INTERFACE_INFO>::iterator ifaceIter;	// iterator
+	PWLAN_INTERFACE_INFO output = nullptr;	// interface info element
 
 	// get a list of all the interfaces
 	ifaceList = ListInterfacesW(hClient);
@@ -230,9 +225,9 @@ std::vector<PWLAN_AVAILABLE_NETWORK> ListNetworksW(
 	PWLAN_AVAILABLE_NETWORK pBssEntry =
 		nullptr;  // information element for one interface
 
-	GUID ifaceGuid = iface->InterfaceGuid;  // Get GUID of the interface
+	GUID ifaceGuid = iface->InterfaceGuid;	// Get GUID of the interface
 
-	std::vector<PWLAN_AVAILABLE_NETWORK> outputVector;  // output vector
+	std::vector<PWLAN_AVAILABLE_NETWORK> outputVector;	// output vector
 
 	//	WCHAR GuidString[39] = {0};
 
@@ -261,7 +256,7 @@ std::vector<PWLAN_AVAILABLE_NETWORK> ListNetworksW(
 		{
 			pBssEntry = (WLAN_AVAILABLE_NETWORK*)&pBssList
 							->Network[j];  // get entry for network
-			outputVector.push_back(pBssEntry);  // save entry
+			outputVector.push_back(pBssEntry);	// save entry
 		}
 	}
 
@@ -281,8 +276,8 @@ PWLAN_AVAILABLE_NETWORK GetNetworkW(
 	HANDLE hClient, const std::string& ssid, const std::string& guid)
 {
 	// Variables
-	PWLAN_INTERFACE_INFO iface;  // interface handler
-	PWLAN_AVAILABLE_NETWORK output;  // output network handler
+	PWLAN_INTERFACE_INFO iface;	 // interface handler
+	PWLAN_AVAILABLE_NETWORK output;	 // output network handler
 
 	// Get a handler to the interface
 	iface = GetInterfaceW(guid, hClient);
@@ -307,7 +302,7 @@ PWLAN_AVAILABLE_NETWORK GetNetworkW(
 
 #endif
 
-#endif  // end of Windows auxiliary functions definition
+#endif	// end of Windows auxiliary functions definition
 
 /*---------------------------------------------------------------
 					ListInterfaces
@@ -321,7 +316,7 @@ std::vector<std::string> CWirelessPower::ListInterfaces()
 #ifdef MRPT_OS_LINUX
 	// in linux, the command line is used to get all the relevant information
 	FILE* cmdoutput;  // file handler for the executed command line
-	char ifaceread[256], *netname;  // strings used to read the output of the
+	char ifaceread[256], *netname;	// strings used to read the output of the
 	// command line and get the name of each
 	// network
 
@@ -352,9 +347,9 @@ std::vector<std::string> CWirelessPower::ListInterfaces()
 	// In windows, this function is a wrapper to ListInterfacesW
 
 	std::vector<PWLAN_INTERFACE_INFO>
-		ifaces;  // vector containing the interface entries (Windows format)
+		ifaces;	 // vector containing the interface entries (Windows format)
 	std::vector<PWLAN_INTERFACE_INFO>::iterator
-		ifacesIter;  // iterator to run through the previous list
+		ifacesIter;	 // iterator to run through the previous list
 
 	// get the list
 	ifaces = ListInterfacesW(hClient);
@@ -381,7 +376,7 @@ std::vector<std::string> CWirelessPower::ListNetworks()
 
 #ifdef MRPT_OS_LINUX
 
-	std::stringstream commandl;  // command to be executed
+	std::stringstream commandl;	 // command to be executed
 
 	FILE* cmdoutput;
 	char listread[1024];
@@ -414,7 +409,7 @@ std::vector<std::string> CWirelessPower::ListNetworks()
 	THROW_EXCEPTION("Sorry, method not available for MinGW");
 #else
 
-	PWLAN_INTERFACE_INFO iface;  // Information element for an interface
+	PWLAN_INTERFACE_INFO iface;	 // Information element for an interface
 
 	iface = GetInterfaceW(guid, (HANDLE)hClient);  // Get the interface handler
 
@@ -564,7 +559,7 @@ void CWirelessPower::loadConfig_sensorSpecific(
 
 	ssid = configSource.read_string(iniSection, "ssid", "", true);
 	guid = configSource.read_string(
-		iniSection, "guid", "", true);  // in the case of Linux, the "GUID" is
+		iniSection, "guid", "", true);	// in the case of Linux, the "GUID" is
 	// the interface name (wlanX)
 
 #ifdef _WIN32

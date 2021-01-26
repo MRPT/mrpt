@@ -8,19 +8,20 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/KDTreeCapable.h>  // For kd-tree's
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>  // for chi2inv
-#include <mrpt/math/ops_matrices.h>  // extractSubmatrix
+#include <mrpt/math/ops_matrices.h>	 // extractSubmatrix
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/slam/data_association.h>
+
 #include <Eigen/Dense>
 #include <memory>
 #include <memory>  // unique_ptr
 #include <nanoflann.hpp>  // For kd-tree's
-#include <numeric>  // accumulate
+#include <numeric>	// accumulate
 #include <set>
 
 /*
@@ -73,7 +74,7 @@ double joint_pdf_metric(
 	const size_t N = info.currentAssociation.size();
 	ASSERT_(N > 0);
 	std::vector<size_t> indices_pred(
-		N);  // Appearance order indices in the std::maps
+		N);	 // Appearance order indices in the std::maps
 	std::vector<size_t> indices_obs(N);
 
 	{
@@ -93,7 +94,7 @@ double joint_pdf_metric(
 	CMatrixDynamic<T> COV;
 	mrpt::math::extractSubmatrixSymmetricalBlocksDyn(
 		Y_predictions_cov,
-		info.length_O,  // dims of cov. submatrices
+		info.length_O,	// dims of cov. submatrices
 		indices_pred, COV);
 
 	// ----------------------------------------------------------------------
@@ -125,8 +126,8 @@ double joint_pdf_metric(
 	// Matching likelihood: The evaluation at 0 of the PDF of the difference
 	// between the two Gaussians:
 	const T cov_det = COV.det();
-	const double ml = exp(-0.5 * d2) / (std::pow(M_2PI, info.length_O * 0.5) *
-										std::sqrt(cov_det));
+	const double ml = exp(-0.5 * d2) /
+		(std::pow(M_2PI, info.length_O * 0.5) * std::sqrt(cov_det));
 	return ml;
 }
 
@@ -398,8 +399,8 @@ void mrpt::slam::data_association_full_covariance(
 
 				// Individual compatibility
 				const bool IC = (compatibilityTestMetric == metricML)
-									? (ml > log_ML_compat_test_threshold)
-									: (d2 < chi2thres);
+					? (ml > log_ML_compat_test_threshold)
+					: (d2 < chi2thres);
 				results.indiv_compatibility(i, j) = IC;
 				if (IC) results.indiv_compatibility_counts[j]++;
 			}
@@ -417,7 +418,7 @@ void mrpt::slam::data_association_full_covariance(
 			// Only compute the distances for these ones:
 			for (size_t w = 0; w < N_KD_RESULTS; w++)
 			{
-				const size_t i = kd_result_indices[w];  // This is the index of
+				const size_t i = kd_result_indices[w];	// This is the index of
 				// the prediction in
 				// "predictions_mean"
 
@@ -438,7 +439,7 @@ void mrpt::slam::data_association_full_covariance(
 					diff_means_i_j, pred_i_cov, d2, ml);
 
 				if (d2 > 6 * chi2thres)
-					break;  // Since kd-tree returns the landmarks by distance
+					break;	// Since kd-tree returns the landmarks by distance
 				// order, we can skip the rest
 
 				// The distance according to the metric
@@ -448,8 +449,8 @@ void mrpt::slam::data_association_full_covariance(
 
 				// Individual compatibility
 				const bool IC = (compatibilityTestMetric == metricML)
-									? (ml > log_ML_compat_test_threshold)
-									: (d2 < chi2thres);
+					? (ml > log_ML_compat_test_threshold)
+					: (d2 < chi2thres);
 				results.indiv_compatibility(i, j) = IC;
 				if (IC) results.indiv_compatibility_counts[j]++;
 			}
@@ -552,8 +553,7 @@ void mrpt::slam::data_association_full_covariance(
 		}
 		break;
 
-		default:
-			THROW_EXCEPTION("Unknown value of 'method'");
+		default: THROW_EXCEPTION("Unknown value of 'method'");
 	};
 
 	// If a mapping of prediction indices to IDs was providen, apply it now:

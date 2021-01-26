@@ -9,6 +9,7 @@
 #include "CFormEdit.h"
 
 #include <wx/msgdlg.h>
+
 #include "xRawLogViewerMain.h"
 
 //(*InternalHeaders(CFormEdit)
@@ -640,9 +641,10 @@ void filter_delObsByClass(
 		for (auto it = SF->begin(); it != SF->end();)
 		{
 			CObservation::Ptr obs = *it;
-			if (string::npos != find_in_vector(
-									string(obs->GetRuntimeClass()->className),
-									classNameOfObsToRemove))
+			if (string::npos !=
+				find_in_vector(
+					string(obs->GetRuntimeClass()->className),
+					classNameOfObsToRemove))
 			{
 				// A match: Delete it:
 				it = SF->erase(it);
@@ -663,9 +665,10 @@ void filter_remObsByClass(
 		for (auto it = SF->begin(); it != SF->end();)
 		{
 			CObservation::Ptr obs = *it;
-			if (string::npos == find_in_vector(
-									string(obs->GetRuntimeClass()->className),
-									classNameOfObsToRemove))
+			if (string::npos ==
+				find_in_vector(
+					string(obs->GetRuntimeClass()->className),
+					classNameOfObsToRemove))
 			{
 				// A NO match: Delete it:
 				it = SF->erase(it);
@@ -964,14 +967,14 @@ void CFormEdit::executeOperationOnRawlog(
 
 	wxProgressDialog progDia(
 		wxT("Modifying rawlog"), wxT("Processing..."),
-		processMax,  // range
+		processMax,	 // range
 		this,  // parent
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
 	CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES = true;
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	unsigned int countLoop = 0;
 	bool keepLoading = true;
@@ -1087,18 +1090,15 @@ void CFormEdit::executeOperationOnRawlog(
 				wxT("Processing... (%u objects processed)"), countLoop);
 			int curProgr = isInMemory ? countLoop : in_fil->getPosition();
 			if (!progDia.Update(curProgr, auxStr)) keepLoading = false;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		// Delete only if processing file
-		if (newObj && !isInMemory)
-		{
-			newObj.reset();
-		}
+		if (newObj && !isInMemory) { newObj.reset(); }
 
 	}  // end while keep loading
 
-	progDia.Update(processMax);  // Close dialog.
+	progDia.Update(processMax);	 // Close dialog.
 
 	wxMessageBox(
 		(format("%s %i\n\nEnd message:\n%s", endMsg, changes, errorMsg.c_str())
@@ -1207,12 +1207,10 @@ void leave_horizontalScans(
 				auto* o = static_cast<CObservation2DRangeScan*>(obs.get());
 
 				if (fabs(o->sensorPose.pitch()) > minPitchToDeleteLaserScan)
-				{
-					it = SF->erase(it);
-				}
+				{ it = SF->erase(it); }
 				else
 				{
-					changesCount++;  // Count success
+					changesCount++;	 // Count success
 					it++;
 				}
 			}

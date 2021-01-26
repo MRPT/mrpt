@@ -8,11 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TLine2D.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/epsilon.h>
-#include <mrpt/math/geometry.h>  // distance()
+#include <mrpt/math/geometry.h>	 // distance()
 #include <mrpt/math/ops_containers.h>  // squareNorm()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 
@@ -48,8 +48,8 @@ bool TLine3D::contains(const TPoint3D& point) const
 	// if -----------=-----------=-----------, point is inside the line.
 	//   director[0] director[1] director[2]
 	return (std::abs(dx * director[1] - dy * director[0]) < getEpsilon()) &&
-		   (std::abs(dx * director[2] - dz * director[0]) < getEpsilon()) &&
-		   (std::abs(dy * director[2] - dz * director[1]) < getEpsilon());
+		(std::abs(dx * director[2] - dz * director[0]) < getEpsilon()) &&
+		(std::abs(dy * director[2] - dz * director[1]) < getEpsilon());
 }
 double TLine3D::distance(const TPoint3D& point) const
 {

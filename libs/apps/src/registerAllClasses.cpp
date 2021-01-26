@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "apps-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/initializer.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_apps)

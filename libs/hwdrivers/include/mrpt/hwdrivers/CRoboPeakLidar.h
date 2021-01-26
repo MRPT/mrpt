@@ -103,6 +103,6 @@ class CRoboPeakLidar : public C2DRangeFinderAbstract
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection) override;
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

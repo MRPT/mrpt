@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
@@ -59,8 +59,8 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 				m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 		out << infoPerPTG[i]
-				   .TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
-		out << infoPerPTG[i].TP_Robot;  // v17
+				   .TP_Targets;	 // v8: CPoint2D -> TPoint2D. v26: vector
+		out << infoPerPTG[i].TP_Robot;	// v17
 		out << infoPerPTG[i].timeForTPObsTransformation
 			<< infoPerPTG[i].timeForHolonomicMethod;  // made double in v12
 		out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed
@@ -76,15 +76,15 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 		if (there_is_ptg_data) out << infoPerPTG[i].ptg;
 
 		// Was: out << infoPerPTG[i].clearance.raw_clearances; // v19
-		infoPerPTG[i].clearance.writeToStream(out);  // v25
+		infoPerPTG[i].clearance.writeToStream(out);	 // v25
 	}
 	out << nSelectedPTG << WS_Obstacles;
 	out << WS_Obstacles_original;  // v20
 
 	// Removed v24: out << robotOdometryPose;
-	out << robotPoseLocalization << robotPoseOdometry;  // v24
+	out << robotPoseLocalization << robotPoseOdometry;	// v24
 
-	out << WS_targets_relative;  // v8, v26: vector
+	out << WS_targets_relative;	 // v8, v26: vector
 	// v16:
 	out << ptg_index_NOP << ptg_last_k_NOP;
 	out << rel_cur_pose_wrt_last_vel_cmd_NOP
@@ -93,7 +93,7 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 	// Removed: v24. out << ptg_last_curRobotVelLocal; // v17
 	ptg_last_navDynState.writeToStream(out);  // v24
 
-	if (ptg_index_NOP < 0) out << cmd_vel /*v10*/ << cmd_vel_original;  // v15
+	if (ptg_index_NOP < 0) out << cmd_vel /*v10*/ << cmd_vel_original;	// v15
 
 	// Previous values: REMOVED IN VERSION #6
 	n = robotShape_x.size();
@@ -130,7 +130,7 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 	// v15: cmd_vel converted from std::vector<double> into CSerializable
 	out << additional_debug_msgs;  // v18
 
-	navDynState.writeToStream(out);  // v24
+	navDynState.writeToStream(out);	 // v24
 }
 
 void CLogFileRecord::serializeFrom(
@@ -187,10 +187,7 @@ void CLogFileRecord::serializeFrom(
 				ipp.TP_Targets.clear();
 				if (version >= 8)
 				{
-					if (version >= 26)
-					{
-						in >> ipp.TP_Targets;
-					}
+					if (version >= 26) { in >> ipp.TP_Targets; }
 					else
 					{
 						mrpt::math::TPoint2D trg;
@@ -204,8 +201,7 @@ void CLogFileRecord::serializeFrom(
 					in >> pos;
 					ipp.TP_Targets.emplace_back(pos.x(), pos.y());
 				}
-				if (version >= 17)
-					in >> ipp.TP_Robot;
+				if (version >= 17) in >> ipp.TP_Robot;
 				else
 					ipp.TP_Robot = mrpt::math::TPoint2D(0, 0);
 
@@ -293,10 +289,7 @@ void CLogFileRecord::serializeFrom(
 			WS_targets_relative.clear();
 			if (version >= 8)
 			{
-				if (version >= 26)
-				{
-					in >> WS_targets_relative;
-				}
+				if (version >= 26) { in >> WS_targets_relative; }
 				else
 				{
 					mrpt::math::TPoint2D trg;
@@ -337,13 +330,8 @@ void CLogFileRecord::serializeFrom(
 				ptg_index_NOP = -1;
 			}
 			if (version >= 17 && version < 24)
-			{
-				in >> ptg_last_navDynState.curVelLocal;
-			}
-			if (version >= 24)
-			{
-				ptg_last_navDynState.readFromStream(in);
-			}
+			{ in >> ptg_last_navDynState.curVelLocal; }
+			if (version >= 24) { ptg_last_navDynState.readFromStream(in); }
 
 			if (version >= 10)
 			{
@@ -413,10 +401,7 @@ void CLogFileRecord::serializeFrom(
 
 			if (version > 0)
 			{  // Version 1 --------------
-				if (version >= 10)
-				{
-					in >> cur_vel >> cur_vel_local;
-				}
+				if (version >= 10) { in >> cur_vel >> cur_vel_local; }
 				else
 				{
 					float actual_v, actual_w;
@@ -473,7 +458,8 @@ void CLogFileRecord::serializeFrom(
 				{
 					in >> n;
 					float dummy;
-					for (i = 0; i < n; i++) in >> dummy;
+					for (i = 0; i < n; i++)
+						in >> dummy;
 				}
 			}
 			else
@@ -485,7 +471,7 @@ void CLogFileRecord::serializeFrom(
 			{
 				if (version < 10)
 				{
-					int32_t navigatorBehavior;  // removed in v10
+					int32_t navigatorBehavior;	// removed in v10
 					in >> navigatorBehavior;
 				}
 
@@ -503,10 +489,7 @@ void CLogFileRecord::serializeFrom(
 				timestamps["tim_start_iteration"] = tt;
 			}
 
-			if (version >= 11)
-			{
-				in >> robotShape_radius;
-			}
+			if (version >= 11) { in >> robotShape_radius; }
 			else
 			{
 				robotShape_radius = 0.5;
@@ -518,10 +501,7 @@ void CLogFileRecord::serializeFrom(
 				in >> dummy_cmd_vel_filterings;
 			}
 
-			if (version >= 13)
-			{
-				in >> values >> timestamps;
-			}
+			if (version >= 13) { in >> values >> timestamps; }
 			else
 			{
 				values.clear();
@@ -530,10 +510,7 @@ void CLogFileRecord::serializeFrom(
 
 			if (version >= 14)
 			{
-				if (version >= 24)
-				{
-					in >> relPoseSense >> relPoseVelCmd;
-				}
+				if (version >= 24) { in >> relPoseSense >> relPoseVelCmd; }
 				else
 				{
 					mrpt::poses::CPose2D crelPoseSense, crelPoseVelCmd;
@@ -547,13 +524,11 @@ void CLogFileRecord::serializeFrom(
 				relPoseSense = relPoseVelCmd = mrpt::math::TPose2D(0, 0, 0);
 			}
 
-			if (version >= 18)
-				in >> additional_debug_msgs;
+			if (version >= 18) in >> additional_debug_msgs;
 			else
 				additional_debug_msgs.clear();
 
-			if (version >= 24)
-				navDynState.readFromStream(in);
+			if (version >= 24) navDynState.readFromStream(in);
 			else
 			{
 				navDynState =
@@ -564,7 +539,6 @@ void CLogFileRecord::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }

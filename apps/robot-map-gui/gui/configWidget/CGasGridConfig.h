@@ -8,11 +8,11 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
-#include "CBaseConfig.h"
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
 
 #include <memory>
 
-#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include "CBaseConfig.h"
 
 namespace Ui
 {

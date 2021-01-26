@@ -157,8 +157,10 @@ class CPose3D : public CPose<CPose3D, 6>,
 		ASSERT_EQUAL_(rot.cols(), 3);
 		ASSERT_EQUAL_(xyz.size(), 3);
 		for (int r = 0; r < 3; r++)
-			for (int c = 0; c < 3; c++) m_ROT(r, c) = rot(r, c);
-		for (int r = 0; r < 3; r++) m_coords[r] = xyz[r];
+			for (int c = 0; c < 3; c++)
+				m_ROT(r, c) = rot(r, c);
+		for (int r = 0; r < 3; r++)
+			m_coords[r] = xyz[r];
 	}
 	//! \overload
 	inline CPose3D(
@@ -589,18 +591,12 @@ class CPose3D : public CPose<CPose3D, 6>,
 		updateYawPitchRoll();
 		switch (i)
 		{
-			case 0:
-				return m_coords[0];
-			case 1:
-				return m_coords[1];
-			case 2:
-				return m_coords[2];
-			case 3:
-				return m_yaw;
-			case 4:
-				return m_pitch;
-			case 5:
-				return m_roll;
+			case 0: return m_coords[0];
+			case 1: return m_coords[1];
+			case 2: return m_coords[2];
+			case 3: return m_yaw;
+			case 4: return m_pitch;
+			case 5: return m_roll;
 			default:
 				throw std::runtime_error(
 					"CPose3D::operator[]: Index of bounds.");
@@ -706,7 +702,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 	}
 	/** @} */
 
-};  // End of class def.
+};	// End of class def.
 
 std::ostream& operator<<(std::ostream& o, const CPose3D& p);
 

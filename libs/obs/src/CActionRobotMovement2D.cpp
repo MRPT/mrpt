@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/point_poses2vectors.h>
 #include <mrpt/math/wrap2pi.h>
@@ -17,6 +17,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::obs;
@@ -179,8 +180,7 @@ void CActionRobotMovement2D::serializeFrom(
 				encoderRightTicks = 0;
 			}
 
-			if (version >= 6)
-				in >> timestamp;
+			if (version >= 6) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 		}
@@ -345,8 +345,7 @@ void CActionRobotMovement2D::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -475,39 +474,35 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 
 	// The increments in odometry:
 	double Arot1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0)
-					   ? atan2(odometryIncrement.y(), odometryIncrement.x())
-					   : 0;
+		? atan2(odometryIncrement.y(), odometryIncrement.x())
+		: 0;
 	double Atrans = odometryIncrement.norm();
 	double Arot2 = math::wrapToPi(odometryIncrement.phi() - Arot1);
 
 	// Draw samples:
 	for (size_t i = 0; i < o.thrunModel.nParticlesCount; i++)
 	{
-		double Arot1_draw =
-			Arot1 - (o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
-					 o.thrunModel.alfa2_rot_trans * Atrans) *
-						getRandomGenerator().drawGaussian1D_normalized();
-		double Atrans_draw =
-			Atrans -
+		double Arot1_draw = Arot1 -
+			(o.thrunModel.alfa1_rot_rot * fabs(Arot1) +
+			 o.thrunModel.alfa2_rot_trans * Atrans) *
+				getRandomGenerator().drawGaussian1D_normalized();
+		double Atrans_draw = Atrans -
 			(o.thrunModel.alfa3_trans_trans * Atrans +
 			 o.thrunModel.alfa4_trans_rot * (fabs(Arot1) + fabs(Arot2))) *
 				getRandomGenerator().drawGaussian1D_normalized();
-		double Arot2_draw =
-			Arot2 - (o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
-					 o.thrunModel.alfa2_rot_trans * Atrans) *
-						getRandomGenerator().drawGaussian1D_normalized();
+		double Arot2_draw = Arot2 -
+			(o.thrunModel.alfa1_rot_rot * fabs(Arot2) +
+			 o.thrunModel.alfa2_rot_trans * Atrans) *
+				getRandomGenerator().drawGaussian1D_normalized();
 
 		// Output:
-		aux->m_particles[i].d.x =
-			Atrans_draw * cos(Arot1_draw) +
+		aux->m_particles[i].d.x = Atrans_draw * cos(Arot1_draw) +
 			motionModelConfiguration.thrunModel.additional_std_XY *
 				getRandomGenerator().drawGaussian1D_normalized();
-		aux->m_particles[i].d.y =
-			Atrans_draw * sin(Arot1_draw) +
+		aux->m_particles[i].d.y = Atrans_draw * sin(Arot1_draw) +
 			motionModelConfiguration.thrunModel.additional_std_XY *
 				getRandomGenerator().drawGaussian1D_normalized();
-		aux->m_particles[i].d.phi =
-			Arot1_draw + Arot2_draw +
+		aux->m_particles[i].d.phi = Arot1_draw + Arot2_draw +
 			motionModelConfiguration.thrunModel.additional_std_phi *
 				getRandomGenerator().drawGaussian1D_normalized();
 		aux->m_particles[i].d.normalizePhi();
@@ -562,26 +557,22 @@ void CActionRobotMovement2D::drawSingleSample_modelThrun(
 	// The increments in odometry:
 	double Arot1 = (rawOdometryIncrementReading.y() != 0 ||
 					rawOdometryIncrementReading.x() != 0)
-					   ? atan2(
-							 rawOdometryIncrementReading.y(),
-							 rawOdometryIncrementReading.x())
-					   : 0;
+		? atan2(
+			  rawOdometryIncrementReading.y(), rawOdometryIncrementReading.x())
+		: 0;
 	double Atrans = rawOdometryIncrementReading.norm();
 	double Arot2 = math::wrapToPi(rawOdometryIncrementReading.phi() - Arot1);
 
-	double Arot1_draw =
-		Arot1 -
+	double Arot1_draw = Arot1 -
 		(motionModelConfiguration.thrunModel.alfa1_rot_rot * fabs(Arot1) +
 		 motionModelConfiguration.thrunModel.alfa2_rot_trans * Atrans) *
 			getRandomGenerator().drawGaussian1D_normalized();
-	double Atrans_draw =
-		Atrans -
+	double Atrans_draw = Atrans -
 		(motionModelConfiguration.thrunModel.alfa3_trans_trans * Atrans +
 		 motionModelConfiguration.thrunModel.alfa4_trans_rot *
 			 (fabs(Arot1) + fabs(Arot2))) *
 			getRandomGenerator().drawGaussian1D_normalized();
-	double Arot2_draw =
-		Arot2 -
+	double Arot2_draw = Arot2 -
 		(motionModelConfiguration.thrunModel.alfa1_rot_rot * fabs(Arot2) +
 		 motionModelConfiguration.thrunModel.alfa2_rot_trans * Atrans) *
 			getRandomGenerator().drawGaussian1D_normalized();

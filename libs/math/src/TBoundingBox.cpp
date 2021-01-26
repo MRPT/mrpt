@@ -11,6 +11,7 @@
 //
 #include <mrpt/math/TBoundingBox.h>
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
+
 #include <type_traits>
 
 using namespace mrpt::math;

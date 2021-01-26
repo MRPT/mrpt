@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/core/round.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
@@ -58,10 +58,7 @@ CMetricMapBuilderRBPF::CMetricMapBuilderRBPF()
 CMetricMapBuilderRBPF& CMetricMapBuilderRBPF::operator=(
 	const CMetricMapBuilderRBPF& src)
 {
-	if (this == &src)
-	{
-		return *this;
-	}
+	if (this == &src) { return *this; }
 	mapPDF = src.mapPDF;
 	m_PF_options = src.m_PF_options;
 	insertionLinDistance = src.insertionLinDistance;
@@ -143,14 +140,14 @@ void CMetricMapBuilderRBPF::processActionObservation(
 	//    or this is the first observation, etc...
 	// ----------------------------------------------------------------------------
 	bool do_localization =
-		(!mapPDF.SFs.size() ||  // This is the first observation!
+		(!mapPDF.SFs.size() ||	// This is the first observation!
 		 options.debugForceInsertion ||
 		 odoIncrementSinceLastLocalization.mean.norm() > localizeLinDistance ||
 		 std::abs(odoIncrementSinceLastLocalization.mean.yaw()) >
 			 localizeAngDistance);
 
 	bool do_map_update =
-		(!mapPDF.SFs.size() ||  // This is the first observation!
+		(!mapPDF.SFs.size() ||	// This is the first observation!
 		 options.debugForceInsertion ||
 		 odoIncrementSinceLastMapUpdate.norm() > insertionLinDistance ||
 		 std::abs(odoIncrementSinceLastMapUpdate.yaw()) > insertionAngDistance);
@@ -284,10 +281,7 @@ void CMetricMapBuilderRBPF::initialize(
 	auto lck = mrpt::lockHelper(critZoneChangingMap);
 
 	mrpt::poses::CPose3D curPose;
-	if (x0)
-	{
-		curPose = mrpt::poses::CPose3D(x0->getMeanVal());
-	}
+	if (x0) { curPose = mrpt::poses::CPose3D(x0->getMeanVal()); }
 	else if (!initialMap.empty())
 	{
 		// get pose of last keyframe:
@@ -445,8 +439,8 @@ void CMetricMapBuilderRBPF::drawCurrentEstimationToImage(CCanvas* img)
 					x1, round((imgHeight - 1) - y1), x2,
 					round((imgHeight - 1) - y2),
 					i == M ? TColor(0, 0, 0)
-						   : TColor(0x50, 0x50, 0x50),  // Color, gray levels,
-					i == M ? 3 : 1  // Line width
+						   : TColor(0x50, 0x50, 0x50),	// Color, gray levels,
+					i == M ? 3 : 1	// Line width
 				);
 			}
 		}

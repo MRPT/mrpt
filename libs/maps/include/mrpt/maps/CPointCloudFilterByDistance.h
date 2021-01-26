@@ -12,6 +12,7 @@
 #include <mrpt/maps/CPointCloudFilterBase.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPose3D.h>
+
 #include <map>
 
 namespace mrpt::maps

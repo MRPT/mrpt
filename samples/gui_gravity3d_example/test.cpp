@@ -14,6 +14,7 @@
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -83,9 +84,9 @@ void GravityDemo()
 		double a = atan2(masses[i].y, masses[i].x);
 
 		masses[i].vx = -V0 * sin(a) +
-					   getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
+			getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
 		masses[i].vy = V0 * cos(a) +
-					   getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
+			getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
 		masses[i].vz = 0;  // getRandomGenerator().drawUniform(-V0,V0);
 
 		masses[i].mass =
@@ -126,7 +127,8 @@ void GravityDemo()
 		size_t n_steps = mrpt::round(ceil(At / LARGEST_STEP) + 1);
 		double At_steps = At / n_steps;
 		n_steps = min(n_steps, size_t(3));
-		for (size_t j = 0; j < n_steps; j++) simulateGravity(masses, At_steps);
+		for (size_t j = 0; j < n_steps; j++)
+			simulateGravity(masses, At_steps);
 
 		for (size_t i = 0; i < masses.size(); i++)
 		{
@@ -175,7 +177,7 @@ void simulateGravity(vector<TMass>& objs, double At)
 
 			const double Rj = objs[j].radius;
 
-			if (D < (Ri + Rj))  // Collission!!
+			if (D < (Ri + Rj))	// Collission!!
 			{
 				// Index in the array must be larger than its content!!
 				if (D < lstMass_i_joins_j[j].second)

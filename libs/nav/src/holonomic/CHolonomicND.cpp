@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
@@ -87,13 +87,12 @@ void CHolonomicND::navigate(const NavInput& ni, NavOutput& no)
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
-		const double targetNearnessFactor =
-			m_enableApproachTargetSlowDown
-				? std::min(
-					  1.0,
-					  trg.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE /
-									ptg_ref_dist))
-				: 1.0;
+		const double targetNearnessFactor = m_enableApproachTargetSlowDown
+			? std::min(
+				  1.0,
+				  trg.norm() /
+					  (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
+			: 1.0;
 
 		const double riskFactor =
 			std::min(1.0, riskEvaluation / options.RISK_EVALUATION_DISTANCE);
@@ -136,7 +135,7 @@ void CHolonomicND::gapsEstimator(
 	ASSERT_(n > 2);
 
 	// ================ Parameters ================
-	const int GAPS_MIN_WIDTH = ceil(n * 0.01);  // was: 3
+	const int GAPS_MIN_WIDTH = ceil(n * 0.01);	// was: 3
 	const double GAPS_MIN_DEPTH_CONSIDERED = 0.6;
 	const double GAPS_MAX_RELATIVE_DEPTH = 0.5;
 	// ============================================
@@ -160,8 +159,7 @@ void CHolonomicND::gapsEstimator(
 	for (double threshold_ratio = 0.95; threshold_ratio >= 0.05;
 		 threshold_ratio -= 0.05)
 	{
-		const double dist_threshold =
-			threshold_ratio * overall_max_dist +
+		const double dist_threshold = threshold_ratio * overall_max_dist +
 			(1.0f - threshold_ratio) *
 				min(target.norm(), GAPS_MIN_DEPTH_CONSIDERED);
 
@@ -171,7 +169,7 @@ void CHolonomicND::gapsEstimator(
 
 		for (size_t i = 0; i < n; i++)
 		{
-			if (!is_inside && (obstacles[i] >= dist_threshold))  // A gap begins
+			if (!is_inside && (obstacles[i] >= dist_threshold))	 // A gap begins
 			{
 				sec_ini = i;
 				maxDist = obstacles[i];
@@ -181,8 +179,7 @@ void CHolonomicND::gapsEstimator(
 				is_inside &&
 				(i == (n - 1) || obstacles[i] < dist_threshold))  // A gap ends
 			{
-				if (obstacles[i] < dist_threshold)
-					sec_end = i - 1;
+				if (obstacles[i] < dist_threshold) sec_end = i - 1;
 				else
 					sec_end = i;
 
@@ -426,9 +423,10 @@ void CHolonomicND::searchBestGap(
 	const unsigned int risk_eval_nsectors =
 		round(options.RISK_EVALUATION_SECTORS_PERCENT * obstacles.size());
 	const unsigned int sec_ini = std::max(
-		min_risk_eval_sector, risk_eval_nsectors < out_selDirection
-								  ? out_selDirection - risk_eval_nsectors
-								  : 0);
+		min_risk_eval_sector,
+		risk_eval_nsectors < out_selDirection
+			? out_selDirection - risk_eval_nsectors
+			: 0);
 	const unsigned int sec_fin =
 		std::min(max_risk_eval_sector, out_selDirection + risk_eval_nsectors);
 
@@ -453,7 +451,7 @@ void CHolonomicND::calcRepresentativeSectorForGap(
 		direction2sector(atan2(target.y, target.x), obstacles.size());
 
 	if ((gap.end - gap.ini) <
-		sectors_to_be_wide)  // Select the intermediate sector
+		sectors_to_be_wide)	 // Select the intermediate sector
 	{
 #if 1
 		sector = round(0.5f * gap.ini + 0.5f * gap.end);
@@ -562,9 +560,9 @@ void CHolonomicND::evaluateGaps(
 		// -----------------------------------------------------
 		double closestX, closestY;
 		double dist_eucl = math::minimumDistanceFromPointToSegment(
-			target_x, target_y,  // Point
-			0, 0, x, y,  // Segment
-			closestX, closestY  // Out
+			target_x, target_y,	 // Point
+			0, 0, x, y,	 // Segment
+			closestX, closestY	// Out
 		);
 
 		const float factor3 =
@@ -580,8 +578,7 @@ void CHolonomicND::evaluateGaps(
 			unsigned int dist = mrpt::abs_diff(
 				m_last_selected_sector, gap->representative_sector);
 
-			if (dist > unsigned(0.1 * obstacles.size()))
-				factor_AntiCab = 0.0;
+			if (dist > unsigned(0.1 * obstacles.size())) factor_AntiCab = 0.0;
 			else
 				factor_AntiCab = 1.0;
 		}
@@ -593,7 +590,7 @@ void CHolonomicND::evaluateGaps(
 		ASSERT_(options.factorWeights.size() == 4);
 
 		if (obstacles[gap->representative_sector] <
-			options.TOO_CLOSE_OBSTACLE)  // Too close to obstacles
+			options.TOO_CLOSE_OBSTACLE)	 // Too close to obstacles
 			out_gaps_evaluation[i] = 0;
 		else
 			out_gaps_evaluation[i] =
@@ -609,8 +606,7 @@ unsigned int CHolonomicND::direction2sector(
 	const double a, const unsigned int N)
 {
 	const int idx = round(0.5 * (N * (1 + mrpt::math::wrapToPi(a) / M_PI) - 1));
-	if (idx < 0)
-		return 0;
+	if (idx < 0) return 0;
 	else
 		return static_cast<unsigned int>(idx);
 }
@@ -655,8 +651,7 @@ void CLogFileRecord_ND::serializeFrom(
 			situation = (CHolonomicND::TSituations)n;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -746,7 +741,6 @@ void CHolonomicND::serializeFrom(
 			in >> m_last_selected_sector;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }

@@ -77,6 +77,6 @@ class CHierarchicalMHMap : public mrpt::serialization::CSerializable,
 	 */
 	void clear();
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::hmtslam

@@ -82,7 +82,8 @@ double stub_kmeans(
 		{
 			TInnerVectorCenters c;
 			c.resize(dims);
-			for (size_t j = 0; j < dims; j++) c[j] = *center_ptr++;
+			for (size_t j = 0; j < dims; j++)
+				c[j] = *center_ptr++;
 			out_centers->push_back(c);
 		}
 	}

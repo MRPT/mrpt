@@ -135,8 +135,8 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(
 		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = {_("OpenCV\'s default"),
-										 _("Scaramuzza et al.\'s")};
+	wxString __wxRadioBoxChoices_1[2] = {
+		_("OpenCV\'s default"), _("Scaramuzza et al.\'s")};
 	rbMethod = new wxRadioBox(
 		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
@@ -315,7 +315,7 @@ void CDlgCalibWizardOnline::OnbtnStartClick(wxCommandEvent& event)
 	m_threadImgToProcess.reset();
 	m_threadMustClose = false;
 	m_threadResults.clear();
-	m_threadResultsComputed = true;  // To start a new detection
+	m_threadResultsComputed = true;	 // To start a new detection
 	m_threadIsClosed = false;
 
 	m_calibFrames.clear();
@@ -330,7 +330,7 @@ void CDlgCalibWizardOnline::OnbtnStartClick(wxCommandEvent& event)
 	this->m_panelCamera->Disable();
 
 	// start processing:
-	timCapture.Start(2, true);  // One shot
+	timCapture.Start(2, true);	// One shot
 }
 
 void CDlgCalibWizardOnline::OnbtnStopClick(wxCommandEvent& event)
@@ -394,8 +394,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 			std::dynamic_pointer_cast<CObservationImage>(obs);
 
 		// Is there a detection??
-		bool blankTime =
-			(last_valid != INVALID_TIMESTAMP) &&
+		bool blankTime = (last_valid != INVALID_TIMESTAMP) &&
 			mrpt::system::timeDifference(last_valid, mrpt::system::now()) < 2.0;
 
 		if (!blankTime && m_threadResultsComputed && !m_threadResults.empty())
@@ -470,13 +469,12 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 			wxTheApp->Yield();
 
 			// Run calibration itself:
-			if (wxOK == wxMessageBox(
-							_("The desired number of frames have been "
-							  "grabbed.\nOkay to accept these frames?"),
-							_("Done"), wxCANCEL | wxOK, this))
-			{
-				EndModal(wxID_OK);
-			}
+			if (wxOK ==
+				wxMessageBox(
+					_("The desired number of frames have been "
+					  "grabbed.\nOkay to accept these frames?"),
+					_("Done"), wxCANCEL | wxOK, this))
+			{ EndModal(wxID_OK); }
 			else
 			{
 				try

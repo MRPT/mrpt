@@ -11,6 +11,7 @@
 #include <mrpt/core/bits_math.h>  // keep_max(),...
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/math/math_frwds.h>
+
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -105,7 +106,8 @@ inline void cumsum_tmpl(const CONTAINER1& in_data, CONTAINER2& out_cumsum)
 		std::remove_const_t<std::remove_reference_t<decltype(in_data[0])>>;
 	T last = 0;
 	const size_t N = in_data.size();
-	for (size_t i = 0; i < N; i++) last = out_cumsum[i] = last + in_data[i];
+	for (size_t i = 0; i < N; i++)
+		last = out_cumsum[i] = last + in_data[i];
 }
 
 template <class CONTAINER1, class CONTAINER2>
@@ -161,7 +163,8 @@ inline T maximum(const std::vector<T>& v)
 {
 	ASSERT_(!v.empty());
 	T m = v[0];
-	for (size_t i = 0; i < v.size(); i++) mrpt::keep_max(m, v[i]);
+	for (size_t i = 0; i < v.size(); i++)
+		mrpt::keep_max(m, v[i]);
 	return m;
 }
 template <typename T>
@@ -169,7 +172,8 @@ inline T minimum(const std::vector<T>& v)
 {
 	ASSERT_(!v.empty());
 	T m = v[0];
-	for (size_t i = 0; i < v.size(); i++) mrpt::keep_min(m, v[i]);
+	for (size_t i = 0; i < v.size(); i++)
+		mrpt::keep_min(m, v[i]);
 	return m;
 }
 
@@ -191,7 +195,8 @@ template <size_t N, class T, class U>
 inline T squareNorm(const U& v)
 {
 	T res = 0;
-	for (size_t i = 0; i < N; i++) res += square(v[i]);
+	for (size_t i = 0; i < N; i++)
+		res += square(v[i]);
 	return res;
 }
 
@@ -208,7 +213,8 @@ template <size_t N, class T, class U, class V>
 inline T dotProduct(const U& v1, const V& v2)
 {
 	T res = 0;
-	for (size_t i = 0; i < N; i++) res += v1[i] * v2[i];
+	for (size_t i = 0; i < N; i++)
+		res += v1[i] * v2[i];
 	return res;
 }
 
@@ -243,8 +249,7 @@ inline RET sumRetType(const CONTAINER& v)
 template <class CONTAINER>
 inline double mean(const CONTAINER& v)
 {
-	if (v.empty())
-		return 0;
+	if (v.empty()) return 0;
 	else
 		return sum(v) / static_cast<double>(v.size());
 }
@@ -278,7 +283,7 @@ inline void minimum_maximum(
 template <class CONTAINER, typename Scalar>
 void normalize(CONTAINER& c, Scalar valMin, Scalar valMax)
 {
-	if (!c.size()) return;  // empty() is not defined for Eigen classes
+	if (!c.size()) return;	// empty() is not defined for Eigen classes
 	const Scalar curMin = c.minCoeff();
 	const Scalar curMax = c.maxCoeff();
 	Scalar minMaxDelta = curMax - curMin;
@@ -384,9 +389,11 @@ void meanAndCovVec(
 	// First: Compute the mean
 	out_mean.assign(M, 0);
 	for (size_t i = 0; i < N; i++)
-		for (size_t j = 0; j < M; j++) out_mean[j] += v[i][j];
+		for (size_t j = 0; j < M; j++)
+			out_mean[j] += v[i][j];
 
-	for (size_t j = 0; j < M; j++) out_mean[j] *= N_inv;
+	for (size_t j = 0; j < M; j++)
+		out_mean[j] *= N_inv;
 
 	// Second: Compute the covariance
 	//  Save only the above-diagonal part, then after averaging
@@ -403,7 +410,8 @@ void meanAndCovVec(
 					(v[i][j] - out_mean[j]) * (v[i][k] - out_mean[k]);
 	}
 	for (size_t j = 0; j < M; j++)
-		for (size_t k = j + 1; k < M; k++) out_cov(k, j) = out_cov(j, k);
+		for (size_t k = j + 1; k < M; k++)
+			out_cov(k, j) = out_cov(j, k);
 	out_cov *= N_inv;
 }
 
@@ -453,4 +461,4 @@ double ncc_vector(const CONT1& patch1, const CONT2& patch2)
 /** @} Misc ops */
 
 }  // namespace mrpt::math
-/**  @} */  // end of grouping
+/**  @} */	// end of grouping

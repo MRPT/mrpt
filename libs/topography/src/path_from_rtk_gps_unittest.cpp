@@ -47,11 +47,11 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
 		// -------------------------------------------
 		mrpt::topography::path_from_rtk_gps(
 			robot_path, rawlog,
-			0,  // first entry
-			rawlog.size() - 1,  // last entry
-			false,  // Isn't a GUI
-			false,  // disableGPSInterp
-			1,  // path_smooth_filter_size
+			0,	// first entry
+			rawlog.size() - 1,	// last entry
+			false,	// Isn't a GUI
+			false,	// disableGPSInterp
+			1,	// path_smooth_filter_size
 			&rtk_path_info);
 
 		EXPECT_EQ(robot_path.size(), 75u);

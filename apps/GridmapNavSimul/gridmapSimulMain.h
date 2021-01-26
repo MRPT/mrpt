@@ -161,4 +161,4 @@ class gridmapSimulFrame : public wxFrame
 	CMyGLCanvas* m_canvas;
 };
 
-#endif  // gridmapSimulMAIN_H
+#endif	// gridmapSimulMAIN_H

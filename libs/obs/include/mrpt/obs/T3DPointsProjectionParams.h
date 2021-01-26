@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/poses/CPose3D.h>
+
 #include <cstdint>
 #include <string>
 

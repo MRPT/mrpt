@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-
+#include "io-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/io/CStream.h>
+
 #include <cstdarg>
-#include <cstring>  // strlen()
+#include <cstring>	// strlen()
 #include <iostream>
 #include <vector>
 
@@ -80,11 +81,11 @@ bool CStream::getline(std::string& out_str)
 			// New char read:
 			if (out_str[N] == '\r')
 			{
-				out_str.resize(N);  // Ignore.
+				out_str.resize(N);	// Ignore.
 			}
 			else if (out_str[N] == '\n')
 			{
-				out_str.resize(N);  // End of line!
+				out_str.resize(N);	// End of line!
 				return true;  // Ok.
 			}
 		}

@@ -7,21 +7,20 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 
 #ifdef _WIN32
-#include <windows.h>
-
 #include <conio.h>
 #include <direct.h>
 #include <io.h>
 #include <process.h>
 #include <sys/utime.h>
 #include <tlhelp32.h>
+#include <windows.h>
 #else
 #include <pthread.h>
 #include <sys/select.h>
@@ -29,14 +28,16 @@
 #include <termios.h>
 #include <unistd.h>
 #include <utime.h>
+
 #include <cerrno>
 #endif
 
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include <cmath>  // floor()
 #include <ctime>
-#include <iostream>  // for the << operator
+#include <iostream>	 // for the << operator
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -205,7 +206,7 @@ double mrpt::system::extractDayTimeFromTimestamp(
 	SYSTEMTIME sysT;
 	FileTimeToSystemTime((FILETIME*)&t, &sysT);
 	return sysT.wHour * 3600.0 + sysT.wMinute * 60.0 + sysT.wSecond +
-		   sysT.wMilliseconds * 0.001;
+		sysT.wMilliseconds * 0.001;
 #else
 	time_t auxTime =
 		(t - ((uint64_t)116444736 * 1000000000)) / (uint64_t)10000000;
@@ -231,7 +232,8 @@ string mrpt::system::timeLocalToString(
 	auto secFractions = calcSecFractions(tmp);
 	// We start with 10^{-6} second units: reduce if requested by user:
 	const unsigned int user_secondFractionDigits = secondFractionDigits;
-	while (secondFractionDigits++ < 6) secFractions = secFractions / 10;
+	while (secondFractionDigits++ < 6)
+		secFractions = secFractions / 10;
 
 	return format(
 		"%02u:%02u:%02u.%0*u", ptm->tm_hour, ptm->tm_min,

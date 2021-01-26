@@ -10,9 +10,8 @@
 
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-
 #include <mrpt/system/CObserver.h>
+#include <mrpt/vision/CFeatureExtraction.h>
 
 namespace mrpt::slam
 {
@@ -70,6 +69,6 @@ class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 	/** A cache of already computed maps. */
 	TCache m_cache;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::slam

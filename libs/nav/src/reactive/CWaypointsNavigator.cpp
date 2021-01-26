@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
@@ -40,8 +40,8 @@ bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(
 		dynamic_cast<const CWaypointsNavigator::TNavigationParamsWaypoints*>(
 			&rhs);
 	return o != nullptr &&
-		   CAbstractNavigator::TNavigationParams::isEqual(rhs) &&
-		   multiple_targets == o->multiple_targets;
+		CAbstractNavigator::TNavigationParams::isEqual(rhs) &&
+		multiple_targets == o->multiple_targets;
 }
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
@@ -60,7 +60,7 @@ void CWaypointsNavigator::onNavigateCommandReceived()
 	m_was_aligning = false;
 	m_waypoint_nav_status = TWaypointStatusSequence();
 	m_waypoint_nav_status.timestamp_nav_started = INVALID_TIMESTAMP;
-	m_waypoint_nav_status.waypoint_index_current_goal = -1;  // Not started yet.
+	m_waypoint_nav_status.waypoint_index_current_goal = -1;	 // Not started yet.
 }
 
 void CWaypointsNavigator::navigateWaypoints(
@@ -84,7 +84,7 @@ void CWaypointsNavigator::navigateWaypoints(
 	}
 	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
 
-	m_waypoint_nav_status.waypoint_index_current_goal = -1;  // Not started yet.
+	m_waypoint_nav_status.waypoint_index_current_goal = -1;	 // Not started yet.
 
 	// The main loop navigationStep() will iterate over waypoints and send them
 	// to navigate()
@@ -119,7 +119,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 	//     Waypoint navigation algorithm
 	// --------------------------------------
 	m_is_aligning =
-		false;  // the robot is aligning into a waypoint with a desired heading
+		false;	// the robot is aligning into a waypoint with a desired heading
 
 	{
 		mrpt::system::CTimeLoggerEntry tle(
@@ -127,7 +127,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
 		TWaypointStatusSequence& wps =
-			m_waypoint_nav_status;  // shortcut to save typing
+			m_waypoint_nav_status;	// shortcut to save typing
 
 		if (wps.waypoints.empty() || wps.final_goal_reached)
 		{
@@ -145,9 +145,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 			robot_move_seg.point1.x = m_curPoseVel.pose.x;
 			robot_move_seg.point1.y = m_curPoseVel.pose.y;
 			if (wps.last_robot_pose.x == TWaypoint::INVALID_NUM)
-			{
-				robot_move_seg.point2 = robot_move_seg.point1;
-			}
+			{ robot_move_seg.point2 = robot_move_seg.point1; }
 			else
 			{
 				robot_move_seg.point2.x = wps.last_robot_pose.x;
@@ -166,9 +164,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				{
 					bool consider_wp_reached = false;
 					if (wp.target_heading == TWaypoint::INVALID_NUM)
-					{
-						consider_wp_reached = true;
-					}
+					{ consider_wp_reached = true; }
 					else
 					{
 						// Handle pure-rotation robot interface to honor
@@ -178,7 +174,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						const double tim_since_last_align =
 							mrpt::system::timeDifference(
 								m_last_alignment_cmd, mrpt::system::now());
-						const double ALIGN_WAIT_TIME = 1.5;  // seconds
+						const double ALIGN_WAIT_TIME = 1.5;	 // seconds
 
 						if (std::abs(ang_err) <=
 								params_waypoints_navigator
@@ -186,9 +182,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 							/* give some time for the alignment (if supported in
 							   this robot) to finish)*/
 							tim_since_last_align > ALIGN_WAIT_TIME)
-						{
-							consider_wp_reached = true;
-						}
+						{ consider_wp_reached = true; }
 						else
 						{
 							m_is_aligning = true;
@@ -216,9 +210,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 								// do a
 								// "stop"
 								if (align_cmd)
-								{
-									this->changeSpeeds(*align_cmd);
-								}
+								{ this->changeSpeeds(*align_cmd); }
 								else
 								{
 									consider_wp_reached =
@@ -263,9 +255,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						// Was this the final goal??
 						if (wps.waypoint_index_current_goal <
 							int(wps.waypoints.size() - 1))
-						{
-							wps.waypoint_index_current_goal++;
-						}
+						{ wps.waypoint_index_current_goal++; }
 						else
 						{
 							wps.final_goal_reached = true;
@@ -318,14 +308,12 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						if (++wps.waypoints[idx].counter_seen_reachable >
 							params_waypoints_navigator
 								.min_timesteps_confirm_skip_waypoints)
-						{
-							most_advanced_wp = idx;
-						}
+						{ most_advanced_wp = idx; }
 					}
 
 					// Is allowed to skip it?
 					if (!wps.waypoints[idx].allow_skip)
-						break;  // Do not keep trying, since we are now allowed
+						break;	// Do not keep trying, since we are now allowed
 					// to skip this one.
 				}
 
@@ -415,9 +403,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					// For backwards compat. with single-target code, write
 					// single target info too for the first, next, waypoint:
 					if (wp_idx == wps.waypoint_index_current_goal)
-					{
-						nav_cmd.target = ti;
-					}
+					{ nav_cmd.target = ti; }
 					// Append to list of targets:
 					nav_cmd.multiple_targets.emplace_back(ti);
 				}
@@ -435,7 +421,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 	// end-of-navigation events *after*
 	//       waypoints-related events:
 
-	m_was_aligning = m_is_aligning;  // Let the next timestep know about this
+	m_was_aligning = m_is_aligning;	 // Let the next timestep know about this
 
 	MRPT_END
 }
@@ -449,10 +435,7 @@ void CWaypointsNavigator::navigationStep()
 	mrpt::system::CTimeLoggerEntry tle(
 		m_navProfiler, "CWaypointsNavigator::navigationStep()");
 
-	if (m_navigationState != SUSPENDED)
-	{
-		waypoints_navigationStep();
-	}
+	if (m_navigationState != SUSPENDED) { waypoints_navigationStep(); }
 
 	// Call base navigation step to execute one-single waypoint navigation, as
 	// usual:
@@ -540,15 +523,13 @@ bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 	const TWaypointStatus* wp = nullptr;
 	const auto& wps = m_waypoint_nav_status;
 	if (m_navigationParams->target.targetIsIntermediaryWaypoint)
-	{
-		ret = false;
-	}
+	{ ret = false; }
 	else if (wps.timestamp_nav_started != INVALID_TIMESTAMP)
 	{
 		wp = (!wps.waypoints.empty() && wps.waypoint_index_current_goal >= 0 &&
 			  wps.waypoint_index_current_goal < (int)wps.waypoints.size())
-				 ? &wps.waypoints[wps.waypoint_index_current_goal]
-				 : nullptr;
+			? &wps.waypoints[wps.waypoint_index_current_goal]
+			: nullptr;
 		ret =
 			(wp == nullptr &&
 			 targetDist <= m_navigationParams->target.targetAllowedDistance) ||

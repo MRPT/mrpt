@@ -8,17 +8,38 @@
    +------------------------------------------------------------------------+ */
 
 #include "xRawLogViewerMain.h"
-#include "CFormBatchSensorPose.h"
-#include "CFormChangeSensorPositions.h"
-#include "CFormEdit.h"
-#include "CFormMotionModel.h"
-#include "CFormPlayVideo.h"
-#include "CFormRawMap.h"
-#include "CIniEditor.h"
-#include "COdometryParams.h"
-#include "CScanAnimation.h"
-#include "CScanMatching.h"
 
+#include <mrpt/containers/stl_containers_utils.h>
+#include <mrpt/gui/WxUtils.h>
+#include <mrpt/gui/about_box.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/math/ops_matrices.h>	 // << ops
+#include <mrpt/math/ops_vectors.h>	// << ops
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationComment.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/memory.h>
+#include <mrpt/vision/CVideoFileWriter.h>
 #include <wx/busyinfo.h>
 #include <wx/dirdlg.h>
 #include <wx/filedlg.h>
@@ -30,43 +51,20 @@
 #include <wx/textdlg.h>
 #include <wx/tipdlg.h>
 
-#include "xRawLogViewerApp.h"
-
-#include <mrpt/containers/stl_containers_utils.h>
-#include <mrpt/gui/WxUtils.h>
-#include <mrpt/gui/about_box.h>
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/math/ops_matrices.h>  // << ops
-#include <mrpt/math/ops_vectors.h>  // << ops
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/slam/CICP.h>
-#include <mrpt/system/CDirectoryExplorer.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/memory.h>
-#include <mrpt/vision/CVideoFileWriter.h>
+#include <iomanip>
 #include <map>
 
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/obs/CObservationBearingRange.h>
-#include <mrpt/obs/CObservationComment.h>
-#include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/obs/CObservationRange.h>
-#include <mrpt/obs/CObservationStereoImages.h>
-
-#include <mrpt/serialization/CArchive.h>
-#include <iomanip>
+#include "CFormBatchSensorPose.h"
+#include "CFormChangeSensorPositions.h"
+#include "CFormEdit.h"
+#include "CFormMotionModel.h"
+#include "CFormPlayVideo.h"
+#include "CFormRawMap.h"
+#include "CIniEditor.h"
+#include "COdometryParams.h"
+#include "CScanAnimation.h"
+#include "CScanMatching.h"
+#include "xRawLogViewerApp.h"
 
 //(*InternalHeaders(xRawLogViewerFrame)
 #include <wx/artprov.h>
@@ -196,7 +194,7 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 		wxbuild << _T("-Unicode build");
 #else
 		wxbuild << _T("-ANSI build");
-#endif  // wxUSE_UNICODE
+#endif	// wxUSE_UNICODE
 	}
 
 	return wxbuild;
@@ -1705,7 +1703,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	plotRangeBearing->EnableDoubleBuffer(true);
 	plotRawlogSensorTimes->EnableDoubleBuffer(true);
 
-	Maximize();  // Maximize the main window
+	Maximize();	 // Maximize the main window
 
 	// Set sliders:
 	// ----------------------
@@ -1868,12 +1866,12 @@ void xRawLogViewerFrame::OnSaveFile(wxCommandEvent& event)
 
 		wxProgressDialog progDia(
 			wxT("Saving rawlog to file"), wxT("Saving..."),
-			n,  // range
+			n,	// range
 			this,  // parent
 			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();  // Let the app. process messages
+		wxTheApp->Yield();	// Let the app. process messages
 
 		// Comments:
 		string comts;
@@ -1890,8 +1888,8 @@ void xRawLogViewerFrame::OnSaveFile(wxCommandEvent& event)
 		{
 			if (countLoop++ % 100 == 0)
 			{
-				if (!progDia.Update(i)) break;  // Exit the loop
-				wxTheApp->Yield();  // Let the app. process messages
+				if (!progDia.Update(i)) break;	// Exit the loop
+				wxTheApp->Yield();	// Let the app. process messages
 			}
 
 			archiveFrom(fs) << *rawlog.getAsGeneric(i);
@@ -1970,8 +1968,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 
 	// Save the path
 	string rawlog_path = extractFileDirectory(str);
-	if (rawlog_path.empty())
-		rawlog_path = "./";
+	if (rawlog_path.empty()) rawlog_path = "./";
 	else if (*rawlog_path.rbegin() != '/' && *rawlog_path.rbegin() != '\\')
 		rawlog_path += string("/");
 
@@ -2016,9 +2013,8 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 
 	uint64_t filSize = fil.getTotalBytesCount();
 
-	const uint64_t progDialogMax =
-		filSize >>
-		10;  // Size, in Kb's (to avoid saturatin the "int" in wxProgressDialog)
+	const uint64_t progDialogMax = filSize >>
+		10;	 // Size, in Kb's (to avoid saturatin the "int" in wxProgressDialog)
 
 	loadedFileName = str;
 	StatusBar1->SetStatusText(
@@ -2027,16 +2023,16 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 	wxString auxStr;
 	wxProgressDialog progDia(
 		wxT("Progress of rawlog load"), wxT("Loading..."),
-		progDialogMax,  // range, in Kb's
+		progDialogMax,	// range, in Kb's
 		this,  // parent
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 	progDia.SetSize(500, progDia.GetSize().GetHeight());
 	progDia.Center();
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	// Clear first:
 	rawlog.clear();
@@ -2075,7 +2071,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 						auxStr))
 					keepLoading = false;
 				progDia.Fit();
-				wxTheApp->Yield();  // Let the app. process messages
+				wxTheApp->Yield();	// Let the app. process messages
 
 				if (memUsg_Mb > 2600 && !alreadyWarnedTooLargeFile)
 				{
@@ -2089,9 +2085,10 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 						"This is just a warning to make you watch whether your "
 						"system runs out of memory while still loading.\n";
 					msg += "Do you want to continue loading this file?";
-					if (wxNO == wxMessageBox(
-									msg.c_str(), _("Warning"),
-									wxYES_NO | wxICON_EXCLAMATION))
+					if (wxNO ==
+						wxMessageBox(
+							msg.c_str(), _("Warning"),
+							wxYES_NO | wxICON_EXCLAMATION))
 						keepLoading = false;
 				}
 			}
@@ -2168,7 +2165,8 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 			if (rawlog.size() > 10000)
 			{
 				size_t NN = rawlog.size() - 10000;
-				while (rawlog.size() > NN) rawlog.remove(NN);
+				while (rawlog.size() > NN)
+					rawlog.remove(NN);
 			}
 			else
 				rawlog.clear();
@@ -2231,16 +2229,16 @@ void xRawLogViewerFrame::rebuildTreeView()
 	int countLoop = 0;
 
 	Notebook1->ChangeSelection(0);
-	curSelectedObservation.reset();  // = nullptr;
-	curSelectedObject.reset();  // = nullptr;
+	curSelectedObservation.reset();	 // = nullptr;
+	curSelectedObject.reset();	// = nullptr;
 
 	wxProgressDialog progDia(
 		wxT("Constructing the tree view"), wxT("Creating the tree..."),
-		(int)rawlog.size(),  // range
+		(int)rawlog.size(),	 // range
 		this,  // parent
 		wxPD_APP_MODAL | wxPD_AUTO_HIDE);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	WX_START_TRY
 
@@ -2268,7 +2266,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 		if (countLoop++ % updateProgressBarSteps == 0)
 		{
 			progDia.Update(i);
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		// Process element:
@@ -2335,7 +2333,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 				if (tim_start == INVALID_TIMESTAMP) tim_start = obs->timestamp;
 
-				tim_last = obs->timestamp;  // Keep the last one
+				tim_last = obs->timestamp;	// Keep the last one
 
 				// Stats:
 				listOfObjects[obs->GetRuntimeClass()]++;
@@ -2371,9 +2369,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 			}  // end Observation
 			break;
-			default:
-				break;
-		};  // end switch type
+			default: break;
+		};	// end switch type
 
 	}  // end for i
 
@@ -2560,8 +2557,7 @@ void xRawLogViewerFrame::OntimAutoLoadTrigger(wxTimerEvent& event)
 	Panel5->Refresh();
 
 	// Now: Open it:
-	if (global_fileToOpen.size())
-		loadRawlogFile(global_fileToOpen);
+	if (global_fileToOpen.size()) loadRawlogFile(global_fileToOpen);
 	else
 		rebuildTreeView();
 
@@ -2757,8 +2753,7 @@ void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent& event)
 				}
 				break;
 
-				default:
-					break;
+				default: break;
 			}
 		}
 
@@ -2775,15 +2770,14 @@ void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent& event)
 string xRawLogViewerFrame::AskForImageFileFormat()
 {
 #define SIZE_lstImgFormats 5
-	wxString lstImgFormats[SIZE_lstImgFormats] = {_("jpg"), _("png"), _("bmp"),
-												  _("tif"), _("pgm")};
+	wxString lstImgFormats[SIZE_lstImgFormats] = {
+		_("jpg"), _("png"), _("bmp"), _("tif"), _("pgm")};
 
 	int ret = wxGetSingleChoiceIndex(
 		_("Choose the format of the output images:"), _("Images format"),
 		SIZE_lstImgFormats, lstImgFormats, this);
 
-	if (ret == -1)
-		return string("");
+	if (ret == -1) return string("");
 	else
 		return string(lstImgFormats[ret].mb_str());
 }
@@ -2808,15 +2802,13 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 	const string target_dir = string(target_dir_wx.mb_str());
 
 	const string fil_odo = target_dir + string("/") +
-						   mrpt::system::extractFileName(loadedFileName) +
-						   string("_ODO.txt");
+		mrpt::system::extractFileName(loadedFileName) + string("_ODO.txt");
 	const string fil_odo_times = target_dir + string("/") +
-								 mrpt::system::extractFileName(loadedFileName) +
-								 string("_ODO_times.txt");
+		mrpt::system::extractFileName(loadedFileName) +
+		string("_ODO_times.txt");
 
 	const string prefix_laser = target_dir + string("/") +
-								mrpt::system::extractFileName(loadedFileName) +
-								string("_LASER_");
+		mrpt::system::extractFileName(loadedFileName) + string("_LASER_");
 
 	unsigned int i, n = (unsigned int)rawlog.size();
 
@@ -2848,7 +2840,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 
 	wxProgressDialog progDia(
 		wxT("Exporting as text files"), wxT("Saving..."),
-		n,  // range
+		n,	// range
 		this,  // parent
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
@@ -2858,7 +2850,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 		if (i % 50 == 0)
 		{
 			if (!progDia.Update(i)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		switch (rawlog.getType(i))
@@ -3039,10 +3031,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 						std::dynamic_pointer_cast<CObservationOdometry>(o);
 
 					CPose2D poseIncrement(0, 0, 0);
-					if (!lastOdo_ok)
-					{
-						lastOdo_ok = true;
-					}
+					if (!lastOdo_ok) { lastOdo_ok = true; }
 					else
 					{
 						poseIncrement = odo->odometry - lastOdo;
@@ -3069,8 +3058,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 			break;
 
 			// Error:
-			default:
-				THROW_EXCEPTION("Unknown element type in the rawlog");
+			default: THROW_EXCEPTION("Unknown element type in the rawlog");
 
 		}  // end switch.
 	}
@@ -3148,7 +3136,7 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	unsigned int countLoop = 0;
 	int entryIndex = 0;
@@ -3162,7 +3150,7 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent& event)
 			auxStr.sprintf(wxT("Parsing file... %u objects"), entryIndex);
 			if (!progDia.Update((int)fil.getPosition(), auxStr))
 				keepLoading = false;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		CSerializable::Ptr newObj;
@@ -3173,9 +3161,7 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent& event)
 			if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame) ||
 				newObj->GetRuntimeClass() == CLASS_ID(CActionCollection) ||
 				newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
-			{
-				entryIndex++;
-			}
+			{ entryIndex++; }
 			else
 			{
 				// Unknown class:
@@ -3236,7 +3222,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	unsigned int countLoop = 0;
 	int imgSaved = 0;
@@ -3250,7 +3236,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 			auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
 			if (!progDia.Update((int)fil.getPosition(), auxStr))
 				keepLoading = false;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		CSerializable::Ptr newObj;
@@ -3367,15 +3353,9 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 
 			switch (theMainWindow->Notebook2->GetSelection())
 			{
-				case 0:
-					imgToSave = &obs->imageLeft;
-					break;
-				case 1:
-					imgToSave = &obs->imageRight;
-					break;
-				case 2:
-					imgToSave = &obs->imageDisparity;
-					break;
+				case 0: imgToSave = &obs->imageLeft; break;
+				case 1: imgToSave = &obs->imageRight; break;
+				case 2: imgToSave = &obs->imageDisparity; break;
 			}
 		}
 		else if (IS_CLASS(*curSelectedObservation, CObservation3DRangeScan))
@@ -3447,15 +3427,9 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
 
 			switch (theMainWindow->Notebook2->GetSelection())
 			{
-				case 0:
-					imgToLoad = &obs->imageLeft;
-					break;
-				case 1:
-					imgToLoad = &obs->imageRight;
-					break;
-				case 2:
-					imgToLoad = &obs->imageDisparity;
-					break;
+				case 0: imgToLoad = &obs->imageLeft; break;
+				case 1: imgToLoad = &obs->imageRight; break;
+				case 2: imgToLoad = &obs->imageDisparity; break;
 			}
 		}
 
@@ -3513,7 +3487,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 
 	ASSERT_(DECIMATE_RATIO >= 1);
 	wxBusyCursor busyCursor;
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	size_t i, N = rawlog.size();
 
@@ -3523,7 +3497,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 	//  one,
 	//  then call "clearWithoutDelete" at the end.
 	// ------------------------------------------------------------------------------
-	CSensoryFrame::Ptr last_sf;  // empty ptr
+	CSensoryFrame::Ptr last_sf;	 // empty ptr
 	CActionRobotMovement2D::TMotionModelOptions odometryOptions;
 	bool cummMovementInit = false;
 	long SF_counter = 0;
@@ -3566,7 +3540,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 			if (!last_sf)
 			{
 				last_sf = std::dynamic_pointer_cast<CSensoryFrame>(obj);
-				objToBeDeleted = false;  // Do not delete this one
+				objToBeDeleted = false;	 // Do not delete this one
 			}
 
 			if (++SF_counter >= DECIMATE_RATIO)
@@ -3628,7 +3602,7 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	int invalidScans = 0;
 	string errorMsg;
@@ -3639,7 +3613,7 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -3733,7 +3707,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	int nFilt = 0, nReadings = 0;
 	string errorMsg;
@@ -3745,7 +3719,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -3810,8 +3784,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 												maxChange)
 										{
 											obs_1->m_readings[j]
-												.readingsVoltage[i] =
-												0.5f *
+												.readingsVoltage[i] = 0.5f *
 												(obs->m_readings[j]
 													 .readingsVoltage[i] +
 												 obs_2->m_readings[j]
@@ -3862,8 +3835,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 									obs_2->m_readings[j]
 										.readingsVoltage.size());
 
-								for (size_t k = 0;
-									 k <
+								for (size_t k = 0; k <
 									 obs->m_readings[j].readingsVoltage.size();
 									 k++)
 								{
@@ -3883,11 +3855,11 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 											maxChange)
 									{
 										obs_1->m_readings[j]
-											.readingsVoltage[k] =
-											0.5f * (obs->m_readings[j]
-														.readingsVoltage[k] +
-													obs_2->m_readings[j]
-														.readingsVoltage[k]);
+											.readingsVoltage[k] = 0.5f *
+											(obs->m_readings[j]
+												 .readingsVoltage[k] +
+											 obs_2->m_readings[j]
+												 .readingsVoltage[k]);
 										nFilt++;
 									}
 								}
@@ -3901,8 +3873,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 				}
 				break;
 
-				default:
-					break;
+				default: break;
 			}  // end for each entry
 		}
 		catch (exception& e)
@@ -3990,9 +3961,8 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
-		};  // end
+			default: break;
+		};	// end
 	}
 
 	for (i = 0; i < n; i++)
@@ -4036,9 +4006,7 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 										 obs_2->sensedData[q].sensedDistance);
 
 							if (filter)
-							{
-								obs_2->sensedData[q].sensedDistance = 0;
-							}
+							{ obs_2->sensedData[q].sensedDistance = 0; }
 							nFilt++;
 						}
 					}
@@ -4048,8 +4016,7 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 					obs_1 = obs;
 				}
 			}
-			default:
-				break;
+			default: break;
 		};
 	}
 
@@ -4066,13 +4033,11 @@ void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent& event)
 {
 	WX_START_TRY
 
-	bool clearEncoders =
-		wxYES == wxMessageBox(
-					 _("Set 'hasEncodersInfo' fields to false?"),
+	bool clearEncoders = wxYES ==
+		wxMessageBox(_("Set 'hasEncodersInfo' fields to false?"),
 					 _("Select operations"), wxYES_NO, this);
-	bool clearVelocities =
-		wxYES == wxMessageBox(
-					 _("Set 'hasVelocities' fields to false?"),
+	bool clearVelocities = wxYES ==
+		wxMessageBox(_("Set 'hasVelocities' fields to false?"),
 					 _("Select operations"), wxYES_NO, this);
 
 	wxBusyCursor waitCursor;
@@ -4086,7 +4051,7 @@ void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	int nChanges = 0;
 	string errorMsg;
@@ -4097,7 +4062,7 @@ void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -4262,7 +4227,7 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	size_t invalidSegments = 0, invalidRanges = 0;
 	string lstTouched;
@@ -4274,7 +4239,7 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -4334,9 +4299,8 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent& event)
 				}
 				break;
 
-				default:
-					break;
-			};  // end switch
+				default: break;
+			};	// end switch
 		}
 		catch (exception& e)
 		{
@@ -4388,9 +4352,9 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 	CICP::TReturnInfo icpInfo;
 
 	// The 2 SFs and the action between:
-	CSensoryFrame::Ptr SF_ref;  // = nullptr;
-	CSensoryFrame::Ptr SF_new;  // = nullptr;
-	CActionCollection::Ptr act_between;  // = nullptr;
+	CSensoryFrame::Ptr SF_ref;	// = nullptr;
+	CSensoryFrame::Ptr SF_new;	// = nullptr;
+	CActionCollection::Ptr act_between;	 // = nullptr;
 
 	CPosePDF::Ptr poseEst;
 
@@ -4446,7 +4410,7 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	string errorMsg;
 
@@ -4456,16 +4420,14 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
 		{
 			// Check type:
 			if (rawlog.getType(countLoop) == CRawlog::etActionCollection)
-			{
-				act_between = rawlog.getAsAction(countLoop);
-			}
+			{ act_between = rawlog.getAsAction(countLoop); }
 			else if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
 			{
 				// This is a SF:
@@ -4825,7 +4787,7 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
 					else
 					{
 						odo->odometry = auxLastAbsOdo +
-										auxOdoIncr.rawOdometryIncrementReading;
+							auxOdoIncr.rawOdometryIncrementReading;
 						auxLastAbsOdo = odo->odometry;
 					}
 					M++;
@@ -4910,7 +4872,8 @@ void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent& event)
 					}
 
 					::fprintf(f, "%06u ", i);
-					for (float q : rowOfRangesByID) ::fprintf(f, "%03.04f ", q);
+					for (float q : rowOfRangesByID)
+						::fprintf(f, "%03.04f ", q);
 					::fprintf(f, "\n");
 					M++;
 				}
@@ -5130,8 +5093,7 @@ void xRawLogViewerFrame::OnMenuRenameSensor(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
+			default: break;
 		}  // end switch type
 
 	}  // end for
@@ -5219,12 +5181,12 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 		// now apply the changes:
 		wxProgressDialog progDia(
 			wxT("Modifying rawlog"), wxT("Processing..."),
-			rawlog.size(),  // range
+			rawlog.size(),	// range
 			this,  // parent
 			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();  // Let the app. process messages
+		wxTheApp->Yield();	// Let the app. process messages
 
 		size_t changes = 0;
 		int countLoop = 0;
@@ -5297,11 +5259,11 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 							wxT("Processing... (%i objects processed)"),
 							countLoop)))
 					keepDoing = false;
-				wxTheApp->Yield();  // Let the app. process messages
+				wxTheApp->Yield();	// Let the app. process messages
 			}
 		}
 
-		progDia.Update(rawlog.size());  // Close dialog.
+		progDia.Update(rawlog.size());	// Close dialog.
 
 		wxMessageBox(
 			wxString::Format(
@@ -5343,7 +5305,7 @@ void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	size_t invalidRanges = 0;
 
@@ -5353,7 +5315,7 @@ void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		// Check type:
@@ -5380,9 +5342,8 @@ void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
-		};  // end switch
+			default: break;
+		};	// end switch
 
 	}  // end while keep loading
 
@@ -5420,7 +5381,7 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	size_t N = 0;
 
@@ -5430,7 +5391,7 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		// Check type:
@@ -5472,9 +5433,8 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
-		};  // end switch
+			default: break;
+		};	// end switch
 
 	}  // end while keep loading
 
@@ -5576,12 +5536,12 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 		// now apply the changes:
 		wxProgressDialog progDia(
 			wxT("Modifying rawlog"), wxT("Processing..."),
-			rawlog.size(),  // range
+			rawlog.size(),	// range
 			this,  // parent
 			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();  // Let the app. process messages
+		wxTheApp->Yield();	// Let the app. process messages
 
 		size_t changes = 0;
 		int countLoop = 0;
@@ -5609,7 +5569,7 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 						isSingleObs = true;
 					}
 					else
-						break;  // not a laser scan
+						break;	// not a laser scan
 				}
 				else if (it.getType() == CRawlog::etSensoryFrame)
 				{
@@ -5650,11 +5610,11 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 							wxT("Processing... (%i objects processed)"),
 							countLoop)))
 					keepDoing = false;
-				wxTheApp->Yield();  // Let the app. process messages
+				wxTheApp->Yield();	// Let the app. process messages
 			}
 		}
 
-		progDia.Update(rawlog.size());  // Close dialog.
+		progDia.Update(rawlog.size());	// Close dialog.
 
 		wxMessageBox(
 			wxString::Format(
@@ -5750,12 +5710,12 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 		// now apply the changes:
 		wxProgressDialog progDia(
 			wxT("Modifying rawlog"), wxT("Processing..."),
-			rawlog.size(),  // range
+			rawlog.size(),	// range
 			this,  // parent
 			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();  // Let the app. process messages
+		wxTheApp->Yield();	// Let the app. process messages
 
 		size_t changes = 0;
 		int countLoop = 0;
@@ -5783,7 +5743,7 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 						isSingleObs = true;
 					}
 					else
-						break;  // not a laser scan
+						break;	// not a laser scan
 				}
 				else if (it.getType() == CRawlog::etSensoryFrame)
 				{
@@ -5824,11 +5784,11 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 							wxT("Processing... (%i objects processed)"),
 							countLoop)))
 					keepDoing = false;
-				wxTheApp->Yield();  // Let the app. process messages
+				wxTheApp->Yield();	// Let the app. process messages
 			}
 		}
 
-		progDia.Update(rawlog.size());  // Close dialog.
+		progDia.Update(rawlog.size());	// Close dialog.
 
 		wxMessageBox(
 			wxString::Format(
@@ -5861,7 +5821,7 @@ void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	size_t N = 0;
 
@@ -5871,7 +5831,7 @@ void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		// Check type:
@@ -5924,9 +5884,8 @@ void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
-		};  // end switch
+			default: break;
+		};	// end switch
 
 	}  // end while keep loading
 
@@ -5954,7 +5913,7 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	size_t N = 0;
 
@@ -5964,7 +5923,7 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		// Check type:
@@ -6001,9 +5960,8 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
-		};  // end switch
+			default: break;
+		};	// end switch
 
 	}  // end while keep loading
 
@@ -6067,7 +6025,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	//  possible <channel_desc>: left, right, disparity (more in the future?)
 	std::vector<std::string> outVideosIdx;
@@ -6084,7 +6042,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 				wxT("Processing rawlog... %u image frames"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
 			progDia.Fit();
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -6178,7 +6136,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 				// The video writter for this channel:
 				mrpt::vision::CVideoFileWriter& vid = outVideos[idx];
 
-				if (!vid.isOpen())  // Open file upon first usage:
+				if (!vid.isOpen())	// Open file upon first usage:
 				{
 					const string filname =
 						mrpt::system::extractFileDirectory(outAviFilename) +
@@ -6242,7 +6200,7 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	int nChanges = 0;
 	string errorMsg;
@@ -6256,7 +6214,7 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -6334,7 +6292,7 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	int nChanges = 0;
 	string errorMsg;
@@ -6348,7 +6306,7 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsing rawlog... %u objects"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -6419,7 +6377,7 @@ void TInfoPerSensorLabel::addOcurrence(
 	mrpt::system::TTimeStamp obs_tim,
 	mrpt::system::TTimeStamp first_dataset_tim)
 {
-	double obs_t = .0;  // 0-based timestamp:
+	double obs_t = .0;	// 0-based timestamp:
 	if (first_dataset_tim != INVALID_TIMESTAMP && obs_tim != INVALID_TIMESTAMP)
 		obs_t = mrpt::system::timeDifference(first_dataset_tim, obs_tim);
 

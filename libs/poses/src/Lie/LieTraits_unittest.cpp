@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -106,7 +107,8 @@ class SE_traits_tests : public ::testing::Test
 		CMatrixFixed<double, DIMS, DIMS> num_J1, num_J2;
 		{
 			CVectorFixedDouble<2 * DIMS> x_mean;
-			for (int i = 0; i < DIMS + DIMS; i++) x_mean[i] = 0;
+			for (int i = 0; i < DIMS + DIMS; i++)
+				x_mean[i] = 0;
 
 			TParams params;
 			params.P1 = P1;
@@ -258,13 +260,15 @@ class SE_traits_tests : public ::testing::Test
 	{
 		for (const auto& p1 : ptc)
 			for (const auto& p2 : ptc)
-				for (const auto& pd : ptc) test_jacobs_DinvP1InvP2(p1, pd, p2);
+				for (const auto& pd : ptc)
+					test_jacobs_DinvP1InvP2(p1, pd, p2);
 	}
 
 	void tests_jacobs_dAB_dAB()
 	{
 		for (const auto& p1 : ptc)
-			for (const auto& p2 : ptc) test_jacobs_AB(p1, p2);
+			for (const auto& p2 : ptc)
+				test_jacobs_AB(p1, p2);
 	}
 };
 

@@ -24,7 +24,7 @@
 //
 #include <DbgHelp.h>
 #else
-#include <dlfcn.h>  // dladdr()
+#include <dlfcn.h>	// dladdr()
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <stdio.h>
@@ -45,17 +45,17 @@
 #include <link.h>  // in deb package: libc6-dev
 
 #if HAVE_DECL_BFD_GET_SECTION_FLAGS
-#define mrpt_debug_bfd_section_flags(_abfd, _section) \
+#define mrpt_debug_bfd_section_flags(_abfd, _section)                          \
 	bfd_get_section_flags(_abfd, _section)
 #elif HAVE_DECL_BFD_SECTION_FLAGS
-#define mrpt_debug_bfd_section_flags(_abfd, _section) \
+#define mrpt_debug_bfd_section_flags(_abfd, _section)                          \
 	bfd_section_flags(_section)
 #else
 #error "Unsupported BFD API"
 #endif
 
 #if HAVE_DECL_BFD_GET_SECTION_VMA
-#define mrpt_debug_bfd_section_vma(_abfd, _section) \
+#define mrpt_debug_bfd_section_vma(_abfd, _section)                            \
 	bfd_get_section_vma(_abfd, _section)
 #elif HAVE_DECL_BFD_SECTION_VMA
 #define mrpt_debug_bfd_section_vma(_abfd, _section) bfd_section_vma(_section)
@@ -66,7 +66,7 @@
 #if HAVE_1_ARG_BFD_SECTION_SIZE
 #define mrpt_debug_bfd_section_size(_abfd, _section) bfd_section_size(_section)
 #else
-#define mrpt_debug_bfd_section_size(_abfd, _section) \
+#define mrpt_debug_bfd_section_size(_abfd, _section)                           \
 	bfd_section_size(_abfd, _section);
 #endif
 
@@ -249,7 +249,8 @@ static std::vector<mrpt::TCallStackEntry> processFile(
 	}
 
 	auto retBuf = translateAddressesBuf(abfd, addr, naddr, syms);
-	for (auto& e : retBuf) e.address = PC_addr;
+	for (auto& e : retBuf)
+		e.address = PC_addr;
 
 	free(syms);
 
@@ -285,11 +286,12 @@ static std::vector<mrpt::TCallStackEntry> backtraceSymbols(
 
 		// lookup the symbol
 		const char* fil = (match.mFile && strlen(match.mFile))
-							  ? match.mFile
-							  : "/proc/self/exe";
+			? match.mFile
+			: "/proc/self/exe";
 
 		auto newVals = processFile(fil, &addr, 1, PC_addr);
-		for (auto& v : newVals) ret.emplace_back(std::move(v));
+		for (auto& v : newVals)
+			ret.emplace_back(std::move(v));
 	}
 
 	return ret;
@@ -350,7 +352,7 @@ void mrpt::callStackBackTrace(
 	// Auto initialize Sym system on first call, auto free at program end.
 	auto& sym = WindowsSymResources::Instance();
 	if (!sym.initialized())
-		return;  // error already dumped to std::cerr inside the ctor
+		return;	 // error already dumped to std::cerr inside the ctor
 
 	char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
 	PSYMBOL_INFO pSymbol = (PSYMBOL_INFO)buffer;

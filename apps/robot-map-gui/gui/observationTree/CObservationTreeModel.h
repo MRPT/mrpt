@@ -11,10 +11,9 @@
 #include <QAbstractTableModel>
 #include <QDebug>
 #include <QItemSelection>
+#include <memory>
 
 #include "CRootNode.h"
-
-#include <memory>
 
 namespace mrpt
 {

@@ -7,18 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "slam-precomp.h"  // Precompiled headerss
-
-#include <mrpt/slam/CMonteCarloLocalization2D.h>
-
+#include "slam-precomp.h"  // Precompiled headers
+//
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/system/CTicTac.h>
-
 #include <mrpt/random.h>
-
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/slam/PF_aux_structs.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -172,9 +169,9 @@ double
 	ASSERT_(
 		options.metricMap || particleIndexForMap < options.metricMaps.size());
 
-	CMetricMap* map =
-		(options.metricMap) ? options.metricMap :  // All particles, one map
-			options.metricMaps[particleIndexForMap];  // One map per particle
+	CMetricMap* map = (options.metricMap) ? options.metricMap
+										  :	 // All particles, one map
+		options.metricMaps[particleIndexForMap];  // One map per particle
 
 	// For each observation:
 	double ret = 1;
@@ -240,20 +237,16 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 	freeCells_x.reserve(sizeX * sizeY);
 	freeCells_y.reserve(sizeX * sizeY);
 
-	if (x_min > theMap->getXMin())
-		xIdx1 = max(0, theMap->x2idx(x_min));
+	if (x_min > theMap->getXMin()) xIdx1 = max(0, theMap->x2idx(x_min));
 	else
 		xIdx1 = 0;
-	if (x_max < theMap->getXMax())
-		xIdx2 = min(sizeX - 1, theMap->x2idx(x_max));
+	if (x_max < theMap->getXMax()) xIdx2 = min(sizeX - 1, theMap->x2idx(x_max));
 	else
 		xIdx2 = sizeX - 1;
-	if (y_min > theMap->getYMin())
-		yIdx1 = max(0, theMap->y2idx(y_min));
+	if (y_min > theMap->getYMin()) yIdx1 = max(0, theMap->y2idx(y_min));
 	else
 		yIdx1 = 0;
-	if (y_max < theMap->getYMax())
-		yIdx2 = min(sizeY - 1, theMap->y2idx(y_max));
+	if (y_max < theMap->getYMax()) yIdx2 = min(sizeY - 1, theMap->y2idx(y_max));
 	else
 		yIdx2 = sizeY - 1;
 
@@ -279,11 +272,9 @@ void CMonteCarloLocalization2D::resetUniformFreeSpace(
 		int idx =
 			round(getRandomGenerator().drawUniform(0.0, nFreeCells - 1.001));
 
-		m_particles[i].d.x =
-			freeCells_x[idx] +
+		m_particles[i].d.x = freeCells_x[idx] +
 			getRandomGenerator().drawUniform(-gridRes, gridRes);
-		m_particles[i].d.y =
-			freeCells_y[idx] +
+		m_particles[i].d.y = freeCells_y[idx] +
 			getRandomGenerator().drawUniform(-gridRes, gridRes);
 		m_particles[i].d.phi =
 			getRandomGenerator().drawUniform(phi_min, phi_max);

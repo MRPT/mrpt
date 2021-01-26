@@ -31,8 +31,7 @@ void run_rnav_test_impl(
 	using namespace mrpt::nav;
 
 	const std::string sFil = mrpt::system::find_mrpt_shared_dir() +
-							 std::string("config_files/navigation-ptgs/") +
-							 sFilename;
+		std::string("config_files/navigation-ptgs/") + sFilename;
 
 	if (!mrpt::system::fileExists(sFil))
 	{
@@ -101,7 +100,7 @@ void run_rnav_test_impl(
 			mrpt::obs::CObservation2DRangeScan scan;
 			scan.aperture = mrpt::DEG2RAD(270.0);
 			scan.maxRange = 20.0;
-			scan.sensorPose.z(0.4);  // height of the lidar (important! it must
+			scan.sensorPose.z(0.4);	 // height of the lidar (important! it must
 			// intersect with the robot height)
 
 			m_grid.laserScanSimulator(

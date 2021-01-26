@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -37,7 +38,8 @@ class Pose3DPDFGaussTests : public ::testing::Test
 			r, 0, std_scale);
 		CMatrixDouble66 cov;
 		cov.matProductOf_AAt(r);  // random semi-definite positive matrix:
-		for (int i = 0; i < 6; i++) cov(i, i) += 1e-7;
+		for (int i = 0; i < 6; i++)
+			cov(i, i) += 1e-7;
 		CPose3DPDFGaussian p6pdf(CPose3D(x, y, z, yaw, pitch, roll), cov);
 		return p6pdf;
 	}
@@ -72,7 +74,8 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		const CPose3D p2(
 			x[6 + 0], x[6 + 1], x[6 + 2], x[6 + 3], x[6 + 4], x[6 + 5]);
 		const CPose3D p = p1 + p2;
-		for (int i = 0; i < 6; i++) Y[i] = p[i];
+		for (int i = 0; i < 6; i++)
+			Y[i] = p[i];
 	}
 
 	static void func_inv_compose(
@@ -83,7 +86,8 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		const CPose3D p2(
 			x[6 + 0], x[6 + 1], x[6 + 2], x[6 + 3], x[6 + 4], x[6 + 5]);
 		const CPose3D p = p1 - p2;
-		for (int i = 0; i < 6; i++) Y[i] = p[i];
+		for (int i = 0; i < 6; i++)
+			Y[i] = p[i];
 	}
 
 	// Test "+" & "+=" operator
@@ -105,8 +109,10 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		CMatrixFixed<double, 6, 6> y_cov;
 		{
 			CVectorFixedDouble<12> x_mean;
-			for (int i = 0; i < 6; i++) x_mean[i] = p6pdf1.mean[i];
-			for (int i = 0; i < 6; i++) x_mean[6 + i] = p6pdf2.mean[i];
+			for (int i = 0; i < 6; i++)
+				x_mean[i] = p6pdf1.mean[i];
+			for (int i = 0; i < 6; i++)
+				x_mean[6 + i] = p6pdf2.mean[i];
 
 			CMatrixFixed<double, 12, 12> x_cov;
 			x_cov.insertMatrix(0, 0, p6pdf1.cov);
@@ -155,8 +161,8 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		CMatrixDouble66 df_dx(UNINITIALIZED_MATRIX),
 			df_du(UNINITIALIZED_MATRIX);
 		CPose3DPDF::jacobiansPoseComposition(
-			q1,  // x
-			q2,  // u
+			q1,	 // x
+			q2,	 // u
 			df_dx, df_du);
 
 		// Numerical approximation:
@@ -164,8 +170,10 @@ class Pose3DPDFGaussTests : public ::testing::Test
 			num_df_du(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<2 * 6> x_mean;
-			for (int i = 0; i < 6; i++) x_mean[i] = q1[i];
-			for (int i = 0; i < 6; i++) x_mean[6 + i] = q2[i];
+			for (int i = 0; i < 6; i++)
+				x_mean[i] = q1[i];
+			for (int i = 0; i < 6; i++)
+				x_mean[6 + i] = q2[i];
 
 			double DUMMY = 0;
 			CVectorFixedDouble<2 * 6> x_incrs;
@@ -223,8 +231,10 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		CMatrixFixed<double, 6, 6> y_cov;
 		{
 			CVectorFixedDouble<2 * 6> x_mean;
-			for (int i = 0; i < 6; i++) x_mean[i] = p6pdf1.mean[i];
-			for (int i = 0; i < 6; i++) x_mean[6 + i] = p6pdf2.mean[i];
+			for (int i = 0; i < 6; i++)
+				x_mean[i] = p6pdf1.mean[i];
+			for (int i = 0; i < 6; i++)
+				x_mean[6 + i] = p6pdf2.mean[i];
 
 			CMatrixFixed<double, 12, 12> x_cov;
 			x_cov.insertMatrix(0, 0, p6pdf1.cov);
@@ -269,7 +279,7 @@ class Pose3DPDFGaussTests : public ::testing::Test
 		CPose3DPDFGaussian p6pdf2 =
 			generateRandomPose3DPDF(x, y, z, yaw, pitch, roll, std_scale);
 		CPose3DPDFGaussian p6_zero(
-			CPose3D(0, 0, 0, 0, 0, 0), CMatrixDouble66());  // COV=All zeros
+			CPose3D(0, 0, 0, 0, 0, 0), CMatrixDouble66());	// COV=All zeros
 
 		// Unary "-":
 		const CPose3DPDFGaussian p6_inv = -p6pdf2;

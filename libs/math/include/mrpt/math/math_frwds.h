@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstddef>  // std:size_t
+#include <cstddef>	// std:size_t
 
 /*! \file math_frwds.h
  * Forward declarations of all mrpt::math classes related to vectors, arrays

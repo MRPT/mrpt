@@ -10,6 +10,7 @@
 
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <algorithm>
 #include <functional>
 #include <map>
@@ -108,7 +109,8 @@ class CMonteCarlo
 		std::vector<T> baseData(N);
 		std::vector<NUM> errorData(N);
 		mrpt::system::CTicTac meter;
-		for (size_t i = 0; i < N; ++i) baseData[i] = valueGenerator(gen);
+		for (size_t i = 0; i < N; ++i)
+			baseData[i] = valueGenerator(gen);
 		if (errorFun1)
 		{
 			meter.Tic();
@@ -131,7 +133,7 @@ class CMonteCarlo
 			time = meter.Tac();
 		}
 		NUM res = accumulate(errorData.begin(), errorData.end(), NUM(0)) /
-				  errorData.size();
+			errorData.size();
 #if 0
 		if (showInWindow)
 		{

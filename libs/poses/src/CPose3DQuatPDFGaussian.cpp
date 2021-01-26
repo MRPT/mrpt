@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/transform_gaussian.h>
@@ -19,6 +19,7 @@
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -98,14 +99,13 @@ void CPose3DQuatPDFGaussian::serializeFrom(
 			mrpt::math::deserializeSymmetricMatrixFrom(cov, in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
 void CPose3DQuatPDFGaussian::copyFrom(const CPose3DQuatPDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	// Convert to gaussian pdf:
 	o.getCovarianceAndMean(cov, mean);
@@ -213,9 +213,9 @@ void CPose3DQuatPDFGaussian::changeCoordinatesReference(
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
 		newReferenceBaseQuat,  // x
-		this->mean,  // u
+		this->mean,	 // u
 		df_dx, df_du,
-		&this->mean  // Output:  newReferenceBaseQuat + this->mean;
+		&this->mean	 // Output:  newReferenceBaseQuat + this->mean;
 	);
 
 	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
@@ -246,7 +246,8 @@ void CPose3DQuatPDFGaussian::drawManySamples(
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, cov);
 
 	for (auto& outSample : outSamples)
-		for (unsigned int k = 0; k < 7; k++) outSample[k] += mean[k];
+		for (unsigned int k = 0; k < 7; k++)
+			outSample[k] += mean[k];
 
 	MRPT_END
 }
@@ -295,10 +296,10 @@ void CPose3DQuatPDFGaussian::operator+=(const CPose3DQuat& Ap)
 	CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
-		this->mean,  // x
-		Ap,  // u
+		this->mean,	 // x
+		Ap,	 // u
 		df_dx, df_du,
-		&this->mean  // Output: this->mean + Ap;
+		&this->mean	 // Output: this->mean + Ap;
 	);
 
 	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
@@ -316,10 +317,10 @@ void CPose3DQuatPDFGaussian::operator+=(const CPose3DQuatPDFGaussian& Ap)
 	CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
-		this->mean,  // x
+		this->mean,	 // x
 		Ap.mean,  // u
 		df_dx, df_du,
-		&this->mean  // Output:  this->mean + Ap.mean;
+		&this->mean	 // Output:  this->mean + Ap.mean;
 	);
 
 	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
@@ -364,7 +365,8 @@ void CPose3DQuatPDFGaussian::enforceCovSymmetry()
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
 	for (int i = 0; i < cov.rows() - 1; i++)
-		for (int j = i + 1; j < cov.rows(); j++) cov(i, j) = cov(j, i);
+		for (int j = i + 1; j < cov.rows(); j++)
+			cov(i, j) = cov(j, i);
 }
 
 /*---------------------------------------------------------------

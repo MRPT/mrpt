@@ -8,11 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
+
 #include "CAboutBoxBase.h"
 
 using namespace mrpt;
@@ -58,10 +60,7 @@ std::string CAboutBoxBase::information(
 		"For bug reports and source code, visit:"
 		" https://github.com/MRPT/mrpt \n\n";
 	;
-	if (!m_additionalInfo.empty())
-	{
-		str += m_additionalInfo + "\n";
-	}
+	if (!m_additionalInfo.empty()) { str += m_additionalInfo + "\n"; }
 	str += "MRPT version:           " + MRPT_getVersion() + "\n";
 	str += "MRPT source timestamp:  " + MRPT_getCompilationDate() + "\n";
 
@@ -81,7 +80,7 @@ std::string CAboutBoxBase::information(
 		str += "-Unicode build";
 #else
 		str += "-ANSI build";
-#endif  // wxUSE_UNICODE
+#endif	// wxUSE_UNICODE
 
 		str += "\nOpenCV version:         ";
 #if MRPT_HAS_OPENCV

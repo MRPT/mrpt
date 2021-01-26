@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "kinematics-precomp.h"  // Precompiled headers
-
+#include "kinematics-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/initializer.h>
 #include <mrpt/kinematics.h>
 

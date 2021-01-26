@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "CFormEdit.h"
-#include "xRawLogViewerMain.h"
-
 #include <wx/choicdlg.h>
 #include <wx/dirdlg.h>
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
 #include <wx/textdlg.h>
+
+#include "CFormEdit.h"
+#include "xRawLogViewerMain.h"
 
 // General global variables:
 #include <mrpt/containers/stl_containers_utils.h>
@@ -54,10 +54,11 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	bool ref_valid = false;
 
 	// Ask the user for the reference?
-	if (wxYES != wxMessageBox(
-					 _("Do you want to take the GPS reference automatically "
-					   "from the first found entry?"),
-					 _("GPS path"), wxYES_NO))
+	if (wxYES !=
+		wxMessageBox(
+			_("Do you want to take the GPS reference automatically "
+			  "from the first found entry?"),
+			_("GPS path"), wxYES_NO))
 	{
 		wxString s = wxGetTextFromUser(
 			_("Reference Latitude (degrees):"), _("GPS reference"), _("0.0"),
@@ -93,9 +94,8 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	}
 
 	// Only RTK fixed?
-	bool only_rtk =
-		wxYES == wxMessageBox(
-					 _("Take into account 'rtk' (modes 4-5) readings only?"),
+	bool only_rtk = wxYES ==
+		wxMessageBox(_("Take into account 'rtk' (modes 4-5) readings only?"),
 					 _("GPS path"), wxYES_NO);
 
 	vector<float> xs, ys, zs;
@@ -114,9 +114,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 				CObservation::Ptr o =
 					sf->getObservationBySensorLabel(the_label);
 				if (o && IS_CLASS(*o, CObservationGPS))
-				{
-					obs = std::dynamic_pointer_cast<CObservationGPS>(o);
-				}
+				{ obs = std::dynamic_pointer_cast<CObservationGPS>(o); }
 			}
 			break;
 
@@ -126,27 +124,23 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 
 				if (!os::_strcmpi(o->sensorLabel.c_str(), the_label.c_str()) &&
 					IS_CLASS(*o, CObservationGPS))
-				{
-					obs = std::dynamic_pointer_cast<CObservationGPS>(o);
-				}
+				{ obs = std::dynamic_pointer_cast<CObservationGPS>(o); }
 			}
 			break;
 
-			default:
-				break;
+			default: break;
 		}
 
 		// If we had a GPS obs, process it:
 		const mrpt::obs::gnss::Message_NMEA_GGA* gga = nullptr;
 		if (obs && obs->hasMsgClass<mrpt::obs::gnss::Message_NMEA_GGA>())
-		{
-			gga = &obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
-		}
+		{ gga = &obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>(); }
 
-		if (gga && (!only_rtk || gga->fields.fix_quality == 4 ||
-					gga->fields.fix_quality == 5))
+		if (gga &&
+			(!only_rtk || gga->fields.fix_quality == 4 ||
+			 gga->fields.fix_quality == 5))
 		{
-			TPoint3D X_ENU;  // Transformed coordinates
+			TPoint3D X_ENU;	 // Transformed coordinates
 
 			const auto obsCoords = gga->getAsStruct<TGeodeticCoords>();
 
@@ -225,14 +219,10 @@ void fixGPStimestamp(
 
 	const gnss::Message_NMEA_GGA* gga = nullptr;
 	if (obs && obs->hasMsgClass<gnss::Message_NMEA_GGA>())
-	{
-		gga = &obs->getMsgByClass<gnss::Message_NMEA_GGA>();
-	}
+	{ gga = &obs->getMsgByClass<gnss::Message_NMEA_GGA>(); }
 	const gnss::Message_NMEA_RMC* rmc = nullptr;
 	if (obs && obs->hasMsgClass<gnss::Message_NMEA_RMC>())
-	{
-		rmc = &obs->getMsgByClass<gnss::Message_NMEA_RMC>();
-	}
+	{ rmc = &obs->getMsgByClass<gnss::Message_NMEA_RMC>(); }
 
 	if (gga && gga->fields.fix_quality > 0)
 	{
@@ -299,7 +289,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 	std::vector<std::string> the_labels =
 		AskForObservationByLabelMultiple("Choose the GPS(s) to consider:");
 
-	CVectorDouble time_changes;  // all the shifts
+	CVectorDouble time_changes;	 // all the shifts
 
 	std::map<std::string, double> DeltaTimes;
 
@@ -357,15 +347,14 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 	double average_time_change = 0, std_time_change = 0;
 	mrpt::math::meanAndStd(time_changes, average_time_change, std_time_change);
 
-	if (wxYES == wxMessageBox(
-					 wxString::Format(
-						 _("%u changes, average/std time shift is: %f/%f sec. "
-						   "Do you want to re-order by timestamp?"),
-						 nChanges, average_time_change, std_time_change),
-					 _("Done"), wxYES_NO, this))
-	{
-		OnMenuResortByTimestamp(event);
-	}
+	if (wxYES ==
+		wxMessageBox(
+			wxString::Format(
+				_("%u changes, average/std time shift is: %f/%f sec. "
+				  "Do you want to re-order by timestamp?"),
+				nChanges, average_time_change, std_time_change),
+			_("Done"), wxYES_NO, this))
+	{ OnMenuResortByTimestamp(event); }
 
 	WX_END_TRY
 }
@@ -509,8 +498,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
+			default: break;
 		}  // end switch type
 
 		// Now check if we have 2 gps with the same time stamp:
@@ -592,8 +580,7 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 	{
 		switch (rawlog.getType(i))
 		{
-			default:
-				break;
+			default: break;
 
 			case CRawlog::etSensoryFrame:
 			{
@@ -638,12 +625,13 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 
 	string s("Number of GPS readings for each fix_quality value:\n");
 	static const char* gpsModes[9] = {
-		"Invalid",   "GPS fix (SPS)",  "DGPS",		   "PPS fix",   "RTK",
+		"Invalid",	 "GPS fix (SPS)",  "DGPS",		   "PPS fix",	"RTK",
 		"Float RTK", "Dead reckoning", "Manual input", "Simulation"};
 	for (i = 0; i < 9; i++)
-		s = s + format(
-					"Mode %u : %u readings (Mode: '%s')\n", (unsigned)i,
-					histogramGPSModes[i], gpsModes[i]);
+		s = s +
+			format(
+				"Mode %u : %u readings (Mode: '%s')\n", (unsigned)i,
+				histogramGPSModes[i], gpsModes[i]);
 
 	wxMessageBox(s.c_str(), _("GPS data summary"), wxOK, this);
 
@@ -697,10 +685,11 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 		// Ask the user for the reference?
 		if (!ref_valid &&
-			wxYES != wxMessageBox(
-						 _("Do you want to take the GPS reference "
-						   "automatically from the first found entry?"),
-						 _("Export GPS data"), wxYES_NO))
+			wxYES !=
+				wxMessageBox(
+					_("Do you want to take the GPS reference "
+					  "automatically from the first found entry?"),
+					_("Export GPS data"), wxYES_NO))
 		{
 			wxString s = wxGetTextFromUser(
 				_("Reference Latitude (degrees):"), _("GPS reference"),
@@ -788,7 +777,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 							if (obs->has_GGA_datum())  // && obs->has_RMC_datum
 													   // )
 							{
-								TPoint3D p;  // Transformed coordinates
+								TPoint3D p;	 // Transformed coordinates
 
 								// The first gps datum?
 								if (!ref_valid)
@@ -856,7 +845,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 												  .fields.direction_degrees)
 										: 0.0,
 									p.x, p.y, p.z,
-									(int)i,  // rawlog index
+									(int)i,	 // rawlog index
 									geo.x, geo.y, geo.z);
 								M++;
 
@@ -908,18 +897,18 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 								::fprintf(
 									f_this,
 									"%% "
-									"%14s "  // Time
+									"%14s "	 // Time
 									"%23s %23s %23s "  // lat lon alt
 									"%4s %4s %11s %11s "  // fix #sats speed dir
 									"%23s %23s %23s "  // X Y Z local
-									"%6s "  // rawlog index
+									"%6s "	// rawlog index
 									"%21s %21s %21s "  // X Y Z geocentric
 									"%21s %21s %21s "  // X Y Z Cartessian (GPS)
 									"%21s %21s %21s "  // VX VY VZ Cartessian
 									// (GPS)
 									"%21s %21s %21s "  // VX VY VZ Cartessian
 									// (Local)
-									"%14s "  // SAT Time
+									"%14s "	 // SAT Time
 									"\n",
 									"Time", "Lat", "Lon", "Alt", "fix", "#sats",
 									"speed", "dir", "Local X", "Local Y",
@@ -935,7 +924,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 							if (obs->has_GGA_datum())  // && obs->has_RMC_datum
 													   // )
 							{
-								TPoint3D p;  // Transformed coordinates
+								TPoint3D p;	 // Transformed coordinates
 
 								// The first gps datum?
 								if (!ref_valid)
@@ -1010,17 +999,17 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									"%23.16f %23.16f %23.6f "  // lat lon alt
 									"%4u %4u %11.6f %11.6f "  // fix #sats speed
 									// dir
-									"%23.16f %23.16f %23.16f "  // X Y Z local
-									"%6i "  // rawlog index
-									"%21.16f %21.16f %21.16f "  // X Y Z
+									"%23.16f %23.16f %23.16f "	// X Y Z local
+									"%6i "	// rawlog index
+									"%21.16f %21.16f %21.16f "	// X Y Z
 									// geocentric
-									"%21.16f %21.16f %21.16f "  // X Y Z
+									"%21.16f %21.16f %21.16f "	// X Y Z
 									// Cartessian
 									// (GPS)
-									"%21.16f %21.16f %21.16f "  // VX VY VZ
+									"%21.16f %21.16f %21.16f "	// VX VY VZ
 									// Cartessian
 									// (GPS)
-									"%21.16f %21.16f %21.16f "  // VX VY VZ
+									"%21.16f %21.16f %21.16f "	// VX VY VZ
 									// Cartessian
 									// (Local)
 									"%14.4f "  // SAT Time
@@ -1050,7 +1039,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 												  .fields.direction_degrees)
 										: 0.0,
 									p.x, p.y, p.z,
-									(int)i,  // rawlog index
+									(int)i,	 // rawlog index
 									geo.x, geo.y, geo.z, cart_pos.x, cart_pos.y,
 									cart_pos.z, cart_vel.x, cart_vel.y,
 									cart_vel.z, cart_vel_local.x,
@@ -1076,8 +1065,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 				}
 				break;
 
-				default:
-					break;
+				default: break;
 			}
 		}
 

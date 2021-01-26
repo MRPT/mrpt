@@ -7,11 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/serialization/stl_serialization.h>
+
 #include <Eigen/Dense>
+
 #include "CPoseInterpolatorBase.hpp"  // templ impl
 
 using namespace mrpt::poses;
@@ -21,7 +23,7 @@ IMPLEMENTS_SERIALIZABLE(CPose3DInterpolator, CSerializable, mrpt::poses)
 uint8_t CPose3DInterpolator::serializeGetVersion() const { return 1; }
 void CPose3DInterpolator::serializeTo(mrpt::serialization::CArchive& out) const
 {
-	out << m_path;  // v1: change container element CPose3D->TPose3D
+	out << m_path;	// v1: change container element CPose3D->TPose3D
 }
 void CPose3DInterpolator::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -44,8 +46,7 @@ void CPose3DInterpolator::serializeFrom(
 			in >> m_path;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -151,7 +152,7 @@ void CPoseInterpolatorBase<3>::impl_interpolation(
 				math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, Z);
 			out_interp.yaw =
 				math::leastSquareLinearFit<double, decltype(ts), 4>(
-					td, ts, yaw, true);  // Wrap 2pi
+					td, ts, yaw, true);	 // Wrap 2pi
 			out_interp.pitch =
 				math::leastSquareLinearFit<double, decltype(ts), 4>(
 					td, ts, pitch, true);
@@ -169,7 +170,7 @@ void CPoseInterpolatorBase<3>::impl_interpolation(
 				math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, Z);
 			out_interp.yaw =
 				math::leastSquareLinearFit<double, decltype(ts), 4>(
-					td, ts, yaw, true);  // Wrap 2pi
+					td, ts, yaw, true);	 // Wrap 2pi
 			out_interp.pitch =
 				math::leastSquareLinearFit<double, decltype(ts), 4>(
 					td, ts, pitch, true);
@@ -224,9 +225,8 @@ void CPoseInterpolatorBase<3>::impl_interpolation(
 		}
 		break;
 
-		default:
-			THROW_EXCEPTION("Unknown value for interpolation method!");
-	};  // end switch
+		default: THROW_EXCEPTION("Unknown value for interpolation method!");
+	};	// end switch
 }
 
 // Explicit instantations:

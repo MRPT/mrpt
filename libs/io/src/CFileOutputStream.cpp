@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-
+#include "io-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/CFileOutputStream.h>
 
@@ -69,17 +69,10 @@ uint64_t CFileOutputStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 
 	switch (Origin)
 	{
-		case sFromBeginning:
-			way = ios_base::beg;
-			break;
-		case sFromCurrent:
-			way = ios_base::cur;
-			break;
-		case sFromEnd:
-			way = ios_base::end;
-			break;
-		default:
-			THROW_EXCEPTION("Invalid value for 'Origin'");
+		case sFromBeginning: way = ios_base::beg; break;
+		case sFromCurrent: way = ios_base::cur; break;
+		case sFromEnd: way = ios_base::end; break;
+		default: THROW_EXCEPTION("Invalid value for 'Origin'");
 	}
 
 	m_of.seekp(offset, way);
@@ -102,8 +95,7 @@ uint64_t CFileOutputStream::getTotalBytesCount() const
 uint64_t CFileOutputStream::getPosition() const
 {
 	auto& f = const_cast<std::ofstream&>(m_of);
-	if (m_of.is_open())
-		return f.tellp();
+	if (m_of.is_open()) return f.tellp();
 	else
 		return 0;
 }

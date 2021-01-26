@@ -9,10 +9,9 @@
 
 #pragma once
 
+#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
-
-#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 
 namespace mrpt::graphslam::deciders
 {

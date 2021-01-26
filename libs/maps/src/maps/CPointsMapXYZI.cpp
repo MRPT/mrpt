@@ -8,7 +8,7 @@
 +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/bits_mem.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
@@ -19,6 +19,7 @@
 #include <mrpt/serialization/aligned_serialization.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 #include "CPointsMap_crtp_common.h"
@@ -153,8 +154,7 @@ void CPointsMapXYZI::serializeFrom(
 			likelihoodOptions.readFromStream(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -269,10 +269,7 @@ bool CPointsMapXYZI::loadXYZI_from_text_file(const std::string& file)
 		std::stringstream ss(line);
 
 		float x, y, z, i;
-		if (!(ss >> x >> y >> z >> i))
-		{
-			break;
-		}
+		if (!(ss >> x >> y >> z >> i)) { break; }
 
 		insertPointFast(x, y, z);
 		m_intensity.push_back(i);
@@ -452,8 +449,7 @@ bool CPointsMapXYZI::loadFromKittiVelodyneFile(const std::string& filename)
 			constexpr std::size_t nToRead = sizeof(float) * 4;
 			float xyzi[4];
 			std::size_t nRead = f->Read(&xyzi, nToRead);
-			if (nRead == 0)
-				break;  // EOF
+			if (nRead == 0) break;	// EOF
 			else if (nRead == nToRead)
 			{
 				m_x.push_back(xyzi[0]);

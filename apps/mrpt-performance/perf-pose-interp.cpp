@@ -43,10 +43,7 @@ double pose_interp_test(int a1, int a2)
 	std::vector<mrpt::Clock::duration> Ats(N);
 	for (long i = 0; i < N; i++)
 	{
-		if (INSERT_AT_END)
-		{
-			Ats[i] = dt;
-		}
+		if (INSERT_AT_END) { Ats[i] = dt; }
 		else
 		{
 			std::chrono::duration<double> randomDuration(

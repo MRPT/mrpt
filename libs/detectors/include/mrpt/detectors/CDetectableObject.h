@@ -11,6 +11,7 @@
 
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <cmath>
 
 namespace mrpt::detectors
@@ -38,7 +39,7 @@ class CDetectableObject : public mrpt::serialization::CSerializable
 		obs = newObs;
 	};
 
-};  // End of class
+};	// End of class
 
 class CDetectable2D : public CDetectableObject
 {
@@ -85,5 +86,5 @@ class CDetectable3D : public CDetectable2D
 	/** Z coordinate of detected object */
 	float m_z;
 
-};  // End of class
+};	// End of class
 }  // namespace mrpt::detectors

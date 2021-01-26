@@ -11,10 +11,6 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/poses/CPose3DPDFGaussianInf.h>
-#include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/system/filesystem.h>
-
 #include <mrpt/graphslam/ERD/CEmptyERD.h>
 #include <mrpt/graphslam/ERD/CICPCriteriaERD.h>
 #include <mrpt/graphslam/ERD/CLoopCloserERD.h>
@@ -22,6 +18,9 @@
 #include <mrpt/graphslam/NRD/CEmptyNRD.h>
 #include <mrpt/graphslam/NRD/CFixedIntervalsNRD.h>
 #include <mrpt/graphslam/NRD/CICPCriteriaNRD.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/system/filesystem.h>
 
 #include <iostream>
 #include <string>

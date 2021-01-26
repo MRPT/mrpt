@@ -11,10 +11,10 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 
-#include "CWindowManager.h"
-
 #include <map>
 #include <string>
+
+#include "CWindowManager.h"
 
 namespace mrpt::graphslam::detail
 {

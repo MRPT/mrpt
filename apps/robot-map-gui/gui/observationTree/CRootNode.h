@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "CNode.h"
-
 #include "mrpt/maps/CSimpleMap.h"
 
 class CRootNode : public CNode

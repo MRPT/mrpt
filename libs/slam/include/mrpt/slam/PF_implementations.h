@@ -19,6 +19,7 @@
 #include <mrpt/random.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TKLDParams.h>
+
 #include <cmath>
 
 /** \file PF_implementations.h
@@ -49,7 +50,7 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 {
 	auto* me = static_cast<MYSELF*>(this);
 
-	if (actions != nullptr)  // A valid action?
+	if (actions != nullptr)	 // A valid action?
 	{
 		mrpt::obs::CActionRobotMovement2D::Ptr robotMovement2D =
 			actions->getBestMovementEstimation();
@@ -95,10 +96,9 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		}
 	}
 
-	const bool SFhasValidObservations =
-		(sf == nullptr) ? false
-						: PF_SLAM_implementation_doWeHaveValidObservations(
-							  me->m_particles, sf);
+	const bool SFhasValidObservations = (sf == nullptr)
+		? false
+		: PF_SLAM_implementation_doWeHaveValidObservations(me->m_particles, sf);
 
 	// All the things we need?
 	if (!((m_accumRobotMovement2DIsValid || m_accumRobotMovement3DIsValid) &&
@@ -112,7 +112,7 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		m_movementDrawer.setPosePDF(
 			m_accumRobotMovement3D);  // <--- Set mov. drawer
 		m_accumRobotMovement3DIsValid =
-			false;  // Reset odometry for next iteration
+			false;	// Reset odometry for next iteration
 	}
 	else
 	{
@@ -123,9 +123,9 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 		ASSERT_(theResultingRobotMov.poseChange);
 		m_movementDrawer.setPosePDF(
-			*theResultingRobotMov.poseChange);  // <--- Set mov. drawer
+			*theResultingRobotMov.poseChange);	// <--- Set mov. drawer
 		m_accumRobotMovement2DIsValid =
-			false;  // Reset odometry for next iteration
+			false;	// Reset odometry for next iteration
 	}
 	return true;
 }  // end of PF_SLAM_implementation_gatherActionsCheckBothActObs
@@ -288,7 +288,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			mrpt::poses::CPose3D increment_i;
 			size_t N = 1;
 
-			do  // THE MAIN DRAW SAMPLING LOOP
+			do	// THE MAIN DRAW SAMPLING LOOP
 			{
 				// Draw a robot movement increment:
 				m_movementDrawer.drawSample(increment_i);
@@ -329,7 +329,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 					// K = K + 1
 					size_t K = stateSpaceBins.size();
-					if (K > 1)  //&& newParticles.size() >
+					if (K > 1)	//&& newParticles.size() >
 					// options.KLD_minSampleSize )
 					{
 						// Update the number of m_particles!!
@@ -365,7 +365,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		{
 			bool pose_is_valid;
 			const mrpt::math::TPose3D partPose =
-				getLastPose(i, pose_is_valid);  // Take the particle data:
+				getLastPose(i, pose_is_valid);	// Take the particle data:
 			auto partPose2 = mrpt::poses::CPose3D(partPose);
 			const double obs_log_lik =
 				PF_SLAM_computeObservationLikelihoodForParticle(
@@ -445,7 +445,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	const mrpt::poses::CPose3D oldPose =
 		mrpt::poses::CPose3D(me->getLastPose(index, pose_is_valid));
 	mrpt::math::CVectorDouble vectLiks(
-		N, 0);  // The vector with the individual log-likelihoods.
+		N, 0);	// The vector with the individual log-likelihoods.
 	mrpt::poses::CPose3D drawnSample;
 	for (size_t q = 0; q < N; q++)
 	{
@@ -474,7 +474,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 	// Save into the object:
 	me->m_pfAuxiliaryPFOptimal_estimatedProb[index] =
-		avrgLogLik;  // log( accum / N );
+		avrgLogLik;	 // log( accum / N );
 	me->m_pfAuxiliaryPFOptimal_maxLikelihood[index] = maxLik;
 
 	if (PF_options.pfAuxFilterOptimal_MLE)
@@ -484,7 +484,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	// and compute the resulting probability of this particle:
 	// ------------------------------------------------------------
 	return me->m_particles[index].log_w +
-		   me->m_pfAuxiliaryPFOptimal_estimatedProb[index];
+		me->m_pfAuxiliaryPFOptimal_estimatedProb[index];
 
 	MRPT_END
 }  // end of PF_SLAM_particlesEvaluator_AuxPFOptimal
@@ -535,7 +535,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 		// Combined log_likelihood: Previous weight * obs_likelihood:
 		return cur_logweight +
-			   myObj->m_pfAuxiliaryPFStandard_estimatedProb[index];
+			myObj->m_pfAuxiliaryPFStandard_estimatedProb[index];
 	}
 	else
 	{
@@ -551,7 +551,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		ASSERT_(N > 1);
 
 		mrpt::math::CVectorDouble vectLiks(
-			N, 0);  // The vector with the individual log-likelihoods.
+			N, 0);	// The vector with the individual log-likelihoods.
 		mrpt::poses::CPose3D drawnSample;
 		for (size_t q = 0; q < N; q++)
 		{
@@ -580,7 +580,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 		// Save into the object:
 		myObj->m_pfAuxiliaryPFStandard_estimatedProb[index] =
-			avrgLogLik;  // log( accum / N );
+			avrgLogLik;	 // log( accum / N );
 
 		myObj->m_pfAuxiliaryPFOptimal_maxLikelihood[index] = maxLik;
 		if (PF_options.pfAuxFilterOptimal_MLE)
@@ -590,7 +590,7 @@ double PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		// and compute the resulting probability of this particle:
 		// ------------------------------------------------------------
 		return cur_logweight +
-			   myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index];
+			myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index];
 	}
 	MRPT_END
 }
@@ -624,7 +624,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	// ----------------------------------------------------------------------
 	if (!PF_SLAM_implementation_gatherActionsCheckBothActObs<BINTYPE>(
 			actions, sf))
-		return;  // Nothing we can do here...
+		return;	 // Nothing we can do here...
 	// OK, we have m_movementDrawer loaded and observations...let's roll!
 
 	// -------------------------------------------------------------------------------
@@ -840,11 +840,12 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		std::vector<size_t> oldPartIdxsStillNotPropragated(
 			Np1);  // Use a list since we'll use "erase" a lot here.
 		for (size_t k = 0; k < Np1; k++)
-			oldPartIdxsStillNotPropragated[k] = k;  //.push_back(k);
+			oldPartIdxsStillNotPropragated[k] = k;	//.push_back(k);
 
 		const size_t Np = stateSpaceBinsLastTimestepParticles.size();
 		std::vector<size_t> permutationPathsAuxVector(Np);
-		for (size_t k = 0; k < Np; k++) permutationPathsAuxVector[k] = k;
+		for (size_t k = 0; k < Np; k++)
+			permutationPathsAuxVector[k] = k;
 
 		// Instead of picking randomly from "permutationPathsAuxVector", we can
 		// shuffle it now just once,
@@ -857,7 +858,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 		TSetStateSpaceBins stateSpaceBins;
 
-		do  // "N" is the index of the current "new particle":
+		do	// "N" is the index of the current "new particle":
 		{
 			// Generate a new particle:
 			//
@@ -912,12 +913,11 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 					// remove it from the list:
 					if (oldPartIdxsStillNotPropragated.size())
 					{
-						const size_t idx =
-							mrpt::random::getRandomGenerator()
-								.drawUniform32bit() %
+						const size_t idx = mrpt::random::getRandomGenerator()
+											   .drawUniform32bit() %
 							oldPartIdxsStillNotPropragated.size();
 						auto it = oldPartIdxsStillNotPropragated.begin() +
-								  idx;  // advance(it,idx);
+							idx;  // advance(it,idx);
 						k = *it;
 						oldPartIdxsStillNotPropragated.erase(it);
 					}
@@ -1050,7 +1050,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 	bool pose_is_valid;
 	const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(
-		getLastPose(k, pose_is_valid));  // current pose of the k'th particle
+		getLastPose(k, pose_is_valid));	 // current pose of the k'th particle
 	// ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
 
 	//   (b) Rejection-sampling: Draw a new robot pose from x[k],
@@ -1072,7 +1072,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 		{  // APF:
 			m_movementDrawer.drawSample(movementDraw);
 			out_newPose.composeFrom(
-				oldPose, movementDraw);  // newPose = oldPose + movementDraw;
+				oldPose, movementDraw);	 // newPose = oldPose + movementDraw;
 			// Compute likelihood:
 			poseLogLik = PF_SLAM_computeObservationLikelihoodForParticle(
 				PF_options, k, *sf, out_newPose);
@@ -1105,7 +1105,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 
 				out_newPose.composeFrom(
 					oldPose,
-					movementDraw);  // out_newPose = oldPose + movementDraw;
+					movementDraw);	// out_newPose = oldPose + movementDraw;
 
 				// Compute acceptance probability:
 				poseLogLik = PF_SLAM_computeObservationLikelihoodForParticle(
@@ -1124,7 +1124,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 				if (ratioLikLik > 1)
 				{
 					m_pfAuxiliaryPFOptimal_maxLikelihood[k] =
-						poseLogLik;  //  :'-( !!!
+						poseLogLik;	 //  :'-( !!!
 					// acceptanceProb = 0;		// Keep searching or keep this
 					// one?
 				}
@@ -1165,8 +1165,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			const double weightFact =
 				(poseLogLik - m_pfAuxiliaryPFStandard_estimatedProb[k]) *
 				PF_options.powFactor;
-			if (doResample)
-				out_newParticleLogWeight = weightFact;
+			if (doResample) out_newParticleLogWeight = weightFact;
 			else
 				out_newParticleLogWeight =
 					weightFact + me->m_particles[k].log_w;

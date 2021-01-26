@@ -10,6 +10,7 @@
 #include <mrpt/io/CPipe.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <iostream>
 #include <thread>
 

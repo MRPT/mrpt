@@ -258,19 +258,19 @@ class CDisplayWindowGUI : public nanogui::Screen
 	SubWindows m_subWindows{*this};
 };
 
-#define NANOGUI_START_TRY \
-	try                   \
+#define NANOGUI_START_TRY                                                      \
+	try                                                                        \
 	{
-#define NANOGUI_END_TRY(_parentWindowRef_)                             \
-	}                                                                  \
-	catch (const std::exception& e)                                    \
-	{                                                                  \
-		const auto sErr = mrpt::exception_to_str(e);                   \
-		auto dlg = new nanogui::MessageDialog(                         \
-			&_parentWindowRef_, nanogui::MessageDialog::Type::Warning, \
-			"Exception", sErr);                                        \
-		dlg->setCallback([](int /*result*/) {});                       \
+#define NANOGUI_END_TRY(_parentWindowRef_)                                     \
+	}                                                                          \
+	catch (const std::exception& e)                                            \
+	{                                                                          \
+		const auto sErr = mrpt::exception_to_str(e);                           \
+		auto dlg = new nanogui::MessageDialog(                                 \
+			&_parentWindowRef_, nanogui::MessageDialog::Type::Warning,         \
+			"Exception", sErr);                                                \
+		dlg->setCallback([](int /*result*/) {});                               \
 	}
 
 }  // namespace mrpt::gui
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI

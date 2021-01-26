@@ -48,12 +48,11 @@ inline typename MATRIXLIKE::Scalar normalPDFInf(
 	T ret = ::exp(
 		static_cast<T>(-0.5) *
 		mrpt::math::multiply_HtCH_scalar(x - mu, cov_inv));
-	return scaled_pdf
-			   ? ret
-			   : ret * ::sqrt(
-						   cov_inv.det() / ::pow(
-											   static_cast<T>(M_2PI),
-											   static_cast<T>(cov_inv.rows())));
+	return scaled_pdf ? ret
+					  : ret *
+			::sqrt(cov_inv.det() /
+				   ::pow(
+					   static_cast<T>(M_2PI), static_cast<T>(cov_inv.rows())));
 	MRPT_END
 }
 
@@ -87,10 +86,10 @@ typename MATRIXLIKE::Scalar normalPDF(
 	return std::exp(
 			   static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
 			   mrpt::math::multiply_HtCH_scalar(d, cov.inverse_LLt())) /
-		   (::pow(
-				static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
-				static_cast<typename MATRIXLIKE::Scalar>(0.5 * cov.cols())) *
-			::sqrt(cov.det()));
+		(::pow(
+			 static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
+			 static_cast<typename MATRIXLIKE::Scalar>(0.5 * cov.cols())) *
+		 ::sqrt(cov.det()));
 	MRPT_END
 }
 
@@ -118,8 +117,9 @@ double KLD_Gaussians(
 	MATRIXLIKE2 cov1_inv;
 	cov1.inverse_LLt(cov1_inv);
 	const VECTORLIKE1 mu_difs = mu0 - mu1;
-	return 0.5 * (log(cov1.det() / cov0.det()) + (cov1_inv * cov0).trace() +
-				  multiply_HCHt_scalar(mu_difs, cov1_inv) - N);
+	return 0.5 *
+		(log(cov1.det() / cov0.det()) + (cov1_inv * cov0).trace() +
+		 multiply_HCHt_scalar(mu_difs, cov1_inv) - N);
 	MRPT_END
 }
 
@@ -231,7 +231,7 @@ void confidenceIntervals(
 	const std::vector<double> H =
 		mrpt::math::histogram(data, x_min, x_max, histogramNumBins);
 	std::vector<double> Hc;
-	cumsum(H, Hc);  // CDF
+	cumsum(H, Hc);	// CDF
 	Hc *= 1.0 / mrpt::math::maximum(Hc);
 
 	auto it_low = std::lower_bound(Hc.begin(), Hc.end(), confidenceInterval);

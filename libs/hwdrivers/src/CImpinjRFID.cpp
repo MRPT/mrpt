@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 #include <mrpt/system/os.h>
 
@@ -155,9 +155,9 @@ bool CImpinjRFID::getObservation(mrpt::obs::CObservationRFID& obs)
 			// Fill the observation
 			obs.tag_readings.resize(
 				obs.tag_readings.size() +
-				1);  // Alloc space for one more tag obs
+				1);	 // Alloc space for one more tag obs
 			mrpt::obs::CObservationRFID::TTagReading& new_tag =
-				*obs.tag_readings.rbegin();  // Get a reference to the latest
+				*obs.tag_readings.rbegin();	 // Get a reference to the latest
 			// new tag structure
 
 			// Fill in fields in "new_tag":
@@ -170,8 +170,7 @@ bool CImpinjRFID::getObservation(mrpt::obs::CObservationRFID& obs)
 			// "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr <<
 			// std::endl;
 		}
-		if (receivedSomething)
-			return true;
+		if (receivedSomething) return true;
 		else
 			return false;
 	}

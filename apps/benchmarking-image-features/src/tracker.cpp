@@ -15,6 +15,7 @@
   ---------------------------------------------------------------*/
 
 #include "tracker.h"
+
 #include <set>
 
 using mrpt::system::CTicTac;
@@ -54,33 +55,33 @@ cv::Mat Tracker::trackThemAll(
 	// To see all the existing params and documentation, see
 	// mrpt::vision::CGenericFeatureTracker
 	tracker->extra_params["remove_lost_features"] =
-		remove_lost_feats;  //;1;   // automatically remove out-of-image and
+		remove_lost_feats;	//;1;   // automatically remove out-of-image and
 	// badly tracked features
 
 	tracker->extra_params["add_new_features"] =
-		add_new_feats;  // 1;   // track, AND ALSO, add new features
+		add_new_feats;	// 1;   // track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"] = 32;
 	tracker->extra_params["minimum_KLT_response_to_add"] = 10;
-	tracker->extra_params["add_new_feat_max_features"] = max_feats;  // 350;
-	tracker->extra_params["add_new_feat_patch_size"] = patch_size;  // 11;
+	tracker->extra_params["add_new_feat_max_features"] = max_feats;	 // 350;
+	tracker->extra_params["add_new_feat_patch_size"] = patch_size;	// 11;
 
-	tracker->extra_params["update_patches_every"] = 0;  // Don't update patches.
+	tracker->extra_params["update_patches_every"] = 0;	// Don't update patches.
 
 	tracker->extra_params["check_KLT_response_every"] =
-		5;  // Re-check the KLT-response to assure features are in good points.
+		5;	// Re-check the KLT-response to assure features are in good points.
 	tracker->extra_params["minimum_KLT_response"] = 5;
 
 	// Specific params for "CFeatureTracker_KL"
 	// ------------------------------------------------------
 	tracker->extra_params["window_width"] = window_width;  // 5;
-	tracker->extra_params["window_height"] = window_height;  // 5;
+	tracker->extra_params["window_height"] = window_height;	 // 5;
 	// tracker->extra_params["LK_levels"] = 3;
 	// tracker->extra_params["LK_max_iters"] = 10;
 	// tracker->extra_params["LK_epsilon"] = 0.1;
 	// tracker->extra_params["LK_max_tracking_error"] = 150;
 
 	long current_num = tracking_image_counter % files_fullpath_tracking.size();
-	CImage theImg;  // The grabbed image:
+	CImage theImg;	// The grabbed image:
 	theImg.loadFromFile(files_fullpath_tracking.at(current_num));
 
 	// Take the resolution upon first valid frame.

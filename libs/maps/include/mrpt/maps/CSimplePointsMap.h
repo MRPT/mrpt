@@ -55,7 +55,7 @@ class CSimplePointsMap : public CPointsMap
 	   from CPointsMap
 		@{ */
 	void reserve(size_t newLength) override;  // See base class docs
-	void resize(size_t newLength) override;  // See base class docs
+	void resize(size_t newLength) override;	 // See base class docs
 	void setSize(size_t newLength) override;  // See base class docs
 	/** The virtual method for \a insertPoint() *without* calling
 	 * mark_as_modified()   */
@@ -140,7 +140,7 @@ class CSimplePointsMap : public CPointsMap
 	/** Rendering as 3D object options */
 	mrpt::maps::CPointsMap::TRenderOptions renderOpts;
 	MAP_DEFINITION_END(CSimplePointsMap)
-};  // End of class def.
+};	// End of class def.
 }  // namespace maps
 
 namespace opengl
@@ -192,7 +192,7 @@ class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
 	{
 		m_obj.setPointFast(idx, 0, 0, 0);
 	}
-};  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
+};	// end of PointCloudAdapter<mrpt::maps::CPointsMap>
 }  // namespace opengl
 
 }  // namespace mrpt

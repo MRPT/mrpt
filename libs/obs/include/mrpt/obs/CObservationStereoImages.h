@@ -121,7 +121,7 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 
 	void load() const override;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs
 // Add for declaration of mexplus::from template specialization

@@ -18,6 +18,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace std;
@@ -90,8 +91,7 @@ void TestSLERP()
 	{
 		// Compute the time:
 		double t = ::fmod(tic.Tac(), MOVE_PERIOD2);
-		if (t < MOVE_PERIOD)
-			t /= MOVE_PERIOD;
+		if (t < MOVE_PERIOD) t /= MOVE_PERIOD;
 		else
 			t = 1 - (t - MOVE_PERIOD) / MOVE_PERIOD;
 

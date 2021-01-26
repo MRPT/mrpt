@@ -7,9 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"  // Precompiled headers
-
+#include "comms-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CInterfaceFTDI.h>
+
 #include <algorithm>  // min()
 
 using namespace mrpt;
@@ -36,7 +37,7 @@ size_t CInterfaceFTDI::Read(void* Buffer, size_t Count)
 
 		ftdi_read(
 			buf, to_read,
-			&nActualRead);  // ftdi_read(Buffer,(unsigned long)Count, &ret );
+			&nActualRead);	// ftdi_read(Buffer,(unsigned long)Count, &ret );
 
 		// Save data into the circular buffer:
 		m_readBuffer.push_many(buf, nActualRead);

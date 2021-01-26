@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/obs/CObservation6DFeatures.h>
 #include <mrpt/serialization/CArchive.h>
@@ -68,8 +68,7 @@ void CObservation6DFeatures::serializeFrom(
 			in >> sensorLabel >> timestamp;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

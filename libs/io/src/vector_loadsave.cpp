@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-
+#include "io-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
@@ -65,7 +65,8 @@ bool mrpt::io::loadTextFile(
 	std::ifstream f(fileName);
 	if (!f.is_open()) return false;
 	std::string s;
-	while (std::getline(f, s)) o.emplace_back(std::move(s));
+	while (std::getline(f, s))
+		o.emplace_back(std::move(s));
 	return true;
 }
 
@@ -94,7 +95,8 @@ bool mrpt::io::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (float it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
+	for (float it : vec)
+		os::fprintf(f, byRows ? "%e " : "%e\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 
@@ -108,7 +110,8 @@ bool mrpt::io::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (double it : vec) os::fprintf(f, byRows ? "%e " : "%e\n", it);
+	for (double it : vec)
+		os::fprintf(f, byRows ? "%e " : "%e\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 
@@ -122,7 +125,8 @@ bool mrpt::io::vectorToTextFile(
 	FILE* f = os::fopen(fileName.c_str(), append ? "at" : "wt");
 	if (!f) return false;
 
-	for (int it : vec) os::fprintf(f, byRows ? "%i " : "%i\n", it);
+	for (int it : vec)
+		os::fprintf(f, byRows ? "%i " : "%i\n", it);
 
 	if (byRows) os::fprintf(f, "\n");
 

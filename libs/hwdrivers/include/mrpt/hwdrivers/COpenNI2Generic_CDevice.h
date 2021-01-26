@@ -146,10 +146,7 @@ class COpenNI2Generic::CDevice
 		for (int xc = 0; xc < w; ++xc, ++s)
 		{
 			int x = xc;
-			if (isMirrorMode())
-			{
-				x = w - xc - 1;
-			}
+			if (isMirrorMode()) { x = w - xc - 1; }
 			setPixel(*s, rgb, x, y);
 		}
 	}
@@ -185,15 +182,13 @@ class COpenNI2Generic::CDevice
 	void setMirrorMode(bool mode) { m_mirror = mode; }
 	bool hasColor() const
 	{
-		if (!m_streams[COLOR_STREAM])
-			return false;
+		if (!m_streams[COLOR_STREAM]) return false;
 		else
 			return m_streams[COLOR_STREAM]->isValid();
 	}
 	bool hasDepth() const
 	{
-		if (!m_streams[DEPTH_STREAM])
-			return false;
+		if (!m_streams[DEPTH_STREAM]) return false;
 		else
 			return m_streams[DEPTH_STREAM]->isValid();
 	}
@@ -214,14 +209,9 @@ class COpenNI2Generic::CDevice
 
 	bool getCameraParam(int streamType, mrpt::img::TCamera& param) const
 	{
-		if (streamType < 0 || streamType >= STREAM_TYPE_SIZE)
-		{
-			return false;
-		}
+		if (streamType < 0 || streamType >= STREAM_TYPE_SIZE) { return false; }
 		if (!m_streams[streamType] || m_streams[streamType]->isValid() == false)
-		{
-			return false;
-		}
+		{ return false; }
 		m_streams[streamType]->getCameraParam(param);
 		return true;
 	}
@@ -237,6 +227,6 @@ class COpenNI2Generic::CDevice
    private:
 	bool getSerialNumber(std::string& sn);
 
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 };
 }  // namespace mrpt::hwdrivers

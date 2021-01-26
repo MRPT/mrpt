@@ -7,20 +7,19 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/opengl/CRenderizable.h>  // Include these before windows.h!!
+#include <mrpt/opengl/CRenderizable.h>	// Include these before windows.h!!
 #include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <mutex>
-
-#include <mrpt/opengl/opengl_api.h>
 
 using namespace std;
 using namespace mrpt;
@@ -86,8 +85,7 @@ void CRenderizable::writeToStreamRender(
 
 	if (!all_scales_unity)
 	{
-		if (all_scales_equal)
-			out << m_scale_x;
+		if (all_scales_equal) out << m_scale_x;
 		else
 			out << m_scale_x << m_scale_y << m_scale_z;
 	}
@@ -148,8 +146,7 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 				m_pose.z(z);
 				m_pose.setYawPitchRoll(yaw, pitch, roll);
 
-				if (all_scales_unity)
-					m_scale_x = m_scale_y = m_scale_z = 1;
+				if (all_scales_unity) m_scale_x = m_scale_y = m_scale_z = 1;
 				else
 				{
 					if (all_scales_equal_but_not_unity)
@@ -162,8 +159,7 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 				}
 
 				in >> m_show_name >> m_visible;
-				if (serialization_version >= 1)
-					in >> m_representativePoint;
+				if (serialization_version >= 1) in >> m_representativePoint;
 				else
 					m_representativePoint = mrpt::math::TPoint3Df(0, 0, 0);
 			}

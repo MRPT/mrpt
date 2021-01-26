@@ -16,11 +16,10 @@
 	 further instructions, the man-page or online docs at:
 		 https://www.mrpt.org/list-of-mrpt-apps/application-graph-slam
  ---------------------------------------------------------------*/
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/graphs.h>
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui.h>
-
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 
 using namespace mrpt;
 using namespace mrpt::graphslam;
@@ -32,31 +31,31 @@ using namespace mrpt::math;
 using namespace std;
 
 // Declarations:
-#define VERBOSE_COUT \
+#define VERBOSE_COUT                                                           \
 	if (verbose) std::cout << "[graph-slam] "
 
-#define DECLARE_OP_FUNCTION(_NAME)                                      \
-	void _NAME(                                                         \
-		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline, \
+#define DECLARE_OP_FUNCTION(_NAME)                                             \
+	void _NAME(                                                                \
+		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,        \
 		bool verbose)
 
-#define IMPLEMENT_OP_FUNCTION(_NAME)                                         \
-	template <class GRAPHTYPE>                                               \
-	void _NAME##impl(                                                        \
-		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,      \
-		bool verbose);                                                       \
-	void _NAME(                                                              \
-		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,      \
-		bool verbose)                                                        \
-	{                                                                        \
-		if (!is3D)                                                           \
-			_NAME##impl<CNetworkOfPoses2D>(in_file, is3D, cmdline, verbose); \
-		else                                                                 \
-			_NAME##impl<CNetworkOfPoses3D>(in_file, is3D, cmdline, verbose); \
-	}                                                                        \
-	template <class GRAPHTYPE>                                               \
-	void _NAME##impl(                                                        \
-		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,      \
+#define IMPLEMENT_OP_FUNCTION(_NAME)                                           \
+	template <class GRAPHTYPE>                                                 \
+	void _NAME##impl(                                                          \
+		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,        \
+		bool verbose);                                                         \
+	void _NAME(                                                                \
+		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,        \
+		bool verbose)                                                          \
+	{                                                                          \
+		if (!is3D)                                                             \
+			_NAME##impl<CNetworkOfPoses2D>(in_file, is3D, cmdline, verbose);   \
+		else                                                                   \
+			_NAME##impl<CNetworkOfPoses3D>(in_file, is3D, cmdline, verbose);   \
+	}                                                                          \
+	template <class GRAPHTYPE>                                                 \
+	void _NAME##impl(                                                          \
+		const std::string& in_file, bool is3D, TCLAP::CmdLine& cmdline,        \
 		bool verbose)
 
 /**
@@ -178,10 +177,7 @@ int main(int argc, char** argv)
 		{
 			if (arg_op->isSet())
 			{
-				if (selected_op.empty())
-				{
-					selected_op = arg_op->getName();
-				}
+				if (selected_op.empty()) { selected_op = arg_op->getName(); }
 				else
 					throw std::runtime_error(
 						"Exactly one operation must be indicated on command "
@@ -277,7 +273,7 @@ IMPLEMENT_OP_FUNCTION(op_info)
 // -----------------------------------------------------------------------------------
 IMPLEMENT_OP_FUNCTION(op_dijkstra)
 {
-	const bool save_to_file = arg_output_file.isSet();  // Output to file??
+	const bool save_to_file = arg_output_file.isSet();	// Output to file??
 	const bool display_3D = arg_view.isSet();  // Output to 3D view??
 
 	if (!save_to_file && !display_3D)
@@ -328,7 +324,7 @@ IMPLEMENT_OP_FUNCTION(op_dijkstra)
 // -----------------------------------------------------------------------------------
 IMPLEMENT_OP_FUNCTION(op_levmarq)
 {
-	const bool save_to_file = arg_output_file.isSet();  // Output to file??
+	const bool save_to_file = arg_output_file.isSet();	// Output to file??
 	const bool display_3D = arg_view.isSet();  // Output to 3D view??
 	const bool skip_dijkstra = arg_no_span.isSet();
 

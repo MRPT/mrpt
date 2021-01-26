@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/comms/CSerialPort.h>
+
 #include <iostream>
 #include <memory>
 

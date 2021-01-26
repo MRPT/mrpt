@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/math/matrix_serialization.h>  // for >> ops
+#include <mrpt/math/matrix_serialization.h>	 // for >> ops
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <mrpt/serialization/CArchive.h>  // for >> ops
@@ -270,8 +270,7 @@ class CGeneralizedEllipsoidTemplate
 				m_needToRecomputeEigenVals = true;
 			}
 			break;
-			default:
-				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+			default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 		};
 		CRenderizable::notifyChange();
 	}

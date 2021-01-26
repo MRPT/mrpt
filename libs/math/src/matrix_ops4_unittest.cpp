@@ -18,6 +18,7 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -127,7 +128,7 @@ TEST(Matrices, laplacian)
 
 	const double real_laplacian_vals[6 * 6] = {
 		2, -1, 0,  0, -1, 0,  -1, 3,  -1, 0,  -1, 0, 0, -1, 2, -1, 0, 0,
-		0, 0,  -1, 3, -1, -1, -1, -1, 0,  -1, 3,  0, 0, 0,  0, -1, 0, 1};
+		0, 0,  -1, 3, -1, -1, -1, -1, 0,  -1, 3,  0, 0, 0,	0, -1, 0, 1};
 	const CMatrixDouble GT_L(6, 6, real_laplacian_vals);
 
 	EXPECT_NEAR((GT_L - L).sum_abs(), 0, 1e-4);

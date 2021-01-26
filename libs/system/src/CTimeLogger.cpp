@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/bits_math.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -81,11 +82,11 @@ CTimeLogger::~CTimeLogger()
 
 void CTimeLogger::clear(bool deep_clear)
 {
-	if (deep_clear)
-		m_data.clear();
+	if (deep_clear) m_data.clear();
 	else
 	{
-		for (auto& e : m_data) e.second = TCallData();
+		for (auto& e : m_data)
+			e.second = TCallData();
 	}
 }
 
@@ -129,8 +130,8 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 	// append dashes to the header to reach column_width
 	{
 		const auto space_to_fill = top_header.size() < column_width
-									   ? (column_width - top_header.size()) / 2
-									   : 2;
+			? (column_width - top_header.size()) / 2
+			: 2;
 		std::string dashes_half(space_to_fill, '-');
 		top_header = dashes_half + top_header + dashes_half;
 		if (dashes_half.size() % 2)
@@ -151,7 +152,8 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 	// for all the timed sections: sort by inserting into a std::map
 	using NameAndCallData = std::map<std::string_view, TCallData>;
 	NameAndCallData stat_strs;
-	for (const auto& i : m_data) stat_strs[i.first] = i.second;
+	for (const auto& i : m_data)
+		stat_strs[i.first] = i.second;
 
 	// format tree-like patterns like:
 	//  ----------
@@ -168,20 +170,15 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 	std::string last_parent;
 	for (const auto& i : stat_strs)
 	{
-		string line = string(i.first);  // make a copy
+		string line = string(i.first);	// make a copy
 
 		const auto dot_pos = line.find(".");
-		if (dot_pos == std::string::npos)
-		{
-			last_parent = line;
-		}
+		if (dot_pos == std::string::npos) { last_parent = line; }
 		else
 		{
 			const auto parent_pos = line.find(last_parent);
 			if (parent_pos != std::string::npos && !last_parent.empty())
-			{
-				line = "+-> "s + line.substr(dot_pos);
-			}
+			{ line = "+-> "s + line.substr(dot_pos); }
 		}
 
 		const string sMinT = unitsFormat(i.second.min_t, 1, false);
@@ -242,9 +239,9 @@ void CTimeLogger::saveToMFile(const std::string& file) const
 
 	string s;
 	s += "function [s] = "s + mrpt::system::extractFileName(file) +
-		 "()\n"
-		 "s = struct();\n"
-		 "s.whole = struct();\n\n"s;
+		"()\n"
+		"s = struct();\n"
+		"s.whole = struct();\n\n"s;
 
 	std::string s_names = "s.names={"s;
 	std::string s_counts = "s.count=["s;
@@ -271,7 +268,8 @@ void CTimeLogger::saveToMFile(const std::string& file) const
 
 			s += "s.whole."s + clean_name + "=[";
 			const auto& wh = i.second.whole_history.value();
-			for (const double v : wh) s += mrpt::format("%e,", v);
+			for (const double v : wh)
+				s += mrpt::format("%e,", v);
 			s += "];\n";
 		}
 	}
@@ -397,16 +395,14 @@ CTimeLogger::TCallData::TCallData() = default;
 double CTimeLogger::getMeanTime(const std::string& name) const
 {
 	TDataMap::const_iterator it = m_data.find(name);
-	if (it == m_data.end())
-		return 0;
+	if (it == m_data.end()) return 0;
 	else
 		return it->second.n_calls ? it->second.mean_t / it->second.n_calls : 0;
 }
 double CTimeLogger::getLastTime(const std::string& name) const
 {
 	TDataMap::const_iterator it = m_data.find(name);
-	if (it == m_data.end())
-		return 0;
+	if (it == m_data.end()) return 0;
 	else
 		return it->second.last_t;
 }

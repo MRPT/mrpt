@@ -490,7 +490,8 @@ class CBinaryRelation
 			}  //	else exist.push_back(dist);
 		}
 		std::sort(added.begin(), added.end());
-		for (size_t j = 1; j < added.size(); ++j) added[j] -= j;
+		for (size_t j = 1; j < added.size(); ++j)
+			added[j] -= j;
 		std::multiset<size_t> poss(added.begin(), added.end());
 		relation.insertRowsAndCols(poss, poss);
 		return added.size();

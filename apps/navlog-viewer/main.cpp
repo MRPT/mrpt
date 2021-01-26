@@ -11,7 +11,9 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/os.h>
 #include <mrpt/version.h>
+
 #include <iostream>
+
 #include "navlog-viewer-ui.h"
 
 int main(int argc, char** argv)

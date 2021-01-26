@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationRFID.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -30,9 +30,12 @@ void CObservationRFID::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// (Fields are dumped in separate for loops for backward compatibility
 	// with old serialization versions)
-	for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].power;
-	for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].epc;
-	for (uint32_t i = 0; i < Ntags; i++) out << tag_readings[i].antennaPort;
+	for (uint32_t i = 0; i < Ntags; i++)
+		out << tag_readings[i].power;
+	for (uint32_t i = 0; i < Ntags; i++)
+		out << tag_readings[i].epc;
+	for (uint32_t i = 0; i < Ntags; i++)
+		out << tag_readings[i].antennaPort;
 
 	out << sensorLabel;
 	out << timestamp;
@@ -65,29 +68,27 @@ void CObservationRFID::serializeFrom(
 			// (Fields are read in separate for loops for backward compatibility
 			// with old serialization versions)
 			tag_readings.resize(Ntags);
-			for (uint32_t i = 0; i < Ntags; i++) in >> tag_readings[i].power;
-			for (uint32_t i = 0; i < Ntags; i++) in >> tag_readings[i].epc;
+			for (uint32_t i = 0; i < Ntags; i++)
+				in >> tag_readings[i].power;
+			for (uint32_t i = 0; i < Ntags; i++)
+				in >> tag_readings[i].epc;
 			for (uint32_t i = 0; i < Ntags; i++)
 				in >> tag_readings[i].antennaPort;
 
-			if (version >= 1)
-				in >> sensorLabel;
+			if (version >= 1) in >> sensorLabel;
 			else
 				sensorLabel = "";
 
-			if (version >= 2)
-				in >> timestamp;
+			if (version >= 2) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 
-			if (version >= 3)
-				in >> sensorPoseOnRobot;
+			if (version >= 3) in >> sensorPoseOnRobot;
 			else
 				sensorPoseOnRobot = CPose3D();
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

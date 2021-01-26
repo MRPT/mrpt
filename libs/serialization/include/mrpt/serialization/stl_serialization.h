@@ -11,6 +11,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/typemeta/TTypeName_stl.h>  // TTypeName<> for STL templates, needed for serialization of STL templates
+
 #include <algorithm>  // for_each()
 #include <array>
 #include <deque>
@@ -71,15 +72,17 @@ using is_map_like = std::is_same<
 
 template <typename T>
 using is_map = std::is_same<
-	T, typename std::map<
-		   typename T::key_type, typename T::mapped_type,
-		   typename T::key_compare, typename T::allocator_type>>;
+	T,
+	typename std::map<
+		typename T::key_type, typename T::mapped_type, typename T::key_compare,
+		typename T::allocator_type>>;
 
 template <typename T>
 using is_multimap = std::is_same<
-	T, typename std::multimap<
-		   typename T::key_type, typename T::mapped_type,
-		   typename T::key_compare, typename T::allocator_type>>;
+	T,
+	typename std::multimap<
+		typename T::key_type, typename T::mapped_type, typename T::key_compare,
+		typename T::allocator_type>>;
 
 template <typename T, std::enable_if_t<is_map<T>::value, int> = 0>
 std::string containerName()
@@ -151,7 +154,8 @@ CArchive& operator>>(CArchive& in, T& obj)
 	{                                                                          \
 		out << std::string(#CONTAINER) << mrpt::typemeta::TTypeName<K>::get(); \
 		out.WriteAs<uint32_t>(obj.size());                                     \
-		for (const auto& e : obj) out << e;                                    \
+		for (const auto& e : obj)                                              \
+			out << e;                                                          \
 		return out;                                                            \
 	}                                                                          \
 	/** Template method to deserialize an associative STL container */         \

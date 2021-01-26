@@ -13,6 +13,7 @@
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/opengl/opengl_fonts.h>
+
 #include <future>
 #include <map>
 #include <mutex>
@@ -51,24 +52,20 @@
 
 #if 0
 // The wxFreeChart library
-#include <wx/bars/barplot.h>
-#include <wx/chartpanel.h>
-
 #include <wx/axis/categoryaxis.h>
 #include <wx/axis/dateaxis.h>
 #include <wx/axis/numberaxis.h>
-
+#include <wx/bars/barplot.h>
+#include <wx/category/categorydataset.h>
+#include <wx/category/categorysimpledataset.h>
+#include <wx/chartpanel.h>
 #include <wx/xy/xydataset.h>
 #include <wx/xy/xyhistorenderer.h>
 #include <wx/xy/xylinerenderer.h>
 #include <wx/xy/xyplot.h>
 #include <wx/xy/xysimpledataset.h>
-
 #include <wx/xyz/bubbleplot.h>
 #include <wx/xyz/xyzdataset.h>
-
-#include <wx/category/categorydataset.h>
-#include <wx/category/categorysimpledataset.h>
 #endif
 
 #endif
@@ -162,7 +159,7 @@ class WxSubsystem
 
 		DECLARE_EVENT_TABLE()
 
-	};  // end class CWXMainFrame
+	};	// end class CWXMainFrame
 
 	struct TWxMainThreadData
 	{
@@ -306,7 +303,7 @@ class WxSubsystem
 	static std::queue<TRequestToWxMainThread*>* listPendingWxRequests;
 	static std::mutex* cs_listPendingWxRequests;
 #endif
-};  // End of class def.
+};	// End of class def.
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -376,7 +373,7 @@ class CWindowDialog : public wxFrame
 	void OnMouseMove(wxMouseEvent& event);
 
 	DECLARE_EVENT_TABLE()
-};  // end class CWindowDialog
+};	// end class CWindowDialog
 
 class C3DWindowDialog : public wxFrame
 {
@@ -468,7 +465,7 @@ class CWindowDialogPlots : public wxFrame
 	void OnMouseDown(wxMouseEvent& event);
 
 	DECLARE_EVENT_TABLE()
-};  // end class CWindowDialog
+};	// end class CWindowDialog
 
 #endif
 

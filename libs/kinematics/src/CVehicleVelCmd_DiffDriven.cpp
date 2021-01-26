@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "kinematics-precomp.h"  // Precompiled header
-
+#include "kinematics-precomp.h"	 // Precompiled header
+//
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -24,14 +24,9 @@ std::string CVehicleVelCmd_DiffDriven::getVelCmdDescription(
 {
 	switch (index)
 	{
-		case 0:
-			return "lin_vel";
-			break;
-		case 1:
-			return "ang_vel";
-			break;
-		default:
-			THROW_EXCEPTION_FMT("index out of bounds: %i", index);
+		case 0: return "lin_vel"; break;
+		case 1: return "ang_vel"; break;
+		default: THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -39,14 +34,9 @@ double CVehicleVelCmd_DiffDriven::getVelCmdElement(const int index) const
 {
 	switch (index)
 	{
-		case 0:
-			return lin_vel;
-			break;
-		case 1:
-			return ang_vel;
-			break;
-		default:
-			THROW_EXCEPTION_FMT("index out of bounds: %i", index);
+		case 0: return lin_vel; break;
+		case 1: return ang_vel; break;
+		default: THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -55,14 +45,9 @@ void CVehicleVelCmd_DiffDriven::setVelCmdElement(
 {
 	switch (index)
 	{
-		case 0:
-			lin_vel = val;
-			break;
-		case 1:
-			ang_vel = val;
-			break;
-		default:
-			THROW_EXCEPTION_FMT("index out of bounds: %i", index);
+		case 0: lin_vel = val; break;
+		case 1: ang_vel = val; break;
+		default: THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -77,11 +62,8 @@ void CVehicleVelCmd_DiffDriven::serializeFrom(
 {
 	switch (version)
 	{
-		case 0:
-			in >> lin_vel >> ang_vel;
-			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		case 0: in >> lin_vel >> ang_vel; break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

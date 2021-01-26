@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 //#define HAS_SYSTEM_OCTOMAP
@@ -40,13 +41,13 @@ void TestOctoMap()
 	if (false)
 	{
 		// Manually update voxels:
-		map.updateVoxel(1, 1, 1, true);  // integrate 'occupied' measurement
+		map.updateVoxel(1, 1, 1, true);	 // integrate 'occupied' measurement
 
 		map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
 		map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
 		map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
 
-		map.updateVoxel(-1, -1, 1, false);  // integrate 'occupied' measurement
+		map.updateVoxel(-1, -1, 1, false);	// integrate 'occupied' measurement
 
 		double occup;
 		bool is_mapped;

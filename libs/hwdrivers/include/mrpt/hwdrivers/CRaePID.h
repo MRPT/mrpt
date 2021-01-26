@@ -97,6 +97,6 @@ class CRaePID : public mrpt::hwdrivers::CGenericSensor
 	 */
 	void getLimits(float& min, float& max);
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::hwdrivers

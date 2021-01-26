@@ -179,5 +179,5 @@ class C2DRangeFinderAbstract : public mrpt::system::COutputLogger,
 	/// Used in internal_notifyNoScanReceived()
 	int m_failure_waiting_scan_counter{0}, m_max_missed_scan_failures{10};
 
-};  // End of class
+};	// End of class
 }  // namespace mrpt::hwdrivers

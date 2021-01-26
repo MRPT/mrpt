@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled header
-
+#include "hwdrivers-precomp.h"	// Precompiled header
+//
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/img/TStereoCamera.h>
@@ -76,7 +76,7 @@ COpenNI2Sensor::~COpenNI2Sensor()
 {
 #if MRPT_HAS_OPENNI2
 	close(m_user_device_number);
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /** This method can or cannot be implemented in the derived class, depending on
@@ -120,17 +120,13 @@ void COpenNI2Sensor::initialize()
 		{
 			if (getDepthSensorParam(
 					m_cameraParamsDepth, m_user_device_number) == false)
-			{
-				THROW_EXCEPTION("Failed to get Depth camera parameters.");
-			}
+			{ THROW_EXCEPTION("Failed to get Depth camera parameters."); }
 		}
 		if (isValidParameter(m_cameraParamsRGB) == false)
 		{
 			if (getColorSensorParam(m_cameraParamsRGB, m_user_device_number) ==
 				false)
-			{
-				THROW_EXCEPTION("Failed to get RGB camera parameters.");
-			}
+			{ THROW_EXCEPTION("Failed to get RGB camera parameters."); }
 		}
 	}
 	catch (std::logic_error& e)
@@ -139,7 +135,7 @@ void COpenNI2Sensor::initialize()
 	}
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
@@ -177,7 +173,7 @@ void COpenNI2Sensor::doProcess()
 	}
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /** Loads specific configuration for the device from a given source of
@@ -228,20 +224,13 @@ void COpenNI2Sensor::loadConfig_sensorSpecific(
 					 "Ignoring error loading calibration parameters:\n"
 				  << e.what();
 	}
-	if (hasRightCameraSection)
-	{
-		m_cameraParamsRGB = sc.rightCamera;
-	}
-	if (hasLeftCameraSection)
-	{
-		m_cameraParamsDepth = sc.leftCamera;
-	}
+	if (hasRightCameraSection) { m_cameraParamsRGB = sc.rightCamera; }
+	if (hasLeftCameraSection) { m_cameraParamsDepth = sc.leftCamera; }
 	if (hasLeft2RightPose)
 	{
 		const mrpt::poses::CPose3D twist(
 			0, 0, 0, -90.0_deg, 0.0_deg, -90.0_deg);
-		m_relativePoseIntensityWRTDepth =
-			twist +
+		m_relativePoseIntensityWRTDepth = twist +
 			mrpt::poses::CPose3D(mrpt::poses::CPose3DQuat(sc.rightCameraPose));
 	}
 
@@ -348,7 +337,7 @@ void COpenNI2Sensor::getNextObservation(
 //	cout << "COpenNI2Sensor::getNextObservation finish\n";
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /* -----------------------------------------------------

@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rawlog-edit-declarations.h"
-
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/topography.h>
+
+#include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -65,7 +65,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 			const CObservationGPS* obs =
 				dynamic_cast<CObservationGPS*>(o.get());
 
-			if (!obs->has_GGA_datum()) return true;  // Nothing to do...
+			if (!obs->has_GGA_datum()) return true;	 // Nothing to do...
 
 			// Insert the new entries:
 			TDataPerGPS& D = m_gps_paths[obs->sensorLabel];
@@ -210,10 +210,10 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 						{
 							// Compute distance between points, in meters:
 							//  (very rough, but fast spherical approximation):
-							const double dist =
-								6.371e6 * DEG2RAD(::hypot(
-											  last_valid.lon - d.lon,
-											  last_valid.lat - d.lat));
+							const double dist = 6.371e6 *
+								DEG2RAD(::hypot(
+									last_valid.lon - d.lon,
+									last_valid.lat - d.lat));
 
 							// If the distance is above a threshold, finish the
 							// line and start another one:
@@ -249,7 +249,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 				"</kml>\n");
 		}  // end generate_KML
 
-	};  // end CRawlogProcessor_ExportGPS_KML
+	};	// end CRawlogProcessor_ExportGPS_KML
 
 	// Process
 	// ---------------------------------
@@ -393,8 +393,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 			if (it == lstFiles.end())  // A new file for this sensorlabel??
 			{
-				const std::string fileName =
-					m_filPrefix + string("_") +
+				const std::string fileName = m_filPrefix + string("_") +
 					fileNameStripInvalidChars(obs->sensorLabel) +
 					string(".txt");
 
@@ -411,16 +410,16 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 				::fprintf(
 					f_this,
 					"%% "
-					"%14s "  // Time
+					"%14s "	 // Time
 					"%23s %23s %23s "  // lat lon alt
 					"%4s %4s %11s %11s "  // fix #sats speed dir
 					"%23s %23s %23s "  // X Y Z local
-					"%6s "  // rawlog index
+					"%6s "	// rawlog index
 					"%21s %21s %21s "  // X Y Z geocentric
 					"%21s %21s %21s "  // X Y Z Cartessian (GPS)
 					"%21s %21s %21s "  // VX VY VZ Cartessian (GPS)
 					"%21s %21s %21s "  // VX VY VZ Cartessian (Local)
-					"%14s "  // SAT Time
+					"%14s "	 // SAT Time
 					"\n",
 					"Time", "Lat", "Lon", "Alt", "fix", "#sats", "speed", "dir",
 					"Local X", "Local Y", "Local Z", "rawlog ID", "Geocen X",
@@ -435,7 +434,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 			{
 				const auto& gga =
 					obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
-				TPoint3D p;  // Transformed coordinates
+				TPoint3D p;	 // Transformed coordinates
 
 				// The first gps datum?
 				if (refCoords.isClear())
@@ -488,12 +487,12 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					"%14.4f "  // Time
 					"%23.16f %23.16f %23.6f "  // lat lon alt
 					"%4u %4u %11.6f %11.6f "  // fix #sats speed dir
-					"%23.16f %23.16f %23.16f "  // X Y Z local
-					"%6i "  // rawlog index
-					"%21.16f %21.16f %21.16f "  // X Y Z geocentric
-					"%21.16f %21.16f %21.16f "  // X Y Z Cartessian (GPS)
-					"%21.16f %21.16f %21.16f "  // VX VY VZ Cartessian (GPS)
-					"%21.16f %21.16f %21.16f "  // VX VY VZ Cartessian (Local)
+					"%23.16f %23.16f %23.16f "	// X Y Z local
+					"%6i "	// rawlog index
+					"%21.16f %21.16f %21.16f "	// X Y Z geocentric
+					"%21.16f %21.16f %21.16f "	// X Y Z Cartessian (GPS)
+					"%21.16f %21.16f %21.16f "	// VX VY VZ Cartessian (GPS)
+					"%21.16f %21.16f %21.16f "	// VX VY VZ Cartessian (Local)
 					"%14.4f "  // SAT Time
 					"\n",
 					tim, DEG2RAD(gga.fields.latitude_degrees),
@@ -511,7 +510,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 									  .fields.direction_degrees)
 						: 0.0,
 					p.x, p.y, p.z,
-					(int)m_rawlogEntry,  // rawlog index
+					(int)m_rawlogEntry,	 // rawlog index
 					geo.x, geo.y, geo.z, cart_pos.x, cart_pos.y, cart_pos.z,
 					cart_vel.x, cart_vel.y, cart_vel.z, cart_vel_local.x,
 					cart_vel_local.y, cart_vel_local.z,
@@ -625,10 +624,9 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 
 				FILE* f_this;
 
-				if (itF == lstFiles.end())  // A new file for this sensorlabel??
+				if (itF == lstFiles.end())	// A new file for this sensorlabel??
 				{
-					const std::string fileName =
-						m_filPrefix + string("_") +
+					const std::string fileName = m_filPrefix + string("_") +
 						fileNameStripInvalidChars(sLabelMsg) + string(".txt");
 
 					VERBOSE_COUT << "Writing GPS TXT file: " << fileName

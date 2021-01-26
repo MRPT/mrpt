@@ -186,7 +186,7 @@ class CPosePDFGaussian : public CPosePDF
 	void composePoint(
 		const mrpt::math::TPoint2D& l, CPoint2DPDFGaussian& g) const;
 
-};  // End of class def.
+};	// End of class def.
 
 /** Pose compose operator: RES = A (+) B , computing both the mean and the
  * covariance */

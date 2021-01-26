@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CCylinder.h>
@@ -92,7 +92,8 @@ void CCylinder::onUpdateBuffers_Triangles()
 	}
 
 	// All faces, same color:
-	for (auto& t : tris) t.setColor(m_color);
+	for (auto& t : tris)
+		t.setColor(m_color);
 }
 
 void CCylinder::serializeTo(mrpt::serialization::CSchemeArchiveBase& out) const
@@ -121,8 +122,7 @@ void CCylinder::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			m_hasTopBase = static_cast<bool>(in["hasTopBase"]);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 uint8_t CCylinder::serializeGetVersion() const { return 1; }
@@ -151,8 +151,7 @@ void CCylinder::serializeFrom(
 
 			in >> m_hasBottomBase >> m_hasTopBase;
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }
@@ -169,8 +168,7 @@ bool solveEqn(double a, double b, double c, double& t)
 	if (a >= mrpt::math::getEpsilon())
 	{
 		double delta = square(b) - a * c;
-		if (delta == 0)
-			return (t = -b / a) >= 0;
+		if (delta == 0) return (t = -b / a) >= 0;
 		else if (delta >= 0)
 		{
 			delta = sqrt(delta);
@@ -208,13 +206,11 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 		if (!reachesHeight(zz)) return false;
 		float r;
 		return getRadius(zz, r)
-				   ? solveEqn(
-						 square(lin.director[0]) + square(lin.director[1]),
-						 lin.director[0] * lin.pBase.x +
-							 lin.director[1] * lin.pBase.y,
-						 square(lin.pBase.x) + square(lin.pBase.y) - square(r),
-						 dist)
-				   : false;
+			? solveEqn(
+				  square(lin.director[0]) + square(lin.director[1]),
+				  lin.director[0] * lin.pBase.x + lin.director[1] * lin.pBase.y,
+				  square(lin.pBase.x) + square(lin.pBase.y) - square(r), dist)
+			: false;
 	}
 	bool fnd = false;
 	double nDist, tZ0;

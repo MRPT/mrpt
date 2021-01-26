@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"	// Precompiled headers
 //
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/distributions.h>
@@ -150,8 +150,7 @@ void CPosePDFSOG::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -159,12 +158,10 @@ void CPosePDFSOG::copyFrom(const CPosePDF& o)
 {
 	MRPT_START
 
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFSOG))
-	{
-		m_modes = dynamic_cast<const CPosePDFSOG*>(&o)->m_modes;
-	}
+	{ m_modes = dynamic_cast<const CPosePDFSOG*>(&o)->m_modes; }
 	else
 	{
 		// Approximate as a mono-modal gaussian pdf:
@@ -295,9 +292,9 @@ void CPosePDFSOG::bayesianFusion(
 
 	// Normal distribution canonical form constant:
 	// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
-	double a =
-		-0.5 * (3 * log(M_2PI) - log(covInv.det()) +
-				(eta.transpose() * p2->cov.asEigen() * eta.asEigen())(0, 0));
+	double a = -0.5 *
+		(3 * log(M_2PI) - log(covInv.det()) +
+		 (eta.transpose() * p2->cov.asEigen() * eta.asEigen())(0, 0));
 
 	this->m_modes.clear();
 	for (const auto& m : p1->m_modes)
@@ -329,14 +326,14 @@ void CPosePDFSOG::bayesianFusion(
 		auto new_eta_i = CMatrixDouble31(newKernel.mean);
 		new_eta_i = new_covInv_i * new_eta_i;
 
-		double a_i =
-			-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-					(eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
-					 eta_i.asEigen())(0, 0));
-		double new_a_i =
-			-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-					(new_eta_i.transpose() * newKernel.cov.asEigen() *
-					 new_eta_i.asEigen())(0, 0));
+		double a_i = -0.5 *
+			(3 * log(M_2PI) - log(new_covInv_i.det()) +
+			 (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
+			  eta_i.asEigen())(0, 0));
+		double new_a_i = -0.5 *
+			(3 * log(M_2PI) - log(new_covInv_i.det()) +
+			 (new_eta_i.transpose() * newKernel.cov.asEigen() *
+			  new_eta_i.asEigen())(0, 0));
 
 		// newKernel.w	   = (it)->w * exp( a + a_i - new_a_i );
 		newKernel.log_w = m.log_w + a + a_i - new_a_i;
@@ -379,7 +376,8 @@ void CPosePDFSOG::inverse(CPosePDF& o) const
  ---------------------------------------------------------------*/
 void CPosePDFSOG::operator+=(const CPose2D& Ap)
 {
-	for (auto& m : m_modes) m.mean = m.mean + Ap;
+	for (auto& m : m_modes)
+		m.mean = m.mean + Ap;
 
 	this->rotateAllCovariances(Ap.phi());
 }
@@ -442,7 +440,7 @@ double CPosePDFSOG::evaluateNormalizedPDF(const CPose2D& x) const
 	{
 		MU = CMatrixDouble31(m.mean);
 		ret += exp(m.log_w) * math::normalPDF(X, MU, m.cov) /
-			   math::normalPDF(MU, MU, m.cov);
+			math::normalPDF(MU, MU, m.cov);
 	}
 
 	return ret;
@@ -473,9 +471,11 @@ void CPosePDFSOG::normalizeWeights()
 	if (!m_modes.size()) return;
 
 	double maxW = m_modes[0].log_w;
-	for (auto& m : m_modes) maxW = max(maxW, m.log_w);
+	for (auto& m : m_modes)
+		maxW = max(maxW, m.log_w);
 
-	for (auto& m : m_modes) m.log_w -= maxW;
+	for (auto& m : m_modes)
+		m.log_w -= maxW;
 
 	MRPT_END
 }
@@ -521,7 +521,7 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 	normalizeWeights();
 
 	size_t N = m_modes.size();
-	if (N < 2) return;  // Nothing to do
+	if (N < 2) return;	// Nothing to do
 
 	// Method described in:
 	// "Kullback-Leibler Approach to Gaussian Mixture Reduction", A.R. Runnalls.
@@ -530,12 +530,13 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 
 	for (size_t i = 0; i < (N - 1);)
 	{
-		N = m_modes.size();  // It might have changed.
+		N = m_modes.size();	 // It might have changed.
 		double sumW = 0;
 
 		// For getting linear weights:
 		sumW = 0;
-		for (size_t j = 0; j < N; j++) sumW += exp(m_modes[j].log_w);
+		for (size_t j = 0; j < N; j++)
+			sumW += exp(m_modes[j].log_w);
 		ASSERT_(sumW);
 
 		const double Wi = exp(m_modes[i].log_w) / sumW;
@@ -564,14 +565,14 @@ void CPosePDFSOG::mergeModes(double max_KLd, bool verbose)
 				mrpt::math::wrapToPiInPlace(MUij(2, 0));
 
 				CMatrixDouble33 AUX;
-				AUX.matProductOf_AAt(MUij);  // AUX = MUij * MUij^T
+				AUX.matProductOf_AAt(MUij);	 // AUX = MUij * MUij^T
 
 				AUX *= Wi * Wj * Wij_ * Wij_;
 				Pij += AUX;
 
 				double Bij = (Wi + Wj) * log(Pij.det()) -
-							 Wi * log(m_modes[i].cov.det()) -
-							 Wj * log(m_modes[j].cov.det());
+					Wi * log(m_modes[i].cov.det()) -
+					Wj * log(m_modes[j].cov.det());
 				if (verbose)
 				{
 					cout << "try merge[" << i << ", " << j

@@ -25,18 +25,12 @@ inline std::string typeToName(TypeOfConfig type)
 {
 	switch (type)
 	{
-		case PointsMap:
-			return "pointsMap";
-		case Occupancy:
-			return "occupancyGrid";
-		case Landmarks:
-			return "landmarksMap";
-		case Beacon:
-			return "beaconMap";
-		case GasGrid:
-			return "gasGrid";
-		default:
-			break;
+		case PointsMap: return "pointsMap";
+		case Occupancy: return "occupancyGrid";
+		case Landmarks: return "landmarksMap";
+		case Beacon: return "beaconMap";
+		case GasGrid: return "gasGrid";
+		default: break;
 	}
 
 	return "";

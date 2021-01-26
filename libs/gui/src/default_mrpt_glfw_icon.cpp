@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/gui/default_mrpt_glfw_icon.h>
+
 #include <cstdint>
 #include <vector>
 
@@ -25,12 +26,12 @@ unsigned char* mrpt::gui::default_mrpt_glfw_icon()
 	unsigned int height = 64;
 	/*  Call this macro repeatedly.  After each use, the pixel data can be
 	 * extracted  */
-#define HEADER_PIXEL(data, pixel)                                           \
-	{                                                                       \
-		pixel[0] = (((data[0] - 33) << 2) | ((data[1] - 33) >> 4));         \
-		pixel[1] = ((((data[1] - 33) & 0xF) << 4) | ((data[2] - 33) >> 2)); \
-		pixel[2] = ((((data[2] - 33) & 0x3) << 6) | ((data[3] - 33)));      \
-		data += 4;                                                          \
+#define HEADER_PIXEL(data, pixel)                                              \
+	{                                                                          \
+		pixel[0] = (((data[0] - 33) << 2) | ((data[1] - 33) >> 4));            \
+		pixel[1] = ((((data[1] - 33) & 0xF) << 4) | ((data[2] - 33) >> 2));    \
+		pixel[2] = ((((data[2] - 33) & 0x3) << 6) | ((data[3] - 33)));         \
+		data += 4;                                                             \
 	}
 	static const char* header_data =
 		":'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E:'2E"
@@ -295,7 +296,7 @@ unsigned char* mrpt::gui::default_mrpt_glfw_icon()
 	dat.resize(width * height * 4);
 	const char* in = header_data;
 	uint8_t* out = dat.data();
-	const uint8_t transp = 100;  // transparent color
+	const uint8_t transp = 100;	 // transparent color
 
 	for (unsigned int y = 0; y < height; y++)
 	{
@@ -305,8 +306,8 @@ unsigned char* mrpt::gui::default_mrpt_glfw_icon()
 			HEADER_PIXEL(in, out);
 			// alpha
 			out[3] = (out[0] == transp && out[1] == transp && out[2] == transp)
-						 ? 0x00
-						 : 0xff;
+				? 0x00
+				: 0xff;
 			out += 4;
 		}
 	}

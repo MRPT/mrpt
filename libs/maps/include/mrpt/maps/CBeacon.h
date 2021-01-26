@@ -9,14 +9,13 @@
 #pragma once
 
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/obs/CObservation.h>  // INVALID_BEACON_ID
+#include <mrpt/obs/CObservation.h>	// INVALID_BEACON_ID
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPointPDFSOG.h>
 #include <mrpt/serialization/CSerializable.h>
-
-#include <mrpt/opengl/CSetOfObjects.h>
 
 namespace mrpt::maps
 {
@@ -177,6 +176,6 @@ class CBeacon : public mrpt::poses::CPointPDF
 			mrpt::poses::CPoint3D(0, 0, 0),
 		float maxDistanceFromCenter = 0);
 
-};  // End of class definition
+};	// End of class definition
 
 }  // namespace mrpt::maps

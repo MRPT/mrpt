@@ -14,6 +14,7 @@
 #include <mrpt/obs/VelodyneCalibration.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <vector>
 
 namespace mrpt
@@ -138,7 +139,7 @@ class CObservationVelodyneScan : public CObservation
 	struct raw_block_t
 	{
 	   private:
-		uint16_t m_header;  ///< Block id: UPPER_BANK or LOWER_BANK
+		uint16_t m_header;	///< Block id: UPPER_BANK or LOWER_BANK
 		uint16_t m_rotation;  ///< 0-35999, divide by 100 to get degrees
 	   public:
 		laser_return_t laser_returns[SCANS_PER_BLOCK];
@@ -225,7 +226,7 @@ class CObservationVelodyneScan : public CObservation
 	bool has_satellite_timestamp{false};
 
 	mrpt::system::TTimeStamp getOriginalReceivedTimeStamp()
-		const override;  // See base class docs
+		const override;	 // See base class docs
 
 	/** See \a point_cloud and \a scan_packets */
 	struct TPointCloud
@@ -397,7 +398,7 @@ class CObservationVelodyneScan : public CObservation
 	void getDescriptionAsText(
 		std::ostream& o) const override;  // See base class docs
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace obs
 

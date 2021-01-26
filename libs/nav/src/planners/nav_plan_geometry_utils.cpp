@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/poly_roots.h>
 #include <mrpt/math/wrap2pi.h>
@@ -49,15 +49,11 @@ bool mrpt::nav::collision_free_dist_segment_circ_robot(
 
 	if (nsols <= 0) return false;
 	double r_min;
-	if (nsols == 1)
-		r_min = r1;
+	if (nsols == 1) r_min = r1;
 	else
 	{
 		if (r1 < 0 && r2 < 0) return false;
-		if (r1 < 0)
-		{
-			r_min = r2;
-		}
+		if (r1 < 0) { r_min = r2; }
 		else if (r2 < 0)
 		{
 			r_min = r1;
@@ -139,7 +135,7 @@ bool mrpt::nav::collision_free_dist_arc_circ_robot(
 
 	double th0 = atan2(
 		sol0.x - ptArcCenter.x,
-		-(sol0.y - ptArcCenter.y));  // (x,y) order is intentionally like this!
+		-(sol0.y - ptArcCenter.y));	 // (x,y) order is intentionally like this!
 	double th1 = atan2(sol1.x - ptArcCenter.x, -(sol1.y - ptArcCenter.y));
 
 	if (r > 0)

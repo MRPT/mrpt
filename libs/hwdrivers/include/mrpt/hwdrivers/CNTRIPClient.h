@@ -169,6 +169,6 @@ class CNTRIPClient
 	 */
 	void sendBackToServer(const std::string& data);
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

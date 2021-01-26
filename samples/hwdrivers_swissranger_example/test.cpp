@@ -17,6 +17,7 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -226,18 +227,14 @@ void Test_SwissRanger()
 					cam.enableImageHistEqualization(
 						!cam.isEnabledImageHistEqualization());
 					break;
-				case 'g':
-					cam.enableConvGray(!cam.isEnabledConvGray());
-					break;
+				case 'g': cam.enableConvGray(!cam.isEnabledConvGray()); break;
 				case 'd':
 					cam.enableDenoiseANF(!cam.isEnabledDenoiseANF());
 					break;
 				case 'f':
 					cam.enableMedianFilter(!cam.isEnabledMedianFilter());
 					break;
-				case 27:
-					endLoop = true;
-					break;
+				case 27: endLoop = true; break;
 			}
 		}
 

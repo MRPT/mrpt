@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/io/CFileStream.h>
@@ -20,6 +20,7 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -251,7 +252,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 				"Action list does not contain any CActionRobotMovement2D "
 				"derived object!");
 
-		if (!LMH->m_accumRobotMovementIsValid)  // Reset accum.
+		if (!LMH->m_accumRobotMovementIsValid)	// Reset accum.
 		{
 			act->poseChange->getMean(
 				LMH->m_accumRobotMovement.rawOdometryIncrementReading);
@@ -276,7 +277,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	// All the needed things?
 	if (!LMH->m_accumRobotMovementIsValid || !SFhasValidObservations)
-		return;  // Nothing we can do here...
+		return;	 // Nothing we can do here...
 
 	// OK, we have all we need, let's start!
 
@@ -300,7 +301,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	const CActionRobotMovement2D* robotMovement = &theResultingRobotMov;
 
 	LMH->m_accumRobotMovementIsValid =
-		false;  // To reset odometry at next iteration!
+		false;	// To reset odometry at next iteration!
 
 	// ----------------------------------------------------------------------
 	//		0) Common part:  Prepare m_particles "draw" and compute
@@ -401,7 +402,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 			// at the same point (this is the lowest bound of subsequent
 			// uncertainty):
 			movementDraw = CPose2D(0, 0, 0);
-			newPose = oldPose;  // + movementDraw;
+			newPose = oldPose;	// + movementDraw;
 		}
 		else
 		{
@@ -431,7 +432,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 
 				newPose.composeFrom(
 					oldPose,
-					movementDraw);  // newPose = oldPose + movementDraw;
+					movementDraw);	// newPose = oldPose + movementDraw;
 
 				// Compute acceptance probability:
 				newPoseLikelihood = auxiliarComputeObservationLikelihood(
@@ -449,10 +450,10 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 						// p(z|x)/p(z|x*)=%f\n",ratioLikLik);
 					}
 					LMH->m_maxLikelihood[k] = newPoseLikelihood;  //  :'-( !!!
-					acceptanceProb = 0;  // Keep searching!!
+					acceptanceProb = 0;	 // Keep searching!!
 				}
 
-				statsTrialsCount++;  // Stats
+				statsTrialsCount++;	 // Stats
 
 			} while (acceptanceProb < getRandomGenerator().drawUniform(
 										  MIN_ACCEPT_UNIF_DISTRIB, 0.999f));
@@ -471,8 +472,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 		LMH->m_log_w_metric_history.resize(M);
 		LMH->m_log_w_metric_history[i][currentPoseID] += weightFact;
 
-		if (doResample)
-			newParticlesWeight[i] = 0;
+		if (doResample) newParticlesWeight[i] = 0;
 		else
 			newParticlesWeight[i] = LMH->m_particles[k].log_w + weightFact;
 
@@ -551,7 +551,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	newParticlesDerivedFromIdx.clear();
 
 	double out_max_log_w;
-	LMH->normalizeWeights(&out_max_log_w);  // Normalize weights:
+	LMH->normalizeWeights(&out_max_log_w);	// Normalize weights:
 	LMH->m_log_w += out_max_log_w;
 
 #if 0
@@ -599,7 +599,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	CPose2D oldPose(*myObj->getCurrentPose(index));
 	//	CPose2D			drawnSample;
 	mrpt::math::CVectorDouble vectLiks(
-		N, 0);  // The vector with the individual log-likelihoods.
+		N, 0);	// The vector with the individual log-likelihoods.
 
 	for (size_t q = 0; q < N; q++)
 	{
@@ -625,7 +625,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	// This is done to avoid floating point overflow!!
 	double maxLogLik = math::maximum(vectLiks);
 	vectLiks.array() -=
-		maxLogLik;  // Maximum log-lik = 0 (max linear likelihood=1)
+		maxLogLik;	// Maximum log-lik = 0 (max linear likelihood=1)
 
 	//      average_lik    =      \sum(e^liks)   * e^maxLik  /     N
 	// log( average_lik  ) = log( \sum(e^liks) ) + maxLik   - log( N )
@@ -634,7 +634,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	// Save into the object:
 	myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index] =
-		avrgLogLik;  // log( accum / N );
+		avrgLogLik;	 // log( accum / N );
 	myObj->m_maxLikelihood[index] = maxLik;
 	myObj->m_movementDrawMaximumLikelihood[index] =
 		myObj->m_movementDraws[maxLikDraw];
@@ -647,7 +647,7 @@ double CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	//	else	return myObj->m_particles[index].w;
 
 	double ret = myObj->m_particles[index].log_w +
-				 myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index];
+		myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index];
 
 	MRPT_CHECK_NORMAL_NUMBER(ret);
 
@@ -680,15 +680,18 @@ void CLSLAM_RBPF_2DLASER::TPathBin::dumpToStdOut() const
 	std::vector<int>::const_iterator it;
 
 	std::cout << "x   = [";
-	for (it = x.begin(); it != x.end(); it++) std::cout << *it << " ";
+	for (it = x.begin(); it != x.end(); it++)
+		std::cout << *it << " ";
 	std::cout << "]" << std::endl;
 
 	std::cout << "y   = [";
-	for (it = y.begin(); it != y.end(); it++) std::cout << *it << " ";
+	for (it = y.begin(); it != y.end(); it++)
+		std::cout << *it << " ";
 	std::cout << "]" << std::endl;
 
 	std::cout << "Phi = [";
-	for (it = phi.begin(); it != phi.end(); it++) std::cout << *it << " ";
+	for (it = phi.begin(); it != phi.end(); it++)
+		std::cout << *it << " ";
 	std::cout << "]" << std::endl;
 }
 
@@ -701,8 +704,7 @@ void CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 {
 	size_t lenBinPath;
 
-	if (path != nullptr)
-		lenBinPath = path->size();
+	if (path != nullptr) lenBinPath = path->size();
 	else
 		lenBinPath = 0;
 
@@ -801,7 +803,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 				"Action list does not contain any CActionRobotMovement2D "
 				"derived object!");
 
-		if (!LMH->m_accumRobotMovementIsValid)  // Reset accum.
+		if (!LMH->m_accumRobotMovementIsValid)	// Reset accum.
 		{
 			act->poseChange->getMean(
 				LMH->m_accumRobotMovement.rawOdometryIncrementReading);
@@ -826,7 +828,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 	// All the needed things?
 	if (!LMH->m_accumRobotMovementIsValid || !SFhasValidObservations)
-		return;  // Nothing we can do here...
+		return;	 // Nothing we can do here...
 	ASSERT_(sf != nullptr);
 	ASSERT_(!PF_options.adaptiveSampleSize);
 
@@ -837,7 +839,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	const CPose2D initialPoseEstimation =
 		LMH->m_accumRobotMovement.rawOdometryIncrementReading;
 	LMH->m_accumRobotMovementIsValid =
-		false;  // To reset odometry at next iteration!
+		false;	// To reset odometry at next iteration!
 
 	// ----------------------------------------------------------------------
 	//						1) FIXED SAMPLE SIZE VERSION
@@ -928,9 +930,9 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 			// Update the weight:
 			// ---------------------------------------------------------------------------
-			const double log_lik =
-				PF_options.powFactor * auxiliarComputeObservationLikelihood(
-										   PF_options, LMH, i, sf, &new_pose2d);
+			const double log_lik = PF_options.powFactor *
+				auxiliarComputeObservationLikelihood(
+									   PF_options, LMH, i, sf, &new_pose2d);
 
 			part.log_w += log_lik;
 
@@ -943,7 +945,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 	// Accumulate the log likelihood of this LMH as a whole:
 	double out_max_log_w;
-	LMH->normalizeWeights(&out_max_log_w);  // Normalize weights:
+	LMH->normalizeWeights(&out_max_log_w);	// Normalize weights:
 	LMH->m_log_w += out_max_log_w;
 
 	printf("[CLSLAM_RBPF_2DLASER] Overall likelihood = %.2e\n", out_max_log_w);

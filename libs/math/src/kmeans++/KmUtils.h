@@ -37,6 +37,7 @@
 #endif
 
 #include <memory.h>
+
 #include <cstdlib>
 
 // The data-type used for a single coordinate for points
@@ -60,18 +61,21 @@ inline void PointCopy(Scalar* p1, const Scalar* p2, int d)
 // Point vector tools
 inline void PointAdd(Scalar* p1, const Scalar* p2, int d)
 {
-	for (int i = 0; i < d; i++) p1[i] += p2[i];
+	for (int i = 0; i < d; i++)
+		p1[i] += p2[i];
 }
 
 inline void PointScale(Scalar* p, Scalar scale, int d)
 {
-	for (int i = 0; i < d; i++) p[i] *= scale;
+	for (int i = 0; i < d; i++)
+		p[i] *= scale;
 }
 
 inline Scalar PointDistSq(const Scalar* p1, const Scalar* p2, int d)
 {
 	Scalar result = 0;
-	for (int i = 0; i < d; i++) result += (p1[i] - p2[i]) * (p1[i] - p2[i]);
+	for (int i = 0; i < d; i++)
+		result += (p1[i] - p2[i]) * (p1[i] - p2[i]);
 	return result;
 }
 
@@ -83,7 +87,7 @@ inline Scalar PointDistSq(const Scalar* p1, const Scalar* p2, int d)
 #ifdef ENABLE_KMEANS_ASSERTS
 int __KMeansAssertionFailure(
 	const char* file, int line, const char* expression);
-#define KM_ASSERT(expression) \
+#define KM_ASSERT(expression)                                                  \
 	(void)((expression) != 0 ? 0 : __KMeansAssertionFailure(__FILE__, __LINE__, #expression))
 #else
 #define KM_ASSERT(expression)

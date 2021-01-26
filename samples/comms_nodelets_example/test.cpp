@@ -9,7 +9,9 @@
 
 #define NODELETS_TEST_VERBOSE
 #include <mrpt/core/exceptions.h>
+
 #include <iostream>
+
 #include "NodeletsTest_impl.cpp"
 
 int main()

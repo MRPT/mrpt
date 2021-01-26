@@ -68,7 +68,7 @@ CSetOfObjects::Ptr graph_visualize(
 		for (auto itNod = g.nodes.begin(); itNod != g.nodes.end(); ++itNod)
 		{
 			const CPose3D p = CPose3D(
-				itNod->second);  // Convert to 3D from whatever its real type.
+				itNod->second);	 // Convert to 3D from whatever its real type.
 
 			keep_min(BB_min.x, p.x());
 			keep_min(BB_min.y, p.y());
@@ -99,7 +99,7 @@ CSetOfObjects::Ptr graph_visualize(
 		for (auto itNod = g.nodes.begin(); itNod != g.nodes.end(); ++itNod)
 		{
 			const CPose3D p = CPose3D(
-				itNod->second);  // Convert to 3D from whatever its real type.
+				itNod->second);	 // Convert to 3D from whatever its real type.
 			pnts->insertPoint(p.x(), p.y(), p.z());
 		}
 
@@ -112,17 +112,15 @@ CSetOfObjects::Ptr graph_visualize(
 		for (auto itNod = g.nodes.begin(); itNod != g.nodes.end(); ++itNod)
 		{
 			const CPose3D p = CPose3D(
-				itNod->second);  // Convert to 3D from whatever its real type.
-			CSetOfObjects::Ptr gl_corner =
-				show_node_corners
-					? (is_3D_graph
-						   ? stock_objects::CornerXYZSimple(
-								 nodes_corner_scale, 1.0 /*line width*/)
-						   : stock_objects::CornerXYSimple(
-								 nodes_corner_scale, 1.0 /*line width*/))
-					: std::make_shared<CSetOfObjects>();
+				itNod->second);	 // Convert to 3D from whatever its real type.
+			CSetOfObjects::Ptr gl_corner = show_node_corners
+				? (is_3D_graph ? stock_objects::CornerXYZSimple(
+									 nodes_corner_scale, 1.0 /*line width*/)
+							   : stock_objects::CornerXYSimple(
+									 nodes_corner_scale, 1.0 /*line width*/))
+				: std::make_shared<CSetOfObjects>();
 			gl_corner->setPose(p);
-			if (show_ID_labels)  // don't show IDs twice!
+			if (show_ID_labels)	 // don't show IDs twice!
 			{
 				gl_corner->setName(
 					format("%u", static_cast<unsigned int>(itNod->first)));
@@ -141,8 +139,8 @@ CSetOfObjects::Ptr graph_visualize(
 		{
 			// Node ID of the source pose:
 			const auto node_id_start = g.edges_store_inverse_poses
-										   ? edge.first.second
-										   : edge.first.first;
+				? edge.first.second
+				: edge.first.first;
 
 			// Draw only if we have the global coords of starting nodes:
 			auto itNod = g.nodes.find(node_id_start);

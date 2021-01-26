@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -189,8 +190,7 @@ void op_sparse_multiply_AB(
 void op_dense_multiply_AB(
 	const CMatrixDouble& M1, const CMatrixDouble& M2, CMatrixDouble& res)
 {
-	if (M1.isSquare() && M2.isSquare())
-		res = M1 * M2;
+	if (M1.isSquare() && M2.isSquare()) res = M1 * M2;
 	else
 		res = M1.asEigen() * M2.asEigen();
 }

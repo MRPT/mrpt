@@ -51,7 +51,8 @@ void PlaceRecognition::computeLabels(
 	std::vector<int>& labels)
 {
 	// initialize all labels to zero.
-	for (int i = 0; i < NUM_CLASSES; i++) counts[i] = 0;
+	for (int i = 0; i < NUM_CLASSES; i++)
+		counts[i] = 0;
 
 	/// assign labels based on the label/place name that appears in the file
 	/// name
@@ -99,7 +100,8 @@ int PlaceRecognition::predictLabel2(
 	/// PUT A CONDITION IF feats_size =0 OUTPUT A RANDOM CLASS INSTEAD OF GOING
 	/// THROUGH BLANK STUFF, actually kinda doing that only currently
 	std::vector<int> labels(feats_size);
-	for (int i = 0; i < feats_size; i++) labels[i] = 0;
+	for (int i = 0; i < feats_size; i++)
+		labels[i] = 0;
 
 	/// following for loop iterates over all key-points in the given
 	/// feats_testingAll CFeatureList and assigns a place label
@@ -128,8 +130,7 @@ int PlaceRecognition::predictLabel2(
 			{
 				for (int k = 0; k < descriptor_size; k++)
 				{
-					temp_sum =
-						temp_sum +
+					temp_sum = temp_sum +
 						pow((temp_feat.at(k) - (int)training_words[j].at(k)),
 							2);
 				}
@@ -146,7 +147,8 @@ int PlaceRecognition::predictLabel2(
 
 	}  // end of outter loop iterates over each key-point
 
-	for (int i = 0; i < feats_size; i++) cout << labels[i] << " ";
+	for (int i = 0; i < feats_size; i++)
+		cout << labels[i] << " ";
 	int predicted_label = findMax(labels);
 	return predicted_label;
 }
@@ -165,7 +167,8 @@ int PlaceRecognition::predictLabel(
 	/// PUT A CONDITION IF feats_size =0 OUTPUT A RANDOM CLASS INSTEAD OF GOING
 	/// THROUGH BLANK STUFF, actually kinda doing that only currently
 	std::vector<int> labels(feats_size);
-	for (int i = 0; i < feats_size; i++) labels[i] = 0;
+	for (int i = 0; i < feats_size; i++)
+		labels[i] = 0;
 
 	for (int i = 0; i < feats_size;
 		 i++)  // feat_size is the number of key-points
@@ -191,8 +194,7 @@ int PlaceRecognition::predictLabel(
 					/// Use abs if better results
 					// temp_sum = temp_sum + abs((temp_feat.at(k) -
 					// training_words[j].at(k)));
-					temp_sum =
-						temp_sum +
+					temp_sum = temp_sum +
 						pow((temp_feat.at(k) - training_words[j].at(k)), 2);
 				}
 
@@ -207,7 +209,8 @@ int PlaceRecognition::predictLabel(
 		}  // iterates over each key-point in the training images / dataset
 	}  // end of outter loop iterates over each key-point
 
-	for (int i = 0; i < feats_size; i++) cout << labels[i] << " ";
+	for (int i = 0; i < feats_size; i++)
+		cout << labels[i] << " ";
 
 	int predicted_label = findMax(labels);
 	return predicted_label;
@@ -220,9 +223,11 @@ int PlaceRecognition::findMax(const std::vector<int>& labels)
 {
 	const auto feats_size = labels.size();
 	int temp_labels[NUM_CLASSES];
-	for (int i = 0; i < NUM_CLASSES; i++) temp_labels[i] = 0;
+	for (int i = 0; i < NUM_CLASSES; i++)
+		temp_labels[i] = 0;
 
-	for (unsigned int i = 0; i < feats_size; i++) temp_labels[labels[i] - 1]++;
+	for (unsigned int i = 0; i < feats_size; i++)
+		temp_labels[labels[i] - 1]++;
 
 	/// find out maximum out of the temp_labels array
 	int max = 0, pos = 0;
@@ -466,8 +471,7 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
  ************************************************************************************************/
 string PlaceRecognition::findPlaceName(int type)
 {
-	if (type == 1)
-		return "PRINTING AREA";
+	if (type == 1) return "PRINTING AREA";
 	else if (type == 2)
 		return "CORRIDOR";
 	else if (type == 3)

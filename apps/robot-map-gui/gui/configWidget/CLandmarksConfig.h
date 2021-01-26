@@ -8,11 +8,11 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
-#include "CBaseConfig.h"
+#include <mrpt/maps/CLandmarksMap.h>
 
 #include <memory>
 
-#include <mrpt/maps/CLandmarksMap.h>
+#include "CBaseConfig.h"
 
 namespace Ui
 {

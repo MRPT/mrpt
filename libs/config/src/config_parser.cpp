@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "config-precomp.h"  // Precompiled headers
-
+#include "config-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/config/config_parser.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <mrpt/system/string_utils.h>
-#include <cstring>  // strncmp
+
+#include <cstring>	// strncmp
 #include <map>
 
 namespace mrpt::config::internal
@@ -76,7 +77,7 @@ std::string mci::parse_process_var_eval(
 			new_expr.swap(expr);
 		}
 		else
-			break;  // nothing else to evaluate
+			break;	// nothing else to evaluate
 	}
 	return expr;
 }
@@ -109,10 +110,7 @@ std::string mrpt::config::config_parser(const std::string& input)
 	while (i < in_len)
 	{
 		const char c = in_str[i];
-		if (c == '\n')
-		{
-			pc.line_count++;
-		}
+		if (c == '\n') { pc.line_count++; }
 
 		if (c == '\\' && i < in_len - 1 &&
 			(in_str[i + 1] == '\r' || in_str[i + 1] == '\n'))
@@ -154,9 +152,7 @@ std::string mrpt::config::config_parser(const std::string& input)
 					{
 						// not whitespace
 						if (!in_var_name && !done_var_name)
-						{
-							in_var_name = true;
-						}
+						{ in_var_name = true; }
 					}
 					else
 					{
@@ -167,14 +163,8 @@ std::string mrpt::config::config_parser(const std::string& input)
 							done_var_name = true;
 						}
 					}
-					if (in_var_name)
-					{
-						var_name += ch;
-					}
-					if (done_var_name)
-					{
-						var_value += ch;
-					}
+					if (in_var_name) { var_name += ch; }
+					if (done_var_name) { var_value += ch; }
 				}
 
 				parse_process_var_define(pc, var_name, var_value);

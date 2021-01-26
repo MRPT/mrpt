@@ -9,7 +9,6 @@
    */
 #pragma once
 #include "CBaseObservationNode.h"
-
 #include "mrpt/obs/CObservation2DRangeScan.h"
 
 class CRangeScanNode : public CBaseObservationNode

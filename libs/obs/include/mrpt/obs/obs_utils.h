@@ -42,21 +42,14 @@ typename OBSERVATION_T::Ptr getObservation(
 	const mrpt::rtti::TRuntimeClassId* class_ID =
 		&OBSERVATION_T::GetRuntimeClassIdStatic();
 	if (observation && observation->GetRuntimeClass()->derivedFrom(class_ID))
-	{
-		cobs_ptr = std::dynamic_pointer_cast<OBSERVATION_T>(observation);
-	}
+	{ cobs_ptr = std::dynamic_pointer_cast<OBSERVATION_T>(observation); }
 
 	// CSensoryFrame
 	if (observations)
-	{
-		cobs_ptr = observations->getObservationByClass<OBSERVATION_T>();
-	}
+	{ cobs_ptr = observations->getObservationByClass<OBSERVATION_T>(); }
 
 	// decide on which one to return
-	if (cobs_ptr && sf_ptr)
-	{
-		obs_out = priority_to_sf ? sf_ptr : cobs_ptr;
-	}
+	if (cobs_ptr && sf_ptr) { obs_out = priority_to_sf ? sf_ptr : cobs_ptr; }
 	else if (cobs_ptr)
 	{
 		obs_out = cobs_ptr;

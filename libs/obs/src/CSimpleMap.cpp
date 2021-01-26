@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -223,7 +223,8 @@ uint8_t CSimpleMap::serializeGetVersion() const { return 1; }
 void CSimpleMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_posesObsPairs.size());
-	for (const auto& p : m_posesObsPairs) out << *p.first << *p.second;
+	for (const auto& p : m_posesObsPairs)
+		out << *p.first << *p.second;
 }
 
 void CSimpleMap::serializeFrom(
@@ -257,8 +258,7 @@ void CSimpleMap::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

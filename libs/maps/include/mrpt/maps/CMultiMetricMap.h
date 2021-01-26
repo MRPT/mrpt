@@ -229,6 +229,6 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::maps

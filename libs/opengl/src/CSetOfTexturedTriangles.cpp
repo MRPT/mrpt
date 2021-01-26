@@ -7,12 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>
-#include <mrpt/serialization/CArchive.h>
-
 #include <mrpt/opengl/opengl_api.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace std;
 using namespace mrpt;
@@ -39,7 +38,8 @@ void CSetOfTexturedTriangles::serializeTo(
 
 	out << n;
 
-	for (uint32_t i = 0; i < n; i++) m_triangles[i].writeTo(out);
+	for (uint32_t i = 0; i < n; i++)
+		m_triangles[i].writeTo(out);
 }
 
 void CSetOfTexturedTriangles::serializeFrom(
@@ -52,10 +52,7 @@ void CSetOfTexturedTriangles::serializeFrom(
 		case 2:
 		{
 			readFromStreamRender(in);
-			if (version >= 2)
-			{
-				readFromStreamTexturedObject(in);
-			}
+			if (version >= 2) { readFromStreamTexturedObject(in); }
 			else
 			{  // Old version.
 				THROW_EXCEPTION("deserializing old version not supported.");
@@ -65,11 +62,11 @@ void CSetOfTexturedTriangles::serializeFrom(
 			in >> n;
 			m_triangles.resize(n);
 
-			for (uint32_t i = 0; i < n; i++) m_triangles[i].readFrom(in);
+			for (uint32_t i = 0; i < n; i++)
+				m_triangles[i].readFrom(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

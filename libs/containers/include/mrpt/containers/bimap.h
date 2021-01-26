@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/exceptions.h>
+
 #include <map>
 
 namespace mrpt::containers
@@ -144,6 +145,6 @@ class bimap
 		return m_v2k.find(v);
 	}
 	inline iterator_inverse find_value(const VALUE& v) { return m_v2k.find(v); }
-};  // end class bimap
+};	// end class bimap
 
 }  // namespace mrpt::containers

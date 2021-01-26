@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "graphs-precomp.h"  // Precompiled headers
-
+#include "graphs-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/graphs/CGraphPartitioner.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixF.h>
-#include <mrpt/math/ops_matrices.h>  // laplacian()
-#include <iostream>  // cout
+#include <mrpt/math/ops_matrices.h>	 // laplacian()
+
+#include <iostream>	 // cout
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -63,7 +64,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 	size_t nRows = eigenVectors.rows();
 
 	// for (i=0;i<eigenVectors.cols();i++) mean+=eigenVectors(colNo,i);
-	for (size_t i = 0; i < nRows; i++) mean += eigenVectors(i, colNo);
+	for (size_t i = 0; i < nRows; i++)
+		mean += eigenVectors(i, colNo);
 	mean /= nRows;
 
 	out_part1.clear();
@@ -71,8 +73,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 
 	for (size_t i = 0; i < nRows; i++)
 	{
-		if (eigenVectors(i, colNo) >= mean)
-			out_part1.push_back(i);
+		if (eigenVectors(i, colNo) >= mean) out_part1.push_back(i);
 		else
 			out_part2.push_back(i);
 	}
@@ -86,8 +87,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::SpectralBisection(
 		out_part2.clear();
 		// Assign 50%-50%:
 		for (int i = 0; i < Adj.cols(); i++)
-			if (i <= Adj.cols() / 2)
-				out_part1.push_back(i);
+			if (i <= Adj.cols() / 2) out_part1.push_back(i);
 			else
 				out_part2.push_back(i);
 	}
@@ -139,8 +139,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 		Adj = in_A;
 
 	// Make bisection
-	if (useSpectralBisection)
-		SpectralBisection(Adj, p1, p2, cut_value, false);
+	if (useSpectralBisection) SpectralBisection(Adj, p1, p2, cut_value, false);
 	else
 		exactBisection(Adj, p1, p2, cut_value, false);
 
@@ -157,7 +156,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 
 		// No:
 		p1.clear();
-		for (i = 0; i < nodeCount; i++) p1.push_back(i);
+		for (i = 0; i < nodeCount; i++)
+			p1.push_back(i);
 		out_parts.push_back(p1);
 	}
 	else
@@ -174,7 +174,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 			// sub-matrix:
 			GRAPH_MATRIX A_1(p1.size(), p1.size());
 			for (i = 0; i < p1.size(); i++)
-				for (j = 0; j < p1.size(); j++) A_1(i, j) = in_A(p1[i], p1[j]);
+				for (j = 0; j < p1.size(); j++)
+					A_1(i, j) = in_A(p1[i], p1[j]);
 
 			RecursiveSpectralPartition(
 				A_1, p1_parts, threshold_Ncut, forceSimetry,
@@ -185,7 +186,8 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::RecursiveSpectralPartition(
 			// sub-matrix:
 			GRAPH_MATRIX A_2(p2.size(), p2.size());
 			for (i = 0; i < p2.size(); i++)
-				for (j = 0; j < p2.size(); j++) A_2(i, j) = in_A(p2[i], p2[j]);
+				for (j = 0; j < p2.size(); j++)
+					A_2(i, j) = in_A(p2[i], p2[j]);
 
 			RecursiveSpectralPartition(
 				A_2, p2_parts, threshold_Ncut, forceSimetry,
@@ -239,7 +241,8 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
 	// -----------------------------------------------
 	num_t cut_AB = 0;
 	for (i = 0; i < size1; i++)
-		for (j = 0; j < size2; j++) cut_AB += in_A(in_part1[i], in_part2[j]);
+		for (j = 0; j < size2; j++)
+			cut_AB += in_A(in_part1[i], in_part2[j]);
 
 	num_t assoc_AA = 0;
 	for (i = 0; i < size1; i++)
@@ -254,8 +257,7 @@ num_t CGraphPartitioner<GRAPH_MATRIX, num_t>::nCut(
 	num_t assoc_AV = assoc_AA + cut_AB;
 	num_t assoc_BV = assoc_BB + cut_AB;
 
-	if (!cut_AB)
-		return 0;
+	if (!cut_AB) return 0;
 	else
 		return cut_AB / assoc_AV + cut_AB / assoc_BV;
 }
@@ -310,8 +312,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 
 		for (i = 0; i < nodeCount; i++)
 		{
-			if (partition[i])
-				part2.push_back(i);
+			if (partition[i]) part2.push_back(i);
 			else
 				part1.push_back(i);
 		}
@@ -337,9 +338,10 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 
 		// End criterion:
 		end = true;
-		for (i = 0; end && i < nodeCount; i++) end = end && partition[i];
+		for (i = 0; end && i < nodeCount; i++)
+			end = end && partition[i];
 
-	};  // End of while
+	};	// End of while
 
 	// Return the best partition:
 	out_cut_value = bestCutValue;
@@ -349,8 +351,7 @@ void CGraphPartitioner<GRAPH_MATRIX, num_t>::exactBisection(
 
 	for (i = 0; i < nodeCount; i++)
 	{
-		if (bestPartition[i])
-			out_part2.push_back(i);
+		if (bestPartition[i]) out_part2.push_back(i);
 		else
 			out_part1.push_back(i);
 	}

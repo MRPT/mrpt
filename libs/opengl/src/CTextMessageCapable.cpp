@@ -7,10 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CTextMessageCapable.h>
-
 #include <mrpt/opengl/opengl_api.h>
 
 using namespace std;
@@ -26,9 +25,7 @@ void CTextMessageCapable::TListTextMessages::regenerateGLobjects() const
 		if (labelData.gl_text && labelData.gl_text_outdated) continue;
 
 		if (!labelData.gl_text)
-		{
-			labelData.gl_text = mrpt::opengl::CText::Create();
-		}
+		{ labelData.gl_text = mrpt::opengl::CText::Create(); }
 		if (labelData.draw_shadow && !labelData.gl_text_shadow)
 			labelData.gl_text_shadow = mrpt::opengl::CText::Create();
 
@@ -49,8 +46,7 @@ bool CTextMessageCapable::updateTextMessage(
 	const size_t unique_index, const std::string& text)
 {
 	auto it = m_2D_texts.messages.find(unique_index);
-	if (it == m_2D_texts.messages.end())
-		return false;
+	if (it == m_2D_texts.messages.end()) return false;
 	else
 	{
 		it->second.text = text;

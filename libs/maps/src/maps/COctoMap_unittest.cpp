@@ -25,13 +25,13 @@ TEST(COctoMapTests, updateVoxels)
 
 	COctoMap map(0.1);
 
-	map.updateVoxel(1, 1, 1, true);  // integrate 'occupied' measurement
+	map.updateVoxel(1, 1, 1, true);	 // integrate 'occupied' measurement
 
 	map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
 	map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
 	map.updateVoxel(1.5, 1, 1, true);  // integrate 'occupied' measurement
 
-	map.updateVoxel(-1, -1, 1, false);  // integrate 'occupied' measurement
+	map.updateVoxel(-1, -1, 1, false);	// integrate 'occupied' measurement
 
 	double occup;
 	bool is_mapped;

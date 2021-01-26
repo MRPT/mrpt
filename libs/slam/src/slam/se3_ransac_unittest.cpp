@@ -12,6 +12,7 @@
 //   [MRPT]/samples/ransac-data-association/
 // ------------------------------------------------------
 
+#include <gtest/gtest.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/poses/CPose2D.h>
@@ -19,8 +20,6 @@
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
 #include <mrpt/tfest/se2.h>
-
-#include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -45,7 +44,7 @@ const double MAP_SIZE_Y = 15;
 
 struct TObs
 {
-	size_t ID;  // Ground truth ID
+	size_t ID;	// Ground truth ID
 	double x, y;
 };
 
@@ -94,12 +93,12 @@ bool ransac_data_assoc_run()
 		GT_pose_inv.composePoint(gx, gy, lx, ly);
 
 		observations[i].ID = idxs[i].first;
-		observations[i].x =
-			lx + mrpt::random::getRandomGenerator().drawGaussian1D(
-					 0, normalizationStd);
-		observations[i].y =
-			ly + mrpt::random::getRandomGenerator().drawGaussian1D(
-					 0, normalizationStd);
+		observations[i].x = lx +
+			mrpt::random::getRandomGenerator().drawGaussian1D(
+				0, normalizationStd);
+		observations[i].y = ly +
+			mrpt::random::getRandomGenerator().drawGaussian1D(
+				0, normalizationStd);
 	}
 
 	// ----------------------------------------------------
@@ -131,7 +130,7 @@ bool ransac_data_assoc_run()
 	mrpt::tfest::TSE2RobustParams params;
 	mrpt::tfest::TSE2RobustResult results;
 
-	params.ransac_minSetSize = RANSAC_MINIMUM_INLIERS;  // ransac_minSetSize (to
+	params.ransac_minSetSize = RANSAC_MINIMUM_INLIERS;	// ransac_minSetSize (to
 	// add the solution to
 	// the SOG)
 	params.ransac_maxSetSize =
@@ -139,7 +138,7 @@ bool ransac_data_assoc_run()
 			.size();  // ransac_maxSetSize: Test with all data points
 	params.ransac_mahalanobisDistanceThreshold =
 		ransac_mahalanobisDistanceThreshold;
-	params.ransac_nSimulations = 0;  // 0=auto
+	params.ransac_nSimulations = 0;	 // 0=auto
 	params.ransac_fuseByCorrsMatch = true;
 	params.ransac_fuseMaxDiffXY = 0.01f;
 	params.ransac_fuseMaxDiffPhi = 0.1_deg;

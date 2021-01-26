@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/serialization/CArchive.h>
+
 #include <cstdint>
 #include <cstring>
 #include <vector>

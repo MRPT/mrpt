@@ -10,11 +10,6 @@
 #pragma once
 
 #include <mrpt/config.h>
-
-#include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/COpenGLViewport.h>
-#include <mrpt/opengl/CRenderizable.h>
-
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CAssimpModel.h>
 #include <mrpt/opengl/CAxis.h>
@@ -30,8 +25,11 @@
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/opengl/CMeshFast.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>
@@ -54,7 +52,6 @@
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CVectorField2D.h>
 #include <mrpt/opengl/CVectorField3D.h>
-
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/opengl/pose_pdfs.h>
 #include <mrpt/opengl/stock_objects.h>

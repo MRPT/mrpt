@@ -277,6 +277,6 @@ class CStereoRectifyMap
 
 	void internal_invalidate();
 
-};  // end class
+};	// end class
 
 }  // namespace mrpt::vision

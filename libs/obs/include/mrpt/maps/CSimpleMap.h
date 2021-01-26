@@ -202,6 +202,6 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 	/** The stored data */
 	TPosePDFSensFramePairList m_posesObsPairs;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::maps

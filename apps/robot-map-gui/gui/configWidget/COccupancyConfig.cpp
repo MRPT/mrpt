@@ -8,10 +8,11 @@
    +---------------------------------------------------------------------------+
    */
 #include "COccupancyConfig.h"
-#include "TypeOfConfig.h"
-#include "ui_COccupancyConfig.h"
 
 #include <mrpt/io/CFileOutputStream.h>
+
+#include "TypeOfConfig.h"
+#include "ui_COccupancyConfig.h"
 
 using namespace mrpt;
 using namespace maps;

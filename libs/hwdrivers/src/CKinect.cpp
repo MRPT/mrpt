@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/img/TStereoCamera.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -47,7 +47,7 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect, mrpt::hwdrivers)
 #define f_ctx_ptr reinterpret_cast<freenect_context**>(&m_f_ctx)
 #define f_dev reinterpret_cast<freenect_device*>(m_f_dev)
 #define f_dev_ptr reinterpret_cast<freenect_device**>(&m_f_dev)
-#endif  // MRPT_HAS_KINECT_FREENECT
+#endif	// MRPT_HAS_KINECT_FREENECT
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
 mrpt::system::CTimeLogger alloc_tim;
@@ -286,7 +286,7 @@ void depth_cb(freenect_device* dev, void* v_depth, uint32_t timestamp)
 #endif
 
 	const CKinect::TDepth2RangeArray& r2m = obj->getRawDepth2RangeConversion();
-	obs.rangeUnits = 1e-3f;  // we use mm as units
+	obs.rangeUnits = 1e-3f;	 // we use mm as units
 
 	for (int r = 0; r < frMode.height; r++)
 		for (int c = 0; c < frMode.width; c++)
@@ -344,7 +344,7 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 		obs.intensityImageChannel = mrpt::obs::CObservation3DRangeScan::CH_IR;
 		obs.intensityImage.loadFromMemoryBuffer(
 			frMode.width, frMode.height,
-			false,  // Color image?
+			false,	// Color image?
 			reinterpret_cast<unsigned char*>(img_data));
 	}
 
@@ -357,14 +357,14 @@ void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 	obj->internal_tim_latest_rgb() = timestamp;
 }
 // ========  END OF GLOBAL CALLBACK FUNCTIONS ========
-#endif  // MRPT_HAS_KINECT_FREENECT
+#endif	// MRPT_HAS_KINECT_FREENECT
 
 void CKinect::open()
 {
 	if (isOpen()) close();
 
 	// Alloc memory, if this is the first time:
-	m_buf_depth.resize(640 * 480 * 3);  // We'll resize this below if needed
+	m_buf_depth.resize(640 * 480 * 3);	// We'll resize this below if needed
 	m_buf_rgb.resize(640 * 480 * 3);
 
 #if MRPT_HAS_KINECT_FREENECT  // ----> libfreenect
@@ -403,7 +403,7 @@ void CKinect::open()
 		FREENECT_RESOLUTION_MEDIUM,
 		m_video_channel == VIDEO_CHANNEL_IR
 			? FREENECT_VIDEO_IR_8BIT
-			: FREENECT_VIDEO_BAYER  // FREENECT_VIDEO_RGB: Use Bayer instead so
+			: FREENECT_VIDEO_BAYER	// FREENECT_VIDEO_RGB: Use Bayer instead so
 		// we can directly decode it here
 	);
 
@@ -429,8 +429,9 @@ void CKinect::open()
 	freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);
 
 	freenect_set_depth_mode(
-		f_dev, freenect_find_depth_mode(
-				   FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_10BIT));
+		f_dev,
+		freenect_find_depth_mode(
+			FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_10BIT));
 
 	// Set user data = pointer to "this":
 	freenect_set_user(f_dev, this);
@@ -441,7 +442,7 @@ void CKinect::open()
 	if (freenect_start_video(f_dev) < 0)
 		THROW_EXCEPTION("Error starting video streaming.");
 
-#endif  // MRPT_HAS_KINECT_FREENECT
+#endif	// MRPT_HAS_KINECT_FREENECT
 }
 
 void CKinect::close()
@@ -457,7 +458,7 @@ void CKinect::close()
 
 	if (f_ctx) freenect_shutdown(f_ctx);
 	m_f_ctx = nullptr;
-#endif  // MRPT_HAS_KINECT_FREENECT
+#endif	// MRPT_HAS_KINECT_FREENECT
 }
 
 /** Changes the video channel to open (RGB or IR) - you can call this method
@@ -469,7 +470,7 @@ void CKinect::setVideoChannel([[maybe_unused]] const TVideoChannel vch)
 {
 #if MRPT_HAS_KINECT_FREENECT
 	m_video_channel = vch;
-	if (!isOpen()) return;  // Nothing else to do here.
+	if (!isOpen()) return;	// Nothing else to do here.
 
 	// rgb or IR channel:
 	freenect_stop_video(f_dev);
@@ -479,7 +480,7 @@ void CKinect::setVideoChannel([[maybe_unused]] const TVideoChannel vch)
 		FREENECT_RESOLUTION_MEDIUM,
 		m_video_channel == VIDEO_CHANNEL_IR
 			? FREENECT_VIDEO_IR_8BIT
-			: FREENECT_VIDEO_BAYER  // FREENECT_VIDEO_RGB: Use Bayer instead so
+			: FREENECT_VIDEO_BAYER	// FREENECT_VIDEO_RGB: Use Bayer instead so
 		// we can directly decode it here
 	);
 
@@ -489,7 +490,7 @@ void CKinect::setVideoChannel([[maybe_unused]] const TVideoChannel vch)
 
 	freenect_start_video(f_dev);
 
-#endif  // MRPT_HAS_KINECT_FREENECT
+#endif	// MRPT_HAS_KINECT_FREENECT
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
@@ -511,7 +512,7 @@ void CKinect::getNextObservation(
 #if MRPT_HAS_KINECT_FREENECT
 
 	using namespace std::chrono_literals;
-	const auto max_wait = 40ms;  // 1/25 FPS
+	const auto max_wait = 40ms;	 // 1/25 FPS
 
 	// Mark previous observation's timestamp as out-dated:
 	m_latest_obs.hasPoints3D = false;
@@ -533,7 +534,7 @@ void CKinect::getNextObservation(
 	{
 		// Got a new frame?
 		if ((!m_grab_image ||
-			 m_tim_latest_rgb != 0) &&  // If we are NOT grabbing RGB or we are
+			 m_tim_latest_rgb != 0) &&	// If we are NOT grabbing RGB or we are
 			// and there's a new frame...
 			(!m_grab_depth ||
 			 m_tim_latest_depth != 0)  // If we are NOT grabbing Depth or we are
@@ -558,7 +559,7 @@ void CKinect::getNextObservation(
 		m_latest_obs.hasRangeImage = true;
 		m_latest_obs.range_is_depth = true;
 
-		m_latest_obs_cs.lock();  // Important: if system is running slow, etc.
+		m_latest_obs_cs.lock();	 // Important: if system is running slow, etc.
 		// we cannot tell for sure that the depth
 		// buffer is not beeing filled right now:
 		m_latest_obs.rangeImage.setSize(
@@ -656,7 +657,7 @@ void CKinect::getNextObservation(
 	// If successful, fill out the accelerometer data:
 	if (there_is_obs && this->m_grab_IMU)
 	{
-		double acc_x = 0, acc_y = 0, acc_z = 0;  // In m/s^2
+		double acc_x = 0, acc_y = 0, acc_z = 0;	 // In m/s^2
 		bool has_good_acc = false;
 
 #if MRPT_HAS_KINECT_FREENECT
@@ -687,7 +688,8 @@ void CKinect::getNextObservation(
 			out_obs_imu.timestamp = out_obs.timestamp;
 			out_obs_imu.sensorPose = out_obs.sensorPose;
 
-			for (auto&& i : out_obs_imu.dataIsPresent) i = false;
+			for (auto&& i : out_obs_imu.dataIsPresent)
+				i = false;
 
 			out_obs_imu.dataIsPresent[IMU_X_ACC] = true;
 			out_obs_imu.dataIsPresent[IMU_Y_ACC] = true;

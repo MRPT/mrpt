@@ -14,6 +14,7 @@
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/geometry.h>
+
 #include <algorithm>
 
 using namespace mrpt;
@@ -342,10 +343,11 @@ TEST(Geometry, conformAPlane)
 		EXPECT_FALSE(mrpt::math::conformAPlane(pts));
 	}
 	{
-		std::vector<TPoint3D> pts = {{5.56496063, -2.30508217, 29.53900000},
-									 {5.87949871, 0.00000000, 29.53900000},
-									 {13.50000000, 0.00000000, 0.00000000},
-									 {12.50465807, -7.29433126, 0.00000000}};
+		std::vector<TPoint3D> pts = {
+			{5.56496063, -2.30508217, 29.53900000},
+			{5.87949871, 0.00000000, 29.53900000},
+			{13.50000000, 0.00000000, 0.00000000},
+			{12.50465807, -7.29433126, 0.00000000}};
 		EXPECT_TRUE(mrpt::math::conformAPlane(pts));
 	}
 }
@@ -361,7 +363,7 @@ TEST(Geometry, RectanglesIntersection)
 
 	// Test cases: x,y,phi,  0/1:false/true (expected output)
 	const std::vector<tst_set_t> tsts = {
-		{0, 0, 0.0_deg, /*result*/ 1},	{3.1, 0, 0.0_deg, /*result*/ 0},
+		{0, 0, 0.0_deg, /*result*/ 1},	  {3.1, 0, 0.0_deg, /*result*/ 0},
 		{-3.1, 0, 0.0_deg, /*result*/ 0}, {2.9, 0, 0.0_deg, /*result*/ 1},
 		{-2.9, 0, 0.0_deg, /*result*/ 1}, {0, 4.1, 0.0_deg, /*result*/ 0},
 		{0, 3.9, 0.0_deg, /*result*/ 1},  {0, -4.1, 0.0_deg, /*result*/ 0},

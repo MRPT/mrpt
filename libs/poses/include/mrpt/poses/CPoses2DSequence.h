@@ -10,6 +10,7 @@
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <vector>
 
 namespace mrpt::poses
@@ -87,5 +88,5 @@ class CPoses2DSequence : public mrpt::serialization::CSerializable
 	 */
 	std::vector<CPose2D> poses;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

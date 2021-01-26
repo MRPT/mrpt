@@ -7,37 +7,38 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config.h>  // for HAVE_SINCOS
 #include <mrpt/core/bits_math.h>  // for square
 #include <mrpt/math/CMatrixDynamic.h>  // for CMatrixD...
-#include <mrpt/math/CMatrixF.h>  // for CMatrixF
-#include <mrpt/math/CMatrixFixed.h>  // for CMatrixF...
-#include <mrpt/math/CQuaternion.h>  // for CQuatern...
-#include <mrpt/math/CVectorFixed.h>  // for CArrayDo...
+#include <mrpt/math/CMatrixF.h>	 // for CMatrixF
+#include <mrpt/math/CMatrixFixed.h>	 // for CMatrixF...
+#include <mrpt/math/CQuaternion.h>	// for CQuatern...
+#include <mrpt/math/CVectorFixed.h>	 // for CArrayDo...
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/math/geometry.h>  // for skew_sym...
+#include <mrpt/math/geometry.h>	 // for skew_sym...
 #include <mrpt/math/homog_matrices.h>  // for homogene...
-#include <mrpt/math/matrix_serialization.h>  // for operator>>
+#include <mrpt/math/matrix_serialization.h>	 // for operator>>
 #include <mrpt/math/ops_containers.h>  // for dotProduct
 #include <mrpt/math/utils_matlab.h>
-#include <mrpt/math/wrap2pi.h>  // for wrapToPi
+#include <mrpt/math/wrap2pi.h>	// for wrapToPi
 #include <mrpt/poses/CPoint2D.h>  // for CPoint2D
 #include <mrpt/poses/CPoint3D.h>  // for CPoint3D
-#include <mrpt/poses/CPose2D.h>  // for CPose2D
-#include <mrpt/poses/CPose3D.h>  // for CPose3D
-#include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
+#include <mrpt/poses/CPose2D.h>	 // for CPose2D
+#include <mrpt/poses/CPose3D.h>	 // for CPose3D
+#include <mrpt/poses/CPose3DQuat.h>	 // for CPose3DQuat
 #include <mrpt/poses/Lie/SO.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/serialization/CSerializable.h>  // for CSeriali...
+
 #include <Eigen/Dense>
 #include <algorithm>  // for move
 #include <cmath>  // for fabs
-#include <iomanip>  // for operator<<
+#include <iomanip>	// for operator<<
 #include <limits>  // for numeric_...
-#include <ostream>  // for operator<<
+#include <ostream>	// for operator<<
 #include <string>  // for allocator
 
 using namespace mrpt;
@@ -85,16 +86,20 @@ CPose3D::CPose3D(const math::CMatrixDouble& m)
 	ASSERT_GE_(m.rows(), 3);
 	ASSERT_GE_(m.cols(), 4);
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) m_ROT(r, c) = m(r, c);
-	for (int r = 0; r < 3; r++) m_coords[r] = m(r, 3);
+		for (int c = 0; c < 3; c++)
+			m_ROT(r, c) = m(r, c);
+	for (int r = 0; r < 3; r++)
+		m_coords[r] = m(r, 3);
 }
 
 CPose3D::CPose3D(const math::CMatrixDouble44& m)
 	: m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 {
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) m_ROT(r, c) = m(r, c);
-	for (int r = 0; r < 3; r++) m_coords[r] = m(r, 3);
+		for (int c = 0; c < 3; c++)
+			m_ROT(r, c) = m(r, c);
+	for (int r = 0; r < 3; r++)
+		m_coords[r] = m(r, 3);
 }
 
 /** Constructor from a quaternion (which only represents the 3D rotation part)
@@ -128,9 +133,11 @@ void CPose3D::serializeTo(mrpt::serialization::CArchive& out) const
 	// original and reconstructed poses. To ensure bit-by-bit equivalence before
 	// and after serialization, let's get back to serializing the actual SO(3)
 	// matrix in serialization v3:
-	for (int i = 0; i < 3; i++) out << m_coords[i];
+	for (int i = 0; i < 3; i++)
+		out << m_coords[i];
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) out << m_ROT(r, c);
+		for (int c = 0; c < 3; c++)
+			out << m_ROT(r, c);
 }
 void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -178,13 +185,14 @@ void CPose3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		break;
 		case 3:
 		{
-			for (int i = 0; i < 3; i++) in >> m_coords[i];
+			for (int i = 0; i < 3; i++)
+				in >> m_coords[i];
 			for (int r = 0; r < 3; r++)
-				for (int c = 0; c < 3; c++) in >> m_ROT(r, c);
+				for (int c = 0; c < 3; c++)
+					in >> m_ROT(r, c);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	m_ypr_uptodate = false;
 }
@@ -213,8 +221,7 @@ void CPose3D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			m_ROT = m;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
@@ -322,14 +329,12 @@ void CPose3D::sphericalCoordinates(
 	out_range = local.norm();
 
 	// Yaw:
-	if (local.y != 0 || local.x != 0)
-		out_yaw = atan2(local.y, local.x);
+	if (local.y != 0 || local.x != 0) out_yaw = atan2(local.y, local.x);
 	else
 		out_yaw = 0;
 
 	// Pitch:
-	if (out_range != 0)
-		out_pitch = -asin(local.z / out_range);
+	if (out_range != 0) out_pitch = -asin(local.z / out_range);
 	else
 		out_pitch = 0;
 }
@@ -419,26 +424,26 @@ void CPose3D::composePoint(
 				0,
 				0,
 				-lx * sy * cp + ly * (-sy * sp * sr - cy * cr) +
-					lz * (-sy * sp * cr + cy * sr),  // d_x'/d_yaw
+					lz * (-sy * sp * cr + cy * sr),	 // d_x'/d_yaw
 				-lx * cy * sp + ly * (cy * cp * sr) +
 					lz * (cy * cp * cr),  // d_x'/d_pitch
 				ly * (cy * sp * cr + sy * sr) +
-					lz * (-cy * sp * sr + sy * cr),  // d_x'/d_roll
+					lz * (-cy * sp * sr + sy * cr),	 // d_x'/d_roll
 				0,
 				1,
 				0,
 				lx * cy * cp + ly * (cy * sp * sr - sy * cr) +
-					lz * (cy * sp * cr + sy * sr),  // d_y'/d_yaw
+					lz * (cy * sp * cr + sy * sr),	// d_y'/d_yaw
 				-lx * sy * sp + ly * (sy * cp * sr) +
 					lz * (sy * cp * cr),  // d_y'/d_pitch
 				ly * (sy * sp * cr - cy * sr) +
-					lz * (-sy * sp * sr - cy * cr),  // d_y'/d_roll
+					lz * (-sy * sp * sr - cy * cr),	 // d_y'/d_roll
 				0,
 				0,
 				1,
-				0,  // d_z' / d_yaw
-				-lx * cp - ly * sp * sr - lz * sp * cr,  // d_z' / d_pitch
-				ly * cp * cr - lz * cp * sr  // d_z' / d_roll
+				0,	// d_z' / d_yaw
+				-lx * cp - ly * sp * sr - lz * sp * cr,	 // d_z' / d_pitch
+				ly * cp * cr - lz * cp * sr	 // d_z' / d_roll
 			};
 			out_jacobian_df_dpose.value().get().loadFromArray(nums);
 		}
@@ -510,19 +515,19 @@ void CPose3D::getAsQuaternion(
 bool mrpt::poses::operator==(const CPose3D& p1, const CPose3D& p2)
 {
 	return (p1.m_coords == p2.m_coords) &&
-		   ((p1.getRotationMatrix() - p2.getRotationMatrix())
-				.array()
-				.abs()
-				.maxCoeff() < 1e-6);
+		((p1.getRotationMatrix() - p2.getRotationMatrix())
+			 .array()
+			 .abs()
+			 .maxCoeff() < 1e-6);
 }
 
 bool mrpt::poses::operator!=(const CPose3D& p1, const CPose3D& p2)
 {
 	return (p1.m_coords != p2.m_coords) ||
-		   ((p1.getRotationMatrix() - p2.getRotationMatrix())
-				.array()
-				.abs()
-				.maxCoeff() >= 1e-6);
+		((p1.getRotationMatrix() - p2.getRotationMatrix())
+			 .array()
+			 .abs()
+			 .maxCoeff() >= 1e-6);
 }
 
 /*---------------------------------------------------------------
@@ -562,15 +567,13 @@ void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B)
 		const CVectorFixedDouble<3> B_coords = B.m_coords;
 		for (int r = 0; r < 3; r++)
 			m_coords[r] = A.m_coords[r] + A.m_ROT(r, 0) * B_coords[0] +
-						  A.m_ROT(r, 1) * B_coords[1] +
-						  A.m_ROT(r, 2) * B_coords[2];
+				A.m_ROT(r, 1) * B_coords[1] + A.m_ROT(r, 2) * B_coords[2];
 	}
 	else
 	{
 		for (int r = 0; r < 3; r++)
 			m_coords[r] = A.m_coords[r] + A.m_ROT(r, 0) * B.m_coords[0] +
-						  A.m_ROT(r, 1) * B.m_coords[1] +
-						  A.m_ROT(r, 2) * B.m_coords[2];
+				A.m_ROT(r, 1) * B.m_coords[1] + A.m_ROT(r, 2) * B.m_coords[2];
 	}
 
 	// Important: Make this multiplication AFTER the translational part, to cope
@@ -600,8 +603,8 @@ bool CPose3D::isHorizontal(const double tolerance) const
 {
 	updateYawPitchRoll();
 	return (fabs(m_pitch) <= tolerance || M_PI - fabs(m_pitch) <= tolerance) &&
-		   (fabs(m_roll) <= tolerance ||
-			fabs(mrpt::math::wrapToPi(m_roll - M_PI)) <= tolerance);
+		(fabs(m_roll) <= tolerance ||
+		 fabs(mrpt::math::wrapToPi(m_roll - M_PI)) <= tolerance);
 }
 
 /**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient
@@ -626,8 +629,7 @@ void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B)
 
 	for (int i = 0; i < 3; i++)
 		m_coords[i] = t_b_inv[i] + R_b_inv(i, 0) * A.m_coords[0] +
-					  R_b_inv(i, 1) * A.m_coords[1] +
-					  R_b_inv(i, 2) * A.m_coords[2];
+			R_b_inv(i, 1) * A.m_coords[1] + R_b_inv(i, 2) * A.m_coords[2];
 
 	// Rot part:
 	m_ROT = R_b_inv * A.m_ROT;
@@ -782,7 +784,8 @@ void CPose3D::getHomogeneousMatrix(mrpt::math::CMatrixDouble44& out_HM) const
 {
 	auto M = out_HM.asEigen();
 	M.block<3, 3>(0, 0) = m_ROT.asEigen();
-	for (int i = 0; i < 3; i++) out_HM(i, 3) = m_coords[i];
+	for (int i = 0; i < 3; i++)
+		out_HM(i, 3) = m_coords[i];
 	out_HM(3, 0) = out_HM(3, 1) = out_HM(3, 2) = 0.;
 	out_HM(3, 3) = 1.;
 }

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "CDlgLog.h"
+
 #include "hmt_slam_guiMain.h"
 
 //(*InternalHeaders(CDlgLog)

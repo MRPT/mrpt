@@ -10,6 +10,7 @@
 
 //! [example sstring]
 #include <mrpt/typemeta/static_string.h>
+
 #include <iostream>
 
 void Test_StaticString()
@@ -37,6 +38,7 @@ void Test_StaticString()
 
 //! [example num2str]
 #include <mrpt/typemeta/num_to_string.h>
+
 #include <iostream>
 
 void Test_StaticNum2Str()

@@ -8,9 +8,11 @@
 +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CVectorDynamic.h>
+
 #include <Eigen/Dense>
+
 #include "MatrixVectorBase_impl.h"
 
 using namespace mrpt::math;
@@ -25,7 +27,7 @@ CVectorDynamic<T2> CVectorDynamic<T>::cast() const
 }
 
 // Explicit instantiation of "MatrixVectorBase_impl.h" methods:
-#define DO_VECDYN_INSTANTIATION(T_) \
+#define DO_VECDYN_INSTANTIATION(T_)                                            \
 	template class mrpt::math::MatrixVectorBase<T_, CVectorDynamic<T_>>;
 
 DO_VECDYN_INSTANTIATION(float)

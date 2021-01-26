@@ -10,6 +10,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/opengl.h>
+
 #include <iostream>
 
 using namespace std;
@@ -45,7 +46,7 @@ void TestOpenGLVideo()
 
 	// An opengl plane with the video texture
 	opengl::CTexturedPlane::Ptr gl_plane1 =
-		opengl::CTexturedPlane::Create(0, 1, 0, 0.75);  // 4/3 aspect ratio
+		opengl::CTexturedPlane::Create(0, 1, 0, 0.75);	// 4/3 aspect ratio
 	opengl::CTexturedPlane::Ptr gl_plane2 =
 		opengl::CTexturedPlane::Create(0, 1, 0, 0.75);
 	opengl::CTexturedPlane::Ptr gl_plane3 =

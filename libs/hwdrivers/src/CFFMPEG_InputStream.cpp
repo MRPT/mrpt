@@ -9,17 +9,17 @@
 
 #if defined(__GNUC__)  // Needed for ffmpeg headers. Only allowed here when not
 // using precomp. headers
-#define __STDC_CONSTANT_MACROS  // Needed for having "UINT64_C" and so
+#define __STDC_CONSTANT_MACROS	// Needed for having "UINT64_C" and so
 #endif
-
+//
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config.h>
-
-#include "hwdrivers-precomp.h"  // Precompiled headers
 
 #if MRPT_HAS_FFMPEG
 extern "C"
 {
-#define _MSC_STDINT_H_  // We already have pstdint.h in MRPT
+#define _MSC_STDINT_H_	// We already have pstdint.h in MRPT
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
@@ -117,7 +117,7 @@ bool CFFMPEG_InputStream::openURL(
 	const std::string& url, bool grab_as_grayscale, bool verbose)
 {
 #if MRPT_HAS_FFMPEG
-	this->close();  // Close first
+	this->close();	// Close first
 
 	TFFMPEGContext* ctx = &m_impl->m_state;
 
@@ -144,10 +144,7 @@ bool CFFMPEG_InputStream::openURL(
 	}
 
 	// Dump information about file onto standard error
-	if (verbose)
-	{
-		av_dump_format(ctx->pFormatCtx, 0, url.c_str(), false);
-	}
+	if (verbose) { av_dump_format(ctx->pFormatCtx, 0, url.c_str(), false); }
 
 	// Find the first video stream
 	ctx->videoStream = -1;
@@ -357,8 +354,7 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 		}
 		// while (ret >= 0)
 		ret = avcodec_receive_frame(ctx->pCodecCtx, ctx->pFrame);
-		if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-			return false;
+		if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return false;
 		else if (ret < 0)
 		{
 			std::cerr << "[CFFMPEG_InputStream] avcodec_receive_frame "
@@ -429,7 +425,7 @@ double CFFMPEG_InputStream::getVideoFPS() const
 	if (!ctx->pCodecCtx) return -1;
 
 	return static_cast<double>(ctx->pCodecCtx->time_base.den) /
-		   ctx->pCodecCtx->time_base.num;
+		ctx->pCodecCtx->time_base.num;
 #else
 	return false;
 #endif

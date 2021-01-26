@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/robust_kernels.h>
@@ -19,6 +19,7 @@
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
+
 #include <Eigen/Dense>
 #include <algorithm>  // reverse()
 
@@ -134,7 +135,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				// User Callback?
 				if (p.callback)
 				{
-					cbPars.calibRound = -1;  // Detecting corners
+					cbPars.calibRound = -1;	 // Detecting corners
 					cbPars.current_iter = 0;
 					cbPars.current_rmse = 0;
 					cbPars.nImgsProcessed = i * 2 + lr + 1;
@@ -240,7 +241,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		//       = 6N+24
 		// ----------------------------------------------------------------------------------
 		const size_t N = valid_image_pair_indices.size();
-		const size_t nObs = 2 * N * CORNERS_COUNT;  // total number of valid
+		const size_t nObs = 2 * N * CORNERS_COUNT;	// total number of valid
 		// observations (px,py)
 		// taken into account in the
 		// optimization
@@ -328,7 +329,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				p.robust_kernel_param);
 
 			// Build linear system:
-			mrpt::math::CVectorDynamic<double> minus_g;  // minus gradient
+			mrpt::math::CVectorDynamic<double> minus_g;	 // minus gradient
 			build_linear_system(res_jacob, vars_to_optimize, minus_g, H);
 
 			ASSERT_EQUAL_(nUnknowns, (size_t)H.cols());
@@ -353,7 +354,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 				// Solve for increment: (H + \lambda I) eps = -gradient
 				auto HH = H;
-				for (size_t i = 0; i < nUnknowns; i++) HH(i, i) += lambda;
+				for (size_t i = 0; i < nUnknowns; i++)
+					HH(i, i) += lambda;
 				// HH(i,i)*= (1.0 + lambda);
 
 				Eigen::LLT<Eigen::MatrixXd> llt(
@@ -574,7 +576,7 @@ Jacobian:
 */
 
 static void jacob_db_dp(
-	const TPoint3D& p,  // 3D coordinates wrt the camera
+	const TPoint3D& p,	// 3D coordinates wrt the camera
 	mrpt::math::CMatrixFixed<double, 2, 3>& G)
 {
 	const double pz_ = 1 / p.z;
@@ -633,8 +635,8 @@ y \end{array}\right)
 */
 
 static void jacob_dh_db_and_dh_dc(
-	const TPoint3D& nP,  // Point in relative coords wrt the camera
-	const mrpt::math::CVectorFixedDouble<9>& c,  // camera parameters
+	const TPoint3D& nP,	 // Point in relative coords wrt the camera
+	const mrpt::math::CVectorFixedDouble<9>& c,	 // camera parameters
 	mrpt::math::CMatrixFixed<double, 2, 2>& Hb,
 	mrpt::math::CMatrixFixed<double, 2, 9>& Hc)
 {
@@ -643,7 +645,7 @@ static void jacob_dh_db_and_dh_dc(
 
 	const double r2 = x * x + y * y;
 	const double r = std::sqrt(r2);
-	const double r6 = r2 * r2 * r2;  // (x^2+y^2)^3 = r^6
+	const double r6 = r2 * r2 * r2;	 // (x^2+y^2)^3 = r^6
 
 	// c=[fx fy cx cy k1 k2 k3 t1 t2]
 	const double fx = c[0], fy = c[1];
@@ -652,21 +654,23 @@ static void jacob_dh_db_and_dh_dc(
 	const double t1 = c[7], t2 = c[8];
 
 	// Hb = dh(b,c)/db  (2x2)
-	Hb(0, 0) =
-		fx * (k2 * r2 + k3 * r6 + 6 * t2 * x + 2 * t1 * y +
-			  x * (2 * k1 * x + 4 * k2 * x * r + 6 * k3 * x * r2) + k1 * r + 1);
-	Hb(0, 1) = fx * (2 * t1 * x + 2 * t2 * y +
-					 x * (2 * k1 * y + 4 * k2 * y * r + 6 * k3 * y * r2));
+	Hb(0, 0) = fx *
+		(k2 * r2 + k3 * r6 + 6 * t2 * x + 2 * t1 * y +
+		 x * (2 * k1 * x + 4 * k2 * x * r + 6 * k3 * x * r2) + k1 * r + 1);
+	Hb(0, 1) = fx *
+		(2 * t1 * x + 2 * t2 * y +
+		 x * (2 * k1 * y + 4 * k2 * y * r + 6 * k3 * y * r2));
 
-	Hb(1, 0) = fy * (2 * t1 * x + 2 * t2 * y +
-					 y * (2 * k1 * x + 4 * k2 * x * r + 6 * k3 * x * r2));
-	Hb(1, 1) =
-		fy * (k2 * r2 + k3 * r6 + 2 * t2 * x + 6 * t1 * y +
-			  y * (2 * k1 * y + 4 * k2 * y * r + 6 * k3 * y * r2) + k1 * r + 1);
+	Hb(1, 0) = fy *
+		(2 * t1 * x + 2 * t2 * y +
+		 y * (2 * k1 * x + 4 * k2 * x * r + 6 * k3 * x * r2));
+	Hb(1, 1) = fy *
+		(k2 * r2 + k3 * r6 + 2 * t2 * x + 6 * t1 * y +
+		 y * (2 * k1 * y + 4 * k2 * y * r + 6 * k3 * y * r2) + k1 * r + 1);
 
 	// Hc = dh(b,c)/dc  (2x9)
 	Hc(0, 0) = t2 * (3 * x * x + y * y) + x * (k2 * r2 + k3 * r6 + k1 * r + 1) +
-			   2 * t1 * x * y;
+		2 * t1 * x * y;
 	Hc(0, 1) = 0;
 	Hc(0, 2) = 1;
 	Hc(0, 3) = 0;
@@ -678,7 +682,7 @@ static void jacob_dh_db_and_dh_dc(
 
 	Hc(1, 0) = 0;
 	Hc(1, 1) = t1 * (x * x + 3 * y * y) + y * (k2 * r2 + k3 * r6 + k1 * r + 1) +
-			   2 * t2 * x * y;
+		2 * t2 * x * y;
 	Hc(1, 2) = 0;
 	Hc(1, 3) = 1;
 	Hc(1, 4) = fy * y * r;
@@ -739,10 +743,14 @@ static void project_point(
 		1 + params.dist[0] * r2 + params.dist[1] * r4 + params.dist[4] * r6;
 	const double B = 2 * x * y;
 
-	px.x = params.cx() + params.fx() * (x * A + params.dist[2] * B +
-										params.dist[3] * (r2 + 2 * square(x)));
-	px.y = params.cy() + params.fy() * (y * A + params.dist[3] * B +
-										params.dist[2] * (r2 + 2 * square(y)));
+	px.x = params.cx() +
+		params.fx() *
+			(x * A + params.dist[2] * B +
+			 params.dist[3] * (r2 + 2 * square(x)));
+	px.y = params.cy() +
+		params.fy() *
+			(y * A + params.dist[3] * B +
+			 params.dist[2] * (r2 + 2 * square(y)));
 }
 
 // Build the "-gradient" and the Hessian matrix:
@@ -999,12 +1007,14 @@ void eval_h_b(
 		1 + params.dist[0] * r2 + params.dist[1] * r4 + params.dist[4] * r6;
 	const double B = 2 * x * y;
 
-	out[0] =
-		params.cx() + params.fx() * (x * A + params.dist[2] * B +
-									 params.dist[3] * (r2 + 2 * square(x)));
-	out[1] =
-		params.cy() + params.fy() * (y * A + params.dist[3] * B +
-									 params.dist[2] * (r2 + 2 * square(y)));
+	out[0] = params.cx() +
+		params.fx() *
+			(x * A + params.dist[2] * B +
+			 params.dist[3] * (r2 + 2 * square(x)));
+	out[1] = params.cy() +
+		params.fy() *
+			(y * A + params.dist[3] * B +
+			 params.dist[2] * (r2 + 2 * square(y)));
 }
 
 void eval_b_p(
@@ -1023,7 +1033,8 @@ void eval_deps_D_p(
 	const CPose3D incrPose = Lie::SE<3>::exp(incr);
 	TPoint3D D_p_out;
 	incrPose.composePoint(D_p, D_p_out);
-	for (int i = 0; i < 3; i++) out[i] = D_p_out[i];
+	for (int i = 0; i < 3; i++)
+		out[i] = D_p_out[i];
 }
 
 struct TEvalData_A_eps_D_p
@@ -1041,7 +1052,8 @@ void eval_dA_eps_D_p(
 	const CPose3D A_eps_D = dat.A + (incrPose + dat.D);
 	TPoint3D pt;
 	A_eps_D.composePoint(dat.p, pt);
-	for (int i = 0; i < 3; i++) out[i] = pt[i];
+	for (int i = 0; i < 3; i++)
+		out[i] = pt[i];
 }
 // ---------------------------------------------------------------
 // End of aux. function, only if we evaluate Jacobians numerically:
@@ -1200,15 +1212,15 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			// ----- Numeric Jacobians ----
 
 			CVectorFixedDouble<30>
-				x0;  // eps_l (6) + eps_lr (6) + l_camparams (9) +
+				x0;	 // eps_l (6) + eps_lr (6) + l_camparams (9) +
 			// r_camparams (9)
 			x0.setZero();
 			x0.segment<9>(6 + 6) = lm_stat.left_cam_params;
 			x0.segment<9>(6 + 6 + 9) = lm_stat.right_cam_params;
 
 			const double x_incrs_val[30] = {
-				1e-6, 1e-6, 1e-6, 1e-7, 1e-7, 1e-7,  // eps_l
-				1e-6, 1e-6, 1e-6, 1e-7, 1e-7, 1e-7,  // eps_r
+				1e-6, 1e-6, 1e-6, 1e-7, 1e-7, 1e-7,	 // eps_l
+				1e-6, 1e-6, 1e-6, 1e-7, 1e-7, 1e-7,	 // eps_r
 				1e-3, 1e-3, 1e-3, 1e-3, 1e-8, 1e-8, 1e-8, 1e-8, 1e-4,  // cam_l
 				1e-3, 1e-3, 1e-3, 1e-3, 1e-8, 1e-8, 1e-8, 1e-8, 1e-4  // cam_rl
 			};
@@ -1223,7 +1235,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 #if defined(COMPARE_NUMERIC_JACOBIANS)
 			const mrpt::math::CMatrixFixed<double, 4, 30> J_num = rje.J;
 #endif
-#endif  // ---- end of numeric Jacobians ----
+#endif	// ---- end of numeric Jacobians ----
 
 // Only for debugging:
 #if defined(COMPARE_NUMERIC_JACOBIANS)

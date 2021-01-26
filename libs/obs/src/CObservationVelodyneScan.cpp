@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "obs-precomp.h"  // Precompiled headers
+//
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/core/round.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
@@ -15,8 +17,6 @@
 #include <mrpt/serialization/stl_serialization.h>
 
 #include <iostream>
-
-#include "obs-precomp.h"  // Precompiled headers
 
 using namespace std;
 using namespace mrpt::obs;
@@ -30,11 +30,11 @@ IMPLEMENTS_SERIALIZABLE(CObservationVelodyneScan, CObservation, mrpt::obs)
 static CSinCosLookUpTableFor2DScans velodyne_sincos_tables;
 
 const float VLP16_BLOCK_TDURATION = 110.592f;  // [us]
-const float VLP16_DSR_TOFFSET = 2.304f;  // [us]
-const float VLP16_FIRING_TOFFSET = 55.296f;  // [us]
+const float VLP16_DSR_TOFFSET = 2.304f;	 // [us]
+const float VLP16_FIRING_TOFFSET = 55.296f;	 // [us]
 
-const double HDR32_DSR_TOFFSET = 1.152;  // [us]
-const double HDR32_FIRING_TOFFSET = 46.08;  // [us]
+const double HDR32_DSR_TOFFSET = 1.152;	 // [us]
+const double HDR32_FIRING_TOFFSET = 46.08;	// [us]
 
 mrpt::system::TTimeStamp Velo::getOriginalReceivedTimeStamp() const
 {
@@ -58,7 +58,7 @@ void Velo::serializeTo(mrpt::serialization::CArchive& out) const
 				calibration.laser_corrections.size());
 	out << point_cloud.x << point_cloud.y << point_cloud.z
 		<< point_cloud.intensity;
-	out << has_satellite_timestamp;  // v1
+	out << has_satellite_timestamp;	 // v1
 	// v2:
 	out << point_cloud.timestamp << point_cloud.azimuth << point_cloud.laser_id
 		<< point_cloud.pointsForLaserID;
@@ -95,8 +95,7 @@ void Velo::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			point_cloud.clear();
 			in >> point_cloud.x >> point_cloud.y >> point_cloud.z >>
 				point_cloud.intensity;
-			if (version >= 1)
-				in >> has_satellite_timestamp;
+			if (version >= 1) in >> has_satellite_timestamp;
 			else
 				has_satellite_timestamp =
 					(this->timestamp != this->originalReceivedTimestamp);
@@ -105,8 +104,7 @@ void Velo::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 					point_cloud.laser_id >> point_cloud.pointsForLaserID;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
 	// m_cachedMap.clear();
@@ -133,7 +131,7 @@ static double VLP16AdjustTimeStamp(
 	int firingblock, int dsr, int firingwithinblock)
 {
 	return (firingblock * VLP16_BLOCK_TDURATION) + (dsr * VLP16_DSR_TOFFSET) +
-		   (firingwithinblock * VLP16_FIRING_TOFFSET);
+		(firingwithinblock * VLP16_FIRING_TOFFSET);
 }
 
 static void velodyne_scan_to_pointcloud(
@@ -181,10 +179,9 @@ static void velodyne_scan_to_pointcloud(
 			const uint32_t us_pkt0 = scan.scan_packets[0].gps_timestamp();
 			const uint32_t us_pkt_this = raw->gps_timestamp();
 			// Handle the case of time counter reset by new hour 00:00:00
-			const uint32_t us_ellapsed =
-				(us_pkt_this >= us_pkt0)
-					? (us_pkt_this - us_pkt0)
-					: (1000000UL * 3600UL + us_pkt_this - us_pkt0);
+			const uint32_t us_ellapsed = (us_pkt_this >= us_pkt0)
+				? (us_pkt_this - us_pkt0)
+				: (1000000UL * 3600UL + us_pkt_this - us_pkt0);
 			pkt_tim =
 				mrpt::system::timestampAdd(scan.timestamp, us_ellapsed * 1e-6);
 		}
@@ -204,7 +201,7 @@ static void velodyne_scan_to_pointcloud(
 				int localDiff = (Velo::ROTATION_MAX_UNITS +
 								 raw->blocks[i + nBlocksPerAzimuth].rotation() -
 								 raw->blocks[i].rotation()) %
-								Velo::ROTATION_MAX_UNITS;
+					Velo::ROTATION_MAX_UNITS;
 				diffs[i] = localDiff;
 			}
 			std::nth_element(
@@ -304,7 +301,7 @@ static void velodyne_scan_to_pointcloud(
 								isolatedPointsFilterDistance_units)
 							pass_filter = false;
 					}
-					if (!pass_filter) continue;  // Filter out this point
+					if (!pass_filter) continue;	 // Filter out this point
 				}
 
 				// Azimuth correction: correct for the laser rotation as a
@@ -342,8 +339,7 @@ static void velodyne_scan_to_pointcloud(
 						nextblockdsr0 = HDL32AdjustTimeStamp(block + 1, 0);
 						blockdsr0 = HDL32AdjustTimeStamp(block, 0);
 						break;
-					case 64:
-						break;
+					case 64: break;
 					default:
 					{
 						THROW_EXCEPTION("Error: unhandled LIDAR model!");
@@ -351,8 +347,9 @@ static void velodyne_scan_to_pointcloud(
 				};
 
 				const int azimuthadjustment = mrpt::round(
-					median_azimuth_diff * ((timestampadjustment - blockdsr0) /
-										   (nextblockdsr0 - blockdsr0)));
+					median_azimuth_diff *
+					((timestampadjustment - blockdsr0) /
+					 (nextblockdsr0 - blockdsr0)));
 
 				const float azimuth_corrected_f =
 					azimuth_raw_f + azimuthadjustment;
@@ -392,7 +389,7 @@ static void velodyne_scan_to_pointcloud(
 				// Compute raw position
 				const mrpt::math::TPoint3Df pt(
 					xy_distance * cos_azimuth +
-						horz_offset * sin_azimuth,  // MRPT +X = Velodyne +Y
+						horz_offset * sin_azimuth,	// MRPT +X = Velodyne +Y
 					-(xy_distance * sin_azimuth -
 					  horz_offset * cos_azimuth),  // MRPT +Y = Velodyne -X
 					distance * sin_vert_angle + vert_offset);
@@ -471,9 +468,7 @@ void Velo::generatePointCloud(const TGeneratePointCloudParameters& params)
 			me_.point_cloud.z.push_back(pt_z);
 			me_.point_cloud.intensity.push_back(pt_intensity);
 			if (params_.generatePerPointTimestamp)
-			{
-				me_.point_cloud.timestamp.push_back(tim);
-			}
+			{ me_.point_cloud.timestamp.push_back(tim); }
 			if (params_.generatePerPointAzimuth)
 			{
 				const int azimuth_corrected =

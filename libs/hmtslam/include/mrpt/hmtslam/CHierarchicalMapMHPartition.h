@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/system/COutputLogger.h>
+
 #include <map>
 
 namespace mrpt
@@ -274,6 +275,6 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 		const float margin_to_substract = 6) const;
 
    protected:
-};  // End of class def.
+};	// End of class def.
 }  // namespace hmtslam
 }  // namespace mrpt

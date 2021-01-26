@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "xRawLogViewerMain.h"
-
 #include <wx/app.h>
 #include <wx/choicdlg.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
 #include <wx/textdlg.h>
+
+#include "xRawLogViewerMain.h"
 
 // General global variables:
 #include <mrpt/io/CFileGZInputStream.h>
@@ -41,25 +41,26 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 	WX_START_TRY
 
 	bool onlyOnePerLabel =
-		(wxYES == wxMessageBox(
-					  _("Keep only one observation of each label within each "
-						"sensoryframe?"),
-					  _("Compact rawlog"), wxYES_NO, this));
+		(wxYES ==
+		 wxMessageBox(
+			 _("Keep only one observation of each label within each "
+			   "sensoryframe?"),
+			 _("Compact rawlog"), wxYES_NO, this));
 
 	int progress_N = static_cast<int>(rawlog.size());
 	int progress_i = progress_N;
 
 	wxProgressDialog progDia(
 		wxT("Compacting rawlog"), wxT("Processing..."),
-		progress_N,  // range
+		progress_N,	 // range
 		this,  // parent
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	CActionRobotMovement2D::Ptr lastAct;
-	CSensoryFrame::Ptr lastSF;  //  = nullptr;
+	CSensoryFrame::Ptr lastSF;	//  = nullptr;
 
 	unsigned counter_loops = 0;
 	unsigned nActionsDel = 0;
@@ -71,7 +72,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 		if (counter_loops++ % 50 == 0)
 		{
 			if (!progDia.Update(progress_N - progress_i)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		bool deleteThis = false;
@@ -197,7 +198,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 	ASSERT_(DECIMATE_RATIO >= 1);
 
 	wxBusyCursor busyCursor;
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	size_t i, N = rawlog.size();
 
@@ -356,7 +357,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	unsigned int countLoop = 0;
 	int entryIndex = 0;
@@ -386,7 +387,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 			auxStr.sprintf(wxT("Parsing file... %u objects"), entryIndex);
 			if (!progDia.Update((int)fil.getPosition(), auxStr))
 				keepLoading = false;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		CSerializable::Ptr newObj;
@@ -494,7 +495,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 
 	progDia.Update(filSize);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	WX_END_TRY
 }
@@ -514,7 +515,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 
 	// Create the default "/Images" directory.
 	string outDir = extractFileDirectory(filToSave) + string("/") +
-					extractFileName(filToSave) + string("_Images");
+		extractFileName(filToSave) + string("_Images");
 	if (fileExists(outDir))
 	{
 		wxMessageBox(
@@ -557,7 +558,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	unsigned int countLoop = 0;
 	int imgSaved = 0;
@@ -571,7 +572,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 			auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
 			if (!progDia.Update((int)fil.getPosition(), auxStr))
 				keepLoading = false;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -693,7 +694,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	unsigned int countLoop = 0;
 	bool keepLoading = true;
@@ -713,7 +714,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 			auxStr.sprintf(wxT("Parsing file... %u objects"), countLoop);
 			if (!progDia.Update((int)fil.getPosition(), auxStr))
 				keepLoading = false;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -751,8 +752,8 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 						std::make_shared<CObservationOdometry>();
 					newO->sensorLabel = "odometry";
 					newO->timestamp = actOdom->timestamp != INVALID_TIMESTAMP
-										  ? actOdom->timestamp
-										  : lastValidObsTime;
+						? actOdom->timestamp
+						: lastValidObsTime;
 					newO->odometry = odometry_accum;
 
 					time_ordered_list_observation.insert(
@@ -817,10 +818,11 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 	WX_START_TRY
 
 	bool useSensorTimestamp =
-		(wxYES == wxMessageBox(
-					  _("Yes: use sensor-based UTC timestamp. No: use "
-						"computer-based timestamp, when available."),
-					  _("Which timestamp to use?"), wxYES_NO, this));
+		(wxYES ==
+		 wxMessageBox(
+			 _("Yes: use sensor-based UTC timestamp. No: use "
+			   "computer-based timestamp, when available."),
+			 _("Which timestamp to use?"), wxYES_NO, this));
 
 	wxBusyCursor waitCursor;
 
@@ -845,8 +847,8 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 				CObservation::Ptr o = rawlog.getAsObservation(i);
 
 				TTimeStamp tim = useSensorTimestamp
-									 ? o->getTimeStamp()
-									 : o->getOriginalReceivedTimeStamp();
+					? o->getTimeStamp()
+					: o->getOriginalReceivedTimeStamp();
 
 				if (tim == INVALID_TIMESTAMP)
 				{
@@ -951,20 +953,18 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
+			default: break;
 		}  // end switch type
 
 	}  // end for
 
-	if (wxYES == wxMessageBox(
-					 wxString::Format(
-						 _("%u changes. Do you want to re-order by timestamp?"),
-						 nChanges),
-					 _("Done"), wxYES_NO, this))
-	{
-		OnMenuResortByTimestamp(event);
-	}
+	if (wxYES ==
+		wxMessageBox(
+			wxString::Format(
+				_("%u changes. Do you want to re-order by timestamp?"),
+				nChanges),
+			_("Done"), wxYES_NO, this))
+	{ OnMenuResortByTimestamp(event); }
 
 	WX_END_TRY
 }
@@ -975,10 +975,11 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 	WX_START_TRY
 
 	bool onlyOnePerLabel =
-		(wxYES == wxMessageBox(
-					  _("Keep only one observation of each label within each "
-						"sensoryframe?"),
-					  _("Convert to sensoryframe's"), wxYES_NO, this));
+		(wxYES ==
+		 wxMessageBox(
+			 _("Keep only one observation of each label within each "
+			   "sensoryframe?"),
+			 _("Convert to sensoryframe's"), wxYES_NO, this));
 
 	wxString strMaxL = wxGetTextFromUser(
 		_("Maximum length of each sensoryframe (seconds):"),
@@ -1000,7 +1001,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	CSensoryFrame SF_new;
 	set<string> SF_new_labels;
@@ -1015,10 +1016,8 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 					countLoop,
 					wxString::Format(
 						wxT("Parsing rawlog... %u objects"), countLoop)))
-			{
-				return;
-			}
-			wxTheApp->Yield();  // Let the app. process messages
+			{ return; }
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		switch (rawlog.getType(countLoop))
@@ -1038,10 +1037,9 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 				// Update stats:
 				bool label_existed =
 					SF_new_labels.find(o->sensorLabel) != SF_new_labels.end();
-				double SF_len =
-					SF_new_first_t == INVALID_TIMESTAMP
-						? 0
-						: timeDifference(SF_new_first_t, o->timestamp);
+				double SF_len = SF_new_first_t == INVALID_TIMESTAMP
+					? 0
+					: timeDifference(SF_new_first_t, o->timestamp);
 
 				// Decide:
 				// End SF and start a new one?
@@ -1087,8 +1085,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 			}
 			break;
 
-			default:
-				break;
+			default: break;
 		}  // end for each entry
 
 	}  // end while keep loading

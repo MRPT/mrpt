@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/format.h>
+
 #include <cstdio>
 #include <string>
 #include <vector>

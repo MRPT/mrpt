@@ -40,8 +40,8 @@ struct TRobotShape
 	const std::vector<double>& getHeights() const { return heights; }
 
    private:
-	std::vector<mrpt::math::CPolygon> polygons;  // The polygonal bases
-	std::vector<double> radius;  // The radius of each prism.
+	std::vector<mrpt::math::CPolygon> polygons;	 // The polygonal bases
+	std::vector<double> radius;	 // The radius of each prism.
 	std::vector<double> heights;  // Heights of the prisms
 };
 
@@ -111,7 +111,7 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
 		return m_ptgmultilevel[i]
 			.PTGs[0]
-			.get();  // Return for the 0'th level (ptgs
+			.get();	 // Return for the 0'th level (ptgs
 		// are replicated at each level)
 	}
 	const CParameterizedTrajectoryGenerator* getPTG(size_t i) const override
@@ -119,14 +119,14 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 		ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty());
 		return m_ptgmultilevel[i]
 			.PTGs[0]
-			.get();  // Return for the 0'th level (ptgs
+			.get();	 // Return for the 0'th level (ptgs
 		// are replicated at each level)
 	}
 
 	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
 	void saveConfigFile(mrpt::config::CConfigFileBase& c)
-		const override;  // See base class docs!
+		const override;	 // See base class docs!
 
    private:
 	// ------------------------------------------------------
@@ -178,5 +178,5 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 	 * the logging record for the current timestep */
 	void loggingGetWSObstaclesAndShape(CLogFileRecord& out_log) override;
 
-};  // end class
+};	// end class
 }  // namespace mrpt::nav

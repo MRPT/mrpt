@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGrid.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
@@ -16,6 +16,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <fstream>
 
 using namespace std;
@@ -37,7 +38,7 @@ CPose3DPDFGrid::CPose3DPDFGrid(
 
 void CPose3DPDFGrid::copyFrom(const CPose3DPDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	THROW_EXCEPTION("Not implemented yet!");
 }
@@ -137,8 +138,7 @@ void CPose3DPDFGrid::serializeFrom(
 			ASSERT_EQUAL_(m_data.size(), m_size_xyzYPR);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -184,12 +184,14 @@ void CPose3DPDFGrid::normalize()
 	double SUM = 0;
 
 	// SUM:
-	for (auto it = m_data.begin(); it != m_data.end(); ++it) SUM += *it;
+	for (auto it = m_data.begin(); it != m_data.end(); ++it)
+		SUM += *it;
 
 	if (SUM > 0)
 	{
 		const auto f = 1.0 / SUM;
-		for (double& it : m_data) it *= f;
+		for (double& it : m_data)
+			it *= f;
 	}
 }
 
@@ -197,5 +199,6 @@ void CPose3DPDFGrid::uniformDistribution()
 {
 	const double val = 1.0 / m_data.size();
 
-	for (double& it : m_data) it = val;
+	for (double& it : m_data)
+		it = val;
 }

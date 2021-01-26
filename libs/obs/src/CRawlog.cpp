@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
@@ -141,7 +141,8 @@ uint8_t CRawlog::serializeGetVersion() const { return 1; }
 void CRawlog::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_seqOfActObs.size());
-	for (const auto& a : m_seqOfActObs) out << a;
+	for (const auto& a : m_seqOfActObs)
+		out << a;
 	out << m_commentTexts;
 }
 
@@ -154,12 +155,12 @@ void CRawlog::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		{
 			clear();
 			m_seqOfActObs.resize(in.ReadAs<uint32_t>());
-			for (auto& a : m_seqOfActObs) a = in.ReadObject();
+			for (auto& a : m_seqOfActObs)
+				a = in.ReadObject();
 			in >> m_commentTexts;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -215,10 +216,7 @@ bool CRawlog::loadFromRawLogFile(
 			else
 			{
 				// Other classes:
-				if (non_obs_objects_are_legal)
-				{
-					add_obj = true;
-				}
+				if (non_obs_objects_are_legal) { add_obj = true; }
 				else
 				{
 					keepReading = false;
@@ -270,7 +268,8 @@ bool CRawlog::saveToRawLogFile(const std::string& fileName) const
 		CFileGZOutputStream fo(fileName);
 		auto f = archiveFrom(fo);
 		if (!m_commentTexts.text.empty()) f << m_commentTexts;
-		for (const auto& m_seqOfActOb : m_seqOfActObs) f << *m_seqOfActOb;
+		for (const auto& m_seqOfActOb : m_seqOfActObs)
+			f << *m_seqOfActOb;
 		return true;
 	}
 	catch (const std::exception& e)
@@ -300,9 +299,7 @@ bool CRawlog::readActionObservationPair(
 			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID(CActionCollection))
-			{
-				action = std::dynamic_pointer_cast<CActionCollection>(obj);
-			}
+			{ action = std::dynamic_pointer_cast<CActionCollection>(obj); }
 			else
 			{
 				obj.reset();
@@ -317,9 +314,7 @@ bool CRawlog::readActionObservationPair(
 			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-			{
-				observations = std::dynamic_pointer_cast<CSensoryFrame>(obj);
-			}
+			{ observations = std::dynamic_pointer_cast<CSensoryFrame>(obj); }
 			else
 			{
 				obj.reset();
@@ -362,9 +357,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (IS_CLASS(*obj, CActionCollection))
-			{
-				action = std::dynamic_pointer_cast<CActionCollection>(obj);
-			}
+			{ action = std::dynamic_pointer_cast<CActionCollection>(obj); }
 			else if (IS_DERIVED(*obj, CObservation))
 			{
 				observation = std::dynamic_pointer_cast<CObservation>(obj);
@@ -383,9 +376,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-			{
-				observations = std::dynamic_pointer_cast<CSensoryFrame>(obj);
-			}
+			{ observations = std::dynamic_pointer_cast<CSensoryFrame>(obj); }
 			rawlogEntry++;
 		}
 		return true;
@@ -476,7 +467,7 @@ void CRawlog::findObservationsByClassInRange(
 			}
 			else
 			{
-				break;  // end of time window!
+				break;	// end of time window!
 			}
 		}
 		else

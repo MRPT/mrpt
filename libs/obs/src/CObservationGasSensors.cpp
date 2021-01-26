@@ -8,11 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <fstream>
 #include <iostream>
 
@@ -83,13 +84,11 @@ void CObservationGasSensors::serializeFrom(
 				}
 			}
 
-			if (version >= 4)
-				in >> sensorLabel;
+			if (version >= 4) in >> sensorLabel;
 			else
 				sensorLabel = "";
 
-			if (version >= 5)
-				in >> timestamp;
+			if (version >= 5) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 		}
@@ -123,7 +122,7 @@ void CObservationGasSensors::serializeFrom(
 
 			// (2)
 			eNose.eNosePoseOnTheRobot =
-				TPose3D(0.20, 0.15, 0.10, .0, .0, .0);  // (x,y,z) only
+				TPose3D(0.20, 0.15, 0.10, .0, .0, .0);	// (x,y,z) only
 			eNose.readingsVoltage.resize(4);
 			eNose.readingsVoltage[0] = readings[8];
 			eNose.readingsVoltage[1] = readings[10];
@@ -135,8 +134,7 @@ void CObservationGasSensors::serializeFrom(
 			m_readings.push_back(eNose);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -153,7 +151,8 @@ void CObservationGasSensors::getSensorPose(CPose3D& out_sensorPose) const
 
 void CObservationGasSensors::setSensorPose(const CPose3D& newSensorPose)
 {
-	for (auto& r : m_readings) r.eNosePoseOnTheRobot = newSensorPose.asTPose();
+	for (auto& r : m_readings)
+		r.eNosePoseOnTheRobot = newSensorPose.asTPose();
 }
 
 bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(
@@ -228,7 +227,8 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(
 
 		// Average data to reduce noise (Noise Filtering)
 		float partial_sum = 0;
-		for (auto& i : m_antiNoise_window) partial_sum += i.reading;
+		for (auto& i : m_antiNoise_window)
+			partial_sum += i.reading;
 
 		m_antiNoise_window.at(winNoise_size / 2).reading_filtered =
 			partial_sum / winNoise_size;
@@ -262,8 +262,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling(
 
 			if ((incT > 0) & (!first_incT))
 			{  // not the same sample due to initialization of buffers
-				if (fixed_incT == 0)
-					fixed_incT = incT;
+				if (fixed_incT == 0) fixed_incT = incT;
 				else
 					// ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));
 					if (fabs(incT - fixed_incT) > (double)(0.05))

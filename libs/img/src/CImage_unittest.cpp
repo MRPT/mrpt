@@ -365,8 +365,7 @@ TEST(CImage, ScaleImage)
 	for (int pass = 0; pass < 2; pass++)
 	{
 		CImage c;
-		if (pass == 0)
-			c = a.makeDeepCopy();
+		if (pass == 0) c = a.makeDeepCopy();
 		else
 			a.scaleImage(c, 311, 211);
 		const auto cw = c.getWidth(), ch = c.getHeight();
@@ -568,4 +567,4 @@ TEST(CImage, DifferentAccessMethodsGray)
 	}
 }
 
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV

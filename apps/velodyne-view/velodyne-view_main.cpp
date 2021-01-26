@@ -24,7 +24,7 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>  // MRPT_getVersion()
+#include <mrpt/system/os.h>	 // MRPT_getVersion()
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -81,7 +81,7 @@ struct TThreadParam
 	volatile double tilt_ang_deg{0};
 	volatile double Hz{0};
 
-	CObservationVelodyneScan::Ptr new_obs;  // Raw scans
+	CObservationVelodyneScan::Ptr new_obs;	// Raw scans
 	CObservationGPS::Ptr new_obs_gps;  // GPS, if any
 };
 
@@ -109,7 +109,7 @@ void thread_grabbing(TThreadParam& p)
 								  name2value(arg_model.getValue()));
 		if (arg_ip_filter.isSet())
 			velodyne.setDeviceIP(
-				arg_ip_filter.getValue());  // Default: from any IP
+				arg_ip_filter.getValue());	// Default: from any IP
 		if (arg_in_pcap.isSet())
 			velodyne.setPCAPInputFile(arg_in_pcap.getValue());
 		if (arg_out_pcap.isSet())
@@ -163,9 +163,7 @@ void thread_grabbing(TThreadParam& p)
 			{
 				switch (p.pushed_key)
 				{
-					case 27:
-						p.quit = true;
-						break;
+					case 27: p.quit = true; break;
 				}
 
 				// Clear pushed key flag:
@@ -368,9 +366,7 @@ int VelodyneView(int argc, char** argv)
 					win3D.setCameraZoom(win3D.getCameraZoom() / 1.2);
 					win3D.repaint();
 					break;
-				case ' ':
-					view_freeze = !view_freeze;
-					break;
+				case ' ': view_freeze = !view_freeze; break;
 				case '1':
 					pc_params.dualKeepLast = !pc_params.dualKeepLast;
 					break;
@@ -378,9 +374,7 @@ int VelodyneView(int argc, char** argv)
 					pc_params.dualKeepStrongest = !pc_params.dualKeepStrongest;
 					break;
 				// ...and the rest in the sensor thread:
-				default:
-					thrPar.pushed_key = key;
-					break;
+				default: thrPar.pushed_key = key; break;
 			};
 		}
 
@@ -414,7 +408,7 @@ int main(int argc, char** argv)
 	{
 		int ret = VelodyneView(argc, argv);
 		std::this_thread::sleep_for(
-			50ms);  // to allow GUI threads to end gracefully.
+			50ms);	// to allow GUI threads to end gracefully.
 		return ret;
 	}
 	catch (const std::exception& e)

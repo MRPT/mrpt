@@ -9,10 +9,9 @@
 
 #pragma once
 
+#include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
-
-#include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
 
 namespace mrpt::graphslam::optimizers
 {

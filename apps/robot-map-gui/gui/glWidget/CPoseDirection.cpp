@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+
    */
 #include "CPoseDirection.h"
+
 #include <QDoubleSpinBox>
 
 CPoseDirection::CPoseDirection(QWidget* parent)

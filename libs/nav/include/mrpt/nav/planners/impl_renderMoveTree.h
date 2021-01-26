@@ -165,9 +165,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 
 			mrpt::math::TPose2D parent_state;
 			if (node.parent_id != INVALID_NODEID)
-			{
-				parent_state = lstNodes.find(node.parent_id)->second.state;
-			}
+			{ parent_state = lstNodes.find(node.parent_id)->second.state; }
 			const mrpt::math::TPose2D& trg_state = node.state;
 
 			const bool is_new_one = (itNode == (lstNodes.end() - 1));
@@ -279,7 +277,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 			mrpt::opengl::CPointCloud::Create();
 
 		obj->loadFromPointsMap(options.local_obs_from_nearest_pose);
-		obj->setPose(*options.x_nearest_pose);  // Points are relative to this
+		obj->setPose(*options.x_nearest_pose);	// Points are relative to this
 		// pose: let OpenGL to deal with
 		// the coords. composition
 		obj->setPointSize(options.point_size_local_obstacles);

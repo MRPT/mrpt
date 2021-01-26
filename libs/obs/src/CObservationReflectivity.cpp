@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -40,8 +40,7 @@ void CObservationReflectivity::serializeFrom(
 			in >> sensorLabel >> timestamp;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

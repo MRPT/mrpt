@@ -42,4 +42,4 @@ class my_qlabel : public QLabel
    public slots:
 };
 
-#endif  // BENCHMARKINGIMAGEFEATURES_GUI_MY_QLABEL_H
+#endif	// BENCHMARKINGIMAGEFEATURES_GUI_MY_QLABEL_H

@@ -7,14 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 
 int main(int argc, char** argv)
 {
@@ -108,10 +107,9 @@ int main(int argc, char** argv)
 		mrpt::maps::COccupancyGridMap2D grid;
 		grid.loadFromBitmap(img, cell_res, {px, py});
 
-		const std::string sOutFile =
-			arg_output_file.isSet() ? arg_output_file.getValue()
-									: mrpt::system::fileNameChangeExtension(
-										  inputFile, "gridmap.gz");
+		const std::string sOutFile = arg_output_file.isSet()
+			? arg_output_file.getValue()
+			: mrpt::system::fileNameChangeExtension(inputFile, "gridmap.gz");
 		std::cout << "Output map file: " << sOutFile << std::endl;
 
 		if (mrpt::system::fileExists(sOutFile) && !arg_overwrite.isSet())

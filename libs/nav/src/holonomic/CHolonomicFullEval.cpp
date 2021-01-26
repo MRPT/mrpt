@@ -16,7 +16,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 
-#include <Eigen/Dense>  // col(),...
+#include <Eigen/Dense>	// col(),...
 #include <cmath>
 
 using namespace mrpt;
@@ -106,14 +106,15 @@ void CHolonomicFullEval::evalSingleTarget(
 
 	for (unsigned int i = 0; i < nDirs; i++)
 	{
-		double scores[NUM_FACTORS];  // scores for each criterion
+		double scores[NUM_FACTORS];	 // scores for each criterion
 
 		// Too close to obstacles? (unless target is in between obstacles and
 		// the robot)
 		if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE &&
 			!(i == target_k && ni.obstacles[i] > 1.02 * target_dist))
 		{
-			for (size_t l = 0; l < NUM_FACTORS; l++) m_dirs_scores(i, l) = .0;
+			for (size_t l = 0; l < NUM_FACTORS; l++)
+				m_dirs_scores(i, l) = .0;
 			continue;
 		}
 
@@ -206,8 +207,9 @@ void CHolonomicFullEval::evalSingleTarget(
 
 			if (hist_dist >= options.HYSTERESIS_SECTOR_COUNT)
 				scores[3] = square(
-					1.0 - (hist_dist - options.HYSTERESIS_SECTOR_COUNT) /
-							  double(nDirs));
+					1.0 -
+					(hist_dist - options.HYSTERESIS_SECTOR_COUNT) /
+						double(nDirs));
 			else
 				scores[3] = 1.0;
 		}
@@ -244,8 +246,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
 		// Factor [6]: Direct distance in "sectors":
 		// -------------------------------------------------------------------
-		scores[6] =
-			1.0 /
+		scores[6] = 1.0 /
 			(1.0 + mrpt::square((4.0 / nDirs) * mrpt::abs_diff(i, target_k)));
 
 		// If target is not directly reachable for this i-th direction, decimate
@@ -298,7 +299,7 @@ void CHolonomicFullEval::evalSingleTarget(
 	eo.phase_scores = std::vector<std::vector<double>>(
 		NUM_PHASES, std::vector<double>(nDirs, .0));
 	auto& phase_scores = eo.phase_scores;  // shortcut
-	double last_phase_threshold = -1.0;  // don't threshold for the first phase
+	double last_phase_threshold = -1.0;	 // don't threshold for the first phase
 
 	for (unsigned int phase_idx = 0; phase_idx < NUM_PHASES; phase_idx++)
 	{
@@ -312,18 +313,15 @@ void CHolonomicFullEval::evalSingleTarget(
 					options.TOO_CLOSE_OBSTACLE ||  // Too close to obstacles ?
 				(phase_idx > 0 &&
 				 phase_scores[phase_idx - 1][i] <
-					 last_phase_threshold)  // thresholding of the previous
+					 last_phase_threshold)	// thresholding of the previous
 				// phase
 			)
-			{
-				this_dir_eval = .0;
-			}
+			{ this_dir_eval = .0; }
 			else
 			{
 				// Weighted avrg of factors:
 				for (unsigned int l : options.PHASE_FACTORS[phase_idx])
-					this_dir_eval +=
-						options.factorWeights.at(l) *
+					this_dir_eval += options.factorWeights.at(l) *
 						std::log(std::max(1e-6, m_dirs_scores(i, l)));
 
 				this_dir_eval *= weights_sum_phase_inv[phase_idx];
@@ -341,8 +339,7 @@ void CHolonomicFullEval::evalSingleTarget(
 			options.PHASE_THRESHOLDS[phase_idx] > .0 &&
 			options.PHASE_THRESHOLDS[phase_idx] < 1.0);
 
-		last_phase_threshold =
-			options.PHASE_THRESHOLDS[phase_idx] * phase_max +
+		last_phase_threshold = options.PHASE_THRESHOLDS[phase_idx] * phase_max +
 			(1.0 - options.PHASE_THRESHOLDS[phase_idx]) * phase_min;
 	}  // end for each phase
 
@@ -360,8 +357,7 @@ void CHolonomicFullEval::evalSingleTarget(
 			mrpt::keep_max(phase_max, dirs_eval[i]);
 			mrpt::keep_min(phase_min, dirs_eval[i]);
 		}
-		last_phase_threshold =
-			options.PHASE_THRESHOLDS.back() * phase_max +
+		last_phase_threshold = options.PHASE_THRESHOLDS.back() * phase_max +
 			(1.0 - options.PHASE_THRESHOLDS.back()) * phase_min;
 	}
 
@@ -449,18 +445,13 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 			if (inside_gap)
 			{
 				auto& active_gap = *gaps.rbegin();
-				if (val >= active_gap.max_eval)
-				{
-					active_gap.k_best_eval = i;
-				}
+				if (val >= active_gap.max_eval) { active_gap.k_best_eval = i; }
 				mrpt::keep_max(active_gap.max_eval, val);
 				mrpt::keep_min(active_gap.min_eval, val);
 
 				if (best_gap_idx == std::string::npos ||
 					val > gaps[best_gap_idx].max_eval)
-				{
-					best_gap_idx = gaps.size() - 1;
-				}
+				{ best_gap_idx = gaps.size() - 1; }
 			}
 		}  // end for i
 
@@ -504,13 +495,12 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
-		const double targetNearnessFactor =
-			m_enableApproachTargetSlowDown
-				? std::min(
-					  1.0, ni.targets.front().norm() /
-							   (options.TARGET_SLOW_APPROACHING_DISTANCE /
-								ptg_ref_dist))
-				: 1.0;
+		const double targetNearnessFactor = m_enableApproachTargetSlowDown
+			? std::min(
+				  1.0,
+				  ni.targets.front().norm() /
+					  (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
+			: 1.0;
 
 		const double obs_dist = ni.obstacles[best_dir_k];
 		// Was: min with obs_clearance too.
@@ -518,15 +508,12 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 			options.TOO_CLOSE_OBSTACLE,
 			options.OBSTACLE_SLOW_DOWN_DISTANCE * ni.maxObstacleDist);
 		double riskFactor = 1.0;
-		if (obs_dist <= options.TOO_CLOSE_OBSTACLE)
-		{
-			riskFactor = 0.0;
-		}
+		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) { riskFactor = 0.0; }
 		else if (
 			obs_dist < obs_dist_th && obs_dist_th > options.TOO_CLOSE_OBSTACLE)
 		{
 			riskFactor = (obs_dist - options.TOO_CLOSE_OBSTACLE) /
-						 (obs_dist_th - options.TOO_CLOSE_OBSTACLE);
+				(obs_dist_th - options.TOO_CLOSE_OBSTACLE);
 		}
 		no.desiredSpeed =
 			ni.maxRobotSpeed * std::min(riskFactor, targetNearnessFactor);
@@ -546,10 +533,7 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 		log->dirs_eval = evals.front().phase_scores;
 		log->dirs_eval.back() = overall_scores;
 
-		if (options.LOG_SCORE_MATRIX)
-		{
-			log->dirs_scores = m_dirs_scores;
-		}
+		if (options.LOG_SCORE_MATRIX) { log->dirs_scores = m_dirs_scores; }
 	}
 }
 
@@ -557,8 +541,7 @@ unsigned int CHolonomicFullEval::direction2sector(
 	const double a, const unsigned int N)
 {
 	const int idx = round(0.5 * (N * (1 + mrpt::math::wrapToPi(a) / M_PI) - 1));
-	if (idx < 0)
-		return 0;
+	if (idx < 0) return 0;
 	else
 		return static_cast<unsigned int>(idx);
 }
@@ -585,32 +568,23 @@ void CLogFileRecord_FullEval::serializeFrom(
 		case 2:
 		case 3:
 		{
-			if (version >= 2)
-			{
-				in >> CHolonomicLogFileRecord::dirs_eval;
-			}
+			if (version >= 2) { in >> CHolonomicLogFileRecord::dirs_eval; }
 			else
 			{
 				CHolonomicLogFileRecord::dirs_eval.resize(2);
 				in >> CHolonomicLogFileRecord::dirs_eval[0];
 				if (version >= 1)
-				{
-					in >> CHolonomicLogFileRecord::dirs_eval[1];
-				}
+				{ in >> CHolonomicLogFileRecord::dirs_eval[1]; }
 			}
 			in >> dirs_scores >> selectedSector >> evaluation;
-			if (version >= 3)
-			{
-				in >> selectedTarget;
-			}
+			if (version >= 3) { in >> selectedTarget; }
 			else
 			{
 				selectedTarget = 0;
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -740,11 +714,11 @@ void CHolonomicFullEval::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Params:
 	out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT
-		<< options.PHASE_FACTORS <<  // v3
+		<< options.PHASE_FACTORS <<	 // v3
 		options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE
-		<< options.PHASE_THRESHOLDS  // v3
-		<< options.OBSTACLE_SLOW_DOWN_DISTANCE  // v1
-		<< options.factorNormalizeOrNot  // v2
+		<< options.PHASE_THRESHOLDS	 // v3
+		<< options.OBSTACLE_SLOW_DOWN_DISTANCE	// v1
+		<< options.factorNormalizeOrNot	 // v2
 		<< options.clearance_threshold_ratio
 		<< options.gap_width_ratio_threshold  // v4:
 		;
@@ -765,10 +739,7 @@ void CHolonomicFullEval::serializeFrom(
 			// Params:
 			in >> options.factorWeights >> options.HYSTERESIS_SECTOR_COUNT;
 
-			if (version >= 3)
-			{
-				in >> options.PHASE_FACTORS;
-			}
+			if (version >= 3) { in >> options.PHASE_FACTORS; }
 			else
 			{
 				options.PHASE_THRESHOLDS.resize(2);
@@ -777,10 +748,7 @@ void CHolonomicFullEval::serializeFrom(
 			in >> options.TARGET_SLOW_APPROACHING_DISTANCE >>
 				options.TOO_CLOSE_OBSTACLE;
 
-			if (version >= 3)
-			{
-				in >> options.PHASE_THRESHOLDS;
-			}
+			if (version >= 3) { in >> options.PHASE_THRESHOLDS; }
 			else
 			{
 				options.PHASE_THRESHOLDS.resize(1);
@@ -800,8 +768,7 @@ void CHolonomicFullEval::serializeFrom(
 			in >> m_last_selected_sector;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

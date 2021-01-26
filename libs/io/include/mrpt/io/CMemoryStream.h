@@ -92,7 +92,7 @@ class CMemoryStream : public CStream
 		ASSERT_(alloc_block_size > 0);
 		m_alloc_block_size = alloc_block_size;
 	}
-};  // End of class def.
+};	// End of class def.
 
 namespace internal
 {

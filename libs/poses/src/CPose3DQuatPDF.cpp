@@ -7,12 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::poses;
@@ -76,21 +77,21 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	df_dx(1, 1) = 1;
 	df_dx(2, 2) = 1;
 
-	alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
-		const double vals2[3 * 4] = {2 * (-qz * ay + qy * az),
-									 2 * (qy * ay + qz * az),
-									 2 * (-2 * qy * ax + qx * ay + qr * az),
-									 2 * (-2 * qz * ax - qr * ay + qx * az),
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double vals2[3 * 4] = {
+		2 * (-qz * ay + qy * az),
+		2 * (qy * ay + qz * az),
+		2 * (-2 * qy * ax + qx * ay + qr * az),
+		2 * (-2 * qz * ax - qr * ay + qx * az),
 
-									 2 * (qz * ax - qx * az),
-									 2 * (qy * ax - 2 * qx * ay - qr * az),
-									 2 * (qx * ax + qz * az),
-									 2 * (qr * ax - 2 * qz * ay + qy * az),
+		2 * (qz * ax - qx * az),
+		2 * (qy * ax - 2 * qx * ay - qr * az),
+		2 * (qx * ax + qz * az),
+		2 * (qr * ax - 2 * qz * ay + qy * az),
 
-									 2 * (-qy * ax + qx * ay),
-									 2 * (qz * ax + qr * ay - 2 * qx * az),
-									 2 * (-qr * ax + qz * ay - 2 * qy * az),
-									 2 * (qx * ax + qy * ay)};
+		2 * (-qy * ax + qx * ay),
+		2 * (qz * ax + qr * ay - 2 * qx * az),
+		2 * (-qr * ax + qz * ay - 2 * qy * az),
+		2 * (qx * ax + qy * ay)};
 
 	// df_dx(0:3,3:7) = vals2 * NORM_JACOB
 	df_dx.block<3, 4>(0, 3).noalias() =
@@ -100,7 +101,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	{
 		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double aux44_data[4 * 4] = {
 			q2r, -q2x, -q2y, -q2z, q2x, q2r, q2z,  -q2y,
-			q2y, -q2z, q2r,  q2x,  q2z, q2y, -q2x, q2r};
+			q2y, -q2z, q2r,	 q2x,  q2z, q2y, -q2x, q2r};
 
 		df_dx.block<4, 4>(3, 3).noalias() =
 			(norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();
@@ -125,8 +126,8 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	// Second part:
 	{
 		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double aux44_data[4 * 4] = {
-			qr, -qx, -qy, -qz, qx, qr,  -qz, qy,
-			qy, qz,  qr,  -qx, qz, -qy, qx,  qr};
+			qr, -qx, -qy, -qz, qx, qr,	-qz, qy,
+			qy, qz,	 qr,  -qx, qz, -qy, qx,	 qr};
 
 		df_du.block<4, 4>(3, 3).noalias() =
 			(norm_jacob * CMatrixFixed<double, 4, 4>(aux44_data)).asEigen();

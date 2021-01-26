@@ -45,12 +45,12 @@ bool TLine2D::contains(const TPoint2D& point) const
 double TLine2D::distance(const TPoint2D& point) const
 {
 	return std::abs(evaluatePoint(point)) /
-		   sqrt(coefs[0] * coefs[0] + coefs[1] * coefs[1]);
+		sqrt(coefs[0] * coefs[0] + coefs[1] * coefs[1]);
 }
 double TLine2D::signedDistance(const TPoint2D& point) const
 {
 	return evaluatePoint(point) /
-		   sqrt(coefs[0] * coefs[0] + coefs[1] * coefs[1]);
+		sqrt(coefs[0] * coefs[0] + coefs[1] * coefs[1]);
 }
 void TLine2D::getNormalVector(double (&vector)[2]) const
 {
@@ -60,7 +60,8 @@ void TLine2D::getNormalVector(double (&vector)[2]) const
 void TLine2D::unitarize()
 {
 	double s = sqrt(coefs[0] * coefs[0] + coefs[1] * coefs[1]);
-	for (double& coef : coefs) coef /= s;
+	for (double& coef : coefs)
+		coef /= s;
 }
 void TLine2D::getDirectorVector(double (&vector)[2]) const
 {

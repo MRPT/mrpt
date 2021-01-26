@@ -159,7 +159,7 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	 * equal. */
 	double mahalanobisDistanceTo(const CPose3DQuatPDFGaussian& theOther);
 
-};  // End of class def.
+};	// End of class def.
 
 bool operator==(
 	const CPose3DQuatPDFGaussian& p1, const CPose3DQuatPDFGaussian& p2);

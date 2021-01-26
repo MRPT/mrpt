@@ -97,9 +97,9 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
 };
 
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
-#define THROW_TYPED_EXCEPTION(msg, exceptionClass)         \
-	throw mrpt::ExceptionWithCallBack<exceptionClass>(     \
-		exceptionClass(mrpt::internal::exception_line_msg( \
+#define THROW_TYPED_EXCEPTION(msg, exceptionClass)                             \
+	throw mrpt::ExceptionWithCallBack<exceptionClass>(                         \
+		exceptionClass(mrpt::internal::exception_line_msg(                     \
 			msg, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__)))
 
 /** \def THROW_EXCEPTION(msg);
@@ -109,95 +109,95 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  */
 #define THROW_EXCEPTION(msg) THROW_TYPED_EXCEPTION(msg, std::logic_error)
 
-#define THROW_EXCEPTION_FMT(_FORMAT_STRING, ...) \
+#define THROW_EXCEPTION_FMT(_FORMAT_STRING, ...)                               \
 	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING, __VA_ARGS__))
 
-#define THROW_TYPED_EXCEPTION_FMT(exceptionClass, _FORMAT_STRING, ...) \
-	THROW_TYPED_EXCEPTION(                                             \
+#define THROW_TYPED_EXCEPTION_FMT(exceptionClass, _FORMAT_STRING, ...)         \
+	THROW_TYPED_EXCEPTION(                                                     \
 		mrpt::format(_FORMAT_STRING, __VA_ARGS__), exceptionClass)
 
 /** For use in CSerializable implementations */
-#define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(__V)                      \
-	THROW_EXCEPTION_FMT(                                                   \
-		"Cannot parse object: unknown serialization version number: '%i'", \
+#define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(__V)                          \
+	THROW_EXCEPTION_FMT(                                                       \
+		"Cannot parse object: unknown serialization version number: '%i'",     \
 		static_cast<int>(__V))
 
 /** Throws a stacked exception if condition "f" is false; with custom message.
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
-#define ASSERTMSG_(f, __ERROR_MSG)                             \
-	do                                                         \
-	{                                                          \
-		if (!(f)) THROW_EXCEPTION(::std::string(__ERROR_MSG)); \
+#define ASSERTMSG_(f, __ERROR_MSG)                                             \
+	do                                                                         \
+	{                                                                          \
+		if (!(f)) THROW_EXCEPTION(::std::string(__ERROR_MSG));                 \
 	} while (0)
 
 /** Throws a stacked exception if condition "f" is false.
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
-#define ASSERT_(f) \
+#define ASSERT_(f)                                                             \
 	ASSERTMSG_(f, std::string("Assert condition failed: ") + ::std::string(#f))
 
 /** Throws an exception if the number is NaN, IND, or +/-INF, or return the same
  * number otherwise. */
-#define MRPT_CHECK_NORMAL_NUMBER(v) \
-	do                              \
-	{                               \
-		ASSERT_(std::isfinite(v));  \
-		ASSERT_(!std::isnan(v));    \
+#define MRPT_CHECK_NORMAL_NUMBER(v)                                            \
+	do                                                                         \
+	{                                                                          \
+		ASSERT_(std::isfinite(v));                                             \
+		ASSERT_(!std::isnan(v));                                               \
 	} while (0)
 
-#define ASRT_FAIL(__CONDITIONSTR, __A, __B, __ASTR, __BSTR) \
-	THROW_EXCEPTION(                                        \
+#define ASRT_FAIL(__CONDITIONSTR, __A, __B, __ASTR, __BSTR)                    \
+	THROW_EXCEPTION(                                                           \
 		mrpt::internal::asrt_fail(__CONDITIONSTR, __A, __B, __ASTR, __BSTR));
 
 /** Assert comparing two values, reporting their actual values upon failure */
-#define ASSERT_EQUAL_(__A, __B)                                          \
-	do                                                                   \
-	{                                                                    \
-		if (__A != __B) ASRT_FAIL("ASSERT_EQUAL_", __A, __B, #__A, #__B) \
+#define ASSERT_EQUAL_(__A, __B)                                                \
+	do                                                                         \
+	{                                                                          \
+		if (__A != __B) ASRT_FAIL("ASSERT_EQUAL_", __A, __B, #__A, #__B)       \
 	} while (0)
 
-#define ASSERT_NOT_EQUAL_(__A, __B)                                          \
-	do                                                                       \
-	{                                                                        \
-		if (__A == __B) ASRT_FAIL("ASSERT_NOT_EQUAL_", __A, __B, #__A, #__B) \
+#define ASSERT_NOT_EQUAL_(__A, __B)                                            \
+	do                                                                         \
+	{                                                                          \
+		if (__A == __B) ASRT_FAIL("ASSERT_NOT_EQUAL_", __A, __B, #__A, #__B)   \
 	} while (0)
 
 /** Checks two float/double values, reporting their values upon failure */
-#define ASSERT_NEAR_(__A, __B, __TOLERANCE)                 \
-	do                                                      \
-	{                                                       \
-		const auto diff = std::abs(__A - __B);              \
-		if (diff > __TOLERANCE)                             \
-			ASRT_FAIL("ASSERT_NEAR_", __A, __B, #__A, #__B) \
+#define ASSERT_NEAR_(__A, __B, __TOLERANCE)                                    \
+	do                                                                         \
+	{                                                                          \
+		const auto diff = std::abs(__A - __B);                                 \
+		if (diff > __TOLERANCE)                                                \
+			ASRT_FAIL("ASSERT_NEAR_", __A, __B, #__A, #__B)                    \
 	} while (0)
 
 /** Checks A<B */
-#define ASSERT_LT_(__A, __B)                                          \
-	do                                                                \
-	{                                                                 \
-		if (__A >= __B) ASRT_FAIL("ASSERT_LT_", __A, __B, #__A, #__B) \
+#define ASSERT_LT_(__A, __B)                                                   \
+	do                                                                         \
+	{                                                                          \
+		if (__A >= __B) ASRT_FAIL("ASSERT_LT_", __A, __B, #__A, #__B)          \
 	} while (0)
 
 /** Checks A<=B */
-#define ASSERT_LE_(__A, __B)                                         \
-	do                                                               \
-	{                                                                \
-		if (__A > __B) ASRT_FAIL("ASSERT_LE_", __A, __B, #__A, #__B) \
+#define ASSERT_LE_(__A, __B)                                                   \
+	do                                                                         \
+	{                                                                          \
+		if (__A > __B) ASRT_FAIL("ASSERT_LE_", __A, __B, #__A, #__B)           \
 	} while (0)
 
 /** Checks A>B */
-#define ASSERT_GT_(__A, __B)                                          \
-	do                                                                \
-	{                                                                 \
-		if (__A <= __B) ASRT_FAIL("ASSERT_GT_", __A, __B, #__A, #__B) \
+#define ASSERT_GT_(__A, __B)                                                   \
+	do                                                                         \
+	{                                                                          \
+		if (__A <= __B) ASRT_FAIL("ASSERT_GT_", __A, __B, #__A, #__B)          \
 	} while (0)
 
 /** Checks A>=B */
-#define ASSERT_GE_(__A, __B)                                         \
-	do                                                               \
-	{                                                                \
-		if (__A < __B) ASRT_FAIL("ASSERT_GE_", __A, __B, #__A, #__B) \
+#define ASSERT_GE_(__A, __B)                                                   \
+	do                                                                         \
+	{                                                                          \
+		if (__A < __B) ASRT_FAIL("ASSERT_GE_", __A, __B, #__A, #__B)           \
 	} while (0)
 
 // ------- Deprecated ---------
@@ -234,20 +234,20 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  * tracing throw the call stack after an exception. \sa
  * MRPT_TRY_END,MRPT_TRY_END_WITH_CLEAN_UP
  */
-#define MRPT_TRY_START \
-	try                \
+#define MRPT_TRY_START                                                         \
+	try                                                                        \
 	{
 /** The end of a standard MRPT "try...catch()" block that allows tracing
  * throw the call stack after an exception. \sa
  * MRPT_TRY_START,MRPT_TRY_END_WITH_CLEAN_UP
  */
-#define MRPT_TRY_END                                          \
-	}                                                         \
-	catch (std::bad_alloc&) { throw; }                        \
-	catch (const mrpt::ExceptionWithCallBackBase&) { throw; } \
-	catch (const std::exception& __e)                         \
-	{                                                         \
-		throw mrpt::ExceptionWithCallBack(__e);               \
+#define MRPT_TRY_END                                                           \
+	}                                                                          \
+	catch (std::bad_alloc&) { throw; }                                         \
+	catch (const mrpt::ExceptionWithCallBackBase&) { throw; }                  \
+	catch (const std::exception& __e)                                          \
+	{                                                                          \
+		throw mrpt::ExceptionWithCallBack(__e);                                \
 	}
 
 /** The end of a standard MRPT "try...catch()" block that allows tracing
@@ -256,15 +256,15 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  * MRPT_TRY_END,MRPT_TRY_START
  *
  */
-#define MRPT_TRY_END_WITH_CLEAN_UP(stuff) \
-	}                                     \
-	catch (std::bad_alloc&) { throw; }    \
-	catch (...)                           \
-	{                                     \
-		{                                 \
-			stuff                         \
-		}                                 \
-		throw;                            \
+#define MRPT_TRY_END_WITH_CLEAN_UP(stuff)                                      \
+	}                                                                          \
+	catch (std::bad_alloc&) { throw; }                                         \
+	catch (...)                                                                \
+	{                                                                          \
+		{                                                                      \
+			stuff                                                              \
+		}                                                                      \
+		throw;                                                                 \
 	}
 
 // General macros for use within each MRPT method/function. They

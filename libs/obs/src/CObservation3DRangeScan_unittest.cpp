@@ -72,7 +72,7 @@ TEST(CObservation3DRangeScan, Project3D_noFilter)
 	mrpt::obs::T3DPointsProjectionParams pp;
 	mrpt::obs::TRangeImageFilterParams fp;
 
-	for (int i = 0; i < 4; i++)  // test all combinations of flags
+	for (int i = 0; i < 4; i++)	 // test all combinations of flags
 	{
 		mrpt::obs::CObservation3DRangeScan o;
 		fillSampleObs(o, pp, i);
@@ -98,7 +98,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMax1)
 	fp.rangeMask_min = &fMin;
 	fp.rangeMask_max = &fMax;
 
-	for (int i = 0; i < 8; i++)  // test all combinations of flags
+	for (int i = 0; i < 8; i++)	 // test all combinations of flags
 	{
 		mrpt::obs::CObservation3DRangeScan o;
 		fillSampleObs(o, pp, i);
@@ -117,7 +117,7 @@ TEST(CObservation3DRangeScan, Project3D_additionalLayers)
 
 	pp.layer = "LATEST";
 
-	for (int i = 0; i < 4; i++)  // test all combinations of flags
+	for (int i = 0; i < 4; i++)	 // test all combinations of flags
 	{
 		mrpt::obs::CObservation3DRangeScan o;
 		fillSampleObs(o, pp, i);
@@ -137,7 +137,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMaxAllBetween)
 	for (int r = 10; r < 16; r++)
 		for (int c = 10; c < 16; c++)
 		{
-			fMin(r, c) = r - 0.1f;  // All points actually lie in between
+			fMin(r, c) = r - 0.1f;	// All points actually lie in between
 			fMax(r, c) = r + 0.1f;
 		}
 
@@ -166,7 +166,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMinMaxNoneBetween)
 	for (int r = 10; r < 16; r++)
 		for (int c = 10; c < 16; c++)
 		{
-			fMin(r, c) = r + 1.1f;  // No point lies in between
+			fMin(r, c) = r + 1.1f;	// No point lies in between
 			fMax(r, c) = r + 1.2f;
 		}
 
@@ -194,13 +194,13 @@ TEST(CObservation3DRangeScan, Project3D_filterMin)
 	for (int r = 10; r < 16; r++)
 		for (int c = 10; c < 16; c++)
 			fMin(r, c) =
-				14.5f;  // Only last row of points should pass this filter
+				14.5f;	// Only last row of points should pass this filter
 
 	mrpt::obs::T3DPointsProjectionParams pp;
 	mrpt::obs::TRangeImageFilterParams fp;
 	fp.rangeMask_min = &fMin;
 
-	for (int i = 0; i < 8; i++)  // test all combinations of flags
+	for (int i = 0; i < 8; i++)	 // test all combinations of flags
 	{
 		mrpt::obs::CObservation3DRangeScan o;
 		fillSampleObs(o, pp, i);
@@ -218,13 +218,13 @@ TEST(CObservation3DRangeScan, Project3D_filterMax)
 	for (int r = 10; r < 16; r++)
 		for (int c = 10; c < 16; c++)
 			fMax(r, c) =
-				11.5f;  // Only first 2 rows of points should pass this filter
+				11.5f;	// Only first 2 rows of points should pass this filter
 
 	mrpt::obs::T3DPointsProjectionParams pp;
 	mrpt::obs::TRangeImageFilterParams fp;
 	fp.rangeMask_max = &fMax;
 
-	for (int i = 0; i < 8; i++)  // test all combinations of flags
+	for (int i = 0; i < 8; i++)	 // test all combinations of flags
 	{
 		mrpt::obs::CObservation3DRangeScan o;
 		fillSampleObs(o, pp, i);
@@ -319,7 +319,7 @@ TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 
 TEST(CObservation3DRangeScan, SyntheticRange)
 {
-	for (int i = 0; i < 4; i++)  // test all combinations of flags
+	for (int i = 0; i < 4; i++)	 // test all combinations of flags
 	{
 		mrpt::obs::T3DPointsProjectionParams pp;
 		mrpt::obs::CObservation3DRangeScan o;
@@ -356,7 +356,7 @@ TEST(CObservation3DRangeScan, SyntheticRange)
 
 TEST(CObservation3DRangeScan, SyntheticDepth)
 {
-	for (int i = 0; i < 4; i++)  // test all combinations of flags
+	for (int i = 0; i < 4; i++)	 // test all combinations of flags
 	{
 		mrpt::obs::T3DPointsProjectionParams pp;
 		mrpt::obs::CObservation3DRangeScan o;

@@ -26,10 +26,13 @@
 #include <wx/textctrl.h>
 #include <wx/things/toggle.h>
 #include <wx/timer.h>
+
 #include "MyGLCanvas.h"
 //*)
 
+#include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav.h>
 #include <mrpt/opengl/CDisk.h>
@@ -40,9 +43,6 @@
 #include <mrpt/opengl/CSimpleLine.h>
 
 #include <memory>  // unique_ptr<>
-
-#include <mrpt/gui/CMyRedirector.h>
-#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -209,7 +209,7 @@ class reactive_navigator_demoframe : public wxFrame
 
 	/* Methods: */
 	void updateMap3DView();
-	bool reinitSimulator();  // Create navigator object & load params from GUI.
+	bool reinitSimulator();	 // Create navigator object & load params from GUI.
 	// Return false on error
 	void simulateOneStep(double time_step);
 	void updateViewsDynamicObjects();  // Update 3D object positions and refresh
@@ -236,7 +236,7 @@ class reactive_navigator_demoframe : public wxFrame
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& source,
-			const std::string& section) const override;  // See base docs
+			const std::string& section) const override;	 // See base docs
 	};
 
 	TOptions m_simul_options;
@@ -319,7 +319,7 @@ class reactive_navigator_demoframe : public wxFrame
 	std::unique_ptr<mrpt::kinematics::CVehicleSimulVirtualBase> m_robotSimul;
 
 	mrpt::system::CTicTac
-		m_runtime;  // just for animations, this is not robot time
+		m_runtime;	// just for animations, this is not robot time
 	/** Of the cursor on the 3D view (in world coordinates at Z=0) */
 	mrpt::math::TPoint2D m_curCursorPos;
 	/** The state of the cursor onto the 3D view: */
@@ -346,4 +346,4 @@ class reactive_navigator_demoframe : public wxFrame
 	mrpt::opengl::CSetOfLines::Ptr gl_nd_gaps, gl_tp_obstacles;
 };
 
-#endif  // HOLONOMIC_NAVIGATOR_DEMOMAIN_H
+#endif	// HOLONOMIC_NAVIGATOR_DEMOMAIN_H

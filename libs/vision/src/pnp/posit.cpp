@@ -7,12 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-//#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to
-// enable the plugin system
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <iostream>
-#include "vision-precomp.h"  // Precompiled headers
 
 #include "posit.h"
 

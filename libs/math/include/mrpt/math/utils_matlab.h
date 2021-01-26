@@ -38,8 +38,8 @@ mxArray* convertToMatlab(const MATRIX& mat)
 	mxArray* mxa = mxCreateDoubleMatrix(m, n, mxREAL);
 	// *IMPORTANT* Matlab stores matrices in *column-major* order!
 	double* mxa_data = mxGetPr(mxa);
-	for (size_t j = 0; j < n; j++)  // column
-		for (size_t i = 0; i < m; i++)  // rows
+	for (size_t j = 0; j < n; j++)	// column
+		for (size_t i = 0; i < m; i++)	// rows
 			*mxa_data++ = mat.coeff(i, j);
 	return mxa;
 }
@@ -53,7 +53,7 @@ mxArray* convertVectorToMatlab(const CONTAINER& vec)
 	mxArray* mxa = mxCreateDoubleMatrix(m, n, mxREAL);
 	// *IMPORTANT* Matlab stores matrices in *column-major* order!
 	double* mxa_data = mxGetPr(mxa);
-	for (size_t i = 0; i < m; i++)  // rows
+	for (size_t i = 0; i < m; i++)	// rows
 		*mxa_data++ = vec[i];
 	return mxa;
 }

@@ -10,6 +10,7 @@
 
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/topography/data_types.h>
+
 #include <vector>
 
 namespace mrpt
@@ -273,7 +274,7 @@ inline void ENU_axes_from_WGS84(
 /** @}
 	======================================================================= */
 
-/**  @} */  // end of grouping
+/**  @} */	// end of grouping
 
 }  // namespace topography
 

@@ -43,7 +43,7 @@ TEST(CObservationRotatingScan, fromVelodyne)
 {
 	using namespace std::string_literals;
 	const auto fil = mrpt::system::getShareMRPTDir() +
-					 "/datasets/test_velodyne_VLP16.rawlog"s;
+		"/datasets/test_velodyne_VLP16.rawlog"s;
 
 	mrpt::obs::CRawlog rawlog;
 	bool load_ok = rawlog.loadFromRawLogFile(fil);

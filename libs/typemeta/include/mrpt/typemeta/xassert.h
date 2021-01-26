@@ -24,5 +24,5 @@
 /** MRPT_X_ASSERT(): build error if condition is known not to work at compile
  * time, throw an exception at runtime if the condition needs to be evaluated.
  */
-#define MRPT_X_ASSERT(CHECK) \
+#define MRPT_X_ASSERT(CHECK)                                                   \
 	(MRPT_LIKELY(CHECK) ? void(0) : [] { throw std::runtime_error(#CHECK); }())

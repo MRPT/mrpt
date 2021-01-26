@@ -342,6 +342,6 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	 */
 	std::deque<CObservation::Ptr> m_observations;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

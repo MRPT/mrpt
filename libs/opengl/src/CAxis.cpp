@@ -7,12 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CText3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include "gltext.h"
 
 using namespace mrpt;
@@ -143,7 +144,8 @@ void CAxis::onUpdateBuffers_Wireframe()
 
 	cbd.assign(vbd.size(), m_color);
 
-	for (auto& lb : m_gl_labels) lb->updateBuffers();
+	for (auto& lb : m_gl_labels)
+		lb->updateBuffers();
 }
 
 void CAxis::enqueForRenderRecursive(
@@ -172,7 +174,8 @@ void CAxis::serializeTo(mrpt::serialization::CArchive& out) const
 	// v1:
 	out << m_marks[0] << m_marks[1] << m_marks[2] << m_textScale;
 	for (auto i : m_textRot)
-		for (int j = 0; j < 3; j++) out << i[j];
+		for (int j = 0; j < 3; j++)
+			out << i[j];
 	// v2:
 	out << m_markLen;
 }
@@ -193,7 +196,8 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			{
 				in >> m_marks[0] >> m_marks[1] >> m_marks[2] >> m_textScale;
 				for (auto& i : m_textRot)
-					for (int j = 0; j < 3; j++) in >> i[j];
+					for (int j = 0; j < 3; j++)
+						in >> i[j];
 			}
 			else
 			{
@@ -205,8 +209,7 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			if (version >= 2) in >> m_markLen;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

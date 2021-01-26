@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/maps/CPointCloudFilterBase.h>
 
 using namespace mrpt::maps;

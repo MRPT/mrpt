@@ -15,6 +15,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/system/CTimeLogger.h>
+
 #include <future>
 
 namespace mrpt
@@ -201,6 +202,6 @@ class CFaceDetection : public CObjectDetection
 		const mrpt::img::CImage& face, size_t c1, size_t r1, size_t c2,
 		size_t r2, mrpt::math::CMatrixDynamic<unsigned int>& hist);
 
-};  // End of class
+};	// End of class
 }  // namespace detectors
 }  // namespace mrpt
