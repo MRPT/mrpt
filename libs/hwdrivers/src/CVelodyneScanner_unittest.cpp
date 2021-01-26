@@ -95,4 +95,4 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 	EXPECT_EQ(nScans, 3U);
 }
 
-#endif  // MRPT_HAS_LIBPCAP
+#endif	// MRPT_HAS_LIBPCAP

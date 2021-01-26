@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "detectors-precomp.h"  // Precompiled headers
-
+#include "detectors-precomp.h"	// Precompiled headers
+//
 #include <mrpt/detectors/CDetectableObject.h>
 #include <mrpt/serialization/CArchive.h>
 

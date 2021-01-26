@@ -18,7 +18,7 @@ MRPT_WARNING(
 
 // Maps:
 #include <mrpt/maps.h>
-#include <mrpt/maps/CMultiMetricMap.h>  // This class is in [mrpt-slam]
+#include <mrpt/maps/CMultiMetricMap.h>	// This class is in [mrpt-slam]
 #include <mrpt/maps/CMultiMetricMapPDF.h>  // This class is in [mrpt-slam]
 
 // Map Building algorithms:

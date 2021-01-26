@@ -7,16 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config.h>
-
 #include <mrpt/core/exceptions.h>
 
 #ifdef _WIN32
-#include <windows.h>
-
 #include <mmsystem.h>
+#include <windows.h>
 
 #if !defined(__GNUC__)
 #pragma comment(lib, "WINMM.LIB")
@@ -30,6 +28,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <cerrno>
 #include <cstdint>
 #include <cstdio>
@@ -114,7 +113,7 @@ bool CJoystick::getJoystickPosition(
 	int ID = JOYSTICKID1 + nJoy;
 
 	// Get joy pos:
-	if (JOYERR_NOERROR != joyGetPos(ID, &jinfo)) return false;  // Error.
+	if (JOYERR_NOERROR != joyGetPos(ID, &jinfo)) return false;	// Error.
 
 	// Output data:
 	x = (jinfo.wXpos - m_x_min) / (float)(m_x_max - m_x_min);

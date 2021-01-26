@@ -83,8 +83,7 @@ class CDynamicGrid
 		m_size_y = round((m_y_max - m_y_min) / m_resolution);
 
 		// Cells memory:
-		if (fill_value)
-			m_map.assign(m_size_x * m_size_y, *fill_value);
+		if (fill_value) m_map.assign(m_size_x * m_size_y, *fill_value);
 		else
 			m_map.resize(m_size_x * m_size_y);
 	}
@@ -100,7 +99,8 @@ class CDynamicGrid
 	 */
 	inline void fill(const T& value)
 	{
-		for (auto it = m_map.begin(); it != m_map.end(); ++it) *it = value;
+		for (auto it = m_map.begin(); it != m_map.end(); ++it)
+			*it = value;
 	}
 
 	/** Changes the size of the grid, maintaining previous contents.
@@ -213,8 +213,7 @@ class CDynamicGrid
 	 */
 	inline T* cellByIndex(unsigned int cx, unsigned int cy)
 	{
-		if (cx >= m_size_x || cy >= m_size_y)
-			return nullptr;
+		if (cx >= m_size_x || cy >= m_size_y) return nullptr;
 		else
 			return &m_map[cx + cy * m_size_x];
 	}
@@ -224,8 +223,7 @@ class CDynamicGrid
 	 */
 	inline const T* cellByIndex(unsigned int cx, unsigned int cy) const
 	{
-		if (cx >= m_size_x || cy >= m_size_y)
-			return nullptr;
+		if (cx >= m_size_x || cy >= m_size_y) return nullptr;
 		else
 			return &m_map[cx + cy * m_size_x];
 	}
@@ -294,7 +292,8 @@ class CDynamicGrid
 		if (m_map.empty()) return;
 		const T* c = &m_map[0];
 		for (size_t cy = 0; cy < m_size_y; cy++)
-			for (size_t cx = 0; cx < m_size_x; cx++) m(cy, cx) = *c++;
+			for (size_t cx = 0; cx < m_size_x; cx++)
+				m(cy, cx) = *c++;
 	}
 
 	/** The user must implement this in order to provide "saveToTextFile" a way
@@ -375,7 +374,7 @@ class CDynamicGrid
 	double m_x_min{0}, m_x_max{0}, m_y_min{0}, m_y_max{0}, m_resolution{0};
 	size_t m_size_x{0}, m_size_y{0};
 
-};  // end of CDynamicGrid<>
+};	// end of CDynamicGrid<>
 
 }  // namespace containers
 }  // namespace mrpt

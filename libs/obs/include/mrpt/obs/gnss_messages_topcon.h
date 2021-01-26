@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixFixed.h>
+
 #include "gnss_messages_common.h"
 
 namespace mrpt::obs::gnss
@@ -60,7 +61,7 @@ struct Message_TOPCON_PZS : public gnss_message
 
 	bool hasStats{false};
 	uint8_t stats_GPS_sats_used{0},
-		stats_GLONASS_sats_used{0};  //<! Only if hasStats is true
+		stats_GLONASS_sats_used{0};	 //<! Only if hasStats is true
 	/** [0,100] %, only in modes other than RTK FIXED. */
 	uint8_t stats_rtk_fix_progress{0};
 

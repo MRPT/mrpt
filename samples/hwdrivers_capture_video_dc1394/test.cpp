@@ -10,6 +10,7 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt::hwdrivers;
@@ -32,8 +33,8 @@ void TestCapture_1394()
 	uint64_t cameraGUID = 0;
 	uint16_t cameraUnit = 0;
 
-	options.frame_width = 1024;  // 640;
-	options.frame_height = 768;  // 480;
+	options.frame_width = 1024;	 // 640;
+	options.frame_height = 768;	 // 480;
 	options.color_coding = COLOR_CODING_YUV422;
 
 	// Other capture options:

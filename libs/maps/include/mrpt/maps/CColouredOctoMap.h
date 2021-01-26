@@ -85,12 +85,12 @@ class CColouredOctoMap
 
 	MAP_DEFINITION_START(CColouredOctoMap)
 	double resolution{
-		0.10};  //!< The finest resolution of the octomap (default: 0.10
+		0.10};	//!< The finest resolution of the octomap (default: 0.10
 	//! meters)
 	mrpt::maps::CColouredOctoMap::TInsertionOptions
-		insertionOpts;  //!< Observations insertion options
+		insertionOpts;	//!< Observations insertion options
 	mrpt::maps::CColouredOctoMap::TLikelihoodOptions
-		likelihoodOpts;  //!< Probabilistic observation likelihood options
+		likelihoodOpts;	 //!< Probabilistic observation likelihood options
 	MAP_DEFINITION_END(CColouredOctoMap)
 
 	/** Returns true if the map is empty/no observation has been inserted */
@@ -166,8 +166,8 @@ class CColouredOctoMap
 		const mrpt::poses::CPose3D* robotPose) override;
 
 	TColourUpdate m_colour_method{
-		INTEGRATE};  //! Method used to updated voxels colour.
+		INTEGRATE};	 //! Method used to updated voxels colour.
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace maps
 }  // namespace mrpt

@@ -21,7 +21,7 @@ namespace mrpt::maps
 /** The contents of each voxel in a CRandomFieldGridMap3D map.
  * \ingroup mrpt_maps_grp
  **/
-#if defined(MRPT_IS_X86_AMD64)  // Pragma defined to ensure no structure
+#if defined(MRPT_IS_X86_AMD64)	// Pragma defined to ensure no structure
 // packing: since we'll serialize
 // TRandomFieldVoxel to streams, we want it not
 // to depend on compiler options, etc.

@@ -15,6 +15,7 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPolygon3D.h>
 #include <mrpt/serialization/serialization_frwds.h>
+
 #include <array>
 
 namespace mrpt::opengl
@@ -37,8 +38,8 @@ struct TTriangle
 	struct Vertex
 	{
 		mrpt::math::TPointXYZfRGBAu8 xyzrgba;
-		mrpt::math::TVector3Df normal;  //!< Must not be normalized
-		mrpt::math::TVector2Df uv;  //!< texture coordinates (0,0)-(1,1)
+		mrpt::math::TVector3Df normal;	//!< Must not be normalized
+		mrpt::math::TVector2Df uv;	//!< texture coordinates (0,0)-(1,1)
 
 		void setColor(const mrpt::img::TColor& c)
 		{

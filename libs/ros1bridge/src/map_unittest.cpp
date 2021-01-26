@@ -57,7 +57,7 @@ TEST(Map, basicTestHeader)
 		for (uint32_t w = 0; w < srcRos.info.width; w++)
 		{
 			EXPECT_EQ(
-				desMrpt.getPos(w, h), 0.5);  // all -1 entreis should map to 0.5
+				desMrpt.getPos(w, h), 0.5);	 // all -1 entreis should map to 0.5
 		}
 	}
 }

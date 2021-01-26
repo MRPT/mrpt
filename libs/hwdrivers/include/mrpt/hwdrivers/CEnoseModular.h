@@ -14,6 +14,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationGasSensors.h>
+
 #include <memory>  // unique_ptr
 
 namespace mrpt::hwdrivers
@@ -120,5 +121,5 @@ class CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 	/** Set the serial port baud rate (default: 115200) */
 	inline void setSerialPortBaud(unsigned int baud) { m_COM_baud = baud; }
 	inline unsigned int getSerialPortBaud() const { return m_COM_baud; }
-};  // end of class
+};	// end of class
 }  // namespace mrpt::hwdrivers

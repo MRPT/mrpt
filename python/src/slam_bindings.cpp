@@ -9,19 +9,21 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/obs/CObservation.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservationRange.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/serialization/CArchive.h>
-
+#include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/io/CStream.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/serialization/CArchive.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
@@ -29,13 +31,6 @@
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
-
-#include <mrpt/bayes/CParticleFilter.h>
-
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-
-#include <mrpt/io/CStream.h>
 
 /* STD */
 #include <cstdint>

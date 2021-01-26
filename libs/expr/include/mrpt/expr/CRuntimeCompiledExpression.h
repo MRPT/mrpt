@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <string>
+
 #include "mrpt-expr_export.h"
 
 namespace exprtk
@@ -112,7 +113,7 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 	mrpt::pimpl<Impl> m_impl;
 	struct ExprVerbose;
 	friend struct ExprVerbose;
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace expr
 

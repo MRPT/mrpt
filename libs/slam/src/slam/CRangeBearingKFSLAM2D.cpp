@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
@@ -56,7 +56,7 @@ void CRangeBearingKFSLAM2D::reset()
 	m_SFs.clear();
 
 	// INIT KF STATE
-	m_xkk.assign(3, 0);  // State: 3D pose (x,y,phi)
+	m_xkk.assign(3, 0);	 // State: 3D pose (x,y,phi)
 
 	// Initial cov:
 	m_pkk.setSize(3, 3);
@@ -188,7 +188,8 @@ void CRangeBearingKFSLAM2D::OnGetAction(KFArray_ACT& u) const
 	else
 	{
 		// Left u as zeros
-		for (size_t i = 0; i < 3; i++) u[i] = 0;
+		for (size_t i = 0; i < 3; i++)
+			u[i] = 0;
 	}
 }
 
@@ -240,10 +241,7 @@ void CRangeBearingKFSLAM2D::OnTransitionJacobian(KFMatrix_VxV& F) const
 
 	TPoint2D Ap;
 
-	if (act3D)
-	{
-		Ap = TPoint2D(CPose2D(act3D->poseChange.mean).asTPose());
-	}
+	if (act3D) { Ap = TPoint2D(CPose2D(act3D->poseChange.mean).asTPose()); }
 	else if (act2D)
 	{
 		Ap = TPoint2D(act2D->poseChange->getMeanVal().asTPose());
@@ -449,20 +447,19 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 	// ---------------------------------------------------
 	// Generate dhi_dxv: A 2x3 block
 	// ---------------------------------------------------
-	const kftype EXP1 =
-		-2 * yi * y0s * cphi0 - 2 * yi * y0 + 2 * xi * y0s * sphi0 -
-		2 * xi * x0 - 2 * xi * x0s * cphi0 - 2 * yi * x0s * sphi0 +
-		2 * y0s * y0 * cphi0 - 2 * y0s * x0 * sphi0 + 2 * y0 * x0s * sphi0 +
-		square(x0) + 2 * x0s * x0 * cphi0 + square(x0s) + square(y0s) +
-		square(xi) + square(yi) + square(y0);
+	const kftype EXP1 = -2 * yi * y0s * cphi0 - 2 * yi * y0 +
+		2 * xi * y0s * sphi0 - 2 * xi * x0 - 2 * xi * x0s * cphi0 -
+		2 * yi * x0s * sphi0 + 2 * y0s * y0 * cphi0 - 2 * y0s * x0 * sphi0 +
+		2 * y0 * x0s * sphi0 + square(x0) + 2 * x0s * x0 * cphi0 + square(x0s) +
+		square(y0s) + square(xi) + square(yi) + square(y0);
 	const kftype sqrtEXP1_1 = kftype(1) / sqrt(EXP1);
 
 	const kftype EXP2 = cphi0s * xi + sphi0s * yi - sin(phis) * y0s -
-						y0 * sphi0s - x0s * cos(phis) - x0 * cphi0s;
+		y0 * sphi0s - x0s * cos(phis) - x0 * cphi0s;
 	const kftype EXP2sq = square(EXP2);
 
 	const kftype EXP3 = -sphi0s * xi + cphi0s * yi - cos(phis) * y0s -
-						y0 * cphi0s + x0s * sin(phis) + x0 * sphi0s;
+		y0 * cphi0s + x0s * sin(phis) + x0 * sphi0s;
 	const kftype EXP3sq = square(EXP3);
 
 	const kftype EXP4 = kftype(1) / (1 + EXP3sq / EXP2sq);
@@ -472,7 +469,7 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 	Hx(0, 2) = (y0s * xi * cphi0 + y0s * yi * sphi0 - y0 * y0s * sphi0 -
 				x0 * y0s * cphi0 + x0s * xi * sphi0 - x0s * yi * cphi0 +
 				y0 * x0s * cphi0 - x0s * x0 * sphi0) *
-			   sqrtEXP1_1;
+		sqrtEXP1_1;
 
 	Hx(1, 0) = (sphi0s / (EXP2) + (EXP3) / EXP2sq * cphi0s) * EXP4;
 	Hx(1, 1) = (-cphi0s / (EXP2) + (EXP3) / EXP2sq * sphi0s) * EXP4;
@@ -552,7 +549,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 
 	// Data association:
 	// ---------------------
-	data_association.assign(N, -1);  // Initially, all new landmarks
+	data_association.assign(N, -1);	 // Initially, all new landmarks
 
 	// For each observed LM:
 	std::vector<size_t> obs_idxs_needing_data_assoc;
@@ -675,7 +672,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 				m_last_data_association.Y_pred_means(q, w) =
 					all_predictions[i][w];
 			m_last_data_association.predictions_IDs.push_back(
-				i);  // for the conversion of indices...
+				i);	 // for the conversion of indices...
 		}
 
 		// Do Dat. Assoc :
@@ -919,7 +916,7 @@ void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(
 	}
 
 	m_last_data_association.newly_inserted_landmarks[in_obsIdx] =
-		in_idxNewFeat;  // Just for stats, etc...
+		in_idxNewFeat;	// Just for stats, etc...
 
 	MRPT_END
 }
@@ -1048,7 +1045,7 @@ void CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(
 
 			CPose3D p;
 			pdf3D->getMean(p);
-			CPoint3D pnt3D(p);  // 6D -> 3D only
+			CPoint3D pnt3D(p);	// 6D -> 3D only
 
 			os::fprintf(f, "%.04f %.04f", pnt3D.x(), pnt3D.y());
 			if (i < (m_SFs.size() - 1)) os::fprintf(f, ";");
@@ -1132,7 +1129,7 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 
 	out_LM_indices_to_predict.clear();
 	for (size_t i = 0; i < prediction_means.size(); i++)
-#if (!STATS_EXPERIMENT)  // In the experiment we force errors too far and some
+#if (!STATS_EXPERIMENT)	 // In the experiment we force errors too far and some
 		// predictions are out of range, so just generate all
 		// of them:
 		if (prediction_means[i][0] <
@@ -1154,7 +1151,8 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 void CRangeBearingKFSLAM2D::OnTransitionJacobianNumericGetIncrements(
 	KFArray_VEH& out_increments) const
 {
-	for (size_t i = 0; i < get_vehicle_size(); i++) out_increments[i] = 1e-6;
+	for (size_t i = 0; i < get_vehicle_size(); i++)
+		out_increments[i] = 1e-6;
 }
 
 /** Only called if using a numeric approximation of the observation Jacobians,

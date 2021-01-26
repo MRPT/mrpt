@@ -17,7 +17,7 @@
 			 as real-time visualization of all that stuff.
   ---------------------------------------------------------------*/
 
-#include <mrpt/gui/CDisplayWindow3D.h>  // For visualization windows
+#include <mrpt/gui/CDisplayWindow3D.h>	// For visualization windows
 #include <mrpt/hwdrivers/CCameraSensor.h>  // For capture of video from videos/cameras
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
@@ -64,8 +64,8 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 	bool SHOW_FEAT_TRACKS = true;
 
 	const double SAVE_VIDEO_FPS =
-		30;  // If DO_SAVE_VIDEO=true, the FPS of the video file
-	const char* SAVE_VIDEO_CODEC = "XVID";  // "XVID", "PIM1", "MJPG"
+		30;	 // If DO_SAVE_VIDEO=true, the FPS of the video file
+	const char* SAVE_VIDEO_CODEC = "XVID";	// "XVID", "PIM1", "MJPG"
 
 	bool DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
 	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
@@ -157,7 +157,7 @@ int DoTrackingDemo(CCameraSensor::Ptr cam, bool DO_SAVE_VIDEO)
 			continue;
 		}
 
-		CImage theImg;  // The grabbed image:
+		CImage theImg;	// The grabbed image:
 
 		if (IS_CLASS(*obs, CObservationImage))
 		{
@@ -442,7 +442,7 @@ int main(int argc, char** argv)
 
 		const bool last_arg_is_save_video =
 			!strcmp("--save-video", argv[argc - 1]);
-		if (last_arg_is_save_video) argc--;  // Discard last argument
+		if (last_arg_is_save_video) argc--;	 // Discard last argument
 
 		if (argc == 2)
 		{
@@ -475,7 +475,7 @@ int main(int argc, char** argv)
 				CImage::setImagesPathBase(CRawlog::detectImagesDirectory(fil));
 
 				cam->loadConfig(cfg, "CONFIG");
-				cam->initialize();  // This will raise an exception if neccesary
+				cam->initialize();	// This will raise an exception if neccesary
 			}
 			else
 			{
@@ -487,7 +487,7 @@ int main(int argc, char** argv)
 				cfg.write("CONFIG", "ffmpeg_url", fil);
 
 				cam->loadConfig(cfg, "CONFIG");
-				cam->initialize();  // This will raise an exception if neccesary
+				cam->initialize();	// This will raise an exception if neccesary
 			}
 		}
 
@@ -511,7 +511,7 @@ int main(int argc, char** argv)
 		const int ret = DoTrackingDemo(cam, last_arg_is_save_video);
 
 		win.reset();
-		std::this_thread::sleep_for(150ms);  // give time to close GUI threads
+		std::this_thread::sleep_for(150ms);	 // give time to close GUI threads
 		return ret;
 	}
 	catch (const std::exception& e)

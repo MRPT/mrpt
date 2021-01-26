@@ -12,6 +12,7 @@
 #include <mrpt/core/format.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/math_frwds.h>  // CMatrixFixed
+
 #include <cmath>
 #include <vector>
 
@@ -86,12 +87,9 @@ struct TPoint2D_ : public TPoseOrPoint,
 	{
 		switch (i)
 		{
-			case 0:
-				return this->x;
-			case 1:
-				return this->y;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return this->x;
+			case 1: return this->y;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y */
@@ -99,12 +97,9 @@ struct TPoint2D_ : public TPoseOrPoint,
 	{
 		switch (i)
 		{
-			case 0:
-				return this->x;
-			case 1:
-				return this->y;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return this->x;
+			case 1: return this->y;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 

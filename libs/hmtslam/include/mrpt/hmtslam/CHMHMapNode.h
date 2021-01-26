@@ -9,12 +9,12 @@
 #pragma once
 
 #include <mrpt/core/safe_pointers.h>
-#include <mrpt/hmtslam/HMT_SLAM_common.h>
-#include <mrpt/obs/CSensoryFrame.h>
-
 #include <mrpt/graphs/TNodeID.h>
 #include <mrpt/hmtslam/CMHPropertiesValuesList.h>
+#include <mrpt/hmtslam/HMT_SLAM_common.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <map>
 
 namespace mrpt::hmtslam
@@ -133,7 +133,7 @@ class CHMHMapNode : public mrpt::serialization::CSerializable
 	bool isNeighbor(
 		const TNodeID& otherArea, const THypothesisID& hyp_id) const;
 
-};  // End of class def.
+};	// End of class def.
 
 /** A map between node IDs and nodes (used in HMT-SLAM).
  * \sa CHMTSLAM

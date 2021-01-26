@@ -7,8 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "graphslam-precomp.h"	// Precompiled headers
+//
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
-#include "graphslam-precomp.h"  // Precompiled headers
 
 // implementation file of CEdgeCounter class
 using namespace mrpt::graphslam::detail;
@@ -61,10 +62,7 @@ void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const
 int CEdgeCounter::getNumForEdgeType(const std::string& name) const
 {
 	auto search = m_name_to_edges_num.find(name);
-	if (search != m_name_to_edges_num.end())
-	{
-		return search->second;
-	}
+	if (search != m_name_to_edges_num.end()) { return search->second; }
 	else
 	{
 		THROW_EXCEPTION("No edge with such name exists");
@@ -74,10 +72,7 @@ int CEdgeCounter::getNumForEdgeType(const std::string& name) const
 void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num)
 {
 	auto search = m_name_to_edges_num.find(name);
-	if (search != m_name_to_edges_num.end())
-	{
-		*total_num = search->second;
-	}
+	if (search != m_name_to_edges_num.end()) { *total_num = search->second; }
 	else
 	{
 		THROW_EXCEPTION("No edge with such name exists");
@@ -87,10 +82,7 @@ void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num)
 void CEdgeCounter::setEdgesManually(const std::string& name, int num_of_edges)
 {
 	auto search = m_name_to_edges_num.find(name);
-	if (search != m_name_to_edges_num.end())
-	{
-		search->second = num_of_edges;
-	}
+	if (search != m_name_to_edges_num.end()) { search->second = num_of_edges; }
 	else
 	{
 		std::string str_err = "No edge with such name exists.";
@@ -99,9 +91,7 @@ void CEdgeCounter::setEdgesManually(const std::string& name, int num_of_edges)
 	// Update the visualization if the user has already set the vizualization
 	// parameters
 	if (m_has_read_textmessage_params && m_win_manager)
-	{
-		this->updateTextMessages();
-	}
+	{ this->updateTextMessages(); }
 }
 
 void CEdgeCounter::addEdge(
@@ -111,7 +101,7 @@ void CEdgeCounter::addEdge(
 	auto search = m_name_to_edges_num.find(name);
 	if (search != m_name_to_edges_num.end())
 	{
-		(search->second)++;  // increment to the found element
+		(search->second)++;	 // increment to the found element
 
 		// specify warning if is_new = true
 		if (is_new)
@@ -139,10 +129,7 @@ void CEdgeCounter::addEdge(
 	}
 	else
 	{
-		if (is_new)
-		{
-			m_name_to_edges_num[name] = 1;
-		}
+		if (is_new) { m_name_to_edges_num[name] = 1; }
 		else
 		{
 			std::string str_err =
@@ -155,9 +142,7 @@ void CEdgeCounter::addEdge(
 	// Update the visualization if the user has already set the vizualization
 	// parameters
 	if (m_has_read_textmessage_params && m_win_manager)
-	{
-		updateTextMessages();
-	}
+	{ updateTextMessages(); }
 }
 
 void CEdgeCounter::addEdgeType(const std::string& name)

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>
@@ -35,16 +35,15 @@ TPoint3D_<T>::TPoint3D_(const TPose2D& p)
 
 template <typename T>
 TPoint3D_<T>::TPoint3D_(const TPose3D& p)
-	: TPoint3D_data<T>{static_cast<T>(p.x), static_cast<T>(p.y),
-					   static_cast<T>(p.z)}
+	: TPoint3D_data<T>{
+		  static_cast<T>(p.x), static_cast<T>(p.y), static_cast<T>(p.z)}
 {
 }
 
 template <typename T>
 bool TPoint3D_<T>::operator<(const TPoint3D_<T>& p) const
 {
-	if (this->x < p.x)
-		return true;
+	if (this->x < p.x) return true;
 	else if (this->x > p.x)
 		return false;
 	else if (this->y < p.y)

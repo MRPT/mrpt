@@ -7,9 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-// INCLUDE
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CSICKTim561Eth_2050101.h>
 #include <mrpt/system/string_utils.h>
 
@@ -17,7 +16,7 @@
 #include <iostream>
 #include <sstream>
 
-#define APPERTURE 4.712385  // in radian <=> 270
+#define APPERTURE 4.712385	// in radian <=> 270
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -89,10 +88,7 @@ void CSICKTim561Eth::loadConfig_sensorSpecific(
 
 bool CSICKTim561Eth::checkIsConnected()
 {
-	if (m_connected)
-	{
-		return true;
-	}
+	if (m_connected) { return true; }
 	else
 	{
 		try
@@ -368,10 +364,7 @@ bool CSICKTim561Eth::turnOn()
 void CSICKTim561Eth::sendCommand(const char* cmd)
 {
 	generateCmd(cmd);
-	if (!m_cmd.empty())
-	{
-		m_client.writeAsync(&m_cmd[0], m_cmd.size());
-	}
+	if (!m_cmd.empty()) { m_client.writeAsync(&m_cmd[0], m_cmd.size()); }
 }
 
 void CSICKTim561Eth::generateCmd(const char* cmd)
@@ -402,21 +395,13 @@ bool CSICKTim561Eth::decodeScan(
 			case 1:
 				// If no "sRA" and also no "sSN", return false reading
 				if (strncmp(&next[1], "sRA", 3) && strncmp(&next[1], "sSN", 3))
-				{
-					return false;
-				}
+				{ return false; }
 				break;
 			case 2:
-				if (strcmp(next, "LMDscandata"))
-				{
-					return false;
-				}
+				if (strcmp(next, "LMDscandata")) { return false; }
 				break;
 			case 6:
-				if (strcmp(next, "1"))
-				{
-					MRPT_LOG_DEBUG("Laser is ready");
-				}
+				if (strcmp(next, "1")) { MRPT_LOG_DEBUG("Laser is ready"); }
 				else if (strcmp(next, "0"))
 				{
 					MRPT_LOG_DEBUG("Laser is busy");
@@ -440,8 +425,7 @@ bool CSICKTim561Eth::decodeScan(
 				scanCount = strtoul(next, nullptr, 16);
 				MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
 				break;
-			default:
-				break;
+			default: break;
 		}
 		next = strtok(nullptr, " ", &tmp);
 	}
@@ -524,10 +508,7 @@ void CSICKTim561Eth::doProcess()
 			MRPT_LOG_DEBUG("state working");
 		}
 		// if at least one data have been sensed:
-		if (isThereObservation)
-		{
-			appendObservation(obs);
-		}
+		if (isThereObservation) { appendObservation(obs); }
 	}
 	catch (...)
 	{

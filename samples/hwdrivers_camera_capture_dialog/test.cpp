@@ -11,6 +11,7 @@
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -93,8 +94,7 @@ void TestCameraCaptureAsk()
 					img->saveToFile(sFile);
 				}
 				break;
-				default:
-					break;
+				default: break;
 			};
 		}
 

@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -72,8 +73,8 @@ class Pose3DTests : public ::testing::Test
 		const CPose3D p1_c_p2 = p1 + p2;
 		const CPose3D p1_i_p2 = p1 - p2;
 
-		const CPose3D p1_c_p2_i_p2 = p1_c_p2 - p1;  // should be -> p2
-		const CPose3D p2_c_p1_i_p2 = p2 + p1_i_p2;  // Should be -> p1
+		const CPose3D p1_c_p2_i_p2 = p1_c_p2 - p1;	// should be -> p2
+		const CPose3D p2_c_p1_i_p2 = p2 + p1_i_p2;	// Should be -> p1
 
 		EXPECT_NEAR(
 			0,
@@ -283,7 +284,8 @@ class Pose3DTests : public ::testing::Test
 		CPose3D q(x[0], x[1], x[2], x[3], x[4], x[5]);
 		const CPoint3D p(x[6 + 0], x[6 + 1], x[6 + 2]);
 		const CPoint3D pp = q + p;
-		for (int i = 0; i < 3; i++) Y[i] = pp[i];
+		for (int i = 0; i < 3; i++)
+			Y[i] = pp[i];
 	}
 
 	static void func_inv_compose_point(
@@ -316,7 +318,8 @@ class Pose3DTests : public ::testing::Test
 		CMatrixFixed<double, 3, 6> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<6 + 3> x_mean;
-			for (int i = 0; i < 6; i++) x_mean[i] = p1[i];
+			for (int i = 0; i < 6; i++)
+				x_mean[i] = p1[i];
 			x_mean[6 + 0] = x;
 			x_mean[6 + 1] = y;
 			x_mean[6 + 2] = z;
@@ -385,7 +388,8 @@ class Pose3DTests : public ::testing::Test
 		CMatrixFixed<double, 3, 6> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<6 + 3> x_mean;
-			for (int i = 0; i < 6; i++) x_mean[i] = p1[i];
+			for (int i = 0; i < 6; i++)
+				x_mean[i] = p1[i];
 			x_mean[6 + 0] = x;
 			x_mean[6 + 1] = y;
 			x_mean[6 + 2] = z;
@@ -456,7 +460,8 @@ class Pose3DTests : public ::testing::Test
 		CPose3D q = Lie::SE<3>::exp(x);
 		const CPoint3D p(P[0], P[1], P[2]);
 		const CPoint3D pp = q + p;
-		for (int i = 0; i < 3; i++) Y[i] = pp[i];
+		for (int i = 0; i < 3; i++)
+			Y[i] = pp[i];
 	}
 
 	static void func_invcompose_point_se3(
@@ -466,7 +471,8 @@ class Pose3DTests : public ::testing::Test
 		CPose3D q = Lie::SE<3>::exp(x);
 		const CPoint3D p(P[0], P[1], P[2]);
 		const CPoint3D pp = p - q;
-		for (int i = 0; i < 3; i++) Y[i] = pp[i];
+		for (int i = 0; i < 3; i++)
+			Y[i] = pp[i];
 	}
 
 	void test_composePointJacob_se3(const CPose3D& p, const TPoint3D x_l)
@@ -482,10 +488,12 @@ class Pose3DTests : public ::testing::Test
 		CMatrixFixed<double, 3, 6> num_df_dse3(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<6> x_mean;
-			for (int i = 0; i < 6; i++) x_mean[i] = 0;
+			for (int i = 0; i < 6; i++)
+				x_mean[i] = 0;
 
 			CVectorFixedDouble<3> P;
-			for (int i = 0; i < 3; i++) P[i] = pp[i];
+			for (int i = 0; i < 3; i++)
+				P[i] = pp[i];
 
 			CVectorFixedDouble<6> x_incrs;
 			x_incrs.fill(1e-9);
@@ -524,10 +532,12 @@ class Pose3DTests : public ::testing::Test
 		CMatrixFixed<double, 3, 6> num_df_dse3(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<6> x_mean;
-			for (int i = 0; i < 6; i++) x_mean[i] = 0;
+			for (int i = 0; i < 6; i++)
+				x_mean[i] = 0;
 
 			CVectorFixedDouble<3> P;
-			for (int i = 0; i < 3; i++) P[i] = pp[i];
+			for (int i = 0; i < 3; i++)
+				P[i] = pp[i];
 
 			CVectorFixedDouble<6> x_incrs;
 			x_incrs.fill(1e-9);
@@ -567,7 +577,8 @@ class Pose3DTests : public ::testing::Test
 	void check_jacob_expe_e_at_0()
 	{
 		CVectorFixedDouble<6> x_mean;
-		for (int i = 0; i < 6; i++) x_mean[i] = 0;
+		for (int i = 0; i < 6; i++)
+			x_mean[i] = 0;
 
 		const double& dummy = 0.;
 		CVectorFixedDouble<6> x_incrs;
@@ -586,13 +597,13 @@ class Pose3DTests : public ::testing::Test
 		// [ 0   -[e3]_x ]
 		// [ I_3    0    ]
 		double vals[12 * 6] = {
-			0, 0, 0, 0, 0, 0,  0, 0, 0, 0,  0, 1, 0, 0, 0, 0, -1, 0,
+			0, 0, 0, 0, 0, 0,  0, 0, 0, 0,	0, 1, 0, 0, 0, 0, -1, 0,
 
-			0, 0, 0, 0, 0, -1, 0, 0, 0, 0,  0, 0, 0, 0, 0, 1, 0,  0,
+			0, 0, 0, 0, 0, -1, 0, 0, 0, 0,	0, 0, 0, 0, 0, 1, 0,  0,
 
 			0, 0, 0, 0, 1, 0,  0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0,  0,
 
-			1, 0, 0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 0, 0, 1, 0, 0,  0};
+			1, 0, 0, 0, 0, 0,  0, 1, 0, 0,	0, 0, 0, 0, 1, 0, 0,  0};
 		CMatrixFixed<double, 12, 6> M(vals);
 
 		EXPECT_NEAR(
@@ -873,23 +884,27 @@ static const std::vector<mrpt::poses::CPose3D> ptc = {
 // More complex tests:
 TEST_F(Pose3DTests, InverseHM)
 {
-	for (const auto& p : ptc) test_inverse(p);
+	for (const auto& p : ptc)
+		test_inverse(p);
 }
 
 TEST_F(Pose3DTests, Compose)
 {
 	for (const auto& p1 : ptc)
-		for (const auto& p2 : ptc) test_compose(p1, p2);
+		for (const auto& p2 : ptc)
+			test_compose(p1, p2);
 }
 TEST_F(Pose3DTests, composeFrom)
 {
 	for (const auto& p1 : ptc)
-		for (const auto& p2 : ptc) test_composeFrom(p1, p2);
+		for (const auto& p2 : ptc)
+			test_composeFrom(p1, p2);
 }
 
 TEST_F(Pose3DTests, ToFromCPose2D)
 {
-	for (const auto& p : ptc) test_to_from_2d(p.x(), p.y(), p.yaw());
+	for (const auto& p : ptc)
+		test_to_from_2d(p.x(), p.y(), p.yaw());
 }
 
 TEST_F(Pose3DTests, ComposeAndInvComposeWithPoint)
@@ -960,7 +975,8 @@ TEST_F(Pose3DTests, InvComposePointJacob_se3)
 
 TEST_F(Pose3DTests, ExpLnEqual)
 {
-	for (const auto& p : ptc) test_ExpLnEqual(p);
+	for (const auto& p : ptc)
+		test_ExpLnEqual(p);
 }
 
 TEST_F(Pose3DTests, Jacob_dExpe_de_at_0) { check_jacob_expe_e_at_0(); }
@@ -978,16 +994,19 @@ TEST_F(Pose3DTests, Jacob_dLnT_dT)
 
 TEST_F(Pose3DTests, Jacob_dexpeD_de)
 {
-	for (const auto& p : ptc) test_Jacob_dexpeD_de(p);
+	for (const auto& p : ptc)
+		test_Jacob_dexpeD_de(p);
 }
 
 TEST_F(Pose3DTests, Jacob_dDexpe_de)
 {
-	for (const auto& p : ptc) test_Jacob_dDexpe_de(p);
+	for (const auto& p : ptc)
+		test_Jacob_dDexpe_de(p);
 }
 
 TEST_F(Pose3DTests, Jacob_dAexpeD_de)
 {
 	for (const auto& p1 : ptc)
-		for (const auto& p2 : ptc) test_Jacob_dAexpeD_de(p1, p2);
+		for (const auto& p2 : ptc)
+			test_Jacob_dAexpeD_de(p1, p2);
 }

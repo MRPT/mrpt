@@ -12,6 +12,7 @@
 #include <mrpt/math/TPolygon2D.h>
 #include <mrpt/math/TPolygon3D.h>
 #include <mrpt/math/TPose3D.h>
+
 #include <vector>
 
 namespace mrpt::math

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/system/os.h>
+
 #include <deque>
 
 namespace mrpt::system
@@ -86,6 +87,6 @@ class CDirectoryExplorer
 	static void filterByExtension(
 		TFileInfoList& lstFiles, const std::string& extension);
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::system

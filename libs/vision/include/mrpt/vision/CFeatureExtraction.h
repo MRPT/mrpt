@@ -181,9 +181,9 @@ class CFeatureExtraction
 		struct TSIFTOptions
 		{
 			TSIFTOptions() = default;
-			TSIFTImplementation implementation{OpenCV};  //!< Default: OpenCV
+			TSIFTImplementation implementation{OpenCV};	 //!< Default: OpenCV
 			int octaveLayers{3};
-			double threshold{0.04};  //!< default= 0.04
+			double threshold{0.04};	 //!< default= 0.04
 			double edgeThreshold{10};  //!< default= 10
 		} SIFTOptions;
 
@@ -521,5 +521,5 @@ class CFeatureExtraction
 		unsigned int init_ID, unsigned int nDesiredFeatures,
 		const TImageROI& ROI = TImageROI());
 
-};  // end of class
+};	// end of class
 }  // namespace mrpt::vision

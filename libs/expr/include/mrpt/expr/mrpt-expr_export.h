@@ -9,7 +9,7 @@
 #pragma once
 
 #ifdef _MSC_VER
-#pragma warning(disable : 4251)  // DLL export private fields
+#pragma warning(disable : 4251)	 // DLL export private fields
 #endif
 
 #if defined(MRPT_EXPR_STATIC_DEFINE) || !defined(_WIN32)

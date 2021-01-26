@@ -166,8 +166,8 @@ class CObservationGasSensors : public CObservation
 			const mrpt::system::TTimeStamp& timestamp, float reading,
 			float estimation, float tau);
 
-	};  // End of CMOSmodel class def.
+	};	// End of CMOSmodel class def.
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

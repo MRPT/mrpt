@@ -22,7 +22,7 @@ TEST(Compress, DataBlockGZ)
 	std::vector<uint8_t> in_data(N);
 	for (size_t i = 0; i < N; i++)
 		in_data[i] = static_cast<uint8_t>(
-			i);  // We need low entropy for compression to have something to do!
+			i);	 // We need low entropy for compression to have something to do!
 
 	// Compress it:
 	std::vector<uint8_t> compress_data;

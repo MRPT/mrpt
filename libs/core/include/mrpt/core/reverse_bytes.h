@@ -10,6 +10,7 @@
 
 #include <mrpt/config.h>
 #include <mrpt/core/Clock.h>
+
 #include <cstdint>
 
 namespace mrpt

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/serialization/CArchive.h>
@@ -56,8 +56,8 @@ void CBox::onUpdateBuffers_Wireframe()
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	vbd.clear();
 
-	const std::array<mrpt::math::TPoint3D, 2> corner = {m_corner_min,
-														m_corner_max};
+	const std::array<mrpt::math::TPoint3D, 2> corner = {
+		m_corner_min, m_corner_max};
 
 	for (unsigned int i = 0; i < 2; i++)
 	{
@@ -127,7 +127,8 @@ void CBox::onUpdateBuffers_Triangles()
 		P3(c0.x, c1.y, c1.z), P3(c0.x, c0.y, c1.z), P3(c1.x, c1.y, c1.z));
 
 	// All faces, all vertices, same color:
-	for (auto& t : tris) t.setColor(m_color);
+	for (auto& t : tris)
+		t.setColor(m_color);
 }
 
 uint8_t CBox::serializeGetVersion() const { return 1; }
@@ -152,16 +153,14 @@ void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				m_corner_max.x >> m_corner_max.y >> m_corner_max.z >>
 				m_wireframe >> m_lineWidth;
 			// Version 1:
-			if (version >= 1)
-				in >> m_draw_border >> m_solidborder_color;
+			if (version >= 1) in >> m_draw_border >> m_solidborder_color;
 			else
 			{
 				m_draw_border = false;
 			}
 
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

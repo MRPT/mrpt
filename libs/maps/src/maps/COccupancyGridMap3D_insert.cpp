@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -163,7 +163,7 @@ void COccupancyGridMap3D::insertRay(
 	const int Acz_ = std::abs(Acz);
 
 	const int nStepsRay = mrpt::max3(Acx_, Acy_, Acz_);
-	if (!nStepsRay) return;  // May be...
+	if (!nStepsRay) return;	 // May be...
 
 	const float N_1 = 1.0f / nStepsRay;
 

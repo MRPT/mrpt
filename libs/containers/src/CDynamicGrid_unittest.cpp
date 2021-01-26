@@ -40,7 +40,8 @@ TEST(CDynamicGrid, rangeForLoop)
 
 	std::map<int, int> counter;
 
-	for (const int& d : grid) counter[d]++;
+	for (const int& d : grid)
+		counter[d]++;
 
 	EXPECT_EQ(counter.at(0), 20 * 20 * 10 * 10 - 1);
 	EXPECT_EQ(counter.at(8), 1);

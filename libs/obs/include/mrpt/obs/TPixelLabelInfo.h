@@ -10,6 +10,7 @@
 
 #include <mrpt/core/integer_select.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -172,6 +173,6 @@ struct TPixelLabelInfo : public TPixelLabelInfoBase
 	void internal_writeToStream(
 		mrpt::serialization::CArchive& out) const override;
 	void Print(std::ostream& out) const override;
-};  // end TPixelLabelInfo
+};	// end TPixelLabelInfo
 
 }  // namespace mrpt::obs

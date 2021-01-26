@@ -20,6 +20,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/tfest/se2.h>
+
 #include <iostream>
 
 // Method explained in paper:
@@ -60,7 +61,7 @@ using namespace std;
 
 struct TObs
 {
-	size_t ID;  // Ground truth ID
+	size_t ID;	// Ground truth ID
 	double x, y;
 };
 
@@ -72,7 +73,7 @@ void TestRANSAC()
 	mrpt::gui::CDisplayWindow3D win(
 		"MRPT example: ransac-data-association", 800, 600);
 
-	mrpt::system::CTimeLogger timelog;  // For dumping stats at the end
+	mrpt::system::CTimeLogger timelog;	// For dumping stats at the end
 	mrpt::system::CTicTac timer;
 
 	getRandomGenerator().randomize();  // randomize with time
@@ -84,12 +85,13 @@ void TestRANSAC()
 #if LOAD_MAP_FROM_FILE
 	{
 		CMatrixDouble M;
-		M.loadFromTextFile(sMAP_FILE);  // Launch except. on error
+		M.loadFromTextFile(sMAP_FILE);	// Launch except. on error
 		ASSERT_(M.cols() == 3 && M.rows() > 2)
 
 		const size_t nPts = M.rows();
 		the_map.resize(nPts);
-		for (size_t i = 0; i < nPts; i++) the_map.setPoint(i, M(i, 1), M(i, 2));
+		for (size_t i = 0; i < nPts; i++)
+			the_map.setPoint(i, M(i, 1), M(i, 2));
 	}
 #else
 	// Generate random MAP:
@@ -200,12 +202,12 @@ void TestRANSAC()
 			GT_pose_inv.composePoint(gx, gy, lx, ly);
 
 			observations[i].ID = idxs[i].first;
-			observations[i].x =
-				lx + mrpt::random::getRandomGenerator().drawGaussian1D(
-						 0, normalizationStd);
-			observations[i].y =
-				ly + mrpt::random::getRandomGenerator().drawGaussian1D(
-						 0, normalizationStd);
+			observations[i].x = lx +
+				mrpt::random::getRandomGenerator().drawGaussian1D(
+					0, normalizationStd);
+			observations[i].y = ly +
+				mrpt::random::getRandomGenerator().drawGaussian1D(
+					0, normalizationStd);
 		}
 
 		// ----------------------------------------------------
@@ -245,14 +247,14 @@ void TestRANSAC()
 		mrpt::tfest::TSE2RobustResult results;
 
 		params.ransac_minSetSize =
-			RANSAC_MINIMUM_INLIERS;  // ransac_minSetSize (to add the solution
+			RANSAC_MINIMUM_INLIERS;	 // ransac_minSetSize (to add the solution
 		// to the SOG)
 		params.ransac_maxSetSize =
 			all_correspondences
 				.size();  // ransac_maxSetSize: Test with all data points
 		params.ransac_mahalanobisDistanceThreshold =
 			ransac_mahalanobisDistanceThreshold;
-		params.ransac_nSimulations = 0;  // 0=auto
+		params.ransac_nSimulations = 0;	 // 0=auto
 		params.ransac_fuseByCorrsMatch = true;
 		params.ransac_fuseMaxDiffXY = 0.01f;
 		params.ransac_fuseMaxDiffPhi = 0.1_deg;
@@ -288,11 +290,12 @@ void TestRANSAC()
 		for (size_t i = 0; i < out_best_pairings.size(); i++)
 			obs2map_pairings[out_best_pairings[i].other_idx] =
 				out_best_pairings[i].this_idx == ((unsigned int)-1)
-					? -1
-					: out_best_pairings[i].this_idx;
+				? -1
+				: out_best_pairings[i].this_idx;
 
 		cout << "1\n";
-		for (size_t i = 0; i < nObs; i++) cout << obs2map_pairings[i] << " ";
+		for (size_t i = 0; i < nObs; i++)
+			cout << obs2map_pairings[i] << " ";
 		cout << endl;
 
 		gl_result->clear();

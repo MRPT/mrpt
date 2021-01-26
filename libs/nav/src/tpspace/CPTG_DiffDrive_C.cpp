@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/serialization/CArchive.h>
@@ -48,11 +48,8 @@ void CPTG_DiffDrive_C::serializeFrom(
 
 	switch (version)
 	{
-		case 0:
-			in >> K;
-			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		case 0: in >> K; break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -100,15 +97,13 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(
 
 		if (K > 0)
 		{
-			if (y > 0)
-				theta = atan2((double)x, fabs(R) - y);
+			if (y > 0) theta = atan2((double)x, fabs(R) - y);
 			else
 				theta = atan2((double)x, y + fabs(R));
 		}
 		else
 		{
-			if (y > 0)
-				theta = atan2(-(double)x, fabs(R) - y);
+			if (y > 0) theta = atan2(-(double)x, fabs(R) - y);
 			else
 				theta = atan2(-(double)x, y + fabs(R));
 		}

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
@@ -31,7 +31,8 @@ uint8_t CActionCollection::serializeGetVersion() const { return 0; }
 void CActionCollection::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_actions.size());
-	for (const auto& a : *this) out << *a;
+	for (const auto& a : *this)
+		out << *a;
 }
 
 void CActionCollection::serializeFrom(
@@ -49,8 +50,7 @@ void CActionCollection::serializeFrom(
 					ObjectReadFromStreamToPtrs<CAction::Ptr>(&in));
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -107,9 +107,7 @@ CActionRobotMovement2D::Ptr CActionCollection::getBestMovementEstimation() const
 
 			if (temp->estimationMethod ==
 				CActionRobotMovement2D::emScan2DMatching)
-			{
-				return temp;
-			}
+			{ return temp; }
 
 			double det = temp->poseChange->getCovariance().det();
 

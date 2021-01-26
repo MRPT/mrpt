@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/exceptions.h>  //ASSERTMSG_
+
 #include <string>
 
 namespace mrpt::system
@@ -19,15 +20,15 @@ namespace mrpt::system
  * \ingroup mrpt_system_grp
  * @{ */
 
-#define ASSERT_FILE_EXISTS_(FIL)       \
-	ASSERTMSG_(                        \
-		mrpt::system::fileExists(FIL), \
+#define ASSERT_FILE_EXISTS_(FIL)                                               \
+	ASSERTMSG_(                                                                \
+		mrpt::system::fileExists(FIL),                                         \
 		std::string("Assert file existence failed: ") + ::std::string(FIL))
 
-#define ASSERT_DIRECTORY_EXISTS_(DIR)                        \
-	ASSERTMSG_(                                              \
-		mrpt::system::directoryExists(DIR),                  \
-		std::string("Assert directory existence failed: ") + \
+#define ASSERT_DIRECTORY_EXISTS_(DIR)                                          \
+	ASSERTMSG_(                                                                \
+		mrpt::system::directoryExists(DIR),                                    \
+		std::string("Assert directory existence failed: ") +                   \
 			::std::string(DIR))
 
 /** Returns the name of a proposed temporary file name */

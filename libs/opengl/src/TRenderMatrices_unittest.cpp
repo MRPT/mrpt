@@ -16,12 +16,12 @@
 
 #if defined(USE_GLM_GROUND_TRUTH)
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtc/matrix_transform.hpp>  // glm::translate, glm::rotate, glm::scale, glm::perspective
-#include <glm/gtc/type_ptr.hpp>  // glm::value_ptr
+#include <glm/gtc/matrix_transform.hpp>	 // glm::translate, glm::rotate, glm::scale, glm::perspective
+#include <glm/gtc/type_ptr.hpp>	 // glm::value_ptr
 #include <glm/gtx/string_cast.hpp>
 #include <glm/mat4x4.hpp>  // glm::mat4
-#include <glm/vec3.hpp>  // glm::vec3
-#include <glm/vec4.hpp>  // glm::vec4, glm::ivec4
+#include <glm/vec3.hpp>	 // glm::vec3
+#include <glm/vec4.hpp>	 // glm::vec4, glm::ivec4
 #endif
 
 TEST(OpenGL, perspectiveMatrix)
@@ -53,7 +53,7 @@ TEST(OpenGL, perspectiveMatrix)
 		"0.000000 0.000000 -1.002002 -1.000000;"
 		"0.000000 0.000000 -0.200200 0.000000"
 		"]");
-	P_GT = P_GT.transpose().eval();  // GT was in column major
+	P_GT = P_GT.transpose().eval();	 // GT was in column major
 
 	EXPECT_NEAR((P_GT - rm.p_matrix).array().abs().maxCoeff(), 0, 0.001f)
 		<< "P=\n"
@@ -84,7 +84,7 @@ TEST(OpenGL, orthoMatrix)
 		"0.000000 0.000000 -0.020020 0.000000;"
 		"-0.200000 -0.666667 -1.002002 1.000000"
 		"]");
-	P_GT = P_GT.transpose().eval();  // GT was in column major
+	P_GT = P_GT.transpose().eval();	 // GT was in column major
 
 	EXPECT_NEAR((P_GT - rm.p_matrix).array().abs().maxCoeff(), 0, 0.001f)
 		<< "P=\n"

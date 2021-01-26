@@ -11,8 +11,8 @@
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <cstdint>
 
+#include <cstdint>
 #include <iostream>
 #include <sstream>
 #include <string>

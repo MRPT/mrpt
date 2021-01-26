@@ -16,7 +16,7 @@
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TPose3DQuat.h>
 #include <mrpt/math/matrix_serialization.h>
-#include <mrpt/math/ops_matrices.h>  // multiply_*()
+#include <mrpt/math/ops_matrices.h>	 // multiply_*()
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -237,11 +237,8 @@ struct graph_ops
 		g->clear();
 		switch (stored_version)
 		{
-			case 0:
-				in >> g->nodes >> g->edges >> g->root;
-				break;
-			default:
-				MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(stored_version);
+			case 0: in >> g->nodes >> g->edges >> g->root; break;
+			default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(stored_version);
 		}
 	}
 
@@ -257,7 +254,7 @@ struct graph_ops
 
 		using CPOSE = typename graph_t::constraint_t;
 
-		set<string> alreadyWarnedUnknowns;  // for unknown line types, show a
+		set<string> alreadyWarnedUnknowns;	// for unknown line types, show a
 		// warning to cerr just once.
 
 		// First, empty the graph:
@@ -364,7 +361,7 @@ struct graph_ops
 						CPOSE>::constraint_t::type_value;
 					pose_t& newNode = g->nodes[id];
 					newNode = pose_t(CPose2D(
-						p2D));  // Convert to mrpt::poses::CPose3D if needed
+						p2D));	// Convert to mrpt::poses::CPose3D if needed
 				}
 			}
 			else if (strCmpI(key, "VERTEX3"))
@@ -404,7 +401,7 @@ struct graph_ops
 				{
 					g->nodes[id] = typename CNetworkOfPoses<CPOSE>::
 						constraint_t::type_value(CPose3D(
-							p3D));  // Auto converted to CPose2D if needed
+							p3D));	// Auto converted to CPose2D if needed
 				}
 			}
 			else if (strCmpI(key, "VERTEX_SE3:QUAT"))
@@ -442,7 +439,7 @@ struct graph_ops
 				{
 					g->nodes[id] = typename CNetworkOfPoses<CPOSE>::
 						constraint_t::type_value(
-							CPose3D(CPose3DQuat(p3D)));  // Auto converted to
+							CPose3D(CPose3DQuat(p3D)));	 // Auto converted to
 					// CPose2D if needed
 				}
 			}
@@ -719,7 +716,7 @@ struct graph_ops
 		//  (with id1 < id2)
 		using TListAllEdges =
 			map<pair<TNodeID, TNodeID>,
-				vector<TEdgeIterator>>;  // For god's sake... when will ALL
+				vector<TEdgeIterator>>;	 // For god's sake... when will ALL
 		// compilers support
 		// auto!! :'-(
 		TListAllEdges lstAllEdges;
@@ -742,7 +739,7 @@ struct graph_ops
 		for (auto it = lstAllEdges.begin(); it != lstAllEdges.end(); ++it)
 		{
 			const size_t N = it->second.size();
-			for (size_t i = 1; i < N; i++)  // i=0 is NOT removed
+			for (size_t i = 1; i < N; i++)	// i=0 is NOT removed
 				g->edges.erase(it->second[i]);
 
 			if (N >= 2) nRemoved += N - 1;
@@ -864,10 +861,11 @@ struct graph_ops
 
 				// make sure setting annotations was successful
 				ASSERTMSG_(
-					res, mrpt::format(
-							 "Setting annotations for nodeID \"%lu\" was "
-							 "unsuccessful",
-							 static_cast<unsigned long>(poses_cit->first)));
+					res,
+					mrpt::format(
+						"Setting annotations for nodeID \"%lu\" was "
+						"unsuccessful",
+						static_cast<unsigned long>(poses_cit->first)));
 			}
 		}
 
@@ -920,23 +918,23 @@ struct graph_ops
 		math::wrapToPiInPlace(err[4]);
 		math::wrapToPiInPlace(err[5]);
 		return square(err[0]) + square(err[1]) + square(err[2]) +
-			   square(err[3]) + square(err[4]) + square(err[5]);
+			square(err[3]) + square(err[4]) + square(err[5]);
 	}
 
 	static inline double auxEuclid2Dist(
 		const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2)
 	{
 		return square(p1.x() - p2.x()) + square(p1.y() - p2.y()) +
-			   square(mrpt::math::wrapToPi(p1.phi() - p2.phi()));
+			square(mrpt::math::wrapToPi(p1.phi() - p2.phi()));
 	}
 	static inline double auxEuclid2Dist(
 		const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2)
 	{
 		return square(p1.x() - p2.x()) + square(p1.y() - p2.y()) +
-			   square(p1.z() - p2.z()) +
-			   square(mrpt::math::wrapToPi(p1.yaw() - p2.yaw())) +
-			   square(mrpt::math::wrapToPi(p1.pitch() - p2.pitch())) +
-			   square(mrpt::math::wrapToPi(p1.roll() - p2.roll()));
+			square(p1.z() - p2.z()) +
+			square(mrpt::math::wrapToPi(p1.yaw() - p2.yaw())) +
+			square(mrpt::math::wrapToPi(p1.pitch() - p2.pitch())) +
+			square(mrpt::math::wrapToPi(p1.roll() - p2.roll()));
 	}
 
 	// --------------------------------------------------------------------------------
@@ -1017,6 +1015,6 @@ struct graph_ops
 		MRPT_END
 	}
 
-};  // end of graph_ops<graph_t>
+};	// end of graph_ops<graph_t>
 
 }  // namespace mrpt::graphs::detail

@@ -39,22 +39,22 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace std;
 
-QImage qimage_1[MAX_DESC], qimage_2[MAX_DESC];  //!< qimage1 and qimage2 stores
+QImage qimage_1[MAX_DESC], qimage_2[MAX_DESC];	//!< qimage1 and qimage2 stores
 //! the descriptor visualizations
-QLabel *images1[MAX_DESC], *images2[MAX_DESC];  //!< images1 and images2 store
+QLabel *images1[MAX_DESC], *images2[MAX_DESC];	//!< images1 and images2 store
 //! the descriptor image as a
 //! qlabel
-QImage qimage_1_plots_distances[MAX_DESC];  //!< stores the distances of the
+QImage qimage_1_plots_distances[MAX_DESC];	//!< stores the distances of the
 //! i'th descriptor from other
 //! descriptors in image2
-QLabel* images1_plots_distances[MAX_DESC];  //!< stores the image of distances
+QLabel* images1_plots_distances[MAX_DESC];	//!< stores the image of distances
 //! of the i'th descriptor as a
 //! qlabel
-QLabel* featureMatchingInfo[MAX_DESC];  //!< stores the matching information for
+QLabel* featureMatchingInfo[MAX_DESC];	//!< stores the matching information for
 //! the i'th descriptor in image1
-int min_dist_indexes[MAX_DESC];  //!< stores the index of the minimum distance
+int min_dist_indexes[MAX_DESC];	 //!< stores the index of the minimum distance
 //! for the best matching descriptor
-double min_distances[MAX_DESC];  //!< stores the minimum distance for the best
+double min_distances[MAX_DESC];	 //!< stores the minimum distance for the best
 //! matching descriptor
 
 int successful_matches = 0;
@@ -65,46 +65,48 @@ float threshold_dist2 = 0.1;  //!< second threshold of descriptor distance for
 int repeatibility_threshold = 10;  //!< the repeatability window threshold in
 //! pixels for key-points to be detected in
 //! subsequent frames
-int repeatability = 0;  //!< stores the general repeatability based on threshold
-int number_false_positives = 0;  //!< stores the number of false negatives
-int number_false_negatives = 0;  //!< stores the number of false positives
+int repeatability = 0;	//!< stores the general repeatability based on threshold
+int number_false_positives = 0;	 //!< stores the number of false negatives
+int number_false_negatives = 0;	 //!< stores the number of false positives
 int false_pos_neg_threshold = 5;  //!< stores the false positive negative
 //! threshold, can be changed if required
 
 string repeatibility_result = "";  //!< holds the repeatability result
 string detector_result = "";  //!< holds the detector result
-string descriptor_result = "";  //!< holds the general descriptor results
+string descriptor_result = "";	//!< holds the general descriptor results
 string descriptor_result2 =
-	"";  //!< holds the matchicng results and the false_po_neg_result
+	"";	 //!< holds the matchicng results and the false_po_neg_result
 string detector_result2 = "";  //!< holds the repeatibility result
 string single_dataset_path = "";  //!< stores the path of the single dataset
-string rawlogPath = "";  //!< stores the path of the rawlog file dataset
+string rawlogPath = "";	 //!< stores the path of the rawlog file dataset
 
 int rawlog_type = 0;  //!< 0 for single, 1 for stereo
-float dist1_p[MAX_DESC], dist2_p[MAX_DESC];  //!< stores the best and the second
+float dist1_p[MAX_DESC], dist2_p[MAX_DESC];	 //!< stores the best and the second
 //! best matching descriptor
 //! distance
 
-string detector_names[] = {"KLT Detector",
-						   "Harris Corner Detector",
-						   "SIFT",
-						   "SURF",
-						   "FAST Detector",
-						   "FASTER9 Detector",
-						   "FASTER10 Detector",
-						   "FASTER12",
-						   "ORB Detector",
-						   "AKAZE Detector",
-						   "LSD Detector"};
+string detector_names[] = {
+	"KLT Detector",
+	"Harris Corner Detector",
+	"SIFT",
+	"SURF",
+	"FAST Detector",
+	"FASTER9 Detector",
+	"FASTER10 Detector",
+	"FASTER12",
+	"ORB Detector",
+	"AKAZE Detector",
+	"LSD Detector"};
 
-string descriptor_names[] = {"SIFT Descriptor",
-							 "SURF Descriptor",
-							 "Intensity-domain spin image descriptor",
-							 "Polar Images descriptor",
-							 "Log-polar image descriptor",
-							 "ORB Descriptor",
-							 "BLD Descriptor",
-							 "LATCH Descriptor"};
+string descriptor_names[] = {
+	"SIFT Descriptor",
+	"SURF Descriptor",
+	"Intensity-domain spin image descriptor",
+	"Polar Images descriptor",
+	"Log-polar image descriptor",
+	"ORB Descriptor",
+	"BLD Descriptor",
+	"LATCH Descriptor"};
 cv::Mat cvImg1;
 
 /************************************************************************************************
@@ -152,14 +154,11 @@ void MainWindow::on_button_generate_clicked()
 			min_distances[i1] = min_dist;
 
 			/// compute the second closest descriptor
-			float temp_second = std::numeric_limits<double>::max();  // 999999
+			float temp_second = std::numeric_limits<double>::max();	 // 999999
 			for (unsigned int i = 0; i < featsImage2.size(); i++)
 			{
 				if (distances[i] == min_dist) continue;
-				if (temp_second > distances[i])
-				{
-					temp_second = distances[i];
-				}
+				if (temp_second > distances[i]) { temp_second = distances[i]; }
 			}
 			dist1_p[i1] = min_dist;
 			dist2_p[i1] = temp_second;
@@ -217,7 +216,7 @@ void MainWindow::on_button_generate_clicked()
 			images1_plots_distances[i1] = new QLabel;
 			images1_plots_distances[i1]->setPixmap(
 				QPixmap::fromImage(qimage_1_plots_distances[i1]));
-#endif  // HAVE_OPENCV_PLOT
+#endif	// HAVE_OPENCV_PLOT
 		}
 
 		const auto& best_ft2 = featsImage2[min_dist_idx];
@@ -227,31 +226,27 @@ void MainWindow::on_button_generate_clicked()
 		switch (descriptor_selected)
 		{
 			case -1:  // Patch, descAny
-			case 3:  // descPolarImages
-			case 4:  // descLogPolarImages
+			case 3:	 // descPolarImages
+			case 4:	 // descLogPolarImages
 			case 2:
 			{  // descSpinImages
 
 				CImage auxImg1, auxImg2;
-				if (descriptor_selected == -1)  // descAny
+				if (descriptor_selected == -1)	// descAny
 				{
 					auxImg1 = *ft1.patch;
 					if (currentInputIndex == 1 || currentInputIndex == 4 ||
 						(currentInputIndex == 2 && rawlog_type == 1))
-					{
-						auxImg2 = *best_ft2.patch;
-					}
+					{ auxImg2 = *best_ft2.patch; }
 				}
-				else if (descriptor_selected == 3)  // descPolarImages
+				else if (descriptor_selected == 3)	// descPolarImages
 				{
 					auxImg1.setFromMatrix(*ft1.descriptors.PolarImg);
 					if (currentInputIndex == 1 || currentInputIndex == 4 ||
 						(currentInputIndex == 2 && rawlog_type == 1))
-					{
-						auxImg2.setFromMatrix(*best_ft2.descriptors.PolarImg);
-					}
+					{ auxImg2.setFromMatrix(*best_ft2.descriptors.PolarImg); }
 				}
-				else if (descriptor_selected == 4)  // descLogPolarImages
+				else if (descriptor_selected == 4)	// descLogPolarImages
 				{
 					auxImg1.setFromMatrix(*ft1.descriptors.LogPolarImg);
 					if (currentInputIndex == 1 || currentInputIndex == 4 ||
@@ -261,11 +256,11 @@ void MainWindow::on_button_generate_clicked()
 							*best_ft2.descriptors.LogPolarImg);
 					}
 				}
-				else if (descriptor_selected == 2)  // descSpinImages
+				else if (descriptor_selected == 2)	// descSpinImages
 				{
 					const size_t nR1 = ft1.descriptors.SpinImg_range_rows;
 					const size_t nC1 = ft1.descriptors.SpinImg->size() /
-									   ft1.descriptors.SpinImg_range_rows;
+						ft1.descriptors.SpinImg_range_rows;
 					CMatrixFloat M1(nR1, nC1);
 					for (size_t r = 0; r < nR1; r++)
 						for (size_t c = 0; c < nC1; c++)
@@ -277,8 +272,7 @@ void MainWindow::on_button_generate_clicked()
 					{
 						const size_t nR =
 							best_ft2.descriptors.SpinImg_range_rows;
-						const size_t nC =
-							best_ft2.descriptors.SpinImg->size() /
+						const size_t nC = best_ft2.descriptors.SpinImg->size() /
 							best_ft2.descriptors.SpinImg_range_rows;
 						CMatrixFloat M2(nR, nC);
 						for (size_t r = 0; r < nR; r++)
@@ -334,17 +328,16 @@ void MainWindow::on_button_generate_clicked()
 			}
 			break;
 
-			case 0:  // descSIFT
-			case 1:  // desccSURF
-			case 5:  // descORB
-			case 6:  // descBLD
-			case 7:  // descLATCH
+			case 0:	 // descSIFT
+			case 1:	 // desccSURF
+			case 5:	 // descORB
+			case 6:	 // descBLD
+			case 7:	 // descLATCH
 			{
 				vector<uint8_t> v1, v2;
 				vector<float> v1_surf, v2_surf;
 
-				if (descriptor_selected == 0)
-					v1 = *ft1.descriptors.SIFT;
+				if (descriptor_selected == 0) v1 = *ft1.descriptors.SIFT;
 				else if (descriptor_selected == 1)
 					v1_surf = *ft1.descriptors.SURF;
 				else if (descriptor_selected == 5)
@@ -358,8 +351,7 @@ void MainWindow::on_button_generate_clicked()
 				Mat xData, yData, display;
 				Ptr<plot::Plot2d> plot;
 				int len;
-				if (descriptor_selected != 1)
-					len = v1.size();
+				if (descriptor_selected != 1) len = v1.size();
 				else
 					len = v1_surf.size();
 
@@ -428,8 +420,7 @@ void MainWindow::on_button_generate_clicked()
 					Mat xData, yData, display;
 					Ptr<plot::Plot2d> plot;
 					int len;
-					if (descriptor_selected != 1)
-						len = v2.size();
+					if (descriptor_selected != 1) len = v2.size();
 					else
 						len = v2_surf.size();
 
@@ -938,10 +929,7 @@ string MainWindow::getImageDir(string path)
 	long i = path.size() - 1;
 	for (; i >= 0; i--)
 	{
-		if (path.at(i) == '/')
-		{
-			break;
-		}
+		if (path.at(i) == '/') { break; }
 	}
 	string temp = path.substr(0, i);
 	;
@@ -1083,10 +1071,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 
 	/// check if rawlog_type ==0 implying rawlog has single images else stereo
 	/// images
-	if (rawlog_type == 0)
-	{
-		image2->setVisible(false);
-	}
+	if (rawlog_type == 0) { image2->setVisible(false); }
 	else
 	{
 		image2->setVisible(true);
@@ -1126,7 +1111,7 @@ void MainWindow::on_file_input_choose(int choice)
 
 	/// HIDE previous and next buttons for the cases : single image, stereo
 	/// image or stereo image
-	if (choice == 0 || choice == 1)  // || choice == 4)
+	if (choice == 0 || choice == 1)	 // || choice == 4)
 	{
 		next_button->setVisible(false);
 		prev_button->setVisible(false);
@@ -1138,7 +1123,7 @@ void MainWindow::on_file_input_choose(int choice)
 	{
 		next_button->setVisible(true);
 		prev_button->setVisible(true);
-		if (choice != 4 || choice != 2)  // no need of vision options for stereo
+		if (choice != 4 || choice != 2)	 // no need of vision options for stereo
 			// datasets and rawlog formats
 			makeVisionOptionsVisible(true);
 	}
@@ -1165,23 +1150,12 @@ void MainWindow::on_file_input_choose(int choice)
 	currentInputIndex = inputs->currentIndex();
 	switch (currentInputIndex)
 	{
-		case 0:
-			groupBox_images->setTitle("Single Image");
-			break;
-		case 1:
-			groupBox_images->setTitle("Stereo Image Pair");
-			break;
-		case 2:
-			groupBox_images->setTitle("Image RawLog File");
-			break;
-		case 3:
-			groupBox_images->setTitle("Single Image Dataset");
-			break;
-		case 4:
-			groupBox_images->setTitle("Stereo Image Dataset");
-			break;
-		default:
-			groupBox_images->setTitle("Invalid Selection");
+		case 0: groupBox_images->setTitle("Single Image"); break;
+		case 1: groupBox_images->setTitle("Stereo Image Pair"); break;
+		case 2: groupBox_images->setTitle("Image RawLog File"); break;
+		case 3: groupBox_images->setTitle("Single Image Dataset"); break;
+		case 4: groupBox_images->setTitle("Stereo Image Dataset"); break;
+		default: groupBox_images->setTitle("Invalid Selection");
 	}
 	/// hide previous and next buttons for place recognition option
 	if (placeRecog_checked_flag == true)
@@ -1204,10 +1178,10 @@ void MainWindow::fillDetectorInfo()
 
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 &&
-		 rawlog_type == 1))  // stereo image or stereo dataset
+		 rawlog_type == 1))	 // stereo image or stereo dataset
 		img2.loadFromFile(file_path2);
 
-	if (detector_selected == 0)  // 0 = KLT Detector
+	if (detector_selected == 0)	 // 0 = KLT Detector
 	{
 		fext.options.featsType = featKLT;
 		klt_opts.min_distance = param1_edit->text().toFloat();
@@ -1259,7 +1233,7 @@ void MainWindow::fillDetectorInfo()
 	else if (
 		detector_selected == 4 || detector_selected == 5 ||
 		detector_selected == 6 ||
-		detector_selected == 7)  // FAST detector and its variants
+		detector_selected == 7)	 // FAST detector and its variants
 	{
 		fast_opts.threshold = param1_edit->text().toFloat();
 		fast_opts.min_distance = param2_edit->text().toFloat();
@@ -1335,7 +1309,7 @@ void MainWindow::fillDescriptorInfo()
 
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 &&
-		 rawlog_type == 1))  // stereo image or stereo dataset
+		 rawlog_type == 1))	 // stereo image or stereo dataset
 		img2.loadFromFile(file_path2);
 
 	if (descriptor_selected == 0)  //!< SIFT Descriptors
@@ -1371,7 +1345,7 @@ void MainWindow::fillDescriptorInfo()
 	else if (descriptor_selected == 2)
 	{
 		desc_to_compute =
-			TDescriptorType(4);  //!< Intensity-domain spin image descriptors
+			TDescriptorType(4);	 //!< Intensity-domain spin image descriptors
 
 		spin_opts.radius = param1_edit_desc->text().toInt();
 		spin_opts.hist_size_intensity = param2_edit_desc->text().toInt();
@@ -1402,7 +1376,7 @@ void MainWindow::fillDescriptorInfo()
 	}
 	else if (descriptor_selected == 4)
 	{
-		desc_to_compute = TDescriptorType(16);  //!< Log-Polar image descriptor
+		desc_to_compute = TDescriptorType(16);	//!< Log-Polar image descriptor
 
 		log_polar_opts.radius = param1_edit_desc->text().toInt();
 		log_polar_opts.num_angles = param2_edit_desc->text().toInt();
@@ -1415,7 +1389,7 @@ void MainWindow::fillDescriptorInfo()
 	}
 	else if (descriptor_selected == 5)
 	{
-		desc_to_compute = TDescriptorType(32);  //!< ORB image descriptor
+		desc_to_compute = TDescriptorType(32);	//!< ORB image descriptor
 
 		// string temp_str = param1_edit_desc->text().toStdString();
 		// bool temp_bool = temp_str.compare("true") == 0;
@@ -1433,7 +1407,7 @@ void MainWindow::fillDescriptorInfo()
 	}
 	else if (descriptor_selected == 6)
 	{
-		desc_to_compute = TDescriptorType(64);  //!< BLD image descriptor
+		desc_to_compute = TDescriptorType(64);	//!< BLD image descriptor
 
 		BLD_opts.numOfOctave = param1_edit_desc->text().toInt();
 		BLD_opts.widthOfBand = param2_edit_desc->text().toInt();
@@ -1447,7 +1421,7 @@ void MainWindow::fillDescriptorInfo()
 	}
 	else if (descriptor_selected == 6)
 	{
-		desc_to_compute = TDescriptorType(128);  //!< LATCH image descriptor
+		desc_to_compute = TDescriptorType(128);	 //!< LATCH image descriptor
 
 		// string temp_str = param2_edit_desc->text().toStdString();
 		// bool temp_bool = temp_str.compare("true") == 0;
@@ -1490,12 +1464,9 @@ void MainWindow::on_detector_button_clicked()
 	// if(file_path1.empty() || file_path2.empty())
 	{
 		if (currentInputIndex == 3 || currentInputIndex == 4 ||
-			currentInputIndex == 2)  // read files from folder for datasets
+			currentInputIndex == 2)	 // read files from folder for datasets
 		{
-			if (flag_read_files_bug)
-			{
-				readFilesFromFolder(2);
-			}
+			if (flag_read_files_bug) { readFilesFromFolder(2); }
 		}
 	}
 
@@ -1517,8 +1488,7 @@ void MainWindow::on_detector_button_clicked()
 
 	/// converting to color images to draw markers in correct color
 	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	if (temp1.channels() == 3)
-		cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	if (temp1.channels() == 3) cvtColor(cvImg1, temp1, CV_BGR2RGB);
 	else
 		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 
@@ -1531,7 +1501,7 @@ void MainWindow::on_detector_button_clicked()
 			temp1, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
 			CROSS_SIZE, CROSS_THICKNESS);
 	}
-	drawLineLSD(temp1, 0);  /// 0 means draw line on left image
+	drawLineLSD(temp1, 0);	/// 0 means draw line on left image
 
 	/// converting the cv::Mat to a QImage and changing the resolution of the
 	/// output images
@@ -1556,8 +1526,7 @@ void MainWindow::on_detector_button_clicked()
 		/// converting to color to draw coloured markers
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
-		if (temp2.channels() == 3)
-			cvtColor(cvImg2, temp2, CV_BGR2RGB);
+		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
 		else
 			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
@@ -1571,7 +1540,7 @@ void MainWindow::on_detector_button_clicked()
 				temp2, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
 				CROSS_SIZE, CROSS_THICKNESS);
 		}
-		drawLineLSD(temp2, 1);  // 1 means draw on right image
+		drawLineLSD(temp2, 1);	// 1 means draw on right image
 
 		QImage dest2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
@@ -1655,17 +1624,17 @@ void MainWindow::on_descriptor_button_clicked()
 		desc_to_compute = TDescriptorType(2);  //!< SURF descriptors
 	else if (descriptor_selected == 2)
 		desc_to_compute =
-			TDescriptorType(4);  //!< Intensity-domain spin image descriptor
+			TDescriptorType(4);	 //!< Intensity-domain spin image descriptor
 	else if (descriptor_selected == 3)
 		desc_to_compute = TDescriptorType(8);  //!< Polar image descriptor
 	else if (descriptor_selected == 4)
-		desc_to_compute = TDescriptorType(16);  //!< Log-Polar image descriptor
+		desc_to_compute = TDescriptorType(16);	//!< Log-Polar image descriptor
 	else if (descriptor_selected == 5)
-		desc_to_compute = TDescriptorType(32);  //!< ORB image descriptor
+		desc_to_compute = TDescriptorType(32);	//!< ORB image descriptor
 	else if (descriptor_selected == 6)
-		desc_to_compute = TDescriptorType(64);  //!< BLD image descriptor
+		desc_to_compute = TDescriptorType(64);	//!< BLD image descriptor
 	else if (descriptor_selected == 7)
-		desc_to_compute = TDescriptorType(128);  //!< LATCH image descriptor
+		desc_to_compute = TDescriptorType(128);	 //!< LATCH image descriptor
 
 	if (desc_to_compute != descAny) fext.options.patchSize = 0;
 
@@ -1777,7 +1746,7 @@ void MainWindow::on_browse_button_clicked()
 
 	file_path1 = inputFilePath->text().toStdString();
 	single_dataset_path = inputFilePath->text().toStdString();
-	if (currentInputIndex == 2)  // rawlog
+	if (currentInputIndex == 2)	 // rawlog
 	{
 		rawlogPath = inputFilePath->text().toStdString();
 		readRawlogFiles(rawlogPath);
@@ -1907,9 +1876,7 @@ void MainWindow::ReadInputFormat()
 	// numFeatures = numFeaturesLineEdit->text().toInt();
 
 	if (currentInputIndex == 0)
-	{
-		file_path1 = inputFilePath->text().toStdString();
-	}
+	{ file_path1 = inputFilePath->text().toStdString(); }
 	else if (currentInputIndex == 1)  // only read the single images if a single
 	// image or stereo image input is
 	// specified
@@ -1972,7 +1939,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		/// this loop simply pushes absolute paths for the left images
 		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
-			if (files.at(i).size() > 4)  // this removes the . and .. in linux
+			if (files.at(i).size() > 4)	 // this removes the . and .. in linux
 			// as all files will have size more
 			// than 4 .png .jpg etc.
 			{
@@ -1994,19 +1961,20 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		}  // end of for
 		sort(
 			files_fullpath2.begin(),
-			files_fullpath2.end());  // Use the start and end like this
+			files_fullpath2.end());	 // Use the start and end like this
 		file_path2 = files_fullpath2.at(current_imageIndex);
 	}
 	else if (
 		currentInputIndex == 3 || currentInputIndex == 4 ||
 		currentInputIndex ==
-			2)  // meaning stereo dataset or single image dataset
+			2)	// meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1.c_str());
-		while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
+		while ((pdir = readdir(dir)))
+			files.emplace_back(pdir->d_name);
 		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
-			if (files.at(i).size() > 4)  // this removes the . and .. in linux
+			if (files.at(i).size() > 4)	 // this removes the . and .. in linux
 			// as all files will have size more
 			// than 4 .png .jpg etc.
 			{
@@ -2017,7 +1985,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 	}
 	sort(
 		files_fullpath.begin(),
-		files_fullpath.end());  // Use the start and end like this
+		files_fullpath.end());	// Use the start and end like this
 	file_path1 = files_fullpath.at(current_imageIndex);
 
 	/// DO the following only if user selects option for providing a STEREO
@@ -2029,7 +1997,8 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		file_path2 = inputFilePath2->text().toStdString();
 
 		dir2 = opendir(file_path2.c_str());
-		while ((pdir2 = readdir(dir2))) files2.emplace_back(pdir2->d_name);
+		while ((pdir2 = readdir(dir2)))
+			files2.emplace_back(pdir2->d_name);
 		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
@@ -2042,7 +2011,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		}  // end of for
 		sort(
 			files_fullpath2.begin(),
-			files_fullpath2.end());  // Use the start and end like this
+			files_fullpath2.end());	 // Use the start and end like this
 		file_path2 = files_fullpath2.at(current_imageIndex);
 	}
 
@@ -2088,8 +2057,7 @@ void MainWindow::displayImagesWithoutDetector()
 	/// grayscale images
 	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
 	// cout << "dimensions " << temp1.dims << endl;
-	if (temp1.channels() == 3)
-		cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	if (temp1.channels() == 3) cvtColor(cvImg1, temp1, CV_BGR2RGB);
 	else
 		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 
@@ -2102,7 +2070,7 @@ void MainWindow::displayImagesWithoutDetector()
 			temp1, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
 			CROSS_SIZE, CROSS_THICKNESS);
 	}
-	drawLineLSD(temp1, 0);  // 0 means draw line on left image
+	drawLineLSD(temp1, 0);	// 0 means draw line on left image
 
 	QImage dest1 = QImage(
 		(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
@@ -2127,8 +2095,7 @@ void MainWindow::displayImagesWithoutDetector()
 		/// grayscale images
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
-		if (temp2.channels() == 3)
-			cvtColor(cvImg2, temp2, CV_BGR2RGB);
+		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
 		else
 			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
@@ -2141,7 +2108,7 @@ void MainWindow::displayImagesWithoutDetector()
 				temp2, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
 				CROSS_SIZE, CROSS_THICKNESS);
 		}
-		drawLineLSD(temp2, 0);  // 0 means draw line on left image
+		drawLineLSD(temp2, 0);	// 0 means draw line on left image
 
 		QImage dest2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
@@ -2190,8 +2157,7 @@ void MainWindow::on_sample_clicked()
 	cv::Mat cvImg1 = img1.asCvMatRef();
 
 	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	if (temp1.channels() == 3)
-		cvtColor(cvImg1, temp1, CV_BGR2RGB);
+	if (temp1.channels() == 3) cvtColor(cvImg1, temp1, CV_BGR2RGB);
 	else
 		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 
@@ -2210,8 +2176,7 @@ void MainWindow::on_sample_clicked()
 		cv::Mat cvImg2 = img2.asCvMatRef();
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
-		if (temp2.channels() == 3)
-			cvtColor(cvImg2, temp2, CV_BGR2RGB);
+		if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
 		else
 			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 		QImage disp2 = QImage(
@@ -2424,8 +2389,7 @@ void MainWindow::makeVisualOdomParamsVisible(bool flag)
  ************************************************************************************************/
 void MainWindow::onVisualOdomChecked(int state)
 {
-	if (visual_odom_enable->isChecked())
-		makeVisualOdomParamsVisible(true);
+	if (visual_odom_enable->isChecked()) makeVisualOdomParamsVisible(true);
 	else
 	{
 		makeVisualOdomParamsVisible(false);
@@ -2465,8 +2429,7 @@ void MainWindow::on_browse_calibration_clicked()
 void MainWindow::onTrackingEnabled(int state)
 {
 	ReadInputFormat();
-	if (tracking_enable->isChecked())
-		makeTrackerParamVisible(true);
+	if (tracking_enable->isChecked()) makeTrackerParamVisible(true);
 	else
 		makeTrackerParamVisible(false);
 
@@ -2494,14 +2457,15 @@ void MainWindow::onTrackingEnabled(int state)
 
 		if (currentInputIndex == 3 ||
 			currentInputIndex ==
-				4)  // meaning stereo dataset or single image dataset
+				4)	// meaning stereo dataset or single image dataset
 		{
 			dir = opendir(file_path_temp.c_str());
-			while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
+			while ((pdir = readdir(dir)))
+				files.emplace_back(pdir->d_name);
 
 			for (unsigned long i = 0, j = 0; i < files.size(); i++)
 			{
-				if (files.at(i).size() > 4)  // this removes the . and .. in
+				if (files.at(i).size() > 4)	 // this removes the . and .. in
 				// linux as all files will have
 				// size more than 4 .png .jpg etc.
 				{
@@ -2513,7 +2477,7 @@ void MainWindow::onTrackingEnabled(int state)
 		}
 		sort(
 			files_fullpath_tracking.begin(),
-			files_fullpath_tracking.end());  // Use the start and end like this
+			files_fullpath_tracking.end());	 // Use the start and end like this
 	}
 	else
 	{
@@ -2572,8 +2536,7 @@ Point MainWindow::trackKeyPoint(
 					temp_test_x > resolution_x || temp_test_y > resolution_y)
 					break;
 
-				response =
-					response +
+				response = response +
 					pow((cvImg_org_gray.at<int>(temp_org_x, temp_org_y) -
 						 cvImg_test_gray.at<int>(temp_test_x, temp_test_y)),
 						2);
@@ -2750,8 +2713,7 @@ void MainWindow::on_browseTraining_clicked()
 
 	/// 0 = single image; 1 = stereo image; 2 = rawlog file ; 3 = image dataset
 	/// folder
-	if (currentInputIndex == 3)
-		dialog.setFileMode(QFileDialog::Directory);
+	if (currentInputIndex == 3) dialog.setFileMode(QFileDialog::Directory);
 	else
 		return;
 
@@ -2775,10 +2737,7 @@ void MainWindow::on_browseTesting_clicked()
 
 	/// 0 = single image; 1 = stereo image; 2 = rawlog file ; 3 = image dataset
 	/// folder
-	if (currentInputIndex == 3)
-	{
-		dialog.setFileMode(QFileDialog::Directory);
-	}
+	if (currentInputIndex == 3) { dialog.setFileMode(QFileDialog::Directory); }
 	else
 		return;
 
@@ -2833,10 +2792,11 @@ void MainWindow::store_Training_TestingSets()
 			if (true)
 			{
 				dir = opendir(file_path_temp.c_str());
-				while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
+				while ((pdir = readdir(dir)))
+					files.emplace_back(pdir->d_name);
 				for (unsigned int i = 0, j = 0; i < files.size(); i++)
 				{
-					if (files.at(i).size() > 4)  // this removes the . and .. in
+					if (files.at(i).size() > 4)	 // this removes the . and .. in
 					// linux as all files will have
 					// size more than 4 .png .jpg
 					// etc.
@@ -2871,10 +2831,11 @@ void MainWindow::store_Training_TestingSets()
 			if (true)
 			{
 				dir = opendir(file_path_temp.c_str());
-				while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
+				while ((pdir = readdir(dir)))
+					files.emplace_back(pdir->d_name);
 				for (unsigned int i = 0, j = 0; i < files.size(); i++)
 				{
-					if (files.at(i).size() > 4)  // this removes the . and .. in
+					if (files.at(i).size() > 4)	 // this removes the . and .. in
 					// linux as all files will have
 					// size more than 4 .png .jpg
 					// etc.
@@ -2887,7 +2848,7 @@ void MainWindow::store_Training_TestingSets()
 			}
 			sort(
 				testing_files_paths.begin(),
-				testing_files_paths.end());  // Use the start and end like this
+				testing_files_paths.end());	 // Use the start and end like this
 			// displayVector(testing_files_paths);
 		}
 	}
@@ -2941,7 +2902,7 @@ void MainWindow::on_place_recog_clicked()
 	place_recog_image = new QLabel;
 	place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(
 		current_place_recog_index %
-		testing_files_paths.size())));  // replace this with initial
+		testing_files_paths.size())));	// replace this with initial
 	// image of select an image by
 	// specifying path
 
@@ -2991,7 +2952,7 @@ void MainWindow::on_place_recog_clicked_iterate()
 	place_recog_image = new QLabel;
 	place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(
 		current_place_recog_index %
-		testing_files_paths.size())));  // replace this with initial
+		testing_files_paths.size())));	// replace this with initial
 	// image of select an image by
 	// specifying path
 	QImage qscaled2 = place_recog_qimage.scaled(
@@ -3110,7 +3071,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	groupBox_images = new QGroupBox("Single Image");
 	image1 = new my_qlabel;
 	qimage1.load(
-		"../../apps/benchmarking-image-features/images/1.png");  // replace this
+		"../../apps/benchmarking-image-features/images/1.png");	 // replace this
 	// with initial
 	// image of
 	// select an
@@ -3123,7 +3084,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 
 	image2 = new QLabel;
 	qimage2.load(
-		"../../apps/benchmarking-image-features/images/2.png");  // replace this
+		"../../apps/benchmarking-image-features/images/2.png");	 // replace this
 	// with initial
 	// image of
 	// select an
@@ -3338,7 +3299,7 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	place_recog_label = new QLabel;
 
 	place_recog_qimage.load(
-		"../../apps/benchmarking-image-features/images/1.png");  // replace this
+		"../../apps/benchmarking-image-features/images/1.png");	 // replace this
 	// with initial
 	// image of
 	// select an
@@ -3593,13 +3554,14 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 
 	if (currentInputIndex == 3 ||
 		currentInputIndex ==
-			4)  // meaning stereo dataset or single image dataset
+			4)	// meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1_temp.c_str());
-		while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
+		while ((pdir = readdir(dir)))
+			files.emplace_back(pdir->d_name);
 		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
-			if (files.at(i).size() > 4)  // this removes the . and .. in linux
+			if (files.at(i).size() > 4)	 // this removes the . and .. in linux
 			// as all files will have size more
 			// than 4 .png .jpg etc.
 			{
@@ -3611,7 +3573,7 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 
 	sort(
 		files_fullpath.begin(),
-		files_fullpath.end());  // Use the start and end like this
+		files_fullpath.end());	// Use the start and end like this
 	long files_length = files_fullpath.size();
 
 	// repeatibility_threshold
@@ -3631,7 +3593,7 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 
 	// Clearing the features list is very important to avoid mixing subsequent
 	// button clicks output
-	CFeatureList temp_featsImage1;  //.clear();
+	CFeatureList temp_featsImage1;	//.clear();
 	CImage temp_img1;
 	int consecutive = 0;
 	temp_featsImage1.clear();
@@ -3657,10 +3619,7 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 				break;
 			}
 		}
-		if (repeatable)
-		{
-			repeatability++;
-		}
+		if (repeatable) { repeatability++; }
 		else
 		{
 			flag_consecutive = false;
@@ -3668,17 +3627,11 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 		if (flag_consecutive)
 		{
 			consecutive++;
-			if (consecutive > max_num)
-			{
-				max_num = consecutive;
-			}
+			if (consecutive > max_num) { max_num = consecutive; }
 		}
 		else
 		{
-			if (consecutive > max_num)
-			{
-				max_num = consecutive;
-			}
+			if (consecutive > max_num) { max_num = consecutive; }
 			consecutive = 0;
 		}
 	}
@@ -3715,13 +3668,14 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 
 	if (currentInputIndex == 3 ||
 		currentInputIndex ==
-			4)  // meaning stereo dataset or single image dataset
+			4)	// meaning stereo dataset or single image dataset
 	{
 		dir = opendir(file_path1_temp.c_str());
-		while ((pdir = readdir(dir))) files.emplace_back(pdir->d_name);
+		while ((pdir = readdir(dir)))
+			files.emplace_back(pdir->d_name);
 		for (unsigned int i = 0, j = 0; i < files.size(); i++)
 		{
-			if (files.at(i).size() > 4)  // this removes the . and .. in linux
+			if (files.at(i).size() > 4)	 // this removes the . and .. in linux
 			// as all files will have size more
 			// than 4 .png .jpg etc.
 			{
@@ -3739,10 +3693,11 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 
 	string file_path2_temp = inputHomogrpahyPath->text().toStdString();
 	if (currentInputIndex ==
-		3)  // meaning single image dataset for repeatability
+		3)	// meaning single image dataset for repeatability
 	{
 		dir2 = opendir(file_path2_temp.c_str());
-		while ((pdir2 = readdir(dir2))) files2.emplace_back(pdir2->d_name);
+		while ((pdir2 = readdir(dir2)))
+			files2.emplace_back(pdir2->d_name);
 		for (unsigned int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
@@ -3762,10 +3717,10 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 	/// Sorting happens here to sort the images in sequential order
 	sort(
 		files_fullpath.begin(),
-		files_fullpath.end());  // Use the start and end like this
+		files_fullpath.end());	// Use the start and end like this
 	sort(
 		files_fullpath2.begin(),
-		files_fullpath2.end());  // Use the start and end like this
+		files_fullpath2.end());	 // Use the start and end like this
 
 	/// Now reading each of the homographies and storing them in appropriate
 	/// variables
@@ -3799,7 +3754,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			for (int j = 0; j < 3; j++) cout << homographies[k][i][j] << " ";
+			for (int j = 0; j < 3; j++)
+				cout << homographies[k][i][j] << " ";
 		}
 		cout << endl;
 	}
@@ -3822,7 +3778,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 
 	// Clearing the features list is very important to avoid mixing subsequent
 	// button clicks output
-	CFeatureList temp_featsImage1;  //.clear();
+	CFeatureList temp_featsImage1;	//.clear();
 	CImage temp_img1;
 	int consecutive = 0;
 	temp_featsImage1.clear();
@@ -3831,7 +3787,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 
 	/// start checking the repeatability based on the homographies stored in the
 	/// homograph
-	for (int i = 1; i < files_length; i++)  // i starts from 1 as we do not want
+	for (int i = 1; i < files_length; i++)	// i starts from 1 as we do not want
 	// to find the repeatability for the
 	// first image as that is where the
 	// key-point comes from
@@ -3847,11 +3803,11 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		// i-1 because 5 homographies w.r.t to the first reference frame
 
 		double temp_x_after = homographies[i - 1][0][0] * temp_x_before +
-							  homographies[i - 1][0][1] * temp_y_before +
-							  homographies[i - 1][0][2];
+			homographies[i - 1][0][1] * temp_y_before +
+			homographies[i - 1][0][2];
 		double temp_y_after = homographies[i - 1][1][0] * temp_x_before +
-							  homographies[i - 1][1][1] * temp_y_before +
-							  homographies[i - 1][1][2];
+			homographies[i - 1][1][1] * temp_y_before +
+			homographies[i - 1][1][2];
 
 		temp_featsImage1.clear();
 		temp_img1.loadFromFile(files_fullpath.at(i));
@@ -3872,8 +3828,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 			}
 		}
 
-		if (repeatable)
-			repeatability++;
+		if (repeatable) repeatability++;
 		else
 			flag_consecutive = false;
 
@@ -3890,9 +3845,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		}
 	}
 
-	double percent_repeat =
-		(double)repeatability / (double)(files_length - 1) *
-		100.00;  // files_length-1 because the first file is referene frame
+	double percent_repeat = (double)repeatability / (double)(files_length - 1) *
+		100.00;	 // files_length-1 because the first file is referene frame
 
 	stringstream ss;
 	ss << "<br/> Repeatability of selected keypoint (Homography Based) "
@@ -3915,7 +3869,7 @@ string MainWindow::falsePositivesNegatives()
 {
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 &&
-		 rawlog_type == 1))  // implying stereo images or stereo image dataset
+		 rawlog_type == 1))	 // implying stereo images or stereo image dataset
 	{
 		// compute homography from img1 and img2
 		// For this case, I was thinking again in the homography approach. If
@@ -3940,10 +3894,7 @@ string MainWindow::falsePositivesNegatives()
 
 			bool isInNeighborhood = checkIfSamePoint(
 				initial_x, initial_y, test_x, test_y, false_pos_neg_threshold);
-			if (!isInNeighborhood)
-			{
-				number_false_positives++;
-			}
+			if (!isInNeighborhood) { number_false_positives++; }
 
 			// now checking false negatives
 			// check if a keypoint match actually exist around the area in image
@@ -4136,9 +4087,7 @@ void MainWindow::Mouse_Pressed()
 		images_static = images1[pos];
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
-		{
-			images_static2 = images2[pos];
-		}
+		{ images_static2 = images2[pos]; }
 
 		/// this is done to fix the overlaying of labels on top of each other.
 		if (flag_descriptor_match) featureMatched->setVisible(false);
@@ -4158,8 +4107,7 @@ void MainWindow::Mouse_Pressed()
 			// featsImage2.saveToTextFile("./KeyPoints2.txt");
 			cv::Mat cvImg2 = img2.asCvMatRef();
 			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-			if (temp2.channels() == 3)
-				cvtColor(cvImg2, temp2, CV_BGR2RGB);
+			if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
 			else
 				cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
@@ -4173,7 +4121,7 @@ void MainWindow::Mouse_Pressed()
 					temp2, Point(temp_x, temp_y), Scalar(0, 255, 0),
 					MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 			}
-			drawLineLSD(temp2, 1);  // 1 means right image
+			drawLineLSD(temp2, 1);	// 1 means right image
 			drawMarker(
 				temp2,
 				Point(
@@ -4203,7 +4151,7 @@ void MainWindow::Mouse_Pressed()
 				MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 		}
 
-		drawLineLSD(temp_desc_ref, 0);  // 1 means right image
+		drawLineLSD(temp_desc_ref, 0);	// 1 means right image
 		drawMarker(
 			temp_desc_ref, Point(temp_x, temp_y), Scalar(255, 0, 0),
 			MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
@@ -4239,7 +4187,7 @@ void MainWindow::Mouse_Pressed()
 			(currentInputIndex == 2 && rawlog_type == 1))
 			desc_VisualizeGrid->addWidget(
 				featureMatched, 1, 0, 1,
-				1);  // add the label telling about the feature matching
+				1);	 // add the label telling about the feature matching
 	}
 	else if (
 		descriptor_selected == 0 || descriptor_selected == 1 ||
@@ -4271,8 +4219,7 @@ void MainWindow::Mouse_Pressed()
 			/// converting to colour image to show markers in color for
 			/// grayscale images too
 			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-			if (temp2.channels() == 3)
-				cvtColor(cvImg2, temp2, CV_BGR2RGB);
+			if (temp2.channels() == 3) cvtColor(cvImg2, temp2, CV_BGR2RGB);
 			else
 				cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
@@ -4285,7 +4232,7 @@ void MainWindow::Mouse_Pressed()
 					temp2, Point(temp_x, temp_y), Scalar(0, 255, 0),
 					MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 			}
-			drawLineLSD(temp2, 1);  // 1 means draw on right image
+			drawLineLSD(temp2, 1);	// 1 means draw on right image
 			drawMarker(
 				temp2,
 				Point(
@@ -4316,7 +4263,7 @@ void MainWindow::Mouse_Pressed()
 				temp_desc_ref, Point(temp_x, temp_y), Scalar(0, 255, 0),
 				MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 		}
-		drawLineLSD(temp_desc_ref, 0);  // 1 means right image
+		drawLineLSD(temp_desc_ref, 0);	// 1 means right image
 		drawMarker(
 			temp_desc_ref, Point(temp_x, temp_y), Scalar(255, 0, 0),
 			MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
@@ -4346,7 +4293,7 @@ void MainWindow::Mouse_Pressed()
 			(currentInputIndex == 2 && rawlog_type == 1))
 			desc_VisualizeGrid->addWidget(
 				featureMatched, 1, 0, 1,
-				1);  // add the label telling about the feature matching
+				1);	 // add the label telling about the feature matching
 	}
 
 	QImage dest1 = QImage(

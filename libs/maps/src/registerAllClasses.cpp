@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"
-
+//
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
 #include <mrpt/maps.h>

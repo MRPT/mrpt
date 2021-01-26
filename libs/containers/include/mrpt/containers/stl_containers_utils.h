@@ -79,7 +79,8 @@ template <class T>
 std::string getSTLContainerAsString(const T& t)
 {
 	std::stringstream ss;
-	for (auto& e : t) ss << e << ", ";
+	for (auto& e : t)
+		ss << e << ", ";
 	return ss.str();
 }
 /**\brief Print the given vector t.

@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hmt_slam_guiMain.h"
-
-#include <wx/msgdlg.h>
-
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
+#include <wx/msgdlg.h>
+
 #include <memory>
+
+#include "hmt_slam_guiMain.h"
 
 using namespace std;
 using namespace mrpt;
@@ -52,15 +52,9 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 
 					switch (msg->opcode)
 					{
-						case OP_QUIT_THREAD:
-							end = true;
-							break;
-						case OP_START_SLAM:
-							is_running_slam = true;
-							break;
-						case OP_PAUSE_SLAM:
-							is_running_slam = false;
-							break;
+						case OP_QUIT_THREAD: end = true; break;
+						case OP_START_SLAM: is_running_slam = true; break;
+						case OP_PAUSE_SLAM: is_running_slam = false; break;
 
 						default:
 							throw std::runtime_error("Unknown OPCODE!");
@@ -68,7 +62,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					}
 					delete msg;
 				}
-				if (end) break;  // end thread
+				if (end) break;	 // end thread
 
 				// If we are running SLAM, read actions/observations and feed
 				// them into the SLAM engine:
@@ -83,7 +77,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					// std::string(edRestParams->GetValue().mb_str()) );
 					const string fil = string(
 						this->edInputRawlog->GetValue()
-							.mb_str());  // cfg.read_string("HMT-SLAM","rawlog_file","");
+							.mb_str());	 // cfg.read_string("HMT-SLAM","rawlog_file","");
 					if (!mrpt::system::fileExists(fil))
 					{
 						is_running_slam = false;
@@ -97,7 +91,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 							mrpt::system::LVL_INFO, "RAWLOG FILE: \n%s\n",
 							fil.c_str());
 						OUT_DIR =
-							"HMT_SLAM_OUTPUT";  // cfg.read_string("HMT-SLAM","LOG_OUTPUT_DIR",
+							"HMT_SLAM_OUTPUT";	// cfg.read_string("HMT-SLAM","LOG_OUTPUT_DIR",
 						// "HMT_SLAM_OUTPUT");
 
 						// Set relative path for externally-stored images in

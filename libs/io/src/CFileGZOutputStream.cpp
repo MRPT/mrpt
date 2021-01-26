@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-
+#include "io-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <cerrno>
-#include <cstring>  // strerror
-
 #include <zlib.h>
+
+#include <cerrno>
+#include <cstring>	// strerror
 
 using namespace mrpt::io;
 using namespace std;
@@ -75,19 +75,13 @@ size_t CFileGZOutputStream::Read(void*, size_t)
 
 size_t CFileGZOutputStream::Write(const void* Buffer, size_t Count)
 {
-	if (!m_f->f)
-	{
-		THROW_EXCEPTION("File is not open.");
-	}
+	if (!m_f->f) { THROW_EXCEPTION("File is not open."); }
 	return gzwrite(m_f->f, const_cast<void*>(Buffer), Count);
 }
 
 uint64_t CFileGZOutputStream::getPosition() const
 {
-	if (!m_f->f)
-	{
-		THROW_EXCEPTION("File is not open.");
-	}
+	if (!m_f->f) { THROW_EXCEPTION("File is not open."); }
 	return gztell(m_f->f);
 }
 

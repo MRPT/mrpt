@@ -43,7 +43,8 @@ typename MAT::Scalar mahalanobisDistance2(
 #endif
 	const size_t N = X.size();
 	CVectorDynamic<typename MAT::Scalar> X_MU(N);
-	for (size_t i = 0; i < N; i++) X_MU[i] = X[i] - MU[i];
+	for (size_t i = 0; i < N; i++)
+		X_MU[i] = X[i] - MU[i];
 	auto z = COV.llt_solve(X_MU);
 	return z.dot(z);
 	MRPT_END
@@ -141,13 +142,13 @@ T productIntegralTwoGaussians(
 	ASSERT_(vector_dim >= 1);
 
 	CMatrixDynamic<T> C = COV1;
-	C += COV2;  // Sum of covs:
+	C += COV2;	// Sum of covs:
 	const T cov_det = C.det();
 	CMatrixDynamic<T> C_inv;
 	C.inverse_LLt(C_inv);
 
 	return std::pow(M_2PI, -0.5 * vector_dim) * (1.0 / std::sqrt(cov_det)) *
-		   exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
+		exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
 }
 
 /** Computes the integral of the product of two Gaussians, with means separated
@@ -163,13 +164,13 @@ T productIntegralTwoGaussians(
 	ASSERT_(mean_diffs.size() == DIM);
 
 	CMatrixFixed<T, DIM, DIM> C = COV1;
-	C += COV2;  // Sum of covs:
+	C += COV2;	// Sum of covs:
 	const T cov_det = C.det();
 	CMatrixFixed<T, DIM, DIM> C_inv(mrpt::math::UNINITIALIZED_MATRIX);
 	C.inverse_LLt(C_inv);
 
 	return std::pow(M_2PI, -0.5 * DIM) * (1.0 / std::sqrt(cov_det)) *
-		   exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
+		exp(-0.5 * mean_diffs.multiply_HCHt_scalar(C_inv));
 }
 
 /** Computes both, the integral of the product of two Gaussians and their square
@@ -185,7 +186,7 @@ void productIntegralAndMahalanobisTwoGaussians(
 	ASSERT_(vector_dim >= 1);
 
 	MATLIKE1 C = COV1;
-	C += COV2;  // Sum of covs:
+	C += COV2;	// Sum of covs:
 	if (CROSS_COV12)
 	{
 		C -= *CROSS_COV12;
@@ -197,7 +198,7 @@ void productIntegralAndMahalanobisTwoGaussians(
 
 	maha2_out = mrpt::math::multiply_HCHt_scalar(mean_diffs, C_inv);
 	intprod_out = std::pow(M_2PI, -0.5 * vector_dim) *
-				  (1.0 / std::sqrt(cov_det)) * exp(-0.5 * maha2_out);
+		(1.0 / std::sqrt(cov_det)) * exp(-0.5 * maha2_out);
 }
 
 /** Computes both, the logarithm of the PDF and the square Mahalanobis distance
@@ -216,10 +217,10 @@ void mahalanobisDistance2AndLogPDF(
 	const MATRIXLIKE C_inv = cov.inverse_LLt();
 	maha2_out = multiply_HtCH_scalar(diff_mean, C_inv);
 	log_pdf_out = static_cast<typename MATRIXLIKE::Scalar>(-0.5) *
-				  (maha2_out +
-				   static_cast<typename MATRIXLIKE::Scalar>(cov.cols()) *
-					   ::log(static_cast<typename MATRIXLIKE::Scalar>(M_2PI)) +
-				   ::log(cov.det()));
+		(maha2_out +
+		 static_cast<typename MATRIXLIKE::Scalar>(cov.cols()) *
+			 ::log(static_cast<typename MATRIXLIKE::Scalar>(M_2PI)) +
+		 ::log(cov.det()));
 	MRPT_END
 }
 
@@ -258,7 +259,7 @@ template <
 	class VECTOR_OF_VECTORS, class MATRIXLIKE, class VECTORLIKE,
 	class VECTORLIKE2, class VECTORLIKE3>
 inline void
-	covariancesAndMeanWeighted(  // Done inline to speed-up the special case
+	covariancesAndMeanWeighted(	 // Done inline to speed-up the special case
 								 // expanded in covariancesAndMean() below.
 		const VECTOR_OF_VECTORS& elements, MATRIXLIKE& covariances,
 		VECTORLIKE& means, const VECTORLIKE2* weights_mean,
@@ -274,9 +275,7 @@ inline void
 	const size_t nElms = elements.size();
 	const T NORM = 1.0 / nElms;
 	if (weights_mean)
-	{
-		ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms));
-	}
+	{ ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms)); }
 	// The mean goes first:
 	for (size_t i = 0; i < DIM; i++)
 	{
@@ -290,7 +289,8 @@ inline void
 			}
 			else
 			{
-				for (size_t j = 0; j < nElms; j++) accum += elements[j][i];
+				for (size_t j = 0; j < nElms; j++)
+					accum += elements[j][i];
 				accum *= NORM;
 			}
 		}
@@ -316,8 +316,8 @@ inline void
 					Waccum_R += w;
 				}
 			}
-			if (Waccum_L > 0) accum_L /= Waccum_L;  // [0,2pi]
-			if (Waccum_R > 0) accum_R /= Waccum_R;  // [-pi,pi]
+			if (Waccum_L > 0) accum_L /= Waccum_L;	// [0,2pi]
+			if (Waccum_R > 0) accum_R /= Waccum_R;	// [-pi,pi]
 			if (accum_L > M_PI)
 				accum_L -= M_2PI;  // Left side to [-pi,pi] again:
 			accum =
@@ -328,7 +328,7 @@ inline void
 	}
 	// Now the covariance:
 	for (size_t i = 0; i < DIM; i++)
-		for (size_t j = 0; j <= i; j++)  // Only 1/2 of the matrix
+		for (size_t j = 0; j <= i; j++)	 // Only 1/2 of the matrix
 		{
 			typename MATRIXLIKE::Scalar elem = 0;
 			if (weights_cov)
@@ -342,7 +342,7 @@ inline void
 						elem += (*weights_cov)[k] * Ai * Aj;
 					else
 						elem += (*weights_cov)[k] * mrpt::math::wrapToPi(Ai) *
-								mrpt::math::wrapToPi(Aj);
+							mrpt::math::wrapToPi(Aj);
 				}
 			}
 			else
@@ -540,7 +540,7 @@ double averageWrap2Pi(const CVectorDouble& angles);
 double averageLogLikelihood(
 	const CVectorDouble& logWeights, const CVectorDouble& logLikelihoods);
 
-/**  @} */  // end of grouping container_ops_grp
+/**  @} */	// end of grouping container_ops_grp
 
 }  // namespace math
 }  // namespace mrpt

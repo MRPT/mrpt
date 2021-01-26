@@ -217,7 +217,7 @@ void TestOpenGLObjects()
 
 	// CEllipsoid3D
 	{
-		const double cov3d_dat[] = {0.9,  0.7,  -0.4, 0.7, 1.6,
+		const double cov3d_dat[] = {0.9,  0.7,	-0.4, 0.7, 1.6,
 									-0.6, -0.4, -0.6, 1.5};
 		const double cov2d_dat[] = {0.9, 0.7, 0.7, 1.6};
 		mrpt::math::CMatrixDouble22 cov2d(cov2d_dat);
@@ -314,8 +314,8 @@ void TestOpenGLObjects()
 		const double rho_mean = 0.5 * (1. / min_dist + 1. / max_dist);
 		const double rho_std = (1. / 6.) * (1. / min_dist - 1. / max_dist);
 
-		const double cov_params_dat[] = {square(rho_std), 0, 0,
-										 square(2.0_deg)};
+		const double cov_params_dat[] = {
+			square(rho_std), 0, 0, square(2.0_deg)};
 		const double mean_params_dat[] = {rho_mean, 70.0_deg};
 		mrpt::math::CMatrixFixed<double, 2, 2> cov_params(cov_params_dat);
 		mrpt::math::CMatrixFixed<double, 2, 1> mean_params(mean_params_dat);
@@ -414,11 +414,9 @@ void TestOpenGLObjects()
 				const unsigned int vert_ind = v + u * (rows + 1);
 
 				vert_coords[3 * vert_ind] = (2.f - 0.01f * u) *
-											(2.f + cos(0.01f * M_PI * v)) *
-											cos(0.01f * M_PI * u);
+					(2.f + cos(0.01f * M_PI * v)) * cos(0.01f * M_PI * u);
 				vert_coords[3 * vert_ind + 1] = (2.f - 0.01f * u) *
-												(2.f + cos(0.01f * M_PI * v)) *
-												sin(0.01f * M_PI * u);
+					(2.f + cos(0.01f * M_PI * v)) * sin(0.01f * M_PI * u);
 				vert_coords[3 * vert_ind + 2] =
 					3.f * 0.01f * u + (2.f - 0.01f * u) * sin(0.01f * M_PI * v);
 			}
@@ -452,7 +450,7 @@ void TestOpenGLObjects()
 				Z(r, c) = sin(0.05 * (c + r) - 0.5) * cos(0.9 - 0.03 * r);
 
 		const std::string texture_file = mrpt::system::getShareMRPTDir() +
-										 "datasets/sample-texture-terrain.jpg"s;
+			"datasets/sample-texture-terrain.jpg"s;
 
 		mrpt::img::CImage im;
 
@@ -713,7 +711,7 @@ void TestOpenGLObjects()
 			const unsigned int num = 20;
 			const float scale = 0.8 * STEP_X / num;
 			auto obj = opengl::CVectorField3D::Create();
-			obj->setLocation(off_x, -0.5 * scale * num, 0);  //
+			obj->setLocation(off_x, -0.5 * scale * num, 0);	 //
 
 			CMatrixFloat x(num, num), y(num, num), z(num, num);
 			CMatrixFloat vx(num, num), vy(num, num), vz(num, num);
@@ -971,7 +969,7 @@ void TestOpenGLObjects()
 	// Add image-mode viewport:
 	{
 		const std::string img_file = mrpt::system::getShareMRPTDir() +
-									 "datasets/stereo-calib/0_left.jpg"s;
+			"datasets/stereo-calib/0_left.jpg"s;
 
 		mrpt::img::CImage im;
 		if (im.loadFromFile(img_file))

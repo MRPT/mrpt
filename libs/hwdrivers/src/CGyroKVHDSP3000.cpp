@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 #include <mrpt/obs/CObservationIMU.h>
 
@@ -74,10 +74,7 @@ void CGyroKVHDSP3000::doProcess()
 			break;
 	}
 
-	if (!m_firstInteration)
-	{
-		appendObservation(observationGyro);
-	}
+	if (!m_firstInteration) { appendObservation(observationGyro); }
 	else
 		m_firstInteration = false;
 }
@@ -145,14 +142,10 @@ void CGyroKVHDSP3000::changeMode(GYRO_MODE _newMode)
 	char commande[3];
 	switch (m_mode)
 	{
-		case RATE:
-			commande[0] = 'R';
-			break;
-		case INTEGRATED_ANGLE:
-			commande[0] = 'P';
-			break;
+		case RATE: commande[0] = 'R'; break;
+		case INTEGRATED_ANGLE: commande[0] = 'P'; break;
 		case INCREMENTAL_ANGLE:
-			commande[0] = 'A';  // incremental.
+			commande[0] = 'A';	// incremental.
 			break;
 	}
 	commande[1] = 0x0A;
@@ -160,9 +153,7 @@ void CGyroKVHDSP3000::changeMode(GYRO_MODE _newMode)
 	// we send the command four times to be sure that the command will be
 	// interpreted by the sensor.
 	if (m_serialPort->Write(commande, 3 * sizeof(char)) <= 0)
-	{
-		THROW_EXCEPTION("can't write on serial port");
-	}
+	{ THROW_EXCEPTION("can't write on serial port"); }
 }
 
 void CGyroKVHDSP3000::resetIncrementalAngle()
@@ -174,8 +165,6 @@ void CGyroKVHDSP3000::resetIncrementalAngle()
 		commande[1] = '\n';
 		commande[2] = 0;
 		if (m_serialPort->Write(commande, 3 * sizeof(char)) <= 0)
-		{
-			THROW_EXCEPTION("can't write on serial port");
-		}
+		{ THROW_EXCEPTION("can't write on serial port"); }
 	}
 }

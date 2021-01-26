@@ -71,7 +71,7 @@ template <
 bool is_aligned(T ptr)
 {
 	return alignment == 0 ||
-		   reinterpret_cast<std::size_t>(ptr) % alignment == 0;
+		reinterpret_cast<std::size_t>(ptr) % alignment == 0;
 }
 /** @} */
 

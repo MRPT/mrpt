@@ -38,7 +38,7 @@ class CObservationPointCloud : public CObservation
 	enum class ExternalStorageFormat : uint8_t
 	{
 		None = 0,  //!< is always stored in memory
-		MRPT_Serialization,  //!< Uses mrpt-serialization binary file
+		MRPT_Serialization,	 //!< Uses mrpt-serialization binary file
 		KittiBinFile,  //!< Uses Kitti .bin file format
 		PlainTextFile  //!< Plain text, each line has "x y z [i]" coords
 	};
@@ -92,6 +92,6 @@ class CObservationPointCloud : public CObservation
 	}
 	/** @} */
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

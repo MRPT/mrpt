@@ -15,13 +15,12 @@
 //  Started: JLBC @ Feb-2016
 // ===========================================================================
 
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/3rdparty/tclap/CmdLine.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

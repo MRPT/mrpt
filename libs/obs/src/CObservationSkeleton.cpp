@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationSkeleton.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <iostream>
 
 using namespace mrpt::obs;
@@ -77,14 +78,10 @@ void CObservationSkeleton::serializeFrom(
 
 			in >> sensorLabel;
 			in >> timestamp;
-			if (version >= 2)
-			{
-				in >> sensorPose;
-			}
+			if (version >= 2) { in >> sensorPose; }
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -100,8 +97,8 @@ void CObservationSkeleton::getDescriptionAsText(std::ostream& o) const
 	// ----------------------------------------------------------------------
 	o << endl << "Joint Positions (x, y, z) [mm] -- confidence" << endl;
 
-#define PRINT_JOINT(_J)                                                       \
-	cout << "\t" << #_J << ":\t(" << this->_J.x << ", " << this->_J.y << ", " \
+#define PRINT_JOINT(_J)                                                        \
+	cout << "\t" << #_J << ":\t(" << this->_J.x << ", " << this->_J.y << ", "  \
 		 << this->_J.z << ") -- " << this->_J.conf << endl;
 
 	PRINT_JOINT(head)

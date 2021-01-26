@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -31,11 +31,8 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
 
 	switch (version)
 	{
-		case 0:
-			in >> diffuse >> ambient >> specular >> direction;
-			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		case 0: in >> diffuse >> ambient >> specular >> direction; break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

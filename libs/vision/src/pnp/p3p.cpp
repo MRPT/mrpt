@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <cmath>
 #include <cstring>
 #include <iostream>
-#include "vision-precomp.h"  // Precompiled headers
 
 #include "p3p.h"
 #include "polynom_solver.h"
@@ -134,7 +135,8 @@ bool mrpt::vision::pnp::p3p::solve(
 
 	for (int i = 0; i < 3; i++)
 	{
-		for (int j = 0; j < 3; j++) R[i][j] = Rs[ns][i][j];
+		for (int j = 0; j < 3; j++)
+			R[i][j] = Rs[ns][i][j];
 		t[i] = ts[ns][i];
 	}
 
@@ -259,7 +261,7 @@ int mrpt::vision::pnp::p3p::solve_for_lengths(
 	double B =
 		q * (-2 * (ab + a2 + 1 - b) + r2 * ab + a_4) + pr * (b - b2 + ab);
 	double C = q2 + b2 * (r2 + p2 - 2) - b * (p2 + pqr) - ab * (r2 + pqr) +
-			   (a2 - a_2) * (2 + q2) + 2;
+		(a2 - a_2) * (2 + q2) + 2;
 	double D =
 		pr * (ab - b2 + b) + q * ((p2 - 2) * b + 2 * (ab - a2) + a_4 - 2);
 	double E = 1 + 2 * (b - a - ab) + b2 - b * p2 + a2;
@@ -290,24 +292,25 @@ int mrpt::vision::pnp::p3p::solve_for_lengths(
 
 		double x2 = x * x;
 
-		double b1 =
-			((1 - a - b) * x2 + (q * a - q) * x + 1 - a + b) *
+		double b1 = ((1 - a - b) * x2 + (q * a - q) * x + 1 - a + b) *
 			(((r3 * (a2 + ab * (2 - r2) - a_2 + b2 - 2 * b + 1)) * x +
 
 			  (r3q * (2 * (b - a2) + a_4 + ab * (r2 - 2) - 2) +
 			   pr2 * (1 + a2 + 2 * (ab - a - b) + r2 * (b - b2) + b2))) *
 				 x2 +
 
-			 (r3 * (q2 * (1 - 2 * a + a2) + r2 * (b2 - ab) - a_4 +
-					2 * (a2 - b2) + 2) +
+			 (r3 *
+				  (q2 * (1 - 2 * a + a2) + r2 * (b2 - ab) - a_4 +
+				   2 * (a2 - b2) + 2) +
 			  r * p2 * (b2 + 2 * (ab - b - a) + 1 + a2) +
 			  pr2 * q * (a_4 + 2 * (b - ab - a2) - 2 - r2 * b)) *
 				 x +
 
 			 2 * r3q * (a_2 - b - a2 + ab - 1) +
 			 pr2 * (q2 - a_4 + 2 * (a2 - b2) + r2 * b + q2 * (a2 - a_2) + 2) +
-			 p2 * (p * (2 * (ab - a - b) + a2 + b2 + 1) +
-				   2 * q * r * (b + a_2 - a2 - ab - 1)));
+			 p2 *
+				 (p * (2 * (ab - a - b) + a2 + b2 + 1) +
+				  2 * q * r * (b + a_2 - a2 - ab - 1)));
 
 		// Check reality condition
 		if (b1 <= 0) continue;
@@ -382,7 +385,8 @@ bool mrpt::vision::pnp::p3p::align(
 
 	// Quaternion:
 	double q[4];
-	for (int i = 0; i < 4; i++) q[i] = U[i * 4 + i_ev];
+	for (int i = 0; i < 4; i++)
+		q[i] = U[i * 4 + i_ev];
 
 	double q02 = q[0] * q[0], q12 = q[1] * q[1], q22 = q[2] * q[2],
 		   q32 = q[3] * q[3];
@@ -403,8 +407,9 @@ bool mrpt::vision::pnp::p3p::align(
 	R[2][2] = q02 + q32 - q12 - q22;
 
 	for (int i = 0; i < 3; i++)
-		T[i] = C_end[i] - (R[i][0] * C_start[0] + R[i][1] * C_start[1] +
-						   R[i][2] * C_start[2]);
+		T[i] = C_end[i] -
+			(R[i][0] * C_start[0] + R[i][1] * C_start[1] +
+			 R[i][2] * C_start[2]);
 
 	return true;
 }
@@ -427,7 +432,7 @@ bool mrpt::vision::pnp::p3p::jacobi_4x4(double* A, double* D, double* U)
 	for (int iter = 0; iter < 50; iter++)
 	{
 		double sum = fabs(A[1]) + fabs(A[2]) + fabs(A[3]) + fabs(A[6]) +
-					 fabs(A[7]) + fabs(A[11]);
+			fabs(A[7]) + fabs(A[11]);
 
 		if (sum == 0.0) return true;
 
@@ -446,8 +451,7 @@ bool mrpt::vision::pnp::p3p::jacobi_4x4(double* A, double* D, double* U)
 				else if (fabs(Aij) > tresh)
 				{
 					double hh = D[j] - D[i], t;
-					if (fabs(hh) + eps_machine == fabs(hh))
-						t = Aij / hh;
+					if (fabs(hh) + eps_machine == fabs(hh)) t = Aij / hh;
 					else
 					{
 						double theta = 0.5 * hh / Aij;
@@ -494,7 +498,8 @@ bool mrpt::vision::pnp::p3p::jacobi_4x4(double* A, double* D, double* U)
 			}
 		}
 
-		for (int i = 0; i < 4; i++) B[i] += Z[i];
+		for (int i = 0; i < 4; i++)
+			B[i] += Z[i];
 		memcpy(D, B, 4 * sizeof(double));
 		memset(Z, 0, 4 * sizeof(double));
 	}

@@ -7,14 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -148,7 +149,7 @@ void CMeshFast::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_textureImage;
 	out << m_isImage;
 	out << xMin << xMax << yMin << yMax;
-	out << X << Y << Z;  // We don't need to serialize C, it's computed
+	out << X << Y << Z;	 // We don't need to serialize C, it's computed
 	out << m_enableTransparency;
 	out << m_colorFromZ;
 	out << int16_t(m_colorMap);
@@ -186,8 +187,7 @@ void CMeshFast::serializeFrom(
 			pointsUpToDate = false;
 			break;
 
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

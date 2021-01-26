@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
+//
 
 // ----------------------------------------------------------------------------------------
 // For the theory behind this implementation, see the technical report in:
@@ -28,6 +29,7 @@
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::slam;
@@ -69,7 +71,7 @@ void CRangeBearingKFSLAM::reset()
 	// -----------------------
 	// INIT KF STATE
 	m_xkk.assign(get_vehicle_size(), 0);  // State: 6D pose (x,y,z)=(0,0,0)
-	m_xkk[3] = 1.0;  // (qr,qx,qy,qz)=(1,0,0,0)
+	m_xkk[3] = 1.0;	 // (qr,qx,qy,qz)=(1,0,0,0)
 
 	// Initial cov:  nullptr diagonal -> perfect knowledge.
 	m_pkk.setSize(get_vehicle_size(), get_vehicle_size());
@@ -210,9 +212,7 @@ void CRangeBearingKFSLAM::processActionObservation(
 	CPose3DPDFGaussian::Ptr auxPosePDF = CPose3DPDFGaussian::Create(q);
 
 	if (options.create_simplemap)
-	{
-		m_SFs.insert(CPose3DPDF::Ptr(auxPosePDF), SF);
-	}
+	{ m_SFs.insert(CPose3DPDF::Ptr(auxPosePDF), SF); }
 
 	// =============================================================
 	//  UPDATE THE PARTITION GRAPH EXPERIMENT
@@ -268,9 +268,7 @@ CPose3DQuat CRangeBearingKFSLAM::getIncrementFromOdometry() const
 	CActionRobotMovement3D::Ptr actMov3D =
 		m_action->getActionByClass<CActionRobotMovement3D>();
 	if (actMov3D && !options.force_ignore_odometry)
-	{
-		return CPose3DQuat(actMov3D->poseChange.mean);
-	}
+	{ return CPose3DQuat(actMov3D->poseChange.mean); }
 	else if (actMov2D && !options.force_ignore_odometry)
 	{
 		CPose2D estMovMean;
@@ -309,9 +307,7 @@ void CRangeBearingKFSLAM::OnTransitionModel(
 	// otherwise, we are imposing a lower bound to the best uncertainty from now
 	// on:
 	if (size_t(m_xkk.size()) == get_vehicle_size())
-	{
-		out_skipPrediction = true;
-	}
+	{ out_skipPrediction = true; }
 
 	// Current pose: copy xyz+quat
 	CPose3DQuat robotPose = getCurrentRobotPoseMean();
@@ -330,7 +326,8 @@ void CRangeBearingKFSLAM::OnTransitionModel(
 	robotPose += odoIncrement;
 
 	// Output:
-	for (size_t i = 0; i < xv.SizeAtCompileTime; i++) xv[i] = robotPose[i];
+	for (size_t i = 0; i < xv.SizeAtCompileTime; i++)
+		xv[i] = robotPose[i];
 
 	MRPT_END
 }
@@ -352,9 +349,9 @@ void CRangeBearingKFSLAM::OnTransitionJacobian(KFMatrix_VxV& F) const
 	CMatrixDouble77 df_du(UNINITIALIZED_MATRIX);
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
-		robotPose,  // x
+		robotPose,	// x
 		theIncr,  // u
-		F,  // df_dx,
+		F,	// df_dx,
 		df_du);
 
 	MRPT_END
@@ -477,8 +474,8 @@ void CRangeBearingKFSLAM::OnObservationModel(
 		// ---------------------------------------------------
 		sensorPoseAbs.sphericalCoordinates(
 			mapEst,
-			out_predictions[i][0],  // range
-			out_predictions[i][1],  // yaw
+			out_predictions[i][0],	// range
+			out_predictions[i][1],	// yaw
 			out_predictions[i][2]  // pitch
 		);
 	}
@@ -513,7 +510,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 	CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
 	CMatrixFixed<kftype, 7, 7> H_senpose_vehpose(UNINITIALIZED_MATRIX);
 	CMatrixFixed<kftype, 7, 7> H_senpose_senrelpose(
-		UNINITIALIZED_MATRIX);  // Not actually used
+		UNINITIALIZED_MATRIX);	// Not actually used
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
 		robotPose, sensorPoseOnRobot, H_senpose_vehpose, H_senpose_senrelpose,
@@ -531,9 +528,9 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 	double obsData[3];
 	sensorPoseAbs.sphericalCoordinates(
 		mapEst,
-		obsData[0],  // range
-		obsData[1],  // yaw
-		obsData[2],  // pitch
+		obsData[0],	 // range
+		obsData[1],	 // yaw
+		obsData[2],	 // pitch
 		&Hy, &Hx_sensor);
 
 	// Chain rule: Hx = d sensorpose / d vehiclepose   * Hx_sensor
@@ -599,7 +596,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 
 	// Data association:
 	// ---------------------
-	data_association.assign(N, -1);  // Initially, all new landmarks
+	data_association.assign(N, -1);	 // Initially, all new landmarks
 
 	// For each observed LM:
 	std::vector<size_t> obs_idxs_needing_data_assoc;
@@ -675,7 +672,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 				m_last_data_association.Y_pred_means(q, w) =
 					all_predictions[i][w];
 			m_last_data_association.predictions_IDs.push_back(
-				i);  // for the conversion of indices...
+				i);	 // for the conversion of indices...
 		}
 
 		// Do Dat. Assoc :
@@ -718,7 +715,7 @@ void CRangeBearingKFSLAM::OnNormalizeStateVector()
 		square(m_xkk[6]));
 	ASSERTMSG_(T > 0, "Vehicle pose quaternion norm is not >0!!");
 
-	const double T_ = (m_xkk[3] < 0 ? -1.0 : 1.0) / T;  // qr>=0
+	const double T_ = (m_xkk[3] < 0 ? -1.0 : 1.0) / T;	// qr>=0
 	m_xkk[3] *= T_;
 	m_xkk[4] *= T_;
 	m_xkk[5] *= T_;
@@ -850,7 +847,7 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 	CPose3DQuat sensorPoseAbs(UNINITIALIZED_QUATERNION);
 	CMatrixFixed<kftype, 7, 7> dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
 	CMatrixFixed<kftype, 7, 7> dsensorabs_dsenrelpose(
-		UNINITIALIZED_MATRIX);  // Not actually used
+		UNINITIALIZED_MATRIX);	// Not actually used
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
 		robotPose, sensorPoseOnRobot, dsensorabs_dvehpose,
@@ -891,15 +888,16 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 		[           -sin(h_pitch),                                0,
 	   -h_range*cos(h_pitch)]
 	*/
-	const kftype values_dynlocal_dhn[] = {chn_p * chn_y,
-										  -hn_r * chn_p * shn_y,
-										  -hn_r * chn_y * shn_p,
-										  chn_p * shn_y,
-										  hn_r * chn_p * chn_y,
-										  -hn_r * shn_p * shn_y,
-										  -shn_p,
-										  0,
-										  -hn_r * chn_p};
+	const kftype values_dynlocal_dhn[] = {
+		chn_p * chn_y,
+		-hn_r * chn_p * shn_y,
+		-hn_r * chn_y * shn_p,
+		chn_p * shn_y,
+		hn_r * chn_p * chn_y,
+		-hn_r * shn_p * shn_y,
+		-shn_p,
+		0,
+		-hn_r * chn_p};
 	const KFMatrix_FxO dynlocal_dhn(values_dynlocal_dhn);
 
 	KFMatrix_FxF jacob_dyn_dynrelsensor(UNINITIALIZED_MATRIX);
@@ -1026,7 +1024,7 @@ void CRangeBearingKFSLAM::getAs3DObject(
 			// This is done for each landmark:
 			map<int, bool> belongToPartition;
 			const CSimpleMap* SFs =
-				&m_SFs;  // mapPartitioner.getSequenceOfFrames();
+				&m_SFs;	 // mapPartitioner.getSequenceOfFrames();
 
 			for (size_t p = 0; p < m_lastPartitionSet.size(); p++)
 			{
@@ -1095,7 +1093,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps(
 			partitions.push_back(tmpCluster);
 			tmpCluster.clear();
 			tmpCluster.push_back(
-				i);  // This observation "i" is shared between both clusters
+				i);	 // This observation "i" is shared between both clusters
 		}
 	}
 	m_lastPartitionSet = partitions;
@@ -1104,7 +1102,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps(
 	getLastPartitionLandmarks(landmarksMembership);
 
 	// Replace copy:
-	m_lastPartitionSet = tmpParts;  //-V519
+	m_lastPartitionSet = tmpParts;	//-V519
 }
 
 /*---------------------------------------------------------------
@@ -1124,7 +1122,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 	{
 		map<int, bool> belongToPartition;
 		const CSimpleMap* SFs =
-			&m_SFs;  // mapPartitioner.getSequenceOfFrames();
+			&m_SFs;	 // mapPartitioner.getSequenceOfFrames();
 
 		for (size_t p = 0; p < m_lastPartitionSet.size(); p++)
 		{
@@ -1192,8 +1190,9 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 		{
 			// Sum the cross cov. between LM(i) and LM(j)??
 			// --> Only if there is no common cluster:
-			if (0 == math::countCommonElements(
-						 landmarksMembership[i], landmarksMembership[j]))
+			if (0 ==
+				math::countCommonElements(
+					landmarksMembership[i], landmarksMembership[j]))
 			{
 				size_t col = get_vehicle_size() + i * get_feature_size();
 				size_t row = get_vehicle_size() + j * get_feature_size();
@@ -1202,12 +1201,13 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
 		}
 	}
 
-	return sumOffBlocks / H.asEigen()
-							  .block(
-								  get_vehicle_size(), get_vehicle_size(),
-								  H.rows() - get_vehicle_size(),
-								  H.cols() - get_vehicle_size())
-							  .sum();  // Starting (7,7)-end
+	return sumOffBlocks /
+		H.asEigen()
+			.block(
+				get_vehicle_size(), get_vehicle_size(),
+				H.rows() - get_vehicle_size(),
+				H.cols() - get_vehicle_size())
+			.sum();	 // Starting (7,7)-end
 	MRPT_END
 }
 
@@ -1392,9 +1392,7 @@ void CRangeBearingKFSLAM::OnPreComputingPredictions(
 				(30.0_deg + 0.5 * fov_yaw + 4 * options.std_sensor_yaw) &&
 			fabs(prediction_means[i][2]) <
 				(30.0_deg + 0.5 * fov_pitch + 4 * options.std_sensor_pitch))
-		{
-			out_LM_indices_to_predict.push_back(i);
-		}
+		{ out_LM_indices_to_predict.push_back(i); }
 #endif
 	}
 }

@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
 #include <mrpt/system/string_utils.h>
+
 #include <limits>
 
 using namespace mrpt::nav;
@@ -65,7 +66,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 				catch (std::exception&)
 				{
 					m_score_exprs.clear();
-					throw;  // rethrow
+					throw;	// rethrow
 				}
 
 				// Register formulas also as variables, usable by the assert()
@@ -105,7 +106,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 				catch (std::exception&)
 				{
 					m_movement_assert_exprs.clear();
-					throw;  // rethrow
+					throw;	// rethrow
 				}
 			}
 		}
@@ -116,9 +117,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 			// Evaluate:
 			double val;
 			if (m.speed <= 0)  // Invalid candidate
-			{
-				val = .0;
-			}
+			{ val = .0; }
 			else
 			{
 				val = sc.second.eval();
@@ -148,16 +147,13 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 		}
 
 		// Normalize:
-		if (maxScore <= 0)  // all scores=0... let's decide that all are equal,
+		if (maxScore <= 0)	// all scores=0... let's decide that all are equal,
 		// so normalized to "1"
 		{
 			for (auto& s : score_values)
 			{
 				auto it = s.find(sScoreName);
-				if (it != s.end())
-				{
-					it->second = 1.0;
-				}
+				if (it != s.end()) { it->second = 1.0; }
 			}
 		}
 		else if (maxScore > 0 && maxScore != 1.0 /* already normalized! */)
@@ -166,10 +162,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 			for (auto& s : score_values)
 			{
 				auto it = s.find(sScoreName);
-				if (it != s.end())
-				{
-					it->second *= K;
-				}
+				if (it != s.end()) { it->second *= K; }
 			}
 		}
 	}
@@ -310,9 +303,7 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(
 		scores_to_normalize.clear();
 		std::string sLst = c.read_string(s, "scores_to_normalize", "");
 		if (!sLst.empty())
-		{
-			mrpt::system::tokenize(sLst, ", \t", scores_to_normalize);
-		}
+		{ mrpt::system::tokenize(sLst, ", \t", scores_to_normalize); }
 	}
 }
 

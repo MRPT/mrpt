@@ -11,6 +11,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "holonomic_navigator_demoMain.h"
 //*)
 

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CBoardSonars.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
@@ -85,7 +85,7 @@ void CBoardSonars::loadConfig_sensorSpecific(
 	{
 		configSource.read_vector(
 			iniSection, format("pose%i", *itSonar), aux, aux,
-			true);  // Get the sonar poses
+			true);	// Get the sonar poses
 		m_sonarPoses[*itSonar] = mrpt::math::TPose3D(
 			aux[0], aux[1], aux[2], DEG2RAD((float)aux[3]),
 			DEG2RAD((float)aux[4]), DEG2RAD((float)aux[5]));
@@ -144,14 +144,13 @@ bool CBoardSonars::sendConfigCommands()
 		msg.content.resize(16);
 		for (i = 0; i < 16; i++)
 		{
-			if (i < m_firingOrder.size())
-				msg.content[i] = m_firingOrder[i];
+			if (i < m_firingOrder.size()) msg.content[i] = m_firingOrder[i];
 			else
 				msg.content[i] = 0xFF;
 		}
 		auto arch = mrpt::serialization::archiveFrom(*this);
 		arch.sendMessage(msg);
-		if (!arch.receiveMessage(msgRx)) return false;  // Error
+		if (!arch.receiveMessage(msgRx)) return false;	// Error
 
 		// Send cmd for gain:
 		// ----------------------------
@@ -173,7 +172,7 @@ bool CBoardSonars::sendConfigCommands()
 				msg.content[i] = 0xFF;
 		}
 		arch.sendMessage(msg);
-		if (!arch.receiveMessage(msgRx)) return false;  // Error
+		if (!arch.receiveMessage(msgRx)) return false;	// Error
 
 		// Send cmd for max range:
 		// ----------------------------
@@ -181,7 +180,7 @@ bool CBoardSonars::sendConfigCommands()
 		msg.content.resize(1);
 		msg.content[0] = (int)((m_maxRange / 0.043f) - 1);
 		arch.sendMessage(msg);
-		if (!arch.receiveMessage(msgRx)) return false;  // Error
+		if (!arch.receiveMessage(msgRx)) return false;	// Error
 
 		// Send cmd for max range:
 		// ----------------------------
@@ -191,7 +190,7 @@ bool CBoardSonars::sendConfigCommands()
 		msg.content[0] = T >> 8;
 		msg.content[1] = T & 0x00FF;
 		arch.sendMessage(msg);
-		if (!arch.receiveMessage(msgRx)) return false;  // Error
+		if (!arch.receiveMessage(msgRx)) return false;	// Error
 
 		return true;
 	}

@@ -11,6 +11,7 @@
 //! [example typename]
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/TTypeName_stl.h>
+
 #include <iostream>
 #include <memory>  // shared_ptr
 

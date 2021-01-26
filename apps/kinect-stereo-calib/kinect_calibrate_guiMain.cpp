@@ -1220,8 +1220,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	// Set std::cout/cerr out:
 	m_my_redirector = std::make_unique<CMyRedirector>(
 		edLogTest,
-		false,  // yieldApplication
-		0,  // bufferSize
+		false,	// yieldApplication
+		0,	// bufferSize
 		true,  // also_cerr
 		true,  // threadSafe -> we must call dumpNow()
 		true  // also_to_cout_cerr
@@ -1303,10 +1303,11 @@ void kinect_calibrate_guiDialog::OnNotebook1PageChanging(wxNotebookEvent& event)
 		}
 		else
 		{
-			if (wxYES == ::wxMessageBox(
-							 _("Your unsaved data will be lost, are you sure "
-							   "you want to leave this page?"),
-							 _("Confirm"), wxYES_NO, this))
+			if (wxYES ==
+				::wxMessageBox(
+					_("Your unsaved data will be lost, are you sure "
+					  "you want to leave this page?"),
+					_("Confirm"), wxYES_NO, this))
 				event.Skip();  // Permit change
 			else
 				event.Veto();  // Veto change
@@ -1355,7 +1356,7 @@ void kinect_calibrate_guiDialog::OnbtnConnectClick(wxCommandEvent& event)
 
 	m_cap_thread_data.quit = false;
 	m_cap_thread_data.flag_grab_depth =
-		false;  // we don't need depth data for image registration.
+		false;	// we don't need depth data for image registration.
 	m_findcorners_thread_data.quit = false;
 
 	// Launch thread:
@@ -1385,7 +1386,7 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 		CKinect kinect;
 
 		// We only have to grab the intensity channel:
-		kinect.enableGrabRGB(true);  // RGB / IR channels:
+		kinect.enableGrabRGB(true);	 // RGB / IR channels:
 		kinect.enableGrabDepth(p.flag_grab_depth);
 		kinect.enableGrab3DPoints(false);
 		kinect.enableGrabAccelerometers(false);
@@ -1417,9 +1418,7 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 			kinect.getNextObservation(*obs, there_is_obs, hard_error);
 
 			if (!hard_error && there_is_obs)
-			{
-				std::atomic_store(&p.new_obs, obs);
-			}
+			{ std::atomic_store(&p.new_obs, obs); }
 
 			if (old_tilt_ang_deg != p.tilt_ang_deg)
 			{
@@ -1449,7 +1448,7 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 	{
 		cout << "[Kinect thread] Exception: " << mrpt::exception_to_str(e)
 			 << endl;
-		p.quit = true;  // Exit for some error
+		p.quit = true;	// Exit for some error
 	}
 	p.terminated = true;
 }
@@ -1526,8 +1525,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 {
 	switch (Notebook1->GetSelection())
 	{
-		default:
-			break;
+		default: break;
 
 		// ------------------------------------------
 		//   Tab 1: Testing
@@ -1562,9 +1560,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			switch (m_grabstate)
 			{
-				case gsIdle:
-					cnt_skip_frames = 0;
-					break;
+				case gsIdle: cnt_skip_frames = 0; break;
 
 				case gsSwitchingRGB:
 					center_messages.emplace_back(
@@ -1661,7 +1657,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 						m_findcorners_thread_data.detected_corners;
 				}
 				m_findcorners_thread_data.detected_corners_done =
-					false;  // Signal that we've read the data.
+					false;	// Signal that we've read the data.
 			}
 
 			// Makes an RGB color even if it was grayscale so we can draw color
@@ -1932,9 +1928,8 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 			const mrpt::img::TImageSize szL = il.getSize();
 			const mrpt::img::TImageSize szR = ir.getSize();
 
-			const double lRatio =
-				static_cast<double>(szL.x) /
-				szL.y;  // Don't assume both images have equal size
+			const double lRatio = static_cast<double>(szL.x) /
+				szL.y;	// Don't assume both images have equal size
 			const double rRatio = static_cast<double>(szR.x) / szR.y;
 
 			mrpt::img::TImageSize trg_sz_l, trg_sz_r;
@@ -2000,18 +1995,12 @@ void myCalibCallback(
 				"Detecting corners: %u images done out of %u", d.nImgsProcessed,
 				d.nImgsToProcess);
 			break;
-		case 0:
-			s = "Round #1: Calibration without distortion";
-			break;
-		case 1:
-			s = "Round #2: Full calibration";
-			break;
+		case 0: s = "Round #1: Calibration without distortion"; break;
+		case 1: s = "Round #2: Full calibration"; break;
 	};
 
 	if (d.calibRound == 0 || d.calibRound == 1)
-	{
-		s += mrpt::format(" (RMSE=%.05f px)", d.current_rmse);
-	}
+	{ s += mrpt::format(" (RMSE=%.05f px)", d.current_rmse); }
 
 	dat->pd->Update(d.current_iter, s.c_str());
 	dat->pd->SetSize(500, 100);
@@ -2664,8 +2653,9 @@ void kinect_calibrate_guiDialog::fillGridLine(
 	int r, const char* label_prefix, const char* label, const std::string& val)
 {
 	m_grid_live_calib->SetRowLabelValue(
-		r, (std::string(label_prefix) + std::string(".") + std::string(label))
-			   .c_str());
+		r,
+		(std::string(label_prefix) + std::string(".") + std::string(label))
+			.c_str());
 	m_grid_live_calib->SetCellValue(r, 0, val.c_str());
 }
 
@@ -2681,7 +2671,7 @@ void kinect_calibrate_guiDialog::LiveCalibGridInitialize()
 	// Build cells & labels:
 	m_grid_live_calib->AppendCols(1, false);
 	m_grid_live_calib->AppendRows(24, false);
-	m_grid_live_calib->SetColLabelSize(0);  // Hide
+	m_grid_live_calib->SetColLabelSize(0);	// Hide
 
 	m_grid_live_calib->EndBatch();
 }

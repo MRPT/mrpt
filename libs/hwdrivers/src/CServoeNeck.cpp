@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/core/bits_math.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
+
 #include <cmath>
 #include <cstdint>
 #include <thread>
@@ -121,14 +122,13 @@ bool CServoeNeck::setRegisterValue(
 
 		// Send cmd for setting the value of the register:
 		// ------------------------------------------------
-		if (fast)
-			msg.type = 0x15;
+		if (fast) msg.type = 0x15;
 		else
 			msg.type = 0x11;
 		msg.content.resize(3);
 		msg.content[2] = (uint8_t)value;  // Low byte
-		msg.content[1] = (uint8_t)(value >> 8);  // High byte
-		msg.content[0] = servo;  // Servo number
+		msg.content[1] = (uint8_t)(value >> 8);	 // High byte
+		msg.content[0] = servo;	 // Servo number
 
 		archiveFrom(*this).sendMessage(msg);
 		if (!archiveFrom(*this).receiveMessage(msgRx)) return false;  // Error
@@ -163,10 +163,10 @@ bool CServoeNeck::setRegisterValueAndSpeed(
 		msg.content.resize(5);
 		msg.content[4] = (uint8_t)speed;  // Low byte of the speed of the servo
 		msg.content[3] =
-			(uint8_t)(speed >> 8);  // High byte of the speed of the servo
+			(uint8_t)(speed >> 8);	// High byte of the speed of the servo
 		msg.content[2] = (uint8_t)value;  // Low byte
-		msg.content[1] = (uint8_t)(value >> 8);  // High byte
-		msg.content[0] = servo;  // Servo number
+		msg.content[1] = (uint8_t)(value >> 8);	 // High byte
+		msg.content[0] = servo;	 // Servo number
 
 		archiveFrom(*this).sendMessage(msg);
 		if (!archiveFrom(*this).receiveMessage(msgRx)) return false;  // Error
@@ -299,15 +299,15 @@ bool CServoeNeck::setAngleWithFilter(
 	if (m_PrevAngles.size() == m_NumPrevAngles &&
 		m_NumPrevAngles != 0)  // If the deque is full populated
 		m_PrevAngles.erase(
-			m_PrevAngles.begin());  // Erase the first angle of the deque
+			m_PrevAngles.begin());	// Erase the first angle of the deque
 
-	m_PrevAngles.push_back(angle);  // Push back the new angle
+	m_PrevAngles.push_back(angle);	// Push back the new angle
 
 	std::deque<double>::iterator it;
 	for (it = m_PrevAngles.begin(); it != m_PrevAngles.end();
-		 ++it)  // Sum up all the elements in the deque
+		 ++it)	// Sum up all the elements in the deque
 		nangle += *it;
-	nangle /= m_PrevAngles.size();  // Mean angle
+	nangle /= m_PrevAngles.size();	// Mean angle
 
 	return (setAngle(nangle, servo, fast));
 }
@@ -327,7 +327,7 @@ bool CServoeNeck::disableServo(const uint8_t servo)
 		// ----------------------------
 		msg.type = 0x13;
 		msg.content.resize(1);
-		msg.content[0] = servo;  // Servo number
+		msg.content[0] = servo;	 // Servo number
 
 		archiveFrom(*this).sendMessage(msg);
 		if (!archiveFrom(*this).receiveMessage(msgRx)) return false;  // Error
@@ -358,7 +358,7 @@ bool CServoeNeck::enableServo(const uint8_t servo)
 		// --------------------------------
 		msg.type = 0x14;
 		msg.content.resize(1);
-		msg.content[0] = servo;  // Servo number
+		msg.content[0] = servo;	 // Servo number
 
 		archiveFrom(*this).sendMessage(msg);
 		if (!archiveFrom(*this).receiveMessage(msgRx)) return false;  // Error

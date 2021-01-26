@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include <CTraitsTest.h>
+#include <gtest/gtest.h>
 #include <mrpt/containers/circular_buffer.h>
 #include <mrpt/core/common.h>
 #include <mrpt/random.h>
-#include <array>
 
-#include <gtest/gtest.h>
+#include <array>
 
 template class mrpt::CTraitsTest<mrpt::containers::circular_buffer<char>>;
 
@@ -31,9 +31,11 @@ TEST(circular_buffer_tests, EmptyPopAfterPushes)
 	mrpt::containers::circular_buffer<cb_t> cb(LEN);
 	for (size_t nWr = 0; nWr < LEN; nWr++)
 	{
-		for (size_t i = 0; i < nWr; i++) cb.push(12);
+		for (size_t i = 0; i < nWr; i++)
+			cb.push(12);
 		cb_t ret;
-		for (size_t i = 0; i < nWr; i++) cb.pop(ret);
+		for (size_t i = 0; i < nWr; i++)
+			cb.pop(ret);
 		// The next one must fail:
 		EXPECT_THROW(cb.pop(ret), std::exception);
 	}
@@ -48,7 +50,8 @@ TEST(circular_buffer_tests, RandomWriteAndPeek)
 	{
 		const size_t nWr =
 			mrpt::random::getRandomGenerator().drawUniform32bit() % LEN;
-		for (size_t i = 0; i < nWr; i++) cb.push(i);
+		for (size_t i = 0; i < nWr; i++)
+			cb.push(i);
 		cb_t ret;
 		for (size_t i = 0; i < nWr; i++)
 		{
@@ -70,15 +73,15 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 
 	for (size_t iter = 0; iter < 1000; iter++)
 	{
-		const size_t nWr =
-			1 +
+		const size_t nWr = 1 +
 			mrpt::random::getRandomGenerator().drawUniform32bit() % (LEN - 1);
 		dum_buf.resize(nWr);
 		cb.push_many(&dum_buf[0], nWr);
 		cb_t ret;
 		if (iter % 2)
 		{
-			for (size_t i = 0; i < nWr; i++) ret = cb.peek(i);
+			for (size_t i = 0; i < nWr; i++)
+				ret = cb.peek(i);
 			(void)ret;
 		}
 		else
@@ -87,7 +90,8 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 		}
 		if (iter % 3)
 		{
-			for (size_t i = 0; i < nWr; i++) cb.pop(ret);
+			for (size_t i = 0; i < nWr; i++)
+				cb.pop(ret);
 			(void)ret;
 		}
 		else
@@ -105,13 +109,15 @@ TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
 	{
 		const size_t nWr =
 			mrpt::random::getRandomGenerator().drawUniform32bit() % LEN;
-		for (size_t i = 0; i < nWr; i++) cb.push(i);
+		for (size_t i = 0; i < nWr; i++)
+			cb.push(i);
 		cb_t ret;
 		for (unsigned k = 0; k < 5; k++)
 		{
 			EXPECT_ANY_THROW(ret = cb.peek(nWr + k););
 		}
-		for (size_t i = 0; i < nWr; i++) cb.pop(ret);
+		for (size_t i = 0; i < nWr; i++)
+			cb.pop(ret);
 	}
 }
 
@@ -137,7 +143,8 @@ void impl_WritePeekCheck()
 	constexpr T LEN = 20;
 	mrpt::containers::circular_buffer<T> cb(LEN + 1);
 
-	for (T i = 0; i < LEN; i++) cb.push(i);
+	for (T i = 0; i < LEN; i++)
+		cb.push(i);
 
 	std::array<T, LEN> peek_vals;
 	cb.peek_many(&peek_vals[0], LEN);

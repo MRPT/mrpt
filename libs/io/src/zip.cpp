@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-
+#include "io-precomp.h"	 // Precompiled headers
+//
 #include "zlib.h"
 
 // For named pipes:
@@ -18,13 +18,13 @@
 #endif
 
 #include <mrpt/core/exceptions.h>
-#include <mrpt/io/vector_loadsave.h>
-#include <mrpt/io/zip.h>
-
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileInputStream.h>
+#include <mrpt/io/vector_loadsave.h>
+#include <mrpt/io/zip.h>
 #include <mrpt/system/filesystem.h>
+
 #include <chrono>
 #include <iostream>
 
@@ -296,7 +296,7 @@ bool mrpt::io::zip::compress_gz_data_block(
 			if (f)
 			{
 				retVal = (int)in_data.size() ==
-						 gzwrite(f, &in_data[0], in_data.size());
+					gzwrite(f, &in_data[0], in_data.size());
 				gzclose(f);
 			}
 			else
@@ -366,7 +366,7 @@ bool mrpt::io::zip::decompress_gz_data_block(
 	if (!mrpt::io::vectorToBinaryFile(in_gz_data, tmp_file_name)) return false;
 	bool retVal = mrpt::io::zip::decompress_gz_file(tmp_file_name, out_data);
 
-	remove(tmp_file_name.c_str());  // Delete tmp file
+	remove(tmp_file_name.c_str());	// Delete tmp file
 
 	return retVal;
 }

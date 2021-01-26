@@ -8,67 +8,64 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/io/CMemoryStream.h>
-#include <mrpt/obs/gnss_messages.h>  // Must include all message classes so we can implemente the class factory here
+#include <mrpt/obs/gnss_messages.h>	 // Must include all message classes so we can implemente the class factory here
 #include <mrpt/serialization/CArchive.h>
+
 #include <iostream>
 #include <map>
 
 using namespace std;
 using namespace mrpt::obs::gnss;
 
-#define LIST_ALL_MSGS                     \
-	/* ====== NMEA ======  */             \
-	DOFOR(NMEA_GGA)                       \
-	DOFOR(NMEA_GSA)                       \
-	DOFOR(NMEA_RMC)                       \
-	DOFOR(NMEA_ZDA)                       \
-	DOFOR(NMEA_VTG)                       \
-	DOFOR(NMEA_GLL)                       \
-	/* ====== TopCon mmGPS ====== */      \
-	DOFOR(TOPCON_PZS)                     \
-	DOFOR(TOPCON_SATS)                    \
-	/* ====== Novatel OEM6 ======  */     \
-	DOFOR(NV_OEM6_GENERIC_FRAME)          \
-	DOFOR(NV_OEM6_BESTPOS)                \
-	/* ====== Novatel SPAN+OEM6 ====== */ \
-	DOFOR(NV_OEM6_GENERIC_SHORT_FRAME)    \
-	DOFOR(NV_OEM6_INSPVAS)                \
-	DOFOR(NV_OEM6_RANGECMP)               \
-	DOFOR(NV_OEM6_RXSTATUS)               \
-	DOFOR(NV_OEM6_RAWEPHEM)               \
-	DOFOR(NV_OEM6_VERSION)                \
-	DOFOR(NV_OEM6_RAWIMUS)                \
-	DOFOR(NV_OEM6_MARKPOS)                \
-	DOFOR(NV_OEM6_MARKTIME)               \
-	DOFOR(NV_OEM6_MARK2TIME)              \
+#define LIST_ALL_MSGS                                                          \
+	/* ====== NMEA ======  */                                                  \
+	DOFOR(NMEA_GGA)                                                            \
+	DOFOR(NMEA_GSA)                                                            \
+	DOFOR(NMEA_RMC)                                                            \
+	DOFOR(NMEA_ZDA)                                                            \
+	DOFOR(NMEA_VTG)                                                            \
+	DOFOR(NMEA_GLL)                                                            \
+	/* ====== TopCon mmGPS ====== */                                           \
+	DOFOR(TOPCON_PZS)                                                          \
+	DOFOR(TOPCON_SATS)                                                         \
+	/* ====== Novatel OEM6 ======  */                                          \
+	DOFOR(NV_OEM6_GENERIC_FRAME)                                               \
+	DOFOR(NV_OEM6_BESTPOS)                                                     \
+	/* ====== Novatel SPAN+OEM6 ====== */                                      \
+	DOFOR(NV_OEM6_GENERIC_SHORT_FRAME)                                         \
+	DOFOR(NV_OEM6_INSPVAS)                                                     \
+	DOFOR(NV_OEM6_RANGECMP)                                                    \
+	DOFOR(NV_OEM6_RXSTATUS)                                                    \
+	DOFOR(NV_OEM6_RAWEPHEM)                                                    \
+	DOFOR(NV_OEM6_VERSION)                                                     \
+	DOFOR(NV_OEM6_RAWIMUS)                                                     \
+	DOFOR(NV_OEM6_MARKPOS)                                                     \
+	DOFOR(NV_OEM6_MARKTIME)                                                    \
+	DOFOR(NV_OEM6_MARK2TIME)                                                   \
 	DOFOR(NV_OEM6_IONUTC)
 
 // Class factory:
 gnss_message* gnss_message::Factory(const gnss_message_type_t msg_id)
 {
-#define DOFOR(_MSG_ID) \
-	case _MSG_ID:      \
-		return new Message_##_MSG_ID();
+#define DOFOR(_MSG_ID)                                                         \
+	case _MSG_ID: return new Message_##_MSG_ID();
 	switch (msg_id)
 	{
 		LIST_ALL_MSGS
-		default:
-			return nullptr;
+		default: return nullptr;
 	};
 #undef DOFOR
 }
 bool gnss_message::FactoryKnowsMsgType(const gnss_message_type_t msg_id)
 {
-#define DOFOR(_MSG_ID) \
-	case _MSG_ID:      \
-		return true;
+#define DOFOR(_MSG_ID)                                                         \
+	case _MSG_ID: return true;
 	switch (msg_id)
 	{
 		LIST_ALL_MSGS
-		default:
-			return false;
+		default: return false;
 	};
 #undef DOFOR
 }
@@ -135,10 +132,7 @@ gnss_message_ptr::gnss_message_ptr() = default;
 // Ctor:Makes a copy of the pointee
 gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr& o)
 {
-	if (!o.ptr)
-	{
-		ptr = nullptr;
-	}
+	if (!o.ptr) { ptr = nullptr; }
 	else
 	{
 		mrpt::io::CMemoryStream buf;

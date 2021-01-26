@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/serialization/CArchive.h>
@@ -41,8 +41,7 @@ void CObservationRobotPose::serializeFrom(
 			if (version >= 1) in >> sensorPose;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

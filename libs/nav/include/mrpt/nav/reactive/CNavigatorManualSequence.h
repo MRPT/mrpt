@@ -10,6 +10,7 @@
 
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <map>
 
 namespace mrpt::nav
@@ -29,7 +30,7 @@ class CNavigatorManualSequence : public mrpt::nav::CAbstractNavigator
 	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
 	void saveConfigFile(mrpt::config::CConfigFileBase& c)
-		const override;  // See base class docs!
+		const override;	 // See base class docs!
 	/** Must be called for loading collision grids, etc. before invoking any
 	 * navigation command */
 	void initialize() override;

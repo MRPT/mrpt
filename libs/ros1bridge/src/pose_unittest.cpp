@@ -33,18 +33,21 @@ TEST(PoseConversions, copyMatrix3x3ToCMatrixDouble33)
 	const mrpt::math::CMatrixDouble33 des = mrpt::ros1bridge::fromROS(src);
 
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) EXPECT_FLOAT_EQ(des(r, c), src[r][c]);
+		for (int c = 0; c < 3; c++)
+			EXPECT_FLOAT_EQ(des(r, c), src[r][c]);
 }
 TEST(PoseConversions, copyCMatrixDouble33ToMatrix3x3)
 {
 	mrpt::math::CMatrixDouble33 src;
 	for (int r = 0, i = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++, i++) src(r, c) = i;
+		for (int c = 0; c < 3; c++, i++)
+			src(r, c) = i;
 
 	const tf2::Matrix3x3 des = mrpt::ros1bridge::toROS(src);
 
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) EXPECT_FLOAT_EQ(des[r][c], src(r, c));
+		for (int c = 0; c < 3; c++)
+			EXPECT_FLOAT_EQ(des[r][c], src(r, c));
 }
 
 // Declare a test

@@ -7,14 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+
 #include <iostream>
 #include <limits>
 
@@ -24,7 +25,7 @@ using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CPoint3D, CSerializable, mrpt::poses)
 
-/** Constructor from an CPoint2D object. */  // Here instead of in the .h to
+/** Constructor from an CPoint2D object. */	 // Here instead of in the .h to
 // avoid headers include loops.
 CPoint3D::CPoint3D(const CPoint2D& p)
 {
@@ -74,8 +75,7 @@ void CPoint3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			in >> m_coords[0] >> m_coords[1] >> m_coords[2];
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 /** Serialize CSerializable Object to CSchemeArchiveBase derived object*/
@@ -100,8 +100,7 @@ void CPoint3D::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			m_coords[2] = static_cast<double>(in["z"]);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 /*---------------------------------------------------------------

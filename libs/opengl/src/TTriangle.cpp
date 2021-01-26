@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/TTriangle.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -27,9 +27,10 @@ void TTriangle::computeNormals()
 	const float by = y(2) - y(0);
 	const float bz = z(2) - z(0);
 
-	const mrpt::math::TVector3Df no = {ay * bz - az * by, -ax * bz + az * bx,
-									   ax * by - ay * bx};
-	for (auto& v : vertices) v.normal = no;
+	const mrpt::math::TVector3Df no = {
+		ay * bz - az * by, -ax * bz + az * bx, ax * by - ay * bx};
+	for (auto& v : vertices)
+		v.normal = no;
 }
 
 void TTriangle::writeTo(mrpt::serialization::CArchive& o) const

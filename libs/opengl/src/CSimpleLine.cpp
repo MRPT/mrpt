@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
@@ -47,7 +47,7 @@ void CSimpleLine::serializeTo(mrpt::serialization::CArchive& out) const
 	writeToStreamRender(out);
 	out << m_x0 << m_y0 << m_z0;
 	out << m_x1 << m_y1 << m_z1 << m_lineWidth;
-	out << m_antiAliasing;  // Added in v1
+	out << m_antiAliasing;	// Added in v1
 }
 
 void CSimpleLine::serializeFrom(
@@ -60,14 +60,12 @@ void CSimpleLine::serializeFrom(
 			readFromStreamRender(in);
 			in >> m_x0 >> m_y0 >> m_z0;
 			in >> m_x1 >> m_y1 >> m_z1 >> m_lineWidth;
-			if (version >= 1)
-				in >> m_antiAliasing;
+			if (version >= 1) in >> m_antiAliasing;
 			else
 				m_antiAliasing = true;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

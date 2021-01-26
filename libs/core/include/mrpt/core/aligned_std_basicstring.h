@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 #include <mrpt/core/aligned_allocator.h>
+
 #include <string>
 namespace mrpt
 {

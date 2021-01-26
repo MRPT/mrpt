@@ -26,6 +26,7 @@
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
+
 #include <Eigen/Dense>
 #include <array>
 #include <vector>
@@ -41,7 +42,7 @@ using mrpt::math::CVectorFixedDouble;  // Allow these "using"s since these
 using mrpt::math::CMatrixFixed;
 using std::vector;
 
-#define VERBOSE_COUT \
+#define VERBOSE_COUT                                                           \
 	if (verbose) cout
 
 // Auxiliary struct for keeping the list of all Jacobians in a sparse, efficient
@@ -84,7 +85,7 @@ void frameJac(
 {
 	using mrpt::square;
 
-	double x, y, z;  // wrt cam (local coords)
+	double x, y, z;	 // wrt cam (local coords)
 	if (POSES_ARE_INVERSE)
 		cam_pose.composePoint(
 			landmark_global.x, landmark_global.y, landmark_global.z, x, y, z);
@@ -104,18 +105,19 @@ void frameJac(
 	{
 		const double xy = x * y;
 
-		const double J_vals[] = {fx_z,
-								 0,
-								 -fx_z2 * x,
-								 -fx_z2 * xy,
-								 camera_params.fx() * (1 + square(x * _z)),
-								 -fx_z * y,
-								 0,
-								 fy_z,
-								 -fy_z2 * y,
-								 -camera_params.fy() * (1 + square(y * _z)),
-								 fy_z2 * xy,
-								 fy_z * x};
+		const double J_vals[] = {
+			fx_z,
+			0,
+			-fx_z2 * x,
+			-fx_z2 * xy,
+			camera_params.fx() * (1 + square(x * _z)),
+			-fx_z * y,
+			0,
+			fy_z,
+			-fy_z2 * y,
+			-camera_params.fy() * (1 + square(y * _z)),
+			fy_z2 * xy,
+			fy_z * x};
 		out_J.loadFromArray(J_vals);
 	}
 	else
@@ -123,7 +125,7 @@ void frameJac(
 		const mrpt::math::CMatrixDouble33& R = cam_pose.getRotationMatrix();
 
 		const double jac_proj_vals[] = {fx_z, 0,	-fx_z2 * x,
-										0,	fy_z, -fy_z2 * y};
+										0,	  fy_z, -fy_z2 * y};
 		const mrpt::math::CMatrixFixed<double, 2, 3> jac_proj(jac_proj_vals);
 
 		const double p_x = cam_pose.x();
@@ -171,7 +173,7 @@ void pointJac(
 {
 	using namespace mrpt::math;
 
-	mrpt::math::TPoint3D l;  // Local point, wrt camera
+	mrpt::math::TPoint3D l;	 // Local point, wrt camera
 
 	mrpt::math::CMatrixDouble33 dp_point(mrpt::math::UNINITIALIZED_MATRIX);
 

@@ -7,11 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/serialization/stl_serialization.h>
+
 #include <Eigen/Dense>
+
 #include "CPoseInterpolatorBase.hpp"  // templ impl
 
 using namespace mrpt::poses;
@@ -33,8 +35,7 @@ void CPose2DInterpolator::serializeFrom(
 			in >> m_path;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -114,7 +115,7 @@ void CPoseInterpolatorBase<2>::impl_interpolation(
 				math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, Y);
 			out_interp.phi =
 				math::leastSquareLinearFit<double, decltype(ts), 4>(
-					td, ts, yaw, true);  // Wrap 2pi
+					td, ts, yaw, true);	 // Wrap 2pi
 		}
 		break;
 
@@ -124,7 +125,7 @@ void CPoseInterpolatorBase<2>::impl_interpolation(
 			out_interp.y = math::spline(td, ts, Y);
 			out_interp.phi =
 				math::leastSquareLinearFit<double, decltype(ts), 4>(
-					td, ts, yaw, true);  // Wrap 2pi
+					td, ts, yaw, true);	 // Wrap 2pi
 		}
 		break;
 
@@ -160,9 +161,8 @@ void CPoseInterpolatorBase<2>::impl_interpolation(
 		}
 		break;
 
-		default:
-			THROW_EXCEPTION("Unknown value for interpolation method!");
-	};  // end switch
+		default: THROW_EXCEPTION("Unknown value for interpolation method!");
+	};	// end switch
 }
 
 // Explicit instantations:

@@ -65,7 +65,7 @@ class SO_average<2>
    private:
 	double m_count{0};
 	double m_accum_x{0}, m_accum_y{0};
-};  // end SO_average<2>
+};	// end SO_average<2>
 
 /** Computes weighted and un-weighted averages of SO(3) orientations.
  * Add values to average with \a append(), when done call \a get_average().
@@ -106,7 +106,7 @@ class SO_average<3>
    private:
 	double m_count{0};
 	mrpt::math::CMatrixDouble33 m_accum_rot;
-};  // end SO_average<3>
+};	// end SO_average<3>
 
 /** Computes weighted and un-weighted averages of SE(2) poses.
  * Add values to average with \a append(), when done call \a get_average().
@@ -144,7 +144,7 @@ class SE_average<2>
 	double m_count{0};
 	double m_accum_x{0}, m_accum_y{0};
 	SO_average<2> m_rot_part;
-};  // end SE_average<2>
+};	// end SE_average<2>
 
 /** Computes weighted and un-weighted averages of SE(3) poses.
  * Add values to average with \a append(), when done call \a get_average().
@@ -182,7 +182,7 @@ class SE_average<3>
 	double m_count{0};
 	double m_accum_x{0}, m_accum_y{0}, m_accum_z{0};
 	SO_average<3> m_rot_part;
-};  // end SE_average<3>
+};	// end SE_average<3>
 
 /** @} */  // end of grouping
 

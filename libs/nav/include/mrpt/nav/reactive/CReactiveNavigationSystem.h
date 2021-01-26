@@ -96,7 +96,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 	{
 		double min_obstacles_height{0.0},
 			max_obstacles_height{
-				10.0};  // The range of "z" coordinates for obstacles
+				10.0};	// The range of "z" coordinates for obstacles
 		// to be considered
 
 		void loadFromConfigFile(
@@ -113,7 +113,7 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
 	void saveConfigFile(mrpt::config::CConfigFileBase& c)
-		const override;  // See base class docs!
+		const override;	 // See base class docs!
 
    private:
 	/** The list of PTGs to use for navigation */
@@ -151,5 +151,5 @@ class CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 		const mrpt::math::TPose2D& rel_pose_PTG_origin_wrt_sense,
 		const bool eval_clearance) override;
 
-};  // end class
+};	// end class
 }  // namespace mrpt::nav

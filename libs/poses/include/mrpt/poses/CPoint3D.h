@@ -123,7 +123,7 @@ class CPoint3D : public CPoint<CPoint3D, 3>,
 
 	void setToNaN() override;
 
-};  // End of class def.
+};	// End of class def.
 
 /** Dumps a point as a string (x,y,z) */
 std::ostream& operator<<(std::ostream& o, const CPoint3D& p);

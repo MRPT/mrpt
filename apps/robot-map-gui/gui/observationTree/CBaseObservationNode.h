@@ -9,7 +9,6 @@
    */
 #pragma once
 #include "CNode.h"
-
 #include "mrpt/poses/CPose3D.h"
 
 class CBaseObservationNode : public CNode

@@ -11,8 +11,9 @@
 #include <mrpt/config.h>  // MRPT_WORD_SIZE
 #include <mrpt/io/CStream.h>
 #include <mrpt/system/os.h>
+
 #include <cstdint>
-#include <cstring>  // strlen()
+#include <cstring>	// strlen()
 #include <string>
 
 namespace mrpt
@@ -201,7 +202,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 		uint32_t actRead =
 			readAsync(magic, toRead, timeoutStart_ms, timeoutBetween_ms);
 		if (actRead != toRead) return false;  // Error!
-		magic[actRead] = 0;  // Null-term string
+		magic[actRead] = 0;	 // Null-term string
 		// Check magic:
 		if (0 != ::strcmp("MRPTMessage", magic)) return false;
 		// (2) Read the message type:
@@ -247,7 +248,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 	/** Return the current size of the SO send buffer. */
 	int getSOSendBufffer();
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace comms
 }  // namespace mrpt

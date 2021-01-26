@@ -13,8 +13,6 @@
 		   basic template for predefined 2D/3D graphs of pose contraints.
 */
 
-#include <iostream>
-
 #include <mrpt/containers/yaml.h>
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
@@ -32,10 +30,11 @@
 #include <mrpt/system/os.h>
 
 #include <algorithm>
+#include <iostream>
 #include <iterator>
 #include <memory>
 #include <optional>
-#include <type_traits>  // is_base_of()
+#include <type_traits>	// is_base_of()
 
 namespace mrpt
 {
@@ -149,10 +148,10 @@ class CNetworkOfPoses
 	{
 		using namespace mrpt::typemeta;
 		return literal("mrpt::graphs::CNetworkOfPoses<") +
-			   TTypeName<CPOSE>::get() + literal(",") +
-			   TTypeName<MAPS_IMPLEMENTATION>::get() + literal(",") +
-			   TTypeName<NODE_ANNOTATIONS>::get() + literal(",") +
-			   TTypeName<EDGE_ANNOTATIONS>::get() + literal(">");
+			TTypeName<CPOSE>::get() + literal(",") +
+			TTypeName<MAPS_IMPLEMENTATION>::get() + literal(",") +
+			TTypeName<NODE_ANNOTATIONS>::get() + literal(",") +
+			TTypeName<EDGE_ANNOTATIONS>::get() + literal(">");
 	}
 
 	/** The type of each global pose in \a nodes: an extension of the \a
@@ -168,8 +167,8 @@ class CNetworkOfPoses
 		{
 			using namespace mrpt::typemeta;
 			return literal("global_pose_t<") +
-				   TTypeName<constraint_no_pdf_t>::get() + literal(",") +
-				   TTypeName<NODE_ANNOTATIONS>::get() + literal(">");
+				TTypeName<constraint_no_pdf_t>::get() + literal(",") +
+				TTypeName<NODE_ANNOTATIONS>::get() + literal(">");
 		}
 
 		/**\brief Potential class constructors
@@ -329,10 +328,7 @@ class CNetworkOfPoses
 		is_multirobot =
 			(std::is_base_of_v<
 				mrpt::graphs::detail::TMRSlamNodeAnnotations, global_pose_t>);
-		if (is_multirobot)
-		{
-			viz.reset(new visualizer_multirobot_t(*this));
-		}
+		if (is_multirobot) { viz.reset(new visualizer_multirobot_t(*this)); }
 		else
 		{
 			viz.reset(new visualizer_t(*this));
@@ -357,8 +353,9 @@ class CNetworkOfPoses
 			topological_distances = std::nullopt)
 	{
 		detail::graph_ops<self_t>::graph_of_poses_dijkstra_init(
-			this, topological_distances ? &topological_distances.value().get()
-										: nullptr);
+			this,
+			topological_distances ? &topological_distances.value().get()
+								  : nullptr);
 	}
 
 	/** Look for duplicated edges (even in opposite directions) between all
@@ -451,9 +448,7 @@ class CNetworkOfPoses
 		bool is_fully_connected_graph = true;
 		std::set<TNodeID> node_IDs_real;  // actual set of nodes to be used.
 		if (*node_IDs.rbegin() - *node_IDs.begin() + 1 == node_IDs.size())
-		{
-			node_IDs_real = node_IDs;
-		}
+		{ node_IDs_real = node_IDs; }
 		else
 		{  // contains non-consecutive nodes
 			is_fully_connected_graph = false;
@@ -481,7 +476,7 @@ class CNetworkOfPoses
 			{
 				if (node_IDs_it == own_it->first)
 				{
-					break;  // I throw exception afterwards
+					break;	// I throw exception afterwards
 				}
 			}
 			ASSERTMSG_(
@@ -516,9 +511,7 @@ class CNetworkOfPoses
 			// if both nodes exist in the given set, add the corresponding edge
 			if (sub_graph->nodes.find(from) != sub_graph->nodes.end() &&
 				sub_graph->nodes.find(to) != sub_graph->nodes.end())
-			{
-				sub_graph->insertEdge(from, to, curr_edge);
-			}
+			{ sub_graph->insertEdge(from, to, curr_edge); }
 		}
 
 		if (!auto_expand_set && !is_fully_connected_graph)
@@ -614,10 +607,7 @@ class CNetworkOfPoses
 							}
 						}
 
-						if (!is_there)
-						{
-							mainland.insert(n_it->first);
-						}
+						if (!is_there) { mainland.insert(n_it->first); }
 					}
 
 					bool is_single_island =
@@ -747,10 +737,7 @@ class CNetworkOfPoses
 		for (nodes_cit_t n_cit = this->nodes.begin();
 			 n_cit != this->nodes.end(); ++n_cit)
 		{
-			if (n_cit->first > max_nodeID)
-			{
-				max_nodeID = n_cit->first;
-			}
+			if (n_cit->first > max_nodeID) { max_nodeID = n_cit->first; }
 		}
 		TNodeID renum_start = max_nodeID + 1;
 		size_t renum_counter = 0;
@@ -768,9 +755,7 @@ class CNetworkOfPoses
 
 		// If given, use the old_to_new_nodeID_mappings map.
 		if (old_to_new_nodeID_mappings_out)
-		{
-			old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_out;
-		}
+		{ old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_out; }
 		else
 		{
 			old_to_new_nodeID_mappings = &mappings_tmp;

@@ -10,23 +10,24 @@
 
 #include <mrpt/containers/list_searchable.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <set>
 
 #define COMMON_TOPOLOG_HYP static_cast<THypothesisID>(0)
 
 #define NODE_ANNOTATION_METRIC_MAPS "metricMaps"  // CMultiMetricMap
-#define NODE_ANNOTATION_REF_POSEID "refPoseID"  // TPoseID
+#define NODE_ANNOTATION_REF_POSEID "refPoseID"	// TPoseID
 #define NODE_ANNOTATION_POSES_GRAPH "posesGraph"  // CRobotPosesGraph
 
-#define NODE_ANNOTATION_PLACE_POSE "placePose"  // mrpt::poses::CPoint2D
+#define NODE_ANNOTATION_PLACE_POSE "placePose"	// mrpt::poses::CPoint2D
 
-#define ARC_ANNOTATION_DELTA \
-	"Delta"  // CPose3DPDF (for the current implementation, it's a
+#define ARC_ANNOTATION_DELTA                                                   \
+	"Delta"	 // CPose3DPDF (for the current implementation, it's a
 // CPose3DPDFParticles)
-#define ARC_ANNOTATION_DELTA_SRC_POSEID \
-	"Delta_poseID_src"  // TPoseID (elemental datatype)
-#define ARC_ANNOTATION_DELTA_TRG_POSEID \
-	"Delta_poseID_trg"  // TPoseID (elemental datatype)
+#define ARC_ANNOTATION_DELTA_SRC_POSEID                                        \
+	"Delta_poseID_src"	// TPoseID (elemental datatype)
+#define ARC_ANNOTATION_DELTA_TRG_POSEID                                        \
+	"Delta_poseID_trg"	// TPoseID (elemental datatype)
 
 /**  Used in constructor of mrpt::hmtslam::CHMHMapArc */
 #define ARC_TYPES "Membership,Navegability,RelativePose,Location"

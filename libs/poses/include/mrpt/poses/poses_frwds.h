@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <cstddef>  // size_t
+#include <cstddef>	// size_t
 
 namespace mrpt::poses
 {

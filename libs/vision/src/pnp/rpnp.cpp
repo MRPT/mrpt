@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include "vision-precomp.h"  // Precompiled headers
 
 //#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to
 // enable the plugin system
@@ -34,7 +35,8 @@ mrpt::vision::pnp::rpnp::rpnp(
 	P = obj_pts.transpose();
 	Q = img_pts.transpose();
 
-	for (int i = 0; i < n; i++) Q.col(i) = Q.col(i) / Q.col(i).norm();
+	for (int i = 0; i < n; i++)
+		Q.col(i) = Q.col(i) / Q.col(i).norm();
 
 	R.setZero();
 	t.setZero();
@@ -54,7 +56,8 @@ bool mrpt::vision::pnp::rpnp::compute_pose(
 	t_ = Eigen::Vector3d::Zero();
 
 	for (int i = 0; i < n; i++)
-		for (int j = 0; j < 2; j++) rij(i, j) = rand() % n;
+		for (int j = 0; j < 2; j++)
+			rij(i, j) = rand() % n;
 
 	for (int ii = 0; ii < n; ii++)
 	{
@@ -105,7 +108,8 @@ bool mrpt::vision::pnp::rpnp::compute_pose(
 	R0.col(1) = y;
 	R0.col(2) = z;
 
-	for (int i = 0; i < n; i++) P.col(i) = R0.transpose() * (P.col(i) - p0);
+	for (int i = 0; i < n; i++)
+		P.col(i) = R0.transpose() * (P.col(i) - p0);
 
 	// Dividing the n - point set into(n - 2) 3 - point subsets
 	// and setting up the P3P equations
@@ -173,10 +177,7 @@ bool mrpt::vision::pnp::rpnp::compute_pose(
 	double* ptr = &act_roots_[0];
 	Eigen::Map<Eigen::VectorXd> act_roots(ptr, cnt);
 
-	if (cnt == 0)
-	{
-		return false;
-	}
+	if (cnt == 0) { return false; }
 
 	Eigen::VectorXd act_roots1(cnt);
 	act_roots1 << act_roots.segment(0, cnt);
@@ -231,7 +232,7 @@ bool mrpt::vision::pnp::rpnp::compute_pose(
 			double ui = img_pts(j, 0), vi = img_pts(j, 1), xi = P(0, j),
 				   yi = P(1, j), zi = P(2, j);
 			D.row(2 * j) << -r(1) * yi + ui * (r(7) * yi + r(8) * zi) -
-								r(2) * zi,
+					r(2) * zi,
 				-r(2) * yi + ui * (r(8) * yi - r(7) * zi) + r(1) * zi, -1, 0,
 				ui, ui * r(6) * xi - r(0) * xi;
 
@@ -270,14 +271,11 @@ bool mrpt::vision::pnp::rpnp::compute_pose(
 		XXc.setZero();
 
 		XXcs.row(0) = r(0) * xi + (r(1) * c + r(2) * s) * yi +
-					  (-r(1) * s + r(2) * c) * zi +
-					  t(0) * Eigen::VectorXd::Ones(n);
+			(-r(1) * s + r(2) * c) * zi + t(0) * Eigen::VectorXd::Ones(n);
 		XXcs.row(1) = r(3) * xi + (r(4) * c + r(5) * s) * yi +
-					  (-r(4) * s + r(5) * c) * zi +
-					  t(1) * Eigen::VectorXd::Ones(n);
+			(-r(4) * s + r(5) * c) * zi + t(1) * Eigen::VectorXd::Ones(n);
 		XXcs.row(2) = r(6) * xi + (r(7) * c + r(8) * s) * yi +
-					  (-r(7) * s + r(8) * c) * zi +
-					  t(2) * Eigen::VectorXd::Ones(n);
+			(-r(7) * s + r(8) * c) * zi + t(2) * Eigen::VectorXd::Ones(n);
 
 		for (int ii = 0; ii < n; ii++)
 			XXc.col(ii) = Q.col(ii) * XXcs.col(ii).norm();
@@ -292,7 +290,8 @@ bool mrpt::vision::pnp::rpnp::compute_pose(
 		R_cum[i] = R2;
 		t_cum[i] = t2;
 
-		for (int k = 0; k < n; k++) XXc.col(k) = R2 * XXw.col(k) + t2;
+		for (int k = 0; k < n; k++)
+			XXc.col(k) = R2 * XXw.col(k) + t2;
 
 		Eigen::MatrixXd xxc(2, n);
 
@@ -301,7 +300,7 @@ bool mrpt::vision::pnp::rpnp::compute_pose(
 
 		double res = ((xxc.row(0) - img_pts.col(0).transpose()).norm() +
 					  (xxc.row(1) - img_pts.col(1).transpose()).norm()) /
-					 2;
+			2;
 
 		err_cum[i] = res;
 	}

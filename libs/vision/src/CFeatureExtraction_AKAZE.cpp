@@ -13,13 +13,14 @@
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
-#include "vision-precomp.h"  // Precompiled headers
+#include "vision-precomp.h"	 // Precompiled headers
+//
+
 // Universal include for all versions of OpenCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
-
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/os.h>
-#include <mrpt/vision/CFeatureExtraction.h>  // important import
+#include <mrpt/vision/CFeatureExtraction.h>	 // important import
 
 using namespace mrpt::vision;
 using namespace mrpt::img;
@@ -41,7 +42,7 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 #else
 
 	using namespace cv;
-	vector<KeyPoint> cv_feats;  // The opencv keypoint output vector
+	vector<KeyPoint> cv_feats;	// The opencv keypoint output vector
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 
@@ -131,7 +132,7 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 			inImg.extract_patch(
 				*ft.patch, round(kp.pt.x) - offset, round(kp.pt.y) - offset,
 				options.patchSize,
-				options.patchSize);  // Image patch surronding the feature
+				options.patchSize);	 // Image patch surronding the feature
 		}
 		feats.emplace_back(std::move(ft));
 		++cont;

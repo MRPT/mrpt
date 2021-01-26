@@ -100,9 +100,9 @@ class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
 	unsigned int m_nTries_connect{1};
 	unsigned int m_nTries_current{0};
 	int m_canbus_speed{250000};
-	bool m_canreader_timestamp{false};  // for future work
+	bool m_canreader_timestamp{false};	// for future work
 	bool m_CANBusChannel_isOpen{
-		false};  // if the can bus channel is open or not
+		false};	 // if the can bus channel is open or not
 
    protected:
 	/** See the class documentation at the top for expected parameters */
@@ -169,6 +169,6 @@ class CCANBusReader : public mrpt::system::COutputLogger, public CGenericSensor
 
 	void doProcess() override;
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

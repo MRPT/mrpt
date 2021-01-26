@@ -7,9 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "tfest-precomp.h"  // Precompiled headers
-
+#include "tfest-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config.h>
+
 #include "se2_l2_internal.h"
 
 #if MRPT_ARCH_INTEL_COMPATIBLE
@@ -79,7 +80,7 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
 
 	// Compute all four means:
 	const __m128 Ninv_4val =
-		_mm_set1_ps(N_inv);  // load 4 copies of the same value
+		_mm_set1_ps(N_inv);	 // load 4 copies of the same value
 	sum_a_xyz = _mm_mul_ps(sum_a_xyz, Ninv_4val);
 	sum_b_xyz = _mm_mul_ps(sum_b_xyz, Ninv_4val);
 
@@ -113,4 +114,4 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
 	return ret;
 }
 
-#endif  // MRPT_ARCH_INTEL_COMPATIBLE
+#endif	// MRPT_ARCH_INTEL_COMPATIBLE

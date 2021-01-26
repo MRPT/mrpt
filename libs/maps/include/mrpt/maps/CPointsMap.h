@@ -23,6 +23,7 @@
 #include <mrpt/opengl/PLY_import_export.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <iosfwd>
 
 // Add for declaration of mexplus::from template specialization
@@ -228,7 +229,7 @@ class CPointsMap : public CMetricMap,
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** The minimum distance between points (in 3D): If two points are too
 		 * close, one of them is not inserted into the map. Default is 0.02
@@ -288,7 +289,7 @@ class CPointsMap : public CMetricMap,
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** Binary dump to stream - for usage in derived classes' serialization
 		 */
@@ -318,7 +319,7 @@ class CPointsMap : public CMetricMap,
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** Binary dump to stream - used in derived classes' serialization */
 		void writeToStream(mrpt::serialization::CArchive& out) const;
@@ -1078,8 +1079,7 @@ class CPointsMap : public CMetricMap,
 	/// Returns the dim'th component of the idx'th point in the class:
 	inline float kdtree_get_pt(const size_t idx, int dim) const
 	{
-		if (dim == 0)
-			return m_x[idx];
+		if (dim == 0) return m_x[idx];
 		else if (dim == 1)
 			return m_y[idx];
 		else if (dim == 2)
@@ -1214,7 +1214,7 @@ class CPointsMap : public CMetricMap,
 	template <class Derived>
 	friend struct detail::pointmap_traits;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace maps
 
@@ -1266,6 +1266,6 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
 	{
 		m_obj.setPointFast(idx, 0, 0, 0);
 	}
-};  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
+};	// end of PointCloudAdapter<mrpt::maps::CPointsMap>
 }  // namespace opengl
 }  // namespace mrpt

@@ -22,7 +22,8 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/typemeta/TEnumType.h>
-#include <cstring>  // memcpy
+
+#include <cstring>	// memcpy
 #include <vector>
 
 namespace mrpt
@@ -338,7 +339,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	virtual void OnTransitionJacobianNumericGetIncrements(
 		KFArray_VEH& out_increments) const
 	{
-		for (size_t i = 0; i < VEH_SIZE; i++) out_increments[i] = 1e-6;
+		for (size_t i = 0; i < VEH_SIZE; i++)
+			out_increments[i] = 1e-6;
 	}
 
 	/** Implements the transition noise covariance \f$ Q_k \f$
@@ -370,7 +372,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		// Default: all of them:
 		const size_t N = this->getNumberOfLandmarksInTheMap();
 		out_LM_indices_to_predict.resize(N);
-		for (size_t i = 0; i < N; i++) out_LM_indices_to_predict[i] = i;
+		for (size_t i = 0; i < N; i++)
+			out_LM_indices_to_predict[i] = i;
 	}
 
 	/** Return the observation NOISE covariance matrix, that is, the model of
@@ -450,8 +453,10 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		KFArray_VEH& out_veh_increments,
 		KFArray_FEAT& out_feat_increments) const
 	{
-		for (size_t i = 0; i < VEH_SIZE; i++) out_veh_increments[i] = 1e-6;
-		for (size_t i = 0; i < FEAT_SIZE; i++) out_feat_increments[i] = 1e-6;
+		for (size_t i = 0; i < VEH_SIZE; i++)
+			out_veh_increments[i] = 1e-6;
+		for (size_t i = 0; i < FEAT_SIZE; i++)
+			out_feat_increments[i] = 1e-6;
 	}
 
 	/** Computes A=A-B, which may need to be re-implemented depending on the
@@ -609,9 +614,9 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	/** The vector of all partial Jacobians dh[i]_dy[i] for each prediction */
 	std::vector<KFMatrix_OxF> m_Hys;
 	KFMatrix m_S;
-	vector_KFArray_OBS m_Z;  // Each entry is one observation:
+	vector_KFArray_OBS m_Z;	 // Each entry is one observation:
 	KFMatrix m_K;  // Kalman gain
-	KFMatrix m_S_1;  // Inverse of m_S
+	KFMatrix m_S_1;	 // Inverse of m_S
 	KFMatrix m_dh_dx_full_obs;
 	KFMatrix m_aux_K_dh_dx;
 
@@ -651,7 +656,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 		const typename CKalmanFilterCapable<
 			VEH_SIZEb, OBS_SIZEb, FEAT_SIZEb, ACT_SIZEb, KFTYPEb>::KFMatrix_OxO&
 			R);
-};  // end class
+};	// end class
 
 }  // namespace bayes
 }  // namespace mrpt

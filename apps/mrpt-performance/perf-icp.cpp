@@ -32,8 +32,7 @@ using namespace std;
 double icp_test_1(int a1, int a2)
 {
 	using namespace std::string_literals;
-	const std::string rawlog_file =
-		mrpt::system::getShareMRPTDir() +
+	const std::string rawlog_file = mrpt::system::getShareMRPTDir() +
 		"datasets/2006-01ENE-21-SENA_Telecom Faculty_one_loop_only.rawlog"s;
 
 	if (!mrpt::system::fileExists(rawlog_file)) return 1;
@@ -103,7 +102,7 @@ double icp_test_1(int a1, int a2)
 		// --------------------------------------------------
 		if (!CRawlog::readActionObservationPair(
 				arch, action, observations, rawlogEntry))
-			break;  // file EOF
+			break;	// file EOF
 
 		// Execute:
 		mapBuilder.processActionObservation(*action, *observations);

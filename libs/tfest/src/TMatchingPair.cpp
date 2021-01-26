@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "tfest-precomp.h"  // Precompiled headers
+#include "tfest-precomp.h"	// Precompiled headers
 //
 #include <mrpt/core/format.h>
 #include <mrpt/poses/CPose2D.h>
@@ -18,7 +18,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
-#include <numeric>  // accumulate()
+#include <numeric>	// accumulate()
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -175,9 +175,7 @@ void TMatchingPairListTempl<T>::filterUniqueRobustPairs(
 				bestMatchForThisMap[c.this_idx]
 					->errorSquareAfterTransformation  // or better
 		)
-		{
-			bestMatchForThisMap[c.this_idx] = &c;
-		}
+		{ bestMatchForThisMap[c.this_idx] = &c; }
 	}
 
 	//   2) Go again through the list of correspondences and remove those
@@ -185,7 +183,7 @@ void TMatchingPairListTempl<T>::filterUniqueRobustPairs(
 	for (auto& c : *this)
 	{
 		if (bestMatchForThisMap[c.this_idx] == &c)
-			out_filtered_list.push_back(c);  // Add to the output
+			out_filtered_list.push_back(c);	 // Add to the output
 	}
 }
 

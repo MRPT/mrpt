@@ -8,12 +8,13 @@
    +---------------------------------------------------------------------------+
    */
 #include "CViewerContainer.h"
-#include "CGLWidget.h"
-#include "gui/observationTree/CRangeScanNode.h"
-#include "ui_CViewerContainer.h"
 
 #include <QDebug>
 #include <QTextEdit>
+
+#include "CGLWidget.h"
+#include "gui/observationTree/CRangeScanNode.h"
+#include "ui_CViewerContainer.h"
 
 CViewerContainer::CViewerContainer(QWidget* parent)
 	: QWidget(parent),
@@ -136,12 +137,12 @@ void CViewerContainer::updateConfigChanges(
 	for (auto& it : renderizableMaps)
 	{
 		bool is2D = it.first.type == TypeOfConfig::PointsMap ||
-					it.first.type == TypeOfConfig::Occupancy;
+			it.first.type == TypeOfConfig::Occupancy;
 		CGlWidget* gl = new CGlWidget(is2D);
 		gl->fillMap(it.second);
 
 		QString name = QString::fromStdString(typeToName(it.first.type)) +
-					   QString::number(it.first.index);
+			QString::number(it.first.index);
 		int tabIndex = m_ui->m_tabWidget->addTab(gl, name);
 		m_tabsInfo.emplace(tabIndex, it.first);
 
@@ -202,7 +203,8 @@ void CViewerContainer::changedSelected(
 	const std::vector<CRobotPose::Ptr>& robotPoses)
 {
 	std::vector<size_t> indexes;
-	for (auto& pose : robotPoses) indexes.push_back(pose->getId());
+	for (auto& pose : robotPoses)
+		indexes.push_back(pose->getId());
 	emit selectedChanged(indexes);
 }
 

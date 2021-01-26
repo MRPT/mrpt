@@ -84,8 +84,7 @@ class CPolyhedron : public CRenderizableShaderWireFrame,
 		 */
 		bool operator==(const TPolyhedronEdge& e) const
 		{
-			if (e.v1 == v1 && e.v2 == v2)
-				return true;
+			if (e.v1 == v1 && e.v2 == v2) return true;
 			else
 				return e.v1 == v2 && e.v2 == v1;
 		}

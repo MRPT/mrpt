@@ -24,7 +24,6 @@
 // The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
 //  See http://sourceforge.net/projects/wxmathplot
 #include <mrpt/3rdparty/mathplot/mathplot.h>
-
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 class CFormRawMap : public wxDialog

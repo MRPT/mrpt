@@ -10,7 +10,7 @@
 
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/obs/CObservation.h>  // INVALID_LANDMARK_ID
+#include <mrpt/obs/CObservation.h>	// INVALID_LANDMARK_ID
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/serialization/CSerializable.h>
@@ -122,6 +122,6 @@ class CLandmark : public mrpt::serialization::CSerializable
 	 */
 	static TLandmarkID m_counterIDs;
 
-};  // End of class definition
+};	// End of class definition
 
 }  // namespace mrpt::maps

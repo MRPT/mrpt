@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
+#include "opengl-precomp.h"	 // Precompiled header
 //
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/serialization/CArchive.h>
@@ -43,7 +43,8 @@ std::array<mrpt::math::TPoint3Df, 8> CFrustum::computeFrustumCorners() const
 	for (size_t j = 0; j < 2; j++)
 	{
 		const float r = j == 0 ? m_min_distance : m_max_distance;
-		for (size_t i = 0; i < 4; i++) pts[4 * j + i].x = r;
+		for (size_t i = 0; i < 4; i++)
+			pts[4 * j + i].x = r;
 		pts[4 * j + 0].y = -r * tan(m_fov_horz_left);
 		pts[4 * j + 1].y = -r * tan(m_fov_horz_left);
 		pts[4 * j + 2].y = r * tan(m_fov_horz_right);
@@ -103,7 +104,8 @@ void CFrustum::onUpdateBuffers_Triangles()
 	tris.emplace_back(pts[1], pts[0], pts[4]);
 
 	// All faces, all vertices, same color:
-	for (auto& t : tris) t.setColor(m_planes_color);
+	for (auto& t : tris)
+		t.setColor(m_planes_color);
 }
 
 // Ctors
@@ -163,8 +165,7 @@ void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				m_planes_color.R >> m_planes_color.G >> m_planes_color.B >>
 				m_planes_color.A;
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

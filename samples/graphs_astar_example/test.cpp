@@ -9,6 +9,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <mrpt/graphs/CAStarAlgorithm.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -54,7 +55,7 @@ class CCoinDistribution
 	inline bool operator==(const CCoinDistribution& mon) const
 	{
 		return (coins2 == mon.coins2) && (coins7 == mon.coins7) &&
-			   (coins8 == mon.coins8) && (coins19 == mon.coins19);
+			(coins8 == mon.coins8) && (coins19 == mon.coins19);
 	}
 };
 
@@ -97,7 +98,7 @@ class CAStarExample : public CAStarAlgorithm<CCoinDistribution>
 		sols[0].coins2++;  // Misma solución, más una moneda de 2.
 		sols[1].coins7++;  // Misma solución, más una moneda de 7.
 		sols[2].coins8++;  // Misma solución, más una moneda de 8...
-		sols[3].coins19++;  // Y misma solución, más una moneda de 19.
+		sols[3].coins19++;	// Y misma solución, más una moneda de 19.
 	}
 	double getHeuristic(const CCoinDistribution& s) override
 	{  // Heuristic cost of the remaining part of the solution.
@@ -121,9 +122,10 @@ int main(int argc, char** argv)
 		char text[11];
 		printf(
 			"Input an integer number to solve a problem, or \"e\" to end.\n");
-		if (1 != scanf(
-					 "%10s",
-					 text))  // GCC warning: scanf -> return cannot be ignored!
+		if (1 !=
+			scanf(
+				"%10s",
+				text))	// GCC warning: scanf -> return cannot be ignored!
 		{
 			printf("Please, input a positive integer.\n\n");
 			continue;
@@ -137,7 +139,7 @@ int main(int argc, char** argv)
 		}
 		// The solution objects and the problem are created...
 		CCoinDistribution solIni,
-			solFin;  // Initial solution automatically initialized to (0,0,0,0).
+			solFin;	 // Initial solution automatically initialized to (0,0,0,0).
 		CAStarExample prob(static_cast<size_t>(val));
 		switch (prob.getOptimalSolution(solIni, solFin, HUGE_VAL, 15))
 		{

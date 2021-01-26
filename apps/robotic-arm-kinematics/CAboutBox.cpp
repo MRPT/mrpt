@@ -20,7 +20,9 @@
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/system/os.h>
-#include <Eigen/Dense>  // for version
+
+#include <Eigen/Dense>	// for version
+
 #include "robotic_arm_kinematicsMain.h"
 
 using namespace mrpt;
@@ -167,7 +169,7 @@ void CAboutBox::OnInit([[maybe_unused]] wxInitDialogEvent& event)
 	wxVer << _T("-Unicode build");
 #else
 	wxVer << _T("-ANSI build");
-#endif  // wxUSE_UNICODE
+#endif	// wxUSE_UNICODE
 
 	// Set the label with MRPT version:
 	wxString s(_("Build: "));

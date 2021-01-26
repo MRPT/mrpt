@@ -397,7 +397,7 @@ class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 			double initialDelay{0}, freq{1000}, dutyCycle{0.5};
 		} co_pulses;
 
-	};  // end of TaskDescription
+	};	// end of TaskDescription
 
 	/** Publicly accessible vector with the list of tasks to be launched upon
 	 * call to CNationalInstrumentsDAQ::initialize().
@@ -438,6 +438,6 @@ class CNationalInstrumentsDAQ : public mrpt::system::COutputLogger,
 	/** Method to be executed in each parallel thread. */
 	void grabbing_thread(TInfoPerTask& ipt);
 
-};  // end class
+};	// end class
 
 }  // namespace mrpt::hwdrivers

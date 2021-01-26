@@ -26,20 +26,19 @@ namespace gui
 
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
-#include <wx/icon.h>
-#include <wx/image.h>
-#include <wx/intl.h>
-#include <wx/string.h>
-
 #include <wx/busyinfo.h>
 #include <wx/colordlg.h>
 #include <wx/dcmemory.h>
 #include <wx/dirdlg.h>
 #include <wx/filedlg.h>
+#include <wx/icon.h>
+#include <wx/image.h>
 #include <wx/imaglist.h>
+#include <wx/intl.h>
 #include <wx/log.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
+#include <wx/string.h>
 #include <wx/textdlg.h>
 
 #if wxUSE_GLCANVAS && MRPT_HAS_OPENGL_GLUT
@@ -121,10 +120,10 @@ class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
 	void postRender() override;
 	void renderError(const std::string& err_msg) override;
 
-};  // end of class
+};	// end of class
 
 }  // namespace gui
 }  // namespace mrpt
 
-#endif  // wxUSE_GLCANVAS
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// wxUSE_GLCANVAS
+#endif	// MRPT_HAS_WXWIDGETS

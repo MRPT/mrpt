@@ -24,10 +24,9 @@
 #include <wx/textctrl.h>
 //*)
 
-#include <wx/combobox.h>
-
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <wx/combobox.h>
 
 class CFormEdit : public wxDialog
 {

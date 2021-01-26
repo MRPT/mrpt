@@ -31,6 +31,6 @@ class CTicTac
 
    private:
 	alignas(16) unsigned long largeInts[2]{0, 0};
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::system

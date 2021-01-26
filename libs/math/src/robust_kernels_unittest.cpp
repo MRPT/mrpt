@@ -19,9 +19,10 @@ using namespace std;
 // (expected robustified output)   ; R' (1st derivative)   ; R'' (2nd
 // derivative)
 // =============  Kernel: None (plain least squares)
-const double list_test_kernel_none[][5] = {{0.0, .0, 0.0, 1.0, 0.0},
-										   {1.0, .0, 1.0, 1.0, 0.0},
-										   {10.0, .0, 10.0, 1.0, 0.0}};
+const double list_test_kernel_none[][5] = {
+	{0.0, .0, 0.0, 1.0, 0.0},
+	{1.0, .0, 1.0, 1.0, 0.0},
+	{10.0, .0, 10.0, 1.0, 0.0}};
 
 // =============  Kernel: Pseudo-Huber
 const double list_test_kernel_pshb[][5] = {

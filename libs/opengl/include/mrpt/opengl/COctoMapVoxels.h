@@ -159,8 +159,9 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::POINTS,
-				DefaultShaderID::TRIANGLES};
+		return {
+			DefaultShaderID::WIREFRAME, DefaultShaderID::POINTS,
+			DefaultShaderID::TRIANGLES};
 	}
 	void onUpdateBuffers_Points() override;
 	void onUpdateBuffers_Wireframe() override;

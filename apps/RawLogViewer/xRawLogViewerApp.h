@@ -19,4 +19,4 @@ class xRawLogViewerApp : public wxApp
 	int OnExit() override;
 };
 
-#endif  // XRAWLOGVIEWERAPP_H
+#endif	// XRAWLOGVIEWERAPP_H

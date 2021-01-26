@@ -242,7 +242,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 						PF.executeOn(
 							pdf,
 							action.get(),  // Action
-							observations.get(),  // Obs.
+							observations.get(),	 // Obs.
 							&PF_stats  // Output statistics
 						);
 					}
@@ -255,7 +255,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 
 				step++;
 
-			};  // while rawlogEntries
+			};	// while rawlogEntries
 		}  // for repetitions
 	}  // end of loop for different # of particles
 }
@@ -285,7 +285,7 @@ TEST(MonteCarlo2D, RunSampleDataset)
 			bool pass1 = (final_pf_pose - GT_endpose).norm() < 0.10;
 			bool pass2 = final_pf_cov_trace < 0.01;
 
-			if (pass1 && pass2) return;  // OK!
+			if (pass1 && pass2) return;	 // OK!
 
 			// else: give it another try...
 			cout << "\n*Warning: Test failed. Will give it another chance, "

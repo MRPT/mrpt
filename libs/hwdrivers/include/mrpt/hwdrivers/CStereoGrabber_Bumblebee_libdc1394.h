@@ -8,10 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/config.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-
-#include <mrpt/config.h>
 
 namespace mrpt::hwdrivers
 {
@@ -67,7 +66,7 @@ class CStereoGrabber_Bumblebee_libdc1394
 
 	/** If this has been correctly initiated */
 	bool m_bInitialized;
-};  // End of class
+};	// End of class
 static_assert(
 	!std::is_copy_constructible_v<CStereoGrabber_Bumblebee_libdc1394> &&
 		!std::is_copy_assignable_v<CStereoGrabber_Bumblebee_libdc1394>,

@@ -164,7 +164,8 @@ class CPose3DGridTemplate
 		double resolution_XYZ, double resolution_YPR)
 	{
 		// Checks
-		for (int i = 0; i < 6; i++) ASSERT_GT_(bb_max[i], bb_min[i]);
+		for (int i = 0; i < 6; i++)
+			ASSERT_GT_(bb_max[i], bb_min[i]);
 		ASSERT_GT_(resolution_XYZ, .0);
 		ASSERT_GT_(resolution_YPR, .0);
 
@@ -280,7 +281,8 @@ class CPose3DGridTemplate
 
 	inline void fill(const T& val)
 	{
-		for (auto& v : m_data) v = val;
+		for (auto& v : m_data)
+			v = val;
 	}
 
 	auto getSizeX() const { return m_sizeX; }
@@ -295,6 +297,6 @@ class CPose3DGridTemplate
 	const std::vector<T>& getData() const { return m_data; }
 	std::vector<T>& getData() { return m_data; }
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::poses

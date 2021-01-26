@@ -11,6 +11,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <vector>
 
 namespace mrpt
@@ -124,8 +125,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 		v.resize(N);
 		for (size_t i = 0; i < N; i++)
 		{
-			if (m_links[i].is_prismatic)
-				v[i] = m_links[i].d;
+			if (m_links[i].is_prismatic) v[i] = m_links[i].d;
 			else
 				v[i] = m_links[i].theta;
 		}
@@ -147,8 +147,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 		const size_t N = m_links.size();
 		for (size_t i = 0; i < N; i++)
 		{
-			if (m_links[i].is_prismatic)
-				m_links[i].d = v[i];
+			if (m_links[i].is_prismatic) m_links[i].d = v[i];
 			else
 				m_links[i].theta = v[i];
 		}
@@ -187,7 +186,7 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 		std::vector<mrpt::poses::CPose3D>& poses,
 		const mrpt::poses::CPose3D& pose0 = mrpt::poses::CPose3D()) const;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace kinematics
 

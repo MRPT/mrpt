@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
+
 #include <thread>
 
 #ifdef HAVE_OPENCV_VIDEOIO
@@ -43,26 +44,13 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 	int cv_cap_indx = 0;
 	switch (cameraType)
 	{
-		case CAMERA_CV_AUTODETECT:
-			cv_cap_indx = CV_CAP_ANY;
-			break;
-		case CAMERA_CV_DC1394:
-			cv_cap_indx = CV_CAP_DC1394;
-			break;
-		case CAMERA_CV_VFL:
-			cv_cap_indx = CV_CAP_V4L;
-			break;
-		case CAMERA_CV_VFW:
-			cv_cap_indx = CV_CAP_VFW;
-			break;
-		case CAMERA_CV_MIL:
-			cv_cap_indx = CV_CAP_MIL;
-			break;
-		case CAMERA_CV_DSHOW:
-			cv_cap_indx = CV_CAP_DSHOW;
-			break;
-		default:
-			THROW_EXCEPTION_FMT("Invalid camera type: %i", cameraType);
+		case CAMERA_CV_AUTODETECT: cv_cap_indx = CV_CAP_ANY; break;
+		case CAMERA_CV_DC1394: cv_cap_indx = CV_CAP_DC1394; break;
+		case CAMERA_CV_VFL: cv_cap_indx = CV_CAP_V4L; break;
+		case CAMERA_CV_VFW: cv_cap_indx = CV_CAP_VFW; break;
+		case CAMERA_CV_MIL: cv_cap_indx = CV_CAP_MIL; break;
+		case CAMERA_CV_DSHOW: cv_cap_indx = CV_CAP_DSHOW; break;
+		default: THROW_EXCEPTION_FMT("Invalid camera type: %i", cameraType);
 	}
 
 	cv_cap_indx += cameraIndex;
@@ -98,9 +86,9 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 			enum
 			{
 				MY_MODE_160x120_YUV444 = 64,
-				MY_MODE_320x240_YUV422,  // ***
+				MY_MODE_320x240_YUV422,	 // ***
 				MY_MODE_640x480_YUV411,
-				MY_MODE_640x480_YUV422,  // ***
+				MY_MODE_640x480_YUV422,	 // ***
 				MY_MODE_640x480_RGB,  // ?
 				MY_MODE_640x480_MONO,  // ***
 				MY_MODE_640x480_MONO16
@@ -197,10 +185,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(const std::string& AVI_fileName)
 CImageGrabber_OpenCV::~CImageGrabber_OpenCV()
 {
 #if MRPT_HAS_OPENCV
-	if (m_bInitialized)
-	{
-		m_capture->cap.release();
-	}
+	if (m_bInitialized) { m_capture->cap.release(); }
 #endif
 }
 

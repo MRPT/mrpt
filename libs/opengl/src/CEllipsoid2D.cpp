@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/serialization/CArchive.h>
@@ -54,8 +54,7 @@ void CEllipsoid2D::serializeFrom(
 			setCovMatrix(m_cov);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

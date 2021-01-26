@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "graphslam-precomp.h"	// Precompiled headers
+//
 // Implementattion file for TSlidingWindow struct
-#include "graphslam-precomp.h"  // Precompiled headers
-
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
 #include <mrpt/serialization/CArchive.h>
@@ -29,15 +29,9 @@ double TSlidingWindow::getMedian()
 	MRPT_START
 
 	double median_out = 0.0;
-	if (m_measurements_vec.empty())
-	{
-		return 0.0;
-	}
+	if (m_measurements_vec.empty()) { return 0.0; }
 
-	if (m_median_updated)
-	{
-		median_out = m_median_cached;
-	}
+	if (m_median_updated) { median_out = m_median_cached; }
 	else
 	{
 		// copy the current vector, sort it and return value in middle
@@ -60,10 +54,7 @@ double TSlidingWindow::getMean()
 
 	double mean_out = 0.0;
 
-	if (m_mean_updated)
-	{
-		mean_out = m_mean_cached;
-	}
+	if (m_mean_updated) { mean_out = m_mean_cached; }
 	else
 	{
 		mean_out = std::accumulate(
@@ -140,9 +131,7 @@ void TSlidingWindow::addNewMeasurement(double measurement)
 
 	// if I haven't already filled up to win_size the vector, just add it
 	if (m_win_size > m_measurements_vec.size())
-	{
-		m_measurements_vec.push_back(measurement);
-	}
+	{ m_measurements_vec.push_back(measurement); }
 	else
 	{
 		// remove first element - add it as last element

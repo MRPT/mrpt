@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -18,9 +18,9 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <cassert>
 #include <cstring>
-
 #include <type_traits>
 
 // For Windows: get the common code out of CTicTac so it's only run once!
@@ -53,7 +53,7 @@ using namespace mrpt::system;
 // Macros for easy access to memory with the correct types:
 #ifdef _WIN32
 #define LARGE_INTEGER_NUMS reinterpret_cast<LARGE_INTEGER*>(largeInts)
-#define LARGE_INTEGER_NUMS_CONST \
+#define LARGE_INTEGER_NUMS_CONST                                               \
 	reinterpret_cast<const LARGE_INTEGER*>(largeInts)
 #else
 #define TIMEVAL_NUMS reinterpret_cast<struct timespec*>(largeInts)
@@ -94,12 +94,12 @@ double CTicTac::Tac() const noexcept
 	LARGE_INTEGER l1;
 	QueryPerformanceCounter(&l1);
 	return (l1.QuadPart - l[0].QuadPart) *
-		   AuxWindowsTicTac::GetInstance().dbl_period;
+		AuxWindowsTicTac::GetInstance().dbl_period;
 #else
 	struct timespec ts1;
 	const auto* ts = TIMEVAL_NUMS_CONST;
 	clock_gettime(CLOCK_MONOTONIC, &ts1);
 	return static_cast<double>(ts1.tv_sec - ts[0].tv_sec) +
-		   1e-9 * static_cast<double>(ts1.tv_nsec - ts[0].tv_nsec);
+		1e-9 * static_cast<double>(ts1.tv_nsec - ts[0].tv_nsec);
 #endif
 }

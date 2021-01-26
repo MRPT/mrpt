@@ -134,18 +134,15 @@ void CRandomFieldGridMap2D::internal_clear()
 					int cx2 = (j % m_size_x);
 					int cy2 = (j / m_size_x);
 
-					if (i == j)
-					{
-						m_cov(i, j) = std0sqr;
-					}
+					if (i == j) { m_cov(i, j) = std0sqr; }
 					else
 					{
-						m_cov(i, j) =
-							std0sqr * exp(-0.5 *
-										  (res2 * static_cast<double>(
-													  square(cx1 - cx2) +
-													  square(cy1 - cy2))) /
-										  KF_covSigma2);
+						m_cov(i, j) = std0sqr *
+							exp(-0.5 *
+								(res2 *
+								 static_cast<double>(
+									 square(cx1 - cx2) + square(cy1 - cy2))) /
+								KF_covSigma2);
 						m_cov(j, i) = m_cov(i, j);
 					}
 				}  // for j
@@ -204,19 +201,20 @@ void CRandomFieldGridMap2D::internal_clear()
 					Acy = 0;
 					for (Acx = 1; Acx <= W; Acx++)
 						*ptr++ = std0sqr *
-								 exp(-0.5 *
-									 (res2 * static_cast<double>(
-												 square(Acx) + square(Acy))) /
-									 KF_covSigma2);
+							exp(-0.5 *
+								(res2 *
+								 static_cast<double>(
+									 square(Acx) + square(Acy))) /
+								KF_covSigma2);
 
 					// 3) The others W rows:
 					for (Acy = 1; Acy <= W; Acy++)
 						for (Acx = -W; Acx <= W; Acx++)
-							*ptr++ =
-								std0sqr *
+							*ptr++ = std0sqr *
 								exp(-0.5 *
-									(res2 * static_cast<double>(
-												square(Acx) + square(Acy))) /
+									(res2 *
+									 static_cast<double>(
+										 square(Acx) + square(Acy))) /
 									KF_covSigma2);
 				}
 				else
@@ -246,7 +244,7 @@ void CRandomFieldGridMap2D::internal_clear()
 				getYMin(), getYMax());
 
 			// Set the gridmap (m_map) to initial values:
-			TRandomFieldCell def(0, 0);  // mean, std
+			TRandomFieldCell def(0, 0);	 // mean, std
 			fill(def);
 
 			mrpt::maps::COccupancyGridMap2D m_Ocgridmap;
@@ -277,8 +275,7 @@ void CRandomFieldGridMap2D::internal_clear()
 							this->m_insertOptions_common
 								->GMRF_gridmap_image_cy));
 					ASSERT_(grid_loaded_ok);
-					res_coef =
-						this->getResolution() /
+					res_coef = this->getResolution() /
 						this->m_insertOptions_common->GMRF_gridmap_image_res;
 				}
 				else
@@ -341,7 +338,7 @@ void CRandomFieldGridMap2D::internal_clear()
 
 			m_mrf_factors_activeObs.clear();
 			m_mrf_factors_activeObs.resize(
-				nodeCount);  // All cells, no observation
+				nodeCount);	 // All cells, no observation
 
 			m_mrf_factors_priors.clear();
 
@@ -369,13 +366,13 @@ void CRandomFieldGridMap2D::internal_clear()
 				size_t cxoj_min, cxoj_max, cyoj_min, cyoj_max, seed_cxo,
 					seed_cyo;  // Cell j limits in the Occupancy
 				size_t cxoi_min, cxoi_max, cyoi_min, cyoi_max, objective_cxo,
-					objective_cyo;  // Cell i limits in the Occupancy
+					objective_cyo;	// Cell i limits in the Occupancy
 				size_t cxo_min, cxo_max, cyo_min,
 					cyo_max;  // Cell i+j limits in the Occupancy
 				// bool first_obs = false;
 
 				std::multimap<size_t, size_t>
-					cell_interconnections;  // Store the interconnections
+					cell_interconnections;	// Store the interconnections
 				// (relations) of each cell with its
 				// neighbourds
 
@@ -483,7 +480,7 @@ void CRandomFieldGridMap2D::internal_clear()
 			else
 			{
 				ConnectivityDescriptor* custom_connectivity =
-					m_gmrf_connectivity.get();  // Use a raw ptr to avoid the
+					m_gmrf_connectivity.get();	// Use a raw ptr to avoid the
 				// cost in the inner loops
 				if (custom_connectivity != nullptr)
 					MRPT_LOG_DEBUG(
@@ -506,8 +503,8 @@ void CRandomFieldGridMap2D::internal_clear()
 					// 2) the bottom node:  j+m_size_x
 					//-------------------------------------------------
 					const size_t c_idx_to_check[2] = {cx, cy};
-					const size_t c_idx_to_check_limits[2] = {m_size_x - 1,
-															 m_size_y - 1};
+					const size_t c_idx_to_check_limits[2] = {
+						m_size_x - 1, m_size_y - 1};
 					const size_t c_neighbor_idx_incr[2] = {1, m_size_x};
 
 					for (int dir = 0; dir < 2; dir++)
@@ -562,9 +559,7 @@ void CRandomFieldGridMap2D::internal_clear()
 
 		}  // end case
 		break;
-		default:
-			cerr << "MAP TYPE NOT RECOGNIZED... QUITTING" << endl;
-			break;
+		default: cerr << "MAP TYPE NOT RECOGNIZED... QUITTING" << endl; break;
 	}  // end switch
 }
 
@@ -623,9 +618,10 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 		{
 			for (unsigned cy = 0; cy < Ac_all; cy++)
 			{
-				dist = m_resolution * sqrt(static_cast<double>(
-										  square(Ac_cutoff + 1 - cx) +
-										  square(Ac_cutoff + 1 - cy)));
+				dist = m_resolution *
+					sqrt(static_cast<double>(
+						square(Ac_cutoff + 1 - cx) +
+						square(Ac_cutoff + 1 - cy)));
 				*(it++) = std::exp(-square(dist / std));
 			}
 		}
@@ -817,20 +813,13 @@ void CRandomFieldGridMap2D::getAsMatrix(
 			switch (m_mapType)
 			{
 				case mrKernelDM:
-				case mrKernelDMV:
-					c = computeMeanCellValue_DM_DMV(cell);
-					break;
+				case mrKernelDMV: c = computeMeanCellValue_DM_DMV(cell); break;
 
 				case mrKalmanFilter:
-				case mrKalmanApproximate:
-					c = cell->kf_mean();
-					break;
-				case mrGMRF_SD:
-					c = cell->gmrf_mean();
-					break;
+				case mrKalmanApproximate: c = cell->kf_mean(); break;
+				case mrGMRF_SD: c = cell->gmrf_mean(); break;
 
-				default:
-					THROW_EXCEPTION("Unknown m_mapType!!");
+				default: THROW_EXCEPTION("Unknown m_mapType!!");
 			};
 			mrpt::saturate(
 				c, m_insertOptions_common->GMRF_saturate_min,
@@ -885,7 +874,7 @@ void CRandomFieldGridMap2D::resize(
 			//		Update the covariance matrix
 			// ------------------------------------------
 			size_t i, j, N = m_size_y * m_size_x;  // The new number of cells
-			CMatrixD oldCov(m_cov);  // Make a copy
+			CMatrixD oldCov(m_cov);	 // Make a copy
 
 			// m_cov.saveToTextFile("__debug_cov_before_resize.txt");
 
@@ -912,9 +901,9 @@ void CRandomFieldGridMap2D::resize(
 				size_t cx1 = i % m_size_x;
 				size_t cy1 = i / m_size_x;
 
-				bool C1_isFromOldMap =
-					Acx_left <= cx1 && cx1 < (Acx_left + old_sizeX) &&
-					Acy_bottom <= cy1 && cy1 < (Acy_bottom + old_sizeY);
+				bool C1_isFromOldMap = Acx_left <= cx1 &&
+					cx1 < (Acx_left + old_sizeX) && Acy_bottom <= cy1 &&
+					cy1 < (Acy_bottom + old_sizeY);
 
 				if (C1_isFromOldMap)
 				{
@@ -923,9 +912,9 @@ void CRandomFieldGridMap2D::resize(
 						size_t cx2 = j % m_size_x;
 						size_t cy2 = j / m_size_x;
 
-						bool C2_isFromOldMap =
-							Acx_left <= cx2 && cx2 < (Acx_left + old_sizeX) &&
-							Acy_bottom <= cy2 && cy2 < (Acy_bottom + old_sizeY);
+						bool C2_isFromOldMap = Acx_left <= cx2 &&
+							cx2 < (Acx_left + old_sizeX) && Acy_bottom <= cy2 &&
+							cy2 < (Acy_bottom + old_sizeY);
 
 						// Were both cells in the old map??? --> Copy it!
 						if (C1_isFromOldMap && C2_isFromOldMap)
@@ -1011,17 +1000,17 @@ void CRandomFieldGridMap2D::resize(
 				size_t cx1 = i % m_size_x;
 				size_t cy1 = i / m_size_x;
 
-				bool C1_isFromOldMap =
-					Acx_left <= cx1 && cx1 < (Acx_left + old_sizeX) &&
-					Acy_bottom <= cy1 && cy1 < (Acy_bottom + old_sizeY);
+				bool C1_isFromOldMap = Acx_left <= cx1 &&
+					cx1 < (Acx_left + old_sizeX) && Acy_bottom <= cy1 &&
+					cy1 < (Acy_bottom + old_sizeY);
 				for (j = i; j < N; j++)
 				{
 					size_t cx2 = j % m_size_x;
 					size_t cy2 = j / m_size_x;
 
-					bool C2_isFromOldMap =
-						Acx_left <= cx2 && cx2 < (Acx_left + old_sizeX) &&
-						Acy_bottom <= cy2 && cy2 < (Acy_bottom + old_sizeY);
+					bool C2_isFromOldMap = Acx_left <= cx2 &&
+						cx2 < (Acx_left + old_sizeX) && Acy_bottom <= cy2 &&
+						cy2 < (Acy_bottom + old_sizeY);
 					double dist = 0;
 
 					// If both cells were NOT in the old map??? --> Introduce
@@ -1037,8 +1026,8 @@ void CRandomFieldGridMap2D::resize(
 						else
 						{
 							dist = m_resolution *
-								   sqrt(static_cast<double>(
-									   square(cx1 - cx2) + square(cy1 - cy2)));
+								sqrt(static_cast<double>(
+									square(cx1 - cx2) + square(cy1 - cy2)));
 							double K = sqrt(m_cov(i, i) * m_cov(j, j));
 
 							if (std::isnan(K))
@@ -1049,8 +1038,7 @@ void CRandomFieldGridMap2D::resize(
 								ASSERT_(!std::isnan(K));
 							}
 
-							m_cov(i, j) =
-								K *
+							m_cov(i, j) = K *
 								exp(-0.5 *
 									square(
 										dist /
@@ -1116,20 +1104,21 @@ void CRandomFieldGridMap2D::resize(
 				// 2) W rest of the first row:
 				int Acx, Acy = 0;
 				for (Acx = 1; Acx <= W; Acx++)
-					*ptr++ =
-						std0sqr * exp(-0.5 *
-									  (res2 * static_cast<double>(
-												  square(Acx) + square(Acy))) /
-									  KF_covSigma2);
+					*ptr++ = std0sqr *
+						exp(-0.5 *
+							(res2 *
+							 static_cast<double>(square(Acx) + square(Acy))) /
+							KF_covSigma2);
 
 				// 3) The others W rows:
 				for (Acy = 1; Acy <= W; Acy++)
 					for (Acx = -W; Acx <= W; Acx++)
 						*ptr++ = std0sqr *
-								 exp(-0.5 *
-									 (res2 * static_cast<double>(
-												 square(Acx) + square(Acy))) /
-									 KF_covSigma2);
+							exp(-0.5 *
+								(res2 *
+								 static_cast<double>(
+									 square(Acx) + square(Acy))) /
+								KF_covSigma2);
 			}
 
 			// Go thru all the cells, from the bottom to the top so
@@ -1158,7 +1147,7 @@ void CRandomFieldGridMap2D::resize(
 					// "i" is an existing old cell: just copy the "m_stackedCov"
 					// row:
 					ASSERT_(int(old_idx_of_i) < m_stackedCov.rows());
-					if (old_idx_of_i != int(i))  // Copy row only if it's moved
+					if (old_idx_of_i != int(i))	 // Copy row only if it's moved
 					{
 						const double* ptr_old = &m_stackedCov(old_idx_of_i, 0);
 						double* ptr_new = &m_stackedCov(i, 0);
@@ -1205,7 +1194,7 @@ void CRandomFieldGridMap2D::insertObservation_KF(
 	ASSERT_(cell != nullptr);
 	size_t N, i, j;
 
-	double yk = normReading - cell->kf_mean();  // Predicted observation mean
+	double yk = normReading - cell->kf_mean();	// Predicted observation mean
 	double sk =
 		m_cov(cellIdx, cellIdx) +
 		square(
@@ -1432,9 +1421,8 @@ void CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 		}
 		break;
 
-		default:
-			THROW_EXCEPTION("Unknown method!");
-	};  // end switch
+		default: THROW_EXCEPTION("Unknown method!");
+	};	// end switch
 }
 
 /*---------------------------------------------------------------
@@ -1611,11 +1599,13 @@ void CRandomFieldGridMap2D::getAs3DObject(
 
 	// xs: array of X-axis values
 	xs.resize(m_size_x);
-	for (cx = 0; cx < m_size_x; cx++) xs[cx] = m_x_min + m_resolution * cx;
+	for (cx = 0; cx < m_size_x; cx++)
+		xs[cx] = m_x_min + m_resolution * cx;
 
 	// ys: array of Y-axis values
 	ys.resize(m_size_y);
-	for (cy = 0; cy < m_size_y; cy++) ys[cy] = m_y_min + m_resolution * cy;
+	for (cy = 0; cy < m_size_y; cy++)
+		ys[cy] = m_y_min + m_resolution * cy;
 
 	// Draw the surfaces:
 	switch (m_mapType)
@@ -1743,14 +1733,13 @@ void CRandomFieldGridMap2D::getAs3DObject(
 					double v_x_1y_1 =
 						min(10.0, max(0.0, square(cell_x_1y_1->kf_std())));
 
-					col_xy =
-						v_xy /
-						10;  // min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
-					col_x_1y = v_x_1y / 10;  // min(1.0,max(0.0,
+					col_xy = v_xy /
+						10;	 // min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
+					col_x_1y = v_x_1y / 10;	 // min(1.0,max(0.0,
 					// (v_x_1y-minVal_v)/AMaxMin_v ) );
-					col_xy_1 = v_xy_1 / 10;  // min(1.0,max(0.0,
+					col_xy_1 = v_xy_1 / 10;	 // min(1.0,max(0.0,
 					// (v_xy_1-minVal_v)/AMaxMin_v ) );
-					col_x_1y_1 = v_x_1y_1 / 10;  // min(1.0,max(0.0,
+					col_x_1y_1 = v_x_1y_1 / 10;	 // min(1.0,max(0.0,
 					// (v_x_1y_1-minVal_v)/AMaxMin_v ) );
 
 					// Triangle #1:
@@ -1792,7 +1781,7 @@ void CRandomFieldGridMap2D::getAs3DObject(
 			meanObj->insert(obj_m);
 			varObj->insert(obj_v);
 		}
-		break;  // end KF models
+		break;	// end KF models
 
 		case mrKernelDM:
 		case mrKernelDMV:
@@ -1961,8 +1950,8 @@ void CRandomFieldGridMap2D::getAs3DObject(
 			meanObj->insert(obj_m);
 			varObj->insert(obj_v);
 		}
-		break;  // end Kernel models
-	};  // end switch maptype
+		break;	// end Kernel models
+	};	// end switch maptype
 }
 
 /*---------------------------------------------------------------
@@ -1973,8 +1962,8 @@ double CRandomFieldGridMap2D::computeConfidenceCellValue_DM_DMV(
 {
 	// A confidence measure:
 	return 1.0 -
-		   std::exp(-square(
-			   cell->dm_mean_w() / m_insertOptions_common->dm_sigma_omega));
+		std::exp(-square(
+			cell->dm_mean_w() / m_insertOptions_common->dm_sigma_omega));
 }
 
 /*---------------------------------------------------------------
@@ -1984,9 +1973,9 @@ double CRandomFieldGridMap2D::computeMeanCellValue_DM_DMV(
 	const TRandomFieldCell* cell) const
 {
 	// A confidence measure:
-	const double alpha =
-		1.0 - std::exp(-square(
-				  cell->dm_mean_w() / m_insertOptions_common->dm_sigma_omega));
+	const double alpha = 1.0 -
+		std::exp(-square(
+			cell->dm_mean_w() / m_insertOptions_common->dm_sigma_omega));
 	const double r_val =
 		(cell->dm_mean_w() > 0) ? (cell->dm_mean() / cell->dm_mean_w()) : 0;
 	return alpha * r_val + (1 - alpha) * m_average_normreadings_mean;
@@ -1999,9 +1988,9 @@ double CRandomFieldGridMap2D::computeVarCellValue_DM_DMV(
 	const TRandomFieldCell* cell) const
 {
 	// A confidence measure:
-	const double alpha =
-		1.0 - std::exp(-square(
-				  cell->dm_mean_w() / m_insertOptions_common->dm_sigma_omega));
+	const double alpha = 1.0 -
+		std::exp(-square(
+			cell->dm_mean_w() / m_insertOptions_common->dm_sigma_omega));
 	const double r_val =
 		(cell->dm_mean_w() > 0) ? (cell->dmv_var_mean / cell->dm_mean_w()) : 0;
 	return alpha * r_val + (1 - alpha) * m_average_normreadings_var;
@@ -2064,17 +2053,16 @@ void CRandomFieldGridMap2D::predictMeasurement(
 				queries[3].cy = y2idx(y + m_resolution * 0.5);
 				// Weights:
 				queries[0].coef = K_1 * (idx2x(queries[3].cx) - x) *
-								  (idx2y(queries[3].cy) - y);
+					(idx2y(queries[3].cy) - y);
 				queries[1].coef = K_1 * (idx2x(queries[3].cx) - x) *
-								  (y - idx2y(queries[0].cy));
+					(y - idx2y(queries[0].cy));
 				queries[2].coef = K_1 * (x - idx2x(queries[0].cx)) *
-								  (idx2y(queries[3].cy) - y);
+					(idx2y(queries[3].cy) - y);
 				queries[3].coef = K_1 * (x - idx2x(queries[0].cx)) *
-								  (y - idx2y(queries[0].cy));
+					(y - idx2y(queries[0].cy));
 			}
 			break;
-		default:
-			THROW_EXCEPTION("Unknown interpolation method!");
+		default: THROW_EXCEPTION("Unknown interpolation method!");
 	};
 
 	// Run queries:
@@ -2139,8 +2127,7 @@ void CRandomFieldGridMap2D::predictMeasurement(
 			}
 			break;
 
-			default:
-				THROW_EXCEPTION("Invalid map type.");
+			default: THROW_EXCEPTION("Invalid map type.");
 		};
 	}
 
@@ -2155,8 +2142,7 @@ void CRandomFieldGridMap2D::predictMeasurement(
 
 	// Un-do the sensor normalization:
 	if (do_sensor_normalization)
-		out_predict_response =
-			m_insertOptions_common->R_min +
+		out_predict_response = m_insertOptions_common->R_min +
 			out_predict_response *
 				(m_insertOptions_common->R_max - m_insertOptions_common->R_min);
 
@@ -2185,7 +2171,7 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 
 	const TRandomFieldCell defCell(
 		m_insertOptions_common->KF_defaultCellMeanValue,  // mean
-		-1  // Just to indicate that cells are new, next changed to:
+		-1	// Just to indicate that cells are new, next changed to:
 		// m_insertOptions_common->KF_initialCellStd			// std
 	);
 
@@ -2224,8 +2210,8 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 	double yk = normReading - cell->kf_mean();
 
 	// Predicted observation variance
-	double sk = m_stackedCov(cellIdx, 0) +  // Variance of that cell: cov(i,i)
-				square(m_insertOptions_common->KF_observationModelNoise);
+	double sk = m_stackedCov(cellIdx, 0) +	// Variance of that cell: cov(i,i)
+		square(m_insertOptions_common->KF_observationModelNoise);
 
 	double sk_1 = 1.0 / sk;
 
@@ -2293,9 +2279,9 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 		int idx_i_in_c;
 		if (Acy > 0)
 			idx_i_in_c =
-				(W + 1) + (Acy - 1) * W21 + (start_cx + W);  // Rest of rows
+				(W + 1) + (Acy - 1) * W21 + (start_cx + W);	 // Rest of rows
 		else
-			idx_i_in_c = 0;  // First row.
+			idx_i_in_c = 0;	 // First row.
 
 		int window_idx = start_cx + W + (Acy + W) * W21;
 
@@ -2349,13 +2335,12 @@ void CRandomFieldGridMap2D::insertObservation_KF2(
 			// one...)
 
 			const int Ay = cy_j - cy_i;
-			if (Ay > W) break;  // We are absolutely sure out of i's window.
+			if (Ay > W) break;	// We are absolutely sure out of i's window.
 
 			const double cov_c_j = cross_covs_c_i[j];
 
 			int idx_j_in_i;
-			if (Ay > 0)
-				idx_j_in_i = Ax + W + (Ay - 1) * W21 + W + 1;
+			if (Ay > 0) idx_j_in_i = Ax + W + (Ay - 1) * W21 + W + 1;
 			else
 				idx_j_in_i = Ax;  // First row:
 
@@ -2400,7 +2385,8 @@ void CRandomFieldGridMap2D::getMeanAndCov(
 {
 	const size_t N = BASE::m_map.size();
 	out_means.resize(N);
-	for (size_t i = 0; i < N; ++i) out_means[i] = BASE::m_map[i].kf_mean();
+	for (size_t i = 0; i < N; ++i)
+		out_means[i] = BASE::m_map[i].kf_mean();
 
 	recoverMeanAndCov();
 	// Avoid warning on object slicing: we are OK with that.
@@ -2439,7 +2425,7 @@ void CRandomFieldGridMap2D::setMeanAndSTD(
 	for (size_t i = 0; i < N; ++i)
 	{
 		m_map[i].kf_mean() = in_means[i];  // update mean values
-		m_stackedCov(i, 0) = square(in_std[i]);  // update variance values
+		m_stackedCov(i, 0) = square(in_std[i]);	 // update variance values
 	}
 	recoverMeanAndCov();  // update STD values from cov matrix
 }
@@ -2460,9 +2446,7 @@ void CRandomFieldGridMap2D::updateMapEstimation()
 			// Nothing to do, already done in the insert method...
 			break;
 
-		case mrGMRF_SD:
-			this->updateMapEstimation_GMRF();
-			break;
+		case mrGMRF_SD: this->updateMapEstimation_GMRF(); break;
 		default:
 			THROW_EXCEPTION(
 				"insertObservation() isn't implemented for selected 'mapType'");
@@ -2482,9 +2466,7 @@ void CRandomFieldGridMap2D::insertIndividualReading(
 		case mrKernelDMV:
 			insertObservation_KernelDM_DMV(sensorReading, point, true);
 			break;
-		case mrKalmanFilter:
-			insertObservation_KF(sensorReading, point);
-			break;
+		case mrKalmanFilter: insertObservation_KF(sensorReading, point); break;
 		case mrKalmanApproximate:
 			insertObservation_KF2(sensorReading, point);
 			break;
@@ -2493,7 +2475,7 @@ void CRandomFieldGridMap2D::insertIndividualReading(
 				sensorReading, point, update_map, time_invariant,
 				reading_stddev == .0
 					? m_insertOptions_common
-						  ->GMRF_lambdaObs  // default information
+						  ->GMRF_lambdaObs	// default information
 					: 1.0 / mrpt::square(reading_stddev));
 			break;
 		default:
@@ -2556,8 +2538,8 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	for (size_t j = 0; j < m_map.size(); j++)
 	{
 		m_map[j].gmrf_std() = m_insertOptions_common->GMRF_skip_variance
-								  ? .0
-								  : std::sqrt(x_var[j]);
+			? .0
+			: std::sqrt(x_var[j]);
 		m_map[j].gmrf_mean() += x_incr[j];
 
 		mrpt::saturate(
@@ -2730,7 +2712,7 @@ void CRandomFieldGridMap2D::TObservationGMRF::evalJacobian(double& dr_dx) const
 double CRandomFieldGridMap2D::TPriorFactorGMRF::evaluateResidual() const
 {
 	return m_parent->m_map[this->node_id_i].gmrf_mean() -
-		   m_parent->m_map[this->node_id_j].gmrf_mean();
+		m_parent->m_map[this->node_id_j].gmrf_mean();
 }
 double CRandomFieldGridMap2D::TPriorFactorGMRF::getInformation() const
 {

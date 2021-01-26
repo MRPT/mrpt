@@ -79,7 +79,7 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 	unsigned int m_scanFrequency;  // in hertz
 	double m_angleResolution;  // in degrees
 	double m_startAngle;  // degrees
-	double m_stopAngle;  // degrees
+	double m_stopAngle;	 // degrees
 	mrpt::poses::CPose3D m_sensorPose;
 	double m_maxRange{200.0};
 	double m_beamApperture;

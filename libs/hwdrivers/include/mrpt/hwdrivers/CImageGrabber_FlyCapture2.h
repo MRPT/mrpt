@@ -274,7 +274,7 @@ class CImageGrabber_FlyCapture2
 
 	/** Returns if current configuration is stereo or not */
 	inline bool isStereo() { return m_options.stereo_mode; }
-};  // End of class
+};	// End of class
 static_assert(
 	!std::is_copy_constructible_v<CImageGrabber_FlyCapture2> &&
 		!std::is_copy_assignable_v<CImageGrabber_FlyCapture2>,

@@ -52,7 +52,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	{
 		const std::size_t N = diags.size();
 		mbDerived().setZero(N, N);
-		for (std::size_t i = 0; i < N; i++) mbDerived()(i, i) = diags[i];
+		for (std::size_t i = 0; i < N; i++)
+			mbDerived()(i, i) = diags[i];
 	}
 	void setIdentity()
 	{
@@ -284,7 +285,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 			for (Index c = r; c < N; c++)
 			{
 				typename Derived::Scalar s = 0;
-				for (Index i = 0; i < Ninner; i++) s += A(r, i) * A(c, i);
+				for (Index i = 0; i < Ninner; i++)
+					s += A(r, i) * A(c, i);
 				mbDerived()(r, c) = s;
 				mbDerived()(c, r) = s;
 			}
@@ -303,7 +305,8 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 			for (Index c = r; c < N; c++)
 			{
 				typename Derived::Scalar s = 0;
-				for (Index i = 0; i < Ninner; i++) s += A(i, r) * A(i, c);
+				for (Index i = 0; i < Ninner; i++)
+					s += A(i, r) * A(i, c);
 				mbDerived()(r, c) = s;
 				mbDerived()(c, r) = s;
 			}

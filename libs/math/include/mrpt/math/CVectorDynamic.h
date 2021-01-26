@@ -15,7 +15,8 @@
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TTypeName.h>
-#include <cstring>  // memset()
+
+#include <cstring>	// memset()
 #include <type_traits>
 
 namespace mrpt::math
@@ -79,7 +80,8 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 			if constexpr (std::is_trivial_v<T>)
 				::memset(&m_data[old_len], 0, sizeof(T) * (new_len - old_len));
 			else
-				for (size_t k = old_len; k < new_len; k++) m_data[k] = T();
+				for (size_t k = old_len; k < new_len; k++)
+					m_data[k] = T();
 		}
 	}
 
@@ -121,7 +123,8 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 		std::size_t N = std::size(data);
 		ASSERTMSG_(N != 0, "CVectorDynamic ctor: Empty array!");
 		realloc(N);
-		for (size_t i = 0; i < N; i++) m_data[i] = static_cast<T>(data[i]);
+		for (size_t i = 0; i < N; i++)
+			m_data[i] = static_cast<T>(data[i]);
 	}
 
 	/** Convert from Eigen matrix */
@@ -159,7 +162,8 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 		MRPT_START
 		ASSERT_EQUAL_(m.cols(), 1U);
 		setSize(m.rows(), 1);
-		for (Index r = 0; r < rows(); r++) (*this)[r] = m(r, 0);
+		for (Index r = 0; r < rows(); r++)
+			(*this)[r] = m(r, 0);
 		MRPT_END
 	}
 
@@ -205,7 +209,8 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	CMatrixFixed<Scalar, LEN, 1> segmentCopy(int start = 0) const
 	{
 		CMatrixFixed<Scalar, LEN, 1> v;
-		for (int i = 0; i < LEN; i++) v[i] = m_data[start + i];
+		for (int i = 0; i < LEN; i++)
+			v[i] = m_data[start + i];
 		return v;
 	}
 
@@ -215,7 +220,8 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	{
 		CVectorDynamic<Scalar> v;
 		v.resize(LEN);
-		for (int i = 0; i < LEN; i++) v[i] = m_data[start + i];
+		for (int i = 0; i < LEN; i++)
+			v[i] = m_data[start + i];
 		return v;
 	}
 

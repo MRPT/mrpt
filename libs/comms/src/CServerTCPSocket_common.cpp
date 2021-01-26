@@ -7,14 +7,16 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"  // Precompiled headers
-
+#include "comms-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/os.h>
+
 #include <cstdio>  // stderr
+
 using namespace mrpt::comms;
 
 #if defined(MRPT_OS_LINUX) || defined(__APPLE__)
@@ -28,6 +30,7 @@ using namespace mrpt::comms;
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <cerrno>
 #endif
 
@@ -98,10 +101,7 @@ std::unique_ptr<CClientTCPSocket> CServerTCPSocket::accept(int timeout_ms)
 	FD_SET(m_serverSock, &sockArr);
 
 	// The timeout:
-	if (timeout_ms < 0)
-	{
-		ptrTimeout = nullptr;
-	}
+	if (timeout_ms < 0) { ptrTimeout = nullptr; }
 	else
 	{
 		timeoutSelect.tv_sec = timeout_ms / 1000;

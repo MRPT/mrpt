@@ -25,8 +25,9 @@ class CPointPDFParticles
 	: public CPointPDF,
 	  public mrpt::bayes::CParticleFilterData<mrpt::math::TPoint3Df>,
 	  public mrpt::bayes::CParticleFilterDataImpl<
-		  CPointPDFParticles, mrpt::bayes::CParticleFilterData<
-								  mrpt::math::TPoint3Df>::CParticleList>
+		  CPointPDFParticles,
+		  mrpt::bayes::CParticleFilterData<
+			  mrpt::math::TPoint3Df>::CParticleList>
 {
 	DEFINE_SERIALIZABLE(CPointPDFParticles, mrpt::poses)
 
@@ -41,8 +42,8 @@ class CPointPDFParticles
 	 * with a given initial value  */
 	void setSize(
 		size_t numberParticles,
-		const mrpt::math::TPoint3Df& defaultValue = mrpt::math::TPoint3Df{0, 0,
-																		  0});
+		const mrpt::math::TPoint3Df& defaultValue = mrpt::math::TPoint3Df{
+			0, 0, 0});
 
 	/** Returns the number of particles */
 	size_t size() const { return m_particles.size(); }
@@ -85,5 +86,5 @@ class CPointPDFParticles
 		const CPointPDF& p1, const CPointPDF& p2,
 		const double minMahalanobisDistToDrop = 0) override;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

@@ -15,7 +15,8 @@
 #include <mrpt/obs/T3DPointsProjectionParams.h>
 #include <mrpt/obs/TRangeImageFilter.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
-#include <Eigen/Dense>  // block<>()
+
+#include <Eigen/Dense>	// block<>()
 
 namespace mrpt::obs::detail
 {
@@ -71,9 +72,9 @@ inline void range2XYZ_LUT(
 		ASSERT_EQUAL_(fp.rangeMask_max->rows(), src_obs.rangeImage.rows());
 	}
 
-	mrpt::math::CMatrix_u16* ri =
-		pp.layer.empty() ? &src_obs.rangeImage
-						 : &src_obs.rangeImageOtherLayers.at(pp.layer);
+	mrpt::math::CMatrix_u16* ri = pp.layer.empty()
+		? &src_obs.rangeImage
+		: &src_obs.rangeImageOtherLayers.at(pp.layer);
 
 #if MRPT_HAS_SSE2
 	// if image width is not 8*N, use standard method
@@ -232,7 +233,7 @@ void unprojectInto(
 			for (size_t i = 0; i < nPts; i++)
 			{
 				int img_idx_x,
-					img_idx_y;  // projected pixel coordinates, in the
+					img_idx_y;	// projected pixel coordinates, in the
 				// RGB image plane
 				bool pointWithinImage = false;
 				if (isDirectCorresp)
@@ -258,7 +259,7 @@ void unprojectInto(
 						img_idx_y = mrpt::round(
 							cy + fy * pt_wrt_color[1] / pt_wrt_color[2]);
 						pointWithinImage = img_idx_x >= 0 && img_idx_x < imgW &&
-										   img_idx_y >= 0 && img_idx_y < imgH;
+							img_idx_y >= 0 && img_idx_y < imgH;
 					}
 				}
 
@@ -414,16 +415,16 @@ inline void do_project_3d_pointcloud_SSE2(
 #if MRPT_HAS_SSE2
 	// Preconditions: minRangeMask() has the right size
 	// Use optimized version:
-	const int W_4 = W >> 2;  // /=4 , since we process 4 values at a time.
+	const int W_4 = W >> 2;	 // /=4 , since we process 4 values at a time.
 	size_t idx = 0;
 	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) float xs[4], ys[4], zs[4];
 	const __m128 D_zeros = _mm_set_ps(.0f, .0f, .0f, .0f);
-	const __m128 xormask =
-		(fp.rangeCheckBetween) ? _mm_cmpneq_ps(D_zeros, D_zeros)
-							   :  // want points BETWEEN min and max to be valid
-			_mm_cmpeq_ps(
-				D_zeros,
-				D_zeros);  // want points OUTSIDE of min and max to be valid
+	const __m128 xormask = (fp.rangeCheckBetween)
+		? _mm_cmpneq_ps(D_zeros, D_zeros)
+		:  // want points BETWEEN min and max to be valid
+		_mm_cmpeq_ps(
+			D_zeros,
+			D_zeros);  // want points OUTSIDE of min and max to be valid
 	for (int r = 0; r < H; r++)
 	{
 		const uint16_t* Du16_ptr = &rangeImage(r, 0);
@@ -437,7 +438,8 @@ inline void do_project_3d_pointcloud_SSE2(
 			// Let the compiler optimize this as MMX instructions (tested in
 			// godbolt):
 			alignas(16) float tmp[4];
-			for (int b = 0; b < 4; b++) tmp[b] = Du16_ptr[b] * rangeUnits;
+			for (int b = 0; b < 4; b++)
+				tmp[b] = Du16_ptr[b] * rangeUnits;
 
 			const __m128 D = _mm_load_ps(&tmp[0]);
 			const __m128 nz_mask = _mm_cmpgt_ps(D, D_zeros);
@@ -463,7 +465,7 @@ inline void do_project_3d_pointcloud_SSE2(
 							_mm_cmplt_ps(D, Dmax), _mm_cmpeq_ps(Dmax, D_zeros));
 					}
 					valid_range_mask = _mm_and_ps(
-						valid_range_mask, nz_mask);  // Filter out D=0 points
+						valid_range_mask, nz_mask);	 // Filter out D=0 points
 				}
 				else
 				{
@@ -482,16 +484,17 @@ inline void do_project_3d_pointcloud_SSE2(
 					valid_range_mask = _mm_xor_ps(valid_range_mask, xormask);
 					// Add the case of D_min & D_max = 0 (no filtering)
 					valid_range_mask = _mm_or_ps(
-						valid_range_mask, _mm_and_ps(
-											  _mm_cmpeq_ps(Dmin, D_zeros),
-											  _mm_cmpeq_ps(Dmax, D_zeros)));
+						valid_range_mask,
+						_mm_and_ps(
+							_mm_cmpeq_ps(Dmin, D_zeros),
+							_mm_cmpeq_ps(Dmax, D_zeros)));
 					// Finally, ensure no invalid ranges get thru:
 					valid_range_mask = _mm_and_ps(valid_range_mask, nz_mask);
 				}
 			}
 			const int valid_range_maski = _mm_movemask_epi8(
 				_mm_castps_si128(valid_range_mask));  // 0x{f|0}{f|0}{f|0}{f|0}
-			if (valid_range_maski != 0)  // Any of the 4 values is valid?
+			if (valid_range_maski != 0)	 // Any of the 4 values is valid?
 			{
 				const __m128 KX = _mm_load_ps(kxs);
 				const __m128 KY = _mm_load_ps(kys);

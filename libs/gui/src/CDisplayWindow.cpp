@@ -8,14 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/img/CImage.h>
-#include <mrpt/system/os.h>
-
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -389,8 +388,10 @@ void CDisplayWindow::showImageAndPoints(
 	const TColor& color, bool showNumbers)
 {
 	std::vector<float> x(x_.size()), y(y_.size());
-	for (size_t i = 0; i < x.size(); i++) x[i] = x_[i];
-	for (size_t i = 0; i < y.size(); i++) y[i] = y_[i];
+	for (size_t i = 0; i < x.size(); i++)
+		x[i] = x_[i];
+	for (size_t i = 0; i < y.size(); i++)
+		y[i] = y_[i];
 	showImageAndPoints(img, x, y, color, showNumbers);
 }
 
@@ -404,7 +405,7 @@ void CDisplayWindow::showImageAndPoints(
 	MRPT_START
 	ASSERT_(x.size() == y.size());
 
-	CImage imgColor = img.colorImage();  // Create a colorimage
+	CImage imgColor = img.colorImage();	 // Create a colorimage
 	for (size_t i = 0; i < x.size(); i++)
 	{
 		imgColor.drawMark(round(x[i]), round(y[i]), color, '+');

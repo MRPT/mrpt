@@ -14,6 +14,7 @@
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/vision/TKeyPoint.h>
 #include <mrpt/vision/types.h>
+
 #include <optional>
 
 namespace mrpt
@@ -78,7 +79,7 @@ class CFeature : public mrpt::serialization::CSerializable
 	/** A measure of the "goodness" of the feature */
 	float response{0.0};
 
-	float orientation{0.0};  //!< Main orientation of the feature
+	float orientation{0.0};	 //!< Main orientation of the feature
 	// Scale: replaced by keypoint.octave ==> float scale{0};
 
 	/** A field for any other flags needed by the user (this has not a
@@ -86,14 +87,14 @@ class CFeature : public mrpt::serialization::CSerializable
 	uint8_t user_flags{0};
 
 	// # added by Raghavender Sahdev
-	float x2[2], y2[2];  //!< Coordinates for a LSD Detector to represent a line
+	float x2[2], y2[2];	 //!< Coordinates for a LSD Detector to represent a line
 
 	double depth{
-		0};  //!< The estimated depth in 3D of this feature wrt the camera
+		0};	 //!< The estimated depth in 3D of this feature wrt the camera
 	//! in the current frame
 	//!
 	double initialDepth{
-		0};  //!< The estimated depth in 3D of this feature wrt the
+		0};	 //!< The estimated depth in 3D of this feature wrt the
 	//! camera that took its image
 	mrpt::math::TPoint3D
 		p3D;  //!< The estimated 3D point of this feature wrt its camera
@@ -267,7 +268,7 @@ class CFeature : public mrpt::serialization::CSerializable
 		const mrpt::math::CMatrixF& desc1, const mrpt::math::CMatrixF& desc2,
 		float& minDistAngle, bool normalize_distances, bool dont_shift_angle);
 
-};  // end of class
+};	// end of class
 
 /** A list of visual features, to be used as output by detectors, as
  * input/output by trackers, etc.
@@ -393,8 +394,7 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	inline float kdtree_get_pt(const size_t idx, int dim) const
 	{
 		ASSERTDEB_(dim == 0 || dim == 1);
-		if (dim == 0)
-			return m_feats[idx].keypoint.pt.x;
+		if (dim == 0) return m_feats[idx].keypoint.pt.x;
 		else
 			return m_feats[idx].keypoint.pt.y;
 	}
@@ -484,7 +484,7 @@ class CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 	inline void mark_as_outdated() const { kdtree_mark_as_outdated(); }
 	/** @} */
 
-};  // end of class
+};	// end of class
 
 /****************************************************
 			Class CMATCHEDFEATURELIST
@@ -538,7 +538,7 @@ class CMatchedFeatureList : public std::deque<std::pair<CFeature, CFeature>>
 
    protected:
 	TFeatureID m_leftMaxID{0}, m_rightMaxID{0};
-};  // end of class
+};	// end of class
 
 /** @} */  // End of add to module: mrptvision_features
 

@@ -73,7 +73,7 @@ class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
 
 	/** Query if exist movement limits */
 
-	bool enableLimitsQ(bool& enable) override;  // Query if exist some limit
+	bool enableLimitsQ(bool& enable) override;	// Query if exist some limit
 
 	/** Enable/Disable movement limits */
 
@@ -322,6 +322,6 @@ class CTuMicos : public CPtuBase, public mrpt::system::COutputLogger
 
 	int axis_index;
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

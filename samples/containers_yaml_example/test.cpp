@@ -13,7 +13,7 @@
 
 //! [example-yaml]
 #include <mrpt/containers/yaml.h>
-#include <mrpt/core/demangle.h>  // demangle() utility
+#include <mrpt/core/demangle.h>	 // demangle() utility
 
 #include <iostream>
 

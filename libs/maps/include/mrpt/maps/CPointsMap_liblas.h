@@ -10,13 +10,13 @@
 
 /** \file Include this file in your user application only if you have libLAS
  * installed in your system */
+#include <mrpt/maps/CPointsMap.h>
+
+#include <fstream>
+#include <iostream>
 #include <liblas/liblas.hpp>
 #include <liblas/reader.hpp>
 #include <liblas/writer.hpp>
-
-#include <mrpt/maps/CPointsMap.h>
-#include <fstream>
-#include <iostream>
 #include <string>
 
 namespace mrpt

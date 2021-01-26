@@ -10,6 +10,7 @@
 
 #include <mrpt/core/common.h>  // remove MSVC warnings
 #include <mrpt/core/integer_select.h>
+
 #include <array>
 #include <stdexcept>
 #include <string_view>
@@ -93,7 +94,7 @@ class ts_hash_map
 		bool operator==(const const_iterator& o) const
 		{
 			return m_vec == o.m_vec && m_idx_outer == o.m_idx_outer &&
-				   m_idx_inner == o.m_idx_inner;
+				m_idx_inner == o.m_idx_inner;
 		}
 		bool operator!=(const const_iterator& o) const { return !(*this == o); }
 		const value_type& operator*() const
@@ -256,6 +257,6 @@ class ts_hash_map
 	iterator end() { return iterator(m_vec, *this, m_vec.size(), 0); }
 	/** @} */
 
-};  // end class ts_hash_map
+};	// end class ts_hash_map
 
 }  // namespace mrpt::containers

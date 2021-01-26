@@ -12,6 +12,7 @@
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
+
 #include <iostream>
 
 using config_changer_t = std::function<void(mrpt::config::CConfigFileBase&)>;
@@ -28,8 +29,7 @@ void generic_pf_test(
 	using namespace std::string_literals;
 
 	const auto ini_fil = mrpt::UNITTEST_BASEDIR +
-						 "/share/mrpt/config_files/pf-localization/"s +
-						 ini_filename;
+		"/share/mrpt/config_files/pf-localization/"s + ini_filename;
 	ASSERT_FILE_EXISTS_(ini_fil);
 
 	const auto rawlog_fil =
@@ -45,8 +45,8 @@ void generic_pf_test(
 		MCL app;
 		app.setMinLoggingLevel(mrpt::system::LVL_ERROR);
 
-		const char* argv[] = {"pf-localization-slam", ini_fil.c_str(),
-							  rawlog_fil.c_str()};
+		const char* argv[] = {
+			"pf-localization-slam", ini_fil.c_str(), rawlog_fil.c_str()};
 		const int argc = sizeof(argv) / sizeof(argv[0]);
 
 		app.initialize(argc, argv);
@@ -93,10 +93,7 @@ static auto tester_for_localization_demo =
 		const auto p_err = mrpt::poses::CPose3D(p_gt - p);
 		const double err = mrpt::poses::Lie::SE<3>::log(p_err).norm();
 
-		if (err < 0.5)
-		{
-			tester_result_ok = true;
-		}
+		if (err < 0.5) { tester_result_ok = true; }
 		else
 		{
 			tester_result_ok = false;

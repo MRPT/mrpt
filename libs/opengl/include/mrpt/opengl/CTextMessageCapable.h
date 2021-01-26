@@ -11,6 +11,7 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/opengl_fonts.h>
+
 #include <map>
 
 namespace mrpt::opengl
@@ -75,6 +76,6 @@ class CTextMessageCapable
    protected:
 	TListTextMessages m_2D_texts;
 
-};  // end of CTextMessageCapable
+};	// end of CTextMessageCapable
 
 }  // namespace mrpt::opengl

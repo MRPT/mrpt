@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/random.h>
 
 using namespace mrpt::slam;
@@ -57,7 +57,8 @@ CHMHMapNode::~CHMHMapNode()
 	if (m_parent.get()) m_parent->onNodeDestruction(this);
 
 	// To the arcs:
-	for (auto& m_arc : m_arcs) m_arc->onNodeDestruction(this);
+	for (auto& m_arc : m_arcs)
+		m_arc->onNodeDestruction(this);
 }
 
 uint8_t CHMHMapNode::serializeGetVersion() const { return 0; }
@@ -85,8 +86,7 @@ void CHMHMapNode::serializeFrom(
 			//	m_parent->onNodeAddition(this);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -120,7 +120,7 @@ void CHMHMapNode::onArcAddition(const CHMHMapArc::Ptr& arc)
 	{
 		// Already in the list?
 		auto it = m_arcs.find(arc);
-		if (it == m_arcs.end()) m_arcs.push_back(arc);  // Add to the list:
+		if (it == m_arcs.end()) m_arcs.push_back(arc);	// Add to the list:
 	}
 
 	MRPT_END

@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/system/datetime.h>
+
 #include <iostream>
 #include <mutex>
 
@@ -86,10 +87,7 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 	}
 
 	// First, update velocities:
-	if (hasVelocities)
-	{
-		m_robot_vel_local = velLocal;
-	}
+	if (hasVelocities) { m_robot_vel_local = velLocal; }
 	else
 	{  // Note: JLBC 23/Nov/2016: I have removed an estimation of velocity from
 		// increments of odometry
@@ -189,7 +187,7 @@ void CRobot2DPoseEstimator::extrapolateRobotPose(
 	{
 		// vy==0, assume we are in a Ackermann-like steering vehicle: compute an
 		// arc:
-		const double R = velLocal.vx / velLocal.omega;  // Radius
+		const double R = velLocal.vx / velLocal.omega;	// Radius
 		const double theta = velLocal.omega * delta_time;  // traversed arc
 		const double cc = cos(p.phi);
 		const double ss = sin(p.phi);

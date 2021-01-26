@@ -11,6 +11,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "gridmapSimulMain.h"
 //*)
 #include <wx/log.h>

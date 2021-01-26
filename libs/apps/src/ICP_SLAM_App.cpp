@@ -53,9 +53,7 @@ void ICP_SLAM_App_Base::initialize(int argc, const char** argv)
 
 	// Process arguments:
 	if (argc < 2)
-	{
-		THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str());
-	}
+	{ THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str()); }
 
 	// Config file:
 	const std::string configFile = std::string(argv[1]);
@@ -192,7 +190,7 @@ void ICP_SLAM_App_Base::run()
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
 		if (!impl_get_next_observations(action, observations, observation))
-			break;  // EOF
+			break;	// EOF
 
 		const bool isObsBasedRawlog = observation ? true : false;
 
@@ -202,9 +200,9 @@ void ICP_SLAM_App_Base::run()
 			 *observations->begin() &&
 			 (*observations->begin())->timestamp != INVALID_TIMESTAMP));
 
-		const mrpt::system::TTimeStamp cur_timestamp =
-			isObsBasedRawlog ? observation->timestamp
-							 : (*observations->begin())->timestamp;
+		const mrpt::system::TTimeStamp cur_timestamp = isObsBasedRawlog
+			? observation->timestamp
+			: (*observations->begin())->timestamp;
 
 		// For drawing in 3D views:
 		std::vector<mrpt::obs::CObservation2DRangeScan::Ptr> lst_lidars;
@@ -252,8 +250,7 @@ void ICP_SLAM_App_Base::run()
 					CObservation2DRangeScan::Ptr new_obs =
 						observations
 							->getObservationByClass<CObservation2DRangeScan>(i);
-					if (!new_obs)
-						break;  // There're no more scans
+					if (!new_obs) break;  // There're no more scans
 					else
 						lst_lidars.push_back(new_obs);
 				}
@@ -263,8 +260,7 @@ void ICP_SLAM_App_Base::run()
 		// Execute:
 		// ----------------------------------------
 		tictac.Tic();
-		if (isObsBasedRawlog)
-			mapBuilder.processObservation(observation);
+		if (isObsBasedRawlog) mapBuilder.processObservation(observation);
 		else
 			mapBuilder.processActionObservation(*action, *observations);
 		t_exec = tictac.Tac();
@@ -323,7 +319,7 @@ void ICP_SLAM_App_Base::run()
 				mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);
 			groundPlane->setColor(0.4f, 0.4f, 0.4f);
 			view->insert(groundPlane);
-			view_map->insert(CRenderizable::Ptr(groundPlane));  // A copy
+			view_map->insert(CRenderizable::Ptr(groundPlane));	// A copy
 
 			// The camera pointing to the current robot pose:
 			if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
@@ -479,8 +475,7 @@ void ICP_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
 {
 	MRPT_START
 	// Rawlog file: from args. line or from config file:
-	if (argc == 3)
-		m_rawlogFileName = std::string(argv[2]);
+	if (argc == 3) m_rawlogFileName = std::string(argv[2]);
 	else
 		m_rawlogFileName = params.read_string(
 			sect, "rawlog_file", std::string("log.rawlog"), true);
@@ -507,9 +502,7 @@ void ICP_SLAM_App_Live::impl_initialize(int argc, const char** argv)
 	MRPT_START
 
 	if (argc != 2)
-	{
-		THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str());
-	}
+	{ THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str()); }
 
 	// Config file already loaded into "params".
 

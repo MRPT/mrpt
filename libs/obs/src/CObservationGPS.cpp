@@ -8,10 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
-#include <mrpt/math/matrix_serialization.h>  // for << of matrices
+//
+#include <mrpt/math/matrix_serialization.h>	 // for << of matrices
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <iomanip>
 
 using namespace std;
@@ -36,11 +37,12 @@ uint8_t CObservationGPS::serializeGetVersion() const { return 11; }
 void CObservationGPS::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << timestamp << originalReceivedTimestamp << sensorLabel << sensorPose;
-	out << has_satellite_timestamp;  // v11
+	out << has_satellite_timestamp;	 // v11
 
 	const uint32_t nMsgs = messages.size();
 	out << nMsgs;
-	for (const auto& message : messages) message.second->writeToStream(out);
+	for (const auto& message : messages)
+		message.second->writeToStream(out);
 }
 
 void CObservationGPS::serializeFrom(
@@ -55,8 +57,7 @@ void CObservationGPS::serializeFrom(
 		{
 			in >> timestamp >> originalReceivedTimestamp >> sensorLabel >>
 				sensorPose;
-			if (version >= 11)
-				in >> has_satellite_timestamp;  // v11
+			if (version >= 11) in >> has_satellite_timestamp;  // v11
 			else
 				has_satellite_timestamp =
 					(this->timestamp != this->originalReceivedTimestamp);
@@ -105,8 +106,7 @@ void CObservationGPS::serializeFrom(
 		case 8:
 		case 9:
 		{
-			if (version >= 3)
-				in >> timestamp;
+			if (version >= 3) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 
@@ -160,12 +160,10 @@ void CObservationGPS::serializeFrom(
 				MRPT_READ_POD(in, RMC_datum.direction_degrees);
 				this->setMsg(datum);
 			}
-			if (version > 1)
-				in >> sensorLabel;
+			if (version > 1) in >> sensorLabel;
 			else
 				sensorLabel = "";
-			if (version >= 4)
-				in >> sensorPose;
+			if (version >= 4) in >> sensorPose;
 			else
 				sensorPose.setFromValues(0, 0, 0, 0, 0, 0);
 			if (version >= 5)
@@ -241,8 +239,7 @@ void CObservationGPS::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
 	if (version < 10 && originalReceivedTimestamp == INVALID_TIMESTAMP)
@@ -253,7 +250,8 @@ void CObservationGPS::dumpToStream(std::ostream& out) const
 {
 	out << "\n------------- [CObservationGPS] Dump of " << messages.size()
 		<< " messages --------------------\n";
-	for (const auto& m : messages) m.second->dumpToStream(out);
+	for (const auto& m : messages)
+		m.second->dumpToStream(out);
 	out << "-------------- [CObservationGPS] End of dump -----------------\n\n";
 }
 
@@ -301,10 +299,11 @@ mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(
 {
 	auto it = messages.find(type_id);
 	ASSERTMSG_(
-		it != messages.end(), mrpt::format(
-								  "[CObservationGPS::getMsgByType] Cannot find "
-								  "any observation of type `%u`",
-								  static_cast<unsigned int>(type_id)));
+		it != messages.end(),
+		mrpt::format(
+			"[CObservationGPS::getMsgByType] Cannot find "
+			"any observation of type `%u`",
+			static_cast<unsigned int>(type_id)));
 	return it->second.get();
 }
 /** \overload */
@@ -313,15 +312,16 @@ const mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(
 {
 	auto it = messages.find(type_id);
 	ASSERTMSG_(
-		it != messages.end(), mrpt::format(
-								  "[CObservationGPS::getMsgByType] Cannot find "
-								  "any observation of type `%u`",
-								  static_cast<unsigned int>(type_id)));
+		it != messages.end(),
+		mrpt::format(
+			"[CObservationGPS::getMsgByType] Cannot find "
+			"any observation of type `%u`",
+			static_cast<unsigned int>(type_id)));
 	return it->second.get();
 }
 
 // From: http://gnsstk.sourceforge.net/time__conversion_8c-source.html
-#define TIMECONV_JULIAN_DATE_START_OF_GPS_TIME (2444244.5)  // [days]
+#define TIMECONV_JULIAN_DATE_START_OF_GPS_TIME (2444244.5)	// [days]
 bool TIMECONV_GetJulianDateFromGPSTime(
 	const unsigned short gps_week, const double gps_tow,
 	const unsigned int utc_offset, double* julian_date)
@@ -329,7 +329,7 @@ bool TIMECONV_GetJulianDateFromGPSTime(
 	if (gps_tow < 0.0 || gps_tow > 604800.0) return false;
 	// GPS time is ahead of UTC time and Julian time by the UTC offset
 	*julian_date = (gps_week + (gps_tow - utc_offset) / 604800.0) * 7.0 +
-				   TIMECONV_JULIAN_DATE_START_OF_GPS_TIME;
+		TIMECONV_JULIAN_DATE_START_OF_GPS_TIME;
 	return true;
 }
 
@@ -341,8 +341,7 @@ bool TIMECONV_IsALeapYear(const unsigned short year)
 		is_a_leap_year = true;
 		if ((year % 100) == 0)
 		{
-			if ((year % 400) == 0)
-				is_a_leap_year = true;
+			if ((year % 400) == 0) is_a_leap_year = true;
 			else
 				is_a_leap_year = false;
 		}
@@ -363,52 +362,25 @@ bool TIMECONV_GetNumberOfDaysInMonth(
 
 	switch (month)
 	{
-		case 1:
-			utmp = 31;
-			break;
+		case 1: utmp = 31; break;
 		case 2:
-			if (is_a_leapyear)
-			{
-				utmp = 29;
-			}
+			if (is_a_leapyear) { utmp = 29; }
 			else
 			{
 				utmp = 28;
 			}
 			break;
-		case 3:
-			utmp = 31;
-			break;
-		case 4:
-			utmp = 30;
-			break;
-		case 5:
-			utmp = 31;
-			break;
-		case 6:
-			utmp = 30;
-			break;
-		case 7:
-			utmp = 31;
-			break;
-		case 8:
-			utmp = 31;
-			break;
-		case 9:
-			utmp = 30;
-			break;
-		case 10:
-			utmp = 31;
-			break;
-		case 11:
-			utmp = 30;
-			break;
-		case 12:
-			utmp = 31;
-			break;
-		default:
-			return false;
-			break;
+		case 3: utmp = 31; break;
+		case 4: utmp = 30; break;
+		case 5: utmp = 31; break;
+		case 6: utmp = 30; break;
+		case 7: utmp = 31; break;
+		case 8: utmp = 31; break;
+		case 9: utmp = 30; break;
+		case 10: utmp = 31; break;
+		case 11: utmp = 30; break;
+		case 12: utmp = 31; break;
+		default: return false; break;
 	}
 	*days_in_month = utmp;
 	return true;
@@ -418,7 +390,7 @@ bool TIMECONV_GetNumberOfDaysInMonth(
 bool TIMECONV_GetUTCTimeFromJulianDate(
 	const double julian_date, mrpt::system::TTimeParts& utc)
 {
-	int a, b, c, d, e;  // temporary values
+	int a, b, c, d, e;	// temporary values
 
 	unsigned short year;
 	unsigned char month;
@@ -426,7 +398,7 @@ bool TIMECONV_GetUTCTimeFromJulianDate(
 	unsigned char hour;
 	unsigned char minute;
 	unsigned char days_in_month = 0;
-	double td;  // temporary double
+	double td;	// temporary double
 	double seconds;
 	bool result;
 
@@ -439,16 +411,16 @@ bool TIMECONV_GetUTCTimeFromJulianDate(
 	d = (int)(365.25 * c);
 	e = (int)(((double)(b - d)) / 30.6001);
 
-	td = b - d - (int)(30.6001 * e) + fmod(julian_date + 0.5, 1.0);  // [days]
+	td = b - d - (int)(30.6001 * e) + fmod(julian_date + 0.5, 1.0);	 // [days]
 	day = (unsigned char)td;
 	td -= day;
-	td *= 24.0;  // [hours]
+	td *= 24.0;	 // [hours]
 	hour = (unsigned char)td;
 	td -= hour;
-	td *= 60.0;  // [minutes]
+	td *= 60.0;	 // [minutes]
 	minute = (unsigned char)td;
 	td -= minute;
-	td *= 60.0;  // [s]
+	td *= 60.0;	 // [s]
 	seconds = td;
 	month = (unsigned char)(e - 1 - 12 * (int)(e / 14));
 	year = (unsigned short)(c - 4715 - (int)((7.0 + (double)month) / 10.0));

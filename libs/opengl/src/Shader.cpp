@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/opengl_api.h>
+
 #include <iostream>
 #include <list>
 #include <mutex>
@@ -36,7 +37,7 @@ Shader::Shader(Shader&& o)
 
 void Shader::clear()
 {
-	if (!m_shader) return;  // Nothing to do
+	if (!m_shader) return;	// Nothing to do
 #if MRPT_HAS_OPENGL_GLUT
 	glDeleteShader(m_shader);
 	m_shader = 0;
@@ -68,8 +69,7 @@ bool Shader::compile(
 		log.resize(log_length);
 		glGetShaderInfoLog(m_shader, log_length, NULL, &log[0]);
 
-		if (outErrorMessages)
-			outErrorMessages.value().get() = std::move(log);
+		if (outErrorMessages) outErrorMessages.value().get() = std::move(log);
 		else
 			std::cerr << "[Shader::compile] Compile error: " << log << "\n";
 
@@ -130,9 +130,7 @@ void Program::clear()
 	// If we are in the same thread that created us, ok, clean up.
 	// Otherwise, postpone it for later on:
 	if (m_data->linkedThread == std::this_thread::get_id())
-	{
-		internal_clear();
-	}
+	{ internal_clear(); }
 	else
 	{
 		// Postpone:
@@ -201,8 +199,7 @@ bool Program::linkProgram(
 		log.resize(log_length);
 		glGetProgramInfoLog(m_data->program, log_length, NULL, &log[0]);
 
-		if (outErrorMessages)
-			outErrorMessages.value().get() = std::move(log);
+		if (outErrorMessages) outErrorMessages.value().get() = std::move(log);
 		else
 			std::cerr << "[Program::linkProgram] Link error: " << log << "\n";
 		clear();
@@ -264,12 +261,12 @@ void Program::dumpProgramDescription(std::ostream& o) const
 
 	GLint count;
 
-	GLint size;  // size of the variable
+	GLint size;	 // size of the variable
 	GLenum type;  // type of the variable (float, vec3 or mat4, etc)
 
-	const GLsizei bufSize = 32;  // maximum name length
+	const GLsizei bufSize = 32;	 // maximum name length
 	GLchar name[bufSize];  // variable name in GLSL
-	GLsizei length;  // name length
+	GLsizei length;	 // name length
 
 	// Attributes
 	glGetProgramiv(m_data->program, GL_ACTIVE_ATTRIBUTES, &count);

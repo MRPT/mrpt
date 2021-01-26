@@ -53,4 +53,4 @@ class CMyGLCanvas : public wxPanel
 
 #endif
 
-#endif  // MYGLCANVAS_H
+#endif	// MYGLCANVAS_H

@@ -8,12 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationRFID.h>
 
-#include <mrpt/comms/CClientTCPSocket.h>
-#include <mrpt/comms/CServerTCPSocket.h>
 #include <memory>
 
 namespace mrpt::hwdrivers
@@ -99,6 +99,6 @@ class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 	/** Close the connection to the reader.
 	 */
 	void closeReader();
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::hwdrivers

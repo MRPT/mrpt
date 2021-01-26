@@ -10,6 +10,7 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/optional_ref.h>
+
 #include <memory>
 #include <thread>
 #include <unordered_map>

@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
-//#include <mrpt/math/eigen_extensions.h>
+//
 #include <mrpt/math/ransac_applications.h>
 
 using namespace mrpt;
@@ -47,7 +46,8 @@ void ransac3Dplane_fit(
 		CMatrixDynamic<T>& M = fitModels[0];
 
 		M.setSize(1, 4);
-		for (size_t i = 0; i < 4; i++) M(0, i) = T(plane.coefs[i]);
+		for (size_t i = 0; i < 4; i++)
+			M(0, i) = T(plane.coefs[i]);
 	}
 	catch (exception&)
 	{
@@ -135,7 +135,7 @@ void mrpt::math::ransac_detect_3D_planes(
 			remainingPoints, mrpt::math::ransac3Dplane_fit<NUMTYPE>,
 			mrpt::math::ransac3Dplane_distance<NUMTYPE>,
 			mrpt::math::ransac3Dplane_degenerate<NUMTYPE>, threshold,
-			3,  // Minimum set of points
+			3,	// Minimum set of points
 			this_best_inliers, this_best_model,
 			0.999  // Prob. of good result
 		);
@@ -145,11 +145,12 @@ void mrpt::math::ransac_detect_3D_planes(
 		{
 			// Add this plane to the output list:
 			out_detected_planes.emplace_back(
-				this_best_inliers.size(), TPlane(
-											  double(this_best_model(0, 0)),
-											  double(this_best_model(0, 1)),
-											  double(this_best_model(0, 2)),
-											  double(this_best_model(0, 3))));
+				this_best_inliers.size(),
+				TPlane(
+					double(this_best_model(0, 0)),
+					double(this_best_model(0, 1)),
+					double(this_best_model(0, 2)),
+					double(this_best_model(0, 3))));
 
 			out_detected_planes.rbegin()->second.unitarize();
 
@@ -159,7 +160,7 @@ void mrpt::math::ransac_detect_3D_planes(
 		}
 		else
 		{
-			break;  // Do not search for more planes.
+			break;	// Do not search for more planes.
 		}
 	}
 
@@ -167,11 +168,11 @@ void mrpt::math::ransac_detect_3D_planes(
 }
 
 // Template explicit instantiations:
-#define EXPLICIT_INST_ransac_detect_3D_planes(_TYPE_)                     \
-	template void mrpt::math::ransac_detect_3D_planes<_TYPE_>(            \
-		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y, \
-		const CVectorDynamic<_TYPE_>& z,                                  \
-		vector<pair<size_t, TPlane>>& out_detected_planes,                \
+#define EXPLICIT_INST_ransac_detect_3D_planes(_TYPE_)                          \
+	template void mrpt::math::ransac_detect_3D_planes<_TYPE_>(                 \
+		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y,      \
+		const CVectorDynamic<_TYPE_>& z,                                       \
+		vector<pair<size_t, TPlane>>& out_detected_planes,                     \
 		const double threshold, const size_t min_inliers_for_valid_plane)
 
 EXPLICIT_INST_ransac_detect_3D_planes(float);
@@ -201,7 +202,8 @@ void ransac2Dline_fit(
 		CMatrixDynamic<T>& M = fitModels[0];
 
 		M.setSize(1, 3);
-		for (size_t i = 0; i < 3; i++) M(0, i) = static_cast<T>(line.coefs[i]);
+		for (size_t i = 0; i < 3; i++)
+			M(0, i) = static_cast<T>(line.coefs[i]);
 	}
 	catch (exception&)
 	{
@@ -219,7 +221,7 @@ void ransac2Dline_distance(
 	out_inlierIndices.clear();
 	out_bestModelIndex = 0;
 
-	if (testModels.empty()) return;  // No model, no inliers.
+	if (testModels.empty()) return;	 // No model, no inliers.
 
 	ASSERTMSG_(
 		testModels.size() == 1,
@@ -290,9 +292,9 @@ void mrpt::math::ransac_detect_2D_lines(
 			remainingPoints, ransac2Dline_fit<NUMTYPE>,
 			ransac2Dline_distance<NUMTYPE>, ransac2Dline_degenerate<NUMTYPE>,
 			threshold,
-			2,  // Minimum set of points
+			2,	// Minimum set of points
 			this_best_inliers, this_best_model,
-			0.99999  // Prob. of good result
+			0.99999	 // Prob. of good result
 		);
 
 		// Is this plane good enough?
@@ -300,10 +302,11 @@ void mrpt::math::ransac_detect_2D_lines(
 		{
 			// Add this plane to the output list:
 			out_detected_lines.emplace_back(
-				this_best_inliers.size(), TLine2D(
-											  double(this_best_model(0, 0)),
-											  double(this_best_model(0, 1)),
-											  double(this_best_model(0, 2))));
+				this_best_inliers.size(),
+				TLine2D(
+					double(this_best_model(0, 0)),
+					double(this_best_model(0, 1)),
+					double(this_best_model(0, 2))));
 
 			out_detected_lines.rbegin()->second.unitarize();
 
@@ -313,7 +316,7 @@ void mrpt::math::ransac_detect_2D_lines(
 		}
 		else
 		{
-			break;  // Do not search for more planes.
+			break;	// Do not search for more planes.
 		}
 	}
 
@@ -321,10 +324,10 @@ void mrpt::math::ransac_detect_2D_lines(
 }
 
 // Template explicit instantiations:
-#define EXPLICIT_INSTANT_ransac_detect_2D_lines(_TYPE_)                   \
-	template void mrpt::math::ransac_detect_2D_lines<_TYPE_>(             \
-		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y, \
-		std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,      \
+#define EXPLICIT_INSTANT_ransac_detect_2D_lines(_TYPE_)                        \
+	template void mrpt::math::ransac_detect_2D_lines<_TYPE_>(                  \
+		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y,      \
+		std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,           \
 		const double threshold, const size_t min_inliers_for_valid_line)
 
 EXPLICIT_INSTANT_ransac_detect_2D_lines(float);

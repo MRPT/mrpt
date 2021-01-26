@@ -7,14 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "config-precomp.h"  // Precompiled headers
-
+#include "config-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+
 #include <cmath>  // abs()
 
 using namespace std;
@@ -69,13 +70,13 @@ void CConfigFileBase::writeString(
 	const std::string& comment)
 {
 	if (name_padding_width < 1 && value_padding_width < 1 && comment.empty())
-		this->writeString(section, name, str);  // Default (old) behavior.
+		this->writeString(section, name, str);	// Default (old) behavior.
 
 	std::string name_pad;
 	if (name_padding_width >= 1)
 		name_pad = mrpt::format(
 			"%*s", -name_padding_width,
-			name.c_str());  // negative width: printf right padding
+			name.c_str());	// negative width: printf right padding
 	else
 		name_pad = name;
 
@@ -257,7 +258,8 @@ void CConfigFileBase::setContentFromYAML(const std::string& yaml_block)
 	}
 
 	// 1st: unscoped:
-	for (const auto& kv : unscoped) this->write("", kv.first, kv.second);
+	for (const auto& kv : unscoped)
+		this->write("", kv.first, kv.second);
 
 	for (const auto& sect : sections)
 		for (const auto& kv : sect.second)
@@ -287,8 +289,7 @@ std::string CConfigFileBase::getContentAsYAML() const
 		for (const auto& k : keys)
 		{
 			const auto val = this->readString(sect, k, "");
-			if (sect.empty())
-				n[k] = val;
+			if (sect.empty()) n[k] = val;
 			else
 				n[sect][k] = val;
 		}

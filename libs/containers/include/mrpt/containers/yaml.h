@@ -107,9 +107,9 @@ class yaml
 		~node_t() = default;
 
 		template <
-			typename T,  //
+			typename T,	 //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,  //
+				std::initializer_list<map_t::value_type>, T>>,	//
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -182,20 +182,14 @@ class yaml
 			ASSERT_(isScalar());
 			if (const char* const* s = std::any_cast<const char*>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			if (const std::string* s = std::any_cast<std::string>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			if (const std::string_view* s =
 					std::any_cast<std::string_view>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			THROW_EXCEPTION_FMT(
 				"Used node_t as map key with a type non-convertible to string: "
 				"'%s'",
@@ -772,12 +766,12 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  * MCP_LOAD_REQ(p, K);
  * \endcode
  */
-#define MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__)           \
-	if (!paramsVariable__.has(#keyproxiedMapEntryName__))                  \
-		throw std::invalid_argument(mrpt::format(                          \
-			"Required parameter `%s` not an existing key in dictionary.",  \
-			#keyproxiedMapEntryName__));                                   \
-	keyproxiedMapEntryName__ = paramsVariable__[#keyproxiedMapEntryName__] \
+#define MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__)               \
+	if (!paramsVariable__.has(#keyproxiedMapEntryName__))                      \
+		throw std::invalid_argument(mrpt::format(                              \
+			"Required parameter `%s` not an existing key in dictionary.",      \
+			#keyproxiedMapEntryName__));                                       \
+	keyproxiedMapEntryName__ = paramsVariable__[#keyproxiedMapEntryName__]     \
 								   .as<decltype(keyproxiedMapEntryName__)>()
 
 /** Macro to load a variable from a mrpt::containers::yaml (initials MCP)
@@ -791,21 +785,21 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  * MCP_LOAD_OPT(p, K);
  * \endcode
  */
-#define MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__) \
-	keyproxiedMapEntryName__ = paramsVariable__.getOrDefault(    \
+#define MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__)               \
+	keyproxiedMapEntryName__ = paramsVariable__.getOrDefault(                  \
 		#keyproxiedMapEntryName__, keyproxiedMapEntryName__)
 
 /** Just like MCP_LOAD_REQ(), but converts the read number from degrees to
  * radians */
-#define MCP_LOAD_REQ_DEG(paramsVariable__, keyproxiedMapEntryName__) \
-	MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__);        \
+#define MCP_LOAD_REQ_DEG(paramsVariable__, keyproxiedMapEntryName__)           \
+	MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__);                  \
 	keyproxiedMapEntryName__ = mrpt::DEG2RAD(keyproxiedMapEntryName__)
 
 /** Just like MCP_LOAD_OPT(), but converts the read number from degrees to
  * radians */
-#define MCP_LOAD_OPT_DEG(paramsVariable__, keyproxiedMapEntryName__)    \
-	keyproxiedMapEntryName__ = mrpt::RAD2DEG(keyproxiedMapEntryName__); \
-	MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__);           \
+#define MCP_LOAD_OPT_DEG(paramsVariable__, keyproxiedMapEntryName__)           \
+	keyproxiedMapEntryName__ = mrpt::RAD2DEG(keyproxiedMapEntryName__);        \
+	MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__);                  \
 	keyproxiedMapEntryName__ = mrpt::DEG2RAD(keyproxiedMapEntryName__)
 
 /** Macro to store a variable into a mrpt::containers::yaml (initials MCP)
@@ -823,11 +817,11 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  * MCP_SAVE_DEG(p,K);
  * \endcode
  */
-#define MCP_SAVE(paramsVariable__, keyproxiedMapEntryName__) \
+#define MCP_SAVE(paramsVariable__, keyproxiedMapEntryName__)                   \
 	paramsVariable__[#keyproxiedMapEntryName__] = keyproxiedMapEntryName__;
 
-#define MCP_SAVE_DEG(paramsVariable__, keyproxiedMapEntryName__) \
-	paramsVariable__[#keyproxiedMapEntryName__] =                \
+#define MCP_SAVE_DEG(paramsVariable__, keyproxiedMapEntryName__)               \
+	paramsVariable__[#keyproxiedMapEntryName__] =                              \
 		mrpt::RAD2DEG(keyproxiedMapEntryName__);
 
 }  // namespace mrpt::containers
@@ -1094,8 +1088,8 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		{
 			const auto str = implAnyAsGetter<std::string>(s);
 			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
-				   str == "YES" || str == "true" || str == "True" ||
-				   str == "TRUE" || str == "on" || str == "ON" || str == "On";
+				str == "YES" || str == "true" || str == "True" ||
+				str == "TRUE" || str == "on" || str == "ON" || str == "On";
 		}
 	}
 

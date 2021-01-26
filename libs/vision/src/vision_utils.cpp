@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/geometry.h>
@@ -25,6 +25,7 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/pinhole.h>
 #include <mrpt/vision/utils.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -94,10 +95,7 @@ void vision::openCV_cross_correlation(
 	ASSERT_((y_search_ini + y_search_size + patch_h) <= im_h);
 	CImage img_region_to_search;
 
-	if (entireImg)
-	{
-		img_region_to_search = im.makeShallowCopy();
-	}
+	if (entireImg) { img_region_to_search = im.makeShallowCopy(); }
 	else
 	{
 		im.extract_patch(
@@ -221,12 +219,15 @@ double vision::computeMsd(
 	TPoint3D err;
 	for (it = feat_list.begin(); it != feat_list.end(); it++)
 	{
-		err.x = it->other_x - (it->this_x * mat(0, 0) + it->this_y * mat(0, 1) +
-							   it->this_z * mat(0, 2) + Rt.x());
-		err.y = it->other_y - (it->this_x * mat(1, 0) + it->this_y * mat(1, 1) +
-							   it->this_z * mat(1, 2) + Rt.y());
-		err.z = it->other_z - (it->this_x * mat(2, 0) + it->this_y * mat(2, 1) +
-							   it->this_z * mat(2, 2) + Rt.z());
+		err.x = it->other_x -
+			(it->this_x * mat(0, 0) + it->this_y * mat(0, 1) +
+			 it->this_z * mat(0, 2) + Rt.x());
+		err.y = it->other_y -
+			(it->this_x * mat(1, 0) + it->this_y * mat(1, 1) +
+			 it->this_z * mat(1, 2) + Rt.y());
+		err.z = it->other_z -
+			(it->this_x * mat(2, 0) + it->this_y * mat(2, 1) +
+			 it->this_z * mat(2, 2) + Rt.z());
 
 		acum += err.norm();
 
@@ -327,18 +328,18 @@ size_t vision::matchFeatures(
 	ASSERT_((sz1 > 0) && (sz2 > 0));  // Both lists have features within it
 	ASSERT_(
 		list1.get_type() ==
-		list2.get_type());  // Both lists must be of the same type
+		list2.get_type());	// Both lists must be of the same type
 
-	CFeatureList::const_iterator itList1, itList2;  // Iterators for the lists
+	CFeatureList::const_iterator itList1, itList2;	// Iterators for the lists
 
 	// For SIFT & SURF
-	float distDesc;  // EDD or EDSD
-	float minDist1;  // Minimum EDD or EDSD
-	float minDist2;  // Second minimum EDD or EDSD
+	float distDesc;	 // EDD or EDSD
+	float minDist1;	 // Minimum EDD or EDSD
+	float minDist2;	 // Second minimum EDD or EDSD
 
 	// For Harris
-	double maxCC1;  // Maximum CC
-	double maxCC2;  // Second maximum CC
+	double maxCC1;	// Maximum CC
+	double maxCC2;	// Second maximum CC
 
 	// For SAD
 	double minSAD1, minSAD2;
@@ -374,7 +375,7 @@ size_t vision::matchFeatures(
 			 ++itList2, ++rFeat)  // ... compare with all the features in list2.
 		{
 			// Filter out by epipolar constraint
-			double d = 0.0;  // Distance to the epipolar line
+			double d = 0.0;	 // Distance to the epipolar line
 			if (options.useEpipolarRestriction)
 			{
 				if (options.parallelOpticalAxis)
@@ -405,12 +406,12 @@ size_t vision::matchFeatures(
 
 			// Use epipolar restriction
 			bool c1 = options.useEpipolarRestriction
-						  ? fabs(d) < options.epipolar_TH
-						  : true;
+				? fabs(d) < options.epipolar_TH
+				: true;
 			// Use x-coord restriction
 			bool c2 = options.useXRestriction
-						  ? itList1->keypoint.pt.x - itList2->keypoint.pt.x > 0
-						  : true;
+				? itList1->keypoint.pt.x - itList2->keypoint.pt.x > 0
+				: true;
 
 			if (c1 && c2)
 			{
@@ -443,7 +444,7 @@ size_t vision::matchFeatures(
 					case TMatchingOptions::mmCorrelation:
 					{
 						size_t u, v;  // Coordinates of the peak
-						double res;  // Value of the peak
+						double res;	 // Value of the peak
 
 						// Ensure that both features have patches
 						ASSERT_(
@@ -486,7 +487,7 @@ size_t vision::matchFeatures(
 						else if (distDesc < minDist2)
 							minDist2 = distDesc;
 
-						break;  // end case featSURF
+						break;	// end case featSURF
 					}  // end mmDescriptorSURF
 
 					case TMatchingOptions::mmDescriptorORB:
@@ -562,24 +563,23 @@ size_t vision::matchFeatures(
 				// Distance between SIFT
 				// descriptors (EDD)
 				cond2 = (minDist1 / minDist2) <
-						options.EDD_RATIO;  // Ratio between the two lowest EDSD
+					options.EDD_RATIO;	// Ratio between the two lowest EDSD
 				minVal = minDist1;
 				break;
 			case TMatchingOptions::mmCorrelation:
 				cond1 = maxCC1 >
-						options.minCC_TH;  // Minimum cross correlation value
+					options.minCC_TH;  // Minimum cross correlation value
 				cond2 = (maxCC2 / maxCC1) <
-						options.rCC_TH;  // Ratio between the two highest cross
+					options.rCC_TH;	 // Ratio between the two highest cross
 				// correlation values
 				minVal = 1 - maxCC1;
 				break;
 			case TMatchingOptions::mmDescriptorSURF:
-				cond1 = minDist1 < options.maxEDSD_TH;  // Maximum Euclidean
+				cond1 = minDist1 < options.maxEDSD_TH;	// Maximum Euclidean
 				// Distance between SURF
 				// descriptors (EDSD)
-				cond2 =
-					(minDist1 / minDist2) <
-					options.EDSD_RATIO;  // Ratio between the two lowest EDSD
+				cond2 = (minDist1 / minDist2) <
+					options.EDSD_RATIO;	 // Ratio between the two lowest EDSD
 				minVal = minDist1;
 				break;
 			case TMatchingOptions::mmSAD:
@@ -592,12 +592,11 @@ size_t vision::matchFeatures(
 				cond2 = true;
 				minVal = minDist1;
 				break;
-			default:
-				THROW_EXCEPTION("Invalid value of 'matching_method'");
+			default: THROW_EXCEPTION("Invalid value of 'matching_method'");
 		}
 
 		// PROCESS THE RESULTS
-		if (cond1 && cond2)  // The minimum distance must be below a threshold
+		if (cond1 && cond2)	 // The minimum distance must be below a threshold
 		{
 			int auxIdx = idxRightList[minRightIdx];
 			if (auxIdx != FEAT_FREE)
@@ -757,7 +756,7 @@ double vision::computeSAD(const CImage& p1, const CImage& p2)
 void vision::addFeaturesToImage(
 	const CImage& inImg, const CFeatureList& theList, CImage& outImg)
 {
-	outImg = inImg;  // Create a copy of the input image
+	outImg = inImg;	 // Create a copy of the input image
 	for (const auto& it : theList)
 		outImg.rectangle(
 			it.keypoint.pt.x - 5, it.keypoint.pt.y - 5, it.keypoint.pt.x + 5,
@@ -818,28 +817,27 @@ void vision::projectMatchedFeature(
 	double nfx1 = leftFeat.keypoint.pt.x, nfy1 = leftFeat.keypoint.pt.y,
 		   nfx2 = rightFeat.keypoint.pt.x, nfy2 = rightFeat.keypoint.pt.y;
 
-	const double x = nfx1 * f0;  // x  = (x  / f0) * f0   x  = x
-	const double y = nfy1 * f0;  // y  = (y  / f0) * f0   y  = y
+	const double x = nfx1 * f0;	 // x  = (x  / f0) * f0   x  = x
+	const double y = nfy1 * f0;	 // y  = (y  / f0) * f0   y  = y
 	const double xd = nfx2 * f0;  // x' = (x' / f0) * f0   x' = x'
 	const double yd = nfy2 * f0;  // y' = (y' / f0) * f0   y' = y'
 
 	const double f2 = f0 * f0;
 	const double p9 = f2 * params.F(2, 2);
-	const double Q00 =
-		f2 *
+	const double Q00 = f2 *
 		(params.F(0, 2) * params.F(0, 2) + params.F(1, 2) * params.F(1, 2) +
 		 params.F(2, 0) * params.F(2, 0) + params.F(2, 1) * params.F(2, 1));
 
 	double Jh = (std::numeric_limits<double>::max)();  // J hat = 
-	double xh = x;  // x hat = x
-	double yh = y;  // y hat = y
+	double xh = x;	// x hat = x
+	double yh = y;	// y hat = y
 	double xhd = xd;  // x hat dash = x'
 	double yhd = yd;  // y hat dash = y'
 	double
 		xt = 0,
 		yt = 0, xtd = 0,
 		ytd =
-			0;  // x tilde = 0, y tilde = 0, x tilde dash = 0, y tilde dash = 0
+			0;	// x tilde = 0, y tilde = 0, x tilde dash = 0, y tilde dash = 0
 	for (;;)
 	{
 		const double p1 = (xh * xhd + xhd * xt + xh * xtd) * params.F(0, 0);
@@ -875,21 +873,22 @@ void vision::projectMatchedFeature(
 		const double Q58 = f0 * yh * params.F(1, 1) * params.F(2, 1);
 
 		const double udotV0xiu = Q00 + Q11 + Q22 + Q44 + Q55 +
-								 2.0 * (Q12 + Q13 + Q14 + Q17 + Q23 + Q25 +
-										Q28 + Q45 + Q46 + Q47 + Q56 + Q58);
+			2.0 *
+				(Q12 + Q13 + Q14 + Q17 + Q23 + Q25 + Q28 + Q45 + Q46 + Q47 +
+				 Q56 + Q58);
 
 		ASSERT_(fabs(udotV0xiu) > 1e-5);
 
 		const double C = udotxi / udotV0xiu;
 
-		xt = C * (params.F(0, 0) * xhd + params.F(0, 1) * yhd +
-				  f0 * params.F(0, 2));
-		yt = C * (params.F(1, 0) * xhd + params.F(1, 1) * yhd +
-				  f0 * params.F(1, 2));
+		xt = C *
+			(params.F(0, 0) * xhd + params.F(0, 1) * yhd + f0 * params.F(0, 2));
+		yt = C *
+			(params.F(1, 0) * xhd + params.F(1, 1) * yhd + f0 * params.F(1, 2));
 		xtd = C *
-			  (params.F(0, 0) * xh + params.F(1, 0) * yh + f0 * params.F(2, 0));
+			(params.F(0, 0) * xh + params.F(1, 0) * yh + f0 * params.F(2, 0));
 		ytd = C *
-			  (params.F(0, 1) * xh + params.F(1, 1) * yh + f0 * params.F(2, 1));
+			(params.F(0, 1) * xh + params.F(1, 1) * yh + f0 * params.F(2, 1));
 
 		const double Jt = xt * xt + yt * yt + xtd * xtd + ytd * ytd;
 		//        cout << "Jt:" << Jt << " and Jh: " << Jh << endl;
@@ -907,8 +906,8 @@ void vision::projectMatchedFeature(
 			Jh = Jt;  // J hat      = J tilde
 			xh = x - xt;  // x hat      = x  - x tilde
 			yh = y - yt;  // y hat      = y  - y tilde
-			xhd = xd - xtd;  // x hat dash = x' - x tilde dash
-			yhd = yd - ytd;  // y hat dash = y' - y tilde dash
+			xhd = xd - xtd;	 // x hat dash = x' - x tilde dash
+			yhd = yd - ytd;	 // y hat dash = y' - y tilde dash
 		}
 	}  // end for
 
@@ -928,7 +927,7 @@ void vision::projectMatchedFeatures(
 {
 	MRPT_START
 
-	landmarks.clear();  // Assert that the output CLandmarksMap is clear
+	landmarks.clear();	// Assert that the output CLandmarksMap is clear
 
 	float stdPixel2 = square(param.stdPixel);
 	float stdDisp2 = square(param.stdDisp);
@@ -954,9 +953,7 @@ void vision::projectMatchedFeatures(
 
 		// Filter out bad points
 		if ((z3D < param.minZ) || (z3D > param.maxZ))
-		{
-			itList = mfList.erase(itList);
-		}
+		{ itList = mfList.erase(itList); }
 		else
 		{
 			TPoint3D p3D(x3D, y3D, z3D);
@@ -989,18 +986,16 @@ void vision::projectMatchedFeatures(
 					float base2 = square(param.baseline);
 					float disp2 = square(disp);
 
-					lm.pose_cov_11 =
-						stdPixel2 * base2 / disp2 +
+					lm.pose_cov_11 = stdPixel2 * base2 / disp2 +
 						stdDisp2 * base2 * square(pt1.x - c0) / square(disp2);
 					lm.pose_cov_12 = stdDisp2 * base2 * (pt1.x - c0) *
-									 (pt1.y - r0) / square(disp2);
+						(pt1.y - r0) / square(disp2);
 					lm.pose_cov_13 = stdDisp2 * base2 * sqrt(foc2) *
-									 (pt1.x - c0) / square(disp2);
-					lm.pose_cov_22 =
-						stdPixel2 * base2 / disp2 +
+						(pt1.x - c0) / square(disp2);
+					lm.pose_cov_22 = stdPixel2 * base2 / disp2 +
 						stdDisp2 * base2 * square(pt1.y - r0) / square(disp2);
 					lm.pose_cov_23 = stdDisp2 * base2 * sqrt(foc2) *
-									 (pt1.y - r0) / square(disp2);
+						(pt1.y - r0) / square(disp2);
 					lm.pose_cov_33 = stdDisp2 * foc2 * base2 / square(disp2);
 				}  // end case 'Prop_Linear'
 				break;
@@ -1024,19 +1019,19 @@ void vision::projectMatchedFeatures(
 					Pa(2, 2) = (Na + k) * square(param.stdDisp);
 
 					// Cholesky decomposition
-					Pa.chol(L);  // math::chol(Pa,L);
+					Pa.chol(L);	 // math::chol(Pa,L);
 
-					vector<TPoint3D> B;  // B group
-					TPoint3D meanB;  // Mean value of the B group
+					vector<TPoint3D> B;	 // B group
+					TPoint3D meanB;	 // Mean value of the B group
 					CMatrixF Pb;  // Covariance of the B group
 
 					B.resize(2 * Na + 1);  // Set of output values
-					Pb.fill(0);  // Reset the output covariance
+					Pb.fill(0);	 // Reset the output covariance
 
-					CVectorFloat vAux, myPoint;  // Auxiliar vectors
-					CVectorFloat meanA;  // Mean value of the A group
+					CVectorFloat vAux, myPoint;	 // Auxiliar vectors
+					CVectorFloat meanA;	 // Mean value of the A group
 
-					vAux.resize(3);  // Set the variables size
+					vAux.resize(3);	 // Set the variables size
 					meanA.resize(3);
 					myPoint.resize(3);
 
@@ -1048,7 +1043,7 @@ void vision::projectMatchedFeatures(
 					// Output mean
 					meanB.x = w0 * x3D;
 					meanB.y = w0 * y3D;
-					meanB.z = w0 * z3D;  // Add to the mean
+					meanB.z = w0 * z3D;	 // Add to the mean
 					B[0].x = x3D;
 					B[0].y = y3D;
 					B[0].z = z3D;  // Insert into B
@@ -1074,9 +1069,9 @@ void vision::projectMatchedFeatures(
 
 						// Pass the Ai through the functions:
 						x3D = (myPoint[0] - param.K(0, 2)) *
-							  ((param.baseline)) / myPoint[2];
+							((param.baseline)) / myPoint[2];
 						y3D = (myPoint[1] - param.K(1, 2)) *
-							  ((param.baseline)) / myPoint[2];
+							((param.baseline)) / myPoint[2];
 						z3D = (param.K(0, 0)) * ((param.baseline)) / myPoint[2];
 
 						// Add to the B mean computation and the B vector
@@ -1096,7 +1091,7 @@ void vision::projectMatchedFeatures(
 						float weight = w1;
 						CMatrixF v(3, 1);
 
-						if (i == 0)  // The weight for the mean value of A is w0
+						if (i == 0)	 // The weight for the mean value of A is w0
 							weight = w0;
 
 						v(0, 0) = B[i].x - meanB.x;
@@ -1142,19 +1137,19 @@ void vision::projectMatchedFeatures(
 					Pa(2, 2) = (Na + lambda) * square(param.stdDisp);
 
 					// Cholesky decomposition
-					Pa.chol(L);  // math::chol(Pa,L);
+					Pa.chol(L);	 // math::chol(Pa,L);
 
-					vector<TPoint3D> B;  // B group
-					TPoint3D meanB;  // Mean value of the B group
+					vector<TPoint3D> B;	 // B group
+					TPoint3D meanB;	 // Mean value of the B group
 					CMatrixF Pb;  // Covariance of the B group
 
 					B.resize(2 * Na + 1);  // Set of output values
-					Pb.fill(0);  // Reset the output covariance
+					Pb.fill(0);	 // Reset the output covariance
 
-					CVectorFloat vAux, myPoint;  // Auxiliar vectors
-					CVectorFloat meanA;  // Mean value of the A group
+					CVectorFloat vAux, myPoint;	 // Auxiliar vectors
+					CVectorFloat meanA;	 // Mean value of the A group
 
-					vAux.resize(3);  // Set the variables size
+					vAux.resize(3);	 // Set the variables size
 					meanA.resize(3);
 					myPoint.resize(3);
 
@@ -1194,9 +1189,9 @@ void vision::projectMatchedFeatures(
 
 						// Pass the Ai through the functions:
 						x3D = (myPoint[0] - param.K(0, 2)) *
-							  ((param.baseline)) / myPoint[2];
+							((param.baseline)) / myPoint[2];
 						y3D = (myPoint[1] - param.K(1, 2)) *
-							  ((param.baseline)) / myPoint[2];
+							((param.baseline)) / myPoint[2];
 						z3D = (param.K(0, 0)) * ((param.baseline)) / myPoint[2];
 
 						// Add to the B mean computation and the B vector
@@ -1216,7 +1211,7 @@ void vision::projectMatchedFeatures(
 						float weight = w1;
 						CMatrixF v(3, 1);
 
-						if (i == 0)  // The weight for the mean value of A is w0
+						if (i == 0)	 // The weight for the mean value of A is w0
 							weight = w0_c;
 
 						v(0, 0) = B[i].x - meanB.x;
@@ -1257,7 +1252,7 @@ void vision::projectMatchedFeatures(
 	MRPT_START
 	ASSERT_(leftList.size() == rightList.size());
 
-	landmarks.clear();  // Assert that the output CLandmarksMap is clear
+	landmarks.clear();	// Assert that the output CLandmarksMap is clear
 
 	CFeatureList::iterator itListL, itListR;
 	float stdPixel2 = square(param.stdPixel);
@@ -1270,7 +1265,7 @@ void vision::projectMatchedFeatures(
 		const auto& ptL = itListL->keypoint.pt;
 		const auto& ptR = itListR->keypoint.pt;
 
-		float disp = ptL.x - ptR.x;  // Disparity
+		float disp = ptL.x - ptR.x;	 // Disparity
 		if (disp < 1e-9)  // Filter out too far points
 		{
 			itListL = leftList.erase(itListL);
@@ -1322,18 +1317,16 @@ void vision::projectMatchedFeatures(
 					float base2 = square(param.baseline);
 					float disp2 = square(ptL.x - ptR.x);
 
-					lm.pose_cov_11 =
-						stdPixel2 * base2 / disp2 +
+					lm.pose_cov_11 = stdPixel2 * base2 / disp2 +
 						stdDisp2 * base2 * square(ptL.x - c0) / square(disp2);
 					lm.pose_cov_12 = stdDisp2 * base2 * (ptL.x - c0) *
-									 (ptL.y - r0) / square(disp2);
+						(ptL.y - r0) / square(disp2);
 					lm.pose_cov_13 = stdDisp2 * base2 * sqrt(foc2) *
-									 (ptL.x - c0) / square(disp2);
-					lm.pose_cov_22 =
-						stdPixel2 * base2 / disp2 +
+						(ptL.x - c0) / square(disp2);
+					lm.pose_cov_22 = stdPixel2 * base2 / disp2 +
 						stdDisp2 * base2 * square(ptL.y - r0) / square(disp2);
 					lm.pose_cov_23 = stdDisp2 * base2 * sqrt(foc2) *
-									 (ptL.y - r0) / square(disp2);
+						(ptL.y - r0) / square(disp2);
 					lm.pose_cov_33 = stdDisp2 * foc2 * base2 / square(disp2);
 				}  // end case 'Prop_Linear'
 				break;
@@ -1357,19 +1350,19 @@ void vision::projectMatchedFeatures(
 					Pa(2, 2) = (Na + k) * square(param.stdDisp);
 
 					// Cholesky decomposition
-					Pa.chol(L);  // math::chol(Pa,L);
+					Pa.chol(L);	 // math::chol(Pa,L);
 
-					vector<TPoint3D> B;  // B group
-					TPoint3D meanB;  // Mean value of the B group
+					vector<TPoint3D> B;	 // B group
+					TPoint3D meanB;	 // Mean value of the B group
 					CMatrixF Pb;  // Covariance of the B group
 
 					B.resize(2 * Na + 1);  // Set of output values
-					Pb.fill(0);  // Reset the output covariance
+					Pb.fill(0);	 // Reset the output covariance
 
-					CVectorFloat vAux, myPoint;  // Auxiliar vectors
-					CVectorFloat meanA;  // Mean value of the A group
+					CVectorFloat vAux, myPoint;	 // Auxiliar vectors
+					CVectorFloat meanA;	 // Mean value of the A group
 
-					vAux.resize(3);  // Set the variables size
+					vAux.resize(3);	 // Set the variables size
 					meanA.resize(3);
 					myPoint.resize(3);
 
@@ -1381,7 +1374,7 @@ void vision::projectMatchedFeatures(
 					// Output mean
 					meanB.x = w0 * x3D;
 					meanB.y = w0 * y3D;
-					meanB.z = w0 * z3D;  // Add to the mean
+					meanB.z = w0 * z3D;	 // Add to the mean
 					B[0].x = x3D;
 					B[0].y = y3D;
 					B[0].z = z3D;  // Insert into B
@@ -1406,9 +1399,9 @@ void vision::projectMatchedFeatures(
 
 						// Pass the Ai through the functions:
 						x3D = (myPoint[0] - param.K(0, 2)) *
-							  ((param.baseline)) / myPoint[2];
+							((param.baseline)) / myPoint[2];
 						y3D = (myPoint[1] - param.K(1, 2)) *
-							  ((param.baseline)) / myPoint[2];
+							((param.baseline)) / myPoint[2];
 						z3D = (param.K(0, 0)) * ((param.baseline)) / myPoint[2];
 
 						// Add to the B mean computation and the B vector
@@ -1428,7 +1421,7 @@ void vision::projectMatchedFeatures(
 						float weight = w1;
 						CMatrixF v(3, 1);
 
-						if (i == 0)  // The weight for the mean value of A is w0
+						if (i == 0)	 // The weight for the mean value of A is w0
 							weight = w0;
 
 						v(0, 0) = B[i].x - meanB.x;
@@ -1474,19 +1467,19 @@ void vision::projectMatchedFeatures(
 					Pa(2, 2) = (Na + lambda) * square(param.stdDisp);
 
 					// Cholesky decomposition
-					Pa.chol(L);  // math::chol(Pa,L);
+					Pa.chol(L);	 // math::chol(Pa,L);
 
-					vector<TPoint3D> B;  // B group
-					TPoint3D meanB;  // Mean value of the B group
+					vector<TPoint3D> B;	 // B group
+					TPoint3D meanB;	 // Mean value of the B group
 					CMatrixF Pb;  // Covariance of the B group
 
 					B.resize(2 * Na + 1);  // Set of output values
-					Pb.fill(0);  // Reset the output covariance
+					Pb.fill(0);	 // Reset the output covariance
 
-					CVectorFloat vAux, myPoint;  // Auxiliar vectors
-					CVectorFloat meanA;  // Mean value of the A group
+					CVectorFloat vAux, myPoint;	 // Auxiliar vectors
+					CVectorFloat meanA;	 // Mean value of the A group
 
-					vAux.resize(3);  // Set the variables size
+					vAux.resize(3);	 // Set the variables size
 					meanA.resize(3);
 					myPoint.resize(3);
 
@@ -1519,9 +1512,9 @@ void vision::projectMatchedFeatures(
 
 						// Pass the Ai through the functions:
 						x3D = (myPoint[0] - param.K(0, 2)) *
-							  ((param.baseline)) / myPoint[2];
+							((param.baseline)) / myPoint[2];
 						y3D = (myPoint[1] - param.K(1, 2)) *
-							  ((param.baseline)) / myPoint[2];
+							((param.baseline)) / myPoint[2];
 						z3D = (param.K(0, 0)) * ((param.baseline)) / myPoint[2];
 
 						// Add to the B mean computation and the B vector
@@ -1541,7 +1534,7 @@ void vision::projectMatchedFeatures(
 						float weight = w1;
 						CMatrixF v(3, 1);
 
-						if (i == 0)  // The weight for the mean value of A is w0
+						if (i == 0)	 // The weight for the mean value of A is w0
 							weight = w0_c;
 
 						v(0, 0) = B[i].x - meanB.x;
@@ -1583,8 +1576,8 @@ void vision::StereoObs2BRObs(
 {
 	// Compute the range and bearing
 	double f = intrinsicParams(0, 0);  // Focal length in pixels
-	double x0 = intrinsicParams(0, 2);  // Principal point column
-	double y0 = intrinsicParams(1, 2);  // Principal point row
+	double x0 = intrinsicParams(0, 2);	// Principal point column
+	double y0 = intrinsicParams(1, 2);	// Principal point row
 	double b = baseline;  // Stereo camera baseline
 	double sg_c2 = square(sg[0]);  // Sigma of the column variable
 	double sg_r2 = square(sg[1]);  // Sigma of the row variable
@@ -1694,8 +1687,8 @@ void vision::StereoObs2BRObs(
 
 	// Compute the range and bearing
 	double f = inObs.leftCamera.fx();  // Focal length in pixels
-	double x0 = inObs.leftCamera.cx();  // Principal point column
-	double y0 = inObs.leftCamera.cy();  // Principal point row
+	double x0 = inObs.leftCamera.cx();	// Principal point column
+	double y0 = inObs.leftCamera.cy();	// Principal point row
 	double b = inObs.rightCameraPose.x();  // Stereo camera baseline
 	double sg_c2 = square(sg[0]);  // Sigma of the column variable
 	double sg_r2 = square(sg[1]);  // Sigma of the row variable
@@ -1844,7 +1837,8 @@ void vision::computeStereoRectificationMaps(
 
 	double m1[3][3];
 	for (unsigned int i = 0; i < 3; ++i)
-		for (unsigned int j = 0; j < 3; ++j) m1[i][j] = hMatrix(i, j);
+		for (unsigned int j = 0; j < 3; ++j)
+			m1[i][j] = hMatrix(i, j);
 
 	double ipl[3][3], ipr[3][3], dpl[5], dpr[5];
 	for (unsigned int i = 0; i < 3; ++i)
@@ -1876,7 +1870,7 @@ void vision::computeStereoRectificationMaps(
 	cv::Mat Q(4, 4, CV_64F, _Q);
 
 	cv::Size nSize(resX, resY);
-	double alpha = 0.0;  // alpha value: 0.0 = zoom and crop the image so that
+	double alpha = 0.0;	 // alpha value: 0.0 = zoom and crop the image so that
 	// there's not black areas
 
 	// OpenCV 2.3+ has this signature:
@@ -1915,28 +1909,24 @@ void TStereoSystemParams::loadFromConfigFile(
 	unc = iniFile.read_int(section.c_str(), "uncPropagation", uncPropagation);
 	switch (unc)
 	{
-		case 0:
-			uncPropagation = Prop_Linear;
-			break;
-		case 1:
-			uncPropagation = Prop_UT;
-			break;
-		case 2:
-			uncPropagation = Prop_SUT;
-			break;
+		case 0: uncPropagation = Prop_Linear; break;
+		case 1: uncPropagation = Prop_UT; break;
+		case 2: uncPropagation = Prop_SUT; break;
 	}  // end switch
 
 	CVectorDouble k_vec(9);
 	iniFile.read_vector(
 		section.c_str(), "k_vec", CVectorDouble(), k_vec, false);
 	for (unsigned int ii = 0; ii < 3; ++ii)
-		for (unsigned int jj = 0; jj < 3; ++jj) K(ii, jj) = k_vec[ii * 3 + jj];
+		for (unsigned int jj = 0; jj < 3; ++jj)
+			K(ii, jj) = k_vec[ii * 3 + jj];
 
 	CVectorDouble f_vec(9);
 	iniFile.read_vector(
 		section.c_str(), "f_vec", CVectorDouble(), f_vec, false);
 	for (unsigned int ii = 0; ii < 3; ++ii)
-		for (unsigned int jj = 0; jj < 3; ++jj) F(ii, jj) = f_vec[ii * 3 + jj];
+		for (unsigned int jj = 0; jj < 3; ++jj)
+			F(ii, jj) = f_vec[ii * 3 + jj];
 
 	baseline = iniFile.read_float(section.c_str(), "baseline", baseline);
 	stdPixel = iniFile.read_float(section.c_str(), "stdPixel", stdPixel);
@@ -1958,15 +1948,9 @@ void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 	out << "Method for 3D Uncert. \t= ";
 	switch (uncPropagation)
 	{
-		case Prop_Linear:
-			out << "Linear propagation\n";
-			break;
-		case Prop_UT:
-			out << "Unscented Transform\n";
-			break;
-		case Prop_SUT:
-			out << "Scaled Unscented Transform\n";
-			break;
+		case Prop_Linear: out << "Linear propagation\n"; break;
+		case Prop_UT: out << "Unscented Transform\n"; break;
+		case Prop_SUT: out << "Scaled Unscented Transform\n"; break;
 	}  // end switch
 
 	out << mrpt::format("K\t\t\t= [%f\t%f\t%f]\n", K(0, 0), K(0, 1), K(0, 2));
@@ -1995,7 +1979,7 @@ void TStereoSystemParams::dumpToTextStream(std::ostream& out) const
 -------------------------------------------------------------*/
 TMatchingOptions::TMatchingOptions()
 
-	= default;  // end constructor TMatchingOptions
+	= default;	// end constructor TMatchingOptions
 
 /*-------------------------------------------------------------
 			TMatchingOptions: loadFromConfigFile
@@ -2007,21 +1991,11 @@ void TMatchingOptions::loadFromConfigFile(
 		iniFile.read_int(section.c_str(), "matching_method", matching_method);
 	switch (mm)
 	{
-		case 0:
-			matching_method = mmCorrelation;
-			break;
-		case 1:
-			matching_method = mmDescriptorSIFT;
-			break;
-		case 2:
-			matching_method = mmDescriptorSURF;
-			break;
-		case 3:
-			matching_method = mmSAD;
-			break;
-		case 4:
-			matching_method = mmDescriptorORB;
-			break;
+		case 0: matching_method = mmCorrelation; break;
+		case 1: matching_method = mmDescriptorSIFT; break;
+		case 2: matching_method = mmDescriptorSURF; break;
+		case 3: matching_method = mmSAD; break;
+		case 4: matching_method = mmDescriptorORB; break;
 	}  // end switch
 
 	useEpipolarRestriction = iniFile.read_bool(

@@ -48,5 +48,5 @@ class CCascadeClassifierDetection : virtual public CObjectDetection
 		/** Cascade classifier options */
 	} m_options;
 
-};  // End of class
+};	// End of class
 }  // namespace mrpt::detectors

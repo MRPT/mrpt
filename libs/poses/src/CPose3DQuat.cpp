@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <Eigen/Dense>
 #include <iomanip>
 #include <limits>
@@ -280,21 +281,21 @@ void CPose3DQuat::inverseComposePoint(
 			const double Ay = 2 * (gy - m_coords[1]);
 			const double Az = 2 * (gz - m_coords[2]);
 
-			alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
-				const double vals[3 * 4] = {-qy * Az + qz * Ay,
-											qy * Ay + qz * Az,
-											qx * Ay - 2 * qy * Ax - qr * Az,
-											qx * Az + qr * Ay - 2 * qz * Ax,
+			alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double vals[3 * 4] = {
+				-qy * Az + qz * Ay,
+				qy * Ay + qz * Az,
+				qx * Ay - 2 * qy * Ax - qr * Az,
+				qx * Az + qr * Ay - 2 * qz * Ax,
 
-											qx * Az - qz * Ax,
-											qy * Ax - 2 * qx * Ay + qr * Az,
-											qx * Ax + qz * Az,
-											qy * Az - 2 * qz * Ay - qr * Ax,
+				qx * Az - qz * Ax,
+				qy * Ax - 2 * qx * Ay + qr * Az,
+				qx * Ax + qz * Az,
+				qy * Az - 2 * qz * Ay - qr * Ax,
 
-											qy * Ax - qx * Ay,
-											qz * Ax - qr * Ay - 2 * qx * Az,
-											qr * Ax + qz * Ay - 2 * qy * Az,
-											qx * Ax + qy * Ay};
+				qy * Ax - qx * Ay,
+				qz * Ax - qr * Ay - 2 * qx * Az,
+				qr * Ax + qz * Ay - 2 * qy * Az,
+				qx * Ax + qy * Ay};
 
 			CMatrixDouble44 norm_jacob(UNINITIALIZED_MATRIX);
 			this->quat().normalizationJacobian(norm_jacob);
@@ -340,8 +341,7 @@ void CPose3DQuat::serializeFrom(
 				m_quat[1] >> m_quat[2] >> m_quat[3];
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 /** Serialize CSerializable Object to CSchemeArchiveBase derived object*/
@@ -376,8 +376,7 @@ void CPose3DQuat::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			m_quat[3] = static_cast<double>(in["orientation"]["z"]);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 /*---------------------------------------------------------------
@@ -406,14 +405,12 @@ void CPose3DQuat::sphericalCoordinates(
 	out_range = local.norm();
 
 	// Yaw:
-	if (local.y != 0 || local.x != 0)
-		out_yaw = atan2(local.y, local.x);
+	if (local.y != 0 || local.x != 0) out_yaw = atan2(local.y, local.x);
 	else
 		out_yaw = 0;
 
 	// Pitch:
-	if (out_range != 0)
-		out_pitch = -asin(local.z / out_range);
+	if (out_range != 0) out_pitch = -asin(local.z / out_range);
 	else
 		out_pitch = 0;
 
@@ -442,15 +439,16 @@ void CPose3DQuat::sphericalCoordinates(
 		const double t2 = std::sqrt(x2 + y2);
 		const double _K = 1.0 / (t2 * square(out_range));
 
-		double vals[3 * 3] = {local.x * _r,
-							  local.y * _r,
-							  local.z * _r,
-							  -local.y / (x2 * (y2 / x2 + 1)),
-							  1.0 / (local.x * (y2 / x2 + 1)),
-							  0,
-							  (local.x * local.z) * _K,
-							  (local.y * local.z) * _K,
-							  -t2 / square(out_range)};
+		double vals[3 * 3] = {
+			local.x * _r,
+			local.y * _r,
+			local.z * _r,
+			-local.y / (x2 * (y2 / x2 + 1)),
+			1.0 / (local.x * (y2 / x2 + 1)),
+			0,
+			(local.x * local.z) * _K,
+			(local.y * local.z) * _K,
+			-t2 / square(out_range)};
 
 		const CMatrixDouble33 dryp_dlocalpoint(vals);
 		if (out_jacob_dryp_dpoint)
@@ -509,7 +507,7 @@ void CPose3DQuat::setToNaN()
 bool mrpt::poses::operator==(const CPose3DQuat& p1, const CPose3DQuat& p2)
 {
 	return p1.quat() == p2.quat() && p1.x() == p2.x() && p1.y() == p2.y() &&
-		   p1.z() == p2.z();
+		p1.z() == p2.z();
 }
 
 bool mrpt::poses::operator!=(const CPose3DQuat& p1, const CPose3DQuat& p2)

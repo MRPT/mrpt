@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+
    */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CTextFileLinesParser.h>
@@ -20,6 +20,7 @@
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/utils.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -78,8 +79,7 @@ void TMultiResDescMatchOptions::saveToConfigFile(
 	else
 		cfg.write(section, "useOriFilter", "false");
 
-	if (useDepthFilter)
-		cfg.write(section, "useDepthFilter", "true");
+	if (useDepthFilter) cfg.write(section, "useDepthFilter", "true");
 	else
 		cfg.write(section, "useDepthFilter", "false");
 
@@ -114,8 +114,7 @@ void TMultiResDescMatchOptions::dumpToTextStream(std::ostream& out) const
 	else
 		out << "No\n";
 	out << "Use depth filter?:              ";
-	if (useDepthFilter)
-		out << "Yes\n";
+	if (useDepthFilter) out << "Yes\n";
 	else
 	{
 		out << "No\n";
@@ -233,19 +232,18 @@ void TMultiResDescOptions::dumpToTextStream(std::ostream& out) const
 		out << "No\n";
 
 	out << "Compute Hash Coeffs:            ";
-	if (computeHashCoeffs)
-		out << "Yes\n";
+	if (computeHashCoeffs) out << "Yes\n";
 	else
 		out << "No\n";
 
 	out << "Blur image previously:          ";
-	if (blurImage)
-		out << "Yes\n";
+	if (blurImage) out << "Yes\n";
 	else
 		out << "No\n";
 
 	out << "Scales:                         ";
-	for (double scale : scales) out << mrpt::format("%.2f ", scale);
+	for (double scale : scales)
+		out << mrpt::format("%.2f ", scale);
 	out << "\n";
 	out << "-------------------------------------------------------- \n";
 }  // end-dumpToTextStream
@@ -264,18 +262,10 @@ void CFeature::dumpToTextStream(std::ostream& out) const
 	out << "Status:                         ";
 	switch (track_status)
 	{
-		case 0:
-			out << "Idle\n";
-			break;
-		case 1:
-			out << "[KLT] Out of bounds [KLT]\n";
-			break;
-		case 5:
-			out << "[KLT] Tracked\n";
-			break;
-		case 10:
-			out << "[KLT] Lost\n";
-			break;
+		case 0: out << "Idle\n"; break;
+		case 1: out << "[KLT] Out of bounds [KLT]\n"; break;
+		case 5: out << "[KLT] Tracked\n"; break;
+		case 10: out << "[KLT] Lost\n"; break;
 	}
 
 	out << mrpt::format("Response:                       %.2f\n", response);
@@ -337,10 +327,7 @@ void CFeature::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			in >> keypoint.pt.x >> keypoint.pt.y >> keypoint.ID >> patch >>
 				patchSize >> aux_type >> aux_KLTS >> keypoint.response >>
 				orientation >> keypoint.octave >> user_flags;
-			if (version > 0)
-			{
-				in >> depth >> initialDepth >> p3D;
-			}
+			if (version > 0) { in >> depth >> initialDepth >> p3D; }
 			in >> descriptors.SIFT >> descriptors.SURF >> descriptors.SpinImg >>
 				descriptors.SpinImg_range_rows >> descriptors.PolarImg >>
 				descriptors.LogPolarImg >> descriptors.polarImgsNoRotation >>
@@ -351,8 +338,7 @@ void CFeature::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			track_status = (TFeatureTrackStatus)aux_KLTS;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -400,8 +386,7 @@ float CFeature::descriptorDistanceTo(
 	// If we are not ask for a specific descriptor, select the first one found:
 	if (descriptorToUse == descAny)
 	{
-		if (descriptors.hasDescriptorSIFT())
-			descriptorToUse = descSIFT;
+		if (descriptors.hasDescriptorSIFT()) descriptorToUse = descSIFT;
 		else if (descriptors.hasDescriptorSURF())
 			descriptorToUse = descSURF;
 		else if (descriptors.hasDescriptorSpinImg())
@@ -442,13 +427,10 @@ float CFeature::descriptorDistanceTo(
 			return descriptorLogPolarImgDistanceTo(
 				oFeature, minAng, normalize_distances);
 		}
-		case descORB:
-			return float(descriptorORBDistanceTo(oFeature));
+		case descORB: return float(descriptorORBDistanceTo(oFeature));
 		// # added by Raghavender Sahdev
-		case descBLD:
-			return (descriptorBLDDistanceTo(oFeature));
-		case descLATCH:
-			return (descriptorLATCHDistanceTo(oFeature));
+		case descBLD: return (descriptorBLDDistanceTo(oFeature));
+		case descLATCH: return (descriptorLATCHDistanceTo(oFeature));
 		default:
 			THROW_EXCEPTION_FMT(
 				"Unknown value for 'descriptorToUse'=%u",
@@ -508,7 +490,7 @@ float CFeature::descriptorSURFDistanceTo(
 	if (normalize_distances) dist /= descriptors.SURF->size();
 	dist = sqrt(dist);
 	if (normalize_distances)
-		dist /= 0.20f;  // JL: Ad-hoc value! Investigate where does this come
+		dist /= 0.20f;	// JL: Ad-hoc value! Investigate where does this come
 	// from...
 	return dist;
 }  // end descriptorSURFDistanceTo
@@ -565,7 +547,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 	const float desc2_mean = desc2.sum() / d2f(width * height);
 #endif
 
-	CVectorFloat distances(height, 0);  // Distances for each shift
+	CVectorFloat distances(height, 0);	// Distances for each shift
 
 	for (delta = 0; delta < height; delta++)
 	{
@@ -578,7 +560,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 		dist = 0;
 		for (i = 0; i < height; i++)
 		{
-			ii = (i + delta) % height;  // Shifted index
+			ii = (i + delta) % height;	// Shifted index
 			for (j = 0; j < width; j++)
 			{
 #ifdef LM_CORR_METHOD_EUCLID
@@ -736,7 +718,7 @@ uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 		// doi:10.1145/367236.367286
 		uint8_t x_or = t_desc[k] ^ o_desc[k];
 		uint8_t count;
-		for (count = 0; x_or; count++)  // ...
+		for (count = 0; x_or; count++)	// ...
 			x_or &= x_or - 1;  // ...
 		distance += count;
 	}
@@ -832,33 +814,38 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 	if (descriptors.hasDescriptorSIFT())
 	{
 		f.printf("%4d ", int(descriptors.SIFT->size()));
-		for (unsigned char k : *descriptors.SIFT) f.printf("%4d ", k);
+		for (unsigned char k : *descriptors.SIFT)
+			f.printf("%4d ", k);
 	}
 
 	f.printf("%2d ", int(descriptors.hasDescriptorSURF() ? 1 : 0));
 	if (descriptors.hasDescriptorSURF())
 	{
 		f.printf("%4d ", int(descriptors.SURF->size()));
-		for (float k : *descriptors.SURF) f.printf("%8.5f ", k);
+		for (float k : *descriptors.SURF)
+			f.printf("%8.5f ", k);
 	}
 
 	f.printf("%2d ", int(descriptors.hasDescriptorORB() ? 1 : 0));
 	if (descriptors.hasDescriptorORB())
-		for (unsigned char k : *descriptors.ORB) f.printf("%d ", k);
+		for (unsigned char k : *descriptors.ORB)
+			f.printf("%d ", k);
 
 	// # ADDED by Raghavender Sahdev
 	f.printf("%2d ", int(descriptors.hasDescriptorBLD() ? 1 : 0));
 	if (descriptors.hasDescriptorBLD())
 	{
 		f.printf("%4d ", int(descriptors.BLD->size()));
-		for (unsigned char k : *descriptors.BLD) f.printf("%4d ", k);
+		for (unsigned char k : *descriptors.BLD)
+			f.printf("%4d ", k);
 	}
 
 	f.printf("%2d ", int(descriptors.hasDescriptorLATCH() ? 1 : 0));
 	if (descriptors.hasDescriptorLATCH())
 	{
 		f.printf("%4d ", int(descriptors.LATCH->size()));
-		for (unsigned char k : *descriptors.LATCH) f.printf("%4d ", k);
+		for (unsigned char k : *descriptors.LATCH)
+			f.printf("%4d ", k);
 	}
 
 	f.printf("\n");
@@ -1137,7 +1124,8 @@ TFeatureID CFeatureList::getMaxID() const
 	MRPT_START
 	ASSERT_(!empty());
 	vision::TFeatureID maxID = begin()->keypoint.ID;
-	for (const auto& f : *this) mrpt::keep_max(maxID, f.keypoint.ID);
+	for (const auto& f : *this)
+		mrpt::keep_max(maxID, f.keypoint.ID);
 	return maxID;
 	MRPT_END
 }
@@ -1276,7 +1264,8 @@ bool CFeature::getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat& desc) const
 		desc.resize(nR, nC);
 		auto itD = descriptors.SpinImg->begin();
 		for (size_t r = 0; r < nR; r++)
-			for (size_t c = 0; c < nC; c++) desc.coeffRef(r, c) = *itD++;
+			for (size_t c = 0; c < nC; c++)
+				desc.coeffRef(r, c) = *itD++;
 		return true;
 	}
 	else if (descriptors.hasDescriptorPolarImg())

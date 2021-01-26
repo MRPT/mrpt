@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"	// Precompiled headers
 //
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
@@ -185,7 +185,7 @@ void CClientTCPSocket::connect(
 #else
 	int oldflags = fcntl(m_hSock, F_GETFL, 0);
 	if (oldflags == -1) THROW_EXCEPTION("Error retrieving fcntl();of socket.");
-	oldflags |= O_NONBLOCK;  // Set NON-BLOCKING
+	oldflags |= O_NONBLOCK;	 // Set NON-BLOCKING
 	if (-1 == fcntl(m_hSock, F_SETFL, oldflags))
 		THROW_EXCEPTION("Error entering non-blocking mode with fcntl();");
 #endif
@@ -218,8 +218,8 @@ void CClientTCPSocket::connect(
 	int sel_ret = select(
 		m_hSock + 1,
 		nullptr,  // For read
-		&ss_write,  // For write or *connect done*
-		&ss_errors,  // For errors
+		&ss_write,	// For write or *connect done*
+		&ss_errors,	 // For errors
 		timeout_ms == 0 ? nullptr : &timer);
 
 	if (sel_ret == 0)
@@ -304,8 +304,7 @@ size_t CClientTCPSocket::readAsync(
 		// Use the "first" or "between" timeouts:
 		int curTimeout = alreadyRead == 0 ? timeoutStart_ms : timeoutBetween_ms;
 
-		if (curTimeout < 0)
-			ptrTimeout = nullptr;
+		if (curTimeout < 0) ptrTimeout = nullptr;
 		else
 		{
 			timeoutSelect.tv_sec = curTimeout / 1000;
@@ -389,10 +388,7 @@ size_t CClientTCPSocket::writeAsync(
 	FD_SET(m_hSock, &sockArr);
 
 	// The timeout:
-	if (timeout_ms < 0)
-	{
-		ptrTimeout = nullptr;
-	}
+	if (timeout_ms < 0) { ptrTimeout = nullptr; }
 	else
 	{
 		timeoutSelect.tv_sec = timeout_ms / 1000;
@@ -492,8 +488,7 @@ int CClientTCPSocket::getTCPNoDelay()
 	int res =
 		getsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, (char*)&value, &length);
 
-	if (res == -1)
-		return -1;
+	if (res == -1) return -1;
 	else
 		return value;
 }

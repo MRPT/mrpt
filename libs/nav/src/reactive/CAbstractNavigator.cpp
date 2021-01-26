@@ -8,11 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
+
 #include <limits>
 #include <typeinfo>
 
@@ -50,11 +51,11 @@ bool mrpt::nav::CAbstractNavigator::TargetInfo::operator==(
 	const TargetInfo& o) const
 {
 	return target_coords == o.target_coords &&
-		   target_frame_id == o.target_frame_id &&
-		   targetAllowedDistance == o.targetAllowedDistance &&
-		   targetIsRelative == o.targetIsRelative &&
-		   targetDesiredRelSpeed == o.targetDesiredRelSpeed &&
-		   targetIsIntermediaryWaypoint == o.targetIsIntermediaryWaypoint;
+		target_frame_id == o.target_frame_id &&
+		targetAllowedDistance == o.targetAllowedDistance &&
+		targetIsRelative == o.targetIsRelative &&
+		targetDesiredRelSpeed == o.targetDesiredRelSpeed &&
+		targetIsIntermediaryWaypoint == o.targetIsIntermediaryWaypoint;
 }
 
 // Gets navigation params as a human-readable format:
@@ -235,7 +236,7 @@ void CAbstractNavigator::navigationStep()
 		case NAVIGATING:
 			this->performNavigationStepNavigating(
 				true /* do call virtual method nav implementation*/);
-			break;  // End case NAVIGATING
+			break;	// End case NAVIGATING
 	};
 	m_lastNavigationState = prevState;
 
@@ -302,7 +303,7 @@ void CAbstractNavigator::processNavigateCommand(const TNavigationParams* params)
 		m_navigationParams->target.target_coords =
 			m_curPoseVel.pose + m_navigationParams->target.target_coords;
 		m_navigationParams->target.targetIsRelative =
-			false;  // Now it's not relative
+			false;	// Now it's not relative
 	}
 
 	// new state:
@@ -345,7 +346,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 				"updateCurrentPoseAndSpeeds: ignoring call, since last call "
 				"was only %f ms ago.",
 				last_call_age * 1e3);
-			return;  // previous data is still valid: don't query the robot
+			return;	 // previous data is still valid: don't query the robot
 			// again
 		}
 	}
@@ -490,7 +491,7 @@ bool CAbstractNavigator::checkHasReachedTarget(const double targetDist) const
 void CAbstractNavigator::internal_onStartNewNavigation()
 {
 	m_robot.startWatchdog(1000);  // Watchdog = 1 seg
-	m_latestPoses.clear();  // Clear cache of last poses.
+	m_latestPoses.clear();	// Clear cache of last poses.
 	m_latestOdomPoses.clear();
 	onStartNewNavigation();
 }
@@ -618,7 +619,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 				params_abstract_navigator.dist_check_target_is_blocked)
 			{
 				const auto rel_trg = m_navigationParams->target.target_coords -
-									 m_curPoseVel.pose;
+					m_curPoseVel.pose;
 				const bool is_col = checkCollisionWithLatestObstacles(rel_trg);
 				if (is_col)
 				{
@@ -650,10 +651,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 		}
 
 		// The normal execution of the navigation: Execute one step:
-		if (call_virtual_nav_method)
-		{
-			performNavigationStep();
-		}
+		if (call_virtual_nav_method) { performNavigationStep(); }
 	}
 	catch (const std::exception& e)
 	{

@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/topography.h>
 #include "topography-precomp.h"
-
+//
 #include <mrpt/core/initializer.h>
+#include <mrpt/topography.h>
 
 using namespace mrpt::topography;
 

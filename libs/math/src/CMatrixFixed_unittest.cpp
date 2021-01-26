@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixed.h>
+
 #include <Eigen/Dense>
 
 TEST(CMatrixFixed, CtorUninit)
@@ -22,7 +23,8 @@ TEST(CMatrixFixed, CtorAllZeros)
 {
 	mrpt::math::CMatrixFixed<double, 2, 2> M;
 	for (int i = 0; i < 2; i++)
-		for (int j = 0; j < 2; j++) EXPECT_EQ(M(i, j), .0);
+		for (int j = 0; j < 2; j++)
+			EXPECT_EQ(M(i, j), .0);
 }
 
 TEST(CMatrixFixed, Identity)
@@ -38,7 +40,8 @@ TEST(CMatrixFixed, Identity)
 
 	// Check that access via data() is what we expect:
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) EXPECT_EQ(&M(r, c), &M.data()[c + r * 3]);
+		for (int c = 0; c < 3; c++)
+			EXPECT_EQ(&M(r, c), &M.data()[c + r * 3]);
 }
 
 TEST(CMatrixFixed, asString)
@@ -54,7 +57,8 @@ TEST(CMatrixFixed, GetSetEigen)
 		mrpt::math::CMatrixFixed<double, 3, 3> M;
 		auto em = M.asEigen();
 		em.setIdentity();
-		for (int i = 0; i < 3; i++) EXPECT_EQ(M(i, i), 1.0);
+		for (int i = 0; i < 3; i++)
+			EXPECT_EQ(M(i, i), 1.0);
 	}
 	{
 		mrpt::math::CMatrixFixed<double, 3, 3> M;

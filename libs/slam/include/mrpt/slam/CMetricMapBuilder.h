@@ -141,6 +141,6 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 	TOptions options;
 
    public:
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::slam

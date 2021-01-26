@@ -11,6 +11,7 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationStereoImages.h>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
@@ -38,7 +39,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 	   public:
 		size_t entries_converted;
-		size_t entries_skipped;  // Already external
+		size_t entries_skipped;	 // Already external
 
 		CRawlogProcessor_Externalize(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
@@ -60,8 +61,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 			outDir = (out_rawlog_basedir.empty()
 						  ? string()
 						  : (out_rawlog_basedir + string("/"))) +
-					 extractFileName(outrawlog.out_rawlog_filename) +
-					 string("_Images");
+				extractFileName(outrawlog.out_rawlog_filename) +
+				string("_Images");
 			if (directoryExists(outDir))
 				throw runtime_error(
 					string("*ABORTING*: Output directory for images already "
@@ -138,8 +139,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 				if (obsPc->pointcloud && !obsPc->isExternallyStored())
 				{
-					const string fileName =
-						"pc_"s + label_time +
+					const string fileName = "pc_"s + label_time +
 						(m_external_txt ? ".txt"s : ".bin"s);
 					obsPc->setAsExternalStorage(
 						fileName,
@@ -222,8 +222,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
-			if (actions)
-				(*outrawlog.out_rawlog) << actions << SF;
+			if (actions) (*outrawlog.out_rawlog) << actions << SF;
 			else
 				(*outrawlog.out_rawlog) << obs;
 		}

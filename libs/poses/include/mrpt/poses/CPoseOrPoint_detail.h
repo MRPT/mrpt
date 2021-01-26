@@ -62,7 +62,7 @@ struct T3DTypeHelper<CPose3DQuat>
 };
 
 template <class DERIVEDCLASS, int IS3D>
-struct pose_point_impl;  // generic template, specialized below:
+struct pose_point_impl;	 // generic template, specialized below:
 
 // Extra members for 3D implementation:
 template <class DERIVEDCLASS>

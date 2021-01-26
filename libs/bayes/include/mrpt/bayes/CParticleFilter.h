@@ -208,7 +208,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
 	 */
 	CParticleFilter::TParticleFilterOptions m_options;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace bayes
 }  // namespace mrpt

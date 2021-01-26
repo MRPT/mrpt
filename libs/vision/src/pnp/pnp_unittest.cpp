@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #include <gtest/gtest.h>
 #include <mrpt/vision/pnp_algos.h>
+
 #include <Eigen/Dense>
 #include <iostream>
 

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixFixed.h>
+
 #include <Eigen/Dense>
 
 namespace mrpt::math

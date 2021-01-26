@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/types.h>
+
 #include <array>
 
 namespace mrpt::vision
@@ -165,5 +166,5 @@ bool checkerBoardStereoCalibration(
 	TCalibrationStereoImageList& images, const TStereoCalibParams& params,
 	TStereoCalibResults& out_results);
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision

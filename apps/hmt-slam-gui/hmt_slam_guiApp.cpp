@@ -13,6 +13,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "hmt_slam_guiMain.h"
 //*)
 

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/system/CTicTac.h>
@@ -94,8 +94,7 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 
 		if (leftIsDown)
 		{
-			if (event.ShiftDown())
-				updateZoom(params, X, Y);
+			if (event.ShiftDown()) updateZoom(params, X, Y);
 
 			else if (event.ControlDown())
 				updateRotate(params, X, Y);
@@ -261,4 +260,4 @@ void CWxGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D& camPose)
 	THROW_EXCEPTION("todo");
 }
 
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS

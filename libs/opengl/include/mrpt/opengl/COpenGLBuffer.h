@@ -24,8 +24,8 @@ class COpenGLBuffer
 	enum class Type : unsigned int
 	{
 		Vertex = 0x8892,  // GL_ARRAY_BUFFER (Default)
-		ElementIndex = 0x8893,  // GL_ELEMENT_ARRAY_BUFFER
-		PixelPack = 0x88EB,  // GL_PIXEL_PACK_BUFFER
+		ElementIndex = 0x8893,	// GL_ELEMENT_ARRAY_BUFFER
+		PixelPack = 0x88EB,	 // GL_PIXEL_PACK_BUFFER
 		PixelUnpack = 0x88EC  // GL_PIXEL_UNPACK_BUFFER
 	};
 

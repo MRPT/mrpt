@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
-
+#include "containers-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/containers/CDynamicGrid.h>
 #include <mrpt/core/format.h>
+
 #include <fstream>
 
 bool mrpt::containers::internal::dynamic_grid_txt_saver::saveToTextFile(

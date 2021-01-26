@@ -77,7 +77,7 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/maps/CPointsMap_liblas.h>
 #endif
 
-const mrpt::maps::CColouredPointsMap dummy_map;  // this is to enforce to load
+const mrpt::maps::CColouredPointsMap dummy_map;	 // this is to enforce to load
 // the mrpt-maps DLL, then
 // register all OpenGL classes
 // defined there.
@@ -206,8 +206,7 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 	double estimatedFPS;
 	static double meanEstimatedFPS = 1;
 
-	if (At > 0)
-		estimatedFPS = 1 / At;
+	if (At > 0) estimatedFPS = 1 / At;
 	else
 		estimatedFPS = 0;
 
@@ -265,7 +264,7 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 			// cout << "Time to build file list: " << tictac.Tac() << endl;
 
 			string curFileName = extractFileName(loadedFileName) + string(".") +
-								 extractFileExtension(loadedFileName);
+				extractFileExtension(loadedFileName);
 
 			// Find the current file:
 			CDirectoryExplorer::TFileInfoList::iterator it;
@@ -691,8 +690,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	SetMenuBar(MenuBar1);
 	StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
 	int __wxStatusBarWidths_1[4] = {-10, -10, -4, -5};
-	int __wxStatusBarStyles_1[4] = {wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL,
-									wxSB_NORMAL};
+	int __wxStatusBarStyles_1[4] = {
+		wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL};
 	StatusBar1->SetFieldsCount(4, __wxStatusBarWidths_1);
 	StatusBar1->SetStatusStyles(4, __wxStatusBarStyles_1);
 	SetStatusBar(StatusBar1);
@@ -976,16 +975,15 @@ void _DSceneViewerFrame::updateTitle()
 
 void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 {
-	timLoadFileCmdLine.Stop();  // One shot only.
+	timLoadFileCmdLine.Stop();	// One shot only.
 	// Open file if passed by the command line:
 	if (!global_fileToOpen.empty())
 	{
 		if (mrpt::system::strCmpI(
-				"3Dscene", mrpt::system::extractFileExtension(
-							   global_fileToOpen, true /*ignore .gz*/)))
-		{
-			loadFromFile(global_fileToOpen);
-		}
+				"3Dscene",
+				mrpt::system::extractFileExtension(
+					global_fileToOpen, true /*ignore .gz*/)))
+		{ loadFromFile(global_fileToOpen); }
 		else
 		{
 			std::cout << "Filename extension does not match `3Dscene`, "
@@ -1024,7 +1022,7 @@ void _DSceneViewerFrame::OntimAutoplay(wxTimerEvent& event)
 
 	// Continue?
 	if (btnAutoplay->GetValue())
-		m_autoplayTimer->Start(delayBetweenAutoplay, true);  // One-shot:
+		m_autoplayTimer->Start(delayBetweenAutoplay, true);	 // One-shot:
 }
 
 void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
@@ -1223,9 +1221,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 		if ((openGLSceneRef->viewportsCount() == 0) ||
 			!openGLSceneRef->getViewport("main") ||
 			(openGLSceneRef->getViewport("main")->size() == 0))
-		{
-			wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this);
-		}
+		{ wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this); }
 		else
 		{
 			// Change the camera
@@ -1265,8 +1261,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 					}
 				}
 
-				if (valid)
-					m_canvas->setCameraPointing(p.x(), p.y(), p.z());
+				if (valid) m_canvas->setCameraPointing(p.x(), p.y(), p.z());
 				else
 				{
 					// end of path:
@@ -1312,9 +1307,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 		if ((openGLSceneRef->viewportsCount() == 0) ||
 			!openGLSceneRef->getViewport("main") ||
 			(openGLSceneRef->getViewport("main")->size() == 0))
-		{
-			wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this);
-		}
+		{ wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this); }
 		else
 		{
 			// Change the camera
@@ -1361,7 +1354,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 
 			maxv = azimuth + max_value;
 
-			m_travelling_is_arbitrary = false;  // Circular
+			m_travelling_is_arbitrary = false;	// Circular
 			m_tTravelling.Start(100);
 
 			Refresh(false);
@@ -1461,8 +1454,9 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(
 		_("Max. density of points in each octree (points/pixel^2):"),
 		_("Enter new value"),
 		wxString::Format(
-			_("%e"), (double)mrpt::global_settings::
-						 OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL()),
+			_("%e"),
+			(double)mrpt::global_settings::
+				OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL()),
 		this);
 
 	double N1, N2;
@@ -1729,15 +1723,9 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			{
 				switch (dlgPLY.rbIntFromXYZ->GetSelection())
 				{
-					case 1:
-						gl_points->enableColorFromX();
-						break;
-					case 2:
-						gl_points->enableColorFromY();
-						break;
-					case 3:
-						gl_points->enableColorFromZ();
-						break;
+					case 1: gl_points->enableColorFromX(); break;
+					case 2: gl_points->enableColorFromY(); break;
+					case 3: gl_points->enableColorFromZ(); break;
 				};
 			}
 
@@ -2130,15 +2118,9 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		{
 			switch (dlgPLY.rbIntFromXYZ->GetSelection())
 			{
-				case 1:
-					gl_points->enableColorFromX();
-					break;
-				case 2:
-					gl_points->enableColorFromY();
-					break;
-				case 3:
-					gl_points->enableColorFromZ();
-					break;
+				case 1: gl_points->enableColorFromX(); break;
+				case 2: gl_points->enableColorFromY(); break;
+				case 3: gl_points->enableColorFromZ(); break;
 			};
 		}
 

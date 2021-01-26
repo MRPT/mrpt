@@ -8,12 +8,12 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+
 #include <string>
 
 #include "CNode.h"
-
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
 
 class CPosesNode : public CNode
 {

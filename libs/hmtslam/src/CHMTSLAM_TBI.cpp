@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
@@ -55,7 +55,7 @@ void CHMTSLAM::thread_TBI()
 		while (!obj->m_terminateThreads)
 		{
 			std::this_thread::sleep_for(100ms);
-		};  // end while execute thread
+		};	// end while execute thread
 
 		// Finish thread:
 		// -------------------------
@@ -156,7 +156,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 
 			// Compute it:
 			double match = obj->m_map.computeOverlapProbabilityBetweenNodes(
-				areaID,  // From
+				areaID,	 // From
 				a->first,  // To
 				LMH_ID);
 
@@ -228,7 +228,8 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	}  // end of m_topLCdets_cs lock
 
 	// Delete candidates which had no PDF when they should.
-	for (unsigned long it : lstNodesToErase) msg->loopClosureData.erase(it);
+	for (unsigned long it : lstNodesToErase)
+		msg->loopClosureData.erase(it);
 
 	obj->logFmt(
 		mrpt::system::LVL_DEBUG, "[TBI_main] Done. %u candidates found.\n",

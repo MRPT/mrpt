@@ -42,7 +42,8 @@ tf2::Matrix3x3 toROS(const mrpt::math::CMatrixDouble33& src)
 {
 	tf2::Matrix3x3 des;
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) des[r][c] = src(r, c);
+		for (int c = 0; c < 3; c++)
+			des[r][c] = src(r, c);
 	return des;
 }
 
@@ -232,7 +233,8 @@ mrpt::math::CMatrixDouble33 fromROS(const tf2::Matrix3x3& src)
 {
 	mrpt::math::CMatrixDouble33 des;
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 3; c++) des(r, c) = src[r][c];
+		for (int c = 0; c < 3; c++)
+			des(r, c) = src[r][c];
 	return des;
 }
 

@@ -10,6 +10,7 @@
 
 #include <mrpt/math/CVectorDynamic.h>  //CVectorFloat
 #include <mrpt/obs/T2DScanProperties.h>
+
 #include <map>
 #include <mutex>
 

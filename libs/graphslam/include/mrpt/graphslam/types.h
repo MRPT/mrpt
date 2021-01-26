@@ -10,6 +10,7 @@
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/poses/Lie/SE.h>
+
 #include <functional>
 #include <map>
 
@@ -74,7 +75,7 @@ struct TResultInfoSpaLevMarq
 	double final_total_sq_error;
 };
 
-/**  @} */  // end of grouping
+/**  @} */	// end of grouping
 
 }  // namespace graphslam
 }  // namespace mrpt

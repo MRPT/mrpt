@@ -177,20 +177,20 @@ enum nv_ins_status_type_t : uint32_t
 	INS_INACTIVE = 0,  // IMU logs are present, but the alignment routine has
 	// not started; INS is inactive.
 	INS_ALIGNING = 1,  // INS is in alignment mode.
-	INS_HIGH_VARIANCE = 2,  // The INS solution is in navigation mode but the
+	INS_HIGH_VARIANCE = 2,	// The INS solution is in navigation mode but the
 	// azimuth solution uncertainty has exceeded the
 	// threshold.
-	INS_SOLUTION_GOOD = 3,  // The INS filter is in navigation mode and the INS
+	INS_SOLUTION_GOOD = 3,	// The INS filter is in navigation mode and the INS
 	// solution is good.
-	INS_SOLUTION_FREE = 6,  // The INS filter is in navigation mode and the GNSS
+	INS_SOLUTION_FREE = 6,	// The INS filter is in navigation mode and the GNSS
 	// solution is suspected to be in error.
-	INS_ALIGNMENT_COMPLETE = 7,  // The INS filter is in navigation mode, but
+	INS_ALIGNMENT_COMPLETE = 7,	 // The INS filter is in navigation mode, but
 	// not enough vehicle dynamics have been
 	// experienced for the system to be within
 	// specifications.
 	DETERMINING_ORIENTATION =
-		8,  // INS is determining the IMU axis aligned with gravity.
-	WAITING_INITIALPOS = 9  // The INS filter has determined the IMU orientation
+		8,	// INS is determining the IMU axis aligned with gravity.
+	WAITING_INITIALPOS = 9	// The INS filter has determined the IMU orientation
 	// and is awaiting an initial position estimate to
 	// begin the alignment process.
 };
@@ -484,7 +484,8 @@ struct Message_NV_OEM6_VERSION : public gnss_message
 	{
 #if MRPT_IS_BIG_ENDIAN
 		header.fixEndianness();
-		for (auto& c : components) mrpt::reverseBytesInPlace(c.type);
+		for (auto& c : components)
+			mrpt::reverseBytesInPlace(c.type);
 		mrpt::reverseBytesInPlace(crc);
 #endif
 	}

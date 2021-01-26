@@ -316,9 +316,9 @@ class slamdemoFrame : public wxFrame
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& source,
-			const std::string& section) const override;  // See base docs
+			const std::string& section) const override;	 // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** -1: random, other, use as seed */
 		int random_seed{-1};
@@ -360,4 +360,4 @@ class slamdemoFrame : public wxFrame
 	TSimulationOptions options;
 };
 
-#endif  // SLAMDEMOMAIN_H
+#endif	// SLAMDEMOMAIN_H

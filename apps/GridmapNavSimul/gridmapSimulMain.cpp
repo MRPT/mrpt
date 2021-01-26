@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gridmapSimulMain.h"
+
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(gridmapSimulFrame)
@@ -19,6 +20,16 @@
 #include <wx/string.h>
 //*)
 
+#include <mrpt/gui/about_box.h>
+#include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/CFileOutputStream.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/system/filesystem.h>
 #include <wx/artprov.h>
 #include <wx/busyinfo.h>
 #include <wx/colordlg.h>
@@ -34,18 +45,6 @@
 
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/app_icon_gridmapsimul.xpm"
-
-#include <mrpt/gui/about_box.h>
-
-#include <mrpt/io/CFileGZInputStream.h>
-#include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/io/CFileOutputStream.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/system/CTimeLogger.h>
-#include <mrpt/system/filesystem.h>
 
 //#define DO_SCAN_LIKELIHOOD_DEBUG
 
@@ -71,19 +70,19 @@ class MyArtProvider : public wxArtProvider
 		const wxSize& size) override;
 };
 
-#define RETURN_BITMAP(artid, xpm)                                        \
-	if (id == artid)                                                     \
-	{                                                                    \
-		if (client == wxART_MENU)                                        \
-		{                                                                \
-			wxBitmap b(xpm);                                             \
-			return wxBitmap(                                             \
-				b.ConvertToImage().Scale(16, 16, wxIMAGE_QUALITY_HIGH)); \
-		}                                                                \
-		else                                                             \
-		{                                                                \
-			return wxBitmap(xpm);                                        \
-		}                                                                \
+#define RETURN_BITMAP(artid, xpm)                                              \
+	if (id == artid)                                                           \
+	{                                                                          \
+		if (client == wxART_MENU)                                              \
+		{                                                                      \
+			wxBitmap b(xpm);                                                   \
+			return wxBitmap(                                                   \
+				b.ConvertToImage().Scale(16, 16, wxIMAGE_QUALITY_HIGH));       \
+		}                                                                      \
+		else                                                                   \
+		{                                                                      \
+			return wxBitmap(xpm);                                              \
+		}                                                                      \
 	}
 
 // CreateBitmap function
@@ -99,20 +98,18 @@ wxBitmap MyArtProvider::CreateBitmap(
 }
 
 #include <mrpt/gui/CWxGLCanvasBase.h>
-
+#include <mrpt/gui/WxUtils.h>
 #include <mrpt/hwdrivers/CJoystick.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/system/CTicTac.h>
-
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
-#include <vector>
+#include <mrpt/system/CTicTac.h>
 
-#include <mrpt/gui/WxUtils.h>
+#include <vector>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -826,18 +823,10 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 			switch (last_pressed_key)
 			{
-				case WXK_UP:
-					y = -1;
-					break;
-				case WXK_DOWN:
-					y = 1;
-					break;
-				case WXK_LEFT:
-					x = -1;
-					break;
-				case WXK_RIGHT:
-					x = 1;
-					break;
+				case WXK_UP: y = -1; break;
+				case WXK_DOWN: y = 1; break;
+				case WXK_LEFT: x = -1; break;
+				case WXK_RIGHT: x = 1; break;
 			}
 
 			if (x != 0 || y != 0)
@@ -862,7 +851,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		mrpt::obs::CObservation2DRangeScan the_scan;
 		the_scan.sensorLabel = "LASER_SIM";
 		the_scan.sensorPose.setFromValues(0.20, 0, 0.10);
-		the_scan.maxRange = 80;  // LASER_MAX_RANGE;
+		the_scan.maxRange = 80;	 // LASER_MAX_RANGE;
 		the_scan.aperture = LASER_APERTURE;
 		the_scan.stdError = LASER_STD_ERROR;
 
@@ -893,15 +882,15 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			win.plot(ssu_out.scanWithUncert.rangeScan.scan, "3k-", "mean");
 			win.plot(the_scan.scan, "r-", "obs");
 
-			Eigen::VectorXd ci1 =
-				ssu_out.scanWithUncert.rangesMean +
-				3 * ssu_out.scanWithUncert.rangesCovar.diagonal()
+			Eigen::VectorXd ci1 = ssu_out.scanWithUncert.rangesMean +
+				3 *
+					ssu_out.scanWithUncert.rangesCovar.diagonal()
 						.array()
 						.sqrt()
 						.matrix();
-			Eigen::VectorXd ci2 =
-				ssu_out.scanWithUncert.rangesMean -
-				3 * ssu_out.scanWithUncert.rangesCovar.diagonal()
+			Eigen::VectorXd ci2 = ssu_out.scanWithUncert.rangesMean -
+				3 *
+					ssu_out.scanWithUncert.rangesCovar.diagonal()
 						.array()
 						.sqrt()
 						.matrix();
@@ -949,7 +938,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				// Save also the gridmap:
 				CFileGZOutputStream out_grid;
 				string grid_file = string(edOutFile->GetValue().mb_str()) +
-								   string("_grid.gridmap.gz");
+					string("_grid.gridmap.gz");
 				if (!out_grid.open(grid_file))
 				{
 					outs.close();
@@ -962,7 +951,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 						_("Error"), wxOK, this);
 				}
 
-				archiveFrom(out_grid) << the_grid;  // save it
+				archiveFrom(out_grid) << the_grid;	// save it
 			}
 
 			static long decimation_count = 0;

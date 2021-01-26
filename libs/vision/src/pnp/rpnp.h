@@ -30,13 +30,13 @@ class rpnp
 		obj_pts;  //! Object Points (n X 3) in Camera Co-ordinate system
 	Eigen::MatrixXd
 		img_pts;  //! Image Points (n X 3) in Camera Co-ordinate system
-	Eigen::MatrixXd cam_intrinsic;  //! Camera Intrinsic Matrix
-	Eigen::MatrixXd P;  //! Transposed Object Points (3 X n) for computations
-	Eigen::MatrixXd Q;  //! Transposed Image Points (3 X n) for computations
+	Eigen::MatrixXd cam_intrinsic;	//! Camera Intrinsic Matrix
+	Eigen::MatrixXd P;	//! Transposed Object Points (3 X n) for computations
+	Eigen::MatrixXd Q;	//! Transposed Image Points (3 X n) for computations
 
-	Eigen::Matrix3d R;  //! Rotation matrix
-	Eigen::Vector3d t;  //! Translation vector
-	int n;  //! Number of 2D/3D correspondences
+	Eigen::Matrix3d R;	//! Rotation matrix
+	Eigen::Vector3d t;	//! Translation vector
+	int n;	//! Number of 2D/3D correspondences
 
    public:
 	//! Constructor for rpnp class
@@ -88,5 +88,5 @@ class rpnp
 		Eigen::Vector3d& t2);
 };
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision::pnp

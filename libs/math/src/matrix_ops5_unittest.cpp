@@ -14,6 +14,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -30,7 +31,8 @@ TEST(Matrices, loadFromArray)
 	mat.loadFromArray(nums);
 
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 4; c++) EXPECT_EQ(nums[4 * r + c], mat(r, c));
+		for (int c = 0; c < 4; c++)
+			EXPECT_EQ(nums[4 * r + c], mat(r, c));
 }
 
 alignas(MRPT_MAX_STATIC_ALIGN_BYTES) static double test_nums[3 * 4] = {
@@ -45,7 +47,8 @@ TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 								   MRPT_MAX_STATIC_ALIGN_BYTES>(test_nums));
 
 	for (int r = 0; r < 3; r++)
-		for (int c = 0; c < 4; c++) EXPECT_EQ(test_nums[4 * r + c], mat(r, c));
+		for (int c = 0; c < 4; c++)
+			EXPECT_EQ(test_nums[4 * r + c], mat(r, c));
 }
 
 TEST(Matrices, EigenMatrix_loadWithEigenMap)
@@ -55,6 +58,7 @@ TEST(Matrices, EigenMatrix_loadWithEigenMap)
 		Eigen::Map<Eigen::Matrix<double, 3, 4>, MRPT_MAX_STATIC_ALIGN_BYTES>(
 			test_nums);
 
-	for (int r = 0; r < 3; r++)  // Transposed!!
-		for (int c = 0; c < 4; c++) EXPECT_EQ(test_nums[3 * c + r], mat(r, c));
+	for (int r = 0; r < 3; r++)	 // Transposed!!
+		for (int c = 0; c < 4; c++)
+			EXPECT_EQ(test_nums[3 * c + r], mat(r, c));
 }

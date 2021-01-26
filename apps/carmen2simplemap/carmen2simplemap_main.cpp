@@ -32,6 +32,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
 #include <fstream>
 
 using namespace mrpt;
@@ -60,7 +61,7 @@ TCLAP::ValueArg<int> arg_gz_level(
 	"0: none, 1-9: min-max", cmd);
 
 // Declarations:
-#define VERBOSE_COUT \
+#define VERBOSE_COUT                                                           \
 	if (verbose) cout << "[carmen2simplemap] "
 
 // -----------------------------------------------
@@ -144,7 +145,7 @@ int main(int argc, char** argv)
 				{
 					if (!IS_CLASS(
 							*importedObservation,
-							CObservationOdometry))  // Odometry was already used
+							CObservationOdometry))	// Odometry was already used
 					// as positioning...
 					{
 						SF->insert(importedObservation);

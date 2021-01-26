@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rawlog-edit-declarations.h"
-
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/interp_fit.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/topography.h>
+
+#include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -223,7 +223,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 				"</kml>\n");
 		}  // end generate_KML
 
-	};  // end CRawlogProcessor_ExportGPS_KML
+	};	// end CRawlogProcessor_ExportGPS_KML
 
 	// Process
 	// ---------------------------------

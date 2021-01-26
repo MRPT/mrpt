@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #if MRPT_HAS_WXWIDGETS
 
 #include "CAboutBox_wx.h"
@@ -27,7 +27,6 @@
 
 // For CV_VERSION
 #include <mrpt/config.h>
-
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
@@ -188,4 +187,4 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 }
 
 void CAboutBox::OnButton1Click(wxCommandEvent& event) { Close(); }
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS

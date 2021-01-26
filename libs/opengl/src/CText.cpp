@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include <mrpt/opengl/opengl_api.h>
 #include "gltext.h"
 
 using namespace mrpt;
@@ -42,7 +42,8 @@ void CText::onUpdateBuffers_Text()
 
 	// All lines & triangles, the same color:
 	cbd.assign(vbd.size(), m_color);
-	for (auto& tri : m_triangles) tri.setColor(m_color);
+	for (auto& tri : m_triangles)
+		tri.setColor(m_color);
 }
 
 void CText::render(const RenderContext& rc) const
@@ -124,8 +125,7 @@ void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

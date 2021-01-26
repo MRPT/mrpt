@@ -85,5 +85,5 @@ class CTextFileLinesParser
 	bool m_filter_C_comments{true};
 	bool m_filter_SH_comments{true};
 
-};  // end of CTextFileLinesParser
+};	// end of CTextFileLinesParser
 }  // namespace mrpt::io

@@ -10,6 +10,7 @@
 
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/datetime.h>
+
 #include <map>
 #include <string>
 
@@ -77,7 +78,7 @@ class FrameTransformerInterface
 		/** Timeout */
 		const double timeout_secs = .0) = 0;
 
-};  // End of class def.
+};	// End of class def.
 
 /** See docs in FrameTransformerInterface.
  *   This class is an implementation for standalone (non ROS) applications.

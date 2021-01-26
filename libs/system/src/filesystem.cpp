@@ -7,13 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, e
 #include <mrpt/core/format.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>  // for sprintf
+#include <mrpt/system/os.h>	 // for sprintf
 
 #include <algorithm>
 #include <cstdio>
@@ -22,19 +22,19 @@
 #include <vector>
 
 #ifdef _WIN32
-#include <windows.h>
-
 #include <conio.h>
 #include <direct.h>
 #include <io.h>
 #include <process.h>
 #include <sys/utime.h>
 #include <tlhelp32.h>
+#include <windows.h>
 #else
 #include <sys/time.h>
 #include <termios.h>
 #include <unistd.h>
 #include <utime.h>
+
 #include <cerrno>
 #include <ctime>
 #endif
@@ -84,8 +84,7 @@ string mrpt::system::extractFileDirectory(const string& filePath)
 	for (i = (int)filePath.size() - 1; i > 0; i--)
 		if (filePath[i] == '\\' || filePath[i] == '/') break;
 
-	if (!i)
-		return string("");
+	if (!i) return string("");
 	else
 		return filePath.substr(0, i + 1);
 }
@@ -108,8 +107,7 @@ string mrpt::system::extractFileExtension(
 		if (filePath[i] == '.')
 		{
 			string the_ext = filePath.substr(i + 1, i_end - i);
-			if (!ignore_gz || the_ext != "gz")
-				return the_ext;
+			if (!ignore_gz || the_ext != "gz") return the_ext;
 			else
 			{
 				i_end = --i;
@@ -128,7 +126,7 @@ string mrpt::system::extractFileExtension(
 bool mrpt::system::fileExists(const string& path)
 {
 	return 0 ==
-		   _access(path.c_str(), 0x00);  // 0x00 = Check for existence only!
+		_access(path.c_str(), 0x00);  // 0x00 = Check for existence only!
 }
 
 /*---------------------------------------------------------------
@@ -165,7 +163,7 @@ bool mrpt::system::createDirectory(const string& dirName)
 	return (rc || GetLastError() == ERROR_ALREADY_EXISTS);
 #else
 	int ret = mkdir(dirName.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	if (ret && errno != EEXIST)  // We ignore this error...
+	if (ret && errno != EEXIST)	 // We ignore this error...
 	{
 		string str = format("[createDirectory %s]", dirName.c_str());
 		perror(str.c_str());
@@ -242,8 +240,7 @@ bool mrpt::system::deleteFilesInDirectory(
 	}
 
 	// Finally, delete the directory itselt.
-	if (deleteDirectoryAsWell)
-		return 0 == _rmdir(path.c_str());
+	if (deleteDirectoryAsWell) return 0 == _rmdir(path.c_str());
 	else
 		return true;
 }
@@ -264,10 +261,7 @@ std::string mrpt::system::getcwd()
 	{
 		std::string cwd;
 		cwd.resize(size);
-		if (::getcwd(&cwd[0], size) == &cwd[0])
-		{
-			return cwd;
-		}
+		if (::getcwd(&cwd[0], size) == &cwd[0]) { return cwd; }
 		if (errno != ERANGE)
 			THROW_EXCEPTION("Error getting current working directory!");
 		size *= 2;
@@ -314,8 +308,7 @@ bool mrpt::system::renameFile(
 
 	if (error_msg)
 	{
-		if (ret_err)
-			*error_msg = strerror(errno);
+		if (ret_err) *error_msg = strerror(errno);
 		else
 			*error_msg = "";
 	}
@@ -353,8 +346,7 @@ uint64_t mrpt::system::getFileSize(const std::string& fileName)
 #if defined(_MSC_VER)
 	// Visual Studio:
 	struct __stat64 filStat;
-	if (_stat64(fileName.c_str(), &filStat))
-		return uint64_t(-1);
+	if (_stat64(fileName.c_str(), &filStat)) return uint64_t(-1);
 	else
 		return uint64_t(filStat.st_size);
 #else
@@ -362,8 +354,7 @@ uint64_t mrpt::system::getFileSize(const std::string& fileName)
 	struct stat filStat
 	{
 	};
-	if (stat(fileName.c_str(), &filStat))
-		return uint64_t(-1);
+	if (stat(fileName.c_str(), &filStat)) return uint64_t(-1);
 	else
 		return uint64_t(filStat.st_size);
 #endif
@@ -421,7 +412,7 @@ bool mrpt::system::copyFile(
 			*outErrStr = string(
 							 "Source file exists but cannot open it... is file "
 							 "being used?:  ") +
-						 org;
+				org;
 		return false;
 	}
 
@@ -491,7 +482,7 @@ bool mrpt::system::copyFile(
 					*outErrStr = string(
 									 "Cannot overwrite target file, even after "
 									 "changing file attributes! : ") +
-								 trg;
+						trg;
 				fclose(f_src);
 				return false;
 			}
@@ -518,7 +509,7 @@ bool mrpt::system::copyFile(
 					*outErrStr = string(
 									 "Cannot overwrite target file, even after "
 									 "changing file permissions! : ") +
-								 trg;
+						trg;
 				fclose(f_src);
 				return false;
 			}
@@ -537,7 +528,7 @@ bool mrpt::system::copyFile(
 				*outErrStr = string(
 								 "Error writing the contents of the target "
 								 "file (disk full?): ") +
-							 trg;
+					trg;
 			fclose(f_src);
 			fclose(f_trg);
 			return false;
@@ -576,10 +567,9 @@ bool mrpt::system::copyFile(
 		// Leave only those attributes which can be legally copied:
 		// (Refer to: http://msdn2.microsoft.com/en-us/library/aa365535.aspx )
 		dwPropSrc &= FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN |
-					 FILE_ATTRIBUTE_NORMAL |
-					 FILE_ATTRIBUTE_NOT_CONTENT_INDEXED |
-					 FILE_ATTRIBUTE_OFFLINE | FILE_ATTRIBUTE_READONLY |
-					 FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY;
+			FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED |
+			FILE_ATTRIBUTE_OFFLINE | FILE_ATTRIBUTE_READONLY |
+			FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY;
 
 		// Copy them to the target attributes:
 		dwPropTrg &=
@@ -630,8 +620,7 @@ time_t mrpt::system::getFileModificationTime(const std::string& filename)
 	struct stat fS
 	{
 	};
-	if (0 != stat(filename.c_str(), &fS))
-		return 0;
+	if (0 != stat(filename.c_str(), &fS)) return 0;
 	else
 		return fS.st_mtime;
 }

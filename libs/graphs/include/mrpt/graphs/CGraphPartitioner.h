@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CMatrixDynamic.h>
+
 #include <vector>
 
 namespace mrpt
@@ -138,7 +139,7 @@ class CGraphPartitioner
 		const GRAPH_MATRIX& in_A, const std::vector<uint32_t>& in_part1,
 		const std::vector<uint32_t>& in_part2);
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace graphs
 }  // namespace mrpt

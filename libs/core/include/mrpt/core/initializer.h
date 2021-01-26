@@ -18,32 +18,31 @@
 #include <mrpt/config.h>
 #if defined(MRPT_BUILT_AS_DLL)
 #include <windows.h>
-#define MRPT_INITIALIZER(f)                                              \
-	static void f();                                                     \
-	BOOL WINAPI DllMain(                                                 \
-		HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpvReserved*/) \
-	{                                                                    \
-		switch (fdwReason)                                               \
-		{                                                                \
-			case DLL_PROCESS_ATTACH:                                     \
-				f();                                                     \
-		}                                                                \
-		return TRUE;                                                     \
-	}                                                                    \
+#define MRPT_INITIALIZER(f)                                                    \
+	static void f();                                                           \
+	BOOL WINAPI DllMain(                                                       \
+		HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpvReserved*/)       \
+	{                                                                          \
+		switch (fdwReason)                                                     \
+		{                                                                      \
+			case DLL_PROCESS_ATTACH: f();                                      \
+		}                                                                      \
+		return TRUE;                                                           \
+	}                                                                          \
 	static void f(void)
 #else
 // Static libs in Windows: the hardest case, subject to be optimized out
-#define MRPT_INITIALIZER(f)   \
-	static void f(void);      \
-	struct f##_t_             \
-	{                         \
-		f##_t_(void) { f(); } \
-	};                        \
-	static f##_t_ f##_;       \
+#define MRPT_INITIALIZER(f)                                                    \
+	static void f(void);                                                       \
+	struct f##_t_                                                              \
+	{                                                                          \
+		f##_t_(void) { f(); }                                                  \
+	};                                                                         \
+	static f##_t_ f##_;                                                        \
 	static void f(void)
 #endif
 #else
-#define MRPT_INITIALIZER(f)                                                 \
-	static void f(void) __attribute__((constructor)) __attribute__((used)); \
+#define MRPT_INITIALIZER(f)                                                    \
+	static void f(void) __attribute__((constructor)) __attribute__((used));    \
 	static void f(void)
 #endif

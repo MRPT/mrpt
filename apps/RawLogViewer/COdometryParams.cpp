@@ -10,6 +10,7 @@
 #include "COdometryParams.h"
 
 #include <wx/msgdlg.h>
+
 #include "xRawLogViewerMain.h"
 
 //(*InternalHeaders(COdometryParams)

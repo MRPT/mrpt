@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -102,8 +102,7 @@ void RotScan::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -161,7 +160,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 
 	// Azimuth (wrt sensor) at the beginning of one packet, to its timestamp:
 	std::map<degree_cents, gps_microsecs> azimuth2timestamp;
-	std::multiset<double> rotspeed;  // per packet estimated rot speed (deg/sec)
+	std::multiset<double> rotspeed;	 // per packet estimated rot speed (deg/sec)
 
 	// column count:
 	const size_t num_lasers = o.calibration.laser_corrections.size();
@@ -172,9 +171,9 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 	columnCount =
 		Velo::SCANS_PER_BLOCK * o.scan_packets.size() * Velo::BLOCKS_PER_PACKET;
 
-	const double timeBetweenLastTwoBlocks =
-		1e-6 * (o.scan_packets.rbegin()->gps_timestamp() -
-				(o.scan_packets.rbegin() + 1)->gps_timestamp());
+	const double timeBetweenLastTwoBlocks = 1e-6 *
+		(o.scan_packets.rbegin()->gps_timestamp() -
+		 (o.scan_packets.rbegin() + 1)->gps_timestamp());
 
 	rangeImage.setZero(rowCount, columnCount);
 	intensityImage.setZero(rowCount, columnCount);
@@ -292,7 +291,7 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 						{
 							int c = (dsr + block * Velo::SCANS_PER_BLOCK +
 									 pktIdx * Velo::SCANS_PER_PACKET) /
-									num_lasers;
+								num_lasers;
 							if (pkt.laser_return_mode == Velo::RETMODE_DUAL)
 								c /= 2;
 							return c;
@@ -337,20 +336,14 @@ void RotScan::fromVelodyne(const mrpt::obs::CObservationVelodyneScan& o)
 	const auto microsecs_1st_pkt = o.scan_packets.begin()->gps_timestamp();
 	const auto microsecs_last_pkt = o.scan_packets.rbegin()->gps_timestamp();
 	sweepDuration = 1e-6 * (microsecs_last_pkt - microsecs_1st_pkt) +
-					timeBetweenLastTwoBlocks;
+		timeBetweenLastTwoBlocks;
 
 	// Decode model byte:
 	switch (model)
 	{
-		case 0x21:
-			lidarModel = "HDL-32E";
-			break;
-		case 0x22:
-			lidarModel = "VLP-16";
-			break;
-		default:
-			lidarModel = "Unknown";
-			break;
+		case 0x21: lidarModel = "HDL-32E"; break;
+		case 0x22: lidarModel = "VLP-16"; break;
+		default: lidarModel = "Unknown"; break;
 	};
 
 	MRPT_END

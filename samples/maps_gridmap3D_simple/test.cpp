@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 // ------------------------------------------------------
@@ -22,7 +23,7 @@
 void TestGridMap3D()
 {
 	mrpt::maps::COccupancyGridMap3D map;
-	const float resolution = 0.10;  // [meters]
+	const float resolution = 0.10;	// [meters]
 	map.setSize(
 		mrpt::math::TPoint3D(-3, -5, -2), mrpt::math::TPoint3D(10, 5, 2),
 		resolution);

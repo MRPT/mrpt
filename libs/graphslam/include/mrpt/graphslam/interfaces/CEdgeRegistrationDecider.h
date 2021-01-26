@@ -14,10 +14,10 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
 
-#include "CRegistrationDeciderOrOptimizer.h"
-
 #include <map>
 #include <string>
+
+#include "CRegistrationDeciderOrOptimizer.h"
 
 namespace mrpt::graphslam::deciders
 {

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cmath>
-#include <cstddef>  // size_t
+#include <cstddef>	// size_t
 
 namespace mrpt::math
 {
@@ -73,7 +73,7 @@ void unwrap2PiSequence(VECTOR& x)
 	const size_t N = x.size();
 	for (size_t i = 0; i < N; i++)
 	{
-		mrpt::math::wrapToPiInPlace(x[i]);  // assure it's in the -pi,pi range.
+		mrpt::math::wrapToPiInPlace(x[i]);	// assure it's in the -pi,pi range.
 		if (!i) continue;
 		double Ap = x[i] - x[i - 1];
 		if (Ap > M_PI) x[i] -= 2. * M_PI;
@@ -97,8 +97,7 @@ inline T angDistance(T from, T to)
 	wrapToPiInPlace(from);
 	wrapToPiInPlace(to);
 	T d = to - from;
-	if (d > M_PI)
-		d -= 2. * M_PI;
+	if (d > M_PI) d -= 2. * M_PI;
 	else if (d < -M_PI)
 		d += 2. * M_PI;
 	return d;

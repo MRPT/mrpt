@@ -8,11 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TSegment3D.h>
-#include <mrpt/math/geometry.h>  // distance()
+#include <mrpt/math/geometry.h>	 // distance()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
+
 #include <Eigen/Dense>
 
 using namespace mrpt::math;
@@ -44,8 +45,8 @@ double TSegment3D::distance(const TSegment3D& segment) const
 	double d = u.dot(w);
 	double e = v.dot(w);
 	double D = a * c - b * b;  // always >= 0
-	double sc, sN, sD = D;  // sc = sN / sD, default sD = D >= 0
-	double tc, tN, tD = D;  // tc = tN / tD, default tD = D >= 0
+	double sc, sN, sD = D;	// sc = sN / sD, default sD = D >= 0
+	double tc, tN, tD = D;	// tc = tN / tD, default tD = D >= 0
 
 	// compute the line parameters of the two closest points
 	if (D < 0.00000001)
@@ -77,8 +78,7 @@ double TSegment3D::distance(const TSegment3D& segment) const
 	{  // tc < 0 => the t=0 edge is visible
 		tN = 0.0;
 		// recompute sc for this edge
-		if (-d < 0.0)
-			sN = 0.0;
+		if (-d < 0.0) sN = 0.0;
 		else if (-d > a)
 			sN = sD;
 		else
@@ -91,8 +91,7 @@ double TSegment3D::distance(const TSegment3D& segment) const
 	{  // tc > 1 => the t=1 edge is visible
 		tN = tD;
 		// recompute sc for this edge
-		if ((-d + b) < 0.0)
-			sN = 0;
+		if ((-d + b) < 0.0) sN = 0;
 		else if ((-d + b) > a)
 			sN = sD;
 		else
@@ -119,8 +118,7 @@ bool TSegment3D::contains(const TPoint3D& point) const
 
 bool TSegment3D::operator<(const TSegment3D& s) const
 {
-	if (point1 < s.point1)
-		return true;
+	if (point1 < s.point1) return true;
 	else if (s.point1 < point1)
 		return false;
 	else

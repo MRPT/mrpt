@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "kinematics-precomp.h"  // Precompiled header
-
+#include "kinematics-precomp.h"	 // Precompiled header
+//
 #include <mrpt/kinematics/CVehicleSimul_Holo.h>
 #include <mrpt/math/wrap2pi.h>
 
@@ -24,7 +24,7 @@ void CVehicleSimul_Holo::internal_simulControlStep(const double dt)
 {
 	// Control:
 	if (m_vel_ramp_cmd.issue_time >= 0 &&
-		m_time > m_vel_ramp_cmd.issue_time)  // are we executing any cmd?
+		m_time > m_vel_ramp_cmd.issue_time)	 // are we executing any cmd?
 	{
 		const double t = m_time - m_vel_ramp_cmd.issue_time;
 		const double T = m_vel_ramp_cmd.ramp_time;
@@ -51,16 +51,14 @@ void CVehicleSimul_Holo::internal_simulControlStep(const double dt)
 			mrpt::math::wrapToPi(m_vel_ramp_cmd.dir - m_odometry.phi);
 		if (std::abs(Aang) < mrpt::DEG2RAD(1.0))
 		{
-			m_odometric_vel.omega = .0;  // we are aligned.
+			m_odometric_vel.omega = .0;	 // we are aligned.
 		}
 		else
 		{
 			const double wf =
 				mrpt::sign(Aang) * std::abs(m_vel_ramp_cmd.rot_speed);
 			if (t <= m_vel_ramp_cmd.ramp_time)
-			{
-				m_odometric_vel.omega = wi + t * (wf - wi) / T;
-			}
+			{ m_odometric_vel.omega = wi + t * (wf - wi) / T; }
 			else
 			{
 				m_odometric_vel.omega = wf;

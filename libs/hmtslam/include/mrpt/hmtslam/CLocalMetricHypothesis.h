@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
-
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
@@ -17,9 +16,9 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
-#include <map>
 
 #include <list>
+#include <map>
 #include <mutex>
 
 namespace mrpt
@@ -274,7 +273,7 @@ class CLocalMetricHypothesis
 	/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
 	mutable std::vector<mrpt::poses::CPose2D> m_movementDrawMaximumLikelihood;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace hmtslam
 }  // namespace mrpt

@@ -16,6 +16,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
 #include <mrpt/system/COutputLogger.h>
+
 #include <atomic>
 
 namespace mrpt::apps

@@ -97,6 +97,6 @@ class CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 
 	friend class MyXSensCallback;
 
-};  // end of class
+};	// end of class
 
 }  // namespace mrpt::hwdrivers

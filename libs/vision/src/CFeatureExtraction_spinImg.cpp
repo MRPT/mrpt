@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/vision/CFeatureExtraction.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -97,8 +98,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 			{
 				uint8_t pix_val;
 				// get the pixel color [0,255]
-				if (!img_color)
-					pix_val = in_img.at<uint8_t>(px, py);
+				if (!img_color) pix_val = in_img.at<uint8_t>(px, py);
 				else
 				{
 					auto aux_pix_ptr = in_img.ptr<uint8_t>(px, py);
@@ -123,11 +123,12 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 				//  weighted by a exponential function to model a Gaussian
 				//  kernel
 				const int bin_int_low =
-					max(0, static_cast<int>(ceil(
-							   k_int2idx *
-							   (pix_val -
-								STD_TIMES *
-									options.SpinImagesOptions.std_intensity))));
+					max(0,
+						static_cast<int>(ceil(
+							k_int2idx *
+							(pix_val -
+							 STD_TIMES *
+								 options.SpinImagesOptions.std_intensity))));
 				const int bin_int_hi =
 					min(static_cast<int>(HIST_N_INT - 1),
 						static_cast<int>(ceil(
@@ -165,7 +166,7 @@ void CFeatureExtraction::internal_computeSpinImageDescriptors(
 						{
 							// Gaussian kernel:
 							double v = _2var_dist * square(pix_dist_cur_dist) +
-									   _2var_int * square(pix_val_cur_val);
+								_2var_int * square(pix_val_cur_val);
 
 							hist2d(bin_int, bin_dist) += exp(v);
 						}

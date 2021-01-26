@@ -51,6 +51,6 @@ class CObservable
 	 *  subscribed, so it can save the wasted time preparing an event that will
 	 * be not read. */
 	inline bool hasSubscribers() const { return !m_subscribers.empty(); }
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::system

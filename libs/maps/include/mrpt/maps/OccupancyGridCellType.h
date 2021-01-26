@@ -9,11 +9,12 @@
 #pragma once
 
 #include <mrpt/config.h>
+
 #include <cstdint>
-#if (                                                \
-	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&   \
-	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) || \
-	(defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&   \
+#if (                                                                          \
+	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&                             \
+	!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) ||                           \
+	(defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) &&                             \
 	 defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS))
 #error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
 #endif

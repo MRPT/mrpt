@@ -22,8 +22,7 @@ void CRobotPose::setSelected(bool is)
 {
 	removeObject(m_currentObj);
 
-	if (is)
-		m_currentObj = mrpt::opengl::stock_objects::CornerXYZEye();
+	if (is) m_currentObj = mrpt::opengl::stock_objects::CornerXYZEye();
 	else
 		m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
 

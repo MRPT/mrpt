@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -161,12 +161,12 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 	// Insert only HORIZONTAL scans, since the grid is supposed to
 	//  be a horizontal representation of space.
 	if (!o.isPlanarScan(insertionOptions.horizontalTolerance))
-		return 0.5;  // NO WAY TO ESTIMATE NON HORIZONTAL SCANS!!
+		return 0.5;	 // NO WAY TO ESTIMATE NON HORIZONTAL SCANS!!
 
 	// Assure we have a 2D points-map representation of the points from the
 	// scan:
 	CPointsMap::TInsertionOptions insOpt;
-	insOpt.minDistBetweenLaserPoints = -1;  // ALL the laser points
+	insOpt.minDistBetweenLaserPoints = -1;	// ALL the laser points
 
 	const auto* compareMap =
 		o.buildAuxPointsMap<mrpt::maps::CPointsMap>(&insOpt);
@@ -229,7 +229,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 		likelihoodOutputs.OWA_individualLikValues[k] =
 			likelihoodOutputs.OWA_pairList[k].first;
 		likResult += likelihoodOptions.OWA_weights[k] *
-					 likelihoodOutputs.OWA_individualLikValues[k];
+			likelihoodOutputs.OWA_individualLikValues[k];
 	}
 
 	return log(likResult);
@@ -254,7 +254,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
 		// Insert only HORIZONTAL scans, since the grid is supposed to
 		//  be a horizontal representation of space.
 		if (!o.isPlanarScan(insertionOptions.horizontalTolerance))
-			return 0.5;  // NO WAY TO ESTIMATE NON HORIZONTAL SCANS!!
+			return 0.5;	 // NO WAY TO ESTIMATE NON HORIZONTAL SCANS!!
 
 		// Build a copy of this occupancy grid:
 		COccupancyGridMap2D compareGrid(
@@ -366,7 +366,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 		// Insert only HORIZONTAL scans, since the grid is supposed to
 		//  be a horizontal representation of space.
 		if (!o.isPlanarScan(insertionOptions.horizontalTolerance))
-			return 0.5;  // NO WAY TO ESTIMATE NON HORIZONTAL SCANS!!
+			return 0.5;	 // NO WAY TO ESTIMATE NON HORIZONTAL SCANS!!
 
 		// The number of simulated rays will be original range scan rays /
 		// DOWNRATIO
@@ -382,9 +382,9 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 		// Performs the scan simulation:
 		laserScanSimulator(
 			simulatedObs,  // The in/out observation
-			takenFrom,  // robot pose
-			0.45f,  // Cells threshold
-			nRays,  // Scan length
+			takenFrom,	// robot pose
+			0.45f,	// Cells threshold
+			nRays,	// Scan length
 			0, decimation);
 
 		double stdLaser = likelihoodOptions.rayTracing_stdHit;
@@ -405,8 +405,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 			// Is a valid range?
 			if (o.getScanRangeValidity(j))
 			{
-				likelihood =
-					0.1 / o.maxRange +
+				likelihood = 0.1 / o.maxRange +
 					0.9 *
 						exp(-square(
 							min((float)fabs(r_sim - r_obs), 2.0f) / stdSqrt2));
@@ -620,9 +619,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 		{
 			// We are into the map limits:
 			if (likelihoodOptions.enableLikelihoodCache)
-			{
-				thisLik = precomputedLikelihood[cx + cy * size_x];
-			}
+			{ thisLik = precomputedLikelihood[cx + cy * size_x]; }
 
 			if (!likelihoodOptions.enableLikelihoodCache ||
 				thisLik == LIK_LF_CACHE_INVALID)
@@ -652,7 +649,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 					for (int yy = yy1; yy <= yy2; yy++)
 					{
 						unsigned int Ay2 =
-							square((unsigned int)(Ay));  // Square is faster
+							square((unsigned int)(Ay));	 // Square is faster
 						// with unsigned.
 						signed short Ax = Ax0;
 						cellType cell;
@@ -688,10 +685,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 		}
 
 		// Update the likelihood:
-		if (Product_T_OrSum_F)
-		{
-			ret += log(thisLik);
-		}
+		if (Product_T_OrSum_F) { ret += log(thisLik); }
 		else
 		{
 			ret += thisLik;
@@ -717,7 +711,7 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
 	double ret;
 	size_t N = pm->size();
 
-	if (!N) return 1e-100;  // No way to estimate this likelihood!!
+	if (!N) return 1e-100;	// No way to estimate this likelihood!!
 
 	// Compute the likelihoods for each point:
 	ret = 0;
@@ -780,16 +774,16 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
 			{
 				float P_free = getCell(cx, cy);
 				float termDist =
-					exp(Q * (square(idx2x(cx) - pointGlobal.x) +
-							 square(idx2y(cy) - pointGlobal.y)));
+					exp(Q *
+						(square(idx2x(cx) - pointGlobal.x) +
+						 square(idx2y(cy) - pointGlobal.y)));
 
 				lik += P_free * zRandomTerm + (1 - P_free) * termDist;
 			}  // end for cy
 		}  // end for cx
 
 		// Update the likelihood:
-		if (likelihoodOptions.LF_alternateAverageMethod)
-			ret += lik;
+		if (likelihoodOptions.LF_alternateAverageMethod) ret += lik;
 		else
 			ret += log(lik / ((cy_max - cy_min + 1) * (cx_max - cx_min + 1)));
 		nCells++;
@@ -869,30 +863,14 @@ void COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(
 	out << "likelihoodMethod                        = ";
 	switch (likelihoodMethod)
 	{
-		case lmMeanInformation:
-			out << "lmMeanInformation";
-			break;
-		case lmRayTracing:
-			out << "lmRayTracing";
-			break;
-		case lmConsensus:
-			out << "lmConsensus";
-			break;
-		case lmCellsDifference:
-			out << "lmCellsDifference";
-			break;
-		case lmLikelihoodField_Thrun:
-			out << "lmLikelihoodField_Thrun";
-			break;
-		case lmLikelihoodField_II:
-			out << "lmLikelihoodField_II";
-			break;
-		case lmConsensusOWA:
-			out << "lmConsensusOWA";
-			break;
-		default:
-			out << "UNKNOWN!!!";
-			break;
+		case lmMeanInformation: out << "lmMeanInformation"; break;
+		case lmRayTracing: out << "lmRayTracing"; break;
+		case lmConsensus: out << "lmConsensus"; break;
+		case lmCellsDifference: out << "lmCellsDifference"; break;
+		case lmLikelihoodField_Thrun: out << "lmLikelihoodField_Thrun"; break;
+		case lmLikelihoodField_II: out << "lmLikelihoodField_II"; break;
+		case lmConsensusOWA: out << "lmConsensusOWA"; break;
+		default: out << "UNKNOWN!!!"; break;
 	}
 	out << "\n";
 

@@ -14,7 +14,8 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/random/RandomGenerators.h>
-#include <Eigen/Dense>  // for 6x8 fixed-matrices
+
+#include <Eigen/Dense>	// for 6x8 fixed-matrices
 
 #include "common.h"
 
@@ -374,8 +375,9 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 		mrpt::random::getRandomGenerator().randomize(1234);
 		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 		v.asEigen() *= 0.1;
-		a_cov.matProductOf_AAt(v);  // COV = v*vt
-		for (int i = 3; i < 6; i++) a_cov(i, i) += square(2.0_deg);
+		a_cov.matProductOf_AAt(v);	// COV = v*vt
+		for (int i = 3; i < 6; i++)
+			a_cov(i, i) += square(2.0_deg);
 	}
 
 	CPose3DPDFGaussian a(a_mean, a_cov);
@@ -407,8 +409,9 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 		mrpt::random::getRandomGenerator().randomize(1234);
 		mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 		v.asEigen() *= 0.1;
-		a_cov.matProductOf_AAt(v);  // COV = v*vt
-		for (int i = 3; i < 6; i++) a_cov(i, i) += square(2.0_deg);
+		a_cov.matProductOf_AAt(v);	// COV = v*vt
+		for (int i = 3; i < 6; i++)
+			a_cov(i, i) += square(2.0_deg);
 	}
 	CPose3DPDFGaussian a(a_mean, a_cov);
 

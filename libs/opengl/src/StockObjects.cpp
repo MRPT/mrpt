@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CBox.h>
@@ -48,58 +48,58 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	t.vertex(1) = {-0.20f, 0.10f, 0.25f};
 	t.vertex(2) = {-0.20f, -0.10f, 0.25f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 0
+	obj->insertTriangle(t);	 // 0
 	t.vertex(0) = {0.10f, -0.10f, 0.20f};
 	t.vertex(1) = {0.10f, 0.10f, 0.20f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 1
+	obj->insertTriangle(t);	 // 1
 
 	t.vertex(0) = {0.10f, -0.10f, 0.05f};
 	t.vertex(1) = {0.10f, 0.10f, 0.20f};
 	t.vertex(2) = {0.10f, -0.10f, 0.20f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 2
+	obj->insertTriangle(t);	 // 2
 	t.vertex(0) = {0.10f, -0.10f, 0.05f};
 	t.vertex(1) = {0.10f, 0.10f, 0.05f};
 	t.vertex(2) = {0.10f, 0.10f, 0.20f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 3
+	obj->insertTriangle(t);	 // 3
 
 	t.vertex(0) = {-0.20f, -0.10f, 0.05f};
 	t.vertex(1) = {-0.20f, -0.10f, 0.25f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 2b
+	obj->insertTriangle(t);	 // 2b
 	t.vertex(0) = {-0.20f, -0.10f, 0.05f};
 	t.vertex(1) = {-0.20f, 0.10f, 0.25f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.05f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 3b
+	obj->insertTriangle(t);	 // 3b
 
 	t.vertex(0) = {0.10f, -0.10f, 0.20f};
 	t.vertex(1) = {-0.20f, -0.10f, 0.25f};
 	t.vertex(2) = {-0.20f, -0.10f, 0.05f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 4
+	obj->insertTriangle(t);	 // 4
 
 	t.vertex(0) = {0.10f, -0.10f, 0.20f};
 	t.vertex(1) = {-0.20f, -0.10f, 0.05f};
 	t.vertex(2) = {0.10f, -0.10f, 0.05f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 5
+	obj->insertTriangle(t);	 // 5
 
 	t.vertex(0) = {0.10f, 0.10f, 0.20f};
 	t.vertex(1) = {-0.20f, 0.10f, 0.05f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.25f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 6
+	obj->insertTriangle(t);	 // 6
 
 	t.vertex(0) = {0.10f, 0.10f, 0.20f};
 	t.vertex(1) = {0.10f, 0.10f, 0.05f};
 	t.vertex(2) = {-0.20f, 0.10f, 0.05f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 7
+	obj->insertTriangle(t);	 // 7
 
 	t.setColor(mrpt::img::TColorf(0.05f, 0.05f, 0.05f, 1));
 
@@ -107,23 +107,23 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
 	t.vertex(1) = {0.00f, 0.11f, 0.10f};
 	t.vertex(2) = {0.05f, 0.11f, 0.05f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 8
+	obj->insertTriangle(t);	 // 8
 	t.vertex(0) = {0.00f, 0.11f, 0.00f};
 	t.vertex(1) = {0.00f, 0.11f, 0.10f};
 	t.vertex(2) = {-0.05f, 0.11f, 0.05f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 9
+	obj->insertTriangle(t);	 // 9
 
 	t.vertex(0) = {0.00f, -0.11f, 0.00f};
 	t.vertex(1) = {0.00f, -0.11f, 0.10f};
 	t.vertex(2) = {0.05f, -0.11f, 0.05f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 10
+	obj->insertTriangle(t);	 // 10
 	t.vertex(0) = {0.00f, -0.11f, 0.00f};
 	t.vertex(1) = {0.00f, -0.11f, 0.10f};
 	t.vertex(2) = {-0.05f, -0.11f, 0.05f};
 	t.computeNormals();
-	obj->insertTriangle(t);  // 11
+	obj->insertTriangle(t);	 // 11
 
 	ret->insert(obj);
 

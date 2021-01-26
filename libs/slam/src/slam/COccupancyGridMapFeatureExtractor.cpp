@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
 
 using namespace mrpt;
@@ -35,7 +35,7 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 	vision::CFeatureList lstFeatures;
 
 	fExt.options = feat_options;
-	fExt.options.patchSize = 0;  // Do NOT extract patch
+	fExt.options.patchSize = 0;	 // Do NOT extract patch
 
 	// Detect interest points:
 	fExt.detectFeatures(img, lstFeatures, 0 /* Init ID */, number_of_features);

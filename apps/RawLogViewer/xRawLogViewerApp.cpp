@@ -8,10 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include "xRawLogViewerApp.h"
+
 #include <wx/stdpaths.h>
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "xRawLogViewerMain.h"
 //*)
 #include <wx/cmdline.h>
@@ -66,7 +68,7 @@ bool xRawLogViewerApp::OnInit()
 	// Create the INI file:
 	wxString dataDir = wxStandardPaths::Get().GetUserDataDir();
 	std::string dataDirStr(dataDir.mb_str());
-	mrpt::system::createDirectory(dataDirStr);  // Create dir!
+	mrpt::system::createDirectory(dataDirStr);	// Create dir!
 	std::string iniFileName(dataDirStr + std::string("/config.cfg"));
 	iniFile = std::make_unique<CConfigFile>(iniFileName);
 

@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/core/common.h>
+
 #include <string>
 
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT)

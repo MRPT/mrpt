@@ -12,6 +12,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include "CGraphSlamHandler.h"
 
 template <class GRAPH_T>
@@ -27,10 +28,7 @@ CGraphSlamHandler<GRAPH_T>::CGraphSlamHandler(
 	ASSERTDEB_(m_logger);
 	ASSERTDEB_(m_options_checker);
 
-	if (m_enable_visuals)
-	{
-		this->initVisualization();
-	}
+	if (m_enable_visuals) { this->initVisualization(); }
 }
 
 template <class GRAPH_T>
@@ -56,16 +54,10 @@ CGraphSlamHandler<GRAPH_T>::~CGraphSlamHandler()
 	if (m_do_save_results)
 	{
 		this->initOutputDir(m_output_dir_fname);
-		if (m_engine)
-		{
-			this->saveResults(m_output_dir_fname);
-		}
+		if (m_engine) { this->saveResults(m_output_dir_fname); }
 	}
 
-	if (m_engine)
-	{
-		delete m_engine;
-	}
+	if (m_engine) { delete m_engine; }
 
 	if (m_enable_visuals)
 	{
@@ -176,10 +168,11 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 #endif
 					renameFile(output_dir_fname, dst_fname, &error_msg);
 				ASSERTDEBMSG_(
-					did_rename, format(
-									"\nError while trying to rename the output "
-									"directory: %s",
-									error_msg.c_str()));
+					did_rename,
+					format(
+						"\nError while trying to rename the output "
+						"directory: %s",
+						error_msg.c_str()));
 				break;
 			}
 		}  // end switch (answer_int)
@@ -356,9 +349,7 @@ void CGraphSlamHandler<GRAPH_T>::saveResults(
 
 	// get the occupancy map that was built
 	if (m_save_map)
-	{
-		this->saveMap(output_dir_fname + "/" + m_save_map_fname);
-	}
+	{ this->saveMap(output_dir_fname + "/" + m_save_map_fname); }
 
 	m_logger->logFmt(mrpt::system::LVL_INFO, "Generated report.");
 }

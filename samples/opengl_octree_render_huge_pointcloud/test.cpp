@@ -12,6 +12,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/random.h>
+
 #include <iostream>
 
 using namespace std;
@@ -153,12 +154,8 @@ void TestOctreeRenderHugePointCloud()
 		{
 			switch (win.getPushedKey())
 			{
-				case 'q':
-					end = true;
-					break;
-				case 'b':
-					gl_bb->setVisibility(!gl_bb->isVisible());
-					break;
+				case 'q': end = true; break;
+				case 'b': gl_bb->setVisibility(!gl_bb->isVisible()); break;
 			};
 		}
 

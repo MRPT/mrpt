@@ -55,5 +55,5 @@ class CMappedImage
 	 */
 	double getPixel(double x, double y) const;
 
-};  // End of class
+};	// End of class
 }  // namespace mrpt::img

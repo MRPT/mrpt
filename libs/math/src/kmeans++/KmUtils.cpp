@@ -11,6 +11,7 @@
 // Author: David Arthur (darthur@gmail.com), 2009
 
 #include "KmUtils.h"
+
 #include <iostream>
 using namespace std;
 

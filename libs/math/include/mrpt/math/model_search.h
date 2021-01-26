@@ -102,7 +102,7 @@ class ModelSearch
 		const typename TModelFit::Real& p_fitnessThreshold,
 		size_t p_populationSize, size_t p_maxIteration,
 		typename TModelFit::Model& p_bestModel, std::vector<size_t>& p_inliers);
-};  // end of class
+};	// end of class
 
 }  // namespace mrpt::math
 // Template implementations:

@@ -7,9 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/config.h>
-
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/config/CConfigFileMemory.h>
 
 #if MRPT_HAS_FYAML

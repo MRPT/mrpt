@@ -61,7 +61,7 @@ class CSphere : public CGeneralizedEllipsoidTemplate<3>
 		  m_nDivsLatitude(nDivsLatitude)
 	{
 		regenerateBaseParams();
-		BASE::enableDrawSolid3D(true);  // default
+		BASE::enableDrawSolid3D(true);	// default
 	}
 
 	virtual ~CSphere() override = default;

@@ -112,7 +112,8 @@ double matrix_test_inv_dyn(int a1, int a2)
 
 	const long N = 1000;
 	CTicTac tictac;
-	for (long i = 0; i < N; i++) A2 = A.inverse_LLt();
+	for (long i = 0; i < N; i++)
+		A2 = A.inverse_LLt();
 	return tictac.Tac() / N;
 }
 
@@ -124,7 +125,8 @@ double matrix_test_inv_fix(int a1, int a2)
 
 	const long N = 1000;
 	CTicTac tictac;
-	for (long i = 0; i < N; i++) A2 = A.inverse_LLt();
+	for (long i = 0; i < N; i++)
+		A2 = A.inverse_LLt();
 	return tictac.Tac() / N;
 }
 
@@ -136,7 +138,8 @@ double matrix_test_det_dyn(int a1, int a2)
 
 	const long N = 10000;
 	CTicTac tictac;
-	for (long i = 0; i < N; i++) A.det();
+	for (long i = 0; i < N; i++)
+		A.det();
 	return tictac.Tac() / N;
 }
 
@@ -148,7 +151,8 @@ double matrix_test_det_fix(int a1, int a2)
 
 	const long N = 10000;
 	CTicTac tictac;
-	for (long i = 0; i < N; i++) A.det();
+	for (long i = 0; i < N; i++)
+		A.det();
 	return tictac.Tac() / N;
 }
 
@@ -163,7 +167,8 @@ double matrix_test_vector_resize(int VECTOR_LEN, int a2)
 	{
 		vec_t v;
 		v.resize(VECTOR_LEN);
-		for (auto& m : v) m.resize(DIM, DIM);
+		for (auto& m : v)
+			m.resize(DIM, DIM);
 	}
 	return tictac.Tac() / N;
 }

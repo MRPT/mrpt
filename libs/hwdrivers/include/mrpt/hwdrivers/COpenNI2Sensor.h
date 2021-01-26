@@ -379,5 +379,5 @@ class COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 	 */
 	int m_serial_number{0};
 
-};  // End of class
+};	// End of class
 }  // namespace mrpt::hwdrivers

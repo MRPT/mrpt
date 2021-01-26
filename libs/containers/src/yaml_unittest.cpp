@@ -748,7 +748,7 @@ MRPT_TEST(yaml, parseAndEmit)
 		//
 		testYamlParseEmit_1, testYamlParseEmit_2, testYamlParseEmit_3,
 		testYamlParseEmit_4, testYamlParseEmit_5,
-		testYamlParseEmit_6  // "indentSequences=false" for this one
+		testYamlParseEmit_6	 // "indentSequences=false" for this one
 		//
 	};
 
@@ -770,7 +770,7 @@ MRPT_TEST(yaml, parseAndEmit)
 			<< "=== Input:\n"
 			<< testText << "=== Output:\n"
 			<< ss.str() << "=== Debug dump of test yaml doc [" << idx
-			<< "]:\n",  // Yes, it is an intentional ","
+			<< "]:\n",	// Yes, it is an intentional ","
 			p.printDebugStructure(std::cout);
 
 		// Test with yamllint
@@ -850,4 +850,4 @@ MRPT_TEST(yaml, fromJSON)
 }
 MRPT_TEST_END()
 
-#endif  // MRPT_HAS_FYAML
+#endif	// MRPT_HAS_FYAML

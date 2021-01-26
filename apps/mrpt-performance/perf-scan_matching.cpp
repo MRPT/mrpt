@@ -127,7 +127,8 @@ double tfest_test_1(int a1, int a2)
 	CTicTac tictac;
 
 	tictac.Tic();
-	for (size_t i = 0; i < N; i++) mrpt::tfest::se3_l2(list, out, scale);
+	for (size_t i = 0; i < N; i++)
+		mrpt::tfest::se3_l2(list, out, scale);
 
 	const double T = tictac.Tac() / N;
 	return T;

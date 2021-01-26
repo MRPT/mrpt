@@ -7,10 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "xRawLogViewerMain.h"
-
 #include <wx/tooltip.h>
 
+#include "../wx-common/mrpt_logo.xpm"
 #include "imgs/Applications.xpm"
 #include "imgs/ArrowLeft2.xpm"
 #include "imgs/Exec.xpm"
@@ -22,22 +21,21 @@
 #include "imgs/icon_animate_scans.xpm"
 #include "imgs/icon_icp.xpm"
 #include "imgs/icon_play.xpm"
+#include "xRawLogViewerMain.h"
 
-#include "../wx-common/mrpt_logo.xpm"
-
-#define RETURN_BITMAP(artid, xpm)                                        \
-	if (id == artid)                                                     \
-	{                                                                    \
-		if (client == wxART_MENU)                                        \
-		{                                                                \
-			wxBitmap b(xpm);                                             \
-			return wxBitmap(                                             \
-				b.ConvertToImage().Scale(16, 16, wxIMAGE_QUALITY_HIGH)); \
-		}                                                                \
-		else                                                             \
-		{                                                                \
-			return wxBitmap(xpm);                                        \
-		}                                                                \
+#define RETURN_BITMAP(artid, xpm)                                              \
+	if (id == artid)                                                           \
+	{                                                                          \
+		if (client == wxART_MENU)                                              \
+		{                                                                      \
+			wxBitmap b(xpm);                                                   \
+			return wxBitmap(                                                   \
+				b.ConvertToImage().Scale(16, 16, wxIMAGE_QUALITY_HIGH));       \
+		}                                                                      \
+		else                                                                   \
+		{                                                                      \
+			return wxBitmap(xpm);                                              \
+		}                                                                      \
 	}
 
 // CreateBitmap function

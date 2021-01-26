@@ -69,19 +69,19 @@ namespace gui
 
 #ifndef WX_START_TRY
 
-#define WX_START_TRY \
-	try              \
+#define WX_START_TRY                                                           \
+	try                                                                        \
 	{
-#define WX_END_TRY                                                            \
-	}                                                                         \
-	catch (std::exception & e)                                                \
-	{                                                                         \
-		wxMessageBox(                                                         \
-			mrpt::exception_to_str(e), wxT("Exception"), wxOK, nullptr);      \
-	}                                                                         \
-	catch (...)                                                               \
-	{                                                                         \
-		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, nullptr); \
+#define WX_END_TRY                                                             \
+	}                                                                          \
+	catch (std::exception & e)                                                 \
+	{                                                                          \
+		wxMessageBox(                                                          \
+			mrpt::exception_to_str(e), wxT("Exception"), wxOK, nullptr);       \
+	}                                                                          \
+	catch (...)                                                                \
+	{                                                                          \
+		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, nullptr);  \
 	}
 
 #endif

@@ -13,6 +13,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CWeightedPointsMap.h>
 #include <mrpt/poses/CPoint2D.h>
+
 #include <sstream>
 
 using namespace mrpt;

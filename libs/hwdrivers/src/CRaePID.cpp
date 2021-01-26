@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/system/datetime.h>
 
@@ -57,7 +57,7 @@ void CRaePID::loadConfig_sensorSpecific(
 ----------------------------------------------------- */
 bool CRaePID::tryToOpenTheCOM()
 {
-	if (COM.isOpen()) return true;  // Already open
+	if (COM.isOpen()) return true;	// Already open
 
 	if (m_verbose)
 		cout << "[CRaePID] Opening " << com_port << " @ " << com_bauds << endl;
@@ -203,8 +203,7 @@ bool CRaePID::switchPower()
 	std::string reading;
 	reading = COM.ReadString();
 
-	if (strcmp(reading.c_str(), "Sleep...") == 0)
-		return true;
+	if (strcmp(reading.c_str(), "Sleep...") == 0) return true;
 	else
 		return false;
 }
@@ -273,10 +272,8 @@ bool CRaePID::errorStatus(std::string& errorString)
 
 	// Take the first part and check the possible error condition
 	if ((strcmp(errors_text[0].c_str(), "0") == 0) &&
-		(strcmp(errors_text[1].c_str(), "0") == 0))  // no error
-	{
-		return false;
-	}
+		(strcmp(errors_text[1].c_str(), "0") == 0))	 // no error
+	{ return false; }
 	else
 	{
 		// By the moment, return the raw error; note that if necessary a

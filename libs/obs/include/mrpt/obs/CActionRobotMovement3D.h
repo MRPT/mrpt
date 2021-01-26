@@ -126,6 +126,6 @@ class CActionRobotMovement3D : public CAction
 	 */
 	mrpt::math::CVectorFloat velocities{6};
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

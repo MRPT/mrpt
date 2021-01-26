@@ -167,12 +167,13 @@ class CProbabilityDensityFunction
 	double getCovarianceEntropy() const
 	{
 		static const double ln_2PI = 1.8378770664093454835606594728112;
-		return 0.5 * (STATE_LEN + STATE_LEN * ln_2PI +
-					  log(std::max(
-						  getCovariance().det(),
-						  std::numeric_limits<double>::epsilon())));
+		return 0.5 *
+			(STATE_LEN + STATE_LEN * ln_2PI +
+			 log(std::max(
+				 getCovariance().det(),
+				 std::numeric_limits<double>::epsilon())));
 	}
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::math

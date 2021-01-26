@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CVectorField3D.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
@@ -86,10 +86,7 @@ void CVectorField3D::onUpdateBuffers_Wireframe()
 				x_p(j, i) + x_vf(j, i), y_p(j, i) + y_vf(j, i),
 				z_p(j, i) + z_vf(j, i));
 
-			if (!m_colorFromModule)
-			{
-				cbd.emplace_back(m_field_color);
-			}
+			if (!m_colorFromModule) { cbd.emplace_back(m_field_color); }
 			else
 			{
 				// Compute color
@@ -97,8 +94,7 @@ void CVectorField3D::onUpdateBuffers_Wireframe()
 				const float module = sqrt(
 					square(x_vf(j, i)) + square(y_vf(j, i)) +
 					square(z_vf(j, i)));
-				if (module > m_maxspeed)
-					col = m_maxspeed_color;
+				if (module > m_maxspeed) col = m_maxspeed_color;
 				else
 				{
 					const float f = (m_maxspeed - module) / m_maxspeed;
@@ -161,9 +157,7 @@ void CVectorField3D::serializeFrom(
 			in >> m_field_color;
 			break;
 
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-			break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version); break;
 	};
 	CRenderizable::notifyChange();
 }

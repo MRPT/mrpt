@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/filesystem.h>
@@ -30,10 +30,7 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 
 	// If the image is GRAYSCALE, we need to convert it into RGB, so do it
 	// manually:
-	if (!new_image.isColor())
-	{
-		new_image = new_image.colorImage();
-	}
+	if (!new_image.isColor()) { new_image = new_image.colorImage(); }
 
 	if (new_image.getChannelsOrder() == "BGR"s)
 	{
@@ -42,8 +39,7 @@ wxImage* mrpt::gui::MRPTImage2wxImage(const mrpt::img::CImage& img)
 		new_image = im;
 	}
 
-	const int row_in_bytes =
-		new_image.getWidth() *
+	const int row_in_bytes = new_image.getWidth() *
 		(new_image.getChannelCount() == mrpt::img::CH_RGB ? 3 : 1);
 	uint8_t* data =
 		static_cast<uint8_t*>(malloc(row_in_bytes * new_image.getHeight()));
@@ -864,8 +860,7 @@ void CPanelCameraSelection::readConfigIntoVideoSourcePanel(
 
 		const int w = cfg->read_int(sect, "cv_frame_width", 0);
 
-		if (w == 320)
-			this->cbOpencvResolution->SetSelection(1);
+		if (w == 320) this->cbOpencvResolution->SetSelection(1);
 		else if (w == 640)
 			this->cbOpencvResolution->SetSelection(2);
 		else
@@ -947,4 +942,4 @@ mrptKeyModifier mrpt::gui::keyEventToMrptKeyModifier(const wxKeyEvent& ev)
 	return mrptKeyModifier(mod);
 }
 
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS

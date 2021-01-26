@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -130,7 +131,8 @@ class Pose3DQuatTests : public ::testing::Test
 		q.quat().normalize();
 		const CPoint3D p(x[7 + 0], x[7 + 1], x[7 + 2]);
 		const CPoint3D pp = q + p;
-		for (int i = 0; i < 3; i++) Y[i] = pp[i];
+		for (int i = 0; i < 3; i++)
+			Y[i] = pp[i];
 	}
 
 	void test_composePointJacob(
@@ -151,7 +153,8 @@ class Pose3DQuatTests : public ::testing::Test
 		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<7 + 3> x_mean;
-			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
@@ -267,14 +270,14 @@ class Pose3DQuatTests : public ::testing::Test
 			const double Ay = y - y1;  // ay  -  y;
 			const double Az = z - z1;  // az  -  z;
 			theorical.x = Ax + 2 * (Ay) * (qr * qz + qx * qy) -
-						  2 * (Az) * (qr * qy - qx * qz) -
-						  2 * (square(qy) + square(qz)) * (Ax);
+				2 * (Az) * (qr * qy - qx * qz) -
+				2 * (square(qy) + square(qz)) * (Ax);
 			theorical.y = Ay - 2 * (Ax) * (qr * qz - qx * qy) +
-						  2 * (Az) * (qr * qx + qy * qz) -
-						  2 * (square(qx) + square(qz)) * (Ay);
+				2 * (Az) * (qr * qx + qy * qz) -
+				2 * (square(qx) + square(qz)) * (Ay);
 			theorical.z = Az + 2 * (Ax) * (qr * qy + qx * qz) -
-						  2 * (Ay) * (qr * qx - qy * qz) -
-						  2 * (square(qx) + square(qy)) * (Az);
+				2 * (Ay) * (qr * qx - qy * qz) -
+				2 * (square(qx) + square(qy)) * (Az);
 		}
 		EXPECT_NEAR(theorical.x, l.x, 1e-5);
 		EXPECT_NEAR(theorical.y, l.y, 1e-5);
@@ -285,7 +288,8 @@ class Pose3DQuatTests : public ::testing::Test
 		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<7 + 3> x_mean;
-			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
@@ -504,7 +508,8 @@ class Pose3DQuatTests : public ::testing::Test
 		CMatrixFixed<double, 3, 7> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<7 + 3> x_mean;
-			for (int i = 0; i < 7; i++) x_mean[i] = q1[i];
+			for (int i = 0; i < 7; i++)
+				x_mean[i] = q1[i];
 			x_mean[7 + 0] = x;
 			x_mean[7 + 1] = y;
 			x_mean[7 + 2] = z;
@@ -557,9 +562,11 @@ class Pose3DQuatTests : public ::testing::Test
 		CVectorFixedDouble<4>& Y)
 	{
 		CQuaternionDouble q;
-		for (int i = 0; i < 4; i++) q[i] = x[i];
+		for (int i = 0; i < 4; i++)
+			q[i] = x[i];
 		q.normalize();
-		for (int i = 0; i < 4; i++) Y[i] = q[i];
+		for (int i = 0; i < 4; i++)
+			Y[i] = q[i];
 	}
 
 	void test_normalizeJacob(double yaw1, double pitch1, double roll1)
@@ -575,7 +582,8 @@ class Pose3DQuatTests : public ::testing::Test
 		CMatrixFixed<double, 4, 4> num_df_dpose(UNINITIALIZED_MATRIX);
 		{
 			CVectorFixedDouble<4> x_mean;
-			for (int i = 0; i < 4; i++) x_mean[i] = q1[i];
+			for (int i = 0; i < 4; i++)
+				x_mean[i] = q1[i];
 
 			double DUMMY = 0;
 			CVectorFixedDouble<4> x_incrs;
@@ -666,32 +674,32 @@ TEST(QuatTests, Quat_vs_YPR)
 	// Using: ZYX Euler angles convention
 
 	quat_vs_YPR(
-		0.0_deg, 0.0_deg, 0.0_deg,  // Input Yaw-pitch-roll
-		0, 0, 0, 1,  // Expected quaternion
+		0.0_deg, 0.0_deg, 0.0_deg,	// Input Yaw-pitch-roll
+		0, 0, 0, 1,	 // Expected quaternion
 		"[  1.0000000  0.0000000  0.0000000; "
 		"   0.0000000  1.0000000  0.0000000; "
 		"   0.0000000  0.0000000  1.0000000 ]");
 	quat_vs_YPR(
-		90.0_deg, 0.0_deg, 0.0_deg,  // Input Yaw-pitch-roll
-		0, 0, 0.7071068, 0.7071068,  // Expected quaternion
+		90.0_deg, 0.0_deg, 0.0_deg,	 // Input Yaw-pitch-roll
+		0, 0, 0.7071068, 0.7071068,	 // Expected quaternion
 		"[  0.0000000 -1.0000000  0.0000000;"
 		"   1.0000000  0.0000000  0.0000000;"
 		"   0.0000000  0.0000000  1.0000000 ]");
 	quat_vs_YPR(
 		30.0_deg, 10.0_deg, 60.0_deg,  // Input Yaw-pitch-roll
-		0.4615897, 0.2018243, 0.1811979, 0.8446119,  // Expected quaternion
+		0.4615897, 0.2018243, 0.1811979, 0.8446119,	 // Expected quaternion
 		"[  0.8528686 -0.1197639  0.5082046;"
 		"   0.4924039  0.5082046 -0.7065880;"
 		"  -0.1736482  0.8528686  0.4924039 ]");
 	quat_vs_YPR(
 		-10.0_deg, -20.0_deg, -30.0_deg,  // Input Yaw-pitch-roll
-		-0.2685358, -0.1448781, -0.1276794, 0.9437144,  // Expected quaternion
+		-0.2685358, -0.1448781, -0.1276794, 0.9437144,	// Expected quaternion
 		"[  0.9254166  0.3187958 -0.2048741;"
 		"  -0.1631759  0.8231729  0.5438381;"
 		"   0.3420202 -0.4698463  0.8137977 ]");
 	quat_vs_YPR(
 		-179.9995949_deg, -90.0_deg, 0.0_deg,  // Input Yaw-pitch-roll
-		0.7071068, 0, 0.7071068, -0.000005,  // Expected quaternion
+		0.7071068, 0, 0.7071068, -0.000005,	 // Expected quaternion
 		"[  0.0000000  0.0000071  1.0000000;"
 		"  -0.0000071 -1.0000000  0.0000071;"
 		"   1.0000000 -0.0000071  0.0000000 ]");

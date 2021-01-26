@@ -121,9 +121,7 @@ void thread_grabbing(TThreadParam& p)
 								? CKinect::VIDEO_CHANNEL_IR
 								: CKinect::VIDEO_CHANNEL_RGB);
 						break;
-					case 27:
-						p.quit = true;
-						break;
+					case 27: p.quit = true; break;
 				}
 
 				// Clear pushed key flag:
@@ -190,7 +188,7 @@ void Test_Kinect()
 	auto gl_voxels = mrpt::opengl::COctoMapVoxels::Create();
 
 	const double aspect_ratio =
-		480.0 / 640.0;  // kinect.rows() / double( kinect.cols() );
+		480.0 / 640.0;	// kinect.rows() / double( kinect.cols() );
 
 	opengl::COpenGLViewport::Ptr viewRange,
 		viewInt;  // Extra viewports for the RGB & D images.
@@ -262,7 +260,7 @@ void Test_Kinect()
 			{
 				win3D.get3DSceneAndLock();
 				viewInt->setImageView(
-					last_obs->intensityImage);  // This is not "_fast" since the
+					last_obs->intensityImage);	// This is not "_fast" since the
 				// intensity image is used below
 				// in the coloured point cloud.
 				win3D.unlockAccess3DScene();
@@ -366,9 +364,7 @@ void Test_Kinect()
 				break;
 
 				// ...and the rest in the kinect thread:
-				default:
-					thrPar.pushed_key = key;
-					break;
+				default: thrPar.pushed_key = key; break;
 			};
 		}
 

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/img/color_maps.h>
 #include <mrpt/io/CFileGZInputStream.h>
@@ -227,9 +227,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 					}
 
 					if (i < it->sensorTypes.size())
-					{
-						sensorReading = it->readingsVoltage[i];
-					}
+					{ sensorReading = it->readingsVoltage[i]; }
 					else
 					{
 						cout << "Sensor especified not found, compute default "
@@ -251,7 +249,7 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 
 			// Normalization:
 			sensorReading = (sensorReading - insertionOptions.R_min) /
-							(insertionOptions.R_max - insertionOptions.R_min);
+				(insertionOptions.R_max - insertionOptions.R_min);
 
 			// Update the gross estimates of mean/vars for the whole reading
 			// history (see IROS2009 paper):
@@ -426,8 +424,7 @@ void CGasConcentrationGridMap2D::serializeFrom(
 			m_hasToRecoverMeanAndCov = true;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -575,7 +572,7 @@ void CGasConcentrationGridMap2D::getWindAs3DObject(
 	// Return an arrow map of the wind state (module(color) and direction).
 	float scale = 0.2f;
 	size_t arrow_separation =
-		5;  // distance between arrows, expresed as times the cell resolution
+		5;	// distance between arrows, expresed as times the cell resolution
 
 	// map limits
 	float x_min = d2f(getXMin());
@@ -720,12 +717,12 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 
 			// Read dirwind value of cell i
 			mu_phi = *windGrid_direction.cellByIndex(
-				cell_i_cx, cell_i_cy);  //[0,2*pi]
+				cell_i_cx, cell_i_cy);	//[0,2*pi]
 			unsigned int phi_indx = round(mu_phi / LUT.phi_inc);
 
 			// Read modwind value of cell i
 			mu_modwind =
-				*windGrid_module.cellByIndex(cell_i_cx, cell_i_cy);  //[0,inf)
+				*windGrid_module.cellByIndex(cell_i_cx, cell_i_cy);	 //[0,inf)
 			mu_r = mu_modwind * At;
 			if (mu_r > LUT.max_r) mu_r = LUT.max_r;
 			unsigned int r_indx = round(mu_r / LUT.r_inc);
@@ -792,7 +789,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 				{
 					if (row_sum[it_i] >= 1)
 						new_means[it_i] += (A(it_i, it_j) / row_sum[it_i]) *
-										   m_map[it_j].kf_mean();
+							m_map[it_j].kf_mean();
 					else
 						new_means[it_i] +=
 							A(it_i, it_j) * m_map[it_j].kf_mean();
@@ -804,8 +801,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 			//----------
 			// Consider special case (borders cells)
 			if (row_sum[it_i] < 1)
-				new_variances[it_i] =
-					(1 - row_sum[it_i]) *
+				new_variances[it_i] = (1 - row_sum[it_i]) *
 					square(insertionOptions.KF_initialCellStd);
 
 			for (size_t it_j = 0; it_j < N; it_j++)
@@ -813,13 +809,11 @@ bool CGasConcentrationGridMap2D::simulateAdvection(double STD_increase_value)
 				if (A(it_i, it_j) != 0)
 				{
 					if (row_sum[it_i] >= 1)
-						new_variances[it_i] +=
-							(A(it_i, it_j) / row_sum[it_i]) *
+						new_variances[it_i] += (A(it_i, it_j) / row_sum[it_i]) *
 							(m_stackedCov(it_j, 0) +
 							 square(m_map[it_j].kf_mean() - new_means[it_i]));
 					else
-						new_variances[it_i] +=
-							A(it_i, it_j) *
+						new_variances[it_i] += A(it_i, it_j) *
 							(m_stackedCov(it_j, 0) +
 							 square(m_map[it_j].kf_mean() - new_means[it_i]));
 				}
@@ -904,10 +898,10 @@ that models the propagation of the gas comming from cell_i.
 	LUT.resolution = getResolution();  // resolution of the grid-cells (m)
 	LUT.std_phi =
 		insertionOptions
-			.std_windNoise_phi;  // Standard Deviation in wind Angle (cte)
+			.std_windNoise_phi;	 // Standard Deviation in wind Angle (cte)
 	LUT.std_r = insertionOptions.std_windNoise_mod /
-				insertionOptions
-					.advectionFreq;  // Standard Deviation in wind module (cte)
+		insertionOptions
+			.advectionFreq;	 // Standard Deviation in wind module (cte)
 	std::string filename = format(
 		"Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz", LUT.resolution,
 		LUT.std_phi, LUT.std_r);
@@ -915,9 +909,9 @@ that models the propagation of the gas comming from cell_i.
 	// Fixed Params:
 	LUT.phi_inc = M_PIf / 8;  // Increment in the wind Angle. (rad)
 	LUT.phi_count =
-		round(2 * M_PI / LUT.phi_inc) + 1;  // Number of angles to generate
+		round(2 * M_PI / LUT.phi_inc) + 1;	// Number of angles to generate
 	LUT.r_inc = 0.1f;  // Increment in the wind Module. (m)
-	LUT.max_r = 2;  // maximum distance (m) to simulate
+	LUT.max_r = 2;	// maximum distance (m) to simulate
 	LUT.r_count =
 		round(LUT.max_r / LUT.r_inc) + 1;  // Number of wind modules to simulate
 
@@ -977,9 +971,7 @@ that models the propagation of the gas comming from cell_i.
 				float r = r_indx * LUT.r_inc;
 
 				if (debug)
-				{
-					fprintf(debug_file, "\n[%.2f] [%.2f] ---> ", phi, r);
-				}
+				{ fprintf(debug_file, "\n[%.2f] [%.2f] ---> ", phi, r); }
 
 				// Estimates Cell_i_position
 				// unsigned int cell_i_cx = 0;
@@ -1031,14 +1023,12 @@ that models the propagation of the gas comming from cell_i.
 				int sr = 3;
 				for (int sd = (-3); sd <= (3); sd++)
 				{
-					vertex_x[indx] =
-						cell_i_x +
+					vertex_x[indx] = cell_i_x +
 						(r + sr * LUT.std_r) * cos(phi + sd * std_phi_BBox);
 					if (vertex_x[indx] < minBBox_x) minBBox_x = vertex_x[indx];
 					if (vertex_x[indx] > maxBBox_x) maxBBox_x = vertex_x[indx];
 
-					vertex_y[indx] =
-						cell_i_y +
+					vertex_y[indx] = cell_i_y +
 						(r + sr * LUT.std_r) * sin(phi + sd * std_phi_BBox);
 					if (vertex_y[indx] < minBBox_y) minBBox_y = vertex_y[indx];
 					if (vertex_y[indx] > maxBBox_y) maxBBox_y = vertex_y[indx];
@@ -1048,14 +1038,12 @@ that models the propagation of the gas comming from cell_i.
 				sr = -3;
 				for (int sd = (3); sd >= (-3); sd--)
 				{
-					vertex_x[indx] =
-						cell_i_x +
+					vertex_x[indx] = cell_i_x +
 						(r + sr * LUT.std_r) * cos(phi + sd * std_phi_BBox);
 					if (vertex_x[indx] < minBBox_x) minBBox_x = vertex_x[indx];
 					if (vertex_x[indx] > maxBBox_x) maxBBox_x = vertex_x[indx];
 
-					vertex_y[indx] =
-						cell_i_y +
+					vertex_y[indx] = cell_i_y +
 						(r + sr * LUT.std_r) * sin(phi + sd * std_phi_BBox);
 					if (vertex_y[indx] < minBBox_y) minBBox_y = vertex_y[indx];
 					if (vertex_y[indx] > maxBBox_y) maxBBox_y = vertex_y[indx];
@@ -1084,7 +1072,7 @@ that models the propagation of the gas comming from cell_i.
 				{
 					// Concentration of cell_i moves to cell_a (cx,cy)
 					TGaussianCell gauss_info;
-					gauss_info.cx = min_cx;  // since max_cx == min_cx
+					gauss_info.cx = min_cx;	 // since max_cx == min_cx
 					gauss_info.cy = min_cy;
 					gauss_info.value = 1;  // prob = 1
 
@@ -1146,15 +1134,15 @@ that models the propagation of the gas comming from cell_i.
 									 square(phi_ia - phi) /
 										 square(LUT.std_phi)));
 							w += (1 / (2 * M_PI * LUT.std_r * LUT.std_phi)) *
-								 exp(-0.5 *
-									 (square(r_ia - r) / square(LUT.std_r) +
-									  square(phi_ia + 2 * M_PI - phi) /
-										  square(LUT.std_phi)));
+								exp(-0.5 *
+									(square(r_ia - r) / square(LUT.std_r) +
+									 square(phi_ia + 2 * M_PI - phi) /
+										 square(LUT.std_phi)));
 							w += (1 / (2 * M_PI * LUT.std_r * LUT.std_phi)) *
-								 exp(-0.5 *
-									 (square(r_ia - r) / square(LUT.std_r) +
-									  square(phi_ia - 2 * M_PI - phi) /
-										  square(LUT.std_phi)));
+								exp(-0.5 *
+									(square(r_ia - r) / square(LUT.std_r) +
+									 square(phi_ia - 2 * M_PI - phi) /
+										 square(LUT.std_phi)));
 
 							// Since we work with a cell grid, approximate the
 							// weight of the gaussian by the volume of the
@@ -1337,8 +1325,8 @@ bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
 
 		f << LUT.phi_inc;  // rad
 		f << (float)LUT.phi_count;
-		f << LUT.r_inc;  // m
-		f << LUT.max_r;  // maximum distance (m)
+		f << LUT.r_inc;	 // m
+		f << LUT.max_r;	 // maximum distance (m)
 		f << (float)LUT.r_count;
 
 		// Save Multi-table

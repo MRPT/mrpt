@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/math/geometry.h>  // distance()
+#include <mrpt/math/geometry.h>	 // distance()
 
 namespace mrpt::math
 {
@@ -21,11 +21,13 @@ class FAddPoint
 	T& object;
 	FAddPoint(T& o) : object(o)
 	{
-		for (size_t i = 0; i < N; i++) object[i] = 0.0;
+		for (size_t i = 0; i < N; i++)
+			object[i] = 0.0;
 	}
 	void operator()(const T& o)
 	{
-		for (size_t i = 0; i < N; i++) object[i] += o[i];
+		for (size_t i = 0; i < N; i++)
+			object[i] += o[i];
 	}
 };
 

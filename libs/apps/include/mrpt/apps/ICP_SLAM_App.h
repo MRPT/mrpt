@@ -15,6 +15,7 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/system/COutputLogger.h>
+
 #include <atomic>
 
 namespace mrpt::apps

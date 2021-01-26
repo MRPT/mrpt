@@ -15,7 +15,8 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <cstdlib>  // size_t
+
+#include <cstdlib>	// size_t
 #include <string>
 
 namespace mrpt::nav
@@ -256,7 +257,7 @@ class PlannerTPS_VirtualBase
 		const mrpt::nav::CParameterizedTrajectoryGenerator* in_PTG,
 		const double MAX_DIST, double& out_TPObstacle_k);
 
-};  // end class PlannerTPS_VirtualBase
+};	// end class PlannerTPS_VirtualBase
 /** @} */
 }  // namespace mrpt::nav
 #include "impl_renderMoveTree.h"

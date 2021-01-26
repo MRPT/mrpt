@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/core/alignment_req.h>
+
 #include <memory>
 #include <type_traits>
 

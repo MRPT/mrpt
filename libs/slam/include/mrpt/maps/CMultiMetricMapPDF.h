@@ -8,17 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-
 #include <mrpt/poses/CPoseRandomSampler.h>
-
-#include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/slam/CICP.h>
-
 #include <mrpt/slam/PF_implementations_data.h>
 
 namespace mrpt
@@ -117,7 +114,7 @@ class CMultiMetricMapPDF
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** [pf optimal proposal only]  Only for PF algorithm=2 (Exact
 		 * "pfOptimalProposal")
@@ -269,7 +266,7 @@ class CMultiMetricMapPDF
 		const mrpt::poses::CPose3D& x) const override;
 	/** @} */
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace maps
 }  // namespace mrpt

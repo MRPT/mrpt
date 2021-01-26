@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config/CConfigFile.h>
+
 #include "DifOdometry_Datasets.h"
 
 using namespace std;
@@ -128,8 +129,7 @@ int main(int num_arg, char* argv[])
 
 		while (!stop)
 		{
-			if (odo.window.keyHit())
-				pushed_key = odo.window.getPushedKey();
+			if (odo.window.keyHit()) pushed_key = odo.window.getPushedKey();
 			else
 				pushed_key = 0;
 

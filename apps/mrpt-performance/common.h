@@ -12,7 +12,7 @@
 
 #include <mrpt/core/bits_math.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/obs/obs_frwds.h>  // CObservation2DRangeScan
+#include <mrpt/obs/obs_frwds.h>	 // CObservation2DRangeScan
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 

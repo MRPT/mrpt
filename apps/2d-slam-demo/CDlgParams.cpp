@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "CDlgParams.h"
+
 #include "slamdemoMain.h"
 
 //(*InternalHeaders(CDlgParams)
@@ -258,8 +259,8 @@ CDlgParams::CDlgParams(
 		_T("ID_PANEL1"));
 	FlexGridSizer9 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer9->AddGrowableCol(0);
-	wxString __wxRadioBoxChoices_1[2] = {_("Mahalanobis"),
-										 _("Matching likelihood")};
+	wxString __wxRadioBoxChoices_1[2] = {
+		_("Mahalanobis"), _("Matching likelihood")};
 	rbICmetric = new wxRadioBox(
 		panelDA, ID_RADIOBOX3, _("Indiv. compat. gating"), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL,
@@ -296,8 +297,8 @@ CDlgParams::CDlgParams(
 	FlexGridSizer9->Add(
 		rbDAMethod, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	FlexGridSizer9->Add(-1, -1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	wxString __wxRadioBoxChoices_3[2] = {_("Mahalanobis"),
-										 _("Matching likelihood")};
+	wxString __wxRadioBoxChoices_3[2] = {
+		_("Mahalanobis"), _("Matching likelihood")};
 	rbDAMetric = new wxRadioBox(
 		panelDA, ID_RADIOBOX2, _("D.A. Distance measure "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_3, 1, wxRA_VERTICAL,

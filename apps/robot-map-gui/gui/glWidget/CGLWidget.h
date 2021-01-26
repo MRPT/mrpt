@@ -11,7 +11,6 @@
 #include <QGLWidget>
 
 #include "CRobotPose.h"
-
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 #include "mrpt/maps/CSimpleMap.h"

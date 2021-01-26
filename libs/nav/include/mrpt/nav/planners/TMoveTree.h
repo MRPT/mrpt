@@ -12,9 +12,8 @@
 #include <mrpt/containers/traits_map.h>
 #include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/poses/CPose2D.h>
-
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/poses/CPose2D.h>
 
 namespace mrpt::nav
 {
@@ -158,7 +157,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 			mrpt::graphs::TNodeID next_node_id = node->parent_id;
 			if (next_node_id == INVALID_NODEID)
 			{
-				break;  // finished
+				break;	// finished
 			}
 			else
 			{
@@ -176,7 +175,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	/** Info per node */
 	node_map_t m_nodes;
 
-};  // end TMoveTree
+};	// end TMoveTree
 
 /** An edge for the move tree used for planning in SE2 and TP-space */
 struct TMoveEdgeSE2_TP
@@ -204,7 +203,7 @@ struct TMoveEdgeSE2_TP
 		  cost(0.0),
 		  ptg_index(0),
 		  ptg_K(0),
-		  ptg_dist(0.0)  // these are all PTGs parameters
+		  ptg_dist(0.0)	 // these are all PTGs parameters
 	{
 	}
 	TMoveEdgeSE2_TP() : parent_id(INVALID_NODEID) {}
@@ -233,8 +232,8 @@ struct PoseDistanceMetric<TNodeSE2>
 	double distance(const TNodeSE2& a, const TNodeSE2& b) const
 	{
 		return mrpt::square(a.state.x - b.state.x) +
-			   mrpt::square(a.state.y - b.state.y) +
-			   mrpt::square(mrpt::math::angDistance(a.state.phi, b.state.phi));
+			mrpt::square(a.state.y - b.state.y) +
+			mrpt::square(mrpt::math::angDistance(a.state.phi, b.state.phi));
 	}
 	PoseDistanceMetric() = default;
 };
@@ -269,9 +268,9 @@ struct PoseDistanceMetric<TNodeSE2_TP>
 		bool tp_point_is_exact =
 			m_ptg.inverseMap_WS2TP(relPose.x(), relPose.y(), k, d);
 		if (tp_point_is_exact)
-			return d * m_ptg.getRefDistance();  // de-normalize distance
+			return d * m_ptg.getRefDistance();	// de-normalize distance
 		else
-			return std::numeric_limits<double>::max();  // not in range: we
+			return std::numeric_limits<double>::max();	// not in range: we
 		// can't evaluate this
 		// distance!
 	}

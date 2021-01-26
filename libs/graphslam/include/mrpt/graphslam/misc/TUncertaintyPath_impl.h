@@ -54,7 +54,7 @@ void TUncertaintyPath<GRAPH_T>::clear()
 	auto init_path_mat = CMatrixDouble33::Identity();
 
 	// put a really large number - we are certain of this position
-	init_path_mat *= 10000;  // TODO - justify this..
+	init_path_mat *= 10000;	 // TODO - justify this..
 	curr_pose_pdf.cov_inv = init_path_mat;
 
 	determinant_is_updated = false;
@@ -201,10 +201,7 @@ void TUncertaintyPath<GRAPH_T>::getAsString(std::string* str) const
 	ss << endl;
 
 	CMatrixDouble33 mat;
-	if (curr_pose_pdf.isInfType())
-	{
-		curr_pose_pdf.getInformationMatrix(mat);
-	}
+	if (curr_pose_pdf.isInfType()) { curr_pose_pdf.getInformationMatrix(mat); }
 	else
 	{
 		curr_pose_pdf.getCovariance(mat);
@@ -245,10 +242,7 @@ double TUncertaintyPath<GRAPH_T>::getDeterminant()
 
 	// update the cached version and return it.
 	CMatrixDouble33 mat;
-	if (curr_pose_pdf.isInfType())
-	{
-		curr_pose_pdf.getInformationMatrix(mat);
-	}
+	if (curr_pose_pdf.isInfType()) { curr_pose_pdf.getInformationMatrix(mat); }
 	else
 	{
 		curr_pose_pdf.getCovariance(mat);
@@ -281,9 +275,7 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 	// if we are talking about covariances then the *lower*.
 	bool has_lower = false;
 	if (curr_pose_pdf.isInfType())
-	{
-		has_lower = this->getDeterminant() > other.getDeterminant();
-	}
+	{ has_lower = this->getDeterminant() > other.getDeterminant(); }
 	else
 	{
 		has_lower = this->getDeterminant() < other.getDeterminant();

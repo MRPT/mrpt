@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
@@ -93,11 +93,11 @@ static const uint8_t cube_indices[2 * 6 * 3] = {
 
 // normal array: one per triangle
 static const mrpt::math::TPoint3Df normals_cube[6 * 2] = {
-	{1, 0, 0},  {1, 0, 0},  // v0,v1,v2,v3 (front)
-	{0, 1, 0},  {0, 1, 0},  // v0,v3,v4,v5 (right)
-	{0, 0, 1},  {0, 0, 1},  // v0,v5,v6,v1 (top)
-	{0, -1, 0}, {0, -1, 0},  // v1,v6,v7,v2 (left)
-	{0, 0, -1}, {0, 0, -1},  // v7,v4,v3,v2 (bottom)
+	{1, 0, 0},	{1, 0, 0},	// v0,v1,v2,v3 (front)
+	{0, 1, 0},	{0, 1, 0},	// v0,v3,v4,v5 (right)
+	{0, 0, 1},	{0, 0, 1},	// v0,v5,v6,v1 (top)
+	{0, -1, 0}, {0, -1, 0},	 // v1,v6,v7,v2 (left)
+	{0, 0, -1}, {0, 0, -1},	 // v7,v4,v3,v2 (bottom)
 	{-1, 0, 0}, {-1, 0, 0}};  // v4,v7,v6,v5 (back)
 
 void COctoMapVoxels::onUpdateBuffers_Wireframe()
@@ -260,7 +260,7 @@ void COctoMapVoxels::serializeTo(CArchive& out) const
 		<< m_enable_lighting << m_showVoxelsAsPoints << m_showVoxelsAsPointsSize
 		<< m_show_grids << m_grid_width << m_grid_color
 		<< m_enable_cube_transparency  // added in v1
-		<< uint32_t(m_visual_mode);  // added in v2
+		<< uint32_t(m_visual_mode);	 // added in v2
 }
 
 void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
@@ -278,8 +278,7 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 				m_showVoxelsAsPointsSize >> m_show_grids >> m_grid_width >>
 				m_grid_color;
 
-			if (version >= 1)
-				in >> m_enable_cube_transparency;
+			if (version >= 1) in >> m_enable_cube_transparency;
 			else
 				m_enable_cube_transparency = false;
 
@@ -294,8 +293,7 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 				m_visual_mode = COctoMapVoxels::COLOR_FROM_OCCUPANCY;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
 	CRenderizable::notifyChange();

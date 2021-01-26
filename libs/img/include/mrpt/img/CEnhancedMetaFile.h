@@ -208,5 +208,5 @@ class CEnhancedMetaFile : public CCanvas
 			std::cout << "Covariance matrix leading to error is:" << std::endl
 					  << *cov2D << std::endl;);
 	}
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::img

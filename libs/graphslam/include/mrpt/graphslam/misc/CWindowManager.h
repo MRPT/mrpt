@@ -91,10 +91,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 	/**\brief Wrapper call around the CWindowDisplay3D */
 	bool isOpen()
 	{
-		if (win)
-		{
-			return win->isOpen();
-		}
+		if (win) { return win->isOpen(); }
 		else
 		{
 			return false;
@@ -113,10 +110,7 @@ class CWindowManager : public mrpt::system::COutputLogger
 		const mrpt::img::TColorf& color = mrpt::img::TColorf(1.0, 1.0, 1.0),
 		const size_t unique_index = 0)
 	{
-		if (!win)
-		{
-			return;
-		}
+		if (!win) { return; }
 
 		win->addTextMessage(x, y, text, unique_index);
 	}

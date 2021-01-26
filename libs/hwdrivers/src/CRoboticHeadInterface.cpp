@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -26,9 +26,9 @@ CRoboticHeadInterface::CRoboticHeadInterface()
 
 	m_serialNumber = "OREJA001";
 	gain.resize(3);
-	gain[0] = 127;  // 0x7F (maximo)
-	gain[1] = 127;  // 0x7F (maximo)
-	gain[2] = 127;  // 0x7F (maximo)
+	gain[0] = 127;	// 0x7F (maximo)
+	gain[1] = 127;	// 0x7F (maximo)
+	gain[2] = 127;	// 0x7F (maximo)
 	head_yaw = 0;
 	head_pitch = 0;
 
@@ -79,8 +79,7 @@ bool CRoboticHeadInterface::SetGain(int& new_gain, int& channel)
 	archiveFrom(m_usbConnection).sendMessage(msg);
 	while (!archiveFrom(m_usbConnection).receiveMessage(msg))
 		;
-	if (msg.content[0] == 0)
-		return false;
+	if (msg.content[0] == 0) return false;
 	else
 		return true;
 }
@@ -110,9 +109,9 @@ void CRoboticHeadInterface::Get3SoundBuffer(CMatrixDynamic<int>& buf)
 
 	// Las lecturas se haran de 100 en 100 datos y hay 3 buffers de 500 muestras
 	// cada uno
-	for (size_t k = 0; k < 3; k++)  // Lectura de cada canal
+	for (size_t k = 0; k < 3; k++)	// Lectura de cada canal
 	{
-		for (size_t j = 0; j < 500 / 100; j++)  // Lectura de un canal completo
+		for (size_t j = 0; j < 500 / 100; j++)	// Lectura de un canal completo
 		{
 			while (!archiveFrom(m_usbConnection).receiveMessage(msg))
 				;

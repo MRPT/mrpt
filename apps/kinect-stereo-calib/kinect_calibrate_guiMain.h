@@ -37,16 +37,15 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/timer.h>
+
 #include "MyGLCanvas.h"
 //*)
 
-#include <wx/config.h>  // wxConfig
-
 #include <mrpt/gui/CMyRedirector.h>
-
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
+#include <wx/config.h>	// wxConfig
 
 #include <thread>
 
@@ -121,9 +120,9 @@ class kinect_calibrate_guiDialog : public wxDialog
 	mrpt::vision::TStereoCalibParams m_calib_params;
 
 	mrpt::opengl::CPointCloudColoured::Ptr
-		m_gl_3d_points;  // For live Kinect tests
+		m_gl_3d_points;	 // For live Kinect tests
 	mrpt::opengl::CSetOfObjects::Ptr m_gl_corner_left,
-		m_gl_corner_right;  // For live Kinect tests
+		m_gl_corner_right;	// For live Kinect tests
 
 	void thread_grabbing();
 	void thread_find_corners();
@@ -387,4 +386,4 @@ class kinect_calibrate_guiDialog : public wxDialog
 	DECLARE_EVENT_TABLE()
 };
 
-#endif  // KINECT_CALIBRATE_GUIMAIN_H
+#endif	// KINECT_CALIBRATE_GUIMAIN_H

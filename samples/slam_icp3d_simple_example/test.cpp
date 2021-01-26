@@ -12,8 +12,6 @@
  * Execute an Iterative Closest Point algorithm using two 3D point clouds.
  */
 
-#include <mrpt/slam/CICP.h>
-
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -23,6 +21,8 @@
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/slam/CICP.h>
+
 #include <iostream>
 
 using namespace std;
@@ -164,9 +164,9 @@ void test_icp3D()
 	cout << "Size of  xs in M2: " << xs.size() << endl;
 
 	CPose3DPDF::Ptr pdf = icp.Align3D(
-		&M2_noisy,  // Map to align
+		&M2_noisy,	// Map to align
 		&M1,  // Reference map
-		CPose3D(),  // Initial gross estimate
+		CPose3D(),	// Initial gross estimate
 		icp_info);
 
 	CPose3D mean = pdf->getMeanVal();

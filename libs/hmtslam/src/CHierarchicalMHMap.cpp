@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <cstring>
 
 using namespace mrpt::poses;
@@ -46,11 +47,13 @@ void CHierarchicalMHMap::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Nodes:
 	out.WriteAs<uint32_t>(nodeCount());
-	for (const auto& n : m_nodes) out << *n.second;
+	for (const auto& n : m_nodes)
+		out << *n.second;
 
 	// Arcs:
 	out.WriteAs<uint32_t>(arcCount());
-	for (const auto& a : m_arcs) out << *a;
+	for (const auto& a : m_arcs)
+		out << *a;
 }
 
 void CHierarchicalMHMap::serializeFrom(
@@ -70,7 +73,7 @@ void CHierarchicalMHMap::serializeFrom(
 			for (i = 0; i < n; i++)
 			{
 				CHMHMapNode::Ptr node = std::make_shared<CHMHMapNode>(
-					this);  // This insert the node in my internal list via the
+					this);	// This insert the node in my internal list via the
 				// callback method
 				in >> *node;
 			}
@@ -88,8 +91,7 @@ void CHierarchicalMHMap::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -146,7 +148,7 @@ void CHierarchicalMHMap::onArcAddition(CHMHMapArc::Ptr& arc)
 	// Check if it is not already in the list:
 	auto it = m_arcs.find(arc);
 
-	if (it == m_arcs.end())  // Is it new?
+	if (it == m_arcs.end())	 // Is it new?
 		m_arcs.push_back(arc);
 }
 

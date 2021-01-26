@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/system/os.h>
+
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -81,6 +82,6 @@ class CFileSystemWatcher
 	int m_wd;
 #endif
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::system

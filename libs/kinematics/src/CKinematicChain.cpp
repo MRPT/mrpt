@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "kinematics-precomp.h"  // Precompiled headers
-
+#include "kinematics-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/kinematics/CKinematicChain.h>
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -76,16 +76,12 @@ void CKinematicChain::serializeFrom(
 		case 1:
 		{
 			in >> m_links;
-			if (version >= 1)
-			{
-				in >> m_origin;
-			}
+			if (version >= 1) { in >> m_origin; }
 			else
 				m_origin = mrpt::poses::CPose3D();
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -113,15 +109,16 @@ void CKinematicChain::recomputeAllPoses(
 		const double a = m_links[i].a;
 
 		const double t_vals[3] = {a * cos(th), a * sin(th), d};
-		const double r_vals[3 * 3] = {cos(th),
-									  -sin(th) * cos(alpha),
-									  sin(th) * sin(alpha),
-									  sin(th),
-									  cos(th) * cos(alpha),
-									  -cos(th) * sin(alpha),
-									  0,
-									  sin(alpha),
-									  cos(alpha)};
+		const double r_vals[3 * 3] = {
+			cos(th),
+			-sin(th) * cos(alpha),
+			sin(th) * sin(alpha),
+			sin(th),
+			cos(th) * cos(alpha),
+			-cos(th) * sin(alpha),
+			0,
+			sin(alpha),
+			cos(alpha)};
 
 		const CMatrixDouble33 R(r_vals);
 		const CVectorFixedDouble<3> t(t_vals);
@@ -247,11 +244,8 @@ mrpt::serialization::CArchive& mrpt::kinematics::operator>>(
 	in >> version;
 	switch (version)
 	{
-		case 0:
-			in >> o.theta >> o.d >> o.a >> o.alpha >> o.is_prismatic;
-			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		case 0: in >> o.theta >> o.d >> o.a >> o.alpha >> o.is_prismatic; break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 	return in;
 }

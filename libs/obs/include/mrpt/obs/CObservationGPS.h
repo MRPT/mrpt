@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <map>
 #include <typeinfo>
 
@@ -146,10 +147,11 @@ class CObservationGPS : public CObservation
 		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		ASSERTMSG_(
-			it != messages.end(), mrpt::format(
-									  "[CObservationGPS::getMsgByClass] Cannot "
-									  "find any observation of type `%s`",
-									  typeid(MSG_CLASS).name()));
+			it != messages.end(),
+			mrpt::format(
+				"[CObservationGPS::getMsgByClass] Cannot "
+				"find any observation of type `%s`",
+				typeid(MSG_CLASS).name()));
 		ASSERT_(it->second.get());
 		return *dynamic_cast<MSG_CLASS*>(it->second.get());
 	}
@@ -160,10 +162,11 @@ class CObservationGPS : public CObservation
 		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		ASSERTMSG_(
-			it != messages.end(), mrpt::format(
-									  "[CObservationGPS::getMsgByClass] Cannot "
-									  "find any observation of type `%s`",
-									  typeid(MSG_CLASS).name()));
+			it != messages.end(),
+			mrpt::format(
+				"[CObservationGPS::getMsgByClass] Cannot "
+				"find any observation of type `%s`",
+				typeid(MSG_CLASS).name()));
 		ASSERT_(it->second.get());
 		return *dynamic_cast<const MSG_CLASS*>(it->second.get());
 	}
@@ -176,8 +179,8 @@ class CObservationGPS : public CObservation
 		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		return it == messages.end()
-				   ? static_cast<MSG_CLASS*>(nullptr)
-				   : dynamic_cast<MSG_CLASS*>(it->second.get());
+			? static_cast<MSG_CLASS*>(nullptr)
+			: dynamic_cast<MSG_CLASS*>(it->second.get());
 	}
 	/** \overload */
 	template <class MSG_CLASS>
@@ -186,8 +189,8 @@ class CObservationGPS : public CObservation
 		auto it = messages.find(
 			static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 		return it == messages.end()
-				   ? dynamic_cast<MSG_CLASS*>(nullptr)
-				   : dynamic_cast<MSG_CLASS*>(it->second.get());
+			? dynamic_cast<MSG_CLASS*>(nullptr)
+			: dynamic_cast<MSG_CLASS*>(it->second.get());
 	}
 
 	/** Dumps the contents of the observation in a human-readable form to a
@@ -212,7 +215,7 @@ class CObservationGPS : public CObservation
 		std::ostream& o) const override;  // See base class docs
 
 	mrpt::system::TTimeStamp getOriginalReceivedTimeStamp()
-		const override;  // See base class docs
+		const override;	 // See base class docs
 	/** @} */
 
 	/** true if the corresponding field exists in \a messages. */
@@ -241,6 +244,6 @@ class CObservationGPS : public CObservation
 		uint16_t gps_week, double gps_sec, const int leap_seconds_count,
 		mrpt::system::TTimeParts& utc_out);
 	/** @} */
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

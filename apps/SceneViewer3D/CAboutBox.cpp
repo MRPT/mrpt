@@ -18,9 +18,9 @@
 //*)
 
 #include <mrpt/gui/CMyRedirector.h>
-#include "_DSceneViewerMain.h"
-
 #include <mrpt/system/os.h>
+
+#include "_DSceneViewerMain.h"
 
 #ifdef Button1
 #undef Button1
@@ -188,7 +188,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 	wxVer << _T("-Unicode build");
 #else
 	wxVer << _T("-ANSI build");
-#endif  // wxUSE_UNICODE
+#endif	// wxUSE_UNICODE
 
 	// Set the label with MRPT version:
 	wxString s(_("Build: "));

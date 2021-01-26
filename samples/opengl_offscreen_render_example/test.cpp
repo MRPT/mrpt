@@ -11,6 +11,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <iostream>
 
 using namespace std;

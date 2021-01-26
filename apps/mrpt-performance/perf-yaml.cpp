@@ -71,7 +71,7 @@ double yaml_loadFromFile(int, int)
 		tl.leave("t");
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	return r;
 }
 double yaml_FromFile(int, int)
@@ -85,7 +85,7 @@ double yaml_FromFile(int, int)
 		tl.leave("t");
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	return r;
 }
 
@@ -101,7 +101,7 @@ double yaml_loadFromText(int, int)
 		tl.leave("t");
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	return r;
 }
 double yaml_FromText(int, int)
@@ -115,7 +115,7 @@ double yaml_FromText(int, int)
 		tl.leave("t");
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	return r;
 }
 
@@ -139,7 +139,7 @@ double yaml_query(int, int)
 		sTotal += s2;
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	ASSERT_EQUAL_(sTotal.size(), 62U * reps);
 	return r;
 }
@@ -165,7 +165,7 @@ double yaml_iterate(int, int)
 		tl.leave("t");
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	ASSERT_EQUAL_(visits, 1231U * reps);
 	ASSERT_EQUAL_(sAllKeys.size(), 16849U * reps);
 	ASSERT_EQUAL_(allEntries, 4099U * reps);
@@ -184,7 +184,7 @@ double yaml_yamlcpp_FromFile(int, int)
 		tl.leave("t");
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	return r;
 }
 double yaml_yamlcpp_Load(int, int)
@@ -198,7 +198,7 @@ double yaml_yamlcpp_Load(int, int)
 		tl.leave("t");
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	return r;
 }
 double yaml_yamlcpp_query(int, int)
@@ -223,7 +223,7 @@ double yaml_yamlcpp_query(int, int)
 		sTotal += s2;
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	ASSERT_EQUAL_(sTotal.size(), 62U * reps);
 	return r;
 }
@@ -249,7 +249,7 @@ double yaml_yamlcpp_iterate(int, int)
 		tl.leave("t");
 	}
 	double r = tl.getMeanTime("t");
-	tl.clear(true);  // deep clear to silent dtor stats
+	tl.clear(true);	 // deep clear to silent dtor stats
 	ASSERT_EQUAL_(visits, 1231U * reps);
 	ASSERT_EQUAL_(sAllKeys.size(), 16849U * reps);
 	ASSERT_EQUAL_(allEntries, 4099U * reps);

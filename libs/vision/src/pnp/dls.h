@@ -59,7 +59,7 @@ class dls
 
 			// make z into unit vectors from normalized pixel coords
 			double sr = std::pow(ipoints.at<IpointType>(i, 0), 2) +
-						std::pow(ipoints.at<IpointType>(i, 1), 2) + (double)1;
+				std::pow(ipoints.at<IpointType>(i, 1), 2) + (double)1;
 			sr = std::sqrt(sr);
 
 			z.at<double>(0, i) = ipoints.at<IpointType>(i, 0) / sr;
@@ -189,12 +189,12 @@ class dls
 	bool positive_eigenvalues(const cv::Mat* eigenvalues);
 
 	cv::Mat p, z, mn;  //! object-image points
-	int N;  //! number of input points
+	int N;	//! number of input points
 	std::vector<double> f1coeff, f2coeff, f3coeff,
-		cost_;  //! coefficient for coefficients matrix
+		cost_;	//! coefficient for coefficients matrix
 	std::vector<cv::Mat> C_est_, t_est_;  //! optimal candidates
 	cv::Mat C_est__, t_est__;  //! optimal found solution
-	double cost__;  //! cost for optimal found solution
+	double cost__;	//! cost for optimal found solution
 };
 
 /**
@@ -212,7 +212,7 @@ class EigenvalueDecomposition
 
 	cv::Mat _eigenvalues;  //! Holds the computed eigenvalues.
 
-	cv::Mat _eigenvectors;  //! Holds the computed eigenvectors.
+	cv::Mat _eigenvectors;	//! Holds the computed eigenvectors.
 
 	/**
 	 * @brief Function to allocate memmory for 1d array
@@ -235,7 +235,8 @@ class EigenvalueDecomposition
 	_Tp* alloc_1d(int m, _Tp val)
 	{
 		_Tp* arr = alloc_1d<_Tp>(m);
-		for (int i = 0; i < m; i++) arr[i] = val;
+		for (int i = 0; i < m; i++)
+			arr[i] = val;
 		return arr;
 	}
 
@@ -249,7 +250,8 @@ class EigenvalueDecomposition
 	_Tp** alloc_2d(int m, int _n)
 	{
 		_Tp** arr = new _Tp*[m];
-		for (int i = 0; i < m; i++) arr[i] = new _Tp[_n];
+		for (int i = 0; i < m; i++)
+			arr[i] = new _Tp[_n];
 		return arr;
 	}
 
@@ -344,14 +346,8 @@ class EigenvalueDecomposition
 			while (l > low)
 			{
 				s = std::abs(H[l - 1][l - 1]) + std::abs(H[l][l]);
-				if (s == 0.0)
-				{
-					s = norm;
-				}
-				if (std::abs(H[l][l - 1]) < eps * s)
-				{
-					break;
-				}
+				if (s == 0.0) { s = norm; }
+				if (std::abs(H[l][l - 1]) < eps * s) { break; }
 				l--;
 			}
 
@@ -382,20 +378,14 @@ class EigenvalueDecomposition
 
 				if (q >= 0)
 				{
-					if (p >= 0)
-					{
-						z = p + z;
-					}
+					if (p >= 0) { z = p + z; }
 					else
 					{
 						z = p - z;
 					}
 					d[n1 - 1] = x + z;
 					d[n1] = d[n1 - 1];
-					if (z != 0.0)
-					{
-						d[n1] = x - w / z;
-					}
+					if (z != 0.0) { d[n1] = x - w / z; }
 					e[n1 - 1] = 0.0;
 					e[n1] = 0.0;
 					x = H[n1][n1 - 1];
@@ -483,10 +473,7 @@ class EigenvalueDecomposition
 					if (s > 0)
 					{
 						s = std::sqrt(s);
-						if (y < x)
-						{
-							s = -s;
-						}
+						if (y < x) { s = -s; }
 						s = x - w / ((y - x) / 2.0 + s);
 						for (int i = low; i <= n1; i++)
 						{
@@ -513,27 +500,20 @@ class EigenvalueDecomposition
 					p = p / s;
 					q = q / s;
 					r = r / s;
-					if (m == l)
-					{
-						break;
-					}
+					if (m == l) { break; }
 					if (std::abs(H[m][m - 1]) * (std::abs(q) + std::abs(r)) <
-						eps * (std::abs(p) *
-							   (std::abs(H[m - 1][m - 1]) + std::abs(z) +
-								std::abs(H[m + 1][m + 1]))))
-					{
-						break;
-					}
+						eps *
+							(std::abs(p) *
+							 (std::abs(H[m - 1][m - 1]) + std::abs(z) +
+							  std::abs(H[m + 1][m + 1]))))
+					{ break; }
 					m--;
 				}
 
 				for (int i = m + 2; i <= n1; i++)
 				{
 					H[i][i - 2] = 0.0;
-					if (i > m + 2)
-					{
-						H[i][i - 3] = 0.0;
-					}
+					if (i > m + 2) { H[i][i - 3] = 0.0; }
 				}
 
 				// Double QR step involving rows l:n and columns m:n
@@ -554,21 +534,12 @@ class EigenvalueDecomposition
 							r = r / x;
 						}
 					}
-					if (x == 0.0)
-					{
-						break;
-					}
+					if (x == 0.0) { break; }
 					s = std::sqrt(p * p + q * q + r * r);
-					if (p < 0)
-					{
-						s = -s;
-					}
+					if (p < 0) { s = -s; }
 					if (s != 0)
 					{
-						if (k != m)
-						{
-							H[k][k - 1] = -s * x;
-						}
+						if (k != m) { H[k][k - 1] = -s * x; }
 						else if (l != m)
 						{
 							H[k][k - 1] = -H[k][k - 1];
@@ -628,10 +599,7 @@ class EigenvalueDecomposition
 
 		// Backsubstitute to find vectors of upper triangular form
 
-		if (norm == 0.0)
-		{
-			return;
-		}
+		if (norm == 0.0) { return; }
 
 		for (n1 = nn - 1; n1 >= 0; n1--)
 		{
@@ -662,10 +630,7 @@ class EigenvalueDecomposition
 						l = i;
 						if (e[i] == 0.0)
 						{
-							if (w != 0.0)
-							{
-								H[i][n1] = -r / w;
-							}
+							if (w != 0.0) { H[i][n1] = -r / w; }
 							else
 							{
 								H[i][n1] = -r / (eps * norm);
@@ -681,9 +646,7 @@ class EigenvalueDecomposition
 							t = (x * s - z * r) / q;
 							H[i][n1] = t;
 							if (std::abs(x) > std::abs(z))
-							{
-								H[i + 1][n1] = (-r - w * t) / x;
-							}
+							{ H[i + 1][n1] = (-r - w * t) / x; }
 							else
 							{
 								H[i + 1][n1] = (-s - y * t) / z;
@@ -762,8 +725,8 @@ class EigenvalueDecomposition
 							if (vr == 0.0 && vi == 0.0)
 							{
 								vr = eps * norm *
-									 (std::abs(w) + std::abs(q) + std::abs(x) +
-									  std::abs(y) + std::abs(z));
+									(std::abs(w) + std::abs(q) + std::abs(x) +
+									 std::abs(y) + std::abs(z));
 							}
 							cdiv(
 								x * r - z * ra + q * sa,
@@ -866,10 +829,7 @@ class EigenvalueDecomposition
 					h += ort[i] * ort[i];
 				}
 				double g = std::sqrt(h);
-				if (ort[m] > 0)
-				{
-					g = -g;
-				}
+				if (ort[m] > 0) { g = -g; }
 				h = h - ort[m] * g;
 				ort[m] = ort[m] - g;
 
@@ -1054,6 +1014,6 @@ class EigenvalueDecomposition
  * \endcond
  */
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision::pnp
-#endif  // OPENCV_Check
+#endif	// OPENCV_Check

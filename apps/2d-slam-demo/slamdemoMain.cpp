@@ -8,8 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "slamdemoMain.h"
+
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
+
 #include "CDlgParams.h"
 #include "CLogView.h"
 #include "slamdemoApp.h"
@@ -23,9 +25,8 @@
 #include <wx/intl.h>
 #include <wx/string.h>
 //*)
-#include <mrpt/gui/wx28-fixes.h>
-
 #include <mrpt/gui/about_box.h>
+#include <mrpt/gui/wx28-fixes.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/ops_matrices.h>
@@ -35,7 +36,6 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include <mrpt/serialization/CArchive.h>
 #include <memory>
 
 using namespace std;
@@ -807,10 +807,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	mnuStop->Enable(false);
 
 // Init graphs:
-#define INIT_PLOT_LABELS(_PL, _LBX, _LBY)   \
-	_PL->AddLayer(new mpScaleX(wxT(_LBX))); \
-	_PL->AddLayer(new mpScaleY(wxT(_LBY))); \
-	_PL->LockAspect(true);                  \
+#define INIT_PLOT_LABELS(_PL, _LBX, _LBY)                                      \
+	_PL->AddLayer(new mpScaleX(wxT(_LBX)));                                    \
+	_PL->AddLayer(new mpScaleY(wxT(_LBY)));                                    \
+	_PL->LockAspect(true);                                                     \
 	_PL->Fit(-10, 10, -10, 10);
 
 #define INIT_PLOT(_PL) INIT_PLOT_LABELS(_PL, "x", "y")
@@ -967,12 +967,12 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	plotStatTime->EnableDoubleBuffer(true);
 
 // DA Stats plots ------------
-#define INIT_DA_PLOT(CODE)                             \
-	m_lyDa##CODE = new mpFXYVector();                  \
-	m_lyDa##CODE->SetPen(wxPen(wxColour(0, 0, 0), 5)); \
-	m_lyDa##CODE->SetContinuity(false);                \
-	plotDa##CODE->AddLayer(m_lyDa##CODE);              \
-	plotDa##CODE->LockAspect(false);                   \
+#define INIT_DA_PLOT(CODE)                                                     \
+	m_lyDa##CODE = new mpFXYVector();                                          \
+	m_lyDa##CODE->SetPen(wxPen(wxColour(0, 0, 0), 5));                         \
+	m_lyDa##CODE->SetContinuity(false);                                        \
+	plotDa##CODE->AddLayer(m_lyDa##CODE);                                      \
+	plotDa##CODE->LockAspect(false);                                           \
 	plotDa##CODE->EnableDoubleBuffer(true);
 
 	INIT_DA_PLOT(FP);
@@ -1098,12 +1098,13 @@ void slamdemoFrame::OnbtnRunBatchClicked(wxCommandEvent& event)
 	static CTicTac tictac;
 
 	wxBusyCursor info;
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	tictac.Tic();
 	const size_t N =
 		(options.path_square_len / options.robot_step_length) * 4 + 50;
-	for (size_t i = 0; i < N; i++) executeOneStep();
+	for (size_t i = 0; i < N; i++)
+		executeOneStep();
 
 	const double T = tictac.Tac();
 
@@ -1260,11 +1261,9 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 	for (size_t i = 0; i < AREA_SEGS; i++)
 	{
 		double a = options.sensor_fov * (-0.5 + double(i) / (AREA_SEGS - 1));
-		xs_area[i] =
-			options.sensorOnTheRobot.x() +
+		xs_area[i] = options.sensorOnTheRobot.x() +
 			options.sensor_max_range * cos(a + options.sensorOnTheRobot.phi());
-		ys_area[i] =
-			options.sensorOnTheRobot.y() +
+		ys_area[i] = options.sensorOnTheRobot.y() +
 			options.sensor_max_range * sin(a + options.sensorOnTheRobot.phi());
 	}
 	xs_area[AREA_SEGS] = options.sensorOnTheRobot.x();
@@ -1307,7 +1306,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 						(unsigned)m_lastObservation.sensedData.size())
 						.c_str());
 
-	for (auto& m_lyObsLM : m_lyObsLMs) plotObs->DelLayer(m_lyObsLM, true);
+	for (auto& m_lyObsLM : m_lyObsLMs)
+		plotObs->DelLayer(m_lyObsLM, true);
 	m_lyObsLMs.clear();
 
 	CMatrixDouble22 NOISE;
@@ -1359,7 +1359,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 		vector<TPoint2D> LMs;
 		map<unsigned int, CLandmark::TLandmarkID> landmarkIDs;
 
-		CVectorDouble Xkk;  // Full mean & cov
+		CVectorDouble Xkk;	// Full mean & cov
 		CMatrixDouble Pkk;
 
 		m_SLAM.getCurrentState(estRobotPose, LMs, landmarkIDs, Xkk, Pkk);
@@ -1498,10 +1498,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 		plotErrorPhi->Refresh();
 
 		// Execution times: --------------
-		if (m_lyStatTimes->GetDataLength() >= N)
-		{
-			m_lyStatTimes->Clear();
-		}
+		if (m_lyStatTimes->GetDataLength() >= N) { m_lyStatTimes->Clear(); }
 		for (size_t i = m_lyStatTimes->GetDataLength(); i < N; i++)
 		{
 			THistoric& h = m_historicData[i];
@@ -1689,9 +1686,9 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 
 				const double v = da.results.indiv_distances(p, o);
 				if (v > 500)
-					gridDA->SetCellValue(p, o, wxT("\u221E"));  // Infinity
+					gridDA->SetCellValue(p, o, wxT("\u221E"));	// Infinity
 				else if (v < -950)
-					gridDA->SetCellValue(p, o, wxT("-\u221E"));  // -Infinity
+					gridDA->SetCellValue(p, o, wxT("-\u221E"));	 // -Infinity
 				else
 					gridDA->SetCellValue(
 						p, o, wxString::Format(wxT("%.02f"), v));
@@ -1720,7 +1717,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			m_lyDaTP->AppendDataPoint(i, m_historicData[i].da_true_pos);
 
 		unsigned int totalTP = 0;
-		for (size_t i = 0; i < N; i++) totalTP += m_historicData[i].da_true_pos;
+		for (size_t i = 0; i < N; i++)
+			totalTP += m_historicData[i].da_true_pos;
 		lbDaTP->SetLabel(wxString::Format(wxT("True positives: %u"), totalTP));
 
 		// DA True negatives --------------
@@ -1729,7 +1727,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap)
 			m_lyDaTN->AppendDataPoint(i, m_historicData[i].da_true_neg);
 
 		unsigned int totalTN = 0;
-		for (size_t i = 0; i < N; i++) totalTN += m_historicData[i].da_true_neg;
+		for (size_t i = 0; i < N; i++)
+			totalTN += m_historicData[i].da_true_neg;
 		lbDaTN->SetLabel(wxString::Format(wxT("True negatives: %u"), totalTN));
 
 		// DA false positives --------------
@@ -1907,7 +1906,7 @@ void slamdemoFrame::executeOneStep()
 				m_SLAM.options.std_sensor_range /
 					options.uncert_overestim_sensor,
 				m_SLAM.options.std_sensor_yaw / options.uncert_overestim_sensor,
-				0,  // sigma_pitch: we are in 2D
+				0,	// sigma_pitch: we are in 2D
 				&m_lastObservation_GT_indices, options.spurious_count_mean,
 				options.spurious_count_std);
 		}
@@ -1926,10 +1925,10 @@ void slamdemoFrame::executeOneStep()
 			odo_opts.modelSelection = CActionRobotMovement2D::mmGaussian;
 
 			// Model as a constant noise in X,Y,PHI:
-			odo_opts.gaussianModel.a1 = 0;  // 0.01f;
-			odo_opts.gaussianModel.a2 = 0;  // RAD2DEG( 0.0001f );
-			odo_opts.gaussianModel.a3 = 0;  // DEG2RAD( 0.1f );
-			odo_opts.gaussianModel.a4 = 0;  // 0.01; //0.05f;
+			odo_opts.gaussianModel.a1 = 0;	// 0.01f;
+			odo_opts.gaussianModel.a2 = 0;	// RAD2DEG( 0.0001f );
+			odo_opts.gaussianModel.a3 = 0;	// DEG2RAD( 0.1f );
+			odo_opts.gaussianModel.a4 = 0;	// 0.01; //0.05f;
 			odo_opts.gaussianModel.minStdXY = options.odometry_noise_std_xy;
 			odo_opts.gaussianModel.minStdPHI = options.odometry_noise_std_phi;
 
@@ -1942,8 +1941,9 @@ void slamdemoFrame::executeOneStep()
 				0,
 				options.odometry_noise_std_xy / options.uncert_overestim_odom));
 			noisyPoseIncr.phi_incr(getRandomGenerator().drawGaussian1D(
-				0, options.odometry_noise_std_phi /
-					   options.uncert_overestim_odom));
+				0,
+				options.odometry_noise_std_phi /
+					options.uncert_overestim_odom));
 
 			actmov.computeFromOdometry(noisyPoseIncr, odo_opts);
 			actmov.timestamp = mrpt::system::now();
@@ -1963,9 +1963,7 @@ void slamdemoFrame::executeOneStep()
 
 			// Save dataset to file?
 			if (m_rawlog_out_file.fileOpenCorrectly())
-			{
-				archiveFrom(m_rawlog_out_file) << act << sf;
-			}
+			{ archiveFrom(m_rawlog_out_file) << act << sf; }
 		}
 
 		// For the case of doing D.A., save the correspondences REAL_MAP <->
@@ -2011,11 +2009,10 @@ void slamdemoFrame::executeOneStep()
 				const size_t o_realmap_idx =
 					m_lastObservation_GT_indices[o];  // Note: This can be "-1"
 				// for spurious readings!
-				const bool o_was_mapped =
-					(o_realmap_idx == std::string::npos)
-						? false
-						: old_realIDX_already_mapped.find(o_realmap_idx) !=
-							  old_realIDX_already_mapped.end();
+				const bool o_was_mapped = (o_realmap_idx == std::string::npos)
+					? false
+					: old_realIDX_already_mapped.find(o_realmap_idx) !=
+						old_realIDX_already_mapped.end();
 				const bool o_has_been_just_inserted =
 					da.newly_inserted_landmarks.find(o) !=
 					da.newly_inserted_landmarks.end();
@@ -2103,7 +2100,7 @@ void slamdemoFrame::OntimSimulTrigger(wxTimerEvent& event)
 		_("Step %u done in %.03fms"), (unsigned)m_historicData.size(),
 		1e3 * T));
 
-	wxTheApp->Yield(true);  // Let the app. process messages
+	wxTheApp->Yield(true);	// Let the app. process messages
 
 	// Prepare next step:
 	timSimul.Start(20, true);
@@ -2206,8 +2203,7 @@ void slamdemoFrame::OnConfigClicked(wxCommandEvent& event)
 		//		m_SLAM.KF_options.fusion_strategy =
 		// TKFFusionMethod(dlg.rbFusion->GetSelection());
 
-		if (dlg.rbMapCorridor->GetValue())
-			options.map_generator = "1";
+		if (dlg.rbMapCorridor->GetValue()) options.map_generator = "1";
 		else if (dlg.rbMapRandom->GetValue())
 			options.map_generator = "2";
 		else
@@ -2267,7 +2263,7 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
 	vector<TPoint2D> LMs;
 	map<unsigned int, CLandmark::TLandmarkID> landmarkIDs;
 
-	CVectorDouble Xkk;  // Full mean & cov
+	CVectorDouble Xkk;	// Full mean & cov
 	CMatrixDouble Pkk;
 
 	m_SLAM.getCurrentState(estRobotPose, LMs, landmarkIDs, Xkk, Pkk);
@@ -2411,12 +2407,12 @@ void slamdemoFrame::OnmnuItemSaveRawlogSelected(wxCommandEvent& event)
 		obs.text = std::string(
 					   "Rawlog generated by 2d-slam-demo\n"
 					   " MRPT version: ") +
-				   mrpt::system::MRPT_getVersion() +
-				   std::string(
+			mrpt::system::MRPT_getVersion() +
+			std::string(
 					   "\n"
 					   " Creation date: ") +
-				   mrpt::system::dateTimeLocalToString(mrpt::system::now()) +
-				   std::string("\n");
+			mrpt::system::dateTimeLocalToString(mrpt::system::now()) +
+			std::string("\n");
 
 		mrpt::serialization::archiveFrom(m_rawlog_out_file) << obs;
 	}

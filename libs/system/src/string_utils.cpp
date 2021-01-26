@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/format.h>
-#include <mrpt/system/os.h>  // strncmp(),...
+#include <mrpt/system/os.h>	 // strncmp(),...
 #include <mrpt/system/string_utils.h>
+
 #include <algorithm>
 #include <cmath>  // abs
 #include <cstring>
@@ -29,7 +30,7 @@ string mrpt::system::lowerCase(const string& str)
 
 	std::transform(
 		outStr.begin(), outStr.end(),  // In
-		outStr.begin(),  // Out
+		outStr.begin(),	 // Out
 		(int (*)(int))tolower);
 	return outStr;
 }
@@ -42,7 +43,7 @@ string mrpt::system::upperCase(const string& str)
 	string outStr(str);
 	std::transform(
 		outStr.begin(), outStr.end(),  // In
-		outStr.begin(),  // Out
+		outStr.begin(),	 // Out
 		(int (*)(int))toupper);
 	return outStr;
 }
@@ -69,10 +70,7 @@ void mrpt::system::encodeUTF8(
 	for (unsigned short i : input)
 	{
 		// 0xxxxxxx
-		if (i < 0x80)
-		{
-			output += (char)i;
-		}
+		if (i < 0x80) { output += (char)i; }
 		// 110xxxxx 10xxxxxx
 		else if (i < 0x800)
 		{
@@ -108,7 +106,7 @@ void mrpt::system::decodeUTF8(
 		if ((input[i] & MASK3BYTES) == MASK3BYTES)
 		{
 			ch = ((input[i] & 0x0F) << 12) | ((input[i + 1] & MASKBITS) << 6) |
-				 (input[i + 2] & MASKBITS);
+				(input[i + 2] & MASKBITS);
 			i += 3;
 		}
 		// 110xxxxx 10xxxxxx
@@ -221,7 +219,7 @@ void mrpt::system::tokenize(
 	const size_t len = inString.size();
 	bool prev_was_delim = true;
 	std::string cur_token;
-	for (size_t pos = 0; pos <= len; pos++)  // the "<=" is intentional!!
+	for (size_t pos = 0; pos <= len; pos++)	 // the "<=" is intentional!!
 	{
 		char c = '\0';
 		bool cur_is_delim;
@@ -269,10 +267,7 @@ template void mrpt::system::tokenize<std::vector<std::string>>(
 ---------------------------------------------------------------*/
 std::string mrpt::system::trim(const std::string& str)
 {
-	if (str.empty())
-	{
-		return std::string();
-	}
+	if (str.empty()) { return std::string(); }
 	else
 	{
 		size_t s = str.find_first_not_of(" \t");
@@ -313,7 +308,7 @@ bool mrpt::system::strStarts(const std::string& s1, const std::string& s2)
 {
 	return !mrpt::system::os::_strncmp(
 		s1.c_str(), s2.c_str(),
-		s2.size());  // if s1 is shorter it's not a problem
+		s2.size());	 // if s1 is shorter it's not a problem
 }
 
 /** Return true if "str" starts with "subStr" (case insensitive)  \sa strStarts
@@ -322,7 +317,7 @@ bool mrpt::system::strStartsI(const std::string& s1, const std::string& s2)
 {
 	return !mrpt::system::os::_strnicmp(
 		s1.c_str(), s2.c_str(),
-		s2.size());  // if s1 is shorter it's not a problem
+		s2.size());	 // if s1 is shorter it's not a problem
 }
 
 template <typename STRING_LIST>
@@ -333,7 +328,8 @@ static void impl_stringListAsString(
 
 	// 1) Compute overall length, including 2 chars per new-line:
 	size_t totalLen = lst.size() * lenNL;
-	for (const auto& s : lst) totalLen += s.size();
+	for (const auto& s : lst)
+		totalLen += s.size();
 
 	outText.resize(totalLen);
 
@@ -344,7 +340,8 @@ static void impl_stringListAsString(
 		mrpt::system::os::memcpy(
 			&outText[curPos], totalLen, s.c_str(), s.size());
 		curPos += s.size();
-		for (const auto& sNL : newline) outText[curPos++] = sNL;
+		for (const auto& sNL : newline)
+			outText[curPos++] = sNL;
 	}
 }
 

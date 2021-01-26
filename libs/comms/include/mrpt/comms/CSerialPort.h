@@ -164,5 +164,5 @@ class CSerialPort : public mrpt::io::CStream
 	 */
 	int hCOM{-1};
 #endif
-};  // end of class
+};	// end of class
 }  // namespace mrpt::comms

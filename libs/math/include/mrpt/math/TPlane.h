@@ -11,6 +11,7 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/TSegment3D.h>
+
 #include <array>
 #include <iosfwd>
 
@@ -126,7 +127,8 @@ struct TPlane
 	 */
 	TPlane(const double (&vec)[4])
 	{
-		for (size_t i = 0; i < 4; i++) coefs[i] = vec[i];
+		for (size_t i = 0; i < 4; i++)
+			coefs[i] = vec[i];
 	}
 
 	/** Returns "[A, B, C, D]"

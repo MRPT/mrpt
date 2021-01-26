@@ -14,6 +14,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
+
 #include <iostream>
 #include <map>
 
@@ -35,26 +36,26 @@ map<string, CVectorDouble> results;
 
 // vectorToTextFile( out_indxs, #ALGOR, true, true); /* By rows, append */
 
-#define TEST_RESAMPLING(ALGOR)                                            \
-	mrpt::system::deleteFile(#ALGOR);                                     \
-	/*printf(#ALGOR);*/                                                   \
-	/*printf("\n");*/                                                     \
-	ERR_MEANs.clear();                                                    \
-	ERR_STDs.clear();                                                     \
-	for (size_t i = 0; i < N_TESTS; i++)                                  \
-	{                                                                     \
-		mrpt::random::getRandomGenerator().drawUniformVector(             \
-			log_ws, MIN_LOG_WEIG, 0.0);                                   \
-		CParticleFilterCapable::log2linearWeights(log_ws, lin_ws);        \
-		CParticleFilterCapable::computeResampling(                        \
-			CParticleFilter::ALGOR, log_ws, out_indxs);                   \
-		hist_parts = mrpt::math::histogram(out_indxs, 0, M - 1, M, true); \
-		vector<double> errs_hist = lin_ws - hist_parts;                   \
-		ERR_MEANs.push_back(mrpt::math::mean(errs_hist));                 \
-		ERR_STDs.push_back(mrpt::math::stddev(errs_hist));                \
-	}                                                                     \
-	printf("%s: ERR_MEAN %e\n", #ALGOR, mrpt::math::mean(ERR_MEANs));     \
-	printf("%s: ERR_STD %f\n", #ALGOR, mrpt::math::mean(ERR_STDs));       \
+#define TEST_RESAMPLING(ALGOR)                                                 \
+	mrpt::system::deleteFile(#ALGOR);                                          \
+	/*printf(#ALGOR);*/                                                        \
+	/*printf("\n");*/                                                          \
+	ERR_MEANs.clear();                                                         \
+	ERR_STDs.clear();                                                          \
+	for (size_t i = 0; i < N_TESTS; i++)                                       \
+	{                                                                          \
+		mrpt::random::getRandomGenerator().drawUniformVector(                  \
+			log_ws, MIN_LOG_WEIG, 0.0);                                        \
+		CParticleFilterCapable::log2linearWeights(log_ws, lin_ws);             \
+		CParticleFilterCapable::computeResampling(                             \
+			CParticleFilter::ALGOR, log_ws, out_indxs);                        \
+		hist_parts = mrpt::math::histogram(out_indxs, 0, M - 1, M, true);      \
+		vector<double> errs_hist = lin_ws - hist_parts;                        \
+		ERR_MEANs.push_back(mrpt::math::mean(errs_hist));                      \
+		ERR_STDs.push_back(mrpt::math::stddev(errs_hist));                     \
+	}                                                                          \
+	printf("%s: ERR_MEAN %e\n", #ALGOR, mrpt::math::mean(ERR_MEANs));          \
+	printf("%s: ERR_STD %f\n", #ALGOR, mrpt::math::mean(ERR_STDs));            \
 	results[#ALGOR].push_back(mrpt::math::mean(ERR_STDs));
 
 // ------------------------------------------------------

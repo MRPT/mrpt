@@ -15,6 +15,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -26,7 +27,7 @@ using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;
 
-string SERIAL_NAME;  // Name of the serial port to open
+string SERIAL_NAME;	 // Name of the serial port to open
 
 // ------------------------------------------------------
 //				Test_HOKUYO
@@ -93,8 +94,7 @@ void Test_HOKUYO()
 	// Config: Use defaults + selected port ( serial or ethernet )
 
 	printf("[TEST] Turning laser ON...\n");
-	if (laser.turnOn())
-		printf("[TEST] Initialization OK!\n");
+	if (laser.turnOn()) printf("[TEST] Initialization OK!\n");
 	else
 	{
 		printf("[TEST] Initialization failed!\n");
@@ -161,10 +161,7 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		if (argc > 1)
-		{
-			SERIAL_NAME = string(argv[1]);
-		}
+		if (argc > 1) { SERIAL_NAME = string(argv[1]); }
 
 		Test_HOKUYO();
 		return 0;

@@ -10,11 +10,12 @@
 
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/MatrixVectorBase.h>
+
 #include <cstdint>
 #include <cstdio>  // fopen(),...
 #include <ctime>  // time(),...
-#include <fstream>  // ifstream
-#include <sstream>  // stringstream
+#include <fstream>	// ifstream
+#include <sstream>	// stringstream
 #include <stdexcept>
 #include <vector>
 
@@ -29,10 +30,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 
 	// Look for starting "[".
 	size_t ini = s.find_first_not_of(" \t\r\n");
-	if (ini == std::string::npos || s[ini] != '[')
-	{
-		return false;
-	}
+	if (ini == std::string::npos || s[ini] != '[') { return false; }
 
 	size_t end = s.find_last_not_of(" \t\r\n");
 	if (end == std::string::npos || s[end] != ']') return false;
@@ -48,10 +46,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 	{
 		// Extract one row:
 		size_t end_row = s.find_first_of(";]", i);
-		if (end_row == std::string::npos)
-		{
-			return false;
-		}
+		if (end_row == std::string::npos) { return false; }
 
 		// We have one row in s[ i : (end_row-1) ]
 		std::stringstream ss(s.substr(i, end_row - i));
@@ -73,8 +68,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 		// Empty row? Only for the first row, then this is an empty matrix:
 		if (lstElements.empty())
 		{
-			if (nRow > 0)
-				return false;
+			if (nRow > 0) return false;
 			else
 			{
 				// Else, this may be an empty matrix... if there is no next row,
@@ -102,9 +96,7 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 			// Append to the matrix:
 			if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
 				Derived::ColsAtCompileTime == Eigen::Dynamic)
-			{
-				mvbDerived().resize(nRow + 1, N);
-			}
+			{ mvbDerived().resize(nRow + 1, N); }
 			else if (
 				Derived::RowsAtCompileTime != Eigen::Dynamic &&
 				int(nRow) >= Derived::RowsAtCompileTime)
@@ -183,8 +175,7 @@ void MatrixVectorBase<Scalar, Derived>::saveToTextFile(
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 		struct tm timeinfo_data;
 		struct tm* timeinfo;
-		if (0 != ::localtime_s(&timeinfo_data, &rawtime))
-			timeinfo = nullptr;
+		if (0 != ::localtime_s(&timeinfo_data, &rawtime)) timeinfo = nullptr;
 		else
 			timeinfo = &timeinfo_data;
 #else
@@ -268,7 +259,7 @@ void MatrixVectorBase<Scalar, Derived>::loadFromTextFile(std::istream& f)
 					ptr = ptrEnd;
 					ptrEnd = nullptr;
 				}
-			};  // end while procesing this row
+			};	// end while procesing this row
 
 			if (!i && nRows == 0)
 				throw std::runtime_error("loadFromTextFile: Empty first line!");
@@ -475,9 +466,7 @@ Derived MatrixVectorBase<Scalar, Derived>::operator*(const Derived& m2) const
 		"B.asEigen()` for general matrix products.");
 	Derived ret(mvbDerived().rows(), mvbDerived().rows());
 	if constexpr (Derived::RowsAtCompileTime == Derived::ColsAtCompileTime)
-	{
-		ret.asEigen() = mvbDerived().asEigen() * m2.asEigen();
-	}
+	{ ret.asEigen() = mvbDerived().asEigen() * m2.asEigen(); }
 	return ret;
 }
 
@@ -512,9 +501,7 @@ Scalar MatrixVectorBase<Scalar, Derived>::dot(
 	const CVectorDynamic<Scalar>& v) const
 {
 	if constexpr (Derived::ColsAtCompileTime == 1)
-	{
-		return mvbDerived().asEigen().dot(v.mvbDerived().asEigen());
-	}
+	{ return mvbDerived().asEigen().dot(v.mvbDerived().asEigen()); }
 	else
 	{
 		ASSERTMSG_(false, "dot(): Implemented for column vectors only.");
@@ -525,9 +512,7 @@ Scalar MatrixVectorBase<Scalar, Derived>::dot(
 	const MatrixVectorBase<Scalar, Derived>& v) const
 {
 	if constexpr (Derived::ColsAtCompileTime == 1)
-	{
-		return mvbDerived().asEigen().dot(v.mvbDerived().asEigen());
-	}
+	{ return mvbDerived().asEigen().dot(v.mvbDerived().asEigen()); }
 	else
 	{
 		ASSERTMSG_(false, "dot(): Implemented for column vectors only.");

@@ -159,5 +159,5 @@ class COpenNI2Generic
 	/** Default: all true
 	 */
 	bool m_grab_image{true}, m_grab_depth{true}, m_grab_3D_points{true};
-};  // End of class
+};	// End of class
 }  // namespace mrpt::hwdrivers

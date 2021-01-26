@@ -11,6 +11,7 @@
 #include <mrpt/core/bits_math.h>  // hypot_fast()
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/wrap2pi.h>
+
 #include <vector>
 
 namespace mrpt::math
@@ -66,14 +67,10 @@ struct TPose2D : public TPoseOrPoint,
 	{
 		switch (i)
 		{
-			case 0:
-				return x;
-			case 1:
-				return y;
-			case 2:
-				return phi;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return x;
+			case 1: return y;
+			case 2: return phi;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y,phi */
@@ -81,14 +78,10 @@ struct TPose2D : public TPoseOrPoint,
 	{
 		switch (i)
 		{
-			case 0:
-				return x;
-			case 1:
-				return y;
-			case 2:
-				return phi;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return x;
+			case 1: return y;
+			case 2: return phi;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/**
@@ -146,15 +139,15 @@ struct TPose2D : public TPoseOrPoint,
 inline bool operator==(const TPose2D& p1, const TPose2D& p2)
 {
 	return (p1.x == p2.x) && (p1.y == p2.y) &&
-		   (mrpt::math::wrapTo2Pi(p1.phi) ==
-			mrpt::math::wrapTo2Pi(p2.phi));  //-V550
+		(mrpt::math::wrapTo2Pi(p1.phi) ==
+		 mrpt::math::wrapTo2Pi(p2.phi));  //-V550
 }
 /** Exact comparison between 2D poses, taking possible cycles into account */
 inline bool operator!=(const TPose2D& p1, const TPose2D& p2)
 {
 	return (p1.x != p2.x) || (p1.y != p2.y) ||
-		   (mrpt::math::wrapTo2Pi(p1.phi) !=
-			mrpt::math::wrapTo2Pi(p2.phi));  //-V550
+		(mrpt::math::wrapTo2Pi(p1.phi) !=
+		 mrpt::math::wrapTo2Pi(p2.phi));  //-V550
 }
 
 }  // namespace mrpt::math

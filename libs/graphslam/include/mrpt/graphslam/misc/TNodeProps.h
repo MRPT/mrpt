@@ -28,9 +28,7 @@ struct TNodeProps
 		str->clear();
 		*str += mrpt::format("Pose: %s|\t", this->pose.asString().c_str());
 		if (this->scan)
-		{
-			*str += mrpt::format("Scan #%lu", this->scan->getScanSize());
-		}
+		{ *str += mrpt::format("Scan #%lu", this->scan->getScanSize()); }
 		else
 		{
 			*str += "Scan: NONE";

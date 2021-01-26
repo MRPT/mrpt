@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "CLogView.h"
+
 #include "slamdemoApp.h"  // These are just to avoid weird WX compile issues with UNICODE, etc..
 #include "slamdemoMain.h"
-
-#include "CLogView.h"
 
 //(*InternalHeaders(CLogView)
 #include <wx/font.h>

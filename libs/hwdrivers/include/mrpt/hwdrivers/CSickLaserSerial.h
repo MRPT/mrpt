@@ -208,6 +208,6 @@ class CSickLaserSerial : public C2DRangeFinderAbstract
 	 */
 	bool turnOff() override;
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/crc.h>
@@ -84,7 +84,7 @@ void CSickLaserUSB::doProcessSimple(
 	auto AtDO = std::chrono::milliseconds(AtUI - 50);
 	outObservation.timestamp = m_timeStartTT + AtDO;
 
-	outObservation.sensorLabel = m_sensorLabel;  // Set label
+	outObservation.sensorLabel = m_sensorLabel;	 // Set label
 
 	// Extract the timestamp of the sensor:
 
@@ -188,7 +188,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 	buf[2] = buf[3] = 0;
 
 	while (nFrameBytes < (lenghtField = (6 + (buf[2] | (buf[3] << 8)))) +
-							 5 /* for 32bit timestamp + end-flag */)
+			   5 /* for 32bit timestamp + end-flag */)
 	{
 		if (lenghtField > 800)
 		{
@@ -197,8 +197,7 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 			buf[2] = buf[3] = 0;
 		}
 
-		if (nFrameBytes < 4)
-			nBytesToRead = 1;
+		if (nFrameBytes < 4) nBytesToRead = 1;
 		else
 			nBytesToRead =
 				(5 /* for 32bit timestamp + end-flag */ + lenghtField) -
@@ -248,9 +247,9 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 	if (buf[4] != 0xB0) return false;
 
 	// GET FRAME INFO
-	int info = buf[5] | (buf[6] << 8);  // Little Endian
+	int info = buf[5] | (buf[6] << 8);	// Little Endian
 	int n_points = info & 0x01FF;
-	is_mm_mode = 0 != ((info & 0xC000) >> 14);  // 0x00: cm 0x01: mm
+	is_mm_mode = 0 != ((info & 0xC000) >> 14);	// 0x00: cm 0x01: mm
 
 	out_ranges_meters.resize(n_points);
 
@@ -296,9 +295,8 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 
 	// Get USB board timestamp:
 	out_board_timestamp = (uint32_t(buf[nFrameBytes - 5]) << 24) |
-						  (uint32_t(buf[nFrameBytes - 4]) << 16) |
-						  (uint32_t(buf[nFrameBytes - 3]) << 8) |
-						  uint32_t(buf[nFrameBytes - 2]);
+		(uint32_t(buf[nFrameBytes - 4]) << 16) |
+		(uint32_t(buf[nFrameBytes - 3]) << 8) | uint32_t(buf[nFrameBytes - 2]);
 
 	// All OK
 	return true;

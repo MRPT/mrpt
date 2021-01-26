@@ -8,12 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #define MRPT_NO_WARN_BIG_HDR
-#include <mrpt/opengl.h>
-
-#include <mrpt/io/CMemoryStream.h>
-#include <mrpt/serialization/CArchive.h>
-
 #include <gtest/gtest.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/opengl.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -30,7 +28,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(CFrustum),
 		CLASS_ID(CDisk),
 		CLASS_ID(CGridPlaneXY),
-#if MRPT_HAS_OPENCV  // These classes need CImage serialization
+#if MRPT_HAS_OPENCV	 // These classes need CImage serialization
 		CLASS_ID(CMesh),
 		CLASS_ID(CTexturedPlane),
 #endif

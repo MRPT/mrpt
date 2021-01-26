@@ -17,6 +17,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -29,9 +30,9 @@ using namespace std;
 
 // Define as needed for your application:
 using MyRansac = mrpt::math::RANSAC_Template<
-	float,  // Numeric data type: float since pointclouds use float
-	mrpt::maps::CPointsMap,  // Dataset type (can be an abstract base type)
-	mrpt::math::TPlane  // Model type to be estimated
+	float,	// Numeric data type: float since pointclouds use float
+	mrpt::maps::CPointsMap,	 // Dataset type (can be an abstract base type)
+	mrpt::math::TPlane	// Model type to be estimated
 	>;
 
 namespace mrpt::math
@@ -51,7 +52,8 @@ void ransac3Dplane_fit(
 	ASSERT_(useIndices.size() == 3);
 
 	TPoint3D pt[3];
-	for (int i = 0; i < 3; i++) allData.getPoint(useIndices[i], pt[i]);
+	for (int i = 0; i < 3; i++)
+		allData.getPoint(useIndices[i], pt[i]);
 
 	try
 	{
@@ -146,7 +148,7 @@ void TestRANSAC()
 	myransac.execute(
 		data, &ransac3Dplane_fit, &ransac3Dplane_distance,
 		&ransac3Dplane_degenerate, DIST_THRESHOLD,
-		3,  // Minimum set of points
+		3,	// Minimum set of points
 		best_inliers, best_model);
 
 	cout << "Computation time: " << tictac.Tac() * 1000.0 << " ms\n";

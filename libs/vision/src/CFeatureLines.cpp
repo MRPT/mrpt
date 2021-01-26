@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+
  */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/vision/CFeatureLines.h>
 #include <mrpt/vision/utils.h>
@@ -172,10 +172,7 @@ static void extractLines_CannyHough(
 			longest = shortest;
 			shortest = memory;
 			dx2 = 0;
-			if (h < 0)
-			{
-				dy2 = -1;
-			}
+			if (h < 0) { dy2 = -1; }
 			else
 			{
 				dy2 = 1;
@@ -276,7 +273,7 @@ void CFeatureLines::extractLines(
 	std::vector<cv::Vec2f> lines;
 	cv::HoughLines(
 		canny_img, lines, 1, CV_PI / 180.0,
-		threshold);  // CAUTION: The last parameter depends on the input image,
+		threshold);	 // CAUTION: The last parameter depends on the input image,
 	// it's the smallest number of pixels to consider a line in
 	// the accumulator
 	//    double minLineLength=50, maxLineGap=5;

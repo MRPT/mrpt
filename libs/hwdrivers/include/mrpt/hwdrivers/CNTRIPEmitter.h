@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <fstream>
 
 namespace mrpt::hwdrivers
@@ -125,6 +126,6 @@ class CNTRIPEmitter : public CGenericSensor
 	CNTRIPClient& getNTRIPClient() { return m_client; }
 	/** Exposes the NTRIP client object */
 	const CNTRIPClient& getNTRIPClient() const { return m_client; }
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

@@ -11,6 +11,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TTypeName.h>  // Used in all derived classes
+
 #include <iosfwd>  // std::ostream
 #include <stdexcept>
 #include <type_traits>
@@ -75,8 +76,9 @@ struct ProvideStaticResize
 
 /** Text streaming function */
 template <
-	class PoseOrPoint, typename = std::enable_if_t<std::is_base_of_v<
-						   mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+	class PoseOrPoint,
+	typename = std::enable_if_t<
+		std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 std::ostream& operator<<(std::ostream& o, const PoseOrPoint& p)
 {
 	o << p.asString();
@@ -85,23 +87,27 @@ std::ostream& operator<<(std::ostream& o, const PoseOrPoint& p)
 
 /** Binary streaming function */
 template <
-	class PoseOrPoint, typename = std::enable_if_t<std::is_base_of_v<
-						   mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+	class PoseOrPoint,
+	typename = std::enable_if_t<
+		std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, PoseOrPoint& o)
 {
-	for (int i = 0; i < o.static_size; i++) in >> o[i];
+	for (int i = 0; i < o.static_size; i++)
+		in >> o[i];
 	return in;
 }
 
 /** Binary streaming function */
 template <
-	class PoseOrPoint, typename = std::enable_if_t<std::is_base_of_v<
-						   mrpt::math::TPoseOrPoint, PoseOrPoint>>>
+	class PoseOrPoint,
+	typename = std::enable_if_t<
+		std::is_base_of_v<mrpt::math::TPoseOrPoint, PoseOrPoint>>>
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const PoseOrPoint& o)
 {
-	for (int i = 0; i < o.static_size; i++) out << o[i];
+	for (int i = 0; i < o.static_size; i++)
+		out << o[i];
 	return out;
 }
 

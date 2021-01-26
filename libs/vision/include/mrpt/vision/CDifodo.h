@@ -192,7 +192,7 @@ class CDifodo
 	double fps;
 
 	/** Resolution of the images taken by the range camera */
-	unsigned int cam_mode;  // (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
+	unsigned int cam_mode;	// (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
 
 	/** Downsample the image taken by the range camera. Useful to reduce the
 	  computational burden,

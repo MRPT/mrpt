@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TPoseOrPoint.h>
+
 #include <vector>
 
 namespace mrpt::math
@@ -40,14 +41,10 @@ struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 	{
 		switch (i)
 		{
-			case 0:
-				return vx;
-			case 1:
-				return vy;
-			case 2:
-				return omega;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return vx;
+			case 1: return vy;
+			case 2: return omega;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/** Coordinate access using operator[]. Order: vx,vy,vphi */
@@ -55,14 +52,10 @@ struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 	{
 		switch (i)
 		{
-			case 0:
-				return vx;
-			case 1:
-				return vy;
-			case 2:
-				return omega;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return vx;
+			case 1: return vy;
+			case 2: return omega;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/** Transformation into vector */

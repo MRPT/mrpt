@@ -102,6 +102,6 @@ class CHMHMapArc : public mrpt::serialization::CSerializable
 	 */
 	CMHPropertiesValuesList m_annotations;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::hmtslam

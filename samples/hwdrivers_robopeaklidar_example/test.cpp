@@ -12,6 +12,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -21,7 +22,7 @@ using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace std;
 
-string SERIAL_NAME;  // Name of the serial port to open
+string SERIAL_NAME;	 // Name of the serial port to open
 
 // ------------------------------------------------------
 //				Test_RPLIDAR
@@ -51,8 +52,7 @@ void Test_RPLIDAR()
 
 	// Config: Use defaults + selected port ( serial or ethernet )
 	printf("Turning laser ON...\n");
-	if (laser.turnOn())
-		printf("Initialization OK!\n");
+	if (laser.turnOn()) printf("Initialization OK!\n");
 	else
 	{
 		printf("Initialization failed!\n");

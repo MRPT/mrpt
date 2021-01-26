@@ -18,7 +18,7 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
    protected:
 	CTopLCDetector_FabMap(CHMTSLAM* hmtslam);
 
-	void* m_fabmap;  // FabMapInstance*
+	void* m_fabmap;	 // FabMapInstance*
 
    public:
 	/** A class factory, to be implemented in derived classes.
@@ -60,12 +60,12 @@ class CTopLCDetector_FabMap : public CTopLCDetectorBase
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		std::string vocab_path, vocabName;
 		double p_obs_given_exists{0.39}, p_at_new_place{0.99},
 			df_lik_smooth{0.99};
 	};
 
-};  // end class
+};	// end class
 }  // namespace mrpt::hmtslam

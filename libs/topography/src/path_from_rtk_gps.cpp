@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "topography-precomp.h"  // Precompiled headers
-
+#include "topography-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/math/data_utils.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/tfest/se3.h>
@@ -62,7 +62,7 @@ void mrpt::topography::path_from_rtk_gps(
 	if (outInfo) *outInfo = outInfoTemp;
 
 	map<string, map<Clock::time_point, TPoint3D>>
-		gps_paths;  // label -> (time -> 3D local coords)
+		gps_paths;	// label -> (time -> 3D local coords)
 
 	bool abort = false;
 	bool ref_valid = false;
@@ -100,7 +100,7 @@ void mrpt::topography::path_from_rtk_gps(
 		mrpt::Clock::time_point, std::map<std::string, CObservationGPS::Ptr>>;
 	TListGPSs list_gps_obs;
 
-	map<string, size_t> GPS_RTK_reads;  // label-># of RTK readings
+	map<string, size_t> GPS_RTK_reads;	// label-># of RTK readings
 	map<string, TPoint3D>
 		GPS_local_coords_on_vehicle;  // label -> local pose on the vehicle
 
@@ -108,8 +108,7 @@ void mrpt::topography::path_from_rtk_gps(
 	{
 		switch (rawlog.getType(i))
 		{
-			default:
-				break;
+			default: break;
 
 			case CRawlog::etObservation:
 			{
@@ -172,15 +171,15 @@ void mrpt::topography::path_from_rtk_gps(
 	//
 	// TODO: Generalize equations for # of GPS > 3
 	// -----------------------------------------------------------
-	map<set<string>, double> Ad_ij;  // InterGPS distances in 2D
+	map<set<string>, double> Ad_ij;	 // InterGPS distances in 2D
 	map<set<string>, double>
-		phi_ij;  // Directions on XY of the lines between i-j
+		phi_ij;	 // Directions on XY of the lines between i-j
 	map<string, size_t>
-		D_cov_indexes;  // Sensor label-> index in the matrix (first=0, ...)
-	map<size_t, string> D_cov_rev_indexes;  // Reverse of D_cov_indexes
+		D_cov_indexes;	// Sensor label-> index in the matrix (first=0, ...)
+	map<size_t, string> D_cov_rev_indexes;	// Reverse of D_cov_indexes
 
 	CMatrixDouble D_cov;  // square distances cov
-	CMatrixDouble D_cov_1;  // square distances cov (inverse)
+	CMatrixDouble D_cov_1;	// square distances cov (inverse)
 	CVectorDouble D_mean;  // square distances mean
 
 	if (doConsistencyCheck && GPS_local_coords_on_vehicle.size() == 3)
@@ -214,14 +213,11 @@ void mrpt::topography::path_from_rtk_gps(
 		// See paper for the formulas!
 		// TODO: generalize for N>3
 
-		D_cov(0, 0) =
-			2 *
+		D_cov(0, 0) = 2 *
 			square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[1])]);
-		D_cov(1, 1) =
-			2 *
+		D_cov(1, 1) = 2 *
 			square(Ad_ij[make_set(D_cov_rev_indexes[0], D_cov_rev_indexes[2])]);
-		D_cov(2, 2) =
-			2 *
+		D_cov(2, 2) = 2 *
 			square(Ad_ij[make_set(D_cov_rev_indexes[1], D_cov_rev_indexes[2])]);
 
 		D_cov(1, 0) =
@@ -291,7 +287,7 @@ void mrpt::topography::path_from_rtk_gps(
 					// For each GPS in the current timestamp:
 					bool fnd = (GPS.find(lstGPSLabel) != GPS.end());
 
-					if (fnd) continue;  // this one is present.
+					if (fnd) continue;	// this one is present.
 
 					// Ok, we have "*l" missing in the set "*i".
 					// Try to interpolate from neighbors:
@@ -324,22 +320,19 @@ void mrpt::topography::path_from_rtk_gps(
 							// cout << endl;
 
 							new_gps->getMsgByClass<gnss::Message_NMEA_GGA>()
-								.fields.longitude_degrees =
-								0.5 *
+								.fields.longitude_degrees = 0.5 *
 								(GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>()
 									 .fields.longitude_degrees +
 								 GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>()
 									 .fields.longitude_degrees);
 							new_gps->getMsgByClass<gnss::Message_NMEA_GGA>()
-								.fields.latitude_degrees =
-								0.5 *
+								.fields.latitude_degrees = 0.5 *
 								(GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>()
 									 .fields.latitude_degrees +
 								 GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>()
 									 .fields.latitude_degrees);
 							new_gps->getMsgByClass<gnss::Message_NMEA_GGA>()
-								.fields.altitude_meters =
-								0.5 *
+								.fields.altitude_meters = 0.5 *
 								(GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>()
 									 .fields.altitude_meters +
 								 GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>()
@@ -370,11 +363,11 @@ void mrpt::topography::path_from_rtk_gps(
 			{
 				const size_t N = i->second.size();
 				std::map<std::string, CObservationGPS::Ptr>& GPS = i->second;
-				CVectorDouble X(N), Y(N), Z(N);  // Global XYZ coordinates
+				CVectorDouble X(N), Y(N), Z(N);	 // Global XYZ coordinates
 				std::map<string, size_t>
 					XYZidxs;  // Sensor label -> indices in X Y Z
 
-				if (!ref_valid)  // get the reference lat/lon, if it's not set
+				if (!ref_valid)	 // get the reference lat/lon, if it's not set
 				// from rawlog configuration block.
 				{
 					ref_valid = true;
@@ -404,7 +397,7 @@ void mrpt::topography::path_from_rtk_gps(
 					P.z += memFil.read_double(sect, "z", 0);
 
 					XYZidxs[g_it->second->sensorLabel] =
-						k;  // Save index correspondence
+						k;	// Save index correspondence
 
 					// Create the correspondence:
 					corrs.push_back(TMatchingPair(
@@ -464,7 +457,7 @@ void mrpt::topography::path_from_rtk_gps(
 				// "this" (reference map) -> GPS global coordinates
 				// "other" -> GPS local coordinates on the vehicle
 				mrpt::tfest::se3_l2(
-					corrs, optimal_pose, optimal_scale, true);  // Force scale=1
+					corrs, optimal_pose, optimal_scale, true);	// Force scale=1
 				// cout << "optimal pose: " << optimal_pose << " " <<
 				// optimal_scale << endl;
 				MRPT_CHECK_NORMAL_NUMBER(optimal_pose.x());
@@ -584,9 +577,9 @@ void mrpt::topography::path_from_rtk_gps(
 			TPoint3D& pl = i.second;
 			mrpt::topography::geodeticToENU_WGS84(
 				TGeodeticCoords(
-					pl.x, pl.y, pl.z),  // i->second.x,i->second.y,i->second.z,
+					pl.x, pl.y, pl.z),	// i->second.x,i->second.y,i->second.z,
 				// // lat, lon, heigh
-				P,  // X Y Z
+				P,	// X Y Z
 				ref);
 
 			pl.x = P.x + off_X;

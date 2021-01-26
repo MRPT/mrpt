@@ -11,8 +11,9 @@
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/serialization/CArchive.h>
-#include <iomanip>  // for setprecision(), etc.
-#include <iterator>  // std::ostream_iterator
+
+#include <iomanip>	// for setprecision(), etc.
+#include <iterator>	 // std::ostream_iterator
 
 // Many of the functions originally in this file are now in ops_containers.h
 #include <mrpt/math/ops_containers.h>
@@ -32,7 +33,8 @@ inline std::vector<T1>& operator*=(std::vector<T1>& a, const std::vector<T2>& b)
 {
 	ASSERT_EQUAL_(a.size(), b.size());
 	const size_t N = a.size();
-	for (size_t i = 0; i < N; i++) a[i] *= b[i];
+	for (size_t i = 0; i < N; i++)
+		a[i] *= b[i];
 	return a;
 }
 
@@ -41,7 +43,8 @@ template <typename T1>
 inline std::vector<T1>& operator*=(std::vector<T1>& a, const T1 b)
 {
 	const size_t N = a.size();
-	for (size_t i = 0; i < N; i++) a[i] *= b;
+	for (size_t i = 0; i < N; i++)
+		a[i] *= b;
 	return a;
 }
 
@@ -53,7 +56,8 @@ inline std::vector<T1> operator*(
 	ASSERT_EQUAL_(a.size(), b.size());
 	const size_t N = a.size();
 	std::vector<T1> ret(N);
-	for (size_t i = 0; i < N; i++) ret[i] = a[i] * b[i];
+	for (size_t i = 0; i < N; i++)
+		ret[i] = a[i] * b[i];
 	return ret;
 }
 
@@ -63,7 +67,8 @@ inline std::vector<T1>& operator+=(std::vector<T1>& a, const std::vector<T2>& b)
 {
 	ASSERT_EQUAL_(a.size(), b.size());
 	const size_t N = a.size();
-	for (size_t i = 0; i < N; i++) a[i] += b[i];
+	for (size_t i = 0; i < N; i++)
+		a[i] += b[i];
 	return a;
 }
 
@@ -72,7 +77,8 @@ template <typename T1>
 inline std::vector<T1>& operator+=(std::vector<T1>& a, const T1 b)
 {
 	const size_t N = a.size();
-	for (size_t i = 0; i < N; i++) a[i] += b;
+	for (size_t i = 0; i < N; i++)
+		a[i] += b;
 	return a;
 }
 
@@ -84,7 +90,8 @@ inline std::vector<T1> operator+(
 	ASSERT_EQUAL_(a.size(), b.size());
 	const size_t N = a.size();
 	std::vector<T1> ret(N);
-	for (size_t i = 0; i < N; i++) ret[i] = a[i] + b[i];
+	for (size_t i = 0; i < N; i++)
+		ret[i] = a[i] + b[i];
 	return ret;
 }
 
@@ -94,7 +101,8 @@ inline std::vector<T1> operator-(
 {
 	ASSERT_EQUAL_(v1.size(), v2.size());
 	std::vector<T1> res(v1.size());
-	for (size_t i = 0; i < v1.size(); i++) res[i] = v1[i] - v2[i];
+	for (size_t i = 0; i < v1.size(); i++)
+		res[i] = v1[i] - v2[i];
 	return res;
 }
 
@@ -150,13 +158,14 @@ mrpt::serialization::CArchive& operator>>(
 	std::string nam;
 	istrm >> nam;
 	ASSERTMSG_(
-		nam == namExpect, format(
-							  "Error deserializing: expected '%s', got '%s'",
-							  namExpect.c_str(), nam.c_str()));
+		nam == namExpect,
+		format(
+			"Error deserializing: expected '%s', got '%s'", namExpect.c_str(),
+			nam.c_str()));
 	if (N) istrm.ReadBufferFixEndianness<T>(&a[0], N);
 	return istrm;
 }
 
-/**  @} */  // end of grouping
+/**  @} */	// end of grouping
 
 }  // namespace mrpt::math

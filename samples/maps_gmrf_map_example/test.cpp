@@ -12,6 +12,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/random.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -62,7 +63,7 @@ void Example_GMRF()
 			new MyConnectivityVisitor);
 	gasmap.setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 	gasmap.setCellsConnectivity(conn);
-	gasmap.clear();  // for the connectivity to be taken into account.
+	gasmap.clear();	 // for the connectivity to be taken into account.
 
 	auto gl_data = mrpt::opengl::CPointCloud::Create();
 	gl_data->setPointSize(3.0f);

@@ -75,20 +75,13 @@ struct TPose3D : public TPoseOrPoint,
 	{
 		switch (i)
 		{
-			case 0:
-				return x;
-			case 1:
-				return y;
-			case 2:
-				return z;
-			case 3:
-				return yaw;
-			case 4:
-				return pitch;
-			case 5:
-				return roll;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return x;
+			case 1: return y;
+			case 2: return z;
+			case 3: return yaw;
+			case 4: return pitch;
+			case 5: return roll;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
@@ -96,20 +89,13 @@ struct TPose3D : public TPoseOrPoint,
 	{
 		switch (i)
 		{
-			case 0:
-				return x;
-			case 1:
-				return y;
-			case 2:
-				return z;
-			case 3:
-				return yaw;
-			case 4:
-				return pitch;
-			case 5:
-				return roll;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return x;
+			case 1: return y;
+			case 2: return z;
+			case 3: return yaw;
+			case 4: return pitch;
+			case 5: return roll;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/**
@@ -226,21 +212,19 @@ TPose3D operator-(const TPose3D& b, const TPose3D& a);
 inline bool operator==(const TPose3D& p1, const TPose3D& p2)
 {
 	return (p1.x == p2.x) && (p1.y == p2.y) && (p1.z == p2.z) &&
-		   (mrpt::math::wrapTo2Pi(p1.yaw) == mrpt::math::wrapTo2Pi(p2.yaw)) &&
-		   (mrpt::math::wrapTo2Pi(p1.pitch) ==
-			mrpt::math::wrapTo2Pi(p2.pitch)) &&
-		   (mrpt::math::wrapTo2Pi(p1.roll) ==
-			mrpt::math::wrapTo2Pi(p2.roll));  //-V550
+		(mrpt::math::wrapTo2Pi(p1.yaw) == mrpt::math::wrapTo2Pi(p2.yaw)) &&
+		(mrpt::math::wrapTo2Pi(p1.pitch) == mrpt::math::wrapTo2Pi(p2.pitch)) &&
+		(mrpt::math::wrapTo2Pi(p1.roll) ==
+		 mrpt::math::wrapTo2Pi(p2.roll));  //-V550
 }
 /** Exact comparison between 3D poses, taking possible cycles into account */
 inline bool operator!=(const TPose3D& p1, const TPose3D& p2)
 {
 	return (p1.x != p2.x) || (p1.y != p2.y) || (p1.z != p2.z) ||
-		   (mrpt::math::wrapTo2Pi(p1.yaw) != mrpt::math::wrapTo2Pi(p2.yaw)) ||
-		   (mrpt::math::wrapTo2Pi(p1.pitch) !=
-			mrpt::math::wrapTo2Pi(p2.pitch)) ||
-		   (mrpt::math::wrapTo2Pi(p1.roll) !=
-			mrpt::math::wrapTo2Pi(p2.roll));  //-V550
+		(mrpt::math::wrapTo2Pi(p1.yaw) != mrpt::math::wrapTo2Pi(p2.yaw)) ||
+		(mrpt::math::wrapTo2Pi(p1.pitch) != mrpt::math::wrapTo2Pi(p2.pitch)) ||
+		(mrpt::math::wrapTo2Pi(p1.roll) !=
+		 mrpt::math::wrapTo2Pi(p2.roll));  //-V550
 }
 
 }  // namespace mrpt::math

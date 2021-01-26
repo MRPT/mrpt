@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "random-precomp.h"  // Precompiled headers
-
+#include "random-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/random/RandomGenerators.h>
 
 using namespace mrpt::random;
@@ -65,12 +65,14 @@ void Generator_MT19937::generateNumbers()
 	// and:
 	//  http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
 	//
-	const int N = 624;  // length of state vector
-	const int M = 397;  // period parameter
+	const int N = 624;	// length of state vector
+	const int M = 397;	// period parameter
 
 	uint32_t* p = m_MT;
-	for (int i = N - M; i--; ++p) *p = twist(p[M], p[0], p[1]);
-	for (int i = M; --i; ++p) *p = twist(p[M - N], p[0], p[1]);
+	for (int i = N - M; i--; ++p)
+		*p = twist(p[M], p[0], p[1]);
+	for (int i = M; --i; ++p)
+		*p = twist(p[M - N], p[0], p[1]);
 	*p = twist(p[M - N], p[0], m_MT[0]);
 }
 

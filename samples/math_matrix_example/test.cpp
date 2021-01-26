@@ -14,6 +14,7 @@
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <Eigen/Dense>
 #include <iostream>
 
@@ -165,7 +166,8 @@ void TestCov()
 	for (size_t i = 0; i < 4; i++)
 	{
 		samples[i].resize(3);
-		for (size_t j = 0; j < 3; j++) samples[i][j] = Mdyn(i, j);
+		for (size_t j = 0; j < 3; j++)
+			samples[i][j] = Mdyn(i, j);
 	}
 
 	cout << "COV (vector of vectors): " << endl

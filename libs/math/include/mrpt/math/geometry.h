@@ -366,7 +366,8 @@ void project3D(
 {
 	size_t N = objs.size();
 	newObjs.resize(N);
-	for (size_t i = 0; i < N; i++) project3D(objs[i], newXYpose, newObjs[i]);
+	for (size_t i = 0; i < N; i++)
+		project3D(objs[i], newXYpose, newObjs[i]);
 }
 
 /** Uses the given pose 2D to project a point into a new base. */
@@ -425,7 +426,8 @@ void project2D(
 {
 	size_t N = objs.size();
 	newObjs.resize(N);
-	for (size_t i = 0; i < N; i++) project2D(objs[i], newXpose, newObjs[i]);
+	for (size_t i = 0; i < N; i++)
+		project2D(objs[i], newXpose, newObjs[i]);
 }
 /** @}
  */

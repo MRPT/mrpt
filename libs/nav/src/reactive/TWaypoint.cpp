@@ -8,11 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/nav/reactive/TWaypoint.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+
 #include <limits>
 
 using namespace mrpt::nav;
@@ -44,7 +45,7 @@ TWaypoint::TWaypoint(
 bool TWaypoint::isValid() const
 {
 	return (target.x != INVALID_NUM) && (target.y != INVALID_NUM) &&
-		   (allowed_distance != INVALID_NUM);
+		(allowed_distance != INVALID_NUM);
 }
 
 std::string TWaypoint::getAsText() const
@@ -228,7 +229,7 @@ void TWaypointSequence::save(
 	const unsigned int N = waypoints.size();
 	c.write(s, "waypoint_count", N);
 
-	const int NP = 27;  // name padding
+	const int NP = 27;	// name padding
 
 	for (unsigned int i = 0; i < N; i++)
 	{

@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "obs-precomp.h"  // Precompiled headers
+//
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <fstream>
-
-#include "obs-precomp.h"  // Precompiled headers
 
 using namespace mrpt::obs;
 using namespace mrpt::poses;
@@ -93,8 +93,7 @@ void CObservationStereoImagesFeatures::serializeFrom(
 			in >> sensorLabel >> timestamp;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -118,7 +117,8 @@ void CObservationStereoImagesFeatures::getDescriptionAsText(
 	o << aux.inMatlabFormat() << endl << aux << endl;
 
 	o << "Distortion parameters vector for the LEFT camera:" << endl << "[ ";
-	for (unsigned int i = 0; i < 5; ++i) o << cameraLeft.dist[i] << " ";
+	for (unsigned int i = 0; i < 5; ++i)
+		o << cameraLeft.dist[i] << " ";
 	o << "]" << endl;
 
 	o << "Intrinsic parameters matrix for the RIGHT camera:" << endl;
@@ -126,7 +126,8 @@ void CObservationStereoImagesFeatures::getDescriptionAsText(
 	o << aux.inMatlabFormat() << endl << aux << endl;
 
 	o << "Distortion parameters vector for the RIGHT camera:" << endl << "[ ";
-	for (unsigned int i = 0; i < 5; ++i) o << cameraRight.dist[i] << " ";
+	for (unsigned int i = 0; i < 5; ++i)
+		o << cameraRight.dist[i] << " ";
 	o << "]" << endl;
 
 	o << endl

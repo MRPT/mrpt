@@ -308,6 +308,6 @@ class CPtuBase
 
 	virtual bool radAsign(char axis, char command, double nRad) = 0;
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

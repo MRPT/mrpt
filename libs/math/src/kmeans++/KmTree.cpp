@@ -12,6 +12,7 @@
 
 // Includes
 #include "KmTree.h"
+
 #include <cstdlib>
 #include <iostream>
 using namespace std;
@@ -22,7 +23,8 @@ KmTree::KmTree(int n, int d, Scalar* points) : n_(n), d_(d), points_(points)
 	int node_size = sizeof(Node) + d_ * 3 * sizeof(Scalar);
 	node_data_ = (char*)malloc((2 * n - 1) * node_size);
 	point_indices_ = (int*)malloc(n * sizeof(int));
-	for (int i = 0; i < n; i++) point_indices_[i] = i;
+	for (int i = 0; i < n; i++)
+		point_indices_[i] = i;
 	KM_ASSERT(node_data_ != nullptr && point_indices_ != nullptr);
 
 	// Calculate the bounding box for the points
@@ -187,10 +189,7 @@ KmTree::Node* KmTree::BuildNodes(
 			i1++;
 			size1++;
 		}
-		if (is_i2_good)
-		{
-			i2--;
-		}
+		if (is_i2_good) { i2--; }
 	}
 
 	// Create the child nodes
@@ -208,7 +207,7 @@ KmTree::Node* KmTree::BuildNodes(
 	PointCopy(center, node->sum, d_);
 	PointScale(center, Scalar(1) / node->num_points, d_);
 	node->opt_cost = GetNodeCost(node->lower_node, center) +
-					 GetNodeCost(node->upper_node, center);
+		GetNodeCost(node->upper_node, center);
 	PointFree(center);
 	return node;
 }
@@ -287,7 +286,7 @@ Scalar KmTree::DoKMeansStepAtNode(
 			Scalar result = DoKMeansStepAtNode(
 								node->lower_node, new_k, new_candidates,
 								centers, sums, counts, assignment) +
-							DoKMeansStepAtNode(
+				DoKMeansStepAtNode(
 								node->upper_node, new_k, new_candidates,
 								centers, sums, counts, assignment);
 			free(new_candidates);
@@ -431,12 +430,11 @@ Scalar KmTree::SeedKmppUpdateAssignment(
 	// Recurse
 	Scalar cost = SeedKmppUpdateAssignment(
 					  node->lower_node, new_cluster, centers, dist_sq) +
-				  SeedKmppUpdateAssignment(
+		SeedKmppUpdateAssignment(
 					  node->upper_node, new_cluster, centers, dist_sq);
 	int i1 = node->lower_node->kmpp_cluster_index,
 		i2 = node->upper_node->kmpp_cluster_index;
-	if (i1 == i2 && i1 != -1)
-		node->kmpp_cluster_index = i1;
+	if (i1 == i2 && i1 != -1) node->kmpp_cluster_index = i1;
 	else
 		node->kmpp_cluster_index = -1;
 	return cost;

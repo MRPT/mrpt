@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "core-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/exceptions.h>
 
@@ -89,7 +89,7 @@ inline void from_nanoseconds(const uint64_t ns, struct timespec& ts)
 static uint64_t to100ns(const timespec& tim)
 {
 	return uint64_t(tim.tv_sec) * UINT64_C(10000000) +
-		   UINT64_C(116444736) * UINT64_C(1000000000) + tim.tv_nsec / 100;
+		UINT64_C(116444736) * UINT64_C(1000000000) + tim.tv_nsec / 100;
 }
 #endif
 
@@ -104,7 +104,7 @@ static uint64_t getCurrentTime() noexcept
 			FILETIME t;
 			GetSystemTimeAsFileTime(&t);
 			return (((uint64_t)t.dwHighDateTime) << 32) |
-				   ((uint64_t)t.dwLowDateTime);
+				((uint64_t)t.dwLowDateTime);
 #elif defined(__APPLE__)
 			struct timeval tv;
 			timespec tim{0, 0};
@@ -126,7 +126,7 @@ static uint64_t getCurrentTime() noexcept
 			FILETIME t;
 			GetSystemTimeAsFileTime(&t);
 			return (((uint64_t)t.dwHighDateTime) << 32) |
-				   ((uint64_t)t.dwLowDateTime);
+				((uint64_t)t.dwLowDateTime);
 #elif defined(__APPLE__)
 			struct timeval tv;
 			timespec tim{0, 0};
@@ -179,7 +179,7 @@ double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
 	return double(
 			   t.time_since_epoch().count() -
 			   UINT64_C(116444736) * UINT64_C(1000000000)) /
-		   10000000.0;
+		10000000.0;
 }
 
 void mrpt::Clock::setActiveClock(const Source s)
@@ -224,11 +224,10 @@ int64_t mrpt::Clock::resetMonotonicToRealTimeEpoch() noexcept
 	clk.m2r_epoch.rt2mono_diff =
 		clk.m2r_epoch.realtime_ns - clk.m2r_epoch.monotonic_ns;
 
-	const int64_t err =
-		clk.monotonic_epoch_init
-			? (static_cast<int64_t>(clk.m2r_epoch.rt2mono_diff) -
-			   static_cast<int64_t>(old_diff))
-			: 0;
+	const int64_t err = clk.monotonic_epoch_init
+		? (static_cast<int64_t>(clk.m2r_epoch.rt2mono_diff) -
+		   static_cast<int64_t>(old_diff))
+		: 0;
 
 	clk.monotonic_epoch_init = true;
 	return err;

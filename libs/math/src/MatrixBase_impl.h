@@ -11,6 +11,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/MatrixBase.h>
+
 #include <Eigen/Eigenvalues>  // EigenSolver
 #include <cstdint>
 #include <stdexcept>
@@ -89,7 +90,8 @@ void sortEigResults(
 	const int64_t N = static_cast<int64_t>(eVals.size());
 	std::vector<std::pair<Scalar, int64_t>> D;
 	D.reserve(N);
-	for (int64_t i = 0; i < N; i++) D.emplace_back(eVals[i], i);
+	for (int64_t i = 0; i < N; i++)
+		D.emplace_back(eVals[i], i);
 	std::sort(D.begin(), D.end());
 
 	// store:
@@ -122,7 +124,8 @@ bool MatrixBase<Scalar, Derived>::eig(
 	{
 		eVals.resize(N);
 		eVecs = es.eigenvectors().real();
-		for (int i = 0; i < N; i++) eVals[i] = eigenVal[i];
+		for (int i = 0; i < N; i++)
+			eVals[i] = eigenVal[i];
 	}
 	return true;
 }
@@ -147,7 +150,8 @@ bool MatrixBase<Scalar, Derived>::eig_symmetric(
 	{
 		eVals.resize(N);
 		eVecs = es.eigenvectors().real();
-		for (int i = 0; i < N; i++) eVals[i] = eigenVal[i];
+		for (int i = 0; i < N; i++)
+			eVals[i] = eigenVal[i];
 	}
 	return true;
 }

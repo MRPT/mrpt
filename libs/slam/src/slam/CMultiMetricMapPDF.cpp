@@ -8,12 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/io/CFileStream.h>
-#include <mrpt/random.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>
-
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
@@ -24,9 +20,11 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGrid.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
-
 #include <mrpt/slam/PF_aux_structs.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -138,10 +136,7 @@ void CMultiMetricMapPDF::clear(
 					kf_pose_set = true;
 				}
 			}
-			if (!kf_pose_set)
-			{
-				kf_pose = keyframe_pose->getMeanVal();
-			}
+			if (!kf_pose_set) { kf_pose = keyframe_pose->getMeanVal(); }
 			p.d->robotPath[i] = kf_pose.asTPose();
 			for (const auto& obs : *sfkeyframe_sf)
 			{
@@ -150,10 +145,11 @@ void CMultiMetricMapPDF::clear(
 		}
 	}
 
-	SFs = prevMap;  // copy
+	SFs = prevMap;	// copy
 	SF2robotPath.clear();
 	SF2robotPath.reserve(nOldKeyframes);
-	for (size_t i = 0; i < nOldKeyframes; i++) SF2robotPath.push_back(i);
+	for (size_t i = 0; i < nOldKeyframes; i++)
+		SF2robotPath.push_back(i);
 
 	averageMapIsUpdated = false;
 }
@@ -214,7 +210,8 @@ void CMultiMetricMapPDF::serializeTo(mrpt::serialization::CArchive& out) const
 		out << part.log_w;
 		out << part.d->mapTillNow;
 		out.WriteAs<uint32_t>(part.d->robotPath.size());
-		for (const auto& p : part.d->robotPath) out << p;
+		for (const auto& p : part.d->robotPath)
+			out << p;
 	}
 	out << SFs << SF2robotPath;
 }
@@ -250,14 +247,14 @@ void CMultiMetricMapPDF::serializeFrom(
 
 				in >> m;
 				m_particles[i].d->robotPath.resize(m);
-				for (j = 0; j < m; j++) in >> m_particles[i].d->robotPath[j];
+				for (j = 0; j < m; j++)
+					in >> m_particles[i].d->robotPath[j];
 			}
 
 			in >> SFs >> SF2robotPath;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -331,7 +328,8 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 
 	// Compute the sum of weights:
 	double sumLinearWeights = 0;
-	for (auto& p : m_particles) sumLinearWeights += exp(p.log_w);
+	for (auto& p : m_particles)
+		sumLinearWeights += exp(p.log_w);
 
 	// CHECK:
 	for (auto& p : m_particles)
@@ -354,7 +352,8 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 
 		// For each particle in the RBPF:
 		double sumW = 0;
-		for (auto& p : m_particles) sumW += exp(p.log_w);
+		for (auto& p : m_particles)
+			sumW += exp(p.log_w);
 
 		if (sumW == 0) sumW = 1;
 
@@ -444,7 +443,7 @@ double CMultiMetricMapPDF::getCurrentEntropyOfPaths()
 {
 	size_t i;
 	size_t N =
-		m_particles[0].d->robotPath.size();  // The poses count along the paths
+		m_particles[0].d->robotPath.size();	 // The poses count along the paths
 
 	// Compute paths entropy:
 	// ---------------------------
@@ -501,7 +500,8 @@ double CMultiMetricMapPDF::getCurrentJointEntropy()
 
 	// Sum of linear weights:
 	double sumLinearWeights = 0;
-	for (auto& p : m_particles) sumLinearWeights += exp(p.log_w);
+	for (auto& p : m_particles)
+		sumLinearWeights += exp(p.log_w);
 
 	// Compute weighted maps entropy:
 	// --------------------------------

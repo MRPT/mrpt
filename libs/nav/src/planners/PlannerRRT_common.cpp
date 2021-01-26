@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/nav/planners/PlannerRRT_common.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
@@ -122,7 +122,7 @@ void PlannerTPS_VirtualBase::internal_loadConfig_PTG(
 	m_PTGs.clear();
 
 	const size_t PTG_COUNT =
-		ini.read_int(sSect, "PTG_COUNT", 0, true);  // load the number of PTGs
+		ini.read_int(sSect, "PTG_COUNT", 0, true);	// load the number of PTGs
 	for (unsigned int n = 0; n < PTG_COUNT; n++)
 	{
 		// Generate it:
@@ -143,7 +143,7 @@ void PlannerTPS_VirtualBase::transformPointcloudWithSquareClipping(
 	in_map.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
 
 	out_map.clear();
-	out_map.reserve(nObs);  // Prealloc mem for speed-up
+	out_map.reserve(nObs);	// Prealloc mem for speed-up
 
 	const CPose2D invPose = -asSeenFrom;
 	// We can safely discard the rest of obstacles, since they cannot be

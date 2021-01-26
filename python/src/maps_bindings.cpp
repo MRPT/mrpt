@@ -102,10 +102,7 @@ object COccupancyGridMap2D_to_ROS_OccupancyGrid_msg1(
 		for (int32_t x = 0; x < width; ++x)
 		{
 			float occupancy = self.getCell(x, y);
-			if (occupancy < 0.45)
-			{
-				data.append(100);
-			}
+			if (occupancy < 0.45) { data.append(100); }
 			else if (occupancy > 0.55)
 			{
 				data.append(0);
@@ -157,9 +154,7 @@ void COccupancyGridMap2D_from_ROS_OccupancyGrid_msg(
 		{
 			int32_t occupancy = extract<int32_t>(data[idx]);
 			if (occupancy >= 0)
-			{
-				self.setCell(x, y, (100 - occupancy) / 100.0);
-			}
+			{ self.setCell(x, y, (100 - occupancy) / 100.0); }
 			else
 			{
 				self.setCell(x, y, 0.5);
@@ -261,7 +256,8 @@ list CMultiMetricMapPDF_getPath(CMultiMetricMapPDF& self, size_t i)
 	std::deque<mrpt::math::TPose3D> path;
 	list ret_val;
 	self.getPath(i, path);
-	for (const auto& k : path) ret_val.append(k);
+	for (const auto& k : path)
+		ret_val.append(k);
 	return ret_val;
 }
 
@@ -409,7 +405,7 @@ void export_maps()
 				// contents.")
 				.def(
 					"resizeGrid", &COccupancyGridMap2D::resizeGrid,
-					COccupancyGridMap2D_resizeGrid_overloads())  //, "Change the
+					COccupancyGridMap2D_resizeGrid_overloads())	 //, "Change the
 				// size of
 				// gridmap,
 				// maintaining
@@ -421,7 +417,7 @@ void export_maps()
 				.def(
 					"loadFromBitmapFile",
 					&COccupancyGridMap2D::loadFromBitmapFile,
-					COccupancyGridMap2D_loadFromBitmapFile_overloads())  //,
+					COccupancyGridMap2D_loadFromBitmapFile_overloads())	 //,
 				//"Load
 				// the
 				// gridmap

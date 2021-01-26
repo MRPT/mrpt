@@ -204,6 +204,6 @@ class CPose2DGridTemplate
 	size_t getSizeX() const { return m_sizeX; }
 	size_t getSizeY() const { return m_sizeY; }
 	size_t getSizePhi() const { return m_sizePhi; }
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::poses

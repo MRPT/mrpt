@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/core/bits_math.h>
 #include <mrpt/hwdrivers/CPtuDPerception.h>
 #include <mrpt/system/os.h>
@@ -181,8 +181,7 @@ bool CPtuDPerception::enableLimitsQ(bool& enable)
 
 	if (!transmit("L") || !receive("L", response)) return false;
 
-	if (strstr(upperCase(response).c_str(), "ENABLE") != nullptr)
-		enable = true;
+	if (strstr(upperCase(response).c_str(), "ENABLE") != nullptr) enable = true;
 	else
 		enable = false;
 
@@ -195,8 +194,7 @@ bool CPtuDPerception::enableLimitsQ(bool& enable)
 
 bool CPtuDPerception::enableLimits(bool set)
 {
-	if (set)
-		return (transmit("LE") && receive("LE", nullptr));
+	if (set) return (transmit("LE") && receive("LE", nullptr));
 	else
 		return (transmit("LD") && receive("LD", nullptr));
 }
@@ -207,8 +205,7 @@ bool CPtuDPerception::enableLimits(bool set)
 
 bool CPtuDPerception::inmediateExecution(bool set)
 {
-	if (set)
-		return (transmit("I") && receive("I", nullptr));
+	if (set) return (transmit("I") && receive("I", nullptr));
 	else
 		return (transmit("S") && receive("S", nullptr));
 }
@@ -303,8 +300,7 @@ bool CPtuDPerception::powerModeQ(bool transit, char& mode)
 
 	if (transit)
 	{
-		if (!transmit("PM"))
-			return false;
+		if (!transmit("PM")) return false;
 		else if (!transmit("PH"))
 			return false;
 	}
@@ -327,7 +323,7 @@ bool CPtuDPerception::powerModeQ(bool transit, char& mode)
 
 bool CPtuDPerception::powerMode(bool transit, char mode)
 {
-	char sTrans[4];  //="";
+	char sTrans[4];	 //="";
 	sTrans[0] = 'P';
 	sTrans[1] = transit ? 'M' : 'H';
 	sTrans[2] = mode;
@@ -350,9 +346,7 @@ bool CPtuDPerception::init(const string& port)
 
 		cout << "[PTU::OpenSerialPort] Opening serial port...";
 
-		if (serPort.isOpen())
-		{
-		}
+		if (serPort.isOpen()) {}
 		else
 		{
 			cout << " Error opening serial port";
@@ -372,7 +366,7 @@ bool CPtuDPerception::init(const string& port)
 		// PTU initial configuration
 		cout << "[PTU::setInitialConfiguration] Setting initial "
 				"configuration...";
-		if ((!verbose(true)) ||  // Original: false	Actual: true
+		if ((!verbose(true)) ||	 // Original: false	Actual: true
 			(!resolution()) || (!echoMode(true)) || (!inmediateExecution(true)))
 		{
 			cout << " Error setting initial configuration";
@@ -432,10 +426,7 @@ bool CPtuDPerception::transmit(const char* command)
 
 	size_t written = serPort.Write(str, strlen(str));
 
-	if (!written)
-	{
-		return false;
-	}
+	if (!written) { return false; }
 
 	return true;
 }
@@ -455,8 +446,9 @@ bool CPtuDPerception::receive(const char* command, char* response)
 	{
 		nReaden = serPort.Read(&str[cnt], 1);
 		if (nReaden != 0) cnt++;
-	} while ((nReaden != 0) && (((tmp = strstr(str, command)) == nullptr) ||
-								(str[cnt - 1] != '\n')));
+	} while (
+		(nReaden != 0) &&
+		(((tmp = strstr(str, command)) == nullptr) || (str[cnt - 1] != '\n')));
 
 	if (nReaden == 0)
 	{
@@ -508,8 +500,7 @@ bool CPtuDPerception::verboseQ(bool& mode)
 
 	if (!transmit("F") || !receive("F", response)) return false;
 
-	if (strstr(response, "VERBOSE") != nullptr)
-		mode = true;
+	if (strstr(response, "VERBOSE") != nullptr) mode = true;
 	else
 		mode = false;
 
@@ -522,8 +513,7 @@ bool CPtuDPerception::verboseQ(bool& mode)
 
 bool CPtuDPerception::verbose(bool set)
 {
-	if (set)
-		return (transmit("FV") && (receive("FV", nullptr)));
+	if (set) return (transmit("FV") && (receive("FV", nullptr)));
 	else
 		return (transmit("FT") && (receive("FT", nullptr)));
 }
@@ -538,8 +528,7 @@ bool CPtuDPerception::echoModeQ(bool& mode)
 
 	if (!transmit("E") || !receive("E", response)) return false;
 
-	if (strstr(upperCase(response).c_str(), "ENABLE") != nullptr)
-		mode = true;
+	if (strstr(upperCase(response).c_str(), "ENABLE") != nullptr) mode = true;
 	else
 		mode = false;
 
@@ -552,8 +541,7 @@ bool CPtuDPerception::echoModeQ(bool& mode)
 
 bool CPtuDPerception::echoMode(bool mode)
 {
-	if (mode)
-		return (transmit("EE") && receive("EE", nullptr));
+	if (mode) return (transmit("EE") && receive("EE", nullptr));
 	else
 		return (transmit("ED") && receive("ED", nullptr));
 }
@@ -651,10 +639,7 @@ bool CPtuDPerception::scan(
 	// Performs first sweep
 	for (int i = 0; i < totalSteps / steps; i++)
 	{
-		if (initial > final)
-		{
-			moveToOffPos(axis, -radPre);
-		}
+		if (initial > final) { moveToOffPos(axis, -radPre); }
 		else
 		{
 			moveToOffPos(axis, radPre);
@@ -670,10 +655,7 @@ bool CPtuDPerception::scan(
 	// Performs seecond scan
 	for (int i = 0; i < (totalSteps / steps) - 1; i++)
 	{
-		if (initial > final)
-		{
-			moveToOffPos(axis, radPre);
-		}
+		if (initial > final) { moveToOffPos(axis, radPre); }
 		else
 		{
 			moveToOffPos(axis, -radPre);
@@ -696,8 +678,7 @@ bool CPtuDPerception::scan(
 
 long CPtuDPerception::radToPos(char axis, double nrad)
 {
-	if (axis == Pan)
-		return (long)(nrad / panResolution);
+	if (axis == Pan) return (long)(nrad / panResolution);
 	else
 		return (long)(nrad / tiltResolution);
 }
@@ -708,8 +689,7 @@ long CPtuDPerception::radToPos(char axis, double nrad)
 
 double CPtuDPerception::posToRad(char axis, long nPos)
 {
-	if (axis == Pan)
-		return (double)nPos * panResolution;
+	if (axis == Pan) return (double)nPos * panResolution;
 	else
 		return (double)nPos * tiltResolution;
 }
@@ -747,16 +727,10 @@ int CPtuDPerception::checkErrors()
 	int code = 0;
 
 	// Check for errors
-	if (noError())
-	{
-		code = 0;
-	}
+	if (noError()) { code = 0; }
 	else
 	{
-		if (comError())
-		{
-			code = 1;
-		}
+		if (comError()) { code = 1; }
 		else if (timeoutError())
 		{
 			code = 2;

@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "serialization-precomp.h"  // Precompiled headers
-
+#include "serialization-precomp.h"	// Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/archiveFrom_std_streams.h>
-#include <cstring>  // memcpy()
+
+#include <cstring>	// memcpy()
 #include <sstream>
 
 using namespace mrpt::serialization;

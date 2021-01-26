@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/graphs/TNodeAnnotations.h>
+
 #include <cstdint>
 #include <sstream>
 #include <string>

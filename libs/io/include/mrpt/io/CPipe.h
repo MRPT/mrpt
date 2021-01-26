@@ -55,7 +55,7 @@ class CPipe
 
 	static void initializePipe(
 		CPipeReadEndPoint& outReadPipe, CPipeWriteEndPoint& outWritePipe);
-};  // end of CPipe
+};	// end of CPipe
 
 /** Common interface of read & write pipe end-points
  * \ingroup mrpt_io_grp
@@ -113,7 +113,7 @@ class CPipeBaseEndPoint : public mrpt::io::CStream
 	uint64_t getTotalBytesCount() const override;
 	/** Without effect in this class */
 	uint64_t getPosition() const override;
-};  // end of CPipeBaseEndPoint
+};	// end of CPipeBaseEndPoint
 static_assert(
 	!std::is_copy_constructible_v<CPipeBaseEndPoint> &&
 		!std::is_copy_assignable_v<CPipeBaseEndPoint>,
@@ -142,7 +142,7 @@ class CPipeReadEndPoint : public CPipeBaseEndPoint
    private:
 	CPipeReadEndPoint();
 
-};  // end of CPipeReadEndPoint
+};	// end of CPipeReadEndPoint
 
 /** The write end-point in a pipe created with mrpt::synch::CPipe.
  * Use the method CStream::Write() of the base class CStream
@@ -165,7 +165,7 @@ class CPipeWriteEndPoint : public CPipeBaseEndPoint
    private:
 	CPipeWriteEndPoint();
 
-};  // end of CPipeWriteEndPoint
+};	// end of CPipeWriteEndPoint
 
 template <typename ReadPtr, typename WritePtr>
 void CPipe::createPipe(ReadPtr& outReadPipe, WritePtr& outWritePipe)

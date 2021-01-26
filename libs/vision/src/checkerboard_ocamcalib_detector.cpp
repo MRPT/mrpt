@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
+#include "vision-precomp.h"	 // Precompiled headers
 //
 #include <stack>  // Precompiled headers
 
@@ -97,122 +97,51 @@ bool do_special_dilation(
 			cvDilate(ipl, ipl, kernel_cross, 1);
 			isLast = true;
 			[[fallthrough]];
-		case 36:
-			cvErode(ipl, ipl, kernel_rect, 1);
-			[[fallthrough]];
-		case 35:
-			cvDilate(ipl, ipl, kernel_vert, 1);
-			[[fallthrough]];
-		case 34:
-			cvDilate(ipl, ipl, kernel_vert, 1);
-			[[fallthrough]];
-		case 33:
-			cvDilate(ipl, ipl, kernel_vert, 1);
-			[[fallthrough]];
-		case 32:
-			cvDilate(ipl, ipl, kernel_vert, 1);
-			[[fallthrough]];
-		case 31:
-			cvDilate(ipl, ipl, kernel_vert, 1);
-			break;
+		case 36: cvErode(ipl, ipl, kernel_rect, 1); [[fallthrough]];
+		case 35: cvDilate(ipl, ipl, kernel_vert, 1); [[fallthrough]];
+		case 34: cvDilate(ipl, ipl, kernel_vert, 1); [[fallthrough]];
+		case 33: cvDilate(ipl, ipl, kernel_vert, 1); [[fallthrough]];
+		case 32: cvDilate(ipl, ipl, kernel_vert, 1); [[fallthrough]];
+		case 31: cvDilate(ipl, ipl, kernel_vert, 1); break;
 
-		case 30:
-			cvDilate(ipl, ipl, kernel_cross, 1);
-			[[fallthrough]];
-		case 29:
-			cvErode(ipl, ipl, kernel_rect, 1);
-			[[fallthrough]];
-		case 28:
-			cvDilate(ipl, ipl, kernel_horz, 1);
-			[[fallthrough]];
-		case 27:
-			cvDilate(ipl, ipl, kernel_horz, 1);
-			[[fallthrough]];
-		case 26:
-			cvDilate(ipl, ipl, kernel_horz, 1);
-			[[fallthrough]];
-		case 25:
-			cvDilate(ipl, ipl, kernel_horz, 1);
-			[[fallthrough]];
-		case 24:
-			cvDilate(ipl, ipl, kernel_horz, 1);
-			break;
+		case 30: cvDilate(ipl, ipl, kernel_cross, 1); [[fallthrough]];
+		case 29: cvErode(ipl, ipl, kernel_rect, 1); [[fallthrough]];
+		case 28: cvDilate(ipl, ipl, kernel_horz, 1); [[fallthrough]];
+		case 27: cvDilate(ipl, ipl, kernel_horz, 1); [[fallthrough]];
+		case 26: cvDilate(ipl, ipl, kernel_horz, 1); [[fallthrough]];
+		case 25: cvDilate(ipl, ipl, kernel_horz, 1); [[fallthrough]];
+		case 24: cvDilate(ipl, ipl, kernel_horz, 1); break;
 
-		case 23:
-			cvDilate(ipl, ipl, kernel_diag2, 1);
-			[[fallthrough]];
-		case 22:
-			cvDilate(ipl, ipl, kernel_diag1, 1);
-			[[fallthrough]];
-		case 21:
-			cvDilate(ipl, ipl, kernel_diag2, 1);
-			[[fallthrough]];
-		case 20:
-			cvDilate(ipl, ipl, kernel_diag1, 1);
-			[[fallthrough]];
-		case 19:
-			cvDilate(ipl, ipl, kernel_diag2, 1);
-			[[fallthrough]];
-		case 18:
-			cvDilate(ipl, ipl, kernel_diag1, 1);
-			break;
+		case 23: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
+		case 22: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
+		case 21: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
+		case 20: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
+		case 19: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
+		case 18: cvDilate(ipl, ipl, kernel_diag1, 1); break;
 
-		case 17:
-			cvDilate(ipl, ipl, kernel_diag2, 1);
-			[[fallthrough]];
-		case 16:
-			cvDilate(ipl, ipl, kernel_diag2, 1);
-			[[fallthrough]];
-		case 15:
-			cvDilate(ipl, ipl, kernel_diag2, 1);
-			[[fallthrough]];
-		case 14:
-			cvDilate(ipl, ipl, kernel_diag2, 1);
-			break;
+		case 17: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
+		case 16: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
+		case 15: cvDilate(ipl, ipl, kernel_diag2, 1); [[fallthrough]];
+		case 14: cvDilate(ipl, ipl, kernel_diag2, 1); break;
 
-		case 13:
-			cvDilate(ipl, ipl, kernel_diag1, 1);
-			[[fallthrough]];
-		case 12:
-			cvDilate(ipl, ipl, kernel_diag1, 1);
-			[[fallthrough]];
-		case 11:
-			cvDilate(ipl, ipl, kernel_diag1, 1);
-			[[fallthrough]];
-		case 10:
-			cvDilate(ipl, ipl, kernel_diag1, 1);
-			break;
+		case 13: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
+		case 12: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
+		case 11: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
+		case 10: cvDilate(ipl, ipl, kernel_diag1, 1); break;
 
-		case 9:
-			cvDilate(ipl, ipl, kernel_cross, 1);
-			[[fallthrough]];
-		case 8:
-			cvErode(ipl, ipl, kernel_rect, 1);
-			[[fallthrough]];
-		case 7:
-			cvDilate(ipl, ipl, kernel_cross, 1);
-			[[fallthrough]];
+		case 9: cvDilate(ipl, ipl, kernel_cross, 1); [[fallthrough]];
+		case 8: cvErode(ipl, ipl, kernel_rect, 1); [[fallthrough]];
+		case 7: cvDilate(ipl, ipl, kernel_cross, 1); [[fallthrough]];
 		case 6:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
 			isLast = true;
 			[[fallthrough]];
-		case 5:
-			cvDilate(ipl, ipl, kernel_diag1, 1);
-			[[fallthrough]];
-		case 4:
-			cvDilate(ipl, ipl, kernel_rect, 1);
-			[[fallthrough]];
-		case 3:
-			cvErode(ipl, ipl, kernel_cross, 1);
-			[[fallthrough]];
-		case 2:
-			cvDilate(ipl, ipl, kernel_rect, 1);
-			[[fallthrough]];
-		case 1:
-			cvDilate(ipl, ipl, kernel_cross, 1);
-			[[fallthrough]];
-		case 0: /* first try: do nothing to the image */
-			break;
+		case 5: cvDilate(ipl, ipl, kernel_diag1, 1); [[fallthrough]];
+		case 4: cvDilate(ipl, ipl, kernel_rect, 1); [[fallthrough]];
+		case 3: cvErode(ipl, ipl, kernel_cross, 1); [[fallthrough]];
+		case 2: cvDilate(ipl, ipl, kernel_rect, 1); [[fallthrough]];
+		case 1: cvDilate(ipl, ipl, kernel_cross, 1); [[fallthrough]];
+		case 0: /* first try: do nothing to the image */ break;
 	};
 
 	return isLast;
@@ -229,7 +158,7 @@ int cvFindChessboardCorners3(
 	// PART 0: INITIALIZATION
 	//-----------------------------------------------------------------------
 	// Initialize variables
-	int flags = 1;  // not part of the function call anymore!
+	int flags = 1;	// not part of the function call anymore!
 	size_t max_count = 0;
 	int max_dilation_run_ID = -1;
 	// const int min_dilations		=  0; // JL: was: 1
@@ -240,7 +169,7 @@ int cvFindChessboardCorners3(
 	vector<CvCBQuad::Ptr> quad_group;  // CvCBQuad **quad_group		=  0;
 	vector<CvCBCorner::Ptr> corners;  // CvCBCorner *corners			=  0;
 	vector<CvCBQuad::Ptr>
-		output_quad_group;  //	CvCBQuad **output_quad_group = 0;
+		output_quad_group;	//	CvCBQuad **output_quad_group = 0;
 
 	// debug trial. Martin Rufli, 28. Ocober, 2008
 	int block_size = 0;
@@ -395,7 +324,7 @@ int cvFindChessboardCorners3(
 				// overwritten during the next loop pass.
 				// "output_quad_group" is a true copy of "quad_group" and
 				// later used for output
-				output_quad_group = quad_group;  // mrCopyQuadGroup( quad_group,
+				output_quad_group = quad_group;	 // mrCopyQuadGroup( quad_group,
 				// output_quad_group, max_count
 				// );
 			}
@@ -557,7 +486,7 @@ void icvCleanFoundConnectedQuads(
 	// or ones which don't belong to the pattern rectangle. Else go to the end
 	// of the function
 	const size_t nQuads = quad_group.size();
-	if (nQuads <= expected_quads_count) return;  // Nothing to be done.
+	if (nQuads <= expected_quads_count) return;	 // Nothing to be done.
 
 	// Create an array of quadrangle centers
 	vector<CvPoint2D32f> centers(nQuads);
@@ -585,13 +514,13 @@ void icvCleanFoundConnectedQuads(
 		ci.y *= 0.25f;
 
 		// Quad area:
-		const double a =
-			triangleArea(
-				q->corners[0]->pt.x, q->corners[0]->pt.y, q->corners[1]->pt.x,
-				q->corners[1]->pt.y, q->corners[2]->pt.x, q->corners[2]->pt.y) +
-			triangleArea(
-				q->corners[0]->pt.x, q->corners[0]->pt.y, q->corners[2]->pt.x,
-				q->corners[2]->pt.y, q->corners[3]->pt.x, q->corners[3]->pt.y);
+		const double a = triangleArea(
+							 q->corners[0]->pt.x, q->corners[0]->pt.y,
+							 q->corners[1]->pt.x, q->corners[1]->pt.y,
+							 q->corners[2]->pt.x, q->corners[2]->pt.y) +
+			triangleArea(q->corners[0]->pt.x, q->corners[0]->pt.y,
+						 q->corners[2]->pt.x, q->corners[2]->pt.y,
+						 q->corners[3]->pt.x, q->corners[3]->pt.y);
 
 		q->area = a;
 		quad_areas[i] = a;
@@ -648,10 +577,7 @@ void icvCleanFoundConnectedQuads(
 			}
 		}
 
-		if (most_outlier_idx >= 0)
-		{
-			min_box_area_index = most_outlier_idx;
-		}
+		if (most_outlier_idx >= 0) { min_box_area_index = most_outlier_idx; }
 
 		if (min_box_area_index == -1)  // if the previous filter didn't work:
 		{
@@ -735,12 +661,12 @@ void icvFindConnectedQuads(
 		seqStack.push(q);  // cvSeqPush( stack, &q );
 
 		q->group_idx = group_idx;
-		out_group.push_back(q);  // out_group[count++] = q;
+		out_group.push_back(q);	 // out_group[count++] = q;
 
 		while (!seqStack.empty())
 		{
 			q = seqStack.top();
-			seqStack.pop();  // cvSeqPop( stack, &q );
+			seqStack.pop();	 // cvSeqPop( stack, &q );
 
 			for (size_t k = 0; k < 4; k++)
 			{
@@ -753,7 +679,7 @@ void icvFindConnectedQuads(
 					neighbor->group_idx = group_idx;
 					seqStack.push(neighbor);  // cvSeqPush( stack, &neighbor );
 					out_group.push_back(
-						neighbor);  // out_group[count++] = neighbor;
+						neighbor);	// out_group[count++] = neighbor;
 				}
 			}
 		}
@@ -1019,11 +945,9 @@ void mrLabelQuadGroup(
 							// Second corner, check wheter this and the
 							// first one have equal coordinates, else
 							// interpolate
-							float delta_x =
-								(quad_group[k])->corners[l]->pt.x -
+							float delta_x = (quad_group[k])->corners[l]->pt.x -
 								(quad_group[quadID])->corners[cornerID]->pt.x;
-							float delta_y =
-								(quad_group[k])->corners[l]->pt.y -
+							float delta_y = (quad_group[k])->corners[l]->pt.y -
 								(quad_group[quadID])->corners[cornerID]->pt.y;
 
 							if (delta_x != 0 || delta_y != 0)
@@ -1234,8 +1158,7 @@ void mrFindQuadNeighbors2(std::vector<CvCBQuad::Ptr>& quads, int dilation)
 	// conservative assumption that dilation was performed using the 3x3 CROSS
 	// kernel, which coresponds to the 4-neighborhood.
 	const float thresh_dilation = (float)(2 * dilation + 3) *
-								  (2 * dilation + 3) *
-								  2;  // the "*2" is for the x and y component
+		(2 * dilation + 3) * 2;	 // the "*2" is for the x and y component
 	float dx, dy, dist;
 	// int cur_quad_group = -1;
 
@@ -1285,29 +1208,29 @@ void mrFindQuadNeighbors2(std::vector<CvCBQuad::Ptr>& quads, int dilation)
 						// compute midpoints of "parallel" quad sides 1
 						float x1 = (cur_quad->corners[i]->pt.x +
 									cur_quad->corners[(i + 1) % 4]->pt.x) /
-								   2;
+							2;
 						float y1 = (cur_quad->corners[i]->pt.y +
 									cur_quad->corners[(i + 1) % 4]->pt.y) /
-								   2;
+							2;
 						float x2 = (cur_quad->corners[(i + 2) % 4]->pt.x +
 									cur_quad->corners[(i + 3) % 4]->pt.x) /
-								   2;
+							2;
 						float y2 = (cur_quad->corners[(i + 2) % 4]->pt.y +
 									cur_quad->corners[(i + 3) % 4]->pt.y) /
-								   2;
+							2;
 						// compute midpoints of "parallel" quad sides 2
 						float x3 = (cur_quad->corners[i]->pt.x +
 									cur_quad->corners[(i + 3) % 4]->pt.x) /
-								   2;
+							2;
 						float y3 = (cur_quad->corners[i]->pt.y +
 									cur_quad->corners[(i + 3) % 4]->pt.y) /
-								   2;
+							2;
 						float x4 = (cur_quad->corners[(i + 1) % 4]->pt.x +
 									cur_quad->corners[(i + 2) % 4]->pt.x) /
-								   2;
+							2;
 						float y4 = (cur_quad->corners[(i + 1) % 4]->pt.y +
 									cur_quad->corners[(i + 2) % 4]->pt.y) /
-								   2;
+							2;
 
 						// MARTIN: Heuristic
 						// For the corner "j" of quad "k" to be considered,
@@ -1356,29 +1279,29 @@ void mrFindQuadNeighbors2(std::vector<CvCBQuad::Ptr>& quads, int dilation)
 						// compute midpoints of "parallel" quad sides 1
 						float u1 = (quads[k]->corners[j]->pt.x +
 									quads[k]->corners[(j + 1) % 4]->pt.x) /
-								   2;
+							2;
 						float v1 = (quads[k]->corners[j]->pt.y +
 									quads[k]->corners[(j + 1) % 4]->pt.y) /
-								   2;
+							2;
 						float u2 = (quads[k]->corners[(j + 2) % 4]->pt.x +
 									quads[k]->corners[(j + 3) % 4]->pt.x) /
-								   2;
+							2;
 						float v2 = (quads[k]->corners[(j + 2) % 4]->pt.y +
 									quads[k]->corners[(j + 3) % 4]->pt.y) /
-								   2;
+							2;
 						// compute midpoints of "parallel" quad sides 2
 						float u3 = (quads[k]->corners[j]->pt.x +
 									quads[k]->corners[(j + 3) % 4]->pt.x) /
-								   2;
+							2;
 						float v3 = (quads[k]->corners[j]->pt.y +
 									quads[k]->corners[(j + 3) % 4]->pt.y) /
-								   2;
+							2;
 						float u4 = (quads[k]->corners[(j + 1) % 4]->pt.x +
 									quads[k]->corners[(j + 2) % 4]->pt.x) /
-								   2;
+							2;
 						float v4 = (quads[k]->corners[(j + 1) % 4]->pt.y +
 									quads[k]->corners[(j + 2) % 4]->pt.y) /
-								   2;
+							2;
 
 						// MARTIN: Heuristic
 						// for the corner "j" of quad "k" to be considered, it
@@ -1545,29 +1468,29 @@ int mrAugmentBestRun(
 						// sides 1
 						float x1 = (cur_quad->corners[i]->pt.x +
 									cur_quad->corners[(i + 1) % 4]->pt.x) /
-								   2;
+							2;
 						float y1 = (cur_quad->corners[i]->pt.y +
 									cur_quad->corners[(i + 1) % 4]->pt.y) /
-								   2;
+							2;
 						float x2 = (cur_quad->corners[(i + 2) % 4]->pt.x +
 									cur_quad->corners[(i + 3) % 4]->pt.x) /
-								   2;
+							2;
 						float y2 = (cur_quad->corners[(i + 2) % 4]->pt.y +
 									cur_quad->corners[(i + 3) % 4]->pt.y) /
-								   2;
+							2;
 						// compute midpoints of "parallel" quad sides 2
 						float x3 = (cur_quad->corners[i]->pt.x +
 									cur_quad->corners[(i + 3) % 4]->pt.x) /
-								   2;
+							2;
 						float y3 = (cur_quad->corners[i]->pt.y +
 									cur_quad->corners[(i + 3) % 4]->pt.y) /
-								   2;
+							2;
 						float x4 = (cur_quad->corners[(i + 1) % 4]->pt.x +
 									cur_quad->corners[(i + 2) % 4]->pt.x) /
-								   2;
+							2;
 						float y4 = (cur_quad->corners[(i + 1) % 4]->pt.y +
 									cur_quad->corners[(i + 2) % 4]->pt.y) /
-								   2;
+							2;
 
 						// MARTIN: Heuristic
 						// For the corner "j" of quad "k" to be considered,
@@ -1620,29 +1543,29 @@ int mrAugmentBestRun(
 						// quad sides 1
 						float u1 = (new_quads[k]->corners[j]->pt.x +
 									new_quads[k]->corners[(j + 1) % 4]->pt.x) /
-								   2;
+							2;
 						float v1 = (new_quads[k]->corners[j]->pt.y +
 									new_quads[k]->corners[(j + 1) % 4]->pt.y) /
-								   2;
+							2;
 						float u2 = (new_quads[k]->corners[(j + 2) % 4]->pt.x +
 									new_quads[k]->corners[(j + 3) % 4]->pt.x) /
-								   2;
+							2;
 						float v2 = (new_quads[k]->corners[(j + 2) % 4]->pt.y +
 									new_quads[k]->corners[(j + 3) % 4]->pt.y) /
-								   2;
+							2;
 						// compute midpoints of "parallel" quad sides 2
 						float u3 = (new_quads[k]->corners[j]->pt.x +
 									new_quads[k]->corners[(j + 3) % 4]->pt.x) /
-								   2;
+							2;
 						float v3 = (new_quads[k]->corners[j]->pt.y +
 									new_quads[k]->corners[(j + 3) % 4]->pt.y) /
-								   2;
+							2;
 						float u4 = (new_quads[k]->corners[(j + 1) % 4]->pt.x +
 									new_quads[k]->corners[(j + 2) % 4]->pt.x) /
-								   2;
+							2;
 						float v4 = (new_quads[k]->corners[(j + 1) % 4]->pt.y +
 									new_quads[k]->corners[(j + 2) % 4]->pt.y) /
-								   2;
+							2;
 
 						// MARTIN: Heuristic
 						// For the corner "j" of quad "k" to be considered,
@@ -1925,8 +1848,7 @@ int icvGenerateQuads(
 		if (CV_IS_SEQ_HOLE(src_contour) && rect.width * rect.height >= min_size)
 		{
 			int min_approx_level = 2, max_approx_level;
-			if (firstRun == true)
-				max_approx_level = 3;
+			if (firstRun == true) max_approx_level = 3;
 			else
 				max_approx_level = MAX_CONTOUR_APPROX;
 			int approx_level;
@@ -2230,8 +2152,8 @@ int myQuads2Points(
 	// All corners found?
 	return (out_corners.size() ==
 			size_t(pattern_size.width) * size_t(pattern_size.height))
-			   ? 1
-			   : 0;
+		? 1
+		: 0;
 }
 
 // Make unique all the (smart pointers-pointed) objects in the list and
@@ -2239,7 +2161,8 @@ int myQuads2Points(
 void quadListMakeUnique(std::vector<CvCBQuad::Ptr>& quads)
 {
 	std::map<CvCBQuad*, size_t> pointer2index;
-	for (size_t i = 0; i < quads.size(); i++) pointer2index[quads[i].get()] = i;
+	for (size_t i = 0; i < quads.size(); i++)
+		pointer2index[quads[i].get()] = i;
 
 	vector<std::array<size_t, 4>> neig_indices(quads.size());
 	for (size_t i = 0; i < quads.size(); i++)
@@ -2259,4 +2182,4 @@ void quadListMakeUnique(std::vector<CvCBQuad::Ptr>& quads)
 // END OF FILE  (Of "OCamCalib Toolbox" code)
 //===========================================================================
 
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV

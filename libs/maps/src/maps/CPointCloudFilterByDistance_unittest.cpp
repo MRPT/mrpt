@@ -16,7 +16,7 @@ void run_pc_filter_test(
 	const size_t expected_m1_count, const size_t expected_m2_count)
 {
 	const double pts1[8][3] = {
-		{1, 0, 0}, {1.03, 0, 0},	 {1, 1, 0},  {1.01, 1.02, 0},
+		{1, 0, 0}, {1.03, 0, 0},	 {1, 1, 0},	 {1.01, 1.02, 0},
 		{0, 1, 0}, {-0.01, 1.01, 0}, {-1, 0, 0}, {-1.01, 0.02, 0}};
 	const mrpt::poses::CPose3D pts1_pose(0, 0, 0, 0, 0, 0);
 	const mrpt::system::TTimeStamp pts1_tim = mrpt::system::now();
@@ -26,7 +26,8 @@ void run_pc_filter_test(
 		mrpt::system::timestampAdd(pts1_tim, 0.2 + map2_tim_off);
 
 	mrpt::maps::CSimplePointsMap map1, map2;
-	for (const auto& i : pts1) map1.insertPoint(i[0], i[1], i[2]);
+	for (const auto& i : pts1)
+		map1.insertPoint(i[0], i[1], i[2]);
 	for (size_t i = 0; i < sizeof(pts1) / sizeof(pts1[0]); i++)
 	{
 		double x, y, z;

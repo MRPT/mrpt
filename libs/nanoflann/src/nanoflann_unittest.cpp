@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/core/exceptions.h>
+
 #include <nanoflann.hpp>
 
 TEST(nanoflann, test1) { MRPT_TODO("Write me!"); }

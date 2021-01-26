@@ -66,14 +66,14 @@ class KmTree
    private:
 	struct Node
 	{
-		int num_points;  // Number of points stored in this node
-		int first_point_index;  // The smallest point index stored in this node
+		int num_points;	 // Number of points stored in this node
+		int first_point_index;	// The smallest point index stored in this node
 		Scalar *median, *radius;  // Bounding box center and half side-lengths
 		Scalar* sum;  // Sum of the points stored in this node
 		Scalar opt_cost;  // Min cost for putting all points in this node in 1
 		// cluster
-		Node *lower_node, *upper_node;  // Child nodes
-		mutable int kmpp_cluster_index;  // The cluster these points are
+		Node *lower_node, *upper_node;	// Child nodes
+		mutable int kmpp_cluster_index;	 // The cluster these points are
 		// assigned to or -1 if variable
 	};
 

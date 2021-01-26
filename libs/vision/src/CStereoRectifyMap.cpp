@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -113,12 +114,11 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 	const uint32_t ncols = cam1.ncols;
 	const uint32_t nrows = cam1.nrows;
 
-	const cv::Size trg_size =
-		m_resize_output
-			? cv::Size(
-				  m_resize_output_value.x,
-				  m_resize_output_value.y)  // User requested image scaling
-			: cv::Size();  // Default=don't scale
+	const cv::Size trg_size = m_resize_output
+		? cv::Size(
+			  m_resize_output_value.x,
+			  m_resize_output_value.y)	// User requested image scaling
+		: cv::Size();  // Default=don't scale
 
 	const uint32_t ncols_out =
 		m_resize_output ? m_resize_output_value.x : ncols;
@@ -158,7 +158,8 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 
 	double m1[3][3];
 	for (unsigned int i = 0; i < 3; ++i)
-		for (unsigned int j = 0; j < 3; ++j) m1[i][j] = hMatrix(i, j);
+		for (unsigned int j = 0; j < 3; ++j)
+			m1[i][j] = hMatrix(i, j);
 
 	// right camera pose: translation
 	double rcTrans[3] = {hMatrix(0, 3), hMatrix(1, 3), hMatrix(2, 3)};
@@ -193,9 +194,9 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::img::TStereoCamera& params)
 	cv::Mat Q(4, 4, CV_64F, _Q);
 
 	const cv::Size img_size(ncols, nrows);
-	const cv::Size real_trg_size =
-		m_resize_output ? trg_size
-						: img_size;  // Note: trg_size is Size() by default
+	const cv::Size real_trg_size = m_resize_output
+		? trg_size
+		: img_size;	 // Note: trg_size is Size() by default
 
 	// OpenCV 2.3+ has this signature:
 	cv::stereoRectify(
@@ -272,10 +273,9 @@ void CStereoRectifyMap::rectify(
 	const uint32_t ncols = m_camera_params.leftCamera.ncols;
 	const uint32_t nrows = m_camera_params.leftCamera.nrows;
 
-	const CvSize trg_size =
-		m_resize_output
-			? cvSize(m_resize_output_value.x, m_resize_output_value.y)
-			: cvSize(ncols, nrows);
+	const CvSize trg_size = m_resize_output
+		? cvSize(m_resize_output_value.x, m_resize_output_value.y)
+		: cvSize(ncols, nrows);
 
 	out_left_image.resize(
 		trg_size.width, trg_size.height, in_left_image.getChannelCount());

@@ -9,7 +9,6 @@
    */
 #pragma once
 #include <QWidget>
-
 #include <memory>
 
 #include "CDocument.h"

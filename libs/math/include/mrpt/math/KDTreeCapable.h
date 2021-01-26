@@ -13,6 +13,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
+
 #include <array>
 #include <atomic>
 #include <memory>  // unique_ptr
@@ -825,8 +826,8 @@ class KDTreeCapable
 		}
 	}
 
-};  // end of KDTreeCapable
+};	// end of KDTreeCapable
 
-/**  @} */  // end of grouping
+/**  @} */	// end of grouping
 
 }  // namespace mrpt::math

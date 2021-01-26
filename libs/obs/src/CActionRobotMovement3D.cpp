@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/random.h>
@@ -48,14 +48,12 @@ void CActionRobotMovement3D::serializeFrom(
 			in >> poseChange;
 			in >> hasVelocities >> velocities;
 
-			if (version >= 1)
-				in >> timestamp;
+			if (version >= 1) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -146,16 +144,15 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 
 	// The increments in odometry:
 	double Ayaw1 = (odometryIncrement.y() != 0 || odometryIncrement.x() != 0)
-					   ? atan2(odometryIncrement.y(), odometryIncrement.x())
-					   : 0;
+		? atan2(odometryIncrement.y(), odometryIncrement.x())
+		: 0;
 
 	double Atrans = odometryIncrement.norm();
 
-	double Apitch1 =
-		(odometryIncrement.y() != 0 || odometryIncrement.x() != 0 ||
-		 odometryIncrement.z() != 0)
-			? atan2(odometryIncrement.z(), odometryIncrement.norm())
-			: 0;
+	double Apitch1 = (odometryIncrement.y() != 0 ||
+					  odometryIncrement.x() != 0 || odometryIncrement.z() != 0)
+		? atan2(odometryIncrement.z(), odometryIncrement.norm())
+		: 0;
 
 	double Aroll = odometryIncrement.roll();
 	double Apitch2 = odometryIncrement.pitch();
@@ -168,43 +165,40 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	for (size_t i = 0; i < o.mm6DOFModel.nParticlesCount; i++)
 	{
 		auto& ith_part = aux->m_particles[i].d;
-		double Ayaw1_draw =
-			Ayaw1 + (o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
-						rnd.drawGaussian1D_normalized();
-		double Apitch1_draw =
-			Apitch1 + (o.mm6DOFModel.a3 * odometryIncrement.z()) *
-						  rnd.drawGaussian1D_normalized();
-		double Atrans_draw =
-			Atrans + (o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
-					  o.mm6DOFModel.a6 * (Aroll + Apitch2)) *
-						 rnd.drawGaussian1D_normalized();
+		double Ayaw1_draw = Ayaw1 +
+			(o.mm6DOFModel.a1 * Ayaw1 + o.mm6DOFModel.a2 * Atrans) *
+				rnd.drawGaussian1D_normalized();
+		double Apitch1_draw = Apitch1 +
+			(o.mm6DOFModel.a3 * odometryIncrement.z()) *
+				rnd.drawGaussian1D_normalized();
+		double Atrans_draw = Atrans +
+			(o.mm6DOFModel.a4 * Atrans + o.mm6DOFModel.a5 * Ayaw2 +
+			 o.mm6DOFModel.a6 * (Aroll + Apitch2)) *
+				rnd.drawGaussian1D_normalized();
 
-		double Aroll_draw = Aroll + (o.mm6DOFModel.a7 * Aroll) *
-										rnd.drawGaussian1D_normalized();
-		double Apitch2_draw = Apitch2 + (o.mm6DOFModel.a8 * Apitch2) *
-											rnd.drawGaussian1D_normalized();
-		double Ayaw2_draw =
-			Ayaw2 + (o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *
-						rnd.drawGaussian1D_normalized();
+		double Aroll_draw = Aroll +
+			(o.mm6DOFModel.a7 * Aroll) * rnd.drawGaussian1D_normalized();
+		double Apitch2_draw = Apitch2 +
+			(o.mm6DOFModel.a8 * Apitch2) * rnd.drawGaussian1D_normalized();
+		double Ayaw2_draw = Ayaw2 +
+			(o.mm6DOFModel.a9 * Ayaw2 + o.mm6DOFModel.a10 * Atrans) *
+				rnd.drawGaussian1D_normalized();
 
 		// Output:
 		ith_part.x = Atrans_draw * cos(Apitch1_draw) * cos(Ayaw1_draw) +
-					 stdxyz * rnd.drawGaussian1D_normalized();
+			stdxyz * rnd.drawGaussian1D_normalized();
 		ith_part.y = Atrans_draw * cos(Apitch1_draw) * sin(Ayaw1_draw) +
-					 stdxyz * rnd.drawGaussian1D_normalized();
+			stdxyz * rnd.drawGaussian1D_normalized();
 		ith_part.z = -Atrans_draw * sin(Apitch1_draw) +
-					 stdxyz * rnd.drawGaussian1D_normalized();
+			stdxyz * rnd.drawGaussian1D_normalized();
 
-		ith_part.yaw =
-			Ayaw1_draw + Ayaw2_draw +
+		ith_part.yaw = Ayaw1_draw + Ayaw2_draw +
 			motionModelConfiguration.mm6DOFModel.additional_std_angle *
 				rnd.drawGaussian1D_normalized();
-		ith_part.pitch =
-			Apitch1_draw + Apitch2_draw +
+		ith_part.pitch = Apitch1_draw + Apitch2_draw +
 			motionModelConfiguration.mm6DOFModel.additional_std_angle *
 				rnd.drawGaussian1D_normalized();
-		ith_part.roll =
-			Aroll_draw +
+		ith_part.roll = Aroll_draw +
 			motionModelConfiguration.mm6DOFModel.additional_std_angle *
 				rnd.drawGaussian1D_normalized();
 	}

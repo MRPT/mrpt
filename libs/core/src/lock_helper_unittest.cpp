@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/core/lock_helper.h>
+
 #include <mutex>
 
 TEST(lock_helper, testCompilation)

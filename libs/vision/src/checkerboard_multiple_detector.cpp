@@ -7,17 +7,19 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CVectorFixed.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/kmeans.h>
+
 #include <list>
 #include <vector>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
+
 #include "checkerboard_ocamcalib_detector.h"
 
 #if VIS
@@ -50,7 +52,7 @@ bool find_chessboard_corners_multiple(
 	// PART 0: INITIALIZATION
 	//-----------------------------------------------------------------------
 	// Initialize variables
-	int flags = 1;  // not part of the function call anymore!
+	int flags = 1;	// not part of the function call anymore!
 	// int found					=  0;
 
 	vector<CvCBQuad::Ptr> quads;
@@ -152,12 +154,12 @@ bool find_chessboard_corners_multiple(
 		for (size_t i = 0; i < quads.size(); i++)
 		{
 			const CvCBQuad* q = quads[i].get();
-			quad_centers[i][0] =
-				0.25 * (q->corners[0]->pt.x + q->corners[1]->pt.x +
-						q->corners[2]->pt.x + q->corners[3]->pt.x);
-			quad_centers[i][1] =
-				0.25 * (q->corners[0]->pt.y + q->corners[1]->pt.y +
-						q->corners[2]->pt.y + q->corners[3]->pt.y);
+			quad_centers[i][0] = 0.25 *
+				(q->corners[0]->pt.x + q->corners[1]->pt.x +
+				 q->corners[2]->pt.x + q->corners[3]->pt.x);
+			quad_centers[i][1] = 0.25 *
+				(q->corners[0]->pt.y + q->corners[1]->pt.y +
+				 q->corners[2]->pt.y + q->corners[3]->pt.y);
 		}
 
 		// Try the k-means with a number of variable # of clusters:
@@ -240,7 +242,7 @@ bool find_chessboard_corners_multiple(
 	//  to the expected output data struct, doing a final check to
 	//  remove duplicates:
 	vector<TPoint2D>
-		out_boards_centers;  // the center (average) of each output board.
+		out_boards_centers;	 // the center (average) of each output board.
 	for (auto it = good_quad_groups.begin(); it != good_quad_groups.end(); ++it)
 	{
 		// Compute the center of this board:
@@ -269,7 +271,7 @@ bool find_chessboard_corners_multiple(
 		{
 			vector<CvPoint2D32f> pts;
 			if (1 ==
-				myQuads2Points(*it, pattern_size, pts))  // and populate it now.
+				myQuads2Points(*it, pattern_size, pts))	 // and populate it now.
 			{
 				// Ok with it: add to the output list:
 				out_corners.push_back(pts);
@@ -290,4 +292,4 @@ bool find_chessboard_corners_multiple(
 	return !out_corners.empty();
 }
 
-#endif  // MRPT_HAS_OPENCV
+#endif	// MRPT_HAS_OPENCV

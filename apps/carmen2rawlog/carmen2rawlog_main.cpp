@@ -20,17 +20,15 @@
 //  Started: JLBC @ Aug-2010
 // ===========================================================================
 
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/TPose2D.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
-
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/carmen_log_tools.h>
 #include <mrpt/serialization/CArchive.h>
-
-#include <mrpt/3rdparty/tclap/CmdLine.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 #include <fstream>
 #include <map>
@@ -60,7 +58,7 @@ TCLAP::ValueArg<int> arg_gz_level(
 	"0: none, 1-9: min-max", cmd);
 
 // Declarations:
-#define VERBOSE_COUT \
+#define VERBOSE_COUT                                                           \
 	if (verbose) cout << "[carmen2rawlog] "
 
 // -----------------------------------------------
@@ -110,7 +108,7 @@ int main(int argc, char** argv)
 		// The main loop
 		// --------------------------------
 		vector<CObservation::Ptr> importedObservations;
-		map<TTimeStamp, TPose2D> groundTruthPoses;  // If found...
+		map<TTimeStamp, TPose2D> groundTruthPoses;	// If found...
 		unsigned int nSavedObs = 0;
 
 		const mrpt::system::TTimeStamp base_timestamp = mrpt::system::now();

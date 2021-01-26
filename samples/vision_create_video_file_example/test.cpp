@@ -9,6 +9,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/vision/CVideoFileWriter.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -28,7 +29,7 @@ void Test_VideoFile()
 	const int W = 352;
 	const int H = 288;
 
-	vid.open("test.avi", 15, TImageSize(W, H));  // Use default codec
+	vid.open("test.avi", 15, TImageSize(W, H));	 // Use default codec
 	//	vid.open("test.avi",15,TImageSize(W,H),"XVID");
 
 	for (int i = 1; i < 100; i++)

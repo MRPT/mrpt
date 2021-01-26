@@ -13,7 +13,7 @@ namespace mrpt::graphslam::deciders
 {
 template <class GRAPH_T>
 CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD()
-	: params(*this)  // pass reference to self when initializing the parameters
+	: params(*this)	 // pass reference to self when initializing the parameters
 // m_mahal_distance_ICP_odom("Mahalanobis dist (ICP - odom)")
 {
 	using namespace mrpt::math;
@@ -254,15 +254,13 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition()
 	if (m_use_distance_node_reg)
 	{
 		distance_crit = this->m_since_prev_node_PDF.getMeanVal().norm() >
-						params.registration_max_distance;
+			params.registration_max_distance;
 	}
 
 	// actual check
 	bool registered = false;
 	if (distance_crit || angle_crit)
-	{
-		registered = this->registerNewNodeAtEnd();
-	}
+	{ registered = this->registerNewNodeAtEnd(); }
 
 	return registered;
 	MRPT_END

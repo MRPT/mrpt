@@ -13,7 +13,7 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
+#include <mrpt/math/matrix_serialization.h>	 // For "<<" ">>" operators.
 #include <mrpt/math/utils_matlab.h>
 
 using namespace mrpt::img;
@@ -44,12 +44,13 @@ void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << focalLengthMeters;
 	// v3: from 5 to 8 dist params:
-	for (size_t k = 0; k < dist.size(); k++) out << dist[k];
+	for (size_t k = 0; k < dist.size(); k++)
+		out << dist[k];
 	// v4: only store the 4 relevant values:
 	out << fx() << fy() << cx() << cy();
 	// version 0 did serialize here a "CMatrixDouble15"
-	out << nrows << ncols;  // New in v2
-	out << cameraName;  // v5
+	out << nrows << ncols;	// New in v2
+	out << cameraName;	// v5
 }
 void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -65,9 +66,11 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			in >> focalLengthMeters;
 
 			dist.fill(0);
-			for (unsigned int k = 0; k < 5; k++) in >> dist[k];
+			for (unsigned int k = 0; k < 5; k++)
+				in >> dist[k];
 			if (version >= 3)
-				for (unsigned int k = 5; k < 8; k++) in >> dist[k];
+				for (unsigned int k = 5; k < 8; k++)
+					in >> dist[k];
 
 			if (version < 4)
 			{
@@ -92,8 +95,7 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				in >> __distortionParams;
 			}
 
-			if (version >= 2)
-				in >> nrows >> ncols;
+			if (version >= 2) in >> nrows >> ncols;
 			else
 			{
 				nrows = 480;
@@ -102,8 +104,7 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			if (version >= 5) in >> cameraName;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
@@ -196,7 +197,8 @@ void TCamera::loadFromConfigFile(
 		THROW_EXCEPTION("Expected 4,5 or 8-length vector in field 'dist'");
 
 	dist.fill(0);
-	for (CVectorDouble::Index i = 0; i < dists.size(); i++) dist[i] = dists[i];
+	for (CVectorDouble::Index i = 0; i < dists.size(); i++)
+		dist[i] = dists[i];
 
 	focalLengthMeters =
 		cfg.read_double(section, "focal_length", 0, false /* optional value */);
@@ -240,9 +242,9 @@ bool mrpt::img::operator==(
 	const mrpt::img::TCamera& a, const mrpt::img::TCamera& b)
 {
 	return a.ncols == b.ncols && a.nrows == b.nrows &&
-		   a.intrinsicParams == b.intrinsicParams && a.dist == b.dist &&
-		   a.focalLengthMeters == b.focalLengthMeters &&
-		   a.cameraName == b.cameraName;
+		a.intrinsicParams == b.intrinsicParams && a.dist == b.dist &&
+		a.focalLengthMeters == b.focalLengthMeters &&
+		a.cameraName == b.cameraName;
 }
 bool mrpt::img::operator!=(
 	const mrpt::img::TCamera& a, const mrpt::img::TCamera& b)

@@ -13,8 +13,7 @@
 
 TEST(CSimpleMap, ParseFileInFormat_v1_5)
 {
-	const std::string fil =
-		mrpt::UNITTEST_BASEDIR +
+	const std::string fil = mrpt::UNITTEST_BASEDIR +
 		std::string("/share/mrpt/datasets/localization_demo.simplemap.gz");
 
 	mrpt::maps::CSimpleMap sm;

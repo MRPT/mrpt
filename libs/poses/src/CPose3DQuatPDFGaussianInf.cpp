@@ -7,25 +7,26 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
-#include <mrpt/math/CMatrixFixed.h>  // for CMatrixF...
-#include <mrpt/math/CQuaternion.h>  // for CQuatern...
+#include "poses-precomp.h"	// Precompiled headers
+//
+#include <mrpt/math/CMatrixFixed.h>	 // for CMatrixF...
+#include <mrpt/math/CQuaternion.h>	// for CQuatern...
 #include <mrpt/math/distributions.h>
-#include <mrpt/poses/CPose3D.h>  // for CPose3D
-#include <mrpt/poses/CPose3DQuat.h>  // for CPose3DQuat
-#include <mrpt/poses/CPose3DQuatPDF.h>  // for CPose3DQ...
+#include <mrpt/poses/CPose3D.h>	 // for CPose3D
+#include <mrpt/poses/CPose3DQuat.h>	 // for CPose3DQuat
+#include <mrpt/poses/CPose3DQuatPDF.h>	// for CPose3DQ...
 #include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
 #include <mrpt/random/RandomGenerators.h>  // for CRandomG...
 #include <mrpt/serialization/CSerializable.h>  // for CSeriali...
 #include <mrpt/serialization/stl_serialization.h>
-#include <mrpt/system/os.h>  // for fopen
+#include <mrpt/system/os.h>	 // for fopen
+
 #include <Eigen/Dense>
 #include <algorithm>  // for move, max
 #include <cstdio>  // for size_t
 #include <exception>  // for exception
-#include <new>  // for operator...
-#include <ostream>  // for operator<<
+#include <new>	// for operator...
+#include <ostream>	// for operator<<
 #include <string>  // for allocator
 #include <vector>  // for vector
 
@@ -67,9 +68,11 @@ void CPose3DQuatPDFGaussianInf::serializeTo(
 {
 	out << mean;
 
-	for (int r = 0; r < cov_inv.rows(); r++) out << cov_inv(r, r);
 	for (int r = 0; r < cov_inv.rows(); r++)
-		for (int c = r + 1; c < cov_inv.cols(); c++) out << cov_inv(r, c);
+		out << cov_inv(r, r);
+	for (int r = 0; r < cov_inv.rows(); r++)
+		for (int c = r + 1; c < cov_inv.cols(); c++)
+			out << cov_inv(r, c);
 }
 void CPose3DQuatPDFGaussianInf::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -80,7 +83,8 @@ void CPose3DQuatPDFGaussianInf::serializeFrom(
 		{
 			in >> mean;
 
-			for (int r = 0; r < cov_inv.rows(); r++) in >> cov_inv(r, r);
+			for (int r = 0; r < cov_inv.rows(); r++)
+				in >> cov_inv(r, r);
 			for (int r = 0; r < cov_inv.rows(); r++)
 				for (int c = r + 1; c < cov_inv.cols(); c++)
 				{
@@ -90,14 +94,13 @@ void CPose3DQuatPDFGaussianInf::serializeFrom(
 				}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
 void CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DQuatPDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	// Convert to gaussian pdf:
 	CMatrixDouble77 C(UNINITIALIZED_MATRIX);
@@ -153,9 +156,9 @@ void CPose3DQuatPDFGaussianInf::changeCoordinatesReference(
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
 		newReferenceBaseQuat,  // x
-		this->mean,  // u
+		this->mean,	 // u
 		df_dx, df_du,
-		&this->mean  // Output:  newReferenceBaseQuat + this->mean;
+		&this->mean	 // Output:  newReferenceBaseQuat + this->mean;
 	);
 
 	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
@@ -190,7 +193,8 @@ void CPose3DQuatPDFGaussianInf::drawManySamples(
 	getRandomGenerator().drawGaussianMultivariateMany(outSamples, N, COV);
 
 	for (auto& outSample : outSamples)
-		for (unsigned int k = 0; k < 7; k++) outSample[k] += mean[k];
+		for (unsigned int k = 0; k < 7; k++)
+			outSample[k] += mean[k];
 
 	MRPT_END
 }
@@ -237,10 +241,10 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuat& Ap)
 	CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
-		this->mean,  // x
-		Ap,  // u
+		this->mean,	 // x
+		Ap,	 // u
 		df_dx, df_du,
-		&this->mean  // Output: this->mean + Ap;
+		&this->mean	 // Output: this->mean + Ap;
 	);
 
 	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
@@ -259,16 +263,16 @@ void CPose3DQuatPDFGaussianInf::operator+=(const CPose3DQuatPDFGaussianInf& Ap)
 	CMatrixDouble77 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
-		this->mean,  // x
+		this->mean,	 // x
 		Ap.mean,  // u
 		df_dx, df_du,
-		&this->mean  // Output:  this->mean + Ap.mean;
+		&this->mean	 // Output:  this->mean + Ap.mean;
 	);
 
 	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
 	const CMatrixDouble77 Ap_cov = Ap.cov_inv.inverse_LLt();
 	CMatrixDouble77 NEW_COV = mrpt::math::multiply_HCHt(df_dx, OLD_COV) +
-							  mrpt::math::multiply_HCHt(df_du, Ap_cov);
+		mrpt::math::multiply_HCHt(df_du, Ap_cov);
 
 	this->cov_inv = NEW_COV.inverse_LLt();
 }

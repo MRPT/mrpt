@@ -180,5 +180,5 @@ class CPointPDFSOG : public CPointPDF
 	/** Evaluates the PDF at a given point */
 	double evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

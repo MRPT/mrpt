@@ -9,21 +9,20 @@
 
 // This file contains portions of code from sicklms200.cc from the Player/Stage
 // project.
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include <mrpt/hwdrivers/CSickLaserSerial.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/crc.h>
 #include <mrpt/system/os.h>
 
-#include <mrpt/hwdrivers/CSickLaserSerial.h>
-
 IMPLEMENTS_GENERIC_SENSOR(CSickLaserSerial, mrpt::hwdrivers)
 
-#define RET_ERROR(msg)                                                   \
-	{                                                                    \
-		cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << endl; \
-		return false;                                                    \
+#define RET_ERROR(msg)                                                         \
+	{                                                                          \
+		cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << endl;       \
+		return false;                                                          \
 	}
 
 using namespace std;
@@ -56,10 +55,7 @@ CSickLaserSerial::~CSickLaserSerial()
 	{
 		try
 		{
-			if (!m_skip_laser_config)
-			{
-				LMS_endContinuousMode();
-			}
+			if (!m_skip_laser_config) { LMS_endContinuousMode(); }
 		}
 		catch (...)
 		{
@@ -92,10 +88,7 @@ void CSickLaserSerial::doProcessSimple(
 	// Wait for a scan:
 	if (!waitContinuousSampleFrame(ranges, LMS_stat, is_mm_mode))
 	{
-		if (!internal_notifyNoScanReceived())
-		{
-			hardwareError = true;
-		}
+		if (!internal_notifyNoScanReceived()) { hardwareError = true; }
 		return;
 	}
 
@@ -106,7 +99,7 @@ void CSickLaserSerial::doProcessSimple(
 	// -----------------------------------------------
 	outObservation.timestamp = mrpt::system::now();
 
-	outObservation.sensorLabel = m_sensorLabel;  // Set label
+	outObservation.sensorLabel = m_sensorLabel;	 // Set label
 
 	// Extract the timestamp of the sensor:
 
@@ -294,8 +287,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 			buf[2] = buf[3] = 0;
 		}
 
-		if (nFrameBytes < 4)
-			nBytesToRead = 1;
+		if (nFrameBytes < 4) nBytesToRead = 1;
 		else
 			nBytesToRead = (lengthField)-nFrameBytes;
 
@@ -322,9 +314,7 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 		// Era la primera?
 		if (nFrameBytes > 1 || (!nFrameBytes && buf[0] == 0x02) ||
 			(nFrameBytes == 1 && buf[1] == 0x80))
-		{
-			nFrameBytes += nRead;
-		}
+		{ nFrameBytes += nRead; }
 		else
 		{
 			nFrameBytes = 0;  // No es cabecera de trama correcta
@@ -345,9 +335,9 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 	if (buf[4] != 0xB0) return false;
 
 	// GET FRAME INFO
-	int info = buf[5] | (buf[6] << 8);  // Little Endian
+	int info = buf[5] | (buf[6] << 8);	// Little Endian
 	int n_points = info & 0x01FF;
-	is_mm_mode = 0 != ((info & 0xC000) >> 14);  // 0x00: cm 0x01: mm
+	is_mm_mode = 0 != ((info & 0xC000) >> 14);	// 0x00: cm 0x01: mm
 
 	out_ranges_meters.resize(n_points);
 
@@ -491,20 +481,11 @@ bool CSickLaserSerial::LMS_setupBaudrate(int baud)
 	cmd[0] = 0x20;
 	switch (baud)
 	{
-		case 9600:
-			cmd[1] = 0x42;
-			break;
-		case 19200:
-			cmd[1] = 0x41;
-			break;
-		case 38400:
-			cmd[1] = 0x40;
-			break;
-		case 500000:
-			cmd[1] = 0x48;
-			break;
-		default:
-			THROW_EXCEPTION("Invalid baud rate value");
+		case 9600: cmd[1] = 0x42; break;
+		case 19200: cmd[1] = 0x41; break;
+		case 38400: cmd[1] = 0x40; break;
+		case 500000: cmd[1] = 0x48; break;
+		default: THROW_EXCEPTION("Invalid baud rate value");
 	}
 
 	uint16_t cmd_len = 2;
@@ -547,8 +528,7 @@ bool CSickLaserSerial::LMS_waitACK(uint16_t timeout_ms)
 		}
 	} while (tictac.Tac() < timeout_ms * 1e-3);
 
-	if (b == 0x15)
-		RET_ERROR("NACK received.")
+	if (b == 0x15) RET_ERROR("NACK received.")
 	else if (b != 0)
 		RET_ERROR(format("Unexpected code received: 0x%02X", b))
 	else
@@ -582,12 +562,10 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
 				m_received_frame_buffer[nBytes] = b;
 				nBytes++;
 				if (m_verbose)
-				{
-					printf("[CSickLaserSerial::Receive] RX: %02X\n", b);
-				}
+				{ printf("[CSickLaserSerial::Receive] RX: %02X\n", b); }
 			}
 		}
-		if (tictac.Tac() >= maxTime) return false;  // Timeout
+		if (tictac.Tac() >= maxTime) return false;	// Timeout
 	}
 
 	const uint16_t lengthField =
@@ -606,7 +584,7 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
 	uint16_t CRC = mrpt::system::compute_CRC16(
 		m_received_frame_buffer, 4 + lengthField, CRC16_GEN_POL);
 	uint16_t CRC_packet = m_received_frame_buffer[4 + lengthField + 0] |
-						  (m_received_frame_buffer[4 + lengthField + 1] << 8);
+		(m_received_frame_buffer[4 + lengthField + 1] << 8);
 	if (CRC_packet != CRC)
 	{
 		printf(
@@ -639,14 +617,14 @@ bool CSickLaserSerial::LMS_sendMeasuringMode_cm_mm()
 	// {0x02,0x00,0x0A,0x00,0x20,0x00,0x53,0x49,0x43,0x4B,0x5F,0x4C,0x4D,0x53,0xBE,0xC5};
 	cmd[0] = 0x20; /* mode change command */
 	cmd[1] = 0x00; /* configuration mode */
-	cmd[2] = 0x53;  // S - the password
-	cmd[3] = 0x49;  // I
-	cmd[4] = 0x43;  // C
-	cmd[5] = 0x4B;  // K
-	cmd[6] = 0x5F;  // _
-	cmd[7] = 0x4C;  // L
-	cmd[8] = 0x4D;  // M
-	cmd[9] = 0x53;  // S
+	cmd[2] = 0x53;	// S - the password
+	cmd[3] = 0x49;	// I
+	cmd[4] = 0x43;	// C
+	cmd[5] = 0x4B;	// K
+	cmd[6] = 0x5F;	// _
+	cmd[7] = 0x4C;	// L
+	cmd[8] = 0x4D;	// M
+	cmd[9] = 0x53;	// S
 
 	uint16_t cmd_len = 10;
 	if (!SendCommandToSICK(cmd, cmd_len))
@@ -686,10 +664,10 @@ bool CSickLaserSerial::LMS_sendMeasuringMode_cm_mm()
 	m_received_frame_buffer[11] = this->m_mm_mode ? 0x01 : 0x00;
 
 	// 4.2 Build the output command
-	m_received_frame_buffer[1] = 0x00;  // Address
-	m_received_frame_buffer[2] = 0x23;  // Length (low byte)
-	m_received_frame_buffer[3] = 0x00;  // Length (high byte)
-	m_received_frame_buffer[4] = 0x77;  // Configure command
+	m_received_frame_buffer[1] = 0x00;	// Address
+	m_received_frame_buffer[2] = 0x23;	// Length (low byte)
+	m_received_frame_buffer[3] = 0x00;	// Length (high byte)
+	m_received_frame_buffer[4] = 0x77;	// Configure command
 
 	memcpy(cmd, m_received_frame_buffer + 4, 0x23);
 	cmd_len = 0x23;
@@ -786,7 +764,7 @@ bool CSickLaserSerial::SendCommandToSICK(
 	ASSERT_(COM);
 
 	// Create header
-	cmd_full[0] = 0x02;  // STX
+	cmd_full[0] = 0x02;	 // STX
 	cmd_full[1] = 0;  // ADDR
 	cmd_full[2] = cmd_len & 0xFF;
 	cmd_full[3] = cmd_len >> 8;
@@ -803,7 +781,8 @@ bool CSickLaserSerial::SendCommandToSICK(
 	if (m_verbose)
 	{
 		printf("[CSickLaserSerial::SendCommandToSICK] TX: ");
-		for (unsigned int i = 0; i < toWrite; i++) printf("%02X ", cmd_full[i]);
+		for (unsigned int i = 0; i < toWrite; i++)
+			printf("%02X ", cmd_full[i]);
 		printf("\n");
 	}
 

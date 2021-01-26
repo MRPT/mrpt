@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 #include <mrpt/opengl/opengl_api.h>
 
@@ -130,7 +130,8 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 	}
 
 	// All faces, all vertices, same color:
-	for (auto& t : tris) t.setColor(m_color);
+	for (auto& t : tris)
+		t.setColor(m_color);
 }
 
 template <>
@@ -208,7 +209,8 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 	}
 
 	// All faces, all vertices, same color:
-	for (auto& t : tris) t.setColor(m_color);
+	for (auto& t : tris)
+		t.setColor(m_color);
 }
 
 template <>
@@ -282,8 +284,7 @@ void CGeneralizedEllipsoidTemplate<3>::generatePoints(
 
 	for (uint32_t i = 0; i < slices; i++)
 	{
-		if (i == 0)
-			aux_add3DpointWithEigenVectors(1, 0, 0, pts, U, m_mean);
+		if (i == 0) aux_add3DpointWithEigenVectors(1, 0, 0, pts, U, m_mean);
 		else if (i == (slices - 1))
 			aux_add3DpointWithEigenVectors(-1, 0, 0, pts, U, m_mean);
 		else

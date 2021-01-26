@@ -13,7 +13,6 @@
 
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
-
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/wrap2pi.h>
@@ -21,6 +20,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -189,7 +189,7 @@ class CRangeBearing : public mrpt::bayes::CKalmanFilterCapable<
 // ---------------------------------------------------------------
 struct CParticleVehicleData
 {
-	float x, y, vx, vy;  // Vehicle state (position & velocities)
+	float x, y, vx, vy;	 // Vehicle state (position & velocities)
 };
 
 class CRangeBearingParticleFilter
@@ -286,18 +286,19 @@ void TestBayesianTracking()
 
 		// Simulate noisy observation:
 		float realBearing = atan2(y, x);
-		float obsBearing =
-			realBearing + BEARING_SENSOR_NOISE_STD *
-							  getRandomGenerator().drawGaussian1D_normalized();
+		float obsBearing = realBearing +
+			BEARING_SENSOR_NOISE_STD *
+				getRandomGenerator().drawGaussian1D_normalized();
 		printf(
 			"Real/Simulated bearing: %.03f / %.03f deg\n", RAD2DEG(realBearing),
 			RAD2DEG(obsBearing));
 
 		float realRange = sqrt(square(x) + square(y));
 		float obsRange =
-			max(0.0, realRange +
-						 RANGE_SENSOR_NOISE_STD *
-							 getRandomGenerator().drawGaussian1D_normalized());
+			max(0.0,
+				realRange +
+					RANGE_SENSOR_NOISE_STD *
+						getRandomGenerator().drawGaussian1D_normalized());
 		printf("Real/Simulated range: %.03f / %.03f \n", realRange, obsRange);
 
 		// Process with EKF:
@@ -313,7 +314,7 @@ void TestBayesianTracking()
 		SF.insert(obsRangeBear);  // memory freed by SF.
 
 		EKF.getProfiler().enter("PF:complete_step");
-		PF.executeOn(particles, nullptr, &SF);  // Process in the PF
+		PF.executeOn(particles, nullptr, &SF);	// Process in the PF
 		EKF.getProfiler().leave("PF:complete_step");
 
 		// Show EKF state:
@@ -605,20 +606,16 @@ void CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
 	// Transition model:
 	for (i = 0; i < N; i++)
 	{
-		m_particles[i].d->x +=
-			DELTA_TIME * m_particles[i].d->vx +
+		m_particles[i].d->x += DELTA_TIME * m_particles[i].d->vx +
 			TRANSITION_MODEL_STD_XY *
 				getRandomGenerator().drawGaussian1D_normalized();
-		m_particles[i].d->y +=
-			DELTA_TIME * m_particles[i].d->vy +
+		m_particles[i].d->y += DELTA_TIME * m_particles[i].d->vy +
 			TRANSITION_MODEL_STD_XY *
 				getRandomGenerator().drawGaussian1D_normalized();
 
-		m_particles[i].d->vx +=
-			TRANSITION_MODEL_STD_VXY *
+		m_particles[i].d->vx += TRANSITION_MODEL_STD_VXY *
 			getRandomGenerator().drawGaussian1D_normalized();
-		m_particles[i].d->vy +=
-			TRANSITION_MODEL_STD_VXY *
+		m_particles[i].d->vy += TRANSITION_MODEL_STD_VXY *
 			getRandomGenerator().drawGaussian1D_normalized();
 	}
 

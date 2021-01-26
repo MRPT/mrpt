@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "obs-precomp.h"  // Precompiled headers
+//
 #include <mrpt/core/round.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/wrap2pi.h>
@@ -14,7 +16,6 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include "obs-precomp.h"  // Precompiled headers
 #if MRPT_HAS_MATLAB
 #include <mexplus.h>
 #endif
@@ -110,22 +111,17 @@ void CObservation2DRangeScan::serializeFrom(
 			else
 			{
 				// validRange: Default values: If distance is not maxRange
-				for (i = 0; i < N; i++) m_validRange[i] = m_scan[i] < maxRange;
+				for (i = 0; i < N; i++)
+					m_validRange[i] = m_scan[i] < maxRange;
 			}
 
-			if (version >= 2)
-			{
-				in >> stdError;
-			}
+			if (version >= 2) { in >> stdError; }
 			else
 			{
 				stdError = 0.01f;
 			}
 
-			if (version >= 3)
-			{
-				in >> timestamp;
-			}
+			if (version >= 3) { in >> timestamp; }
 
 			// Default values for newer versions:
 			beamAperture = DEG2RAD(0.25f);
@@ -175,14 +171,11 @@ void CObservation2DRangeScan::serializeFrom(
 				in >> hasIntensity;
 				setScanHasIntensity(hasIntensity);
 				if (hasIntensity && N)
-				{
-					in.ReadBufferFixEndianness(&m_intensity[0], N);
-				}
+				{ in.ReadBufferFixEndianness(&m_intensity[0], N); }
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
 	m_cachedMap.reset();
@@ -199,20 +192,21 @@ IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservation2DRangeScan)
 mxArray* CObservation2DRangeScan::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-	const char* fields[] = {"class",  // Data common to any MRPT class
-							"ts",
-							"sensorLabel",  // Data common to any observation
-							"scan",
-							"validRange",
-							"intensity"  // Received raw data
-							"aperture",
-							"rightToLeft",
-							"maxRange",  // Scan plane geometry and properties
-							"stdError",
-							"beamAperture",
-							"deltaPitch",  // Ray properties
-							"pose",  // Sensor pose
-							"map"};  // Points map
+	const char* fields[] = {
+		"class",  // Data common to any MRPT class
+		"ts",
+		"sensorLabel",	// Data common to any observation
+		"scan",
+		"validRange",
+		"intensity"	 // Received raw data
+		"aperture",
+		"rightToLeft",
+		"maxRange",	 // Scan plane geometry and properties
+		"stdError",
+		"beamAperture",
+		"deltaPitch",  // Ray properties
+		"pose",	 // Sensor pose
+		"map"};	 // Points map
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));
 
@@ -309,7 +303,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 				(Gz >= area.second.first && Gz <= area.second.second))
 			{
 				*valid_it = false;
-				break;  // Go for next point
+				break;	// Go for next point
 			}
 		}  // for each area
 	}  // for each point
@@ -387,11 +381,13 @@ void CObservation2DRangeScan::filterByExclusionAngles(
 
 		if (idx_end >= idx_ini)
 		{
-			for (size_t i = idx_ini; i <= idx_end; i++) m_validRange[i] = false;
+			for (size_t i = idx_ini; i <= idx_end; i++)
+				m_validRange[i] = false;
 		}
 		else
 		{
-			for (size_t i = 0; i < idx_end; i++) m_validRange[i] = false;
+			for (size_t i = 0; i < idx_end; i++)
+				m_validRange[i] = false;
 
 			for (size_t i = idx_ini; i < sizeRangeScan; i++)
 				m_validRange[i] = false;
@@ -476,7 +472,8 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
 		"Sensor field-of-view (\"aperture\"): %.01f deg\n", RAD2DEG(aperture));
 
 	o << "Raw scan values: [";
-	for (i = 0; i < m_scan.size(); i++) o << format("%.03f ", m_scan[i]);
+	for (i = 0; i < m_scan.size(); i++)
+		o << format("%.03f ", m_scan[i]);
 	o << "]\n";
 
 	o << "Raw valid-scan values: [";

@@ -10,6 +10,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
@@ -36,7 +37,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 
 	   public:
 		size_t entries_converted;
-		size_t entries_skipped;  // Already external
+		size_t entries_skipped;	 // Already external
 
 		CRawlogProcessor_RenameExternals(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
@@ -68,7 +69,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 						prevName);
 
 					const string fileName = string("img_") + label_time +
-											string("_left.") + imgFileExtension;
+						string("_left.") + imgFileExtension;
 					obsSt->imageLeft.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -86,8 +87,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 						prevName);
 
 					const string fileName = string("img_") + label_time +
-											string("_right.") +
-											imgFileExtension;
+						string("_right.") + imgFileExtension;
 					obsSt->imageRight.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -109,7 +109,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 					obsIm->image.getExternalStorageFileAbsolutePath(prevName);
 
 					const string fileName = string("img_") + label_time +
-											string(".") + imgFileExtension;
+						string(".") + imgFileExtension;
 					obsIm->image.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -134,7 +134,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 						prevName);
 
 					const string fileName = string("3DCAM_") + label_time +
-											string("_INT.") + imgFileExtension;
+						string("_INT.") + imgFileExtension;
 					obs3D->intensityImage.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -154,7 +154,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 						prevName);
 
 					const string fileName = string("3DCAM_") + label_time +
-											string("_CONF.") + imgFileExtension;
+						string("_CONF.") + imgFileExtension;
 					obs3D->confidenceImage.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -196,8 +196,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
-			if (actions)
-				(*outrawlog.out_rawlog) << actions << SF;
+			if (actions) (*outrawlog.out_rawlog) << actions << SF;
 			else
 				(*outrawlog.out_rawlog) << obs;
 		}

@@ -15,7 +15,7 @@
 
 #include <exception>
 #include <functional>
-#include <iostream>  // TODO - remove me
+#include <iostream>	 // TODO - remove me
 #include <limits>
 #include <utility>
 #include <vector>
@@ -37,7 +37,7 @@ class NotConnectedGraph : public std::exception
 	{
 	}
 
-	using std::exception::what;  // supress clang warning
+	using std::exception::what;	 // supress clang warning
 	const char* what() { return m_err.c_str(); }
 	~NotConnectedGraph() noexcept override = default;
 	/**\brief Fill set with the nodeIDs Dijkstra algorithm could not reach
@@ -285,9 +285,7 @@ class CDijkstra
 					}
 
 					if (!have_traversed)
-					{
-						nodeIDs_unconnected.insert(n_it->first);
-					}
+					{ nodeIDs_unconnected.insert(n_it->first); }
 				}
 
 				std::string err_str = "Graph is not fully connected!";
@@ -307,7 +305,7 @@ class CDijkstra
 
 			// For each arc from "u":
 			const std::set<TNodeID>& neighborsOfU =
-				m_allNeighbors[u];  // graph.getNeighborsOf(u,neighborsOfU);
+				m_allNeighbors[u];	// graph.getNeighborsOf(u,neighborsOfU);
 			for (unsigned long i : neighborsOfU)
 			{
 				if (i == u) continue;  // ignore self-loops...
@@ -320,8 +318,7 @@ class CDijkstra
 
 				// Get weight of edge u<->i
 				double edge_ui_weight;
-				if (!functor_edge_weight)
-					edge_ui_weight = 1.;
+				if (!functor_edge_weight) edge_ui_weight = 1.;
 				else
 				{  // edge may be i->u or u->i:
 					edge_ui = graph.edges.find(std::make_pair(u, i));
@@ -464,7 +461,7 @@ class CDijkstra
 			std::list<TreeEdgeInfo>& edges =
 				out_tree.edges_to_children[id == id_from ? id_to : id_from];
 			TreeEdgeInfo newEdge(id);
-			newEdge.reverse = (id == id_from);  // true: root towards leafs.
+			newEdge.reverse = (id == id_from);	// true: root towards leafs.
 			auto itEdgeData =
 				m_cached_graph.edges.find(std::make_pair(id_from, id_to));
 			ASSERTMSG_(
@@ -482,6 +479,6 @@ class CDijkstra
 
 	/** @} */
 
-};  // end class
+};	// end class
 
 }  // namespace mrpt::graphs

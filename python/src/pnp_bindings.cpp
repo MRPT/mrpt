@@ -9,6 +9,7 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <Python.h>
 #include <numpy/arrayobject.h>
+
 #include <boost/python.hpp>
 using namespace boost::python;
 
@@ -17,7 +18,6 @@ using namespace boost::python;
 using namespace Eigen;
 
 #include <mrpt/config.h>
-
 #include <mrpt/vision/pnp_algos.h>
 mrpt::vision::pnp::CPnP pnp_algos;
 

@@ -162,7 +162,8 @@ class TCamera : public mrpt::serialization::CSerializable
 	inline std::vector<double> getDistortionParamsAsVector() const
 	{
 		std::vector<double> v(8);
-		for (size_t i = 0; i < 8; i++) v[i] = dist[i];
+		for (size_t i = 0; i < 8; i++)
+			v[i] = dist[i];
 		return v;
 	}
 
@@ -171,7 +172,8 @@ class TCamera : public mrpt::serialization::CSerializable
 		const mrpt::math::CMatrixDouble15& distParVector)
 	{
 		dist.fill(0);
-		for (size_t i = 0; i < 5; i++) dist[i] = distParVector(0, i);
+		for (size_t i = 0; i < 5; i++)
+			dist[i] = distParVector(0, i);
 	}
 
 	/** Set the whole vector of distortion params of the camera from a 4, 5, or
@@ -182,7 +184,8 @@ class TCamera : public mrpt::serialization::CSerializable
 		auto N = static_cast<size_t>(distParVector.size());
 		ASSERT_(N == 4 || N == 5 || N == 8);
 		dist.fill(0);  // Default values
-		for (size_t i = 0; i < N; i++) dist[i] = distParVector[i];
+		for (size_t i = 0; i < N; i++)
+			dist[i] = distParVector[i];
 	}
 
 	/** Set the vector of distortion params of the camera from the individual
@@ -248,7 +251,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	/** Set the value of the k6 distortion parameter.  */
 	inline void k6(double val) { dist[7] = val; }
 
-};  // end class TCamera
+};	// end class TCamera
 
 bool operator==(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);
 bool operator!=(const mrpt::img::TCamera& a, const mrpt::img::TCamera& b);

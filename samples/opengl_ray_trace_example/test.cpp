@@ -29,6 +29,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 #define COLORR 1.0f
@@ -136,7 +137,8 @@ void generateObjects(CSetOfObjects::Ptr& world)
 
 	CEllipsoid3D::Ptr ell = CEllipsoid3D::Create();
 	CMatrixDouble md = CMatrixDouble(3, 3);
-	for (size_t i = 0; i < 3; i++) md(i, i) = MYRANDG(8.0, 1.0);
+	for (size_t i = 0; i < 3; i++)
+		md(i, i) = MYRANDG(8.0, 1.0);
 	for (size_t i = 0; i < 3; i++)
 	{
 		size_t ii = (i + 1) % 3;

@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>
+
 #include <map>
 #include <optional>
 
@@ -62,13 +63,14 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
-				DefaultShaderID::POINTS};
+		return {
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;
 	void onUpdateBuffers_Points() override;
-	void onUpdateBuffers_all();  // special case for assimp
+	void onUpdateBuffers_all();	 // special case for assimp
 	void freeOpenGLResources() override
 	{
 		CRenderizableShaderTriangles::freeOpenGLResources();
@@ -108,7 +110,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	void loadScene(
 		const std::string& file_name,
 		const int flags = LoadFlags::RealTimeMaxQuality | LoadFlags::FlipUVs |
-						  LoadFlags::Verbose);
+			LoadFlags::Verbose);
 
 	/** Empty the object */
 	void clear();
@@ -150,6 +152,6 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		mrpt::opengl::internal::RenderElements& re);
 	void process_textures(const aiScene* scene);
 
-};  // namespace mrpt::opengl
+};	// namespace mrpt::opengl
 
 }  // namespace mrpt::opengl

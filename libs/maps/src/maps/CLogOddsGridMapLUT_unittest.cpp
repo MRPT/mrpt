@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
+
 #include <numeric>
 
 template <typename cell_t>

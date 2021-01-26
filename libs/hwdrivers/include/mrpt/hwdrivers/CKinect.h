@@ -541,7 +541,7 @@ class CKinect : public mrpt::hwdrivers::CGenericSensor
 	/** Compute m_range2meters at construction */
 	void calculate_range2meters();
 
-};  // End of class
+};	// End of class
 }  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CKinect::TVideoChannel)
 using namespace mrpt::hwdrivers;

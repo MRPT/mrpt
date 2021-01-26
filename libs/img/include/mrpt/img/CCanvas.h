@@ -11,6 +11,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/math_frwds.h>
+
 #include <cmath>  // sin() cos()
 
 namespace mrpt::img
@@ -301,9 +302,7 @@ class CCanvas
 						static_cast<unsigned int>(list.getFeatureResponse(i))),
 					TColor::red());
 			if (!list.isPointFeature(i))
-			{
-				this->drawCircle(x, y, list.getScale(i), TColor::red());
-			}
+			{ this->drawCircle(x, y, list.getScale(i), TColor::red()); }
 			else if (showScale)
 			{
 				this->textOut(
@@ -312,6 +311,6 @@ class CCanvas
 			}
 		}
 	}
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::img

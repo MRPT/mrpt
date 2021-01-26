@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -225,7 +225,7 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 	const TColor general_color_u = general_color.asTColor();
 
 	gl_obj.clear();
-	gl_obj.resizeVoxelSets(2);  // 2 sets of voxels: occupied & free
+	gl_obj.resizeVoxelSets(2);	// 2 sets of voxels: occupied & free
 	if (renderingOptions.generateGridLines) gl_obj.reserveGridCubes(N);
 
 	gl_obj.showVoxels(
@@ -288,10 +288,7 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 
 						case COctoMapVoxels::TRANSPARENCY_FROM_OCCUPANCY:
 							coeft = 255 - 510 * (1 - occ);
-							if (coeft < 0)
-							{
-								coeft = 0;
-							}
+							if (coeft < 0) { coeft = 0; }
 							vx_color = general_color.asTColor();
 							vx_color.A = mrpt::round(coeft);
 							break;
@@ -307,10 +304,7 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 						case COctoMapVoxels::MIXED:
 							coefc = d2f(255 * inv_dz * (z - bbmin.z));
 							coeft = d2f(255 - 510 * (1 - occ));
-							if (coeft < 0)
-							{
-								coeft = 0;
-							}
+							if (coeft < 0) { coeft = 0; }
 							vx_color = TColor(
 								f2u8(coefc * general_color.R),
 								f2u8(coefc * general_color.G),
@@ -318,8 +312,7 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 								static_cast<uint8_t>(coeft));
 							break;
 
-						default:
-							THROW_EXCEPTION("Unknown coloring scheme!");
+						default: THROW_EXCEPTION("Unknown coloring scheme!");
 					}
 
 					const size_t vx_set =
@@ -379,9 +372,9 @@ void COccupancyGridMap3D::serializeTo(mrpt::serialization::CArchive& out) const
 #else
 	out.WriteBufferFixEndianness
 #endif
-		(m_grid.cellByIndex(0, 0, 0), sizeof(cell_t) * m_grid.getSizeX() *
-										  m_grid.getSizeY() *
-										  m_grid.getSizeZ());
+		(m_grid.cellByIndex(0, 0, 0),
+		 sizeof(cell_t) * m_grid.getSizeX() * m_grid.getSizeY() *
+			 m_grid.getSizeZ());
 
 	// insertionOptions:
 	out << insertionOptions.maxDistanceInsertion
@@ -458,8 +451,7 @@ void COccupancyGridMap3D::serializeFrom(
 			renderingOptions.readFromStream(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -486,8 +478,7 @@ void COccupancyGridMap3D::TRenderingOptions::readFromStream(
 				visibleFreeVoxels;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 

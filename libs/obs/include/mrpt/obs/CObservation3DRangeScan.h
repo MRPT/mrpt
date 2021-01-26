@@ -25,6 +25,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TEnumType.h>
+
 #include <optional>
 
 namespace mrpt::obs
@@ -329,7 +330,7 @@ class CObservation3DRangeScan : public CObservation
 	std::vector<float> points3D_x, points3D_y, points3D_z;
 	/** If hasPoints3D=true, the (x,y) pixel coordinates for each (X,Y,Z) point
 	 * in \a points3D_x, points3D_y, points3D_z */
-	std::vector<uint16_t> points3D_idxs_x, points3D_idxs_y;  //!<
+	std::vector<uint16_t> points3D_idxs_x, points3D_idxs_y;	 //!<
 
 	/** Use this method instead of resizing all three \a points3D_x, \a
 	 * points3D_y & \a points3D_z to allow the usage of the internal memory
@@ -610,7 +611,7 @@ class CObservation3DRangeScan : public CObservation
 	 * \sa unprojectInto */
 	const unproject_LUT_t& get_unproj_lut() const;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::obs
 
 namespace mrpt::opengl
@@ -672,7 +673,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 		m_obj.points3D_z[idx] = 0;
 	}
 
-};  // end of PointCloudAdapter<CObservation3DRangeScan>
+};	// end of PointCloudAdapter<CObservation3DRangeScan>
 }  // namespace mrpt::opengl
 MRPT_ENUM_TYPE_BEGIN(mrpt::obs::CObservation3DRangeScan::TIntensityChannelID)
 MRPT_FILL_ENUM_MEMBER(mrpt::obs::CObservation3DRangeScan, CH_VISIBLE);

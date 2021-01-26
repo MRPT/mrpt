@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
@@ -20,6 +20,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -97,14 +98,13 @@ void CPose3DPDFGaussianInf::serializeFrom(
 			mrpt::math::deserializeSymmetricMatrixFrom(cov_inv, in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
 void CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	if (IS_CLASS(o, CPose3DPDFGaussianInf))
 	{  // It's my same class:
@@ -266,8 +266,8 @@ void CPose3DPDFGaussianInf::operator+=(const CPose3D& Ap)
 	CMatrixDouble66 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
 	CPose3DPDF::jacobiansPoseComposition(
-		this->mean,  // x
-		Ap,  // u
+		this->mean,	 // x
+		Ap,	 // u
 		df_dx, df_du);
 
 	// this->cov = H1*this->cov*H1' + H2*Ap.cov*H2';
@@ -359,10 +359,9 @@ double CPose3DPDFGaussianInf::mahalanobisDistanceTo(
 	{
 		if (COV_(i, i) == 0)
 		{
-			if (MU(i, 0) != 0)
-				return std::numeric_limits<double>::infinity();
+			if (MU(i, 0) != 0) return std::numeric_limits<double>::infinity();
 			else
-				COV_(i, i) = 1;  // Any arbitrary value since
+				COV_(i, i) = 1;	 // Any arbitrary value since
 			// MU(i)=0, and this value doesn't
 			// affect the result.
 		}

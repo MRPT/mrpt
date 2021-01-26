@@ -107,16 +107,16 @@ class ClangFormat:
     def _lint(self, file_name, print_diff):
         """Check the specified file has the correct format
         """
-        with open(file_name, 'rb') as original_text:
-            original_file = original_text.read()
+        fo = open(file_name, 'rb')
+        original_file = fo.read().decode('utf-8')
 
         # Get formatted file as clang-format would format the file
-        formatted_file = callo([self.clang_path, "--style=file", file_name])
+        formatted_file = callo([self.clang_path, "--style=file", file_name]).decode('utf-8')
 
         if original_file != formatted_file:
             if print_diff:
-                original_lines = original_file.splitlines()
-                formatted_lines = formatted_file.splitlines()
+                original_lines = original_file.splitlines(keepends=True)
+                formatted_lines = formatted_file.splitlines(keepends=True)
                 result = difflib.unified_diff(original_lines, formatted_lines)
 
                 # Take a lock to ensure diffs do not get mixed when printed to
@@ -126,6 +126,8 @@ class ClangFormat:
                     logger.info("To fix formatting errors, run %s "
                                 "--style=file -i %s", self.clang_path,
                                 file_name)
+
+                    sys.stderr.writelines(result)
 
             return False
 

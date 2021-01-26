@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
@@ -48,7 +48,7 @@ void CHMTSLAM::thread_3D_viewer()
 		while (!obj->m_terminateThreads)
 		{
 			std::this_thread::sleep_for(100ms);
-		};  // end while execute thread
+		};	// end while execute thread
 
 		// Finish thread:
 		// -------------------------

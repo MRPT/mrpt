@@ -234,13 +234,13 @@ class CQuaternion : public CVectorFixed<T, 4>
 		// First: compute result, then save in this object. In this way we avoid
 		// problems when q1 or q2 == *this !!
 		const T new_r = q1.r() * q2.r() - q1.x() * q2.x() - q1.y() * q2.y() -
-						q1.z() * q2.z();
+			q1.z() * q2.z();
 		const T new_x = q1.r() * q2.x() + q2.r() * q1.x() + q1.y() * q2.z() -
-						q2.y() * q1.z();
+			q2.y() * q1.z();
 		const T new_y = q1.r() * q2.y() + q2.r() * q1.y() + q1.z() * q2.x() -
-						q2.z() * q1.x();
+			q2.z() * q1.x();
 		const T new_z = q1.r() * q2.z() + q2.r() * q1.z() + q1.x() * q2.y() -
-						q2.x() * q1.y();
+			q2.x() * q1.y();
 		this->r(new_r);
 		this->x(new_x);
 		this->y(new_y);
@@ -303,7 +303,8 @@ class CQuaternion : public CVectorFixed<T, 4>
 	{
 		ensurePositiveRealPart();
 		const T qq = 1.0 / std::sqrt(normSqr());
-		for (unsigned int i = 0; i < 4; i++) (*this)[i] *= qq;
+		for (unsigned int i = 0; i < 4; i++)
+			(*this)[i] *= qq;
 	}
 
 	/** Calculate the 4x4 Jacobian of the normalization operation of this
@@ -534,7 +535,7 @@ class CQuaternion : public CVectorFixed<T, 4>
 		return q;
 	}
 
-};  // end class
+};	// end class
 
 /** A quaternion of data type "double" */
 using CQuaternionDouble = CQuaternion<double>;

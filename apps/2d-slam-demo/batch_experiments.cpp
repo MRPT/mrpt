@@ -11,7 +11,9 @@
 #include <mrpt/math/wrap2pi.h>
 #include <wx/image.h>
 #include <wx/msgdlg.h>
+
 #include <fstream>
+
 #include "slamdemoApp.h"
 #include "slamdemoMain.h"
 
@@ -45,7 +47,8 @@ void slamdemoApp::DoBatchExperiments(const std::string& cfgFil)
 	tim.Tic();
 
 	if (!m_option_norun)
-		for (size_t i = 0; i < nSteps; i++) win->executeOneStep();
+		for (size_t i = 0; i < nSteps; i++)
+			win->executeOneStep();
 
 	double mT = tim.Tac();
 

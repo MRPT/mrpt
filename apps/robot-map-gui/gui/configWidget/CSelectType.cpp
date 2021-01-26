@@ -8,9 +8,10 @@
    +---------------------------------------------------------------------------+
    */
 #include "CSelectType.h"
-#include "ui_CSelectType.h"
 
 #include <QListWidget>
+
+#include "ui_CSelectType.h"
 
 CSelectType::CSelectType(QWidget* parent)
 	: QDialog(parent), m_ui(std::make_unique<Ui::CSelectType>())

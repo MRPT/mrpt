@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/opengl/COpenGLVertexArrayObject.h>
 #include <mrpt/opengl/opengl_api.h>
+
 #include <thread>
 
 using namespace mrpt::opengl;
