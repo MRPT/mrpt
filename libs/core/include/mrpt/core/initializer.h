@@ -17,6 +17,7 @@
 #if defined(_MSC_VER)
 #include <mrpt/config.h>
 #if defined(MRPT_BUILT_AS_DLL)
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #define MRPT_INITIALIZER(f)                                                    \
 	static void f();                                                           \

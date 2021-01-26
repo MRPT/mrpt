@@ -14,13 +14,15 @@
 #include <mrpt/system/os.h>
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+//
 #include <conio.h>
 #include <direct.h>
 #include <io.h>
 #include <process.h>
 #include <sys/utime.h>
 #include <tlhelp32.h>
-#include <windows.h>
 #else
 #include <pthread.h>
 #include <sys/select.h>

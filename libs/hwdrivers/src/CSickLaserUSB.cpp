@@ -14,10 +14,6 @@
 #include <mrpt/system/crc.h>
 #include <mrpt/system/os.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 IMPLEMENTS_GENERIC_SENSOR(CSickLaserUSB, mrpt::hwdrivers)
 
 using namespace std;
@@ -267,12 +263,8 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 	// End frame:
 	if (buf[nFrameBytes - 1] != 0x55)
 	{
-// cerr << format("[CSickLaserUSB::waitContinuousSampleFrame] bad end flag") <<
-// endl;
-#ifdef _WIN32
-		OutputDebugStringA(
-			"[CSickLaserUSB::waitContinuousSampleFrame] bad end flag\n");
-#endif
+		MRPT_LOG_ERROR(
+			"[CSickLaserUSB::waitContinuousSampleFrame] bad end flag");
 		return false;  // Bad CRC
 	}
 
@@ -282,14 +274,10 @@ bool CSickLaserUSB::waitContinuousSampleFrame(
 		buf[lenghtField - 2] | (buf[lenghtField - 1] << 8);
 	if (CRC_packet != CRC)
 	{
-		const string s = format(
+		MRPT_LOG_ERROR_FMT(
 			"[CSickLaserUSB::waitContinuousSampleFrame] bad CRC len=%u "
 			"nptns=%u: %i != %i\n",
 			unsigned(lenghtField), unsigned(n_points), CRC_packet, CRC);
-		cerr << s;
-#ifdef _WIN32
-		OutputDebugStringA(s.c_str());
-#endif
 		return false;  // Bad CRC
 	}
 

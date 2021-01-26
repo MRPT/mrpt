@@ -14,9 +14,11 @@
 #include <mrpt/system/scheduler.h>
 
 #ifdef MRPT_OS_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+//
 #include <process.h>
 #include <tlhelp32.h>
-#include <windows.h>
 #else
 #include <pthread.h>
 #include <sys/select.h>
