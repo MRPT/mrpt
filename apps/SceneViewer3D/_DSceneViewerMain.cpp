@@ -106,19 +106,6 @@ wxBitmap MyArtProvider::CreateBitmap(
 // Used for feedback from the glcanvas component to its parent.
 _DSceneViewerFrame* theWindow = nullptr;
 
-#ifdef MRPT_OS_WINDOWS
-// Windows:
-#include <windows.h>
-#endif
-
-#ifdef MRPT_OS_APPLE
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-
 #include <mutex>
 
 using namespace mrpt;
