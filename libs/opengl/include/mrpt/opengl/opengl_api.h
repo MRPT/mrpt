@@ -22,8 +22,9 @@
 #if defined(_MSC_VER)
 #pragma warning(disable : 4505)
 #endif
-#include <GL/glew.h>
 #include <windows.h>
+//
+#include <GL/glew.h>
 #endif	// _WIN32
 
 #ifdef __APPLE__

@@ -14,8 +14,9 @@
 #include <mrpt/system/thread_name.h>
 
 #if defined(MRPT_OS_WINDOWS)
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
+//
 #include <cwchar>
 #include <vector>
 

@@ -142,6 +142,8 @@ using PFT_EVENT_HANDLER = void (*)(unsigned long, unsigned, long);
 
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/core/exceptions.h>
+
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 using namespace mrpt;

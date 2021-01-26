@@ -13,8 +13,10 @@
 #include <mrpt/core/exceptions.h>
 
 #ifdef _WIN32
-#include <mmsystem.h>
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+//
+#include <mmsystem.h>
 
 #if !defined(__GNUC__)
 #pragma comment(lib, "WINMM.LIB")
