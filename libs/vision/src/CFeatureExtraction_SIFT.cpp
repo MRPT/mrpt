@@ -124,7 +124,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 #if MRPT_OPENCV_VERSION_NUM >= 0x440
 			using sift_t = cv::SIFT;
 #else
-			using sift_t cv::xfeatures2d::SIFT;
+			using sift_t = cv::xfeatures2d::SIFT;
 #endif
 
 			auto sift = sift_t::create(

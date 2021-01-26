@@ -203,7 +203,7 @@ namespace mrpt::tfest
 template class TMatchingPairListTempl<float>;
 template class TMatchingPairListTempl<double>;
 
-template class TMatchingPairTempl<float>;
-template class TMatchingPairTempl<double>;
+template struct TMatchingPairTempl<float>;
+template struct TMatchingPairTempl<double>;
 
 }  // namespace mrpt::tfest
