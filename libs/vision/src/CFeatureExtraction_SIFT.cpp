@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>
-
-#include "vision-precomp.h"	 // Precompiled headers
 
 // Universal include for all versions of OpenCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
@@ -124,7 +124,7 @@ void CFeatureExtraction::extractFeaturesSIFT(
 #if MRPT_OPENCV_VERSION_NUM >= 0x440
 			using sift_t = cv::SIFT;
 #else
-			using sift_t cv::xfeatures2d::SIFT;
+			using sift_t = cv::xfeatures2d::SIFT;
 #endif
 
 			auto sift = sift_t::create(
@@ -138,8 +138,8 @@ void CFeatureExtraction::extractFeaturesSIFT(
 			const size_t N = cv_feats.size();
 			// std::cout << "N:" << N << "\n";
 			unsigned int nMax = nDesiredFeatures != 0 && N > nDesiredFeatures
-									? nDesiredFeatures
-									: N;
+				? nDesiredFeatures
+				: N;
 			const int offset = (int)this->options.patchSize / 2 + 1;
 			const size_t size_2 = options.patchSize / 2;
 			const size_t imgH = img.getHeight();

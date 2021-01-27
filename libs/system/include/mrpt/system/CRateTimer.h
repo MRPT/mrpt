@@ -42,6 +42,6 @@ class CRateTimer
    private:
 	double m_rate_hz{1.0};
 	mrpt::system::CTicTac m_tictac;
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::system

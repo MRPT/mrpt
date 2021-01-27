@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/serialization/CArchive.h>
@@ -109,8 +109,7 @@ void CTexturedPlane::serializeFrom(
 			readFromStreamTexturedObject(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }
@@ -128,7 +127,8 @@ void CTexturedPlane::updatePoly() const
 	poly[2].x = poly[3].x = m_xMax;
 	poly[0].y = poly[3].y = m_yMin;
 	poly[1].y = poly[2].y = m_yMax;
-	for (size_t i = 0; i < 4; i++) poly[i].z = 0;
+	for (size_t i = 0; i < 4; i++)
+		poly[i].z = 0;
 	tmpPoly.resize(1);
 	tmpPoly[0] = poly;
 	polygonUpToDate = true;

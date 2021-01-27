@@ -192,18 +192,17 @@ class CPoseOrPoint
 		{
 			if (is3DPoseOrPoint())
 				return square(x() - b.x()) + square(y() - b.y()) +
-					   square(
-						   derived().m_coords[2] -
+					square(derived().m_coords[2] -
 						   static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
 			else
 				return square(x() - b.x()) + square(y() - b.y()) +
-					   square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
+					square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
 		}
 		else
 		{
 			if (is3DPoseOrPoint())
 				return square(x() - b.x()) + square(y() - b.y()) +
-					   square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
+					square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
 			else
 				return square(x() - b.x()) + square(y() - b.y());
 		}
@@ -229,7 +228,7 @@ class CPoseOrPoint
 	{
 		using mrpt::square;
 		return square(ax - x()) + square(ay - y()) +
-			   square(az - (is3DPoseOrPoint() ? derived().m_coords[2] : 0));
+			square(az - (is3DPoseOrPoint() ? derived().m_coords[2] : 0));
 	}
 
 	/** Returns the 2D distance from this pose/point to a 2D point (ignores Z,
@@ -306,7 +305,7 @@ class CPoseOrPoint
 	virtual void setToNaN() = 0;
 
 	/** @} */
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace poses
 }  // namespace mrpt

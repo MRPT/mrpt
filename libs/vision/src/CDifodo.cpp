@@ -7,12 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/round.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/CDifodo.h>
+
 #include <Eigen/Dense>
 #include <iostream>
 
@@ -86,7 +87,7 @@ CDifodo::CDifodo()
 
 	depth_wf.setSize(m_height, m_width);
 
-	fps = 30.f;  // In Hz
+	fps = 30.f;	 // In Hz
 
 	previous_speed_const_weight = 0.05f;
 	previous_speed_eig_weight = 0.5f;
@@ -187,8 +188,7 @@ void CDifodo::buildCoordinatesPyramid()
 										min_depth = d;
 								}
 
-							if (min_depth < 10.f)
-								depth[i](v, u) = min_depth;
+							if (min_depth < 10.f) depth[i](v, u) = min_depth;
 							else
 								depth[i](v, u) = 0.f;
 						}
@@ -240,8 +240,7 @@ void CDifodo::buildCoordinatesPyramid()
 									}
 								}
 
-							if (min_depth < 10.f)
-								depth[i](v, u) = min_depth;
+							if (min_depth < 10.f) depth[i](v, u) = min_depth;
 							else
 								depth[i](v, u) = 0.f;
 						}
@@ -314,8 +313,8 @@ void CDifodo::buildCoordinatesPyramidFast()
 					{
 						const Matrix4f d_block =
 							depth[i_1].block<4, 4>(v2 - 1, u2 - 1);
-						float depths[4] = {d_block(5), d_block(6), d_block(9),
-										   d_block(10)};
+						float depths[4] = {
+							d_block(5), d_block(6), d_block(9), d_block(10)};
 						float dcenter;
 
 						// Sort the array (try to find a good/representative
@@ -326,8 +325,7 @@ void CDifodo::buildCoordinatesPyramidFast()
 						for (unsigned char k = 1; k < 3; k++)
 							if (depths[k] > depths[k + 1])
 								std::swap(depths[k + 1], depths[k]);
-						if (depths[2] < depths[1])
-							dcenter = depths[1];
+						if (depths[2] < depths[1]) dcenter = depths[1];
 						else
 							dcenter = depths[2];
 
@@ -359,8 +357,7 @@ void CDifodo::buildCoordinatesPyramidFast()
 					{
 						const Matrix2f d_block = depth[i_1].block<2, 2>(v2, u2);
 						const float new_d = 0.25f * d_block.array().sum();
-						if (new_d < 0.4f)
-							depth[i](v, u) = 0.f;
+						if (new_d < 0.4f) depth[i](v, u) = 0.f;
 						else
 							depth[i](v, u) = new_d;
 					}
@@ -418,17 +415,14 @@ void CDifodo::performWarping()
 			{
 				// Transform point to the warped reference frame
 				const float depth_w = acu_trans(0, 0) * z +
-									  acu_trans(0, 1) * xx[image_level](i, j) +
-									  acu_trans(0, 2) * yy[image_level](i, j) +
-									  acu_trans(0, 3);
+					acu_trans(0, 1) * xx[image_level](i, j) +
+					acu_trans(0, 2) * yy[image_level](i, j) + acu_trans(0, 3);
 				const float x_w = acu_trans(1, 0) * z +
-								  acu_trans(1, 1) * xx[image_level](i, j) +
-								  acu_trans(1, 2) * yy[image_level](i, j) +
-								  acu_trans(1, 3);
+					acu_trans(1, 1) * xx[image_level](i, j) +
+					acu_trans(1, 2) * yy[image_level](i, j) + acu_trans(1, 3);
 				const float y_w = acu_trans(2, 0) * z +
-								  acu_trans(2, 1) * xx[image_level](i, j) +
-								  acu_trans(2, 2) * yy[image_level](i, j) +
-								  acu_trans(2, 3);
+					acu_trans(2, 1) * xx[image_level](i, j) +
+					acu_trans(2, 2) * yy[image_level](i, j) + acu_trans(2, 3);
 
 				// Calculate warping
 				const float uwarp = f * x_w / depth_w + disp_u_i;
@@ -524,14 +518,12 @@ void CDifodo::calculateCoord()
 			}
 			else
 			{
-				depth_inter[image_level](v, u) =
-					0.5f * (depth_old[image_level](v, u) +
-							depth_warped[image_level](v, u));
-				xx_inter[image_level](v, u) =
-					0.5f *
+				depth_inter[image_level](v, u) = 0.5f *
+					(depth_old[image_level](v, u) +
+					 depth_warped[image_level](v, u));
+				xx_inter[image_level](v, u) = 0.5f *
 					(xx_old[image_level](v, u) + xx_warped[image_level](v, u));
-				yy_inter[image_level](v, u) =
-					0.5f *
+				yy_inter[image_level](v, u) = 0.5f *
 					(yy_old[image_level](v, u) + yy_warped[image_level](v, u));
 				null(v, u) = false;
 				if ((u > 0) && (v > 0) && (u < cols_i - 1) && (v < rows_i - 1))
@@ -586,11 +578,12 @@ void CDifodo::calculateDepthDerivatives()
 	{
 		for (unsigned int u = 1; u < cols_i - 1; u++)
 			if (null(v, u) == false)
-				du(v, u) =
-					(rx_ninv(v, u - 1) * (depth_inter[image_level](v, u + 1) -
-										  depth_inter[image_level](v, u)) +
-					 rx_ninv(v, u) * (depth_inter[image_level](v, u) -
-									  depth_inter[image_level](v, u - 1))) /
+				du(v, u) = (rx_ninv(v, u - 1) *
+								(depth_inter[image_level](v, u + 1) -
+								 depth_inter[image_level](v, u)) +
+							rx_ninv(v, u) *
+								(depth_inter[image_level](v, u) -
+								 depth_inter[image_level](v, u - 1))) /
 					(rx_ninv(v, u) + rx_ninv(v, u - 1));
 
 		du(v, 0) = du(v, 1);
@@ -601,11 +594,12 @@ void CDifodo::calculateDepthDerivatives()
 	{
 		for (unsigned int v = 1; v < rows_i - 1; v++)
 			if (null(v, u) == false)
-				dv(v, u) =
-					(ry_ninv(v - 1, u) * (depth_inter[image_level](v + 1, u) -
-										  depth_inter[image_level](v, u)) +
-					 ry_ninv(v, u) * (depth_inter[image_level](v, u) -
-									  depth_inter[image_level](v - 1, u))) /
+				dv(v, u) = (ry_ninv(v - 1, u) *
+								(depth_inter[image_level](v + 1, u) -
+								 depth_inter[image_level](v, u)) +
+							ry_ninv(v, u) *
+								(depth_inter[image_level](v, u) -
+								 depth_inter[image_level](v - 1, u))) /
 					(ry_ninv(v, u) + ry_ninv(v - 1, u));
 
 		dv(0, u) = dv(1, u);
@@ -616,8 +610,9 @@ void CDifodo::calculateDepthDerivatives()
 	for (unsigned int u = 0; u < cols_i; u++)
 		for (unsigned int v = 0; v < rows_i; v++)
 			if (null(v, u) == false)
-				dt(v, u) = d2f(fps) * (depth_warped[image_level](v, u) -
-									   depth_old[image_level](v, u));
+				dt(v, u) = d2f(fps) *
+					(depth_warped[image_level](v, u) -
+					 depth_old[image_level](v, u));
 }
 
 void CDifodo::computeWeights()
@@ -701,16 +696,16 @@ void CDifodo::computeWeights()
 				// dycomp*kai_level[3];
 
 				const float j4 = 1.f;
-				const float j5 =
-					xx_inter[image_level](v, u) * inv_d * inv_d * f_inv *
+				const float j5 = xx_inter[image_level](v, u) * inv_d * inv_d *
+						f_inv *
 						(kai_level[0] +
 						 yy_inter[image_level](v, u) * kai_level[4] -
 						 xx_inter[image_level](v, u) * kai_level[5]) +
 					inv_d * f_inv *
 						(-kai_level[1] - z * kai_level[5] +
 						 yy_inter[image_level](v, u) * kai_level[3]);
-				const float j6 =
-					yy_inter[image_level](v, u) * inv_d * inv_d * f_inv *
+				const float j6 = yy_inter[image_level](v, u) * inv_d * inv_d *
+						f_inv *
 						(kai_level[0] +
 						 yy_inter[image_level](v, u) * kai_level[4] -
 						 xx_inter[image_level](v, u) * kai_level[5]) +
@@ -731,24 +726,22 @@ void CDifodo::computeWeights()
 				//					Compute linearization error
 				//-----------------------------------------------------------------------
 				const float ini_du = depth_old[image_level](v, u + 1) -
-									 depth_old[image_level](v, u - 1);
+					depth_old[image_level](v, u - 1);
 				const float ini_dv = depth_old[image_level](v + 1, u) -
-									 depth_old[image_level](v - 1, u);
+					depth_old[image_level](v - 1, u);
 				const float final_du = depth_warped[image_level](v, u + 1) -
-									   depth_warped[image_level](v, u - 1);
+					depth_warped[image_level](v, u - 1);
 				const float final_dv = depth_warped[image_level](v + 1, u) -
-									   depth_warped[image_level](v - 1, u);
+					depth_warped[image_level](v - 1, u);
 
 				const float dut = ini_du - final_du;
 				const float dvt = ini_dv - final_dv;
 				const float duu = du(v, u + 1) - du(v, u - 1);
 				const float dvv = dv(v + 1, u) - dv(v - 1, u);
-				const float dvu =
-					dv(v, u + 1) -
+				const float dvu = dv(v, u + 1) -
 					dv(v, u - 1);  // Completely equivalent to compute duv
 
-				const float error_l =
-					kdt * square(dt(v, u)) +
+				const float error_l = kdt * square(dt(v, u)) +
 					kduv * (square(du(v, u)) + square(dv(v, u))) +
 					k2dt * (square(dut) + square(dvt)) +
 					k2duv * (square(duu) + square(dvv) + square(dvu));
@@ -794,10 +787,11 @@ void CDifodo::solveOneLevel()
 				A(cont, 1) = tw * (-dycomp);
 				A(cont, 2) = tw * (-dzcomp);
 				A(cont, 3) = tw * (dycomp * y - dzcomp * x);
-				A(cont, 4) = tw * (y + dycomp * inv_d * y * x +
-								   dzcomp * (y * y * inv_d + d));
-				A(cont, 5) = tw * (-x - dycomp * (x * x * inv_d + d) -
-								   dzcomp * inv_d * y * x);
+				A(cont, 4) = tw *
+					(y + dycomp * inv_d * y * x + dzcomp * (y * y * inv_d + d));
+				A(cont, 5) = tw *
+					(-x - dycomp * (x * x * inv_d + d) -
+					 dzcomp * inv_d * y * x);
 				B(cont, 0) = tw * (-dt(v, u));
 
 				cont++;
@@ -810,7 +804,8 @@ void CDifodo::solveOneLevel()
 
 	// Covariance matrix calculation
 	MatrixXf res = -B;
-	for (unsigned int k = 0; k < 6; k++) res += Var(k) * A.col(k);
+	for (unsigned int k = 0; k < 6; k++)
+		res += Var(k) * A.col(k);
 
 	est_cov =
 		(1.f / float(num_valid_points - 6)) * AtA.inverse() * res.squaredNorm();
@@ -827,8 +822,7 @@ void CDifodo::odometryCalculation()
 	clock.Tic();
 
 	// Build the gaussian pyramid
-	if (fast_pyramid)
-		buildCoordinatesPyramidFast();
+	if (fast_pyramid) buildCoordinatesPyramidFast();
 	else
 		buildCoordinatesPyramid();
 

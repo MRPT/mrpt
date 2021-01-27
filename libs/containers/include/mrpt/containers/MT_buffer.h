@@ -73,6 +73,6 @@ class MT_buffer
 		m_cs.unlock();
 	}
 
-};  // end of MT_buffer
+};	// end of MT_buffer
 
 }  // namespace mrpt::containers

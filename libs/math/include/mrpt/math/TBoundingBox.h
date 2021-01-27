@@ -12,6 +12,7 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/serialization/serialization_frwds.h>
 #include <mrpt/typemeta/TTypeName.h>
+
 #include <algorithm>  // max()
 #include <optional>
 

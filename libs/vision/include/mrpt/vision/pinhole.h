@@ -64,9 +64,8 @@ inline mrpt::img::TPixelCoordf projectPoint_no_distortion(
 	const mrpt::img::TCamera& cam_params, const mrpt::poses::CPose3D& F,
 	const mrpt::math::TPoint3D& P)
 {
-	double x, y, z;  // wrt cam (local coords)
-	if (INVERSE_CAM_POSE)
-		F.composePoint(P.x, P.y, P.z, x, y, z);
+	double x, y, z;	 // wrt cam (local coords)
+	if (INVERSE_CAM_POSE) F.composePoint(P.x, P.y, P.z, x, y, z);
 	else
 		F.inverseComposePoint(P.x, P.y, P.z, x, y, z);
 	ASSERT_(z != 0);
@@ -84,12 +83,10 @@ inline void projectPoint_no_distortion(
 {
 	ASSERT_(in_point_wrt_cam.z != 0);
 	// Pinhole model:
-	out_projectedPoints.x = cam_params.cx() + cam_params.fx() *
-												  in_point_wrt_cam.x /
-												  in_point_wrt_cam.z;
-	out_projectedPoints.y = cam_params.cy() + cam_params.fy() *
-												  in_point_wrt_cam.y /
-												  in_point_wrt_cam.z;
+	out_projectedPoints.x = cam_params.cx() +
+		cam_params.fx() * in_point_wrt_cam.x / in_point_wrt_cam.z;
+	out_projectedPoints.y = cam_params.cy() +
+		cam_params.fy() * in_point_wrt_cam.y / in_point_wrt_cam.z;
 }
 
 /** Project a set of 3D points into a camera at an arbitrary 6D pose using its

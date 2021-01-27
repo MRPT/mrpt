@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/about_box.h>
 

@@ -12,6 +12,7 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -120,7 +121,7 @@ void TestImageFFT()
 	IM1.loadFromFile(
 		myDataDir + string("fft2_test_image_patch.jpg"), 0);  // "Patch"
 	IM2.loadFromFile(
-		myDataDir + string("fft2_test_image.jpg"), 0);  // Ref. image
+		myDataDir + string("fft2_test_image.jpg"), 0);	// Ref. image
 
 	printf("Computing images correlation...");
 	tictac.Tic();

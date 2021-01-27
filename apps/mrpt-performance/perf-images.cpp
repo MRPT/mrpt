@@ -33,20 +33,11 @@ double image_test_1(int w, int img_quality)
 	int h = 0;
 	switch (w)
 	{
-		case 640:
-			h = 480;
-			break;
-		case 800:
-			h = 600;
-			break;
-		case 1024:
-			h = 768;
-			break;
-		case 1280:
-			h = 1024;
-			break;
-		default:
-			THROW_EXCEPTION("Invalid 'w'!");
+		case 640: h = 480; break;
+		case 800: h = 600; break;
+		case 1024: h = 768; break;
+		case 1280: h = 1024; break;
+		default: THROW_EXCEPTION("Invalid 'w'!");
 	}
 
 	CImage img(w, h, mrpt::img::CH_RGB);
@@ -66,7 +57,8 @@ double image_test_1(int w, int img_quality)
 	const size_t N = 30;
 
 	tictac.Tic();
-	for (size_t i = 0; i < N; i++) img.saveToFile(fil, img_quality);
+	for (size_t i = 0; i < N; i++)
+		img.saveToFile(fil, img_quality);
 
 	const double T = tictac.Tac() / N;
 	mrpt::system::deleteFile(fil);
@@ -82,17 +74,10 @@ double image_saveload(int iFormat, int to_shm)
 	const char* format;
 	switch (iFormat)
 	{
-		case 0:
-			format = "bmp";
-			break;
-		case 1:
-			format = "png";
-			break;
-		case 2:
-			format = "jpg";
-			break;
-		default:
-			THROW_EXCEPTION("Wrong format");
+		case 0: format = "bmp"; break;
+		case 1: format = "png"; break;
+		case 2: format = "jpg"; break;
+		default: THROW_EXCEPTION("Wrong format");
 	}
 
 	const int w = 800, h = 600;
@@ -108,10 +93,7 @@ double image_saveload(int iFormat, int to_shm)
 	CTicTac tictac;
 
 	string fil;
-	if (to_shm)
-	{
-		fil = string("/dev/shm/mrpt_perf_test.") + string(format);
-	}
+	if (to_shm) { fil = string("/dev/shm/mrpt_perf_test.") + string(format); }
 	else
 	{
 		fil = mrpt::system::getTempFileName() + string(".") + string(format);
@@ -140,7 +122,8 @@ double image_saveload(int iFormat, int to_shm)
 		const size_t N = 30;
 
 		tictac.Tic();
-		for (size_t i = 0; i < N; i++) img.saveToFile(fil);
+		for (size_t i = 0; i < N; i++)
+			img.saveToFile(fil);
 
 		T = tictac.Tac() / N;
 	}
@@ -170,7 +153,8 @@ double image_test_2(int w, int h)
 	const size_t N = 50;
 
 	tictac.Tic();
-	for (size_t i = 0; i < N; i++) img.filterGaussian(img2, 7, 7);
+	for (size_t i = 0; i < N; i++)
+		img.filterGaussian(img2, 7, 7);
 
 	double R = tictac.Tac() / N;
 
@@ -251,7 +235,8 @@ double image_rgb2gray_8u(int w, int h)
 	const size_t N = 300;
 
 	tictac.Tic();
-	for (size_t i = 0; i < N; i++) img.grayscale(img2);
+	for (size_t i = 0; i < N; i++)
+		img.grayscale(img2);
 
 	return tictac.Tac() / N;
 }

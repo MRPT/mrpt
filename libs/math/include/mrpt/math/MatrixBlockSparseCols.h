@@ -11,6 +11,7 @@
 
 #include <mrpt/containers/map_as_vector.h>
 #include <mrpt/math/CMatrixDynamic.h>  // For mrpt::math::CMatrixDouble
+
 #include <map>
 
 namespace mrpt::math
@@ -107,7 +108,8 @@ struct MatrixBlockSparseCols
 	 * columns, though!) \sa getColCount */
 	inline void clearColEntries()
 	{
-		for (size_t i = 0; i < m_cols.size(); i++) m_cols[i].clear();
+		for (size_t i = 0; i < m_cols.size(); i++)
+			m_cols[i].clear();
 	}
 
 	/** Clear all the entries in each column (do not change the number of
@@ -143,8 +145,7 @@ struct MatrixBlockSparseCols
 		const size_t nCols = m_cols.size();
 		const size_t nRows = findCurrentNumberOfRows();
 
-		if (is_col_compressed)
-			D.setSize(nRows * NROWS, nCols * NCOLS);
+		if (is_col_compressed) D.setSize(nRows * NROWS, nCols * NCOLS);
 		else
 			D.setSize(nCols * NROWS, nRows * NCOLS);
 
@@ -177,7 +178,7 @@ struct MatrixBlockSparseCols
 				 itRow != m_cols[j].end(); ++itRow)
 				mrpt::keep_max(nRows, itRow->first);
 		return nRows +
-			   1;  // nRows was the max. row index, now it's the row count.
+			1;	// nRows was the max. row index, now it's the row count.
 	}
 
 	/** Builds a binary matrix with 1s where an elementary matrix is stored, 0s
@@ -247,6 +248,6 @@ struct MatrixBlockSparseCols
 		}
 	}  // end copyNumericalValuesFrom()
 
-};  // end of MatrixBlockSparseCols
+};	// end of MatrixBlockSparseCols
 
 }  // namespace mrpt::math

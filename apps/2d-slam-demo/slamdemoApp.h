@@ -33,4 +33,4 @@ class slamdemoApp : public wxApp
 	bool m_option_norun;
 };
 
-#endif  // SLAMDEMOAPP_H
+#endif	// SLAMDEMOAPP_H

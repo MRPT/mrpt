@@ -13,6 +13,7 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/math/utils.h>  // normalize()
+
 #include <iostream>
 #include <mrpt/math/interp_fit.hpp>
 

@@ -48,7 +48,7 @@ class CPointsMapXYZI : public CPointsMap
 	@{ */
 
 	void reserve(size_t newLength) override;  // See base class docs
-	void resize(size_t newLength) override;  // See base class docs
+	void resize(size_t newLength) override;	 // See base class docs
 	void setSize(size_t newLength) override;  // See base class docs
 
 	/** The virtual method for \a insertPoint() *without* calling
@@ -238,7 +238,7 @@ class CPointsMapXYZI : public CPointsMap
 	void getPCLPointCloudXYZI(POINTCLOUD& cloud) const
 	{
 		const size_t nThis = this->size();
-		this->getPCLPointCloud(cloud);  // 1st: xyz data
+		this->getPCLPointCloud(cloud);	// 1st: xyz data
 		// 2nd: I data
 		for (size_t i = 0; i < nThis; ++i)
 			cloud.points[i].intensity = m_intensity[i];
@@ -273,7 +273,7 @@ class CPointsMapXYZI : public CPointsMap
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
 	MAP_DEFINITION_END(CPointsMapXYZI)
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace maps
 
@@ -386,6 +386,6 @@ class PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
 		m_obj.setPointColor_fast(idx, r / 255.f, g / 255.f, b / 255.f);
 	}
 
-};  // end of PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
+};	// end of PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
 }  // namespace opengl
 }  // namespace mrpt

@@ -22,11 +22,12 @@
  */
 
 #include "vision-lgpl-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/robust_kernels.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/vision/pinhole.h>
+
 #include "ba_internals.h"
 
 using namespace std;
@@ -284,10 +285,7 @@ void mrpt::vision::ba_build_gradient_Hessians(
 			CVectorFixedDouble<6> eps_delta;
 			// eps_delta = J^t * RESID
 			eps_delta = JACOB.J_frame.transpose() * RESID;
-			if (!use_robust_kernel)
-			{
-				eps_frame[frame_id] += eps_delta;
-			}
+			if (!use_robust_kernel) { eps_frame[frame_id] += eps_delta; }
 			else
 			{
 				const double rho_1st_der = (*kernel_1st_deriv)[i];
@@ -308,10 +306,7 @@ void mrpt::vision::ba_build_gradient_Hessians(
 			CVectorFixedDouble<3> eps_delta;
 			// eps_delta = J^t * RESID
 			eps_delta = JACOB.J_point.transpose() * RESID;
-			if (!use_robust_kernel)
-			{
-				eps_point[point_id] += eps_delta;
-			}
+			if (!use_robust_kernel) { eps_point[point_id] += eps_delta; }
 			else
 			{
 				const double rho_1st_der = (*kernel_1st_deriv)[i];

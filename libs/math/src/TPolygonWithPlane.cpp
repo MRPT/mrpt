@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPolygonWithPlane.h>
 #include <mrpt/math/geometry.h>
@@ -32,5 +32,6 @@ void TPolygonWithPlane::getPlanes(
 {
 	size_t N = oldPolys.size();
 	newPolys.resize(N);
-	for (size_t i = 0; i < N; i++) newPolys[i] = oldPolys[i];
+	for (size_t i = 0; i < N; i++)
+		newPolys[i] = oldPolys[i];
 }

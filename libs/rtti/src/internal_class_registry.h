@@ -27,8 +27,7 @@ struct queue_register_functions_t
 	inline bool get(TRegisterFunction& ret)
 	{
 		std::lock_guard<std::mutex> lock(funcs_cs);
-		if (funcs.empty())
-			return false;
+		if (funcs.empty()) return false;
 		else
 		{
 			ret = funcs.front();

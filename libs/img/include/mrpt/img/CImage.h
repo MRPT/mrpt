@@ -1046,5 +1046,5 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	void makeSureImageIsLoaded() const;
 	uint8_t* internal_get(int col, int row, uint8_t channel = 0) const;
 	void internal_fromIPL(const IplImage* iplImage, copy_type_t c);
-};  // End of class
+};	// End of class
 }  // namespace mrpt::img

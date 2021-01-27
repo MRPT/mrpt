@@ -11,6 +11,7 @@
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
+
 #include <map>
 
 namespace mrpt::slam
@@ -47,7 +48,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 		/** (default:false) Match against the occupancy grid or the points map?
 		 * The former is quicker but less precise. */
 		bool matchAgainstTheGrid;
@@ -178,8 +179,8 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	struct TDist
 	{
 		TDist() = default;
-		double lin{0};  // meters
-		double ang{0};  // degrees
+		double lin{0};	// meters
+		double ang{0};	// degrees
 		mrpt::math::TPose2D last_update;
 
 		void updateDistances(const mrpt::poses::CPose2D& p);

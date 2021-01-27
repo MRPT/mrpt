@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 
@@ -204,8 +204,7 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
 					// Si coincide, eliminar el de mas "dist."
 					if ((i1j1 && i2j2) || (i1j2 && i2j1))
 					{
-						if (temp_clear[i] < temp_clear[j])
-							temp_borrar[j] = 1;
+						if (temp_clear[i] < temp_clear[j]) temp_borrar[j] = 1;
 						else
 							temp_borrar[i] = 1;
 					}
@@ -295,8 +294,9 @@ int COccupancyGridMap2D::computeClearance(
 		for (int i = 0; i < N_CIRCULOS; i++)
 		{
 			int nPasos = round(
-				1 + (M_2PI *
-					 i));  // Estimacion de # de entradas (luego seran menos)
+				1 +
+				(M_2PI *
+				 i));  // Estimacion de # de entradas (luego seran menos)
 			float A = 0;
 			float AA = (2.0f * M_PIf / nPasos);
 			int ult_x = 0, x, ult_y = 0, y;
@@ -358,14 +358,13 @@ int COccupancyGridMap2D::computeClearance(
 						// Esta el 2o punto separado del 1o??
 						bool pasa;
 
-						if (!(*nBasis))
-							pasa = true;
+						if (!(*nBasis)) pasa = true;
 						else
 						{
 							int ax = basis_x[0] - xx;
 							int ay = basis_y[0] - yy;
 							pasa = sqrt(1.0f * ax * ax + ay * ay) >
-								   (1.75f * tam_circ);
+								(1.75f * tam_circ);
 						}
 
 						if (pasa)
@@ -384,8 +383,7 @@ int COccupancyGridMap2D::computeClearance(
 		// Si solo encontramos 1 obstaculo, 1 sola vuelta extra mas:
 		if (*nBasis)
 		{
-			if (*nBasis == 1)
-				vueltas_extra--;
+			if (*nBasis == 1) vueltas_extra--;
 			else
 				vueltas_extra = 0;
 		}
@@ -405,8 +403,7 @@ int COccupancyGridMap2D::computeClearance(
 			dx = cx - basis_x[0];
 			dy = cy - basis_y[0];
 			if (std::abs(dx) > std::abs(dy))
-				if (dx > 0)
-					dir_predilecta = 4;
+				if (dx > 0) dir_predilecta = 4;
 				else
 					dir_predilecta = 3;
 			else if (dy > 0)
@@ -416,8 +413,7 @@ int COccupancyGridMap2D::computeClearance(
 
 			vec = GetNeighborhood(basis_x[0], basis_y[0]);
 			dir = -1;
-			if (!(vec & (1 << dir_predilecta)))
-				dir = dir_predilecta;
+			if (!(vec & (1 << dir_predilecta))) dir = dir_predilecta;
 			else if (!(vec & (1 << 1)))
 				dir = 1;
 			else if (!(vec & (1 << 3)))
@@ -442,8 +438,7 @@ int COccupancyGridMap2D::computeClearance(
 			dx = cx - basis_x[1];
 			dy = cy - basis_y[1];
 			if (std::abs(dx) > std::abs(dy))
-				if (dx > 0)
-					dir_predilecta = 4;
+				if (dx > 0) dir_predilecta = 4;
 				else
 					dir_predilecta = 3;
 			else if (dy > 0)
@@ -453,8 +448,7 @@ int COccupancyGridMap2D::computeClearance(
 
 			vec = GetNeighborhood(basis_x[1], basis_y[1]);
 			dir = -1;
-			if (!(vec & (1 << dir_predilecta)))
-				dir = dir_predilecta;
+			if (!(vec & (1 << dir_predilecta))) dir = dir_predilecta;
 			else if (!(vec & (1 << 1)))
 				dir = 1;
 			else if (!(vec & (1 << 3)))
@@ -519,39 +513,27 @@ int COccupancyGridMap2D::direction2idx(int dx, int dy)
 		case -1:
 			switch (dy)
 			{
-				case -1:
-					return 0;
-				case 0:
-					return 3;
-				case 1:
-					return 5;
-				default:
-					return -1;
+				case -1: return 0;
+				case 0: return 3;
+				case 1: return 5;
+				default: return -1;
 			};
 		case 0:
 			switch (dy)
 			{
-				case -1:
-					return 1;
-				case 1:
-					return 6;
-				default:
-					return -1;
+				case -1: return 1;
+				case 1: return 6;
+				default: return -1;
 			};
 		case 1:
 			switch (dy)
 			{
-				case -1:
-					return 2;
-				case 0:
-					return 4;
-				case 1:
-					return 7;
-				default:
-					return -1;
+				case -1: return 2;
+				case 0: return 4;
+				case 1: return 7;
+				default: return -1;
 			};
-		default:
-			return -1;
+		default: return -1;
 	};
 }
 
@@ -588,9 +570,9 @@ float COccupancyGridMap2D::computeClearance(
 	for (xx = xx1; xx <= xx2; xx++)
 		for (yy = yy1; yy <= yy2; yy++)
 			if (map[xx + yy * size_x] < thresholdCellValue)
-				clearance_sq =
-					min(clearance_sq, square(resolution) *
-										  (square(xx - cx) + square(yy - cy)));
+				clearance_sq = min(
+					clearance_sq,
+					square(resolution) * (square(xx - cx) + square(yy - cy)));
 
 	return sqrt(clearance_sq);
 }

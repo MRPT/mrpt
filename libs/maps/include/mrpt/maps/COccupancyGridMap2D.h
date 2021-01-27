@@ -118,8 +118,7 @@ class COccupancyGridMap2D
 	template <typename T>
 	static T H(const T p)
 	{
-		if (p == 0 || p == 1)
-			return 0;
+		if (p == 0 || p == 1) return 0;
 		else
 			return -p * std::log(p);
 	}
@@ -368,8 +367,7 @@ class COccupancyGridMap2D
 	 * do not use it normally */
 	inline cellType* getRow(int cy)
 	{
-		if (cy < 0 || static_cast<unsigned int>(cy) >= size_y)
-			return nullptr;
+		if (cy < 0 || static_cast<unsigned int>(cy) >= size_y) return nullptr;
 		else
 			return &map[0 + cy * size_x];
 	}
@@ -378,8 +376,7 @@ class COccupancyGridMap2D
 	 * do not use it normally */
 	inline const cellType* getRow(int cy) const
 	{
-		if (cy < 0 || static_cast<unsigned int>(cy) >= size_y)
-			return nullptr;
+		if (cy < 0 || static_cast<unsigned int>(cy) >= size_y) return nullptr;
 		else
 			return &map[0 + cy * size_x];
 	}
@@ -483,7 +480,7 @@ class COccupancyGridMap2D
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for
 		 * they to be inserted in this map! */
@@ -565,7 +562,7 @@ class COccupancyGridMap2D
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** The selected method to compute an observation likelihood */
 		TLikelihoodMethod likelihoodMethod{lmLikelihoodField_Thrun};

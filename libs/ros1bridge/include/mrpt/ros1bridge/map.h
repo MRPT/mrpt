@@ -12,6 +12,7 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <nav_msgs/OccupancyGrid.h>
+
 #include <cstdint>
 #include <string>
 
@@ -35,7 +36,7 @@ class MapHdl
 #else
 	int lut_cellmrpt2ros[0xFFFF];  // lookup table for entry convertion
 #endif
-	int lut_cellros2mrpt[101];  // lookup table for entry convertion
+	int lut_cellros2mrpt[101];	// lookup table for entry convertion
 
 	MapHdl();
 	MapHdl(const MapHdl&);

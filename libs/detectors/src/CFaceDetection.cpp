@@ -6,8 +6,9 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#include "detectors-precomp.h"  // Precompiled headers
 
+#include "detectors-precomp.h"	// Precompiled headers
+//
 #include <mrpt/detectors/CFaceDetection.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -24,6 +25,7 @@
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
+
 #include <Eigen/Dense>
 #include <fstream>
 
@@ -566,10 +568,10 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 			if ((c > end) && (region(r, c))) end = c;
 		}
 
-	if (end == 0) end = faceWidth - 1;  // Check if the end has't changed
+	if (end == 0) end = faceWidth - 1;	// Check if the end has't changed
 	if (end < 3 * (faceWidth / 4))
-		end = 3 * (faceWidth / 4);  // To avoid spoiler
-	if (start == faceWidth) start = 0;  // Check if the start has't changed
+		end = 3 * (faceWidth / 4);	// To avoid spoiler
+	if (start == faceWidth) start = 0;	// Check if the start has't changed
 	if (start > faceWidth / 4) start = faceWidth / 4;  // To avoid spoiler
 
 	// cout << "Start: " << start << " End: " << end << endl;
@@ -624,15 +626,13 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 				(face->intensityImage.at<uint8_t>(c, r)) > 50)
 			{
 				unsigned int row, col;
-				if (r < sectionVSize + upLimit * 0.3)
-					row = 0;
+				if (r < sectionVSize + upLimit * 0.3) row = 0;
 				else if (r < sectionVSize * 2 - upLimit * 0.15)
 					row = 1;
 				else
 					row = 2;
 
-				if (c < c1)
-					col = 0;
+				if (c < c1) col = 0;
 				else if (c < c2)
 					col = 1;
 				else
@@ -696,30 +696,31 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 
 	if (regions2[0].size() > 0)
 	{
-		for (auto& i : regions2[0]) oldPointsX1.push_back(i.x);
+		for (auto& i : regions2[0])
+			oldPointsX1.push_back(i.x);
 
 		middle1 = floor((double)oldPointsX1.size() / 2);
 		nth_element(
 			oldPointsX1.begin(), oldPointsX1.begin() + middle1,
-			oldPointsX1.end());  // Obtain center element
+			oldPointsX1.end());	 // Obtain center element
 	}
 
 	vector<double> oldPointsX2;
 
 	if (regions2[2].size() > 0)
 	{
-		for (auto& i : regions2[2]) oldPointsX2.push_back(i.x);
+		for (auto& i : regions2[2])
+			oldPointsX2.push_back(i.x);
 
 		middle2 = floor((double)oldPointsX2.size() / 2);
 		nth_element(
 			oldPointsX2.begin(), oldPointsX2.begin() + middle2,
-			oldPointsX2.end());  // Obtain center element
+			oldPointsX2.end());	 // Obtain center element
 	}
 
 	for (size_t i = 0; i < 3; i++)
 		for (size_t j = 0; j < 3; j++)
-			if (!numPoints[i][j])
-				meanPos[i][j] = TPoint3D(0, 0, 0);
+			if (!numPoints[i][j]) meanPos[i][j] = TPoint3D(0, 0, 0);
 			else
 				meanPos[i][j] = meanPos[i][j] / numPoints[i][j];
 
@@ -733,14 +734,18 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 	vector<double> dist(5);
 	size_t res = checkRelativePosition(
 		meanPos[1][0], meanPos[1][2], meanPos[1][1], dist[0]);
-	res += res && checkRelativePosition(
-					  meanPos[2][0], meanPos[2][2], meanPos[2][1], dist[1]);
-	res += res && checkRelativePosition(
-					  meanPos[0][0], meanPos[0][2], meanPos[0][1], dist[2]);
-	res += res && checkRelativePosition(
-					  meanPos[0][0], meanPos[2][2], meanPos[1][1], dist[3]);
-	res += res && checkRelativePosition(
-					  meanPos[2][0], meanPos[0][2], meanPos[1][1], dist[4]);
+	res += res &&
+		checkRelativePosition(
+			   meanPos[2][0], meanPos[2][2], meanPos[2][1], dist[1]);
+	res += res &&
+		checkRelativePosition(
+			   meanPos[0][0], meanPos[0][2], meanPos[0][1], dist[2]);
+	res += res &&
+		checkRelativePosition(
+			   meanPos[0][0], meanPos[2][2], meanPos[1][1], dist[3]);
+	res += res &&
+		checkRelativePosition(
+			   meanPos[2][0], meanPos[0][2], meanPos[1][1], dist[4]);
 
 	ofstream f;
 	f.open("dist.txt", ofstream::app);
@@ -748,8 +753,7 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 	f.close();
 
 	bool real = false;
-	if (!res)
-		real = true;
+	if (!res) real = true;
 	else if ((res = 1) && (sum(dist) > 0.04))
 		real = true;
 
@@ -771,8 +775,7 @@ bool CFaceDetection::checkIfFaceRegions(CObservation3DRangeScan* face)
 		if (m_measure.takeTime) m_timeLog.leave("Check if face plane: regions");
 	}
 
-	if (real)
-		return true;  // Filter passed
+	if (real) return true;	// Filter passed
 	else
 	{
 		// Uncomment if you want to known what regions was discarted by this
@@ -818,8 +821,7 @@ size_t CFaceDetection::checkRelativePosition(
 
 	dist = yIdeal - y;
 
-	if (y < yIdeal)
-		return 0;
+	if (y < yIdeal) return 0;
 	else
 		return 1;
 }
@@ -1691,9 +1693,7 @@ void CFaceDetection::experimental_segmentFace(
 		{
 			if (face.confidenceImage.at<uint8_t>(j, i) >
 				m_options.confidenceThreshold)
-			{
-				toExpand(i, j) = 1;
-			}
+			{ toExpand(i, j) = 1; }
 		}
 		cont += faceWidth - x2;
 	}
@@ -1766,10 +1766,7 @@ void CFaceDetection::experimental_segmentFace(
 	{
 		for (unsigned int col = 0; col < faceWidth; col++)
 		{
-			if (!(region(row, col)))
-			{
-				img.setPixel(col, row, 0);
-			}
+			if (!(region(row, col))) { img.setPixel(col, row, 0); }
 		}
 	}
 
@@ -1972,8 +1969,7 @@ void CFaceDetection::debug_returnResults(
 			j++;
 		}
 
-		if (falsePositive)
-			falsePositivesDeleted++;
+		if (falsePositive) falsePositivesDeleted++;
 		else
 		{
 			bool igno = false;

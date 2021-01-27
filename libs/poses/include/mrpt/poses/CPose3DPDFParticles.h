@@ -115,5 +115,5 @@ class CPose3DPDFParticles
 	/** Bayesian fusion */
 	void bayesianFusion(const CPose3DPDF& p1, const CPose3DPDF& p2) override;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

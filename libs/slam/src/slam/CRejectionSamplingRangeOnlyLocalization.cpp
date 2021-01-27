@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/TPose2D.h>
@@ -95,9 +95,10 @@ double CRejectionSamplingRangeOnlyLocalization::RS_observationLikelihood(
 	{
 		// TODO: height now includes the sensor "z"!!!...
 		CPoint3D P(
-			x + CPoint3D(
-					m_dataPerBeacon[i].sensorOnRobot.x,
-					m_dataPerBeacon[i].sensorOnRobot.y, 0));
+			x +
+			CPoint3D(
+				m_dataPerBeacon[i].sensorOnRobot.x,
+				m_dataPerBeacon[i].sensorOnRobot.y, 0));
 
 		if (i != m_drawIndex)
 			// Evalute:
@@ -174,17 +175,21 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 
 				// Keep max/min:
 				xMin = min(
-					xMin, data.beaconPosition.x - (data.radiusAtRobotPlane +
-												   4 * m_sigmaRanges + 1.0));
+					xMin,
+					data.beaconPosition.x -
+						(data.radiusAtRobotPlane + 4 * m_sigmaRanges + 1.0));
 				xMax = max(
-					xMax, data.beaconPosition.x + (data.radiusAtRobotPlane +
-												   4 * m_sigmaRanges + 1.0));
+					xMax,
+					data.beaconPosition.x +
+						(data.radiusAtRobotPlane + 4 * m_sigmaRanges + 1.0));
 				yMin = min(
-					yMin, data.beaconPosition.y - (data.radiusAtRobotPlane +
-												   4 * m_sigmaRanges + 1.0));
+					yMin,
+					data.beaconPosition.y -
+						(data.radiusAtRobotPlane + 4 * m_sigmaRanges + 1.0));
 				yMax = max(
-					yMax, data.beaconPosition.y + (data.radiusAtRobotPlane +
-												   4 * m_sigmaRanges + 1.0));
+					yMax,
+					data.beaconPosition.y +
+						(data.radiusAtRobotPlane + 4 * m_sigmaRanges + 1.0));
 			}
 			else
 			{
@@ -298,7 +303,7 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 	for (i = 0; i < m_dataPerBeacon.size(); i++)
 	{
 		float c = m_dataPerBeacon[i].radiusAtRobotPlane *
-				  (m_dataPerBeacon[i].maxAngle - m_dataPerBeacon[i].minAngle);
+			(m_dataPerBeacon[i].maxAngle - m_dataPerBeacon[i].minAngle);
 		if (c < minCoberture)
 		{
 			minCoberture = c;

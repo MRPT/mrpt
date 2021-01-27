@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 
 using namespace mrpt::slam;
@@ -24,7 +24,8 @@ void CRobotPosesGraph::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	auto N = static_cast<uint32_t>(size());
 	out << N;
-	for (const auto& e : *this) out << e.first << e.second.sf << e.second.pdf;
+	for (const auto& e : *this)
+		out << e.first << e.second.sf << e.second.pdf;
 }
 
 void CRobotPosesGraph::serializeFrom(
@@ -49,8 +50,7 @@ void CRobotPosesGraph::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

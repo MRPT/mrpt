@@ -22,6 +22,7 @@
 #include <wx/textctrl.h>
 #include <wx/things/toggle.h>
 #include <wx/timer.h>
+
 #include "MyGLCanvas.h"
 //*)
 
@@ -33,6 +34,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSimpleLine.h>
+
 #include <memory>  // unique_ptr
 
 // JLBC: Unix X headers have these funny things...
@@ -129,7 +131,7 @@ class holonomic_navigator_demoFrame : public wxFrame
 
 	/* Methods: */
 	void updateMap3DView();
-	void reinitSimulator();  // Create navigator object & load params from GUI
+	void reinitSimulator();	 // Create navigator object & load params from GUI
 	void simulateOneStep(double time_step);
 	void updateViewsDynamicObjects();  // Update 3D object positions and refresh
 	// views.
@@ -151,7 +153,7 @@ class holonomic_navigator_demoFrame : public wxFrame
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& source,
-			const std::string& section) const override;  // See base docs
+			const std::string& section) const override;	 // See base docs
 	};
 
 	TOptions m_simul_options;
@@ -193,4 +195,4 @@ class holonomic_navigator_demoFrame : public wxFrame
 	mrpt::opengl::CSetOfLines::Ptr gl_nd_gaps;
 };
 
-#endif  // HOLONOMIC_NAVIGATOR_DEMOMAIN_H
+#endif	// HOLONOMIC_NAVIGATOR_DEMOMAIN_H

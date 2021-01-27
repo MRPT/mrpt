@@ -11,6 +11,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/system/CObserver.h>
+
 #include <iostream>
 
 using namespace mrpt::obs;
@@ -57,7 +58,8 @@ void TestObserverPattern()
 	observer.observeBegin(*map1);
 
 	// Insert:
-	for (int i = 0; i < 3; i++) map1->insertObservation(obs);
+	for (int i = 0; i < 3; i++)
+		map1->insertObservation(obs);
 
 	// Clear:
 	map1->clear();

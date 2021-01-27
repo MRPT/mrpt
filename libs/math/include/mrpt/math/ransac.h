@@ -10,6 +10,7 @@
 
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/system/COutputLogger.h>
+
 #include <functional>
 #include <set>
 
@@ -90,7 +91,7 @@ class RANSAC_Template : public mrpt::system::COutputLogger
 		const double prob_good_sample = 0.999,
 		const size_t maxIter = 2000) const;
 
-};  // end class
+};	// end class
 
 /** The default instance of RANSAC, for double type */
 using RANSAC = RANSAC_Template<double>;

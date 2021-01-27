@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
@@ -18,6 +18,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::poses;
@@ -63,8 +64,7 @@ void CPoint2DPDFGaussian::serializeFrom(
 			in >> mean >> cov;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 void CPoint2DPDFGaussian::serializeTo(
@@ -89,14 +89,13 @@ void CPoint2DPDFGaussian::serializeFrom(
 			cov = m;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
 void CPoint2DPDFGaussian::copyFrom(const CPoint2DPDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	// Convert to gaussian pdf:
 	o.getCovarianceAndMean(cov, mean);
@@ -183,8 +182,8 @@ double CPoint2DPDFGaussian::productIntegralWith(
 	const Eigen::Vector2d MU{mean.x() - p.mean.x(), mean.y() - p.mean.y()};
 
 	return std::pow(M_2PI, -0.5 * state_length) *
-		   (1.0 / std::sqrt(C.determinant())) *
-		   exp(-0.5 * MU.transpose() * C_inv * MU);
+		(1.0 / std::sqrt(C.determinant())) *
+		exp(-0.5 * MU.transpose() * C_inv * MU);
 
 	MRPT_END
 }
@@ -242,8 +241,8 @@ double CPoint2DPDFGaussian::mahalanobisDistanceTo(
 	const CPoint2DPDFGaussian& other) const
 {
 	// The difference in means:
-	const Eigen::Vector2d deltaX{other.mean.x() - mean.x(),
-								 other.mean.y() - mean.y()};
+	const Eigen::Vector2d deltaX{
+		other.mean.x() - mean.x(), other.mean.y() - mean.y()};
 
 	// The inverse of the combined covs:
 	return std::sqrt(

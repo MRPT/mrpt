@@ -227,8 +227,8 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	FlexGridSizer3 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableRow(0);
-	wxString __wxRadioBoxChoices_1[2] = {_("Select by index within SF"),
-										 _("Select by label")};
+	wxString __wxRadioBoxChoices_1[2] = {
+		_("Select by index within SF"), _("Select by label")};
 	rbApply = new wxRadioBox(
 		this, ID_RADIOBOX1, _("Apply to..."), wxDefaultPosition,
 		wxSize(202, 67), 2, __wxRadioBoxChoices_1, 1, wxRA_HORIZONTAL,
@@ -803,12 +803,12 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 
 	wxProgressDialog progDia(
 		wxT("Modifying rawlog"), wxT("Processing..."),
-		processMax,  // range
+		processMax,	 // range
 		this,  // parent
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	unsigned int countLoop = 0;
 	bool keepLoading = true;
@@ -826,10 +826,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 		CSerializable::Ptr newObj;
 		try
 		{
-			if (isInMemory)
-			{
-				newObj = rawlog.getAsGeneric(countLoop);
-			}
+			if (isInMemory) { newObj = rawlog.getAsGeneric(countLoop); }
 			else
 			{
 				archiveFrom(*in_fil) >> newObj;
@@ -900,18 +897,15 @@ void CFormChangeSensorPositions::executeOperationOnRawlog(
 				wxT("Processing... (%u objects processed)"), countLoop);
 			int curProgr = isInMemory ? countLoop : (int)in_fil->getPosition();
 			if (!progDia.Update(curProgr, auxStr)) keepLoading = false;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		// Delete only if processing file
-		if (newObj && !isInMemory)
-		{
-			newObj.reset();
-		}
+		if (newObj && !isInMemory) { newObj.reset(); }
 
 	}  // end while keep loading
 
-	progDia.Update(processMax);  // Close dialog.
+	progDia.Update(processMax);	 // Close dialog.
 
 	if (strlen(endMsg))
 	{

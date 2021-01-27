@@ -300,7 +300,7 @@ class CPosePDFParticlesExtended
 		const bayes::CParticleFilterCapable* obj, size_t index,
 		const void* action, const void* observation);
 
-};  // End of class def.
+};	// End of class def.
 
 /** Auxiliary structure
  */

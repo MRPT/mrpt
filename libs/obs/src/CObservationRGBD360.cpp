@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CObservationRGBD360.h>
@@ -54,7 +54,8 @@ void CObservationRGBD360::serializeTo(mrpt::serialization::CArchive& out) const
 			out << intensityImage;
 	//		out << hasConfidenceImage; if (hasConfidenceImage) out <<
 	// confidenceImage;
-	for (auto t : timestamps) out << t;
+	for (auto t : timestamps)
+		out << t;
 	//
 	out << stdError;
 	out << timestamp;
@@ -91,7 +92,8 @@ void CObservationRGBD360::serializeFrom(
 				for (auto& intensityImage : intensityImages)
 					in >> intensityImage;
 
-			for (auto& t : timestamps) in >> t;
+			for (auto& t : timestamps)
+				in >> t;
 			in >> stdError;
 			in >> timestamp;
 			in >> sensorLabel;
@@ -100,8 +102,7 @@ void CObservationRGBD360::serializeFrom(
 			in >> m_rangeImage_external_stored >> m_rangeImage_external_file;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

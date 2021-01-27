@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>
@@ -41,8 +41,7 @@ TPoint2D_<T>::TPoint2D_(const TPose3D& p)
 template <typename T>
 bool TPoint2D_<T>::operator<(const TPoint2D_<T>& p) const
 {
-	if (this->x < p.x)
-		return true;
+	if (this->x < p.x) return true;
 	else if (this->x > p.x)
 		return false;
 	else

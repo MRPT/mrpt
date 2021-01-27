@@ -93,22 +93,22 @@ class CLoadableOptions
 
 	/** Virtual destructor */
 	virtual ~CLoadableOptions() = default;
-};  // End of class def.
+};	// End of class def.
 
 /** Macro for dumping a variable to a stream, within the method
  * "dumpToTextStream(out)" (Variable types are: int, double, float, bool, string
  */
-#define LOADABLEOPTS_DUMP_VAR(variableName, variableType)                 \
-	{                                                                     \
-		dumpVar_##variableType(                                           \
-			out, #variableName, static_cast<variableType>(variableName)); \
+#define LOADABLEOPTS_DUMP_VAR(variableName, variableType)                      \
+	{                                                                          \
+		dumpVar_##variableType(                                                \
+			out, #variableName, static_cast<variableType>(variableName));      \
 	}
 
 /** Macro for dumping a variable to a stream, transforming the argument from
  * radians to degrees.  */
-#define LOADABLEOPTS_DUMP_VAR_DEG(variableName)                              \
-	{                                                                        \
-		dumpVar_double(                                                      \
-			out, #variableName, RAD2DEG(static_cast<double>(variableName))); \
+#define LOADABLEOPTS_DUMP_VAR_DEG(variableName)                                \
+	{                                                                          \
+		dumpVar_double(                                                        \
+			out, #variableName, RAD2DEG(static_cast<double>(variableName)));   \
 	}
 }  // namespace mrpt::config

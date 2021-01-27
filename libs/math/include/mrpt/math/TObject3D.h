@@ -194,25 +194,15 @@ struct TObject3D
 		destroy();
 		switch (type = obj.type)
 		{
-			case GEOMETRIC_TYPE_POINT:
-				data.point = obj.data.point;
-				break;
-			case GEOMETRIC_TYPE_SEGMENT:
-				data.segment = obj.data.segment;
-				break;
-			case GEOMETRIC_TYPE_LINE:
-				data.line = obj.data.line;
-				break;
+			case GEOMETRIC_TYPE_POINT: data.point = obj.data.point; break;
+			case GEOMETRIC_TYPE_SEGMENT: data.segment = obj.data.segment; break;
+			case GEOMETRIC_TYPE_LINE: data.line = obj.data.line; break;
 			case GEOMETRIC_TYPE_POLYGON:
 				data.polygon = new TPolygon3D(*(obj.data.polygon));
 				break;
-			case GEOMETRIC_TYPE_PLANE:
-				data.plane = obj.data.plane;
-				break;
-			case GEOMETRIC_TYPE_UNDEFINED:
-				break;
-			default:
-				THROW_EXCEPTION("Invalid TObject3D object");
+			case GEOMETRIC_TYPE_PLANE: data.plane = obj.data.plane; break;
+			case GEOMETRIC_TYPE_UNDEFINED: break;
+			default: THROW_EXCEPTION("Invalid TObject3D object");
 		}
 		return *this;
 	}

@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/bits_math.h>  // square
 #include <mrpt/math/TPose3DQuat.h>
+
 #include <cmath>
 
 using namespace mrpt::math;
@@ -24,7 +25,8 @@ void TPose3DQuat::fromString(const std::string& s)
 		THROW_EXCEPTION("Malformed expression in ::fromString");
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 7, "Wrong size of vector in ::fromString");
-	for (int i = 0; i < m.cols(); i++) (*this)[i] = m(0, i);
+	for (int i = 0; i < m.cols(); i++)
+		(*this)[i] = m(0, i);
 }
 
 double TPose3DQuat::norm() const

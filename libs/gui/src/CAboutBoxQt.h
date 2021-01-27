@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
-#include "CAboutBoxBase.h"
-
 #include <QDialog>
+
+#include "CAboutBoxBase.h"
 
 class QTextEdit;
 class QTabWidget;

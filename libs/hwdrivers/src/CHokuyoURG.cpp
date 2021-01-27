@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CHokuyoURG.h>
@@ -148,8 +148,8 @@ void CHokuyoURG::doProcessSimple(
 	{
 		// Extract the timestamp of the sensor:
 		uint32_t nowUI = ((m_rcv_data[0] - 0x30) << 18) +
-						 ((m_rcv_data[1] - 0x30) << 12) +
-						 ((m_rcv_data[2] - 0x30) << 6) + (m_rcv_data[3] - 0x30);
+			((m_rcv_data[1] - 0x30) << 12) + ((m_rcv_data[2] - 0x30) << 6) +
+			(m_rcv_data[3] - 0x30);
 
 		uint32_t AtUI = 0;
 		if (m_timeStartUI == 0)
@@ -190,8 +190,9 @@ void CHokuyoURG::doProcessSimple(
 
 		outObservation.setScanRange(i, range_mm * 0.001f);
 		outObservation.setScanRangeValidity(
-			i, range_mm >= 20 &&
-				   (outObservation.getScanRange(i) <= outObservation.maxRange));
+			i,
+			range_mm >= 20 &&
+				(outObservation.getScanRange(i) <= outObservation.maxRange));
 
 		if (m_intensity)
 		{
@@ -360,7 +361,7 @@ bool CHokuyoURG::turnOn()
 		const int half_range = static_cast<int>(
 								   (m_sensor_info.scans_per_360deg / 360.0) *
 								   RAD2DEG(m_reduced_fov)) >>
-							   1;
+			1;
 		m_firstRange = center - half_range;
 		m_lastRange = center + half_range;
 		MRPT_LOG_INFO_STREAM(
@@ -536,7 +537,8 @@ bool CHokuyoURG::parseResponse()
 				m_rcv_status0 = tmp_rcv_status0;
 				m_rcv_status1 = tmp_rcv_status1;
 				// Empty read bytes so far:
-				for (size_t k = 0; k < peekIdx; k++) m_rx_buffer.pop();
+				for (size_t k = 0; k < peekIdx; k++)
+					m_rx_buffer.pop();
 				return true;
 			}
 
@@ -567,7 +569,8 @@ bool CHokuyoURG::parseResponse()
 				m_rcv_status1 = tmp_rcv_status1;
 
 				// Empty read bytes so far:
-				for (size_t k = 0; k < peekIdx; k++) m_rx_buffer.pop();
+				for (size_t k = 0; k < peekIdx; k++)
+					m_rx_buffer.pop();
 
 				MRPT_LOG_DEBUG_STREAM(
 					"[Hokuyo] parseResponse(): RX `" << m_rcv_data << "`");
@@ -1041,10 +1044,7 @@ void CHokuyoURG::purgeBuffers()
 	if (m_ip_dir.empty())
 	{
 		auto* COM = dynamic_cast<CSerialPort*>(m_stream.get());
-		if (COM != nullptr)
-		{
-			COM->purgeBuffers();
-		}
+		if (COM != nullptr) { COM->purgeBuffers(); }
 	}
 	else  // Socket connection
 	{

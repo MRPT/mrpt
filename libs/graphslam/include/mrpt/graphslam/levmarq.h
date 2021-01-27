@@ -13,10 +13,11 @@
 #include <mrpt/graphslam/types.h>
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/system/CTimeLogger.h>
+// (Must come *after* "types.h" above)
+#include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
+
 #include <map>
 #include <memory>
-
-#include <mrpt/graphslam/levmarq_impl.h>  // Aux classes
 
 namespace mrpt::graphslam
 {
@@ -74,8 +75,9 @@ namespace mrpt::graphslam
  * \note Implementation can be found in file \a levmarq_impl.h
  */
 template <
-	class GRAPH_T, class FEEDBACK_CALLABLE =
-					   typename graphslam_traits<GRAPH_T>::TFunctorFeedback>
+	class GRAPH_T,
+	class FEEDBACK_CALLABLE =
+		typename graphslam_traits<GRAPH_T>::TFunctorFeedback>
 void optimize_graph_spa_levmarq(
 	GRAPH_T& graph, TResultInfoSpaLevMarq& out_info,
 	const std::set<mrpt::graphs::TNodeID>* in_nodes_to_optimize = nullptr,
@@ -118,24 +120,21 @@ void optimize_graph_spa_levmarq(
 	// of them to be optimized:
 	profiler.enter("optimize_graph_spa_levmarq.list_IDs");
 	const set<TNodeID>* nodes_to_optimize;
-	set<TNodeID> nodes_to_optimize_auxlist;  // Used only if
+	set<TNodeID> nodes_to_optimize_auxlist;	 // Used only if
 	// in_nodes_to_optimize==nullptr
-	if (in_nodes_to_optimize)
-	{
-		nodes_to_optimize = in_nodes_to_optimize;
-	}
+	if (in_nodes_to_optimize) { nodes_to_optimize = in_nodes_to_optimize; }
 	else
 	{
 		// We have to make the list of IDs:
 		for (const auto& n : graph.nodes)
-			if (n.first != graph.root)  // Root node is fixed.
+			if (n.first != graph.root)	// Root node is fixed.
 				nodes_to_optimize_auxlist.insert(
 					nodes_to_optimize_auxlist.end(),
 					n.first);  // Provide the "first guess" insert position
 		// for efficiency
 		nodes_to_optimize = &nodes_to_optimize_auxlist;
 	}
-	profiler.leave("optimize_graph_spa_levmarq.list_IDs");  // ---------------/
+	profiler.leave("optimize_graph_spa_levmarq.list_IDs");	// ---------------/
 
 	// Number of nodes to optimize, or free variables:
 	const size_t nFreeNodes = nodes_to_optimize->size();
@@ -242,7 +241,7 @@ void optimize_graph_spa_levmarq(
 	grad.setZero();
 	using map_ID2matrix_TxT_t = std::map<TNodeID, typename gst::matrix_TxT>;
 
-	double lambda = initial_lambda;  // Will be actually set on first iteration.
+	double lambda = initial_lambda;	 // Will be actually set on first iteration.
 	double v = 1;  // was 2, changed since it's modified in the first pass.
 	bool have_to_recompute_H_and_grad = true;
 
@@ -329,7 +328,7 @@ void optimize_graph_spa_levmarq(
 
 			// End condition #1
 			const double grad_norm_inf = math::norm_inf(
-				grad);  // inf-norm (abs. maximum value) of the gradient
+				grad);	// inf-norm (abs. maximum value) of the gradient
 			if (grad_norm_inf <= e1)
 			{
 				// Change is too small
@@ -424,13 +423,13 @@ void optimize_graph_spa_levmarq(
 			if (lambda <= 0 && iter == 0)
 			{
 				profiler.enter(
-					"optimize_graph_spa_levmarq.lambda_init");  // ---\  .
+					"optimize_graph_spa_levmarq.lambda_init");	// ---\  .
 				double H_diagonal_max = 0;
 				for (size_t i = 0; i < nFreeNodes; i++)
 					for (auto it = H_map[i].begin(); it != H_map[i].end(); ++it)
 					{
 						const size_t j =
-							it->first;  // entry submatrix is for (i,j).
+							it->first;	// entry submatrix is for (i,j).
 						if (i == j)
 						{
 							for (size_t k = 0; k < DIMS_POSE; k++)
@@ -441,14 +440,14 @@ void optimize_graph_spa_levmarq(
 				lambda = tau * H_diagonal_max;
 
 				profiler.leave(
-					"optimize_graph_spa_levmarq.lambda_init");  // ---/
+					"optimize_graph_spa_levmarq.lambda_init");	// ---/
 			}
 			else
 			{
 				// After recomputing H and the grad, we update lambda:
-				lambda *= 0.1;  // std::max(0.333, 1-pow(2*rho-1,3.0) );
+				lambda *= 0.1;	// std::max(0.333, 1-pow(2*rho-1,3.0) );
 			}
-			mrpt::keep_max(lambda, 1e-200);  // JL: Avoids underflow!
+			mrpt::keep_max(lambda, 1e-200);	 // JL: Avoids underflow!
 			v = 2;
 		}  // end "have_to_recompute_H_and_grad"
 
@@ -461,9 +460,7 @@ void optimize_graph_spa_levmarq(
 
 		// Feedback to the user:
 		if (functor_feedback)
-		{
-			functor_feedback(graph, iter, max_iters, total_sqr_err);
-		}
+		{ functor_feedback(graph, iter, max_iters, total_sqr_err); }
 
 		profiler.enter("optimize_graph_spa_levmarq.sp_H:build");
 		// Now, build the actual sparse matrix H:
@@ -476,7 +473,7 @@ void optimize_graph_spa_levmarq(
 
 			for (auto it = H_map[i].begin(); it != H_map[i].end(); ++it)
 			{
-				const size_t j = it->first;  // entry submatrix is for (i,j).
+				const size_t j = it->first;	 // entry submatrix is for (i,j).
 				const size_t j_offset = j * DIMS_POSE;
 
 				// For i==j (diagonal blocks), it's different, since we only
@@ -558,7 +555,8 @@ void optimize_graph_spa_levmarq(
 				auto itP = graph.nodes.find(it);
 				const typename gst::graph_t::constraint_t::type_value& P =
 					itP->second;
-				for (size_t i = 0; i < DIMS_POSE; i++) x_norm += square(P[i]);
+				for (size_t i = 0; i < DIMS_POSE; i++)
+					x_norm += square(P[i]);
 			}
 			x_norm = std::sqrt(x_norm);
 		}
@@ -621,7 +619,7 @@ void optimize_graph_spa_levmarq(
 			profiler.leave("optimize_graph_spa_levmarq.Jacobians&err");
 
 			// Now, to decide whether to accept the change:
-			if (new_total_sqr_err < total_sqr_err)  // rho>0)
+			if (new_total_sqr_err < total_sqr_err)	// rho>0)
 			{
 				// Accept the new point:
 				new_lstJacobians.swap(lstJacobians);
@@ -662,6 +660,6 @@ void optimize_graph_spa_levmarq(
 	MRPT_END
 }  // end of optimize_graph_spa_levmarq()
 
-/**  @} */  // end of grouping
+/**  @} */	// end of grouping
 
 }  // namespace mrpt::graphslam

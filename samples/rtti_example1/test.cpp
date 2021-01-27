@@ -10,6 +10,7 @@
 
 //! [example-define-class]
 #include <mrpt/rtti/CObject.h>
+
 #include <iostream>
 #include <memory>
 

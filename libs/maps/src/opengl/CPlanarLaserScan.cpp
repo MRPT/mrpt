@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -119,7 +119,8 @@ void CPlanarLaserScan::onUpdateBuffers_Points()
 	const float *x, *y, *z;
 	m_cache_points.getPointsBuffer(n, x, y, z);
 
-	for (size_t i = 0; i < n; i++) vbd.emplace_back(x[i], y[i], z[i]);
+	for (size_t i = 0; i < n; i++)
+		vbd.emplace_back(x[i], y[i], z[i]);
 
 	cbd.assign(
 		vbd.size(),
@@ -176,8 +177,7 @@ void CPlanarLaserScan::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -226,6 +226,7 @@ auto CPlanarLaserScan::getBoundingBox() const -> mrpt::math::TBoundingBox
 
 mrpt::math::TPoint3Df CPlanarLaserScan::getLocalRepresentativePoint() const
 {
-	return {d2f(m_scan.sensorPose.x()), d2f(m_scan.sensorPose.y()),
-			d2f(m_scan.sensorPose.z())};
+	return {
+		d2f(m_scan.sensorPose.x()), d2f(m_scan.sensorPose.y()),
+		d2f(m_scan.sensorPose.z())};
 }

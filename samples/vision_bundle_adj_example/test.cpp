@@ -51,7 +51,7 @@ using namespace std;
 
 CVectorDouble history_avr_err;
 
-double WORLD_SCALE = 1;  // Will change when loading SBA examples
+double WORLD_SCALE = 1;	 // Will change when loading SBA examples
 
 // A feedback functor, which is called on each iteration by the optimizer to let
 // us know on the progress:
@@ -84,7 +84,7 @@ void bundle_adj_full_demo(
 
 	mrpt::containers::yaml extra_params;
 	// extra_params["verbose"] = true;
-	extra_params["max_iterations"] = 2000;  // 250;
+	extra_params["max_iterations"] = 2000;	// 250;
 	// extra_params["num_fix_frames"] = 1;
 	// extra_params["num_fix_points"] = 0;
 	extra_params["robust_kernel"] = false;
@@ -129,9 +129,9 @@ int main(int argc, char** argv)
 
 		// Only for simulation mode:
 		TFramePosesVec frame_poses_real,
-			frame_poses_noisy;  // Ground truth & starting point
+			frame_poses_noisy;	// Ground truth & starting point
 		TLandmarkLocationsVec landmark_points_real,
-			landmark_points_noisy;  // Ground truth & starting point
+			landmark_points_noisy;	// Ground truth & starting point
 
 		if (argc == 1)
 		{
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
 			// -------------------------------------
 			const size_t nPts = 100;  // # of 3D landmarks
 			const double L1 =
-				60;  // Draw random poses in the rectangle L1xL2xL3
+				60;	 // Draw random poses in the rectangle L1xL2xL3
 			const double L2 = 10;
 			const double L3 = 10;
 			const double max_camera_dist = L1 * 4;
@@ -162,12 +162,12 @@ int main(int argc, char** argv)
 			// Noise params:
 			const double STD_PX_ERROR = 0.10;  // pixels
 
-			const double STD_PX_ERROR_OUTLIER = 5;  // pixels
-			const double PROBABILITY_OUTLIERS = 0;  // 0.01;
+			const double STD_PX_ERROR_OUTLIER = 5;	// pixels
+			const double PROBABILITY_OUTLIERS = 0;	// 0.01;
 
 			const double STD_PT3D = 0.10;  // meters
 			const double STD_CAM_XYZ = 0.05;  // meters
-			const double STD_CAM_ANG = 5.0_deg;  // degs
+			const double STD_CAM_ANG = 5.0_deg;	 // degs
 
 			landmark_points_real.resize(nPts);
 			for (size_t i = 0; i < nPts; i++)
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 				p.y = 4 * L2;  // cameraPathEllipRadius2 * sin(ang);
 				p.z = 0;
 				p.yaw = -90.0_deg -
-						30.0_deg * x / cameraPathLen;  // wrapToPi(ang+M_PI);
+					30.0_deg * x / cameraPathLen;  // wrapToPi(ang+M_PI);
 				p.pitch = 0;
 				p.roll = 0;
 				// Angles above is for +X pointing to the (0,0,0), but we want
@@ -418,7 +418,7 @@ int main(int argc, char** argv)
 					cout << "Done. " << landmark_points.size() << " points, "
 						 << allObs.size() << " observations read.\n";
 
-					landmark_points_real = landmark_points;  // To draw in 3D
+					landmark_points_real = landmark_points;	 // To draw in 3D
 					// the initial
 					// values as well.
 				}

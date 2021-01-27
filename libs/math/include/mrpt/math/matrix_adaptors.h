@@ -179,7 +179,7 @@ class ReverseAccessorIterator
 	inline ReverseAccessorIterator<A, T> operator+(int off) const
 	{
 		ReverseAccessorIterator<A, T> it = *this;
-		it += off;  // Yes, that's right.
+		it += off;	// Yes, that's right.
 		return it;
 	}
 	inline AccessorIterator<A, T>& operator-=(int off)
@@ -190,7 +190,7 @@ class ReverseAccessorIterator
 	inline AccessorIterator<A, T> operator-(int off) const
 	{
 		ReverseAccessorIterator<A, T> it = *this;
-		it -= off;  // Yes, that's right
+		it -= off;	// Yes, that's right
 		return it;
 	}
 	inline int operator-(const ReverseAccessorIterator<A, T>& it) const

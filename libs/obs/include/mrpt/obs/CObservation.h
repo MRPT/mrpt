@@ -167,7 +167,7 @@ class CObservation : public mrpt::serialization::CSerializable
 
 	/** @} */
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace obs
 }  // namespace mrpt

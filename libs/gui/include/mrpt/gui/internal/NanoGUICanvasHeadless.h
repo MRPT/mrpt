@@ -33,4 +33,4 @@ class NanoGUICanvasHeadless : public mrpt::gui::CGlCanvasBaseHeadless
 	void scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel);
 };
 }  // namespace mrpt::gui::internal
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI

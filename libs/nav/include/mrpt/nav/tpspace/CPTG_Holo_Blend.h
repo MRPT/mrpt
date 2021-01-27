@@ -86,7 +86,7 @@ class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 
 	// Compilation of user-given expressions
 	mrpt::expr::CRuntimeCompiledExpression m_expr_v, m_expr_w, m_expr_T_ramp;
-	double m_expr_dir;  // Used as symbol "dir" in m_expr_v and m_expr_w
+	double m_expr_dir;	// Used as symbol "dir" in m_expr_v and m_expr_w
 
 	/** Evals expr_v */
 	double internal_get_v(const double dir) const;

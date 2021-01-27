@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/config.h>  // for MRPT_OS_LINUX
 #include <mrpt/core/exceptions.h>  // for MRPT_END, MRPT_START, MRPT_UNUSE...
 #include <mrpt/system/memory.h>
+
 #include <cstdio>  // for size_t, fclose, fopen, fscanf, FILE
-#include <cstdlib>  // for free, realloc
+#include <cstdlib>	// for free, realloc
 #include <exception>  // for exception
 
 #ifdef __APPLE__
@@ -22,10 +23,11 @@
 #endif
 
 #ifdef MRPT_OS_LINUX
-#include <unistd.h>  // sysconf()
+#include <unistd.h>	 // sysconf()
 #endif
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 // Windows:
 typedef struct _PROCESS_MEMORY_COUNTERS
@@ -92,8 +94,7 @@ class CAuxPSAPI_Loader
 	{
 		try
 		{
-			if (!m_ptr)
-				return false;
+			if (!m_ptr) return false;
 			else
 				return (*m_ptr)(Process, ppsmemCounters, cb);
 		}
@@ -125,9 +126,7 @@ unsigned long mrpt::system::getMemoryUsage()
 
 	if (PSAPI_LOADER.GetProcessMemoryInfo(
 			GetCurrentProcess(), &pmc, sizeof(pmc)))
-	{
-		MEM = (long)pmc.PagefileUsage;
-	}
+	{ MEM = (long)pmc.PagefileUsage; }
 #endif
 
 #ifdef MRPT_OS_LINUX
@@ -155,9 +154,7 @@ unsigned long mrpt::system::getMemoryUsage()
 	if (task_info(
 			mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info,
 			&count) == 0)
-	{
-		MEM = info.virtual_size;
-	}
+	{ MEM = info.virtual_size; }
 #endif
 	return MEM;
 	MRPT_END

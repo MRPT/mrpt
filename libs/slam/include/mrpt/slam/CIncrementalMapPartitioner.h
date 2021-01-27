@@ -17,6 +17,7 @@
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/typemeta/TEnumType.h>
+
 #include <functional>
 #include <limits>
 
@@ -221,7 +222,7 @@ class CIncrementalMapPartitioner : public mrpt::system::COutputLogger,
 
 	similarity_func_t m_sim_func;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::slam
 MRPT_ENUM_TYPE_BEGIN(mrpt::slam::similarity_method_t)
 MRPT_FILL_ENUM_MEMBER(mrpt::slam, smMETRIC_MAP_MATCHING);

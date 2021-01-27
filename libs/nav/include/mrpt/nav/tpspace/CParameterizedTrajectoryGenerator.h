@@ -19,6 +19,7 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <cstdint>
 
 namespace mrpt
@@ -510,7 +511,7 @@ class CParameterizedTrajectoryGenerator
 		ClearanceDiagram::dist2clearance_t& inout_realdist2clearance,
 		bool treat_as_obstacle = true) const;
 
-};  // end of class
+};	// end of class
 
 /** A list of PTGs (smart pointers) */
 using TListPTGPtr =

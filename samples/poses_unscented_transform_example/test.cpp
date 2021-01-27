@@ -19,6 +19,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <Eigen/Dense>
 #include <iostream>
 
@@ -105,7 +106,7 @@ void Test_SUT()
 			dumm,  // fixed parameter: not used in this example
 			y_mean, y_cov,
 			5e5,  // Samples
-			&MC_samples  // we want the samples.
+			&MC_samples	 // we want the samples.
 		);
 
 	cout << "MC: Time (ms): " << 1e3 * tictac.Tac() / N << endl;
@@ -200,7 +201,8 @@ static void aux_posequat2poseypr(
 		x[0], x[1], x[2],
 		mrpt::math::CQuaternionDouble(x[3], x[4], x[5], x[6]));
 	const CPose3D p2 = CPose3D(p);
-	for (int i = 0; i < 6; i++) y[i] = p2[i];
+	for (int i = 0; i < 6; i++)
+		y[i] = p2[i];
 	// cout << "p2: " << y[3] << endl;
 }
 
@@ -214,8 +216,9 @@ void TestCalibrate_pose2quat()
 	CMatrixFixed<double, 7, 1> v;
 	mrpt::random::getRandomGenerator().drawGaussian1DMatrix(v);
 	v *= 1e-3;
-	o.cov.matProductOf_AAt(v);  // COV = v*vt
-	for (int i = 0; i < 7; i++) o.cov(i, i) += 0.01;
+	o.cov.matProductOf_AAt(v);	// COV = v*vt
+	for (int i = 0; i < 7; i++)
+		o.cov(i, i) += 0.01;
 
 	o.cov(0, 1) = o.cov(1, 0) = 0.007;
 
@@ -226,7 +229,7 @@ void TestCalibrate_pose2quat()
 	const CVectorFixedDouble<7> x_mean(o.mean);
 	CVectorFixedDouble<6> y_mean;
 	static const bool elements_do_wrapPI[6] = {
-		false, false, false, true, true, true};  // xyz yaw pitch roll
+		false, false, false, true, true, true};	 // xyz yaw pitch roll
 
 	static const double dummy = 0;
 	// MonteCarlo:
@@ -234,7 +237,7 @@ void TestCalibrate_pose2quat()
 	CMatrixDouble66 MC_y_cov;
 	mrpt::math::transform_gaussian_montecarlo(
 		x_mean, o.cov, aux_posequat2poseypr,
-		dummy,  // fixed parameter: not used in this example
+		dummy,	// fixed parameter: not used in this example
 		MC_y_mean, MC_y_cov, 500);
 	cout << "MC: " << endl
 		 << MC_y_mean << endl
@@ -253,8 +256,8 @@ void TestCalibrate_pose2quat()
 		x_mean, o.cov, aux_posequat2poseypr, dummy, y_mean, p_ypr.cov,
 		elements_do_wrapPI,
 		1e-3,  // alpha
-		0,  // K
-		2.0  // beta
+		0,	// K
+		2.0	 // beta
 	);
 
 	cout << "SUT: " << endl

@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "serialization-precomp.h"  // Precompiled headers
+#include "serialization-precomp.h"	// Precompiled headers
 //
 #include <mrpt/core/byte_manip.h>
 #include <mrpt/core/exceptions.h>
@@ -17,7 +17,7 @@
 #include <mrpt/serialization/aligned_serialization.h>
 
 #include <array>
-#include <cstring>  // strlen()
+#include <cstring>	// strlen()
 
 using namespace mrpt::serialization;
 
@@ -105,10 +105,7 @@ void CArchive::WriteObject(const CSerializable* o)
 
 	// First, the "classname".
 	const char* className;
-	if (o != nullptr)
-	{
-		className = o->GetRuntimeClass()->className;
-	}
+	if (o != nullptr) { className = o->GetRuntimeClass()->className; }
 	else
 	{
 		className = "nullptr";
@@ -507,7 +504,8 @@ CArchive& mrpt::serialization::operator<<(
 {
 	auto N = static_cast<uint32_t>(vec.size());
 	s << N;
-	for (size_t i = 0; i < N; i++) s << vec[i];
+	for (size_t i = 0; i < N; i++)
+		s << vec[i];
 	return s;
 }
 
@@ -517,7 +515,8 @@ CArchive& mrpt::serialization::operator>>(
 	uint32_t N;
 	s >> N;
 	vec.resize(N);
-	for (size_t i = 0; i < N; i++) s >> vec[i];
+	for (size_t i = 0; i < N; i++)
+		s >> vec[i];
 	return s;
 }
 
@@ -535,13 +534,11 @@ void CArchive::sendMessage(const CMessage& msg)
 	buf[nBytesTx++] = (unsigned char)(msg.type);
 
 	if (msg_format_is_tiny)
-	{
-		buf[nBytesTx++] = (unsigned char)msg.content.size();
-	}
+	{ buf[nBytesTx++] = (unsigned char)msg.content.size(); }
 	else
 	{
 		buf[nBytesTx++] = msg.content.size() & 0xff;  // lo
-		buf[nBytesTx++] = (msg.content.size() >> 8) & 0xff;  // hi
+		buf[nBytesTx++] = (msg.content.size() >> 8) & 0xff;	 // hi
 	}
 
 	if (!msg.content.empty())
@@ -550,7 +547,7 @@ void CArchive::sendMessage(const CMessage& msg)
 	buf[nBytesTx++] = 0x96;
 
 	// Send buffer -------------------------------------
-	WriteBuffer(&buf[0], nBytesTx);  // Exceptions will be raised on errors here
+	WriteBuffer(&buf[0], nBytesTx);	 // Exceptions will be raised on errors here
 
 	MRPT_END
 }
@@ -567,8 +564,7 @@ bool CArchive::receiveMessage(CMessage& msg)
 
 	for (;;)
 	{
-		if (nBytesInFrame < 4)
-			nBytesToRx = 1;
+		if (nBytesInFrame < 4) nBytesToRx = 1;
 		else
 		{
 			if (buf[0] == 0x69)
@@ -579,7 +575,7 @@ bool CArchive::receiveMessage(CMessage& msg)
 			else if (buf[0] == 0x79)
 			{
 				payload_len = MAKEWORD16B(
-					buf[3] /*low*/, buf[2] /*hi*/);  // Length of the content
+					buf[3] /*low*/, buf[2] /*hi*/);	 // Length of the content
 				expectedLen = payload_len + 5;
 			}
 			nBytesToRx = expectedLen - nBytesInFrame;

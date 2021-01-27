@@ -432,7 +432,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	bool internal_send_http_post(const std::string& post_data);
 
-};  // end of class
+};	// end of class
 }  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::CVelodyneScanner::model_t)
 using namespace mrpt::hwdrivers;

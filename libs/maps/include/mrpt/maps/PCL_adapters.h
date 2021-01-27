@@ -79,7 +79,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ>>
 		pcl::PointXYZ& p = m_obj.points[idx];
 		p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN();
 	}
-};  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> >
+};	// end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> >
 
 /** Specialization
  * mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> > for an
@@ -229,7 +229,7 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>>
 		p.b = b;
 	}
 
-};  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>
+};	// end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB>
 // >
 
 /** Specialization
@@ -387,6 +387,6 @@ class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>>
 		p.b = b;
 	}
 
-};  // end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>
+};	// end of mrpt::opengl::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGBA>
 // >
 }  // namespace mrpt::opengl

@@ -235,13 +235,13 @@ typedef enum
 
 /* Common fields between JPEG compression and decompression master structs. */
 
-#define jpeg_common_fields                                                \
-	struct jpeg_error_mgr* err; /* Error handler module */                \
-	struct jpeg_memory_mgr* mem; /* Memory manager module */              \
-	struct jpeg_progress_mgr*                                             \
-		progress; /* Progress monitor, or nullptr if none */              \
-	void* client_data; /* Available for use by application */             \
-	boolean is_decompressor; /* So common code can tell which is which */ \
+#define jpeg_common_fields                                                     \
+	struct jpeg_error_mgr* err; /* Error handler module */                     \
+	struct jpeg_memory_mgr* mem; /* Memory manager module */                   \
+	struct jpeg_progress_mgr*                                                  \
+		progress; /* Progress monitor, or nullptr if none */                   \
+	void* client_data; /* Available for use by application */                  \
+	boolean is_decompressor; /* So common code can tell which is which */      \
 	int global_state /* For checking call sequence validity */
 
 /* Routines that are to be used by both halves of the library are declared
@@ -662,7 +662,8 @@ struct jpeg_error_mgr
 	 */
 	int msg_code;
 #define JMSG_STR_PARM_MAX 80
-	union {
+	union
+	{
 		int i[8];
 		char s[JMSG_STR_PARM_MAX];
 	} msg_parm;
@@ -888,13 +889,13 @@ jpeg_std_error JPP((struct jpeg_error_mgr * err));
  * passed for version mismatch checking.
  * NB: you must set up the error-manager BEFORE calling jpeg_create_xxx.
  */
-#define jpeg_create_compress(cinfo) \
-	jpeg_CreateCompress(            \
-		(cinfo), JPEG_LIB_VERSION,  \
+#define jpeg_create_compress(cinfo)                                            \
+	jpeg_CreateCompress(                                                       \
+		(cinfo), JPEG_LIB_VERSION,                                             \
 		(size_t)sizeof(struct jpeg_compress_struct))
-#define jpeg_create_decompress(cinfo) \
-	jpeg_CreateDecompress(            \
-		(cinfo), JPEG_LIB_VERSION,    \
+#define jpeg_create_decompress(cinfo)                                          \
+	jpeg_CreateDecompress(                                                     \
+		(cinfo), JPEG_LIB_VERSION,                                             \
 		(size_t)sizeof(struct jpeg_decompress_struct))
 EXTERN(void)
 jpeg_CreateCompress JPP((j_compress_ptr cinfo, int version, size_t structsize));
@@ -965,8 +966,8 @@ jpeg_read_header JPP((j_decompress_ptr cinfo, boolean require_image));
 /* Return value is one of: */
 #define JPEG_SUSPENDED 0 /* Suspended due to lack of input data */
 #define JPEG_HEADER_OK 1 /* Found valid image datastream */
-#define JPEG_HEADER_TABLES_ONLY                  \
-	2 /* Found valid table-specs-only datastream \
+#define JPEG_HEADER_TABLES_ONLY                                                \
+	2 /* Found valid table-specs-only datastream                               \
 	   */
 /* If you pass require_image = TRUE (normal case), you need not check for
  * a TABLES_ONLY return code; an abbreviated file will cause an error exit.

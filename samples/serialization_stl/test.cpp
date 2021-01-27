@@ -8,12 +8,13 @@
    +------------------------------------------------------------------------+ */
 /** \example serialization_stl/test.cpp */
 
-#include <iostream>  // cout
+#include <iostream>	 // cout
 
 template <class CONTAINER>
 void printMap(const CONTAINER& m)
 {
-	for (const auto& e : m) std::cout << e.first << "=" << e.second << ", ";
+	for (const auto& e : m)
+		std::cout << e.first << "=" << e.second << ", ";
 	std::cout << std::endl;
 }
 
@@ -23,7 +24,7 @@ void printMap(const CONTAINER& m)
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 
-#include <iostream>  // cout
+#include <iostream>	 // cout
 
 void WriteAndReadExample()
 {
@@ -60,9 +61,9 @@ void WriteAndReadExample()
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/archiveFrom_std_streams.h>
 #include <mrpt/serialization/stl_serialization.h>
-#include <fstream>  // io std streams
 
-#include <iostream>  // cout
+#include <fstream>	// io std streams
+#include <iostream>	 // cout
 
 void WriteAndReadExampleStdIO()
 {

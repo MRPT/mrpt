@@ -8,10 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"
-
-#include <mrpt/gui.h>
-
+//
 #include <mrpt/core/initializer.h>
+#include <mrpt/gui.h>
 #include <mrpt/serialization/CSerializable.h>
 
 using namespace mrpt::gui;

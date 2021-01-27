@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/hwdrivers/CGPS_NTRIP.h>
+
 #include <iostream>
 
 using namespace mrpt::hwdrivers;

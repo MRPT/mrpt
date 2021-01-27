@@ -9,6 +9,7 @@
 
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <cmath>
 #include <iostream>
 
@@ -38,8 +39,8 @@ void TestLevMarq()
 	CTicTac tictac;
 
 	initial_x.resize(2);
-	initial_x[0] = 1.4;  // x
-	initial_x[1] = 2.5;  // y
+	initial_x[0] = 1.4;	 // x
+	initial_x[1] = 2.5;	 // y
 
 	CVectorDouble increments_x(2);
 	increments_x.fill(0.0001);

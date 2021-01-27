@@ -7,9 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-
+#include "io-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/io/CFileStream.h>
+
 #include <iomanip>
 #include <iostream>
 #include <string>  // std::getline()
@@ -32,8 +33,7 @@ CFileStream::CFileStream() : m_f() {}
 CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_) : m_f()
 {
 	std::ios_base::openmode mode = std::ios_base::in;
-	if (mode_ == fomRead)
-		mode = std::ios_base::in;
+	if (mode_ == fomRead) mode = std::ios_base::in;
 	else if (mode_ == fomWrite)
 		mode = std::ios_base::out | std::ios_base::trunc;
 	else if (mode_ == fomAppend)
@@ -56,8 +56,7 @@ CFileStream::CFileStream(const string& fileName, TFileOpenModes mode_) : m_f()
 bool CFileStream::open(const std::string& fileName, TFileOpenModes mode_)
 {
 	std::ios_base::openmode mode = std::ios_base::in;
-	if (mode_ == fomRead)
-		mode = std::ios_base::in;
+	if (mode_ == fomRead) mode = std::ios_base::in;
 	else if (mode_ == fomWrite)
 		mode = std::ios_base::out | std::ios_base::trunc;
 	else if (mode_ == fomAppend)
@@ -118,15 +117,9 @@ uint64_t CFileStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 
 	switch (Origin)
 	{
-		case sFromBeginning:
-			way = ios_base::beg;
-			break;
-		case sFromCurrent:
-			way = ios_base::cur;
-			break;
-		case sFromEnd:
-			way = ios_base::end;
-			break;
+		case sFromBeginning: way = ios_base::beg; break;
+		case sFromCurrent: way = ios_base::cur; break;
+		case sFromEnd: way = ios_base::end; break;
 		default:
 			throw std::runtime_error(
 				"[CFileStream::Seek] Invalid value for 'Origin'");
@@ -154,8 +147,7 @@ uint64_t CFileStream::getTotalBytesCount() const
 uint64_t CFileStream::getPosition() const
 {
 	auto& f = const_cast<std::fstream&>(m_f);
-	if (m_f.is_open())
-		return f.tellg();
+	if (m_f.is_open()) return f.tellg();
 	else
 		return 0;
 }
@@ -165,8 +157,7 @@ uint64_t CFileStream::getPosition() const
  ---------------------------------------------------------------*/
 uint64_t CFileStream::getPositionI()
 {
-	if (m_f.is_open())
-		return m_f.tellg();
+	if (m_f.is_open()) return m_f.tellg();
 	else
 		return 0;
 }
@@ -176,8 +167,7 @@ uint64_t CFileStream::getPositionI()
  ---------------------------------------------------------------*/
 uint64_t CFileStream::getPositionO()
 {
-	if (m_f.is_open())
-		return m_f.tellp();
+	if (m_f.is_open()) return m_f.tellp();
 	else
 		return 0;
 }
@@ -191,7 +181,7 @@ bool CFileStream::fileOpenCorrectly() const { return m_f.is_open(); }
  ---------------------------------------------------------------*/
 bool CFileStream::readLine(string& str)
 {
-	str = string();  // clear() is not defined in VC6
+	str = string();	 // clear() is not defined in VC6
 	if (!m_f.is_open()) return false;
 
 	std::getline(m_f, str);

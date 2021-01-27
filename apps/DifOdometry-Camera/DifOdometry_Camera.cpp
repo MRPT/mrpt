@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Camera.h"
+
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CFrustum.h>
@@ -17,6 +18,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
+
 #include <Eigen/Dense>
 
 using namespace Eigen;
@@ -177,8 +179,7 @@ void CDifodoCamera::loadFrame()
 		const openni::DepthPixel* pDepth = pDepthRow;
 		for (int xc = width - 1; xc >= 0; --xc, ++pDepth)
 		{
-			if (*pDepth < 4500.f)
-				depth_wf(yc, xc) = 0.001f * (*pDepth);
+			if (*pDepth < 4500.f) depth_wf(yc, xc) = 0.001f * (*pDepth);
 
 			else
 				depth_wf(yc, xc) = 0.f;
@@ -369,8 +370,7 @@ void CDifodoCamera::reset()
 {
 	// Reset Difodo
 	loadFrame();
-	if (fast_pyramid)
-		buildCoordinatesPyramidFast();
+	if (fast_pyramid) buildCoordinatesPyramidFast();
 	else
 		buildCoordinatesPyramid();
 	loadFrame();

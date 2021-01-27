@@ -136,5 +136,5 @@ class CPose3DPDF : public mrpt::serialization::CSerializable,
 		return SETOFOBJECTS::posePDF2opengl(*this);
 	}
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

@@ -9,17 +9,17 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
+#include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/obs/VelodyneCalibration.h>
+
 #include <cmath>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <sstream>
-
-#include <mrpt/config.h>
 #if MRPT_HAS_TINYXML2
 #include <tinyxml2.h>
 #endif
@@ -142,8 +142,7 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void* node_ptr)
 			0.01 * get_xml_children_as_double(node_px, "distCorrection_");
 		plc.verticalOffsetCorrection =
 			0.01 * get_xml_children_as_double(node_px, "vertOffsetCorrection_");
-		plc.horizontalOffsetCorrection =
-			0.01 *
+		plc.horizontalOffsetCorrection = 0.01 *
 			get_xml_children_as_double(node_px, "horizOffsetCorrection_");
 
 		plc.sinVertCorrection = std::sin(mrpt::DEG2RAD(plc.verticalCorrection));
@@ -174,7 +173,7 @@ bool VelodyneCalibration::loadFromXMLText(const std::string& xml_file_contents)
 			std::cerr
 				<< "[VelodyneCalibration::loadFromXMLText] Error parsing XML "
 				   "content: "
-#if TIXML2_MAJOR_VERSION >= 7 || \
+#if TIXML2_MAJOR_VERSION >= 7 ||                                               \
 	(TIXML2_MAJOR_VERSION >= 6 && TIXML2_MINOR_VERSION >= 2)
 				<< tinyxml2::XMLDocument::ErrorIDToName(err)
 #else
@@ -213,7 +212,7 @@ bool VelodyneCalibration::loadFromXMLFile(
 		{
 			std::cerr << "[VelodyneCalibration::loadFromXMLFile] Error loading "
 						 "XML file: "
-#if TIXML2_MAJOR_VERSION >= 7 || \
+#if TIXML2_MAJOR_VERSION >= 7 ||                                               \
 	(TIXML2_MAJOR_VERSION >= 6 && TIXML2_MINOR_VERSION >= 2)
 					  << tinyxml2::XMLDocument::ErrorIDToName(err)
 #else
@@ -326,11 +325,10 @@ const VelodyneCalibration& VelodyneCalibration::LoadDefaultCalibration(
 	auto it = cache_default_calibs.find(lidar_model);
 	if (it != cache_default_calibs.end()) return it->second;
 
-	VelodyneCalibration result;  // Leave empty to indicate unknown model
+	VelodyneCalibration result;	 // Leave empty to indicate unknown model
 	std::string xml_contents, yaml_contents;
 
-	if (lidar_model == "VLP16")
-		xml_contents = velodyne_default_calib_VLP16;
+	if (lidar_model == "VLP16") xml_contents = velodyne_default_calib_VLP16;
 	else if (lidar_model == "HDL32")
 		xml_contents = velodyne_default_calib_HDL32;
 	else if (lidar_model == "HDL64")

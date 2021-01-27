@@ -8,11 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <array>
 
 #include "sample_image1.h"
@@ -26,6 +27,7 @@ void stock_observations::example2DRangeScan(
 	using scan_data_t = std::array<float, 361>;
 	using scan_valid_data_t = std::array<char, 361>;
 
+	// clang-format off
 	const std::array<scan_data_t, 2> SCAN_RANGES = {
 		{{0.910f,  0.900f,  0.910f,  0.900f,  0.900f,  0.890f,  0.890f,
 		  0.880f,  0.890f,  0.880f,  0.880f,  0.880f,  0.880f,  0.880f,
@@ -164,6 +166,7 @@ void stock_observations::example2DRangeScan(
 		  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}};
+	// clang-format on
 
 	s.aperture = M_PIf;
 	s.rightToLeft = true;
@@ -183,8 +186,7 @@ void stock_observations::exampleImage(mrpt::img::CImage& im, int i)
 		case 1:
 			buf.assignMemoryNotOwn(sample_image2, sizeof(sample_image2));
 			break;
-		default:
-			THROW_EXCEPTION("Out of bound index in exampleImage()");
+		default: THROW_EXCEPTION("Out of bound index in exampleImage()");
 	}
 	mrpt::serialization::archiveFrom(buf) >> im;
 }

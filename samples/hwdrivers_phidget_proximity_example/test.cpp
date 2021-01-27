@@ -11,6 +11,7 @@
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 #include <thread>
 
@@ -27,8 +28,7 @@ int main(int argc, char** argv)
 	try
 	{
 		string confFileName;
-		if (argc < 2)
-			confFileName = string("./conf.ini");
+		if (argc < 2) confFileName = string("./conf.ini");
 		else
 			confFileName = string(argv[1]);
 

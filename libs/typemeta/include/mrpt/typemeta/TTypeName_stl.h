@@ -11,6 +11,7 @@
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
 #include <mrpt/typemeta/static_string.h>
+
 #include <array>
 #include <chrono>
 #include <deque>
@@ -35,7 +36,7 @@ MRPT_DECLARE_TTYPENAME(std::string)
 		constexpr static auto get()                                            \
 		{                                                                      \
 			return literal(#_CONTAINER) + literal("<") + TTypeName<V>::get() + \
-				   literal(">");                                               \
+				literal(">");                                                  \
 		}                                                                      \
 	};
 
@@ -52,8 +53,8 @@ MRPT_DECLARE_TTYPENAME_CONTAINER(std::set)
 		constexpr static auto get()                                            \
 		{                                                                      \
 			return literal(#_CONTAINER) + literal("<") + TTypeName<V>::get() + \
-				   literal(",") + literal(num_to_string<N>::value) +           \
-				   literal(">");                                               \
+				literal(",") + literal(num_to_string<N>::value) +              \
+				literal(">");                                                  \
 		}                                                                      \
 	};
 
@@ -66,7 +67,7 @@ MRPT_DECLARE_TTYPENAME_CONTAINER_FIX_SIZE(std::array)
 		constexpr static auto get()                                            \
 		{                                                                      \
 			return literal(#_CONTAINER) + literal("<") + TTypeName<K>::get() + \
-				   literal(",") + TTypeName<V>::get() + literal(">");          \
+				literal(",") + TTypeName<V>::get() + literal(">");             \
 		}                                                                      \
 	};
 
@@ -79,7 +80,7 @@ struct TTypeName<std::pair<T1, T2>>
 	constexpr static auto get()
 	{
 		return literal("std::pair<") + TTypeName<T1>::get() + literal(",") +
-			   TTypeName<T2>::get() + literal(">");
+			TTypeName<T2>::get() + literal(">");
 	}
 };
 

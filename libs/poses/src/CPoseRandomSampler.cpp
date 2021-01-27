@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
+#include "poses-precomp.h"	// Precompiled headers
 //
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
@@ -125,7 +125,7 @@ void CPoseRandomSampler::setPosePDF(const CPosePDF& pdf)
 	}
 	else if (IS_CLASS(pdf, CPosePDFParticles))
 	{
-		return;  // Nothing to prepare.
+		return;	 // Nothing to prepare.
 	}
 	else
 	{
@@ -167,7 +167,7 @@ void CPoseRandomSampler::setPosePDF(const CPose3DPDF& pdf)
 	}
 	else if (IS_CLASS(pdf, CPose3DPDFParticles))
 	{
-		return;  // Nothing to prepare.
+		return;	 // Nothing to prepare.
 	}
 	else
 	{
@@ -185,10 +185,7 @@ CPose2D& CPoseRandomSampler::drawSample(CPose2D& p) const
 {
 	MRPT_START
 
-	if (m_pdf2D)
-	{
-		do_sample_2D(p);
-	}
+	if (m_pdf2D) { do_sample_2D(p); }
 	else if (m_pdf3D)
 	{
 		CPose3D q;
@@ -343,10 +340,7 @@ void CPoseRandomSampler::getOriginalPDFCov2D(CMatrixDouble33& cov3x3) const
 	MRPT_START
 	ASSERT_(this->isPrepared());
 
-	if (m_pdf2D)
-	{
-		m_pdf2D->getCovariance(cov3x3);
-	}
+	if (m_pdf2D) { m_pdf2D->getCovariance(cov3x3); }
 	else
 	{
 		ASSERT_(m_pdf3D);
@@ -390,8 +384,7 @@ CPose2D& CPoseRandomSampler::getSamplingMean2D(CPose2D& out_mean) const
 	MRPT_START
 	ASSERT_(this->isPrepared());
 
-	if (m_pdf2D)
-		out_mean = m_fastdraw_gauss_M_2D;
+	if (m_pdf2D) out_mean = m_fastdraw_gauss_M_2D;
 	else
 		out_mean = CPose2D(m_fastdraw_gauss_M_3D);
 
@@ -407,8 +400,7 @@ CPose3D& CPoseRandomSampler::getSamplingMean3D(CPose3D& out_mean) const
 	MRPT_START
 	ASSERT_(this->isPrepared());
 
-	if (m_pdf3D)
-		out_mean = m_fastdraw_gauss_M_3D;
+	if (m_pdf3D) out_mean = m_fastdraw_gauss_M_3D;
 	else
 		out_mean = CPose3D(m_fastdraw_gauss_M_2D);
 

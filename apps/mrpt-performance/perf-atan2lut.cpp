@@ -9,6 +9,7 @@
 
 #include <mrpt/math/CAtan2LookUpTable.h>
 #include <mrpt/random.h>
+
 #include <cmath>
 
 #include "common.h"
@@ -53,10 +54,10 @@ double atan2_lut_multires_test_build(int, int)
 	mrpt::math::CAtan2LookUpTableMultiRes atan2lut;
 
 	std::map<double, double> res2extension;
-	res2extension[0.001] = 0.8;  // 0.1 cm resolution
-	res2extension[0.01] = 2.0;  // 1.0 cm resolution
-	res2extension[0.02] = 5.0;  // 2.0 cm resolution
-	res2extension[0.05] = 11.0;  // 5.0 cm resolution
+	res2extension[0.001] = 0.8;	 // 0.1 cm resolution
+	res2extension[0.01] = 2.0;	// 1.0 cm resolution
+	res2extension[0.02] = 5.0;	// 2.0 cm resolution
+	res2extension[0.05] = 11.0;	 // 5.0 cm resolution
 
 	mrpt::system::CTicTac tictac;
 	tictac.Tic();
@@ -74,10 +75,10 @@ double atan2_lut_multires_test_query(int, int)
 	mrpt::math::CAtan2LookUpTableMultiRes atan2lut;
 
 	std::map<double, double> res2extension;
-	res2extension[0.001] = 0.8;  // 0.1 cm resolution
-	res2extension[0.01] = 2.0;  // 1.0 cm resolution
-	res2extension[0.02] = 5.0;  // 2.0 cm resolution
-	res2extension[0.05] = 11.0;  // 5.0 cm resolution
+	res2extension[0.001] = 0.8;	 // 0.1 cm resolution
+	res2extension[0.01] = 2.0;	// 1.0 cm resolution
+	res2extension[0.02] = 5.0;	// 2.0 cm resolution
+	res2extension[0.05] = 11.0;	 // 5.0 cm resolution
 	atan2lut.resize(res2extension);
 
 	tictac.Tic();

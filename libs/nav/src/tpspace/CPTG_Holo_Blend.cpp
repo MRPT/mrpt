@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 #include <mrpt/math/CVectorFixed.h>
@@ -41,22 +41,22 @@ Number of steps "d" for each PTG path "k":
 
 #ifdef DO_PERFORMANCE_BENCHMARK
 mrpt::system::CTimeLogger tl_holo("CPTG_Holo_Blend");
-#define PERFORMANCE_BENCHMARK \
+#define PERFORMANCE_BENCHMARK                                                  \
 	CTimeLoggerEntry tle(tl_holo, __CURRENT_FUNCTION_NAME__);
 #else
 #define PERFORMANCE_BENCHMARK
 #endif
 
-double CPTG_Holo_Blend::PATH_TIME_STEP = 10e-3;  // 10 ms
-double CPTG_Holo_Blend::eps = 1e-4;  // epsilon for detecting 1/0 situation
+double CPTG_Holo_Blend::PATH_TIME_STEP = 10e-3;	 // 10 ms
+double CPTG_Holo_Blend::eps = 1e-4;	 // epsilon for detecting 1/0 situation
 
 // As a macro instead of a function (uglier) to allow for const variables
 // (safer)
-#define COMMON_PTG_DESIGN_PARAMS                                   \
-	const double vxi = m_nav_dyn_state.curVelLocal.vx,             \
-				 vyi = m_nav_dyn_state.curVelLocal.vy;             \
-	const double vf_mod = internal_get_v(dir);                     \
-	const double vxf = vf_mod * cos(dir), vyf = vf_mod * sin(dir); \
+#define COMMON_PTG_DESIGN_PARAMS                                               \
+	const double vxi = m_nav_dyn_state.curVelLocal.vx,                         \
+				 vyi = m_nav_dyn_state.curVelLocal.vy;                         \
+	const double vf_mod = internal_get_v(dir);                                 \
+	const double vxf = vf_mod * cos(dir), vyf = vf_mod * sin(dir);             \
 	const double T_ramp = internal_get_T_ramp(dir);
 
 #if 0
@@ -105,7 +105,7 @@ static double calc_trans_distance_t_below_Tramp_abc_numeric(
 
 	ASSERT_(a >= .0);
 	ASSERT_(c >= .0);
-	double feval_t = std::sqrt(c);  // t (initial: t=0)
+	double feval_t = std::sqrt(c);	// t (initial: t=0)
 	double feval_tp1;  // t+1
 
 	const double At = T / (NUM_STEPS);
@@ -276,9 +276,7 @@ void CPTG_Holo_Blend::serializeFrom(
 		case 3:
 		case 4:
 			if (version >= 1)
-			{
-				CPTG_RobotShape_Circular::internal_shape_loadFromStream(in);
-			}
+			{ CPTG_RobotShape_Circular::internal_shape_loadFromStream(in); }
 
 			in >> T_ramp_max >> V_MAX >> W_MAX >> turningRadiusReference;
 			if (version == 2)
@@ -286,13 +284,9 @@ void CPTG_Holo_Blend::serializeFrom(
 				double dummy_maxAllowedDirAngle;  // removed in v3
 				in >> dummy_maxAllowedDirAngle;
 			}
-			if (version >= 4)
-			{
-				in >> expr_V >> expr_W >> expr_T_ramp;
-			}
+			if (version >= 4) { in >> expr_V >> expr_W >> expr_T_ramp; }
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -324,7 +318,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(
 	// in each case: (1) t<T_ramp and (2) t>T_ramp
 
 	// Initial value:
-	mrpt::math::CVectorFixed<double, 3> q;  // [t vxf vyf]
+	mrpt::math::CVectorFixed<double, 3> q;	// [t vxf vyf]
 	q[0] = T_ramp_max * 1.1;
 	q[1] = V_MAX * x / sqrt(x * x + y * y);
 	q[2] = V_MAX * y / sqrt(x * x + y * y);
@@ -445,9 +439,7 @@ size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
 	}
 	ASSERT_(step > 0);
 	if (m_pathStepCountCache.size() != m_alphaValuesCount)
-	{
-		m_pathStepCountCache.assign(m_alphaValuesCount, -1);
-	}
+	{ m_pathStepCountCache.assign(m_alphaValuesCount, -1); }
 	m_pathStepCountCache[k] = step;
 	return step;
 }
@@ -486,13 +478,12 @@ void CPTG_Holo_Blend::getPathPose(
 		int nroots = mrpt::math::solve_poly2(a, b, c, r1, r2);
 		if (nroots != 2)
 		{
-			p.phi = .0;  // typical case: wi=wf=0
+			p.phi = .0;	 // typical case: wi=wf=0
 		}
 		else
 		{
 			const double t_solve = std::max(r1, r2);
-			if (t > t_solve)
-				p.phi = dir;
+			if (t > t_solve) p.phi = dir;
 			else
 				p.phi = wi * t + t * t * TR2_ * (wf - wi);
 		}
@@ -501,8 +492,7 @@ void CPTG_Holo_Blend::getPathPose(
 	{
 		// Time required to align completed?
 		const double t_solve = (dir - T_ramp * 0.5 * (wi + wf)) / wf + T_ramp;
-		if (t > t_solve)
-			p.phi = dir;
+		if (t > t_solve) p.phi = dir;
 		else
 			p.phi = T_ramp * 0.5 * (wi + wf) + (t - T_ramp) * wf;
 	}
@@ -520,13 +510,10 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint32_t step) const
 	const double k4 = (vyf - vyi) * TR2_;
 
 	if (t < T_ramp)
-	{
-		return calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, t);
-	}
+	{ return calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, t); }
 	else
 	{
-		const double dist_trans =
-			(t - T_ramp) * V_MAX +
+		const double dist_trans = (t - T_ramp) * V_MAX +
 			calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, T_ramp);
 		return dist_trans;
 	}
@@ -607,7 +594,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(
 				{
 					double err = calc_trans_distance_t_below_Tramp_abc(
 									 t_solved, a, b, c) -
-								 dist;
+						dist;
 					const double diff =
 						std::sqrt(a * t_solved * t_solved + b * t_solved + c);
 					ASSERT_(std::abs(diff) > 1e-40);
@@ -678,7 +665,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(
 	else
 	{
 		// Special case: 2nd order equation (a=b=0)
-		const double discr = d * d - 4 * c * e;  // c*t^2 + d*t + e = 0
+		const double discr = d * d - 4 * c * e;	 // c*t^2 + d*t + e = 0
 		if (discr >= 0)
 		{
 			num_real_sols = 2;
@@ -693,12 +680,11 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(
 
 	for (int i = 0; i < num_real_sols; i++)
 	{
-		if (roots[i] == roots[i] &&  // not NaN
+		if (roots[i] == roots[i] &&	 // not NaN
 			std::isfinite(roots[i]) && roots[i] >= .0 &&
 			roots[i] <= T_ramp * 1.01)
 		{
-			if (sol_t < 0)
-				sol_t = roots[i];
+			if (sol_t < 0) sol_t = roots[i];
 			else
 				mrpt::keep_min(sol_t, roots[i]);
 		}
@@ -724,8 +710,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(
 			const double sol_t1 = (-xb - sqrt(discr)) / (2 * xa);
 
 			// Identify the shortest valid collision time:
-			if (sol_t0 < T_ramp && sol_t1 < T_ramp)
-				sol_t = -1.0;
+			if (sol_t0 < T_ramp && sol_t1 < T_ramp) sol_t = -1.0;
 			else if (sol_t0 < T_ramp && sol_t1 >= T_ramp_thres099)
 				sol_t = sol_t1;
 			else if (sol_t1 < T_ramp && sol_t0 >= T_ramp_thres099)
@@ -744,7 +729,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(
 		dist = calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, sol_t);
 	else
 		dist = (sol_t - T_ramp) * V_MAX +
-			   calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, T_ramp);
+			calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, T_ramp);
 
 	// Store in the output variable:
 	internal_TPObsDistancePostprocess(ox, oy, dist, tp_obstacle_k);

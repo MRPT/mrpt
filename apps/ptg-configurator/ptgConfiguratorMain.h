@@ -23,13 +23,12 @@
 #include <wx/stattext.h>
 #include <wx/statusbr.h>
 #include <wx/textctrl.h>
+
 #include "MyGLCanvas.h"
 //*)
 
 #include <mrpt/3rdparty/mathplot/mathplot.h>
-
 #include <mrpt/gui/CMyRedirector.h>
-
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/COpenGLViewport.h>

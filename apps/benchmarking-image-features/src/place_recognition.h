@@ -22,11 +22,12 @@
 
 /// standard C++ includes
 #include <ctype.h>
+
 #include <algorithm>  // for copy
 #include <ctime>
 #include <fstream>
 #include <iostream>
-#include <iterator>  // for ostream_iterator
+#include <iterator>	 // for ostream_iterator
 #include <sstream>
 #include <string>
 #include <vector>
@@ -48,10 +49,10 @@ class PlaceRecognition
 {
    public:
 	std::vector<std::string>
-		training_paths;  //!< this holds the training image paths for
+		training_paths;	 //!< this holds the training image paths for
 	//! the training dataset
 	std::vector<std::string>
-		testing_paths;  //!< this holds the testing image paths for
+		testing_paths;	//!< this holds the testing image paths for
 	//! the testing dataset
 	mrpt::vision::TDescriptorType
 		desc_to_compute;  //!< this holds the type of the descriptor
@@ -61,7 +62,7 @@ class PlaceRecognition
 	int descriptor_selected;  //!< the type of descriptor the user selects from
 	//! the GUI
 
-	std::vector<float>* training_words_org;  //!< the training words/descriptors
+	std::vector<float>* training_words_org;	 //!< the training words/descriptors
 	//! extracted from the training dataset
 	//! for descriptor SURF
 	std::vector<uint8_t>*
@@ -100,27 +101,27 @@ class PlaceRecognition
 	int training_count[NUM_CLASSES];  //!< this has the class specific counts
 	//! for the occurrence of each class type
 	//! in the training dataset
-	int testing_count[NUM_CLASSES];  //!< this has the class specific counts for
+	int testing_count[NUM_CLASSES];	 //!< this has the class specific counts for
 	//! the occurrence of each class type in the
 	//! testing dataset
 
 	int len_training =
-		0;  //!< the length of the training images dataset / number
+		0;	//!< the length of the training images dataset / number
 	//! of images
 	int len_testing =
-		0;  //!< the length of the testing images dataset / number of
+		0;	//!< the length of the testing images dataset / number of
 	//! images
 
 	int correct = 0;  //!< counter to count the current number of correct
 	//! classifications of the place
-	int incorrect = 0;  //!< counter to count the current number of incorrect
+	int incorrect = 0;	//!< counter to count the current number of incorrect
 	//! classifications of the place
 
 	mrpt::vision::CFeatureList*
-		feats_training;  //!< the features extracted from all the
+		feats_training;	 //!< the features extracted from all the
 	//! training images dataset
 	mrpt::vision::CFeatureList*
-		feats_testing;  //!< the features extracted from all the
+		feats_testing;	//!< the features extracted from all the
 	//! testing images dataset
 
 	mrpt::img::CImage*
@@ -246,4 +247,4 @@ class PlaceRecognition
 	std::string findPlaceName(int type);
 };
 
-#endif  // MRPT_PLACERECOGNITION_H
+#endif	// MRPT_PLACERECOGNITION_H

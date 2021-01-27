@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
@@ -17,6 +17,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::poses;
@@ -79,8 +80,7 @@ void CPointPDFGaussian::serializeFrom(
 			in >> mean >> cov;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 void CPointPDFGaussian::serializeTo(
@@ -105,14 +105,13 @@ void CPointPDFGaussian::serializeFrom(
 			cov = m;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
 void CPointPDFGaussian::copyFrom(const CPointPDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	// Convert to gaussian pdf:
 	o.getCovarianceAndMean(cov, mean);
@@ -173,8 +172,8 @@ void CPointPDFGaussian::bayesianFusion(
 
 	cov = CMatrixDouble33(C1_inv + C2_inv).inverse_LLt();
 
-	auto x = cov.asEigen() * (C1_inv.asEigen() * x1.asEigen() +
-							  C2_inv.asEigen() * x2.asEigen());
+	auto x = cov.asEigen() *
+		(C1_inv.asEigen() * x1.asEigen() + C2_inv.asEigen() * x2.asEigen());
 
 	mean.x(x(0, 0));
 	mean.y(x(1, 0));
@@ -197,14 +196,14 @@ double CPointPDFGaussian::productIntegralWith(const CPointPDFGaussian& p) const
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
 	CMatrixDouble33 C = cov;
-	C += p.cov;  // Sum of covs
+	C += p.cov;	 // Sum of covs
 	CMatrixDouble33 C_inv = C.inverse_LLt();
 
 	const Eigen::Vector3d MU(
 		mean.x() - p.mean.x(), mean.y() - p.mean.y(), mean.z() - p.mean.z());
 
 	return std::pow(M_2PI, -0.5 * state_length) * (1.0 / std::sqrt(C.det())) *
-		   exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
+		exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
 
 	MRPT_END
 }
@@ -230,8 +229,8 @@ double CPointPDFGaussian::productIntegralWith2D(
 	const Eigen::Vector2d MU(mean.x() - p.mean.x(), mean.y() - p.mean.y());
 
 	return std::pow(M_2PI, -0.5 * (state_length - 1)) *
-		   (1.0 / std::sqrt(C.det())) *
-		   exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
+		(1.0 / std::sqrt(C.det())) *
+		exp(-0.5 * (MU.transpose() * C_inv.asEigen() * MU)(0, 0));
 
 	MRPT_END
 }

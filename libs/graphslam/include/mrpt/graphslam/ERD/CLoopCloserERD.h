@@ -11,6 +11,12 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/graphs/CHypothesisNotFoundException.h>
+#include <mrpt/graphs/THypothesis.h>
+#include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/TNodeProps.h>
+#include <mrpt/graphslam/misc/TSlidingWindow.h>
+#include <mrpt/graphslam/misc/TUncertaintyPath.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -18,13 +24,6 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
-
-#include <mrpt/graphs/CHypothesisNotFoundException.h>
-#include <mrpt/graphs/THypothesis.h>
-#include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
-#include <mrpt/graphslam/misc/TNodeProps.h>
-#include <mrpt/graphslam/misc/TSlidingWindow.h>
-#include <mrpt/graphslam/misc/TUncertaintyPath.h>
 
 #include <map>
 #include <set>

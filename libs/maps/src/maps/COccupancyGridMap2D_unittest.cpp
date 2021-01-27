@@ -29,7 +29,7 @@ TEST(COccupancyGridMap2DTests, insert2DScan)
 		COccupancyGridMap2D grid(-50.0f, 50.0f, -50.0f, 50.0f, 0.10f);
 		grid.insertObservation(scan1);
 
-		EXPECT_GT(grid.getPos(0.5, 0), 0.51f);  // A cell in front of the laser
+		EXPECT_GT(grid.getPos(0.5, 0), 0.51f);	// A cell in front of the laser
 		// should have a high "freeness"
 	}
 }

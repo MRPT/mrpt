@@ -65,4 +65,4 @@ class MRPT2NanoguiGLCanvas : public nanogui::GLCanvas
 
 }  // namespace mrpt::gui
 
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI

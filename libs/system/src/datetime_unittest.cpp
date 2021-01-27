@@ -69,7 +69,7 @@ TEST(DateTime, timestampAdd)
 	const auto t1 = mrpt::system::now();
 	const double d1 = mrpt::system::timestampToDouble(t1);
 
-	const double delta = 10.5;  // seconds
+	const double delta = 10.5;	// seconds
 
 	// Positive incr:
 	{

@@ -8,10 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "apps-precomp.h"  // Precompiled headers
-
-#include <mrpt/apps/CGridMapAlignerApp.h>
-
+//
 #include <mrpt/3rdparty/tclap/CmdLine.h>
+#include <mrpt/apps/CGridMapAlignerApp.h>
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui.h>
 #include <mrpt/io/CFileGZInputStream.h>

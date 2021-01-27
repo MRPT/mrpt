@@ -19,4 +19,4 @@ class hmtMapViewerApp : public wxApp
 	int OnExit() override;
 };
 
-#endif  // HMTMAPVIEWERAPP_H
+#endif	// HMTMAPVIEWERAPP_H

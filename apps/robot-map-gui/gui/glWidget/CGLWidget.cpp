@@ -20,6 +20,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/stock_objects.h>
+
 #include <QApplication>
 #include <QMouseEvent>
 #include <cmath>
@@ -98,10 +99,7 @@ void CGlWidget::fillMap(const CSetOfObjects::Ptr& renderizableMap)
 		{
 			CRenderizable* ren = m_map->begin()->get();
 			auto* textured = dynamic_cast<CTexturedPlane*>(ren);
-			if (textured)
-			{
-				textured->getPlaneCorners(xMin, xMax, yMin, yMax);
-			}
+			if (textured) { textured->getPlaneCorners(xMin, xMax, yMin, yMax); }
 			else
 			{
 				auto* points = dynamic_cast<CPointCloud*>(ren);
@@ -131,8 +129,7 @@ void CGlWidget::fillMap(const CSetOfObjects::Ptr& renderizableMap)
 		updateCamerasParams();
 	}
 
-	if (m_isShowObs)
-		setSelectedObservation(m_isShowObs);
+	if (m_isShowObs) setSelectedObservation(m_isShowObs);
 	else
 		update();
 }
@@ -156,8 +153,7 @@ void CGlWidget::setSelectedObservation(bool is)
 	m_isShowObs = is;
 	if (!m_doc || !m_map) return;
 
-	if (is)
-		m_map->insert(m_visiblePoints);
+	if (is) m_map->insert(m_visiblePoints);
 
 	else
 	{
@@ -286,8 +282,7 @@ void CGlWidget::setGridColor(double r, double g, double b, double a)
 
 void CGlWidget::setVisibleGrid(bool is)
 {
-	if (is)
-		insertToMap(m_groundPlane);
+	if (is) insertToMap(m_groundPlane);
 	else
 		removeFromMap(m_groundPlane);
 }
@@ -303,27 +298,13 @@ bool CGlWidget::setBot(int value)
 
 	switch (value)
 	{
-		case 0:
-			m_currentObs = opengl::stock_objects::CornerXYZSimple();
-			break;
-		case 1:
-			m_currentObs = opengl::stock_objects::CornerXYZ();
-			break;
-		case 2:
-			m_currentObs = opengl::stock_objects::RobotGiraff();
-			break;
-		case 3:
-			m_currentObs = opengl::stock_objects::RobotRhodon();
-			break;
-		case 4:
-			m_currentObs = opengl::stock_objects::RobotPioneer();
-			break;
-		case 5:
-			m_currentObs = opengl::stock_objects::BumblebeeCamera();
-			break;
-		default:
-			m_currentObs = opengl::stock_objects::CornerXYZSimple();
-			break;
+		case 0: m_currentObs = opengl::stock_objects::CornerXYZSimple(); break;
+		case 1: m_currentObs = opengl::stock_objects::CornerXYZ(); break;
+		case 2: m_currentObs = opengl::stock_objects::RobotGiraff(); break;
+		case 3: m_currentObs = opengl::stock_objects::RobotRhodon(); break;
+		case 4: m_currentObs = opengl::stock_objects::RobotPioneer(); break;
+		case 5: m_currentObs = opengl::stock_objects::BumblebeeCamera(); break;
+		default: m_currentObs = opengl::stock_objects::CornerXYZSimple(); break;
 	}
 	if (m_showRobot)
 	{
@@ -384,7 +365,8 @@ void CGlWidget::updateSelectionWithoutSignals(const std::vector<size_t>& idx)
 	blockSignals(true);
 	deselectAll();
 
-	for (auto& id : idx) selectPoint(id);
+	for (auto& id : idx)
+		selectPoint(id);
 
 	blockSignals(false);
 }
@@ -538,7 +520,8 @@ void CGlWidget::mouseReleaseEvent(QMouseEvent* event)
 	if (m_moveSelected)
 	{
 		std::vector<size_t> idx;
-		for (auto& it : m_selectedPoints) idx.push_back(it->getId());
+		for (auto& it : m_selectedPoints)
+			idx.push_back(it->getId());
 
 		auto scenePos = sceneToWorld(m_pressedPos);
 		auto sceneOtherPos = sceneToWorld(event->pos());
@@ -561,7 +544,8 @@ void CGlWidget::keyPressEvent(QKeyEvent* event)
 	if (event->key() == Qt::Key_Delete)
 	{
 		std::vector<size_t> idx;
-		for (auto& it : m_selectedPoints) idx.push_back(it->getId());
+		for (auto& it : m_selectedPoints)
+			idx.push_back(it->getId());
 		deselectAll();
 		emit deleteRobotPoses(idx);
 	}
@@ -572,26 +556,13 @@ img::TColorf CGlWidget::typeToColor(int type) const
 	mrpt::img::TColor color = mrpt::img::TColor::red();
 	switch (type)
 	{
-		case 0:
-			color = mrpt::img::TColor::red();
-			break;
-		case 1:
-			color = mrpt::img::TColor::green();
-			break;
-		case 2:
-			color = mrpt::img::TColor::blue();
-			break;
-		case 3:
-			color = mrpt::img::TColor::white();
-			break;
-		case 4:
-			color = mrpt::img::TColor::black();
-			break;
-		case 5:
-			color = mrpt::img::TColor::gray();
-			break;
-		default:
-			break;
+		case 0: color = mrpt::img::TColor::red(); break;
+		case 1: color = mrpt::img::TColor::green(); break;
+		case 2: color = mrpt::img::TColor::blue(); break;
+		case 3: color = mrpt::img::TColor::white(); break;
+		case 4: color = mrpt::img::TColor::black(); break;
+		case 5: color = mrpt::img::TColor::gray(); break;
+		default: break;
 	}
 	return mrpt::img::TColorf(color);
 }

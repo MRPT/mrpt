@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/hmtslam/CMHPropertiesValuesList.h>
 #include <mrpt/system/os.h>
+
 #include <cstdio>
 
 using namespace mrpt::hmtslam;
@@ -68,8 +69,7 @@ void CMHPropertiesValuesList::serializeFrom(
 				// Object:
 				in >> isNull;
 
-				if (isNull)
-					m_properties[i].value.reset();
+				if (isNull) m_properties[i].value.reset();
 				else
 					in >> m_properties[i].value;
 
@@ -78,8 +78,7 @@ void CMHPropertiesValuesList::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -220,7 +219,7 @@ std::vector<std::string> CMHPropertiesValuesList::getPropertyNames() const
 				break;
 			}
 		}
-		if (isNew) ret.push_back(m_propertie.name);  // Yes, it is new:
+		if (isNew) ret.push_back(m_propertie.name);	 // Yes, it is new:
 	}
 
 	return ret;
@@ -246,8 +245,7 @@ void CMHPropertiesValuesList::remove(
 void CMHPropertiesValuesList::removeAll(const int64_t& hypothesis_ID)
 {
 	for (auto it = m_properties.begin(); it != m_properties.end();)
-		if (it->ID == hypothesis_ID)
-			it = m_properties.erase(it);
+		if (it->ID == hypothesis_ID) it = m_properties.erase(it);
 		else
 			++it;
 }

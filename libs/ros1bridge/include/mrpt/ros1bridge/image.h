@@ -18,7 +18,8 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <sensor_msgs/Image.h>
-#include <cstring>  // size_t
+
+#include <cstring>	// size_t
 
 namespace mrpt::ros1bridge
 {

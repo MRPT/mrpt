@@ -97,6 +97,6 @@ class CJoystick
 		int x_min = -32767, int x_max = 32767, int y_min = -32767,
 		int y_max = 32767, int z_min = -32767, int z_max = 32767);
 #endif
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::hwdrivers

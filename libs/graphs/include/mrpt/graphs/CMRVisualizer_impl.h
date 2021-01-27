@@ -145,7 +145,7 @@ void CMRVisualizer<
 
 		// CPointCloud is initialized
 		const CPose3D p = CPose3D(
-			n_it->second);  // Convert to 3D from whatever its real type.
+			n_it->second);	// Convert to 3D from whatever its real type.
 
 		// insert current pose to its corresponding CPointCloud instance
 		CPointCloud::Ptr& curr_cloud = strid_to_cloud.at(curr_strid);
@@ -224,9 +224,7 @@ void CMRVisualizer<
 			make_pair(curr_end_strid, is_interconnecting_edge);
 
 		// have I already found the current pair
-		if (id_to_set_of_lines.find(curr_pair) != id_to_set_of_lines.end())
-		{
-		}
+		if (id_to_set_of_lines.find(curr_pair) != id_to_set_of_lines.end()) {}
 		else
 		{  // CSetOfLines not yet registered.
 			// Register a new CSetOfLines when a unique pair of
@@ -252,8 +250,8 @@ void CMRVisualizer<
 
 			// width of the line
 			double curr_width = is_interconnecting_edge
-									? interconnecting_edge_width
-									: edge_width;
+				? interconnecting_edge_width
+				: edge_width;
 			curr_set_of_lines->setLineWidth(curr_width);
 
 		}  // end of (is CSetOfLines/Color registered)

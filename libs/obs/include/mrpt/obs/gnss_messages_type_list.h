@@ -56,7 +56,7 @@ enum gnss_message_type_t
 	NV_OEM6_GPGLL = 219 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_GPGGA = 218 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_GPGGARTK =
-		259 + NV_OEM6_MSG2ENUM,  // More decimal digits than regular GGA
+		259 + NV_OEM6_MSG2ENUM,	 // More decimal digits than regular GGA
 	NV_OEM6_GPGSA = 221 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_GPGSV = 223 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_GPHDT = 1045 + NV_OEM6_MSG2ENUM,

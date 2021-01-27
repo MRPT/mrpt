@@ -13,12 +13,12 @@
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/os.h>
-#include <mrpt/vision/CFeatureExtraction.h>  // important import
+#include <mrpt/vision/CFeatureExtraction.h>	 // important import
 
 #ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
@@ -55,7 +55,7 @@ void CFeatureExtraction::extractFeaturesLSD(
 #else
 	using namespace cv;
 
-	vector<KeyPoint> cv_feats;  // The opencv keypoint output vector
+	vector<KeyPoint> cv_feats;	// The opencv keypoint output vector
 	vector<KeyLine> cv_line;
 
 	// Make sure we operate on a gray-scale version of the image:
@@ -161,7 +161,7 @@ void CFeatureExtraction::extractFeaturesLSD(
 				inImg.extract_patch(
 					p, round(kp.pt.x) - offset, round(kp.pt.y) - offset,
 					options.patchSize,
-					options.patchSize);  // Image patch surronding the feature
+					options.patchSize);	 // Image patch surronding the feature
 				ft.patch = std::move(p);
 			}
 			feats.emplace_back(std::move(ft));
@@ -192,7 +192,7 @@ void CFeatureExtraction::internal_computeBLDLineDescriptors(
 	const CImage img_grayscale(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
 	const Mat& img = img_grayscale.asCvMatRef();
 
-	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
+	vector<KeyPoint> cv_feats;	// OpenCV keypoint output vector
 	Mat cv_descs;  // OpenCV descriptor output
 
 	cv::Mat mask = Mat::ones(img.size(), CV_8UC1);
@@ -228,5 +228,5 @@ void CFeatureExtraction::internal_computeBLDLineDescriptors(
 			desc[m] = cv_descs.at<int>(i, m);
 	}
 
-#endif  // end of opencv3 version check
+#endif	// end of opencv3 version check
 }  // end internal_computeBLDDescriptors

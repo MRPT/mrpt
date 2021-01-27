@@ -9,6 +9,7 @@
 #include "bindings.h"
 
 /* MRPT */
+#include <mrpt/math/CMatrixF.h>
 #include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -16,14 +17,11 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
-
-#include <mrpt/math/CMatrixF.h>
 
 // #include <mrpt/img/TColor.h>
 
@@ -264,7 +262,7 @@ void export_opengl()
 			// the \"main\" viewport).")
 			.def(
 				"clear", &COpenGLScene::clear,
-				COpenGLScene_clear_overloads())  //, "Clear the list of objects
+				COpenGLScene_clear_overloads())	 //, "Clear the list of objects
 			// and viewports in the scene,
 			// deleting objects' memory, and
 			// leaving just the default

@@ -63,7 +63,7 @@ class CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** The aligner method: */
 		TAlignerMethod methodSelection{CGridMapAligner::amModifiedRANSAC};

@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/common.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/system/string_utils.h>
+
 #include <iostream>
 
 using namespace mrpt::system;
@@ -156,9 +157,7 @@ bool mrpt::system::decodeBase64(
 						  << std::endl;
 				errors++;
 				break;
-			case 2:
-				outData.push_back((bits >> 10));
-				break;
+			case 2: outData.push_back((bits >> 10)); break;
 			case 3:
 				outData.push_back((bits >> 16));
 				outData.push_back(((bits >> 8) & 0xff));

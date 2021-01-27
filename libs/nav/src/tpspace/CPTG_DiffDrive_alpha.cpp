@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
@@ -63,11 +63,8 @@ void CPTG_DiffDrive_alpha::serializeFrom(
 
 	switch (version)
 	{
-		case 0:
-			in >> cte_a0v >> cte_a0w;
-			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		case 0: in >> cte_a0v >> cte_a0w; break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -86,8 +83,10 @@ void CPTG_DiffDrive_alpha::ptgDiffDriveSteeringFunction(
 {
 	float At_a = alpha - phi;
 
-	while (At_a > M_PI) At_a -= (float)M_2PI;
-	while (At_a < -M_PI) At_a += (float)M_2PI;
+	while (At_a > M_PI)
+		At_a -= (float)M_2PI;
+	while (At_a < -M_PI)
+		At_a += (float)M_2PI;
 
 	v = V_MAX * exp(-square(At_a / cte_a0v));
 	w = W_MAX * (-0.5f + (1 / (1 + exp(-At_a / cte_a0w))));

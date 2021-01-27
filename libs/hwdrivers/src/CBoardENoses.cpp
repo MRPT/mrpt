@@ -7,12 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CBoardENoses.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -208,10 +209,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 		// lenght
 
 		auto arch = mrpt::serialization::archiveFrom(*comms);
-		if (!arch.receiveMessage(msg))
-		{
-			return false;
-		}
+		if (!arch.receiveMessage(msg)) { return false; }
 
 		// m_state = ssWorking;
 
@@ -220,7 +218,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
 		vector<uint16_t> readings(
 			msg.content.size() /
-			2);  // divide by 2 to pass from byte to word. 136B/2 = 68 Words
+			2);	 // divide by 2 to pass from byte to word. 136B/2 = 68 Words
 
 		if (msg.content.size() > 0)
 		{
@@ -270,7 +268,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 				for (size_t idx = 0; idx < wordsPereNose / 2; idx++)
 				{
 					if (readings[i * wordsPereNose + 2 * idx + 2] !=
-						0x0000)  // not empty slot
+						0x0000)	 // not empty slot
 					{
 						// Is temperature?
 						if (readings[i * wordsPereNose + 2 * idx + 2] == 0xFFFF)
@@ -307,7 +305,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
 			// Set Timestamp
 			auto* p =
-				(uint16_t*)&readings[readings.size() - 2];  // Get readings time
+				(uint16_t*)&readings[readings.size() - 2];	// Get readings time
 			// from frame
 			// (always last 2
 			// words)
@@ -327,8 +325,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 		// CONTROL
 		bool correct = true;
 
-		if (obs.m_readings.size() != 4)
-			correct = false;
+		if (obs.m_readings.size() != 4) correct = false;
 		else
 		{
 			for (auto& m_reading : obs.m_readings)
@@ -344,7 +341,7 @@ bool CBoardENoses::getObservation(mrpt::obs::CObservationGasSensors& obs)
 
 		if (!correct) printf("Error en la observacion");  // For debug
 
-		return !obs.m_readings.empty();  // Done OK!
+		return !obs.m_readings.empty();	 // Done OK!
 	}
 	catch (exception& e)
 	{

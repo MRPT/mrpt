@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/nav/holonomic/CHolonomicVFF.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -86,18 +86,18 @@ void CHolonomicVFF::navigate(const NavInput& ni, NavOutput& no)
 
 	// Result:
 	no.desiredDirection = (resultantForce.y == 0 && resultantForce.x == 0)
-							  ? 0
-							  : atan2(resultantForce.y, resultantForce.x);
+		? 0
+		: atan2(resultantForce.y, resultantForce.x);
 
 	// Speed control: Reduction factors
 	// ---------------------------------------------
 	if (m_enableApproachTargetSlowDown)
 	{
 		const double targetNearnessFactor = std::min(
-			1.0, trg.norm() /
-					 (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist));
-		no.desiredSpeed =
-			ni.maxRobotSpeed *
+			1.0,
+			trg.norm() /
+				(options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist));
+		no.desiredSpeed = ni.maxRobotSpeed *
 			std::min(obstacleNearnessFactor, targetNearnessFactor);
 	}
 }
@@ -119,8 +119,7 @@ void CHolonomicVFF::serializeFrom(
 				options.TARGET_SLOW_APPROACHING_DISTANCE;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -138,8 +137,7 @@ void CLogFileRecord_VFF::serializeFrom(
 		{
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

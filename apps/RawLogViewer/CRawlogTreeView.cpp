@@ -34,9 +34,8 @@ END_EVENT_TABLE()
 std::atomic_bool CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES{false};
 
 #define MRPT_NO_WARN_BIG_HDR  // It's ok here
-#include <mrpt/obs.h>
-
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/obs.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -85,8 +84,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 
 	if (m_rawlog)
 	{
-		if (hint_rawlog_items < 0)
-			m_tree_nodes.reserve(m_rawlog->size() + 100);
+		if (hint_rawlog_items < 0) m_tree_nodes.reserve(m_rawlog->size() + 100);
 		else
 			m_tree_nodes.reserve(hint_rawlog_items + 100);
 	}
@@ -231,7 +229,7 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 
 	for (size_t i = first_item; i < last_item; i++)
 	{
-		int y = i * ROW_HEIGHT;  // y= bottom of that row
+		int y = i * ROW_HEIGHT;	 // y= bottom of that row
 		TNodeData& d = m_tree_nodes[i];
 
 		switch (d.level)
@@ -276,9 +274,7 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 
 				// Text:
 				if (d.level == 1)
-				{
-					s << "[" << std::to_string(d.index) << "] ";
-				}
+				{ s << "[" << std::to_string(d.index) << "] "; }
 
 				s << d.data->GetRuntimeClass()->className;
 
@@ -350,7 +346,7 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 
 		for (size_t i = first_item; i < last_item; i++)
 		{
-			int y = i * ROW_HEIGHT;  // y= bottom of that row
+			int y = i * ROW_HEIGHT;	 // y= bottom of that row
 			TNodeData& d = m_tree_nodes[i];
 
 			if (d.data)
@@ -367,8 +363,7 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 				if (t_this != INVALID_TIMESTAMP)
 				{
 					// Draw line:
-					if (m_selectedItem == int(i))
-						dc.SetPen(gray_thick);
+					if (m_selectedItem == int(i)) dc.SetPen(gray_thick);
 					else
 						dc.SetPen(gray_thin);
 
@@ -405,8 +400,7 @@ int CRawlogTreeView::iconIndexFromClass(const TRuntimeClassId* class_ID)
 {
 	int iconIndex = -1;
 
-	if (class_ID == CLASS_ID(CObservation2DRangeScan))
-		iconIndex = 6;
+	if (class_ID == CLASS_ID(CObservation2DRangeScan)) iconIndex = 6;
 	else if (class_ID == CLASS_ID(CObservationImage))
 		iconIndex = 4;
 	else if (class_ID == CLASS_ID(CObservationStereoImages))
@@ -420,7 +414,7 @@ int CRawlogTreeView::iconIndexFromClass(const TRuntimeClassId* class_ID)
 	else if (class_ID == CLASS_ID(CObservationRFID))
 		iconIndex = 8;
 	else if (class_ID->derivedFrom(CLASS_ID(CObservation)))
-		iconIndex = 2;  // Default observation
+		iconIndex = 2;	// Default observation
 	else if (class_ID == CLASS_ID(CActionCollection))
 		iconIndex = 0;
 	else if (class_ID == CLASS_ID(CSensoryFrame))
@@ -487,8 +481,7 @@ void CRawlogTreeView::OnMouseWheel(wxMouseEvent& event)
 	int x, y;
 	GetViewStart(&x, &y);
 
-	if (event.GetWheelRotation() > 0)
-		y--;
+	if (event.GetWheelRotation() > 0) y--;
 	else
 		y++;
 

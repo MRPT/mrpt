@@ -103,7 +103,7 @@ class CVehicleSimulVirtualBase
 		m_Aphi_err_std = Aphi_err_std;
 	}
 
-	void resetStatus();  //! Reset all simulator variables to 0 (except the
+	void resetStatus();	 //! Reset all simulator variables to 0 (except the
 	//! simulation time). \sa resetTime
 	/** Reset time counter \sa resetStatus */
 	void resetTime();

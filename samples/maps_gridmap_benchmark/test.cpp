@@ -15,6 +15,7 @@
 #include <mrpt/obs/stock_observations.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;

@@ -217,7 +217,7 @@ class CPoseInterpolatorBase
 		const TInterpolatorMethod method, const mrpt::Clock::time_point& td,
 		pose_t& out_interp) const;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses
 MRPT_ENUM_TYPE_BEGIN(mrpt::poses::TInterpolatorMethod)
 MRPT_FILL_ENUM_MEMBER(mrpt::poses, imSpline);

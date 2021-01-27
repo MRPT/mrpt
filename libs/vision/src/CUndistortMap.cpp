@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/vision/CUndistortMap.h>
 
 // Universal include for all versions of OpenCV
@@ -32,8 +32,10 @@ void CUndistortMap::setFromCamParams(const mrpt::img::TCamera& campar)
 	// Convert to opencv's format:
 	double aux1[3][3], aux2[1][5];
 	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) aux1[i][j] = campar.intrinsicParams(i, j);
-	for (int i = 0; i < 5; i++) aux2[0][i] = campar.dist[i];
+		for (int j = 0; j < 3; j++)
+			aux1[i][j] = campar.intrinsicParams(i, j);
+	for (int i = 0; i < 5; i++)
+		aux2[0][i] = campar.dist[i];
 
 	const cv::Mat inMat(3, 3, CV_64F, aux1);
 	const cv::Mat distM(1, 5, CV_64F, aux2);

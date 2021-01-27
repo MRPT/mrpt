@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/poly_roots.h>
+
 #include <cmath>
 
 // Based on:
@@ -93,14 +94,14 @@ void CSqrt(
 }
 //---------------------------------------------------------------------------
 int SolveP4Bi(
-	double* x, double b, double d)  // solve equation x^4 + b*x^2 + d = 0
+	double* x, double b, double d)	// solve equation x^4 + b*x^2 + d = 0
 {
 	double D = b * b - 4 * d;
 	if (D >= 0)
 	{
 		double sD = sqrt(D);
 		double x1 = (-b + sD) / 2;
-		double x2 = (-b - sD) / 2;  // x2 <= x1
+		double x2 = (-b - sD) / 2;	// x2 <= x1
 		if (x2 >= 0)  // 0 <= x2 <= x1, 4 real roots
 		{
 			double sx1 = sqrt(x1);
@@ -111,7 +112,7 @@ int SolveP4Bi(
 			x[3] = sx2;
 			return 4;
 		}
-		if (x1 < 0)  // x2 <= x1 < 0, two pair of imaginary roots
+		if (x1 < 0)	 // x2 <= x1 < 0, two pair of imaginary roots
 		{
 			double sx1 = sqrt(-x1);
 			double sx2 = sqrt(-x2);
@@ -141,11 +142,11 @@ int SolveP4Bi(
 //---------------------------------------------------------------------------
 static void dblSort3(double& a, double& b, double& c)  // make: a <= b <= c
 {
-	if (a > b) std::swap(a, b);  // now a<=b
+	if (a > b) std::swap(a, b);	 // now a<=b
 	if (c < b)
 	{
 		std::swap(b, c);  // now a<=b, b<=c
-		if (a > b) std::swap(a, b);  // now a<=b
+		if (a > b) std::swap(a, b);	 // now a<=b
 	}
 }
 //---------------------------------------------------------------------------
@@ -155,14 +156,14 @@ int SolveP4De(
 {
 	// if( c==0 ) return SolveP4Bi(x,b,d); // After that, c!=0
 	if (std::abs(c) < 1e-14 * (std::abs(b) + std::abs(d)))
-		return SolveP4Bi(x, b, d);  // After that, c!=0
+		return SolveP4Bi(x, b, d);	// After that, c!=0
 
 	int res3 = mrpt::math::solve_poly3(
 		x, 2 * b, b * b - 4 * d, -c * c);  // solve resolvent
 	// by Viet theorem:  x1*x2*x3=-c*c not equals to 0, so x1!=0, x2!=0, x3!=0
 	if (res3 > 1)  // 3 real roots,
 	{
-		dblSort3(x[0], x[1], x[2]);  // sort roots to x[0] <= x[1] <= x[2]
+		dblSort3(x[0], x[1], x[2]);	 // sort roots to x[0] <= x[1] <= x[2]
 		// Note: x[0]*x[1]*x[2]= c*c > 0
 		if (x[0] > 0)  // all roots are positive
 		{
@@ -191,10 +192,10 @@ int SolveP4De(
 		double sz2 = sqrt(-x[1]);
 		double sz3 = sqrt(x[2]);
 
-		if (c > 0)  // sign = -1
+		if (c > 0)	// sign = -1
 		{
 			x[0] = -sz3 / 2;
-			x[1] = (sz1 - sz2) / 2;  // x[0]±i*x[1]
+			x[1] = (sz1 - sz2) / 2;	 // x[0]±i*x[1]
 			x[2] = sz3 / 2;
 			x[3] = (-sz1 - sz2) / 2;  // x[2]±i*x[3]
 			return 0;
@@ -212,10 +213,10 @@ int SolveP4De(
 	double sz1 = sqrt(x[0]);
 	double szr, szi;
 	CSqrt(x[1], x[2], szr, szi);  // (szr+i*szi)^2 = x[1]+i*x[2]
-	if (c > 0)  // sign = -1
+	if (c > 0)	// sign = -1
 	{
-		x[0] = -sz1 / 2 - szr;  // 1st real root
-		x[1] = -sz1 / 2 + szr;  // 2nd real root
+		x[0] = -sz1 / 2 - szr;	// 1st real root
+		x[1] = -sz1 / 2 + szr;	// 2nd real root
 		x[2] = sz1 / 2;
 		x[3] = szi;
 		return 2;
@@ -234,7 +235,7 @@ double N4Step(
 	double x, double a, double b, double c,
 	double d)  // one Newton step for x^4 + a*x^3 + b*x^2 + c*x + d
 {
-	double fxs = ((4 * x + 3 * a) * x + 2 * b) * x + c;  // f'(x)
+	double fxs = ((4 * x + 3 * a) * x + 2 * b) * x + c;	 // f'(x)
 	if (fxs == 0) return 1e99;
 	double fx = (((x + a) * x + b) * x + c) * x + d;  // f(x)
 	return x - fx / fxs;
@@ -298,11 +299,11 @@ static double SolveP5_1(
 	if (std::abs(c) > brd) brd = std::abs(c);
 	if (std::abs(d) > brd) brd = std::abs(d);
 	if (std::abs(e) > brd) brd = std::abs(e);
-	brd++;  // brd - border of real roots
+	brd++;	// brd - border of real roots
 
-	double x0, f0;  // less, than root
-	double x1, f1;  // greater, than root
-	double x2, f2, f2s;  // next values, f(x2), f'(x2)
+	double x0, f0;	// less, than root
+	double x1, f1;	// greater, than root
+	double x2, f2, f2s;	 // next values, f(x2), f'(x2)
 	double dx = 1e8;
 
 	if (e < 0)
@@ -329,7 +330,7 @@ static double SolveP5_1(
 	// Firstly 5 bisections
 	for (cnt = 0; cnt < 5; cnt++)
 	{
-		x2 = (x0 + x1) / 2;  // next point
+		x2 = (x0 + x1) / 2;	 // next point
 		f2 = F5(x2);  // f(x2)
 		if (std::abs(f2) < eps) return x2;
 		if (f2 > 0)
@@ -381,7 +382,7 @@ static double SolveP5_1(
 int mrpt::math::solve_poly5(
 	double* x, double a, double b, double c, double d,
 	double
-		e) noexcept  // solve equation x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
+		e) noexcept	 // solve equation x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 {
 	double r = x[0] = SolveP5_1(a, b, c, d, e);
 	double a1 = a + r, b1 = b + r * a1, c1 = c + r * b1, d1 = d + r * c1;

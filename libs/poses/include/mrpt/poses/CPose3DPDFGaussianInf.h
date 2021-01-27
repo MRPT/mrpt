@@ -177,7 +177,7 @@ class CPose3DPDFGaussianInf : public CPose3DPDF
 	 */
 	double mahalanobisDistanceTo(const CPose3DPDFGaussianInf& theOther);
 
-};  // End of class def.
+};	// End of class def.
 bool operator==(
 	const CPose3DPDFGaussianInf& p1, const CPose3DPDFGaussianInf& p2);
 /** Pose composition for two 3D pose Gaussians  \sa CPose3DPDFGaussian::operator

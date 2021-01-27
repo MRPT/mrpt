@@ -9,8 +9,10 @@
 
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
+
 #include <fstream>
 #include <iostream>
+
 #include "ReactiveNav3D_demo.h"
 
 using namespace std;

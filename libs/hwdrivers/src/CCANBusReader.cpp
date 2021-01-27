@@ -7,27 +7,27 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 // This file contains portions of code from sicklms200.cc from the Player/Stage
 // project.
-
-#include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CCANBusReader.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/crc.h>
 #include <mrpt/system/os.h>
-#include <cstdio>  // printf
-#include <cstring>  // memset
 
+#include <cstdio>  // printf
+#include <cstring>	// memset
 #include <iostream>
 #include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CCANBusReader, mrpt::hwdrivers)
 
-#define RET_ERROR(msg)                                                   \
-	{                                                                    \
-		cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << endl; \
-		return false;                                                    \
+#define RET_ERROR(msg)                                                         \
+	{                                                                          \
+		cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << msg << endl;       \
+		return false;                                                          \
 	}
 
 using namespace std;
@@ -38,8 +38,7 @@ using namespace mrpt::system;
 
 char hexCharToInt(char n)
 {
-	if (n >= '0' && n <= '9')
-		return (n - '0');
+	if (n >= '0' && n <= '9') return (n - '0');
 	else
 
 		if (n >= 'A' && n <= 'F')
@@ -90,8 +89,7 @@ void CCANBusReader::doProcess()
 	bool hardwareError;
 
 	doProcessSimple(thereIsObservation, *obs, hardwareError);
-	if (thereIsObservation)
-		appendObservation(obs);
+	if (thereIsObservation) appendObservation(obs);
 	else
 		cout << "No frame received" << endl;
 }
@@ -131,7 +129,7 @@ void CCANBusReader::doProcessSimple(
 	//   Extract the observation:
 	// -----------------------------------------------
 	outObservation.timestamp = mrpt::system::now();
-	outObservation.sensorLabel = m_sensorLabel;  // Set label
+	outObservation.sensorLabel = m_sensorLabel;	 // Set label
 
 	// And the scan ranges:
 	outObservation.m_priority = out_prio;
@@ -193,7 +191,7 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
 			{
 				//			    cout << "Creating port" << endl;
 				m_mySerialPort =
-					new mrpt::comms::CSerialPort();  // Create the port myself:
+					new mrpt::comms::CSerialPort();	 // Create the port myself:
 			}
 			else
 				throw std::logic_error(
@@ -210,7 +208,7 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
 			{
 				// Try to open it now:
 				m_mySerialPort->setSerialPortName(m_com_port);
-				m_mySerialPort->open();  // will raise an exception on error.
+				m_mySerialPort->open();	 // will raise an exception on error.
 
 				// Set basic params:
 				m_mySerialPort->setConfig(9600);
@@ -283,36 +281,16 @@ bool CCANBusReader::sendCANBusReaderSpeed()
 	cmd[0] = 'S';
 	switch (m_canbus_speed)
 	{
-		case 10000:
-			cmd[1] = '0';
-			break;
-		case 20000:
-			cmd[1] = '1';
-			break;
-		case 50000:
-			cmd[1] = '2';
-			break;
-		case 100000:
-			cmd[1] = '3';
-			break;
-		case 125000:
-			cmd[1] = '4';
-			break;
-		case 250000:
-			cmd[1] = '5';
-			break;
-		case 500000:
-			cmd[1] = '6';
-			break;
-		case 800000:
-			cmd[1] = '7';
-			break;
-		case 1000000:
-			cmd[1] = '8';
-			break;
-		default:
-			RET_ERROR("Incorrect CAN Bus speed");
-			break;
+		case 10000: cmd[1] = '0'; break;
+		case 20000: cmd[1] = '1'; break;
+		case 50000: cmd[1] = '2'; break;
+		case 100000: cmd[1] = '3'; break;
+		case 125000: cmd[1] = '4'; break;
+		case 250000: cmd[1] = '5'; break;
+		case 500000: cmd[1] = '6'; break;
+		case 800000: cmd[1] = '7'; break;
+		case 1000000: cmd[1] = '8'; break;
+		default: RET_ERROR("Incorrect CAN Bus speed"); break;
 	}
 	sendCommandToCANReader(cmd, 2);
 	return waitACK(50);
@@ -377,7 +355,8 @@ bool CCANBusReader::waitContinuousSampleFrame(
 	unsigned char buf[40];
 
 	// clear buffer
-	for (unsigned char& k : buf) k = 0;
+	for (unsigned char& k : buf)
+		k = 0;
 
 	uint8_t dlc = 0;
 	while (nFrameBytes < (lengthField = (10U + dlc + 1U)))
@@ -387,12 +366,12 @@ bool CCANBusReader::waitContinuousSampleFrame(
 		{
 			cout << "#" << int(dlc) << " ";
 			nFrameBytes = 0;  // No es cabecera de trama correcta
-			for (unsigned char& k : buf) k = 0;
+			for (unsigned char& k : buf)
+				k = 0;
 			dlc = 0;
 		}
 
-		if (nFrameBytes < 10)
-			nBytesToRead = 1;
+		if (nFrameBytes < 10) nBytesToRead = 1;
 		else
 		{
 			dlc = 2 * uint8_t(hexCharToInt(buf[9]));
@@ -429,7 +408,8 @@ bool CCANBusReader::waitContinuousSampleFrame(
 		else
 		{
 			nFrameBytes = 0;  // No es cabecera de trama correcta
-			for (unsigned char& k : buf) k = 0;
+			for (unsigned char& k : buf)
+				k = 0;
 		}
 	}  // end while
 
@@ -595,7 +575,7 @@ bool CCANBusReader::waitACK(uint16_t timeout_ms)
 		}
 	} while (tictac.Tac() < timeout_ms * 1e-3);
 
-	if (b == 0x07)  // [BELL]
+	if (b == 0x07)	// [BELL]
 		RET_ERROR("ERROR received.")
 	else if (b != 0)
 		RET_ERROR(format("Unexpected code received: 0x%02X", b))
@@ -675,15 +655,16 @@ bool CCANBusReader::waitIncomingFrame(uint16_t timeout)
 				nBytes++;
 			}
 			if (nBytes == 10)
-				dlc = 2 * uint8_t(hexCharToInt(
-							  m_received_frame_buffer[9]));  // here is the
+				dlc = 2 *
+					uint8_t(hexCharToInt(
+						m_received_frame_buffer[9]));  // here is the
 			// number of
 			// BYTES of
 			// data -> 2
 			// hex values
 			// for byte
 		}
-		if (tictac.Tac() >= maxTime) return false;  // Timeout
+		if (tictac.Tac() >= maxTime) return false;	// Timeout
 	}
 	// Check final flag
 	if (m_received_frame_buffer[10U + dlc] != 0x0D)
@@ -720,7 +701,8 @@ bool CCANBusReader::sendCommandToCANReader(
 
 #if 1
 	printf("TX: ");
-	for (unsigned int i = 0; i < toWrite; i++) printf("%02X ", cmd_full[i]);
+	for (unsigned int i = 0; i < toWrite; i++)
+		printf("%02X ", cmd_full[i]);
 	printf("\n");
 #endif
 

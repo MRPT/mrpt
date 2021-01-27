@@ -107,8 +107,9 @@ TEST(NavTests, PTGs_tests)
 					// (0,0) in its domain
 
 					const double tolerance_dist = std::max(
-						0.10, 10.0 * std::sqrt(tx * tx + ty * ty) * M_PI * 2 /
-								  ptg->getPathCount());
+						0.10,
+						10.0 * std::sqrt(tx * tx + ty * ty) * M_PI * 2 /
+							ptg->getPathCount());
 
 					int k;
 					double normalized_d;

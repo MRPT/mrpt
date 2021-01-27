@@ -9,6 +9,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SE.h>
+
 #include <iostream>
 
 // ------------------------------------------------------

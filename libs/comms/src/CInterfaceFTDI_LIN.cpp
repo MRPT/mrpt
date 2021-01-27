@@ -207,7 +207,7 @@ void CInterfaceFTDI::ListAllDevices([[maybe_unused]] TFTDIDeviceList& outList)
 	for (bus = usb_busses; bus; bus = bus->next)
 		for (dev = bus->devices; dev; dev = dev->next)
 			recursive_fill_list_devices(
-				dev, outList);  // Process this node and its children:
+				dev, outList);	// Process this node and its children:
 
 #endif
 	if (getenv("VERBOSE") != nullptr)
@@ -325,8 +325,7 @@ void CInterfaceFTDI::ftdi_read(
 	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 
 	int ret = ftdi_read_data(ctx, (unsigned char*)lpvBuffer, dwBuffSize);
-	if (ret >= 0)
-		*lpdwBytesRead = ret;
+	if (ret >= 0) *lpdwBytesRead = ret;
 	else
 	{
 		if (!strcmp("usb bulk read failed", ctx->error_str))
@@ -354,8 +353,7 @@ void CInterfaceFTDI::ftdi_write(
 	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 
 	int ret = ftdi_write_data(ctx, (unsigned char*)lpvBuffer, dwBuffSize);
-	if (ret >= 0)
-		*lpdwBytes = ret;
+	if (ret >= 0) *lpdwBytes = ret;
 	else
 		THROW_EXCEPTION(string(ftdi_get_error_string(ctx)));
 

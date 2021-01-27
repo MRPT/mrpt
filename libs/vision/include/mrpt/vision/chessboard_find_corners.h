@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-
 #include <mrpt/vision/types.h>
 
 namespace mrpt::vision

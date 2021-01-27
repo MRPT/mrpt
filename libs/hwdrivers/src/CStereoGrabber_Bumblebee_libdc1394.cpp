@@ -7,9 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Only for precomp. headers, include all libmrpt-core headers.
-
+#include "hwdrivers-precomp.h"	// Only for precomp. headers, include all libmrpt-core headers.
+//
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
+
 #include <map>
 
 using namespace std;
@@ -24,8 +25,8 @@ CStereoGrabber_Bumblebee_libdc1394::CStereoGrabber_Bumblebee_libdc1394(
 	MRPT_TRY_START
 
 	TCaptureOptions_dc1394 opt1394;
-	opt1394.mode7 = 3;  // stereo cameras are captured with MODE7-3
-	opt1394.deinterlace_stereo = true;  // It is stereo.
+	opt1394.mode7 = 3;	// stereo cameras are captured with MODE7-3
+	opt1394.deinterlace_stereo = true;	// It is stereo.
 
 	std::map<double, grabber_dc1394_framerate_t> Rs;
 	Rs[1.875] = FRAMERATE_1_875;
@@ -37,8 +38,7 @@ CStereoGrabber_Bumblebee_libdc1394::CStereoGrabber_Bumblebee_libdc1394(
 	Rs[120] = FRAMERATE_120;
 	Rs[240] = FRAMERATE_240;
 
-	if (Rs.find(frameRate) != Rs.end())
-		opt1394.framerate = Rs[frameRate];
+	if (Rs.find(frameRate) != Rs.end()) opt1394.framerate = Rs[frameRate];
 	else
 		cerr << "[CStereoGrabber_Bumblebee_libdc1394] Ignoring unknown "
 				"framerate: "

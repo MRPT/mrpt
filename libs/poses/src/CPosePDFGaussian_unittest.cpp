@@ -12,6 +12,7 @@
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -34,7 +35,8 @@ class PosePDFGaussTests : public ::testing::Test
 			r, 0, std_scale);
 		CMatrixDouble33 cov;
 		cov.matProductOf_AAt(r);  // random semi-definite positive matrix:
-		for (int i = 0; i < 3; i++) cov(i, i) += 1e-7;
+		for (int i = 0; i < 3; i++)
+			cov(i, i) += 1e-7;
 		CPosePDFGaussian pdf(CPose2D(x, y, phi), cov);
 		return pdf;
 	}
@@ -45,7 +47,8 @@ class PosePDFGaussTests : public ::testing::Test
 	{
 		const CPose2D p1(x[0], x[1], x[2]);
 		const CPose2D p1_inv = CPose2D() - p1;
-		for (int i = 0; i < 3; i++) Y[i] = p1_inv[i];
+		for (int i = 0; i < 3; i++)
+			Y[i] = p1_inv[i];
 	}
 
 	void testPoseInverse(double x, double y, double phi, double std_scale)
@@ -60,7 +63,8 @@ class PosePDFGaussTests : public ::testing::Test
 		CMatrixFixed<double, 3, 3> y_cov;
 		{
 			CVectorFixedDouble<3> x_mean;
-			for (int i = 0; i < 3; i++) x_mean[i] = pdf1.mean[i];
+			for (int i = 0; i < 3; i++)
+				x_mean[i] = pdf1.mean[i];
 
 			CMatrixFixed<double, 3, 3> x_cov = pdf1.cov;
 

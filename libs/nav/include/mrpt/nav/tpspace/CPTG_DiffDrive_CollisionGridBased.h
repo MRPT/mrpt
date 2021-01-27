@@ -205,12 +205,12 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 			const unsigned int icx, const unsigned int icy, const uint16_t k,
 			const float dist);
 
-	};  // end of class CCollisionGrid
+	};	// end of class CCollisionGrid
 
 	// Save/Load from files.
 	bool saveColGridsToFile(
 		const std::string& filename,
-		const mrpt::math::CPolygon& computed_robotShape) const;  // true = OK
+		const mrpt::math::CPolygon& computed_robotShape) const;	 // true = OK
 	bool loadColGridsFromFile(
 		const std::string& filename,
 		const mrpt::math::CPolygon& current_robotShape);  // true = OK

@@ -10,6 +10,7 @@
 // Font header file
 #pragma once
 
+// clang-format off
 Point mono_vertices[] = {
 
 	{0.4000f, 0.4089f},  {0.3669f, 0.5306f},  {0.3383f, 0.5405f},
@@ -2644,8 +2645,10 @@ Font::Char mono_chars[] = {
 	{3714, 10698, 7428, 93, 66, 0.8333f},
 	{3747, 10791, 7494, 225, 154, 0.8333f},
 };
+// clang-format on
 
-Font mono_font = {mono_vertices, mono_triangles, mono_lines, mono_chars,
-				  " $(,048<@DHLPTX\\`dhlptx|#'+/"
-				  "37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
-				  "AEIMQUY]aeimquy}"};
+Font mono_font = {
+	mono_vertices, mono_triangles, mono_lines, mono_chars,
+	" $(,048<@DHLPTX\\`dhlptx|#'+/"
+	"37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
+	"AEIMQUY]aeimquy}"};

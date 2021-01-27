@@ -169,15 +169,9 @@ struct TObject2D
 		destroy();
 		switch (type = obj.type)
 		{
-			case GEOMETRIC_TYPE_POINT:
-				data.point = obj.data.point;
-				break;
-			case GEOMETRIC_TYPE_SEGMENT:
-				data.segment = obj.data.segment;
-				break;
-			case GEOMETRIC_TYPE_LINE:
-				data.line = obj.data.line;
-				break;
+			case GEOMETRIC_TYPE_POINT: data.point = obj.data.point; break;
+			case GEOMETRIC_TYPE_SEGMENT: data.segment = obj.data.segment; break;
+			case GEOMETRIC_TYPE_LINE: data.line = obj.data.line; break;
 			case GEOMETRIC_TYPE_POLYGON:
 				data.polygon = new TPolygon2D(*(obj.data.polygon));
 				break;

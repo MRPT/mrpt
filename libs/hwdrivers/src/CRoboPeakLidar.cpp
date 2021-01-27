@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
+#include "hwdrivers-precomp.h"	// Precompiled headers
 //
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CSerialPort.h>
@@ -292,10 +292,7 @@ bool CRoboPeakLidar::checkCOMMs()
 	}
 
 	rplidar_response_device_info_t devinfo;
-	if (IS_FAIL(RPLIDAR_DRV->getDeviceInfo(devinfo)))
-	{
-		return false;
-	}
+	if (IS_FAIL(RPLIDAR_DRV->getDeviceInfo(devinfo))) { return false; }
 
 	if (m_verbose)
 	{
@@ -309,7 +306,8 @@ bool CRoboPeakLidar::checkCOMMs()
 			(unsigned int)devinfo.hardware_version,
 			(unsigned int)devinfo.model);
 
-		for (unsigned char i : devinfo.serialnum) printf("%02X", i);
+		for (unsigned char i : devinfo.serialnum)
+			printf("%02X", i);
 		printf("\n");
 	}
 

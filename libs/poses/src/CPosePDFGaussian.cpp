@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
@@ -21,6 +21,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -86,8 +87,7 @@ void CPosePDFGaussian::serializeFrom(
 			cov = auxCov.cast_double();
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -113,8 +113,7 @@ void CPosePDFGaussian::serializeFrom(
 			cov = m;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
@@ -123,7 +122,7 @@ void CPosePDFGaussian::serializeFrom(
   ---------------------------------------------------------------*/
 void CPosePDFGaussian::copyFrom(const CPosePDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	// Convert to gaussian pdf:
 	o.getMean(mean);
@@ -310,7 +309,7 @@ void CPosePDFGaussian::inverse(CPosePDF& o) const
 	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double H_values[] = {
 		-ccos, -ssin, mean.x() * ssin - mean.y() * ccos,
 		ssin,  -ccos, mean.x() * ccos + mean.y() * ssin,
-		0,	 0,	 -1};
+		0,	   0,	  -1};
 	const CMatrixFixed<double, 3, 3> H(H_values);
 
 	out->cov.asEigen().noalias() =
@@ -346,7 +345,7 @@ double CPosePDFGaussian::evaluateNormalizedPDF(const CPose2D& x) const
 	auto MU = CMatrixDouble31(mean);
 
 	return math::normalPDF(X, MU, this->cov) /
-		   math::normalPDF(MU, MU, this->cov);
+		math::normalPDF(MU, MU, this->cov);
 }
 
 /*---------------------------------------------------------------
@@ -459,7 +458,7 @@ void CPosePDFGaussian::inverseComposition(
 	// Build the cov:
 	//  Y = dh_xv * XV * dh_xv^T  + dh_xi * XI * dh_xi^T
 	this->cov = mrpt::math::multiply_HCHt(dh_xv, xv.cov) +
-				mrpt::math::multiply_HCHt(dh_xi, xi.cov);
+		mrpt::math::multiply_HCHt(dh_xi, xi.cov);
 
 	// Mean:
 	mean = xv.mean - xi.mean;
@@ -505,7 +504,7 @@ void CPosePDFGaussian::inverseComposition(
 	//  Y = dh_xv * XV * dh_xv^T  + dh_xi * XI * dh_xi^T +  A + At
 	//     being A = dh_dx0 * COV01 * dh_dx1^t
 	this->cov = mrpt::math::multiply_HCHt(dh_x0, x0.cov) +
-				mrpt::math::multiply_HCHt(dh_x1, x1.cov);
+		mrpt::math::multiply_HCHt(dh_x1, x1.cov);
 
 	auto M =
 		CMatrixDouble33(dh_x0.asEigen() * COV_01.asEigen() * dh_x1.asEigen());
@@ -526,12 +525,12 @@ void CPosePDFGaussian::operator+=(const CPosePDFGaussian& Ap)
 	CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
 	CPosePDF::jacobiansPoseComposition(
-		this->mean,  // x
+		this->mean,	 // x
 		Ap.mean,  // u
 		df_dx, df_du);
 
 	this->cov = mrpt::math::multiply_HCHt(df_dx, OLD_COV) +
-				mrpt::math::multiply_HCHt(df_du, Ap.cov);
+		mrpt::math::multiply_HCHt(df_du, Ap.cov);
 
 	// MEAN:
 	this->mean = this->mean + Ap.mean;
@@ -551,8 +550,8 @@ void CPosePDFGaussian::composePoint(
 	// COV:
 	CMatrixDouble33 df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 	CPosePDF::jacobiansPoseComposition(
-		this->mean,  // x
-		this->mean,  // u
+		this->mean,	 // x
+		this->mean,	 // u
 		df_dx, df_du,
 		true,  // Eval df_dx
 		false  // Eval df_du (not needed)

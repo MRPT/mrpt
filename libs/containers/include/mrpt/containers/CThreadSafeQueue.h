@@ -90,8 +90,7 @@ class CThreadSafeQueue
 	inline T* get()
 	{
 		std::lock_guard<std::mutex> lock(m_csQueue);
-		if (m_msgs.empty())
-			return nullptr;
+		if (m_msgs.empty()) return nullptr;
 		else
 		{
 			T* ret = m_msgs.front();
@@ -109,16 +108,14 @@ class CThreadSafeQueue
 	inline T* get_lastest_purge_old()
 	{
 		std::lock_guard<std::mutex> lock(m_csQueue);
-		if (m_msgs.empty())
-			return nullptr;
+		if (m_msgs.empty()) return nullptr;
 		else
 		{
 			for (;;)
 			{
 				T* ret = m_msgs.front();
 				m_msgs.pop();
-				if (m_msgs.empty())
-					return ret;
+				if (m_msgs.empty()) return ret;
 				else
 					delete ret;
 			}
@@ -139,5 +136,5 @@ class CThreadSafeQueue
 		return m_msgs.size();
 	}
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::containers

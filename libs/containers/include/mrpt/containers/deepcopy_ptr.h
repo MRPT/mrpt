@@ -90,30 +90,26 @@ class generic_copier_ptr
 
 	T* operator->()
 	{
-		if (m_ptr)
-			return m_ptr;
+		if (m_ptr) return m_ptr;
 		else
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}
 	const T* operator->() const
 	{
-		if (m_ptr)
-			return m_ptr;
+		if (m_ptr) return m_ptr;
 		else
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}
 
 	T& operator*()
 	{
-		if (m_ptr)
-			return *m_ptr;
+		if (m_ptr) return *m_ptr;
 		else
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}
 	const T& operator*() const
 	{
-		if (m_ptr)
-			return *m_ptr;
+		if (m_ptr) return *m_ptr;
 		else
 			throw std::runtime_error("dereferencing nullptr poly_ptr");
 	}

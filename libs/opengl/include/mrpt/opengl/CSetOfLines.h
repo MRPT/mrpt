@@ -174,9 +174,10 @@ class CSetOfLines : public CRenderizableShaderWireFrame,
 		double z1)
 	{
 		setLineByIndex(
-			index, mrpt::math::TSegment3D(
-					   mrpt::math::TPoint3D(x0, y0, z0),
-					   mrpt::math::TPoint3D(x1, y1, z1)));
+			index,
+			mrpt::math::TSegment3D(
+				mrpt::math::TPoint3D(x0, y0, z0),
+				mrpt::math::TPoint3D(x1, y1, z1)));
 		CRenderizable::notifyChange();
 	}
 	/**

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
+
 #include <array>
 
 namespace mrpt::math
@@ -63,7 +64,8 @@ struct TLine3D
 	/** Get director vector */
 	void getDirectorVector(double (&vector)[3]) const
 	{
-		for (size_t i = 0; i < 3; i++) vector[i] = director[i];
+		for (size_t i = 0; i < 3; i++)
+			vector[i] = director[i];
 	}
 	/** Get director vector (may be NOT unitary if not set so by the user) \sa
 	 * getUnitaryDirectorVector(), unitarize() */

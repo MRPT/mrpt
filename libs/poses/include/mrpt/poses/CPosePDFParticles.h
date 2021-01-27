@@ -171,6 +171,6 @@ class CPosePDFParticles
 		const double y_min, const double y_max, const double phi,
 		const double stepSizeXY, const double stdXY, const double stdPhi) const;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::poses

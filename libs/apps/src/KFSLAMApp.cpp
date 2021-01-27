@@ -8,9 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "apps-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/apps/KFSLAMApp.h>
-
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CFileGZInputStream.h>
@@ -26,6 +25,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+
 #include <fstream>
 
 using namespace mrpt::apps;
@@ -44,9 +44,7 @@ void KFSLAMApp::initialize(int argc, const char** argv)
 
 	// Process arguments:
 	if (argc < 2)
-	{
-		THROW_EXCEPTION("Usage: kf-slam <config_file> [dataset.rawlog]");
-	}
+	{ THROW_EXCEPTION("Usage: kf-slam <config_file> [dataset.rawlog]"); }
 
 	// Config file:
 	const std::string configFile = std::string(argv[1]);
@@ -55,8 +53,7 @@ void KFSLAMApp::initialize(int argc, const char** argv)
 	params.setContent(mrpt::io::file_get_contents(configFile));
 
 	// Rawlog file: from args. line or from config file:
-	if (argc == 3)
-		rawlogFileName = std::string(argv[2]);
+	if (argc == 3) rawlogFileName = std::string(argv[2]);
 	else
 		rawlogFileName = params.read_string(
 			"MappingApplication", "rawlog_file", std::string("log.rawlog"));
@@ -237,7 +234,7 @@ void KFSLAMApp::Run_KF_SLAM()
 {
 	MRPT_START
 
-	auto& cfgFile = params;  // for backwards compat of old code
+	auto& cfgFile = params;	 // for backwards compat of old code
 
 	// The EKF-SLAM class:
 	// Traits for this KF implementation (2D or 3D)
@@ -407,7 +404,7 @@ void KFSLAMApp::Run_KF_SLAM()
 		// --------------------------------------------------
 		if (!CRawlog::readActionObservationPair(
 				rawlogArch, action, observations, rawlogEntry))
-			break;  // file EOF
+			break;	// file EOF
 
 		if (rawlogEntry >= rawlog_offset)
 		{
@@ -804,7 +801,7 @@ void KFSLAMApp::Run_KF_SLAM()
 			"Step " << step << " - Rawlog entries processed: " << rawlogEntry);
 
 		step++;
-	};  // end "while(1)"
+	};	// end "while(1)"
 
 	// Partitioning experiment: Only for 6D SLAM:
 	traits_t::doPartitioningExperiment(mapping, fullCov, OUT_DIR);

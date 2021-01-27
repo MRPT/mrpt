@@ -8,13 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
+
 #include <limits>
 
 using namespace mrpt::nav;
@@ -85,8 +86,7 @@ void mrpt::nav::ClearanceDiagram::readFromStream(
 			this->resize(m_actual_num_paths, decim_num);
 			in >> m_raw_clearances;
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -131,7 +131,7 @@ size_t mrpt::nav::ClearanceDiagram::decimated_k_to_real_k(size_t k) const
 double ClearanceDiagram::getClearance(
 	uint16_t actual_k, double dist, bool integrate_over_path) const
 {
-	if (this->empty())  // If we are not using clearance values, just return a
+	if (this->empty())	// If we are not using clearance values, just return a
 		// fixed value:
 		return 0.0;
 
@@ -142,7 +142,7 @@ double ClearanceDiagram::getClearance(
 	const auto& rc_k = m_raw_clearances[k];
 
 	double res = 0;
-	int avr_count = 0;  // weighted avrg: closer to query points weight more
+	int avr_count = 0;	// weighted avrg: closer to query points weight more
 	// than at path start.
 	for (const auto& e : rc_k)
 	{
@@ -156,13 +156,10 @@ double ClearanceDiagram::getClearance(
 			res += e.second;
 			avr_count++;
 		}
-		if (e.first > dist) break;  // target dist reached.
+		if (e.first > dist) break;	// target dist reached.
 	}
 
-	if (!avr_count)
-	{
-		res = rc_k.begin()->second;
-	}
+	if (!avr_count) { res = rc_k.begin()->second; }
 	else
 	{
 		res = res / avr_count;

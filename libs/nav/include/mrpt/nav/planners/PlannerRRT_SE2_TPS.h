@@ -12,6 +12,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/nav/planners/PlannerRRT_common.h>
 #include <mrpt/nav/planners/TMoveTree.h>
+
 #include <numeric>
 
 namespace mrpt::nav
@@ -103,7 +104,7 @@ class PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
    protected:
 	bool m_initialized{false};
 
-};  // end class PlannerRRT_SE2_TPS
+};	// end class PlannerRRT_SE2_TPS
 
 /** @} */
 }  // namespace mrpt::nav

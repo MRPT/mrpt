@@ -11,6 +11,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -56,7 +57,8 @@ void TestGeometry3D()
 	CTicTac tictac;
 	tictac.Tic();
 	size_t i, N = 10000;
-	for (i = 0; i < N; i++) L2 = L - (R + C);
+	for (i = 0; i < N; i++)
+		L2 = L - (R + C);
 	cout << "Computation in: " << 1e6 * tictac.Tac() / ((double)N) << " us"
 		 << endl;
 

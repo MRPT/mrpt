@@ -9,7 +9,8 @@
 #pragma once
 
 #include <mrpt/core/exceptions.h>
-#include <cstdlib>  // size_t
+
+#include <cstdlib>	// size_t
 
 namespace mrpt::containers
 {

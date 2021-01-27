@@ -562,6 +562,43 @@ MRPT_TEST(yaml, fromYAML)
 }
 MRPT_TEST_END()
 
+MRPT_TEST(yaml, printInShortFormat)
+{
+	mrpt::containers::yaml n1 = mrpt::containers::yaml::Sequence({1, 2, 3});
+
+	n1.node().printInShortFormat = true;
+
+	mrpt::containers::YamlEmitOptions eo;
+	eo.emitHeader = false;
+
+	{
+		std::stringstream ss;
+		n1.printAsYAML(ss, eo);
+		EXPECT_EQ(ss.str(), "[1, 2, 3]\n");
+	}
+
+	mrpt::containers::yaml n2 = mrpt::containers::yaml::Map();
+	n2["foo"] = 1.0;
+	n2["bar"] = n1;
+
+	{
+		std::stringstream ss;
+		n2.printAsYAML(ss, eo);
+		EXPECT_EQ(ss.str(), "bar: [1, 2, 3]\nfoo: 1\n");
+	}
+
+	mrpt::containers::yaml n3 = mrpt::containers::yaml::Map();
+	n3["alpha"] = 1.0;
+	n3["beta"] = n2;
+
+	{
+		std::stringstream ss;
+		n3.printAsYAML(ss, eo);
+		EXPECT_EQ(ss.str(), "alpha: 1\nbeta:\n  bar: [1, 2, 3]\n  foo: 1\n");
+	}
+}
+MRPT_TEST_END()
+
 MRPT_TEST(yaml, outOfRangeIntegers)
 {
 	mrpt::containers::yaml p;
@@ -711,7 +748,7 @@ MRPT_TEST(yaml, parseAndEmit)
 		//
 		testYamlParseEmit_1, testYamlParseEmit_2, testYamlParseEmit_3,
 		testYamlParseEmit_4, testYamlParseEmit_5,
-		testYamlParseEmit_6  // "indentSequences=false" for this one
+		testYamlParseEmit_6	 // "indentSequences=false" for this one
 		//
 	};
 
@@ -733,7 +770,7 @@ MRPT_TEST(yaml, parseAndEmit)
 			<< "=== Input:\n"
 			<< testText << "=== Output:\n"
 			<< ss.str() << "=== Debug dump of test yaml doc [" << idx
-			<< "]:\n",  // Yes, it is an intentional ","
+			<< "]:\n",	// Yes, it is an intentional ","
 			p.printDebugStructure(std::cout);
 
 		// Test with yamllint
@@ -813,4 +850,4 @@ MRPT_TEST(yaml, fromJSON)
 }
 MRPT_TEST_END()
 
-#endif  // MRPT_HAS_FYAML
+#endif	// MRPT_HAS_FYAML

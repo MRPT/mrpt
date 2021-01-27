@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/vision/CFeatureExtraction.h>
 
 // Universal include for all versions of OpenCV
@@ -33,7 +33,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 #if MRPT_HAS_OPENCV
 	using namespace cv;
 
-	vector<KeyPoint> cv_feats;  // The opencv keypoint output vector
+	vector<KeyPoint> cv_feats;	// The opencv keypoint output vector
 
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -76,7 +76,8 @@ void CFeatureExtraction::extractFeaturesFAST(
 	//      indices "sorted_indices" than sorting directly the actual list of
 	//      features "cv_feats"
 	std::vector<size_t> sorted_indices(N);
-	for (size_t i = 0; i < N; i++) sorted_indices[i] = i;
+	for (size_t i = 0; i < N; i++)
+		sorted_indices[i] = i;
 	std::sort(
 		sorted_indices.begin(), sorted_indices.end(),
 		KeypointResponseSorter<vector<KeyPoint>>(cv_feats));
@@ -100,14 +101,12 @@ void CFeatureExtraction::extractFeaturesFAST(
 	const float occupied_grid_cell_size = options.FASTOptions.min_distance / 2;
 	const float occupied_grid_cell_size_inv = 1.0f / occupied_grid_cell_size;
 
-	unsigned int grid_lx =
-		!do_filter_min_dist
-			? 1
-			: (unsigned int)(1 + inImg.getWidth() * occupied_grid_cell_size_inv);
-	unsigned int grid_ly =
-		!do_filter_min_dist
-			? 1
-			: (unsigned int)(1 + inImg.getHeight() * occupied_grid_cell_size_inv);
+	unsigned int grid_lx = !do_filter_min_dist
+		? 1
+		: (unsigned int)(1 + inImg.getWidth() * occupied_grid_cell_size_inv);
+	unsigned int grid_ly = !do_filter_min_dist
+		? 1
+		: (unsigned int)(1 + inImg.getHeight() * occupied_grid_cell_size_inv);
 
 	mrpt::math::CMatrixBool occupied_sections(grid_lx, grid_ly);
 	occupied_sections.fill(false);
@@ -176,7 +175,7 @@ void CFeatureExtraction::extractFeaturesFAST(
 			inImg.extract_patch(
 				*ft.patch, round(ft.keypoint.pt.x) - offset,
 				round(ft.keypoint.pt.y) - offset, options.patchSize,
-				options.patchSize);  // Image patch surronding the feature
+				options.patchSize);	 // Image patch surronding the feature
 		}
 		feats.emplace_back(std::move(ft));
 		++cont;

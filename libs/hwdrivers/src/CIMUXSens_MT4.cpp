@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationIMU.h>
@@ -232,7 +232,7 @@ class MyXSensCallback : public XsCallback
 
 				rGPS.speed_knots =
 					sqrt(vel_data[0] * vel_data[0] + vel_data[1] * vel_data[1]);
-				rGPS.direction_degrees = 0;  // Could be worked out from
+				rGPS.direction_degrees = 0;	 // Could be worked out from
 				// velocity and magnatic field
 				// perhaps.
 			}
@@ -274,8 +274,8 @@ struct CIMUXSens_MT4::Impl
 #pragma comment(lib, "SetupAPI.lib")
 #pragma comment(lib, "WinUsb.lib")
 #endif
-#endif  // _WIN32
-#endif  // MRPT_HAS_xSENS
+#endif	// _WIN32
+#endif	// MRPT_HAS_xSENS
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4, mrpt::hwdrivers)
 

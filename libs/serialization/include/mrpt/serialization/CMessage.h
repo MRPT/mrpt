@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/serialization/CSerializable.h>
+
 #include <cstdint>
 #include <vector>
 
@@ -98,6 +99,6 @@ class CMessage
 		MRPT_END
 	}
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::serialization

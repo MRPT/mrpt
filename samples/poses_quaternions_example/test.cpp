@@ -10,6 +10,7 @@
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
+
 #include <iostream>
 
 using namespace mrpt;

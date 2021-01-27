@@ -7,10 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
-//#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to
-// enable the plugin system
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <iostream>
@@ -65,7 +63,7 @@ bool mrpt::vision::pnp::ppnp::compute_pose(
 		Y = S - e * c.transpose();
 
 		Zmindiag = ((PR * Y.transpose()).diagonal()).array() /
-				   ((P.array() * P.array()).rowwise().sum()).array();
+			((P.array() * P.array()).rowwise().sum()).array();
 
 		for (int i = 0; i < n; i++)
 			if (Zmindiag(i) < 0) Zmindiag(i) = 0;

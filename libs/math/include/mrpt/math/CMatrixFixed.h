@@ -13,11 +13,12 @@
 #include <mrpt/math/MatrixBase.h>
 #include <mrpt/math/math_frwds.h>  // Forward declarations
 #include <mrpt/math/matrix_size_t.h>
-#include <mrpt/math/point_poses2vectors.h>  // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
+#include <mrpt/math/point_poses2vectors.h>	// MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 #include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/num_to_string.h>
+
 #include <array>
-#include <cstddef>  // std::size_t
+#include <cstddef>	// std::size_t
 
 namespace mrpt::math
 {
@@ -134,7 +135,8 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 		MRPT_START
 		setSize(m.rows(), m.cols());
 		for (Index r = 0; r < rows(); r++)
-			for (Index c = 0; c < cols(); c++) (*this)(r, c) = m(r, c);
+			for (Index c = 0; c < cols(); c++)
+				(*this)(r, c) = m(r, c);
 		MRPT_END
 	}
 
@@ -174,7 +176,8 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 		const auto LEN = std::size(vals);
 		ASSERT_EQUAL_(LEN, ROWS * COLS);
 		for (size_t r = 0, i = 0; r < ROWS; r++)
-			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = vals[i++];
+			for (size_t c = 0; c < COLS; c++)
+				m_data[r * COLS + c] = vals[i++];
 		MRPT_END
 	}
 
@@ -183,7 +186,8 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 	void loadFromRawPointer(const T* data)
 	{
 		for (size_t r = 0, i = 0; r < ROWS; r++)
-			for (size_t c = 0; c < COLS; c++) m_data[r * COLS + c] = data[i++];
+			for (size_t c = 0; c < COLS; c++)
+				m_data[r * COLS + c] = data[i++];
 	}
 
 	/** Throws if size does not match with the fixed matrix size */
@@ -203,8 +207,7 @@ class CMatrixFixed : public MatrixBase<T, CMatrixFixed<T, ROWS, COLS>>
 
 	void resize(size_t n)
 	{
-		if (ROWS == 1)
-			ASSERT_EQUAL_(COLS, n);
+		if (ROWS == 1) ASSERT_EQUAL_(COLS, n);
 		else if (COLS == 1)
 			ASSERT_EQUAL_(ROWS, n);
 		else
@@ -416,8 +419,8 @@ struct TTypeName<mrpt::math::CMatrixFixed<T, N, M>>
 	constexpr static auto get()
 	{
 		return literal("CMatrixFixed<") + TTypeName<T>::get() + literal(",") +
-			   literal(num_to_string<N>::value) + literal(",") +
-			   literal(num_to_string<M>::value) + literal(">");
+			literal(num_to_string<N>::value) + literal(",") +
+			literal(num_to_string<M>::value) + literal(">");
 	}
 };
 }  // namespace mrpt::typemeta

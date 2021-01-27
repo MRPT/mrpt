@@ -246,6 +246,6 @@ class CInterfaceFTDI : public mrpt::io::CStream
 
 #endif
 
-};  // end of class
+};	// end of class
 
 }  // namespace mrpt::comms

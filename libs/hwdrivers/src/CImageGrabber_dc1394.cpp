@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
+#include "hwdrivers-precomp.h"	// Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
@@ -108,10 +108,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	dc1394_camera_free_list(list);
 
 	// Camera open OK:
-	if (verbose)
-	{
-		dc1394_camera_print_info(THE_CAMERA, stdout);
-	}
+	if (verbose) { dc1394_camera_print_info(THE_CAMERA, stdout); }
 
 	// get all supported modes:
 	dc1394video_modes_t modes;
@@ -133,15 +130,13 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	}
 	else
 	{
-#define TEST_MODE(W, H, COLORMODEL)                                         \
-	else if (                                                               \
-		options.frame_width == W && options.frame_height == H &&            \
-		options.color_coding == COLOR_CODING_##COLORMODEL) m_desired_mode = \
+#define TEST_MODE(W, H, COLORMODEL)                                            \
+	else if (                                                                  \
+		options.frame_width == W && options.frame_height == H &&               \
+		options.color_coding == COLOR_CODING_##COLORMODEL) m_desired_mode =    \
 		DC1394_VIDEO_MODE_##W##x##H##_##COLORMODEL;
 
-		if (false)
-		{
-		}
+		if (false) {}
 		TEST_MODE(160, 120, YUV444)
 		TEST_MODE(320, 240, YUV422)
 		TEST_MODE(640, 480, YUV411)
@@ -186,30 +181,20 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 			case DC1394_VIDEO_MODE_640x480_YUV422:
 				mode = "640x480_YUV422";
 				break;
-			case DC1394_VIDEO_MODE_640x480_RGB8:
-				mode = "640x480_RGB8";
-				break;
-			case DC1394_VIDEO_MODE_640x480_MONO8:
-				mode = "640x480_MONO8";
-				break;
+			case DC1394_VIDEO_MODE_640x480_RGB8: mode = "640x480_RGB8"; break;
+			case DC1394_VIDEO_MODE_640x480_MONO8: mode = "640x480_MONO8"; break;
 			case DC1394_VIDEO_MODE_640x480_MONO16:
 				mode = "640x480_MONO16";
 				break;
 			case DC1394_VIDEO_MODE_800x600_YUV422:
 				mode = "800x600_YUV422";
 				break;
-			case DC1394_VIDEO_MODE_800x600_RGB8:
-				mode = "800x600_RGB8";
-				break;
-			case DC1394_VIDEO_MODE_800x600_MONO8:
-				mode = "800x600_MONO8";
-				break;
+			case DC1394_VIDEO_MODE_800x600_RGB8: mode = "800x600_RGB8"; break;
+			case DC1394_VIDEO_MODE_800x600_MONO8: mode = "800x600_MONO8"; break;
 			case DC1394_VIDEO_MODE_1024x768_YUV422:
 				mode = "1024x768_YUV422";
 				break;
-			case DC1394_VIDEO_MODE_1024x768_RGB8:
-				mode = "1024x768_RGB8";
-				break;
+			case DC1394_VIDEO_MODE_1024x768_RGB8: mode = "1024x768_RGB8"; break;
 			case DC1394_VIDEO_MODE_1024x768_MONO8:
 				mode = "1024x768_MONO8";
 				break;
@@ -222,9 +207,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 			case DC1394_VIDEO_MODE_1280x960_YUV422:
 				mode = "1280x960_YUV422";
 				break;
-			case DC1394_VIDEO_MODE_1280x960_RGB8:
-				mode = "1280x960_RGB8";
-				break;
+			case DC1394_VIDEO_MODE_1280x960_RGB8: mode = "1280x960_RGB8"; break;
 			case DC1394_VIDEO_MODE_1280x960_MONO8:
 				mode = "1280x960_MONO8";
 				break;
@@ -243,33 +226,15 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 			case DC1394_VIDEO_MODE_1600x1200_MONO16:
 				mode = "1600x1200_MONO16";
 				break;
-			case DC1394_VIDEO_MODE_EXIF:
-				mode = "EXIF";
-				break;
-			case DC1394_VIDEO_MODE_FORMAT7_0:
-				mode = "FORMAT7_0";
-				break;
-			case DC1394_VIDEO_MODE_FORMAT7_1:
-				mode = "FORMAT7_1";
-				break;
-			case DC1394_VIDEO_MODE_FORMAT7_2:
-				mode = "FORMAT7_2";
-				break;
-			case DC1394_VIDEO_MODE_FORMAT7_3:
-				mode = "FORMAT7_3";
-				break;
-			case DC1394_VIDEO_MODE_FORMAT7_4:
-				mode = "FORMAT7_4";
-				break;
-			case DC1394_VIDEO_MODE_FORMAT7_5:
-				mode = "FORMAT7_5";
-				break;
-			case DC1394_VIDEO_MODE_FORMAT7_6:
-				mode = "FORMAT7_6";
-				break;
-			case DC1394_VIDEO_MODE_FORMAT7_7:
-				mode = "FORMAT7_7";
-				break;
+			case DC1394_VIDEO_MODE_EXIF: mode = "EXIF"; break;
+			case DC1394_VIDEO_MODE_FORMAT7_0: mode = "FORMAT7_0"; break;
+			case DC1394_VIDEO_MODE_FORMAT7_1: mode = "FORMAT7_1"; break;
+			case DC1394_VIDEO_MODE_FORMAT7_2: mode = "FORMAT7_2"; break;
+			case DC1394_VIDEO_MODE_FORMAT7_3: mode = "FORMAT7_3"; break;
+			case DC1394_VIDEO_MODE_FORMAT7_4: mode = "FORMAT7_4"; break;
+			case DC1394_VIDEO_MODE_FORMAT7_5: mode = "FORMAT7_5"; break;
+			case DC1394_VIDEO_MODE_FORMAT7_6: mode = "FORMAT7_6"; break;
+			case DC1394_VIDEO_MODE_FORMAT7_7: mode = "FORMAT7_7"; break;
 			default:
 				cerr << "[CImageGrabber_dc1394] ERROR: Requested video mode is "
 						"not valid."
@@ -331,30 +296,14 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	dc1394framerate_t the_framerate;
 	switch (m_options.framerate)
 	{
-		case FRAMERATE_1_875:
-			the_framerate = DC1394_FRAMERATE_1_875;
-			break;
-		case FRAMERATE_3_75:
-			the_framerate = DC1394_FRAMERATE_3_75;
-			break;
-		case FRAMERATE_7_5:
-			the_framerate = DC1394_FRAMERATE_7_5;
-			break;
-		case FRAMERATE_15:
-			the_framerate = DC1394_FRAMERATE_15;
-			break;
-		case FRAMERATE_30:
-			the_framerate = DC1394_FRAMERATE_30;
-			break;
-		case FRAMERATE_60:
-			the_framerate = DC1394_FRAMERATE_60;
-			break;
-		case FRAMERATE_120:
-			the_framerate = DC1394_FRAMERATE_120;
-			break;
-		case FRAMERATE_240:
-			the_framerate = DC1394_FRAMERATE_240;
-			break;
+		case FRAMERATE_1_875: the_framerate = DC1394_FRAMERATE_1_875; break;
+		case FRAMERATE_3_75: the_framerate = DC1394_FRAMERATE_3_75; break;
+		case FRAMERATE_7_5: the_framerate = DC1394_FRAMERATE_7_5; break;
+		case FRAMERATE_15: the_framerate = DC1394_FRAMERATE_15; break;
+		case FRAMERATE_30: the_framerate = DC1394_FRAMERATE_30; break;
+		case FRAMERATE_60: the_framerate = DC1394_FRAMERATE_60; break;
+		case FRAMERATE_120: the_framerate = DC1394_FRAMERATE_120; break;
+		case FRAMERATE_240: the_framerate = DC1394_FRAMERATE_240; break;
 
 		default:
 			cerr << "[CImageGrabber_dc1394] ERROR: Requested framerate is not "
@@ -394,17 +343,17 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		if (verbose) cout << "ISO Speed: " << iso_speed << endl;
 
 // set trigger options:
-#define SET_TRIGGER(opt, OPT, TYPE)                                       \
-	if (options.trigger_##opt >= 0)                                       \
-	{                                                                     \
-		err = dc1394_external_trigger_set_##opt(                          \
-			THE_CAMERA,                                                   \
-			static_cast<dc1394trigger_##opt##_t>(                         \
-				DC1394_TRIGGER_##TYPE##_MIN + options.trigger_##opt));    \
-		DC1394_WRN(                                                       \
-			err,                                                          \
-			"[CImageGrabber_dc1394::changeCaptureOptions] Could not set " \
-			"trigger opt");                                               \
+#define SET_TRIGGER(opt, OPT, TYPE)                                            \
+	if (options.trigger_##opt >= 0)                                            \
+	{                                                                          \
+		err = dc1394_external_trigger_set_##opt(                               \
+			THE_CAMERA,                                                        \
+			static_cast<dc1394trigger_##opt##_t>(                              \
+				DC1394_TRIGGER_##TYPE##_MIN + options.trigger_##opt));         \
+		DC1394_WRN(                                                            \
+			err,                                                               \
+			"[CImageGrabber_dc1394::changeCaptureOptions] Could not set "      \
+			"trigger opt");                                                    \
 	}
 	SET_TRIGGER(mode, MODE, MODE)
 	SET_TRIGGER(source, SOURCE, SOURCE)
@@ -477,10 +426,7 @@ CImageGrabber_dc1394::~CImageGrabber_dc1394()
 
 		dc1394_camera_free(THE_CAMERA);
 	}
-	if (THE_CONTEXT)
-	{
-		dc1394_free(THE_CONTEXT);
-	}
+	if (THE_CONTEXT) { dc1394_free(THE_CONTEXT); }
 #endif
 }
 
@@ -562,7 +508,7 @@ bool CImageGrabber_dc1394::getObservation(
 
 		if ((err = dc1394_bayer_decoding_8bit(
 				 imageBuf, imageBufRGB, width, 2 * height,
-				 DC1394_COLOR_FILTER_GBRG,  // Has to be this value for
+				 DC1394_COLOR_FILTER_GBRG,	// Has to be this value for
 				 // Bumblebee!
 				 DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
 		{
@@ -573,7 +519,7 @@ bool CImageGrabber_dc1394::getObservation(
 		}
 
 		out_observation.image.loadFromMemoryBuffer(
-			width, height, true, imageBufRGB);  // Left cam.
+			width, height, true, imageBufRGB);	// Left cam.
 		// out_observation.image.loadFromMemoryBuffer(width,height,true,
 		// imageBufRGB+ width*height*3 ); // Right cam.
 
@@ -649,7 +595,7 @@ bool CImageGrabber_dc1394::getObservation(
 
 		if ((err = dc1394_bayer_decoding_8bit(
 				 imageBuf, imageBufRGB, width, 2 * height,
-				 DC1394_COLOR_FILTER_GBRG,  // Has to be this value for
+				 DC1394_COLOR_FILTER_GBRG,	// Has to be this value for
 				 // Bumblebee!
 				 DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
 		{
@@ -660,10 +606,10 @@ bool CImageGrabber_dc1394::getObservation(
 		}
 
 		out_observation.imageLeft.loadFromMemoryBuffer(
-			width, height, true, imageBufRGB);  // Left cam.
+			width, height, true, imageBufRGB);	// Left cam.
 		out_observation.imageRight.loadFromMemoryBuffer(
 			width, height, true,
-			imageBufRGB + width * height * 3);  // Right cam.
+			imageBufRGB + width * height * 3);	// Right cam.
 
 		delete[] imageBuf;
 		delete[] imageBufRGB;

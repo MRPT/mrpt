@@ -8,8 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "reactive_navigator_demoMain.h"
+
 #include <wx/msgdlg.h>
 #include <wx/textdlg.h>
+
 #include <memory>
 
 //(*InternalHeaders(reactive_navigator_demoframe)
@@ -32,10 +34,10 @@
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
-#include "../wx-common/mrpt_logo.xpm"
-#include "imgs/main_icon.xpm"
 
+#include "../wx-common/mrpt_logo.xpm"
 #include "DEFAULT_GRIDMAP_DATA.h"
+#include "imgs/main_icon.xpm"
 
 const double NAV_SIMUL_TIMESTEP_MS = 25;
 
@@ -383,8 +385,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		_T("ID_PANEL6"));
 	FlexGridSizer9 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer9->AddGrowableCol(0);
-	wxString __wxRadioBoxChoices_1[2] = {_("Autonavigation (reactive)"),
-										 _("Preprogrammed sequences")};
+	wxString __wxRadioBoxChoices_1[2] = {
+		_("Autonavigation (reactive)"), _("Preprogrammed sequences")};
 	rbNavMode = new wxRadioBox(
 		pnNavSelButtons, ID_RADIOBOX2, _("Navigator"), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, wxRA_SPECIFY_COLS,
@@ -437,8 +439,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		5);
 	FlexGridSizer9->Add(
 		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	wxString __wxRadioBoxChoices_2[2] = {_("Differential (Ackermann) drive"),
-										 _("Holonomic")};
+	wxString __wxRadioBoxChoices_2[2] = {
+		_("Differential (Ackermann) drive"), _("Holonomic")};
 	rbKinType = new wxRadioBox(
 		pnNavSelButtons, ID_RADIOBOX1, _("Robot kinematics type"),
 		wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 1,
@@ -987,7 +989,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 			0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		m_gl_placing_nav_target->insert(obj);
-		m_gl_placing_nav_target->setVisibility(false);  // Start invisible.
+		m_gl_placing_nav_target->setVisibility(false);	// Start invisible.
 		openGLSceneRef->insert(m_gl_placing_nav_target);
 	}
 	{  // Sign of "replacing the robot":
@@ -1008,7 +1010,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		obj->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00, 0x70));
 		m_gl_drawing_obs->insert(obj);
 
-		m_gl_drawing_obs->setVisibility(false);  // Start invisible.
+		m_gl_drawing_obs->setVisibility(false);	 // Start invisible.
 		openGLSceneRef->insert(m_gl_drawing_obs);
 	}
 
@@ -1198,10 +1200,7 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 			std::cerr.flush();
 		}
 
-		if (m_is_running)
-		{
-			simulateOneStep(NAV_SIMUL_TIMESTEP_MS * 1e-3);
-		}
+		if (m_is_running) { simulateOneStep(NAV_SIMUL_TIMESTEP_MS * 1e-3); }
 		updateViewsDynamicObjects();
 		timRunSimul.Start(
 			NAV_SIMUL_TIMESTEP_MS, true);  // execute the simulation step by
@@ -1257,22 +1256,16 @@ bool reactive_navigator_demoframe::reinitSimulator()
 			cfg.setContent(std::string(edManualSeqs->GetValue().mb_str()));
 			break;
 		}
-		default:
-			throw std::runtime_error("Invalid nav method selected!");
+		default: throw std::runtime_error("Invalid nav method selected!");
 	};
 	ASSERT_(m_navMethod.get());
 	// Load params:
 	std::string sKinPrefix;
 	switch (rbKinType->GetSelection())
 	{
-		case 0:
-			sKinPrefix = "DIFF_";
-			break;
-		case 1:
-			sKinPrefix = "HOLO_";
-			break;
-		default:
-			throw std::runtime_error("Invalid kinematic model selected!");
+		case 0: sKinPrefix = "DIFF_"; break;
+		case 1: sKinPrefix = "HOLO_"; break;
+		default: throw std::runtime_error("Invalid kinematic model selected!");
 	};
 
 	{
@@ -1350,12 +1343,12 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				0.005f;
 			m_latest_obstacles.insertionOptions.also_interpolate = false;
 
-			m_latest_obstacles.clear();  // erase old points
+			m_latest_obstacles.clear();	 // erase old points
 			m_latest_obstacles.insertObservation(simulatedScan);
 			// m_latest_obstacles is ref-copied into the robot2nav interface.
 		}
 
-		gl_scan3D->setScan(simulatedScan);  // Draw real scan in 3D view
+		gl_scan3D->setScan(simulatedScan);	// Draw real scan in 3D view
 	}
 
 	// Navigate:
@@ -1376,9 +1369,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
 	static int decim_path = 0;
 	if (gl_robot_path->empty() || ++decim_path > 10)
-	{
-		gl_robot_path->appendLine(cur_pt, cur_pt);
-	}
+	{ gl_robot_path->appendLine(cur_pt, cur_pt); }
 	else
 	{
 		gl_robot_path->appendLineStrip(cur_pt);
@@ -1396,7 +1387,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			}
 		}
 		if (m_log_trajectory_file
-				.is_open())  // just in case there was any error opening
+				.is_open())	 // just in case there was any error opening
 		{
 			const mrpt::math::TPose2D pose = m_robotSimul->getCurrentGTPose();
 			const mrpt::math::TTwist2D vel = m_robotSimul->getCurrentGTVel();
@@ -1450,8 +1441,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				const size_t N_STEPS = 20;
 				for (size_t j = 0; j < N_STEPS; j++)
 				{
-					const double sec =
-						log->gaps_ini[i] +
+					const double sec = log->gaps_ini[i] +
 						j * (log->gaps_end[i] - log->gaps_ini[i]) /
 							static_cast<double>(N_STEPS - 1);
 					const double ang = M_PI * (-1.0 + 2.0 * sec / nObs);
@@ -1525,11 +1515,10 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			if (ptg)
 			{
 				// Draw path:
-				const int selected_k =
-					is_NOP_op
-						? lfr.ptg_last_k_NOP
-						: ptg->alpha2index(lfr.infoPerPTG[lfr.nSelectedPTG]
-											   .desiredDirection);
+				const int selected_k = is_NOP_op
+					? lfr.ptg_last_k_NOP
+					: ptg->alpha2index(
+						  lfr.infoPerPTG[lfr.nSelectedPTG].desiredDirection);
 				float max_dist = ptg->getRefDistance();
 				gl_robot_ptg_prediction->clear();
 
@@ -1726,8 +1715,7 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
 				}
 			}
 			break;
-			default:
-				break;
+			default: break;
 		};
 
 		StatusBar1->SetStatusText(
@@ -1841,8 +1829,7 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 				skip_normal_process = true;
 			}
 			break;
-		default:
-			break;
+		default: break;
 	}
 
 	if (!skip_normal_process)
@@ -2064,8 +2051,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			gl_robot_local->setScale(1.0 / m_simul_options.MAX_SENSOR_RADIUS);
 		}
 		break;
-		default:
-			throw std::runtime_error("Invalid kinematic model selected!");
+		default: throw std::runtime_error("Invalid kinematic model selected!");
 	};
 }
 

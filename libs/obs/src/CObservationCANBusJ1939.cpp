@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <iostream>
 
 using namespace mrpt::obs;
@@ -56,7 +57,8 @@ void CObservationCANBusJ1939::serializeFrom(
 
 			in >> n;
 			m_data.resize(n);
-			for (i = 0; i < n; ++i) in >> m_data[i];
+			for (i = 0; i < n; ++i)
+				in >> m_data[i];
 
 			in >> n;
 			m_raw_frame.resize(n);
@@ -71,8 +73,7 @@ void CObservationCANBusJ1939::serializeFrom(
 			in >> timestamp;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -93,12 +94,15 @@ void CObservationCANBusJ1939::getDescriptionAsText(std::ostream& o) const
 	o << "Data length: " << format("0x%02X", m_data_length)
 	  << " [Dec: " << int(m_data_length) << "]" << endl;
 	o << "Data: ";
-	for (unsigned char k : m_data) o << format("0x%02X", k) << " ";
+	for (unsigned char k : m_data)
+		o << format("0x%02X", k) << " ";
 	o << " [Dec: ";
-	for (unsigned char k : m_data) o << int(k) << " ";
+	for (unsigned char k : m_data)
+		o << int(k) << " ";
 	o << "]" << endl;
 
 	o << "Raw frame: ";
-	for (char k : m_raw_frame) o << k;
+	for (char k : m_raw_frame)
+		o << k;
 	o << endl;
 }

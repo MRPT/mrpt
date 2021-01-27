@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
 #include <mrpt/maps/CMultiMetricMap.h>
@@ -22,6 +22,7 @@
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::slam;
@@ -112,7 +113,7 @@ void CIncrementalMapPartitioner::clear()
 {
 	m_last_last_partition_are_new_ones = false;
 	m_A.setSize(0, 0);
-	m_individualFrames.clear();  // Free the map...
+	m_individualFrames.clear();	 // Free the map...
 	m_individualMaps.clear();
 	m_last_partition.clear();  // Delete last partitions
 }
@@ -145,7 +146,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 
 	// Select method to evaluate similarity:
 	similarity_func_t sim_func;
-	using namespace std::placeholders;  // for _1, _2 etc.
+	using namespace std::placeholders;	// for _1, _2 etc.
 	switch (options.simil_method)
 	{
 		case smMETRIC_MAP_MATCHING:
@@ -155,11 +156,8 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 		case smOBSERVATION_OVERLAP:
 			sim_func = &eval_similarity_observation_overlap;
 			break;
-		case smCUSTOM_FUNCTION:
-			sim_func = m_sim_func;
-			break;
-		default:
-			THROW_EXCEPTION("Invalid value for `simil_method`");
+		case smCUSTOM_FUNCTION: sim_func = m_sim_func; break;
+		default: THROW_EXCEPTION("Invalid value for `simil_method`");
 	};
 
 	// Evaluate the similarity metric for the last row & column:
@@ -301,7 +299,8 @@ void CIncrementalMapPartitioner::removeSetOfNodes(
 	// --------------------------------------------------
 	m_last_partition.resize(1);
 	m_last_partition[0].resize(nNew);
-	for (i = 0; i < nNew; i++) m_last_partition[0][i] = i;
+	for (i = 0; i < nNew; i++)
+		m_last_partition[0][i] = i;
 
 	m_last_last_partition_are_new_ones = false;
 
@@ -453,8 +452,7 @@ void CIncrementalMapPartitioner::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

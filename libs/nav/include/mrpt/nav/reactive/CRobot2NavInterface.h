@@ -11,7 +11,7 @@
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TTwist2D.h>
-#include <mrpt/obs/obs_frwds.h>  // CSimplePointsMap
+#include <mrpt/obs/obs_frwds.h>	 // CSimplePointsMap
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/datetime.h>

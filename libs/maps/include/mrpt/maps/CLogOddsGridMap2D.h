@@ -45,8 +45,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 		const cell_t thres, cell_t* mapArray, const unsigned _size_x)
 	{
 		cell_t* theCell = mapArray + (x + y * _size_x);
-		if (*theCell > thres)
-			*theCell -= logodd_obs;
+		if (*theCell > thres) *theCell -= logodd_obs;
 		else
 			*theCell = traits_t::CELLTYPE_MIN;
 	}
@@ -64,8 +63,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 	inline static void updateCell_fast_occupied(
 		cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
 	{
-		if (*theCell > thres)
-			*theCell -= logodd_obs;
+		if (*theCell > thres) *theCell -= logodd_obs;
 		else
 			*theCell = traits_t::CELLTYPE_MIN;
 	}
@@ -86,8 +84,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 		const cell_t thres, cell_t* mapArray, const unsigned _size_x)
 	{
 		cell_t* theCell = mapArray + (x + y * _size_x);
-		if (*theCell < thres)
-			*theCell += logodd_obs;
+		if (*theCell < thres) *theCell += logodd_obs;
 		else
 			*theCell = traits_t::CELLTYPE_MAX;
 	}
@@ -106,12 +103,11 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 	inline static void updateCell_fast_free(
 		cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
 	{
-		if (*theCell < thres)
-			*theCell += logodd_obs;
+		if (*theCell < thres) *theCell += logodd_obs;
 		else
 			*theCell = traits_t::CELLTYPE_MAX;
 	}
 
-};  // end of CLogOddsGridMap2D
+};	// end of CLogOddsGridMap2D
 
 }  // namespace mrpt::maps

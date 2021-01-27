@@ -10,9 +10,9 @@
 #ifndef MYARTPROVIDER_H
 #define MYARTPROVIDER_H
 
-#include "CDlgLog.h"
-
 #include <wx/artprov.h>
+
+#include "CDlgLog.h"
 
 class CMyArtProvider : public wxArtProvider
 {
@@ -22,4 +22,4 @@ class CMyArtProvider : public wxArtProvider
 		const wxSize& size) override;
 };
 
-#endif  // MYARTPROVIDER_H
+#endif	// MYARTPROVIDER_H

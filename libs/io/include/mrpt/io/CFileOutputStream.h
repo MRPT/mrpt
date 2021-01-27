@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/io/CStream.h>
+
 #include <fstream>
 
 namespace mrpt::io
@@ -74,7 +75,7 @@ class CFileOutputStream : public CStream
 
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
-};  // End of class def.
+};	// End of class def.
 static_assert(
 	!std::is_copy_constructible_v<CFileOutputStream> &&
 		!std::is_copy_assignable_v<CFileOutputStream>,

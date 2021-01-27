@@ -79,7 +79,7 @@ DECLARE_OP_FUNCTION(op_info)
 					obs_indiv = SF->getObservationByIndex(idxObs);
 				}
 				else
-					break;  // shouldn't...
+					break;	// shouldn't...
 
 				// Process "obs_indiv":
 				ASSERT_(obs_indiv);
@@ -101,7 +101,7 @@ DECLARE_OP_FUNCTION(op_info)
 			return true;  // No error.
 		}
 
-	};  // end CRawlogProcessor_Info
+	};	// end CRawlogProcessor_Info
 
 	// Process
 	// ---------------------------------
@@ -117,8 +117,9 @@ DECLARE_OP_FUNCTION(op_info)
 		 << mrpt::system::unitsFormat(in_rawlog.getPosition()) << "B\n";
 	cout << "Compression ratio                 : "
 		 << format(
-				"%.02f%%\n", 100.0 * double(proc.m_filSize) /
-								 double(in_rawlog.getPosition()));
+				"%.02f%%\n",
+				100.0 * double(proc.m_filSize) /
+					double(in_rawlog.getPosition()));
 	cout << "Overall number of objects         : " << (proc.m_rawlogEntry + 1)
 		 << "\n";
 	cout << "Actions/SensoryFrame format       : "
@@ -148,7 +149,7 @@ DECLARE_OP_FUNCTION(op_info)
 			Hz = double(
 					 it->second.occurrences > 1 ? it->second.occurrences - 1
 												: 1) /
-				 dur;
+				dur;
 		}
 		cout << "Sensor (Label/Occurs/Rate/Durat.) : "
 			 << format(

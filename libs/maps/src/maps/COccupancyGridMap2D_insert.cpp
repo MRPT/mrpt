@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/memory.h>  // alloca()
+#include <mrpt/system/memory.h>	 // alloca()
 
 #if HAVE_ALLOCA_H
 #include <alloca.h>
@@ -81,8 +81,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 	// saturation limits:
 	cellType logodd_thres_occupied =
 		OCCGRID_CELLTYPE_MIN + logodd_observation_occupied;
-	cellType logodd_thres_free =
-		OCCGRID_CELLTYPE_MAX -
+	cellType logodd_thres_free = OCCGRID_CELLTYPE_MAX -
 		std::max(logodd_noecho_free, logodd_observation_free);
 
 	if (IS_CLASS(obs, CObservation2DRangeScan))
@@ -105,9 +104,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 		// Check the altitude of the map (if feature enabled!)
 		if (insertionOptions.useMapAltitude &&
 			fabs(insertionOptions.mapAltitude - sensorPose3D.z()) > 0.001)
-		{
-			reallyInsert = false;
-		}
+		{ reallyInsert = false; }
 
 		// Manage horizontal scans, but with the sensor bottom-up:
 		//  Use the z-axis direction of the transformed Z axis of the sensor
@@ -133,8 +130,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			float last_valid_range = maxDistanceInsertion;
 
 			int K = updateInfoChangeOnly.enabled
-						? updateInfoChangeOnly.laserRaysSkip
-						: decimation;
+				? updateInfoChangeOnly.laserRaysSkip
+				: decimation;
 			size_t idx, nRanges = o.getScanSize();
 			float curRange = 0;
 
@@ -225,8 +222,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					new_x_max += 2 * securMargen;
 				else
 					new_x_max = x_max;
-				if (new_x_min < x_min + securMargen)
-					new_x_min -= 2;
+				if (new_x_min < x_min + securMargen) new_x_min -= 2;
 				else
 					new_x_min = x_min;
 
@@ -234,8 +230,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					new_y_max += 2 * securMargen;
 				else
 					new_y_max = y_max;
-				if (new_y_min < y_min + securMargen)
-					new_y_min -= 2;
+				if (new_y_min < y_min + securMargen) new_y_min -= 2;
 				else
 					new_y_min = y_min;
 
@@ -249,7 +244,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				unsigned theMapSize_x = size_x;
 
 				int cx0 =
-					x2idx(px);  // Remember: This must be after the resizeGrid!!
+					x2idx(px);	// Remember: This must be after the resizeGrid!!
 				int cy0 = y2idx(py);
 
 				// Insert rays:
@@ -294,8 +289,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					int frCX = cx << FRBITS;
 					int frCY = cy << FRBITS;
 					const auto logodd_free = o.getScanRangeValidity(idx)
-												 ? logodd_observation_free
-												 : logodd_noecho_free;
+						? logodd_observation_free
+						: logodd_noecho_free;
 
 					for (int nStep = 0; nStep < nStepsRay; nStep++)
 					{
@@ -393,8 +388,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					new_x_max += 2 * securMargen;
 				else
 					new_x_max = x_max;
-				if (new_x_min < x_min + securMargen)
-					new_x_min -= 2;
+				if (new_x_min < x_min + securMargen) new_x_min -= 2;
 				else
 					new_x_min = x_min;
 
@@ -402,8 +396,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					new_y_max += 2 * securMargen;
 				else
 					new_y_max = y_max;
-				if (new_y_min < y_min + securMargen)
-					new_y_min -= 2;
+				if (new_y_min < y_min + securMargen) new_y_min -= 2;
 				else
 					new_y_min = y_min;
 
@@ -444,7 +437,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				const float dA_2 = 0.5f * o.aperture / N;
 				for (idx = 0; idx < nRanges; idx += K, A += dAK)
 				{
-					float theR;  // The range of this beam
+					float theR;	 // The range of this beam
 					if (o.getScanRangeValidity(idx))
 					{
 						curRange = o.getScanRange(idx);
@@ -464,7 +457,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					}
 					if (theR < resolution)
 						continue;  // Range must be larger than a cell...
-					theR -= resolution;  // Remove one cell of length, which
+					theR -= resolution;	 // Remove one cell of length, which
 					// will be filled with "occupied"
 					// later.
 
@@ -531,7 +524,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						// the "y" of P1:
 						P1b.y = P1.y;
 						P1b.x = P0.x +
-								(P1.y - P0.y) * (P2.x - P0.x) / (P2.y - P0.y);
+							(P1.y - P0.y) * (P2.x - P0.x) / (P2.y - P0.y);
 
 						P1b.cx = x2idx(P1b.x);
 						P1b.cy = y2idx(P1b.y);
@@ -545,17 +538,17 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						// const int Acy01b = P1b.cy - P0.cy;  // = Acy01
 
 						// Increments at each raytracing step:
-						const float inv_N_01 =
-							1.0f / (max3(
-										std::abs(Acx01), std::abs(Acy01),
-										std::abs(Acx01b)) +
-									1);  // Number of steps ^ -1
+						const float inv_N_01 = 1.0f /
+							(max3(
+								 std::abs(Acx01), std::abs(Acy01),
+								 std::abs(Acx01b)) +
+							 1);  // Number of steps ^ -1
 						const int frAcx01 = round(
-							(Acx01 << FRBITS) * inv_N_01);  //  Acx*128 / N
+							(Acx01 << FRBITS) * inv_N_01);	//  Acx*128 / N
 						const int frAcy01 = round(
-							(Acy01 << FRBITS) * inv_N_01);  //  Acy*128 / N
+							(Acy01 << FRBITS) * inv_N_01);	//  Acy*128 / N
 						const int frAcx01b = round(
-							(Acx01b << FRBITS) * inv_N_01);  //  Acx*128 / N
+							(Acx01b << FRBITS) * inv_N_01);	 //  Acx*128 / N
 
 						// ------------------------------------
 						// First sub-triangle: P0-P1-P1b
@@ -601,7 +594,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						do
 						{
 							if (last_insert_cy !=
-								R1.cy)  // || last_insert_cx!=R1.cx)
+								R1.cy)	// || last_insert_cx!=R1.cx)
 							{
 								last_insert_cy = R1.cy;
 								//	last_insert_cx = R1.cx;
@@ -615,7 +608,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 							R1.frX += frAx_R1;
 							R1.frY += frAy_R1;
-							R2.frX += frAx_R2;  // R1.frY += frAcy01;
+							R2.frX += frAx_R2;	// R1.frY += frAcy01;
 
 							R1.cx = R1.frX >> FRBITS;
 							R1.cy = R1.frY >> FRBITS;
@@ -635,17 +628,17 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						// const int Acy1b2 = Acy12
 
 						// Increments at each raytracing step:
-						const float inv_N_12 =
-							1.0f / (max3(
-										std::abs(Acx12), std::abs(Acy12),
-										std::abs(Acx1b2)) +
-									1);  // Number of steps ^ -1
+						const float inv_N_12 = 1.0f /
+							(max3(
+								 std::abs(Acx12), std::abs(Acy12),
+								 std::abs(Acx1b2)) +
+							 1);  // Number of steps ^ -1
 						const int frAcx12 = round(
-							(Acx12 << FRBITS) * inv_N_12);  //  Acx*128 / N
+							(Acx12 << FRBITS) * inv_N_12);	//  Acx*128 / N
 						const int frAcy12 = round(
-							(Acy12 << FRBITS) * inv_N_12);  //  Acy*128 / N
+							(Acy12 << FRBITS) * inv_N_12);	//  Acy*128 / N
 						const int frAcx1b2 = round(
-							(Acx1b2 << FRBITS) * inv_N_12);  //  Acx*128 / N
+							(Acx1b2 << FRBITS) * inv_N_12);	 //  Acx*128 / N
 
 						// struct { int frX,frY; int cx,cy; } R1,R2;	//
 						// Fractional coords of the two rays:
@@ -653,7 +646,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						// R1 forced to be at the left hand
 						frAy_R1 = frAcy12;
 						if (!frAy_R1)
-							frAy_R1 = 2 << FRBITS;  // If Ay=0, force it to be
+							frAy_R1 = 2 << FRBITS;	// If Ay=0, force it to be
 						// >0 so the "do...while"
 						// loop below ends in ONE
 						// iteration.
@@ -690,7 +683,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						do
 						{
 							if (last_insert_cy !=
-								R1.cy)  // || last_insert_cx!=R1.cx)
+								R1.cy)	// || last_insert_cx!=R1.cx)
 							{
 								//	last_insert_cx = R1.cx;
 								last_insert_cy = R1.cy;
@@ -703,7 +696,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 							R1.frX += frAx_R1;
 							R1.frY += frAy_R1;
-							R2.frX += frAx_R2;  // R1.frY += frAcy01;
+							R2.frX += frAx_R2;	// R1.frY += frAcy01;
 
 							R1.cx = R1.frX >> FRBITS;
 							R1.cy = R1.frY >> FRBITS;
@@ -764,7 +757,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 							const int nSteps =
 								(max(std::abs(AcxE), std::abs(AcyE)) + 1);
 							const float inv_N_12 =
-								1.0f / nSteps;  // Number of steps ^ -1
+								1.0f / nSteps;	// Number of steps ^ -1
 							const int frAcxE = round(
 								(AcxE << FRBITS) * inv_N_12);  //  Acx*128 / N
 							const int frAcyE = round(
@@ -821,9 +814,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 		// Check the altitude of the map (if feature enabled!)
 		if (insertionOptions.useMapAltitude &&
 			fabs(insertionOptions.mapAltitude - sensorPose3D.z()) > 0.001)
-		{
-			reallyInsert = false;
-		}
+		{ reallyInsert = false; }
 		if (reallyInsert)
 		{
 			// ---------------------------------------------
@@ -844,8 +835,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			float last_valid_range = maxDistanceInsertion;
 
 			int K = updateInfoChangeOnly.enabled
-						? updateInfoChangeOnly.laserRaysSkip
-						: decimation;
+				? updateInfoChangeOnly.laserRaysSkip
+				: decimation;
 			size_t idx, nRanges = o.sensedData.size();
 			float curRange = 0;
 
@@ -912,21 +903,17 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			// Add an extra margin:
 			float securMargen = 15 * resolution;
 
-			if (new_x_max > x_max - securMargen)
-				new_x_max += 2 * securMargen;
+			if (new_x_max > x_max - securMargen) new_x_max += 2 * securMargen;
 			else
 				new_x_max = x_max;
-			if (new_x_min < x_min + securMargen)
-				new_x_min -= 2;
+			if (new_x_min < x_min + securMargen) new_x_min -= 2;
 			else
 				new_x_min = x_min;
 
-			if (new_y_max > y_max - securMargen)
-				new_y_max += 2 * securMargen;
+			if (new_y_max > y_max - securMargen) new_y_max += 2 * securMargen;
 			else
 				new_y_max = y_max;
-			if (new_y_min < y_min + securMargen)
-				new_y_min -= 2;
+			if (new_y_min < y_min + securMargen) new_y_min -= 2;
 			else
 				new_y_min = y_min;
 
@@ -958,7 +945,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			const float dA_2 = 0.5f * o.sensorConeApperture;
 			for (idx = 0; idx < nRanges; idx += K, A += dAK)
 			{
-				float theR;  // The range of this beam
+				float theR;	 // The range of this beam
 				if (o.sensedData[idx].sensedDistance < maxDistanceInsertion)
 				{
 					curRange = o.sensedData[idx].sensedDistance;
@@ -978,7 +965,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				}
 				if (theR < resolution)
 					continue;  // Range must be larger than a cell...
-				theR -= resolution;  // Remove one cell of length, which will be
+				theR -= resolution;	 // Remove one cell of length, which will be
 				// filled with "occupied" later.
 
 				/* ---------------------------------------------------------
@@ -1057,11 +1044,11 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					// const int Acy01b = P1b.cy - P0.cy;  // = Acy01
 
 					// Increments at each raytracing step:
-					const float inv_N_01 =
-						1.0f / (max3(
-									std::abs(Acx01), std::abs(Acy01),
-									std::abs(Acx01b)) +
-								1);  // Number of steps ^ -1
+					const float inv_N_01 = 1.0f /
+						(max3(
+							 std::abs(Acx01), std::abs(Acy01),
+							 std::abs(Acx01b)) +
+						 1);  // Number of steps ^ -1
 					const int frAcx01 =
 						round((Acx01 << FRBITS) * inv_N_01);  //  Acx*128 / N
 					const int frAcy01 =
@@ -1112,7 +1099,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					do
 					{
 						if (last_insert_cy !=
-							R1.cy)  // || last_insert_cx!=R1.cx)
+							R1.cy)	// || last_insert_cx!=R1.cx)
 						{
 							last_insert_cy = R1.cy;
 							//	last_insert_cx = R1.cx;
@@ -1126,7 +1113,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 						R1.frX += frAx_R1;
 						R1.frY += frAy_R1;
-						R2.frX += frAx_R2;  // R1.frY += frAcy01;
+						R2.frX += frAx_R2;	// R1.frY += frAcy01;
 
 						R1.cx = R1.frX >> FRBITS;
 						R1.cy = R1.frY >> FRBITS;
@@ -1145,11 +1132,11 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					// const int Acy1b2 = Acy12
 
 					// Increments at each raytracing step:
-					const float inv_N_12 =
-						1.0f / (max3(
-									std::abs(Acx12), std::abs(Acy12),
-									std::abs(Acx1b2)) +
-								1);  // Number of steps ^ -1
+					const float inv_N_12 = 1.0f /
+						(max3(
+							 std::abs(Acx12), std::abs(Acy12),
+							 std::abs(Acx1b2)) +
+						 1);  // Number of steps ^ -1
 					const int frAcx12 =
 						round((Acx12 << FRBITS) * inv_N_12);  //  Acx*128 / N
 					const int frAcy12 =
@@ -1164,7 +1151,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					// R1 forced to be at the left hand
 					frAy_R1 = frAcy12;
 					if (!frAy_R1)
-						frAy_R1 = 2 << FRBITS;  // If Ay=0, force it to be >0 so
+						frAy_R1 = 2 << FRBITS;	// If Ay=0, force it to be >0 so
 					// the "do...while" loop below
 					// ends in ONE iteration.
 
@@ -1200,7 +1187,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					do
 					{
 						if (last_insert_cy !=
-							R1.cy)  // || last_insert_cx!=R1.cx)
+							R1.cy)	// || last_insert_cx!=R1.cx)
 						{
 							//	last_insert_cx = R1.cx;
 							last_insert_cy = R1.cy;
@@ -1213,7 +1200,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 						R1.frX += frAx_R1;
 						R1.frY += frAy_R1;
-						R2.frX += frAx_R2;  // R1.frY += frAcy01;
+						R2.frX += frAx_R2;	// R1.frY += frAcy01;
 
 						R1.cx = R1.frX >> FRBITS;
 						R1.cy = R1.frY >> FRBITS;
@@ -1272,11 +1259,11 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						const int nSteps =
 							(max(std::abs(AcxE), std::abs(AcyE)) + 1);
 						const float inv_N_12 =
-							1.0f / nSteps;  // Number of steps ^ -1
+							1.0f / nSteps;	// Number of steps ^ -1
 						const int frAcxE =
-							round((AcxE << FRBITS) * inv_N_12);  //  Acx*128 / N
+							round((AcxE << FRBITS) * inv_N_12);	 //  Acx*128 / N
 						const int frAcyE =
-							round((AcyE << FRBITS) * inv_N_12);  //  Acy*128 / N
+							round((AcyE << FRBITS) * inv_N_12);	 //  Acy*128 / N
 
 						R1.cx = P1.cx;
 						R1.cy = P1.cy;

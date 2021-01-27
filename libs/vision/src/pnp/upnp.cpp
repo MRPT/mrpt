@@ -7,7 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
+#include "vision-precomp.h"	 // Precompiled headers
+//
 
 // M*//////////////////////////////////////////////////////////////////////////////////////
 //
@@ -63,8 +64,8 @@
 \****************************************************************************************/
 
 #include <mrpt/3rdparty/do_opencv_includes.h>
-#include <iostream>
 
+#include <iostream>
 #include <limits>
 using namespace std;
 #if MRPT_HAS_OPENCV
@@ -171,7 +172,8 @@ void upnp::copy_R_and_t(
 {
 	for (int i = 0; i < 3; i++)
 	{
-		for (int j = 0; j < 3; j++) R_dst[i][j] = R_src[i][j];
+		for (int j = 0; j < 3; j++)
+			R_dst[i][j] = R_src[i][j];
 		t_dst[i] = t_src[i];
 	}
 }
@@ -224,12 +226,13 @@ void upnp::estimate_R_and_t(double R[3][3], double t[3])
 	Mat(ABt_V.t()).copyTo(ABt_V);
 
 	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) R[i][j] = dot(abt_u + 3 * i, abt_v + 3 * j);
+		for (int j = 0; j < 3; j++)
+			R[i][j] = dot(abt_u + 3 * i, abt_v + 3 * j);
 
-	const double det =
-		R[0][0] * R[1][1] * R[2][2] + R[0][1] * R[1][2] * R[2][0] +
-		R[0][2] * R[1][0] * R[2][1] - R[0][2] * R[1][1] * R[2][0] -
-		R[0][1] * R[1][0] * R[2][2] - R[0][0] * R[1][2] * R[2][1];
+	const double det = R[0][0] * R[1][1] * R[2][2] +
+		R[0][1] * R[1][2] * R[2][0] + R[0][2] * R[1][0] * R[2][1] -
+		R[0][2] * R[1][1] * R[2][0] - R[0][1] * R[1][0] * R[2][2] -
+		R[0][0] * R[1][2] * R[2][1];
 
 	if (det < 0)
 	{
@@ -248,7 +251,8 @@ void upnp::solve_for_sign()
 	if (pcs[2] < 0.0)
 	{
 		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 3; j++) ccs[i][j] = -ccs[i][j];
+			for (int j = 0; j < 3; j++)
+				ccs[i][j] = -ccs[i][j];
 
 		for (int i = 0; i < number_of_correspondences; i++)
 		{
@@ -294,7 +298,8 @@ double upnp::reprojection_error(const double R[3][3], const double t[3])
 
 void upnp::choose_control_points()
 {
-	for (int i = 0; i < 4; ++i) cws[i][0] = cws[i][1] = cws[i][2] = 0.0;
+	for (int i = 0; i < 4; ++i)
+		cws[i][0] = cws[i][1] = cws[i][2] = 0.0;
 	cws[0][0] = cws[1][1] = cws[2][2] = 1.0;
 }
 
@@ -336,17 +341,20 @@ void upnp::fill_M(
 
 void upnp::compute_ccs(const double* betas, const double* ut)
 {
-	for (int i = 0; i < 4; ++i) ccs[i][0] = ccs[i][1] = ccs[i][2] = 0.0;
+	for (int i = 0; i < 4; ++i)
+		ccs[i][0] = ccs[i][1] = ccs[i][2] = 0.0;
 
 	int N = 4;
 	for (int i = 0; i < N; ++i)
 	{
 		const double* v = ut + 12 * (9 + i);
 		for (int j = 0; j < 4; ++j)
-			for (int k = 0; k < 3; ++k) ccs[j][k] += betas[i] * v[3 * j + k];
+			for (int k = 0; k < 3; ++k)
+				ccs[j][k] += betas[i] * v[3 * j + k];
 	}
 
-	for (int i = 0; i < 4; ++i) ccs[i][2] *= fu;
+	for (int i = 0; i < 4; ++i)
+		ccs[i][2] *= fu;
 }
 
 void upnp::compute_pcs()
@@ -358,7 +366,7 @@ void upnp::compute_pcs()
 
 		for (int j = 0; j < 3; j++)
 			pc[j] = a[0] * ccs[0][j] + a[1] * ccs[1][j] + a[2] * ccs[2][j] +
-					a[3] * ccs[3][j];
+				a[3] * ccs[3][j];
 	}
 }
 
@@ -439,7 +447,8 @@ Mat upnp::compute_constraint_distance_2param_6eq_2unk_f_unk(const Mat& M1)
 	Mat P = Mat(6, 2, CV_64F);
 
 	double m[13];
-	for (int i = 1; i < 13; ++i) m[i] = *M1.ptr<double>(i - 1);
+	for (int i = 1; i < 13; ++i)
+		m[i] = *M1.ptr<double>(i - 1);
 
 	double t1 = pow(m[4], 2);
 	double t4 = pow(m[1], 2);
@@ -528,8 +537,8 @@ Mat upnp::compute_constraint_distance_3param_6eq_6unk_f_unk(
 	*P.ptr<double>(0, 0) =
 		t1 + t2 - 2 * m[1][4] * m[1][1] - 2 * m[1][5] * m[1][2] + t7 + t8;
 	*P.ptr<double>(0, 1) = -2 * m[2][4] * m[1][1] + 2 * t11 + 2 * t12 -
-						   2 * m[1][4] * m[2][1] - 2 * m[2][5] * m[1][2] +
-						   2 * t15 + 2 * t16 - 2 * m[1][5] * m[2][2];
+		2 * m[1][4] * m[2][1] - 2 * m[2][5] * m[1][2] + 2 * t15 + 2 * t16 -
+		2 * m[1][5] * m[2][2];
 	*P.ptr<double>(0, 2) =
 		t19 - 2 * m[2][4] * m[2][1] + t22 + t23 + t24 - 2 * m[2][5] * m[2][2];
 	*P.ptr<double>(0, 3) = t28 + t29 - 2 * m[1][6] * m[1][3];
@@ -539,9 +548,9 @@ Mat upnp::compute_constraint_distance_3param_6eq_6unk_f_unk(
 
 	*P.ptr<double>(1, 0) =
 		t8 - 2 * m[1][8] * m[1][2] - 2 * m[1][7] * m[1][1] + t47 + t48 + t2;
-	*P.ptr<double>(1, 1) =
-		2 * t15 - 2 * m[1][8] * m[2][2] - 2 * m[2][8] * m[1][2] + 2 * t52 -
-		2 * m[1][7] * m[2][1] - 2 * m[2][7] * m[1][1] + 2 * t55 + 2 * t11;
+	*P.ptr<double>(1, 1) = 2 * t15 - 2 * m[1][8] * m[2][2] -
+		2 * m[2][8] * m[1][2] + 2 * t52 - 2 * m[1][7] * m[2][1] -
+		2 * m[2][7] * m[1][1] + 2 * t55 + 2 * t11;
 	*P.ptr<double>(1, 2) =
 		-2 * m[2][8] * m[2][2] + t22 + t23 + t59 - 2 * m[2][7] * m[2][1] + t62;
 	*P.ptr<double>(1, 3) = t29 + t64 - 2 * m[1][9] * m[1][3];
@@ -552,8 +561,8 @@ Mat upnp::compute_constraint_distance_3param_6eq_6unk_f_unk(
 	*P.ptr<double>(2, 0) =
 		-2 * m[1][11] * m[1][2] + t2 + t8 + t78 + t79 - 2 * m[1][10] * m[1][1];
 	*P.ptr<double>(2, 1) = 2 * t15 - 2 * m[1][11] * m[2][2] + 2 * t84 -
-						   2 * m[1][10] * m[2][1] - 2 * m[2][10] * m[1][1] +
-						   2 * t87 - 2 * m[2][11] * m[1][2] + 2 * t11;
+		2 * m[1][10] * m[2][1] - 2 * m[2][10] * m[1][1] + 2 * t87 -
+		2 * m[2][11] * m[1][2] + 2 * t11;
 	*P.ptr<double>(2, 2) =
 		t90 + t22 - 2 * m[2][10] * m[2][1] + t23 - 2 * m[2][11] * m[2][2] + t95;
 	*P.ptr<double>(2, 3) = -2 * m[1][12] * m[1][3] + t99 + t29;
@@ -564,8 +573,8 @@ Mat upnp::compute_constraint_distance_3param_6eq_6unk_f_unk(
 	*P.ptr<double>(3, 0) =
 		t48 + t1 - 2 * m[1][8] * m[1][5] + t7 - 2 * m[1][7] * m[1][4] + t47;
 	*P.ptr<double>(3, 1) = 2 * t16 - 2 * m[1][7] * m[2][4] + 2 * t55 + 2 * t52 -
-						   2 * m[1][8] * m[2][5] - 2 * m[2][8] * m[1][5] -
-						   2 * m[2][7] * m[1][4] + 2 * t12;
+		2 * m[1][8] * m[2][5] - 2 * m[2][8] * m[1][5] - 2 * m[2][7] * m[1][4] +
+		2 * t12;
 	*P.ptr<double>(3, 2) =
 		t24 - 2 * m[2][8] * m[2][5] + t19 - 2 * m[2][7] * m[2][4] + t62 + t59;
 	*P.ptr<double>(3, 3) = -2 * m[1][9] * m[1][6] + t64 + t28;
@@ -575,9 +584,9 @@ Mat upnp::compute_constraint_distance_3param_6eq_6unk_f_unk(
 
 	*P.ptr<double>(4, 0) =
 		t1 - 2 * m[1][10] * m[1][4] + t7 + t78 + t79 - 2 * m[1][11] * m[1][5];
-	*P.ptr<double>(4, 1) =
-		2 * t84 - 2 * m[1][11] * m[2][5] - 2 * m[1][10] * m[2][4] + 2 * t16 -
-		2 * m[2][11] * m[1][5] + 2 * t87 - 2 * m[2][10] * m[1][4] + 2 * t12;
+	*P.ptr<double>(4, 1) = 2 * t84 - 2 * m[1][11] * m[2][5] -
+		2 * m[1][10] * m[2][4] + 2 * t16 - 2 * m[2][11] * m[1][5] + 2 * t87 -
+		2 * m[2][10] * m[1][4] + 2 * t12;
 	*P.ptr<double>(4, 2) =
 		t19 + t24 - 2 * m[2][10] * m[2][4] - 2 * m[2][11] * m[2][5] + t95 + t90;
 	*P.ptr<double>(4, 3) = t28 - 2 * m[1][12] * m[1][6] + t99;
@@ -586,12 +595,12 @@ Mat upnp::compute_constraint_distance_3param_6eq_6unk_f_unk(
 	*P.ptr<double>(4, 5) = t105 - 2 * m[2][12] * m[2][6] + t40;
 
 	*P.ptr<double>(5, 0) = -2 * m[1][10] * m[1][7] + t47 + t48 + t78 + t79 -
-						   2 * m[1][11] * m[1][8];
+		2 * m[1][11] * m[1][8];
 	*P.ptr<double>(5, 1) = 2 * t84 + 2 * t87 - 2 * m[2][11] * m[1][8] -
-						   2 * m[1][10] * m[2][7] - 2 * m[2][10] * m[1][7] +
-						   2 * t55 + 2 * t52 - 2 * m[1][11] * m[2][8];
+		2 * m[1][10] * m[2][7] - 2 * m[2][10] * m[1][7] + 2 * t55 + 2 * t52 -
+		2 * m[1][11] * m[2][8];
 	*P.ptr<double>(5, 2) = -2 * m[2][10] * m[2][7] - 2 * m[2][11] * m[2][8] +
-						   t62 + t59 + t90 + t95;
+		t62 + t59 + t90 + t95;
 	*P.ptr<double>(5, 3) = t64 - 2 * m[1][12] * m[1][9] + t99;
 	*P.ptr<double>(5, 4) =
 		2 * t68 - 2 * m[2][12] * m[1][9] - 2 * m[1][12] * m[2][9] + 2 * t101;
@@ -626,7 +635,8 @@ void upnp::generate_all_possible_solutions_for_f_unk(
 		Mat I = Mat(3, 1, CV_64F, independent_term);
 		Mat S = Mat(1, 3, CV_64F);
 
-		for (int j = 0; j < 9; ++j) matrix[j] = (double)matrix_to_resolve[i][j];
+		for (int j = 0; j < 9; ++j)
+			matrix[j] = (double)matrix_to_resolve[i][j];
 
 		independent_term[0] = log(std::abs(betas[combination[i][0] - 1]));
 		independent_term[1] = log(std::abs(betas[combination[i][1] - 1]));
@@ -655,7 +665,8 @@ void upnp::gauss_newton(
 		compute_A_and_b_gauss_newton(
 			L_6x12->ptr<double>(0), Rho->ptr<double>(0), betas, A, B, f[0]);
 		qr_solve(A, B, X);
-		for (int i = 0; i < 3; i++) betas[i] += x[i];
+		for (int i = 0; i < 3; i++)
+			betas[i] += x[i];
 		f[0] += x[3];
 	}
 
@@ -682,28 +693,26 @@ void upnp::compute_A_and_b_gauss_newton(
 		auto* rowA = A->ptr<double>(i);
 
 		rowA[0] = 2 * rowL[0] * betas[0] + rowL[1] * betas[1] +
-				  rowL[2] * betas[2] +
-				  f * f *
-					  (2 * rowL[6] * betas[0] + rowL[7] * betas[1] +
-					   rowL[8] * betas[2]);
+			rowL[2] * betas[2] +
+			f * f *
+				(2 * rowL[6] * betas[0] + rowL[7] * betas[1] +
+				 rowL[8] * betas[2]);
 		rowA[1] = rowL[1] * betas[0] + 2 * rowL[3] * betas[1] +
-				  rowL[4] * betas[2] +
-				  f * f *
-					  (rowL[7] * betas[0] + 2 * rowL[9] * betas[1] +
-					   rowL[10] * betas[2]);
+			rowL[4] * betas[2] +
+			f * f *
+				(rowL[7] * betas[0] + 2 * rowL[9] * betas[1] +
+				 rowL[10] * betas[2]);
 		rowA[2] = rowL[2] * betas[0] + rowL[4] * betas[1] +
-				  2 * rowL[5] * betas[2] +
-				  f * f *
-					  (rowL[8] * betas[0] + rowL[10] * betas[1] +
-					   2 * rowL[11] * betas[2]);
-		rowA[3] =
-			2 * f *
+			2 * rowL[5] * betas[2] +
+			f * f *
+				(rowL[8] * betas[0] + rowL[10] * betas[1] +
+				 2 * rowL[11] * betas[2]);
+		rowA[3] = 2 * f *
 			(rowL[6] * betas[0] * betas[0] + rowL[7] * betas[0] * betas[1] +
 			 rowL[8] * betas[0] * betas[2] + rowL[9] * betas[1] * betas[1] +
 			 rowL[10] * betas[1] * betas[2] + rowL[11] * betas[2] * betas[2]);
 
-		*b->ptr<double>(i) =
-			rho[i] -
+		*b->ptr<double>(i) = rho[i] -
 			(rowL[0] * betas[0] * betas[0] + rowL[1] * betas[0] * betas[1] +
 			 rowL[2] * betas[0] * betas[2] + rowL[3] * betas[1] * betas[1] +
 			 rowL[4] * betas[1] * betas[2] + rowL[5] * betas[2] * betas[2] +
@@ -777,8 +786,7 @@ void upnp::compute_rho(double* rho)
 double upnp::dist2(const double* p1, const double* p2)
 {
 	return (p1[0] - p2[0]) * (p1[0] - p2[0]) +
-		   (p1[1] - p2[1]) * (p1[1] - p2[1]) +
-		   (p1[2] - p2[2]) * (p1[2] - p2[2]);
+		(p1[1] - p2[1]) * (p1[1] - p2[1]) + (p1[2] - p2[2]) * (p1[2] - p2[2]);
 }
 
 double upnp::dot(const double* v1, const double* v2)

@@ -11,6 +11,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/system/COutputLogger.h>
+
 #include <memory>
 
 namespace mrpt::apps

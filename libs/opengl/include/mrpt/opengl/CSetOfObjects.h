@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/poses/poses_frwds.h>  // All these are needed for the auxiliary methods posePDF2opengl()
+#include <mrpt/poses/poses_frwds.h>	 // All these are needed for the auxiliary methods posePDF2opengl()
 
 namespace mrpt::opengl
 {
@@ -61,7 +61,8 @@ class CSetOfObjects : public CRenderizable
 	template <class T_it>
 	inline void insert(const T_it& begin, const T_it& end)
 	{
-		for (T_it it = begin; it != end; it++) insert(*it);
+		for (T_it it = begin; it != end; it++)
+			insert(*it);
 	}
 
 	shader_list_t requiredShaders() const override
@@ -200,8 +201,9 @@ typename T::Ptr CSetOfObjects::getByClass(size_t ith) const
 	// If not found directly, search recursively:
 	for (const auto& o : m_objects)
 	{
-		if (o && o->GetRuntimeClass() ==
-					 CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+		if (o &&
+			o->GetRuntimeClass() ==
+				CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
 			typename T::Ptr obj = std::dynamic_pointer_cast<CSetOfObjects>(o)
 									  ->template getByClass<T>(ith);

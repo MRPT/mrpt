@@ -11,6 +11,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "reactive_navigator_demoMain.h"
 //*)
 

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/topography.h>
+
 #include <Eigen/Dense>
 #include <iostream>
 
@@ -62,10 +63,11 @@ void TestGPS_coords()
 
 	cout << "P0->P1: " << (geo1 - geo0) << endl;
 	cout << "(p1.h-p0.h)*ENU_Z: "
-		 << (pt1.height - pt0.height) * mrpt::poses::CPose3D(pose_ENU)
-											.getRotationMatrix()
-											.blockCopy<3, 1>(0, 2)
-											.transpose()
+		 << (pt1.height - pt0.height) *
+			mrpt::poses::CPose3D(pose_ENU)
+				.getRotationMatrix()
+				.blockCopy<3, 1>(0, 2)
+				.transpose()
 		 << endl;
 
 	// UTM:
@@ -73,8 +75,8 @@ void TestGPS_coords()
 	cout << endl << "UTM coordinate test:" << endl;
 
 	double lats[] = {40.3154333, 46.283900, 37.577833,
-					 28.645650,  38.855550, 25.061783};
-	double lons[] = {-3.4857166, 7.8012333,   -119.95525,
+					 28.645650,	 38.855550, 25.061783};
+	double lons[] = {-3.4857166, 7.8012333,	  -119.95525,
 					 -17.759533, -94.7990166, 121.640266};
 	int zone;
 	char band;
@@ -96,7 +98,7 @@ void TestGeoid2Geocentric()
 {
 	const double lon0 = -3.733572031;  // RAD2DEG( 0.6408472493152757L );
 	const double lat0 = 37.89250616;  // RAD2DEG(-0.0780454933097760L );
-	const double h0 = 515.579;  // 53.200600; // meters
+	const double h0 = 515.579;	// 53.200600; // meters
 
 	cout << endl;
 	cout << format("Point: lon=%.012f lat=%.012f h=%.04f\n", lon0, lat0, h0);

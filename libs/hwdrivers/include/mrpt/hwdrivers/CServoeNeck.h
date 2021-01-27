@@ -155,6 +155,6 @@ class CServoeNeck : public mrpt::comms::CInterfaceFTDI
 	 */
 	bool checkConnectionAndConnect();
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

@@ -15,6 +15,7 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <map>
 #include <vector>
 
@@ -93,7 +94,7 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	/** The robot pose (from odometry and from the localization/SLAM system). */
 	mrpt::math::TPose2D robotPoseLocalization, robotPoseOdometry;
 	mrpt::math::TPose2D relPoseSense,
-		relPoseVelCmd;  //! Relative poses (wrt to robotPoseLocalization) for
+		relPoseVelCmd;	//! Relative poses (wrt to robotPoseLocalization) for
 	//! extrapolated paths at two instants: time of obstacle
 	//! sense, and future pose of motion comman
 	/** The relative location of target(s) in Workspace. */

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/gui/CQtGlCanvasBase.h>
 
 #if MRPT_HAS_Qt5
@@ -166,4 +166,4 @@ void CQtGlCanvasBase::unpressMouseButtons()
 	m_isPressRMouseButton = false;
 }
 
-#endif  // MRPT_HAS_Qt5
+#endif	// MRPT_HAS_Qt5

@@ -169,7 +169,7 @@ class CRangeBearingKFSLAM
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** A 7-length vector with the std. deviation of the transition model in
 		 * (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is
@@ -503,5 +503,5 @@ class CRangeBearingKFSLAM
 	/** Return the last odometry, as a pose increment. */
 	mrpt::poses::CPose3DQuat getIncrementFromOdometry() const;
 
-};  // end class
+};	// end class
 }  // namespace mrpt::slam

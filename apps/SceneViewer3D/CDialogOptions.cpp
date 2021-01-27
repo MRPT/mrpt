@@ -9,8 +9,9 @@
 
 //#include "_DSceneViewerMain.h"
 
-#include <wx/app.h>
+#include "CDialogOptions.h"
 
+#include <wx/app.h>
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/busyinfo.h>
@@ -28,7 +29,6 @@
 #include <wx/string.h>
 #include <wx/textdlg.h>
 
-#include "CDialogOptions.h"
 #include "_DSceneViewerMain.h"
 
 //(*InternalHeaders(CDialogOptions)

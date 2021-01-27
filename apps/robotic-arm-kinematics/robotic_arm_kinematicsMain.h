@@ -24,12 +24,13 @@
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+
 #include "MyGLCanvas.h"
 //*)
 
-#include "PanelDOF.h"
-
 #include <mrpt/kinematics/CKinematicChain.h>
+
+#include "PanelDOF.h"
 
 class robotic_arm_kinematicsFrame : public wxFrame
 {
@@ -185,4 +186,4 @@ class robotic_arm_kinematicsFrame : public wxFrame
 
 extern robotic_arm_kinematicsFrame* the_win;
 
-#endif  // robotic_arm_KINEMATICSMAIN_H
+#endif	// robotic_arm_KINEMATICSMAIN_H

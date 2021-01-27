@@ -99,13 +99,17 @@ class yaml
 		/** Optional comment block */
 		comments_t comments;
 
+		/** Optional flag to print collections in short form (e.g. [A,B] for
+		 * sequences) \note (New in MRPT 2.1.8) */
+		bool printInShortFormat = false;
+
 		node_t() = default;
 		~node_t() = default;
 
 		template <
-			typename T,  //
+			typename T,	 //
 			typename = std::enable_if_t<!std::is_constructible_v<
-				std::initializer_list<map_t::value_type>, T>>,  //
+				std::initializer_list<map_t::value_type>, T>>,	//
 			typename = std::enable_if_t<!std::is_constructible_v<
 				std::initializer_list<sequence_t::value_type>, T>>>
 		node_t(const T& scalar)
@@ -178,20 +182,14 @@ class yaml
 			ASSERT_(isScalar());
 			if (const char* const* s = std::any_cast<const char*>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			if (const std::string* s = std::any_cast<std::string>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			if (const std::string_view* s =
 					std::any_cast<std::string_view>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			THROW_EXCEPTION_FMT(
 				"Used node_t as map key with a type non-convertible to string: "
 				"'%s'",
@@ -290,6 +288,31 @@ class yaml
 	/** \overload (loads an existing YAMLCPP into this) */
 	template <typename YAML_NODE>
 	inline void loadFromYAMLCPP(const YAML_NODE& n);
+
+	/** Creates a yaml dictionary node from an Eigen or mrpt::math matrix.
+	 * Example (compatible with OpenCV & ROS YAML formats):
+	 * \code
+	 * rows: 2
+	 * cols: 3
+	 * data: [11, 12, 13, 21, 22, 23]
+	 * \endcode
+	 * \sa toMatrix()
+	 */
+	template <typename MATRIX>
+	inline static yaml FromMatrix(const MATRIX& m);
+
+	/** Fills in a matrix from a yaml dictionary node.
+	 * The matrix can be either an Eigen or mrpt::math matrix.
+	 * Example yaml node (compatible with OpenCV & ROS YAML formats):
+	 * \code
+	 * rows: 2
+	 * cols: 3
+	 * data: [11, 12, 13, 21, 22, 23]
+	 * \endcode
+	 * \sa FromMatrix()
+	 */
+	template <typename MATRIX>
+	inline void toMatrix(MATRIX& m) const;
 
 	/** @} */
 
@@ -677,6 +700,7 @@ class yaml
 		int indent = 0;
 		bool needsNL = false;
 		bool needsSpace = false;
+		bool shortFormat = false;
 	};
 
 	// Return: true if the last printed char is a newline char
@@ -742,12 +766,12 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  * MCP_LOAD_REQ(p, K);
  * \endcode
  */
-#define MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__)           \
-	if (!paramsVariable__.has(#keyproxiedMapEntryName__))                  \
-		throw std::invalid_argument(mrpt::format(                          \
-			"Required parameter `%s` not an existing key in dictionary.",  \
-			#keyproxiedMapEntryName__));                                   \
-	keyproxiedMapEntryName__ = paramsVariable__[#keyproxiedMapEntryName__] \
+#define MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__)               \
+	if (!paramsVariable__.has(#keyproxiedMapEntryName__))                      \
+		throw std::invalid_argument(mrpt::format(                              \
+			"Required parameter `%s` not an existing key in dictionary.",      \
+			#keyproxiedMapEntryName__));                                       \
+	keyproxiedMapEntryName__ = paramsVariable__[#keyproxiedMapEntryName__]     \
 								   .as<decltype(keyproxiedMapEntryName__)>()
 
 /** Macro to load a variable from a mrpt::containers::yaml (initials MCP)
@@ -761,21 +785,21 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  * MCP_LOAD_OPT(p, K);
  * \endcode
  */
-#define MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__) \
-	keyproxiedMapEntryName__ = paramsVariable__.getOrDefault(    \
+#define MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__)               \
+	keyproxiedMapEntryName__ = paramsVariable__.getOrDefault(                  \
 		#keyproxiedMapEntryName__, keyproxiedMapEntryName__)
 
 /** Just like MCP_LOAD_REQ(), but converts the read number from degrees to
  * radians */
-#define MCP_LOAD_REQ_DEG(paramsVariable__, keyproxiedMapEntryName__) \
-	MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__);        \
+#define MCP_LOAD_REQ_DEG(paramsVariable__, keyproxiedMapEntryName__)           \
+	MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__);                  \
 	keyproxiedMapEntryName__ = mrpt::DEG2RAD(keyproxiedMapEntryName__)
 
 /** Just like MCP_LOAD_OPT(), but converts the read number from degrees to
  * radians */
-#define MCP_LOAD_OPT_DEG(paramsVariable__, keyproxiedMapEntryName__)    \
-	keyproxiedMapEntryName__ = mrpt::RAD2DEG(keyproxiedMapEntryName__); \
-	MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__);           \
+#define MCP_LOAD_OPT_DEG(paramsVariable__, keyproxiedMapEntryName__)           \
+	keyproxiedMapEntryName__ = mrpt::RAD2DEG(keyproxiedMapEntryName__);        \
+	MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__);                  \
 	keyproxiedMapEntryName__ = mrpt::DEG2RAD(keyproxiedMapEntryName__)
 
 /** Macro to store a variable into a mrpt::containers::yaml (initials MCP)
@@ -793,11 +817,11 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  * MCP_SAVE_DEG(p,K);
  * \endcode
  */
-#define MCP_SAVE(paramsVariable__, keyproxiedMapEntryName__) \
+#define MCP_SAVE(paramsVariable__, keyproxiedMapEntryName__)                   \
 	paramsVariable__[#keyproxiedMapEntryName__] = keyproxiedMapEntryName__;
 
-#define MCP_SAVE_DEG(paramsVariable__, keyproxiedMapEntryName__) \
-	paramsVariable__[#keyproxiedMapEntryName__] =                \
+#define MCP_SAVE_DEG(paramsVariable__, keyproxiedMapEntryName__)               \
+	paramsVariable__[#keyproxiedMapEntryName__] =                              \
 		mrpt::RAD2DEG(keyproxiedMapEntryName__);
 
 }  // namespace mrpt::containers
@@ -932,6 +956,53 @@ inline void yaml::loadFromYAMLCPP(const YAML_NODE& n)
 	*this = yaml::FromYAMLCPP(n);
 }
 
+template <typename MATRIX>
+inline yaml yaml::FromMatrix(const MATRIX& m)
+{
+	yaml r = mrpt::containers::yaml::Map();
+	r["rows"] = static_cast<int64_t>(m.rows());
+	r["cols"] = static_cast<int64_t>(m.cols());
+	auto& data = r["data"] = mrpt::containers::yaml::Sequence();
+	data.node().printInShortFormat = true;
+	for (int iRow = 0; iRow < m.rows(); iRow++)
+		for (int iCol = 0; iCol < m.cols(); iCol++)
+			data.push_back(m(iRow, iCol));
+	return r;
+}
+
+template <typename MATRIX>
+inline void yaml::toMatrix(MATRIX& m) const
+{
+	ASSERT_(isMap());
+	ASSERT_(has("rows") && has("cols") && has("data"));
+	const int nRows = (*this)["rows"].as<int>();
+	const int nCols = (*this)["cols"].as<int>();
+	ASSERT_((nRows > 0 && nCols > 0) || (nRows == 0 && nCols == 0));
+
+	const auto& data = (*this)["data"];
+	ASSERT_(data.isSequence());
+	ASSERT_EQUAL_(static_cast<int>(data.size()), nRows * nCols);
+
+	using entry_t = std::decay_t<decltype(m(0, 0))>;
+
+	if (m.cols() <= 0 || m.rows() <= 0)
+	{
+		try
+		{
+			m.resize(nRows, nCols);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	ASSERT_EQUAL_(m.cols(), nCols);
+	ASSERT_EQUAL_(m.rows(), nRows);
+
+	for (int r = 0, idx = 0; r < nRows; r++)
+		for (int c = 0; c < nCols; c++, idx++)
+			m(r, c) = data.operator()(idx).as<entry_t>();
+}
+
 /** Sort operator required for std::map with node_t as key */
 inline bool operator<(const yaml::node_t& lhs, const yaml::node_t& rhs)
 {
@@ -1017,8 +1088,8 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		{
 			const auto str = implAnyAsGetter<std::string>(s);
 			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
-				   str == "YES" || str == "true" || str == "True" ||
-				   str == "TRUE" || str == "on" || str == "ON" || str == "On";
+				str == "YES" || str == "true" || str == "True" ||
+				str == "TRUE" || str == "on" || str == "ON" || str == "On";
 		}
 	}
 

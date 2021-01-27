@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
+
 #include <vector>
 
 using namespace mrpt::maps;
@@ -37,7 +38,7 @@ void CPointCloudFilterByDistance::filter(
 	ASSERT_(pc != nullptr);
 
 	auto original_pc = CSimplePointsMap::Create();
-	(*original_pc) = (*pc);  // make deep copy
+	(*original_pc) = (*pc);	 // make deep copy
 
 	// 1) Filter:
 	// ---------------------
@@ -62,9 +63,7 @@ void CPointCloudFilterByDistance::filter(
 	}
 
 	if (prev_pc.size() < static_cast<size_t>(options.previous_keyframes))
-	{
-		can_do_filter = false;
-	}
+	{ can_do_filter = false; }
 	else
 	{
 		for (int i = 0; can_do_filter && i < options.previous_keyframes; ++i)
@@ -73,7 +72,7 @@ void CPointCloudFilterByDistance::filter(
 					m_last_frames.rbegin()->first, pc_timestamp) >
 				options.too_old_seconds)
 			{
-				can_do_filter = false;  // A required keyframe is too old
+				can_do_filter = false;	// A required keyframe is too old
 				break;
 			}
 		}
@@ -158,19 +157,15 @@ void CPointCloudFilterByDistance::filter(
 		// Remove points:
 		if ((params == nullptr || params->do_not_delete == false) && N > 0 &&
 			del_count / double(N) <
-				options.max_deletion_ratio  // If we are deleting too many
+				options.max_deletion_ratio	// If we are deleting too many
 			// points, it may be that the filter
 			// is plainly wrong
 		)
-		{
-			pc->applyDeletionMask(deletion_mask);
-		}
+		{ pc->applyDeletionMask(deletion_mask); }
 	}  // we can do filter
 
 	if (params != nullptr && params->out_deletion_mask != nullptr)
-	{
-		*params->out_deletion_mask = deletion_mask;
-	}
+	{ *params->out_deletion_mask = deletion_mask; }
 
 	// 2) Add PC to list
 	// ---------------------
@@ -188,9 +183,7 @@ void CPointCloudFilterByDistance::filter(
 	{
 		if (mrpt::system::timeDifference(it->first, pc_timestamp) >
 			options.too_old_seconds)
-		{
-			it = m_last_frames.erase(it);
-		}
+		{ it = m_last_frames.erase(it); }
 		else
 		{
 			++it;

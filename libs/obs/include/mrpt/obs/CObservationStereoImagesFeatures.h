@@ -112,6 +112,6 @@ class CObservationStereoImagesFeatures : public CObservation
 	{
 		cameraPoseOnRobot = newSensorPose;
 	}
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

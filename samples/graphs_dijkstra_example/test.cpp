@@ -12,6 +12,7 @@
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 #include <map>
 
@@ -47,7 +48,7 @@ double myDijkstraWeight(
 	const CMyDijkstra::edge_t& edge)
 {
 	//	return 1;					// Topological distance
-	return edge.norm();  // Metric distance
+	return edge.norm();	 // Metric distance
 }
 
 // ------------------------------------------------------

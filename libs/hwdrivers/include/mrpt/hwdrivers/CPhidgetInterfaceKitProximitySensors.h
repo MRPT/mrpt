@@ -168,12 +168,12 @@ class CPhidgetInterfaceKitProximitySensors : public mrpt::system::COutputLogger,
 	float m_minOfMinRanges;
 	float m_maxOfMaxRanges;
 
-	void* m_carteInterfaceKit;  // CPhidgetInterfaceKitHandle
+	void* m_carteInterfaceKit;	// CPhidgetInterfaceKitHandle
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& iniSection) override;
-};  // end class
+};	// end class
 
 }  // namespace mrpt::hwdrivers

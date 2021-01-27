@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
@@ -16,6 +16,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/string_utils.h>
+
 #include <Eigen/Dense>
 #include <algorithm>
 #include <cmath>  // erf(), ...
@@ -33,7 +34,7 @@ using mrpt::serialization::CArchive;
 double math::normalPDF(double x, double mu, double std)
 {
 	return ::exp(-0.5 * square((x - mu) / std)) /
-		   (std * 2.506628274631000502415765284811);
+		(std * 2.506628274631000502415765284811);
 }
 
 /*---------------------------------------------------------------
@@ -42,12 +43,12 @@ double math::normalPDF(double x, double mu, double std)
 double math::chi2inv(double P, unsigned int dim)
 {
 	ASSERT_(P >= 0 && P < 1);
-	if (P == 0)
-		return 0;
+	if (P == 0) return 0;
 	else
-		return dim * pow(1.0 - 2.0 / (9 * dim) +
-							 sqrt(2.0 / (9 * dim)) * normalQuantile(P),
-						 3);
+		return dim *
+			pow(1.0 - 2.0 / (9 * dim) +
+					sqrt(2.0 / (9 * dim)) * normalQuantile(P),
+				3);
 }
 
 /*---------------------------------------------------------------
@@ -57,7 +58,8 @@ uint64_t math::factorial64(unsigned int n)
 {
 	uint64_t ret = 1;
 
-	for (unsigned int i = 2; i <= n; i++) ret *= i;
+	for (unsigned int i = 2; i <= n; i++)
+		ret *= i;
 
 	return ret;
 }
@@ -69,7 +71,8 @@ double math::factorial(unsigned int n)
 {
 	double retLog = 0;
 
-	for (unsigned int i = 2; i <= n; i++) retLog += ::log((double)n);
+	for (unsigned int i = 2; i <= n; i++)
+		retLog += ::log((double)n);
 
 	return ::exp(retLog);
 }
@@ -84,14 +87,15 @@ double math::normalQuantile(double p)
 	static const double a[6] = {-3.969683028665376e+01, 2.209460984245205e+02,
 								-2.759285104469687e+02, 1.383577518672690e+02,
 								-3.066479806614716e+01, 2.506628277459239e+00};
-	static const double b[5] = {-5.447609879822406e+01, 1.615858368580409e+02,
-								-1.556989798598866e+02, 6.680131188771972e+01,
-								-1.328068155288572e+01};
+	static const double b[5] = {
+		-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+		6.680131188771972e+01, -1.328068155288572e+01};
 	static const double c[6] = {-7.784894002430293e-03, -3.223964580411365e-01,
 								-2.400758277161838e+00, -2.549732539343734e+00,
-								4.374664141464968e+00,  2.938163982698783e+00};
-	static const double d[4] = {7.784695709041462e-03, 3.224671290700398e-01,
-								2.445134137142996e+00, 3.754408661907416e+00};
+								4.374664141464968e+00,	2.938163982698783e+00};
+	static const double d[4] = {
+		7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+		3.754408661907416e+00};
 
 	ASSERT_(!std::isnan(p));
 	ASSERT_(p < 1.0 && p > 0.0);
@@ -133,12 +137,12 @@ double math::normalQuantile(double p)
  ---------------------------------------------------------------*/
 double math::normalCDF(double u)
 {
-	static const double a[5] = {1.161110663653770e-002, 3.951404679838207e-001,
-								2.846603853776254e+001, 1.887426188426510e+002,
-								3.209377589138469e+003};
-	static const double b[5] = {1.767766952966369e-001, 8.344316438579620e+000,
-								1.725514762600375e+002, 1.813893686502485e+003,
-								8.044716608901563e+003};
+	static const double a[5] = {
+		1.161110663653770e-002, 3.951404679838207e-001, 2.846603853776254e+001,
+		1.887426188426510e+002, 3.209377589138469e+003};
+	static const double b[5] = {
+		1.767766952966369e-001, 8.344316438579620e+000, 1.725514762600375e+002,
+		1.813893686502485e+003, 8.044716608901563e+003};
 	static const double c[9] = {
 		2.15311535474403846e-8, 5.64188496988670089e-1, 8.88314979438837594e00,
 		6.61191906371416295e01, 2.98635138197400131e02, 8.81952221241769090e02,
@@ -302,7 +306,8 @@ double math::averageLogLikelihood(const CVectorDouble& logLikelihoods)
 	double ll_max = math::maximum(logLikelihoods);
 	double SUM1 = 0;
 
-	for (size_t i = 0; i < N; i++) SUM1 += exp(logLikelihoods[i] - ll_max);
+	for (size_t i = 0; i < N; i++)
+		SUM1 += exp(logLikelihoods[i] - ll_max);
 
 	double res = log(SUM1) - log(static_cast<double>(N)) + ll_max;
 
@@ -343,8 +348,8 @@ double math::averageWrap2Pi(const CVectorDouble& angles)
 	// Next: PHI
 	// -----------------------------------
 	// The mean value from each side:
-	if (W_phi_L) phi_L /= static_cast<double>(W_phi_L);  // [0,2pi]
-	if (W_phi_R) phi_R /= static_cast<double>(W_phi_R);  // [-pi,pi]
+	if (W_phi_L) phi_L /= static_cast<double>(W_phi_L);	 // [0,2pi]
+	if (W_phi_R) phi_R /= static_cast<double>(W_phi_R);	 // [-pi,pi]
 
 	// Left side to [-pi,pi] again:
 	if (phi_L > M_PI) phi_L -= M_2PI;
@@ -447,8 +452,7 @@ double mrpt::math::interpolate2points(
 	const double Ay = y1 - y0;
 
 	double r = y0 + Ay * (x - x0) / Ax;
-	if (!wrap2pi)
-		return r;
+	if (!wrap2pi) return r;
 	else
 		return mrpt::math::wrapToPi(r);
 
@@ -464,10 +468,10 @@ void mrpt::math::medianFilter(
 	[[maybe_unused]] int numberOfSigmas)
 {
 	ASSERT_((int)inV.size() >= _winSize);
-	ASSERT_(_winSize >= 2);  // The minimum window size is 3 elements
+	ASSERT_(_winSize >= 2);	 // The minimum window size is 3 elements
 	size_t winSize = _winSize;
 
-	if (!(winSize % 2))  // We use an odd number of elements for the window size
+	if (!(winSize % 2))	 // We use an odd number of elements for the window size
 		winSize++;
 
 	size_t sz = inV.size();
@@ -493,9 +497,10 @@ void mrpt::math::medianFilter(
 
 		size_t auxSz = aux.size();
 		size_t auxMPoint = auxSz / 2;
-		outV[k] = (auxSz % 2) ? (aux[auxMPoint])
-							  : (0.5 * (aux[auxMPoint - 1] +
-										aux[auxMPoint]));  // If the window is
+		outV[k] = (auxSz % 2)
+			? (aux[auxMPoint])
+			: (0.5 *
+			   (aux[auxMPoint - 1] + aux[auxMPoint]));	// If the window is
 		// even, take the
 		// mean value of the
 		// middle points

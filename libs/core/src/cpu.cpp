@@ -8,13 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "core-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config.h>
 #include <mrpt/core/cpu.h>
 #include <mrpt/core/format.h>
 
 #if defined(_MSC_VER)
-#include <intrin.h>  // __cpuidex
+#include <intrin.h>	 // __cpuidex
 #endif
 
 namespace mrpt::cpu::internal

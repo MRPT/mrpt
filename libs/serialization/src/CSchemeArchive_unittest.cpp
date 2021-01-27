@@ -12,6 +12,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+
 #include <sstream>
 
 // Check if we have jsoncpp to enable those tests:

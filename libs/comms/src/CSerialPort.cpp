@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"  // Precompiled headers
-
+#include "comms-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CSerialPort.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/os.h>
@@ -18,16 +18,15 @@
 //  http://www.easysw.com/~mike/serial/serial.html
 
 #include <fcntl.h> /* File control definitions */
+#include <sys/ioctl.h>	// FIONREAD,...
 #include <sys/time.h>  // gettimeofday
+#include <termios.h> /* POSIX terminal control definitions */
 #include <unistd.h> /* UNIX standard function definitions */
+
 #include <cerrno> /* Error number definitions */
+#include <csignal>
 #include <cstdio> /* Standard input/output definitions */
 #include <cstring> /* String function definitions */
-
-#include <termios.h> /* POSIX terminal control definitions */
-
-#include <sys/ioctl.h>  // FIONREAD,...
-#include <csignal>
 
 #ifdef HAVE_LINUX_SERIAL_H
 #include <linux/serial.h>
@@ -35,9 +34,10 @@
 
 #include <map>
 
-#endif  // Linux | Apple
+#endif	// Linux | Apple
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
@@ -109,7 +109,7 @@ void CSerialPort::open()
 	// Open the serial port:
 	if (INVALID_HANDLE_VALUE ==
 		(hCOM = CreateFileA(
-			 m_serialName.c_str(),  // Serial Port name
+			 m_serialName.c_str(),	// Serial Port name
 			 GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, 0)))
 	{
 		hCOM = nullptr;
@@ -220,36 +220,16 @@ void CSerialPort::setConfig(
 	int BR;
 	switch (baudRate)
 	{
-		case 300:
-			BR = CBR_300;
-			break;
-		case 600:
-			BR = CBR_600;
-			break;
-		case 1200:
-			BR = CBR_1200;
-			break;
-		case 2400:
-			BR = CBR_2400;
-			break;
-		case 4800:
-			BR = CBR_4800;
-			break;
-		case 9600:
-			BR = CBR_9600;
-			break;
-		case 19200:
-			BR = CBR_19200;
-			break;
-		case 38400:
-			BR = CBR_38400;
-			break;
-		case 57600:
-			BR = CBR_57600;
-			break;
-		case 115200:
-			BR = CBR_115200;
-			break;
+		case 300: BR = CBR_300; break;
+		case 600: BR = CBR_600; break;
+		case 1200: BR = CBR_1200; break;
+		case 2400: BR = CBR_2400; break;
+		case 4800: BR = CBR_4800; break;
+		case 9600: BR = CBR_9600; break;
+		case 19200: BR = CBR_19200; break;
+		case 38400: BR = CBR_38400; break;
+		case 57600: BR = CBR_57600; break;
+		case 115200: BR = CBR_115200; break;
 		default:
 			BR = baudRate;
 			// THROW_EXCEPTION_FMT("Invalid desired baud rate value:
@@ -265,12 +245,8 @@ void CSerialPort::setConfig(
 	// stop bits:
 	switch (nStopBits)
 	{
-		case 1:
-			dcb_conf.StopBits = ONESTOPBIT;
-			break;
-		case 2:
-			dcb_conf.StopBits = TWOSTOPBITS;
-			break;
+		case 1: dcb_conf.StopBits = ONESTOPBIT; break;
+		case 2: dcb_conf.StopBits = TWOSTOPBITS; break;
 		default:
 			THROW_EXCEPTION_FMT("Invalid number of stop bits: %i", nStopBits);
 			break;
@@ -308,101 +284,45 @@ void CSerialPort::setConfig(
 	bool special_rate = false;
 	switch (baudRate)
 	{
-		case 50:
-			BR = B50;
-			break;
-		case 75:
-			BR = B75;
-			break;
-		case 110:
-			BR = B110;
-			break;
-		case 134:
-			BR = B134;
-			break;
-		case 200:
-			BR = B200;
-			break;
-		case 300:
-			BR = B300;
-			break;
-		case 600:
-			BR = B600;
-			break;
-		case 1200:
-			BR = B1200;
-			break;
-		case 2400:
-			BR = B2400;
-			break;
-		case 4800:
-			BR = B4800;
-			break;
-		case 9600:
-			BR = B9600;
-			break;
-		case 19200:
-			BR = B19200;
-			break;
-		case 38400:
-			BR = B38400;
-			break;
-		case 57600:
-			BR = B57600;
-			break;
-		case 115200:
-			BR = B115200;
-			break;
-		case 230400:
-			BR = B230400;
-			break;
+		case 50: BR = B50; break;
+		case 75: BR = B75; break;
+		case 110: BR = B110; break;
+		case 134: BR = B134; break;
+		case 200: BR = B200; break;
+		case 300: BR = B300; break;
+		case 600: BR = B600; break;
+		case 1200: BR = B1200; break;
+		case 2400: BR = B2400; break;
+		case 4800: BR = B4800; break;
+		case 9600: BR = B9600; break;
+		case 19200: BR = B19200; break;
+		case 38400: BR = B38400; break;
+		case 57600: BR = B57600; break;
+		case 115200: BR = B115200; break;
+		case 230400: BR = B230400; break;
 #ifdef B460800
-		case 460800:
-			BR = B460800;
-			break;
+		case 460800: BR = B460800; break;
 #endif
 #ifdef B500000
-		case 500000:
-			BR = B500000;
-			break;
+		case 500000: BR = B500000; break;
 #endif
 #ifdef B4000000
-		case 576000:
-			BR = B576000;
-			break;
-		case 921600:
-			BR = B921600;
-			break;
-		case 1000000:
-			BR = B1000000;
-			break;
-		case 1152000:
-			BR = B1152000;
-			break;
-		case 1500000:
-			BR = B1500000;
-			break;
-		case 2000000:
-			BR = B2000000;
-			break;
-		case 2500000:
-			BR = B2500000;
-			break;
-		case 3000000:
-			BR = B3000000;
-			break;
-		case 3500000:
-			BR = B3500000;
-			break;
-		case 4000000:
-			BR = B4000000;
-			break;
+		case 576000: BR = B576000; break;
+		case 921600: BR = B921600; break;
+		case 1000000: BR = B1000000; break;
+		case 1152000: BR = B1152000; break;
+		case 1500000: BR = B1500000; break;
+		case 2000000: BR = B2000000; break;
+		case 2500000: BR = B2500000; break;
+		case 3000000: BR = B3000000; break;
+		case 3500000: BR = B3500000; break;
+		case 4000000: BR = B4000000; break;
 #endif
 		default:
 #ifdef HAVE_LINUX_SERIAL_H
 			special_rate = true;
 #else
-			BR = baudRate;  // This is all we can try in that case...
+			BR = baudRate;	// This is all we can try in that case...
 #endif
 			break;
 	}
@@ -419,7 +339,7 @@ void CSerialPort::setConfig(
 		const int actual_rate = serial.baud_base / serial.custom_divisor;
 
 		serial.flags &= ~ASYNC_SPD_MASK;
-		serial.flags |= ASYNC_SPD_CUST;  // We want to use our CUSTOM divisor.
+		serial.flags |= ASYNC_SPD_CUST;	 // We want to use our CUSTOM divisor.
 
 		if (ioctl(hCOM, TIOCSSERIAL, &serial) < 0)
 			THROW_EXCEPTION("error on TIOCSSERIAL ioctl");
@@ -466,21 +386,11 @@ void CSerialPort::setConfig(
 	port_settings.c_cflag &= ~CSIZE;
 	switch (bits)
 	{
-		case 5:
-			port_settings.c_cflag |= CS5;
-			break;
-		case 6:
-			port_settings.c_cflag |= CS6;
-			break;
-		case 7:
-			port_settings.c_cflag |= CS7;
-			break;
-		case 8:
-			port_settings.c_cflag |= CS8;
-			break;
-		default:
-			THROW_EXCEPTION_FMT("Invalid character size: %i", bits);
-			break;
+		case 5: port_settings.c_cflag |= CS5; break;
+		case 6: port_settings.c_cflag |= CS6; break;
+		case 7: port_settings.c_cflag |= CS7; break;
+		case 8: port_settings.c_cflag |= CS8; break;
+		default: THROW_EXCEPTION_FMT("Invalid character size: %i", bits); break;
 	}
 
 	// parity  0:No parity, 1:Odd, 2:Even
@@ -507,12 +417,8 @@ void CSerialPort::setConfig(
 	// stop bits:
 	switch (nStopBits)
 	{
-		case 1:
-			port_settings.c_cflag &= ~(CSTOPB);
-			break;
-		case 2:
-			port_settings.c_cflag |= CSTOPB;
-			break;
+		case 1: port_settings.c_cflag &= ~(CSTOPB); break;
+		case 2: port_settings.c_cflag |= CSTOPB; break;
 		default:
 			THROW_EXCEPTION_FMT("Invalid number of stop bits: %i", nStopBits);
 			break;
@@ -577,7 +483,7 @@ void CSerialPort::setTimeouts(
 	timeouts.ReadIntervalTimeout =
 		ReadIntervalTimeout;  // Milisegundos entre dos bytes recibidos
 	timeouts.ReadTotalTimeoutMultiplier =
-		ReadTotalTimeoutMultiplier;  // Milisegundos de espera por cada byte a
+		ReadTotalTimeoutMultiplier;	 // Milisegundos de espera por cada byte a
 	// recibir
 	timeouts.ReadTotalTimeoutConstant =
 		ReadTotalTimeoutConstant;  // Milisegundos de espera en cada operacion
@@ -585,7 +491,7 @@ void CSerialPort::setTimeouts(
 	timeouts.WriteTotalTimeoutMultiplier =
 		WriteTotalTimeoutMultiplier;  // Timeout de escritura no usado
 	timeouts.WriteTotalTimeoutConstant =
-		WriteTotalTimeoutConstant;  // Timeout de escritura no usado
+		WriteTotalTimeoutConstant;	// Timeout de escritura no usado
 
 	if (!SetCommTimeouts(hCOM, &timeouts))
 		THROW_EXCEPTION("Error changing COM port timeout config");
@@ -637,7 +543,7 @@ void CSerialPort::close()
 	// Close the serial port file descriptor.
 	::close(hCOM);
 
-	hCOM = -1;  // Means the port is closed
+	hCOM = -1;	// Means the port is closed
 #endif
 	MRPT_END
 }
@@ -656,9 +562,9 @@ size_t CSerialPort::Read(void* Buffer, size_t Count)
 
 	if (!ReadFile(
 			hCOM,  // Handle,
-			Buffer,  // Buffer
+			Buffer,	 // Buffer
 			(DWORD)Count,  // Max expected bytes
-			&actuallyRead,  // Actually read bytes
+			&actuallyRead,	// Actually read bytes
 			nullptr))
 		THROW_EXCEPTION("Error reading from port!");
 
@@ -748,10 +654,10 @@ std::string CSerialPort::ReadString(
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
 
-	if (out_timeout) *out_timeout = false;  // Will be set to true on timeout
+	if (out_timeout) *out_timeout = false;	// Will be set to true on timeout
 
 	m_timer.Tic();
-	string receivedStr;  // Rx buffer
+	string receivedStr;	 // Rx buffer
 
 	while (total_timeout_ms < 0 || (m_timer.Tac() * 1e3 < total_timeout_ms))
 	{
@@ -763,15 +669,14 @@ std::string CSerialPort::ReadString(
 		if (!ReadFile(
 				hCOM,  // Handle,
 				buf,  // Buffer
-				1,  // Max expected bytes
-				&actuallyRead,  // Actually read bytes
+				1,	// Max expected bytes
+				&actuallyRead,	// Actually read bytes
 				nullptr))
 			THROW_EXCEPTION("Error reading from port!");
 
 		if (actuallyRead)
 		{  // Append to string, if it's not a control char:
-			if (!strchr(eol_chars, buf[0]))
-				receivedStr.push_back(buf[0]);
+			if (!strchr(eol_chars, buf[0])) receivedStr.push_back(buf[0]);
 			else
 			{  // end of string!
 				return receivedStr;
@@ -800,13 +705,10 @@ std::string CSerialPort::ReadString(
 			// Read just 1 byte:
 			char buf[1];
 			if ((nRead = ::read(hCOM, buf, 1)) < 0)
-			{
-				cerr << "[CSerialPort] Error reading from port..." << endl;
-			}
+			{ cerr << "[CSerialPort] Error reading from port..." << endl; }
 			if (nRead)
 			{  // Append to string, if it's not a control char:
-				if (!strchr(eol_chars, buf[0]))
-					receivedStr.push_back(buf[0]);
+				if (!strchr(eol_chars, buf[0])) receivedStr.push_back(buf[0]);
 				else
 				{  // end of string!
 					return receivedStr;
@@ -873,7 +775,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
 			{
 				gettimeofday(&end, nullptr);
 				usecs = (end.tv_sec - start.tv_sec) * 1000000 +
-						(end.tv_usec - start.tv_usec);
+					(end.tv_usec - start.tv_usec);
 			} while (usecs < 60);
 			// std::this_thread::sleep_for(1ms); // we'll continue writting is a
 			// ms.
@@ -881,7 +783,7 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
 	} while ((total_bytes_written < Count) && (!errno || EAGAIN == errno));
 	//
 	if (num_of_bytes_written <
-		0)  // This means we exit the loop due to a bad "errno".
+		0)	// This means we exit the loop due to a bad "errno".
 		THROW_EXCEPTION_FMT(
 			"Error writing data to the serial port: %s", strerror(errno));
 

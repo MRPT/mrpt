@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/aligned_allocator.h>
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
@@ -116,8 +116,7 @@ const CHMHMapNode::Ptr CHierarchicalMapMHPartition::getNodeByLabel(
   ---------------------------------------------------------------*/
 CHMHMapNode::Ptr CHierarchicalMapMHPartition::getFirstNode()
 {
-	if (m_nodes.empty())
-		return CHMHMapNode::Ptr();
+	if (m_nodes.empty()) return CHMHMapNode::Ptr();
 	else
 		return (m_nodes.begin())->second;
 }
@@ -748,7 +747,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 	14                        previous[v] := u
 	*/
 
-	map<CHMHMapNode::TNodeID, TDistance> d;  // distance
+	map<CHMHMapNode::TNodeID, TDistance> d;	 // distance
 	map<CHMHMapNode::TNodeID, TPrevious> previous;
 	map<CHMHMapNode::TNodeID, CHMHMapArc::Ptr> previous_arcs;
 	map<CHMHMapNode::TNodeID, bool> visited;
@@ -817,8 +816,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 			}
 			else
 			{
-				if ((*i)->getNodeFrom() != nodeU->getID())
-					continue;
+				if ((*i)->getNodeFrom() != nodeU->getID()) continue;
 				else
 					vID = (*i)->getNodeTo();
 			}
@@ -918,7 +916,7 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 			(*arcsIt)->m_annotations.get(ARC_ANNOTATION_DELTA, hypothesisID);
 		ASSERT_(anotation);
 
-		CPose3DPDFGaussian pdf;  // Convert to gaussian
+		CPose3DPDFGaussian pdf;	 // Convert to gaussian
 		pdf.copyFrom(*std::dynamic_pointer_cast<CPose3DPDF>(anotation));
 
 		vector<CVectorDouble> samples;
@@ -960,8 +958,7 @@ void CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 
 		for (unsigned int j = 0; j < pathLength; j++)
 		{
-			if (j)
-				sample = sample + listSamples[j][i];
+			if (j) sample = sample + listSamples[j][i];
 			else
 				sample = listSamples[j][i];
 		}
@@ -1015,9 +1012,7 @@ void CHierarchicalMapMHPartition::findArcsBetweenNodes(
 		if ((*itArc)->m_hypotheses.has(hypothesisID))
 			if ((*itArc)->m_nodeFrom == node2id ||
 				(*itArc)->m_nodeTo == node2id)
-			{
-				ret.push_back(*itArc);
-			}
+			{ ret.push_back(*itArc); }
 	}
 
 	MRPT_END
@@ -1074,8 +1069,7 @@ bool CHierarchicalMapMHPartition::areNodesNeightbour(
 			if ((*itArc)->m_nodeFrom == node2id ||
 				(*itArc)->m_nodeTo == node2id)
 			{
-				if (!requiredAnnotation)
-					return true;
+				if (!requiredAnnotation) return true;
 				else if ((*itArc)->m_annotations.get(
 							 requiredAnnotation, hypothesisID))
 					return true;
@@ -1166,7 +1160,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		CMultiMetricMap::Ptr metricMap =
 			node->m_annotations.getAs<CMultiMetricMap>(
 				NODE_ANNOTATION_METRIC_MAPS, hypothesisID);
-		if (metricMap)  // ASSERT_(metricMap);
+		if (metricMap)	// ASSERT_(metricMap);
 		{
 			mrpt::opengl::CSetOfObjects::Ptr objTex =
 				mrpt::opengl::CSetOfObjects::Create();
@@ -1302,7 +1296,7 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 
 	nodePoses.clear();
 
-	if (m_arcs.empty()) return;  // Nothing we can do!
+	if (m_arcs.empty()) return;	 // Nothing we can do!
 
 	// 1) Convert hmt-slam graph into graphslam graph... (this should be avoided
 	// in future version of HTML-SLAM!!)
@@ -1349,7 +1343,7 @@ void CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 		// To the output map:
 		CPose3DPDFGaussian& new_pose = nodePoses[node_id];
 		new_pose.mean = it_node->second;
-		new_pose.cov.setIdentity();  // *** At present, graphslam does not
+		new_pose.cov.setIdentity();	 // *** At present, graphslam does not
 		// output the uncertainty of poses... ***
 	}
 
@@ -1613,9 +1607,7 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 				r1_x_min, r1_x_max, r1_y_min, r1_y_max, r2_x_min, r2_x_max,
 				r2_y_min, r2_y_max, posePDF.m_particles[i].d.x,
 				posePDF.m_particles[i].d.y, posePDF.m_particles[i].d.yaw))
-		{
-			hits++;
-		}
+		{ hits++; }
 	}
 
 	return static_cast<double>(hits) / monteCarloSamples;

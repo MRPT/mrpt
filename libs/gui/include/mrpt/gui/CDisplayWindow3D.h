@@ -390,7 +390,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	/** called by CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers */
 	void internal_emitGrabImageEvent(const std::string& fil);
 
-};  // End of class def.
+};	// End of class def.
 
 /** @name Events specific to CDisplayWindow3D
 	@{  */
@@ -418,7 +418,7 @@ class mrptEvent3DWindowGrabImageFile : public mrpt::system::mrptEvent
 	CDisplayWindow3D* source_object;
 	/** The absolute path of the file that has been just saved. */
 	const std::string& img_file;
-};  // End of class def.
+};	// End of class def.
 
 /** @} */
 

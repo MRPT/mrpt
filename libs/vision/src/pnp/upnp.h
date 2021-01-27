@@ -340,21 +340,21 @@ class upnp
 		const double R_dst[3][3], const double t_dst[3], double R_src[3][3],
 		double t_src[3]);
 
-	double uc;  //! Image center in x-direction
-	double vc;  //! Image center in y-direction
-	double fu;  //! Focal length in x-direction
-	double fv;  //! Focal length in y-direction
+	double uc;	//! Image center in x-direction
+	double vc;	//! Image center in y-direction
+	double fu;	//! Focal length in x-direction
+	double fv;	//! Focal length in y-direction
 
 	std::vector<double> pws;  //! Object points
-	std::vector<double> us;  //! Image points
+	std::vector<double> us;	 //! Image points
 	std::vector<double> alphas, pcs;  //! Internal variable
-	int number_of_correspondences;  //! Number of 2d/3d correspondences
+	int number_of_correspondences;	//! Number of 2d/3d correspondences
 
 	double cws[4][3], ccs[4][3];  //! Control point variables
-	int max_nr;  //! Internal variable
+	int max_nr;	 //! Internal variable
 	double *A1, *A2;  //! Internal variable
 };
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision::pnp
-#endif  // Check for OPENCV_LIB
+#endif	// Check for OPENCV_LIB

@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
-#include <mrpt/math/matrix_serialization.h>  // for << >> ops of matrices
+#include "opengl-precomp.h"	 // Precompiled header
+//
+#include <mrpt/math/matrix_serialization.h>	 // for << >> ops of matrices
 #include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -39,8 +40,8 @@ void CEllipsoidInverseDepth2D::transformFromParameterSpace(
 		const double inv_range = in_pts[i][0];
 		const double yaw = in_pts[i][1];
 		const double range = inv_range < 0
-								 ? m_underflowMaxRange
-								 : (inv_range != 0 ? 1. / inv_range : 0);
+			? m_underflowMaxRange
+			: (inv_range != 0 ? 1. / inv_range : 0);
 		out_pts[i][0] = d2f(range * cos(yaw));
 		out_pts[i][1] = d2f(range * sin(yaw));
 	}
@@ -70,8 +71,7 @@ void CEllipsoidInverseDepth2D::serializeFrom(
 			in >> m_underflowMaxRange;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

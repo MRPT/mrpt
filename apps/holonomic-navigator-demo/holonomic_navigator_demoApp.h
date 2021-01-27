@@ -18,4 +18,4 @@ class holonomic_navigator_demoApp : public wxApp
 	bool OnInit() override;
 };
 
-#endif  // HOLONOMIC_NAVIGATOR_DEMOAPP_H
+#endif	// HOLONOMIC_NAVIGATOR_DEMOAPP_H

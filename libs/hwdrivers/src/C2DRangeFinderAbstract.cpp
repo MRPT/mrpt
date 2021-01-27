@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
@@ -80,7 +80,7 @@ void C2DRangeFinderAbstract::doProcess()
 		m_state = ssWorking;
 
 		appendObservation(m_nextObservation);
-		m_nextObservation.reset();  // Create a new object in the next call
+		m_nextObservation.reset();	// Create a new object in the next call
 	}
 }
 
@@ -90,8 +90,7 @@ void C2DRangeFinderAbstract::internal_notifyGoodScanNow()
 
 	if (m_last_good_scan != INVALID_TIMESTAMP)
 	{
-		m_estimated_scan_period =
-			0.9 * m_estimated_scan_period +
+		m_estimated_scan_period = 0.9 * m_estimated_scan_period +
 			0.1 * mrpt::system::timeDifference(m_last_good_scan, new_t);
 	}
 	m_last_good_scan = new_t;

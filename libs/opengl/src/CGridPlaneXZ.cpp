@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CGridPlaneXZ.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -77,8 +77,7 @@ void CGridPlaneXZ::serializeFrom(
 			in >> m_xMin >> m_xMax;
 			in >> m_zMin >> m_zMax >> m_plane_y;
 			in >> m_frequency;
-			if (version >= 1)
-				in >> m_lineWidth >> m_antiAliasing;
+			if (version >= 1) in >> m_lineWidth >> m_antiAliasing;
 			else
 			{
 				m_lineWidth = 1.0f;
@@ -86,8 +85,7 @@ void CGridPlaneXZ::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

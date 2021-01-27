@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
@@ -21,7 +21,7 @@ TPixelLabelInfoBase::~TPixelLabelInfoBase() = default;
 
 void plib::writeToStream(mrpt::serialization::CArchive& out) const
 {
-	const uint8_t version = 1;  // for possible future changes.
+	const uint8_t version = 1;	// for possible future changes.
 	out << version;
 	// 1st: Save number MAX_NUM_DIFFERENT_LABELS so we can reconstruct the
 	// object in the class factory later on.
@@ -39,7 +39,8 @@ void TPixelLabelInfo<BYTES_REQUIRED_>::internal_readFromStream(
 		in >> nR >> nC;
 		pixelLabels.resize(nR, nC);
 		for (uint32_t c = 0; c < nC; c++)
-			for (uint32_t r = 0; r < nR; r++) in >> pixelLabels.coeffRef(r, c);
+			for (uint32_t r = 0; r < nR; r++)
+				in >> pixelLabels.coeffRef(r, c);
 	}
 	in >> pixelLabelNames;
 }
@@ -52,7 +53,8 @@ void TPixelLabelInfo<BYTES_REQUIRED_>::internal_writeToStream(
 		const auto nC = static_cast<uint32_t>(pixelLabels.cols());
 		out << nR << nC;
 		for (uint32_t c = 0; c < nC; c++)
-			for (uint32_t r = 0; r < nR; r++) out << pixelLabels.coeff(r, c);
+			for (uint32_t r = 0; r < nR; r++)
+				out << pixelLabels.coeff(r, c);
 	}
 	out << pixelLabelNames;
 }
@@ -77,22 +79,14 @@ TPixelLabelInfoBase* plib::readAndBuildFromStream(
 			TPixelLabelInfoBase* new_obj = nullptr;
 			switch (bitfield_bytes)
 			{
-				case 1:
-					new_obj = new TPixelLabelInfo<1>();
-					break;
-				case 2:
-					new_obj = new TPixelLabelInfo<2>();
-					break;
+				case 1: new_obj = new TPixelLabelInfo<1>(); break;
+				case 2: new_obj = new TPixelLabelInfo<2>(); break;
 				case 3:
-				case 4:
-					new_obj = new TPixelLabelInfo<4>();
-					break;
+				case 4: new_obj = new TPixelLabelInfo<4>(); break;
 				case 5:
 				case 6:
 				case 7:
-				case 8:
-					new_obj = new TPixelLabelInfo<8>();
-					break;
+				case 8: new_obj = new TPixelLabelInfo<8>(); break;
 				default:
 					throw std::runtime_error(
 						"Unknown type of pixelLabel inner class while "
@@ -105,9 +99,7 @@ TPixelLabelInfoBase* plib::readAndBuildFromStream(
 		}
 		break;
 
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-			break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version); break;
 	};
 }
 

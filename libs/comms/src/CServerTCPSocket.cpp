@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"  // Precompiled headers
-
+#include "comms-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/core/exceptions.h>
@@ -25,6 +25,7 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
 #include <cerrno>
 //#include <iostream>
 #include <arpa/inet.h>

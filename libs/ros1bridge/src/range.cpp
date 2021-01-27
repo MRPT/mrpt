@@ -36,7 +36,8 @@ bool toROS(
 	long num_range = obj.sensedData.size();
 
 	// 1) sensor_msgs::Range:: header
-	for (long i = 0; i < num_range; i++) msg[i].header = msg_header;
+	for (long i = 0; i < num_range; i++)
+		msg[i].header = msg_header;
 
 	// 2) sensor_msg::Range parameters
 	for (long i = 0; i < num_range; i++)

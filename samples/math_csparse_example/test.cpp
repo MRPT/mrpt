@@ -9,6 +9,7 @@
 
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/random/RandomGenerators.h>
+
 #include <iostream>
 
 using namespace mrpt;

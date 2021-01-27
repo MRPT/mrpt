@@ -7,14 +7,15 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/ops_containers.h>  // maximum()
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -96,7 +97,8 @@ std::tuple<CMatrixDouble33, CPoint3D> CPointPDFParticles::getCovarianceAndMean()
 
 	double lin_w_sum = 0;
 
-	for (i = 0; i < n; i++) lin_w_sum += exp(m_particles[i].log_w);
+	for (i = 0; i < n; i++)
+		lin_w_sum += exp(m_particles[i].log_w);
 	if (lin_w_sum == 0) lin_w_sum = 1;
 
 	for (i = 0; i < n; i++)
@@ -158,14 +160,13 @@ void CPointPDFParticles::serializeFrom(
 					m_particle.d->z;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
 void CPointPDFParticles::copyFrom(const CPointPDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	// Convert to samples:
 	THROW_EXCEPTION("NO");
@@ -202,7 +203,7 @@ void CPointPDFParticles::changeCoordinatesReference(
 	for (auto& m_particle : m_particles)
 	{
 		newReferenceBase.composePoint(
-			m_particle.d->x, m_particle.d->y, m_particle.d->z,  // In
+			m_particle.d->x, m_particle.d->y, m_particle.d->z,	// In
 			pt.x, pt.y, pt.z  // Out
 		);
 		m_particle.d->x = d2f(pt.x);

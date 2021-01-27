@@ -8,20 +8,21 @@
    +------------------------------------------------------------------------+ */
 
 #include "core-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/reverse_bytes.h>
+
 #include <cstdlib>
 #include <cstring>
 
 // These #defines from:
 // https://github.com/boostorg/endian/blob/master/include/boost/endian/detail/intrinsic.hpp
 #ifndef __has_builtin
-#define __has_builtin(x) 0  // Compatibility with non-clang compilers
+#define __has_builtin(x) 0	// Compatibility with non-clang compilers
 #endif
-#if (                                                         \
-	defined(__clang__) && __has_builtin(__builtin_bswap32) && \
-	__has_builtin(__builtin_bswap64)) ||                      \
-	(defined(__GNUC__) &&                                     \
+#if (                                                                          \
+	defined(__clang__) && __has_builtin(__builtin_bswap32) &&                  \
+	__has_builtin(__builtin_bswap64)) ||                                       \
+	(defined(__GNUC__) &&                                                      \
 	 (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)))
 #define HAVE_BSWAP_INTRINSICS
 #endif
@@ -32,7 +33,7 @@ void reverseBytesInPlace_2b(T& v_in_out)
 	uint16_t org;
 	std::memcpy(
 		&org, &v_in_out,
-		sizeof(T));  // Was: = *reinterpret_cast<uint16_t*>(&v_in_out); but
+		sizeof(T));	 // Was: = *reinterpret_cast<uint16_t*>(&v_in_out); but
 	// caused SIGBUS in some archs
 	const uint16_t val_rev = ((org & 0xff00) >> 8) | ((org & 0x00ff) << 8);
 	std::memcpy(&v_in_out, &val_rev, sizeof(T));  // This avoid deref. puned
@@ -47,7 +48,7 @@ void reverseBytesInPlace_4b(T& v_in_out)
 	uint32_t org;
 	std::memcpy(
 		&org, &v_in_out,
-		sizeof(T));  // Was: = = *reinterpret_cast<uint32_t*>(&v_in_out); but
+		sizeof(T));	 // Was: = = *reinterpret_cast<uint32_t*>(&v_in_out); but
 	// caused SIGBUS in some archs
 	const uint32_t val_rev =
 #if defined(_MSC_VER)
@@ -70,7 +71,7 @@ void reverseBytesInPlace_8b(T& v_in_out)
 	uint64_t org;
 	std::memcpy(
 		&org, &v_in_out,
-		sizeof(T));  // Was: = *reinterpret_cast<uint64_t*>(&v_in_out); but
+		sizeof(T));	 // Was: = *reinterpret_cast<uint64_t*>(&v_in_out); but
 // caused SIGBUS in some archs
 #if defined(_MSC_VER)
 	uint64_t val_rev = _byteswap_uint64(org);

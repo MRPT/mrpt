@@ -13,7 +13,7 @@
 #include <wx/string.h>
 //*)
 
-#ifdef None  // X header conflict...
+#ifdef None	 // X header conflict...
 #undef None
 #endif
 
@@ -24,7 +24,6 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
 #include <mrpt/opengl/stock_objects.h>
-
 #include <wx/app.h>
 #include <wx/busyinfo.h>
 #include <wx/log.h>
@@ -329,7 +328,8 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	WX_START_TRY
 
 	// load from disk if needed:
-	for (auto& it : *sf) it->load();
+	for (auto& it : *sf)
+		it->load();
 
 	// Mix?
 	if (!m_mixlasers)
@@ -448,8 +448,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			}
 
 			// Load as RGB or grayscale points:
-			if (pointMapCol)
-				gl_obj->loadFromPointsMap(pointMapCol.get());
+			if (pointMapCol) gl_obj->loadFromPointsMap(pointMapCol.get());
 			else
 			{
 				gl_obj->loadFromPointsMap(pointMap.get());
@@ -544,13 +543,11 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 		TRenderObject& ro = o.second;
 
 		if ((tim_last == INVALID_TIMESTAMP &&
-			 wereScans)  // Scans without timestamps
+			 wereScans)	 // Scans without timestamps
 			|| (tim_last != INVALID_TIMESTAMP &&
 				fabs(mrpt::system::timeDifference(ro.timestamp, tim_last)) >
 					largest_period))
-		{
-			lst_to_delete.push_back(o.first);
-		}
+		{ lst_to_delete.push_back(o.first); }
 	}
 
 	// Remove too old observations:
@@ -559,7 +556,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 		TRenderObject& ro = m_gl_objects[s];
 		m_plot3D->getOpenGLSceneRef()->removeObject(
 			ro.obj);  // Remove from the opengl viewport
-		m_gl_objects.erase(s);  // and from my list
+		m_gl_objects.erase(s);	// and from my list
 	}
 
 	// Show timestamp:
@@ -576,7 +573,8 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 	m_plot3D->Refresh();
 
 	// Post-process: unload 3D observations.
-	for (auto& o : *sf) o->unload();
+	for (auto& o : *sf)
+		o->unload();
 
 	WX_END_TRY
 }
@@ -602,7 +600,7 @@ void CScanAnimation::OnbtnPlayClick(wxCommandEvent& event)
 		while (!m_stop)
 		{
 			int idx = slPos->GetValue();
-			if (idx >= ((int)rawlog.size()) - 1) break;  // End!
+			if (idx >= ((int)rawlog.size()) - 1) break;	 // End!
 
 			if (rawlog.getType(idx) != CRawlog::etActionCollection)
 			{

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
+//
 
 // Force size_x being a multiple of 16 cells
 //#define		ROWSIZE_MULTIPLE_16
@@ -263,7 +264,7 @@ void COccupancyGridMap2D::resizeGrid(
 
 #ifdef ROWSIZE_MULTIPLE_16
 	// map rows must be 16 bytes aligned:
-	size_t old_new_size_x = new_size_x;  // Debug
+	size_t old_new_size_x = new_size_x;	 // Debug
 	if (0 != (new_size_x % 16))
 	{
 		int size_x_incr = 16 - (new_size_x % 16);
@@ -429,7 +430,8 @@ void COccupancyGridMap2D::internal_clear()
 void COccupancyGridMap2D::fill(float default_value)
 {
 	cellType defValue = p2l(default_value);
-	for (auto it = map.begin(); it < map.end(); ++it) *it = defValue;
+	for (auto it = map.begin(); it < map.end(); ++it)
+		*it = defValue;
 	// For the precomputed likelihood trick:
 	m_likelihoodCacheOutDated = true;
 }
@@ -458,18 +460,18 @@ void COccupancyGridMap2D::updateCell(int x, int y, float v)
 	else
 	{
 		cellType obs =
-			p2l(v);  // The observation: will be >0 for free, <0 for occupied.
+			p2l(v);	 // The observation: will be >0 for free, <0 for occupied.
 		if (obs > 0)
 		{
 			if (theCell > (OCCGRID_CELLTYPE_MAX - obs))
-				theCell = OCCGRID_CELLTYPE_MAX;  // Saturate
+				theCell = OCCGRID_CELLTYPE_MAX;	 // Saturate
 			else
 				theCell += obs;
 		}
 		else
 		{
 			if (theCell < (OCCGRID_CELLTYPE_MIN - obs))
-				theCell = OCCGRID_CELLTYPE_MIN;  // Saturate
+				theCell = OCCGRID_CELLTYPE_MIN;	 // Saturate
 			else
 				theCell += obs;
 		}
@@ -541,7 +543,7 @@ void COccupancyGridMap2D::determineMatching2D(
 	const float cos_phi = cos(otherMapPose.phi);
 
 	size_t nOtherMapPointsWithCorrespondence =
-		0;  // Number of points with one corrs. at least
+		0;	// Number of points with one corrs. at least
 	size_t nTotalCorrespondences = 0;  // Total number of corrs
 	float _sumSqrDist = 0;
 
@@ -553,7 +555,7 @@ void COccupancyGridMap2D::determineMatching2D(
 	correspondences.clear();
 
 	// Hay mapa local?
-	if (!nLocalPoints) return;  // No
+	if (!nLocalPoints) return;	// No
 
 	// Solo hacer matching si existe alguna posibilidad de que
 	//  los dos mapas se toquen:
@@ -574,11 +576,9 @@ void COccupancyGridMap2D::determineMatching2D(
 	{
 		// Girar y desplazar cada uno de los puntos del local map:
 		const float xx = x_locals[localIdx] = otherMapPose.x +
-											  cos_phi * otherMap_pxs[localIdx] -
-											  sin_phi * otherMap_pys[localIdx];
+			cos_phi * otherMap_pxs[localIdx] - sin_phi * otherMap_pys[localIdx];
 		const float yy = y_locals[localIdx] = otherMapPose.y +
-											  sin_phi * otherMap_pxs[localIdx] +
-											  cos_phi * otherMap_pys[localIdx];
+			sin_phi * otherMap_pxs[localIdx] + cos_phi * otherMap_pys[localIdx];
 		z_locals[localIdx] = /* otherMapPose.z +*/ otherMap_pzs[localIdx];
 
 		// mantener el max/min de los puntos:
@@ -592,7 +592,7 @@ void COccupancyGridMap2D::determineMatching2D(
 	//   do not even try to match them!!
 	if (local_x_min > x_max || local_x_max < x_min || local_y_min > y_max ||
 		local_y_max < y_min)
-		return;  // Matching is NULL!
+		return;	 // Matching is NULL!
 
 	const cellType thresholdCellValue = p2l(0.5f);
 
@@ -636,7 +636,7 @@ void COccupancyGridMap2D::determineMatching2D(
 			{
 				// Is an occupied cell?
 				if (map[cx + cy * size_x] <
-					thresholdCellValue)  //  getCell(cx,cy)<0.49)
+					thresholdCellValue)	 //  getCell(cx,cy)<0.49)
 				{
 					const float residual_x = idx2x(cx) - x_local;
 					const float residual_y = idx2y(cy) - y_local;
@@ -713,8 +713,7 @@ void COccupancyGridMap2D::determineMatching2D(
 
 	}  // End "for each local point"...
 
-	extraResults.correspondencesRatio =
-		nOtherMapPointsWithCorrespondence /
+	extraResults.correspondencesRatio = nOtherMapPointsWithCorrespondence /
 		d2f(nLocalPoints / params.decimation_other_map_points);
 	extraResults.sumSqrDist = _sumSqrDist;
 
@@ -753,8 +752,7 @@ float COccupancyGridMap2D::computePathCost(
 		sumCost += getPos(x, y);
 	}
 
-	if (nSteps)
-		return sumCost / d2f(nSteps);
+	if (nSteps) return sumCost / d2f(nSteps);
 	else
 		return 0;
 }

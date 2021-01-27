@@ -72,8 +72,7 @@ QModelIndex CObservationTreeModel::index(
 	CNode* parentNode = getNodeFromIndexSafe(parent);
 
 	CNode* childItem = (parentNode->child(row));
-	if (childItem)
-		return createIndex(row, column, childItem);
+	if (childItem) return createIndex(row, column, childItem);
 	else
 		return QModelIndex();
 }
@@ -101,8 +100,7 @@ CNode* CObservationTreeModel::getNodeFromIndexSafe(
 	const QModelIndex& index) const
 {
 	CNode* node;
-	if (!index.isValid() || !index.internalPointer())
-		node = m_rootNode.get();
+	if (!index.isValid() || !index.internalPointer()) node = m_rootNode.get();
 	else
 		node = static_cast<CNode*>(index.internalPointer());
 

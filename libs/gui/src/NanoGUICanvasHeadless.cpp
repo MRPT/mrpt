@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 
 using namespace mrpt::gui;
@@ -35,8 +35,7 @@ void NanoGUICanvasHeadless::mouseMotionEvent(
 
 		if (leftIsDown)
 		{
-			if (modifiers & GLFW_MOD_SHIFT)
-				updateZoom(params, X, Y);
+			if (modifiers & GLFW_MOD_SHIFT) updateZoom(params, X, Y);
 			else if (modifiers & GLFW_MOD_CONTROL)
 				updateRotate(params, X, Y);
 			else
@@ -66,4 +65,4 @@ void NanoGUICanvasHeadless::scrollEvent(
 	setCameraParams(params);
 }
 
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI

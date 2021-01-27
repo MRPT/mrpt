@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/opengl/opengl_api.h>
@@ -35,7 +35,8 @@ void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
 	writeToStreamRender(out);
 	auto n = (uint32_t)m_triangles.size();
 	out << n;
-	for (size_t i = 0; i < n; i++) m_triangles[i].writeTo(out);
+	for (size_t i = 0; i < n; i++)
+		m_triangles[i].writeTo(out);
 }
 void CSetOfTriangles::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -48,11 +49,11 @@ void CSetOfTriangles::serializeFrom(
 			uint32_t n;
 			in >> n;
 			m_triangles.assign(n, TTriangle());
-			for (size_t i = 0; i < n; i++) m_triangles[i].readFrom(in);
+			for (size_t i = 0; i < n; i++)
+				m_triangles[i].readFrom(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	polygonsUpToDate = false;
 	CRenderizable::notifyChange();
@@ -68,7 +69,8 @@ CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 {
 	CRenderizable::notifyChange();
 	m_color = c;
-	for (auto& t : m_triangles) t.setColor(c);
+	for (auto& t : m_triangles)
+		t.setColor(c);
 	return *this;
 }
 
@@ -76,7 +78,8 @@ CRenderizable& CSetOfTriangles::setColorR_u8(const uint8_t r)
 {
 	CRenderizable::notifyChange();
 	m_color.R = r;
-	for (auto& t : m_triangles) t.setColor(m_color);
+	for (auto& t : m_triangles)
+		t.setColor(m_color);
 	return *this;
 }
 
@@ -84,7 +87,8 @@ CRenderizable& CSetOfTriangles::setColorG_u8(const uint8_t g)
 {
 	CRenderizable::notifyChange();
 	m_color.G = g;
-	for (auto& t : m_triangles) t.setColor(m_color);
+	for (auto& t : m_triangles)
+		t.setColor(m_color);
 	return *this;
 }
 
@@ -92,7 +96,8 @@ CRenderizable& CSetOfTriangles::setColorB_u8(const uint8_t b)
 {
 	CRenderizable::notifyChange();
 	m_color.B = b;
-	for (auto& t : m_triangles) t.setColor(m_color);
+	for (auto& t : m_triangles)
+		t.setColor(m_color);
 	return *this;
 }
 
@@ -100,7 +105,8 @@ CRenderizable& CSetOfTriangles::setColorA_u8(const uint8_t a)
 {
 	CRenderizable::notifyChange();
 	m_color.A = a;
-	for (auto& t : m_triangles) t.setColor(m_color);
+	for (auto& t : m_triangles)
+		t.setColor(m_color);
 	return *this;
 }
 
@@ -109,7 +115,8 @@ void CSetOfTriangles::getPolygons(
 {
 	if (!polygonsUpToDate) updatePolygons();
 	size_t N = m_polygons.size();
-	for (size_t i = 0; i < N; i++) polys[i] = m_polygons[i].poly;
+	for (size_t i = 0; i < N; i++)
+		polys[i] = m_polygons[i].poly;
 }
 
 void CSetOfTriangles::updatePolygons() const

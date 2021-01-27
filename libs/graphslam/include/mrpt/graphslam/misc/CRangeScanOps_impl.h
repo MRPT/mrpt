@@ -30,10 +30,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose2D initial_pose;
-	if (initial_pose_in)
-	{
-		initial_pose = *initial_pose_in;
-	}
+	if (initial_pose_in) { initial_pose = *initial_pose_in; }
 
 	mrpt::poses::CPosePDF::Ptr pdf =
 		params.icp.Align(&m1, &m2, initial_pose, info);
@@ -70,9 +67,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
 	if (initial_pose_in)
-	{
-		initial_pose = mrpt::poses::CPose3D(*initial_pose_in);
-	}
+	{ initial_pose = mrpt::poses::CPose3D(*initial_pose_in); }
 
 	mrpt::poses::CPose3DPDF::Ptr pdf =
 		params.icp.Align3D(&m1, &m2, initial_pose, info);
@@ -81,10 +76,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	// copy from the 3D PDF
 	// NULLIFY contraint_t if Z displacement is high (normally this should be 0)
 	// since we are moving in 2D
-	if (fabs(pdf->getMeanVal().z()) < 0.1)
-	{
-		rel_edge->copyFrom(*pdf);
-	}
+	if (fabs(pdf->getMeanVal().z()) < 0.1) { rel_edge->copyFrom(*pdf); }
 	else
 	{
 		rel_edge = nullptr;
@@ -116,10 +108,7 @@ void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 	std::vector<bool> deletion_mask(map_size, true);
 	for (size_t i = 0; i != map_size; ++i)
 	{
-		if (i % keep_point_every == 0)
-		{
-			deletion_mask[i] = false;
-		}
+		if (i % keep_point_every == 0) { deletion_mask[i] = false; }
 	}
 	m->applyDeletionMask(deletion_mask);
 
@@ -139,9 +128,7 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 	bool success = false;
 	// if it doesn't exist, create it
 	if (!*scan2D_out)
-	{
-		*scan2D_out = mrpt::obs::CObservation2DRangeScan::Create();
-	}
+	{ *scan2D_out = mrpt::obs::CObservation2DRangeScan::Create(); }
 
 	if (scan3D_in->hasRangeImage)
 	{
@@ -198,7 +185,7 @@ void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
 	conversion_params.oversampling_ratio = source.read_double(
 		section, "conversion_oversampling_ratio", 1.1, false);
 	conversion_params.z_min = source.read_double(
-		section, "conversion_z_min", 0, false);  // TODO - is this accurate?
+		section, "conversion_z_min", 0, false);	 // TODO - is this accurate?
 
 	// load the icp parameters - from "ICP" section explicitly
 	icp.options.loadFromConfigFile(source, "ICP");

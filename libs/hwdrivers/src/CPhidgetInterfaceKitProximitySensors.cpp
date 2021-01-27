@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/system/os.h>
@@ -160,18 +160,10 @@ void CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 			cout.width(19);
 			switch (m_sensorType[i])
 			{
-				case EZ1:
-					cout << "EZ1 |";
-					break;
-				case SHARP_30cm:
-					cout << "SHARP_30cm |";
-					break;
-				case SHARP_80cm:
-					cout << "SHARP_80cm |";
-					break;
-				case UNPLUGGED:
-					cout << "UNPLUGGED |";
-					break;
+				case EZ1: cout << "EZ1 |"; break;
+				case SHARP_30cm: cout << "SHARP_30cm |"; break;
+				case SHARP_80cm: cout << "SHARP_80cm |"; break;
+				case UNPLUGGED: cout << "UNPLUGGED |"; break;
 			}
 			cout.width(43);
 			cout << m_sensorPoses[i];
@@ -256,10 +248,7 @@ void CPhidgetInterfaceKitProximitySensors::doProcess()
 		getObservation(*obs);
 		m_state = ssWorking;
 		// if at least one data have been sensed :
-		if (obs->sensedData.size() > 0)
-		{
-			appendObservation(obs);
-		}
+		if (obs->sensedData.size() > 0) { appendObservation(obs); }
 	}
 	catch (...)
 	{
@@ -280,7 +269,7 @@ void CPhidgetInterfaceKitProximitySensors::getObservation([
 	obs.minSensorDistance = m_minOfMinRanges;
 	obs.maxSensorDistance = m_maxOfMaxRanges;
 	obs.sensorConeApperture =
-		DEG2RAD(2.0f);  // TODO : Adapt to real sensor cone apperture.
+		DEG2RAD(2.0f);	// TODO : Adapt to real sensor cone apperture.
 	obs.sensedData.clear();
 
 	int sensorValue;
@@ -311,15 +300,13 @@ void CPhidgetInterfaceKitProximitySensors::getObservation([
 					obsRange.sensedDistance =
 						4800. / (d2f(sensorValue) - 16.92);
 					break;
-				default:
-					obsRange.sensedDistance = -1;
-					break;
+				default: obsRange.sensedDistance = -1; break;
 			}
 
 			obsRange.sensorID = i;
 			obsRange.sensorPose =
 				m_sensorPoses[i]
-					.asTPose();  // The pose of the IR sensor on the robot
+					.asTPose();	 // The pose of the IR sensor on the robot
 			obs.sensedData.push_back(obsRange);
 		}
 	}

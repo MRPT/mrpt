@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/distributions.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 
@@ -39,15 +39,12 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
 	{
 		const double prediction_total_var = rangesCovar(i, i) + sensorRangeVar;
 
-		if (prediction_total_var > max_var)
-		{
-			continue;
-		}
+		if (prediction_total_var > max_var) { continue; }
 		num_valid++;
 
 		const double otherScanRange = otherScan.getScanRangeValidity(i)
-										  ? otherScan.getScanRange(i)
-										  : otherScan.maxRange;
+			? otherScan.getScanRange(i)
+			: otherScan.maxRange;
 
 		const double likGauss = std::exp(
 			-0.5 * mrpt::square(otherScanRange - rangesMean[i]) /
@@ -55,8 +52,7 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(
 		double pi;
 		if (otherScan.getScanRange(i) > rangesMean[i])
 		{
-			if (otherScan.getScanRangeValidity(i))
-				pi = likGauss;
+			if (otherScan.getScanRangeValidity(i)) pi = likGauss;
 			else
 				pi = std::max(likGauss, params.prob_lost_ray);
 		}

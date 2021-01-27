@@ -13,6 +13,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/optional_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
+
 #include <memory>  // shared_ptr
 
 using namespace mrpt::serialization;
@@ -49,7 +50,7 @@ TEST(Serialization, STL_stdmap)
 TEST(Serialization, STL_complex_error_type)
 {
 	std::map<double, std::array<uint8_t, 2>> v1;
-	std::map<double, std::array<int8_t, 2>> v2;  // different type!
+	std::map<double, std::array<int8_t, 2>> v2;	 // different type!
 
 	v1[0.4].fill(2);
 
@@ -133,10 +134,7 @@ TEST(Serialization, vector_shared_ptr)
 	EXPECT_EQ(m1.size(), m2.size());
 	for (auto i = 0U; i < m1.size(); i++)
 	{
-		if (!m1[i])
-		{
-			EXPECT_EQ(m1[i], m2[i]);
-		}
+		if (!m1[i]) { EXPECT_EQ(m1[i], m2[i]); }
 		else
 		{
 			EXPECT_EQ(*m1[i], *m2[i]);

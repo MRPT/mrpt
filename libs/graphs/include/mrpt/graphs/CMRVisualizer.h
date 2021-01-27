@@ -8,10 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <iostream>
-
 #include <mrpt/graphs/CVisualizer.h>
 #include <mrpt/graphs/TMRSlamNodeAnnotations.h>
+
+#include <iostream>
 #include <utility>
 
 namespace mrpt::graphs::detail
@@ -30,7 +30,7 @@ namespace mrpt::graphs::detail
  */
 template <
 	class CPOSE,  // Type of edges
-	class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
+	class MAPS_IMPLEMENTATION,	// Use std::map<> vs. std::vector<>
 	class NODE_ANNOTATIONS = mrpt::graphs::detail::TMRSlamNodeAnnotations,
 	class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
 class CMRVisualizer
@@ -61,7 +61,7 @@ class CMRVisualizer
 
 template <
 	class CPOSE,  // Type of edges
-	class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
+	class MAPS_IMPLEMENTATION,	// Use std::map<> vs. std::vector<>
 	class EDGE_ANNOTATIONS>
 class CMRVisualizer<
 	CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>

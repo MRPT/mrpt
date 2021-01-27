@@ -7,17 +7,17 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
 #include <mrpt/opengl/TLightParameters.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTimeLogger.h>
+
 #include <iostream>
 #include <memory>  // std::align
 #include <thread>
-
-#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -427,7 +427,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 				GL_TEXTURE_2D, 0 /*level*/, GL_RGBA8 /* RGB components */,
 				width, height, 0 /*border*/, img_format, img_type, dataAligned);
 			CHECK_OPENGL_ERROR();
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);	 // Reset
 			CHECK_OPENGL_ERROR();
 
 		}  // End of color texture WITH trans.
@@ -445,12 +445,9 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 			const GLenum img_format = [=]() {
 				switch (nBytesPerPixel)
 				{
-					case 1:
-						return GL_LUMINANCE;
-					case 3:
-						return (is_RGB_order ? GL_RGB : GL_BGR);
-					case 4:
-						return GL_BGRA;
+					case 1: return GL_LUMINANCE;
+					case 3: return (is_RGB_order ? GL_RGB : GL_BGR);
+					case 4: return GL_BGRA;
 				};
 				THROW_EXCEPTION("Invalid texture image channel count.");
 			}();
@@ -468,7 +465,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 				width, height, 0 /*border*/, img_format, img_type,
 				m_textureImage.ptrLine<uint8_t>(0));
 			CHECK_OPENGL_ERROR();
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);  // Reset
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);	 // Reset
 			CHECK_OPENGL_ERROR();
 
 		}  // End of color texture WITHOUT trans.
@@ -575,14 +572,12 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 			{
 				assignImage(m_textureImage);
 			}
-			if (version >= 1)
-				in >> m_textureImageAssigned;
+			if (version >= 1) in >> m_textureImageAssigned;
 			else
 				m_textureImageAssigned = true;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

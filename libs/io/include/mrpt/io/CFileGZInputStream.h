@@ -74,5 +74,5 @@ class CFileGZInputStream : public CStream
 	uint64_t Seek(int64_t, CStream::TSeekOrigin = sFromBeginning) override;
 	size_t Read(void* Buffer, size_t Count) override;
 	size_t Write(const void* Buffer, size_t Count) override;
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::io

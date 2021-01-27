@@ -7,10 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
-
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
 
@@ -25,13 +24,12 @@ IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera, mrpt::hwdrivers)
 #include <libMesaSR.h>
 
 #ifdef MRPT_OS_LINUX
-#include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
-
 #include <asm/ioctls.h>
 #include <linux/sockios.h>
+#include <stdio.h>
 #include <sys/select.h>
+#include <termios.h>
+#include <unistd.h>
 #endif
 #endif
 
@@ -257,46 +255,20 @@ bool CSwissRanger3DCamera::open()
 	const ModulationFrq fr = SR_GetModulationFrequency(cam);
 	switch (fr)
 	{
-		case MF_40MHz:
-			m_maxRange = 3.75;
-			break;
-		case MF_30MHz:
-			m_maxRange = 5;
-			break;
-		case MF_21MHz:
-			m_maxRange = 7.14;
-			break;
-		case MF_20MHz:
-			m_maxRange = 7.5;
-			break;
-		case MF_19MHz:
-			m_maxRange = 7.89;
-			break;
-		case MF_60MHz:
-			m_maxRange = 2.5;
-			break;
-		case MF_15MHz:
-			m_maxRange = 10;
-			break;
-		case MF_10MHz:
-			m_maxRange = 15;
-			break;
-		case MF_29MHz:
-			m_maxRange = 5.17;
-			break;
-		case MF_31MHz:
-			m_maxRange = 4.84;
-			break;
-		case MF_14_5MHz:
-			m_maxRange = 10.34;
-			break;
-		case MF_15_5MHz:
-			m_maxRange = 9.68;
-			break;
+		case MF_40MHz: m_maxRange = 3.75; break;
+		case MF_30MHz: m_maxRange = 5; break;
+		case MF_21MHz: m_maxRange = 7.14; break;
+		case MF_20MHz: m_maxRange = 7.5; break;
+		case MF_19MHz: m_maxRange = 7.89; break;
+		case MF_60MHz: m_maxRange = 2.5; break;
+		case MF_15MHz: m_maxRange = 10; break;
+		case MF_10MHz: m_maxRange = 15; break;
+		case MF_29MHz: m_maxRange = 5.17; break;
+		case MF_31MHz: m_maxRange = 4.84; break;
+		case MF_14_5MHz: m_maxRange = 10.34; break;
+		case MF_15_5MHz: m_maxRange = 9.68; break;
 
-		default:
-			m_maxRange = 5.0;
-			break;
+		default: m_maxRange = 5.0; break;
 	}
 
 	SR_SetTimeout(cam, 1000 /* ms */);
@@ -426,9 +398,9 @@ void CSwissRanger3DCamera::getNextObservation(
 					//      Y            Z
 					SR_CoordTrfFlt(
 						SRCAM(m_cam),
-						&obs.points3D_y[0],  // X
-						&obs.points3D_z[0],  // Y
-						&obs.points3D_x[0],  // Z
+						&obs.points3D_y[0],	 // X
+						&obs.points3D_z[0],	 // Y
+						&obs.points3D_x[0],	 // Z
 						sizeof(float), sizeof(float), sizeof(float));
 				}
 			}
@@ -471,12 +443,11 @@ void CSwissRanger3DCamera::getNextObservation(
 					// Save as external image file??
 					if (!m_path_for_external_images.empty())
 					{
-						const string filName =
-							fileNameStripInvalidChars(trim(m_sensorLabel)) +
-							format(
-								"_INT_%f.%s",
-								(double)timestampTotime_t(obs.timestamp),
-								m_external_images_format.c_str());
+						const string filName = fileNameStripInvalidChars(
+												   trim(m_sensorLabel)) +
+							format("_INT_%f.%s",
+								   (double)timestampTotime_t(obs.timestamp),
+								   m_external_images_format.c_str());
 						obs.intensityImage.saveToFile(
 							m_path_for_external_images + string("/") + filName,
 							m_external_images_jpeg_quality);
@@ -503,18 +474,17 @@ void CSwissRanger3DCamera::getNextObservation(
 					{
 						uint8_t* row = obs.confidenceImage(0, y, 0);
 						for (size_t x = 0; x < img->width; x++)
-							(*row++) = (*data_ptr++) >> 8;  // Convert 16u -> 8u
+							(*row++) = (*data_ptr++) >> 8;	// Convert 16u -> 8u
 					}
 
 					// Save as external image file??
 					if (!m_path_for_external_images.empty())
 					{
-						const string filName =
-							fileNameStripInvalidChars(trim(m_sensorLabel)) +
-							format(
-								"_CONF_%f.%s",
-								(double)timestampTotime_t(obs.timestamp),
-								m_external_images_format.c_str());
+						const string filName = fileNameStripInvalidChars(
+												   trim(m_sensorLabel)) +
+							format("_CONF_%f.%s",
+								   (double)timestampTotime_t(obs.timestamp),
+								   m_external_images_format.c_str());
 						obs.confidenceImage.saveToFile(
 							m_path_for_external_images + string("/") + filName,
 							m_external_images_jpeg_quality);
@@ -524,8 +494,7 @@ void CSwissRanger3DCamera::getNextObservation(
 			}
 			break;
 
-			default:
-				break;
+			default: break;
 		}
 	}
 

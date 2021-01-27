@@ -13,6 +13,7 @@
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <variant>
 #include <vector>
 
@@ -173,7 +174,7 @@ class CObservationRotatingScan : public CObservation
 	}
 	void getDescriptionAsText(std::ostream& o) const override;
 
-};  // End of class def.
+};	// End of class def.
 
 /** @} */
 

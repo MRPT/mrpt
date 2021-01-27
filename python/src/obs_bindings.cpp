@@ -9,6 +9,9 @@
 #include "bindings.h"
 
 /* MRPT */
+#include <mrpt/io/CStream.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
@@ -19,11 +22,6 @@
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CRawlog.h>
-
-#include <mrpt/maps/CPointsMap.h>
-#include <mrpt/maps/CSimpleMap.h>
-
-#include <mrpt/io/CStream.h>
 #include <mrpt/serialization/CArchive.h>
 
 /* STD */
@@ -239,7 +237,7 @@ void CObservation2DRangeScan_from_ROS_LaserScan_msg(
 	self.timestamp = t;
 	self.maxRange = extract<float>(scan_msg.attr("range_max"));
 	self.aperture = extract<float>(scan_msg.attr("angle_max")) -
-					extract<float>(scan_msg.attr("angle_min"));
+		extract<float>(scan_msg.attr("angle_min"));
 	self.beamAperture = extract<float>(scan_msg.attr("angle_increment"));
 	self.sensorPose = pose;
 	// set ranges
@@ -396,42 +394,49 @@ void export_obs()
 
 		{
 			// TMotionModelOptions
-			scope s2 =
-				class_<CActionRobotMovement2D::TMotionModelOptions>(
-					"TMotionModelOptions", init<>())
-					.def_readwrite(
-						"modelSelection",
-						&CActionRobotMovement2D::TMotionModelOptions::
-							modelSelection)
-					.def_readwrite(
-						"gaussianModel", &CActionRobotMovement2D::
-											 TMotionModelOptions::gaussianModel)
-					.def_readwrite(
-						"thrunModel", &CActionRobotMovement2D::
-										  TMotionModelOptions::thrunModel);
+			scope s2 = class_<CActionRobotMovement2D::TMotionModelOptions>(
+						   "TMotionModelOptions", init<>())
+						   .def_readwrite(
+							   "modelSelection",
+							   &CActionRobotMovement2D::TMotionModelOptions::
+								   modelSelection)
+						   .def_readwrite(
+							   "gaussianModel",
+							   &CActionRobotMovement2D::TMotionModelOptions::
+								   gaussianModel)
+						   .def_readwrite(
+							   "thrunModel",
+							   &CActionRobotMovement2D::TMotionModelOptions::
+								   thrunModel);
 
 			// TOptions_GaussianModel
 			class_<CActionRobotMovement2D::TMotionModelOptions::
 					   TOptions_GaussianModel>(
 				"TOptions_GaussianModel", init<>())
 				.def_readwrite(
-					"a1", &CActionRobotMovement2D::TMotionModelOptions::
-							  TOptions_GaussianModel::a1)
+					"a1",
+					&CActionRobotMovement2D::TMotionModelOptions::
+						TOptions_GaussianModel::a1)
 				.def_readwrite(
-					"a2", &CActionRobotMovement2D::TMotionModelOptions::
-							  TOptions_GaussianModel::a2)
+					"a2",
+					&CActionRobotMovement2D::TMotionModelOptions::
+						TOptions_GaussianModel::a2)
 				.def_readwrite(
-					"a3", &CActionRobotMovement2D::TMotionModelOptions::
-							  TOptions_GaussianModel::a3)
+					"a3",
+					&CActionRobotMovement2D::TMotionModelOptions::
+						TOptions_GaussianModel::a3)
 				.def_readwrite(
-					"a4", &CActionRobotMovement2D::TMotionModelOptions::
-							  TOptions_GaussianModel::a4)
+					"a4",
+					&CActionRobotMovement2D::TMotionModelOptions::
+						TOptions_GaussianModel::a4)
 				.def_readwrite(
-					"minStdXY", &CActionRobotMovement2D::TMotionModelOptions::
-									TOptions_GaussianModel::minStdXY)
+					"minStdXY",
+					&CActionRobotMovement2D::TMotionModelOptions::
+						TOptions_GaussianModel::minStdXY)
 				.def_readwrite(
-					"minStdPHI", &CActionRobotMovement2D::TMotionModelOptions::
-									 TOptions_GaussianModel::minStdPHI);
+					"minStdPHI",
+					&CActionRobotMovement2D::TMotionModelOptions::
+						TOptions_GaussianModel::minStdPHI);
 
 			// TOptions_ThrunModel
 			class_<CActionRobotMovement2D::TMotionModelOptions::

@@ -18,4 +18,4 @@ class robotic_arm_kinematicsApp : public wxApp
 	bool OnInit() override;
 };
 
-#endif  // robotic_arm_KINEMATICSAPP_H
+#endif	// robotic_arm_KINEMATICSAPP_H

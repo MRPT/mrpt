@@ -18,4 +18,4 @@ class hmt_slam_guiApp : public wxApp
 	bool OnInit() override;
 };
 
-#endif  // HMT_SLAM_GUIAPP_H
+#endif	// HMT_SLAM_GUIAPP_H

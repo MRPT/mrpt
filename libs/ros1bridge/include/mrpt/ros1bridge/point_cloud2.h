@@ -14,6 +14,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <sensor_msgs/PointCloud2.h>
+
 #include <set>
 #include <string>
 

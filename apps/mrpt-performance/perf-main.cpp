@@ -38,7 +38,7 @@ const std::string PERF_DATA_DIR = std::string(MRPT_DOC_PERF_DIR);
 const std::string PERF_DATA_DIR;
 #endif
 
-vector<pair<string, double>> all_perf_data;  // pair: description, time
+vector<pair<string, double>> all_perf_data;	 // pair: description, time
 
 // All this mess is to avoid the smart compiler optimizer to remove "code with
 // no effect" in some test functions...
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
 
 		bool doLog = true;
 		bool HAVE_PERF_DATA_DIR = !PERF_DATA_DIR.empty() &&
-								  mrpt::system::directoryExists(PERF_DATA_DIR);
+			mrpt::system::directoryExists(PERF_DATA_DIR);
 		if (HAVE_PERF_DATA_DIR)
 			cout << "Using perf-data dir: " << PERF_DATA_DIR << endl;
 
@@ -105,8 +105,7 @@ int main(int argc, char** argv)
 
 		CFileOutputStream fo;
 		doLog = fo.open(filName);
-		if (doLog)
-			cout << "Saving log to: " << filName << endl;
+		if (doLog) cout << "Saving log to: " << filName << endl;
 		else
 			cout << "Cannot save log, error opening " << filName
 				 << " for writing..." << endl;
@@ -166,7 +165,7 @@ int main(int argc, char** argv)
 
 			try
 			{
-				const double t = it->func(it->arg1, it->arg2);  // Run it.
+				const double t = it->func(it->arg1, it->arg2);	// Run it.
 
 				mrpt::system::setConsoleColor(CONCOL_GREEN);
 				cout << mrpt::system::intervalFormat(t);
@@ -237,7 +236,7 @@ int main(int argc, char** argv)
 // Macros to create strings with the compiler version:
 #define ___STR2__(x) #x
 #define ___STR1__(x) ___STR2__(x)
-#define COMP_VER(NAME, MAJ, MIN, PATCH) \
+#define COMP_VER(NAME, MAJ, MIN, PATCH)                                        \
 	NAME ___STR1__(MAJ) ___STR1__(MIN) ___STR1__(PATCH)
 
 #if defined(_MSC_VER)
@@ -263,14 +262,12 @@ int main(int argc, char** argv)
 			const char* compiler_name = "unknowncompiler";
 #endif
 
-			const string fil_name =
-				PERF_DATA_DIR + mrpt::format(
-									"/perf-results-%i.%i.%i%s-%s-%ibit.dat",
-									int((MRPT_VERSION >> 8) & 0x0F),
-									int((MRPT_VERSION >> 4) & 0x0F),
-									int((MRPT_VERSION >> 0) & 0x0F),
-									version_postfix, compiler_name,
-									int(MRPT_WORD_SIZE));
+			const string fil_name = PERF_DATA_DIR +
+				mrpt::format("/perf-results-%i.%i.%i%s-%s-%ibit.dat",
+							 int((MRPT_VERSION >> 8) & 0x0F),
+							 int((MRPT_VERSION >> 4) & 0x0F),
+							 int((MRPT_VERSION >> 0) & 0x0F), version_postfix,
+							 compiler_name, int(MRPT_WORD_SIZE));
 			cout << "Saving perf-data to: " << fil_name << endl;
 			CFileOutputStream f(fil_name);
 			auto arch = archiveFrom(f);

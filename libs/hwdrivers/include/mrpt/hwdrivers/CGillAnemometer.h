@@ -61,6 +61,6 @@ class CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 	void loadConfig_sensorSpecific(
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section) override;
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::hwdrivers

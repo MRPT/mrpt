@@ -18,17 +18,17 @@ namespace mrpt::system
 using TCallStackBackTrace = mrpt::TCallStackBackTrace;
 
 [[deprecated("Use mrpt::callStackBackTrace() instead")]]  //
-	inline void
+inline void
 	getCallStackBackTrace(TCallStackBackTrace& bt)
 {
 	mrpt::callStackBackTrace(bt);
 }
 
 [[deprecated("Use mrpt::callStackBackTrace() instead")]]  //
-	inline TCallStackBackTrace
+inline TCallStackBackTrace
 	getCallStackBackTrace()
 {
 	return mrpt::callStackBackTrace();
 }
 
-};  // namespace mrpt::system
+};	// namespace mrpt::system

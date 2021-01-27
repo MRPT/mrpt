@@ -10,6 +10,7 @@
 
 //! [example]
 #include <mrpt/typemeta/TEnumType.h>
+
 #include <iostream>
 #include <string>
 

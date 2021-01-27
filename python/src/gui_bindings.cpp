@@ -43,7 +43,7 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(
 	CDisplayWindow3D_waitForKey_overloads, CDisplayWindow3D_waitForKey, 1, 2)
 // end of CDisplayWindow3D
 
-#define MAKE_ENUM_VALUE(enum_type, enum_name) \
+#define MAKE_ENUM_VALUE(enum_type, enum_name)                                  \
 	.value(#enum_name, enum_type::enum_name)
 
 void export_gui()

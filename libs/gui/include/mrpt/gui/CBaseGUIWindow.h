@@ -15,6 +15,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
+
 #include <atomic>
 #include <future>
 #include <mutex>
@@ -151,7 +152,7 @@ class CBaseGUIWindow : public mrpt::system::CObservable
 	 */
 	int getPushedKey(mrptKeyModifier* out_pushModifier = nullptr);
 
-};  // End of class def.
+};	// End of class def.
 
 /** @name Events common to all GUI windows:
 	@{  */
@@ -181,7 +182,7 @@ class mrptEventWindowChar : public mrpt::system::mrptEvent
 	int char_code;
 	/** Modifiers (Shift, Control, etc...) */
 	mrptKeyModifier key_modifiers;
-};  // End of class def.
+};	// End of class def.
 
 /**  An event sent by a window upon resize.
  *
@@ -204,7 +205,7 @@ class mrptEventWindowResize : public mrpt::system::mrptEvent
 
 	CBaseGUIWindow* source_object;
 	size_t new_width, new_height;
-};  // End of class def.
+};	// End of class def.
 
 /**  An event sent by a window upon a mouse click, giving the (x,y) pixel
  * coordinates.
@@ -236,7 +237,7 @@ class mrptEventMouseDown : public mrpt::system::mrptEvent
 	mrpt::img::TPixelCoord coords;
 	bool leftButton;
 	bool rightButton;
-};  // End of class def.
+};	// End of class def.
 
 /**  An event sent by a window when the mouse is moved over it.
  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked
@@ -265,7 +266,7 @@ class mrptEventMouseMove : public mrpt::system::mrptEvent
 	mrpt::img::TPixelCoord coords;
 	bool leftButton;
 	bool rightButton;
-};  // End of class def.
+};	// End of class def.
 
 /**  An event sent by a window upon when it's about to be closed, either
  * manually by the user or programmatically.
@@ -293,7 +294,7 @@ class mrptEventWindowClosed : public mrpt::system::mrptEvent
 	}
 	CBaseGUIWindow* source_object;
 	bool allow_close;
-};  // End of class def.
+};	// End of class def.
 
 /**  @} */
 

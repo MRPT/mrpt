@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "config-precomp.h"  // Precompiled headers
+#include "config-precomp.h"	 // Precompiled headers
 
 // Fix to SimpleIni bug: not able to build with C++17
 #include <functional>
@@ -25,10 +25,10 @@ using binary_function = std::function<RET(T1, T2)>;
 #define SI_CONVERT_ICU 1
 #endif
 #include <SimpleIni.h>
-
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/config_parser.h>
 #include <mrpt/system/os.h>
+
 #include <fstream>
 #include <iostream>
 

@@ -45,7 +45,7 @@ TEST(CTimeLogger, getLastTime)
 	doTimLogEntry(tl, "foo", 10);
 	EXPECT_EQ(tl.getLastTime("foo"), 0);
 
-	tl.clear(true);  // to silent console output upon dtor
+	tl.clear(true);	 // to silent console output upon dtor
 }
 
 TEST(CTimeLogger, getMeanTime)
@@ -56,7 +56,7 @@ TEST(CTimeLogger, getMeanTime)
 
 	EXPECT_GT(tl.getMeanTime("foo"), 100e-3);
 
-	tl.clear(true);  // to silent console output upon dtor
+	tl.clear(true);	 // to silent console output upon dtor
 }
 
 TEST(CTimeLogger, printStats)

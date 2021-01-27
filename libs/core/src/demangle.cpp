@@ -17,8 +17,8 @@
 //
 #include <DbgHelp.h>
 #else
-#include <cxxabi.h>  // __cxa_demangle()
-#include <dlfcn.h>  // dladdr()
+#include <cxxabi.h>	 // __cxa_demangle()
+#include <dlfcn.h>	// dladdr()
 #include <execinfo.h>
 
 #include <cstdlib>
@@ -36,9 +36,7 @@ std::string mrpt::demangle(const std::string& symbolName)
 	if (!UnDecorateSymbolName(
 			symbolName.c_str(), undecorated_name, sizeof(undecorated_name),
 			UNDNAME_COMPLETE))
-	{
-		return symbolName;
-	}
+	{ return symbolName; }
 	else
 	{
 		return std::string(undecorated_name);

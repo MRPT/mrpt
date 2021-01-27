@@ -11,7 +11,6 @@
 // enable the plugin system
 #include <Eigen/Dense>
 #include <Eigen/SVD>
-
 #include <iostream>
 
 #define LOOP_MAX_COUNT 30
@@ -34,15 +33,15 @@ class posit
 {
 	Eigen::MatrixXd obj_pts;  //! Object Points in Camera Co-ordinate system
 	Eigen::MatrixXd img_pts;  //! Image Points in pixels
-	Eigen::MatrixXd cam_intrinsic;  //! Camera Intrinsic matrix
-	Eigen::MatrixXd obj_matrix;  //! Pseudo-Inverse of Object Points matrix
+	Eigen::MatrixXd cam_intrinsic;	//! Camera Intrinsic matrix
+	Eigen::MatrixXd obj_matrix;	 //! Pseudo-Inverse of Object Points matrix
 
 	double f;  //! Focal Length from camera intrinsic matrix
 	Eigen::VectorXd epsilons;  //! Co-efficients used for scaling
-	int n;  //! Number of 2d/3d correspondences
+	int n;	//! Number of 2d/3d correspondences
 
-	Eigen::MatrixXd R;  //! Rotation Matrix
-	Eigen::VectorXd t;  //! Translation Vector
+	Eigen::MatrixXd R;	//! Rotation Matrix
+	Eigen::VectorXd t;	//! Translation Vector
 
 	Eigen::MatrixXd obj_vecs;  //! Object Points relative to 1st object point
 	Eigen::MatrixXd img_vecs;  //! Image Points relative to 1st image point
@@ -76,5 +75,5 @@ class posit
 	long get_img_diff();
 };
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision::pnp

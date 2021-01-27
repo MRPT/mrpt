@@ -10,6 +10,7 @@
 
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/string_utils.h>
+
 #include <cstdio>
 #include <cstring>
 #include <sstream>
@@ -80,8 +81,7 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 		CSerializable::Ptr obj = get(propertyName, hypothesis_ID);
 		if (!obj)
 		{
-			if (allowNullPointer)
-				return typename T::Ptr();
+			if (allowNullPointer) return typename T::Ptr();
 			else
 				THROW_EXCEPTION("Null pointer");
 		}
@@ -201,5 +201,5 @@ class CMHPropertiesValuesList : public mrpt::serialization::CSerializable
 	iterator end() { return m_properties.end(); }
 	const_iterator end() const { return m_properties.end(); }
 	size_t size() const { return m_properties.size(); }
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::hmtslam

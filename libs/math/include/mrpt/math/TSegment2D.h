@@ -50,12 +50,9 @@ struct TSegment2D
 	{
 		switch (i)
 		{
-			case 0:
-				return point1;
-			case 1:
-				return point2;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return point1;
+			case 1: return point2;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/** Access to points using operator[0-1] */
@@ -63,12 +60,9 @@ struct TSegment2D
 	{
 		switch (i)
 		{
-			case 0:
-				return point1;
-			case 1:
-				return point2;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return point1;
+			case 1: return point2;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/**

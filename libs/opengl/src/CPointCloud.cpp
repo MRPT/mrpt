@@ -7,15 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
-
-#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -75,10 +74,9 @@ void CPointCloud::onUpdateBuffers_Points()
 			if (!m_points.empty())
 			{
 				const float* vs = m_colorFromDepth == CPointCloud::colZ
-									  ? &m_points[0].z
-									  : (m_colorFromDepth == CPointCloud::colY
-											 ? &m_points[0].y
-											 : &m_points[0].x);
+					? &m_points[0].z
+					: (m_colorFromDepth == CPointCloud::colY ? &m_points[0].y
+															 : &m_points[0].x);
 				m_min = m_max = vs[0];
 				for (size_t i = 1; i < N; i++)
 				{
@@ -92,8 +90,7 @@ void CPointCloud::onUpdateBuffers_Points()
 		}
 
 		m_max_m_min = m_max - m_min;
-		if (std::abs(m_max_m_min) < 1e-4)
-			m_max_m_min = -1;
+		if (std::abs(m_max_m_min) < 1e-4) m_max_m_min = -1;
 		else
 			m_min = m_max - m_max_m_min * 1.01f;
 		m_max_m_min_inv = 1.0f / m_max_m_min;
@@ -136,10 +133,11 @@ void CPointCloud::onUpdateBuffers_Points()
 			float f = (depthCol - m_min) * m_max_m_min_inv;
 			f = std::max(0.0f, min(1.0f, f));
 
-			cbd.push_back({f2u8(m_colorFromDepth_min.R + f * m_col_slop_inv.R),
-						   f2u8(m_colorFromDepth_min.G + f * m_col_slop_inv.G),
-						   f2u8(m_colorFromDepth_min.B + f * m_col_slop_inv.B),
-						   m_color.A});
+			cbd.push_back(
+				{f2u8(m_colorFromDepth_min.R + f * m_col_slop_inv.R),
+				 f2u8(m_colorFromDepth_min.G + f * m_col_slop_inv.G),
+				 f2u8(m_colorFromDepth_min.B + f * m_col_slop_inv.B),
+				 m_color.A});
 		}
 	}
 	else
@@ -246,8 +244,7 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 			m_pointSmooth = static_cast<bool>(in["pointSmooth"]);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 uint8_t CPointCloud::serializeGetVersion() const { return 6; }
@@ -259,7 +256,8 @@ void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// out << m_xs << m_ys << m_zs;// was: v4
 	out.WriteAs<uint32_t>(m_points.size());
-	for (const auto& pt : m_points) out << pt;
+	for (const auto& pt : m_points)
+		out << pt;
 
 	// New in version 2:
 	out << m_colorFromDepth_min.R << m_colorFromDepth_min.G
@@ -312,11 +310,11 @@ void CPointCloud::serializeFrom(
 				// New in v5:
 				auto N = in.ReadAs<uint32_t>();
 				m_points.resize(N);
-				for (auto& pt : m_points) in >> pt;
+				for (auto& pt : m_points)
+					in >> pt;
 			}
 
-			if (version >= 1 && version < 6)
-				in >> m_pointSize;
+			if (version >= 1 && version < 6) in >> m_pointSize;
 			else
 				m_pointSize = 1;
 
@@ -335,16 +333,14 @@ void CPointCloud::serializeFrom(
 				m_colorFromDepth_max.B = m_color.B * 255.f;
 			}
 
-			if (version >= 4)
-				in >> m_pointSmooth;
+			if (version >= 4) in >> m_pointSmooth;
 			else
 				m_pointSmooth = false;
 
 			if (version >= 6) CRenderizableShaderPoints::params_deserialize(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
 	markAllPointsAsNew();
@@ -440,7 +436,8 @@ void CPointCloud::setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts)
 {
 	const auto N = pts.size();
 	m_points.resize(N);
-	for (size_t i = 0; i < N; i++) m_points[i] = pts[i];
+	for (size_t i = 0; i < N; i++)
+		m_points[i] = pts[i];
 	m_minmax_valid = false;
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();

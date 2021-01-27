@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
+
 #include <iostream>
 
 using namespace mrpt;

@@ -23,6 +23,6 @@ namespace mrpt::poses
 template <class DERIVEDCLASS, std::size_t DIM>
 class CPose : public CPoseOrPoint<DERIVEDCLASS, DIM>
 {
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::poses

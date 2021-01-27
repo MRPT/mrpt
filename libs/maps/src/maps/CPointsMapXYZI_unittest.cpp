@@ -11,6 +11,7 @@
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
+
 #include <iostream>
 
 TEST(CPointsMapXYZI, loadFromKittiVelodyneFile)

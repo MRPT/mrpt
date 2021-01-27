@@ -10,6 +10,7 @@
 
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/typemeta/TTypeName_stl.h>  // TTypeName<> for STL templates, needed for serialization of STL templates
+
 #include <optional>
 
 namespace mrpt::serialization

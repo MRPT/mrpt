@@ -8,13 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CSplineInterpolator1D.h>  // for CSplineInterpolator1D
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/serialization/CSerializable.h>  // for CSerializable, CSeriali...
 #include <mrpt/serialization/stl_serialization.h>  // for operator<<, operator>>
+
 #include <map>
-#include <mrpt/math/interp_fit.hpp>  // for spline
+#include <mrpt/math/interp_fit.hpp>	 // for spline
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -55,27 +56,18 @@ double& CSplineInterpolator1D::query(double x, double& y, bool& out_valid) const
 	}
 
 	// Are we in the beginning or the end of the path?
-	if (it_ge1 == m_x2y.end() || it_ge1 == m_x2y.begin())
-	{
-		return y;
-	}
+	if (it_ge1 == m_x2y.end() || it_ge1 == m_x2y.begin()) { return y; }
 
 	p3 = *it_ge1;  // Third pair
 	++it_ge1;
-	if (it_ge1 == m_x2y.end())
-	{
-		return y;
-	}
+	if (it_ge1 == m_x2y.end()) { return y; }
 	p4 = *it_ge1;  // Fourth pair
 
 	--it_ge1;
 	--it_ge1;
 	p2 = *it_ge1;  // Second pair
 
-	if (it_ge1 == m_x2y.begin())
-	{
-		return y;
-	}
+	if (it_ge1 == m_x2y.begin()) { return y; }
 
 	p1 = *(--it_ge1);  // First pair
 
@@ -110,12 +102,11 @@ void CSplineInterpolator1D::serializeFrom(
 {
 	switch (version)
 	{
-		case 0:  // floats
+		case 0:	 // floats
 		{
 			in >> m_x2y >> m_wrap2pi;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }

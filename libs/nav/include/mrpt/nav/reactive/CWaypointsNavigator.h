@@ -135,7 +135,7 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	void loadConfigFile(const mrpt::config::CConfigFileBase& c)
 		override;  // See base class docs!
 	void saveConfigFile(mrpt::config::CConfigFileBase& c)
-		const override;  // See base class docs!
+		const override;	 // See base class docs!
 
    protected:
 	/** The latest waypoints navigation command and the up-to-date control

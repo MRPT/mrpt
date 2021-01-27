@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "img-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/img/TColor.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
@@ -67,7 +67,7 @@ TColor& TColor::operator=(const TColor& other) = default;
 bool mrpt::img::operator==(const TColor& first, const TColor& second)
 {
 	bool ret = first.R == second.R && first.G == second.G &&
-			   first.B == second.B && first.A == second.A;
+		first.B == second.B && first.A == second.A;
 
 	return ret;
 }

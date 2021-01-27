@@ -4,13 +4,20 @@
 - Changes in applications:
   - RawLogViewer:
     - "Scan animation" window: now also shows the timestamp of observations.
+  - camera-calib and kinect-stereo-calib:
+    - New option to save camera calibration results as YAML files.
 - General build changes:
   - Fix excessive alignment in aarch64 (32->16 bytes).
+  - clang-format: enforce and upgraded to use clang-format-10.
 - Changes in libraries:
+  - \ref mrpt_containers_grp
+    - New YAML to/from matrix methods: mrpt::containers::yaml::FromMatrix(), mrpt::containers::yaml::toMatrix()
   - \ref mrpt_core_grp
     - New CMake build flag `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions.
   - \ref mrpt_math_grp
     - New class mrpt::math::TBoundingBox
+  - \ref mrpt_opengl_grp
+    - mrpt::opengl::CFrustum() new constructor from mrpt::img::TCamera()
 - BUG FIXES:
   - Log `*_THROTTLE_*` macros (e.g. MRPT_LOG_THROTTLE_DEBUG) did not report the message the first time they were called, which seems a safer behavior.
   - Reverted changed behavior: mrpt::config::CConfigFile did not throw if a non-existing file was passed to its constructor, but it throws in MRPT 2.1.{0-7}.

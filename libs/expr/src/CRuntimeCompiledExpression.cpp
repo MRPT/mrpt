@@ -8,15 +8,16 @@
    +------------------------------------------------------------------------+ */
 
 #include "expr-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/expr/CRuntimeCompiledExpression.h>
 #include <mrpt/system/string_utils.h>
+
 #include <cmath>  // M_PI
 #include <cstdlib>
 #include <iostream>
 
-#define exprtk_disable_string_capabilities  // Workaround a bug in Ubuntu
+#define exprtk_disable_string_capabilities	// Workaround a bug in Ubuntu
 // precise's GCC+libstdc++
 
 // Disable some parts of exprtk to build faster and reduce lib size:

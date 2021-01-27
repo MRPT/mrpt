@@ -9,6 +9,7 @@
 
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
+
 #include <iostream>
 
 using std::cout;

@@ -16,6 +16,7 @@
 
 #include <QApplication>
 #include <QtGui>
+
 #include "mainwindow.h"
 
 using namespace std;

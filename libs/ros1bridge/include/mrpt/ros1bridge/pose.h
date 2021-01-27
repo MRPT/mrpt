@@ -18,7 +18,8 @@
 #include <mrpt/poses/poses_frwds.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Transform.h>
-#include <cstring>  // size_t
+
+#include <cstring>	// size_t
 
 namespace mrpt::ros1bridge
 {

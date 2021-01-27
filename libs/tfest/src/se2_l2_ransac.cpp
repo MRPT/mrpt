@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "tfest-precomp.h"  // Precompiled headers
+#include "tfest-precomp.h"	// Precompiled headers
 //
 #include <mrpt/core/round.h>
 #include <mrpt/math/distributions.h>
@@ -217,7 +217,7 @@ bool tfest::se2_l2_robust(
 			params.probability_find_good_model > 0 &&
 			params.probability_find_good_model < 1);
 		// Set an initial # of iterations:
-		results.ransac_iters = 10;  // It doesn't matter actually, since will be
+		results.ransac_iters = 10;	// It doesn't matter actually, since will be
 		// changed in the first loop
 	}
 
@@ -233,7 +233,8 @@ bool tfest::se2_l2_robust(
 	// First: Build a permutation of the correspondences to pick from it
 	// sequentially:
 	std::vector<size_t> corrsIdxs(nCorrs), corrsIdxsPermutation;
-	for (size_t i = 0; i < nCorrs; i++) corrsIdxs[i] = i;
+	for (size_t i = 0; i < nCorrs; i++)
+		corrsIdxs[i] = i;
 
 	size_t iter_idx;
 	for (iter_idx = 0; iter_idx < results.ransac_iters;
@@ -537,12 +538,11 @@ bool tfest::se2_l2_robust(
 				// Update estimate of nCorrs, the number of trials to ensure we
 				// pick,
 				// with probability p, a data set with no outliers.
-				const double fracinliers =
-					ninliers /
+				const double fracinliers = ninliers /
 					static_cast<double>(howManyDifCorrs);  // corrsIdxs.size());
-				double pNoOutliers =
-					1 - pow(fracinliers, static_cast<double>(
-											 2.0 /*minimumSizeSamplesToFit*/));
+				double pNoOutliers = 1 -
+					pow(fracinliers,
+						static_cast<double>(2.0 /*minimumSizeSamplesToFit*/));
 
 				pNoOutliers = std::max(
 					std::numeric_limits<double>::epsilon(),
@@ -583,7 +583,7 @@ bool tfest::se2_l2_robust(
 		if (subSet.size() >= params.ransac_minSetSize &&
 			this_subset_RMSE < MAX_RMSE_TO_END)
 		{
-			break;  // end RANSAC iterations.
+			break;	// end RANSAC iterations.
 		}
 
 #ifdef DO_PROFILING

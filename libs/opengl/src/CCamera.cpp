@@ -7,12 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CCamera.h>
-#include <mrpt/serialization/CArchive.h>
-
 #include <mrpt/opengl/opengl_api.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -48,8 +47,7 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				m_azimuthDeg >> m_elevationDeg;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

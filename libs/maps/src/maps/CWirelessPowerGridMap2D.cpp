@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
@@ -148,7 +148,7 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
 
 		// Normalization:
 		sensorReading = (sensorReading - insertionOptions.R_min) /
-						(insertionOptions.R_max - insertionOptions.R_min);
+			(insertionOptions.R_max - insertionOptions.R_min);
 
 		// Update the gross estimates of mean/vars for the whole reading history
 		// (see IROS2009 paper):
@@ -325,8 +325,7 @@ void CWirelessPowerGridMap2D::serializeFrom(
 			m_hasToRecoverMeanAndCov = true;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

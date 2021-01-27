@@ -7,17 +7,18 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "graphs-precomp.h"  // Precompiled headers
-
+#include "graphs-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
 using namespace std;
 
-#if EIGEN_VERSION_AT_LEAST(3, 1, 0)  // Requires Eigen>=3.1
+#if EIGEN_VERSION_AT_LEAST(3, 1, 0)	 // Requires Eigen>=3.1
 #include <Eigen/SparseCore>
 #include <Eigen/SparseQR>
 #endif
@@ -106,7 +107,7 @@ void ScalarFactorGraph::updateEstimation(
 	std::vector<Eigen::Triplet<double>> A_tri;
 	A_tri.reserve(m1 + 2 * m2);
 
-	Eigen::VectorXd g;  // Error vector
+	Eigen::VectorXd g;	// Error vector
 
 	g.setZero(m);
 	int edge_counter = 0;

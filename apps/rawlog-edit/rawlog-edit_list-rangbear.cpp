@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/obs/CObservationBearingRange.h>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;

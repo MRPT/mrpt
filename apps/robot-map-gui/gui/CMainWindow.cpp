@@ -8,16 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "CMainWindow.h"
-#include "CDocument.h"
-#include "CUndoManager.h"
-#include "ui_CMainWindow.h"
 
-#include "gui/observationTree/CPosesNode.h"
-#include "observationTree/CObservationImageNode.h"
-#include "observationTree/CObservationStereoImageNode.h"
-#include "observationTree/CObservationTreeModel.h"
-#include "observationTree/CObservationsNode.h"
-#include "observationTree/CPairNode.h"
+#include <mrpt/core/bits_math.h>
 
 #include <QAction>
 #include <QDebug>
@@ -27,12 +19,20 @@
 #include <QMenuBar>
 #include <QTreeWidgetItem>
 
-#include <mrpt/core/bits_math.h>
+#include "CDocument.h"
+#include "CUndoManager.h"
+#include "gui/observationTree/CPosesNode.h"
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/gui/about_box.h"
 #include "mrpt/gui/error_box.h"
 #include "mrpt/math/wrap2pi.h"
 #include "mrpt/poses/CPose3D.h"
+#include "observationTree/CObservationImageNode.h"
+#include "observationTree/CObservationStereoImageNode.h"
+#include "observationTree/CObservationTreeModel.h"
+#include "observationTree/CObservationsNode.h"
+#include "observationTree/CPairNode.h"
+#include "ui_CMainWindow.h"
 
 using mrpt::DEG2RAD;
 using mrpt::RAD2DEG;
@@ -283,8 +283,7 @@ void CMainWindow::itemClicked(const QModelIndex& index)
 			m_ui->m_viewer->showRobotDirection(stereoImageNode->getPose());
 			break;
 		}
-		default:
-			break;
+		default: break;
 	}
 }
 
@@ -520,7 +519,7 @@ void CMainWindow::updateRenderMapFromConfig()
 	for (auto& it : renderizableMaps)
 	{
 		QString name = QString::fromStdString(typeToName(it.first.type)) +
-					   QString::number(it.first.index);
+			QString::number(it.first.index);
 
 		auto action = m_ui->m_saveMetricMapRepresentation->addAction(name);
 		connect(
@@ -554,7 +553,8 @@ void CMainWindow::clearObservationsViewer()
 {
 	QLayout* layout = m_ui->m_contentsNodeViewer->layout();
 	QLayoutItem* child;
-	while ((child = layout->takeAt(0)) != 0) delete child;
+	while ((child = layout->takeAt(0)) != 0)
+		delete child;
 }
 
 void CMainWindow::addToRecent(const std::string& fileName)

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "CDlgCamTracking.h"
+
 #include "_DSceneViewerMain.h"
 
 //(*InternalHeaders(CDlgCamTracking)
@@ -155,10 +156,7 @@ void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
 		->getViewport("main")
 		->getCurrentCameraPose(p);
 
-	if (m_poses.empty())
-	{
-		m_poses.insert(Clock::now(), p);
-	}
+	if (m_poses.empty()) { m_poses.insert(Clock::now(), p); }
 	else
 	{
 		m_poses.insert(Clock::now(), p);

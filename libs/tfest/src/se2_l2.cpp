@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "tfest-precomp.h"  // Precompiled headers
-
+#include "tfest-precomp.h"	// Precompiled headers
+//
 #include <mrpt/core/cpu.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -118,9 +118,7 @@ bool tfest::se2_l2(
 	internal::se2_l2_impl_return_t<float> implRet;
 #if MRPT_ARCH_INTEL_COMPATIBLE
 	if (mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
-	{
-		implRet = mrpt::tfest::internal::se2_l2_impl_SSE2(in_correspondences);
-	}
+	{ implRet = mrpt::tfest::internal::se2_l2_impl_SSE2(in_correspondences); }
 	else
 #endif
 	{
@@ -128,10 +126,9 @@ bool tfest::se2_l2(
 	}
 
 	out_transformation.phi = (implRet.Ax != 0 || implRet.Ay != 0)
-								 ? atan2(
-									   static_cast<double>(implRet.Ay),
-									   static_cast<double>(implRet.Ax))
-								 : 0.0;
+		? atan2(
+			  static_cast<double>(implRet.Ay), static_cast<double>(implRet.Ax))
+		: 0.0;
 
 	const double ccos = cos(out_transformation.phi);
 	const double csin = sin(out_transformation.phi);
@@ -159,7 +156,7 @@ bool tfest::se2_l2(
 			var_x_b += square(in_correspondence.other_x - implRet.mean_x_b);
 			var_y_b += square(in_correspondence.other_y - implRet.mean_y_b);
 		}
-		var_x_a *= N_1_inv;  //  /= (N-1)
+		var_x_a *= N_1_inv;	 //  /= (N-1)
 		var_y_a *= N_1_inv;
 		var_x_b *= N_1_inv;
 		var_y_b *= N_1_inv;
@@ -167,8 +164,7 @@ bool tfest::se2_l2(
 		// 1) Compute  BETA = s_Delta^2 / s_p^2
 		// --------------------------------
 		const double BETA = (var_x_a + var_y_a + var_x_b + var_y_b) *
-							pow(static_cast<double>(N), 2.0) *
-							static_cast<double>(N - 1);
+			pow(static_cast<double>(N), 2.0) * static_cast<double>(N - 1);
 
 		// 2) And the final covariance matrix:
 		//  (remember: this matrix has yet to be
@@ -176,29 +172,30 @@ bool tfest::se2_l2(
 		// -------------------------------------------------------
 		const double D = square(implRet.Ax) + square(implRet.Ay);
 
-		(*C)(0, 0) = 2.0 * N_inv + BETA * square(
-											  (implRet.mean_x_b * implRet.Ay +
-											   implRet.mean_y_b * implRet.Ax) /
-											  D);
-		(*C)(1, 1) = 2.0 * N_inv + BETA * square(
-											  (implRet.mean_x_b * implRet.Ax -
-											   implRet.mean_y_b * implRet.Ay) /
-											  D);
+		(*C)(0, 0) = 2.0 * N_inv +
+			BETA *
+				square(
+					(implRet.mean_x_b * implRet.Ay +
+					 implRet.mean_y_b * implRet.Ax) /
+					D);
+		(*C)(1, 1) = 2.0 * N_inv +
+			BETA *
+				square(
+					(implRet.mean_x_b * implRet.Ax -
+					 implRet.mean_y_b * implRet.Ay) /
+					D);
 		(*C)(2, 2) = BETA / D;
 
-		(*C)(0, 1) = (*C)(1, 0) =
-			-BETA *
+		(*C)(0, 1) = (*C)(1, 0) = -BETA *
 			(implRet.mean_x_b * implRet.Ay + implRet.mean_y_b * implRet.Ax) *
 			(implRet.mean_x_b * implRet.Ax - implRet.mean_y_b * implRet.Ay) /
 			square(D);
 
-		(*C)(0, 2) = (*C)(2, 0) =
-			BETA *
+		(*C)(0, 2) = (*C)(2, 0) = BETA *
 			(implRet.mean_x_b * implRet.Ay + implRet.mean_y_b * implRet.Ax) /
 			pow(D, 1.5);
 
-		(*C)(1, 2) = (*C)(2, 1) =
-			BETA *
+		(*C)(1, 2) = (*C)(2, 1) = BETA *
 			(implRet.mean_y_b * implRet.Ay - implRet.mean_x_b * implRet.Ax) /
 			pow(D, 1.5);
 	}

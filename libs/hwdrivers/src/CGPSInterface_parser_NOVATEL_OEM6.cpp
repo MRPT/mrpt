@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/system/crc.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt::hwdrivers;
@@ -26,8 +27,8 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 	// to be grabbed from the last Message_NV_OEM6_IONUTC msg
 	static uint32_t num_leap_seconds =
 		getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS") == nullptr
-			? 18
-			: atoi(getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS"));
+		? 18
+		: atoi(getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS"));
 
 	using namespace mrpt::obs::gnss;
 
@@ -48,8 +49,8 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		peek_buffer[2] == nv_oem6_short_header_t::SYNCH2;
 
 	const bool is_regular_hdr = peek_buffer[0] == nv_oem6_header_t::SYNCH0 &&
-								peek_buffer[1] == nv_oem6_header_t::SYNCH1 &&
-								peek_buffer[2] == nv_oem6_header_t::SYNCH2;
+		peek_buffer[1] == nv_oem6_header_t::SYNCH1 &&
+		peek_buffer[2] == nv_oem6_header_t::SYNCH2;
 
 	if (!is_short_hdr && !is_regular_hdr)
 		return false;  // skip 1 byte, we dont recognize this format
@@ -82,9 +83,9 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		const uint32_t crc_computed =
 			mrpt::system::compute_CRC32(&buf[0], expected_total_msg_len - 4);
 		const uint32_t crc_read = (buf[expected_total_msg_len - 1] << 24) |
-								  (buf[expected_total_msg_len - 2] << 16) |
-								  (buf[expected_total_msg_len - 3] << 8) |
-								  (buf[expected_total_msg_len - 4] << 0);
+			(buf[expected_total_msg_len - 2] << 16) |
+			(buf[expected_total_msg_len - 3] << 8) |
+			(buf[expected_total_msg_len - 4] << 0);
 		if (crc_read != crc_computed)
 			return false;  // skip 1 byte, we dont recognize this format
 
@@ -102,8 +103,8 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		mrpt::io::CMemoryStream tmpStream;
 		auto arch = mrpt::serialization::archiveFrom(tmpStream);
 		const uint32_t msg_id = use_generic_container
-									? (uint32_t)(NV_OEM6_GENERIC_SHORT_FRAME)
-									: (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
+			? (uint32_t)(NV_OEM6_GENERIC_SHORT_FRAME)
+			: (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
 		arch << (uint32_t)(msg_id);
 		// This len = hdr + hdr.msg_len + 4 (crc);
 		arch << (uint32_t)(expected_total_msg_len);
@@ -161,9 +162,9 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		const uint32_t crc_computed =
 			mrpt::system::compute_CRC32(&buf[0], expected_total_msg_len - 4);
 		const uint32_t crc_read = (buf[expected_total_msg_len - 1] << 24) |
-								  (buf[expected_total_msg_len - 2] << 16) |
-								  (buf[expected_total_msg_len - 3] << 8) |
-								  (buf[expected_total_msg_len - 4] << 0);
+			(buf[expected_total_msg_len - 2] << 16) |
+			(buf[expected_total_msg_len - 3] << 8) |
+			(buf[expected_total_msg_len - 4] << 0);
 		if (crc_read != crc_computed)
 			return false;  // skip 1 byte, we dont recognize this format
 
@@ -181,8 +182,8 @@ bool CGPSInterface::implement_parser_NOVATEL_OEM6(
 		mrpt::io::CMemoryStream tmpStream;
 		auto arch = mrpt::serialization::archiveFrom(tmpStream);
 		const int32_t msg_id = use_generic_container
-								   ? (uint32_t)(NV_OEM6_GENERIC_FRAME)
-								   : (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
+			? (uint32_t)(NV_OEM6_GENERIC_FRAME)
+			: (uint32_t)hdr.msg_id + NV_OEM6_MSG2ENUM;
 		arch << msg_id;
 		arch << (uint32_t)(expected_total_msg_len);
 		arch.WriteBuffer(&buf[0], buf.size());

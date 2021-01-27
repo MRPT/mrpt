@@ -187,7 +187,7 @@ class CPosePDFGaussianInf : public CPosePDF
 		this->inverseComposition(*this, ref);
 	}
 
-};  // End of class def.
+};	// End of class def.
 
 bool operator==(const CPosePDFGaussianInf& p1, const CPosePDFGaussianInf& p2);
 /** Pose compose operator: RES = A (+) B , computing both the mean and the

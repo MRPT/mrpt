@@ -11,6 +11,7 @@
 
 #include <mrpt/core/SSE_types.h>  // needed by SSE intrinsics used in some inline functions below.
 #include <mrpt/core/cpu.h>
+
 #include <cmath>  // pow(), lrint()
 
 namespace mrpt

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "detectors-precomp.h"  // Precompiled headers
-
+#include "detectors-precomp.h"	// Precompiled headers
+//
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>

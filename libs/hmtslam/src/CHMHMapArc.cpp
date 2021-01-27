@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
@@ -124,8 +124,7 @@ void CHMHMapArc::serializeFrom(
 				node->onArcAddition(myPtr);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -159,5 +158,6 @@ void TArcList::read(mrpt::serialization::CArchive& in)
 void TArcList::write(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(this->size());
-	for (const auto& i : *this) out << *i;
+	for (const auto& i : *this)
+		out << *i;
 }

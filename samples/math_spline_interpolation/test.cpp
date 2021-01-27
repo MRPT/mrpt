@@ -15,6 +15,7 @@
 #include <mrpt/random.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 #include <mrpt/math/interp_fit.hpp>
 
@@ -96,7 +97,7 @@ void TestSplineInterpolation()
 
 	for (t = x[1]; t <= x[2]; t += 0.01)
 	{
-		double w = mrpt::math::spline(t, x, y);  // wrap no
+		double w = mrpt::math::spline(t, x, y);	 // wrap no
 		//		double w = mrpt::math::spline(t, x, y, true); // wrap yes
 		ts.push_back(t);
 		ys_interp.push_back(w);

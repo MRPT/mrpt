@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "graph_slam_levmarq_test_common.h"
-
 #include <gtest/gtest.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
+
+#include "graph_slam_levmarq_test_common.h"
 
 using namespace mrpt;
 using namespace mrpt::random;
@@ -159,7 +159,7 @@ class GraphTester : public GraphSlamLevMarqTest<my_graph_t>,
 	{
 		auto files_it = inout_graph_files.find(type);
 		if (files_it == inout_graph_files.end())
-			return;  // No tests for this type
+			return;	 // No tests for this type
 
 		const string prefix = UNITTEST_BASEDIR + string("/tests/");
 		for (const auto& tst : files_it->second)
@@ -213,28 +213,28 @@ using GraphTester3D = GraphTester<CNetworkOfPoses3D>;
 using GraphTester2DInf = GraphTester<CNetworkOfPoses2DInf>;
 using GraphTester3DInf = GraphTester<CNetworkOfPoses3DInf>;
 
-#define GRAPHS_TESTS(_TYPE)                           \
-	TEST_F(_TYPE, OptimizeSampleRingPath)             \
-	{                                                 \
-		for (int seed = 1; seed <= 3; seed++)         \
-		{                                             \
-			getRandomGenerator().randomize(seed);     \
-			test_ring_path(#_TYPE);                   \
-		}                                             \
-	}                                                 \
-	TEST_F(_TYPE, BinarySerialization)                \
-	{                                                 \
-		getRandomGenerator().randomize(123);          \
-		test_graph_bin_serialization();               \
-	}                                                 \
-	TEST_F(_TYPE, WriteReadTextFile)                  \
-	{                                                 \
-		getRandomGenerator().randomize(123);          \
-		test_graph_text_serialization();              \
-	}                                                 \
-	TEST_F(_TYPE, OptimizeCompareKnownSolution)       \
-	{                                                 \
-		test_optimize_compare_known_solution(#_TYPE); \
+#define GRAPHS_TESTS(_TYPE)                                                    \
+	TEST_F(_TYPE, OptimizeSampleRingPath)                                      \
+	{                                                                          \
+		for (int seed = 1; seed <= 3; seed++)                                  \
+		{                                                                      \
+			getRandomGenerator().randomize(seed);                              \
+			test_ring_path(#_TYPE);                                            \
+		}                                                                      \
+	}                                                                          \
+	TEST_F(_TYPE, BinarySerialization)                                         \
+	{                                                                          \
+		getRandomGenerator().randomize(123);                                   \
+		test_graph_bin_serialization();                                        \
+	}                                                                          \
+	TEST_F(_TYPE, WriteReadTextFile)                                           \
+	{                                                                          \
+		getRandomGenerator().randomize(123);                                   \
+		test_graph_text_serialization();                                       \
+	}                                                                          \
+	TEST_F(_TYPE, OptimizeCompareKnownSolution)                                \
+	{                                                                          \
+		test_optimize_compare_known_solution(#_TYPE);                          \
 	}
 
 GRAPHS_TESTS(GraphTester2D)

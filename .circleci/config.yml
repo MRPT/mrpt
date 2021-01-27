@@ -67,6 +67,7 @@ jobs:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
+      - run: apt install clang-format-10 -yq
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: pip3 install --user -r .circleci/python_reqs.txt

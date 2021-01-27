@@ -109,7 +109,7 @@ class CPoint2D : public CPoint<CPoint2D, 2>,
 
 	void setToNaN() override;
 
-};  // End of class def.
+};	// End of class def.
 
 /** Dumps a point as a string (x,y) */
 std::ostream& operator<<(std::ostream& o, const CPoint2D& p);

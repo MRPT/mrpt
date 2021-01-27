@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "CPosePDFParticlesExtended.h"
+
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
@@ -18,8 +20,6 @@
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
-
-#include "CPosePDFParticlesExtended.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -60,7 +60,7 @@ void CPosePDFParticlesExtended::copyFrom(const CPosePDF& o)
 
 	CParticleList::iterator itSrc, itDest;
 
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFParticlesExtended))
 	{
@@ -156,8 +156,8 @@ void CPosePDFParticlesExtended::getMean(CPose2D& est) const
 	// Next: PHI
 	// -----------------------------------
 	// The mean value from each side:
-	if (W_phi_L > 0) phi_L /= W_phi_L;  // [0,2pi]
-	if (W_phi_R > 0) phi_R /= W_phi_R;  // [-pi,pi]
+	if (W_phi_L > 0) phi_L /= W_phi_L;	// [0,2pi]
+	if (W_phi_R > 0) phi_R /= W_phi_R;	// [-pi,pi]
 
 	// Left side to [-pi,pi] again:
 	if (phi_L > M_PI) phi_L = phi_L - M_2PI;
@@ -183,7 +183,8 @@ TExtendedCPose2D CPosePDFParticlesExtended::getEstimatedPoseState() const
 
 	est.state.resize(m_particles[0].d->state.size());
 
-	for (i = 0; i < n; i++) W += exp(m_particles[i].log_w);
+	for (i = 0; i < n; i++)
+		W += exp(m_particles[i].log_w);
 	if (W == 0) W = 1;
 
 	// First: XY
@@ -223,8 +224,8 @@ TExtendedCPose2D CPosePDFParticlesExtended::getEstimatedPoseState() const
 	// Next: PHI
 	// -----------------------------------
 	// The mean value from each side:
-	if (W_phi_L > 0) phi_L /= W_phi_L;  // [0,2pi]
-	if (W_phi_R > 0) phi_R /= W_phi_R;  // [-pi,pi]
+	if (W_phi_L > 0) phi_L /= W_phi_L;	// [0,2pi]
+	if (W_phi_R > 0) phi_R /= W_phi_R;	// [-pi,pi]
 
 	// Left side to [-pi,pi] again:
 	if (phi_L > M_PI) phi_L = phi_L - M_2PI;
@@ -251,7 +252,8 @@ std::tuple<CMatrixDouble33, CPose2D>
 
 	double lin_w_sum = 0;
 
-	for (i = 0; i < n; i++) lin_w_sum += exp(m_particles[i].log_w);
+	for (i = 0; i < n; i++)
+		lin_w_sum += exp(m_particles[i].log_w);
 	if (lin_w_sum == 0) lin_w_sum = 1;
 
 	for (i = 0; i < n; i++)
@@ -291,7 +293,8 @@ void CPosePDFParticlesExtended::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(m_particles.size());
-	for (const auto& p : m_particles) out << p.log_w << p.d->pose << p.d->state;
+	for (const auto& p : m_particles)
+		out << p.log_w << p.d->pose << p.d->state;
 }
 
 void CPosePDFParticlesExtended::serializeFrom(
@@ -314,8 +317,7 @@ void CPosePDFParticlesExtended::serializeFrom(
 				in >> it->log_w >> it->d->pose >> it->d->state;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -375,7 +377,7 @@ void CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 		poseSamplesGen.setPosePDF(*robotMovement->poseChange);
 
 		CPose2D increment_i;
-		for (i = 0; i < M; i++)  // Update particle poses:
+		for (i = 0; i < M; i++)	 // Update particle poses:
 		{
 			poseSamplesGen.drawSample(increment_i);
 
@@ -408,7 +410,7 @@ void CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 			 it++, i++)
 			it->log_w += auxiliarComputeObservationLikelihood(
 							 PF_options, this, i, sf, it->d.get()) *
-						 PF_options.powFactor;
+				PF_options.powFactor;
 	};
 
 	MRPT_END
@@ -437,17 +439,14 @@ void CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	robotMovement =
 		actions
-			->getBestMovementEstimation();  // Find a robot movement estimation:
-	if (!robotMovement)  // Assure one has been found:
+			->getBestMovementEstimation();	// Find a robot movement estimation:
+	if (!robotMovement)	 // Assure one has been found:
 		THROW_EXCEPTION(
 			"Action list does not contain any CActionRobotMovement2D derived "
 			"object!");
 
 	ASSERT_(options.metricMap || options.metricMaps.size() > 0);
-	if (!options.metricMap)
-	{
-		ASSERT_(options.metricMaps.size() == M);
-	}
+	if (!options.metricMap) { ASSERT_(options.metricMaps.size() == M); }
 
 	// ----------------------------------------------------------------------
 	//		0) Common part:  Prepare m_particles "draw" and compute
@@ -542,7 +541,8 @@ void CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 						oldPose.pose + m_movementDrawer.drawSample(drawnSample);
 					// Prediction of the BIAS "state vector":
 					newPose.state = oldPose.state;
-					for (auto& s : newPose.state) offsetTransitionModel(s);
+					for (auto& s : newPose.state)
+						offsetTransitionModel(s);
 
 					// Likelihood:
 					double lik = auxiliarComputeObservationLikelihood(
@@ -604,7 +604,7 @@ void CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 			// Insert the new particle!:
 			newParticles[i] = new TExtendedCPose2D(newPose);
 			// And its weight:
-			newParticlesWeight[i] = 1;  // newPoseLikelihood /
+			newParticlesWeight[i] = 1;	// newPoseLikelihood /
 			// m_pfAuxiliaryPFOptimal_estimatedProb[k];
 		}  // for i
 
@@ -846,12 +846,12 @@ double CPosePDFParticlesExtended::evaluatePDF_parzen(
 		difPhi = wrapToPi(phi - m_particle.d->pose.phi());
 
 		ret += exp(m_particle.log_w) *
-			   mrpt::math::normalPDF(
+			mrpt::math::normalPDF(
 				   sqrt(
 					   square(x - m_particle.d->pose.x()) +
 					   square(y - m_particle.d->pose.y())),
 				   0, stdXY) *
-			   mrpt::math::normalPDF(fabs(difPhi), 0, stdPhi);
+			mrpt::math::normalPDF(fabs(difPhi), 0, stdPhi);
 	}
 
 	return ret;
@@ -913,8 +913,7 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 
 	const auto* pdf = static_cast<const CPosePDFParticlesExtended*>(obj);
 
-	if (pdf->options.metricMap)
-		map = pdf->options.metricMap;
+	if (pdf->options.metricMap) map = pdf->options.metricMap;
 	else
 	{
 		ASSERT_(pdf->options.metricMaps.size() > particleIndexForMap);
@@ -979,11 +978,11 @@ double CPosePDFParticlesExtended::particlesEvaluator_AuxPFOptimal(
 
 	// and compute the obs. likelihood:
 	// --------------------------------------------
-	return ret + (pdf->m_pfAuxiliaryPFOptimal_estimatedProb[index] =
-					  auxiliarComputeObservationLikelihood(
-						  PF_options, pdf, index,
-						  static_cast<const CSensoryFrame*>(observation),
-						  &x_predict));
+	return ret +
+		(pdf->m_pfAuxiliaryPFOptimal_estimatedProb[index] =
+			 auxiliarComputeObservationLikelihood(
+				 PF_options, pdf, index,
+				 static_cast<const CSensoryFrame*>(observation), &x_predict));
 
 	MRPT_END
 }

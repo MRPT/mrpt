@@ -8,9 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TSegment2D.h>
-#include <mrpt/math/geometry.h>  // distance()
+#include <mrpt/math/geometry.h>	 // distance()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 
 using namespace mrpt::math;
@@ -38,7 +38,7 @@ double TSegment2D::signedDistance(const TPoint2D& point) const
 	if (ds1 > (ds2 + ds3) || ds2 > (ds1 + ds3))
 		// Fix sign:
 		return std::min(d1, d2) *
-			   (TLine2D(*this).signedDistance(point) < 0 ? -1 : 1);
+			(TLine2D(*this).signedDistance(point) < 0 ? -1 : 1);
 	else
 		return TLine2D(*this).signedDistance(point);
 }
@@ -62,8 +62,7 @@ TSegment2D::TSegment2D(const TSegment3D& s)
 
 bool TSegment2D::operator<(const TSegment2D& s) const
 {
-	if (point1 < s.point1)
-		return true;
+	if (point1 < s.point1) return true;
 	else if (s.point1 < point1)
 		return false;
 	else

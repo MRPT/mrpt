@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "io-precomp.h"  // Precompiled headers
-
+#include "io-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/CFileInputStream.h>
 
@@ -96,17 +96,10 @@ uint64_t CFileInputStream::Seek(int64_t Offset, CStream::TSeekOrigin Origin)
 
 	switch (Origin)
 	{
-		case sFromBeginning:
-			way = ios_base::beg;
-			break;
-		case sFromCurrent:
-			way = ios_base::cur;
-			break;
-		case sFromEnd:
-			way = ios_base::end;
-			break;
-		default:
-			THROW_EXCEPTION("Invalid value for 'Origin'");
+		case sFromBeginning: way = ios_base::beg; break;
+		case sFromCurrent: way = ios_base::cur; break;
+		case sFromEnd: way = ios_base::end; break;
+		default: THROW_EXCEPTION("Invalid value for 'Origin'");
 	}
 
 	m_if.seekg(offset, way);
@@ -136,8 +129,7 @@ uint64_t CFileInputStream::getTotalBytesCount() const
 uint64_t CFileInputStream::getPosition() const
 {
 	auto& f = const_cast<std::ifstream&>(m_if);
-	if (m_if.is_open())
-		return f.tellg();
+	if (m_if.is_open()) return f.tellg();
 	else
 		return 0;
 }
@@ -151,7 +143,7 @@ bool CFileInputStream::fileOpenCorrectly() const { return m_if.is_open(); }
  ---------------------------------------------------------------*/
 bool CFileInputStream::readLine(string& str)
 {
-	str = string();  // clear() is not defined in VC6
+	str = string();	 // clear() is not defined in VC6
 	if (!m_if.is_open()) return false;
 
 	std::getline(m_if, str);

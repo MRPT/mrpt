@@ -15,6 +15,7 @@
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+
 #include <functional>
 #include <vector>
 
@@ -74,15 +75,16 @@ void transform_gaussian_unscented(
 	// Propagate the samples X_i -> Y_i:
 	// We don't need to store the X sigma points: just use one vector to compute
 	// all the Y sigma points:
-	std::vector<VECTORLIKE3> Y(1 + 2 * Nx);  // 2Nx+1 sigma points
+	std::vector<VECTORLIKE3> Y(1 + 2 * Nx);	 // 2Nx+1 sigma points
 	VECTORLIKE1 X = x_mean;
 	functor(X, fixed_param, Y[0]);
-	VECTORLIKE1 delta;  // i'th row of L:
+	VECTORLIKE1 delta;	// i'th row of L:
 	delta.resize(Nx);
 	size_t row = 1;
 	for (size_t i = 0; i < Nx; i++)
 	{
-		for (size_t k = 0; k < Nx; k++) delta[k] = L(i, k);
+		for (size_t k = 0; k < Nx; k++)
+			delta[k] = L(i, k);
 		X = x_mean;
 		X -= delta;
 		functor(X, fixed_param, Y[row++]);

@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/math/ops_vectors.h>  // << of std::vector()
+#include "obs-precomp.h"  // Precompiled headers
+//
+#include <mrpt/math/ops_vectors.h>	// << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CArchive.h>
 
 #include <Eigen/Dense>
 #include <iostream>
-
-#include "obs-precomp.h"  // Precompiled headers
 
 #if MRPT_HAS_MATLAB
 #include <mexplus/mxarray.h>
@@ -47,10 +47,7 @@ void CObservationImage::serializeFrom(
 		{
 			in >> cameraPose;
 
-			if (version >= 4)
-			{
-				in >> cameraParams;
-			}
+			if (version >= 4) { in >> cameraParams; }
 			else
 			{
 				CMatrixF intrinsicParams, distortionParams;
@@ -81,14 +78,12 @@ void CObservationImage::serializeFrom(
 			else
 				cameraParams.focalLengthMeters = 0.002;
 
-			if (version >= 3)
-				in >> sensorLabel;
+			if (version >= 3) in >> sensorLabel;
 			else
 				sensorLabel = "";
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -103,7 +98,7 @@ IMPLEMENTS_MEXPLUS_FROM(mrpt::obs::CObservationImage)
 mxArray* CObservationImage::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
-	const char* fields[] = {"class", "ts",   "sensorLabel",
+	const char* fields[] = {"class", "ts",	 "sensorLabel",
 							"image", "pose", "params"};
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));

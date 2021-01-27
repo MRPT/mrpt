@@ -86,5 +86,5 @@ class CUndistortMap
 	/** A copy of the data provided by the user */
 	mrpt::img::TCamera m_camera_params;
 
-};  // end class
+};	// end class
 }  // namespace mrpt::vision

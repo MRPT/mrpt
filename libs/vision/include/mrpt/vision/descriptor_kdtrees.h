@@ -89,7 +89,7 @@ struct TSIFTDescriptorsKDTreeIndex
 	kdtree_t* m_kdtree;
 
 	const CFeatureList& m_feats;
-};  // end of TSIFTDescriptorsKDTreeIndex
+};	// end of TSIFTDescriptorsKDTreeIndex
 
 /** A kd-tree builder for sets of features with SURF descriptors.
  *   Example of usage:
@@ -147,7 +147,7 @@ struct TSURFDescriptorsKDTreeIndex
 	kdtree_t* m_kdtree;
 
 	const CFeatureList& m_feats;
-};  // end of TSURFDescriptorsKDTreeIndex
+};	// end of TSURFDescriptorsKDTreeIndex
 
 /** @} */
 

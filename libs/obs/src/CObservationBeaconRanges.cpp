@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
@@ -69,19 +69,16 @@ void CObservationBeaconRanges::serializeFrom(
 
 			if (version >= 1) in >> auxEstimatePose;
 
-			if (version >= 2)
-				in >> sensorLabel;
+			if (version >= 2) in >> sensorLabel;
 			else
 				sensorLabel = "";
 
-			if (version >= 3)
-				in >> timestamp;
+			if (version >= 3) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

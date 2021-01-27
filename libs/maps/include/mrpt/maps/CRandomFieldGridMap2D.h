@@ -17,6 +17,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
+
 #include <list>
 
 namespace mrpt::maps
@@ -87,7 +88,7 @@ struct TRandomFieldCell
 	/** [Dynamic maps only] The std cell value that was updated (to be used in
 	 * the Forgetting_curve */
 	double updated_std;
-};  // namespace mrpt::maps
+};	// namespace mrpt::maps
 
 #if defined(MRPT_IS_X86_AMD64)
 #pragma pack(pop)

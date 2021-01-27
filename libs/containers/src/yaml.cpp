@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "containers-precomp.h"  // Precompiled headers
+#include "containers-precomp.h"	 // Precompiled headers
 //
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
@@ -29,8 +29,8 @@ using namespace mrpt::containers;
 bool yaml::node_t::isNullNode() const
 {
 	return std::holds_alternative<std::monostate>(d) ||
-		   (std::holds_alternative<scalar_t>(d) &&
-			!std::get<scalar_t>(d).has_value());
+		(std::holds_alternative<scalar_t>(d) &&
+		 !std::get<scalar_t>(d).has_value());
 }
 bool yaml::node_t::isScalar() const
 {
@@ -120,8 +120,7 @@ const yaml::scalar_t& yaml::node_t::asScalar() const
 
 size_t yaml::node_t::size() const
 {
-	if (isScalar() || isNullNode())
-		return 1;
+	if (isScalar() || isNullNode()) return 1;
 	else if (isMap())
 		return asMap().size();
 	else
@@ -410,10 +409,16 @@ bool yaml::internalPrintNodeAsYAML(
 	{
 		if (ps.needsNL)
 		{
-			o << "\n";
-			if (ps.eo.indentSequences) ps2.indent += 2;
+			if (p.printInShortFormat) { o << " "; }
+			else
+			{
+				o << "\n";
+				if (ps.eo.indentSequences) ps2.indent += 2;
+			}
 			ps2.needsNL = false;
 		}
+
+		ps2.shortFormat = p.printInShortFormat;
 		return internalPrintAsYAML(std::get<sequence_t>(p.d), o, ps2, cs);
 	}
 
@@ -438,8 +443,7 @@ void yaml::internalPrintDebugStructure(
 	const std::string sInd(indent, ' ');
 
 	o << sInd << "- " << p.typeName() << ". Comments:";
-	if (!cs.at(0).has_value() && !cs.at(1).has_value())
-		o << " [none]. ";
+	if (!cs.at(0).has_value() && !cs.at(1).has_value()) o << " [none]. ";
 	else
 		o << " top='" << shortenComment(cs.at(0)) << "' right:'"
 		  << shortenComment(cs.at(1)) << "'. ";
@@ -538,14 +542,47 @@ bool yaml::internalPrintAsYAML(
 	}
 #endif
 
-	const std::string sInd(ps.indent, ' ');
-	for (const auto& e : v)
+	// Only print sequence in short format if all entries are scalars:
+	bool doUseShortFormat = ps.shortFormat;
+	if (doUseShortFormat)
 	{
-		o << sInd << "-";
-		auto ps2 = ps;
-		ps2.needsNL = true;
-		ps2.needsSpace = true;
-		if (!internalPrintNodeAsYAML(e, o, ps2)) o << "\n";
+		for (const auto& e : v)
+			if (!e.isScalar() && !e.isNullNode())
+			{
+				std::cerr << "\nSkip short format for: " << e.typeName()
+						  << std::endl;
+				doUseShortFormat = false;
+				break;
+			}
+	}
+
+	if (doUseShortFormat)
+	{
+		o << "[";
+		bool first = true;
+		for (const auto& e : v)
+		{
+			if (!first) o << ", ";
+
+			auto ps2 = ps;
+			ps2.needsNL = false;
+			ps2.needsSpace = false;
+			internalPrintNodeAsYAML(e, o, ps2);
+			first = false;
+		}
+		o << "]\n";
+	}
+	else
+	{
+		const std::string sInd(ps.indent, ' ');
+		for (const auto& e : v)
+		{
+			o << sInd << "-";
+			auto ps2 = ps;
+			ps2.needsNL = true;
+			ps2.needsSpace = true;
+			if (!internalPrintNodeAsYAML(e, o, ps2)) o << "\n";
+		}
 	}
 	return true;
 }
@@ -629,9 +666,7 @@ bool yaml::internalPrintStringScalar(
 			if (const auto& rc =
 					cs[static_cast<size_t>(CommentPosition::RIGHT)];
 				rc.has_value())
-			{
-				internalPrintRightComment(o, rc.value());
-			}
+			{ internalPrintRightComment(o, rc.value()); }
 			else
 				o << "\n";
 		}
@@ -652,9 +687,7 @@ bool yaml::internalPrintAsYAML(
 	const comments_t& cs)
 {
 	if (!v.has_value())
-	{
-		return internalPrintAsYAML(std::monostate(), o, ps, cs);
-	}
+	{ return internalPrintAsYAML(std::monostate(), o, ps, cs); }
 
 	if (v.type() == typeid(yaml))
 		return internalPrintNodeAsYAML(
@@ -687,9 +720,9 @@ bool yaml::internalPrintAsYAML(
 			return true;
 	}
 	else if (v.type() == typeid(float))
-		o << std::any_cast<float>(v);
+		o << mrpt::format("%.16g", std::any_cast<float>(v));
 	else if (v.type() == typeid(double))
-		o << std::any_cast<double>(v);
+		o << mrpt::format("%.16g", std::any_cast<double>(v));
 	else if (v.type() == typeid(uint16_t))
 		o << std::any_cast<uint16_t>(v);
 	else if (v.type() == typeid(int16_t))
@@ -763,8 +796,8 @@ static std::optional<std::string> extractComment(
 			// process comment:
 			const size_t charsToRemove =
 				(i + 2 < c.size() && c[i + 1] == ' ' && c[i + 2] == ' ')
-					? 3
-					: ((i + 1 < c.size() && c[i + 1] == ' ') ? 2 : 1);
+				? 3
+				: ((i + 1 < c.size() && c[i + 1] == ' ') ? 2 : 1);
 			c.erase(i, charsToRemove);
 		}
 		else
@@ -792,42 +825,42 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 		case FYET_NONE:
 		{
 			PARSER_DBG_OUT("Event: None");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			return recursiveParse(p);  // Keep going
 		}
 		break;
 		case FYET_STREAM_START:
 		{
 			PARSER_DBG_OUT("Event: Stream start");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			return recursiveParse(p);  // Keep going
 		}
 		break;
 		case FYET_STREAM_END:
 		{
 			PARSER_DBG_OUT("Event: Stream end");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			return recursiveParse(p);  // Keep going
 		}
 		break;
 		case FYET_DOCUMENT_START:
 		{
 			PARSER_DBG_OUT("Event: Doc start");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			return recursiveParse(p);  // Keep going
 		}
 		break;
 		case FYET_DOCUMENT_END:
 		{
 			PARSER_DBG_OUT("Event: Doc end");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			return recursiveParse(p);  // Keep going
 		}
 		break;
 		case FYET_MAPPING_START:
 		{
 			PARSER_DBG_OUT("Event: MAP START");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 
 			yaml::node_t n;
 			yaml::map_t& m = n.d.emplace<yaml::map_t>();
@@ -856,21 +889,21 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 		case FYET_MAPPING_END:
 		{
 			PARSER_DBG_OUT("Event: MAP END");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			return {};
 		}
 		break;
 		case FYET_SEQUENCE_START:
 		{
 			PARSER_DBG_OUT("Event: SEQ START");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			yaml::node_t n;
 			yaml::sequence_t& s = n.d.emplace<yaml::sequence_t>();
 
 			for (;;)
 			{
 				auto entry = recursiveParse(p);
-				if (!entry.has_value()) break;  // end of sequence reached?
+				if (!entry.has_value()) break;	// end of sequence reached?
 				s.push_back(std::move(entry.value()));
 			}
 
@@ -880,7 +913,7 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 		case FYET_SEQUENCE_END:
 		{
 			PARSER_DBG_OUT("Event: SEQ END");
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			return {};
 		}
 		break;
@@ -917,7 +950,7 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 							CommentPosition::RIGHT)] = std::move(cR.value());
 				}
 
-				fy_parser_event_free(p, event);  // free event
+				fy_parser_event_free(p, event);	 // free event
 				return n;
 			}
 			else
@@ -927,7 +960,7 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 		}
 		break;
 		case FYET_ALIAS:
-			fy_parser_event_free(p, event);  // free event
+			fy_parser_event_free(p, event);	 // free event
 			return recursiveParse(p);  // Keep going
 	};
 
@@ -1106,9 +1139,10 @@ const yaml::node_t& findKeyNode(
 	const auto& m = me->asMap();
 	auto itK = m.find(key);
 	ASSERTMSG_(
-		itK != m.end(), mrpt::format(
-							"key '%.*s' not present in map",
-							static_cast<int>(key.size()), key.data()));
+		itK != m.end(),
+		mrpt::format(
+			"key '%.*s' not present in map", static_cast<int>(key.size()),
+			key.data()));
 	return itK->first;
 }
 

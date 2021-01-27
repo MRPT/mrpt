@@ -10,6 +10,7 @@
 
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <cmath>  // ceil()
 
 namespace mrpt

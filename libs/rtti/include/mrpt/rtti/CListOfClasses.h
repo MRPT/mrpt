@@ -55,6 +55,6 @@ class CListOfClasses
 	 */
 	void fromString(const std::string& s);
 
-};  // end of class
+};	// end of class
 
 }  // namespace mrpt::rtti

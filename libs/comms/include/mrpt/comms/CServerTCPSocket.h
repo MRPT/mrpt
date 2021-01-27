@@ -10,6 +10,7 @@
 
 #include <mrpt/core/common.h>
 #include <mrpt/system/COutputLogger.h>
+
 #include <memory>  // unique_ptr
 #include <string>
 
@@ -74,6 +75,6 @@ class CServerTCPSocket : public mrpt::system::COutputLogger
 		unsigned short listenPort, const std::string& IPaddress,
 		int maxConnectionsWaiting);
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::comms

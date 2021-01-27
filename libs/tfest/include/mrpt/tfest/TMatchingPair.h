@@ -162,8 +162,7 @@ std::ostream& operator<<(
 template <typename T>
 bool operator<(const TMatchingPairTempl<T>& a, const TMatchingPairTempl<T>& b)
 {
-	if (a.this_idx == b.this_idx)
-		return (a.this_idx < b.this_idx);
+	if (a.this_idx == b.this_idx) return (a.this_idx < b.this_idx);
 	else
 		return (a.other_idx < b.other_idx);
 }

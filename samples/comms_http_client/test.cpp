@@ -40,8 +40,8 @@ void Test_HTTP_get()
 	}
 
 	string typ = httpOut.out_headers.count("Content-Type")
-					 ? httpOut.out_headers.at("Content-Type")
-					 : string("???");
+		? httpOut.out_headers.at("Content-Type")
+		: string("???");
 
 	std::cout << "Ok: " << content.size() << " bytes of type: " << typ
 			  << std::endl;

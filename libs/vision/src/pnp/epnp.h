@@ -252,20 +252,20 @@ class epnp
 		const double R_dst[3][3], const double t_dst[3], double R_src[3][3],
 		double t_src[3]);
 
-	double uc;  //! Image center in x-direction
-	double vc;  //! Image center in y-direction
-	double fu;  //! Focal length in x-direction
-	double fv;  //! Focal length in y-direction
+	double uc;	//! Image center in x-direction
+	double vc;	//! Image center in y-direction
+	double fu;	//! Focal length in x-direction
+	double fv;	//! Focal length in y-direction
 
 	std::vector<double> pws, us, alphas, pcs;  //! Internal member variables
-	int number_of_correspondences;  //! Number of 2d/3d correspondences
+	int number_of_correspondences;	//! Number of 2d/3d correspondences
 
 	double cws[4][3], ccs[4][3];  //! Internal member variables
-	double cws_determinant;  //! Internal member variable
-	int max_nr;  //! Internal member variable
+	double cws_determinant;	 //! Internal member variable
+	int max_nr;	 //! Internal member variable
 	double *A1, *A2;  //! Internal member variables
 };
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision::pnp
 #endif

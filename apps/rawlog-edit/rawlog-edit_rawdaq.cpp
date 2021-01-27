@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rawlog-edit-declarations.h"
-
 #include <mrpt/obs/CObservationRawDAQ.h>
+
+#include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -18,56 +18,56 @@ using namespace mrpt::rawlogtools;
 using namespace std;
 using namespace mrpt::io;
 
-#define WRITE_AIN_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)                    \
-	if (!obs->_VECTOR_NAME.empty())                                          \
-	{                                                                        \
-		if (obs->AIN_interleaved)                                            \
-		{                                                                    \
-			for (i = 0, tim = tim0;                                          \
-				 i < obs->_VECTOR_NAME.size() / obs->AIN_channel_count;      \
-				 i++, tim += At)                                             \
-			{                                                                \
-				::fprintf(f_this, "%14.4f ", tim);                           \
-				for (size_t j = 0; j < obs->AIN_channel_count; j++)          \
-				{                                                            \
-					::fprintf(                                               \
-						f_this, _FRMT " ",                                   \
-						(_TYPECAST)obs                                       \
-							->_VECTOR_NAME[i * obs->AIN_channel_count + j]); \
-					m_entriesSaved++;                                        \
-				}                                                            \
-				::fprintf(f_this, "\n");                                     \
-			}                                                                \
-		}                                                                    \
-		else                                                                 \
-		{                                                                    \
-			const size_t nSmpls =                                            \
-				obs->_VECTOR_NAME.size() / obs->AIN_channel_count;           \
-			for (i = 0, tim = tim0; i < nSmpls; i++, tim += At)              \
-			{                                                                \
-				::fprintf(f_this, "%14.4f ", tim);                           \
-				for (size_t j = 0; j < obs->AIN_channel_count; j++)          \
-				{                                                            \
-					::fprintf(                                               \
-						f_this, _FRMT " ",                                   \
-						(_TYPECAST)obs->_VECTOR_NAME[i + j * nSmpls]);       \
-					m_entriesSaved++;                                        \
-				}                                                            \
-				::fprintf(f_this, "\n");                                     \
-			}                                                                \
-		}                                                                    \
+#define WRITE_AIN_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)                      \
+	if (!obs->_VECTOR_NAME.empty())                                            \
+	{                                                                          \
+		if (obs->AIN_interleaved)                                              \
+		{                                                                      \
+			for (i = 0, tim = tim0;                                            \
+				 i < obs->_VECTOR_NAME.size() / obs->AIN_channel_count;        \
+				 i++, tim += At)                                               \
+			{                                                                  \
+				::fprintf(f_this, "%14.4f ", tim);                             \
+				for (size_t j = 0; j < obs->AIN_channel_count; j++)            \
+				{                                                              \
+					::fprintf(                                                 \
+						f_this, _FRMT " ",                                     \
+						(_TYPECAST)obs                                         \
+							->_VECTOR_NAME[i * obs->AIN_channel_count + j]);   \
+					m_entriesSaved++;                                          \
+				}                                                              \
+				::fprintf(f_this, "\n");                                       \
+			}                                                                  \
+		}                                                                      \
+		else                                                                   \
+		{                                                                      \
+			const size_t nSmpls =                                              \
+				obs->_VECTOR_NAME.size() / obs->AIN_channel_count;             \
+			for (i = 0, tim = tim0; i < nSmpls; i++, tim += At)                \
+			{                                                                  \
+				::fprintf(f_this, "%14.4f ", tim);                             \
+				for (size_t j = 0; j < obs->AIN_channel_count; j++)            \
+				{                                                              \
+					::fprintf(                                                 \
+						f_this, _FRMT " ",                                     \
+						(_TYPECAST)obs->_VECTOR_NAME[i + j * nSmpls]);         \
+					m_entriesSaved++;                                          \
+				}                                                              \
+				::fprintf(f_this, "\n");                                       \
+			}                                                                  \
+		}                                                                      \
 	}
 
-#define WRITE_OTHER_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)                   \
-	if (!obs->_VECTOR_NAME.empty())                                           \
-	{                                                                         \
-		for (i = 0, tim = tim0; i < obs->_VECTOR_NAME.size(); i++, tim += At) \
-		{                                                                     \
-			::fprintf(f_this, "%14.4f ", tim);                                \
-			::fprintf(f_this, _FRMT " ", (_TYPECAST)obs->_VECTOR_NAME[i]);    \
-			m_entriesSaved++;                                                 \
-		}                                                                     \
-		::fprintf(f_this, "\n");                                              \
+#define WRITE_OTHER_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST)                    \
+	if (!obs->_VECTOR_NAME.empty())                                            \
+	{                                                                          \
+		for (i = 0, tim = tim0; i < obs->_VECTOR_NAME.size(); i++, tim += At)  \
+		{                                                                      \
+			::fprintf(f_this, "%14.4f ", tim);                                 \
+			::fprintf(f_this, _FRMT " ", (_TYPECAST)obs->_VECTOR_NAME[i]);     \
+			m_entriesSaved++;                                                  \
+		}                                                                      \
+		::fprintf(f_this, "\n");                                               \
 	}
 
 // ======================================================================
@@ -114,8 +114,7 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
 
 			if (it == lstFiles.end())  // A new file for this sensorlabel??
 			{
-				const std::string fileName =
-					m_filPrefix + string("_") +
+				const std::string fileName = m_filPrefix + string("_") +
 					fileNameStripInvalidChars(obs->sensorLabel) +
 					string(".txt");
 
@@ -133,7 +132,7 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
 				::fprintf(
 					f_this,
 					"%% "
-					"%14s "  // Time
+					"%14s "	 // Time
 					"%23s"
 					"\n",
 					"Time", "Measured values (meaning is channel-dependant)");

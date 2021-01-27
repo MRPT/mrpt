@@ -8,15 +8,17 @@
 +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CVectorDynamic.h>
+
 #include <Eigen/Dense>
+
 #include "MatrixVectorBase_impl.h"
 
 // Template instantiation:
-#define DO_MATDYN_INSTANTIATION(T_)              \
-	template class mrpt::math::MatrixVectorBase< \
+#define DO_MATDYN_INSTANTIATION(T_)                                            \
+	template class mrpt::math::MatrixVectorBase<                               \
 		T_, mrpt::math::CMatrixDynamic<T_>>;
 
 DO_MATDYN_INSTANTIATION(double)

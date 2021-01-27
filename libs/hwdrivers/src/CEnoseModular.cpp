@@ -7,12 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CEnoseModular.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -219,7 +220,7 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 			obs.m_readings.push_back(newRead);
 			obs.sensorLabel = m_sensorLabel;
 			obs.timestamp = mrpt::system::getCurrentTime();
-			return !obs.m_readings.empty();  // Done OK!
+			return !obs.m_readings.empty();	 // Done OK!
 		}
 		else
 		{

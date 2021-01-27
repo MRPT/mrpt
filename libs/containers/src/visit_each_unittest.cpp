@@ -7,10 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <gtest/gtest.h>
 #include <mrpt/containers/visit_each.h>
 #include <mrpt/core/common.h>
-
-#include <gtest/gtest.h>
 
 int counter = 0;
 struct Bar1
