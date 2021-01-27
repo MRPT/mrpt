@@ -12,6 +12,8 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>
 
+#include <mrpt/config.h>
+
 template class mrpt::CTraitsTest<mrpt::img::TCamera>;
 
 using mrpt::img::TCamera;
@@ -62,6 +64,7 @@ TEST(TCamera, CopyCtor)
 	EXPECT_EQ(c2.p2(), 5.6e-9);
 }
 
+#if MRPT_HAS_FYAML
 TEST(TCamera, FromYAML)
 {
 	const std::string sampleParams = R"XXX(#yaml camera in OpenCV format
@@ -107,3 +110,4 @@ TEST(TCamera, ToFromYAML)
 
 	EXPECT_EQ(c1, c2);
 }
+#endif
