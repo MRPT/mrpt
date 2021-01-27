@@ -9,11 +9,10 @@
    */
 #pragma once
 
-#include "CNode.h"
-
-#include "mrpt/obs/CSensoryFrame.h"
-
 #include <vector>
+
+#include "CNode.h"
+#include "mrpt/obs/CSensoryFrame.h"
 
 class CBaseObservationNode;
 

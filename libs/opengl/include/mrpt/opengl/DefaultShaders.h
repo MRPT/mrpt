@@ -10,6 +10,7 @@
 
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/Shader.h>
+
 #include <cstdint>
 
 namespace mrpt::opengl

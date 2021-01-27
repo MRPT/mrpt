@@ -78,8 +78,7 @@ double pointmap_test_1(int a1, int a2)
 
 	const unsigned N_REPS = 25;
 
-	if (a2 == 0)
-		return tictac.Tac();
+	if (a2 == 0) return tictac.Tac();
 	else if (a2 == 1)
 	{  // 2d kd-tree
 		float x, y, dist2;
@@ -245,13 +244,13 @@ double pointmap_test_5(int a1, int a2)
 
 	CTicTac tictac;
 
-	float x0, x1, y0, y1, z0, z1;
 	for (long i = 0; i < a2; i++)
 	{
 		// Modify the map so the bounding box cache is invalidated:
 		pt_map.setPoint(0, 0, 0, 0);
 
-		pt_map.boundingBox(x0, x1, y0, y1, z0, z1);
+		// auto bb =
+		pt_map.boundingBox();
 	}
 
 	return tictac.Tac() / a2;

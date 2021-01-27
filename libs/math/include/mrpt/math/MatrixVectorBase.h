@@ -11,8 +11,9 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/is_defined.h>
 #include <mrpt/core/optional_ref.h>
+
 #include <algorithm>  // fill()
-#include <cstddef>  // size_t
+#include <cstddef>	// size_t
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -281,9 +282,7 @@ class MatrixVectorBase
 		if constexpr (
 			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
 			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
-		{
-			return impl_op_add(m2);
-		}
+		{ return impl_op_add(m2); }
 		else
 		{
 			throw std::runtime_error(
@@ -296,9 +295,7 @@ class MatrixVectorBase
 		if constexpr (
 			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
 			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
-		{
-			impl_op_selfadd(m2);
-		}
+		{ impl_op_selfadd(m2); }
 		else
 		{
 			throw std::runtime_error(
@@ -311,9 +308,7 @@ class MatrixVectorBase
 		if constexpr (
 			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
 			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
-		{
-			return impl_op_subs(m2);
-		}
+		{ return impl_op_subs(m2); }
 		else
 		{
 			throw std::runtime_error(
@@ -326,9 +321,7 @@ class MatrixVectorBase
 		if constexpr (
 			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
 			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
-		{
-			impl_op_selfsubs(m2);
-		}
+		{ impl_op_selfsubs(m2); }
 		else
 		{
 			throw std::runtime_error(

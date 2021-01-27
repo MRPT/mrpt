@@ -18,7 +18,8 @@
 #include <geometry_msgs/Quaternion.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <sensor_msgs/Imu.h>
-#include <cstring>  // size_t
+
+#include <cstring>	// size_t
 
 /// ROS message:    http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html
 /// MRPT message:

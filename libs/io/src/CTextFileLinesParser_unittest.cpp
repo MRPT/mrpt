@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/core/common.h>
 #include <mrpt/io/CTextFileLinesParser.h>
+
 #include <sstream>
 
 TEST(CTextFileLinesParser, parse)

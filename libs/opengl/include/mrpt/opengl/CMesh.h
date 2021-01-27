@@ -53,8 +53,8 @@ class CMesh : public CRenderizableShaderTexturedTriangles,
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME,
-				DefaultShaderID::TEXTURED_TRIANGLES};
+		return {
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TEXTURED_TRIANGLES};
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_TexturedTriangles() override;

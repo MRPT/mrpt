@@ -87,12 +87,12 @@ class CSICKTim561Eth : public C2DRangeFinderAbstract
 	unsigned int m_scanFrequency;  // Scanning Hertz
 	double m_angleResolution;  // Degrees [0.0001, 1]
 	double m_startAngle;  // the minimum startAngle is -45 degree
-	double m_stopAngle;  // the maximum stopAngle is 225 degree
+	double m_stopAngle;	 // the maximum stopAngle is 225 degree
 	mrpt::poses::CPose3D m_sensorPose;
 	double m_maxRange{10.0};  // 10 meter is the range official suggested
-	double m_beamApperture;  // the range bewteen m_startAngle to m_stopAngle
+	double m_beamApperture;	 // the range bewteen m_startAngle to m_stopAngle
 
-	void generateCmd(const char* cmd);  // According to communication protocol
+	void generateCmd(const char* cmd);	// According to communication protocol
 	bool checkIsConnected();  // Check the status about Lidar connection
 	bool decodeLogIn(char* msg);
 	bool decodeScanCfg(std::istringstream& stream);

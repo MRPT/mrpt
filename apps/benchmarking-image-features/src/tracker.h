@@ -22,18 +22,19 @@
 #ifndef MRPT_TRACKER_H
 #define MRPT_TRACKER_H
 
-#endif  // MRPT_TRACKER_H
+#endif	// MRPT_TRACKER_H
 
 /// OpenCV includes
 #include <mrpt/3rdparty/do_opencv_includes.h>
 
 /// standard C++ includes
 #include <ctype.h>
+
 #include <algorithm>  // for copy
 #include <ctime>
 #include <fstream>
 #include <iostream>
-#include <iterator>  // for ostream_iterator
+#include <iterator>	 // for ostream_iterator
 #include <list>
 #include <sstream>
 #include <string>
@@ -66,7 +67,7 @@ class Tracker
 	mrpt::vision::CGenericFeatureTrackerAutoPtr tracker;
 	mrpt::img::CImage previous_image;
 	mrpt::vision::TSequenceFeatureObservations feat_track_history;
-	bool save_tracked_history;  // Dump feat_track_history to a file at the end
+	bool save_tracked_history;	// Dump feat_track_history to a file at the end
 	mrpt::vision::TCameraPoseID curCamPoseId;
 	static const size_t FEATS_TRACK_LEN = 10;
 	std::map<mrpt::vision::TFeatureID, std::list<mrpt::img::TPixelCoord>>

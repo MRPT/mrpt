@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/opengl_api.h>
@@ -123,8 +123,7 @@ void CRenderizableShaderPoints::params_deserialize(
 			in >> m_pointSize >> m_variablePointSize >> m_variablePointSize_K >>
 				m_variablePointSize_DepthScale;
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/maps/logoddscell_traits.h>
+
 #include <cmath>
 
 namespace mrpt::maps
@@ -71,8 +72,7 @@ struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 			const double p = std::min(1.0 - 1e-14, std::max(1e-14, j * K));
 			const double logodd = log(p) - log(1 - p);
 			int L = round(logodd * LOGODD_K);
-			if (L > traits_t::CELLTYPE_MAX)
-				L = traits_t::CELLTYPE_MAX;
+			if (L > traits_t::CELLTYPE_MAX) L = traits_t::CELLTYPE_MAX;
 			else if (L < traits_t::CELLTYPE_MIN)
 				L = traits_t::CELLTYPE_MIN;
 			p2lTable[j] = L;

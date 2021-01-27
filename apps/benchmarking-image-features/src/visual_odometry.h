@@ -50,12 +50,13 @@ THE SOFTWARE.
 
 /// basic C++ includes
 #include <ctype.h>
+
 #include <algorithm>  // for copy
 #include <array>
 #include <ctime>
 #include <fstream>
 #include <iostream>
-#include <iterator>  // for ostream_iterator
+#include <iterator>	 // for ostream_iterator
 #include <sstream>
 #include <string>
 #include <vector>

@@ -7,15 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/math/ops_containers.h>  // for << ops
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
-
-#include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -131,8 +130,7 @@ void CPointCloudColoured::serializeFrom(
 			CRenderizableShaderPoints::params_deserialize(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
@@ -194,9 +192,10 @@ void CPointCloudColoured::PLY_import_set_vertex(
 			idx, TPointXYZfRGBAu8(pt.x, pt.y, pt.z, 0xff, 0xff, 0xff));
 	else
 		this->setPoint(
-			idx, TPointXYZfRGBAu8(
-					 pt.x, pt.y, pt.z, f2u8(pt_color->R), f2u8(pt_color->G),
-					 f2u8(pt_color->B)));
+			idx,
+			TPointXYZfRGBAu8(
+				pt.x, pt.y, pt.z, f2u8(pt_color->R), f2u8(pt_color->G),
+				f2u8(pt_color->B)));
 }
 
 /** In a base class, return the number of vertices */
@@ -235,15 +234,9 @@ void CPointCloudColoured::recolorizeByCoordinate(
 		float coord = .0f;
 		switch (coord_index)
 		{
-			case 0:
-				coord = m_points[i].x;
-				break;
-			case 1:
-				coord = m_points[i].y;
-				break;
-			case 2:
-				coord = m_points[i].z;
-				break;
+			case 0: coord = m_points[i].x; break;
+			case 1: coord = m_points[i].y; break;
+			case 2: coord = m_points[i].z; break;
 		};
 		const float col_idx =
 			std::max(0.0f, std::min(1.0f, (coord - coord_min) * coord_range_1));

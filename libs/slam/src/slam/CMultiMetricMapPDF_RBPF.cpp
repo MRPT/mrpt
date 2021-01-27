@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/maps/CBeaconMap.h>
 #include <mrpt/maps/CLandmarksMap.h>
@@ -23,9 +23,8 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/random.h>
-#include <mrpt/system/CTicTac.h>
-
 #include <mrpt/slam/PF_aux_structs.h>
+#include <mrpt/system/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -76,15 +75,15 @@ void KLF_loadBinFromParticle(
 	const TPose3D* newPoseToBeInserted)
 {
 	const size_t lenBinPath = (currentParticleValue != nullptr)
-								  ? currentParticleValue->robotPath.size()
-								  : 0;
+		? currentParticleValue->robotPath.size()
+		: 0;
 
 	// Set the output bin dimensionality:
 	outBin.bins.resize(lenBinPath + (newPoseToBeInserted != nullptr ? 1 : 0));
 
 	// Is a path provided??
 	if (currentParticleValue != nullptr)
-		for (size_t i = 0; i < lenBinPath; ++i)  // Fill the bin data:
+		for (size_t i = 0; i < lenBinPath; ++i)	 // Fill the bin data:
 		{
 			outBin.bins[i].x = round(
 				currentParticleValue->robotPath[i].x / opts.KLD_binSize_XY);
@@ -126,7 +125,7 @@ struct TAuxRangeMeasInfo
 	float sensedDistance{0};
 	int64_t beaconID;
 	size_t nGaussiansInMap{
-		0};  // Number of Gaussian modes in the map representation
+		0};	 // Number of Gaussian modes in the map representation
 
 	/** Auxiliary for optimal sampling in RO-SLAM */
 	static bool cmp_Asc(const TAuxRangeMeasInfo& a, const TAuxRangeMeasInfo& b)
@@ -492,11 +491,11 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 									(itBeacs)->m_typePDF == CBeacon::pdfSOG);
 								newMeas.nGaussiansInMap =
 									(itBeacs)->m_typePDF == CBeacon::pdfSOG
-										? (itBeacs)->m_locationSOG.size()
-										: 1 /*pdfGauss*/;
+									? (itBeacs)->m_locationSOG.size()
+									: 1 /*pdfGauss*/;
 
 								lstObservedRanges.push_back(newMeas);
-								break;  // Next observation
+								break;	// Next observation
 							}
 						}
 					}
@@ -529,8 +528,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					CPointPDFSOG::TGaussianMode newMode;
 					newMode.log_w = 0;
 
-					CPose3D auxPose =
-						ith_last_pose +
+					CPose3D auxPose = ith_last_pose +
 						motionModelMeanIncr;  // CPose3D(robotMovement->poseChange->getEstimatedPose()));
 					firstEstimateRobotHeading = auxPose.yaw();
 
@@ -545,7 +543,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					poseCOV.setSize(2, 2);
 					poseCOV.setSize(3, 3);
 					newMode.val.cov = poseCOV;
-					fusedObsModels.push_back(newMode);  // Add it:
+					fusedObsModels.push_back(newMode);	// Add it:
 				}
 
 				// 2. Generate the optimal proposal by fusing obs models
@@ -565,9 +563,9 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 							CPointPDFSOG newObsModel;
 							(itBeacs)->generateObservationModelDistribution(
 								sensedRange, newObsModel,
-								beacMap.get(),  // The beacon map, for options
+								beacMap.get(),	// The beacon map, for options
 								lstObservedRange
-									.sensorLocationOnRobot,  // Sensor
+									.sensorLocationOnRobot,	 // Sensor
 								// location on
 								// robot
 								centerPositionPrior, centerPositionPriorRadius);
@@ -612,7 +610,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 									 it != fusedObsModels.end();)
 								{
 									if (max_w - (it)->log_w >
-										20)  // Remove the mode:
+										20)	 // Remove the mode:
 										it = fusedObsModels.erase(it);
 									else
 										it++;
@@ -726,7 +724,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 										//
 										double lik =
-											1;  // newObsModel.evaluatePDF(CPoint3D(grid_x,grid_y,0),true);
+											1;	// newObsModel.evaluatePDF(CPoint3D(grid_x,grid_y,0),true);
 										switch ((itBeacs)->m_typePDF)
 										{
 											case CBeacon::pdfSOG:
@@ -759,7 +757,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 											}
 											break;
 											default:
-												break;  // THROW_EXCEPTION("NO");
+												break;	// THROW_EXCEPTION("NO");
 										}
 
 										(*cell) *= lik;
@@ -879,9 +877,9 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		if (!updateStageAlreadyDone)
 		{
 			partIt->log_w += PF_options.powFactor *
-							 (PF_SLAM_computeObservationLikelihoodForParticle(
-								  PF_options, i, *sf, finalPose) +
-							  extra_log_lik);
+				(PF_SLAM_computeObservationLikelihoodForParticle(
+					 PF_options, i, *sf, finalPose) +
+				 extra_log_lik);
 		}  // if update not already done...
 
 	}  // end of for each particle "i" & "partIt"

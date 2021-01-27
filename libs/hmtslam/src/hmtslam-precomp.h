@@ -10,5 +10,4 @@
 #pragma once
 
 #include <mrpt/config.h>
-
 #include <mrpt/hmtslam/CHMTSLAM.h>

@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
+#include "hwdrivers-precomp.h"	// Precompiled headers
 //
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/config/CConfigFileMemory.h>
@@ -186,7 +186,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_swissranger
-				->initialize();  // This will launch an exception if needed.
+				->initialize();	 // This will launch an exception if needed.
 		}
 		catch (std::exception&)
 		{
@@ -212,7 +212,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_kinect
-				->initialize();  // This will launch an exception if needed.
+				->initialize();	 // This will launch an exception if needed.
 		}
 		catch (std::exception&)
 		{
@@ -238,7 +238,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_openni2
-				->initialize();  // This will launch an exception if needed.
+				->initialize();	 // This will launch an exception if needed.
 		}
 		catch (const std::exception& e)
 		{
@@ -746,7 +746,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	CObservationImage::Ptr obs;
 	CObservationStereoImages::Ptr stObs;
 	CObservation3DRangeScan::Ptr
-		obs3D;  // 3D range image, also with an intensity channel
+		obs3D;	// 3D range image, also with an intensity channel
 	CObservationIMU::Ptr obsIMU;  // IMU observation grabbed by DUO3D cameras
 
 	bool capture_ok = false;
@@ -809,8 +809,9 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			m_cap_kinect->getNextObservation(
 				*obs3D, there_is_obs, hardware_error);
 			if (!there_is_obs) std::this_thread::sleep_for(1ms);
-		} while (!there_is_obs && mrpt::system::timeDifference(
-									  t0, mrpt::system::now()) < max_timeout);
+		} while (!there_is_obs &&
+				 mrpt::system::timeDifference(t0, mrpt::system::now()) <
+					 max_timeout);
 
 		if (!there_is_obs || hardware_error)
 		{  // Error
@@ -833,8 +834,9 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			m_cap_openni2->getNextObservation(
 				*obs3D, there_is_obs, hardware_error);
 			if (!there_is_obs) std::this_thread::sleep_for(1ms);
-		} while (!there_is_obs && mrpt::system::timeDifference(
-									  t0, mrpt::system::now()) < max_timeout);
+		} while (!there_is_obs &&
+				 mrpt::system::timeDifference(t0, mrpt::system::now()) <
+					 max_timeout);
 
 		if (!there_is_obs || hardware_error)
 		{  // Error
@@ -877,10 +879,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		if (!m_cap_ffmpeg->retrieveFrame(im))
 		{  // Error
 			m_state = CGenericSensor::ssError;
-			if (!anyGood)
-			{
-				THROW_EXCEPTION("Error grabbing image");
-			}
+			if (!anyGood) { THROW_EXCEPTION("Error grabbing image"); }
 			else
 			{
 				MRPT_LOG_THROTTLE_WARN(
@@ -1033,7 +1032,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 						stObs->imageDisparity
 							.getExternalStorageFileAbsolutePath());
 
-				CImage::setImagesPathBase(old_dir);  // Restore
+				CImage::setImagesPathBase(old_dir);	 // Restore
 			}
 			else
 				continue;  // Keep reading
@@ -1043,7 +1042,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	else if (m_cap_flycap)
 	{
 		bool ok;
-		if (!m_cap_flycap->isStereo())  // Mono image
+		if (!m_cap_flycap->isStereo())	// Mono image
 		{
 			obs = std::make_shared<CObservationImage>();
 			ok = m_cap_flycap->getObservation(*obs);
@@ -1094,8 +1093,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			// It seems that the timestamp is not always filled in from FlyCap
 			// driver?
 			stObs->timestamp = (obsL.timestamp != INVALID_TIMESTAMP)
-								   ? obsL.timestamp
-								   : mrpt::system::now();
+				? obsL.timestamp
+				: mrpt::system::now();
 			stObs->imageLeft = std::move(obsL.image);
 			stObs->imageRight = std::move(obsR.image);
 			capture_ok = true;
@@ -1175,8 +1174,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	else if (stObs)
 	{
 		stObs->sensorLabel = (m_cap_duo3d && m_cap_duo3d->captureIMUIsSet())
-								 ? m_sensorLabel + "_IMG"
-								 : m_sensorLabel;
+			? m_sensorLabel + "_IMG"
+			: m_sensorLabel;
 		stObs->setSensorPose(m_sensorPose);
 	}
 	else if (obs3D)
@@ -1234,7 +1233,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	bool delayed_insertion_in_obs_queue = false;
 	if (!m_path_for_external_images.empty())
 	{
-		if (stObs)  // If we have grabbed an stereo observation ...
+		if (stObs)	// If we have grabbed an stereo observation ...
 		{  // Stereo obs  -------
 			if (m_external_images_own_thread)
 			{
@@ -1312,11 +1311,10 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			}
 			else
 			{
-				string filName =
-					fileNameStripInvalidChars(trim(m_sensorLabel)) +
-					format(
-						"_%f.%s", (double)timestampTotime_t(obs->timestamp),
-						m_external_images_format.c_str());
+				string filName = fileNameStripInvalidChars(
+									 trim(m_sensorLabel)) +
+					format("_%f.%s", (double)timestampTotime_t(obs->timestamp),
+						   m_external_images_format.c_str());
 				// cout << "[CCameraSensor] Saving " << filName << endl;
 				obs->image.saveToFile(
 					m_path_for_external_images + string("/") + filName,
@@ -1498,7 +1496,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	if (!WxSubsystem::isConsoleApp())
 	{
 		std::this_thread::sleep_for(
-			20ms);  // Force at least 1-2 timer ticks for processing the event:
+			20ms);	// Force at least 1-2 timer ticks for processing the event:
 		wxApp::GetInstance()->Yield(true);
 	}
 
@@ -1535,12 +1533,12 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 
 	CCameraSensor::Ptr cam = std::make_shared<CCameraSensor>();
 	cam->loadConfig(selectedConfig, "CONFIG");
-	cam->initialize();  // This will raise an exception if neccesary
+	cam->initialize();	// This will raise an exception if neccesary
 
 	return cam;
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 }
 
 /* ------------------------------------------------------------------------
@@ -1572,7 +1570,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 	}
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 }
 
 /* ------------------------------------------------------------------------
@@ -1591,7 +1589,7 @@ void mrpt::hwdrivers::writeConfigFromVideoSourcePanel(
 
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 	MRPT_END
 }
 
@@ -1613,7 +1611,7 @@ void mrpt::hwdrivers::readConfigIntoVideoSourcePanel(
 
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets");
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 	MRPT_END
 }
 
@@ -1650,11 +1648,10 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 				CObservationImage::Ptr obs =
 					std::dynamic_pointer_cast<CObservationImage>(i->second);
 
-				string filName =
-					fileNameStripInvalidChars(trim(m_sensorLabel)) +
-					format(
-						"_%f.%s", (double)timestampTotime_t(obs->timestamp),
-						m_external_images_format.c_str());
+				string filName = fileNameStripInvalidChars(
+									 trim(m_sensorLabel)) +
+					format("_%f.%s", (double)timestampTotime_t(obs->timestamp),
+						   m_external_images_format.c_str());
 
 				obs->image.saveToFile(
 					m_path_for_external_images + string("/") + filName,

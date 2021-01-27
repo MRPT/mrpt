@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/vision/CFeatureExtraction.h>
 
 // Universal include for all versions of OpenCV
@@ -33,7 +33,7 @@ void CFeatureExtraction::extractFeaturesORB(
 #if MRPT_HAS_OPENCV
 	using namespace cv;
 
-	vector<KeyPoint> cv_feats;  // OpenCV keypoint output vector
+	vector<KeyPoint> cv_feats;	// OpenCV keypoint output vector
 	Mat cv_descs;  // OpenCV descriptor output
 
 	const bool use_precomputed_feats = feats.size() > 0;
@@ -109,7 +109,8 @@ void CFeatureExtraction::extractFeaturesORB(
 	//      indices "sorted_indices" than sorting directly the actual list of
 	//      features "cv_feats"
 	std::vector<size_t> sorted_indices(n_feats);
-	for (size_t i = 0; i < n_feats; i++) sorted_indices[i] = i;
+	for (size_t i = 0; i < n_feats; i++)
+		sorted_indices[i] = i;
 	std::sort(
 		sorted_indices.begin(), sorted_indices.end(),
 		KeypointResponseSorter<vector<KeyPoint>>(cv_feats));
@@ -131,22 +132,20 @@ void CFeatureExtraction::extractFeaturesORB(
 		options.ORBOptions.min_distance / 2;
 	const float occupied_grid_cell_size_inv = 1.0f / occupied_grid_cell_size;
 
-	unsigned int grid_lx =
-		!do_filter_min_dist
-			? 1
-			: (unsigned int)(1 + inImg.getWidth() * occupied_grid_cell_size_inv);
-	unsigned int grid_ly =
-		!do_filter_min_dist
-			? 1
-			: (unsigned int)(1 + inImg.getHeight() * occupied_grid_cell_size_inv);
+	unsigned int grid_lx = !do_filter_min_dist
+		? 1
+		: (unsigned int)(1 + inImg.getWidth() * occupied_grid_cell_size_inv);
+	unsigned int grid_ly = !do_filter_min_dist
+		? 1
+		: (unsigned int)(1 + inImg.getHeight() * occupied_grid_cell_size_inv);
 
 	mrpt::math::CMatrixBool occupied_sections(
-		grid_lx, grid_ly);  // See the comments above for an explanation.
+		grid_lx, grid_ly);	// See the comments above for an explanation.
 	occupied_sections.fill(false);
 
 	const size_t n_max_feats = nDesiredFeatures > 0
-								   ? std::min(size_t(nDesiredFeatures), n_feats)
-								   : n_feats;
+		? std::min(size_t(nDesiredFeatures), n_feats)
+		: n_feats;
 
 	if (!options.addNewFeatures) feats.clear();
 	// feats.reserve( feats.size() + n_max_feats );
@@ -216,7 +215,7 @@ void CFeatureExtraction::extractFeaturesORB(
 			inImg.extract_patch(
 				*ft.patch, round(kp.pt.x) - patch_size_2,
 				round(kp.pt.y) - patch_size_2, options.patchSize,
-				options.patchSize);  // Image patch surronding the feature
+				options.patchSize);	 // Image patch surronding the feature
 		}
 
 		feats.emplace_back(std::move(ft));

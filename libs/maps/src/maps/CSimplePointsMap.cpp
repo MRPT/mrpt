@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/bits_mem.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/serialization/CArchive.h>
@@ -142,8 +142,7 @@ void CSimplePointsMap::serializeFrom(
 				in.ReadBufferFixEndianness(&m_y[0], n);
 				in.ReadBufferFixEndianness(&m_z[0], n);
 			}
-			if (version >= 9)
-				in >> genericMapParams;
+			if (version >= 9) in >> genericMapParams;
 			else
 			{
 				bool disableSaveAs3DObject;
@@ -235,10 +234,7 @@ void CSimplePointsMap::serializeFrom(
 				}
 			}
 
-			if (version >= 3)
-			{
-				in >> insertionOptions.horizontalTolerance;
-			}
+			if (version >= 3) { in >> insertionOptions.horizontalTolerance; }
 
 			if (version >= 5)  // version 5: added likelihoodOptions
 				likelihoodOptions.readFromStream(in);
@@ -247,8 +243,7 @@ void CSimplePointsMap::serializeFrom(
 				in >> insertionOptions.insertInvalidPoints;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

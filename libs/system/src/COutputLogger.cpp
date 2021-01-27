@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
+#include "system-precomp.h"	 // Precompiled headers
 //
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/lock_helper.h>
@@ -15,7 +15,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
 
-#include <cstdarg>  // for logFmt
+#include <cstdarg>	// for logFmt
 #include <cstdio>
 #include <fstream>
 #include <iostream>
@@ -41,9 +41,9 @@ using namespace std;
 static std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>
 	logging_levels_to_colors = {
 		CONCOL_BLUE,  // LVL_DEBUG
-		CONCOL_NORMAL,  // LVL_INFO
+		CONCOL_NORMAL,	// LVL_INFO
 		CONCOL_GREEN,  // LVL_WARN
-		CONCOL_RED  // LVL_ERROR
+		CONCOL_RED	// LVL_ERROR
 };
 
 std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>&
@@ -57,7 +57,7 @@ static std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>
 		"DEBUG",  // LVL_DEBUG
 		"INFO ",  // LVL_INFO
 		"WARN ",  // LVL_WARN
-		"ERROR"  // LVL_ERROR
+		"ERROR"	 // LVL_ERROR
 };
 std::array<std::string, NUMBER_OF_VERBOSITY_LEVELS>&
 	COutputLogger::logging_levels_to_names()
@@ -152,7 +152,8 @@ void COutputLogger::getLogAsString(std::string& fname) const
 {
 	fname.clear();
 	auto lck = mrpt::lockHelper(*m_historyMtx);
-	for (const auto& h : m_history) fname += h.getAsString();
+	for (const auto& h : m_history)
+		fname += h.getAsString();
 }
 std::string COutputLogger::getLogAsString() const
 {
@@ -165,16 +166,16 @@ void COutputLogger::writeLogToFile(const std::optional<string> fname_in) const
 	using namespace std::string_literals;
 
 	// determine the filename - open it
-	std::string fname =
-		fname_in.has_value()
-			? fname_in.value()
-			: mrpt::system::fileNameStripInvalidChars(m_logger_name) + ".log"s;
+	std::string fname = fname_in.has_value()
+		? fname_in.value()
+		: mrpt::system::fileNameStripInvalidChars(m_logger_name) + ".log"s;
 
 	std::ofstream f(fname);
 	ASSERTMSG_(
-		f.is_open(), mrpt::format(
-						 "[%s] Could not open external file: %s",
-						 m_logger_name.c_str(), fname.c_str()));
+		f.is_open(),
+		mrpt::format(
+			"[%s] Could not open external file: %s", m_logger_name.c_str(),
+			fname.c_str()));
 
 	std::string hist_str;
 	this->getLogAsString(hist_str);
@@ -185,7 +186,8 @@ void COutputLogger::writeLogToFile(const std::optional<string> fname_in) const
 void COutputLogger::dumpLogToConsole() const
 {
 	auto lck = mrpt::lockHelper(*m_historyMtx);
-	for (const auto& h : m_history) h.dumpToConsole();
+	for (const auto& h : m_history)
+		h.dumpToConsole();
 }
 
 std::string COutputLogger::getLoggerLastMsg() const
@@ -243,7 +245,7 @@ void COutputLogger::TMsg::dumpToConsole() const
 {
 	const std::string str = getAsString();
 
-	const bool dump_to_cerr = (level == LVL_ERROR);  // LVL_ERROR alternatively
+	const bool dump_to_cerr = (level == LVL_ERROR);	 // LVL_ERROR alternatively
 	// dumped to stderr instead
 	// of stdout
 

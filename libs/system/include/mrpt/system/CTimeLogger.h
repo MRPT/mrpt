@@ -12,6 +12,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <deque>
 #include <map>
 #include <optional>
@@ -155,7 +156,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	double getLastTime(const std::string& name) const;
 
 	friend struct CTimeLoggerEntry;
-};  // End of class def.
+};	// End of class def.
 
 /** A safe way to call enter() and leave() of a mrpt::system::CTimeLogger upon
  * construction and destruction of

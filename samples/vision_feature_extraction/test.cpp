@@ -10,6 +10,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
+
 #include <iostream>
 
 using namespace mrpt::gui;
@@ -35,11 +36,11 @@ void TestExtractMatchProjectAndPaint()
 	CImage imL, imR;
 
 	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY +
-				  string("vision_feature_extraction/") +
-				  string("imgs/imL_p01.jpg");  // Left image
+		string("vision_feature_extraction/") +
+		string("imgs/imL_p01.jpg");	 // Left image
 	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY +
-				  string("vision_feature_extraction/") +
-				  string("imgs/imR_p01.jpg");  // Right image
+		string("vision_feature_extraction/") +
+		string("imgs/imR_p01.jpg");	 // Right image
 
 	// Load and check images
 	if (!imL.loadFromFile(imgL))
@@ -100,11 +101,11 @@ void TestMatchFeatures()
 	CImage imL, imR;
 
 	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY +
-				  string("vision_feature_extraction/") +
-				  string("imgs/imL_p01.jpg");  // Left image
+		string("vision_feature_extraction/") +
+		string("imgs/imL_p01.jpg");	 // Left image
 	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY +
-				  string("vision_feature_extraction/") +
-				  string("imgs/imR_p01.jpg");  // Right image
+		string("vision_feature_extraction/") +
+		string("imgs/imR_p01.jpg");	 // Right image
 
 	//	string imgL = "../../bin/imgs/640x480_left_rect.jpg";		// Left
 	// image
@@ -252,11 +253,11 @@ void TestMatchingComparative()
 {
 	// Take two images
 	string imgL = MRPT_EXAMPLES_BASE_DIRECTORY +
-				  string("vision_feature_extraction/") +
-				  string("imgs/imL_p01.jpg");  // Left image
+		string("vision_feature_extraction/") +
+		string("imgs/imL_p01.jpg");	 // Left image
 	string imgR = MRPT_EXAMPLES_BASE_DIRECTORY +
-				  string("vision_feature_extraction/") +
-				  string("imgs/imR_p01.jpg");  // Right image
+		string("vision_feature_extraction/") +
+		string("imgs/imR_p01.jpg");	 // Right image
 
 	CImage im1, im2;
 	im1.loadFromFile(imgL);
@@ -316,7 +317,7 @@ void TestMatchingComparative()
 			TColor::green());  // Epipolar
 		copyjoinimage.drawCircle(
 			pt1.x, pt1.y, 4, TColor::green(),
-			2);  // Keypoint
+			2);	 // Keypoint
 
 		copyInfoImage.update_patch(*it1->patch, 0, 0);
 		bool firstMatch = true;
@@ -379,7 +380,7 @@ void TestMatchingComparative()
 
 				copyjoinimage.drawCircle(
 					pt2.x + imW, pt2.y, 4, TColor::blue(),
-					2);  // Keypoint
+					2);	 // Keypoint
 				double rx0, rx1, ry0, ry1, tx, ty;
 				rx0 = pt2.x + imW - 15;
 				rx1 = pt2.x + imW;

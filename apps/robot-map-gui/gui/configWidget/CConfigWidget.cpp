@@ -172,8 +172,7 @@ CBaseConfig* CConfigWidget::configByType(TypeOfConfig type) const
 		{
 			return new CLandmarksConfig();
 		}
-		default:
-			break;
+		default: break;
 	}
 	return nullptr;
 }

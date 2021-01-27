@@ -14,6 +14,7 @@
 #include <mrpt/gui/WxUtils.h>
 #include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/choice.h>
 #include <wx/dialog.h>
 #include <wx/radiobox.h>
 #include <wx/sizer.h>
@@ -21,27 +22,22 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/timer.h>
-
-#include <wx/choice.h>
 //*)
 
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/vision/chessboard_camera_calib.h>
-
-#include <mrpt/gui/CDisplayWindow3D.h>
-
-#include "MyGLCanvas.h"
-
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/pnp_algos.h>
+
 #include <fstream>
 
-#define CAMERA_CALIB_GUI_VERSION "2.0"
+#include "MyGLCanvas.h"
 
 class CDlgPoseEst : public wxDialog
 {

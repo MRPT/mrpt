@@ -77,9 +77,7 @@ void CLevMarqGSO<GRAPH_T>::updateVisuals()
 	parent::updateVisuals();
 
 	if (opt_params.optimization_distance > 0)
-	{
-		this->updateOptDistanceVisualization();
-	}
+	{ this->updateOptDistanceVisualization(); }
 
 	this->updateGraphVisualization();
 
@@ -101,21 +99,15 @@ void CLevMarqGSO<GRAPH_T>::notifyOfWindowEvents(
 	{
 		if (events_occurred.find(opt_params.keystroke_optimization_distance)
 				->second)
-		{
-			this->toggleOptDistanceVisualization();
-		}
+		{ this->toggleOptDistanceVisualization(); }
 
 		if (events_occurred.find(opt_params.keystroke_optimize_graph)->second)
-		{
-			this->_optimizeGraph(/*is_full_update=*/true);
-		}
+		{ this->_optimizeGraph(/*is_full_update=*/true); }
 	}
 
 	// graph toggling
 	if (events_occurred.find(viz_params.keystroke_graph_toggle)->second)
-	{
-		this->toggleGraphVisualization();
-	}
+	{ this->toggleGraphVisualization(); }
 
 	// if mouse event, let the user decide about the camera
 	if (events_occurred.find("mouse_clicked")->second)
@@ -197,10 +189,7 @@ inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 
 	this->m_win->forceRepaint();
 
-	if (m_autozoom_active)
-	{
-		this->fitGraphInView();
-	}
+	if (m_autozoom_active) { this->fitGraphInView(); }
 
 	MRPT_END
 }
@@ -399,10 +388,7 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 	this->m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
 
 	// if less than X nodes exist overall, do not try optimizing
-	if (m_min_nodes_for_optimization > this->m_graph->nodes.size())
-	{
-		return;
-	}
+	if (m_min_nodes_for_optimization > this->m_graph->nodes.size()) { return; }
 
 	mrpt::system::CTicTac optimization_timer;
 	optimization_timer.Tic();
@@ -440,10 +426,7 @@ void CLevMarqGSO<GRAPH_T>::_optimizeGraph(bool is_full_update /*=false*/)
 		*(this->m_graph), levmarq_info, nodes_to_optimize, opt_params.cfg,
 		&CLevMarqGSO<GRAPH_T>::levMarqFeedback);  // functor feedback
 
-	if (is_full_update)
-	{
-		m_just_fully_optimized_graph = true;
-	}
+	if (is_full_update) { m_just_fully_optimized_graph = true; }
 	else
 	{
 		m_just_fully_optimized_graph = false;
@@ -494,7 +477,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForLoopClosures()
 				this->logFmt(
 					mrpt::system::LVL_DEBUG, "Registering loop closure... ");
 				is_loop_closure = true;
-				break;  // no need for more iterations
+				break;	// no need for more iterations
 			}
 		}
 	}
@@ -522,9 +505,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 	if (!added_lc)
 	{  // reset both ignored and used counters
 		if (m_curr_used_consec_lcs != 0 || m_curr_ignored_consec_lcs != 0)
-		{
-			MRPT_LOG_DEBUG_STREAM("No new Loop Closure found.");
-		}
+		{ MRPT_LOG_DEBUG_STREAM("No new Loop Closure found."); }
 
 		m_curr_used_consec_lcs = 0;
 		m_curr_ignored_consec_lcs = 0;
@@ -549,9 +530,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 
 			// decide of the my policy on full optimization
 			if (ignore_limit_reached)
-			{
-				m_optimization_policy = OptimizationPolicy::UseLoopClosures;
-			}
+			{ m_optimization_policy = OptimizationPolicy::UseLoopClosures; }
 			if (use_limit_reached)
 			{
 				m_optimization_policy = OptimizationPolicy::IgnoreLoopClosures;
@@ -560,9 +539,7 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 		else
 		{  // no limits reached yet.
 			if (m_optimization_policy == OptimizationPolicy::UseLoopClosures)
-			{
-				m_curr_used_consec_lcs += 1;
-			}
+			{ m_curr_used_consec_lcs += 1; }
 			else
 			{
 				m_curr_ignored_consec_lcs += 1;
@@ -614,10 +591,7 @@ void CLevMarqGSO<GRAPH_T>::getNearbyNodesOf(
 		{
 			double curr_distance = this->m_graph->nodes[nodeID].distanceTo(
 				this->m_graph->nodes[cur_nodeID]);
-			if (curr_distance <= distance)
-			{
-				nodes_set->insert(nodeID);
-			}
+			if (curr_distance <= distance) { nodes_set->insert(nodeID); }
 		}
 	}
 	else

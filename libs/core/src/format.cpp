@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "core-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/format.h>
+
 #include <cstdarg>
 
 // A sprintf-like function for std::string
@@ -37,10 +38,7 @@ std::string mrpt::format(const char* fmt, ...)
 		length *= 2;
 
 		// Ok?
-		if (result >= 0)
-		{
-			buffer.resize(result);
-		}
+		if (result >= 0) { buffer.resize(result); }
 	}
 	return buffer;
 }

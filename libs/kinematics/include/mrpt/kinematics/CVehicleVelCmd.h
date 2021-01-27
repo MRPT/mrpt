@@ -10,6 +10,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <string>
 
 namespace mrpt::kinematics

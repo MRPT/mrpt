@@ -15,7 +15,7 @@
 #include <mrpt/ros1bridge/map.h>
 #include <mrpt/ros1bridge/pose.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/filesystem.h>  // for fileExists()
+#include <mrpt/system/filesystem.h>	 // for fileExists()
 #include <mrpt/system/string_utils.h>  // for lowerCase()
 #include <mrpt/version.h>
 #include <nav_msgs/OccupancyGrid.h>
@@ -33,7 +33,7 @@ using mrpt::maps::CSimpleMap;
 #define INT8_MIN (-INT8_MAX - 1)
 #define INT16_MAX 0x7fff
 #define INT16_MIN (-INT16_MAX - 1)
-#endif  // INT8_MAX
+#endif	// INT8_MAX
 
 namespace mrpt::ros1bridge
 {
@@ -178,7 +178,7 @@ bool MapHdl::loadMap(
 		// Detect file extension:
 		std::string mapExt =
 			mrpt::system::lowerCase(mrpt::system::extractFileExtension(
-				_map_file, true));  // Ignore possible .gz extensions
+				_map_file, true));	// Ignore possible .gz extensions
 
 		if (!mapExt.compare("simplemap"))
 		{

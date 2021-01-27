@@ -7,14 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
-#include <mrpt/hwdrivers/CIbeoLuxETH.h>  // Precompiled headers
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
+#include <mrpt/hwdrivers/CIbeoLuxETH.h>	 // Precompiled headers
 
 #include <bitset>
 #include <thread>
 
-#define APPERTURE 4.712385  // in radian <=> 270°
+#define APPERTURE 4.712385	// in radian <=> 270°
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -56,7 +56,7 @@ void CIbeoLuxETH::dataCollection()
 	unsigned char state = SearchForAF;
 	unsigned char msgIn[1], Header[20], ScanListHeader[44], ScanPointData[10];
 	unsigned int datatype, /*scannumber,*/ numScanpoints, angleTicks, SPlayer,
-		SPdistance;  // SPecho;
+		SPdistance;	 // SPecho;
 	int SPHangle;
 	unsigned char msg[32];
 
@@ -83,22 +83,19 @@ void CIbeoLuxETH::dataCollection()
 				break;
 			case SearchForFE:
 				m_client.readAsync(msgIn, 1, 100, 10);
-				if (msgIn[0] == 0xFE)
-					state = SearchForC0;
+				if (msgIn[0] == 0xFE) state = SearchForC0;
 				else
 					state = SearchForAF;
 				break;
 			case SearchForC0:
 				m_client.readAsync(msgIn, 1, 100, 10);
-				if (msgIn[0] == 0xC0)
-					state = SearchForC2;
+				if (msgIn[0] == 0xC0) state = SearchForC2;
 				else
 					state = SearchForAF;
 				break;
 			case SearchForC2:
 				m_client.readAsync(msgIn, 1, 100, 10);
-				if (msgIn[0] == 0xC2)
-					state = PacketFound;
+				if (msgIn[0] == 0xC2) state = PacketFound;
 				else
 					state = SearchForAF;
 				break;
@@ -123,9 +120,7 @@ void CIbeoLuxETH::dataCollection()
 						// do nothing
 						state = SearchForAF;
 						break;
-					case 0x2202:
-						state = SaveData;
-						break;
+					case 0x2202: state = SaveData; break;
 					default:
 						std::cerr << "UNKNOWN packet of type " << hex
 								  << datatype << " received!!\n";
@@ -155,7 +150,7 @@ void CIbeoLuxETH::dataCollection()
 					// SPecho  = ScanPointData[0] >> 4; // two higher bits
 					// denote echo
 					SPHangle = (char)ScanPointData[3] * 0x100 +
-							   ScanPointData[2];  // signed INT16 here
+						ScanPointData[2];  // signed INT16 here
 					SPdistance = ScanPointData[5] * 0x100 + ScanPointData[4];
 
 					// Sanity checks
@@ -202,7 +197,7 @@ void CIbeoLuxETH::dataCollection()
 				appendObservation(newObs);
 
 				state = SearchForAF;
-				break;  // SaveData
+				break;	// SaveData
 		}  // Switch
 	}  // While
 
@@ -243,18 +238,10 @@ double CIbeoLuxETH::convertLayerToRad(int scanlayer)
 
 	switch (scanlayer)
 	{
-		case 0:
-			vangle = -0.02094395103;
-			break;
-		case 1:
-			vangle = -0.006981317009;
-			break;
-		case 2:
-			vangle = 0.006981317009;
-			break;
-		case 3:
-			vangle = 0.02094395103;
-			break;
+		case 0: vangle = -0.02094395103; break;
+		case 1: vangle = -0.006981317009; break;
+		case 2: vangle = 0.006981317009; break;
+		case 3: vangle = 0.02094395103; break;
 		default:
 			vangle = 0;
 			std::cerr << "Layer: " << scanlayer << "! Returning " << vangle
@@ -300,12 +287,12 @@ void CIbeoLuxETH::makeCommandHeader(unsigned char* buffer)
 	buffer[8] = 0x00;  // Size of data block
 	buffer[9] = 0x00;
 	buffer[10] = 0x00;
-	buffer[11] = 0x00;  // to be set by the command function
-	buffer[12] = 0x00;  // Reserved + source Id
-	buffer[13] = 0x78;  // source ID of 0x78 as observed
-	buffer[14] = 0x20;  // Data Type - 2010 = command
+	buffer[11] = 0x00;	// to be set by the command function
+	buffer[12] = 0x00;	// Reserved + source Id
+	buffer[13] = 0x78;	// source ID of 0x78 as observed
+	buffer[14] = 0x20;	// Data Type - 2010 = command
 	buffer[15] = 0x10;
-	buffer[16] = 0x00;  // 4* ntpp time (s) + 4* fractions of a second
+	buffer[16] = 0x00;	// 4* ntpp time (s) + 4* fractions of a second
 	buffer[17] = 0x00;
 	buffer[18] = 0x00;
 	buffer[19] = 0x00;
@@ -318,37 +305,37 @@ void CIbeoLuxETH::makeCommandHeader(unsigned char* buffer)
 void CIbeoLuxETH::makeStartCommand(unsigned char* buffer)
 {
 	// Header - all big endian
-	buffer[11] = 0x04;  // Size of data block
+	buffer[11] = 0x04;	// Size of data block
 	// Data Block - all little endian
-	buffer[24] = 0x20;  // Start Measure 0x0020
+	buffer[24] = 0x20;	// Start Measure 0x0020
 	buffer[25] = 0x00;
-	buffer[26] = 0x00;  // Reserved, but obligatory
+	buffer[26] = 0x00;	// Reserved, but obligatory
 	buffer[27] = 0x00;
 }
 
 void CIbeoLuxETH::makeStopCommand(unsigned char* buffer)
 {
 	// Header - all big endian
-	buffer[11] = 0x04;  // Size of data block
+	buffer[11] = 0x04;	// Size of data block
 	// Data Block - all little endian
-	buffer[24] = 0x21;  // Stop Measure 0x0021
+	buffer[24] = 0x21;	// Stop Measure 0x0021
 	buffer[25] = 0x00;
-	buffer[26] = 0x00;  // Reserved, but obligatory
+	buffer[26] = 0x00;	// Reserved, but obligatory
 	buffer[27] = 0x00;
 }
 
 void CIbeoLuxETH::makeTypeCommand(unsigned char* buffer)
 {
 	// Header - all big endian
-	buffer[11] = 0x08;  // Size of data block
+	buffer[11] = 0x08;	// Size of data block
 	// Data Block - big endian (for filter command!)
-	buffer[24] = 0x00;  // Command Type - 0005 = set datatype filter
+	buffer[24] = 0x00;	// Command Type - 0005 = set datatype filter
 	buffer[25] = 0x05;
-	buffer[26] = 0x00;  // Data type filter length
+	buffer[26] = 0x00;	// Data type filter length
 	buffer[27] = 0x02;
-	buffer[28] = 0x22;  // start value
+	buffer[28] = 0x22;	// start value
 	buffer[29] = 0x00;
-	buffer[30] = 0x22;  // end value
+	buffer[30] = 0x22;	// end value
 	buffer[31] = 0x10;
 }
 

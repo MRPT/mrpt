@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose3D.h>
@@ -35,7 +35,7 @@ CPose3DPDFParticles::CPose3DPDFParticles(size_t M)
 void CPose3DPDFParticles::copyFrom(const CPose3DPDF& o)
 {
 	MRPT_START
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 	if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles))
 	{
 		const auto* pdf = dynamic_cast<const CPose3DPDFParticles*>(&o);
@@ -75,12 +75,12 @@ std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
 	CMatrixDouble66 cov;
 	CPose3D mean;
 
-	getMean(mean);  // First! the mean value:
+	getMean(mean);	// First! the mean value:
 
 	// Now the covariance:
 	cov.setZero();
 	CVectorFixedDouble<6> vars;
-	vars.setZero();  // The diagonal of the final covariance matrix
+	vars.setZero();	 // The diagonal of the final covariance matrix
 
 	// Elements off the diagonal of the covariance matrix:
 	double std_xy = 0, std_xz = 0, std_xya = 0, std_xp = 0, std_xr = 0;
@@ -102,7 +102,8 @@ std::tuple<CMatrixDouble66, CPose3D> CPose3DPDFParticles::getCovarianceAndMean()
 
 	// Sum all weight values:
 	double W = 0;
-	for (const auto& p : m_particles) W += exp(p.log_w);
+	for (const auto& p : m_particles)
+		W += exp(p.log_w);
 
 	ASSERT_(W > 0);
 
@@ -210,8 +211,7 @@ void CPose3DPDFParticles::serializeFrom(
 			readParticlesFromStream(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -277,7 +277,8 @@ void CPose3DPDFParticles::inverse(CPose3DPDF& o) const
 	// Prepare the output:
 	out->copyFrom(*this);
 	const CPose3D zero(0, 0, 0);
-	for (auto& p : out->m_particles) p.d = (zero - CPose3D(p.d)).asTPose();
+	for (auto& p : out->m_particles)
+		p.d = (zero - CPose3D(p.d)).asTPose();
 	MRPT_END
 }
 

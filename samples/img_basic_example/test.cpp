@@ -11,6 +11,7 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -42,7 +43,7 @@ void TestImageConversion()
 	}
 	printf("Image loaded in %.03fms\n", 1000 * tictac.Tac());
 
-	if (false)  // A very simple test:
+	if (false)	// A very simple test:
 	{
 		CDisplayWindow win1("JPEG file, color");
 		win1.setPos(10, 10);

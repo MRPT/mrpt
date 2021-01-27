@@ -13,6 +13,7 @@
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/TEnumType.h>
+
 #include <map>
 #include <vector>
 
@@ -64,7 +65,7 @@ enum TKeyPointMethod : int8_t
 	/** ORB detector and descriptor, OpenCV's implementation */
 	featORB = 10,
 	// #added by Raghavender Sahdev
-	featAKAZE = 11,  //!< AKAZE detector, OpenCV's implementation
+	featAKAZE = 11,	 //!< AKAZE detector, OpenCV's implementation
 	featLSD = 12  //!< LSD detector, OpenCV's implementation
 	// Remember: If new values are added, also update MRPT_FILL_ENUM below!
 };
@@ -90,7 +91,7 @@ enum TDescriptorType : uint16_t
 	/** Bit-based feature descriptor */
 	descORB = 32,
 	descBLD = 64,  //!< BLD Line descriptor
-	descLATCH = 128  //!< LATCH Line descriptor
+	descLATCH = 128	 //!< LATCH Line descriptor
 	// Remember: If new values are added, also update MRPT_FILL_ENUM below!
 };
 
@@ -298,7 +299,7 @@ struct TStereoSystemParams : public mrpt::config::CLoadableOptions
 	 */
 	// TStereoSystemParams();
 
-};  // End struct TStereoSystemParams
+};	// End struct TStereoSystemParams
 
 /** A structure for storing a 3D ROI
  */
@@ -318,7 +319,7 @@ struct TROI
 	float yMax{0};
 	float zMin{0};
 	float zMax{0};
-};  // end struct TROI
+};	// end struct TROI
 
 /** A structure for defining a ROI within an image
  */
@@ -450,20 +451,19 @@ struct TMatchingOptions : public mrpt::config::CLoadableOptions
 	bool operator==(const TMatchingOptions& o) const
 	{
 		return CHECK_MEMBER(useXRestriction) &&
-			   CHECK_MEMBER(useDisparityLimits) &&
-			   CHECK_MEMBER(useEpipolarRestriction) &&
-			   CHECK_MEMBER(addMatches) && CHECK_MEMBER(EDD_RATIO) &&
-			   CHECK_MEMBER(EDSD_RATIO) &&
-			   CHECK_MEMBER(enable_robust_1to1_match) &&
-			   CHECK_MEMBER(epipolar_TH) && CHECK_MEMBER(estimateDepth) &&
-			   CHECK_MEMBER(F) && CHECK_MEMBER(hasFundamentalMatrix) &&
-			   CHECK_MEMBER(matching_method) &&
-			   CHECK_MEMBER(maxDepthThreshold) && CHECK_MEMBER(maxEDD_TH) &&
-			   CHECK_MEMBER(maxEDSD_TH) && CHECK_MEMBER(maxORB_dist) &&
-			   CHECK_MEMBER(maxSAD_TH) && CHECK_MEMBER(max_disp) &&
-			   CHECK_MEMBER(minCC_TH) && CHECK_MEMBER(minDCC_TH) &&
-			   CHECK_MEMBER(min_disp) && CHECK_MEMBER(parallelOpticalAxis) &&
-			   CHECK_MEMBER(rCC_TH) && CHECK_MEMBER(SAD_RATIO);
+			CHECK_MEMBER(useDisparityLimits) &&
+			CHECK_MEMBER(useEpipolarRestriction) && CHECK_MEMBER(addMatches) &&
+			CHECK_MEMBER(EDD_RATIO) && CHECK_MEMBER(EDSD_RATIO) &&
+			CHECK_MEMBER(enable_robust_1to1_match) &&
+			CHECK_MEMBER(epipolar_TH) && CHECK_MEMBER(estimateDepth) &&
+			CHECK_MEMBER(F) && CHECK_MEMBER(hasFundamentalMatrix) &&
+			CHECK_MEMBER(matching_method) && CHECK_MEMBER(maxDepthThreshold) &&
+			CHECK_MEMBER(maxEDD_TH) && CHECK_MEMBER(maxEDSD_TH) &&
+			CHECK_MEMBER(maxORB_dist) && CHECK_MEMBER(maxSAD_TH) &&
+			CHECK_MEMBER(max_disp) && CHECK_MEMBER(minCC_TH) &&
+			CHECK_MEMBER(minDCC_TH) && CHECK_MEMBER(min_disp) &&
+			CHECK_MEMBER(parallelOpticalAxis) && CHECK_MEMBER(rCC_TH) &&
+			CHECK_MEMBER(SAD_RATIO);
 	}
 
 	void operator=(const TMatchingOptions& o)
@@ -494,7 +494,7 @@ struct TMatchingOptions : public mrpt::config::CLoadableOptions
 		COPY_MEMBER(SAD_RATIO)
 	}
 
-};  // end struct TMatchingOptions
+};	// end struct TMatchingOptions
 
 /** Struct containing the output after matching multi-resolution SIFT-like
  * descriptors
@@ -517,7 +517,7 @@ struct TMultiResMatchingOutput
 
 	TMultiResMatchingOutput() = default;
 
-};  // end struct TMultiResMatchingOutput
+};	// end struct TMultiResMatchingOutput
 
 /** Struct containing the options when matching multi-resolution SIFT-like
  * descriptors
@@ -595,7 +595,7 @@ struct TMultiResDescMatchOptions : public mrpt::config::CLoadableOptions
 		const std::string& section) const override;
 	void dumpToTextStream(std::ostream& out) const override;
 
-};  // end TMultiResDescMatchOptions
+};	// end TMultiResDescMatchOptions
 
 /** Struct containing the options when computing the multi-resolution SIFT-like
  * descriptors
@@ -673,10 +673,10 @@ struct TMultiResDescOptions : public mrpt::config::CLoadableOptions
 		const std::string& section) override;  // See base docs
 	void saveToConfigFile(
 		mrpt::config::CConfigFileBase& cfg,
-		const std::string& section) const override;  // See base docs
+		const std::string& section) const override;	 // See base docs
 	void dumpToTextStream(std::ostream& out) const override;  // See base docs
 
-};  // end TMultiResDescOptions
+};	// end TMultiResDescOptions
 
 /** @} */  // end of grouping
 }  // namespace mrpt::vision

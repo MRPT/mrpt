@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/string_utils.h>
@@ -25,26 +25,27 @@ using namespace Fc2Triclops;
 
 #if MRPT_HAS_OPENCV
 #include <opencv2/imgproc/imgproc_c.h>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
 
-#define CHECK_FC2_ERROR(_err)                                     \
-	{                                                             \
-		if (_err != PGRERROR_OK)                                  \
-		{                                                         \
-			THROW_EXCEPTION_FMT(                                  \
-				"FlyCapture2 error:\n%s", _err.GetDescription()); \
-		}                                                         \
+#define CHECK_FC2_ERROR(_err)                                                  \
+	{                                                                          \
+		if (_err != PGRERROR_OK)                                               \
+		{                                                                      \
+			THROW_EXCEPTION_FMT(                                               \
+				"FlyCapture2 error:\n%s", _err.GetDescription());              \
+		}                                                                      \
 	}
-#define CHECK_TRICLOPS_ERROR(_err)                                     \
-	{                                                                  \
-		if (_err != TriclopsErrorOk)                                   \
-		{                                                              \
-			THROW_EXCEPTION_FMT(                                       \
-				"Triclops Error:\n'%s'", triclopsErrorToString(_err)); \
-		}                                                              \
+#define CHECK_TRICLOPS_ERROR(_err)                                             \
+	{                                                                          \
+		if (_err != TriclopsErrorOk)                                           \
+		{                                                                      \
+			THROW_EXCEPTION_FMT(                                               \
+				"Triclops Error:\n'%s'", triclopsErrorToString(_err));         \
+		}                                                                      \
 	}
 #define FC2_CAM reinterpret_cast<FlyCapture2::Camera*>(m_camera)
 #define FC2_CAM_INFO reinterpret_cast<FlyCapture2::CameraInfo*>(m_camera_info)
@@ -98,8 +99,8 @@ fc2_str_val<FrameRate> fc2_FrameRate_table[] = {
 	{"FRAMERATE_120", FlyCapture2::FRAMERATE_120},
 	{"FRAMERATE_240", FlyCapture2::FRAMERATE_240},
 	{"FRAMERATE_FORMAT7", FlyCapture2::FRAMERATE_FORMAT7}};
-fc2_str_val<GrabMode> fc2_GrabMode_table[] = {{"DROP_FRAMES", DROP_FRAMES},
-											  {"BUFFER_FRAMES", BUFFER_FRAMES}};
+fc2_str_val<GrabMode> fc2_GrabMode_table[] = {
+	{"DROP_FRAMES", DROP_FRAMES}, {"BUFFER_FRAMES", BUFFER_FRAMES}};
 
 #define GET_CONV_TABLE(type)                                                   \
 	vector<fc2_str_val<type>> fc2_vals_gen(type)                               \
@@ -131,8 +132,7 @@ const char* fc2_defnum2str(const T& val)
 {
 	vector<fc2_str_val<T>> fc2_vals = fc2_vals_gen(T());
 	size_t i = static_cast<int>(val);
-	if (i < fc2_vals.size())
-		return fc2_vals[i].str;
+	if (i < fc2_vals.size()) return fc2_vals[i].str;
 	else
 		THROW_EXCEPTION_FMT(
 			"Error: Unknown FlyCapture2 enum: %i", static_cast<int>(val));
@@ -142,8 +142,8 @@ const char* fc2_defnum2str(const T& val)
 //  Options: TCaptureOptions_bumblebee
 // -------------------------------------------------------------
 TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2()
-	: videomode(),  //("VIDEOMODE_640x480Y8"),
-	  framerate(),  // ("FRAMERATE_30"),
+	: videomode(),	//("VIDEOMODE_640x480Y8"),
+	  framerate(),	// ("FRAMERATE_30"),
 	  grabmode("BUFFER_FRAMES")
 
 {
@@ -282,7 +282,8 @@ void CImageGrabber_FlyCapture2::open(
 	if (m_options.open_by_guid)
 	{
 		// Open by GUID:
-		for (int i = 0; i < 4; i++) guid.value[i] = m_options.camera_guid[i];
+		for (int i = 0; i < 4; i++)
+			guid.value[i] = m_options.camera_guid[i];
 	}
 	else
 	{
@@ -473,11 +474,11 @@ void CImageGrabber_FlyCapture2::open(
 		p.type = FlyCapture2::AUTO_EXPOSURE;
 		FlyCapture2::Error error = FC2_CAM->GetProperty(&p);
 		CHECK_FC2_ERROR(error)
-		p.autoManualMode = m_options.autoexposure_auto;  // true=auto
-		p.onOff = m_options.autoexposure_onOff;  // true=on
-		p.absControl = m_options.autoexposure_abs;  // true=abs
+		p.autoManualMode = m_options.autoexposure_auto;	 // true=auto
+		p.onOff = m_options.autoexposure_onOff;	 // true=on
+		p.absControl = m_options.autoexposure_abs;	// true=abs
 		p.absValue =
-			m_options.autoexposure_EV;  // abs value in Exposure Value (EV)
+			m_options.autoexposure_EV;	// abs value in Exposure Value (EV)
 		fe = FC2_CAM->SetProperty(&p);
 		CHECK_FC2_ERROR(fe)
 	}
@@ -501,7 +502,7 @@ void CImageGrabber_FlyCapture2::open(
 		p.type = FlyCapture2::SHUTTER;
 		FlyCapture2::Error error = FC2_CAM->GetProperty(&p);
 		CHECK_FC2_ERROR(error)
-		p.autoManualMode = m_options.shutter_auto;  // true=auto
+		p.autoManualMode = m_options.shutter_auto;	// true=auto
 		p.absControl = m_options.shutter_abs;  // true=abs
 		p.absValue = m_options.shutter_time_ms;
 		// p.onOff = false;
@@ -515,9 +516,9 @@ void CImageGrabber_FlyCapture2::open(
 		p.type = FlyCapture2::GAIN;
 		FlyCapture2::Error error = FC2_CAM->GetProperty(&p);
 		CHECK_FC2_ERROR(error)
-		p.autoManualMode = m_options.gain_auto;  // true=auto
-		p.absControl = m_options.gain_abs;  // true=abs
-		p.absValue = m_options.gain_dB;  // abs value in dB (decibeles)
+		p.autoManualMode = m_options.gain_auto;	 // true=auto
+		p.absControl = m_options.gain_abs;	// true=abs
+		p.absValue = m_options.gain_dB;	 // abs value in dB (decibeles)
 		// p.onOff = false;
 		fe = FC2_CAM->SetProperty(&p);
 		CHECK_FC2_ERROR(fe)
@@ -550,9 +551,7 @@ void CImageGrabber_FlyCapture2::startCapture()
 {
 #if MRPT_HAS_FLYCAPTURE2
 	if (!m_camera)
-	{
-		THROW_EXCEPTION("Camera is not opened. Call open() first.");
-	}
+	{ THROW_EXCEPTION("Camera is not opened. Call open() first."); }
 
 	FlyCapture2::Error error = FC2_CAM->StartCapture();
 	CHECK_FC2_ERROR(error)
@@ -710,13 +709,13 @@ bool CImageGrabber_FlyCapture2::getObservation(
 		// FlyCapture2::ImageMetadata imd = image.GetMetadata();
 		// Determine if it's B/W or color:
 		FlyCapture2::PixelFormat pf = image.GetPixelFormat();
-		const bool is_color =
-			pf == PIXEL_FORMAT_RGB8 || pf == PIXEL_FORMAT_RGB16 ||
-			pf == PIXEL_FORMAT_S_RGB16 || pf == PIXEL_FORMAT_RAW8 ||
-			pf == PIXEL_FORMAT_RAW16 || pf == PIXEL_FORMAT_RAW12 ||
-			pf == PIXEL_FORMAT_BGR || pf == PIXEL_FORMAT_BGRU ||
-			pf == PIXEL_FORMAT_RGBU || pf == PIXEL_FORMAT_BGR16 ||
-			pf == PIXEL_FORMAT_BGRU16 || pf == PIXEL_FORMAT_422YUV8_JPEG;
+		const bool is_color = pf == PIXEL_FORMAT_RGB8 ||
+			pf == PIXEL_FORMAT_RGB16 || pf == PIXEL_FORMAT_S_RGB16 ||
+			pf == PIXEL_FORMAT_RAW8 || pf == PIXEL_FORMAT_RAW16 ||
+			pf == PIXEL_FORMAT_RAW12 || pf == PIXEL_FORMAT_BGR ||
+			pf == PIXEL_FORMAT_BGRU || pf == PIXEL_FORMAT_RGBU ||
+			pf == PIXEL_FORMAT_BGR16 || pf == PIXEL_FORMAT_BGRU16 ||
+			pf == PIXEL_FORMAT_422YUV8_JPEG;
 		// Decode image:
 		error = image.Convert(
 			is_color ? PIXEL_FORMAT_BGR : PIXEL_FORMAT_MONO8, FC2_BUF_IMG);

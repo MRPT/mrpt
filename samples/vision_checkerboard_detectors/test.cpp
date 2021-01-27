@@ -11,6 +11,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/chessboard_find_corners.h>
+
 #include <iostream>
 
 using namespace std;

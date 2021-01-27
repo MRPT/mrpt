@@ -81,5 +81,5 @@ class CConfigFilePrefixer : public CConfigFileBase
 		const override;
 	void clear() override;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::config

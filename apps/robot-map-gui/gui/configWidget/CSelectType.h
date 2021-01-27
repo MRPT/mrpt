@@ -9,7 +9,6 @@
    */
 #pragma once
 #include <QDialog>
-
 #include <memory>
 
 #include "TypeOfConfig.h"

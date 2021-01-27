@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/maps/CMultiMetricMap.h>
@@ -26,6 +26,7 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/tfest/se2.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::math;
@@ -176,10 +177,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 	//  At least two landmarks at each map!
 	// ------------------------------------------------------
-	if (nLM1 < 2 || nLM2 < 2)
-	{
-		outInfo.goodness = 0;
-	}
+	if (nLM1 < 2 || nLM2 < 2) { outInfo.goodness = 0; }
 	else
 	{
 		//#define METHOD_FFT
@@ -450,9 +448,9 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					round(options.ransac_minSetSizeRatio * 0.5 * (nLM1 + nLM2));
 				// Set an initial # of iterations:
 				const unsigned int ransac_min_nSimulations =
-					2 * (nLM1 + nLM2);  // 1000;
+					2 * (nLM1 + nLM2);	// 1000;
 				unsigned int ransac_nSimulations =
-					10;  // It doesn't matter actually, since will be changed in
+					10;	 // It doesn't matter actually, since will be changed in
 				// the first loop
 				const double probability_find_good_model = 0.9999;
 
@@ -475,17 +473,16 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 				//   |   | = ----------- = -----------
 				//   \ 2 /    2! (n-2)!         2
 				//
-				const unsigned int max_trials =
-					(nCorrs * (nCorrs - 1) / 2) *
-					5;  // "*5" is just for safety...
+				const unsigned int max_trials = (nCorrs * (nCorrs - 1) / 2) *
+					5;	// "*5" is just for safety...
 
-				unsigned int iter = 0;  // Valid iterations (those passing the
+				unsigned int iter = 0;	// Valid iterations (those passing the
 				// first mahalanobis test)
 				unsigned int trials = 0;  // counter of all iterations,
 				// including "iter" + failing ones.
 				while (iter < ransac_nSimulations &&
 					   trials <
-						   max_trials)  // ransac_nSimulations can be dynamic
+						   max_trials)	// ransac_nSimulations can be dynamic
 				{
 					trials++;
 
@@ -497,7 +494,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					do
 					{
 						idx2 = getRandomGenerator().drawUniform32bit() % nCorrs;
-					} while (idx1 == idx2);  // Avoid a degenerated case!
+					} while (idx1 == idx2);	 // Avoid a degenerated case!
 
 					// Uniqueness of features:
 					if (all_corrs[idx1].this_idx == all_corrs[idx2].this_idx ||
@@ -532,7 +529,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 					if (corrs_dist_chi2 > chi2_thres_dim1) continue;  // Nope
 
-					iter++;  // Do not count iterations if they fail the test
+					iter++;	 // Do not count iterations if they fail the test
 					// above.
 
 					// before proceeding with this hypothesis, is it an old one?
@@ -569,7 +566,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					// correspondences:
 					bool keep_incorporating = true;
 					CPosePDFGaussian temptPose;
-					do  // Incremently incorporate inliers:
+					do	// Incremently incorporate inliers:
 					{
 						if (!mrpt::tfest::se2_l2(tentativeSubSet, temptPose))
 							continue;  // Invalid matching...
@@ -585,14 +582,14 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 						const double ccos = cos(temptPose.mean.phi());
 						const double ssin = sin(temptPose.mean.phi());
 
-						CMatrixDouble22 Hc;  // Jacobian wrt point_j
+						CMatrixDouble22 Hc;	 // Jacobian wrt point_j
 						Hc(1, 1) = ccos;
 						Hc(0, 0) = ccos;
 						Hc(1, 0) = ssin;
 						Hc(0, 1) = -ssin;
 
 						CMatrixFixed<double, 2, 3>
-							Hq;  // Jacobian wrt transformation q
+							Hq;	 // Jacobian wrt transformation q
 						Hq(0, 0) = 1;
 						Hq(1, 1) = 1;
 
@@ -626,7 +623,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 							if (used_landmarks2[j]) continue;
 
 							lm2_pnts.getPoint(
-								j, p2_j_local);  // In local coords.
+								j, p2_j_local);	 // In local coords.
 							pdf_M2_j.mean = mrpt::poses::CPoint2D(
 								temptPose.mean +
 								p2_j_local);  // In (temptative) global coords:
@@ -740,7 +737,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 									mrpt::tfest::TMatchingPair(
 										best_pair_ij.first, best_pair_ij.second,
 										p1_i_localx, p1_i_localy, 0,  // MAP1
-										p2_j_localx, p2_j_localy, 0  // MAP2
+										p2_j_localx, p2_j_localy, 0	 // MAP2
 										));
 
 								keep_incorporating = true;
@@ -754,7 +751,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					if (ninliers > minInliersTOaccept)
 					{
 						CPosePDFSOG::TGaussianMode newGauss;
-						newGauss.log_w = 0;  // log(1);  //
+						newGauss.log_w = 0;	 // log(1);  //
 						// std::log(static_cast<double>(nCoincidences));
 						newGauss.mean = temptPose.mean;
 						newGauss.cov = temptPose.cov;
@@ -773,13 +770,12 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 						// Update estimate of N, the number of trials to ensure
 						// we pick,
 						// with probability p, a data set with no outliers.
-						const double fracinliers =
-							ninliers /
+						const double fracinliers = ninliers /
 							static_cast<double>(std::min(nLM1, nLM2));
-						double pNoOutliers =
-							1 - pow(fracinliers,
-									static_cast<double>(
-										2.0));  // minimumSizeSamplesToFit
+						double pNoOutliers = 1 -
+							pow(fracinliers,
+								static_cast<double>(
+									2.0));	// minimumSizeSamplesToFit
 
 						pNoOutliers = std::max(
 							std::numeric_limits<double>::epsilon(),
@@ -1022,7 +1018,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 			pivotPt_y - sin(phi) * map2width_2,
 			phi);  // Rotation point: the centre of img1:
 		CPoint2D v1, v3;
-		v2 = CPose2D(0, 0, 0) - v2;  // Inverse
+		v2 = CPose2D(0, 0, 0) - v2;	 // Inverse
 
 		for (size_t cy2 = 0; cy2 < map2_ly; cy2++)
 		{
@@ -1041,7 +1037,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 		map1_img.cross_correlation_FFT(
 			map2_img, outCrossCorr, -1, -1, -1, -1,
 			127,  // Bias to be substracted
-			127  // Bias to be substracted
+			127	 // Bias to be substracted
 		);
 
 		float corrPeak = outCrossCorr.maxCoeff();

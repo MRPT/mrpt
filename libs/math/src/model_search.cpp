@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/model_search.h>
 #include <mrpt/random/random_shuffle.h>
 
@@ -23,11 +23,13 @@ void ModelSearch::pickRandomIndex(
 	ASSERT_(p_size >= p_pick);
 
 	std::vector<size_t> a(p_size);
-	for (size_t i = 0; i < p_size; i++) a[i] = i;
+	for (size_t i = 0; i < p_size; i++)
+		a[i] = i;
 
 	mrpt::random::shuffle(a.begin(), a.end());
 	p_ind.resize(p_pick);
-	for (size_t i = 0; i < p_pick; i++) p_ind[i] = a[i];
+	for (size_t i = 0; i < p_pick; i++)
+		p_ind[i] = a[i];
 }
 
 //----------------------------------------------------------------------
@@ -41,5 +43,6 @@ void ModelSearch::pickRandomIndex(
 
 	mrpt::random::shuffle(inds.begin(), inds.end());
 	p_ind.resize(p_pick);
-	for (size_t i = 0; i < p_pick; i++) p_ind[i] = inds[i];
+	for (size_t i = 0; i < p_pick; i++)
+		p_ind[i] = inds[i];
 }

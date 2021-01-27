@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+
 #include <atomic>
 #include <deque>
 
@@ -116,8 +117,9 @@ class COctreePointRenderer
 	{
 		octree_assure_uptodate();
 		if (!m_octree_nodes.empty())
-			return {{mrpt::math::TPoint3D(m_octree_nodes[0].bb_min),
-					 mrpt::math::TPoint3D(m_octree_nodes[0].bb_max)}};
+			return {
+				{mrpt::math::TPoint3D(m_octree_nodes[0].bb_min),
+				 mrpt::math::TPoint3D(m_octree_nodes[0].bb_max)}};
 		else
 			return {};
 	}
@@ -194,11 +196,11 @@ class COctreePointRenderer
 			// Coordinate signs are relative to the parent center (split point):
 			switch (my_child_index)
 			{
-				case 0:  // x-, y-, z-
+				case 0:	 // x-, y-, z-
 					bb_min = parent.bb_min;
 					bb_max = parent.center;
 					break;
-				case 1:  // x+, y-, z-
+				case 1:	 // x+, y-, z-
 					bb_min.x = parent.center.x;
 					bb_max.x = parent.bb_max.x;
 					bb_min.y = parent.bb_min.y;
@@ -206,7 +208,7 @@ class COctreePointRenderer
 					bb_min.z = parent.bb_min.z;
 					bb_max.z = parent.center.z;
 					break;
-				case 2:  // x-, y+, z-
+				case 2:	 // x-, y+, z-
 					bb_min.x = parent.bb_min.x;
 					bb_max.x = parent.center.x;
 					bb_min.y = parent.center.y;
@@ -214,7 +216,7 @@ class COctreePointRenderer
 					bb_min.z = parent.bb_min.z;
 					bb_max.z = parent.center.z;
 					break;
-				case 3:  // x+, y+, z-
+				case 3:	 // x+, y+, z-
 					bb_min.x = parent.center.x;
 					bb_max.x = parent.bb_max.x;
 					bb_min.y = parent.center.y;
@@ -222,7 +224,7 @@ class COctreePointRenderer
 					bb_min.z = parent.bb_min.z;
 					bb_max.z = parent.center.z;
 					break;
-				case 4:  // x-, y-, z+
+				case 4:	 // x-, y-, z+
 					bb_min.x = parent.bb_min.x;
 					bb_max.x = parent.center.x;
 					bb_min.y = parent.bb_min.y;
@@ -230,7 +232,7 @@ class COctreePointRenderer
 					bb_min.z = parent.center.z;
 					bb_max.z = parent.bb_max.z;
 					break;
-				case 5:  // x+, y-, z+
+				case 5:	 // x+, y-, z+
 					bb_min.x = parent.center.x;
 					bb_max.x = parent.bb_max.x;
 					bb_min.y = parent.bb_min.y;
@@ -238,7 +240,7 @@ class COctreePointRenderer
 					bb_min.z = parent.center.z;
 					bb_max.z = parent.bb_max.z;
 					break;
-				case 6:  // x-, y+, z+
+				case 6:	 // x-, y+, z+
 					bb_min.x = parent.bb_min.x;
 					bb_max.x = parent.center.x;
 					bb_min.y = parent.center.y;
@@ -246,12 +248,11 @@ class COctreePointRenderer
 					bb_min.z = parent.center.z;
 					bb_max.z = parent.bb_max.z;
 					break;
-				case 7:  // x+, y+, z+
+				case 7:	 // x+, y+, z+
 					bb_min = parent.center;
 					bb_max = parent.bb_max;
 					break;
-				default:
-					throw std::runtime_error("my_child_index!=[0,7]");
+				default: throw std::runtime_error("my_child_index!=[0,7]");
 			}
 		}
 
@@ -331,10 +332,11 @@ class COctreePointRenderer
 			// If all 8 corners are way out of the screen (and all "cr_z" have
 			// the same sign),
 			// this node and all the children are not visible:
-			if (!box_crosses_image_plane && (px_min.x >= ri.viewport_width ||
-											 px_min.y >= ri.viewport_height ||
-											 px_max.x < 0 || px_max.y < 0))
-				return;  // Not visible
+			if (!box_crosses_image_plane &&
+				(px_min.x >= ri.viewport_width ||
+				 px_min.y >= ri.viewport_height || px_max.x < 0 ||
+				 px_max.y < 0))
+				return;	 // Not visible
 		}
 
 		// Check if the node has points and is visible:
@@ -346,10 +348,10 @@ class COctreePointRenderer
 				// visible:
 				m_visible_octree_nodes_ongoing++;
 
-				float render_area_sqpixels =
-					trust_me_youre_visible ? approx_area_sqpixels
-										   : std::abs(px_min.x - px_max.x) *
-												 std::abs(px_min.y - px_max.y);
+				float render_area_sqpixels = trust_me_youre_visible
+					? approx_area_sqpixels
+					: std::abs(px_min.x - px_max.x) *
+						std::abs(px_min.y - px_max.y);
 				render_area_sqpixels = std::max(1.0f, render_area_sqpixels);
 
 				// OK: Add to list of rendering-pending:
@@ -383,15 +385,14 @@ class COctreePointRenderer
 			if (children_are_all_visible_for_sure)
 			{
 				mrpt::img::TPixelCoordf
-					child_cr_px[8];  // No need to initialize
+					child_cr_px[8];	 // No need to initialize
 				float child_cr_z[8];  // No need to initialize
 
 				// Approximate area of the children nodes:
-				const float approx_child_area =
-					trust_me_youre_visible
-						? approx_area_sqpixels / 8.0f
-						: std::abs(px_min.x - px_max.x) *
-							  std::abs(px_min.y - px_max.y) / 8.0f;
+				const float approx_child_area = trust_me_youre_visible
+					? approx_area_sqpixels / 8.0f
+					: std::abs(px_min.x - px_max.x) *
+						std::abs(px_min.y - px_max.y) / 8.0f;
 
 				for (int i = 0; i < 8; i++)
 					this->octree_recursive_render(
@@ -466,15 +467,15 @@ class COctreePointRenderer
 					node.bb_max.x, node.bb_max.y, node.bb_max.z);  // 7
 
 // Project all these points:
-#define PROJ_SUB_NODE(POSTFIX)                                       \
-	mrpt::img::TPixelCoordf px_##POSTFIX;                            \
-	float depth_##POSTFIX;                                           \
-	ri.projectPointPixels(                                           \
-		p_##POSTFIX.x, p_##POSTFIX.y, p_##POSTFIX.z, px_##POSTFIX.x, \
+#define PROJ_SUB_NODE(POSTFIX)                                                 \
+	mrpt::img::TPixelCoordf px_##POSTFIX;                                      \
+	float depth_##POSTFIX;                                                     \
+	ri.projectPointPixels(                                                     \
+		p_##POSTFIX.x, p_##POSTFIX.y, p_##POSTFIX.z, px_##POSTFIX.x,           \
 		px_##POSTFIX.y, depth_##POSTFIX);
 
-#define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX)             \
-	const mrpt::img::TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
+#define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX)                             \
+	const mrpt::img::TPixelCoordf px_##POSTFIX = cr_px[INDEX];                 \
 	float depth_##POSTFIX = cr_z[INDEX];
 
 				PROJ_SUB_NODE_ALREADY_DONE(0, Xm_Ym_Zm)
@@ -512,17 +513,17 @@ class COctreePointRenderer
 				PROJ_SUB_NODE_ALREADY_DONE(7, Xp_Yp_Zp)
 
 // Recursive call children nodes:
-#define DO_RECURSE_CHILD(                                                \
-	INDEX, SEQ0, SEQ1, SEQ2, SEQ3, SEQ4, SEQ5, SEQ6, SEQ7)               \
-	{                                                                    \
-		mrpt::img::TPixelCoordf child_cr_px[8] = {                       \
-			px_##SEQ0, px_##SEQ1, px_##SEQ2, px_##SEQ3,                  \
-			px_##SEQ4, px_##SEQ5, px_##SEQ6, px_##SEQ7};                 \
-		float child_cr_z[8] = {depth_##SEQ0, depth_##SEQ1, depth_##SEQ2, \
-							   depth_##SEQ3, depth_##SEQ4, depth_##SEQ5, \
-							   depth_##SEQ6, depth_##SEQ7};              \
-		this->octree_recursive_render(                                   \
-			node.child_id[INDEX], ri, child_cr_px, child_cr_z);          \
+#define DO_RECURSE_CHILD(                                                      \
+	INDEX, SEQ0, SEQ1, SEQ2, SEQ3, SEQ4, SEQ5, SEQ6, SEQ7)                     \
+	{                                                                          \
+		mrpt::img::TPixelCoordf child_cr_px[8] = {                             \
+			px_##SEQ0, px_##SEQ1, px_##SEQ2, px_##SEQ3,                        \
+			px_##SEQ4, px_##SEQ5, px_##SEQ6, px_##SEQ7};                       \
+		float child_cr_z[8] = {depth_##SEQ0, depth_##SEQ1, depth_##SEQ2,       \
+							   depth_##SEQ3, depth_##SEQ4, depth_##SEQ5,       \
+							   depth_##SEQ6, depth_##SEQ7};                    \
+		this->octree_recursive_render(                                         \
+			node.child_id[INDEX], ri, child_cr_px, child_cr_z);                \
 	}
 
 				//                     0         1         2         3
@@ -787,7 +788,7 @@ class COctreePointRenderer
 		o << "Total elements in all nodes: " << total_elements << std::endl;
 	}  // end of octree_debug_dump_tree
 
-};  // namespace opengl
+};	// namespace opengl
 
 }  // namespace opengl
 }  // namespace mrpt

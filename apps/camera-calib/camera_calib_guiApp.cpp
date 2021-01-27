@@ -11,6 +11,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "camera_calib_guiMain.h"
 //*)
 

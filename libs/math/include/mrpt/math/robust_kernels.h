@@ -47,7 +47,7 @@ struct RobustKernel<rkLeastSquares, T>
 	{
 		out_1st_deriv = 1;
 		out_2nd_deriv = 0;
-		return r2;  // return: 2*cost;  cost: 0.5* |r|^2
+		return r2;	// return: 2*cost;  cost: 0.5* |r|^2
 	}
 };
 

@@ -7,22 +7,22 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
+#include "opengl-precomp.h"	 // Precompiled header
 //
 #include <mrpt/math/TLine3D.h>
-#include <mrpt/math/geometry.h>  // crossProduct3D()
+#include <mrpt/math/geometry.h>	 // crossProduct3D()
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/DefaultShaders.h>
+#include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTimeLogger.h>
-#include <Eigen/Dense>
 
-#include <mrpt/opengl/opengl_api.h>
+#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -105,7 +105,7 @@ void COpenGLViewport::insert(const CRenderizable::Ptr& newObject)
 static int sizeFromRatio(
 	const int startCoord, const double dSize, const int iLength)
 {
-	if (dSize > 1)  // >1 -> absolute pixels:
+	if (dSize > 1)	// >1 -> absolute pixels:
 		return static_cast<int>(dSize);
 	else if (dSize < 0)
 	{  // Negative numbers: Specify the right side coordinates instead of
@@ -153,8 +153,7 @@ void COpenGLViewport::renderImageMode() const
 	_.mv_matrix.setIdentity();
 	_.p_matrix.setIdentity();
 
-	if (ratio > 1)
-		_.p_matrix(1, 1) *= ratio;
+	if (ratio > 1) _.p_matrix(1, 1) *= ratio;
 	else if (ratio > 0)
 		_.p_matrix(0, 0) /= ratio;
 
@@ -314,13 +313,13 @@ void COpenGLViewport::renderNormalSceneMode() const
 	_.mv_matrix.setIdentity();
 
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);  // GL_LESS
+	glDepthFunc(GL_LEQUAL);	 // GL_LESS
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 // Enable point sizes>1
-#if defined(GL_PROGRAM_POINT_SIZE)  // it seems it's undefined in OSX (?)
+#if defined(GL_PROGRAM_POINT_SIZE)	// it seems it's undefined in OSX (?)
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	CHECK_OPENGL_ERROR();
 #endif
@@ -522,8 +521,7 @@ void COpenGLViewport::render(
 
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
-	if (isImageViewMode())
-		renderImageMode();
+	if (isImageViewMode()) renderImageMode();
 	else
 		renderNormalSceneMode();
 
@@ -564,7 +562,8 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 	uint32_t n;
 	n = (uint32_t)m_objects.size();
 	out << n;
-	for (const auto& m_object : m_objects) out << *m_object;
+	for (const auto& m_object : m_objects)
+		out << *m_object;
 
 	// Added in v2: Global OpenGL settings:
 	out << m_OpenGL_enablePolygonNicest;
@@ -626,18 +625,14 @@ void COpenGLViewport::serializeFrom(
 				m_objects.begin(), m_objects.end(), ObjectReadFromStream(&in));
 
 			// Added in v2: Global OpenGL settings:
-			if (version >= 2)
-			{
-				in >> m_OpenGL_enablePolygonNicest;
-			}
+			if (version >= 2) { in >> m_OpenGL_enablePolygonNicest; }
 			else
 			{
 				// Defaults
 			}
 
 			// Added in v3: Lights
-			if (version >= 3)
-				in >> m_lights;
+			if (version >= 3) in >> m_lights;
 			else
 			{
 				// Default:
@@ -668,8 +663,7 @@ void COpenGLViewport::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -680,8 +674,7 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 {
 	for (auto& m_object : m_objects)
 	{
-		if (m_object->m_name == str)
-			return m_object;
+		if (m_object->m_name == str) return m_object;
 		else if (
 			m_object->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
@@ -697,7 +690,8 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 
 void COpenGLViewport::initializeTextures()
 {
-	for (auto& obj : m_objects) obj->initializeTextures();
+	for (auto& obj : m_objects)
+		obj->initializeTextures();
 }
 
 void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
@@ -718,7 +712,8 @@ void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
 			dynamic_cast<CSetOfObjects*>(m_object.get())
 				->dumpListOfObjects(auxLst);
 
-			for (const auto& i : auxLst) lst.emplace_back(string(" ") + i);
+			for (const auto& i : auxLst)
+				lst.emplace_back(string(" ") + i);
 		}
 	}
 }
@@ -793,8 +788,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		double Ax = m_state.eyeDistance * 0.5;
 		double Ay = Ax;
 
-		if (ASPECT > 1)
-			Ax *= ASPECT;
+		if (ASPECT > 1) Ax *= ASPECT;
 		else
 		{
 			if (ASPECT != 0) Ay /= ASPECT;

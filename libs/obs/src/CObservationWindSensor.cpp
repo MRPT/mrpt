@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationWindSensor.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -36,24 +36,20 @@ void CObservationWindSensor::serializeFrom(
 		case 3:
 		{
 			in >> speed >> direction;
-			if (version >= 1)
-				in >> sensorLabel;
+			if (version >= 1) in >> sensorLabel;
 			else
 				sensorLabel = "";
 
-			if (version >= 2)
-				in >> timestamp;
+			if (version >= 2) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 
-			if (version >= 3)
-				in >> sensorPoseOnRobot;
+			if (version >= 3) in >> sensorPoseOnRobot;
 			else
 				sensorPoseOnRobot = CPose3D();
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

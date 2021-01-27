@@ -13,6 +13,7 @@
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class is in mrpt-maps
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -84,7 +85,7 @@ int main(int argc, char** argv)
 		gl_2d_scan->enablePoints(true);
 		gl_2d_scan->enableLine(true);
 		gl_2d_scan->enableSurface(true);
-		gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3);  // RGBA
+		gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3);	// RGBA
 
 		opengl::COpenGLViewport::Ptr
 			viewInt;  // Extra viewports for the RGB images.
@@ -119,7 +120,7 @@ int main(int argc, char** argv)
 		bool bObs = false, bError = true;
 		mrpt::system::TTimeStamp last_obs_tim = INVALID_TIMESTAMP;
 
-		while (!win3D.keyHit())  // Push any key to exit // win3D.isOpen()
+		while (!win3D.keyHit())	 // Push any key to exit // win3D.isOpen()
 		{
 			//    cout << "Get new observation\n";
 			CObservation3DRangeScan::Ptr newObs =

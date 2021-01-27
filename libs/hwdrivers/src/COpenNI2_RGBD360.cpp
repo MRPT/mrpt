@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled header
-
+#include "hwdrivers-precomp.h"	// Precompiled header
+//
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
 #include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -44,7 +44,7 @@ COpenNI2_RGBD360::~COpenNI2_RGBD360()
 {
 #if MRPT_HAS_OPENNI2
 	kill();
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /** This method can or cannot be implemented in the derived class, depending on
@@ -71,7 +71,7 @@ void COpenNI2_RGBD360::initialize()
 		open(sensor_id);
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
@@ -111,7 +111,7 @@ void COpenNI2_RGBD360::doProcess()
 	}
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /** Loads specific configuration for the device from a given source of
@@ -245,7 +245,7 @@ void COpenNI2_RGBD360::getNextObservation(
 	cout << "getNextObservation took " << 1000 * tictac.Tac() << "ms\n";
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /* -----------------------------------------------------

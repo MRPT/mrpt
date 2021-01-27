@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/SO_SE_average.h>
@@ -84,7 +84,7 @@ std::tuple<mrpt::math::CMatrixDouble66, CPose3D>
 			MMt.matProductOf_AAt(estMean_i);
 			MMt += m.val.cov;
 			MMt *= w;
-			estCov += MMt;  // w * ( (it)->val.cov +
+			estCov += MMt;	// w * ( (it)->val.cov +
 			// ((estMean_i-estMean)*(~(estMean_i-estMean))) );
 		}
 
@@ -99,7 +99,8 @@ void CPose3DPDFSOG::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t N = m_modes.size();
 	out << N;
-	for (const auto& m : m_modes) out << m.log_w << m.val.mean << m.val.cov;
+	for (const auto& m : m_modes)
+		out << m.log_w << m.val.mean << m.val.cov;
 }
 void CPose3DPDFSOG::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -132,8 +133,7 @@ void CPose3DPDFSOG::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -141,12 +141,10 @@ void CPose3DPDFSOG::copyFrom(const CPose3DPDF& o)
 {
 	MRPT_START
 
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG))
-	{
-		*this = dynamic_cast<const CPose3DPDFSOG&>(o);
-	}
+	{ *this = dynamic_cast<const CPose3DPDFSOG&>(o); }
 	else
 	{
 		this->resize(1);
@@ -181,7 +179,8 @@ bool CPose3DPDFSOG::saveToTextFile(const std::string& file) const
  ---------------------------------------------------------------*/
 void CPose3DPDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase)
 {
-	for (auto& m : m_modes) m.val.changeCoordinatesReference(newReferenceBase);
+	for (auto& m : m_modes)
+		m.val.changeCoordinatesReference(newReferenceBase);
 }
 
 /*---------------------------------------------------------------
@@ -227,8 +226,10 @@ void CPose3DPDFSOG::normalizeWeights()
 	MRPT_START
 	if (m_modes.empty()) return;
 	double maxW = m_modes[0].log_w;
-	for (auto& m : m_modes) maxW = max(maxW, m.log_w);
-	for (auto& m : m_modes) m.log_w -= maxW;
+	for (auto& m : m_modes)
+		maxW = max(maxW, m.log_w);
+	for (auto& m : m_modes)
+		m.log_w -= maxW;
 	MRPT_END
 }
 
@@ -287,7 +288,8 @@ void CPose3DPDFSOG::appendFrom(const CPose3DPDFSOG& o)
 	if (o.m_modes.empty()) return;
 
 	// Make copies:
-	for (const auto& m_mode : o.m_modes) m_modes.push_back(m_mode);
+	for (const auto& m_mode : o.m_modes)
+		m_modes.push_back(m_mode);
 
 	normalizeWeights();
 	MRPT_END
@@ -298,10 +300,7 @@ void CPose3DPDFSOG::appendFrom(const CPose3DPDFSOG& o)
  ---------------------------------------------------------------*/
 void CPose3DPDFSOG::getMostLikelyMode(CPose3DPDFGaussian& outVal) const
 {
-	if (this->empty())
-	{
-		outVal = CPose3DPDFGaussian();
-	}
+	if (this->empty()) { outVal = CPose3DPDFGaussian(); }
 	else
 	{
 		auto it_best = m_modes.end();

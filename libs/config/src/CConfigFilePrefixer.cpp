@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "config-precomp.h"  // Precompiled headers
-
+#include "config-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/config/CConfigFilePrefixer.h>
 
 using namespace mrpt::config;
@@ -62,7 +62,8 @@ void CConfigFilePrefixer::getAllSections(
 {
 	ensureIsBound();
 	m_bound_object->getAllSections(sections);
-	for (auto& section : sections) section = m_prefix_sections + section;
+	for (auto& section : sections)
+		section = m_prefix_sections + section;
 }
 
 void CConfigFilePrefixer::getAllKeys(
@@ -70,7 +71,8 @@ void CConfigFilePrefixer::getAllKeys(
 {
 	ensureIsBound();
 	m_bound_object->getAllKeys(section, keys);
-	for (auto& key : keys) key = m_prefix_keys + key;
+	for (auto& key : keys)
+		key = m_prefix_keys + key;
 }
 void CConfigFilePrefixer::clear()
 {

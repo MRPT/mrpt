@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
 #include <mrpt/gui/default_mrpt_glfw_icon.h>
@@ -32,7 +32,7 @@ CDisplayWindowGUI::CDisplayWindowGUI(
 	images.pixels = default_mrpt_glfw_icon();
 
 // glfwSetWindowIcon added in glfw 3.2
-#if GLFW_VERSION_MAJOR > 3 || \
+#if GLFW_VERSION_MAJOR > 3 ||                                                  \
 	(GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR >= 2)
 	glfwSetWindowIcon(screen()->glfwWindow(), 1, &images);
 #endif
@@ -120,8 +120,7 @@ bool CDisplayWindowGUI::scrollEvent(
 
 bool CDisplayWindowGUI::dropEvent(const std::vector<std::string>& filenames)
 {
-	if (m_dropFilesCallback)
-		return m_dropFilesCallback(filenames);
+	if (m_dropFilesCallback) return m_dropFilesCallback(filenames);
 	else
 		return false;
 }
@@ -294,4 +293,4 @@ void CDisplayWindowGUI::SubWindows::onSubWindowFocused(int index)
 	if (index >= 0 && index < n) uiCombo->setSelectedIndex(index);
 }
 
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI

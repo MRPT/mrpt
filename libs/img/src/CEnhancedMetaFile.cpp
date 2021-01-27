@@ -8,13 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include "img-precomp.h"  // Precompiled headers
-
+//
+#include <mrpt/config.h>
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/os.h>
 
-#include <mrpt/config.h>
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 

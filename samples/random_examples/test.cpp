@@ -15,6 +15,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/random.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -33,7 +34,7 @@ void TestHist()
 	hist.add(45);
 
 	cout << "Histogram test:" << endl;
-	cout << "Should be 1: " << hist.getBinCount(0) << endl;  // Result: "1"
+	cout << "Should be 1: " << hist.getBinCount(0) << endl;	 // Result: "1"
 	cout << "Should be 0.33: " << hist.getBinRatio(0)
 		 << endl;  // Result: "0.33"
 }

@@ -8,13 +8,12 @@
    +------------------------------------------------------------------------+ */
 
 #pragma once
-#include <QMainWindow>
-#include <QSettings>
-
-#include <memory>
-
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+
+#include <QMainWindow>
+#include <QSettings>
+#include <memory>
 
 /** This class implements GUI of main window and connection with other classes
  */

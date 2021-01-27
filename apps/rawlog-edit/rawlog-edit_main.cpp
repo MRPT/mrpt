@@ -470,10 +470,7 @@ int main(int argc, char** argv)
 		for (auto& arg_op : arg_ops)
 			if (arg_op->isSet())
 			{
-				if (selected_op.empty())
-				{
-					selected_op = arg_op->getName();
-				}
+				if (selected_op.empty()) { selected_op = arg_op->getName(); }
 				else
 					throw std::runtime_error(
 						"Exactly one operation must be indicated on command "

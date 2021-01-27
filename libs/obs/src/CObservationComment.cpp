@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationComment.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <iostream>
 
 using namespace mrpt::obs;
@@ -30,11 +31,8 @@ void CObservationComment::serializeFrom(
 {
 	switch (version)
 	{
-		case 0:
-			in >> text >> timestamp;
-			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		case 0: in >> text >> timestamp; break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

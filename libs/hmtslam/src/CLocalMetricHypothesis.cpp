@@ -8,7 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -19,8 +20,6 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/hmtslam/CRobotPosesGraph.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -70,7 +69,7 @@ void CLocalMetricHypothesis::getAs3DScene(
 			std::make_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 5);
 		obj->setColor(0.4f, 0.4f, 0.4f);
 
-		objs->insert(obj);  // it will free the memory
+		objs->insert(obj);	// it will free the memory
 	}
 
 	// ---------------------------------------------------------
@@ -119,7 +118,7 @@ void CLocalMetricHypothesis::getAs3DScene(
 	}
 
 	map<CHMHMapNode::TNodeID, CPoint3D>
-		areas_mean;  // Store the mean pose of each area
+		areas_mean;	 // Store the mean pose of each area
 	map<CHMHMapNode::TNodeID, int> areas_howmany;
 
 	for (it = lstPoses.begin(); it != lstPoses.end(); it++)
@@ -140,7 +139,7 @@ void CLocalMetricHypothesis::getAs3DScene(
 		// Mean:
 		ellip->setLocation(
 			pdf.mean.x(), pdf.mean.y(),
-			pdf.mean.z() + 0.005);  // To be above the ground gridmap...
+			pdf.mean.z() + 0.005);	// To be above the ground gridmap...
 
 		// Cov:
 		CMatrixDouble C = CMatrixDouble(pdf.cov);  // 6x6 cov.
@@ -625,7 +624,7 @@ void CLocalMetricHypothesis::rebuildMetricMaps()
 		for (auto itP = m_particle.d->robotPoses.begin(); itP != End; ++itP)
 		{
 			if (itP->first !=
-				m_currentRobotPose)  // Current robot pose has no SF stored.
+				m_currentRobotPose)	 // Current robot pose has no SF stored.
 			{
 				auto SFit = m_SFs.find(itP->first);
 				ASSERT_(SFit != m_SFs.end());
@@ -840,7 +839,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 			pdfOrigin_ok = true;
 		}
 
-		if (*it != m_currentRobotPose)  // The current robot pose has no SF
+		if (*it != m_currentRobotPose)	// The current robot pose has no SF
 		{
 			auto itSF = m_SFs.find(*it);
 			ASSERT_(itSF != m_SFs.end());
@@ -852,7 +851,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 			}
 			else
 			{
-				poseInfo.sf = itSF->second;  // Copy observations
+				poseInfo.sf = itSF->second;	 // Copy observations
 			}
 		}
 	}
@@ -927,8 +926,7 @@ void CLocalMetricHypothesis::serializeFrom(
 			readParticlesFromStream(in);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -955,8 +953,7 @@ void CLSLAMParticleData::serializeFrom(
 			in >> metricMaps >> robotPoses;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

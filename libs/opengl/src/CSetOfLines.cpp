@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/serialization/CArchive.h>
@@ -121,7 +121,7 @@ void CSetOfLines::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_Segments << m_lineWidth;
-	out << m_antiAliasing;  // Added in v3
+	out << m_antiAliasing;	// Added in v3
 	CRenderizableShaderPoints::params_serialize(out);  // v4
 }
 
@@ -136,8 +136,7 @@ void CSetOfLines::serializeFrom(
 			readFromStreamRender(in);
 			CVectorFloat x0, y0, z0, x1, y1, z1;
 			in >> x0 >> y0 >> z0 >> x1 >> y1 >> z1;
-			if (version >= 1)
-				in >> m_lineWidth;
+			if (version >= 1) in >> m_lineWidth;
 			else
 				m_lineWidth = 1;
 			size_t N = x0.size();
@@ -160,18 +159,15 @@ void CSetOfLines::serializeFrom(
 			readFromStreamRender(in);
 			in >> m_Segments;
 			in >> m_lineWidth;
-			if (version >= 3)
-				in >> m_antiAliasing;
+			if (version >= 3) in >> m_antiAliasing;
 			else
 				m_antiAliasing = true;
-			if (version >= 4)
-				CRenderizableShaderPoints::params_deserialize(in);
+			if (version >= 4) CRenderizableShaderPoints::params_deserialize(in);
 			else
 				m_pointSize = .0f;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }

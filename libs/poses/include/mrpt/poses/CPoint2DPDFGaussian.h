@@ -121,5 +121,5 @@ class CPoint2DPDFGaussian : public CPoint2DPDF
 	/** Returns the Mahalanobis distance from this PDF to some point */
 	double mahalanobisDistanceToPoint(const double x, const double y) const;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

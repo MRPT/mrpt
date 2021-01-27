@@ -11,13 +11,12 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/math/CMatrixB.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/geometry.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
-
-#include <mrpt/math/geometry.h>
 
 namespace mrpt::opengl
 {
@@ -65,7 +64,8 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 		 * Union type with the actual data.
 		 * \sa rangeType
 		 */
-		union rd {
+		union rd
+		{
 			struct
 			{
 				double initial;
@@ -157,16 +157,11 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 							mrpt::sign(
 								rangeData.mode0.final -
 								rangeData.mode0.initial))
-							   ? fabs(
-									 rangeData.mode0.final -
-									 rangeData.mode0.initial)
-							   : 0;
-				case 1:
-					return rangeData.mode1.final - rangeData.mode1.initial;
-				case 2:
-					return rangeData.mode2.aperture;
-				default:
-					throw std::logic_error("Unknown range type.");
+						? fabs(rangeData.mode0.final - rangeData.mode0.initial)
+						: 0;
+				case 1: return rangeData.mode1.final - rangeData.mode1.initial;
+				case 2: return rangeData.mode2.aperture;
+				default: throw std::logic_error("Unknown range type.");
 			}
 		}
 		/**
@@ -178,14 +173,12 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 			switch (rangeType)
 			{
 				case 0:
-				case 1:
-					return rangeData.mode0.initial;
+				case 1: return rangeData.mode0.initial;
 				case 2:
 					return rangeData.mode2.negToPos
-							   ? -rangeData.mode2.aperture / 2
-							   : rangeData.mode2.aperture / 2;
-				default:
-					throw std::logic_error("Unknown range type.");
+						? -rangeData.mode2.aperture / 2
+						: rangeData.mode2.aperture / 2;
+				default: throw std::logic_error("Unknown range type.");
 			}
 		}
 		/**
@@ -201,16 +194,14 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 							mrpt::sign(
 								rangeData.mode0.final -
 								rangeData.mode0.initial))
-							   ? rangeData.mode0.final
-							   : rangeData.mode0.initial;
-				case 1:
-					return rangeData.mode1.final;
+						? rangeData.mode0.final
+						: rangeData.mode0.initial;
+				case 1: return rangeData.mode1.final;
 				case 2:
 					return rangeData.mode2.negToPos
-							   ? rangeData.mode2.aperture / 2
-							   : -rangeData.mode2.aperture / 2;
-				default:
-					throw std::logic_error("Unknown range type.");
+						? rangeData.mode2.aperture / 2
+						: -rangeData.mode2.aperture / 2;
+				default: throw std::logic_error("Unknown range type.");
 			}
 		}
 		/**
@@ -221,21 +212,17 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 		{
 			switch (rangeType)
 			{
-				case 0:
-					return rangeData.mode0.increment;
+				case 0: return rangeData.mode0.increment;
 				case 1:
 					return (rangeData.mode1.final - rangeData.mode1.initial) /
-						   static_cast<double>(rangeData.mode1.amount - 1);
+						static_cast<double>(rangeData.mode1.amount - 1);
 				case 2:
 					return rangeData.mode2.negToPos
-							   ? rangeData.mode2.aperture /
-									 static_cast<double>(
-										 rangeData.mode2.amount - 1)
-							   : -rangeData.mode2.aperture /
-									 static_cast<double>(
-										 rangeData.mode2.amount - 1);
-				default:
-					throw std::logic_error("Unknown range type.");
+						? rangeData.mode2.aperture /
+							static_cast<double>(rangeData.mode2.amount - 1)
+						: -rangeData.mode2.aperture /
+							static_cast<double>(rangeData.mode2.amount - 1);
+				default: throw std::logic_error("Unknown range type.");
 			}
 		}
 		/**
@@ -251,17 +238,15 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 							mrpt::sign(
 								rangeData.mode0.final -
 								rangeData.mode0.initial))
-							   ? 1 + static_cast<size_t>(ceil(
-										 (rangeData.mode0.final -
-										  rangeData.mode0.initial) /
-										 rangeData.mode0.increment))
-							   : 1;
-				case 1:
-					return rangeData.mode1.amount;
-				case 2:
-					return rangeData.mode2.amount;
-				default:
-					throw std::logic_error("Unknown range type.");
+						? 1 +
+							static_cast<size_t>(ceil(
+								(rangeData.mode0.final -
+								 rangeData.mode0.initial) /
+								rangeData.mode0.increment))
+						: 1;
+				case 1: return rangeData.mode1.amount;
+				case 2: return rangeData.mode2.amount;
+				default: throw std::logic_error("Unknown range type.");
 			}
 		}
 		/**
@@ -278,16 +263,13 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 		{
 			switch (rangeType)
 			{
-				case 0:
-					return mrpt::sign(rangeData.mode0.increment) > 0;
+				case 0: return mrpt::sign(rangeData.mode0.increment) > 0;
 				case 1:
 					return mrpt::sign(
 							   rangeData.mode1.final -
 							   rangeData.mode1.initial) > 0;
-				case 2:
-					return rangeData.mode2.negToPos;
-				default:
-					throw std::logic_error("Unknown range type.");
+				case 2: return rangeData.mode2.negToPos;
+				default: throw std::logic_error("Unknown range type.");
 			}
 		}
 	};

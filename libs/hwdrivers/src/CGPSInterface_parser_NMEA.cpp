@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt::hwdrivers;
@@ -30,7 +31,7 @@ bool CGPSInterface::implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide)
 	const size_t nBytesAval = m_rx_buffer.size();  // Available for read
 
 	// If the string does not start with "$GP" it is not valid:
-	uint8_t buf[3];  // peek_buffer
+	uint8_t buf[3];	 // peek_buffer
 	m_rx_buffer.peek_many(&buf[0], 3);
 
 	// Known "talkers": Baidu, Galileo, GPS, GLONASS, etc.
@@ -69,7 +70,8 @@ bool CGPSInterface::implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide)
 	if (line_is_ended)
 	{
 		// Pop from buffer:
-		for (size_t i = 0; i < line.size(); i++) m_rx_buffer.pop();
+		for (size_t i = 0; i < line.size(); i++)
+			m_rx_buffer.pop();
 
 		// Parse:
 		const bool did_have_gga = m_just_parsed_messages.has_GGA_datum();
@@ -81,10 +83,7 @@ bool CGPSInterface::implement_parser_NMEA(size_t& out_minimum_rx_buf_to_decide)
 
 			// Save GGA cache (useful for NTRIP,...)
 			const bool now_has_gga = m_just_parsed_messages.has_GGA_datum();
-			if (now_has_gga && !did_have_gga)
-			{
-				m_last_GGA = line;
-			}
+			if (now_has_gga && !did_have_gga) { m_last_GGA = line; }
 		}
 		else
 		{
@@ -170,8 +169,7 @@ bool CGPSInterface::parse_NMEA(
 
 		// N/S:
 		token = lstTokens[3];
-		if (token.empty())
-			all_fields_ok = false;
+		if (token.empty()) all_fields_ok = false;
 		else if (token[0] == 'S')
 			gga.fields.latitude_degrees = -gga.fields.latitude_degrees;
 
@@ -189,8 +187,7 @@ bool CGPSInterface::parse_NMEA(
 
 		// E_W:
 		token = lstTokens[5];
-		if (token.empty())
-			all_fields_ok = false;
+		if (token.empty()) all_fields_ok = false;
 		else if (token[0] == 'W')
 			gga.fields.longitude_degrees = -gga.fields.longitude_degrees;
 
@@ -214,8 +211,7 @@ bool CGPSInterface::parse_NMEA(
 
 		// Altitude:
 		token = lstTokens[9];
-		if (token.empty())
-			all_fields_ok = false;
+		if (token.empty()) all_fields_ok = false;
 		else
 			gga.fields.altitude_meters = atof(token.c_str());
 
@@ -271,8 +267,7 @@ bool CGPSInterface::parse_NMEA(
 
 		// Valid?
 		token = lstTokens[2];
-		if (token.empty())
-			all_fields_ok = false;
+		if (token.empty()) all_fields_ok = false;
 		else
 			rmc.fields.validity_char = token.c_str()[0];
 
@@ -289,8 +284,7 @@ bool CGPSInterface::parse_NMEA(
 
 		// N/S:
 		token = lstTokens[4];
-		if (token.empty())
-			all_fields_ok = false;
+		if (token.empty()) all_fields_ok = false;
 		else if (token[0] == 'S')
 			rmc.fields.latitude_degrees = -rmc.fields.latitude_degrees;
 
@@ -308,8 +302,7 @@ bool CGPSInterface::parse_NMEA(
 
 		// E/W:
 		token = lstTokens[6];
-		if (token.empty())
-			all_fields_ok = false;
+		if (token.empty()) all_fields_ok = false;
 		else if (token[0] == 'W')
 			rmc.fields.longitude_degrees = -rmc.fields.longitude_degrees;
 
@@ -339,8 +332,7 @@ bool CGPSInterface::parse_NMEA(
 			rmc.fields.magnetic_dir = atof(token.c_str());
 			// E/W:
 			token = lstTokens[11];
-			if (token.empty())
-				all_fields_ok = false;
+			if (token.empty()) all_fields_ok = false;
 			else if (token[0] == 'W')
 				rmc.fields.magnetic_dir = -rmc.fields.magnetic_dir;
 		}
@@ -350,13 +342,12 @@ bool CGPSInterface::parse_NMEA(
 		{
 			// Only for NMEA 2.3
 			token = lstTokens[12];
-			if (token.empty())
-				all_fields_ok = false;
+			if (token.empty()) all_fields_ok = false;
 			else
 				rmc.fields.positioning_mode = token.c_str()[0];
 		}
 		else
-			rmc.fields.positioning_mode = 'A';  // Default for older receiver
+			rmc.fields.positioning_mode = 'A';	// Default for older receiver
 
 		if (all_fields_ok)
 		{
@@ -393,8 +384,7 @@ bool CGPSInterface::parse_NMEA(
 
 		// N/S:
 		token = lstTokens[2];
-		if (token.empty())
-			all_fields_ok = false;
+		if (token.empty()) all_fields_ok = false;
 		else if (token[0] == 'S')
 			gll.fields.latitude_degrees = -gll.fields.latitude_degrees;
 
@@ -412,8 +402,7 @@ bool CGPSInterface::parse_NMEA(
 
 		// E/W:
 		token = lstTokens[4];
-		if (token.empty())
-			all_fields_ok = false;
+		if (token.empty()) all_fields_ok = false;
 		else if (token[0] == 'W')
 			gll.fields.longitude_degrees = -gll.fields.longitude_degrees;
 
@@ -434,8 +423,7 @@ bool CGPSInterface::parse_NMEA(
 
 			// Valid?
 			token = lstTokens[6];
-			if (token.empty())
-				all_fields_ok = false;
+			if (token.empty()) all_fields_ok = false;
 			else
 				gll.fields.validity_char = token.c_str()[0];
 		}
@@ -561,14 +549,12 @@ bool CGPSInterface::parse_NMEA(
 		//     2.1      Vertical dilution of precision (VDOP)
 		//     *39      the checksum data, always begins with *
 		token = lstTokens[1];
-		if (!token.empty())
-			gsa.fields.auto_selection_fix = token[0];
+		if (!token.empty()) gsa.fields.auto_selection_fix = token[0];
 		else
 			all_fields_ok = false;
 
 		token = lstTokens[2];
-		if (!token.empty())
-			gsa.fields.fix_2D_3D = token[0];
+		if (!token.empty()) gsa.fields.fix_2D_3D = token[0];
 		else
 			all_fields_ok = false;
 

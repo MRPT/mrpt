@@ -12,6 +12,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/system/os.h>
+
 #include <vector>
 
 namespace mrpt
@@ -249,7 +250,7 @@ class CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 	 */
 	void setWindowTitle(const std::string& str) override;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace gui
 

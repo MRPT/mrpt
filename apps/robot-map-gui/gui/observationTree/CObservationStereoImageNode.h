@@ -9,7 +9,6 @@
    */
 #pragma once
 #include "CBaseObservationNode.h"
-
 #include "mrpt/obs/CObservationStereoImages.h"
 
 class CObservationStereoImagesNode : public CBaseObservationNode

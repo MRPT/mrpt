@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "kinematics-precomp.h"  // Precompiled header
-
+#include "kinematics-precomp.h"	 // Precompiled header
+//
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -33,20 +33,11 @@ std::string CVehicleVelCmd_Holo::getVelCmdDescription(const int index) const
 {
 	switch (index)
 	{
-		case 0:
-			return "vel";
-			break;
-		case 1:
-			return "dir_local";
-			break;
-		case 2:
-			return "ramp_time";
-			break;
-		case 3:
-			return "rot_speed";
-			break;
-		default:
-			THROW_EXCEPTION_FMT("index out of bounds: %i", index);
+		case 0: return "vel"; break;
+		case 1: return "dir_local"; break;
+		case 2: return "ramp_time"; break;
+		case 3: return "rot_speed"; break;
+		default: THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -54,20 +45,11 @@ double CVehicleVelCmd_Holo::getVelCmdElement(const int index) const
 {
 	switch (index)
 	{
-		case 0:
-			return vel;
-			break;
-		case 1:
-			return dir_local;
-			break;
-		case 2:
-			return ramp_time;
-			break;
-		case 3:
-			return rot_speed;
-			break;
-		default:
-			THROW_EXCEPTION_FMT("index out of bounds: %i", index);
+		case 0: return vel; break;
+		case 1: return dir_local; break;
+		case 2: return ramp_time; break;
+		case 3: return rot_speed; break;
+		default: THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -75,20 +57,11 @@ void CVehicleVelCmd_Holo::setVelCmdElement(const int index, const double val)
 {
 	switch (index)
 	{
-		case 0:
-			vel = val;
-			break;
-		case 1:
-			dir_local = val;
-			break;
-		case 2:
-			ramp_time = val;
-			break;
-		case 3:
-			rot_speed = val;
-			break;
-		default:
-			THROW_EXCEPTION_FMT("index out of bounds: %i", index);
+		case 0: vel = val; break;
+		case 1: dir_local = val; break;
+		case 2: ramp_time = val; break;
+		case 3: rot_speed = val; break;
+		default: THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -106,11 +79,8 @@ void CVehicleVelCmd_Holo::serializeFrom(
 {
 	switch (version)
 	{
-		case 0:
-			in >> vel >> dir_local >> ramp_time >> rot_speed;
-			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		case 0: in >> vel >> dir_local >> ramp_time >> rot_speed; break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -142,7 +112,7 @@ double CVehicleVelCmd_Holo::cmdVel_limits(
 	if (vel > params.robotMax_V_mps) f = params.robotMax_V_mps / vel;
 
 	vel *= f;  // |(vx,vy)|
-	rot_speed *= f;  // rot_speed
+	rot_speed *= f;	 // rot_speed
 	// ramp_time: leave unchanged
 	// Blending with "beta" not required, since the ramp_time already blends
 	// cmds for holo robots.

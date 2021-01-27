@@ -238,7 +238,7 @@ class CActionRobotMovement2D : public CAction
 	mutable mrpt::math::CMatrixDouble33 m_fastDrawGauss_Z;
 	mutable mrpt::poses::CPose2D m_fastDrawGauss_M;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs
 

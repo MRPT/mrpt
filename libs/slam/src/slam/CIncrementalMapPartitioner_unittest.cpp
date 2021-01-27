@@ -23,8 +23,7 @@ TEST(CIncrementalMapPartitioner, test_dataset)
 	imp.options.mrp.maxMahaDistForCorr = 10.0f;
 	imp.options.simil_method = mrpt::slam::smMETRIC_MAP_MATCHING;
 
-	const std::string map_file =
-		mrpt::UNITTEST_BASEDIR +
+	const std::string map_file = mrpt::UNITTEST_BASEDIR +
 		std::string("/share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz");
 	ASSERT_FILE_EXISTS_(map_file);
 

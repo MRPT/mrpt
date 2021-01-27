@@ -10,6 +10,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/system/os.h>
+
 #include <cstdio>
 #include <iostream>
 
@@ -74,10 +75,7 @@ void TestNTRIP()
 
 	string msgerr;
 
-	if (!ntrip.open(params, msgerr))
-	{
-		cout << "ERROR: " << msgerr << endl;
-	}
+	if (!ntrip.open(params, msgerr)) { cout << "ERROR: " << msgerr << endl; }
 	else
 	{
 		cout << "Reading stream... press any key to finish." << endl;
@@ -111,10 +109,7 @@ void TestNTRIP2()
 
 	string msgerr;
 
-	if (!ntrip.open(params, msgerr))
-	{
-		cout << "ERROR: " << msgerr << endl;
-	}
+	if (!ntrip.open(params, msgerr)) { cout << "ERROR: " << msgerr << endl; }
 	else
 	{
 		cout << "Reading stream... press any key to finish." << endl;

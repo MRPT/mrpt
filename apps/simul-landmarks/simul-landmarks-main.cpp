@@ -16,16 +16,15 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/random.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
-
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -53,7 +52,7 @@ int main(int argc, char** argv)
 			" MRPT C++ Library: %s - Sources timestamp: %s\n",
 			MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 
-		if (showVersion) return 0;  // Program end
+		if (showVersion) return 0;	// Program end
 
 		// Process arguments:
 		if (argc < 2 || showHelp)
@@ -75,8 +74,7 @@ int main(int argc, char** argv)
 
 		const int random_seed = ini.read_int("Params", "random_seed", 0);
 
-		if (random_seed != 0)
-			getRandomGenerator().randomize(random_seed);
+		if (random_seed != 0) getRandomGenerator().randomize(random_seed);
 		else
 			getRandomGenerator().randomize();
 
@@ -310,7 +308,8 @@ int main(int argc, char** argv)
 
 			// Keep the GT of the robot pose:
 			GT_path.setSize(i + 1, 6);
-			for (size_t k = 0; k < 6; k++) GT_path(i, k) = realPose[k];
+			for (size_t k = 0; k < 6; k++)
+				GT_path(i, k) = realPose[k];
 
 			cout << obs->sensedData.size() << " landmarks in sight";
 
@@ -464,7 +463,7 @@ int main(int argc, char** argv)
 			cout << "Press any key or close the 3D window to exit." << endl;
 			win.waitForKey();
 
-#endif  // MRPT_HAS_OPENGL_GLUT  && MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_OPENGL_GLUT  && MRPT_HAS_WXWIDGETS
 		}
 	}
 	catch (const std::exception& e)

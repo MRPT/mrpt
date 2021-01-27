@@ -18,6 +18,7 @@
 #include <mrpt/system/CObserver.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace std;
@@ -29,7 +30,7 @@ using namespace mrpt::system;
 // This is my custom class to handle the pre/post render events:
 struct TMyExtraRenderingStuff : public mrpt::system::CObserver
 {
-	opengl::CSphere::Ptr ball_obj;  // The ball moving in the scene
+	opengl::CSphere::Ptr ball_obj;	// The ball moving in the scene
 
 	TMyExtraRenderingStuff() {}
 	void OnEvent(const mrptEvent& e) override

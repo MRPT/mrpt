@@ -7,10 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/hwdrivers/CMyntEyeCamera.h>
+
 #include <iostream>
 #include <thread>
 
@@ -43,7 +44,8 @@ static mrpt::img::TCamera convertIntrinsics(const mynteyed::CameraIntrinsics& i)
 	p.fx(i.fx);
 	p.fy(i.fy);
 	// The distortion coefficients: k1,k2,p1,p2,k3
-	for (int k = 0; k < 5; k++) p.dist[k] = i.coeffs[k];
+	for (int k = 0; k < 5; k++)
+		p.dist[k] = i.coeffs[k];
 
 	return p;
 }
@@ -55,9 +57,7 @@ CMyntEyeCamera::CMyntEyeCamera(const TMyntEyeCameraParameters& p)
 	MRPT_START
 #if MRPT_HAS_MYNTEYE_D
 	if (!mynteyed::util::select(*m_capture->cam, &m_capture->dev_info))
-	{
-		THROW_EXCEPTION("No MYNTEYE-D cameras was found!");
-	}
+	{ THROW_EXCEPTION("No MYNTEYE-D cameras was found!"); }
 	mynteyed::util::print_stream_infos(
 		*m_capture->cam, m_capture->dev_info.index);
 
@@ -70,9 +70,7 @@ CMyntEyeCamera::CMyntEyeCamera(const TMyntEyeCameraParameters& p)
 	m_capture->cam->Open(params);
 	std::cout << std::endl;
 	if (!m_capture->cam->IsOpened())
-	{
-		THROW_EXCEPTION("Error: Open camera failed");
-	}
+	{ THROW_EXCEPTION("Error: Open camera failed"); }
 	std::cout << "[CMyntEyeCamera] Open device successful.\n";
 
 	mynteyed::StreamIntrinsics si =
@@ -117,8 +115,7 @@ bool CMyntEyeCamera::getObservation(mrpt::obs::CObservation3DRangeScan& out)
 			image_depth =
 				m_capture->cam->GetStreamData(mynteyed::ImageType::IMAGE_DEPTH);
 
-		if (image_color.img && image_depth.img)
-			break;
+		if (image_color.img && image_depth.img) break;
 		else
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -161,7 +158,7 @@ bool CMyntEyeCamera::getObservation(mrpt::obs::CObservation3DRangeScan& out)
 		out.range_is_depth = true;
 		// This method will try to exploit memory pooling if possible:
 		out.rangeImage_setSize(h, w);
-		out.rangeUnits = 1e-3f;  // we use mm as units
+		out.rangeUnits = 1e-3f;	 // we use mm as units
 
 		ASSERT_EQUAL_(
 			i->data_size(), static_cast<size_t>(i->width() * i->height() * 2));

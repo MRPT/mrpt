@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/bits_math.h>
 #include <mrpt/math/fourier.h>
+
 #include <Eigen/Dense>
 #include <algorithm>
 #include <cmath>
@@ -33,7 +34,7 @@ static void four1(float data[], unsigned long nn, int isign)
 {
 	unsigned long n, mmax, m, j, i;
 	double wtemp, wr, wpr, wpi, wi,
-		theta;  // Double precision for the trigonometric recurrences.
+		theta;	// Double precision for the trigonometric recurrences.
 	float tempr, tempi;
 
 	n = nn << 1;
@@ -60,8 +61,9 @@ static void four1(float data[], unsigned long nn, int isign)
 	while (n > mmax)  // Outer loop executed log2 nn times.
 	{
 		unsigned long istep = mmax << 1;
-		theta = isign * (6.28318530717959 /
-						 mmax);  // Initialize the trigonometric recurrence.
+		theta = isign *
+			(6.28318530717959 /
+			 mmax);	 // Initialize the trigonometric recurrence.
 		wtemp = sin(0.5 * theta);
 		wpr = -2.0 * wtemp * wtemp;
 		wpi = sin(theta);
@@ -80,7 +82,7 @@ static void four1(float data[], unsigned long nn, int isign)
 				data[i + 1] += tempi;
 			}
 			wr = (wtemp = wr) * wpr - wi * wpi +
-				 wr;  // Trigonometric recurrence.
+				wr;	 // Trigonometric recurrence.
 			wi = wi * wpr + wtemp * wpi + wi;
 		}
 		mmax = istep;
@@ -103,11 +105,11 @@ static void realft(float data[], unsigned long n)
 	unsigned long i, i1, i2, i3, i4, np3;
 	float c1 = 0.5, c2, h1r, h1i, h2r, h2i;
 	double wr, wi, wpr, wpi, wtemp,
-		theta;  // Double precision for the trigonometric recurrences.
+		theta;	// Double precision for the trigonometric recurrences.
 	theta = 3.141592653589793 / (double)(n >> 1);  // Initialize the recurrence.
 
 	c2 = -0.5;
-	four1(data, n >> 1, 1);  // The forward transform is here.
+	four1(data, n >> 1, 1);	 // The forward transform is here.
 
 	wtemp = sin(0.5 * theta);
 	wpr = -2.0 * wtemp * wtemp;
@@ -115,7 +117,7 @@ static void realft(float data[], unsigned long n)
 	wr = 1.0 + wpr;
 	wi = wpi;
 	np3 = n + 3;
-	for (i = 2; i <= (n >> 2); i++)  // Case i=1 done separately below.
+	for (i = 2; i <= (n >> 2); i++)	 // Case i=1 done separately below.
 	{
 		i4 = 1 + (i3 = np3 - (i2 = 1 + (i1 = i + i - 1)));
 		h1r = c1 * (data[i1] + data[i3]);  // The two separate transforms are
@@ -124,7 +126,7 @@ static void realft(float data[], unsigned long n)
 		h2r = -c2 * (data[i2] + data[i4]);
 		h2i = c2 * (data[i1] - data[i3]);
 		data[i1] =
-			(float)(h1r + wr * h2r - wi * h2i);  // Here they are recombined to
+			(float)(h1r + wr * h2r - wi * h2i);	 // Here they are recombined to
 		// form the true transform of
 		// the original real data.
 		data[i2] = (float)(h1i + wr * h2i + wi * h2r);
@@ -522,18 +524,9 @@ static void bitrv2(int n, int* ip, FFT_TYPE* a)
   */
 static void cdft(int n, int isgn, FFT_TYPE* a, int* ip, FFT_TYPE* w)
 {
-	if (n > (ip[0] << 2))
-	{
-		makewt(n >> 2, ip, w);
-	}
-	if (n > 4)
-	{
-		bitrv2(n, ip + 2, a);
-	}
-	if (isgn < 0)
-	{
-		cftfsub(n, a, w);
-	}
+	if (n > (ip[0] << 2)) { makewt(n >> 2, ip, w); }
+	if (n > 4) { bitrv2(n, ip + 2, a); }
+	if (isgn < 0) { cftfsub(n, a, w); }
 	else
 	{
 		cftbsub(n, a, w);
@@ -594,15 +587,9 @@ static void rdft(int n, int isgn, FFT_TYPE* a, int* ip, FFT_TYPE* w)
 	}
 	else
 	{
-		if (n > 4)
-		{
-			bitrv2(n, ip + 2, a);
-		}
+		if (n > 4) { bitrv2(n, ip + 2, a); }
 		cftbsub(n, a, w);
-		if (n > 4)
-		{
-			rftbsub(n, a, nc, w + nw);
-		}
+		if (n > 4) { rftbsub(n, a, nc, w + nw); }
 		xi = a[0] - a[1];
 		a[0] += a[1];
 		a[1] = xi;
@@ -739,10 +726,7 @@ static void rdft2d(
 	FFT_TYPE xi;
 
 	n = n1 << 1;
-	if (n < n2)
-	{
-		n = n2;
-	}
+	if (n < n2) { n = n2; }
 	nw = ip[0];
 	if (n > (nw << 2))
 	{
@@ -892,14 +876,8 @@ static void cdft2d(
 	int n, i, j, i2;
 
 	n = n1 << 1;
-	if (n < n2)
-	{
-		n = n2;
-	}
-	if (n > (ip[0] << 2))
-	{
-		makewt(n >> 2, ip, w);
-	}
+	if (n < n2) { n = n2; }
+	if (n > (ip[0] << 2)) { makewt(n >> 2, ip, w); }
 	for (i = 0; i <= n1 - 1; i++)
 	{
 		cdft(n2, isgn, a[i], ip, w);
@@ -948,13 +926,11 @@ void mrpt::math::fft_real(
 
 	for (unsigned int i = 0; i < n_2; i++)
 	{
-		if (i == (n_2 - 1))
-			out_FFT_Re[i] = auxVect[2];
+		if (i == (n_2 - 1)) out_FFT_Re[i] = auxVect[2];
 		else
 			out_FFT_Re[i] = auxVect[1 + i * 2];
 
-		if (i == 0 || i == (n_2 - 1))
-			out_FFT_Im[i] = 0;
+		if (i == 0 || i == (n_2 - 1)) out_FFT_Im[i] = 0;
 		else
 			out_FFT_Im[i] = auxVect[1 + i * 2 + 1];
 
@@ -990,7 +966,8 @@ void math::dft2_real(
 	for (i = 0; i < dim1; i++)
 	{
 		a[i] = new FFT_TYPE[dim2];
-		for (j = 0; j < dim2; j++) a[i][j] = in_data(i, j);
+		for (j = 0; j < dim2; j++)
+			a[i][j] = in_data(i, j);
 	}
 
 	t = new FFT_TYPE[2 * dim1 + 20];
@@ -1056,7 +1033,8 @@ void math::dft2_real(
 	out_real(dim1 / 2, dim2 / 2) = (float)a[dim1 / 2][1];
 
 	// Free temporary memory:
-	for (i = 0; i < dim1; i++) delete[] a[i];
+	for (i = 0; i < dim1; i++)
+		delete[] a[i];
 	delete[] a;
 	delete[] t;
 	delete[] ip;
@@ -1094,7 +1072,8 @@ void math::idft2_real(
 	// Reserve memory and copy data:
 	// --------------------------------------
 	a = new float_ptr[dim1];
-	for (i = 0; i < dim1; i++) a[i] = new FFT_TYPE[dim2];
+	for (i = 0; i < dim1; i++)
+		a[i] = new FFT_TYPE[dim2];
 
 	// a[j1][2*j2] = R[j1][j2] = R[n1-j1][n2-j2],
 	// a[j1][2*j2+1] = I[j1][j2] = -I[n1-j1][n2-j2],
@@ -1153,10 +1132,12 @@ void math::idft2_real(
 	FFT_TYPE scale = 2.0f / (dim1 * dim2);
 
 	for (i = 0; i < dim1; i++)
-		for (j = 0; j < dim2; j++) out_data(i, j) = (float)(a[i][j] * scale);
+		for (j = 0; j < dim2; j++)
+			out_data(i, j) = (float)(a[i][j] * scale);
 
 	// Free temporary memory:
-	for (i = 0; i < dim1; i++) delete[] a[i];
+	for (i = 0; i < dim1; i++)
+		delete[] a[i];
 	delete[] a;
 	delete[] t;
 	delete[] ip;
@@ -1196,7 +1177,7 @@ static void myGeneralDFT(
 	{
 		for (k2 = 0; k2 < dim2; k2++)
 		{
-			R = I = 0;  // Accum:
+			R = I = 0;	// Accum:
 
 			for (n1 = 0; n1 < dim1; n1++)
 			{
@@ -1265,7 +1246,8 @@ void math::dft2_complex(
 			// Create/realloc buffers:
 			if (a)
 			{
-				for (i = 0; i < dim1; i++) delete[] a[i];
+				for (i = 0; i < dim1; i++)
+					delete[] a[i];
 				delete[] a;
 			}
 			if (ip) delete[] ip;
@@ -1276,7 +1258,8 @@ void math::dft2_complex(
 			alreadyInitSize2 = (int)dim2;
 
 			a = new float_ptr[dim1];
-			for (i = 0; i < dim1; i++) a[i] = new FFT_TYPE[2 * dim2];
+			for (i = 0; i < dim1; i++)
+				a[i] = new FFT_TYPE[2 * dim2];
 
 			t = new FFT_TYPE[2 * dim1 + 20];
 			ip = new int[(int)ceil(
@@ -1373,7 +1356,8 @@ void math::idft2_complex(
 			// Create/realloc buffers:
 			if (a)
 			{
-				for (i = 0; i < dim1; i++) delete[] a[i];
+				for (i = 0; i < dim1; i++)
+					delete[] a[i];
 				delete[] a;
 			}
 			if (ip) delete[] ip;
@@ -1384,7 +1368,8 @@ void math::idft2_complex(
 			alreadyInitSize2 = (int)dim2;
 
 			a = new float_ptr[dim1];
-			for (i = 0; i < dim1; i++) a[i] = new FFT_TYPE[2 * dim2];
+			for (i = 0; i < dim1; i++)
+				a[i] = new FFT_TYPE[2 * dim2];
 			t = new FFT_TYPE[2 * dim1 + 20];
 			ip = new int[(int)ceil(
 				20 + 2 + sqrt((FFT_TYPE)max(dim1, dim2 / 2)))];

@@ -57,7 +57,7 @@ class mrptEvent
 
 	mrpt::Clock::time_point timestamp;
 
-};  // End of class def.
+};	// End of class def.
 
 /**  An event sent by any CObservable object (automatically) just before being
  * destroyed and telling its observers to unsubscribe.
@@ -73,6 +73,6 @@ class mrptEventOnDestroy : public mrptEvent
 	inline mrptEventOnDestroy(const CObservable* obj) : source_object(obj) {}
 	const CObservable* source_object;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::system

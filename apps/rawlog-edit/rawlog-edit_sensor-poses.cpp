@@ -8,7 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config/CConfigFile.h>
+
 #include <map>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
@@ -112,8 +114,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
-			if (actions)
-				(*outrawlog.out_rawlog) << actions << SF;
+			if (actions) (*outrawlog.out_rawlog) << actions << SF;
 			else
 				(*outrawlog.out_rawlog) << obs;
 		}

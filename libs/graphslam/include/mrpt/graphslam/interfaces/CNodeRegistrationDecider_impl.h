@@ -69,10 +69,11 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 			this->m_graph->nodes.insert(
 				make_pair(this->m_graph->root, tmp_pose));
 		ASSERTDEBMSG_(
-			res.second, mrpt::format(
-							"nodeID \"%lu\" with pose \"%s\" seems to be "
-							"already registered.",
-							this->m_graph->root, tmp_pose.asString().c_str()));
+			res.second,
+			mrpt::format(
+				"nodeID \"%lu\" with pose \"%s\" seems to be "
+				"already registered.",
+				this->m_graph->root, tmp_pose.asString().c_str()));
 
 		this->m_prev_registered_nodeID = this->m_graph->root;
 	}
@@ -93,10 +94,11 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 #endif
 			this->m_graph->nodes.insert(make_pair(to, tmp_pose));
 		ASSERTDEBMSG_(
-			res.second, mrpt::format(
-							"nodeID \"%lu\" with pose \"%s\" seems to be "
-							"already registered.",
-							to, tmp_pose.asString().c_str()));
+			res.second,
+			mrpt::format(
+				"nodeID \"%lu\" with pose \"%s\" seems to be "
+				"already registered.",
+				to, tmp_pose.asString().c_str()));
 		this->m_graph->insertEdgeAtEnd(from, to, constraint);
 	}
 
@@ -149,9 +151,7 @@ typename GRAPH_T::global_pose_t
 	global_pose_t pose_out;
 
 	if (this->m_prev_registered_nodeID != INVALID_NODEID)
-	{
-		pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID);
-	}
+	{ pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID); }
 
 	pose_out += m_since_prev_node_PDF.getMeanVal();
 	return pose_out;

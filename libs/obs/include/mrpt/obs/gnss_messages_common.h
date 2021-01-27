@@ -11,7 +11,8 @@
 #include <mrpt/obs/gnss_messages_type_list.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/datetime.h>
-#include <cstring>  // memset()
+
+#include <cstring>	// memset()
 #include <iosfwd>
 
 namespace mrpt
@@ -105,7 +106,7 @@ struct gnss_message_ptr
 	/** Assigns a pointer. Memory now belongs to this class. */
 	explicit gnss_message_ptr(const gnss_message* p);
 	gnss_message_ptr& operator=(
-		const gnss_message_ptr& o);  // Makes a copy of the pointee
+		const gnss_message_ptr& o);	 // Makes a copy of the pointee
 	/** Dtor: it frees the pointee memory */
 	virtual ~gnss_message_ptr();
 	bool operator==(const gnss_message* o) const { return o == ptr; }
@@ -129,56 +130,56 @@ struct gnss_message_ptr
 	void set(gnss_message* p);
 };
 
-#define GNSS_MESSAGE_BINARY_BLOCK(DATA_PTR, DATA_LEN)                        \
-   protected:                                                                \
-	void internal_writeToStream(mrpt::serialization::CArchive& out)          \
-		const override                                                       \
-	{                                                                        \
-		out.WriteAs<uint32_t>(DATA_LEN);                                     \
-		auto nonconst_this = const_cast<std::remove_const<                   \
-			std::remove_reference<decltype(*this)>::type>::type*>(this);     \
-		/* Temporarily switch to little endian for serialization only */     \
-		nonconst_this->fixEndianness();                                      \
-		out.WriteBuffer(DATA_PTR, DATA_LEN);                                 \
-		nonconst_this->fixEndianness();                                      \
-	}                                                                        \
-	void internal_readFromStream(mrpt::serialization::CArchive& in) override \
-	{                                                                        \
-		const uint32_t nBytesInStream = in.ReadAs<uint32_t>();               \
-		ASSERT_EQUAL_(nBytesInStream, DATA_LEN);                             \
-		in.ReadBuffer(DATA_PTR, DATA_LEN);                                   \
-		fixEndianness();                                                     \
-	}                                                                        \
-                                                                             \
+#define GNSS_MESSAGE_BINARY_BLOCK(DATA_PTR, DATA_LEN)                          \
+   protected:                                                                  \
+	void internal_writeToStream(mrpt::serialization::CArchive& out)            \
+		const override                                                         \
+	{                                                                          \
+		out.WriteAs<uint32_t>(DATA_LEN);                                       \
+		auto nonconst_this = const_cast<std::remove_const<                     \
+			std::remove_reference<decltype(*this)>::type>::type*>(this);       \
+		/* Temporarily switch to little endian for serialization only */       \
+		nonconst_this->fixEndianness();                                        \
+		out.WriteBuffer(DATA_PTR, DATA_LEN);                                   \
+		nonconst_this->fixEndianness();                                        \
+	}                                                                          \
+	void internal_readFromStream(mrpt::serialization::CArchive& in) override   \
+	{                                                                          \
+		const uint32_t nBytesInStream = in.ReadAs<uint32_t>();                 \
+		ASSERT_EQUAL_(nBytesInStream, DATA_LEN);                               \
+		in.ReadBuffer(DATA_PTR, DATA_LEN);                                     \
+		fixEndianness();                                                       \
+	}                                                                          \
+                                                                               \
    public:
 
-#define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID)                      \
-	struct Message_##_MSG_ID : public gnss_message                     \
-	{                                                                  \
-		GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))             \
-		enum : uint32_t                                                \
-		{                                                              \
-			msg_type = _MSG_ID                                         \
-		}; /* Static msg type (member expected by templates)*/         \
-		Message_##_MSG_ID()                                            \
-			: gnss_message(static_cast<gnss_message_type_t>(msg_type)) \
-		{                                                              \
-		}                                                              \
-		struct content_t                                               \
+#define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID)                              \
+	struct Message_##_MSG_ID : public gnss_message                             \
+	{                                                                          \
+		GNSS_MESSAGE_BINARY_BLOCK(&fields, sizeof(fields))                     \
+		enum : uint32_t                                                        \
+		{                                                                      \
+			msg_type = _MSG_ID                                                 \
+		}; /* Static msg type (member expected by templates)*/                 \
+		Message_##_MSG_ID()                                                    \
+			: gnss_message(static_cast<gnss_message_type_t>(msg_type))         \
+		{                                                                      \
+		}                                                                      \
+		struct content_t                                                       \
 		{
-#define GNSS_BINARY_MSG_DEFINITION_MID                                       \
-	content_t() = default;                                                   \
-	}                                                                        \
-	;                                                                        \
-	content_t fields; /** Message content, accesible by individual fields */ \
+#define GNSS_BINARY_MSG_DEFINITION_MID                                         \
+	content_t() = default;                                                     \
+	}                                                                          \
+	;                                                                          \
+	content_t fields; /** Message content, accesible by individual fields */   \
 	void dumpToStream(std::ostream& out) const override;
 
-#define GNSS_BINARY_MSG_DEFINITION_MID_END \
-	}                                      \
+#define GNSS_BINARY_MSG_DEFINITION_MID_END                                     \
+	}                                                                          \
 	;
 
-#define GNSS_BINARY_MSG_DEFINITION_END \
-	GNSS_BINARY_MSG_DEFINITION_MID     \
+#define GNSS_BINARY_MSG_DEFINITION_END                                         \
+	GNSS_BINARY_MSG_DEFINITION_MID                                             \
 	GNSS_BINARY_MSG_DEFINITION_MID_END
 
 // Pragma to ensure we can safely serialize some of these structures

@@ -82,8 +82,8 @@ void PlannerSimple2D::computePath(
 		for (x = 0; x < size_x; x++)
 		{
 			grid[x + row] = (theMap.getCell(x, y) > occupancyThreshold)
-								? CELL_EMPTY
-								: CELL_OBSTACLE;
+				? CELL_EMPTY
+				: CELL_OBSTACLE;
 		}
 	}
 
@@ -110,9 +110,7 @@ void PlannerSimple2D::computePath(
 					grid[x + 1 + row__1] >= val || grid[x - 1 + row] >= val ||
 					grid[x + 1 + row] >= val || grid[x - 1 + row_1] >= val ||
 					grid[x + row_1] >= val || grid[x + 1 + row_1] >= val)
-				{
-					grid[x + row] = std::max(grid[x + row], val - 1);
-				}
+				{ grid[x + row] = std::max(grid[x + row], val - 1); }
 			}
 		}
 	}

@@ -7,18 +7,20 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
+#include "opengl-precomp.h"	 // Precompiled header
+//
 
 // Stripped out version of libCVD gltext.cpp file, ported to OpenGL>=3
 // 2-BSD License.
 
-#include "gltext.h"
-
 #include <mrpt/math/TPoint2D.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <map>
+
+#include "gltext.h"
 
 using namespace std;
 
@@ -166,19 +168,14 @@ std::pair<double, double> glDrawText(
 		const mrpt::math::TPoint2Df& cursor) const;
 	switch (style)
 	{
-		case FILL:
-			operation = &Font::fill;
-			break;
-		case OUTLINE:
-			operation = &Font::outline;
-			break;
+		case FILL: operation = &Font::fill; break;
+		case OUTLINE: operation = &Font::outline; break;
 		case NICE:
 			// operation = &Font::draw; (See comments in definition of "NICE")
 			operation = &Font::fill;
 			break;
 
-		default:
-			THROW_EXCEPTION("Invalid style value");
+		default: THROW_EXCEPTION("Invalid style value");
 	};
 
 	int lines = 0;

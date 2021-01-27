@@ -10,6 +10,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/opengl.h>
+
 #include <iostream>
 
 using namespace std;

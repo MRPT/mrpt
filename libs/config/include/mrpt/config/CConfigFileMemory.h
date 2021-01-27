@@ -10,6 +10,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/core/pimpl.h>
+
 #include <string>
 #include <vector>
 
@@ -85,6 +86,6 @@ class CConfigFileMemory : public CConfigFileBase
 		const std::string& defaultStr,
 		bool failIfNotFound = false) const override;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::config

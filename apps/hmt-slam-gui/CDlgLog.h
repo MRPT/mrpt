@@ -19,6 +19,7 @@
 //*)
 
 #include <mrpt/gui/CMyRedirector.h>
+
 #include <memory>  // unique_ptr
 
 class CDlgLog : public wxDialog

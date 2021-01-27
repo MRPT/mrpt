@@ -11,6 +11,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "slamdemoMain.h"
 //*)
 #include <wx/msgdlg.h>
@@ -102,7 +103,8 @@ bool slamdemoApp::doCommandLineProcess()
 	bool res_parse = cmd.parse(argc, &auxArgs[0]);
 
 	// Free aux mem:
-	for (int i = 0; i < argc; i++) delete[] auxArgs[i];
+	for (int i = 0; i < argc; i++)
+		delete[] auxArgs[i];
 
 	if (!res_parse)
 	{

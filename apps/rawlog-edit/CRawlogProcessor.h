@@ -102,7 +102,7 @@ class CRawlogProcessor
 						mrpt::system::unitsFormat(fil_pos).c_str(),
 						(fil_pos > m_filSize ? '>' : ' '),
 						mrpt::system::unitsFormat(m_filSize)
-							.c_str());  // \r -> don't go to the next line...
+							.c_str());	// \r -> don't go to the next line...
 
 					std::cout.flush();
 				}
@@ -127,9 +127,9 @@ class CRawlogProcessor
 							 "filter implementation.\n";
 				break;
 			}
-		};  // end while
+		};	// end while
 
-		if (verbose) std::cout << "\n";  // new line after the "\r".
+		if (verbose) std::cout << "\n";	 // new line after the "\r".
 
 		m_timToParse = m_timParse.Tac();
 
@@ -152,7 +152,7 @@ class CRawlogProcessor
 		// Default: Do nothing
 	}
 
-};  // end CRawlogProcessor
+};	// end CRawlogProcessor
 
 /** A virtual class that implements the common stuff around parsing a rawlog
  * file
@@ -189,7 +189,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 				obs_indiv = &SF->getObservationByIndex(idxObs);
 			}
 			else
-				break;  // shouldn't...
+				break;	// shouldn't...
 
 			// Process "obs_indiv":
 			ASSERT_(obs_indiv);
@@ -212,7 +212,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 	virtual bool processOneObservation(mrpt::obs::CObservation::Ptr& obs) = 0;
 	virtual bool processOneAction(mrpt::obs::CAction::Ptr&) { return true; }
 
-};  // end CRawlogProcessorOnEachObservation
+};	// end CRawlogProcessorOnEachObservation
 
 /** A specialization of CRawlogProcessorOnEachObservation that handles the
  * common case of
@@ -290,15 +290,13 @@ class CRawlogProcessorFilterObservations
 			// Remove from SF those observations freed:
 			for (auto it = SF->begin(); it != SF->end();)
 			{
-				if (*it)
-					it++;
+				if (*it) it++;
 				else
 					it = SF->erase(it);
 			}
 			for (auto it = actions->begin(); it != actions->end();)
 			{
-				if (*it)
-					it++;
+				if (*it) it++;
 				else
 					it = actions->erase(it);
 			}
@@ -312,7 +310,7 @@ class CRawlogProcessorFilterObservations
 		}
 	}
 
-};  // end CRawlogProcessorOnEachObservation
+};	// end CRawlogProcessorOnEachObservation
 
 }  // namespace rawlogtools
 }  // namespace mrpt

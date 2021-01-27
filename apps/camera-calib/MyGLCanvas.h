@@ -31,4 +31,4 @@ class CMyGLCanvas : public CWxGLCanvasBase
 	void OnRenderError(const wxString& str) override;
 };
 
-#endif  // MYGLCANVAS_H
+#endif	// MYGLCANVAS_H

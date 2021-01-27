@@ -13,6 +13,7 @@
   ---------------------------------------------------------------*/
 
 #include "camera_calib_guiMain.h"
+
 #include "CDlgCalibWizardOnline.h"
 #include "CDlgPoseEst.h"
 
@@ -23,20 +24,19 @@
 #include <wx/string.h>
 //*)
 
-#include <wx/filedlg.h>
-#include <wx/msgdlg.h>
-#include <wx/progdlg.h>
-
+#include <mrpt/containers/yaml.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/vision/pnp_algos.h>
+#include <wx/filedlg.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
 
+#include <Eigen/Dense>
 #include <fstream>
 #include <iostream>
-
-#include <mrpt/vision/pnp_algos.h>
-#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -153,7 +153,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	Create(
 		parent, id, _("Camera calibration GUI - Part of the MRPT project"),
 		wxDefaultPosition, wxDefaultSize,
-		wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMAXIMIZE_BOX, _T("id"));
+		wxDEFAULT_DIALOG_STYLE | wxDEFAULT_FRAME_STYLE, _T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer1->AddGrowableCol(1);
 	FlexGridSizer1->AddGrowableRow(0);
@@ -282,11 +282,11 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = {_("OpenCV\'s default"),
-										 _("Scaramuzza et al.\'s")};
+	wxString __wxRadioBoxChoices_1[2] = {
+		_("OpenCV\'s default"), _("Scaramuzza et al.\'s")};
 	rbMethod = new wxRadioBox(
 		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
-		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
+		wxDefaultSize, 2, __wxRadioBoxChoices_1, 0, 0, wxDefaultValidator,
 		_T("ID_RADIOBOX1"));
 	FlexGridSizer6->Add(
 		rbMethod, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
@@ -518,13 +518,10 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent, wxWindowID id)
 	icon.CopyFromBitmap(wxBitmap(wxImage(icono_main_xpm)));
 	this->SetIcon(icon);
 
-	this->show3Dview();  // Empty 3D scene
+	this->show3Dview();	 // Empty 3D scene
 
 	Center();
-	this->SetTitle(format(
-					   "Camera calibration %s - Part of the MRPT project",
-					   CAMERA_CALIB_GUI_VERSION)
-					   .c_str());
+	this->SetTitle("Camera calibration - Part of the MRPT project");
 	Maximize();
 }
 
@@ -555,12 +552,12 @@ void camera_calib_guiDialog::OnAddImage(wxCommandEvent& event)
 
 		wxProgressDialog progDia(
 			wxT("Adding image files"), wxT("Processing..."),
-			files.Count(),  // range
+			files.Count(),	// range
 			this,  // parent
 			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();  // Let the app. process messages
+		wxTheApp->Yield();	// Let the app. process messages
 
 		int counter_loops = 0;
 
@@ -569,7 +566,7 @@ void camera_calib_guiDialog::OnAddImage(wxCommandEvent& event)
 			if (counter_loops++ % 5 == 0)
 			{
 				if (!progDia.Update(i)) break;
-				wxTheApp->Yield();  // Let the app. process messages
+				wxTheApp->Yield();	// Let the app. process messages
 			}
 
 			const string fil = string(files[i].mb_str());
@@ -687,30 +684,15 @@ void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 
 	{
 		wxFileDialog dlg(
-			this, _("Save intrinsic parameters matrix"), _("."),
-			_("intrinsic_matrix.txt"),
-			_("Text files (*.txt)|*.txt|All files (*.*)|*.*"),
+			this, _("Save camera calibration"), _("."), _("calibration.yml"),
+			_("YAML files (*.yml)|*.yml|All files (*.*)|*.*"),
 			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 
 		if (wxID_OK != dlg.ShowModal()) return;
 
-		camera_params.intrinsicParams.saveToTextFile(
-			string(dlg.GetPath().mb_str()));
-	}
-
-	{
-		wxFileDialog dlg(
-			this, _("Save distortion parameters"), _("."),
-			_("distortion_matrix.txt"),
-			_("Text files (*.txt)|*.txt|All files (*.*)|*.*"),
-			wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-
-		if (wxID_OK != dlg.ShowModal()) return;
-
-		CMatrixDouble M(1, 5);
-		for (unsigned i = 0; i < 5; i++) M(0, i) = camera_params.dist[i];
-
-		M.saveToTextFile(string(dlg.GetPath().mb_str()));
+		std::ofstream f(string(dlg.GetPath().mb_str()));
+		ASSERT_(f.is_open());
+		camera_params.asYAML().printAsYAML(f);
 	}
 }
 

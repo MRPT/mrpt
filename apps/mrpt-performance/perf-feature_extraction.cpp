@@ -11,6 +11,7 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 
 #include <iomanip>
+
 #include "common.h"
 
 using namespace mrpt::vision;
@@ -84,7 +85,8 @@ double benchmark_detectFeatures_FASTER(int N, int threshold)
 	img = img.grayscale();
 
 	tictac.Tic();
-	for (int i = 0; i < N; i++) fExt.detectFeatures(img, feats, 0, MAX_N_FEATS);
+	for (int i = 0; i < N; i++)
+		fExt.detectFeatures(img, feats, 0, MAX_N_FEATS);
 
 	const double T = tictac.Tac() / N;
 	return T;

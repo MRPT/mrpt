@@ -203,7 +203,7 @@ class CPose3DPDFGaussian : public CPose3DPDF
 	 */
 	void getCovSubmatrix2D(mrpt::math::CMatrixDouble& out_cov) const;
 
-};  // End of class def.
+};	// End of class def.
 /** Pose composition for two 3D pose Gaussians  \sa CPose3DPDFGaussian::operator
  * +=  */
 inline CPose3DPDFGaussian operator+(

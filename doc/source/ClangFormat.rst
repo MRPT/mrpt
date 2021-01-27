@@ -6,20 +6,20 @@ The following instructions offer a summary of the formatting/style changes
 applied on July 7th 2017, as well as handy solutions for solving formatting
 problems and for making this transition as smooth as possible.
 
-As of Dec 2019, we use clang-format-8.
+As of Jan 2020, we use clang-format-10.
 
 Line-wrapping
 --------------
 
 MRPT code is to be wrapped at **80** lines. This has the following consequences:
 
-- Long(er) inline doxygen comments `//!< ...` are to be automatically wrapped 
+- Long(er) inline doxygen comments `//!< ...` are to be automatically wrapped
   up and indented at the same line. This is most likely not what the developer
   wants. To get around this replace them with the standard `/** ... */`
   comments or any other alternative outlined in the `doxygen docs <https://www.stack.nl/~dimitri/doxygen/manual/docblocks.html>`_.
-  
+
   For bulk reformatting of these comments you may use `sed` as in `this script <https://github.com/bergercookie/clang_git_format/blob/master/scripts/convert_inline_doxygen_comments.sh>`_.
-  
+
   **WARNING:** The `/**...*/` snippet should be placed on the **previous**
   line from the variable, directive that is for. This is **opposite** to the
   convention for the `//!<...` commenting which is placed to the right of the

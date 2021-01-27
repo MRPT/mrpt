@@ -12,26 +12,28 @@
 
 // Includes
 #include "KMeans.h"
+
 #include <ctime>
 #include <sstream>
 #include <vector>
+
 #include "KmTree.h"
 using namespace std;
 
 // Logging
 static vector<ostream*> gLogOutputs;
 static vector<ostream*> gVerboseLogOutputs;
-#define LOG(verbose, text)                                  \
-	{                                                       \
-		vector<ostream*>& outputs =                         \
-			((verbose) ? gVerboseLogOutputs : gLogOutputs); \
-		if (outputs.size() > 0)                             \
-		{                                                   \
-			ostringstream string_stream;                    \
-			string_stream << text;                          \
-			for (int i = 0; i < (int)outputs.size(); i++)   \
-				*(outputs[i]) << string_stream.str();       \
-		}                                                   \
+#define LOG(verbose, text)                                                     \
+	{                                                                          \
+		vector<ostream*>& outputs =                                            \
+			((verbose) ? gVerboseLogOutputs : gLogOutputs);                    \
+		if (outputs.size() > 0)                                                \
+		{                                                                      \
+			ostringstream string_stream;                                       \
+			string_stream << text;                                             \
+			for (int i = 0; i < (int)outputs.size(); i++)                      \
+				*(outputs[i]) << string_stream.str();                          \
+		}                                                                      \
 	}
 void AddKMeansLogging(std::ostream* out, bool verbose)
 {
@@ -71,14 +73,16 @@ static void RunKMeansOnce(
 		Scalar new_cost = tree.DoKMeansStep(k, centers, nullptr);
 		is_done = (iteration > 0 && new_cost >= (1 - kEpsilon) * old_cost);
 		old_cost = new_cost;
-		LOG(true, "Completed iteration #" << (iteration + 1) << ", cost="
-										  << new_cost << "..." << endl);
+		LOG(true,
+			"Completed iteration #" << (iteration + 1) << ", cost=" << new_cost
+									<< "..." << endl);
 	}
 	double this_time = GetSeconds() - start_time;
 
 	// Log the clustering we found
-	LOG(false, "Completed run: cost=" << old_cost << " (" << this_time
-									  << " seconds)" << endl);
+	LOG(false,
+		"Completed run: cost=" << old_cost << " (" << this_time << " seconds)"
+							   << endl);
 
 	// Handle a new min cost, updating best_centers and best_assignment as
 	// appropriate
@@ -105,13 +109,13 @@ void LogMetaStats(
 	double max_time, double total_time, int num_attempts)
 {
 	LOG(false, "Aggregate info over " << num_attempts << " runs:" << endl);
-	LOG(false, "  Cost: min=" << min_cost
-							  << " average=" << (total_cost / num_attempts)
-							  << " max=" << max_cost << endl);
-	LOG(false, "  Time: min=" << min_time
-							  << " average=" << (total_time / num_attempts)
-							  << " max=" << max_time << endl
-							  << endl);
+	LOG(false,
+		"  Cost: min=" << min_cost << " average=" << (total_cost / num_attempts)
+					   << " max=" << max_cost << endl);
+	LOG(false,
+		"  Time: min=" << min_time << " average=" << (total_time / num_attempts)
+					   << " max=" << max_time << endl
+					   << endl);
 }
 
 // See KMeans.h
@@ -146,7 +150,8 @@ Scalar RunKMeans(
 		double start_time = GetSeconds();
 
 		// Choose centers uniformly at random
-		for (int i = 0; i < n; i++) unused_centers[i] = i;
+		for (int i = 0; i < n; i++)
+			unused_centers[i] = i;
 		int num_unused_centers = n;
 		for (int i = 0; i < k; i++)
 		{

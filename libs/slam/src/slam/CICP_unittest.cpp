@@ -20,6 +20,7 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/slam/CICP.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -200,9 +201,9 @@ TEST_F(ICPTests, RayTracingICP3D)
 	icp.options.thresholdAng = 0;
 
 	CPose3DPDF::Ptr pdf = icp.Align3D(
-		&M2_noisy,  // Map to align
+		&M2_noisy,	// Map to align
 		&M1,  // Reference map
-		CPose3D(),  // Initial gross estimate
+		CPose3D(),	// Initial gross estimate
 		icp_info);
 
 	CPose3D mean = pdf->getMeanVal();

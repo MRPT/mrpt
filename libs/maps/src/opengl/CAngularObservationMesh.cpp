@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/serialization/CArchive.h>
@@ -34,7 +34,7 @@
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "GlU32.lib")
 #endif
-#endif  // MRPT_HAS_OPENGL_GLUT
+#endif	// MRPT_HAS_OPENGL_GLUT
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -83,11 +83,13 @@ void CAngularObservationMesh::updateMesh() const
 		double p1 = pitchBounds[0];
 		double p2 = pitchBounds[1];
 		for (size_t i = 0; i < numRows; i++)
-			pitchs[i] = p1 + (p2 - p1) * static_cast<double>(i) /
-								 static_cast<double>(numRows - 1);
+			pitchs[i] = p1 +
+				(p2 - p1) * static_cast<double>(i) /
+					static_cast<double>(numRows - 1);
 	}
 	else
-		for (size_t i = 0; i < numRows; i++) pitchs[i] = pitchBounds[i];
+		for (size_t i = 0; i < numRows; i++)
+			pitchs[i] = pitchBounds[i];
 	const bool rToL = scanSet[0].rightToLeft;
 	for (size_t i = 0; i < numRows; i++)
 	{
@@ -99,9 +101,10 @@ void CAngularObservationMesh::updateMesh() const
 		for (size_t j = 0; j < numCols; j++)
 			if ((validityMatrix(i, j) = ss_i.getScanRangeValidity(j)))
 			{
-				double pYaw = aperture * ((static_cast<double>(j) /
-										   static_cast<double>(numCols - 1)) -
-										  0.5);
+				double pYaw = aperture *
+					((static_cast<double>(j) /
+					  static_cast<double>(numCols - 1)) -
+					 0.5);
 				// Without the pitch since it's already within each sensorPose:
 				actualMesh(i, j) =
 					((origin +
@@ -124,8 +127,7 @@ void CAngularObservationMesh::updateMesh() const
 			{
 				case 0:
 				case 1:
-				case 2:
-					break;
+				case 2: break;
 				case 3:
 					if (!b1)
 						addTriangle(
@@ -328,8 +330,7 @@ void CAngularObservationMesh::serializeFrom(
 			readFromStreamRender(in);
 			in >> pitchBounds >> scanSet >> m_Wireframe >> mEnableTransparency;
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	meshUpToDate = false;
 	CRenderizable::notifyChange();
@@ -342,7 +343,8 @@ void CAngularObservationMesh::TDoubleRange::values(
 	double incr = increment();
 	size_t am = amount();
 	vals.resize(am);
-	for (size_t i = 0; i < am - 1; i++, value += incr) vals[i] = value;
+	for (size_t i = 0; i < am - 1; i++, value += incr)
+		vals[i] = value;
 	vals[am - 1] = finalValue();
 }
 
@@ -385,9 +387,9 @@ class FAddUntracedLines
 			if (!obs.getScanRangeValidity(i))
 			{
 				double yaw = obs.aperture *
-							 ((static_cast<double>(i) /
-							   static_cast<double>(obs.getScanSize() - 1)) -
-							  0.5);
+					((static_cast<double>(i) /
+					  static_cast<double>(obs.getScanSize() - 1)) -
+					 0.5);
 				lins->appendLine(
 					obs.sensorPose.asTPose(),
 					(obs.sensorPose +
@@ -411,7 +413,8 @@ void CAngularObservationMesh::getUntracedRays(
 TPolygon3D createFromTriangle(const mrpt::opengl::TTriangle& t)
 {
 	TPolygon3D res(3);
-	for (size_t i = 0; i < 3; i++) res[i] = t.vertices[i].xyzrgba.pt;
+	for (size_t i = 0; i < 3; i++)
+		res[i] = t.vertices[i].xyzrgba.pt;
 	return res;
 }
 

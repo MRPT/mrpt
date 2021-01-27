@@ -8,8 +8,9 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CSparseMatrix.h>
+
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -124,7 +125,7 @@ void CSparseMatrix::construct_from_triplet(const cs& triplet)
 {
 	cs* sm = cs_compress(&triplet);
 	copy_fast(sm);
-	cs_spfree(sm);  // This will release just the "cs" structure itself, not the
+	cs_spfree(sm);	// This will release just the "cs" structure itself, not the
 	// internal buffers, by now set to NULL.
 }
 
@@ -234,23 +235,23 @@ CSparseMatrix CSparseMatrix::transpose() const
 void CSparseMatrix::cs2dense(const cs& SM, CMatrixDouble& d_M)
 {
 	d_M.setZero(SM.m, SM.n);
-	if (SM.nz >= 0)  // isTriplet ??
+	if (SM.nz >= 0)	 // isTriplet ??
 	{  // It's in triplet form.
 		for (int idx = 0; idx < SM.nz; ++idx)
 			d_M(SM.i[idx], SM.p[idx]) +=
-				SM.x[idx];  // += since the convention is that duplicate (i,j)
+				SM.x[idx];	// += since the convention is that duplicate (i,j)
 		// entries add to each other.
 	}
 	else
 	{  // Column compressed format:
-		ASSERT_(SM.x);  // JL: Could it be nullptr and be OK???
+		ASSERT_(SM.x);	// JL: Could it be nullptr and be OK???
 
 		for (int j = 0; j < SM.n; j++)
 		{
 			const int p0 = SM.p[j];
 			const int p1 = SM.p[j + 1];
 			for (int p = p0; p < p1; p++)
-				d_M(SM.i[p], j) += SM.x[p];  // += since the convention is that
+				d_M(SM.i[p], j) += SM.x[p];	 // += since the convention is that
 			// duplicate (i,j) entries add to
 			// each other.
 		}
@@ -271,7 +272,7 @@ void CSparseMatrix::compressFromTriplet()
 
 	cs* sm = cs_compress(&this->sparse_matrix);
 	copy_fast(sm);
-	cs_spfree(sm);  // This will release just the "cs" structure itself, not the
+	cs_spfree(sm);	// This will release just the "cs" structure itself, not the
 	// internal buffers, now set to NULL.
 }
 
@@ -319,7 +320,7 @@ bool CSparseMatrix::saveToTextFile_sparse(const std::string& filName)
 		sparse_matrix.nzmax);  // Rows, cols, nzmax
 
 	// Data lines:
-	if (sparse_matrix.nz >= 0)  // isTriplet ??
+	if (sparse_matrix.nz >= 0)	// isTriplet ??
 	{  // It's in triplet form.
 		for (int i = 0; i < sparse_matrix.nzmax; i++)
 			if (sparse_matrix.x[i] != 0)
@@ -432,7 +433,7 @@ void CSparseMatrix::CholeskyDecomp::update(const CSparseMatrix& new_SM)
 		m_originalSM->sparse_matrix.n == new_SM.sparse_matrix.n,
 		"New matrix doesn't have the same sparse structure!");
 
-	m_originalSM = &new_SM;  // Just copy the reference.
+	m_originalSM = &new_SM;	 // Just copy the reference.
 
 	// Release old data:
 	cs_nfree(m_numeric_structure);

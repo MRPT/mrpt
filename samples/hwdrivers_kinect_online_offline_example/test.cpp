@@ -31,6 +31,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
+
 #include <iostream>
 #include <memory>
 
@@ -94,7 +95,7 @@ void thread_grabbing(TThreadParam& p)
 	try
 	{
 		typedef std::unique_ptr<CKinect>
-			CKinectPtr;  // This assures automatic destruction
+			CKinectPtr;	 // This assures automatic destruction
 
 		// Only one of these will be actually used:
 		CKinectPtr kinect;
@@ -179,7 +180,7 @@ void thread_grabbing(TThreadParam& p)
 				// We have one observation:
 				CObservation3DRangeScan::Ptr obs3D =
 					std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
-				obs3D->load();  // *Important* This is needed to load the range
+				obs3D->load();	// *Important* This is needed to load the range
 				// image if stored as a separate file.
 
 				// Do we have to wait to emulate real-time behavior?
@@ -254,8 +255,7 @@ void Test_KinectOnlineOffline(
 	do
 	{
 		CObservation3DRangeScan::Ptr newObs = std::atomic_load(&thrPar.new_obs);
-		if (newObs && newObs->timestamp != INVALID_TIMESTAMP)
-			break;
+		if (newObs && newObs->timestamp != INVALID_TIMESTAMP) break;
 		else
 			std::this_thread::sleep_for(10ms);
 	} while (!thrPar.quit);
@@ -331,7 +331,7 @@ void Test_KinectOnlineOffline(
 			// Show intensity image:
 			if (newObs->hasIntensityImage)
 			{
-				viewInt->setImageView(newObs->intensityImage);  // This is not
+				viewInt->setImageView(newObs->intensityImage);	// This is not
 				// "_fast" since
 				// the intensity
 				// image may be
@@ -452,8 +452,7 @@ void Test_KinectOnlineOffline(
 				case 27:  // ESC
 					thrPar.quit = true;
 					break;
-				default:
-					break;
+				default: break;
 			};
 		}
 

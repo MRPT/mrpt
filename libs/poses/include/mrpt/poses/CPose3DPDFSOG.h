@@ -140,5 +140,5 @@ class CPose3DPDFSOG : public CPose3DPDF
 	 * density */
 	void appendFrom(const CPose3DPDFSOG& o);
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

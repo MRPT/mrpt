@@ -11,6 +11,7 @@
 #include <mrpt/apps/KFSLAMApp.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
+
 #include <functional>
 
 using config_changer_t = std::function<void(mrpt::config::CConfigFileBase&)>;
@@ -22,7 +23,7 @@ void generic_kf_slam_test(
 	using namespace std::string_literals;
 
 	const auto ini_fil = mrpt::UNITTEST_BASEDIR +
-						 "/share/mrpt/config_files/kf-slam/"s + ini_filename;
+		"/share/mrpt/config_files/kf-slam/"s + ini_filename;
 	EXPECT_TRUE(mrpt::system::fileExists(ini_fil));
 
 	const auto rawlog_fil =

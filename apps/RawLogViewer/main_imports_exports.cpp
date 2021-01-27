@@ -7,10 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "xRawLogViewerMain.h"
-
 #include <mrpt/gui/CMyRedirector.h>
-
 #include <wx/busyinfo.h>
 #include <wx/dirdlg.h>
 #include <wx/filedlg.h>
@@ -18,6 +15,8 @@
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
 #include <wx/textdlg.h>
+
+#include "xRawLogViewerMain.h"
 
 // General global variables:
 #include <mrpt/io/CFileGZInputStream.h>
@@ -39,6 +38,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -63,15 +63,18 @@ void goToTheLastToken(char*& str);
 
 void goToNextToken(char*& str)
 {
-	while (str[0] && str[0] != ' ') str++;
+	while (str[0] && str[0] != ' ')
+		str++;
 	if (str[0] == ' ') str++;
 }
 
 void goToTheLastToken(char*& str)
 {
-	while (str[0]) str++;
+	while (str[0])
+		str++;
 	str--;
-	while (str[0] && str[0] != ' ') str--;
+	while (str[0] && str[0] != ' ')
+		str--;
 	if (str[0] == ' ') str++;
 }
 
@@ -125,7 +128,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 	rawlog.clear();
 	wxProgressDialog progDia(
 		_("Importing rawlog..."), _("Processing..."),
-		n,  // range
+		n,	// range
 		this,  // parent
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
@@ -135,7 +138,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 	while (i < n && !end)
 	{
 		// Find the line type:
-		string line(sl[i]);  //= sl->Strings[i];
+		string line(sl[i]);	 //= sl->Strings[i];
 
 		// Find the line type:
 		// ----------------------------------------------------
@@ -216,8 +219,8 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 
 		if ((i++ % 30) == 0)
 		{
-			if (!progDia.Update(i)) end = true;  // Exit the loop
-			wxTheApp->Yield();  // Let the app. process messages
+			if (!progDia.Update(i)) end = true;	 // Exit the loop
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 	}
 
@@ -238,10 +241,11 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 	WX_START_TRY
 
 	if (rawlog.size())
-		if (wxYES != wxMessageBox(
-						 _("This will overwrite your currently loaded rawlog. "
-						   "Proceed anyway?"),
-						 _("Import rawlog"), wxYES_NO, this))
+		if (wxYES !=
+			wxMessageBox(
+				_("This will overwrite your currently loaded rawlog. "
+				  "Proceed anyway?"),
+				_("Import rawlog"), wxYES_NO, this))
 			return;
 
 	// Select directory:
@@ -289,7 +293,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	string errorMsg;
 	rawlog.clear();
@@ -302,7 +306,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 		{
 			auxStr.sprintf(wxT("Parsed %u files"), countLoop);
 			if (!progDia.Update(countLoop, auxStr)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		try
@@ -427,19 +431,19 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 
 		wxProgressDialog progDia(
 			wxT("Exporting rawlog to ALOG"), wxT("Saving..."),
-			n,  // range
+			n,	// range
 			this,  // parent
 			wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 				wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-		wxTheApp->Yield();  // Let the app. process messages
+		wxTheApp->Yield();	// Let the app. process messages
 
 		for (i = 0; i < n; i++)
 		{
 			if (countLoop++ % 100 == 0)
 			{
 				if (!progDia.Update(i)) continue;  // Exit the loop
-				wxTheApp->Yield();  // Let the app. process messages
+				wxTheApp->Yield();	// Let the app. process messages
 			}
 
 			// EXPORT
@@ -507,18 +511,16 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 						for (unsigned int j = 0; j < 181; j++)
 						{
 							unsigned int idx;
-							if (j == 90)
-								idx = 180;
+							if (j == 90) idx = 180;
 							else if (j < 90)
 								idx = 1 + 2 * j;
 							else
 								idx = 2 * j;
 
 							float val = obs->getScanRangeValidity(idx)
-											? obs->getScanRange(idx)
-											: 0;
-							if (j < (181 - 1))
-								::fprintf(f, "%.03f,", val);
+								? obs->getScanRange(idx)
+								: 0;
+							if (j < (181 - 1)) ::fprintf(f, "%.03f,", val);
 							else
 								::fprintf(f, "%.03f}\n", val);
 						}
@@ -528,10 +530,9 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 						for (unsigned int idx = 0; idx < 181; idx++)
 						{
 							float val = obs->getScanRangeValidity(idx)
-											? obs->getScanRange(idx)
-											: 0;
-							if (idx < (181 - 1))
-								::fprintf(f, "%.03f,", val);
+								? obs->getScanRange(idx)
+								: 0;
+							if (idx < (181 - 1)) ::fprintf(f, "%.03f,", val);
 							else
 								::fprintf(f, "%.03f}\n", val);
 						}
@@ -623,7 +624,7 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 					parseGeneralVector(strLine, 2, rawdata);
 					if (rawdata.size() == 4)
 					{
-						newRecord.type = 0;  // OK, valid odometry
+						newRecord.type = 0;	 // OK, valid odometry
 
 						timestamp = init_timestamp + rawdata[0];
 
@@ -823,21 +824,22 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 					if (string::npos != (idx = strLine.find("Pose=[3x1]{")))
 					{
 						newRecord.data.resize(6);
-						if (3 == sscanf(
-									 strLine.c_str() + idx + 11, "%f,%f,%f",
-									 &newRecord.data[0], &newRecord.data[1],
-									 &newRecord.data[2]))
+						if (3 ==
+							sscanf(
+								strLine.c_str() + idx + 11, "%f,%f,%f",
+								&newRecord.data[0], &newRecord.data[1],
+								&newRecord.data[2]))
 						{
 							if (string::npos !=
 								(idx = strLine.find("Vel=[3x1]{")))
 							{
-								if (3 == sscanf(
-											 strLine.c_str() + idx + 10,
-											 "%f,%f,%f", &newRecord.data[3],
-											 &newRecord.data[4],
-											 &newRecord.data[5]))
+								if (3 ==
+									sscanf(
+										strLine.c_str() + idx + 10, "%f,%f,%f",
+										&newRecord.data[3], &newRecord.data[4],
+										&newRecord.data[5]))
 								{
-									newRecord.type = 0;  // OK, valid odometry
+									newRecord.type = 0;	 // OK, valid odometry
 								}
 							}
 						}
@@ -989,10 +991,11 @@ void xRawLogViewerFrame::OnMenuImportALOG(wxCommandEvent& event)
 	else
 	{
 		// No images, but perhaps they are in a separate directory??
-		if (wxYES == wxMessageBox(
-						 _("No images found in the alog. Do you want to "
-						   "provide an additional directory with image files?"),
-						 _("Additional images?"), wxYES_NO))
+		if (wxYES ==
+			wxMessageBox(
+				_("No images found in the alog. Do you want to "
+				  "provide an additional directory with image files?"),
+				_("Additional images?"), wxYES_NO))
 		{
 			wxDirDialog dirDialog(
 				this,
@@ -1084,12 +1087,12 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 
 	wxProgressDialog progDia(
 		wxT("Importing rawlog"), wxT("Importing..."),
-		progress_N,  // range
+		progress_N,	 // range
 		this,  // parent
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	std::map<double, TAlogRecord>::const_iterator it;
 
@@ -1098,7 +1101,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 		if (progress_i++ % 50 == 0)
 		{
 			if (!progDia.Update((int)progress_i)) break;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		TTimeStamp tim = time_tToTimestamp(it->first);
@@ -1210,10 +1213,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 				it->second.data[0], it->second.data[1],
 				it->second.data[2] + M_PI / 2);
 
-			if (firstOdo)
-			{
-				firstOdo = false;
-			}
+			if (firstOdo) { firstOdo = false; }
 			else
 			{
 				Aodo = curOdo - lastOdometry;
@@ -1281,17 +1281,16 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 				case CRawlog::etObservation:
 				{
 					CObservation::Ptr o =
-						rawlog.getAsObservation(i);  // get the observation
+						rawlog.getAsObservation(i);	 // get the observation
 					if (IS_CLASS(*o, CObservationGasSensors))
 					{
 						obs = std::dynamic_pointer_cast<CObservationGasSensors>(
-							o);  // Get the GAS observation
+							o);	 // Get the GAS observation
 					}
 				}
 				break;
 
-				default:
-					continue;
+				default: continue;
 			}  // end-case
 
 			// If we have a GAS obs, then process it:
@@ -1398,18 +1397,17 @@ void xRawLogViewerFrame::OnGenWifiTxt(wxCommandEvent& event)
 				case CRawlog::etObservation:
 				{
 					CObservation::Ptr o =
-						rawlog.getAsObservation(i);  // get the observation
+						rawlog.getAsObservation(i);	 // get the observation
 					if (IS_CLASS(*o, CObservationWirelessPower))
 					{
 						obs = std::dynamic_pointer_cast<
 							CObservationWirelessPower>(
-							o);  // Get the GAS observation
+							o);	 // Get the GAS observation
 					}
 				}
 				break;
 
-				default:
-					continue;
+				default: continue;
 			}  // end-case
 
 			// If we have a WIFI obs, then process it:
@@ -1515,17 +1513,16 @@ void xRawLogViewerFrame::OnGenRFIDTxt(wxCommandEvent& event)
 				case CRawlog::etObservation:
 				{
 					CObservation::Ptr o =
-						rawlog.getAsObservation(i);  // get the observation
+						rawlog.getAsObservation(i);	 // get the observation
 					if (IS_CLASS(*o, CObservationRFID))
 					{
 						obs = std::dynamic_pointer_cast<CObservationRFID>(
-							o);  // Get the GAS observation
+							o);	 // Get the GAS observation
 					}
 				}
 				break;
 
-				default:
-					continue;
+				default: continue;
 			}  // end-case
 
 			// If we have a RFID obs, then process it:
@@ -1595,10 +1592,11 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 	WX_START_TRY
 
 	if (rawlog.size())
-		if (wxYES != wxMessageBox(
-						 _("This will overwrite your currently loaded rawlog. "
-						   "Proceed anyway?"),
-						 _("Import rawlog"), wxYES_NO, this))
+		if (wxYES !=
+			wxMessageBox(
+				_("This will overwrite your currently loaded rawlog. "
+				  "Proceed anyway?"),
+				_("Import rawlog"), wxYES_NO, this))
 			return;
 
 	wxString caption = wxT("Import a uni-bremen DLR dataset...");
@@ -1669,16 +1667,18 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 	CRawlog newRawlog;
 
 	const bool use_SF_format =
-		(wxYES == wxMessageBox(
-					  _("Use Actions-SensoryFrames format (YES) or the "
-						"Observation-only format (NO)?"),
-					  _("Import rawlog"), wxYES_NO, this));
+		(wxYES ==
+		 wxMessageBox(
+			 _("Use Actions-SensoryFrames format (YES) or the "
+			   "Observation-only format (NO)?"),
+			 _("Import rawlog"), wxYES_NO, this));
 
 	const bool use_ground_truth_IDs =
-		(wxYES == wxMessageBox(
-					  _("Employ landmark IDs in file (YES) or make the sensor "
-						"unable to identify any landmarks (NO)?"),
-					  _("Import rawlog"), wxYES_NO, this));
+		(wxYES ==
+		 wxMessageBox(
+			 _("Employ landmark IDs in file (YES) or make the sensor "
+			   "unable to identify any landmarks (NO)?"),
+			 _("Import rawlog"), wxYES_NO, this));
 
 	// Parse line by line:
 	mrpt::io::CTextFileLinesParser fileParser(import_filename);
@@ -1722,10 +1722,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 			// First, do we have some queued obs?
 			if (!set_of_obs.empty())
 			{
-				if (use_SF_format)
-				{
-					newRawlog.insert(set_of_obs);
-				}
+				if (use_SF_format) { newRawlog.insert(set_of_obs); }
 				else
 				{
 					for (size_t i = 0; i < set_of_obs.size(); i++)
@@ -1748,7 +1745,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 				obs->maxSensorDistance = 100;
 				obs->sensor_std_yaw = 1e-4f;
 				obs->sensor_std_range = 1e-2f;
-				obs->sensor_std_pitch = 0;  // Is a 2D sensor
+				obs->sensor_std_pitch = 0;	// Is a 2D sensor
 				obs->fieldOfView_pitch = 0;
 				obs->fieldOfView_yaw = 180.0_deg;
 				obs->validCovariances =
@@ -1826,7 +1823,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 				-atof(words[2].c_str());  // Ey! Yes, I flipped the coord.
 			// system to match MRPT's standard
 			const double lm_y = atof(
-				words[1].c_str());  //  of +X pointing fordward, +Y to the left.
+				words[1].c_str());	//  of +X pointing fordward, +Y to the left.
 
 			const double r = std::sqrt(square(lm_x) + square(lm_y));
 			const double a = atan2(lm_y, lm_x);
@@ -1873,7 +1870,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 			}
 			else
 			{
-				meas.landmarkID = INVALID_LANDMARK_ID;  // Unknown IDs
+				meas.landmarkID = INVALID_LANDMARK_ID;	// Unknown IDs
 			}
 
 			meas.range = r;
@@ -1895,10 +1892,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 	// observations:
 	if (!set_of_obs.empty())
 	{
-		if (use_SF_format)
-		{
-			newRawlog.insert(set_of_obs);
-		}
+		if (use_SF_format) { newRawlog.insert(set_of_obs); }
 		else
 		{
 			for (size_t i = 0; i < set_of_obs.size(); i++)
@@ -1908,7 +1902,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 
 	wxTheApp->Yield();
 	// Update the views:
-	rawlog = newRawlog;  // Load into GUI
+	rawlog = newRawlog;	 // Load into GUI
 	rebuildTreeView();
 
 	// Extra info, to the console:
@@ -1975,8 +1969,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 		{
 			switch (rawlog.getType(i))
 			{
-				default:
-					break;
+				default: break;
 
 				case CRawlog::etSensoryFrame:
 				{
@@ -2047,7 +2040,7 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 							TTimeStamp t = obs->timestamp;
 
 							double sampleTime = timestampTotime_t(
-								t);  // timeDifference(rawlog_first_timestamp,t);
+								t);	 // timeDifference(rawlog_first_timestamp,t);
 
 							// Time:
 							::fprintf(f, "%f ", sampleTime);

@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include <mrpt/vision/types.h>
-
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/TKeyPoint.h>
+#include <mrpt/vision/types.h>
+
 #include <memory>  // for unique_ptr
 
 namespace mrpt::vision
@@ -303,5 +303,5 @@ struct CFeatureTracker_KL : public CGenericFeatureTracker
 		FEATLIST& inout_featureList);
 };
 
-/**  @}  */  // end of grouping
+/**  @}  */	 // end of grouping
 }  // namespace mrpt::vision

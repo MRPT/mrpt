@@ -10,6 +10,7 @@
 // Font header file
 #pragma once
 
+// clang-format off
 Point sans_vertices[] = {
 
 	{0.3677f, 0.3885f},   {0.3332f, 0.5073f},   {0.3038f, 0.5173f},
@@ -2582,8 +2583,10 @@ Font::Char sans_chars[] = {
 	{3628, 10446, 7256, 72, 52, 0.7437f},
 	{3654, 10518, 7308, 225, 154, 0.6833f},
 };
+// clang-format on
 
-Font sans_font = {sans_vertices, sans_triangles, sans_lines, sans_chars,
-				  " $(,048<@DHLPTX\\`dhlptx|#'+/"
-				  "37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
-				  "AEIMQUY]aeimquy}"};
+Font sans_font = {
+	sans_vertices, sans_triangles, sans_lines, sans_chars,
+	" $(,048<@DHLPTX\\`dhlptx|#'+/"
+	"37;?CGKOSW[_cgkosw{\"&*.26:>BFJNRVZ^bfjnrvz~\t!%)-159="
+	"AEIMQUY]aeimquy}"};

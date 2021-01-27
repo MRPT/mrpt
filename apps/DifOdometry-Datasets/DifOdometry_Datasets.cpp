@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Datasets.h"
+
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CFrustum.h>
@@ -17,6 +18,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
+
 #include "legend.xpm"
 
 using namespace Eigen;
@@ -34,7 +36,7 @@ void CDifodoDatasets::loadConfiguration(
 	const mrpt::config::CConfigFileBase& ini)
 {
 	fovh = M_PIf * 62.5f /
-		   180.0f;  // Larger FOV because depth is registered with color
+		180.0f;	 // Larger FOV because depth is registered with color
 	fovv = M_PIf * 48.5f / 180.0f;
 	cam_mode = 1;
 	fast_pyramid = false;
@@ -371,8 +373,7 @@ void CDifodoDatasets::loadFrame()
 			const float z =
 				range(height - downsample * i - 1, width - downsample * j - 1) *
 				rangeUnits;
-			if (z < 4.5f)
-				depth_wf(i, j) = z;
+			if (z < 4.5f) depth_wf(i, j) = z;
 			else
 				depth_wf(i, j) = 0.f;
 		}
@@ -450,8 +451,7 @@ void CDifodoDatasets::loadFrame()
 	f_gt >> last_gt_data[5];
 	f_gt >> last_gt_data[6];
 
-	if (last_groundtruth - timestamp_obs > 0.01)
-		groundtruth_ok = false;
+	if (last_groundtruth - timestamp_obs > 0.01) groundtruth_ok = false;
 
 	else
 	{
@@ -463,7 +463,7 @@ void CDifodoDatasets::loadFrame()
 		const float incr_t1 = last_groundtruth - timestamp_obs;
 		const float incr_t = incr_t0 + incr_t1;
 
-		if (incr_t == 0.f)  // Deal with defects in the groundtruth files
+		if (incr_t == 0.f)	// Deal with defects in the groundtruth files
 		{
 			groundtruth_ok = false;
 			return;
@@ -532,8 +532,7 @@ void CDifodoDatasets::loadFrame()
 void CDifodoDatasets::reset()
 {
 	loadFrame();
-	if (fast_pyramid)
-		buildCoordinatesPyramidFast();
+	if (fast_pyramid) buildCoordinatesPyramidFast();
 	else
 		buildCoordinatesPyramid();
 

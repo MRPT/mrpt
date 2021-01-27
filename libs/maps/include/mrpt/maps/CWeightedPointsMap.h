@@ -54,7 +54,7 @@ class CWeightedPointsMap : public CPointsMap
 	   from CPointsMap
 		@{ */
 	void reserve(size_t newLength) override;  // See base class docs
-	void resize(size_t newLength) override;  // See base class docs
+	void resize(size_t newLength) override;	 // See base class docs
 	void setSize(size_t newLength) override;  // See base class docs
 
 	/** The virtual method for \a insertPoint() *without* calling
@@ -153,7 +153,7 @@ class CWeightedPointsMap : public CPointsMap
 	/** Probabilistic observation likelihood options */
 	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
 	MAP_DEFINITION_END(CWeightedPointsMap)
-};  // End of class def.
+};	// End of class def.
 }  // namespace maps
 
 namespace opengl
@@ -200,6 +200,6 @@ class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
 	{
 		m_obj.setPointFast(idx, x, y, z);
 	}
-};  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
+};	// end of PointCloudAdapter<mrpt::maps::CPointsMap>
 }  // namespace opengl
 }  // namespace mrpt

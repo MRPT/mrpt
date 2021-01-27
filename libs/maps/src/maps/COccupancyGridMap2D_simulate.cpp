@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/math/CVectorFixed.h>
@@ -16,6 +16,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -47,7 +48,7 @@ void COccupancyGridMap2D::laserScanSimulator(
 	inout_Scan.resizeScan(N);
 
 	double A = sensorPose.phi() +
-			   (inout_Scan.rightToLeft ? -0.5 : +0.5) * inout_Scan.aperture;
+		(inout_Scan.rightToLeft ? -0.5 : +0.5) * inout_Scan.aperture;
 	const double AA =
 		(inout_Scan.rightToLeft ? 1.0 : -1.0) * (inout_Scan.aperture / (N - 1));
 
@@ -86,7 +87,7 @@ void COccupancyGridMap2D::sonarSimulator(
 			round(1 + inout_observation.sensorConeApperture / 1.0_deg);
 
 		double direction = sensorAbsolutePose.phi() -
-						   0.5 * inout_observation.sensorConeApperture;
+			0.5 * inout_observation.sensorConeApperture;
 		const double Adir = inout_observation.sensorConeApperture / nRays;
 
 		float min_detected_obs = 0;
@@ -113,8 +114,7 @@ void COccupancyGridMap2D::simulateScanRay(
 	const float threshold_free, const double noiseStd,
 	const double angleNoiseStd) const
 {
-	const double A_ =
-		angle_direction +
+	const double A_ = angle_direction +
 		(angleNoiseStd > .0
 			 ? getRandomGenerator().drawGaussian1D_normalized() * angleNoiseStd
 			 : .0);
@@ -216,11 +216,11 @@ static void func_laserSimul_callback(
 	// Scan size:
 	y_scanRanges.resize(N);
 
-	double A =
-		sensorPose.phi() + (fixed_param.params->rightToLeft ? -0.5 : +0.5) *
-							   fixed_param.params->aperture;
+	double A = sensorPose.phi() +
+		(fixed_param.params->rightToLeft ? -0.5 : +0.5) *
+			fixed_param.params->aperture;
 	const double AA = (fixed_param.params->rightToLeft ? 1.0 : -1.0) *
-					  (fixed_param.params->aperture / (N - 1));
+		(fixed_param.params->aperture / (N - 1));
 
 	const float free_thres = 1.0f - fixed_param.params->threshold;
 
@@ -255,10 +255,10 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 			mrpt::math::transform_gaussian_unscented(
 				robPoseMean,  // x_mean
 				in_params.robotPose.cov,  // x_cov
-				&func_laserSimul_callback,  // void  (*functor)(const
+				&func_laserSimul_callback,	// void  (*functor)(const
 				// VECTORLIKE1 &x,const USERPARAM
 				// &fixed_param, VECTORLIKE3 &y)
-				simulData,  // const USERPARAM &fixed_param,
+				simulData,	// const USERPARAM &fixed_param,
 				out_results.scanWithUncert.rangesMean,
 				out_results.scanWithUncert.rangesCovar,
 				nullptr,  // elem_do_wrap2pi,
@@ -271,10 +271,10 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 			mrpt::math::transform_gaussian_montecarlo(
 				robPoseMean,  // x_mean
 				in_params.robotPose.cov,  // x_cov
-				&func_laserSimul_callback,  // void  (*functor)(const
+				&func_laserSimul_callback,	// void  (*functor)(const
 				// VECTORLIKE1 &x,const USERPARAM
 				// &fixed_param, VECTORLIKE3 &y)
-				simulData,  // const USERPARAM &fixed_param,
+				simulData,	// const USERPARAM &fixed_param,
 				out_results.scanWithUncert.rangesMean,
 				out_results.scanWithUncert.rangesCovar, in_params.MC_samples);
 			break;

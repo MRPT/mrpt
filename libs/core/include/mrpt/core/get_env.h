@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/core/from_string.h>
+
 #include <cstdlib>
 
 namespace mrpt

@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/core/bits_math.h>
 #include <mrpt/hwdrivers/CTuMicos.h>
 #include <mrpt/system/string_utils.h>
+
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -412,8 +413,7 @@ bool CTuMicos::changeMotionDir()
 	// Otains actual motion dir
 	if (!radQuerry(0, 'c', motionDir)) return false;
 
-	if (!motionDir)
-		newMotionDir = 1;
+	if (!motionDir) newMotionDir = 1;
 	else
 		newMotionDir = 0;
 
@@ -439,10 +439,7 @@ bool CTuMicos::init(const string& port)
 
 		cout << "[PTU::OpenSerialPort] Opening serial port...";
 
-		if (serPort.isOpen())
-		{
-			cout << "OK" << endl;
-		}
+		if (serPort.isOpen()) { cout << "OK" << endl; }
 		else
 		{
 			cout << " Error opening serial port";
@@ -527,10 +524,7 @@ bool CTuMicos::transmit(const char* command)
 	// Wirte in serial port
 	size_t written = serPort.Write(str, strlen(str));
 
-	if (!written)
-	{
-		return false;
-	}
+	if (!written) { return false; }
 
 	return true;
 }
@@ -543,7 +537,7 @@ bool CTuMicos::receive(const char* command, char* response)
 {
 	int cnt = 0;
 	unsigned long nReaden;
-	char str[150];  //="";
+	char str[150];	//="";
 	// char * tmp="";
 
 	do
@@ -682,8 +676,7 @@ bool CTuMicos::radQuerry(char axis, char command, double& rad)
 			char* strContext;
 			ptr1 = mrpt::system::strtok(response, s2, &strContext);
 			ptr2 = mrpt::system::strtok(nullptr, s2, &strContext);
-			if (axis == 'l')
-				rad = (long)atof((const char*)ptr1);
+			if (axis == 'l') rad = (long)atof((const char*)ptr1);
 			else
 				rad = (long)atof((const char*)ptr2);
 		}
@@ -711,9 +704,7 @@ bool CTuMicos::radAsign(char axis, char command, double nRad)
 	char command2[300];
 
 	if (command == 'v')
-	{
-		sprintf(command2, "%f %u %s", RAD2DEG(nRad), axis_index, "snv");
-	}
+	{ sprintf(command2, "%f %u %s", RAD2DEG(nRad), axis_index, "snv"); }
 
 	return transmit(command2);
 }
@@ -785,10 +776,7 @@ int CTuMicos::checkErrors()
 
 	radQuerry(0, 'e', code);
 
-	if ((int)code == 0)
-	{
-		cout << endl << "[No Error]" << endl;
-	}
+	if ((int)code == 0) { cout << endl << "[No Error]" << endl; }
 	else
 	{
 		switch ((int)code)
@@ -796,9 +784,7 @@ int CTuMicos::checkErrors()
 			case 1:
 			case 2:
 			case 3:
-			case 4:
-				cout << endl << "[Error] Internal error" << endl;
-				break;
+			case 4: cout << endl << "[Error] Internal error" << endl; break;
 			case 1001:
 				cout << endl << "[Error] Wrong parameter type" << endl;
 				break;
@@ -821,11 +807,8 @@ int CTuMicos::checkErrors()
 				cout << endl
 					 << "[Error] Parameter out of the movement area" << endl;
 				break;
-			case 2000:
-				cout << endl << "[Error] Unknown command" << endl;
-				break;
-			default:
-				break;
+			case 2000: cout << endl << "[Error] Unknown command" << endl; break;
+			default: break;
 		}
 	}
 

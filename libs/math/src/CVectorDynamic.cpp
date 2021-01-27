@@ -8,8 +8,9 @@
 +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CVectorDynamic.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::math;
@@ -23,7 +24,7 @@ CVectorDynamic<T2> CVectorDynamic<T>::cast() const
 	return r;
 }
 
-#define DO_VECDYN_INSTANTIATION(T_) \
+#define DO_VECDYN_INSTANTIATION(T_)                                            \
 	template class mrpt::math::CVectorDynamic<T_>;
 
 DO_VECDYN_INSTANTIATION(float)

@@ -8,12 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/config.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <fstream>
 
 using namespace mrpt;
@@ -110,12 +111,12 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 	CTicTac tictac;
 	tictac.Tic();
 
-	m_mrf_factors_activeObs.resize(nodeCount);  // Alloc space for obs
+	m_mrf_factors_activeObs.resize(nodeCount);	// Alloc space for obs
 	m_gmrf.initialize(nodeCount);
 
 	ConnectivityDescriptor* custom_connectivity =
 		m_gmrf_connectivity
-			.get();  // Use a raw ptr to avoid the cost in the inner loops
+			.get();	 // Use a raw ptr to avoid the cost in the inner loops
 
 	size_t cx = 0, cy = 0, cz = 0;
 	for (size_t j = 0; j < nodeCount; j++)
@@ -126,8 +127,8 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 		// 3) the top node: j+m_size_x*m_size*y
 		//-------------------------------------------------
 		const size_t c_idx_to_check[3] = {cx, cy, cz};
-		const size_t c_idx_to_check_limits[3] = {m_size_x - 1, m_size_y - 1,
-												 m_size_z - 1};
+		const size_t c_idx_to_check_limits[3] = {
+			m_size_x - 1, m_size_y - 1, m_size_z - 1};
 		const size_t c_neighbor_idx_incr[3] = {1, m_size_x, m_size_x_times_y};
 
 		for (int dir = 0; dir < 3; dir++)
@@ -211,10 +212,7 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
 	std::ofstream f_mean, f_stddev;
 
 	f_mean.open(filName_mean);
-	if (!f_mean.is_open())
-	{
-		return false;
-	}
+	if (!f_mean.is_open()) { return false; }
 	else
 	{
 		f_mean << "x coord, y coord, z coord, scalar\n";
@@ -223,10 +221,7 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
 	if (!filName_stddev.empty())
 	{
 		f_stddev.open(filName_stddev);
-		if (!f_stddev.is_open())
-		{
-			return false;
-		}
+		if (!f_stddev.is_open()) { return false; }
 		else
 		{
 			f_mean << "x coord, y coord, z coord, scalar\n";
@@ -389,8 +384,7 @@ void CRandomFieldGridMap3D::serializeFrom(
 				insertionOptions.GMRF_skip_variance;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -411,7 +405,7 @@ void CRandomFieldGridMap3D::TObservationGMRF::evalJacobian(double& dr_dx) const
 double CRandomFieldGridMap3D::TPriorFactorGMRF::evaluateResidual() const
 {
 	return m_parent->m_map[this->node_id_i].mean_value -
-		   m_parent->m_map[this->node_id_j].mean_value;
+		m_parent->m_map[this->node_id_j].mean_value;
 }
 double CRandomFieldGridMap3D::TPriorFactorGMRF::getInformation() const
 {

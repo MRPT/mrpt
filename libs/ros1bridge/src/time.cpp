@@ -9,6 +9,7 @@
 
 #include <mrpt/core/Clock.h>
 #include <mrpt/ros1bridge/time.h>
+
 #include <cmath>  // std::fmod
 
 namespace mrpt::ros1bridge

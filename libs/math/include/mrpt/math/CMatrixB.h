@@ -32,6 +32,6 @@ class CMatrixB : public mrpt::serialization::CSerializable, public CMatrixBool
 		CMatrixBool::operator=(m);
 		return *this;
 	}
-};  // end of class definition
+};	// end of class definition
 
 }  // namespace mrpt::math

@@ -73,8 +73,7 @@ bool DemoFeatures()
 	string sel_method;
 	std::getline(cin, sel_method);
 
-	if (sel_method.empty())
-		fext.options.featsType = featFAST;
+	if (sel_method.empty()) fext.options.featsType = featFAST;
 	else
 		fext.options.featsType = TKeyPointMethod(atoi(sel_method.c_str()));
 
@@ -102,8 +101,7 @@ Descriptors:
 		string desc_method;
 		std::getline(cin, desc_method);
 
-		if (desc_method.empty())
-			desc_to_compute = TDescriptorType(0);
+		if (desc_method.empty()) desc_to_compute = TDescriptorType(0);
 		else
 			desc_to_compute = TDescriptorType(atoi(desc_method.c_str()));
 	}
@@ -137,7 +135,7 @@ Descriptors:
 
 	// Only extract patchs if we are using it: descAny means take the patch:
 	if (desc_to_compute != descAny)
-		fext.options.patchSize = 0;  // Do not extract patch:
+		fext.options.patchSize = 0;	 // Do not extract patch:
 
 	CFeatureList feats1, feats2;
 
@@ -191,8 +189,7 @@ Descriptors:
 	CDisplayWindow::Ptr winptr2D_descr1, winptr2D_descr2;
 	CDisplayWindowPlots::Ptr winptrPlot_descr1, winptrPlot_descr2;
 
-	if (fext.options.featsType == featSIFT)
-		desc_to_compute = descSIFT;
+	if (fext.options.featsType == featSIFT) desc_to_compute = descSIFT;
 	else if (fext.options.featsType == featSURF)
 		desc_to_compute = descSURF;
 
@@ -241,7 +238,7 @@ Descriptors:
 
 	// Show features distances:
 	for (unsigned int i1 = 0; i1 < feats1.size() && winPlots.isOpen() &&
-							  win1.isOpen() && win2.isOpen();
+		 win1.isOpen() && win2.isOpen();
 		 i1++)
 	{
 		// Compute distances:
@@ -318,7 +315,7 @@ Descriptors:
 					{
 						const size_t nR = ft_i1.descriptors.SpinImg_range_rows;
 						const size_t nC = ft_i1.descriptors.SpinImg->size() /
-										  ft_i1.descriptors.SpinImg_range_rows;
+							ft_i1.descriptors.SpinImg_range_rows;
 						CMatrixFloat M1(nR, nC);
 						for (size_t r = 0; r < nR; r++)
 							for (size_t c = 0; c < nC; c++)
@@ -329,8 +326,7 @@ Descriptors:
 					{
 						const size_t nR =
 							best_ft2.descriptors.SpinImg_range_rows;
-						const size_t nC =
-							best_ft2.descriptors.SpinImg->size() /
+						const size_t nC = best_ft2.descriptors.SpinImg->size() /
 							best_ft2.descriptors.SpinImg_range_rows;
 						CMatrixFloat M2(nR, nC);
 						for (size_t r = 0; r < nR; r++)

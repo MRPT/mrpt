@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+
    */
 #include "CPointsConfig.h"
+
 #include "TypeOfConfig.h"
 #include "ui_CPointsConfig.h"
 

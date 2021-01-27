@@ -33,7 +33,7 @@ inline T hypot_fast(const T x, const T y)
 	return std::sqrt(x * x + y * y);
 }
 
-#ifdef DEG2RAD  // functions are preferred over macros
+#ifdef DEG2RAD	// functions are preferred over macros
 #undef DEG2RAD
 #endif
 #ifdef RAD2DEG
@@ -103,8 +103,7 @@ inline int signWithZero(T x)
 template <typename T>
 T lowestPositive(const T a, const T b)
 {
-	if (a > 0 && a <= b)
-		return a;  // a positive and smaller than b
+	if (a > 0 && a <= b) return a;	// a positive and smaller than b
 	else if (b > 0)
 		return b;  // b is positive and either smaller than a or a is negative
 	else

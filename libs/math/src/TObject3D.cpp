@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/TObject2D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/math/TPoint2D.h>
@@ -23,23 +23,13 @@ void TObject3D::generate2DObject(TObject2D& obj) const
 {
 	switch (type)
 	{
-		case GEOMETRIC_TYPE_POINT:
-			obj = TPoint2D(data.point);
-			break;
-		case GEOMETRIC_TYPE_SEGMENT:
-			obj = TSegment2D(data.segment);
-			break;
-		case GEOMETRIC_TYPE_LINE:
-			obj = TLine2D(data.line);
-			break;
-		case GEOMETRIC_TYPE_POLYGON:
-			obj = TPolygon2D(*(data.polygon));
-			break;
+		case GEOMETRIC_TYPE_POINT: obj = TPoint2D(data.point); break;
+		case GEOMETRIC_TYPE_SEGMENT: obj = TSegment2D(data.segment); break;
+		case GEOMETRIC_TYPE_LINE: obj = TLine2D(data.line); break;
+		case GEOMETRIC_TYPE_POLYGON: obj = TPolygon2D(*(data.polygon)); break;
 		case GEOMETRIC_TYPE_PLANE:
 			throw std::logic_error("Too many dimensions");
-		default:
-			obj = TObject2D();
-			break;
+		default: obj = TObject2D(); break;
 	}
 }
 
@@ -78,8 +68,7 @@ void TObject3D::getPoints(
 	std::vector<TObject3D>& remainder)
 {
 	for (const auto& obj : objs)
-		if (obj.isPoint())
-			pnts.push_back(obj.data.point);
+		if (obj.isPoint()) pnts.push_back(obj.data.point);
 		else
 			remainder.push_back(obj);
 }
@@ -88,8 +77,7 @@ void TObject3D::getSegments(
 	std::vector<TObject3D>& remainder)
 {
 	for (const auto& obj : objs)
-		if (obj.isSegment())
-			sgms.push_back(obj.data.segment);
+		if (obj.isSegment()) sgms.push_back(obj.data.segment);
 		else
 			remainder.push_back(obj);
 }
@@ -98,8 +86,7 @@ void TObject3D::getLines(
 	std::vector<TObject3D>& remainder)
 {
 	for (const auto& obj : objs)
-		if (obj.isLine())
-			lins.push_back(obj.data.line);
+		if (obj.isLine()) lins.push_back(obj.data.line);
 		else
 			remainder.push_back(obj);
 }
@@ -108,8 +95,7 @@ void TObject3D::getPlanes(
 	std::vector<TObject3D>& remainder)
 {
 	for (const auto& obj : objs)
-		if (obj.isPlane())
-			plns.push_back(obj.data.plane);
+		if (obj.isPlane()) plns.push_back(obj.data.plane);
 		else
 			remainder.push_back(obj);
 }
@@ -118,8 +104,7 @@ void TObject3D::getPolygons(
 	std::vector<TObject3D>& remainder)
 {
 	for (const auto& obj : objs)
-		if (obj.isPolygon())
-			polys.push_back(*(obj.data.polygon));
+		if (obj.isPolygon()) polys.push_back(*(obj.data.polygon));
 		else
 			remainder.push_back(obj);
 }

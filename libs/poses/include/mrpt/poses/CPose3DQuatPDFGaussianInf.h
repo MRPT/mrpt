@@ -141,7 +141,7 @@ class CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 	 * the range [0,1] */
 	double evaluateNormalizedPDF(const CPose3DQuat& x) const;
 
-};  // End of class def.
+};	// End of class def.
 
 bool operator==(
 	const CPose3DQuatPDFGaussianInf& p1, const CPose3DQuatPDFGaussianInf& p2);

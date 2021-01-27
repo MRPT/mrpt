@@ -12,6 +12,7 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -90,7 +91,7 @@ void TestImageConvolutionFFT()
 
 		// IFFT:
 		math::idft2_complex(I2_R, I2_I, res_R, res_I);
-		res_R *= 1.0f;  // SCALE!
+		res_R *= 1.0f;	// SCALE!
 
 		meanTime += tictac.Tac();
 		printf(" Done,%.06fms\n", tictac.Tac() * 1000.0f);

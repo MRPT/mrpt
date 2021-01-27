@@ -8,10 +8,10 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
+#include <memory>
+
 #include "CBaseConfig.h"
 #include "ui_CGeneralConfig.h"
-
-#include <memory>
 
 struct SGeneralSetting
 {

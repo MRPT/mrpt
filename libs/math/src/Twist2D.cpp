@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/bits_math.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TTwist2D.h>
@@ -57,12 +57,14 @@ mrpt::math::TPose2D TTwist2D::operator*(const double dt) const
 mrpt::serialization::CArchive& mrpt::math::operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TTwist2D& o)
 {
-	for (size_t i = 0; i < o.size(); i++) in >> o[i];
+	for (size_t i = 0; i < o.size(); i++)
+		in >> o[i];
 	return in;
 }
 mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TTwist2D& o)
 {
-	for (size_t i = 0; i < o.size(); i++) out << o[i];
+	for (size_t i = 0; i < o.size(); i++)
+		out << o[i];
 	return out;
 }

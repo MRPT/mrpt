@@ -15,6 +15,7 @@
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt;

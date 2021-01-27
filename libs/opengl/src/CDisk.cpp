@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -72,7 +72,8 @@ void CDisk::onUpdateBuffers_Triangles()
 	}
 
 	// All faces, same color:
-	for (auto& t : tris) t.setColor(m_color);
+	for (auto& t : tris)
+		t.setColor(m_color);
 }
 
 uint8_t CDisk::serializeGetVersion() const { return 1; }
@@ -100,8 +101,7 @@ void CDisk::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }
@@ -128,9 +128,10 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	// The following expression yields the collision point between the plane and
 	// the beam (the y and z
 	// coordinates are zero).
-	dist = x + (y * (sin(p) * sin(w) * cos(r) - cos(w) * sin(r)) +
-				z * cos(p) * cos(r)) /
-				   coef;
+	dist = x +
+		(y * (sin(p) * sin(w) * cos(r) - cos(w) * sin(r)) +
+		 z * cos(p) * cos(r)) /
+			coef;
 	if (dist < 0) return false;
 	// Euclidean distance is invariant to rotations...
 	double d2 = (x - dist) * (x - dist) + y * y + z * z;

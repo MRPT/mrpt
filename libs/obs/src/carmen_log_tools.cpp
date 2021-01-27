@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/containers/yaml.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -53,13 +53,13 @@ bool mrpt::obs::carmen_log_parse_line(
 		CObservation2DRangeScan::Ptr obsLaser_ptr =
 			std::make_shared<CObservation2DRangeScan>();
 		CObservation2DRangeScan* obsLaser =
-			obsLaser_ptr.get();  // Faster access
+			obsLaser_ptr.get();	 // Faster access
 
 		// Parse:
-		int laser_type;  //  SICK_LMS = 0, SICK_PLS = 1, HOKUYO_URG = 2,
+		int laser_type;	 //  SICK_LMS = 0, SICK_PLS = 1, HOKUYO_URG = 2,
 		//  SIMULATED_LASER = 3,
 		double start_angle, angular_resolution, accuracy;
-		int remission_mode;  // OFF = 0, DIRECT = 1, NORMALIZED = 2
+		int remission_mode;	 // OFF = 0, DIRECT = 1, NORMALIZED = 2
 
 		if (!(S >> obsLaser->sensorLabel >> laser_type >> start_angle >>
 			  obsLaser->aperture >> angular_resolution >> obsLaser->maxRange >>
@@ -125,8 +125,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		string robotName;
 		S >> timestamp >> robotName;
 
-		const mrpt::system::TTimeStamp obs_time =
-			time_start_log +
+		const mrpt::system::TTimeStamp obs_time = time_start_log +
 			std::chrono::microseconds(static_cast<uint64_t>(1e-6 * timestamp));
 
 		obsLaser->timestamp = obs_time;
@@ -159,7 +158,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		CObservation2DRangeScan::Ptr obsLaser_ptr =
 			std::make_shared<CObservation2DRangeScan>();
 		CObservation2DRangeScan* obsLaser =
-			obsLaser_ptr.get();  // Faster access
+			obsLaser_ptr.get();	 // Faster access
 
 		// Parse:
 		size_t nRanges;
@@ -205,8 +204,9 @@ bool mrpt::obs::carmen_log_parse_line(
 			obsLaser->setScanRange(i, range);
 			// Valid value?
 			obsLaser->setScanRangeValidity(
-				i, (obsLaser->getScanRange(i) >= obsLaser->maxRange ||
-					obsLaser->getScanRange(i) <= 0));
+				i,
+				(obsLaser->getScanRange(i) >= obsLaser->maxRange ||
+				 obsLaser->getScanRange(i) <= 0));
 		}
 
 		mrpt::math::TPose2D globalLaserPose;
@@ -226,8 +226,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		string robotName;
 		S >> timestamp >> robotName;
 
-		const mrpt::system::TTimeStamp obs_time =
-			time_start_log +
+		const mrpt::system::TTimeStamp obs_time = time_start_log +
 			std::chrono::microseconds(static_cast<uint64_t>(1e-6 * timestamp));
 
 		obsLaser->timestamp = obs_time;

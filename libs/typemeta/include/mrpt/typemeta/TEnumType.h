@@ -46,7 +46,7 @@ struct bimap
 		m_k2v[k] = v;
 		m_v2k[v] = k;
 	}
-};  // end bimap
+};	// end bimap
 }  // namespace internal
 
 /** Only specializations of this class are defined for each enum type of
@@ -59,33 +59,33 @@ struct TEnumTypeFiller
 	static void fill(internal::bimap<ENUMTYPE, std::string>& m_map);
 };
 
-#define MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS)                              \
-	namespace mrpt                                                            \
-	{                                                                         \
-	namespace typemeta                                                        \
-	{                                                                         \
-	template <>                                                               \
-	struct TEnumTypeFiller<_ENUM_TYPE_WITH_NS>                                \
-	{                                                                         \
-		static void fill(                                                     \
-			mrpt::typemeta::internal::bimap<_ENUM_TYPE_WITH_NS, std::string>& \
-				m_map)                                                        \
+#define MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS)                               \
+	namespace mrpt                                                             \
+	{                                                                          \
+	namespace typemeta                                                         \
+	{                                                                          \
+	template <>                                                                \
+	struct TEnumTypeFiller<_ENUM_TYPE_WITH_NS>                                 \
+	{                                                                          \
+		static void fill(                                                      \
+			mrpt::typemeta::internal::bimap<_ENUM_TYPE_WITH_NS, std::string>&  \
+				m_map)                                                         \
 		{
-#define MRPT_ENUM_TYPE_BEGIN_NAMESPACE(_NAMESPACE, _ENUM_TYPE_WITH_NS) \
-	MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS)                           \
+#define MRPT_ENUM_TYPE_BEGIN_NAMESPACE(_NAMESPACE, _ENUM_TYPE_WITH_NS)         \
+	MRPT_ENUM_TYPE_BEGIN(_ENUM_TYPE_WITH_NS)                                   \
 	using namespace _NAMESPACE;
 
-#define MRPT_ENUM_TYPE_END() \
-	}                        \
-	}                        \
-	;                        \
-	}                        \
+#define MRPT_ENUM_TYPE_END()                                                   \
+	}                                                                          \
+	}                                                                          \
+	;                                                                          \
+	}                                                                          \
 	}
 
 /** For use in specializations of TEnumTypeFiller */
 #define MRPT_FILL_ENUM(_X) m_map.insert(_X, #_X)
 #define MRPT_FILL_ENUM_CUSTOM_NAME(_X, _NAME) m_map.insert(_X, _NAME)
-#define MRPT_FILL_ENUM_MEMBER(_CLASS, _VALUE) \
+#define MRPT_FILL_ENUM_MEMBER(_CLASS, _VALUE)                                  \
 	m_map.insert(_CLASS::_VALUE, #_VALUE)
 
 /** A helper class that can convert an enum value into its textual

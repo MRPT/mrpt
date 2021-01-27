@@ -15,7 +15,7 @@
 
 namespace mrpt::poses
 {
-class CPosePDFGaussian;  // frd decl.
+class CPosePDFGaussian;	 // frd decl.
 
 /** Declares a class that represents a probability density function (pdf) of a
  * 2D pose (x,y,phi).
@@ -26,7 +26,6 @@ class CPosePDFGaussian;  // frd decl.
  * class,
  *   changeCoordinatesReference, in the form of a method rather than an
  * operator.
- *
  *
  *  See also the tutorial on <a
  * href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations"
@@ -128,6 +127,6 @@ class CPosePDF : public mrpt::serialization::CSerializable,
 	}
 
    public:
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::poses

@@ -30,7 +30,7 @@ struct ci_less
 		return std::lexicographical_compare(
 			s1.begin(), s1.end(),  // source range
 			s2.begin(), s2.end(),  // dest range
-			nocase_compare());  // comparison
+			nocase_compare());	// comparison
 	}
 };
 

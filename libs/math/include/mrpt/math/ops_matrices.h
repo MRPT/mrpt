@@ -29,8 +29,7 @@ inline void multiply_HCHt(
 	const MAT_H& H, const MAT_C& C, MAT_R& R, bool accumResultInOutput = false)
 {
 	auto res = (mat2eig(H) * mat2eig(C) * mat2eig(H).transpose()).eval();
-	if (accumResultInOutput)
-		R.asEigen() += res;
+	if (accumResultInOutput) R.asEigen() += res;
 	else
 	{
 		R.resize(res.rows(), res.cols());
@@ -89,7 +88,8 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 	// First: Compute the mean
 	out_mean.assign(M, 0);
 	for (size_t i = 0; i < N; i++)
-		for (size_t j = 0; j < M; j++) out_mean[j] += v.coeff(i, j);
+		for (size_t j = 0; j < M; j++)
+			out_mean[j] += v.coeff(i, j);
 	out_mean *= N_inv;
 
 	// Second: Compute the covariance
@@ -107,7 +107,8 @@ void meanAndCovMat(const MAT_IN& v, VECTOR& out_mean, MAT_OUT& out_cov)
 					(v(i, j) - out_mean[j]) * (v(i, k) - out_mean[k]);
 	}
 	for (size_t j = 0; j < M; j++)
-		for (size_t k = j + 1; k < M; k++) out_cov(k, j) = out_cov(j, k);
+		for (size_t k = j + 1; k < M; k++)
+			out_cov(k, j) = out_cov(j, k);
 	out_cov *= N_inv;
 }
 
@@ -214,7 +215,8 @@ void laplacian(const MATIN& g, MATOUT& ret)
 	for (typename MATIN::Index i = 0; i < N; i++)
 	{
 		typename MATIN::Scalar deg = 0;
-		for (typename MATIN::Index j = 0; j < N; j++) deg += g(j, i);
+		for (typename MATIN::Index j = 0; j < N; j++)
+			deg += g(j, i);
 		ret(i, i) += deg;
 	}
 }
@@ -240,7 +242,7 @@ void extractSubmatrixSymmetricalBlocks(
 	const size_t N = block_indices.size();
 	const size_t nrows_out = N * BLOCKSIZE;
 	out.resize(nrows_out, nrows_out);
-	if (!N) return;  // Done
+	if (!N) return;	 // Done
 	for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
 	{
 		for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
@@ -277,7 +279,7 @@ void extractSubmatrixSymmetricalBlocksDyn(
 	const size_t N = block_indices.size();
 	const size_t nrows_out = N * BLOCKSIZE;
 	out.resize(nrows_out, nrows_out);
-	if (!N) return;  // Done
+	if (!N) return;	 // Done
 	for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
 	{
 		for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
@@ -317,14 +319,14 @@ void extractSubmatrixSymmetrical(
 	const size_t N = indices.size();
 	const size_t nrows_out = N;
 	out.resize(nrows_out, nrows_out);
-	if (!N) return;  // Done
+	if (!N) return;	 // Done
 	for (size_t dst_row_blk = 0; dst_row_blk < N; ++dst_row_blk)
 		for (size_t dst_col_blk = 0; dst_col_blk < N; ++dst_col_blk)
 			out(dst_row_blk, dst_col_blk) =
 				m(indices[dst_row_blk], indices[dst_col_blk]);
 }
 
-/**  @} */  // end of grouping
+/**  @} */	// end of grouping
 
 }  // namespace math
 }  // namespace mrpt

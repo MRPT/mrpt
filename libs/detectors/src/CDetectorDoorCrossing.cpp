@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "detectors-precomp.h"  // Precompiled headers
-
+#include "detectors-precomp.h"	// Precompiled headers
+//
 #include <mrpt/detectors/CDetectorDoorCrossing.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -64,7 +64,7 @@ void CDetectorDoorCrossing::process(
 	// 2) Remove oldest pair:
 	// -----------------------------------------
 	ASSERT_(options.windowSize > 1);
-	ASSERT_((lastObs.size() % 2) == 0);  // Assure even size
+	ASSERT_((lastObs.size() % 2) == 0);	 // Assure even size
 
 	while (lastObs.size() > options.windowSize * 2)
 	{
@@ -125,10 +125,7 @@ void CDetectorDoorCrossing::process(
 	// -------------------------------------------------------
 	auxMap.mapByClass<COccupancyGridMap2D>()->computeEntropy(entropy);
 
-	if (!lastEntropyValid)
-	{
-		out_estimation.enoughInformation = false;
-	}
+	if (!lastEntropyValid) { out_estimation.enoughInformation = false; }
 	else
 	{
 		// 5) Fill output data

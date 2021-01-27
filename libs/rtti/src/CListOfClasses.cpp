@@ -6,9 +6,11 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#include "rtti-precomp.h"  // Precompiled headers
 
+#include "rtti-precomp.h"  // Precompiled headers
+//
 #include <mrpt/rtti/CListOfClasses.h>
+
 #include <algorithm>
 #include <cctype>
 #include <functional>

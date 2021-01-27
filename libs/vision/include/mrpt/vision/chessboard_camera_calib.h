@@ -105,5 +105,5 @@ bool checkerBoardCameraCalibration(
 	double* out_MSE = nullptr, bool skipDrawDetectedImgs = false,
 	bool useScaramuzzaAlternativeDetector = false);
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision

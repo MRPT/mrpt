@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/system/string_utils.h>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
@@ -59,8 +60,7 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
-			if (actions)
-				(*outrawlog.out_rawlog) << actions << SF;
+			if (actions) (*outrawlog.out_rawlog) << actions << SF;
 			else
 				(*outrawlog.out_rawlog) << obs;
 		}

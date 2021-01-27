@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+
    */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/vision/CFeatureExtraction.h>
@@ -74,9 +74,7 @@ void CFeatureExtraction::detectFeatures(
 			extractFeaturesLSD(img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
-		default:
-			THROW_EXCEPTION("options.method has an invalid value!");
-			break;
+		default: THROW_EXCEPTION("options.method has an invalid value!"); break;
 	}
 }
 

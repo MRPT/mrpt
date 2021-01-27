@@ -10,6 +10,7 @@
 
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/serialization/CSerializable.h>
+
 #include <memory>
 #include <optional>
 #include <sstream>

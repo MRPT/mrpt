@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "apps-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/apps/RBPF_SLAM_App.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/io/CFileGZOutputStream.h>
@@ -27,8 +27,8 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
-#include <mrpt/system/filesystem.h>  // ASSERT_FILE_EXISTS_()
-#include <mrpt/system/memory.h>  // getMemoryUsage()
+#include <mrpt/system/filesystem.h>	 // ASSERT_FILE_EXISTS_()
+#include <mrpt/system/memory.h>	 // getMemoryUsage()
 
 using namespace mrpt::apps;
 
@@ -55,9 +55,7 @@ void RBPF_SLAM_App_Base::initialize(int argc, const char** argv)
 
 	// Process arguments:
 	if (argc < 2)
-	{
-		THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str());
-	}
+	{ THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str()); }
 
 	// Config file:
 	const std::string configFile = std::string(argv[1]);
@@ -220,8 +218,7 @@ void RBPF_SLAM_App_Base::run()
 	mapBuilder->options.debugForceInsertion = false;
 
 	auto& rng = mrpt::random::getRandomGenerator();
-	if (RANDOM_SEED >= 0)
-		rng.randomize(RANDOM_SEED);
+	if (RANDOM_SEED >= 0) rng.randomize(RANDOM_SEED);
 	else
 		rng.randomize();
 
@@ -303,14 +300,13 @@ void RBPF_SLAM_App_Base::run()
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
 		if (!impl_get_next_observations(action, observations, observation))
-			break;  // EOF
+			break;	// EOF
 
 		// Update odometry:
 		{
 			CActionRobotMovement2D::Ptr act =
 				action->getBestMovementEstimation();
-			if (act)
-				odoPose = odoPose + CPose3D(act->poseChange->getMeanVal());
+			if (act) odoPose = odoPose + CPose3D(act->poseChange->getMeanVal());
 			else
 			{
 				CActionRobotMovement3D::Ptr act3D =
@@ -582,7 +578,7 @@ void RBPF_SLAM_App_Base::run()
 		step++;
 		MRPT_LOG_INFO_FMT("------------- STEP %u ----------------", step);
 
-	};  // end while
+	};	// end while
 
 	MRPT_LOG_INFO_FMT(
 		"----------- **END** (total time: %.03f sec) ---------",
@@ -637,8 +633,7 @@ void RBPF_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
 {
 	MRPT_START
 	// Rawlog file: from args. line or from config file:
-	if (argc == 3)
-		m_rawlogFileName = std::string(argv[2]);
+	if (argc == 3) m_rawlogFileName = std::string(argv[2]);
 	else
 		m_rawlogFileName = params.read_string(
 			sect, "rawlog_file", std::string("log.rawlog"), true);

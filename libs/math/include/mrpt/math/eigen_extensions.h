@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/math/math_frwds.h>
+
 #include <algorithm>
 
 /* Utility functions to ease the use of Eigen matrices */

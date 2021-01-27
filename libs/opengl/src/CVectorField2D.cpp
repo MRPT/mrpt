@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/opengl/CVectorField2D.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -97,8 +97,7 @@ void CVectorField2D::onUpdateBuffers_Triangles()
 	for (int i = 0; i < xcomp.cols(); i++)
 		for (int j = 0; j < xcomp.rows(); j++)
 		{
-			const float tri_side =
-				0.25f *
+			const float tri_side = 0.25f *
 				sqrt(xcomp(j, i) * xcomp(j, i) + ycomp(j, i) * ycomp(j, i));
 			const float ang = ::atan2f(ycomp(j, i), xcomp(j, i)) - 1.5708f;
 			tris.emplace_back(
@@ -179,9 +178,7 @@ void CVectorField2D::serializeFrom(
 			in >> m_field_color;
 			break;
 
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-			break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version); break;
 	};
 	CRenderizable::notifyChange();
 }
@@ -203,8 +200,9 @@ void CVectorField2D::adjustVectorFieldToGrid()
 		ycomp.maxCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
 	const float ratio_yn =
 		ycomp.minCoeff() * (ycomp.rows() - 1) / (yMax - yMin);
-	const float norm_factor = 0.85f / max(max(ratio_xp, std::abs(ratio_xn)),
-										  max(ratio_yp, std::abs(ratio_yn)));
+	const float norm_factor = 0.85f /
+		max(max(ratio_xp, std::abs(ratio_xn)),
+			max(ratio_yp, std::abs(ratio_yn)));
 
 	xcomp *= norm_factor;
 	ycomp *= norm_factor;

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
-
+#include "opengl-precomp.h"	 // Precompiled header
+//
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/TLine3D.h>
@@ -189,12 +189,10 @@ bool analyzeJohnsonPartsString(
 						if (parts.size() == 0) parts.push_back(INF_NO_BODY);
 						parts.push_back(PRISM);
 						break;
-					default:
-						return false;
+					default: return false;
 				}
 				break;
-			default:
-				return false;
+			default: return false;
 		}
 		i++;
 	}
@@ -208,8 +206,7 @@ bool analyzeJohnsonPartsString(
 }
 inline size_t additionalVertices(JohnsonBodyPart j, uint32_t numBaseEdges)
 {
-	if (j == INF_NO_BODY || j == SUP_NO_BODY)
-		return 0;
+	if (j == INF_NO_BODY || j == SUP_NO_BODY) return 0;
 	else if (j < UPWARDS_CUPOLA)
 		return 1;  // j is a pyramid
 	else if (j < PRISM)
@@ -217,7 +214,7 @@ inline size_t additionalVertices(JohnsonBodyPart j, uint32_t numBaseEdges)
 	else if (j < UPWARDS_ROTUNDA)
 		return numBaseEdges;  // j is a prism or antiprism
 	else
-		return 10;  // j is a rotunda
+		return 10;	// j is a rotunda
 }
 void insertCupola(
 	size_t numBaseEdges, double angleShift, double baseRadius,
@@ -232,12 +229,13 @@ void insertCupola(
 	// Cupola's height is so that (Da^2+Height^2=Edge length^2, where Da is the
 	// difference between both apothems.
 	double h = sqrt(
-		square(edgeLength) - square(
-								 baseRadius * cos(M_PI / numBaseEdges) -
-								 minorRadius * cos(M_PI / edges2)));
+		square(edgeLength) -
+		square(
+			baseRadius * cos(M_PI / numBaseEdges) -
+			minorRadius * cos(M_PI / edges2)));
 	double height = verts[base].z + (isUpwards ? h : -h);
 	angleShift += M_PI / edges2 +
-				  (isRotated ? -M_PI / numBaseEdges : M_PI / numBaseEdges);
+		(isRotated ? -M_PI / numBaseEdges : M_PI / numBaseEdges);
 	size_t minorBase = verts.size();
 	for (size_t i = 0; i < edges2; i++)
 	{
@@ -294,8 +292,10 @@ void insertRotunda(
 		p2[i].z = baseHeight + (isUpwards ? R1 : -R1);
 	}
 	size_t newBase = verts.size();
-	for (const auto& i : p1) verts.push_back(i);
-	for (const auto& i : p2) verts.push_back(i);
+	for (const auto& i : p1)
+		verts.push_back(i);
+	for (const auto& i : p2)
+		verts.push_back(i);
 	CPolyhedron::TPolyhedronFace f, g;
 	f.vertices.resize(3);
 	g.vertices.resize(5);
@@ -318,14 +318,14 @@ void insertRotunda(
 		g.vertices[4] = (i + i + baseStart + 1) % 10 + base;
 		faces.push_back(g);
 	}
-	for (size_t i = 0; i < 5; i++) g.vertices[i] = i + newBase;
+	for (size_t i = 0; i < 5; i++)
+		g.vertices[i] = i + newBase;
 	faces.push_back(g);
 	return;
 }
 inline size_t additionalFaces(JohnsonBodyPart j, uint32_t numBaseEdges)
 {
-	if (j == INF_NO_BODY || j == SUP_NO_BODY)
-		return 1;  // j is a base
+	if (j == INF_NO_BODY || j == SUP_NO_BODY) return 1;	 // j is a base
 	else if (j < UPWARDS_CUPOLA)
 		return numBaseEdges;  // j is a pyramid
 	else if (j < PRISM)
@@ -335,7 +335,7 @@ inline size_t additionalFaces(JohnsonBodyPart j, uint32_t numBaseEdges)
 	else if (j == ANTIPRISM)
 		return numBaseEdges << 1;
 	else
-		return 16;  // j is a rotunda
+		return 16;	// j is a rotunda
 }
 
 inline bool faceContainsEdge(
@@ -355,12 +355,12 @@ bool getPlanesIntersection(const vector<const TPlane*>& planes, TPoint3D& pnt)
 	TPlane pl = *planes[0];
 	TLine3D l;
 	TObject3D obj;
-	for (size_t i = 1; i < planes.size(); i++) switch (o)
+	for (size_t i = 1; i < planes.size(); i++)
+		switch (o)
 		{
 			case 0:
 				if (!intersect(pl, *planes[i], obj)) return false;
-				if (obj.getPlane(pl))
-					o = 0;
+				if (obj.getPlane(pl)) o = 0;
 				else if (obj.getLine(l))
 					o = 1;
 				else if (obj.getPoint(pnt))
@@ -370,8 +370,7 @@ bool getPlanesIntersection(const vector<const TPlane*>& planes, TPoint3D& pnt)
 				break;
 			case 1:
 				if (!intersect(l, *planes[i], obj)) return false;
-				if (obj.getLine(l))
-					o = 1;
+				if (obj.getLine(l)) o = 1;
 				else if (obj.getPoint(pnt))
 					o = 2;
 				else
@@ -380,8 +379,7 @@ bool getPlanesIntersection(const vector<const TPlane*>& planes, TPoint3D& pnt)
 			case 2:
 				if (!planes[i]->contains(pnt)) return false;
 				break;
-			default:
-				return false;
+			default: return false;
 		}
 	return o == 2;
 }
@@ -396,8 +394,7 @@ bool searchForFace(
 		size_t hmf = 0;
 		for (unsigned int it2 : f)
 		{
-			if (it2 == v1)
-				hmf |= 1;
+			if (it2 == v1) hmf |= 1;
 			else if (it2 == v2)
 				hmf |= 2;
 			else if (it2 == v3)
@@ -414,8 +411,7 @@ bool searchForEdge(
 	for (where = 0; where < es.size(); where++)
 	{
 		const CPolyhedron::TPolyhedronEdge& e = es[where];
-		if (e.v1 == v1 && e.v2 == v2)
-			return true;
+		if (e.v1 == v1 && e.v2 == v2) return true;
 		else if (e.v1 == v2 && e.v2 == v1)
 			return false;
 	}
@@ -432,8 +428,7 @@ bool searchForEdge(
 		const vector<uint32_t>& f = it->vertices;
 		char res = 0;
 		for (unsigned int it2 : f)
-			if (it2 == v1)
-				res |= 1;
+			if (it2 == v1) res |= 1;
 			else if (it2 == v2)
 				res |= 2;
 		if (res == 3) return true;
@@ -741,7 +736,7 @@ CPolyhedron::Ptr CPolyhedron::CreateBifrustum(
 		verts[i + N].z = height1;
 		verts[i + N2].x = x * ratio2;
 		verts[i + N2].y = y * ratio2;
-		verts[i + N2].z = -height2;  // This is not an error. This way, two
+		verts[i + N2].z = -height2;	 // This is not an error. This way, two
 		// positive heights produce an actual
 		// bifrustum.
 	}
@@ -780,8 +775,7 @@ CPolyhedron::Ptr CPolyhedron::CreateTrapezohedron(
 	double shift = space / 2;
 	double height1 = basesDistance / 2;
 	double cospii = cos(M_PI / numBaseEdges);
-	double height2 =
-		height1 * (cospii + 1) /
+	double height2 = height1 * (cospii + 1) /
 		(1 - cospii);  // Apex height, calculated so each face conforms a plane
 	for (size_t i = 0; i < numBaseEdges; i++)
 	{
@@ -840,8 +834,8 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 		square(baseRadius) * (2 - 2 * cos(M_PI / numBaseEdges)));
 	// Vertices' and faces' vectors are computed
 	size_t nVerts = numBaseEdges * (nParts - 1) +
-					additionalVertices(parts[0], numBaseEdges) +
-					additionalVertices(*parts.rbegin(), numBaseEdges);
+		additionalVertices(parts[0], numBaseEdges) +
+		additionalVertices(*parts.rbegin(), numBaseEdges);
 	size_t nFaces = 0;
 	for (size_t i = 0; i < nParts; i++)
 		nFaces += additionalFaces(parts[i], numBaseEdges);
@@ -855,8 +849,7 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 	vector<pair<double, size_t>> basePositionInfo(nParts - 1);
 	for (size_t i = 0; i < nParts - 1; i++)
 	{
-		if (parts[i] == PRISM)
-			h = edgeLength;
+		if (parts[i] == PRISM) h = edgeLength;
 		else if (parts[i] == ANTIPRISM)
 		{
 			h = antiPrism_height;
@@ -1031,8 +1024,7 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 					basePositionInfo[0].second * semi, baseRadius, true, false,
 					endBase, verts, faces);
 				break;
-			default:
-				throw std::logic_error("Internal error");
+			default: throw std::logic_error("Internal error");
 		}
 		initialBase = endBase;
 		endBase += numBaseEdges;
@@ -1087,7 +1079,8 @@ void CPolyhedron::getSetOfPolygons(std::vector<math::TPolygon3D>& vec) const
 	if (!polygonsUpToDate) updatePolygons();
 	size_t N = tempPolygons.size();
 	vec.resize(N);
-	for (size_t i = 0; i < N; i++) vec[i] = tempPolygons[i].poly;
+	for (size_t i = 0; i < N; i++)
+		vec[i] = tempPolygons[i].poly;
 }
 
 void CPolyhedron::getSetOfPolygonsAbsolute(
@@ -1098,7 +1091,8 @@ void CPolyhedron::getSetOfPolygonsAbsolute(
 	vector<TPoint3D> nVerts;
 	nVerts.resize(N);
 	CPose3D pose = this->m_pose;
-	for (size_t i = 0; i < N; i++) pose.composePoint(m_Vertices[i], nVerts[i]);
+	for (size_t i = 0; i < N; i++)
+		pose.composePoint(m_Vertices[i], nVerts[i]);
 	transform(
 		m_Faces.begin(), m_Faces.end(), vec.begin(),
 		FCreatePolygonFromFace<TPolygon3D>(nVerts));
@@ -1146,52 +1140,29 @@ CPolyhedron::Ptr CPolyhedron::CreateRandomPolyhedron(double radius)
 {
 	switch (mrpt::random::getRandomGenerator().drawUniform32bit() % 34)
 	{
-		case 0:
-			return CreateTetrahedron(radius);
-		case 1:
-			return CreateHexahedron(radius);
-		case 2:
-			return CreateOctahedron(radius);
-		case 3:
-			return CreateDodecahedron(radius);
-		case 4:
-			return CreateIcosahedron(radius);
-		case 5:
-			return CreateTruncatedTetrahedron(radius);
-		case 6:
-			return CreateTruncatedHexahedron(radius);
-		case 7:
-			return CreateTruncatedOctahedron(radius);
-		case 8:
-			return CreateTruncatedDodecahedron(radius);
-		case 9:
-			return CreateTruncatedIcosahedron(radius);
-		case 10:
-			return CreateCuboctahedron(radius);
-		case 11:
-			return CreateRhombicuboctahedron(radius);
-		case 12:
-			return CreateIcosidodecahedron(radius);
-		case 13:
-			return CreateRhombicosidodecahedron(radius);
-		case 14:
-			return CreateTriakisTetrahedron(radius);
-		case 15:
-			return CreateTriakisOctahedron(radius);
-		case 16:
-			return CreateTetrakisHexahedron(radius);
-		case 17:
-			return CreateTriakisIcosahedron(radius);
-		case 18:
-			return CreatePentakisDodecahedron(radius);
-		case 19:
-			return CreateRhombicDodecahedron(radius);
-		case 20:
-			return CreateDeltoidalIcositetrahedron(radius);
-		case 21:
-			return CreateRhombicTriacontahedron(radius);
-		case 22:
-			return CreateDeltoidalHexecontahedron(radius);
+		case 0: return CreateTetrahedron(radius);
+		case 1: return CreateHexahedron(radius);
+		case 2: return CreateOctahedron(radius);
+		case 3: return CreateDodecahedron(radius);
+		case 4: return CreateIcosahedron(radius);
+		case 5: return CreateTruncatedTetrahedron(radius);
+		case 6: return CreateTruncatedHexahedron(radius);
+		case 7: return CreateTruncatedOctahedron(radius);
+		case 8: return CreateTruncatedDodecahedron(radius);
+		case 9: return CreateTruncatedIcosahedron(radius);
+		case 10: return CreateCuboctahedron(radius);
+		case 11: return CreateRhombicuboctahedron(radius);
+		case 12: return CreateIcosidodecahedron(radius);
+		case 13: return CreateRhombicosidodecahedron(radius);
+		case 14: return CreateTriakisTetrahedron(radius);
+		case 15: return CreateTriakisOctahedron(radius);
+		case 16: return CreateTetrakisHexahedron(radius);
+		case 17: return CreateTriakisIcosahedron(radius);
+		case 18: return CreatePentakisDodecahedron(radius);
+		case 19: return CreateRhombicDodecahedron(radius);
+		case 20: return CreateDeltoidalIcositetrahedron(radius);
+		case 21: return CreateRhombicTriacontahedron(radius);
+		case 22: return CreateDeltoidalHexecontahedron(radius);
 		case 23:
 			return CreateArchimedeanRegularPrism(
 				(mrpt::random::getRandomGenerator().drawUniform32bit() % 10) +
@@ -1226,12 +1197,10 @@ CPolyhedron::Ptr CPolyhedron::CreateRandomPolyhedron(double radius)
 				 << 1) +
 					4,
 				radius, "C-AC+");
-		case 29:
-			return CreateJohnsonSolidWithConstantBase(10, radius, "R+");
+		case 29: return CreateJohnsonSolidWithConstantBase(10, radius, "R+");
 		case 30:
 			return CreateJohnsonSolidWithConstantBase(10, radius, "R-PRR+");
-		case 31:
-			return CreateJohnsonSolidWithConstantBase(10, radius, "R-AR+");
+		case 31: return CreateJohnsonSolidWithConstantBase(10, radius, "R-AR+");
 		case 32:
 			return CreateCatalanTrapezohedron(
 				(mrpt::random::getRandomGenerator().drawUniform32bit() % 5) + 3,
@@ -1240,8 +1209,7 @@ CPolyhedron::Ptr CPolyhedron::CreateRandomPolyhedron(double radius)
 			return CreateCatalanDoublePyramid(
 				(mrpt::random::getRandomGenerator().drawUniform32bit() % 5) + 3,
 				radius);
-		default:
-			return CreateEmpty();
+		default: return CreateEmpty();
 	}
 }
 
@@ -1270,7 +1238,8 @@ CPolyhedron::Ptr CPolyhedron::getDual() const
 	vector<TPoint3D> vertices(NV);
 	for (size_t i = 0; i < NV; i++)
 	{
-		for (size_t j = 0; j < NF; j++) incidence(i, j) = false;
+		for (size_t j = 0; j < NF; j++)
+			incidence(i, j) = false;
 		vector<const TPlane*> fPls;
 		fPls.reserve(m_Faces[i].vertices.size());
 		for (auto it = m_Faces[i].vertices.begin();
@@ -1324,8 +1293,7 @@ CPolyhedron::Ptr CPolyhedron::getDual() const
 CPolyhedron::Ptr CPolyhedron::truncate(double factor) const
 {
 	if (factor < 0) return CreateEmpty();
-	if (factor == 0)
-		return CreateNoCheck(m_Vertices, m_Faces);
+	if (factor == 0) return CreateNoCheck(m_Vertices, m_Faces);
 	else if (factor < 1)
 	{
 		size_t NE = m_Edges.size();
@@ -1407,7 +1375,8 @@ CPolyhedron::Ptr CPolyhedron::truncate(double factor) const
 			const TPoint3D& p1 = m_Vertices[m_Edges[i].v1];
 			const TPoint3D& p2 = m_Vertices[m_Edges[i].v2];
 			TPoint3D& dst = vertices[i];
-			for (size_t j = 0; j < 3; j++) dst[j] = (p1[j] + p2[j]) / 2;
+			for (size_t j = 0; j < 3; j++)
+				dst[j] = (p1[j] + p2[j]) / 2;
 			faces[m_Edges[i].v1].vertices.push_back(i);
 			faces[m_Edges[i].v2].vertices.push_back(i);
 		}
@@ -1456,8 +1425,7 @@ CPolyhedron::Ptr CPolyhedron::truncate(double factor) const
 
 CPolyhedron::Ptr CPolyhedron::cantellate(double factor) const
 {
-	if (factor < 0)
-		return CreateEmpty();
+	if (factor < 0) return CreateEmpty();
 	else if (factor == 0)
 		return CreateNoCheck(m_Vertices, m_Faces);
 	size_t NV = m_Vertices.size();
@@ -1513,8 +1481,7 @@ CPolyhedron::Ptr CPolyhedron::cantellate(double factor) const
 		if (f.size() == 3) continue;
 		for (size_t i = 1; i < f.size() - 1; i++)
 			for (;;)
-				if (searchForEdge(edgeBegin, end, f[i - 1], f[i]))
-					break;
+				if (searchForEdge(edgeBegin, end, f[i - 1], f[i])) break;
 				else
 				{
 					uint32_t tmp = f[i];
@@ -1528,8 +1495,7 @@ CPolyhedron::Ptr CPolyhedron::cantellate(double factor) const
 			it->vertices;  // Will always have exactly 4 vertices
 		for (size_t i = 1; i < 3; i++)
 			for (;;)
-				if (searchForEdge(begin, edgeBegin, f[i - 1], f[i]))
-					break;
+				if (searchForEdge(begin, edgeBegin, f[i - 1], f[i])) break;
 				else
 				{
 					uint32_t tmp = f[i];
@@ -1547,7 +1513,8 @@ CPolyhedron::Ptr CPolyhedron::augment(double height) const
 	vector<TPoint3D> vertices(NV + NF);
 	std::copy(m_Vertices.begin(), m_Vertices.end(), vertices.begin());
 	size_t tnf = 0;
-	for (const auto& mFace : m_Faces) tnf += mFace.vertices.size();
+	for (const auto& mFace : m_Faces)
+		tnf += mFace.vertices.size();
 	vector<TPolyhedronFace> faces(tnf);
 	TPolygon3D tmp;
 	TPlane pTmp;
@@ -1563,7 +1530,8 @@ CPolyhedron::Ptr CPolyhedron::augment(double height) const
 		const vector<uint32_t>& face = m_Faces[i].vertices;
 		size_t N = face.size();
 		tmp.resize(N);
-		for (size_t j = 0; j < N; j++) tmp[j] = m_Vertices[face[j]];
+		for (size_t j = 0; j < N; j++)
+			tmp[j] = m_Vertices[face[j]];
 		tmp.getBestFittingPlane(pTmp);
 		pTmp.unitarize();
 		tmp.getCenter(cTmp);
@@ -1623,7 +1591,8 @@ CPolyhedron::Ptr CPolyhedron::augment(double height, size_t numVertices) const
 			continue;
 		}
 		TPoint3D& vertex = vertices[iV];
-		for (size_t j = 0; j < numVertices; j++) tmp[j] = m_Vertices[face[j]];
+		for (size_t j = 0; j < numVertices; j++)
+			tmp[j] = m_Vertices[face[j]];
 		tmp.getBestFittingPlane(pTmp);
 		pTmp.unitarize();
 		tmp.getCenter(cTmp);
@@ -1653,7 +1622,8 @@ CPolyhedron::Ptr CPolyhedron::augment(bool direction) const
 	vector<TPoint3D> vertices(NV + NF);
 	std::copy(m_Vertices.begin(), m_Vertices.end(), vertices.begin());
 	size_t tnf = 0;
-	for (const auto& mFace : m_Faces) tnf += mFace.vertices.size();
+	for (const auto& mFace : m_Faces)
+		tnf += mFace.vertices.size();
 	vector<TPolyhedronFace> faces(tnf);
 	TPolygon3D tmp;
 	TPlane pTmp;
@@ -1669,7 +1639,8 @@ CPolyhedron::Ptr CPolyhedron::augment(bool direction) const
 		const vector<uint32_t>& face = m_Faces[i].vertices;
 		size_t N = face.size();
 		tmp.resize(N);
-		for (size_t j = 0; j < N; j++) tmp[j] = m_Vertices[face[j]];
+		for (size_t j = 0; j < N; j++)
+			tmp[j] = m_Vertices[face[j]];
 		tmp.getCenter(cTmp);
 		double height = getHeight(tmp, cTmp);  // throws std::logic_error
 		tmp.getBestFittingPlane(pTmp);
@@ -1730,7 +1701,8 @@ CPolyhedron::Ptr CPolyhedron::augment(size_t numVertices, bool direction) const
 			continue;
 		}
 		TPoint3D& vertex = vertices[iV];
-		for (size_t j = 0; j < numVertices; j++) tmp[j] = m_Vertices[face[j]];
+		for (size_t j = 0; j < numVertices; j++)
+			tmp[j] = m_Vertices[face[j]];
 		tmp.getBestFittingPlane(pTmp);
 		pTmp.unitarize();
 		tmp.getCenter(cTmp);
@@ -1843,7 +1815,8 @@ bool CPolyhedron::setNormal(TPolyhedronFace& f, bool doCheck)
 {
 	size_t N = doCheck ? f.vertices.size() : 3;
 	TPolygon3D poly(N);
-	for (size_t i = 0; i < N; i++) poly[i] = m_Vertices[f.vertices[i]];
+	for (size_t i = 0; i < N; i++)
+		poly[i] = m_Vertices[f.vertices[i]];
 	TPlane tmp;
 	if (!poly.getPlane(tmp)) return false;
 	f.normal = tmp.getNormalVector();
@@ -1960,8 +1933,7 @@ void CPolyhedron::serializeFrom(
 				addEdges(mFace);
 			}
 			break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
 }
@@ -2012,7 +1984,8 @@ CPolyhedron::Ptr CPolyhedron::CreateTetrahedron(double radius)
 {
 	CPolyhedron::Ptr tetra =
 		CreateJohnsonSolidWithConstantBase(3, radius * sqrt(8.0) / 3.0, "P+");
-	for (auto& mVertice : tetra->m_Vertices) mVertice.z -= radius / 3;
+	for (auto& mVertice : tetra->m_Vertices)
+		mVertice.z -= radius / 3;
 	return tetra;
 }
 CPolyhedron::Ptr CPolyhedron::CreateHexahedron(double radius)
@@ -2282,5 +2255,6 @@ void CPolyhedron::onUpdateBuffers_Triangles()
 	}
 
 	// All faces, all vertices, same color:
-	for (auto& t : tris) t.setColor(m_color);
+	for (auto& t : tris)
+		t.setColor(m_color);
 }

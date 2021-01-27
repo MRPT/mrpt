@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+
    */
 #include "CLandmarksConfig.h"
+
 #include "TypeOfConfig.h"
 #include "ui_CLandmarksConfig.h"
 

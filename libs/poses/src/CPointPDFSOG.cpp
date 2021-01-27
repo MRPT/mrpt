@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/matrix_serialization.h>
@@ -18,6 +18,7 @@
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::poses;
@@ -150,8 +151,7 @@ void CPointPDFSOG::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -159,12 +159,10 @@ void CPointPDFSOG::copyFrom(const CPointPDF& o)
 {
 	MRPT_START
 
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPointPDFSOG))
-	{
-		m_modes = dynamic_cast<const CPointPDFSOG*>(&o)->m_modes;
-	}
+	{ m_modes = dynamic_cast<const CPointPDFSOG*>(&o)->m_modes; }
 	else
 	{
 		// Approximate as a mono-modal gaussian pdf:
@@ -199,7 +197,8 @@ bool CPointPDFSOG::saveToTextFile(const std::string& file) const
  ---------------------------------------------------------------*/
 void CPointPDFSOG::changeCoordinatesReference(const CPose3D& newReferenceBase)
 {
-	for (auto& m : m_modes) m.val.changeCoordinatesReference(newReferenceBase);
+	for (auto& m : m_modes)
+		m.val.changeCoordinatesReference(newReferenceBase);
 }
 
 /*---------------------------------------------------------------
@@ -221,9 +220,9 @@ void CPointPDFSOG::drawSingleSample(CPoint3D& outSample) const
 		*itW = it->log_w;
 
 	CParticleFilterCapable::computeResampling(
-		CParticleFilter::prMultinomial,  // Resampling algorithm
-		logWeights,  // input: log weights
-		outIdxs  // output: indexes
+		CParticleFilter::prMultinomial,	 // Resampling algorithm
+		logWeights,	 // input: log weights
+		outIdxs	 // output: indexes
 	);
 
 	// we need just one: take the first (arbitrary)
@@ -268,7 +267,7 @@ void CPointPDFSOG::bayesianFusion(
 
 	this->m_modes.clear();
 	bool is2D =
-		false;  // to detect & avoid errors in 3x3 matrix inversions of range=2.
+		false;	// to detect & avoid errors in 3x3 matrix inversions of range=2.
 
 	for (const auto& m : p1->m_modes)
 	{
@@ -289,8 +288,9 @@ void CPointPDFSOG::bayesianFusion(
 
 		// Normal distribution canonical form constant:
 		// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
-		double a = -0.5 * (3 * log(M_2PI) - log(covInv.det()) +
-						   (eta.transpose() * c.asEigen() * eta)(0, 0));
+		double a = -0.5 *
+			(3 * log(M_2PI) - log(covInv.det()) +
+			 (eta.transpose() * c.asEigen() * eta)(0, 0));
 
 		for (const auto& m2 : p2->m_modes)
 		{
@@ -343,7 +343,7 @@ void CPointPDFSOG::bayesianFusion(
 				// ----------------------------------------------------------------------
 				TGaussianMode newKernel;
 
-				newKernel.val = auxGaussianProduct;  // Copy mean & cov
+				newKernel.val = auxGaussianProduct;	 // Copy mean & cov
 
 				CMatrixDouble33 covInv_i = auxSOG_Kernel_i.cov.inverse_LLt();
 				Eigen::Vector3d eta_i =
@@ -355,14 +355,14 @@ void CPointPDFSOG::bayesianFusion(
 					CMatrixDouble31(newKernel.val.mean).asEigen();
 				new_eta_i = new_covInv_i.asEigen() * new_eta_i;
 
-				double a_i =
-					-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-							(eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
-							 eta_i)(0, 0));
-				double new_a_i =
-					-0.5 * (3 * log(M_2PI) - log(new_covInv_i.det()) +
-							(new_eta_i.transpose() *
-							 newKernel.val.cov.asEigen() * new_eta_i)(0, 0));
+				double a_i = -0.5 *
+					(3 * log(M_2PI) - log(new_covInv_i.det()) +
+					 (eta_i.transpose() * auxSOG_Kernel_i.cov.asEigen() *
+					  eta_i)(0, 0));
+				double new_a_i = -0.5 *
+					(3 * log(M_2PI) - log(new_covInv_i.det()) +
+					 (new_eta_i.transpose() * newKernel.val.cov.asEigen() *
+					  new_eta_i)(0, 0));
 
 				newKernel.log_w = m.log_w + m2.log_w + a + a_i - new_a_i;
 
@@ -413,7 +413,8 @@ void CPointPDFSOG::normalizeWeights()
 	for (it = m_modes.begin(); it != m_modes.end(); ++it)
 		maxW = max(maxW, it->log_w);
 
-	for (it = m_modes.begin(); it != m_modes.end(); ++it) it->log_w -= maxW;
+	for (it = m_modes.begin(); it != m_modes.end(); ++it)
+		it->log_w -= maxW;
 
 	MRPT_END
 }
@@ -436,8 +437,7 @@ double CPointPDFSOG::ESS() const
 	for (it = m_modes.begin(); it != m_modes.end(); ++it)
 		cum += square(exp(it->log_w) / sumLinearWeights);
 
-	if (cum == 0)
-		return 0;
+	if (cum == 0) return 0;
 	else
 		return 1.0 / (m_modes.size() * cum);
 	MRPT_END
@@ -524,10 +524,7 @@ double CPointPDFSOG::evaluatePDF(const CPoint3D& x, bool sumOverAllZs) const
  ---------------------------------------------------------------*/
 void CPointPDFSOG::getMostLikelyMode(CPointPDFGaussian& outVal) const
 {
-	if (this->empty())
-	{
-		outVal = CPointPDFGaussian();
-	}
+	if (this->empty()) { outVal = CPointPDFGaussian(); }
 	else
 	{
 		auto it_best = m_modes.end();

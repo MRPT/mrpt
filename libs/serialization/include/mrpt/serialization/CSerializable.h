@@ -10,6 +10,7 @@
 
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/serialization_frwds.h>
+
 #include <cstdint>
 
 // Make this frwd decl independent of MRPT_HAS_MATLAB in config.h:
@@ -88,7 +89,7 @@ class CSerializable : public mrpt::rtti::CObject
 	 * MATLAB.
 	 */
 	virtual mxArray* writeToMatlab() const { return nullptr; }
-};  // End of class def.
+};	// End of class def.
 
 /** \addtogroup noncstream_serialization Non-CStream serialization functions (in
  * #include <mrpt/serializatin/CSerializable.h>)
@@ -118,21 +119,21 @@ void OctetVectorToObject(
 /** @} */
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
-#define DEFINE_SCHEMA_SERIALIZABLE()                                          \
-   protected:                                                                 \
-	/*! @name CSerializable virtual methods for schema based archives*/       \
-	/*! @{ */                                                                 \
-	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out)            \
-		const override;                                                       \
-	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in) override; \
+#define DEFINE_SCHEMA_SERIALIZABLE()                                           \
+   protected:                                                                  \
+	/*! @name CSerializable virtual methods for schema based archives*/        \
+	/*! @{ */                                                                  \
+	void serializeTo(mrpt::serialization::CSchemeArchiveBase& out)             \
+		const override;                                                        \
+	void serializeFrom(mrpt::serialization::CSchemeArchiveBase& in) override;  \
 /*! @} */
 
 /** For use inside all serializeTo(CSchemeArchiveBase) methods */
-#define SCHEMA_SERIALIZE_DATATYPE_VERSION(ser_version)                     \
-	do                                                                     \
-	{                                                                      \
-		out["datatype"] = std::string(this->GetRuntimeClass()->className); \
-		out["version"] = ser_version;                                      \
+#define SCHEMA_SERIALIZE_DATATYPE_VERSION(ser_version)                         \
+	do                                                                         \
+	{                                                                          \
+		out["datatype"] = std::string(this->GetRuntimeClass()->className);     \
+		out["version"] = ser_version;                                          \
 	} while (false)
 
 /** For use inside serializeFrom(CSchemeArchiveBase) methods */
@@ -149,64 +150,64 @@ void OctetVectorToObject(
 
 /** This declaration must be inserted in all CSerializable classes definition,
  * within the class declaration. */
-#define DEFINE_SERIALIZABLE(class_name, NS)                                  \
-	DEFINE_MRPT_OBJECT(class_name, NS)                                       \
-   protected:                                                                \
-	/*! @name CSerializable virtual methods */                               \
-	/*! @{ */                                                                \
-	uint8_t serializeGetVersion() const override;                            \
-	void serializeTo(mrpt::serialization::CArchive& out) const override;     \
-	void serializeFrom(                                                      \
-		mrpt::serialization::CArchive& in, uint8_t serial_version) override; \
+#define DEFINE_SERIALIZABLE(class_name, NS)                                    \
+	DEFINE_MRPT_OBJECT(class_name, NS)                                         \
+   protected:                                                                  \
+	/*! @name CSerializable virtual methods */                                 \
+	/*! @{ */                                                                  \
+	uint8_t serializeGetVersion() const override;                              \
+	void serializeTo(mrpt::serialization::CArchive& out) const override;       \
+	void serializeFrom(                                                        \
+		mrpt::serialization::CArchive& in, uint8_t serial_version) override;   \
 /*! @} */
 
 /** To be added to all CSerializable-classes implementation files.
  * This registers the class name with the NameSpace prefix.
  */
-#define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace) \
+#define IMPLEMENTS_SERIALIZABLE(class_name, base, NameSpace)                   \
 	IMPLEMENTS_MRPT_OBJECT(class_name, base, NameSpace)
 
 /** This declaration must be inserted in virtual CSerializable classes
  * definition: */
-#define DEFINE_VIRTUAL_SERIALIZABLE(class_name) \
+#define DEFINE_VIRTUAL_SERIALIZABLE(class_name)                                \
 	DEFINE_VIRTUAL_MRPT_OBJECT(class_name)
 
 /** This must be inserted as implementation of some required members for
  *  virtual CSerializable classes:
  */
-#define IMPLEMENTS_VIRTUAL_SERIALIZABLE(class_name, base_class, NS) \
+#define IMPLEMENTS_VIRTUAL_SERIALIZABLE(class_name, base_class, NS)            \
 	IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class, NS)
 
-#define IMPLEMENTS_VIRTUAL_SERIALIZABLE_NS_PREFIX(class_name, base_class, NS) \
+#define IMPLEMENTS_VIRTUAL_SERIALIZABLE_NS_PREFIX(class_name, base_class, NS)  \
 	IMPLEMENTS_VIRTUAL_MRPT_OBJECT_NS_PREFIX(class_name, base_class, NS)
 
 /** This must be inserted if a custom conversion method for MEX API is
  * implemented in the class */
-#define DECLARE_MEX_CONVERSION                           \
-	/*! @name Virtual methods for MRPT-MEX conversion */ \
-	/*! @{ */                                            \
-   public:                                               \
-	mxArray* writeToMatlab() const override;             \
+#define DECLARE_MEX_CONVERSION                                                 \
+	/*! @name Virtual methods for MRPT-MEX conversion */                       \
+	/*! @{ */                                                                  \
+   public:                                                                     \
+	mxArray* writeToMatlab() const override;                                   \
 /*! @} */
 
 /** This must be inserted if a custom conversion method for MEX API is
  * implemented in the class */
-#define DECLARE_MEXPLUS_FROM(complete_type)    \
-	namespace mexplus                          \
-	{                                          \
-	template <typename T>                      \
-	mxArray* from(const T& value);             \
-	template <>                                \
-	mxArray* from(const complete_type& value); \
+#define DECLARE_MEXPLUS_FROM(complete_type)                                    \
+	namespace mexplus                                                          \
+	{                                                                          \
+	template <typename T>                                                      \
+	mxArray* from(const T& value);                                             \
+	template <>                                                                \
+	mxArray* from(const complete_type& value);                                 \
 	}
 
-#define IMPLEMENTS_MEXPLUS_FROM(complete_type) \
-	namespace mexplus                          \
-	{                                          \
-	template <>                                \
-	mxArray* from(const complete_type& var)    \
-	{                                          \
-		return var.writeToMatlab();            \
-	}                                          \
+#define IMPLEMENTS_MEXPLUS_FROM(complete_type)                                 \
+	namespace mexplus                                                          \
+	{                                                                          \
+	template <>                                                                \
+	mxArray* from(const complete_type& var)                                    \
+	{                                                                          \
+		return var.writeToMatlab();                                            \
+	}                                                                          \
 	}
 }  // namespace mrpt::serialization

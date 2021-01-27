@@ -12,6 +12,7 @@
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
+
 #include <map>
 
 namespace mrpt::topography

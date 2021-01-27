@@ -12,6 +12,7 @@
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
+
 #include <algorithm>
 
 struct TPerfField
@@ -76,9 +77,9 @@ int run_build_tables()
 	// ====================================================
 	//                  index.html
 	// ====================================================
-	const string out_fil_index = PERF_DATA_DIR + string(
-													 "/perf-html/"
-													 "index.html");
+	const string out_fil_index = PERF_DATA_DIR +
+		string("/perf-html/"
+			   "index.html");
 	cout << "Generating: " << out_fil_index << "...\n";
 	fo.open(out_fil_index);
 	fo.printf(
@@ -142,10 +143,7 @@ int run_build_tables()
 			//				continue;
 			//			}
 			string txt;
-			if (i == j)
-			{
-				txt = "&empty;";
-			}
+			if (i == j) { txt = "&empty;"; }
 			else
 			{
 				txt = format(
@@ -182,8 +180,7 @@ int run_build_tables()
 	// ====================================================
 	for (const auto& P : lstConfigurations)
 	{
-		const string out_fil =
-			PERF_DATA_DIR +
+		const string out_fil = PERF_DATA_DIR +
 			format("/perf-html/results_%s.html", P.config_name.c_str());
 		cout << "Generating: " << out_fil << "...\n";
 		CFileOutputStream f(out_fil);
@@ -237,11 +234,9 @@ int run_build_tables()
 		{
 			TPerfField P2 = lstConfigurations[j];
 			if (j == i) continue;
-			const string out_fil =
-				PERF_DATA_DIR + format(
-									"/perf-html/comparison_%s_vs_%s.html",
-									P1.config_name.c_str(),
-									P2.config_name.c_str());
+			const string out_fil = PERF_DATA_DIR +
+				format("/perf-html/comparison_%s_vs_%s.html",
+					   P1.config_name.c_str(), P2.config_name.c_str());
 
 			cout << "Generating: " << out_fil << "...\n";
 
@@ -251,7 +246,8 @@ int run_build_tables()
 
 			// Convert P2 data into a std::map<> for search efficiency:
 			map<string, double> P2_dat;
-			for (auto& k : P2.all_perf_data) P2_dat[k.first] = k.second;
+			for (auto& k : P2.all_perf_data)
+				P2_dat[k.first] = k.second;
 
 			CFileOutputStream f(out_fil);
 

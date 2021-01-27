@@ -10,6 +10,7 @@
 
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TPoint3D.h>
+
 #include <string>
 #include <vector>
 
@@ -72,7 +73,7 @@ class PLY_Importer
    private:
 	std::string m_ply_import_last_error;
 
-};  // End of class def.
+};	// End of class def.
 
 /** A virtual base class that implements the capability of exporting 3D point
  * clouds and faces to a file in the Stanford PLY format.
@@ -130,6 +131,6 @@ class PLY_Exporter
    private:
 	mutable std::string m_ply_export_last_error;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::opengl

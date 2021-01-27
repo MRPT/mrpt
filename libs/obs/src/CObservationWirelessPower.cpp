@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -22,7 +22,7 @@ uint8_t CObservationWirelessPower::serializeGetVersion() const { return 3; }
 void CObservationWirelessPower::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
-	out << power << sensorLabel << timestamp << sensorPoseOnRobot;  // in v3
+	out << power << sensorLabel << timestamp << sensorPoseOnRobot;	// in v3
 }
 
 void CObservationWirelessPower::serializeFrom(
@@ -36,24 +36,20 @@ void CObservationWirelessPower::serializeFrom(
 		case 3:
 		{
 			in >> power;
-			if (version >= 1)
-				in >> sensorLabel;
+			if (version >= 1) in >> sensorLabel;
 			else
 				sensorLabel = "";
 
-			if (version >= 2)
-				in >> timestamp;
+			if (version >= 2) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 
-			if (version >= 3)
-				in >> sensorPoseOnRobot;
+			if (version >= 3) in >> sensorPoseOnRobot;
 			else
 				sensorPoseOnRobot = CPose3D();
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

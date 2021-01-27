@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -23,7 +23,8 @@ uint8_t CPoses2DSequence::serializeGetVersion() const { return 0; }
 void CPoses2DSequence::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out.WriteAs<uint32_t>(poses.size());
-	for (const auto& p : poses) out << p;
+	for (const auto& p : poses)
+		out << p;
 }
 void CPoses2DSequence::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -33,11 +34,11 @@ void CPoses2DSequence::serializeFrom(
 		case 0:
 		{
 			poses.resize(in.ReadAs<uint32_t>());
-			for (auto& p : poses) in >> p;
+			for (auto& p : poses)
+				in >> p;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -91,7 +92,8 @@ CPose2D CPoses2DSequence::absolutePoseOf(unsigned int n)
 
 	if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
 
-	for (i = 0; i < n; i++) ret = ret + poses[i];
+	for (i = 0; i < n; i++)
+		ret = ret + poses[i];
 
 	return ret;
 }
@@ -107,7 +109,8 @@ double CPoses2DSequence::computeTraveledDistanceAfter(size_t n)
 
 	if (n > poses.size()) THROW_EXCEPTION("Index out of range!!");
 
-	for (size_t i = 0; i < n; i++) dist += poses[i].norm();
+	for (size_t i = 0; i < n; i++)
+		dist += poses[i].norm();
 
 	return dist;
 }

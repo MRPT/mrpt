@@ -23,9 +23,8 @@
 #include <wx/toolbar.h>
 #include <wx/treectrl.h>
 //*)
-#include <wx/timer.h>
-
 #include <mrpt/gui/WxUtils.h>
+#include <wx/timer.h>
 
 /* Jerome Monceaux : 2011/03/08
  * Include <string> needed under snow leopard
@@ -146,4 +145,4 @@ class hmtMapViewerFrame : public wxFrame
 	wxTimer timAutoLoad;
 	void OntimAutoLoadTrigger(wxTimerEvent& event);
 };
-#endif  // HMTMAPVIEWERMAIN_H
+#endif	// HMTMAPVIEWERMAIN_H

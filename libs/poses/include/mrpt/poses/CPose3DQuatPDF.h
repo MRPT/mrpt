@@ -109,5 +109,5 @@ class CPose3DQuatPDF
 		return SETOFOBJECTS::posePDF2opengl(*this);
 	}
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

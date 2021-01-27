@@ -11,6 +11,7 @@
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/system/CControlledRateTimer.h>
+
 #include <iostream>
 
 // Declare the supported command line switches ===========

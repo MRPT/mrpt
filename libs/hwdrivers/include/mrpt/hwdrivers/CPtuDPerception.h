@@ -72,7 +72,7 @@ class CPtuDPerception : public CPtuBase
 
 	/** Query if exist movement limits */
 
-	bool enableLimitsQ(bool& enable) override;  // Query if exist some limit
+	bool enableLimitsQ(bool& enable) override;	// Query if exist some limit
 
 	/** Enable/Disable movement limits */
 
@@ -417,6 +417,6 @@ class CPtuDPerception : public CPtuBase
 		Com4 = 4
 	};
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

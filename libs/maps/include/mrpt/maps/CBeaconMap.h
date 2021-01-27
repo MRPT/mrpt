@@ -114,7 +114,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** The standard deviation used for Beacon ranges likelihood
 		 * (default=0.08m).
@@ -133,7 +133,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** Insert a new beacon as a set of montecarlo samples (default=true),
 		 * or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).
@@ -312,6 +312,6 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	mrpt::maps::CBeaconMap::TLikelihoodOptions likelihoodOpts;
 	MAP_DEFINITION_END(CBeaconMap)
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::maps

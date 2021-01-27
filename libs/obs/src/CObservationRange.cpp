@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -51,8 +51,7 @@ void CObservationRange::serializeFrom(
 			CPose3D aux;
 			for (i = 0; i < n; i++)
 			{
-				if (version >= 3)
-					in >> sensedData[i].sensorID;
+				if (version >= 3) in >> sensedData[i].sensorID;
 				else
 					sensedData[i].sensorID = i;
 
@@ -60,19 +59,16 @@ void CObservationRange::serializeFrom(
 				sensedData[i].sensorPose = aux.asTPose();
 			}
 
-			if (version >= 1)
-				in >> sensorLabel;
+			if (version >= 1) in >> sensorLabel;
 			else
 				sensorLabel = "";
 
-			if (version >= 2)
-				in >> timestamp;
+			if (version >= 2) in >> timestamp;
 			else
 				timestamp = INVALID_TIMESTAMP;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -81,8 +77,7 @@ void CObservationRange::serializeFrom(
  ---------------------------------------------------------------*/
 void CObservationRange::getSensorPose(CPose3D& out_sensorPose) const
 {
-	if (!sensedData.empty())
-		out_sensorPose = CPose3D(sensedData[0].sensorPose);
+	if (!sensedData.empty()) out_sensorPose = CPose3D(sensedData[0].sensorPose);
 	else
 		out_sensorPose = CPose3D(0, 0, 0);
 }
@@ -92,7 +87,8 @@ void CObservationRange::getSensorPose(CPose3D& out_sensorPose) const
  ---------------------------------------------------------------*/
 void CObservationRange::setSensorPose(const CPose3D& newSensorPose)
 {
-	for (auto& sd : sensedData) sd.sensorPose = newSensorPose.asTPose();
+	for (auto& sd : sensedData)
+		sd.sensorPose = newSensorPose.asTPose();
 }
 
 void CObservationRange::getDescriptionAsText(std::ostream& o) const

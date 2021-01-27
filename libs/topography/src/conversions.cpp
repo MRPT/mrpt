@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "topography-precomp.h"  // Precompiled headers
-
+#include "topography-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -80,9 +80,9 @@ void mrpt::topography::geocentricToENU_WGS84(
 	//   ECEF.
 	out_ENU_point.x = -slon * P_geocentric.x + clon * P_geocentric.y;
 	out_ENU_point.y = -clon * slat * P_geocentric.x -
-					  slon * slat * P_geocentric.y + clat * P_geocentric.z;
+		slon * slat * P_geocentric.y + clat * P_geocentric.z;
 	out_ENU_point.z = clon * clat * P_geocentric.x +
-					  slon * clat * P_geocentric.y + slat * P_geocentric.z;
+		slon * clat * P_geocentric.y + slat * P_geocentric.z;
 }
 
 void mrpt::topography::geocentricToENU_WGS84(
@@ -112,11 +112,9 @@ void mrpt::topography::geocentricToENU_WGS84(
 		//   ECEF.
 		out_ENU_points[i].x = -slon * P_geocentric.x + clon * P_geocentric.y;
 		out_ENU_points[i].y = -clon * slat * P_geocentric.x -
-							  slon * slat * P_geocentric.y +
-							  clat * P_geocentric.z;
+			slon * slat * P_geocentric.y + clat * P_geocentric.z;
 		out_ENU_points[i].z = clon * clat * P_geocentric.x +
-							  slon * clat * P_geocentric.y +
-							  slat * P_geocentric.z;
+			slon * clat * P_geocentric.y + slat * P_geocentric.z;
 	}
 }
 
@@ -165,7 +163,7 @@ void mrpt::topography::ENU_axes_from_WGS84(
 	const double clon = cos(DEG2RAD(in_longitude_reference_degrees)),
 				 slon = sin(DEG2RAD(in_longitude_reference_degrees));
 
-	CMatrixDouble44 HM;  // zeros by default
+	CMatrixDouble44 HM;	 // zeros by default
 	HM(0, 0) = -slon;
 	HM(0, 1) = -clon * slat;
 	HM(0, 2) = clon * clat;
@@ -342,8 +340,7 @@ void mrpt::topography::geodeticToUTM(
 {
 	const double la = GeodeticCoords.lat;
 	char Letra;
-	if (la < -72)
-		Letra = 'C';
+	if (la < -72) Letra = 'C';
 	else if (la < -64)
 		Letra = 'D';
 	else if (la < -56)
@@ -451,8 +448,7 @@ void mrpt::topography::GeodeticToUTM(
 
 	char Letra;
 
-	if (la < -72)
-		Letra = 'C';
+	if (la < -72) Letra = 'C';
 	else if (la < -64)
 		Letra = 'D';
 	else if (la < -56)

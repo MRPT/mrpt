@@ -16,6 +16,7 @@
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;

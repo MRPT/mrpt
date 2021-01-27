@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h"  // Precomp header
-
+//
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/poses/CPose3D.h>
 
@@ -129,7 +129,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(
 		static_cast<unsigned int>(m_robotShape.size()));
 
 	CAbstractPTGBasedReactive::loadConfigFile(
-		c);  // call parent's overriden method:
+		c);	 // call parent's overriden method:
 
 	MRPT_END
 }
@@ -206,7 +206,8 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
 	// Empty slice maps:
 	const size_t nSlices = m_robotShape.size();
 	m_WS_Obstacles_inlevels.resize(nSlices);
-	for (size_t i = 0; i < nSlices; i++) m_WS_Obstacles_inlevels[i].clear();
+	for (size_t i = 0; i < nSlices; i++)
+		m_WS_Obstacles_inlevels[i].clear();
 
 	// Sort obstacles in "slices":
 	size_t nPts;
@@ -233,7 +234,7 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
 					m_WS_Obstacles_inlevels[idxH].insertPoint(
 						xs[j], ys[j], zs[j]);
 
-				break;  // stop searching for height slots.
+				break;	// stop searching for height slots.
 			}
 		}
 	}

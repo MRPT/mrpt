@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/obs/CObservationRawDAQ.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <iostream>
 
 using namespace mrpt::obs;
@@ -43,8 +44,7 @@ void CObservationRawDAQ::serializeFrom(
 				CNTRIN_32bits >> CNTRIN_double;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -59,16 +59,16 @@ void CObservationRawDAQ::getDescriptionAsText(std::ostream& o) const
 	o << "Analog IN interleaved?  : " << (AIN_interleaved ? "yes" : "no")
 	  << "\n";
 
-#define RAWDAQ_SHOW_FIRSTS(_VEC)                                         \
-	o << "Raw data in " #_VEC " (" << (_VEC).size()                      \
-	  << " entries): First values [";                                    \
-	if (!(_VEC).empty())                                                 \
-	{                                                                    \
-		for (size_t i = 1;                                               \
-			 i <= std::min((_VEC).size(), static_cast<size_t>(10)); i++) \
-			o << (_VEC)[i - 1] << " ";                                   \
-		o << " ... ";                                                    \
-	}                                                                    \
+#define RAWDAQ_SHOW_FIRSTS(_VEC)                                               \
+	o << "Raw data in " #_VEC " (" << (_VEC).size()                            \
+	  << " entries): First values [";                                          \
+	if (!(_VEC).empty())                                                       \
+	{                                                                          \
+		for (size_t i = 1;                                                     \
+			 i <= std::min((_VEC).size(), static_cast<size_t>(10)); i++)       \
+			o << (_VEC)[i - 1] << " ";                                         \
+		o << " ... ";                                                          \
+	}                                                                          \
 	o << "]\n";
 
 	RAWDAQ_SHOW_FIRSTS(AIN_8bits)

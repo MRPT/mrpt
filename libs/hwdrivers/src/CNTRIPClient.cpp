@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/net_utils.h>
 #include <mrpt/core/bits_math.h>
@@ -16,6 +16,7 @@
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/string_utils.h>
+
 #include <cstring>
 #include <iostream>
 
@@ -94,8 +95,7 @@ bool CNTRIPClient::open(const NTRIPArgs& params, string& out_errmsg)
 
 	switch (m_answer_connection)
 	{
-		case connOk:
-			return true;
+		case connOk: return true;
 		case connError:
 			out_errmsg = format(
 				"Error trying to connect to server '%s'",
@@ -106,9 +106,7 @@ bool CNTRIPClient::open(const NTRIPArgs& params, string& out_errmsg)
 				"Authentication failed for server '%s'", params.server.c_str());
 			return false;
 
-		default:
-			out_errmsg = "UNKNOWN m_answer_connection!!";
-			return false;
+		default: out_errmsg = "UNKNOWN m_answer_connection!!"; return false;
 	}
 }
 
@@ -143,7 +141,7 @@ void CNTRIPClient::private_ntrip_thread()
 					// Nothing to be done... just wait
 				}
 
-				if (last_thread_do_process)  // Let the waiting caller continue
+				if (last_thread_do_process)	 // Let the waiting caller continue
 					// now.
 					m_sem_sock_closed.set_value();
 

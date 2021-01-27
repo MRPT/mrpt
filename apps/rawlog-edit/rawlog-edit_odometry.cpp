@@ -7,9 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rawlog-edit-declarations.h"
-
 #include <mrpt/obs/CObservationOdometry.h>
+
+#include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -62,11 +62,10 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 
 			if (it == lstFiles.end())  // A new file for this sensorlabel??
 			{
-				const std::string fileName =
-					m_filPrefix + string("_") +
-					fileNameStripInvalidChars(
-						obs->sensorLabel.empty() ? string("ODOMETRY")
-												 : obs->sensorLabel) +
+				const std::string fileName = m_filPrefix + string("_") +
+					fileNameStripInvalidChars(obs->sensorLabel.empty()
+												  ? string("ODOMETRY")
+												  : obs->sensorLabel) +
 					string(".txt");
 
 				VERBOSE_COUT << "Writing odometry TXT file: " << fileName
@@ -83,7 +82,7 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 				::fprintf(
 					f_this,
 					"%% "
-					"%14s "  // TIMESTAMP
+					"%14s "	 // TIMESTAMP
 					"%18s %18s %18s "  // GLOBAL_ODO_{x,y,phi}
 					"%18s %18s %18s "  // HAS, TICKS_L/R
 					"%18s %18s %18s "  // HAS, V,W
@@ -107,7 +106,7 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 			::fprintf(
 				f_this,
 				"%14.4f "  // TIMESTAMP
-				"%18.5f %18.5f %18.5f "  // GLOBAL_ODO_{x,y,phi}
+				"%18.5f %18.5f %18.5f "	 // GLOBAL_ODO_{x,y,phi}
 				"%18i %18i %18i "  // HAS, TICKS_L/R
 				"%18i %18.5f %18.5f"  // HAS, V,W
 				"\n",
@@ -227,8 +226,7 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
 			mrpt::obs::CObservation::Ptr& obs) override
 		{
 			ASSERT_((actions && SF) || obs);
-			if (actions)
-				(*outrawlog.out_rawlog) << actions << SF;
+			if (actions) (*outrawlog.out_rawlog) << actions << SF;
 			else
 				(*outrawlog.out_rawlog) << obs;
 		}

@@ -7,9 +7,11 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/config.h>
+
 #include <iostream>
-#include "vision-precomp.h"  // Precompiled headers
 
 #if MRPT_HAS_OPENCV
 #include <mrpt/3rdparty/do_opencv_includes.h>
@@ -62,9 +64,11 @@ void mrpt::vision::pnp::epnp::choose_control_points()
 	// Take C0 as the reference points centroid:
 	cws[0][0] = cws[0][1] = cws[0][2] = 0;
 	for (int i = 0; i < number_of_correspondences; i++)
-		for (int j = 0; j < 3; j++) cws[0][j] += pws[3 * i + j];
+		for (int j = 0; j < 3; j++)
+			cws[0][j] += pws[3 * i + j];
 
-	for (int j = 0; j < 3; j++) cws[0][j] /= number_of_correspondences;
+	for (int j = 0; j < 3; j++)
+		cws[0][j] /= number_of_correspondences;
 
 	// Take C1, C2, and C3 from PCA on the reference points:
 	CvMat* PW0 = cvCreateMat(number_of_correspondences, 3, CV_64F);
@@ -98,7 +102,8 @@ void mrpt::vision::pnp::epnp::compute_barycentric_coordinates()
 	CvMat CC_inv = cvMat(3, 3, CV_64F, cc_inv);
 
 	for (int i = 0; i < 3; i++)
-		for (int j = 1; j < 4; j++) cc[3 * i + j - 1] = cws[j][i] - cws[0][i];
+		for (int j = 1; j < 4; j++)
+			cc[3 * i + j - 1] = cws[j][i] - cws[0][i];
 
 	cvInvert(&CC, &CC_inv, CV_SVD);
 	double* ci = cc_inv;
@@ -109,8 +114,8 @@ void mrpt::vision::pnp::epnp::compute_barycentric_coordinates()
 
 		for (int j = 0; j < 3; j++)
 			a[1 + j] = ci[3 * j] * (pi[0] - cws[0][0]) +
-					   ci[3 * j + 1] * (pi[1] - cws[0][1]) +
-					   ci[3 * j + 2] * (pi[2] - cws[0][2]);
+				ci[3 * j + 1] * (pi[1] - cws[0][1]) +
+				ci[3 * j + 2] * (pi[2] - cws[0][2]);
 		a[0] = 1.0f - a[1] - a[2] - a[3];
 	}
 }
@@ -135,13 +140,15 @@ void mrpt::vision::pnp::epnp::fill_M(
 
 void mrpt::vision::pnp::epnp::compute_ccs(const double* betas, const double* ut)
 {
-	for (int i = 0; i < 4; i++) ccs[i][0] = ccs[i][1] = ccs[i][2] = 0.0f;
+	for (int i = 0; i < 4; i++)
+		ccs[i][0] = ccs[i][1] = ccs[i][2] = 0.0f;
 
 	for (int i = 0; i < 4; i++)
 	{
 		const double* v = ut + 12 * (11 - i);
 		for (int j = 0; j < 4; j++)
-			for (int k = 0; k < 3; k++) ccs[j][k] += betas[i] * v[3 * j + k];
+			for (int k = 0; k < 3; k++)
+				ccs[j][k] += betas[i] * v[3 * j + k];
 	}
 }
 
@@ -154,7 +161,7 @@ void mrpt::vision::pnp::epnp::compute_pcs()
 
 		for (int j = 0; j < 3; j++)
 			pc[j] = a[0] * ccs[0][j] + a[1] * ccs[1][j] + a[2] * ccs[2][j] +
-					a[3] * ccs[3][j];
+				a[3] * ccs[3][j];
 	}
 }
 
@@ -213,7 +220,8 @@ void mrpt::vision::pnp::epnp::copy_R_and_t(
 {
 	for (int i = 0; i < 3; i++)
 	{
-		for (int j = 0; j < 3; j++) R_dst[i][j] = R_src[i][j];
+		for (int j = 0; j < 3; j++)
+			R_dst[i][j] = R_src[i][j];
 		t_dst[i] = t_src[i];
 	}
 }
@@ -221,8 +229,7 @@ void mrpt::vision::pnp::epnp::copy_R_and_t(
 double mrpt::vision::pnp::epnp::dist2(const double* p1, const double* p2)
 {
 	return (p1[0] - p2[0]) * (p1[0] - p2[0]) +
-		   (p1[1] - p2[1]) * (p1[1] - p2[1]) +
-		   (p1[2] - p2[2]) * (p1[2] - p2[2]);
+		(p1[1] - p2[1]) * (p1[1] - p2[1]) + (p1[2] - p2[2]) * (p1[2] - p2[2]);
 }
 
 double mrpt::vision::pnp::epnp::dot(const double* v1, const double* v2)
@@ -277,12 +284,13 @@ void mrpt::vision::pnp::epnp::estimate_R_and_t(double R[3][3], double t[3])
 	cvSVD(&ABt, &ABt_D, &ABt_U, &ABt_V, CV_SVD_MODIFY_A);
 
 	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) R[i][j] = dot(abt_u + 3 * i, abt_v + 3 * j);
+		for (int j = 0; j < 3; j++)
+			R[i][j] = dot(abt_u + 3 * i, abt_v + 3 * j);
 
-	const double det =
-		R[0][0] * R[1][1] * R[2][2] + R[0][1] * R[1][2] * R[2][0] +
-		R[0][2] * R[1][0] * R[2][1] - R[0][2] * R[1][1] * R[2][0] -
-		R[0][1] * R[1][0] * R[2][2] - R[0][0] * R[1][2] * R[2][1];
+	const double det = R[0][0] * R[1][1] * R[2][2] +
+		R[0][1] * R[1][2] * R[2][0] + R[0][2] * R[1][0] * R[2][1] -
+		R[0][2] * R[1][1] * R[2][0] - R[0][1] * R[1][0] * R[2][2] -
+		R[0][0] * R[1][2] * R[2][1];
 
 	if (det < 0)
 	{
@@ -301,7 +309,8 @@ void mrpt::vision::pnp::epnp::solve_for_sign()
 	if (pcs[2] < 0.0)
 	{
 		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 3; j++) ccs[i][j] = -ccs[i][j];
+			for (int j = 0; j < 3; j++)
+				ccs[i][j] = -ccs[i][j];
 
 		for (int i = 0; i < number_of_correspondences; i++)
 		{
@@ -520,13 +529,13 @@ void mrpt::vision::pnp::epnp::compute_A_and_b_gauss_newton(
 		double* rowA = A->data.db + i * 4;
 
 		rowA[0] = 2 * rowL[0] * betas[0] + rowL[1] * betas[1] +
-				  rowL[3] * betas[2] + rowL[6] * betas[3];
+			rowL[3] * betas[2] + rowL[6] * betas[3];
 		rowA[1] = rowL[1] * betas[0] + 2 * rowL[2] * betas[1] +
-				  rowL[4] * betas[2] + rowL[7] * betas[3];
+			rowL[4] * betas[2] + rowL[7] * betas[3];
 		rowA[2] = rowL[3] * betas[0] + rowL[4] * betas[1] +
-				  2 * rowL[5] * betas[2] + rowL[8] * betas[3];
+			2 * rowL[5] * betas[2] + rowL[8] * betas[3];
 		rowA[3] = rowL[6] * betas[0] + rowL[7] * betas[1] + rowL[8] * betas[2] +
-				  2 * rowL[9] * betas[3];
+			2 * rowL[9] * betas[3];
 
 		cvmSet(
 			b, i, 0,
@@ -555,7 +564,8 @@ void mrpt::vision::pnp::epnp::gauss_newton(
 		compute_A_and_b_gauss_newton(
 			L_6x10->data.db, Rho->data.db, betas, &A, &B);
 		qr_solve(&A, &B, &X);
-		for (int i = 0; i < 4; i++) betas[i] += x[i];
+		for (int i = 0; i < 4; i++)
+			betas[i] += x[i];
 	}
 }
 

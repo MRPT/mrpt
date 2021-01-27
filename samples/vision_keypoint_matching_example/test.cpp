@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/vision/CFeatureExtraction.h>
+
 #include <iostream>
 
 using mrpt::format;
@@ -83,7 +84,7 @@ void TestExtractMatchProjectAndPaint()
 
 	// Project features:
 	mrpt::maps::CLandmarksMap outMap;
-	TStereoSystemParams stereoOptions;  // Default options: Bumblebee + 640x480
+	TStereoSystemParams stereoOptions;	// Default options: Bumblebee + 640x480
 	cout << "Projecting matched features" << endl;
 	mrpt::vision::projectMatchedFeatures(mHarris, stereoOptions, outMap);
 
@@ -328,7 +329,7 @@ void TestMatchingComparative()
 
 		copyInfoImage = infoimage;
 		copyjoinimage = joinimage;
-		copyjoinimage.line(pt1.x, 0, pt1.x, imH, TColor::green());  // Horiz
+		copyjoinimage.line(pt1.x, 0, pt1.x, imH, TColor::green());	// Horiz
 		copyjoinimage.line(
 			pt1.x + imW, 0, pt1.x + imW, imH,
 			TColor::green());  // Horiz
@@ -398,7 +399,7 @@ void TestMatchingComparative()
 
 				copyjoinimage.drawCircle(
 					pt2.x + imW, pt2.y, 4, TColor::blue(),
-					2);  // Keypoint
+					2);	 // Keypoint
 				double rx0, rx1, ry0, ry1, tx, ty;
 				rx0 = pt2.x + imW - 15;
 				rx1 = pt2.x + imW;

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "img-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/round.h>
 #include <mrpt/img/CMappedImage.h>
 
@@ -80,10 +80,7 @@ double CMappedImage::getPixel(double x, double y) const
 	const double px = (x - m_x0) / m_pixel_size;
 	const double py = (y - m_y0) / m_pixel_size;
 
-	if (px < 0 || py < 0 || px > W || py > H)
-	{
-		return 0;
-	}  // Out of image
+	if (px < 0 || py < 0 || px > W || py > H) { return 0; }	 // Out of image
 
 	switch (m_method)
 	{
@@ -115,9 +112,9 @@ double CMappedImage::getPixel(double x, double y) const
 				static_cast<double>((*m_img).at<uint8_t>(px1, py1));
 
 			const double R1 = P11 * (px1 - px) /* /(px1-px0)*/ +
-							  P21 * (px - px0) /* /(px1-px0) */;
+				P21 * (px - px0) /* /(px1-px0) */;
 			const double R2 = P12 * (px1 - px) /* /(px1-px0)*/ +
-							  P22 * (px - px0) /* /(px1-px0) */;
+				P22 * (px - px0) /* /(px1-px0) */;
 
 			return R1 * (py1 - py) + R2 * (py - py0);
 		}

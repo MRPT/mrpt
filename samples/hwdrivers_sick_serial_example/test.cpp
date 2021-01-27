@@ -12,6 +12,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -23,7 +24,7 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::poses;
 using namespace std;
 
-string SERIAL_NAME;  // Name of the serial port to open
+string SERIAL_NAME;	 // Name of the serial port to open
 
 // ------------------------------------------------------
 //				Test_PLS
@@ -63,7 +64,7 @@ void TestPLS()
 	// laser.loadConfig( CConfigFile( "./LASER_SCAN_TEST.ini") ,"PLS#1" );
 
 	cout << "Trying to initialize the laser..." << endl;
-	laser.initialize();  // This will raise an exception on error
+	laser.initialize();	 // This will raise an exception on error
 	cout << "Initialized OK!" << endl;
 
 	while (!mrpt::system::os::kbhit())
@@ -113,10 +114,7 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		if (argc > 1)
-		{
-			SERIAL_NAME = string(argv[1]);
-		}
+		if (argc > 1) { SERIAL_NAME = string(argv[1]); }
 
 		TestPLS();
 		return 0;

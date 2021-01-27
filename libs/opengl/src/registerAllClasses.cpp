@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "opengl-precomp.h"  // Precompiled header
+#include "opengl-precomp.h"	 // Precompiled header
 //
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>

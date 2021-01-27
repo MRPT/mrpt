@@ -128,6 +128,6 @@ class CSkeletonTracker : public hwdrivers::CGenericSensor
 	{
 		m_showPreview = setPreview;
 	}
-};  // end of class
+};	// end of class
 
 }  // namespace mrpt::hwdrivers

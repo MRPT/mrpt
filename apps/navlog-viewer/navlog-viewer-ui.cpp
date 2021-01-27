@@ -8,16 +8,16 @@
    +------------------------------------------------------------------------+ */
 
 #include "navlog-viewer-ui.h"
-#include <mrpt/gui/about_box.h>
 
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/containers/printf_vector.h>
 #include <mrpt/core/lock_helper.h>
+#include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
-#include <mrpt/math/geometry.h>  // intersect()
+#include <mrpt/math/geometry.h>	 // intersect()
 #include <mrpt/math/utils.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -29,6 +29,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+
 #include <algorithm>  // replace()
 #include <fstream>
 
@@ -41,7 +42,7 @@ static const mrpt::opengl::TFontParams& getFontParams()
 	{
 		fp.vfont_style = mrpt::opengl::FILL;
 		fp.vfont_name = "mono";
-		fp.vfont_scale = 10.0f;  // pixels
+		fp.vfont_scale = 10.0f;	 // pixels
 		fp.draw_shadow = true;
 	}
 	return fp;
@@ -49,15 +50,15 @@ static const mrpt::opengl::TFontParams& getFontParams()
 
 // Font size & line spaces for GUI-overlayed text lines
 static const float Ay = getFontParams().vfont_scale + 3;
-#define ADD_WIN_TEXTMSG_COL(__MSG, __COL)                       \
-	{                                                           \
-		auto fp = getFontParams();                              \
-		fp.color = __COL;                                       \
-		m_win->background_scene->getViewport()->addTextMessage( \
-			5.0, 5 + (lineY++) * Ay, __MSG, unique_id++, fp);   \
+#define ADD_WIN_TEXTMSG_COL(__MSG, __COL)                                      \
+	{                                                                          \
+		auto fp = getFontParams();                                             \
+		fp.color = __COL;                                                      \
+		m_win->background_scene->getViewport()->addTextMessage(                \
+			5.0, 5 + (lineY++) * Ay, __MSG, unique_id++, fp);                  \
 	}
 
-#define ADD_WIN_TEXTMSG(__MSG) \
+#define ADD_WIN_TEXTMSG(__MSG)                                                 \
 	ADD_WIN_TEXTMSG_COL(__MSG, mrpt::img::TColorf(1, 1, 1))
 
 using namespace std;
@@ -418,10 +419,7 @@ void NavlogViewerApp::OnMainIdleLoop()
 		}
 	}
 
-	if (m_showCursorXY)
-	{
-		OntimMouseXY();
-	}
+	if (m_showCursorXY) { OntimMouseXY(); }
 }
 
 bool NavlogViewerApp::OnKeyboardCallback(
@@ -546,8 +544,7 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 				auto log0ptr =
 					mrpt::ptr_cast<CLogFileRecord>::from(m_logdata[0]);
 				ASSERT_(log0ptr.get());
-				const auto curPose =
-					log0ptr->robotPoseLocalization +
+				const auto curPose = log0ptr->robotPoseLocalization +
 					(log.robotPoseOdometry - log0ptr->robotPoseOdometry);
 
 				gl_robot_frame->setPose(curPose);
@@ -578,7 +575,7 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 		{
 			mrpt::opengl::CSetOfObjects::Ptr gl_relposes;
 			mrpt::opengl::CRenderizable::Ptr gl_relposes_r =
-				gl_robot_frame->getByName("relposes");  // Get or create if new
+				gl_robot_frame->getByName("relposes");	// Get or create if new
 			if (!gl_relposes_r)
 			{
 				gl_relposes = mrpt::opengl::CSetOfObjects::Create();
@@ -633,8 +630,7 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 					dynamic_pointer_cast<mrpt::opengl::CPointCloud>(gl_obs_r);
 			}
 			gl_obs->loadFromPointsMap(&log.WS_Obstacles_original);
-			if (m_cbShowDelays->checked())
-				gl_obs->setPose(log.relPoseSense);
+			if (m_cbShowDelays->checked()) gl_obs->setPose(log.relPoseSense);
 			else
 				gl_obs->setPose(mrpt::poses::CPose3D());
 		}
@@ -658,8 +654,7 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 					gl_obs_r);
 			}
 			gl_obs->loadFromPointsMap(&log.WS_Obstacles);
-			if (m_cbShowDelays->checked())
-				gl_obs->setPose(log.relPoseSense);
+			if (m_cbShowDelays->checked()) gl_obs->setPose(log.relPoseSense);
 			else
 				gl_obs->setPose(mrpt::poses::CPose3D());
 		}
@@ -668,7 +663,7 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 			// Selected PTG path:
 			mrpt::opengl::CSetOfLines::Ptr gl_path;
 			mrpt::opengl::CRenderizable::Ptr gl_path_r =
-				gl_robot_frame->getByName("path");  // Get or create if new
+				gl_robot_frame->getByName("path");	// Get or create if new
 			if (!gl_path_r)
 			{
 				gl_path = mrpt::opengl::CSetOfLines::Create();
@@ -696,11 +691,10 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 								   : log.navDynState);
 
 					// Draw path:
-					const int selected_k =
-						log.ptg_index_NOP < 0
-							? ptg->alpha2index(
-								  log.infoPerPTG[sel_ptg_idx].desiredDirection)
-							: log.ptg_last_k_NOP;
+					const int selected_k = log.ptg_index_NOP < 0
+						? ptg->alpha2index(
+							  log.infoPerPTG[sel_ptg_idx].desiredDirection)
+						: log.ptg_last_k_NOP;
 					float max_dist = ptg->getRefDistance();
 					ptg->add_robotShape_to_setOfLines(*gl_path);
 
@@ -710,10 +704,9 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 
 					// PTG origin:
 					// enable delays model?
-					mrpt::math::TPose2D ptg_origin =
-						(m_cbShowDelays->checked())
-							? log.relPoseVelCmd
-							: mrpt::math::TPose2D(0, 0, 0);
+					mrpt::math::TPose2D ptg_origin = (m_cbShowDelays->checked())
+						? log.relPoseVelCmd
+						: mrpt::math::TPose2D(0, 0, 0);
 
 					// "NOP cmd" case:
 					if (log.ptg_index_NOP >= 0)
@@ -868,8 +861,9 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 	}
 
 	ADD_WIN_TEXTMSG(mrpt::format(
-		"cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str()
-								  : "NOP (Continue last PTG)"));
+		"cmd_vel=%s",
+		log.cmd_vel ? log.cmd_vel->asString().c_str()
+					: "NOP (Continue last PTG)"));
 
 	ADD_WIN_TEXTMSG(mrpt::format(
 		"cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel.vx,
@@ -918,8 +912,7 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 		const CLogFileRecord::TInfoPerPTG& pI = log.infoPerPTG[nPTG];
 
 		mrpt::img::TColorf col;
-		if (((int)nPTG) == log.nSelectedPTG)
-			col = mrpt::img::TColorf(1, 1, 1);
+		if (((int)nPTG) == log.nSelectedPTG) col = mrpt::img::TColorf(1, 1, 1);
 		else
 			col = mrpt::img::TColorf(.8f, .8f, .8f);
 
@@ -1159,10 +1152,7 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 				{
 					mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg =
 						m_logdata_ptg_paths[sel_ptg_idx];
-					if (ptg)
-					{
-						tp_target_k = ptg->alpha2index(ang);
-					}
+					if (ptg) { tp_target_k = ptg->alpha2index(ang); }
 				}
 
 				auto fp2 = getFontParams();
@@ -1300,7 +1290,7 @@ void NavlogViewerApp::OnmnuMatlabPlotsSelected()
 	int decim_point_cnt = 0;
 
 	std::vector<float> X, Y;  // Obstacles
-	std::vector<float> TX, TY;  // Target over time
+	std::vector<float> TX, TY;	// Target over time
 
 	const size_t N = m_logdata.size();
 	for (size_t i = 0; i < N; i++)
@@ -1447,9 +1437,10 @@ void NavlogViewerApp::OnmnuSaveScoreMatrixSelected()
 			if (!dirs_scores || dirs_scores->rows() < 2) continue;
 
 			const std::string sFil = mrpt::system::fileNameChangeExtension(
-				fileName, mrpt::format(
-							  "step%06u_ptg%02u.txt", (unsigned int)i,
-							  (unsigned int)iPTG));
+				fileName,
+				mrpt::format(
+					"step%06u_ptg%02u.txt", (unsigned int)i,
+					(unsigned int)iPTG));
 
 			dirs_scores->saveToTextFile(sFil, mrpt::math::MATRIX_FORMAT_FIXED);
 		}
@@ -1539,7 +1530,7 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 	};
 	std::map<double, TRobotPoseVel> global_local_vel;  // time: curPoseAndVel
 	std::map<double, double> vals_timoff_obstacles, vals_timoff_curPoseVelAge,
-		vals_timoff_sendVelCmd;  // time: tim_start_iteration
+		vals_timoff_sendVelCmd;	 // time: tim_start_iteration
 
 	const int MAX_CMDVEL_COMPONENTS = 15;
 	using cmdvel_vector_t = mrpt::math::CVectorDouble;
@@ -1563,7 +1554,7 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 			}
 			else
 			{
-				tim_start_iteration++;  // just in case we don't have
+				tim_start_iteration++;	// just in case we don't have
 										// valid
 				// iteration timestamp (??)
 			}
@@ -1600,13 +1591,11 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 
 		// curPoseAndVel:
 		{
-			double tim_pose = tim_start_iteration;  // default
+			double tim_pose = tim_start_iteration;	// default
 
 			const auto it = logptr->timestamps.find("curPoseAndVel");
 			if (it != logptr->timestamps.end())
-			{
-				tim_pose = mrpt::system::timestampToDouble(it->second);
-			}
+			{ tim_pose = mrpt::system::timestampToDouble(it->second); }
 
 			auto& p = global_local_vel[tim_pose];
 			p.pose = logptr->robotPoseLocalization;
@@ -1618,7 +1607,7 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 		// send cmd vels:
 		if (logptr->cmd_vel)
 		{
-			double tim_send_cmd_vel = tim_start_iteration;  // default
+			double tim_send_cmd_vel = tim_start_iteration;	// default
 			const auto it = logptr->timestamps.find("tim_send_cmd_vel");
 			if (it != logptr->timestamps.end())
 			{
@@ -1636,9 +1625,7 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 
 	double t_ref = 0;
 	if (!selected_PTG_over_time.empty())
-	{
-		t_ref = selected_PTG_over_time.begin()->first;
-	}
+	{ t_ref = selected_PTG_over_time.begin()->first; }
 
 	f << "clear; close all;\n";
 

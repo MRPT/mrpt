@@ -17,6 +17,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/system/CTicTac.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -58,7 +59,8 @@ void TestPosePDFOperations()
 	double v;
 
 	tictac.Tic();
-	for (int i = 0; i < 10000; i++) v = p1.productIntegralWith(p2);
+	for (int i = 0; i < 10000; i++)
+		v = p1.productIntegralWith(p2);
 
 	printf("Time for computing: %.04fus\n", tictac.Tac() * 1e+6f / 10000);
 

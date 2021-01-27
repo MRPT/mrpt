@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/ops_matrices.h>
@@ -22,6 +22,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -76,8 +77,7 @@ void CPosePDFGaussianInf::serializeFrom(
 			in >> cov_inv(0, 1) >> cov_inv(0, 2) >> cov_inv(1, 2);
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -103,8 +103,7 @@ void CPosePDFGaussianInf::serializeFrom(
 			cov_inv = m;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
@@ -113,7 +112,7 @@ void CPosePDFGaussianInf::serializeFrom(
   ---------------------------------------------------------------*/
 void CPosePDFGaussianInf::copyFrom(const CPosePDF& o)
 {
-	if (this == &o) return;  // It may be used sometimes
+	if (this == &o) return;	 // It may be used sometimes
 
 	if (IS_CLASS(o, CPosePDFGaussianInf))
 	{  // It's my same class:
@@ -330,7 +329,7 @@ void CPosePDFGaussianInf::inverse(CPosePDF& o) const
 	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double H_values[] = {
 		-ccos, -ssin, mean.x() * ssin - mean.y() * ccos,
 		ssin,  -ccos, mean.x() * ccos + mean.y() * ssin,
-		0,	 0,	 -1};
+		0,	   0,	  -1};
 	const CMatrixFixed<double, 3, 3> H(H_values);
 
 	// o.cov = H * cov * Ht. It's the same with inverse covariances.
@@ -494,7 +493,7 @@ void CPosePDFGaussianInf::operator+=(const CPosePDFGaussianInf& Ap)
 	CMatrixDouble33 df_dx, df_du;
 
 	CPosePDF::jacobiansPoseComposition(
-		this->mean,  // x
+		this->mean,	 // x
 		Ap.mean,  // u
 		df_dx, df_du);
 

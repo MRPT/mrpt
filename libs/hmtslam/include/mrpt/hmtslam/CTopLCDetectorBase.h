@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
-
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
@@ -78,6 +77,6 @@ class CTopLCDetectorBase
 	}
 	using Ptr = std::shared_ptr<CTopLCDetectorBase>;
 
-};  // end class
+};	// end class
 
 }  // namespace mrpt::hmtslam

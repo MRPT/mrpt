@@ -273,20 +273,13 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 	{
 		switch (i)
 		{
-			case 0:
-				return m_coords[0];
-			case 1:
-				return m_coords[1];
-			case 2:
-				return m_coords[2];
-			case 3:
-				return m_quat[0];
-			case 4:
-				return m_quat[1];
-			case 5:
-				return m_quat[2];
-			case 6:
-				return m_quat[3];
+			case 0: return m_coords[0];
+			case 1: return m_coords[1];
+			case 2: return m_coords[2];
+			case 3: return m_quat[0];
+			case 4: return m_quat[1];
+			case 5: return m_quat[2];
+			case 6: return m_quat[3];
 			default:
 				throw std::runtime_error(
 					"CPose3DQuat::operator[]: Index of bounds.");
@@ -297,20 +290,13 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 	{
 		switch (i)
 		{
-			case 0:
-				return m_coords[0];
-			case 1:
-				return m_coords[1];
-			case 2:
-				return m_coords[2];
-			case 3:
-				return m_quat[0];
-			case 4:
-				return m_quat[1];
-			case 5:
-				return m_quat[2];
-			case 6:
-				return m_quat[3];
+			case 0: return m_coords[0];
+			case 1: return m_coords[1];
+			case 2: return m_coords[2];
+			case 3: return m_quat[0];
+			case 4: return m_quat[1];
+			case 5: return m_quat[2];
+			case 6: return m_quat[3];
 			default:
 				throw std::runtime_error(
 					"CPose3DQuat::operator[]: Index of bounds.");
@@ -491,7 +477,7 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 		{
 			return !(operator==(it));
 		}
-	};  // end iterator
+	};	// end iterator
 
 	struct const_iterator
 		: public std::iterator<std::random_access_iterator_tag, value_type>
@@ -601,7 +587,7 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 		{
 			return !(operator==(it));
 		}
-	};  // end const_iterator
+	};	// end const_iterator
 
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -633,7 +619,7 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 
 	void setToNaN() override;
 
-};  // End of class def.
+};	// End of class def.
 
 std::ostream& operator<<(std::ostream& o, const CPose3DQuat& p);
 

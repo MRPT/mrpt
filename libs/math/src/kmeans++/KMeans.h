@@ -18,6 +18,7 @@
 
 // Includes
 #include <iostream>
+
 #include "KmUtils.h"
 
 // Sets preferences for how much logging is done and where it is outputted, when

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "img-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/img/TStereoCamera.h>
 #include <mrpt/serialization/CArchive.h>
@@ -89,8 +89,7 @@ void TStereoCamera::serializeFrom(
 			in >> leftCamera >> rightCamera >> rightCameraPose;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 

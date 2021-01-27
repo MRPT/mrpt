@@ -12,6 +12,7 @@
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/vision/types.h>
+
 #include <functional>
 
 namespace mrpt::vision
@@ -121,7 +122,8 @@ struct TKeyPointList_templ
 		if (this->empty()) return 0;
 		TFeatureID maxID = m_feats[0].ID;
 		size_t N = m_feats.size() - 1;
-		for (; N; --N) mrpt::keep_max(maxID, m_feats[N].ID);
+		for (; N; --N)
+			mrpt::keep_max(maxID, m_feats[N].ID);
 		return maxID;
 	}
 
@@ -264,7 +266,7 @@ struct TKeyPointList_templ
 	std::vector<size_t> m_first_index_per_row;
 	mrpt::math::CMatrixBool m_occupied_sections;
 
-};  // end of class
+};	// end of class
 
 /** A list of image features using the structure TKeyPoint for each feature
  * - capable of KD-tree computations */
@@ -318,8 +320,7 @@ class CFeatureListKDTree
 	inline float kdtree_get_pt(const size_t idx, int dim) const
 	{
 		ASSERTDEB_(dim == 0 || dim == 1);
-		if (dim == 0)
-			return m_data[idx].pt.x;
+		if (dim == 0) return m_data[idx].pt.x;
 		else
 			return m_data[idx].pt.y;
 	}
@@ -351,7 +352,7 @@ class CFeatureListKDTree
 
 	/** @} */
 
-};  // end CFeatureListKDTree
+};	// end CFeatureListKDTree
 
 /** @} */  // End of add to module: mrptvision_features
 

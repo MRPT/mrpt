@@ -242,7 +242,7 @@ class CObservation2DRangeScan : public CObservation
 	void filterByExclusionAngles(
 		const std::vector<std::pair<double, double>>& angles);
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace obs
 namespace typemeta

@@ -8,14 +8,16 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config.h>
+
 #if MRPT_HAS_Qt5
 
 #include <QLabel>
 #include <QTabWidget>
 #include <QTextEdit>
 #include <QVBoxLayout>
+
 #include "CAboutBoxQt.h"
 
 CAboutBoxQt::CAboutBoxQt(
@@ -49,4 +51,4 @@ QTextEdit* CAboutBoxQt::widgetForTabs(
 	return action;
 }
 
-#endif  // MRPT_HAS_Qt5
+#endif	// MRPT_HAS_Qt5

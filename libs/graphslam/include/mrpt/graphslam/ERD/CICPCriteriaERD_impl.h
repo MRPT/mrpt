@@ -139,9 +139,7 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 		registered_new_node = false;
 
 		if (m_is_using_3DScan)
-		{
-			checkRegistrationCondition3D(nodes_to_check_ICP);
-		}
+		{ checkRegistrationCondition3D(nodes_to_check_ICP); }
 		else
 		{
 			checkRegistrationCondition2D(nodes_to_check_ICP);
@@ -168,9 +166,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 	// search for curr_laser_scan
 	search = this->m_nodes_to_laser_scans2D.find(curr_nodeID);
 	if (search != this->m_nodes_to_laser_scans2D.end())
-	{
-		curr_laser_scan = search->second;
-	}
+	{ curr_laser_scan = search->second; }
 
 	// commence only if I have the current laser scan
 	if (curr_laser_scan)
@@ -191,7 +187,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 
 				// make use of initial node position difference for the ICP edge
 				pose_t initial_pose = this->m_graph->nodes[curr_nodeID] -
-									  this->m_graph->nodes[node_it];
+					this->m_graph->nodes[node_it];
 
 				this->m_time_logger.enter("CICPCriteriaERD::getICPEdge");
 				this->getICPEdge(
@@ -249,9 +245,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 	// search for curr_laser_scan
 	search = m_nodes_to_laser_scans3D.find(curr_nodeID);
 	if (search != m_nodes_to_laser_scans3D.end())
-	{
-		curr_laser_scan = search->second;
-	}
+	{ curr_laser_scan = search->second; }
 
 	// commence only if I have the current laser scan
 	if (curr_laser_scan)
@@ -322,10 +316,7 @@ void CICPCriteriaERD<GRAPH_T>::getNearbyNodesOf(
 		{
 			double curr_distance = this->m_graph->nodes[nodeID].distanceTo(
 				this->m_graph->nodes[cur_nodeID]);
-			if (curr_distance <= distance)
-			{
-				nodes_set->insert(nodeID);
-			}
+			if (curr_distance <= distance) { nodes_set->insert(nodeID); }
 		}
 	}
 	else
@@ -345,9 +336,7 @@ void CICPCriteriaERD<GRAPH_T>::notifyOfWindowEvents(
 
 	// I know the key exists - I put it there explicitly
 	if (events_occurred.find(params.keystroke_laser_scans)->second)
-	{
-		this->toggleLaserScansVisualization();
-	}
+	{ this->toggleLaserScansVisualization(); }
 
 	MRPT_END
 }
@@ -498,9 +487,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 
 		// if fake 2D exists use it
 		if (m_fake_laser_scan2D)
-		{
-			laser_scan_viz->setScan(*m_fake_laser_scan2D);
-		}
+		{ laser_scan_viz->setScan(*m_fake_laser_scan2D); }
 		else
 		{
 			laser_scan_viz->setScan(*m_last_laser_scan2D);

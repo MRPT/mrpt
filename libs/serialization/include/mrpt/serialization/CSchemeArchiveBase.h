@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/serialization/CSerializable.h>
+
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
@@ -60,7 +61,7 @@ class CSchemeArchiveBase_impl
 	// Dict accessor
 	virtual CSchemeArchiveBase operator[](std::string) = 0;
 
-   public:  // should make it private by virtue of friend class
+   public:	// should make it private by virtue of friend class
 	void setParent(CSchemeArchiveBase* parent) { m_parent = parent; }
 
    protected:

@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include <iterator>  // iterator_traits
+#include <iterator>	 // iterator_traits
 #include <random>  // uniform_int_distribution
-#include <utility>  // std::swap
+#include <utility>	// std::swap
 
 namespace mrpt
 {
@@ -38,7 +38,7 @@ void shuffle(RandomIt first, RandomIt last, URBG&& g)
 template <class RandomIt>
 void shuffle(RandomIt first, RandomIt last)
 {
-	std::random_device rd;  // used for random seed
+	std::random_device rd;	// used for random seed
 	std::mt19937 g(rd());
 	mrpt::random::shuffle(first, last, g);
 }

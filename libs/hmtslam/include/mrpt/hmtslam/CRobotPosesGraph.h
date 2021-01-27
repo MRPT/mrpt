@@ -8,13 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/serialization/CSerializable.h>
-
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/serialization/CSerializable.h>
 
 namespace mrpt::hmtslam
 {
@@ -46,6 +45,6 @@ class CRobotPosesGraph : public mrpt::serialization::CSerializable,
 	 * (mrpt::maps::CSimpleMap) object. */
 	void convertIntoSimplemap(mrpt::maps::CSimpleMap& out_simplemap) const;
 
-};  // end of class
+};	// end of class
 
 }  // namespace mrpt::hmtslam

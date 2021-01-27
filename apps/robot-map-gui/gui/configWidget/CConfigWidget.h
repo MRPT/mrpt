@@ -8,17 +8,16 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+
 #include <QWidget>
+#include <memory>
 
 #include "CBaseConfig.h"
 #include "CGeneralConfig.h"
 #include "TypeOfConfig.h"
-
-#include <memory>
-
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/maps/TMetricMapInitializer.h>
-#include <mrpt/opengl/CSetOfObjects.h>
 
 class QListWidgetItem;
 class CGeneralConfig;

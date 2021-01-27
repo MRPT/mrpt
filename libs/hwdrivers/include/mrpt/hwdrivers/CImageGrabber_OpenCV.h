@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/config.h>
-
 #include <mrpt/core/pimpl.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/obs/CObservationImage.h>
@@ -103,7 +102,7 @@ class CImageGrabber_OpenCV
 	 */
 	bool getObservation(mrpt::obs::CObservationImage& out_observation);
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers
 MRPT_ENUM_TYPE_BEGIN(mrpt::hwdrivers::TCameraType)

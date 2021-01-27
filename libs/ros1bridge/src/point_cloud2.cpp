@@ -73,7 +73,8 @@ static void get_uint16_from_field(
 std::set<std::string> extractFields(const sensor_msgs::PointCloud2& msg)
 {
 	std::set<std::string> lst;
-	for (const auto& f : msg.fields) lst.insert(f.name);
+	for (const auto& f : msg.fields)
+		lst.insert(f.name);
 	return lst;
 }
 

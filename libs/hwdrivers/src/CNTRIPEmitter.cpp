@@ -7,12 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CNTRIPEmitter.h>
-
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+
 #include <iostream>
 
 IMPLEMENTS_GENERIC_SENSOR(CNTRIPEmitter, mrpt::hwdrivers)
@@ -122,9 +122,7 @@ void CNTRIPEmitter::initialize()
 	}
 
 	if (m_raw_output_file_stream.is_open())
-	{
-		m_raw_output_file_stream.close();
-	}
+	{ m_raw_output_file_stream.close(); }
 
 	if (!m_raw_output_file_prefix.empty())
 	{
@@ -165,9 +163,7 @@ void CNTRIPEmitter::loadConfig_sensorSpecific(
 		"specified in configuration file!");
 
 	if (!m_com_port.empty())
-	{
-		m_com_bauds = c.read_int(s, "baudRate", m_com_bauds, true);
-	}
+	{ m_com_bauds = c.read_int(s, "baudRate", m_com_bauds, true); }
 
 	m_transmit_to_server =
 		c.read_bool(s, "transmit_to_server", m_transmit_to_server);

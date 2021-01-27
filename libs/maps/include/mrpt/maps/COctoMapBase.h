@@ -98,12 +98,12 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		double maxrange{
 			-1.};  //!< maximum range for how long individual beams are
 		//! inserted (default -1: complete beam)
-		bool pruning{true};  //!< whether the tree is (losslessly) pruned after
+		bool pruning{true};	 //!< whether the tree is (losslessly) pruned after
 		//! insertion (default: true)
 
 		/// (key name in .ini files: "occupancyThres") sets the threshold for
@@ -142,8 +142,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/// @return threshold (probability) for occupancy - sensor model
 		double getOccupancyThres() const
 		{
-			if (m_parent.get())
-				return m_parent->getOccupancyThres();
+			if (m_parent.get()) return m_parent->getOccupancyThres();
 			else
 				return this->occupancyThres;
 		}
@@ -156,8 +155,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/// @return probablility for a "hit" in the sensor model (probability)
 		double getProbHit() const
 		{
-			if (m_parent.get())
-				return m_parent->getProbHit();
+			if (m_parent.get()) return m_parent->getProbHit();
 			else
 				return this->probHit;
 		}
@@ -166,8 +164,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/// @return probablility for a "miss"  in the sensor model (probability)
 		double getProbMiss() const
 		{
-			if (m_parent.get())
-				return m_parent->getProbMiss();
+			if (m_parent.get()) return m_parent->getProbMiss();
 			else
 				return this->probMiss;
 		}
@@ -177,8 +174,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/// (probability)
 		double getClampingThresMin() const
 		{
-			if (m_parent.get())
-				return m_parent->getClampingThresMin();
+			if (m_parent.get()) return m_parent->getClampingThresMin();
 			else
 				return this->clampingThresMin;
 		}
@@ -192,8 +188,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		/// (probability)
 		double getClampingThresMax() const
 		{
-			if (m_parent.get())
-				return m_parent->getClampingThresMax();
+			if (m_parent.get()) return m_parent->getClampingThresMax();
 			else
 				return this->clampingThresMax;
 		}
@@ -207,7 +202,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	   private:
 		mrpt::ignored_copy_ptr<myself_t> m_parent;
 
-		double occupancyThres{0.5};  // sets the threshold for occupancy (sensor
+		double occupancyThres{0.5};	 // sets the threshold for occupancy (sensor
 		// model) (Default=0.5)
 		double probHit{
 			0.7};  // sets the probablility for a "hit" (will be converted
@@ -219,12 +214,12 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		// clamping (sensor model) (Default=0.1192, -2
 		// in log odds)
 		double clampingThresMax{
-			0.971};  // sets the maximum threshold for occupancy
+			0.971};	 // sets the maximum threshold for occupancy
 		// clamping (sensor model) (Default=0.971, 3.5
 		// in log odds)
 	};
 
-	TInsertionOptions insertionOptions;  //!< The options used when inserting
+	TInsertionOptions insertionOptions;	 //!< The options used when inserting
 	//! observations in the map
 
 	/** Options used when evaluating "computeObservationLikelihood"
@@ -240,14 +235,14 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** Binary dump to stream */
 		void writeToStream(mrpt::serialization::CArchive& out) const;
 		/** Binary dump to stream */
 		void readFromStream(mrpt::serialization::CArchive& in);
 
-		uint32_t decimation{1};  //!< Speed up the likelihood computation by
+		uint32_t decimation{1};	 //!< Speed up the likelihood computation by
 		//! considering only one out of N rays (default=1)
 	};
 
@@ -261,20 +256,20 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	struct TRenderingOptions
 	{
 		bool generateGridLines{
-			false};  //!< Generate grid lines for all octree nodes,
+			false};	 //!< Generate grid lines for all octree nodes,
 		//! useful to draw the "structure" of the
 		//! octree, but computationally costly (Default:
 		//! false)
 
 		bool generateOccupiedVoxels{
-			true};  //!< Generate voxels for the occupied
+			true};	//!< Generate voxels for the occupied
 		//! volumes  (Default=true)
 		bool visibleOccupiedVoxels{
-			true};  //!< Set occupied voxels visible (requires
+			true};	//!< Set occupied voxels visible (requires
 		//! generateOccupiedVoxels=true)
 		//!(Default=true)
 
-		bool generateFreeVoxels{true};  //!< Generate voxels for the freespace
+		bool generateFreeVoxels{true};	//!< Generate voxels for the freespace
 		//!(Default=true)
 		bool visibleFreeVoxels{true};  //!< Set free voxels visible (requires
 		//! generateFreeVoxels=true) (Default=true)
@@ -387,5 +382,5 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) override;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::maps

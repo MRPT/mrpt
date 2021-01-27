@@ -7,14 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/system/COutputLogger.h>
-
 #include <mrpt/graphslam/CGraphSlamEngine.h>
 #include <mrpt/graphslam/apps_related/CGraphSlamHandler.h>
 #include <mrpt/graphslam/apps_related/TUserOptionsChecker.h>
-
-#include <mrpt/3rdparty/tclap/CmdLine.h>
+#include <mrpt/system/COutputLogger.h>
 
 #include <string>
 
@@ -120,9 +118,7 @@ void execGraphSlamEngine(mrpt::system::COutputLogger* logger)
 		}
 
 		if (list_optimizers.getValue())
-		{
-			options_checker.dumpOptimizersToConsole();
-		}
+		{ options_checker.dumpOptimizersToConsole(); }
 
 		if (list_registrars || list_optimizers.getValue())
 		{
@@ -140,9 +136,7 @@ void execGraphSlamEngine(mrpt::system::COutputLogger* logger)
 	// ground-truth file
 	string ground_truth_fname;
 	if (arg_ground_truth_file.isSet())
-	{
-		ground_truth_fname = arg_ground_truth_file.getValue();
-	}
+	{ ground_truth_fname = arg_ground_truth_file.getValue(); }
 
 	if (disable_visuals.getValue())
 	{  // enabling Visualization objects
@@ -183,15 +177,11 @@ int main(int argc, char** argv)
 		// Input Validation
 		cmd_line.xorAdd(dim_2d, dim_3d);
 		if (!cmd_line.parse(argc, argv) || showVersion || showHelp)
-		{
-			return 0;
-		}
+		{ return 0; }
 
 		// CGraphSlamEngine initialization
 		if (dim_2d.getValue())
-		{
-			execGraphSlamEngine<CNetworkOfPoses2DInf>(&logger);
-		}
+		{ execGraphSlamEngine<CNetworkOfPoses2DInf>(&logger); }
 		else
 		{
 			execGraphSlamEngine<CNetworkOfPoses3DInf>(&logger);

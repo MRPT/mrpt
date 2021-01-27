@@ -7,7 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 
 #include <mrpt/hwdrivers/CSkeletonTracker.h>
 
@@ -34,10 +35,10 @@ using namespace std;
 #define skl_states (static_cast<nite::SkeletonState*>(m_skeletons_ptr))
 #define user_tracker (static_cast<nite::UserTracker*>(m_userTracker_ptr))
 #define MAX_USERS 10
-#define FILL_JOINT_DATA(_J1, _J2)                                  \
-	obs->_J1.x = user.getSkeleton().getJoint(_J2).getPosition().x; \
-	obs->_J1.y = user.getSkeleton().getJoint(_J2).getPosition().y; \
-	obs->_J1.z = user.getSkeleton().getJoint(_J2).getPosition().z; \
+#define FILL_JOINT_DATA(_J1, _J2)                                              \
+	obs->_J1.x = user.getSkeleton().getJoint(_J2).getPosition().x;             \
+	obs->_J1.y = user.getSkeleton().getJoint(_J2).getPosition().y;             \
+	obs->_J1.z = user.getSkeleton().getJoint(_J2).getPosition().z;             \
 	obs->_J1.conf = user.getSkeleton().getJoint(_J2).getPositionConfidence();
 
 #if MRPT_HAS_NITE2
@@ -46,9 +47,9 @@ using namespace std;
 #endif
 
 string jointNames[] = {
-	"head",		   "neck",		 "torso",	 "left_shoulder", "left_elbow",
-	"left_hand",   "left_hip",   "left_knee", "left_foot",	 "right_shoulder",
-	"right_elbow", "right_hand", "right_hip", "right_knee",	"right_foot"};
+	"head",		   "neck",		 "torso",	  "left_shoulder", "left_elbow",
+	"left_hand",   "left_hip",	 "left_knee", "left_foot",	   "right_shoulder",
+	"right_elbow", "right_hand", "right_hip", "right_knee",	   "right_foot"};
 
 /*-------------------------------------------------------------
 					CSkeletonTracker
@@ -61,7 +62,8 @@ CSkeletonTracker::CSkeletonTracker() : m_timeStartTT(), m_sensorPose()
 #if MRPT_HAS_OPENNI2 && MRPT_HAS_NITE2
 	m_skeletons_ptr = new nite::SkeletonState[MAX_USERS];
 	m_userTracker_ptr = new nite::UserTracker;
-	for (int i = 0; i < MAX_USERS; ++i) skl_states[i] = nite::SKELETON_NONE;
+	for (int i = 0; i < MAX_USERS; ++i)
+		skl_states[i] = nite::SKELETON_NONE;
 
 	m_linesToPlot.resize(NUM_LINES);
 	m_joint_theta.resize(NUM_JOINTS);
@@ -80,7 +82,7 @@ CSkeletonTracker::CSkeletonTracker() : m_timeStartTT(), m_sensorPose()
 CSkeletonTracker::~CSkeletonTracker()
 {
 #if MRPT_HAS_OPENNI2 && MRPT_HAS_NITE2
-	nite::NiTE::shutdown();  // close tracker
+	nite::NiTE::shutdown();	 // close tracker
 	delete[] skl_states;
 	m_skeletons_ptr = nullptr;
 	delete user_tracker;
@@ -257,8 +259,7 @@ void CSkeletonTracker::processPreviewNone()
 					CSphere::Ptr s = std::dynamic_pointer_cast<CSphere>(
 						body->getByName(jointNames[i]));
 					CPoint3D sphPos;
-					if (i == 0)
-						sphPos = CPoint3D(0, 0, 0);
+					if (i == 0) sphPos = CPoint3D(0, 0, 0);
 					else
 					{
 						m_joint_theta[i] += M_2PI / (10 * (NUM_JOINTS - 1));
@@ -346,53 +347,23 @@ void CSkeletonTracker::processPreview(
 
 					switch (i)
 					{
-						case 0:
-							j = obs->head;
-							break;
-						case 1:
-							j = obs->neck;
-							break;
-						case 2:
-							j = obs->torso;
-							break;
+						case 0: j = obs->head; break;
+						case 1: j = obs->neck; break;
+						case 2: j = obs->torso; break;
 
-						case 3:
-							j = obs->left_shoulder;
-							break;
-						case 4:
-							j = obs->left_elbow;
-							break;
-						case 5:
-							j = obs->left_hand;
-							break;
-						case 6:
-							j = obs->left_hip;
-							break;
-						case 7:
-							j = obs->left_knee;
-							break;
-						case 8:
-							j = obs->left_foot;
-							break;
+						case 3: j = obs->left_shoulder; break;
+						case 4: j = obs->left_elbow; break;
+						case 5: j = obs->left_hand; break;
+						case 6: j = obs->left_hip; break;
+						case 7: j = obs->left_knee; break;
+						case 8: j = obs->left_foot; break;
 
-						case 9:
-							j = obs->right_shoulder;
-							break;
-						case 10:
-							j = obs->right_elbow;
-							break;
-						case 11:
-							j = obs->right_hand;
-							break;
-						case 12:
-							j = obs->right_hip;
-							break;
-						case 13:
-							j = obs->right_knee;
-							break;
-						case 14:
-							j = obs->right_foot;
-							break;
+						case 9: j = obs->right_shoulder; break;
+						case 10: j = obs->right_elbow; break;
+						case 11: j = obs->right_hand; break;
+						case 12: j = obs->right_hip; break;
+						case 13: j = obs->right_knee; break;
+						case 14: j = obs->right_foot; break;
 					}  // end-switch
 
 					CSphere::Ptr s = std::dynamic_pointer_cast<CSphere>(
@@ -524,7 +495,7 @@ void CSkeletonTracker::doProcess()
 		}  // end-else-if
 	}  // end-for
 
-	if (n_data_ok == 0)  // none of the sensors yielded data
+	if (n_data_ok == 0)	 // none of the sensors yielded data
 		m_toutCounter++;
 
 	if (m_toutCounter > 0)
@@ -541,7 +512,7 @@ void CSkeletonTracker::doProcess()
 
 		cout << "	[Skeleton tracker] No user found after 2000 attempts ..."
 			 << endl;
-		nite::NiTE::shutdown();  // close tracker
+		nite::NiTE::shutdown();	 // close tracker
 	}
 #else
 	THROW_EXCEPTION(

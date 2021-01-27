@@ -181,6 +181,6 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	 */
 	void eraseByIndex(size_t index);
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

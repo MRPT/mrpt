@@ -109,8 +109,9 @@ class array_string
 	template <int N1, REQUIRES(N1 <= N)>
 	constexpr array_string(
 		const string_literal<N1>& s1, const string_literal<N - N1>& s2)
-		: array_string{s1, s2, internal::make_sequence<N1>{},
-					   internal::make_sequence<N - N1>{}}
+		: array_string{
+			  s1, s2, internal::make_sequence<N1>{},
+			  internal::make_sequence<N - N1>{}}
 	{
 	}
 
@@ -118,8 +119,9 @@ class array_string
 	template <int N1, REQUIRES(N1 <= N)>
 	constexpr array_string(
 		const array_string<N1>& s1, const string_literal<N - N1>& s2)
-		: array_string{s1, s2, internal::make_sequence<N1>{},
-					   internal::make_sequence<N - N1>{}}
+		: array_string{
+			  s1, s2, internal::make_sequence<N1>{},
+			  internal::make_sequence<N - N1>{}}
 	{
 	}
 
@@ -127,8 +129,9 @@ class array_string
 	template <int N1, REQUIRES(N1 <= N)>
 	constexpr array_string(
 		const array_string<N1>& s1, const array_string<N - N1>& s2)
-		: array_string{s1, s2, internal::make_sequence<N1>{},
-					   internal::make_sequence<N - N1>{}}
+		: array_string{
+			  s1, s2, internal::make_sequence<N1>{},
+			  internal::make_sequence<N - N1>{}}
 	{
 	}
 

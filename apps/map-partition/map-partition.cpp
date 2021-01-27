@@ -118,7 +118,8 @@ void Test()
 			for (size_t j = 0; j < parts.size(); j++)
 			{
 				printf("  Part#%u=", (unsigned int)j);
-				for (unsigned int k : parts[j]) printf(" %u", k);
+				for (unsigned int k : parts[j])
+					printf(" %u", k);
 				printf("\n");
 			}
 		}
@@ -138,7 +139,8 @@ void Test()
 		"wt");
 	for (auto& part : parts)
 	{
-		for (size_t j = 0; j < part.size(); j++) fprintf(f, "%u ", part[j]);
+		for (size_t j = 0; j < part.size(); j++)
+			fprintf(f, "%u ", part[j]);
 
 		fprintf(f, "\n");
 	}
@@ -271,8 +273,7 @@ void Test()
 				f, "       %.03f,%.03f,%.03f", meanPose.x(), meanPose.y(),
 				meanPose.phi());
 
-			if (j == (parts[i].size() - 1))
-				fprintf(f, "];\n");
+			if (j == (parts[i].size() - 1)) fprintf(f, "];\n");
 			else
 				fprintf(f, ";...\n");
 		}
@@ -281,18 +282,10 @@ void Test()
 		char color = 'k';
 		switch (i % 4)
 		{
-			case 0:
-				color = 'k';
-				break;
-			case 1:
-				color = 'r';
-				break;
-			case 2:
-				color = 'b';
-				break;
-			case 3:
-				color = 'g';
-				break;
+			case 0: color = 'k'; break;
+			case 1: color = 'r'; break;
+			case 2: color = 'b'; break;
+			case 3: color = 'g'; break;
 		}
 		fprintf(f, "drawRobot(poses(1:STEP:end,:),R,'%c');\n", color);
 	}
@@ -382,8 +375,7 @@ int main(int argc, char** argv)
 		{
 			bool err = false;
 
-			if (!sscanf(argv[2], "%f", &THRESHOLD_NCUT))
-				err = true;
+			if (!sscanf(argv[2], "%f", &THRESHOLD_NCUT)) err = true;
 			else if (THRESHOLD_NCUT < 0 || THRESHOLD_NCUT > 2)
 				err = true;
 

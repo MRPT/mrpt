@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+
    */
 #include "CGasGridConfig.h"
+
 #include "TypeOfConfig.h"
 #include "ui_CGasGridConfig.h"
 

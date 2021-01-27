@@ -44,7 +44,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 	scan.clear();
 
 	CPose3D robotPose3D;
-	if (robotPose)  // Default values are (0,0,0)
+	if (robotPose)	// Default values are (0,0,0)
 		robotPose3D = (*robotPose);
 
 	if (IS_CLASS(obs, CObservation2DRangeScan))
@@ -112,7 +112,7 @@ bool COctoMapBase<OCTREE, OCTREE_NODE>::
 		sensorPt =
 			octomap::point3d(sensorPose.x(), sensorPose.y(), sensorPose.z());
 
-		obs.load();  // ensure points are loaded from an external source
+		obs.load();	 // ensure points are loaded from an external source
 
 		// size:
 		std::size_t sizeRangeScan = 0;
@@ -342,8 +342,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TLikelihoodOptions::readFromStream(
 			in >> decimation;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 
@@ -433,8 +432,7 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::TRenderingOptions::readFromStream(
 				visibleFreeVoxels;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
 

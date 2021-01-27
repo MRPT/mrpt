@@ -23,6 +23,7 @@
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
 #include <wx/textdlg.h>
+
 #include "xRawLogViewerMain.h"
 
 // General global variables:
@@ -815,7 +816,7 @@ void CFormMotionModel::applyToRawlogFile()
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	unsigned int countLoop = 0;
 	bool keepLoading = true;
@@ -834,7 +835,7 @@ void CFormMotionModel::applyToRawlogFile()
 				wxT("Processing... (%u objects processed)"), rawlog.size());
 			if (!progDia.Update((int)in_fil.getPosition(), auxStr))
 				keepLoading = false;
-			wxTheApp->Yield();  // Let the app. process messages
+			wxTheApp->Yield();	// Let the app. process messages
 		}
 
 		CSerializable::Ptr newObj;
@@ -920,8 +921,7 @@ void CFormMotionModel::OnbtnGaussOKClick(wxCommandEvent& event)
 	// Process the data:
 	loadFromGaussian();
 
-	if (rbLoaded->GetValue())
-		applyToLoadedRawlog();
+	if (rbLoaded->GetValue()) applyToLoadedRawlog();
 	else
 		applyToRawlogFile();
 
@@ -933,8 +933,7 @@ void CFormMotionModel::OnbtnThrunOkClick(wxCommandEvent& event)
 	// Process the data:
 	loadFromThrun();
 
-	if (rbLoaded->GetValue())
-		applyToLoadedRawlog();
+	if (rbLoaded->GetValue()) applyToLoadedRawlog();
 	else
 		applyToRawlogFile();
 
@@ -1252,7 +1251,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
 				newObj->GetRuntimeClass()->className);
 		}
 
-		newObj.reset();  // FREE MEMORY!
+		newObj.reset();	 // FREE MEMORY!
 
 		if (nLoaded++ > MAX_READ_FOR_MODEL_SEARCH) keepLoading = false;
 

@@ -11,6 +11,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "ptgConfiguratorMain.h"
 //*)
 #include <mrpt/system/os.h>

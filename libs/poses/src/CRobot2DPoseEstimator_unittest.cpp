@@ -77,7 +77,7 @@ TEST(CRobot2DPoseEstimator, integrateOdometryAndLocalization)
 	EXPECT_NEAR(vl.vy, vel1.vy, 1e-5);
 	EXPECT_NEAR(vl.omega, vel1.omega, 1e-5);
 
-	EXPECT_NEAR(vg.vx, -vel1.vy, 1e-5);  // 90deg rot
+	EXPECT_NEAR(vg.vx, -vel1.vy, 1e-5);	 // 90deg rot
 	EXPECT_NEAR(vg.vy, vel1.vx, 1e-5);
 	EXPECT_NEAR(vg.omega, vel1.omega, 1e-5);
 

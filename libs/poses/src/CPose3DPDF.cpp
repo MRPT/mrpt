@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
@@ -22,6 +22,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::poses;
@@ -183,8 +184,8 @@ void CPose3DPDF::jacobiansPoseComposition(
 	const CPose3DQuat quat_u(u);
 
 	CPose3DQuatPDF::jacobiansPoseComposition(
-		quat_x,  // x
-		quat_u,  // u
+		quat_x,	 // x
+		quat_u,	 // u
 		quat_df_dx, quat_df_du);
 
 	// And now J_Q2E:

@@ -15,8 +15,9 @@
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/typemeta/TTypeName.h>
+
 #include <algorithm>  // swap()
-#include <cstring>  // memset()
+#include <cstring>	// memset()
 #include <type_traits>
 
 namespace mrpt::math
@@ -187,7 +188,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		ASSERT_(m.m_Cols >= cropColCount);
 		realloc(cropRowCount, cropColCount);
 		for (size_t i = 0; i < m_Rows; i++)
-			for (size_t j = 0; j < m_Cols; j++) (*this)(i, j) = m(i, j);
+			for (size_t j = 0; j < m_Cols; j++)
+				(*this)(i, j) = m(i, j);
 	}
 
 	/** Constructor from fixed-size matrix: */
@@ -476,27 +478,29 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	template <typename VECTOR>
 	void appendRow(const VECTOR& in)
 	{
-		if (m_Cols == 0 || m_Rows == 0)
-			ASSERT_(!in.empty());
+		if (m_Cols == 0 || m_Rows == 0) ASSERT_(!in.empty());
 		else
 			ASSERT_(in.size() == m_Cols);
 		const auto row = m_Rows;
 		realloc(row + 1, m_Cols = in.size());
-		for (size_t i = 0; i < m_Cols; i++) (*this)(row, i) = in[i];
+		for (size_t i = 0; i < m_Cols; i++)
+			(*this)(row, i) = in[i];
 	}
 
 	template <typename VECTOR>
 	void setRow(const Index row, const VECTOR& v)
 	{
 		ASSERT_EQUAL_(cols(), static_cast<size_type>(v.size()));
-		for (Index c = 0; c < cols(); c++) (*this)(row, c) = v[c];
+		for (Index c = 0; c < cols(); c++)
+			(*this)(row, c) = v[c];
 	}
 
 	template <typename VECTOR>
 	void setCol(const Index col, const VECTOR& v)
 	{
 		ASSERT_EQUAL_(rows(), static_cast<size_type>(v.size()));
-		for (Index r = 0; r < rows(); r++) (*this)(r, col) = v[r];
+		for (Index r = 0; r < rows(); r++)
+			(*this)(r, col) = v[r];
 	}
 
 	/** Appends a new column to the matrix from a vector.
@@ -519,7 +523,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 		else
 			ASSERT_EQUAL_(static_cast<decltype(m_Rows)>(in.size()), m_Rows);
 		realloc(r, c + 1);
-		for (size_t i = 0; i < m_Rows; i++) (*this)(i, m_Cols - 1) = in[i];
+		for (size_t i = 0; i < m_Rows; i++)
+			(*this)(i, m_Cols - 1) = in[i];
 	}
 
 	/** Returns a vector containing the matrix's values.
@@ -529,7 +534,8 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	{
 		out.clear();
 		out.reserve(m_Rows * m_Cols);
-		for (const auto& d : m_data) out.push_back(d);
+		for (const auto& d : m_data)
+			out.push_back(d);
 	}
 
 	/** Get as an Eigen-compatible Eigen::Map object  */
@@ -570,7 +576,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	 * matrix. \sa llt_solve() */
 	CVectorDynamic<Scalar> lu_solve(const CVectorDynamic<Scalar>& b) const;
 
-};  // end of class CMatrixDynamic
+};	// end of class CMatrixDynamic
 
 /** Declares a matrix of booleans (non serializable).
  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB */

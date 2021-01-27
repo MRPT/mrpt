@@ -8,10 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/hmtslam/CPropertiesValuesList.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/os.h>
+
 #include <cstdio>
 #include <iostream>
 
@@ -75,8 +76,7 @@ void CPropertiesValuesList::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -153,8 +153,7 @@ void CPropertiesValuesList::set(
 		{
 			// Delete current contents:
 			// Copy new value:
-			if (!obj)
-				m_propertie.value.reset();
+			if (!obj) m_propertie.value.reset();
 			else
 				m_propertie.value = obj;  //->clone();
 			return;

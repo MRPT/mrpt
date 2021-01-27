@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/obs/CObservationVisualLandmarks.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -48,14 +48,12 @@ void CObservationVisualLandmarks::serializeFrom(
 				// The landmarks:
 				>> landmarks;
 
-			if (version > 0)
-				in >> sensorLabel;
+			if (version > 0) in >> sensorLabel;
 			else
 				sensorLabel = "";
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

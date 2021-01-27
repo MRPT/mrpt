@@ -145,11 +145,12 @@ void readFileWithPoses(
 
 	// make sure file exists
 	ASSERTMSG_(
-		fileExists(fname), format(
-							   "\nFile %s was not found.\n"
-							   "Either specify a valid filename or set set the "
-							   "m_visualize_GT flag to false\n",
-							   fname.c_str()));
+		fileExists(fname),
+		format(
+			"\nFile %s was not found.\n"
+			"Either specify a valid filename or set set the "
+			"m_visualize_GT flag to false\n",
+			fname.c_str()));
 
 	CFileInputStream file_GT(fname);
 	ASSERTMSG_(
@@ -162,10 +163,7 @@ void readFileWithPoses(
 	// move to the first non-commented line
 	for (size_t i = 0; file_GT.readLine(curr_line); i++)
 	{
-		if (curr_line.at(0) != '#')
-		{
-			break;
-		}
+		if (curr_line.at(0) != '#') { break; }
 	}
 
 	// handle the first pose as an offset
@@ -202,9 +200,7 @@ void readFileWithPoses(
 
 		// scalar substraction of initial offset
 		if (substract_init_offset)
-		{
-			curr_pose.addComponents(pose_offset_opposite);
-		}
+		{ curr_pose.addComponents(pose_offset_opposite); }
 
 		// push the newly created pose
 		poses_vec->push_back(curr_pose);

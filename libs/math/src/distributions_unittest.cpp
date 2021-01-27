@@ -11,6 +11,7 @@
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/random.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt;
@@ -159,8 +160,8 @@ TEST(distributions, noncentralChi2PDF_CDF)
 
 TEST(data_utils, mahalanobisDistance2AndLogPDF)
 {
-	const double cov_vals[3 * 3] = {0.00393682,   -6.11165e-07, -8.62169e-05,
-									-6.11165e-07, 7.44917e-05,  -1.17274e-07,
+	const double cov_vals[3 * 3] = {0.00393682,	  -6.11165e-07, -8.62169e-05,
+									-6.11165e-07, 7.44917e-05,	-1.17274e-07,
 									-8.62169e-05, -1.17274e-07, 0.000108955};
 	const CMatrixDouble33 COV(cov_vals);
 

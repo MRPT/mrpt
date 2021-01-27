@@ -11,6 +11,7 @@
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/system/CTimeLogger.h>
+
 #include <deque>
 
 namespace mrpt::graphs
@@ -111,6 +112,6 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 	mrpt::system::CTimeLogger m_timelogger;
 	bool m_enable_profiler{false};
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::graphs

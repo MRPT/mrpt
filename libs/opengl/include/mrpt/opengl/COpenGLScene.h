@@ -96,7 +96,8 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		const T_it& begin, const T_it& end,
 		const std::string& vpn = std::string("main"))
 	{
-		for (T_it it = begin; it != end; it++) insert(*it, vpn);
+		for (T_it it = begin; it != end; it++)
+			insert(*it, vpn);
 	}
 
 	/**Creates a new viewport, adding it to the scene and returning a pointer to

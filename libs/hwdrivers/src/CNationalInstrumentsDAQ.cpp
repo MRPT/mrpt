@@ -7,12 +7,13 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 #include <mrpt/serialization/CArchive.h>
+
 #include <iostream>
-#include <iterator>  // advance()
+#include <iterator>	 // advance()
 
 // If we have both, DAQmx & DAQmxBase, prefer DAQmx:
 #define MRPT_HAS_SOME_NIDAQMX (MRPT_HAS_NIDAQMXBASE || MRPT_HAS_NIDAQMX)
@@ -83,14 +84,14 @@
 
 // An auxiliary macro to check and report errors in the DAQmx library as
 // exceptions with a well-explained message.
-#define MRPT_DAQmx_ErrChk(functionCall)                                \
-	if ((functionCall) < 0)                                            \
-	{                                                                  \
-		char errBuff[2048];                                            \
-		MRPT_DAQmxGetExtendedErrorInfo(errBuff, 2048);                 \
-		std::string sErr = mrpt::format(                               \
-			"DAQ error: '%s'\nCalling: '%s'", errBuff, #functionCall); \
-		THROW_EXCEPTION(sErr);                                         \
+#define MRPT_DAQmx_ErrChk(functionCall)                                        \
+	if ((functionCall) < 0)                                                    \
+	{                                                                          \
+		char errBuff[2048];                                                    \
+		MRPT_DAQmxGetExtendedErrorInfo(errBuff, 2048);                         \
+		std::string sErr = mrpt::format(                                       \
+			"DAQ error: '%s'\nCalling: '%s'", errBuff, #functionCall);         \
+		THROW_EXCEPTION(sErr);                                                 \
 	}
 
 using namespace mrpt::hwdrivers;
@@ -117,27 +118,27 @@ CNationalInstrumentsDAQ::CNationalInstrumentsDAQ()
 }
 
 // Just like "MRPT_LOAD_HERE_CONFIG_VAR" but...
-#define MY_LOAD_HERE_CONFIG_VAR(                                  \
-	variableName, variableType, targetVariable, configFileObject, \
-	sectionNameStr)                                               \
-	targetVariable = configFileObject.read_##variableType(        \
+#define MY_LOAD_HERE_CONFIG_VAR(                                               \
+	variableName, variableType, targetVariable, configFileObject,              \
+	sectionNameStr)                                                            \
+	targetVariable = configFileObject.read_##variableType(                     \
 		sectionNameStr, variableName, targetVariable, false);
 
-#define MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(                          \
-	variableName, variableType, targetVariable, configFileObject,    \
-	sectionNameStr)                                                  \
-	{                                                                \
-		try                                                          \
-		{                                                            \
-			targetVariable = configFileObject.read_##variableType(   \
-				sectionNameStr, variableName, targetVariable, true); \
-		}                                                            \
-		catch (std::exception&)                                      \
-		{                                                            \
-			THROW_EXCEPTION(format(                                  \
-				"Value for '%s' not found in config file",           \
-				std::string(variableName).c_str()));                 \
-		}                                                            \
+#define MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(                                    \
+	variableName, variableType, targetVariable, configFileObject,              \
+	sectionNameStr)                                                            \
+	{                                                                          \
+		try                                                                    \
+		{                                                                      \
+			targetVariable = configFileObject.read_##variableType(             \
+				sectionNameStr, variableName, targetVariable, true);           \
+		}                                                                      \
+		catch (std::exception&)                                                \
+		{                                                                      \
+			THROW_EXCEPTION(format(                                            \
+				"Value for '%s' not found in config file",                     \
+				std::string(variableName).c_str()));                           \
+		}                                                                      \
 	}
 
 /* -----------------------------------------------------
@@ -450,7 +451,7 @@ void CNationalInstrumentsDAQ::initialize()
 		// Try to create a new task:
 		m_running_tasks.push_back(TInfoPerTask());
 		TInfoPerTask& ipt = m_running_tasks.back();
-		ipt.task = tf;  // Save a copy of the task info for the thread to have
+		ipt.task = tf;	// Save a copy of the task info for the thread to have
 		// all the needed info
 
 		try
@@ -588,7 +589,7 @@ void CNationalInstrumentsDAQ::initialize()
 
 			// Add a large timeout, just in case the writing thread dies
 			// unexpectedly so the reader doesn't hang on:
-			ipt.read_pipe->timeout_read_start_us = 100000;  // 100ms
+			ipt.read_pipe->timeout_read_start_us = 100000;	// 100ms
 			ipt.read_pipe->timeout_read_between_us = 100000;  // 100ms
 
 			MRPT_DAQmx_ErrChk(MRPT_DAQmxStartTask(taskHandle));
@@ -627,7 +628,7 @@ void CNationalInstrumentsDAQ::initialize()
 			this->stop();
 			std::cerr << "[CNationalInstrumentsDAQ] Closing tasks done.\n";
 
-			throw;  // Rethrow
+			throw;	// Rethrow
 		}
 	}  // end for each task_definitions[i]
 
@@ -809,9 +810,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 						 &dBuf[0], dBuf.size(), &pointsReadPerChan, nullptr)) <
 						0 &&
 					err != DAQmxErrorSamplesNotYetAvailable)
-				{
-					MRPT_DAQmx_ErrChk(err)
-				}
+				{ MRPT_DAQmx_ErrChk(err) }
 				else if (pointsReadPerChan > 0)
 				{
 					ASSERT_EQUAL_(
@@ -836,9 +835,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 						 DAQmx_Val_GroupByChannel, &u8Buf[0], u8Buf.size(),
 						 &pointsReadPerChan, nullptr)) < 0 &&
 					err != DAQmxErrorSamplesNotYetAvailable)
-				{
-					MRPT_DAQmx_ErrChk(err)
-				}
+				{ MRPT_DAQmx_ErrChk(err) }
 				else if (pointsReadPerChan > 0)
 				{
 					ASSERT_EQUAL_(
@@ -861,9 +858,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 						 taskHandle, totalSamplesToRead, timeout, &dBuf[0],
 						 dBuf.size(), &pointsReadPerChan, nullptr)) < 0 &&
 					err != DAQmxErrorSamplesNotYetAvailable)
-				{
-					MRPT_DAQmx_ErrChk(err)
-				}
+				{ MRPT_DAQmx_ErrChk(err) }
 				else if (pointsReadPerChan > 0)
 				{
 					ASSERT_EQUAL_(totalSamplesToRead, pointsReadPerChan);
@@ -910,7 +905,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 		std::cerr << "[CNationalInstrumentsDAQ::grabbing_thread] Exception:\n"
 				  << e.what() << std::endl;
 	}
-#endif  // MRPT_HAS_SOME_NIDAQMX
+#endif	// MRPT_HAS_SOME_NIDAQMX
 
 	ipt.is_closed = true;
 }
@@ -935,9 +930,7 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(
 			groupedByChannel ? DAQmx_Val_GroupByChannel
 							 : DAQmx_Val_GroupByScanNumber,
 			const_cast<float64*>(volt_values), &samplesWritten, nullptr))
-	{
-		MRPT_DAQmx_ErrChk(err)
-	}
+	{ MRPT_DAQmx_ErrChk(err) }
 #endif
 }
 
@@ -960,9 +953,7 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(
 	if (err = MRPT_DAQmxWriteDigitalLines(
 			taskHandle, nSamplesPerChannel, FALSE, timeout,
 			DAQmx_Val_GroupByScanNumber, &dat, &samplesWritten, nullptr))
-	{
-		MRPT_DAQmx_ErrChk(err)
-	}
+	{ MRPT_DAQmx_ErrChk(err) }
 #endif
 }
 

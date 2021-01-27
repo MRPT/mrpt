@@ -8,14 +8,14 @@
    +------------------------------------------------------------------------+ */
 /** \example serialization_json_example/test.cpp */
 
-#include <iostream>  // cout
-#include <sstream>  // stringstream
+#include <iostream>	 // cout
+#include <sstream>	// stringstream
 
 //! [example]
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/serialization/CSchemeArchive.h>
 
-#include <iostream>  // cout
+#include <iostream>	 // cout
 
 void WriteAndReadExample()
 {

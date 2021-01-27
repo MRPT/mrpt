@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/serialization/CArchive.h>
@@ -75,10 +75,7 @@ void CObservationStereoImages::serializeFrom(
 				cameraPose = CPose3DQuat(aux);
 			}
 
-			if (version >= 5)
-			{
-				in >> cameraPose >> leftCamera >> rightCamera;
-			}
+			if (version >= 5) { in >> cameraPose >> leftCamera >> rightCamera; }
 			else
 			{
 				CMatrixF intParams;
@@ -90,12 +87,11 @@ void CObservationStereoImages::serializeFrom(
 				rightCamera.intrinsicParams = intParams;
 			}
 
-			in >> imageLeft >> imageRight;  // For all the versions
+			in >> imageLeft >> imageRight;	// For all the versions
 
-			if (version >= 1)
-				in >> timestamp;
+			if (version >= 1) in >> timestamp;
 			else
-				timestamp = INVALID_TIMESTAMP;  // For version 1 to 5
+				timestamp = INVALID_TIMESTAMP;	// For version 1 to 5
 			if (version >= 2)
 			{
 				if (version < 5)
@@ -116,23 +112,21 @@ void CObservationStereoImages::serializeFrom(
 			if (version >= 3 && version < 5)  // For versions 3 & 4
 			{
 				double foc;
-				in >> foc;  // Get the focal length in meters
+				in >> foc;	// Get the focal length in meters
 				leftCamera.focalLengthMeters = rightCamera.focalLengthMeters =
 					foc;  // ... and set it to both cameras
 			}
 			else if (version < 3)
 				leftCamera.focalLengthMeters = rightCamera.focalLengthMeters =
-					0.002;  // For version 0, 1 & 2 (from version 5, this
+					0.002;	// For version 0, 1 & 2 (from version 5, this
 			// parameter is included in the TCamera objects)
 
-			if (version >= 4)
-				in >> sensorLabel;
+			if (version >= 4) in >> sensorLabel;
 			else
 				sensorLabel = "";  // For version 1 to 5
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -148,7 +142,7 @@ mxArray* CObservationStereoImages::writeToMatlab() const
 {
 #if MRPT_HAS_MATLAB
 	const char* fields[] = {"class",   "ts",	 "sensorLabel", "imageL",
-							"imageR",  "poseL",  "poseLR",		"poseR",
+							"imageR",  "poseL",	 "poseLR",		"poseR",
 							"paramsL", "paramsR"};
 	mexplus::MxArray obs_struct(
 		mexplus::MxArray::Struct(sizeof(fields) / sizeof(fields[0]), fields));

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/vision/CFeatureExtraction.h>
 
 // Universal include for all versions of OpenCV
@@ -60,9 +60,9 @@ void CFeatureExtraction::extractFeaturesKLT(
 		// maxima ( with min_eig <
 		// threshold*max(eig_image) )
 		(double)options.harrisOptions
-			.min_distance,  // minimum distance between features
-		cv::noArray(),  // mask
-		3,  // blocksize
+			.min_distance,	// minimum distance between features
+		cv::noArray(),	// mask
+		3,	// blocksize
 		use_harris, /* harris */
 		options.harrisOptions.k);
 
@@ -117,12 +117,12 @@ void CFeatureExtraction::extractFeaturesKLT(
 		CFeature ft;
 
 		ft.type = featKLT;
-		ft.keypoint.pt.x = points[i].x;  // X position
-		ft.keypoint.pt.y = points[i].y;  // Y position
+		ft.keypoint.pt.x = points[i].x;	 // X position
+		ft.keypoint.pt.y = points[i].y;	 // Y position
 		ft.track_status = status_TRACKED;  // Feature Status
-		ft.response = 0.0;  // A value proportional to the quality of the
+		ft.response = 0.0;	// A value proportional to the quality of the
 		// feature (unused yet)
-		ft.keypoint.ID = nCFeats++;  // Feature ID into extraction
+		ft.keypoint.ID = nCFeats++;	 // Feature ID into extraction
 		ft.patchSize = options.patchSize;  // The size of the feature patch
 
 		if (options.patchSize > 0)
@@ -131,7 +131,7 @@ void CFeatureExtraction::extractFeaturesKLT(
 			inImg.extract_patch(
 				*ft.patch, round(ft.keypoint.pt.x) - offset,
 				round(ft.keypoint.pt.y) - offset, options.patchSize,
-				options.patchSize);  // Image patch surronding the feature
+				options.patchSize);	 // Image patch surronding the feature
 		}
 
 		feats.emplace_back(std::move(ft));

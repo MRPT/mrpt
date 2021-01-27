@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"	// Precompiled headers
 //
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CServerTCPSocket.h>
@@ -38,6 +38,7 @@
 
 #ifdef _WIN32
 #include <winsock.h>
+
 #include <iostream>
 #endif
 
@@ -195,10 +196,7 @@ http_errorcode mrpt::comms::net::http_request(
 			//  or an error code is read.
 			size_t to_read_now;
 
-			if (!content_length_read)
-			{
-				to_read_now = 1500;
-			}
+			if (!content_length_read) { to_read_now = 1500; }
 			else
 			{
 				to_read_now = (content_length + content_offset) - total_read;
@@ -254,18 +252,14 @@ http_errorcode mrpt::comms::net::http_request(
 					// Process the headers:
 					// ------------------------------
 					if (!::strncmp("HTTP/", (const char*)&buf[0], 5))
-					{
-						http_code = ::atoi((const char*)&buf[9]);
-					}
+					{ http_code = ::atoi((const char*)&buf[9]); }
 					else
 					{
 						// May it be a "SOURCETABLE " answer for NTRIP
 						// protocol??
 						if (!::strncmp(
 								"SOURCETABLE ", (const char*)&buf[0], 12))
-						{
-							http_code = ::atoi((const char*)&buf[12]);
-						}
+						{ http_code = ::atoi((const char*)&buf[12]); }
 						else
 						{
 							if (output)
@@ -364,10 +358,7 @@ http_errorcode mrpt::comms::net::http_request(
 		// Set the content output:
 		out_content.swap(buf);
 
-		if (http_code == 200)
-		{
-			return net::http_errorcode::Ok;
-		}
+		if (http_code == 200) { return net::http_errorcode::Ok; }
 		else
 		{
 			if (output)
@@ -441,14 +432,14 @@ bool net::DNS_resolve_async(
 			hostent* he = gethostbyname(server_name.c_str());
 			if (!he)
 			{
-				dns_result.clear();  // empty string -> error.
+				dns_result.clear();	 // empty string -> error.
 			}
 			else
 			{
 				struct in_addr ADDR;
 				std::memcpy(
 					&ADDR, he->h_addr,
-					sizeof(ADDR));  // Was: *((struct in_addr *)he->h_addr);
+					sizeof(ADDR));	// Was: *((struct in_addr *)he->h_addr);
 				// Convert address to text:
 				dns_result = string(inet_ntoa(ADDR));
 			}

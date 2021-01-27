@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
+
 #include <array>
 #include <vector>
 
@@ -29,7 +30,7 @@ class CFeatureLines
 		std::vector<std::array<int, 4>>& segments, size_t threshold,
 		const bool display = false);
 
-};  // end of class
+};	// end of class
 
 }  // namespace vision
 }  // namespace mrpt

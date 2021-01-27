@@ -11,6 +11,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -21,8 +22,6 @@
 #include <map>
 #include <set>
 #include <string>
-
-#include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 
 namespace mrpt::graphslam::deciders
 {

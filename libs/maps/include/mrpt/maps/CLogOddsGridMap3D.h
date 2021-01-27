@@ -47,8 +47,7 @@ struct CLogOddsGridMap3D : public detail::logoddscell_traits<TCELL>
 		cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
 	{
 		if (theCell == nullptr) return;
-		if (*theCell > thres)
-			*theCell -= logodd_obs;
+		if (*theCell > thres) *theCell -= logodd_obs;
 		else
 			*theCell = traits_t::CELLTYPE_MIN;
 	}
@@ -84,8 +83,7 @@ struct CLogOddsGridMap3D : public detail::logoddscell_traits<TCELL>
 		cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
 	{
 		if (theCell == nullptr) return;
-		if (*theCell < thres)
-			*theCell += logodd_obs;
+		if (*theCell < thres) *theCell += logodd_obs;
 		else
 			*theCell = traits_t::CELLTYPE_MAX;
 	}

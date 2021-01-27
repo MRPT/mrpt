@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "rawlog-edit-declarations.h"
-
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/obs/CObservationGasSensors.h>
+
+#include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -64,11 +64,10 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 
 			if (it == lstFiles.end())  // A new file for this sensorlabel??
 			{
-				const std::string fileName =
-					m_filPrefix + string("_") +
-					fileNameStripInvalidChars(
-						obs->sensorLabel.empty() ? string("ENOSE")
-												 : obs->sensorLabel) +
+				const std::string fileName = m_filPrefix + string("_") +
+					fileNameStripInvalidChars(obs->sensorLabel.empty()
+												  ? string("ENOSE")
+												  : obs->sensorLabel) +
 					string(".txt");
 
 				VERBOSE_COUT << "Writing e-nose TXT file: " << fileName << endl;

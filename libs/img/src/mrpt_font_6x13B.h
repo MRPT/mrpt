@@ -7,6 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+// clang-format off
 static const unsigned char mrpt_font_gz_6x13B[] = {
 	31,  139, 8,   0,   0,   0,   0,   0,   4,   3,   237, 154, 219, 110, 37,
 	69,  12,  69,  131, 16,  3,   136, 155, 64,  48,  2,   2,   156, 121, 26,
@@ -120,3 +121,4 @@ static const unsigned char mrpt_font_gz_6x13B[] = {
 	204, 117, 77,  218, 47,  36,  99,  215, 144, 146, 190, 25,  171, 239, 197,
 	249, 19,  168, 42,  53,  120, 24,  52,  0,   0,
 };
+// clang-format on

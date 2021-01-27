@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 			" MRPT C++ Library: %s - Sources timestamp: %s\n",
 			MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 
-		if (showVersion) return 0;  // Program end
+		if (showVersion) return 0;	// Program end
 
 		// Process arguments:
 		if (argc < 2 || showHelp)

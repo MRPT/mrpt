@@ -34,7 +34,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <rosbag/bag.h>  // rosbag_storage C++ lib
+#include <rosbag/bag.h>	 // rosbag_storage C++ lib
 #include <rosbag/view.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
@@ -124,10 +124,7 @@ class RosSynchronizer
 			mrpt::poses::CPose3D currentPose(poseQuat);
 
 			mrpt::poses::CPose3D incOdoPose(0, 0, 0, 0, 0, 0);
-			if (m_poseValid)
-			{
-				incOdoPose = currentPose - m_lastPose;
-			}
+			if (m_poseValid) { incOdoPose = currentPose - m_lastPose; }
 			m_lastPose = currentPose;
 			m_poseValid = true;
 			mrpt::obs::CActionRobotMovement3D::TMotionModelOptions model;
@@ -152,9 +149,7 @@ class RosSynchronizer
 	Obs checkAndSignal()
 	{
 		if (check(std::make_index_sequence<sizeof...(Args)>{}))
-		{
-			return signal();
-		}
+		{ return signal(); }
 		return {};
 	}
 
@@ -362,8 +357,8 @@ class Transcriber
 			if (sensorType == "CObservation3DRangeScan")
 			{
 				bool rangeIsDepth = sensor.count("rangeIsDepth")
-										? sensor.at("rangeIsDepth").as<bool>()
-										: true;
+					? sensor.at("rangeIsDepth").as<bool>()
+					: true;
 				auto callback = [=](const sensor_msgs::Image::Ptr& image,
 									const sensor_msgs::CameraInfo::Ptr& info) {
 					return toRangeImage(sensorName, image, info, rangeIsDepth);

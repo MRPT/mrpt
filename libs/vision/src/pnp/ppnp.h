@@ -43,10 +43,10 @@ class ppnp
 	bool compute_pose(Eigen::Matrix3d& R, Eigen::Vector3d& t, int n);
 
    private:
-	Eigen::MatrixXd P;  //! Image points in pixels
-	Eigen::MatrixXd S;  //! Object points in Camera Co-ordinate system
-	Eigen::MatrixXd C;  //! Camera intrinsic matrix
+	Eigen::MatrixXd P;	//! Image points in pixels
+	Eigen::MatrixXd S;	//! Object points in Camera Co-ordinate system
+	Eigen::MatrixXd C;	//! Camera intrinsic matrix
 };
 
-/** @}  */  // end of grouping
+/** @}  */	// end of grouping
 }  // namespace mrpt::vision::pnp

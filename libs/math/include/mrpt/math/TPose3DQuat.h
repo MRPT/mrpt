@@ -43,22 +43,14 @@ struct TPose3DQuat : public TPoseOrPoint,
 	{
 		switch (i)
 		{
-			case 0:
-				return x;
-			case 1:
-				return y;
-			case 2:
-				return z;
-			case 3:
-				return qr;
-			case 4:
-				return qx;
-			case 5:
-				return qy;
-			case 6:
-				return qz;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return x;
+			case 1: return y;
+			case 2: return z;
+			case 3: return qr;
+			case 4: return qx;
+			case 5: return qy;
+			case 6: return qz;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/** Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz */
@@ -66,22 +58,14 @@ struct TPose3DQuat : public TPoseOrPoint,
 	{
 		switch (i)
 		{
-			case 0:
-				return x;
-			case 1:
-				return y;
-			case 2:
-				return z;
-			case 3:
-				return qr;
-			case 4:
-				return qx;
-			case 5:
-				return qy;
-			case 6:
-				return qz;
-			default:
-				throw std::out_of_range("index out of range");
+			case 0: return x;
+			case 1: return y;
+			case 2: return z;
+			case 3: return qr;
+			case 4: return qx;
+			case 5: return qy;
+			case 6: return qz;
+			default: throw std::out_of_range("index out of range");
 		}
 	}
 	/** Pose's spatial coordinates (x,y,z) norm. */
@@ -90,7 +74,8 @@ struct TPose3DQuat : public TPoseOrPoint,
 	void asVector(std::vector<double>& v) const
 	{
 		v.resize(7);
-		for (size_t i = 0; i < 7; i++) v[i] = (*this)[i];
+		for (size_t i = 0; i < 7; i++)
+			v[i] = (*this)[i];
 	}
 	/** Returns a human-readable textual representation of the object as "[x y z
 	 * qr qx qy qz]"

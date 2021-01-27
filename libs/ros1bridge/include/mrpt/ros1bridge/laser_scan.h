@@ -13,6 +13,7 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <sensor_msgs/LaserScan.h>
+
 #include <cstdint>
 #include <string>
 

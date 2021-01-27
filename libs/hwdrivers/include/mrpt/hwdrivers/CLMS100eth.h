@@ -132,7 +132,7 @@ class CLMS100Eth : public C2DRangeFinderAbstract
 	unsigned int m_scanFrequency = 0;  // hertz
 	double m_angleResolution = 0;  // degrees
 	double m_startAngle = 0;  // degrees
-	double m_stopAngle = 0;  // degrees
+	double m_stopAngle = 0;	 // degrees
 	mrpt::poses::CPose3D m_sensorPose;
 	double m_maxRange{20.0};
 	double m_beamApperture = 0;

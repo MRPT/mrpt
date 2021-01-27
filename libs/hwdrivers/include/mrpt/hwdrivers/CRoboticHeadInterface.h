@@ -115,6 +115,6 @@ class CRoboticHeadInterface : public mrpt::system::COutputLogger
 	  */
 	void SetHeadPose(int& yaw, int& pitch);
 
-};  // End of class
+};	// End of class
 
 }  // namespace mrpt::hwdrivers

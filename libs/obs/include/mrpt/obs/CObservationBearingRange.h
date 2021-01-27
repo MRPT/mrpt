@@ -105,6 +105,6 @@ class CObservationBearingRange : public CObservation
 	}
 	void getDescriptionAsText(std::ostream& o) const override;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

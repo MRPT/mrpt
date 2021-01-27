@@ -122,6 +122,6 @@ class CMonteCarloLocalization3D
 		const mrpt::poses::CPose3D& x) const override;
 	/** @} */
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::slam

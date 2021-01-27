@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CGillAnemometer.h>
 #include <mrpt/system/datetime.h>
 
@@ -56,7 +56,7 @@ void CGillAnemometer::loadConfig_sensorSpecific(
 ----------------------------------------------------- */
 bool CGillAnemometer::tryToOpenTheCOM()
 {
-	if (COM.isOpen()) return true;  // Already open
+	if (COM.isOpen()) return true;	// Already open
 
 	if (m_verbose)
 		cout << "[CGillAnemometer] Opening " << com_port << " @ " << com_bauds
@@ -145,8 +145,7 @@ void CGillAnemometer::doProcess()
 				std::string s_units = list.at(3);
 				// Module
 				std::string s_speed = list.at(2);
-				if (s_units == "M")
-					obsPtr->speed = atof(s_speed.c_str());
+				if (s_units == "M") obsPtr->speed = atof(s_speed.c_str());
 				else if (s_units == "K")
 					obsPtr->speed = atof(s_speed.c_str()) * 1000 / 3600;
 				else
@@ -171,7 +170,7 @@ void CGillAnemometer::doProcess()
 			else
 				printf("ERROR: WindSonic error code %u\n", status);
 		}
-		else if (list.size() == 5)  // when there is no wind, the sensor does
+		else if (list.size() == 5)	// when there is no wind, the sensor does
 		// not provide a wind direction
 		{
 			// Status
@@ -182,8 +181,7 @@ void CGillAnemometer::doProcess()
 				std::string s_units = list.at(2);
 				// module
 				std::string s_speed = list.at(1);
-				if (s_units == "M")
-					obsPtr->speed = atof(s_speed.c_str());
+				if (s_units == "M") obsPtr->speed = atof(s_speed.c_str());
 				else if (s_units == "K")
 					obsPtr->speed = atof(s_speed.c_str()) * 1000 / 3600;
 				else

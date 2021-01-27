@@ -68,6 +68,6 @@ class CPoint2DPDF : public mrpt::serialization::CSerializable,
 		is_PDF_val = 1
 	};
 	static constexpr bool is_PDF() { return is_PDF_val != 0; }
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::poses

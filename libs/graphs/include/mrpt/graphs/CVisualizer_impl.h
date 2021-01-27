@@ -56,30 +56,16 @@ void CVisualizer<
 	const double nodes_point_size =
 		viz_params.getOrDefault<double>("nodes_point_size", 0.);
 
-	if (show_ground_grid)
-	{
-		this->drawGroundGrid(object, &viz_params);
-	}
+	if (show_ground_grid) { this->drawGroundGrid(object, &viz_params); }
 
-	if (nodes_point_size > 0)
-	{
-		this->drawNodePoints(object, &viz_params);
-	}
+	if (nodes_point_size > 0) { this->drawNodePoints(object, &viz_params); }
 
 	if (show_node_corners || show_ID_labels)
-	{
-		this->drawNodeCorners(object, &viz_params);
-	}
+	{ this->drawNodeCorners(object, &viz_params); }
 
-	if (show_edge_rel_poses)
-	{
-		this->drawEdgeRelPoses(object, &viz_params);
-	}
+	if (show_edge_rel_poses) { this->drawEdgeRelPoses(object, &viz_params); }
 
-	if (show_edges)
-	{
-		this->drawEdges(object, &viz_params);
-	}
+	if (show_edges) { this->drawEdges(object, &viz_params); }
 }
 
 template <
@@ -100,7 +86,7 @@ void CVisualizer<
 	for (auto n_it = m_graph.nodes.begin(); n_it != m_graph.nodes.end(); ++n_it)
 	{
 		const CPose3D p = CPose3D(
-			n_it->second);  // Convert to 3D from whatever its real type.
+			n_it->second);	// Convert to 3D from whatever its real type.
 
 		keep_min(BB_min.x, p.x());
 		keep_min(BB_min.y, p.y());
@@ -180,13 +166,12 @@ void CVisualizer<
 		// Convert to 3D from whatever its real type.  CSetOfObjects::Ptr
 		// gl_corner = show_node_corners ?
 		const CPose3D p = CPose3D(n_it->second);
-		CSetOfObjects::Ptr gl_corner =
-			show_node_corners
-				? (m_is_3D_graph ? stock_objects::CornerXYZSimple(
-									   nodes_corner_scale, 1.0 /*line width*/)
-								 : stock_objects::CornerXYSimple(
-									   nodes_corner_scale, 1.0 /*line width*/))
-				: std::make_shared<CSetOfObjects>();
+		CSetOfObjects::Ptr gl_corner = show_node_corners
+			? (m_is_3D_graph ? stock_objects::CornerXYZSimple(
+								   nodes_corner_scale, 1.0 /*line width*/)
+							 : stock_objects::CornerXYSimple(
+								   nodes_corner_scale, 1.0 /*line width*/))
+			: std::make_shared<CSetOfObjects>();
 		gl_corner->setPose(p);
 		if (show_ID_labels)
 		{  // don't show IDs twice!
@@ -226,8 +211,8 @@ void CVisualizer<
 	{
 		// Node ID of the source pose:
 		const TNodeID node_id_start = m_graph.edges_store_inverse_poses
-										  ? edge_it->first.second
-										  : edge_it->first.first;
+			? edge_it->first.second
+			: edge_it->first.first;
 
 		// Draw only if we have the global coords of starting nodes:
 		auto n_it = m_graph.nodes.find(node_id_start);

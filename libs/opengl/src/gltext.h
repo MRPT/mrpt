@@ -16,6 +16,7 @@
 #include <mrpt/opengl/TTriangle.h>
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/poses/CPose3D.h>
+
 #include <iostream>
 #include <map>
 #include <string>

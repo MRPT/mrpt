@@ -47,10 +47,7 @@ DECLARE_OP_FUNCTION(op_remove_label)
 		bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override
 		{
 			for (const auto& m_filter_label : m_filter_labels)
-				if (obs->sensorLabel == m_filter_label)
-				{
-					return false;
-				}
+				if (obs->sensorLabel == m_filter_label) { return false; }
 			return true;
 		}
 	};
@@ -108,10 +105,7 @@ DECLARE_OP_FUNCTION(op_keep_label)
 		bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override
 		{
 			for (const auto& m_filter_label : m_filter_labels)
-				if (obs->sensorLabel == m_filter_label)
-				{
-					return true;
-				}
+				if (obs->sensorLabel == m_filter_label) { return true; }
 			return false;
 		}
 	};

@@ -16,7 +16,7 @@ template <
 bool my_is_aligned(T ptr)
 {
 	return alignment == 0 ||
-		   reinterpret_cast<std::size_t>(ptr) % alignment == 0;
+		reinterpret_cast<std::size_t>(ptr) % alignment == 0;
 }
 
 TEST(aligned_allocator, aligned_malloc)
@@ -48,7 +48,8 @@ TEST(aligned_allocator, aligned_calloc)
 	void* p = mrpt::aligned_calloc(100, 32);
 	EXPECT_TRUE(my_is_aligned<32>(p));
 	const uint8_t* ptr = reinterpret_cast<uint8_t*>(p);
-	for (int i = 0; i < 100; i++) EXPECT_EQ(ptr[i], 0);
+	for (int i = 0; i < 100; i++)
+		EXPECT_EQ(ptr[i], 0);
 
 	mrpt::aligned_free(p);
 }

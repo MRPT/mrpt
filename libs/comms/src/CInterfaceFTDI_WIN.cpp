@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "comms-precomp.h"  // Precompiled headers
-
+#include "comms-precomp.h"	// Precompiled headers
+//
 #include <iostream>
 
 #ifdef _WIN32
@@ -140,10 +140,11 @@ using PFT_EVENT_HANDLER = void (*)(unsigned long, unsigned, long);
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ===========================================================================*/
 
-#include <windows.h>
-
 #include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/core/exceptions.h>
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 using namespace mrpt;
 using namespace mrpt::comms;
@@ -398,8 +399,7 @@ void CInterfaceFTDI::checkErrorAndRaise(int errorCode)
 	};  */
 	switch (errorCode)
 	{
-		case 0:
-			return;
+		case 0: return;
 		case 1:
 			Close();
 			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INVALID_HANDLE");
@@ -409,13 +409,10 @@ void CInterfaceFTDI::checkErrorAndRaise(int errorCode)
 		case 3:
 			Close();
 			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_DEVICE_NOT_OPENED");
-		case 4:
-			Close();
-			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_IO_ERROR");
+		case 4: Close(); THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_IO_ERROR");
 		case 5:
 			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INSUFFICIENT_RESOURCES");
-		case 6:
-			THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INVALID_PARAMETER");
+		case 6: THROW_EXCEPTION("*** FTD2XX ERROR ***: FT_INVALID_PARAMETER");
 		default:
 			THROW_EXCEPTION("*** FTD2XX ERROR ***: Invalid error code!?!?!?");
 	};

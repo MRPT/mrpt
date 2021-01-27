@@ -9,12 +9,12 @@
 
 #include "CFormRawMap.h"
 
-#include "xRawLogViewerMain.h"
-
 #include <wx/app.h>
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
+
+#include "xRawLogViewerMain.h"
 
 //(*InternalHeaders(CFormRawMap)
 #include <wx/artprov.h>
@@ -435,8 +435,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 {
 	{
 		TPoint3D minC, maxC;
-		if (robot_path.size())
-			robot_path.getBoundingBox(minC, maxC);
+		if (robot_path.size()) robot_path.getBoundingBox(minC, maxC);
 		else
 		{
 			minC = TPoint3D(-100, -100, 0);
@@ -482,9 +481,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 			auto this_t = it.first;
 
 			if (distanceBetweenPoints(x0, y0, z0, p.x, p.y, p.z) < 5.5)
-			{
-				obj->appendLine(x0, y0, z0, p.x, p.y, p.z);
-			}
+			{ obj->appendLine(x0, y0, z0, p.x, p.y, p.z); }
 			else if (last_t)
 			{
 				// We have a gap without GT:
@@ -617,7 +614,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 	size_t count = 0;
 
 	vector<float> pathX, pathY;
@@ -706,9 +703,8 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 				addNewPathEntry = true;
 			}
 			break;
-			default:
-				break;
-		};  // end switch
+			default: break;
+		};	// end switch
 
 		if (addNewPathEntry)
 		{
@@ -747,17 +743,14 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 		size_t nPts = thePntsMap->size();
 		size_t decimation = 1;
 
-		if (nPts > 100000)
-		{
-			decimation = nPts / 100000;
-		}
+		if (nPts > 100000) { decimation = nPts / 100000; }
 
 		vector<float> Xs, Ys;
 		thePntsMap->getAllPoints(Xs, Ys, decimation);
 
 		lyPoints->SetData(Xs, Ys);
 		plotMap->LockAspect(false);
-		plotMap->Fit();  // Update the window to show the new data fitted.
+		plotMap->Fit();	 // Update the window to show the new data fitted.
 		plotMap->LockAspect(true);
 		plotMap->AddLayer(new mpScaleX());
 		plotMap->AddLayer(new mpScaleY());
@@ -887,12 +880,12 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
 
 	wxProgressDialog progDia(
 		wxT("Generating paths"), wxT("Working..."),
-		(int)nComputationSteps,  // range
+		(int)nComputationSteps,	 // range
 		this,  // parent
 		wxPD_CAN_ABORT | wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_AUTO_HIDE |
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 	size_t count = 0;
 
 	bool abort = false;
@@ -1004,7 +997,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
 	//
 	plotMap->EnableDoubleBuffer(true);
 
-	plotMap->Fit();  // Update the window to show the new data fitted.
+	plotMap->Fit();	 // Update the window to show the new data fitted.
 	plotMap->LockAspect(true);
 	plotMap->AddLayer(new mpScaleX());
 	plotMap->AddLayer(new mpScaleY());
@@ -1074,14 +1067,13 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 			wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
 
 	progDia2.SetSize(400, progDia2.GetSize().GetHeight());
-	wxTheApp->Yield();  // Let the app. process messages
+	wxTheApp->Yield();	// Let the app. process messages
 
 	for (size_t i = first; !abort && i <= last; i++)
 	{
 		switch (rawlog.getType(i))
 		{
-			default:
-				break;
+			default: break;
 
 			case CRawlog::etObservation:
 			{
@@ -1157,17 +1149,14 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 		size_t nPts = thePntsMap->size();
 		size_t decimation = 1;
 
-		if (nPts > 100000)
-		{
-			decimation = nPts / 100000;
-		}
+		if (nPts > 100000) { decimation = nPts / 100000; }
 
 		vector<float> Xs, Ys;
 		thePntsMap->getAllPoints(Xs, Ys, decimation);
 
 		lyPoints->SetData(Xs, Ys);
 		plotMap->LockAspect(false);
-		plotMap->Fit();  // Update the window to show the new data fitted.
+		plotMap->Fit();	 // Update the window to show the new data fitted.
 		plotMap->LockAspect(true);
 		plotMap->AddLayer(new mpScaleX());
 		plotMap->AddLayer(new mpScaleY());

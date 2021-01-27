@@ -14,7 +14,7 @@
 #include <mrpt/nav.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/system/filesystem.h>  // directoryExists(), ...
+#include <mrpt/system/filesystem.h>	 // directoryExists(), ...
 
 #include <iostream>
 
@@ -67,12 +67,12 @@ void TestRRT1()
 
 	// Logging:
 	planner.params.save_3d_log_freq =
-		0;  // 500; // save some iterations for debugging
+		0;	// 500; // save some iterations for debugging
 
 	// End criteria:
 	planner.end_criteria.acceptedDistToTarget = 0.25;
 	planner.end_criteria.acceptedAngToTarget =
-		180.0_deg;  // 180d=Any orientation is ok
+		180.0_deg;	// 180d=Any orientation is ok
 	planner.end_criteria.maxComputationTime = 15.0;
 	planner.end_criteria.minComputationTime =
 		1.0;  // 0=accept first found acceptable solution

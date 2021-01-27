@@ -20,8 +20,7 @@ namespace mrpt::math
 template <class MATRIXLIKE>
 inline size_t size(const MATRIXLIKE& m, const int dim)
 {
-	if (dim == 1)
-		return m.rows();
+	if (dim == 1) return m.rows();
 	else if (dim == 2)
 		return m.cols();
 	else

@@ -7,13 +7,14 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "poses-precomp.h"  // Precompiled headers
-
+#include "poses-precomp.h"	// Precompiled headers
+//
 #include <mrpt/config.h>  // for HAVE_SINCOS
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/Lie/SO.h>
+
 #include <cmath>
 
 using namespace mrpt;
@@ -95,8 +96,7 @@ SO<3>::tangent_vector SO<3>::log(const SO<3>::type& R)
 	{
 		if (std::abs(w) < 1e-7)
 		{
-			if (w > 0)
-				two_atan_nbyw_by_n = M_PI / n;
+			if (w > 0) two_atan_nbyw_by_n = M_PI / n;
 			else
 				two_atan_nbyw_by_n = -M_PI / n;
 		}

@@ -35,7 +35,7 @@ using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace std;
 
-const double KEYFRAMES_MIN_DISTANCE = 0.50;  // meters
+const double KEYFRAMES_MIN_DISTANCE = 0.50;	 // meters
 const double KEYFRAMES_MIN_ANG = 20.0_deg;
 
 // Thread for grabbing: Do this is another thread so we divide rendering and
@@ -242,8 +242,7 @@ void Test_3DCamICP()
 			cur_obs = possiblyNewObs;
 
 			// Unproject 3D points:
-			if (!cur_points)
-				cur_points = CColouredPointsMap::Create();
+			if (!cur_points) cur_points = CColouredPointsMap::Create();
 			else
 				cur_points->clear();
 
@@ -418,13 +417,13 @@ void Test_3DCamICP()
 			ui_data.viewInt->setImageView(std::move(theImg));
 			ui_data.viewInt_mtx->unlock();
 		}
-	};  // end lambdaUpdateThread
+	};	// end lambdaUpdateThread
 
 	std::thread thWorker = std::thread(lambdaUpdateThread);
 
 	// Add UI controls:
-	std::array<nanogui::TextBox*, 4> lbStatuses = {nullptr, nullptr, nullptr,
-												   nullptr};
+	std::array<nanogui::TextBox*, 4> lbStatuses = {
+		nullptr, nullptr, nullptr, nullptr};
 	mrpt::gui::MRPT2NanoguiGLCanvas* glCanvasRGBView = nullptr;
 	nanogui::Window* subWin2 = nullptr;
 
@@ -461,20 +460,11 @@ void Test_3DCamICP()
 
 				switch (sel)
 				{
-					case 0:
-						break;
-					case 1:
-						glCanvasRGBView->setFixedWidth(200);
-						break;
-					case 2:
-						glCanvasRGBView->setFixedWidth(400);
-						break;
-					case 3:
-						glCanvasRGBView->setFixedWidth(800);
-						break;
-					case 4:
-						glCanvasRGBView->setFixedWidth(1000);
-						break;
+					case 0: break;
+					case 1: glCanvasRGBView->setFixedWidth(200); break;
+					case 2: glCanvasRGBView->setFixedWidth(400); break;
+					case 3: glCanvasRGBView->setFixedWidth(800); break;
+					case 4: glCanvasRGBView->setFixedWidth(1000); break;
 				};
 				win.performLayout();
 			});
@@ -492,7 +482,7 @@ void Test_3DCamICP()
 					mrpt::round(std::pow(2.0, mrpt::round(v)));
 				ui_data.icpDecimation = decim;
 				auto s = std::string("Point cloud decimation: ") +
-						 std::to_string(ui_data.icpDecimation);
+					std::to_string(ui_data.icpDecimation);
 				slVal->setValue(s);
 			});
 		}
@@ -554,7 +544,7 @@ void Test_3DCamICP()
 	cout << "Bye!\n";
 }
 
-#endif  // MRPT_HAS_NANOGUI
+#endif	// MRPT_HAS_NANOGUI
 
 int main(int argc, char** argv)
 {

@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
-
+#include "hwdrivers-precomp.h"	// Precompiled headers
+//
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 
 // Universal include for all versions of OpenCV
@@ -56,7 +56,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 		m_disparityParams =
 			static_cast<svsVideoImages*>(m_videoObject)->GetDP();
 		static_cast<svsVideoImages*>(m_videoObject)
-			->SetNDisp(m_options.m_NDisp);  // 32 disparities
+			->SetNDisp(m_options.m_NDisp);	// 32 disparities
 		static_cast<svsVideoImages*>(m_videoObject)
 			->SetCorrsize(m_options.m_Corrsize);  // correlation window size
 		static_cast<svsVideoImages*>(m_videoObject)
@@ -70,9 +70,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 
 		if (!(static_cast<svsVideoImages*>(m_videoObject)
 				  ->SetExposure(0, 0, true, true)))
-		{
-			cout << "Can't set Auto exposure" << endl;
-		}
+		{ cout << "Can't set Auto exposure" << endl; }
 		else
 		{
 			cout << "Autoexposure set to 0 0" << endl;
@@ -86,7 +84,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 		static_cast<svsVideoImages*>(m_videoObject)
 			->SetRate(m_options.framerate);
 		static_cast<svsVideoImages*>(m_videoObject)
-			->SetSpeckleSize(m_options.m_SpeckleSize);  // TODO add in config
+			->SetSpeckleSize(m_options.m_SpeckleSize);	// TODO add in config
 
 		// TODO call CheckParam
 		if (static_cast<svsVideoImages*>(m_videoObject)->CheckParams())
@@ -104,10 +102,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 
 				ret =
 					static_cast<svsVideoImages*>(m_videoObject)->SetRect(true);
-				if (ret)
-				{
-					cout << "Images will be rectified" << endl;
-				}
+				if (ret) { cout << "Images will be rectified" << endl; }
 				else
 				{
 					cout << "Can't set rectification" << endl;
@@ -117,7 +112,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 					// NOTE: for STOC device, turn on stereo processing on-chip
 					if (static_cast<svsVideoImages*>(m_videoObject) &&
 						static_cast<svsVideoImages*>(m_videoObject)
-							->is_proc_capable)  // can we process on-camera?
+							->is_proc_capable)	// can we process on-camera?
 					{
 						static_cast<svsVideoImages*>(m_videoObject)
 							->SetProcMode(PROC_MODE_DISPARITY);
@@ -131,7 +126,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 					// NOTE: for STOC device, turn off stereo processing on-chip
 					if (static_cast<svsVideoImages*>(m_videoObject) &&
 						static_cast<svsVideoImages*>(m_videoObject)
-							->is_proc_capable)  // can we process on-camera?
+							->is_proc_capable)	// can we process on-camera?
 					{
 						static_cast<svsVideoImages*>(m_videoObject)
 							->SetProcMode(PROC_MODE_OFF);
@@ -171,7 +166,7 @@ CStereoGrabber_SVS::~CStereoGrabber_SVS()
 {
 #if MRPT_HAS_SVS
 	static_cast<svsVideoImages*>(m_videoObject)->Close();
-#endif  // No need to raise an exception on "#else" since it's already raised
+#endif	// No need to raise an exception on "#else" since it's already raised
 	// upon construction.
 }
 
@@ -219,7 +214,7 @@ bool CStereoGrabber_SVS::getStereoObservation([
 
 			ASSERT_(
 				ImageDisparity->widthStep ==
-				ImageDisparity->width);  // JL: The code below assumes
+				ImageDisparity->width);	 // JL: The code below assumes
 			// image_width == widthStep
 
 			for (int pix = 0; pix < sizeOfMat; pix++, ptrOutDisp++, ptrDisp++)
@@ -256,7 +251,7 @@ bool CStereoGrabber_SVS::getStereoObservation([
 
 			ASSERT_(
 				ImageDisparity->widthStep ==
-				ImageDisparity->width);  // JL: The code below assumes
+				ImageDisparity->width);	 // JL: The code below assumes
 			// image_width == widthStep
 
 			for (int pix = 0; pix < sizeOfMat; pix++, ptrOutDisp++, ptrDisp++)
@@ -283,7 +278,7 @@ bool CStereoGrabber_SVS::getStereoObservation([
 			IplImage* ImageRight = cvCreateImageHeader(
 				cvSize(m_resolutionX, m_resolutionY), IPL_DEPTH_8U, 1);
 			ImageRight->widthStep =
-				ImageRight->width;  // JL: The next line assumes this
+				ImageRight->width;	// JL: The next line assumes this
 			ImageRight->imageData =
 				(char*)static_cast<svsStereoImage*>(m_stereoImage)->Right();
 
@@ -326,10 +321,10 @@ TCaptureOptions_SVS::TCaptureOptions_SVS(
 	frame_height = _frame_height;
 	framerate = _framerate;
 	m_NDisp = _NDisp;  // 32 disparities
-	m_Corrsize = _Corrsize;  // correlation window size
-	m_LR = _LR;  // no left-right check, not available
-	m_Thresh = _Thresh;  // texture filter
-	m_Unique = _Unique;  // uniqueness filter
+	m_Corrsize = _Corrsize;	 // correlation window size
+	m_LR = _LR;	 // no left-right check, not available
+	m_Thresh = _Thresh;	 // texture filter
+	m_Unique = _Unique;	 // uniqueness filter
 	m_Horopter = _Horopter;
 	m_SpeckleSize = _SpeckleSize;
 	m_procesOnChip = _procesOnChip;

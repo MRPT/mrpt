@@ -98,6 +98,6 @@ class CConfigFile : public CConfigFileBase
 	void getAllKeys(const std::string& section, std::vector<std::string>& keys)
 		const override;
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::config

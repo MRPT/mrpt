@@ -38,17 +38,14 @@ CNode::ObjectType CPairNode::type() const
 std::string CPairNode::displayName() const
 {
 	return std::string("[") + std::to_string(m_indexInSimpleMap) +
-		   std::string("] Pose-SF pair");
+		std::string("] Pose-SF pair");
 }
 CNode* CPairNode::getChild(int id) const
 {
 	switch (id)
 	{
-		case 0:
-			return m_pose.get();
-		case 1:
-			return m_observations.get();
-		default:
-			return nullptr;
+		case 0: return m_pose.get();
+		case 1: return m_observations.get();
+		default: return nullptr;
 	};
 }

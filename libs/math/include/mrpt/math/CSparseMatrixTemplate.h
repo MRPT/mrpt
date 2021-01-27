@@ -82,8 +82,7 @@ class CSparseMatrixTemplate
 	inline T operator()(size_t r, size_t c) const
 	{
 		auto it = objectList.find(std::make_pair(r, c));
-		if (it == objectList.end())
-			return T();
+		if (it == objectList.end()) return T();
 		else
 			return it->second;
 	}
@@ -135,17 +134,18 @@ class CSparseMatrixTemplate
 			 it != objectList.end(); ++it)
 		{
 			const std::pair<size_t, size_t>& index = it->first;
-			if (index.first < nRow)
-				continue;
+			if (index.first < nRow) continue;
 			else if (index.first == nRow)
 			{
-				for (size_t i = nextIndex; i < index.second; i++) vec[i] = T();
+				for (size_t i = nextIndex; i < index.second; i++)
+					vec[i] = T();
 				vec[index.second] = it->second;
 				nextIndex = index.second + 1;
 			}
 			else
 			{
-				for (size_t i = nextIndex; i < mColumns; i++) vec[i] = T();
+				for (size_t i = nextIndex; i < mColumns; i++)
+					vec[i] = T();
 				break;
 			}
 		}
@@ -169,12 +169,14 @@ class CSparseMatrixTemplate
 			const std::pair<size_t, size_t>& index = it->first;
 			if (index.second == nCol)
 			{
-				for (size_t i = nextIndex; i < index.first; i++) vec[i] = T();
+				for (size_t i = nextIndex; i < index.first; i++)
+					vec[i] = T();
 				vec[index.first] = it->second;
 				nextIndex = index.first + 1;
 			}
 		}
-		for (size_t i = nextIndex; i < mRows; i++) vec[i] = T();
+		for (size_t i = nextIndex; i < mRows; i++)
+			vec[i] = T();
 	}
 	/**
 	 * Inserts an element into the matrix.
@@ -244,8 +246,7 @@ class CSparseMatrixTemplate
 		{
 			const T& obj = vec[i];
 			std::pair<size_t, size_t> index = std::make_pair(nRow, i);
-			if (obj == nullObject)
-				objectList.erase(index);
+			if (obj == nullObject) objectList.erase(index);
 			else
 				objectList[index] = obj;
 		}
@@ -269,8 +270,7 @@ class CSparseMatrixTemplate
 		{
 			const T& obj = vec[i];
 			std::pair<size_t, size_t> index = std::make_pair(i, nCol);
-			if (obj == nullObject)
-				objectList.erase(index);
+			if (obj == nullObject) objectList.erase(index);
 			else
 				objectList[index] = obj;
 		}
@@ -390,7 +390,7 @@ class CSparseMatrixTemplate
 		for (auto it = nulls.begin(); it != nulls.end(); ++it)
 			objectList.erase(*it);
 	}
-};  // end of sparse matrix
+};	// end of sparse matrix
 
 /** A sparse matrix container for square symmetrical content around the main
  * diagonal.
@@ -421,22 +421,21 @@ class CSparseSymmetricalMatrix : public CSparseMatrixTemplate<T>
 
 	inline T operator()(size_t r, size_t c) const
 	{
-		if (c < r) std::swap(r, c);  // Symmetrical matrix
+		if (c < r) std::swap(r, c);	 // Symmetrical matrix
 		typename CSparseMatrixTemplate<T>::const_iterator it =
 			CSparseMatrixTemplate<T>::objectList.find(std::make_pair(r, c));
-		if (it == CSparseMatrixTemplate<T>::objectList.end())
-			return T();
+		if (it == CSparseMatrixTemplate<T>::objectList.end()) return T();
 		else
 			return it->second;
 	}
 	inline T& operator()(size_t r, size_t c)
 	{  //-V659
-		if (c < r) std::swap(r, c);  // Symmetrical matrix
+		if (c < r) std::swap(r, c);	 // Symmetrical matrix
 		if (r >= CSparseMatrixTemplate<T>::mRows ||
 			c >= CSparseMatrixTemplate<T>::mColumns)
 			throw std::logic_error("Out of range");
 		return CSparseMatrixTemplate<T>::objectList[std::make_pair(r, c)];
 	}
 
-};  // end of CSparseSymmetricalMatrix
+};	// end of CSparseSymmetricalMatrix
 }  // namespace mrpt::math

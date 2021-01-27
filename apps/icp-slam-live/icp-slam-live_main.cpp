@@ -18,6 +18,7 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/apps/ICP_SLAM_App.h>
+
 #include <iostream>
 
 int main(int argc, char** argv)

@@ -7,8 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <iostream>
-#include "vision-precomp.h"  // Precompiled headers
 
 //#include <mrpt/math/types_math.h>  // Eigen must be included first via MRPT to
 // enable the plugin system
@@ -42,13 +43,15 @@ void lhm::estimate_t()
 {
 	Eigen::Vector3d sum_;
 	sum_.setZero();
-	for (int i = 0; i < n; i++) sum_ += F[i] * R * P.col(i);
+	for (int i = 0; i < n; i++)
+		sum_ += F[i] * R * P.col(i);
 	t = G * sum_;
 }
 
 void lhm::xform()
 {
-	for (int i = 0; i < n; i++) Q.col(i) = R * P.col(i) + t;
+	for (int i = 0; i < n; i++)
+		Q.col(i) = R * P.col(i) + t;
 }
 
 Eigen::Matrix4d lhm::qMatQ(Eigen::VectorXd q)
@@ -73,7 +76,8 @@ Eigen::Matrix4d lhm::qMatW(Eigen::VectorXd q)
 
 void lhm::absKernel()
 {
-	for (int i = 0; i < n; i++) Q.col(i) = F[i] * Q.col(i);
+	for (int i = 0; i < n; i++)
+		Q.col(i) = F[i] * Q.col(i);
 
 	Eigen::Vector3d P_bar, Q_bar;
 	P_bar = P.rowwise().mean();
@@ -151,9 +155,10 @@ void lhm::absKernel()
 	Eigen::EigenSolver<Eigen::Matrix4d> es(A);
 
 	const Eigen::Matrix4d Ae = es.pseudoEigenvalueMatrix();
-	Eigen::Vector4d D;  // Ae.diagonal(); for some reason this leads to an
+	Eigen::Vector4d D;	// Ae.diagonal(); for some reason this leads to an
 	// internal compiler error in MSVC11... (sigh)
-	for (int i = 0; i < 4; i++) D[i] = Ae(i, i);
+	for (int i = 0; i < 4; i++)
+		D[i] = Ae(i, i);
 
 	Eigen::Matrix4d V_mat = es.pseudoEigenvectors();
 

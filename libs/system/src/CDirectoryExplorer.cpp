@@ -7,36 +7,36 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #ifdef _WIN32
 #ifdef _MSC_VER
 #include <sys/utime.h>
 #endif
-#include <windows.h>
-
 #include <direct.h>
 #include <io.h>
+#include <windows.h>
 #else
 #include <dirent.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <utime.h>
+
 #include <cerrno>
 #include <cstring>
 #include <ctime>
 #endif
 
+#include <mrpt/core/exceptions.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include <algorithm>
 #include <cstdio>
 #include <iostream>
 #include <queue>
-
-#include <mrpt/core/exceptions.h>
-#include <mrpt/system/CDirectoryExplorer.h>
-#include <mrpt/system/filesystem.h>
 
 using namespace mrpt::system;
 using namespace std;
@@ -98,7 +98,7 @@ void CDirectoryExplorer::explore(
 
 			// File size:
 			newEntry.fileSize = ((uint64_t)f.nFileSizeLow) +
-								(((uint64_t)f.nFileSizeHigh) << 32);
+				(((uint64_t)f.nFileSizeHigh) << 32);
 
 			// File times:
 			struct stat statDat;
@@ -116,7 +116,7 @@ void CDirectoryExplorer::explore(
 			// Flags:
 			newEntry.isDir = 0 != (statDat.st_mode & _S_IFDIR);
 			newEntry.isSymLink =
-				false;  // (We donnot look for this in Windows, by now...)
+				false;	// (We donnot look for this in Windows, by now...)
 
 			// Save:
 			outList.push_back(newEntry);
@@ -176,9 +176,7 @@ void CDirectoryExplorer::explore(
 
 				// Is it a symbolic link?? Need to call "lstat":
 				if (!lstat(newEntry.wholePath.c_str(), &lstatDat))
-				{
-					newEntry.isSymLink = S_ISLNK(lstatDat.st_mode);
-				}
+				{ newEntry.isSymLink = S_ISLNK(lstatDat.st_mode); }
 				else
 					newEntry.isSymLink = false;
 

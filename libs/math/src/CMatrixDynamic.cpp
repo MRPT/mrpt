@@ -8,9 +8,10 @@
 +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CVectorDynamic.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::math;
@@ -44,7 +45,7 @@ CVectorDynamic<T> CMatrixDynamic<T>::lu_solve(const CVectorDynamic<T>& b) const
 }
 
 // Template instantiation:
-#define DO_MATDYN_INSTANTIATION(T_) \
+#define DO_MATDYN_INSTANTIATION(T_)                                            \
 	template class mrpt::math::CMatrixDynamic<T_>;
 
 DO_MATDYN_INSTANTIATION(float)

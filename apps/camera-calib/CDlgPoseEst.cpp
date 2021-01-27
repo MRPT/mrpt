@@ -63,7 +63,7 @@ END_EVENT_TABLE()
 CDlgPoseEst::CPNP_PTR pose_algos[9] = {
 	&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls,
 	&mrpt::vision::pnp::CPnP::upnp, &mrpt::vision::pnp::CPnP::p3p,
-	&mrpt::vision::pnp::CPnP::lhm,  &mrpt::vision::pnp::CPnP::posit,
+	&mrpt::vision::pnp::CPnP::lhm,	&mrpt::vision::pnp::CPnP::posit,
 	&mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp};
 
 CDlgPoseEst::CDlgPoseEst(
@@ -146,8 +146,8 @@ CDlgPoseEst::CDlgPoseEst(
 		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = {_("OpenCV\'s default"),
-										 _("Scaramuzza et al.\'s")};
+	wxString __wxRadioBoxChoices_1[2] = {
+		_("OpenCV\'s default"), _("Scaramuzza et al.\'s")};
 	rbMethod = new wxRadioBox(
 		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
@@ -343,10 +343,12 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 	{
 		double arr[9];
 
-		for (double& i : arr) file >> i;
+		for (double& i : arr)
+			file >> i;
 
 		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) cam_intrinsic(i, j) = arr[3 * i + j];
+			for (int j = 0; j < 3; j++)
+				cam_intrinsic(i, j) = arr[3 * i + j];
 
 		file.close();
 	}
@@ -357,8 +359,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 				"intrinsic_matrix.txt"),
 			wxT("Quit?"), wxYES_NO | wxCANCEL);
 
-		if (answer == wxYES)
-			EndModal(wxID_CANCEL);
+		if (answer == wxYES) EndModal(wxID_CANCEL);
 		else
 			return;
 	}
@@ -374,7 +375,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 	m_threadImgToProcess.reset();
 	m_threadMustClose = false;
 	m_threadResults.clear();
-	m_threadResultsComputed = true;  // To start a new detection
+	m_threadResultsComputed = true;	 // To start a new detection
 	m_threadIsClosed = false;
 
 	m_calibFrames.clear();
@@ -388,7 +389,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 	this->m_panelCamera->Disable();
 
 	// start processing:
-	timCapture.Start(2, true);  // One shot
+	timCapture.Start(2, true);	// One shot
 }
 
 void CDlgPoseEst::OnbtnStopClick(wxCommandEvent& event)
@@ -452,8 +453,7 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		CObservationImage::Ptr obs_img =
 			std::dynamic_pointer_cast<CObservationImage>(obs);
 
-		bool blankTime =
-			(last_valid != INVALID_TIMESTAMP) &&
+		bool blankTime = (last_valid != INVALID_TIMESTAMP) &&
 			mrpt::system::timeDifference(last_valid, mrpt::system::now()) < 0.5;
 		if (!blankTime && m_threadResultsComputed && !m_threadResults.empty())
 		{
@@ -544,18 +544,15 @@ void CDlgPoseEst::threadProcessCorners()
 						obj->m_normalize_image,
 						obj->m_useScaramuzzaAlternativeDetector);
 
-					if (!foundCorners)
-						obj->m_threadResults.clear();
+					if (!foundCorners) obj->m_threadResults.clear();
 					else
 					{
 						if (obj->flag_pose_est == true)
 						{
-							const double m_check_len_x =
-								0.1 *
+							const double m_check_len_x = 0.1 *
 								atof(string(edLengthX->GetValue().mb_str())
 										 .c_str());
-							const double m_check_len_y =
-								0.1 *
+							const double m_check_len_y = 0.1 *
 								atof(string(edLengthY->GetValue().mb_str())
 										 .c_str());
 
@@ -579,12 +576,12 @@ void CDlgPoseEst::threadProcessCorners()
 												[i * m_check_size_y + j]
 													.x -
 											cam_intrinsic(0, 2)) /
-											   cam_intrinsic(0, 0),
+											cam_intrinsic(0, 0),
 										(obj->m_threadResults
 											 [i * m_check_size_y + j]
 												 .y -
 										 cam_intrinsic(1, 2)) /
-											cam_intrinsic(1, 1),
+										cam_intrinsic(1, 1),
 										1;
 
 							int algo_idx = pnpSelect->GetSelection();

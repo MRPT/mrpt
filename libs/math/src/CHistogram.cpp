@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/math/utils.h>  // linspace()
@@ -68,8 +68,7 @@ double CHistogram::getBinRatio(const size_t index) const
 {
 	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
 
-	if (m_count)
-		return m_bins[index] / double(m_count);
+	if (m_count) return m_bins[index] / double(m_count);
 	else
 		return 0;
 }
@@ -80,7 +79,8 @@ void CHistogram::getHistogram(
 	linspace(m_min, m_max, m_bins.size(), x);
 	const size_t N = m_bins.size();
 	hits.resize(N);
-	for (size_t i = 0; i < N; i++) hits[i] = static_cast<double>(m_bins[i]);
+	for (size_t i = 0; i < N; i++)
+		hits[i] = static_cast<double>(m_bins[i]);
 }
 
 void CHistogram::getHistogramNormalized(
@@ -91,7 +91,8 @@ void CHistogram::getHistogramNormalized(
 
 	hits.resize(N);
 	const double K = m_binSizeInv / m_count;
-	for (size_t i = 0; i < N; i++) hits[i] = K * m_bins[i];
+	for (size_t i = 0; i < N; i++)
+		hits[i] = K * m_bins[i];
 }
 
 CHistogram CHistogram::createWithFixedWidth(

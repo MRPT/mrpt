@@ -33,7 +33,7 @@ struct TCaptureOptions_SVS
 	double framerate;
 	/** number of STOC's disparities (Default: 64 ) */
 	int m_NDisp;
-	int m_Corrsize;  // correlation window size
+	int m_Corrsize;	 // correlation window size
 	int m_LR;  // no left-right check, not available
 	int m_Thresh;  // texture filter
 	int m_Unique;  // uniqueness filter
@@ -71,7 +71,7 @@ class CStereoGrabber_SVS
 	void* m_videoObject{nullptr};  // svsVideoImages*
 	void* m_stereoImage{nullptr};  // svsStereoImage*
 	void* m_disparityParams{nullptr};  // svsDisparityParams*
-	void* m_processObject;  // svsStereoProcess
+	void* m_processObject;	// svsStereoProcess
 	unsigned int m_resolutionX;
 	unsigned int m_resolutionY;
 
@@ -111,7 +111,7 @@ class CStereoGrabber_SVS
 	bool getStereoObservation(
 		mrpt::obs::CObservationStereoImages& out_observation);
 
-};  // End of class
+};	// End of class
 static_assert(
 	!std::is_copy_constructible_v<CStereoGrabber_SVS> &&
 		!std::is_copy_assignable_v<CStereoGrabber_SVS>,

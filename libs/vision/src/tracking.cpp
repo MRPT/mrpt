@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/vision/CFeatureExtraction.h>
@@ -255,7 +255,7 @@ inline void trackFeatures_addNewFeats_simple_list(
 		 i++)
 	{
 		const TKeyPoint& feat = new_feats[sorted_indices[i]];
-		if (feat.response < minimum_KLT_response_to_add) break;  // continue;
+		if (feat.response < minimum_KLT_response_to_add) break;	 // continue;
 
 		// Check the min-distance:
 		double min_dist_sqr = std::numeric_limits<double>::max();
@@ -346,9 +346,7 @@ inline size_t trackFeatures_deleteOOB_impl_simple_feat(
 						img_width - MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
 				y > static_cast<int>(
 						img_height - MIN_DIST_MARGIN_TO_STOP_TRACKING))
-			{
-				eras = true;
-			}
+			{ eras = true; }
 		}
 		if (!eras) survival_idxs.push_back(i);
 	}
@@ -402,9 +400,7 @@ inline size_t trackFeatures_deleteOOB(
 				y < MIN_DIST_MARGIN_TO_STOP_TRACKING ||
 				x > (img_width - MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
 				y > (img_height - MIN_DIST_MARGIN_TO_STOP_TRACKING))
-			{
-				eras = true;
-			}
+			{ eras = true; }
 		}
 		if (eras)  // Erase or keep?
 		{
@@ -606,7 +602,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 					m_newly_detected_feats[i].response =
 						cur_gray.KLT_response(x, y, KLT_response_half_win);
 				else
-					m_newly_detected_feats[i].response = 0;  // Out of bounds
+					m_newly_detected_feats[i].response = 0;	 // Out of bounds
 			}
 		}
 
@@ -614,7 +610,8 @@ void CGenericFeatureTracker::internal_trackFeatures(
 		//      indices "sorted_indices" than sorting directly the actual list
 		//      of features "m_newly_detected_feats"
 		std::vector<size_t> sorted_indices(N);
-		for (size_t i = 0; i < N; i++) sorted_indices[i] = i;
+		for (size_t i = 0; i < N; i++)
+			sorted_indices[i] = i;
 
 		std::sort(
 			sorted_indices.begin(), sorted_indices.end(),
@@ -665,9 +662,10 @@ void CGenericFeatureTracker::updateAdaptiveNewFeatsThreshold(
 
 	if (nNewlyDetectedFeats < hysteresis_min_num_feats)
 		m_detector_adaptive_thres = std::max(
-			2.0, std::min(
-					 m_detector_adaptive_thres - 1.0,
-					 m_detector_adaptive_thres * 0.8));
+			2.0,
+			std::min(
+				m_detector_adaptive_thres - 1.0,
+				m_detector_adaptive_thres * 0.8));
 	else if (nNewlyDetectedFeats > hysteresis_max_num_feats)
 		m_detector_adaptive_thres = std::max(
 			m_detector_adaptive_thres + 1.0, m_detector_adaptive_thres * 1.2);

@@ -423,6 +423,6 @@ class CRawlog : public mrpt::serialization::CSerializable
 	 */
 	static std::string detectImagesDirectory(const std::string& rawlogFilename);
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

@@ -8,13 +8,14 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/homog_matrices.h>  // homogeneousMatrixInverse()
+
 #include <Eigen/Dense>
 
 using namespace mrpt::math;
@@ -72,8 +73,8 @@ void TPose3D::getAsQuaternion(
 		alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double nums[4 * 3] = {
 			-0.5 * q[3], 0.5 * (-csc + scs), -0.5 * q[1],
 			-0.5 * q[2], 0.5 * (-ssc - ccs), 0.5 * q[0],
-			0.5 * q[1],  0.5 * (ccc - sss),  0.5 * q[3],
-			0.5 * q[0],  0.5 * (-css - scc), -0.5 * q[2]};
+			0.5 * q[1],	 0.5 * (ccc - sss),	 0.5 * q[3],
+			0.5 * q[0],	 0.5 * (-css - scc), -0.5 * q[2]};
 		out_dq_dr.value().get().loadFromArray(nums);
 	}
 }
@@ -122,16 +123,16 @@ void TPose3D::getRotationMatrix(mrpt::math::CMatrixDouble33& R) const
 	const double cr = cos(roll);
 	const double sr = sin(roll);
 
-	alignas(MRPT_MAX_STATIC_ALIGN_BYTES)
-		const double rot_vals[] = {cy * cp,
-								   cy * sp * sr - sy * cr,
-								   cy * sp * cr + sy * sr,
-								   sy * cp,
-								   sy * sp * sr + cy * cr,
-								   sy * sp * cr - cy * sr,
-								   -sp,
-								   cp * sr,
-								   cp * cr};
+	alignas(MRPT_MAX_STATIC_ALIGN_BYTES) const double rot_vals[] = {
+		cy * cp,
+		cy * sp * sr - sy * cr,
+		cy * sp * cr + sy * sr,
+		sy * cp,
+		sy * sp * sr + cy * cr,
+		sy * sp * cr - cy * sr,
+		-sp,
+		cp * sr,
+		cp * cr};
 	R.loadFromArray(rot_vals);
 }
 void TPose3D::SO3_to_yaw_pitch_roll(
@@ -185,8 +186,7 @@ void TPose3D::SO3_to_yaw_pitch_roll(
 		// is vertical.
 
 		roll = 0.0;
-		if (pitch > 0)
-			yaw = atan2(R(1, 2), R(0, 2));
+		if (pitch > 0) yaw = atan2(R(1, 2), R(0, 2));
 		else
 			yaw = atan2(-R(1, 2), -R(0, 2));
 	}

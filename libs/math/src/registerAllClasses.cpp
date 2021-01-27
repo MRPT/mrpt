@@ -8,9 +8,8 @@
    +------------------------------------------------------------------------+ */
 
 #include "math-precomp.h"
-
+//
 #include <mrpt/core/initializer.h>
-
 #include <mrpt/math/CMatrixB.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixF.h>

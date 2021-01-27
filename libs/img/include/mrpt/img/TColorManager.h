@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/img/TColor.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <set>

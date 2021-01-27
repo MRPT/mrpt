@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPosePDF.h>
+
 #include <memory>  // unique_ptr
 
 namespace mrpt::poses
@@ -122,5 +123,5 @@ class CPoseRandomSampler
 	 * yaw ~ pitch ~ roll ] \f$. */
 	void getOriginalPDFCov3D(mrpt::math::CMatrixDouble& cov6x6) const;
 
-};  // End of class def.
+};	// End of class def.
 }  // namespace mrpt::poses

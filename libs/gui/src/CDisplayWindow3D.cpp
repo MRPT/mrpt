@@ -8,15 +8,13 @@
    +------------------------------------------------------------------------+ */
 
 #include "gui-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config.h>
-
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/img/CImage.h>
-#include <mrpt/system/CTicTac.h>
-
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/img/CImage.h>
+#include <mrpt/system/CTicTac.h>
 
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32
@@ -109,10 +107,7 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
 				m_win3D->m_lastFullScreen = mrpt::system::now();
 				cout << "[CDisplayWindow3D] Switching fullscreen...\n";
 				auto* win = (C3DWindowDialog*)m_win3D->m_hwnd.get();
-				if (win)
-				{
-					win->ShowFullScreen(!win->IsFullScreen());
-				}
+				if (win) { win->ShowFullScreen(!win->IsFullScreen()); }
 			}
 			// Alt+Enter: Don't notify on this key stroke, since if we're
 			// switching to fullscreen
@@ -250,7 +245,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(
 	}
 }
 
-#endif  // Wx + OpenGL
+#endif	// Wx + OpenGL
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -369,7 +364,7 @@ void C3DWindowDialog::OnResize(wxSizeEvent& event)
 #endif
 }
 
-#endif  // MRPT_HAS_WXWIDGETS
+#endif	// MRPT_HAS_WXWIDGETS
 
 /*---------------------------------------------------------------
 					Constructor
@@ -541,10 +536,7 @@ void CDisplayWindow3D::setCameraPointingToPoint(
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	auto* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win)
-	{
-		win->m_canvas->setCameraPointing(x, y, z);
-	}
+	if (win) { win->m_canvas->setCameraPointing(x, y, z); }
 #endif
 }
 
@@ -751,8 +743,7 @@ void CDisplayWindow3D::grabImagesStop() { m_grab_imgs_prefix.clear(); }
  ---------------------------------------------------------------*/
 std::string CDisplayWindow3D::grabImageGetNextFile()
 {
-	if (m_grab_imgs_prefix.empty())
-		return string();
+	if (m_grab_imgs_prefix.empty()) return string();
 	else
 		return format(
 			"%s%06u.png", m_grab_imgs_prefix.c_str(), m_grab_imgs_idx++);
@@ -777,7 +768,7 @@ bool CDisplayWindow3D::getLastWindowImage(mrpt::img::CImage& out_img) const
 		std::lock_guard<std::mutex> lock(m_last_captured_img_cs);
 		if (m_last_captured_img)
 		{
-			out_img = *m_last_captured_img;  // Copy the full image
+			out_img = *m_last_captured_img;	 // Copy the full image
 			ret = true;
 		}
 		else

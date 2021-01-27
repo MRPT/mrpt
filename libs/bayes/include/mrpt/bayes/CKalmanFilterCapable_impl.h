@@ -13,7 +13,8 @@
 #endif
 
 #include <mrpt/containers/stl_containers_utils.h>
-#include <mrpt/math/ops_matrices.h>  // extractSubmatrixSymmetrical()
+#include <mrpt/math/ops_matrices.h>	 // extractSubmatrixSymmetrical()
+
 #include <Eigen/Dense>
 
 namespace mrpt
@@ -93,7 +94,7 @@ void CKalmanFilterCapable<
 			KF_options.debug_verify_analytic_jacobians)
 		{  // Numeric approximation:
 			KFArray_VEH xkk_vehicle(
-				&m_xkk[0]);  // A copy of the vehicle part of the state vector.
+				&m_xkk[0]);	 // A copy of the vehicle part of the state vector.
 			KFArray_VEH xkk_veh_increments;
 			OnTransitionJacobianNumericGetIncrements(xkk_veh_increments);
 
@@ -135,10 +136,9 @@ void CKalmanFilterCapable<
 		//  3.1:  Pxx submatrix
 		// ====================================
 		// Replace old covariance:
-		m_pkk.asEigen().template block<VEH_SIZE, VEH_SIZE>(0, 0) =
-			Q.asEigen() + dfv_dxv.asEigen() *
-							  m_pkk.template block<VEH_SIZE, VEH_SIZE>(0, 0) *
-							  dfv_dxv.asEigen().transpose();
+		m_pkk.asEigen().template block<VEH_SIZE, VEH_SIZE>(0, 0) = Q.asEigen() +
+			dfv_dxv.asEigen() * m_pkk.template block<VEH_SIZE, VEH_SIZE>(0, 0) *
+				dfv_dxv.asEigen().transpose();
 
 		// ====================================
 		//  3.2:  All Pxy_i
@@ -147,8 +147,9 @@ void CKalmanFilterCapable<
 		KFMatrix_VxF aux;
 		for (size_t i = 0; i < N_map; i++)
 		{
-			aux = dfv_dxv.asEigen() * m_pkk.template block<VEH_SIZE, FEAT_SIZE>(
-										  0, VEH_SIZE + i * FEAT_SIZE);
+			aux = dfv_dxv.asEigen() *
+				m_pkk.template block<VEH_SIZE, FEAT_SIZE>(
+					0, VEH_SIZE + i * FEAT_SIZE);
 
 			m_pkk.asEigen().template block<VEH_SIZE, FEAT_SIZE>(
 				0, VEH_SIZE + i * FEAT_SIZE) = aux.asEigen();
@@ -159,7 +160,8 @@ void CKalmanFilterCapable<
 		// =============================================================
 		//  4. NOW WE CAN OVERWRITE THE NEW STATE VECTOR
 		// =============================================================
-		for (size_t i = 0; i < VEH_SIZE; i++) m_xkk[i] = xv[i];
+		for (size_t i = 0; i < VEH_SIZE; i++)
+			m_xkk[i] = xv[i];
 
 		// Normalize, if neccesary.
 		OnNormalizeStateVector();
@@ -173,7 +175,7 @@ void CKalmanFilterCapable<
 	// =============================================================
 	m_timLogger.enter("KF:3.predict all obs");
 
-	KFMatrix_OxO R;  // Sensor uncertainty (covariance matrix): R
+	KFMatrix_OxO R;	 // Sensor uncertainty (covariance matrix): R
 	OnGetObservationNoise(R);
 
 	// Predict the observations for all the map LMs, so the user
@@ -221,10 +223,9 @@ void CKalmanFilterCapable<
 
 	m_timLogger.enter("KF:5.build Jacobians");
 
-	size_t N_pred =
-		FEAT_SIZE == 0
-			? 1 /* In non-SLAM problems, there'll be only 1 fixed observation */
-			: m_predictLMidxs.size();
+	size_t N_pred = FEAT_SIZE == 0
+		? 1 /* In non-SLAM problems, there'll be only 1 fixed observation */
+		: m_predictLMidxs.size();
 
 	std::vector<int>
 		data_association;  // -1: New map feature.>=0: Indexes in the
@@ -239,7 +240,7 @@ void CKalmanFilterCapable<
 	m_Hxs.resize(N_pred);  // Lists of partial Jacobians
 	m_Hys.resize(N_pred);
 
-	size_t first_new_pred = 0;  // This will be >0 only if we perform multiple
+	size_t first_new_pred = 0;	// This will be >0 only if we perform multiple
 	// loops due to failures in the prediction
 	// heuristic.
 
@@ -273,7 +274,7 @@ void CKalmanFilterCapable<
 
 			// Try the analitic Jacobian first:
 			m_user_didnt_implement_jacobian =
-				false;  // Set to true by the default method if not
+				false;	// Set to true by the default method if not
 			// reimplemented in base class.
 			if (KF_options.use_analytic_observation_jacobian)
 				OnObservationJacobians(lm_idx, Hx, Hy);
@@ -418,8 +419,8 @@ void CKalmanFilterCapable<
 			ASSERTDEB_(m_S.cols() == OBS_SIZE);
 
 			m_S = m_Hxs[0].asEigen() * m_pkk.asEigen() *
-					  m_Hxs[0].asEigen().transpose() +
-				  R.asEigen();
+					m_Hxs[0].asEigen().transpose() +
+				R.asEigen();
 		}
 
 		m_timLogger.leave("KF:6.build m_S");
@@ -430,8 +431,8 @@ void CKalmanFilterCapable<
 
 		// Get observations and do data-association:
 		OnGetObservationsAndDataAssociation(
-			m_Z, data_association,  // Out
-			m_all_predictions, m_S, m_predictLMidxs, R  // In
+			m_Z, data_association,	// Out
+			m_all_predictions, m_S, m_predictLMidxs, R	// In
 		);
 		ASSERTDEB_(
 			data_association.size() == m_Z.size() ||
@@ -492,21 +493,21 @@ void CKalmanFilterCapable<
 						[](int i) { return i == -1; })));
 
 				const size_t N_upd =
-					(FEAT_SIZE == 0) ? 1 :  // Non-SLAM problems: Just one
+					(FEAT_SIZE == 0) ? 1 :	// Non-SLAM problems: Just one
 											// observation for the entire
 											// system.
-						mapIndicesForKFUpdate
-							.size();  // SLAM: # of observed known landmarks
+					mapIndicesForKFUpdate
+						.size();  // SLAM: # of observed known landmarks
 
 				// Just one, or several update iterations??
 				const size_t nKF_iterations = (KF_options.method == kfEKFNaive)
-												  ? 1
-												  : KF_options.IKF_iterations;
+					? 1
+					: KF_options.IKF_iterations;
 
 				const KFVector xkk_0 = m_xkk;
 
 				// For each IKF iteration (or 1 for EKF)
-				if (N_upd > 0)  // Do not update if we have no observations!
+				if (N_upd > 0)	// Do not update if we have no observations!
 				{
 					for (size_t IKF_iteration = 0;
 						 IKF_iteration < nKF_iterations; IKF_iteration++)
@@ -519,7 +520,7 @@ void CKalmanFilterCapable<
 						// creating a copy into "m_dh_dx_full_obs"
 						m_dh_dx_full_obs.setZero(
 							N_upd * OBS_SIZE,
-							VEH_SIZE + FEAT_SIZE * N_map);  // Init to zeros.
+							VEH_SIZE + FEAT_SIZE * N_map);	// Init to zeros.
 						KFMatrix S_observed;  // The KF "m_S" matrix: A
 						// re-ordered, subset, version of
 						// the prediction m_S:
@@ -617,7 +618,7 @@ void CKalmanFilterCapable<
 
 						// K = m_pkk * (~dh_dx) * m_S.inverse_LLt() );
 						m_K.asEigen() = m_pkk.asEigen() *
-										m_dh_dx_full_obs.asEigen().transpose();
+							m_dh_dx_full_obs.asEigen().transpose();
 
 						// Inverse of S_observed -> m_S_1
 						m_S_1 = S_observed.inverse_LLt();
@@ -702,10 +703,7 @@ void CKalmanFilterCapable<
 					bool doit;
 					size_t idxInTheFilter = 0;
 
-					if (data_association.empty())
-					{
-						doit = true;
-					}
+					if (data_association.empty()) { doit = true; }
 					else
 					{
 						doit = data_association[obsIdx] >= 0;
@@ -718,10 +716,9 @@ void CKalmanFilterCapable<
 							"KF:8.update stage:1.ScalarAtOnce.prepare");
 
 						// Already mapped: OK
-						const size_t idx_off =
-							VEH_SIZE +
+						const size_t idx_off = VEH_SIZE +
 							idxInTheFilter *
-								FEAT_SIZE;  // The offset in m_xkk & Pkk.
+								FEAT_SIZE;	// The offset in m_xkk & Pkk.
 
 						// Compute just the part of the Jacobian that we need
 						// using the current updated m_xkk:
@@ -824,7 +821,7 @@ void CKalmanFilterCapable<
 								KFTYPE accum = 0;
 								for (size_t q = 0; q < FEAT_SIZE; q++)
 									accum += Hy(j, q) *
-											 m_pkk(idx_off + q, idx_off + k);
+										m_pkk(idx_off + q, idx_off + k);
 								Sij += Hy(j, k) * accum;
 							}
 
@@ -891,14 +888,13 @@ void CKalmanFilterCapable<
 			// --------------------------------------------------------------------
 			// - IKF method, processing each observation scalar secuentially:
 			// --------------------------------------------------------------------
-			case kfIKF:  // TODO !!
+			case kfIKF:	 // TODO !!
 			{
 				THROW_EXCEPTION("IKF scalar by scalar not implemented yet.");
 			}
 			break;
 
-			default:
-				THROW_EXCEPTION("Invalid value of options.KF_method");
+			default: THROW_EXCEPTION("Invalid value of options.KF_method");
 		}  // end switch method
 	}
 
@@ -1012,8 +1008,9 @@ void addNewLandmarks(
 			// Append to map of IDs <-> position in the state vector:
 			ASSERTDEB_(FEAT_SIZE > 0);
 			ASSERTDEB_(
-				0 == ((obj.internal_getXkk().size() - VEH_SIZE) %
-					  FEAT_SIZE));  // Sanity test
+				0 ==
+				((obj.internal_getXkk().size() - VEH_SIZE) %
+				 FEAT_SIZE));  // Sanity test
 
 			const size_t newIndexInMap =
 				(obj.internal_getXkk().size() - VEH_SIZE) / FEAT_SIZE;

@@ -7,13 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "slam-precomp.h"  // Precompiled headerss
-
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/slam/CMonteCarloLocalization3D.h>
-
+#include "slam-precomp.h"  // Precompiled headers
+//
 #include <mrpt/core/round.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/slam/CMonteCarloLocalization3D.h>
 #include <mrpt/slam/PF_aux_structs.h>
 
 using namespace std;
@@ -176,9 +175,9 @@ double
 	ASSERT_(
 		options.metricMap || particleIndexForMap < options.metricMaps.size());
 
-	CMetricMap* map =
-		(options.metricMap) ? options.metricMap :  // All particles, one map
-			options.metricMaps[particleIndexForMap];  // One map per particle
+	CMetricMap* map = (options.metricMap) ? options.metricMap
+										  :	 // All particles, one map
+		options.metricMaps[particleIndexForMap];  // One map per particle
 
 	// For each observation:
 	double ret = 1;

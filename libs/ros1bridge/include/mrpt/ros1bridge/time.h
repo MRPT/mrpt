@@ -33,4 +33,4 @@ ros::Time toROS(const mrpt::system::TTimeStamp& src);
 
 /** @} */
 
-};  // namespace mrpt::ros1bridge
+};	// namespace mrpt::ros1bridge

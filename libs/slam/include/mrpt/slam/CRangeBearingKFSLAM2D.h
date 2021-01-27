@@ -11,17 +11,15 @@
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/math/CMatrixDynamic.h>
-#include <mrpt/opengl/opengl_frwds.h>
-
 #include <mrpt/containers/bimap.h>
 #include <mrpt/core/safe_pointers.h>
-
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
@@ -114,7 +112,7 @@ class CRangeBearingKFSLAM2D
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;  // See base docs
 		void dumpToTextStream(
-			std::ostream& out) const override;  // See base docs
+			std::ostream& out) const override;	// See base docs
 
 		/** A 3-length vector with the std. deviation of the transition model in
 		 * (x,y,phi) used only when there is no odometry (if there is odo, its
@@ -390,5 +388,5 @@ class CRangeBearingKFSLAM2D
 
 	/** Last data association */
 	TDataAssocInfo m_last_data_association;
-};  // end class
+};	// end class
 }  // namespace mrpt::slam

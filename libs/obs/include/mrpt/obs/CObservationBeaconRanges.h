@@ -63,7 +63,7 @@ class CObservationBeaconRanges : public CObservation
 	void debugPrintOut();
 
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
-		const override;  // See base class docs.
+		const override;	 // See base class docs.
 	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
 		override;  // See base class docs.
 	void getDescriptionAsText(
@@ -73,6 +73,6 @@ class CObservationBeaconRanges : public CObservation
 	 * beacon, or 0 if the beacon is not observed */
 	float getSensedRangeByBeaconID(int32_t beaconID);
 
-};  // End of class def.
+};	// End of class def.
 
 }  // namespace mrpt::obs

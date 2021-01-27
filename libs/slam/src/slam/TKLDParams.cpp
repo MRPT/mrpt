@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/slam/TKLDParams.h>

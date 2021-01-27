@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "bayes-precomp.h"  // Precompiled headers
-
+#include "bayes-precomp.h"	// Precompiled headers
+//
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/random.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -39,7 +40,8 @@ void CParticleFilterCapable::performResampling(
 	vector<size_t> indxs;
 	vector<double> log_ws;
 	log_ws.assign(in_particle_count, .0);
-	for (size_t i = 0; i < in_particle_count; i++) log_ws[i] = getW(i);
+	for (size_t i = 0; i < in_particle_count; i++)
+		log_ws[i] = getW(i);
 
 	// Compute the surviving indexes:
 	computeResampling(
@@ -112,10 +114,7 @@ void CParticleFilterCapable::computeResampling(
 
 			while (i < out_particle_count)
 			{
-				if (T[i] < Q[j])
-				{
-					out_indexes[i++] = (unsigned int)j;
-				}
+				if (T[i] < Q[j]) { out_indexes[i++] = (unsigned int)j; }
 				else
 				{
 					j++;
@@ -123,7 +122,7 @@ void CParticleFilterCapable::computeResampling(
 				}
 			}
 		}
-		break;  // end of "Select with replacement"
+		break;	// end of "Select with replacement"
 
 		case CParticleFilter::prResidual:
 		{
@@ -139,21 +138,22 @@ void CParticleFilterCapable::computeResampling(
 				R += N[i];
 			}
 			size_t N_rnd = out_particle_count >= R ? (out_particle_count - R)
-												   : 0;  // # of particles to be
+												   : 0;	 // # of particles to be
 			// drawn randomly (the
 			// "residual" part)
 
 			// Fillout the deterministic part of the resampling:
 			out_indexes.resize(out_particle_count);
 			for (i = 0, j = 0; i < out_particle_count; i++)
-				for (size_t k = 0; k < N[i]; k++) out_indexes[j++] = i;
+				for (size_t k = 0; k < N[i]; k++)
+					out_indexes[j++] = i;
 
 			size_t M_fixed = j;
 
 			// Prepare a multinomial resampling with the residual part,
 			//  using the modified weights:
 			// ----------------------------------------------------------
-			if (N_rnd)  // If there are "residual" part (should be virtually
+			if (N_rnd)	// If there are "residual" part (should be virtually
 			// always!)
 			{
 				// Compute modified weights:
@@ -181,9 +181,7 @@ void CParticleFilterCapable::computeResampling(
 				while (i < N_rnd)
 				{
 					if (T[i] < Q[j])
-					{
-						out_indexes[M_fixed + i++] = (unsigned int)j;
-					}
+					{ out_indexes[M_fixed + i++] = (unsigned int)j; }
 					else
 					{
 						j++;
@@ -219,8 +217,7 @@ void CParticleFilterCapable::computeResampling(
 			i = j = 0;
 			while (i < out_particle_count)
 			{
-				if (T[i] < Q[j])
-					out_indexes[i++] = (unsigned int)j;
+				if (T[i] < Q[j]) out_indexes[i++] = (unsigned int)j;
 				else
 				{
 					j++;
@@ -242,15 +239,15 @@ void CParticleFilterCapable::computeResampling(
 			vector<double> T(M + 1);
 			double _1_M = 1.0 / M;
 			T[0] = getRandomGenerator().drawUniform(0.0, _1_M);
-			for (i = 1; i < M; i++) T[i] = T[i - 1] + _1_M;
+			for (i = 1; i < M; i++)
+				T[i] = T[i - 1] + _1_M;
 			T[M] = 1;
 
 			out_indexes.resize(out_particle_count);
 			i = j = 0;
 			while (i < out_particle_count)
 			{
-				if (T[i] < Q[j])
-					out_indexes[i++] = (unsigned int)j;
+				if (T[i] < Q[j]) out_indexes[i++] = (unsigned int)j;
 				else
 				{
 					j++;
@@ -410,7 +407,7 @@ void CParticleFilterCapable::prepareFastDrawSample(
 		m_fastDrawAuxiliary.CDF[PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS] = 1.0;
 
 		// Compute the CDF and save threshold indexes:
-		double CDF = 0;  // Cumulative density func.
+		double CDF = 0;	 // Cumulative density func.
 		for (i = 0, j = 0; i < M && j < PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS;
 			 i++)
 		{
@@ -427,7 +424,7 @@ void CParticleFilterCapable::prepareFastDrawSample(
 		ASSERT_(j == PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS);
 
 // Done!
-#if !defined(_MSC_VER) || (_MSC_VER > 1400)  // <=VC2005 doesn't work with this!
+#if !defined(_MSC_VER) || (_MSC_VER > 1400)	 // <=VC2005 doesn't work with this!
 		MRPT_END_WITH_CLEAN_UP(/* Debug: */
 							   cout << "j=" << j
 									<< "\nm_fastDrawAuxiliary.CDF_indexes:"
@@ -554,11 +551,13 @@ void CParticleFilterCapable::log2linearWeights(
 
 	double sumW = 0;
 	size_t i;
-	for (i = 0; i < N; i++) sumW += out_linWeights[i] = exp(in_logWeights[i]);
+	for (i = 0; i < N; i++)
+		sumW += out_linWeights[i] = exp(in_logWeights[i]);
 
 	ASSERT_(sumW > 0);
 
-	for (i = 0; i < N; i++) out_linWeights[i] /= sumW;
+	for (i = 0; i < N; i++)
+		out_linWeights[i] /= sumW;
 
 	MRPT_END
 }

@@ -13,9 +13,10 @@
 #include <mrpt/math/TPlane.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/epsilon.h>
-#include <mrpt/math/geometry.h>  // getAngle()
+#include <mrpt/math/geometry.h>	 // getAngle()
 #include <mrpt/math/ops_containers.h>  // dotProduct()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
+
 #include <iostream>
 
 using namespace mrpt::math;
@@ -34,7 +35,7 @@ bool TPlane::contains(const TLine3D& line) const
 {
 	if (!contains(line.pBase)) return false;  // Base point must be contained
 	return std::abs(getAngle(*this, line)) <
-		   getEpsilon();  // Plane's normal must be normal to director vector
+		getEpsilon();  // Plane's normal must be normal to director vector
 }
 double TPlane::distance(const TPoint3D& point) const
 {
@@ -50,7 +51,8 @@ double TPlane::distance(const TLine3D& line) const
 TVector3D TPlane::getNormalVector() const
 {
 	TVector3D v;
-	for (int i = 0; i < 3; i++) v[i] = coefs[i];
+	for (int i = 0; i < 3; i++)
+		v[i] = coefs[i];
 	return v;
 }
 
@@ -60,14 +62,16 @@ TVector3D TPlane::getUnitaryNormalVector() const
 	const double s = sqrt(squareNorm<3, double>(coefs));
 	ASSERT_GT_(s, getEpsilon());
 	const double k = 1.0 / s;
-	for (int i = 0; i < 3; i++) vec[i] = coefs[i] * k;
+	for (int i = 0; i < 3; i++)
+		vec[i] = coefs[i] * k;
 	return vec;
 }
 
 void TPlane::unitarize()
 {
 	double s = sqrt(squareNorm<3, double>(coefs));
-	for (double& coef : coefs) coef /= s;
+	for (double& coef : coefs)
+		coef /= s;
 }
 
 // Returns a 6D pose such as its XY plane coincides with the plane
@@ -90,7 +94,8 @@ void TPlane::getAsPose3DForcingOrigin(
 		throw std::logic_error("Base point is not in the plane.");
 	const TVector3D normal = getUnitaryNormalVector();
 	CMatrixDouble44 AXIS = generateAxisBaseFromDirectionAndAxis(normal, 2);
-	for (size_t i = 0; i < 3; i++) AXIS(i, 3) = center[i];
+	for (size_t i = 0; i < 3; i++)
+		AXIS(i, 3) = center[i];
 	pose.fromHomogeneousMatrix(AXIS);
 }
 TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
@@ -147,10 +152,11 @@ TPlane::TPlane(const TLine3D& r1, const TLine3D& r2)
 		// Use a line's director vector and both pBase's difference to create
 		// the plane.
 		double d[3];
-		for (size_t i = 0; i < 3; i++) d[i] = r1.pBase[i] - r2.pBase[i];
+		for (size_t i = 0; i < 3; i++)
+			d[i] = r1.pBase[i] - r2.pBase[i];
 		crossProduct3D(r1.director, d, coefs);
 		coefs[3] = -coefs[0] * r1.pBase.x - coefs[1] * r1.pBase.y -
-				   coefs[2] * r1.pBase.z;
+			coefs[2] * r1.pBase.z;
 	}
 	else if (std::abs(evaluatePoint(r2.pBase)) >= getEpsilon())
 		throw std::logic_error("Lines do not intersect");

@@ -10,6 +10,7 @@
 
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TRenderMatrices.h>
+
 #include <cstdint>
 #include <deque>
 #include <map>

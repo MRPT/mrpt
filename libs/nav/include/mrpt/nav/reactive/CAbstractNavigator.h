@@ -87,7 +87,7 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 		 * straight-line Euclidean distances. */
 		double targetDesiredRelSpeed{.05};
 		bool targetIsIntermediaryWaypoint{
-			false};  // !< (Default=false) If true, event
+			false};	 // !< (Default=false) If true, event
 		// callback
 		// `sendWaypointReachedEvent()` will
 		// be called instead of
@@ -265,8 +265,8 @@ class CAbstractNavigator : public mrpt::system::COutputLogger
 	}
 
 	/** Publicly available time profiling object. Default: disabled */
-	mrpt::system::CTimeLogger m_navProfiler{false,
-											"mrpt::nav::CAbstractNavigator"};
+	mrpt::system::CTimeLogger m_navProfiler{
+		false, "mrpt::nav::CAbstractNavigator"};
 
    private:
 	/** Last internal state of navigator: */

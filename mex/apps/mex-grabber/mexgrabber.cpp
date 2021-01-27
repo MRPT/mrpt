@@ -115,7 +115,7 @@ MEX_DEFINE(new)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	//			Load config from file:
 	// ------------------------------------------
 	int time_between_launches = 300;
-	double SF_max_time_span = 0.25;  // Seconds
+	double SF_max_time_span = 0.25;	 // Seconds
 	bool use_sensoryframes = false;
 	int GRABBER_PERIOD_MS = 1000;
 

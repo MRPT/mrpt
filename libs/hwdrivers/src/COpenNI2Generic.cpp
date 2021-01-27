@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled header
-
+#include "hwdrivers-precomp.h"	// Precompiled header
+//
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/CTimeLogger.h>
@@ -48,7 +48,7 @@ bool setONI2StreamMode(
 	openni::PixelFormat format);
 std::string oni2DevInfoStr(const openni::DeviceInfo& info, int tab = 0);
 bool cmpONI2Device(const openni::DeviceInfo& i1, const openni::DeviceInfo& i2);
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 
 #include <mrpt/hwdrivers/COpenNI2Generic_CDevice.h>
 
@@ -87,7 +87,7 @@ COpenNI2Generic::COpenNI2Generic(
 #if MRPT_HAS_OPENNI2
 	  m_rgb_format(openni::PIXEL_FORMAT_RGB888),
 	  m_depth_format(openni::PIXEL_FORMAT_DEPTH_1_MM),
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 	  m_verbose(false),
 	  m_grab_image(true),
 	  m_grab_depth(true),
@@ -114,10 +114,7 @@ bool COpenNI2Generic::start()
 #if MRPT_HAS_OPENNI2
 	if (numInstances == 0)
 	{
-		if (openni::OpenNI::initialize() != openni::STATUS_OK)
-		{
-			return false;
-		}
+		if (openni::OpenNI::initialize() != openni::STATUS_OK) { return false; }
 		else
 		{
 			std::cerr << "[" << __FUNCTION__ << "]" << std::endl
@@ -128,7 +125,7 @@ bool COpenNI2Generic::start()
 	return true;
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /*-------------------------------------------------------------
@@ -137,10 +134,7 @@ dtor
 COpenNI2Generic::~COpenNI2Generic()
 {
 	numInstances--;
-	if (numInstances == 0)
-	{
-		kill();
-	}
+	if (numInstances == 0) { kill(); }
 }
 
 int COpenNI2Generic::getNumDevices() const
@@ -152,10 +146,7 @@ void COpenNI2Generic::setVerbose(bool verbose) { m_verbose = verbose; }
 bool COpenNI2Generic::isVerbose() const { return m_verbose; }
 void COpenNI2Generic::showLog(const std::string& message) const
 {
-	if (isVerbose() == false)
-	{
-		return;
-	}
+	if (isVerbose() == false) { return; }
 	std::cerr << message;
 }
 /** This method can or cannot be implemented in the derived class, depending on
@@ -188,15 +179,9 @@ int COpenNI2Generic::getConnectedDevices()
 		for (unsigned int j = 0, j_end = vDevices.size();
 			 j < j_end && isExist == false; ++j)
 		{
-			if (cmpONI2Device(info, vDevices[j]->getInfo()))
-			{
-				isExist = true;
-			}
+			if (cmpONI2Device(info, vDevices[j]->getInfo())) { isExist = true; }
 		}
-		if (isExist == false)
-		{
-			newDevices.insert(i);
-		}
+		if (isExist == false) { newDevices.insert(i); }
 	}
 	// Add new devices to device list(static member).
 	for (int newDevice : newDevices)
@@ -216,10 +201,7 @@ int COpenNI2Generic::getConnectedDevices()
 		}
 	}
 
-	if (getNumDevices() == 0)
-	{
-		showLog(" No devices connected -> EXIT\n");
-	}
+	if (getNumDevices() == 0) { showLog(" No devices connected -> EXIT\n"); }
 	else
 	{
 		showLog(mrpt::format(" %d devices were found.\n", getNumDevices()));
@@ -227,7 +209,7 @@ int COpenNI2Generic::getConnectedDevices()
 	return getNumDevices();
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 void COpenNI2Generic::kill()
@@ -238,21 +220,18 @@ void COpenNI2Generic::kill()
 	openni::OpenNI::shutdown();
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 bool COpenNI2Generic::isOpen([[maybe_unused]] const unsigned sensor_id) const
 {
 #if MRPT_HAS_OPENNI2
 	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
-	if ((int)sensor_id >= getNumDevices())
-	{
-		return false;
-	}
+	if ((int)sensor_id >= getNumDevices()) { return false; }
 	return vDevices[sensor_id]->isOpen();
 #else
 	return false;
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 void COpenNI2Generic::open([[maybe_unused]] unsigned sensor_id)
@@ -260,10 +239,7 @@ void COpenNI2Generic::open([[maybe_unused]] unsigned sensor_id)
 #if MRPT_HAS_OPENNI2
 	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
-	if (!getNumDevices())
-	{
-		THROW_EXCEPTION("No OpenNI2 devices found.");
-	}
+	if (!getNumDevices()) { THROW_EXCEPTION("No OpenNI2 devices found."); }
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
@@ -285,10 +261,7 @@ void COpenNI2Generic::open([[maybe_unused]] unsigned sensor_id)
 	vDevices[sensor_id]->open(m_width, m_height, m_fps);
 	showLog(vDevices[sensor_id]->getLog() + "\n");
 	showLog(mrpt::format(" Device [%d] ", sensor_id));
-	if (vDevices[sensor_id]->isOpen())
-	{
-		showLog(" open successfully.\n");
-	}
+	if (vDevices[sensor_id]->isOpen()) { showLog(" open successfully.\n"); }
 	else
 	{
 		showLog(" open failed.\n");
@@ -296,7 +269,7 @@ void COpenNI2Generic::open([[maybe_unused]] unsigned sensor_id)
 	std::this_thread::sleep_for(1000ms);  // Sleep
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 unsigned int COpenNI2Generic::openDevicesBySerialNum([
@@ -351,7 +324,7 @@ unsigned int COpenNI2Generic::openDevicesBySerialNum([
 	return num_open_dev;
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 unsigned int COpenNI2Generic::openDeviceBySerial(
@@ -371,10 +344,7 @@ bool COpenNI2Generic::getDeviceIDFromSerialNum(
 	for (size_t i = 0, i_end = vDevices.size(); i < i_end; ++i)
 	{
 		unsigned int sn;
-		if (vDevices[i]->getSerialNumber(sn) == false)
-		{
-			continue;
-		}
+		if (vDevices[i]->getSerialNumber(sn) == false) { continue; }
 		if (sn == SerialRequired)
 		{
 			sensor_id = (int)i;
@@ -384,7 +354,7 @@ bool COpenNI2Generic::getDeviceIDFromSerialNum(
 	return false;
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 void COpenNI2Generic::close([[maybe_unused]] unsigned sensor_id)
@@ -392,10 +362,7 @@ void COpenNI2Generic::close([[maybe_unused]] unsigned sensor_id)
 #if MRPT_HAS_OPENNI2
 	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
 	// Sensor index validation.
-	if (!getNumDevices())
-	{
-		THROW_EXCEPTION("No OpenNI2 devices found.");
-	}
+	if (!getNumDevices()) { THROW_EXCEPTION("No OpenNI2 devices found."); }
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
@@ -404,7 +371,7 @@ void COpenNI2Generic::close([[maybe_unused]] unsigned sensor_id)
 	vDevices[sensor_id]->close();
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
@@ -424,10 +391,7 @@ void COpenNI2Generic::getNextFrameRGB(
 {
 #if MRPT_HAS_OPENNI2
 	// Sensor index validation.
-	if (!getNumDevices())
-	{
-		THROW_EXCEPTION("No OpenNI2 devices found.");
-	}
+	if (!getNumDevices()) { THROW_EXCEPTION("No OpenNI2 devices found."); }
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
@@ -442,7 +406,7 @@ void COpenNI2Generic::getNextFrameRGB(
 	}
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 void COpenNI2Generic::getNextFrameD(
@@ -453,10 +417,7 @@ void COpenNI2Generic::getNextFrameD(
 {
 #if MRPT_HAS_OPENNI2
 	// Sensor index validation.
-	if (getNumDevices() == 0)
-	{
-		THROW_EXCEPTION("No OpenNI2 devices found.");
-	}
+	if (getNumDevices() == 0) { THROW_EXCEPTION("No OpenNI2 devices found."); }
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
@@ -471,7 +432,7 @@ void COpenNI2Generic::getNextFrameD(
 	}
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 /** The main data retrieving function, to be called after calling loadConfig()
@@ -489,10 +450,7 @@ void COpenNI2Generic::getNextFrameRGBD(
 {
 #if MRPT_HAS_OPENNI2
 	// Sensor index validation.
-	if (!getNumDevices())
-	{
-		THROW_EXCEPTION("No OpenNI2 devices found.");
-	}
+	if (!getNumDevices()) { THROW_EXCEPTION("No OpenNI2 devices found."); }
 	if ((int)sensor_id >= getNumDevices())
 	{
 		THROW_EXCEPTION(
@@ -507,7 +465,7 @@ void COpenNI2Generic::getNextFrameRGBD(
 	}
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 bool COpenNI2Generic::getColorSensorParam(
@@ -516,14 +474,11 @@ bool COpenNI2Generic::getColorSensorParam(
 {
 #if MRPT_HAS_OPENNI2
 	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
-	if (isOpen(sensor_id) == false)
-	{
-		return false;
-	}
+	if (isOpen(sensor_id) == false) { return false; }
 	return vDevices[sensor_id]->getCameraParam(CDevice::COLOR_STREAM, param);
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 bool COpenNI2Generic::getDepthSensorParam(
@@ -532,14 +487,11 @@ bool COpenNI2Generic::getDepthSensorParam(
 {
 #if MRPT_HAS_OPENNI2
 	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
-	if (isOpen(sensor_id) == false)
-	{
-		return false;
-	}
+	if (isOpen(sensor_id) == false) { return false; }
 	return vDevices[sensor_id]->getCameraParam(CDevice::DEPTH_STREAM, param);
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support");
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2
 }
 
 #if MRPT_HAS_OPENNI2
@@ -567,27 +519,12 @@ bool setONI2StreamMode(
 		// modes[i].getResolutionX() << "x" << modes[i].getResolutionY() << " "
 		// << modes[i].getFps() << " fps. format " << modes[i].getPixelFormat()
 		// << std::endl;
-		if (modes[i].getResolutionX() != w)
-		{
-			continue;
-		}
-		if (modes[i].getResolutionY() != h)
-		{
-			continue;
-		}
-		if (modes[i].getFps() != fps)
-		{
-			continue;
-		}
-		if (modes[i].getPixelFormat() != format)
-		{
-			continue;
-		}
+		if (modes[i].getResolutionX() != w) { continue; }
+		if (modes[i].getResolutionY() != h) { continue; }
+		if (modes[i].getFps() != fps) { continue; }
+		if (modes[i].getPixelFormat() != format) { continue; }
 		openni::Status rc = stream.setVideoMode(modes[i]);
-		if (rc != openni::STATUS_OK)
-		{
-			return false;
-		}
+		if (rc != openni::STATUS_OK) { return false; }
 		return true;
 	}
 	return false;
@@ -661,14 +598,8 @@ bool COpenNI2Generic::CDevice::synchMirrorMode()
 	for (auto& m_stream : m_streams)
 	{
 		if (!m_stream) continue;
-		if (m_stream->isMirrorSupported() == false)
-		{
-			break;
-		}
-		if (m_stream->setMirror(m_mirror) == false)
-		{
-			return false;
-		}
+		if (m_stream->isMirrorSupported() == false) { break; }
+		if (m_stream->setMirror(m_mirror) == false) { return false; }
 	}
 	return true;
 }
@@ -710,7 +641,7 @@ bool COpenNI2Generic::CDevice::startStreams()
 bool COpenNI2Generic::CDevice::isOpen() const
 {
 	return (m_streams[COLOR_STREAM] && m_streams[COLOR_STREAM]->isValid()) ||
-		   (m_streams[DEPTH_STREAM] && m_streams[DEPTH_STREAM]->isValid());
+		(m_streams[DEPTH_STREAM] && m_streams[DEPTH_STREAM]->isValid());
 }
 
 void COpenNI2Generic::CDevice::close()
@@ -799,7 +730,7 @@ bool COpenNI2Generic::CDevice::open(int w, int h, int fps)
 		m_log << "  Device doesn't do image registration!" << endl;
 	}
 
-	if (false)  // hasColor())
+	if (false)	// hasColor())
 	{  // printf("DBG: hasColor() returned TRUE\n");
 		m_streams[COLOR_STREAM]->disableAutoExposure();
 		printf("DBG: returned from disableAutoExposure()\n");
@@ -820,15 +751,11 @@ bool COpenNI2Generic::CDevice::getNextFrameRGB(
 {
 	MRPT_START
 	if (!hasColor())
-	{
-		THROW_EXCEPTION("This OpenNI2 device does not support color imaging");
-	}
+	{ THROW_EXCEPTION("This OpenNI2 device does not support color imaging"); }
 	openni::VideoFrameRef frame;
 	if (m_streams[COLOR_STREAM]->getFrame(
 			frame, timestamp, there_is_obs, hardware_error) == false)
-	{
-		return false;
-	}
+	{ return false; }
 	copyFrame<openni::RGB888Pixel, mrpt::img::CImage>(frame, img);
 
 	return true;
@@ -841,15 +768,11 @@ bool COpenNI2Generic::CDevice::getNextFrameD(
 {
 	MRPT_START
 	if (!hasDepth())
-	{
-		THROW_EXCEPTION("This OpenNI2 device does not support depth imaging");
-	}
+	{ THROW_EXCEPTION("This OpenNI2 device does not support depth imaging"); }
 	openni::VideoFrameRef frame;
 	if (m_streams[DEPTH_STREAM]->getFrame(
 			frame, timestamp, there_is_obs, hardware_error) == false)
-	{
-		return false;
-	}
+	{ return false; }
 	copyFrame<openni::DepthPixel, mrpt::math::CMatrix_u16>(frame, depth_mm);
 
 	return true;
@@ -866,13 +789,9 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 	hardware_error = false;
 
 	if (!hasColor())
-	{
-		THROW_EXCEPTION("This OpenNI2 device does not support color imaging");
-	}
+	{ THROW_EXCEPTION("This OpenNI2 device does not support color imaging"); }
 	if (!hasDepth())
-	{
-		THROW_EXCEPTION("This OpenNI2 device does not support depth imaging");
-	}
+	{ THROW_EXCEPTION("This OpenNI2 device does not support depth imaging"); }
 	// Read a frame (depth + rgb)
 	mrpt::system::TTimeStamp tm;
 	openni::VideoFrameRef frame[STREAM_TYPE_SIZE];
@@ -881,13 +800,8 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 		if (!m_streams[i] || !m_streams[i]->isValid()) continue;
 		if (m_streams[i]->getFrame(
 				frame[i], tm, there_is_obs, hardware_error) == false)
-		{
-			return false;
-		}
-		if (there_is_obs == false || hardware_error == true)
-		{
-			return false;
-		}
+		{ return false; }
+		if (there_is_obs == false || hardware_error == true) { return false; }
 	}
 
 	const int width = frame[COLOR_STREAM].getWidth();
@@ -911,8 +825,9 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 	const char* data[STREAM_TYPE_SIZE] = {
 		(const char*)frame[COLOR_STREAM].getData(),
 		(const char*)frame[DEPTH_STREAM].getData()};
-	const int step[STREAM_TYPE_SIZE] = {frame[COLOR_STREAM].getStrideInBytes(),
-										frame[DEPTH_STREAM].getStrideInBytes()};
+	const int step[STREAM_TYPE_SIZE] = {
+		frame[COLOR_STREAM].getStrideInBytes(),
+		frame[DEPTH_STREAM].getStrideInBytes()};
 
 	for (int yc = 0; yc < height; ++yc)
 	{
@@ -921,10 +836,7 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 		for (int xc = 0; xc < width; ++xc, ++pDepth, ++pRgb)
 		{
 			int x = xc;
-			if (isMirrorMode())
-			{
-				x = width - x - 1;
-			}
+			if (isMirrorMode()) { x = width - x - 1; }
 			setPixel(*pRgb, obs.intensityImage, x, yc);
 			setPixel(*pDepth, obs.rangeImage, x, yc);
 		}
@@ -970,20 +882,14 @@ bool COpenNI2Generic::CDevice::getSerialNumber(std::string& sn)
 		return false;
 	}
 	sn = std::string(serialNumber);
-	if (isOpened == false)
-	{
-		m_device.close();
-	}
+	if (isOpened == false) { m_device.close(); }
 	return true;
 }
 
 bool COpenNI2Generic::CDevice::getSerialNumber(unsigned int& sn)
 {
 	std::string str;
-	if (getSerialNumber(str) == false)
-	{
-		return false;
-	}
+	if (getSerialNumber(str) == false) { return false; }
 	std::stringstream sst;
 	sst.str(str);
 	sst >> sn;
@@ -1000,10 +906,7 @@ COpenNI2Generic::CDevice::CStream::CStream(
 	  m_format(format),
 	  m_verbose(verbose)
 {
-	if (m_type == openni::SENSOR_COLOR)
-	{
-		m_strName = "openni::SENSOR_COLOR";
-	}
+	if (m_type == openni::SENSOR_COLOR) { m_strName = "openni::SENSOR_COLOR"; }
 	else if (m_type == openni::SENSOR_DEPTH)
 	{
 		m_strName = "openni::SENSOR_DEPTH";
@@ -1022,10 +925,7 @@ COpenNI2Generic::CDevice::CStream::CStream(
 COpenNI2Generic::CDevice::CStream::~CStream() { destroy(); }
 bool COpenNI2Generic::CDevice::CStream::isMirrorSupported() const
 {
-	if (isValid() == false)
-	{
-		THROW_EXCEPTION(getName() + " is not opened.");
-	}
+	if (isValid() == false) { THROW_EXCEPTION(getName() + " is not opened."); }
 	return m_stream.isPropertySupported(openni::STREAM_PROPERTY_MIRRORING);
 }
 
@@ -1039,9 +939,7 @@ bool COpenNI2Generic::CDevice::CStream::setMirror(bool flag)
 	}
 	if (m_stream.isPropertySupported(openni::STREAM_PROPERTY_MIRRORING) ==
 		false)
-	{
-		return false;
-	}
+	{ return false; }
 	if (m_stream.setMirroringEnabled(flag) != openni::STATUS_OK)
 	{
 		m_log << "[" << __FUNCTION__ << "]" << std::endl
@@ -1181,10 +1079,7 @@ bool COpenNI2Generic::CDevice::CStream::getFrame(
 {
 	there_is_obs = false;
 	hardware_error = false;
-	if (isValid() == false)
-	{
-		return false;
-	}
+	if (isValid() == false) { return false; }
 	openni::Status rc = m_stream.readFrame(&frame);
 	if (rc != openni::STATUS_OK)
 	{
@@ -1198,4 +1093,4 @@ bool COpenNI2Generic::CDevice::CStream::getFrame(
 	return true;
 }
 
-#endif  // MRPT_HAS_OPENNI2
+#endif	// MRPT_HAS_OPENNI2

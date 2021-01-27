@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "ptgConfiguratorMain.h"
+
 #include <mrpt/gui/about_box.h>
 #include <wx/msgdlg.h>
 
@@ -20,13 +21,13 @@
 #include <wx/settings.h>
 #include <wx/string.h>
 //*)
-#include <mrpt/system/os.h>
-
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/wx28-fixes.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
+#include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
+
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/main_icon.xpm"
 
@@ -615,8 +616,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	SetMenuBar(MenuBar1);
 	StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
 	int __wxStatusBarWidths_1[4] = {-2, -5, -3, -3};
-	int __wxStatusBarStyles_1[4] = {wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL,
-									wxSB_NORMAL};
+	int __wxStatusBarStyles_1[4] = {
+		wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL};
 	StatusBar1->SetFieldsCount(4, __wxStatusBarWidths_1);
 	StatusBar1->SetStatusStyles(4, __wxStatusBarStyles_1);
 	SetStatusBar(StatusBar1);
@@ -924,14 +925,11 @@ void ptgConfiguratorframe::rebuild3Dview()
 	// Limits:
 	gl_axis_WS->setAxisLimits(-refDist, -refDist, .0f, refDist, refDist, .0f);
 
-	double tx = 10.0, ty = .0;  // Target in WS
+	double tx = 10.0, ty = .0;	// Target in WS
 	{
 		bool ok_x = edTargetX->GetValue().ToDouble(&tx);
 		bool ok_y = edTargetY->GetValue().ToDouble(&ty);
-		if (ok_x && ok_y)
-		{
-			gl_WS_target->setLocation(tx, ty, 0);
-		}
+		if (ok_x && ok_y) { gl_WS_target->setLocation(tx, ty, 0); }
 	}
 
 	if (ptg && ptg->isInitialized())
@@ -1024,11 +1022,10 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 			const double max_dist = TP_Obstacles[k];
 
-			mrpt::opengl::CSetOfLines& sol =
-				cbHighlightOnePath->IsChecked() &&
-						k == size_t(edIndexHighlightPath->GetValue())
-					? *gl_robot_ptg_prediction_highlight
-					: *gl_robot_ptg_prediction;
+			mrpt::opengl::CSetOfLines& sol = cbHighlightOnePath->IsChecked() &&
+					k == size_t(edIndexHighlightPath->GetValue())
+				? *gl_robot_ptg_prediction_highlight
+				: *gl_robot_ptg_prediction;
 
 			ptg->renderPathAsSimpleLine(k, sol, 0.10f, max_dist);
 
@@ -1091,11 +1088,10 @@ void ptgConfiguratorframe::rebuild3Dview()
 				const mrpt::math::TTwist2D curVel = ptg->getPathTwist(k, j);
 
 				// Head calc:
-				const double head2dir =
-					(curVel.vy != 0 || curVel.vx != 0)
-						? mrpt::math::angDistance(
-							  ::atan2(curVel.vy, curVel.vx), curPose.phi)
-						: .0;
+				const double head2dir = (curVel.vy != 0 || curVel.vx != 0)
+					? mrpt::math::angDistance(
+						  ::atan2(curVel.vy, curVel.vx), curPose.phi)
+					: .0;
 
 				if (is_selected_path)
 				{
@@ -1338,8 +1334,7 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
 				rebuild3Dview();
 			}
 			break;
-			default:
-				break;
+			default: break;
 		};
 		StatusBar1->SetStatusText(
 			wxString::Format(
@@ -1354,7 +1349,7 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
 
 void ptgConfiguratorframe::Onplot3DMouseClick(wxMouseEvent& event)
 {
-	m_plot->SetCursor(*wxSTANDARD_CURSOR);  // End of cross cursor
+	m_plot->SetCursor(*wxSTANDARD_CURSOR);	// End of cross cursor
 	m_cursorPickState = cpsNone;  // end of mode
 
 	// Do normal process in that class:

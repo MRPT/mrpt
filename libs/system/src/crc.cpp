@@ -7,8 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "system-precomp.h"  // Precompiled headers
-
+#include "system-precomp.h"	 // Precompiled headers
+//
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/crc.h>
 
@@ -61,8 +61,7 @@ unsigned long CRC32Value(int i, const uint32_t CRC32_POLYNOMIAL)
 	unsigned long ulCRC = i;
 	for (int j = 8; j > 0; j--)
 	{
-		if (ulCRC & 1)
-			ulCRC = (ulCRC >> 1) ^ CRC32_POLYNOMIAL;
+		if (ulCRC & 1) ulCRC = (ulCRC >> 1) ^ CRC32_POLYNOMIAL;
 		else
 			ulCRC >>= 1;
 	}

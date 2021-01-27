@@ -11,6 +11,7 @@
 
 //(*AppHeaders
 #include <wx/image.h>
+
 #include "robotic_arm_kinematicsMain.h"
 //*)
 

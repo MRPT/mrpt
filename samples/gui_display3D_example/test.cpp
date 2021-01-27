@@ -19,6 +19,7 @@
 #include <mrpt/opengl/CText.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace std;
@@ -53,7 +54,7 @@ void TestDisplay3D()
 		COpenGLViewport::Ptr vi = theScene->createViewport("myClone2");
 		vi->setViewportPosition(
 			/*x px*/ -250, /*y px*/ -250, /*width px*/ 250,
-			/*height px*/ 200);  // x,y negative means pixels from the
+			/*height px*/ 200);	 // x,y negative means pixels from the
 		// top/right, instead of from the bottom/left.
 		vi->setCloneView("main");
 		vi->setTransparent(false);
@@ -183,7 +184,7 @@ void TestDisplay3D()
 		fp2.vfont_scale = 14;
 
 		win.addTextMessage(
-			0.02, 0.02,  // X,Y<=1 means coordinates are factors over the entire
+			0.02, 0.02,	 // X,Y<=1 means coordinates are factors over the entire
 			// viewport area.
 			format(
 				"ball#1 pos: %.02f %.02f %.02f ", obj1->getPoseX(),
@@ -191,7 +192,7 @@ void TestDisplay3D()
 			10 /*id*/, fp2);
 
 		win.addTextMessage(
-			5, -15,  // |X|,|Y|>1 means absolute coordinates, negative means
+			5, -15,	 // |X|,|Y|>1 means absolute coordinates, negative means
 			// from the top instead of the bottom.
 			format(
 				"Time: %s",
@@ -204,7 +205,7 @@ void TestDisplay3D()
 		int mouse_x, mouse_y;
 		if (placeMode &&
 			win.getLastMousePosition(
-				mouse_x, mouse_y))  // See also: getLastMousePositionRay()
+				mouse_x, mouse_y))	// See also: getLastMousePositionRay()
 		{
 			// Get the ray in 3D for the latest mouse (X,Y):
 			mrpt::math::TLine3D ray;

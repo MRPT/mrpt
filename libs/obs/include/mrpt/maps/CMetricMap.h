@@ -18,6 +18,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/tfest/TMatchingPair.h>
+
 #include <deque>
 
 namespace mrpt::maps
@@ -302,7 +303,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 			const_cast<const CMetricMap*>(this)->getAsSimplePointsMap());
 	}
 
-};  // End of class def.
+};	// End of class def.
 
 /** A list of metric maps (used in the mrpt::poses::CPosePDFParticles class):
  */

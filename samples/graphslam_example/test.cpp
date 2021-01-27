@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/random.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -39,7 +40,7 @@ const double STD_NOISE_EDGE_XYZ = 0.001;
 const double STD_NOISE_EDGE_ANG = 0.01_deg;
 
 const double STD4EDGES_COV_MATRIX = 10;
-const double ERROR_IN_INCOMPATIBLE_EDGE = 0.3;  // ratio [0,1]
+const double ERROR_IN_INCOMPATIBLE_EDGE = 0.3;	// ratio [0,1]
 
 /**
  * Generic struct template
@@ -256,7 +257,7 @@ struct ExampleDemoGraphSLAM
 		// params["verbose"]  = 1;
 		params["profiler"] = true;
 		params["max_iterations"] = 500;
-		params["scale_hessian"] = 0.1;  // If <1, will "exagerate" the scale of
+		params["scale_hessian"] = 0.1;	// If <1, will "exagerate" the scale of
 		// the gradient and, normally, will
 		// converge much faster.
 		params["tau"] = 1e-3;

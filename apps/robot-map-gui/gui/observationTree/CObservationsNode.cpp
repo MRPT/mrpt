@@ -13,7 +13,6 @@
 #include "CObservationImageNode.h"
 #include "CObservationStereoImageNode.h"
 #include "CRangeScanNode.h"
-
 #include "mrpt/obs/CObservation2DRangeScan.h"
 #include "mrpt/obs/CObservationImage.h"
 #include "mrpt/obs/CObservationStereoImages.h"

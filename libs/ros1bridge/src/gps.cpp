@@ -26,20 +26,11 @@ bool fromROS(const sensor_msgs::NavSatFix& msg, mrpt::obs::CObservationGPS& obj)
 
 	switch (msg.status.status)
 	{
-		case -1:
-			gga.fields.fix_quality = 0;
-			break;
-		case 0:
-			gga.fields.fix_quality = 1;
-			break;
-		case 2:
-			gga.fields.fix_quality = 2;
-			break;
-		case 1:
-			gga.fields.fix_quality = 3;
-			break;
-		default:
-			gga.fields.fix_quality = 0;  // never going to execute default
+		case -1: gga.fields.fix_quality = 0; break;
+		case 0: gga.fields.fix_quality = 1; break;
+		case 2: gga.fields.fix_quality = 2; break;
+		case 1: gga.fields.fix_quality = 3; break;
+		default: gga.fields.fix_quality = 0;  // never going to execute default
 	}
 	obj.setMsg(gga);
 	return true;
@@ -67,18 +58,10 @@ bool toROS(
 		/// http://mrpt.ual.es/reference/devel/gnss__messages__ascii__nmea_8h_source.html
 		switch (gga.fields.fix_quality)
 		{
-			case 0:
-				msg.status.status = -1;
-				break;
-			case 1:
-				msg.status.status = 0;
-				break;
-			case 2:
-				msg.status.status = 2;
-				break;
-			case 3:
-				msg.status.status = 1;
-				break;
+			case 0: msg.status.status = -1; break;
+			case 1: msg.status.status = 0; break;
+			case 2: msg.status.status = 2; break;
+			case 3: msg.status.status = 1; break;
 			default:
 				// this is based on literature available on GPS as the number of
 				// types in ROS and MRPT are not same

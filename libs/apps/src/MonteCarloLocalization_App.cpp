@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "apps-precomp.h"  // Precompiled headers
-
+//
 #include <mrpt/apps/MonteCarloLocalization_App.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/config/CConfigFile.h>
@@ -24,7 +24,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
-#include <mrpt/math/ops_vectors.h>  // << for vector<>
+#include <mrpt/math/ops_vectors.h>	// << for vector<>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -46,6 +46,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
 #include <Eigen/Dense>
 
 using namespace mrpt::apps;
@@ -71,9 +72,7 @@ void MonteCarloLocalization_Base::initialize(int argc, const char** argv)
 
 	// Process arguments:
 	if (argc < 2)
-	{
-		THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str());
-	}
+	{ THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str()); }
 
 	// Config file:
 	const std::string configFile = std::string(argv[1]);
@@ -763,7 +762,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 					PF.executeOn(
 						pdf,
 						action.get(),  // Action
-						observations.get(),  // Obs.
+						observations.get(),	 // Obs.
 						&PF_stats  // Output statistics
 					);
 
@@ -783,8 +782,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 					action->getBestMovementEstimation();
 				if (best_mov_estim)
 				{
-					odometryEstimation =
-						odometryEstimation +
+					odometryEstimation = odometryEstimation +
 						best_mov_estim->poseChange->getMeanVal();
 				}
 
@@ -815,7 +813,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 						locErr += mrpt::hypot_fast(
 									  expectedPose.x() - pk.x,
 									  expectedPose.y() - pk.y) *
-								  exp(pdf.getW(k)) / sumW;
+							exp(pdf.getW(k)) / sumW;
 					}
 					convergenceErrors_mtx.lock();
 					convergenceErrors.push_back(locErr);
@@ -912,14 +910,16 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
 							Eigen::VectorXd ci1 =
 								ssu_out.scanWithUncert.rangesMean.asEigen() +
-								3 * ssu_out.scanWithUncert.rangesCovar.asEigen()
+								3 *
+									ssu_out.scanWithUncert.rangesCovar.asEigen()
 										.diagonal()
 										.array()
 										.sqrt()
 										.matrix();
 							Eigen::VectorXd ci2 =
 								ssu_out.scanWithUncert.rangesMean.asEigen() -
-								3 * ssu_out.scanWithUncert.rangesCovar.asEigen()
+								3 *
+									ssu_out.scanWithUncert.rangesCovar.asEigen()
 										.diagonal()
 										.array()
 										.sqrt()
@@ -1046,14 +1046,14 @@ void MonteCarloLocalization_Base::do_pf_localization()
 						(unsigned)step));
 				}
 
-			};  // while rawlogEntries
+			};	// while rawlogEntries
 
 			indivConvergenceErrors.saveToTextFile(sOUT_DIR + "/GT_error.txt");
 			odoError.saveToTextFile(sOUT_DIR + "/ODO_error.txt");
 			executionTimes.saveToTextFile(sOUT_DIR + "/exec_times.txt");
 
 			if (win3D && NUM_REPS == 1) mrpt::system::pause();
-		};  // for repetitions
+		};	// for repetitions
 
 		CTicTac tictacGlobal;
 		tictacGlobal.Tic();
@@ -1073,7 +1073,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 		for (size_t r = 0; r < NUM_REPS; r += runs_per_thread)
 		{
 			auto runner = [&](size_t i_start, size_t i_end) {
-				if (i_end > NUM_REPS) i_end = NUM_REPS;  // sanity check
+				if (i_end > NUM_REPS) i_end = NUM_REPS;	 // sanity check
 				for (size_t i = i_start; i < i_end; i++)
 					run_localization_code(i);
 			};
@@ -1260,8 +1260,7 @@ void MonteCarloLocalization_Rawlog::impl_initialize(int argc, const char** argv)
 {
 	MRPT_START
 	// Rawlog file: from args. line or from config file:
-	if (argc == 3)
-		m_rawlogFileName = std::string(argv[2]);
+	if (argc == 3) m_rawlogFileName = std::string(argv[2]);
 	else
 		m_rawlogFileName = params.read_string(
 			sect, "rawlog_file", std::string("log.rawlog"), true);

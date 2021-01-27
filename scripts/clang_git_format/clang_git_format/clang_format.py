@@ -7,13 +7,11 @@ import threading
 import subprocess
 import logging
 
-from .config import (CLANG_FORMAT_VERSION, CLANG_FORMAT_SHORT_VERSION)
 from .config import (PROGNAME)
 
 from .utils import (
     callo,
-    get_clang_format_from_linux_cache,
-    get_clang_format_from_darwin_cache, )
+    )
 
 logger = logging.getLogger("clang-format")
 
@@ -41,9 +39,7 @@ class ClangFormat:
             # Check for various versions staring with binaries with version
             # specific suffixes in the user's path
             programs = [
-                PROGNAME + "-" + CLANG_FORMAT_VERSION,
-                PROGNAME + "-" + CLANG_FORMAT_SHORT_VERSION,
-                PROGNAME,
+                PROGNAME
             ]
 
             if sys.platform == "win32":
@@ -80,26 +76,16 @@ class ClangFormat:
                 os.makedirs(cache_dir)
 
             self.clang_path = os.path.join(cache_dir,
-                                           PROGNAME + "-" +
-                                           CLANG_FORMAT_VERSION
+                                           PROGNAME
                                            + self.clang_format_progname_ext)
 
             # Download a new version if the cache is empty or stale
             if not os.path.isfile(self.clang_path) \
                     or not self._validate_version():
 
-                logger.warning("Haven't found a valid clang version in PATH. "
-                               "Downloading a valid version...")
-
-                if sys.platform.startswith("linux"):
-                    get_clang_format_from_linux_cache(self.clang_path)
-                elif sys.platform == "darwin":
-                    get_clang_format_from_darwin_cache(self.clang_path)
-                else:
-                    logger.error("clang-format.py does not support "
-                                 "downloading clang-format "
-                                 " on this platform, please install "
-                                 "clang-format %s ", CLANG_FORMAT_VERSION)
+                logger.error("Haven't found a valid %s version in PATH. ",
+                             PROGNAME)
+                sys.exit(1)
 
         # Validate we have the correct version
         # We only can fail here if the user specified a clang-format binary and
@@ -114,24 +100,23 @@ class ClangFormat:
         """Validate clang-format is the expected version
         """
         cf_version = callo([self.clang_path, "--version"])
-        logger.warning("Using clang-format version: %s", cf_version)
+        logger.warning("Using clang-format: %s", str(PROGNAME))
 
-        # JLBC: Disable version checks and just use the version we find:
         return True
 
     def _lint(self, file_name, print_diff):
         """Check the specified file has the correct format
         """
-        with open(file_name, 'rb') as original_text:
-            original_file = original_text.read()
+        fo = open(file_name, 'rb')
+        original_file = fo.read().decode('utf-8')
 
         # Get formatted file as clang-format would format the file
-        formatted_file = callo([self.clang_path, "--style=file", file_name])
+        formatted_file = callo([self.clang_path, "--style=file", file_name]).decode('utf-8')
 
         if original_file != formatted_file:
             if print_diff:
-                original_lines = original_file.splitlines()
-                formatted_lines = formatted_file.splitlines()
+                original_lines = original_file.splitlines(keepends=True)
+                formatted_lines = formatted_file.splitlines(keepends=True)
                 result = difflib.unified_diff(original_lines, formatted_lines)
 
                 # Take a lock to ensure diffs do not get mixed when printed to
@@ -141,8 +126,8 @@ class ClangFormat:
                     logger.info("To fix formatting errors, run %s "
                                 "--style=file -i %s", self.clang_path,
                                 file_name)
-                    for line in result:
-                        logger.info(line.rstrip())
+
+                    sys.stderr.writelines(result)
 
             return False
 

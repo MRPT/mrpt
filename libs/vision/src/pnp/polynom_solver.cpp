@@ -7,11 +7,12 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include "polynom_solver.h"
-#include "vision-precomp.h"  // Precompiled headers
-
+#include "vision-precomp.h"	 // Precompiled headers
+//
 #include <cmath>
 #include <iostream>
+
+#include "polynom_solver.h"
 
 #define CV_PI 3.14159265358979323846
 
@@ -151,8 +152,7 @@ int solve_deg4(
 	if (R < 10E-12)
 	{
 		double temp = r0 * r0 - 4 * e;
-		if (temp < 0)
-			D2 = E2 = -1;
+		if (temp < 0) D2 = E2 = -1;
 		else
 		{
 			double sqrt_temp = sqrt(temp);

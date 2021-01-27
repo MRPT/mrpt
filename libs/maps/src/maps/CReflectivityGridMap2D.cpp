@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"  // Precomp header
-
+//
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/obs/CObservationReflectivity.h>
@@ -205,15 +205,15 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		sensor_pose.composeFrom(takenFrom, o.sensorPose);
 
 		cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
-		if (!cell)
-			return 0;  // out of the map..
+		if (!cell) return 0;  // out of the map..
 		else
 		{
 			ASSERT_GE_(o.reflectivityLevel, 0);
 			ASSERT_LE_(o.reflectivityLevel, 1);
-			return -0.5 * square(
-							  (m_logodd_lut.l2p(*cell) - o.reflectivityLevel) /
-							  o.sensorStdNoise);
+			return -0.5 *
+				square(
+					(m_logodd_lut.l2p(*cell) - o.reflectivityLevel) /
+					o.sensorStdNoise);
 		}
 	}
 	else
@@ -263,8 +263,7 @@ void CReflectivityGridMap2D::serializeFrom(
 			if (version >= 1) in >> genericMapParams;
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 
@@ -316,8 +315,7 @@ void CReflectivityGridMap2D::getAsImage(
 		unsigned char* destPtr;
 		for (unsigned int y = 0; y < m_size_y; y++)
 		{
-			if (!verticalFlip)
-				destPtr = img(0, m_size_y - 1 - y);
+			if (!verticalFlip) destPtr = img(0, m_size_y - 1 - y);
 			else
 				destPtr = img(0, y);
 			for (unsigned int x = 0; x < m_size_x; x++)
@@ -333,8 +331,7 @@ void CReflectivityGridMap2D::getAsImage(
 		unsigned char* destPtr;
 		for (unsigned int y = 0; y < m_size_y; y++)
 		{
-			if (!verticalFlip)
-				destPtr = img(0, m_size_y - 1 - y);
+			if (!verticalFlip) destPtr = img(0, m_size_y - 1 - y);
 			else
 				destPtr = img(0, y);
 			for (unsigned int x = 0; x < m_size_x; x++)

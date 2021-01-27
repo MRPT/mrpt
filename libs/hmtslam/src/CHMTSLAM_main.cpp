@@ -25,13 +25,12 @@
  */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/io/CFileStream.h>
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
-
 #include <mrpt/system/os.h>
 
 using namespace mrpt::slam;
@@ -143,7 +142,8 @@ CHMTSLAM::~CHMTSLAM()
 		std::lock_guard<std::mutex> lock(m_topLCdets_cs);
 
 		// Clear old list:
-		for (auto& m_topLCdet : m_topLCdets) delete m_topLCdet;
+		for (auto& m_topLCdet : m_topLCdets)
+			delete m_topLCdet;
 		m_topLCdets.clear();
 	}
 }
@@ -446,7 +446,7 @@ void CHMTSLAM::initializeEmptyMap()
 		newLMH.m_parent = this;
 
 		newLMH.m_currentRobotPose =
-			POSEID_INVALID;  // Special case: map is empty
+			POSEID_INVALID;	 // Special case: map is empty
 		newLMH.m_log_w = 0;
 		newLMH.m_ID = newHypothID;
 
@@ -480,7 +480,8 @@ void CHMTSLAM::initializeEmptyMap()
 		std::lock_guard<std::mutex> lock(m_topLCdets_cs);
 
 		// Clear old list:
-		for (auto& m_topLCdet : m_topLCdets) delete m_topLCdet;
+		for (auto& m_topLCdet : m_topLCdets)
+			delete m_topLCdet;
 		m_topLCdets.clear();
 
 		// Create new list:
@@ -539,7 +540,7 @@ void CHMTSLAM::getAs3DScene([[maybe_unused]] COpenGLScene& scene3D) {}
 bool CHMTSLAM::abortedDueToErrors()
 {
 	return m_terminationFlag_LSLAM || m_terminationFlag_TBI ||
-		   m_terminationFlag_3D_viewer;
+		m_terminationFlag_3D_viewer;
 }
 
 /*---------------------------------------------------------------
@@ -614,8 +615,7 @@ void CHMTSLAM::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			// Save options??? Better allow changing them...
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
 

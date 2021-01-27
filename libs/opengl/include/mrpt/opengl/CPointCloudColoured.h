@@ -302,8 +302,9 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 		const float Rf, const float Gf, const float Bf, const float Af)
 	{
 		m_obj.setPoint(
-			idx, mrpt::math::TPointXYZfRGBAu8(
-					 x, y, z, f2u8(Rf), f2u8(Gf), f2u8(Bf), f2u8(Af)));
+			idx,
+			mrpt::math::TPointXYZfRGBAu8(
+				x, y, z, f2u8(Rf), f2u8(Gf), f2u8(Bf), f2u8(Af)));
 	}
 
 	/** Get XYZ_RGBu8 coordinates of i'th point */
@@ -357,7 +358,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 		m_obj.setPointColor_u8_fast(idx, r, g, b);
 	}
 
-};  // end of PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
+};	// end of PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 
 // After declaring the adapter we can here implement this method:
 template <class POINTSMAP>

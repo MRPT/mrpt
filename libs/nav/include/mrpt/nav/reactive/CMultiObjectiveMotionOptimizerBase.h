@@ -83,7 +83,7 @@ class CMultiObjectiveMotionOptimizerBase : public mrpt::rtti::CObject
 			const std::string& section) override;  // See base docs
 		void saveToConfigFile(
 			mrpt::config::CConfigFileBase& cfg,
-			const std::string& section) const override;  // See base docs
+			const std::string& section) const override;	 // See base docs
 	};
 
 	/** Resets the object state; use if the parameters change, so they are

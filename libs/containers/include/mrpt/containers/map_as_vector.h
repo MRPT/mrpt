@@ -137,8 +137,7 @@ class map_as_vector
 	 * vector) */
 	inline iterator find(const size_t i)
 	{
-		if (i < m_vec.size())
-			return m_vec.begin() + i;
+		if (i < m_vec.size()) return m_vec.begin() + i;
 		else
 			return m_vec.end();
 	}
@@ -147,14 +146,13 @@ class map_as_vector
 	 * vector) */
 	inline const_iterator find(const size_t i) const
 	{
-		if (i < m_vec.size())
-			return m_vec.begin() + i;
+		if (i < m_vec.size()) return m_vec.begin() + i;
 		else
 			return m_vec.end();
 	}
 
 	/** @} */
 
-};  // end class map_as_vector
+};	// end class map_as_vector
 
 }  // namespace mrpt::containers

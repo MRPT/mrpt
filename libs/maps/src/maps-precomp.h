@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/config.h>
-
 #include <mrpt/serialization/CArchive.h>  // So all maps which are serializable have this at hand.
 
 #if MRPT_ENABLE_PRECOMPILED_HDRS

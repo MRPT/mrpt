@@ -19,6 +19,7 @@
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/system/CObserver.h>
+
 #include "map2_1.xpm"
 #include "map2_2.xpm"
 #include "map2_3.xpm"
@@ -38,10 +39,7 @@ class MyObserver : public mrpt::system::CObserver
    protected:
 	void OnEvent(const mrptEvent& e)
 	{
-		if (e.isOfType<mrptEventMouseDown>())
-		{
-			mouse_click = 1;
-		}
+		if (e.isOfType<mrptEventMouseDown>()) { mouse_click = 1; }
 	}
 
    public:
@@ -155,9 +153,7 @@ class CRobotKinects
 		{
 			if ((kinectrelpose.distance3DTo(x[i], y[i], z[i]) < m_min_range) ||
 				(kinectrelpose.distance3DTo(x[i], y[i], z[i]) > m_max_range))
-			{
-				deletion.push_back(1);
-			}
+			{ deletion.push_back(1); }
 			else
 			{
 				deletion.push_back(0);
@@ -206,9 +202,8 @@ class CRobotKinects
 					{
 						row_points.getPoint(
 							acc_factor * j, point.x, point.y, point.z);
-						incrz =
-							kinectrelpose.distance3DTo(
-								point.x, point.y, point.z) *
+						incrz = kinectrelpose.distance3DTo(
+									point.x, point.y, point.z) *
 							tan((float(i) / (m_rows - 1) - 0.5) * m_fov_v +
 								m_pitch_angle) *
 							cos((float(j) / (m_columns - 1) - 0.5) * m_fov_h);
@@ -216,33 +211,24 @@ class CRobotKinects
 
 						// Points which belong to their height level are
 						// inserted. Otherwise they are deleted.
-						if (m_maps.size() == 1)
-						{
-							m_points.insertPoint(point);
-						}
+						if (m_maps.size() == 1) { m_points.insertPoint(point); }
 						else
 						{
 							if (k == 0)
 							{
 								if (point.z < heights[k])
-								{
-									m_points.insertPoint(point);
-								}
+								{ m_points.insertPoint(point); }
 							}
 							else if (k == m_maps.size() - 1)
 							{
 								if (point.z >= h)
-								{
-									m_points.insertPoint(point);
-								}
+								{ m_points.insertPoint(point); }
 							}
 							else
 							{
 								if ((point.z >= h) &&
 									(point.z < h + heights[k]))
-								{
-									m_points.insertPoint(point);
-								}
+								{ m_points.insertPoint(point); }
 							}
 						}
 					}
@@ -272,7 +258,8 @@ class CShortTermMemory
 
 	float remainder(float dividend, float divisor)
 	{
-		while (dividend > divisor) dividend -= divisor;
+		while (dividend > divisor)
+			dividend -= divisor;
 		return dividend;
 	}
 
@@ -310,9 +297,9 @@ class CShortTermMemory
 		// The grid is displaced according to the robot movement
 		{
 			int despx = obsgrids[0].x2idx(robot_ingrid.x + incrx) -
-						obsgrids[0].x2idx(robot_ingrid.x);
+				obsgrids[0].x2idx(robot_ingrid.x);
 			int despy = obsgrids[0].y2idx(robot_ingrid.y + incry) -
-						obsgrids[0].y2idx(robot_ingrid.y);
+				obsgrids[0].y2idx(robot_ingrid.y);
 			// int despxpos = abs(despx);
 			// int despypos = abs(despy);
 			float despxmeters = despx * obsgrids[0].getResolution();
@@ -357,14 +344,12 @@ class CShortTermMemory
 				}
 			}
 
-			robot_ingrid.x =
-				sign<float>(robot_ingrid.x + incrx) *
-				remainder(
-					abs(robot_ingrid.x + incrx), obsgrids[0].getResolution());
-			robot_ingrid.y =
-				sign<float>(robot_ingrid.y + incry) *
-				remainder(
-					abs(robot_ingrid.y + incry), obsgrids[0].getResolution());
+			robot_ingrid.x = sign<float>(robot_ingrid.x + incrx) *
+				remainder(abs(robot_ingrid.x + incrx),
+						  obsgrids[0].getResolution());
+			robot_ingrid.y = sign<float>(robot_ingrid.y + incry) *
+				remainder(abs(robot_ingrid.y + incry),
+						  obsgrids[0].getResolution());
 		}
 
 		// Second, update the likelihood values according to kinect scan
@@ -373,7 +358,7 @@ class CShortTermMemory
 		float angrot = -phi;
 		float aux_xpass;
 		float incr_grid_reactive =
-			0.2 / obsgrids[0].getResolution();  // This number marks distance in
+			0.2 / obsgrids[0].getResolution();	// This number marks distance in
 												// meters (but it's transformed
 												// into an index)
 		mrpt::math::TPoint3D paux;
@@ -406,9 +391,9 @@ class CShortTermMemory
 
 				// Points rotation and translation
 				aux_xpass = paux.x * cos(angrot) + paux.y * sin(angrot) +
-							robot_ingrid.x;
+					robot_ingrid.x;
 				paux.y = -paux.x * sin(angrot) + paux.y * cos(angrot) +
-						 robot_ingrid.y;
+					robot_ingrid.y;
 				paux.x = aux_xpass;
 
 				// Set binary occupancy of the cells (1 - there is at least one
@@ -419,7 +404,7 @@ class CShortTermMemory
 					(paux.z > level_height + 0.000001))
 				{
 					index = obsgrids[n].x2idx(paux.x) +
-							num_col * obsgrids[n].y2idx(paux.y);
+						num_col * obsgrids[n].y2idx(paux.y);
 					obs_in[index] = 1;
 				}
 			}
@@ -458,13 +443,13 @@ class CShortTermMemory
 						if (obsgrids[n].getCell(i, j) > occupancy_threshold)
 						{
 							paux.x = (obsgrids[n].idx2x(i) - robot_ingrid.x) *
-										 cos(-angrot) +
-									 (obsgrids[n].idx2y(j) - robot_ingrid.y) *
-										 sin(-angrot);
+									cos(-angrot) +
+								(obsgrids[n].idx2y(j) - robot_ingrid.y) *
+									sin(-angrot);
 							paux.y = -(obsgrids[n].idx2x(i) - robot_ingrid.x) *
-										 sin(-angrot) +
-									 (obsgrids[n].idx2y(j) - robot_ingrid.y) *
-										 cos(-angrot);
+									sin(-angrot) +
+								(obsgrids[n].idx2y(j) - robot_ingrid.y) *
+									cos(-angrot);
 							paux.z = level_height + 0.5 * heights[n];
 							grid_points.insertPoint(paux.x, paux.y, paux.z);
 							// Include points in their level for reactive
@@ -768,10 +753,7 @@ class CMyReactInterface
 			float h;
 			for (unsigned int i = 0; i < robotShape.size(); i++)
 			{
-				if (i == 0)
-				{
-					h = 0;
-				}
+				if (i == 0) { h = 0; }
 				else
 				{
 					h = robotShape.getHeight(i - 1) + h;
@@ -882,10 +864,7 @@ class CMyReactInterface
 				CRenderizable::Ptr obj;
 				obj = scene->getByName(format("Level%d", i + 1));
 
-				if (i == 0)
-				{
-					h = 0;
-				}
+				if (i == 0) { h = 0; }
 				else
 				{
 					h = robotShape.getHeight(i - 1) + h;
@@ -953,8 +932,7 @@ class CMyReactInterface
 		navparams.target.target_coords = mrpt::math::TPose2D(x, y, 0);
 		navparams.target.targetAllowedDistance = targetAllowedDistance;
 		navparams.target.targetIsRelative = targetIsRelative;
-		if (!targetIsRelative)
-			target = CPose2D(x, y, 0);
+		if (!targetIsRelative) target = CPose2D(x, y, 0);
 		else
 		{
 			CPose2D robotpose = CPose2D(robotSim.getCurrentGTPose());

@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "hmtslam-precomp.h"  // Precomp header
-
+//
 using namespace mrpt::hmtslam;
 
 IMPLEMENTS_SERIALIZABLE(THypothesisIDSet, CSerializable, mrpt::hmtslam)
@@ -18,7 +18,8 @@ void THypothesisIDSet::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	auto N = (uint32_t)size();
 	out << N;
-	for (THypothesisID it : *this) out << it;
+	for (THypothesisID it : *this)
+		out << it;
 }
 
 void THypothesisIDSet::serializeFrom(
@@ -40,7 +41,6 @@ void THypothesisIDSet::serializeFrom(
 			}
 		}
 		break;
-		default:
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }

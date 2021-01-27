@@ -54,5 +54,5 @@ class CObjectDetection
 		const mrpt::obs::CObservation& obs,
 		vector_detectable_object& detected) = 0;
 
-};  // End of class
+};	// End of class
 }  // namespace mrpt::detectors

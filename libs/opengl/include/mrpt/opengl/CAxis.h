@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
+
 #include <array>
 
 namespace mrpt::opengl
@@ -77,7 +78,7 @@ class CAxis : public CRenderizableShaderWireFrame
 	/** draw marks for X,Y,Z */
 	std::array<bool, 3> m_marks = {false, false, false};
 	float m_textScale{0.10f};
-	float m_textRot[3][3];  // {x,y,z},{yaw,pitch,roll}
+	float m_textRot[3][3];	// {x,y,z},{yaw,pitch,roll}
 	float m_markLen{0.07f};
 
 	mrpt::opengl::CListOpenGLObjects m_gl_labels;
