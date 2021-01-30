@@ -9,10 +9,9 @@
 
 #include <CTraitsTest.h>
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>
-
-#include <mrpt/config.h>
 
 template class mrpt::CTraitsTest<mrpt::img::TCamera>;
 
