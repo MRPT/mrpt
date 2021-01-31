@@ -812,34 +812,23 @@ namespace exprtk
             #undef exprtk_register_int_type_tag
 
             template <typename T>
-            struct epsilon_type
-            {
-               static inline T value()
-               {
-                  const T epsilon = T(0.0000000001);
-                  return epsilon;
-               }
-            };
+            struct epsilon_type {};
 
-            template <>
-            struct epsilon_type <float>
-            {
-               static inline float value()
-               {
-                  const float epsilon = float(0.000001f);
-                  return epsilon;
-               }
-            };
+            #define exprtk_define_epsilon_type(Type, Epsilon) \
+            template <> struct epsilon_type<Type>             \
+            {                                                 \
+               static inline Type value()                     \
+               {                                              \
+                  const Type epsilon = static_cast<Type>(Epsilon);         \
+                  return epsilon;                             \
+               }                                              \
+            };                                                \
 
-            template <>
-            struct epsilon_type <long double>
-            {
-               static inline long double value()
-               {
-                  const long double epsilon = static_cast<long double>(0.000000000001);
-                  return epsilon;
-               }
-            };
+            exprtk_define_epsilon_type(float      ,      0.000001f)
+            exprtk_define_epsilon_type(double     ,   0.0000000001)
+            exprtk_define_epsilon_type(long double, 0.000000000001)
+
+            #undef exprtk_define_epsilon_type
 
             template <typename T>
             inline bool is_nan_impl(const T v, real_type_tag)
@@ -1839,8 +1828,8 @@ namespace exprtk
       template <typename T>
       inline bool valid_exponent(const int exponent, numeric::details::real_type_tag)
       {
-         return (std::numeric_limits<T>::min_exponent10 <= exponent) &&
-                (exponent <= std::numeric_limits<T>::max_exponent10) ;
+         using namespace details::numeric;
+         return (numeric_info<T>::min_exp <= exponent) && (exponent <= numeric_info<T>::max_exp);
       }
 
       template <typename Iterator, typename T>
@@ -1885,14 +1874,7 @@ namespace exprtk
 
             while (end != itr)
             {
-               // Note: For 'physical' superscalar architectures it
-               // is advised that the following loop be: 4xPD1 and 1xPD2
                unsigned int digit;
-
-               #ifdef exprtk_enable_superscalar
-               parse_digit_1(d)
-               parse_digit_1(d)
-               #endif
                parse_digit_1(d)
                parse_digit_1(d)
                parse_digit_2(d)
@@ -1913,12 +1895,6 @@ namespace exprtk
                while (end != itr)
                {
                   unsigned int digit;
-
-                  #ifdef exprtk_enable_superscalar
-                  parse_digit_1(tmp_d)
-                  parse_digit_1(tmp_d)
-                  parse_digit_1(tmp_d)
-                  #endif
                   parse_digit_1(tmp_d)
                   parse_digit_1(tmp_d)
                   parse_digit_2(tmp_d)
@@ -1928,12 +1904,12 @@ namespace exprtk
                {
                   instate = true;
 
-                  const int exponent = static_cast<int>(-std::distance(curr, itr));
+                  const int frac_exponent = static_cast<int>(-std::distance(curr, itr));
 
-                  if (!valid_exponent<T>(exponent, numeric::details::real_type_tag()))
+                  if (!valid_exponent<T>(frac_exponent, numeric::details::real_type_tag()))
                      return false;
 
-                  d += compute_pow10(tmp_d, exponent);
+                  d += compute_pow10(tmp_d, frac_exponent);
                }
 
                #undef parse_digit_1
@@ -7559,13 +7535,13 @@ namespace exprtk
                                   const std::size_t r1,
                                   const std::size_t size) const
          {
-            if ((r0 < 0) || (r0 >= size))
+            if (r0 >= size)
             {
                throw std::runtime_error("range error: (r0 < 0) || (r0 >= size)");
                return false;
             }
 
-            if ((r1 < 0) || (r1 >= size))
+            if (r1 >= size)
             {
                throw std::runtime_error("range error: (r1 < 0) || (r1 >= size)");
                return false;
