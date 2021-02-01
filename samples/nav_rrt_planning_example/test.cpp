@@ -92,14 +92,13 @@ void TestRRT1()
 
 	// Obstacles:
 	planner_input.obstacles_points.loadFromSimpleMap(simplemap);
-	mrpt::math::TPoint3D bbox_min, bbox_max;
-	planner_input.obstacles_points.boundingBox(bbox_min, bbox_max);
+	const auto bbox = planner_input.obstacles_points.boundingBox();
 	// Convert gridmap -> obstacle points:
 	// gridmap.getAsPointCloud( planner_input.obstacles_points );
 
 	// Workspace bounding box:
-	planner_input.world_bbox_min = mrpt::math::TPoint2D(bbox_min.x, bbox_min.y);
-	planner_input.world_bbox_max = mrpt::math::TPoint2D(bbox_max.x, bbox_max.y);
+	planner_input.world_bbox_min = mrpt::math::TPoint2D(bbox.min.x, bbox.min.y);
+	planner_input.world_bbox_max = mrpt::math::TPoint2D(bbox.max.x, bbox.max.y);
 
 // size_t iters=0;
 // Show results in a GUI and keep improving:
