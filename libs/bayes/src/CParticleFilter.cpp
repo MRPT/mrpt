@@ -45,7 +45,8 @@ CParticleFilter::CParticleFilter()
 
 void CParticleFilter::executeOn(
 	CParticleFilterCapable& obj, const mrpt::obs::CActionCollection* action,
-	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
+	const mrpt::obs::CSensoryFrame* observation,
+	TParticleFilterStats* stats) const
 {
 	MRPT_START
 
@@ -89,8 +90,8 @@ void CParticleFilter::executeOn(
 	{
 		if (obj.ESS() < m_options.BETA)
 		{
-			MRPT_LOG_DEBUG(mrpt::format(
-				"Resampling particles (ESS was %.02f)\n", obj.ESS()));
+			MRPT_LOG_DEBUG_FMT(
+				"Resampling particles (ESS was %.02f)\n", obj.ESS());
 			obj.performResampling(m_options);  // Resample
 		}
 	}

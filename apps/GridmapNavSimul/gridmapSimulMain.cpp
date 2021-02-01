@@ -1047,10 +1047,10 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 		{
 			auto scene = m_canvas->getOpenGLSceneRef();
-			const mrpt::math::TPose2D p = the_robot.getCurrentGTPose();
 
 			scene->getViewport()->addTextMessage(
-				20, 20, string("Pose: ") + p.asString(), 0);
+				20, 20,
+				string("Pose: ") + the_robot.getCurrentGTPose().asString(), 0);
 
 			const mrpt::math::TTwist2D vel_local =
 				the_robot.getCurrentGTVelLocal();

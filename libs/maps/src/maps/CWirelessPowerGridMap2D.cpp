@@ -181,7 +181,7 @@ bool CWirelessPowerGridMap2D::internal_insertObservation(
   ---------------------------------------------------------------*/
 double CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
 	[[maybe_unused]] const CObservation& obs,
-	[[maybe_unused]] const CPose3D& takenFrom)
+	[[maybe_unused]] const CPose3D& takenFrom) const
 {
 	THROW_EXCEPTION("Not implemented yet!");
 }

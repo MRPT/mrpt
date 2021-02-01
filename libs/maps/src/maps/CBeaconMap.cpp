@@ -142,11 +142,8 @@ void CBeaconMap::serializeFrom(
 	};
 }
 
-/*---------------------------------------------------------------
-					computeObservationLikelihood
-  ---------------------------------------------------------------*/
 double CBeaconMap::internal_computeObservationLikelihood(
-	const CObservation& obs, const CPose3D& robotPose3D)
+	const CObservation& obs, const CPose3D& robotPose3D) const
 {
 	MRPT_START
 

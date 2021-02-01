@@ -227,7 +227,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 		const mrpt::obs::CObservation& obs) const override;
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 
 };	// End of class def.
 

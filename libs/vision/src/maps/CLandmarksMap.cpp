@@ -196,7 +196,7 @@ void CLandmarksMap::serializeFrom(
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CLandmarksMap::internal_computeObservationLikelihood(
-	const CObservation& obs, const CPose3D& robotPose3D)
+	const CObservation& obs, const CPose3D& robotPose3D) const
 {
 	MRPT_START
 
@@ -1648,27 +1648,19 @@ void CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
 
   ---------------------------------------------------------------*/
 double CLandmarksMap::computeLikelihood_RSLC_2007(
-	const CLandmarksMap* s, [[maybe_unused]] const CPose2D& sensorPose)
+	const CLandmarksMap* s, [[maybe_unused]] const CPose2D& sensorPose) const
 {
 	MRPT_START
 
 	double lik = 1.0;
 	TSequenceLandmarks::const_iterator itOther;
-	CLandmark* lm;	//*itClosest;
 	double corr;
 	double PrNoCorr;
 	CPointPDFGaussian poseThis, poseOther;
-	// double								STD_THETA = 0.15_deg;
-	// double								STD_DIST = 0.5f;
 	double nFoundCorrs = 0;
-	std::vector<int32_t>* corrs;
 	unsigned int cx, cy, cx_1, cx_2, cy_1, cy_2;
 
-	//	s->saveToMATLABScript2D(std::string("ver_sensed.m"));
-	// saveToMATLABScript2D(std::string("ver_ref.m"),"r");
-
-	CDynamicGrid<std::vector<int32_t>>* grid = landmarks.getGrid();
-	// grid->saveToTextFile( "debug_grid.txt" );
+	const auto grid = landmarks.getGrid();
 
 	// For each landmark in the observations:
 	for (itOther = s->landmarks.begin(); itOther != s->landmarks.end();
@@ -1699,12 +1691,12 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 		for (cx = cx_1; cx <= cx_2; cx++)
 			for (cy = cy_1; cy <= cy_2; cy++)
 			{
-				corrs = grid->cellByIndex(cx, cy);
+				auto corrs = grid->cellByIndex(cx, cy);
 				ASSERT_(corrs != nullptr);
 				if (!corrs->empty())
-					for (int& it : *corrs)
+					for (auto it : *corrs)
 					{
-						lm = landmarks.get(it);
+						auto lm = landmarks.get(it);
 
 						// Compute the "correspondence" in the range [0,1]:
 						// -------------------------------------------------------------
@@ -1738,37 +1730,7 @@ double CLandmarksMap::computeLikelihood_RSLC_2007(
 		// correspondence:
 		nFoundCorrs += 1 - PrNoCorr;
 
-		/**** DEBUG **** /
-		{
-			//FILE	*f=os::fopen("debug_corrs.txt","wt");
-			//for (Cij=v_Cij.begin(),pZj=v_pZj.begin(); pZj!=v_pZj.end();
-		Cij++,pZj++)
-			//{
-			//	os::fprintf(f,"%e %e\n", *Cij, *pZj);
-			//}
-
-			//os::fprintf(f,"\n INDIV LIK=%e\n lik=%e\n
-		closestObstacleInLine=%e\n measured
-		range=%e\n",indivLik,lik,closestObstacleInLine,
-		itOther.descriptors.SIFT[1]);
-			//os::fprintf(f,"
-		closestObstacleDirection=%e\n",closestObstacleDirection);
-			//os::fclose(f);
-
-			printf("\n lik=%e\n closestObstacleInLine=%e\n measured
-		range=%e\n",lik,closestObstacleInLine, itOther.descriptors.SIFT[1]);
-			if (itClosest)
-					printf(" closest=(%.03f,%.03f)\n", itClosest->pose_mean.x,
-		itClosest->pose_mean.y);
-			else	printf(" closest=nullptr\n");
-
-			printf(" P(no corrs)=%e\n",	PrNoCorr );
-			mrpt::system::pause();
-		}
-		/ ***************/
-
 		lik *= 1 - PrNoCorr;
-
 	}  // enf for each landmark in the other map.
 
 	lik = nFoundCorrs / static_cast<double>(s->size());
@@ -1942,14 +1904,14 @@ float CLandmarksMap::TCustomSequenceLandmarks::getLargestDistanceFromOrigin()
   ---------------------------------------------------------------*/
 double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 	CLandmarksMap* theMap, TMatchingPairList* correspondences,
-	std::vector<bool>* otherCorrespondences)
+	std::vector<bool>* otherCorrespondences) const
 {
 	double lik = 0;	 // For 'traditional'
 	double lik_i;
 	unsigned long distDesc;
 	double likByDist, likByDesc;
 
-	std::vector<unsigned char>::iterator it1, it2;
+	std::vector<unsigned char>::const_iterator it1, it2;
 	double K_dist = -0.5 / square(likelihoodOptions.SIFTs_mahaDist_std);
 	double K_desc =
 		-0.5 / square(likelihoodOptions.SIFTs_sigma_descriptor_dist);
@@ -1968,7 +1930,7 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 			// lik = 1e-9;		// For consensus
 			lik = 1.0;	// For traditional
 
-			TSequenceLandmarks::iterator lm1, lm2;
+			TSequenceLandmarks::const_iterator lm1, lm2;
 			for (idx1 = 0, lm1 = theMap->landmarks.begin();
 				 lm1 < theMap->landmarks.end();
 				 lm1 += decimation, idx1 += decimation)	 // Other theMap LM1
@@ -2094,8 +2056,8 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 			for (itCorr = correspondences->begin();
 				 itCorr != correspondences->end(); itCorr++)
 			{
-				CLandmark* lm1 = theMap->landmarks.get(itCorr->other_idx);
-				CLandmark* lm2 = landmarks.get(itCorr->this_idx);
+				auto lm1 = theMap->landmarks.get(itCorr->other_idx);
+				auto lm2 = landmarks.get(itCorr->this_idx);
 
 				dij(0, 0) = lm1->pose_mean.x - lm2->pose_mean.x;
 				dij(0, 1) = lm1->pose_mean.y - lm2->pose_mean.y;

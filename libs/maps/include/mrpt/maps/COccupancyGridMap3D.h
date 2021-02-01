@@ -380,7 +380,7 @@ class COccupancyGridMap3D
 	// See docs in base class
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 	// See docs in base class
 	bool internal_canComputeObservationLikelihood(
 		const mrpt::obs::CObservation& obs) const override;

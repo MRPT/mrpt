@@ -16,7 +16,8 @@
 using namespace mrpt::maps;
 
 double COccupancyGridMap3D::internal_computeObservationLikelihood(
-	const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom3D)
+	const mrpt::obs::CObservation& obs,
+	const mrpt::poses::CPose3D& takenFrom3D) const
 {
 	THROW_EXCEPTION("Implement me!");
 	return .0;

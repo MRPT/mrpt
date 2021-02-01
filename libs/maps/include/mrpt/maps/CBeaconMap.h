@@ -60,7 +60,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 
    public:
 	/** Constructor */

@@ -177,7 +177,7 @@ void CMultiMetricMap::serializeFrom(
 
 // Read docs in base class
 double CMultiMetricMap::internal_computeObservationLikelihood(
-	const CObservation& obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom) const
 {
 	MRPT_START
 	double ret_log_lik = 0;
