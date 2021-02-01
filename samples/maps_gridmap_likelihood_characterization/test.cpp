@@ -109,7 +109,7 @@ void theMainThing()
 
 	float phi = (float)0.0_deg;
 
-	CPose2D nullPose(0, 0, phi);
+	auto nullPose = CPose3D(0, 0, 0, phi, 0, 0);
 
 	for (float y = evalgrid_y_min; y < evalgrid_y_max; y += res)
 	{
