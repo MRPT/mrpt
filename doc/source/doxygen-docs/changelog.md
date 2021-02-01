@@ -20,6 +20,8 @@
       - Const correctness fixed in all mrpt::maps::CMetricMap classes.
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CFrustum() new constructor from mrpt::img::TCamera()
+  - \ref mrpt_poses_grp
+    - mrpt::poses::CPose3D: Add more syntactic sugger static constructors.
   - \ref mrpt_slam_grp
     - mrpt::slam::TMonteCarloLocalizationParams map parameters are now shared pointers instead of plain pointers for safer code.
 - BUG FIXES:
