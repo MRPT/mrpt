@@ -669,7 +669,7 @@ double CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
 	auto* map = const_cast<CMultiMetricMap*>(
 		&theObj->m_particles[particleIndexForMap].d->metricMaps);
 
-	return map->computeObservationsLikelihood(*observation, *x);
+	return map->computeObservationsLikelihood(*observation, CPose3D(*x));
 }
 
 /*---------------------------------------------------------------

@@ -60,11 +60,8 @@ void CMetricMap::loadFromProbabilisticPosesAndObservations(
 	}
 }
 
-/*---------------------------------------------------------------
-						computeObservationsLikelihood
-  ---------------------------------------------------------------*/
 double CMetricMap::computeObservationsLikelihood(
-	const CSensoryFrame& sf, const CPose2D& takenFrom)
+	const CSensoryFrame& sf, const CPose3D& takenFrom)
 {
 	double lik = 0;
 	for (const auto& it : sf)
@@ -73,15 +70,6 @@ double CMetricMap::computeObservationsLikelihood(
 	return lik;
 }
 
-double CMetricMap::computeObservationLikelihood(
-	const CObservation& obs, const CPose2D& takenFrom)
-{
-	return computeObservationLikelihood(obs, CPose3D(takenFrom));
-}
-
-/*---------------------------------------------------------------
-				canComputeObservationLikelihood
-  ---------------------------------------------------------------*/
 bool CMetricMap::canComputeObservationsLikelihood(const CSensoryFrame& sf) const
 {
 	bool can = false;
@@ -165,7 +153,8 @@ bool CMetricMap::canComputeObservationLikelihood(
 }
 
 double CMetricMap::computeObservationLikelihood(
-	const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom)
+	const mrpt::obs::CObservation& obs,
+	const mrpt::poses::CPose3D& takenFrom) const
 {
 	if (genericMapParams.enableObservationLikelihood)
 		return internal_computeObservationLikelihood(obs, takenFrom);

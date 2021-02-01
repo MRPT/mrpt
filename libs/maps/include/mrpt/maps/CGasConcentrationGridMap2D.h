@@ -152,7 +152,7 @@ class CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 
 	/** Builds a LookUp table with the values of the Gaussian Weights result of
 	 * the wind advection

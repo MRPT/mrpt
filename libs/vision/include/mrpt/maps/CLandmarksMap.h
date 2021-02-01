@@ -121,7 +121,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	 */
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 
 	/** The color of landmark ellipsoids in CLandmarksMap::getAs3DObject */
 	static mrpt::img::TColorf COLOR_LANDMARKS_IN_3DSCENES;
@@ -175,10 +175,9 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 		void hasBeenModifiedAll();
 		void erase(unsigned int indx);
 
-		mrpt::containers::CDynamicGrid<std::vector<int32_t>>* getGrid()
-		{
-			return &m_grid;
-		}
+		auto* getGrid() { return &m_grid; }
+		const auto* getGrid() const { return &m_grid; }
+
 		/** Returns the landmark with a given landmrk ID, or nullptr if not
 		 * found
 		 */
@@ -506,7 +505,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	  Automation (ICRA), Rome (Italy), Apr 10-14, 2007</em>
 	  */
 	double computeLikelihood_RSLC_2007(
-		const CLandmarksMap* s, const mrpt::poses::CPose2D& sensorPose);
+		const CLandmarksMap* s, const mrpt::poses::CPose2D& sensorPose) const;
 
 	/** Loads into this landmarks map the SIFT features extracted from an image
 	 * observation (Previous contents of map will be erased)
@@ -606,7 +605,7 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	double computeLikelihood_SIFT_LandmarkMap(
 		CLandmarksMap* map,
 		mrpt::tfest::TMatchingPairList* correspondences = nullptr,
-		std::vector<bool>* otherCorrespondences = nullptr);
+		std::vector<bool>* otherCorrespondences = nullptr) const;
 
 	/** Returns true if the map is empty/no observation has been inserted.
 	 */

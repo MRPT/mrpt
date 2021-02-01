@@ -380,7 +380,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	// See docs in base class
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 
 };	// End of class def.
 }  // namespace mrpt::maps

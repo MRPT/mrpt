@@ -92,8 +92,8 @@ class COccupancyGridMap2D
 	/** Auxiliary variables to speed up the computation of observation
 	 * likelihood values for LF method among others, at a high cost in memory
 	 * (see TLikelihoodOptions::enableLikelihoodCache). */
-	std::vector<double> precomputedLikelihood;
-	bool m_likelihoodCacheOutDated{true};
+	mutable std::vector<double> precomputedLikelihood;
+	mutable bool m_likelihoodCacheOutDated{true};
 
 	/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if
 	 * not a basis point. */
@@ -147,37 +147,37 @@ class COccupancyGridMap2D
 	 * Consensus for gridmaps, see the ICRA2007 paper by Blanco et al.)  */
 	double computeObservationLikelihood_Consensus(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose2D& takenFrom) const;
 	/** One of the methods that can be selected for implementing
 	 * "computeObservationLikelihood". TODO: This method is described in....  */
 	double computeObservationLikelihood_ConsensusOWA(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose2D& takenFrom) const;
 	/** One of the methods that can be selected for implementing
 	 * "computeObservationLikelihood"  */
 	double computeObservationLikelihood_CellsDifference(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose2D& takenFrom) const;
 	/** One of the methods that can be selected for implementing
 	 * "computeObservationLikelihood" */
 	double computeObservationLikelihood_MI(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose2D& takenFrom) const;
 	/** One of the methods that can be selected for implementing
 	 * "computeObservationLikelihood" */
 	double computeObservationLikelihood_rayTracing(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose2D& takenFrom) const;
 	/** One of the methods that can be selected for implementing
 	 * "computeObservationLikelihood".*/
 	double computeObservationLikelihood_likelihoodField_Thrun(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose2D& takenFrom) const;
 	/** One of the methods that can be selected for implementing
 	 * "computeObservationLikelihood". */
 	double computeObservationLikelihood_likelihoodField_II(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose2D& takenFrom) const;
 
 	/** Clear the map: It set all cells to their default occupancy value (0.5),
 	 * without changing the resolution (the grid extension is reset to the
@@ -224,7 +224,9 @@ class COccupancyGridMap2D
 		int cellsUpdated{0};
 		/** In this mode, some laser rays can be skips to speep-up */
 		int laserRaysSkip{1};
-	} updateInfoChangeOnly;
+	};
+
+	mutable TUpdateCellsInfoChangeOnly updateInfoChangeOnly;
 
 	/** Fills all the cells with a default value. */
 	void fill(float default_value = 0.5f);
@@ -627,17 +629,19 @@ class COccupancyGridMap2D
 	/** Some members of this struct will contain intermediate or output data
 	 * after calling "computeObservationLikelihood" for some likelihood
 	 * functions */
-	class TLikelihoodOutput
+	struct TLikelihoodOutput
 	{
 	   public:
-		TLikelihoodOutput() : OWA_pairList(), OWA_individualLikValues() {}
 		/** [OWA method] This will contain the ascending-ordered list of
 		 * pairs:(likelihood values, 2D point in map coordinates). */
 		std::vector<TPairLikelihoodIndex> OWA_pairList;
+
 		/** [OWA method] This will contain the ascending-ordered list of
 		 * likelihood values for individual range measurements in the scan. */
 		std::vector<double> OWA_individualLikValues;
-	} likelihoodOutputs;
+	};
+
+	mutable TLikelihoodOutput likelihoodOutputs;
 
 	/** Performs a downsampling of the gridmap, by a given factor:
 	 * resolution/=ratio */
@@ -923,7 +927,7 @@ class COccupancyGridMap2D
 	 */
 	double computeLikelihoodField_Thrun(
 		const CPointsMap* pm,
-		const mrpt::poses::CPose2D* relativePose = nullptr);
+		const mrpt::poses::CPose2D* relativePose = nullptr) const;
 
 	/** Computes the likelihood [0,1] of a set of points, given the current grid
 	 * map as reference.
@@ -934,7 +938,7 @@ class COccupancyGridMap2D
 	 */
 	double computeLikelihoodField_II(
 		const CPointsMap* pm,
-		const mrpt::poses::CPose2D* relativePose = nullptr);
+		const mrpt::poses::CPose2D* relativePose = nullptr) const;
 
 	/** Saves the gridmap as a graphical file (BMP,PNG,...).
 	 * The format will be derived from the file extension (see
@@ -1119,7 +1123,7 @@ class COccupancyGridMap2D
 	// See docs in base class
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 	// See docs in base class
 	bool internal_canComputeObservationLikelihood(
 		const mrpt::obs::CObservation& obs) const override;

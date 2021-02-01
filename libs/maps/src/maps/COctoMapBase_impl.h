@@ -213,7 +213,8 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 
 template <class OCTREE, class OCTREE_NODE>
 double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
-	const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D& takenFrom)
+	const mrpt::obs::CObservation& obs,
+	const mrpt::poses::CPose3D& takenFrom) const
 {
 	octomap::point3d sensorPt;
 	octomap::Pointcloud scan;

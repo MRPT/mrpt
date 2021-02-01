@@ -941,11 +941,10 @@ double CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 			obser = &obserDumm;
 		}
 
+		// Compute the likelihood:
 		ret += map->computeObservationLikelihood(
-			*obser, x->pose);  // Compute the likelihood:
+			*obser, mrpt::poses::CPose3D(x->pose));
 	}
-
-	// cout << x->pose << format(": lik = %f",ret) << endl;
 
 	// Done!
 	return ret;

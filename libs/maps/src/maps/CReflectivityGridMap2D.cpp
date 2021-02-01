@@ -184,7 +184,7 @@ bool CReflectivityGridMap2D::internal_insertObservation(
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
 double CReflectivityGridMap2D::internal_computeObservationLikelihood(
-	const CObservation& obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom) const
 {
 	MRPT_START
 
@@ -204,7 +204,7 @@ double CReflectivityGridMap2D::internal_computeObservationLikelihood(
 		CPose3D sensor_pose;
 		sensor_pose.composeFrom(takenFrom, o.sensorPose);
 
-		cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
+		const cell_t* cell = cellByPos(sensor_pose.x(), sensor_pose.y());
 		if (!cell) return 0;  // out of the map..
 		else
 		{

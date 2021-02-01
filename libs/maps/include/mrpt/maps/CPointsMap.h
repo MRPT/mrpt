@@ -1007,11 +1007,11 @@ class CPointsMap : public CMetricMap,
 	// See docs in base class
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 
 	double internal_computeObservationLikelihoodPointCloud3D(
 		const mrpt::poses::CPose3D& pc_in_map, const float* xs, const float* ys,
-		const float* zs, const std::size_t num_pts);
+		const float* zs, const std::size_t num_pts) const;
 
 	/** @name PCL library support
 		@{ */

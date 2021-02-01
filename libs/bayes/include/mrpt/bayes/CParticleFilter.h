@@ -201,7 +201,7 @@ class CParticleFilter : public mrpt::system::COutputLogger
 	void executeOn(
 		CParticleFilterCapable& obj, const mrpt::obs::CActionCollection* action,
 		const mrpt::obs::CSensoryFrame* observation,
-		TParticleFilterStats* stats = nullptr);
+		TParticleFilterStats* stats = nullptr) const;
 
 	/** The options to be used in the PF, must be set before executing any step
 	 * of the particle filter.

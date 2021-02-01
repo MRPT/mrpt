@@ -1359,7 +1359,7 @@ void CPointsMap::compute3DDistanceToMesh(
 
 double CPointsMap::internal_computeObservationLikelihoodPointCloud3D(
 	const mrpt::poses::CPose3D& pc_in_map, const float* xs, const float* ys,
-	const float* zs, const std::size_t num_pts)
+	const float* zs, const std::size_t num_pts) const
 {
 	MRPT_TRY_START
 
@@ -1398,7 +1398,7 @@ double CPointsMap::internal_computeObservationLikelihoodPointCloud3D(
 }
 
 double CPointsMap::internal_computeObservationLikelihood(
-	const CObservation& obs, const CPose3D& takenFrom)
+	const CObservation& obs, const CPose3D& takenFrom) const
 {
 	// This function depends on the observation type:
 	// -----------------------------------------------------

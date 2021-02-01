@@ -100,8 +100,8 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 	CParticleFilter::TParticleFilterStats PF_stats;
 
 	// Load the set of metric maps to consider in the experiments:
-	CMultiMetricMap metricMap;
-	metricMap.setListOfMaps(mapList);
+	auto metricMap = CMultiMetricMap::Create();
+	metricMap->setListOfMaps(mapList);
 
 	getRandomGenerator().randomize();
 
@@ -124,7 +124,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 			mrpt::serialization::archiveFrom(f) >> simpleMap;
 			ASSERT_(simpleMap.size() > 0);
 			// Build metric map:
-			metricMap.loadFromProbabilisticPosesAndObservations(simpleMap);
+			metricMap->loadFromProbabilisticPosesAndObservations(simpleMap);
 		}
 		else
 		{
@@ -156,7 +156,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 			// PDF Options:
 			pdf.options = pdfPredictionOptions;
 
-			pdf.options.metricMap = &metricMap;
+			pdf.options.metricMap = metricMap;
 
 			// Create the PF object:
 			CParticleFilter PF;
@@ -172,7 +172,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 					iniSectionName, "init_PDF_mode", false,
 					/*Fail if not found*/ true))
 			{
-				auto grid = metricMap.mapByClass<COccupancyGridMap2D>();
+				auto grid = metricMap->mapByClass<COccupancyGridMap2D>();
 				pdf.resetUniformFreeSpace(
 					grid.get(), 0.7f, PARTICLE_COUNT,
 					iniFile.read_float(

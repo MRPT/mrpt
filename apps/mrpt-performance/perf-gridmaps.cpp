@@ -155,10 +155,10 @@ double grid_test_8(int a1, int a2)
 	CTicTac tictac;
 	for (long i = 0; i < N; i++)
 	{
-		CPose2D pose(
+		CPose3D pose(
 			getRandomGenerator().drawUniform(-1.0, 1.0),
-			getRandomGenerator().drawUniform(-1.0, 1.0),
-			getRandomGenerator().drawUniform(-M_PI, M_PI));
+			getRandomGenerator().drawUniform(-1.0, 1.0), .0,
+			getRandomGenerator().drawUniform(-M_PI, M_PI), .0, .0);
 		R += gridmap.computeObservationLikelihood(scan1, pose);
 	}
 	return tictac.Tac() / N;

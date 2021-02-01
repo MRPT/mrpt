@@ -256,8 +256,8 @@ void MonteCarloLocalization_Base::do_pf_localization()
 	CParticleFilter::TParticleFilterStats PF_stats;
 
 	// Load the set of metric maps to consider in the experiments:
-	CMultiMetricMap metricMap;
-	metricMap.setListOfMaps(mapList);
+	auto metricMap = CMultiMetricMap::Create();
+	metricMap->setListOfMaps(mapList);
 
 	{
 		std::stringstream ss;
@@ -297,7 +297,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			// Build metric map:
 			// ------------------------------
 			MRPT_LOG_INFO("Building metric map(s) from '.simplemap'...");
-			metricMap.loadFromProbabilisticPosesAndObservations(simpleMap);
+			metricMap->loadFromProbabilisticPosesAndObservations(simpleMap);
 			MRPT_LOG_INFO("Done.");
 		}
 		else if (!mapExt.compare("gridmap"))
@@ -305,7 +305,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			// It's a ".gridmap":
 			// -------------------------
 			MRPT_LOG_INFO("Loading gridmap from '.gridmap'...");
-			auto grid = metricMap.mapByClass<COccupancyGridMap2D>();
+			auto grid = metricMap->mapByClass<COccupancyGridMap2D>();
 			ASSERT_(grid);
 			{
 				CFileGZInputStream f(MAP_FILE);
@@ -356,7 +356,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
 	// Gridmap / area of initial uncertainty:
 	COccupancyGridMap2D::TEntropyInfo gridInfo;
-	if (auto grid = metricMap.mapByClass<COccupancyGridMap2D>(); grid)
+	if (auto grid = metricMap->mapByClass<COccupancyGridMap2D>(); grid)
 	{
 		grid->computeEntropy(gridInfo);
 		MRPT_LOG_INFO_FMT(
@@ -417,7 +417,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			if (SCENE3D_FREQ > 0 || SHOW_PROGRESS_3D_REAL_TIME)
 			{
 				mrpt::math::TBoundingBoxf bbox({-50, -50, 0}, {50, 50, 0});
-				if (auto pts = metricMap.getAsSimplePointsMap(); pts)
+				if (auto pts = metricMap->getAsSimplePointsMap(); pts)
 					bbox = pts->boundingBox();
 
 				scene.insert(mrpt::opengl::CGridPlaneXY::Create(
@@ -430,7 +430,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 							bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y));
 
 				CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
-				metricMap.getAs3DObject(gl_obj);
+				metricMap->getAs3DObject(gl_obj);
 				scene.insert(gl_obj);
 			}
 
@@ -462,7 +462,8 @@ void MonteCarloLocalization_Base::do_pf_localization()
 				ASSERT_DIRECTORY_EXISTS_(sOUT_DIR_3D);
 
 				using namespace std::string_literals;
-				metricMap.saveMetricMapRepresentationToFile(sOUT_DIR + "/map"s);
+				metricMap->saveMetricMapRepresentationToFile(
+					sOUT_DIR + "/map"s);
 			}
 
 			MONTECARLO_TYPE pdf;
@@ -470,7 +471,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			// PDF Options:
 			pdf.options = pdfPredictionOptions;
 
-			pdf.options.metricMap = &metricMap;
+			pdf.options.metricMap = metricMap;
 
 			// Create the PF object:
 			CParticleFilter PF;
@@ -488,7 +489,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 			{
 				// Reset uniform on free space:
 				pf2gauss_t<MONTECARLO_TYPE>::resetOnFreeSpace(
-					pdf, metricMap, PARTICLE_COUNT, init_min, init_max);
+					pdf, *metricMap, PARTICLE_COUNT, init_min, init_max);
 			}
 			else
 			{
@@ -858,7 +859,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 					// several are
 					// present.
 					COccupancyGridMap2D::Ptr gridmap =
-						metricMap.mapByClass<COccupancyGridMap2D>();
+						metricMap->mapByClass<COccupancyGridMap2D>();
 					if (obs_scan && gridmap)  // We have both, go on:
 					{
 						// Simulate scan + uncertainty:

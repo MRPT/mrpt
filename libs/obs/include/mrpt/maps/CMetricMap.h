@@ -67,7 +67,8 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	/** Internal method called by computeObservationLikelihood() */
 	virtual double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) = 0;
+		const mrpt::poses::CPose3D& takenFrom) const = 0;
+
 	/** Internal method called by canComputeObservationLikelihood() */
 	virtual bool internal_canComputeObservationLikelihood([
 		[maybe_unused]] const mrpt::obs::CObservation& obs) const
@@ -140,12 +141,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	 */
 	double computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom);
-
-	/** \overload */
-	double computeObservationLikelihood(
-		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose3D& takenFrom) const;
 
 	/** Returns true if this map is able to compute a sensible likelihood
 	 * function for this observation (i.e. an occupancy grid map cannot with an
@@ -168,7 +164,7 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	 */
 	double computeObservationsLikelihood(
 		const mrpt::obs::CSensoryFrame& sf,
-		const mrpt::poses::CPose2D& takenFrom);
+		const mrpt::poses::CPose3D& takenFrom);
 
 	/** Returns true if this map is able to compute a sensible likelihood
 	 * function for this observation (i.e. an occupancy grid map cannot with an
@@ -304,9 +300,5 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	}
 
 };	// End of class def.
-
-/** A list of metric maps (used in the mrpt::poses::CPosePDFParticles class):
- */
-using TMetricMapList = std::deque<CMetricMap*>;
 
 }  // namespace mrpt::maps

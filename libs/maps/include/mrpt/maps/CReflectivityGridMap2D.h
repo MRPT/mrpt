@@ -109,7 +109,7 @@ class CReflectivityGridMap2D : public CMetricMap,
 		const mrpt::poses::CPose3D* robotPose = nullptr) override;
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D& takenFrom) override;
+		const mrpt::poses::CPose3D& takenFrom) const override;
 
 	MAP_DEFINITION_START(CReflectivityGridMap2D)
 	/** See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions */

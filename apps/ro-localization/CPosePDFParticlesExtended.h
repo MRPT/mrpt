@@ -70,7 +70,7 @@ class CPosePDFParticlesExtended
 		 * is supplied for each particle: There must be the same maps here as
 		 * pose particles.
 		 */
-		mrpt::maps::TMetricMapList metricMaps;
+		std::deque<mrpt::maps::CMetricMap*> metricMaps;
 
 		/** Parameters for the KLD adaptive sample size algorithm (see Dieter
 		 * Fox's papers), which is used only if the CParticleFilter is created

@@ -169,9 +169,10 @@ double
 	ASSERT_(
 		options.metricMap || particleIndexForMap < options.metricMaps.size());
 
-	CMetricMap* map = (options.metricMap) ? options.metricMap
-										  :	 // All particles, one map
-		options.metricMaps[particleIndexForMap];  // One map per particle
+	// All particles, one map, or One map per particle
+	const auto map = (options.metricMap)
+		? options.metricMap
+		: options.metricMaps[particleIndexForMap];
 
 	// For each observation:
 	double ret = 1;
