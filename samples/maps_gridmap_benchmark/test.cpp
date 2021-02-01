@@ -266,10 +266,10 @@ void BenchmarkGridmaps()
 		tictac.Tic();
 		for (i = 0; i < N; i++)
 		{
-			CPose2D pose(
+			const auto pose = mrpt::poses::CPose3D::FromXYZYawPitchRoll(
 				getRandomGenerator().drawUniform(-1.0, 1.0),
-				getRandomGenerator().drawUniform(-1.0, 1.0),
-				getRandomGenerator().drawUniform(-M_PI, M_PI));
+				getRandomGenerator().drawUniform(-1.0, 1.0), .0,
+				getRandomGenerator().drawUniform(-M_PI, M_PI), .0, .0);
 			R += gridMap->computeObservationLikelihood(scan1, pose);
 		}
 		double T = tictac.Tac();
