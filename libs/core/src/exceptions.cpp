@@ -88,7 +88,12 @@ void impl_excep_to_str(
 	catch (const std::exception& er)
 	{
 		// It's nested: recursive call
-		impl_excep_to_str(er, ret, lvl + 1);
+		if (lvl < MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH)
+			impl_excep_to_str(er, ret, lvl + 1);
+		else
+		{
+			ret += " (... max depth reached ...)\n";
+		}
 	}
 #else
 	// Basic version:
@@ -102,4 +107,9 @@ std::string mrpt::exception_to_str(const std::exception& e)
 	std::string descr;
 	mrpt::internal::impl_excep_to_str(e, descr);
 	return descr;
+}
+
+int mrpt::internal::MAX_BACKTRACE_DEPTH()
+{
+	return MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH;
 }
