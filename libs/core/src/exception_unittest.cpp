@@ -72,3 +72,25 @@ TEST(exception, assertException)
 		{ ASSERT_EQUAL_(trueValue, falseValue); },
 		mrpt::ExceptionWithCallBackBase);
 }
+
+static std::string testFoo()
+{
+	try
+	{
+		std::vector<int> dummy;
+		ASSERTMSG_(!dummy.empty(), "Check it");
+		return {};
+	}
+	catch (std::exception& e)
+	{
+		const auto err = mrpt::exception_to_str(e);
+		return err;
+	}
+}
+
+TEST(exception, infiniteRecurseBug)
+{
+	// Should not crash:
+	const auto s = testFoo();
+	EXPECT_TRUE(s.find("Check it") != std::string::npos);
+}

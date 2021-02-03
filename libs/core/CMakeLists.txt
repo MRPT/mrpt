@@ -33,7 +33,8 @@ if(BUILD_mrpt-core)
 	if (CMAKE_MRPT_HAS_BFD)
 		target_link_libraries(core PRIVATE ${BFD_LIBRARIES})
 	endif()
-	
+
+	target_compile_definitions(core PRIVATE MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH=${MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH})
 	if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
 		target_compile_definitions(core PRIVATE MRPT_EXCEPTIONS_WITH_CALL_STACK)
 	endif()

@@ -19,6 +19,8 @@
 
 namespace mrpt::internal
 {
+int MAX_BACKTRACE_DEPTH();
+
 std::string exception_line_msg(
 	const std::string_view& msg, const char* filename, unsigned int line,
 	const char* function_name);
@@ -81,7 +83,9 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
 		: BASE_EXCEPTION(originalException),
 		  ExceptionWithCallBackBase(
 			  originalException.what(),
-			  mrpt::callStackBackTrace(2 /*skip 2 frames*/))
+			  mrpt::callStackBackTrace(
+				  2 /*skip 2 frames*/,
+				  2 + mrpt::internal::MAX_BACKTRACE_DEPTH()))
 	{
 	}
 
