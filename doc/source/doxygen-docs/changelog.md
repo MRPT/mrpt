@@ -13,10 +13,10 @@
   - \ref mrpt_containers_grp
     - New YAML to/from matrix methods: mrpt::containers::yaml::FromMatrix(), mrpt::containers::yaml::toMatrix()
   - \ref mrpt_core_grp
-    - New CMake build flag `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions.
+    - New CMake build flags `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions and `MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH` to set their maximum depth.
   - \ref mrpt_math_grp
     - New class mrpt::math::TBoundingBox
-    - \ref mrpt_maps_grp
+  - \ref mrpt_maps_grp
       - Const correctness fixed in all mrpt::maps::CMetricMap classes.
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CFrustum() new constructor from mrpt::img::TCamera()
