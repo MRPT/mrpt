@@ -75,6 +75,8 @@ find_package(codecov)
 option(MRPT_ALLOW_LGPLV3 "Allows MRPT to use LGPLV3 code (mrpt-vision-lgpl)" "OFF")
 
 option(MRPT_EXCEPTIONS_WITH_CALL_STACK "Report callstack upon exceptions" "ON")
+set(MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH "50" CACHE STRING "Maximum number of stack levels to show upon exceptions.")
+mark_as_advanced(MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH)
 
 # The root directory for all MRPT libraries/modules:
 set(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
