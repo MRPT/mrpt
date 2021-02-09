@@ -1,4 +1,3 @@
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/MRPT/mrpt)
 
 <h1 align="center">The MRPT project</h1>
 
@@ -7,6 +6,8 @@ gcc/clang: <a href="https://circleci.com/gh/MRPT/mrpt/tree/develop"><img src="ht
 <a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/develop/graph/badge.svg" /></a>  GH downloads: <a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a> SF downloads (datasets): <a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a>
 
 Last Win64 builds: <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-develop/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-develop'></a> <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-stable/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-stable'></a>
+
+Workspace: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/MRPT/mrpt)
 
 ## 1. Introduction
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
