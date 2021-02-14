@@ -29,6 +29,7 @@
   - Log `*_THROTTLE_*` macros (e.g. MRPT_LOG_THROTTLE_DEBUG) did not report the message the first time they were called, which seems a safer behavior.
   - Reverted changed behavior: mrpt::config::CConfigFile did not throw if a non-existing file was passed to its constructor, but it throws in MRPT 2.1.{0-7}.
   - Fix build against opencv 2.4.x (version in Ubuntu Xenial 16.04).
+  - Fixed: CHokuyoURG::initialize() won't report sensor status as ssError if it fails to communicate with the sensor, incorrectly leaving it as ssInitializing instead.
 
 ------
 # Version 2.1.7: Released Jan 2nd, 2021

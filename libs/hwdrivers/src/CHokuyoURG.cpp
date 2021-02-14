@@ -1028,10 +1028,10 @@ void CHokuyoURG::initialize()
 {
 	if (m_verbose) this->setMinLoggingLevel(mrpt::system::LVL_DEBUG);
 
-	if (!ensureStreamIsOpen()) return;
-
-	if (!turnOn())
+	if (!ensureStreamIsOpen() || !turnOn())
 	{
+		m_state = ssError;
+
 		MRPT_LOG_ERROR("[Hokuyo] Error initializing HOKUYO scanner");
 		return;
 	}
