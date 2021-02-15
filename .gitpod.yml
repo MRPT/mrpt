@@ -1,0 +1,6 @@
+image:
+  file: .gitpod.Dockerfile
+
+vscode:
+  extensions:
+    - ms-vscode.cmake-tools@1.5.3:QI2POGDzx7mhyCmZyf/3vg==
