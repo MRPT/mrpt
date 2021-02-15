@@ -352,7 +352,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		    set_property(
 			    TARGET ${name}
 				APPEND_STRING PROPERTY
-				LINK_FLAGS " -Wl,--as-needed -Wl,--no-undefined -Wl,--no-allow-shlib-undefined")
+				LINK_FLAGS " -Wl,--copy-dt-needed-entries -Wl,--no-undefined -Wl,--no-allow-shlib-undefined")
 		endif()
 
 		if(MRPT_ENABLE_PRECOMPILED_HDRS)

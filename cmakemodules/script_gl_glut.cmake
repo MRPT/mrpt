@@ -19,7 +19,7 @@ unset(MRPT_OPENGL_LIBS)
 
 
 # Read: https://cmake.org/cmake/help/latest/module/FindOpenGL.html
-set(OpenGL_GL_PREFERENCE "LEGACY")
+#set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL)
 
 if(UNIX)
@@ -31,12 +31,12 @@ if(OpenGL_FOUND)
 	set_target_properties(imp_opengl
 		PROPERTIES
 		INTERFACE_INCLUDE_DIRECTORIES "${OPENGL_INCLUDE_DIR}"
-		INTERFACE_LINK_LIBRARIES "${OPENGL_gl_LIBRARY}"
+		INTERFACE_LINK_LIBRARIES "OpenGL::GL"
 		)
 	list(APPEND MRPT_OPENGL_LIBS imp_opengl)
 endif()
 
-if(UNIX AND GLUT_FOUND AND OPENGL_gl_LIBRARY AND OPENGL_glu_LIBRARY AND GLUT_glut_LIBRARY)
+if(UNIX AND GLUT_FOUND AND OpenGL_FOUND AND OPENGL_glu_LIBRARY AND GLUT_glut_LIBRARY)
 	set(CMAKE_MRPT_HAS_OPENGL_GLUT 1)
 	set(CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM 1)
 
@@ -53,7 +53,7 @@ if(UNIX AND GLUT_FOUND AND OPENGL_gl_LIBRARY AND OPENGL_glu_LIBRARY AND GLUT_glu
 endif()
 
 # GLUT: Windows or Linux w/o system OpenGL packages: embedded source version.
-if (WIN32 OR (OPENGL_gl_LIBRARY AND NOT CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM))
+if (WIN32 OR (OpenGL_FOUND AND NOT CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM))
 	if (NOT WIN32) # In Windows, this is the expected behavior!
 		message(STATUS "**Warning**: System GLUT libraries not found! Using built-in version:")
 		message(STATUS "  OPENGL_gl_LIBRARY: ${OPENGL_gl_LIBRARY}")
