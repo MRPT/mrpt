@@ -30,5 +30,5 @@ else()
     mark_as_advanced(NANOFLANN_BUILD_TESTS)
 
     add_subdirectory(3rdparty/nanoflann)
-    set_target_properties(nanoflann PROPERTIES FOLDER "3rd party")
+    #set_target_properties(nanoflann PROPERTIES FOLDER "3rd party")
 endif()
