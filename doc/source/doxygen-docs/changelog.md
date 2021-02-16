@@ -15,6 +15,8 @@
     - New YAML to/from matrix methods: mrpt::containers::yaml::FromMatrix(), mrpt::containers::yaml::toMatrix()
   - \ref mrpt_core_grp
     - New CMake build flags `MRPT_EXCEPTIONS_WITH_CALL_STACK` to optionally disable reporting call stacks upon exceptions and `MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH` to set their maximum depth.
+  - \ref mrpt_hwdrivers_grp
+    - mrpt::hwdrivers::CHokuyoURG now has a parameter for communications timeout (`comms_timeout_ms`).
   - \ref mrpt_math_grp
     - New class mrpt::math::TBoundingBox
   - \ref mrpt_maps_grp

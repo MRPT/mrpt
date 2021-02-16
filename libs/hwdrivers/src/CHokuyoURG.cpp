@@ -217,35 +217,28 @@ void CHokuyoURG::doProcessSimple(
 						loadConfig_sensorSpecific
 -------------------------------------------------------------*/
 void CHokuyoURG::loadConfig_sensorSpecific(
-	const mrpt::config::CConfigFileBase& configSource,
-	const std::string& iniSection)
+	const mrpt::config::CConfigFileBase& c, const std::string& s)
 {
-	m_reduced_fov =
-		DEG2RAD(configSource.read_float(iniSection, "reduced_fov", 0)),
+	m_reduced_fov = DEG2RAD(c.read_float(s, "reduced_fov", 0)),
 
-	m_motorSpeed_rpm =
-		configSource.read_int(iniSection, "HOKUYO_motorSpeed_rpm", 0);
+	m_motorSpeed_rpm = c.read_int(s, "HOKUYO_motorSpeed_rpm", 0);
 	m_sensorPose.setFromValues(
-		configSource.read_float(iniSection, "pose_x", 0),
-		configSource.read_float(iniSection, "pose_y", 0),
-		configSource.read_float(iniSection, "pose_z", 0),
-		DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
-		DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
+		c.read_float(s, "pose_x", 0), c.read_float(s, "pose_y", 0),
+		c.read_float(s, "pose_z", 0), DEG2RAD(c.read_float(s, "pose_yaw", 0)),
+		DEG2RAD(c.read_float(s, "pose_pitch", 0)),
+		DEG2RAD(c.read_float(s, "pose_roll", 0)));
 
-	m_highSensMode =
-		configSource.read_bool(iniSection, "HOKUYO_HS_mode", m_highSensMode);
+	m_highSensMode = c.read_bool(s, "HOKUYO_HS_mode", m_highSensMode);
 
 #ifdef _WIN32
-	m_com_port =
-		configSource.read_string(iniSection, "COM_port_WIN", m_com_port);
+	const char* comVarName = "COM_port_WIN";
 #else
-	m_com_port =
-		configSource.read_string(iniSection, "COM_port_LIN", m_com_port);
+	const char* comVarName = "COM_port_LIN";
 #endif
 
-	m_ip_dir = configSource.read_string(iniSection, "IP_DIR", m_ip_dir);
-	m_port_dir = configSource.read_int(iniSection, "PORT_DIR", m_port_dir);
+	m_com_port = c.read_string(s, comVarName, m_com_port);
+	m_ip_dir = c.read_string(s, "IP_DIR", m_ip_dir);
+	m_port_dir = c.read_int(s, "PORT_DIR", m_port_dir);
 
 	ASSERTMSG_(
 		!m_com_port.empty() || !m_ip_dir.empty(),
@@ -261,15 +254,15 @@ void CHokuyoURG::loadConfig_sensorSpecific(
 			"connection");
 	}
 
-	m_disable_firmware_timestamp = configSource.read_bool(
-		iniSection, "disable_firmware_timestamp", m_disable_firmware_timestamp);
-	m_intensity = configSource.read_bool(iniSection, "intensity", m_intensity),
+	m_disable_firmware_timestamp = c.read_bool(
+		s, "disable_firmware_timestamp", m_disable_firmware_timestamp);
+	m_intensity = c.read_bool(s, "intensity", m_intensity),
 
-	MRPT_LOAD_HERE_CONFIG_VAR(
-		scan_interval, int, m_scan_interval, configSource, iniSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(scan_interval, int, m_scan_interval, c, s);
+	MRPT_LOAD_HERE_CONFIG_VAR(comms_timeout_ms, int, m_comms_timeout_ms, c, s);
 
 	// Parent options:
-	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
+	C2DRangeFinderAbstract::loadCommonParams(c, s);
 }
 
 /*-------------------------------------------------------------
@@ -291,7 +284,7 @@ bool CHokuyoURG::turnOn()
 		{
 			// It is a COM:
 			COM->setConfig(19200);
-			COM->setTimeouts(100, 0, 200, 0, 0);
+			COM->setTimeouts(m_comms_timeout_ms, 0, m_comms_timeout_ms, 0, 0);
 
 			// Assure the laser is off and quiet:
 			switchLaserOff();
@@ -432,8 +425,9 @@ bool CHokuyoURG::ensureBufferHasBytes(const size_t nDesiredBytes)
 	try
 	{
 		auto sock = dynamic_cast<CClientTCPSocket*>(m_stream.get());
-		const size_t nRead = sock ? sock->readAsync(&buf[0], to_read, 100, 10)
-								  : m_stream->Read(&buf[0], to_read);
+		const size_t nRead = sock
+			? sock->readAsync(&buf[0], to_read, m_comms_timeout_ms, 10)
+			: m_stream->Read(&buf[0], to_read);
 		m_rx_buffer.push_many(&buf[0], nRead);
 	}
 	catch (std::exception&)
