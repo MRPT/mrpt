@@ -33,7 +33,6 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
   group_mrpt_kinematics_grp.rst
   group_mrpt_maps_grp.rst
   group_mrpt_math_grp.rst
-  group_mrpt_nanoflann_grp.rst
   group_mrpt_nav_grp.rst
   group_mrpt_obs_grp.rst
   group_mrpt_opengl_grp.rst

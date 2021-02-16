@@ -59,7 +59,7 @@ define_mrpt_lib(
 	mrpt-serialization
 	mrpt-random
 	mrpt-system
-	mrpt-nanoflann
+	nanoflann # find_package() lib name
 	# Other imported targets:
 	${eigen_dep}
 	)
@@ -81,6 +81,9 @@ if(BUILD_mrpt-math)
 		# LNK1189：library limit of 65535 objects exceeded
 		target_compile_options(math PRIVATE /Ob2)
 	endif()
+
+	# nanoflann:
+	target_link_libraries(math PUBLIC nanoflann::nanoflann)
 
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
 		target_link_libraries(math PRIVATE ${SuiteSparse_LIBRARIES})

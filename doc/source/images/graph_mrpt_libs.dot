@@ -72,11 +72,6 @@ digraph MRPT_LIBS {
 	math -> serialization;
 	math -> random;
 	math -> system;
-	math -> nanoflann;
-
-	{ rank = sink;
-	nanoflann  [label="mrpt-nanoflann",URL="group_nanoflann_grp.html"];
-	}
 
 	nav        [label="mrpt-nav",URL="group_mrpt_nav_grp.html"];
 	nav -> kinematics;
