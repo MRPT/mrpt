@@ -121,6 +121,7 @@ message(STATUS " _____________________ MANDATORY LIBRARIES _____________________
 SHOW_CONFIG_LINE_SYSTEM("eigen3                              " CMAKE_MRPT_HAS_EIGEN "[Version: ${MRPT_EIGEN_VERSION}]")
 message(STATUS " - Assumed max. EIGEN_MAX_ALIGN_BYTES         : ${EIGEN_MAX_ALIGN_BYTES}")
 message(STATUS " - Assumed max. EIGEN_MAX_STATIC_ALIGN_BYTES  : ${EIGEN_MAX_STATIC_ALIGN_BYTES}")
+SHOW_CONFIG_LINE_SYSTEM("nanoflann                           " CMAKE_MRPT_HAS_NANOFLANN "[Version: ${NANOFLANN_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("simpleini                           " CMAKE_MRPT_HAS_SIMPLEINI)
 SHOW_CONFIG_LINE_SYSTEM("zlib (compression)                  " CMAKE_MRPT_HAS_ZLIB)
 message(STATUS "")

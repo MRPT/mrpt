@@ -10,6 +10,7 @@
   - Fix excessive alignment in aarch64 (32->16 bytes).
   - clang-format: enforce and upgraded to use clang-format-10.
   - Fix building against the non-legacy GL library (Linux).
+  - nanoflann source code is no longer included as a copy: it will be used as the system library libnanoflann-dev, or as a git submodule if the former is not found.
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - New YAML to/from matrix methods: mrpt::containers::yaml::FromMatrix(), mrpt::containers::yaml::toMatrix()
