@@ -58,6 +58,9 @@ namespace mrpt::hwdrivers
  *    # 0=means send all scans, 1=means send 50% of scans, etc.
  *    # scan_interval = 0
  *
+ *    # Overrides communication timeout [milliseconds]
+ *    # comms_timeout_ms = 100
+ *
  *    #preview = true // Enable GUI visualization of captured data
  *
  *    # Optional: Exclusion zones to avoid the robot seeing itself:
@@ -288,6 +291,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** Get intensity from lidar scan (default: false) */
 	bool m_intensity{false};
 	unsigned int m_scan_interval{0};
+	int m_comms_timeout_ms{100};
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
