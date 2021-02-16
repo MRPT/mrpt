@@ -23,6 +23,7 @@ Build-Depends: debhelper (>= 12),
 	libicu-dev,
 	libjpeg-dev,
 	libjsoncpp-dev,
+	libnanoflann-dev,
 	libnav-msgs-dev,
 	liboctomap-dev,
 	libopencv-dev,
@@ -401,18 +402,9 @@ Breaks: libmrpt-dev (<< 1:2)
 Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version}),
          libsuitesparse-dev, libeigen3-dev, libmrpt-serialization-dev,
-         libmrpt-random-dev, libmrpt-system-dev, libmrpt-nanoflann-dev,
+         libmrpt-random-dev, libmrpt-system-dev, lib-nanoflann-dev,
 		 libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - math development package
- This package provides headers and libraries for development.
-
-Package: libmrpt-nanoflann-dev
-Section: libdevel
-Architecture: all
-Breaks: libmrpt-dev (<< 1:2)
-Replaces: libmrpt-dev (<< 1:2)
-Depends: ${misc:Depends}, libmrpt-common-dev
-Description: Mobile Robot Programming Toolkit - nanoflann development package
  This package provides headers and libraries for development.
 
 Package: libmrpt-nav@MRPT_VER_MM@
@@ -737,7 +729,6 @@ Depends: ${misc:Depends},
          libmrpt-kinematics-dev (>= ${binary:Version}),
          libmrpt-maps-dev (>= ${binary:Version}),
          libmrpt-math-dev (>= ${binary:Version}),
-         libmrpt-nanoflann-dev (>= ${binary:Version}),
          libmrpt-nav-dev (>= ${binary:Version}),
          libmrpt-obs-dev (>= ${binary:Version}),
          libmrpt-opengl-dev (>= ${binary:Version}),

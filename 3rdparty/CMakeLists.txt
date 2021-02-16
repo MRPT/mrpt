@@ -269,6 +269,11 @@ endif()
 # already handled in cmakemodules/script_simpleini.cmake
 
 # ----------------------------------
+# nanoflann:
+# ----------------------------------
+# Already handled in cmakemodules/script_nanoflann.cmake
+
+# ----------------------------------
 # googletest
 # ----------------------------------
 if (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
