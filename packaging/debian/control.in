@@ -5,49 +5,49 @@ Maintainer: José Luis Blanco Claraco <joseluisblancoc@gmail.com>
 Build-Depends: debhelper (>= 12),
 	debhelper-compat (= 12),
 	cmake,
-	perl,
-	zlib1g-dev,
-	libjpeg-dev,
-	libwxgtk3.0-gtk3-dev,
-	libftdi1-dev,
-	freeglut3-dev,
-	libopencv-dev,
-	libavcodec-dev, libavformat-dev, libavutil-dev, libswscale-dev,
+	doxygen-latex,
 	doxygen,
+	freeglut3-dev,
 	ghostscript,
 	graphviz,
-	texlive, latexmk, texlive-latex-extra, texlive-science,
-	doxygen-latex,
-	libdc1394-dev [linux-any] | libdc1394-22-dev [linux-any],
-	libusb-1.0-0-dev [linux-any],
-	libudev-dev [linux-any],
-	libfreenect-dev,
-	libpcap-dev,
-	libopenni2-dev,
-	libsuitesparse-dev,
-	libeigen3-dev,
 	libassimp-dev,
-	qtbase5-dev,
-	liboctomap-dev,
-	libqt5opengl5-dev,
-	libjsoncpp-dev,
-	libtinyxml2-dev,
+	libavcodec-dev, libavformat-dev, libavutil-dev, libswscale-dev,
 	libcv-bridge-dev,
+	libdc1394-dev [linux-any] | libdc1394-22-dev [linux-any],
+	libeigen3-dev,
+	libfreenect-dev,
+	libftdi1-dev,
 	libgeometry-msgs-dev,
+	libglfw3-dev,
+	libglu1-mesa-dev,
+	libicu-dev,
+	libjpeg-dev,
+	libjsoncpp-dev,
+	libnanoflann-dev,
 	libnav-msgs-dev,
+	liboctomap-dev,
+	libopencv-dev,
+	libopenni2-dev,
+	libpcap-dev,
+	libqt5opengl5-dev,
 	librosbag-storage-dev,
 	libroscpp-dev,
 	libsensor-msgs-dev,
+	libsimpleini-dev,
 	libstd-srvs-dev,
 	libstereo-msgs-dev,
+	libsuitesparse-dev,
 	libtf2-dev,
 	libtf2-msgs-dev,
-	libglu1-mesa-dev,
-	libglfw3-dev,
-	libxxf86vm-dev,
+	libtinyxml2-dev,
+	libudev-dev [linux-any],
+	libusb-1.0-0-dev [linux-any],
+	libwxgtk3.0-gtk3-dev,
 	libxrandr-dev,
-	libsimpleini-dev,
-	libicu-dev
+	libxxf86vm-dev,
+	qtbase5-dev,
+	texlive, latexmk, texlive-latex-extra, texlive-science,
+	zlib1g-dev
 Standards-Version: 4.5.1
 Homepage: https://www.mrpt.org/
 
@@ -402,18 +402,9 @@ Breaks: libmrpt-dev (<< 1:2)
 Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version}),
          libsuitesparse-dev, libeigen3-dev, libmrpt-serialization-dev,
-         libmrpt-random-dev, libmrpt-system-dev, libmrpt-nanoflann-dev,
+         libmrpt-random-dev, libmrpt-system-dev, lib-nanoflann-dev,
 		 libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - math development package
- This package provides headers and libraries for development.
-
-Package: libmrpt-nanoflann-dev
-Section: libdevel
-Architecture: all
-Breaks: libmrpt-dev (<< 1:2)
-Replaces: libmrpt-dev (<< 1:2)
-Depends: ${misc:Depends}, libmrpt-common-dev
-Description: Mobile Robot Programming Toolkit - nanoflann development package
  This package provides headers and libraries for development.
 
 Package: libmrpt-nav@MRPT_VER_MM@
@@ -738,7 +729,6 @@ Depends: ${misc:Depends},
          libmrpt-kinematics-dev (>= ${binary:Version}),
          libmrpt-maps-dev (>= ${binary:Version}),
          libmrpt-math-dev (>= ${binary:Version}),
-         libmrpt-nanoflann-dev (>= ${binary:Version}),
          libmrpt-nav-dev (>= ${binary:Version}),
          libmrpt-obs-dev (>= ${binary:Version}),
          libmrpt-opengl-dev (>= ${binary:Version}),
