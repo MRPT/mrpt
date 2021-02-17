@@ -35,9 +35,9 @@ export MRPT_PKG_CUSTOM_CMAKE_PARAMS_xenial="-DCMAKE_C_COMPILER=/usr/bin/gcc-7 -D
 # (Remove these lines after xenial and bionic EOL)
 export MRPT_PKG_EXPORTED_SUBMODULES_xenial="simpleini nanoflann"
 export MRPT_PKG_EXPORTED_SUBMODULES_bionic="simpleini nanoflann"
-export MRPT_PKG_EXPORTED_SUBMODULES_focal="nanoflann"
-export MRPT_PKG_EXPORTED_SUBMODULES_groovy="nanoflann"
-export MRPT_PKG_EXPORTED_SUBMODULES_hirsute=""
+export MRPT_PKG_EXPORTED_SUBMODULES_focal="simpleini nanoflann"
+export MRPT_PKG_EXPORTED_SUBMODULES_groovy="simpleini nanoflann"
+export MRPT_PKG_EXPORTED_SUBMODULES_hirsute="simpleini nanoflann"
 
 # Checks
 # --------------------------------
