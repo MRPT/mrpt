@@ -822,8 +822,8 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - 3d-rotation-converter: A GUI tool to convert between different SO(3)
      rotation parameterizations (quaternions, Euler angles, etc.)
 
-Package: python-mrpt
+Package: python3-mrpt
 Architecture: any
-Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends},  python
+Depends: ${python3:Depends}, ${misc:Depends}, ${shlibs:Depends},  python
 Description: Mobile Robot Programming Toolkit - Python bindings
  This package installs MRPT bindings for Python.
