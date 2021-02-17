@@ -45,6 +45,8 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles
 	 * plane. */
 	void setPlaneCorners(float xMin, float xMax, float yMin, float yMax)
 	{
+		ASSERT_NOT_EQUAL_(xMin, xMax);
+		ASSERT_NOT_EQUAL_(yMin, yMax);
 		m_xMin = xMin;
 		m_xMax = xMax;
 		m_yMin = yMin;

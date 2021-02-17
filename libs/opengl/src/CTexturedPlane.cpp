@@ -24,11 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CTexturedPlane, CRenderizable, mrpt::opengl)
 CTexturedPlane::CTexturedPlane(
 	float x_min, float x_max, float y_min, float y_max)
 {
-	// Copy data:
-	m_xMin = x_min;
-	m_xMax = x_max;
-	m_yMin = y_min;
-	m_yMax = y_max;
+	setPlaneCorners(x_min, x_max, y_min, y_max);
 }
 
 void CTexturedPlane::onUpdateBuffers_TexturedTriangles()

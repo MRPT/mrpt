@@ -33,6 +33,7 @@
   - Reverted changed behavior: mrpt::config::CConfigFile did not throw if a non-existing file was passed to its constructor, but it throws in MRPT 2.1.{0-7}.
   - Fix build against opencv 2.4.x (version in Ubuntu Xenial 16.04).
   - Fixed: CHokuyoURG::initialize() won't report sensor status as ssError if it fails to communicate with the sensor, incorrectly leaving it as ssInitializing instead.
+  - Fixed: mrpt::opengl::CTexturedPlane::setPlaneCorners() did not check for incorrect null width or height.
 
 ------
 # Version 2.1.7: Released Jan 2nd, 2021
