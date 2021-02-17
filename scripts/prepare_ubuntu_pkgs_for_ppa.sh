@@ -34,10 +34,20 @@ export MRPT_PKG_CUSTOM_CMAKE_PARAMS_xenial="-DCMAKE_C_COMPILER=/usr/bin/gcc-7 -D
 # Special case for Bionic: use embedded version of simpleini
 # (Remove these lines after xenial and bionic EOL)
 export MRPT_PKG_EXPORTED_SUBMODULES_xenial="simpleini nanoflann"
+export DEB_EXTRA_BUILD_DEPS_xenial="cmake"  # dummy package (it cannot be blank)
+
 export MRPT_PKG_EXPORTED_SUBMODULES_bionic="simpleini nanoflann"
-export MRPT_PKG_EXPORTED_SUBMODULES_focal="simpleini nanoflann"
-export MRPT_PKG_EXPORTED_SUBMODULES_groovy="simpleini nanoflann"
-export MRPT_PKG_EXPORTED_SUBMODULES_hirsute="simpleini nanoflann"
+export DEB_EXTRA_BUILD_DEPS_bionic="cmake"  # dummy package (it cannot be blank)
+
+export MRPT_PKG_EXPORTED_SUBMODULES_focal="nanoflann"
+export DEB_EXTRA_BUILD_DEPS_focal="libsimpleini-dev"
+
+export MRPT_PKG_EXPORTED_SUBMODULES_groovy="nanoflann"
+export DEB_EXTRA_BUILD_DEPS_groovy="libsimpleini-dev"
+
+export MRPT_PKG_EXPORTED_SUBMODULES_hirsute=""
+export DEB_EXTRA_BUILD_DEPS_hirsute="libsimpleini-dev, libnanoflann-dev"
+
 
 # Checks
 # --------------------------------
@@ -93,6 +103,9 @@ do
 
 	auxVarName2=MRPT_PKG_EXPORTED_SUBMODULES_${DEBIAN_DIST}
 	export MRPT_PKG_EXPORTED_SUBMODULES=${!auxVarName2} # Replace by variable contents
+
+	auxVarName2=DEB_EXTRA_BUILD_DEPS_${DEBIAN_DIST}
+	export DEB_EXTRA_BUILD_DEPS=${!auxVarName2} # Replace by variable contents
 
 	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG}  -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}${auxVarName}"
 
