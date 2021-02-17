@@ -402,7 +402,7 @@ Breaks: libmrpt-dev (<< 1:2)
 Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version}),
          libsuitesparse-dev, libeigen3-dev, libmrpt-serialization-dev,
-         libmrpt-random-dev, libmrpt-system-dev, lib-nanoflann-dev,
+         libmrpt-random-dev, libmrpt-system-dev, libnanoflann-dev,
 		 libmrpt-common-dev
 Description: Mobile Robot Programming Toolkit - math development package
  This package provides headers and libraries for development.
