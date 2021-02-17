@@ -152,6 +152,7 @@ gpg --export --export-options export-minimal --armor > debian/upstream/signing-k
 # Parse debian/ control.in --> control
 mv debian/control.in debian/control
 sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" debian/control
+sed -i "s/@DEB_EXTRA_BUILD_DEPS@/${DEB_EXTRA_BUILD_DEPS}/g" debian/control
 
 # Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "debian/rules" file
 # with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
