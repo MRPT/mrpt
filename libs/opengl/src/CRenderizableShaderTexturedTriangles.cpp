@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/opengl_api.h>
@@ -274,6 +275,16 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	static mrpt::system::CTimeLogger tim;
 #endif
 
+	// Destroy a former texture, if it was freed:
+	// It's important we do this from the very same thread from which it was
+	// reserved:
+	if (m_texture_is_pending_destruction)
+	{
+		m_texture_is_pending_destruction = false;
+		releaseTextureName(m_glTextureName);
+		m_glTextureName = 0;
+	}
+
 	// Do nothing until we are assigned an image.
 	if (m_textureImage.isEmpty()) return;
 
@@ -531,8 +542,7 @@ void CRenderizableShaderTexturedTriangles::unloadTexture()
 	if (m_texture_is_loaded)
 	{
 		m_texture_is_loaded = false;
-		releaseTextureName(m_glTextureName);
-		m_glTextureName = 0;
+		m_texture_is_pending_destruction = true;
 	}
 }
 
@@ -582,42 +592,78 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 	CRenderizable::notifyChange();
 }
 
-static std::map<unsigned int, std::thread::id> textureReservedFrom;
+/** This class is a workaround to crashes and memory leaks caused by not
+ * reserving and freeing opengl textures from the same thread. */
+class TextureResourceHandler
+{
+   public:
+	static TextureResourceHandler& Instance()
+	{
+		static TextureResourceHandler o;
+		return o;
+	}
+
+	unsigned int generateTextureID()
+	{
+#if MRPT_HAS_OPENGL_GLUT
+		auto lck = mrpt::lockHelper(m_texturesMtx);
+
+		processDestroyQueue();
+
+		// Create one OpenGL texture
+		GLuint textureID;
+		glGenTextures(1, &textureID);
+		CHECK_OPENGL_ERROR();
+		m_textureReservedFrom[textureID] = std::this_thread::get_id();
+
+		return textureID;
+#else
+		THROW_EXCEPTION("This function needs OpenGL");
+#endif
+	}
+
+	void releaseTextureID(unsigned int id)
+	{
+#if MRPT_HAS_OPENGL_GLUT
+		auto lck = mrpt::lockHelper(m_texturesMtx);
+
+		m_destroyQueue[std::this_thread::get_id()].push_back(id);
+		processDestroyQueue();
+#endif
+	}
+
+   private:
+	TextureResourceHandler() = default;
+
+	void processDestroyQueue()
+	{
+#if MRPT_HAS_OPENGL_GLUT
+		if (auto itLst = m_destroyQueue.find(std::this_thread::get_id());
+			itLst != m_destroyQueue.end())
+		{
+			auto& lst = itLst->second;
+			glDeleteTextures(lst.size(), lst.data());
+			CHECK_OPENGL_ERROR();
+			lst.clear();
+		}
+#endif
+	}
+
+#if MRPT_HAS_OPENGL_GLUT
+	std::mutex m_texturesMtx;
+	std::map<GLuint, std::thread::id> m_textureReservedFrom;
+	std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;
+#endif
+};
 
 unsigned int CRenderizableShaderTexturedTriangles::getNewTextureNumber()
 {
-	MRPT_START
-#if MRPT_HAS_OPENGL_GLUT
-	// Create one OpenGL texture
-	GLuint textureID;
-	glGenTextures(1, &textureID);
-
-	textureReservedFrom[textureID] = std::this_thread::get_id();
-	return textureID;
-#else
-	THROW_EXCEPTION("This function needs OpenGL");
-#endif
-	MRPT_END
+	return TextureResourceHandler::Instance().generateTextureID();
 }
 
 void CRenderizableShaderTexturedTriangles::releaseTextureName(unsigned int i)
 {
-	MRPT_START
-#if MRPT_HAS_OPENGL_GLUT
-
-	auto it = textureReservedFrom.find(i);
-	if (it == textureReservedFrom.end()) return;
-
-	if (std::this_thread::get_id() == it->second)
-	{
-		GLuint t = i;
-		glDeleteTextures(1, &t);
-		CHECK_OPENGL_ERROR();
-	}
-
-	textureReservedFrom.erase(it);
-#endif
-	MRPT_END
+	TextureResourceHandler::Instance().releaseTextureID(i);
 }
 
 const mrpt::math::TBoundingBox
