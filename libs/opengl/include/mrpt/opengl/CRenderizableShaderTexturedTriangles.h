@@ -115,6 +115,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 
 	mutable unsigned int m_glTextureName{0};
 	mutable bool m_texture_is_loaded{false};
+	mutable bool m_texture_is_pending_destruction{false};
 	bool m_textureImageAssigned = false;
 	mutable mrpt::img::CImage m_textureImage{4, 4};
 	mutable mrpt::img::CImage m_textureImageAlpha;

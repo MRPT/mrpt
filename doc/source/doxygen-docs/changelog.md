@@ -34,6 +34,7 @@
   - Fix build against opencv 2.4.x (version in Ubuntu Xenial 16.04).
   - Fixed: CHokuyoURG::initialize() won't report sensor status as ssError if it fails to communicate with the sensor, incorrectly leaving it as ssInitializing instead.
   - Fixed: mrpt::opengl::CTexturedPlane::setPlaneCorners() did not check for incorrect null width or height.
+  - Fixed: mrpt::opengl textured objects leaking memory (Closes [#1136](https://github.com/MRPT/mrpt/issues/1136)).
 
 ------
 # Version 2.1.7: Released Jan 2nd, 2021
