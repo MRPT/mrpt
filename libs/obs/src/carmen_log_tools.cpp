@@ -204,9 +204,7 @@ bool mrpt::obs::carmen_log_parse_line(
 			obsLaser->setScanRange(i, range);
 			// Valid value?
 			obsLaser->setScanRangeValidity(
-				i,
-				(obsLaser->getScanRange(i) >= obsLaser->maxRange ||
-				 obsLaser->getScanRange(i) <= 0));
+				i, !(range >= obsLaser->maxRange || range <= 0));
 		}
 
 		mrpt::math::TPose2D globalLaserPose;
