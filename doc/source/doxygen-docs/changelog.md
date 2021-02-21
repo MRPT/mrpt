@@ -35,6 +35,7 @@
   - Fixed: CHokuyoURG::initialize() won't report sensor status as ssError if it fails to communicate with the sensor, incorrectly leaving it as ssInitializing instead.
   - Fixed: mrpt::opengl::CTexturedPlane::setPlaneCorners() did not check for incorrect null width or height.
   - Fixed: mrpt::opengl textured objects leaking memory (Closes [#1136](https://github.com/MRPT/mrpt/issues/1136)).
+  - Fix bug in parsing CARMEN logs: mrpt::obs::carmen_log_parse_line() returned all scan ranges marked as "invalid".
 
 ------
 # Version 2.1.7: Released Jan 2nd, 2021
