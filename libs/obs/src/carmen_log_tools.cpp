@@ -83,7 +83,7 @@ bool mrpt::obs::carmen_log_parse_line(
 			obsLaser->setScanRange(i, range);
 			// Valid value?
 			obsLaser->setScanRangeValidity(
-				i, (range >= obsLaser->maxRange || range <= 0));
+				i, !(range >= obsLaser->maxRange || range <= 0));
 		}
 
 		size_t remmision_count;
