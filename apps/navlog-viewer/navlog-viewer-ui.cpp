@@ -217,6 +217,11 @@ NavlogViewerApp::NavlogViewerApp()
 		m_rbPerPTGPlots = layer->add<nanogui::ComboBox>(lst, lst);
 		m_rbPerPTGPlots->setCallback([this](int) { OnslidLogCmdScroll(); });
 		m_rbPerPTGPlots->setSelectedIndex(2);
+
+		auto cbOrtho = layer->add<nanogui::CheckBox>("Orthogonal");
+		cbOrtho->setCallback([this](bool ortho) {
+			m_win->camera().setCameraProjective(!ortho);
+		});
 	}
 
 	// ===== TAB: Advanced
