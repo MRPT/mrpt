@@ -6,6 +6,8 @@
     - "Scan animation" window: now also shows the timestamp of observations.
   - camera-calib and kinect-stereo-calib:
     - New option to save camera calibration results as YAML files.
+  - navlog-viewer:
+    - New option to enable orthogonal view.
 - General build changes:
   - Fix excessive alignment in aarch64 (32->16 bytes).
   - clang-format: enforce and upgraded to use clang-format-10.
