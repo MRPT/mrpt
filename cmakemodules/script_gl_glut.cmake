@@ -22,6 +22,13 @@ unset(MRPT_OPENGL_LIBS)
 #set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL)
 
+if (NOT "${CMAKE_VERSION}" VERSION_LESS "3.8.2")
+	set(MRPT_GL_LIB OpenGL::GL)
+else()
+	set(MRPT_GL_LIB ${OPENGL_gl_LIBRARY})
+endif()
+
+
 if(UNIX)
 	find_package(GLUT)
 endif()
@@ -31,7 +38,7 @@ if(OpenGL_FOUND)
 	set_target_properties(imp_opengl
 		PROPERTIES
 		INTERFACE_INCLUDE_DIRECTORIES "${OPENGL_INCLUDE_DIR}"
-		INTERFACE_LINK_LIBRARIES "OpenGL::GL"
+		INTERFACE_LINK_LIBRARIES "${MRPT_GL_LIB}"
 		)
 	list(APPEND MRPT_OPENGL_LIBS imp_opengl)
 endif()
