@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.1.8: (Under development)
+# Version 2.1.8: Released Feb 23rd, 2021
 - Changes in applications:
   - RawLogViewer:
     - "Scan animation" window: now also shows the timestamp of observations.
