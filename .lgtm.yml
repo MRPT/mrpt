@@ -1,0 +1,33 @@
+extraction:
+  exclude:
+    - 3rdparty
+    - apps
+  cpp:
+    prepare:
+      packages:
+      - "build-essential"
+      - "pkg-config"
+      - "cmake"
+      - "libwxgtk3.0-dev"
+      - "libwxgtk3.0-gtk3-dev"
+      - "libopencv-dev"
+      - "libeigen3-dev"
+      - "libgtest-dev"
+      - "libftdi-dev"
+      - "freeglut3-dev"
+      - "zlib1g-dev"
+      - "libusb-1.0-0-dev"
+      - "libudev-dev"
+      - "libfreenect-dev"
+      - "libdc1394-22-dev"
+      - "libavformat-dev"
+      - "libswscale-dev"
+      - "libassimp-dev"
+      - "libjpeg-dev"
+      - "libsuitesparse-dev"
+      - "libpcap-dev"
+      - "liboctomap-dev"
+      - "libglfw3-dev"
+    configure:
+      command: "cmake -S . -B . -DBUILD_APPLICATIONS=OFF"
+
