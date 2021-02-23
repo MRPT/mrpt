@@ -35,18 +35,23 @@ export MRPT_PKG_CUSTOM_CMAKE_PARAMS_xenial="-DCMAKE_C_COMPILER=/usr/bin/gcc-7 -D
 # (Remove these lines after xenial and bionic EOL)
 export MRPT_PKG_EXPORTED_SUBMODULES_xenial="simpleini nanoflann"
 export DEB_EXTRA_BUILD_DEPS_xenial="cmake"  # dummy package (it cannot be blank)
+export DEB_NANOFLANN_DEP_xenial="libmrpt-common-dev"  # dummy package (it cannot be blank)
 
 export MRPT_PKG_EXPORTED_SUBMODULES_bionic="simpleini nanoflann"
 export DEB_EXTRA_BUILD_DEPS_bionic="cmake"  # dummy package (it cannot be blank)
+export DEB_NANOFLANN_DEP_bionic="libmrpt-common-dev"  # dummy package (it cannot be blank)
 
 export MRPT_PKG_EXPORTED_SUBMODULES_focal="nanoflann"
 export DEB_EXTRA_BUILD_DEPS_focal="libsimpleini-dev"
+export DEB_NANOFLANN_DEP_focal="libmrpt-common-dev"  # dummy package (it cannot be blank)
 
 export MRPT_PKG_EXPORTED_SUBMODULES_groovy="nanoflann"
 export DEB_EXTRA_BUILD_DEPS_groovy="libsimpleini-dev"
+export DEB_NANOFLANN_DEP_groovy="libmrpt-common-dev"  # dummy package (it cannot be blank)
 
 export MRPT_PKG_EXPORTED_SUBMODULES_hirsute=""
 export DEB_EXTRA_BUILD_DEPS_hirsute="libsimpleini-dev, libnanoflann-dev"
+export DEB_NANOFLANN_DEP_hirsute="libnanoflann-dev"  # make mrpt-math-dev to depend on nanoflann headers
 
 
 # Checks
@@ -106,6 +111,9 @@ do
 
 	auxVarName2=DEB_EXTRA_BUILD_DEPS_${DEBIAN_DIST}
 	export DEB_EXTRA_BUILD_DEPS=${!auxVarName2} # Replace by variable contents
+
+	auxVarName2=DEB_NANOFLANN_DEP_${DEBIAN_DIST}
+	export DEB_NANOFLANN_DEP=${!auxVarName2} # Replace by variable contents
 
 	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG}  -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}${auxVarName}"
 
