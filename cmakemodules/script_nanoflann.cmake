@@ -46,9 +46,3 @@ endif()
 if ($ENV{VERBOSE})
     message(STATUS "nanoflann_DIR: ${nanoflann_DIR}")
 endif()
-
-# Target nanoflann::nanoflann is now already well defined.
-# Define this alias so we can list "nanoflann" as a direct dependency
-# of mrpt-math and it gets mapped into a find_dependency(nanoflann) command
-# in mrpt-math-config.cmake:
-add_library(nanoflann ALIAS nanoflann::nanoflann)

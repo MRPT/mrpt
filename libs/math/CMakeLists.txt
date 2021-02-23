@@ -59,8 +59,8 @@ define_mrpt_lib(
 	mrpt-serialization
 	mrpt-random
 	mrpt-system
-	nanoflann # find_package() lib name
 	# Other imported targets:
+	nanoflann # find_package() lib name
 	${eigen_dep}
 	)
 
