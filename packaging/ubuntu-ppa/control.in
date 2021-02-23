@@ -410,16 +410,9 @@ Breaks: libmrpt-dev (<< 1:2)
 Replaces: libmrpt-dev (<< 1:2)
 Depends: ${misc:Depends},libmrpt-math@MRPT_VER_MM@ (= ${binary:Version}),
          libsuitesparse-dev, libeigen3-dev, libmrpt-serialization-dev,
-         libmrpt-random-dev, libmrpt-system-dev, libmrpt-nanoflann-dev,
-		 libmrpt-common-dev
+         libmrpt-random-dev, libmrpt-system-dev,
+         libmrpt-common-dev, @DEB_NANOFLANN_DEP@
 Description: Mobile Robot Programming Toolkit - math development package
- This package provides headers and libraries for development.
-
-Package: libmrpt-nanoflann-dev
-Section: libdevel
-Architecture: all
-Depends: ${misc:Depends}, libmrpt-common-dev
-Description: Mobile Robot Programming Toolkit - nanoflann development package
  This package provides headers and libraries for development.
 
 Package: libmrpt-nav@MRPT_VER_MM@
