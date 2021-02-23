@@ -261,7 +261,8 @@ class ClangRepoFormatter(object):
             file_list = parser_args["lint_files"]
             self._lint_files(file_list)
         elif len(parser_args["lint_patches"]):
-            self.lint_patches()
+            file_list = parser_args["lint_patches"]
+            self.lint_patches(file_list)
         elif len(parser_args["reformat_branch"]):
             start = parser_args["reformat_branch"][0]
             end = parser_args["reformat_branch"][1]

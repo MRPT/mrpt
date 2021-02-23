@@ -1,9 +1,6 @@
 """File containing utility functions"""
 
 import os
-import tempfile
-import shutil
-import urllib
 import sys
 import subprocess
 from .custom_exceptions import CalledProcessError
@@ -22,7 +19,7 @@ def get_base_dir():
     try:
         return subprocess.check_output(
             ['git', 'rev-parse', '--show-toplevel']).rstrip()
-    except:
+    except subprocess.CalledProcessError:
         # We are not in a valid git directory. Use the script path instead.
         return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 

@@ -357,7 +357,7 @@ def calc_err(pose1, pose2):
     elif val == np.nan:
         val = 1
 
-    err_q = np.max(np.std::abs(np.arccos(val))) * 180 / np.pi
+    err_q = np.max(np.abs(np.arccos(val))) * 180 / np.pi
     err_q = err_q if err_q < 180 - err_q else 180 - err_q
 
     err = [err_t, err_q]
