@@ -21,7 +21,7 @@ class ClangFormat:
     """
 
     def __init__(self, clang_path, cache_dir):
-        """Initializataion method.
+        """Initialization method.
         """
         self.clang_path = None
         self.clang_format_progname_ext = ""
@@ -100,7 +100,7 @@ class ClangFormat:
         """Validate clang-format is the expected version
         """
         cf_version = callo([self.clang_path, "--version"])
-        logger.warning("Using clang-format: %s", str(PROGNAME))
+        logger.warning("Using clang-format: %s", str(cf_version))
 
         return True
 
@@ -111,7 +111,8 @@ class ClangFormat:
         original_file = fo.read().decode('utf-8')
 
         # Get formatted file as clang-format would format the file
-        formatted_file = callo([self.clang_path, "--style=file", file_name]).decode('utf-8')
+        formatted_file = callo(
+          [self.clang_path, "--style=file", file_name]).decode('utf-8')
 
         if original_file != formatted_file:
             if print_diff:

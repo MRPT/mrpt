@@ -2,9 +2,7 @@
 
 import argparse
 import os
-import platform
 import sys
-import shutil
 import subprocess
 
 DEFAULT_MRPT_VERSION = '1:1.3.0-1'
@@ -12,17 +10,20 @@ DEFAULT_MRPT_VERSION = '1:1.3.0-1'
 # args
 parser = argparse.ArgumentParser()
 parser.add_argument('-b', '--build_dir', help='Path to the build directory.')
-parser.add_argument('-m', '--mrpt_version', help='The MRPT lib version those bindings are generated from. DEFAULT: {}'.format(DEFAULT_MRPT_VERSION))
+parser.add_argument('-m', '--mrpt_version',help='The MRPT lib version those bindings are generated from. DEFAULT: {}'.format(DEFAULT_MRPT_VERSION))
 parser.add_argument('-a', '--architecture', required=True, help='The architecture the bindings are built for (i386, amd, armhf, etc.).')
 args = parser.parse_args()
+
 
 # check requirements
 def check_required_program(program):
     try:
         subprocess.call(['which', program])
-    except:
+    except subprocess.CalledProcessError:
         print 'Required program "{}" not found.'.format(program)
         sys.exit(1)
+
+
 print 'Looking for required programs:'
 check_required_program('sudo')
 check_required_program('dpkg')
@@ -33,7 +34,8 @@ check_required_program('lintian')
 if args.build_dir:
     build_dir = args.build_dir
 else:
-    build_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'build')
+    build_dir = os.path.join(
+      os.path.dirname(os.path.realpath(__file__)), '..', 'build')
 
 # save current dir
 curr_dir = str(os.path.abspath(os.path.curdir))
@@ -69,7 +71,7 @@ if os.path.exists(pkg_dir):
     try:
         command = 'rm -rf {}'.format(pkg_dir)
         subprocess.call(["/usr/bin/sudo", "sh", "-c", command])
-    except:
+    except subprocess.CalledProcessError:
         raise
     print 'Removed existing packaging dir.'
 
@@ -90,7 +92,7 @@ inst_dir = os.path.join(pkg_dir, 'usr', 'lib', 'python2.7', 'dist-packages')
 try:
     command = 'mkdir -p {}'.format(inst_dir)
     subprocess.call(["/usr/bin/sudo", "sh", "-c", command])
-except:
+except subprocess.CalledProcessError:
     raise
 print 'Created install dir: "{}".'.format(inst_dir)
 
@@ -125,7 +127,7 @@ control_content = [
     'Description: MRPT python bindings.',
     ' This package contains the python bindings for',
     ' the Mobile Robot Programming Toolkit (MRPT).',
-    '' # final new line
+    ''  # final new line
 ]
 control_filename = os.path.join(pkg_dir, 'DEBIAN', 'control')
 control_file = open(control_filename, 'w+')
@@ -195,7 +197,8 @@ subprocess.call(['dpkg', '-b', 'mrpt-python-bindings'])
 
 # check package with lintian
 print 'Check package:'
-subprocess.call(['lintian', os.path.join(home_dir, 'mrpt-python-bindings.deb')])
+subprocess.call(
+  ['lintian', os.path.join(home_dir, 'mrpt-python-bindings.deb')])
 
 # go to initial dir
 os.chdir(curr_dir)
