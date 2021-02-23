@@ -19,7 +19,10 @@ unset(MRPT_OPENGL_LIBS)
 
 
 # Read: https://cmake.org/cmake/help/latest/module/FindOpenGL.html
-#set(OpenGL_GL_PREFERENCE "LEGACY")
+if (POLICY CMP0072)
+	# prefer non-legacy opengl libs
+	cmake_policy(SET CMP0072 NEW)
+endif()
 find_package(OpenGL)
 
 if (NOT "${CMAKE_VERSION}" VERSION_LESS "3.8.2")
