@@ -113,6 +113,16 @@ override_dh_install:
 	# Move headers to -dev directories:
 	cp -vr $(CURDIR)/debian/usr/libmrpt-*dev $(CURDIR)/debian/
 
+	# If we are in an old (<21.04) Ubuntu distro, manually include nanoflann
+	# into mrpt-math-dev as a workaround to the lack of a system library:
+	if [ -d $(CURDIR)/obj-$(DEB_HOST_MULTIARCH)/3rdparty/nanoflann ]; then \
+	  make -C $(CURDIR)/obj-$(DEB_HOST_MULTIARCH)/3rdparty/nanoflann install; \
+	  mv -v $(CURDIR)/debian/usr/include/nanoflann.hpp $(CURDIR)/debian/libmrpt-math-dev/usr/include/; \
+	  mv -v $(CURDIR)/debian/usr/share/cmake/nanoflann $(CURDIR)/debian/libmrpt-math-dev/usr/share/cmake/; \
+	  mkdir -vp $(CURDIR)/debian/libmrpt-math-dev/usr/share/pkgconfig/; \
+	  mv -v $(CURDIR)/debian/usr/share/pkgconfig/nanoflann.pc $(CURDIR)/debian/libmrpt-math-dev/usr/share/pkgconfig/; \
+	fi;
+
 	# Move python stuff:
 #	mkdir -p $(CURDIR)/debian/python-mrpt/usr/lib
 #	mv -v $(CURDIR)/debian/usr/lib/* $(CURDIR)/debian/python-mrpt/usr/lib
