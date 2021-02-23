@@ -10,13 +10,15 @@ find_package(nanoflann CONFIG QUIET)
 
 if (NOT nanoflann_FOUND)
     message(STATUS "--- Running CMake on external submodule 'nanoflann'...")
+    file(MAKE_DIRECTORY "${nanoflann_EMBEDDED_BUILD_DIR}")
     execute_process(COMMAND
-        ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S "${MRPT_SOURCE_DIR}/3rdparty/nanoflann" -B "${nanoflann_EMBEDDED_BUILD_DIR}"
+        ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -S "${MRPT_SOURCE_DIR}/3rdparty/nanoflann"
         -DNANOFLANN_BUILD_EXAMPLES=OFF
         -DNANOFLANN_BUILD_BENCHMARKS=OFF
         -DNANOFLANN_BUILD_TESTS=OFF
         -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
       RESULT_VARIABLE result
+      WORKING_DIRECTORY "${nanoflann_EMBEDDED_BUILD_DIR}"
       )
     if(result)
       message(FATAL_ERROR "CMake step for nanoflann failed: ${result}")
