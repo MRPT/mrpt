@@ -97,7 +97,15 @@ void impl_excep_to_str(
 	}
 #else
 	// Basic version:
-	ret = e.what();
+	const auto* ecb = dynamic_cast<const ExceptionWithCallBackBase*>(&e);
+	if(ecb)
+	{
+		ret = ecb->originalWhat;
+	}
+	else
+	{
+		ret = e.what();
+	}
 #endif
 }
 }  // namespace mrpt::internal
