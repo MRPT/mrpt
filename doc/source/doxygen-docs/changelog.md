@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.1.9: UNRELEASED
-- (no changes yet)
+- BUG FIXES:
+  - Fix potential infinite recursion in exceptions with stack trace (Closes [#1141](https://github.com/MRPT/mrpt/issues/1141)).
 
 ------
 # Version 2.1.8: Released Feb 23rd, 2021
