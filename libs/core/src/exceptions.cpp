@@ -98,10 +98,7 @@ void impl_excep_to_str(
 #else
 	// Basic version:
 	const auto* ecb = dynamic_cast<const ExceptionWithCallBackBase*>(&e);
-	if(ecb)
-	{
-		ret = ecb->originalWhat;
-	}
+	if (ecb) { ret = ecb->originalWhat; }
 	else
 	{
 		ret = e.what();
