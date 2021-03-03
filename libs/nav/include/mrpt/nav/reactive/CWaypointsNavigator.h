@@ -89,13 +89,29 @@ class CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 		TWaypointStatusSequence& out_nav_status) const;
 
 	/** Get a copy of the control structure which describes the progress status
-	 * of the waypoint navigation. */
+	 * of the waypoint navigation.
+	 * \ref getWaypointsRef()
+	 */
 	TWaypointStatusSequence getWaypointNavStatus() const
 	{
 		TWaypointStatusSequence nav_status;
 		this->getWaypointNavStatus(nav_status);
 		return nav_status;
 	}
+
+	/** Gets a write-enabled reference to the list of waypoints, simultanously
+	 * acquiring the critical section mutex.
+	 * Caller must call endWaypointsAccess() when done editing the waypoints.
+	 */
+	TWaypointStatusSequence& beginWaypointsAccess()
+	{
+		m_nav_waypoints_cs.lock();
+		return m_waypoint_nav_status;
+	}
+
+	/** Must be called after beginWaypointsAccess() */
+	void endWaypointsAccess() { m_nav_waypoints_cs.unlock(); }
+
 	/** @}*/
 
 	/** Returns `true` if, according to the information gathered at the last
