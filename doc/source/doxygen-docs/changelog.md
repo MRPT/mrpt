@@ -7,6 +7,7 @@
     - mrpt::nav::TWaypoint now has std::any fields to hold user-given extra data.
 - BUG FIXES:
   - Fix potential infinite recursion in exceptions with stack trace (Closes [#1141](https://github.com/MRPT/mrpt/issues/1141)).
+  - Fix potential race conditions accessing waypoint lists in mrpt::nav::CWaypointsNavigator
 
 ------
 # Version 2.1.8: Released Feb 23rd, 2021

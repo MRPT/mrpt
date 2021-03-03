@@ -9,6 +9,7 @@
 
 #include "nav-precomp.h"  // Precomp header
 //
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
@@ -58,9 +59,9 @@ void CWaypointsNavigator::onNavigateCommandReceived()
 	std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
 	m_was_aligning = false;
+
+	// This initializes all fields to initial values:
 	m_waypoint_nav_status = TWaypointStatusSequence();
-	m_waypoint_nav_status.timestamp_nav_started = INVALID_TIMESTAMP;
-	m_waypoint_nav_status.waypoint_index_current_goal = -1;	 // Not started yet.
 }
 
 void CWaypointsNavigator::navigateWaypoints(
@@ -94,7 +95,9 @@ void CWaypointsNavigator::navigateWaypoints(
 void CWaypointsNavigator::getWaypointNavStatus(
 	TWaypointStatusSequence& out_nav_status) const
 {
-	// No need to lock mutex...
+	// Make sure the data structure is not under modification:
+	auto lck = mrpt::lockHelper(m_nav_waypoints_cs);
+
 	out_nav_status = m_waypoint_nav_status;
 }
 
@@ -126,8 +129,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 			m_timlog_delays, "CWaypointsNavigator::navigationStep()");
 		std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
-		TWaypointStatusSequence& wps =
-			m_waypoint_nav_status;	// shortcut to save typing
+		// shortcut to save typing
+		TWaypointStatusSequence& wps = m_waypoint_nav_status;
 
 		if (wps.waypoints.empty() || wps.final_goal_reached)
 		{
