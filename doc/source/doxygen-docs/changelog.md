@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.1.9: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_vision_grp
+    - Remove all obsolete `SIFTOptions.implementation` values. `OpenCV` is now the only possibility.
 - BUG FIXES:
   - Fix potential infinite recursion in exceptions with stack trace (Closes [#1141](https://github.com/MRPT/mrpt/issues/1141)).
 

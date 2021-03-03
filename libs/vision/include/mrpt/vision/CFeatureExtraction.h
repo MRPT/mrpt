@@ -76,11 +76,9 @@ class CFeatureExtraction
 
 	enum TSIFTImplementation
 	{
-		LoweBinary = 0 /* obsolete */,
-		CSBinary /* obsolete */,
-		VedaldiBinary /* obsolete */,
-		Hess /* obsolete */,
-		OpenCV /* DEFAULT */
+		// number 4 is to keep physical numbering after removing all obsolete
+		// possibilities in mrpt 2.2.0
+		OpenCV = 4 /* DEFAULT */
 	};
 
 	/** The set of parameters for all the detectors & descriptor algorithms */
