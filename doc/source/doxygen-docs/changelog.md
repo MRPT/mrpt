@@ -1,9 +1,14 @@
 \page changelog Change Log
 
 # Version 2.1.9: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_nav_grp
+    - mrpt::nav::TWaypoint now uses std::optional instead of magic numbers in some fields.
+    - mrpt::nav::TWaypoint now has std::any fields to hold user-given extra data.
 - BUG FIXES:
   - Fix invalid bounding box returned by octree_getBoundingBox() and mrpt::opengl point cloud classes when empty (Closes [#1145](https://github.com/MRPT/mrpt/issues/1145)).
   - Fix potential infinite recursion in exceptions with stack trace (Closes [#1141](https://github.com/MRPT/mrpt/issues/1141)).
+  - Fix potential race conditions accessing waypoint lists in mrpt::nav::CWaypointsNavigator
 
 ------
 # Version 2.1.8: Released Feb 23rd, 2021
