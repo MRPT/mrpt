@@ -163,14 +163,17 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					m_was_aligning /* we were already aligning at a WP */)
 				{
 					bool consider_wp_reached = false;
-					if (wp.target_heading == TWaypoint::INVALID_NUM)
-					{ consider_wp_reached = true; }
+					if (!wp.target_heading.has_value())
+					{
+						// Any heading is ok:
+						consider_wp_reached = true;
+					}
 					else
 					{
 						// Handle pure-rotation robot interface to honor
 						// target_heading
 						const double ang_err = mrpt::math::angDistance(
-							m_curPoseVel.pose.phi, wp.target_heading);
+							m_curPoseVel.pose.phi, wp.target_heading.value());
 						const double tim_since_last_align =
 							mrpt::system::timeDifference(
 								m_last_alignment_cmd, mrpt::system::now());
@@ -199,7 +202,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 									"Trying to align to heading: %.02f deg. "
 									"Relative heading: %.02f deg. "
 									"With motion cmd: %s",
-									mrpt::RAD2DEG(wp.target_heading),
+									mrpt::RAD2DEG(*wp.target_heading),
 									mrpt::RAD2DEG(ang_err),
 									align_cmd ? align_cmd->asString().c_str()
 											  : "nullptr (operation not "
@@ -227,7 +230,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 									"current_heading=%.02f deg "
 									"target_heading=%.02f deg",
 									mrpt::RAD2DEG(m_curPoseVel.pose.phi),
-									mrpt::RAD2DEG(wp.target_heading));
+									mrpt::RAD2DEG(*wp.target_heading));
 							}
 						}
 					}
@@ -391,9 +394,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					ti.target_coords.x = wp.target.x;
 					ti.target_coords.y = wp.target.y;
 					ti.target_coords.phi =
-						(wp.target_heading != TWaypoint::INVALID_NUM
-							 ? wp.target_heading
-							 : .0);
+						(wp.target_heading.has_value() ? *wp.target_heading
+													   : .0);
 					ti.target_frame_id = wp.target_frame_id;
 					ti.targetAllowedDistance = wp.allowed_distance;
 					ti.targetIsRelative = false;
