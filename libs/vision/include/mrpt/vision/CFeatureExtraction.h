@@ -338,11 +338,6 @@ class CFeatureExtraction
 	* \param in_img (input) The image from where to compute the descriptors.
 	* \param in_features (input/output) The list of features whose
 	descriptors are going to be computed.
-	*
-	* \note The SIFT descriptors for already located features can only be
-	computed through the Hess and
-			CSBinary implementations which may be specified in
-	CFeatureExtraction::TOptions::SIFTOptions.
 	*/
 	void internal_computeSiftDescriptors(
 		const mrpt::img::CImage& in_img, CFeatureList& in_features);

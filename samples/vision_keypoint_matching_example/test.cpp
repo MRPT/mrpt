@@ -151,15 +151,11 @@ void TestMatchFeatures(bool showMatches)
 	// SIFT
 	cout << "Detecting SIFT features in LEFT image" << endl;
 	fExt.options.featsType = featSIFT;
-	// fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
-	fExt.options.SIFTOptions.implementation = CFeatureExtraction::OpenCV;
 	fExt.detectFeatures(imL, featsSIFT_L);
 	cout << "Detected " << featsSIFT_L.size() << endl;
 
 	cout << "Detecting SIFT features in RIGHT image" << endl;
 	fExt.options.featsType = featSIFT;
-	// fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
-	fExt.options.SIFTOptions.implementation = CFeatureExtraction::OpenCV;
 	fExt.detectFeatures(imR, featsSIFT_R);
 	cout << "Detected " << featsSIFT_R.size() << endl;
 	cout << "***************************************************" << endl;
@@ -291,7 +287,6 @@ void TestMatchingComparative()
 	CFeatureExtraction fExt;
 	fExt.options.featsType = featFAST;
 	fExt.options.patchSize = 21;
-	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
 
 	// Find FAST features
 	CFeatureList list1, list2;
