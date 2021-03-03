@@ -4,6 +4,7 @@
 - Changes in libraries:
   - \ref mrpt_nav_grp
     - mrpt::nav::TWaypoint now uses std::optional instead of magic numbers in some fields.
+    - mrpt::nav::TWaypoint now has std::any fields to hold user-given extra data.
 - BUG FIXES:
   - Fix potential infinite recursion in exceptions with stack trace (Closes [#1141](https://github.com/MRPT/mrpt/issues/1141)).
 

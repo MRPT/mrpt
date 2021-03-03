@@ -15,6 +15,7 @@
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/system/datetime.h>
 
+#include <any>
 #include <optional>
 #include <string>
 #include <vector>
@@ -77,6 +78,9 @@ struct TWaypoint
 
 	/** get in human-readable format */
 	std::string getAsText() const;
+
+	/** Any user-stored custom data */
+	std::any user_data;
 
 	/** The default value of fields (used to detect non-set values) */
 	static constexpr int INVALID_NUM{-100000};
@@ -142,6 +146,9 @@ struct TWaypointStatus : public TWaypoint
 	/** (Initialized to 0 automatically) How many times this waypoint has been
 	 * seen as "reachable" before it being the current active waypoint. */
 	int counter_seen_reachable{0};
+
+	/** Any user-stored custom status data */
+	std::any user_status_data;
 
 	/** Only copies the base class TWaypoint data fields */
 	TWaypointStatus& operator=(const TWaypoint& wp);
