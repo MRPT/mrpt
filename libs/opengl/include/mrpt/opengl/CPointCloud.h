@@ -107,9 +107,9 @@ class CPointCloud : public CRenderizableShaderPoints,
 	 * in the coordinate frame of the object parent. */
 	mrpt::math::TBoundingBox getBoundingBox() const override
 	{
-		auto bb = this->octree_getBoundingBox();
-		ASSERT_(bb);
-		return *bb;
+		if (auto bb = this->octree_getBoundingBox(); bb) return *bb;
+		else
+			return {};
 	}
 
 	/** @name Read/Write of the list of points to render

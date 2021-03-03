@@ -9,6 +9,7 @@
 
 #include "nav-precomp.h"  // Precomp header
 //
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
@@ -58,9 +59,9 @@ void CWaypointsNavigator::onNavigateCommandReceived()
 	std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
 	m_was_aligning = false;
+
+	// This initializes all fields to initial values:
 	m_waypoint_nav_status = TWaypointStatusSequence();
-	m_waypoint_nav_status.timestamp_nav_started = INVALID_TIMESTAMP;
-	m_waypoint_nav_status.waypoint_index_current_goal = -1;	 // Not started yet.
 }
 
 void CWaypointsNavigator::navigateWaypoints(
@@ -94,7 +95,9 @@ void CWaypointsNavigator::navigateWaypoints(
 void CWaypointsNavigator::getWaypointNavStatus(
 	TWaypointStatusSequence& out_nav_status) const
 {
-	// No need to lock mutex...
+	// Make sure the data structure is not under modification:
+	auto lck = mrpt::lockHelper(m_nav_waypoints_cs);
+
 	out_nav_status = m_waypoint_nav_status;
 }
 
@@ -126,8 +129,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 			m_timlog_delays, "CWaypointsNavigator::navigationStep()");
 		std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
-		TWaypointStatusSequence& wps =
-			m_waypoint_nav_status;	// shortcut to save typing
+		// shortcut to save typing
+		TWaypointStatusSequence& wps = m_waypoint_nav_status;
 
 		if (wps.waypoints.empty() || wps.final_goal_reached)
 		{
@@ -163,14 +166,17 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					m_was_aligning /* we were already aligning at a WP */)
 				{
 					bool consider_wp_reached = false;
-					if (wp.target_heading == TWaypoint::INVALID_NUM)
-					{ consider_wp_reached = true; }
+					if (!wp.target_heading.has_value())
+					{
+						// Any heading is ok:
+						consider_wp_reached = true;
+					}
 					else
 					{
 						// Handle pure-rotation robot interface to honor
 						// target_heading
 						const double ang_err = mrpt::math::angDistance(
-							m_curPoseVel.pose.phi, wp.target_heading);
+							m_curPoseVel.pose.phi, wp.target_heading.value());
 						const double tim_since_last_align =
 							mrpt::system::timeDifference(
 								m_last_alignment_cmd, mrpt::system::now());
@@ -199,7 +205,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 									"Trying to align to heading: %.02f deg. "
 									"Relative heading: %.02f deg. "
 									"With motion cmd: %s",
-									mrpt::RAD2DEG(wp.target_heading),
+									mrpt::RAD2DEG(*wp.target_heading),
 									mrpt::RAD2DEG(ang_err),
 									align_cmd ? align_cmd->asString().c_str()
 											  : "nullptr (operation not "
@@ -227,7 +233,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 									"current_heading=%.02f deg "
 									"target_heading=%.02f deg",
 									mrpt::RAD2DEG(m_curPoseVel.pose.phi),
-									mrpt::RAD2DEG(wp.target_heading));
+									mrpt::RAD2DEG(*wp.target_heading));
 							}
 						}
 					}
@@ -391,9 +397,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					ti.target_coords.x = wp.target.x;
 					ti.target_coords.y = wp.target.y;
 					ti.target_coords.phi =
-						(wp.target_heading != TWaypoint::INVALID_NUM
-							 ? wp.target_heading
-							 : .0);
+						(wp.target_heading.has_value() ? *wp.target_heading
+													   : .0);
 					ti.target_frame_id = wp.target_frame_id;
 					ti.targetAllowedDistance = wp.allowed_distance;
 					ti.targetIsRelative = false;
