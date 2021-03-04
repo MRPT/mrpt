@@ -29,11 +29,6 @@ CLandmarksConfig::CLandmarksConfig()
 	m_ui->TKeyPointMethod->addItem("featBeacon", TKeyPointMethod::featBeacon);
 	m_ui->TKeyPointMethod->addItem("featFAST", TKeyPointMethod::featFAST);
 
-	m_ui->implementation->addItem("LoweBinary", CFeatureExtraction::LoweBinary);
-	m_ui->implementation->addItem("CSBinary", CFeatureExtraction::CSBinary);
-	m_ui->implementation->addItem(
-		"VedaldiBinary", CFeatureExtraction::VedaldiBinary);
-	m_ui->implementation->addItem("Hess", CFeatureExtraction::Hess);
 	m_ui->implementation->addItem("OpenCV", CFeatureExtraction::OpenCV);
 
 	setInsertOpt();
@@ -168,9 +163,6 @@ void CLandmarksConfig::updateConfiguration(
 	mapDefination->likelihoodOpts.SIFT_feat_options.ORBOptions.extract_patch =
 		m_ui->extract_patch->isChecked();
 
-	mapDefination->likelihoodOpts.SIFT_feat_options.SIFTOptions.implementation =
-		static_cast<CFeatureExtraction::TSIFTImplementation>(
-			m_ui->implementation->currentData().toInt());
 	mapDefination->likelihoodOpts.SIFT_feat_options.SIFTOptions.threshold =
 		m_ui->thresholdSIFTOptions->value();
 	mapDefination->likelihoodOpts.SIFT_feat_options.SIFTOptions.edgeThreshold =
@@ -314,9 +306,6 @@ void CLandmarksConfig::setLikelihoodOpt(
 		likelihoodOpt.SIFT_feat_options.ORBOptions.scale_factor);
 	m_ui->extract_patch->setChecked(
 		likelihoodOpt.SIFT_feat_options.ORBOptions.extract_patch);
-
-	m_ui->implementation->setCurrentIndex(
-		likelihoodOpt.SIFT_feat_options.SIFTOptions.implementation);
 
 	m_ui->thresholdSIFTOptions->setValue(
 		likelihoodOpt.SIFT_feat_options.SIFTOptions.threshold);

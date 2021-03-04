@@ -1321,8 +1321,6 @@ void MainWindow::fillDescriptorInfo()
 
 		fext.options.SIFTOptions.threshold = SIFT_opts.threshold;
 		fext.options.SIFTOptions.edgeThreshold = SIFT_opts.edge_threshold;
-		// fext.options.SIFTOptions.implementation =
-		// CFeatureExtraction::CSBinary;
 	}
 	else if (descriptor_selected == 1)
 	{

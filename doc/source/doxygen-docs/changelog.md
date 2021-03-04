@@ -2,6 +2,8 @@
 
 # Version 2.1.9: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_vision_grp
+    - Remove all obsolete `SIFTOptions.implementation` values. `OpenCV` is now the only possibility.
   - \ref mrpt_nav_grp
     - mrpt::nav::TWaypoint now uses std::optional instead of magic numbers in some fields.
     - mrpt::nav::TWaypoint now has std::any fields to hold user-given extra data.
