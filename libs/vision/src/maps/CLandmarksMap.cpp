@@ -694,9 +694,7 @@ void CLandmarksMap::loadSiftFeaturesFromStereoImageObservation(
 	CLandmarksMap landmarkMap;
 
 	// Extract SIFT features:
-	fExt.options = feat_options;  // OLD:
-	// fExt.options.SIFTOptions.implementation =
-	// vision::CFeatureExtraction::Hess;
+	fExt.options = feat_options;
 
 	// Default: Hess implementation
 	fExt.detectFeatures(

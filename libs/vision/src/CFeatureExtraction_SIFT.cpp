@@ -70,37 +70,6 @@ void CFeatureExtraction::extractFeaturesSIFT(
 
 	switch (options.SIFTOptions.implementation)
 	{
-		case CSBinary:
-		{
-			THROW_EXCEPTION(
-				"CSBinary SIFT not available since MRPT 1.9.9: "
-				"Use `OpenCV` version");
-			break;
-		}  // end case Binary in C#
-		case VedaldiBinary:
-		{
-			THROW_EXCEPTION(
-				"Vedaldi SIFT not available since MRPT 1.9.9: "
-				"Use `OpenCV` version");
-			break;
-		}  // end case Binary by Vedaldi
-		case LoweBinary:  // Binary by David Lowe
-		{
-			THROW_EXCEPTION(
-				"LoweBinary not available since MRPT 1.9.9: "
-				"Use `OpenCV` version");
-			break;
-		}  // end case Binary by Lowe
-		case Hess:	// Implementation by Robert Hess
-		{
-			THROW_EXCEPTION(
-				"Hess SIFT not available since MRPT 1.9.9: "
-				"Use `OpenCV` version");
-			break;
-		}  // end case Hess
-		//***********************************************************************************************
-		// USING OPENCV
-		//***********************************************************************************************
 		case OpenCV:
 		{
 #if defined(HAVE_OPENCV_NONFREE) || defined(HAVE_OPENCV_XFEATURES2D)
