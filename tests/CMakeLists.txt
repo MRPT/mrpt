@@ -135,7 +135,7 @@ if (TARGET test_mrpt_img)
 endif()
 
 if (TARGET test_mrpt_core)
-	if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
+    if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
         target_compile_definitions(test_mrpt_core PRIVATE MRPT_EXCEPTIONS_WITH_CALL_STACK)
     endif()
 endif()
