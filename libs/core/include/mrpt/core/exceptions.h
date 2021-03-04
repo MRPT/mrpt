@@ -105,6 +105,7 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
 	throw mrpt::ExceptionWithCallBack<exceptionClass>(                         \
 		exceptionClass(mrpt::internal::exception_line_msg(                     \
 			msg, __FILE__, __LINE__, __CURRENT_FUNCTION_NAME__)))
+
 /** \def THROW_EXCEPTION(msg);
  * \param msg This can be a char*, a std::string, or a literal string.
  * Defines a unified way of reporting exceptions
