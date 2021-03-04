@@ -36,7 +36,7 @@ if(BUILD_mrpt-core)
 
 	target_compile_definitions(core PRIVATE MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH=${MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH})
 	if (MRPT_EXCEPTIONS_WITH_CALL_STACK)
-		target_compile_definitions(core PRIVATE MRPT_EXCEPTIONS_WITH_CALL_STACK)
+		target_compile_definitions(core PUBLIC MRPT_EXCEPTIONS_WITH_CALL_STACK)
 	endif()
 
 endif()
