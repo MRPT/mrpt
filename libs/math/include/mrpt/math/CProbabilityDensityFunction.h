@@ -13,6 +13,8 @@
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/math_frwds.h>
 
+#include <limits>  // numeric_limits
+
 namespace mrpt::math
 {
 /** A generic template for probability density distributions (PDFs).

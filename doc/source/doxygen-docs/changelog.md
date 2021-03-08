@@ -470,7 +470,7 @@ CObservation3DRangeScan::convertTo2DScan()
 <h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
 - <b>Detailed list of changes:</b>
   - CMake >=3.1 is now required for use of ExternalProjects.
-  - Scripts `scripts/prepare_{debian,release}.sh` have been refactored and
+  - Scripts `packaging/prepare_{debian,release}.sh` have been refactored and
 simplified.
   - Removed embedded source code versions of Eigen, assimp and octomap.
 Downloaded and built as ExternalProjects if not present in the system.
