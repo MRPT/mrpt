@@ -12,6 +12,7 @@
 #include <mrpt/system/os.h>
 
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::gui;

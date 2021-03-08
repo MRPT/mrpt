@@ -91,8 +91,8 @@ class map_as_vector
 		@{ */
 	//!< Default constructor - does nothing */
 	inline map_as_vector() = default;
-	/** Copy constructor */
-	inline map_as_vector(const map_as_vector<KEY, VALUE>& o) : m_vec(o.m_vec) {}
+	/** Copy constructor & operator= -> default */
+
 	inline size_t size() const { return m_vec.size(); }
 	inline bool empty() const { return m_vec.empty(); }
 	/** Count how many entries have a given key value - unlike std::map<K,V>,
