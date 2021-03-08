@@ -34,24 +34,13 @@ do
      esac
 done
 
-if [ -f version_prefix.txt ];
-then
-	MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
-  MRPT_VERSION_MAJOR=${MRPT_VERSION_STR:0:1}
-	MRPT_VERSION_MINOR=${MRPT_VERSION_STR:2:1}
-	MRPT_VERSION_PATCH=${MRPT_VERSION_STR:4:1}
-	MRPT_VER_MM="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}"
-	MRPT_VER_MMP="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}.${MRPT_VERSION_PATCH}"
-else
-	echo "Error: cannot find version_prefix.txt!!"
-	exit 1
-fi
+source packaging/parse_mrpt_version.sh
 
 # Append snapshot?
 if [ $APPEND_SNAPSHOT_NUM == "1" ];
 then
         CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-        source $CUR_SCRIPT_DIR/prepare_debian_gen_snapshot_version.sh  # populate MRPT_SNAPSHOT_VERSION
+        source $CUR_SCRIPT_DIR/generate_snapshot_version.sh  # populate MRPT_SNAPSHOT_VERSION
 
         MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
 else
@@ -72,7 +61,7 @@ then
   #then
   #  echo "## release file already exists. Reusing it."
   #else
-    source scripts/prepare_release.sh
+    source packaging/prepare_release.sh
     echo
     echo "## Done prepare_release.sh"
   #fi
