@@ -16,6 +16,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
+#include <thread>
+
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::img;
@@ -277,8 +279,8 @@ Descriptors:
 
 		winPlots.axis(-15, distances.size(), -0.15 * max_dist, max_dist * 1.15);
 		winPlots.plot(
-			CVectorDouble(1, (double)min_dist_idx), CVectorDouble(1, min_dist),
-			".8b", "best_dists");
+			std::vector<double>({1.0, double(min_dist_idx)}),
+			std::vector<double>({1.0, min_dist}), ".8b", "best_dists");
 
 		winPlots.setWindowTitle(
 			format("Distances feat #%u -> all others ", i1));
