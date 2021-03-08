@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <cstddef>	// size_t
 #include <map>
 #include <vector>
 
