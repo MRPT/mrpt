@@ -1,5 +1,19 @@
 \page changelog Change Log
 
+# Version 2.2.0: Released March 10th, 2021
+- Changes in libraries:
+  - \ref mrpt_vision_grp
+    - Remove all obsolete `SIFTOptions.implementation` values. `OpenCV` is now the only possibility.
+  - \ref mrpt_nav_grp
+    - mrpt::nav::TWaypoint now uses std::optional instead of magic numbers in some fields.
+    - mrpt::nav::TWaypoint now has std::any fields to hold user-given extra data.
+- BUG FIXES:
+  - Fix invalid bounding box returned by octree_getBoundingBox() and mrpt::opengl point cloud classes when empty (Closes [#1145](https://github.com/MRPT/mrpt/issues/1145)).
+  - Fix potential infinite recursion in exceptions with stack trace (Closes [#1141](https://github.com/MRPT/mrpt/issues/1141)).
+  - Fix potential race conditions accessing waypoint lists in mrpt::nav::CWaypointsNavigator
+  - Fix build errors with gcc-11.
+
+------
 # Version 2.1.8: Released Feb 23rd, 2021
 - Changes in applications:
   - RawLogViewer:
@@ -456,7 +470,7 @@ CObservation3DRangeScan::convertTo2DScan()
 <h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
 - <b>Detailed list of changes:</b>
   - CMake >=3.1 is now required for use of ExternalProjects.
-  - Scripts `scripts/prepare_{debian,release}.sh` have been refactored and
+  - Scripts `packaging/prepare_{debian,release}.sh` have been refactored and
 simplified.
   - Removed embedded source code versions of Eigen, assimp and octomap.
 Downloaded and built as ExternalProjects if not present in the system.

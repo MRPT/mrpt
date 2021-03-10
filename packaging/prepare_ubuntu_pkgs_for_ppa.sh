@@ -115,10 +115,10 @@ do
 	auxVarName2=DEB_NANOFLANN_DEP_${DEBIAN_DIST}
 	export DEB_NANOFLANN_DEP=${!auxVarName2} # Replace by variable contents
 
-	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG}  -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}${auxVarName}"
+	bash packaging/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG}  -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}${auxVarName}"
 
 	CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-	source $CUR_SCRIPT_DIR/prepare_debian_gen_snapshot_version.sh # populate MRPT_SNAPSHOT_VERSION
+	source $CUR_SCRIPT_DIR/generate_snapshot_version.sh # populate MRPT_SNAPSHOT_VERSION
 
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
 	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}~snapshot${MRPT_SNAPSHOT_VERSION}${DEBIAN_DIST}/debian
