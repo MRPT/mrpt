@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.1.9: UNRELEASED
+# Version 2.2.0: UNRELEASED
 - Changes in libraries:
   - \ref mrpt_vision_grp
     - Remove all obsolete `SIFTOptions.implementation` values. `OpenCV` is now the only possibility.
