@@ -12,6 +12,7 @@
 #include <mrpt/system/CTicTac.h>
 
 #include <iostream>
+#include <thread>
 
 using namespace mrpt::gui;
 using namespace mrpt::hwdrivers;

@@ -21,6 +21,7 @@
 
 #include <ctime>  // clock_gettime
 #include <iostream>
+#include <mutex>  // unique_lock
 #include <shared_mutex>
 
 namespace mrpt::internal

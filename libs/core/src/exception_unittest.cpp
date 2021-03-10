@@ -51,13 +51,17 @@ TEST(exception, stackedExceptionComplex)
 	catch (const std::exception& e)
 	{
 		const auto sExc = mrpt::exception_to_str(e);
+
+#if !defined(MRPT_EXCEPTIONS_WITH_CALL_STACK)
+		EXPECT_TRUE(sExc.find("Aw!") != std::string::npos) << sExc;
+#else
 		const auto num_lines = std::count(sExc.begin(), sExc.end(), '\n');
 		EXPECT_GT(num_lines, 10) << sExc;
-
 		EXPECT_TRUE(sExc.find("Message:  Aw!") != std::string::npos) << sExc;
-
+#endif
 // This test doesn't pass in Windows if building w/o debug symbols:
-#if !defined(_WIN32) || defined(_DEBUG)
+#if defined(MRPT_EXCEPTIONS_WITH_CALL_STACK) &&                                \
+	(!defined(_WIN32) || defined(_DEBUG))
 		EXPECT_TRUE(sExc.find("test_except_toplevel") != std::string::npos)
 			<< sExc;
 #endif

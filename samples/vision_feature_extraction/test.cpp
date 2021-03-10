@@ -145,15 +145,11 @@ void TestMatchFeatures()
 	// SIFT
 	cout << "Detecting SIFT features in LEFT image" << endl;
 	fExt.options.featsType = featSIFT;
-	// fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
-	fExt.options.SIFTOptions.implementation = CFeatureExtraction::OpenCV;
 	fExt.detectFeatures(imL, featsSIFT_L);
 	cout << "Detected " << featsSIFT_L.size() << endl;
 
 	cout << "Detecting SIFT features in RIGHT image" << endl;
 	fExt.options.featsType = featSIFT;
-	// fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
-	fExt.options.SIFTOptions.implementation = CFeatureExtraction::OpenCV;
 	fExt.detectFeatures(imR, featsSIFT_R);
 	cout << "Detected " << featsSIFT_R.size() << endl;
 	cout << "***************************************************" << endl;
@@ -269,7 +265,6 @@ void TestMatchingComparative()
 	CFeatureExtraction fExt;
 	fExt.options.featsType = featFAST;
 	fExt.options.patchSize = 21;
-	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
 
 	// Find FAST features
 	CFeatureList list1, list2;
@@ -495,7 +490,6 @@ void TestExtractFeatures()
 
 	cout << "Computing SIFT descriptors only ... [f_harris+sift.txt]" << endl;
 	tictac.Tic();
-	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
 	fExt.computeDescriptors(img, featsHarris, descSIFT);
 	cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
 	featsHarris.saveToTextFile("f_harris+sift.txt");
@@ -515,7 +509,6 @@ void TestExtractFeatures()
 	cout << "Extracting SIFT features... [f_sift_hess.txt]" << endl;
 	tictac.Tic();
 	fExt.options.featsType = featSIFT;
-	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
 	fExt.detectFeatures(img, featsSIFT_Hess);
 	cout << "Detected " << featsSIFT_Hess.size() << " features in ";
 	cout << format("  %.03fms", tictac.Tac() * 1000) << endl << endl;
