@@ -1,8 +1,9 @@
-mrpt (1:2.2.0-1) UNRELEASED; urgency=medium
+mrpt (1:2.2.0-1) unstable; urgency=medium
 
   * Fix build errors with gcc-11 (Closes: #984246)
+  * New version of upstream sources.
 
- -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Mon, 08 Mar 2021 11:06:01 +0100
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Wed, 10 Mar 2021 17:05:20 +0100
 
 mrpt (1:2.1.8-1) unstable; urgency=medium
 
