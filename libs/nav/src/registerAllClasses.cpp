@@ -21,6 +21,7 @@ MRPT_INITIALIZER(registerAllNavigationClasses)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// PTGs:
+	registerClass(CLASS_ID(CParameterizedTrajectoryGenerator));
 	registerClass(CLASS_ID(CPTG_DiffDrive_C));
 	registerClass(CLASS_ID(CPTG_DiffDrive_alpha));
 	registerClass(CLASS_ID(CPTG_DiffDrive_CCS));

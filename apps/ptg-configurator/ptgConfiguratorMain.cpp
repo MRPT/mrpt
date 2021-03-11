@@ -797,9 +797,11 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 			mrpt::rtti::getAllRegisteredClasses();
 		for (auto lstClasse : lstClasses)
 		{
-			if (!lstClasse->derivedFrom("CParameterizedTrajectoryGenerator") ||
+			if (!lstClasse->derivedFrom(
+					"mrpt::nav::CParameterizedTrajectoryGenerator") ||
 				!mrpt::system::os::_strcmpi(
-					lstClasse->className, "CParameterizedTrajectoryGenerator"))
+					lstClasse->className,
+					"mrpt::nav::CParameterizedTrajectoryGenerator"))
 				continue;
 			cbPTGClass->AppendString(lstClasse->className);
 		}
@@ -1231,9 +1233,11 @@ void ptgConfiguratorframe::loadPlugin()
 			mrpt::rtti::getAllRegisteredClasses();
 		for (auto lstClasse : lstClasses)
 		{
-			if (!lstClasse->derivedFrom("CParameterizedTrajectoryGenerator") ||
+			if (!lstClasse->derivedFrom(
+					"mrpt::nav::CParameterizedTrajectoryGenerator") ||
 				!mrpt::system::os::_strcmpi(
-					lstClasse->className, "CParameterizedTrajectoryGenerator"))
+					lstClasse->className,
+					"mrpt::nav::CParameterizedTrajectoryGenerator"))
 				continue;
 			cbPTGClass->AppendString(lstClasse->className);
 		}
