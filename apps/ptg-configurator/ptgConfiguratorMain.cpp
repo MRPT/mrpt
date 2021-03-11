@@ -265,7 +265,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		wxDefaultValidator, _T("ID_SLIDER1"));
 	FlexGridSizer4->Add(
 		slidPathHighlight, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+		wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
 	edIndexHighlightPath = new wxSpinCtrl(
 		Panel1, ID_SPINCTRL2, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
 		100, 0, _T("ID_SPINCTRL2"));
@@ -435,7 +436,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	cbShowClearance = new wxCheckBox(
 		Panel2, ID_CHECKBOX6, _("Clearance diagram"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX6"));
-	cbShowClearance->SetValue(true);
+	cbShowClearance->SetValue(false);
 	FlexGridSizer15->Add(
 		cbShowClearance, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
@@ -681,6 +682,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_TPSpace_TP_obstacles = mrpt::opengl::CSetOfObjects::Create();
 	gl_TPSpace_clearance =
 		mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
+	gl_TPSpace_clearance->setVisibility(false);
 	gl_TPSpace_clearance_interp =
 		mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
 	gl_TPSpace_clearance_interp->setVisibility(false);
@@ -740,7 +742,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	{
 		gl_axis_WS = mrpt::opengl::CAxis::Create(
 			-10.0, -10.0, 0, 10.0, 10.0, 0.0, 1.0, 2.0);
-		gl_axis_WS->setTextScale(0.20f);
+		gl_axis_WS->setTextScale(0.10f);
 		gl_axis_WS->enableTickMarks(true, true, true);
 		gl_axis_WS->setColor_u8(mrpt::img::TColor(30, 30, 30, 50));
 		gl_axis_WS->setTextLabelOrientation(0, 0, 0, 0);
@@ -751,7 +753,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	{
 		gl_axis_TPS = mrpt::opengl::CAxis::Create(
 			-1.0, -1.0, 0, 1.0, 1.0, 0.0, 0.25, 2.0);
-		gl_axis_TPS->setTextScale(0.04f);
+		gl_axis_TPS->setTextScale(0.025f);
 		gl_axis_TPS->enableTickMarks(true, true, false);
 		gl_axis_TPS->setColor_u8(mrpt::img::TColor(30, 30, 30, 50));
 		gl_axis_TPS->setTextLabelOrientation(0, 0, 0, 0);
