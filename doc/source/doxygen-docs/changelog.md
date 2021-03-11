@@ -1,5 +1,9 @@
 \page changelog Change Log
 
+# Version 2.2.1: UNRELEASED
+- No changes yet
+
+------
 # Version 2.2.0: Released March 10th, 2021
 - Changes in libraries:
   - \ref mrpt_vision_grp
