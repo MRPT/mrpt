@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.2.1: UNRELEASED
-- No changes yet
+- BUG FIXES:
+  - ptg-configurator: Fix failure to list existing PTGs, due to RTTI unregistered name "CParameterizedTrajectoryGenerator".
 
 ------
 # Version 2.2.0: Released March 10th, 2021
