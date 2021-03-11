@@ -780,7 +780,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	{
 		// Ortho projection:
 		// -------------------------------
-		double Ax = m_state.eyeDistance * 0.5;
+		double Ax = m_state.eyeDistance * 0.25;
 		double Ay = Ax;
 
 		if (ASPECT > 1) Ax *= ASPECT;
