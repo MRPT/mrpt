@@ -3,7 +3,9 @@
 # Version 2.2.1: UNRELEASED
 - Changes in libraries:
   - \ref mrpt_graphs_grp
-    - mrpt::graphs::CDijkstra now no longer requires a field `nodes` in input graphs.
+    - mrpt::graphs::CDijkstra:
+      - now no longer requires a field `nodes` in input graphs.
+      - add convenient return by value getTreeGraph()
 - BUG FIXES:
   - ptg-configurator: Fix failure to list existing PTGs, due to RTTI unregistered name "CParameterizedTrajectoryGenerator".
   - mrpt::opengl::COpenGLViewport::get3DRayForPixelCoord() returned wrong pixel coordinates when in orthogonal projection mode.
