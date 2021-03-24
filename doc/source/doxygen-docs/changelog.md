@@ -2,6 +2,8 @@
 
 # Version 2.2.1: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_containers_grp
+    - add method mrpt::containers::map_as_vector::at()
   - \ref mrpt_graphs_grp
     - mrpt::graphs::CDijkstra:
       - now no longer requires a field `nodes` in input graphs.
