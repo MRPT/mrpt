@@ -119,6 +119,15 @@ class map_as_vector
 		m_vec[i].first = i;
 		return m_vec[i].second;
 	}
+	/** Read-only operator, throws exception if the given key index does not
+	 * exist. */
+	inline const VALUE& at(const size_t i) const
+	{
+		if (i >= m_vec.size() || m_vec.at(i).first != i)
+			throw std::out_of_range(
+				"map_as_vector: at() for non-existing element.");
+		return m_vec.at(i).second;
+	}
 
 	/** Insert pair<key,val>, as in std::map (guess_point is actually ignored in
 	 * this class) */
