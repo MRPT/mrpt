@@ -10,6 +10,7 @@
 
 #include <cstddef>	// size_t
 #include <map>
+#include <stdexcept>
 #include <vector>
 
 namespace mrpt::containers
