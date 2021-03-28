@@ -12,6 +12,7 @@
 - BUG FIXES:
   - ptg-configurator: Fix failure to list existing PTGs, due to RTTI unregistered name "CParameterizedTrajectoryGenerator".
   - mrpt::opengl::COpenGLViewport::get3DRayForPixelCoord() returned wrong pixel coordinates when in orthogonal projection mode.
+  - mrpt::opengl::CArrow: Fix wrong normal calculation (wrong rendering reflections).
 
 ------
 # Version 2.2.0: Released March 10th, 2021

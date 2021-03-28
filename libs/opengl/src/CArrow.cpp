@@ -86,9 +86,9 @@ void CArrow::onUpdateBuffers_Triangles()
 			T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, .0f)),
 			T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, h0)),
 			// Normals:
-			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)),
-			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
-			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)));
+			T.rotateVector(V3f(coswt * cc[i].x, coswt * cc[i].y, sinwt)),
+			T.rotateVector(V3f(coswt * cc[ip].x, coswt * cc[ip].y, sinwt)),
+			T.rotateVector(V3f(coswt * cc[i].x, coswt * cc[i].y, sinwt)));
 
 		tris.emplace_back(
 			// Points:
@@ -96,9 +96,9 @@ void CArrow::onUpdateBuffers_Triangles()
 			T.composePoint(P3f(r0 * cc[ip].x, r0 * cc[ip].y, h0)),
 			T.composePoint(P3f(r0 * cc[i].x, r0 * cc[i].y, h0)),
 			// Normals:
-			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
-			T.rotateVector(V3f(-coswt * cc[ip].y, coswt * cc[ip].x, sinwt)),
-			T.rotateVector(V3f(-coswt * cc[i].y, coswt * cc[i].x, sinwt)));
+			T.rotateVector(V3f(coswt * cc[ip].x, coswt * cc[ip].y, sinwt)),
+			T.rotateVector(V3f(coswt * cc[ip].x, coswt * cc[ip].y, sinwt)),
+			T.rotateVector(V3f(coswt * cc[i].x, coswt * cc[i].y, sinwt)));
 	}
 
 	// top cone:
@@ -111,9 +111,9 @@ void CArrow::onUpdateBuffers_Triangles()
 			T.composePoint(P3f(r1 * cc[ip].x, r1 * cc[ip].y, h0)),
 			T.composePoint(P3f(.0f, .0f, h1)),
 			// Normals:
-			T.rotateVector(V3f(-cosht * cc[i].y, cosht * cc[i].x, sinht)),
-			T.rotateVector(V3f(-cosht * cc[ip].y, cosht * cc[ip].x, sinht)),
-			T.rotateVector(V3f(-cosht * cc[i].y, cosht * cc[i].x, sinht)));
+			T.rotateVector(V3f(cosht * cc[i].x, cosht * cc[i].y, sinht)),
+			T.rotateVector(V3f(cosht * cc[ip].x, cosht * cc[ip].y, sinht)),
+			T.rotateVector(V3f(0, 0, 1)));
 	}
 
 	// All faces, same color:
