@@ -948,3 +948,16 @@ double CPTG_DiffDrive_CollisionGridBased::getPathStepDuration() const
 {
 	return m_stepTimeDuration;
 }
+
+mrpt::math::TTwist2D CPTG_DiffDrive_CollisionGridBased::getPathTwist(
+	uint16_t k, uint32_t step) const
+{
+	ASSERT_(k < m_trajectory.size());
+	ASSERT_(step < m_trajectory[k].size());
+
+	auto tw = mrpt::math::TTwist2D(
+		m_trajectory[k][step].v, 0, m_trajectory[k][step].w);
+	tw.rotate(m_trajectory[k][step].phi);
+
+	return tw;
+}
