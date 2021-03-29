@@ -1,4 +1,10 @@
-mrpt (1:2.2.0-1) unstable; urgency=medium
+mrpt (1:2.2.1-1) UNRELEASED; urgency=medium
+
+  * Fix broken package dependency (Closes: #986071).
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com> Mon, 29 Mar 2021 15:17:00 +0200
+
+mrpt (1:2.2.0-1) experimental; urgency=medium
 
   * Fix build errors with gcc-11 (Closes: #984246)
   * New version of upstream sources.
