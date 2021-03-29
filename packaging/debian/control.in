@@ -674,7 +674,7 @@ Section: libdevel
 Architecture: any
 Breaks: libmrpt-dev (<< 1:2)
 Replaces: libmrpt-dev (<< 1:2)
-Depends: ${misc:Depends},libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
+Depends: ${misc:Depends},libmrpt-vision-lgpl@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-vision-dev
 Description: Mobile Robot Programming Toolkit - vision-lgpl development package
  This package provides headers and libraries for development.
