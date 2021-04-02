@@ -15,6 +15,7 @@
   - mrpt::opengl::CArrow: Fix wrong normal calculation (wrong rendering reflections).
   - mrpt::nav::CPTG_DiffDrive_CollisionGridBased::getPathTwist() returned much larger velocities than the actual values.
   - Fix broken Debian dependencies for libmrpt-vision-lgpl (Closes [Debian bug #986071](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=986071)).
+  - `mrpt::maps::CPointsMap::load2Dor3D_from_text_stream()` for 2D maps left uninitialized values in `z`. Fixed to load zeros instead.
 
 ------
 # Version 2.2.0: Released March 10th, 2021

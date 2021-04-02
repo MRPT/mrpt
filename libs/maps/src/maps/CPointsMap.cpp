@@ -117,7 +117,7 @@ bool CPointsMap::load2Dor3D_from_text_stream(
 	size_t linIdx = 1;
 	for (std::string line; std::getline(in, line); ++linIdx)
 	{
-		float coords[3];
+		float coords[3] = {0, 0, 0};
 		std::stringstream ss(line);
 		for (int idxCoord = 0; idxCoord < (is_3D ? 3 : 2); idxCoord++)
 		{
