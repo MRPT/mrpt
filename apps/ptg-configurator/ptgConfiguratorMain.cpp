@@ -87,7 +87,9 @@ const long ptgConfiguratorframe::ID_BUTTON2 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT6 = wxNewId();
 const long ptgConfiguratorframe::ID_TEXTCTRL6 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT7 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT7b = wxNewId();
 const long ptgConfiguratorframe::ID_TEXTCTRL7 = wxNewId();
+const long ptgConfiguratorframe::ID_TEXTCTRL7b = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT17 = wxNewId();
 const long ptgConfiguratorframe::ID_TEXTCTRL8 = wxNewId();
 const long ptgConfiguratorframe::ID_BUTTON4 = wxNewId();
@@ -324,8 +326,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer8->Add(
 		btnRebuildTPObs, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
 	StaticText6 = new wxStaticText(
-		Panel1, ID_STATICTEXT6, _("Target: x="), wxDefaultPosition,
+		Panel1, ID_STATICTEXT6, _("Target (x,y,phi_deg):"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT6"));
 	FlexGridSizer8->Add(
 		StaticText6, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
@@ -335,18 +338,21 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer8->Add(
 		edTargetX, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticText7 = new wxStaticText(
-		Panel1, ID_STATICTEXT7, _("y="), wxDefaultPosition, wxDefaultSize, 0,
-		_T("ID_STATICTEXT7"));
-	FlexGridSizer8->Add(
-		StaticText7, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
 	edTargetY = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL7, _("1.0"), wxDefaultPosition, wxSize(35, -1), 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL7"));
 	FlexGridSizer8->Add(
 		edTargetY, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
+	edTargetPhiDeg = new wxTextCtrl(
+		Panel1, ID_TEXTCTRL7b, _("0.0"), wxDefaultPosition, wxSize(35, -1), 0,
+		wxDefaultValidator, _T("ID_TEXTCTRL7b"));
+	FlexGridSizer8->Add(
+		edTargetPhiDeg, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
 	StaticText17 = new wxStaticText(
 		Panel1, ID_STATICTEXT17, _("RelSpeed="), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT17"));
@@ -715,18 +721,26 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_WS_obs->setColor_u8(0, 0, 0);
 	gl_view_WS->insert(gl_WS_obs);
 
-	gl_WS_target = mrpt::opengl::CPointCloud::Create();
-	gl_WS_target->setPointSize(7.0);
-	gl_WS_target->setColor_u8(0xff, 0, 0);
-	gl_WS_target->insertPoint(0, 0, 0);
+	gl_WS_target = mrpt::opengl::CSetOfObjects::Create();
+	{
+		auto glShape = mrpt::opengl::CSetOfLines::Create();
+		glShape->setColor_u8(0xff, 0, 0);
+		mrpt::nav::CPTG_RobotShape_Circular::
+			static_add_robotShape_to_setOfLines(*glShape, {}, 0.2);
+		gl_WS_target->insert(glShape);
+	}
 	gl_WS_target->setName("WS-target");
 	gl_WS_target->enableShowName(true);
 	gl_view_WS->insert(gl_WS_target);
 
-	gl_WS_target_reprojected = mrpt::opengl::CPointCloud::Create();
-	gl_WS_target_reprojected->setPointSize(5.0);
-	gl_WS_target_reprojected->setColor_u8(0xff, 0xff, 0x00, 0xe0);
-	gl_WS_target_reprojected->insertPoint(0, 0, 0);
+	gl_WS_target_reprojected = mrpt::opengl::CSetOfObjects::Create();
+	{
+		auto glShape = mrpt::opengl::CSetOfLines::Create();
+		glShape->setColor_u8(0xff, 0xff, 0x00, 0xe0);
+		mrpt::nav::CPTG_RobotShape_Circular::
+			static_add_robotShape_to_setOfLines(*glShape, {}, 0.15);
+		gl_WS_target_reprojected->insert(glShape);
+	}
 	gl_WS_target_reprojected->setName("WS-target-reproj");
 	gl_WS_target_reprojected->enableShowName(true);
 	gl_view_WS->insert(gl_WS_target_reprojected);
@@ -929,11 +943,16 @@ void ptgConfiguratorframe::rebuild3Dview()
 	// Limits:
 	gl_axis_WS->setAxisLimits(-refDist, -refDist, .0f, refDist, refDist, .0f);
 
-	double tx = 10.0, ty = .0;	// Target in WS
+	double tx = 10.0, ty = .0, tphi_deg = .0;  // Target in WS
 	{
 		bool ok_x = edTargetX->GetValue().ToDouble(&tx);
 		bool ok_y = edTargetY->GetValue().ToDouble(&ty);
-		if (ok_x && ok_y) { gl_WS_target->setLocation(tx, ty, 0); }
+		bool ok_phi = edTargetPhiDeg->GetValue().ToDouble(&tphi_deg);
+		if (ok_x && ok_y && ok_phi)
+		{
+			gl_WS_target->setPose(
+				mrpt::math::TPose3D(tx, ty, 0, mrpt::DEG2RAD(tphi_deg), 0, 0));
+		}
 	}
 
 	if (ptg && ptg->isInitialized())
@@ -944,6 +963,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				navdyn = ptg->getCurrentNavDynamicState();
 			navdyn.relTarget.x = tx;
 			navdyn.relTarget.y = ty;
+			navdyn.relTarget.phi = mrpt::DEG2RAD(tphi_deg);
 			edRelSpeedAtTarget->GetValue().ToDouble(&navdyn.targetRelSpeed);
 			ptg->updateNavDynamicState(navdyn);
 		}
@@ -1180,7 +1200,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 			{
 				mrpt::math::TPose2D p;
 				ptg->getPathPose(k, check_step, p);
-				gl_WS_target_reprojected->setLocation(p.x, p.y, 0);
+				gl_WS_target_reprojected->setPose(p);
 				gl_WS_target_reprojected->setName("WS-Target-reproj");
 			}
 			else

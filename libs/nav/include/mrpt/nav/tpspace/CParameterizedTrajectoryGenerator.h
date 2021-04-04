@@ -542,6 +542,10 @@ class CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 		const mrpt::poses::CPose2D& origin =
 			mrpt::poses::CPose2D()) const override;
 
+	static void static_add_robotShape_to_setOfLines(
+		mrpt::opengl::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin,
+		const mrpt::math::CPolygon& robotShape);
+
    protected:
 	/** Will be called whenever the robot shape is set / updated */
 	virtual void internal_processNewRobotShape() = 0;
@@ -583,6 +587,11 @@ class CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 		mrpt::opengl::CSetOfLines& gl_shape,
 		const mrpt::poses::CPose2D& origin =
 			mrpt::poses::CPose2D()) const override;
+
+	static void static_add_robotShape_to_setOfLines(
+		mrpt::opengl::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin,
+		const double robotRadius);
+
 	bool isPointInsideRobotShape(const double x, const double y) const override;
 
    protected:
