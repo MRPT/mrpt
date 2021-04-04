@@ -3,7 +3,7 @@ Section: science
 Priority: optional
 Maintainer: José Luis Blanco Claraco <joseluisblancoc@gmail.com>
 Build-Depends: debhelper (>= 9),
-	cmake,
+	cmake (>= 3.8),
 	perl,
 	zlib1g-dev,
 	libjpeg-dev,

@@ -34,17 +34,8 @@ function(mrpt_lib_target_requires_cpp17 _TARGET)
 		# Modern, clean way to do this:
 		get_target_property(target_type ${_TARGET} TYPE)
 		target_compile_features(${_TARGET} ${INTERF_TYPE} cxx_std_17)
-
-		# At present (CMake 3.12 + MSVC 19.15.26732.1) it seems cxx_std_17
-		# does not enable C++17 in MSVC (!).
-		# target_compile_options(${_TARGET} ${INTERF_TYPE} "/std:c++17")
 	else()
-		# Support older cmake versions:
-		if (MSVC)
-			target_compile_options(${_TARGET} ${INTERF_TYPE} "/std:c++latest")
-		else()
-			target_compile_options(${_TARGET} ${INTERF_TYPE} "-std=c++17")
-		endif()
+		message(FATAL_ERROR "MRPT requires CMake >=3.8.0 to build since MRPT 2.2.1, so libraries compile features regarding C++ versions are handled properly. For Ubuntu Xenial, check out e.g. this PPA: https://launchpad.net/~andrew-fuller/+archive/ubuntu/cmake/+packages")
 	endif()
 endfunction()
 
