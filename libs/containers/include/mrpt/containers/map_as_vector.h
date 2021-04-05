@@ -129,6 +129,14 @@ class map_as_vector
 				"map_as_vector: at() for non-existing element.");
 		return m_vec.at(i).second;
 	}
+	/// \overload
+	inline VALUE& at(const size_t i)
+	{
+		if (i >= m_vec.size() || m_vec.at(i).first != i)
+			throw std::out_of_range(
+				"map_as_vector: at() for non-existing element.");
+		return m_vec.at(i).second;
+	}
 
 	/** Insert pair<key,val>, as in std::map (guess_point is actually ignored in
 	 * this class) */
