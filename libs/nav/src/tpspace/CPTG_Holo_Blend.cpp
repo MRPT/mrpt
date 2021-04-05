@@ -308,7 +308,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(
 
 	ASSERT_(x != 0 || y != 0);
 
-	const double err_threshold = 1e-3;
+	const double err_threshold = 1e-2;
 	const double T_ramp = T_ramp_max;
 	const double vxi = m_nav_dyn_state.curVelLocal.vx,
 				 vyi = m_nav_dyn_state.curVelLocal.vy;
