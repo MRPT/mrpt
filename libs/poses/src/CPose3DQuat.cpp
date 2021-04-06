@@ -539,7 +539,8 @@ void CPose3DQuat::fromString(const std::string& s)
 {
 	mrpt::math::CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
-		THROW_EXCEPTION("Malformed expression in ::fromString");
+		THROW_EXCEPTION_FMT(
+			"Malformed expression in ::fromString, s=\"%s\"", s.c_str());
 	ASSERTMSG_(m.rows() == 1 && m.cols() == 7, "Expected vector length=7");
 	m_coords[0] = m(0, 0);
 	m_coords[1] = m(0, 1);

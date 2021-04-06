@@ -409,7 +409,8 @@ void CPose2D::fromString(const std::string& s)
 {
 	CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
-		THROW_EXCEPTION("Malformed expression in ::fromString");
+		THROW_EXCEPTION_FMT(
+			"Malformed expression in ::fromString, s=\"%s\"", s.c_str());
 	ASSERTMSG_(m.rows() == 1 && m.cols() == 3, "Expected vector length=3");
 	x(m(0, 0));
 	y(m(0, 1));

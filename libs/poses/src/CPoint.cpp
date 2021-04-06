@@ -22,7 +22,8 @@ void CPoint<DERIVEDCLASS, DIM>::fromString(const std::string& s)
 {
 	mrpt::math::CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
-		THROW_EXCEPTION("Malformed expression in ::fromString");
+		THROW_EXCEPTION_FMT(
+			"Malformed expression in ::fromString, s=\"%s\"", s.c_str());
 	ASSERT_EQUAL_(m.rows(), 1);
 	ASSERT_EQUAL_(m.cols(), DERIVEDCLASS::static_size);
 	for (int i = 0; i < DERIVEDCLASS::static_size; i++)
