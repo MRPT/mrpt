@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /system_params_by_name
+# CMake file for the MRPT example:  /system_progress_bar
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-set(sampleName system_params_by_name)
+set(sampleName system_progress_bar)
 project(EXAMPLE_${sampleName})
 
 cmake_minimum_required(VERSION 3.1)

@@ -98,6 +98,7 @@ if(BUILD_EXAMPLES)
 		system_directory_explorer_example
 		system_file_system_watcher
 		system_dirs_files_manipulation
+		system_progress_bar
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::system mrpt::poses mrpt::io)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
