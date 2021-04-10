@@ -13,6 +13,8 @@
       - now no longer requires a field `nodes` in input graphs.
       - add convenient return by value getTreeGraph()
       - Deprecate mrpt::graphs::CDijkstra::Visitor virtual class API in favor of new C++11 std::function-based mrpt::graphs::CDijkstra::visitor_t
+  - \ref mrpt_system_grp
+    - New function mrpt::system::progress()
 - BUG FIXES:
   - ptg-configurator: Fix failure to list existing PTGs, due to RTTI unregistered name "CParameterizedTrajectoryGenerator".
   - mrpt::opengl::COpenGLViewport::get3DRayForPixelCoord() returned wrong pixel coordinates when in orthogonal projection mode.
