@@ -397,6 +397,7 @@ void CPointCloud::markAllPointsAsNew()
 {
 	m_minmax_valid = false;
 	octree_mark_as_outdated();
+	CRenderizable::notifyChange();
 }
 
 /** In a base class, reserve memory to prepare subsequent calls to

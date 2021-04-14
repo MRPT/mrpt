@@ -19,6 +19,7 @@
   - ptg-configurator: Fix failure to list existing PTGs, due to RTTI unregistered name "CParameterizedTrajectoryGenerator".
   - mrpt::opengl::COpenGLViewport::get3DRayForPixelCoord() returned wrong pixel coordinates when in orthogonal projection mode.
   - mrpt::opengl::CArrow: Fix wrong normal calculation (wrong rendering reflections).
+  - mrpt::opengl::CPointCloud::markAllPointsAsNew() and mrpt::opengl::CPointCloudColoured::markAllPointsAsNew() did not refresh OpenGL buffers.
   - mrpt::nav::CPTG_DiffDrive_CollisionGridBased::getPathTwist() returned much larger velocities than the actual values.
   - Fix broken Debian dependencies for libmrpt-vision-lgpl (Closes [Debian bug #986071](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=986071)).
   - `mrpt::maps::CPointsMap::load2Dor3D_from_text_stream()` for 2D maps left uninitialized values in `z`. Fixed to load zeros instead.
