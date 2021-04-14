@@ -16,6 +16,8 @@
 
 namespace mrpt
 {
+/** Kinematics classes namespace \ingroup mrpt_kinematics_grp
+ */
 namespace kinematics
 {
 /** An individual kinematic chain element (one link) which builds up a
@@ -24,6 +26,7 @@ namespace kinematics
  * the end point
  * follows a Denavit-Hartenberg standard parameterization: [theta, d, a,
  * alpha].
+ * \ingroup mrpt_kinematics_grp
  */
 struct TKinematicLink
 {
@@ -66,7 +69,7 @@ mrpt::serialization::CArchive& operator<<(
  * which defaults to standard XYZ axes with +Z pointing upwards.
  *
  * \sa CPose3D
- * \ingroup kinematics_grp
+ * \ingroup mrpt_kinematics_grp
  */
 class CKinematicChain : public mrpt::serialization::CSerializable
 {
