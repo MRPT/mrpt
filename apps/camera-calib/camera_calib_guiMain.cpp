@@ -737,8 +737,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 		TImageSize imgSizes(0, 0);
 
 		// Generate the images on-the-fly:
-		CImage imgOrgColor;
-		it->second.img_original.colorImage(imgOrgColor);
+		CImage imgOrgColor = it->second.img_original.colorImage();
 
 		imgSizes = imgOrgColor.getSize();
 
