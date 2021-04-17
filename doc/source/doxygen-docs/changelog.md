@@ -13,6 +13,8 @@
       - now no longer requires a field `nodes` in input graphs.
       - add convenient return by value getTreeGraph()
       - Deprecate mrpt::graphs::CDijkstra::Visitor virtual class API in favor of new C++11 std::function-based mrpt::graphs::CDijkstra::visitor_t
+  - \ref mrpt_opengl_grp
+    - mrpt::opengl::CAssimpModel now uses a texture cache to speed up and reduce RAM usage if loading the same textures in different objects.
   - \ref mrpt_system_grp
     - New function mrpt::system::progress()
 - BUG FIXES:

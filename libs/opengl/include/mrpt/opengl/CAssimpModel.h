@@ -103,6 +103,8 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		};
 	};
 
+	using filepath_t = std::string;
+
 	/**  Loads a scene from a file in any supported file.
 	 * \exception std::runtime_error On any error during loading or importing
 	 * the file.
@@ -124,7 +126,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	{
 		// indices in \a m_texturedObjects. string::npos for non-initialized
 		// ones
-		size_t id_idx{std::string::npos};
+		size_t id_idx = std::string::npos;
 		mrpt::img::CImage img_rgb;
 		std::optional<mrpt::img::CImage> img_alpha;
 	};
@@ -137,15 +139,14 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	/** Bounding box */
 	mrpt::math::TPoint3D m_bbox_min{0, 0, 0}, m_bbox_max{0, 0, 0};
 
-	std::string m_modelPath;
+	filepath_t m_modelPath;
 
-	mutable bool m_textures_loaded{false};
-	mutable std::map<std::string, TInfoPerTexture> m_textureIdMap;
+	mutable std::map<filepath_t, TInfoPerTexture> m_textureIdMap;
 
 	// We define a textured object per texture image, and delegate texture
 	// handling to that class:
 	mutable std::vector<CSetOfTexturedTriangles::Ptr> m_texturedObjects;
-	bool m_verboseLoad = true;
+	bool m_verboseLoad = false;
 
 	void recursive_render(
 		const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
