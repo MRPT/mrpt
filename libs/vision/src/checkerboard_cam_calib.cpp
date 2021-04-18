@@ -18,6 +18,10 @@
 
 #include <Eigen/Dense>
 
+#if MRPT_HAS_OPENCV
+#include <opencv2/core/eigen.hpp>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
@@ -49,9 +53,6 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	return ret;
 }
 
-#if MRPT_HAS_OPENCV
-#include <opencv2/core/eigen.hpp>
-#endif
 
 /* -------------------------------------------------------
 				checkerBoardCameraCalibration
