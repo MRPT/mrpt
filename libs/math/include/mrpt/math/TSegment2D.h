@@ -21,6 +21,21 @@ namespace mrpt::math
 struct TSegment2D
 {
    public:
+	/** Constructor from both points */
+	TSegment2D(const TPoint2D& p1, const TPoint2D& p2) : point1(p1), point2(p2)
+	{
+	}
+	/// Static method, returns segment from two points \note New in MRPT 2.3.0
+	static TSegment2D FromPoints(const TPoint2D& p1, const TPoint2D& p2)
+	{
+		return TSegment2D(p1, p2);
+	}
+	/** Fast default constructor. Initializes to (0,0)-(0,0) */
+	TSegment2D() = default;
+
+	/** Explicit constructor from 3D object, discarding the z. */
+	explicit TSegment2D(const TSegment3D& s);
+
 	/**
 	 * Origin point.
 	 */
@@ -77,20 +92,6 @@ struct TSegment2D
 		p.x = (point1.x + point2.x) / 2;
 		p.y = (point1.y + point2.y) / 2;
 	}
-	/**
-	 * Constructor from both points.
-	 */
-	TSegment2D(const TPoint2D& p1, const TPoint2D& p2) : point1(p1), point2(p2)
-	{
-	}
-	/**
-	 * Fast default constructor. Initializes to garbage.
-	 */
-	TSegment2D() = default;
-	/**
-	 * Explicit constructor from 3D object, discarding the z.
-	 */
-	explicit TSegment2D(const TSegment3D& s);
 
 	bool operator<(const TSegment2D& s) const;
 };

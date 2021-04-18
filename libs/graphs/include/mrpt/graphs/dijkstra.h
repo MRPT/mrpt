@@ -465,7 +465,7 @@ class CDijkstra
 
 	}  // end getTreeGraph
 
-	/// \overload \note (New in MRPT 2.2.1)
+	/// \overload \note (New in MRPT 2.3.0)
 	tree_graph_t getTreeGraph() const
 	{
 		tree_graph_t tg;

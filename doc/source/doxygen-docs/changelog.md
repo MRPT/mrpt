@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.2.1: UNRELEASED
+# Version 2.3.0: UNRELEASED
 - General build changes:
   - CMake >=3.8.0 is now required to ensure proper handling of dependencies compile options.
 - Changes in applications:
@@ -13,6 +13,11 @@
       - now no longer requires a field `nodes` in input graphs.
       - add convenient return by value getTreeGraph()
       - Deprecate mrpt::graphs::CDijkstra::Visitor virtual class API in favor of new C++11 std::function-based mrpt::graphs::CDijkstra::visitor_t
+  - \ref mrpt_math_grp
+    - Removed redundant mrpt::math::pointIntoPolygon2D()  -> mrpt::math::TPolygon2D::contains()
+    - Removed redundant mrpt::math::SegmentsIntersection() ->  mrpt::math::intersect(mrpt::math::TSegment2D,mrpt::math::TSegment2D)
+    - Removed redundant mrpt::math::distancePointToPolygon2D() -> TPolygon2D::distance()
+    - Moved mrpt::math::minDistBetweenLines() -> mrpt::math::TLine3D::distance()
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CAssimpModel now uses a texture cache to speed up and reduce RAM usage if loading the same textures in different objects.
   - \ref mrpt_system_grp

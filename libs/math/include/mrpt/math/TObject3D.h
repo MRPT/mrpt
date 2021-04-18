@@ -20,9 +20,9 @@ namespace mrpt::math
 /** \addtogroup  geometry_grp
  * @{ */
 
-/**
- * Standard object for storing any 3D lightweight object. Do not inherit from
- * this class.
+/** A variant type for any lightweight 3D type: point, segment, line, plane,
+ * polygon. this class.
+ *
  * \sa TPoint3D,TSegment3D,TLine3D,TPlane,TPolygon3D
  */
 struct TObject3D
