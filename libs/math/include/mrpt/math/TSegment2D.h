@@ -111,6 +111,9 @@ mrpt::serialization::CArchive& operator>>(
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TSegment2D& s);
 
+/** Text streaming function */
+std::ostream& operator<<(std::ostream& o, const TSegment2D& p);
+
 }  // namespace mrpt::math
 
 namespace mrpt::typemeta

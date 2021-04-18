@@ -93,5 +93,5 @@ if(BUILD_mrpt-math)
 	endif ()
 
 	# Minimize debug info for this module:
-	mrpt_reduced_debug_symbols(math)
+	#mrpt_reduced_debug_symbols(math)
 endif()

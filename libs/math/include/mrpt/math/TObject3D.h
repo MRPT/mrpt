@@ -15,321 +15,149 @@
 #include <mrpt/math/TPolygon3D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 
+#include <variant>
+
 namespace mrpt::math
 {
 /** \addtogroup  geometry_grp
  * @{ */
 
 /** A variant type for any lightweight 3D type: point, segment, line, plane,
- * polygon. this class.
+ * polygon. Use provided helper method, or directly access the variant `data`.
  *
  * \sa TPoint3D,TSegment3D,TLine3D,TPlane,TPolygon3D
  */
 struct TObject3D
 {
-   private:
-	/**
-	 * Object type identifier.
-	 */
-	unsigned char type{GEOMETRIC_TYPE_UNDEFINED};
-	/**
-	 * Union containing pointer to actual data.
-	 */
-	struct tobject3d_data_t
-	{
-		TPoint3D point;
-		TSegment3D segment;
-		TLine3D line;
-		TPolygon3D* polygon{nullptr};
-		TPlane plane;
+	using variant_t = std::variant<
+		std::monostate, TPoint3D, TSegment3D, TLine3D, TPolygon3D, TPlane>;
 
-		tobject3d_data_t() = default;
-	} data;
-	/**
-	 * Destroys the object and releases the pointer, if any.
-	 */
-	void destroy()
+	variant_t data;
+
+	TObject3D() = default;
+	~TObject3D() = default;
+
+	/** Constructor from point, segment, line, polygon, or plane */
+	template <typename T>
+	static TObject3D From(const T& p)
 	{
-		if (type == GEOMETRIC_TYPE_POLYGON) delete data.polygon;
-		type = GEOMETRIC_TYPE_UNDEFINED;
+		TObject3D o;
+		o.data = p;
+		return o;
 	}
 
-   public:
-	/**
-	 * Constructor from point.
-	 */
-	TObject3D(const TPoint3D& p) : type(GEOMETRIC_TYPE_POINT)
-	{
-		data.point = p;
-	}
-	/**
-	 * Constructor from segment.
-	 */
-	TObject3D(const TSegment3D& s) : type(GEOMETRIC_TYPE_SEGMENT)
-	{
-		data.segment = s;
-	}
-	/**
-	 * Constructor from line.
-	 */
-	TObject3D(const TLine3D& r) : type(GEOMETRIC_TYPE_LINE) { data.line = r; }
-	/**
-	 * Constructor from polygon.
-	 */
-	TObject3D(const TPolygon3D& p) : type(GEOMETRIC_TYPE_POLYGON)
-	{
-		data.polygon = new TPolygon3D(p);
-	}
-	/**
-	 * Constructor from plane.
-	 */
-	TObject3D(const TPlane& p) : type(GEOMETRIC_TYPE_PLANE) { data.plane = p; }
-	/**
-	 * Empty constructor.
-	 */
-	TObject3D() : type(GEOMETRIC_TYPE_UNDEFINED) {}
-	/**
-	 * Destructor.
-	 */
-	~TObject3D() { destroy(); }
-	/**
-	 * Checks whether content is a point.
-	 */
-	bool isPoint() const { return type == GEOMETRIC_TYPE_POINT; }
-	/**
-	 * Checks whether content is a segment.
-	 */
-	bool isSegment() const { return type == GEOMETRIC_TYPE_SEGMENT; }
+	/** Checks whether content is a point. */
+	bool isPoint() const { return std::holds_alternative<TPoint3D>(data); }
+
+	/**Checks whether content is a segment. */
+	bool isSegment() const { return std::holds_alternative<TSegment3D>(data); }
 	/**
 	 * Checks whether content is a line.
 	 */
-	bool isLine() const { return type == GEOMETRIC_TYPE_LINE; }
+	bool isLine() const { return std::holds_alternative<TLine3D>(data); }
 	/**
 	 * Checks whether content is a polygon.
 	 */
-	bool isPolygon() const { return type == GEOMETRIC_TYPE_POLYGON; }
+	bool isPolygon() const { return std::holds_alternative<TPolygon3D>(data); }
 	/**
 	 * Checks whether content is a plane.
 	 */
-	bool isPlane() const { return type == GEOMETRIC_TYPE_PLANE; }
+	bool isPlane() const { return std::holds_alternative<TPlane>(data); }
+
+	bool empty() const { return std::holds_alternative<std::monostate>(data); }
+
 	/**
-	 * Gets object type.
+	 *  Gets the content as a given expected type (an exception will be thrown
+	 * if type is wrong, check type first).
 	 */
-	unsigned char getType() const { return type; }
-	/**
-	 * Gets the content as a point, returning false if the type is not
-	 * adequate.
-	 */
-	bool getPoint(TPoint3D& p) const
+	template <typename T>
+	const T& getAs() const
 	{
-		if (isPoint())
-		{
-			p = data.point;
-			return true;
-		}
-		else
-			return false;
+		return std::get<T>(data);
 	}
-	/**
-	 * Gets the content as a segment, returning false if the type is not
-	 * adequate.
-	 */
-	bool getSegment(TSegment3D& s) const
+
+	/// \overload
+	template <typename T>
+	T& getAs()
 	{
-		if (isSegment())
-		{
-			s = data.segment;
-			return true;
-		}
-		else
-			return false;
+		return std::get<T>(data);
 	}
-	/**
-	 * Gets the content as a line, returning false if the type is not adequate.
+
+	/** returns true if the objects is a point, and retrieves its value in
+	 * `out`. Prefer getAs(). This method was left in mrpt 2.3.0 for backwards
+	 * compatibility.
 	 */
-	bool getLine(TLine3D& r) const
+	bool getPoint(TPoint3D& out) const
 	{
-		if (isLine())
-		{
-			r = data.line;
-			return true;
-		}
-		else
-			return false;
+		if (!isPoint()) return false;
+		out = getAs<TPoint3D>();
+		return true;
 	}
-	/**
-	 * Gets the content as a polygon, returning false if the type is not
-	 * adequate.
+	/** returns true if the objects is a segment, and retrieves its value in
+	 * `out`. Prefer getAs(). This method was left in mrpt 2.3.0 for backwards
+	 * compatibility.
 	 */
-	bool getPolygon(TPolygon3D& p) const
+	bool getSegment(TSegment3D& out) const
 	{
-		if (isPolygon())
-		{
-			p = *(data.polygon);
-			return true;
-		}
-		else
-			return false;
+		if (!isSegment()) return false;
+		out = getAs<TSegment3D>();
+		return true;
 	}
-	/**
-	 * Gets the content as a plane, returning false if the type is not
-	 * adequate.
+	/** returns true if the objects is a line, and retrieves its value in
+	 * `out`. Prefer getAs(). This method was left in mrpt 2.3.0 for backwards
+	 * compatibility.
 	 */
-	bool getPlane(TPlane& p) const
+	bool getLine(TLine3D& out) const
 	{
-		if (isPlane())
-		{
-			p = data.plane;
-			return true;
-		}
-		else
-			return false;
+		if (!isLine()) return false;
+		out = getAs<TLine3D>();
+		return true;
 	}
-	/**
-	 * Assigns another object, creating a new pointer if needed.
+	/** returns true if the objects is a TPolygon3D, and retrieves its value in
+	 * `out`. Prefer getAs(). This method was left in mrpt 2.3.0 for backwards
+	 * compatibility.
 	 */
-	TObject3D& operator=(const TObject3D& obj)
+	bool getPolygon(TPolygon3D& out) const
 	{
-		if (this == &obj) return *this;
-		destroy();
-		switch (type = obj.type)
-		{
-			case GEOMETRIC_TYPE_POINT: data.point = obj.data.point; break;
-			case GEOMETRIC_TYPE_SEGMENT: data.segment = obj.data.segment; break;
-			case GEOMETRIC_TYPE_LINE: data.line = obj.data.line; break;
-			case GEOMETRIC_TYPE_POLYGON:
-				data.polygon = new TPolygon3D(*(obj.data.polygon));
-				break;
-			case GEOMETRIC_TYPE_PLANE: data.plane = obj.data.plane; break;
-			case GEOMETRIC_TYPE_UNDEFINED: break;
-			default: THROW_EXCEPTION("Invalid TObject3D object");
-		}
-		return *this;
+		if (!isPolygon()) return false;
+		out = getAs<TPolygon3D>();
+		return true;
 	}
-	/**
-	 * Assigns a point to this object.
+	/** returns true if the objects is a TPlane, and retrieves its value in
+	 * `out`. Prefer getAs(). This method was left in mrpt 2.3.0 for backwards
+	 * compatibility.
 	 */
-	void operator=(const TPoint3D& p)
+	bool getPlane(TPlane& out) const
 	{
-		destroy();
-		type = GEOMETRIC_TYPE_POINT;
-		data.point = p;
+		if (!isPlane()) return false;
+		out = getAs<TPlane>();
+		return true;
 	}
+
+	/** Gets a string with the type and the parameters of the object. `empty` if
+	 * not defined. \note New in MRPT 2.3.0 */
+	std::string asString() const;
+
 	/**
-	 * Assigns a segment to this object.
-	 */
-	void operator=(const TSegment3D& s)
-	{
-		destroy();
-		type = GEOMETRIC_TYPE_SEGMENT;
-		data.segment = s;
-	}
-	/**
-	 * Assigns a line to this object.
-	 */
-	void operator=(const TLine3D& l)
-	{
-		destroy();
-		type = GEOMETRIC_TYPE_LINE;
-		data.line = l;
-	}
-	/**
-	 * Assigns a polygon to this object.
-	 */
-	void operator=(const TPolygon3D& p)
-	{
-		destroy();
-		type = GEOMETRIC_TYPE_POLYGON;
-		data.polygon = new TPolygon3D(p);
-	}
-	/**
-	 * Assigns a plane to this object.
-	 */
-	void operator=(const TPlane& p)
-	{
-		destroy();
-		type = GEOMETRIC_TYPE_PLANE;
-		data.plane = p;
-	}
-	/**
-	 * Projects into 2D space.
+	 * Cast into 2D space.
 	 * \throw std::logic_error if the 3D object loses its properties when
 	 * projecting into 2D space (for example, it's a plane or a vertical line).
 	 */
-	void generate2DObject(TObject2D& obj) const;
-	/**
-	 * Constructs from another object.
-	 */
-	TObject3D(const TObject3D& obj) : type(GEOMETRIC_TYPE_UNDEFINED)
-	{
-		operator=(obj);
-	}
-	/**
-	 * Static method to retrieve every point included in a vector of objects.
-	 */
-	static void getPoints(
-		const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts);
-	/**
-	 * Static method to retrieve every segment included in a vector of objects.
-	 */
-	static void getSegments(
-		const std::vector<TObject3D>& objs, std::vector<TSegment3D>& sgms);
-	/**
-	 * Static method to retrieve every line included in a vector of objects.
-	 */
-	static void getLines(
-		const std::vector<TObject3D>& objs, std::vector<TLine3D>& lins);
-	/**
-	 * Static method to retrieve every plane included in a vector of objects.
-	 */
-	static void getPlanes(
-		const std::vector<TObject3D>& objs, std::vector<TPlane>& plns);
-	/**
-	 * Static method to retrieve every polygon included in a vector of objects.
-	 */
-	static void getPolygons(
-		const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys);
-	/**
-	 * Static method to retrieve every point included in a vector of objects,
-	 * returning the remaining objects in another argument.
-	 */
-	static void getPoints(
-		const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts,
-		std::vector<TObject3D>& remainder);
-	/**
-	 * Static method to retrieve every segment included in a vector of objects,
-	 * returning the remaining objects in another argument.
-	 */
-	static void getSegments(
-		const std::vector<TObject3D>& objs, std::vector<TSegment3D>& sgms,
-		std::vector<TObject3D>& remainder);
-	/**
-	 * Static method to retrieve every line included in a vector of objects,
-	 * returning the remaining objects in another argument.
-	 */
-	static void getLines(
-		const std::vector<TObject3D>& objs, std::vector<TLine3D>& lins,
-		std::vector<TObject3D>& remainder);
-	/**
-	 * Static method to retrieve every plane included in a vector of objects,
-	 * returning the remaining objects in another argument.
-	 */
-	static void getPlanes(
-		const std::vector<TObject3D>& objs, std::vector<TPlane>& plns,
-		std::vector<TObject3D>& remainder);
-	/**
-	 * Static method to retrieve every polygon included in a vector of objects,
-	 * returning the remaining objects in another argument.
-	 */
-	static void getPolygons(
-		const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys,
-		std::vector<TObject3D>& remainder);
+	TObject2D generate2DObject() const;
 };
 
 mrpt::serialization::CArchive& operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TObject3D& o);
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TObject3D& o);
+
+/** Textual print stream operator. \sa TObject3D::asString() */
+inline std::ostream& operator<<(
+	std::ostream& o, const mrpt::math::TObject3D& obj)
+{
+	o << obj.asString();
+	return o;
+}
 
 /** @} */
 

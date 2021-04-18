@@ -16,6 +16,8 @@
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/math/epsilon.h>
 
+#include <iostream>
+
 #include "polygons_utils.h"
 
 using namespace mrpt::math;
@@ -69,6 +71,10 @@ inline double isLeft(
 
 bool TPolygon2D::contains(const TPoint2D& P) const
 {
+	// References:
+	// - http://geomalgorithms.com/a03-_inclusion.html
+	// - https://en.wikipedia.org/wiki/Point_in_polygon#Winding_number_algorithm
+
 	int wn = 0;	 // the  winding number counter
 
 	// loop through all edges of the polygon
@@ -184,4 +190,12 @@ inline void TPolygon2D::createRegularPolygon(
 	createRegularPolygon(numEdges, radius, poly);
 	for (size_t i = 0; i < numEdges; i++)
 		poly[i] = pose.composePoint(poly[i]);
+}
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TPolygon2D& p)
+{
+	o << "mrpt::math::TPolygon2D vertices:\n";
+	for (const auto& v : p)
+		o << " - " << v << "\n";
+	return o;
 }
