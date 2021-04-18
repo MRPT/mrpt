@@ -98,7 +98,7 @@ void math::closestFromPointToLine(
 /*---------------------------------------------------------------
 	Returns the sq. distance to closest point to a line
   ---------------------------------------------------------------*/
-double math::closestSquareDistanceFromPointToLine(
+double math::squaredDistancePointToLine(
 	double Px, double Py, double x1, double y1, double x2, double y2)
 {
 	if (x1 == x2 && y1 == y2) { return square(Px - x1) + square(Py - y1); }
@@ -110,253 +110,6 @@ double math::closestSquareDistanceFromPointToLine(
 
 		return square(x1 + (Ratio * Dx) - Px) + square(y1 + (Ratio * Dy) - Py);
 	}
-}
-
-/*---------------------------------------------------------------
-						Intersect
-  ---------------------------------------------------------------*/
-bool math::SegmentsIntersection(
-	const double x1, const double y1, const double x2, const double y2,
-	const double x3, const double y3, const double x4, const double y4,
-	double& ix, double& iy)
-{
-	double UpperX, UpperY, LowerX, LowerY, Ax, Bx, Cx, Ay, By, Cy, d, f, e,
-		Ratio;
-
-	Ax = x2 - x1;
-	Bx = x3 - x4;
-
-	if (Ax < 0)
-	{
-		LowerX = x2;
-		UpperX = x1;
-	}
-	else
-	{
-		UpperX = x2;
-		LowerX = x1;
-	}
-
-	if (Bx > 0)
-	{
-		if (UpperX < x4 || x3 < LowerX) return false;
-	}
-	else if (UpperX < x3 || x4 < LowerX)
-		return false;
-
-	Ay = y2 - y1;
-	By = y3 - y4;
-
-	if (Ay < 0)
-	{
-		LowerY = y2;
-		UpperY = y1;
-	}
-	else
-	{
-		UpperY = y2;
-		LowerY = y1;
-	}
-
-	if (By > 0)
-	{
-		if (UpperY < y4 || y3 < LowerY) return false;
-	}
-	else if (UpperY < y3 || y4 < LowerY)
-		return false;
-
-	Cx = x1 - x3;
-	Cy = y1 - y3;
-	d = (By * Cx) - (Bx * Cy);
-	f = (Ay * Bx) - (Ax * By);
-
-	if (f > 0)
-	{
-		if (d < 0 || d > f) return false;
-	}
-	else if (d > 0 || d < f)
-		return false;
-
-	e = (Ax * Cy) - (Ay * Cx);
-
-	if (f > 0)
-	{
-		if (e < 0 || e > f) return false;
-	}
-	else if (e > 0 || e < f)
-		return false;
-
-	Ratio = (Ax * -By) - (Ay * -Bx);
-
-	if (Ratio != 0)
-	{
-		Ratio = ((Cy * -Bx) - (Cx * -By)) / Ratio;
-		ix = x1 + (Ratio * Ax);
-		iy = y1 + (Ratio * Ay);
-	}
-	else
-	{
-		if ((Ax * -Cy) == (-Cx * Ay))
-		{
-			ix = x3;
-			iy = y3;
-		}
-		else
-		{
-			ix = x4;
-			iy = y4;
-		}
-	}
-	return true;
-}
-
-/*---------------------------------------------------------------
-						Intersect
-  ---------------------------------------------------------------*/
-bool math::SegmentsIntersection(
-	const double x1, const double y1, const double x2, const double y2,
-	const double x3, const double y3, const double x4, const double y4,
-	float& ix, float& iy)
-{
-	double x, y;
-	bool b = SegmentsIntersection(x1, y1, x2, y2, x3, y3, x4, y4, x, y);
-	ix = d2f(x);
-	iy = d2f(y);
-	return b;
-}
-
-/*---------------------------------------------------------------
-						Intersect
-  ---------------------------------------------------------------*/
-bool math::pointIntoPolygon2D(
-	double px, double py, unsigned int polyEdges, const double* poly_xs,
-	const double* poly_ys)
-{
-	unsigned int i, j;
-	bool res = false;
-
-	if (polyEdges < 3) return res;
-
-	j = polyEdges - 1;
-
-	for (i = 0; i < polyEdges; i++)
-	{
-		if ((poly_ys[i] <= py && py < poly_ys[j]) ||  // an upward crossing
-			(poly_ys[j] <= py && py < poly_ys[i]))	// a downward crossing
-		{
-			// compute the edge-ray intersect @ the x-coordinate
-			if (px - poly_xs[i] <
-				((poly_xs[j] - poly_xs[i]) * (py - poly_ys[i]) /
-				 (poly_ys[j] - poly_ys[i])))
-				res = !res;
-		}
-		j = i;
-	}
-
-	return res;
-}
-
-/*---------------------------------------------------------------
-						Intersect
-  ---------------------------------------------------------------*/
-double math::distancePointToPolygon2D(
-	double px, double py, unsigned int polyEdges, const double* poly_xs,
-	const double* poly_ys)
-{
-	unsigned int i, j;
-	double minDist = 1e20f;
-
-	// Is the point INTO?
-	if (pointIntoPolygon2D(px, py, polyEdges, poly_xs, poly_ys)) return 0;
-
-	// Compute the closest distance from the point to any segment:
-	j = polyEdges - 1;
-
-	for (i = 0; i < polyEdges; i++)
-	{
-		// segment: [j]-[i]
-		// ----------------------
-		double closestX, closestY;
-		double d = minimumDistanceFromPointToSegment(
-			px, py, poly_xs[j], poly_ys[j], poly_xs[i], poly_ys[i], closestX,
-			closestY);
-
-		minDist = min(d, minDist);
-
-		// For next iter:
-		j = i;
-	}
-
-	return minDist;
-}
-
-/*---------------------------------------------------------------
-					minDistBetweenLines
- --------------------------------------------------------------- */
-bool math::minDistBetweenLines(
-	double p1_x, double p1_y, double p1_z, double p2_x, double p2_y,
-	double p2_z, double p3_x, double p3_y, double p3_z, double p4_x,
-	double p4_y, double p4_z, double& x, double& y, double& z, double& dist)
-{
-	const double EPS = 1e-30f;
-
-	double p13_x, p13_y, p13_z;
-	double p43_x, p43_y, p43_z;
-	double p21_x, p21_y, p21_z;
-
-	double d1343, d4321, d1321, d4343, d2121;
-	double numer, denom;
-
-	p13_x = p1_x - p3_x;
-	p13_y = p1_y - p3_y;
-	p13_z = p1_z - p3_z;
-
-	p43_x = p4_x - p3_x;
-	p43_y = p4_y - p3_y;
-	p43_z = p4_z - p3_z;
-
-	if (fabs(p43_x) < EPS && fabs(p43_y) < EPS && fabs(p43_z) < EPS)
-		return false;
-
-	p21_x = p2_x - p1_x;
-	p21_y = p2_y - p1_y;
-	p21_z = p2_z - p1_z;
-	if (fabs(p21_x) < EPS && fabs(p21_y) < EPS && fabs(p21_z) < EPS)
-		return false;
-
-	d1343 = p13_x * p43_x + p13_y * p43_y + p13_z * p43_z;
-	d4321 = p43_x * p21_x + p43_y * p21_y + p43_z * p21_z;
-	d1321 = p13_x * p21_x + p13_y * p21_y + p13_z * p21_z;
-	d4343 = p43_x * p43_x + p43_y * p43_y + p43_z * p43_z;
-	d2121 = p21_x * p21_x + p21_y * p21_y + p21_z * p21_z;
-
-	denom = d2121 * d4343 - d4321 * d4321;
-	if (fabs(denom) < EPS) return false;
-
-	numer = d1343 * d4321 - d1321 * d4343;
-
-	double mua = numer / denom;
-	double mub = (d1343 + d4321 * mua) / d4343;
-	double pa_x, pa_y, pa_z;
-	double pb_x, pb_y, pb_z;
-
-	pa_x = p1_x + mua * p21_x;
-	pa_y = p1_y + mua * p21_y;
-	pa_z = p1_z + mua * p21_z;
-
-	pb_x = p3_x + mub * p43_x;
-	pb_y = p3_y + mub * p43_y;
-	pb_z = p3_z + mub * p43_z;
-
-	dist = (double)sqrt(
-		square(pa_x - pb_x) + square(pa_y - pb_y) + square(pa_z - pb_z));
-
-	// the mid point:
-	x = 0.5 * (pa_x + pb_x);
-	y = 0.5 * (pa_y + pb_y);
-	z = 0.5 * (pa_z + pb_z);
-
-	return true;
 }
 
 /*---------------------------------------------------------------
@@ -413,25 +166,32 @@ bool math::RectanglesIntersection(
 
 	// Test for intersections:
 	// ----------------------------------------
-	double ix, iy;
+	TObject2D intersectObj;
 
 	for (int idx = 0; idx < 4; idx++)
 	{
-		if (math::SegmentsIntersection(
-				R1_x_min, R1_y_min, R1_x_max, R1_y_min, xs[idx], ys[idx],
-				xs[(idx + 1) % 4], ys[(idx + 1) % 4], ix, iy))
+		const auto seg2 = TSegment2D::FromPoints(
+			{xs[idx], ys[idx]}, {xs[(idx + 1) % 4], ys[(idx + 1) % 4]});
+
+		if (mrpt::math::intersect(
+				TSegment2D::FromPoints(
+					{R1_x_min, R1_y_min}, {R1_x_max, R1_y_min}),
+				seg2, intersectObj))
 			return true;
-		if (math::SegmentsIntersection(
-				R1_x_max, R1_y_min, R1_x_max, R1_y_max, xs[idx], ys[idx],
-				xs[(idx + 1) % 4], ys[(idx + 1) % 4], ix, iy))
+		if (mrpt::math::intersect(
+				TSegment2D::FromPoints(
+					{R1_x_max, R1_y_min}, {R1_x_max, R1_y_max}),
+				seg2, intersectObj))
 			return true;
-		if (math::SegmentsIntersection(
-				R1_x_max, R1_y_max, R1_x_min, R1_y_max, xs[idx], ys[idx],
-				xs[(idx + 1) % 4], ys[(idx + 1) % 4], ix, iy))
+		if (mrpt::math::intersect(
+				TSegment2D::FromPoints(
+					{R1_x_max, R1_y_max}, {R1_x_min, R1_y_max}),
+				seg2, intersectObj))
 			return true;
-		if (math::SegmentsIntersection(
-				R1_x_min, R1_y_max, R1_x_min, R1_y_min, xs[idx], ys[idx],
-				xs[(idx + 1) % 4], ys[(idx + 1) % 4], ix, iy))
+		if (mrpt::math::intersect(
+				TSegment2D::FromPoints(
+					{R1_x_min, R1_y_max}, {R1_x_min, R1_y_min}),
+				seg2, intersectObj))
 			return true;
 	}
 

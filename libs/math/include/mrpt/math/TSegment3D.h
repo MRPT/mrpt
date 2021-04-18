@@ -21,6 +21,26 @@ namespace mrpt::math
 struct TSegment3D
 {
    public:
+	/** Fast default constructor. Initializes to (0,0,0)-(0,0,0) */
+	TSegment3D() = default;
+
+	/** Constructor from two points */
+	TSegment3D(const TPoint3D& p1, const TPoint3D& p2) : point1(p1), point2(p2)
+	{
+	}
+
+	/// Static method, returns segment from two points \note New in MRPT 2.3.0
+	static TSegment3D FromPoints(const TPoint3D& p1, const TPoint3D& p2)
+	{
+		return TSegment3D(p1, p2);
+	}
+
+	/** Constructor from 2D object. Sets the z to zero  */
+	explicit TSegment3D(const TSegment2D& s)
+		: point1(s.point1), point2(s.point2)
+	{
+	}
+
 	TPoint3D point1;  //!< origin point
 	TPoint3D point2;  //!< final point
 
@@ -68,23 +88,6 @@ struct TSegment3D
 		p.x = (point1.x + point2.x) / 2;
 		p.y = (point1.y + point2.y) / 2;
 		p.z = (point1.z + point2.z) / 2;
-	}
-	/**
-	 * Constructor from both points.
-	 */
-	TSegment3D(const TPoint3D& p1, const TPoint3D& p2) : point1(p1), point2(p2)
-	{
-	}
-	/**
-	 * Fast default constructor. Initializes to garbage.
-	 */
-	TSegment3D() = default;
-	/**
-	 * Constructor from 2D object. Sets the z to zero.
-	 */
-	explicit TSegment3D(const TSegment2D& s)
-		: point1(s.point1), point2(s.point2)
-	{
 	}
 
 	bool operator<(const TSegment3D& s) const;

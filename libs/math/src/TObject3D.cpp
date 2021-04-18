@@ -19,6 +19,8 @@
 
 using namespace mrpt::math;
 
+MRPT_TODO("Rewrite with variant!");
+
 void TObject3D::generate2DObject(TObject2D& obj) const
 {
 	switch (type)

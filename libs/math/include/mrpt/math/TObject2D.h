@@ -19,9 +19,8 @@ namespace mrpt::math
 /** \addtogroup  geometry_grp
  * @{ */
 
-/**
- * Standard type for storing any lightweight 2D type. Do not inherit from this
- * class.
+/** A variant type for any lightweight 2D type: point, segment, line, polygon.
+ *
  * \sa TPoint2D,TSegment2D,TLine2D,TPolygon2D
  */
 struct TObject2D

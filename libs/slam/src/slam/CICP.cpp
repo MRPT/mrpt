@@ -703,17 +703,17 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 						d1, d2);
 
 					w1 = *other_x_trans - Axy;
-					q1 = math::closestSquareDistanceFromPointToLine(
+					q1 = math::squaredDistancePointToLine(
 						w1, *other_y_trans, x1, y1, x2, y2);
 					q1 = kernel(q1, rho2);
 
 					w2 = *other_x_trans;
-					q2 = math::closestSquareDistanceFromPointToLine(
+					q2 = math::squaredDistancePointToLine(
 						w2, *other_y_trans, x1, y1, x2, y2);
 					q2 = kernel(q2, rho2);
 
 					w3 = *other_x_trans + Axy;
-					q3 = math::closestSquareDistanceFromPointToLine(
+					q3 = math::squaredDistancePointToLine(
 						w3, *other_y_trans, x1, y1, x2, y2);
 					q3 = kernel(q3, rho2);
 #endif
@@ -728,7 +728,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					// --------------------------------------
 					w1 = *other_y_trans - Axy;
 #ifdef ICP_DISTANCES_TO_LINE
-					q1 = math::closestSquareDistanceFromPointToLine(
+					q1 = math::squaredDistancePointToLine(
 						*other_x_trans, w1, x1, y1, x2, y2);
 					q1 = kernel(q1, rho2);
 #else
@@ -747,7 +747,7 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
 					w3 = *other_y_trans + Axy;
 #ifdef ICP_DISTANCES_TO_LINE
-					q3 = math::closestSquareDistanceFromPointToLine(
+					q3 = math::squaredDistancePointToLine(
 						*other_x_trans, w3, x1, y1, x2, y2);
 					q3 = kernel(q3, rho2);
 #else

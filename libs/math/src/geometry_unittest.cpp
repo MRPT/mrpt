@@ -78,6 +78,28 @@ TEST(Geometry, Line3DAngle)
 	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l4, l1)), 30.0, 1e-5);
 }
 
+TEST(Geometry, Line3DDistance)
+{
+	{
+		// intersect
+		const auto l1 = TLine3D::FromTwoPoints({0, 0, 0}, {1, 0, 0});
+		const auto l2 = TLine3D::FromTwoPoints({-1, -1, 0}, {5, 5, 0});
+		EXPECT_NEAR(l1.distance(l2).value(), .0, 1e-10);
+	}
+	{
+		// cross (do not intersect)
+		const auto l1 = TLine3D::FromTwoPoints({0, 0, 0}, {1, 0, 0});
+		const auto l2 = TLine3D::FromTwoPoints({-1, -1, 1}, {5, 5, 1});
+		EXPECT_NEAR(l1.distance(l2).value(), 1.0, 1e-10);
+	}
+	{
+		// parallel:
+		const auto l1 = TLine3D::FromTwoPoints({0, 0, 0}, {1, 0, 0});
+		const auto l2 = TLine3D::FromTwoPoints({0, 2, 0}, {2, 2, 0});
+		EXPECT_FALSE(l1.distance(l2).has_value());
+	}
+}
+
 TEST(Geometry, Segment2DIntersect)
 {
 	{
@@ -403,4 +425,81 @@ TEST(TPlane, asString)
 	const auto p = TPlane::From3Points({1, 1, 1}, {2, 0, 0}, {0, 0, 5});
 	const auto s = p.asString();
 	EXPECT_EQ(s, "[  -5.00000,   -3.00000,   -2.00000,   10.00000]");
+}
+
+TEST(Geometry, closestFromPointToSegment)
+{
+	using mrpt::math::closestFromPointToSegment;
+	using mrpt::math::TPoint2D;
+
+	EXPECT_NEAR(
+		(closestFromPointToSegment({0, 0}, {0, 1}, {1, 1}) - TPoint2D(0, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToSegment({0, 1}, {0, 1}, {1, 1}) - TPoint2D(0, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToSegment({1, 1}, {0, 1}, {1, 1}) - TPoint2D(1, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToSegment({-1, 2}, {0, 1}, {1, 1}) - TPoint2D(0, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToSegment({3, 3}, {0, 1}, {1, 1}) - TPoint2D(1, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToSegment({0.5, 0.1}, {0, 1}, {1, 1}) -
+		 TPoint2D(0.5, 1))
+			.norm(),
+		.0, 1e-5);
+}
+
+TEST(Geometry, closestFromPointToLine)
+{
+	using mrpt::math::closestFromPointToLine;
+	using mrpt::math::TPoint2D;
+
+	EXPECT_NEAR(
+		(closestFromPointToLine({0, 0}, {0, 1}, {1, 1}) - TPoint2D(0, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToLine({0, 1}, {0, 1}, {1, 1}) - TPoint2D(0, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToLine({1, 1}, {0, 1}, {1, 1}) - TPoint2D(1, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToLine({-1, 2}, {0, 1}, {1, 1}) - TPoint2D(-1, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToLine({3, 3}, {0, 1}, {1, 1}) - TPoint2D(3, 1))
+			.norm(),
+		.0, 1e-5);
+	EXPECT_NEAR(
+		(closestFromPointToLine({0.5, 0.1}, {0, 1}, {1, 1}) - TPoint2D(0.5, 1))
+			.norm(),
+		.0, 1e-5);
+}
+
+TEST(Geometry, squaredDistancePointToLine)
+{
+	using mrpt::math::squaredDistancePointToLine;
+	using mrpt::math::TPoint2D;
+	EXPECT_NEAR(squaredDistancePointToLine({0, 0}, {0, 1}, {1, 1}), 1.0, 1e-5);
+	EXPECT_NEAR(squaredDistancePointToLine({0, 1}, {0, 1}, {1, 1}), .0, 1e-5);
+	EXPECT_NEAR(squaredDistancePointToLine({1, 1}, {0, 1}, {1, 1}), .0, 1e-5);
+	EXPECT_NEAR(squaredDistancePointToLine({-1, 2}, {0, 1}, {1, 1}), 1.0, 1e-5);
+	EXPECT_NEAR(squaredDistancePointToLine({3, 3}, {0, 1}, {1, 1}), 4.0, 1e-5);
+	EXPECT_NEAR(
+		squaredDistancePointToLine({0.5, 0.1}, {0, 1}, {1, 1}), 0.9 * 0.9,
+		1e-5);
 }

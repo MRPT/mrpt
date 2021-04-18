@@ -24,7 +24,7 @@ namespace mrpt::system
  * \snippet system_progress_bar/test.cpp example-system-progress-bar
  *
  * \ingroup mrpt_system_grp
- * \note (New in MRPT 2.2.1)
+ * \note (New in MRPT 2.3.0)
  */
 std::string progress(
 	const double progressRatio0to1, const std::size_t barLength,
