@@ -53,7 +53,6 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	return ret;
 }
 
-
 /* -------------------------------------------------------
 				checkerBoardCameraCalibration
    ------------------------------------------------------- */
