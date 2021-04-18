@@ -71,6 +71,9 @@ class TPolygon2D : public std::vector<TPoint2D>
 		const mrpt::math::TPose2D& pose);
 };
 
+/** Text streaming function */
+std::ostream& operator<<(std::ostream& o, const TPolygon2D& p);
+
 }  // namespace mrpt::math
 
 namespace mrpt::typemeta

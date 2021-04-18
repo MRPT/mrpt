@@ -31,7 +31,7 @@ TEST(Geometry, Line2DIntersect)
 	bool do_inter = intersect(l1, l2, inter);
 
 	EXPECT_TRUE(do_inter);
-	EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_POINT);
+	EXPECT_TRUE(inter.isPoint());
 
 	TPoint2D i(0, 0);
 	inter.getPoint(i);
@@ -111,7 +111,7 @@ TEST(Geometry, Segment2DIntersect)
 		bool do_inter = intersect(s1, s2, inter);
 
 		EXPECT_TRUE(do_inter);
-		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_POINT);
+		EXPECT_TRUE(inter.isPoint());
 
 		TPoint2D i(0, 0);
 		inter.getPoint(i);
@@ -154,7 +154,7 @@ TEST(Geometry, Intersection3D)
 
 		TObject3D inter;
 		EXPECT_TRUE(intersect(p3d, s3d, inter));
-		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_SEGMENT);
+		EXPECT_TRUE(inter.isSegment());
 		TSegment3D test;
 		inter.getSegment(test);
 		// Should this be true? EXPECT_EQ(s3d, test);
@@ -168,7 +168,7 @@ TEST(Geometry, Intersection3D)
 
 		TObject3D inter;
 		EXPECT_TRUE(intersect(p3d, s3d, inter));
-		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_POINT);
+		EXPECT_TRUE(inter.isPoint());
 	}
 	{
 		TSegment3D s3d1({
@@ -182,7 +182,7 @@ TEST(Geometry, Intersection3D)
 
 		TObject3D inter;
 		EXPECT_TRUE(intersect(s3d1, s3d2, inter));
-		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_SEGMENT);
+		EXPECT_TRUE(inter.isSegment());
 	}
 	{
 		TSegment3D s3d1({
@@ -196,7 +196,7 @@ TEST(Geometry, Intersection3D)
 
 		TObject3D inter;
 		EXPECT_TRUE(intersect(s3d1, s3d2, inter));
-		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_POINT);
+		EXPECT_TRUE(inter.isPoint());
 
 		TPoint3D test;
 		TPoint3D expect{0.5, 0.5, 0};
@@ -238,7 +238,7 @@ TEST(Geometry, IntersectionPlanePlane)
 
 		TObject3D inter;
 		EXPECT_TRUE(intersect(plane1, plane2, inter));
-		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_PLANE);
+		EXPECT_TRUE(inter.isPlane());
 	}
 	{
 		// Intersecting planes
@@ -255,7 +255,7 @@ TEST(Geometry, IntersectionPlanePlane)
 
 		TObject3D inter;
 		EXPECT_TRUE(intersect(plane1, plane2, inter));
-		EXPECT_EQ(inter.getType(), GEOMETRIC_TYPE_LINE);
+		EXPECT_TRUE(inter.isLine());
 	}
 }
 

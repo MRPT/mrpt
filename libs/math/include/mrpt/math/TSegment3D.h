@@ -108,6 +108,9 @@ mrpt::serialization::CArchive& operator>>(
 mrpt::serialization::CArchive& operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TSegment3D& s);
 
+/** Text streaming function */
+std::ostream& operator<<(std::ostream& o, const TSegment3D& p);
+
 }  // namespace mrpt::math
 
 namespace mrpt::typemeta
