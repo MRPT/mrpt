@@ -135,3 +135,9 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
 {
 	return out << s.point1 << s.point2;
 }
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TSegment3D& p)
+{
+	o << p.point1 << "-" << p.point2;
+	return o;
+}
