@@ -18,6 +18,8 @@
 #include <mrpt/math/epsilon.h>
 #include <mrpt/math/geometry.h>	 // project3D()
 
+#include <iostream>
+
 #include "polygons_utils.h"
 
 using namespace mrpt::math;
@@ -120,4 +122,12 @@ void TPolygon3D::createRegularPolygon(
 	createRegularPolygon(numEdges, radius, poly);
 	for (size_t i = 0; i < numEdges; i++)
 		pose.composePoint(poly[i], poly[i]);
+}
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TPolygon3D& p)
+{
+	o << "mrpt::math::TPolygon3D vertices:\n";
+	for (const auto& v : p)
+		o << " - " << v << "\n";
+	return o;
 }

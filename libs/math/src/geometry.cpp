@@ -9,6 +9,7 @@
 
 #include "math-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CPolygon.h>
@@ -98,7 +99,7 @@ void math::closestFromPointToLine(
 /*---------------------------------------------------------------
 	Returns the sq. distance to closest point to a line
   ---------------------------------------------------------------*/
-double math::closestSquareDistanceFromPointToLine(
+double math::squaredDistancePointToLine(
 	double Px, double Py, double x1, double y1, double x2, double y2)
 {
 	if (x1 == x2 && y1 == y2) { return square(Px - x1) + square(Py - y1); }
@@ -110,253 +111,6 @@ double math::closestSquareDistanceFromPointToLine(
 
 		return square(x1 + (Ratio * Dx) - Px) + square(y1 + (Ratio * Dy) - Py);
 	}
-}
-
-/*---------------------------------------------------------------
-						Intersect
-  ---------------------------------------------------------------*/
-bool math::SegmentsIntersection(
-	const double x1, const double y1, const double x2, const double y2,
-	const double x3, const double y3, const double x4, const double y4,
-	double& ix, double& iy)
-{
-	double UpperX, UpperY, LowerX, LowerY, Ax, Bx, Cx, Ay, By, Cy, d, f, e,
-		Ratio;
-
-	Ax = x2 - x1;
-	Bx = x3 - x4;
-
-	if (Ax < 0)
-	{
-		LowerX = x2;
-		UpperX = x1;
-	}
-	else
-	{
-		UpperX = x2;
-		LowerX = x1;
-	}
-
-	if (Bx > 0)
-	{
-		if (UpperX < x4 || x3 < LowerX) return false;
-	}
-	else if (UpperX < x3 || x4 < LowerX)
-		return false;
-
-	Ay = y2 - y1;
-	By = y3 - y4;
-
-	if (Ay < 0)
-	{
-		LowerY = y2;
-		UpperY = y1;
-	}
-	else
-	{
-		UpperY = y2;
-		LowerY = y1;
-	}
-
-	if (By > 0)
-	{
-		if (UpperY < y4 || y3 < LowerY) return false;
-	}
-	else if (UpperY < y3 || y4 < LowerY)
-		return false;
-
-	Cx = x1 - x3;
-	Cy = y1 - y3;
-	d = (By * Cx) - (Bx * Cy);
-	f = (Ay * Bx) - (Ax * By);
-
-	if (f > 0)
-	{
-		if (d < 0 || d > f) return false;
-	}
-	else if (d > 0 || d < f)
-		return false;
-
-	e = (Ax * Cy) - (Ay * Cx);
-
-	if (f > 0)
-	{
-		if (e < 0 || e > f) return false;
-	}
-	else if (e > 0 || e < f)
-		return false;
-
-	Ratio = (Ax * -By) - (Ay * -Bx);
-
-	if (Ratio != 0)
-	{
-		Ratio = ((Cy * -Bx) - (Cx * -By)) / Ratio;
-		ix = x1 + (Ratio * Ax);
-		iy = y1 + (Ratio * Ay);
-	}
-	else
-	{
-		if ((Ax * -Cy) == (-Cx * Ay))
-		{
-			ix = x3;
-			iy = y3;
-		}
-		else
-		{
-			ix = x4;
-			iy = y4;
-		}
-	}
-	return true;
-}
-
-/*---------------------------------------------------------------
-						Intersect
-  ---------------------------------------------------------------*/
-bool math::SegmentsIntersection(
-	const double x1, const double y1, const double x2, const double y2,
-	const double x3, const double y3, const double x4, const double y4,
-	float& ix, float& iy)
-{
-	double x, y;
-	bool b = SegmentsIntersection(x1, y1, x2, y2, x3, y3, x4, y4, x, y);
-	ix = d2f(x);
-	iy = d2f(y);
-	return b;
-}
-
-/*---------------------------------------------------------------
-						Intersect
-  ---------------------------------------------------------------*/
-bool math::pointIntoPolygon2D(
-	double px, double py, unsigned int polyEdges, const double* poly_xs,
-	const double* poly_ys)
-{
-	unsigned int i, j;
-	bool res = false;
-
-	if (polyEdges < 3) return res;
-
-	j = polyEdges - 1;
-
-	for (i = 0; i < polyEdges; i++)
-	{
-		if ((poly_ys[i] <= py && py < poly_ys[j]) ||  // an upward crossing
-			(poly_ys[j] <= py && py < poly_ys[i]))	// a downward crossing
-		{
-			// compute the edge-ray intersect @ the x-coordinate
-			if (px - poly_xs[i] <
-				((poly_xs[j] - poly_xs[i]) * (py - poly_ys[i]) /
-				 (poly_ys[j] - poly_ys[i])))
-				res = !res;
-		}
-		j = i;
-	}
-
-	return res;
-}
-
-/*---------------------------------------------------------------
-						Intersect
-  ---------------------------------------------------------------*/
-double math::distancePointToPolygon2D(
-	double px, double py, unsigned int polyEdges, const double* poly_xs,
-	const double* poly_ys)
-{
-	unsigned int i, j;
-	double minDist = 1e20f;
-
-	// Is the point INTO?
-	if (pointIntoPolygon2D(px, py, polyEdges, poly_xs, poly_ys)) return 0;
-
-	// Compute the closest distance from the point to any segment:
-	j = polyEdges - 1;
-
-	for (i = 0; i < polyEdges; i++)
-	{
-		// segment: [j]-[i]
-		// ----------------------
-		double closestX, closestY;
-		double d = minimumDistanceFromPointToSegment(
-			px, py, poly_xs[j], poly_ys[j], poly_xs[i], poly_ys[i], closestX,
-			closestY);
-
-		minDist = min(d, minDist);
-
-		// For next iter:
-		j = i;
-	}
-
-	return minDist;
-}
-
-/*---------------------------------------------------------------
-					minDistBetweenLines
- --------------------------------------------------------------- */
-bool math::minDistBetweenLines(
-	double p1_x, double p1_y, double p1_z, double p2_x, double p2_y,
-	double p2_z, double p3_x, double p3_y, double p3_z, double p4_x,
-	double p4_y, double p4_z, double& x, double& y, double& z, double& dist)
-{
-	const double EPS = 1e-30f;
-
-	double p13_x, p13_y, p13_z;
-	double p43_x, p43_y, p43_z;
-	double p21_x, p21_y, p21_z;
-
-	double d1343, d4321, d1321, d4343, d2121;
-	double numer, denom;
-
-	p13_x = p1_x - p3_x;
-	p13_y = p1_y - p3_y;
-	p13_z = p1_z - p3_z;
-
-	p43_x = p4_x - p3_x;
-	p43_y = p4_y - p3_y;
-	p43_z = p4_z - p3_z;
-
-	if (fabs(p43_x) < EPS && fabs(p43_y) < EPS && fabs(p43_z) < EPS)
-		return false;
-
-	p21_x = p2_x - p1_x;
-	p21_y = p2_y - p1_y;
-	p21_z = p2_z - p1_z;
-	if (fabs(p21_x) < EPS && fabs(p21_y) < EPS && fabs(p21_z) < EPS)
-		return false;
-
-	d1343 = p13_x * p43_x + p13_y * p43_y + p13_z * p43_z;
-	d4321 = p43_x * p21_x + p43_y * p21_y + p43_z * p21_z;
-	d1321 = p13_x * p21_x + p13_y * p21_y + p13_z * p21_z;
-	d4343 = p43_x * p43_x + p43_y * p43_y + p43_z * p43_z;
-	d2121 = p21_x * p21_x + p21_y * p21_y + p21_z * p21_z;
-
-	denom = d2121 * d4343 - d4321 * d4321;
-	if (fabs(denom) < EPS) return false;
-
-	numer = d1343 * d4321 - d1321 * d4343;
-
-	double mua = numer / denom;
-	double mub = (d1343 + d4321 * mua) / d4343;
-	double pa_x, pa_y, pa_z;
-	double pb_x, pb_y, pb_z;
-
-	pa_x = p1_x + mua * p21_x;
-	pa_y = p1_y + mua * p21_y;
-	pa_z = p1_z + mua * p21_z;
-
-	pb_x = p3_x + mub * p43_x;
-	pb_y = p3_y + mub * p43_y;
-	pb_z = p3_z + mub * p43_z;
-
-	dist = (double)sqrt(
-		square(pa_x - pb_x) + square(pa_y - pb_y) + square(pa_z - pb_z));
-
-	// the mid point:
-	x = 0.5 * (pa_x + pb_x);
-	y = 0.5 * (pa_y + pb_y);
-	z = 0.5 * (pa_z + pb_z);
-
-	return true;
 }
 
 /*---------------------------------------------------------------
@@ -413,25 +167,32 @@ bool math::RectanglesIntersection(
 
 	// Test for intersections:
 	// ----------------------------------------
-	double ix, iy;
+	TObject2D intersectObj;
 
 	for (int idx = 0; idx < 4; idx++)
 	{
-		if (math::SegmentsIntersection(
-				R1_x_min, R1_y_min, R1_x_max, R1_y_min, xs[idx], ys[idx],
-				xs[(idx + 1) % 4], ys[(idx + 1) % 4], ix, iy))
+		const auto seg2 = TSegment2D::FromPoints(
+			{xs[idx], ys[idx]}, {xs[(idx + 1) % 4], ys[(idx + 1) % 4]});
+
+		if (mrpt::math::intersect(
+				TSegment2D::FromPoints(
+					{R1_x_min, R1_y_min}, {R1_x_max, R1_y_min}),
+				seg2, intersectObj))
 			return true;
-		if (math::SegmentsIntersection(
-				R1_x_max, R1_y_min, R1_x_max, R1_y_max, xs[idx], ys[idx],
-				xs[(idx + 1) % 4], ys[(idx + 1) % 4], ix, iy))
+		if (mrpt::math::intersect(
+				TSegment2D::FromPoints(
+					{R1_x_max, R1_y_min}, {R1_x_max, R1_y_max}),
+				seg2, intersectObj))
 			return true;
-		if (math::SegmentsIntersection(
-				R1_x_max, R1_y_max, R1_x_min, R1_y_max, xs[idx], ys[idx],
-				xs[(idx + 1) % 4], ys[(idx + 1) % 4], ix, iy))
+		if (mrpt::math::intersect(
+				TSegment2D::FromPoints(
+					{R1_x_max, R1_y_max}, {R1_x_min, R1_y_max}),
+				seg2, intersectObj))
 			return true;
-		if (math::SegmentsIntersection(
-				R1_x_min, R1_y_max, R1_x_min, R1_y_min, xs[idx], ys[idx],
-				xs[(idx + 1) % 4], ys[(idx + 1) % 4], ix, iy))
+		if (mrpt::math::intersect(
+				TSegment2D::FromPoints(
+					{R1_x_min, R1_y_max}, {R1_x_min, R1_y_min}),
+				seg2, intersectObj))
 			return true;
 	}
 
@@ -462,8 +223,7 @@ bool intersectInCommonPlane(
 	TObject2D obj2D;
 	if (intersect(proj1_2D, proj2_2D, obj2D))
 	{
-		TObject3D tmp;
-		obj2D.generate3DObject(tmp);
+		TObject3D tmp = obj2D.generate3DObject();
 		// Undo projection
 		project3D(tmp, pose, obj);
 		return true;
@@ -485,14 +245,14 @@ bool intersectInCommonLine(
 	TPoint3D pMax = ((s11[1][i1] < s21[1][i1]) ? s11 : s21)[1];
 	if (std::abs(pMax[i1] - pMin[i1]) < geometryEpsilon)
 	{  // Intersection is a point
-		obj = pMax;
+		obj.data = pMax;
 		return true;
 	}
 	else if (pMax[i1] < pMin[i1])
 		return false;  // No intersection
 	else
 	{
-		obj = TSegment3D(pMin, pMax);  // Intersection is a segment
+		obj.data = TSegment3D(pMin, pMax);	// Intersection is a segment
 		return true;
 	}
 }
@@ -508,14 +268,14 @@ bool intersectInCommonLine(
 	TPoint2D pMax = ((s11[1][i1] < s21[1][i1]) ? s11 : s21)[1];
 	if (std::abs(pMax[i1] - pMin[i1]) < geometryEpsilon)
 	{  // Intersection is a point
-		obj = pMax;
+		obj.data = pMax;
 		return true;
 	}
 	else if (pMax[i1] < pMin[i1])
 		return false;  // No intersection
 	else
 	{
-		obj = TSegment2D(pMin, pMax);  // Intersection is a segment
+		obj.data = TSegment2D(pMin, pMax);	// Intersection is a segment
 		return true;
 	}
 }
@@ -540,10 +300,10 @@ bool intersect(
 {
 	// LINE MUST BE UNITARY
 	TObject3D obj;
-	TPoint3D p;
 	if (intersect(p1.plane, l2, obj))
-		if (obj.getPoint(p))
+		if (obj.isPoint())
 		{
+			const TPoint3D p = obj.getAs<TPoint3D>();
 			for (size_t i = 0; i < 3; i++)
 				if (std::abs(l2.director[i]) > geometryEpsilon)
 				{
@@ -564,10 +324,11 @@ bool intersect(
 	const TPolygonWithPlane& p1, const TPolygonWithPlane& p2, TObject3D& obj)
 {
 	if (!intersect(p1.plane, p2.plane, obj)) return false;
-	TLine3D lin3D;
+
 	TObject3D aux;
-	if (obj.getLine(lin3D))
+	if (obj.isLine())
 	{
+		const TLine3D lin3D = obj.getAs<TLine3D>();
 		TLine3D lin3D1, lin3D2;
 		TLine2D lin2D1, lin2D2;
 		TObject2D obj2D1, obj2D2;
@@ -578,16 +339,22 @@ bool intersect(
 		if (intersect(p1.poly2D, lin2D1, obj2D1) &&
 			intersect(p2.poly2D, lin2D2, obj2D2))
 		{
-			TObject3D obj3D1, obj3D2, obj3Dp1, obj3Dp2;
-			obj2D1.generate3DObject(obj3D1);
-			obj2D2.generate3DObject(obj3D2);
+			TObject3D obj3Dp1, obj3Dp2;
+			const TObject3D obj3D1 = obj2D1.generate3DObject();
+			const TObject3D obj3D2 = obj2D2.generate3DObject();
 			project3D(obj3D1, p1.pose, obj3Dp1);
 			project3D(obj3D2, p2.pose, obj3Dp2);
-			TPoint3D po1, po2;
 			TSegment3D s1, s2;
-			if (obj3D1.getPoint(po1)) s1 = TSegment3D(po1, po1);
+			if (obj3D1.isPoint())
+			{
+				const auto po1 = obj3D1.getAs<TPoint3D>();
+				s1 = TSegment3D(po1, po1);
+			}
 			else
-				obj3D1.getSegment(s1);
+			{
+				s1 = obj3D1.getAs<TSegment3D>();
+			}
+			TPoint3D po2;
 			if (obj3D2.getPoint(po2)) s2 = TSegment3D(po2, po2);
 			else
 				obj3D2.getSegment(s2);
@@ -601,7 +368,7 @@ bool intersect(
 		TObject2D obj2D;
 		if (intersect(p1.poly2D, p2.poly2D, obj2D))
 		{
-			obj2D.generate3DObject(aux);
+			aux = obj2D.generate3DObject();
 			project3D(aux, p1.pose, obj);
 			return true;
 		}
@@ -623,7 +390,7 @@ bool math::intersect(const TSegment3D& s1, const TSegment3D& s2, TObject3D& obj)
 		irr.getPoint(p);
 		if (s1.contains(p) && s2.contains(p))
 		{
-			obj = p;
+			obj.data = p;
 			return true;
 		}
 		else
@@ -639,7 +406,7 @@ bool math::intersect(const TSegment3D& s1, const TPlane& p1, TObject3D& obj)
 	if (obj.isLine())
 	{
 		// Segment is fully inside the plane, so it is the return value.
-		obj = s1;
+		obj.data = s1;
 		return true;
 	}
 	else
@@ -658,7 +425,7 @@ bool math::intersect(const TSegment3D& s1, const TLine3D& r1, TObject3D& obj)
 	if (obj.isLine())
 	{
 		// Segment's line is the other line.
-		obj = s1;
+		obj.data = s1;
 		return true;
 	}
 	else
@@ -686,7 +453,7 @@ bool math::intersect(const TPlane& p1, const TPlane& p2, TObject3D& obj)
 				geometryEpsilon)
 				return false;
 		// Planes are the same
-		obj = p1;
+		obj.data = p1;
 		return true;
 	}
 	else
@@ -711,7 +478,7 @@ bool math::intersect(const TPlane& p1, const TPlane& p2, TObject3D& obj)
 			(p2.coefs[c1] * p1.coefs[3] - p1.coefs[c1] * p2.coefs[3]) /
 			lin.director[i1];
 		lin.unitarize();
-		obj = lin;
+		obj.data = lin;
 		return true;
 	}
 }
@@ -729,7 +496,7 @@ bool math::intersect(const TPlane& p1, const TLine3D& r2, TObject3D& obj)
 		if (std::abs(e) < geometryEpsilon)
 		{
 			// Line is contained in plane.
-			obj = r2;
+			obj.data = r2;
 			return true;
 		}
 		else
@@ -743,7 +510,7 @@ bool math::intersect(const TPlane& p1, const TLine3D& r2, TObject3D& obj)
 		p.x = r2.pBase.x - t * r2.director[0];
 		p.y = r2.pBase.y - t * r2.director[1];
 		p.z = r2.pBase.z - t * r2.director[2];
-		obj = p;
+		obj.data = p;
 		return true;
 	}
 }
@@ -769,7 +536,7 @@ bool math::intersect(const TLine3D& r1, const TLine3D& r2, TObject3D& obj)
 			p[k] = r2.pBase[k] + u * r2.director[k];
 		if (r1.contains(p))
 		{
-			obj = p;
+			obj.data = p;
 			return true;
 		}
 		else
@@ -779,7 +546,7 @@ bool math::intersect(const TLine3D& r1, const TLine3D& r2, TObject3D& obj)
 	if (r1.contains(r2.pBase))
 	{
 		// Lines are the same
-		obj = r1;
+		obj.data = r1;
 		return true;
 	}
 	else
@@ -795,7 +562,7 @@ bool math::intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj)
 		TPoint2D p;
 		p.x = (r1.coefs[1] * r2.coefs[2] - r1.coefs[2] * r2.coefs[1]) / sysDet;
 		p.y = (r1.coefs[2] * r2.coefs[0] - r1.coefs[0] * r2.coefs[2]) / sysDet;
-		obj = p;
+		obj.data = p;
 		return true;
 	}
 	else
@@ -808,7 +575,7 @@ bool math::intersect(const TLine2D& r1, const TLine2D& r2, TObject2D& obj)
 			return false;
 
 		// Lines are the same
-		obj = r1;
+		obj.data = r1;
 		return true;
 	}
 }
@@ -820,7 +587,7 @@ bool math::intersect(const TLine2D& r1, const TSegment2D& s2, TObject2D& obj)
 	if (obj.isLine())
 	{
 		// Segment is inside the line
-		obj = s2;
+		obj.data = s2;
 		return true;
 	}
 	else if (obj.getPoint(p))
@@ -1087,6 +854,13 @@ void math::project3D(
 	newPlane.unitarize();
 }
 
+namespace mrpt::math
+{
+// dummy, required for std::visit()
+void project3D(const std::monostate&, const TPose3D&, std::monostate&) {}
+void project2D(const std::monostate&, const TPose3D&, std::monostate&) {}
+}  // namespace mrpt::math
+
 void math::project3D(
 	const TPolygon3D& polygon, const TPose3D& newXYpose, TPolygon3D& newPolygon)
 {
@@ -1099,50 +873,13 @@ void math::project3D(
 void math::project3D(
 	const TObject3D& object, const TPose3D& newXYpose, TObject3D& newObject)
 {
-	switch (object.getType())
-	{
-		case GEOMETRIC_TYPE_POINT:
-		{
-			TPoint3D p, p2;
-			object.getPoint(p);
-			project3D(p, newXYpose, p2);
-			newObject = p2;
-			break;
-		}
-		case GEOMETRIC_TYPE_SEGMENT:
-		{
-			TSegment3D p, p2;
-			object.getSegment(p);
-			project3D(p, newXYpose, p2);
-			newObject = p2;
-			break;
-		}
-		case GEOMETRIC_TYPE_LINE:
-		{
-			TLine3D p, p2;
-			object.getLine(p);
-			project3D(p, newXYpose, p2);
-			newObject = p2;
-			break;
-		}
-		case GEOMETRIC_TYPE_PLANE:
-		{
-			TPlane p, p2;
-			object.getPlane(p);
-			project3D(p, newXYpose, p2);
-			newObject = p2;
-			break;
-		}
-		case GEOMETRIC_TYPE_POLYGON:
-		{
-			TPolygon3D p, p2;
-			object.getPolygon(p);
-			project3D(p, newXYpose, p2);
-			newObject = p2;
-			break;
-		}
-		default: newObject = TObject3D();
-	}
+	std::visit(
+		[&](auto& o) {
+			using T = std::decay_t<decltype(o)>;
+			newObject.data.emplace<T>();
+			project3D(o, newXYpose, std::get<T>(newObject.data));
+		},
+		object.data);
 }
 
 void math::project2D(
@@ -1176,42 +913,13 @@ void math::project2D(
 void math::project2D(
 	const TObject2D& obj, const TPose2D& newXpose, TObject2D& newObject)
 {
-	switch (obj.getType())
-	{
-		case GEOMETRIC_TYPE_POINT:
-		{
-			TPoint2D p, p2;
-			obj.getPoint(p);
-			project2D(p, newXpose, p2);
-			newObject = p2;
-			break;
-		}
-		case GEOMETRIC_TYPE_SEGMENT:
-		{
-			TSegment2D p, p2;
-			obj.getSegment(p);
-			project2D(p, newXpose, p2);
-			newObject = p2;
-			break;
-		}
-		case GEOMETRIC_TYPE_LINE:
-		{
-			TLine2D p, p2;
-			obj.getLine(p);
-			project2D(p, newXpose, p2);
-			newObject = p2;
-			break;
-		}
-		case GEOMETRIC_TYPE_POLYGON:
-		{
-			TPolygon2D p, p2;
-			obj.getPolygon(p);
-			project2D(p, newXpose, p2);
-			newObject = p2;
-			break;
-		}
-		default: newObject = TObject2D();
-	}
+	std::visit(
+		[&](auto& o) {
+			using T = std::decay_t<decltype(o)>;
+			newObject.data.emplace<T>();
+			project2D(o, newXpose, std::get<T>(newObject.data));
+		},
+		obj.data);
 }
 
 bool math::intersect(const TPolygon2D& p1, const TSegment2D& s2, TObject2D& obj)
@@ -1274,14 +982,14 @@ bool math::intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj)
 		{
 			TPoint2D p;
 			project2D(pnts[0], pose, p);
-			obj = p;
+			obj.data = p;
 			return true;
 		}
 		case 2:
 		{
 			TSegment2D s;
 			project2D(TSegment2D(pnts[0], pnts[1]), pose, s);
-			obj = s;
+			obj.data = s;
 			return true;
 		}
 		default: throw std::logic_error("Polygon is not convex");
@@ -1354,18 +1062,6 @@ void getSegmentsWithLine(const TPolygon2D& poly, vector<TSegmentWithLine>& segs)
 	segs[N - 1] = TSegmentWithLine(poly[N - 1], poly[0]);
 }
 
-inline char fromObject(const TObject2D& obj)
-{
-	switch (obj.getType())
-	{
-		case GEOMETRIC_TYPE_POINT: return 'P';
-		case GEOMETRIC_TYPE_SEGMENT: return 'S';
-		case GEOMETRIC_TYPE_LINE: return 'L';
-		case GEOMETRIC_TYPE_POLYGON: return 'O';
-		default: return 'U';
-	}
-}
-
 bool math::intersect(
 	const TPolygon2D& /*p1*/, const TPolygon2D& /*p2*/, TObject2D& /*obj*/)
 {
@@ -1423,12 +1119,7 @@ bool math::intersect(const TPolygon3D& p1, const TSegment3D& s2, TObject3D& obj)
 	TSegment3D sgm;
 	if (obj.getPoint(pnt))
 	{
-		TPose3D pose;
-		p.getAsPose3DForcingOrigin(p1[0], pose);
-		CMatrixDouble44 HMinv;
-		pose.getInverseHomogeneousMatrix(HMinv);
-		TPose3D poseNeg;
-		poseNeg.fromHomogeneousMatrix(HMinv);
+		const TPose3D poseNeg = -p.getAsPose3DForcingOrigin(p1[0]);
 		TPolygon3D projPoly;
 		TPoint3D projPnt;
 		project3D(p1, poseNeg, projPoly);
@@ -1448,12 +1139,7 @@ bool math::intersect(const TPolygon3D& p1, const TLine3D& r2, TObject3D& obj)
 	TPoint3D pnt;
 	if (obj.getPoint(pnt))
 	{
-		TPose3D pose;
-		p.getAsPose3DForcingOrigin(p1[0], pose);
-		CMatrixDouble44 HMinv;
-		pose.getInverseHomogeneousMatrix(HMinv);
-		TPose3D poseNeg;
-		poseNeg.fromHomogeneousMatrix(HMinv);
+		const TPose3D poseNeg = -p.getAsPose3DForcingOrigin(p1[0]);
 		TPolygon3D projPoly;
 		TPoint3D projPnt;
 		project3D(p1, poseNeg, projPoly);
@@ -1474,7 +1160,7 @@ bool math::intersect(const TPolygon3D& p1, const TPlane& p2, TObject3D& obj)
 	if (obj.isPlane())
 	{
 		// Polygon is inside the plane
-		obj = p1;
+		obj.data = p1;
 		return true;
 	}
 	else if (obj.getLine(ln))
@@ -1628,7 +1314,7 @@ bool math::intersect(const TObject2D& o1, const TObject2D& o2, TObject2D& obj)
 	TPolygon2D po1, po2;
 	if (o1.getPoint(p1))
 	{
-		obj = p1;
+		obj.data = p1;
 		if (o2.getPoint(p2)) return distance(p1, p2) < geometryEpsilon;
 		else if (o2.getSegment(s2))
 			return s2.contains(p1);
@@ -1643,7 +1329,7 @@ bool math::intersect(const TObject2D& o1, const TObject2D& o2, TObject2D& obj)
 		{
 			if (s1.contains(p2))
 			{
-				obj = p2;
+				obj.data = p2;
 				return true;
 			}  // else return false;
 		}
@@ -1660,7 +1346,7 @@ bool math::intersect(const TObject2D& o1, const TObject2D& o2, TObject2D& obj)
 		{
 			if (l1.contains(p2))
 			{
-				obj = p2;
+				obj.data = p2;
 				return true;
 			}  // else return false;
 		}
@@ -1677,7 +1363,7 @@ bool math::intersect(const TObject2D& o1, const TObject2D& o2, TObject2D& obj)
 		{
 			if (po1.contains(p2))
 			{
-				obj = p2;
+				obj.data = p2;
 				return true;
 			}  // else return false;
 		}
@@ -1700,7 +1386,7 @@ bool math::intersect(const TObject3D& o1, const TObject3D& o2, TObject3D& obj)
 	TPlane pl1, pl2;
 	if (o1.getPoint(p1))
 	{
-		obj = p1;
+		obj.data = p1;
 		if (o2.getPoint(p2)) return distance(p1, p2) < geometryEpsilon;
 		else if (o2.getSegment(s2))
 			return s2.contains(p1);
@@ -1717,7 +1403,7 @@ bool math::intersect(const TObject3D& o1, const TObject3D& o2, TObject3D& obj)
 		{
 			if (s1.contains(p2))
 			{
-				obj = p2;
+				obj.data = p2;
 				return true;
 			}  // else return false;
 		}
@@ -1736,7 +1422,7 @@ bool math::intersect(const TObject3D& o1, const TObject3D& o2, TObject3D& obj)
 		{
 			if (l1.contains(p2))
 			{
-				obj = p2;
+				obj.data = p2;
 				return true;
 			}  // else return false;
 		}
@@ -1755,7 +1441,7 @@ bool math::intersect(const TObject3D& o1, const TObject3D& o2, TObject3D& obj)
 		{
 			if (po1.contains(p2))
 			{
-				obj = p2;
+				obj.data = p2;
 				return true;
 			}  // else return false;
 		}
@@ -1774,7 +1460,7 @@ bool math::intersect(const TObject3D& o1, const TObject3D& o2, TObject3D& obj)
 		{
 			if (pl1.contains(p2))
 			{
-				obj = p2;
+				obj.data = p2;
 				return true;
 			}  // else return false;
 		}
@@ -2212,14 +1898,42 @@ void math::assemblePolygons(
 		if (!usedSegments[i]) remainder.push_back(tmp[i]);
 }
 
+static std::vector<TPolygon3D> getPolygons(
+	const std::vector<TObject3D>& objs,
+	const mrpt::optional_ref<std::vector<mrpt::math::TObject3D>>& others =
+		std::nullopt)
+{
+	std::vector<TPolygon3D> r;
+	for (const auto& o : objs)
+	{
+		if (o.isPolygon()) r.emplace_back(o.getAs<TPolygon3D>());
+		else if (others)
+			others->get().push_back(o);
+	}
+	return r;
+}
+static std::vector<TSegment3D> getSegments(
+	const std::vector<TObject3D>& objs,
+	const mrpt::optional_ref<std::vector<mrpt::math::TObject3D>>& others =
+		std::nullopt)
+
+{
+	std::vector<TSegment3D> r;
+	for (const auto& o : objs)
+	{
+		if (o.isSegment()) r.emplace_back(o.getAs<TSegment3D>());
+		else if (others)
+			others->get().push_back(o);
+	}
+	return r;
+}
+
 void math::assemblePolygons(
 	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys)
 {
-	std::vector<TObject3D> tmp;
-	std::vector<TSegment3D> sgms;
-	TObject3D::getPolygons(objs, polys, tmp);
-	TObject3D::getSegments(tmp, sgms);
-	assemblePolygons(sgms, polys);
+	polys = getPolygons(objs);
+	const auto segms = getSegments(objs);
+	assemblePolygons(segms, polys);
 }
 
 void math::assemblePolygons(
@@ -2227,12 +1941,13 @@ void math::assemblePolygons(
 	std::vector<TObject3D>& remainder)
 {
 	std::vector<TObject3D> tmp;
-	std::vector<TSegment3D> sgms, remainderSgms;
-	TObject3D::getPolygons(objs, polys, tmp);
-	TObject3D::getSegments(tmp, sgms, remainder);
+	polys = getPolygons(objs, tmp);
+
+	std::vector<TSegment3D> remainderSgms;
+	const auto sgms = getSegments(tmp, remainder);
 	assemblePolygons(sgms, polys, remainderSgms);
-	remainder.insert(
-		remainder.end(), remainderSgms.begin(), remainderSgms.end());
+	for (const auto& o : remainderSgms)
+		remainder.emplace_back(TObject3D::From(o));
 }
 
 void math::assemblePolygons(
@@ -2240,9 +1955,8 @@ void math::assemblePolygons(
 	std::vector<TSegment3D>& remainder1, std::vector<TObject3D>& remainder2)
 {
 	std::vector<TObject3D> tmp;
-	std::vector<TSegment3D> sgms;
-	TObject3D::getPolygons(objs, polys, tmp);
-	TObject3D::getSegments(tmp, sgms, remainder2);
+	polys = getPolygons(objs, tmp);
+	std::vector<TSegment3D> sgms = getSegments(tmp, remainder2);
 	assemblePolygons(sgms, polys, remainder1);
 }
 
@@ -2252,7 +1966,7 @@ bool intersect(const TLine2D& l1, const TSegmentWithLine& s2, TObject2D& obj)
 	{
 		if (obj.isLine())
 		{
-			obj = s2.segment;
+			obj.data = s2.segment;
 			return true;
 		}
 		else

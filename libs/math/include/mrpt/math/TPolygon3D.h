@@ -70,6 +70,9 @@ class TPolygon3D : public std::vector<TPoint3D>
 		const mrpt::math::TPose3D& pose);
 };
 
+/** Text streaming function */
+std::ostream& operator<<(std::ostream& o, const TPolygon3D& p);
+
 }  // namespace mrpt::math
 
 namespace mrpt::typemeta

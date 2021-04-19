@@ -898,6 +898,17 @@ void closestFromPointToSegment(
 	double Px, double Py, double x1, double y1, double x2, double y2,
 	double& out_x, double& out_y);
 
+/// \overload (New in MRPT 2.3.0)
+inline mrpt::math::TPoint2D closestFromPointToSegment(
+	const mrpt::math::TPoint2D& query, const mrpt::math::TPoint2D& segPt1,
+	const mrpt::math::TPoint2D& segPt2)
+{
+	mrpt::math::TPoint2D r;
+	closestFromPointToSegment(
+		query.x, query.y, segPt1.x, segPt1.y, segPt2.x, segPt2.y, r.x, r.y);
+	return r;
+}
+
 /** Computes the closest point from a given point to a (infinite) line.
  * \sa closestFromPointToSegment
  */
@@ -905,10 +916,30 @@ void closestFromPointToLine(
 	double Px, double Py, double x1, double y1, double x2, double y2,
 	double& out_x, double& out_y);
 
+/// \overload (New in MRPT 2.3.0)
+inline mrpt::math::TPoint2D closestFromPointToLine(
+	const mrpt::math::TPoint2D& query, const mrpt::math::TPoint2D& linePt1,
+	const mrpt::math::TPoint2D& linePt2)
+{
+	mrpt::math::TPoint2D r;
+	closestFromPointToLine(
+		query.x, query.y, linePt1.x, linePt1.y, linePt2.x, linePt2.y, r.x, r.y);
+	return r;
+}
+
 /** Returns the square distance from a point to a line.
  */
-double closestSquareDistanceFromPointToLine(
+double squaredDistancePointToLine(
 	double Px, double Py, double x1, double y1, double x2, double y2);
+
+/// \overload (New in MRPT 2.3.0)
+inline double squaredDistancePointToLine(
+	const mrpt::math::TPoint2D& query, const mrpt::math::TPoint2D& linePt1,
+	const mrpt::math::TPoint2D& linePt2)
+{
+	return squaredDistancePointToLine(
+		query.x, query.y, linePt1.x, linePt1.y, linePt2.x, linePt2.y);
+}
 
 /** Returns the distance between 2 points in 2D. */
 template <typename T>
@@ -955,27 +986,6 @@ double minimumDistanceFromPointToSegment(
 	return distanceBetweenPoints(Px, Py, ox, oy);
 }
 
-/** Returns the intersection point, and if it exists, between two segments.
- */
-bool SegmentsIntersection(
-	const double x1, const double y1, const double x2, const double y2,
-	const double x3, const double y3, const double x4, const double y4,
-	double& ix, double& iy);
-
-/** Returns the intersection point, and if it exists, between two segments.
- */
-bool SegmentsIntersection(
-	const double x1, const double y1, const double x2, const double y2,
-	const double x3, const double y3, const double x4, const double y4,
-	float& ix, float& iy);
-
-/** Returns true if the 2D point (px,py) falls INTO the given polygon.
- * \sa pointIntoQuadrangle
- */
-bool pointIntoPolygon2D(
-	double px, double py, unsigned int polyEdges, const double* poly_xs,
-	const double* poly_ys);
-
 /** Specialized method to check whether a point (x,y) falls into a quadrangle.
  * \sa pointIntoPolygon2D
  */
@@ -1002,27 +1012,6 @@ bool pointIntoQuadrangle(
 	const T da4 = mrpt::math::wrapToPi(a1 - a4);
 	return (sign(da3) == sign(da4) && (sign(da4) == sign(da1)));
 }
-
-/** Returns the closest distance of a given 2D point to a polygon, or "0" if the
- * point is INTO the polygon or its perimeter.
- */
-double distancePointToPolygon2D(
-	double px, double py, unsigned int polyEdges, const double* poly_xs,
-	const double* poly_ys);
-
-/** Calculates the minimum distance between a pair of lines.
-  The lines are given by:
-	- Line 1 = P1 + f (P2-P1)
-	- Line 2 = P3 + f (P4-P3)
-  The Euclidean distance is returned in "dist", and the mid point between the
-  lines in (x,y,z)
-  \return It returns false if there is no solution, i.e. lines are (almost, up
-  to EPS) parallel.
- */
-bool minDistBetweenLines(
-	double p1_x, double p1_y, double p1_z, double p2_x, double p2_y,
-	double p2_z, double p3_x, double p3_y, double p3_z, double p4_x,
-	double p4_y, double p4_z, double& x, double& y, double& z, double& dist);
 
 /** Returns whether two rotated rectangles intersect.
  *  The first rectangle is not rotated and given by

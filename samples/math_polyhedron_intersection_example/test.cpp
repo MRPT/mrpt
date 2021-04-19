@@ -66,7 +66,8 @@ void piThreadFunction(PIThreadParam& p)
 {
 	vector<TObject3D> ints;
 	CPolyhedron::getIntersection(p.polys->first, p.polys->second, ints);
-	TObject3D::getSegments(ints, p.intersection);
+	for (const auto& o : ints)
+		if (o.isSegment()) p.intersection.emplace_back(o.getAs<TSegment3D>());
 }
 
 inline std::thread piCreateThread(PIThreadParam& p)

@@ -63,6 +63,7 @@ struct TPlane
 	void unitarize();
 	void getAsPose3D(mrpt::math::TPose3D& outPose) const;
 	void getAsPose3DForcingOrigin(const TPoint3D& center, TPose3D& pose) const;
+	TPose3D getAsPose3DForcingOrigin(const TPoint3D& center) const;
 	/** Get normal vector */
 	TVector3D getUnitaryNormalVector() const;
 	/** Defines a plane which contains these three points.

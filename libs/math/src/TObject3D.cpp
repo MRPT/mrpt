@@ -17,188 +17,121 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>  // >> of TPolygon3D
 
+#include <sstream>
+
 using namespace mrpt::math;
 
-void TObject3D::generate2DObject(TObject2D& obj) const
+TObject2D TObject3D::generate2DObject() const
 {
-	switch (type)
+	if (isPoint()) { return {TPoint2D(getAs<TPoint3D>())}; }
+	else if (isSegment())
 	{
-		case GEOMETRIC_TYPE_POINT: obj = TPoint2D(data.point); break;
-		case GEOMETRIC_TYPE_SEGMENT: obj = TSegment2D(data.segment); break;
-		case GEOMETRIC_TYPE_LINE: obj = TLine2D(data.line); break;
-		case GEOMETRIC_TYPE_POLYGON: obj = TPolygon2D(*(data.polygon)); break;
-		case GEOMETRIC_TYPE_PLANE:
-			throw std::logic_error("Too many dimensions");
-		default: obj = TObject2D(); break;
+		return {TSegment2D(getAs<TSegment3D>())};
 	}
-}
-
-void TObject3D::getPoints(
-	const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts)
-{
-	for (const auto& obj : objs)
-		if (obj.isPoint()) pnts.push_back(obj.data.point);
-}
-void TObject3D::getSegments(
-	const std::vector<TObject3D>& objs, std::vector<TSegment3D>& sgms)
-{
-	for (const auto& obj : objs)
-		if (obj.isSegment()) sgms.push_back(obj.data.segment);
-}
-void TObject3D::getLines(
-	const std::vector<TObject3D>& objs, std::vector<TLine3D>& lins)
-{
-	for (const auto& obj : objs)
-		if (obj.isLine()) lins.push_back(obj.data.line);
-}
-void TObject3D::getPlanes(
-	const std::vector<TObject3D>& objs, std::vector<TPlane>& plns)
-{
-	for (const auto& obj : objs)
-		if (obj.isPlane()) plns.push_back(obj.data.plane);
-}
-void TObject3D::getPolygons(
-	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys)
-{
-	for (const auto& obj : objs)
-		if (obj.isPolygon()) polys.push_back(*(obj.data.polygon));
-}
-void TObject3D::getPoints(
-	const std::vector<TObject3D>& objs, std::vector<TPoint3D>& pnts,
-	std::vector<TObject3D>& remainder)
-{
-	for (const auto& obj : objs)
-		if (obj.isPoint()) pnts.push_back(obj.data.point);
-		else
-			remainder.push_back(obj);
-}
-void TObject3D::getSegments(
-	const std::vector<TObject3D>& objs, std::vector<TSegment3D>& sgms,
-	std::vector<TObject3D>& remainder)
-{
-	for (const auto& obj : objs)
-		if (obj.isSegment()) sgms.push_back(obj.data.segment);
-		else
-			remainder.push_back(obj);
-}
-void TObject3D::getLines(
-	const std::vector<TObject3D>& objs, std::vector<TLine3D>& lins,
-	std::vector<TObject3D>& remainder)
-{
-	for (const auto& obj : objs)
-		if (obj.isLine()) lins.push_back(obj.data.line);
-		else
-			remainder.push_back(obj);
-}
-void TObject3D::getPlanes(
-	const std::vector<TObject3D>& objs, std::vector<TPlane>& plns,
-	std::vector<TObject3D>& remainder)
-{
-	for (const auto& obj : objs)
-		if (obj.isPlane()) plns.push_back(obj.data.plane);
-		else
-			remainder.push_back(obj);
-}
-void TObject3D::getPolygons(
-	const std::vector<TObject3D>& objs, std::vector<TPolygon3D>& polys,
-	std::vector<TObject3D>& remainder)
-{
-	for (const auto& obj : objs)
-		if (obj.isPolygon()) polys.push_back(*(obj.data.polygon));
-		else
-			remainder.push_back(obj);
+	else if (isLine())
+	{
+		return {TLine2D(getAs<TLine3D>())};
+	}
+	else if (isPolygon())
+	{
+		return {TPolygon2D(getAs<TPolygon3D>())};
+	}
+	else if (isPlane())
+	{
+		THROW_EXCEPTION("Cannot cast down a 3D plane to 2D.");
+	}
+	else if (empty())
+	{
+		return {};
+	}
+	THROW_EXCEPTION("Unexpected type.");
 }
 
 mrpt::serialization::CArchive& mrpt::math::operator>>(
 	mrpt::serialization::CArchive& in, mrpt::math::TObject3D& o)
 {
-	uint16_t type;
-	in >> type;
-	switch (static_cast<unsigned char>(type))
+	// We cannot use ReadVariant<> since types are not CSerializable...sigh.
+
+	switch (in.ReadAs<uint8_t>())
 	{
-		case GEOMETRIC_TYPE_POINT:
-		{
-			TPoint3D p;
-			in >> p;
-			o = p;
-		}
-		break;
-		case GEOMETRIC_TYPE_SEGMENT:
-		{
-			TSegment3D s;
-			in >> s;
-			o = s;
-		}
-		break;
-		case GEOMETRIC_TYPE_LINE:
-		{
-			TLine3D l;
-			in >> l;
-			o = l;
-		}
-		break;
-		case GEOMETRIC_TYPE_PLANE:
-		{
-			TPlane p;
-			in >> p;
-			o = p;
-		}
-		break;
-		case GEOMETRIC_TYPE_POLYGON:
-		{
-			TPolygon3D p;
-			in >> p;
-			o = p;
-		}
-		break;
-		case GEOMETRIC_TYPE_UNDEFINED:
-		{
-			o = TObject3D();
-		}
-		break;
-		default:
-			throw std::logic_error(
-				"Unknown TObject3D type found while reading stream");
-	}
+		case 0: o.data.emplace<std::monostate>(); break;
+		case 1:
+			o.data.emplace<TPoint3D>();
+			in >> o.getAs<TPoint3D>();
+			break;
+		case 2:
+			o.data.emplace<TSegment3D>();
+			in >> o.getAs<TSegment3D>();
+			break;
+		case 3:
+			o.data.emplace<TLine3D>();
+			in >> o.getAs<TLine3D>();
+			break;
+		case 4:
+			o.data.emplace<TPolygon3D>();
+			in >> o.getAs<TPolygon3D>();
+			break;
+		case 5:
+			o.data.emplace<TPlane>();
+			in >> o.getAs<TPlane>();
+			break;
+		default: THROW_EXCEPTION("Unexpected type index");
+	};
 	return in;
 }
 
 mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TObject3D& o)
 {
-	out.WriteAs<uint16_t>(o.getType());
-	switch (o.getType())
+	if (o.empty()) { out.WriteAs<uint8_t>(0); }
+	else if (o.isPoint())
 	{
-		case GEOMETRIC_TYPE_POINT:
-		{
-			TPoint3D p;
-			o.getPoint(p);
-			return out << p;
-		};
-		case GEOMETRIC_TYPE_SEGMENT:
-		{
-			TSegment3D s;
-			o.getSegment(s);
-			return out << s;
-		};
-		case GEOMETRIC_TYPE_LINE:
-		{
-			TLine3D l;
-			o.getLine(l);
-			return out << l;
-		};
-		case GEOMETRIC_TYPE_PLANE:
-		{
-			TPlane p;
-			o.getPlane(p);
-			return out << p;
-		};
-		case GEOMETRIC_TYPE_POLYGON:
-		{
-			TPolygon3D p;
-			o.getPolygon(p);
-			return out << p;
-		};
+		out.WriteAs<uint8_t>(1);
+		out << o.getAs<TPoint3D>();
 	}
+	else if (o.isSegment())
+	{
+		out.WriteAs<uint8_t>(2);
+		out << o.getAs<TSegment3D>();
+	}
+	else if (o.isLine())
+	{
+		out.WriteAs<uint8_t>(3);
+		out << o.getAs<TLine3D>();
+	}
+	else if (o.isPolygon())
+	{
+		out.WriteAs<uint8_t>(4);
+		out << o.getAs<TPolygon3D>();
+	}
+	else if (o.isPlane())
+	{
+		out.WriteAs<uint8_t>(5);
+		out << o.getAs<TPlane>();
+	}
+	THROW_EXCEPTION("Unexpected type index");
 	return out;
+}
+
+namespace mrpt::typemeta
+{
+// Specialization must occur in the same namespace
+MRPT_DECLARE_TTYPENAME_NO_NAMESPACE(monostate, std)
+}  // namespace mrpt::typemeta
+
+namespace mrpt::math
+{
+extern std::ostream& operator<<(std::ostream& o, const std::monostate&);
+}  // namespace mrpt::math
+
+std::string TObject3D::asString() const
+{
+	std::stringstream ss;
+	std::visit(
+		[&](const auto& o) {
+			ss << mrpt::typemeta::TTypeName<std::decay_t<decltype(o)>>::get()
+			   << ": " << o;
+		},
+		data);
+	return ss.str();
 }

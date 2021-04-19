@@ -170,6 +170,10 @@ class CArchive
 	 */
 	void WriteObject(const CSerializable* o);
 	void WriteObject(const CSerializable& o) { WriteObject(&o); }
+
+	/** Requires to serialize variants without a proper value. */
+	CArchive& operator<<(const std::monostate&);
+
 	/** Reads an object from stream, its class determined at runtime, and
 	 * returns a smart pointer to the object.
 	 * \exception std::exception On I/O error or undefined class.
@@ -261,6 +265,7 @@ class CArchive
 		bool isOldFormat;
 		int8_t version;
 		internal_ReadObjectHeader(strClassName, isOldFormat, version);
+		if (strClassName == "std::monostate") return {};
 		const mrpt::rtti::TRuntimeClassId* classId =
 			mrpt::rtti::findRegisteredClass(strClassName);
 		if (!classId)
@@ -284,7 +289,7 @@ class CArchive
 	template <typename T>
 	void WriteVariant(T t)
 	{
-		std::visit([&](auto& o) { this->WriteObject(o); }, t);
+		std::visit([&](auto& o) { *this << o; }, t);
 	}
 #endif
 
@@ -517,7 +522,7 @@ CArchive& operator>>(CArchive& in, typename std::variant<T...>& pObj)
 template <typename... T>
 CArchive& operator<<(CArchive& out, const typename std::variant<T...>& pObj)
 {
-	pObj.match([&](auto& t) { out << t; });
+	std::visit([&](auto& o) { out << o; }, pObj);
 	return out;
 }
 
