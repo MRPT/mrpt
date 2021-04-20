@@ -32,7 +32,7 @@ TEST(clock, delay_Realtime)
 	mrpt::Clock::setActiveClock(mrpt::Clock::Source::Monotonic);
 	test_delay();
 
-#if 0 // not repetitive results
+#if 0  // non-repetitive results
 	// mono->rt offset:
 	const uint64_t d1 = mrpt::Clock::getMonotonicToRealtimeOffset();
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
