@@ -20,6 +20,7 @@ MRPT
 
   tutorials
   applications
+  examples
   supported-sensors
 
 .. toctree::

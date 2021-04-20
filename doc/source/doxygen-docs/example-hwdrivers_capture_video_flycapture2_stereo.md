@@ -1,0 +1,3 @@
+\page hwdrivers_capture_video_flycapture2_stereo Example: hwdrivers_capture_video_flycapture2_stereo
+C++ example source code:
+\include hwdrivers_capture_video_flycapture2_stereo/test.cpp
