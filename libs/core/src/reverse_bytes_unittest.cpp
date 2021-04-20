@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/core/bit_cast.h>
 #include <mrpt/core/reverse_bytes.h>
 
@@ -118,6 +119,17 @@ TEST(bits, reverseBytes)
 		auto val_check = bit_cast<uint64_t>(val);
 		EXPECT_EQ(val_check, val_r_ok);
 	}
+#ifdef HAVE_LONG_DOUBLE
+	{
+		// 1.0 == 0x3ff0000000000000
+		long double val = 1;
+		const long double val0 = val;
+		mrpt::reverseBytesInPlace(val);
+		EXPECT_NE(val, val0);
+		mrpt::reverseBytesInPlace(val);
+		EXPECT_EQ(val, val0);
+	}
+#endif
 	{
 		std::chrono::time_point<mrpt::Clock> t = mrpt::Clock::now();
 		const auto t_org = t;
