@@ -19,7 +19,7 @@ namespace mrpt::containers
  * std::map<> but is implemented as a linear std::vector<> indexed by KEY.
  *  Note that KEY must be integer types only (size_t, uint32_t, etc.)
  *  This implementation is much more efficient than std::map<> when the most
- * common operation is accesing elements
+ * common operation is accessing elements
  *   by KEY with find() or [], and the range of KEY values starts at 0 (or a
  * reasonable low number).
  *

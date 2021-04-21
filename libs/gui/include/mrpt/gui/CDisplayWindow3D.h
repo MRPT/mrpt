@@ -127,7 +127,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	/** Internal OpenGL object (see general discussion in about usage of this
 	 * object) */
 	mrpt::opengl::COpenGLScene::Ptr m_3Dscene;
-	/** Critical section for accesing m_3Dscene */
+	/** Critical section for accessing m_3Dscene */
 	mutable std::recursive_timed_mutex m_csAccess3DScene;
 
 	/** Throws an exception on initialization error */
@@ -169,7 +169,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	/** Gets a reference to the smart shared pointer that holds the internal
 	 * scene (carefuly read introduction in gui::CDisplayWindow3D before use!)
-	 *  This also locks the critical section for accesing the scene, thus the
+	 *  This also locks the critical section for accessing the scene, thus the
 	 * window will not be repainted until it is unlocked.
 	 * \note It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.*/
 	mrpt::opengl::COpenGLScene::Ptr& get3DSceneAndLock();
