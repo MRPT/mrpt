@@ -246,7 +246,6 @@ class xRawLogViewerFrame : public wxFrame
 	void OnmnuCreateAVISelected(wxCommandEvent& event);
 	void OnMenuRegenerateOdometryTimes(wxCommandEvent& event);
 	void OnMenuItem3DObsRecoverParams(wxCommandEvent& event);
-	void Onslid3DcamConfCmdScrollChanged(wxCommandEvent&);
 	void OnMenuItemImportBremenDLRLog(wxCommandEvent& event);
 	void OnMenuRenameSingleObs(wxCommandEvent& event);
 	//*)
@@ -315,7 +314,7 @@ class xRawLogViewerFrame : public wxFrame
 	static const long ID_PANEL22;
 	static const long ID_STATICBITMAP6;
 	static const long ID_PANEL23;
-	static const long ID_NOTEBOOK4;
+	static const long ID_NOTEBOOK_3DOBS;
 	static const long ID_PANEL19;
 	static const long ID_NOTEBOOK1;
 	static const long ID_PANEL5;
@@ -495,7 +494,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem32;
 	wxBoxSizer* BoxSizer2;
 	wxTimer timAutoLoad;
-	wxStaticText* StaticText3;
 	wxMenuItem* MenuItem13;
 	wxMenu* MenuItem8;
 	mpWindow* plotAct2D_XY;
@@ -545,7 +543,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxPanel* pn3Dobs_Int;
 	wxTextCtrl* memStats;
 	wxPanel* pn_CObservationStereoImage;
-	wxSlider* slid3DcamConf;
 	wxPanel* Panel2;
 	wxMenu* MenuItem5;
 	wxMenuItem* MenuItem21;
@@ -575,6 +572,7 @@ class xRawLogViewerFrame : public wxFrame
 	//*)
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
+	void On3DObsPagesChange(wxBookCtrlEvent& event);
 
 	// void OntreeViewItemRightClick(wxTreeEvent& event);
 

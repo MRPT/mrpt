@@ -266,13 +266,26 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		obs->load();  // Make sure the 3D point cloud, etc... are all
 		// loaded in memory.
 
+		// Render options
+		// --------------------------------
+		float axisTickFrequency = 1.0f;
+		float axisLimits = 20.0f;
+		float axisTickTextSize = 0.075f;
+		bool colorFromRGBimage = true;
+		char colorizeByAxis = 'x';	// x,y,z, anything else = none.
+		bool invertColorMapping = false;
+		mrpt::img::TColormap colorMap = mrpt::img::cmJET;
+		float pointSize = 4.0f;
+
+		// Generate/load 3D points
+		// ----------------------
 		mrpt::maps::CPointsMap::Ptr pointMap;
 		mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
 		mrpt::obs::T3DPointsProjectionParams pp;
 		pp.takeIntoAccountSensorPoseOnRobot = true;
 
 		// Color from intensity image?
-		if (obs->hasRangeImage && obs->hasIntensityImage)
+		if (colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)
 		{
 			pointMapCol = mrpt::maps::CColouredPointsMap::Create();
 			pointMapCol->colorScheme.scheme =
@@ -305,8 +318,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		{
 			auto gl_axis = mrpt::opengl::CAxis::Create(
-				-20, -20, -20, 20, 20, 20, 1, 2, true);
-			gl_axis->setTextScale(0.075f);
+				-axisLimits, -axisLimits, -axisLimits, axisLimits, axisLimits,
+				axisLimits, axisTickFrequency, 2, true);
+			gl_axis->setTextScale(axisTickTextSize);
 			gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
 			openGLSceneRef->insert(gl_axis);
 		}
@@ -318,13 +332,34 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		{
 			gl_pnts->loadFromPointsMap(pointMap.get());
 			const auto bb = gl_pnts->getBoundingBox();
-			gl_pnts->recolorizeByCoordinate(
-				bb.max.x, bb.min.x, 0 /*color by x*/, mrpt::img::cmJET);
+
+			switch (colorizeByAxis)
+			{
+				case 'x':
+					gl_pnts->recolorizeByCoordinate(
+						invertColorMapping ? bb.max.x : bb.min.x,
+						invertColorMapping ? bb.min.x : bb.max.x, 0 /* x */,
+						colorMap);
+					break;
+				case 'y':
+					gl_pnts->recolorizeByCoordinate(
+						invertColorMapping ? bb.max.y : bb.min.y,
+						invertColorMapping ? bb.min.y : bb.max.y, 1 /* y */,
+						colorMap);
+					break;
+				case 'z':
+					gl_pnts->recolorizeByCoordinate(
+						invertColorMapping ? bb.max.z : bb.min.z,
+						invertColorMapping ? bb.min.z : bb.max.z, 2 /* z */,
+						colorMap);
+					break;
+				default: break;
+			}
 		}
 
 		// No need to further transform 3D points
 		gl_pnts->setPose(mrpt::poses::CPose3D());
-		gl_pnts->setPointSize(4.0);
+		gl_pnts->setPointSize(pointSize);
 
 		openGLSceneRef->insert(gl_pnts);
 		m_gl3DRangeScan->Refresh();
@@ -335,7 +370,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			CImage im;
 			if (obs->hasIntensityImage) im = obs->intensityImage;
 			else
-				im.resize(10, 10, CH_GRAY);
+				im.resize(1, 1, CH_GRAY);
 			wxImage* img = mrpt::gui::MRPTImage2wxImage(im);
 			if (img->IsOk()) bmp3Dobs_int->SetBitmap(wxBitmap(*img));
 			bmp3Dobs_int->Refresh();
@@ -349,7 +384,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				auxImg =
 					obs->rangeImage_getAsImage(mrpt::img::TColormap::cmHOT);
 			else
-				auxImg.resize(10, 10, CH_GRAY);
+				auxImg.resize(1, 1, CH_GRAY);
 
 			wxImage* img = mrpt::gui::MRPTImage2wxImage(auxImg);
 			if (img->IsOk()) bmp3Dobs_depth->SetBitmap(wxBitmap(*img));
@@ -363,7 +398,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				img = mrpt::gui::MRPTImage2wxImage(obs->confidenceImage);
 			else
 			{
-				mrpt::img::CImage dumm(10, 10);
+				mrpt::img::CImage dumm(1, 1);
 				img = mrpt::gui::MRPTImage2wxImage(dumm);
 			}
 			if (img->IsOk()) bmp3Dobs_conf->SetBitmap(wxBitmap(*img));
