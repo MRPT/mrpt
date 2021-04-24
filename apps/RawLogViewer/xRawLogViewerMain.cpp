@@ -264,6 +264,7 @@ const long xRawLogViewerFrame::ID_STATICBITMAP5 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL22 = wxNewId();
 const long xRawLogViewerFrame::ID_STATICBITMAP6 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL23 = wxNewId();
+const long xRawLogViewerFrame::ID_PANEL_VIEW_3D_POINT_OPTIONS = wxNewId();
 const long xRawLogViewerFrame::ID_NOTEBOOK_3DOBS = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL19 = wxNewId();
 const long xRawLogViewerFrame::ID_NOTEBOOK1 = wxNewId();
@@ -954,10 +955,16 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pn3Dobs_Conf->SetSizer(FlexGridSizer14);
 	FlexGridSizer14->Fit(pn3Dobs_Conf);
 	FlexGridSizer14->SetSizeHints(pn3Dobs_Conf);
+
+	pnViewOptions = new ViewOptions3DPoints(
+		nb_3DObsChannels, ID_PANEL_VIEW_3D_POINT_OPTIONS);
+
 	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D points"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Depth, _("Depth"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Int, _("Intensity"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
+	nb_3DObsChannels->AddPage(pnViewOptions, _("Visualization options"), false);
+
 	FlexGridSizer8->Add(
 		nb_3DObsChannels, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
 	pn_CObservation3DRangeScan->SetSizer(FlexGridSizer8);
@@ -6392,6 +6399,9 @@ void xRawLogViewerFrame::On3DObsPagesChange(wxBookCtrlEvent& event)
 {
 	if (event.GetSelection() == 0)
 	{
+		// Re-generate 3D points (to reflect changes in viz options):
+		SelectObjectInTreeView(curSelectedObject);
+
 		m_gl3DRangeScan->Refresh();
 		wxTheApp->Yield();	// Let the app. process messages
 		m_gl3DRangeScan->Render();

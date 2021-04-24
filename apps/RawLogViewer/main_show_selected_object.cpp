@@ -268,14 +268,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		// Render options
 		// --------------------------------
-		float axisTickFrequency = 1.0f;
-		float axisLimits = 20.0f;
-		float axisTickTextSize = 0.075f;
-		bool colorFromRGBimage = true;
-		char colorizeByAxis = 'x';	// x,y,z, anything else = none.
-		bool invertColorMapping = false;
-		mrpt::img::TColormap colorMap = mrpt::img::cmJET;
-		float pointSize = 4.0f;
+		const auto& p = pnViewOptions->m_params;
 
 		// Generate/load 3D points
 		// ----------------------
@@ -285,7 +278,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		pp.takeIntoAccountSensorPoseOnRobot = true;
 
 		// Color from intensity image?
-		if (colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)
+		if (p.colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)
 		{
 			pointMapCol = mrpt::maps::CColouredPointsMap::Create();
 			pointMapCol->colorScheme.scheme =
@@ -317,10 +310,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		openGLSceneRef->clear();
 
 		{
+			const float L = p.axisLimits;
 			auto gl_axis = mrpt::opengl::CAxis::Create(
-				-axisLimits, -axisLimits, -axisLimits, axisLimits, axisLimits,
-				axisLimits, axisTickFrequency, 2, true);
-			gl_axis->setTextScale(axisTickTextSize);
+				-L, -L, -L, L, L, L, p.axisTickFrequency, 2, true);
+			gl_axis->setTextScale(p.axisTickTextSize);
 			gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
 			openGLSceneRef->insert(gl_axis);
 		}
@@ -333,25 +326,25 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			gl_pnts->loadFromPointsMap(pointMap.get());
 			const auto bb = gl_pnts->getBoundingBox();
 
-			switch (colorizeByAxis)
+			switch (p.colorizeByAxis)
 			{
-				case 'x':
+				case 0:
 					gl_pnts->recolorizeByCoordinate(
-						invertColorMapping ? bb.max.x : bb.min.x,
-						invertColorMapping ? bb.min.x : bb.max.x, 0 /* x */,
-						colorMap);
+						p.invertColorMapping ? bb.max.x : bb.min.x,
+						p.invertColorMapping ? bb.min.x : bb.max.x, 0 /* x */,
+						p.colorMap);
 					break;
-				case 'y':
+				case 1:
 					gl_pnts->recolorizeByCoordinate(
-						invertColorMapping ? bb.max.y : bb.min.y,
-						invertColorMapping ? bb.min.y : bb.max.y, 1 /* y */,
-						colorMap);
+						p.invertColorMapping ? bb.max.y : bb.min.y,
+						p.invertColorMapping ? bb.min.y : bb.max.y, 1 /* y */,
+						p.colorMap);
 					break;
-				case 'z':
+				case 2:
 					gl_pnts->recolorizeByCoordinate(
-						invertColorMapping ? bb.max.z : bb.min.z,
-						invertColorMapping ? bb.min.z : bb.max.z, 2 /* z */,
-						colorMap);
+						p.invertColorMapping ? bb.max.z : bb.min.z,
+						p.invertColorMapping ? bb.min.z : bb.max.z, 2 /* z */,
+						p.colorMap);
 					break;
 				default: break;
 			}
@@ -359,7 +352,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		// No need to further transform 3D points
 		gl_pnts->setPose(mrpt::poses::CPose3D());
-		gl_pnts->setPointSize(pointSize);
+		gl_pnts->setPointSize(p.pointSize);
 
 		openGLSceneRef->insert(gl_pnts);
 		m_gl3DRangeScan->Refresh();
