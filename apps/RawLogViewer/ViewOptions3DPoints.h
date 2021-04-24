@@ -37,6 +37,8 @@ struct ParametersView3DPoints
 	bool invertColorMapping = false;
 	mrpt::img::TColormap colorMap = mrpt::img::cmJET;
 	double pointSize = 4.0;
+	bool drawSensorPose = true;
+	double sensorPoseScale = 0.3;
 
 	void to_UI(ViewOptions3DPoints& ui) const;
 	void from_UI(const ViewOptions3DPoints& ui);
@@ -57,8 +59,11 @@ class ViewOptions3DPoints : public wxPanel
 	wxCheckBox* cbInvertColormap;
 	wxTextCtrl* edTickInterval;
 	wxStaticText* StaticText3;
+	wxTextCtrl* edSensorPoseScale;
+	wxCheckBox* cbShowSensorPose;
 	wxButton* btnApply;
 	wxStaticText* StaticText4;
+	wxStaticText* StaticText5;
 	wxStaticText* StaticText2;
 	wxRadioBox* RadioBox1;
 	wxCheckBox* cbColorFromRGB;
@@ -84,6 +89,9 @@ class ViewOptions3DPoints : public wxPanel
 	static const long ID_CHECKBOX2;
 	static const long ID_STATICTEXT4;
 	static const long ID_SPINCTRL1;
+	static const long ID_CHECKBOX3;
+	static const long ID_STATICTEXT5;
+	static const long ID_TEXTCTRL4;
 	//*)
 
    private:

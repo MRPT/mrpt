@@ -13,6 +13,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/datetime.h>
 
 #include "xRawLogViewerMain.h"
@@ -316,6 +317,14 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			gl_axis->setTextScale(p.axisTickTextSize);
 			gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
 			openGLSceneRef->insert(gl_axis);
+		}
+
+		if (p.drawSensorPose)
+		{
+			const auto glCorner =
+				mrpt::opengl::stock_objects::CornerXYZ(p.sensorPoseScale);
+			glCorner->setPose(obs->sensorPose);
+			openGLSceneRef->insert(glCorner);
 		}
 
 		auto gl_pnts = mrpt::opengl::CPointCloudColoured::Create();
