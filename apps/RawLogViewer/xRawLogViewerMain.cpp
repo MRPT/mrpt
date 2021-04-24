@@ -546,7 +546,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		StaticLine3, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
 	Button6 = new wxCustomButton(
-		this, ID_BUTTON8, _("Animate..."),
+		this, ID_BUTTON8, _("Browse..."),
 		wxArtProvider::GetBitmap(
 			wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),
 			wxART_TOOLBAR),

@@ -7,6 +7,7 @@
   - ptg-configurator: target now also comprises a heading angle.
   - RawLogViewer:
     - New tab with CObservation3DRangeScan visualization options.
+    - All icons have been updated for a more modern look.
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - add method mrpt::containers::map_as_vector::at()
