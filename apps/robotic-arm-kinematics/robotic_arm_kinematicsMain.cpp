@@ -906,16 +906,16 @@ void robotic_arm_kinematicsFrame::OnButtonSaveFromEdit(wxCommandEvent& event)
 		TKinematicLink& l = m_robot.getLinkRef(sel);
 
 		double d;
-		edTheta->GetValue().ToDouble(&d);
+		edTheta->GetValue().ToCDouble(&d);
 		l.theta = DEG2RAD(d);
 
-		edD->GetValue().ToDouble(&d);
+		edD->GetValue().ToCDouble(&d);
 		l.d = 1e-3 * d;
 
-		edA->GetValue().ToDouble(&d);
+		edA->GetValue().ToCDouble(&d);
 		l.a = 1e-3 * d;
 
-		edAlpha->GetValue().ToDouble(&d);
+		edAlpha->GetValue().ToCDouble(&d);
 		l.alpha = DEG2RAD(d);
 
 		l.is_prismatic = (rbType->GetSelection() == 1);

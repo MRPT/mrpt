@@ -907,7 +907,7 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 	if (s.IsEmpty()) return;
 
 	double delta_time_secs;
-	if (!s.ToDouble(&delta_time_secs))
+	if (!s.ToCDouble(&delta_time_secs))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -985,7 +985,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 		_("Maximum length of each sensoryframe (seconds):"),
 		_("Convert to sensoryframe's"), _("1.0"));
 	double maxLengthSF;
-	strMaxL.ToDouble(&maxLengthSF);
+	strMaxL.ToCDouble(&maxLengthSF);
 
 	// Process:
 	CRawlog new_rawlog;

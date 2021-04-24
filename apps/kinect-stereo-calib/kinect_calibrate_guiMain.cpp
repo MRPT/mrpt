@@ -2018,8 +2018,8 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 		m_calib_params.check_size_y = edCalibCheckY->GetValue();
 
 		double sx, sy;
-		edCalibSizeX->GetValue().ToDouble(&sx);
-		edCalibSizeY->GetValue().ToDouble(&sy);
+		edCalibSizeX->GetValue().ToCDouble(&sx);
+		edCalibSizeY->GetValue().ToCDouble(&sy);
 
 		m_calib_params.check_squares_length_X_meters = 1e-3 * sx;
 		m_calib_params.check_squares_length_Y_meters = 1e-3 * sy;
@@ -2719,7 +2719,7 @@ double kinect_calibrate_guiDialog::parseGridLine(int r)
 	double R;
 	const wxString s = m_grid_live_calib->GetCellValue(r, 0);
 
-	if (!s.ToDouble(&R))
+	if (!s.ToCDouble(&R))
 		throw std::runtime_error(mrpt::format(
 									 "Error parsing double string: '%s'",
 									 (const char*)s.mb_str(wxConvUTF8))
@@ -2800,8 +2800,8 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 	const unsigned int check_size_y = edCalibCheckY->GetValue();
 
 	double check_squares_length_X_meters, check_squares_length_Y_meters;
-	edCalibSizeX->GetValue().ToDouble(&check_squares_length_X_meters);
-	edCalibSizeY->GetValue().ToDouble(&check_squares_length_Y_meters);
+	edCalibSizeX->GetValue().ToCDouble(&check_squares_length_X_meters);
+	edCalibSizeY->GetValue().ToCDouble(&check_squares_length_Y_meters);
 
 	check_squares_length_X_meters *= 1e-3;
 	check_squares_length_Y_meters *= 1e-3;
