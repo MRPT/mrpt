@@ -5,6 +5,8 @@
   - CMake >=3.8.0 is now required to ensure proper handling of dependencies compile options.
 - Changes in applications:
   - ptg-configurator: target now also comprises a heading angle.
+  - RawLogViewer:
+    - New tab with CObservation3DRangeScan visualization options.
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - add method mrpt::containers::map_as_vector::at()

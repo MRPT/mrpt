@@ -31,7 +31,6 @@
 #include "CRawlogTreeView.h"
 #include "MyGLCanvas.h"
 //*)
-
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/combobox.h>
@@ -40,6 +39,8 @@
 
 #include <map>
 #include <string>
+
+#include "ViewOptions3DPoints.h"
 
 // General global variables:
 #include <mrpt/config/CConfigFile.h>
@@ -314,6 +315,7 @@ class xRawLogViewerFrame : public wxFrame
 	static const long ID_PANEL22;
 	static const long ID_STATICBITMAP6;
 	static const long ID_PANEL23;
+	static const long ID_PANEL_VIEW_3D_POINT_OPTIONS;
 	static const long ID_NOTEBOOK_3DOBS;
 	static const long ID_PANEL19;
 	static const long ID_NOTEBOOK1;
@@ -429,6 +431,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem57;
 	wxStaticBitmapPopup* bmpObsImage;
 	wxPanel* pn3Dobs_Conf;
+	ViewOptions3DPoints* pnViewOptions;
 	wxMenuItem* MenuItem59;
 	wxPanel* pn_CSensorialFrame;
 	wxPanel* Panel5;

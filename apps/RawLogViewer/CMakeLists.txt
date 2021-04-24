@@ -16,17 +16,18 @@ endif()
 # TARGET:
 # ---------------------------------------------
 set(SRCS
- CFormEdit.cpp	CFormEdit.h
- CFormMotionModel.cpp	CFormMotionModel.h
- CFormPlayVideo.cpp		CFormPlayVideo.h
- CFormRawMap.cpp		CFormRawMap.h
- CScanMatching.cpp		CScanMatching.h
+ CFormEdit.cpp            CFormEdit.h
+ CFormMotionModel.cpp     CFormMotionModel.h
+ CFormPlayVideo.cpp       CFormPlayVideo.h
+ CFormRawMap.cpp          CFormRawMap.h
+ CScanMatching.cpp        CScanMatching.h
+ COdometryParams.cpp      COdometryParams.h
+ CScanAnimation.cpp       CScanAnimation.h
+ ViewOptions3DPoints.cpp  ViewOptions3DPoints.h
+ xRawLogViewerApp.cpp     xRawLogViewerApp.h
+ xRawLogViewerMain.cpp    xRawLogViewerMain.h
+ MyGLCanvas.cpp           MyGLCanvas.h
  CFormChangeSensorPositions.cpp CFormChangeSensorPositions.h
- COdometryParams.cpp 		COdometryParams.h
- CScanAnimation.cpp			CScanAnimation.h
- xRawLogViewerApp.cpp	xRawLogViewerApp.h
- xRawLogViewerMain.cpp	xRawLogViewerMain.h
- MyGLCanvas.cpp         MyGLCanvas.h
  main_gps_ops.cpp
  main_images_ops.cpp
  main_imports_exports.cpp
