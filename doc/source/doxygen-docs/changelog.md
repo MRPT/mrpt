@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.3.0: UNRELEASED
+# Version 2.3.0: Released April 25th, 2021
 - General build changes:
   - CMake >=3.8.0 is now required to ensure proper handling of dependencies compile options.
 - Changes in applications:
