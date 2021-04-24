@@ -28,6 +28,9 @@ const long ViewOptions3DPoints::ID_RADIOBOX2 = wxNewId();
 const long ViewOptions3DPoints::ID_CHECKBOX2 = wxNewId();
 const long ViewOptions3DPoints::ID_STATICTEXT4 = wxNewId();
 const long ViewOptions3DPoints::ID_SPINCTRL1 = wxNewId();
+const long ViewOptions3DPoints::ID_CHECKBOX3 = wxNewId();
+const long ViewOptions3DPoints::ID_STATICTEXT5 = wxNewId();
+const long ViewOptions3DPoints::ID_TEXTCTRL4 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(ViewOptions3DPoints, wxPanel)
@@ -49,16 +52,15 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	wxFlexGridSizer* FlexGridSizer1;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxFlexGridSizer* FlexGridSizer4;
+	wxStaticBoxSizer* StaticBoxSizer3;
 	wxFlexGridSizer* FlexGridSizer3;
+	wxFlexGridSizer* FlexGridSizer5;
 	wxStaticBoxSizer* StaticBoxSizer1;
 
 	Create(
 		parent, id, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("id"));
-	FlexGridSizer1 = new wxFlexGridSizer(2, 2, 0, 0);
-	FlexGridSizer1->AddGrowableCol(0);
-	FlexGridSizer1->AddGrowableCol(1);
-	FlexGridSizer1->AddGrowableRow(0);
+	FlexGridSizer1 = new wxFlexGridSizer(1, 3, 0, 0);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Axes"));
 	FlexGridSizer2 = new wxFlexGridSizer(0, 2, 0, 0);
 	StaticText1 = new wxStaticText(
@@ -150,10 +152,30 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	FlexGridSizer3->Add(FlexGridSizer4, 1, wxALL | wxEXPAND, 0);
 	StaticBoxSizer2->Add(FlexGridSizer3, 1, wxALL | wxEXPAND, 5);
 	FlexGridSizer1->Add(StaticBoxSizer2, 1, wxALL | wxEXPAND, 5);
+	StaticBoxSizer3 =
+		new wxStaticBoxSizer(wxHORIZONTAL, this, _("Sensor pose"));
+	FlexGridSizer5 = new wxFlexGridSizer(0, 1, 0, 0);
+	cbShowSensorPose = new wxCheckBox(
+		this, ID_CHECKBOX3, _("Show sensor pose"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
+	cbShowSensorPose->SetValue(false);
+	FlexGridSizer5->Add(
+		cbShowSensorPose, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+	StaticText5 = new wxStaticText(
+		this, ID_STATICTEXT5, _("XYZ corner scale [m]:"), wxDefaultPosition,
+		wxDefaultSize, 0, _T("ID_STATICTEXT5"));
+	FlexGridSizer5->Add(
+		StaticText5, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+	edSensorPoseScale = new wxTextCtrl(
+		this, ID_TEXTCTRL4, _("0.1"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_TEXTCTRL4"));
+	FlexGridSizer5->Add(edSensorPoseScale, 1, wxALL | wxEXPAND, 5);
+	StaticBoxSizer3->Add(FlexGridSizer5, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer1->Add(StaticBoxSizer3, 1, wxALL | wxEXPAND, 5);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
-
 	//*)
 
 	Bind(wxEVT_BUTTON, &ViewOptions3DPoints::OnbtnApplyClick, this, ID_BUTTON1);
@@ -169,6 +191,9 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	Bind(
 		wxEVT_SPINCTRL, &ViewOptions3DPoints::OnbtnApplyClick, this,
 		ID_SPINCTRL1);
+	Bind(
+		wxEVT_CHECKBOX, &ViewOptions3DPoints::OnbtnApplyClick, this,
+		ID_CHECKBOX3);
 
 	m_params.load_from_ini_file();
 	m_params.to_UI(*this);
@@ -205,6 +230,9 @@ void ParametersView3DPoints::to_UI(ViewOptions3DPoints& ui) const
 
 	ui.edPointSize->SetValue(pointSize);
 
+	ui.cbShowSensorPose->SetValue(drawSensorPose);
+	ui.edSensorPoseScale->SetValue(wxString::Format("%.03f", sensorPoseScale));
+
 	WX_END_TRY
 }
 void ParametersView3DPoints::from_UI(const ViewOptions3DPoints& ui)
@@ -226,6 +254,9 @@ void ParametersView3DPoints::from_UI(const ViewOptions3DPoints& ui)
 
 	pointSize = ui.edPointSize->GetValue();
 
+	drawSensorPose = ui.cbShowSensorPose->IsChecked();
+	ui.edSensorPoseScale->GetValue().ToCDouble(&sensorPoseScale);
+
 	WX_END_TRY
 }
 
@@ -242,6 +273,8 @@ void ParametersView3DPoints::save_to_ini_file() const
 	MRPT_SAVE_CONFIG_VAR(invertColorMapping, c, s);
 	MRPT_SAVE_CONFIG_VAR(pointSize, c, s);
 	MRPT_SAVE_CONFIG_VAR(colorMap, c, s);
+	MRPT_SAVE_CONFIG_VAR(drawSensorPose, c, s);
+	MRPT_SAVE_CONFIG_VAR(sensorPoseScale, c, s);
 }
 
 void ParametersView3DPoints::load_from_ini_file()
@@ -256,5 +289,7 @@ void ParametersView3DPoints::load_from_ini_file()
 	MRPT_LOAD_CONFIG_VAR_CS(colorizeByAxis, int);
 	MRPT_LOAD_CONFIG_VAR_CS(invertColorMapping, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(pointSize, double);
+	MRPT_LOAD_CONFIG_VAR_CS(drawSensorPose, bool);
+	MRPT_LOAD_CONFIG_VAR_CS(sensorPoseScale, double);
 	colorMap = c.read_enum(s, "colorMap", colorMap);
 }
