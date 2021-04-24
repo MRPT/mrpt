@@ -117,7 +117,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 	wxString strMaxLaserRange = wxGetTextFromUser(
 		_("Maximum valid laser range:"), _("Enter parameter:"), _("30"));
 	double maxValidLaserRange;
-	strMaxLaserRange.ToDouble(&maxValidLaserRange);
+	strMaxLaserRange.ToCDouble(&maxValidLaserRange);
 
 	float thisTimestamp;
 
@@ -273,7 +273,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 		_("Provide frame rate (fps, or Hz):"),
 		_("To generate fake timestamps:"), _("10"));
 	double FPS;
-	strFPS.ToDouble(&FPS);
+	strFPS.ToCDouble(&FPS);
 
 	ASSERT_(FPS > 0);
 

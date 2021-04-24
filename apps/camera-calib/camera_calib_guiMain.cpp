@@ -895,7 +895,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		wxString::Format(wxT("%.07f"), camera_params.intrinsicParams(0, 0)),
 		this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&camera_params.intrinsicParams(0, 0)))
+	if (!s.ToCDouble(&camera_params.intrinsicParams(0, 0)))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -906,7 +906,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		wxString::Format(wxT("%.07f"), camera_params.intrinsicParams(1, 1)),
 		this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&camera_params.intrinsicParams(1, 1)))
+	if (!s.ToCDouble(&camera_params.intrinsicParams(1, 1)))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -917,7 +917,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		wxString::Format(wxT("%.07f"), camera_params.intrinsicParams(0, 2)),
 		this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&camera_params.intrinsicParams(0, 2)))
+	if (!s.ToCDouble(&camera_params.intrinsicParams(0, 2)))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -928,7 +928,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		wxString::Format(wxT("%.07f"), camera_params.intrinsicParams(1, 2)),
 		this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&camera_params.intrinsicParams(1, 2)))
+	if (!s.ToCDouble(&camera_params.intrinsicParams(1, 2)))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -938,7 +938,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		_("Distortion param p1:"), _("Manual parameters"),
 		wxString::Format(wxT("%.07f"), camera_params.dist[0]), this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&camera_params.dist[0]))
+	if (!s.ToCDouble(&camera_params.dist[0]))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -948,7 +948,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		_("Distortion param p2:"), _("Manual parameters"),
 		wxString::Format(wxT("%.07f"), camera_params.dist[1]), this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&camera_params.dist[1]))
+	if (!s.ToCDouble(&camera_params.dist[1]))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -958,7 +958,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		_("Distortion param k1:"), _("Manual parameters"),
 		wxString::Format(wxT("%.07f"), camera_params.dist[2]), this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&camera_params.dist[2]))
+	if (!s.ToCDouble(&camera_params.dist[2]))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -968,7 +968,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		_("Distortion param k2:"), _("Manual parameters"),
 		wxString::Format(wxT("%.07f"), camera_params.dist[3]), this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&camera_params.dist[3]))
+	if (!s.ToCDouble(&camera_params.dist[3]))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;

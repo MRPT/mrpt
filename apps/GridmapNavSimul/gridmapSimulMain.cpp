@@ -1101,14 +1101,14 @@ void gridmapSimulFrame::OnbtnStartClick(wxCommandEvent& event)
 	double Aphi_err_bias;
 	double Aphi_err_std;
 
-	edAxb->GetValue().ToDouble(&Ax_err_bias);
-	edAxs->GetValue().ToDouble(&Ax_err_std);
+	edAxb->GetValue().ToCDouble(&Ax_err_bias);
+	edAxs->GetValue().ToCDouble(&Ax_err_std);
 
-	edAyb->GetValue().ToDouble(&Ay_err_bias);
-	edAys->GetValue().ToDouble(&Ay_err_std);
+	edAyb->GetValue().ToCDouble(&Ay_err_bias);
+	edAys->GetValue().ToCDouble(&Ay_err_std);
 
-	edApb->GetValue().ToDouble(&Aphi_err_bias);
-	edAps->GetValue().ToDouble(&Aphi_err_std);
+	edApb->GetValue().ToCDouble(&Aphi_err_bias);
+	edAps->GetValue().ToCDouble(&Aphi_err_std);
 	Aphi_err_bias = DEG2RAD(Aphi_err_bias);
 	Aphi_err_std = DEG2RAD(Aphi_err_std);
 
@@ -1178,8 +1178,8 @@ void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
 				  "center:"),
 				_("Grid parameters"), _("-1"), this);
 
-			if (sCellSize.ToDouble(&cell_size) && sCX.ToDouble(&cx) &&
-				sCY.ToDouble(&cy))
+			if (sCellSize.ToCDouble(&cell_size) && sCX.ToCDouble(&cx) &&
+				sCY.ToCDouble(&cy))
 			{
 				if (the_grid.loadFromBitmap(
 						img, cell_size, mrpt::math::TPoint2D(cx, cy)))
@@ -1217,14 +1217,14 @@ void gridmapSimulFrame::OnbtnExploreClick(wxCommandEvent& event)
 
 void gridmapSimulFrame::OnbtnSetLaserClick(wxCommandEvent& event)
 {
-	edSpan->GetValue().ToDouble(&LASER_APERTURE);
+	edSpan->GetValue().ToCDouble(&LASER_APERTURE);
 	LASER_APERTURE = DEG2RAD(LASER_APERTURE);
 
 	edCount->GetValue().ToLong(&LASER_N_RANGES);
 
-	edStdNoise->GetValue().ToDouble(&LASER_STD_ERROR);
+	edStdNoise->GetValue().ToCDouble(&LASER_STD_ERROR);
 
-	edStdNoiseAng->GetValue().ToDouble(&LASER_BEARING_STD_ERROR);
+	edStdNoiseAng->GetValue().ToCDouble(&LASER_BEARING_STD_ERROR);
 	LASER_BEARING_STD_ERROR = DEG2RAD(LASER_BEARING_STD_ERROR);
 }
 

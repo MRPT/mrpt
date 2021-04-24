@@ -3682,7 +3682,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent&)
 		_("Maximum change between readings (volts):"),
 		_("Filter out gas readings 'spikes':"), _("0.05"));
 	double maxChange;
-	strMaxChange.ToDouble(&maxChange);
+	strMaxChange.ToCDouble(&maxChange);
 
 	wxBusyCursor waitCursor;
 	int nEntries = (int)rawlog.size();
@@ -5352,7 +5352,7 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent&)
 		_("Enter the new maximum range (in meters):"), _("Maximum range:"),
 		_("81.0"));
 	double maxR;
-	strMaxR.ToDouble(&maxR);
+	strMaxR.ToCDouble(&maxR);
 
 	wxBusyCursor waitCursor;
 	int nEntries = (int)rawlog.size();

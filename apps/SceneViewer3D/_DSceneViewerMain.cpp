@@ -1447,7 +1447,7 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(
 		this);
 
 	double N1, N2;
-	if (sRet1.ToDouble(&N1) && sRet2.ToDouble(&N2))
+	if (sRet1.ToCDouble(&N1) && sRet2.ToCDouble(&N2))
 	{
 		mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(N1);
 		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL(N2);
@@ -1702,7 +1702,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 					mrpt::opengl::stock_objects::CornerXYZ());
 
 			double ptSize;
-			dlgPLY.cbPointSize->GetStringSelection().ToDouble(&ptSize);
+			dlgPLY.cbPointSize->GetStringSelection().ToCDouble(&ptSize);
 			if (gl_points) gl_points->setPointSize(ptSize);
 			if (gl_points_col) gl_points_col->setPointSize(ptSize);
 
@@ -1718,9 +1718,9 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
 			TPose3D ptCloudPose(0, 0, 0, 0, 0, 0);
 
-			dlgPLY.edYaw->GetValue().ToDouble(&ptCloudPose.yaw);
-			dlgPLY.edPitch->GetValue().ToDouble(&ptCloudPose.pitch);
-			dlgPLY.edRoll->GetValue().ToDouble(&ptCloudPose.roll);
+			dlgPLY.edYaw->GetValue().ToCDouble(&ptCloudPose.yaw);
+			dlgPLY.edPitch->GetValue().ToCDouble(&ptCloudPose.pitch);
+			dlgPLY.edRoll->GetValue().ToCDouble(&ptCloudPose.roll);
 			ptCloudPose.yaw = DEG2RAD(ptCloudPose.yaw);
 			ptCloudPose.pitch = DEG2RAD(ptCloudPose.pitch);
 			ptCloudPose.roll = DEG2RAD(ptCloudPose.roll);
@@ -2097,7 +2097,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 			scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 		double ptSize;
-		dlgPLY.cbPointSize->GetStringSelection().ToDouble(&ptSize);
+		dlgPLY.cbPointSize->GetStringSelection().ToCDouble(&ptSize);
 		if (gl_points) gl_points->setPointSize(ptSize);
 		if (gl_points_col) gl_points_col->setPointSize(ptSize);
 
@@ -2113,9 +2113,9 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 
 		TPose3D ptCloudPose(0, 0, 0, 0, 0, 0);
 
-		dlgPLY.edYaw->GetValue().ToDouble(&ptCloudPose.yaw);
-		dlgPLY.edPitch->GetValue().ToDouble(&ptCloudPose.pitch);
-		dlgPLY.edRoll->GetValue().ToDouble(&ptCloudPose.roll);
+		dlgPLY.edYaw->GetValue().ToCDouble(&ptCloudPose.yaw);
+		dlgPLY.edPitch->GetValue().ToCDouble(&ptCloudPose.pitch);
+		dlgPLY.edRoll->GetValue().ToCDouble(&ptCloudPose.roll);
 		ptCloudPose.yaw = DEG2RAD(ptCloudPose.yaw);
 		ptCloudPose.pitch = DEG2RAD(ptCloudPose.pitch);
 		ptCloudPose.roll = DEG2RAD(ptCloudPose.roll);

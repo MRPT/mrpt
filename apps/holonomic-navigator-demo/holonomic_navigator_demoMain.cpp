@@ -1025,8 +1025,8 @@ void holonomic_navigator_demoFrame::OnbtnLoadMapClick(wxCommandEvent& event)
 				  "center:"),
 				_("Grid parameters"), _("-1"), this);
 
-			if (sCellSize.ToDouble(&cell_size) && sCX.ToDouble(&cx) &&
-				sCY.ToDouble(&cy))
+			if (sCellSize.ToCDouble(&cell_size) && sCX.ToCDouble(&cx) &&
+				sCY.ToCDouble(&cy))
 			{
 				if (!m_gridMap.loadFromBitmap(img, cell_size, {cx, cy}))
 					wxMessageBox(

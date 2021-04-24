@@ -945,9 +945,9 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 	double tx = 10.0, ty = .0, tphi_deg = .0;  // Target in WS
 	{
-		bool ok_x = edTargetX->GetValue().ToDouble(&tx);
-		bool ok_y = edTargetY->GetValue().ToDouble(&ty);
-		bool ok_phi = edTargetPhiDeg->GetValue().ToDouble(&tphi_deg);
+		bool ok_x = edTargetX->GetValue().ToCDouble(&tx);
+		bool ok_y = edTargetY->GetValue().ToCDouble(&ty);
+		bool ok_phi = edTargetPhiDeg->GetValue().ToCDouble(&tphi_deg);
 		if (ok_x && ok_y && ok_phi)
 		{
 			gl_WS_target->setPose(
@@ -964,7 +964,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 			navdyn.relTarget.x = tx;
 			navdyn.relTarget.y = ty;
 			navdyn.relTarget.phi = mrpt::DEG2RAD(tphi_deg);
-			edRelSpeedAtTarget->GetValue().ToDouble(&navdyn.targetRelSpeed);
+			edRelSpeedAtTarget->GetValue().ToCDouble(&navdyn.targetRelSpeed);
 			ptg->updateNavDynamicState(navdyn);
 		}
 
@@ -975,8 +975,8 @@ void ptgConfiguratorframe::rebuild3Dview()
 		gl_WS_obs->clear();
 		{
 			double ox, oy;
-			bool ok_x = edObsX->GetValue().ToDouble(&ox);
-			bool ok_y = edObsY->GetValue().ToDouble(&oy);
+			bool ok_x = edObsX->GetValue().ToCDouble(&ox);
+			bool ok_y = edObsY->GetValue().ToCDouble(&oy);
 			if (ok_x && ok_y)
 			{
 				if (cbBuildTPObs->IsChecked())
@@ -1057,7 +1057,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 			if (cbDrawShapePath->IsChecked())
 			{
 				double min_shape_dists = 1.0;
-				edMinDistBtwShapes->GetValue().ToDouble(&min_shape_dists);
+				edMinDistBtwShapes->GetValue().ToCDouble(&min_shape_dists);
 				bool done = false;
 				for (double d = max_dist; !done; d -= min_shape_dists)
 				{
