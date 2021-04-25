@@ -1,8 +1,14 @@
-mrpt (1:2.2.1-1) UNRELEASED; urgency=medium
+mrpt (1:2.3.0-1) unstable; urgency=medium
 
-  * Fix broken package dependency (Closes: #986071).
+  * New version of upstream sources.
 
- -- José Luis Blanco Claraco <joseluisblancoc@gmail.com> Mon, 29 Mar 2021 15:17:00 +0200
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Sun, 25 Apr 2021 02:13:22 +0200
+
+mrpt (1:2.1.7-2) unstable; urgency=medium
+
+  * Fix broken Debian dependencies for libmrpt-vision-lgpl (Closes: #986071).
+
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Tue, 13 Apr 2021 02:09:00 +0200
 
 mrpt (1:2.2.0-1) experimental; urgency=medium
 
