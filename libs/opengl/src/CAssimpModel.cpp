@@ -31,9 +31,12 @@
 #endif
 #endif
 
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
+
+#include <mutex>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -44,6 +47,74 @@ IMPLEMENTS_SERIALIZABLE(CAssimpModel, CRenderizable, mrpt::opengl)
 
 namespace mrpt::opengl::internal
 {
+class TexturesCache
+{
+   public:
+	static TexturesCache& Instance()
+	{
+		static TexturesCache i;
+		return i;
+	}
+
+	struct CachedTexturesInfo
+	{
+		bool load_ok = false;
+		bool load_attempted = false;
+		mrpt::img::CImage img_rgb;
+		std::optional<mrpt::img::CImage> img_alpha;
+	};
+
+	CachedTexturesInfo& get(
+		const CAssimpModel::filepath_t& texturePath, bool verboseLoad)
+	{
+		using namespace std::string_literals;
+
+		auto lck = mrpt::lockHelper(gTextureCacheMtx);
+		auto& entry = gTextureCache[texturePath];
+		if (entry.load_attempted) return entry;
+
+		// Load images:
+		// TGA is handled specially since it's not supported by OpenCV:
+		if (mrpt::system::lowerCase(
+				mrpt::system::extractFileExtension(texturePath)) == "tga"s)
+		{
+			entry.img_alpha.emplace();
+
+			entry.load_ok = mrpt::img::CImage::loadTGA(
+				texturePath, entry.img_rgb, *entry.img_alpha);
+		}
+		else
+		{
+			entry.load_ok = entry.img_rgb.loadFromFile(texturePath);
+		}
+
+		if (entry.load_ok)
+		{
+			if (verboseLoad)
+				std::cout << "[CAssimpModel] Loaded texture: " << texturePath
+						  << "\n";
+		}
+		else
+		{
+			/* Error occured */
+			const std::string sError = mrpt::format(
+				"[CAssimpModel] Couldn't load texture image: '%s'",
+				texturePath.c_str());
+			std::cerr << sError << std::endl;
+		}
+
+		entry.load_attempted = true;
+		return entry;
+	}
+
+   private:
+	TexturesCache() = default;
+	~TexturesCache() = default;
+
+	std::map<CAssimpModel::filepath_t, CachedTexturesInfo> gTextureCache;
+	std::mutex gTextureCacheMtx;
+};
+
 struct RenderElements
 {
 	std::vector<mrpt::math::TPoint3Df>* lines_vbd = nullptr;
@@ -219,7 +290,6 @@ void CAssimpModel::clear()
 	m_assimp_scene->importer.FreeScene();
 #endif
 	m_modelPath.clear();
-	m_textures_loaded = false;
 	m_textureIdMap.clear();
 	m_texturedObjects.clear();
 }
@@ -581,8 +651,8 @@ void CAssimpModel::process_textures(const aiScene* scene)
 		// save image ID
 		std::string filename = kv.first;  // get filename
 		CAssimpModel::TInfoPerTexture& ipt = kv.second;
-		ipt.id_idx =
-			m_texturedObjects.size();  // save texture id for filename in map
+		// save texture id for filename in map:
+		ipt.id_idx = m_texturedObjects.size();
 
 		// Create "children" textured objects:
 		auto& texturedObj =
@@ -591,40 +661,16 @@ void CAssimpModel::process_textures(const aiScene* scene)
 		const std::string fileloc =
 			mrpt::system::filePathSeparatorsToNative(basepath + filename);
 
-		// Load images:
-		// TGA is handled specially since it's not supported by OpenCV:
-		bool load_ok;
-		if (mrpt::system::lowerCase(
-				mrpt::system::extractFileExtension(fileloc)) == "tga"s)
-		{
-			ipt.img_alpha.emplace();
+		// Query textureCache:
+		auto& cache = internal::TexturesCache::Instance();
+		auto& tc = cache.get(fileloc, m_verboseLoad);
 
-			load_ok = mrpt::img::CImage::loadTGA(
-				fileloc, ipt.img_rgb, *ipt.img_alpha);
-		}
-		else
+		if (tc.load_ok)
 		{
-			load_ok = ipt.img_rgb.loadFromFile(fileloc);
-		}
-
-		if (load_ok)
-		{
-			if (m_verboseLoad)
-				std::cout << "[CAssimpModel] Loaded texture: " << fileloc
-						  << "\n";
-
-			if (ipt.img_alpha.has_value())
-				texturedObj->assignImage(ipt.img_rgb, *ipt.img_alpha);
+			if (tc.img_alpha.has_value())
+				texturedObj->assignImage(tc.img_rgb, *tc.img_alpha);
 			else
-				texturedObj->assignImage(ipt.img_rgb);
-		}
-		else
-		{
-			/* Error occured */
-			const std::string sError = mrpt::format(
-				"[CAssimpModel] Couldn't load texture image: '%s'",
-				fileloc.c_str());
-			std::cerr << sError << std::endl;
+				texturedObj->assignImage(tc.img_rgb);
 		}
 	}
 }

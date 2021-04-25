@@ -78,6 +78,7 @@
 		<Unit filename="../wxsmith/COdometryParams.wxs" />
 		<Unit filename="../wxsmith/CScanMatching.wxs" />
 		<Unit filename="../wxsmith/xRawLogViewerframe.wxs" />
+		<Unit filename="../wxsmith/ViewOptions3DPoints.wxs" />
 		<Unit filename="../xRawLogViewerApp.cpp" />
 		<Unit filename="../xRawLogViewerApp.h" />
 		<Unit filename="../xRawLogViewerMain.cpp" />
@@ -101,6 +102,7 @@
 					<wxDialog wxs="../wxsmith/CFormChangeSensorPositions.wxs" src="../CFormChangeSensorPositions.cpp" hdr="../CFormChangeSensorPositions.h" name="CFormChangeSensorPositions" language="CPP" />
 					<wxDialog wxs="../wxsmith/CScanAnimation.wxs" src="../CScanAnimation.cpp" hdr="../CScanAnimation.h" name="CScanAnimation" language="CPP" />
 					<wxDialog wxs="../wxsmith/CFormBatchSensorPose.wxs" src="../CFormBatchSensorPose.cpp" hdr="../CFormBatchSensorPose.h" name="CFormBatchSensorPose" language="CPP" />
+					<wxPanel wxs="../wxsmith/ViewOptions3DPoints.wxs" src="../ViewOptions3DPoints.cpp" hdr="../ViewOptions3DPoints.h" name="ViewOptions3DPoints" language="CPP" />
 				</resources>
 			</wxsmith>
 			<debugger />

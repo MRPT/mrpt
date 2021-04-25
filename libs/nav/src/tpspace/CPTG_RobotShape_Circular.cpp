@@ -43,11 +43,11 @@ void CPTG_RobotShape_Circular::saveToConfigFile(
 		sSection, "robot_radius", m_robotRadius, WN, WV, "Robot radius [m].");
 }
 
-void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
-	mrpt::opengl::CSetOfLines& gl_shape,
-	const mrpt::poses::CPose2D& origin) const
+void CPTG_RobotShape_Circular::static_add_robotShape_to_setOfLines(
+	mrpt::opengl::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin,
+	const double robotRadius)
 {
-	const double R = m_robotRadius;
+	const double R = robotRadius;
 	const int N = 17;
 	// Transform coordinates:
 	std::vector<double> shap_x(N), shap_y(N), shap_z(N);
@@ -72,6 +72,13 @@ void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
 	gl_shape.appendLine(
 		origin.x(), origin.y() - R * 0.02, .0, origin.x(),
 		origin.y() + R * 0.02, .0);
+}
+
+void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
+	mrpt::opengl::CSetOfLines& gl_shape,
+	const mrpt::poses::CPose2D& origin) const
+{
+	static_add_robotShape_to_setOfLines(gl_shape, origin, m_robotRadius);
 }
 
 void CPTG_RobotShape_Circular::internal_shape_loadFromStream(

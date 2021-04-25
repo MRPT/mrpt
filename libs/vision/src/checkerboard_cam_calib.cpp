@@ -18,6 +18,10 @@
 
 #include <Eigen/Dense>
 
+#if MRPT_HAS_OPENCV
+#include <opencv2/core/eigen.hpp>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::img;
@@ -48,10 +52,6 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	distortionParams = cam.getDistortionParamsAsVector();
 	return ret;
 }
-
-#if MRPT_HAS_OPENCV
-#include <opencv2/core/eigen.hpp>
-#endif
 
 /* -------------------------------------------------------
 				checkerBoardCameraCalibration
@@ -342,9 +342,12 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		{
 			TImageCalibData& dat = it->second;
 			if (!dat.img_original.isExternallyStored())
-				dat.img_original.undistort(
-					dat.img_rectified, out_camera_params);
-		}  // end undistort
+			{
+				mrpt::img::CImage im;
+				dat.img_original.undistort(im, out_camera_params);
+				dat.img_rectified = std::move(im);
+			}
+		}
 
 		// -----------------------------------------------
 		// Reproject points to measure the fit sqr error

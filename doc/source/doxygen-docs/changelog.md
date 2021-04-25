@@ -1,5 +1,41 @@
 \page changelog Change Log
 
+# Version 2.3.0: Released April 25th, 2021
+- General build changes:
+  - CMake >=3.8.0 is now required to ensure proper handling of dependencies compile options.
+- Changes in applications:
+  - ptg-configurator: target now also comprises a heading angle.
+  - RawLogViewer:
+    - New tab with CObservation3DRangeScan visualization options.
+    - All icons have been updated for a more modern look.
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - add method mrpt::containers::map_as_vector::at()
+  - \ref mrpt_graphs_grp
+    - mrpt::graphs::CDijkstra:
+      - now no longer requires a field `nodes` in input graphs.
+      - add convenient return by value getTreeGraph()
+      - Deprecate mrpt::graphs::CDijkstra::Visitor virtual class API in favor of new C++11 std::function-based mrpt::graphs::CDijkstra::visitor_t
+  - \ref mrpt_math_grp
+    - Removed redundant mrpt::math::pointIntoPolygon2D()  -> mrpt::math::TPolygon2D::contains()
+    - Removed redundant mrpt::math::SegmentsIntersection() ->  mrpt::math::intersect(mrpt::math::TSegment2D,mrpt::math::TSegment2D)
+    - Removed redundant mrpt::math::distancePointToPolygon2D() -> TPolygon2D::distance()
+    - Moved mrpt::math::minDistBetweenLines() -> mrpt::math::TLine3D::distance()
+  - \ref mrpt_opengl_grp
+    - mrpt::opengl::CAssimpModel now uses a texture cache to speed up and reduce RAM usage if loading the same textures in different objects.
+  - \ref mrpt_system_grp
+    - New function mrpt::system::progress()
+- BUG FIXES:
+  - ptg-configurator: Fix failure to list existing PTGs, due to RTTI unregistered name "CParameterizedTrajectoryGenerator".
+  - mrpt::opengl::COpenGLViewport::get3DRayForPixelCoord() returned wrong pixel coordinates when in orthogonal projection mode.
+  - mrpt::opengl::CArrow: Fix wrong normal calculation (wrong rendering reflections).
+  - mrpt::opengl::CPointCloud::markAllPointsAsNew() and mrpt::opengl::CPointCloudColoured::markAllPointsAsNew() did not refresh OpenGL buffers.
+  - mrpt::nav::CPTG_DiffDrive_CollisionGridBased::getPathTwist() returned much larger velocities than the actual values.
+  - Fix broken Debian dependencies for libmrpt-vision-lgpl (Closes [Debian bug #986071](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=986071)).
+  - `mrpt::maps::CPointsMap::load2Dor3D_from_text_stream()` for 2D maps left uninitialized values in `z`. Fixed to load zeros instead.
+  - Fixed crash in mrpt::vision::checkerBoardCameraCalibration() causing segfault in the camera-calib app.
+
+------
 # Version 2.2.0: Released March 10th, 2021
 - Changes in libraries:
   - \ref mrpt_vision_grp

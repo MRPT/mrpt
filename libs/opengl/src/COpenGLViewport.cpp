@@ -764,28 +764,23 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		m_state.viewport_width / double(m_state.viewport_height);
 
 	// unitary vector between (eye) -> (pointing):
-	TPoint3D pointing_dir;
-	pointing_dir.x = -cos(m_state.azimuth) * cos(m_state.elev);
-	pointing_dir.y = -sin(m_state.azimuth) * cos(m_state.elev);
-	pointing_dir.z = -sin(m_state.elev);
+	const TPoint3D pointing_dir = {
+		-cos(m_state.azimuth) * cos(m_state.elev),
+		-sin(m_state.azimuth) * cos(m_state.elev), -sin(m_state.elev)};
 
 	// The camera X vector (in 3D) can be computed from the camera azimuth
 	// angle:
-	TPoint3D cam_x_3d;
-	cam_x_3d.x = -sin(m_state.azimuth);
-	cam_x_3d.y = cos(m_state.azimuth);
-	cam_x_3d.z = 0;
+	const TPoint3D cam_x_3d = {-sin(m_state.azimuth), cos(m_state.azimuth), 0};
 
 	// The camera real UP vector (in 3D) is the cross product:
 	//     X3d x pointing_dir:
-	TPoint3D cam_up_3d;
-	mrpt::math::crossProduct3D(cam_x_3d, pointing_dir, cam_up_3d);
+	const auto cam_up_3d = mrpt::math::crossProduct3D(cam_x_3d, pointing_dir);
 
 	if (!m_state.is_projective)
 	{
 		// Ortho projection:
 		// -------------------------------
-		double Ax = m_state.eyeDistance * 0.5;
+		double Ax = m_state.eyeDistance * 0.25;
 		double Ay = Ax;
 
 		if (ASPECT > 1) Ax *= ASPECT;

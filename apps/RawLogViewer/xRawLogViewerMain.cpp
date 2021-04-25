@@ -125,7 +125,7 @@ wxStaticBitmapPopup::wxStaticBitmapPopup(
 	mnuImages.Append(mnu2);
 }
 wxStaticBitmapPopup::~wxStaticBitmapPopup() = default;
-void wxStaticBitmapPopup::OnShowPopupMenu(wxMouseEvent& event)
+void wxStaticBitmapPopup::OnShowPopupMenu(wxMouseEvent&)
 {
 	PopupMenu(&mnuImages);
 }
@@ -264,7 +264,8 @@ const long xRawLogViewerFrame::ID_STATICBITMAP5 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL22 = wxNewId();
 const long xRawLogViewerFrame::ID_STATICBITMAP6 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL23 = wxNewId();
-const long xRawLogViewerFrame::ID_NOTEBOOK4 = wxNewId();
+const long xRawLogViewerFrame::ID_PANEL_VIEW_3D_POINT_OPTIONS = wxNewId();
+const long xRawLogViewerFrame::ID_NOTEBOOK_3DOBS = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL19 = wxNewId();
 const long xRawLogViewerFrame::ID_NOTEBOOK1 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL5 = wxNewId();
@@ -419,7 +420,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	wxFlexGridSizer* FlexGridSizer14;
 	wxFlexGridSizer* FlexGridSizer13;
 	wxMenuItem* MenuItem41;
-	wxFlexGridSizer* FlexGridSizer12;
 	wxMenu* MenuItem81;
 	wxMenuBar* MenuBar1;
 	wxFlexGridSizer* FlexGridSizer6;
@@ -546,7 +546,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		StaticLine3, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
 	Button6 = new wxCustomButton(
-		this, ID_BUTTON8, _("Animate..."),
+		this, ID_BUTTON8, _("Browse..."),
 		wxArtProvider::GetBitmap(
 			wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),
 			wxART_TOOLBAR),
@@ -897,35 +897,19 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer8->AddGrowableCol(0);
 	FlexGridSizer8->AddGrowableRow(0);
 	nb_3DObsChannels = new wxNotebook(
-		pn_CObservation3DRangeScan, ID_NOTEBOOK4, wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_NOTEBOOK4"));
+		pn_CObservation3DRangeScan, ID_NOTEBOOK_3DOBS, wxDefaultPosition,
+		wxDefaultSize, 0, _T("ID_NOTEBOOK_3DOBS"));
+
 	pn3Dobs_3D = new wxPanel(
 		nb_3DObsChannels, ID_PANEL20, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_PANEL20"));
-	FlexGridSizer9 = new wxFlexGridSizer(1, 2, 0, 0);
+	FlexGridSizer9 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer9->AddGrowableCol(0);
 	FlexGridSizer9->AddGrowableRow(0);
 	m_gl3DRangeScan = new CMyGLCanvas(
 		pn3Dobs_3D, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
-	FlexGridSizer9->Add(
-		m_gl3DRangeScan, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer12 = new wxFlexGridSizer(2, 1, 0, 0);
-	FlexGridSizer12->AddGrowableCol(0);
-	FlexGridSizer12->AddGrowableRow(1);
-	StaticText3 = new wxStaticText(
-		pn3Dobs_3D, ID_STATICTEXT3, _("Min.conf."), wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-	FlexGridSizer12->Add(
-		StaticText3, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
-	slid3DcamConf = new wxSlider(
-		pn3Dobs_3D, ID_SLIDER1, 127, 0, 255, wxDefaultPosition, wxDefaultSize,
-		wxSL_VERTICAL | wxSL_INVERSE, wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer12->Add(
-		slid3DcamConf, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
-	FlexGridSizer9->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		0);
+	FlexGridSizer9->Add(m_gl3DRangeScan, 1, wxALL | wxEXPAND, 0);
 	pn3Dobs_3D->SetSizer(FlexGridSizer9);
 	FlexGridSizer9->Fit(pn3Dobs_3D);
 	FlexGridSizer9->SetSizeHints(pn3Dobs_3D);
@@ -971,10 +955,16 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pn3Dobs_Conf->SetSizer(FlexGridSizer14);
 	FlexGridSizer14->Fit(pn3Dobs_Conf);
 	FlexGridSizer14->SetSizeHints(pn3Dobs_Conf);
+
+	pnViewOptions = new ViewOptions3DPoints(
+		nb_3DObsChannels, ID_PANEL_VIEW_3D_POINT_OPTIONS);
+
 	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D points"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Depth, _("Depth"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Int, _("Intensity"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
+	nb_3DObsChannels->AddPage(pnViewOptions, _("Visualization options"), false);
+
 	FlexGridSizer8->Add(
 		nb_3DObsChannels, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
 	pn_CObservation3DRangeScan->SetSizer(FlexGridSizer8);
@@ -1452,9 +1442,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		wxEVT_BUTTON, &xRawLogViewerFrame::OnbtnEditCommentsClick1, this,
 		ID_BUTTON1);
 	Bind(
-		wxEVT_SLIDER, &xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged,
-		this, ID_SLIDER1);
-	Bind(
 		wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,
 		&xRawLogViewerFrame::OnNotebook1PageChanging, this, ID_NOTEBOOK1);
 	Bind(wxEVT_MENU, &xRawLogViewerFrame::OnFileOpen, this, ID_MENUITEM1);
@@ -1641,6 +1628,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		ID_TIMER1);
 	//*)
 
+	Bind(
+		wxEVT_NOTEBOOK_PAGE_CHANGED, &xRawLogViewerFrame::On3DObsPagesChange,
+		this, ID_NOTEBOOK_3DOBS);
+
 	// "Manually" added code:
 	// ----------------------------
 	// Image list for the tree view:
@@ -1821,7 +1812,7 @@ bool xRawLogViewerFrame::AskForSaveRawlog(std::string& fil)
 //------------------------------------------------------------------------
 //                      Open a file dialog
 //------------------------------------------------------------------------
-void xRawLogViewerFrame::OnFileOpen(wxCommandEvent& event)
+void xRawLogViewerFrame::OnFileOpen(wxCommandEvent&)
 {
 	string fil;
 	if (AskForOpenRawlog(fil)) loadRawlogFile(fil);
@@ -1830,7 +1821,7 @@ void xRawLogViewerFrame::OnFileOpen(wxCommandEvent& event)
 //------------------------------------------------------------------------
 //                      Save as...
 //------------------------------------------------------------------------
-void xRawLogViewerFrame::OnSaveFile(wxCommandEvent& event)
+void xRawLogViewerFrame::OnSaveFile(wxCommandEvent&)
 {
 	wxString caption = wxT("Save as...");
 	wxString wildcard =
@@ -1904,7 +1895,7 @@ void xRawLogViewerFrame::OnSaveFile(wxCommandEvent& event)
 //------------------------------------------------------------------------
 //               Edit rawlog dialog
 //------------------------------------------------------------------------
-void xRawLogViewerFrame::OnEditRawlog(wxCommandEvent& event)
+void xRawLogViewerFrame::OnEditRawlog(wxCommandEvent&)
 {
 	CFormEdit dialog(this);
 
@@ -2551,7 +2542,7 @@ class CMyTips : public wxTipProvider
 //------------------------------------------------------------------------
 // Auto-load the file passed in the cmd line (if any)
 //------------------------------------------------------------------------
-void xRawLogViewerFrame::OntimAutoLoadTrigger(wxTimerEvent& event)
+void xRawLogViewerFrame::OntimAutoLoadTrigger(wxTimerEvent&)
 {
 	// To fix a strange bug in windows!: The window is not drawn correctly:
 	Panel5->Refresh();
@@ -2601,7 +2592,7 @@ void xRawLogViewerFrame::OnNotebook1PageChanging(wxNotebookEvent& event)
 //------------------------------------------------------------------------
 // Changes the motion model parameters.
 //------------------------------------------------------------------------
-void xRawLogViewerFrame::OnChangeMotionModel(wxCommandEvent& event)
+void xRawLogViewerFrame::OnChangeMotionModel(wxCommandEvent&)
 {
 	// Create the dialog:
 	CFormMotionModel formMotionModel(this);
@@ -2611,7 +2602,7 @@ void xRawLogViewerFrame::OnChangeMotionModel(wxCommandEvent& event)
 //------------------------------------------------------------------------
 // Menu cmd: Show images of a file as a video:
 //------------------------------------------------------------------------
-void xRawLogViewerFrame::OnShowImagesAsVideo(wxCommandEvent& event)
+void xRawLogViewerFrame::OnShowImagesAsVideo(wxCommandEvent&)
 {
 	CFormPlayVideo diag(this);
 
@@ -2629,7 +2620,7 @@ void xRawLogViewerFrame::OnShowImagesAsVideo(wxCommandEvent& event)
 //------------------------------------------------------------------------
 //               Dialog: Build map directly from odometry/gps
 //------------------------------------------------------------------------
-void xRawLogViewerFrame::OnRawMapOdo(wxCommandEvent& event)
+void xRawLogViewerFrame::OnRawMapOdo(wxCommandEvent&)
 {
 	if (rawlog.size() < 1)
 	{
@@ -2673,7 +2664,7 @@ void xRawLogViewerFrame::OnRawMapOdo(wxCommandEvent& event)
 	formRawMap->ShowModal();
 }
 
-void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -2782,7 +2773,7 @@ string xRawLogViewerFrame::AskForImageFileFormat()
 		return string(lstImgFormats[ret].mb_str());
 }
 
-void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
+void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -3083,7 +3074,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnShowICP(wxCommandEvent& event)
+void xRawLogViewerFrame::OnShowICP(wxCommandEvent&)
 {
 	if (rawlog.size() < 1)
 	{
@@ -3097,7 +3088,7 @@ void xRawLogViewerFrame::OnShowICP(wxCommandEvent& event)
 	scanMatchingDialog->Maximize();
 }
 
-void xRawLogViewerFrame::OnLoadAPartOnly(wxCommandEvent& event)
+void xRawLogViewerFrame::OnLoadAPartOnly(wxCommandEvent&)
 {
 	string fil;
 	if (!AskForOpenRawlog(fil)) return;
@@ -3117,7 +3108,7 @@ void xRawLogViewerFrame::OnLoadAPartOnly(wxCommandEvent& event)
 	loadRawlogFile(fil, first, last);
 }
 
-void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent& event)
+void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -3191,7 +3182,7 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
+void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -3317,10 +3308,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnFileGenVisualLMFromStereoImages(
-	wxCommandEvent& event)
-{
-}
+void xRawLogViewerFrame::OnFileGenVisualLMFromStereoImages(wxCommandEvent&) {}
 
 void xRawLogViewerFrame::OnMRUFile(wxCommandEvent& event)
 {
@@ -3328,7 +3316,7 @@ void xRawLogViewerFrame::OnMRUFile(wxCommandEvent& event)
 	if (!f.empty()) loadRawlogFile(string(f.mb_str()));
 }
 
-void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
+void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent&)
 {
 	try
 	{
@@ -3406,7 +3394,7 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 	}
 }
 
-void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
+void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent&)
 {
 	try
 	{
@@ -3459,7 +3447,7 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
 	}
 }
 
-void xRawLogViewerFrame::OnChangeSensorPositions(wxCommandEvent& event)
+void xRawLogViewerFrame::OnChangeSensorPositions(wxCommandEvent&)
 {
 	CFormChangeSensorPositions dialog(this);
 
@@ -3471,7 +3459,7 @@ void xRawLogViewerFrame::OnChangeSensorPositions(wxCommandEvent& event)
 	dialog.ShowModal();
 }
 
-void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
+void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -3587,7 +3575,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
+void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -3686,7 +3674,7 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
+void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -3694,7 +3682,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 		_("Maximum change between readings (volts):"),
 		_("Filter out gas readings 'spikes':"), _("0.05"));
 	double maxChange;
-	strMaxChange.ToDouble(&maxChange);
+	strMaxChange.ToCDouble(&maxChange);
 
 	wxBusyCursor waitCursor;
 	int nEntries = (int)rawlog.size();
@@ -3898,7 +3886,7 @@ void xRawLogViewerFrame::OnFilterSpureousGas(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
+void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -4029,7 +4017,7 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent& event)
+void xRawLogViewerFrame::OnForceEncodersFalse(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -4207,7 +4195,7 @@ void doFilterErrScans(
 	}  // end-if is a laser scan
 }
 
-void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent& event)
+void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -4326,7 +4314,7 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
+void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -4555,7 +4543,7 @@ CLASS_ID(CActionCollection) );
 */
 
 // Menu: Delete an element from the rawlog
-void xRawLogViewerFrame::OnMenuItem37Selected(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuItem37Selected(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -4602,7 +4590,7 @@ void xRawLogViewerFrame::OnMenuItem37Selected(wxCommandEvent& event)
 	WX_END_TRY
 }
 // Menu: New action 2D (SM)
-void xRawLogViewerFrame::OnMenuItem47Selected(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuItem47Selected(wxCommandEvent&)
 {
 	WX_START_TRY
 	if (curSelectedObject)
@@ -4647,7 +4635,7 @@ void xRawLogViewerFrame::OnMenuItem47Selected(wxCommandEvent& event)
 	WX_END_TRY
 }
 // Menu: New action 2D (odometry)
-void xRawLogViewerFrame::OnMenuItem46Selected(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuItem46Selected(wxCommandEvent&)
 {
 	WX_START_TRY
 	if (curSelectedObject)
@@ -4690,17 +4678,17 @@ void xRawLogViewerFrame::OnMenuItem46Selected(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuExpandAll(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuExpandAll(wxCommandEvent&)
 {
 	// treeView->ExpandAll();
 }
 
-void xRawLogViewerFrame::OnMenuCollapseAll(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuCollapseAll(wxCommandEvent&)
 {
 	// treeView->CollapseAll();
 }
 
-void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
+void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -4801,7 +4789,7 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
 }
 
 // Generate text file with 1D range measurements
-void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent& event)
+void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -4889,8 +4877,7 @@ void xRawLogViewerFrame::OnRangeFinder1DGenTextFile(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(
-	wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -4962,7 +4949,7 @@ void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnShowAnimateScans(wxCommandEvent& event)
+void xRawLogViewerFrame::OnShowAnimateScans(wxCommandEvent&)
 {
 	CScanAnimation scanAnimation(this);
 	scanAnimation.Maximize();
@@ -4970,13 +4957,10 @@ void xRawLogViewerFrame::OnShowAnimateScans(wxCommandEvent& event)
 	scanAnimation.ShowModal();
 }
 
-void xRawLogViewerFrame::OnMenuShowTips(wxCommandEvent& event)
-{
-	showNextTip(true);
-}
+void xRawLogViewerFrame::OnMenuShowTips(wxCommandEvent&) { showNextTip(true); }
 
-void xRawLogViewerFrame::OnbtnEditCommentsClick(wxCommandEvent& event) {}
-void xRawLogViewerFrame::OnMenuInsertComment(wxCommandEvent& event) {}
+void xRawLogViewerFrame::OnbtnEditCommentsClick(wxCommandEvent&) {}
+void xRawLogViewerFrame::OnMenuInsertComment(wxCommandEvent&) {}
 // Asks for a sensor label:
 std::vector<std::string> xRawLogViewerFrame::AskForObservationByLabelMultiple(
 	const std::string& title)
@@ -5046,7 +5030,7 @@ std::string xRawLogViewerFrame::AskForObservationByLabel(
 }
 
 // Changes the label of a sensor:
-void xRawLogViewerFrame::OnMenuRenameSensor(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRenameSensor(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -5107,7 +5091,7 @@ void xRawLogViewerFrame::OnMenuRenameSensor(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent&)
 {
 	CFormBatchSensorPose dialog(this);
 	if (dialog.ShowModal())
@@ -5290,7 +5274,7 @@ void doFilterInvalidRange(CObservation::Ptr& obs, size_t& invalidRanges)
 	}
 }
 
-void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -5357,7 +5341,7 @@ void xRawLogViewerFrame::OnMenuMarkLaserScanInvalid(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -5368,7 +5352,7 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent& event)
 		_("Enter the new maximum range (in meters):"), _("Maximum range:"),
 		_("81.0"));
 	double maxR;
-	strMaxR.ToDouble(&maxR);
+	strMaxR.ToCDouble(&maxR);
 
 	wxBusyCursor waitCursor;
 	int nEntries = (int)rawlog.size();
@@ -5447,7 +5431,7 @@ void xRawLogViewerFrame::OnMenuChangeMaxRangeLaser(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnbtnEditCommentsClick1(wxCommandEvent& event)
+void xRawLogViewerFrame::OnbtnEditCommentsClick1(wxCommandEvent&)
 {
 	CIniEditor dlg(this);
 
@@ -5462,13 +5446,13 @@ void xRawLogViewerFrame::OnbtnEditCommentsClick1(wxCommandEvent& event)
 	}
 }
 
-void xRawLogViewerFrame::OnMenuRevert(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRevert(wxCommandEvent&)
 {
 	if (mrpt::system::fileExists(loadedFileName))
 		loadRawlogFile(loadedFileName);
 }
 
-void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent&)
 {
 	CFormBatchSensorPose dialog(this);
 
@@ -5627,7 +5611,7 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 	}
 }
 
-void xRawLogViewerFrame::OnComboImageDirsChange(wxCommandEvent& event)
+void xRawLogViewerFrame::OnComboImageDirsChange(wxCommandEvent&)
 {
 	wxString dir = toolbarcomboImages->GetStringSelection();
 
@@ -5649,7 +5633,7 @@ void xRawLogViewerFrame::OnComboImageDirsChange(wxCommandEvent& event)
 	}
 }
 
-void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
+void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent&)
 {
 	CFormBatchSensorPose dialog(this);
 
@@ -5801,7 +5785,7 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent& event)
 	}
 }
 
-void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -5898,7 +5882,7 @@ void xRawLogViewerFrame::OnMenuRangeBearFilterIDs(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -5991,7 +5975,7 @@ bool operator<(const TImageToSaveData& a, const TImageToSaveData& b)
 	return a.channel_desc < b.channel_desc;
 }
 
-void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
+void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -6185,7 +6169,7 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -6277,7 +6261,7 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 }
 
 // Recover 3D camera params from range data:
-void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -6366,12 +6350,6 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged(wxCommandEvent&)
-{
-	// Refresh:
-	SelectObjectInTreeView(curSelectedObject);
-}
-
 size_t TInfoPerSensorLabel::getOccurences() const { return timOccurs.size(); }
 void TInfoPerSensorLabel::addOcurrence(
 	mrpt::system::TTimeStamp obs_tim,
@@ -6389,7 +6367,7 @@ void TInfoPerSensorLabel::addOcurrence(
 		max_ellapsed_tim_between_obs = ellapsed_tim;
 }
 
-void xRawLogViewerFrame::OnMenuRenameSingleObs(wxCommandEvent& event)
+void xRawLogViewerFrame::OnMenuRenameSingleObs(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -6415,4 +6393,17 @@ void xRawLogViewerFrame::OnMenuRenameSingleObs(wxCommandEvent& event)
 	rebuildTreeView();
 
 	WX_END_TRY
+}
+
+void xRawLogViewerFrame::On3DObsPagesChange(wxBookCtrlEvent& event)
+{
+	if (event.GetSelection() == 0)
+	{
+		// Re-generate 3D points (to reflect changes in viz options):
+		SelectObjectInTreeView(curSelectedObject);
+
+		m_gl3DRangeScan->Refresh();
+		wxTheApp->Yield();	// Let the app. process messages
+		m_gl3DRangeScan->Render();
+	}
 }

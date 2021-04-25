@@ -8,9 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/optional_ref.h>
 #include <mrpt/math/TPoint3D.h>
 
 #include <array>
+#include <optional>
 
 namespace mrpt::math
 {
@@ -57,6 +59,15 @@ struct TLine3D
 	 * Distance between the line and a point.
 	 */
 	double distance(const TPoint3D& point) const;
+	/** Minimum distance between this and another line.
+	 * The return will be std::nullopt if lines are parallel, or zero if they
+	 * intersect, a positive number otherwise.
+	 * \note New in MRPT 2.3.0
+	 */
+	std::optional<double> distance(
+		const TLine3D& point,
+		const mrpt::optional_ref<mrpt::math::TPoint3D>& outMidPoint =
+			std::nullopt) const;
 	/**
 	 * Unitarize director vector.
 	 */

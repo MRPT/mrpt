@@ -170,7 +170,11 @@ void CPointCloudColoured::push_back(
 }
 
 // Do needed internal work if all points are new (octree rebuilt,...)
-void CPointCloudColoured::markAllPointsAsNew() { octree_mark_as_outdated(); }
+void CPointCloudColoured::markAllPointsAsNew()
+{
+	octree_mark_as_outdated();
+	CRenderizable::notifyChange();
+}
 /** In a base class, reserve memory to prepare subsequent calls to
  * PLY_import_set_vertex */
 void CPointCloudColoured::PLY_import_set_vertex_count(const size_t N)

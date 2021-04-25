@@ -39,7 +39,7 @@ void reduced_hash(const std::string_view& value, uint64_t& hash);
  * C++11 std::hash<> due to its limitation in some implementations.
  *
  * This implementation is much more efficient than std::map<> when the most
- * common operation is accesing elements
+ * common operation is accessing elements
  *  by KEY with find() or [], and is also thread-safe if different threads
  * create entries with different hash values.
  *

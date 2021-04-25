@@ -13,6 +13,8 @@
 #include <mrpt/math/geometry.h>	 // distance()
 #include <mrpt/serialization/CArchive.h>  // impl of << operator
 
+#include <iostream>
+
 using namespace mrpt::math;
 
 double TSegment2D::length() const { return math::distance(point1, point2); }
@@ -78,4 +80,10 @@ mrpt::serialization::CArchive& mrpt::math::operator<<(
 	mrpt::serialization::CArchive& out, const mrpt::math::TSegment2D& s)
 {
 	return out << s.point1 << s.point2;
+}
+
+std::ostream& mrpt::math::operator<<(std::ostream& o, const TSegment2D& p)
+{
+	o << p.point1 << "-" << p.point2;
+	return o;
 }

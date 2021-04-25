@@ -64,7 +64,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 			_("Reference Latitude (degrees):"), _("GPS reference"), _("0.0"),
 			this);
 		if (s.IsEmpty()) return;
-		if (!s.ToDouble(&ref.lat.decimal_value))
+		if (!s.ToCDouble(&ref.lat.decimal_value))
 		{
 			wxMessageBox(_("Invalid number"));
 			return;
@@ -74,7 +74,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 			_("Reference Longitude (degrees):"), _("GPS reference"), _("0.0"),
 			this);
 		if (s.IsEmpty()) return;
-		if (!s.ToDouble(&ref.lon.decimal_value))
+		if (!s.ToCDouble(&ref.lon.decimal_value))
 		{
 			wxMessageBox(_("Invalid number"));
 			return;
@@ -84,7 +84,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 			_("Reference Height (meters):"), _("GPS reference"), _("0.0"),
 			this);
 		if (s.IsEmpty()) return;
-		if (!s.ToDouble(&ref.height))
+		if (!s.ToCDouble(&ref.height))
 		{
 			wxMessageBox(_("Invalid number"));
 			return;
@@ -695,7 +695,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 				_("Reference Latitude (degrees):"), _("GPS reference"),
 				_("0.0"), this);
 			if (s.IsEmpty()) return;
-			if (!s.ToDouble(&refCoords.lat.decimal_value))
+			if (!s.ToCDouble(&refCoords.lat.decimal_value))
 			{
 				wxMessageBox(_("Invalid number"));
 				return;
@@ -705,7 +705,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 				_("Reference Longitude (degrees):"), _("GPS reference"),
 				_("0.0"), this);
 			if (s.IsEmpty()) return;
-			if (!s.ToDouble(&refCoords.lon.decimal_value))
+			if (!s.ToCDouble(&refCoords.lon.decimal_value))
 			{
 				wxMessageBox(_("Invalid number"));
 				return;
@@ -715,7 +715,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 				_("Reference Height (meters):"), _("GPS reference"), _("0.0"),
 				this);
 			if (s.IsEmpty()) return;
-			if (!s.ToDouble(&refCoords.height))
+			if (!s.ToCDouble(&refCoords.height))
 			{
 				wxMessageBox(_("Invalid number"));
 				return;

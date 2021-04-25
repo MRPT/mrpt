@@ -269,23 +269,11 @@ class CDijkstra
 				std::set<TNodeID> nodeIDs_unconnected;
 
 				// for all the nodes in the graph
-				for (auto n_it = graph.nodes.begin(); n_it != graph.nodes.end();
-					 ++n_it)
+				for (auto nId : m_lstNode_IDs)
 				{
 					// have I already visited this node in Dijkstra?
-					bool have_traversed = false;
-					for (auto d_it = m_distances.begin();
-						 d_it != m_distances.end(); ++d_it)
-					{
-						if (n_it->first == d_it->first)
-						{
-							have_traversed = true;
-							break;
-						}
-					}
-
-					if (!have_traversed)
-					{ nodeIDs_unconnected.insert(n_it->first); }
+					if (m_distances.count(nId) == 0)
+						nodeIDs_unconnected.insert(nId);
 				}
 
 				std::string err_str = "Graph is not fully connected!";
@@ -476,6 +464,14 @@ class CDijkstra
 		}
 
 	}  // end getTreeGraph
+
+	/// \overload \note (New in MRPT 2.3.0)
+	tree_graph_t getTreeGraph() const
+	{
+		tree_graph_t tg;
+		getTreeGraph(tg);
+		return tg;
+	}
 
 	/** @} */
 

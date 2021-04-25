@@ -24,6 +24,10 @@ TEST(WorkerThreadsPool, runTasks)
 		pool.enqueue(f, 2);
 		pool.enqueue(f, 3);
 
+		const auto n = pool.pendingTasks();
+		EXPECT_GE(n, 0);
+		EXPECT_LE(n, 3);
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 	EXPECT_EQ(accum, 6);
