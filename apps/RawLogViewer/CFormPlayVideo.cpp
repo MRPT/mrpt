@@ -667,9 +667,6 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 	// Find an image to show:
 	CImage* imgShow = nullptr;
 
-	// Displayed images:
-	// displayedImgs.resize(3);
-
 	// unload current imgs:
 	for (auto& displayedImg : displayedImgs)
 		if (displayedImg) displayedImg->unload();
@@ -778,6 +775,7 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 			// Draw image:
 			drawHorzRules(*imgShow);
 			wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
+			imgShow->unload();	// for delayed-loaded rawlogs
 
 			wxWindowDC dc(thePanel);
 			wxMemoryDC tmpDc;
@@ -838,8 +836,7 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				drawHorzRules(*imgShow);
 				wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-				imgShow->unload();	// for delayed-loaded rawlogs, save lots of
-				// memory!
+				imgShow->unload();	// for delayed-loaded rawlogs
 
 				wxWindowDC dc(pnLeft);
 				wxMemoryDC tmpDc;
@@ -880,8 +877,7 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				drawHorzRules(*imgShow);
 				wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-				imgShow->unload();	// for delayed-loaded rawlogs, save lots of
-				// memory!
+				imgShow->unload();	// for delayed-loaded rawlogs
 
 				wxWindowDC dc(pnRight);
 				wxMemoryDC tmpDc;
@@ -923,8 +919,7 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				drawHorzRules(*imgShow);
 				wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-				imgShow->unload();	// for delayed-loaded rawlogs, save lots of
-				// memory!
+				imgShow->unload();	// for delayed-loaded rawlogs
 
 				wxWindowDC dc(pnRight);
 				wxMemoryDC tmpDc;
@@ -975,8 +970,7 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 
 				drawHorzRules(*imgShow);
 				wxImage* wxIMG = mrpt::gui::MRPTImage2wxImage(*imgShow);
-				imgShow->unload();	// for delayed-loaded rawlogs, save lots of
-				// memory!
+				imgShow->unload();	// for delayed-loaded rawlogs
 
 				wxWindowDC dc(pnLeft);
 				wxMemoryDC tmpDc;

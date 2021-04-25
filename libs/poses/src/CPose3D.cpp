@@ -768,7 +768,8 @@ void CPose3D::fromString(const std::string& s)
 	using mrpt::DEG2RAD;
 	mrpt::math::CMatrixDouble m;
 	if (!m.fromMatlabStringFormat(s))
-		THROW_EXCEPTION("Malformed expression in ::fromString");
+		THROW_EXCEPTION_FMT(
+			"Malformed expression in ::fromString, s=\"%s\"", s.c_str());
 	ASSERTMSG_(m.rows() == 1 && m.cols() == 6, "Expected vector length=6");
 	this->setFromValues(
 		m(0, 0), m(0, 1), m(0, 2), DEG2RAD(m(0, 3)), DEG2RAD(m(0, 4)),

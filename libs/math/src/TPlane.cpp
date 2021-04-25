@@ -98,6 +98,13 @@ void TPlane::getAsPose3DForcingOrigin(
 		AXIS(i, 3) = center[i];
 	pose.fromHomogeneousMatrix(AXIS);
 }
+TPose3D TPlane::getAsPose3DForcingOrigin(const TPoint3D& center) const
+{
+	TPose3D r;
+	getAsPose3DForcingOrigin(center, r);
+	return r;
+}
+
 TPlane::TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
 {
 	double dx1 = p2.x - p1.x;

@@ -173,7 +173,7 @@ void export_gui()
 					"Gets a reference to the smart shared pointer that holds "
 					"the internal scene (carefuly read introduction in "
 					"gui::CDisplayWindow3D before use!) This also locks the "
-					"critical section for accesing the scene, thus the window "
+					"critical section for accessing the scene, thus the window "
 					"will not be repainted until it is unlocked.")
 				.def(
 					"unlockAccess3DScene",

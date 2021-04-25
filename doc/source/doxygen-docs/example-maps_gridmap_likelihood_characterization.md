@@ -1,0 +1,3 @@
+\page maps_gridmap_likelihood_characterization Example: maps_gridmap_likelihood_characterization
+C++ example source code:
+\include maps_gridmap_likelihood_characterization/test.cpp

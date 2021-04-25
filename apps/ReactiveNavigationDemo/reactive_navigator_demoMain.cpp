@@ -1747,7 +1747,7 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 				double heading = TWaypoint::INVALID_NUM;
 				if (event.ControlDown())
 				{
-					this->edWayPtHeading->GetValue().ToDouble(&heading);
+					this->edWayPtHeading->GetValue().ToCDouble(&heading);
 					heading *= M_PI / 180;
 				}
 				m_waypoints_clicked.waypoints.emplace_back(
@@ -1946,8 +1946,8 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick(wxCommandEvent& event)
 				  "center:"),
 				_("Grid parameters"), _("-1"), this);
 
-			if (sCellSize.ToDouble(&cell_size) && sCX.ToDouble(&cx) &&
-				sCY.ToDouble(&cy))
+			if (sCellSize.ToCDouble(&cell_size) && sCX.ToCDouble(&cx) &&
+				sCY.ToCDouble(&cy))
 			{
 				if (!m_gridMap.loadFromBitmap(img, cell_size, {cx, cy}))
 					wxMessageBox(
@@ -2065,7 +2065,7 @@ void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
 	s = wxGetTextFromUser(
 		_("Width (x) [meters]:"), _("New map"), _("40.0"), this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&lx))
+	if (!s.ToCDouble(&lx))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -2074,7 +2074,7 @@ void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
 	s = wxGetTextFromUser(
 		_("Height (y) [meters]:"), _("New map"), _("30.0"), this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&ly))
+	if (!s.ToCDouble(&ly))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;
@@ -2083,7 +2083,7 @@ void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
 	s = wxGetTextFromUser(
 		_("Grid resolution [meters]:"), _("New map"), _("0.25"), this);
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&res))
+	if (!s.ToCDouble(&res))
 	{
 		wxMessageBox(_("Invalid number"));
 		return;

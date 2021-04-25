@@ -118,7 +118,7 @@ class COctreePointRenderer
 		octree_assure_uptodate();
 		if (m_octree_nodes.size() > 1 ||
 			(m_octree_nodes.size() == 1 && m_octree_nodes.at(0).is_leaf &&
-			 !m_octree_nodes.at(0).pts.empty()))
+			 (!m_octree_nodes.at(0).pts.empty() || m_octree_nodes.at(0).all)))
 			return {
 				{mrpt::math::TPoint3D(m_octree_nodes[0].bb_min),
 				 mrpt::math::TPoint3D(m_octree_nodes[0].bb_max)}};

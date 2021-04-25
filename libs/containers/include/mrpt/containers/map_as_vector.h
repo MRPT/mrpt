@@ -10,6 +10,7 @@
 
 #include <cstddef>	// size_t
 #include <map>
+#include <stdexcept>
 #include <vector>
 
 namespace mrpt::containers
@@ -18,7 +19,7 @@ namespace mrpt::containers
  * std::map<> but is implemented as a linear std::vector<> indexed by KEY.
  *  Note that KEY must be integer types only (size_t, uint32_t, etc.)
  *  This implementation is much more efficient than std::map<> when the most
- * common operation is accesing elements
+ * common operation is accessing elements
  *   by KEY with find() or [], and the range of KEY values starts at 0 (or a
  * reasonable low number).
  *
@@ -118,6 +119,23 @@ class map_as_vector
 		if (m_vec.size() <= i) m_vec.resize(i + 1);
 		m_vec[i].first = i;
 		return m_vec[i].second;
+	}
+	/** Read-only operator, throws exception if the given key index does not
+	 * exist. */
+	inline const VALUE& at(const size_t i) const
+	{
+		if (i >= m_vec.size() || m_vec.at(i).first != i)
+			throw std::out_of_range(
+				"map_as_vector: at() for non-existing element.");
+		return m_vec.at(i).second;
+	}
+	/// \overload
+	inline VALUE& at(const size_t i)
+	{
+		if (i >= m_vec.size() || m_vec.at(i).first != i)
+			throw std::out_of_range(
+				"map_as_vector: at() for non-existing element.");
+		return m_vec.at(i).second;
 	}
 
 	/** Insert pair<key,val>, as in std::map (guess_point is actually ignored in

@@ -142,6 +142,16 @@ struct TBoundingBox_
 	{
 		return {pose.inverseComposePoint(min), pose.inverseComposePoint(max)};
 	}
+
+	/** Print bounding box as a string with format
+	 * "(minx,miny,minz)-(maxx,maxy,maxz)" */
+	std::string asString() const
+	{
+		std::string s = min.asString();
+		s += "-";
+		s += max.asString();
+		return s;
+	}
 };
 
 /** A bounding box defined by the 3D points at each minimum-maximum corner.

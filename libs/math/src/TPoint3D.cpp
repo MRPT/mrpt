@@ -59,7 +59,8 @@ void TPoint3D_<T>::fromString(const std::string& s)
 {
 	mrpt::math::CMatrixDynamic<T> m;
 	if (!m.fromMatlabStringFormat(s))
-		THROW_EXCEPTION("Malformed expression in ::fromString");
+		THROW_EXCEPTION_FMT(
+			"Malformed expression in ::fromString, s=\"%s\"", s.c_str());
 	ASSERTMSG_(
 		m.rows() == 1 && m.cols() == 3, "Wrong size of vector in ::fromString");
 	this->x = m(0, 0);

@@ -90,11 +90,11 @@ void CPTG_RobotShape_Polygonal::saveToConfigFile(
 	}
 }
 
-void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
-	mrpt::opengl::CSetOfLines& gl_shape,
-	const mrpt::poses::CPose2D& origin) const
+void CPTG_RobotShape_Polygonal::static_add_robotShape_to_setOfLines(
+	mrpt::opengl::CSetOfLines& gl_shape, const mrpt::poses::CPose2D& origin,
+	const mrpt::math::CPolygon& robotShape)
 {
-	const int N = m_robotShape.size();
+	const int N = robotShape.size();
 	if (N >= 2)
 	{
 		// Transform coordinates:
@@ -102,7 +102,7 @@ void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
 		for (int i = 0; i < N; i++)
 		{
 			origin.composePoint(
-				m_robotShape[i].x, m_robotShape[i].y, 0, shap_x[i], shap_y[i],
+				robotShape[i].x, robotShape[i].y, 0, shap_x[i], shap_y[i],
 				shap_z[i]);
 		}
 
@@ -114,6 +114,13 @@ void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
 			gl_shape.appendLineStrip(shap_x[idx], shap_y[idx], shap_z[idx]);
 		}
 	}
+}
+
+void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
+	mrpt::opengl::CSetOfLines& gl_shape,
+	const mrpt::poses::CPose2D& origin) const
+{
+	static_add_robotShape_to_setOfLines(gl_shape, origin, m_robotShape);
 }
 
 void CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(

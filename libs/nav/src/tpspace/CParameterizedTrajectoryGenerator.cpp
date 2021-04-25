@@ -19,6 +19,9 @@
 
 using namespace mrpt::nav;
 
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(
+	CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
+
 static std::string OUTPUT_DEBUG_PATH_PREFIX = "./reactivenav.logs";
 static PTG_collision_behavior_t COLLISION_BEHAVIOR =
 	mrpt::nav::COLL_BEH_BACK_AWAY;
@@ -33,9 +36,6 @@ PTG_collision_behavior_t&
 {
 	return ::COLLISION_BEHAVIOR;
 }
-
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(
-	CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
 
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator()
 	: m_nav_dyn_state(), m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX)

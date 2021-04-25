@@ -111,7 +111,7 @@ bool CHeightGridMap2D_Base::intersectLine3D(
 			{
 				// yes:
 				TPoint3D colPt(testPt.x, testPt.y, pt_z);
-				obj = TObject3D(colPt);
+				obj = TObject3D::From(colPt);
 				return true;
 			}
 		}

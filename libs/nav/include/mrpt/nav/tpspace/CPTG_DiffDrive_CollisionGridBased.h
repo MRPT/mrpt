@@ -157,6 +157,8 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 		float min_dist, float* out_max_acc_v = nullptr,
 		float* out_max_acc_w = nullptr);
 
+	mrpt::math::TTwist2D getPathTwist(uint16_t k, uint32_t step) const override;
+
 	/**  A list of all the pairs (alpha,distance) such as the robot collides at
 	 *that cell.
 	 *  - map key   (uint16_t) -> alpha value (k)

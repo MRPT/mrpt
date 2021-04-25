@@ -96,6 +96,18 @@ CArchive& mrpt::serialization::operator<<(CArchive& out, const std::string& str)
 	return out;
 }
 
+CArchive& CArchive::operator<<(const std::monostate&)
+{
+	const char* className = "std::monostate";
+	int8_t classNamLen = strlen(className);
+	int8_t classNamLen_mod = classNamLen | 0x80;
+
+	(*this) << classNamLen_mod;
+	this->WriteBuffer(className, classNamLen);
+
+	return *this;
+}
+
 /*---------------------------------------------------------------
 Writes an object to the stream.
 ---------------------------------------------------------------*/
