@@ -50,18 +50,18 @@ struct CDisplayWindowGUI_Params
  * Refer to nanogui API docs or MRPT examples for further usage examples.
  * A typical lifecycle of a GUI app with this class might look like:
  *
- * \rst
- * .. code-block:: cpp
- *
- *    nanogui::init();
- *    {
- *      mrpt::gui::CDisplayWindowGUI win;
- *      win.drawAll();
- *      win.setVisible(true);
- *      nanogui::mainloop();
- *    }
- *    nanogui::shutdown();
- * \endrst
+ * \code
+ * nanogui::init();
+ * {
+ *   mrpt::gui::CDisplayWindowGUI win;
+ *   // Populate win adding UI controls, etc.
+ *   // ...
+ *   win.drawAll();
+ *   win.setVisible(true);
+ *   nanogui::mainloop();
+ * }
+ * nanogui::shutdown();
+ * \endcode
  *
  *
  * ![mrpt::gui::CDisplayWindowGUI screenshot](preview_CDisplayWindowGUI.png)

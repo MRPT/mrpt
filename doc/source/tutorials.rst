@@ -7,10 +7,40 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
 
 .. toctree::
   :maxdepth: 2
+  :caption: Basics
 
   using_mrpt_apps
   mrpt_from_cmake
+
+.. toctree::
+  :maxdepth: 2
+  :caption: GUI and 3D graphics
+
+  page_tutorial_3D_scenes.rst
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Robotics, SLAM
+
+  tutorial-mrpt-maps-model
   range_only_localization_mapping
+  tutorial-icp-alignment
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Maths, Geometry
+
+  tutorial-ransac
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Robotics file formats
+
+  tutorial-file-formats
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Miscellaneous
+
   page_porting_mrpt2
   env-vars
-  tutorial-icp-alignment

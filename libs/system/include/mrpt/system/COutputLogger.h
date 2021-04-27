@@ -25,6 +25,7 @@
 #include <string>
 #include <string_view>
 
+/** System helpers and utilities \ingroup mrpt_system_grp */
 namespace mrpt::system
 {
 /** \brief Enumeration of available verbosity levels. \sa COutputLogger */
