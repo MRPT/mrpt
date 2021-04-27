@@ -20,6 +20,7 @@
 #include <cstring>	// memset()
 #include <type_traits>
 
+/** Math and geometry \ingroup mrpt_math_grp */
 namespace mrpt::math
 {
 /**  This template class provides the basic functionality for a general 2D

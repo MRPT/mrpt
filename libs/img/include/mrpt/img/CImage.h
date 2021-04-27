@@ -27,6 +27,7 @@ namespace mrpt::io { class CStream; }
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM(mrpt::img::CImage)
 
+/** Classes for image storage and manipulation \ingroup mrpt_img_grp */
 namespace mrpt::img
 {
 enum class PixelDepth : int32_t
