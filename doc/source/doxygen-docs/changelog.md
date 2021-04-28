@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.3.1: UNRELEASED
-- No changes yet.
+- General cmake scripts:
+  - `find_package(mrpt-xxx)` is now much faster.
 
 # Version 2.3.0: Released April 25th, 2021
 - General build changes:
