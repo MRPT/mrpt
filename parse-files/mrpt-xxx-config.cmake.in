@@ -1,7 +1,6 @@
 include(CMakeFindDependencyMacro)
 
 if (TARGET mrpt::@MRPT_MODULE_NAME@)
-    message("======== ALREADY: mrpt::@MRPT_MODULE_NAME@")
     return()
 endif()
 
