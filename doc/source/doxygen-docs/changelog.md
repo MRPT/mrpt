@@ -3,6 +3,9 @@
 # Version 2.3.1: UNRELEASED
 - General cmake scripts:
   - `find_package(mrpt-xxx)` is now much faster.
+- Changes in libraries:
+  - \ref mrpt_obs_grp
+    - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
 
 # Version 2.3.0: Released April 25th, 2021
 - General build changes:
