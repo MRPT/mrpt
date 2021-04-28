@@ -140,13 +140,16 @@ class CActionCollection : public mrpt::serialization::CSerializable
 		MRPT_END
 	}
 
-	/** Add a new object to the list.
-	 */
+	/** Add a new object to the list, making a deep copy. */
 	void insert(CAction& action);
+
+	/** Add a new object to the list (no deep copy).
+	 * \note (New in MRPT 2.3.1) */
+	void insert(const CAction::Ptr& action);
 
 	/** Returns the actions count in the collection.
 	 */
-	size_t size();
+	size_t size() const;
 
 	/** Returns the best pose increment estimator in the collection, based on
 	 * the determinant of its pose change covariance matrix.
