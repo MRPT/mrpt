@@ -4,6 +4,8 @@
 - General cmake scripts:
   - `find_package(mrpt-xxx)` is now much faster.
 - Changes in libraries:
+  - \ref mrpt_core_grp
+    - Removed mrpt::reverseBytesInPlace(long double) for it not being portable.
   - \ref mrpt_obs_grp
     - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
 
