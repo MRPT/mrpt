@@ -29,8 +29,8 @@ build_script:
   - cmake --build . --config Release --target PACKAGE
   # Rename package:
   - cd c:\projects\mrpt
-  - cmd: IF NOT DEFINED APPVEYOR_REPO_TAG_NAME SET APPVEYOR_REPO_TAG_NAME=build
-  - cmd: move c:\projects\mrpt\build\MRPT*.exe c:\projects\mrpt\mrpt-%APPVEYOR_REPO_TAG_NAME%-%APPVEYOR_REPO_BRANCH%.exe
+  - cmd: IF NOT DEFINED APPVEYOR_REPO_TAG_NAME SET PKG_NAME=branch-%APPVEYOR_REPO_BRANCH% ELSE SET PKG_NAME=release-%APPVEYOR_REPO_TAG_NAME%
+  - cmd: move c:\projects\mrpt\build\MRPT*.exe c:\projects\mrpt\mrpt-%PKG_NAME%.exe
   - dir
 
 install:
@@ -101,22 +101,23 @@ artifacts:
 #---------------------------------#
 deploy:
   - provider: GitHub
-    release: mrpt-v$(APPVEYOR_BUILD_VERSION)
-    description: 'Windows binary releases (nightly builds)'
+    release: "Release of v$(APPVEYOR_REPO_TAG_NAME) [Windows binaries]"
+    description: 'Windows binary releases (nightly builds) from AppVeyor.'
     auth_token:
       secure: vUzG+a7umHCzqv0eUNXZS/dczNSMiJ37Ivuv50aIPXhYQenlxUiua+Merj/pjCmy
     artifact: /.*\.exe/
-    draft: true
+    draft: false
     prerelease: false
     on:
-      branch: develop                # release from develop branch
+      APPVEYOR_REPO_TAG: true        # deploy on tag push only
   - provider: GitHub
-    release: mrpt-v$(APPVEYOR_BUILD_VERSION)
-    description: 'Windows binary releases (stable)'
+    release: "Windows nightly builds"
+    description: 'Windows binary releases (develop) from AppVeyor.  APPVEYOR_BUILD_VERSION=%APPVEYOR_BUILD_VERSION%.'
     auth_token:
       secure: vUzG+a7umHCzqv0eUNXZS/dczNSMiJ37Ivuv50aIPXhYQenlxUiua+Merj/pjCmy
     artifact: /.*\.exe/
-    draft: true
+    draft: false
     prerelease: false
+    force_update: true
     on:
-      branch: master                # release from master branch
+      branch: develop
