@@ -151,19 +151,3 @@ void mrpt::reverseBytesInPlace(std::chrono::time_point<mrpt::Clock>& v_in_out)
 	reverseBytesInPlace_8b(val);
 	v_in_out = std::chrono::time_point<mrpt::Clock>(mrpt::Clock::duration(val));
 }
-
-#ifdef HAVE_LONG_DOUBLE
-void mrpt::reverseBytesInPlace(long double& v_in_out)
-{
-	uint64_t dat[2];
-	std::memcpy(
-		&dat[0], &v_in_out, sizeof(long double));  // This avoid deref. puned
-	// pointer warning with:
-	// *reinterpret_cast<const
-	// T*>(&val_rev);
-	std::swap(dat[0], dat[1]);
-	reverseBytesInPlace(dat[0]);
-	reverseBytesInPlace(dat[1]);
-	std::memcpy(&v_in_out, &dat[0], sizeof(long double));
-}
-#endif

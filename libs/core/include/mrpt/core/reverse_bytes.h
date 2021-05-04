@@ -31,7 +31,6 @@ void reverseBytesInPlace(uint64_t& v_in_out);
 void reverseBytesInPlace(int64_t& v_in_out);
 void reverseBytesInPlace(float& v_in_out);
 void reverseBytesInPlace(double& v_in_out);
-void reverseBytesInPlace(long double& v_in_out);
 void reverseBytesInPlace(std::chrono::time_point<mrpt::Clock>& v_in_out);
 
 /** Reverse the order of the bytes of a given type (useful for transforming btw
