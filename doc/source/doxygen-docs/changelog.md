@@ -6,6 +6,8 @@
 - Changes in libraries:
   - \ref mrpt_core_grp
     - Removed mrpt::reverseBytesInPlace(long double) for it not being portable.
+  - \ref mrpt_gui_grp
+    - mrpt::gui::CDisplayWindowGUI new methods to minimize/restore subwindows.
   - \ref mrpt_obs_grp
     - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
 

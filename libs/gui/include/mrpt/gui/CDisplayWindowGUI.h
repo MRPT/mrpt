@@ -154,6 +154,31 @@ class CDisplayWindowGUI : public nanogui::Screen
 	nanogui::Window* getSubWindowsUI() { return m_subWindows.ui; }
 	const nanogui::Window* getSubWindowsUI() const { return m_subWindows.ui; }
 
+	/** Direct (read-only) access to managed subwindows by 0-based index
+	 * (creation order).
+	 *
+	 * \sa createManagedSubWindow()
+	 * \note [New in MRPT 2.3.1]
+	 */
+	const nanogui::Window* getSubwindow(size_t index) const
+	{
+		return m_subWindows.windows.at(index);
+	}
+
+	/** Get the number of managed subwindows. \sa createManagedSubWindow()
+	 * \note [New in MRPT 2.3.1]
+	 */
+	size_t getSubwindowCount() const { return m_subWindows.windows.size(); }
+
+	/** Minimize a subwindow. \note [New in MRPT 2.3.1] */
+	void subwindowMinimize(size_t index) { m_subWindows.minimize(index); }
+
+	/** Restore a minimized subwindow. \note [New in MRPT 2.3.1] */
+	void subwindowRestore(size_t index) { m_subWindows.restore(index); }
+
+	/** Forces focus on a subwindow. \note [New in MRPT 2.3.1] */
+	void subwindowSetFocused(size_t index) { m_subWindows.setFocused(index); }
+
 	/** @} */
 
 	/** @name Access to full-window (background) GL scene
@@ -256,7 +281,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 	};
 
 	SubWindows m_subWindows{*this};
-};
+};	// namespace mrpt::gui
 
 #define NANOGUI_START_TRY                                                      \
 	try                                                                        \
