@@ -100,15 +100,23 @@ artifacts:
 #     deployment configuration    #
 #---------------------------------#
 deploy:
-  release: mrpt-v$(APPVEYOR_BUILD_VERSION)
-  description: 'Windows binary releases'
-  provider: GitHub
-  auth_token:
-    secure: vUzG+a7umHCzqv0eUNXZS/dczNSMiJ37Ivuv50aIPXhYQenlxUiua+Merj/pjCmy
-  artifact: /.*\.exe/
-  draft: true
-  prerelease: false
-  on:
-    branch: develop                # release from develop branch
-    branch: master                 # release from master branch
-    APPVEYOR_REPO_TAG: true        # deploy on tag push only
+  - provider: GitHub
+    release: mrpt-v$(APPVEYOR_BUILD_VERSION)
+    description: 'Windows binary releases (nightly builds)'
+    auth_token:
+      secure: vUzG+a7umHCzqv0eUNXZS/dczNSMiJ37Ivuv50aIPXhYQenlxUiua+Merj/pjCmy
+    artifact: /.*\.exe/
+    draft: true
+    prerelease: false
+    on:
+      branch: develop                # release from develop branch
+  - provider: GitHub
+    release: mrpt-v$(APPVEYOR_BUILD_VERSION)
+    description: 'Windows binary releases (stable)'
+    auth_token:
+      secure: vUzG+a7umHCzqv0eUNXZS/dczNSMiJ37Ivuv50aIPXhYQenlxUiua+Merj/pjCmy
+    artifact: /.*\.exe/
+    draft: true
+    prerelease: false
+    on:
+      branch: master                # release from master branch
