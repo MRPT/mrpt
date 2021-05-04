@@ -100,42 +100,15 @@ artifacts:
 #     deployment configuration    #
 #---------------------------------#
 deploy:
-  - provider: BinTray
-    on:
-      branch: develop
-    username: jlblancoc
-    api_key:
-      secure: /wf8T+rsWefWakICQHmyXWaQUUufN3GD9c2zEfs1zHc2jU5kO1d/KocnxKRNSx1j
-    subject: mrpt
-    repo: mrpt-win-binaries
-    package: MRPT-nightly-builds
-    version: win64-develop
-    publish: true
-    override: true
-    explode: true
-  - provider: BinTray
-    on:
-      branch: master
-    username: jlblancoc
-    api_key:
-      secure: /wf8T+rsWefWakICQHmyXWaQUUufN3GD9c2zEfs1zHc2jU5kO1d/KocnxKRNSx1j
-    subject: mrpt
-    repo: mrpt-win-binaries
-    package: MRPT-nightly-builds
-    version: win64-stable
-    publish: true
-    override: true
-    explode: true
-  - provider: BinTray
-    on:
-      APPVEYOR_REPO_TAG: true
-    username: jlblancoc
-    api_key:
-      secure: /wf8T+rsWefWakICQHmyXWaQUUufN3GD9c2zEfs1zHc2jU5kO1d/KocnxKRNSx1j
-    subject: mrpt
-    repo: mrpt-win-binaries
-    package: MRPT-nightly-builds
-    version: win64-tags
-    publish: true
-    override: true
-    explode: true
+  release: mrpt-v$(APPVEYOR_BUILD_VERSION)
+  description: 'Windows binary releases'
+  provider: GitHub
+  auth_token:
+    secure: vUzG+a7umHCzqv0eUNXZS/dczNSMiJ37Ivuv50aIPXhYQenlxUiua+Merj/pjCmy
+  artifact: /.*\.exe/
+  draft: true
+  prerelease: false
+  on:
+    branch: develop                # release from develop branch
+    branch: master                 # release from master branch
+    APPVEYOR_REPO_TAG: true        # deploy on tag push only
