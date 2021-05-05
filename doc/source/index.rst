@@ -11,7 +11,7 @@ MRPT
   compiling
   license
   page_changelog
-
+  authors
 
 .. toctree::
   :maxdepth: 2

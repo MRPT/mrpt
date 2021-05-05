@@ -2,15 +2,16 @@ This file contains the list of people involved in the development
 of MRPT along its history. If you feel someone is missing, please
 fork and pull-request.
 
- DEVELOPERS
-==========================================================
+An online, dynamic list of git commit authors can be reached at:
+  https://github.com/MRPT/mrpt/graphs/contributors
+
 MRPT was born in 2004 at MAPIR lab in the University of Málaga and has been
 under continuous development by many developers and contributors since then.
 
 The following list is roughly sorted in reverse chronological order. See also
 the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
 
-* Jose-Luis Blanco-Claraco. Main developer.  http://www.ual.es/~jlblanco/  https://github.com/jlblancoc
+* Jose-Luis Blanco-Claraco. Main developer.  https://www.ual.es/~jlblanco/  https://github.com/jlblancoc
 
 * Hunter (2016-) https://github.com/jolting
   - Tons of changes towards porting code to C++14 for MRPT 2.0
@@ -158,13 +159,13 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
   - The application benchmarking-image-features
   - added files in the mrpt/libs/vision (detectors: AKAZE, LSD line detectors; descriptors: LATCH, BLD)
 
-* Aliben - (Github: http://github.com/alibenD).
+* Aliben - (Github: https://github.com/alibenD).
   - Driver for SICK TIM561/55x/56x via ethernet (mrpt::hwdrivers::CSICKTim561Eth)
   - A testing sample for SICK TIM55x/TIM56x series
 
 * David Serret
   - Small changes in Velodyne drivers
-  
+
 * Edward Rosten
   - Part of his libCVD (Free BSD) has been used in libs/opengl/src/gltext.cpp
 
