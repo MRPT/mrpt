@@ -43,7 +43,8 @@ extensions = [
     'doxyrest',
     'cpplexer',
     'sphinx_panels',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
+    'm2r2',  # provides: mdinclude
 ]
 
 # Required in sphinx-bibtex>=2.0

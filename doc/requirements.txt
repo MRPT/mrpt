@@ -1,3 +1,4 @@
 sphinx_rtd_theme
 sphinx-panels
 sphinxcontrib-bibtex
+m2r2
