@@ -29,7 +29,7 @@ build_script:
   - cmake --build . --config Release --target PACKAGE
   # Rename package:
   - cd c:\projects\mrpt
-  - cmd: IF NOT DEFINED APPVEYOR_REPO_TAG_NAME SET PKG_NAME=branch-%APPVEYOR_REPO_BRANCH% 
+  - cmd: IF NOT DEFINED APPVEYOR_REPO_TAG_NAME SET PKG_NAME=branch-%APPVEYOR_REPO_BRANCH%
   - cmd: IF DEFINED APPVEYOR_REPO_TAG_NAME SET PKG_NAME=release-%APPVEYOR_REPO_TAG_NAME%
   - cmd: move c:\projects\mrpt\build\MRPT*.exe c:\projects\mrpt\mrpt-%PKG_NAME%.exe
   - dir
@@ -113,7 +113,7 @@ deploy:
       APPVEYOR_REPO_TAG: true        # deploy on tag push only
   - provider: GitHub
     release: "Windows nightly builds"
-    description: 'Windows binary releases (develop) from AppVeyor.  APPVEYOR_BUILD_VERSION=%APPVEYOR_BUILD_VERSION%.'
+    description: 'Windows binary releases (develop) from AppVeyor.\nAPPVEYOR_BUILD_VERSION=%APPVEYOR_BUILD_VERSION%\nLast commit timestamp: %APPVEYOR_REPO_COMMIT_TIMESTAMP%\nGit commit: %APPVEYOR_REPO_COMMIT% %APPVEYOR_REPO_COMMIT_MESSAGE%'
     auth_token:
       secure: vUzG+a7umHCzqv0eUNXZS/dczNSMiJ37Ivuv50aIPXhYQenlxUiua+Merj/pjCmy
     artifact: /.*\.exe/
