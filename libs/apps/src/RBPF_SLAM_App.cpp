@@ -18,7 +18,6 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
