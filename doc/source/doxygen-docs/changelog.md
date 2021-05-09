@@ -10,6 +10,7 @@
     - mrpt::gui::CDisplayWindowGUI new methods to minimize/restore subwindows.
   - \ref mrpt_obs_grp
     - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
+    - New method mrpt::obs::CObservation2DRangeScan::getScanAngle() and clarify docs on class members.
 
 # Version 2.3.0: Released April 25th, 2021
 - General build changes:

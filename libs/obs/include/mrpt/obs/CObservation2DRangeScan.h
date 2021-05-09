@@ -25,28 +25,30 @@ namespace obs
 {
 /** A "CObservation"-derived class that represents a 2D range scan measurement
  * (typically from a laser scanner).
- *  The data structures are generic enough to hold a wide variety of 2D
+ * The data structures are generic enough to hold a wide variety of 2D
  * scanners and "3D" planar rotating 2D lasers.
  *
- *  These are the most important data fields:
- *    - These three fields are private data member (since MRPT 1.5.0) for
- * safety and to ensure data consistency. Read them with the
- * backwards-compatible proxies `scan`, `intensity`, `validRange` or (preferred)
- * with the new `get_*`, `set_*` and `resize()` methods:
- *      - CObservation2DRangeScan::scan -> A vector of float values with all
- * the range measurements (in meters).
- *      - CObservation2DRangeScan::validRange -> A vector (of <b>identical
- * size</b> to <i>scan<i>), has non-zeros for those ranges than are valid (i.e.
- * will be zero for non-reflected rays, etc.)
- *      - CObservation2DRangeScan::intensity -> A vector (of <b>identical
- * size</b> to <i>scan<i>) a unitless int values representing the relative
- * strength of each return. Higher values indicate a more intense return. This
- * is useful for filtering out low intensity(noisy) returns or detecting intense
- * landmarks.
- *    - CObservation2DRangeScan::aperture -> The field-of-view of the scanner,
+ * These are the most important data fields:
+ * - Scan ranges: A vector of float values with all the range measurements
+ * [meters]. Access via `CObservation2DRangeScan::getScanRange()` and
+ * `CObservation2DRangeScan::setScanRange()`.
+ * - Range validity: A vector (of <b>identical size</b> to <i>scan<i>), it holds
+ * `true` for those ranges than are valid (i.e. will be zero for non-reflected
+ * rays, etc.), `false` for scan rays without a valid lidar return.
+ * - Reflection intensity: A vector (of <b>identical size</b> to <i>scan<i>) a
+ * unitless int values representing the relative strength of each return. Higher
+ * values indicate a more intense return. This is useful for filtering out low
+ * intensity (noisy) returns or detecting intense landmarks.
+ * - CObservation2DRangeScan::aperture: The field-of-view of the scanner,
  * in radians (typically, M_PI = 180deg).
- *    - CObservation2DRangeScan::sensorPose -> The 6D location of the sensor on
- * the robot reference frame (default=at the origin).
+ * - CObservation2DRangeScan::sensorPose: The 6D location of the sensor on
+ * the robot reference frame (default=at the origin), i.e. wrt `base_link`
+ * following ROS conventions.
+ * - CObservation2DRangeScan::rightToLeft: The scanning direction:
+ * true=counterclockwise (default), false=clockwise.
+ *
+ * Note that the *angle of each range* in the vectors above is implicitly
+ * defined by the index within the vector.
  *
  * \sa CObservation, CPointsMap, T2DScanProperties
  * \ingroup mrpt_obs_grp
@@ -108,6 +110,25 @@ class CObservation2DRangeScan : public CObservation
 	 */
 	bool getScanRangeValidity(const size_t i) const;
 	void setScanRangeValidity(const size_t i, const bool val);
+
+	/** Returns the computed direction (relative heading in radians, with
+	 * 0=forward) of the given ray index, following the following formula:
+	 * \code
+	 * float Ang = -0.5f * aperture;
+	 * float dA = aperture / (m_scan.size() - 1);
+	 * if (!rightToLeft)
+	 * {
+	 *  Ang = -Ang;
+	 *  dA = -dA;
+	 * }
+	 * return Ang + dA * idx;
+	 * \endcode
+	 *
+	 * \params[in] idx Index of the ray, from `0` to `size()-1`.
+	 *
+	 * \note (New in MRPT 2.3.1)
+	 */
+	float getScanAngle(const size_t idx) const;
 
 	/** The "aperture" or field-of-view of the range finder, in radians
 	 * (typically M_PI = 180 degrees). */
