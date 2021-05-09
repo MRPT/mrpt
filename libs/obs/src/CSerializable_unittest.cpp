@@ -28,6 +28,7 @@ using namespace std;
 
 TEST_CLASS_MOVE_COPY_CTORS(CObservation2DRangeScan);
 TEST_CLASS_MOVE_COPY_CTORS(CObservation3DRangeScan);
+TEST_CLASS_MOVE_COPY_CTORS(CObservation3DScene);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationRGBD360);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationBearingRange);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationBatteryState);
@@ -55,6 +56,7 @@ TEST_CLASS_MOVE_COPY_CTORS(CActionRobotMovement3D);
 const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 	// Observations:
 	CLASS_ID(CObservation2DRangeScan), CLASS_ID(CObservation3DRangeScan),
+	CLASS_ID(CObservation3DScene),	//
 	CLASS_ID(CObservationRGBD360), CLASS_ID(CObservationBearingRange),
 	CLASS_ID(CObservationBatteryState), CLASS_ID(CObservationWirelessPower),
 	CLASS_ID(CObservationRFID), CLASS_ID(CObservationBeaconRanges),

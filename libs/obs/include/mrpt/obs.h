@@ -21,6 +21,7 @@ MRPT_WARNING(
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DScene.h>
 #include <mrpt/obs/CObservation6DFeatures.h>
 #include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>

@@ -446,6 +446,26 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 #endif
 	}
 
+	if (classID == CLASS_ID(CObservation3DScene))
+	{
+		// ----------------------------------------------------------------------
+		//              CObservation3DScene
+		// ----------------------------------------------------------------------
+		Notebook1->ChangeSelection(9);
+		CObservation3DScene::Ptr obs =
+			std::dynamic_pointer_cast<CObservation3DScene>(sel_obj);
+
+// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+		if (obs->scene) *openGLSceneRef = *obs->scene;
+		else
+			openGLSceneRef->clear();
+
+		this->m_gl3DRangeScan->Refresh();
+#endif
+	}
+
 	if (classID == CLASS_ID(CObservationRotatingScan))
 	{
 		// ----------------------------------------------------------------------

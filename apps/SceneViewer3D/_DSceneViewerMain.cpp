@@ -107,6 +107,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 _DSceneViewerFrame* theWindow = nullptr;
 
 #include <mutex>
+#include <sstream>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -331,6 +332,7 @@ const long _DSceneViewerFrame::ID_MENUITEM30 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM23 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM_PRINT_TEXT = wxNewId();
 const long _DSceneViewerFrame::idMenuQuit = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM24 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM26 = wxNewId();
@@ -600,6 +602,10 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	mnuSceneStats = new wxMenuItem(
 		Menu1, ID_MENUITEM18, _("Scene stats"), wxEmptyString, wxITEM_NORMAL);
 	Menu1->Append(mnuSceneStats);
+	mnuPrintScene = new wxMenuItem(
+		Menu1, ID_MENUITEM_PRINT_TEXT, _("Print as text to console"),
+		wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(mnuPrintScene);
 	Menu1->AppendSeparator();
 	MenuItem1 = new wxMenuItem(
 		Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"),
@@ -721,6 +727,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	Bind(wxEVT_MENU, &svf::OnMenuItem14Selected, this, ID_MENUITEM12);
 	Bind(wxEVT_MENU, &svf::OnMenuItemHighResRender, this, ID_MENUITEM23);
 	Bind(wxEVT_MENU, &svf::OnmnuSceneStatsSelected, this, ID_MENUITEM18);
+	Bind(wxEVT_MENU, &svf::OnMenuPrintScene, this, ID_MENUITEM_PRINT_TEXT);
 	Bind(wxEVT_MENU, &svf::OnQuit, this, idMenuQuit);
 	Bind(wxEVT_MENU, &svf::OnmnuSelectNoneSelected, this, ID_MENUITEM24);
 	Bind(wxEVT_MENU, &svf::OnmnuSelectByClassSelected, this, ID_MENUITEM26);
@@ -1524,8 +1531,22 @@ void func_gather_stats(const mrpt::opengl::CRenderizable::Ptr& o)
 	}
 }
 
+void _DSceneViewerFrame::OnMenuPrintScene(wxCommandEvent&)
+{
+	try
+	{
+		std::stringstream ss;
+		m_canvas->getOpenGLSceneRef()->print(ss);
+		std::cout << ss.str();
+	}
+	catch (const std::exception& e)
+	{
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
+	}
+}
+
 // Gather stats on the scene:
-void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
+void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent&)
 {
 	try
 	{

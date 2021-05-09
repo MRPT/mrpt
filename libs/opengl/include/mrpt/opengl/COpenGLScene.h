@@ -179,7 +179,14 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 
 	/** Retrieves a list of all objects in text form.
 	 */
-	void dumpListOfObjects(std::vector<std::string>& lst);
+	void dumpListOfObjects(std::vector<std::string>& lst) const;
+
+	/// \overload
+	std::vector<std::string> dumpListOfObjects() const;
+
+	/** Prints all viewports and objects in textual form.
+	 * \note (New in MRPT 2.1.3) */
+	void print(std::ostream& o) const;
 
 	/** Saves the scene to a 3Dscene file, loadable by the application
 	 * SceneViewer3D

@@ -211,15 +211,38 @@ void COpenGLScene::initializeTextures()
 /*--------------------------------------------------------------
 					dumpListOfObjects
   ---------------------------------------------------------------*/
-void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst)
+void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst) const
 {
+	using namespace std::string_literals;
 	lst.clear();
 
 	for (auto& v : m_viewports)
 	{
-		lst.emplace_back(string("VIEWPORT: ") + v->m_name);
+		lst.emplace_back("Viewport: '"s + v->m_name + "'"s);
 		lst.emplace_back("============================================");
 		v->dumpListOfObjects(lst);
+	}
+}
+
+std::vector<std::string> COpenGLScene::dumpListOfObjects() const
+{
+	std::vector<std::string> v;
+	dumpListOfObjects(v);
+	return v;
+}
+
+void COpenGLScene::print(std::ostream& o) const
+{
+	using namespace std::string_literals;
+
+	for (auto& v : m_viewports)
+	{
+		o << "Viewport: '"s << v->m_name << "'\n"s;
+		o << "============================================\n";
+		std::vector<std::string> lst;
+		v->dumpListOfObjects(lst);
+		for (const auto& line : lst)
+			o << line << "\n";
 	}
 }
 

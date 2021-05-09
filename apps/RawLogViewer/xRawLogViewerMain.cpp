@@ -959,7 +959,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pnViewOptions = new ViewOptions3DPoints(
 		nb_3DObsChannels, ID_PANEL_VIEW_3D_POINT_OPTIONS);
 
-	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D points"), false);
+	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D view"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Depth, _("Depth"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Int, _("Intensity"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
@@ -982,8 +982,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Notebook1->AddPage(pn_CObservationGPS, _("Obs: GPS"), false);
 	Notebook1->AddPage(
 		pn_CObservationBearingRange, _("Obs: RangeBearing"), false);
-	Notebook1->AddPage(
-		pn_CObservation3DRangeScan, _("Obs: 3D range scan"), false);
+	Notebook1->AddPage(pn_CObservation3DRangeScan, _("Obs: 3D"), false);
 	BoxSizer3->Add(
 		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel5->SetSizer(BoxSizer3);
