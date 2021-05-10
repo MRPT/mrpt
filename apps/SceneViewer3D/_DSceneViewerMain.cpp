@@ -45,8 +45,21 @@ const std::string iniFileSect("CONF_WIN");
 const std::string iniFileSect("CONF_LIN");
 #endif
 
+#include "../wx-common/Applications.xpm"
+#include "../wx-common/ArrowLeft2.xpm"
+#include "../wx-common/Folderdownloads.xpm"
+#include "../wx-common/Qmark.xpm"
+#include "../wx-common/empty_file.xpm"
+#include "../wx-common/icon_backward.xpm"
+#include "../wx-common/icon_cubes.xpm"
+#include "../wx-common/icon_forward.xpm"
+#include "../wx-common/icon_play.xpm"
+#include "../wx-common/icon_record.xpm"
+#include "../wx-common/icon_undo.xpm"
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/icono_main.xpm"
+//
+#include "../wx-common/return_bitmap.h"
 
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
@@ -97,6 +110,18 @@ wxBitmap MyArtProvider::CreateBitmap(
 {
 	if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(icono_main_xpm);
 	if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
+
+	RETURN_BITMAP(wxART_NORMAL_FILE, empty_file_xpm)
+	RETURN_BITMAP(wxART_FILE_OPEN, Folderdownloads_xpm);
+	RETURN_BITMAP(wxART_REMOVABLE, icon_play_xpm);
+	RETURN_BITMAP(wxART_HELP_BOOK, Qmark_xpm);
+	RETURN_BITMAP(wxART_QUIT, ArrowLeft2_xpm);
+	RETURN_BITMAP(wxART_GO_FORWARD, icon_forward_xpm);
+	RETURN_BITMAP(wxART_GO_BACK, icon_backward_xpm);
+	RETURN_BITMAP(wxART_FIND, Applications_xpm);
+	RETURN_BITMAP(wxART_TICK_MARK, icon_cubes_xpm);
+	RETURN_BITMAP(wxART_REDO, icon_undo_xpm);
+	RETURN_BITMAP(wxART_HARDDISK, icon_record_xpm);
 
 	// Any wxWidgets icons not implemented here
 	// will be provided by the default art provider.
