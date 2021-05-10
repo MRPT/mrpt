@@ -12,6 +12,7 @@
     - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
     - New method mrpt::obs::CObservation2DRangeScan::getScanAngle() and clarify docs on class members.
     - New class mrpt::obs::CObservation3DScene.
+    - mrpt::obs::CObservationIMU now uses std::array instead of std::vector (faster due to less dynamic memory).
   - \ref mrpt_opengl_grp
     - Deprecate mrpt::opengl::COpenGLScene::dumpListOfObjects() in favor of new mrpt::opengl::COpenGLScene::asYAML()
 - BUG FIXES:
