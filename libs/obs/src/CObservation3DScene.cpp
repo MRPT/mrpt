@@ -43,6 +43,7 @@ void CObservation3DScene::getDescriptionAsText(std::ostream& o) const
 	if (!scene) { o << "nullptr\n"; }
 	else
 	{
-		scene->print(o);
+		auto d = scene->asYAML();
+		d.printAsYAML(o);
 	}
 }

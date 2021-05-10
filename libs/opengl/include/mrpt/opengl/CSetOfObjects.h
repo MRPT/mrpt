@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/poses_frwds.h>	 // All these are needed for the auxiliary methods posePDF2opengl()
 
@@ -119,8 +120,13 @@ class CSetOfObjects : public CRenderizable
 	 */
 	void removeObject(const CRenderizable::Ptr& obj);
 
-	/** Retrieves a list of all objects in text form  */
-	void dumpListOfObjects(std::vector<std::string>& lst);
+	/** Retrieves a list of all objects in text form
+	 * \deprecated Prefer asYAML() (since MRPT 2.1.3) */
+	void dumpListOfObjects(std::vector<std::string>& lst) const;
+
+	/** Prints all objects in human-readable YAML form.
+	 * \note (New in MRPT 2.1.3) */
+	mrpt::containers::yaml asYAML() const;
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 

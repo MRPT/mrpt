@@ -107,7 +107,6 @@ wxBitmap MyArtProvider::CreateBitmap(
 _DSceneViewerFrame* theWindow = nullptr;
 
 #include <mutex>
-#include <sstream>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -1535,9 +1534,8 @@ void _DSceneViewerFrame::OnMenuPrintScene(wxCommandEvent&)
 {
 	try
 	{
-		std::stringstream ss;
-		m_canvas->getOpenGLSceneRef()->print(ss);
-		std::cout << ss.str();
+		auto d = m_canvas->getOpenGLSceneRef()->asYAML();
+		d.printAsYAML(std::cout);
 	}
 	catch (const std::exception& e)
 	{

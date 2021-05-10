@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CRenderizable.h>
 
@@ -178,15 +179,15 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	void initializeTextures();
 
 	/** Retrieves a list of all objects in text form.
-	 */
+	 * 	\deprecated Prefer asYAML() (since MRPT 2.1.3) */
 	void dumpListOfObjects(std::vector<std::string>& lst) const;
 
-	/// \overload
-	std::vector<std::string> dumpListOfObjects() const;
-
-	/** Prints all viewports and objects in textual form.
+	/** Prints all viewports and objects in human-readable YAML form.
+	 * Note that not all objects data is serialized, so this method is not
+	 * suitable for deserialization (for that, use saveToFile(), loadFromFile()
+	 * instead).
 	 * \note (New in MRPT 2.1.3) */
-	void print(std::ostream& o) const;
+	mrpt::containers::yaml asYAML() const;
 
 	/** Saves the scene to a 3Dscene file, loadable by the application
 	 * SceneViewer3D

@@ -224,26 +224,15 @@ void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst) const
 	}
 }
 
-std::vector<std::string> COpenGLScene::dumpListOfObjects() const
+mrpt::containers::yaml COpenGLScene::asYAML() const
 {
-	std::vector<std::string> v;
-	dumpListOfObjects(v);
-	return v;
-}
-
-void COpenGLScene::print(std::ostream& o) const
-{
-	using namespace std::string_literals;
+	mrpt::containers::yaml d = mrpt::containers::yaml::Map();
+	auto vs = d["viewports"];
 
 	for (auto& v : m_viewports)
-	{
-		o << "Viewport: '"s << v->m_name << "'\n"s;
-		o << "============================================\n";
-		std::vector<std::string> lst;
-		v->dumpListOfObjects(lst);
-		for (const auto& line : lst)
-			o << line << "\n";
-	}
+		vs[v->m_name] = v->asYAML();
+
+	return d;
 }
 
 /*--------------------------------------------------------------
