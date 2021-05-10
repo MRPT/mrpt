@@ -201,6 +201,7 @@ TEST(Observations, CopyCtorAssignOp)
 {
 	run_copy_tests<CObservation2DRangeScan>();
 	run_copy_tests<CObservation3DRangeScan>();
+	run_copy_tests<CObservation3DScene>();
 	run_copy_tests<CObservationGPS>();
 	run_copy_tests<CObservationIMU>();
 	run_copy_tests<CObservationOdometry>();
