@@ -12,6 +12,8 @@
     - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
     - New method mrpt::obs::CObservation2DRangeScan::getScanAngle() and clarify docs on class members.
     - New class mrpt::obs::CObservation3DScene.
+- BUG FIXES:
+  - Fix wrong formatting of empty *string* values (not *null* values) in mrpt::containers::yaml.
 
 # Version 2.3.0: Released April 25th, 2021
 - General build changes:
