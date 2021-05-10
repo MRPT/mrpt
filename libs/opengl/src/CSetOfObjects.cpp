@@ -89,23 +89,19 @@ void CSetOfObjects::insert(const CRenderizable::Ptr& newObject)
 	m_objects.push_back(newObject);
 }
 
-/*--------------------------------------------------------------
-					dumpListOfObjects
-  ---------------------------------------------------------------*/
-void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
+void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst) const
 {
-	for (auto& m_object : m_objects)
+	for (auto& obj : m_objects)
 	{
 		// Single obj:
-		string s(m_object->GetRuntimeClass()->className);
-		if (m_object->m_name.size())
-			s += string(" (") + m_object->m_name + string(")");
+		string s(obj->GetRuntimeClass()->className);
+		if (obj->m_name.size()) s += string(" (") + obj->m_name + string(")");
 		lst.emplace_back(s);
 
-		if (m_object->GetRuntimeClass() ==
+		if (obj->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
-			auto* objs = dynamic_cast<CSetOfObjects*>(m_object.get());
+			auto* objs = dynamic_cast<CSetOfObjects*>(obj.get());
 
 			std::vector<std::string> auxLst;
 			objs->dumpListOfObjects(auxLst);
@@ -113,6 +109,39 @@ void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst)
 				lst.emplace_back(string(" ") + i);
 		}
 	}
+}
+
+mrpt::containers::yaml CSetOfObjects::asYAML() const
+{
+	mrpt::containers::yaml d = mrpt::containers::yaml::Sequence();
+
+	d.asSequence().resize(m_objects.size());
+
+	for (size_t i = 0; i < m_objects.size(); i++)
+	{
+		const auto obj = m_objects.at(i);
+		mrpt::containers::yaml de = mrpt::containers::yaml::Map();
+
+		de["index"] = i;
+		if (!obj)
+		{
+			de["class"] = "nullptr";
+			continue;
+		}
+		de["class"] = obj->GetRuntimeClass()->className;
+		de["name"] = obj->m_name;
+		de["location"] = obj->getPose().asString();
+
+		// Single obj:
+		if (obj->GetRuntimeClass() ==
+			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+		{
+			de["obj_children"] =
+				dynamic_cast<CSetOfObjects*>(obj.get())->asYAML();
+		}
+		d.asSequence().at(i) = std::move(de);
+	}
+	return d;
 }
 
 /*--------------------------------------------------------------
