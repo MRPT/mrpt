@@ -8,6 +8,8 @@
     - Removed mrpt::reverseBytesInPlace(long double) for it not being portable.
   - \ref mrpt_gui_grp
     - mrpt::gui::CDisplayWindowGUI new methods to minimize/restore subwindows.
+  - \ref mrpt_math_grp
+    - New method mrpt::math::TLine3D::closestPointTo()
   - \ref mrpt_obs_grp
     - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
     - New method mrpt::obs::CObservation2DRangeScan::getScanAngle() and clarify docs on class members.
