@@ -293,8 +293,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	btnGaussOK->SetDefault();
 	btnGaussOK->SetFocus();
 	wxFont btnGaussOKFont(
-		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	btnGaussOK->SetFont(btnGaussOKFont);
 	FlexGridSizer11->Add(
 		btnGaussOK, 1,
@@ -442,8 +441,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	btnThrunOk->SetDefault();
 	btnThrunOk->SetFocus();
 	wxFont btnThrunOkFont(
-		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	btnThrunOk->SetFont(btnThrunOkFont);
 	FlexGridSizer5->Add(
 		btnThrunOk, 1,

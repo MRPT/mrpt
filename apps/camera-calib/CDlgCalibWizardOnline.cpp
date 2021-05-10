@@ -238,8 +238,7 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(
 		this, ID_BUTTON1, _("Start"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON1"));
 	wxFont btnStartFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	btnStart->SetFont(btnStartFont);
 	FlexGridSizer5->Add(
 		btnStart, 1,
