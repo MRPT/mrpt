@@ -117,12 +117,12 @@ mrpt::containers::yaml CSetOfObjects::asYAML() const
 
 	d.asSequence().resize(m_objects.size());
 
-	for (size_t i = 0; i < m_objects.size(); i++)
+	for (uint32_t i = 0; i < m_objects.size(); i++)
 	{
 		const auto obj = m_objects.at(i);
 		mrpt::containers::yaml de = mrpt::containers::yaml::Map();
 
-		de["index"] = i;
+		de["index"] = i;  // type for "i" must be a stdint type
 		if (!obj)
 		{
 			de["class"] = "nullptr";
