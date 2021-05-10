@@ -625,10 +625,14 @@ bool yaml::internalPrintAsYAML(
 
 // Return true if multiline
 bool yaml::internalPrintStringScalar(
-	const std::string& s, std::ostream& o, const InternalPrintState& ps,
+	const std::string& sIn, std::ostream& o, const InternalPrintState& ps,
 	const comments_t& cs)
 {
 	const std::string sInd(ps.indent + 2, ' ');
+
+	// representation of empty *string*
+	const static std::string emptyStr = "''";
+	const std::string& s = sIn.empty() ? emptyStr : sIn;
 
 	const bool hasFinalNL = !s.empty() && s.back() == '\n';
 
