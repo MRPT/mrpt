@@ -210,8 +210,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		Panel1, ID_BUTTON1, _("Initialize PTG"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
 	wxFont btnReloadParamsFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxBOLD, false, wxEmptyString,
-		wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxBOLD);
 	btnReloadParams->SetFont(btnReloadParamsFont);
 	FlexGridSizer7->Add(
 		btnReloadParams, 1,

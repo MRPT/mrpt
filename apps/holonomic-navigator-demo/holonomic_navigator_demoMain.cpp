@@ -264,8 +264,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	edHoloParams->SetMinSize(wxSize(-1, 100));
 	wxFont edHoloParamsFont(
-		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
 	edHoloParams->SetFont(edHoloParamsFont);
 	FlexGridSizer7->Add(
 		edHoloParams, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
@@ -319,8 +318,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	edInfoLocalView->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	wxFont edInfoLocalViewFont(
-		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
 	edInfoLocalView->SetFont(edInfoLocalViewFont);
 	FlexGridSizer5->Add(
 		edInfoLocalView, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);

@@ -506,9 +506,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	lbXYZs = new wxListBox(
 		Panel1, ID_LISTBOX1, wxDefaultPosition, wxSize(45, -1), 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_LISTBOX1"));
-	wxFont lbXYZsFont(
-		7, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+	wxFont lbXYZsFont(7, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
 	lbXYZs->SetFont(lbXYZsFont);
 	FlexGridSizer19->Add(
 		lbXYZs, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
