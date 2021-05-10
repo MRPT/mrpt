@@ -730,7 +730,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 	mpFXYVector* lyPath = new mpFXYVector();
 	lyPath->SetPen(wxPen(wxColour(255, 0, 0), 2));
 	lyPath->SetContinuity(true);
-	lyPoints->SetPen(wxPen(wxColour(0, 0, 255), 0));
+	lyPoints->SetPen(wxPen(wxColour(0, 0, 255), 1));
 
 	plotMap->AddLayer(lyPoints);
 	plotMap->AddLayer(lyPath);
