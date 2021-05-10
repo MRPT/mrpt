@@ -55,10 +55,16 @@ struct TLine3D
 	TVector3D director{.0, .0, .0};
 	/** Check whether a point is inside the line */
 	bool contains(const TPoint3D& point) const;
-	/**
-	 * Distance between the line and a point.
-	 */
+
+	/** Distance between the line and a point. */
 	double distance(const TPoint3D& point) const;
+
+	/** Closest point to `p` along the line. It is computed as the intersection
+	 * of `this` with the plane perpendicular to `this` that passes through `p`
+	 * \note [New in MRPT 2.3.1]
+	 */
+	TPoint3D closestPointTo(const TPoint3D& p) const;
+
 	/** Minimum distance between this and another line.
 	 * The return will be std::nullopt if lines are parallel, or zero if they
 	 * intersect, a positive number otherwise.
