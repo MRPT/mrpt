@@ -3,6 +3,9 @@
 # Version 2.3.1: UNRELEASED
 - General cmake scripts:
   - `find_package(mrpt-xxx)` is now much faster.
+- Changes in applications:
+  - SceneViewer3D:
+    - Graceful failure when loading a corrupted 3Dscene file.
 - Changes in libraries:
   - \ref mrpt_core_grp
     - Removed mrpt::reverseBytesInPlace(long double) for it not being portable.
