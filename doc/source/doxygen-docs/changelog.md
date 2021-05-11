@@ -22,6 +22,7 @@
     - Deprecate mrpt::opengl::COpenGLScene::dumpListOfObjects() in favor of new mrpt::opengl::COpenGLScene::asYAML()
   - \ref mrpt_system_grp
     - New return-by-value signature for mrpt::system::CDirectoryExplorer::explore(), older version deprecated.
+    - mrpt::system::extractFileDirectory() returns `"."` instead of an empty string for filenames without any explicit full path.
 - BUG FIXES:
   - Fix wrong formatting of empty *string* values (not *null* values) in mrpt::containers::yaml.
 
