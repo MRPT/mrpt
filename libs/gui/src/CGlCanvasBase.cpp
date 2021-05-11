@@ -14,6 +14,7 @@
 #include <mrpt/system/CTicTac.h>
 
 #include <cstdlib>
+#include <iostream>
 
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef _WIN32
@@ -305,16 +306,19 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 			// Set the camera params in the scene:
 			if (!useCameraFromScene)
 			{
-				COpenGLViewport::Ptr view = m_openGLScene->getViewport("main");
-				if (!view)
+				if (COpenGLViewport::Ptr view =
+						m_openGLScene->getViewport("main");
+					view)
 				{
-					THROW_EXCEPTION(
-						"Fatal error: there is no 'main' viewport in the 3D "
-						"scene!");
+					mrpt::opengl::CCamera& cam = view->getCamera();
+					updateCameraParams(cam);
 				}
-
-				mrpt::opengl::CCamera& cam = view->getCamera();
-				updateCameraParams(cam);
+				else
+				{
+					std::cerr << "[CGlCanvasBase::renderCanvas] Warning: there "
+								 "is no 'main' viewport in the 3D scene!"
+							  << std::endl;
+				}
 			}
 
 			tictac.Tic();
