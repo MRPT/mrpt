@@ -20,6 +20,8 @@
     - mrpt::obs::CObservationIMU now uses std::array instead of std::vector (faster due to less dynamic memory).
   - \ref mrpt_opengl_grp
     - Deprecate mrpt::opengl::COpenGLScene::dumpListOfObjects() in favor of new mrpt::opengl::COpenGLScene::asYAML()
+  - \ref mrpt_system_grp
+    - New return-by-value signature for mrpt::system::CDirectoryExplorer::explore(), older version deprecated.
 - BUG FIXES:
   - Fix wrong formatting of empty *string* values (not *null* values) in mrpt::containers::yaml.
 

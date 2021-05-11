@@ -72,9 +72,16 @@ class CDirectoryExplorer
 	 * \param outList The list of found files/directories is stored here.
 	 * \sa sortByName
 	 */
+	static TFileInfoList explore(
+		const std::string& path, const unsigned long mask);
+
+	/// \overload \deprecated Prefer the return-by-value signature (MRPT 2.3.1)
 	static void explore(
 		const std::string& path, const unsigned long mask,
-		TFileInfoList& outList);
+		TFileInfoList& outList)
+	{
+		outList = explore(path, mask);
+	}
 
 	/** Sort the file entries by name, in ascending or descending order
 	 */
