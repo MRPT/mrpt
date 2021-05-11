@@ -44,14 +44,14 @@ using namespace std;
 /*---------------------------------------------------------------
 		explore
  ---------------------------------------------------------------*/
-void CDirectoryExplorer::explore(
-	const string& path, const unsigned long in_mask, TFileInfoList& outList)
+CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
+	const string& path, const unsigned long in_mask)
 {
 	MRPT_START
 
 	unsigned long mask = in_mask;
 
-	outList.clear();
+	CDirectoryExplorer::TFileInfoList outList;
 
 	// The path terminated in "/" or "\\"
 	string searchPath(path);
@@ -190,6 +190,8 @@ void CDirectoryExplorer::explore(
 
 // Done
 #endif
+
+	return outList;
 
 	MRPT_END
 }
