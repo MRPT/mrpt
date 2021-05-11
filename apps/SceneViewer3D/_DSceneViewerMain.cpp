@@ -248,9 +248,6 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 	{
 		try
 		{
-			CTicTac tictac;
-			tictac.Tic();
-
 			// Load a different file:
 
 			// First, build a list of files in the directory:
@@ -272,8 +269,6 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 
 				lastUpdateOfList = curTime;
 			}
-
-			// cout << "Time to build file list: " << tictac.Tac() << endl;
 
 			string curFileName = extractFileName(loadedFileName) + string(".") +
 				extractFileExtension(loadedFileName);
