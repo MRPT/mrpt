@@ -141,11 +141,11 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	}
 
 	/** Add a new object to the list, making a deep copy. */
-	void insert(CAction& action);
+	void insert(const CAction& action);
 
 	/** Add a new object to the list (no deep copy).
 	 * \note (New in MRPT 2.3.1) */
-	void insert(const CAction::Ptr& action);
+	void insertPtr(const CAction::Ptr& action);
 
 	/** Returns the actions count in the collection.
 	 */
