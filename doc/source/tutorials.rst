@@ -16,7 +16,7 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
   :maxdepth: 2
   :caption: GUI and 3D graphics
 
-  page_tutorial_3D_scenes.rst
+  page_tutorial_3D_scenes
 
 .. toctree::
   :maxdepth: 2
@@ -30,6 +30,7 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
   :maxdepth: 2
   :caption: Maths, Geometry
 
+  page_tutorial_math_levenberg_marquardt
   tutorial-ransac
 
 .. toctree::
