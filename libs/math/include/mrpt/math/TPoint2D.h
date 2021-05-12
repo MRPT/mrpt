@@ -13,7 +13,8 @@
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/math_frwds.h>  // CMatrixFixed
 
-#include <cmath>
+#include <cmath>  // sqrt
+#include <type_traits>
 #include <vector>
 
 namespace mrpt::math
@@ -213,6 +214,22 @@ using TPoint2Df = TPoint2D_<float>;
 using TVector2D = TPoint2D;
 /** Useful type alias for float 2-vectors */
 using TVector2Df = TPoint2Df;
+
+/** Unary minus operator for 2D points/vectors. */
+template <typename T>
+constexpr TPoint2D_<T> operator-(const TPoint2D_<T>& p1)
+{
+	return {-p1.x, -p1.y};
+}
+
+/** scalar times vector operator. */
+template <
+	typename T, typename Scalar,
+	std::enable_if_t<std::is_convertible_v<Scalar, T>>* = nullptr>
+constexpr TPoint2D_<T> operator*(const Scalar scalar, const TPoint2D_<T>& p)
+{
+	return {scalar * p.x, scalar * p.y};
+}
 
 /** Exact comparison between 2D points */
 template <typename T>

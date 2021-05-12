@@ -97,19 +97,37 @@ TEST(LightGeomData, ConstExprCtors)
 		constexpr TPoint2D p_add = p1 + p2;
 		constexpr TPoint2D p_sub = p1 - p2;
 		constexpr TPoint2D p_mul = p1 * 2;
+		constexpr TPoint2D p_mul2 = 2 * p1;
+		constexpr TPoint2D p_mul3 = 2.0f * p1;
+		constexpr TPoint2D p_mul4 = 2.0 * p1;
 		constexpr TPoint2D p_div = p1 / 2;
 
-		static_assert(p_add.x == 6.0, "p_add.x == 6.0");
-		static_assert(p_add.y == 8.0, "p_add.y == 8.0");
+		static_assert(p_add == TPoint2D(6.0, 8.0));
+		static_assert(p_sub == TPoint2D(2.0, 4.0));
+		static_assert(p_mul == TPoint2D(8.0, 12.0));
+		static_assert(p_mul2 == TPoint2D(8.0, 12.0));
+		static_assert(p_mul3 == TPoint2D(8.0, 12.0));
+		static_assert(p_mul4 == TPoint2D(8.0, 12.0));
+		static_assert(p_div == TPoint2D(2.0, 3.0));
+	}
+	{
+		constexpr TPoint3D p1(4.0, 6.0, 1.0);
+		constexpr TPoint3D p2(2.0, 2.0, 3.0);
+		constexpr TPoint3D p_add = p1 + p2;
+		constexpr TPoint3D p_sub = p1 - p2;
+		constexpr TPoint3D p_mul = p1 * 2;
+		constexpr TPoint3D p_mul2 = 2 * p1;
+		constexpr TPoint3D p_mul3 = 2.0f * p1;
+		constexpr TPoint3D p_mul4 = 2.0 * p1;
+		constexpr TPoint3D p_div = p1 / 2;
 
-		static_assert(p_sub.x == 2.0, "p_sub.x == 2.0");
-		static_assert(p_sub.y == 4.0, "p_sub.y == 4.0");
-
-		static_assert(p_mul.x == 8.0, "p_mul.x == 8.0");
-		static_assert(p_mul.y == 12.0, "p_mul.y == 12.0");
-
-		static_assert(p_div.x == 2.0, "p_div.x == 2.0");
-		static_assert(p_div.y == 3.0, "p_div.y == 3.0");
+		static_assert(p_add == TPoint3D(6.0, 8.0, 4.0));
+		static_assert(p_sub == TPoint3D(2.0, 4.0, -2.0));
+		static_assert(p_mul == TPoint3D(8.0, 12.0, 2.0));
+		static_assert(p_mul2 == TPoint3D(8.0, 12.0, 2.0));
+		static_assert(p_mul3 == TPoint3D(8.0, 12.0, 2.0));
+		static_assert(p_mul4 == TPoint3D(8.0, 12.0, 2.0));
+		static_assert(p_div == TPoint3D(2.0, 3.0, 0.5));
 	}
 }
 

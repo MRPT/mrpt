@@ -14,6 +14,7 @@
 #include <mrpt/math/math_frwds.h>  // CMatrixFixed
 
 #include <cmath>  // sqrt
+#include <type_traits>
 
 namespace mrpt::math
 {
@@ -363,11 +364,20 @@ struct TPointXYZRGBAf
 };
 #pragma pack(pop)
 
-/** Unary minus operator for 3D points. */
+/** Unary minus operator for 3D points/vectors. */
 template <typename T>
 constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p1)
 {
 	return {-p1.x, -p1.y, -p1.z};
+}
+
+/** scalar times vector operator. */
+template <
+	typename T, typename Scalar,
+	std::enable_if_t<std::is_convertible_v<Scalar, T>>* = nullptr>
+constexpr TPoint3D_<T> operator*(const Scalar scalar, const TPoint3D_<T>& p)
+{
+	return {scalar * p.x, scalar * p.y, scalar * p.z};
 }
 
 /** Exact comparison between 3D points */
