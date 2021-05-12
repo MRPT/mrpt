@@ -20,6 +20,7 @@
     - mrpt::obs::CObservationIMU now uses std::array instead of std::vector (faster due to less dynamic memory).
   - \ref mrpt_opengl_grp
     - Deprecate mrpt::opengl::COpenGLScene::dumpListOfObjects() in favor of new mrpt::opengl::COpenGLScene::asYAML()
+    - New method mrpt::opengl::CSimpleLine::setLineCoords() accepting mrpt::math::TPoint3D (older signature deprecated).
   - \ref mrpt_system_grp
     - New return-by-value signature for mrpt::system::CDirectoryExplorer::explore(), older version deprecated.
     - mrpt::system::extractFileDirectory() returns `"."` instead of an empty string for filenames without any explicit full path.

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/opengl/CRenderizableShaderWireFrame.h>
 
 namespace mrpt::opengl
@@ -26,6 +27,21 @@ class CSimpleLine : public CRenderizableShaderWireFrame
 
    public:
 	void setLineCoords(
+		const mrpt::math::TPoint3Df& p0, const mrpt::math::TPoint3Df& p1)
+	{
+		m_x0 = p0.x;
+		m_y0 = p0.y;
+		m_z0 = p0.z;
+		m_x1 = p1.x;
+		m_y1 = p1.y;
+		m_z1 = p1.z;
+	}
+
+	mrpt::math::TPoint3Df getLineStart() const { return {m_x0, m_y0, m_z0}; }
+	mrpt::math::TPoint3Df getLineEnd() const { return {m_x1, m_y1, m_z1}; }
+
+	/// \deprecated (MRPT 2.3.1)
+	void setLineCoords(
 		float x0, float y0, float z0, float x1, float y1, float z1)
 	{
 		m_x0 = x0;
@@ -37,6 +53,7 @@ class CSimpleLine : public CRenderizableShaderWireFrame
 		CRenderizable::notifyChange();
 	}
 
+	/// \deprecated (MRPT 2.3.1)
 	void getLineCoords(
 		float& x0, float& y0, float& z0, float& x1, float& y1, float& z1) const
 	{
@@ -58,7 +75,8 @@ class CSimpleLine : public CRenderizableShaderWireFrame
 		float x0 = 0, float y0 = 0, float z0 = 0, float x1 = 0, float y1 = 0,
 		float z1 = 0, float lineWidth = 1, bool antiAliasing = true);
 
-	/** Private, virtual destructor: only can be deleted from smart pointers */
+	/** Private, virtual destructor: only can be deleted from smart pointers
+	 */
 	~CSimpleLine() override = default;
 };
 
