@@ -13,6 +13,7 @@
     - mrpt::gui::CDisplayWindowGUI new methods to minimize/restore subwindows.
   - \ref mrpt_math_grp
     - New method mrpt::math::TLine3D::closestPointTo()
+    - New methods mrpt::math::TPose3D::translation(), mrpt::math::TPose2D::translation().
   - \ref mrpt_obs_grp
     - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
     - New method mrpt::obs::CObservation2DRangeScan::getScanAngle() and clarify docs on class members.
