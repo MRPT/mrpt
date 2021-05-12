@@ -76,6 +76,19 @@ struct TPoint2D_ : public TPoseOrPoint,
 	 */
 	explicit TPoint2D_(const TPose3D& p);
 
+	/** Builds from the first 2 elements of a vector-like object: [x y]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TPoint2D FromVector(const Vector& v)
+	{
+		TPoint2D o;
+		for (int i = 0; i < 2; i++)
+			o[i] = v[i];
+		return o;
+	}
+
 	/** Return a copy of this object using type U for coordinates */
 	template <typename U>
 	TPoint2D_<U> cast() const

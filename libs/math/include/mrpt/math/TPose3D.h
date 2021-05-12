@@ -71,6 +71,28 @@ struct TPose3D : public TPoseOrPoint,
 	 * Default fast constructor. Initializes to zeros.
 	 */
 	constexpr TPose3D() = default;
+
+	static TPose3D FromString(const std::string& s)
+	{
+		TPose3D o;
+		o.fromString(s);
+		return o;
+	}
+
+	/** Builds from the first 6 elements of a vector-like object: [x y z yaw
+	 * pitch roll]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TPose3D FromVector(const Vector& v)
+	{
+		TPose3D o;
+		for (int i = 0; i < 6; i++)
+			o[i] = v[i];
+		return o;
+	}
+
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
 	double& operator[](size_t i)
 	{
@@ -107,7 +129,8 @@ struct TPose3D : public TPoseOrPoint,
 	 * Pose's spatial coordinates norm.
 	 */
 	double norm() const { return std::sqrt(square(x) + square(y) + square(z)); }
-	/** Gets the pose as a vector of doubles.
+
+	/** Gets the pose as a vector of doubles: [x y z yaw pitch roll]
 	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
 	template <typename Vector>
@@ -208,13 +231,6 @@ struct TPose3D : public TPoseOrPoint,
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
-
-	static TPose3D FromString(const std::string& s)
-	{
-		TPose3D o;
-		o.fromString(s);
-		return o;
-	}
 };
 
 /** Unary $\ominus\$ operator: computes inverse SE(3) element */

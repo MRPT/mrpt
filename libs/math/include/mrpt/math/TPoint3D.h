@@ -95,6 +95,19 @@ struct TPoint3D_ : public TPoseOrPoint,
 			static_cast<U>(this->z));
 	}
 
+	/** Builds from the first 3 elements of a vector-like object: [x y z]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TPoint3D FromVector(const Vector& v)
+	{
+		TPoint3D o;
+		for (int i = 0; i < 3; i++)
+			o[i] = v[i];
+		return o;
+	}
+
 	/** Coordinate access using operator[]. Order: x,y,z */
 	T& operator[](size_t i)
 	{
