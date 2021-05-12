@@ -90,18 +90,21 @@ struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 		wz *= k;
 	}
 
-	/** Transformation into vector [vx vy vz wx wy wz] */
-	template <typename VECTORLIKE>
-	void asVector(VECTORLIKE& v) const
+	/** Transformation into vector [vx vy vz wx wy wz].
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(6);
 		for (int i = 0; i < 6; i++)
 			v[i] = (*this)[i];
 	}
-	template <typename VECTORLIKE>
-	VECTORLIKE asVector() const
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
 	{
-		VECTORLIKE v;
+		Vector v;
 		asVector(v);
 		return v;
 	}

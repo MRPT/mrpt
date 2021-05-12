@@ -58,14 +58,26 @@ struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 			default: throw std::out_of_range("index out of range");
 		}
 	}
-	/** Transformation into vector */
-	void asVector(std::vector<double>& v) const
+	/** Gets the twist as a vector of doubles.
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(3);
 		v[0] = vx;
 		v[1] = vy;
 		v[2] = omega;
 	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
+	}
+
 	/** Transform the (vx,vy) components for a counterclockwise rotation of
 	 * `ang` radians. */
 	void rotate(const double ang);

@@ -165,17 +165,26 @@ struct TPoint3D_ : public TPoseOrPoint,
 		TPoint3D_data<T>::z *= f;
 		return *this;
 	}
-	/**
-	 * Transformation into vector.
+	/** Gets the pose as a vector of doubles.
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
-	template <class VECTORLIKE>
-	void asVector(VECTORLIKE& v) const
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(3);
 		v[0] = TPoint3D_data<T>::x;
 		v[1] = TPoint3D_data<T>::y;
 		v[2] = TPoint3D_data<T>::z;
 	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
+	}
+
 	/**
 	 * Translation.
 	 */

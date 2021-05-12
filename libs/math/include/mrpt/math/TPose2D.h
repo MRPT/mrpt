@@ -85,16 +85,26 @@ struct TPose2D : public TPoseOrPoint,
 			default: throw std::out_of_range("index out of range");
 		}
 	}
-	/**
-	 * Transformation into vector.
+	/** Gets the pose as a vector of doubles.
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
-	void asVector(std::vector<double>& v) const
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(3);
 		v[0] = x;
 		v[1] = y;
 		v[2] = phi;
 	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
+	}
+
 	/** Returns a human-readable textual representation of the object (eg: "[x y
 	 * yaw]", yaw in degrees)
 	 * \sa fromString

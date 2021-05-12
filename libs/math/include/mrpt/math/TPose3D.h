@@ -107,10 +107,11 @@ struct TPose3D : public TPoseOrPoint,
 	 * Pose's spatial coordinates norm.
 	 */
 	double norm() const { return std::sqrt(square(x) + square(y) + square(z)); }
-	/**
-	 * Gets the pose as a vector of doubles.
+	/** Gets the pose as a vector of doubles.
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
-	void asVector(std::vector<double>& v) const
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(6);
 		v[0] = x;
@@ -120,6 +121,15 @@ struct TPose3D : public TPoseOrPoint,
 		v[4] = pitch;
 		v[5] = roll;
 	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
+	}
+
 	/** Returns a human-readable textual representation of the object (eg: "[x y
 	 * z yaw pitch roll]", angles in degrees.)
 	 * \sa fromString
