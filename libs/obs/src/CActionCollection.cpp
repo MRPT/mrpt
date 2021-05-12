@@ -77,13 +77,13 @@ const CAction& CActionCollection::get(size_t index) const
 
 size_t CActionCollection::size() const { return m_actions.size(); }
 
-void CActionCollection::insert(CAction& action)
+void CActionCollection::insert(const CAction& action)
 {
 	m_actions.emplace_back(
 		CAction::Ptr(dynamic_cast<CAction*>(action.clone())));
 }
 
-void CActionCollection::insert(const CAction::Ptr& action)
+void CActionCollection::insertPtr(const CAction::Ptr& action)
 {
 	m_actions.emplace_back(action);
 }
