@@ -36,6 +36,21 @@ struct TTwist3D : public internal::ProvideStaticResize<TTwist3D>
 	}
 	/** Default fast constructor. Initializes to zeros  */
 	TTwist3D() = default;
+
+	/** Builds from the first 6 elements of a vector-like object: [vx vy vz wx
+	 * wy wz]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TTwist3D FromVector(const Vector& v)
+	{
+		TTwist3D o;
+		for (int i = 0; i < 6; i++)
+			o[i] = v[i];
+		return o;
+	}
+
 	/** Coordinate access using operator[]. Order: vx,vy,vz, wx, wy, wz */
 	double& operator[](size_t i)
 	{

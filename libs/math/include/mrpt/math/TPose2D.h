@@ -63,6 +63,19 @@ struct TPose2D : public TPoseOrPoint,
 	 * Default fast constructor. Initializes to zeros.
 	 */
 	constexpr TPose2D() = default;
+
+	/** Builds from the first 3 elements of a vector-like object: [x y phi]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TPose2D FromVector(const Vector& v)
+	{
+		TPose2D o;
+		for (int i = 0; i < 3; i++)
+			o[i] = v[i];
+		return o;
+	}
 	/** Coordinate access using operator[]. Order: x,y,phi */
 	double& operator[](size_t i)
 	{
