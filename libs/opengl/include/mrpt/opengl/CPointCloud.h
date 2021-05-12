@@ -170,6 +170,15 @@ class CPointCloud : public CRenderizableShaderPoints,
 	/** Adds a new point to the cloud */
 	void insertPoint(float x, float y, float z);
 
+	void insertPoint(const mrpt::math::TPoint3Df& p)
+	{
+		insertPoint(p.x, p.y, p.z);
+	}
+	void insertPoint(const mrpt::math::TPoint3D& p)
+	{
+		insertPoint(p.x, p.y, p.z);
+	}
+
 	/** Read access to each individual point (checks for "i" in the valid
 	 * range only in Debug). */
 	inline const mrpt::math::TPoint3Df& operator[](size_t i) const

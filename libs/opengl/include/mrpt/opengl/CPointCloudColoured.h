@@ -83,6 +83,9 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void push_back(
 		float x, float y, float z, float R, float G, float B, float A = 1);
 
+	/** inserts a new point */
+	void insertPoint(const mrpt::math::TPointXYZfRGBAu8& p);
+
 	/** Set the number of points, with undefined contents */
 	inline void resize(size_t N)
 	{
