@@ -104,15 +104,23 @@ struct TPoint2D_ : public TPoseOrPoint,
 		}
 	}
 
-	/**
-	 * Transformation into vector.
+	/** Gets the pose as a vector of doubles.
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
-	template <typename U>
-	void asVector(std::vector<U>& v) const
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(2);
-		v[0] = static_cast<U>(this->x);
-		v[1] = static_cast<U>(this->y);
+		v[0] = TPoint2D_data<T>::x;
+		v[1] = TPoint2D_data<T>::y;
+	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
 	}
 
 	bool operator<(const TPoint2D_& p) const;
