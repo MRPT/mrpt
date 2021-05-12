@@ -25,8 +25,8 @@ namespace mrpt::math
  * Refer to: \ref tutorial_math_levenberg_marquardt
  *
  * \tparam VECTORTYPE The type for input/output vectors
- * \tparam USERPARAM The type of the additional constant parameters input to the user supplied evaluation
- * functor. Default type is a vector of NUMTYPE.
+ * \tparam USERPARAM The type of the additional constant parameters input to the
+ * user supplied evaluation functor. Default type is a vector of NUMTYPE.
  * \ingroup mrpt_math_grp
  */
 template <typename VECTORTYPE = CVectorDouble, class USERPARAM = VECTORTYPE>
