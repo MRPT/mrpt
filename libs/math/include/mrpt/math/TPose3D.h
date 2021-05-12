@@ -11,6 +11,7 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/wrap2pi.h>
 
@@ -98,6 +99,10 @@ struct TPose3D : public TPoseOrPoint,
 			default: throw std::out_of_range("index out of range");
 		}
 	}
+
+	/** Returns the (x,y,z) translational part of the SE(3) transformation. */
+	mrpt::math::TPoint3D translation() const { return {x, y, z}; }
+
 	/**
 	 * Pose's spatial coordinates norm.
 	 */

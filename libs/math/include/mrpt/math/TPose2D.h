@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/bits_math.h>  // hypot_fast()
+#include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/wrap2pi.h>
 
@@ -116,6 +117,9 @@ struct TPose2D : public TPoseOrPoint,
 	mrpt::math::TPoint2D operator+(const mrpt::math::TPoint2D& b) const;
 
 	mrpt::math::TPoint2D inverseComposePoint(const TPoint2D g) const;
+
+	/** Returns the (x,y) translational part of the SE(2) transformation. */
+	mrpt::math::TPoint2D translation() const { return {x, y}; }
 
 	/** Returns the norm of the (x,y) vector (phi is not used) */
 	double norm() const { return mrpt::hypot_fast(x, y); }

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/CVectorFixed.h>
+#include <mrpt/math/TPoint2D.h>
 #include <mrpt/poses/CPose.h>
 #include <mrpt/serialization/CSerializable.h>
 
@@ -123,6 +124,12 @@ class CPose2D : public CPose<CPose2D, 3>,
 
 	/** Returns a 1x3 vector with [x y phi] */
 	void asVector(vector_t& v) const;
+
+	/** Returns the (x,y) translational part of the SE(2) transformation. */
+	mrpt::math::TPoint2D translation() const
+	{
+		return {m_coords[0], m_coords[1]};
+	}
 
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
 	 * point(translation) or pose (translation+orientation).

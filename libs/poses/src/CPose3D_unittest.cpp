@@ -1010,3 +1010,11 @@ TEST_F(Pose3DTests, Jacob_dAexpeD_de)
 		for (const auto& p2 : ptc)
 			test_Jacob_dAexpeD_de(p1, p2);
 }
+
+TEST_F(Pose3DTests, translation)
+{
+	const auto p =
+		mrpt::poses::CPose3D::FromXYZYawPitchRoll(1.0, 2.0, 3.0, 0, 0, 0);
+	const mrpt::math::TPoint3D t = p.translation();
+	EXPECT_EQ(t, mrpt::math::TPoint3D(1, 2, 3));
+}
