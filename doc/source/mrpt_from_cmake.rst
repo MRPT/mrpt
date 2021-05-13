@@ -4,6 +4,8 @@
 Using MRPT from your CMake project
 ####################################
 
+.. note::
+    See online complete example with a CMake + .cpp file `here <https://github.com/MRPT/mrpt/tree/develop/doc/mrpt_example1>`_.
 
 Finding MRPT from CMake
 -------------------------
