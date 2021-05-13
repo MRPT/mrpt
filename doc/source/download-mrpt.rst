@@ -82,5 +82,4 @@ Windows installers
 
 Executables (.exes and .dlls) and development libraries (.hs and .libs) included:
 
-   - `Last stable version <https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-stable>`_
-   - `Nightly builds <https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-develop>`_
+   - `Nightly builds <https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds>`_
