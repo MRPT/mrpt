@@ -3,7 +3,7 @@ uses the MRPT libraries. It assumes MRPT has already been compiled or
 (in Unix) installed in the system.
 
 Invoking 
-- In Windows: "cmakesetup ."
+- In Windows: "cmake-gui ."
 - Unix: "ccmake ."
 
 should be enough to create the Makefiles. Then invoke "make" to compile the
