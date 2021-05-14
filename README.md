@@ -115,7 +115,7 @@ make
 
 Executables (`.exe`s and `.dll`s) and development libraries (`.h`s and `.lib`s) included:
 
-Last Win64 builds: <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-develop/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-develop'></a> <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-stable/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-stable'></a>
+[Nightly built Windows installer](https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds)
 
 
 ## 4. License
