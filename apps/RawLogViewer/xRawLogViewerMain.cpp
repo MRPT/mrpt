@@ -2621,7 +2621,7 @@ void xRawLogViewerFrame::OnShowImagesAsVideo(wxCommandEvent&)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnRawMapOdo(wxCommandEvent&)
 {
-	if (rawlog.size() < 1)
+	if (rawlog.empty())
 	{
 		wxMessageBox(
 			_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
@@ -4950,6 +4950,13 @@ void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(wxCommandEvent&)
 
 void xRawLogViewerFrame::OnShowAnimateScans(wxCommandEvent&)
 {
+	if (rawlog.empty())
+	{
+		wxMessageBox(
+			_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
+		return;
+	}
+
 	CScanAnimation scanAnimation(this);
 	scanAnimation.Maximize();
 

@@ -117,6 +117,17 @@ class CObservation : public mrpt::serialization::CSerializable
 	 */
 	void getSensorPose(mrpt::math::TPose3D& out_sensorPose) const;
 
+	/** synonym with getSensorPose()
+	 * \sa getSensorPose
+	 * \note (New in MRPT 2.3.1)
+	 */
+	mrpt::math::TPose3D sensorPose() const
+	{
+		mrpt::math::TPose3D p;
+		getSensorPose(p);
+		return p;
+	}
+
 	/** A general method to change the sensor pose on the robot.
 	 *  Note that most sensors will use the full (6D) CPose3D, but see the
 	 * derived classes for more details or special cases.
