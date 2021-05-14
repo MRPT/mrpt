@@ -54,6 +54,7 @@ class CScanAnimation : public wxDialog
 	CMyGLCanvas* m_plot3D;
 	wxTextCtrl* edTimestamp;
 	wxCheckListBox* lstObsLabels;
+	wxButton* btnVizOptions;
 	//*)
 
    protected:
@@ -77,6 +78,9 @@ class CScanAnimation : public wxDialog
 	static const long ID_STATICTEXT2;
 	static const long ID_CHECKBOX2;
 	static const long ID_STATICTEXT3;
+	static const long ID_BUTTON6;
+	static const long ID_BUTTON7;
+
 	//*)
 
    private:
@@ -91,6 +95,8 @@ class CScanAnimation : public wxDialog
 	void OnInit(wxInitDialogEvent& event);
 	void OncbViewOrthoClick(wxCommandEvent& event);
 	//*)
+
+	void OnbtnVizOptions(wxCommandEvent& event);
 
 	DECLARE_EVENT_TABLE()
 
@@ -108,8 +114,16 @@ class CScanAnimation : public wxDialog
 	/** All the observations added to the map. */
 	TListGlObjects m_gl_objects;
 
-	void RebuildMaps();
-	void BuildMapAndRefresh(mrpt::obs::CSensoryFrame* sf);
+	/// Get the rawlog entry (from cur. loaded rawlog), build and displays its
+	/// map:
+	/// \return true if the viz has been refreshed.
+	bool rebuild_view(bool forceRefreshView = false);
+
+	/// This method is called in any case for displaying a laser scan.
+	///  We keep an internal list of recent scans so they don't vanish
+	///  instantaneously.
+	/// \return true if the viz should be refreshed.
+	bool update_opengl_viz(const mrpt::obs::CSensoryFrame& sf);
 };
 
 #endif

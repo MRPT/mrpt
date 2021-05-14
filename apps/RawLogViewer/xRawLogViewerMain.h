@@ -155,6 +155,8 @@ class xRawLogViewerFrame : public wxFrame
 		const std::map<double, TAlogRecord>& theAlog,
 		const std::string& dir_for_images);
 
+	ViewOptions3DPoints* getViewOptions() { return pnViewOptions; }
+
    private:
 	/** Loads the given file in memory, in the varibale "rawlog"
 	 */

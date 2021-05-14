@@ -16,6 +16,7 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/datetime.h>
 
+#include "ParametersView3DPoints.h"
 #include "xRawLogViewerMain.h"
 
 #define MRPT_NO_WARN_BIG_HDR  // It's ok to include ALL hdrs here.
@@ -39,6 +40,134 @@ using namespace mrpt::serialization;
 using namespace mrpt::poses;
 using namespace mrpt::rtti;
 using namespace std;
+
+void recolorize3Dpc(
+	const mrpt::opengl::CPointCloudColoured::Ptr& pnts,
+	const ParametersView3DPoints& p)
+{
+	const auto bb = pnts->getBoundingBox();
+
+	switch (p.colorizeByAxis)
+	{
+		case 0:
+			pnts->recolorizeByCoordinate(
+				p.invertColorMapping ? bb.max.x : bb.min.x,
+				p.invertColorMapping ? bb.min.x : bb.max.x, 0 /* x */,
+				p.colorMap);
+			break;
+		case 1:
+			pnts->recolorizeByCoordinate(
+				p.invertColorMapping ? bb.max.y : bb.min.y,
+				p.invertColorMapping ? bb.min.y : bb.max.y, 1 /* y */,
+				p.colorMap);
+			break;
+		case 2:
+			pnts->recolorizeByCoordinate(
+				p.invertColorMapping ? bb.max.z : bb.min.z,
+				p.invertColorMapping ? bb.min.z : bb.max.z, 2 /* z */,
+				p.colorMap);
+			break;
+		default: break;
+	}
+}
+
+void add_common_to_viz(
+	const CObservation& obs, const ParametersView3DPoints& p,
+	mrpt::opengl::CSetOfObjects& out)
+{
+	{
+		const float L = p.axisLimits;
+		auto gl_axis = mrpt::opengl::CAxis::Create(
+			-L, -L, -L, L, L, L, p.axisTickFrequency, 2, true);
+		gl_axis->setTextScale(p.axisTickTextSize);
+		gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
+		out.insert(gl_axis);
+	}
+
+	if (p.drawSensorPose)
+	{
+		const auto glCorner =
+			mrpt::opengl::stock_objects::CornerXYZ(p.sensorPoseScale);
+		glCorner->setPose(obs.sensorPose());
+		out.insert(glCorner);
+	}
+}
+
+void obs3Dscan_to_viz(
+	const CObservation3DRangeScan::Ptr& obs, const ParametersView3DPoints& p,
+	mrpt::opengl::CSetOfObjects& out)
+{
+	out.clear();
+
+	// Generate/load 3D points
+	// ----------------------
+	mrpt::maps::CPointsMap::Ptr pointMap;
+	mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
+	mrpt::obs::T3DPointsProjectionParams pp;
+	pp.takeIntoAccountSensorPoseOnRobot = true;
+
+	// Color from intensity image?
+	if (p.colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)
+	{
+		pointMapCol = mrpt::maps::CColouredPointsMap::Create();
+		pointMapCol->colorScheme.scheme =
+			CColouredPointsMap::cmFromIntensityImage;
+
+		obs->unprojectInto(*pointMapCol, pp);
+		pointMap = pointMapCol;
+	}
+	else
+	{
+		// Empty point set, or load from XYZ in observation:
+		pointMap = mrpt::maps::CSimplePointsMap::Create();
+		if (obs->hasPoints3D)
+		{
+			for (size_t i = 0; i < obs->points3D_x.size(); i++)
+				pointMap->insertPoint(
+					obs->points3D_x[i], obs->points3D_y[i], obs->points3D_z[i]);
+		}
+		else if (obs->hasRangeImage)
+		{
+			obs->unprojectInto(*pointMap, pp);
+		}
+	}
+
+	add_common_to_viz(*obs, p, out);
+
+	auto gl_pnts = mrpt::opengl::CPointCloudColoured::Create();
+	// Load as RGB or grayscale points:
+	if (pointMapCol) gl_pnts->loadFromPointsMap(pointMapCol.get());
+	else
+	{
+		gl_pnts->loadFromPointsMap(pointMap.get());
+		recolorize3Dpc(gl_pnts, p);
+	}
+
+	// No need to further transform 3D points
+	gl_pnts->setPose(mrpt::poses::CPose3D());
+	gl_pnts->setPointSize(p.pointSize);
+
+	out.insert(gl_pnts);
+}
+
+void obsVelodyne_to_viz(
+	const CObservationVelodyneScan::Ptr& obs, const ParametersView3DPoints& p,
+	mrpt::opengl::CSetOfObjects& out)
+{
+	out.clear();
+
+	add_common_to_viz(*obs, p, out);
+
+	auto pnts = mrpt::opengl::CPointCloudColoured::Create();
+	out.insert(pnts);
+
+	CColouredPointsMap pntsMap;
+	pntsMap.loadFromVelodyneScan(*obs);
+	pnts->loadFromPointsMap(&pntsMap);
+	pnts->setPointSize(p.pointSize);
+
+	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
+}
 
 // Update selected item display:
 void xRawLogViewerFrame::SelectObjectInTreeView(
@@ -112,8 +241,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		//              CObservation2DRangeScan
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(2);
-		CObservation2DRangeScan::Ptr obs =
-			std::dynamic_pointer_cast<CObservation2DRangeScan>(sel_obj);
+		auto obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(sel_obj);
 
 		// Additional text description: This is not within
 		// getDescriptionAsTextValue() because mrpt-maps is not available within
@@ -151,8 +279,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		//              CObservationImage
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(3);
-		CObservationImage::Ptr obs =
-			std::dynamic_pointer_cast<CObservationImage>(sel_obj);
+		auto obs = std::dynamic_pointer_cast<CObservationImage>(sel_obj);
 
 		// Get bitmap:
 		// ----------------------
@@ -169,8 +296,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		//              CObservationStereoImages
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(4);
-		CObservationStereoImages::Ptr obs =
-			std::dynamic_pointer_cast<CObservationStereoImages>(sel_obj);
+		auto obs = std::dynamic_pointer_cast<CObservationStereoImages>(sel_obj);
 
 		// Images:
 		// ----------------------
@@ -197,8 +323,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(1);
 
-		CActionRobotMovement2D::Ptr act =
-			std::dynamic_pointer_cast<CActionRobotMovement2D>(sel_obj);
+		auto act = std::dynamic_pointer_cast<CActionRobotMovement2D>(sel_obj);
 
 		// Plot the 2D pose samples:
 		unsigned int N = 1000;
@@ -229,8 +354,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		//              CObservationBearingRange
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(8);
-		CObservationBearingRange::Ptr obs =
-			std::dynamic_pointer_cast<CObservationBearingRange>(sel_obj);
+		auto obs = std::dynamic_pointer_cast<CObservationBearingRange>(sel_obj);
 
 		// The plot:
 		size_t nPts = obs->sensedData.size();
@@ -261,8 +385,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		//              CObservation3DRangeScan
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(9);
-		CObservation3DRangeScan::Ptr obs =
-			std::dynamic_pointer_cast<CObservation3DRangeScan>(sel_obj);
+		auto obs = std::dynamic_pointer_cast<CObservation3DRangeScan>(sel_obj);
 
 		obs->load();  // Make sure the 3D point cloud, etc... are all
 		// loaded in memory.
@@ -271,99 +394,16 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// --------------------------------
 		const auto& p = pnViewOptions->m_params;
 
-		// Generate/load 3D points
-		// ----------------------
-		mrpt::maps::CPointsMap::Ptr pointMap;
-		mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
-		mrpt::obs::T3DPointsProjectionParams pp;
-		pp.takeIntoAccountSensorPoseOnRobot = true;
+		auto glPts = mrpt::opengl::CSetOfObjects::Create();
 
-		// Color from intensity image?
-		if (p.colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)
-		{
-			pointMapCol = mrpt::maps::CColouredPointsMap::Create();
-			pointMapCol->colorScheme.scheme =
-				CColouredPointsMap::cmFromIntensityImage;
-
-			obs->unprojectInto(*pointMapCol, pp);
-			pointMap = pointMapCol;
-		}
-		else
-		{
-			// Empty point set, or load from XYZ in observation:
-			pointMap = mrpt::maps::CSimplePointsMap::Create();
-			if (obs->hasPoints3D)
-			{
-				for (size_t i = 0; i < obs->points3D_x.size(); i++)
-					pointMap->insertPoint(
-						obs->points3D_x[i], obs->points3D_y[i],
-						obs->points3D_z[i]);
-			}
-			else if (obs->hasRangeImage)
-			{
-				obs->unprojectInto(*pointMap, pp);
-			}
-		}
+		obs3Dscan_to_viz(obs, p, *glPts);
 
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
 		openGLSceneRef->clear();
+		openGLSceneRef->insert(glPts);
 
-		{
-			const float L = p.axisLimits;
-			auto gl_axis = mrpt::opengl::CAxis::Create(
-				-L, -L, -L, L, L, L, p.axisTickFrequency, 2, true);
-			gl_axis->setTextScale(p.axisTickTextSize);
-			gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
-			openGLSceneRef->insert(gl_axis);
-		}
-
-		if (p.drawSensorPose)
-		{
-			const auto glCorner =
-				mrpt::opengl::stock_objects::CornerXYZ(p.sensorPoseScale);
-			glCorner->setPose(obs->sensorPose);
-			openGLSceneRef->insert(glCorner);
-		}
-
-		auto gl_pnts = mrpt::opengl::CPointCloudColoured::Create();
-		// Load as RGB or grayscale points:
-		if (pointMapCol) gl_pnts->loadFromPointsMap(pointMapCol.get());
-		else
-		{
-			gl_pnts->loadFromPointsMap(pointMap.get());
-			const auto bb = gl_pnts->getBoundingBox();
-
-			switch (p.colorizeByAxis)
-			{
-				case 0:
-					gl_pnts->recolorizeByCoordinate(
-						p.invertColorMapping ? bb.max.x : bb.min.x,
-						p.invertColorMapping ? bb.min.x : bb.max.x, 0 /* x */,
-						p.colorMap);
-					break;
-				case 1:
-					gl_pnts->recolorizeByCoordinate(
-						p.invertColorMapping ? bb.max.y : bb.min.y,
-						p.invertColorMapping ? bb.min.y : bb.max.y, 1 /* y */,
-						p.colorMap);
-					break;
-				case 2:
-					gl_pnts->recolorizeByCoordinate(
-						p.invertColorMapping ? bb.max.z : bb.min.z,
-						p.invertColorMapping ? bb.min.z : bb.max.z, 2 /* z */,
-						p.colorMap);
-					break;
-				default: break;
-			}
-		}
-
-		// No need to further transform 3D points
-		gl_pnts->setPose(mrpt::poses::CPose3D());
-		gl_pnts->setPointSize(p.pointSize);
-
-		openGLSceneRef->insert(gl_pnts);
 		m_gl3DRangeScan->Refresh();
 #endif
 
@@ -417,28 +457,20 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		//              CObservationVelodyneScan
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(9);
-		CObservationVelodyneScan::Ptr obs =
-			std::dynamic_pointer_cast<CObservationVelodyneScan>(sel_obj);
+		auto obs = std::dynamic_pointer_cast<CObservationVelodyneScan>(sel_obj);
 
 		obs->generatePointCloud();
+		const auto& p = pnViewOptions->m_params;
+
+		auto glPts = mrpt::opengl::CSetOfObjects::Create();
+		obsVelodyne_to_viz(obs, p, *glPts);
+
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
 		openGLSceneRef->clear();
-		// this->m_gl3DRangeScan->m_openGLScene->insert(
-		// mrpt::opengl::stock_objects::CornerXYZ() );
-		openGLSceneRef->insert(
-			mrpt::opengl::CAxis::Create(-20, -20, -20, 20, 20, 20, 1, 2, true));
+		openGLSceneRef->insert(glPts);
 
-		mrpt::opengl::CPointCloudColoured::Ptr pnts =
-			mrpt::opengl::CPointCloudColoured::Create();
-
-		CColouredPointsMap pntsMap;
-		pntsMap.loadFromVelodyneScan(*obs);
-		pnts->loadFromPointsMap(&pntsMap);
-		pnts->setPointSize(4.0);
-
-		openGLSceneRef->insert(pnts);
 		this->m_gl3DRangeScan->Refresh();
 
 		// Free memory:

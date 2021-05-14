@@ -23,29 +23,7 @@
 
 #include <mrpt/img/color_maps.h>
 
-class ViewOptions3DPoints;
-
-struct ParametersView3DPoints
-{
-	ParametersView3DPoints() = default;
-
-	double axisTickFrequency = 1.0;
-	double axisLimits = 20.0;
-	double axisTickTextSize = 0.075;
-	bool colorFromRGBimage = true;
-	int colorizeByAxis = 0;	 // 0:x,1:y,2:z, anything else = none.
-	bool invertColorMapping = false;
-	mrpt::img::TColormap colorMap = mrpt::img::cmJET;
-	double pointSize = 4.0;
-	bool drawSensorPose = true;
-	double sensorPoseScale = 0.3;
-
-	void to_UI(ViewOptions3DPoints& ui) const;
-	void from_UI(const ViewOptions3DPoints& ui);
-
-	void save_to_ini_file() const;
-	void load_from_ini_file();
-};
+#include "ParametersView3DPoints.h"
 
 class ViewOptions3DPoints : public wxPanel
 {

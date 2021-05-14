@@ -85,7 +85,7 @@
 							<cols>1</cols>
 							<object class="sizeritem">
 								<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbColorFromRGB" member="yes">
-									<label>Color from RGB (if available)</label>
+									<label>Color from RGB/intensity (if available)</label>
 									<checked>1</checked>
 									<handler function="OnbtnApplyClick" entry="EVT_CHECKBOX" />
 								</object>

@@ -108,7 +108,7 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 		new wxStaticBoxSizer(wxHORIZONTAL, this, _("Point cloud"));
 	FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
 	cbColorFromRGB = new wxCheckBox(
-		this, ID_CHECKBOX1, _("Color from RGB (if available)"),
+		this, ID_CHECKBOX1, _("Color from RGB/intensity (if available)"),
 		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
 		_T("ID_CHECKBOX1"));
 	cbColorFromRGB->SetValue(true);
