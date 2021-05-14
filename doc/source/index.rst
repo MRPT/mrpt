@@ -31,6 +31,7 @@ MRPT
   modules
   contributing
   doxygen-index
+  Docs for other versions <https://docs.mrpt.org/reference/>
 
 .. image:: https://mrpt.github.io/imgs/mrpt-videos-mix2.gif
    :alt: MRPT demo usages
