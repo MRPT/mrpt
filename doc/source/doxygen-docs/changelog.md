@@ -4,6 +4,8 @@
 - General cmake scripts:
   - `find_package(mrpt-xxx)` is now much faster.
 - Changes in applications:
+  - RawLogViewer:
+    - Browse scans window now has a check-box list to show/hide individual sensors.
   - SceneViewer3D:
     - Graceful failure when loading a corrupted 3Dscene file.
 - Changes in libraries:
