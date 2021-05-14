@@ -97,6 +97,8 @@ pygments_style = None
 # html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 
+# This ensures search engines will prefer similar pages starting with:
+html_baseurl = "https://docs.mrpt.org/reference/latest/"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
