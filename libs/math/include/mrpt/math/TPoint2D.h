@@ -216,10 +216,10 @@ struct TPoint2D_ : public TPoseOrPoint,
 		return o;
 	}
 
-	/** Squared norm: |v|^2 = x^2+y^2 */
+	/** Squared norm: `|v|^2 = x^2+y^2` */
 	T sqrNorm() const { return this->x * this->x + this->y * this->y; }
 
-	/** Point norm: |v| = sqrt(x^2+y^2) */
+	/** Point norm: `|v| = sqrt(x^2+y^2)` */
 	T norm() const { return std::sqrt(sqrNorm()); }
 };
 

@@ -24,7 +24,7 @@ class TSetOfMetricMapInitializers;
  * be inserted into mrpt::maps::CMultiMetricMap)
  *  See `mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile()` as an
  * easy way of initialize this object, or
- *  construct with the factory methods `<metric_map_class>::MapDefinition()`
+ *  construct with the factory methods `MetricMapClass::MapDefinition()`
  * and `TMetricMapInitializer::factory()`
  *
  * \sa TSetOfMetricMapInitializers, mrpt::maps::CMultiMetricMap

@@ -36,7 +36,7 @@ MRPT_WARNING(
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 
 //#include <mrpt/maps/PCL_adapters.h>  // NOTE: This file must be included from
-// the user code only if he has already #include'd PCL headers.
+// the user code only if he has already include PCL headers.
 
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>

@@ -70,7 +70,7 @@ class CPose3DQuatPDF
 		const CPose3D& newReferenceBase) = 0;
 
 	/** This static method computes the two Jacobians of a pose composition
-	 * operation $f(x,u)= x \oplus u$
+	 * operation \f$ (x,u)= x \oplus u \f$
 	 *  \param out_x_oplus_u If set to !=nullptr, the result of "x+u" will be
 	 * stored here (it will be computed internally anyway).
 	 *  To see the mathematical derivation of the formulas, refer to the

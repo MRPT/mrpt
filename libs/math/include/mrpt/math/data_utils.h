@@ -13,12 +13,7 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
 
-namespace mrpt
-{
-/** This base provides a set of functions for maths stuff. \ingroup
- * mrpt_math_grp
- */
-namespace math
+namespace mrpt::math
 {
 /** \addtogroup stats_grp
  * @{
@@ -542,5 +537,4 @@ double averageLogLikelihood(
 
 /**  @} */	// end of grouping container_ops_grp
 
-}  // namespace math
-}  // namespace mrpt
+}  // namespace mrpt::math
