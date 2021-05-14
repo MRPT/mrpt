@@ -952,7 +952,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		const std::string& fileName, mrpt::img::CImage& out_RGB,
 		mrpt::img::CImage& out_alpha);
 
-	/** Loads the image from an XPM array, as #include'd from a ".xpm" file.
+	/** Loads the image from an XPM array, as included from a ".xpm" file.
 	 * \param[in] swap_rb Swaps red/blue channels from loaded image. *Seems* to
 	 * be always needed, so it's enabled by default.
 	 * \sa loadFromFile

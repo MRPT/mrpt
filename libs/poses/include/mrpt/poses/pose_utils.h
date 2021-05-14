@@ -104,10 +104,10 @@ inline void getPoseFromString</*QUAT_REPR=*/true, /*TUM_FORMAT=*/false>(
  *
  * The expected format is the following:
  *
- * For 2D Poses: timestamp x y theta (in rad)
- * For 3D Poses in RPY form : x y z yaw pitch roll
- * For 3D Poses in Quaternion form : x y z qw qx qy qz
- * For 3D Poses in Quaternion form [TUM Datasets] : x y z qx qy qz qw
+ * - For 2D Poses: timestamp x y theta (in rad)
+ * - For 3D Poses in RPY form : x y z yaw pitch roll
+ * - For 3D Poses in Quaternion form : x y z qw qx qy qz
+ * - For 3D Poses in Quaternion form [TUM Datasets] : x y z qx qy qz qw
  *
  * The 2D format abides to the groundtruth file format used by the
  * <em>GridMapNavSimul</em> application

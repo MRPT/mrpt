@@ -149,14 +149,14 @@ struct TPoint3D_ : public TPoseOrPoint,
 			square(p.y - TPoint3D_data<T>::y) +
 			square(p.z - TPoint3D_data<T>::z);
 	}
-	/** Squared norm: |v|^2 = x^2+y^2+z^2 */
+	/** Squared norm: `|v|^2 = x^2+y^2+z^2` */
 	T sqrNorm() const
 	{
 		return square(TPoint3D_data<T>::x) + square(TPoint3D_data<T>::y) +
 			square(TPoint3D_data<T>::z);
 	}
 
-	/** Point norm: |v| = sqrt(x^2+y^2+z^2) */
+	/** Point norm: `|v| = sqrt(x^2+y^2+z^2)` */
 	T norm() const { return std::sqrt(sqrNorm()); }
 
 	/** Returns this vector with unit length: v/norm(v) */

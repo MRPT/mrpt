@@ -477,7 +477,7 @@ static bool GetRGBFromName(
 }
 #endif
 
-/** Loads the image from an XPM array, as #include'd from a ".xpm" file.
+/** Loads the image from an XPM array, as included from a ".xpm" file.
  * \sa loadFromFile
  * \return false on any error */
 bool mrpt::img::CImage::loadFromXPM(

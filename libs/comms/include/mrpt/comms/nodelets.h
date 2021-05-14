@@ -19,14 +19,11 @@
 #include <mutex>
 #include <unordered_map>
 
-namespace mrpt
+namespace mrpt::comms
 {
-namespace comms
-{
-/** Nodelet-like Pub/Sub communications (in #include <mrpt/comms/nodelets.h>)
+/** Nodelet-like Pub/Sub communications (in `#include <mrpt/comms/nodelets.h>`)
  * \ingroup mrpt_comms_grp
  * @{ */
-
 class Subscriber
 {
    private:
@@ -142,5 +139,4 @@ class TopicDirectory : public std::enable_shared_from_this<TopicDirectory>
 
 /** @} */  // end grouping
 
-}  // namespace comms
-}  // namespace mrpt
+}  // namespace mrpt::comms
