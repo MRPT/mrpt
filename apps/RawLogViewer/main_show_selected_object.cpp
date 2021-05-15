@@ -305,15 +305,22 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		bmpObsStereoLeft->Refresh();
 		delete imgLeft;
 
-		wxImage* imgRight = mrpt::gui::MRPTImage2wxImage(obs->imageRight);
-		bmpObsStereoRight->SetBitmap(wxBitmap(*imgRight));
-		bmpObsStereoRight->Refresh();
-		delete imgRight;
+		if (obs->hasImageRight)
+		{
+			wxImage* imgRight = mrpt::gui::MRPTImage2wxImage(obs->imageRight);
+			bmpObsStereoRight->SetBitmap(wxBitmap(*imgRight));
+			bmpObsStereoRight->Refresh();
+			delete imgRight;
+		}
 
-		wxImage* imgDisp = mrpt::gui::MRPTImage2wxImage(obs->imageDisparity);
-		bmpObsStereoDisp->SetBitmap(wxBitmap(*imgDisp));
-		bmpObsStereoDisp->Refresh();
-		delete imgDisp;
+		if (obs->hasImageDisparity)
+		{
+			wxImage* imgDisp =
+				mrpt::gui::MRPTImage2wxImage(obs->imageDisparity);
+			bmpObsStereoDisp->SetBitmap(wxBitmap(*imgDisp));
+			bmpObsStereoDisp->Refresh();
+			delete imgDisp;
+		}
 	}
 
 	if (classID == CLASS_ID(CActionRobotMovement2D))

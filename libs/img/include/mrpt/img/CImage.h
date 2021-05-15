@@ -807,7 +807,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * on first access and there's no need to call this.
 	 * \unload
 	 */
-	inline void forceLoad() const { makeSureImageIsLoaded(); }
+	inline void forceLoad() const { makeSureImageIsLoaded(true); }
 	/** For external storage image objects only, this method unloads the image
 	 * from memory (or does nothing if already unloaded).
 	 *  It does not need to be called explicitly, unless the user wants to save
@@ -1044,7 +1044,7 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	/** Checks if the image is of type "external storage", and if so and not
 	 * loaded yet, load it.
 	 * \exception CExceptionExternalImageNotFound */
-	void makeSureImageIsLoaded() const;
+	void makeSureImageIsLoaded(bool allowNonInitialized = false) const;
 	uint8_t* internal_get(int col, int row, uint8_t channel = 0) const;
 	void internal_fromIPL(const IplImage* iplImage, copy_type_t c);
 };	// End of class

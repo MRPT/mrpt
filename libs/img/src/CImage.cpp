@@ -1587,7 +1587,7 @@ void CImage::unload() const noexcept
 #endif
 }
 
-void CImage::makeSureImageIsLoaded() const
+void CImage::makeSureImageIsLoaded(bool allowNonInitialized) const
 {
 #if MRPT_HAS_OPENCV
 	if (!m_impl->img.empty()) return;  // OK, continue
@@ -1614,7 +1614,7 @@ void CImage::makeSureImageIsLoaded() const
 				"Error loading externally-stored image from: %s",
 				wholeFile.c_str());
 	}
-	else
+	else if (!allowNonInitialized)
 	{
 		THROW_EXCEPTION(
 			"Trying to access uninitialized image in a non "
