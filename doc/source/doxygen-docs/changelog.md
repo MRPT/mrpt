@@ -29,6 +29,7 @@
     - mrpt::system::extractFileDirectory() returns `"."` instead of an empty string for filenames without any explicit full path.
 - BUG FIXES:
   - Fix wrong formatting of empty *string* values (not *null* values) in mrpt::containers::yaml.
+  - Fix exception loading old datasets with stereo observations, via a new argument in mrpt::img::CImage::makeSureImageIsLoaded()
 
 # Version 2.3.0: Released April 25th, 2021
 - General build changes:
