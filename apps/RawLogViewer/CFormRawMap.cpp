@@ -87,7 +87,6 @@ const long CFormRawMap::ID_BUTTON8 = wxNewId();
 const long CFormRawMap::ID_BUTTON9 = wxNewId();
 const long CFormRawMap::ID_STATICTEXT8 = wxNewId();
 const long CFormRawMap::ID_STATICTEXT2 = wxNewId();
-const long CFormRawMap::ID_BITMAPBUTTON1 = wxNewId();
 const long CFormRawMap::ID_BUTTON4 = wxNewId();
 const long CFormRawMap::ID_TEXTCTRL1 = wxNewId();
 const long CFormRawMap::ID_PANEL1 = wxNewId();
@@ -104,7 +103,6 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 {
 	//(*Initialize(CFormRawMap)
 	wxFlexGridSizer* FlexGridSizer4;
-	wxFlexGridSizer* FlexGridSizer10;
 	wxFlexGridSizer* FlexGridSizer5;
 	wxFlexGridSizer* FlexGridSizer9;
 	wxStaticBoxSizer* boxResults;
@@ -204,7 +202,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 		5);
 	FlexGridSizer4->Add(
 		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer5 = new wxFlexGridSizer(3, 1, 0, 0);
+	FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer6 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer6->AddGrowableCol(0);
@@ -274,9 +272,13 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 	btnView3D->Disable();
 	FlexGridSizer11->Add(
 		btnView3D, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+
+	btnClose = new wxButton(
+		Panel2, ID_BUTTON4, _("Close"), wxDefaultPosition, wxDefaultSize, 0,
+		wxDefaultValidator, _T("ID_BUTTON4"));
 	FlexGridSizer11->Add(
-		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
+		btnClose, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+
 	lbCount = new wxStaticText(
 		Panel2, ID_STATICTEXT8, _("Point count=0 \n (No decimation)"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
@@ -297,27 +299,6 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 		boxResults, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer5->Add(
 		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
-	FlexGridSizer10 = new wxFlexGridSizer(1, 3, 0, 0);
-	FlexGridSizer10->AddGrowableCol(0);
-	FlexGridSizer10->AddGrowableRow(0);
-	FlexGridSizer10->Add(
-		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
-	btnHelp = new wxBitmapButton(
-		Panel2, ID_BITMAPBUTTON1,
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("wxART_INFORMATION")), wxART_BUTTON),
-		wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator,
-		_T("ID_BITMAPBUTTON1"));
-	FlexGridSizer10->Add(
-		btnHelp, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 4);
-	btnClose = new wxButton(
-		Panel2, ID_BUTTON4, _("Close"), wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_BUTTON4"));
-	FlexGridSizer10->Add(
-		btnClose, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer5->Add(
-		FlexGridSizer10, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	FlexGridSizer4->Add(
 		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer2->Add(
@@ -1136,7 +1117,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 	mpFXYVector* lyPath = new mpFXYVector();
 	lyPath->SetPen(wxPen(wxColour(255, 0, 0), 2));
 	lyPath->SetContinuity(true);
-	lyPoints->SetPen(wxPen(wxColour(0, 0, 255), 0));
+	lyPoints->SetPen(wxPen(wxColour(0, 0, 255), 1));
 
 	plotMap->AddLayer(lyPoints);
 	plotMap->AddLayer(lyPath);

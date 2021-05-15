@@ -252,6 +252,7 @@ class xRawLogViewerFrame : public wxFrame
 	void OnMenuItemImportBremenDLRLog(wxCommandEvent& event);
 	void OnMenuRenameSingleObs(wxCommandEvent& event);
 	//*)
+	void OnMenuRenameBySFIndex(wxCommandEvent& event);
 
 	//(*Identifiers(xRawLogViewerFrame)
 	static const long ID_BUTTON2;
@@ -422,6 +423,7 @@ class xRawLogViewerFrame : public wxFrame
 	static const long ID_MENUITEM48;
 	static const long ID_TIMER1;
 	//*)
+	static const long ID_MENUITEM_RENAME_BY_SF_IDX;
 
 	//(*Declarations(xRawLogViewerFrame)
 	wxMenu* MenuItem51;

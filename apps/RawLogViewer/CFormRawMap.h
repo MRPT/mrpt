@@ -55,7 +55,6 @@ class CFormRawMap : public wxDialog
 	static const long ID_BUTTON9;
 	static const long ID_STATICTEXT8;
 	static const long ID_STATICTEXT2;
-	static const long ID_BITMAPBUTTON1;
 	static const long ID_BUTTON4;
 	static const long ID_TEXTCTRL1;
 	static const long ID_PANEL1;
@@ -92,7 +91,6 @@ class CFormRawMap : public wxDialog
 	wxFlexGridSizer* FlexGridSizer3;
 	wxStaticText* lbCount;
 	wxStaticText* StaticText6;
-	wxBitmapButton* btnHelp;
 	wxButton* btnSavePath;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxStaticText* StaticText1;
