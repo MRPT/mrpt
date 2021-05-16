@@ -313,9 +313,6 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 
 	WX_START_TRY
 
-	MRPT_TODO("Fade out old observations by name");
-	// m_gl_objects.clear();
-
 	auto lmbdProcessSensorLabel = [&](const std::string& sNameInMap) {
 		if (m_visibleSensors.find(sNameInMap) == m_visibleSensors.end())
 		{
@@ -492,17 +489,17 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 	}
 
 	// Check what observations are too old and must be deleted:
-	const double largest_period = 0.2;
+	const double largest_period = 1.0;
 	std::vector<std::string> lst_to_delete;
 	for (auto& o : m_gl_objects)
 	{
 		TRenderObject& ro = o.second;
 
-		if ((tim_last == INVALID_TIMESTAMP &&
-			 hasToRefreshViz)  // Scans without timestamps
-			|| (tim_last != INVALID_TIMESTAMP &&
-				fabs(mrpt::system::timeDifference(ro.timestamp, tim_last)) >
-					largest_period))
+		// Scans without timestamps
+		if ((tim_last == INVALID_TIMESTAMP && hasToRefreshViz) ||
+			(tim_last != INVALID_TIMESTAMP &&
+			 fabs(mrpt::system::timeDifference(ro.timestamp, tim_last)) >
+				 largest_period))
 		{ lst_to_delete.push_back(o.first); }
 	}
 
