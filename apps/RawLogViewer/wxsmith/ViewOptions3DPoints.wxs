@@ -11,6 +11,20 @@
 						<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
 							<cols>2</cols>
 							<object class="sizeritem">
+								<object class="wxCheckBox" name="ID_CHECKBOX4" variable="cbShowAxes" member="yes">
+									<label>Show axes</label>
+									<checked>1</checked>
+								</object>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="spacer">
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
 								<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
 									<label>Tick interval [m]:</label>
 								</object>
@@ -168,30 +182,39 @@
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
-				<object class="wxStaticBoxSizer" variable="StaticBoxSizer3" member="no">
-					<label>Sensor pose</label>
+				<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
+					<cols>1</cols>
+					<rows>2</rows>
 					<object class="sizeritem">
-						<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
-							<cols>1</cols>
+						<object class="wxStaticBoxSizer" variable="StaticBoxSizer3" member="no">
+							<label>Sensor pose</label>
 							<object class="sizeritem">
-								<object class="wxCheckBox" name="ID_CHECKBOX3" variable="cbShowSensorPose" member="yes">
-									<label>Show sensor pose</label>
-								</object>
-								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-								<border>5</border>
-								<option>1</option>
-							</object>
-							<object class="sizeritem">
-								<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
-									<label>XYZ corner scale [m]:</label>
-								</object>
-								<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
-								<border>5</border>
-								<option>1</option>
-							</object>
-							<object class="sizeritem">
-								<object class="wxTextCtrl" name="ID_TEXTCTRL4" variable="edSensorPoseScale" member="yes">
-									<value>0.1</value>
+								<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
+									<cols>1</cols>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX3" variable="cbShowSensorPose" member="yes">
+											<label>Show sensor pose</label>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
+											<label>XYZ corner scale [m]:</label>
+										</object>
+										<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxTextCtrl" name="ID_TEXTCTRL4" variable="edSensorPoseScale" member="yes">
+											<value>0.1</value>
+										</object>
+										<flag>wxALL|wxEXPAND</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
 								</object>
 								<flag>wxALL|wxEXPAND</flag>
 								<border>5</border>
@@ -202,9 +225,58 @@
 						<border>5</border>
 						<option>1</option>
 					</object>
+					<object class="sizeritem">
+						<object class="wxStaticBoxSizer" variable="StaticBoxSizer4" member="no">
+							<label>2D lidars</label>
+							<object class="sizeritem">
+								<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
+									<cols>2</cols>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX5" variable="cb2DShowSurf" member="yes">
+											<label>Show surface</label>
+											<checked>1</checked>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxColourPickerCtrl" name="ID_COLOURPICKERCTRL1" variable="colorSurface" member="yes">
+											<colour>#000000</colour>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxCheckBox" name="ID_CHECKBOX6" variable="cb2DShowPoints" member="yes">
+											<label>Show points</label>
+											<checked>1</checked>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxColourPickerCtrl" name="ID_COLOURPICKERCTRL2" variable="color2DPoints" member="yes">
+											<colour>#000000</colour>
+										</object>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<border>5</border>
+										<option>1</option>
+									</object>
+								</object>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
+						</object>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
 				</object>
 				<flag>wxALL|wxEXPAND</flag>
-				<border>5</border>
 				<option>1</option>
 			</object>
 		</object>

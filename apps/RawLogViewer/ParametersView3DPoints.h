@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/img/color_maps.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -21,6 +22,7 @@ struct ParametersView3DPoints
 {
 	ParametersView3DPoints() = default;
 
+	bool showAxis = true;
 	double axisTickFrequency = 1.0;
 	double axisLimits = 20.0;
 	double axisTickTextSize = 0.075;
@@ -31,6 +33,11 @@ struct ParametersView3DPoints
 	double pointSize = 4.0;
 	bool drawSensorPose = true;
 	double sensorPoseScale = 0.3;
+
+	bool showSurfaceIn2Dscans = true;
+	bool showPointsIn2Dscans = true;
+	mrpt::img::TColor surface2DscansColor = {0x00, 0x00, 0xff, 0x80};  // RGBA
+	mrpt::img::TColor points2DscansColor = {0xff, 0x00, 0xff, 0xff};  // RGBA
 
 	void to_UI(ViewOptions3DPoints& ui) const;
 	void from_UI(const ViewOptions3DPoints& ui);
@@ -49,4 +56,8 @@ void obs3Dscan_to_viz(
 
 void obsVelodyne_to_viz(
 	const mrpt::obs::CObservationVelodyneScan::Ptr& obs,
+	const ParametersView3DPoints& p, mrpt::opengl::CSetOfObjects& out);
+
+void obs2Dscan_to_viz(
+	const mrpt::obs::CObservation2DRangeScan::Ptr& obs,
 	const ParametersView3DPoints& p, mrpt::opengl::CSetOfObjects& out);
