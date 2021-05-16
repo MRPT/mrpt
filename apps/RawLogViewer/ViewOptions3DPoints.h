@@ -91,4 +91,4 @@ class ViewOptions3DPoints : public wxPanel
 	DECLARE_EVENT_TABLE()
 };
 
-#endif 
+#endif
