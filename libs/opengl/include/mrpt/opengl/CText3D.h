@@ -20,24 +20,16 @@ namespace mrpt::opengl
  *
  *  Text is drawn along the (+X,+Y) axes.
  *
- *  Default size of characters is "1.0 units". Change it with the standard
+ * Default size of characters is "1.0 units". Change it with the standard
  * method \a CRenderizable::setScale() as with any other 3D object.
- *  The color can be also changed with standard methods in the base class \a
+ * The color can be also changed with standard methods in the base class \a
  * CRenderizable.
  *
- *  \sa opengl::COpenGLScene, CText
+ * ![mrpt::opengl::CText3D](preview_CText3D.png)
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CText3D </td> <td> \image html preview_CText3D.png
- * </td> </tr>
- *  </table>
- *  </div>
- *
+ * \sa opengl::COpenGLScene, CText
  * \note This class is based on code from libcvd (BSD,
- * http://www.edwardrosten.com/cvd/ )
- * \ingroup mrpt_opengl_grp
+ * http://www.edwardrosten.com/cvd/ ) \ingroup mrpt_opengl_grp
  */
 class CText3D : public CRenderizableShaderText
 {

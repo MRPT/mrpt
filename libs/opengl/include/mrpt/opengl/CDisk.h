@@ -15,16 +15,10 @@
 namespace mrpt::opengl
 {
 /** A planar disk in the XY plane.
+ *
+ * ![mrpt::opengl::CDisk](preview_CDisk.png)
+ *
  *  \sa opengl::COpenGLScene
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CDisk </td> <td> \image html preview_CDisk.png
- * </td> </tr>
- *  </table>
- *  </div>
- *
  * \ingroup mrpt_opengl_grp
  */
 class CDisk : public CRenderizableShaderTriangles

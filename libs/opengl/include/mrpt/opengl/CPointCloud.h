@@ -18,28 +18,18 @@ namespace mrpt::opengl
 {
 /** A cloud of points, all with the same color or each depending on its value
  * along a particular coordinate axis.
- *  This class is just an OpenGL representation of a point cloud. For operating
+ * This class is just an OpenGL representation of a point cloud. For operating
  * with maps of points, see mrpt::maps::CPointsMap and derived classes.
  *
- *  To load from a points-map, CPointCloud::loadFromPointsMap().
+ * To load from a points-map, CPointCloud::loadFromPointsMap().
  *
- *   This class uses smart optimizations while rendering to efficiently draw
- * clouds of millions of points,
- *   as described in this page:
- * https://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
+ * This class uses smart optimizations while rendering to efficiently draw
+ * clouds of millions of points, using octrees.
+ *
+ * ![mrpt::opengl::CPointCloud](preview_CPointCloud.png)
  *
  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene,
- * opengl::CPointCloudColoured, mrpt::maps::CPointsMap
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CPointCloud </td> <td> \image html
- * preview_CPointCloud.png </td> </tr>
- *  </table>
- *  </div>
- *
- * \ingroup mrpt_opengl_grp
+ * opengl::CPointCloudColoured, mrpt::maps::CPointsMap \ingroup mrpt_opengl_grp
  */
 class CPointCloud : public CRenderizableShaderPoints,
 					public COctreePointRenderer<CPointCloud>,

@@ -13,17 +13,11 @@
 namespace mrpt::opengl
 {
 /** A 3D arrow
- *  \sa opengl::COpenGLScene
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CArrow </td> <td> \image html preview_CArrow.png
- * </td> </tr>
- *  </table>
- *  </div>
+ *  ![mrpt::opengl::CArrow](preview_CArrow.png)
+ *
+ * \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
- *
  */
 class CArrow : public CRenderizableShaderTriangles
 {

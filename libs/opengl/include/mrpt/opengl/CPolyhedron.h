@@ -28,17 +28,11 @@ class CPolyhedron;
  * not a big problem, since polyhedron creation does not usually take a
  * significant amount of time (they are created once and rendered many times).
  * Polyhedra information and models have been gotten from the Wikipedia,
- * http://wikipedia.org
+ * https://wikipedia.org
+ *
+ * ![mrpt::opengl::CPolyhedron](preview_CPolyhedron.png)
+ *
  * \sa opengl::COpenGLScene
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CPolyhedron </td> <td> \image html
- * preview_CPolyhedron.png </td> </tr>
- *  </table>
- *  </div>
- *
  * \ingroup mrpt_opengl_grp
  */
 class CPolyhedron : public CRenderizableShaderWireFrame,

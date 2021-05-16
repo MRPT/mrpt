@@ -20,38 +20,41 @@ namespace mrpt::opengl
 {
 /** This class allows the user to create, load, save, and render 3D scenes using
  * OpenGL primitives.
- *  The class can be understood as a program to be run over OpenGL, containing
+ * The class can be understood as a program to be run over OpenGL, containing
  * a sequence of viewport definitions,
- *   rendering primitives, etc...
+ * rendering primitives, etc.
  *
- *  It can contain from 1 up to any number of <b>Viewports</b>, each one
- *   associated a set of OpenGL objects and, optionally, a preferred camera
+ * It can contain from 1 up to any number of <b>Viewports</b>, each one
+ * associated a set of OpenGL objects and, optionally, a preferred camera
  * position. Both orthogonal (2D/3D) and projection
- *   camera models can be used for each viewport independently, greatly
+ * camera models can be used for each viewport independently, greatly
  * increasing the possibilities of rendered scenes.
  *
- *  An object of COpenGLScene always contains at least one viewport
+ * An object of COpenGLScene always contains at least one viewport
  * (utils::COpenGLViewport), named "main". Optionally, any
- *   number of other viewports may exist. Viewports are referenced by their
+ * number of other viewports may exist. Viewports are referenced by their
  * names, case-sensitive strings. Each viewport contains
- *   a different 3D scene (i.e. they render different objects), though a
+ * a different 3D scene (i.e. they render different objects), though a
  * mechanism exist to share the same 3D scene by a number of
- *   viewports so memory is not wasted replicating the same objects (see
+ * viewports so memory is not wasted replicating the same objects (see
  * COpenGLViewport::setCloneView ).
  *
- *  The main rendering method, COpenGLScene::render(), assumes a viewport has
+ * The main rendering method, COpenGLScene::render(), assumes a viewport has
  * been set-up for the entire target window. That
- *   method will internally make the required calls to opengl for creating the
+ * method will internally make the required calls to opengl for creating the
  * additional viewports. Note that only the depth
- *   buffer is cleared by default for each (non-main) viewport, to allow
+ * buffer is cleared by default for each (non-main) viewport, to allow
  * transparencies. This can be disabled by the approppriate
- *   member in COpenGLViewport.
+ * member in COpenGLViewport.
  *
- *   An object COpenGLScene can be saved to a ".3Dscene" file using
- * CFileOutputStream, for posterior visualization from
- *    the standalone application <a
- * href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer</a>.
- *    It can be also displayed in real-time using gui::CDisplayWindow3D.
+ * An object COpenGLScene can be saved to a ".3Dscene" file using
+ * CFileOutputStream or with the direct method COpenGLScene::saveToFile()
+ * for posterior visualization from the standalone application \ref
+ * app_SceneViewer3D.
+ *
+ * It can be also displayed in real-time using windows in mrpt::gui or
+ * serialized over a network socket, etc.
+ *
  * \ingroup mrpt_opengl_grp
  */
 class COpenGLScene : public mrpt::serialization::CSerializable
