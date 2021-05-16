@@ -146,11 +146,12 @@ void CPlanarLaserScan::serializeFrom(
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			readFromStreamRender(in);
 			in >> m_scan;
 
-			if (version >= 2)
+			if (version < 2)
 			{  //  m_line_width
 				float dummy;
 				in >> dummy;
@@ -158,7 +159,7 @@ void CPlanarLaserScan::serializeFrom(
 
 			in >> m_line_R >> m_line_G >> m_line_B >> m_line_A;
 
-			if (version >= 2)
+			if (version < 2)
 			{  // m_points_width
 				float dummy;
 				in >> dummy;
