@@ -20,16 +20,9 @@ namespace mrpt::opengl
  * For an overlay indicator that can be easily added to any display, see
  * COpenGLScene::addColorBar()
  *
+ * ![mrpt::opengl::CColorBar](preview_CColorBar.png)
+ *
  * \sa opengl::COpenGLScene,opengl::CRenderizable, COpenGLScene::addColorBar()
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CColorBar </td> <td> \image html
- * preview_CColorBar.png </td> </tr>
- *  </table>
- *  </div>
- *
  * \ingroup mrpt_opengl_grp
  */
 class CColorBar : public CRenderizableShaderTriangles,

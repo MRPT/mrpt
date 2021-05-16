@@ -19,16 +19,10 @@ namespace mrpt::opengl
 {
 /** A 2D vector field representation, consisting of points and arrows drawn on a
  * plane (invisible grid).
- *  \sa opengl::COpenGLScene
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html
- * preview_CVectorField2D.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::CVectorField2D](preview_CVectorField2D.png)
  *
+ * \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
 

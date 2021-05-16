@@ -27,13 +27,7 @@ namespace mrpt::opengl
  * CGeneralizedEllipsoidTemplate::setQuantiles() for learning
  *  the mathematical details about setting the desired confidence interval.
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CEllipsoidRangeBearing2D </td> <td> \image html
- * preview_CEllipsoidRangeBearing2D.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::CEllipsoidRangeBearing2D](preview_CEllipsoidRangeBearing2D.png)
  *
  * \ingroup mrpt_opengl_grp
  */

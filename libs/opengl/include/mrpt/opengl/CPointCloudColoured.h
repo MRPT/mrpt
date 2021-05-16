@@ -21,23 +21,14 @@ namespace mrpt::opengl
  * component is shared by all the points and is stored in the base member
  * m_color_A.
  *
- *  To load from a points-map, CPointCloudColoured::loadFromPointsMap().
+ * To load from a points-map, CPointCloudColoured::loadFromPointsMap().
  *
- *   This class uses smart optimizations while rendering to efficiently draw
- * clouds of millions of points,
- *   as described in this page:
- * https://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
+ * This class uses smart optimizations while rendering to efficiently draw
+ * clouds of millions of points, using octrees.
  *
- *  \sa opengl::COpenGLScene, opengl::CPointCloud
+ * ![mrpt::opengl::CPointCloudColoured](preview_CPointCloudColoured.png)
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CPointCloudColoured </td> <td> \image html
- * preview_CPointCloudColoured.png </td> </tr>
- *  </table>
- *  </div>
- *
+ * \sa opengl::COpenGLScene, opengl::CPointCloud
  * \ingroup mrpt_opengl_grp
  */
 class CPointCloudColoured : public CRenderizableShaderPoints,

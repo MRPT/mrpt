@@ -20,7 +20,7 @@ namespace mrpt::opengl
  *
  *  You can add overlaid text messages, see base class CTextMessageCapable
  *
- *  \sa Example "fbo_render_test"
+ * \sa Example \ref opengl_offscreen_render_example
  * \ingroup mrpt_opengl_grp
  */
 class CFBORender

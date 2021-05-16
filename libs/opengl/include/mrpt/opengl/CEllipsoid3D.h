@@ -19,20 +19,14 @@ namespace mrpt::opengl
  * Note that a transparent ellipsoid can be drawn for "0<alpha<1" values.
  * If any of the eigen values of the covariance matrix of the ellipsoid is
  * zero, nothing will be rendered.
- *  \sa opengl::COpenGLScene
  *
  * Please read the documentation of
  * CGeneralizedEllipsoidTemplate::setQuantiles() for learning
  * the mathematical details about setting the desired confidence interval.
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- *border-style: solid;">
- *   <tr> <td> mrpt::opengl::CEllipsoid3D </td> <td> \image html
- *preview_CEllipsoid.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::CEllipsoid3D](preview_CEllipsoid.png)
  *
+ *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
 class CEllipsoid3D : public CGeneralizedEllipsoidTemplate<3>

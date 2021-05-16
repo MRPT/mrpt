@@ -38,16 +38,10 @@ namespace mrpt::opengl
  * (below 180deg in total).
  *  If you try to set FOVs to larger values they'll truncated to 89.9deg.
  *
+ *
+ * ![mrpt::opengl::CFrustum](preview_CFrustum.png)
+ *
  * \sa opengl::COpenGLScene,opengl::CRenderizable
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CFrustum </td> <td> \image html
- * preview_CFrustum.png </td> </tr>
- *  </table>
- *  </div>
- *
  * \ingroup mrpt_opengl_grp
  */
 class CFrustum : public CRenderizableShaderTriangles,
