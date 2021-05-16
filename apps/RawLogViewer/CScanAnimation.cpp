@@ -57,6 +57,7 @@ const long CScanAnimation::ID_CHECKBOX2 = wxNewId();
 const long CScanAnimation::ID_STATICTEXT3 = wxNewId();
 const long CScanAnimation::ID_BUTTON7 = wxNewId();
 //*)
+const long CScanAnimation::ID_BUTTON_SAVE_SCENE = wxNewId();
 
 BEGIN_EVENT_TABLE(CScanAnimation, wxDialog)
 //(*EventTable(CScanAnimation)
@@ -91,11 +92,12 @@ CScanAnimation::CScanAnimation(
 	FlexGridSizer1 = new wxFlexGridSizer(3, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
 	FlexGridSizer1->AddGrowableRow(1);
+
 	FlexGridSizer4 = new wxFlexGridSizer(1, 5, 0, 0);
 	FlexGridSizer4->AddGrowableCol(4);
 	FlexGridSizer4->AddGrowableRow(0);
 
-	FlexGridSizer4a = new wxFlexGridSizer(1, 3, 0, 0);
+	FlexGridSizer4a = new wxFlexGridSizer(2, 3, 0, 0);
 	btnPlay = new wxButton(
 		this, ID_BUTTON1, _("Start"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON1"));
@@ -115,6 +117,11 @@ CScanAnimation::CScanAnimation(
 		wxDefaultValidator, _T("ID_BUTTON3"));
 	FlexGridSizer4a->Add(
 		btnClose, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
+
+	auto btnSaveScene =
+		new wxButton(this, ID_BUTTON_SAVE_SCENE, _("Save 3Dscene..."));
+	FlexGridSizer4a->Add(
+		btnSaveScene, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
 
 	FlexGridSizer4->Add(
 		FlexGridSizer4a, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP);
@@ -239,7 +246,9 @@ CScanAnimation::CScanAnimation(
 	//*)
 
 	Bind(wxEVT_BUTTON, &CScanAnimation::OnbtnVizOptions, this, ID_BUTTON6);
-
+	Bind(
+		wxEVT_BUTTON, &CScanAnimation::OnbtnSave3DScene, this,
+		ID_BUTTON_SAVE_SCENE);
 	Bind(
 		wxEVT_CHECKBOX, &CScanAnimation::OncbViewOrthoClick, this,
 		ID_CHECKBOX2);
@@ -335,11 +344,12 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 
 		if (IS_CLASS(*it, CObservation2DRangeScan))
 		{
-			CObservation2DRangeScan::Ptr obs =
-				std::dynamic_pointer_cast<CObservation2DRangeScan>(it);
+			auto obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(it);
 			hasToRefreshViz = true;
 			if (tim_last == INVALID_TIMESTAMP || tim_last < obs->timestamp)
 				tim_last = obs->timestamp;
+
+			CSetOfObjects::Ptr gl_objs;
 
 			// Already in the map with the same sensor label?
 			auto it_gl = m_gl_objects.find(sNameInMap);
@@ -347,23 +357,25 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 			{
 				// Update existing object:
 				TRenderObject& ro = it_gl->second;
-				std::dynamic_pointer_cast<CPlanarLaserScan>(ro.obj)->setScan(
-					*obs);
+				gl_objs = std::dynamic_pointer_cast<CSetOfObjects>(ro.obj);
 				ro.timestamp = obs->timestamp;
 			}
 			else
 			{
 				// Create object:
-				CPlanarLaserScan::Ptr gl_obj =
-					std::make_shared<CPlanarLaserScan>();
-				gl_obj->setScan(*obs);
+				gl_objs = CSetOfObjects::Create();
 
 				TRenderObject ro;
-				ro.obj = gl_obj;
+				ro.obj = gl_objs;
 				ro.timestamp = obs->timestamp;
 				m_gl_objects[sNameInMap] = ro;
-				m_plot3D->getOpenGLSceneRef()->insert(gl_obj);
+				m_plot3D->getOpenGLSceneRef()->insert(gl_objs);
 			}
+
+			const auto& p = theMainWindow->getViewOptions()->m_params;
+
+			// convert to viz object:
+			obs2Dscan_to_viz(obs, p, *gl_objs);
 		}
 		else if (IS_CLASS(*it, CObservation3DRangeScan))
 		{
@@ -651,4 +663,24 @@ void CScanAnimation::OnbtnVizOptions(wxCommandEvent&)
 	p.from_UI(*panel);
 
 	rebuild_view(true);
+}
+
+void CScanAnimation::OnbtnSave3DScene(wxCommandEvent&)
+{
+	WX_START_TRY
+
+	wxString defaultDir = iniFile->read_string(iniFileSect, "LastDir", ".");
+
+	wxFileDialog dialog(
+		this, "Save scene as...", defaultDir,
+		mrpt::format("view_%06i.3Dscene", static_cast<int>(slPos->GetValue())),
+		"3Dscene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*",
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+	if (dialog.ShowModal() != wxID_OK) return;
+
+	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
+	openGLSceneRef->saveToFile(dialog.GetPath().ToStdString());
+
+	WX_END_TRY
 }

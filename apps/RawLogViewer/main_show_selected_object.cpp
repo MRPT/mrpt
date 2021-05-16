@@ -12,6 +12,7 @@
 #include <mrpt/math/ops_vectors.h>	// << ops
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/datetime.h>
@@ -75,6 +76,7 @@ void add_common_to_viz(
 	const CObservation& obs, const ParametersView3DPoints& p,
 	mrpt::opengl::CSetOfObjects& out)
 {
+	if (p.showAxis)
 	{
 		const float L = p.axisLimits;
 		auto gl_axis = mrpt::opengl::CAxis::Create(
@@ -87,7 +89,7 @@ void add_common_to_viz(
 	if (p.drawSensorPose)
 	{
 		const auto glCorner =
-			mrpt::opengl::stock_objects::CornerXYZ(p.sensorPoseScale);
+			mrpt::opengl::stock_objects::CornerXYZSimple(p.sensorPoseScale);
 		glCorner->setPose(obs.sensorPose());
 		out.insert(glCorner);
 	}
@@ -167,6 +169,34 @@ void obsVelodyne_to_viz(
 	pnts->setPointSize(p.pointSize);
 
 	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
+}
+
+void obs2Dscan_to_viz(
+	const CObservation2DRangeScan::Ptr& obs, const ParametersView3DPoints& p,
+	mrpt::opengl::CSetOfObjects& out)
+{
+	out.clear();
+
+	add_common_to_viz(*obs, p, out);
+
+	auto pnts = mrpt::opengl::CPlanarLaserScan::Create();
+	out.insert(pnts);
+
+	pnts->setScan(*obs);
+	pnts->setPointSize(p.pointSize);
+	pnts->enableSurface(p.showSurfaceIn2Dscans);
+	pnts->enablePoints(p.showPointsIn2Dscans);
+
+	pnts->setSurfaceColor(
+		mrpt::u8tof(p.surface2DscansColor.R),
+		mrpt::u8tof(p.surface2DscansColor.G),
+		mrpt::u8tof(p.surface2DscansColor.B),
+		mrpt::u8tof(p.surface2DscansColor.A));
+	pnts->setPointsColor(
+		mrpt::u8tof(p.points2DscansColor.R),
+		mrpt::u8tof(p.points2DscansColor.G),
+		mrpt::u8tof(p.points2DscansColor.B),
+		mrpt::u8tof(p.points2DscansColor.A));
 }
 
 // Update selected item display:

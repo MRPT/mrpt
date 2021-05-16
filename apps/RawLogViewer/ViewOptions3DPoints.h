@@ -13,6 +13,7 @@
 //(*Headers(ViewOptions3DPoints)
 #include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/clrpicker.h>
 #include <wx/panel.h>
 #include <wx/radiobox.h>
 #include <wx/sizer.h>
@@ -32,6 +33,8 @@ class ViewOptions3DPoints : public wxPanel
 	virtual ~ViewOptions3DPoints();
 
 	//(*Declarations(ViewOptions3DPoints)
+	wxColourPickerCtrl* color2DPoints;
+	wxCheckBox* cb2DShowSurf;
 	wxTextCtrl* edAxisLimits;
 	wxStaticText* StaticText1;
 	wxCheckBox* cbInvertColormap;
@@ -40,13 +43,16 @@ class ViewOptions3DPoints : public wxPanel
 	wxTextCtrl* edSensorPoseScale;
 	wxCheckBox* cbShowSensorPose;
 	wxButton* btnApply;
+	wxColourPickerCtrl* colorSurface;
 	wxStaticText* StaticText4;
 	wxStaticText* StaticText5;
 	wxStaticText* StaticText2;
+	wxCheckBox* cb2DShowPoints;
 	wxRadioBox* RadioBox1;
 	wxCheckBox* cbColorFromRGB;
 	wxRadioBox* rbColorByAxis;
 	wxTextCtrl* edTickTextSize;
+	wxCheckBox* cbShowAxes;
 	wxSpinCtrl* edPointSize;
 	//*)
 
@@ -54,6 +60,7 @@ class ViewOptions3DPoints : public wxPanel
 
    protected:
 	//(*Identifiers(ViewOptions3DPoints)
+	static const long ID_CHECKBOX4;
 	static const long ID_STATICTEXT1;
 	static const long ID_TEXTCTRL1;
 	static const long ID_STATICTEXT2;
@@ -70,6 +77,10 @@ class ViewOptions3DPoints : public wxPanel
 	static const long ID_CHECKBOX3;
 	static const long ID_STATICTEXT5;
 	static const long ID_TEXTCTRL4;
+	static const long ID_CHECKBOX5;
+	static const long ID_COLOURPICKERCTRL1;
+	static const long ID_CHECKBOX6;
+	static const long ID_COLOURPICKERCTRL2;
 	//*)
 
    private:
@@ -80,4 +91,4 @@ class ViewOptions3DPoints : public wxPanel
 	DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif 

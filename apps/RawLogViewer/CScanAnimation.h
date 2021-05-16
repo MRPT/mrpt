@@ -80,8 +80,8 @@ class CScanAnimation : public wxDialog
 	static const long ID_STATICTEXT3;
 	static const long ID_BUTTON6;
 	static const long ID_BUTTON7;
-
 	//*)
+	static const long ID_BUTTON_SAVE_SCENE;
 
    private:
 	//(*Handlers(CScanAnimation)
@@ -97,6 +97,7 @@ class CScanAnimation : public wxDialog
 	//*)
 
 	void OnbtnVizOptions(wxCommandEvent& event);
+	void OnbtnSave3DScene(wxCommandEvent& event);
 
 	DECLARE_EVENT_TABLE()
 
