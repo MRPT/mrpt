@@ -84,6 +84,19 @@ void add_common_to_viz(
 		gl_axis->setTextScale(p.axisTickTextSize);
 		gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
 		out.insert(gl_axis);
+
+		// Show axis labels such that they can be read from the IIIrd-IVth
+		// quadrant:
+		const float yawIncrs[3] = {180.f, -90.f, 180.f};
+		for (int axis = 0; axis < 3; axis++)
+		{
+			float yaw_deg, pitch_deg, roll_deg;
+			gl_axis->getTextLabelOrientation(
+				axis, yaw_deg, pitch_deg, roll_deg);
+			yaw_deg += yawIncrs[axis];
+			gl_axis->setTextLabelOrientation(
+				axis, yaw_deg, pitch_deg, roll_deg);
+		}
 	}
 
 	if (p.drawSensorPose)
