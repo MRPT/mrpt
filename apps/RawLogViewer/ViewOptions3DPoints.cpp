@@ -389,7 +389,7 @@ void ParametersView3DPoints::load_from_ini_file()
 	MRPT_LOAD_CONFIG_VAR_CS(drawSensorPose, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(sensorPoseScale, double);
 	colorMap = c.read_enum(s, "colorMap", colorMap);
-	MRPT_LOAD_CONFIG_VAR_CS(showAxis, double);
+	MRPT_LOAD_CONFIG_VAR_CS(showAxis, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(showSurfaceIn2Dscans, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(showPointsIn2Dscans, bool);
 
