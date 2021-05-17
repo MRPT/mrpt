@@ -10,7 +10,8 @@ Download MRPT
 Source code
 -------------
 
-Get the latest development version with:
+Get the latest development version from the official
+`MRPT GitHub repository <https://github.com/MRPT/mrpt/>`_ with:
 
 .. code-block:: bash
 
