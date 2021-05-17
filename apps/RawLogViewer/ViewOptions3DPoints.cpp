@@ -302,8 +302,8 @@ void ParametersView3DPoints::to_UI(ViewOptions3DPoints& ui) const
 	ui.edSensorPoseScale->SetValue(wxString::Format("%.03f", sensorPoseScale));
 
 	ui.cbShowAxes->SetValue(showAxis);
-	ui.cb2DShowPoints->SetValue(showSurfaceIn2Dscans);
-	ui.cb2DShowSurf->SetValue(showPointsIn2Dscans);
+	ui.cb2DShowPoints->SetValue(showPointsIn2Dscans);
+	ui.cb2DShowSurf->SetValue(showSurfaceIn2Dscans);
 
 	ui.colorSurface->SetColour(wxColour(surface2DscansColor));
 	ui.color2DPoints->SetColour(wxColour(points2DscansColor));
@@ -333,8 +333,8 @@ void ParametersView3DPoints::from_UI(const ViewOptions3DPoints& ui)
 	ui.edSensorPoseScale->GetValue().ToCDouble(&sensorPoseScale);
 
 	showAxis = ui.cbShowAxes->GetValue();
-	showPointsIn2Dscans = ui.cb2DShowSurf->GetValue();
-	showSurfaceIn2Dscans = ui.cb2DShowPoints->GetValue();
+	showPointsIn2Dscans = ui.cb2DShowPoints->GetValue();
+	showSurfaceIn2Dscans = ui.cb2DShowSurf->GetValue();
 
 	surface2DscansColor =
 		mrpt::img::TColor(ui.colorSurface->GetColour().GetRGBA());
