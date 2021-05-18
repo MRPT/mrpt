@@ -1,4 +1,4 @@
-.. tutorial-icp-alignment:
+.. _tutorial-icp-alignment:
 
 ===================================================================
 Iterative Closest Point (ICP) and other registration algorithms

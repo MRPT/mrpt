@@ -1,4 +1,4 @@
-.. env_vars:
+.. _env_vars:
 
 ====================================================
 Environment variables that MRPT looks for

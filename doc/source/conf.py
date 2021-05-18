@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('_ext'))
 # -- Project information -----------------------------------------------------
 
 project = u'MRPT'
-copyright = u'{year} MRPT authors.'.format(year=datetime.now().year)
+copyright = u'{year} MRPT authors'.format(year=datetime.now().year)
 
 # The short X.Y version
 version = u'v{VER}'.format(VER=os.environ['MRPT_VERSION_STR'])
@@ -162,7 +162,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'MRPT', u'MRPT Documentation',
-     [u'The MOLA Authors.'], 1)
+     [u'The MRPT Authors.'], 1)
 ]
 
 # -- Options for Texinfo output ----------------------------------------------
