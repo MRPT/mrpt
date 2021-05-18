@@ -11,6 +11,8 @@
 - Changes in libraries:
   - \ref mrpt_core_grp
     - Removed mrpt::reverseBytesInPlace(long double) for it not being portable.
+  - \ref mrpt_containers_grp
+    - New environment variable MRPT_YAML_PARSER_VERBOSE controlling mrpt::containers::yaml
   - \ref mrpt_gui_grp
     - mrpt::gui::CDisplayWindowGUI new methods to minimize/restore subwindows.
   - \ref mrpt_math_grp

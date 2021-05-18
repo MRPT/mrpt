@@ -12,6 +12,7 @@
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/get_env.h>
 
 #include <algorithm>
 #include <fstream>
@@ -774,11 +775,17 @@ static yaml::scalar_t textToScalar(const std::string& s)
 #if MRPT_HAS_FYAML
 static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p);
 
-#if 0  // debug
-#define PARSER_DBG_OUT(STR_) std::cout << ">> " << STR_ << "\n"
-#else
-#define PARSER_DBG_OUT(STR) while (0)
-#endif
+static bool MRPT_YAML_PARSER_VERBOSE =
+	mrpt::get_env<bool>("MRPT_YAML_PARSER_VERBOSE", false);
+
+#define PARSER_DBG_OUT(STR_)                                                   \
+	do                                                                         \
+	{                                                                          \
+		if (MRPT_YAML_PARSER_VERBOSE) std::cout << ">> " << STR_ << "\n";      \
+		else                                                                   \
+		{                                                                      \
+		}                                                                      \
+	} while (0)
 
 static std::optional<std::string> extractComment(
 	struct fy_token* t, enum fy_comment_placement cp)
@@ -959,7 +966,9 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 			}
 			else
 			{
-				THROW_EXCEPTION("Unexpected empty scalar?!");
+				THROW_EXCEPTION(
+					"Unexpected empty scalar?! Re-run with environment "
+					"variable MRPT_YAML_PARSER_VERBOSE=1 to get more details.");
 			}
 		}
 		break;
