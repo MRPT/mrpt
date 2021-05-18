@@ -39,7 +39,7 @@ also provides many ready-to-use applications:
   page_app_ptg-configurator.rst
   page_app_rawlog-edit.rst
   page_app_rawlog-grabber.rst
-  page_app_RawLogViewer.rst
+  app_RawLogViewer.rst
   page_app_rbpf-slam.rst
   page_app_ReactiveNav3D-Demo.rst
   page_app_ReactiveNavigationDemo.rst

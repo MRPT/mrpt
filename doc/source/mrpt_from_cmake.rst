@@ -1,7 +1,7 @@
 .. _mrpt_from_cmake:
 
 ####################################
-Using MRPT from your CMake project
+Using MRPT in your CMake project
 ####################################
 
 .. note::
