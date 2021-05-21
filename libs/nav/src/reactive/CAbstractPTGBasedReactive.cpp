@@ -1503,24 +1503,6 @@ void CAbstractPTGBasedReactive::onStartNewNavigation()
 	// override
 }
 
-CAbstractPTGBasedReactive::TSentVelCmd::TSentVelCmd() { reset(); }
-void CAbstractPTGBasedReactive::TSentVelCmd::reset()
-{
-	ptg_index = -1;
-	ptg_alpha_index = -1;
-	tim_send_cmd_vel = INVALID_TIMESTAMP;
-	poseVel = TRobotPoseVel();
-	colfreedist_move_k = .0;
-	was_slowdown = false;
-	speed_scale = 1.0;
-	original_holo_eval = .0;
-	ptg_dynState = CParameterizedTrajectoryGenerator::TNavDynamicState();
-}
-bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
-{
-	return this->poseVel.timestamp != INVALID_TIMESTAMP;
-}
-
 /** \callergraph */
 void CAbstractPTGBasedReactive::build_movement_candidate(
 	CParameterizedTrajectoryGenerator* ptg, const size_t indexPTG,
