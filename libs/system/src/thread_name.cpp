@@ -52,7 +52,7 @@ static std::string GetThreadName()
 
 void mrpt::system::thread_name(const std::string& name)
 {
-#if defined(MRPT_OS_WINDOWS)
+#if defined(MRPT_OS_WINDOWS) && !defined(__MINGW32_MAJOR_VERSION)
 	wchar_t wName[50];
 	std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
 	SetThreadDescription(GetCurrentThread(), wName);
@@ -63,7 +63,7 @@ void mrpt::system::thread_name(const std::string& name)
 
 void mrpt::system::thread_name(const std::string& name, std::thread& theThread)
 {
-#if defined(MRPT_OS_WINDOWS)
+#if defined(MRPT_OS_WINDOWS) && !defined(__MINGW32_MAJOR_VERSION)
 	wchar_t wName[50];
 	std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
 	SetThreadDescription(theThread.native_handle(), wName);
@@ -87,7 +87,7 @@ static std::string w2cstr(wchar_t** wstrnc)
 
 std::string mrpt::system::thread_name()
 {
-#if defined(MRPT_OS_WINDOWS)
+#if defined(MRPT_OS_WINDOWS) && !defined(__MINGW32_MAJOR_VERSION)
 	std::string ret = "NoName";
 	PWSTR str;
 	HRESULT hr = GetThreadDescription(GetCurrentThread(), &str);
@@ -106,7 +106,7 @@ std::string mrpt::system::thread_name()
 
 std::string mrpt::system::thread_name(std::thread& theThread)
 {
-#if defined(MRPT_OS_WINDOWS)
+#if defined(MRPT_OS_WINDOWS) && !defined(__MINGW32_MAJOR_VERSION)
 	std::string ret = "NoName";
 	PWSTR str;
 	HRESULT hr = GetThreadDescription(theThread.native_handle(), &str);

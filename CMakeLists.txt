@@ -151,6 +151,7 @@ if ((${CMAKE_MRPT_KERNEL} MATCHES "GNU") # It doesnt build in hurd
     OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64")   # fails: termios2
     OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "ppc64el") # fails: termios2
     OR ("$ENV{DEB_TARGET_ARCH_CPU}" STREQUAL "powerpc") # fails: termios2
+    OR MINGW
     )
 	set(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
 endif()

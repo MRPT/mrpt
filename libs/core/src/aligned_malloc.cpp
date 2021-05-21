@@ -25,7 +25,7 @@ void* mrpt::aligned_malloc(size_t size, size_t alignment)
 	// size must be an integral multiple of alignment:
 	if (alignment != 0 && (size % alignment) != 0)
 		size = ((size / alignment) + 1) * alignment;
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32_MAJOR_VERSION)
 	return _aligned_malloc(size, alignment);
 #elif __APPLE__
 	void* p;
@@ -37,7 +37,7 @@ void* mrpt::aligned_malloc(size_t size, size_t alignment)
 }
 void mrpt::aligned_free(void* ptr)
 {
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32_MAJOR_VERSION)
 	return _aligned_free(ptr);
 #else
 	return ::free(ptr);

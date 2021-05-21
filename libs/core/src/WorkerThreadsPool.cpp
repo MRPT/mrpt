@@ -87,7 +87,7 @@ void WorkerThreadsPool::resize(std::size_t num_threads)
 // code partially replicated from mrpt::system for convenience (avoid dep)
 static void mySetThreadName(const std::string& name, std::thread& theThread)
 {
-#if defined(MRPT_OS_WINDOWS)
+#if defined(MRPT_OS_WINDOWS) && !defined(__MINGW32_MAJOR_VERSION)
 	wchar_t wName[50];
 	std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
 	SetThreadDescription(theThread.native_handle(), wName);

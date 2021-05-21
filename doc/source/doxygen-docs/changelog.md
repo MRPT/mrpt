@@ -33,6 +33,7 @@
   - Fix wrong formatting of empty *string* values (not *null* values) in mrpt::containers::yaml.
   - Fix exception loading old datasets with stereo observations, via a new argument in mrpt::img::CImage::makeSureImageIsLoaded()
   - Fix unhandled deserialization of v2 of mrpt::opengl::CPlanarLaserScan
+  - Fix build errors with MinGW.
 
 # Version 2.3.0: Released April 25th, 2021
 - General build changes:
