@@ -260,6 +260,8 @@ void CHokuyoURG::loadConfig_sensorSpecific(
 
 	MRPT_LOAD_HERE_CONFIG_VAR(scan_interval, int, m_scan_interval, c, s);
 	MRPT_LOAD_HERE_CONFIG_VAR(comms_timeout_ms, int, m_comms_timeout_ms, c, s);
+	MRPT_LOAD_HERE_CONFIG_VAR(
+		comms_between_timeout_ms, int, m_comms_between_timeout_ms, c, s);
 
 	// Parent options:
 	C2DRangeFinderAbstract::loadCommonParams(c, s);
@@ -425,9 +427,10 @@ bool CHokuyoURG::ensureBufferHasBytes(const size_t nDesiredBytes)
 	try
 	{
 		auto sock = dynamic_cast<CClientTCPSocket*>(m_stream.get());
-		const size_t nRead = sock
-			? sock->readAsync(&buf[0], to_read, m_comms_timeout_ms, 10)
-			: m_stream->Read(&buf[0], to_read);
+		const size_t nRead = sock ? sock->readAsync(
+										&buf[0], to_read, m_comms_timeout_ms,
+										m_comms_between_timeout_ms)
+								  : m_stream->Read(&buf[0], to_read);
 		m_rx_buffer.push_many(&buf[0], nRead);
 	}
 	catch (std::exception&)
