@@ -7,9 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/system/CTicTac.h>
+#include <mrpt/system/os.h>	 // pause()
 
 #include <iostream>
 #include <thread>
@@ -27,18 +28,33 @@ void Test_FFMPEG_CaptureCamera(const std::string& video_url)
 {
 	CFFMPEG_InputStream in_video;
 
-	if (!in_video.openURL(video_url, false /*grayscale*/, true /* verbose */))
+	if (!in_video.openURL(
+			video_url, false /*grayscale*/, true /* verbose */,
+			{{"rtsp_transport", "tcp"}}))
 		return;
 
-	CDisplayWindow win("Video");
+	CDisplayWindow3D win("Video");
 
 	CTicTac tictac;
 	tictac.Tic();
 	unsigned int nFrames = 0;
 
+	std::cout << "Close the window to end program.\n";
+
 	CImage img;
-	while (win.isOpen() && in_video.retrieveFrame(img))
+	for (;;)
 	{
+		if (!win.isOpen())
+		{
+			std::cout << "Window closed. Quitting.\n";
+			break;
+		}
+		if (!in_video.retrieveFrame(img))
+		{
+			std::cout << "Video stream ended. Quitting.\n";
+			break;
+		}
+
 		double fps = ++nFrames / tictac.Tac();
 
 		// decimate for easier viewing:
@@ -56,10 +72,13 @@ void Test_FFMPEG_CaptureCamera(const std::string& video_url)
 		if (nFrames == 1)
 			cout << "Video FPS: " << in_video.getVideoFPS() << endl;
 
-		win.showImage(img);
-		std::this_thread::sleep_for(10ms);
-
-		if (win.keyHit() && win.waitForKey() == 27) break;
+		{
+			auto& scene = win.get3DSceneAndLock();
+			scene->getViewport()->setImageView(std::move(img));
+			win.unlockAccess3DScene();
+			win.repaint();
+		}
+		std::this_thread::sleep_for(1ms);
 	}
 
 	in_video.close();
