@@ -40,6 +40,11 @@ void Test_FFMPEG_CaptureCamera(const std::string& video_url)
 	while (win.isOpen() && in_video.retrieveFrame(img))
 	{
 		double fps = ++nFrames / tictac.Tac();
+
+		// decimate for easier viewing:
+		while (img.getWidth() > 1024)
+			img = img.scaleHalf(mrpt::img::IMG_INTERP_LINEAR);
+
 		img.textOut(
 			5, 5, mrpt::format("%.02f fps", fps), TColor(0x80, 0x80, 0x80));
 		if (nFrames > 100)
