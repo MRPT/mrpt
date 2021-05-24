@@ -13,6 +13,8 @@
     - Removed mrpt::reverseBytesInPlace(long double) for it not being portable.
   - \ref mrpt_containers_grp
     - New environment variable MRPT_YAML_PARSER_VERBOSE controlling mrpt::containers::yaml
+  - \ref mrpt_hwdrivers_grp
+    - New argument to pass custom ffmpeg options to mrpt::hwdrivers::CFFMPEG_InputStream::openURL(). New default is to prefer stream over TCP for more reliable IP cameras reading.
   - \ref mrpt_gui_grp
     - mrpt::gui::CDisplayWindowGUI new methods to minimize/restore subwindows.
   - \ref mrpt_math_grp

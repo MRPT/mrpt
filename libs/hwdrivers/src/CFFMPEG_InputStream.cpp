@@ -114,7 +114,8 @@ bool CFFMPEG_InputStream::isOpen() const
 					openURL
    -------------------------------------------------------- */
 bool CFFMPEG_InputStream::openURL(
-	const std::string& url, bool grab_as_grayscale, bool verbose)
+	const std::string& url, bool grab_as_grayscale, bool verbose,
+	const std::map<std::string, std::string>& optionsMap)
 {
 #if MRPT_HAS_FFMPEG
 	this->close();	// Close first
@@ -124,8 +125,12 @@ bool CFFMPEG_InputStream::openURL(
 	this->m_url = url;
 	this->m_grab_as_grayscale = grab_as_grayscale;
 
+	AVDictionary* options = nullptr;  // "create" an empty dictionary
+	for (const auto& kv : optionsMap)
+		av_dict_set(&options, kv.first.c_str(), kv.second.c_str(), 0);
+
 	// Open video file
-	if (avformat_open_input(&ctx->pFormatCtx, url.c_str(), nullptr, nullptr) !=
+	if (avformat_open_input(&ctx->pFormatCtx, url.c_str(), nullptr, &options) !=
 		0)
 	{
 		ctx->pFormatCtx = nullptr;
@@ -348,20 +353,27 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 		int ret = avcodec_send_packet(ctx->pCodecCtx, &packet);
 		if (ret < 0)
 		{
-			std::cerr << "[CFFMPEG_InputStream] avcodec_send_packet error code="
-					  << ret << std::endl;
+			std::cerr << std::endl
+					  << "[CFFMPEG_InputStream] avcodec_send_packet error code="
+					  << ret << std::endl
+					  << std::endl;
 			return false;
 		}
-		// while (ret >= 0)
-		ret = avcodec_receive_frame(ctx->pCodecCtx, ctx->pFrame);
-		if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return false;
-		else if (ret < 0)
+		while (ret >= 0)
 		{
-			std::cerr << "[CFFMPEG_InputStream] avcodec_receive_frame "
-						 "error code="
-					  << ret << std::endl;
-			return false;
-		}
+			ret = avcodec_receive_frame(ctx->pCodecCtx, ctx->pFrame);
+			if (ret == AVERROR(EAGAIN)) continue;
+
+			if (ret == AVERROR_EOF) return false;
+			else if (ret < 0)
+			{
+				std::cerr << std::endl
+						  << "[CFFMPEG_InputStream] avcodec_receive_frame "
+							 "error code="
+						  << ret << std::endl
+						  << std::endl;
+				return false;
+			}
 
 #else
 		avcodec_decode_video2(
@@ -373,37 +385,35 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 			continue;
 		}
 #endif
-		// Convert the image from its native format to RGB:
-		ctx->img_convert_ctx = sws_getCachedContext(
-			ctx->img_convert_ctx, width, height, ctx->pCodecCtx->pix_fmt, width,
-			height,
-			m_grab_as_grayscale ?  // BGR vs. RGB for OpenCV
-				AV_PIX_FMT_GRAY8
-								: AV_PIX_FMT_BGR24,
-			SWS_BICUBIC, nullptr, nullptr, nullptr);
+			// Convert the image from its native format to RGB:
+			ctx->img_convert_ctx = sws_getCachedContext(
+				ctx->img_convert_ctx, width, height, ctx->pCodecCtx->pix_fmt,
+				width, height,
+				m_grab_as_grayscale ?  // BGR vs. RGB for OpenCV
+					AV_PIX_FMT_GRAY8
+									: AV_PIX_FMT_BGR24,
+				SWS_BICUBIC, nullptr, nullptr, nullptr);
 
-		sws_scale(
-			ctx->img_convert_ctx, ctx->pFrame->data, ctx->pFrame->linesize, 0,
-			height, ctx->pFrameRGB->data, ctx->pFrameRGB->linesize);
+			sws_scale(
+				ctx->img_convert_ctx, ctx->pFrame->data, ctx->pFrame->linesize,
+				0, height, ctx->pFrameRGB->data, ctx->pFrameRGB->linesize);
 
-		// std::cout << "[retrieveFrame] Generating image: " <<
-		// ctx->pCodecPars->width << "x" << ctx->pCodecPars->height
-		// << std::endl; std::cout << "  linsize: " <<
-		// ctx->pFrameRGB->linesize[0] << std::endl;
+			// std::cout << "[retrieveFrame] Generating image: " <<
+			// ctx->pCodecPars->width << "x" << ctx->pCodecPars->height
+			// << std::endl; std::cout << "  linsize: " <<
+			// ctx->pFrameRGB->linesize[0] << std::endl;
 
-		if (ctx->pFrameRGB->linesize[0] !=
-			((m_grab_as_grayscale ? 1 : 3) * width))
-			THROW_EXCEPTION("FIXME: linesize!=width case not handled yet.");
+			if (ctx->pFrameRGB->linesize[0] !=
+				((m_grab_as_grayscale ? 1 : 3) * width))
+				THROW_EXCEPTION("FIXME: linesize!=width case not handled yet.");
 
-		out_img.loadFromMemoryBuffer(
-			width, height, !m_grab_as_grayscale, ctx->pFrameRGB->data[0]);
+			out_img.loadFromMemoryBuffer(
+				width, height, !m_grab_as_grayscale, ctx->pFrameRGB->data[0]);
 
-		// Free the packet that was allocated by av_read_frame
-		av_packet_unref(&packet);
-		return true;
-
-		// Free the packet that was allocated by av_read_frame
-		av_packet_unref(&packet);
+			// Free the packet that was allocated by av_read_frame
+			av_packet_unref(&packet);
+			return true;
+		}
 	}
 
 	return false;  // Error reading/ EOF
@@ -424,8 +434,8 @@ double CFFMPEG_InputStream::getVideoFPS() const
 	if (!ctx) return -1;
 	if (!ctx->pCodecCtx) return -1;
 
-	return static_cast<double>(ctx->pCodecCtx->time_base.den) /
-		ctx->pCodecCtx->time_base.num;
+	return double(ctx->pCodecCtx->framerate.num) /
+		ctx->pCodecCtx->framerate.den;
 #else
 	return false;
 #endif
