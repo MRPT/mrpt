@@ -15,6 +15,7 @@
     - New environment variable MRPT_YAML_PARSER_VERBOSE controlling mrpt::containers::yaml
   - \ref mrpt_hwdrivers_grp
     - New argument to pass custom ffmpeg options to mrpt::hwdrivers::CFFMPEG_InputStream::openURL(). New default is to prefer stream over TCP for more reliable IP cameras reading.
+    - mrpt::hwdrivers::CHokuyoURG now has a parameter for between-data communications timeout (`comms_between_timeout_ms`).
   - \ref mrpt_gui_grp
     - mrpt::gui::CDisplayWindowGUI new methods to minimize/restore subwindows.
   - \ref mrpt_math_grp

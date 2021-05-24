@@ -291,7 +291,8 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	/** Get intensity from lidar scan (default: false) */
 	bool m_intensity{false};
 	unsigned int m_scan_interval{0};
-	int m_comms_timeout_ms{100};
+	int m_comms_timeout_ms = 100;
+	int m_comms_between_timeout_ms = 1;
 
 	/** See the class documentation at the top for expected parameters */
 	void loadConfig_sensorSpecific(
