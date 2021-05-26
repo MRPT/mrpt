@@ -10,7 +10,8 @@ Download MRPT
 Source code
 -------------
 
-Get the latest development version with:
+Get the latest development version from the official
+`MRPT GitHub repository <https://github.com/MRPT/mrpt/>`_ with:
 
 .. code-block:: bash
 
@@ -82,5 +83,4 @@ Windows installers
 
 Executables (.exes and .dlls) and development libraries (.hs and .libs) included:
 
-   - `Last stable version <https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-stable>`_
-   - `Nightly builds <https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-develop>`_
+   - `Nightly builds <https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds>`_

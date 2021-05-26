@@ -11,12 +11,6 @@ Files: share/metainfo/*
 Copyright: 2006-2020, Jose Luis Blanco Claraco
 License: MIT
 
-Files: libs/nanoflann/include/nanoflann.hpp
-Copyright: 2008-2009 Marius Muja (mariusm@cs.ubc.ca)
-           2008-2009 David G. Lowe (lowe@cs.ubc.ca)
-           2011-2019 José Luis Blanco Claraco (joseluisblancoc@gmail.com)
-License: BSD-3-clause
-
 Files: 3rdparty/googletest/*
 Copyright: 2008, Google Inc.
 License: BSD-3-clause

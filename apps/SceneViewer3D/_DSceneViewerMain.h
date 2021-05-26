@@ -88,6 +88,7 @@ class _DSceneViewerFrame : public wxFrame
 	void OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event);
 	void OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event);
 	void OnmnuSceneStatsSelected(wxCommandEvent& event);
+	void OnMenuPrintScene(wxCommandEvent& event);
 	void OnMenuItemImportPLYPointCloud(wxCommandEvent& event);
 	void OnMenuItemExportPointsPLY(wxCommandEvent& event);
 	void OnMenuItemHighResRender(wxCommandEvent& event);
@@ -132,6 +133,7 @@ class _DSceneViewerFrame : public wxFrame
 	static const long ID_MENUITEM12;
 	static const long ID_MENUITEM23;
 	static const long ID_MENUITEM18;
+	static const long ID_MENUITEM_PRINT_TEXT;
 	static const long idMenuQuit;
 	static const long ID_MENUITEM24;
 	static const long ID_MENUITEM26;
@@ -179,6 +181,7 @@ class _DSceneViewerFrame : public wxFrame
 	wxCustomButton* btnOptions;
 	wxMenuItem* mnuSelectNone;
 	wxMenuItem* mnuSceneStats;
+	wxMenuItem* mnuPrintScene;
 	wxMenuItem* mnuSelectionScale;
 	wxMenuItem* mnuImportLAS;
 	wxCustomButton* btnOrtho;

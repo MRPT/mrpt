@@ -211,16 +211,28 @@ void COpenGLScene::initializeTextures()
 /*--------------------------------------------------------------
 					dumpListOfObjects
   ---------------------------------------------------------------*/
-void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst)
+void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst) const
 {
+	using namespace std::string_literals;
 	lst.clear();
 
 	for (auto& v : m_viewports)
 	{
-		lst.emplace_back(string("VIEWPORT: ") + v->m_name);
+		lst.emplace_back("Viewport: '"s + v->m_name + "'"s);
 		lst.emplace_back("============================================");
 		v->dumpListOfObjects(lst);
 	}
+}
+
+mrpt::containers::yaml COpenGLScene::asYAML() const
+{
+	mrpt::containers::yaml d = mrpt::containers::yaml::Map();
+	auto vs = d["viewports"];
+
+	for (auto& v : m_viewports)
+		vs[v->m_name] = v->asYAML();
+
+	return d;
 }
 
 /*--------------------------------------------------------------

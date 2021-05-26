@@ -17,21 +17,15 @@ namespace mrpt::opengl
 {
 /** A 3D vector field representation, consisting of points and arrows drawn at
  * any spatial position.
- *  This opengl object has been created to represent scene flow, and hence
+ * This opengl object has been created to represent scene flow, and hence
  * both the vector field and
- *  the coordinates of the points at which the vector field is represented
+ * the coordinates of the points at which the vector field is represented
  * are stored in matrices because
- *  they are computed from intensity and depth images.
- *  \sa opengl::COpenGLScene
+ * they are computed from intensity and depth images.
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html
- * preview_CVectorField3D.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::CVectorField3D](preview_CVectorField3D.png)
  *
+ * \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
 

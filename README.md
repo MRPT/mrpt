@@ -1,13 +1,16 @@
 
 <h1 align="center">The MRPT project</h1>
 
-gcc/clang: <a href="https://circleci.com/gh/MRPT/mrpt/tree/develop"><img src="https://circleci.com/gh/MRPT/mrpt/tree/develop.svg?style=svg"></a> MSVC: <a href="https://ci.appveyor.com/project/jlblancoc/mrpt" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg/branch/develop?svg=true" /></a> Last stable release: <a href="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a> <a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a>
+<a href="https://circleci.com/gh/MRPT/mrpt/tree/develop"><img src="https://circleci.com/gh/MRPT/mrpt/tree/develop.svg?style=svg"></a>
+<a href="https://ci.appveyor.com/project/jlblancoc/mrpt" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg/branch/develop?svg=true" /></a> 
+<a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/develop/graph/badge.svg" /></a>
+<a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a>
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/MRPT/mrpt)
 
-<a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/develop/graph/badge.svg" /></a>  GH downloads: <a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a> SF downloads (datasets): <a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a>
-
-Last Win64 builds: <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-develop/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-develop'></a> <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-stable/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-stable'></a>
-
-Workspace: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/MRPT/mrpt)
+<a href="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a>
+<a href='https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds'><img src='https://img.shields.io/badge/Windows-Installer-orange?logo=Windows'></a>
+<a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a>
+<a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a>
 
 ## 1. Introduction
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
@@ -112,7 +115,7 @@ make
 
 Executables (`.exe`s and `.dll`s) and development libraries (`.h`s and `.lib`s) included:
 
-Last Win64 builds: <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-develop/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-develop'></a> <a href='https://bintray.com/mrpt/mrpt-win-binaries/MRPT-nightly-builds/win64-stable/link'><img src='https://api.bintray.com/packages/mrpt/mrpt-win-binaries/MRPT-nightly-builds/images/download.svg?version=win64-stable'></a>
+[Nightly built Windows installer](https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds)
 
 
 ## 4. License

@@ -86,7 +86,7 @@ string mrpt::system::extractFileDirectory(const string& filePath)
 	for (i = (int)filePath.size() - 1; i > 0; i--)
 		if (filePath[i] == '\\' || filePath[i] == '/') break;
 
-	if (!i) return string("");
+	if (!i) return string(".");
 	else
 		return filePath.substr(0, i + 1);
 }

@@ -122,6 +122,9 @@ cd ${MRPT_DEBSRC_DIR}
 mkdir debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* debian
 
+# Add AUTHORS file, referenced in d/copyright
+cp $MRPTSRC/AUTHORS debian/
+
 # Use modified control & rules files for Ubuntu PPA packages:
 if [ $IS_FOR_UBUNTU == "1" ];
 then

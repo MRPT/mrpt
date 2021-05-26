@@ -169,6 +169,15 @@ void CPointCloudColoured::push_back(
 	CRenderizable::notifyChange();
 }
 
+void CPointCloudColoured::insertPoint(const mrpt::math::TPointXYZfRGBAu8& p)
+{
+	m_points.emplace_back(p.pt);
+	m_point_colors.emplace_back(p.r, p.g, p.b, p.a);
+
+	markAllPointsAsNew();
+	CRenderizable::notifyChange();
+}
+
 // Do needed internal work if all points are new (octree rebuilt,...)
 void CPointCloudColoured::markAllPointsAsNew()
 {

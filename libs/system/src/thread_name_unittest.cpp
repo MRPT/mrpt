@@ -15,8 +15,8 @@
 #include <atomic>
 #include <condition_variable>
 
-// This functionality is not implemented in OSX
-#if !defined(MRPT_OS_APPLE)
+// This functionality is not implemented in OSX / MinGW
+#if !defined(MRPT_OS_APPLE) && !defined(__MINGW32_MAJOR_VERSION)
 
 TEST(thread_name, set_get_current_thread)
 {

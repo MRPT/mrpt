@@ -173,12 +173,12 @@ class CObservation3DRangeScan : public CObservation
    protected:
 	/** If set to true, m_points3D_external_file is valid. */
 	bool m_points3D_external_stored{false};
-	/** 3D points are in CImage::getImagesPathBase()+<this_file_name> */
+	/** 3D points are in CImage::getImagesPathBase()+ this file name */
 	std::string m_points3D_external_file;
 
 	/** If set to true, m_rangeImage_external_file is valid. */
 	bool m_rangeImage_external_stored{false};
-	/** rangeImage is in CImage::getImagesPathBase()+<this_file_name> */
+	/** rangeImage is in CImage::getImagesPathBase()+ this file name */
 	std::string m_rangeImage_external_file;
 
    public:

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/core/bits_math.h>  // hypot_fast()
+#include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/wrap2pi.h>
 
@@ -62,6 +63,19 @@ struct TPose2D : public TPoseOrPoint,
 	 * Default fast constructor. Initializes to zeros.
 	 */
 	constexpr TPose2D() = default;
+
+	/** Builds from the first 3 elements of a vector-like object: [x y phi]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TPose2D FromVector(const Vector& v)
+	{
+		TPose2D o;
+		for (int i = 0; i < 3; i++)
+			o[i] = v[i];
+		return o;
+	}
 	/** Coordinate access using operator[]. Order: x,y,phi */
 	double& operator[](size_t i)
 	{
@@ -84,16 +98,26 @@ struct TPose2D : public TPoseOrPoint,
 			default: throw std::out_of_range("index out of range");
 		}
 	}
-	/**
-	 * Transformation into vector.
+	/** Gets the pose as a vector of doubles.
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
-	void asVector(std::vector<double>& v) const
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(3);
 		v[0] = x;
 		v[1] = y;
 		v[2] = phi;
 	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
+	}
+
 	/** Returns a human-readable textual representation of the object (eg: "[x y
 	 * yaw]", yaw in degrees)
 	 * \sa fromString
@@ -116,6 +140,9 @@ struct TPose2D : public TPoseOrPoint,
 	mrpt::math::TPoint2D operator+(const mrpt::math::TPoint2D& b) const;
 
 	mrpt::math::TPoint2D inverseComposePoint(const TPoint2D g) const;
+
+	/** Returns the (x,y) translational part of the SE(2) transformation. */
+	mrpt::math::TPoint2D translation() const { return {x, y}; }
 
 	/** Returns the norm of the (x,y) vector (phi is not used) */
 	double norm() const { return mrpt::hypot_fast(x, y); }

@@ -104,6 +104,9 @@ class CRawlog : public mrpt::serialization::CSerializable
 	 * previously in the rawlog will remain being valid. */
 	void clear();
 
+	/** Returns true if the rawlog is empty */
+	bool empty() const;
+
 	/** Add an action to the sequence: a collection of just one element is
 	 * created.
 	 *   The object is duplicated, so the original one can be freed if desired.

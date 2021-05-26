@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
-#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>  // CVectorFloat
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -19,15 +19,26 @@ using namespace mrpt::poses;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation, mrpt::obs)
 
-uint8_t CObservationIMU::serializeGetVersion() const { return 3; }
+CObservationIMU::CObservationIMU()
+{
+	dataIsPresent.fill(false);
+	rawMeasurements.fill(0);
+}
+
+uint8_t CObservationIMU::serializeGetVersion() const { return 4; }
 void CObservationIMU::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// v1->v2 was only done to fix a bug in the ordering of
 	// YAW/PITCH/ROLL rates.
-	out << sensorPose << dataIsPresent << timestamp;
-	out << rawMeasurements;
 	// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to
 	// IMU_TEMPERATURE=20)
+	// v4: switch std::vector -> std::array
+
+	out << sensorPose;
+	out.WriteBuffer(dataIsPresent.data(), dataIsPresent.size());
+	out << timestamp;
+	out.WriteBufferFixEndianness(
+		rawMeasurements.data(), rawMeasurements.size());
 	out << sensorLabel;
 }
 
@@ -36,12 +47,31 @@ void CObservationIMU::serializeFrom(
 {
 	switch (version)
 	{
+		case 4:
+			in >> sensorPose;
+			in.ReadBuffer(dataIsPresent.data(), dataIsPresent.size());
+			in >> timestamp;
+			in.ReadBufferFixEndianness(
+				rawMeasurements.data(), rawMeasurements.size());
+			in >> sensorLabel;
+			break;
+
 		case 0:
 		case 1:
 		case 2:
 		case 3:
+		{
+			// Fill new entries with default values:
+			dataIsPresent.fill(false);
+			rawMeasurements.fill(0);
+
 			in >> sensorPose;
-			in >> dataIsPresent;
+			{
+				std::vector<bool> d;
+				in >> d;
+				for (size_t i = 0; i < d.size(); i++)
+					dataIsPresent.at(i) = d.at(i);
+			}
 
 			in >> timestamp;
 
@@ -50,13 +80,15 @@ void CObservationIMU::serializeFrom(
 			{
 				mrpt::math::CVectorFloat tmp;
 				in >> tmp;
-				rawMeasurements.resize(tmp.size());
-				for (size_t i = 0; i < rawMeasurements.size(); i++)
-					rawMeasurements[i] = tmp[i];
+				for (int i = 0; i < tmp.size(); i++)
+					rawMeasurements.at(i) = tmp[i];
 			}
 			else
 			{
-				in >> rawMeasurements;
+				std::vector<double> d;
+				in >> d;
+				for (size_t i = 0; i < d.size(); i++)
+					rawMeasurements.at(i) = d.at(i);
 			}
 
 			if (version < 2)
@@ -73,22 +105,8 @@ void CObservationIMU::serializeFrom(
 			}
 
 			in >> sensorLabel;
-
-			// Fill new entries with default values:
-			if (dataIsPresent.size() < COUNT_IMU_DATA_FIELDS)
-			{
-				const size_t nOld = dataIsPresent.size();
-				ASSERT_(rawMeasurements.size() == dataIsPresent.size());
-
-				dataIsPresent.resize(COUNT_IMU_DATA_FIELDS);
-				rawMeasurements.resize(COUNT_IMU_DATA_FIELDS);
-				for (size_t i = nOld; i < COUNT_IMU_DATA_FIELDS; i++)
-				{
-					dataIsPresent[i] = false;
-					rawMeasurements[i] = 0;
-				}
-			}
-			break;
+		}
+		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }

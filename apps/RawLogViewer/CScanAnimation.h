@@ -12,6 +12,7 @@
 //(*Headers(CScanAnimation)
 #include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/checklst.h>
 #include <wx/dialog.h>
 #include <wx/radiobut.h>
 #include <wx/sizer.h>
@@ -39,41 +40,33 @@ class CScanAnimation : public wxDialog
 	~CScanAnimation() override;
 
 	//(*Declarations(CScanAnimation)
-	wxBoxSizer* BoxSizer4;
-	wxStaticText* StaticText22;
 	wxButton* btnStop;
-	wxRadioButton* rbLoaded;
 	wxSlider* slPos;
-	wxBoxSizer* BoxSizer5;
 	wxSpinCtrl* edDelay;
-	wxStaticText* StaticText2;
-	wxButton* btnClose;
 	wxStaticText* StaticText1;
+	wxStaticText* StaticText2;
+	wxStaticText* StaticText3;
+	wxButton* btnClose;
 	wxButton* btnJump;
-	wxStaticText* lbNumScans;
-	wxButton* btnPickInput;
 	wxSpinCtrl* edIndex;
-	wxFlexGridSizer* FlexGridSizer8;
-	wxCheckBox* cbAllowMix;
-	wxRadioButton* rbFile;
 	wxCheckBox* cbViewOrtho;
-	wxStaticBoxSizer* StaticBoxSizer1;
-	wxStaticText* lbNumPoints;
 	wxButton* btnPlay;
 	CMyGLCanvas* m_plot3D;
-	wxTextCtrl* edFile;
+	wxTextCtrl* edTimestamp;
+	wxCheckListBox* lstObsLabels;
+	wxButton* btnVizOptions;
 	//*)
 
    protected:
 	//(*Identifiers(CScanAnimation)
-	static const long ID_RADIOBUTTON1;
+	static const long ID_LIST_OBS_LABELS;
 	static const long ID_RADIOBUTTON2;
+	static const long ID_STATICTEXT4;
 	static const long ID_STATICTEXT22;
 	static const long ID_TEXTCTRL11;
 	static const long ID_BUTTON5;
 	static const long ID_BUTTON1;
 	static const long ID_BUTTON2;
-	static const long ID_STATICTEXT4;
 	static const long ID_SPINCTRL2;
 	static const long ID_CHECKBOX1;
 	static const long ID_BUTTON3;
@@ -85,7 +78,10 @@ class CScanAnimation : public wxDialog
 	static const long ID_STATICTEXT2;
 	static const long ID_CHECKBOX2;
 	static const long ID_STATICTEXT3;
+	static const long ID_BUTTON6;
+	static const long ID_BUTTON7;
 	//*)
+	static const long ID_BUTTON_SAVE_SCENE;
 
    private:
 	//(*Handlers(CScanAnimation)
@@ -97,16 +93,18 @@ class CScanAnimation : public wxDialog
 	void OnslPosCmdScroll(wxScrollEvent& event);
 	void OnbtnPickInputClick(wxCommandEvent& event);
 	void OnInit(wxInitDialogEvent& event);
-	void OnrbLoadedSelect(wxCommandEvent& event);
-	void OnrbFile(wxCommandEvent& event);
-	void OncbAllowMixClick(wxCommandEvent& event);
 	void OncbViewOrthoClick(wxCommandEvent& event);
 	//*)
+
+	void OnbtnVizOptions(wxCommandEvent& event);
+	void OnbtnSave3DScene(wxCommandEvent& event);
 
 	DECLARE_EVENT_TABLE()
 
 	bool m_stop;
-	bool m_mixlasers;
+
+	using sensor_label_t = std::string;
+	std::map<sensor_label_t, bool> m_visibleSensors;
 
 	struct TRenderObject
 	{
@@ -117,8 +115,16 @@ class CScanAnimation : public wxDialog
 	/** All the observations added to the map. */
 	TListGlObjects m_gl_objects;
 
-	void RebuildMaps();
-	void BuildMapAndRefresh(mrpt::obs::CSensoryFrame* sf);
+	/// Get the rawlog entry (from cur. loaded rawlog), build and displays its
+	/// map:
+	/// \return true if the viz has been refreshed.
+	bool rebuild_view(bool forceRefreshView = false);
+
+	/// This method is called in any case for displaying a laser scan.
+	///  We keep an internal list of recent scans so they don't vanish
+	///  instantaneously.
+	/// \return true if the viz should be refreshed.
+	bool update_opengl_viz(const mrpt::obs::CSensoryFrame& sf);
 };
 
 #endif

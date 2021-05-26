@@ -14,6 +14,7 @@
 #include <mrpt/math/math_frwds.h>  // CMatrixFixed
 
 #include <cmath>  // sqrt
+#include <type_traits>
 
 namespace mrpt::math
 {
@@ -94,6 +95,19 @@ struct TPoint3D_ : public TPoseOrPoint,
 			static_cast<U>(this->z));
 	}
 
+	/** Builds from the first 3 elements of a vector-like object: [x y z]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TPoint3D FromVector(const Vector& v)
+	{
+		TPoint3D o;
+		for (int i = 0; i < 3; i++)
+			o[i] = v[i];
+		return o;
+	}
+
 	/** Coordinate access using operator[]. Order: x,y,z */
 	T& operator[](size_t i)
 	{
@@ -135,14 +149,14 @@ struct TPoint3D_ : public TPoseOrPoint,
 			square(p.y - TPoint3D_data<T>::y) +
 			square(p.z - TPoint3D_data<T>::z);
 	}
-	/** Squared norm: |v|^2 = x^2+y^2+z^2 */
+	/** Squared norm: `|v|^2 = x^2+y^2+z^2` */
 	T sqrNorm() const
 	{
 		return square(TPoint3D_data<T>::x) + square(TPoint3D_data<T>::y) +
 			square(TPoint3D_data<T>::z);
 	}
 
-	/** Point norm: |v| = sqrt(x^2+y^2+z^2) */
+	/** Point norm: `|v| = sqrt(x^2+y^2+z^2)` */
 	T norm() const { return std::sqrt(sqrNorm()); }
 
 	/** Returns this vector with unit length: v/norm(v) */
@@ -164,17 +178,26 @@ struct TPoint3D_ : public TPoseOrPoint,
 		TPoint3D_data<T>::z *= f;
 		return *this;
 	}
-	/**
-	 * Transformation into vector.
+	/** Gets the pose as a vector of doubles.
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
-	template <class VECTORLIKE>
-	void asVector(VECTORLIKE& v) const
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(3);
 		v[0] = TPoint3D_data<T>::x;
 		v[1] = TPoint3D_data<T>::y;
 		v[2] = TPoint3D_data<T>::z;
 	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
+	}
+
 	/**
 	 * Translation.
 	 */
@@ -363,11 +386,20 @@ struct TPointXYZRGBAf
 };
 #pragma pack(pop)
 
-/** Unary minus operator for 3D points. */
+/** Unary minus operator for 3D points/vectors. */
 template <typename T>
 constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p1)
 {
 	return {-p1.x, -p1.y, -p1.z};
+}
+
+/** scalar times vector operator. */
+template <
+	typename T, typename Scalar,
+	std::enable_if_t<std::is_convertible_v<Scalar, T>>* = nullptr>
+constexpr TPoint3D_<T> operator*(const Scalar scalar, const TPoint3D_<T>& p)
+{
+	return {scalar * p.x, scalar * p.y, scalar * p.z};
 }
 
 /** Exact comparison between 3D points */

@@ -345,8 +345,12 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void initializeTextures();
 
 	/** Retrieves a list of all objects in text form.
-	 */
-	void dumpListOfObjects(std::vector<std::string>& lst);
+	 * 	\deprecated Prefer asYAML() (since MRPT 2.1.3) */
+	void dumpListOfObjects(std::vector<std::string>& lst) const;
+
+	/** Prints all viewport objects in human-readable YAML form.
+	 * \note (New in MRPT 2.1.3) */
+	mrpt::containers::yaml asYAML() const;
 
 	/** Render in image mode */
 	void renderImageMode() const;

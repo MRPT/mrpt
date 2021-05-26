@@ -13,16 +13,10 @@
 namespace mrpt::opengl
 {
 /** A solid or wire-frame sphere.
- *  \sa opengl::COpenGLScene
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CSphere </td> <td> \image html preview_CSphere.png
- * </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::CSphere](preview_CSphere.png)
  *
+ * \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
 class CSphere : public CGeneralizedEllipsoidTemplate<3>

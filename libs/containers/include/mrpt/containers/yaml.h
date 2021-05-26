@@ -74,6 +74,9 @@ namespace mrpt::containers
  * Output:
  *  \include containers_yaml_example/console.out
  *
+ * Verbose debug information on YAML document parsing is emitted if the
+ * environment variable `MRPT_YAML_PARSER_VERBOSE` is set to `1`.
+ *
  * \ingroup mrpt_containers_yaml
  * \note [New in MRPT 2.1.0]
  */

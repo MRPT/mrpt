@@ -22,12 +22,10 @@ namespace mrpt::obs
  *  New observations can be added using:
  *
  * \code
+ * // Create a smart pointer containing an object of class "CObservationXXX"
  * CObservationXXX::Ptr	o = std::make_shared<CObservationXXX>();
- * // Create
- * a smart pointer containing an object of class "CObservationXXX"
- * o->(...)
- *
- * CSensoryFrame	 sf;
+ * // o->... // fill it...
+ * CSensoryFrame sf;
  * sf.insert(o);
  * \endcode
  *
@@ -45,6 +43,11 @@ namespace mrpt::obs
  *
  * Notice that contained observations objects are automatically deleted on
  *  this object's destruction or clear.
+ *
+ * Note also that `shared_ptr<>` to the observations are stored here, so
+ * if a copy of a CSensoryFrame will contain references to the **same** objects,
+ * i.e. copies are shallows copies, not deep copies.
+ *
  * \sa CObservation
  * \ingroup mrpt_obs_grp
  */

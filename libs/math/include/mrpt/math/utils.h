@@ -20,12 +20,7 @@
 #include <limits>  // numeric_limits
 #include <vector>
 
-namespace mrpt
-{
-/** This base provides a set of functions for maths stuff.
- * \ingroup mrpt_math_grp
- */
-namespace math
+namespace mrpt::math
 {
 /**\brief Compare 2 floats and determine whether they are equal
  * \return True if equal, false otherwise
@@ -272,6 +267,4 @@ bool saveEigenSparseTripletsToFile(
 
 /** @} */  // End of mrpt_math_io
 
-}  // namespace math
-
-}  // namespace mrpt
+}  // namespace mrpt::math

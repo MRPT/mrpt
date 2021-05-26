@@ -13,7 +13,8 @@
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/math_frwds.h>  // CMatrixFixed
 
-#include <cmath>
+#include <cmath>  // sqrt
+#include <type_traits>
 #include <vector>
 
 namespace mrpt::math
@@ -75,6 +76,19 @@ struct TPoint2D_ : public TPoseOrPoint,
 	 */
 	explicit TPoint2D_(const TPose3D& p);
 
+	/** Builds from the first 2 elements of a vector-like object: [x y]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TPoint2D FromVector(const Vector& v)
+	{
+		TPoint2D o;
+		for (int i = 0; i < 2; i++)
+			o[i] = v[i];
+		return o;
+	}
+
 	/** Return a copy of this object using type U for coordinates */
 	template <typename U>
 	TPoint2D_<U> cast() const
@@ -103,15 +117,23 @@ struct TPoint2D_ : public TPoseOrPoint,
 		}
 	}
 
-	/**
-	 * Transformation into vector.
+	/** Gets the pose as a vector of doubles.
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
-	template <typename U>
-	void asVector(std::vector<U>& v) const
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(2);
-		v[0] = static_cast<U>(this->x);
-		v[1] = static_cast<U>(this->y);
+		v[0] = TPoint2D_data<T>::x;
+		v[1] = TPoint2D_data<T>::y;
+	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
 	}
 
 	bool operator<(const TPoint2D_& p) const;
@@ -194,10 +216,10 @@ struct TPoint2D_ : public TPoseOrPoint,
 		return o;
 	}
 
-	/** Squared norm: |v|^2 = x^2+y^2 */
+	/** Squared norm: `|v|^2 = x^2+y^2` */
 	T sqrNorm() const { return this->x * this->x + this->y * this->y; }
 
-	/** Point norm: |v| = sqrt(x^2+y^2) */
+	/** Point norm: `|v| = sqrt(x^2+y^2)` */
 	T norm() const { return std::sqrt(sqrNorm()); }
 };
 
@@ -213,6 +235,22 @@ using TPoint2Df = TPoint2D_<float>;
 using TVector2D = TPoint2D;
 /** Useful type alias for float 2-vectors */
 using TVector2Df = TPoint2Df;
+
+/** Unary minus operator for 2D points/vectors. */
+template <typename T>
+constexpr TPoint2D_<T> operator-(const TPoint2D_<T>& p1)
+{
+	return {-p1.x, -p1.y};
+}
+
+/** scalar times vector operator. */
+template <
+	typename T, typename Scalar,
+	std::enable_if_t<std::is_convertible_v<Scalar, T>>* = nullptr>
+constexpr TPoint2D_<T> operator*(const Scalar scalar, const TPoint2D_<T>& p)
+{
+	return {scalar * p.x, scalar * p.y};
+}
 
 /** Exact comparison between 2D points */
 template <typename T>

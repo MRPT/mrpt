@@ -19,18 +19,12 @@
 
 namespace mrpt::opengl
 {
-/** A 3D mesh composed of Triangles and/or Quads.
+/** A 3D mesh composed of triangles and/or quads.
  * A typical usage example would be a 3D model of an object.
- *  \sa opengl::COpenGLScene,opengl::CMesh,opengl::CAssimpModel
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CMesh3D </td> <td> \image html preview_CMesh3D.png
- * </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::CMesh3D](preview_CMesh3D.png)
  *
+ * \sa opengl::COpenGLScene,opengl::CMesh,opengl::CAssimpModel
  * \ingroup mrpt_opengl_grp
  */
 class CMesh3D : public CRenderizableShaderTriangles,

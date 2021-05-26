@@ -11,6 +11,7 @@
 //
 #include <mrpt/math/TLine2D.h>
 #include <mrpt/math/TLine3D.h>
+#include <mrpt/math/TObject3D.h>
 #include <mrpt/math/epsilon.h>
 #include <mrpt/math/geometry.h>	 // distance()
 #include <mrpt/math/ops_containers.h>  // squareNorm()
@@ -179,6 +180,18 @@ std::optional<double> TLine3D::distance(
 	}
 
 	return {dist};
+}
+
+TPoint3D TLine3D::closestPointTo(const TPoint3D& p) const
+{
+	const auto pl = mrpt::math::TPlane::FromPointAndNormal(p, director);
+	TObject3D inter;
+	bool ok = mrpt::math::intersect(pl, *this, inter);
+	ASSERT_(ok);
+	if (inter.isLine()) return p;
+
+	ASSERT_(inter.isPoint());
+	return inter.getAs<TPoint3D>();
 }
 
 std::string TLine3D::asString() const

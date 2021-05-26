@@ -80,6 +80,7 @@
 #include <wx/choice.h>
 #include <wx/config.h>
 #include <wx/image.h>
+#include <wx/textdlg.h>
 #include <wx/tooltip.h>
 
 #include "imgs/tree_icon1.xpm"
@@ -369,6 +370,7 @@ const long xRawLogViewerFrame::ID_MENUITEM50 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM48 = wxNewId();
 const long xRawLogViewerFrame::ID_TIMER1 = wxNewId();
 //*)
+const long xRawLogViewerFrame::ID_MENUITEM_RENAME_BY_SF_IDX = wxNewId();
 
 BEGIN_EVENT_TABLE(xRawLogViewerFrame, wxFrame)
 //(*EventTable(xRawLogViewerFrame)
@@ -959,7 +961,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pnViewOptions = new ViewOptions3DPoints(
 		nb_3DObsChannels, ID_PANEL_VIEW_3D_POINT_OPTIONS);
 
-	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D points"), false);
+	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D view"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Depth, _("Depth"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Int, _("Intensity"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
@@ -982,8 +984,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Notebook1->AddPage(pn_CObservationGPS, _("Obs: GPS"), false);
 	Notebook1->AddPage(
 		pn_CObservationBearingRange, _("Obs: RangeBearing"), false);
-	Notebook1->AddPage(
-		pn_CObservation3DRangeScan, _("Obs: 3D range scan"), false);
+	Notebook1->AddPage(pn_CObservation3DRangeScan, _("Obs: 3D"), false);
 	BoxSizer3->Add(
 		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel5->SetSizer(BoxSizer3);
@@ -1168,6 +1169,12 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		Menu3, ID_MENUITEM82, _("Regenerate timestamps in SF"), wxEmptyString,
 		wxITEM_NORMAL);
 	Menu3->Append(MenuItem79);
+
+	auto MenuItemRenameBySFIdx = new wxMenuItem(
+		Menu3, ID_MENUITEM_RENAME_BY_SF_IDX, _("Rename by SF index"),
+		wxEmptyString, wxITEM_NORMAL);
+	Menu3->Append(MenuItemRenameBySFIdx);
+
 	MenuBar1->Append(Menu3, _("&Edit"));
 	Menu6 = new wxMenu();
 	Menu14 = new wxMenu();
@@ -1631,6 +1638,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Bind(
 		wxEVT_NOTEBOOK_PAGE_CHANGED, &xRawLogViewerFrame::On3DObsPagesChange,
 		this, ID_NOTEBOOK_3DOBS);
+	Bind(
+		wxEVT_MENU, &xRawLogViewerFrame::OnMenuRenameBySFIndex, this,
+		ID_MENUITEM_RENAME_BY_SF_IDX);
 
 	// "Manually" added code:
 	// ----------------------------
@@ -2622,7 +2632,7 @@ void xRawLogViewerFrame::OnShowImagesAsVideo(wxCommandEvent&)
 //------------------------------------------------------------------------
 void xRawLogViewerFrame::OnRawMapOdo(wxCommandEvent&)
 {
-	if (rawlog.size() < 1)
+	if (rawlog.empty())
 	{
 		wxMessageBox(
 			_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
@@ -4589,6 +4599,38 @@ void xRawLogViewerFrame::OnMenuItem37Selected(wxCommandEvent&)
 	rebuildTreeView();
 	WX_END_TRY
 }
+
+void xRawLogViewerFrame::OnMenuRenameBySFIndex(wxCommandEvent&)
+{
+	WX_START_TRY
+
+	wxTextEntryDialog dlg1(
+		this, "Enter SF 0-based index:", "Rename by SF index", "0");
+	dlg1.SetTextValidator(wxFILTER_DIGITS);
+	if (dlg1.ShowModal() != wxID_OK) return;
+
+	wxTextEntryDialog dlg2(
+		this, "Enter new sensor label:", "Rename by SF index", "NEW_NAME");
+	if (dlg2.ShowModal() != wxID_OK) return;
+
+	unsigned long obsIdx = 0;
+	if (!dlg1.GetValue().ToULong(&obsIdx)) return;
+
+	const auto newName = dlg2.GetValue().ToStdString();
+
+	for (const auto& e : rawlog)
+	{
+		auto sf = std::dynamic_pointer_cast<CSensoryFrame>(e);
+		if (!sf) continue;
+
+		if (sf->size() < obsIdx) continue;
+		sf->getObservationByIndex(obsIdx)->sensorLabel = newName;
+	}
+
+	rebuildTreeView();
+	WX_END_TRY
+}
+
 // Menu: New action 2D (SM)
 void xRawLogViewerFrame::OnMenuItem47Selected(wxCommandEvent&)
 {
@@ -4750,7 +4792,8 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent&)
 					{
 						wxMessageBox(
 							(format(
-								 "An odometry measurement was found at entry "
+								 "An odometry measurement was found at "
+								 "entry "
 								 "%i which does not\ncontain encoders info: "
 								 "Cannot recompute odometry without this "
 								 "information!",
@@ -4951,6 +4994,13 @@ void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(wxCommandEvent&)
 
 void xRawLogViewerFrame::OnShowAnimateScans(wxCommandEvent&)
 {
+	if (rawlog.empty())
+	{
+		wxMessageBox(
+			_("Please load a rawlog first!"), _("Rawlog is empty"), wxOK, this);
+		return;
+	}
+
 	CScanAnimation scanAnimation(this);
 	scanAnimation.Maximize();
 
@@ -5103,7 +5153,8 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent&)
 		// Load the "ini-file" from the text control:
 		CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
 
-		// make a list  "sensor_label -> sensor_pose" by parsing the ini-file:
+		// make a list  "sensor_label -> sensor_pose" by parsing the
+		// ini-file:
 		using TSensor2PoseMap = std::map<std::string, mrpt::poses::CPose3D>;
 		TSensor2PoseMap desiredSensorPoses;
 		std::map<std::string, mrpt::obs::CObservationImage> desiredCamParams;
@@ -5465,8 +5516,8 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent&)
 		// Load the "ini-file" from the text control:
 		CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
 
-		// make a list  "sensor_label -> list of exclusion polygons" by parsing
-		// the ini-file:
+		// make a list  "sensor_label -> list of exclusion polygons" by
+		// parsing the ini-file:
 		using TPolygonList = map<string, vector<CPolygon>>;
 		TPolygonList lstExclusions;
 
@@ -5602,7 +5653,8 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent&)
 
 		wxMessageBox(
 			wxString::Format(
-				_("%i entries modified for %i sensor labels and %u exclusion "
+				_("%i entries modified for %i sensor labels and %u "
+				  "exclusion "
 				  "areas."),
 				(int)changes, (int)lstExclusions.size(), nExclZones),
 			_("Done"), wxOK, this);
@@ -5620,8 +5672,8 @@ void xRawLogViewerFrame::OnComboImageDirsChange(wxCommandEvent&)
 	if (mrpt::system::fileExists(dirc))
 	{
 		CImage::setImagesPathBase(dirc);
-		// wxMessageBox( _("The current directory for external images has been
-		// set to:\n")+dir , _("External images"));
+		// wxMessageBox( _("The current directory for external images has
+		// been set to:\n")+dir , _("External images"));
 
 		tree_view->SetSelectedItem(tree_view->GetSelectedItem(), true);
 	}
@@ -5646,8 +5698,8 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent&)
 		// Load the "ini-file" from the text control:
 		CConfigFileMemory cfg(string(dialog.edText->GetValue().mb_str()));
 
-		// make a list  "sensor_label -> list of exclusion polygons" by parsing
-		// the ini-file:
+		// make a list  "sensor_label -> list of exclusion polygons" by
+		// parsing the ini-file:
 		using TExclAreasList = map<string, vector<pair<double, double>>>;
 		TExclAreasList lstExclusions;
 
@@ -5776,7 +5828,8 @@ void xRawLogViewerFrame::OnLaserFilterAngles(wxCommandEvent&)
 
 		wxMessageBox(
 			wxString::Format(
-				_("%i entries modified for %i sensor labels and %u exclusion "
+				_("%i entries modified for %i sensor labels and %u "
+				  "exclusion "
 				  "areas."),
 				(int)changes, (int)lstExclusions.size(), nExclZones),
 			_("Done"), wxOK, this);
@@ -6011,7 +6064,8 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent&)
 
 	wxTheApp->Yield();	// Let the app. process messages
 
-	//  possible <channel_desc>: left, right, disparity (more in the future?)
+	//  possible <channel_desc>: left, right, disparity (more in the
+	//  future?)
 	std::vector<std::string> outVideosIdx;
 	mrpt::vision::CVideoFileWriter outVideos[20];
 

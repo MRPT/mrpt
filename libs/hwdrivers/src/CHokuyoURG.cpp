@@ -14,6 +14,7 @@
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CHokuyoURG, mrpt::hwdrivers)
@@ -70,6 +71,11 @@ void CHokuyoURG::doProcessSimple(
 	bool& outThereIsObservation,
 	mrpt::obs::CObservation2DRangeScan& outObservation, bool& hardwareError)
 {
+#if 0
+	static mrpt::system::CTimeLogger timLogger("CHokuyoURG");
+	mrpt::system::CTimeLoggerEntry tle(timLogger, "doProcessSimple");
+#endif
+
 	outThereIsObservation = false;
 	hardwareError = false;
 
@@ -92,7 +98,7 @@ void CHokuyoURG::doProcessSimple(
 	m_rcv_data.reserve(expectedSize + 1000);
 
 	m_state = ssWorking;
-	if (!parseResponse())
+	if (!parseResponse(false))
 	{
 		if (!internal_notifyNoScanReceived())
 		{
@@ -260,6 +266,8 @@ void CHokuyoURG::loadConfig_sensorSpecific(
 
 	MRPT_LOAD_HERE_CONFIG_VAR(scan_interval, int, m_scan_interval, c, s);
 	MRPT_LOAD_HERE_CONFIG_VAR(comms_timeout_ms, int, m_comms_timeout_ms, c, s);
+	MRPT_LOAD_HERE_CONFIG_VAR(
+		comms_between_timeout_ms, int, m_comms_between_timeout_ms, c, s);
 
 	// Parent options:
 	C2DRangeFinderAbstract::loadCommonParams(c, s);
@@ -412,22 +420,37 @@ bool CHokuyoURG::setHighBaudrate()
 /*-------------------------------------------------------------
 						ensureBufferHasBytes
 -------------------------------------------------------------*/
-bool CHokuyoURG::ensureBufferHasBytes(const size_t nDesiredBytes)
+bool CHokuyoURG::ensureBufferHasBytes(
+	const size_t nDesiredBytes, bool additionalWaitForData)
 {
 	ASSERT_LT_(nDesiredBytes, m_rx_buffer.capacity());
 
 	if (m_rx_buffer.size() >= nDesiredBytes) return true;
 
 	// Try to read more bytes:
-	std::array<uint8_t, 128> buf;
+	std::array<uint8_t, 512> buf;
 	const size_t to_read = std::min(m_rx_buffer.available(), buf.size());
 
 	try
 	{
-		auto sock = dynamic_cast<CClientTCPSocket*>(m_stream.get());
-		const size_t nRead = sock
-			? sock->readAsync(&buf[0], to_read, m_comms_timeout_ms, 10)
-			: m_stream->Read(&buf[0], to_read);
+		const size_t nRead = [this, &buf, additionalWaitForData, to_read]() {
+			if (auto sock = dynamic_cast<CClientTCPSocket*>(m_stream.get());
+				sock)
+			{
+				// socket:
+				auto timeout = m_comms_timeout_ms;
+				if (additionalWaitForData) mrpt::keep_max(timeout, 100);
+
+				return sock->readAsync(
+					&buf[0], to_read, timeout, m_comms_between_timeout_ms);
+			}
+			else
+			{
+				// serial port:
+				return m_stream->Read(&buf[0], to_read);
+			}
+		}();
+
 		m_rx_buffer.push_many(&buf[0], nRead);
 	}
 	catch (std::exception&)
@@ -438,7 +461,7 @@ bool CHokuyoURG::ensureBufferHasBytes(const size_t nDesiredBytes)
 	return (m_rx_buffer.size() >= nDesiredBytes);
 }
 
-bool CHokuyoURG::parseResponse()
+bool CHokuyoURG::parseResponse(bool additionalWaitForData)
 {
 	m_rcv_status0 = '\0';
 	m_rcv_status1 = '\0';
@@ -462,7 +485,8 @@ bool CHokuyoURG::parseResponse()
 			unsigned int i = 0;
 			do
 			{
-				if (!ensureBufferHasBytes(verifLen - i)) return false;
+				if (!ensureBufferHasBytes(verifLen - i, additionalWaitForData))
+					return false;
 
 				// If matches the echo, go on:
 				if (m_rx_buffer.peek(peekIdx++) == m_lastSentMeasCmd[i])
@@ -481,7 +505,8 @@ bool CHokuyoURG::parseResponse()
 		}
 
 		// Now, the status bytes:
-		if (!ensureBufferHasBytes(peekIdx + 2)) return false;
+		if (!ensureBufferHasBytes(peekIdx + 2, additionalWaitForData))
+			return false;
 
 		tmp_rcv_status0 = m_rx_buffer.peek(peekIdx++);
 		tmp_rcv_status1 = m_rx_buffer.peek(peekIdx++);
@@ -490,7 +515,8 @@ bool CHokuyoURG::parseResponse()
 		if (tmp_rcv_status1 != 0x0A)
 		{
 			// Yes, it is SCIP2.0
-			if (!ensureBufferHasBytes(peekIdx + 1)) return false;
+			if (!ensureBufferHasBytes(peekIdx + 1, additionalWaitForData))
+				return false;
 			// Ignore this byte: sumStatus
 			peekIdx++;
 		}
@@ -500,7 +526,8 @@ bool CHokuyoURG::parseResponse()
 		}
 
 		// After the status bytes, there must be a LF:
-		if (!ensureBufferHasBytes(peekIdx + 1)) return false;
+		if (!ensureBufferHasBytes(peekIdx + 1, additionalWaitForData))
+			return false;
 		char nextChar = m_rx_buffer.peek(peekIdx++);
 		if (nextChar != 0x0A) return false;
 
@@ -516,7 +543,7 @@ bool CHokuyoURG::parseResponse()
 		std::string tmp_rx;
 		for (;;)
 		{
-			if (!ensureBufferHasBytes(peekIdx + 1))
+			if (!ensureBufferHasBytes(peekIdx + 1, additionalWaitForData))
 			{
 				// Do not empty the queue, it seems we need to wait for more
 				// data:

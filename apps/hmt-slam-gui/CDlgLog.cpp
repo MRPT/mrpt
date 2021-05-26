@@ -72,9 +72,7 @@ CDlgLog::CDlgLog(
 		wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE | wxTE_READONLY |
 			wxHSCROLL | wxALWAYS_SHOW_SB,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	wxFont edLogFont(
-		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+	wxFont edLogFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
 	edLog->SetFont(edLogFont);
 	FlexGridSizer3->Add(
 		edLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);

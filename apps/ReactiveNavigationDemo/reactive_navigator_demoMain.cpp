@@ -1582,8 +1582,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				wxDefaultValidator, _T("ID_TEXTCTRL_WP"));
 			edWpLog->SetMinSize(wxSize(190, 60));
 			wxFont edLogFont(
-				8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-				wxEmptyString, wxFONTENCODING_DEFAULT);
+				8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
 			edWpLog->SetFont(edLogFont);
 		}
 

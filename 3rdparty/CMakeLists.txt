@@ -221,6 +221,10 @@ if(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM)
 			${OPENGL_glu_LIBRARY}
 		)
 	endif()
+	if (MINGW)
+		target_link_libraries(mrpt_freeglut PRIVATE winmm
+		)
+	endif()
 	unset(SRCS)
 endif()
 
@@ -237,6 +241,12 @@ if(WIN32)
 	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		target_compile_options(mrpt_glew PRIVATE
 			-fPIC
+		)
+	endif()
+
+	if (MINGW)
+		target_compile_options(mrpt_glew PRIVATE
+			-Wno-cast-function-type
 		)
 	endif()
 

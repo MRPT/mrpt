@@ -62,6 +62,9 @@ void CRawlog::insert(CAction& action)
 }
 
 size_t CRawlog::size() const { return m_seqOfActObs.size(); }
+
+bool CRawlog::empty() const { return m_seqOfActObs.empty(); }
+
 CActionCollection::Ptr CRawlog::getAsAction(size_t index) const
 {
 	MRPT_START

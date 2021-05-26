@@ -484,8 +484,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 			wxALWAYS_SHOW_SB,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	wxFont edRestParamsFont(
-		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
 	edRestParams->SetFont(edRestParamsFont);
 	FlexGridSizer18->Add(
 		edRestParams, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);

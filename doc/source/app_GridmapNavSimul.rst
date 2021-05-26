@@ -1,4 +1,4 @@
-.. app_GridmapNavSimul:
+.. _app_GridmapNavSimul:
 
 ====================================================
 Application: GridmapNavSimul

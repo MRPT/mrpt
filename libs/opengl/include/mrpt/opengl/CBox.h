@@ -25,16 +25,9 @@ namespace mrpt::opengl
  *color is the CRenderizable color, border line can be set with
  *setBoxBorderColor().
  *
+ * ![mrpt::opengl::CBox](preview_CBox.png)
+ *
  * \sa opengl::COpenGLScene,opengl::CRenderizable
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- *border-style: solid;">
- *   <tr> <td> mrpt::opengl::CBox </td> <td> \image html preview_CBox.png </td>
- *</tr>
- *  </table>
- *  </div>
- *
  * \ingroup mrpt_opengl_grp
  */
 class CBox : public CRenderizableShaderTriangles,

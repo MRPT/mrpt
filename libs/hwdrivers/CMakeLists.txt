@@ -248,3 +248,7 @@ endif()
 if (CMAKE_MRPT_HAS_MYNTEYE_D)
 	target_link_libraries(hwdrivers PRIVATE mynteye_depth)
 endif()
+# For velodyne driver:
+if (MINGW)
+	target_link_libraries(hwdrivers PRIVATE WS2_32 winmm)
+endif()

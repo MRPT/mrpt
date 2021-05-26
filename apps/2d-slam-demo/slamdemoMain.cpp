@@ -239,8 +239,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel3, ID_STATICTEXT1, _("Ground truth"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT1"));
 	wxFont lbGTFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	lbGT->SetFont(lbGTFont);
 	GridSizer1->Add(
 		lbGT, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -263,8 +262,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel4, ID_STATICTEXT2, _("Observation"), wxDefaultPosition,
 		wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT2"));
 	wxFont lbObsFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	lbObs->SetFont(lbObsFont);
 	GridSizer2->Add(
 		lbObs, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -293,8 +291,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel5, ID_STATICTEXT10, _("Map"), wxDefaultPosition, wxDefaultSize,
 		wxALIGN_CENTRE, _T("ID_STATICTEXT10"));
 	wxFont lbMapFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	lbMap->SetFont(lbMapFont);
 	GridSizer3->Add(
 		lbMap, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -317,8 +314,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel6, ID_STATICTEXT3, _("Indiv. compat (95% ellips.)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT3"));
 	wxFont lmIndCompatFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	lmIndCompat->SetFont(lmIndCompatFont);
 	GridSizer4->Add(
 		lmIndCompat, 1,
@@ -346,8 +342,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel7, ID_STATICTEXT4, _("Dat assoc"), wxDefaultPosition,
 		wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT4"));
 	wxFont lbDatAssocFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	lbDatAssoc->SetFont(lbDatAssocFont);
 	GridSizer5->Add(
 		lbDatAssoc, 1,
@@ -394,8 +389,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel8, ID_STATICTEXT5, _("Vehicle X (err,99% bounds)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT5"));
 	wxFont StaticText2Font(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	StaticText2->SetFont(StaticText2Font);
 	GridSizer7->Add(
 		StaticText2, 1,
@@ -418,8 +412,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel9, ID_STATICTEXT6, _("Vehicle Y (err,99% bounds)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT6"));
 	wxFont StaticText3Font(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	StaticText3->SetFont(StaticText3Font);
 	GridSizer8->Add(
 		StaticText3, 1,
@@ -442,8 +435,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel10, ID_STATICTEXT7, _("Vehicle Phi (err,99% bounds)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT7"));
 	wxFont StaticText4Font(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	StaticText4->SetFont(StaticText4Font);
 	GridSizer9->Add(
 		StaticText4, 1,
@@ -478,8 +470,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel13, ID_STATICTEXT9, _("True positives:"), wxDefaultPosition,
 		wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT9"));
 	wxFont lbDaTPFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	lbDaTP->SetFont(lbDaTPFont);
 	GridSizer6->Add(
 		lbDaTP, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -502,8 +493,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel14, ID_STATICTEXT11, _("True negatives:"), wxDefaultPosition,
 		wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT11"));
 	wxFont lbDaTNFont(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	lbDaTN->SetFont(lbDaTNFont);
 	GridSizer11->Add(
 		lbDaTN, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -526,8 +516,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel15, ID_STATICTEXT12, _("False positives:"), wxDefaultPosition,
 		wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT12"));
 	wxFont StaticText6Font(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	StaticText6->SetFont(StaticText6Font);
 	GridSizer12->Add(
 		StaticText6, 1,
@@ -550,8 +539,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel16, ID_STATICTEXT13, _("False negatives:"), wxDefaultPosition,
 		wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT13"));
 	wxFont StaticText7Font(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	StaticText7->SetFont(StaticText7Font);
 	GridSizer13->Add(
 		StaticText7, 1,
@@ -583,8 +571,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		Panel12, ID_STATICTEXT8, _("Computation time (ms)"), wxDefaultPosition,
 		wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT8"));
 	wxFont StaticText1Font(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	StaticText1->SetFont(StaticText1Font);
 	GridSizer10->Add(
 		StaticText1, 1,
@@ -608,8 +595,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE,
 		_T("ID_STATICTEXT14"));
 	wxFont StaticText5Font(
-		wxDEFAULT, wxDEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+		-1, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
 	StaticText5->SetFont(StaticText5Font);
 	GridSizer14->Add(
 		StaticText5, 1,

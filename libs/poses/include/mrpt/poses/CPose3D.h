@@ -278,7 +278,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 
 	/** @} */  // end Constructors
 
-	/** @name Access 3x3 rotation and 4x4 homogeneous matrices
+	/** @name Access SO(3), SE(3), R(3)
 		@{ */
 
 	/** Returns the corresponding 4x4 homogeneous transformation matrix for the
@@ -304,6 +304,12 @@ class CPose3D : public CPose<CPose3D, 6>,
 	{
 		m_ROT = ROT;
 		m_ypr_uptodate = false;
+	}
+
+	/** Returns the (x,y,z) translational part of the SE(3) transformation. */
+	mrpt::math::TPoint3D translation() const
+	{
+		return {m_coords[0], m_coords[1], m_coords[2]};
 	}
 
 	/** @} */  // end rot and HM

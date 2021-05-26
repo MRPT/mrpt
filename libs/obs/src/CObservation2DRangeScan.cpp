@@ -311,6 +311,19 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 	MRPT_END
 }
 
+float CObservation2DRangeScan::getScanAngle(const size_t idx) const
+{
+	float Ang = -0.5f * aperture, dA = aperture / (m_scan.size() - 1);
+	ASSERT_BELOW_(idx, m_scan.size());
+
+	if (!rightToLeft)
+	{
+		Ang = -Ang;
+		dA = -dA;
+	}
+	return Ang + dA * idx;
+}
+
 /*---------------------------------------------------------------
 						filterByExclusionAreas
  ---------------------------------------------------------------*/
