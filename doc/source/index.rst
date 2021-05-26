@@ -11,7 +11,7 @@ MRPT
   compiling
   license
   page_changelog
-
+  authors
 
 .. toctree::
   :maxdepth: 2
@@ -22,6 +22,7 @@ MRPT
   applications
   examples
   supported-sensors
+  children-projects
 
 .. toctree::
   :maxdepth: 2
@@ -31,6 +32,7 @@ MRPT
   modules
   contributing
   doxygen-index
+  Docs for other versions <https://docs.mrpt.org/reference/>
 
 .. image:: https://mrpt.github.io/imgs/mrpt-videos-mix2.gif
    :alt: MRPT demo usages

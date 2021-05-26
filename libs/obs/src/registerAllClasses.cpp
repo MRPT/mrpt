@@ -27,6 +27,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 	registerClass(CLASS_ID(CObservation));
 	registerClass(CLASS_ID(CObservation2DRangeScan));
 	registerClass(CLASS_ID(CObservation3DRangeScan));
+	registerClass(CLASS_ID(CObservation3DScene));
 	registerClass(CLASS_ID(CObservationVelodyneScan));
 	registerClass(CLASS_ID(CObservationRGBD360));
 	registerClass(CLASS_ID(CObservationBatteryState));

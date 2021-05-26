@@ -15,18 +15,11 @@
 namespace mrpt::opengl
 {
 /** A set of independent lines (or segments), one line with its own start and
- * end positions (X,Y,Z).
- * Optionally, the vertices can be also shown as dots.
- *  \sa opengl::COpenGLScene
+ * end positions (X,Y,Z). Optionally, the vertices can be also shown as dots.
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CSetOfLines </td> <td> \image html
- * preview_CSetOfLines.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::CSetOfLines](preview_CSetOfLines.png)
  *
+ * \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfLines : public CRenderizableShaderWireFrame,

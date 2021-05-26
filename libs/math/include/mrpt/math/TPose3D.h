@@ -11,6 +11,7 @@
 #include <mrpt/core/bits_math.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/math/CMatrixFixed.h>
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/wrap2pi.h>
 
@@ -70,6 +71,28 @@ struct TPose3D : public TPoseOrPoint,
 	 * Default fast constructor. Initializes to zeros.
 	 */
 	constexpr TPose3D() = default;
+
+	static TPose3D FromString(const std::string& s)
+	{
+		TPose3D o;
+		o.fromString(s);
+		return o;
+	}
+
+	/** Builds from the first 6 elements of a vector-like object: [x y z yaw
+	 * pitch roll]
+	 *
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
+	 */
+	template <typename Vector>
+	static TPose3D FromVector(const Vector& v)
+	{
+		TPose3D o;
+		for (int i = 0; i < 6; i++)
+			o[i] = v[i];
+		return o;
+	}
+
 	/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
 	double& operator[](size_t i)
 	{
@@ -98,14 +121,20 @@ struct TPose3D : public TPoseOrPoint,
 			default: throw std::out_of_range("index out of range");
 		}
 	}
+
+	/** Returns the (x,y,z) translational part of the SE(3) transformation. */
+	mrpt::math::TPoint3D translation() const { return {x, y, z}; }
+
 	/**
 	 * Pose's spatial coordinates norm.
 	 */
 	double norm() const { return std::sqrt(square(x) + square(y) + square(z)); }
-	/**
-	 * Gets the pose as a vector of doubles.
+
+	/** Gets the pose as a vector of doubles: [x y z yaw pitch roll]
+	 * \tparam Vector It can be std::vector<double>, Eigen::VectorXd, etc.
 	 */
-	void asVector(std::vector<double>& v) const
+	template <typename Vector>
+	void asVector(Vector& v) const
 	{
 		v.resize(6);
 		v[0] = x;
@@ -115,6 +144,15 @@ struct TPose3D : public TPoseOrPoint,
 		v[4] = pitch;
 		v[5] = roll;
 	}
+	/// \overload
+	template <typename Vector>
+	Vector asVector() const
+	{
+		Vector v;
+		asVector(v);
+		return v;
+	}
+
 	/** Returns a human-readable textual representation of the object (eg: "[x y
 	 * z yaw pitch roll]", angles in degrees.)
 	 * \sa fromString
@@ -193,13 +231,6 @@ struct TPose3D : public TPoseOrPoint,
 	 * \exception std::exception On invalid format
 	 */
 	void fromString(const std::string& s);
-
-	static TPose3D FromString(const std::string& s)
-	{
-		TPose3D o;
-		o.fromString(s);
-		return o;
-	}
 };
 
 /** Unary $\ominus\$ operator: computes inverse SE(3) element */

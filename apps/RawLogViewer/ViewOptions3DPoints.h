@@ -13,6 +13,7 @@
 //(*Headers(ViewOptions3DPoints)
 #include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/clrpicker.h>
 #include <wx/panel.h>
 #include <wx/radiobox.h>
 #include <wx/sizer.h>
@@ -23,29 +24,7 @@
 
 #include <mrpt/img/color_maps.h>
 
-class ViewOptions3DPoints;
-
-struct ParametersView3DPoints
-{
-	ParametersView3DPoints() = default;
-
-	double axisTickFrequency = 1.0;
-	double axisLimits = 20.0;
-	double axisTickTextSize = 0.075;
-	bool colorFromRGBimage = true;
-	int colorizeByAxis = 0;	 // 0:x,1:y,2:z, anything else = none.
-	bool invertColorMapping = false;
-	mrpt::img::TColormap colorMap = mrpt::img::cmJET;
-	double pointSize = 4.0;
-	bool drawSensorPose = true;
-	double sensorPoseScale = 0.3;
-
-	void to_UI(ViewOptions3DPoints& ui) const;
-	void from_UI(const ViewOptions3DPoints& ui);
-
-	void save_to_ini_file() const;
-	void load_from_ini_file();
-};
+#include "ParametersView3DPoints.h"
 
 class ViewOptions3DPoints : public wxPanel
 {
@@ -54,6 +33,8 @@ class ViewOptions3DPoints : public wxPanel
 	virtual ~ViewOptions3DPoints();
 
 	//(*Declarations(ViewOptions3DPoints)
+	wxColourPickerCtrl* color2DPoints;
+	wxCheckBox* cb2DShowSurf;
 	wxTextCtrl* edAxisLimits;
 	wxStaticText* StaticText1;
 	wxCheckBox* cbInvertColormap;
@@ -62,13 +43,16 @@ class ViewOptions3DPoints : public wxPanel
 	wxTextCtrl* edSensorPoseScale;
 	wxCheckBox* cbShowSensorPose;
 	wxButton* btnApply;
+	wxColourPickerCtrl* colorSurface;
 	wxStaticText* StaticText4;
 	wxStaticText* StaticText5;
 	wxStaticText* StaticText2;
+	wxCheckBox* cb2DShowPoints;
 	wxRadioBox* RadioBox1;
 	wxCheckBox* cbColorFromRGB;
 	wxRadioBox* rbColorByAxis;
 	wxTextCtrl* edTickTextSize;
+	wxCheckBox* cbShowAxes;
 	wxSpinCtrl* edPointSize;
 	//*)
 
@@ -76,6 +60,7 @@ class ViewOptions3DPoints : public wxPanel
 
    protected:
 	//(*Identifiers(ViewOptions3DPoints)
+	static const long ID_CHECKBOX4;
 	static const long ID_STATICTEXT1;
 	static const long ID_TEXTCTRL1;
 	static const long ID_STATICTEXT2;
@@ -92,6 +77,10 @@ class ViewOptions3DPoints : public wxPanel
 	static const long ID_CHECKBOX3;
 	static const long ID_STATICTEXT5;
 	static const long ID_TEXTCTRL4;
+	static const long ID_CHECKBOX5;
+	static const long ID_COLOURPICKERCTRL1;
+	static const long ID_CHECKBOX6;
+	static const long ID_COLOURPICKERCTRL2;
 	//*)
 
    private:

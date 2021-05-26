@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CRenderizable.h>
 
@@ -19,38 +20,41 @@ namespace mrpt::opengl
 {
 /** This class allows the user to create, load, save, and render 3D scenes using
  * OpenGL primitives.
- *  The class can be understood as a program to be run over OpenGL, containing
+ * The class can be understood as a program to be run over OpenGL, containing
  * a sequence of viewport definitions,
- *   rendering primitives, etc...
+ * rendering primitives, etc.
  *
- *  It can contain from 1 up to any number of <b>Viewports</b>, each one
- *   associated a set of OpenGL objects and, optionally, a preferred camera
+ * It can contain from 1 up to any number of <b>Viewports</b>, each one
+ * associated a set of OpenGL objects and, optionally, a preferred camera
  * position. Both orthogonal (2D/3D) and projection
- *   camera models can be used for each viewport independently, greatly
+ * camera models can be used for each viewport independently, greatly
  * increasing the possibilities of rendered scenes.
  *
- *  An object of COpenGLScene always contains at least one viewport
+ * An object of COpenGLScene always contains at least one viewport
  * (utils::COpenGLViewport), named "main". Optionally, any
- *   number of other viewports may exist. Viewports are referenced by their
+ * number of other viewports may exist. Viewports are referenced by their
  * names, case-sensitive strings. Each viewport contains
- *   a different 3D scene (i.e. they render different objects), though a
+ * a different 3D scene (i.e. they render different objects), though a
  * mechanism exist to share the same 3D scene by a number of
- *   viewports so memory is not wasted replicating the same objects (see
+ * viewports so memory is not wasted replicating the same objects (see
  * COpenGLViewport::setCloneView ).
  *
- *  The main rendering method, COpenGLScene::render(), assumes a viewport has
+ * The main rendering method, COpenGLScene::render(), assumes a viewport has
  * been set-up for the entire target window. That
- *   method will internally make the required calls to opengl for creating the
+ * method will internally make the required calls to opengl for creating the
  * additional viewports. Note that only the depth
- *   buffer is cleared by default for each (non-main) viewport, to allow
+ * buffer is cleared by default for each (non-main) viewport, to allow
  * transparencies. This can be disabled by the approppriate
- *   member in COpenGLViewport.
+ * member in COpenGLViewport.
  *
- *   An object COpenGLScene can be saved to a ".3Dscene" file using
- * CFileOutputStream, for posterior visualization from
- *    the standalone application <a
- * href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer</a>.
- *    It can be also displayed in real-time using gui::CDisplayWindow3D.
+ * An object COpenGLScene can be saved to a [".3Dscene"
+ * file](robotics_file_formats.html) using CFileOutputStream or with the direct
+ * method COpenGLScene::saveToFile() for posterior visualization from the
+ * standalone application \ref app_SceneViewer3D.
+ *
+ * It can be also displayed in real-time using windows in mrpt::gui or
+ * serialized over a network socket, etc.
+ *
  * \ingroup mrpt_opengl_grp
  */
 class COpenGLScene : public mrpt::serialization::CSerializable
@@ -178,18 +182,24 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	void initializeTextures();
 
 	/** Retrieves a list of all objects in text form.
-	 */
-	void dumpListOfObjects(std::vector<std::string>& lst);
+	 * 	\deprecated Prefer asYAML() (since MRPT 2.1.3) */
+	void dumpListOfObjects(std::vector<std::string>& lst) const;
 
-	/** Saves the scene to a 3Dscene file, loadable by the application
-	 * SceneViewer3D
+	/** Prints all viewports and objects in human-readable YAML form.
+	 * Note that not all objects data is serialized, so this method is not
+	 * suitable for deserialization (for that, use saveToFile(), loadFromFile()
+	 * instead).
+	 * \note (New in MRPT 2.1.3) */
+	mrpt::containers::yaml asYAML() const;
+
+	/** Saves the scene to a [".3Dscene" file](robotics_file_formats.html),
+	 * loadable by: \ref app_SceneViewer3D
 	 * \sa loadFromFile
 	 * \return false on any error.
 	 */
 	bool saveToFile(const std::string& fil) const;
 
-	/** Loads the scene from a 3Dscene file, the format used by the application
-	 * SceneViewer3D.
+	/** Loads the scene from a [".3Dscene" file](robotics_file_formats.html).
 	 * \sa saveToFile
 	 * \return false on any error.
 	 */
@@ -213,10 +223,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	void visitAllObjects(FUNCTOR functor) const
 	{
 		MRPT_START
-		for (const auto& m_viewport : m_viewports)
-			for (auto itO = m_viewport->begin(); itO != m_viewport->end();
-				 ++itO)
-				internal_visitAllObjects(functor, *itO);
+		for (const auto& viewport : m_viewports)
+			for (auto& o : *viewport)
+				internal_visitAllObjects(functor, o);
 		MRPT_END
 	}
 
@@ -237,12 +246,10 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		FUNCTOR functor, const CRenderizable::Ptr& o)
 	{
 		functor(o);
-		if (IS_CLASS(*o, CSetOfObjects))
+		if (auto objs = std::dynamic_pointer_cast<CSetOfObjects>(o); objs)
 		{
-			CSetOfObjects::Ptr obj =
-				std::dynamic_pointer_cast<CSetOfObjects>(o);
-			for (auto it = obj->begin(); it != obj->end(); ++it)
-				internal_visitAllObjects(functor, *it);
+			for (auto obj : *objs)
+				internal_visitAllObjects(functor, obj);
 		}
 	}
 };

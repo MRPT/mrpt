@@ -23,11 +23,6 @@ using namespace std;
 						Constructor
 -------------------------------------------------------------*/
 CGenericSensor::CGenericSensor()
-	: m_sensorLabel("UNNAMED_SENSOR"),
-
-	  m_path_for_external_images(),
-	  m_external_images_format("png")
-
 {
 	const char* sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
 	m_verbose = (sVerbose != nullptr) && atoi(sVerbose) != 0;

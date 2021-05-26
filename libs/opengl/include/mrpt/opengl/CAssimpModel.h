@@ -36,17 +36,10 @@ namespace mrpt::opengl
  *
  *  Models are loaded via CAssimpModel::loadScene()
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CAssimpModel </td> <td> \image html
- * preview_CAssimpModel.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::CAssimpModel](preview_CAssimpModel.png)
  *
- *  \sa opengl::COpenGLScene
+ * \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
- * \note Class introduced in MRPT 1.2.2
  */
 class CAssimpModel : public CRenderizableShaderTriangles,
 					 public CRenderizableShaderWireFrame,

@@ -113,7 +113,7 @@ class CStream
 		this->printf("]");
 	}
 
-	/** Reads from the stream until a '\n' character is found ('\r' characters
+	/** Reads from the stream until a `\n` character is found (`\r` characters
 	 * are ignored).
 	 * \return false on EOF or any other read error.
 	 */

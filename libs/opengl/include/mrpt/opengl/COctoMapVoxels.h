@@ -52,18 +52,12 @@ enum predefined_voxel_sets_t
  *			- showVoxels()
  *			- push_back_Voxel()
  *
- *  Several coloring schemes can be selected with setVisualizationMode(). See
+ * Several coloring schemes can be selected with setVisualizationMode(). See
  *COctoMapVoxels::visualization_mode_t
  *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- *border-style: solid;">
- *   <tr> <td> mrpt::opengl::COctoMapVoxels </td> <td> \image html
- *preview_COctoMapVoxels.png </td> </tr>
- *  </table>
- *  </div>
+ * ![mrpt::opengl::COctoMapVoxels](preview_COctoMapVoxels.png)
  *
- *  \sa opengl::COpenGLScene
+ * \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
 class COctoMapVoxels : public CRenderizableShaderTriangles,

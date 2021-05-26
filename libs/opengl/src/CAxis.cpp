@@ -120,9 +120,9 @@ void CAxis::onUpdateBuffers_Wireframe()
 			label->setScale(m_textScale);
 
 			label->setPose(mrpt::poses::CPose3D(
-				cur_tf.x, cur_tf.y, cur_tf.z, mrpt::DEG2RAD(m_textRot[0][0]),
-				mrpt::DEG2RAD(m_textRot[0][1]),
-				mrpt::DEG2RAD(m_textRot[0][2])));
+				cur_tf.x, cur_tf.y, cur_tf.z, mrpt::DEG2RAD(m_textRot[axis][0]),
+				mrpt::DEG2RAD(m_textRot[axis][1]),
+				mrpt::DEG2RAD(m_textRot[axis][2])));
 			label->setString(n);
 			m_gl_labels.emplace_back(label);
 
@@ -136,8 +136,9 @@ void CAxis::onUpdateBuffers_Wireframe()
 		label->setScale(m_textScale * 1.2f);
 		label->setPose(mrpt::poses::CPose3D(
 			endMark[axis].x, endMark[axis].y, endMark[axis].z,
-			mrpt::DEG2RAD(m_textRot[0][0]), mrpt::DEG2RAD(m_textRot[0][1]),
-			mrpt::DEG2RAD(m_textRot[0][2])));
+			mrpt::DEG2RAD(m_textRot[axis][0]),
+			mrpt::DEG2RAD(m_textRot[axis][1]),
+			mrpt::DEG2RAD(m_textRot[axis][2])));
 		label->setString(axis2name[axis]);
 		m_gl_labels.emplace_back(label);
 	}

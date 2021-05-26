@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('_ext'))
 # -- Project information -----------------------------------------------------
 
 project = u'MRPT'
-copyright = u'{year} MRPT authors.'.format(year=datetime.now().year)
+copyright = u'{year} MRPT authors'.format(year=datetime.now().year)
 
 # The short X.Y version
 version = u'v{VER}'.format(VER=os.environ['MRPT_VERSION_STR'])
@@ -43,7 +43,8 @@ extensions = [
     'doxyrest',
     'cpplexer',
     'sphinx_panels',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
+    'm2r2',  # provides: mdinclude
 ]
 
 # Required in sphinx-bibtex>=2.0
@@ -82,7 +83,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store', 'doxygen-docs']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -96,6 +97,8 @@ pygments_style = None
 # html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 
+# This ensures search engines will prefer similar pages starting with:
+html_baseurl = "https://docs.mrpt.org/reference/latest/"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -159,7 +162,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'MRPT', u'MRPT Documentation',
-     [u'The MOLA Authors.'], 1)
+     [u'The MRPT Authors.'], 1)
 ]
 
 # -- Options for Texinfo output ----------------------------------------------

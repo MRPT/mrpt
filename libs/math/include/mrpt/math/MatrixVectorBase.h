@@ -263,7 +263,7 @@ class MatrixVectorBase
 		return mvbDerived().cols() == 0 && mvbDerived().rows() == 0;
 	}
 
-	/** Compute the norm-infinite of a vector ($f[ ||\mathbf{v}||_\infnty $f]),
+	/** Compute the norm-infinite of a vector (\f[ ||\mathbf{v}||_\infnty \f]),
 	 * ie the maximum absolute value of the elements. */
 	Scalar norm_inf() const;
 

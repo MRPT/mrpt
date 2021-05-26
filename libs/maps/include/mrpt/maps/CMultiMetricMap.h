@@ -157,7 +157,7 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	iterator end() { return maps.end(); }
 	const_iterator end() const { return maps.end(); }
 
-	/** Gets the i-th map \excepmapByIndextime_error On out-of-bounds */
+	/** Gets the i-th map \exception std::runtime_error On out-of-bounds */
 	mrpt::maps::CMetricMap::Ptr mapByIndex(size_t idx) const;
 
 	/** Returns the i'th map of a given class (or of a derived

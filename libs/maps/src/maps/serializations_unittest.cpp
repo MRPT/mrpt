@@ -14,10 +14,13 @@
 #include <mrpt/maps.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
+#include <mrpt/opengl/CAngularObservationMesh.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
+using namespace mrpt::opengl;
 using namespace mrpt::obs;
 using namespace mrpt::io;
 using namespace mrpt::serialization;
@@ -41,9 +44,13 @@ TEST_CLASS_MOVE_COPY_CTORS(CWeightedPointsMap);
 TEST_CLASS_MOVE_COPY_CTORS(CPointsMapXYZI);
 TEST_CLASS_MOVE_COPY_CTORS(COctoMap);
 TEST_CLASS_MOVE_COPY_CTORS(CColouredOctoMap);
-TEST_CLASS_MOVE_COPY_CTORS(CObservationPointCloud);
 TEST_CLASS_MOVE_COPY_CTORS(CSinCosLookUpTableFor2DScans);
+// obs:
+TEST_CLASS_MOVE_COPY_CTORS(CObservationPointCloud);
 TEST_CLASS_MOVE_COPY_CTORS(CObservationRotatingScan);
+// opengl:
+TEST_CLASS_MOVE_COPY_CTORS(CAngularObservationMesh);
+TEST_CLASS_MOVE_COPY_CTORS(CPlanarLaserScan);
 
 // Create a set of classes, then serialize and deserialize to test possible
 // bugs:
@@ -65,8 +72,13 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID(CPointsMapXYZI),
 		CLASS_ID(COctoMap),
 		CLASS_ID(CColouredOctoMap),
+		// obs:
 		CLASS_ID(CObservationPointCloud),
-		CLASS_ID(CObservationRotatingScan)};
+		CLASS_ID(CObservationRotatingScan),
+		// opengl:
+		CLASS_ID(CAngularObservationMesh),
+		CLASS_ID(CPlanarLaserScan),
+	};
 
 	for (auto& lstClasse : lstClasses)
 	{

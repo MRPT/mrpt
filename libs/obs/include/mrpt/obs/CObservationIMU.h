@@ -8,11 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/math/CMatrixD.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/serialization/CSerializable.h>
+
+#include <array>
 
 namespace mrpt::obs
 {
@@ -113,7 +112,8 @@ class CObservationIMU : public CObservation
 	DEFINE_SERIALIZABLE(CObservationIMU, mrpt::obs)
 
    public:
-	CObservationIMU() = default;
+	CObservationIMU();
+
 	~CObservationIMU() override = default;
 
 	/** The pose of the sensor on the robot. */
@@ -122,16 +122,16 @@ class CObservationIMU : public CObservation
 	/** Each entry in this vector is true if the corresponding data index
 	 * contains valid data (the IMU unit supplies that kind of data).
 	 *  See the top of this page for the meaning of the indices.
+	 * Initial value: all set to false.
 	 */
-	std::vector<bool> dataIsPresent =
-		std::vector<bool>(mrpt::obs::COUNT_IMU_DATA_FIELDS, false);
+	std::array<bool, mrpt::obs::COUNT_IMU_DATA_FIELDS> dataIsPresent;
 
 	/** The accelerometer and/or gyroscope measurements taken by the IMU at the
 	 * given timestamp.
 	 * \sa dataIsPresent, CObservation::timestamp
+	 * Initial value: all zeros.
 	 */
-	std::vector<double> rawMeasurements =
-		std::vector<double>(mrpt::obs::COUNT_IMU_DATA_FIELDS, 0);
+	std::array<double, mrpt::obs::COUNT_IMU_DATA_FIELDS> rawMeasurements;
 
 	/** Sets a given data type, and mark it as present. \sa has(), set() */
 	void set(TIMUDataIndex idx, double value)

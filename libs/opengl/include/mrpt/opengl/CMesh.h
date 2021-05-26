@@ -19,19 +19,12 @@
 namespace mrpt::opengl
 {
 /** A planar (XY) grid where each cell has an associated height and, optionally,
- * a texture map.
- *  A typical usage example would be an elevation map or a 3D model of a
- * terrain.
+ * a texture map. A typical usage example would be an elevation map or a 3D
+ * model of a terrain.
+ *
+ * ![mrpt::opengl::CMesh](preview_CMesh.png)
+ *
  *  \sa opengl::COpenGLScene
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CMesh </td> <td> \image html preview_CMesh.png
- * </td> </tr>
- *  </table>
- *  </div>
- *
  * \ingroup mrpt_opengl_grp
  */
 class CMesh : public CRenderizableShaderTexturedTriangles,

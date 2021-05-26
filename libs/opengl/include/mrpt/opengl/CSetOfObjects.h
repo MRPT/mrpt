@@ -8,19 +8,19 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/poses_frwds.h>	 // All these are needed for the auxiliary methods posePDF2opengl()
 
 namespace mrpt::opengl
 {
 /** A set of object, which are referenced to the coordinates framework
- *established in this object.
- *  It can be established a hierarchy of "CSetOfObjects", where the coordinates
- *framework of each
- *   one will be referenced to the parent's one.
- *	The list of child objects is accessed directly as in the class
- *"COpenGLScene"
- *  \sa opengl::COpenGLScene
+ * established in this object.
+ * It can be established a hierarchy of "CSetOfObjects", where the coordinates
+ * framework of each one will be referenced to the parent's one.
+ * The list of child objects is accessed directly as in the class COpenGLScene
+ *
+ * \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfObjects : public CRenderizable
@@ -119,8 +119,13 @@ class CSetOfObjects : public CRenderizable
 	 */
 	void removeObject(const CRenderizable::Ptr& obj);
 
-	/** Retrieves a list of all objects in text form  */
-	void dumpListOfObjects(std::vector<std::string>& lst);
+	/** Retrieves a list of all objects in text form
+	 * \deprecated Prefer asYAML() (since MRPT 2.1.3) */
+	void dumpListOfObjects(std::vector<std::string>& lst) const;
+
+	/** Prints all objects in human-readable YAML form.
+	 * \note (New in MRPT 2.1.3) */
+	mrpt::containers::yaml asYAML() const;
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 

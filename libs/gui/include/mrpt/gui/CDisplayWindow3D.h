@@ -77,41 +77,35 @@ class CMyGLCanvas_DisplayWindow3D;
  *      mrpt::opengl::COpenGLScene::Ptr ptrScene;
  *      mrpt::gui::CDisplayWindow3DLocker  locker(win,ptrScene);
  *      //...
+ *      // Either:
+ *      // - modify ptrScene
+ *      // - Or assign it a prebuilt object with:
+ *      *ptrScene = *otherScene;
  *
  *   } // scene is unlocked upon dtor of `locker`
  * \endcode
  *
  * Notice however that a copy of the smart pointer is made, so replacement of
- * the entire scene
- * via `operator =` is not possible if using this method. Still, in general it
- * should be preferred because
- * the mutexes are automatically released in case of unexpected exceptions.
+ * the entire scene via `operator =` is not possible if using this method.
+ * Instead, the content of the scene should be assigned using the `operator =`
+ * of the **dereferenced** object as illustrated with
+ * the `*ptrScene = *otherScene;` above.
  *
  * The window can also display a set of 2D text messages overlapped to the 3D
- * scene.
- *  See CDisplayWindow3D::addTextMessage
+ * scene. See CDisplayWindow3D::addTextMessage
  *
  *  For a list of supported events with the observer/observable pattern, see
  * the discussion in mrpt::gui::CBaseGUIWindow.
  *  In addition to those events, this class introduces
  * mrpt::gui::mrptEvent3DWindowGrabImageFile
  *
- * ** CDisplayWindow3D mouse view navigation cheatsheet **
- *  - <b>Orbit camera</b>: Left-button pressed + move
- *  - <b>Zoom in / out</b>:
- *    - Mouse scroll wheel, or
- *    - SHIFT+Left-button pressed + move up/down
- *  - <b>Look around (pivot camera)</b>: CTRL+Left-button pressed + move
- * up/down
- *  - <b>Pan (XY plane)</b>: Right-button pressed + move
- *  - <b>Move camera along Z axis</b>: SHIFT+Left-button pressed + move
- * left/right
- *
+ * [CDisplayWindow3D mouse view navigation
+ * cheatsheet](tutorial-3d-navigation-cheatsheet.html)
  *
  * ![mrpt::gui::CDisplayWindow3D screenshot](preview_CDisplayWindow3D.png)
  *
- * \sa  The example /samples/display3D, the <a
- * href="http://www.mrpt.org/Tutorial_3D_Scenes" > tutorial only</a>.
+ * \sa \ref tutorial_3D_scenes
+ *
  * \ingroup mrpt_gui_grp
  */
 class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow

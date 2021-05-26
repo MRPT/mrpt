@@ -100,6 +100,28 @@ TEST(Geometry, Line3DDistance)
 	}
 }
 
+TEST(Geometry, Line3DDclosestPointTo)
+{
+	{
+		const auto l = TLine3D::FromTwoPoints({0, 0, 0}, {1, 0, 0});
+		const auto p = TPoint3D(-1, -1, 1);
+		const auto pc = l.closestPointTo(p);
+
+		EXPECT_NEAR(pc.x, -1, 1e-8);
+		EXPECT_NEAR(pc.y, 0, 1e-8);
+		EXPECT_NEAR(pc.z, 0, 1e-8);
+	}
+	{
+		const auto l = TLine3D::FromTwoPoints({0, 0, 0}, {0, 0, 1});
+		const auto p = TPoint3D(0, 0, -2);
+		const auto pc = l.closestPointTo(p);
+
+		EXPECT_NEAR(pc.x, 0, 1e-8);
+		EXPECT_NEAR(pc.y, 0, 1e-8);
+		EXPECT_NEAR(pc.z, -2, 1e-8);
+	}
+}
+
 TEST(Geometry, Segment2DIntersect)
 {
 	{

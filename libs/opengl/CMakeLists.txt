@@ -37,25 +37,30 @@ define_mrpt_lib(
 	mrpt-img
 	)
 
-if(BUILD_mrpt-opengl)
-	# https://developer.apple.com/macos/whats-new/#deprecationofopenglandopencl
- 	if (APPLE)
-		target_compile_definitions(opengl PRIVATE GL_SILENCE_DEPRECATION)
-	endif()
+if(NOT BUILD_mrpt-opengl)
+  return()
+endif()
 
-	# Link against gl, glu, glut:
-	target_link_libraries(opengl PRIVATE
-		${MRPT_OPENGL_LIBS}
-		)
-	if (TARGET mrpt_glew) # Basically, for Windows
-		target_link_libraries(opengl PRIVATE mrpt_glew)
-	endif()
+# https://developer.apple.com/macos/whats-new/#deprecationofopenglandopencl
+	if (APPLE)
+	target_compile_definitions(opengl PRIVATE GL_SILENCE_DEPRECATION)
+endif()
 
-	# Link against assimp:
-	if (CMAKE_MRPT_HAS_ASSIMP)
-		if(TARGET "EP_assimp")
-			add_dependencies(opengl EP_assimp)
-		endif()
-		target_link_libraries(opengl PRIVATE ${ASSIMP_LIBRARIES})
-	endif ()
+# Link against gl, glu, glut:
+target_link_libraries(opengl PRIVATE
+	${MRPT_OPENGL_LIBS}
+	)
+if (TARGET mrpt_glew) # Basically, for Windows
+	target_link_libraries(opengl PRIVATE mrpt_glew)
+endif()
+
+# Link against assimp:
+if (CMAKE_MRPT_HAS_ASSIMP)
+	if(TARGET "EP_assimp")
+		add_dependencies(opengl EP_assimp)
+	endif()
+	target_link_libraries(opengl PRIVATE ${ASSIMP_LIBRARIES})
+endif ()
+if (MINGW)
+	target_link_libraries(opengl PRIVATE opengl32 GlU32)
 endif()

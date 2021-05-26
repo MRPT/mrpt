@@ -22,14 +22,11 @@ namespace mrpt::math
 /** An implementation of the Levenberg-Marquardt algorithm for least-square
  * minimization.
  *
- *  Refer to this <a
- * href="http://www.mrpt.org/Levenberg%E2%80%93Marquardt_algorithm" >page</a>
- * for more details on the algorithm and its usage.
+ * Refer to: \ref tutorial_math_levenberg_marquardt
  *
- * \tparam NUMTYPE The numeric type for all the operations (float, double, or
- * long double)
- * \tparam USERPARAM The type of the "y" input to the user supplied evaluation
- * functor. Default type is a vector of NUMTYPE.
+ * \tparam VECTORTYPE The type for input/output vectors
+ * \tparam USERPARAM The type of the additional constant parameters input to the
+ * user supplied evaluation functor. Default type is a vector of NUMTYPE.
  * \ingroup mrpt_math_grp
  */
 template <typename VECTORTYPE = CVectorDouble, class USERPARAM = VECTORTYPE>

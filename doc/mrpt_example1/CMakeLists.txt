@@ -1,9 +1,6 @@
 project(mrpt_example1)
 
-cmake_minimum_required(VERSION 3.1)
-if(COMMAND cmake_policy)
-      cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
-endif()
+cmake_minimum_required(VERSION 3.8)
 
 # --------------------------------------------------------------------------
 #   The list of "libs" which can be included can be found in:
@@ -19,13 +16,13 @@ message(STATUS "mrpt-poses_VERSION: ${mrpt-poses_VERSION}")
 #message(STATUS "MRPT_VERSION: ${MRPT_VERSION}")
 #message(STATUS "MRPT_LIBRARIES: ${MRPT_LIBRARIES}")
 
+# Set optimized building:
+if(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+endif()
+
 # Declare the target (an executable)
 add_executable(mrpt_example1
 	test.cpp
 	)
 target_link_libraries(mrpt_example1 mrpt::slam)
-
-# Set optimized building:
-if(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-endif()

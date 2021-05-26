@@ -14,16 +14,10 @@
 namespace mrpt::opengl
 {
 /** A grid of lines over the XZ plane.
+ *
+ * ![mrpt::opengl::CGridPlaneXZ](preview_CGridPlaneXZ.png)
+ *
  *  \sa opengl::COpenGLScene
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CGridPlaneXZ </td> <td> \image html
- * preview_CGridPlaneXZ.png </td> </tr>
- *  </table>
- *  </div>
- *
  * \ingroup mrpt_opengl_grp
  */
 class CGridPlaneXZ : public CRenderizableShaderWireFrame

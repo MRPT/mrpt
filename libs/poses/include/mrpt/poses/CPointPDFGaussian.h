@@ -71,8 +71,8 @@ class CPointPDFGaussian : public CPointPDF
 	 *		- (x2,S2): Mean and variance of the p2 distribution.
 	 *		- (x,S): Mean and variance of the resulting distribution.
 	 *
-	 *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
-	 *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
+	 *    \f$ S = (S_1^{-1} + S_2^{-1})^{-1} \f$
+	 *    \f$ x = S ( S_1^{-1} x_1 + S_2^{-1} x_2 ) \f$
 	 */
 	void bayesianFusion(
 		const CPointPDFGaussian& p1, const CPointPDFGaussian& p2);

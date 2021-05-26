@@ -12,6 +12,9 @@
 #include <mrpt/core/pimpl.h>
 #include <mrpt/img/CImage.h>
 
+#include <map>
+#include <string>
+
 /*---------------------------------------------------------------
 	Class
   ---------------------------------------------------------------*/
@@ -54,10 +57,13 @@ class CFFMPEG_InputStream
 
 	/** Open a video file or a video stream (rtsp://)
 	 *  This can be used to open local video files (eg. "myVideo.avi",
-	 * "c:\a.mpeg") and also IP cameras (e. "rtsp://a.b.c.d/live.sdp").
-	 *  However, note that there is currently no support for user/password in
-	 * IP access.
-	 *  If verbose is set to true, more information about the video will be
+	 * "c:\a.mpeg") and also IP cameras (e.g `rtsp://a.b.c.d/live.sdp`).
+	 *  User/password can be used like `rtsp://USER:PASSWORD@IP/PATH`.
+	 *
+	 * [ffmpeg options](https://www.ffmpeg.org/ffmpeg-protocols.html)
+	 * can be added via the \a options argument.
+	 *
+	 * If \a verbose is set to true, more information about the video will be
 	 * dumped to cout.
 	 *
 	 * \sa close, retrieveFrame
@@ -66,7 +72,9 @@ class CFFMPEG_InputStream
 	 */
 	bool openURL(
 		const std::string& url, bool grab_as_grayscale = false,
-		bool verbose = false);
+		bool verbose = false,
+		const std::map<std::string, std::string>& options = {
+			{"rtsp_transport", "tcp"}});
 
 	/** Return whether the video source was open correctly */
 	bool isOpen() const;

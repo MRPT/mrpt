@@ -77,12 +77,10 @@ class CMemoryStream : public CStream
 	void* getRawBufferData();
 	const void* getRawBufferData() const;
 
-	/** Saves the entire buffer to a file \return true on success, false on
-	 * error */
+	/** Saves the entire buffer to a file \return true on success */
 	bool saveBufferToFile(const std::string& file_name);
 
-	/** Loads the entire buffer from a file * \return true on success, false on
-	 * error */
+	/** Loads the entire buffer from a file \return true on success */
 	bool loadBufferFromFile(const std::string& file_name);
 
 	/** Change the size of the additional memory block that is reserved whenever

@@ -45,8 +45,21 @@ const std::string iniFileSect("CONF_WIN");
 const std::string iniFileSect("CONF_LIN");
 #endif
 
+#include "../wx-common/Applications.xpm"
+#include "../wx-common/ArrowLeft2.xpm"
+#include "../wx-common/Folderdownloads.xpm"
+#include "../wx-common/Qmark.xpm"
+#include "../wx-common/empty_file.xpm"
+#include "../wx-common/icon_backward.xpm"
+#include "../wx-common/icon_cubes.xpm"
+#include "../wx-common/icon_forward.xpm"
+#include "../wx-common/icon_play.xpm"
+#include "../wx-common/icon_record.xpm"
+#include "../wx-common/icon_undo.xpm"
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/icono_main.xpm"
+//
+#include "../wx-common/return_bitmap.h"
 
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
@@ -97,6 +110,18 @@ wxBitmap MyArtProvider::CreateBitmap(
 {
 	if (id == wxART_MAKE_ART_ID(MAIN_ICON)) return wxBitmap(icono_main_xpm);
 	if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
+
+	RETURN_BITMAP(wxART_NORMAL_FILE, empty_file_xpm)
+	RETURN_BITMAP(wxART_FILE_OPEN, Folderdownloads_xpm);
+	RETURN_BITMAP(wxART_REMOVABLE, icon_play_xpm);
+	RETURN_BITMAP(wxART_HELP_BOOK, Qmark_xpm);
+	RETURN_BITMAP(wxART_QUIT, ArrowLeft2_xpm);
+	RETURN_BITMAP(wxART_GO_FORWARD, icon_forward_xpm);
+	RETURN_BITMAP(wxART_GO_BACK, icon_backward_xpm);
+	RETURN_BITMAP(wxART_FIND, Applications_xpm);
+	RETURN_BITMAP(wxART_TICK_MARK, icon_cubes_xpm);
+	RETURN_BITMAP(wxART_REDO, icon_undo_xpm);
+	RETURN_BITMAP(wxART_HARDDISK, icon_record_xpm);
 
 	// Any wxWidgets icons not implemented here
 	// will be provided by the default art provider.
@@ -223,9 +248,6 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 	{
 		try
 		{
-			CTicTac tictac;
-			tictac.Tic();
-
 			// Load a different file:
 
 			// First, build a list of files in the directory:
@@ -247,8 +269,6 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 
 				lastUpdateOfList = curTime;
 			}
-
-			// cout << "Time to build file list: " << tictac.Tac() << endl;
 
 			string curFileName = extractFileName(loadedFileName) + string(".") +
 				extractFileExtension(loadedFileName);
@@ -331,6 +351,7 @@ const long _DSceneViewerFrame::ID_MENUITEM30 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM23 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM_PRINT_TEXT = wxNewId();
 const long _DSceneViewerFrame::idMenuQuit = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM24 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM26 = wxNewId();
@@ -600,6 +621,10 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	mnuSceneStats = new wxMenuItem(
 		Menu1, ID_MENUITEM18, _("Scene stats"), wxEmptyString, wxITEM_NORMAL);
 	Menu1->Append(mnuSceneStats);
+	mnuPrintScene = new wxMenuItem(
+		Menu1, ID_MENUITEM_PRINT_TEXT, _("Print as text to console"),
+		wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(mnuPrintScene);
 	Menu1->AppendSeparator();
 	MenuItem1 = new wxMenuItem(
 		Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"),
@@ -721,6 +746,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	Bind(wxEVT_MENU, &svf::OnMenuItem14Selected, this, ID_MENUITEM12);
 	Bind(wxEVT_MENU, &svf::OnMenuItemHighResRender, this, ID_MENUITEM23);
 	Bind(wxEVT_MENU, &svf::OnmnuSceneStatsSelected, this, ID_MENUITEM18);
+	Bind(wxEVT_MENU, &svf::OnMenuPrintScene, this, ID_MENUITEM_PRINT_TEXT);
 	Bind(wxEVT_MENU, &svf::OnQuit, this, idMenuQuit);
 	Bind(wxEVT_MENU, &svf::OnmnuSelectNoneSelected, this, ID_MENUITEM24);
 	Bind(wxEVT_MENU, &svf::OnmnuSelectByClassSelected, this, ID_MENUITEM26);
@@ -1524,8 +1550,21 @@ void func_gather_stats(const mrpt::opengl::CRenderizable::Ptr& o)
 	}
 }
 
+void _DSceneViewerFrame::OnMenuPrintScene(wxCommandEvent&)
+{
+	try
+	{
+		auto d = m_canvas->getOpenGLSceneRef()->asYAML();
+		d.printAsYAML(std::cout);
+	}
+	catch (const std::exception& e)
+	{
+		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
+	}
+}
+
 // Gather stats on the scene:
-void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
+void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent&)
 {
 	try
 	{

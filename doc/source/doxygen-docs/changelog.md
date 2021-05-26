@@ -1,5 +1,43 @@
 \page changelog Change Log
 
+# Version 2.3.1: Released May 26th, 2021
+- General cmake scripts:
+  - `find_package(mrpt-xxx)` is now much faster.
+- Changes in applications:
+  - RawLogViewer:
+    - Browse scans window now has a check-box list to show/hide individual sensors.
+  - SceneViewer3D:
+    - Graceful failure when loading a corrupted 3Dscene file.
+- Changes in libraries:
+  - \ref mrpt_core_grp
+    - Removed mrpt::reverseBytesInPlace(long double) for it not being portable.
+  - \ref mrpt_containers_grp
+    - New environment variable MRPT_YAML_PARSER_VERBOSE controlling mrpt::containers::yaml
+  - \ref mrpt_hwdrivers_grp
+    - New argument to pass custom ffmpeg options to mrpt::hwdrivers::CFFMPEG_InputStream::openURL(). New default is to prefer stream over TCP for more reliable IP cameras reading.
+    - mrpt::hwdrivers::CHokuyoURG now has a parameter for between-data communications timeout (`comms_between_timeout_ms`).
+  - \ref mrpt_gui_grp
+    - mrpt::gui::CDisplayWindowGUI new methods to minimize/restore subwindows.
+  - \ref mrpt_math_grp
+    - New method mrpt::math::TLine3D::closestPointTo()
+    - New methods mrpt::math::TPose3D::translation(), mrpt::math::TPose2D::translation().
+  - \ref mrpt_obs_grp
+    - New mrpt::obs::CActionCollection::insert() overload for smart pointers.
+    - New method mrpt::obs::CObservation2DRangeScan::getScanAngle() and clarify docs on class members.
+    - New class mrpt::obs::CObservation3DScene.
+    - mrpt::obs::CObservationIMU now uses std::array instead of std::vector (faster due to less dynamic memory).
+  - \ref mrpt_opengl_grp
+    - Deprecate mrpt::opengl::COpenGLScene::dumpListOfObjects() in favor of new mrpt::opengl::COpenGLScene::asYAML()
+    - New method mrpt::opengl::CSimpleLine::setLineCoords() accepting mrpt::math::TPoint3D (older signature deprecated).
+  - \ref mrpt_system_grp
+    - New return-by-value signature for mrpt::system::CDirectoryExplorer::explore(), older version deprecated.
+    - mrpt::system::extractFileDirectory() returns `"."` instead of an empty string for filenames without any explicit full path.
+- BUG FIXES:
+  - Fix wrong formatting of empty *string* values (not *null* values) in mrpt::containers::yaml.
+  - Fix exception loading old datasets with stereo observations, via a new argument in mrpt::img::CImage::makeSureImageIsLoaded()
+  - Fix unhandled deserialization of v2 of mrpt::opengl::CPlanarLaserScan
+  - Fix build errors with MinGW.
+
 # Version 2.3.0: Released April 25th, 2021
 - General build changes:
   - CMake >=3.8.0 is now required to ensure proper handling of dependencies compile options.

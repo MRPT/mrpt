@@ -46,9 +46,7 @@ CLogView::CLogView(
 		this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(835, 437),
 		wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL | wxTE_DONTWRAP,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	wxFont edLogFont(
-		wxDEFAULT, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		wxEmptyString, wxFONTENCODING_DEFAULT);
+	wxFont edLogFont(-1, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
 	edLog->SetFont(edLogFont);
 	FlexGridSizer1->Add(
 		edLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);

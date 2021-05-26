@@ -694,28 +694,59 @@ void COpenGLViewport::initializeTextures()
 		obj->initializeTextures();
 }
 
-void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst)
+void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst) const
 {
-	for (auto& m_object : m_objects)
+	for (auto& obj : m_objects)
 	{
 		// Single obj:
-		string s(m_object->GetRuntimeClass()->className);
-		if (m_object->m_name.size())
-			s += string(" (") + m_object->m_name + string(")");
+		string s(obj->GetRuntimeClass()->className);
+		if (obj->m_name.size()) s += string(" (") + obj->m_name + string(")");
 		lst.emplace_back(s);
 
-		if (m_object->GetRuntimeClass() ==
+		if (obj->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
 			std::vector<std::string> auxLst;
 
-			dynamic_cast<CSetOfObjects*>(m_object.get())
-				->dumpListOfObjects(auxLst);
+			dynamic_cast<CSetOfObjects*>(obj.get())->dumpListOfObjects(auxLst);
 
 			for (const auto& i : auxLst)
 				lst.emplace_back(string(" ") + i);
 		}
 	}
+}
+
+mrpt::containers::yaml COpenGLViewport::asYAML() const
+{
+	mrpt::containers::yaml d = mrpt::containers::yaml::Sequence();
+
+	d.asSequence().resize(m_objects.size());
+
+	for (uint32_t i = 0; i < m_objects.size(); i++)
+	{
+		const auto obj = m_objects.at(i);
+		mrpt::containers::yaml de = mrpt::containers::yaml::Map();
+
+		de["index"] = i;  // type for "i" must be a stdint type
+		if (!obj)
+		{
+			de["class"] = "nullptr";
+			continue;
+		}
+		de["class"] = obj->GetRuntimeClass()->className;
+		de["name"] = obj->m_name;
+		de["location"] = obj->getPose().asString();
+
+		// Single obj:
+		if (obj->GetRuntimeClass() ==
+			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+		{
+			de["obj_children"] =
+				dynamic_cast<CSetOfObjects*>(obj.get())->asYAML();
+		}
+		d.asSequence().at(i) = std::move(de);
+	}
+	return d;
 }
 
 /*--------------------------------------------------------------

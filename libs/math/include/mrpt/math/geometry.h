@@ -297,7 +297,7 @@ bool areAligned(const std::vector<TPoint3D>& points, TLine3D& r);
 /** @}
  */
 
-/** @name Projections
+/** @name Projections - Apply SE(3) transformation
 	@{
  */
 /** Uses the given pose 3D to project a point into a new base */
@@ -332,6 +332,18 @@ void project3D(
 void project3D(
 	const TObject3D& object, const mrpt::math::TPose3D& newXYPose,
 	TObject3D& newObject);
+
+/** Returns the transformed point/line/segment/plane after applying the given
+ * SE(3) transformation.
+ * \note [New in MRPT 2.3.1]
+ */
+template <typename Object>
+Object project3D(const Object& o, const mrpt::math::TPose3D& newPose)
+{
+	Object ret;
+	project3D(o, newPose, ret);
+	return ret;
+}
 
 /** Projects any 3D object into the plane's base, using its inverse pose. If the
  * object is exactly inside the plane, this projection will zero its Z
@@ -390,6 +402,18 @@ void project2D(
 /** Uses the given pose 2D to project any 2D object into a new base */
 void project2D(
 	const TObject2D& object, const TPose2D& newXpose, TObject2D& newObject);
+
+/** Returns the transformed point/line/segment after applying the given
+ * SE(2) transformation.
+ * \note [New in MRPT 2.3.1]
+ */
+template <typename Object>
+Object project2D(const Object& o, const mrpt::math::TPose2D& newPose)
+{
+	Object ret;
+	project2D(o, newPose, ret);
+	return ret;
+}
 
 /** Projects any 2D object into the line's base, using its inverse pose. If the
  * object is exactly inside the line, this projection will zero its Y

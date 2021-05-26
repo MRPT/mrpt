@@ -19,20 +19,13 @@ namespace mrpt::opengl
 /** A planar (XY) grid where each cell has an associated height and, optionally,
  * a texture map.
  * To make it faster to render, instead of drawing lines and triangles it draws
- * a point at each
- * gridcell.
+ * a point at each gridcell.
  *  A typical usage example would be an elevation map or a 3D model of a
  * terrain.
+ *
+ * ![mrpt::opengl::CMeshFast](preview_CMeshFast.png)
+ *
  *  \sa opengl::COpenGLScene
- *
- *  <div align="center">
- *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
- * border-style: solid;">
- *   <tr> <td> mrpt::opengl::CMeshFast </td> <td> \image html
- * preview_CMeshFast.png </td> </tr>
- *  </table>
- *  </div>
- *
  * \ingroup mrpt_opengl_grp
  */
 class CMeshFast : public CRenderizableShaderPoints
