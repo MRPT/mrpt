@@ -47,10 +47,10 @@ namespace mrpt::opengl
  * transparencies. This can be disabled by the approppriate
  * member in COpenGLViewport.
  *
- * An object COpenGLScene can be saved to a ".3Dscene" file using
- * CFileOutputStream or with the direct method COpenGLScene::saveToFile()
- * for posterior visualization from the standalone application \ref
- * app_SceneViewer3D.
+ * An object COpenGLScene can be saved to a [".3Dscene"
+ * file](robotics_file_formats.html) using CFileOutputStream or with the direct
+ * method COpenGLScene::saveToFile() for posterior visualization from the
+ * standalone application \ref app_SceneViewer3D.
  *
  * It can be also displayed in real-time using windows in mrpt::gui or
  * serialized over a network socket, etc.
@@ -192,15 +192,14 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	 * \note (New in MRPT 2.1.3) */
 	mrpt::containers::yaml asYAML() const;
 
-	/** Saves the scene to a 3Dscene file, loadable by the application
-	 * SceneViewer3D
+	/** Saves the scene to a [".3Dscene" file](robotics_file_formats.html),
+	 * loadable by: \ref app_SceneViewer3D
 	 * \sa loadFromFile
 	 * \return false on any error.
 	 */
 	bool saveToFile(const std::string& fil) const;
 
-	/** Loads the scene from a 3Dscene file, the format used by the application
-	 * SceneViewer3D.
+	/** Loads the scene from a [".3Dscene" file](robotics_file_formats.html).
 	 * \sa saveToFile
 	 * \return false on any error.
 	 */
@@ -224,10 +223,9 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	void visitAllObjects(FUNCTOR functor) const
 	{
 		MRPT_START
-		for (const auto& m_viewport : m_viewports)
-			for (auto itO = m_viewport->begin(); itO != m_viewport->end();
-				 ++itO)
-				internal_visitAllObjects(functor, *itO);
+		for (const auto& viewport : m_viewports)
+			for (auto& o : *viewport)
+				internal_visitAllObjects(functor, o);
 		MRPT_END
 	}
 
@@ -248,12 +246,10 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		FUNCTOR functor, const CRenderizable::Ptr& o)
 	{
 		functor(o);
-		if (IS_CLASS(*o, CSetOfObjects))
+		if (auto objs = std::dynamic_pointer_cast<CSetOfObjects>(o); objs)
 		{
-			CSetOfObjects::Ptr obj =
-				std::dynamic_pointer_cast<CSetOfObjects>(o);
-			for (auto it = obj->begin(); it != obj->end(); ++it)
-				internal_visitAllObjects(functor, *it);
+			for (auto obj : *objs)
+				internal_visitAllObjects(functor, obj);
 		}
 	}
 };
