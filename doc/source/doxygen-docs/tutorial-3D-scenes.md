@@ -28,7 +28,7 @@ Viewports are referenced by their names, case-sensitive strings. Each viewport c
 The main rendering method, COpenGLScene::render(), assumes that a viewport has been set-up for the entire target window. That method will internally make the required calls to opengl for creating the additional viewports. Note that only the depth buffer is cleared by default for each (non-main) viewport, to allow transparencies. This can be disabled by the approppriate member in COpenGLViewport.
 
 Users will never normally need to invoke COpenGLScene::render() manually, but use instead:
-- the 3D standalone viewer: [SceneViewer3D](app_SceneViewer3D.html)
+- the 3D standalone viewer: \ref app_SceneViewer3D
 - the basic runtime 3D display windows mrpt::gui::CDisplayWindow3D
 - the advanced GUI-controls capable display  mrpt::gui::CDisplayWindowGUI
 - wxWidgets / Qt controls also exist for integration into custom GUIs (see mrpt::gui:: mrpt::gui::CGlCanvasBase)

@@ -22,6 +22,7 @@ MRPT
   applications
   examples
   supported-sensors
+  children-projects
 
 .. toctree::
   :maxdepth: 2
