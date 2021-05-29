@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.3.2: UNRELEASED
-- (None)
+- BUG FIXES:
+  - mrpt::img::CImage::isEmpty() should return false for delay-load images.
 
 # Version 2.3.1: Released May 26th, 2021
 - General cmake scripts:
