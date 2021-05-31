@@ -3,6 +3,7 @@
 # Version 2.3.2: UNRELEASED
 - BUG FIXES:
   - mrpt::img::CImage::isEmpty() should return false for delay-load images.
+  - Fix build error with GCC 8 in `mrpt/containers/yaml.h`.
 
 # Version 2.3.1: Released May 26th, 2021
 - General cmake scripts:
