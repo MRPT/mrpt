@@ -31,27 +31,39 @@ Minimum compiler requisites:
 .. dropdown:: Debian/Ubuntu
     :open:
 
-    **Minimum** recommended requisites:
+    **Minimum recommended** requisites:
 
     .. code-block:: bash
 
        sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev \
-            libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev libgtest-dev
+         libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev zlib1g-dev \
+         libsuitesparse-dev libjpeg-dev
 
-    **Recommended additional** packages to enable most MRPT features
-    (except ROS bridges):
+    **Recommended additional** packages to enable most MRPT features:
 
     .. code-block:: bash
 
-       sudo apt install libftdi-dev freeglut3-dev zlib1g-dev \
-            libusb-1.0-0-dev libudev-dev libfreenect-dev libdc1394-22-dev \
-            libavformat-dev libswscale-dev libassimp-dev libjpeg-dev \
-            libsuitesparse-dev libpcap-dev liboctomap-dev libglfw3-dev \
-            binutils-dev
+       # Build OpenGL graphics, Qt and nanogui GUIs:
+       sudo apt install freeglut3-dev libassimp-dev libglfw3-dev \
+            libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
+            libxrandr-dev libxxf86vm-dev
 
+       # Support most common sensors:
+       sudo apt install libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
+            libdc1394-22-dev libavformat-dev libswscale-dev libpcap-dev \
+            liboctomap-dev libopenni2-dev
 
-    Install additional dependencies for ros1bridge using official Ubuntu
-    repositories. If you already have a ROS distribution installed,
+       # Support showing debug information in call stacks upon exceptions:
+       sudo apt install binutils-dev libiberty-dev
+
+       # Support using system SimpleINI library (only Ubuntu >=20.04 focal)
+       sudo apt install libicu-dev libsimpleini-dev
+
+    If your Ubuntu distribution is old and does not have any of the packages
+    above, do not worry and ignore it, MRPT CMake scripts will handle it.
+
+    **ROS1 support:** Install additional dependencies for ros1bridge using
+    official Ubuntu repositories. If you already have a ROS distribution installed,
     doing ``source /opt/ros/xxx/setup.bash`` is enough, no further packages
     must be installed. Do not install these packages if you do not need
     the `mrpt::ros1bridge <group_mrpt_ros1bridge_grp.html>`_ module.
