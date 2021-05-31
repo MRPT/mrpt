@@ -89,7 +89,7 @@ class yaml
 	struct node_t;
 	using scalar_t = std::any;
 	using sequence_t = std::vector<node_t>;
-	using map_t = std::map<node_t, node_t, std::less<> /*transparent comp*/>;
+	using map_t = std::map<node_t, node_t>;
 
 	using comments_t = std::array<
 		std::optional<std::string>, static_cast<size_t>(CommentPosition::MAX)>;
