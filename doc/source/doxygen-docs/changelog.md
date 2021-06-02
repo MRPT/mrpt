@@ -2,6 +2,8 @@
 
 # Version 2.3.2: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_gui_grp
+    - mrpt::gui::CDisplayWindowGUI: improved API to allow multiple callback handlers, and to report exceptions in them.
   - \ref mrpt_system_grp
     - mrpt::system::CTimeLogger: Include custom `name` in underlying mrpt::system::COutputLogger name.
 - BUG FIXES:
