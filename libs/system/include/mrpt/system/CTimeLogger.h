@@ -135,7 +135,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
 		const bool is_time = false) noexcept;
 
 	const std::string& getName() const noexcept { return m_name; }
-	void setName(const std::string& name) noexcept { m_name = name; }
+	void setName(const std::string& name) noexcept;
 
 	/** Start of a named section \sa enter */
 	inline void enter(const std::string_view& func_name) noexcept

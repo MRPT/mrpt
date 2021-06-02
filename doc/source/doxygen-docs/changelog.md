@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.3.2: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_system_grp
+    - mrpt::system::CTimeLogger: Include custom `name` in underlying mrpt::system::COutputLogger name.
 - BUG FIXES:
   - mrpt::img::CImage::isEmpty() should return false for delay-load images.
   - Fix build error with GCC 8 in `mrpt/containers/yaml.h`.
