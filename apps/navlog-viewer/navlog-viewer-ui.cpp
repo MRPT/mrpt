@@ -283,8 +283,8 @@ NavlogViewerApp::NavlogViewerApp()
 
 	// Setup idle loop code:
 	// -----------------------------
-	m_win->setLoopCallback([this]() { OnMainIdleLoop(); });
-	m_win->setKeyboardCallback(
+	m_win->addLoopCallback([this]() { OnMainIdleLoop(); });
+	m_win->addKeyboardCallback(
 		[this](int key, int scancode, int action, int modifiers) {
 			return OnKeyboardCallback(key, scancode, action, modifiers);
 		});
