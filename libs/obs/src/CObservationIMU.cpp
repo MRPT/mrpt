@@ -200,3 +200,33 @@ void CObservationIMU::getDescriptionAsText(std::ostream& o) const
 	DUMP_IMU_DATA(IMU_Y_ACC_GLOBAL)
 	DUMP_IMU_DATA(IMU_Z_ACC_GLOBAL)
 }
+
+std::string CObservationIMU::exportTxtHeader() const
+{
+	return mrpt::format(
+		"%16s %16s %16s "  // IMU_{X,Y,Z}_ACC
+		"%16s %16s %16s "  // IMU_YAW_VEL...
+		"%16s %16s %16s "  // IMU_X_VEL...
+		"%16s %16s %16s "  // IMU_YAW...
+		"%16s %16s %16s "  // IMU_X...
+		"%16s %16s %16s "  // MAG_X MAG_Y MAG_Z
+		"%16s %16s %16s "  // PRESS ALTIT TEMP
+		"%16s %16s %16s %16s "	// ORI_QUAT
+		"%16s %16s %16s "  // YAW_VEL_GLOBAL
+		"%16s %16s %16s "  // X Y Z ACC GLOBAL
+		,
+		"IMU_X_ACC", "IMU_Y_ACC", "IMU_Z_ACC", "IMU_WZ", "IMU_WY", "IMU_WX",
+		"IMU_X_VEL", "IMU_Y_VEL", "IMU_Z_VEL", "IMU_YAW", "IMU_PITCH",
+		"IMU_ROLL", "IMU_X", "IMU_Y", "IMU_Z", "MAG_X", "MAG_Y", "MAG_Z",
+		"PRESS", "ALTITUDE", "TEMPERATURE", "ORI_QUAT_X", "ORI_QUAT_Y",
+		"ORI_QUAT_Z", "ORI_QUAT_W", "YAW_VEL_GLOBAL", "PITCH_VEL_GLOBAL",
+		"ROLL_VEL_GLOBAL", "X_ACC_GLOBAL", "Y_ACC_GLOBAL", "Z_ACC_GLOBAL");
+}
+std::string CObservationIMU::exportTxtDataRow() const
+{
+	std::string s;
+	for (size_t idx = 0; idx < rawMeasurements.size(); idx++)
+		s += mrpt::format(
+			"%16.8f ", dataIsPresent[idx] ? rawMeasurements[idx] : 0);
+	return s;
+}

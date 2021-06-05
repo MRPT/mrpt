@@ -63,3 +63,48 @@ void CObservationRobotPose::getDescriptionAsText(std::ostream& o) const
 	o << "Sensor pose: " << sensorPose << endl;
 	o << "Pose: " << pose.asString() << endl;
 }
+
+// See base class docs:
+std::string CObservationRobotPose::exportTxtHeader() const
+{
+	return mrpt::format(
+		"%18s %18s %18s %18s %18s %18s"	 // POSE
+		// COV
+		"%18s %18s %18s %18s %18s %18s"
+		"%18s %18s %18s %18s %18s"
+		"%18s %18s %18s %18s"
+		"%18s %18s %18s"
+		"%18s %18s"
+		"%18s",
+		"X", "Y", "Z", "YAW_RAD", "PITCH_RAD", "ROLL_RAD",	// pose
+		// cov
+		"var_x", "std_x_y", "std_x_z", "std_x_yaw", "std_x_pitch",
+		"std_x_roll",  //
+		"var_y", "std_y_z", "std_y_yaw", "std_y_pitch", "std_y_roll",  //
+		"var_z", "std_z_yaw", "std_z_pitch", "std_z_roll",	//
+		"var_yaw", "std_yaw_pitch", "std_yaw_roll",	 //
+		"var_pitch", "std_yaw_roll",  //
+		"var_roll");
+}
+std::string CObservationRobotPose::exportTxtDataRow() const
+{
+	const auto& C = pose.cov;
+	return mrpt::format(
+		"%18.5f %18.5f %18.5f %18.5f %18.5f %18.5f "  // POSE
+		// cov
+		"%18.5f %18.5f %18.5f %18.5f %18.5f %18.5f "
+		"%18.5f %18.5f %18.5f %18.5f %18.5f "
+		"%18.5f %18.5f %18.5f %18.5f "
+		"%18.5f %18.5f %18.5f "
+		"%18.5f %18.5f "
+		"%18.5f ",
+		pose.mean.x(), pose.mean.y(), pose.mean.z(), pose.mean.yaw(),
+		pose.mean.pitch(), pose.mean.roll(),
+		// cov
+		C(0, 0), C(0, 1), C(0, 2), C(0, 3), C(0, 4), C(0, 5),  //
+		C(1, 1), C(1, 2), C(1, 3), C(1, 4), C(1, 5),  //
+		C(2, 2), C(2, 3), C(2, 4), C(2, 5),	 //
+		C(3, 3), C(3, 4), C(3, 5),	//
+		C(4, 4), C(4, 5),  //
+		C(5, 5));
+}
