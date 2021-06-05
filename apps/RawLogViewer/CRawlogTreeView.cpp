@@ -413,6 +413,15 @@ int CRawlogTreeView::iconIndexFromClass(const TRuntimeClassId* class_ID)
 		iconIndex = 8;
 	else if (class_ID == CLASS_ID(CObservationRFID))
 		iconIndex = 8;
+	else if (class_ID == CLASS_ID(CObservationOdometry))
+		iconIndex = 9;
+	else if (
+		class_ID == CLASS_ID(CObservation3DRangeScan) ||
+		class_ID == CLASS_ID(CObservationVelodyneScan) ||
+		class_ID == CLASS_ID(CObservationPointCloud))
+		iconIndex = 10;
+	else if (class_ID == CLASS_ID(CObservationIMU))
+		iconIndex = 11;
 	else if (class_ID->derivedFrom(CLASS_ID(CObservation)))
 		iconIndex = 2;	// Default observation
 	else if (class_ID == CLASS_ID(CActionCollection))
