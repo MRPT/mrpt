@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.3.2: UNRELEASED
+- Changes in applications:
+  - RawLogViewer:
+    - More tree view icons.
 - Changes in libraries:
   - \ref mrpt_gui_grp
     - mrpt::gui::CDisplayWindowGUI: improved API to allow multiple callback handlers, and to report exceptions in them.
