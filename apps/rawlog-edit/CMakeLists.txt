@@ -18,6 +18,7 @@ add_executable(${PROJECT_NAME}
 	rawlog-edit_gps_gas.cpp
 	rawlog-edit_info.cpp
 	rawlog-edit_externalize.cpp
+	rawlog-edit_export_txt.cpp
 	rawlog-edit_deexternalize.cpp
 	rawlog-edit_filters.cpp
 	rawlog-edit_cuts.cpp

@@ -8,7 +8,7 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
                 <SENSOR_LABEL,0.5>] [--camera-params <SENSOR_LABEL
                 ,file.ini>] [--sensors-pose <file.ini>]
                 [--generate-3d-pointclouds] [--cut] [--export-2d-scans-txt]
-                [--export-rawdaq-txt] [--recalc-odometry]
+                [--export-txt] [--export-rawdaq-txt] [--recalc-odometry]
                 [--export-anemometer-txt] [--export-enose-txt]
                 [--export-odometry-txt] [--export-imu-txt]
                 [--export-gps-all] [--export-gps-txt]
@@ -22,8 +22,8 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
                 [--text-file-output <out.txt>] [--rectify-centers-coincide]
                 [--image-size <COLSxROWS>] [--txt-externals]
                 [--image-format <jpg,png,pgm,...>] [--out-dir <.>] [-p
-                <dataset.rawlog>] [-o <dataset_out.rawlog>] -i
-                <dataset.rawlog> [--] [--version] [-h]
+                <mylib.so>] [-o <dataset_out.rawlog>] -i <dataset.rawlog>
+                [--] [--version] [-h]
 
 
 =head1 USAGE EXAMPLES
@@ -43,6 +43,10 @@ B<Cut the entries from the beginning up to timestamp 1281619819:>
 
 rawlog-edit --cut --to-time 1281619819 \
              -i I<in.rawlog> -o I<out.rawlog>
+
+B<Export all suitable observations to TXT/CSV files:>
+
+rawlog-edit --export-txt -i I<in.rawlog>
 
 
 B<Generate a Google Earth KML file with the GPS data in a dataset:>
@@ -94,10 +98,10 @@ These are the supported arguments and operations:
 
      Requires: -o (or --output)
 
-     Optional: --image-format to set image format (default=jpg), 
+     Optional: --image-format to set image format (default=jpg),
 
      --image-size to resize output images (example: --image-size 640x480)
-     
+
 
 
    --camera-params <SENSOR_LABEL,file.ini>
@@ -147,6 +151,15 @@ These are the supported arguments and operations:
 
      The generated .txt files will be saved in the same path than the input
      rawlog, with the same filename + each sensorLabel.
+
+   --export-txt
+     Op: Generic export observations to TXT/CSV files.
+
+     Generates one .txt file for each different sensor label of all
+     observation classes that supports the export-to-txt API.
+
+     The generated .txt files will be saved in the same path than the input
+     rawlog, as `<rawlog_filename>_<sensorLabel>.txt`.
 
    --export-rawdaq-txt
      Op: Export raw DAQ readings to TXT files.
