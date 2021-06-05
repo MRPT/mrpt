@@ -97,6 +97,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	 * in the coordinate frame of the object parent. */
 	mrpt::math::TBoundingBox getBoundingBox() const override
 	{
+		if (empty()) return {};
 		if (auto bb = this->octree_getBoundingBox(); bb) return *bb;
 		else
 			return {};
@@ -105,9 +106,9 @@ class CPointCloud : public CRenderizableShaderPoints,
 	/** @name Read/Write of the list of points to render
 		@{ */
 
-	inline size_t size() const { return m_points.size(); }
+	size_t size() const { return m_points.size(); }
 	/** Set the number of points (with contents undefined) */
-	inline void resize(size_t N)
+	void resize(size_t N)
 	{
 		m_points.resize(N);
 		m_minmax_valid = false;
@@ -115,7 +116,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	}
 
 	/** Like STL std::vector's reserve */
-	inline void reserve(size_t N) { m_points.reserve(N); }
+	void reserve(size_t N) { m_points.reserve(N); }
 
 	/** Set the list of (X,Y,Z) point coordinates, all at once, from three
 	 * vectors with their coordinates */
@@ -149,13 +150,15 @@ class CPointCloud : public CRenderizableShaderPoints,
 	}
 
 	/** Get a const reference to the internal array of points */
-	inline const std::vector<mrpt::math::TPoint3Df>& getArrayPoints() const
+	const std::vector<mrpt::math::TPoint3Df>& getArrayPoints() const
 	{
 		return m_points;
 	}
 
 	/** Empty the list of points. */
 	void clear();
+
+	bool empty() const { return m_points.empty(); }
 
 	/** Adds a new point to the cloud */
 	void insertPoint(float x, float y, float z);
@@ -171,7 +174,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 
 	/** Read access to each individual point (checks for "i" in the valid
 	 * range only in Debug). */
-	inline const mrpt::math::TPoint3Df& operator[](size_t i) const
+	const mrpt::math::TPoint3Df& operator[](size_t i) const
 	{
 #ifdef _DEBUG
 		ASSERT_LT_(i, size());
@@ -179,7 +182,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 		return m_points[i];
 	}
 
-	inline const mrpt::math::TPoint3Df& getPoint3Df(size_t i) const
+	const mrpt::math::TPoint3Df& getPoint3Df(size_t i) const
 	{
 		return m_points[i];
 	}
@@ -190,8 +193,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 
 	/** Write an individual point (without checking validity of the index).
 	 */
-	inline void setPoint_fast(
-		size_t i, const float x, const float y, const float z)
+	void setPoint_fast(size_t i, const float x, const float y, const float z)
 	{
 		m_points[i] = {x, y, z};
 		m_minmax_valid = false;
@@ -231,29 +233,29 @@ class CPointCloud : public CRenderizableShaderPoints,
 
 	/** @name Modify the appearance of the rendered points
 		@{ */
-	inline void enableColorFromX(bool v = true)
+	void enableColorFromX(bool v = true)
 	{
 		m_colorFromDepth = v ? CPointCloud::colX : CPointCloud::colNone;
 		CRenderizable::notifyChange();
 	}
-	inline void enableColorFromY(bool v = true)
+	void enableColorFromY(bool v = true)
 	{
 		m_colorFromDepth = v ? CPointCloud::colY : CPointCloud::colNone;
 		CRenderizable::notifyChange();
 	}
-	inline void enableColorFromZ(bool v = true)
+	void enableColorFromZ(bool v = true)
 	{
 		m_colorFromDepth = v ? CPointCloud::colZ : CPointCloud::colNone;
 		CRenderizable::notifyChange();
 	}
 
-	inline void enablePointSmooth(bool enable = true)
+	void enablePointSmooth(bool enable = true)
 	{
 		m_pointSmooth = enable;
 		CRenderizable::notifyChange();
 	}
-	inline void disablePointSmooth() { m_pointSmooth = false; }
-	inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
+	void disablePointSmooth() { m_pointSmooth = false; }
+	bool isPointSmoothEnabled() const { return m_pointSmooth; }
 	/** Sets the colors used as extremes when colorFromDepth is enabled. */
 	void setGradientColors(
 		const mrpt::img::TColorf& colorMin, const mrpt::img::TColorf& colorMax);
@@ -285,7 +287,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	mrpt::img::TColorf m_colorFromDepth_min = {0, 0, 0},
 					   m_colorFromDepth_max = {0, 0, 1};
 
-	inline void internal_render_one_point(size_t i) const;
+	void internal_render_one_point(size_t i) const;
 };
 
 /** Specialization mrpt::opengl::PointCloudAdapter<mrpt::opengl::CPointCloud>
@@ -307,19 +309,19 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 	static constexpr bool HAS_RGBu8 = false;
 
 	/** Constructor (accept a const ref for convenience) */
-	inline PointCloudAdapter(const mrpt::opengl::CPointCloud& obj)
+	PointCloudAdapter(const mrpt::opengl::CPointCloud& obj)
 		: m_obj(*const_cast<mrpt::opengl::CPointCloud*>(&obj))
 	{
 	}
 	/** Get number of points */
-	inline size_t size() const { return m_obj.size(); }
+	size_t size() const { return m_obj.size(); }
 	/** Set number of points (to uninitialized values) */
-	inline void resize(const size_t N) { m_obj.resize(N); }
+	void resize(const size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
-	inline void setDimensions(size_t height, size_t width) {}
+	void setDimensions(size_t height, size_t width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
-	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
+	void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
 	{
 		const auto& pt = m_obj[idx];
 		x = pt.x;
@@ -327,14 +329,14 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 		z = pt.z;
 	}
 	/** Set XYZ coordinates of i'th point */
-	inline void setPointXYZ(
+	void setPointXYZ(
 		const size_t idx, const coords_t x, const coords_t y, const coords_t z)
 	{
 		m_obj.setPoint_fast(idx, x, y, z);
 	}
 
 	/** Set XYZ coordinates of i'th point */
-	inline void setInvalidPoint(const size_t idx)
+	void setInvalidPoint(const size_t idx)
 	{
 		m_obj.setPoint_fast(idx, 0, 0, 0);
 	}
