@@ -36,6 +36,7 @@ std::atomic_bool CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES{false};
 #define MRPT_NO_WARN_BIG_HDR  // It's ok here
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/obs.h>
+#include <mrpt/obs/CObservationPointCloud.h>  // this one is in mrpt-maps
 
 using namespace mrpt;
 using namespace mrpt::system;
