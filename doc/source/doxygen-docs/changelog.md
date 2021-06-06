@@ -4,6 +4,7 @@
 - Changes in applications:
   - RawLogViewer:
     - More tree view icons.
+    - "Play video" window now also shows timestamps.
   - rawlog-edit:
     - New operation `--export-txt` exploiting the new export-to-txt API in mrpt::obs::CObservation
 - Changes in libraries:
