@@ -162,7 +162,7 @@ void CObservationIMU::getDescriptionAsText(std::ostream& o) const
 	};
 
 #define DUMP_IMU_DATA(x)                                                       \
-	o << format("%15s = ", #x);                                                \
+	o << format("%20s = ", #x);                                                \
 	if (dataIsPresent[x])                                                      \
 		o << format("%10f %s\n", rawMeasurements[x], imu_units[x]);            \
 	else                                                                       \
