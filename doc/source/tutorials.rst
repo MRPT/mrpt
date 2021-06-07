@@ -23,6 +23,7 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
   :maxdepth: 2
   :caption: Robotics, SLAM
 
+  tutorial-slam-for-beginners-the-basics
   tutorial-mrpt-maps-model
   range_only_localization_mapping
   tutorial-icp-alignment
