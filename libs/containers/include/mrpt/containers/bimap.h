@@ -101,8 +101,9 @@ class bimap
 		return m_v2k.find(v) != m_v2k.end();
 	}
 
-	/**  Get the value associated the given key, KEY->VALUE, raising an
-	 * exception if not present.
+	/** Get the value associated the given key, KEY->VALUE, raising an
+	 * exception if not present (equivalent to `directMap.at()`).
+	 *
 	 *  \sa inverse, hasKey, hasValue
 	 * \exception std::exception On key not present in the bi-map.
 	 */
@@ -114,7 +115,7 @@ class bimap
 	}
 
 	/**  Get the key associated the given value, VALUE->KEY, returning false if
-	 * not present.
+	 * not present (equivalent to `inverseMap.at()`).
 	 *  \sa direct, hasKey, hasValue
 	 * \return false on value not found.
 	 */
