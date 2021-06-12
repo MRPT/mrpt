@@ -10,6 +10,7 @@
 - Changes in libraries:
   - \ref mrpt_gui_grp
     - mrpt::gui::CDisplayWindowGUI: improved API to allow multiple callback handlers, and to report exceptions in them.
+    - New 3D navigation key binding: SHIFT+scroll wheel, for fast up/down pure vertical motion of the camera point.
   - \ref mrpt_obs_grp
     - mrpt::obs::CObservation now has a common API to export datasets to TXT/CSV files, see methods exportTxtSupported(), exportTxtHeader(), exportTxtDataRow(). It has been implemented in all suitable observation classes.
   - \ref mrpt_system_grp

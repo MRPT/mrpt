@@ -31,6 +31,9 @@ class NanoGUICanvasHeadless : public mrpt::gui::CGlCanvasBaseHeadless
 	void mouseButtonEvent(
 		const nanogui::Vector2i& p, int button, bool down, int modifiers);
 	void scrollEvent(const nanogui::Vector2i& p, const nanogui::Vector2f& rel);
+
+   private:
+	int m_lastModifiers = 0;
 };
 }  // namespace mrpt::gui::internal
 #endif	// MRPT_HAS_NANOGUI

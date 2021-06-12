@@ -118,7 +118,18 @@ void CQtGlCanvasBase::mouseReleaseEvent(QMouseEvent* event)
 void CQtGlCanvasBase::wheelEvent(QWheelEvent* event)
 {
 	CamaraParams params = cameraParams();
-	updateZoom(params, event->delta());
+	if (event->modifiers() != Qt::ShiftModifier)
+	{
+		// regular zoom:
+		updateZoom(params, event->delta());
+	}
+	else
+	{
+		// Move vertically +-Z:
+		params.cameraPointingZ +=
+			event->delta() * params.cameraZoomDistance * 1e-4;
+	}
+
 	setCameraParams(params);
 
 	updateCamerasParams();
