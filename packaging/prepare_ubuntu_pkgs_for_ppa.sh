@@ -14,13 +14,13 @@
 set -e
 
 # List of distributions to create PPA packages for:
-#  - Xenial LTS EOL: Apr 2021
 #  - Groovy     EOL: Jul 2021
 #  - Hirsute    EOL: Jan 2022
 #  - Bionic LTS EOL: Apr 2023
 #  - Focal  LTS EOL: Apr 2025
+#  - Impish     EOL: Jul 2022
 if [ -z ${LST_DISTROS+x} ]; then
-	LST_DISTROS=(xenial bionic focal groovy hirsute)
+	LST_DISTROS=(bionic focal groovy hirsute impish)
 fi
 
 count=${#LST_DISTROS[@]}
@@ -28,15 +28,8 @@ echo "========================================================================="
 echo " Ubuntu PPA script for $count distros: ${LST_DISTROS[@]}"
 echo "========================================================================="
 
-# Special case for Xenial: enforce g++7
-export MRPT_PKG_CUSTOM_CMAKE_PARAMS_xenial="-DCMAKE_C_COMPILER=/usr/bin/gcc-7 -DCMAKE_CXX_COMPILER=/usr/bin/g++-7"
-
 # Special case for Bionic: use embedded version of simpleini
 # (Remove these lines after xenial and bionic EOL)
-export MRPT_PKG_EXPORTED_SUBMODULES_xenial="simpleini nanoflann"
-export DEB_EXTRA_BUILD_DEPS_xenial="cmake"  # dummy package (it cannot be blank)
-export DEB_NANOFLANN_DEP_xenial="libmrpt-common-dev"  # dummy package (it cannot be blank)
-
 export MRPT_PKG_EXPORTED_SUBMODULES_bionic="simpleini nanoflann"
 export DEB_EXTRA_BUILD_DEPS_bionic="cmake"  # dummy package (it cannot be blank)
 export DEB_NANOFLANN_DEP_bionic="libmrpt-common-dev"  # dummy package (it cannot be blank)
@@ -88,8 +81,8 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
 # Xenial:armhf does not have any version of liboctomap-dev:
-export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/OctoMap/octomap/archive/v1.9.1.zip"
-export MRPT_RELEASE_EXTRA_OTHERLIBS_PATH="3rdparty/octomap.zip"
+#export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/OctoMap/octomap/archive/v1.9.1.zip"
+#export MRPT_RELEASE_EXTRA_OTHERLIBS_PATH="3rdparty/octomap.zip"
 
 IDXS=$(seq 0 $(expr $count - 1))
 
