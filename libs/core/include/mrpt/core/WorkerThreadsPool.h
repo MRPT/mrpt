@@ -65,7 +65,7 @@ class WorkerThreadsPool
 	/** Enqueue one new working item, to be executed by threads when any is
 	 * available. */
 	template <class F, class... Args>
-	auto enqueue(F&& f, Args&&... args)
+	[[nodiscard]] auto enqueue(F&& f, Args&&... args)
 		-> std::future<typename std::result_of<F(Args...)>::type>;
 
 	/** Returns the number of enqueued tasks, currently waiting for a free
