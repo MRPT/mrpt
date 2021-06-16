@@ -56,6 +56,8 @@ struct CDisplayWindowGUI_Params
  *   mrpt::gui::CDisplayWindowGUI win;
  *   // Populate win adding UI controls, etc.
  *   // ...
+ *   win.performLayout();
+ *
  *   win.drawAll();
  *   win.setVisible(true);
  *   nanogui::mainloop();
