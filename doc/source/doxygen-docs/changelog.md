@@ -8,6 +8,8 @@
   - rawlog-edit:
     - New operation `--export-txt` exploiting the new export-to-txt API in mrpt::obs::CObservation
 - Changes in libraries:
+  - \ref mrpt_containers_grp
+    - YAML macros `MCP_LOAD_OPT()`, `MCP_LOAD_REQ()`, and `MCP_SAVE()` now also support reading and writing enums directly as YAML, transparently converting numerical values to/from their symbolic names.
   - \ref mrpt_gui_grp
     - mrpt::gui::CDisplayWindowGUI: improved API to allow multiple callback handlers, and to report exceptions in them.
     - New 3D navigation key binding: SHIFT+scroll wheel, for fast up/down pure vertical motion of the camera point.
