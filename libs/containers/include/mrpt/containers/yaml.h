@@ -768,14 +768,20 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  *
  * MCP_LOAD_REQ(p, K);
  * \endcode
+ *
+ * Since MRPT 2.3.2, this also works for enums, converting to textual names of
+ * values. Note that this requires enums to implement mrpt::typemeta::TEnumType.
  */
-#define MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__)               \
-	if (!paramsVariable__.has(#keyproxiedMapEntryName__))                      \
+#define MCP_LOAD_REQ(Yaml__, Var__)                                            \
+	if (!Yaml__.has(#Var__))                                                   \
 		throw std::invalid_argument(mrpt::format(                              \
 			"Required parameter `%s` not an existing key in dictionary.",      \
-			#keyproxiedMapEntryName__));                                       \
-	keyproxiedMapEntryName__ = paramsVariable__[#keyproxiedMapEntryName__]     \
-								   .as<decltype(keyproxiedMapEntryName__)>()
+			#Var__));                                                          \
+	if constexpr (std::is_enum_v<decltype(Var__)>)                             \
+		Var__ = mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(Var__)>>:: \
+			name2value(Yaml__[#Var__].as<std::string>());                      \
+	else                                                                       \
+		Var__ = Yaml__[#Var__].as<decltype(Var__)>()
 
 /** Macro to load a variable from a mrpt::containers::yaml (initials MCP)
  * dictionary, leaving it with its former value if not found (OPTional).
@@ -787,23 +793,32 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  *
  * MCP_LOAD_OPT(p, K);
  * \endcode
+ *
+ * Since MRPT 2.3.2, this also works for enums, converting to textual names of
+ * values. Note that this requires enums to implement mrpt::typemeta::TEnumType.
  */
-#define MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__)               \
-	keyproxiedMapEntryName__ = paramsVariable__.getOrDefault(                  \
-		#keyproxiedMapEntryName__, keyproxiedMapEntryName__)
+#define MCP_LOAD_OPT(Yaml__, Var__)                                            \
+	if constexpr (std::is_enum_v<decltype(Var__)>)                             \
+	{                                                                          \
+		if (Yaml__.has(#Var__))                                                \
+			Var__ = mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(       \
+				Var__)>>::name2value(Yaml__[#Var__].as<std::string>());        \
+	}                                                                          \
+	else if (Yaml__.has(#Var__))                                               \
+	Var__ = Yaml__[#Var__].as<decltype(Var__)>()
 
 /** Just like MCP_LOAD_REQ(), but converts the read number from degrees to
  * radians */
-#define MCP_LOAD_REQ_DEG(paramsVariable__, keyproxiedMapEntryName__)           \
-	MCP_LOAD_REQ(paramsVariable__, keyproxiedMapEntryName__);                  \
-	keyproxiedMapEntryName__ = mrpt::DEG2RAD(keyproxiedMapEntryName__)
+#define MCP_LOAD_REQ_DEG(Yaml__, Var__)                                        \
+	MCP_LOAD_REQ(Yaml__, Var__);                                               \
+	Var__ = mrpt::DEG2RAD(Var__)
 
 /** Just like MCP_LOAD_OPT(), but converts the read number from degrees to
  * radians */
-#define MCP_LOAD_OPT_DEG(paramsVariable__, keyproxiedMapEntryName__)           \
-	keyproxiedMapEntryName__ = mrpt::RAD2DEG(keyproxiedMapEntryName__);        \
-	MCP_LOAD_OPT(paramsVariable__, keyproxiedMapEntryName__);                  \
-	keyproxiedMapEntryName__ = mrpt::DEG2RAD(keyproxiedMapEntryName__)
+#define MCP_LOAD_OPT_DEG(Yaml__, Var__)                                        \
+	Var__ = mrpt::RAD2DEG(Var__);                                              \
+	MCP_LOAD_OPT(Yaml__, Var__);                                               \
+	Var__ = mrpt::DEG2RAD(Var__)
 
 /** Macro to store a variable into a mrpt::containers::yaml (initials MCP)
  * dictionary, using as "key" the name of the variable.
@@ -819,13 +834,18 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
  * // loaded in memory:
  * MCP_SAVE_DEG(p,K);
  * \endcode
+ *
+ * Since MRPT 2.3.2, this also works for enums, converting to textual names of
+ * values. Note that this requires enums to implement mrpt::typemeta::TEnumType.
  */
-#define MCP_SAVE(paramsVariable__, keyproxiedMapEntryName__)                   \
-	paramsVariable__[#keyproxiedMapEntryName__] = keyproxiedMapEntryName__;
+#define MCP_SAVE(Yaml__, Var__)                                                \
+	if constexpr (std::is_enum_v<decltype(Var__)>)                             \
+		Yaml__[#Var__] = mrpt::typemeta::TEnumType<                            \
+			std::remove_cv_t<decltype(Var__)>>::value2name(Var__);             \
+	else                                                                       \
+		Yaml__[#Var__] = Var__;
 
-#define MCP_SAVE_DEG(paramsVariable__, keyproxiedMapEntryName__)               \
-	paramsVariable__[#keyproxiedMapEntryName__] =                              \
-		mrpt::RAD2DEG(keyproxiedMapEntryName__);
+#define MCP_SAVE_DEG(Yaml__, Var__) Yaml__[#Var__] = mrpt::RAD2DEG(Var__);
 
 }  // namespace mrpt::containers
 
