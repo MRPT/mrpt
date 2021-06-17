@@ -15,6 +15,7 @@
 #include <mrpt/core/demangle.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/format.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 #include <any>
 #include <array>
