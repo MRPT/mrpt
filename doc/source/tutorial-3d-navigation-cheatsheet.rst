@@ -17,7 +17,7 @@ All MRPT applications use the following convention:
 - **Pan** (XY plane): Right-button pressed + mouse move.
 
 - **Move camera along Z axis**: SHIFT+Left-button pressed + mouse move left/right,
-or (starting in MRPT 2.3.2) SHIFT+scroll wheel for faster up/down vertical motion.
+  or (starting in MRPT 2.3.2) SHIFT+scroll wheel for faster up/down vertical motion.
 
 
 The implementation of the features above by handling mouse and keyboard events
