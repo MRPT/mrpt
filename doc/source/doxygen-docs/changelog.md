@@ -15,6 +15,8 @@
     - New 3D navigation key binding: SHIFT+scroll wheel, for fast up/down pure vertical motion of the camera point.
   - \ref mrpt_obs_grp
     - mrpt::obs::CObservation now has a common API to export datasets to TXT/CSV files, see methods exportTxtSupported(), exportTxtHeader(), exportTxtDataRow(). It has been implemented in all suitable observation classes.
+  - \ref mrpt_poses_grp
+    - New methods mrpt::math::TTwist2D::rotated() and mrpt::math::TTwist3D::rotated()
   - \ref mrpt_system_grp
     - mrpt::system::CTimeLogger: Include custom `name` in underlying mrpt::system::COutputLogger name.
 - BUG FIXES:
