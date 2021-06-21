@@ -160,3 +160,4 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 }
 
 void CObservationImage::load() const { image.forceLoad(); }
+void CObservationImage::unload() { image.unload(); }
