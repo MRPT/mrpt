@@ -21,6 +21,8 @@ void NanoGUICanvasHeadless::mouseMotionEvent(
 	const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button,
 	int modifiers)
 {
+	m_lastModifiers = modifiers;
+
 	const bool leftIsDown = button & (1 << GLFW_MOUSE_BUTTON_LEFT);
 	const bool rightIsDown = button & (1 << GLFW_MOUSE_BUTTON_RIGHT);
 
@@ -54,6 +56,8 @@ void NanoGUICanvasHeadless::mouseMotionEvent(
 void NanoGUICanvasHeadless::mouseButtonEvent(
 	const nanogui::Vector2i& p, int button, bool down, int modifiers)
 {
+	m_lastModifiers = modifiers;
+
 	setMousePos(p.x(), p.y());
 	setMouseClicked(down);
 }
@@ -61,7 +65,18 @@ void NanoGUICanvasHeadless::scrollEvent(
 	const nanogui::Vector2i& p, const nanogui::Vector2f& rel)
 {
 	CamaraParams params = cameraParams();
-	updateZoom(params, 125 * rel.y());
+
+	if (!(m_lastModifiers & GLFW_MOD_SHIFT))
+	{
+		// regular zoom:
+		updateZoom(params, 125 * rel.y());
+	}
+	else
+	{
+		// Move vertically +-Z:
+		params.cameraPointingZ +=
+			125 * rel.y() * params.cameraZoomDistance * 1e-4;
+	}
 	setCameraParams(params);
 }
 

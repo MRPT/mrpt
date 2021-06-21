@@ -68,3 +68,12 @@ void CObservationWirelessPower::getDescriptionAsText(std::ostream& o) const
 	CObservation::getDescriptionAsText(o);
 	o << format("Measured Power: %.02f/100\n", power);
 }
+
+std::string CObservationWirelessPower::exportTxtHeader() const
+{
+	return mrpt::format("%18s", "POWER[0,100]");
+}
+std::string CObservationWirelessPower::exportTxtDataRow() const
+{
+	return mrpt::format("%18.5f ", power);
+}

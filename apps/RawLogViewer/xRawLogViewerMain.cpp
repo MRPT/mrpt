@@ -84,6 +84,9 @@
 #include <wx/tooltip.h>
 
 #include "imgs/tree_icon1.xpm"
+#include "imgs/tree_icon10.xpm"
+#include "imgs/tree_icon11.xpm"
+#include "imgs/tree_icon12.xpm"
 #include "imgs/tree_icon2.xpm"
 #include "imgs/tree_icon3.xpm"
 #include "imgs/tree_icon4.xpm"
@@ -1655,6 +1658,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	imgList->Add(wxIcon(tree_icon7_xpm));
 	imgList->Add(wxIcon(tree_icon8_xpm));
 	imgList->Add(wxIcon(tree_icon9_xpm));
+	imgList->Add(wxIcon(tree_icon10_xpm));
+	imgList->Add(wxIcon(tree_icon11_xpm));
+	imgList->Add(wxIcon(tree_icon12_xpm));
 
 	tree_view->AssignImageList(imgList);
 

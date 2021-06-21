@@ -67,3 +67,19 @@ void CObservationWindSensor::getDescriptionAsText(std::ostream& o) const
 {
 	CObservation::getDescriptionAsText(o);
 }
+
+std::string CObservationWindSensor::exportTxtHeader() const
+{
+	return mrpt::format(
+		"%18s %18s"	 // WIND (mod, direction)
+		,
+		"WIND_MODULE(m/s)", "WIND_DIRECTION (deg)");
+}
+
+std::string CObservationWindSensor::exportTxtDataRow() const
+{
+	return mrpt::format(
+		"%18.5f %18.3f"	 // WIND (mod, direction)
+		,
+		speed, direction);
+}

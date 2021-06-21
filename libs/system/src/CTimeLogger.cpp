@@ -64,13 +64,18 @@ void global_profiler_leave(const char* func_name) noexcept
 
 CTimeLogger::CTimeLogger(
 	bool enabled, const std::string& name, const bool keep_whole_history)
-	: COutputLogger("CTimeLogger"),
-	  m_tictac(),
-	  m_enabled(enabled),
-	  m_name(name),
-	  m_keep_whole_history(keep_whole_history)
+	: m_enabled(enabled), m_keep_whole_history(keep_whole_history)
 {
+	setName(name);
 	m_tictac.Tic();
+}
+
+void CTimeLogger::setName(const std::string& name) noexcept
+{
+	m_name = name;
+	COutputLogger::setLoggerName(
+		name.empty() ? std::string("CTimeLogger")
+					 : (name + std::string(" timeLogger")));
 }
 
 CTimeLogger::~CTimeLogger()

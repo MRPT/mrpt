@@ -1,7 +1,28 @@
 \page changelog Change Log
 
 # Version 2.3.2: UNRELEASED
-- (None)
+- Changes in applications:
+  - RawLogViewer:
+    - More tree view icons.
+    - "Play video" window now also shows timestamps.
+  - rawlog-edit:
+    - New operation `--export-txt` exploiting the new export-to-txt API in mrpt::obs::CObservation
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - YAML macros `MCP_LOAD_OPT()`, `MCP_LOAD_REQ()`, and `MCP_SAVE()` now also support reading and writing enums directly as YAML, transparently converting numerical values to/from their symbolic names.
+  - \ref mrpt_gui_grp
+    - mrpt::gui::CDisplayWindowGUI: improved API to allow multiple callback handlers, and to report exceptions in them.
+    - New 3D navigation key binding: SHIFT+scroll wheel, for fast up/down pure vertical motion of the camera point.
+  - \ref mrpt_obs_grp
+    - mrpt::obs::CObservation now has a common API to export datasets to TXT/CSV files, see methods exportTxtSupported(), exportTxtHeader(), exportTxtDataRow(). It has been implemented in all suitable observation classes.
+  - \ref mrpt_poses_grp
+    - New methods mrpt::math::TTwist2D::rotated() and mrpt::math::TTwist3D::rotated()
+  - \ref mrpt_system_grp
+    - mrpt::system::CTimeLogger: Include custom `name` in underlying mrpt::system::COutputLogger name.
+- BUG FIXES:
+  - mrpt::img::CImage::isEmpty() should return false for delay-load images.
+  - Fix build error with GCC 8 in `mrpt/containers/yaml.h`.
+  - Fix exception rendering empty point clouds due to invalid bounding box.
 
 # Version 2.3.1: Released May 26th, 2021
 - General cmake scripts:

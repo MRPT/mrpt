@@ -24,7 +24,9 @@
 #include <wx/textctrl.h>
 //*)
 
+#include <mrpt/core/Clock.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/obs/obs_frwds.h>
 
 class CFormPlayVideo : public wxDialog
 {
@@ -87,7 +89,9 @@ class CFormPlayVideo : public wxDialog
 	void OncbImageDirsSelect(wxCommandEvent& event);
 	//*)
 
-	bool showSensoryFrame(void* SF, size_t& nImgs);
+	bool showSensoryFrame(
+		mrpt::obs::CSensoryFrame& SF, size_t& nImgs,
+		mrpt::Clock::time_point& timestamp);
 
 	void drawHorzRules(mrpt::img::CImage& img);
 
