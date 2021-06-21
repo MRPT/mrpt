@@ -72,7 +72,20 @@ class CObservationImage : public CObservation
 	}
 	void getDescriptionAsText(std::ostream& o) const override;
 
+	/** @name Delayed-load (lazy-load) manual control methods.
+		@{ */
+
+	/** Makes sure the image, which may be externally stored, are loaded in
+	 * memory. \sa unload
+	 */
 	void load() const override;
+
+	/** Unload image, for the case of it being stored in lazy-load mode
+	 *  (othewise, the method has no effect).
+	 * \sa load
+	 */
+	void unload() override;
+	/** @} */
 
 };	// End of class def.
 
