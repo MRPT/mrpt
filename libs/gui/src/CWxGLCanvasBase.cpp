@@ -123,7 +123,17 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 {
 	CamaraParams params = cameraParams();
-	updateZoom(params, event.GetWheelRotation());
+	if (!event.ShiftDown())
+	{
+		// regular zoom:
+		updateZoom(params, event.GetWheelRotation());
+	}
+	else
+	{
+		// Move vertically +-Z:
+		params.cameraPointingZ +=
+			event.GetWheelRotation() * params.cameraZoomDistance * 1e-4;
+	}
 	setCameraParams(params);
 
 	Refresh(false);

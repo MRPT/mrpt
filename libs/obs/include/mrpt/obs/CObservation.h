@@ -26,18 +26,21 @@ namespace obs
  * \ingroup mrpt_obs_grp */
 #define INVALID_LANDMARK_ID (-1)
 
-/** Declares a class that represents any robot's observation.
- *  This is a base class for many types of sensor observations.
+/** Generic sensor observation.
+ *
+ *  This is a base virtual class for all types of sensor observations.
  *  Users can add new observation types creating a new class deriving from this
- * one.
+ * one, or reuse those provided in MRPT modules. Most observations are defined
+ * in \def mrpt_obs_grp.
  *
- *  <b>IMPORTANT</b>: Observations don't include any information about the robot
- * pose,
- *   just  raw sensory data and, where aplicable, information about the sensor
- * position and
- *   orientation in the local frame of the robot.
+ * Observations do not include any information about the robot localization,
+ * but just raw sensory data and, where aplicable, information about the
+ * sensor position and orientation in the **local frame** (vehicle frame).
  *
- * \sa CSensoryFrame, CMetricMap
+ * Datasets with large number of observations can be managed with
+ * mrpt::obs::CRawLog.
+ *
+ * \sa CSensoryFrame, CMetricMap, mrpt::obs::CRawLog
  * \ingroup mrpt_obs_grp
  */
 class CObservation : public mrpt::serialization::CSerializable
@@ -152,6 +155,25 @@ class CObservation : public mrpt::serialization::CSerializable
 
 	/** Return by value version of getDescriptionAsText(std::ostream&) */
 	std::string getDescriptionAsTextValue() const;
+
+	/** @name Export to TXT/CSV API (see the rawlog-edit app)
+		@{ */
+	/** Must return true if the class is exportable to TXT/CSV files, in which
+	 * case the other virtual methods in this group must be redefined too.
+	 */
+	virtual bool exportTxtSupported() const { return false; }
+
+	/** Returns the description of the data columns. Timestamp is automatically
+	 * included as the first column, do not list it. See example implementations
+	 * if interested in enabling this in custom CObservation classes.
+	 * Do not include newlines.*/
+	virtual std::string exportTxtHeader() const { return {}; }
+
+	/** Returns one row of data with the data stored in this particular object.
+	 * Do not include newlines. */
+	virtual std::string exportTxtDataRow() const { return {}; }
+
+	/** @} */
 
 	/** @name Delayed-load manual control methods.
 		@{ */

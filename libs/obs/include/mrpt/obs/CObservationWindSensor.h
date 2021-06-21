@@ -33,12 +33,10 @@ class CObservationWindSensor : public CObservation
 	/** @name The data members
 	 * @{ */
 
-	/** The wind speed in m/s */
-	double speed{.0};
-	/** The wind flow direction in deg */
-	double direction{.0};
-	/** The location of the sensing anemometer on the robot coordinate framework
-	 */
+	double speed = 0;  //!< Wind speed [m/s]
+	double direction = 0;  //!< Wind flow direction [degrees]
+
+	/** The location of the sensing anemometer on the robot frame */
 	mrpt::poses::CPose3D sensorPoseOnRobot;
 
 	/** @} */
@@ -47,6 +45,11 @@ class CObservationWindSensor : public CObservation
 	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override;
 	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override;
 	void getDescriptionAsText(std::ostream& o) const override;
+
+	// See base class docs:
+	bool exportTxtSupported() const override { return true; }
+	std::string exportTxtHeader() const override;
+	std::string exportTxtDataRow() const override;
 
 };	// End of class def.
 

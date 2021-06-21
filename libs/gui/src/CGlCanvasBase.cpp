@@ -44,8 +44,6 @@ using mrpt::system::CTicTac;
 
 float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
-CGlCanvasBase::CGlCanvasBase() {}
-
 CGlCanvasBase::~CGlCanvasBase()
 {
 	// Ensure all OpenGL resources are freed before the opengl context is gone:

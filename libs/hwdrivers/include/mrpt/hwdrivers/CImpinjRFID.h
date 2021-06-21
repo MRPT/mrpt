@@ -22,6 +22,7 @@ namespace mrpt::hwdrivers
  * connects to a program that does the actual communication with the receiver.
  * This is done because the manufacturer only provides libraries for C# and
  * Java. The program that runs the device must be started after this object
+ * \ingroup mrpt_hwdrivers_grp
  */
 class CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 {

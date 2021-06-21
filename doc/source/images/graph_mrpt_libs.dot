@@ -22,6 +22,7 @@ digraph MRPT_LIBS {
 
 	containers  [label="mrpt-containers",URL="group_mrpt_containers_grp.html"];
 	containers -> core;
+	containers -> typemeta;
 
 	{ rank = sink;
 	core       [label="mrpt-core",URL="group_mrpt_core_grp.html"];

@@ -523,7 +523,7 @@ void Test_3DCamICP()
 	win.performLayout();
 
 	// Set loop hook to update text messages:
-	win.setLoopCallback([&lbStatuses, &ui_data]() {
+	win.addLoopCallback([&lbStatuses, &ui_data]() {
 		ui_data.strStatuses_mtx.lock();
 		for (unsigned int i = 0; i < lbStatuses.size(); i++)
 			lbStatuses[i]->setValue(ui_data.strStatuses[i]);

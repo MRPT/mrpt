@@ -46,16 +46,22 @@ using namespace mrpt::io;
 DECLARE_OP_FUNCTION(op_camera_params);
 DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_deexternalize);
-DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
-DECLARE_OP_FUNCTION(op_export_anemometer_txt);
-DECLARE_OP_FUNCTION(op_export_enose_txt);
+
 DECLARE_OP_FUNCTION(op_export_gps_all);
 DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
+DECLARE_OP_FUNCTION(op_export_enose_txt);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
+DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
+
+DECLARE_OP_FUNCTION(op_export_txt);
+// op_export_txt is a generic replacement of all these:
+DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
+DECLARE_OP_FUNCTION(op_export_anemometer_txt);
 DECLARE_OP_FUNCTION(op_export_imu_txt);
 DECLARE_OP_FUNCTION(op_export_odometry_txt);
-DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
+// ^^^
+
 DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
 DECLARE_OP_FUNCTION(op_info);
@@ -357,6 +363,16 @@ int main(int argc, char** argv)
 			"the input rawlog.",
 			cmd, false));
 		ops_functors["export-rawdaq-txt"] = &op_export_rawdaq_txt;
+
+		arg_ops.push_back(std::make_unique<TCLAP::SwitchArg>(
+			"", "export-txt",
+			"Op: Generic export observations to TXT/CSV files.\n"
+			"Generates one .txt file for each different sensor label of "
+			"all observation classes that supports the export-to-txt API.\n"
+			"The generated .txt files will be saved in the same path than "
+			"the input rawlog, as `<rawlog_filename>_<sensorLabel>.txt`.",
+			cmd, false));
+		ops_functors["export-txt"] = &op_export_txt;
 
 		arg_ops.push_back(std::make_unique<TCLAP::SwitchArg>(
 			"", "export-2d-scans-txt",

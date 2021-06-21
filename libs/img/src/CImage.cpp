@@ -875,7 +875,7 @@ int CImage::channelCount() const
 bool CImage::isEmpty() const
 {
 #if MRPT_HAS_OPENCV
-	return m_imgIsExternalStorage || m_impl->img.empty();
+	return !m_imgIsExternalStorage && m_impl->img.empty();
 #else
 	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
