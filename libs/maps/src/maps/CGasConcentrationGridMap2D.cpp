@@ -144,19 +144,6 @@ void CGasConcentrationGridMap2D::internal_clear()
 		windGrid_module.fill(insertionOptions.default_wind_speed);
 		windGrid_direction.fill(insertionOptions.default_wind_direction);
 
-		/*float S = windGrid_direction.getSizeX() *
-windGrid_direction.getSizeY();
-
-		for( unsigned int y=windGrid_direction.getSizeY()/2;
-y<windGrid_direction.getSizeY(); y++ )
-		{
-			for( unsigned int x=0; x<windGrid_direction.getSizeX(); x++ )
-			{
-				double * wind_cell = windGrid_direction.cellByIndex(x,y);
-				*wind_cell =  3*3.141516/2;
-}
-		}*/
-
 		// Generate Look-Up Table of the Gaussian weights due to wind advection.
 		if (!build_Gaussian_Wind_Grid())
 		{
@@ -646,20 +633,6 @@ void CGasConcentrationGridMap2D::increaseUncertainty(
 
 	// Update m_map.kf_std
 	recoverMeanAndCov();
-
-	// for (cy=0; cy<m_size_y; cy++)
-	//   {
-	//       for (cx=0; cx<m_size_x; cx++)
-	//       {
-	//		// Forgetting_curve --> memory_retention =
-	// exp(-time/memory_relative_strenght)
-	//		memory_retention = exp(- mrpt::system::timeDifference(m_map[cx +
-	// cy*m_size_x].last_updated, now()) / memory_relative_strenght);
-	//		//Update Uncertainty (STD)
-	//		m_map[cx + cy*m_size_x].kf_std = 1 - ( (1-m_map[cx +
-	// cy*m_size_x].updated_std) * memory_retention );
-	//       }
-	//   }
 }
 
 /*---------------------------------------------------------------
@@ -1198,95 +1171,6 @@ that models the propagation of the gas comming from cell_i.
 							}
 						}
 					}
-
-					// OLD WAY
-
-					/* ---------------------------------------------------------
-					   Estimate the volume of the Gaussian on each affected cell
-					//-----------------------------------------------------------*/
-					// for(int cx=min_cx; cx<=max_cx; cx++)
-					//{
-					//	for(int cy=min_cy; cy<=max_cy; cy++)
-					//	{
-					//		// Coordinates of affected cell (center of the cell)
-					//		float cell_a_x = (cx+0.5f)*LUT.resolution;
-					//		float cell_a_y = (cy+0.5f)*LUT.resolution;
-					//		float w_cell_a = 0.0;	//initial Gaussian value of
-					// cell afected
-
-					//		// Estimate volume of the Gaussian under cell (a)
-					//		// Partition each cell into (p x p) subcells and
-					// evaluate the gaussian.
-					//		int p = 40;
-					//		float subcell_pres = LUT.resolution/p;
-					//		float cell_a_x_min = cell_a_x - LUT.resolution/2.0;
-					//		float cell_a_y_min = cell_a_y - LUT.resolution/2.0;
-
-					//
-					//		for(int scy=0; scy<p; scy++)
-					//		{
-					//			for(int scx=0; scx<p; scx++)
-					//			{
-					//				//P-Subcell coordinates (center of the
-					// p-subcell)
-					//				float subcell_a_x = cell_a_x_min +
-					//(scx+0.5f)*subcell_pres;
-					//				float subcell_a_y = cell_a_y_min +
-					//(scy+0.5f)*subcell_pres;
-
-					//				//distance and angle between cell_i and
-					// subcell_a
-					//				float r_ia = sqrt(
-					// square(subcell_a_x-cell_i_x)
-					//+
-					// square(subcell_a_y-cell_i_y) );
-					//				float phi_ia = atan2(subcell_a_y-cell_i_y,
-					// subcell_a_x-cell_i_x);
-
-					//				//Volume Approximation of subcell_a
-					//(Gaussian
-					// Bivariate)
-					//				float w = (1/(2*M_PI*LUT.std_r*LUT.std_phi))
-					//*
-					// exp(-0.5*( square(r_ia-r)/square(LUT.std_r) +
-					// square(phi_ia-phi)/square(LUT.std_phi) ) );
-					//				w += (1/(2*M_PI*LUT.std_r*LUT.std_phi)) *
-					// exp(-0.5*( square(r_ia-r)/square(LUT.std_r) +
-					// square(phi_ia+2*M_PI-phi)/square(LUT.std_phi) ) );
-					//				w += (1/(2*M_PI*LUT.std_r*LUT.std_phi)) *
-					// exp(-0.5*( square(r_ia-r)/square(LUT.std_r) +
-					// square(phi_ia-2*M_PI-phi)/square(LUT.std_phi) ) );
-					//
-					//				//Since we work with a cell grid,
-					// approximate
-					// the
-					// weight of the gaussian by the volume of the subcell_a
-					//				if (r_ia != 0.0)
-					//					w_cell_a = w_cell_a + (w *
-					// square(subcell_pres)/r_ia);
-					//			}//end-for scx
-					//		}//end-for scy
-
-					//		//Save the weight of the gaussian volume for cell_a
-					//(cx,cy)
-					//		TGaussianCell gauss_info;
-					//		gauss_info.cx = cx;
-					//		gauss_info.cy = cy;
-					//		gauss_info.value = w_cell_a;
-
-					//		//Add cell volume to LookUp Table
-					//		LUT_TABLE[phi_indx][r_indx].push_back(gauss_info);
-
-					//		if (debug)
-					//		{
-					//			//Save to file (debug)
-					//			fprintf(debug_file, "(%d,%d)=%.6f
-					//",gauss_info.cx, gauss_info.cy, gauss_info.value);
-					//		}
-					//
-					//
-					//	}//end-for cy
-					//}//end-for cx
 
 				}  // end-if only one affected cell
 
