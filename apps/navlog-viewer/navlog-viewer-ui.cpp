@@ -388,19 +388,14 @@ void NavlogViewerApp::loadLogfile(const std::string& fileName)
 		{
 			// EOF in the middle of an object... It may be usual if the logger
 			// is shut down not cleanly.
-			// auto dlg =
-			new nanogui::MessageDialog(
-				m_win.get(), nanogui::MessageDialog::Type::Warning,
-				"Loading ended with an exception", mrpt::exception_to_str(e));
-
-			break;
+			// Show the error message (catch below)
+			throw;
 		}
 	}
+	NANOGUI_END_TRY(*m_win)
 
 	// Update stats, etc...
 	updateInfoFromLoadedLog();
-
-	NANOGUI_END_TRY(*m_win)
 }
 
 void NavlogViewerApp::OnMainIdleLoop()

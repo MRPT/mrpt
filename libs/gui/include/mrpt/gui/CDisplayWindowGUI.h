@@ -12,6 +12,7 @@
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/system/string_utils.h>  // firstNLines()
 
 #include <mutex>
 #include <string>
@@ -356,10 +357,13 @@ class CDisplayWindowGUI : public nanogui::Screen
 	}                                                                          \
 	catch (const std::exception& e)                                            \
 	{                                                                          \
-		const auto sErr = mrpt::exception_to_str(e);                           \
+		const size_t maxLines = 7;                                             \
+		const std::string sErr =                                               \
+			mrpt::system::firstNLines(mrpt::exception_to_str(e), maxLines);    \
 		auto dlg = new nanogui::MessageDialog(                                 \
 			&_parentWindowRef_, nanogui::MessageDialog::Type::Warning,         \
 			"Exception", sErr);                                                \
+		dlg->requestFocus();                                                   \
 		dlg->setCallback([](int /*result*/) {});                               \
 	}
 
