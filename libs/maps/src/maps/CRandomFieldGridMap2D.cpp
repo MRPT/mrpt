@@ -591,6 +591,7 @@ void CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 
 	// Compute the "parzen Gaussian" once only:
 	// -------------------------------------------------
+	ASSERT_LT_(m_resolution, 0.5 * m_insertOptions_common->cutoffRadius);
 	int Ac_cutoff = round(m_insertOptions_common->cutoffRadius / m_resolution);
 	unsigned Ac_all = 1 + 2 * Ac_cutoff;
 	double minWinValueAtCutOff = exp(-square(
