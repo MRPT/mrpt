@@ -145,6 +145,18 @@ void stringListAsString(
 	const std::deque<std::string>& lst, std::string& out,
 	const std::string& newline = "\r\n");
 
+/** Finds the position of the n-th occurence of the given substring, or
+ * std::string::npos if it does not happen.
+ * \note New in MRPT 2.3.2
+ */
+size_t nthOccurrence(
+	const std::string& str, const std::string& strToFind, size_t nth);
+
+/** Returns the first `n` lines (splitted by '\n' chars) of the given text.
+ * \note New in MRPT 2.3.2
+ */
+std::string firstNLines(const std::string& str, size_t n);
+
 /** Original code snippet found in http://stackoverflow.com/a/30357710 */
 /**\{*/
 

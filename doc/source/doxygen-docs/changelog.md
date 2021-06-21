@@ -20,6 +20,7 @@
     - New methods mrpt::math::TTwist2D::rotated() and mrpt::math::TTwist3D::rotated()
   - \ref mrpt_system_grp
     - mrpt::system::CTimeLogger: Include custom `name` in underlying mrpt::system::COutputLogger name.
+    - New functions mrpt::system::firstNLines() and mrpt::system::nthOccurrence()
 - BUG FIXES:
   - mrpt::img::CImage::isEmpty() should return false for delay-load images.
   - Fix build error with GCC 8 in `mrpt/containers/yaml.h`.
