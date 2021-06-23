@@ -512,7 +512,9 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 			(tim_last != INVALID_TIMESTAMP &&
 			 fabs(mrpt::system::timeDifference(ro.timestamp, tim_last)) >
 				 largest_period))
-		{ lst_to_delete.push_back(o.first); }
+		{
+			lst_to_delete.push_back(o.first);
+		}
 	}
 
 	// Remove too old observations:
@@ -634,7 +636,7 @@ void CScanAnimation::OnbtnVizOptions(wxCommandEvent&)
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
 	dlgViz = &dlg;
 
-	auto sizer1 = new wxFlexGridSizer(2, 1, 0, 0);
+	auto sizer1 = new wxFlexGridSizer(0, 1, 0, 0);
 	sizer1->AddGrowableCol(0);
 
 	auto panel = new ViewOptions3DPoints(&dlg);
