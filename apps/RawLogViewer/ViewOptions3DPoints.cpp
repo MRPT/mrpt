@@ -170,7 +170,7 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	FlexGridSizer3->Add(FlexGridSizer4, 1, wxALL | wxEXPAND, 0);
 	StaticBoxSizer2->Add(FlexGridSizer3, 1, wxALL | wxEXPAND, 5);
 	FlexGridSizer1->Add(StaticBoxSizer2, 1, wxALL | wxEXPAND, 5);
-	FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer5 = new wxFlexGridSizer(0, 1, 0, 0);
 	StaticBoxSizer3 =
 		new wxStaticBoxSizer(wxHORIZONTAL, this, _("Sensor pose"));
 	FlexGridSizer6 = new wxFlexGridSizer(0, 1, 0, 0);
@@ -228,40 +228,17 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
-
-	Connect(
-		ID_BUTTON1, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction)&ViewOptions3DPoints::OnbtnApplyClick);
-	Connect(
-		ID_CHECKBOX1, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ViewOptions3DPoints::OnbtnApplyClick);
-	Connect(
-		ID_RADIOBOX1, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&ViewOptions3DPoints::OnbtnApplyClick);
-	Connect(
-		ID_RADIOBOX2, wxEVT_COMMAND_RADIOBOX_SELECTED,
-		(wxObjectEventFunction)&ViewOptions3DPoints::OnbtnApplyClick);
-	Connect(
-		ID_CHECKBOX2, wxEVT_COMMAND_CHECKBOX_CLICKED,
-		(wxObjectEventFunction)&ViewOptions3DPoints::OnbtnApplyClick);
 	//*)
 
-	Bind(wxEVT_BUTTON, &ViewOptions3DPoints::OnbtnApplyClick, this, ID_BUTTON1);
-	Bind(
-		wxEVT_RADIOBOX, &ViewOptions3DPoints::OnbtnApplyClick, this,
-		ID_RADIOBOX1);
-	Bind(
-		wxEVT_RADIOBOX, &ViewOptions3DPoints::OnbtnApplyClick, this,
-		ID_RADIOBOX2);
-	Bind(
-		wxEVT_CHECKBOX, &ViewOptions3DPoints::OnbtnApplyClick, this,
-		ID_CHECKBOX2);
-	Bind(
-		wxEVT_SPINCTRL, &ViewOptions3DPoints::OnbtnApplyClick, this,
-		ID_SPINCTRL1);
-	Bind(
-		wxEVT_CHECKBOX, &ViewOptions3DPoints::OnbtnApplyClick, this,
-		ID_CHECKBOX3);
+	using Me = ViewOptions3DPoints;
+
+	Bind(wxEVT_BUTTON, &Me::OnbtnApplyClick, this, ID_BUTTON1);
+	Bind(wxEVT_CHECKBOX, &Me::OnbtnApplyClick, this, ID_CHECKBOX1);
+	Bind(wxEVT_CHECKBOX, &Me::OnbtnApplyClick, this, ID_CHECKBOX2);
+	Bind(wxEVT_RADIOBOX, &Me::OnbtnApplyClick, this, ID_RADIOBOX1);
+	Bind(wxEVT_RADIOBOX, &Me::OnbtnApplyClick, this, ID_RADIOBOX2);
+	Bind(wxEVT_CHECKBOX, &Me::OnbtnApplyClick, this, ID_CHECKBOX3);
+	Bind(wxEVT_SPINCTRL, &Me::OnbtnApplyClick, this, ID_SPINCTRL1);
 
 	m_params.load_from_ini_file();
 	m_params.to_UI(*this);
