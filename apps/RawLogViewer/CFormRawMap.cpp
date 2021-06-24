@@ -462,7 +462,9 @@ void loadMapInto3DScene(COpenGLScene& scene)
 			auto this_t = it.first;
 
 			if (distanceBetweenPoints(x0, y0, z0, p.x, p.y, p.z) < 5.5)
-			{ obj->appendLine(x0, y0, z0, p.x, p.y, p.z); }
+			{
+				obj->appendLine(x0, y0, z0, p.x, p.y, p.z);
+			}
 			else if (last_t)
 			{
 				// We have a gap without GT:
@@ -715,7 +717,6 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 
 	plotMap->AddLayer(lyPoints);
 	plotMap->AddLayer(lyPath);
-	plotMap->EnableDoubleBuffer(true);
 
 	lyPath->SetData(pathX, pathY);
 
@@ -976,7 +977,6 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent&)
 	plotMap->AddLayer(lyCov, false);
 
 	//
-	plotMap->EnableDoubleBuffer(true);
 
 	plotMap->Fit();	 // Update the window to show the new data fitted.
 	plotMap->LockAspect(true);
@@ -1121,7 +1121,6 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 
 	plotMap->AddLayer(lyPoints);
 	plotMap->AddLayer(lyPath);
-	plotMap->EnableDoubleBuffer(true);
 
 	lyPath->SetData(pathX, pathY);
 

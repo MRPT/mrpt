@@ -57,7 +57,6 @@ CWindowDialogPlots::CWindowDialogPlots(
 	m_plot->AddLayer(new mpScaleX());
 	m_plot->AddLayer(new mpScaleY());
 	m_plot->LockAspect(false);
-	m_plot->EnableDoubleBuffer(true);
 
 	m_plot->Fit(-10, 10, -10, 10);
 
@@ -691,8 +690,8 @@ void CDisplayWindowPlots::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
 /*---------------------------------------------------------------
 					setWindowTitle
  ---------------------------------------------------------------*/
-void CDisplayWindowPlots::setWindowTitle([
-	[maybe_unused]] const std::string& str)
+void CDisplayWindowPlots::setWindowTitle(
+	[[maybe_unused]] const std::string& str)
 {
 #if MRPT_HAS_WXWIDGETS
 	if (!isOpen())
