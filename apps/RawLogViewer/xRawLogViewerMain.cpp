@@ -1704,12 +1704,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	plotRangeBearing->AddLayer(new mpScaleY());
 	plotRangeBearing->AddLayer(lyRangeBearingLandmarks);
 
-	plotScan2D->EnableDoubleBuffer(true);
-	plotAct2D_XY->EnableDoubleBuffer(true);
-	plotAct2D_PHI->EnableDoubleBuffer(true);
-	plotRangeBearing->EnableDoubleBuffer(true);
-	plotRawlogSensorTimes->EnableDoubleBuffer(true);
-
 	Maximize();	 // Maximize the main window
 
 	// Set sliders:
@@ -3168,7 +3162,9 @@ void xRawLogViewerFrame::OnFileCountEntries(wxCommandEvent&)
 			if (newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame) ||
 				newObj->GetRuntimeClass() == CLASS_ID(CActionCollection) ||
 				newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
-			{ entryIndex++; }
+			{
+				entryIndex++;
+			}
 			else
 			{
 				// Unknown class:
@@ -4010,7 +4006,9 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent&)
 										 obs_2->sensedData[q].sensedDistance);
 
 							if (filter)
-							{ obs_2->sensedData[q].sensedDistance = 0; }
+							{
+								obs_2->sensedData[q].sensedDistance = 0;
+							}
 							nFilt++;
 						}
 					}
@@ -4431,7 +4429,9 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent&)
 		{
 			// Check type:
 			if (rawlog.getType(countLoop) == CRawlog::etActionCollection)
-			{ act_between = rawlog.getAsAction(countLoop); }
+			{
+				act_between = rawlog.getAsAction(countLoop);
+			}
 			else if (rawlog.getType(countLoop) == CRawlog::etSensoryFrame)
 			{
 				// This is a SF:

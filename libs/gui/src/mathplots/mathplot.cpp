@@ -49,6 +49,7 @@ const int INVALID_CLICK_COORDS = -99999;
 
 #include <mrpt/3rdparty/mathplot/mathplot.h>
 #include <wx/bmpbuttn.h>
+#include <wx/dcbuffer.h>
 #include <wx/image.h>
 #include <wx/module.h>
 #include <wx/msgdlg.h>
@@ -888,7 +889,9 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
 		{
 			// Date and/or time axis representation
 			if (m_labelType == mpX_DATETIME)
-			{ fmt = (wxT("%04.0f-%02.0f-%02.0fT%02.0f:%02.0f:%02.0f")); }
+			{
+				fmt = (wxT("%04.0f-%02.0f-%02.0fT%02.0f:%02.0f:%02.0f"));
+			}
 			else if (m_labelType == mpX_DATE)
 			{
 				fmt = (wxT("%04.0f-%02.0f-%02.0f"));
@@ -952,11 +955,15 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
 #endif
 					dc.SetPen(m_pen);
 					if ((m_flags == mpALIGN_BOTTOM) && !m_drawOutsideMargins)
-					{ dc.DrawLine(p, orgy + 4, p, minYpx); }
+					{
+						dc.DrawLine(p, orgy + 4, p, minYpx);
+					}
 					else
 					{
 						if ((m_flags == mpALIGN_TOP) && !m_drawOutsideMargins)
-						{ dc.DrawLine(p, orgy - 4, p, maxYpx); }
+						{
+							dc.DrawLine(p, orgy - 4, p, maxYpx);
+						}
 						else
 						{
 							dc.DrawLine(p, 0 /*-w.GetScrY()*/, p, w.GetScrY());
@@ -1080,7 +1087,9 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
 				dc.GetTextExtent(s, &tx, &ty);
 				if ((m_flags == mpALIGN_BORDER_BOTTOM) ||
 					(m_flags == mpALIGN_TOP))
-				{ dc.DrawText(s, p - tx / 2, orgy - 4 - ty); }
+				{
+					dc.DrawText(s, p - tx / 2, orgy - 4 - ty);
+				}
 				else
 				{
 					dc.DrawText(s, p - tx / 2, orgy + 4);
@@ -1258,7 +1267,9 @@ void mpScaleY::Plot(wxDC& dc, mpWindow& w)
 				if (m_ticks)
 				{  // Draw axis ticks
 					if (m_flags == mpALIGN_BORDER_LEFT)
-					{ dc.DrawLine(orgx, p, orgx + 4, p); }
+					{
+						dc.DrawLine(orgx, p, orgx + 4, p);
+					}
 					else
 					{
 						dc.DrawLine(
@@ -1274,11 +1285,15 @@ void mpScaleY::Plot(wxDC& dc, mpWindow& w)
 #endif
 					dc.SetPen(m_pen);
 					if ((m_flags == mpALIGN_LEFT) && !m_drawOutsideMargins)
-					{ dc.DrawLine(orgx - 4, p, endPx, p); }
+					{
+						dc.DrawLine(orgx - 4, p, endPx, p);
+					}
 					else
 					{
 						if ((m_flags == mpALIGN_RIGHT) && !m_drawOutsideMargins)
-						{ dc.DrawLine(minYpx, p, orgx + 4, p); }
+						{
+							dc.DrawLine(minYpx, p, orgx + 4, p);
+						}
 						else
 						{
 							dc.DrawLine(0 /*-w.GetScrX()*/, p, w.GetScrX(), p);
@@ -1418,9 +1433,6 @@ mpWindow::mpWindow(
 	m_scrX = m_scrY = 64;  // Fixed from m_scrX = m_scrX = 64;
 	m_minX = m_minY = 0;
 	m_maxX = m_maxY = 0;
-	m_last_lx = m_last_ly = 0;
-	m_buff_bmp = nullptr;
-	m_enableDoubleBuffer = FALSE;
 	m_enableMouseNavigation = TRUE;
 	m_mouseMovedAfterRightClick = FALSE;
 	m_movingInfoLayer = nullptr;
@@ -1457,8 +1469,7 @@ mpWindow::mpWindow(
 	m_mouseLClick_X = INVALID_CLICK_COORDS;
 	m_mouseLClick_Y = INVALID_CLICK_COORDS;
 
-	// J.L.Blanco: Eliminates the "flick" with the double buffer.
-	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+	SetBackgroundStyle(wxBG_STYLE_PAINT);
 
 	UpdateAll();
 }
@@ -1467,12 +1478,6 @@ mpWindow::~mpWindow()
 {
 	// Free all the layers:
 	DelAllLayers(true, false);
-
-	if (m_buff_bmp)
-	{
-		delete m_buff_bmp;
-		m_buff_bmp = nullptr;
-	}
 }
 
 // Mouse handler, for detecting when the user drag with the right button or just
@@ -1535,6 +1540,8 @@ void mpWindow::OnMouseWheel(wxMouseEvent& event)
 // JLB
 void mpWindow::OnMouseMove(wxMouseEvent& event)
 {
+	m_drawDottedSelectedWindow = false;
+
 	if (!m_enableMouseNavigation)
 	{
 		event.Skip();
@@ -1578,14 +1585,10 @@ void mpWindow::OnMouseMove(wxMouseEvent& event)
 		{
 			if (m_movingInfoLayer == nullptr)
 			{
-				wxClientDC dc(this);
-				wxPen pen(*wxBLACK, 1, wxPENSTYLE_DOT);
-				dc.SetPen(pen);
-				dc.SetBrush(*wxTRANSPARENT_BRUSH);
-				dc.DrawRectangle(
-					m_mouseLClick_X, m_mouseLClick_Y,
+				m_drawDottedSelectedWindow = true;
+				m_dottedWindowSize = {
 					event.GetX() - m_mouseLClick_X,
-					event.GetY() - m_mouseLClick_Y);
+					event.GetY() - m_mouseLClick_Y};
 			}
 			else
 			{
@@ -1609,16 +1612,6 @@ void mpWindow::OnMouseMove(wxMouseEvent& event)
 					RefreshRect(tmpLyr->GetRectangle());
 				}
 			}
-			/* if (m_coordTooltip) {
-				wxString toolTipContent;
-				toolTipContent.Printf(_("X = %f\nY = %f"), p2x(event.GetX()),
-			p2y(event.GetY()));
-				wxTipWindow** ptr = nullptr;
-				wxRect rectBounds(event.GetX(), event.GetY(), 5, 5);
-				wxTipWindow* tip = new wxTipWindow(this, toolTipContent, 100,
-			ptr, &rectBounds);
-
-			} */
 		}
 	}
 	event.Skip();
@@ -1634,7 +1627,7 @@ void mpWindow::OnMouseLeftDown(wxMouseEvent& event)
 		event.GetY()); /*m_mouseLClick_X, m_mouseLClick_Y);*/
 #endif
 	wxPoint pointClicked = event.GetPosition();
-	m_movingInfoLayer = IsInsideInfoLayer(pointClicked);
+	´ m_movingInfoLayer = IsInsideInfoLayer(pointClicked);
 	if (m_movingInfoLayer != nullptr)
 	{
 #ifdef MATHPLOT_DO_LOGGING
@@ -2096,16 +2089,10 @@ void mpWindow::DelAllLayers(bool alsoDeleteObject, bool refreshDisplay)
 	if (refreshDisplay) UpdateAll();
 }
 
-// void mpWindow::DoPrepareDC(wxDC& dc)
-// {
-//     dc.SetDeviceOrigin(x2p(m_minX), y2p(m_maxY));
-// }
-
-void mpWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
+void mpWindow::OnPaint(wxPaintEvent&)
 {
-	wxPaintDC dc(this);
-	dc.GetSize(&m_scrX, &m_scrY);  // This is the size of the visible area only!
-	//     DoPrepareDC(dc);
+	wxAutoBufferedPaintDC dc(this);
+	dc.GetSize(&m_scrX, &m_scrY);
 
 #ifdef MATHPLOT_DO_LOGGING
 	{
@@ -2118,74 +2105,30 @@ void mpWindow::OnPaint(wxPaintEvent& WXUNUSED(event))
 #endif
 
 	// Selects direct or buffered draw:
-	wxDC* trgDc;
-
-	// J.L.Blanco @ Aug 2007: Added double buffer support
-	if (m_enableDoubleBuffer)
-	{
-		if (m_last_lx != m_scrX || m_last_ly != m_scrY)
-		{
-			if (m_buff_bmp) delete m_buff_bmp;
-			m_buff_bmp = new wxBitmap(m_scrX, m_scrY);
-			m_buff_dc.SelectObject(*m_buff_bmp);
-			m_last_lx = m_scrX;
-			m_last_ly = m_scrY;
-		}
-		trgDc = &m_buff_dc;
-	}
-	else
-	{
-		trgDc = &dc;
-	}
 
 	// Draw background:
-	// trgDc->SetDeviceOrigin(0,0);
-	trgDc->SetPen(*wxTRANSPARENT_PEN);
+	dc.SetPen(*wxTRANSPARENT_PEN);
 	wxBrush brush(GetBackgroundColour());
-	trgDc->SetBrush(brush);
-	trgDc->SetTextForeground(m_fgColour);
-	trgDc->DrawRectangle(0, 0, m_scrX, m_scrY);
+	dc.SetBrush(brush);
+	dc.SetTextForeground(m_fgColour);
+	dc.DrawRectangle(0, 0, m_scrX, m_scrY);
 
 	// Draw all the layers:
-	// trgDc->SetDeviceOrigin( m_scrX>>1, m_scrY>>1);  // Origin at the center
-	wxLayerList::iterator li;
-	for (li = m_layers.begin(); li != m_layers.end(); ++li)
-	{
-		(*li)->Plot(*trgDc, *this);
-	};
+	for (const auto& ly : m_layers)
+		ly->Plot(dc, *this);
 
-	// If doublebuffer, draw now to the window:
-	if (m_enableDoubleBuffer)
+	if (m_drawDottedSelectedWindow)
 	{
-		// trgDc->SetDeviceOrigin(0,0);
-		// dc.SetDeviceOrigin(0,0);  // Origin at the center
-		dc.Blit(0, 0, m_scrX, m_scrY, trgDc, 0, 0);
+		static wxPen pen(*wxBLACK, 1, wxPENSTYLE_DOT);
+		dc.SetPen(pen);
+		dc.SetBrush(*wxTRANSPARENT_BRUSH);
+		dc.DrawRectangle(
+			m_mouseLClick_X, m_mouseLClick_Y, m_dottedWindowSize.x,
+			m_dottedWindowSize.y);
 	}
 
-	/*    if (m_coordTooltip) {
-			wxString toolTipContent;
-			wxPoint mousePoint =  wxGetMousePosition();
-			toolTipContent.Printf(_("X = %f\nY = %f"), p2x(mousePoint.x),
-	   p2y(mousePoint.y));
-			SetToolTip(toolTipContent);
-		}*/
 	// If scrollbars are enabled, refresh them
-	if (m_enableScrollBars)
-	{
-		/*       m_scrollX = (int) floor((m_posX - m_minX)*m_scaleX);
-			   m_scrollY = (int) floor((m_maxY - m_posY )*m_scaleY);
-			   Scroll(m_scrollX, m_scrollY);*/
-		// Scroll(x2p(m_posX), y2p(m_posY));
-		//             SetVirtualSize((int) ((m_maxX - m_minX)*m_scaleX), (int)
-		//             ((m_maxY - m_minY)*m_scaleY));
-		//         int centerX = (m_scrX - m_marginLeft - m_marginRight)/2; // +
-		//         m_marginLeft; // c.x = m_scrX/2;
-		// 	int centerY = (m_scrY - m_marginTop - m_marginBottom)/2; // -
-		// m_marginTop; // c.y = m_scrY/2;
-		/*SetScrollbars(1, 1, (int) ((m_maxX - m_minX)*m_scaleX), (int) ((m_maxY
-		 * - m_minY)*m_scaleY));*/  //, x2p(m_posX + centerX/m_scaleX),
-									// y2p(m_posY - centerY/m_scaleY), true);
-	}
+	if (m_enableScrollBars) {}
 }
 
 // void mpWindow::OnScroll2(wxScrollWinEvent &event)
@@ -2290,7 +2233,7 @@ void mpWindow::SetMPScrollbars(bool status)
 	// //         SetVirtualSize((int) (m_maxX - m_minX), (int) (m_maxY -
 	// m_minY));
 	//     }
-	//     Refresh(false);*/
+	//     Refresh(true);*/
 }
 
 bool mpWindow::UpdateBBox()
@@ -2426,7 +2369,7 @@ void mpWindow::UpdateAll()
 		}
 	}
 
-	Refresh(FALSE);
+	Refresh(true);
 }
 
 void mpWindow::DoScrollCalc(const int position, const int orientation)
@@ -3399,7 +3342,9 @@ void mpBitmapLayer::SetBitmap(
 	const wxImage& inBmp, double x, double y, double lx, double ly)
 {
 	if (!inBmp.Ok())
-	{ wxLogError(wxT("[mpBitmapLayer] Assigned bitmap is not Ok()!")); }
+	{
+		wxLogError(wxT("[mpBitmapLayer] Assigned bitmap is not Ok()!"));
+	}
 	else
 	{
 		if (lx < 0)
