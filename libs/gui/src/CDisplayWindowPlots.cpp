@@ -690,8 +690,8 @@ void CDisplayWindowPlots::setPos([[maybe_unused]] int x, [[maybe_unused]] int y)
 /*---------------------------------------------------------------
 					setWindowTitle
  ---------------------------------------------------------------*/
-void CDisplayWindowPlots::setWindowTitle(
-	[[maybe_unused]] const std::string& str)
+void CDisplayWindowPlots::setWindowTitle([
+	[maybe_unused]] const std::string& str)
 {
 #if MRPT_HAS_WXWIDGETS
 	if (!isOpen())
