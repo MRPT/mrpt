@@ -46,6 +46,10 @@ export MRPT_PKG_EXPORTED_SUBMODULES_hirsute=""
 export DEB_EXTRA_BUILD_DEPS_hirsute="libsimpleini-dev, libnanoflann-dev"
 export DEB_NANOFLANN_DEP_hirsute="libnanoflann-dev"  # make mrpt-math-dev to depend on nanoflann headers
 
+export MRPT_PKG_EXPORTED_SUBMODULES_impish=""
+export DEB_EXTRA_BUILD_DEPS_impish="libsimpleini-dev, libnanoflann-dev"
+export DEB_NANOFLANN_DEP_impish="libnanoflann-dev"  # make mrpt-math-dev to depend on nanoflann headers
+
 
 # Checks
 # --------------------------------
