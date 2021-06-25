@@ -462,9 +462,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 			auto this_t = it.first;
 
 			if (distanceBetweenPoints(x0, y0, z0, p.x, p.y, p.z) < 5.5)
-			{
-				obj->appendLine(x0, y0, z0, p.x, p.y, p.z);
-			}
+			{ obj->appendLine(x0, y0, z0, p.x, p.y, p.z); }
 			else if (last_t)
 			{
 				// We have a gap without GT:
