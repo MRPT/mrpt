@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <mrpt/core/get_env.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
 #include <mrpt/opengl/TLightParameters.h>
@@ -30,6 +31,9 @@ using mrpt::img::CImage;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 	CRenderizableShaderTexturedTriangles, CRenderizable, mrpt::opengl)
+
+const bool MRPT_OPENGL_VERBOSE =
+	mrpt::get_env<bool>("MRPT_OPENGL_VERBOSE", false);
 
 // Whether to profile memory allocations:
 //#define TEXTUREOBJ_PROFILE_MEM_ALLOC
@@ -552,6 +556,9 @@ void CRenderizableShaderTexturedTriangles::unloadTexture()
 	{
 		m_texture_is_loaded = false;
 		m_texture_is_pending_destruction = true;
+		ASSERT_(m_glTextureUnit.has_value());
+		releaseTextureName(m_glTextureName, *m_glTextureUnit);
+		m_glTextureName = 0;
 	}
 }
 
@@ -647,6 +654,10 @@ class TextureResourceHandler
 			m_occupiedTextureUnits.insert(foundUnit);
 		}
 
+		if (MRPT_OPENGL_VERBOSE)
+			std::cout << "[mrpt generateTextureID] textureName:" << textureID
+					  << " unit: " << foundUnit << std::endl;
+
 		return {textureID, foundUnit};
 #else
 		THROW_EXCEPTION("This function needs OpenGL");
@@ -657,6 +668,10 @@ class TextureResourceHandler
 	{
 #if MRPT_HAS_OPENGL_GLUT
 		auto lck = mrpt::lockHelper(m_texturesMtx);
+
+		if (MRPT_OPENGL_VERBOSE)
+			std::cout << "[mrpt releaseTextureID] textureName: " << texName
+					  << " unit: " << texUnit << std::endl;
 
 		m_destroyQueue[std::this_thread::get_id()].push_back(texName);
 		processDestroyQueue();
