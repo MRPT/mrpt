@@ -682,8 +682,12 @@ class TextureResourceHandler
    private:
 	TextureResourceHandler()
 	{
+#if MRPT_HAS_OPENGL_GLUT
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
-		// std::cout << "max texture units: " << m_maxTextureUnits << std::endl;
+		if (MRPT_OPENGL_VERBOSE)
+			std::cout << "[mrpt TextureResourceHandler] maxTextureUnits:"
+					  << m_maxTextureUnits << std::endl;
+#endif
 	}
 
 	void processDestroyQueue()
