@@ -201,6 +201,9 @@ CImage::CImage(const CImage& img, copy_type_t copy_type)
 	  CImage()
 #endif
 {
+	// Also, copy our custom fields:
+	m_imgIsExternalStorage = img.m_imgIsExternalStorage;
+	m_externalFile = img.m_externalFile;
 }
 
 CImage CImage::makeDeepCopy() const
@@ -217,6 +220,7 @@ CImage CImage::makeDeepCopy() const
 void CImage::asCvMat(cv::Mat& out_img, copy_type_t copy_type) const
 {
 #if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();
 	if (copy_type == DEEP_COPY) out_img = m_impl->img.clone();
 	else
 		out_img = m_impl->img;
