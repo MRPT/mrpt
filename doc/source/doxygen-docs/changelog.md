@@ -26,6 +26,7 @@
   - Fix build error with GCC 8 in `mrpt/containers/yaml.h`.
   - Fix exception rendering empty point clouds due to invalid bounding box.
   - Fix broken 2D plots rendering in Ubuntu 20.04 (and probably other systems), via an update in mpWindow to properly use wxAutoBufferedPaintDC.
+  - mrpt::img::CImage::getPixelDepth() should force loading lazy load images.
 
 # Version 2.3.1: Released May 26th, 2021
 - General cmake scripts:
