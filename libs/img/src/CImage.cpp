@@ -290,6 +290,7 @@ PixelDepth CImage::getPixelDepth() const
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	return cvDepth2PixelDepth(m_impl->img.depth());
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
