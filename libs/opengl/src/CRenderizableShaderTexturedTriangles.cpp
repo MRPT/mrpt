@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <memory>  // std::align
+#include <set>
 #include <thread>
 
 using namespace mrpt;
@@ -62,12 +63,13 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 
 	// This will load and/or select our texture, only once:
 	initializeTextures();
+	ASSERT_(m_glTextureUnit.has_value());
 
 	// Set the texture uniform:
 	{
 		const Program& s = *rc.shader;
-		// bound to GL_TEXTURE0:
-		glUniform1i(s.uniformId("textureSampler"), 0);
+		// bound to GL_TEXTURE0 + "i":
+		glUniform1i(s.uniformId("textureSampler"), *m_glTextureUnit);
 	}
 
 	// Enable/disable lights:
@@ -281,7 +283,8 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	if (m_texture_is_pending_destruction)
 	{
 		m_texture_is_pending_destruction = false;
-		releaseTextureName(m_glTextureName);
+		ASSERT_(m_glTextureUnit.has_value());
+		releaseTextureName(m_glTextureName, *m_glTextureUnit);
 		m_glTextureName = 0;
 	}
 
@@ -293,20 +296,26 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		if (m_texture_is_loaded)
 		{
 			// activate the texture unit first before binding texture
-			glActiveTexture(GL_TEXTURE0);
+			ASSERT_(m_glTextureUnit.has_value());
+			glActiveTexture(GL_TEXTURE0 + *m_glTextureUnit);
 			glBindTexture(GL_TEXTURE_2D, m_glTextureName);
 			CHECK_OPENGL_ERROR();
 			return;
 		}
 
 		// Reserve the new one --------------------------
+		m_textureImage.forceLoad();	 // just in case they are lazy-load imgs
+		m_textureImageAlpha.forceLoad();
+
 		ASSERT_(m_textureImage.getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
 		// allocate texture names:
-		m_glTextureName = getNewTextureNumber();
+		const auto p = getNewTextureNumber();
+		m_glTextureName = p.first;
+		m_glTextureUnit = p.second;
 
 		// activate the texture unit first before binding texture
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0 + *m_glTextureUnit);
 		// select our current texture
 		glBindTexture(GL_TEXTURE_2D, m_glTextureName);
 		CHECK_OPENGL_ERROR();
@@ -603,7 +612,8 @@ class TextureResourceHandler
 		return o;
 	}
 
-	unsigned int generateTextureID()
+	/// Return [textureName, textureUnit]
+	std::pair<unsigned int, unsigned int> generateTextureID()
 	{
 #if MRPT_HAS_OPENGL_GLUT
 		auto lck = mrpt::lockHelper(m_texturesMtx);
@@ -616,24 +626,50 @@ class TextureResourceHandler
 		CHECK_OPENGL_ERROR();
 		m_textureReservedFrom[textureID] = std::this_thread::get_id();
 
-		return textureID;
+		int foundUnit = -1;
+		for (int i = 0; i < m_maxTextureUnits; i++)
+			if (!m_occupiedTextureUnits.count(i))
+			{
+				foundUnit = i;
+				break;
+			}
+		if (foundUnit < 0)
+		{
+			foundUnit = 0;
+			std::cerr
+				<< "[mrpt TextureResourceHandler] **WARNING**: Apparently "
+				   "your program reached the maximum number of allowed "
+				   "simultaneous OpenGL textures ("
+				<< m_maxTextureUnits << ")" << std::endl;
+		}
+		else
+		{
+			m_occupiedTextureUnits.insert(foundUnit);
+		}
+
+		return {textureID, foundUnit};
 #else
 		THROW_EXCEPTION("This function needs OpenGL");
 #endif
 	}
 
-	void releaseTextureID(unsigned int id)
+	void releaseTextureID(unsigned int texName, unsigned int texUnit)
 	{
 #if MRPT_HAS_OPENGL_GLUT
 		auto lck = mrpt::lockHelper(m_texturesMtx);
 
-		m_destroyQueue[std::this_thread::get_id()].push_back(id);
+		m_destroyQueue[std::this_thread::get_id()].push_back(texName);
 		processDestroyQueue();
+		m_occupiedTextureUnits.erase(texUnit);
 #endif
 	}
 
    private:
-	TextureResourceHandler() = default;
+	TextureResourceHandler()
+	{
+		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
+		// std::cout << "max texture units: " << m_maxTextureUnits << std::endl;
+	}
 
 	void processDestroyQueue()
 	{
@@ -653,17 +689,21 @@ class TextureResourceHandler
 	std::mutex m_texturesMtx;
 	std::map<GLuint, std::thread::id> m_textureReservedFrom;
 	std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;
+	std::set<GLint> m_occupiedTextureUnits;
+	GLint m_maxTextureUnits;
 #endif
 };
 
-unsigned int CRenderizableShaderTexturedTriangles::getNewTextureNumber()
+std::pair<unsigned int, unsigned int>
+	CRenderizableShaderTexturedTriangles::getNewTextureNumber()
 {
 	return TextureResourceHandler::Instance().generateTextureID();
 }
 
-void CRenderizableShaderTexturedTriangles::releaseTextureName(unsigned int i)
+void CRenderizableShaderTexturedTriangles::releaseTextureName(
+	unsigned int texName, unsigned int texUnit)
 {
-	TextureResourceHandler::Instance().releaseTextureID(i);
+	TextureResourceHandler::Instance().releaseTextureID(texName, texUnit);
 }
 
 const mrpt::math::TBoundingBox

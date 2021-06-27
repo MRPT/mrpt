@@ -114,6 +114,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	bool m_enableLight = false;
 
 	mutable unsigned int m_glTextureName{0};
+	mutable std::optional<int> m_glTextureUnit{0};	//!< the "i" in GL_TEXTUREi
 	mutable bool m_texture_is_loaded{false};
 	mutable bool m_texture_is_pending_destruction{false};
 	bool m_textureImageAssigned = false;
@@ -127,8 +128,9 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 
 	void unloadTexture();
 
-	static unsigned int getNewTextureNumber();
-	static void releaseTextureName(unsigned int i);
+	/// Returns: [texture name, texture unit]
+	static std::pair<unsigned int, unsigned int> getNewTextureNumber();
+	static void releaseTextureName(unsigned int texName, unsigned int texUnit);
 
 	mutable COpenGLBuffer m_vertexBuffer;
 	mutable COpenGLVertexArrayObject m_vao;

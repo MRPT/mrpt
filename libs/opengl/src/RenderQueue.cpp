@@ -162,10 +162,6 @@ void mrpt::opengl::processRenderQueue(
 					shader.uniformId("pmv_matrix"), 1, IS_TRANSPOSED,
 					rqe.renderState.pmv_matrix.data());
 
-			// Use Texture0:
-			if (shader.hasUniform("textureSampler"))
-				glUniform1i(shader.uniformId("textureSampler"), 0);
-
 			CRenderizable::RenderContext rc;
 			rc.shader = &shader;
 			rc.shader_id = rqSet.first;
