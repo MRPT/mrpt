@@ -389,6 +389,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	// Load my custom icons:
 	wxArtProvider::Push(new MyArtProvider);
 
+	const wxFont monoFont(
+		8, wxFontFamily::wxFONTFAMILY_TELETYPE, wxFontStyle::wxFONTSTYLE_NORMAL,
+		wxFontWeight::wxFONTWEIGHT_NORMAL);
+
 	//(*Initialize(xRawLogViewerFrame)
 	wxMenu* Menu39;
 	wxBoxSizer* BoxSizer6;
@@ -677,10 +681,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_WORDWRAP | wxNO_BORDER |
 			wxVSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	wxFont memoFont(
-		wxSize(10, 10), wxFontFamily::wxFONTFAMILY_TELETYPE,
-		wxFontStyle::wxFONTSTYLE_NORMAL, wxFontWeight::wxFONTWEIGHT_NORMAL);
-	memo->SetFont(memoFont);
+	memo->SetFont(monoFont);
 	BoxSizer2->Add(memo, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel3->SetSizer(BoxSizer2);
 	BoxSizer2->Fit(Panel3);
@@ -720,10 +721,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxVSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	memStats->SetMinSize(wxSize(-1, 150));
-	wxFont memStatsFont(
-		10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		_T("Monospace"), wxFONTENCODING_DEFAULT);
-	memStats->SetFont(memStatsFont);
+	memStats->SetFont(monoFont);
 	memStats->SetToolTip(_("Statistics of the rawlog load"));
 	Panel11 = new wxPanel(
 		SplitterWindow2, ID_PANEL25, wxDefaultPosition, wxDefaultSize,
@@ -742,10 +740,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		Notebook3, ID_TEXTCTRL3, wxEmptyString, wxDefaultPosition,
 		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY, wxDefaultValidator,
 		_T("ID_TEXTCTRL3"));
-	wxFont txtExceptionFont(
-		10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		_T("Monospace"), wxFONTENCODING_DEFAULT);
-	txtException->SetFont(txtExceptionFont);
+	txtException->SetFont(monoFont);
 	Notebook3->AddPage(SplitterWindow2, _("Dataset statistics && info"), false);
 	Notebook3->AddPage(txtException, _("End of load message"), false);
 	FlexGridSizer6->Add(
