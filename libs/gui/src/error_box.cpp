@@ -10,6 +10,7 @@
 #include "gui-precomp.h"  // Precompiled headers
 //
 #include <mrpt/gui/error_box.h>
+#include <mrpt/system/string_utils.h>  // firstNLines()
 
 #if MRPT_HAS_Qt5
 #include <QErrorMessage>
@@ -40,12 +41,15 @@ void mrpt::gui::tryCatch(
 
 void mrpt::gui::showErrorMessage(const std::string& str)
 {
+	const size_t maxLines = 7;
+	const std::string sErr = mrpt::system::firstNLines(str, maxLines);
+
 #if MRPT_HAS_Qt5
 	QErrorMessage msg;
-	msg.showMessage(QString::fromStdString(str));
+	msg.showMessage(QString::fromStdString(sErr));
 	msg.exec();
 #elif MRPT_HAS_WXWIDGETS
-	wxMessageBox(str.c_str(), _("Exception"));
+	wxMessageBox(sErr.c_str(), _("Exception"));
 #else
 	std::cerr << str << std::endl;
 #endif	// MRPT_HAS_Qt5

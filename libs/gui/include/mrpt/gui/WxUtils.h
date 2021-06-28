@@ -12,6 +12,7 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/gui/keycodes.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/system/string_utils.h>  // firstNLines()
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -76,8 +77,10 @@ namespace gui
 	}                                                                          \
 	catch (std::exception & e)                                                 \
 	{                                                                          \
-		wxMessageBox(                                                          \
-			mrpt::exception_to_str(e), wxT("Exception"), wxOK, nullptr);       \
+		const size_t maxLines = 7;                                             \
+		const std::string sErr =                                               \
+			mrpt::system::firstNLines(mrpt::exception_to_str(e), maxLines);    \
+		wxMessageBox(sErr, wxT("Exception"), wxOK, nullptr);                   \
 	}                                                                          \
 	catch (...)                                                                \
 	{                                                                          \
