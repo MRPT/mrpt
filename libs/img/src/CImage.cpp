@@ -832,7 +832,7 @@ size_t CImage::getWidth() const
 	makeSureImageIsLoaded();
 	return m_impl->img.cols;
 #else
-	return 0;
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
@@ -869,7 +869,7 @@ size_t CImage::getHeight() const
 	makeSureImageIsLoaded();
 	return m_impl->img.rows;
 #else
-	return 0;
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
@@ -898,7 +898,7 @@ bool CImage::isEmpty() const
 #if MRPT_HAS_OPENCV
 	return !m_imgIsExternalStorage && m_impl->img.empty();
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV support");
+	return true;
 #endif
 }
 

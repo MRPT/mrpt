@@ -63,6 +63,7 @@ static bool expect_identical(
 TEST(CImage, CtorDefault)
 {
 	mrpt::img::CImage img;
+	EXPECT_TRUE(img.isEmpty());
 	EXPECT_THROW(img.isColor(), std::exception);
 	EXPECT_THROW(img.getWidth(), std::exception);
 	EXPECT_THROW(img.getHeight(), std::exception);
