@@ -1773,7 +1773,8 @@ void CImage::scaleImage(
 	if (out_img.m_impl->img.data == srcImg.data) srcImg = srcImg.clone();
 
 	// Already done?
-	if (out_img.getWidth() == width && out_img.getHeight() == height)
+	if (srcImg.cols == static_cast<int>(width) &&
+		srcImg.rows == static_cast<int>(height))
 	{
 		out_img.m_impl->img = srcImg;
 		return;
