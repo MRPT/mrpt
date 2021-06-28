@@ -93,8 +93,8 @@ auto WorkerThreadsPool::enqueue(F&& f, Args&&... args)
 		}
 		// Enqeue the new task:
 		tasks_.emplace([task]() { (*task)(); });
+		condition_.notify_one();
 	}
-	condition_.notify_one();
 	return res;
 }
 }  // namespace mrpt::system
