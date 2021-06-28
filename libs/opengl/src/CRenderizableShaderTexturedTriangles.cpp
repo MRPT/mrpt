@@ -67,13 +67,13 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 
 	// This will load and/or select our texture, only once:
 	initializeTextures();
-	ASSERT_(m_glTextureUnit.has_value());
+	ASSERT_(m_glTexture.has_value());
 
 	// Set the texture uniform:
 	{
 		const Program& s = *rc.shader;
 		// bound to GL_TEXTURE0 + "i":
-		glUniform1i(s.uniformId("textureSampler"), *m_glTextureUnit);
+		glUniform1i(s.uniformId("textureSampler"), m_glTexture->unit);
 	}
 
 	// Enable/disable lights:
@@ -281,28 +281,27 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	static mrpt::system::CTimeLogger tim;
 #endif
 
-	// Destroy a former texture, if it was freed:
-	// It's important we do this from the very same thread from which it was
-	// reserved:
-	if (m_texture_is_pending_destruction)
+	// Note: if we are rendering and the user assigned us no texture image,
+	// let's create a dummy one with the uniform CRenderizable's color:
+	if (!textureImageHasBeenAssigned() || m_textureImage.isEmpty())
 	{
-		m_texture_is_pending_destruction = false;
-		ASSERT_(m_glTextureUnit.has_value());
-		releaseTextureName(m_glTextureName, *m_glTextureUnit);
-		m_glTextureName = 0;
+		mrpt::img::CImage im_rgb(4, 4, mrpt::img::CH_RGB),
+			im_a(4, 4, mrpt::img::CH_GRAY);
+		im_rgb.filledRectangle(0, 0, 3, 3, m_color);
+		im_a.filledRectangle(
+			0, 0, 3, 3,
+			mrpt::img::TColor(m_color.A, m_color.A, m_color.A, m_color.A));
+		const_cast<CRenderizableShaderTexturedTriangles*>(this)->assignImage(
+			std::move(im_rgb), std::move(im_a));
 	}
-
-	// Do nothing until we are assigned an image.
-	if (m_textureImage.isEmpty()) return;
 
 	try
 	{
-		if (m_texture_is_loaded)
+		if (m_glTexture.has_value())
 		{
 			// activate the texture unit first before binding texture
-			ASSERT_(m_glTextureUnit.has_value());
-			glActiveTexture(GL_TEXTURE0 + *m_glTextureUnit);
-			glBindTexture(GL_TEXTURE_2D, m_glTextureName);
+			glActiveTexture(GL_TEXTURE0 + m_glTexture->unit);
+			glBindTexture(GL_TEXTURE_2D, m_glTexture->name);
 			CHECK_OPENGL_ERROR();
 			return;
 		}
@@ -314,14 +313,12 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		ASSERT_(m_textureImage.getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
 		// allocate texture names:
-		const auto p = getNewTextureNumber();
-		m_glTextureName = p.first;
-		m_glTextureUnit = p.second;
+		m_glTexture = getNewTextureNumber();
 
 		// activate the texture unit first before binding texture
-		glActiveTexture(GL_TEXTURE0 + *m_glTextureUnit);
+		glActiveTexture(GL_TEXTURE0 + m_glTexture->unit);
 		// select our current texture
-		glBindTexture(GL_TEXTURE_2D, m_glTextureName);
+		glBindTexture(GL_TEXTURE_2D, m_glTexture->name);
 		CHECK_OPENGL_ERROR();
 
 		// when texture area is small, linear interpolation. Default is
@@ -494,7 +491,9 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 
 		}  // End of color texture WITHOUT trans.
 
-		m_texture_is_loaded = true;
+		// Was: m_texture_is_loaded = true;
+		// Now this situation is represented by the optional m_glTexture having
+		// a valid value.
 
 #ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
 		{
@@ -527,8 +526,9 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	}
 	catch (exception& e)
 	{
-		THROW_EXCEPTION(
-			format("m_glTextureName=%i\n%s", m_glTextureName, e.what()));
+		THROW_EXCEPTION(format(
+			"m_glTextureName=%i\n%s", m_glTexture ? m_glTexture->name : 0,
+			e.what()));
 	}
 	catch (...)
 	{
@@ -552,14 +552,11 @@ CRenderizableShaderTexturedTriangles::~CRenderizableShaderTexturedTriangles()
 }
 void CRenderizableShaderTexturedTriangles::unloadTexture()
 {
-	if (m_texture_is_loaded)
-	{
-		m_texture_is_loaded = false;
-		m_texture_is_pending_destruction = true;
-		ASSERT_(m_glTextureUnit.has_value());
-		releaseTextureName(m_glTextureName, *m_glTextureUnit);
-		m_glTextureName = 0;
-	}
+	if (!m_glTexture.has_value()) return;
+
+	releaseTextureName(*m_glTexture);
+
+	m_glTexture.reset();
 }
 
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
@@ -579,8 +576,6 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 {
 	uint8_t version;
 	in >> version;
-
-	CRenderizable::notifyChange();
 
 	switch (version)
 	{
@@ -605,6 +600,7 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
+
 	CRenderizable::notifyChange();
 }
 
@@ -713,16 +709,20 @@ class TextureResourceHandler
 #endif
 };
 
-std::pair<unsigned int, unsigned int>
+CRenderizableShaderTexturedTriangles::texture_name_unit_t
 	CRenderizableShaderTexturedTriangles::getNewTextureNumber()
 {
-	return TextureResourceHandler::Instance().generateTextureID();
+	CRenderizableShaderTexturedTriangles::texture_name_unit_t ret;
+	const auto r = TextureResourceHandler::Instance().generateTextureID();
+	ret.name = r.first;
+	ret.unit = r.second;
+	return ret;
 }
 
 void CRenderizableShaderTexturedTriangles::releaseTextureName(
-	unsigned int texName, unsigned int texUnit)
+	const texture_name_unit_t& t)
 {
-	TextureResourceHandler::Instance().releaseTextureID(texName, texUnit);
+	TextureResourceHandler::Instance().releaseTextureID(t.name, t.unit);
 }
 
 const mrpt::math::TBoundingBox
