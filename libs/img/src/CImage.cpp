@@ -193,23 +193,35 @@ CImage::CImage(const cv::Mat& img, copy_type_t copy_type) : CImage()
 #endif
 }
 
-CImage::CImage(const CImage& img, copy_type_t copy_type)
-	:
-#if MRPT_HAS_OPENCV
-	  CImage(img.m_impl->img, copy_type)
-#else
-	  CImage()
-#endif
+CImage::CImage(const CImage& img, copy_type_t copy_type) : CImage()
 {
-	// Also, copy our custom fields:
+#if MRPT_HAS_OPENCV
+	MRPT_START
+
+	// Also, copy our custom fields, only if making a shallow copy!
 	m_imgIsExternalStorage = img.m_imgIsExternalStorage;
 	m_externalFile = img.m_externalFile;
+
+	// this new image is *not* lazy-load.
+	if (copy_type == DEEP_COPY && !img.asCvMatRef().empty())
+	{
+		// deep copy
+		m_impl->img = img.asCvMatRef().clone();
+	}
+	else
+	{
+		// shallow copy
+		m_impl->img = img.m_impl->img;
+	}
+	MRPT_END
+#endif
 }
 
 CImage CImage::makeDeepCopy() const
 {
 #if MRPT_HAS_OPENCV
 	CImage ret(*this);
+	ret.makeSureImageIsLoaded();
 	ret.m_impl->img = m_impl->img.clone();
 	return ret;
 #else
@@ -307,7 +319,6 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-	m_imgIsExternalStorage = false;
 #ifdef HAVE_OPENCV_IMGCODECS
 	MRPT_TODO("Port to cv::imdecode()?");
 	MRPT_TODO("add flag to reuse current img buffer");
@@ -318,6 +329,10 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 	if (!newImg) return false;
 	m_impl->img = cv::cvarrToMat(newImg);
 #endif
+
+	m_imgIsExternalStorage = false;
+	m_externalFile.clear();
+
 	if (m_impl->img.empty()) return false;
 
 	return true;
@@ -371,6 +386,7 @@ void CImage::loadFromMemoryBuffer(
 #if MRPT_HAS_OPENCV
 	resize(width, height, color ? CH_RGB : CH_GRAY);
 	m_imgIsExternalStorage = false;
+	m_externalFile.clear();
 
 	auto* imgData = m_impl->img.data;
 	const auto imgWidthStep = m_impl->img.step[0];
@@ -813,7 +829,7 @@ void CImage::getSize(TImageSize& s) const
 size_t CImage::getWidth() const
 {
 #if MRPT_HAS_OPENCV
-	if (m_imgIsExternalStorage) makeSureImageIsLoaded();
+	makeSureImageIsLoaded();
 	return m_impl->img.cols;
 #else
 	return 0;
@@ -850,7 +866,7 @@ size_t CImage::getRowStride() const
 size_t CImage::getHeight() const
 {
 #if MRPT_HAS_OPENCV
-	if (m_imgIsExternalStorage) makeSureImageIsLoaded();
+	makeSureImageIsLoaded();
 	return m_impl->img.rows;
 #else
 	return 0;
