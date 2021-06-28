@@ -17,6 +17,7 @@
 #include <mrpt/core/winerror2str.h>
 
 #include <iostream>
+#include <mutex>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -404,7 +405,14 @@ void mrpt::callStackBackTrace(
 			addrs.push_back(callstack[i]);
 
 #if MRPT_HAS_BFD
-		out_bt.backtrace_levels = backtraceSymbols(addrs.data(), addrs.size());
+		// It seems BFD crashes if it is invoked from several threads in
+		// parallel!
+		static std::mutex bfdMtx;
+		{
+			std::lock_guard<std::mutex> lck(bfdMtx);
+			out_bt.backtrace_levels =
+				backtraceSymbols(addrs.data(), addrs.size());
+		}
 #else
 		std::cerr << "[mrpt::callStackBackTrace] Should never reach here!!\n";
 #endif
