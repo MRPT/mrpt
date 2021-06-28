@@ -202,11 +202,11 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		}
 	}
 
-	/** Constructor from a cv::Mat image, making or not a deep copy of the data
+	/** Constructor from a cv::Mat image, making or not a deep copy of the data.
 	 */
 	CImage(const cv::Mat& img, copy_type_t copy_type);
 
-	/** Constructor from another CImage, making or not a deep copy of the data
+	/** Constructor from another CImage, making or not a deep copy of the data.
 	 */
 	CImage(const CImage& img, copy_type_t copy_type);
 
