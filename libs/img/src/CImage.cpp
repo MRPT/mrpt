@@ -15,6 +15,7 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
@@ -320,10 +321,14 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 
 #if MRPT_HAS_OPENCV
 #ifdef HAVE_OPENCV_IMGCODECS
-	MRPT_TODO("Port to cv::imdecode()?");
-	MRPT_TODO("add flag to reuse current img buffer");
+	std::vector<uint8_t> fileData;
+	if (!mrpt::io::loadBinaryFile(fileData, fileName)) return false;
+	const cv::Mat data(fileData.size(), 1, CV_8UC1, fileData.data());
 
-	m_impl->img = cv::imread(fileName, static_cast<cv::ImreadModes>(isColor));
+	// Reuse the buffer (save memory allocations) if possible:
+	if (m_impl->img.empty()) m_impl->img = cv::imdecode(data, isColor);
+	else
+		cv::imdecode(data, isColor, &m_impl->img);
 #else
 	IplImage* newImg = cvLoadImage(fileName.c_str(), isColor);
 	if (!newImg) return false;
