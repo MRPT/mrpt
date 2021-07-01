@@ -256,6 +256,7 @@ class CObservation3DRangeScan : public CObservation
 			T3DPointsProjectionParams(),
 		const TRangeImageFilterParams& filterParams = TRangeImageFilterParams())
 	{
+		load();	 // load, if lazy-load
 		detail::unprojectInto<POINTMAP>(
 			*this, dest_pointcloud, projectParams, filterParams);
 	}
