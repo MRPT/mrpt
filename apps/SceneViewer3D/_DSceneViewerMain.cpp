@@ -416,7 +416,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	wxMenu* Menu2;
 
 	Create(
-		parent, id, _("3DSceneViewer - Part of the MRPT project"),
+		parent, id, _("SceneViewer3D - Part of the MRPT project"),
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
 	SetMinSize(wxSize(150, 100));
 	{
@@ -986,7 +986,7 @@ void _DSceneViewerFrame::loadFromFile(
 void _DSceneViewerFrame::updateTitle()
 {
 	SetTitle((format(
-				  "3DSceneViewer - Part of the MRPT project [%s]",
+				  "SceneViewer3D - Part of the MRPT project [%s]",
 				  (extractFileName(loadedFileName) + string(".") +
 				   extractFileExtension(loadedFileName))
 					  .c_str())
@@ -1603,7 +1603,7 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent&)
 }
 
 static const std::string name_octrees_bb_globj =
-	"__3dsceneviewer_gl_octree_bb__";
+	"__SceneViewer3D_gl_octree_bb__";
 CSetOfObjects::Ptr aux_gl_octrees_bb;
 
 void func_get_octbb(const mrpt::opengl::CRenderizable::Ptr& o)

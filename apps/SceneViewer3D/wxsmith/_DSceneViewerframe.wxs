@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxFrame" name="_DSceneViewerFrame">
-		<title>3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008</title>
+		<title>SceneViewer3D - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008</title>
 		<centered>1</centered>
 		<icon stock_id="MAIN_ICON" stock_client="wxART_FRAME_ICON" />
 		<minsize>150,100</minsize>
@@ -105,8 +105,8 @@
 							<bitmap stock_id="wxART_FIND" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="wxART_FIND" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
-							<tooltip>View the options of 3DSceneViewer</tooltip>
-							<help>View the options of 3DSceneViewer</help>
+							<tooltip>View the options of SceneViewer3D</tooltip>
+							<help>View the options of SceneViewer3D</help>
 							<handler function="OnMenuOptions" entry="EVT_BUTTON" />
 						</object>
 						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
