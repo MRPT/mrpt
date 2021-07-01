@@ -349,8 +349,6 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 
-	MRPT_TODO("Port to cv::encode()");
-
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
@@ -449,7 +447,10 @@ void CImage::loadFromStreamAsJPEG(CStream& in)
 #if MRPT_HAS_OPENCV
 	MRPT_START
 
-	MRPT_TODO("Port to cv::imdecode()");
+	// This could have been ported to cv::imdecode(). But on a second thought,
+	// it may be not be as easy: imdecode() assumes an input buffer of known
+	// size while here we do not know the size to read from the CStream in
+	// advance.
 
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
