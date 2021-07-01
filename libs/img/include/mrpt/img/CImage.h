@@ -929,11 +929,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * (internally uses OpenCV).
 	 * \param fileName The file to read from.
 	 * \param isColor Specifies colorness of the loaded image:
-	 *  - if >0, the loaded image is forced to be color 3-channel image;
-	 *  - if 0, the loaded image is forced to be grayscale;
-	 *  - if <0, the loaded image will be loaded as is (with number of channels
-	 * depends on the file).
-	 * The supported formats are:
+	 *  - if ==1, the loaded image is forced to be color 3-channel image;
+	 *  - if ==0, the loaded image is forced to be grayscale;
+	 *  - if ==-1, the loaded image will be loaded as is (with number of
+	 * channels depends on the file). The supported formats are:
 	 *
 	 * - Windows bitmaps - BMP, DIB;
 	 * - JPEG files - JPEG, JPG, JPE;
@@ -941,6 +940,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * - Portable image format - PBM, PGM, PPM;
 	 * - Sun rasters - SR, RAS;
 	 * - TIFF files - TIFF, TIF.
+	 *
+	 * MRPT also provides the special loaders loadFromXPM() and loadTGA().
+	 *
+	 * Note that this function uses cv::imdecode() internally to reuse the
+	 * memory buffer used by the image already loaded into this CImage, if
+	 * possible, minimizing the number of memory allocations.
 	 *
 	 * \return False on any error
 	 * \sa saveToFile, setExternalStorage,loadFromXPM, loadTGA
