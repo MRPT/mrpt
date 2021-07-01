@@ -21,7 +21,9 @@
   - \ref mrpt_poses_grp
     - New methods mrpt::math::TTwist2D::rotated() and mrpt::math::TTwist3D::rotated()
   - \ref mrpt_system_grp
-    - mrpt::system::CTimeLogger: Include custom `name` in underlying mrpt::system::COutputLogger name.
+    - mrpt::system::CTimeLogger: 
+      - Include custom `name` in underlying mrpt::system::COutputLogger name.
+      - Fix all valgrind/helgrind warning messages.
     - New functions mrpt::system::firstNLines() and mrpt::system::nthOccurrence()
 - BUG FIXES:
   - mrpt::img::CImage::isEmpty() should return false for delay-load images.

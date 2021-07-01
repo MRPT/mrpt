@@ -10,8 +10,10 @@
 
 #include <mrpt/core/common.h>  // remove MSVC warnings
 #include <mrpt/core/integer_select.h>
+#include <mrpt/core/lock_helper.h>
 
 #include <array>
+#include <mutex>
 #include <stdexcept>
 #include <string_view>
 
@@ -23,7 +25,24 @@ struct ts_map_entry
 	bool used{false};
 	KEY first;
 	VALUE second;
+
 	ts_map_entry() = default;
+	ts_map_entry(const ts_map_entry& e) { *this = e; }
+	ts_map_entry& operator=(const ts_map_entry& e)
+	{
+		used = !!e.used;
+		first = e.first;
+		second = e.second;
+		return *this;
+	}
+	ts_map_entry(ts_map_entry&& e) { *this = std::move(e); }
+	ts_map_entry& operator=(ts_map_entry&& e)
+	{
+		used = e.used;
+		first = e.first;
+		second = e.second;
+		return *this;
+	}
 };
 
 /** hash function used by ts_hash_map. Uses dbj2 method */
@@ -175,29 +194,58 @@ class ts_hash_map
 	/** Number of elements accessed with write access so far */
 	size_t m_size{0};
 
+	std::recursive_mutex m_mtx;	 //!< for m_vec and m_size
+
    public:
 	/** @name Constructors, read/write access and other operations
 		@{ */
 	//!< Default constructor */
 	ts_hash_map() = default;
+
+	ts_hash_map(const ts_hash_map& o) { *this = o; }
+	ts_hash_map(ts_hash_map&& o) { *this = std::move(o); }
+
+	ts_hash_map& operator=(const ts_hash_map& o)
+	{
+		auto lck1 = mrpt::lockHelper(m_mtx);
+		auto lck2 = mrpt::lockHelper(o.m_mtx);
+		m_vec = o.m_vec;
+		m_size = o.m_size;
+		return *this;
+	}
+	ts_hash_map& operator=(ts_hash_map&& o)
+	{
+		auto lck1 = mrpt::lockHelper(m_mtx);
+		auto lck2 = mrpt::lockHelper(o.m_mtx);
+		m_vec = std::move(o.m_vec);
+		m_size = o.m_size;
+		return *this;
+	}
+
 	/** Clear the contents of this container */
 	void clear()
 	{
+		auto lck = mrpt::lockHelper(m_mtx);
 		m_size = 0;
 		for (size_t oi = 0; oi < m_vec.size(); oi++)
 			for (size_t ii = 0; ii < NUM_HAS_TABLE_COLLISIONS_ALLOWED; ii++)
 				m_vec[oi][ii] = value_type();
 	}
 
-	bool empty() const { return m_size == 0; }
+	bool empty() const
+	{
+		auto lck = mrpt::lockHelper(m_mtx);
+		return m_size == 0;
+	}
+
 	/** noexcept version of operator[], returns nullptr upon failure */
 	VALUE* find_or_alloc(const KEY& key) noexcept
 	{
-		typename mrpt::uint_select_by_bytecount<NUM_BYTES_HASH_TABLE>::type
-			hash;
+		auto lck = mrpt::lockHelper(m_mtx);
+
+		mrpt::uint_select_by_bytecount_t<NUM_BYTES_HASH_TABLE> hash;
 		reduced_hash(key, hash);
-		std::array<ts_map_entry<KEY, VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED>&
-			match_arr = m_vec[hash];
+		auto& match_arr = m_vec[hash];
 		for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
 		{
 			if (!match_arr[i].used)
@@ -216,6 +264,8 @@ class ts_hash_map
 	 * already. */
 	VALUE& operator[](const KEY& key)
 	{
+		auto lck = mrpt::lockHelper(m_mtx);
+
 		VALUE* v = find_or_alloc(key);
 		if (!v)
 			throw std::runtime_error("ts_hash_map: too many hash collisions!");
@@ -224,12 +274,11 @@ class ts_hash_map
 
 	const_iterator find(const KEY& key) const
 	{
-		typename mrpt::uint_select_by_bytecount<NUM_BYTES_HASH_TABLE>::type
-			hash;
+		auto lck = mrpt::lockHelper(m_mtx);
+
+		mrpt::uint_select_by_bytecount_t<NUM_BYTES_HASH_TABLE> hash;
 		reduced_hash(key, hash);
-		const std::array<
-			ts_map_entry<KEY, VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED>&
-			match_arr = m_vec[hash];
+		auto& match_arr = m_vec[hash];
 		for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
 		{
 			if (match_arr[i].used && match_arr[i].first == key)
@@ -240,21 +289,29 @@ class ts_hash_map
 
 	const_iterator begin() const
 	{
+		auto lck = mrpt::lockHelper(m_mtx);
+
 		const_iterator it(m_vec, *this, 0, -1);
 		++it;
 		return it;
 	}
 	const_iterator end() const
 	{
+		auto lck = mrpt::lockHelper(m_mtx);
 		return const_iterator(m_vec, *this, m_vec.size(), 0);
 	}
 	iterator begin()
 	{
+		auto lck = mrpt::lockHelper(m_mtx);
 		iterator it(m_vec, *this, 0, -1);
 		++it;
 		return it;
 	}
-	iterator end() { return iterator(m_vec, *this, m_vec.size(), 0); }
+	iterator end()
+	{
+		auto lck = mrpt::lockHelper(m_mtx);
+		return iterator(m_vec, *this, m_vec.size(), 0);
+	}
 	/** @} */
 
 };	// end class ts_hash_map
