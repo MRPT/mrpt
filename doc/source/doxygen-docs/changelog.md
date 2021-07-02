@@ -5,6 +5,8 @@
   - RawLogViewer:
     - More tree view icons.
     - "Play video" window now also shows timestamps.
+  - SceneViewer3D:
+    - New command-line flag `--imgdir` to define the base path for lazy-load images.
   - rawlog-edit:
     - New operation `--export-txt` exploiting the new export-to-txt API in mrpt::obs::CObservation
 - Changes in libraries:
