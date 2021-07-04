@@ -6475,6 +6475,6 @@ void xRawLogViewerFrame::On3DObsPagesChange(wxBookCtrlEvent& event)
 
 		m_gl3DRangeScan->Refresh();
 		wxTheApp->Yield();	// Let the app. process messages
-		m_gl3DRangeScan->Render();
+		// m_gl3DRangeScan->Render();
 	}
 }
