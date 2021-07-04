@@ -374,6 +374,7 @@ const long xRawLogViewerFrame::ID_MENUITEM48 = wxNewId();
 const long xRawLogViewerFrame::ID_TIMER1 = wxNewId();
 //*)
 const long xRawLogViewerFrame::ID_MENUITEM_RENAME_BY_SF_IDX = wxNewId();
+static const long ID_SCROLLEDWINDOW2 = wxNewId();
 
 BEGIN_EVENT_TABLE(xRawLogViewerFrame, wxFrame)
 //(*EventTable(xRawLogViewerFrame)
@@ -782,7 +783,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pn_CObservationImage = new wxPanel(
 		Notebook1, ID_PANEL9, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL9"));
-	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableRow(1);
 	StaticText2 = new wxStaticText(
@@ -792,10 +793,26 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer3->Add(
 		StaticText2, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
+	ScrolledWindow2 = new wxScrolledWindow(
+		pn_CObservationImage, ID_SCROLLEDWINDOW2, wxDefaultPosition,
+		wxDefaultSize, wxHSCROLL | wxVSCROLL, _T("ID_SCROLLEDWINDOW2"));
+	FlexGridSizerImg = new wxFlexGridSizer(0, 1, 0, 0);
+	FlexGridSizerImg->AddGrowableCol(0);
+	FlexGridSizerImg->AddGrowableRow(0);
+
 	bmpObsImage = new wxStaticBitmapPopup(
-		pn_CObservationImage, ID_STATICBITMAP1, wxNullBitmap, wxPoint(0, 0),
+		ScrolledWindow2, ID_STATICBITMAP1, wxNullBitmap, wxPoint(0, 0),
 		wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP1"));
-	FlexGridSizer3->Add(bmpObsImage, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+
+	FlexGridSizerImg->Add(
+		bmpObsImage, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	ScrolledWindow2->SetSizer(FlexGridSizerImg);
+	FlexGridSizerImg->Fit(ScrolledWindow2);
+	FlexGridSizerImg->SetSizeHints(ScrolledWindow2);
+
+	FlexGridSizer3->Add(
+		ScrolledWindow2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	pn_CObservationImage->SetSizer(FlexGridSizer3);
 	FlexGridSizer3->Fit(pn_CObservationImage);
 	FlexGridSizer3->SetSizeHints(pn_CObservationImage);
