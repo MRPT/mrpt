@@ -525,7 +525,9 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 			bool doDelay = false;
 
 			if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(obj); sf)
-			{ doDelay = showSensoryFrame(*sf, nImgs, imgTimestamp); }
+			{
+				doDelay = showSensoryFrame(*sf, nImgs, imgTimestamp);
+			}
 			else if (IS_DERIVED(*obj, CObservation))
 			{
 				CSensoryFrame sf2;
@@ -547,12 +549,14 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 				{
 					str.sprintf(
 						_("Processed: %d images. Timestamp: %f [%s UTC]"),
-						nImgs, mrpt::Clock::toDouble(imgTimestamp),
+						static_cast<int>(nImgs),
+						mrpt::Clock::toDouble(imgTimestamp),
 						mrpt::system::dateTimeToString(imgTimestamp).c_str());
 				}
 				else
 				{
-					str.sprintf(_("Processed: %d images."), nImgs);
+					str.sprintf(
+						_("Processed: %d images."), static_cast<int>(nImgs));
 				}
 				lbProgress->SetLabel(str);
 				if (!doDelay) wxTheApp->Yield();
@@ -1045,13 +1049,13 @@ void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent&)
 		if (imgTimestamp != INVALID_TIMESTAMP)
 		{
 			str.sprintf(
-				_("Processed: %d images. Timestamp: %f [%s UTC]"), nImgs,
-				mrpt::Clock::toDouble(imgTimestamp),
+				_("Processed: %d images. Timestamp: %f [%s UTC]"),
+				static_cast<int>(nImgs), mrpt::Clock::toDouble(imgTimestamp),
 				mrpt::system::dateTimeToString(imgTimestamp).c_str());
 		}
 		else
 		{
-			str.sprintf(_("Processed: %d images."), nImgs);
+			str.sprintf(_("Processed: %d images."), static_cast<int>(nImgs));
 		}
 		lbProgress->SetLabel(str);
 	}
