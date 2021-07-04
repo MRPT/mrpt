@@ -328,6 +328,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------
 		wxImage* img = mrpt::gui::MRPTImage2wxImage(obs->image);
 		bmpObsImage->SetBitmap(wxBitmap(*img));
+		bmpObsImage->SetSize(img->GetWidth(), img->GetHeight());
+		FlexGridSizerImg->FitInside(ScrolledWindow2);
+		// bmpObsImage->FitInside();
+		// ScrolledWindow2->SetVirtualSize(img->GetWidth(), img->GetHeight());
+		ScrolledWindow2->SetScrollRate(1, 1);
+
 		bmpObsImage->Refresh();
 		delete img;
 		obs->image.unload();  // For externally-stored datasets
@@ -604,7 +610,9 @@ catch (CExceptionExternalImageNotFound& e)
 			this, _("Choose the base directory for relative image paths"),
 			CImage::getImagesPathBase().c_str(), 0, wxDefaultPosition);
 		if (dirDialog.ShowModal() == wxID_OK)
-		{ CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str())); }
+		{
+			CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str()));
+		}
 	}
 }
 catch (const std::exception& e)

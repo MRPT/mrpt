@@ -577,6 +577,8 @@ class xRawLogViewerFrame : public wxFrame
 	wxButton* btnEditComments;
 	wxMenuItem* MenuItem85;
 	//*)
+	wxFlexGridSizer* FlexGridSizerImg = nullptr;
+	wxScrolledWindow* ScrolledWindow2 = nullptr;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
