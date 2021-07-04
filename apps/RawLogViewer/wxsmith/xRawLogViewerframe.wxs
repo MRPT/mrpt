@@ -993,7 +993,6 @@
 					</object>
 					<object class="wxMenuItem" name="ID_MENUITEM71" variable="MenuItem68" member="yes">
 						<label>Convert pairs of mono into stereo...</label>
-						<accel>Create stereo images observations from pairs of monocular images</accel>
 						<handler function="OnMenuMono2Stereo" entry="EVT_MENU" />
 					</object>
 					<object class="wxMenuItem" name="ID_MENUITEM72" variable="MenuItem69" member="no">
