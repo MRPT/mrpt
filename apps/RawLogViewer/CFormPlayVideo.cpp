@@ -525,9 +525,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 			bool doDelay = false;
 
 			if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(obj); sf)
-			{
-				doDelay = showSensoryFrame(*sf, nImgs, imgTimestamp);
-			}
+			{ doDelay = showSensoryFrame(*sf, nImgs, imgTimestamp); }
 			else if (IS_DERIVED(*obj, CObservation))
 			{
 				CSensoryFrame sf2;
