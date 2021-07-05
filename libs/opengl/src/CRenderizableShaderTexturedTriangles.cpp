@@ -663,15 +663,17 @@ class TextureResourceHandler
 	void releaseTextureID(unsigned int texName, unsigned int texUnit)
 	{
 #if MRPT_HAS_OPENGL_GLUT
+		MRPT_START
 		auto lck = mrpt::lockHelper(m_texturesMtx);
 
 		if (MRPT_OPENGL_VERBOSE)
 			std::cout << "[mrpt releaseTextureID] textureName: " << texName
 					  << " unit: " << texUnit << std::endl;
 
-		m_destroyQueue[std::this_thread::get_id()].push_back(texName);
+		m_destroyQueue[m_textureReservedFrom.at(texName)].push_back(texName);
 		processDestroyQueue();
 		m_occupiedTextureUnits.erase(texUnit);
+		MRPT_END
 #endif
 	}
 
