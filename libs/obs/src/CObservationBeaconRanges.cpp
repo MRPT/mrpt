@@ -152,11 +152,28 @@ void CObservationBeaconRanges::getDescriptionAsText(std::ostream& o) const
 
 	o << "  BEACON   RANGE     SENSOR POSITION ON ROBOT \n";
 	o << "------------------------------------------------\n";
-	for (const auto& it : sensedData)
+	for (const auto& d : sensedData)
 	{
 		o << format(
-			"   %i      %.04f      (%.03f,%.03f,%.03f)\n", (int)it.beaconID,
-			it.sensedDistance, it.sensorLocationOnRobot.x(),
-			it.sensorLocationOnRobot.y(), it.sensorLocationOnRobot.z());
+			"   %i      %.04f      (%.03f,%.03f,%.03f)\n", (int)d.beaconID,
+			d.sensedDistance, d.sensorLocationOnRobot.x(),
+			d.sensorLocationOnRobot.y(), d.sensorLocationOnRobot.z());
 	}
+}
+
+std::string CObservationBeaconRanges::exportTxtHeader() const
+{
+	return "[BEACON_ID  RANGE  SENSOR_LOCATION_ON_ROBOT] x N \n";
+}
+std::string CObservationBeaconRanges::exportTxtDataRow() const
+{
+	std::stringstream o;
+	for (const auto& d : sensedData)
+	{
+		o << format(
+			"   %i      %.04f      %.03f %.03f %.03f", (int)d.beaconID,
+			d.sensedDistance, d.sensorLocationOnRobot.x(),
+			d.sensorLocationOnRobot.y(), d.sensorLocationOnRobot.z());
+	}
+	return o.str();
 }

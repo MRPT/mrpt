@@ -358,3 +358,27 @@ void mrpt::system::stringListAsString(
 {
 	impl_stringListAsString(lst, outText, newLine);
 }
+
+size_t mrpt::system::nthOccurrence(
+	const std::string& str, const std::string& strToFind, size_t nth)
+{
+	size_t pos = 0;
+	size_t cnt = 0;
+
+	while (cnt != nth)
+	{
+		pos++;
+		pos = str.find(strToFind, pos);
+		if (pos == std::string::npos) return std::string::npos;
+		cnt++;
+	}
+	return pos;
+}
+
+std::string mrpt::system::firstNLines(const std::string& str, size_t n)
+{
+	const auto i = nthOccurrence(str, "\n", n);
+	if (i == std::string::npos) return str;
+	else
+		return str.substr(0, i);
+}

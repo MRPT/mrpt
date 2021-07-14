@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="3DSceneViewer" />
+		<Option title="SceneViewer3D" />
 		<Option pch_mode="2" />
 		<Option compiler="msvc8" />
 		<Build>
 			<Target title="Release">
-				<Option output="bin\Release\3DSceneViewer" prefix_auto="1" extension_auto="1" />
+				<Option output="bin\Release\SceneViewer3D" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj\Release\" />
 				<Option type="0" />
 				<Option compiler="msvc8" />
@@ -36,7 +36,7 @@
 					<Add directory="$(#wx)\lib\vc_lib" />
 				</Linker>
 				<ExtraCommands>
-					<Add after='mt.exe /nologo /manifest &quot;bin\Release\3DSceneViewer.exe.manifest&quot; /outputresource:&quot;bin\Release\3DSceneViewer.exe&quot;;1' />
+					<Add after='mt.exe /nologo /manifest &quot;bin\Release\SceneViewer3D.exe.manifest&quot; /outputresource:&quot;bin\Release\SceneViewer3D.exe&quot;;1' />
 				</ExtraCommands>
 			</Target>
 		</Build>

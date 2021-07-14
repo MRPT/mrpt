@@ -1,4 +1,4 @@
-.. tutorial-icp-rawlogviewer:
+.. _tutorial-icp-rawlogviewer:
 
 ===================================================================
 Using the ScanMatching (ICP) module in RawLogViewer

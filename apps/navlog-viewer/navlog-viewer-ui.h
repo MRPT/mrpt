@@ -44,6 +44,12 @@ class NavlogViewerApp
 	nanogui::CheckBox* m_ClearanceOverPath = nullptr;
 	nanogui::ComboBox* m_rbPerPTGPlots = nullptr;
 
+	nanogui::CheckBox* m_cbManualPickMode = nullptr;
+	nanogui::Slider* m_slidPtgIndex = nullptr;
+	nanogui::Slider* m_slidTrajectoryIndex = nullptr;
+	nanogui::Label* m_manualPickLabel = nullptr;
+	nanogui::Button* m_btnManualPickAppendYaml = nullptr;
+
 	// ============ app data ===============
 	std::string m_openedFileName = "UNNAMED";
 
@@ -67,19 +73,27 @@ class NavlogViewerApp
 
    private:
 	void OnbtnLoadClick();
-	void OnslidLogCmdScroll();
+	void updateVisualization();
 	void OnmnuMatlabPlotsSelected();
 	void OnmnuSeePTGParamsSelected();
 	void OnmnuSaveScoreMatrixSelected();
 	void OntimMouseXY();
 	void OnmnuMatlabExportPaths();
+	void OnmnuExportSelected(std::string filename = {});
 	void OnmnuSaveCurrentObstacles();
 	void OnMainIdleLoop();
 	bool OnKeyboardCallback(int key, int scancode, int action, int modifiers);
+
+	void OnManualPickAppendYaml();
+	void updateManualPickControls();
 
 	mrpt::system::CTicTac m_autoPlayTimer;
 	bool m_autoPlayEnabled = false;
 	double m_autoPlayInterval = 100e-3;
 
 	bool m_showCursorXY = false;
+
+	int m_manualPickPTGIdx = -1;
+	int m_manualPickTrajectoryIdx = -1;
+	double m_manualPickTimestamp = .0;
 };

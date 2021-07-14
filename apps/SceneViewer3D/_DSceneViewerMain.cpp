@@ -9,6 +9,7 @@
 
 #include "_DSceneViewerMain.h"
 
+#include <mrpt/system/string_utils.h>  // firstNLines()
 #include <wx/app.h>
 
 #include "CDlgCamTracking.h"
@@ -168,22 +169,32 @@ wxLogWindow* logWin = nullptr;
 
 void saveLastUsedDirectoryToCfgFile(const std::string& fil)
 {
-	try
-	{
-		iniFile->write(iniFileSect, "LastDir", extractFileDirectory(fil));
-	}
-	catch (const std::exception& e)
-	{
-		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK);
-	}
+	WX_START_TRY
+
+	iniFile->write(iniFileSect, "LastDir", extractFileDirectory(fil));
+
+	WX_END_TRY
 }
 
 void CMyGLCanvas::OnRenderError(const wxString& str)
 {
-	if (!logWin) logWin = new wxLogWindow(this, wxT("Log window"), false);
+	const size_t maxLines = 7;
+	const std::string sErr =
+		mrpt::system::firstNLines(str.ToStdString(), maxLines);
 
-	wxLogError(str);
-	logWin->Show();
+	if (!logWin)
+	{
+		logWin = new wxLogWindow(this, wxT("Log window"), false);
+		logWin->Show();
+	}
+
+	static double lastErrMsg = 0;
+	double tNow = mrpt::Clock::nowDouble();
+	if (tNow - lastErrMsg > 10.0)
+	{
+		lastErrMsg = tNow;
+		wxLogError(wxString(sErr));
+	}
 }
 
 void CMyGLCanvas::OnPreRender() {}
@@ -405,7 +416,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	wxMenu* Menu2;
 
 	Create(
-		parent, id, _("3DSceneViewer - Part of the MRPT project"),
+		parent, id, _("SceneViewer3D - Part of the MRPT project"),
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
 	SetMinSize(wxSize(150, 100));
 	{
@@ -866,6 +877,7 @@ void _DSceneViewerFrame::OnOpenFile(wxCommandEvent& event)
 void _DSceneViewerFrame::loadFromFile(
 	const std::string& fil, bool isInASequence)
 {
+	WX_START_TRY
 	try
 	{
 		// Save the path
@@ -963,23 +975,18 @@ void _DSceneViewerFrame::loadFromFile(
 
 		Refresh(false);
 	}
-	catch (const std::exception& e)
-	{
-		std::cerr << mrpt::exception_to_str(e) << std::endl;
-		btnAutoplay->SetValue(false);
-		wxMessageBox(mrpt::exception_to_str(e), _("Exception"), wxOK, this);
-	}
-	catch (...)
+	catch (const std::exception&)
 	{
 		btnAutoplay->SetValue(false);
-		wxMessageBox(_("Runtime error!"), _("Exception"), wxOK, this);
+		throw;
 	}
+	WX_END_TRY
 }
 
 void _DSceneViewerFrame::updateTitle()
 {
 	SetTitle((format(
-				  "3DSceneViewer - Part of the MRPT project [%s]",
+				  "SceneViewer3D - Part of the MRPT project [%s]",
 				  (extractFileName(loadedFileName) + string(".") +
 				   extractFileExtension(loadedFileName))
 					  .c_str())
@@ -1596,7 +1603,7 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent&)
 }
 
 static const std::string name_octrees_bb_globj =
-	"__3dsceneviewer_gl_octree_bb__";
+	"__SceneViewer3D_gl_octree_bb__";
 CSetOfObjects::Ptr aux_gl_octrees_bb;
 
 void func_get_octbb(const mrpt::opengl::CRenderizable::Ptr& o)

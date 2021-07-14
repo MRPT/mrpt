@@ -328,9 +328,9 @@ void C3DWindowDialog::OnClose(wxCloseEvent& event)
 }
 
 // Menu: Close
-void C3DWindowDialog::OnMenuClose(wxCommandEvent& event) { Close(); }
+void C3DWindowDialog::OnMenuClose(wxCommandEvent&) { Close(); }
 // Menu: About
-void C3DWindowDialog::OnMenuAbout(wxCommandEvent& event)
+void C3DWindowDialog::OnMenuAbout(wxCommandEvent&)
 {
 	::wxMessageBox(
 		_("3D Scene viewer\n Class gui::CDisplayWindow3D\n MRPT C++ library"),

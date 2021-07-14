@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <mrpt/core/get_env.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
 #include <mrpt/opengl/TLightParameters.h>
@@ -18,6 +19,7 @@
 
 #include <iostream>
 #include <memory>  // std::align
+#include <set>
 #include <thread>
 
 using namespace mrpt;
@@ -29,6 +31,9 @@ using mrpt::img::CImage;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(
 	CRenderizableShaderTexturedTriangles, CRenderizable, mrpt::opengl)
+
+const bool MRPT_OPENGL_VERBOSE =
+	mrpt::get_env<bool>("MRPT_OPENGL_VERBOSE", false);
 
 // Whether to profile memory allocations:
 //#define TEXTUREOBJ_PROFILE_MEM_ALLOC
@@ -62,12 +67,13 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 
 	// This will load and/or select our texture, only once:
 	initializeTextures();
+	ASSERT_(m_glTexture.has_value());
 
 	// Set the texture uniform:
 	{
 		const Program& s = *rc.shader;
-		// bound to GL_TEXTURE0:
-		glUniform1i(s.uniformId("textureSampler"), 0);
+		// bound to GL_TEXTURE0 + "i":
+		glUniform1i(s.uniformId("textureSampler"), m_glTexture->unit);
 	}
 
 	// Enable/disable lights:
@@ -275,40 +281,44 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	static mrpt::system::CTimeLogger tim;
 #endif
 
-	// Destroy a former texture, if it was freed:
-	// It's important we do this from the very same thread from which it was
-	// reserved:
-	if (m_texture_is_pending_destruction)
+	// Note: if we are rendering and the user assigned us no texture image,
+	// let's create a dummy one with the uniform CRenderizable's color:
+	if (!textureImageHasBeenAssigned() || m_textureImage.isEmpty())
 	{
-		m_texture_is_pending_destruction = false;
-		releaseTextureName(m_glTextureName);
-		m_glTextureName = 0;
+		mrpt::img::CImage im_rgb(4, 4, mrpt::img::CH_RGB),
+			im_a(4, 4, mrpt::img::CH_GRAY);
+		im_rgb.filledRectangle(0, 0, 3, 3, m_color);
+		im_a.filledRectangle(
+			0, 0, 3, 3,
+			mrpt::img::TColor(m_color.A, m_color.A, m_color.A, m_color.A));
+		const_cast<CRenderizableShaderTexturedTriangles*>(this)->assignImage(
+			std::move(im_rgb), std::move(im_a));
 	}
-
-	// Do nothing until we are assigned an image.
-	if (m_textureImage.isEmpty()) return;
 
 	try
 	{
-		if (m_texture_is_loaded)
+		if (m_glTexture.has_value())
 		{
 			// activate the texture unit first before binding texture
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, m_glTextureName);
+			glActiveTexture(GL_TEXTURE0 + m_glTexture->unit);
+			glBindTexture(GL_TEXTURE_2D, m_glTexture->name);
 			CHECK_OPENGL_ERROR();
 			return;
 		}
 
 		// Reserve the new one --------------------------
+		m_textureImage.forceLoad();	 // just in case they are lazy-load imgs
+		m_textureImageAlpha.forceLoad();
+
 		ASSERT_(m_textureImage.getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
 		// allocate texture names:
-		m_glTextureName = getNewTextureNumber();
+		m_glTexture = getNewTextureNumber();
 
 		// activate the texture unit first before binding texture
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0 + m_glTexture->unit);
 		// select our current texture
-		glBindTexture(GL_TEXTURE_2D, m_glTextureName);
+		glBindTexture(GL_TEXTURE_2D, m_glTexture->name);
 		CHECK_OPENGL_ERROR();
 
 		// when texture area is small, linear interpolation. Default is
@@ -481,7 +491,9 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 
 		}  // End of color texture WITHOUT trans.
 
-		m_texture_is_loaded = true;
+		// Was: m_texture_is_loaded = true;
+		// Now this situation is represented by the optional m_glTexture having
+		// a valid value.
 
 #ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
 		{
@@ -514,8 +526,9 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	}
 	catch (exception& e)
 	{
-		THROW_EXCEPTION(
-			format("m_glTextureName=%i\n%s", m_glTextureName, e.what()));
+		THROW_EXCEPTION(format(
+			"m_glTextureName=%i\n%s", m_glTexture ? m_glTexture->name : 0,
+			e.what()));
 	}
 	catch (...)
 	{
@@ -539,11 +552,11 @@ CRenderizableShaderTexturedTriangles::~CRenderizableShaderTexturedTriangles()
 }
 void CRenderizableShaderTexturedTriangles::unloadTexture()
 {
-	if (m_texture_is_loaded)
-	{
-		m_texture_is_loaded = false;
-		m_texture_is_pending_destruction = true;
-	}
+	if (!m_glTexture.has_value()) return;
+
+	releaseTextureName(*m_glTexture);
+
+	m_glTexture.reset();
 }
 
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
@@ -563,8 +576,6 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 {
 	uint8_t version;
 	in >> version;
-
-	CRenderizable::notifyChange();
 
 	switch (version)
 	{
@@ -589,6 +600,7 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
+
 	CRenderizable::notifyChange();
 }
 
@@ -603,7 +615,8 @@ class TextureResourceHandler
 		return o;
 	}
 
-	unsigned int generateTextureID()
+	/// Return [textureName, textureUnit]
+	std::pair<unsigned int, unsigned int> generateTextureID()
 	{
 #if MRPT_HAS_OPENGL_GLUT
 		auto lck = mrpt::lockHelper(m_texturesMtx);
@@ -616,24 +629,64 @@ class TextureResourceHandler
 		CHECK_OPENGL_ERROR();
 		m_textureReservedFrom[textureID] = std::this_thread::get_id();
 
-		return textureID;
+		int foundUnit = -1;
+		for (int i = 0; i < m_maxTextureUnits; i++)
+			if (!m_occupiedTextureUnits.count(i))
+			{
+				foundUnit = i;
+				break;
+			}
+		if (foundUnit < 0)
+		{
+			foundUnit = 0;
+			std::cerr
+				<< "[mrpt TextureResourceHandler] **WARNING**: Apparently "
+				   "your program reached the maximum number of allowed "
+				   "simultaneous OpenGL textures ("
+				<< m_maxTextureUnits << ")" << std::endl;
+		}
+		else
+		{
+			m_occupiedTextureUnits.insert(foundUnit);
+		}
+
+		if (MRPT_OPENGL_VERBOSE)
+			std::cout << "[mrpt generateTextureID] textureName:" << textureID
+					  << " unit: " << foundUnit << std::endl;
+
+		return {textureID, foundUnit};
 #else
 		THROW_EXCEPTION("This function needs OpenGL");
 #endif
 	}
 
-	void releaseTextureID(unsigned int id)
+	void releaseTextureID(unsigned int texName, unsigned int texUnit)
 	{
 #if MRPT_HAS_OPENGL_GLUT
+		MRPT_START
 		auto lck = mrpt::lockHelper(m_texturesMtx);
 
-		m_destroyQueue[std::this_thread::get_id()].push_back(id);
+		if (MRPT_OPENGL_VERBOSE)
+			std::cout << "[mrpt releaseTextureID] textureName: " << texName
+					  << " unit: " << texUnit << std::endl;
+
+		m_destroyQueue[m_textureReservedFrom.at(texName)].push_back(texName);
 		processDestroyQueue();
+		m_occupiedTextureUnits.erase(texUnit);
+		MRPT_END
 #endif
 	}
 
    private:
-	TextureResourceHandler() = default;
+	TextureResourceHandler()
+	{
+#if MRPT_HAS_OPENGL_GLUT
+		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
+		if (MRPT_OPENGL_VERBOSE)
+			std::cout << "[mrpt TextureResourceHandler] maxTextureUnits:"
+					  << m_maxTextureUnits << std::endl;
+#endif
+	}
 
 	void processDestroyQueue()
 	{
@@ -653,17 +706,25 @@ class TextureResourceHandler
 	std::mutex m_texturesMtx;
 	std::map<GLuint, std::thread::id> m_textureReservedFrom;
 	std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;
+	std::set<GLint> m_occupiedTextureUnits;
+	GLint m_maxTextureUnits;
 #endif
 };
 
-unsigned int CRenderizableShaderTexturedTriangles::getNewTextureNumber()
+CRenderizableShaderTexturedTriangles::texture_name_unit_t
+	CRenderizableShaderTexturedTriangles::getNewTextureNumber()
 {
-	return TextureResourceHandler::Instance().generateTextureID();
+	CRenderizableShaderTexturedTriangles::texture_name_unit_t ret;
+	const auto r = TextureResourceHandler::Instance().generateTextureID();
+	ret.name = r.first;
+	ret.unit = r.second;
+	return ret;
 }
 
-void CRenderizableShaderTexturedTriangles::releaseTextureName(unsigned int i)
+void CRenderizableShaderTexturedTriangles::releaseTextureName(
+	const texture_name_unit_t& t)
 {
-	TextureResourceHandler::Instance().releaseTextureID(i);
+	TextureResourceHandler::Instance().releaseTextureID(t.name, t.unit);
 }
 
 const mrpt::math::TBoundingBox

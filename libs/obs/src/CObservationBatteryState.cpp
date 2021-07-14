@@ -99,3 +99,21 @@ void CObservationBatteryState::getDescriptionAsText(std::ostream& o) const
 			(voltageOtherBatteriesValid[i] == true) ? "True" : "False");
 	}
 }
+
+std::string CObservationBatteryState::exportTxtHeader() const
+{
+	return "VoltageMainRobotBattery "
+		   "VoltageMainRobotComputer "
+		   "[other voltages...]";
+}
+std::string CObservationBatteryState::exportTxtDataRow() const
+{
+	std::string s;
+	s += mrpt::format("%18.5f ", voltageMainRobotBattery);
+	s += mrpt::format("%18.5f ", voltageMainRobotComputer);
+
+	for (CVectorDouble::Index i = 0; i < voltageOtherBatteries.size(); i++)
+		s += mrpt::format("%18.5f ", voltageOtherBatteries[i]);
+
+	return s;
+}

@@ -59,13 +59,44 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	//! Data of all the calls:
 	struct TCallData
 	{
-		TCallData();
-
 		size_t n_calls{0};
 		double min_t{0}, max_t{0}, mean_t{0}, last_t{0};
 		std::stack<double, std::vector<double>> open_calls;
 		bool has_time_units{true};
 		std::optional<std::deque<double>> whole_history{};
+
+		// Each instance holds its own mutex, even after = operations.
+		std::mutex mtx;
+
+		TCallData() = default;
+
+		TCallData(const TCallData& d) { *this = d; }
+		TCallData(TCallData&& d) { *this = std::move(d); }
+
+		TCallData& operator=(const TCallData& d)
+		{
+			n_calls = d.n_calls;
+			min_t = d.min_t;
+			max_t = d.max_t;
+			mean_t = d.mean_t;
+			last_t = d.last_t;
+			open_calls = d.open_calls;
+			has_time_units = d.has_time_units;
+			whole_history = d.whole_history;
+			return *this;
+		}
+		TCallData& operator=(TCallData&& d)
+		{
+			n_calls = d.n_calls;
+			min_t = d.min_t;
+			max_t = d.max_t;
+			mean_t = d.mean_t;
+			last_t = d.last_t;
+			open_calls = std::move(d.open_calls);
+			has_time_units = d.has_time_units;
+			whole_history = std::move(d.whole_history);
+			return *this;
+		}
 	};
 
    protected:
@@ -111,10 +142,18 @@ class CTimeLogger : public mrpt::system::COutputLogger
 	/** Dump all stats through the COutputLogger interface. \sa getStatsAsText,
 	 * saveToCVSFile */
 	void dumpAllStats(const size_t column_width = 80) const;
+
 	/** Resets all stats. By default (deep_clear=false), all section names are
 	 * remembered (not freed) so the cost of creating upon the first next call
-	 * is avoided. */
+	 * is avoided.
+	 *
+	 * \note By design, calling this method is the only one which is not thread
+	 * safe. It's not made thread-safe to save the performance cost. Please,
+	 * ensure that you call `clear()` only while there are no other threads
+	 * registering annotations in the object.
+	 */
 	void clear(bool deep_clear = false);
+
 	void enable(bool enabled = true) { m_enabled = enabled; }
 	void disable() { m_enabled = false; }
 	bool isEnabled() const { return m_enabled; }
@@ -135,7 +174,7 @@ class CTimeLogger : public mrpt::system::COutputLogger
 		const bool is_time = false) noexcept;
 
 	const std::string& getName() const noexcept { return m_name; }
-	void setName(const std::string& name) noexcept { m_name = name; }
+	void setName(const std::string& name) noexcept;
 
 	/** Start of a named section \sa enter */
 	inline void enter(const std::string_view& func_name) noexcept

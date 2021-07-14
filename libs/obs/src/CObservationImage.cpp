@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/get_env.h>
 #include <mrpt/math/ops_vectors.h>	// << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/serialization/CArchive.h>
@@ -159,4 +160,23 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 	}
 }
 
-void CObservationImage::load() const { image.forceLoad(); }
+void CObservationImage::load() const
+{
+	const thread_local bool MRPT_DEBUG_OBSIMG_LAZY_LOAD =
+		mrpt::get_env<bool>("MRPT_DEBUG_OBSIMG_LAZY_LOAD", false);
+	if (MRPT_DEBUG_OBSIMG_LAZY_LOAD)
+		std::cout << "[CObservationImage::load()] Called on this="
+				  << reinterpret_cast<const void*>(this) << std::endl;
+
+	image.forceLoad();
+}
+void CObservationImage::unload()
+{
+	const thread_local bool MRPT_DEBUG_OBSIMG_LAZY_LOAD =
+		mrpt::get_env<bool>("MRPT_DEBUG_OBSIMG_LAZY_LOAD", false);
+	if (MRPT_DEBUG_OBSIMG_LAZY_LOAD)
+		std::cout << "[CObservationImage::unload()] Called on this="
+				  << reinterpret_cast<const void*>(this) << std::endl;
+
+	image.unload();
+}

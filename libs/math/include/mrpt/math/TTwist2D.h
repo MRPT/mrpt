@@ -95,6 +95,16 @@ struct TTwist2D : public internal::ProvideStaticResize<TTwist2D>
 	/** Transform the (vx,vy) components for a counterclockwise rotation of
 	 * `ang` radians. */
 	void rotate(const double ang);
+
+	/** Like rotate(), but returning a copy of the rotated twist.
+	 *  \note New in MRPT 2.3.2 */
+	[[nodiscard]] TTwist2D rotated(const double ang) const
+	{
+		TTwist2D r = *this;
+		r.rotate(ang);
+		return r;
+	}
+
 	bool operator==(const TTwist2D& o) const;
 	bool operator!=(const TTwist2D& o) const;
 	/** Returns the pose increment of multiplying each twist component times

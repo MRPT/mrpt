@@ -10,6 +10,7 @@
 #include "system-precomp.h"	 // Precompiled headers
 //
 #include <mrpt/core/bits_math.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
@@ -64,13 +65,18 @@ void global_profiler_leave(const char* func_name) noexcept
 
 CTimeLogger::CTimeLogger(
 	bool enabled, const std::string& name, const bool keep_whole_history)
-	: COutputLogger("CTimeLogger"),
-	  m_tictac(),
-	  m_enabled(enabled),
-	  m_name(name),
-	  m_keep_whole_history(keep_whole_history)
+	: m_enabled(enabled), m_keep_whole_history(keep_whole_history)
 {
+	setName(name);
 	m_tictac.Tic();
+}
+
+void CTimeLogger::setName(const std::string& name) noexcept
+{
+	m_name = name;
+	COutputLogger::setLoggerName(
+		name.empty() ? std::string("CTimeLogger")
+					 : (name + std::string(" timeLogger")));
 }
 
 CTimeLogger::~CTimeLogger()
@@ -86,7 +92,11 @@ void CTimeLogger::clear(bool deep_clear)
 	else
 	{
 		for (auto& e : m_data)
+		{
+			e.second.mtx.lock();
+			e.second.mtx.unlock();
 			e.second = TCallData();
+		}
 	}
 }
 
@@ -107,6 +117,8 @@ void CTimeLogger::getStats(std::map<std::string, TCallStats>& out_stats) const
 	out_stats.clear();
 	for (const auto& e : m_data)
 	{
+		auto lck = mrpt::lockHelper(e.second.mtx);
+
 		TCallStats& cs = out_stats[std::string(e.first)];
 		cs.min_t = e.second.min_t;
 		cs.max_t = e.second.max_t;
@@ -170,6 +182,8 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 	std::string last_parent;
 	for (const auto& i : stat_strs)
 	{
+		auto lck = mrpt::lockHelper(i.second.mtx);
+
 		string line = string(i.first);	// make a copy
 
 		const auto dot_pos = line.find(".");
@@ -211,6 +225,8 @@ void CTimeLogger::saveToCSVFile(const std::string& csv_file) const
 		 "WHOLE_HISTORY]\n";
 	for (const auto& i : m_data)
 	{
+		auto lck = mrpt::lockHelper(i.second.mtx);
+
 		s += format(
 			"\"%.*s\",%7u,%e,%e,%e,%e,%e", static_cast<int>(i.first.size()),
 			i.first.data(), static_cast<unsigned int>(i.second.n_calls),
@@ -251,6 +267,8 @@ void CTimeLogger::saveToMFile(const std::string& file) const
 
 	for (const auto& i : m_data)
 	{
+		auto lck = mrpt::lockHelper(i.second.mtx);
+
 		s_names += "'"s + i.first + "',"s;
 		s_counts += std::to_string(i.second.n_calls) + ","s;
 		s_mins += mrpt::format("%e,", i.second.min_t);
@@ -304,6 +322,7 @@ void CTimeLogger::do_enter(const std::string_view& func_name) noexcept
 		return;
 	}
 	auto& d = *d_ptr;
+	auto lck = mrpt::lockHelper(d.mtx);
 	d.n_calls++;
 	d.open_calls.push(0);  // Dummy value, it'll be written below
 	d.open_calls.top() = m_tictac.Tac();  // to avoid possible delays.
@@ -321,6 +340,7 @@ double CTimeLogger::do_leave(const std::string_view& func_name) noexcept
 		return .0;
 	}
 	auto& d = *d_ptr;
+	auto lck = mrpt::lockHelper(d.mtx);
 
 	if (!d.open_calls.empty())
 	{
@@ -366,6 +386,7 @@ void CTimeLogger::registerUserMeasure(
 		return;
 	}
 	auto& d = *d_ptr;
+	auto lck = mrpt::lockHelper(d.mtx);
 
 	d.has_time_units = is_time;
 	d.last_t = value;
@@ -390,21 +411,26 @@ void CTimeLogger::registerUserMeasure(
 	}
 }
 
-CTimeLogger::TCallData::TCallData() = default;
-
 double CTimeLogger::getMeanTime(const std::string& name) const
 {
 	TDataMap::const_iterator it = m_data.find(name);
 	if (it == m_data.end()) return 0;
 	else
+	{
+		auto lck = mrpt::lockHelper(it->second.mtx);
+
 		return it->second.n_calls ? it->second.mean_t / it->second.n_calls : 0;
+	}
 }
 double CTimeLogger::getLastTime(const std::string& name) const
 {
 	TDataMap::const_iterator it = m_data.find(name);
 	if (it == m_data.end()) return 0;
 	else
+	{
+		auto lck = mrpt::lockHelper(it->second.mtx);
 		return it->second.last_t;
+	}
 }
 
 CTimeLoggerEntry::CTimeLoggerEntry(

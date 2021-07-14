@@ -11,6 +11,7 @@
 #include <mrpt/config.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/io/vector_loadsave.h>
+#include <mrpt/system/COutputLogger.h>	// for enum type tests
 #include <mrpt/system/os.h>
 
 #include <algorithm>  // count()
@@ -443,6 +444,38 @@ MRPT_TEST(yaml, macros)
 	EXPECT_EQ(Foo, 9.0);
 
 	EXPECT_THROW(MCP_LOAD_REQ(p, Bar), std::exception);
+
+	{
+		mrpt::containers::yaml p2;
+		int i = 10;
+		MCP_SAVE(p2, i);
+
+		EXPECT_EQ(p2["i"].as<int>(), 10);
+
+		{
+			mrpt::system::VerbosityLevel vl = mrpt::system::LVL_WARN;
+			MCP_SAVE(p2, vl);
+		}
+
+		EXPECT_EQ(p2["vl"].as<std::string>(), "WARN");
+
+		{
+			mrpt::system::VerbosityLevel vl;
+			MCP_LOAD_REQ(p2, vl);
+			EXPECT_EQ(vl, mrpt::system::LVL_WARN);
+		}
+		{
+			mrpt::system::VerbosityLevel vl = mrpt::system::LVL_ERROR;
+			MCP_LOAD_OPT(p2, vl);
+			EXPECT_EQ(vl, mrpt::system::LVL_WARN);
+		}
+		{
+			auto p3 = p2;
+			mrpt::system::VerbosityLevel vl = mrpt::system::LVL_ERROR;
+			p3["vl"] = "FakeEnumValue";
+			EXPECT_THROW(MCP_LOAD_OPT(p3, vl), std::exception);
+		}
+	}
 }
 MRPT_TEST_END()
 

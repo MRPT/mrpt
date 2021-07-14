@@ -202,11 +202,11 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 		}
 	}
 
-	/** Constructor from a cv::Mat image, making or not a deep copy of the data
+	/** Constructor from a cv::Mat image, making or not a deep copy of the data.
 	 */
 	CImage(const cv::Mat& img, copy_type_t copy_type);
 
-	/** Constructor from another CImage, making or not a deep copy of the data
+	/** Constructor from another CImage, making or not a deep copy of the data.
 	 */
 	CImage(const CImage& img, copy_type_t copy_type);
 
@@ -671,7 +671,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	/** Returns true if the image is RGB or RGBA, false if it is grayscale */
 	bool isColor() const;
 
-	/** Returns true if the object is in the state after default constructor */
+	/** Returns true if the object is in the state after default constructor.
+	 * Returns false for delay-loaded images, disregarding whether the image is
+	 * actually on disk or memory.
+	 */
 	bool isEmpty() const;
 
 	/** Returns true (as of MRPT v2.0.0, it's fixed) */
@@ -926,11 +929,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * (internally uses OpenCV).
 	 * \param fileName The file to read from.
 	 * \param isColor Specifies colorness of the loaded image:
-	 *  - if >0, the loaded image is forced to be color 3-channel image;
-	 *  - if 0, the loaded image is forced to be grayscale;
-	 *  - if <0, the loaded image will be loaded as is (with number of channels
-	 * depends on the file).
-	 * The supported formats are:
+	 *  - if ==1, the loaded image is forced to be color 3-channel image;
+	 *  - if ==0, the loaded image is forced to be grayscale;
+	 *  - if ==-1, the loaded image will be loaded as is (with number of
+	 * channels depends on the file). The supported formats are:
 	 *
 	 * - Windows bitmaps - BMP, DIB;
 	 * - JPEG files - JPEG, JPG, JPE;
@@ -938,6 +940,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * - Portable image format - PBM, PGM, PPM;
 	 * - Sun rasters - SR, RAS;
 	 * - TIFF files - TIFF, TIF.
+	 *
+	 * MRPT also provides the special loaders loadFromXPM() and loadTGA().
+	 *
+	 * Note that this function uses cv::imdecode() internally to reuse the
+	 * memory buffer used by the image already loaded into this CImage, if
+	 * possible, minimizing the number of memory allocations.
 	 *
 	 * \return False on any error
 	 * \sa saveToFile, setExternalStorage,loadFromXPM, loadTGA

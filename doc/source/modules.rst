@@ -20,7 +20,6 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
   group_mrpt_comms_grp.rst
   group_mrpt_config_grp.rst
   group_mrpt_containers_grp.rst
-  group_mrpt_core_grp.rst
   group_mrpt_detectors_grp.rst
   group_mrpt_expr_grp.rst
   group_mrpt_graphs_grp.rst

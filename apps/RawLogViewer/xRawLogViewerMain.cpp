@@ -84,6 +84,9 @@
 #include <wx/tooltip.h>
 
 #include "imgs/tree_icon1.xpm"
+#include "imgs/tree_icon10.xpm"
+#include "imgs/tree_icon11.xpm"
+#include "imgs/tree_icon12.xpm"
 #include "imgs/tree_icon2.xpm"
 #include "imgs/tree_icon3.xpm"
 #include "imgs/tree_icon4.xpm"
@@ -371,6 +374,7 @@ const long xRawLogViewerFrame::ID_MENUITEM48 = wxNewId();
 const long xRawLogViewerFrame::ID_TIMER1 = wxNewId();
 //*)
 const long xRawLogViewerFrame::ID_MENUITEM_RENAME_BY_SF_IDX = wxNewId();
+static const long ID_SCROLLEDWINDOW2 = wxNewId();
 
 BEGIN_EVENT_TABLE(xRawLogViewerFrame, wxFrame)
 //(*EventTable(xRawLogViewerFrame)
@@ -385,6 +389,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 
 	// Load my custom icons:
 	wxArtProvider::Push(new MyArtProvider);
+
+	const wxFont monoFont(
+		8, wxFontFamily::wxFONTFAMILY_TELETYPE, wxFontStyle::wxFONTSTYLE_NORMAL,
+		wxFontWeight::wxFONTWEIGHT_NORMAL);
 
 	//(*Initialize(xRawLogViewerFrame)
 	wxMenu* Menu39;
@@ -674,10 +682,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_WORDWRAP | wxNO_BORDER |
 			wxVSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	wxFont memoFont(
-		wxSize(10, 10), wxFontFamily::wxFONTFAMILY_TELETYPE,
-		wxFontStyle::wxFONTSTYLE_NORMAL, wxFontWeight::wxFONTWEIGHT_NORMAL);
-	memo->SetFont(memoFont);
+	memo->SetFont(monoFont);
 	BoxSizer2->Add(memo, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	Panel3->SetSizer(BoxSizer2);
 	BoxSizer2->Fit(Panel3);
@@ -717,10 +722,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxVSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	memStats->SetMinSize(wxSize(-1, 150));
-	wxFont memStatsFont(
-		10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		_T("Monospace"), wxFONTENCODING_DEFAULT);
-	memStats->SetFont(memStatsFont);
+	memStats->SetFont(monoFont);
 	memStats->SetToolTip(_("Statistics of the rawlog load"));
 	Panel11 = new wxPanel(
 		SplitterWindow2, ID_PANEL25, wxDefaultPosition, wxDefaultSize,
@@ -739,10 +741,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		Notebook3, ID_TEXTCTRL3, wxEmptyString, wxDefaultPosition,
 		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY, wxDefaultValidator,
 		_T("ID_TEXTCTRL3"));
-	wxFont txtExceptionFont(
-		10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		_T("Monospace"), wxFONTENCODING_DEFAULT);
-	txtException->SetFont(txtExceptionFont);
+	txtException->SetFont(monoFont);
 	Notebook3->AddPage(SplitterWindow2, _("Dataset statistics && info"), false);
 	Notebook3->AddPage(txtException, _("End of load message"), false);
 	FlexGridSizer6->Add(
@@ -784,7 +783,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pn_CObservationImage = new wxPanel(
 		Notebook1, ID_PANEL9, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL9"));
-	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableRow(1);
 	StaticText2 = new wxStaticText(
@@ -794,10 +793,26 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer3->Add(
 		StaticText2, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
+	ScrolledWindow2 = new wxScrolledWindow(
+		pn_CObservationImage, ID_SCROLLEDWINDOW2, wxDefaultPosition,
+		wxDefaultSize, wxHSCROLL | wxVSCROLL, _T("ID_SCROLLEDWINDOW2"));
+	FlexGridSizerImg = new wxFlexGridSizer(0, 1, 0, 0);
+	FlexGridSizerImg->AddGrowableCol(0);
+	FlexGridSizerImg->AddGrowableRow(0);
+
 	bmpObsImage = new wxStaticBitmapPopup(
-		pn_CObservationImage, ID_STATICBITMAP1, wxNullBitmap, wxPoint(0, 0),
+		ScrolledWindow2, ID_STATICBITMAP1, wxNullBitmap, wxPoint(0, 0),
 		wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP1"));
-	FlexGridSizer3->Add(bmpObsImage, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+
+	FlexGridSizerImg->Add(
+		bmpObsImage, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	ScrolledWindow2->SetSizer(FlexGridSizerImg);
+	FlexGridSizerImg->Fit(ScrolledWindow2);
+	FlexGridSizerImg->SetSizeHints(ScrolledWindow2);
+
+	FlexGridSizer3->Add(
+		ScrolledWindow2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	pn_CObservationImage->SetSizer(FlexGridSizer3);
 	FlexGridSizer3->Fit(pn_CObservationImage);
 	FlexGridSizer3->SetSizeHints(pn_CObservationImage);
@@ -1274,10 +1289,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		wxEmptyString, wxITEM_NORMAL);
 	Menu23->Append(MenuItem30);
 	MenuItem68 = new wxMenuItem(
-		Menu23, ID_MENUITEM71,
-		_("Convert pairs of mono into stereo...\tCreate stereo images "
-		  "observations from pairs of monocular images"),
-		wxEmptyString, wxITEM_NORMAL);
+		Menu23, ID_MENUITEM71, _("Convert pairs of mono into stereo..."),
+		"Create stereo images observations from pairs of monocular images",
+		wxITEM_NORMAL);
 	Menu23->Append(MenuItem68);
 	MenuItem69 = new wxMenuItem(
 		Menu23, ID_MENUITEM72, _("Batch rectify images..."), wxEmptyString,
@@ -1655,6 +1669,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	imgList->Add(wxIcon(tree_icon7_xpm));
 	imgList->Add(wxIcon(tree_icon8_xpm));
 	imgList->Add(wxIcon(tree_icon9_xpm));
+	imgList->Add(wxIcon(tree_icon10_xpm));
+	imgList->Add(wxIcon(tree_icon11_xpm));
+	imgList->Add(wxIcon(tree_icon12_xpm));
 
 	tree_view->AssignImageList(imgList);
 
@@ -1697,12 +1714,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	plotRangeBearing->AddLayer(new mpScaleX());
 	plotRangeBearing->AddLayer(new mpScaleY());
 	plotRangeBearing->AddLayer(lyRangeBearingLandmarks);
-
-	plotScan2D->EnableDoubleBuffer(true);
-	plotAct2D_XY->EnableDoubleBuffer(true);
-	plotAct2D_PHI->EnableDoubleBuffer(true);
-	plotRangeBearing->EnableDoubleBuffer(true);
-	plotRawlogSensorTimes->EnableDoubleBuffer(true);
 
 	Maximize();	 // Maximize the main window
 
@@ -6458,6 +6469,6 @@ void xRawLogViewerFrame::On3DObsPagesChange(wxBookCtrlEvent& event)
 
 		m_gl3DRangeScan->Refresh();
 		wxTheApp->Yield();	// Let the app. process messages
-		m_gl3DRangeScan->Render();
+		// m_gl3DRangeScan->Render();
 	}
 }

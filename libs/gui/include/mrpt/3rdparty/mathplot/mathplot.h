@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <memory>
+
 // JL: This is VERY ugly, but ask MS why we cannot export a DLL class with STL
 // members !!
 #if defined(_MSC_VER)
@@ -113,8 +115,8 @@
 #define DEBUG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
 #else
 #define DEBUG_NEW new
-#endif  // _DEBUG
-#endif  // _WINDOWS
+#endif	// _DEBUG
+#endif	// _WINDOWS
 
 // Separation for axes when set close to border
 #define X_BORDER_SEPARATION 40
@@ -925,7 +927,6 @@ typedef std::deque<mpLayer*> wxLayerList;
 
 	Since wxMathPlot version 0.03, the mpWindow incorporates the following
    features:
-		- DoubleBuffering (Default=disabled): Can be set with EnableDoubleBuffer
 		- Mouse based pan/zoom (Default=enabled): Can be set with
    EnableMousePanZoom.
 
@@ -1007,7 +1008,7 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	double GetScaleX() const
 	{
 		return m_scaleX;
-	};  // Schaling's method: maybe another method esists with the same name
+	};	// Schaling's method: maybe another method esists with the same name
 
 	/** Get current view's Y scale.
 		See @ref mpLayer::Plot "rules for coordinate transformation"
@@ -1146,11 +1147,6 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	//     wxCoord y2p(double y, bool drawOutside = true); // { return (wxCoord)
 	//     ( (m_posY-y) * m_scaleY); }
 	inline wxCoord y2p(double y) { return (wxCoord)((m_posY - y) * m_scaleY); }
-
-	/** Enable/disable the double-buffering of the window, eliminating the
-	 * flicker (default=disabled).
-	 */
-	void EnableDoubleBuffer(bool enabled) { m_enableDoubleBuffer = enabled; }
 
 	/** Enable/disable the feature of pan/zoom with the mouse (default=enabled)
 	 */
@@ -1478,14 +1474,6 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 
 	int m_marginTop, m_marginRight, m_marginBottom, m_marginLeft;
 
-	/** For double buffering */
-	int m_last_lx, m_last_ly;
-	/** For double buffering */
-	wxMemoryDC m_buff_dc;
-	/** For double buffering */
-	wxBitmap* m_buff_bmp;
-	/** For double buffering */
-	bool m_enableDoubleBuffer;
 	/** For pan/zoom with the mouse. */
 	bool m_enableMouseNavigation;
 	bool m_mouseMovedAfterRightClick;
@@ -1497,6 +1485,9 @@ class WXDLLIMPEXP_MATHPLOT mpWindow : public wxWindow
 	int m_scrollX = 0, m_scrollY = 0;
 	/** For moving info layers over the window area */
 	mpInfoLayer* m_movingInfoLayer;
+
+	bool m_drawDottedSelectedWindow = false;
+	wxPoint m_dottedWindowSize{0, 0};
 
 	DECLARE_DYNAMIC_CLASS(mpWindow)
 	DECLARE_EVENT_TABLE()

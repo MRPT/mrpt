@@ -113,7 +113,7 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
 * Vicente Arevalo Espejo, University of Malaga.
   - The application camera-calib.
   - Some classes: mrpt::opengl::CSetOfTexturedTriangles, etc..
-  - Some minor changes in: 3DSceneViewer and RawlogViewer applications.
+  - Some minor changes in: SceneViewer3D and RawlogViewer applications.
   - Some image-related functions.
 
 * Adrien Barral - Robopec (France).

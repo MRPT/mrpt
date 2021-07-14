@@ -17,6 +17,7 @@ set_target_properties(tests_build_all PROPERTIES FOLDER "unit tests")
 if (UNIX)
 	add_custom_target(test_gdb)
 	add_custom_target(test_valgrind)
+	add_custom_target(test_helgrind)
 endif()
 
 
@@ -116,6 +117,13 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 			)
 		add_dependencies(run_tests_${_TSTLIB}_valgrind test_${_TSTLIB})
 		add_dependencies(test_valgrind run_tests_${_TSTLIB}_valgrind)
+
+		# test_helgrind
+		add_custom_target(run_tests_${_TSTLIB}_helgrind
+			COMMAND "valgrind" "--tool=helgrind" "--error-exitcode=1" "${GENERATED_EXE}"
+			)
+		add_dependencies(run_tests_${_TSTLIB}_helgrind test_${_TSTLIB})
+		add_dependencies(test_helgrind run_tests_${_TSTLIB}_helgrind)
 	endif()
 
 	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")

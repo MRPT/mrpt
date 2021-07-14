@@ -12,6 +12,7 @@
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/system/string_utils.h>  // firstNLines()
 
 #include <mutex>
 #include <string>
@@ -56,6 +57,8 @@ struct CDisplayWindowGUI_Params
  *   mrpt::gui::CDisplayWindowGUI win;
  *   // Populate win adding UI controls, etc.
  *   // ...
+ *   win.performLayout();
+ *
  *   win.drawAll();
  *   win.setVisible(true);
  *   nanogui::mainloop();
@@ -76,6 +79,16 @@ struct CDisplayWindowGUI_Params
 class CDisplayWindowGUI : public nanogui::Screen
 {
    public:
+	/** @name Callback functor types
+	 * @{ */
+
+	using loop_callback_t = std::function<void(void)>;
+	using drop_files_callback_t = std::function<bool /*handled*/ (
+		const std::vector<std::string>& /* filenames */)>;
+	using keyboard_callback_t = std::function<bool /*handled*/ (
+		int /*key*/, int /*scancode*/, int /*action*/, int /*modifiers*/)>;
+	/** @} */
+
 	/** @name Ctor and basic window set up
 	 * @{ */
 	using Ptr = std::shared_ptr<CDisplayWindowGUI>;
@@ -105,29 +118,88 @@ class CDisplayWindowGUI : public nanogui::Screen
 	void setWindowTitle(const std::string& str);
 
 	/** Every time the window is about to be repainted, an optional callback can
-	 * be called, if provided via this method. */
-	void setLoopCallback(const std::function<void(void)>& callback)
+	 * be called, if provided via this method. This method can be safely called
+	 * multiple times to register multiple callbacks.
+	 *
+	 * \note (New in MRPT 2.3.2)
+	 */
+	void addLoopCallback(const loop_callback_t& callback)
 	{
-		m_loopCallback = callback;
+		m_loopCallbacks.push_back(callback);
 	}
-	const auto& loopCallback() const { return m_loopCallback; }
+	const auto& loopCallbacks() const { return m_loopCallbacks; }
 
-	/** Sets a handle for file drop events */
-	void setDropFilesCallback(
-		const std::function<
-			bool(const std::vector<std::string>& /* filenames */)>& callback)
+	/** Handles drag-and drop events of files into the window.
+	 * This method can be safely called multiple times to register multiple
+	 * callbacks.
+	 *
+	 * \note (New in MRPT 2.3.2)
+	 */
+	void addDropFilesCallback(const drop_files_callback_t& callback)
 	{
-		m_dropFilesCallback = callback;
+		m_dropFilesCallbacks.push_back(callback);
 	}
-	const auto& dropFilesCallback() const { return m_dropFilesCallback; }
+	const auto& dropFilesCallbacks() const { return m_dropFilesCallbacks; }
 
-	void setKeyboardCallback(const std::function<bool(
-								 int /*key*/, int /*scancode*/, int /*action*/,
-								 int /*modifiers*/)>& callback)
+	/** Handles keyboard events.
+	 * This method can be safely called multiple times to register multiple
+	 * callbacks.
+	 *
+	 * \note (New in MRPT 2.3.2)
+	 */
+	void addKeyboardCallback(const keyboard_callback_t& callback)
 	{
-		m_keyboardCallback = callback;
+		m_keyboardCallbacks.push_back(callback);
 	}
-	const auto& keyboardCallback() const { return m_keyboardCallback; }
+	const auto& keyboardCallbacks() const { return m_keyboardCallbacks; }
+
+	/** \note This call replaces *all* existing loop callbacks. See
+	 * addLoopCallback().
+	 * \deprecated In MRPT 2.3.2, replaced by addLoopCallback()
+	 */
+	void setLoopCallback(const loop_callback_t& callback)
+	{
+		m_loopCallbacks.clear();
+		m_loopCallbacks.push_back(callback);
+	}
+	/** \deprecated In MRPT 2.3.2, replaced by loopCallbacks() */
+	loop_callback_t loopCallback() const
+	{
+		return m_loopCallbacks.empty() ? loop_callback_t()
+									   : m_loopCallbacks.at(0);
+	}
+
+	/** \note This call replaces *all* existing drop file callbacks. See
+	 * addDropFilesCallback().
+	 * \deprecated In MRPT 2.3.2, replaced by addDropFilesCallback()
+	 */
+	void setDropFilesCallback(const drop_files_callback_t& callback)
+	{
+		m_dropFilesCallbacks.clear();
+		m_dropFilesCallbacks.push_back(callback);
+	}
+	/** \deprecated In MRPT 2.3.2, replaced by dropFilesCallbacks() */
+	drop_files_callback_t dropFilesCallback() const
+	{
+		return m_dropFilesCallbacks.empty() ? drop_files_callback_t()
+											: m_dropFilesCallbacks.at(0);
+	}
+
+	/** \note This call replaces *all* existing keyboard callbacks. See
+	 * addKeyboardCallback().
+	 * \deprecated In MRPT 2.3.2, replaced by addKeyboardCallback()
+	 */
+	void setKeyboardCallback(const keyboard_callback_t& callback)
+	{
+		m_keyboardCallbacks.clear();
+		m_keyboardCallbacks.push_back(callback);
+	}
+	/** \deprecated In MRPT 2.3.2, replaced by keyboardCallbacks() */
+	keyboard_callback_t keyboardCallback() const
+	{
+		return m_keyboardCallbacks.empty() ? keyboard_callback_t()
+										   : m_keyboardCallbacks.at(0);
+	}
 
 	/** @} */
 
@@ -228,14 +300,9 @@ class CDisplayWindowGUI : public nanogui::Screen
 	/** Used to keep track of mouse events on the camera */
 	internal::NanoGUICanvasHeadless m_background_canvas;
 
-	std::function<void(void)> m_loopCallback;
-	// Returns true if handled
-	std::function<bool(const std::vector<std::string>& /* filenames */)>
-		m_dropFilesCallback;
-	// Returns true if handled
-	std::function<bool(
-		int /*key*/, int /*scancode*/, int /*action*/, int /*modifiers*/)>
-		m_keyboardCallback;
+	std::vector<loop_callback_t> m_loopCallbacks;
+	std::vector<drop_files_callback_t> m_dropFilesCallbacks;
+	std::vector<keyboard_callback_t> m_keyboardCallbacks;
 
 	void createSubWindowsControlUI();
 
@@ -290,10 +357,13 @@ class CDisplayWindowGUI : public nanogui::Screen
 	}                                                                          \
 	catch (const std::exception& e)                                            \
 	{                                                                          \
-		const auto sErr = mrpt::exception_to_str(e);                           \
+		const size_t maxLines = 7;                                             \
+		const std::string sErr =                                               \
+			mrpt::system::firstNLines(mrpt::exception_to_str(e), maxLines);    \
 		auto dlg = new nanogui::MessageDialog(                                 \
 			&_parentWindowRef_, nanogui::MessageDialog::Type::Warning,         \
 			"Exception", sErr);                                                \
+		dlg->requestFocus();                                                   \
 		dlg->setCallback([](int /*result*/) {});                               \
 	}
 
