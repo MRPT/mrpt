@@ -12,9 +12,11 @@
 #include <mrpt/config/CConfigFileMemory.h>
 #include <mrpt/config/CConfigFilePrefixer.h>
 #include <mrpt/containers/printf_vector.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZInputStream.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject3D.h>
 #include <mrpt/math/geometry.h>	 // intersect()
@@ -137,7 +139,7 @@ NavlogViewerApp::NavlogViewerApp()
 	// ===== Time slider:
 	m_txtTimeIndex = m_winMain->add<nanogui::Label>("Time index:");
 	slidLog = m_winMain->add<nanogui::Slider>();
-	slidLog->setCallback([this](float /*v*/) { OnslidLogCmdScroll(); });
+	slidLog->setCallback([this](float /*v*/) { updateVisualization(); });
 
 	m_tabWidget = m_winMain->add<nanogui::TabWidget>();
 
@@ -170,27 +172,27 @@ NavlogViewerApp::NavlogViewerApp()
 		m_cbUseOdometryCoords =
 			layer->add<nanogui::CheckBox>("Use raw odometry");
 		m_cbUseOdometryCoords->setCallback(
-			[this](bool) { OnslidLogCmdScroll(); });
+			[this](bool) { updateVisualization(); });
 
 		m_cbGlobalFrame =
 			layer->add<nanogui::CheckBox>("In global coordinates");
 		m_cbGlobalFrame->setChecked(true);
-		m_cbGlobalFrame->setCallback([this](bool) { OnslidLogCmdScroll(); });
+		m_cbGlobalFrame->setCallback([this](bool) { updateVisualization(); });
 
 		m_cbShowDelays =
 			layer->add<nanogui::CheckBox>("Show delays model-based poses");
 		m_cbShowDelays->setChecked(true);
-		m_cbShowDelays->setCallback([this](bool) { OnslidLogCmdScroll(); });
+		m_cbShowDelays->setCallback([this](bool) { updateVisualization(); });
 
 		m_cbDrawShape =
 			layer->add<nanogui::CheckBox>("Draw robot shape on trajectories");
 		m_cbDrawShape->setChecked(true);
-		m_cbDrawShape->setCallback([this](bool) { OnslidLogCmdScroll(); });
+		m_cbDrawShape->setCallback([this](bool) { updateVisualization(); });
 
 		m_cbShowAllDebugFields =
 			layer->add<nanogui::CheckBox>("Show all debug fields");
 		m_cbShowAllDebugFields->setCallback(
-			[this](bool) { OnslidLogCmdScroll(); });
+			[this](bool) { updateVisualization(); });
 
 		m_cbShowCursor = layer->add<nanogui::CheckBox>("Mouse coordinates");
 		m_cbShowCursor->setChecked(m_showCursorXY);
@@ -199,7 +201,7 @@ NavlogViewerApp::NavlogViewerApp()
 		m_ClearanceOverPath =
 			layer->add<nanogui::CheckBox>("Clearance: path/!pointwise");
 		m_ClearanceOverPath->setCallback(
-			[this](bool) { OnslidLogCmdScroll(); });
+			[this](bool) { updateVisualization(); });
 
 		{
 			auto* panel = layer->add<nanogui::Widget>();
@@ -215,7 +217,7 @@ NavlogViewerApp::NavlogViewerApp()
 		const auto lst = std::vector<std::string>(
 			{"TP-Obstacles only", "+ final scores", "+ preliminary scores"});
 		m_rbPerPTGPlots = layer->add<nanogui::ComboBox>(lst, lst);
-		m_rbPerPTGPlots->setCallback([this](int) { OnslidLogCmdScroll(); });
+		m_rbPerPTGPlots->setCallback([this](int) { updateVisualization(); });
 		m_rbPerPTGPlots->setSelectedIndex(2);
 
 		auto cbOrtho = layer->add<nanogui::CheckBox>("Orthogonal");
@@ -254,6 +256,44 @@ NavlogViewerApp::NavlogViewerApp()
 		lambdaAddSmallFontBtn(layer, "Save score matrices...", [this]() {
 			OnmnuSaveScoreMatrixSelected();
 		});
+		lambdaAddSmallFontBtn(layer, "Export current log entry...", [this]() {
+			OnmnuExportSelected();
+		});
+	}
+
+	// ===== TAB: Manually pick trajectory
+	{
+		nanogui::Widget* layer = m_tabWidget->createTab("Manual pick");
+		auto layout = new nanogui::GridLayout(
+			nanogui::Orientation::Horizontal, 2, nanogui::Alignment::Fill, 10);
+		layer->setLayout(layout);
+
+		m_cbManualPickMode =
+			layer->add<nanogui::CheckBox>("Enable manual pick");
+		m_cbManualPickMode->setCallback(
+			[this](bool) { updateVisualization(); });
+
+		layer->add<nanogui::Label>(" ");
+
+		layer->add<nanogui::Label>("PTG index:");
+		m_slidPtgIndex = layer->add<nanogui::Slider>();
+		m_slidPtgIndex->setCallback(
+			[this](float /*v*/) { updateVisualization(); });
+
+		layer->add<nanogui::Label>("Trajectory index:");
+		m_slidTrajectoryIndex = layer->add<nanogui::Slider>();
+		m_slidTrajectoryIndex->setCallback(
+			[this](float /*v*/) { updateVisualization(); });
+
+		m_manualPickLabel = layer->add<nanogui::Label>("Selection: None");
+		layer->add<nanogui::Label>(" ");
+
+		layer->add<nanogui::Label>(" ");
+
+		m_btnManualPickAppendYaml =
+			layer->add<nanogui::Button>("Append to 'nav-selected.yaml'");
+		m_btnManualPickAppendYaml->setCallback(
+			[this]() { OnManualPickAppendYaml(); });
 	}
 
 	m_tabWidget->setActiveTab(0);
@@ -369,9 +409,16 @@ void NavlogViewerApp::loadLogfile(const std::string& fileName)
 					{
 						m_logdata_ptg_paths.resize(nPTGs);
 						for (size_t i = 0; i < nPTGs; i++)
+						{
 							if (logptr->infoPerPTG[i].ptg)
 								m_logdata_ptg_paths[i] =
 									logptr->infoPerPTG[i].ptg;
+						}
+					}
+					else
+					{
+						for (size_t i = 0; i < nPTGs; i++)
+							logptr->infoPerPTG[i].ptg = m_logdata_ptg_paths[i];
 					}
 				}
 			}
@@ -411,7 +458,7 @@ void NavlogViewerApp::OnMainIdleLoop()
 		if ((p + 1) <= slidLog->range().second)
 		{
 			slidLog->setValue(p + 1);
-			OnslidLogCmdScroll();
+			updateVisualization();
 		}
 		else
 		{
@@ -436,7 +483,7 @@ bool NavlogViewerApp::OnKeyboardCallback(
 			if ((p - 1) >= slidLog->range().first)
 			{
 				slidLog->setValue(p - 1);
-				OnslidLogCmdScroll();
+				updateVisualization();
 			}
 		}
 		break;
@@ -446,7 +493,7 @@ bool NavlogViewerApp::OnKeyboardCallback(
 			if ((p + 1) <= slidLog->range().second)
 			{
 				slidLog->setValue(p + 1);
-				OnslidLogCmdScroll();
+				updateVisualization();
 			}
 		}
 		break;
@@ -464,7 +511,7 @@ void NavlogViewerApp::updateInfoFromLoadedLog()
 		this->txtLogEntries->setValue(std::to_string(N));
 		this->slidLog->setRange({0, N - 1});
 		this->slidLog->setValue(0);
-		OnslidLogCmdScroll();
+		updateVisualization();
 	}
 
 	std::string sDuration("???");
@@ -482,11 +529,13 @@ void NavlogViewerApp::updateInfoFromLoadedLog()
 // ---------------------------------------------
 // 				DRAW ONE LOG RECORD
 // ---------------------------------------------
-void NavlogViewerApp::OnslidLogCmdScroll()
+void NavlogViewerApp::updateVisualization()
 {
 	NANOGUI_START_TRY
 
 	using namespace std::string_literals;
+
+	updateManualPickControls();
 
 	const int log_idx = mrpt::round(slidLog->value());
 	if (log_idx >= int(m_logdata.size())) return;
@@ -669,13 +718,14 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 				gl_path = mrpt::opengl::CSetOfLines::Create();
 				gl_path->setName("path");
 				gl_path->setLineWidth(2.0);
-				gl_path->setColor_u8(mrpt::img::TColor(0x00, 0x00, 0xff));
+				gl_path->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00));
 				gl_robot_frame->insert(gl_path);
 			}
 			else
 				gl_path =
 					mrpt::ptr_cast<mrpt::opengl::CSetOfLines>::from(gl_path_r);
 			gl_path->clear();
+
 			if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) &&
 				sel_ptg_idx >= 0)
 			{
@@ -700,7 +750,6 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 
 					ptg->renderPathAsSimpleLine(
 						selected_k, *gl_path, 0.10, max_dist);
-					gl_path->setColor_u8(mrpt::img::TColor(0xff, 0x00, 0x00));
 
 					// PTG origin:
 					// enable delays model?
@@ -788,6 +837,110 @@ void NavlogViewerApp::OnslidLogCmdScroll()
 				}
 			}
 		}
+
+		{
+			// Manually-picked PTG path:
+			mrpt::opengl::CSetOfLines::Ptr gl_path;
+			mrpt::opengl::CRenderizable::Ptr gl_path_r =
+				gl_robot_frame->getByName(
+					"manual-path");	 // Get or create if new
+			if (!gl_path_r)
+			{
+				gl_path = mrpt::opengl::CSetOfLines::Create();
+				gl_path->setName("manual-path");
+				gl_path->setLineWidth(2.0);
+				gl_path->setColor_u8(mrpt::img::TColor(0x00, 0xff, 0x00));
+				gl_robot_frame->insert(gl_path);
+			}
+			else
+				gl_path =
+					mrpt::ptr_cast<mrpt::opengl::CSetOfLines>::from(gl_path_r);
+			gl_path->clear();
+
+			if (m_manualPickPTGIdx >= 0 &&
+				m_manualPickPTGIdx < int(m_logdata_ptg_paths.size()) &&
+				m_manualPickTrajectoryIdx >= 0)
+			{
+				mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg =
+					m_logdata_ptg_paths[m_manualPickPTGIdx];
+				if (ptg)
+				{
+					if (!ptg->isInitialized()) ptg->initialize();
+
+					// Set instantaneous dyn state:
+					ptg->updateNavDynamicState(
+						is_NOP_cmd ? log.ptg_last_navDynState
+								   : log.navDynState);
+
+					// Draw path:
+					const int selected_k = m_manualPickTrajectoryIdx;
+					float max_dist = ptg->getRefDistance();
+					ptg->add_robotShape_to_setOfLines(*gl_path);
+
+					ptg->renderPathAsSimpleLine(
+						selected_k, *gl_path, 0.10, max_dist);
+
+					// PTG origin:
+					// enable delays model?
+					mrpt::math::TPose2D ptg_origin = (m_cbShowDelays->checked())
+						? log.relPoseVelCmd
+						: mrpt::math::TPose2D(0, 0, 0);
+
+					// "NOP cmd" case:
+					if (log.ptg_index_NOP >= 0)
+					{
+						ptg_origin =
+							ptg_origin - log.rel_cur_pose_wrt_last_vel_cmd_NOP;
+					}
+
+					gl_path->setPose(ptg_origin);
+
+					// Overlay a sequence of robot shapes:
+					if (m_cbDrawShape->checked())
+					{
+						double min_shape_dists =
+							std::max(0.01, std::stod(edShapeMinDist->value()));
+
+						for (double d = min_shape_dists; d < max_dist;
+							 d += min_shape_dists)
+						{
+							uint32_t step;
+							if (!ptg->getPathStepForDist(selected_k, d, step))
+								continue;
+							mrpt::math::TPose2D p;
+							ptg->getPathPose(selected_k, step, p);
+							ptg->add_robotShape_to_setOfLines(
+								*gl_path, mrpt::poses::CPose2D(p));
+						}
+					}
+					{
+						// Robot shape:
+						mrpt::opengl::CSetOfLines::Ptr gl_shape;
+						mrpt::opengl::CRenderizable::Ptr gl_shape_r =
+							gl_robot_frame->getByName(
+								"shape");  // Get or create if new
+						if (!gl_shape_r)
+						{
+							gl_shape =
+								std::make_shared<mrpt::opengl::CSetOfLines>();
+							gl_shape->setName("shape");
+							gl_shape->setLineWidth(4.0);
+							gl_shape->setColor_u8(
+								mrpt::img::TColor(0xff, 0x00, 0x00));
+							gl_robot_frame->insert(gl_shape);
+						}
+						else
+						{
+							gl_shape = std::dynamic_pointer_cast<
+								mrpt::opengl::CSetOfLines>(gl_shape_r);
+						}
+						gl_shape->clear();
+						ptg->add_robotShape_to_setOfLines(*gl_shape);
+					}
+				}
+			}
+		}
+
 		{
 			// Target:
 			mrpt::opengl::CPointCloud::Ptr gl_trg;
@@ -1496,6 +1649,29 @@ void NavlogViewerApp::OntimMouseXY()
 	}
 }
 
+void NavlogViewerApp::OnmnuExportSelected(std::string filename)
+{
+	NANOGUI_START_TRY;
+
+	const int log_idx = mrpt::round(slidLog->value());
+	if (log_idx >= int(m_logdata.size())) return;
+	auto logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[log_idx]);
+	const CLogFileRecord& log = *logptr;
+
+	if (filename.empty())
+		filename = nanogui::file_dialog(
+			{{"navlog", "MRPT navlog file"}}, true /*save*/);
+	if (filename.empty()) return;
+
+	mrpt::io::CFileGZOutputStream f(filename);
+	ASSERT_(f.is_open());
+	auto a = mrpt::serialization::archiveFrom(f);
+
+	a << log;
+
+	NANOGUI_END_TRY(*m_win)
+}
+
 void NavlogViewerApp::OnmnuMatlabExportPaths()
 {
 	NANOGUI_START_TRY;
@@ -1794,6 +1970,88 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 	  << "), '-'); xlabel('Time'); title('Issued motion commands "
 		 "(meaning "
 		 "CVehicleVelCmd-dependend)');\n\n";
+
+	NANOGUI_END_TRY(*m_win)
+}
+
+void NavlogViewerApp::OnManualPickAppendYaml()
+{
+	NANOGUI_START_TRY;
+
+	const std::string yamlFileName = "nav-selected.yaml";
+
+	mrpt::containers::yaml d;
+	if (mrpt::system::fileExists(yamlFileName))
+	{
+		// load for appending:
+		d = mrpt::containers::yaml::FromFile(yamlFileName);
+	}
+	else
+	{
+		// Start from scratch:
+		d = mrpt::containers::yaml::Sequence();
+	}
+
+	// Export individual navlog file:
+	const std::string navLogSingleFile =
+		mrpt::format("log_%.03f.navlog", m_manualPickTimestamp);
+
+	OnmnuExportSelected(navLogSingleFile);
+
+	// Append entry:
+	mrpt::containers::yaml entry = mrpt::containers::yaml::Map();
+	entry["file"] = navLogSingleFile;
+	entry["entry_index"] = 0;  // since we are exporting a single-entry file
+	entry["selected_ptg_index"] = m_manualPickPTGIdx;
+	entry["selected_trajectory_index"] = m_manualPickTrajectoryIdx;
+
+	d.asSequence().push_back(entry);
+
+	std::ofstream fOut(yamlFileName);
+	d.printAsYAML(fOut);
+
+	NANOGUI_END_TRY(*m_win)
+}
+
+void NavlogViewerApp::updateManualPickControls()
+{
+	NANOGUI_START_TRY;
+
+	m_manualPickPTGIdx = -1;
+	m_manualPickTrajectoryIdx = -1;
+
+	const bool manualPickEnabled = m_cbManualPickMode->checked();
+	m_slidPtgIndex->setEnabled(manualPickEnabled);
+	m_slidTrajectoryIndex->setEnabled(manualPickEnabled);
+	m_btnManualPickAppendYaml->setEnabled(manualPickEnabled);
+
+	const int log_idx = mrpt::round(slidLog->value());
+	if (log_idx >= int(m_logdata.size())) return;
+
+	auto logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[log_idx]);
+	const CLogFileRecord& log = *logptr;
+
+	m_slidPtgIndex->setRange({0, log.nPTGs - 1});
+	const int manualPickedPTG = mrpt::round(m_slidPtgIndex->value());
+
+	const auto& ptg = m_logdata_ptg_paths.at(manualPickedPTG);
+	ASSERT_(ptg);
+
+	m_slidTrajectoryIndex->setRange({0, ptg->getPathCount() - 1});
+	const int manualPickedTraj = mrpt::round(m_slidTrajectoryIndex->value());
+
+	m_manualPickLabel->setCaption(mrpt::format(
+		"Selected PTG#%i trajectory #%i", manualPickedPTG, manualPickedTraj));
+
+	if (manualPickEnabled)
+	{
+		if (!log.timestamps.empty())
+			m_manualPickTimestamp =
+				mrpt::Clock::toDouble(log.timestamps.begin()->second);
+
+		m_manualPickPTGIdx = manualPickedPTG;
+		m_manualPickTrajectoryIdx = manualPickedTraj;
+	}
 
 	NANOGUI_END_TRY(*m_win)
 }
