@@ -47,7 +47,18 @@ CDisplayWindowGUI::~CDisplayWindowGUI()
 void CDisplayWindowGUI::drawContents()
 {
 	// If provided, call the user loop code:
-	if (m_loopCallback) m_loopCallback();
+	for (const auto& callback : m_loopCallbacks)
+	{
+		try
+		{
+			callback();
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "[CDisplayWindowGUI] Exception in loop callback:\n"
+					  << e.what() << std::endl;
+		}
+	}
 
 	// Optional: render background scene.
 	std::lock_guard<std::mutex> lck(background_scene_mtx);
@@ -120,16 +131,39 @@ bool CDisplayWindowGUI::scrollEvent(
 
 bool CDisplayWindowGUI::dropEvent(const std::vector<std::string>& filenames)
 {
-	if (m_dropFilesCallback) return m_dropFilesCallback(filenames);
-	else
-		return false;
+	for (const auto& callback : m_dropFilesCallbacks)
+	{
+		try
+		{
+			if (callback(filenames)) return true;
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "[CDisplayWindowGUI] Exception in drop file event "
+						 "callback:\n"
+					  << e.what() << std::endl;
+		}
+	}
+
+	return false;
 }
 
 bool CDisplayWindowGUI::keyboardEvent(
 	int key, int scancode, int action, int modifiers)
 {
-	if (m_keyboardCallback)
-		if (m_keyboardCallback(key, scancode, action, modifiers)) return true;
+	for (const auto& callback : m_keyboardCallbacks)
+	{
+		try
+		{
+			if (callback(key, scancode, action, modifiers)) return true;
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr
+				<< "[CDisplayWindowGUI] Exception in keyboard event callback:\n"
+				<< e.what() << std::endl;
+		}
+	}
 
 	if (Screen::keyboardEvent(key, scancode, action, modifiers)) return true;
 

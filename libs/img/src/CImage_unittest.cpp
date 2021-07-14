@@ -63,7 +63,11 @@ static bool expect_identical(
 TEST(CImage, CtorDefault)
 {
 	mrpt::img::CImage img;
+	EXPECT_TRUE(img.isEmpty());
 	EXPECT_THROW(img.isColor(), std::exception);
+	EXPECT_THROW(img.getWidth(), std::exception);
+	EXPECT_THROW(img.getHeight(), std::exception);
+	EXPECT_THROW(img.getPixelDepth(), std::exception);
 }
 
 #if MRPT_HAS_OPENCV
@@ -353,6 +357,14 @@ TEST(CImage, ScaleImage)
 	bool load_ok = a.loadFromFile(tstImgFileColor);
 	EXPECT_TRUE(load_ok);
 
+	{
+		CImage b(600, 400);
+		a.scaleImage(b, 600, 400);
+		EXPECT_EQ(b.getWidth(), 600U);
+		EXPECT_EQ(b.getHeight(), 400U);
+		EXPECT_EQ(a.getWidth(), 320U);
+		EXPECT_EQ(a.getHeight(), 240U);
+	}
 	{
 		CImage b;
 		a.scaleImage(b, 600, 400);

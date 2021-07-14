@@ -1,5 +1,45 @@
 \page changelog Change Log
 
+# Version 2.3.2: Released Jul 14, 2021
+- Changes in applications:
+  - RawLogViewer:
+    - More tree view icons.
+    - "Play video" window now also shows timestamps.
+  - SceneViewer3D:
+    - New command-line flag `--imgdir` to define the base path for lazy-load images.
+  - rawlog-edit:
+    - New operation `--export-txt` exploiting the new export-to-txt API in mrpt::obs::CObservation
+  - navlog-viewer:
+    - New UI tools to manually pick and export selected PTG selections to a training YAML file.
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - YAML macros `MCP_LOAD_OPT()`, `MCP_LOAD_REQ()`, and `MCP_SAVE()` now also support reading and writing enums directly as YAML, transparently converting numerical values to/from their symbolic names.
+  - \ref mrpt_core_grp
+    - Added C++14 helper templates mrpt::uint_select_by_bytecount_t and mrpt::int_select_by_bytecount_t
+  - \ref mrpt_gui_grp
+    - mrpt::gui::CDisplayWindowGUI: improved API to allow multiple callback handlers, and to report exceptions in them.
+    - New 3D navigation key binding: SHIFT+scroll wheel, for fast up/down pure vertical motion of the camera point.
+  - \ref mrpt_img_grp
+    - mrpt::img::CImage::loadFromFile() now avoids memory allocations if there was already an image in memory with the same size.
+  - \ref mrpt_obs_grp
+    - mrpt::obs::CObservation now has a common API to export datasets to TXT/CSV files, see methods exportTxtSupported(), exportTxtHeader(), exportTxtDataRow(). It has been implemented in all suitable observation classes.
+    - mrpt::obs::CObservationImage::unload() defaulted to doing nothing. It now correctly unloads lazy-load images.
+  - \ref mrpt_poses_grp
+    - New methods mrpt::math::TTwist2D::rotated() and mrpt::math::TTwist3D::rotated()
+  - \ref mrpt_system_grp
+    - mrpt::system::CTimeLogger: 
+      - Include custom `name` in underlying mrpt::system::COutputLogger name.
+      - Fix all valgrind/helgrind warning messages.
+    - New functions mrpt::system::firstNLines() and mrpt::system::nthOccurrence()
+- BUG FIXES:
+  - mrpt::img::CImage::isEmpty() should return false for delay-load images.
+  - Fix build error with GCC 8 in `mrpt/containers/yaml.h`.
+  - Fix exception rendering empty point clouds due to invalid bounding box.
+  - Fix broken 2D plots rendering in Ubuntu 20.04 (and probably other systems), via an update in mpWindow to properly use wxAutoBufferedPaintDC.
+  - mrpt::img::CImage::getPixelDepth() should force loading lazy load images.
+  - Fixed wrong rendering of different textures within the same opengl shader program.
+  - Fixed potential crashes inside BFD if using BFD and calling mrpt::callStackBackTrace() from several parallel threads.
+
 # Version 2.3.1: Released May 26th, 2021
 - General cmake scripts:
   - `find_package(mrpt-xxx)` is now much faster.

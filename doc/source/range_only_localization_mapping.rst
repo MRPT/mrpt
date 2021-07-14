@@ -1,4 +1,4 @@
-.. ro_slam_solutions:
+.. _ro_slam_solutions:
 
 =================================================
 Range-only Localization and Mapping Solutions

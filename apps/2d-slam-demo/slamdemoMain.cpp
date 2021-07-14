@@ -847,7 +847,6 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	plotGT->AddLayer(m_lyGTvisibleRange);
 
 	plotGT->LockAspect();
-	plotGT->EnableDoubleBuffer(true);
 
 	// Map plot ------------
 	m_lyMapRobot = new mpPolygon();
@@ -857,7 +856,6 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	m_lyMapRobot->SetCoordinateBase(0, 0, 0);
 	plotMap->AddLayer(m_lyMapRobot);
 	plotMap->LockAspect();
-	plotMap->EnableDoubleBuffer(true);
 
 	// Observations plot ------------
 	m_lyObsRobot = new mpPolygon();
@@ -874,7 +872,6 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	plotObs->AddLayer(m_lyObsvisibleRange);
 
 	plotObs->LockAspect();
-	plotObs->EnableDoubleBuffer(true);
 
 	// IC plot ------------
 	m_lyICvisibleRange = new mpPolygon();
@@ -884,7 +881,6 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	plotIndivCompat->AddLayer(m_lyICvisibleRange);
 
 	plotIndivCompat->LockAspect(false);
-	plotIndivCompat->EnableDoubleBuffer(true);
 
 	// X ERROR plot ------------
 	m_lyERRX_err = new mpFXYVector();
@@ -903,7 +899,6 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	plotErrorX->AddLayer(m_lyERRX_boundDown);
 
 	plotErrorX->LockAspect(false);
-	plotErrorX->EnableDoubleBuffer(true);
 
 	// Y ERROR plot ------------
 	m_lyERRY_err = new mpFXYVector();
@@ -922,7 +917,6 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	plotErrorY->AddLayer(m_lyERRY_boundDown);
 
 	plotErrorY->LockAspect(false);
-	plotErrorY->EnableDoubleBuffer(true);
 
 	// Phi ERROR plot ------------
 	m_lyERRPHI_err = new mpFXYVector();
@@ -941,7 +935,6 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	plotErrorPhi->AddLayer(m_lyERRPHI_boundDown);
 
 	plotErrorPhi->LockAspect(false);
-	plotErrorPhi->EnableDoubleBuffer(true);
 
 	// Stats Time plot ------------
 	m_lyStatTimes = new mpFXYVector();
@@ -950,7 +943,6 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	plotStatTime->AddLayer(m_lyStatTimes);
 
 	plotStatTime->LockAspect(false);
-	plotStatTime->EnableDoubleBuffer(true);
 
 // DA Stats plots ------------
 #define INIT_DA_PLOT(CODE)                                                     \
@@ -958,8 +950,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	m_lyDa##CODE->SetPen(wxPen(wxColour(0, 0, 0), 5));                         \
 	m_lyDa##CODE->SetContinuity(false);                                        \
 	plotDa##CODE->AddLayer(m_lyDa##CODE);                                      \
-	plotDa##CODE->LockAspect(false);                                           \
-	plotDa##CODE->EnableDoubleBuffer(true);
+	plotDa##CODE->LockAspect(false);
 
 	INIT_DA_PLOT(FP);
 	INIT_DA_PLOT(FN);

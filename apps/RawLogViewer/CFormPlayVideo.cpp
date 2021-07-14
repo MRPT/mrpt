@@ -513,6 +513,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 		{
 			wxTheApp->Yield();
 			CSerializable::Ptr obj;
+			mrpt::Clock::time_point imgTimestamp = INVALID_TIMESTAMP;
 
 			if (fil) { archiveFrom(*fil) >> obj; }
 			else
@@ -523,25 +524,38 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 
 			bool doDelay = false;
 
-			if (IS_CLASS(*obj, CSensoryFrame))
-			{ doDelay = showSensoryFrame(obj.get(), nImgs); }
+			if (auto sf = std::dynamic_pointer_cast<CSensoryFrame>(obj); sf)
+			{ doDelay = showSensoryFrame(*sf, nImgs, imgTimestamp); }
 			else if (IS_DERIVED(*obj, CObservation))
 			{
-				CSensoryFrame sf;
-				sf.insert(std::dynamic_pointer_cast<CObservation>(obj));
-				doDelay = showSensoryFrame(&sf, nImgs);
+				CSensoryFrame sf2;
+				sf2.insert(std::dynamic_pointer_cast<CObservation>(obj));
+				doDelay = showSensoryFrame(sf2, nImgs, imgTimestamp);
 			}
 
 			// Free the loaded object!
 			if (fil) obj.reset();
 
 			// Update UI
-			if ((count++) % 100 == 0)
+			count++;
+			// if ((count) % 10 == 0)
 			{
 				progressBar->SetValue(
 					fil ? (int)fil->getPosition() : (int)count);
 				wxString str;
-				str.sprintf(_("Processed: %d images"), nImgs);
+				if (imgTimestamp != INVALID_TIMESTAMP)
+				{
+					str.sprintf(
+						_("Processed: %d images. Timestamp: %f [%s UTC]"),
+						static_cast<int>(nImgs),
+						mrpt::Clock::toDouble(imgTimestamp),
+						mrpt::system::dateTimeToString(imgTimestamp).c_str());
+				}
+				else
+				{
+					str.sprintf(
+						_("Processed: %d images."), static_cast<int>(nImgs));
+				}
 				lbProgress->SetLabel(str);
 				if (!doDelay) wxTheApp->Yield();
 			}
@@ -652,12 +666,12 @@ void CFormPlayVideo::drawHorzRules(mrpt::img::CImage& img)
 		img.line(0, y, w - 1, y, mrpt::img::TColor::white());
 }
 
-bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
+bool CFormPlayVideo::showSensoryFrame(
+	mrpt::obs::CSensoryFrame& SF, size_t& nImgs, Clock::time_point& timestamp)
 {
 	WX_START_TRY
 
-	ASSERT_(SF);
-	auto* sf = (CSensoryFrame*)SF;
+	auto* sf = &SF;
 
 	bool doDelay = false;
 	bool doReduceLargeImgs = cbReduceLarge->GetValue();
@@ -684,6 +698,8 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 			CObservationImage::Ptr obsImg =
 				sf->getObservationByClass<CObservationImage>(img_idx_sf);
 			if (!obsImg) break;	 // No more images, go on...
+
+			timestamp = obsImg->timestamp;
 
 			// Onto which panel to draw??
 			if (!orderByYaw && !orderByY)
@@ -810,8 +826,10 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 	{
 		CObservationStereoImages::Ptr obsImg2 =
 			sf->getObservationByClass<CObservationStereoImages>();
+
 		if (obsImg2)
 		{
+			timestamp = obsImg2->timestamp;
 			nImgs++;
 
 			// Left:
@@ -944,8 +962,10 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 	{
 		CObservation3DRangeScan::Ptr obs3D =
 			sf->getObservationByClass<CObservation3DRangeScan>();
+
 		if (obs3D && obs3D->hasIntensityImage)
 		{
+			timestamp = obs3D->timestamp;
 			nImgs++;
 
 			// Intensity channel
@@ -997,32 +1017,45 @@ bool CFormPlayVideo::showSensoryFrame(void* SF, size_t& nImgs)
 	return false;
 }
 
-void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent& event)
+void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent&)
 {
 	int idx = progressBar->GetValue();
 	m_idxInRawlog = idx;
+	mrpt::Clock::time_point imgTimestamp;
+	size_t nImgs = 0;
+
 	if (idx > 0 && idx < (int)rawlog.size())
 	{
 		if (rawlog.getType(idx) == CRawlog::etSensoryFrame)
 		{
-			size_t dummy = 0;
-
 			CSensoryFrame::Ptr sf = rawlog.getAsObservations(idx);
-			showSensoryFrame(sf.get(), dummy);
+			showSensoryFrame(*sf.get(), nImgs, imgTimestamp);
 			edIndex->SetValue(idx);
 		}
 		else if (rawlog.getType(idx) == CRawlog::etObservation)
 		{
-			size_t dummy = 0;
-
 			CObservation::Ptr o = rawlog.getAsObservation(idx);
 
 			CSensoryFrame sf;
 			sf.insert(o);
-			showSensoryFrame(&sf, dummy);
+			showSensoryFrame(sf, nImgs, imgTimestamp);
 
 			edIndex->SetValue(idx);
 		}
+
+		wxString str;
+		if (imgTimestamp != INVALID_TIMESTAMP)
+		{
+			str.sprintf(
+				_("Processed: %d images. Timestamp: %f [%s UTC]"),
+				static_cast<int>(nImgs), mrpt::Clock::toDouble(imgTimestamp),
+				mrpt::system::dateTimeToString(imgTimestamp).c_str());
+		}
+		else
+		{
+			str.sprintf(_("Processed: %d images."), static_cast<int>(nImgs));
+		}
+		lbProgress->SetLabel(str);
 	}
 }
 
@@ -1103,20 +1136,11 @@ void CFormPlayVideo::saveCamImage(int n)
 	WX_END_TRY
 }
 
-void CFormPlayVideo::OnbtnSaveCam1Click(wxCommandEvent& event)
-{
-	saveCamImage(0);
-}
-void CFormPlayVideo::OnbtnSaveCam2Click(wxCommandEvent& event)
-{
-	saveCamImage(1);
-}
-void CFormPlayVideo::OnbtnSaveCam3Click(wxCommandEvent& event)
-{
-	saveCamImage(2);
-}
+void CFormPlayVideo::OnbtnSaveCam1Click(wxCommandEvent&) { saveCamImage(0); }
+void CFormPlayVideo::OnbtnSaveCam2Click(wxCommandEvent&) { saveCamImage(1); }
+void CFormPlayVideo::OnbtnSaveCam3Click(wxCommandEvent&) { saveCamImage(2); }
 
-void CFormPlayVideo::OncbImageDirsSelect(wxCommandEvent& event)
+void CFormPlayVideo::OncbImageDirsSelect(wxCommandEvent&)
 {
 	wxString dir = cbImageDirs->GetValue();
 	string dirc = string(dir.mb_str());

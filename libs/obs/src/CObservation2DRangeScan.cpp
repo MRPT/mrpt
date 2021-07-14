@@ -577,3 +577,30 @@ void CObservation2DRangeScan::loadFromVectors(
 		m_validRange[i] = scanValidity[i];
 	}
 }
+
+// See base class docs:
+std::string CObservation2DRangeScan::exportTxtHeader() const
+{
+	std::string ret = "RANGES[i] ... VALID[i]";
+	if (hasIntensity()) ret += " ... INTENSITY[i]";
+	return ret;
+}
+
+std::string CObservation2DRangeScan::exportTxtDataRow() const
+{
+	std::stringstream o;
+	for (size_t i = 0; i < m_scan.size(); i++)
+		o << format("%.03f ", m_scan[i]);
+	o << "    ";
+
+	for (size_t i = 0; i < m_validRange.size(); i++)
+		o << format("%u ", m_validRange[i] ? 1 : 0);
+	o << "    ";
+
+	if (hasIntensity())
+	{
+		for (size_t i = 0; i < m_intensity.size(); i++)
+			o << format("%d ", m_intensity[i]);
+	}
+	return o.str();
+}

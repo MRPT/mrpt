@@ -110,12 +110,27 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	void writeToStreamTexturedObject(mrpt::serialization::CArchive& out) const;
 	void readFromStreamTexturedObject(mrpt::serialization::CArchive& in);
 
+	using texture_name_t = unsigned int;
+	/// the "i" in GL_TEXTUREi
+	using texture_unit_t = int;
+
+	struct texture_name_unit_t
+	{
+		texture_name_unit_t() = default;
+		texture_name_unit_t(texture_name_t Name, texture_unit_t Unit)
+			: name(Name), unit(Unit)
+		{
+		}
+
+		texture_name_t name = 0;
+		/// the "i" in GL_TEXTUREi
+		texture_unit_t unit = 0;
+	};
+
    private:
 	bool m_enableLight = false;
 
-	mutable unsigned int m_glTextureName{0};
-	mutable bool m_texture_is_loaded{false};
-	mutable bool m_texture_is_pending_destruction{false};
+	mutable std::optional<texture_name_unit_t> m_glTexture;
 	bool m_textureImageAssigned = false;
 	mutable mrpt::img::CImage m_textureImage{4, 4};
 	mutable mrpt::img::CImage m_textureImageAlpha;
@@ -127,8 +142,9 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 
 	void unloadTexture();
 
-	static unsigned int getNewTextureNumber();
-	static void releaseTextureName(unsigned int i);
+	/// Returns: [texture name, texture unit]
+	static texture_name_unit_t getNewTextureNumber();
+	static void releaseTextureName(const texture_name_unit_t& t);
 
 	mutable COpenGLBuffer m_vertexBuffer;
 	mutable COpenGLVertexArrayObject m_vao;

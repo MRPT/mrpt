@@ -29,7 +29,6 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles
 	/** Used for ray-tracing */
 	mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPoly;
 	void updatePoly() const;
-	void unloadTexture();
 
    public:
 	/** @name Renderizable shader API virtual methods

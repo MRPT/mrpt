@@ -45,6 +45,8 @@ bool _DSceneViewerApp::OnInit()
 	static const wxCmdLineEntryDesc cmdLineDesc[] = {
 		{wxCMD_LINE_OPTION, wxT_2("l"), wxT_2("load"), wxT_2("load a library"),
 		 wxCMD_LINE_VAL_STRING, 0},
+		{wxCMD_LINE_OPTION, wxT_2("d"), wxT_2("imgdir"),
+		 wxT_2("Lazy-load images directory"), wxCMD_LINE_VAL_STRING, 0},
 		{wxCMD_LINE_PARAM, nullptr, nullptr, wxT_2("Input File"),
 		 wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
 		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}};
@@ -58,6 +60,14 @@ bool _DSceneViewerApp::OnInit()
 		std::cout << "Loading plugin libraries: " << sLib << "...\n";
 		mrpt::system::loadPluginModules(sLib);
 	}
+	wxString imgDir;
+	if (parser.Found(wxT_2("d"), &imgDir))
+	{
+		std::cout << "Using lazy-load images base directory: " << imgDir
+				  << "...\n";
+		mrpt::img::CImage::setImagesPathBase(imgDir.ToStdString());
+	}
+
 	if (parser.GetParamCount() == 1)
 		global_fileToOpen = parser.GetParam().mb_str();
 

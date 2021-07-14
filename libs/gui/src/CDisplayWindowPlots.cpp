@@ -57,7 +57,6 @@ CWindowDialogPlots::CWindowDialogPlots(
 	m_plot->AddLayer(new mpScaleX());
 	m_plot->AddLayer(new mpScaleY());
 	m_plot->LockAspect(false);
-	m_plot->EnableDoubleBuffer(true);
 
 	m_plot->Fit(-10, 10, -10, 10);
 

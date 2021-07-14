@@ -58,6 +58,11 @@ class CObservationOdometry : public CObservation
 	void setSensorPose(const mrpt::poses::CPose3D&) override {}
 	void getDescriptionAsText(std::ostream& o) const override;
 
+	// See base class docs:
+	bool exportTxtSupported() const override { return true; }
+	std::string exportTxtHeader() const override;
+	std::string exportTxtDataRow() const override;
+
 };	// End of class def.
 
 }  // namespace mrpt::obs

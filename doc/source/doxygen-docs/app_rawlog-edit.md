@@ -45,6 +45,11 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
     rawlog-edit --cut --to-time 1281619819 -i in.rawlog -o out.rawlog
 
 
+**Export all suitable observations to TXT/CSV files:**
+
+    rawlog-edit --export-txt -i in.rawlog
+
+
 **Generate a Google Earth KML file with the GPS data in a dataset:**
 
     rawlog-edit --export-gps-kml -i in.rawlog
@@ -142,6 +147,17 @@ These are the supported arguments and operations:
 
         The generated .txt files will be saved in the same path than the input
         rawlog, with the same filename + each sensorLabel.
+
+
+      --export-txt
+       Op: Generic export observations to TXT/CSV files.
+
+       Generates one .txt file for each different sensor label of all
+       observation classes that supports the export-to-txt API.
+
+       The generated .txt files will be saved in the same path than the input
+       rawlog, as `<rawlog_filename>_<sensorLabel>.txt`.
+
 
       --export-rawdaq-txt
         Op: Export raw DAQ readings to TXT files.

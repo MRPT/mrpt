@@ -328,6 +328,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------
 		wxImage* img = mrpt::gui::MRPTImage2wxImage(obs->image);
 		bmpObsImage->SetBitmap(wxBitmap(*img));
+		bmpObsImage->SetSize(img->GetWidth(), img->GetHeight());
+		FlexGridSizerImg->FitInside(ScrolledWindow2);
+		// bmpObsImage->FitInside();
+		// ScrolledWindow2->SetVirtualSize(img->GetWidth(), img->GetHeight());
+		ScrolledWindow2->SetScrollRate(1, 1);
+
 		bmpObsImage->Refresh();
 		delete img;
 		obs->image.unload();  // For externally-stored datasets

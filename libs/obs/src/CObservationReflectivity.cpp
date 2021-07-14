@@ -51,3 +51,13 @@ void CObservationReflectivity::getDescriptionAsText(std::ostream& o) const
 	o << "reflectivityLevel=" << reflectivityLevel << std::endl;
 	o << "channel=" << channel << " (-1=any)" << std::endl;
 }
+
+std::string CObservationReflectivity::exportTxtHeader() const
+{
+	return "reflectivityLevel  channel";
+}
+
+std::string CObservationReflectivity::exportTxtDataRow() const
+{
+	return mrpt::format("%18.5f %5d", reflectivityLevel, channel);
+}

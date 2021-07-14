@@ -15,6 +15,7 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
@@ -193,20 +194,35 @@ CImage::CImage(const cv::Mat& img, copy_type_t copy_type) : CImage()
 #endif
 }
 
-CImage::CImage(const CImage& img, copy_type_t copy_type)
-	:
-#if MRPT_HAS_OPENCV
-	  CImage(img.m_impl->img, copy_type)
-#else
-	  CImage()
-#endif
+CImage::CImage(const CImage& img, copy_type_t copy_type) : CImage()
 {
+#if MRPT_HAS_OPENCV
+	MRPT_START
+
+	// Also, copy our custom fields, only if making a shallow copy!
+	m_imgIsExternalStorage = img.m_imgIsExternalStorage;
+	m_externalFile = img.m_externalFile;
+
+	// this new image is *not* lazy-load.
+	if (copy_type == DEEP_COPY && !img.asCvMatRef().empty())
+	{
+		// deep copy
+		m_impl->img = img.asCvMatRef().clone();
+	}
+	else
+	{
+		// shallow copy
+		m_impl->img = img.m_impl->img;
+	}
+	MRPT_END
+#endif
 }
 
 CImage CImage::makeDeepCopy() const
 {
 #if MRPT_HAS_OPENCV
 	CImage ret(*this);
+	ret.makeSureImageIsLoaded();
 	ret.m_impl->img = m_impl->img.clone();
 	return ret;
 #else
@@ -217,6 +233,7 @@ CImage CImage::makeDeepCopy() const
 void CImage::asCvMat(cv::Mat& out_img, copy_type_t copy_type) const
 {
 #if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();
 	if (copy_type == DEEP_COPY) out_img = m_impl->img.clone();
 	else
 		out_img = m_impl->img;
@@ -290,6 +307,7 @@ PixelDepth CImage::getPixelDepth() const
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	return cvDepth2PixelDepth(m_impl->img.depth());
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
@@ -302,17 +320,24 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-	m_imgIsExternalStorage = false;
 #ifdef HAVE_OPENCV_IMGCODECS
-	MRPT_TODO("Port to cv::imdecode()?");
-	MRPT_TODO("add flag to reuse current img buffer");
+	std::vector<uint8_t> fileData;
+	if (!mrpt::io::loadBinaryFile(fileData, fileName)) return false;
+	const cv::Mat data(fileData.size(), 1, CV_8UC1, fileData.data());
 
-	m_impl->img = cv::imread(fileName, static_cast<cv::ImreadModes>(isColor));
+	// Reuse the buffer (save memory allocations) if possible:
+	if (m_impl->img.empty()) m_impl->img = cv::imdecode(data, isColor);
+	else
+		cv::imdecode(data, isColor, &m_impl->img);
 #else
 	IplImage* newImg = cvLoadImage(fileName.c_str(), isColor);
 	if (!newImg) return false;
 	m_impl->img = cv::cvarrToMat(newImg);
 #endif
+
+	m_imgIsExternalStorage = false;
+	m_externalFile.clear();
+
 	if (m_impl->img.empty()) return false;
 
 	return true;
@@ -366,6 +391,7 @@ void CImage::loadFromMemoryBuffer(
 #if MRPT_HAS_OPENCV
 	resize(width, height, color ? CH_RGB : CH_GRAY);
 	m_imgIsExternalStorage = false;
+	m_externalFile.clear();
 
 	auto* imgData = m_impl->img.data;
 	const auto imgWidthStep = m_impl->img.step[0];
@@ -808,10 +834,10 @@ void CImage::getSize(TImageSize& s) const
 size_t CImage::getWidth() const
 {
 #if MRPT_HAS_OPENCV
-	if (m_imgIsExternalStorage) makeSureImageIsLoaded();
+	makeSureImageIsLoaded();
 	return m_impl->img.cols;
 #else
-	return 0;
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
@@ -845,10 +871,10 @@ size_t CImage::getRowStride() const
 size_t CImage::getHeight() const
 {
 #if MRPT_HAS_OPENCV
-	if (m_imgIsExternalStorage) makeSureImageIsLoaded();
+	makeSureImageIsLoaded();
 	return m_impl->img.rows;
 #else
-	return 0;
+	THROW_EXCEPTION("MRPT built without OpenCV support");
 #endif
 }
 
@@ -875,9 +901,9 @@ int CImage::channelCount() const
 bool CImage::isEmpty() const
 {
 #if MRPT_HAS_OPENCV
-	return m_imgIsExternalStorage || m_impl->img.empty();
+	return !m_imgIsExternalStorage && m_impl->img.empty();
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV support");
+	return true;
 #endif
 }
 
@@ -1752,7 +1778,8 @@ void CImage::scaleImage(
 	if (out_img.m_impl->img.data == srcImg.data) srcImg = srcImg.clone();
 
 	// Already done?
-	if (out_img.getWidth() == width && out_img.getHeight() == height)
+	if (srcImg.cols == static_cast<int>(width) &&
+		srcImg.rows == static_cast<int>(height))
 	{
 		out_img.m_impl->img = srcImg;
 		return;

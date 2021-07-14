@@ -10,15 +10,23 @@ different programs and C++ classes.
 
 .. contents:: :local:
 
+.. toctree::
+  :maxdepth: 1
+  :caption: For more details:
+
+  rawlog_format.rst
+
+
+
 1. Datasets
 ------------
 
 **Typical extension**: ``.rawlog``
 
-Description:MRPT defines a binary format for robotic datasets, or rawlogs,
+Description: MRPT defines a binary format for robotic datasets, or rawlogs,
 which can store the raw observations gathered by an arbitrary mix of sensors
 for its posterior processing. The format is described in detail in the
-Rawlog format page, among associated software tools and converters.
+:ref:`Rawlog format page<rawlog_format>`.
 
 Related applications:
 

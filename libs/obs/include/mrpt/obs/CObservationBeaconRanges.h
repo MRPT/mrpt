@@ -73,6 +73,11 @@ class CObservationBeaconRanges : public CObservation
 	 * beacon, or 0 if the beacon is not observed */
 	float getSensedRangeByBeaconID(int32_t beaconID);
 
+	// See base class docs:
+	bool exportTxtSupported() const override { return true; }
+	std::string exportTxtHeader() const override;
+	std::string exportTxtDataRow() const override;
+
 };	// End of class def.
 
 }  // namespace mrpt::obs
