@@ -9,6 +9,8 @@
     - New command-line flag `--imgdir` to define the base path for lazy-load images.
   - rawlog-edit:
     - New operation `--export-txt` exploiting the new export-to-txt API in mrpt::obs::CObservation
+  - navlog-viewer:
+    - New UI tools to manually pick and export selected PTG selections to a training YAML file.
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - YAML macros `MCP_LOAD_OPT()`, `MCP_LOAD_REQ()`, and `MCP_SAVE()` now also support reading and writing enums directly as YAML, transparently converting numerical values to/from their symbolic names.
