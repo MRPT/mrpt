@@ -98,7 +98,8 @@ workflows:
   build:
     jobs:
       - full-u20.04-focal-codecov
-      - full-u18.04-bionic
+        # Disabled to avoid circle CI concurrency limit timeouts
+        #      - full-u18.04-bionic
       - clang-u18.04-bionic
       - headless-u18.04-bionic
       - minimal-u18.04-bionic
