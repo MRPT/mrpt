@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.3.2: UNRELEASED
+# Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
   - RawLogViewer:
     - More tree view icons.
