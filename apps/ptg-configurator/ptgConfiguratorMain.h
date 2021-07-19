@@ -210,6 +210,7 @@ class ptgConfiguratorframe : public wxFrame
 	wxTextCtrl* edTargetPhiDeg;
 	wxSlider* slidPathHighlight;
 	//*)
+	wxTextCtrl* edSelectedTrajCmd = nullptr;
 
 	DECLARE_EVENT_TABLE()
 
