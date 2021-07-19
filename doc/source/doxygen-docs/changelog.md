@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.3.3: UNRELEASED
+- (None)
+
 # Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
   - RawLogViewer:
@@ -27,7 +30,7 @@
   - \ref mrpt_poses_grp
     - New methods mrpt::math::TTwist2D::rotated() and mrpt::math::TTwist3D::rotated()
   - \ref mrpt_system_grp
-    - mrpt::system::CTimeLogger: 
+    - mrpt::system::CTimeLogger:
       - Include custom `name` in underlying mrpt::system::COutputLogger name.
       - Fix all valgrind/helgrind warning messages.
     - New functions mrpt::system::firstNLines() and mrpt::system::nthOccurrence()
