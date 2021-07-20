@@ -22,6 +22,7 @@
 #define STRINGIFY(str) #str
 
 #define MAKE_PTR(class_name)                                                   \
+	register_ptr_to_python<std::shared_ptr<class_name>>();                     \
 	class_<class_name::Ptr>(                                                   \
 		STRINGIFY(class_name::Ptr), "class_name smart pointer type", no_init)  \
 		.def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())   \

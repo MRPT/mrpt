@@ -23,8 +23,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
-// #include <mrpt/img/TColor.h>
-
 /* namespaces */
 using namespace boost::python;
 using namespace mrpt::opengl;
@@ -108,6 +106,22 @@ void CEllipsoid3D_setFromPosePDF(CEllipsoid3D& self, CPose3DPDF& posePDF)
 }
 // end of CEllipsoid3D
 
+// CEllipsoid2D
+CEllipsoid2D::Ptr CEllipsoid2D_Create()
+{
+	return std::make_shared<CEllipsoid2D>();
+}
+void CEllipsoid2D_setFromPosePDF(CEllipsoid2D& self, CPose3DPDF& posePDF)
+{
+	CPose3D meanPose;
+	CMatrixDouble66 COV;
+	posePDF.getCovarianceAndMean(COV, meanPose);
+	CMatrixDouble22 COV2 = COV.extractMatrix<2, 2>(0, 0);
+	self.setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
+	self.setCovMatrix(COV2);
+}
+// end of CEllipsoid2D
+
 // CGridPlaneXY
 CGridPlaneXY::Ptr CGridPlaneXY_Create(
 	float xMin = -10.0, float xMax = 10.0, float yMin = -10.0,
@@ -125,6 +139,7 @@ MAKE_PTR_CTX(COpenGLScene)
 MAKE_PTR_CTX(CRenderizable)
 MAKE_PTR_CTX(CSetOfObjects)
 MAKE_PTR_CTX(CSetOfLines)
+MAKE_PTR_CTX(CEllipsoid2D)
 MAKE_PTR_CTX(CEllipsoid3D)
 MAKE_PTR_CTX(CGridPlaneXY)
 
@@ -234,15 +249,26 @@ void export_opengl()
 		MAKE_PTR(CEllipsoid3D)
 
 		class_<CEllipsoid3D, boost::noncopyable, bases<CRenderizable>>(
-			"CEllipsoid3D",
-			"A 2D ellipse or 3D ellipsoid, depending on the size of the m_cov "
-			"matrix (2x2 or 3x3).",
+			"CEllipsoid3D", "A 3D ellipsoid, from a covariance matrix.",
 			no_init)
 			.def(
 				"Create", &CEllipsoid3D_Create,
 				"Create smart pointer from class.")
 			.staticmethod("Create")
 			.def("setFromPosePDF", CEllipsoid3D_setFromPosePDF);
+	}
+
+	// CEllipsoid2D
+	{
+		MAKE_PTR(CEllipsoid2D)
+
+		class_<CEllipsoid2D, boost::noncopyable, bases<CRenderizable>>(
+			"CEllipsoid2D", "A 2D ellipse from a covariance matrix.", no_init)
+			.def(
+				"Create", &CEllipsoid2D_Create,
+				"Create smart pointer from class.")
+			.staticmethod("Create")
+			.def("setFromPosePDF", CEllipsoid2D_setFromPosePDF);
 	}
 
 	// COpenGLScene
