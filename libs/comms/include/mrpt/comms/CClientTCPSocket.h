@@ -51,7 +51,10 @@ class CClientTCPSocket : public mrpt::io::CStream
 #endif
 #else
 	/** The handle for the connected TCP socket, or -1 */
-	int m_hSock;
+	int m_hSock = -1;
+	int m_epoll4read_fd = -1;
+	int m_epoll4write_fd = -1;
+	void internal_attach_epoll_to_hsock();
 #endif
 	/** The IP address of the remote part of the connection. */
 	std::string m_remotePartIP;

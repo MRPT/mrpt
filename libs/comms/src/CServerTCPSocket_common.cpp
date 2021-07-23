@@ -156,6 +156,7 @@ std::unique_ptr<CClientTCPSocket> CServerTCPSocket::accept(int timeout_ms)
 		auto ret = std::make_unique<CClientTCPSocket>();
 
 		ret->m_hSock = aceptdSock;
+		ret->internal_attach_epoll_to_hsock();
 
 		ret->m_remotePartIP = std::string(inet_ntoa(otherPart.sin_addr));
 		ret->m_remotePartPort = ntohs(otherPart.sin_port);
