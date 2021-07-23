@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
+- BUG FIXES:
+  - mrpt::comms::CClientTCPSocket crashed if socket handle >=1024 in Linux (Closes [#1157](https://github.com/MRPT/mrpt/issues/1157))
 
 # Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
