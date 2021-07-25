@@ -4,6 +4,9 @@
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
+- Changes in libraries:
+  - \ref mrpt_system_grp
+    - Backwards-compatible change: New function mrpt::system::InvalidTimeStamp() used now inside the macro INVALID_TIMESTAMP, so the macro always returns a const reference instead of returning by value.
 
 # Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
