@@ -8,7 +8,10 @@
   - \ref mrpt_system_grp
     - Backwards-compatible change: New function mrpt::system::InvalidTimeStamp() used now inside the macro INVALID_TIMESTAMP, so the macro always returns a const reference instead of returning by value.
 - BUG FIXES:
-  - Fix potential race conditions in mrpt::rtti class registry and the global mrpt::random::getRandomGenerator()
+  - Fix potential race conditions in:
+    - mrpt::rtti class registry
+    - The global mrpt::random::getRandomGenerator()
+    - mrpt::typemeta::TEnumTypeFiller
 
 # Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
