@@ -10,6 +10,7 @@
 #include "img-precomp.h"  // Precompiled headers
 //
 #include <mrpt/core/cpu.h>
+#include <mrpt/core/get_env.h>
 #include <mrpt/core/round.h>  // for round()
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CFileInputStream.h>
@@ -51,6 +52,9 @@ IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 static bool DISABLE_JPEG_COMPRESSION_value = true;
 static int SERIALIZATION_JPEG_QUALITY_value = 95;
 static std::string IMAGES_PATH_BASE(".");
+
+const thread_local bool MRPT_DEBUG_IMG_LAZY_LOAD =
+	mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
 
 void CImage::DISABLE_JPEG_COMPRESSION(bool val)
 {
@@ -1609,7 +1613,14 @@ void CImage::setExternalStorage(const std::string& fileName) noexcept
 void CImage::unload() const noexcept
 {
 #if MRPT_HAS_OPENCV
-	if (m_imgIsExternalStorage) const_cast<cv::Mat&>(m_impl->img) = cv::Mat();
+	if (m_imgIsExternalStorage)
+	{
+		if (MRPT_DEBUG_IMG_LAZY_LOAD)
+			std::cout << "[CImage::unload()] Called on this="
+					  << reinterpret_cast<const void*>(this) << std::endl;
+
+		const_cast<cv::Mat&>(m_impl->img) = cv::Mat();
+	}
 #endif
 }
 
@@ -1639,6 +1650,11 @@ void CImage::makeSureImageIsLoaded(bool allowNonInitialized) const
 				CExceptionExternalImageNotFound,
 				"Error loading externally-stored image from: %s",
 				wholeFile.c_str());
+
+		if (MRPT_DEBUG_IMG_LAZY_LOAD)
+			std::cout << "[CImage] Loaded lazy-load image file '" << wholeFile
+					  << "' on this=" << reinterpret_cast<const void*>(this)
+					  << std::endl;
 	}
 	else if (!allowNonInitialized)
 	{

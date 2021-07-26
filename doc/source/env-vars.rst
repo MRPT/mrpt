@@ -14,12 +14,16 @@ The following environment variables may be set to alter some MRPT functionality:
   `mrpt::callStackBackTrace() <https://docs.mrpt.org/reference/latest/group_mrpt_core_grp.html?#doxid-group-mrpt-core-grp-1ga14092e6931d0d4ac17bfdf39d2a2ce94>`_,
   falling back to ``dladdr()``.
 
-- ``MRPT_EXPR_VERBOSE``: Set to ``1`` to enable extra verbose debug traces for
-  `mrpt::expr::CRuntimeCompiledExpression::eval() <class_mrpt_expr_CRuntimeCompiledExpression.html>`_.
-
 - ``MRPT_CCAMERA_KINECT_TIMEOUT_MS``: Timeout in milliseconds to wait
   for a new frame from a Kinect sensor when using the method
   mrpt::hwdrivers::CCamera::getNextFrame(). Default: ``3000``.
+
+- ``MRPT_DEBUG_IMG_LAZY_LOAD``: Shows `std::cout` traces whenever an mrpt::img::CImage with delay-load content is created, loaded, or destructed.
+
+- ``MRPT_DEBUG_OBSIMG_LAZY_LOAD``: Shows `std::cout` traces whenever an mrpt::obs::CObservationImage with delay-load content is loaded or unloaded.
+
+- ``MRPT_EXPR_VERBOSE``: Set to ``1`` to enable extra verbose debug traces for
+  `mrpt::expr::CRuntimeCompiledExpression::eval() <class_mrpt_expr_CRuntimeCompiledExpression.html>`_.
 
 - ``MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS``: In mrpt::hwdrivers::CGPSInterface, the
   default offset from GPS time to UTC time, for use before any GNSS especific
