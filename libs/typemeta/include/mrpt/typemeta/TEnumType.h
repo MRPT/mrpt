@@ -128,7 +128,7 @@ struct TEnumType
 	/** Singleton access */
 	static inline internal::bimap<ENUMTYPE, std::string>& getBimap()
 	{
-		static internal::bimap<ENUMTYPE, std::string> data;
+		static thread_local internal::bimap<ENUMTYPE, std::string> data;
 		if (data.m_k2v.empty()) TEnumTypeFiller<ENUMTYPE>::fill(data);
 		return data;
 	}
