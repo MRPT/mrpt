@@ -11,11 +11,10 @@
 //
 #include <mrpt/rtti/CObject.h>
 
-#include <atomic>
 #include <cstdarg>
 #include <iostream>
 #include <map>
-#include <mutex>
+#include <shared_mutex>
 
 #include "internal_class_registry.h"
 
@@ -62,41 +61,31 @@ class CClassRegistry
 
 	void Add(const std::string& className, const TRuntimeClassId& id)
 	{
-		m_being_modified = true;
+		std::unique_lock<std::shared_mutex> lk(m_mtx);
+
+		// Sanity check: don't allow registering twice the same class name!
+		const auto it = m_ns_classes.find(className);
+		if (it != m_ns_classes.cend())
 		{
-			std::unique_lock<std::mutex> lk(m_cs);
-
-			// Sanity check: don't allow registering twice the same class name!
-			const auto it = m_ns_classes.find(className);
-			if (it != m_ns_classes.cend())
+			if (it->second != &id)
 			{
-				if (it->second != &id)
-				{
-					std::cerr << mrpt::format(
-						"[MRPT class registry] Warning: overwriting already "
-						"registered className=`%s` with different "
-						"`TRuntimeClassId`!\n",
-						className.c_str());
-				}
+				std::cerr << mrpt::format(
+					"[MRPT class registry] Warning: overwriting already "
+					"registered className=`%s` with different "
+					"`TRuntimeClassId`!\n",
+					className.c_str());
 			}
-			m_ns_classes[className] = &id;
-
-			// Also register without NS (backwards compatible datasets):
-			m_no_ns_classes[stripNamespace(className)] = &id;
 		}
-		m_being_modified = false;
+		m_ns_classes[className] = &id;
+
+		// Also register without NS (backwards compatible datasets):
+		m_no_ns_classes[stripNamespace(className)] = &id;
 	}
 
 	const TRuntimeClassId* Get(
 		const std::string& className, const bool allow_ignore_namespace)
 	{
-		// Optimization to avoid the costly lock() in virtually all situations:
-		bool has_to_unlock = false;
-		if (m_being_modified)
-		{
-			m_cs.lock();
-			has_to_unlock = true;
-		}
+		std::shared_lock<std::shared_mutex> lk(m_mtx);
 		const TRuntimeClassId* ret = nullptr;
 		const auto itEntry = m_ns_classes.find(className);
 		if (itEntry != m_ns_classes.end())
@@ -115,13 +104,12 @@ class CClassRegistry
 				ret = itEntry2->second;
 			}
 		}
-		if (has_to_unlock) m_cs.unlock();
 		return ret;
 	}
 
 	std::vector<const TRuntimeClassId*> getListOfAllRegisteredClasses()
 	{
-		std::unique_lock<std::mutex> lk(m_cs);
+		std::shared_lock<std::shared_mutex> lk(m_mtx);
 
 		std::vector<const TRuntimeClassId*> ret;
 		for (auto& registeredClasse : m_ns_classes)
@@ -146,8 +134,7 @@ class CClassRegistry
 	// The auxiliary copy of "m_ns_classes", w/o namespace prefixes:
 	TClassnameToRuntimeId m_no_ns_classes;
 
-	std::mutex m_cs;
-	std::atomic<bool> m_being_modified{false};
+	std::shared_mutex m_mtx;
 };
 
 }  // namespace mrpt::rtti
