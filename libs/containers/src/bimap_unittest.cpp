@@ -26,7 +26,9 @@ TEST(bimap, operations)
 	bm.insert("tres", 3.0);
 
 	EXPECT_ANY_THROW(bm.insert("three", 3.0));	// dupl value
+
 	EXPECT_ANY_THROW(bm.insert("dos", 22.0));  // dupl key
+	bm.insert("dos", 2.0);	// does not throw since it's the same pair (k,v)
 
 	EXPECT_EQ(1.0, bm.direct("uno"));
 	EXPECT_EQ(2.0, bm.direct("dos"));
