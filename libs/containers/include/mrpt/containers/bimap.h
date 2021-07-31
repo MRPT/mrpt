@@ -73,12 +73,28 @@ class bimap
 		m_v2k.clear();
 	}
 
-	/** Insert a new pair KEY<->VALUE in the bi-map */
+	/** Insert a new pair KEY<->VALUE in the bi-map
+	 *  It is legal to insert the same pair (key,value) more than once, but
+	 *  if a duplicated key is attempted to be inserted with a different value
+	 * (or viceversa) an exception will be thrown. Remember: this class
+	 * represents a  **bijective** mapping.
+	 */
 	void insert(const KEY& k, const VALUE& v)
 	{
-		if (m_k2v.find(k) != m_k2v.end()) THROW_EXCEPTION("Duplicated key");
-		if (m_v2k.find(v) != m_v2k.end()) THROW_EXCEPTION("Duplicated value");
+		const auto itKey = m_k2v.find(k);
+		const auto itValue = m_v2k.find(v);
+		const bool keyExists = itKey != m_k2v.end(),
+				   valueExists = itValue != m_v2k.end();
 
+		if (keyExists && !valueExists)
+			THROW_EXCEPTION("Duplicated `key` with different `value`");
+
+		if (!keyExists && valueExists)
+			THROW_EXCEPTION("Duplicated `value` with different `key`");
+
+		if (keyExists && valueExists && itKey->second == v) return;	 // Ok
+
+		// New:
 		m_k2v[k] = v;
 		m_v2k[v] = k;
 	}
