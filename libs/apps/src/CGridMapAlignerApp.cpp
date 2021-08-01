@@ -748,8 +748,10 @@ void CGridMapAlignerApp::run()
 				const CPose2D GT_Ap(GT_Ax, GT_Ay, GT_Aphi_rad);
 				TMatchingPairList gt_corrs;
 
-				CFileOutputStream fout_CORR("GT_EXP_CORR.txt", true);
-				CFileOutputStream fout_NCORR("GT_EXP_NCORR.txt", true);
+				CFileOutputStream fout_CORR(
+					"GT_EXP_CORR.txt", OpenMode::APPEND);
+				CFileOutputStream fout_NCORR(
+					"GT_EXP_NCORR.txt", OpenMode::APPEND);
 
 				// Compute the distances:
 				for (size_t i1 = 0; i1 < lmap1->landmarks.size(); i1++)

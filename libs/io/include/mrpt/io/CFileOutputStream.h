@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/io/CStream.h>
+#include <mrpt/io/open_flags.h>
 
 #include <fstream>
 
@@ -29,12 +30,27 @@ class CFileOutputStream : public CStream
    public:
 	/** Constructor
 	 * \param fileName The file to be open in this stream
+	 * \param mode Especify whether to truncate/create the file, or to append at
+	 * the end if it exists.
+	 * \exception std::exception if the file cannot be opened.
+	 */
+	CFileOutputStream(
+		const std::string& fileName, const OpenMode mode = OpenMode::TRUNCATE);
+
+	/** Constructor
+	 * \param fileName The file to be open in this stream
 	 * \param append If set to true, the file will be opened for writing and the
 	 * current cursor position set at the end of the file. Otherwise, previous
 	 * contents will be lost.
 	 * \exception std::exception if the file cannot be opened.
+	 * \deprecated
 	 */
-	CFileOutputStream(const std::string& fileName, bool append = false);
+	[[deprecated("Use signature with OpenMode enum")]]	//
+	CFileOutputStream(const std::string& fileName, bool append)
+		: CFileOutputStream(
+			  fileName, append ? OpenMode::APPEND : OpenMode::TRUNCATE)
+	{
+	}
 
 	/** Default constructor */
 	CFileOutputStream();
@@ -50,7 +66,14 @@ class CFileOutputStream : public CStream
 	 * \sa fileOpenCorrectly
 	 * \return true on success.
 	 */
-	bool open(const std::string& fileName, bool append = false);
+	[[deprecated("Use signature with OpenMode enum")]]	//
+	bool open(const std::string& fileName, bool append)
+	{
+		return open(fileName, append ? OpenMode::APPEND : OpenMode::TRUNCATE);
+	}
+
+	bool open(
+		const std::string& fileName, const OpenMode mode = OpenMode::TRUNCATE);
 
 	/** Close the stream. */
 	void close();
