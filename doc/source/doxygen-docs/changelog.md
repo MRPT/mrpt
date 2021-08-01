@@ -7,6 +7,9 @@
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - New methods mrpt::containers::bimap::erase_by_key(),mrpt::containers::bimap::erase_by_value()
+  - \ref mrpt_io_grp
+    - GZIP compressed streams now also support open and append. See new mrpt::io::CFileGZOutputStream::open() signature.
+    - New enum mrpt::io::OpenMode for clearer-to-read code.
   - \ref mrpt_system_grp
     - Backwards-compatible change: New function mrpt::system::InvalidTimeStamp() used now inside the macro INVALID_TIMESTAMP, so the macro always returns a const reference instead of returning by value.
 - BUG FIXES:

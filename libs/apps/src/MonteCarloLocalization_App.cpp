@@ -1101,7 +1101,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 		{
 			CFileOutputStream f(
 				format("%s_SUMMARY.txt", OUT_DIR_PREFIX.c_str()),
-				true /* append */);
+				OpenMode::APPEND);
 
 			f.printf(
 				"%% Ratio_covergence_success  #particles  "
