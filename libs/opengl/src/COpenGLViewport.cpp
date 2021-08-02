@@ -546,7 +546,7 @@ void COpenGLViewport::render(
 #endif
 }
 
-uint8_t COpenGLViewport::serializeGetVersion() const { return 4; }
+uint8_t COpenGLViewport::serializeGetVersion() const { return 5; }
 void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -584,6 +584,10 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 			<< fp.shadow_color << fp.vfont_spacing << fp.vfont_kerning;
 		out.WriteAs<uint8_t>(static_cast<uint8_t>(fp.vfont_style));
 	}
+
+	// Added in v5: image mode
+	out.WriteAs<bool>(m_imageViewPlane);
+	if (m_imageViewPlane) out << *m_imageViewPlane;
 }
 
 void COpenGLViewport::serializeFrom(
@@ -596,6 +600,7 @@ void COpenGLViewport::serializeFrom(
 		case 2:
 		case 3:
 		case 4:
+		case 5:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
@@ -660,6 +665,13 @@ void COpenGLViewport::serializeFrom(
 					static_cast<TOpenGLFontStyle>(in.ReadAs<uint8_t>());
 
 				this->addTextMessage(x, y, text, id, fp);
+			}
+
+			// Added in v5: image mode
+			if (in.ReadAs<bool>()) { in >> m_imageViewPlane; }
+			else
+			{
+				m_imageViewPlane.reset();
 			}
 		}
 		break;
