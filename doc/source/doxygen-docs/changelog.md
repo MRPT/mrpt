@@ -17,6 +17,7 @@
     - mrpt::rtti class registry
     - The global mrpt::random::getRandomGenerator()
     - mrpt::typemeta::TEnumTypeFiller
+  - Image-mode was not serialized in mrpt::opengl::COpenGLViewport
 
 # Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
