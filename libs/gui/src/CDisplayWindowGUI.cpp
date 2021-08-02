@@ -302,7 +302,6 @@ void CDisplayWindowGUI::SubWindows::minimize(int index)
 	auto w = windows.at(index);
 
 	w->setVisible(false);
-	// w->setFixedSize({1, 1});
 	parent.performLayout();
 }
 
