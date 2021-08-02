@@ -25,11 +25,17 @@ namespace mrpt::containers
  * class is designed to work with **bijective** mappings only. An exception
  * will be thrown if this contract is broken.
  *
+ * \note Defined in `#include <mrpt/containers/bimap.h>`
+ *
  * \note This class can be accessed through iterators to the map KEY->VALUE
  * only.
  * \note Both typenames KEY and VALUE must be suitable for being employed as
  * keys in a std::map, i.e. they must be comparable through a "< operator".
- * \note Defined in #include <mrpt/containers/bimap.h>
+ *
+ * \note To serialize this class with the mrpt::serialization API, include the
+ * header `#include <mrpt/serialization/bimap_serialization.h>` (New in
+ * MRPT 2.3.3)
+ *
  * \ingroup mrpt_containers_grp
  */
 template <typename KEY, typename VALUE>
@@ -190,5 +196,17 @@ class bimap
 	}
 
 };	// end class bimap
+
+template <typename KEY, typename VALUE>
+bool operator==(const bimap<KEY, VALUE>& bm1, const bimap<KEY, VALUE>& bm2)
+{
+	return bm1.getDirectMap() == bm2.getDirectMap();
+}
+
+template <typename KEY, typename VALUE>
+bool operator!=(const bimap<KEY, VALUE>& bm1, const bimap<KEY, VALUE>& bm2)
+{
+	return !(bm1 == bm2);
+}
 
 }  // namespace mrpt::containers
