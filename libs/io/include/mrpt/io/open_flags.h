@@ -19,8 +19,8 @@ namespace mrpt::io
  */
 enum class OpenMode : uint8_t
 {
-TRUNCATE = 0,
-APPEND
-}; 
+	TRUNCATE = 0,
+	APPEND
+};
 
 }  // namespace mrpt::io
