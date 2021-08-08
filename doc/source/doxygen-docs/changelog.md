@@ -22,6 +22,7 @@
     - mrpt::typemeta::TEnumTypeFiller
   - Image-mode was not serialized in mrpt::opengl::COpenGLViewport
   - nanogui: avoid potential divide by zero.
+  - mrpt::comms::CClientTCPSocket crashed if socket handle >=1024 in Linux (Closes [#1157](https://github.com/MRPT/mrpt/issues/1157))
 
 # Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
