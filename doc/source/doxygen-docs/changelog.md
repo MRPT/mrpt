@@ -7,6 +7,7 @@
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - New methods mrpt::containers::bimap::erase_by_key(),mrpt::containers::bimap::erase_by_value()
+    - mrpt::containers::vector_with_small_size_optimization has new methods `at()` and `push_back()` for a smoother transition from STL containers.
   - \ref mrpt_io_grp
     - GZIP compressed streams now also support open and append. See new mrpt::io::CFileGZOutputStream::open() signature.
     - New enum mrpt::io::OpenMode for clearer-to-read code.
