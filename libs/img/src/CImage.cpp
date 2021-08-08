@@ -1934,13 +1934,13 @@ void CImage::joinImagesHorz(const CImage& img1, const CImage& img2)
 #if MRPT_HAS_OPENCV
 	ASSERT_(img1.getHeight() == img2.getHeight());
 
-	auto im1 = img1.m_impl->img, im2 = img2.m_impl->img, img = m_impl->img;
+	auto im1 = img1.m_impl->img, im2 = img2.m_impl->img;
 	ASSERT_(im1.type() == im2.type());
 
-	this->resize(im1.cols + im2.cols, im1.rows, getChannelCount());
+	this->resize(im1.cols + im2.cols, im1.rows, img1.getChannelCount());
 
-	im1.copyTo(img(cv::Rect(0, 0, im1.cols, im1.rows)));
-	im2.copyTo(img(cv::Rect(im1.cols, 0, im2.cols, im2.rows)));
+	im1.copyTo(m_impl->img(cv::Rect(0, 0, im1.cols, im1.rows)));
+	im2.copyTo(m_impl->img(cv::Rect(im1.cols, 0, im2.cols, im2.rows)));
 #endif
 }  // end
 
