@@ -6,31 +6,21 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#include <gtest/gtest.h>
-#include <mrpt/core/WorkerThreadsPool.h>
+#include <cstdint>
 
-TEST(WorkerThreadsPool, runTasks)
+namespace mrpt::io
 {
-	//
-	int accum = 0;
+/** Flags used when opening a file for writing.
+ *
+ * \sa CFileGZOutputStream, CFileGZOutputStream
+ * \ingroup mrpt_io_grp
+ */
+enum class OpenMode : uint8_t
+{
+	TRUNCATE = 0,
+	APPEND
+};
 
-	auto f = [&accum](int x) { accum += x; };
-
-	{
-		mrpt::WorkerThreadsPool pool(1);
-
-		auto fut1 = pool.enqueue(f, 1);
-		auto fut2 = pool.enqueue(f, 2);
-		auto fut3 = pool.enqueue(f, 3);
-
-		const auto n = pool.pendingTasks();
-		EXPECT_GE(n, 0);
-		EXPECT_LE(n, 3);
-
-		fut1.wait();
-		fut2.wait();
-		fut3.wait();
-	}
-	EXPECT_EQ(accum, 6);
-}
+}  // namespace mrpt::io

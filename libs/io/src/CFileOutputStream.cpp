@@ -15,12 +15,13 @@
 using namespace mrpt::io;
 using namespace std;
 
-CFileOutputStream::CFileOutputStream(const string& fileName, bool append)
+CFileOutputStream::CFileOutputStream(
+	const string& fileName, const OpenMode mode)
 	: m_of()
 {
 	MRPT_START
 
-	if (!open(fileName, append))
+	if (!open(fileName, mode))
 		THROW_EXCEPTION_FMT(
 			"Error creating/opening for write file: '%s'", fileName.c_str());
 
@@ -28,13 +29,13 @@ CFileOutputStream::CFileOutputStream(const string& fileName, bool append)
 }
 
 CFileOutputStream::CFileOutputStream() : m_of() {}
-bool CFileOutputStream::open(const string& fileName, bool append)
+bool CFileOutputStream::open(const string& fileName, const OpenMode mode)
 {
 	close();
 
 	// Open for write/append:
 	ios_base::openmode openMode = ios_base::binary | ios_base::out;
-	if (append) openMode |= ios_base::app;
+	if (mode == OpenMode::APPEND) openMode |= ios_base::app;
 
 	m_of.open(fileName.c_str(), openMode);
 	return m_of.is_open();

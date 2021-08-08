@@ -21,11 +21,21 @@ namespace mrpt::containers
  * map with bimap::inverse(). The consistency of the two internal maps is
  * assured at any time.
  *
+ * Note that unique values are required for both KEYS and VALUES, hence this
+ * class is designed to work with **bijective** mappings only. An exception
+ * will be thrown if this contract is broken.
+ *
+ * \note Defined in `#include <mrpt/containers/bimap.h>`
+ *
  * \note This class can be accessed through iterators to the map KEY->VALUE
  * only.
  * \note Both typenames KEY and VALUE must be suitable for being employed as
  * keys in a std::map, i.e. they must be comparable through a "< operator".
- * \note Defined in #include <mrpt/containers/bimap.h>
+ *
+ * \note To serialize this class with the mrpt::serialization API, include the
+ * header `#include <mrpt/serialization/bimap_serialization.h>` (New in
+ * MRPT 2.3.3)
+ *
  * \ingroup mrpt_containers_grp
  */
 template <typename KEY, typename VALUE>
@@ -44,23 +54,24 @@ class bimap
 
 	/** Default constructor - does nothing */
 	bimap() = default;
-	inline const_iterator begin() const { return m_k2v.begin(); }
-	inline iterator begin() { return m_k2v.begin(); }
-	inline const_iterator end() const { return m_k2v.end(); }
-	inline iterator end() { return m_k2v.end(); }
-	inline const_iterator_inverse inverse_begin() const
-	{
-		return m_v2k.begin();
-	}
-	inline iterator_inverse inverse_begin() { return m_v2k.begin(); }
-	inline const_iterator_inverse inverse_end() const { return m_v2k.end(); }
-	inline iterator_inverse inverse_end() { return m_v2k.end(); }
-	inline size_t size() const { return m_k2v.size(); }
-	inline bool empty() const { return m_k2v.empty(); }
+
+	const_iterator begin() const { return m_k2v.begin(); }
+	iterator begin() { return m_k2v.begin(); }
+	const_iterator end() const { return m_k2v.end(); }
+	iterator end() { return m_k2v.end(); }
+	const_iterator_inverse inverse_begin() const { return m_v2k.begin(); }
+	iterator_inverse inverse_begin() { return m_v2k.begin(); }
+	const_iterator_inverse inverse_end() const { return m_v2k.end(); }
+	iterator_inverse inverse_end() { return m_v2k.end(); }
+	size_t size() const { return m_k2v.size(); }
+	bool empty() const { return m_k2v.empty(); }
+
 	/** Return a read-only reference to the internal map KEY->VALUES */
 	const std::map<KEY, VALUE>& getDirectMap() const { return m_k2v; }
+
 	/** Return a read-only reference to the internal map KEY->VALUES */
 	const std::map<VALUE, KEY>& getInverseMap() const { return m_v2k; }
+
 	/** Clear the contents of the bi-map. */
 	void clear()
 	{
@@ -68,9 +79,28 @@ class bimap
 		m_v2k.clear();
 	}
 
-	/** Insert a new pair KEY<->VALUE in the bi-map */
+	/** Insert a new pair KEY<->VALUE in the bi-map
+	 *  It is legal to insert the same pair (key,value) more than once, but
+	 *  if a duplicated key is attempted to be inserted with a different value
+	 * (or viceversa) an exception will be thrown. Remember: this class
+	 * represents a  **bijective** mapping.
+	 */
 	void insert(const KEY& k, const VALUE& v)
 	{
+		const auto itKey = m_k2v.find(k);
+		const auto itValue = m_v2k.find(v);
+		const bool keyExists = itKey != m_k2v.end(),
+				   valueExists = itValue != m_v2k.end();
+
+		if (keyExists && !valueExists)
+			THROW_EXCEPTION("Duplicated `key` with different `value`");
+
+		if (!keyExists && valueExists)
+			THROW_EXCEPTION("Duplicated `value` with different `key`");
+
+		if (keyExists && valueExists && itKey->second == v) return;	 // Ok
+
+		// New:
 		m_k2v[k] = v;
 		m_v2k[v] = k;
 	}
@@ -90,16 +120,10 @@ class bimap
 
 	/** Return true if the given key 'k' is in the bi-map  \sa hasValue, direct,
 	 * inverse */
-	inline bool hasKey(const KEY& k) const
-	{
-		return m_k2v.find(k) != m_k2v.end();
-	}
+	bool hasKey(const KEY& k) const { return m_k2v.find(k) != m_k2v.end(); }
 	/** Return true if the given value 'v' is in the bi-map \sa hasKey, direct,
 	 * inverse */
-	inline bool hasValue(const VALUE& v) const
-	{
-		return m_v2k.find(v) != m_v2k.end();
-	}
+	bool hasValue(const VALUE& v) const { return m_v2k.find(v) != m_v2k.end(); }
 
 	/** Get the value associated the given key, KEY->VALUE, raising an
 	 * exception if not present (equivalent to `directMap.at()`).
@@ -139,13 +163,50 @@ class bimap
 		return i->second;
 	}
 
-	inline const_iterator find_key(const KEY& k) const { return m_k2v.find(k); }
-	inline iterator find_key(const KEY& k) { return m_k2v.find(k); }
-	inline const_iterator_inverse find_value(const VALUE& v) const
+	const_iterator find_key(const KEY& k) const { return m_k2v.find(k); }
+	iterator find_key(const KEY& k) { return m_k2v.find(k); }
+	const_iterator_inverse find_value(const VALUE& v) const
 	{
 		return m_v2k.find(v);
 	}
-	inline iterator_inverse find_value(const VALUE& v) { return m_v2k.find(v); }
+	iterator_inverse find_value(const VALUE& v) { return m_v2k.find(v); }
+
+	/** Removes the bijective application between `KEY<->VALUE` for a given key.
+	 *  \exception std::exception If the key does not exist.
+	 *  \note (New in MRPT 2.3.3);
+	 */
+	void erase_by_key(const KEY& k)
+	{
+		auto i = m_k2v.find(k);
+		if (i == m_k2v.end()) THROW_EXCEPTION("Key not found.");
+		m_v2k.erase(i->second);
+		m_k2v.erase(i);
+	}
+	/** Removes the bijective application between `KEY<->VALUE` for a given
+	 * value.
+	 * \exception std::exception If the value does not exist.
+	 * \note (New in MRPT 2.3.3);
+	 */
+	void erase_by_value(const VALUE& v)
+	{
+		auto i = m_v2k.find(v);
+		if (i == m_v2k.end()) THROW_EXCEPTION("Value not found.");
+		m_k2v.erase(i->second);
+		m_v2k.erase(i);
+	}
+
 };	// end class bimap
+
+template <typename KEY, typename VALUE>
+bool operator==(const bimap<KEY, VALUE>& bm1, const bimap<KEY, VALUE>& bm2)
+{
+	return bm1.getDirectMap() == bm2.getDirectMap();
+}
+
+template <typename KEY, typename VALUE>
+bool operator!=(const bimap<KEY, VALUE>& bm1, const bimap<KEY, VALUE>& bm2)
+{
+	return !(bm1 == bm2);
+}
 
 }  // namespace mrpt::containers

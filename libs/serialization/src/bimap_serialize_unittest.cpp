@@ -8,29 +8,30 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
-#include <mrpt/core/WorkerThreadsPool.h>
+#include <mrpt/containers/bimap.h>
+#include <mrpt/io/CMemoryStream.h>
+#include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CSerializable.h>
+#include <mrpt/serialization/bimap_serialization.h>
 
-TEST(WorkerThreadsPool, runTasks)
+using namespace mrpt::serialization;
+
+TEST(Serialization, bimap)
 {
-	//
-	int accum = 0;
+	mrpt::containers::bimap<uint32_t, std::string> bm1, bm2;
+	bm1.insert(1, "one");
+	bm1.insert(2, "two");
+	bm1.insert(0, "zero");
 
-	auto f = [&accum](int x) { accum += x; };
+	mrpt::io::CMemoryStream f;
+	auto arch = mrpt::serialization::archiveFrom(f);
+	arch << bm1;
 
-	{
-		mrpt::WorkerThreadsPool pool(1);
+	f.Seek(0);
+	arch >> bm2;
+	EXPECT_EQ(bm1, bm2);
 
-		auto fut1 = pool.enqueue(f, 1);
-		auto fut2 = pool.enqueue(f, 2);
-		auto fut3 = pool.enqueue(f, 3);
-
-		const auto n = pool.pendingTasks();
-		EXPECT_GE(n, 0);
-		EXPECT_LE(n, 3);
-
-		fut1.wait();
-		fut2.wait();
-		fut3.wait();
-	}
-	EXPECT_EQ(accum, 6);
+	// Test the != operator too:
+	bm2.insert(3, "three");
+	EXPECT_NE(bm1, bm2);
 }

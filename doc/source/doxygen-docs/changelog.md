@@ -4,7 +4,24 @@
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - New methods mrpt::containers::bimap::erase_by_key(),mrpt::containers::bimap::erase_by_value()
+    - mrpt::containers::vector_with_small_size_optimization has new methods `at()` and `push_back()` for a smoother transition from STL containers.
+  - \ref mrpt_io_grp
+    - GZIP compressed streams now also support open and append. See new mrpt::io::CFileGZOutputStream::open() signature.
+    - New enum mrpt::io::OpenMode for clearer-to-read code.
+  - \ref mrpt_serialization_grp
+    - Implemented serialization of mrpt::containers::bimap in the new header `#include <mrpt/serialization/bimap_serialization.h>`.
+  - \ref mrpt_system_grp
+    - Backwards-compatible change: New function mrpt::system::InvalidTimeStamp() used now inside the macro INVALID_TIMESTAMP, so the macro always returns a const reference instead of returning by value.
 - BUG FIXES:
+  - Fix potential race conditions in:
+    - mrpt::rtti class registry
+    - The global mrpt::random::getRandomGenerator()
+    - mrpt::typemeta::TEnumTypeFiller
+  - Image-mode was not serialized in mrpt::opengl::COpenGLViewport
+  - nanogui: avoid potential divide by zero.
   - mrpt::comms::CClientTCPSocket crashed if socket handle >=1024 in Linux (Closes [#1157](https://github.com/MRPT/mrpt/issues/1157))
 
 # Version 2.3.2: Released Jul 14, 2021
