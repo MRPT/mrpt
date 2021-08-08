@@ -16,7 +16,7 @@
 #include <cstring>
 #include <iostream>
 
-#ifdef _WIN32
+#if defined(MRPT_OS_WINDOWS)
 // Windows
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <winerror.h>
@@ -24,21 +24,27 @@
 #if defined(_MSC_VER)
 #pragma comment(lib, "WS2_32.LIB")
 #endif
-#else
+#endif
+
 // Linux, Apple
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 #define INVALID_SOCKET (-1)
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <sys/epoll.h>	// epoll_create1()
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #include <cerrno>
+#endif
+
+// Linux only:
+#if defined(MRPT_OS_LINUX)
+#include <sys/epoll.h>	// epoll_create1()
 #endif
 
 using namespace mrpt::comms;
@@ -52,7 +58,7 @@ CClientTCPSocket::CClientTCPSocket()
 {
 	MRPT_START
 
-#ifdef _WIN32
+#if defined(MRPT_OS_WINDOWS)
 	// Init the WinSock Library:
 	// ----------------------------
 	WORD wVersionRequested;
@@ -64,16 +70,22 @@ CClientTCPSocket::CClientTCPSocket()
 		THROW_EXCEPTION("Error calling WSAStartup");
 
 	m_hSock = INVALID_SOCKET;
-#else
-	// Linux, Apple
+#endif
+
+#if defined(MRPT_OS_LINUX)
+	// Linux:
 	m_epoll4read_fd = epoll_create1(0);
 	m_epoll4write_fd = epoll_create1(0);
 
 	ASSERTMSG_(
 		m_epoll4read_fd != -1 && m_epoll4write_fd != -1,
 		"[CClientTCPSocket] Failed to create epoll file descriptor!");
-
 #endif
+
+#if defined(MRPT_OS_APPLE)
+	// Nothing to do.
+#endif
+
 	MRPT_END
 }
 
@@ -88,12 +100,18 @@ CClientTCPSocket::~CClientTCPSocket()
 		std::cerr << "[~CClientTCPSocket] Exception:\n"
 				  << mrpt::exception_to_str(e);
 	}
-#ifdef _WIN32
+#if defined(MRPT_OS_WINDOWS)
 	WSACleanup();
-#else
+#endif
+
+#if defined(MRPT_OS_LINUX)
 	// Clean up epoll:
 	if (m_epoll4read_fd != -1) ::close(m_epoll4read_fd);
 	if (m_epoll4write_fd != -1) ::close(m_epoll4write_fd);
+#endif
+
+#if defined(MRPT_OS_APPLE)
+		// Nothing to do.
 #endif
 }
 
@@ -101,7 +119,7 @@ void CClientTCPSocket::close()
 {
 	MRPT_START
 
-#ifdef _WIN32
+#if defined(MRPT_OS_WINDOWS)
 	// Delete socket:
 	if (m_hSock != INVALID_SOCKET)
 	{
@@ -113,9 +131,10 @@ void CClientTCPSocket::close()
 	// Delete socket:
 	if (m_hSock != -1)
 	{
+#if defined(MRPT_OS_LINUX)
 		epoll_ctl(m_epoll4write_fd, EPOLL_CTL_DEL, m_hSock, nullptr);
 		epoll_ctl(m_epoll4read_fd, EPOLL_CTL_DEL, m_hSock, nullptr);
-
+#endif
 		shutdown(m_hSock, SHUT_RDWR);
 		::close(m_hSock);
 		m_hSock = -1;
@@ -153,7 +172,7 @@ void CClientTCPSocket::sendString(const std::string& str)
 	Write(str.c_str(), str.size());
 }
 
-#ifndef _WIN32
+#if defined(MRPT_OS_LINUX)
 void CClientTCPSocket::internal_attach_epoll_to_hsock()
 {
 	struct epoll_event event;
@@ -228,15 +247,15 @@ void CClientTCPSocket::connect(
 	int er = errno;
 	if (r < 0 && er != EINPROGRESS)
 #endif
-		THROW_EXCEPTION(format(
+		THROW_EXCEPTION_FMT(
 			"Error connecting to %s:%hu. Error: %s [%d]",
-			remotePartAddress.c_str(), remotePartTCPPort, strerror(er), er));
+			remotePartAddress.c_str(), remotePartTCPPort, strerror(er), er);
 
-	// socket is created:
+		// socket is created:
+#if defined(MRPT_OS_LINUX)
 	internal_attach_epoll_to_hsock();
 
 	// Wait for connect:
-
 	std::array<struct epoll_event, 1> events;
 
 	const int epoll_timeout_ms = timeout_ms == 0 ? -1 : timeout_ms;
@@ -257,6 +276,35 @@ void CClientTCPSocket::connect(
 		THROW_EXCEPTION(format(
 			"Error connecting to '%s:%hu':\n%s", remotePartAddress.c_str(),
 			remotePartTCPPort, getLastErrorStr().c_str()));
+#elif defined(MRPT_OS_APPLE)
+	// OSX: Older select() API:
+	// Wait for connect:
+	timeval timer = {0, 0};
+	fd_set ss_write, ss_errors;
+	FD_ZERO(&ss_write);
+	FD_ZERO(&ss_errors);
+	FD_SET(m_hSock, &ss_write);
+	FD_SET(m_hSock, &ss_errors);
+
+	timer.tv_sec = timeout_ms / 1000;
+	timer.tv_usec = 1000 * (timeout_ms % 1000);
+	int sel_ret = select(
+		m_hSock + 1,
+		nullptr,  // For read
+		&ss_write,	// For write or *connect done*
+		&ss_errors,	 // For errors
+		timeout_ms == 0 ? nullptr : &timer);
+
+	if (sel_ret == 0)
+		THROW_EXCEPTION(format(
+			"Timeout connecting to '%s:%hu':\n%s", remotePartAddress.c_str(),
+			remotePartTCPPort, getLastErrorStr().c_str()));
+
+	if (sel_ret == -1)
+		THROW_EXCEPTION(format(
+			"Error connecting to '%s:%hu':\n%s", remotePartAddress.c_str(),
+			remotePartTCPPort, getLastErrorStr().c_str()));
+#endif
 
 	// Now, make sure it was not an error!
 	int valopt;
@@ -317,7 +365,17 @@ size_t CClientTCPSocket::readAsync(
 	int readNow;
 	bool timeoutExpired = false;
 
+#if defined(MRPT_OS_LINUX)
 	std::array<struct epoll_event, 1> events;
+#else
+	struct timeval timeoutSelect = {0, 0};
+	struct timeval* ptrTimeout;
+	fd_set sockArr;
+
+	// Init fd_set structure & add our socket to it:
+	FD_ZERO(&sockArr);
+	FD_SET(m_hSock, &sockArr);
+#endif
 
 	// Loop until timeout expires or the socket is closed.
 	while (alreadyRead < Count && !timeoutExpired)
@@ -325,10 +383,20 @@ size_t CClientTCPSocket::readAsync(
 		// Use the "first" or "between" timeouts:
 		int curTimeout = alreadyRead == 0 ? timeoutStart_ms : timeoutBetween_ms;
 
+#if defined(MRPT_OS_LINUX)
 		const int epoll_timeout_ms =
 			(curTimeout < 0) ? -1 /*No timeout*/ : curTimeout;
-
+#else
+		if (curTimeout < 0) ptrTimeout = nullptr;
+		else
+		{
+			timeoutSelect.tv_sec = curTimeout / 1000;
+			timeoutSelect.tv_usec = 1000 * (curTimeout % 1000);
+			ptrTimeout = &timeoutSelect;
+		}
+#endif
 		// Wait for received data
+#if defined(MRPT_OS_LINUX)
 		int event_count;
 		do
 		{
@@ -340,7 +408,18 @@ size_t CClientTCPSocket::readAsync(
 		if (event_count < 0)
 			THROW_EXCEPTION_FMT(
 				"Error reading from socket: %s", getLastErrorStr().c_str());
+#else
+		int event_count = ::select(
+			m_hSock + 1,  // __nfds
+			&sockArr,  // Wait for read
+			nullptr,  // Wait for write
+			nullptr,  // Wait for except.
+			ptrTimeout);  // Timeout
 
+		if (event_count == INVALID_SOCKET)
+			THROW_EXCEPTION_FMT(
+				"Error reading from socket: %s", getLastErrorStr().c_str());
+#endif
 		if (event_count == 0)
 		{
 			// Timeout:
@@ -396,15 +475,36 @@ size_t CClientTCPSocket::writeAsync(
 	int writtenNow;
 	bool timeoutExpired = false;
 
+#if defined(MRPT_OS_LINUX)
 	std::array<struct epoll_event, 1> events;
+#else
+	struct timeval timeoutSelect = {0, 0};
+	struct timeval* ptrTimeout;
+	fd_set sockArr;
+
+	// Init fd_set structure & add our socket to it:
+	FD_ZERO(&sockArr);
+	FD_SET(m_hSock, &sockArr);
+#endif
 
 	// The timeout:
+#if defined(MRPT_OS_LINUX)
 	const int epoll_timeout_ms = timeout_ms < 0 ? -1 : timeout_ms;
+#else
+	if (timeout_ms < 0) { ptrTimeout = nullptr; }
+	else
+	{
+		timeoutSelect.tv_sec = timeout_ms / 1000;
+		timeoutSelect.tv_usec = 1000 * (timeout_ms % 1000);
+		ptrTimeout = &timeoutSelect;
+	}
+#endif
 
 	// Loop until timeout expires or the socket is closed.
 	while (alreadyWritten < Count && !timeoutExpired)
 	{
 		// Wait for received data
+#if defined(MRPT_OS_LINUX)
 		int event_count;
 		do
 		{
@@ -413,10 +513,20 @@ size_t CClientTCPSocket::writeAsync(
 				epoll_timeout_ms);
 
 		} while (event_count < 0 && errno == EINTR);
+#else
+		int event_count = ::select(
+			m_hSock + 1,  // __nfds
+			nullptr,  // Wait for read
+			&sockArr,  // Wait for write
+			nullptr,  // Wait for except.
+			ptrTimeout);  // Timeout
 
+#endif
 		if (event_count < 0)
+		{
 			THROW_EXCEPTION_FMT(
 				"Error writing to socket: %s", getLastErrorStr().c_str());
+		}
 
 		if (event_count == 0)
 		{
