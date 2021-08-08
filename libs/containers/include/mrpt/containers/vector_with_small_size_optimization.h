@@ -213,6 +213,19 @@ class vector_with_small_size_optimization
 		return m_is_small ? m_a[n] : m_v[n];
 	}
 
+	/** Like [], but throws an exception if accessing out of bounds.
+	 * \note (Note in MRPT 2.3.3)
+	 */
+	reference at(size_type n) { return m_is_small ? m_a.at(n) : m_v.at(n); }
+
+	/** Like [], but throws an exception if accessing out of bounds.
+	 * \note (Note in MRPT 2.3.3)
+	 */
+	const_reference at(size_type n) const
+	{
+		return m_is_small ? m_a.at(n) : m_v.at(n);
+	}
+
 	const_reference back() const
 	{
 		return m_is_small ? m_a[m_size - 1] : m_v.back();
@@ -259,6 +272,17 @@ class vector_with_small_size_optimization
 	const_iterator end() const noexcept
 	{
 		return m_is_small ? m_a.data() + m_size : m_v.data() + m_size;
+	}
+
+	/** Grows the container by one and writes the value in the new final
+	 * position.
+	 * \note (Note in MRPT 2.3.3)
+	 */
+	void push_back(const VAL& val)
+	{
+		const auto idx = size();
+		resize(idx + 1);
+		at(idx) = val;
 	}
 };
 
