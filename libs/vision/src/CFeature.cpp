@@ -800,7 +800,10 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 	//    "%%-------------------------------------------------------------------------------------------\n");
 	CFileOutputStream f;
 
-	if (!f.open(filename, APPEND))
+	if (!f.open(
+			filename,
+			APPEND ? mrpt::io::OpenMode::TRUNCATE
+				   : mrpt::io::OpenMode::TRUNCATE))
 		THROW_EXCEPTION(
 			"[CFeature::saveToTextFile] ERROR: File could not be open for "
 			"writing");
@@ -871,7 +874,9 @@ void CFeatureList::saveToTextFile(const std::string& filename, bool APPEND)
 
 	CFileOutputStream f;
 
-	if (!f.open(filename, APPEND))
+	if (!f.open(
+			filename,
+			APPEND ? mrpt::io::OpenMode::APPEND : mrpt::io::OpenMode::TRUNCATE))
 		THROW_EXCEPTION(
 			"[CFeatureList::saveToTextFile] ERROR: File could not be open for "
 			"writing");

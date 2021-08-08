@@ -45,6 +45,13 @@ using namespace mrpt;
 using namespace mrpt::system;
 using namespace std;
 
+// Required to ensure INVALID_TIMESTAMP returns a "const T&":
+const TTimeStamp& mrpt::system::InvalidTimeStamp()
+{
+	static thread_local TTimeStamp t = TTimeStamp();
+	return t;
+}
+
 mrpt::system::TTimeStamp mrpt::system::time_tToTimestamp(const time_t& t)
 {
 	return time_tToTimestamp(static_cast<double>(t));

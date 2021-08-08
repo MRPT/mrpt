@@ -40,8 +40,18 @@ namespace mrpt::system
  */
 using TTimeStamp = mrpt::Clock::time_point;
 
-/** Represents an invalid timestamp, where applicable. */
-#define INVALID_TIMESTAMP mrpt::Clock::time_point()
+/** Required to ensure INVALID_TIMESTAMP returns a "const T&"
+ *  \note (New in MRPT 2.3.3)
+ */
+const TTimeStamp& InvalidTimeStamp();
+
+/** Represents an invalid timestamp, where applicable.
+ *
+ * \note It returns a const reference to a thread_local static object of type
+ * mrpt::Clock::time_point initialized with the default constructor, which is
+ * used as the reference "invalid" timestamp.
+ */
+#define INVALID_TIMESTAMP mrpt::system::InvalidTimeStamp()
 
 /** The parts of a date/time, like the standard `tm` but with fractional
  * (`double`) seconds. \sa TTimeStamp, timestampToParts, buildTimestampFromParts
@@ -121,8 +131,8 @@ inline double timestampToDouble(const mrpt::system::TTimeStamp t) noexcept
 /** Returns the time difference from t1 to t2 (positive if t2 is posterior to
  * t1), in seconds  */
 inline double timeDifference(
-	const mrpt::system::TTimeStamp t_first,
-	const mrpt::system::TTimeStamp t_later)
+	const mrpt::system::TTimeStamp& t_first,
+	const mrpt::system::TTimeStamp& t_later)
 {
 	MRPT_START
 	ASSERT_(t_later != INVALID_TIMESTAMP);

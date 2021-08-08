@@ -1380,7 +1380,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	{
 		if (!m_log_trajectory_file.is_open())
 		{
-			if (m_log_trajectory_file.open("traj_log.txt"))
+			if (m_log_trajectory_file.open(
+					"traj_log.txt", mrpt::io::OpenMode::TRUNCATE))
 			{
 				m_log_trajectory_file.printf(
 					"%% File format: TIME  X   Y  PHI  VX  VY OMEGA\n");

@@ -149,3 +149,20 @@ TEST(vector_with_small_size_optimization, GrowCheckFrontBack)
 		EXPECT_EQ(&v[n - 1], &v.back()) << "n=" << n;
 	}
 }
+TEST(vector_with_small_size_optimization, push_back)
+{
+	vwsso_t v;
+	EXPECT_EQ(v.size(), 0U);
+
+	for (size_t i = 0; i < 2 * SMALL_LEN; i++)
+	{
+		v.push_back(100 + i);
+		EXPECT_EQ(v.size(), i + 1);
+
+		for (size_t j = 0; j <= i; j++)
+		{
+			EXPECT_EQ(v.at(j), 100 + j);
+			EXPECT_EQ(v[j], 100 + j);
+		}
+	}
+}

@@ -87,7 +87,8 @@ void CConfigWidget::saveConfig()
 			this, tr("Unable to open file"), file.errorString());
 		return;
 	}
-	mrpt::io::CFileOutputStream f(configName.toStdString(), true);
+	mrpt::io::CFileOutputStream f(
+		configName.toStdString(), mrpt::io::OpenMode::APPEND);
 
 	for (int i = 0; i < m_ui->stackedWidget->count(); ++i)
 	{

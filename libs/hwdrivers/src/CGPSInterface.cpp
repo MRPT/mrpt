@@ -333,7 +333,7 @@ void CGPSInterface::doProcess()
 			if (m_verbose)
 				std::cout << "[CGPSInterface] Creating RAW dump file: `"
 						  << sFileName << "`\n";
-			m_raw_output_file.open(sFileName);
+			m_raw_output_file.open(sFileName, mrpt::io::OpenMode::TRUNCATE);
 		}
 		if (nRead && m_raw_output_file.fileOpenCorrectly())
 		{ m_raw_output_file.Write(buf, nRead); }

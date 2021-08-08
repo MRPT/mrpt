@@ -14,13 +14,12 @@
 set -e
 
 # List of distributions to create PPA packages for:
-#  - Groovy     EOL: Jul 2021
 #  - Hirsute    EOL: Jan 2022
 #  - Bionic LTS EOL: Apr 2023
 #  - Focal  LTS EOL: Apr 2025
 #  - Impish     EOL: Jul 2022
 if [ -z ${LST_DISTROS+x} ]; then
-	LST_DISTROS=(bionic focal groovy hirsute impish)
+	LST_DISTROS=(bionic focal hirsute impish)
 fi
 
 count=${#LST_DISTROS[@]}
@@ -37,10 +36,6 @@ export DEB_NANOFLANN_DEP_bionic="libmrpt-common-dev"  # dummy package (it cannot
 export MRPT_PKG_EXPORTED_SUBMODULES_focal="nanoflann"
 export DEB_EXTRA_BUILD_DEPS_focal="libsimpleini-dev"
 export DEB_NANOFLANN_DEP_focal="libmrpt-common-dev"  # dummy package (it cannot be blank)
-
-export MRPT_PKG_EXPORTED_SUBMODULES_groovy="nanoflann"
-export DEB_EXTRA_BUILD_DEPS_groovy="libsimpleini-dev"
-export DEB_NANOFLANN_DEP_groovy="libmrpt-common-dev"  # dummy package (it cannot be blank)
 
 export MRPT_PKG_EXPORTED_SUBMODULES_hirsute=""
 export DEB_EXTRA_BUILD_DEPS_hirsute="libsimpleini-dev, libnanoflann-dev"
