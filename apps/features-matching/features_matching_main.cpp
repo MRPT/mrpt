@@ -70,7 +70,7 @@ bool DemoFeatures()
 			"11: AMAZE\n"
 			"12: LSD\n";
 
-	cout << endl << "Select the number for the desired method [8: FASTER-10]:";
+	cout << endl << "Select the number for the desired method [6: FAST]:";
 
 	string sel_method;
 	std::getline(cin, sel_method);
@@ -382,7 +382,7 @@ Descriptors:
 		// win2: Show only best matches:
 
 		// CFeatureList  feats2_best;
-		img2_show_base = img2;
+		img2_show_base = img2.makeDeepCopy();
 
 		CVectorDouble xs_best, ys_best;
 		for (unsigned int i2 = 0; i2 < feats2.size(); i2++)
