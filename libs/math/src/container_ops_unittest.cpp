@@ -85,3 +85,33 @@ TEST(ops_containers, ncc_vector)
 	const double ncc_gt = 0.9858405444;
 	EXPECT_NEAR(ncc, ncc_gt, 1e-4);
 }
+
+TEST(ops_containers, xcorr)
+{
+	// Known output test case:
+	const std::vector<double> a = {
+		1.0000000000, 0.8400000000, 0.7056000000, 0.5927040000,
+		0.4978713600, 0.4182119424, 0.3512980316, 0.2950903466,
+		0.2478758911, 0.2082157485, 0.1749012288, 0.1469170322,
+		0.1234103070, 0.1036646579, 0.0870783126, 0.0731457826,
+	};
+	const std::vector<double> b = {
+		1.0000000000, 0.9200000000, 0.8464000000, 0.7786880000,
+		0.7163929600, 0.6590815232, 0.6063550013, 0.5578466012,
+		0.5132188731, 0.4721613633, 0.4343884542, 0.3996373779,
+		0.3676663877, 0.3382530766, 0.3111928305, 0.2862974041,
+	};
+
+	const size_t maxLag = 5;
+	const std::vector<double> r = mrpt::math::xcorr(a, b, maxLag);
+
+	// Verify that the peak is at the correct spot:
+	const size_t maxCoeffIdx_gt = 5;
+
+	ASSERT_EQUAL_(r.size(), maxLag * 2 + 1);
+	for (size_t i = 0; i < r.size(); i++)
+	{
+		if (i == maxCoeffIdx_gt) continue;
+		EXPECT_GT(r[maxCoeffIdx_gt], r[i]);
+	}
+}

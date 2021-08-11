@@ -11,6 +11,8 @@
   - \ref mrpt_io_grp
     - GZIP compressed streams now also support open and append. See new mrpt::io::CFileGZOutputStream::open() signature.
     - New enum mrpt::io::OpenMode for clearer-to-read code.
+  - \ref mrpt_math_grp
+    - New function mrpt::math::xcorr()
   - \ref mrpt_serialization_grp
     - Implemented serialization of mrpt::containers::bimap in the new header `#include <mrpt/serialization/bimap_serialization.h>`.
   - \ref mrpt_system_grp

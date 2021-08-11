@@ -431,7 +431,9 @@ inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
 	return C;
 }
 
-/** Normalised Cross Correlation between two 1-D vectors.
+/** Normalized Cross Correlation coefficient between two 1-D vectors, returning
+ * a single scalar between [-1, 1].
+ *
  * It is equivalent to the following Matlab code:
  * \code
  * a = a - mean2(a);
@@ -441,12 +443,12 @@ inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
  * \tparam CONT1 A std::vector<double>, Eigen or mrpt::math vectors.
  * \tparam CONT2 A std::vector<double>, Eigen or mrpt::math vectors.
  *
- * \sa
+ * \sa xcorr
  */
 template <class CONT1, class CONT2>
 double ncc_vector(const CONT1& a, const CONT2& b)
 {
-	ASSERT_(a.size() == b.size());
+	ASSERT_EQUAL_(a.size(), b.size());
 
 	double numerator = 0, sum_a = 0, sum_b = 0, result, a_mean, b_mean;
 
@@ -463,6 +465,86 @@ double ncc_vector(const CONT1& a, const CONT2& b)
 	ASSERTMSG_(sum_a * sum_b != 0, "Divide by zero when normalizing.");
 	result = numerator / std::sqrt(sum_a * sum_b);
 	return result;
+}
+
+/** Normalized Cross Correlation between two 1-D vectors, returning a vector
+ *  of scalars, with a peak at the position revealing the offset of "b"
+ *  that makes the two signals most similar:
+ * \code
+ *  r = xcorr(a, b, maxLag);
+ *  lags = mrpt::math::linspace(-maxLag, maxLag);
+ * \endcode
+ *
+ * Where:
+ *  - `a` and `b` are the input signals.
+ *  - `r` is the output cross correlation vector. Its length is `maxLag*2+1`.
+ *  - `maxLag` is the maximum lag to search for.
+ *  - `lags`: If needed, it can be generated with `linspace()`: it will hold the
+ * "delay counts" for each corresponding entry in `r`, the sequence of
+ * integers [-maxLag, maxLag].
+ *
+ * \tparam VECTOR A std::vector<double>, Eigen or mrpt::math vectors.
+ *
+ * \sa ncc_vector
+ * \note (New in MRPT 2.3.3)
+ */
+template <class VECTOR>
+VECTOR xcorr(
+	const VECTOR& a, const VECTOR& b, const size_t maxLag,
+	bool normalized = true)
+{
+	MRPT_START
+
+	const signed int na = a.size(), nb = b.size();
+	ASSERT_(na > 0);
+	ASSERT_(nb > 0);
+	ASSERTMSG_(
+		!normalized || na == nb,
+		"normalized=true is only possible for input sequences of identical "
+		"lengths.");
+
+	const auto a_mean = mrpt::math::mean(a);
+	const auto b_mean = mrpt::math::mean(b);
+
+	// Cache "a" and "b" demeaned and squared to faster repeated access later:
+	auto az = a, asq = a;
+	for (int i = 0; i < na; i++)
+	{
+		az[i] -= a_mean;
+		asq[i] = mrpt::square(az[i]);
+	}
+	auto bz = b, bsq = b;
+	for (int i = 0; i < nb; i++)
+	{
+		bz[i] -= b_mean;
+		bsq[i] = mrpt::square(bz[i]);
+	}
+
+	VECTOR result;
+	result.resize(maxLag * 2 + 1);
+
+	const signed int maxLag_i = static_cast<signed int>(maxLag);
+	for (int lag = -maxLag_i, idx = 0; lag <= maxLag_i; ++lag, ++idx)
+	{
+		double numerator = 0, sum_a = 0, sum_b = 0;
+		for (int i_a = 0; i_a < na; ++i_a)
+		{
+			if (i_a + lag >= nb || i_a + lag < 0) continue;
+
+			numerator += az[i_a] * bz[i_a + lag];
+			if (normalized)
+			{
+				sum_a += asq[i_a];
+				sum_b += bsq[i_a + lag];
+			}
+		}
+		const auto sasb = sum_a * sum_b;
+		const auto r = sasb != 0 ? numerator / std::sqrt(sasb) : numerator;
+		result[idx] = r;
+	}
+
+	return result;
+	MRPT_END
 }
 
 /** @} Misc ops */
