@@ -431,27 +431,34 @@ inline RETURN_MATRIX covVector(const VECTOR_OF_VECTOR& v)
 	return C;
 }
 
-/** Normalised Cross Correlation between two vector patches
- * The Matlab code for this is
+/** Normalised Cross Correlation between two 1-D vectors.
+ * It is equivalent to the following Matlab code:
+ * \code
  * a = a - mean2(a);
  * b = b - mean2(b);
  * r = sum(sum(a.*b))/sqrt(sum(sum(a.*a))*sum(sum(b.*b)));
+ * \endcode
+ * \tparam CONT1 A std::vector<double>, Eigen or mrpt::math vectors.
+ * \tparam CONT2 A std::vector<double>, Eigen or mrpt::math vectors.
+ *
+ * \sa
  */
 template <class CONT1, class CONT2>
-double ncc_vector(const CONT1& patch1, const CONT2& patch2)
+double ncc_vector(const CONT1& a, const CONT2& b)
 {
-	ASSERT_(patch1.size() == patch2.size());
+	ASSERT_(a.size() == b.size());
 
 	double numerator = 0, sum_a = 0, sum_b = 0, result, a_mean, b_mean;
-	a_mean = patch1.mean();
-	b_mean = patch2.mean();
 
-	const size_t N = patch1.size();
+	a_mean = mrpt::math::mean(a);
+	b_mean = mrpt::math::mean(b);
+
+	const size_t N = a.size();
 	for (size_t i = 0; i < N; ++i)
 	{
-		numerator += (patch1[i] - a_mean) * (patch2[i] - b_mean);
-		sum_a += mrpt::square(patch1[i] - a_mean);
-		sum_b += mrpt::square(patch2[i] - b_mean);
+		numerator += (a[i] - a_mean) * (b[i] - b_mean);
+		sum_a += mrpt::square(a[i] - a_mean);
+		sum_b += mrpt::square(b[i] - b_mean);
 	}
 	ASSERTMSG_(sum_a * sum_b != 0, "Divide by zero when normalizing.");
 	result = numerator / std::sqrt(sum_a * sum_b);
