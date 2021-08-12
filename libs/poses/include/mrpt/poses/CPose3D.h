@@ -165,6 +165,12 @@ class CPose3D : public CPose<CPose3D, 6>,
 	{
 		return CPose3D(x, y, z, .0, .0, .0);
 	}
+	/** \overload \note (New in MRPT 2.3.3)
+	 */
+	static CPose3D FromTranslation(const mrpt::math::TPoint3D& t)
+	{
+		return CPose3D(t.x, t.y, t.z, .0, .0, .0);
+	}
 
 	/** Constructor from a 4x4 homogeneous matrix - the passed matrix can be
 	 * actually of any size larger than or equal 3x4, since only those first
