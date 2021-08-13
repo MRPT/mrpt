@@ -158,7 +158,72 @@ const std::string& getMRPTLicense();
  * searches in (1) source code tree, (2) install target paths. */
 std::string find_mrpt_shared_dir();
 
-/** For use in  setConsoleColor */
+/** For use in setConsoleColor().
+ *  \note Numerical values from vt100-console escape codes.
+ */
+enum class ConsoleForegroundColor : uint8_t
+{
+	DEFAULT = 0,
+	BLACK = 30,
+	RED = 31,
+	GREEN = 32,
+	YELLOW = 33,
+	BLUE = 34,
+	MAGENTA = 35,
+	CYAN = 36,
+	WHITE = 37,
+	BRIGHT_BLACK = 90,
+	BRIGHT_RED = 91,
+	BRIGHT_GREEN = 92,
+	BRIGHT_YELLOW = 93,
+	BRIGHT_BLUE = 94,
+	BRIGHT_MAGENTA = 95,
+	BRIGHT_CYAN = 96,
+	BRIGHT_WHITE = 97,
+};
+
+/** For use in setConsoleColor().
+ *  \note Numerical values from vt100-console escape codes.
+ */
+enum class ConsoleBackgroundColor : uint8_t
+{
+	DEFAULT = 0,
+	BLACK = 40,
+	RED = 41,
+	GREEN = 42,
+	YELLOW = 43,
+	BLUE = 44,
+	MAGENTA = 45,
+	CYAN = 46,
+	WHITE = 34,
+	BRIGHT_BLACK = 100,
+	BRIGHT_RED = 101,
+	BRIGHT_GREEN = 102,
+	BRIGHT_YELLOW = 103,
+	BRIGHT_BLUE = 104,
+	BRIGHT_MAGENTA = 105,
+	BRIGHT_CYAN = 106,
+	BRIGHT_WHITE = 107,
+};
+
+/** For use in setConsoleColor().
+ *  \note Numerical values from vt100-console escape codes.
+ */
+enum class ConsoleTextStyle : uint8_t
+{
+	REGULAR = 0,
+	BOLD = 1,
+	DIM = 2,
+	ITALIC = 3,
+	UNDERLINED = 4,
+	BLINKING = 5,
+	REVERSE = 7,
+	INVISIBLE = 8
+};
+
+/** For use in  setConsoleColor()
+ *  \deprecated Prefer ConsoleForegroundColor (since MRPT 2.3.3)
+ */
 enum TConsoleColor
 {
 	CONCOL_NORMAL = 0,
@@ -168,7 +233,14 @@ enum TConsoleColor
 };
 
 /** Changes the text color in the console for the text written from now on.
- * The parameter "color" can be any value in TConsoleColor.
+ * \deprecated Since MRPT 2.3.3, prefer consoleColorAndStyle()
+ *
+ */
+[[deprecated("Use consoleColorAndStyle()")]]  //
+void setConsoleColor(TConsoleColor color, bool changeStdErr = false);
+
+/** Changes the text color and style in the console for the text written from
+ * now on. The parameter "color" can be any value in TConsoleColor.
  *
  * By default the color of "cout" is changed, unless changeStdErr=true, in
  * which case "cerr" is changed.
@@ -176,8 +248,17 @@ enum TConsoleColor
  * \note GNU/Linux: If stdout/stderr is not a real terminal with color support,
  * calling this function will have no effect (i.e. no escape characters will be
  * emitted).
+ *
+ * \note The current implementation only supports a subset of all colors for
+ * Windows terminals.
+ *
+ * \note (New in MRPT 2.3.3)
  */
-void setConsoleColor(TConsoleColor color, bool changeStdErr = false);
+void consoleColorAndStyle(
+	ConsoleForegroundColor fg,
+	ConsoleBackgroundColor bg = ConsoleBackgroundColor::DEFAULT,
+	ConsoleTextStyle style = ConsoleTextStyle::REGULAR,
+	bool applyToStdErr = false);
 
 /** @brief Execute Generic Shell Command
  *

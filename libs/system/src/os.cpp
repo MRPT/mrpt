@@ -485,11 +485,30 @@ uint64_t mrpt::system::os::_strtoull(const char* nptr, char** endptr, int base)
 
 void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
 {
-	static const int TS_NORMAL = 0;
-	static const int TS_BLUE = 1;
-	static const int TS_GREEN = 2;
-	static const int TS_RED = 4;
-#ifdef _WIN32
+	ConsoleForegroundColor fgCol;
+
+	switch (color)
+	{
+		case CONCOL_BLUE: fgCol = ConsoleForegroundColor::BLUE; break;
+		case CONCOL_RED: fgCol = ConsoleForegroundColor::RED; break;
+		case CONCOL_GREEN: fgCol = ConsoleForegroundColor::GREEN; break;
+
+		case CONCOL_NORMAL:
+		default:  //
+			fgCol = ConsoleForegroundColor::DEFAULT;
+			break;
+	};
+
+	consoleColorAndStyle(
+		fgCol, ConsoleBackgroundColor::DEFAULT, ConsoleTextStyle::REGULAR,
+		changeStdErr);
+}
+
+void mrpt::system::consoleColorAndStyle(
+	ConsoleForegroundColor fg, ConsoleBackgroundColor bg,
+	ConsoleTextStyle style, bool applyToStdErr)
+{
+#if defined(_WIN32)
 	static int normal_attributes = -1;
 	HANDLE hstdout =
 		GetStdHandle(changeStdErr ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
@@ -505,29 +524,50 @@ void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
 	SetConsoleTextAttribute(
 		hstdout,
 		(WORD)(
-			color == TS_NORMAL ? normal_attributes
-							   : ((color & TS_BLUE ? FOREGROUND_BLUE : 0) |
-								  (color & TS_GREEN ? FOREGROUND_GREEN : 0) |
-								  (color & TS_RED ? FOREGROUND_RED : 0) |
-								  FOREGROUND_INTENSITY)));
+			color == TS_NORMAL
+				? normal_attributes
+				: ((fg == ConsoleForegroundColor::BLUE ? FOREGROUND_BLUE : 0) |
+				   (fg == ConsoleForegroundColor::GREEN ? FOREGROUND_GREEN
+														: 0) |	//
+				   (fg == ConsoleForegroundColor::RED ? FOREGROUND_RED : 0) |
+				   FOREGROUND_INTENSITY)));
 #else
+	static std::mutex mtx;
+	std::lock_guard<std::mutex> lck(mtx);
+
+	static ConsoleForegroundColor last_fg = ConsoleForegroundColor::DEFAULT;
+	static ConsoleBackgroundColor last_bg = ConsoleBackgroundColor::DEFAULT;
+	static ConsoleTextStyle last_style = ConsoleTextStyle::REGULAR;
+
+	if (fg == last_fg && bg == last_bg && style == last_style) return;
+	last_fg = fg;
+	last_bg = bg;
+	last_style = style;
+
 	// *nix:
-	FILE* f = changeStdErr ? stdout : stderr;
-	const int fd = changeStdErr ? STDOUT_FILENO : STDERR_FILENO;
+	FILE* f = applyToStdErr ? stdout : stderr;
+	const int fd = applyToStdErr ? STDOUT_FILENO : STDERR_FILENO;
 
 	// No color support if it is not a real console:
 	if (!isatty(fd)) return;
 
-	static TConsoleColor last_color = mrpt::system::CONCOL_NORMAL;
-	if (color == last_color) return;
-	last_color = color;
-
-	static const uint8_t ansi_tab[] = {30, 34, 32, 36, 31, 35, 33, 37};
-	int code = 0;
 	fflush(f);
-	if (color != TS_NORMAL)
-		code = ansi_tab[color & (TS_BLUE | TS_GREEN | TS_RED)];
-	fprintf(f, "\x1b[%dm", code);
+
+	std::vector<int> codes;
+	if (int c = static_cast<int>(fg); c != 0) codes.push_back(c);
+	if (int c = static_cast<int>(bg); c != 0) codes.push_back(c);
+	if (int c = static_cast<int>(style); c != 0) codes.push_back(c);
+	if (codes.empty()) codes.push_back(0);
+
+	std::string sFormat;
+	for (size_t i = 0; i < codes.size(); i++)
+	{
+		sFormat.append(std::to_string(codes[i]));
+		if (i + 1 == codes.size()) continue;
+		sFormat.append(";");
+	}
+
+	fprintf(f, "\033[%sm", sFormat.c_str());
 #endif
 }
 
