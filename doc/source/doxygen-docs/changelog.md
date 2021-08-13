@@ -17,6 +17,7 @@
     - Implemented serialization of mrpt::containers::bimap in the new header `#include <mrpt/serialization/bimap_serialization.h>`.
   - \ref mrpt_system_grp
     - Backwards-compatible change: New function mrpt::system::InvalidTimeStamp() used now inside the macro INVALID_TIMESTAMP, so the macro always returns a const reference instead of returning by value.
+    - New function mrpt::system::consoleColorAndStyle()
   - \ref mrpt_vision_grp
     - SIFT descriptors can now be evaluated for arbitrary keypoint coordinates.
 - BUG FIXES:
