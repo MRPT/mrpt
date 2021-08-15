@@ -511,8 +511,8 @@ void mrpt::system::consoleColorAndStyle(
 #if defined(_WIN32)
 	static int normal_attributes = -1;
 	HANDLE hstdout =
-		GetStdHandle(changeStdErr ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
-	fflush(changeStdErr ? stderr : stdout);
+		GetStdHandle(applyToStdErr ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
+	fflush(applyToStdErr ? stderr : stdout);
 
 	if (normal_attributes < 0)
 	{
@@ -524,7 +524,7 @@ void mrpt::system::consoleColorAndStyle(
 	SetConsoleTextAttribute(
 		hstdout,
 		(WORD)(
-			color == TS_NORMAL
+			fg == ConsoleForegroundColor::DEFAULT
 				? normal_attributes
 				: ((fg == ConsoleForegroundColor::BLUE ? FOREGROUND_BLUE : 0) |
 				   (fg == ConsoleForegroundColor::GREEN ? FOREGROUND_GREEN
