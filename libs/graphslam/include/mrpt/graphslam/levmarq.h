@@ -529,8 +529,8 @@ void optimize_graph_spa_levmarq(
 		{
 			// not positive definite so increase mu and try again
 			if (verbose)
-				cout << "[" << __CURRENT_FUNCTION_NAME__
-					 << "] Got non-definite positive matrix, retrying with a "
+				cout << "[optimize_graph_spa_levmarq] Got non-definite "
+						"positive matrix, retrying with a "
 						"larger lambda...\n";
 			lambda *= v;
 			v *= 2;
@@ -638,8 +638,8 @@ void optimize_graph_spa_levmarq(
 					graph.nodes[it->first] = it->second;
 
 				if (verbose)
-					cout << "[" << __CURRENT_FUNCTION_NAME__
-						 << "] Got larger error=" << new_total_sqr_err
+					cout << "[optimize_graph_spa_levmarq] Got larger error="
+						 << new_total_sqr_err
 						 << ", retrying with a larger lambda...\n";
 				// Change params and try again:
 				lambda *= v;
