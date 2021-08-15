@@ -38,15 +38,16 @@ using namespace std;
 // COutputLogger
 // ////////////////////////////////////////////////////////////
 
-static std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>
+static std::array<
+	mrpt::system::ConsoleForegroundColor, NUMBER_OF_VERBOSITY_LEVELS>
 	logging_levels_to_colors = {
-		CONCOL_BLUE,  // LVL_DEBUG
-		CONCOL_NORMAL,	// LVL_INFO
-		CONCOL_GREEN,  // LVL_WARN
-		CONCOL_RED	// LVL_ERROR
+		ConsoleForegroundColor::BLUE,  // LVL_DEBUG
+		ConsoleForegroundColor::DEFAULT,  // LVL_INFO
+		ConsoleForegroundColor::GREEN,	// LVL_WARN
+		ConsoleForegroundColor::RED	 // LVL_ERROR
 };
 
-std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>&
+std::array<mrpt::system::ConsoleForegroundColor, NUMBER_OF_VERBOSITY_LEVELS>&
 	COutputLogger::logging_levels_to_colors()
 {
 	return ::logging_levels_to_colors;
@@ -250,13 +251,17 @@ void COutputLogger::TMsg::dumpToConsole() const
 	// of stdout
 
 	// Set console color:
-	const TConsoleColor concol =
+	const ConsoleForegroundColor concol =
 		COutputLogger::logging_levels_to_colors()[level];
-	mrpt::system::setConsoleColor(concol, dump_to_cerr);
+	mrpt::system::consoleColorAndStyle(
+		concol, ConsoleBackgroundColor::DEFAULT, ConsoleTextStyle::REGULAR,
+		dump_to_cerr);
 	// Output msg:
 	(dump_to_cerr ? std::cerr : std::cout) << str;
 	// Switch back to normal color:
-	mrpt::system::setConsoleColor(CONCOL_NORMAL);
+	mrpt::system::consoleColorAndStyle(
+		ConsoleForegroundColor::DEFAULT, ConsoleBackgroundColor::DEFAULT,
+		ConsoleTextStyle::REGULAR, dump_to_cerr);
 #ifdef _MSC_VER
 	OutputDebugStringA(
 		str.c_str());  // call benchmarked: avrg 90 us (50-200 us)
