@@ -470,32 +470,34 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 			if (tim_last == INVALID_TIMESTAMP || tim_last < obs->timestamp)
 				tim_last = obs->timestamp;
 
+			CSetOfObjects::Ptr gl_objs;
+
 			// Already in the map with the same sensor label?
 			auto it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl != m_gl_objects.end())
 			{
 				// Update existing object:
 				TRenderObject& ro = it_gl->second;
-				auto gl_obj =
-					std::dynamic_pointer_cast<CPointCloudColoured>(ro.obj);
-				gl_obj->loadFromPointsMap(obs->pointcloud.get());
-				gl_obj->setPose(obs->sensorPose);
+				gl_objs = std::dynamic_pointer_cast<CSetOfObjects>(ro.obj);
 				ro.timestamp = obs->timestamp;
 			}
 			else
 			{
 				// Create object:
-				auto gl_obj = std::make_shared<CPointCloudColoured>();
-				gl_obj->setPointSize(3.0);
-				gl_obj->loadFromPointsMap(obs->pointcloud.get());
-				gl_obj->setPose(obs->sensorPose);
+				gl_objs = CSetOfObjects::Create();
 
 				TRenderObject ro;
-				ro.obj = gl_obj;
+				ro.obj = gl_objs;
 				ro.timestamp = obs->timestamp;
 				m_gl_objects[sNameInMap] = ro;
-				m_plot3D->getOpenGLSceneRef()->insert(gl_obj);
+				m_plot3D->getOpenGLSceneRef()->insert(gl_objs);
 			}
+
+			auto& p = theMainWindow->getViewOptions()->m_params;
+
+			// convert to viz object:
+			obsPointCloud_to_viz(obs, p, *gl_objs);
+
 			obs->unload();
 		}
 	}

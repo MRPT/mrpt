@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
+  - RawLogViewer:
+    - Show mrpt::obs::CObservationPointCloud 3D point clouds in main window and scan animation dialog.
   - rosbag2rawlog:
     - PointCloud2 messages are now only converted to mrpt::obs::CObservationRotatingScan is this latter class is specified in the YAML file.
 - Changes in libraries:
