@@ -184,6 +184,23 @@ void obsVelodyne_to_viz(
 	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
 }
 
+void obsPointCloud_to_viz(
+	const mrpt::obs::CObservationPointCloud::Ptr& obs,
+	const ParametersView3DPoints& p, mrpt::opengl::CSetOfObjects& out)
+{
+	out.clear();
+
+	add_common_to_viz(*obs, p, out);
+
+	auto pnts = mrpt::opengl::CPointCloudColoured::Create();
+	out.insert(pnts);
+
+	if (obs->pointcloud) pnts->loadFromPointsMap(obs->pointcloud.get());
+	pnts->setPointSize(p.pointSize);
+
+	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
+}
+
 void obs2Dscan_to_viz(
 	const CObservation2DRangeScan::Ptr& obs, const ParametersView3DPoints& p,
 	mrpt::opengl::CSetOfObjects& out)
@@ -531,6 +548,29 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		// Free memory:
 		obs->point_cloud.clear_deep();
+#endif
+	}
+
+	if (classID == CLASS_ID(CObservationPointCloud))
+	{
+		// ----------------------------------------------------------------------
+		//              CObservationPointCloud
+		// ----------------------------------------------------------------------
+		Notebook1->ChangeSelection(9);
+		auto obs = std::dynamic_pointer_cast<CObservationPointCloud>(sel_obj);
+
+		const auto& p = pnViewOptions->m_params;
+
+		auto glPts = mrpt::opengl::CSetOfObjects::Create();
+		obsPointCloud_to_viz(obs, p, *glPts);
+
+// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+		openGLSceneRef->clear();
+		openGLSceneRef->insert(glPts);
+
+		this->m_gl3DRangeScan->Refresh();
 #endif
 	}
 
