@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
+  - rosbag2rawlog:
+    - PointCloud2 messages are now only converted to mrpt::obs::CObservationRotatingScan is this latter class is specified in the YAML file.
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - New methods mrpt::containers::bimap::erase_by_key(),mrpt::containers::bimap::erase_by_value()

@@ -201,32 +201,24 @@ Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 	if (!fields.count("x") || !fields.count("y") || !fields.count("z"))
 		return {};
 
-	if (fields.count("ring"))
-	{
-		// As a structured 2D range images, if we have ring numbers:
-		auto obsRotScan = mrpt::obs::CObservationRotatingScan::Create();
-		MRPT_TODO("Extract sensor pose from tf frames");
-		const mrpt::poses::CPose3D sensorPose;
-
-		if (!mrpt::ros1bridge::fromROS(*pts, *obsRotScan, sensorPose))
-			THROW_EXCEPTION(
-				"Could not convert pointcloud from ROS to "
-				"CObservationRotatingScan");
-
-		obsRotScan->sensorLabel = msg;
-		return {obsRotScan};
-	}
-	else if (fields.count("intensity"))
+	if (fields.count("intensity"))
 	{
 		// XYZI
 		auto mrptPts = mrpt::maps::CPointsMapXYZI::Create();
 		ptsObs->pointcloud = mrptPts;
+
 		if (!mrpt::ros1bridge::fromROS(*pts, *mrptPts))
-			THROW_EXCEPTION(
-				"Could not convert pointcloud from ROS to "
-				"CPointsMapXYZI");
+		{
+			thread_local bool warn1st = false;
+			if (!warn1st)
+			{
+				warn1st = true;
+				std::cerr << "Could not convert pointcloud from ROS to "
+							 "CPointsMapXYZI. Trying another format.\n";
+			}
+		}
 	}
-	else
+
 	{
 		// XYZ
 		auto mrptPts = mrpt::maps::CSimplePointsMap::Create();
@@ -238,6 +230,36 @@ Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 	}
 
 	return {ptsObs};
+}
+
+Obs toRotatingScan(std::string_view msg, const rosbag::MessageInstance& rosmsg)
+{
+	auto pts = rosmsg.instantiate<sensor_msgs::PointCloud2>();
+
+	// Convert points:
+	std::set<std::string> fields = mrpt::ros1bridge::extractFields(*pts);
+
+	// We need X Y Z:
+	if (!fields.count("x") || !fields.count("y") || !fields.count("z") ||
+		!fields.count("ring"))
+		return {};
+
+	// As a structured 2D range images, if we have ring numbers:
+	auto obsRotScan = mrpt::obs::CObservationRotatingScan::Create();
+	MRPT_TODO("Extract sensor pose from tf frames");
+	const mrpt::poses::CPose3D sensorPose;
+
+	if (!mrpt::ros1bridge::fromROS(*pts, *obsRotScan, sensorPose))
+	{
+		THROW_EXCEPTION(
+			"Could not convert pointcloud from ROS to "
+			"CObservationRotatingScan. Trying another format.");
+	}
+
+	obsRotScan->sensorLabel = msg;
+	obsRotScan->timestamp = mrpt::ros1bridge::fromROS(pts->header.stamp);
+
+	return {obsRotScan};
 }
 
 Obs toIMU(std::string_view msg, const rosbag::MessageInstance& rosmsg)
@@ -377,6 +399,15 @@ class Transcriber
 			{
 				auto callback = [=](const rosbag::MessageInstance& m) {
 					return toPointCloud2(sensorName, m);
+				};
+				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
+					callback);
+				// m_lookup["/tf"].emplace_back(sync->bindTfSync());
+			}
+			else if (sensorType == "CObservationRotatingScan")
+			{
+				auto callback = [=](const rosbag::MessageInstance& m) {
+					return toRotatingScan(sensorName, m);
 				};
 				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
