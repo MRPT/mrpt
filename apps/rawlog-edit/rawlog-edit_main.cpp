@@ -103,7 +103,7 @@ TCLAP::ValueArg<std::string> arg_outdir(
 	".", cmd);
 
 TCLAP::ValueArg<std::string> arg_external_img_extension(
-	"", "image-format", "External image format", false, "jpg",
+	"", "image-format", "External image format", false, "png",
 	"jpg,png,pgm,...", cmd);
 TCLAP::SwitchArg arg_txt_externals(
 	"", "txt-externals",

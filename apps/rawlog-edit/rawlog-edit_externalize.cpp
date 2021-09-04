@@ -139,7 +139,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 				if (obsPc->pointcloud && !obsPc->isExternallyStored())
 				{
-					const string fileName = "pc_"s + label_time +
+					const string fileName = outDir + "pc_"s + label_time +
 						(m_external_txt ? ".txt"s : ".bin"s);
 					obsPc->setAsExternalStorage(
 						fileName,
