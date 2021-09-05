@@ -8,8 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/poses/Lie/SE.h>
 #include <mrpt/poses/sensor_poses.h>
+
+#if MRPT_HAS_FYAML
 
 // clang-format off
 
@@ -54,3 +57,5 @@ TEST(sensor_poses, from_yaml)
 			.0, 1e-3);
 	}
 }
+
+#endif
