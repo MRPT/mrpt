@@ -1670,7 +1670,7 @@ void CImage::makeSureImageIsLoaded(bool allowNonInitialized) const
 
 void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 {
-	mrpt::io::lazy_load_absolute_path(out_path);
+	out_path = mrpt::io::lazy_load_absolute_path(m_externalFile);
 }
 
 void CImage::flipVertical()
