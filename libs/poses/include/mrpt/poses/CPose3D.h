@@ -263,6 +263,16 @@ class CPose3D : public CPose<CPose3D, 6>,
 		return CPose3D(q, x, y, z);
 	}
 
+	/** Builds a pose from a quaternion and a 3D translation.
+	 * \note (New in MRPT 2.3.3)
+	 */
+	template <typename Point3DLike>
+	static CPose3D FromQuaternionAndTranslation(
+		const mrpt::math::CQuaternionDouble& q, const Point3DLike& pt)
+	{
+		return CPose3D(q, pt.x, pt.y, pt.z);
+	}
+
 	/** Fast constructor that leaves all the data uninitialized - call with
 	 * UNINITIALIZED_POSE as argument */
 	inline CPose3D(TConstructorFlags_Poses)
