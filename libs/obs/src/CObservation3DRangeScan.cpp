@@ -14,6 +14,7 @@
 #include <mrpt/core/bits_mem.h>	 // vector_strong_clear
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/lazy_load_path.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
@@ -715,36 +716,12 @@ void CObservation3DRangeScan::rangeImage_getExternalStorageFileAbsolutePath(
 {
 	std::string filName = rangeImage_getExternalStorageFile(rangeImageLayer);
 
-	ASSERT_(filName.size() > 2);
-	if (filName[0] == '/' || (filName[1] == ':' && filName[2] == '\\'))
-	{ out_path = filName; }
-	else
-	{
-		out_path = CImage::getImagesPathBase();
-		size_t N = CImage::getImagesPathBase().size() - 1;
-		if (CImage::getImagesPathBase()[N] != '/' &&
-			CImage::getImagesPathBase()[N] != '\\')
-			out_path += "/";
-		out_path += filName;
-	}
+	out_path = mrpt::io::lazy_load_absolute_path(filName);
 }
 void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(
 	std::string& out_path) const
 {
-	ASSERT_(m_points3D_external_file.size() > 2);
-	if (m_points3D_external_file[0] == '/' ||
-		(m_points3D_external_file[1] == ':' &&
-		 m_points3D_external_file[2] == '\\'))
-	{ out_path = m_points3D_external_file; }
-	else
-	{
-		out_path = CImage::getImagesPathBase();
-		size_t N = CImage::getImagesPathBase().size() - 1;
-		if (CImage::getImagesPathBase()[N] != '/' &&
-			CImage::getImagesPathBase()[N] != '\\')
-			out_path += "/";
-		out_path += m_points3D_external_file;
-	}
+	out_path = mrpt::io::lazy_load_absolute_path(m_points3D_external_file);
 }
 
 void CObservation3DRangeScan::points3D_convertToExternalStorage(

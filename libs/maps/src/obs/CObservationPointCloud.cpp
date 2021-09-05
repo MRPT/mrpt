@@ -11,6 +11,7 @@
 //
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/lazy_load_path.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -112,7 +113,9 @@ void CObservationPointCloud::load() const
 	// Already loaded?
 	if (!isExternallyStored() || (isExternallyStored() && pointcloud)) return;
 
-	const auto abs_filename = m_external_file;
+	const auto abs_filename =
+		mrpt::io::lazy_load_absolute_path(m_external_file);
+	ASSERT_FILE_EXISTS_(abs_filename);
 
 	switch (m_externally_stored)
 	{
@@ -200,7 +203,9 @@ void CObservationPointCloud::unload()
 	if (isExternallyStored() && pointcloud)
 	{
 		// Free memory, saving to the file if it doesn't exist:
-		const auto abs_filename = m_external_file;
+		const auto abs_filename =
+			mrpt::io::lazy_load_absolute_path(m_external_file);
+
 		if (!mrpt::system::fileExists(abs_filename))
 		{
 			switch (m_externally_stored)

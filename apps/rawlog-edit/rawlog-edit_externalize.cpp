@@ -7,6 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/io/lazy_load_path.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationPointCloud.h>
@@ -80,6 +81,9 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 			// Add the final /
 			outDir += "/";
+
+			// Establish as reference external path base:
+			mrpt::io::setImagesPathBase(outDir);
 		}
 
 		bool processOneObservation(CObservation::Ptr& obs) override
@@ -139,7 +143,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 				if (obsPc->pointcloud && !obsPc->isExternallyStored())
 				{
-					const string fileName = outDir + "pc_"s + label_time +
+					const string fileName = "pc_"s + label_time +
 						(m_external_txt ? ".txt"s : ".bin"s);
 					obsPc->setAsExternalStorage(
 						fileName,
@@ -149,7 +153,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 							: CObservationPointCloud::ExternalStorageFormat::
 								  MRPT_Serialization);
 
-					obsPc->unload();
+					obsPc->unload();  // this actually saves the data to disk
 					entries_converted++;
 				}
 				else
