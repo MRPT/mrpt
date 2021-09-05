@@ -16,6 +16,7 @@
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/io/lazy_load_path.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
@@ -51,7 +52,6 @@ IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 
 static bool DISABLE_JPEG_COMPRESSION_value = true;
 static int SERIALIZATION_JPEG_QUALITY_value = 95;
-static std::string IMAGES_PATH_BASE(".");
 
 const thread_local bool MRPT_DEBUG_IMG_LAZY_LOAD =
 	mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
@@ -79,10 +79,13 @@ CExceptionExternalImageNotFound::CExceptionExternalImageNotFound(
 {
 }
 
-const std::string& CImage::getImagesPathBase() { return IMAGES_PATH_BASE; }
+const std::string& CImage::getImagesPathBase()
+{
+	return mrpt::io::getImagesPathBase();
+}
 void CImage::setImagesPathBase(const std::string& path)
 {
-	IMAGES_PATH_BASE = path;
+	mrpt::io::setImagesPathBase(path);
 }
 
 // Do performance time logging?
@@ -1667,22 +1670,7 @@ void CImage::makeSureImageIsLoaded(bool allowNonInitialized) const
 
 void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 {
-	ASSERT_(m_externalFile.size() > 2);
-
-	if (m_externalFile[0] == '/' ||
-		(m_externalFile[1] == ':' &&
-		 (m_externalFile[2] == '\\' || m_externalFile[2] == '/')))
-	{ out_path = m_externalFile; }
-	else
-	{
-		out_path = IMAGES_PATH_BASE;
-
-		size_t N = IMAGES_PATH_BASE.size() - 1;
-		if (IMAGES_PATH_BASE[N] != '/' && IMAGES_PATH_BASE[N] != '\\')
-			out_path += "/";
-
-		out_path += m_externalFile;
-	}
+	mrpt::io::lazy_load_absolute_path(out_path);
 }
 
 void CImage::flipVertical()

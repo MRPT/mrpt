@@ -781,8 +781,15 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 */
 	void setExternalStorage(const std::string& fileName) noexcept;
 
-	/** By default, "."  \sa setExternalStorage */
+	/** By default, "."  \sa setExternalStorage
+	 *  \note Since MRPT 2.3.3 this is a synonym
+	 *        with mrpt::io::getLazyLoadPathBase()
+	 */
 	static const std::string& getImagesPathBase();
+
+	/**  \note Since MRPT 2.3.3 this is a synonym
+	 *        with mrpt::io::setLazyLoadPathBase()
+	 */
 	static void setImagesPathBase(const std::string& path);
 
 	/** See setExternalStorage(). */
