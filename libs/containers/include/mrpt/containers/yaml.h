@@ -318,6 +318,13 @@ class yaml
 	template <typename MATRIX>
 	inline void toMatrix(MATRIX& m) const;
 
+	/** Converts a sequence yaml node into a std::vector, trying to convert all
+	 *  nodes to the same given `Scalar` type.
+	 *  \note (New in MRPT 2.3.3)
+	 */
+	template <typename Scalar>
+	inline std::vector<Scalar> toStdVector() const;
+
 	/** @} */
 
 	/** @name Content and type checkers
@@ -1025,6 +1032,20 @@ inline void yaml::toMatrix(MATRIX& m) const
 	for (int r = 0, idx = 0; r < nRows; r++)
 		for (int c = 0; c < nCols; c++, idx++)
 			m(r, c) = data.operator()(idx).as<entry_t>();
+}
+
+template <typename Scalar>
+inline std::vector<Scalar> yaml::toStdVector() const
+{
+	ASSERT_(isSequence());
+	const auto& seq = asSequence();
+
+	std::vector<Scalar> ret;
+	ret.reserve(seq.size());
+
+	for (const auto& n : seq)
+		ret.push_back(n.as<Scalar>());
+	return ret;
 }
 
 /** Sort operator required for std::map with node_t as key */
