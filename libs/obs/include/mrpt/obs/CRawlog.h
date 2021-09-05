@@ -179,8 +179,7 @@ class CRawlog : public mrpt::serialization::CSerializable
 
 	/** Returns the i'th element in the sequence, as being an action, where
 	 * index=0 is the first object.
-	 *  If it is not an CSensoryFrame, it throws an exception. Do neighter
-	 * modify nor delete the returned pointer.
+	 *  If it is not an CSensoryFrame, it throws an exception.
 	 * \sa size, isAction, getAsAction, getAsObservation
 	 * \exception std::exception If index is out of bounds
 	 */
