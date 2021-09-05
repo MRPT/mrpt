@@ -196,6 +196,8 @@ void obsPointCloud_to_viz(
 	out.insert(pnts);
 
 	if (obs->pointcloud) pnts->loadFromPointsMap(obs->pointcloud.get());
+	pnts->setPose(obs->sensorPose);
+
 	pnts->setPointSize(p.pointSize);
 
 	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
