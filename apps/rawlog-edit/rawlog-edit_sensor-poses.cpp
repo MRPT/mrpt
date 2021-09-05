@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/poses/sensor_poses.h>
 
 #include <map>
 
@@ -34,8 +35,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 	   protected:
 		TOutputRawlogCreator outrawlog;
 
-		using TSensor2PoseMap = std::map<std::string, mrpt::poses::CPose3D>;
-		TSensor2PoseMap desiredSensorPoses;
+		mrpt::poses::SensorToPoseMap desiredSensorPoses;
 
 	   public:
 		size_t m_changedPoses;
@@ -54,39 +54,44 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 			if (ini_poses.empty())
 				throw std::runtime_error(
 					"--sensors-pose op: missing argument: config file to load");
-			if (!fileExists(ini_poses))
-				throw std::runtime_error(
-					string("--sensors-pose op: config file can't be open:") +
-					ini_poses);
+			ASSERT_FILE_EXISTS_(ini_poses);
 
-			// Load the "ini-file" from the text control:
-			CConfigFile cfg(ini_poses);
-
-			// make a list  "sensor_label -> sensor_pose" by parsing the
-			// ini-file:
-
-			std::vector<std::string> sections;
-			cfg.getAllSections(sections);
-
-			for (auto& section : sections)
+			const auto filExt = mrpt::system::extractFileExtension(ini_poses);
+			if (filExt == "yaml" || filExt == "yml")
 			{
-				if (section.empty()) continue;
+				desiredSensorPoses =
+					mrpt::poses::sensor_poses_from_yaml_file(ini_poses);
+			}
+			else
+			{
+				// Assume it's an "ini-file", and
+				// make a list  "sensor_label -> sensor_pose" by parsing the
+				// ini-file:
+				CConfigFile cfg(ini_poses);
 
-				// Get sensor label:
-				string label = cfg.read_string(section, "sensorLabel", "");
-				if (label.empty()) continue;
+				std::vector<std::string> sections;
+				cfg.getAllSections(sections);
 
-				CPose3D the_pose(
-					cfg.read_double(section, "pose_x", 0, true),
-					cfg.read_double(section, "pose_y", 0, true),
-					cfg.read_double(section, "pose_z", 0, true),
-					DEG2RAD(cfg.read_double(section, "pose_yaw", 0)),
-					DEG2RAD(cfg.read_double(section, "pose_pitch", 0)),
-					DEG2RAD(cfg.read_double(section, "pose_roll", 0)));
+				for (auto& section : sections)
+				{
+					if (section.empty()) continue;
 
-				// insert:
-				desiredSensorPoses[label] = the_pose;
-			}  // end for sections
+					// Get sensor label:
+					string label = cfg.read_string(section, "sensorLabel", "");
+					if (label.empty()) continue;
+
+					CPose3D the_pose(
+						cfg.read_double(section, "pose_x", 0, true),
+						cfg.read_double(section, "pose_y", 0, true),
+						cfg.read_double(section, "pose_z", 0, true),
+						DEG2RAD(cfg.read_double(section, "pose_yaw", 0)),
+						DEG2RAD(cfg.read_double(section, "pose_pitch", 0)),
+						DEG2RAD(cfg.read_double(section, "pose_roll", 0)));
+
+					// insert:
+					desiredSensorPoses[label] = the_pose;
+				}  // end for sections
+			}
 
 			if (desiredSensorPoses.empty())
 				throw std::runtime_error(
