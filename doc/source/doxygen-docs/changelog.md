@@ -18,6 +18,8 @@
     - Moved lazy-load operations to mrpt::io::setLazyLoadPathBase() and companion functions, since the older names mentioned images but this setting actually affects other sensors too.
   - \ref mrpt_math_grp
     - New function mrpt::math::xcorr()
+  - \ref mrpt_nav_grp
+    - mrpt::nav::CParameterizedTrajectoryGenerator::initTPObstacleSingle() now always initializes to the maximum free distance, instead of saturating free space when heading to a target waypoint.
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
   - \ref mrpt_serialization_grp

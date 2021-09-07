@@ -259,13 +259,10 @@ void CParameterizedTrajectoryGenerator::initTPObstacles(
 		initTPObstacleSingle(k, TP_Obstacles[k]);
 }
 void CParameterizedTrajectoryGenerator::initTPObstacleSingle(
-	uint16_t k, double& TP_Obstacle_k) const
+	[[maybe_unused]] uint16_t k, double& TP_Obstacle_k) const
 {
-	TP_Obstacle_k = std::min(
-		refDistance,
-		m_nav_dyn_state_target_k != INVALID_PTG_PATH_INDEX
-			? refDistance
-			: this->getPathDist(k, this->getPathStepCount(k) - 1));
+	// Always initialize to the maximum possible free space:
+	TP_Obstacle_k = refDistance;
 }
 
 bool CParameterizedTrajectoryGenerator::debugDumpInFiles(
