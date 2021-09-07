@@ -37,12 +37,6 @@ PTG_collision_behavior_t&
 	return ::COLLISION_BEHAVIOR;
 }
 
-CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator()
-	: m_nav_dyn_state(), m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX)
-
-{
-}
-
 void CParameterizedTrajectoryGenerator::loadDefaultParams()
 {
 	m_alphaValuesCount = 121;

@@ -83,9 +83,11 @@ class CParameterizedTrajectoryGenerator
 	DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
    public:
 	/** Default ctor. Must call `loadFromConfigFile()` before initialization */
-	CParameterizedTrajectoryGenerator();
+	CParameterizedTrajectoryGenerator() = default;
+
 	/**  Destructor  */
 	~CParameterizedTrajectoryGenerator() override = default;
+
 	/** The class factory for creating a PTG from a list of parameters in a
 	 *section of a given config file (physical file or in memory).
 	 *  Possible parameters are:
@@ -463,19 +465,24 @@ class CParameterizedTrajectoryGenerator
 
    protected:
 	double refDistance{.0};
+
 	/** The number of discrete values for "alpha" between -PI and +PI. */
 	uint16_t m_alphaValuesCount{0};
 	double m_score_priority{1.0};
+
 	/** Number of steps for the piecewise-constant approximation of clearance
 	 * from TPS distances [0,1] (Default=5) \sa updateClearance() */
 	uint16_t m_clearance_num_points{5};
+
 	/** Number of paths for the decimated paths analysis of clearance */
 	uint16_t m_clearance_decimated_paths{15};
+
 	/** Updated before each nav step by  */
 	TNavDynamicState m_nav_dyn_state;
-	/** Update in updateNavDynamicState(), contains the path index (k) for the
+
+	/** Updated in updateNavDynamicState(), contains the path index (k) for the
 	 * target. */
-	uint16_t m_nav_dyn_state_target_k;
+	uint16_t m_nav_dyn_state_target_k = INVALID_PTG_PATH_INDEX;
 
 	static const uint16_t INVALID_PTG_PATH_INDEX = static_cast<uint16_t>(-1);
 
