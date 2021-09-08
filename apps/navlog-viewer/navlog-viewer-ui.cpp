@@ -1093,6 +1093,14 @@ void NavlogViewerApp::updateVisualization()
 
 	if (m_cbShowAllDebugFields->checked())
 	{
+		ADD_WIN_TEXTMSG(
+			format(
+				"navDynState: curVelLocal=%s relTarget=%s targetRelSpeed=%.02f",
+				log.navDynState.curVelLocal.asString().c_str(),
+				log.navDynState.relTarget.asString().c_str(),
+				log.navDynState.targetRelSpeed)
+				.c_str());
+
 		for (const auto& e : log.values)
 			ADD_WIN_TEXTMSG(format(
 				"%-30s=%s ", e.first.c_str(),
