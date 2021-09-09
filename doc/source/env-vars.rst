@@ -4,7 +4,9 @@
 Environment variables that MRPT looks for
 ====================================================
 
-The following environment variables may be set to alter some MRPT functionality:
+The following environment variables may be set to alter some MRPT functionality.
+Note that for Boolean flags, the strings ``true``, ``True``, or any nonzero
+numerical value (e.g. ``1``) will be interpreted as "true".
 
 - ``MRPT_BACKTRACE_PRINT_ADDRESS``: Set to ``1`` to show PC (program pointer)
   addresses in mrpt::TCallStackBackTrace::asString() (e.g. in exception backtraces).
@@ -29,7 +31,7 @@ The following environment variables may be set to alter some MRPT functionality:
   default offset from GPS time to UTC time, for use before any GNSS especific
   message informs on this offset. Default: 17 (valid for 01/2016)
 
-- ``MRPT_HWDRIVERS_VERBOSE`: Set to ``1`` to enable verbose output to ``std::cout``
+- ``MRPT_HWDRIVERS_VERBOSE``: Set to ``1`` to enable verbose output to ``std::cout``
   from all mrpt::hwdrivers classes. Default: ``0``.
 
 - ``MRPT_WXSUBSYS_TIMEOUT_MS``: The timeout in milliseconds to wait
