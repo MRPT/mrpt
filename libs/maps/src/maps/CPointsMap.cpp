@@ -1638,6 +1638,10 @@ void CPointsMap::insertAnotherMap(
 	// Set the new size:
 	this->resize(N_this + N_other);
 
+	// Optimization: detect the case of no transformation needed and avoid the
+	// matrix multiplications:
+	const bool identity_tf = (otherPose == CPose3D::Identity());
+
 	mrpt::math::TPoint3Df pt;
 	size_t src, dst;
 	for (src = 0, dst = N_this; src < N_other; src++, dst++)
@@ -1646,11 +1650,17 @@ void CPointsMap::insertAnotherMap(
 		otherMap->getPointFast(src, pt.x, pt.y, pt.z);
 
 		// Translation:
-		double gx, gy, gz;
-		otherPose.composePoint(pt.x, pt.y, pt.z, gx, gy, gz);
+		mrpt::math::TPoint3D g;
+
+		if (!identity_tf)
+			otherPose.composePoint(pt.x, pt.y, pt.z, g.x, g.y, g.z);
+		else
+		{
+			g = pt;
+		}
 
 		// Add to this map:
-		this->setPointFast(dst, gx, gy, gz);
+		this->setPointFast(dst, g.x, g.y, g.z);
 	}
 
 	// Also copy other data fields (color, ...)
