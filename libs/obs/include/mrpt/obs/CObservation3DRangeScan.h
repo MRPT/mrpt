@@ -165,17 +165,6 @@ class CObservation3DRangeScan : public CObservation
 {
 	DEFINE_SERIALIZABLE(CObservation3DRangeScan, mrpt::obs)
 
-   protected:
-	/** If set to true, m_points3D_external_file is valid. */
-	bool m_points3D_external_stored{false};
-	/** 3D points are in CImage::getImagesPathBase()+ this file name */
-	std::string m_points3D_external_file;
-
-	/** If set to true, m_rangeImage_external_file is valid. */
-	bool m_rangeImage_external_stored{false};
-	/** rangeImage is in CImage::getImagesPathBase()+ this file name */
-	std::string m_rangeImage_external_file;
-
    public:
 	CObservation3DRangeScan() = default;
 
@@ -607,6 +596,22 @@ class CObservation3DRangeScan : public CObservation
 	 * Returns a const reference to a global variable. Multithread safe.
 	 * \sa unprojectInto */
 	const unproject_LUT_t& get_unproj_lut() const;
+
+   protected:
+	/** If set to true, m_points3D_external_file is valid. */
+	bool m_points3D_external_stored{false};
+	/** 3D points are in CImage::getImagesPathBase()+ this file name */
+	std::string m_points3D_external_file;
+
+	/** If set to true, m_rangeImage_external_file is valid. */
+	bool m_rangeImage_external_stored{false};
+	/** rangeImage is in CImage::getImagesPathBase()+ this file name */
+	std::string m_rangeImage_external_file;
+
+   private:
+	/** Used to import from old serialized versions */
+	void internal_setRangeImageFromMatrixF(const mrpt::math::CMatrixF& ri);
+	bool m_deserializedFromVersionOlder_v9 = false;
 
 };	// End of class def.
 }  // namespace mrpt::obs
