@@ -143,8 +143,8 @@ void rgbd2rawlog(const string& src_path, const string& out_name)
 	// Range & RGB images are already registered and warped to remove
 	// distortion:
 	const double FOCAL = 525.0;
-	obs.cameraParams.nrows = 640;
-	obs.cameraParams.ncols = 480;
+	obs.cameraParams.nrows = 480;
+	obs.cameraParams.ncols = 640;
 	obs.cameraParams.fx(FOCAL);
 	obs.cameraParams.fy(FOCAL);
 	obs.cameraParams.cx(319.5);
