@@ -372,9 +372,28 @@ void CObservation3DRangeScan::serializeTo(
 	}
 }
 
+void CObservation3DRangeScan::internal_setRangeImageFromMatrixF(
+	const mrpt::math::CMatrixF& ri)
+{
+	const uint32_t rows = ri.rows(), cols = ri.cols();
+
+	// Call "rangeImage_setSize()" to exploit the mempool:
+	if (rows > 0 && cols > 0)
+	{
+		rangeImage_setSize(rows, cols);
+
+		for (uint32_t r = 0; r < rows; r++)
+			for (uint32_t c = 0; c < cols; c++)
+				rangeImage(r, c) =
+					static_cast<uint16_t>(mrpt::round(ri(r, c) / rangeUnits));
+	}
+}
+
 void CObservation3DRangeScan::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
+	m_deserializedFromVersionOlder_v9 = false;
+
 	switch (version)
 	{
 		case 0:
@@ -440,16 +459,8 @@ void CObservation3DRangeScan::serializeFrom(
 						// Convert from old format:
 						mrpt::math::CMatrixF ri;
 						in >> ri;
-						const uint32_t rows = ri.rows(), cols = ri.cols();
-						ASSERT_(rows > 0 && cols > 0);
-
-						// Call "rangeImage_setSize()" to exploit the mempool:
-						rangeImage_setSize(rows, cols);
-
-						for (uint32_t r = 0; r < rows; r++)
-							for (uint32_t c = 0; c < cols; c++)
-								rangeImage(r, c) = static_cast<uint16_t>(
-									mrpt::round(ri(r, c) / rangeUnits));
+						internal_setRangeImageFromMatrixF(ri);
+						m_deserializedFromVersionOlder_v9 = true;
 					}
 					else
 					{
@@ -661,6 +672,10 @@ void CObservation3DRangeScan::load() const
 				layerName = it->first;
 				ri = const_cast<mrpt::math::CMatrix_u16*>(&it->second);
 			}
+
+			// Already loaded? skip:
+			if (ri->rows() != 0) continue;
+
 			const string fil =
 				rangeImage_getExternalStorageFileAbsolutePath(layerName);
 			if (mrpt::system::strCmpI(
@@ -672,15 +687,43 @@ void CObservation3DRangeScan::load() const
 
 				mrpt::io::CFileGZInputStream fi(fil);
 				auto f = mrpt::serialization::archiveFrom(fi);
-				const uint32_t rows = f.ReadAs<uint32_t>();
-				const uint32_t cols = f.ReadAs<uint32_t>();
-				me.rangeImage_setSize(rows, cols);
-				if (ri->size() != 0)
-					f.ReadBufferFixEndianness<uint16_t>(ri->data(), ri->size());
-			}
 
+				if (!m_deserializedFromVersionOlder_v9)
+				{
+					// Normal case: deserialize matrix:
+					const uint32_t rows = f.ReadAs<uint32_t>();
+					const uint32_t cols = f.ReadAs<uint32_t>();
+					me.rangeImage_setSize(rows, cols);
+					if (ri->size() != 0)
+						f.ReadBufferFixEndianness<uint16_t>(
+							ri->data(), ri->size());
+				}
+				else
+				{
+					// Special case: Convert from old format (< v9):
+					mrpt::math::CMatrixF r;
+					f >> r;
+					const_cast<CObservation3DRangeScan*>(this)
+						->internal_setRangeImageFromMatrixF(r);
+
+					// Bug in old version of TUM RGBD rawlog datasets:
+					if (ri->cols() == 640 && ri->rows() == 480 &&
+						static_cast<int>(cameraParams.ncols) == ri->rows() &&
+						static_cast<int>(cameraParams.nrows) == ri->cols())
+					{
+						std::swap(
+							const_cast<uint32_t&>(cameraParams.ncols),
+							const_cast<uint32_t&>(cameraParams.nrows));
+					}
+				}
+			}
 		}  // end for each layer
 	}
+
+	// CImage: no need to force load, they are lazy-loaded automatically upon
+	// access.
+	// intensityImage.forceLoad();
+	// confidenceImage.forceLoad();
 }
 
 void CObservation3DRangeScan::unload()
