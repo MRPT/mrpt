@@ -35,21 +35,19 @@ DECLARE_OP_FUNCTION(op_info)
 	{
 	   public:
 		// Stats to gather:
-		bool has_actSF_format;
-		bool has_obs_format;
-		size_t nActions;
-		size_t nSFs;
+		bool has_actSF_format = false;
+		bool has_obs_format = false;
+		size_t nActions = 0;
+		size_t nSFs = 0;
 		map<string, TInfoPerSensorLabel> infoPerSensorLabel;
+		double firstTimestamp = 0;
+		double lastTimestamp = 0;
 
 		CRawlogProcessor_Info(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 			bool _verbose)
 			: CRawlogProcessor(in_rawlog, cmdline, _verbose)
 		{
-			has_actSF_format = false;
-			has_obs_format = false;
-			nActions = 0;
-			nSFs = 0;
 		}
 
 		bool processOneEntry(
@@ -86,11 +84,21 @@ DECLARE_OP_FUNCTION(op_info)
 				TInfoPerSensorLabel& d =
 					infoPerSensorLabel[obs_indiv->sensorLabel];
 
+				const auto obsTim = obs_indiv->timestamp;
+				if (obsTim != INVALID_TIMESTAMP)
+				{
+					const double t = mrpt::Clock::toDouble(obsTim);
+					if (firstTimestamp == 0 || t < firstTimestamp)
+						firstTimestamp = t;
+
+					if (lastTimestamp == 0 || t > lastTimestamp)
+						lastTimestamp = t;
+				}
+
 				d.className = obs_indiv->GetRuntimeClass()->className;
 				d.occurrences++;
-				if (d.tim_first == INVALID_TIMESTAMP)
-					d.tim_first = obs_indiv->timestamp;
-				d.tim_last = obs_indiv->timestamp;
+				if (d.tim_first == INVALID_TIMESTAMP) d.tim_first = obsTim;
+				d.tim_last = obsTim;
 			}
 
 			// Clear read objects:
@@ -126,6 +134,18 @@ DECLARE_OP_FUNCTION(op_info)
 		 << (proc.has_actSF_format ? "Yes" : "No") << "\n";
 	cout << "Observations format               : "
 		 << (proc.has_obs_format ? "Yes" : "No") << "\n";
+
+	cout << "Earliest timestamp                : "
+		 << mrpt::format("%.06f", proc.firstTimestamp) << " ("
+		 << mrpt::system::dateTimeToString(
+				mrpt::Clock::fromDouble(proc.firstTimestamp))
+		 << " UTC)\n";
+
+	cout << "Latest timestamp                  : "
+		 << mrpt::format("%.06f", proc.lastTimestamp) << " ("
+		 << mrpt::system::dateTimeToString(
+				mrpt::Clock::fromDouble(proc.lastTimestamp))
+		 << " UTC)\n";
 
 	// By sensor labels:
 	cout << "All sensor labels                 : ";
