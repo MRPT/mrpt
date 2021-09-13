@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
+  - rawlog-edit
+    - The `--info` command now also shows the first and last timestamp in a rawlog.
   - RawLogViewer:
     - Show mrpt::obs::CObservationPointCloud 3D point clouds in main window and scan animation dialog.
   - rosbag2rawlog:
