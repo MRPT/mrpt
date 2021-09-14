@@ -726,16 +726,19 @@ void CObservation3DRangeScan::load() const
 	// confidenceImage.forceLoad();
 }
 
-void CObservation3DRangeScan::unload()
+void CObservation3DRangeScan::unload() const
 {
+	auto& me = const_cast<CObservation3DRangeScan&>(*this);
+
 	if (hasPoints3D && m_points3D_external_stored)
 	{
-		mrpt::vector_strong_clear(points3D_x);
-		mrpt::vector_strong_clear(points3D_y);
-		mrpt::vector_strong_clear(points3D_z);
+		mrpt::vector_strong_clear(me.points3D_x);
+		mrpt::vector_strong_clear(me.points3D_y);
+		mrpt::vector_strong_clear(me.points3D_z);
 	}
 
-	if (hasRangeImage && m_rangeImage_external_stored) rangeImage.setSize(0, 0);
+	if (hasRangeImage && m_rangeImage_external_stored)
+		me.rangeImage.setSize(0, 0);
 
 	intensityImage.unload();
 	confidenceImage.unload();
