@@ -197,7 +197,7 @@ void CObservationPointCloud::load() const
 
 	MRPT_END
 }
-void CObservationPointCloud::unload()
+void CObservationPointCloud::unload() const
 {
 	MRPT_START
 	if (isExternallyStored() && pointcloud)
@@ -240,7 +240,8 @@ void CObservationPointCloud::unload()
 		}
 
 		// Now we can safely free the mem:
-		pointcloud.reset();
+		auto& me = const_cast<CObservationPointCloud&>(*this);
+		me.pointcloud.reset();
 	}
 	MRPT_END
 }
