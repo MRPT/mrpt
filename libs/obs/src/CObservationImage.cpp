@@ -170,7 +170,7 @@ void CObservationImage::load() const
 
 	image.forceLoad();
 }
-void CObservationImage::unload()
+void CObservationImage::unload() const
 {
 	const thread_local bool MRPT_DEBUG_OBSIMG_LAZY_LOAD =
 		mrpt::get_env<bool>("MRPT_DEBUG_OBSIMG_LAZY_LOAD", false);
