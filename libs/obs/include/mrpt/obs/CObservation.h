@@ -194,7 +194,7 @@ class CObservation : public mrpt::serialization::CSerializable
 	 * external files (othewise, has no effect).
 	 * \sa load
 	 */
-	virtual void unload()
+	virtual void unload() const
 	{ /* Default implementation: do nothing */
 	}
 

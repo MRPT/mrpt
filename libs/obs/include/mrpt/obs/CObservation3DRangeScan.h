@@ -186,7 +186,7 @@ class CObservation3DRangeScan : public CObservation
 	 * external files (othewise, has no effect).
 	 * \sa load
 	 */
-	void unload() override;
+	void unload() const override;
 	/** @} */
 
 	/** Unprojects the RGB+D image pair into a 3D point cloud (with color if the
