@@ -70,7 +70,7 @@ class CObservationPointCloud : public CObservation
 		@{ */
 	// See base class docs.
 	void load() const override;
-	void unload() override;
+	void unload() const override;
 	/** @} */
 
 	/** \name Point cloud external storage functions

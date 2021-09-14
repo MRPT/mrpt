@@ -84,7 +84,7 @@ class CObservationImage : public CObservation
 	 *  (othewise, the method has no effect).
 	 * \sa load
 	 */
-	void unload() override;
+	void unload() const override;
 	/** @} */
 
 };	// End of class def.
