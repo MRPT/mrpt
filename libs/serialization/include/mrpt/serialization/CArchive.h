@@ -13,6 +13,7 @@
 #include <mrpt/core/is_shared_ptr.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/typemeta/TTypeName.h>
 
 #include <cstdint>
@@ -566,6 +567,30 @@ CArchive& operator>>(CArchive& in, std::shared_ptr<T>& pObj)
 	return in;
 }
 
+template <
+	class ENUM_TYPE, std::enable_if_t<std::is_enum_v<ENUM_TYPE>>* = nullptr>
+CArchive& operator<<(CArchive& out, const ENUM_TYPE& pEnum)
+{
+	const std::string value =
+		mrpt::typemeta::TEnumType<std::remove_cv_t<ENUM_TYPE>>::value2name(
+			pEnum);
+
+	out << value;
+	return out;
+}
+
+template <
+	class ENUM_TYPE, std::enable_if_t<std::is_enum_v<ENUM_TYPE>>* = nullptr>
+CArchive& operator>>(CArchive& in, ENUM_TYPE& pEnum)
+{
+	std::string readValue;
+	in >> readValue;
+
+	pEnum = mrpt::typemeta::TEnumType<std::remove_cv_t<ENUM_TYPE>>::name2value(
+		readValue);
+	return in;
+}
+
 /** CArchive for mrpt::io::CStream classes (use as template argument).
  * \sa Easier to use via function archiveFrom() */
 template <class STREAM>
@@ -584,8 +609,8 @@ class CArchiveStreamBase : public CArchive
 /** Helper function to create a templatized wrapper CArchive object for a:
  * MRPT's `CStream`, `std::istream`, `std::ostream`, `std::stringstream`.
  * \note Use with `std::{.*}stream` requires including
- * `<mrpt/serialization/archiveFrom_std_streams.h>` and explicitly specifying
- * the template parameter like: `archiveFrom<std::istream>` or
+ * `<mrpt/serialization/archiveFrom_std_streams.h>` and explicitly
+ * specifying the template parameter like: `archiveFrom<std::istream>` or
  * `archiveFrom<std::ostream>`.
  * \sa \ref mrpt_serialization_grp, and example serialization_stl/test.cpp
  */

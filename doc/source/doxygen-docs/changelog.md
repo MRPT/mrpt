@@ -30,6 +30,7 @@
     - New function mrpt::poses::sensor_poses_from_yaml()
   - \ref mrpt_serialization_grp
     - Implemented serialization of mrpt::containers::bimap in the new header `#include <mrpt/serialization/bimap_serialization.h>`.
+    - Enums can now be binary-serialized too via `>>` / `<<` streaming operators into an mrpt::serialization::CArchive.
   - \ref mrpt_system_grp
     - Backwards-compatible change: New function mrpt::system::InvalidTimeStamp() used now inside the macro INVALID_TIMESTAMP, so the macro always returns a const reference instead of returning by value.
     - New function mrpt::system::consoleColorAndStyle()
