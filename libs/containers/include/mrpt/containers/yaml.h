@@ -808,11 +808,11 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
 #define MCP_LOAD_OPT(Yaml__, Var__)                                            \
 	if constexpr (std::is_enum_v<decltype(Var__)>)                             \
 	{                                                                          \
-		if (Yaml__.has(#Var__))                                                \
+		if (!Yaml__.empty() && Yaml__.has(#Var__))                             \
 			Var__ = mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(       \
 				Var__)>>::name2value(Yaml__[#Var__].as<std::string>());        \
 	}                                                                          \
-	else if (Yaml__.has(#Var__))                                               \
+	else if (!Yaml__.empty() && Yaml__.has(#Var__))                            \
 	Var__ = Yaml__[#Var__].as<decltype(Var__)>()
 
 /** Just like MCP_LOAD_REQ(), but converts the read number from degrees to
