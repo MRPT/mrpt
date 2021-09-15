@@ -180,6 +180,7 @@ size_t yaml::size() const { return dereferenceProxy()->size(); }
 
 bool yaml::has(const std::string& key) const
 {
+	if (isNullNode()) return false;
 	const map_t& m = this->asMap();
 	return m.end() != m.find(key);
 }
