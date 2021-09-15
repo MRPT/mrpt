@@ -329,7 +329,10 @@ class yaml
 
 	/** @name Content and type checkers
 	 * @{ */
-	/** For map nodes, checks if the given key name exists */
+	/** For map nodes, checks if the given key name exists.
+	 *  Returns false if the node is a `null` node.
+	 *  Throws if the node is not a map or null.
+	 */
 	bool has(const std::string& key) const;
 
 	/** For map or sequence nodes, checks if the container is empty. Also
