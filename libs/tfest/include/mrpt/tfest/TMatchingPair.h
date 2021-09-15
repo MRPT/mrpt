@@ -11,6 +11,7 @@
 #include <mrpt/core/common.h>  // MRPT_IS_X86_AMD64
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TTypeName.h>
 #include <mrpt/typemeta/static_string.h>
 
 #include <cstdint>
