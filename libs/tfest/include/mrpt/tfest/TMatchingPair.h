@@ -10,6 +10,9 @@
 
 #include <mrpt/core/common.h>  // MRPT_IS_X86_AMD64
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/typemeta/static_string.h>
 
 #include <cstdint>
 #include <iosfwd>
@@ -56,7 +59,34 @@ struct TMatchingPairTempl
 	T errorSquareAfterTransformation{0};
 
 	void print(std::ostream& o) const;
+
+	constexpr static auto getClassName()
+	{
+		using namespace mrpt::typemeta;
+		return literal("TMatchingPairTempl<") + TTypeName<T>::get() +
+			literal(">");
+	}
 };
+
+template <typename T>
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const TMatchingPairTempl<T>& obj)
+{
+	out << obj.this_idx << obj.other_idx << obj.this_x << obj.this_y
+		<< obj.this_z << obj.other_x << obj.other_y << obj.other_z
+		<< obj.errorSquareAfterTransformation;
+	return out;
+}
+
+template <typename T>
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, TMatchingPairTempl<T>& obj)
+{
+	in >> obj.this_idx >> obj.other_idx >> obj.this_x >> obj.this_y >>
+		obj.this_z >> obj.other_x >> obj.other_y >> obj.other_z >>
+		obj.errorSquareAfterTransformation;
+	return in;
+}
 
 /** A structure for holding correspondences between two sets of points or
  * points-like entities in 2D or 3D. Using `float` to save space since large
