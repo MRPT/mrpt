@@ -20,6 +20,7 @@
     - Moved lazy-load operations to mrpt::io::setLazyLoadPathBase() and companion functions, since the older names mentioned images but this setting actually affects other sensors too.
   - \ref mrpt_math_grp
     - New function mrpt::math::xcorr()
+    - New header `<mrpt/math/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers
   - \ref mrpt_maps_grp
     - Optimization: mrpt::maps::CPointsMap::insertAnotherMap() avoids matrix multiplication if SE(3) identity is passed as insertion pose.
   - \ref mrpt_nav_grp
@@ -28,6 +29,7 @@
     - Fix const-correctness of mrpt::obs::CObservation::unload() for consistency with load().
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
+    - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers
   - \ref mrpt_serialization_grp
     - Implemented serialization of mrpt::containers::bimap in the new header `#include <mrpt/serialization/bimap_serialization.h>`.
     - Enums can now be binary-serialized too via `>>` / `<<` streaming operators into an mrpt::serialization::CArchive.
