@@ -154,7 +154,7 @@ void CFBORender::getFrame(
 	MRPT_START
 
 	// resize the buffer if it is necessary
-	if (buffer.getWidth() != static_cast<size_t>(m_width) ||
+	if (buffer.isEmpty() || buffer.getWidth() != static_cast<size_t>(m_width) ||
 		buffer.getHeight() != static_cast<size_t>(m_height) ||
 		buffer.getChannelCount() != 3)
 	{ buffer.resize(m_width, m_height, mrpt::img::CH_RGB); }
@@ -174,6 +174,7 @@ void CFBORender::getFrame2(
 	MRPT_START
 
 	// check the buffer size
+	ASSERT_(!buffer.isEmpty());
 	ASSERT_EQUAL_(buffer.getWidth(), static_cast<size_t>(m_width));
 	ASSERT_EQUAL_(buffer.getHeight(), static_cast<size_t>(m_height));
 	ASSERT_EQUAL_(buffer.getChannelCount(), 3);
