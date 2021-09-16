@@ -135,5 +135,14 @@ struct TEnumType
 #undef _MRPT_AUXTOSTR
 };
 
+/** Syntactic sugar for easy conversion of enum values to symbolic name strings.
+ * \note (New in MRPT 2.3.3)
+ */
+template <typename EnumType>
+std::string enum2str(const EnumType& value)
+{
+	return TEnumType<EnumType>::value2name(value);
+}
+
 }  // namespace typemeta
 }  // namespace mrpt
