@@ -206,12 +206,17 @@ NavlogViewerApp::NavlogViewerApp()
 		{
 			auto* panel = layer->add<nanogui::Widget>();
 			panel->setLayout(new nanogui::BoxLayout(
-				nanogui::Orientation::Horizontal, nanogui::Alignment::Fill, 5));
+				nanogui::Orientation::Horizontal, nanogui::Alignment::Fill, 0));
 			panel->add<nanogui::Label>("Min. dist. robot shapes:");
 			edShapeMinDist = panel->add<nanogui::TextBox>("1.0");
 			edShapeMinDist->setEditable(true);
 			edShapeMinDist->setFormat("[0-9.]*");
 		}
+
+		m_cbOrtho2DView = layer->add<nanogui::CheckBox>("Orthogonal 2D mode");
+		m_cbOrtho2DView->setChecked(true);
+		// No need to catch callbacks: the checkbox is checked in the GUI main
+		// loop.
 
 		layer->add<nanogui::Label>("Show for each PTG:");
 		const auto lst = std::vector<std::string>(
@@ -219,11 +224,6 @@ NavlogViewerApp::NavlogViewerApp()
 		m_rbPerPTGPlots = layer->add<nanogui::ComboBox>(lst, lst);
 		m_rbPerPTGPlots->setCallback([this](int) { updateVisualization(); });
 		m_rbPerPTGPlots->setSelectedIndex(2);
-
-		auto cbOrtho = layer->add<nanogui::CheckBox>("Orthogonal");
-		cbOrtho->setCallback([this](bool ortho) {
-			m_win->camera().setCameraProjective(!ortho);
-		});
 	}
 
 	// ===== TAB: Advanced
@@ -479,14 +479,23 @@ void NavlogViewerApp::OnMainIdleLoop()
 	if (m_showCursorXY) { OntimMouseXY(); }
 
 	// Restrict camera motion:
-	MRPT_TODO("cam");
+	if (m_win->background_scene)
+	{
+		auto& mainCam = m_win->camera();
+		if (m_cbOrtho2DView->checked())
+		{
+			mainCam.setElevationDegrees(90);
+			mainCam.setAzimuthDegrees(-90);
+		}
+		mainCam.setCameraProjective(!m_cbOrtho2DView->checked());
+	}
 
 	// Copy camera orientation from the main window into the small XYZ view:
 	if (m_win && m_win->background_scene)
 	{
 		if (auto view = m_win->background_scene->getViewport("xyz"); view)
 		{
-			auto& mainCam = m_win->background_scene->getViewport()->getCamera();
+			auto& mainCam = m_win->camera();
 			auto& xyzCam = view->getCamera();
 
 			xyzCam.setAzimuthDegrees(mainCam.getAzimuthDegrees());
