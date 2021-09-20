@@ -27,6 +27,8 @@
     - mrpt::nav::CParameterizedTrajectoryGenerator::initTPObstacleSingle() now always initializes to the maximum free distance, instead of saturating free space when heading to a target waypoint.
   - \ref mrpt_obs_grp
     - Fix const-correctness of mrpt::obs::CObservation::unload() for consistency with load().
+  - \ref mrpt_opengl_grp
+    - New method mrpt::opengl::COpenGLViewport::setClonedCameraFrom()
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers

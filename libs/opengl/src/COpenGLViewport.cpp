@@ -217,19 +217,33 @@ void COpenGLViewport::renderNormalSceneMode() const
 	{  // Clone: render someone's else objects.
 		ASSERT_(m_parent.get() != nullptr);
 
-		COpenGLViewport::Ptr view = m_parent->getViewport(m_clonedViewport);
+		const auto view = m_parent->getViewport(m_clonedViewport);
 		if (!view)
 			THROW_EXCEPTION_FMT(
 				"Cloned viewport '%s' not found in parent COpenGLScene",
 				m_clonedViewport.c_str());
 
 		objectsToRender = &view->m_objects;
+	}
+	else
+	{  // Normal case: render our own objects:
+		objectsToRender = &m_objects;
+		viewForGetCamera = const_cast<COpenGLViewport*>(this);
+	}
+
+	if (!m_clonedCameraViewport.empty())
+	{
+		const auto view = m_parent->getViewport(m_clonedCameraViewport);
+		if (!view)
+			THROW_EXCEPTION_FMT(
+				"Cloned viewport '%s' not found in parent COpenGLScene",
+				m_clonedViewport.c_str());
+
 		viewForGetCamera =
 			m_isClonedCamera ? view.get() : const_cast<COpenGLViewport*>(this);
 	}
 	else
 	{  // Normal case: render our own objects:
-		objectsToRender = &m_objects;
 		viewForGetCamera = const_cast<COpenGLViewport*>(this);
 	}
 
@@ -546,7 +560,7 @@ void COpenGLViewport::render(
 #endif
 }
 
-uint8_t COpenGLViewport::serializeGetVersion() const { return 5; }
+uint8_t COpenGLViewport::serializeGetVersion() const { return 6; }
 void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -588,6 +602,9 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 	// Added in v5: image mode
 	out.WriteAs<bool>(m_imageViewPlane);
 	if (m_imageViewPlane) out << *m_imageViewPlane;
+
+	// Added in v6:
+	out << m_clonedCameraViewport;
 }
 
 void COpenGLViewport::serializeFrom(
@@ -601,6 +618,7 @@ void COpenGLViewport::serializeFrom(
 		case 3:
 		case 4:
 		case 5:
+		case 6:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
@@ -673,6 +691,10 @@ void COpenGLViewport::serializeFrom(
 			{
 				m_imageViewPlane.reset();
 			}
+
+			if (version >= 6) in >> m_clonedCameraViewport;
+			else
+				m_clonedCameraViewport.clear();
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -973,4 +995,19 @@ auto COpenGLViewport::getBoundingBox() const -> mrpt::math::TBoundingBox
 	}
 
 	return bb;
+}
+
+void COpenGLViewport::setCloneCamera(bool enable)
+{
+	m_isClonedCamera = enable;
+	if (!enable) { m_clonedCameraViewport.clear(); }
+	else
+	{
+		ASSERTMSG_(
+			!m_clonedViewport.empty(),
+			"Error: cannot setCloneCamera(true) on a viewport before calling "
+			"setCloneView()");
+
+		m_clonedCameraViewport = m_clonedViewport;
+	}
 }
