@@ -198,8 +198,14 @@ std::string timeLocalToString(
 /** This function implements time interval formatting: Given a time in seconds,
  * it will return a string describing the interval with the most appropriate
  * unit.
- * E.g.: 1.23 year, 3.50 days, 9.3 hours, 5.3 minutes, 3.34 sec, 178.1 ms,  87.1
- * us.
+ * E.g.:
+ *  - "1 year, 3 days, 4 minutes"
+ *  - "3 days, 8 hours"
+ *  - "9 hours, 4 minutes, 4.3 sec",
+ *  - "3.34 sec"
+ *  - "178.1 ms"
+ *  - "87.1 us"
+ *
  * \sa unitsFormat
  */
 std::string intervalFormat(const double seconds);
