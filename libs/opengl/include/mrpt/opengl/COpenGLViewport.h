@@ -101,10 +101,22 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * \sa setCloneView, setNormalMode
 	 */
 	inline void resetCloneView() { setNormalMode(); }
+
 	/** If set to true, and setCloneView() has been called, this viewport will
 	 * be rendered using the camera of the cloned viewport.
 	 */
-	inline void setCloneCamera(bool enable) { m_isClonedCamera = enable; }
+	void setCloneCamera(bool enable);
+
+	/** Use the camera of another viewport.
+	 *  Note this works even for viewports not in "clone" mode, so you can
+	 *  render different scenes but using the same camera.
+	 */
+	inline void setClonedCameraFrom(const std::string& viewPortName)
+	{
+		m_isClonedCamera = true;
+		m_clonedCameraViewport = viewPortName;
+	}
+
 	/** Resets the viewport to a normal 3D viewport \sa setCloneView,
 	 * setImageView */
 	void setNormalMode();
@@ -363,18 +375,29 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** The camera associated to the viewport */
 	opengl::CCamera m_camera;
+
 	/** The scene that contains this viewport. */
 	mrpt::safe_ptr<COpenGLScene> m_parent;
+
 	/** Set by setCloneView */
 	bool m_isCloned{false};
+
 	/** Set by setCloneCamera */
 	bool m_isClonedCamera{false};
+
 	/** Only if m_isCloned=true */
 	std::string m_clonedViewport;
+
+	/** If m_isClonedCamera && !m_isCloned, take the camera from another view,
+	 * to render a different scene. */
+	std::string m_clonedCameraViewport;
+
 	/** The viewport's name */
 	std::string m_name;
+
 	/** Whether to clear color buffer. */
 	bool m_isTransparent{false};
+
 	/** Default=0, the border around the viewport. */
 	uint32_t m_borderWidth{0};
 
