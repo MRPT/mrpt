@@ -120,9 +120,15 @@ static int sizeFromRatio(
 }
 static int startFromRatio(const double frac, const int dSize)
 {
-	return frac > 1 ? static_cast<int>(frac)
-					: (frac < 0 ? static_cast<int>(dSize + frac)
-								: static_cast<int>(dSize * frac));
+	const bool doWrap = (frac < 0);
+	const auto fracAbs = std::abs(frac);
+
+	const int L = fracAbs > 1 ? static_cast<int>(fracAbs)
+							  : static_cast<int>(dSize * fracAbs);
+
+	int ret = doWrap ? dSize - L : L;
+
+	return ret;
 }
 
 // "Image mode" rendering:
