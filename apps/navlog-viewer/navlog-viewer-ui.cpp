@@ -308,6 +308,16 @@ NavlogViewerApp::NavlogViewerApp()
 		m_win->camera().setElevationDegrees(90.0f);
 		m_win->camera().setZoomDistance(25.0f);
 
+		{
+			auto vi = scene->createViewport("xyz");
+			vi->setViewportPosition(-0.1, 0.0, 0.1, 0.1);
+			vi->setTransparent(true);
+
+			auto glCorners =
+				mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 1.0f);
+			scene->insert(glCorners, "xyz");
+		}
+
 		// XY ground plane:
 		mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
 			mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1, 0.75f);
@@ -467,6 +477,24 @@ void NavlogViewerApp::OnMainIdleLoop()
 	}
 
 	if (m_showCursorXY) { OntimMouseXY(); }
+
+	// Restrict camera motion:
+	MRPT_TODO("cam");
+
+	// Copy camera orientation from the main window into the small XYZ view:
+	if (m_win && m_win->background_scene)
+	{
+		if (auto view = m_win->background_scene->getViewport("xyz"); view)
+		{
+			auto& mainCam = m_win->background_scene->getViewport()->getCamera();
+			auto& xyzCam = view->getCamera();
+
+			xyzCam.setAzimuthDegrees(mainCam.getAzimuthDegrees());
+			xyzCam.setElevationDegrees(mainCam.getElevationDegrees());
+			xyzCam.setOrthogonal(true);
+			xyzCam.setZoomDistance(2.0);
+		}
+	}
 }
 
 bool NavlogViewerApp::OnKeyboardCallback(
