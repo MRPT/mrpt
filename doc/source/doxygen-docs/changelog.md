@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
+  - navlog-viewer:
+    - New checkbox to enforce 2D orthogonal view, which is now the default view.
   - rawlog-edit
     - The `--info` command now also shows the first and last timestamp in a rawlog.
   - RawLogViewer:
@@ -27,6 +29,8 @@
     - mrpt::nav::CParameterizedTrajectoryGenerator::initTPObstacleSingle() now always initializes to the maximum free distance, instead of saturating free space when heading to a target waypoint.
   - \ref mrpt_obs_grp
     - Fix const-correctness of mrpt::obs::CObservation::unload() for consistency with load().
+  - \ref mrpt_opengl_grp
+    - New method mrpt::opengl::COpenGLViewport::setClonedCameraFrom()
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers
@@ -36,6 +40,7 @@
   - \ref mrpt_system_grp
     - Backwards-compatible change: New function mrpt::system::InvalidTimeStamp() used now inside the macro INVALID_TIMESTAMP, so the macro always returns a const reference instead of returning by value.
     - New function mrpt::system::consoleColorAndStyle()
+    - mrpt::system::intervalFormat() now generates more human-friendly strings for time periods larger than 1 second (e.g. "1 year, 3 days, 8 hours").
   - \ref mrpt_vision_grp
     - SIFT descriptors can now be evaluated for arbitrary keypoint coordinates.
 - BUG FIXES:
@@ -48,6 +53,7 @@
   - mrpt::comms::CClientTCPSocket crashed if socket handle >=1024 in Linux (Closes [#1157](https://github.com/MRPT/mrpt/issues/1157))
   - Fix error generating and parsing TUM RGBD dataset rawlog files.
   - Fix regresion in mrpt::opengl::CFBORender::render() throwing an exception if the input image was empty.
+  - Fix incorrect handling of negative, fractional viewport sizes in mrpt::opengl::COpenGLViewport
 
 # Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
