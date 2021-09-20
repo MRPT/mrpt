@@ -43,6 +43,7 @@ class NavlogViewerApp
 	nanogui::CheckBox* m_cbShowCursor = nullptr;
 	nanogui::CheckBox* m_ClearanceOverPath = nullptr;
 	nanogui::ComboBox* m_rbPerPTGPlots = nullptr;
+	nanogui::CheckBox* m_cbOrtho2DView = nullptr;
 
 	nanogui::CheckBox* m_cbManualPickMode = nullptr;
 	nanogui::Slider* m_slidPtgIndex = nullptr;

@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
+  - navlog-viewer:
+    - New checkbox to enforce 2D orthogonal view, which is now the default view.
   - rawlog-edit
     - The `--info` command now also shows the first and last timestamp in a rawlog.
   - RawLogViewer:
