@@ -107,6 +107,16 @@ struct TBoundingBox_
 		mrpt::keep_max(max.z, p.z);
 	}
 
+	/** Returns true if the point lies within the bounding box (including the
+	 * exact border)
+	 * \note (New in MRPT 2.3.3)
+	 */
+	bool containsPoint(const mrpt::math::TPoint3D_<T>& p) const
+	{
+		return p.x >= min.x && p.y >= min.y && p.z >= min.z && p.x <= max.x &&
+			p.y <= max.y && p.z <= max.z;
+	}
+
 	/** Returns a new bounding box, transforming `this` from local coordinates
 	 * to global coordinates, as if `this` was given with respect to `pose`, ie:
 	 *

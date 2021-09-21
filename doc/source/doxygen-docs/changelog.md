@@ -23,6 +23,7 @@
   - \ref mrpt_math_grp
     - New function mrpt::math::xcorr()
     - New header `<mrpt/math/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers
+    - New method mrpt::math::TBoundingBox::containsPoint()
   - \ref mrpt_maps_grp
     - Optimization: mrpt::maps::CPointsMap::insertAnotherMap() avoids matrix multiplication if SE(3) identity is passed as insertion pose.
   - \ref mrpt_nav_grp
