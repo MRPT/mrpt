@@ -10,10 +10,12 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/system/CTimeLogger.h>
 
 #include <chrono>
 #include <iostream>
@@ -41,70 +43,104 @@ void TestDisplay3D()
 		scene.insert(obj);
 	}
 	{
-		opengl::CAxis::Ptr obj = opengl::CAxis::Create();
-		obj->setFrequency(5);
-		obj->enableTickMarks();
-		obj->setAxisLimits(-10, -10, -10, 10, 10, 10);
+		auto obj = opengl::CBox::Create(
+			mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
+		obj->setColor(1.0f, 0.f, 0.f);
+		obj->setName("x");
+		obj->enableShowName(true);
+		obj->setLocation(1.0, 0, 0);
+		scene.insert(obj);
+	}
+	{
+		auto obj = opengl::CBox::Create(
+			mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(.1, .1, .1));
+		obj->setColor(0.0f, 1.f, 0.f);
+		obj->setName("y");
+		obj->enableShowName(true);
+		obj->setLocation(0, 1.0, 0);
+		scene.insert(obj);
+	}
+	{
+		auto obj = opengl::CTexturedPlane::Create();
+		obj->setPlaneCorners(-10, 10, -10, 10);
+		obj->setColor_u8(0x00, 0xff, 0xff, 0xff);
+		obj->setLocation(0, 0, -14);
 		scene.insert(obj);
 	}
 	{
 		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0, 0, 1);
-		obj->setRadius(0.3f);
-		obj->setLocation(0, 0, 1);
+		obj->setRadius(1.0f);
+		obj->setLocation(0, 1, 0);
 		obj->setName("ball_1");
 		scene.insert(obj);
 	}
 	{
 		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(1, 0, 0);
-		obj->setRadius(0.3f);
-		obj->setLocation(-1, -1, 1);
+		obj->setRadius(2.f);
+		obj->setLocation(-3, -1, 1);
 		obj->setName("ball_2");
 		scene.insert(obj);
 	}
 
-	CDisplayWindow win("output");
+	CDisplayWindow win("RGB"), winDepth("Depth");
 
-	int c = 0, width = 640, height = 480;
+	mrpt::system::CTimeLogger tl;
 
-	CFBORender render(width, height);
+	int width = 640, height = 480;
+	const double cameraFOVdeg = 50.0;
+
+	CFBORender renderer(width, height);
 	CImage frame(width, height, CH_RGB);
+	mrpt::math::CMatrixFloat depth;
+
+	scene.getViewport()->setCustomBackgroundColor({0.3f, 0.3f, 0.3f, 1.0f});
+	const float clipMax = 25.0f;
+	scene.getViewport()->setViewportClipDistances(0.1, clipMax);
 
 	{
-		CCamera& camera = render.getCamera(scene);
-		camera.setZoomDistance(50);
+		CCamera& camera = renderer.getCamera(scene);
+		camera.setProjectiveFOVdeg(cameraFOVdeg);
+		camera.setZoomDistance(10);
+		camera.setAzimuthDegrees(0);
+		camera.setElevationDegrees(90);
 	}
 
-	while (!mrpt::system::os::kbhit())
+	while (win.isOpen())
 	{
 		CRenderizable::Ptr obj = scene.getByName("ball_1");
+
+		const double t = mrpt::Clock::nowDouble();
 		obj->setLocation(
-			obj->getPoseX() + cos(obj->getPoseY() / 2) * 0.05,
-			obj->getPoseY() - sin(obj->getPoseX() / 2) * 0.09,
-			obj->getPoseZ() - sin(obj->getPoseX() / 2) * 0.08);
+			1 + cos(t + 0.2) * 2, -2 + sin(t + 0.9) * 4, sin(t + 1.2) * 5);
 
 		obj = scene.getByName("ball_2");
 		obj->setLocation(
-			obj->getPoseX() + cos(obj->getPoseY() / 2) * 0.05,
+			obj->getPoseX() + cos(obj->getPoseY() / 2) * 0.01,
 			obj->getPoseY() - sin(obj->getPoseX() / 2) * 0.09,
 			obj->getPoseZ() - sin(obj->getPoseX() / 2) * 0.08);
 
-		// change the size
-		if (++c > 100)
-		{
-			width = 800, height = 600;
-			frame.resize(width, height, CH_RGB);
-			render.resize(width, height);
-		}
+		tl.enter("render_RGBD");
+		renderer.render_RGBD(scene, frame, depth);
+		tl.leave("render_RGBD");
 
-		// render the scene
-		render.getFrame2(scene, frame);
-
-		// show the redered image
+		// show the rendered RGB image
 		win.showImage(frame);
 
-		std::this_thread::sleep_for(50ms);
+		// Show depth:
+		if (!depth.empty())
+		{
+			std::cout << "minDepth (0=no echo): " << depth.minCoeff()
+					  << " maxDepth: " << depth.maxCoeff() << std::endl;
+
+			mrpt::img::CImage imDepth;
+			depth *= (1.0f / clipMax);
+			imDepth.setFromMatrix(depth, true);
+			winDepth.showImage(imDepth);
+		}
+
+		std::this_thread::sleep_for(25ms);
 	}
 }
 

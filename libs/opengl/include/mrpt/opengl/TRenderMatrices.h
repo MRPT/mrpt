@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPoint3D.h>
 
@@ -26,6 +27,9 @@ struct TRenderMatrices
 {
 	TRenderMatrices() = default;
 
+	/** Is set to true by  COpenGLViewport::updateMatricesFromCamera() */
+	bool initialized = false;
+
 	/** The camera is here. */
 	mrpt::math::TPoint3D eye = {0, 0, 0};
 
@@ -37,11 +41,14 @@ struct TRenderMatrices
 
 	/** In pixels. This may be smaller than the total render window. */
 	size_t viewport_width = 640, viewport_height = 480;
+
 	/** Vertical FOV in degrees. */
 	double FOV = 30.0f;
+
 	/** Camera elev & azimuth, in radians. */
 	double azimuth = .0, elev = .0;
 	double eyeDistance = 1.0f;
+
 	/** true: projective, false: ortho */
 	bool is_projective = true;
 
@@ -86,6 +93,15 @@ struct TRenderMatrices
 	void projectPointPixels(
 		float x, float y, float z, float& proj_u_px, float& proj_v_px,
 		float& proj_depth) const;
+
+	float getLastClipZNear() const { return m_last_z_near; }
+	float getLastClipZFar() const { return m_last_z_far; }
+
+	void saveToYaml(mrpt::containers::yaml& c) const;
+	void print(std::ostream& o) const;
+
+   private:
+	float m_last_z_near = 0, m_last_z_far = 0;
 };
 
 }  // namespace mrpt::opengl

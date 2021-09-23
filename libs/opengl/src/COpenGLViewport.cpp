@@ -216,8 +216,11 @@ void COpenGLViewport::renderNormalSceneMode() const
 	MRPT_START
 
 	// Prepare camera (projection matrix):
+	updateMatricesFromCamera();
+	auto& _ = m_state;
+
+	// Get objects to render:
 	const CListOpenGLObjects* objectsToRender = nullptr;
-	COpenGLViewport* viewForGetCamera = nullptr;
 
 	if (m_isCloned)
 	{  // Clone: render someone's else objects.
@@ -234,86 +237,7 @@ void COpenGLViewport::renderNormalSceneMode() const
 	else
 	{  // Normal case: render our own objects:
 		objectsToRender = &m_objects;
-		viewForGetCamera = const_cast<COpenGLViewport*>(this);
 	}
-
-	if (!m_clonedCameraViewport.empty())
-	{
-		const auto view = m_parent->getViewport(m_clonedCameraViewport);
-		if (!view)
-			THROW_EXCEPTION_FMT(
-				"Cloned viewport '%s' not found in parent COpenGLScene",
-				m_clonedViewport.c_str());
-
-		viewForGetCamera =
-			m_isClonedCamera ? view.get() : const_cast<COpenGLViewport*>(this);
-	}
-	else
-	{  // Normal case: render our own objects:
-		viewForGetCamera = const_cast<COpenGLViewport*>(this);
-	}
-
-	// Get camera:
-	// 1st: if there is a CCamera in the scene (nullptr if no camera found):
-	const CCamera* myCamera =
-		dynamic_cast<CCamera*>(viewForGetCamera->getByClass<CCamera>().get());
-
-	// 2nd: the internal camera of all viewports:
-	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
-
-	ASSERT_(m_camera.m_eyeDistance > 0);
-
-	auto& _ = m_state;
-
-	_.is_projective = myCamera->m_projectiveModel;
-	_.FOV = myCamera->m_projectiveFOVdeg;
-	_.eyeDistance = myCamera->m_eyeDistance;
-	_.azimuth = DEG2RAD(myCamera->m_azimuthDeg);
-	_.elev = DEG2RAD(myCamera->m_elevationDeg);
-
-	if (myCamera->is6DOFMode())
-	{
-		// In 6DOFMode eye is set viewing towards the direction of the
-		// positive Z axis
-		// Up is set as Y axis
-		mrpt::poses::CPose3D viewDirection, pose, at;
-		viewDirection.x(+1);
-		pose = mrpt::poses::CPose3D(myCamera->getPose());
-		at = pose + viewDirection;
-
-		_.eye.x = pose.x();
-		_.eye.y = pose.y();
-		_.eye.z = pose.z();
-		_.pointing.x = at.x();
-		_.pointing.y = at.y();
-		_.pointing.z = at.z();
-		_.up.x = pose.getRotationMatrix()(0, 2);
-		_.up.y = pose.getRotationMatrix()(1, 2);
-		_.up.z = pose.getRotationMatrix()(2, 2);
-	}
-	else
-	{
-		// Normal mode: use "camera orbit" parameters to compute pointing-to
-		// point:
-		const double dis = std::max<double>(0.005, myCamera->m_eyeDistance);
-		_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
-		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
-		_.eye.z = _.pointing.z + dis * sin(_.elev);
-
-		_.pointing.x = myCamera->m_pointingX;
-		_.pointing.y = myCamera->m_pointingY;
-		_.pointing.z = myCamera->m_pointingZ;
-
-		_.up.x = -cos(_.azimuth) * sin(_.elev);
-		_.up.y = -sin(_.azimuth) * sin(_.elev);
-		_.up.z = cos(_.elev);
-	}
-
-	// Compute the projection matrix (p_matrix):
-	_.computeProjectionMatrix(m_clip_min, m_clip_max);
-
-	// Apply eye center and lookAt to p_matrix:
-	_.applyLookAt();
 
 	// Optional pre-Render user code:
 	if (hasSubscribers())
@@ -329,11 +253,14 @@ void COpenGLViewport::renderNormalSceneMode() const
 		m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
 	CHECK_OPENGL_ERROR();
 
-	// Reset model-view 4x4 matrix to the identity transformation:
-	_.mv_matrix.setIdentity();
-
+	// Regular depth model:
+	// 0: far, 1: near
+	// -------------------------------
 	glEnable(GL_DEPTH_TEST);
+	CHECK_OPENGL_ERROR();
+
 	glDepthFunc(GL_LEQUAL);	 // GL_LESS
+	CHECK_OPENGL_ERROR();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -422,7 +349,6 @@ void COpenGLViewport::renderTextMessages() const
 	// Reset model-view 4x4 matrix to the identity transformation:
 	_.mv_matrix.setIdentity();
 
-	// glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -829,6 +755,14 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	const double x_coord, const double y_coord, mrpt::math::TLine3D& out_ray,
 	mrpt::poses::CPose3D* out_cameraPose) const
 {
+	if (!m_state.initialized)
+	{
+		updateMatricesFromCamera();
+		ASSERT_(m_state.initialized);
+	}
+
+	m_state.print(std::cout);
+
 	ASSERTDEB_(m_state.viewport_height > 0 && m_state.viewport_width > 0);
 
 	const double ASPECT =
@@ -1016,4 +950,104 @@ void COpenGLViewport::setCloneCamera(bool enable)
 
 		m_clonedCameraViewport = m_clonedViewport;
 	}
+}
+
+void COpenGLViewport::updateMatricesFromCamera() const
+{
+	auto& _ = m_state;
+
+	// Prepare camera (projection matrix):
+	COpenGLViewport* viewForGetCamera = nullptr;
+
+	if (m_isCloned)
+	{  // Clone: render someone's else objects.
+		ASSERT_(m_parent.get() != nullptr);
+
+		const auto view = m_parent->getViewport(m_clonedViewport);
+		if (!view)
+			THROW_EXCEPTION_FMT(
+				"Cloned viewport '%s' not found in parent COpenGLScene",
+				m_clonedViewport.c_str());
+	}
+	else
+	{  // Normal case: render our own objects:
+		viewForGetCamera = const_cast<COpenGLViewport*>(this);
+	}
+
+	if (!m_clonedCameraViewport.empty())
+	{
+		const auto view = m_parent->getViewport(m_clonedCameraViewport);
+		if (!view)
+			THROW_EXCEPTION_FMT(
+				"Cloned viewport '%s' not found in parent COpenGLScene",
+				m_clonedViewport.c_str());
+
+		viewForGetCamera =
+			m_isClonedCamera ? view.get() : const_cast<COpenGLViewport*>(this);
+	}
+	else
+	{  // Normal case: render our own objects:
+		viewForGetCamera = const_cast<COpenGLViewport*>(this);
+	}
+
+	// Get camera:
+	// 1st: if there is a CCamera in the scene (nullptr if no camera found):
+	const CCamera* myCamera =
+		dynamic_cast<CCamera*>(viewForGetCamera->getByClass<CCamera>().get());
+
+	// 2nd: the internal camera of all viewports:
+	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
+
+	ASSERT_(m_camera.m_eyeDistance > 0);
+
+	_.is_projective = myCamera->m_projectiveModel;
+
+	_.FOV = myCamera->m_projectiveFOVdeg;
+	_.eyeDistance = myCamera->m_eyeDistance;
+	_.azimuth = DEG2RAD(myCamera->m_azimuthDeg);
+	_.elev = DEG2RAD(myCamera->m_elevationDeg);
+
+	if (myCamera->is6DOFMode())
+	{
+		// In 6DOFMode eye is set viewing towards the direction of the
+		// positive Z axis
+		// Up is set as Y axis
+		const auto pose = mrpt::poses::CPose3D(myCamera->getPose());
+		const auto viewDirection =
+			mrpt::poses::CPose3D::FromTranslation(0, 0, 1);
+		const auto at = pose + viewDirection;
+
+		_.eye = pose.translation();
+		_.pointing = at.translation();
+		// "UP" = +Y axis
+		pose.getRotationMatrix().extractColumn(1, _.up);
+	}
+	else
+	{
+		// Normal mode: use "camera orbit" parameters to compute pointing-to
+		// point:
+		const double dis = std::max<double>(0.001, myCamera->m_eyeDistance);
+		_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
+		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
+		_.eye.z = _.pointing.z + dis * sin(_.elev);
+
+		_.pointing.x = myCamera->m_pointingX;
+		_.pointing.y = myCamera->m_pointingY;
+		_.pointing.z = myCamera->m_pointingZ;
+
+		_.up.x = -cos(_.azimuth) * sin(_.elev);
+		_.up.y = -sin(_.azimuth) * sin(_.elev);
+		_.up.z = cos(_.elev);
+	}
+
+	// Compute the projection matrix (p_matrix):
+	_.computeProjectionMatrix(m_clip_min, m_clip_max);
+
+	// Apply eye center and lookAt to p_matrix:
+	_.applyLookAt();
+
+	// Reset model-view 4x4 matrix to the identity transformation:
+	_.mv_matrix.setIdentity();
+
+	_.initialized = true;
 }
