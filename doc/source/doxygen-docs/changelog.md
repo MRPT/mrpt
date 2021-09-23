@@ -34,6 +34,12 @@
     - Fix const-correctness of mrpt::obs::CObservation::unload() for consistency with load().
   - \ref mrpt_opengl_grp
     - New method mrpt::opengl::COpenGLViewport::setClonedCameraFrom()
+    - mrpt::opengl::CFBORender changes:
+      - More consistent naming of API methods: mrpt::opengl::CFBORender::render_RGB().
+      - New method to render into a depth image mrpt::opengl::CFBORender::render_RGBD().
+    - New support for inverse-Z depth OpenGL buffer, better suited to depth-camera simulation:
+      - mrpt::opengl::TRenderMatrices::is_inverse_z_model
+      - mrpt::opengl::CCamera::setInverseZModel()
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers

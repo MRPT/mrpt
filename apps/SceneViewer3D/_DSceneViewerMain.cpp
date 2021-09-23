@@ -1914,12 +1914,14 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			CFBORender render(width, height, true /* skip Glut extra window */);
 			CImage frame(width, height, CH_RGB);
 
-			render.setBackgroundColor(mrpt::img::TColorf(
-				m_canvas->getClearColorR(), m_canvas->getClearColorG(),
-				m_canvas->getClearColorB(), 1.0));
+			m_canvas->getOpenGLSceneRef()
+				->getViewport()
+				->setCustomBackgroundColor(
+					{m_canvas->getClearColorR(), m_canvas->getClearColorG(),
+					 m_canvas->getClearColorB(), 1.0});
 
 			// render the scene
-			render.getFrame(*m_canvas->getOpenGLSceneRef(), frame);
+			render.render_RGB(*m_canvas->getOpenGLSceneRef(), frame);
 
 			frame.saveToFile(sTargetFil);
 		}

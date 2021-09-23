@@ -72,17 +72,19 @@ class CCamera : public CRenderizable
 	float getElevationDegrees() const { return m_elevationDeg; }
 	void setAzimuthDegrees(float ang) { m_azimuthDeg = ang; }
 	void setElevationDegrees(float ang) { m_elevationDeg = ang; }
-	/** Enable/Disable projective mode (vs. orthogonal) */
+
+	/** Enable/Disable projective mode (vs. orthogonal). */
 	void setProjectiveModel(bool v = true) { m_projectiveModel = v; }
-	/** Enable/Disable orthogonal mode (vs. projective) */
+
+	/** Enable/Disable orthogonal mode (vs. projective)*/
 	void setOrthogonal(bool v = true) { m_projectiveModel = !v; }
+
 	/** Set 6DOFMode, if enabled camera is set according to its pose
 	 *(default=false).
-	 *  Conventionally, eye is set looking towards the positive direction of Z
-	 *axis.
-	 *  Up is set as the Y axis.
+	 *  Conventionally, eye is set looking towards +Z axis,
+	 *  "up" is the +Y axis, right is "+X" axis.
 	 *  In this mode azimuth/elevation are ignored.
-	 **/
+	 */
 	void set6DOFMode(bool v) { m_6DOFMode = v; }
 	bool isProjective() const { return m_projectiveModel; }
 	bool isOrthogonal() const { return !m_projectiveModel; }
@@ -114,6 +116,7 @@ class CCamera : public CRenderizable
 	/** If set to true (default), camera model is projective, otherwise, it's
 	 * orthogonal. */
 	bool m_projectiveModel{true};
+
 	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
 	 */
 	float m_projectiveFOVdeg{30};

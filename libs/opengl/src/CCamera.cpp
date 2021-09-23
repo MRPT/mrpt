@@ -54,10 +54,5 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 /** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
 auto CCamera::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	return {
-		{std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		 std::numeric_limits<double>::max()},
-		{-std::numeric_limits<double>::max(),
-		 -std::numeric_limits<double>::max(),
-		 -std::numeric_limits<double>::max()}};
+	return mrpt::math::TBoundingBox::PlusMinusInfinity();
 }
