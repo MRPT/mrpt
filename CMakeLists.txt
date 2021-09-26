@@ -156,23 +156,17 @@ if ((${CMAKE_MRPT_KERNEL} MATCHES "GNU") # It doesnt build in hurd
 	set(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
 endif()
 # Decl option:
-set(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
-if(BUILD_ROBOPEAK_LIDAR)
+set(MRPT_WITH_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
+if(MRPT_WITH_ROBOPEAK_LIDAR)
 	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
 else()
 	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
 endif()
 
 #-----------------------------------
-#  Build the hardware drivers?
-#-----------------------------------
-set(BUILD_HWDRIVERS ON CACHE BOOL "Build hardware drivers (library apps/lib_hwdrivers)?.")
-mark_as_advanced(BUILD_HWDRIVERS)
-
-#-----------------------------------
 #  Build with MRPT-MEX compatibility?
 #-----------------------------------
-set(BUILD_MATLAB OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
+set(MRPT_WITH_MATLAB_WRAPPER OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
 
 # GCC only:
 # ===================================================
@@ -619,12 +613,12 @@ add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-*
 add_subdirectory(3rdparty)   # The third-party libraries
 add_subdirectory(libs)        # The MRPT C++ libraries
 
-set(BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
-if(BUILD_APPLICATIONS)
+set(MRPT_BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
+if(MRPT_BUILD_APPLICATIONS)
 	add_subdirectory(apps)    # The applications:
 endif()
 
-if(BUILD_MATLAB)
+if(MRPT_WITH_MATLAB_WRAPPER)
     add_subdirectory(mex/apps)# The MEX applications
 endif()
 
@@ -639,8 +633,8 @@ add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
-set(BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
-if(BUILD_TESTING)
+set(MRPT_BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
+if(MRPT_BUILD_TESTING)
 	add_subdirectory(tests)  # Build my tests
 endif()
 

@@ -33,8 +33,8 @@ if(PKG_CONFIG_FOUND)
 endif(PKG_CONFIG_FOUND)
 
 if (NOT ASSIMP_FOUND)
-	set(BUILD_ASSIMP ON CACHE BOOL "Build an embedded version of Assimp (3D models importer)")
-	if (BUILD_ASSIMP)
+	set(MRPT_BUILD_ASSIMP ON CACHE BOOL "Build an embedded version of Assimp (3D models importer)")
+	if (MRPT_BUILD_ASSIMP)
 
 		# Use embedded version:
 		# --------------------------
@@ -45,7 +45,7 @@ if (NOT ASSIMP_FOUND)
 		  URL               "https://github.com/assimp/assimp/archive/v4.1.0.tar.gz"
 		  URL_MD5           "83b53a10c38d964bd1e69da0606e2727"
 		  SOURCE_DIR        "${MRPT_BINARY_DIR}/3rdparty/assimp/"
-		  CMAKE_ARGS 
+		  CMAKE_ARGS
 			-DASSIMP_BUILD_ASSIMP_TOOLS=OFF
 			-DASSIMP_BUILD_SAMPLES=OFF
 			-DASSIMP_BUILD_STATIC_LIB=ON
@@ -69,7 +69,7 @@ if (NOT ASSIMP_FOUND)
 
 		set(CMAKE_MRPT_HAS_ASSIMP 1)
 		set(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
-	endif (BUILD_ASSIMP)
+	endif ()
 endif()
 
 if (ASSIMP_FOUND_VIA_CMAKE)
@@ -80,7 +80,7 @@ if (ASSIMP_FOUND_VIA_CMAKE)
 		set(ASSIMP_MSVC_VERSION "vc120")
 	elseif(MSVC14)
 		set(ASSIMP_MSVC_VERSION "vc140")
-	endif(MSVC12)
+	endif()
 
 	if(MSVC12 OR MSVC14)
 		set(ASSIMP_CUSTOM_LIB_NAME "assimp-mrpt-${ASSIMP_MSVC_VERSION}-mt")
@@ -104,7 +104,7 @@ if (ASSIMP_FOUND_VIA_CMAKE)
 			install(FILES "${F}" DESTINATION bin)
 		endforeach(F)
 	endif()
-endif (ASSIMP_FOUND_VIA_CMAKE)
+endif ()
 
 # ASSIMP_ROOT_DIR - the root directory where the installation can be found
 # ASSIMP_CXX_FLAGS - extra flags for compilation
@@ -127,5 +127,5 @@ if (CMAKE_MRPT_HAS_ASSIMP)
 		message(STATUS " ASSIMP_LIBRARIES: ${ASSIMP_LIBRARIES}")
 		message(STATUS " ASSIMP_LIBRARY_DIRS: ${ASSIMP_LIBRARY_DIRS}")
 		message(STATUS " ASSIMP_VERSION: ${ASSIMP_VERSION}")
-	endif ($ENV{VERBOSE})
-endif (CMAKE_MRPT_HAS_ASSIMP)
+	endif ()
+endif ()
