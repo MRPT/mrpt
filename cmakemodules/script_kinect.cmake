@@ -34,20 +34,20 @@ endif (NOT DISABLE_DETECT_LIBFREENECT)
 # Deduce default ON/OFF state of Kinect support:
 if (UNIX)
 	if (PKG_LIBUSB10_FOUND)
-		set(BUILD_KINECT_DEFAULT ON)
+		set(MRPT_WITH_KINECT_DEFAULT ON)
 	else(PKG_LIBUSB10_FOUND)
-		set(BUILD_KINECT_DEFAULT OFF)
+		set(MRPT_WITH_KINECT_DEFAULT OFF)
 	endif(PKG_LIBUSB10_FOUND)
 else(UNIX)
-	set(BUILD_KINECT_DEFAULT OFF)
+	set(MRPT_WITH_KINECT_DEFAULT OFF)
 endif(UNIX)
 
 set(CMAKE_MRPT_HAS_KINECT 0)  # Will be set to 1 only if all conditions are OK
 set(CMAKE_MRPT_HAS_FREENECT 0)
 set(CMAKE_MRPT_HAS_FREENECT_SYSTEM 0) # This means libfreenect is already built somewhere else in the system.
 
-set(BUILD_KINECT ${BUILD_KINECT_DEFAULT} CACHE BOOL "Build support for Xbox Kinect")
-if(BUILD_KINECT)
+set(MRPT_WITH_KINECT ${MRPT_WITH_KINECT_DEFAULT} CACHE BOOL "Build support for Xbox Kinect")
+if(MRPT_WITH_KINECT)
 	# Check deps on Linux/Windows!!!
 
 	if(UNIX)
@@ -75,15 +75,15 @@ if(BUILD_KINECT)
 						message(STATUS "- PKG_LIBUSB10_LIBRARIES: ${PKG_LIBUSB10_LIBRARIES}")
 					endif()
 				else()
-					message(SEND_ERROR "BUILD_KINECT requires libusb-1.0. Install it or disable BUILD_KINECT")
+					message(SEND_ERROR "MRPT_WITH_KINECT requires libusb-1.0. Install it or disable MRPT_WITH_KINECT")
 				endif()
 			endif()
 		endif()
 	elseif()
 		# Kinect for Win32: libfreenect ---------
-		set(BUILD_KINECT_USE_FREENECT ON  CACHE BOOL "Kinect using OpenKinect's libfreenect")
+		set(MRPT_WITH_KINECT_USE_FREENECT ON  CACHE BOOL "Kinect using OpenKinect's libfreenect")
 
-		if (BUILD_KINECT_USE_FREENECT)
+		if (MRPT_WITH_KINECT_USE_FREENECT)
 			# Find packages needed to build library in Windows
 			find_package(libusb-1.0 REQUIRED)
 
@@ -96,11 +96,11 @@ if(BUILD_KINECT)
 				set(CMAKE_MRPT_HAS_FREENECT_SYSTEM 0)  # use embedded version
 			else ()
 				# Error:
-				message(SEND_ERROR "*** ERROR *** Please, set libusb-1 variables or disable BUILD_KINECT.")
+				message(SEND_ERROR "*** ERROR *** Please, set libusb-1 variables or disable MRPT_WITH_KINECT.")
 			endif()
 		endif ()
 	else()
-		message(SEND_ERROR "Sorry! Kinect is supported on Unix or Win32 only. Please, disable BUILD_KINECT.")
+		message(SEND_ERROR "Sorry! Kinect is supported on Unix or Win32 only. Please, disable MRPT_WITH_KINECT.")
 	endif()
 
 else()

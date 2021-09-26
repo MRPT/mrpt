@@ -5,12 +5,12 @@
 set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
 
 # Leave at the user's choice to disable the python bindings:
-option(DISABLE_PYTHON_BINDINGS "Disable the build (if possible) of Python bindings" "OFF")
-if(DISABLE_PYTHON_BINDINGS)
+option(MRPT_DISABLE_PYTHON_BINDINGS "Disable the build (if possible) of Python bindings" "OFF")
+if(MRPT_DISABLE_PYTHON_BINDINGS)
     set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
-endif(DISABLE_PYTHON_BINDINGS)
+endif()
 
-if(UNIX AND NOT DISABLE_PYTHON_BINDINGS)
+if(UNIX AND NOT MRPT_DISABLE_PYTHON_BINDINGS)
     #set( BUILD_PY_BINDINGS OFF CACHE BOOL "If you want to build the MRPT python bindings, enable this.")
     # find packages quiet
     find_package(Boost QUIET COMPONENTS python3)

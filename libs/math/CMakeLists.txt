@@ -23,7 +23,7 @@ endif()
 set_property(GLOBAL PROPERTY mrpt_math_UNIT_TEST_EXTRA_DEPS mrpt-io)
 
 # eigen3:
-if (EIGEN_USE_EMBEDDED_VERSION)
+if (MRPT_EIGEN_USE_EMBEDDED_VERSION)
 	set(eigen_dep EP_eigen3)
 else()
 	set(eigen_dep Eigen3) # find_package() lib name

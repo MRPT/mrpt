@@ -12,7 +12,7 @@
 # Add an option to choose, if coverage should be enabled or not. If enabled
 # marked targets will be build with coverage support and appropriate targets
 # will be added. If disabled coverage will be ignored for *ALL* targets.
-option(ENABLE_COVERAGE "Enable coverage build." OFF)
+option(MRPT_ENABLE_COVERAGE "Enable coverage build." OFF)
 
 set(COVERAGE_FLAG_CANDIDATES
 	# gcc and clang
@@ -33,7 +33,7 @@ set(COVERAGE_FLAG_CANDIDATES
 #   support by the compiler or it is disabled by the user.
 function (add_coverage TNAME)
 	# only add coverage for target, if coverage is support and enabled.
-	if (ENABLE_COVERAGE)
+	if (MRPT_ENABLE_COVERAGE)
 		foreach (TNAME ${ARGV})
 			add_coverage_target(${TNAME})
 		endforeach ()
@@ -61,7 +61,7 @@ endfunction ()
 # Exit this module, if coverage is disabled. add_coverage is defined before this
 # return, so this module can be exited now safely without breaking any build-
 # scripts.
-if (NOT ENABLE_COVERAGE)
+if (NOT MRPT_ENABLE_COVERAGE)
 	return()
 endif ()
 
