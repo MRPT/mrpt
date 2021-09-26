@@ -51,7 +51,7 @@ mark_as_advanced(CMAKE_TIMING_VERBOSE)
 # Enable verbose timing display?
 if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmakemodules/custom_output.sh")
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_CURRENT_SOURCE_DIR}/cmakemodules/custom_output.sh")
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
 # Detect wordsize:
@@ -63,7 +63,7 @@ endif()
 
 include(cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
 
 # -------------------------
 #            CodeCov
@@ -79,7 +79,7 @@ set(MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH "50" CACHE STRING "Maximum number of st
 mark_as_advanced(MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH)
 
 # The root directory for all MRPT libraries/modules:
-set(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
+set(MRPT_LIBS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
 
 # Windows default: lib. Debian pkgs: set from outside rules script
 if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
@@ -579,7 +579,7 @@ endif()
 #	get_directory_property(mrpt_root_dir_COMPILE_OPTIONS COMPILE_OPTIONS)
 #try_run(RUN_EIGEN_RETVAL BUILD_EIGEN_SUCCESS
 #	${CMAKE_BINARY_DIR}
-#	SOURCES "${CMAKE_SOURCE_DIR}/parse-files/eigen_detect_alignment.cpp"
+#	SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/eigen_detect_alignment.cpp"
 #	COMPILE_DEFINITIONS ""
 #	CMAKE_FLAGS
 #	-DINCLUDE_DIRECTORIES:STRING=${MRPT_EIGEN_INCLUDE_DIR}
@@ -624,7 +624,7 @@ endif()
 
 # Generate .h to locate MRPT sources:
 configure_file(
-	"${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in"
+	"${CMAKE_CURRENT_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in"
 	"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
 	)
 
@@ -664,7 +664,7 @@ endif ()
 
 # Write MRPT-version file (the global one, each mrpt-xxxx also has its own):
 configure_file(
-	"${CMAKE_SOURCE_DIR}/parse-files/mrpt-config.cmake"
+	"${CMAKE_CURRENT_SOURCE_DIR}/parse-files/mrpt-config.cmake"
 	"${CMAKE_BINARY_DIR}/mrpt-config.cmake"
 	COPYONLY)
 write_basic_package_version_file(
