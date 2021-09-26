@@ -15,7 +15,7 @@ list(APPEND math_EXTRA_SRCS_NAME 	"math/kmeans" "math/kmeans")
 
 # debug visualizer for Eigen matrices
 if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
-	list(APPEND math_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/debug/*.natvis")
+	list(APPEND math_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/debug/*.natvis")
 	list(APPEND math_EXTRA_SRCS_NAME 	"MSVC debug natvis")
 endif()
 

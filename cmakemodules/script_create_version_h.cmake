@@ -46,7 +46,7 @@ if ("" STREQUAL "${CMAKE_SOURCE_DATE_EPOCH}")
 endif()
 
 
-configure_file("${CMAKE_SOURCE_DIR}/parse-files/version.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h")
+configure_file("${MRPT_SOURCE_DIR}/parse-files/version.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h")
 
 
 # Prepare version.rc for Windows apps:

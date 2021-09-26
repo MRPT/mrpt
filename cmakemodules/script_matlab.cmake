@@ -73,11 +73,11 @@ endif(NOT CMAKE_MRPT_HAS_MATLAB)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Copy all .m files (classes, samples, helpers...) to the build directory
-file(COPY ${CMAKE_SOURCE_DIR}/mex/+mrpt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
-file(COPY ${CMAKE_SOURCE_DIR}/mex/samples DESTINATION ${CMAKE_BINARY_DIR}/mex)
+file(COPY ${MRPT_SOURCE_DIR}/mex/+mrpt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
+file(COPY ${MRPT_SOURCE_DIR}/mex/samples DESTINATION ${CMAKE_BINARY_DIR}/mex)
 # Copy setup file and README
-file(COPY ${CMAKE_SOURCE_DIR}/mex/mrpt_setup.m DESTINATION ${CMAKE_BINARY_DIR}/mex)
-file(COPY ${CMAKE_SOURCE_DIR}/mex/README.txt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
+file(COPY ${MRPT_SOURCE_DIR}/mex/mrpt_setup.m DESTINATION ${CMAKE_BINARY_DIR}/mex)
+file(COPY ${MRPT_SOURCE_DIR}/mex/README.txt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
 
 endif(NOT DISABLE_MATLAB)
 
