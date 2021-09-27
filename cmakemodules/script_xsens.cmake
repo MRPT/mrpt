@@ -24,23 +24,23 @@ else()
 		endif ()
 	endif ()
 endif()
-set(BUILD_XSENS "${DEFAULT_BUILD_MT4}" CACHE BOOL "Build xSens 4th generation libraries (interface 4th generation xSens MT* devices)")
+set(MRPT_WITH_XSENS "${DEFAULT_BUILD_MT4}" CACHE BOOL "Build xSens 4th generation libraries (interface 4th generation xSens MT* devices)")
 
 # Check user doesn't enable it without prerequisites:
-if ("${DEFAULT_BUILD_MT4}" STREQUAL "OFF" AND BUILD_XSENS)
+if ("${DEFAULT_BUILD_MT4}" STREQUAL "OFF" AND MRPT_WITH_XSENS)
 	# Force disable:
-	set(BUILD_XSENS OFF CACHE BOOL "Build xSens 4th generation libraries (interface 4th generation xSens MT* devices)" FORCE)
+	set(MRPT_WITH_XSENS OFF CACHE BOOL "Build xSens 4th generation libraries (interface 4th generation xSens MT* devices)" FORCE)
 	# Warning msg:
 	message(STATUS "*Warning*: Disabling XSens MT4 due to lack of required libs (libusb1.0 & libudev)")
 endif ()
 
 # checks for MT4:
-if (BUILD_XSENS)
+if (MRPT_WITH_XSENS)
 	if (WIN32)
 		# In Windows: Library WinUsb
 		# It's supposed to come by default with Windows XP SP2 and newer, but some have reported problems, so:
 		if (NOT HAVE_WINUSB_H)
-			message(SEND_ERROR "BUILD_XSENS requires <winusb.h>. Fix the missing header, or disable BUILD_XSENS")
+			message(SEND_ERROR "MRPT_WITH_XSENS requires <winusb.h>. Fix the missing header, or disable MRPT_WITH_XSENS")
 		endif ()
 	else()
 		# In Linux: libusb-1.0
@@ -48,7 +48,7 @@ if (BUILD_XSENS)
 			# Perfect, we have libusb-1.0
 			set(XSENS4_LIBS ${XSENS4_LIBS} ${PKG_LIBUDEV_LIBRARIES})
 		else()
-			message(SEND_ERROR "BUILD_XSENS requires libusb-1.0. Install it or disable BUILD_XSENS")
+			message(SEND_ERROR "MRPT_WITH_XSENS requires libusb-1.0. Install it or disable MRPT_WITH_XSENS")
 		endif()
 
 		# In Linux: libdev
@@ -61,7 +61,7 @@ endif ()
 # Create config vars for xSens:
 set(CMAKE_MRPT_HAS_xSENS 0)
 set(CMAKE_MRPT_HAS_xSENS_SYSTEM 0)
-if(BUILD_XSENS)
+if(MRPT_WITH_XSENS)
 	set(CMAKE_MRPT_HAS_xSENS 1)
 	set(CMAKE_MRPT_HAS_xSENS_SYSTEM 0)
 endif()

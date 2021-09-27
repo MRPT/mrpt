@@ -15,7 +15,7 @@ list(APPEND math_EXTRA_SRCS_NAME 	"math/kmeans" "math/kmeans")
 
 # debug visualizer for Eigen matrices
 if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
-	list(APPEND math_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/debug/*.natvis")
+	list(APPEND math_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/debug/*.natvis")
 	list(APPEND math_EXTRA_SRCS_NAME 	"MSVC debug natvis")
 endif()
 
@@ -23,7 +23,7 @@ endif()
 set_property(GLOBAL PROPERTY mrpt_math_UNIT_TEST_EXTRA_DEPS mrpt-io)
 
 # eigen3:
-if (EIGEN_USE_EMBEDDED_VERSION)
+if (MRPT_EIGEN_USE_EMBEDDED_VERSION)
 	set(eigen_dep EP_eigen3)
 else()
 	set(eigen_dep Eigen3) # find_package() lib name

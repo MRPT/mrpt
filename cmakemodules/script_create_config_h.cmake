@@ -13,4 +13,4 @@ set(MRPT_CONFIG_FILE_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include/mrpt-configuration
 file(MAKE_DIRECTORY  "${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 file(MAKE_DIRECTORY  "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt")
 
-configure_file("${CMAKE_SOURCE_DIR}/parse-files/config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h")
+configure_file("${MRPT_SOURCE_DIR}/parse-files/config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h")

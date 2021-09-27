@@ -8,7 +8,7 @@
       "inheritEnvironments": [ "msvc_x86" ],
       "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
       "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
-      "cmakeCommandArgs": "-DEIGEN_USE_EMBEDDED_VERSION=ON",
+      "cmakeCommandArgs": "-DMRPT_EIGEN_USE_EMBEDDED_VERSION=ON",
       "buildCommandArgs": "",
       "ctestCommandArgs": ""
     },
@@ -19,7 +19,7 @@
       "inheritEnvironments": [ "msvc_x86" ],
       "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
       "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
-      "cmakeCommandArgs": "-DEIGEN_USE_EMBEDDED_VERSION=ON",
+      "cmakeCommandArgs": "-DMRPT_EIGEN_USE_EMBEDDED_VERSION=ON",
       "buildCommandArgs": "",
       "ctestCommandArgs": ""
     },
@@ -30,7 +30,7 @@
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
       "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
-      "cmakeCommandArgs": "-DEIGEN_USE_EMBEDDED_VERSION=ON",
+      "cmakeCommandArgs": "-DMRPT_EIGEN_USE_EMBEDDED_VERSION=ON",
       "buildCommandArgs": "",
       "ctestCommandArgs": ""
     },
@@ -41,7 +41,7 @@
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
       "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
-      "cmakeCommandArgs": "-DEIGEN_USE_EMBEDDED_VERSION=ON",
+      "cmakeCommandArgs": "-DMRPT_EIGEN_USE_EMBEDDED_VERSION=ON",
       "buildCommandArgs": "",
       "ctestCommandArgs": ""
     }

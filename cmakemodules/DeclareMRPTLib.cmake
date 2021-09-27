@@ -124,13 +124,13 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	#
 	#  For code simplicity, let's use the same list, just adding the default sources there:
 	list(APPEND ${name}_EXTRA_SRCS
-		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.cpp"
-		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.c"
-		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.cxx"
-		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.h"
-		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.h"
-		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.hpp"
-		"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/lib_mrpt_${name}.h"
+		"${MRPT_SOURCE_DIR}/libs/${name}/src/*.cpp"
+		"${MRPT_SOURCE_DIR}/libs/${name}/src/*.c"
+		"${MRPT_SOURCE_DIR}/libs/${name}/src/*.cxx"
+		"${MRPT_SOURCE_DIR}/libs/${name}/src/*.h"
+		"${MRPT_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.h"
+		"${MRPT_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.hpp"
+		"${MRPT_SOURCE_DIR}/doc/doxygen-pages/lib_mrpt_${name}.h"
 		)
 	list(APPEND ${name}_EXTRA_SRCS_NAME
 		"${name}"
@@ -144,7 +144,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	# Only add these ones for "normal" libraries:
 	if (NOT ${headers_only})
 		list(APPEND ${name}_EXTRA_SRCS
-			"${CMAKE_SOURCE_DIR}/libs/${name}/src/registerAllClasses.cpp"
+			"${MRPT_SOURCE_DIR}/libs/${name}/src/registerAllClasses.cpp"
 			)
 		list(APPEND ${name}_EXTRA_SRCS_NAME
 			"Class register"
@@ -214,8 +214,8 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	set(all_${name}_srcs  ${${name}_srcs})
 
 	# Add main lib header (may not exist in meta-libs only):
-	if (EXISTS "${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
-		set(all_${name}_srcs ${all_${name}_srcs} "${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
+	if (EXISTS "${MRPT_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
+		set(all_${name}_srcs ${all_${name}_srcs} "${MRPT_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
 	endif ()
 
 	if (NOT ${headers_only})
@@ -227,7 +227,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 		# private include dirs for this lib:
 		target_include_directories(${name} PRIVATE
-				$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libs/${name}/src/> # To include ${name}-precomp.h
+				$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/libs/${name}/src/> # To include ${name}-precomp.h
 			)
 		if(MSVC)  # Define math constants if built with MSVC
 			target_compile_definitions(${name} PUBLIC _USE_MATH_DEFINES)
@@ -358,7 +358,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 					COMPILE_FLAGS "/Yu${name}-precomp.h")
 
 				# But for the file used to build the precomp. header:
-				set_source_files_properties("${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
+				set_source_files_properties("${MRPT_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
 					PROPERTIES
 					COMPILE_FLAGS "/Yc${name}-precomp.h")
 			else()
@@ -371,7 +371,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 				set_target_properties(${name} PROPERTIES
 					COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}"
 				)
-				set_target_properties(${name} PROPERTIES	COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h")
+				set_target_properties(${name} PROPERTIES	COTIRE_CXX_PREFIX_HEADER_INIT "${MRPT_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h")
 				cotire(${name})
 
 				if($ENV{VERBOSE})
@@ -385,8 +385,8 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			endif()
 
 			source_group("Precompiled headers" FILES
-				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
-				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h"
+				"${MRPT_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
+				"${MRPT_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h"
 				)
 		endif()
 
