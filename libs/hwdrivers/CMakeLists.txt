@@ -96,7 +96,7 @@ if(CMAKE_MRPT_HAS_LIBPCAP)
 endif()
 
 # XSens MT4 required libs:
-if (BUILD_XSENS)
+if (MRPT_WITH_XSENS)
 	target_link_libraries(hwdrivers PRIVATE ${XSENS4_LIBS})
 endif ()
 

@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.3.3: UNRELEASED
+- Changes in build system:
+  - Most important CMake variables now are prefixed with `MRPT_` to avoid name collisions if using MRPT as a git submodule in a larger project.
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.

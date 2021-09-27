@@ -68,7 +68,7 @@ before_build:
   - mkdir build
   # AppVeyor has a 90 minutes limit: disable some parts.
   - cmake -S. -Bbuild -G "Visual Studio 16 2019" \
-    -DEIGEN_USE_EMBEDDED_VERSION=ON -DBUILD_ASSIMP=OFF \
+    -DMRPT_EIGEN_USE_EMBEDDED_VERSION=ON -DMRPT_BUILD_ASSIMP=OFF \
     -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% \
     -DBUILD_mrpt-hmtslam=OFF \
     -DBUILD_APP_DifOdometry-Camera=OFF -DBUILD_APP_DifOdometry-Datasets=OFF \
@@ -87,7 +87,7 @@ before_build:
     -DBUILD_APP_mrpt-performance=OFF \
     -DBUILD_APP_yaml2ini=OFF \
     -DBUILD_APP_ini2yaml=OFF \
-    -DBUILD_KINECT=OFF
+    -DMRPT_WITH_KINECT=OFF
 on_failure:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 

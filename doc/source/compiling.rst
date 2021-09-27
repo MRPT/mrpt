@@ -186,12 +186,12 @@ Using cmake-gui
 ------------------------
 For all platforms/compilers:
 
-- ``BUILD_APPLICATIONS`` : By default ON, if unchecked the applications won’t be built. Useful if you only want to build MRPT libraries. Notice that you can also always use the MRPT_BUILD_DIR/libs/MRPT_ALL_LIB.* solution (or Makefile) to achieve the same.
+- ``MRPT_BUILD_APPLICATIONS`` : By default ON, if unchecked the applications won’t be built. Useful if you only want to build MRPT libraries. Notice that you can also always use the MRPT_BUILD_DIR/libs/MRPT_ALL_LIB.* solution (or Makefile) to achieve the same.
 - ``BUILD_xSENS``: Whether to use the CMT library for interfacing xSens inertial sensors. Default is ON.
-- ``BUILD_EXAMPLES``: Whether you want to compile all the examples in the “/samples” directory. Default is OFF.
-- ``BUILD_KINECT``: By default ON. Uncheck if you don’t have the required dependencies (read above for your OS).
+- ``MRPT_BUILD_EXAMPLES``: Whether you want to compile all the examples in the “/samples” directory. Default is OFF.
+- ``MRPT_WITH_KINECT``: By default ON. Uncheck if you don’t have the required dependencies (read above for your OS).
 - ``BUILD_SHARED_LIBS``: Build static libraries if set to OFF, or dynamic libraries (.so/.dll) otherwise. Default is ON, and it’s strongly recommended to always use shared libs unless you have special need for static ones.
-- ``EIGEN_USE_EMBEDDED_VERSION``: By default O, instructs MRPT to use the Eigen headers in MRPT/otherlibs/eigen3/. Uncheck if you have Eigen installed in the system and it’s visible through pkg-config. It’s recommended to uncheck this option if you have eigen3 installed in your system (today, eigen3 it’s not yet in any distro repository, that’s why it’s ON by default).
+- ``MRPT_EIGEN_USE_EMBEDDED_VERSION``: By default O, instructs MRPT to use the Eigen headers in MRPT/otherlibs/eigen3/. Uncheck if you have Eigen installed in the system and it’s visible through pkg-config. It’s recommended to uncheck this option if you have eigen3 installed in your system (today, eigen3 it’s not yet in any distro repository, that’s why it’s ON by default).
 - ``MRPT_ALWAYS_CHECKS_DEBUG``: If set to ON, additional security checks will be performed at run-time in many classes. Default is OFF.
 - ``MRPT_ALWAYS_CHECKS_DEBUG_MATRICES``: If set to ON, additional security checks will be performed at run-time in several Matrix operations. Default is ON.
 - ``MRPT_ENABLE_EMBEDDED_ENABLED_PROFILER``: If enabled, all code blocks within macros "MRPT_BEGIN/MRPT_END" will be profiled and the statistics dumped to the console at the end of execution of any program. Default is OFF.

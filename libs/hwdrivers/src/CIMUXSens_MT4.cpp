@@ -293,7 +293,7 @@ CIMUXSens_MT4::CIMUXSens_MT4() : m_impl(mrpt::make_impl<CIMUXSens_MT4::Impl>())
 
 #else
 	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
+		"MRPT has been compiled with 'MRPT_WITH_XSENS'=OFF, so this class "
 		"cannot be used.");
 #endif
 }
@@ -336,7 +336,7 @@ void CIMUXSens_MT4::doProcess()
 
 #else
 	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
+		"MRPT has been compiled with 'MRPT_WITH_XSENS'=OFF, so this class "
 		"cannot be used.");
 #endif
 }
@@ -503,7 +503,7 @@ void CIMUXSens_MT4::initialize()
 
 #else
 	THROW_EXCEPTION(
-		"MRPT has been compiled with 'BUILD_XSENS'=OFF, so this class "
+		"MRPT has been compiled with 'MRPT_WITH_XSENS'=OFF, so this class "
 		"cannot be used.");
 #endif
 }

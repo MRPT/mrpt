@@ -29,5 +29,4 @@ extraction:
       - "liboctomap-dev"
       - "libglfw3-dev"
     configure:
-      command: "cmake -S . -B . -DBUILD_APPLICATIONS=OFF"
-
+      command: "cmake -S . -B . -DMRPT_BUILD_APPLICATIONS=OFF"

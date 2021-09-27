@@ -40,7 +40,7 @@ std::string getcwd();
 /** Attempts to find the directory `[PREFIX/]share/mrpt/` and returns its
  * absolute path, or empty string if not found.
  * Example return paths: Linux after installing = `/usr/share/mrpt/`;
- * manually-built system = `[CMAKE_SOURCE_DIR]/share/mrpt/`, etc.  */
+ * manually-built system = `[MRPT_SOURCE_DIR]/share/mrpt/`, etc.  */
 std::string getShareMRPTDir();
 
 /** Creates a directory
