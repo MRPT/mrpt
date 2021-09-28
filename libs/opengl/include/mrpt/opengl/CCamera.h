@@ -9,23 +9,35 @@
 
 #pragma once
 
+#include <mrpt/img/TCamera.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/CPoseOrPoint.h>
 
 namespace mrpt::opengl
 {
 class COpenGLViewport;
-class CCamera;
 
-/** A camera: if added to a scene, the viewpoint defined by this camera will be
- * used instead of the camera parameters set in COpenGLViewport::m_camera.
- *  A camera can be defined to provide a projective or orthogonal view of the
- * world by setting the member CCamera::m_projectiveModel.
+/** Defines the intrinsic and extrinsic camera coordinates from which to render
+ * a 3D scene.
  *
- * Alternatively, a camera pose and orientation can be given as a CPose3D object
- * if set6DOFMode() is set to `true`, then the pose can be changed with
- * `CRenderizable::setPose()`. Pose axis convention is +X pointing forwards, +Z
- * up.
+ *  By default, each viewport has its own camera, accesible via
+ *  COpenGLViewport::getCamera(), but if a CCamera object is added as an object
+ *  to be rendered, it will override the internal viewport camera.
+ *
+ *  Projection models:
+ *  - Projective model, parameterized via setProjectiveFOVdeg() (vertical field
+ * of view, in degrees), or
+ *  - Projective model, by means of a computer vision pinhole intrinsic
+ * parameter set (see `setProjectiveFromPinhole()`), or
+ *  - Orthogonal projection model (use `setProjectiveModel(false)`, or
+ * `setOrthogonal()`).
+ *
+ * Placing cameras can be done:
+ * - Using an "orbit" model: defined by a "pointing to" point, a distance to
+ * object, and azimuth + elevation angles; or
+ * - Directly giving the SE(3) camera pose, setting the set6DOFMode() to `true`
+ * and storing the desired pose with CRenderizable::setPose(). Pose axis
+ * convention is +Z pointing forwards, +X right, +Y down.
  *
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
@@ -43,6 +55,31 @@ class CCamera : public CRenderizable
 		// None: a camera is a non-visual element.
 		return {};
 	}
+
+	/** @name Projection model (camera intrinsic parameters)
+	 *  @{ */
+
+	/** Enable/Disable projective mode (vs. orthogonal). */
+	void setProjectiveModel(bool v = true) { m_projectiveModel = v; }
+
+	/** Enable/Disable orthogonal mode (vs. projective)*/
+	void setOrthogonal(bool v = true) { m_projectiveModel = !v; }
+
+	/** Vertical field-of-View in degs, only when projectiveModel=true
+	 * (default=30 deg).
+	 */
+	void setProjectiveFOVdeg(float ang) { m_projectiveFOVdeg = ang; }
+	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
+	 */
+	float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }
+
+	bool isProjective() const { return m_projectiveModel; }
+	bool isOrthogonal() const { return !m_projectiveModel; }
+
+	/** @} */
+
+	/** @name Defines camera pose (camera extrinsic parameters)
+	 *  @{ */
 
 	void setPointingAt(float x, float y, float z)
 	{
@@ -73,29 +110,16 @@ class CCamera : public CRenderizable
 	void setAzimuthDegrees(float ang) { m_azimuthDeg = ang; }
 	void setElevationDegrees(float ang) { m_elevationDeg = ang; }
 
-	/** Enable/Disable projective mode (vs. orthogonal). */
-	void setProjectiveModel(bool v = true) { m_projectiveModel = v; }
-
-	/** Enable/Disable orthogonal mode (vs. projective)*/
-	void setOrthogonal(bool v = true) { m_projectiveModel = !v; }
-
-	/** Set 6DOFMode, if enabled camera is set according to its pose
-	 *(default=false).
-	 *  Conventionally, eye is set looking towards +Z axis,
-	 *  "up" is the +Y axis, right is "+X" axis.
-	 *  In this mode azimuth/elevation are ignored.
+	/** Set 6DOFMode, if enabled camera is set according to its pose, set via
+	 *CRenderizable::setPose(). (default=false).
+	 * Conventionally, eye is set looking towards +Z axis, "down" is the +Y
+	 * axis, right is "+X" axis. In this mode azimuth/elevation are ignored.
 	 */
 	void set6DOFMode(bool v) { m_6DOFMode = v; }
-	bool isProjective() const { return m_projectiveModel; }
-	bool isOrthogonal() const { return !m_projectiveModel; }
+
 	bool is6DOFMode() const { return m_6DOFMode; }
-	/** Vertical field-of-View in degs, only when projectiveModel=true
-	 * (default=30 deg).
-	 */
-	void setProjectiveFOVdeg(float ang) { m_projectiveFOVdeg = ang; }
-	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
-	 */
-	float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }
+
+	/** @} */
 
 	/** Render does nothing here. */
 	void render(const RenderContext& rc) const override {}

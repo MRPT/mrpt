@@ -271,7 +271,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void insert(const CRenderizable::Ptr& newObject);
 
 	/** Compute the current 3D camera pose: +Z points forward, +X to the right,
-	 * +Y up.
+	 * +Y down.
 	 *
 	 * \sa get3DRayForPixelCoord
 	 */
