@@ -13,10 +13,10 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/poses/CPoseOrPoint.h>
 
+#include <optional>
+
 namespace mrpt::opengl
 {
-class COpenGLViewport;
-
 /** Defines the intrinsic and extrinsic camera coordinates from which to render
  * a 3D scene.
  *
@@ -44,7 +44,6 @@ class COpenGLViewport;
  */
 class CCamera : public CRenderizable
 {
-	friend class COpenGLViewport;
 	DEFINE_SERIALIZABLE(CCamera, mrpt::opengl)
    public:
 	CCamera() = default;
@@ -65,6 +64,12 @@ class CCamera : public CRenderizable
 	/** Enable/Disable orthogonal mode (vs. projective)*/
 	void setOrthogonal(bool v = true) { m_projectiveModel = !v; }
 
+	void setProjectiveFromPinhole(const mrpt::img::TCamera& camIntrinsics)
+	{
+		m_projectiveModel = true;
+		m_pinholeModel = camIntrinsics;
+	}
+
 	/** Vertical field-of-View in degs, only when projectiveModel=true
 	 * (default=30 deg).
 	 */
@@ -72,6 +77,13 @@ class CCamera : public CRenderizable
 	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
 	 */
 	float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }
+
+	bool hasPinholeModel() const { return m_pinholeModel.has_value(); }
+
+	const std::optional<mrpt::img::TCamera>& getPinholeModel() const
+	{
+		return m_pinholeModel;
+	}
 
 	bool isProjective() const { return m_projectiveModel; }
 	bool isOrthogonal() const { return !m_projectiveModel; }
@@ -103,6 +115,12 @@ class CCamera : public CRenderizable
 	float getPointingAtX() const { return m_pointingX; }
 	float getPointingAtY() const { return m_pointingY; }
 	float getPointingAtZ() const { return m_pointingZ; }
+
+	mrpt::math::TPoint3Df getPointingAt() const
+	{
+		return {m_pointingX, m_pointingY, m_pointingZ};
+	}
+
 	void setZoomDistance(float z) { m_eyeDistance = z; }
 	float getZoomDistance() const { return m_eyeDistance; }
 	float getAzimuthDegrees() const { return m_azimuthDeg; }
@@ -141,9 +159,14 @@ class CCamera : public CRenderizable
 	 * orthogonal. */
 	bool m_projectiveModel{true};
 
-	/** Field-of-View in degs, only when projectiveModel=true (default=30 deg).
+	/** If defined, it overrides m_projectiveFOVdeg. */
+	std::optional<mrpt::img::TCamera> m_pinholeModel;
+
+	/** Field-of-View in degs, only when projectiveModel=true and there is no
+	 * pinhole model assigned. (default=30 deg).
 	 */
 	float m_projectiveFOVdeg{30};
+
 	/** If set to true, camera pose is used when rendering the viewport */
 	bool m_6DOFMode{false};
 };
