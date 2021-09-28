@@ -9,21 +9,19 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
 
 #include <array>
 #include <functional>  // hash
 
-namespace mrpt::containers
-{
-class yaml;
-}
-
 namespace mrpt::img
 {
-/** Parameters for the Brown-Conrady camera lens distortion model.
- *  The parameters obtained for one camera resolution can be used for any other
+/** Intrinsic parameters for a pinhole projective camera model, plus
+ * Brown-Conrady camera lens distortion model.
+ *
+ * The parameters obtained for one camera resolution can be used for any other
  * resolution by means of the method TCamera::scaleToResolution()
  *
  * \sa The application camera-calib-gui for calibrating a camera
@@ -67,9 +65,11 @@ class TCamera : public mrpt::serialization::CSerializable
 	 *
 	 */
 	mrpt::math::CMatrixDouble33 intrinsicParams;
+
 	/** [k1 k2 t1 t2 k3 k4 k5 k6] -> k_i: parameters of radial distortion, t_i:
 	 * parameters of tangential distortion (default=0) */
 	std::array<double, 8> dist{{.0, .0, .0, .0, .0, .0, .0, .0}};
+
 	/** The focal length of the camera, in meters (can be used among
 	 * 'intrinsicParams' to determine the pixel size). */
 	double focalLengthMeters{.0};
