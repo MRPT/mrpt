@@ -41,7 +41,7 @@ struct TRenderMatrices
 	mrpt::math::TPoint3D up = {0, 0, 0};
 
 	/** In pixels. This may be smaller than the total render window. */
-	size_t viewport_width = 640, viewport_height = 480;
+	uint32_t viewport_width = 640, viewport_height = 480;
 
 	/** Vertical FOV in degrees, used only if pinhole_model is not set. */
 	double FOV = 30.0f;
