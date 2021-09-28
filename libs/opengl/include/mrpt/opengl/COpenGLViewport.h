@@ -270,10 +270,20 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 */
 	void insert(const CRenderizable::Ptr& newObject);
 
-	/** Compute the current 3D camera pose.
+	/** Compute the current 3D camera pose: +Z points forward, +X to the right,
+	 * +Y down.
+	 *
 	 * \sa get3DRayForPixelCoord
 	 */
 	void getCurrentCameraPose(mrpt::poses::CPose3D& out_cameraPose) const;
+
+	/// \overload
+	mrpt::poses::CPose3D getCurrentCameraPose() const
+	{
+		mrpt::poses::CPose3D p;
+		getCurrentCameraPose(p);
+		return p;
+	}
 
 	/** Changes the point of view of the camera, from a given pose.
 	 * \sa getCurrentCameraPose
@@ -334,6 +344,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	mrpt::math::TBoundingBox getBoundingBox() const;
 
+	/** Returns a copy of the latest render matrices structure. */
+	TRenderMatrices getRenderMatrices() const { return m_state; }
+
 	/** @} */  // end of Contained objects set/get/search
 
 	/** Destructor: clears all objects. */
@@ -349,6 +362,8 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void render(
 		const int render_width, const int render_height,
 		const int render_offset_x = 0, const int render_offset_y = 0) const;
+
+	void updateMatricesFromCamera() const;
 
    protected:
 	/** Initializes all textures in the scene (See

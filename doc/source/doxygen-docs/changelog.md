@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.3.3: UNRELEASED
+# Version 2.4.0: UNRELEASED
 - Changes in build system:
   - Most important CMake variables now are prefixed with `MRPT_` to avoid name collisions if using MRPT as a git submodule in a larger project.
 - Changes in applications:
@@ -34,6 +34,10 @@
     - Fix const-correctness of mrpt::obs::CObservation::unload() for consistency with load().
   - \ref mrpt_opengl_grp
     - New method mrpt::opengl::COpenGLViewport::setClonedCameraFrom()
+    - mrpt::opengl::CFBORender changes:
+      - More consistent naming of API methods: mrpt::opengl::CFBORender::render_RGB().
+      - New method to render into a depth image mrpt::opengl::CFBORender::render_RGBD().
+    - mrpt::opengl::CCamera::setProjectiveFromPinhole() now allows defining a camera by means of a pinhole model.
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers

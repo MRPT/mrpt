@@ -9,18 +9,23 @@
 
 #pragma once
 
+#include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLScene.h>
 
 namespace mrpt::opengl
 {
-/** A class for rendering 3D scenes off-screen directly into an image using
- * OpenGL extensions (glext).
- *  To define a background color, set it in the scene's "main" viewport.
+/** Render 3D scenes off-screen directly to RGB and/or RGB+D images.
  *
- *  You can add overlaid text messages, see base class CTextMessageCapable
+ * Main methods:
+ * - render_RGB(): Renders a scene into an RGB image.
+ * - render_RGBD(): Renders a scene into an RGB and depth images.
  *
- * \sa Example \ref opengl_offscreen_render_example
+ *  To define a background color, define it in your
+ * `scene.getViewport()->setCustomBackgroundColor()`. You can add overlaid text
+ * messages, see base class CTextMessageCapable
+ *
+ * \sa \ref opengl_offscreen_render_example , \ref gui_fbo_render_example
  * \ingroup mrpt_opengl_grp
  */
 class CFBORender
@@ -38,49 +43,52 @@ class CFBORender
 	/** Destructor */
 	virtual ~CFBORender();
 
-	/** Change the scene camera.
-	 */
-	void setCamera(const COpenGLScene& scene, const CCamera& camera);
-
-	/** Get a reference to the scene camera.
-	 */
-	CCamera& getCamera(const COpenGLScene& scene);
-
-	/** Render the scene and get the rendered rgb image. Resizes the image
-	   buffer if it is necessary.
-	  */
-	void getFrame(const COpenGLScene& scene, mrpt::img::CImage& image);
-
-	/** Render the scene and get the rendered rgb image. Does not resize the
-	   image buffer.
-	  */
-	void getFrame2(const COpenGLScene& scene, mrpt::img::CImage& image);
-
-	/** Resize the rendering canvas size. */
-	void resize(unsigned int width, unsigned int height);
-
-	/** Get the default background color (unles an COpenGLViewport defines a
-	 * custom color) */
-	const mrpt::img::TColorf& getBackgroundColor() const
+	/** Change the scene camera */
+	void setCamera(const COpenGLScene& scene, const CCamera& camera)
 	{
-		return m_default_bk_color;
+		scene.getViewport("main")->getCamera() = camera;
 	}
 
-	/** Set the default background color (unles an COpenGLViewport defines a
-	 * custom color) */
-	void setBackgroundColor(const mrpt::img::TColorf& col)
+	/** Get a reference to the scene camera */
+	CCamera& getCamera(const COpenGLScene& scene)
 	{
-		m_default_bk_color = col;
+		return scene.getViewport("main")->getCamera();
 	}
+
+	/** Render the scene and get the rendered RGB image. Resizes the image
+	 *  buffer if necessary to the configured render resolution.
+	 *
+	 *  \sa resize(), render_RGBD()
+	 */
+	void render_RGB(const COpenGLScene& scene, mrpt::img::CImage& outRGB);
+
+	/** Render the scene and get the rendered RGB and depth images.
+	 * Resizes the provided buffers if necessary to the configured render
+	 * resolution.
+	 * The output depth image is in linear depth distance units (e.g. "meters").
+	 * Note that values is depth, not range, that is, it's the "+z" coordinate
+	 * of a point as seen from the camera, with +Z pointing forward in the view
+	 * direction (the common convention in computer vision).
+	 * Pixels without any observed object in the valid viewport {clipMin,
+	 * clipMax} range will be returned with a range of `0.0`.
+	 *
+	 *  \sa resize(), render_RGB()
+	 */
+	void render_RGBD(
+		const COpenGLScene& scene, mrpt::img::CImage& outRGB,
+		mrpt::math::CMatrixFloat& outDepth);
 
    protected:
-	int m_win, m_width, m_height;
-	unsigned int m_fbo{0}, m_tex{0};
-	bool m_win_used;
-	mrpt::img::TColorf m_default_bk_color;
+	int m_win = 0, m_width = 0, m_height = 0;
+	unsigned int m_fbo_rgb = 0, m_texRGB = 0, m_bufDepth = 0;
+	bool m_win_used = false;
 
-	/** Provide information on Framebuffer object extension.
-	 */
+	/** Provide information on Framebuffer object extension */
 	bool isExtensionSupported(const std::string& extension);
+
+	void internal_render_RGBD(
+		const COpenGLScene& scene,
+		const mrpt::optional_ref<mrpt::img::CImage>& outRGB,
+		const mrpt::optional_ref<mrpt::math::CMatrixFloat>& outDepth);
 };
 }  // namespace mrpt::opengl
