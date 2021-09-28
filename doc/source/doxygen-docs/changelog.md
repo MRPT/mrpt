@@ -37,9 +37,7 @@
     - mrpt::opengl::CFBORender changes:
       - More consistent naming of API methods: mrpt::opengl::CFBORender::render_RGB().
       - New method to render into a depth image mrpt::opengl::CFBORender::render_RGBD().
-    - New support for inverse-Z depth OpenGL buffer, better suited to depth-camera simulation:
-      - mrpt::opengl::TRenderMatrices::is_inverse_z_model
-      - mrpt::opengl::CCamera::setInverseZModel()
+    - mrpt::opengl::CCamera::setProjectiveFromPinhole() now allows defining a camera by means of a pinhole model.
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers

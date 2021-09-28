@@ -998,14 +998,14 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	// 2nd: the internal camera of all viewports:
 	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
 
-	ASSERT_(m_camera.m_eyeDistance > 0);
+	ASSERT_(m_camera.getZoomDistance() > 0);
 
-	_.is_projective = myCamera->m_projectiveModel;
+	_.is_projective = myCamera->isProjective();
 
-	_.FOV = myCamera->m_projectiveFOVdeg;
-	_.eyeDistance = myCamera->m_eyeDistance;
-	_.azimuth = DEG2RAD(myCamera->m_azimuthDeg);
-	_.elev = DEG2RAD(myCamera->m_elevationDeg);
+	_.FOV = myCamera->getProjectiveFOVdeg();
+	_.eyeDistance = myCamera->getZoomDistance();
+	_.azimuth = DEG2RAD(myCamera->getAzimuthDegrees());
+	_.elev = DEG2RAD(myCamera->getElevationDegrees());
 
 	if (myCamera->is6DOFMode())
 	{
@@ -1026,14 +1026,12 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	{
 		// Normal mode: use "camera orbit" parameters to compute pointing-to
 		// point:
-		const double dis = std::max<double>(0.001, myCamera->m_eyeDistance);
+		const double dis = std::max<double>(0.001, myCamera->getZoomDistance());
 		_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
 		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
 		_.eye.z = _.pointing.z + dis * sin(_.elev);
 
-		_.pointing.x = myCamera->m_pointingX;
-		_.pointing.y = myCamera->m_pointingY;
-		_.pointing.z = myCamera->m_pointingZ;
+		_.pointing = myCamera->getPointingAt();
 
 		_.up.x = -cos(_.azimuth) * sin(_.elev);
 		_.up.y = -sin(_.azimuth) * sin(_.elev);
