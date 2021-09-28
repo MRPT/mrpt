@@ -89,7 +89,7 @@ void TestDisplay3D()
 	mrpt::system::CTimeLogger tl;
 
 	int width = 640, height = 480;
-	const double cameraFOVdeg = 50.0;
+	const double cameraFOVdeg = 90.0;
 
 	CFBORender renderer(width, height);
 	CImage frame(width, height, CH_RGB);
@@ -101,7 +101,21 @@ void TestDisplay3D()
 
 	{
 		CCamera& camera = renderer.getCamera(scene);
+
+#if 0
+		mrpt::img::TCamera c1;
+		c1.ncols = width;
+		c1.nrows = height;
+		c1.fx(width * 0.5);
+		c1.fy(width * 0.5);
+		c1.cx(width / 2);
+		c1.cy(height / 2);
+
+		camera.setProjectiveFromPinhole(c1);
+#else
 		camera.setProjectiveFOVdeg(cameraFOVdeg);
+#endif
+
 		camera.setZoomDistance(10);
 		camera.setAzimuthDegrees(0);
 		camera.setElevationDegrees(90);

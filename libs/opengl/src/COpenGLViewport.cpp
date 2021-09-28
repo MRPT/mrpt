@@ -1003,6 +1003,7 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	_.is_projective = myCamera->isProjective();
 
 	_.FOV = myCamera->getProjectiveFOVdeg();
+	_.pinhole_model = myCamera->getPinholeModel();
 	_.eyeDistance = myCamera->getZoomDistance();
 	_.azimuth = DEG2RAD(myCamera->getAzimuthDegrees());
 	_.elev = DEG2RAD(myCamera->getElevationDegrees());

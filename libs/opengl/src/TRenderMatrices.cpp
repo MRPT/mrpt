@@ -46,7 +46,40 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 	m_last_z_near = znear;
 	m_last_z_far = zfar;
 
-	if (is_projective)
+	if (pinhole_model.has_value())
+	{
+		const auto& phm = pinhole_model.value();
+
+		// Equivalent to gluPerspective(), from pinhole camera intrinsic
+		// parameters (cx,cy,fx,fy):
+		ASSERT_EQUAL_(viewport_width, pinhole_model->ncols);
+		ASSERT_EQUAL_(viewport_height, pinhole_model->nrows);
+
+		const int W = pinhole_model->ncols, H = pinhole_model->nrows;
+
+		// See: e.g.
+		// http://ksimek.github.io/2013/06/03/calibrated_cameras_in_opengl/
+		mrpt::math::CMatrixFloat44 persp;
+		persp.setZero();
+
+		persp(0, 0) = phm.fx();
+		persp(1, 1) = phm.fy();
+
+		persp(0, 2) = -phm.cx();
+		persp(1, 2) = -H + phm.cy();
+		persp(2, 2) = (zfar + znear);
+		persp(3, 2) = -1.0f;
+		persp(2, 3) = zfar * znear;
+
+		// glOrtho(-W/2, W/2, -H/2, H/2, near, far);
+
+		computeOrthoProjectionMatrix(
+			0, W, 0 /*bottom*/, H /*top*/, znear, zfar);
+
+		// glMultMatrix(persp);
+		p_matrix = p_matrix * persp;
+	}
+	else if (is_projective)
 	{
 		// Was: gluPerspective()
 		// Based on GLM's perspective (MIT license).
