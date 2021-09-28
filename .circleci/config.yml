@@ -3,30 +3,33 @@ jobs:
   full-u20.04-focal-codecov:
     docker:
       - image: mrpt/mrpt-build-env:full-focal
+    resource_class: xlarge
     steps:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
+      - run: make -j8 -C build tests_build_all
+      - run: CTEST_OUTPUT_ON_FAILURE=1 make -j8 test -C build
       - run: make gcov -C build
-      - run: make -C build
+      - run: make -j8 -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
   full-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
+    resource_class: xlarge
     steps:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -C build
+      - run: make -j8 -C build tests_build_all
+      - run: CTEST_OUTPUT_ON_FAILURE=1 make -j8 test -C build
+      - run: make -j8 -C build
   clang-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
+    resource_class: xlarge
     steps:
       - checkout
       - run: git submodule sync
@@ -37,34 +40,37 @@ jobs:
           environment:
             CC: /usr/bin/clang-6.0
             CXX: /usr/bin/clang++-6.0
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -C build
+      - run: make -j8 -C build tests_build_all
+      - run: CTEST_OUTPUT_ON_FAILURE=1 make -j8 test -C build
+      - run: make -j8 -C build
   headless-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:headless-bionic
+    resource_class: xlarge
     steps:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -C build
+      - run: make -j8 -C build tests_build_all
+      - run: CTEST_OUTPUT_ON_FAILURE=1 make -j8 test -C build
+      - run: make -j8 -C build
   minimal-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:minimal-bionic
+    resource_class: xlarge
     steps:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_DISABLE_PYTHON_BINDINGS=On -DMRPT_EIGEN_USE_EMBEDDED_VERSION=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -C build
+      - run: make -j8 -C build tests_build_all
+      - run: CTEST_OUTPUT_ON_FAILURE=1 make -j8 test -C build
+      - run: make -j8 -C build
   clang-format-lint:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
+    resource_class: medium
     steps:
       - checkout
       - run: apt install clang-format-10 -yq
