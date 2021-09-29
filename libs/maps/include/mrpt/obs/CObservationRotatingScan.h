@@ -84,6 +84,7 @@ class CObservationRotatingScan : public CObservation
 	 * for efficiency of post-processing filters, etc. Zero means no return
 	 * (i.e. invalid range). This member must be always provided, containing the
 	 * ranges for the STRONGEST ray returns.
+	 * To obtain ranges in meters, multiply this matrix by `rangeResolution`.
 	 */
 	mrpt::math::CMatrix_u16 rangeImage{0, 0};
 

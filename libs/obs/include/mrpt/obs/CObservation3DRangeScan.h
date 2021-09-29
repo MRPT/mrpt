@@ -40,98 +40,92 @@ void unprojectInto(
 	const mrpt::obs::TRangeImageFilterParams& filterParams);
 }  // namespace detail
 
-/** A range or depth 3D scan measurement, as from a time-of-flight range camera
- *or a structured-light depth RGBD sensor.
+/** A depth or RGB+D image from a time-of-flight or structured-light sensor.
  *
  * This kind of observations can carry one or more of these data fields:
- *    - 3D point cloud (as float's).
- *    - Each 3D point has its associated (u,v) pixel coordinates in \a
- *points3D_idxs_x & \a points3D_idxs_y (New in MRPT 1.4.0)
- *    - 2D range image (as a matrix): Each entry in the matrix
- *"rangeImage(ROW,COLUMN)" contains a distance or a depth, depending
- *on \a range_is_depth. Ranges are stored as uint16_t for efficiency. The units
- *of ranges are stored separately in rangeUnits.
- *    - 2D intensity (grayscale or RGB) image (as a mrpt::img::CImage).
- *    - 2D confidence image (as a mrpt::img::CImage): For each pixel, a 0x00
- *and a 0xFF mean the lowest and highest confidence levels, respectively.
- *    - Semantic labels: Stored as a matrix of bitfields, each bit having a
- *user-defined meaning.
- *    - For cameras supporting multiple returns per pixels, different layers of
- *range images are available in the map \a rangeImageOtherLayers.
+ *  - 3D point cloud (as {x,y,z} `float` vectors).
+ *  - Each 3D point has its associated `(u,v)` pixel coordinates in \a
+ *    points3D_idxs_x & \a points3D_idxs_y (New in MRPT 1.4.0)
+ *  - 2D range image (as a matrix): Each entry in the matrix
+ *    `rangeImage(ROW,COLUMN)` contains a distance or a depth, depending
+ *    on \a range_is_depth. Ranges are stored as uint16_t for efficiency.
+ *    The units of ranges are stored separately in `rangeUnits`.
+ *  - 2D intensity (grayscale or RGB) image (as a mrpt::img::CImage).
+ *  - 2D confidence image (as a mrpt::img::CImage): For each pixel, a 0x00
+ *    and a 0xFF mean the lowest and highest confidence levels, respectively.
+ *  - Semantic labels: Stored as a matrix of bitfields, each bit having a
+ *    user-defined meaning.
+ *  - For cameras supporting multiple returns per pixels, different layers of
+ *    range images are available in the map \a rangeImageOtherLayers.
  *
- *  The coordinates of the 3D point cloud are in meters with respect to the
- *depth camera origin of coordinates,
- *    with the +X axis pointing forward, +Y pointing left-hand and +Z pointing
- *up. By convention, a 3D point with its coordinates set to (0,0,0), will be
- *considered as invalid.
- *  The field CObservation3DRangeScan::relativePoseIntensityWRTDepth describes
+ * The coordinates of the 3D point cloud are in meters with respect to the
+ * depth camera origin of coordinates,
+ * with the +X axis pointing forward, +Y pointing left-hand and +Z pointing
+ * up. By convention, a 3D point with its coordinates set to (0,0,0), will be
+ * considered as invalid.
+ *
+ * The field CObservation3DRangeScan::relativePoseIntensityWRTDepth describes
  * the change of coordinates from the depth camera to the intensity
  * (RGB or grayscale) camera. In some cameras both cameras coincide,
  * so this pose would be just a rotation (0,0,0,-90deg,0,-90deg).
- * In Microsoft Kinect there is also an offset, as shown in this figure:
+ * In Kinect-like cameras there is also an offset, as shown in this figure:
  *
- *  <div align=center>
- *   <img src="CObservation3DRangeScan_figRefSystem.png">
- *  </div>
+ * ![CObservation3DRangeScan axes](CObservation3DRangeScan_figRefSystem.png)
  *
- *  In any case, check the field \a relativePoseIntensityWRTDepth, or the method
- *\a doDepthAndIntensityCamerasCoincide()
- *    to determine if both frames of reference coincide, since even for Kinect
- *cameras both can coincide if the images
- *    have been rectified.
+ * In any case, check the field \a relativePoseIntensityWRTDepth, or the method
+ * \a doDepthAndIntensityCamerasCoincide() to determine if both frames of
+ * reference coincide, since even for Kinect cameras both can coincide if the
+ * images have been rectified.
  *
- *  The 2D images and matrices are stored as common images, with an up->down
- *rows order and left->right, as usual.
- *   Optionally, the intensity and confidence channels can be set to
- *delayed-load images for off-rawlog storage so it saves
- *   memory by having loaded in memory just the needed images. See the methods
- *load() and unload().
- *  Due to the intensive storage requirements of this kind of observations, this
- *observation is the only one in MRPT
- *   for which it's recommended to always call "load()" and "unload()" before
- *and after using the observation, *ONLY* when
- *   the observation was read from a rawlog dataset, in order to make sure that
- *all the externally stored data fields are
- *   loaded and ready in memory.
+ * The 2D images and matrices are stored as common images, with an up->down
+ * rows order and left->right, as usual.
+ * Optionally, the intensity and confidence channels can be set to
+ * delayed-load images for off-rawlog storage so it saves
+ * memory by having loaded in memory just the needed images. See the methods
+ * load() and unload().
+ * Due to the intensive storage requirements of this kind of observations, this
+ * observation is the only one in MRPT
+ * for which it's recommended to always call "load()" and "unload()" before
+ * and after using the observation, *ONLY* when
+ * the observation was read from a rawlog dataset, in order to make sure that
+ * all the externally stored data fields are
+ * loaded and ready in memory.
  *
- *  Classes that grab observations of this type are:
- *		- mrpt::hwdrivers::CSwissRanger3DCamera
- *		- mrpt::hwdrivers::CKinect
- *		- mrpt::hwdrivers::COpenNI2Sensor
+ * Some classes that grab observations of this type are:
+ *  - mrpt::hwdrivers::CSwissRanger3DCamera
+ *  - mrpt::hwdrivers::CKinect
+ *  - mrpt::hwdrivers::COpenNI2Sensor
  *
- *  There are two sets of calibration parameters (see
- *mrpt::vision::checkerBoardStereoCalibration() or the ready-to-use GUI program
- *<a href="http://www.mrpt.org/Application:kinect-calibrate"
- *>kinect-calibrate</a>):
- *		- cameraParams: Projection parameters of the depth camera.
- *		- cameraParamsIntensity: Projection parameters of the intensity
- *(gray-level or RGB) camera.
+ * There are two sets of calibration parameters (see
+ * mrpt::vision::checkerBoardStereoCalibration() or the ready-to-use GUI program
+ * [kinect-calibrate](https://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/):
+ *  - cameraParams: Intrinsics of the depth camera.
+ *  - cameraParamsIntensity: Intrinsics of the intensity (RGB) camera.
  *
- *  In some cameras, like SwissRanger, both are the same. It is possible in
- *Kinect to rectify the range images such both cameras
- *   seem to coincide and then both sets of camera parameters will be identical.
+ * In some cameras, like SwissRanger, both are the same. It is possible in
+ * Kinect to rectify the range images such both cameras
+ * seem to coincide and then both sets of camera parameters will be identical.
  *
- *  Range data can be interpreted in two different ways depending on the 3D
- *camera (this field is already set to the
- *    correct setting when grabbing observations from an mrpt::hwdrivers
- *sensor):
- *  - range_is_depth=true  -> Kinect-like ranges: entries of \a rangeImage
+ * Range data can be interpreted in two different ways depending on the 3D
+ * camera (this field is already set to the correct setting when grabbing
+ * observations from an mrpt::hwdrivers sensor):
+ *  - `range_is_depth==true`: Kinect-like ranges: entries of \a rangeImage
  *    are distances along the +X (front-facing) axis.
- *  - range_is_depth=false -> Ranges in \a rangeImage are actual distances
- *    in 3D.
+ *  - `range_is_depth==false`: Ranges in \a rangeImage are actual distances
+ *    in 3D, i.e. a bit larger than the depth.
  *
- * The "intensity" channel may come from different channels in sesnsors as
- * Kinect. Look at field \a intensityImageChannel to find out if the image was
+ * The `intensity` channel may come from different channels in sensors as
+ * Kinect. Look at field `intensityImageChannel` to find out if the image was
  * grabbed from the visible (RGB) or IR channels.
  *
  * 3D point clouds can be generated at any moment after grabbing with
  * CObservation3DRangeScan::unprojectInto(), provided the correct calibration
- *parameters. Note that unprojectInto() will store the point cloud in
- *sensor-centric local coordinates. Use unprojectInto() to directly obtain
- *vehicle or world coordinates.
+ * parameters. Note that unprojectInto() will store the point cloud in
+ * sensor-centric local coordinates by default, but changing its parameters you
+ * can obtain a vehicle-centric, or world-frame point cloud instead.
  *
- * Example of how to assign labels to pixels (for object segmentation, semantic
- *information, etc.):
+ * Examples of how to assign labels to pixels (for object segmentation, semantic
+ * information, etc.):
  *
  * \code
  *   // Assume obs of type CObservation3DRangeScan::Ptr
@@ -143,22 +137,12 @@ void unprojectInto(
  *   //...
  * \endcode
  *
- *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence
- *channel is stored as an image instead of a matrix to optimize memory and disk
- *space.
- *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud
- *and the rangeImage can both be stored externally to save rawlog space.
- *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a
- *range_is_depth
- *  \note Starting at serialization version 6 (MRPT 0.9.5+), the new field \a
- *intensityImageChannel
- *  \note Starting at serialization version 7 (MRPT 1.3.1+), new fields for
- *semantic labeling
- *  \note Since MRPT 1.5.0, external files format can be selected at runtime
- *with `CObservation3DRangeScan::EXTERNALS_AS_TEXT`
+ * \note Since MRPT 1.5.0, external files format can be selected at runtime
+ *       with `CObservation3DRangeScan::EXTERNALS_AS_TEXT`
  *
  * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect,
- *CObservation
+ *     mrpt::hwdrivers::COpenNI2Sensor, mrpt::obs::CObservation
+ *
  * \ingroup mrpt_obs_grp
  */
 class CObservation3DRangeScan : public CObservation
@@ -361,12 +345,18 @@ class CObservation3DRangeScan : public CObservation
 	/** true means the field rangeImage contains valid data */
 	bool hasRangeImage{false};
 
-	/** If hasRangeImage=true, a matrix of floats with the range data as
-	 * captured by the camera (in meters).
-	 * For sensors with multiple returns per pixels, this matrix holds the
-	 * CLOSEST of all the returns.
+	/** If `hasRangeImage==true`, rangeImage(r,c) is a matrix of depth values as
+	 * captured by the camera, with `r` the row index and `c` column index.
+	 * Matrix element are integers for efficiency of post-processing
+	 * filters, etc. Zero means no return (i.e. invalid range, no return).
+	 * To obtain range/depth in meters, multiply this matrix by `rangeUnits`.
 	 *
-	 * \sa range_is_depth, rangeUnits, rangeImageOtherLayers */
+	 * For sensors with more than one return per ray, this matrix holds the
+	 * range for the "STRONGEST" (normally the closest) return.
+	 *
+	 * \sa rangeUnits, range_is_depth, rangeUnits, hasRangeImage,
+	 * rangeImageOtherLayers
+	 */
 	mrpt::math::CMatrix_u16 rangeImage;
 
 	/** Additional layer range/depth images. Text labels are arbitrary and
@@ -379,7 +369,7 @@ class CObservation3DRangeScan : public CObservation
 	float rangeUnits = 0.001f;
 
 	/** true: Kinect-like ranges: entries of \a rangeImage are distances
-	 * along the +X axis; false: Ranges in \a rangeImage are actual
+	 * along the +X axis (forward); false: Ranges in \a rangeImage are actual
 	 * distances in 3D.
 	 */
 	bool range_is_depth{true};
