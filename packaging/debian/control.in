@@ -48,7 +48,7 @@ Build-Depends: debhelper (>= 12),
 	qtbase5-dev,
 	texlive, latexmk, texlive-latex-extra, texlive-science,
 	zlib1g-dev
-Standards-Version: 4.5.1
+Standards-Version: 4.6.0
 Homepage: https://www.mrpt.org/
 
 Package: mrpt-doc
