@@ -25,6 +25,16 @@ namespace mrpt::opengl
  * `scene.getViewport()->setCustomBackgroundColor()`. You can add overlaid text
  * messages, see base class CTextMessageCapable
  *
+ * The SE(3) pose from which the scene is rendered is defined by the scene
+ * `"main"` viewport camera pose, with a 180 deg vertical flip in roll.
+ * The user should add a CPose3D() with a yaw=180 degrees (around
+ * forward-looking +Z axis) to the intended camera pose before calling the
+ * render methods in this class. This is done to avoid flipping images in the
+ * CPU (due to the inverted bottom-first OpenGL buffers convention): it is more
+ * efficient to let the GPU do it, at the cost of explicitly specifying this
+ * angle from the user side.
+ * See \ref gui_fbo_render_example for code examples on all this.
+ *
  * \sa \ref opengl_offscreen_render_example , \ref gui_fbo_render_example
  * \ingroup mrpt_opengl_grp
  */
