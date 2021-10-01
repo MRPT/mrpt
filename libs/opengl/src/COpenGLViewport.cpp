@@ -761,8 +761,6 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		ASSERT_(m_state.initialized);
 	}
 
-	m_state.print(std::cout);
-
 	ASSERTDEB_(m_state.viewport_height > 0 && m_state.viewport_width > 0);
 
 	const double ASPECT =
