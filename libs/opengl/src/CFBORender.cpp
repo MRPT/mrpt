@@ -147,7 +147,9 @@ void CFBORender::internal_render_RGBD(
 
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glEnable(GL_TEXTURE_2D);
+	CHECK_OPENGL_ERROR();
+	// glEnable(GL_TEXTURE_2D);
+	// CHECK_OPENGL_ERROR();
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo_rgb);
 	CHECK_OPENGL_ERROR();
 
@@ -254,6 +256,11 @@ void CFBORender::render_RGBD(
 	mrpt::math::CMatrixFloat& outDepth)
 {
 	internal_render_RGBD(scene, outRGB, outDepth);
+}
+void CFBORender::render_depth(
+	const COpenGLScene& scene, mrpt::math::CMatrixFloat& outDepth)
+{
+	internal_render_RGBD(scene, std::nullopt, outDepth);
 }
 
 bool CFBORender::isExtensionSupported([
