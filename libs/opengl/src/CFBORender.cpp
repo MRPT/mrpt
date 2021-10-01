@@ -72,13 +72,13 @@ CFBORender::CFBORender(
 
 	// gen the frambuffer object (FBO), similar manner as a texture
 	glGenFramebuffersEXT(1, &m_fbo_rgb);
-
-	// change viewport size (in pixels)
-	glViewport(0, 0, m_width, m_height);
+	CHECK_OPENGL_ERROR();
 
 	// make textures
 	glGenTextures(1, &m_texRGB);
+	CHECK_OPENGL_ERROR();
 	glGenRenderbuffers(1, &m_bufDepth);
+	CHECK_OPENGL_ERROR();
 
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo_rgb);
@@ -145,16 +145,21 @@ void CFBORender::internal_render_RGBD(
 
 	ASSERT_(optoutRGB.has_value() || optoutDepth.has_value());
 
+	// change viewport size (in pixels)
+	glViewport(0, 0, m_width, m_height);
+	CHECK_OPENGL_ERROR();
+
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindTexture(GL_TEXTURE_2D, 0);
 	CHECK_OPENGL_ERROR();
-	// glEnable(GL_TEXTURE_2D);
-	// CHECK_OPENGL_ERROR();
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo_rgb);
+
+	glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fbo_rgb);
 	CHECK_OPENGL_ERROR();
 
 	glEnable(GL_DEPTH_TEST);
 	CHECK_OPENGL_ERROR();
+
+	scene.getViewport()->updateMatricesFromCamera();
 
 	// ---------------------------
 	// Render:
