@@ -140,10 +140,6 @@ void TestDisplay3D()
 		// camPose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>() <<
 		// "\n";
 
-		// Verticaly flip images (See mrpt::opengl::CFBORender docs):
-		camPose += mrpt::poses::CPose3D::FromYawPitchRoll(
-			180.0_deg /*yaw*/, 0.0_deg /*pitch*/, 0.0_deg /*roll*/);
-
 		camera.setPose(camPose);
 
 #endif
