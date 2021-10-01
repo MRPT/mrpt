@@ -116,9 +116,37 @@ void TestDisplay3D()
 		camera.setProjectiveFOVdeg(cameraFOVdeg);
 #endif
 
+#if 0
+		// Define camera by orbit
 		camera.setZoomDistance(10);
 		camera.setAzimuthDegrees(0);
 		camera.setElevationDegrees(90);
+#else
+
+		// Defined by setPose() instead of orbit values:
+		camera.set6DOFMode(true);
+
+		// Reference camera pose:
+		auto robotPose = mrpt::poses::CPose3D(
+			0, 0, 10.0, 0.0_deg /*yaw*/, 90.0_deg /*pitch*/, 0.0_deg /*roll*/);
+
+		// Convert to +Z pointing forward camera axes:
+		auto camPose =
+			robotPose +
+			mrpt::poses::CPose3D::FromYawPitchRoll(
+				90.0_deg /*yaw*/, 0.0_deg /*pitch*/, 90.0_deg /*roll*/);
+
+		// std::cout << "Camera SE(3) HM:\n" <<
+		// camPose.getHomogeneousMatrixVal<mrpt::math::CMatrixDouble44>() <<
+		// "\n";
+
+		// Verticaly flip images (See mrpt::opengl::CFBORender docs):
+		camPose += mrpt::poses::CPose3D::FromYawPitchRoll(
+			180.0_deg /*yaw*/, 0.0_deg /*pitch*/, 0.0_deg /*roll*/);
+
+		camera.setPose(camPose);
+
+#endif
 	}
 
 	while (win.isOpen())
