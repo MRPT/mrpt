@@ -188,6 +188,9 @@ void CFBORender::internal_render_RGBD(
 			0, 0, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE,
 			outRGB(0, 0));
 		CHECK_OPENGL_ERROR();
+
+		// Flip vertically:
+		outRGB.flipVertical();
 	}
 
 	// ---------------------------
@@ -221,6 +224,17 @@ void CFBORender::internal_render_RGBD(
 			if (d == 1) d = 0;	// no "echo return"
 			else
 				d = linearDepth(d);
+		}
+
+		// flip lines:
+		std::vector<float> bufLine(m_width);
+		const auto bytesPerLine = sizeof(float) * m_width;
+		for (int y = 0; y < m_height / 2; y++)
+		{
+			const int yFlipped = m_height - 1 - y;
+			::memcpy(bufLine.data(), &outDepth(y, 0), bytesPerLine);
+			::memcpy(&outDepth(y, 0), &outDepth(yFlipped, 0), bytesPerLine);
+			::memcpy(&outDepth(yFlipped, 0), bufLine.data(), bytesPerLine);
 		}
 	}
 
