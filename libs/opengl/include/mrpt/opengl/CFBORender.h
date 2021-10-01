@@ -58,7 +58,7 @@ class CFBORender
 	/** Render the scene and get the rendered RGB image. Resizes the image
 	 *  buffer if necessary to the configured render resolution.
 	 *
-	 *  \sa resize(), render_RGBD()
+	 *  \sa render_RGBD()
 	 */
 	void render_RGB(const COpenGLScene& scene, mrpt::img::CImage& outRGB);
 
@@ -72,11 +72,17 @@ class CFBORender
 	 * Pixels without any observed object in the valid viewport {clipMin,
 	 * clipMax} range will be returned with a range of `0.0`.
 	 *
-	 *  \sa resize(), render_RGB()
+	 *  \sa render_RGB()
 	 */
 	void render_RGBD(
 		const COpenGLScene& scene, mrpt::img::CImage& outRGB,
 		mrpt::math::CMatrixFloat& outDepth);
+
+	/** Like render_RGBD(), but only renders the depth image.
+	 *  \sa render_RGBD()
+	 */
+	void render_depth(
+		const COpenGLScene& scene, mrpt::math::CMatrixFloat& outDepth);
 
    protected:
 	int m_win = 0, m_width = 0, m_height = 0;
