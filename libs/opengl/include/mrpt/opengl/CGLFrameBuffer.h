@@ -16,6 +16,16 @@
 
 namespace mrpt::opengl
 {
+/** IDs of FrameBuffers, as used in CGLFramebuffer
+ *
+ * \ingroup mrpt_opengl_grp
+ */
+struct FrameBufferBinding
+{
+	unsigned int drawFbId = 0;
+	unsigned int readFbId = 0;
+};
+
 /** Wrapper for an OpenGL FrameBuffer resource, with RGBA + depth buffers.
  *
  * \ingroup mrpt_opengl_grp
@@ -32,16 +42,23 @@ class CGLFramebuffer
 	/** Release resources */
 	void free();
 
-	/** Bind the framebuffer object to the current context */
-	void bind();
+	/** Bind the framebuffer object to the current context, returns the former
+	 * binding */
+	FrameBufferBinding bind();
+
+	static void Bind(const FrameBufferBinding& ids);
+	static FrameBufferBinding CurrentBinding();
 
 	/** Unbind the framebuffer object from the context */
-	void release();
+	void unbind();
 
 	/// Blit the framebuffer object onto the screen
 	void blit();
 
 	bool initialized() { return m_Framebuffer != 0; }
+
+	unsigned int width() const { return m_width; }
+	unsigned int height() const { return m_height; }
 
    protected:
 	unsigned int m_Framebuffer = 0, m_Depth = 0, m_Color = 0;

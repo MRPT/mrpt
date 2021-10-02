@@ -92,12 +92,8 @@ class CFBORender
    protected:
 	CGLFramebuffer m_fb;
 
-	int m_win = 0, m_width = 0, m_height = 0;
-	unsigned int m_fbo_rgb = 0, m_texRGB = 0, m_bufDepth = 0;
-	bool m_win_used = false;
-
-	/** Provide information on Framebuffer object extension */
-	bool isExtensionSupported(const std::string& extension);
+	int m_win = 0;
+	unsigned int m_texRGB = 0;
 
 	void internal_render_RGBD(
 		const COpenGLScene& scene,
