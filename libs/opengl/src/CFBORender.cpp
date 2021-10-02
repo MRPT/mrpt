@@ -22,13 +22,12 @@ using mrpt::img::CImage;
 ---------------------------------------------------------------*/
 CFBORender::CFBORender(
 	unsigned int width, unsigned int height, const bool skip_glut_window)
-	: m_width(width), m_height(height), m_win_used(!skip_glut_window)
 {
 #if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT
 
 	MRPT_START
 
-	if (m_win_used)
+	if (!skip_glut_window)
 	{
 		// check a previous initialization of the GLUT
 		if (!glutGet(GLUT_INIT_STATE))
@@ -44,80 +43,48 @@ CFBORender::CFBORender(
 		glutHideWindow();
 	}
 
-	// call after creating the hidden window
-	if (!isExtensionSupported("GL_EXT_framebuffer_object"))
-		THROW_EXCEPTION("Framebuffer Object extension unsupported");
-
-// In win32 we have to load the pointers to the functions:
-#ifdef _WIN32
-	glGenFramebuffersEXT =
-		(PFNGLGENFRAMEBUFFERSEXTPROC)wglGetProcAddress("glGenFramebuffersEXT");
-	glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)wglGetProcAddress(
-		"glDeleteFramebuffersEXT");
-	glBindFramebufferEXT =
-		(PFNGLBINDFRAMEBUFFEREXTPROC)wglGetProcAddress("glBindFramebufferEXT");
-	glFramebufferTexture2DEXT =
-		(PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)wglGetProcAddress(
-			"glFramebufferTexture2DEXT");
-
-	ASSERT_(glGenFramebuffersEXT != nullptr);
-	ASSERT_(glDeleteFramebuffersEXT != nullptr);
-	ASSERT_(glBindFramebufferEXT != nullptr);
-	ASSERT_(glFramebufferTexture2DEXT != nullptr);
-#endif
-
 	// -------------------------------
-	// RGB FBO
+	// Create frame buffer object:
 	// -------------------------------
+	m_fb.init(width, height);
+	const auto oldFB = m_fb.bind();
 
 	// gen the frambuffer object (FBO), similar manner as a texture
-	glGenFramebuffersEXT(1, &m_fbo_rgb);
-	CHECK_OPENGL_ERROR();
+	// glGenFramebuffersEXT(1, &m_fbo_rgb);
+	// CHECK_OPENGL_ERROR();
 
-	// make textures
+	// -------------------------------
+	// Create texture:
+	// -------------------------------
 	glGenTextures(1, &m_texRGB);
 	CHECK_OPENGL_ERROR();
-	glGenRenderbuffers(1, &m_bufDepth);
-	CHECK_OPENGL_ERROR();
+	// glGenRenderbuffers(1, &m_bufDepth);
+	// CHECK_OPENGL_ERROR();
+	// glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo_rgb);
 
-	// bind the framebuffer, fbo, so operations will now occur on it
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo_rgb);
-
-	// RGB:
 	glBindTexture(GL_TEXTURE_2D, m_texRGB);
 	CHECK_OPENGL_ERROR();
 
-	glTexImage2D(
-		GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB,
-		GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	CHECK_OPENGL_ERROR();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	CHECK_OPENGL_ERROR();
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGB, m_fb.width(), m_fb.height(), 0, GL_RGB,
+		GL_UNSIGNED_BYTE, nullptr);
 	CHECK_OPENGL_ERROR();
 
 	// bind this texture to the current framebuffer obj. as color_attachement_0
 	glFramebufferTexture2DEXT(
-		GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texRGB, 0);
+		GL_FRAMEBUFFER,	 // GL_DRAW_FRAMEBUFFER
+		GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texRGB, 0);
 	CHECK_OPENGL_ERROR();
 
-	glBindRenderbuffer(GL_RENDERBUFFER, m_bufDepth);
-	CHECK_OPENGL_ERROR();
-
-	glRenderbufferStorage(
-		GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_width, m_height);
-	CHECK_OPENGL_ERROR();
-
-	glFramebufferRenderbuffer(
-		GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_bufDepth);
-	CHECK_OPENGL_ERROR();
-
-	//
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);  //'unbind' framebuffer
-	CHECK_OPENGL_ERROR();
+	// unbind:
+	CGLFramebuffer::Bind(oldFB);
 
 	MRPT_END
-
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!");
 #endif
@@ -128,8 +95,8 @@ CFBORender::~CFBORender()
 #if MRPT_HAS_OPENGL_GLUT
 	// delete the current texture, the framebuffer object and the GLUT window
 	glDeleteTextures(1, &m_texRGB);
-	glDeleteFramebuffersEXT(1, &m_fbo_rgb);
-	if (m_win_used) glutDestroyWindow(m_win);
+	m_fb.free();
+	if (m_win != 0) glutDestroyWindow(m_win);
 #endif
 }
 
@@ -145,15 +112,18 @@ void CFBORender::internal_render_RGBD(
 
 	ASSERT_(optoutRGB.has_value() || optoutDepth.has_value());
 
+	const auto oldFBs = m_fb.bind();
+
+	// Get former viewport
+	GLint oldViewport[4];
+	glGetIntegerv(GL_VIEWPORT, oldViewport);
+
 	// change viewport size (in pixels)
-	glViewport(0, 0, m_width, m_height);
+	glViewport(0, 0, m_fb.width(), m_fb.height());
 	CHECK_OPENGL_ERROR();
 
 	// bind the framebuffer, fbo, so operations will now occur on it
-	glBindTexture(GL_TEXTURE_2D, 0);
-	CHECK_OPENGL_ERROR();
-
-	glBindFramebuffer(GL_FRAMEBUFFER_EXT, m_fbo_rgb);
+	glBindTexture(GL_TEXTURE_2D, m_texRGB);
 	CHECK_OPENGL_ERROR();
 
 	glEnable(GL_DEPTH_TEST);
@@ -164,7 +134,7 @@ void CFBORender::internal_render_RGBD(
 	// ---------------------------
 	// Render:
 	// ---------------------------
-	scene.render();
+	scene.getViewport()->render(m_fb.width(), m_fb.height(), 0, 0);
 
 	// ---------------------------
 	// RGB
@@ -174,23 +144,23 @@ void CFBORender::internal_render_RGBD(
 		auto& outRGB = optoutRGB.value().get();
 		// resize the outRGB if it is necessary
 		if (outRGB.isEmpty() ||
-			outRGB.getWidth() != static_cast<size_t>(m_width) ||
-			outRGB.getHeight() != static_cast<size_t>(m_height) ||
+			outRGB.getWidth() != static_cast<size_t>(m_fb.width()) ||
+			outRGB.getHeight() != static_cast<size_t>(m_fb.height()) ||
 			outRGB.getChannelCount() != 3)
 		{  // resize:
-			outRGB.resize(m_width, m_height, mrpt::img::CH_RGB);
+			outRGB.resize(m_fb.width(), m_fb.height(), mrpt::img::CH_RGB);
 		}
 
 		// check the outRGB size
 		ASSERT_(!outRGB.isEmpty());
-		ASSERT_EQUAL_(outRGB.getWidth(), static_cast<size_t>(m_width));
-		ASSERT_EQUAL_(outRGB.getHeight(), static_cast<size_t>(m_height));
+		ASSERT_EQUAL_(outRGB.getWidth(), static_cast<size_t>(m_fb.width()));
+		ASSERT_EQUAL_(outRGB.getHeight(), static_cast<size_t>(m_fb.height()));
 		ASSERT_EQUAL_(outRGB.getChannelCount(), 3);
 
 		// TODO NOTE: This should fail if the image has padding bytes. See
 		// glPixelStore() etc.
 		glReadPixels(
-			0, 0, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE,
+			0, 0, m_fb.width(), m_fb.height(), GL_BGR_EXT, GL_UNSIGNED_BYTE,
 			outRGB(0, 0));
 		CHECK_OPENGL_ERROR();
 
@@ -204,10 +174,10 @@ void CFBORender::internal_render_RGBD(
 	if (optoutDepth.has_value())
 	{
 		auto& outDepth = optoutDepth.value().get();
-		outDepth.resize(m_height, m_width);
+		outDepth.resize(m_fb.height(), m_fb.width());
 
 		glReadPixels(
-			0, 0, m_width, m_height, GL_DEPTH_COMPONENT, GL_FLOAT,
+			0, 0, m_fb.width(), m_fb.height(), GL_DEPTH_COMPONENT, GL_FLOAT,
 			outDepth.data());
 		CHECK_OPENGL_ERROR();
 
@@ -232,11 +202,11 @@ void CFBORender::internal_render_RGBD(
 		}
 
 		// flip lines:
-		std::vector<float> bufLine(m_width);
-		const auto bytesPerLine = sizeof(float) * m_width;
-		for (int y = 0; y < m_height / 2; y++)
+		std::vector<float> bufLine(m_fb.width());
+		const auto bytesPerLine = sizeof(float) * m_fb.width();
+		for (unsigned int y = 0; y < m_fb.height() / 2; y++)
 		{
-			const int yFlipped = m_height - 1 - y;
+			const int yFlipped = m_fb.height() - 1 - y;
 			::memcpy(bufLine.data(), &outDepth(y, 0), bytesPerLine);
 			::memcpy(&outDepth(y, 0), &outDepth(yFlipped, 0), bytesPerLine);
 			::memcpy(&outDepth(yFlipped, 0), bufLine.data(), bytesPerLine);
@@ -244,8 +214,11 @@ void CFBORender::internal_render_RGBD(
 	}
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not
-	// drawn into the FBO. '0' means "windowing system provided framebuffer
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	// drawn into the FBO.
+	CGLFramebuffer::Bind(oldFBs);
+
+	// Restore viewport:
+	glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
 
 	MRPT_END
 #endif
@@ -266,22 +239,4 @@ void CFBORender::render_depth(
 	const COpenGLScene& scene, mrpt::math::CMatrixFloat& outDepth)
 {
 	internal_render_RGBD(scene, std::nullopt, outDepth);
-}
-
-bool CFBORender::isExtensionSupported([
-	[maybe_unused]] const std::string& extension)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	MRPT_START
-	for (int index = 0;; index++)
-	{
-		const auto extName = glGetStringi(GL_EXTENSIONS, index);
-		if (!extName) break;
-
-		if (std::string(reinterpret_cast<const char*>(extName)) == extension)
-			return true;
-	}
-	MRPT_END
-#endif
-	return false;
 }
