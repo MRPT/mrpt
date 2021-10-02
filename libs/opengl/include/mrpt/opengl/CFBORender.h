@@ -11,6 +11,7 @@
 
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
+#include <mrpt/opengl/CGLFrameBuffer.h>
 #include <mrpt/opengl/COpenGLScene.h>
 
 namespace mrpt::opengl
@@ -89,6 +90,8 @@ class CFBORender
 		const COpenGLScene& scene, mrpt::math::CMatrixFloat& outDepth);
 
    protected:
+	CGLFramebuffer m_fb;
+
 	int m_win = 0, m_width = 0, m_height = 0;
 	unsigned int m_fbo_rgb = 0, m_texRGB = 0, m_bufDepth = 0;
 	bool m_win_used = false;
