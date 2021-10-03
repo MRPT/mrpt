@@ -14,9 +14,6 @@
 
 using namespace mrpt::opengl;
 
-MRPT_TODO("glBindFramebufferEXT -> glBindFramebuffer ??");
-MRPT_TODO("threads queu");
-
 #if MRPT_HAS_OPENGL_GLUT
 static bool isExtensionSupported([[maybe_unused]] const std::string& extension)
 {
@@ -42,24 +39,6 @@ void CGLFramebuffer::init(unsigned int width, unsigned int height, int nSamples)
 		THROW_EXCEPTION(
 			"Framebuffer Object extension unsupported "
 			"(GL_EXT_framebuffer_object)");
-
-// In win32 we have to load the pointers to the functions:
-#ifdef _WIN32
-	glGenFramebuffersEXT =
-		(PFNGLGENFRAMEBUFFERSEXTPROC)wglGetProcAddress("glGenFramebuffersEXT");
-	glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)wglGetProcAddress(
-		"glDeleteFramebuffersEXT");
-	glBindFramebufferEXT =
-		(PFNGLBINDFRAMEBUFFEREXTPROC)wglGetProcAddress("glBindFramebufferEXT");
-	glFramebufferTexture2DEXT =
-		(PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)wglGetProcAddress(
-			"glFramebufferTexture2DEXT");
-
-	ASSERT_(glGenFramebuffersEXT != nullptr);
-	ASSERT_(glDeleteFramebuffersEXT != nullptr);
-	ASSERT_(glBindFramebufferEXT != nullptr);
-	ASSERT_(glFramebufferTexture2DEXT != nullptr);
-#endif
 
 	m_width = width;
 	m_height = height;
@@ -105,11 +84,11 @@ void CGLFramebuffer::init(unsigned int width, unsigned int height, int nSamples)
 	}
 
 	// Frame buffer:
-	glGenFramebuffersEXT(1, &m_Framebuffer);
+	glGenFramebuffers(1, &m_Framebuffer);
 	CHECK_OPENGL_ERROR();
 
 	// bind the framebuffer, fbo, so operations will now occur on it
-	glBindFramebufferEXT(GL_FRAMEBUFFER, m_Framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
 	CHECK_OPENGL_ERROR();
 
 	glFramebufferRenderbuffer(
@@ -143,11 +122,15 @@ void CGLFramebuffer::init(unsigned int width, unsigned int height, int nSamples)
 void CGLFramebuffer::free()
 {
 #if MRPT_HAS_OPENGL_GLUT
+	MRPT_TODO("threads queue");
+
 	glDeleteRenderbuffers(1, &m_Color);
 	CHECK_OPENGL_ERROR();
 	glDeleteRenderbuffers(1, &m_Depth);
 	CHECK_OPENGL_ERROR();
 	m_Color = m_Depth = 0;
+	glDeleteFramebuffers(1, &m_Framebuffer);
+	m_Framebuffer = 0;
 #endif
 }
 
@@ -156,7 +139,7 @@ FrameBufferBinding CGLFramebuffer::bind()
 #if MRPT_HAS_OPENGL_GLUT
 	const FrameBufferBinding ids = CurrentBinding();
 
-	glBindFramebufferEXT(GL_FRAMEBUFFER, m_Framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
 	CHECK_OPENGL_ERROR();
 	if (m_Samples > 1)
 	{
@@ -173,7 +156,7 @@ void CGLFramebuffer::unbind()
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_Samples > 1) glDisable(GL_MULTISAMPLE);
 
-	glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	CHECK_OPENGL_ERROR();
 #endif
 }
@@ -181,23 +164,23 @@ void CGLFramebuffer::unbind()
 void CGLFramebuffer::blit()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glBindFramebufferEXT(GL_READ_FRAMEBUFFER, m_Framebuffer);
-	glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_Framebuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDrawBuffer(GL_BACK);
 
 	glBlitFramebuffer(
 		0, 0, m_width, m_height, 0, 0, m_width, m_height,
 		GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-	glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
 }
 
 void CGLFramebuffer::Bind(const FrameBufferBinding& ids)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glBindFramebufferEXT(GL_READ_FRAMEBUFFER, ids.readFbId);
-	glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, ids.drawFbId);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, ids.readFbId);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ids.drawFbId);
 #endif
 }
 
