@@ -6,11 +6,9 @@
 #   for generating the documentation, etc. are also updated.
 #
 #  For compiling instructions for all compilers and platforms, see
-#   https://www.mrpt.org/Building_and_Installing_Instructions
+#   https://docs.mrpt.org/reference/latest/compiling.html
 #
-#  2007-2020, Jose Luis Blanco <jlblanco@ual.es>
-#
-#  NOTE: CMake can be obtained at http://www.cmake.org/
+#  2007-2021, Jose Luis Blanco <jlblanco@ual.es>
 # ----------------------------------------------------------------------------
 
 if (POLICY CMP0048)

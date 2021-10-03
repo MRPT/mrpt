@@ -34,6 +34,13 @@ numerical value (e.g. ``1``) will be interpreted as "true".
 - ``MRPT_HWDRIVERS_VERBOSE``: Set to ``1`` to enable verbose output to ``std::cout``
   from all mrpt::hwdrivers classes. Default: ``0``.
 
+- ``MRPT_REVEAL_OPENGL_BUFFER_LEAKS``: If enabled, prints warnings whenever an
+  OpenGL resource is destroyed from a thread different to that one on which it 
+  was created. Trying to destroy such a resource would lead to a SEGFAULT, so
+  the destroy is silently skipped. Since this might lead to memory and resource
+  leaks, this variable helps debugging wrong application designs where resources
+  are not created and destroyed from the main OpenGL thread.
+
 - ``MRPT_WXSUBSYS_TIMEOUT_MS``: The timeout in milliseconds to wait
   in mrpt::gui windows constructors until the wxWidgets thread processes and
   really creates the window, before reporting an error. It's also used in

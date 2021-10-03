@@ -9,7 +9,9 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
-#include <mrpt/opengl/CGLFrameBuffer.h>
+#include <mrpt/core/backtrace.h>
+#include <mrpt/core/get_env.h>
+#include <mrpt/opengl/COpenGLFramebuffer.h>
 #include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt::opengl;
@@ -31,7 +33,12 @@ static bool isExtensionSupported([[maybe_unused]] const std::string& extension)
 }
 #endif
 
-void CGLFramebuffer::init(unsigned int width, unsigned int height, int nSamples)
+COpenGLFramebuffer::COpenGLFramebuffer() : m_impl(std::make_shared<RAII_Impl>())
+{
+}
+
+void COpenGLFramebuffer::RAII_Impl::create(
+	unsigned int width, unsigned int height, int nSamples)
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -112,6 +119,9 @@ void CGLFramebuffer::init(unsigned int width, unsigned int height, int nSamples)
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 		THROW_EXCEPTION("Could not create framebuffer object.");
 
+	m_created = true;
+	m_created_from = std::this_thread::get_id();
+
 	// Restore:
 	Bind(oldFBs);
 #else
@@ -119,22 +129,51 @@ void CGLFramebuffer::init(unsigned int width, unsigned int height, int nSamples)
 #endif
 }
 
-void CGLFramebuffer::free()
+void COpenGLFramebuffer::RAII_Impl::destroy()
 {
-#if MRPT_HAS_OPENGL_GLUT
-	MRPT_TODO("threads queue");
+	if (!m_created) return;
 
-	glDeleteRenderbuffers(1, &m_Color);
-	CHECK_OPENGL_ERROR();
-	glDeleteRenderbuffers(1, &m_Depth);
-	CHECK_OPENGL_ERROR();
-	m_Color = m_Depth = 0;
-	glDeleteFramebuffers(1, &m_Framebuffer);
-	m_Framebuffer = 0;
+	static const bool showErrs =
+		(::getenv("MRPT_REVEAL_OPENGL_BUFFER_LEAKS") != nullptr);
+
+#if MRPT_HAS_OPENGL_GLUT
+	if (m_created_from == std::this_thread::get_id())
+	{
+		unbind();
+
+		glDeleteRenderbuffers(1, &m_Color);
+		CHECK_OPENGL_ERROR();
+		glDeleteRenderbuffers(1, &m_Depth);
+		CHECK_OPENGL_ERROR();
+		glDeleteFramebuffers(1, &m_Framebuffer);
+		CHECK_OPENGL_ERROR();
+	}
+	else if (showErrs)
+	{
+		// at least, emit a warning:
+		static thread_local double tLast = 0;
+		auto tNow = mrpt::Clock::nowDouble();
+		if (tNow - tLast > 2.0)
+		{
+			tLast = tNow;
+
+			mrpt::TCallStackBackTrace bt;
+			mrpt::callStackBackTrace(bt);
+
+			std::cerr
+				<< "[COpenGLFramebuffer::RAII_Impl] *Warning* Leaking OpenGL "
+				   "resources: FBO was created from a different thread "
+				   "and cannot free it from this thread, call stack:"
+				<< bt.asString() << std::endl;
+		}
+	}
 #endif
+	m_Color = m_Depth = 0;
+	m_Framebuffer = 0;
+	m_created = false;
 }
 
-FrameBufferBinding CGLFramebuffer::bind()
+FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
 {
 #if MRPT_HAS_OPENGL_GLUT
 	const FrameBufferBinding ids = CurrentBinding();
@@ -151,7 +190,7 @@ FrameBufferBinding CGLFramebuffer::bind()
 #endif
 }
 
-void CGLFramebuffer::unbind()
+void COpenGLFramebuffer::RAII_Impl::unbind()
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_Samples > 1) glDisable(GL_MULTISAMPLE);
@@ -161,22 +200,23 @@ void CGLFramebuffer::unbind()
 #endif
 }
 
-void CGLFramebuffer::blit()
+void COpenGLFramebuffer::blit()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_Framebuffer);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_impl->m_Framebuffer);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDrawBuffer(GL_BACK);
 
 	glBlitFramebuffer(
-		0, 0, m_width, m_height, 0, 0, m_width, m_height,
-		GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		0, 0, m_impl->m_width, m_impl->m_height, 0, 0, m_impl->m_width,
+		m_impl->m_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
+		GL_NEAREST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
 }
 
-void CGLFramebuffer::Bind(const FrameBufferBinding& ids)
+void COpenGLFramebuffer::Bind(const FrameBufferBinding& ids)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, ids.readFbId);
@@ -184,7 +224,7 @@ void CGLFramebuffer::Bind(const FrameBufferBinding& ids)
 #endif
 }
 
-FrameBufferBinding CGLFramebuffer::CurrentBinding()
+FrameBufferBinding COpenGLFramebuffer::CurrentBinding()
 {
 #if MRPT_HAS_OPENGL_GLUT
 	GLint drawFboId = 0, readFboId = 0;
