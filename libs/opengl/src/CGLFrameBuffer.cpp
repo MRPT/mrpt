@@ -15,10 +15,11 @@
 using namespace mrpt::opengl;
 
 MRPT_TODO("glBindFramebufferEXT -> glBindFramebuffer ??");
+MRPT_TODO("threads queu");
 
+#if MRPT_HAS_OPENGL_GLUT
 static bool isExtensionSupported([[maybe_unused]] const std::string& extension)
 {
-#if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
 	for (int index = 0;; index++)
 	{
@@ -29,9 +30,9 @@ static bool isExtensionSupported([[maybe_unused]] const std::string& extension)
 		if (sExt == extension) return true;
 	}
 	MRPT_END
-#endif
 	return false;
 }
+#endif
 
 void CGLFramebuffer::init(unsigned int width, unsigned int height, int nSamples)
 {
@@ -211,5 +212,7 @@ FrameBufferBinding CGLFramebuffer::CurrentBinding()
 	ids.drawFbId = drawFboId;
 	ids.readFbId = readFboId;
 	return ids;
+#else
+	THROW_EXCEPTION("MRPT built without OpenGL support");
 #endif
 }
