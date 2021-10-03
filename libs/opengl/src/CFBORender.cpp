@@ -49,18 +49,11 @@ CFBORender::CFBORender(
 	m_fb.init(width, height);
 	const auto oldFB = m_fb.bind();
 
-	// gen the frambuffer object (FBO), similar manner as a texture
-	// glGenFramebuffersEXT(1, &m_fbo_rgb);
-	// CHECK_OPENGL_ERROR();
-
 	// -------------------------------
 	// Create texture:
 	// -------------------------------
 	glGenTextures(1, &m_texRGB);
 	CHECK_OPENGL_ERROR();
-	// glGenRenderbuffers(1, &m_bufDepth);
-	// CHECK_OPENGL_ERROR();
-	// glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo_rgb);
 
 	glBindTexture(GL_TEXTURE_2D, m_texRGB);
 	CHECK_OPENGL_ERROR();
@@ -76,8 +69,8 @@ CFBORender::CFBORender(
 	CHECK_OPENGL_ERROR();
 
 	// bind this texture to the current framebuffer obj. as color_attachement_0
-	glFramebufferTexture2DEXT(
-		GL_FRAMEBUFFER,	 // GL_DRAW_FRAMEBUFFER
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER,	 // DRAW + READ FB
 		GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texRGB, 0);
 	CHECK_OPENGL_ERROR();
 
