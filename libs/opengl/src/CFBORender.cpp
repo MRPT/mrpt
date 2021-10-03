@@ -46,7 +46,7 @@ CFBORender::CFBORender(
 	// -------------------------------
 	// Create frame buffer object:
 	// -------------------------------
-	m_fb.init(width, height);
+	m_fb.create(width, height);
 	const auto oldFB = m_fb.bind();
 
 	// -------------------------------
@@ -75,7 +75,7 @@ CFBORender::CFBORender(
 	CHECK_OPENGL_ERROR();
 
 	// unbind:
-	CGLFramebuffer::Bind(oldFB);
+	COpenGLFramebuffer::Bind(oldFB);
 
 	MRPT_END
 #else
@@ -88,7 +88,7 @@ CFBORender::~CFBORender()
 #if MRPT_HAS_OPENGL_GLUT
 	// delete the current texture, the framebuffer object and the GLUT window
 	glDeleteTextures(1, &m_texRGB);
-	m_fb.free();
+	m_fb.destroy();
 	if (m_win != 0) glutDestroyWindow(m_win);
 #endif
 }
@@ -208,7 +208,7 @@ void CFBORender::internal_render_RGBD(
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not
 	// drawn into the FBO.
-	CGLFramebuffer::Bind(oldFBs);
+	COpenGLFramebuffer::Bind(oldFBs);
 
 	// Restore viewport:
 	glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
