@@ -18,11 +18,6 @@
 
 namespace mrpt::opengl
 {
-namespace internal
-{
-void clearPendingIfPossible();
-}
-
 /** Type for IDs of shaders.
  * \sa DefaultShaderID, LoadDefaultShader()
  * \ingroup mrpt_opengl_grp
@@ -51,7 +46,7 @@ class Shader
 	Shader& operator=(Shader&&);
 	Shader(Shader&&);
 
-	bool empty() const { return m_shader == 0; }
+	bool empty() const { return m_data->shader == 0; }
 	/** Frees the shader program in OpenGL. */
 	void clear();
 
@@ -67,10 +62,18 @@ class Shader
 		unsigned int type, const std::string& shaderCode,
 		mrpt::optional_ref<std::string> outErrorMessages = std::nullopt);
 
-	unsigned int handle() const { return m_shader; }
+	unsigned int handle() const { return m_data->shader; }
+
+	struct Data
+	{
+		unsigned int shader = 0;
+		std::thread::id creationThread{};
+		bool inPostponedDestructionQueue = false;
+		void destroy();
+	};
 
    private:
-	unsigned int m_shader = 0;
+	std::shared_ptr<Data> m_data = std::make_shared<Data>();
 };
 
 /** A resource handling helper for OpenGL Shader "programs".
@@ -117,39 +120,38 @@ class Program
 		return m_data->program;
 	}
 
-	int uniformId(const char* name) const { return m_uniforms.at(name); }
-	int attributeId(const char* name) const { return m_attribs.at(name); }
+	int uniformId(const char* name) const { return m_data->uniforms.at(name); }
+	int attributeId(const char* name) const { return m_data->attribs.at(name); }
 
 	bool hasUniform(const char* name) const
 	{
-		return m_uniforms.count(name) != 0;
+		return m_data->uniforms.count(name) != 0;
 	}
 	bool hasAttribute(const char* name) const
 	{
-		return m_attribs.count(name) != 0;
+		return m_data->attribs.count(name) != 0;
 	}
 
 	/** Prints a textual summary of the program */
 	void dumpProgramDescription(std::ostream& o) const;
 
-   private:
 	struct Data
 	{
 		std::vector<Shader> shaders;
 		unsigned int program = 0;
 		std::thread::id linkedThread{};
+		bool inPostponedDestructionQueue = false;
+
+		/** OpenGL Uniforms/attribs defined by the user as inputs/outputs in
+		 * shader code. \sa declareUniform(), declareAttribute();
+		 */
+		std::unordered_map<std::string, int> uniforms, attribs;
+
+		void destroy();
 	};
-	std::unique_ptr<Data> m_data = std::make_unique<Data>();
 
-	/** OpenGL Uniforms/attribs defined by the user as inputs/outputs in shader
-	 * code.
-	 * \sa declareUniform(), declareAttribute();
-	 */
-	std::unordered_map<std::string, int> m_uniforms, m_attribs;
-
-	void internal_clear();
-
-	friend void mrpt::opengl::internal::clearPendingIfPossible();
+   private:
+	std::shared_ptr<Data> m_data = std::make_shared<Data>();
 };
 
 }  // namespace mrpt::opengl
