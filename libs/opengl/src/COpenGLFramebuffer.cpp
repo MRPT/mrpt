@@ -133,10 +133,10 @@ void COpenGLFramebuffer::RAII_Impl::destroy()
 {
 	if (!m_created) return;
 
+#if MRPT_HAS_OPENGL_GLUT
 	static const bool showErrs =
 		(::getenv("MRPT_REVEAL_OPENGL_BUFFER_LEAKS") != nullptr);
 
-#if MRPT_HAS_OPENGL_GLUT
 	if (m_created_from == std::this_thread::get_id())
 	{
 		unbind();
@@ -187,6 +187,8 @@ FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
 	}
 
 	return ids;
+#else
+	THROW_EXCEPTION("MRPT built without OpenGL support");
 #endif
 }
 

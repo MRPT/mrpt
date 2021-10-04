@@ -49,10 +49,10 @@ void COpenGLBuffer::RAII_Impl::destroy()
 {
 	if (!created) return;
 
+#if MRPT_HAS_OPENGL_GLUT
 	static const bool showErrs =
 		(::getenv("MRPT_REVEAL_OPENGL_BUFFER_LEAKS") != nullptr);
 
-#if MRPT_HAS_OPENGL_GLUT
 	if (created_from == std::this_thread::get_id())
 	{
 		unbind();
