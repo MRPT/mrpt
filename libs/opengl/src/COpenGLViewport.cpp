@@ -1010,7 +1010,7 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	{
 		// In 6DOFMode eye is set viewing towards the direction of the
 		// positive Z axis
-		// Up is set as Y axis
+		// Up is set as -Y axis
 		const auto pose = mrpt::poses::CPose3D(myCamera->getPose());
 		const auto viewDirection =
 			mrpt::poses::CPose3D::FromTranslation(0, 0, 1);
@@ -1018,8 +1018,9 @@ void COpenGLViewport::updateMatricesFromCamera() const
 
 		_.eye = pose.translation();
 		_.pointing = at.translation();
-		// "UP" = +Y axis
+		// "UP" = -Y axis
 		pose.getRotationMatrix().extractColumn(1, _.up);
+		_.up *= -1.0;
 	}
 	else
 	{
