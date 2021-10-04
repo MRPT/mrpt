@@ -16,6 +16,7 @@ namespace mrpt::opengl
 /** A wrapper for an OpenGL buffer object.
  * Refer to docs for glGenBuffers() and glBufferData().
  *
+ * \sa COpenGLFramebuffer
  * \ingroup mrpt_opengl_grp
  */
 class COpenGLBuffer
@@ -59,16 +60,16 @@ class COpenGLBuffer
 	/** Calls create() only if the buffer has not been created yet. */
 	void createOnce()
 	{
-		if (!isCreated()) create();
+		if (!initialized()) create();
 	}
-	bool isCreated() const { return m_impl->created; }
+	bool initialized() const { return m_impl->created; }
 
 	/** Automatically called upon destructor, no need for the user to call it in
 	 * normal situations. */
 	void destroy() { m_impl->destroy(); }
 
 	void bind() { m_impl->bind(); }
-	void release() { m_impl->bind(); }
+	void unbind() { m_impl->unbind(); }
 
 	unsigned int bufferId() const { return m_impl->buffer_id; }
 
@@ -92,7 +93,7 @@ class COpenGLBuffer
 		void create();
 		void destroy();
 		void bind();
-		void release();
+		void unbind();
 		void allocate(const void* data, int byteCount);
 
 		bool created = false;

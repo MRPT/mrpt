@@ -12,6 +12,7 @@
 #include <mrpt/core/Clock.h>
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/exceptions.h>
+#include <mrpt/core/get_env.h>
 #include <mrpt/opengl/COpenGLBuffer.h>
 #include <mrpt/opengl/opengl_api.h>
 
@@ -48,19 +49,19 @@ void COpenGLBuffer::RAII_Impl::destroy()
 {
 	if (!created) return;
 
+#if MRPT_HAS_OPENGL_GLUT
 	static const bool showErrs =
 		(::getenv("MRPT_REVEAL_OPENGL_BUFFER_LEAKS") != nullptr);
 
-#if MRPT_HAS_OPENGL_GLUT
 	if (created_from == std::this_thread::get_id())
 	{
-		release();
+		unbind();
 		glDeleteBuffers(1, &buffer_id);
 	}
 	else if (showErrs)
 	{
 		// at least, emit a warning:
-		static double tLast = 0;
+		static thread_local double tLast = 0;
 		auto tNow = mrpt::Clock::nowDouble();
 		if (tNow - tLast > 2.0)
 		{
@@ -88,7 +89,7 @@ void COpenGLBuffer::RAII_Impl::bind()
 #endif
 }
 
-void COpenGLBuffer::RAII_Impl::release()
+void COpenGLBuffer::RAII_Impl::unbind()
 {
 #if MRPT_HAS_OPENGL_GLUT
 	if (!created) return;
