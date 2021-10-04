@@ -77,7 +77,7 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 			0, W, 0 /*bottom*/, H /*top*/, znear, zfar);
 
 		// glMultMatrix(persp);
-		p_matrix = p_matrix * persp;
+		p_matrix.asEigen() *= persp.asEigen();
 	}
 	else if (is_projective)
 	{

@@ -38,6 +38,7 @@
       - More consistent naming of API methods: mrpt::opengl::CFBORender::render_RGB().
       - New method to render into a depth image mrpt::opengl::CFBORender::render_RGBD().
     - mrpt::opengl::CCamera::setProjectiveFromPinhole() now allows defining a camera by means of a pinhole model.
+    - New class mrpt::opengl::COpenGLFramebuffer, used to refactor mrpt::opengl::CFBORender
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers
