@@ -107,11 +107,18 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
 	CHECK_OPENGL_ERROR();
 
-	glEnable(GL_CULL_FACE);
+	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
+	else
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
+		CHECK_OPENGL_ERROR();
+	}
 
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
 	CHECK_OPENGL_ERROR();
 
+	glDisable(GL_CULL_FACE);
 	glDisableVertexAttribArray(attr_position);
 	glDisableVertexAttribArray(attr_color);
 	glDisableVertexAttribArray(attr_normals);

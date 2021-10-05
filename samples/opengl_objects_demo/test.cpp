@@ -477,6 +477,7 @@ void TestOpenGLObjects()
 		obj3->enableColorFromZ(true, mrpt::img::cmJET);
 		obj3->enableWireFrame(true);
 		obj3->setLocation(off_x, 0, 0);
+		obj3->cullFaces(mrpt::opengl::TCullFace::BACK);
 		theScene->insert(obj3);
 
 		// obj 4:
@@ -484,6 +485,7 @@ void TestOpenGLObjects()
 		{
 			obj4->assignImageAndZ(im, Z);
 			obj4->setLocation(off_x, 3, 0);
+			obj4->cullFaces(mrpt::opengl::TCullFace::BACK);
 			theScene->insert(obj4);
 		}
 
