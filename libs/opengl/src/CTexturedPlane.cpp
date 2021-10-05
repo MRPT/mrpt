@@ -24,6 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CTexturedPlane, CRenderizable, mrpt::opengl)
 CTexturedPlane::CTexturedPlane(
 	float x_min, float x_max, float y_min, float y_max)
 {
+	this->enableLight(false);
 	setPlaneCorners(x_min, x_max, y_min, y_max);
 }
 

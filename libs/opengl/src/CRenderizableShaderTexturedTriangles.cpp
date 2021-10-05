@@ -89,7 +89,8 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		const Program& s = *rc.shader;
 		glUniform4fv(s.uniformId("light_diffuse"), 1, &rc.lights->diffuse.R);
 		glUniform4fv(s.uniformId("light_ambient"), 1, &rc.lights->ambient.R);
-		glUniform4fv(s.uniformId("light_specular"), 1, &rc.lights->specular.R);
+		// glUniform4fv(s.uniformId("light_specular"), 1,
+		// &rc.lights->specular.R);
 		glUniform3fv(
 			s.uniformId("light_direction"), 1, &rc.lights->direction.x);
 		CHECK_OPENGL_ERROR();
@@ -135,10 +136,19 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
 	CHECK_OPENGL_ERROR();
 
+	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
+	else
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
+		CHECK_OPENGL_ERROR();
+	}
+
 	// Draw:
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
 	CHECK_OPENGL_ERROR();
 
+	glDisable(GL_CULL_FACE);
 	glDisableVertexAttribArray(attr_position);
 	glDisableVertexAttribArray(attr_uv);
 	glDisableVertexAttribArray(attr_normals);
@@ -562,13 +572,14 @@ void CRenderizableShaderTexturedTriangles::unloadTexture()
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
 	mrpt::serialization::CArchive& out) const
 {
-	uint8_t ver = 1;
+	uint8_t ver = 2;
 
 	out << ver;
 	out << m_enableTransparency << m_textureInterpolate;
 	out << m_textureImage;
 	if (m_enableTransparency) out << m_textureImageAlpha;
 	out << m_textureImageAssigned;
+	out << m_enableLight << static_cast<uint8_t>(m_cullface);  // v2
 }
 
 void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
@@ -581,6 +592,7 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			in >> m_enableTransparency >> m_textureInterpolate;
 			in >> m_textureImage;
@@ -596,6 +608,12 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 			if (version >= 1) in >> m_textureImageAssigned;
 			else
 				m_textureImageAssigned = true;
+
+			if (version >= 2)
+			{
+				in >> m_enableLight;
+				m_cullface = static_cast<TCullFace>(in.ReadAs<uint8_t>());
+			}
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

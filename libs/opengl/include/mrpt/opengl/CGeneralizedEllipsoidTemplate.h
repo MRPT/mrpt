@@ -29,6 +29,9 @@ namespace mrpt::opengl
  * \tparam DIM The dimensionality of the parameter space, which must coincide
  * with that of the rendering space (2 or 3)
  *
+ * By default, only the front faces are rendered. Use cullFaces() to change if
+ * needed.
+ *
  * \ingroup mrpt_opengl_grp
  */
 template <int DIM>
@@ -275,7 +278,10 @@ class CGeneralizedEllipsoidTemplate
 		CRenderizable::notifyChange();
 	}
 
-	CGeneralizedEllipsoidTemplate() = default;
+	CGeneralizedEllipsoidTemplate()
+	{
+		CRenderizableShaderTriangles::cullFaces(TCullFace::FRONT);
+	}
 	virtual ~CGeneralizedEllipsoidTemplate() override = default;
 
 	// Uscaled, m_mean, params_pts, m_numSegments, m_numSegments

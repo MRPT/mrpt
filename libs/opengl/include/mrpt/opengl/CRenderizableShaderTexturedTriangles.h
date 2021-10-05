@@ -1,4 +1,4 @@
-/* +------------------------------------------------------------------------+
+﻿/* +------------------------------------------------------------------------+
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
@@ -70,6 +70,11 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	bool isLightEnabled() const { return m_enableLight; }
 	void enableLight(bool enable = true) { m_enableLight = enable; }
 
+	/** Control whether to render the FRONT, BACK, or BOTH (default) set of
+	 * faces. Refer to docs for glCullFace() */
+	void cullFaces(const TCullFace& cf) { m_cullface = cf; }
+	TCullFace cullFaces() const { return m_cullface; }
+
 	/** VERY IMPORTANT: If you use a multi-thread application, you MUST call
 	 * this from the same thread that will later destruct the object in order to
 	 * the OpenGL texture memory to be correctly deleted.
@@ -128,7 +133,8 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	};
 
    private:
-	bool m_enableLight = false;
+	bool m_enableLight = true;
+	TCullFace m_cullface = TCullFace::NONE;
 
 	mutable std::optional<texture_name_unit_t> m_glTexture;
 	bool m_textureImageAssigned = false;

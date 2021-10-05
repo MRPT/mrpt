@@ -161,9 +161,9 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 
 		tris.emplace_back(
 			// Points
-			pts[0], pts[idx], pts[idxp],
+			pts[0], pts[idxp], pts[idx],
 			// Normals:
-			pts[0], pts[idx], pts[idxp]);
+			pts[0], pts[idxp], pts[idx]);
 	}
 
 	// Middle slices: triangle strip (if it were solid)
@@ -203,9 +203,9 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 
 		tris.emplace_back(
 			// Points
-			pts[idx], pts[idxN], pts[idxp],
+			pts[idx], pts[idxp], pts[idxN],
 			// Normals
-			pts[idx], pts[idxN], pts[idxp]);
+			pts[idx], pts[idxp], pts[idxN]);
 	}
 
 	// All faces, all vertices, same color:

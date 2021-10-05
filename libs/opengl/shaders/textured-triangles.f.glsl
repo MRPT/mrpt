@@ -6,17 +6,15 @@ R"XXX(
 // Part of the MRPT project
 
 uniform mat4 mv_matrix;
-uniform vec4 light_diffuse, light_ambient, light_specular;
+uniform vec4 light_diffuse, light_ambient;
 uniform vec3 light_direction;
-uniform sampler2D textureSampler;
 uniform int enableLight;  // 0 or 1
+uniform sampler2D textureSampler;
 
 in vec3 frag_position, frag_normal;
 in vec2 frag_UV; // Interpolated values from the vertex shaders
 
 out vec4 color;
-
-const float frag_shininess = 1.0;
 
 void main()
 {
@@ -24,12 +22,11 @@ void main()
     {
         vec3 mv_light_direction = light_direction;
         vec3 eye = normalize(frag_position);
-        vec3 reflection = reflect(mv_light_direction, frag_normal);
-        vec4 diffuse_factor = max(-dot(frag_normal, mv_light_direction), 0.0) * light_diffuse;
-        vec4 ambient_diffuse_factor = diffuse_factor + light_ambient;
-        vec4 specular_factor = max(pow(-dot(reflection, eye), frag_shininess), 0.0) * light_specular;
+        vec3 fn = normalize(frag_normal);
 
-        color = texture( textureSampler, frag_UV ) * (diffuse_factor + ambient_diffuse_factor + specular_factor);
+        vec4 diffuse_factor = max(-dot(fn, mv_light_direction), 0.0) * light_diffuse;
+
+        color = texture( textureSampler, frag_UV ) * (diffuse_factor + light_ambient);
     }
     else
     {

@@ -147,7 +147,7 @@ void CVectorField2D::onUpdateBuffers_Points()
    Implements the writing to a CStream capability of
 	 CSerializable objects
   ---------------------------------------------------------------*/
-uint8_t CVectorField2D::serializeGetVersion() const { return 0; }
+uint8_t CVectorField2D::serializeGetVersion() const { return 1; }
 void CVectorField2D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -159,6 +159,7 @@ void CVectorField2D::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_antiAliasing;
 	out << m_point_color;
 	out << m_field_color;
+	CRenderizableShaderTriangles::params_serialize(out);  // v1
 }
 
 void CVectorField2D::serializeFrom(
@@ -167,6 +168,7 @@ void CVectorField2D::serializeFrom(
 	switch (version)
 	{
 		case 0:
+		case 1:
 			readFromStreamRender(in);
 
 			in >> xcomp >> ycomp;
@@ -176,6 +178,9 @@ void CVectorField2D::serializeFrom(
 			in >> m_antiAliasing;
 			in >> m_point_color;
 			in >> m_field_color;
+
+			if (version >= 1)
+				CRenderizableShaderTriangles::params_deserialize(in);
 			break;
 
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version); break;
