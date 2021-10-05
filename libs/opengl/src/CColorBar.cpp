@@ -189,13 +189,14 @@ void CColorBar::onUpdateBuffers_Triangles()
 	// Already done in onUpdateBuffers_all()
 }
 
-uint8_t CColorBar::serializeGetVersion() const { return 1; }
+uint8_t CColorBar::serializeGetVersion() const { return 2; }
 void CColorBar::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// version 0
 	out << uint32_t(m_colormap) << m_min_col << m_max_col << m_min_value
 		<< m_max_value << m_label_format << m_label_font_size;
+	CRenderizableShaderTriangles::params_serialize(out);  // v2
 }
 void CColorBar::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -204,6 +205,7 @@ void CColorBar::serializeFrom(
 	{
 		case 0:
 		case 1:
+		case 2:
 			readFromStreamRender(in);
 
 			in.ReadAsAndCastTo<uint32_t, mrpt::img::TColormap>(m_colormap);
@@ -214,6 +216,9 @@ void CColorBar::serializeFrom(
 				bool old_disable_depth_test;
 				in >> old_disable_depth_test;
 			}
+			if (version >= 2)
+				CRenderizableShaderTriangles::params_deserialize(in);
+
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};

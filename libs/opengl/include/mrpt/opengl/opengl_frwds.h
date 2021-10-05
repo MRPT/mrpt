@@ -44,4 +44,6 @@ class CText3D;
 class CTexturedPlane;
 class CVectorField2D;
 class CVectorField3D;
+
+struct TLightParameters;
 }  // namespace mrpt::opengl

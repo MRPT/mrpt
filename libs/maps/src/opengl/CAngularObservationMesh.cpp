@@ -296,29 +296,18 @@ void CAngularObservationMesh::generatePointCloud(CPointsMap* out_map) const
 {
 	ASSERT_(out_map);
 	out_map->clear();
-	/*	size_t numRows=scanSet.size();
-		if ((pitchBounds.size()!=numRows)&&(pitchBounds.size()!=2)) return;
-		std::vector<double> pitchs(numRows);
-		if (pitchBounds.size()==2)	{
-			double p1=pitchBounds[0];
-			double p2=pitchBounds[1];
-			for (size_t i=0;i<numRows;i++)
-	   pitchs[i]=p1+(p2-p1)*static_cast<double>(i)/static_cast<double>(numRows-1);
-		}	else for (size_t i=0;i<numRows;i++) pitchs[i]=pitchBounds[i];
-		for (size_t i=0;i<numRows;i++) out_map->insertObservation(&scanSet[i]);
-	*/
-
 	std::for_each(
 		scanSet.begin(), scanSet.end(), CAngularObservationMesh_fnctr(out_map));
 }
 
-uint8_t CAngularObservationMesh::serializeGetVersion() const { return 0; }
+uint8_t CAngularObservationMesh::serializeGetVersion() const { return 1; }
 void CAngularObservationMesh::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// Version 0:
 	out << pitchBounds << scanSet << m_Wireframe << mEnableTransparency;
+	CRenderizableShaderTriangles::params_serialize(out);  // v1
 }
 
 void CAngularObservationMesh::serializeFrom(
@@ -327,8 +316,13 @@ void CAngularObservationMesh::serializeFrom(
 	switch (version)
 	{
 		case 0:
+		case 1:
 			readFromStreamRender(in);
 			in >> pitchBounds >> scanSet >> m_Wireframe >> mEnableTransparency;
+
+			if (version >= 1)
+				CRenderizableShaderTriangles::params_deserialize(in);
+
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
