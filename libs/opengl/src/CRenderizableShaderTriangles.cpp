@@ -61,7 +61,8 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 
 		glUniform4fv(s.uniformId("light_diffuse"), 1, &rc.lights->diffuse.R);
 		glUniform4fv(s.uniformId("light_ambient"), 1, &rc.lights->ambient.R);
-		glUniform4fv(s.uniformId("light_specular"), 1, &rc.lights->specular.R);
+		// glUniform4fv(s.uniformId("light_specular"), 1,
+		// &rc.lights->specular.R);
 		glUniform3fv(
 			s.uniformId("light_direction"), 1, &rc.lights->direction.x);
 		CHECK_OPENGL_ERROR();
