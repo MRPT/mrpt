@@ -1908,12 +1908,13 @@ CArchive& mrpt::opengl::operator<<(
 	return out;
 }
 
-uint8_t CPolyhedron::serializeGetVersion() const { return 0; }
+uint8_t CPolyhedron::serializeGetVersion() const { return 1; }
 void CPolyhedron::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// version 0
 	out << m_Vertices << m_Faces << m_Wireframe << m_lineWidth;
+	CRenderizableShaderTriangles::params_serialize(out);  // v1
 }
 
 void CPolyhedron::serializeFrom(
@@ -1922,6 +1923,7 @@ void CPolyhedron::serializeFrom(
 	switch (version)
 	{
 		case 0:
+		case 1:
 			readFromStreamRender(in);
 			in >> m_Vertices >> m_Faces >> m_Wireframe >> m_lineWidth;
 			if (!checkConsistence(m_Vertices, m_Faces))
@@ -1932,6 +1934,10 @@ void CPolyhedron::serializeFrom(
 					throw std::logic_error("Bad face specification");
 				addEdges(mFace);
 			}
+
+			if (version >= 1)
+				CRenderizableShaderTriangles::params_deserialize(in);
+
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
