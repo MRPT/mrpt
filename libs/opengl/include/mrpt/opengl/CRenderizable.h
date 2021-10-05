@@ -17,19 +17,15 @@
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_fonts.h>
+#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 #include <deque>
 
 namespace mrpt::opengl
 {
-// Frwd decls:
-class COpenGLViewport;
-class CSetOfObjects;
-class CText;
-struct TLightParameters;
-
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
@@ -386,6 +382,20 @@ class CRenderizable : public mrpt::serialization::CSerializable
 /** A list of smart pointers to renderizable objects */
 using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 
+/** Enum for cull face modes in triangle-based shaders.
+ *  \sa CRenderizableShaderTriangles, CRenderizableShaderTexturedTriangles
+ *  \ingroup mrpt_opengl_grp
+ */
+enum class TCullFace : uint8_t
+{
+	/** The default: culls none, so all front and back faces are visible. */
+	NONE = 0,
+	/** Skip back faces (those that are NOT seen in the CCW direction) */
+	BACK,
+	/** Skip front faces (those that ARE seen in the CCW direction) */
+	FRONT
+};
+
 /** @name Miscellaneous rendering methods
 @{ */
 
@@ -419,3 +429,10 @@ void processRenderQueue(
 /** @} */
 
 }  // namespace mrpt::opengl
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::opengl::TCullFace)
+using namespace mrpt::opengl;
+MRPT_FILL_ENUM_MEMBER(TCullFace, NONE);
+MRPT_FILL_ENUM_MEMBER(TCullFace, BACK);
+MRPT_FILL_ENUM_MEMBER(TCullFace, FRONT);
+MRPT_ENUM_TYPE_END()

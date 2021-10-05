@@ -162,18 +162,18 @@ void TestDisplay3D()
 		const double t = timer.Tac();
 
 		// Move the scene:
-		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+		auto& scene = win.get3DSceneAndLock();
 
 		const double R1 = 8;
 		const double W1 = 5.0, Q1 = 3.3;
-		opengl::CRenderizable::Ptr obj1 = theScene->getByName("ball_1");
+		opengl::CRenderizable::Ptr obj1 = scene->getByName("ball_1");
 		obj1->setLocation(
 			R1 * cos(W1 * t) * sin(Q1 * t), R1 * sin(W1 * t),
 			R1 * cos(W1 * t) * cos(Q1 * t));
 
 		const double R2 = 6;
 		const double W2 = 1.3, Q2 = 7.2;
-		opengl::CRenderizable::Ptr obj2 = theScene->getByName("ball_2");
+		opengl::CRenderizable::Ptr obj2 = scene->getByName("ball_2");
 		obj2->setLocation(
 			R2 * cos(W2 * t) * sin(Q2 * t), R2 * sin(W2 * t),
 			R2 * cos(W2 * t) * cos(Q2 * t));
@@ -209,7 +209,7 @@ void TestDisplay3D()
 		{
 			// Get the ray in 3D for the latest mouse (X,Y):
 			mrpt::math::TLine3D ray;
-			theScene->getViewport("main")->get3DRayForPixelCoord(
+			scene->getViewport("main")->get3DRayForPixelCoord(
 				mouse_x, mouse_y, ray);
 
 			// Create a 3D plane, e.g. Z=0
@@ -227,7 +227,7 @@ void TestDisplay3D()
 			{
 				// Move an object to the position picked by the user:
 				// printf("PT: %f %f %f\n",);
-				theScene->getByName("USER_MOUSE_PICK")
+				scene->getByName("USER_MOUSE_PICK")
 					->setLocation(inters_pt.x, inters_pt.y, inters_pt.z);
 			}
 		}

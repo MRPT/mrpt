@@ -125,13 +125,14 @@ void CCylinder::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
-uint8_t CCylinder::serializeGetVersion() const { return 1; }
+uint8_t CCylinder::serializeGetVersion() const { return 2; }
 void CCylinder::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// version 0
 	out << m_baseRadius << m_topRadius << m_height << m_slices
 		<< m_hasBottomBase << m_hasTopBase;
+	CRenderizableShaderTriangles::params_serialize(out);  // v2
 }
 void CCylinder::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
@@ -140,6 +141,7 @@ void CCylinder::serializeFrom(
 	{
 		case 0:
 		case 1:
+		case 2:
 			readFromStreamRender(in);
 			in >> m_baseRadius >> m_topRadius >> m_height >> m_slices;
 
@@ -150,6 +152,9 @@ void CCylinder::serializeFrom(
 			}
 
 			in >> m_hasBottomBase >> m_hasTopBase;
+
+			if (version >= 2)
+				CRenderizableShaderTriangles::params_deserialize(in);
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};

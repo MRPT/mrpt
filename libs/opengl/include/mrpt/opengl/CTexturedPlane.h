@@ -14,6 +14,7 @@
 namespace mrpt::opengl
 {
 /** A 2D plane in the XY plane with a texture image.
+ *  Lighting is disabled by default in this class.
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */

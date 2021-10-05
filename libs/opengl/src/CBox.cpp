@@ -131,7 +131,7 @@ void CBox::onUpdateBuffers_Triangles()
 		t.setColor(m_color);
 }
 
-uint8_t CBox::serializeGetVersion() const { return 1; }
+uint8_t CBox::serializeGetVersion() const { return 2; }
 void CBox::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -140,6 +140,7 @@ void CBox::serializeTo(mrpt::serialization::CArchive& out) const
 		<< m_corner_max.y << m_corner_max.z << m_wireframe << m_lineWidth;
 	// Version 1:
 	out << m_draw_border << m_solidborder_color;
+	CRenderizableShaderTriangles::params_serialize(out);  // v2
 }
 
 void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -148,6 +149,7 @@ void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 0:
 		case 1:
+		case 2:
 			readFromStreamRender(in);
 			in >> m_corner_min.x >> m_corner_min.y >> m_corner_min.z >>
 				m_corner_max.x >> m_corner_max.y >> m_corner_max.z >>
@@ -158,6 +160,8 @@ void CBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			{
 				m_draw_border = false;
 			}
+			if (version >= 2)
+				CRenderizableShaderTriangles::params_deserialize(in);
 
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

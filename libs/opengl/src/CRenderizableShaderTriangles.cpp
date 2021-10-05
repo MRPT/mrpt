@@ -13,6 +13,7 @@
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/opengl_api.h>
+#include <mrpt/serialization/CArchive.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -46,13 +47,22 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
-	if (rc.lights && rc.shader->hasUniform("light_diffuse"))
+	// Enable/disable lights:
+	{
+		const Program& s = *rc.shader;
+		GLint enabled = m_enableLight ? 1 : 0;
+		glUniform1i(s.uniformId("enableLight"), enabled);
+		CHECK_OPENGL_ERROR();
+	}
+
+	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse"))
 	{
 		const Program& s = *rc.shader;
 
 		glUniform4fv(s.uniformId("light_diffuse"), 1, &rc.lights->diffuse.R);
 		glUniform4fv(s.uniformId("light_ambient"), 1, &rc.lights->ambient.R);
-		glUniform4fv(s.uniformId("light_specular"), 1, &rc.lights->specular.R);
+		// glUniform4fv(s.uniformId("light_specular"), 1,
+		// &rc.lights->specular.R);
 		glUniform3fv(
 			s.uniformId("light_direction"), 1, &rc.lights->direction.x);
 		CHECK_OPENGL_ERROR();
@@ -98,9 +108,18 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
 	CHECK_OPENGL_ERROR();
 
+	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
+	else
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
+		CHECK_OPENGL_ERROR();
+	}
+
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
 	CHECK_OPENGL_ERROR();
 
+	glDisable(GL_CULL_FACE);
 	glDisableVertexAttribArray(attr_position);
 	glDisableVertexAttribArray(attr_color);
 	glDisableVertexAttribArray(attr_normals);
@@ -147,4 +166,25 @@ const mrpt::math::TBoundingBox
 		keep_max(bb.max.z, t.z(2));
 	}
 	return bb;
+}
+
+void CRenderizableShaderTriangles::params_serialize(
+	mrpt::serialization::CArchive& out) const
+{
+	out.WriteAs<uint8_t>(0);  // serialization version
+	out << m_enableLight << static_cast<uint8_t>(m_cullface);
+}
+void CRenderizableShaderTriangles::params_deserialize(
+	mrpt::serialization::CArchive& in)
+{
+	const auto version = in.ReadAs<uint8_t>();
+
+	switch (version)
+	{
+		case 0:
+			in >> m_enableLight;
+			m_cullface = static_cast<TCullFace>(in.ReadAs<uint8_t>());
+			break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+	};
 }

@@ -239,7 +239,7 @@ void CAssimpModel::enqueForRenderRecursive(
 	mrpt::opengl::enqueForRendering(lst, state, rq);
 }
 
-uint8_t CAssimpModel::serializeGetVersion() const { return 0; }
+uint8_t CAssimpModel::serializeGetVersion() const { return 1; }
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);

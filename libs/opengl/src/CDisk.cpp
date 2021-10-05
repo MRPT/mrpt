@@ -76,12 +76,13 @@ void CDisk::onUpdateBuffers_Triangles()
 		t.setColor(m_color);
 }
 
-uint8_t CDisk::serializeGetVersion() const { return 1; }
+uint8_t CDisk::serializeGetVersion() const { return 2; }
 void CDisk::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_radiusIn << m_radiusOut;
 	out << m_nSlices;
+	CRenderizableShaderTriangles::params_serialize(out);  // v2
 }
 
 void CDisk::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -90,6 +91,7 @@ void CDisk::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			readFromStreamRender(in);
 			in >> m_radiusIn >> m_radiusOut;
@@ -99,6 +101,9 @@ void CDisk::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				float dummy_loops;
 				in >> dummy_loops;
 			}
+
+			if (version >= 2)
+				CRenderizableShaderTriangles::params_deserialize(in);
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
