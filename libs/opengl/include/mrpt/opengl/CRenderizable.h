@@ -20,6 +20,7 @@
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/typemeta/TEnumType.h>
 
 #include <deque>
 
@@ -387,7 +388,7 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
  */
 enum class TCullFace : uint8_t
 {
-	/** The default: draws all front and back faces */
+	/** The default: culls none, so all front and back faces are visible. */
 	NONE = 0,
 	/** Skip back faces (those that are NOT seen in the CCW direction) */
 	BACK,
@@ -428,3 +429,10 @@ void processRenderQueue(
 /** @} */
 
 }  // namespace mrpt::opengl
+
+MRPT_ENUM_TYPE_BEGIN(mrpt::opengl::TCullFace)
+using namespace mrpt::opengl;
+MRPT_FILL_ENUM_MEMBER(TCullFace, NONE);
+MRPT_FILL_ENUM_MEMBER(TCullFace, BACK);
+MRPT_FILL_ENUM_MEMBER(TCullFace, FRONT);
+MRPT_ENUM_TYPE_END()
