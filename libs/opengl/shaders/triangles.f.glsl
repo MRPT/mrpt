@@ -6,7 +6,7 @@ R"XXX(
 // Part of the MRPT project
 
 uniform mat4 mv_matrix;
-uniform vec4 light_diffuse, light_ambient, light_specular;
+uniform vec4 light_diffuse, light_ambient;
 uniform vec3 light_direction;
 uniform int enableLight;  // 0 or 1
 
@@ -15,21 +15,17 @@ in vec4 frag_materialColor;
 
 out vec4 color;
 
-const float frag_shininess = 1.0;
-
 void main()
 {
     if (enableLight!=0)
     {
-        vec3 mv_light_direction = light_direction,
-             eye = normalize(frag_position),
-             reflection = reflect(mv_light_direction, frag_normal);
-    
+        vec3 mv_light_direction = light_direction;
+        vec3 eye = normalize(frag_position);
+        vec3 fn = normalize(frag_normal);
+
         vec4 diffuse_factor = max(-dot(frag_normal, mv_light_direction), 0.0) * light_diffuse;
-        vec4 ambient_diffuse_factor = diffuse_factor + light_ambient;
-        vec4 specular_factor = max(pow(-dot(reflection, eye), frag_shininess), 0.0) * light_specular;
-    
-        color = frag_materialColor * (diffuse_factor + ambient_diffuse_factor + specular_factor);
+
+        color = frag_materialColor * (diffuse_factor + light_ambient);
     }
     else
     {
