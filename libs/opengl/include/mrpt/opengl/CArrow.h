@@ -85,6 +85,21 @@ class CArrow : public CRenderizableShaderTriangles
 	{
 	}
 
+	CArrow(
+		const mrpt::math::TPoint3Df& from, const mrpt::math::TPoint3Df& to,
+		float headRatio = 0.2f, float smallRadius = 0.05f,
+		float largeRadius = 0.2f)
+		: m_x0(from.x),
+		  m_y0(from.y),
+		  m_z0(from.z),
+		  m_x1(to.x),
+		  m_y1(to.y),
+		  m_z1(to.z),
+		  m_headRatio(headRatio),
+		  m_smallRadius(smallRadius),
+		  m_largeRadius(largeRadius)
+	{
+	}
 	~CArrow() override = default;
 
    protected:
