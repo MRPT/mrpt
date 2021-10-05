@@ -135,10 +135,19 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
 	CHECK_OPENGL_ERROR();
 
+	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
+	else
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
+		CHECK_OPENGL_ERROR();
+	}
+
 	// Draw:
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
 	CHECK_OPENGL_ERROR();
 
+	glDisable(GL_CULL_FACE);
 	glDisableVertexAttribArray(attr_position);
 	glDisableVertexAttribArray(attr_uv);
 	glDisableVertexAttribArray(attr_normals);

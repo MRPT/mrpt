@@ -72,7 +72,8 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 #include "../shaders/triangles.f.glsl"
 				;
 			uniforms = {"p_matrix",		 "mv_matrix",	   "light_diffuse",
-						"light_ambient", "light_specular", "light_direction"};
+						"light_ambient", "light_specular", "light_direction",
+						"enableLight"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 			// ==============================
