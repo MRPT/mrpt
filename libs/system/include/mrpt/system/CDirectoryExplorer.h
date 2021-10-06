@@ -34,23 +34,11 @@ class CDirectoryExplorer
 	 */
 	struct TFileInfo
 	{
-		/** The file name (without the whole path).
-		 */
-		std::string name;
-
-		/** The whole file path.
-		 */
-		std::string wholePath;
-
-		/** Access and modification times.
-		 */
-		time_t accessTime, modTime;
-
-		bool isDir, isSymLink;
-
-		/** The size of the file in bytes.
-		 */
-		uint64_t fileSize;
+		std::string name;  //!< The file name part only, without path.
+		std::string wholePath;	//!< Full, absolute path of the file
+		time_t accessTime, modTime;	 //!< Access and modification times.
+		bool isDir = false, isSymLink = false;
+		uint64_t fileSize = 0;	//!< File size [bytes]
 	};
 
 	/** The list type used in "explore".
