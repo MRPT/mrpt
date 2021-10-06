@@ -38,6 +38,14 @@
 #include <iostream>
 #include <queue>
 
+#if STD_FS_IS_EXPERIMENTAL
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
+
 using namespace mrpt::system;
 using namespace std;
 
@@ -146,9 +154,9 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
 			// File name:
 			newEntry.name = string(ent->d_name);
 
-			// Complete file path:
-			newEntry.wholePath = searchPath;
-			newEntry.wholePath += newEntry.name;
+			// Complete absolute file path:
+			newEntry.wholePath =
+				fs::absolute(fs::path(searchPath + newEntry.name));
 
 			// File times:
 			struct stat statDat
