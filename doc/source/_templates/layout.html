@@ -8,8 +8,35 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'UA-21128561-10');
+</script>
+{% endblock %}
+
+
+{% block sidebartitle %}
+{{ super() }}
+<script>
+var req = new XMLHttpRequest();
+ req.onload = function(){
+     var versions = JSON.parse(this.responseText);
+     var versionDiv = document.getElementsByClassName('version')[0];
+     var curVer = versionDiv.innerHTML.trim();
+     var s='<select>\n';
+     for(var i = 0; i < versions.length; i++) {
+       var v = versions[i];
+       var vstr = v;
+       if (v.charAt(0)>='0' && v.charAt(0)<='9') {
+         vstr = 'v'+vstr;
+       }
+       s=s+ '<option value="' +v+'"';
+       if (curVer==v) {s=s+' selected';}
+       s=s+'>'+ vstr + '</option>\n';
+     }
+     s = s + '</select>\n';
+     versionDiv.innerHTML = s;
+ };
+ req.open('GET', './versions.txt');
+ req.send();
 </script>
 {% endblock %}
 
