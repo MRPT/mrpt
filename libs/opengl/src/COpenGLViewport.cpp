@@ -351,6 +351,11 @@ void COpenGLViewport::renderTextMessages() const
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	CHECK_OPENGL_ERROR();
+
+	// Text messages should always be visible on top the rest:
+	glDisable(GL_DEPTH_TEST);
+	CHECK_OPENGL_ERROR();
 
 	// Collect all 2D text objects, and update their properties:
 	CListOpenGLObjects objs;
@@ -365,16 +370,6 @@ void COpenGLViewport::renderTextMessages() const
 		float y =
 			label.y >= 1 ? label.y : (label.y < 0 ? h + label.y : label.y * h);
 
-		if (CText::Ptr& o = label.gl_text; o)
-		{
-			o->setFont(label.vfont_name, label.vfont_scale * 2);
-			o->setString(label.text);
-			o->setColor(label.color);
-			// Change coordinates: mrpt text (0,0)-(1,1) to OpenGL
-			// (-1,-1)-(+1,+1):
-			o->setLocation(-1.0f + 2 * x / w, -1.0f + 2 * y / h, 0);
-			objs.push_back(o);
-		}
 		if (CText::Ptr& o = label.gl_text_shadow; o)
 		{
 			o->setFont(label.vfont_name, label.vfont_scale * 2);
@@ -384,6 +379,16 @@ void COpenGLViewport::renderTextMessages() const
 			// (-1,-1)-(+1,+1):
 			o->setLocation(
 				-1.0f + 2 * (x + 1) / w, -1.0f + 2 * (y - 1) / h, 0.1);
+			objs.push_back(o);
+		}
+		if (CText::Ptr& o = label.gl_text; o)
+		{
+			o->setFont(label.vfont_name, label.vfont_scale * 2);
+			o->setString(label.text);
+			o->setColor(label.color);
+			// Change coordinates: mrpt text (0,0)-(1,1) to OpenGL
+			// (-1,-1)-(+1,+1):
+			o->setLocation(-1.0f + 2 * x / w, -1.0f + 2 * y / h, 0);
 			objs.push_back(o);
 		}
 	}
