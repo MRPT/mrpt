@@ -1,10 +1,4 @@
-mrpt (1:2.3.2-1) experimental; urgency=medium
-
-  * New version of upstream sources.
-
- -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Wed, 14 Jul 2021 11:27:53 +0200
-
-mrpt (1:2.2.0-1) experimental; urgency=medium
+mrpt (1:2.4.0-1) unstable; urgency=medium
 
   * Fix build errors with gcc-11 (Closes: #984246)
   * New version of upstream sources.
@@ -13,7 +7,7 @@ mrpt (1:2.2.0-1) experimental; urgency=medium
     use it as a dependency.
   * New version of upstream sources.
 
- -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Wed, 10 Mar 2021 17:05:20 +0100
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  XXX, XX Oct 2021 17:05:20 +0100
 
 mrpt (1:2.1.7-2) unstable; urgency=medium
 
