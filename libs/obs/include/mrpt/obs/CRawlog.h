@@ -94,9 +94,13 @@ class CRawlog : public mrpt::serialization::CSerializable
 	 */
 	enum TEntryType
 	{
+		/** The entry is of type mrpt::obs::CSensoryFrame */
 		etSensoryFrame = 0,
+		/** The entry is of type mrpt::obs::CActionCollection */
 		etActionCollection,
+		/** The entry is of type mrpt::obs::CObservation */
 		etObservation,
+		/** The entry is none of the types above */
 		etOther
 	};
 
