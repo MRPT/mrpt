@@ -277,6 +277,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	// "wxWindow::FindWindowByName" to run right!!! :-(
 	//  And update the required data:
 	const TRuntimeClassId* classID = sel_obj->GetRuntimeClass();
+	bool textDescriptionDone = false;
 
 	// Default selection:
 	Notebook1->ChangeSelection(0);
@@ -287,6 +288,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(sel_obj));
 		obs->load();
 		obs->getDescriptionAsText(cout);
+		textDescriptionDone = true;
 		curSelectedObservation =
 			std::dynamic_pointer_cast<CObservation>(sel_obj);
 	}
@@ -294,6 +296,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	{
 		CAction::Ptr act(std::dynamic_pointer_cast<CAction>(sel_obj));
 		cout << act->getDescriptionAsTextValue();
+		textDescriptionDone = true;
 	}
 
 	// Specific data:
@@ -576,6 +579,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 #endif
 	}
 
+	MRPT_TODO("Replace by generic Visualizable interface");
 	if (classID == CLASS_ID(CObservation3DScene))
 	{
 		// ----------------------------------------------------------------------
@@ -627,6 +631,16 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	{
 		CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(sel_obj));
 		obs->unload();
+	}
+
+	// Stringifyable Interface as a fallback:
+	// ------------------------------------------
+	if (auto s = dynamic_cast<const mrpt::Stringifyable*>(sel_obj.get());
+		s != nullptr && !textDescriptionDone)
+	{
+		std::cout << "Generic object textual description from "
+					 "mrpt::Stringifyable::asString():\n\n"
+				  << s->asString() << std::endl;
 	}
 
 	myRedirector.reset();  // ensures cout is redirected to text box

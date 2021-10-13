@@ -32,7 +32,6 @@ void CPosePDF::jacobiansPoseComposition(
 void CPosePDF::jacobiansPoseComposition(
 	const CPose2D& x, const CPose2D& u, CMatrixDouble33& df_dx,
 	CMatrixDouble33& df_du, const bool compute_df_dx, const bool compute_df_du)
-
 {
 	const double spx = sin(x.phi());
 	const double cpx = cos(x.phi());

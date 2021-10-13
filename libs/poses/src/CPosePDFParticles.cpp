@@ -388,3 +388,13 @@ void CPosePDFParticles::saveParzenPDFToTextFile(
 	if (!f.is_open()) return;
 	f << buf;
 }
+
+std::string CPosePDFParticles::asString() const
+{
+	std::stringstream ss;
+	const auto [c, m] = getCovarianceAndMean();
+	ss << "mrpt::poses::CPosePDFParticles object with " << size()
+	   << " particles, mean=" << m.asString() << " cov=" << c.inMatlabFormat()
+	   << " ESS=" << ESS();
+	return ss.str();
+}

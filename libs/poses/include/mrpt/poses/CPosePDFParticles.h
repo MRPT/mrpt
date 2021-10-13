@@ -10,12 +10,16 @@
 
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 
 namespace mrpt::poses
 {
+using PFDataTPose2D = mrpt::bayes::CParticleFilterData<
+	mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>;
+
 /** Declares a class that represents a Probability Density Function (PDF) over a
  * 2D pose (x,y,phi), using a set of weighted samples.
  *
@@ -27,15 +31,11 @@ namespace mrpt::poses
  * \sa CPose2D, CPosePDF, CPoseGaussianPDF, CParticleFilterCapable
  * \ingroup poses_pdf_grp
  */
-class CPosePDFParticles
-	: public CPosePDF,
-	  public mrpt::bayes::CParticleFilterData<
-		  mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE>,
-	  public mrpt::bayes::CParticleFilterDataImpl<
-		  CPosePDFParticles,
-		  mrpt::bayes::CParticleFilterData<
-			  mrpt::math::TPose2D,
-			  mrpt::bayes::particle_storage_mode::VALUE>::CParticleList>
+class CPosePDFParticles : public CPosePDF,
+						  public PFDataTPose2D,
+						  public mrpt::bayes::CParticleFilterDataImpl<
+							  CPosePDFParticles, PFDataTPose2D::CParticleList>,
+						  public mrpt::Stringifyable
 {
 	DEFINE_SERIALIZABLE(CPosePDFParticles, mrpt::poses)
 
@@ -170,6 +170,8 @@ class CPosePDFParticles
 		const char* fileName, const double x_min, const double x_max,
 		const double y_min, const double y_max, const double phi,
 		const double stepSizeXY, const double stdXY, const double stdPhi) const;
+
+	std::string asString() const override;
 
 };	// End of class def.
 

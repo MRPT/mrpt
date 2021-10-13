@@ -337,3 +337,13 @@ void CPose3DPDFParticles::resetUniform(
 	}
 	MRPT_END
 }
+
+std::string CPose3DPDFParticles::asString() const
+{
+	std::stringstream ss;
+	const auto [c, m] = getCovarianceAndMean();
+	ss << "mrpt::poses::CPose3DPDFParticles object with " << size()
+	   << " particles, mean=" << m.asString() << " cov=" << c.inMatlabFormat()
+	   << " ESS=" << ESS();
+	return ss.str();
+}
