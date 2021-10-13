@@ -2381,7 +2381,12 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 			}  // end Observation
 			break;
-			default: break;
+			default:
+			{
+				auto obj = rawlog.getAsGeneric(i);
+				listOfObjects[obj->GetRuntimeClass()]++;
+			}
+			break;
 		};	// end switch type
 
 	}  // end for i
