@@ -12,6 +12,7 @@
     - The `--info` command now also shows the first and last timestamp in a rawlog.
   - RawLogViewer:
     - Show mrpt::obs::CObservationPointCloud 3D point clouds in main window and scan animation dialog.
+    - Displays timestamp as the user tracks the timeline scroll bar. 
   - rosbag2rawlog:
     - PointCloud2 messages are now only converted to mrpt::obs::CObservationRotatingScan is this latter class is specified in the YAML file.
 - Changes in libraries:
