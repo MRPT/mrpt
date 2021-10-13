@@ -129,10 +129,15 @@ class CRawlogTreeView : public wxScrolledWindow
 	static const int ROW_HEIGHT;
 	static const int TREE_HORZ_STEPS;
 
+	bool m_is_thumb_tracking = false;
+
 	// Events:
 	void OnLeftDown(wxMouseEvent& event);
 	void OnMouseWheel(wxMouseEvent& event);
 	void OnKey(wxKeyEvent& event);
+
+	void onScrollThumbTrack(wxScrollWinEvent& ev);
+	void onScrollThumbRelease(wxScrollWinEvent& ev);
 
 	DECLARE_DYNAMIC_CLASS(CRawlogTreeView)
 	DECLARE_EVENT_TABLE()
