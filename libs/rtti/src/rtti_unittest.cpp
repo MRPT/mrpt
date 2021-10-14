@@ -139,7 +139,7 @@ TEST(rtti, CListOfClasses)
 		EXPECT_TRUE(l.containsDerivedFrom(CLASS_ID(T1)));
 		EXPECT_FALSE(l.containsDerivedFrom(CLASS_ID(T2)));
 		EXPECT_TRUE(l.containsDerivedFrom(CLASS_ID(mrpt::rtti::CObject)));
-		EXPECT_EQ(l.toString(), "MyNS::MyDerived1");
+		EXPECT_EQ(l.asString(), "MyNS::MyDerived1");
 	}
 	{
 		mrpt::rtti::CListOfClasses l;

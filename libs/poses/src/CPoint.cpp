@@ -31,9 +31,9 @@ void CPoint<DERIVEDCLASS, DIM>::fromString(const std::string& s)
 }
 
 template <class DERIVEDCLASS, std::size_t DIM>
-void CPoint<DERIVEDCLASS, DIM>::asString(std::string& s) const
+std::string CPoint<DERIVEDCLASS, DIM>::asString() const
 {
-	s = (!DERIVEDCLASS::is3DPoseOrPoint())
+	return (!DERIVEDCLASS::is3DPoseOrPoint())
 		? mrpt::format(
 			  "[%f %f]", static_cast<const DERIVEDCLASS*>(this)->x(),
 			  static_cast<const DERIVEDCLASS*>(this)->y())

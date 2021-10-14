@@ -57,7 +57,7 @@ void CObservation::getDescriptionAsText(std::ostream& o) const
 	  << "\n\n";
 }
 
-std::string CObservation::getDescriptionAsTextValue() const
+std::string CObservation::asString() const
 {
 	std::stringstream ss;
 	getDescriptionAsText(ss);
