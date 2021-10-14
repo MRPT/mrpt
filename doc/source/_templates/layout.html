@@ -16,12 +16,22 @@
 {% block sidebartitle %}
 {{ super() }}
 <script>
+function onMRPTVersionChange() {
+    var selectBox = document.getElementById("docsVersionSelectBox");
+    const newVersion = selectBox.options[selectBox.selectedIndex].value;
+    var curURL = window.location.href;
+    const lastURLSegment = curURL;
+    const newURL = window.location.protocol + "//" + window.location.host + "/" +
+        "reference/" + newVersion + "/" +
+        window.location.pathname.split("/").pop();
+    window.location.href = newURL;
+}
 var req = new XMLHttpRequest();
  req.onload = function(){
      var versions = JSON.parse(this.responseText);
      var versionDiv = document.getElementsByClassName('version')[0];
      var curVer = versionDiv.innerHTML.trim();
-     var s='<select>\n';
+     var s='<select id="docsVersionSelectBox" onchange="onMRPTVersionChange();">\n';
      for(var i = 0; i < versions.length; i++) {
        var v = versions[i];
        var vstr = v;
@@ -30,7 +40,7 @@ var req = new XMLHttpRequest();
        }
        s=s+ '<option value="' +v+'"';
        if (curVer==v) {s=s+' selected';}
-       s=s+'>'+ vstr + '</option>\n';
+       s=s+'">'+ vstr + '</option>\n';
      }
      s = s + '</select>\n';
      versionDiv.innerHTML = s;
