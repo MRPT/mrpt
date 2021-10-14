@@ -11,6 +11,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/math/MatrixVectorBase.h>
 
+#include <Eigen/Dense>
 #include <cstdint>
 #include <cstdio>  // fopen(),...
 #include <ctime>  // time(),...

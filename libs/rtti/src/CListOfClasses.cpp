@@ -27,7 +27,7 @@ bool CListOfClasses::containsDerivedFrom(
 	return false;
 }
 
-std::string CListOfClasses::toString() const
+std::string CListOfClasses::asString() const
 {
 	std::string s;
 	unsigned int cnt = 0;

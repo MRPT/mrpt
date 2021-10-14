@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/maps/CLogOddsGridMap3D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -32,7 +33,8 @@ namespace mrpt::maps
  **/
 class COccupancyGridMap3D
 	: public CMetricMap,
-	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>
+	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>,
+	  public mrpt::Stringifyable
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap3D, mrpt::maps)
    public:
@@ -375,6 +377,17 @@ class COccupancyGridMap3D
 		const TMatchingRatioParams& params) const override;
 
 	void saveMetricMapRepresentationToFile(const std::string& f) const override;
+
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"3D gridmap, extending from (%f,%f,%f) to (%f,%f,%f), voxel "
+			"resolution in XY=%f in Z=%f",
+			m_grid.getXMin(), m_grid.getYMin(), m_grid.getZMin(),
+			m_grid.getXMax(), m_grid.getYMax(), m_grid.getZMax(),
+			m_grid.getResolutionXY(), m_grid.getResolutionZ());
+	}
 
    private:
 	// See docs in base class

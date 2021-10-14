@@ -28,7 +28,7 @@ enum TConstructorFlags_Quaternions
  *
  *  The elements of the quaternion can be accessed by either:
  *		- r()(equivalent to w()), x(), y(), z(), or
- *		- the operator [] with indices running from 0 (=r) to 3 (=z).
+ *		- the operator [] with indices: [0]=`w`, [1]:`x`, [2]:`y`, [3]:`z`
  *
  *  Users will usually employ the type `CQuaternionDouble` instead of this
  *template.
