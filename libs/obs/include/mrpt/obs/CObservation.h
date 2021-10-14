@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -43,7 +44,8 @@ namespace obs
  * \sa CSensoryFrame, CMetricMap, mrpt::obs::CRawLog
  * \ingroup mrpt_obs_grp
  */
-class CObservation : public mrpt::serialization::CSerializable
+class CObservation : public mrpt::serialization::CSerializable,
+					 public mrpt::Stringifyable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CObservation)
 
@@ -153,8 +155,9 @@ class CObservation : public mrpt::serialization::CSerializable
 	 * object in the dataset */
 	virtual void getDescriptionAsText(std::ostream& o) const;
 
-	/** Return by value version of getDescriptionAsText(std::ostream&) */
-	std::string getDescriptionAsTextValue() const;
+	/** Return by value version of getDescriptionAsText(std::ostream&).
+	 */
+	std::string asString() const override;
 
 	/** @name Export to TXT/CSV API (see the rawlog-edit app)
 		@{ */

@@ -10,6 +10,7 @@
 
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/containers/CDynamicGrid.h>
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
@@ -52,7 +53,8 @@ namespace mrpt::maps
  **/
 class COccupancyGridMap2D
 	: public CMetricMap,
-	  public CLogOddsGridMap2D<OccGridCellTraits::cellType>
+	  public CLogOddsGridMap2D<OccGridCellTraits::cellType>,
+	  public mrpt::Stringifyable
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap2D, mrpt::maps)
    public:
@@ -1118,6 +1120,14 @@ class COccupancyGridMap2D
 		/** Their two first basis points coordinates. */
 		std::vector<int> x_basis1, y_basis1, x_basis2, y_basis2;
 	} CriticalPointsList;
+
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"2D gridmap, extending from (%f,%f) to (%f,%f), cell size=%f",
+			getXMin(), getYMin(), getXMax(), getYMax(), getResolution());
+	}
 
    private:
 	// See docs in base class

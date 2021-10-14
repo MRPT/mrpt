@@ -154,7 +154,11 @@ struct TBoundingBox_
 	}
 
 	/** Print bounding box as a string with format
-	 * "(minx,miny,minz)-(maxx,maxy,maxz)" */
+	 * "(minx,miny,minz)-(maxx,maxy,maxz)"
+	 *
+	 * \note Do not inherit from mrpt::Stringifyable to avoid virtual class
+	 * table and keeping the class trivially-copiable.
+	 */
 	std::string asString() const
 	{
 		std::string s = min.asString();
