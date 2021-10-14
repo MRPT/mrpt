@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/core/safe_pointers.h>
@@ -69,7 +70,8 @@ struct pointmap_traits;
 class CPointsMap : public CMetricMap,
 				   public mrpt::math::KDTreeCapable<CPointsMap>,
 				   public mrpt::opengl::PLY_Importer,
-				   public mrpt::opengl::PLY_Exporter
+				   public mrpt::opengl::PLY_Exporter,
+				   public mrpt::Stringifyable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
 	// This must be added for declaration of MEX-related functions
@@ -1139,6 +1141,15 @@ class CPointsMap : public CMetricMap,
 		m_largestDistanceFromOriginIsUpdated = false;
 		m_boundingBoxIsUpdated = false;
 		kdtree_mark_as_outdated();
+	}
+
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"Pointcloud map with %u points, bounding box:%s",
+			static_cast<unsigned int>(size()),
+			boundingBox().asString().c_str());
 	}
 
    protected:

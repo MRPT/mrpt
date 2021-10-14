@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFileBase.h>
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/serialization/CSerializable.h>
 
 #include <string>
@@ -18,7 +19,8 @@ namespace mrpt::kinematics
 /** Virtual base for velocity commands of different kinematic models of planar
  * mobile robot.
  * \ingroup mrpt_kinematics_grp */
-class CVehicleVelCmd : public mrpt::serialization::CSerializable
+class CVehicleVelCmd : public mrpt::serialization::CSerializable,
+					   public mrpt::Stringifyable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CVehicleVelCmd)
    public:
@@ -42,7 +44,7 @@ class CVehicleVelCmd : public mrpt::serialization::CSerializable
 	/** Set to a command that means "do not move" / "stop". \sa isStopCmd */
 	virtual void setToStop() = 0;
 	/** Returns a human readable description of the cmd */
-	std::string asString() const;
+	std::string asString() const override;
 
 	/** Parameters that may be used by cmdVel_limits() in any derived classes.
 	 */

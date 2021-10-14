@@ -24,9 +24,8 @@ CNode* CPosesNode::child(int id) { return nullptr; }
 CPose3D CPosesNode::getPose() const { return m_pose; }
 std::string CPosesNode::displayName() const
 {
-	std::string str;
-	m_pose.asString(str);
-	return "Pose: " + str;
+	using namespace std::string_literals;
+	return "Pose: "s + m_pose.asString();
 }
 
 CNode::ObjectType CPosesNode::type() const { return ObjectType::Pos; }
