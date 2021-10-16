@@ -1,13 +1,13 @@
-mrpt (1:2.4.0-1) unstable; urgency=medium
+mrpt (1:2.2.0-2) unstable; urgency=medium
 
   * Fix build errors with gcc-11 (Closes: #984246)
-  * New version of upstream sources.
-  * Fix AppStream error.
+  * Remove build-dep on debhelper.
+  * Bump Debian standars to 4.6.0.
+  * Add more fields to debian/control.
   * nanoflann is now a Debian project of its own (libnanoflann-dev),
     use it as a dependency.
-  * New version of upstream sources.
 
- -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  XXX, XX Oct 2021 17:05:20 +0100
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Sat, 16 Oct 2021 22:46:00 +0200
 
 mrpt (1:2.1.7-2) unstable; urgency=medium
 
