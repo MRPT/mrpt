@@ -2,8 +2,10 @@ Source: mrpt
 Section: science
 Priority: optional
 Maintainer: José Luis Blanco Claraco <joseluisblancoc@gmail.com>
-Build-Depends: debhelper (>= 12),
-	debhelper-compat (= 12),
+Rules-Requires-Root: no
+Vcs-Browser: https://github.com/mrpt/mrpt
+Vcs-Git: https://github.com/MRPT/mrpt.git
+Build-Depends: debhelper-compat (= 13),
 	cmake,
 	doxygen-latex,
 	doxygen,
