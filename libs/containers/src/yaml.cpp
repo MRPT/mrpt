@@ -792,10 +792,10 @@ static std::optional<std::string> extractComment(
 	struct fy_token* t, enum fy_comment_placement cp)
 {
 	std::array<char, 2048> str;
-	const char* strEnd = fy_token_get_comment(t, str.data(), str.size(), cp);
-	if (strEnd == str.data()) return {};
+	const char* strRet = fy_token_get_comment(t, str.data(), str.size(), cp);
+	if (!strRet) return {};
 
-	std::string c(str.data(), strEnd - str.data());
+	std::string c(str.data());
 
 	// Remove trailing "# " in each line:
 	size_t i = 0;
