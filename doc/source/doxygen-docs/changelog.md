@@ -19,6 +19,7 @@
   - \ref mrpt_containers_grp
     - New methods mrpt::containers::bimap::erase_by_key(),mrpt::containers::bimap::erase_by_value()
     - mrpt::containers::vector_with_small_size_optimization has new methods `at()` and `push_back()` for a smoother transition from STL containers.
+    - mrpt::containers::yaml and libfyaml updated to latest version (more memory efmore memory efficient parser).
   - \ref mrpt_core_grp
     - New base virtual interface class mrpt::Stringifyable unifying the asString() method already offered by many MRPT classes.
   - \ref mrpt_io_grp
