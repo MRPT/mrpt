@@ -1058,8 +1058,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	uint32_t nStep;
 	bool pt_in_range = cm.PTG->getPathStepForDist(move_k, d, nStep);
 	ASSERT_(pt_in_range);
-	mrpt::math::TPose2D pose;
-	cm.PTG->getPathPose(move_k, nStep, pose);
+	const mrpt::math::TPose2D pose = cm.PTG->getPathPose(move_k, nStep);
 
 	// Make sure that the target slow-down is honored, as seen in real-world
 	// Euclidean space
@@ -1223,10 +1222,9 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 					cm.starting_robot_dist = cur_norm_d;
 				}
 
-				mrpt::math::TPose2D predicted_rel_pose;
-				cm.PTG->getPathPose(
-					m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step,
-					predicted_rel_pose);
+				const mrpt::math::TPose2D predicted_rel_pose =
+					cm.PTG->getPathPose(
+						m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step);
 				const auto predicted_pose_global =
 					m_lastSentVelCmd.poseVel.rawOdometry + predicted_rel_pose;
 				const double predicted2real_dist = mrpt::hypot_fast(

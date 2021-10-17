@@ -238,8 +238,7 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 
 		last_added_dist = d;
 
-		mrpt::math::TPose2D p;
-		this->getPathPose(k, n, p);
+		const mrpt::math::TPose2D p = this->getPathPose(k, n);
 
 		if (first)
 		{
@@ -326,8 +325,7 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(
 		for (size_t n = 0; n < maxPoints; n++)
 		{
 			const size_t nn = std::min(n, path_length[k] - 1);
-			mrpt::math::TPose2D p;
-			this->getPathPose(k, nn, p);
+			const mrpt::math::TPose2D p = this->getPathPose(k, nn);
 			fx << p.x << " ";
 			fy << p.y << " ";
 			fp << p.phi << " ";
@@ -538,8 +536,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 			continue;
 		}
 
-		mrpt::math::TPose2D pose;
-		this->getPathPose(k, step, pose);
+		const mrpt::math::TPose2D pose = getPathPose(k, step);
 
 		// obstacle to robot clearance:
 		ol = pose.inverseComposePoint(og);
