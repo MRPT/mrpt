@@ -1080,8 +1080,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 					}
 					uint32_t step;
 					if (!ptg->getPathStepForDist(k, d, step)) continue;
-					mrpt::math::TPose2D p;
-					ptg->getPathPose(k, step, p);
+					const auto p = ptg->getPathPose(k, step);
 					ptg->add_robotShape_to_setOfLines(
 						sol, mrpt::poses::CPose2D(p));
 				}
@@ -1224,9 +1223,8 @@ void ptgConfiguratorframe::rebuild3Dview()
 			if (ptg->getPathStepForDist(
 					k, norm_d * ptg->getRefDistance(), check_step))
 			{
-				mrpt::math::TPose2D p;
-				ptg->getPathPose(k, check_step, p);
-				gl_WS_target_reprojected->setPose(p);
+				gl_WS_target_reprojected->setPose(
+					ptg->getPathPose(k, check_step));
 				gl_WS_target_reprojected->setName("WS-Target-reproj");
 			}
 			else

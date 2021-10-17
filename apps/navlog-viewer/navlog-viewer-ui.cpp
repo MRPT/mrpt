@@ -815,8 +815,7 @@ void NavlogViewerApp::updateVisualization()
 							uint32_t step;
 							if (!ptg->getPathStepForDist(selected_k, d, step))
 								continue;
-							mrpt::math::TPose2D p;
-							ptg->getPathPose(selected_k, step, p);
+							const auto p = ptg->getPathPose(selected_k, step);
 							ptg->add_robotShape_to_setOfLines(
 								*gl_path, mrpt::poses::CPose2D(p));
 						}
@@ -944,8 +943,7 @@ void NavlogViewerApp::updateVisualization()
 							uint32_t step;
 							if (!ptg->getPathStepForDist(selected_k, d, step))
 								continue;
-							mrpt::math::TPose2D p;
-							ptg->getPathPose(selected_k, step, p);
+							const auto p = ptg->getPathPose(selected_k, step);
 							ptg->add_robotShape_to_setOfLines(
 								*gl_path, mrpt::poses::CPose2D(p));
 						}

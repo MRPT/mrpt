@@ -1552,8 +1552,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 						uint32_t step;
 						if (!ptg->getPathStepForDist(selected_k, d, step))
 							continue;
-						mrpt::math::TPose2D p;
-						ptg->getPathPose(selected_k, step, p);
+						const auto p = ptg->getPathPose(selected_k, step);
 						ptg->add_robotShape_to_setOfLines(
 							*gl_robot_ptg_prediction, mrpt::poses::CPose2D(p));
 					}

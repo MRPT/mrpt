@@ -88,8 +88,7 @@ class CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 
 	// Access to PTG paths (see docs in base class)
 	size_t getPathStepCount(uint16_t k) const override;
-	void getPathPose(
-		uint16_t k, uint32_t step, mrpt::math::TPose2D& p) const override;
+	mrpt::math::TPose2D getPathPose(uint16_t k, uint32_t step) const override;
 	double getPathDist(uint16_t k, uint32_t step) const override;
 	bool getPathStepForDist(
 		uint16_t k, double dist, uint32_t& out_step) const override;
