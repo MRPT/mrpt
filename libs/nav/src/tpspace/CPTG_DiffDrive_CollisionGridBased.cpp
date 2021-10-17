@@ -756,8 +756,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(
 			for (size_t n = 0; n < (nPoints - 1); n++)
 			{
 				// Translate and rotate the robot shape at this C-Space pose:
-				mrpt::math::TPose2D p;
-				getPathPose(k, n, p);
+				const mrpt::math::TPose2D p = getPathPose(k, n);
 
 				mrpt::math::TPoint2D bb_min(
 					std::numeric_limits<double>::max(),
@@ -836,15 +835,15 @@ size_t CPTG_DiffDrive_CollisionGridBased::getPathStepCount(uint16_t k) const
 	return m_trajectory[k].size();
 }
 
-void CPTG_DiffDrive_CollisionGridBased::getPathPose(
-	uint16_t k, uint32_t step, mrpt::math::TPose2D& p) const
+mrpt::math::TPose2D CPTG_DiffDrive_CollisionGridBased::getPathPose(
+	uint16_t k, uint32_t step) const
 {
 	ASSERT_(k < m_trajectory.size());
 	ASSERT_(step < m_trajectory[k].size());
 
-	p.x = m_trajectory[k][step].x;
-	p.y = m_trajectory[k][step].y;
-	p.phi = m_trajectory[k][step].phi;
+	return {
+		m_trajectory[k][step].x, m_trajectory[k][step].y,
+		m_trajectory[k][step].phi};
 }
 
 double CPTG_DiffDrive_CollisionGridBased::getPathDist(

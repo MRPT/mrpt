@@ -34,6 +34,7 @@
     - Optimization: mrpt::maps::CPointsMap::insertAnotherMap() avoids matrix multiplication if SE(3) identity is passed as insertion pose.
   - \ref mrpt_nav_grp
     - mrpt::nav::CParameterizedTrajectoryGenerator::initTPObstacleSingle() now always initializes to the maximum free distance, instead of saturating free space when heading to a target waypoint.
+    - [API change] mrpt::nav::CParameterizedTrajectoryGenerator::getPathPose() had two overloaded signatures, which is not recommended being one of them a virtual method. Only the return-by-value is left.
   - \ref mrpt_obs_grp
     - Fix const-correctness of mrpt::obs::CObservation::unload() for consistency with load().
   - \ref mrpt_opengl_grp

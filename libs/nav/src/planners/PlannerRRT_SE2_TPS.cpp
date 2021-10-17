@@ -271,12 +271,11 @@ void PlannerRRT_SE2_TPS::solve(
 				uint32_t nStep;
 				m_PTGs[idxPTG]->getPathStepForDist(k_rand, d_new, nStep);
 
-				mrpt::math::TPose2D rel_pose;
-				m_PTGs[idxPTG]->getPathPose(k_rand, nStep, rel_pose);
+				mrpt::math::TPose2D rel_pose =
+					m_PTGs[idxPTG]->getPathPose(k_rand, nStep);
 
-				mrpt::math::wrapToPiInPlace(rel_pose.phi);	// wrap to [-pi,pi]
-				// -->avoid out of
-				// bounds errors
+				// wrap to [-pi,pi] to avoid out of bounds errors:
+				mrpt::math::wrapToPiInPlace(rel_pose.phi);
 
 				// [Algo `tp_space_rrt`: Line 15]: pose composition
 				// ------------------------------------------------------------
