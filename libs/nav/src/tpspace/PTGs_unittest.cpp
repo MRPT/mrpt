@@ -127,8 +127,8 @@ TEST(NavTests, PTGs_tests)
 							<< " normalized_d=" << normalized_d << endl;
 						if (step_ok)
 						{
-							mrpt::math::TPose2D pose;
-							ptg->getPathPose(k, step, pose);
+							const mrpt::math::TPose2D pose =
+								ptg->getPathPose(k, step);
 							EXPECT_NEAR(pose.x, tx, tolerance_dist)
 								<< "Test: inverseMap_WS2TP\n PTG#" << n << ": "
 								<< sPTGDesc << endl
