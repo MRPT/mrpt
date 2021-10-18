@@ -386,6 +386,8 @@ bool yaml::internalPrintNodeAsYAML(
 
 			i += lineLen + 1;
 		}
+		// Indent of next line:
+		if (!comment.empty()) o << sInd;
 	}
 
 	// Dispatch:
@@ -431,7 +433,7 @@ static std::string shortenComment(const std::optional<std::string>& c)
 {
 	if (!c.has_value()) return {"[none]"};
 
-	const size_t maxLen = 8;
+	const size_t maxLen = 14;
 	if (c.value().size() > maxLen - 3)
 		return {c.value().substr(0, maxLen) + "..."};
 	else
@@ -798,9 +800,28 @@ static std::optional<std::string> extractComment(
 	// str is already a 0-terminated string:
 	const std::string c(str.data());
 
-	PARSER_DBG_OUT("Comment [" << (int)cp << "]: '" << c << "'\n");
+	PARSER_DBG_OUT(
+		"token: " << reinterpret_cast<void*>(t) << " comment [" << (int)cp
+				  << "]: '" << c << "'");
 
 	return c;
+}
+
+static void parseTokenComments(struct fy_token* tk, yaml::node_t& n)
+{
+	if (!tk) return;
+	{
+		auto cT = extractComment(tk, fycp_top);
+		if (cT)
+			n.comments[static_cast<size_t>(CommentPosition::TOP)] =
+				std::move(cT.value());
+	}
+	{
+		auto cR = extractComment(tk, fycp_right);
+		if (cR)
+			n.comments[static_cast<size_t>(CommentPosition::RIGHT)] =
+				std::move(cR.value());
+	}
 }
 
 static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
@@ -856,6 +877,8 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 			yaml::node_t n;
 			yaml::map_t& m = n.d.emplace<yaml::map_t>();
 
+			parseTokenComments(event->scalar.value, n);
+
 			for (;;)
 			{
 				// Next event is map key:
@@ -865,7 +888,8 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 
 				ASSERT_(nKey->isScalar());
 
-				yaml::node_t& val = m[nKey->as<std::string>()];
+				// Move comments from key:
+				yaml::node_t& val = m[*nKey];
 
 				// and next event is mapped content:
 				auto nVal = recursiveParse(p);
@@ -890,6 +914,8 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 			fy_parser_event_free(p, event);	 // free event
 			yaml::node_t n;
 			yaml::sequence_t& s = n.d.emplace<yaml::sequence_t>();
+
+			parseTokenComments(event->scalar.value, n);
 
 			for (;;)
 			{
@@ -916,30 +942,20 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 			const std::string sValue(strValue, strValueLen);
 
 			PARSER_DBG_OUT(
-				">> Scalar: implicit="
-				<< (event->scalar.tag_implicit ? "1" : "0")
-				<< " tag: " << ((void*)event->scalar.tag)
-				<< " anchor: " << ((void*)event->scalar.anchor)
-				<< fy_token_get_text0(event->scalar.anchor)
-				<< " value: " << sValue);
+				"token: " << reinterpret_cast<void*>(event->scalar.value)
+						  << " Scalar: implicit="
+						  << (event->scalar.tag_implicit ? "1" : "0")
+						  << " tag: " << ((void*)event->scalar.tag)
+						  << " anchor: " << ((void*)event->scalar.anchor)
+						  << fy_token_get_text0(event->scalar.anchor)
+						  << " value: " << sValue);
 
 			if (event->scalar.value)
 			{
 				yaml::node_t n;
 				n.d.emplace<yaml::scalar_t>(textToScalar(sValue));
 
-				{
-					auto cT = extractComment(event->scalar.value, fycp_top);
-					if (cT)
-						n.comments[static_cast<size_t>(CommentPosition::TOP)] =
-							std::move(cT.value());
-				}
-				{
-					auto cR = extractComment(event->scalar.value, fycp_right);
-					if (cR)
-						n.comments[static_cast<size_t>(
-							CommentPosition::RIGHT)] = std::move(cR.value());
-				}
+				parseTokenComments(event->scalar.value, n);
 
 				fy_parser_event_free(p, event);	 // free event
 				return n;
@@ -1071,48 +1087,25 @@ std::ostream& mrpt::containers::operator<<(std::ostream& o, const yaml& p)
 bool yaml::hasComment() const
 {
 	const node_t* n = dereferenceProxy();
-	for (const auto& c : n->comments)
-		if (c.has_value()) return true;
-	return false;
+	return n->hasComment();
 }
 
 bool yaml::hasComment(CommentPosition pos) const
 {
-	MRPT_START
-	int posIndex = static_cast<int>(pos);
-	ASSERT_GE_(posIndex, 0);
-	ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
-
 	const node_t* n = dereferenceProxy();
-	return n->comments[posIndex].has_value();
-	MRPT_END
+	return n->hasComment(pos);
 }
 
 const std::string& yaml::comment() const
 {
-	MRPT_START
 	const node_t* n = dereferenceProxy();
-	for (const auto& c : n->comments)
-		if (c.has_value()) return c.value();
-
-	THROW_EXCEPTION("Trying to access comment but this node has none.");
-	MRPT_END
+	return n->comment();
 }
 
 const std::string& yaml::comment(CommentPosition pos) const
 {
-	MRPT_START
 	const node_t* n = dereferenceProxy();
-
-	int posIndex = static_cast<int>(pos);
-	ASSERT_GE_(posIndex, 0);
-	ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
-
-	ASSERTMSG_(
-		n->comments[posIndex].has_value(),
-		"Trying to access comment but this node has none.");
-	return n->comments[posIndex].value();
-	MRPT_END
+	return n->comment(pos);
 }
 
 void yaml::comment(const std::string& c, CommentPosition position)

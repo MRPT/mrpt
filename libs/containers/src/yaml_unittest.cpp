@@ -520,16 +520,16 @@ MRPT_TEST_END()
 #if MRPT_HAS_FYAML
 
 // clang-format off
-const auto sampleYamlBlock_1 = std::string(R"xxx(
+const auto sampleYamlBlock_1 = R"xxx(
 ~
-)xxx");
+)xxx";
 
-const auto sampleYamlBlock_2 = std::string(R"xxx(
+const auto sampleYamlBlock_2 = R"xxx(
 ---
 foo  # comment
-)xxx");
+)xxx";
 
-const auto sampleYamlBlock_3 = std::string(R"xxx(
+const auto sampleYamlBlock_3 = R"xxx(
 # blah blah
 mySeq:
   - "first"
@@ -538,13 +538,33 @@ mySeq:
   - ~
 myMap:
   K: 10.0
-  P: -5.0
   Q: ~
+  P: -5.0
+  # comment for nestedMap map
   nestedMap:
     a: 1  # comment for a
+    # comment for b
     b: 2
     c: 3
-)xxx");
+)xxx";
+
+const auto sampleYamlBlock_4 = R"xxx(
+myMap:
+  e1: 10.0  # Right comment for e1 value
+myMap2:
+  # Top comment for e2
+  e2: 10.0
+myMap3:
+  # Top comment for e3
+  e3: 10.0 # right comment for e3 value
+# Top comment for myMap4
+myMap4:
+  ~
+# Top comment for myMap5
+myMap5:
+  # top comment for a4
+  a4: 1
+)xxx";
 
 // clang-format on
 
@@ -591,6 +611,27 @@ MRPT_TEST(yaml, fromYAML)
 		EXPECT_EQ(e.comment(), "comment for a");
 		EXPECT_EQ(e.comment(CommentPosition::RIGHT), "comment for a");
 		EXPECT_THROW(e.comment(CommentPosition::TOP), std::exception);
+
+#if 0
+		p.printDebugStructure(std::cout);
+		p.printAsYAML();
+#endif
+
+		const auto& eb = p["myMap"]["nestedMap"].asMap().find("b")->first;
+		EXPECT_TRUE(eb.hasComment());
+		EXPECT_EQ(eb.comment(), "comment for b");
+
+#if 0
+		const auto& ec = p["myMap"]["nestedMap"].asMap().find("c")->first;
+		EXPECT_TRUE(ec.hasComment());
+		EXPECT_EQ(ec.comment(), "Example of multiline");
+#endif
+	}
+
+	{
+		const auto p = mrpt::containers::yaml::FromText(sampleYamlBlock_4);
+
+		EXPECT_EQ(p["myMap"]["e1"].comment(), "Right comment for e1 value");
 	}
 }
 MRPT_TEST_END()
@@ -648,34 +689,34 @@ MRPT_TEST(yaml, outOfRangeIntegers)
 MRPT_TEST_END()
 
 // clang-format off
-const auto testYamlParseEmit_1 = std::string(//
+const auto testYamlParseEmit_1 = 
 R"xxx(# comment line 1, and
 # comment line 2
 1.0
-)xxx");
+)xxx";
 
-const auto testYamlParseEmit_2 = std::string(//
+const auto testYamlParseEmit_2 = 
 R"xxx(- a  # comment for A
 - b  # comment for B
 - c  # comment for C
 -
   d1: xxx  # cool
   d2: xxx  # facts
-)xxx");
+)xxx";
 
-const auto testYamlParseEmit_3 = std::string(//
+const auto testYamlParseEmit_3 = 
 R"xxx(a: 1.0  # A comment
 b: 2.0  # B comment
-)xxx");
+)xxx";
 
-const auto testYamlParseEmit_4 = std::string(//
+const auto testYamlParseEmit_4 = 
 R"xxx(plain scalars:
   - a string
   - a string with a \ backslash that doesn't need to be escaped
   - can also use " quotes ' and $ a % lot /&?+ of other {} [] stuff
-)xxx");
+)xxx";
 
-const auto testYamlParseEmit_5 = std::string(//
+const auto testYamlParseEmit_5 =
 R"xxx(literal: |
   a
   b
@@ -686,9 +727,9 @@ literal block scalar: |
 literal2: |-
   a
   b
-)xxx");
+)xxx";
 
-const auto testYamlParseEmit_6 = std::string(//
+const auto testYamlParseEmit_6 = 
 R"xxx(release_platforms:
   ubuntu:
   - focal
@@ -769,8 +810,7 @@ repositories:
       url: https://github.com/ament/ament_index.git
       version: foxy
     status: maintained
-)xxx");
-
+)xxx";
 // clang-format on
 
 MRPT_TEST(yaml, parseAndEmit)
