@@ -35,7 +35,8 @@ if(BUILD_mrpt-io)
 
 	if(CMAKE_MRPT_HAS_ZLIB)
 		if(NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX AND CMAKE_MRPT_HAS_ZLIB_SYSTEM)
-		    target_link_libraries(io PRIVATE imp_zlib)
+		    target_link_libraries(io PRIVATE ${ZLIB_LIBRARIES})
+			target_include_directories(io PRIVATE ${ZLIB_INCLUDE_DIR})
 		endif()
 	endif()
 
