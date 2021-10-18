@@ -793,31 +793,10 @@ static std::optional<std::string> extractComment(
 {
 	std::array<char, 2048> str;
 	const char* strRet = fy_token_get_comment(t, str.data(), str.size(), cp);
-	if (!strRet) return {};
+	if (!strRet || strRet[0] == '\0') return {};
 
-	std::string c(str.data());
-
-	// Remove trailing "# " in each line:
-	size_t i = 0;
-	while (i < c.size())
-	{
-		const bool startOfLine =
-			i == 0 || (c[i - 1] == '\r' || c[i - 1] == '\n');
-		if (startOfLine && i < c.size() && c[i] == '#')
-		{
-			// process comment:
-			const size_t charsToRemove =
-				(i + 2 < c.size() && c[i + 1] == ' ' && c[i + 2] == ' ')
-				? 3
-				: ((i + 1 < c.size() && c[i + 1] == ' ') ? 2 : 1);
-			c.erase(i, charsToRemove);
-		}
-		else
-		{
-			// No comment:
-			i++;
-		}
-	}
+	// str is already a 0-terminated string:
+	const std::string c(str.data());
 
 	PARSER_DBG_OUT("Comment [" << (int)cp << "]: '" << c << "'\n");
 
