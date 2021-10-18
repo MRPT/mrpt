@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/maps/CMetricMapEvents.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
@@ -51,7 +52,8 @@ namespace mrpt::maps
  * \ingroup mrpt_obs_grp
  */
 class CMetricMap : public mrpt::serialization::CSerializable,
-				   public mrpt::system::CObservable
+				   public mrpt::system::CObservable,
+				   public mrpt::Stringifyable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap)
 

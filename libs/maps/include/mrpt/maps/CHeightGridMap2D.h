@@ -76,6 +76,14 @@ class CHeightGridMap2D
 		return float(c.h);
 	}
 
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"HeightGridMap2D, extending from (%f,%f) to (%f,%f), resolution=%f",
+			getXMin(), getYMin(), getXMax(), getYMax(), getResolution());
+	}
+
 	/** The type of map representation to be used.
 	 *  See mrpt::maps::CHeightGridMap2D for discussion.
 	 */

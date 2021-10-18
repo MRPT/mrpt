@@ -10,7 +10,6 @@
 
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/containers/CDynamicGrid.h>
-#include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/maps/CLogOddsGridMap2D.h>
@@ -53,8 +52,7 @@ namespace mrpt::maps
  **/
 class COccupancyGridMap2D
 	: public CMetricMap,
-	  public CLogOddsGridMap2D<OccGridCellTraits::cellType>,
-	  public mrpt::Stringifyable
+	  public CLogOddsGridMap2D<OccGridCellTraits::cellType>
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap2D, mrpt::maps)
    public:

@@ -63,6 +63,9 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		return m_impl->m_octomap;
 	}
 
+	/** Returns a short description of the map. */
+	std::string asString() const override { return "Octomap"; }
+
 	/** With this struct options are provided to the observation insertion
 	 * process.
 	 * \sa CObservation::insertObservationInto()

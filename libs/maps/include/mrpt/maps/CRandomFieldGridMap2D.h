@@ -170,6 +170,15 @@ class CRandomFieldGridMap2D
 		return mrpt::d2f(c.kf_mean());
 	}
 
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"RandomFieldGridMap2D, extending from (%f,%f) to (%f,%f), "
+			"resolution=%f",
+			getXMin(), getYMin(), getXMax(), getYMax(), getResolution());
+	}
+
 	/** The type of map representation to be used, see CRandomFieldGridMap2D for
 	 * a discussion.
 	 */

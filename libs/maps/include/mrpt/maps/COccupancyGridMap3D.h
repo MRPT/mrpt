@@ -9,7 +9,6 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
-#include <mrpt/core/Stringifyable.h>
 #include <mrpt/maps/CLogOddsGridMap3D.h>
 #include <mrpt/maps/CLogOddsGridMapLUT.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -33,8 +32,7 @@ namespace mrpt::maps
  **/
 class COccupancyGridMap3D
 	: public CMetricMap,
-	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>,
-	  public mrpt::Stringifyable
+	  public CLogOddsGridMap3D<OccGridCellTraits::cellType>
 {
 	DEFINE_SERIALIZABLE(COccupancyGridMap3D, mrpt::maps)
    public:
