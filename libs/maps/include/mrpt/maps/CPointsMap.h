@@ -70,8 +70,7 @@ struct pointmap_traits;
 class CPointsMap : public CMetricMap,
 				   public mrpt::math::KDTreeCapable<CPointsMap>,
 				   public mrpt::opengl::PLY_Importer,
-				   public mrpt::opengl::PLY_Exporter,
-				   public mrpt::Stringifyable
+				   public mrpt::opengl::PLY_Exporter
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CPointsMap)
 	// This must be added for declaration of MEX-related functions

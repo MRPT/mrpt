@@ -200,6 +200,9 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	CLandmarksMap() = default;
 	~CLandmarksMap() override = default;
 
+	/** Returns a short description of the map. */
+	std::string asString() const override { return "LandmarksMap"; }
+
 	/**** FAMD ***/
 	/** Map of the Euclidean Distance between the descriptors of two SIFT-based
 	 * landmarks

@@ -101,6 +101,12 @@ class CReflectivityGridMap2D : public CMetricMap,
 		mrpt::img::CImage& img, bool verticalFlip = false,
 		bool forceRGB = false) const;
 
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return "ReflectivityGridMap2D map";
+	}
+
    protected:
 	// See docs in base class
 	void internal_clear() override;
