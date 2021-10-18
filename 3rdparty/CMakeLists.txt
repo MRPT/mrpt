@@ -112,12 +112,24 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 
 	# Embedded version:
 	target_include_directories(mrpt_rplidar SYSTEM PUBLIC
-		${RPLIDAR_ROOT}/include/
-		${RPLIDAR_ROOT}/src/
+		$<BUILD_INTERFACE:${RPLIDAR_ROOT}/include/>
+		$<BUILD_INTERFACE:${RPLIDAR_ROOT}/src/>
 	)
 	set_target_properties(mrpt_rplidar PROPERTIES FOLDER "3rd party")
 
 	target_link_libraries(mrpt_rplidar PRIVATE mrpt::core) # To enforce c++17
+
+	# needs to be exported, even if private, to make cmake happy since it wants
+	# libraries to be statically-linkable:
+	export(
+		TARGETS mrpt_rplidar
+		FILE "${CMAKE_CURRENT_BINARY_DIR}/mrpt_rplidar-targets.cmake"
+	)
+	install(TARGETS mrpt_rplidar EXPORT mrpt_rplidar-targets)
+	install(EXPORT mrpt_rplidar-targets
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/mrpt_rplidar
+	)
+
 
 	unset(SRCS_LIST)
 	unset(SRCS)
@@ -151,10 +163,10 @@ if(CMAKE_MRPT_HAS_xSENS)
 
 	# Embedded version:
 	target_include_directories(mrpt_xsens SYSTEM PUBLIC
-		${MRPT_SOURCE_DIR}/3rdparty/xspublic/
-		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xstypes/
-		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscommon/
-		${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscontroller/
+		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/3rdparty/xspublic/>
+		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/3rdparty/xspublic/xstypes/>
+		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscommon/>
+		$<BUILD_INTERFACE:${MRPT_SOURCE_DIR}/3rdparty/xspublic/xscontroller/>
 	)
 
 	# Couldn't make this to work with a regular target_compile_options() cmd:
@@ -171,8 +183,18 @@ if(CMAKE_MRPT_HAS_xSENS)
 		target_compile_definitions(mrpt_xsens PRIVATE XDA_STATIC_LIB)
 	endif()
 
+	# needs to be exported, even if private, to make cmake happy since it wants
+	# libraries to be statically-linkable:
+	export(
+		TARGETS mrpt_xsens
+		FILE "${CMAKE_CURRENT_BINARY_DIR}/mrpt_xsens-targets.cmake"
+	)
+	install(TARGETS mrpt_xsens EXPORT mrpt_xsens-targets)
+	install(EXPORT mrpt_xsens-targets
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/mrpt_xsens
+	)
 
-  # Feature should be "cxx_std_11", but it's unknown to cmake 3.5.1 in Xenial:
+	# Feature should be "cxx_std_11", but it's unknown to cmake 3.5.1 in Xenial:
 	target_compile_features(mrpt_xsens PRIVATE cxx_constexpr)
 	set_target_properties(mrpt_xsens PROPERTIES FOLDER "3rd party")
 	unset(SRCS)
