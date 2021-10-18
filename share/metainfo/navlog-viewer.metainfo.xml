@@ -9,8 +9,11 @@
   </description>
   <launchable type="desktop-id">navlog-viewer.desktop</launchable>
   <screenshots>
-    <screenshot type="default">https://static.mrpt.org/screenshots/navlog-viewer.png</screenshot>
+    <screenshot type="default">
+        <caption>Application screenshot</caption>
+        <image>https://static.mrpt.org/screenshots/navlog-viewer.png</image>
+    </screenshot>
   </screenshots>
   <url type="homepage">https://www.mrpt.org/</url>
-  <update_contact>joseluisblancoc_at_gmail.com</update_contact>
+  <update_contact>joseluisblancoc@gmail.com</update_contact>
 </component>
