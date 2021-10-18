@@ -199,6 +199,42 @@ class yaml
 				"'%s'",
 				typeName().c_str());
 		}
+
+		bool hasComment() const
+		{
+			for (const auto& c : comments)
+				if (c.has_value()) return true;
+			return false;
+		}
+		bool hasComment(CommentPosition pos) const
+		{
+			MRPT_START
+			int posIndex = static_cast<int>(pos);
+			ASSERT_GE_(posIndex, 0);
+			ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+			return comments[posIndex].has_value();
+			MRPT_END
+		}
+		const std::string& comment() const
+		{
+			MRPT_START
+			for (const auto& c : comments)
+				if (c.has_value()) return c.value();
+			THROW_EXCEPTION("Trying to access comment but this node has none.");
+			MRPT_END
+		}
+		const std::string& comment(CommentPosition pos) const
+		{
+			MRPT_START
+			int posIndex = static_cast<int>(pos);
+			ASSERT_GE_(posIndex, 0);
+			ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+			ASSERTMSG_(
+				comments[posIndex].has_value(),
+				"Trying to access comment but this node has none.");
+			return comments[posIndex].value();
+			MRPT_END
+		}
 	};
 
 	/** @} */
