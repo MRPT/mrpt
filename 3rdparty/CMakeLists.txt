@@ -125,7 +125,11 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 		TARGETS mrpt_rplidar
 		FILE "${CMAKE_CURRENT_BINARY_DIR}/mrpt_rplidar-targets.cmake"
 	)
-	install(TARGETS mrpt_rplidar EXPORT mrpt_rplidar-targets)
+	install(TARGETS mrpt_rplidar EXPORT mrpt_rplidar-targets
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	)
 	install(EXPORT mrpt_rplidar-targets
 		DESTINATION ${CMAKE_INSTALL_LIBDIR}/mrpt_rplidar
 	)
@@ -189,7 +193,11 @@ if(CMAKE_MRPT_HAS_xSENS)
 		TARGETS mrpt_xsens
 		FILE "${CMAKE_CURRENT_BINARY_DIR}/mrpt_xsens-targets.cmake"
 	)
-	install(TARGETS mrpt_xsens EXPORT mrpt_xsens-targets)
+	install(TARGETS mrpt_xsens EXPORT mrpt_xsens-targets
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	)
 	install(EXPORT mrpt_xsens-targets
 		DESTINATION ${CMAKE_INSTALL_LIBDIR}/mrpt_xsens
 	)
