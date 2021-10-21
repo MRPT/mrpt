@@ -4,8 +4,8 @@
 #             ** File generated automatically, do not modify **
 #
 #  Please, read:
-#  https://docs.mrpt.org/reference/devel/mrpt_from_cmake.html
-
+#  https://docs.mrpt.org/reference/latest/mrpt_from_cmake.html
+#
 #   In your CMakeLists.txt, add these lines:
 #
 #    find_package(MRPT REQUIRED
