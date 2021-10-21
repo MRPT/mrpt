@@ -121,8 +121,9 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
 	/** Insert a new pair to the sequence, making a copy of the smart pointer.
-	* \param index Position in the simplemap where new element will be inserted to
-	*/
+	 * \param index Position in the simplemap where new element will be inserted
+	 * to
+	 */
 	void insertToPos(
 		size_t index, const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
