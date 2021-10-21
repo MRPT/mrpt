@@ -24,22 +24,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CSensoryFrame, CSerializable, mrpt::obs)
 
-CSensoryFrame::CSensoryFrame(const CSensoryFrame& o) : m_observations()
-{
-	*this = o;
-}
-
-CSensoryFrame& CSensoryFrame::operator=(const CSensoryFrame& o)
-{
-	MRPT_START
-	clear();
-	if (this == &o) return *this;  // It may be used sometimes
-	m_observations = o.m_observations;
-	m_cachedMap.reset();
-	return *this;
-	MRPT_END
-}
-
 void CSensoryFrame::clear()
 {
 	m_observations.clear();
@@ -99,19 +83,11 @@ void CSensoryFrame::serializeFrom(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						operator +=
-  ---------------------------------------------------------------*/
-void CSensoryFrame::operator+=([[maybe_unused]] const CSensoryFrame& sf)
+void CSensoryFrame::operator+=(const CSensoryFrame& sf)
 {
 	m_cachedMap.reset();
-	for (auto it = begin(); it != end(); ++it)
-	{
-		CObservation::Ptr newObs = *it;
-		newObs.reset(dynamic_cast<CObservation*>(newObs->clone()));
-		m_observations.push_back(
-			newObs);  // static_cast<CObservation*>( (*it)->clone()) );
-	}
+	for (const auto& obs : sf)
+		m_observations.push_back(obs);
 }
 
 /*---------------------------------------------------------------
@@ -123,19 +99,7 @@ void CSensoryFrame::operator+=(const CObservation::Ptr& obs)
 	m_observations.push_back(obs);
 }
 
-/*---------------------------------------------------------------
-					push_back
-  ---------------------------------------------------------------*/
 void CSensoryFrame::push_back(const CObservation::Ptr& obs)
-{
-	m_cachedMap.reset();
-	m_observations.push_back(obs);
-}
-
-/*---------------------------------------------------------------
-				insert
-  ---------------------------------------------------------------*/
-void CSensoryFrame::insert(const CObservation::Ptr& obs)
 {
 	m_cachedMap.reset();
 	m_observations.push_back(obs);

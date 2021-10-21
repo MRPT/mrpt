@@ -73,6 +73,7 @@
   - Fix incorrect handling of negative, fractional viewport sizes in mrpt::opengl::COpenGLViewport
   - Fix: Should not scale velocity commands when in slow down, in CAbstractPTGBasedReactive::generate_vel_cmd() (Closes [#1175](https://github.com/MRPT/mrpt/issues/1175)).
   - mrpt::system::CDirectoryExplorer did not fill in correct absolute paths if a relative path was passed as starting directory to scan.
+  - Fix mrpt::obs::CSensoryFrame::operator+=() did not perform what it was supposed to do.
 
 # Version 2.3.2: Released Jul 14, 2021
 - Changes in applications:
