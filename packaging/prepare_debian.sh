@@ -103,116 +103,19 @@ echo "Copying orig tarball: mrpt_${MRPT_VERSION_STR}.orig.tar.gz"
 cp $HOME/mrpt_release/mrpt*.tar.gz $MRPT_DEB_DIR/mrpt_${MRPT_VERSION_STR}.orig.tar.gz
 cp $HOME/mrpt_release/mrpt*.tar.gz.asc $MRPT_DEB_DIR/mrpt_${MRPT_VERSION_STR}.orig.tar.gz.asc
 cd ${MRPT_DEB_DIR}
-tar -xf mrpt_${MRPT_VERSION_STR}.orig.tar.gz
 
-if [ ! -d "${MRPT_DEBSRC_DIR}" ];
-then
-  mv mrpt-* ${MRPT_DEBSRC_DIR}  # fix different dir names for Ubuntu PPA packages
-fi
-
-if [ ! -f "${MRPT_DEBSRC_DIR}/CMakeLists.txt" ];
-then
-	echo "*ERROR*: Seems there was a problem copying sources to ${MRPT_DEBSRC_DIR}... aborting script."
-	exit 1
-fi
-
-cd ${MRPT_DEBSRC_DIR}
-
-# Copy debian directory:
-mkdir debian
-cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* debian
-
-# Add AUTHORS file, referenced in d/copyright
-cp $MRPTSRC/AUTHORS debian/
-
-# Use modified control & rules files for Ubuntu PPA packages:
-if [ $IS_FOR_UBUNTU == "1" ];
-then
-	cp ${MRPT_EXTERN_UBUNTU_PPA_DIR}/control.in debian/
-
-  # TL/DR: Remove this line far in the future (now: Dec 2020)
-  # This is needed until Ubuntu uses the now (Dec 2020) experimental dh feature
-  # of describing dh compat levels by means of a build-depends entry instead of
-  # the old file debian/compat:
-  echo "10" > debian/compat
-fi
-
-# Export signing pub key:
-mkdir debian/upstream/ || true
-gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
-
-# Parse debian/ control.in --> control
-mv debian/control.in debian/control
-sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" debian/control
-sed -i "s/@DEB_EXTRA_BUILD_DEPS@/${DEB_EXTRA_BUILD_DEPS}/g" debian/control
-sed -i "s/@DEB_NANOFLANN_DEP@/${DEB_NANOFLANN_DEP}/g" debian/control
-
-# Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "debian/rules" file
-# with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
-RULES_FILE=debian/rules
-sed -i -e "s|REPLACE_HERE_EXTRA_CMAKE_PARAMS|${VALUE_EXTRA_CMAKE_PARAMS}|g" $RULES_FILE
-echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
-
-# To avoid timeout compiling in ARM build farms, skip building heavy docs:
-if [ ${SKIP_HEAVY_DOCS} == "1" ];
-then
-	sed -i "/documentation_performance_html/d" $RULES_FILE
-	sed -i "/documentation_psgz_guides/d" $RULES_FILE
-fi
-
-# Strip my custom files...
-rm debian/*.new || true
-# debian/source file issues for old Ubuntu distros:
-#if [ $IS_FOR_UBUNTU == "1" ];
-#then
-#	rm -fr debian/source
-#fi
-
-# Prepare install files:
-# For each library, create its "<lib>.install" file:
-cd libs
-LST_LIBS=$(ls -d */);   # List only directories
-for lib in $LST_LIBS;
-do
-	lib=${lib%/}  # Remove the trailing "/"
-	echo "usr/lib/libmrpt-${lib}.so.${MRPT_VER_MM}"   > ../debian/libmrpt-${lib}${MRPT_VER_MM}.install
-	echo "usr/lib/libmrpt-${lib}.so.${MRPT_VER_MMP}" >> ../debian/libmrpt-${lib}${MRPT_VER_MM}.install
-done
-cd .. # Back to MRPT root
-
-# Figure out the next Debian version number:
-echo "Detecting next Debian version number..."
-
-CHANGELOG_UPSTREAM_VER=$( dpkg-parsechangelog | sed -n 's/Version:.*\([0-9]\.[0-9]*\.[0-9]*.*snapshot.*\)-.*/\1/p' )
-CHANGELOG_LAST_DEBIAN_VER=$( dpkg-parsechangelog | sed -n 's/Version:.*\([0-9]\.[0-9]*\.[0-9]*\).*-\([0-9]*\).*/\2/p' )
-
-echo " -> PREVIOUS UPSTREAM: $CHANGELOG_UPSTREAM_VER -> New: ${MRPT_VERSION_STR}"
-echo " -> PREVIOUS DEBIAN VERSION: $CHANGELOG_LAST_DEBIAN_VER"
-
-# If we have the same upstream versions, increase the Debian version, otherwise create a new entry:
-if [ "$CHANGELOG_UPSTREAM_VER" = "$MRPT_VERSION_STR" ];
-then
-	NEW_DEBIAN_VER=$[$CHANGELOG_LAST_DEBIAN_VER + 1]
-	echo "Changing to a new Debian version: ${MRPT_VERSION_STR}-${NEW_DEBIAN_VER}"
-	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}-${NEW_DEBIAN_VER}"
-else
-	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}-1"
-fi
-
-echo "Adding a new entry to debian/changelog..."
-
-DEBEMAIL="José Luis Blanco Claraco <joseluisblancoc@gmail.com>" debchange $DEBCHANGE_CMD -b --distribution unstable --force-distribution New version of upstream sources.
-
-echo "Copying back the new changelog to a temporary file in: ${MRPT_EXTERN_DEBIAN_DIR}changelog.new"
-cp debian/changelog ${MRPT_EXTERN_DEBIAN_DIR}changelog.new
+# Was:
+# tar -xf mrpt_${MRPT_VERSION_STR}.orig.tar.gz
 
 set +x
 
-echo "=============================================================="
-echo "Now, you can build the source Deb package with 'debuild -S -sa'"
-echo "=============================================================="
+echo "=================================================================="
+echo "Now, you can build the Debian package using this tarball:"
+echo " $(pwd)/mrpt_${MRPT_VERSION_STR}.orig.tar.gz"
+echo ""
+echo "You should also do now: \"git clean -fd\" in the source code root"
+echo "=================================================================="
 
-cd ..
 ls -lh
 
 exit 0
