@@ -58,8 +58,16 @@ Now, we have to integrate it into the gbp repo.
 .. code-block:: bash
 
    cd MRPT_GBP_REPO
+   git checkout master
    gbp import-orig ~/mrpt_debian/mrpt_*.orig.tar.gz
-   # JL: What else???
+
+       gbp:info: Importing '/home/jlblanco/mrpt_debian/mrpt_2.4.0.orig.tar.gz' to branch 'upstream'...
+       gbp:info: Source package is mrpt
+       gbp:info: Upstream version is 2.4.0
+       gbp:info: Replacing upstream source on 'master'
+       gbp:info: Successfully imported version 2.4.0 of /home/jlblanco/mrpt_debian/mrpt_2.4.0.orig.tar.gz
+
+   # JL: What else??? Update the d/changelog manually, or using any command?
 
 
 (JL: What about this old code, now removed from prepare_debian.sh ?)
