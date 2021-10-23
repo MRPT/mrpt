@@ -12,4 +12,4 @@ Both above include the git submodules that should go into packages, and removes
 those that are not intended to be shipped within Debian packages but which we
 keep into the git repo for the convenience of (mainly) Windows users.
 
-Read more here: [MRPT release check-list](https://docs.mrpt.org/reference/latest/make_a_mrpt_release.html)
+Read more here: [MRPT release check-list](https://docs.mrpt.org/reference/latest/make_a_mrpt_release.html) ([page source code](../doc/source/make_a_mrpt_release.rst)).
