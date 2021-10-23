@@ -240,6 +240,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	void eraseByLabel(const std::string& label);
 
 	/** Returns the i'th observation in the list (0=first).
+	 *  \throw std::exception If out of range.
 	 * \sa begin, size
 	 */
 	const CObservation::Ptr& getObservationByIndex(size_t idx) const;
