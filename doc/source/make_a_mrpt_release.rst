@@ -22,68 +22,62 @@ useful to someone else maintaining MRPT in the future... ;-)
    git checkout master
    git merge develop
    git tag --sign X.Y.Z # release new version
-   bash packaging/prepare_release.sh  # TODO: Merge prepare_debian.sh here!!
+   bash packaging/prepare_release.sh
+   # If everything seems OK, push it:
+   # **WARNING**: This command makes the release public!
+   git push master --tags
 
 - The source tarballs are now in ``$(HOME)/mrpt_release``.
-- Windows binaries will be automatically generated from AppVeyor CI, wait for them. 
+- Windows binaries will be automatically generated from AppVeyor CI, wait for them.
 - Create a new GitHub release from the tag.
 - Attach the tarball, pgp signature, and Windows installer.
-- Release done! :-) 
-
-
-(JL: Recover this old code into the new prepare_release.sh ?)
-
-.. code-block:: bash
-
-   # Export signing pub key:
-   mkdir debian/upstream/ || true
-   gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
+- Release done! :-)
 
 
 2) Create a new Debian package
 --------------------------------
 
-As of Oct/2021, we switched to gbp with:
+As of MRPT 2.4.0 (Oct/2021), we switched to gbp with:
 
 - Upstream repository (source code): https://github.com/mrpt/mrpt
 - gbp repository: https://salsa.debian.org/robotics-team/mrpt
 
 Instructions:
 
-1) Make sure of having generated and uploaded to the GitHub release the `xxx.tar.gz` and its PGP signature.
+1) Make sure of having generated and uploaded to the GitHub release the
+   `xxx.tar.gz` and its PGP signature (part "1" above).
 
-2) Go to the directory where the mrpt gbp repo is cloned.
-
-3) Integrate the new release with:
+2) Go to the directory where the mrpt gbp repo is cloned and integrate the
+   new release with:
 
 .. code-block:: bash
 
-   cd MRPT_GBP_REPO
+   cd /PATH/TO/MRPT_GBP_REPO
    git checkout master
-   gbp import-orig --uscan --pristine-tar
 
-       gbp:info: Importing '/home/jlblanco/mrpt_debian/mrpt_2.4.0.orig.tar.gz' to branch 'upstream'...
-       gbp:info: Source package is mrpt
-       gbp:info: Upstream version is 2.4.0
-       gbp:info: Replacing upstream source on 'master'
-       gbp:info: Successfully imported version 2.4.0 of /home/jlblanco/mrpt_debian/mrpt_2.4.0.orig.tar.gz
+   # Download new release from GitHub releases:
+   gbp import-orig --uscan --pristine-tar
+   # **Or** from a local copy (for dry-runs before actual releases):
+   #gbp import-orig --pristine-tar /PATH/TO/MRPT.X.Y.Z.tar.gz
 
    # update the files in debian/ (copyright, *.install) as needed, commit them and run:
-   gbp dch -R -c
+   gbp dch -R -c --git-author --distribution=unstable
+
+   # Test build (if changes are significant):
+   # (Create cowbuilder image upon first usage first)
+   gbp buildpackage --git-pbuilder --git-dist=unstable --git-postbuild='lintian $GBP_CHANGES_FILE'
+
+   # Push:
    gbp push
 
 
-(JL: And this?)
+If at some point a new PGP signature is used to sign upstream (MRPT GitHub repo,
+not Debian) source packages, remember updating the PGP public key within the
+gbp repository with:
 
 .. code-block:: bash
 
-   # Add AUTHORS file, referenced in d/copyright
-   cp $MRPTSRC/AUTHORS debian/
-
-
-3) Test build in Debian Unstable
----------------------------------------
-
-.. code-block:: bash
-
-   gbp buildpackage --git-pbuilder --git-postbuild='lintian $GBP_CHANGES_FILE'
+   # Export signing pub key:
+   git checkout master
+   mkdir debian/upstream/ || true
+   gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
