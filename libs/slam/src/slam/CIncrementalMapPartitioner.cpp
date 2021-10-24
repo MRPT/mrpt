@@ -133,10 +133,10 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	newMetricMap->setListOfMaps(options.metricmap);
 
 	// Build robo-centric map for each keyframe:
-	frame.insertObservationsInto(newMetricMap.get());
+	frame.insertObservationsInto(*newMetricMap);
 
 	// Add tuple (pose,SF) to "simplemap":
-	m_individualFrames.insert(&robotPose, frame);
+	m_individualFrames.insert(robotPose, frame);
 
 	// Expand the adjacency matrix (pads with 0)
 	m_A.setSize(n, n);
@@ -372,9 +372,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
 	{
-		CPose3DPDF::Ptr i_pdf;
-		CSensoryFrame::Ptr i_sf;
-		m_individualFrames.get(i, i_pdf, i_sf);
+		const auto [i_pdf, i_sf] = m_individualFrames.get(i);
+		(void)i_sf;	 // unused
 
 		CPose3D i_mean;
 		i_pdf->getMean(i_mean);
@@ -406,9 +405,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		// Arcs:
 		for (size_t j = i + 1; j < m_individualFrames.size(); j++)
 		{
-			CPose3DPDF::Ptr j_pdf;
-			CSensoryFrame::Ptr j_sf;
-			m_individualFrames.get(j, j_pdf, j_sf);
+			const auto [j_pdf, j_sf] = m_individualFrames.get(j);
+			(void)j_sf;	 // unused
 
 			CPose3D j_mean;
 			j_pdf->getMean(j_mean);

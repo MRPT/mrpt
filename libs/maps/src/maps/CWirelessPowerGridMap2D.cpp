@@ -116,7 +116,8 @@ void CWirelessPowerGridMap2D::internal_clear()
 						insertObservation
   ---------------------------------------------------------------*/
 bool CWirelessPowerGridMap2D::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	MRPT_START
 

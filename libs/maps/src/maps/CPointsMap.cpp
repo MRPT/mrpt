@@ -1529,7 +1529,7 @@ void internal_build_points_map_from_scan2D(
 		static_cast<CSimplePointsMap*>(out_map.get())->insertionOptions =
 			*static_cast<const CPointsMap::TInsertionOptions*>(insertOps);
 
-	out_map->insertObservation(obs, nullptr);
+	out_map->insertObservation(obs);
 }
 
 struct TAuxLoadFunctor
@@ -1698,7 +1698,7 @@ void CPointsMap::base_copyFrom(const CPointsMap& obj)
   Insert the observation information into this map.
  ---------------------------------------------------------------*/
 bool CPointsMap::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs, const std::optional<const CPose3D>& robotPose)
 {
 	MRPT_START
 
@@ -1747,7 +1747,7 @@ bool CPointsMap::internal_insertObservation(
 
 				auxMap.loadFromRangeScan(
 					o,	// The laser range scan observation
-					&robotPose3D  // The robot pose
+					robotPose3D	 // The robot pose
 				);
 
 				fuseWith(
@@ -1799,7 +1799,7 @@ bool CPointsMap::internal_insertObservation(
 				insertionOptions.addToExistingPointsMap = true;
 				loadFromRangeScan(
 					o,	// The laser range scan observation
-					&robotPose3D  // The robot pose
+					robotPose3D	 // The robot pose
 				);
 			}
 
@@ -1839,7 +1839,7 @@ bool CPointsMap::internal_insertObservation(
 
 				auxMap.loadFromRangeScan(
 					o,	// The laser range scan observation
-					&robotPose3D  // The robot pose
+					robotPose3D	 // The robot pose
 				);
 
 				fuseWith(
@@ -1856,7 +1856,7 @@ bool CPointsMap::internal_insertObservation(
 				insertionOptions.addToExistingPointsMap = true;
 				loadFromRangeScan(
 					o,	// The laser range scan observation
-					&robotPose3D  // The robot pose
+					robotPose3D	 // The robot pose
 				);
 			}
 
@@ -1930,7 +1930,7 @@ bool CPointsMap::internal_insertObservation(
 			CSimplePointsMap auxMap;
 			auxMap.insertionOptions = insertionOptions;
 			auxMap.insertionOptions.addToExistingPointsMap = false;
-			auxMap.loadFromVelodyneScan(o, &robotPose3D);
+			auxMap.loadFromVelodyneScan(o, robotPose3D);
 			fuseWith(
 				&auxMap, insertionOptions.minDistBetweenLaserPoints, nullptr /* rather than &checkForDeletion which we don't need for 3D observations */);
 		}
@@ -1938,7 +1938,7 @@ bool CPointsMap::internal_insertObservation(
 		{
 			// Don't fuse: Simply add
 			insertionOptions.addToExistingPointsMap = true;
-			loadFromVelodyneScan(o, &robotPose3D);
+			loadFromVelodyneScan(o, robotPose3D);
 		}
 		return true;
 	}
@@ -2071,7 +2071,7 @@ void CPointsMap::fuseWith(
 
 void CPointsMap::loadFromVelodyneScan(
 	const mrpt::obs::CObservationVelodyneScan& scan,
-	const mrpt::poses::CPose3D* robotPose)
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	ASSERT_EQUAL_(scan.point_cloud.x.size(), scan.point_cloud.y.size());
 	ASSERT_EQUAL_(scan.point_cloud.x.size(), scan.point_cloud.z.size());

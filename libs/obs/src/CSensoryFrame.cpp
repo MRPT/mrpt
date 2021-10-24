@@ -226,7 +226,8 @@ void CSensoryFrame::internal_buildAuxPointsMap(const void* options) const
 }
 
 bool CSensoryFrame::insertObservationsInto(
-	mrpt::maps::CMetricMap* theMap, const CPose3D* robotPose) const
+	maps::CMetricMap& theMap,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose) const
 {
 	bool anyone = false;
 	for (const auto& it : *this)

@@ -309,7 +309,8 @@ struct pointmap_traits<CWeightedPointsMap>
 }  // namespace mrpt::maps::detail
 /** See CPointsMap::loadFromRangeScan() */
 void CWeightedPointsMap::loadFromRangeScan(
-	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
+	const CObservation2DRangeScan& rangeScan,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	mrpt::maps::detail::loadFromRangeImpl<CWeightedPointsMap>::
 		templ_loadFromRangeScan(*this, rangeScan, robotPose);
@@ -317,7 +318,8 @@ void CWeightedPointsMap::loadFromRangeScan(
 
 /** See CPointsMap::loadFromRangeScan() */
 void CWeightedPointsMap::loadFromRangeScan(
-	const CObservation3DRangeScan& rangeScan, const CPose3D* robotPose)
+	const CObservation3DRangeScan& rangeScan,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	mrpt::maps::detail::loadFromRangeImpl<CWeightedPointsMap>::
 		templ_loadFromRangeScan(*this, rangeScan, robotPose);
