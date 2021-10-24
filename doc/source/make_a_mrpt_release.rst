@@ -11,21 +11,34 @@ useful to someone else maintaining MRPT in the future... ;-)
 1) Generate source code packages
 -----------------------------------
 
-- Go to MRPT dir.
+- Go to MRPT git cloned repository.
+- Make sure of being in branch `develop`.
 - Edit ``doc/source/doxygen-docs/changelog.md`` and set the release date.
 - Do the final ``git commit`` before the release.
-- ``bash packaging/prepare_release.sh``
-- ``bash packaging/prepare_debian.sh``
+- When all CI tests pass:
 
-The packages are in ``$(HOME)/mrpt_release`` and ``$(HOME)/mrpt_debian``
+.. code-block:: bash
 
-Now for windows binary packages:
-(see also the script: MRPT/scripts/automated_build_msvc_binary_package.bat)
-- Extract mrpt-x.y.z.zip
-- Run the script: automated_create_all_windows_MSVC_MinGW_build_dirs.bat
+   git checkout master
+   git merge develop
+   git tag --sign X.Y.Z # release new version
+   bash packaging/prepare_release.sh  # TODO: Merge prepare_debian.sh here!!
 
-Note: Since 2020, Windows binary package generation is also automated
-via AppVeyor CI.
+- The source tarballs are now in ``$(HOME)/mrpt_release``.
+- Windows binaries will be automatically generated from AppVeyor CI, wait for them. 
+- Create a new GitHub release from the tag.
+- Attach the tarball, pgp signature, and Windows installer.
+- Release done! :-) 
+
+
+(JL: Recover this old code into the new prepare_release.sh ?)
+
+.. code-block:: bash
+
+   # Export signing pub key:
+   mkdir debian/upstream/ || true
+   gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
+
 
 2) Create a new Debian package
 --------------------------------
@@ -37,19 +50,7 @@ As of Oct/2021, we switched to gbp with:
 
 Instructions:
 
-1) Make sure of generating the `xxx.orig.tar.gz` file first with:
-
-.. code-block:: bash
-
-   cd MRPT_SOURCE_ROOT
-   packaging/prepare_debian.sh
-
-This should have generated these files:
-
-- `xx`: orig tarball.
-- `xx`: signature.
-
-Now, we have to integrate it into the gbp repo.
+1) Make sure of having generated and uploaded to the GitHub release the `xxx.tar.gz` and its PGP signature.
 
 2) Go to the directory where the mrpt gbp repo is cloned.
 
@@ -67,16 +68,9 @@ Now, we have to integrate it into the gbp repo.
        gbp:info: Replacing upstream source on 'master'
        gbp:info: Successfully imported version 2.4.0 of /home/jlblanco/mrpt_debian/mrpt_2.4.0.orig.tar.gz
 
-   # JL: What else??? Update the d/changelog manually, or using any command?
-
-
-(JL: What about this old code, now removed from prepare_debian.sh ?)
-
-.. code-block:: bash
-
-   # Export signing pub key:
-   mkdir debian/upstream/ || true
-   gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
+   # update the files in debian/ (copyright, *.install) as needed, commit them and run:
+   gbp dch -R -c
+   gbp push
 
 
 (JL: And this?)
@@ -87,24 +81,9 @@ Now, we have to integrate it into the gbp repo.
    cp $MRPTSRC/AUTHORS debian/
 
 
-Was:
-
-.. code-block:: bash
-
-   cd ~/mrpt_debian/mrpt-*
-   debuild -S -sa
-   cd ..
-   lintian *.changes
-
-
-
-
 3) Test build in Debian Unstable
 ---------------------------------------
 
 .. code-block:: bash
 
    gbp buildpackage --git-pbuilder --git-postbuild='lintian $GBP_CHANGES_FILE'
-   sudo ARCH=amd64 DIST=sid pbuilder --build *.dsc
-   cd /var/cache/pbuilder/sid-amd64/result/
-   lintian -I *.deb
