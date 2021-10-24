@@ -13,6 +13,17 @@ jobs:
       - run: make gcov -C build
       - run: make -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
+  full-u21.10-impish:
+    docker:
+      - image: mrpt/mrpt-build-env:full-u21.10-impish
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
+      - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
+      - run: make -C build tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
+      - run: make -C build
   full-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
@@ -98,6 +109,7 @@ workflows:
   build:
     jobs:
       - full-u20.04-focal-codecov
+      - full-u21.10-impish
         # Disabled to avoid circle CI concurrency limit timeouts
         #      - full-u18.04-bionic
       - clang-u18.04-bionic
