@@ -59,7 +59,7 @@ Now, we have to integrate it into the gbp repo.
 
    cd MRPT_GBP_REPO
    git checkout master
-   gbp import-orig ~/mrpt_debian/mrpt_*.orig.tar.gz
+   gbp import-orig --uscan --pristine-tar
 
        gbp:info: Importing '/home/jlblanco/mrpt_debian/mrpt_2.4.0.orig.tar.gz' to branch 'upstream'...
        gbp:info: Source package is mrpt
