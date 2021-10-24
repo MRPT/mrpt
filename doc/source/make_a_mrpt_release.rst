@@ -68,7 +68,9 @@ Instructions:
    #  inside of:
    #   DIST=sid BINDMOUNTS=/home/xxx/xxx/ sudo pbuilder login --save-after-login
    # )
-   gbp buildpackage --git-pbuilder --git-postbuild='lintian $GBP_CHANGES_FILE'
+   gbp buildpackage
+   # or from the host:
+   # gbp buildpackage --git-pbuilder --git-postbuild='lintian $GBP_CHANGES_FILE'
 
    # Push:
    gbp push
