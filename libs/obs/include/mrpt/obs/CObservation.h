@@ -11,7 +11,7 @@
 #include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/math_frwds.h>
-#include <mrpt/poses/poses_frwds.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 
