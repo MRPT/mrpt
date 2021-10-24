@@ -379,7 +379,8 @@ struct pointmap_traits<CPointsMapXYZI>
 }  // namespace mrpt::maps::detail
 /** See CPointsMap::loadFromRangeScan() */
 void CPointsMapXYZI::loadFromRangeScan(
-	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
+	const CObservation2DRangeScan& rangeScan,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	mrpt::maps::detail::loadFromRangeImpl<
 		CPointsMapXYZI>::templ_loadFromRangeScan(*this, rangeScan, robotPose);
@@ -387,7 +388,8 @@ void CPointsMapXYZI::loadFromRangeScan(
 
 /** See CPointsMap::loadFromRangeScan() */
 void CPointsMapXYZI::loadFromRangeScan(
-	const CObservation3DRangeScan& rangeScan, const CPose3D* robotPose)
+	const CObservation3DRangeScan& rangeScan,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	mrpt::maps::detail::loadFromRangeImpl<
 		CPointsMapXYZI>::templ_loadFromRangeScan(*this, rangeScan, robotPose);

@@ -32,11 +32,13 @@
     - New method mrpt::math::TBoundingBox::containsPoint()
   - \ref mrpt_maps_grp
     - Optimization: mrpt::maps::CPointsMap::insertAnotherMap() avoids matrix multiplication if SE(3) identity is passed as insertion pose.
+    - **[API change]** mrpt::maps::CSimpleMap docs improved, API modernized and made const-correct including returned shared_ptr instances as ConstPtr where applicable.
   - \ref mrpt_nav_grp
     - mrpt::nav::CParameterizedTrajectoryGenerator::initTPObstacleSingle() now always initializes to the maximum free distance, instead of saturating free space when heading to a target waypoint.
-    - [API change] mrpt::nav::CParameterizedTrajectoryGenerator::getPathPose() had two overloaded signatures, which is not recommended being one of them a virtual method. Only the return-by-value is left.
+    - **[API change]** mrpt::nav::CParameterizedTrajectoryGenerator::getPathPose() had two overloaded signatures, which is not recommended being one of them a virtual method. Only the return-by-value is left.
   - \ref mrpt_obs_grp
     - Fix const-correctness of mrpt::obs::CObservation::unload() for consistency with load().
+    - **[API change]** Replaced all API signatures taking an optional mrpt::poses::CPose3D as pointers (with default=nullptr) with a modern `std::optional<>`.
   - \ref mrpt_opengl_grp
     - New method mrpt::opengl::COpenGLViewport::setClonedCameraFrom()
     - mrpt::opengl::CFBORender changes:

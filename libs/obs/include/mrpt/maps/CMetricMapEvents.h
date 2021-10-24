@@ -8,19 +8,17 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/obs/obs_frwds.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/system/mrptEvent.h>
 
+#include <optional>
+
 namespace mrpt
 {
-namespace obs
-{
-class CObservation;
-}
 namespace maps
 {
-class CMetricMap;
-
 /** Event emitted by a metric up upon call of clear()
  * \sa CMetricMap
  * \ingroup mrpt_obs_grp
@@ -51,16 +49,16 @@ class mrptEventMetricMapInsert : public mrpt::system::mrptEvent
 	void do_nothing() override {}
 
    public:
-	inline mrptEventMetricMapInsert(
+	mrptEventMetricMapInsert(
 		const mrpt::maps::CMetricMap* smap, const mrpt::obs::CObservation* obs,
-		const mrpt::poses::CPose3D* robotPose)
+		const std::optional<const mrpt::poses::CPose3D>& robotPose)
 		: source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose)
 	{
 	}
 
 	const mrpt::maps::CMetricMap* source_map;
 	const mrpt::obs::CObservation* inserted_obs;
-	const mrpt::poses::CPose3D* inserted_robotPose;
+	const std::optional<const mrpt::poses::CPose3D> inserted_robotPose;
 };
 
 }  // namespace maps

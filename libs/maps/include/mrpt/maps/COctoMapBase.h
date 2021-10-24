@@ -372,8 +372,8 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	template <class octomap_point3d, class octomap_pointcloud>
 	bool internal_build_PointCloud_for_observation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
-		octomap_pointcloud& scan) const;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose,
+		octomap_point3d& sensorPt, octomap_pointcloud& scan) const;
 
 	struct Impl;
 

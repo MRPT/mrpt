@@ -134,7 +134,8 @@ void COctoMap::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 }
 
 bool COctoMap::internal_insertObservation(
-	const mrpt::obs::CObservation& obs, const CPose3D* robotPose)
+	const mrpt::obs::CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	octomap::point3d sensorPt;
 	octomap::Pointcloud scan;

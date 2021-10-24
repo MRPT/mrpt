@@ -14,68 +14,140 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/serialization/CSerializable.h>
 
+#include <tuple>
+
 namespace mrpt::maps
 {
-/** This class stores a sequence of <Probabilistic Pose,SensoryFrame> pairs,
- * thus a "metric map" can be totally determined with this information.
- *     The pose of the sensory frame is not deterministic, but described by some
- * PDF. Full 6D poses are used.
+/** A view-based representation of a metric map.
  *
- *  \note Objects of this class are serialized into (possibly GZ-compressed)
- * files with the extension ".simplemap".
+ *  This comprises a list of `<ProbabilisticPose,SensoryFrame>` pairs, that is,
+ *  the **poses** (keyframes) from which a set of **observations** where
+ * gathered:
+ *  - Poses, in the global `map` frame of reference, are stored as probabilistic
+ * PDFs over SE(3) as instances of mrpt::poses::CPose3DPDF
+ *  - Observations are stored as mrpt::obs::CSensoryFrame.
  *
- * \note Before MRPT 0.9.0 the name of this class was "CSensFrameProbSequence",
- * that's why there is a type with that name to allow backward compatibility.
- * \sa CSensoryFrame, CPosePDF
+ * Note that in order to generate an actual metric map (occupancy grid, point
+ * cloud, octomap, etc.) from a "simple map", you must instantiate the desired
+ * metric map class and invoke its virtual method
+ * mrpt::maps::CMetricMap::loadFromProbabilisticPosesAndObservations().
+ *
+ * \note Objects of this class are serialized into GZ-compressed
+ *       files with the extension `.simplemap`.
+ *       See [Robotics file formats](robotics_file_formats.html).
+ *
+ * \sa mrpt::obs::CSensoryFrame, mrpt::poses::CPose3DPDF, mrpt::maps::CMetricMap
+ *
  * \ingroup mrpt_obs_grp
  */
 class CSimpleMap : public mrpt::serialization::CSerializable
 {
 	DEFINE_SERIALIZABLE(CSimpleMap, mrpt::maps)
    public:
-	/** Default constructor (empty map) */
-	CSimpleMap() = default;
-	/** Copy constructor */
+	CSimpleMap() = default;	 //!< Default ctor: empty map
+	~CSimpleMap() = default;
+
+	/** Copy constructor, makes a deep copy of all data. */
 	CSimpleMap(const CSimpleMap& o);
-	/** Copy */
+
+	/** Copy, making a deep copy of all data. */
 	CSimpleMap& operator=(const CSimpleMap& o);
+
+	struct Pair
+	{
+		Pair() = default;
+		~Pair() = default;
+
+		mrpt::poses::CPose3DPDF::Ptr pose;
+		mrpt::obs::CSensoryFrame::Ptr sf;
+	};
+
+	struct ConstPair
+	{
+		ConstPair() = default;
+		~ConstPair() = default;
+
+		ConstPair(const Pair& p) : pose(p.pose), sf(p.sf) {}
+
+		mrpt::poses::CPose3DPDF::ConstPtr pose;
+		mrpt::obs::CSensoryFrame::ConstPtr sf;
+	};
 
 	/** \name Map access and modification
 	 * @{ */
 
 	/** Save this object to a .simplemap binary file (compressed with gzip)
-	 * \sa loadFromFile
+	 * See [Robotics file formats](robotics_file_formats.html).
+	 * \sa loadFromFile()
 	 * \return false on any error. */
 	bool saveToFile(const std::string& filName) const;
 
 	/** Load the contents of this object from a .simplemap binary file (possibly
 	 * compressed with gzip)
-	 * \sa saveToFile
+	 * See [Robotics file formats](robotics_file_formats.html).
+	 * \sa saveToFile()
 	 * \return false on any error. */
 	bool loadFromFile(const std::string& filName);
 
-	/** Returns the count of pairs (pose,sensory data) */
-	size_t size() const;
-	/** Returns size()!=0 */
-	bool empty() const;
+	/** Returns the count of (pose,sensoryFrame) pairs */
+	size_t size() const { return m_posesObsPairs.size(); }
 
-	/** Access to the i'th pair, first one is index '0'. NOTE: This method
-	 *  returns pointers to the objects inside the list, nor a copy of them,
-	 *  so <b>do neither modify them nor delete them</b>.
-	 * NOTE: You can pass a nullptr pointer if you dont need one of the two
-	 * variables to be returned.
+	/** Returns size()!=0 */
+	bool empty() const { return m_posesObsPairs.empty(); }
+
+	/** Access to the 0-based index i'th pair.
 	 * \exception std::exception On index out of bounds.
 	 */
 	void get(
-		size_t index, mrpt::poses::CPose3DPDF::Ptr& out_posePDF,
-		mrpt::obs::CSensoryFrame::Ptr& out_SF) const;
+		size_t index, mrpt::poses::CPose3DPDF::ConstPtr& out_posePDF,
+		mrpt::obs::CSensoryFrame::ConstPtr& out_SF) const
+	{
+		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
+		out_posePDF = m_posesObsPairs[index].pose;
+		out_SF = m_posesObsPairs[index].sf;
+	}
+	/// \overload
+	std::tuple<
+		mrpt::poses::CPose3DPDF::ConstPtr, mrpt::obs::CSensoryFrame::ConstPtr>
+		get(size_t index) const
+	{
+		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
+		return {m_posesObsPairs[index].pose, m_posesObsPairs[index].sf};
+	}
 
-	/** Changes the i'th pair, first one is index '0'.
-	 *  The referenced object is COPIED, so you can freely destroy the object
-	 * passed as parameter after calling this.
-	 *  If one of the pointers is nullptr, the corresponding contents of the
-	 * current i'th pair is not modified (i.e. if you want just to modify one of
-	 * the values).
+	ConstPair getAsPair(size_t index) const
+	{
+		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
+		return m_posesObsPairs.at(index);
+	}
+	Pair& getAsPair(size_t index)
+	{
+		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
+		return m_posesObsPairs.at(index);
+	}
+
+	/// \overload
+	void get(
+		size_t index, mrpt::poses::CPose3DPDF::Ptr& out_posePDF,
+		mrpt::obs::CSensoryFrame::Ptr& out_SF)
+	{
+		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
+		out_posePDF = m_posesObsPairs[index].pose;
+		out_SF = m_posesObsPairs[index].sf;
+	}
+
+	/// \overload
+	std::tuple<mrpt::poses::CPose3DPDF::Ptr, mrpt::obs::CSensoryFrame::Ptr> get(
+		size_t index)
+	{
+		ASSERTMSG_(index < m_posesObsPairs.size(), "Index out of bounds");
+		return {m_posesObsPairs[index].pose, m_posesObsPairs[index].sf};
+	}
+
+	/** Changes the 0-based index i'th pair.
+	 *  If one of either `in_posePDF` or `in_SF` are empty `shared_ptr`s, the
+	 * corresponding field in the map is not modified.
+	 *
 	 * \exception std::exception On index out of bounds.
 	 * \sa insert, get, remove
 	 */
@@ -83,95 +155,70 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 		size_t index, const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
-	/** Changes the i'th pair, first one is index '0'.
-	 *  The referenced object is COPIED, so you can freely destroy the object
-	 * passed as parameter after calling this.
-	 *  If one of the pointers is nullptr, the corresponding contents of the
-	 * current i'th pair is not modified (i.e. if you want just to modify one of
-	 * the values).
-	 * This version for 2D PDFs just converts the 2D PDF into 3D before calling
-	 * the 3D version.
-	 * \exception std::exception On index out of bounds.
-	 * \sa insert, get, remove
-	 */
+	/// \overload
+	void set(size_t index, const Pair& poseSF)
+	{
+		set(index, poseSF.pose, poseSF.sf);
+	}
+
+	/// \overload For SE(2) pose PDF, internally converted to SE(3).
 	void set(
 		size_t index, const mrpt::poses::CPosePDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
-	/** Deletes the i'th pair, first one is index '0'.
+	/** Deletes the 0-based index i'th pair.
 	 * \exception std::exception On index out of bounds.
 	 * \sa insert, get, set
 	 */
 	void remove(size_t index);
 
-	/** Add a new pair to the sequence. The objects are copied, so original ones
-	 * can be free if desired after insertion. */
+	/** Adds a new keyframe (SE(3) pose) to the view-based map, making a deep
+	 * copy of the pose PDF (observations within the SF are always copied as
+	 * `shared_ptr`s).
+	 */
 	void insert(
-		const mrpt::poses::CPose3DPDF* in_posePDF,
+		const mrpt::poses::CPose3DPDF& in_posePDF,
 		const mrpt::obs::CSensoryFrame& in_SF);
 
-	/** Add a new pair to the sequence, making a copy of the smart pointer */
-	void insert(
-		const mrpt::poses::CPose3DPDF* in_posePDF,
-		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
-
-	/** Add a new pair to the sequence, making a copy of the smart pointer */
+	/** Adds a new keyframe (SE(3) pose) to the view-based map.
+	 *  Both shared pointers are copied (shallow object copies).
+	 */
 	void insert(
 		const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
-	/** Insert a new pair to the sequence, making a copy of the smart pointer.
-	 * \param index Position in the simplemap where new element will be inserted
-	 * to
-	 */
-	void insertToPos(
-		size_t index, const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
-		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
+	/// \overload
+	void insert(const Pair& poseSF) { insert(poseSF.pose, poseSF.sf); }
 
-	/** Add a new pair to the sequence. The objects are copied, so original ones
-	 * can be free if desired
-	 *  after insertion.
-	 * This version for 2D PDFs just converts the 2D PDF into 3D before calling
-	 * the 3D version.
+	/** Adds a new keyframe (SE(2) pose) to the view-based map, making a deep
+	 * copy of the pose PDF (observations within the SF are always copied as
+	 * `shared_ptr`s).
+	 */
+	void insert(
+		const mrpt::poses::CPosePDF& in_posePDF,
+		const mrpt::obs::CSensoryFrame& in_SF);
+
+	/** Adds a new keyframe (SE(2) pose) to the view-based map.
+	 *  Both shared pointers are copied (shallow object copies).
 	 */
 	void insert(
 		const mrpt::poses::CPosePDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
-	/** Add a new pair to the sequence. The objects are copied, so original ones
-	 * can be free if desired
-	 *  after insertion.
-	 * This version for 2D PDFs just converts the 2D PDF into 3D before calling
-	 * the 3D version.
-	 */
-	void insert(
-		const mrpt::poses::CPosePDF* in_posePDF,
-		const mrpt::obs::CSensoryFrame& in_SF);
-
-	/** Add a new pair to the sequence. The objects are copied, so original ones
-	 * can be free if desired
-	 *  after insertion.
-	 * This version for 2D PDFs just converts the 2D PDF into 3D before calling
-	 * the 3D version.
-	 */
-	void insert(
-		const mrpt::poses::CPosePDF* in_posePDF,
-		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
-
 	/** Remove all stored pairs.  \sa remove */
-	void clear();
+	void clear() { m_posesObsPairs.clear(); }
 
-	/** Change the coordinate origin of all stored poses, for consistency with
-	 * future new poses to enter in the system. */
+	/** Change the coordinate origin of all stored poses, that is, translates
+	 * and rotates the map such that the old SE(3) origin (identity
+	 * transformation) becomes the new provided one.
+	 */
 	void changeCoordinatesOrigin(const mrpt::poses::CPose3D& newOrigin);
 
 	/** @} */
 
 	/** \name Iterators API
 	 * @{ */
-	using TPosePDFSensFramePair =
-		std::pair<mrpt::poses::CPose3DPDF::Ptr, mrpt::obs::CSensoryFrame::Ptr>;
-	using TPosePDFSensFramePairList = std::deque<TPosePDFSensFramePair>;
+	using TPosePDFSensFramePairList = std::deque<Pair>;
 
 	using const_iterator = TPosePDFSensFramePairList::const_iterator;
 	using iterator = TPosePDFSensFramePairList::iterator;
@@ -179,20 +226,18 @@ class CSimpleMap : public mrpt::serialization::CSerializable
 	using const_reverse_iterator =
 		TPosePDFSensFramePairList::const_reverse_iterator;
 
-	inline const_iterator begin() const { return m_posesObsPairs.begin(); }
-	inline const_iterator end() const { return m_posesObsPairs.end(); }
-	inline iterator begin() { return m_posesObsPairs.begin(); }
-	inline iterator end() { return m_posesObsPairs.end(); }
-	inline const_reverse_iterator rbegin() const
-	{
-		return m_posesObsPairs.rbegin();
-	}
-	inline const_reverse_iterator rend() const
-	{
-		return m_posesObsPairs.rend();
-	}
-	inline reverse_iterator rbegin() { return m_posesObsPairs.rbegin(); }
-	inline reverse_iterator rend() { return m_posesObsPairs.rend(); }
+	const_iterator begin() const { return m_posesObsPairs.begin(); }
+	const_iterator end() const { return m_posesObsPairs.end(); }
+	const_iterator cbegin() const { return m_posesObsPairs.cbegin(); }
+	const_iterator cend() const { return m_posesObsPairs.cend(); }
+	iterator begin() { return m_posesObsPairs.begin(); }
+	iterator end() { return m_posesObsPairs.end(); }
+	const_reverse_iterator rbegin() const { return m_posesObsPairs.rbegin(); }
+	const_reverse_iterator rend() const { return m_posesObsPairs.rend(); }
+	const_reverse_iterator crbegin() const { return m_posesObsPairs.crbegin(); }
+	const_reverse_iterator crend() const { return m_posesObsPairs.crend(); }
+	reverse_iterator rbegin() { return m_posesObsPairs.rbegin(); }
+	reverse_iterator rend() { return m_posesObsPairs.rend(); }
 	/** @} */
 
    private:

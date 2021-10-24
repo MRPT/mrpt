@@ -145,7 +145,8 @@ void CColouredOctoMap::serializeFrom(
 				insertObservation
  ---------------------------------------------------------------*/
 bool CColouredOctoMap::internal_insertObservation(
-	const mrpt::obs::CObservation& obs, const CPose3D* robotPose)
+	const mrpt::obs::CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	octomap::point3d sensorPt;
 	octomap::Pointcloud scan;
@@ -210,7 +211,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		mrpt::opengl::CPointCloudColoured::Ptr pts =
 			mrpt::opengl::CPointCloudColoured::Create();
 		T3DPointsProjectionParams proj_params;
-		proj_params.robotPoseInTheWorld = robotPose;
+		proj_params.robotPoseInTheWorld = robotPose3D;
 		const_cast<CObservation3DRangeScan&>(o).unprojectInto(
 			*pts, proj_params);
 
