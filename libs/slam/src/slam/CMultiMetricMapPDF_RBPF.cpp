@@ -302,7 +302,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					localMapPoints.insertionOptions.minDistBetweenLaserPoints =
 						0.02f;
 					localMapPoints.insertionOptions.isPlanarMap = true;
-					sf->insertObservationsInto(&localMapPoints);
+					sf->insertObservationsInto(localMapPoints);
 				}
 
 				map_to_align_to = grid.get();
@@ -321,7 +321,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					localMapPoints.insertionOptions.minDistBetweenLaserPoints =
 						0.02f;
 					localMapPoints.insertionOptions.isPlanarMap = true;
-					sf->insertObservationsInto(&localMapPoints);
+					sf->insertObservationsInto(localMapPoints);
 				}
 
 				map_to_align_to = ptsMap.get();
@@ -335,7 +335,7 @@ void CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				if (!built_map_lms)
 				{
 					built_map_lms = true;
-					sf->insertObservationsInto(&localMapLandmarks);
+					sf->insertObservationsInto(localMapLandmarks);
 				}
 
 				map_to_align_to = lmMap.get();

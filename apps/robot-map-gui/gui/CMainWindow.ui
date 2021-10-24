@@ -41,7 +41,7 @@
      <x>0</x>
      <y>0</y>
      <width>902</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -74,7 +74,6 @@
     <addaction name="m_actionLoadConfig"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
-    <addaction name="m_actionGraphSlam"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -442,6 +441,7 @@
   </customwidget>
  </customwidgets>
  <resources>
+  <include location="../resources/resources.qrc"/>
   <include location="../resources/resources.qrc"/>
  </resources>
  <connections>

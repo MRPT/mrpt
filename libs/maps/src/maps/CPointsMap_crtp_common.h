@@ -19,7 +19,7 @@ struct loadFromRangeImpl
 {
 	static inline void templ_loadFromRangeScan(
 		Derived& obj, const mrpt::obs::CObservation2DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose)
+		const std::optional<const mrpt::poses::CPose3D>& robotPose)
 	{
 		using namespace mrpt::poses;
 		using mrpt::DEG2RAD;
@@ -373,7 +373,7 @@ struct loadFromRangeImpl
 
 	static inline void templ_loadFromRangeScan(
 		Derived& obj, const mrpt::obs::CObservation3DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose)
+		const std::optional<const mrpt::poses::CPose3D>& robotPose)
 	{
 		using namespace mrpt::poses;
 		using mrpt::square;

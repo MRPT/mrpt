@@ -658,7 +658,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 				{
 					CPose3D dumPose(curPose);
 					rawlog.getAsObservations(i)->insertObservationsInto(
-						&theMap, &dumPose);
+						theMap, dumPose);
 				}
 				addNewPathEntry = true;
 			}
@@ -678,7 +678,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 				{
 					CPose3D dumPose(curPose);
 					theMap.insertObservation(
-						*rawlog.getAsObservation(i), &dumPose);
+						*rawlog.getAsObservation(i), dumPose);
 					last_tim = rawlog.getAsObservation(i)->timestamp;
 				}
 				addNewPathEntry = true;
@@ -1070,7 +1070,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 					size_t& dec_cnt = decim_count[o->sensorLabel];
 
 					if ((++dec_cnt % decimate) == 0)
-						theMap.insertObservation(*o, &p);
+						theMap.insertObservation(*o, p);
 				}
 			}
 			break;

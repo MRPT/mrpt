@@ -90,11 +90,13 @@ class CSimplePointsMap : public CPointsMap
 	// See CPointsMap::loadFromRangeScan()
 	void loadFromRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 	// See CPointsMap::loadFromRangeScan()
 	void loadFromRangeScan(
 		const mrpt::obs::CObservation3DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 
    protected:
 	void impl_copyFrom(const CPointsMap& obj) override;

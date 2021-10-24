@@ -914,7 +914,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
 			CPose3D scan_pose = getLSPoseForGridMapVisualization(curr_node);
 
 			// Add all to gridmap
-			gridmap->insertObservation(*curr_laser_scan, &scan_pose);
+			gridmap->insertObservation(*curr_laser_scan, scan_pose);
 		}
 
 		m_map_is_cached = true;
