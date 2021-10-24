@@ -36,27 +36,17 @@ void CMetricMap::clear()
 void CMetricMap::loadFromProbabilisticPosesAndObservations(
 	const mrpt::maps::CSimpleMap& sfSeq)
 {
-	CPose3DPDF::Ptr posePDF;
-	CSensoryFrame::Ptr sf;
-	const size_t n = sfSeq.size();
-
 	// Erase previous contents:
 	this->clear();
 
 	// Insert new content:
-	for (size_t i = 0; i < n; i++)
+	for (const auto& pair : sfSeq)
 	{
-		sfSeq.get(i, posePDF, sf);
-		ASSERTMSG_(posePDF, "Input map has an empty `CPose3DPDF` ptr");
-		ASSERTMSG_(sf, "Input map has an empty `CSensoryFrame` ptr");
+		ASSERTMSG_(pair.pose, "Input map has an empty `CPose3DPDF` ptr");
+		ASSERTMSG_(pair.sf, "Input map has an empty `CSensoryFrame` ptr");
 
-		CPose3D robotPose;
-		posePDF->getMean(robotPose);
-
-		sf->insertObservationsInto(
-			this,  // Insert into THIS map.
-			&robotPose	// At this pose.
-		);
+		const auto robotPose = pair.pose->getMeanVal();
+		pair.sf->insertObservationsInto(this, &robotPose);
 	}
 }
 

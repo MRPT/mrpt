@@ -285,7 +285,7 @@ void CMetricMapBuilderRBPF::initialize(
 	else if (!initialMap.empty())
 	{
 		// get pose of last keyframe:
-		curPose = initialMap.rbegin()->first->getMeanVal();
+		curPose = initialMap.rbegin()->pose->getMeanVal();
 	}
 	MRPT_LOG_INFO_STREAM("[initialize] Initial pose: " << curPose);
 

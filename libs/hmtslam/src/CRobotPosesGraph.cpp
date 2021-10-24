@@ -74,5 +74,5 @@ void CRobotPosesGraph::convertIntoSimplemap(CSimpleMap& out_simplemap) const
 {
 	out_simplemap.clear();
 	for (const auto& it : *this)
-		out_simplemap.insert(&it.second.pdf, it.second.sf);
+		out_simplemap.insert(it.second.pdf, it.second.sf);
 }

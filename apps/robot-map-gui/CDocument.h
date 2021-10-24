@@ -66,8 +66,7 @@ class CDocument
 		const std::vector<size_t>& indexes,
 		const mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
 	void move(
-		size_t index,
-		const mrpt::maps::CSimpleMap::TPosePDFSensFramePair& posesObsPair,
+		size_t index, const mrpt::maps::CSimpleMap::Pair& posesObsPair,
 		bool disableUpdateMetricMap = false);
 
 	void insert(
@@ -75,11 +74,13 @@ class CDocument
 		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
 
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList get(
-		const std::vector<size_t>& idx) const;
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePair get(size_t idx) const;
+		const std::vector<size_t>& idx);
+
+	mrpt::maps::CSimpleMap::ConstPair get(size_t idx) const;
+	mrpt::maps::CSimpleMap::Pair get(size_t idx);
 
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList getReverse(
-		const std::vector<size_t>& idx) const;
+		const std::vector<size_t>& idx);
 
    private:
 	void addMapToRenderizableMaps(
