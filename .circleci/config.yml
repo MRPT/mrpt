@@ -5,6 +5,8 @@ jobs:
       - image: mrpt/mrpt-build-env:full-focal
     steps:
       - checkout
+      - restore_cache:
+          key: build-u20.04
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u20.04
@@ -13,46 +15,52 @@ jobs:
       - run: make gcov -C build-u20.04
       - run: make -C build-u20.04
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build-u20.04
-      - persist_to_workspace:
-          root: /root/project/
+      - save_cache:
+          key: build-u20.04
           paths:
-            - build-u20.04
+            - /root/project/
   full-u21.10-impish:
     docker:
       - image: mrpt/mrpt-build-env:full-u21.10-impish
     steps:
       - checkout
+      - restore_cache:
+          key: build-u21.10
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u21.10
       - run: make -C build-u21.10 tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u21.10
       - run: make -C build-u21.10
-      - persist_to_workspace:
-          root: /root/project/
+      - save_cache:
+          key: build-u21.10
           paths:
-            - build-u21.10
+            - /root/project/
   full-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
+      - restore_cache:
+          key: build-u18.04
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u18.04
       - run: make -C build-u18.04 tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04
       - run: make -C build-u18.04
-      - persist_to_workspace:
-          root: /root/project/
+      - save_cache:
+          key: build-u18.04
           paths:
-            - build-u18.04
+            - /root/project/
   clang-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
       - checkout
       - run: git submodule sync
+      - restore_cache:
+          key: build-u18.04-clang
       - run: git submodule update --init --recursive
       - run:
           name: Generate cmake files
@@ -63,40 +71,44 @@ jobs:
       - run: make -C build-u18.04-clang tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-clang
       - run: make -C build-u18.04-clang
-      - persist_to_workspace:
-          root: /root/project/
+      - save_cache:
+          key: build-u18.04-clang
           paths:
-            - build-u18.04-clang
+            - /root/project/
   headless-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:headless-bionic
     steps:
       - checkout
+      - restore_cache:
+          key: build-u18.04-headless
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u18.04-headless
       - run: make -C build-u18.04-headless tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-headless
       - run: make -C build-u18.04-headless
-      - persist_to_workspace:
-          root: /root/project/
+      - save_cache:
+          key: build-u18.04-headless
           paths:
-            - build-u18.04-headless
+            - /root/project/
   minimal-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:minimal-bionic
     steps:
       - checkout
+      - restore_cache:
+          key: build-u18.04-minimal
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_DISABLE_PYTHON_BINDINGS=On -DMRPT_EIGEN_USE_EMBEDDED_VERSION=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u18.04-minimal
       - run: make -C build-u18.04-minimal tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-minimal
       - run: make -C build-u18.04-minimal
-      - persist_to_workspace:
-          root: /root/project/
+      - save_cache:
+          key: build-u18.04-minimal
           paths:
-            - build-u18.04-minimal
+            - /root/project/
   clang-format-lint:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
@@ -117,6 +129,8 @@ jobs:
     working_directory: /Users/distiller/project
     steps:
       - checkout
+      - restore_cache:
+          key: build-u18.04-minimal
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: brew update
@@ -128,10 +142,10 @@ jobs:
       - run: make -j2 -C build-osx tests_build_all
       - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build-osx
       - run: make -j2 -C build-osx
-      - persist_to_workspace:
-          root: /Users/distiller/project
+      - save_cache:
+          key: build-u18.04-minimal
           paths:
-            - build-osx
+            - /Users/distiller/project
 workflows:
   version: 2
   build:
