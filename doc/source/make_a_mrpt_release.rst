@@ -64,8 +64,11 @@ Instructions:
    gbp dch -R -c --git-author --distribution=unstable
 
    # Test build (if changes are significant):
-   # (Create cowbuilder image upon first usage first)
-   gbp buildpackage --git-pbuilder --git-dist=unstable --git-postbuild='lintian $GBP_CHANGES_FILE'
+   # (Create cowbuilder image upon first usage first, then run the command below
+   #  inside of:
+   #   DIST=sid BINDMOUNTS=/home/xxx/xxx/ sudo pbuilder login --save-after-login
+   # )
+   gbp buildpackage --git-pbuilder --git-postbuild='lintian $GBP_CHANGES_FILE'
 
    # Push:
    gbp push
