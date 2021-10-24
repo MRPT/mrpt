@@ -104,7 +104,7 @@ Was:
 
 .. code-block:: bash
 
-   sudo ARCH=amd64 DIST=sid pbuilder --update
+   gbp buildpackage --git-pbuilder --git-postbuild='lintian $GBP_CHANGES_FILE'
    sudo ARCH=amd64 DIST=sid pbuilder --build *.dsc
    cd /var/cache/pbuilder/sid-amd64/result/
    lintian -I *.deb
