@@ -13,6 +13,10 @@ jobs:
       - run: make gcov -C build
       - run: make -C build
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
+      - persist_to_workspace:
+        root: /root/project/
+        paths:
+          - build/*
   full-u21.10-impish:
     docker:
       - image: mrpt/mrpt-build-env:full-u21.10-impish
@@ -24,6 +28,10 @@ jobs:
       - run: make -C build tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
       - run: make -C build
+      - persist_to_workspace:
+        root: /root/project/
+        paths:
+          - build/*
   full-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
