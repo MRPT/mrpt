@@ -142,7 +142,8 @@ void CHeightGridMap2D_MRF::internal_clear()
 }
 
 bool CHeightGridMap2D_MRF::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	return dem_internal_insertObservation(obs, robotPose);
 }

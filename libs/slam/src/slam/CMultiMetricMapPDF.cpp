@@ -137,9 +137,7 @@ void CMultiMetricMapPDF::clear(
 			if (!kf_pose_set) { kf_pose = keyframe_pose->getMeanVal(); }
 			p.d->robotPath[i] = kf_pose.asTPose();
 			for (const auto& obs : *sfkeyframe_sf)
-			{
-				p.d->mapTillNow.insertObservation(*obs, &kf_pose);
-			}
+				p.d->mapTillNow.insertObservation(*obs, kf_pose);
 		}
 	}
 
@@ -415,8 +413,8 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 		bool pose_is_valid;
 		const CPose3D robotPose = CPose3D(getLastPose(i, pose_is_valid));
 		// ASSERT_(pose_is_valid); // if not, use the default (0,0,0)
-		const bool map_modified = sf.insertObservationsInto(
-			&m_particles[i].d->mapTillNow, &robotPose);
+		const bool map_modified =
+			sf.insertObservationsInto(m_particles[i].d->mapTillNow, robotPose);
 		anymap = anymap || map_modified;
 	}
 

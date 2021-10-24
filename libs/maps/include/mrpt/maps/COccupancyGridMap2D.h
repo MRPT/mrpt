@@ -197,7 +197,8 @@ class COccupancyGridMap2D
 	 */
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 
    public:
 	/** Read-only access to the raw cell contents (cells are in log-odd units)

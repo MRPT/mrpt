@@ -120,15 +120,15 @@ void TestLaser2Imgs()
 
 		// Get 3D Point relative to the Laser coordinate Frame (P1) (CPoint3D)
 		CPoint3D point;
-		CSimplePointsMap mapa;
-		mapa.insertionOptions.minDistBetweenLaserPoints = 0;
-		observations->insertObservationsInto(
-			&mapa);	 // <- The map contains the pose of the points (P1)
+		CSimplePointsMap m;
+		m.insertionOptions.minDistBetweenLaserPoints = 0;
+		// <- The map contains the pose of the points (P1)
+		observations->insertObservationsInto(m);
 
 		// Get the points into the map
 		vector<float> X, Y, Z;
 		vector<float>::iterator itX, itY, itZ;
-		mapa.getAllPoints(X, Y, Z);
+		m.getAllPoints(X, Y, Z);
 
 		unsigned int imgW =
 			sImgs ? sImgs->imageLeft.getWidth() : Img->image.getWidth();

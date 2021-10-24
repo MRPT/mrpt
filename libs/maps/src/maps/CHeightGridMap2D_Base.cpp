@@ -126,7 +126,8 @@ bool CHeightGridMap2D_Base::intersectLine3D(
 }
 
 bool CHeightGridMap2D_Base::dem_internal_insertObservation(
-	const mrpt::obs::CObservation& obs, const mrpt::poses::CPose3D* robotPose)
+	const mrpt::obs::CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::obs;
@@ -163,7 +164,7 @@ bool CHeightGridMap2D_Base::dem_internal_insertObservation(
 		const auto& o = static_cast<const CObservationVelodyneScan&>(obs);
 
 		// Create points map, if not created yet:
-		thePointsMoved.loadFromVelodyneScan(o, &robotPose3D);
+		thePointsMoved.loadFromVelodyneScan(o, robotPose3D);
 	}
 
 	// Factorized insertion of points, for different observation classes:

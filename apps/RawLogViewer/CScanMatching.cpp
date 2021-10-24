@@ -544,7 +544,7 @@ static void insert_obs_into_map(
 	if (IS_CLASS(*obj, CSensoryFrame))
 	{
 		auto SF = std::dynamic_pointer_cast<CSensoryFrame>(obj);
-		SF->insertObservationsInto(theMap);
+		SF->insertObservationsInto(*theMap);
 	}
 	else if (IS_DERIVED(*obj, CObservation))
 	{

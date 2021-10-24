@@ -613,7 +613,7 @@ void TestParticlesLocalization()
 
 					CSimplePointsMap map;
 					CPose3D robotPose3D(meanPose);
-					observations->insertObservationsInto(&map, &robotPose3D);
+					observations->insertObservationsInto(map, robotPose3D);
 					scanPts->loadFromPointsMap(&map);
 
 					if (!obj)
