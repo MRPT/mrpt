@@ -79,7 +79,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	void internal_clear() override;
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 
    public:
 	/** Computes the (logarithmic) likelihood that a given observation was taken
@@ -547,7 +548,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	 */
 	void loadOccupancyFeaturesFrom2DRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt,
 		unsigned int downSampleFactor = 1);
 
 	// See docs in base class

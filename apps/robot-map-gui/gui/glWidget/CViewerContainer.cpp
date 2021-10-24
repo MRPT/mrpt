@@ -23,11 +23,10 @@ CViewerContainer::CViewerContainer(QWidget* parent)
 	  m_helpLoadMap(
 		  tr("For loading the map, press File -> Open simplemap or Ctrl + "
 			 "O.\n\n\n")),
-	  m_helpLoadConfig(
-		  tr("For display any maps you must download the configuration file. "
-			 "For this press File -> Load config or Ctrl + E.\n\n\n"
-			 "If you loaded simplemap, you can yourself add the map from "
-			 "Configuration widget"))
+	  m_helpLoadConfig(tr(
+		  "The list of metric maps is empty. Either:\n\n"
+		  "- Select File -> Load config or Ctrl + E; or\n"
+		  "- manually define the metric maps from the 'Configuration' button."))
 {
 	m_ui->setupUi(this);
 	connect(

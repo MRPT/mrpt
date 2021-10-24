@@ -49,16 +49,24 @@ if (NOT DISABLE_ROS)
 	else()
 		set(nav_msgs_FOUND 0)
 	endif()
-	
+
 	# Compare flag:
 	get_directory_property(ROS_DEFINITIONS "COMPILE_DEFINITIONS")
 	set_directory_properties(PROPERTIES "COMPILE_DEFINITIONS" "")
-	
+
 
 	if ($ENV{VERBOSE})
 		message(STATUS "Found ROS1:")
 		message(STATUS "  roscpp_INCLUDE_DIRS :${roscpp_INCLUDE_DIRS}")
 		message(STATUS "  roscpp_LIBRARIES    :${roscpp_LIBRARIES}")
+		message(STATUS "  rosbag_storage_INCLUDE_DIRS :${rosbag_storage_INCLUDE_DIRS}")
+		message(STATUS "  rosbag_storage_LIBRARIES    :${rosbag_storage_LIBRARIES}")
+		message(STATUS "  cv_bridge_INCLUDE_DIRS :${cv_bridge_INCLUDE_DIRS}")
+		message(STATUS "  cv_bridge_LIBRARIES    :${cv_bridge_LIBRARIES}")
+		message(STATUS "  pcl_conversions_INCLUDE_DIRS :${pcl_conversions_INCLUDE_DIRS}")
+		message(STATUS "  pcl_conversions_LIBRARIES    :${pcl_conversions_LIBRARIES}")
+		message(STATUS "  tf2_INCLUDE_DIRS :${tf2_INCLUDE_DIRS}")
+		message(STATUS "  tf2_LIBRARIES    :${tf2_LIBRARIES}")
 		message(STATUS "  ROS definitions     :${ROS_DEFINITIONS}")
 	endif()
 endif()

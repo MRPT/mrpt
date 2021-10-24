@@ -260,7 +260,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
 		compareGrid.insertionOptions.maxDistanceInsertion =
 			insertionOptions.maxDistanceInsertion;
 		compareGrid.insertionOptions.maxOccupancyUpdateCertainty = 0.95f;
-		o.insertObservationInto(&compareGrid, &robotPose);
+		o.insertObservationInto(compareGrid, robotPose);
 
 		// Save Cells offset between the two grids:
 		Ax = round((x_min - compareGrid.x_min) / resolution);
@@ -319,7 +319,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_MI(
 
 	// Insert the observation (It will not be really inserted, only the
 	// information counted)
-	const_cast<COccupancyGridMap2D*>(this)->insertObservation(obs, &poseRobot);
+	const_cast<COccupancyGridMap2D*>(this)->insertObservation(obs, poseRobot);
 
 	// Compute the change in I aported by the observation:
 	double newObservation_mean_I;

@@ -424,7 +424,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 
 			CPose3D estimatedPose3D(currentKnownRobotPose);
 			const bool anymap_update =
-				metricMap.insertObservationPtr(obs, &estimatedPose3D);
+				metricMap.insertObservationPtr(obs, estimatedPose3D);
 			if (!anymap_update)
 				MRPT_LOG_WARN_STREAM(
 					"**No map was updated** after inserting an "
@@ -561,7 +561,7 @@ void CMetricMapBuilderICP::initialize(
 		posePDF->getMean(estimatedPose3D);
 
 		// Insert observations into the map:
-		SF->insertObservationsInto(&metricMap, &estimatedPose3D);
+		SF->insertObservationsInto(metricMap, estimatedPose3D);
 	}
 
 	MRPT_END

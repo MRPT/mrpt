@@ -4454,10 +4454,9 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent&)
 					refMap->clear();
 					newMapPt.clear();
 
-					SF_ref->insertObservationsInto(refMap);
+					SF_ref->insertObservationsInto(*refMap);
 					CPose3D newMapRobotPose(initialEst);
-					SF_new->insertObservationsInto(
-						(CMetricMap*)&newMapPt, &newMapRobotPose);
+					SF_new->insertObservationsInto(newMapPt, newMapRobotPose);
 
 					poseEst = icp.Align(
 						refMap, (CMetricMap*)&newMapPt, initialEst, icpInfo);

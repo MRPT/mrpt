@@ -1833,7 +1833,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 						auto pose3D = partIt->d->robotPoses.find(poseToAdd);
 						ASSERT_(pose3D != partIt->d->robotPoses.end());
 						SF.insertObservationsInto(
-							&partIt->d->metricMaps, &pose3D->second);
+							partIt->d->metricMaps, pose3D->second);
 					}  // end for each particle
 				}
 			}  // end for each m_nodeIDmemberships
