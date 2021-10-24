@@ -202,7 +202,8 @@ bool CMultiMetricMap::internal_canComputeObservationLikelihood(
 }
 
 bool CMultiMetricMap::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	int total_insert = 0;
 

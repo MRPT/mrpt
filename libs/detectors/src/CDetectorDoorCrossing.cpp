@@ -117,7 +117,7 @@ void CDetectorDoorCrossing::process(
 		// Add SF to the grid map:
 		CSensoryFrame::Ptr sf = lastObs.getAsObservations(i * 2 + 1);
 		CPose3D pose3D(p);
-		sf->insertObservationsInto(&auxMap, &pose3D);
+		sf->insertObservationsInto(auxMap, pose3D);
 	}
 
 	// 4) Compute the information differece between this

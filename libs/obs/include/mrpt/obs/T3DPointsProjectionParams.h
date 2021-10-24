@@ -20,13 +20,16 @@ namespace mrpt::obs
  */
 struct T3DPointsProjectionParams
 {
+	T3DPointsProjectionParams() = default;
+
 	/** (Default: false) If false, local (sensor-centric) coordinates of points
 	 * are generated. Otherwise, points are transformed with \a sensorPose.
 	 * Furthermore, if provided, those coordinates are transformed with \a
 	 * robotPoseInTheWorld */
 	bool takeIntoAccountSensorPoseOnRobot = false;
-	/** (Default: nullptr) Read takeIntoAccountSensorPoseOnRobot */
-	const mrpt::poses::CPose3D* robotPoseInTheWorld = nullptr;
+
+	/** (Default: none) Read takeIntoAccountSensorPoseOnRobot */
+	std::optional<mrpt::poses::CPose3D> robotPoseInTheWorld = std::nullopt;
 
 	/** (Default:true) If possible, use SSE2 optimized code. */
 	bool USE_SSE2 = true;
@@ -43,8 +46,6 @@ struct T3DPointsProjectionParams
 	 * here the name of the layer you want to unproject, from those available in
 	 * rangeImageOtherLayers. */
 	std::string layer;
-
-	T3DPointsProjectionParams() = default;
 };
 
 }  // namespace mrpt::obs

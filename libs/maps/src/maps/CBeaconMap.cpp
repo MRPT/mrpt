@@ -351,7 +351,8 @@ double CBeaconMap::internal_computeObservationLikelihood(
 						insertObservation
   ---------------------------------------------------------------*/
 bool CBeaconMap::internal_insertObservation(
-	const mrpt::obs::CObservation& obs, const CPose3D* robotPose)
+	const mrpt::obs::CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	MRPT_START
 

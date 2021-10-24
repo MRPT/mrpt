@@ -63,7 +63,7 @@ void CRobotPosesGraph::insertIntoMetricMap(CMultiMetricMap& metricMap) const
 	for (const auto& it : *this)
 	{
 		it.second.pdf.getMean(meanPose);
-		it.second.sf.insertObservationsInto(&metricMap, &meanPose);
+		it.second.sf.insertObservationsInto(metricMap, meanPose);
 	}
 }
 

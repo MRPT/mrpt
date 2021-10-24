@@ -133,7 +133,7 @@ uint32_t CIncrementalMapPartitioner::addMapFrame(
 	newMetricMap->setListOfMaps(options.metricmap);
 
 	// Build robo-centric map for each keyframe:
-	frame.insertObservationsInto(newMetricMap.get());
+	frame.insertObservationsInto(*newMetricMap);
 
 	// Add tuple (pose,SF) to "simplemap":
 	m_individualFrames.insert(robotPose, frame);

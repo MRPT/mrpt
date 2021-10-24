@@ -64,7 +64,8 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	/** Internal method called by insertObservation() */
 	virtual bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) = 0;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) = 0;
 
 	/** Internal method called by computeObservationLikelihood() */
 	virtual double internal_computeObservationLikelihood(
@@ -123,13 +124,15 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	 */
 	bool insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr);
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 
 	/** A wrapper for smart pointers, just calls the non-smart pointer version.
 	 * See: \ref maps_observations  */
 	bool insertObservationPtr(
 		const mrpt::obs::CObservation::Ptr& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr);
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 
 	/** Computes the log-likelihood of a given observation given an arbitrary
 	 * robot 3D pose.  See: \ref maps_observations

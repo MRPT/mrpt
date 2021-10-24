@@ -45,8 +45,7 @@ void CMetricMap::loadFromProbabilisticPosesAndObservations(
 		ASSERTMSG_(pair.pose, "Input map has an empty `CPose3DPDF` ptr");
 		ASSERTMSG_(pair.sf, "Input map has an empty `CSensoryFrame` ptr");
 
-		const auto robotPose = pair.pose->getMeanVal();
-		pair.sf->insertObservationsInto(this, &robotPose);
+		pair.sf->insertObservationsInto(*this, pair.pose->getMeanVal());
 	}
 }
 
@@ -69,7 +68,8 @@ bool CMetricMap::canComputeObservationsLikelihood(const CSensoryFrame& sf) const
 }
 
 bool CMetricMap::insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	if (!genericMapParams.enableObservationInsertion) return false;
 
@@ -83,7 +83,8 @@ bool CMetricMap::insertObservation(
 }
 
 bool CMetricMap::insertObservationPtr(
-	const CObservation::Ptr& obs, const CPose3D* robotPose)
+	const CObservation::Ptr& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	MRPT_START
 	if (!obs) { THROW_EXCEPTION("Trying to pass a null pointer."); }
