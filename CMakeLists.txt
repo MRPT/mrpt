@@ -540,26 +540,6 @@ set( EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/bin CACHE PATH "Output directory 
 set( MEX_LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/+mrpt CACHE PATH "Output directory for mex functions" )
 set( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output directory for executable mexs" )
 
-#--------------------------------------------------------------
-# If we are building the final step of the Debian package,
-#  save each library files in the corresponding directories:
-#--------------------------------------------------------------
-if(CMAKE_MRPT_USE_DEB_POSTFIXS)
-	# Values when building a Debian package ---------------
-	message(STATUS "** mrpt cmake: Using Debian post-fix for install directories **")
-# DONT add CMAKE_INSTALL_PREFIX to this one. (Read DeclareMRPTLib.cmake notes)
-	set(libmrpt_common_dev_INSTALL_PREFIX "libmrpt-common-dev/usr/")
-	set(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
-	set(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
-	set(mrpt_common_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-common/usr/")
-else()
-	# Values under normal conditions -----------------------
-	set(libmrpt_common_dev_INSTALL_PREFIX "")
-	set(mrpt_apps_INSTALL_PREFIX "")
-	set(mrpt_doc_INSTALL_PREFIX "")
-	set(mrpt_common_INSTALL_PREFIX "")
-endif()
-
 
 # This will become a list with all libraries to be built, and their
 #  dependencies stored in "mrpt-${name}_LIB_DEPS"
@@ -654,11 +634,6 @@ mark_as_advanced(FORCE
 	wxWidgets_USE_REL_AND_DBG
 	wxWidgets_wxrc_EXECUTABLE
 )
-
-set(IS_DEBIAN_DBG_PKG 0)
-if (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set(IS_DEBIAN_DBG_PKG 1)
-endif ()
 
 # Write MRPT-version file (the global one, each mrpt-xxxx also has its own):
 configure_file(
