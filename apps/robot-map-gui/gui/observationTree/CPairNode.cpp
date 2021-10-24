@@ -16,14 +16,14 @@ using namespace mrpt;
 using namespace mrpt::maps;
 
 CPairNode::CPairNode(
-	CNode* parent, const CSimpleMap::TPosePDFSensFramePair& poseSensFramePair,
+	CNode* parent, const CSimpleMap::Pair& poseSensFramePair,
 	size_t indexInSimpleMap)
 	: CNode(parent), m_indexInSimpleMap(indexInSimpleMap)
 {
-	mrpt::poses::CPose3D pos = poseSensFramePair.first->getMeanVal();
+	mrpt::poses::CPose3D pos = poseSensFramePair.pose->getMeanVal();
 	m_pose = std::make_unique<CPosesNode>(this, pos);
-	m_observations = std::make_unique<CObservationsNode>(
-		this, poseSensFramePair.second, pos);
+	m_observations =
+		std::make_unique<CObservationsNode>(this, poseSensFramePair.sf, pos);
 }
 
 CPairNode::~CPairNode() = default;

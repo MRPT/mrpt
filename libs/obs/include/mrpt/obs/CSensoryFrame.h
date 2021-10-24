@@ -114,15 +114,17 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	 *CMetricMap::insertObservation
 	 */
 	bool insertObservationsInto(
-		mrpt::maps::CMetricMap* theMap,
-		const mrpt::poses::CPose3D* robotPose = nullptr) const;
+		mrpt::maps::CMetricMap& theMap,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) const;
 
 	/// \overload
 	inline bool insertObservationsInto(
 		mrpt::maps::CMetricMap::Ptr& theMap,
-		const mrpt::poses::CPose3D* robotPose = nullptr) const
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) const
 	{
-		return insertObservationsInto(theMap.get(), robotPose);
+		return insertObservationsInto(*theMap, robotPose);
 	}
 
 	/** You can use "sf1+=sf2;" to add all observations in sf2 to sf1.
@@ -240,6 +242,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	void eraseByLabel(const std::string& label);
 
 	/** Returns the i'th observation in the list (0=first).
+	 *  \throw std::exception If out of range.
 	 * \sa begin, size
 	 */
 	const CObservation::Ptr& getObservationByIndex(size_t idx) const;

@@ -35,8 +35,8 @@ template <class octomap_point3d, class octomap_pointcloud>
 bool COctoMapBase<OCTREE, OCTREE_NODE>::
 	internal_build_PointCloud_for_observation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
-		octomap_pointcloud& scan) const
+		const std::optional<const mrpt::poses::CPose3D>& robotPose,
+		octomap_point3d& sensorPt, octomap_pointcloud& scan) const
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::obs;
@@ -220,7 +220,7 @@ double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
 	octomap::Pointcloud scan;
 
 	if (!internal_build_PointCloud_for_observation(
-			obs, &takenFrom, sensorPt, scan))
+			obs, takenFrom, sensorPt, scan))
 		return 0;  // Nothing to do.
 
 	octomap::OcTreeKey key;

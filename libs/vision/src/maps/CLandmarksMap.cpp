@@ -211,7 +211,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		CPose2D sensorPose2D(robotPose3D + o.sensorPose);
 
 		auxMap.loadOccupancyFeaturesFrom2DRangeScan(
-			o, &robotPose3D, likelihoodOptions.rangeScan2D_decimation);
+			o, robotPose3D, likelihoodOptions.rangeScan2D_decimation);
 
 		// And compute its likelihood:
 		return computeLikelihood_RSLC_2007(&auxMap, sensorPose2D);
@@ -437,7 +437,8 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						insertObservation
   ---------------------------------------------------------------*/
 bool CLandmarksMap::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	MRPT_START
 
@@ -1547,7 +1548,8 @@ bool CLandmarksMap::saveToMATLABScript2D(
 						loadOccupancyFeaturesFrom2DRangeScan
   ---------------------------------------------------------------*/
 void CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
-	const CObservation2DRangeScan& obs, const CPose3D* robotPose,
+	const CObservation2DRangeScan& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose,
 	unsigned int downSampleFactor)
 {
 	unsigned int i, n = obs.getScanSize();

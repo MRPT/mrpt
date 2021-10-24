@@ -91,7 +91,8 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 	void internal_clear() override;
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) const override;

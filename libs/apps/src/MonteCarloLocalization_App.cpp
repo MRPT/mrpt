@@ -1008,7 +1008,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 						CPose3D robotPose3D(meanPose);
 
 						map.clear();
-						observations->insertObservationsInto(&map);
+						observations->insertObservationsInto(map);
 
 						mrpt::ptr_cast<CPointCloud>::from(scanPts)
 							->loadFromPointsMap(&map);

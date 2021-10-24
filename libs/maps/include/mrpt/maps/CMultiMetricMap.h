@@ -230,7 +230,8 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	void internal_clear() override;
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 	bool internal_canComputeObservationLikelihood(
 		const mrpt::obs::CObservation& obs) const override;
 	double internal_computeObservationLikelihood(

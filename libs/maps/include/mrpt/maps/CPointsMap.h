@@ -824,7 +824,8 @@ class CPointsMap : public CMetricMap,
 	 */
 	virtual void loadFromRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose = nullptr) = 0;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) = 0;
 
 	/** Overload of \a loadFromRangeScan() for 3D range scans (for example,
 	 * Kinect observations).
@@ -844,7 +845,8 @@ class CPointsMap : public CMetricMap,
 	 */
 	virtual void loadFromRangeScan(
 		const mrpt::obs::CObservation3DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose = nullptr) = 0;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) = 0;
 
 	/** Like \a loadFromRangeScan() for Velodyne 3D scans. Points are translated
 	 * and rotated according to the \a sensorPose field in the observation and,
@@ -861,7 +863,8 @@ class CPointsMap : public CMetricMap,
 	 */
 	void loadFromVelodyneScan(
 		const mrpt::obs::CObservationVelodyneScan& scan,
-		const mrpt::poses::CPose3D* robotPose = nullptr);
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 
 	/** Insert the contents of another map into this one, fusing the previous
 	 *content with the new one.
@@ -1179,7 +1182,8 @@ class CPointsMap : public CMetricMap,
 	 * which are accepted. */
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 
 	/** Helper method for ::copyFrom() */
 	void base_copyFrom(const CPointsMap& obj);
