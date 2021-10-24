@@ -365,10 +365,10 @@ void CMainWindow::moveRobotPosesOnMap(
 
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
 		m_document->get(idx);
-	for (size_t i = 0; i < idx.size(); ++i)
+	for (auto& poseSf : posesObsPairs)
 	{
-		mrpt::poses::CPose3DPDF::Ptr posePDF = posesObsPairs.at(i).first;
-		mrpt::poses::CPose3D pose = posePDF->getMeanVal();
+		mrpt::poses::CPose3DPDF::Ptr& posePDF = poseSf.pose;
+		mrpt::poses::CPose3D pose = poseSf.pose->getMeanVal();
 
 		pose.setFromValues(
 			pose[0], pose[1], pose[2], pose.yaw(), pose.pitch(), pose.roll());
@@ -469,9 +469,9 @@ void CMainWindow::updateDirection(
 {
 	if (!m_document) return;
 
-	auto posesObsPair = m_document->get(index);
+	mrpt::maps::CSimpleMap::Pair posesObsPair = m_document->get(index);
 
-	auto posePDF = posesObsPair.first;
+	auto posePDF = posesObsPair.pose;
 	auto pose = posePDF->getMeanVal();
 
 	pose.setFromValues(
@@ -479,7 +479,7 @@ void CMainWindow::updateDirection(
 	auto newPosePDF =
 		mrpt::poses::CPose3DPDFGaussian::Create(pose, posePDF->getCovariance());
 
-	posesObsPair.first = newPosePDF;
+	posesObsPair.pose = newPosePDF;
 	m_document->move(index, posesObsPair);
 
 	updateSaveButtonState();

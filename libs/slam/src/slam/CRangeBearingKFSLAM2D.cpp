@@ -1039,12 +1039,7 @@ void CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(
 		os::fprintf(f, "\nROB_PATH=[");
 		for (i = 0; i < m_SFs.size(); i++)
 		{
-			CSensoryFrame::Ptr dummySF;
-			CPose3DPDF::Ptr pdf3D;
-			m_SFs.get(i, pdf3D, dummySF);
-
-			CPose3D p;
-			pdf3D->getMean(p);
+			const CPose3D p = m_SFs.getAsPair(i).pose->getMeanVal();
 			CPoint3D pnt3D(p);	// 6D -> 3D only
 
 			os::fprintf(f, "%.04f %.04f", pnt3D.x(), pnt3D.y());

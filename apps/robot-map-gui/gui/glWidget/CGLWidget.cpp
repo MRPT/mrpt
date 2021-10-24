@@ -184,10 +184,9 @@ void CGlWidget::setDocument(CDocument* doc)
 	m_visiblePoints->clear();
 
 	size_t id = 0;
-	for (auto iter = m_doc->simplemap().begin();
-		 iter != m_doc->simplemap().end(); ++iter)
+	for (const auto& poseSf : m_doc->simplemap())
 	{
-		math::TPose3D pose = iter->first->getMeanVal().asTPose();
+		math::TPose3D pose = poseSf.pose->getMeanVal().asTPose();
 		CRobotPose::Ptr robotPose = std::make_shared<CRobotPose>(id);
 		robotPose->setPose(pose);
 		m_visiblePoints->insert(robotPose);
@@ -207,10 +206,9 @@ void CGlWidget::updateObservations()
 	m_visiblePoints->clear();
 
 	int id = 0;
-	for (auto iter = m_doc->simplemap().begin();
-		 iter != m_doc->simplemap().end(); ++iter)
+	for (const auto& poseSf : m_doc->simplemap())
 	{
-		math::TPose3D pose = iter->first->getMeanVal().asTPose();
+		math::TPose3D pose = poseSf.pose->getMeanVal().asTPose();
 		CRobotPose::Ptr robotPose = std::make_shared<CRobotPose>(id);
 		robotPose->setPose(pose);
 		m_visiblePoints->insert(robotPose);
@@ -221,10 +219,7 @@ void CGlWidget::updateObservations()
 	ASSERT_(maxDist != -1.0);
 
 	for (auto& it : selectedPoints)
-	{
-		size_t id = it->getId();
-		selectPoint(id);
-	}
+		selectPoint(it->getId());
 
 	emit selectedChanged(m_selectedPoints);
 
@@ -244,11 +239,11 @@ void CGlWidget::setZoom(float zoom)
 float CGlWidget::getZoom() const { return getZoomDistance(); }
 void CGlWidget::setCameraParams(const gui::CGlCanvasBase::CamaraParams& params)
 {
-	CGlCanvasBase::CamaraParams m_cameraParams = cameraParams();
-	if (m_cameraParams.cameraAzimuthDeg != params.cameraAzimuthDeg)
+	CGlCanvasBase::CamaraParams cam = cameraParams();
+	if (cam.cameraAzimuthDeg != params.cameraAzimuthDeg)
 		emit azimuthChanged(params.cameraAzimuthDeg);
 
-	if (m_cameraParams.cameraElevationDeg != params.cameraElevationDeg)
+	if (cam.cameraElevationDeg != params.cameraElevationDeg)
 		emit elevationChanged(params.cameraElevationDeg);
 
 	CQtGlCanvasBase::setCameraParams(params);
@@ -426,9 +421,11 @@ void CGlWidget::mouseMoveEvent(QMouseEvent* event)
 {
 	CQtGlCanvasBase::mouseMoveEvent(event);
 
-	std::pair<bool, math::TPoint3D> scenePos = sceneToWorld(event->pos());
-	if (scenePos.first)
-		emit mousePosChanged(scenePos.second.x, scenePos.second.y);
+	{
+		std::pair<bool, math::TPoint3D> scenePos = sceneToWorld(event->pos());
+		if (scenePos.first)
+			emit mousePosChanged(scenePos.second.x, scenePos.second.y);
+	}
 
 	if (m_moveSelected)
 	{

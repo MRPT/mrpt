@@ -115,9 +115,7 @@ void CMultiMetricMapPDF::clear(
 		p.d->robotPath.resize(nOldKeyframes);
 		for (size_t i = 0; i < nOldKeyframes; i++)
 		{
-			CPose3DPDF::Ptr keyframe_pose;
-			CSensoryFrame::Ptr sfkeyframe_sf;
-			prevMap.get(i, keyframe_pose, sfkeyframe_sf);
+			const auto [keyframe_pose, sfkeyframe_sf] = prevMap.get(i);
 
 			// as pose, use: if the PDF is also a PF with the same number of
 			// samples, use those particles;
