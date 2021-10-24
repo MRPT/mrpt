@@ -41,7 +41,8 @@ struct TLocalPoint
 Insert the observation information into this map.
  ---------------------------------------------------------------*/
 bool COccupancyGridMap2D::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	// 	MRPT_START   // Avoid "try" since we use "alloca"
 

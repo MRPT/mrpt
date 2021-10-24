@@ -177,7 +177,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 			const CPose3D* curRobotPose =
 				&m_particle.d->robotPoses[currentPoseID];
 			m_particle.d->robotPoses[newCurrentPoseID] = *curRobotPose;
-			sf->insertObservationsInto(&m_particle.d->metricMaps, curRobotPose);
+			sf->insertObservationsInto(m_particle.d->metricMaps, *curRobotPose);
 		}
 
 		// Add node membership: for now, a copy of the current pose:
@@ -868,7 +868,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// Build local map:
 	localMapPoints.clear();
 	localMapPoints.insertionOptions.minDistBetweenLaserPoints = 0.02f;
-	sf->insertObservationsInto(&localMapPoints);
+	sf->insertObservationsInto(localMapPoints);
 
 	// Process the particles
 	const size_t M = LMH->m_particles.size();

@@ -63,7 +63,7 @@ void CRobotPosesGraph::insertIntoMetricMap(CMultiMetricMap& metricMap) const
 	for (const auto& it : *this)
 	{
 		it.second.pdf.getMean(meanPose);
-		it.second.sf.insertObservationsInto(&metricMap, &meanPose);
+		it.second.sf.insertObservationsInto(metricMap, meanPose);
 	}
 }
 
@@ -74,5 +74,5 @@ void CRobotPosesGraph::convertIntoSimplemap(CSimpleMap& out_simplemap) const
 {
 	out_simplemap.clear();
 	for (const auto& it : *this)
-		out_simplemap.insert(&it.second.pdf, it.second.sf);
+		out_simplemap.insert(it.second.pdf, it.second.sf);
 }
