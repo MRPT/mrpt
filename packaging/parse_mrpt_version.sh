@@ -1,4 +1,6 @@
 #!/bin/bash
+# Sets the bash variables:
+# MRPT_VERSION_STR, MRPT_VER_MMP, MRPT_VER_MM, MRPT_VERSION_{MAJOR,MINOR,PATCH}
 
 if [ -f version_prefix.txt ];
 then

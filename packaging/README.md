@@ -1,12 +1,15 @@
 Utility scripts to ease packaging for Debian, Ubuntu, Windows binaries, etc.
 ------------------------------------------------------------------------------
 
-The main entry points in this directory are:
+The main entry point in this directory is:
 
-- `packaging/prepare_debian.sh`: Generates the `*.orig.tar.gz` tarballs and
-   sign them.
-- `packaging/prepare_release.sh`: Generates the `*.tar.gz` and `*.zip` source
-   code packages.
+- `packaging/make_release.sh`: Generates the `*.tar.gz` and `*.zip` source
+   code packages. Refer to comments in
+   [packaging/make_release.sh](packaging/make_release.sh) for the full list of
+   tasks done.
+
+- `packaging/prepare_ubuntu_pkgs_for_ppa.sh`: Script to generate Ubuntu PPA
+   packages.
 
 Both above include the git submodules that should go into packages, and removes
 those that are not intended to be shipped within Debian packages but which we

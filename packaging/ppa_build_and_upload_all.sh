@@ -1,6 +1,8 @@
 #!/bin/bash
 # Build all Ubuntu PPA packages and upload them.
-# JLBC, 2013
+# JLBC, 2013-2021
+#
+# TODO: Update script to work with gdb!
 
 set -e
 
@@ -17,10 +19,10 @@ fi
 MRPTDIR=`pwd`
 
 # Build PPA packages:
-export MRPT_PKG_CUSTOM_CMAKE_PARAMS=""
-
 bash packaging/prepare_ubuntu_pkgs_for_ppa.sh
 cd $HOME/mrpt_ubuntu
-bash $MRPTDIR/packaging/upload_all_mrpt_ppa.sh
+
+# upload:
+find . -name '*.changes' | xargs -I FIL dput ppa:joseluisblancoc/mrpt FIL
 
 exit 0
