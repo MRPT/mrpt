@@ -82,29 +82,25 @@ for guide in $LST_GUIDES; do
 done
 
 # Orig tarball:
-cd "${OUT_DIR}/.."
 
 echo "> Creating source tarball: mrpt-${MRPT_VERSION_STR}.tar.gz"
-tar czf "mrpt-${MRPT_VERSION_STR}.tar.gz" "mrpt-${MRPT_VERSION_STR}"
+(cd "${OUT_RELEASES_DIR}" ; tar czf "mrpt-${MRPT_VERSION_STR}.tar.gz" "mrpt-${MRPT_VERSION_STR}" )
 
 # Create .zip file with DOS line endings
 echo "> Creating source zip in DOS format: mrpt-${MRPT_VERSION_STR}.zip"
 
-cd "${OUT_DIR}"
-bash scripts/all_files_change_format.sh todos
+( cd "${OUT_DIR}" ; bash scripts/all_files_change_format.sh todos )
 
-cd "${OUT_DIR}/.."
-zip "mrpt-${MRPT_VERSION_STR}.zip" -q -r "mrpt-${MRPT_VERSION_STR}/*"
-
-rm -fr "mrpt-${MRPT_VERSION_STR}"
+zip "${OUT_RELEASES_DIR}/mrpt-${MRPT_VERSION_STR}.zip" -q -r "${OUT_DIR}"
 
 # GPG signature:
-gpg --armor --detach-sign "mrpt-${MRPT_VERSION_STR}.tar.gz"
+gpg --armor --detach-sign "${OUT_RELEASES_DIR}/mrpt-${MRPT_VERSION_STR}.tar.gz"
 
+rm -fr "${OUT_DIR}"
 
 echo "=================================================================="
 echo "                     Package files generated:"
 echo "=================================================================="
-find "$(pwd)"
+( cd "${OUT_RELEASES_DIR}" ; find . )
 echo "=================================================================="
 echo "You should also do now: \"git clean -fd\" in the source code root"
