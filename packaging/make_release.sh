@@ -59,9 +59,6 @@ then
 
 	cd "${MRPTSRC}"
 
-	# Remove VCS control files:
-	find "${OUT_DIR}" -name '.git*' -delete
-
 	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
 	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 else
