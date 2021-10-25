@@ -26,15 +26,13 @@ namespace mrpt::math
  *  \ingroup mrpt_math_grp
  *  @{ */
 
-/** A generic adaptor class for providing Nearest Neighbor (NN) lookup via the
- * `nanoflann` library.
- *   This makes use of the CRTP design pattern.
+/** Adaptor class providing Nearest Neighbor (NN) searcg via `nanoflann`,
+ * making use of the CRTP design pattern.
  *
- *  Derived classes must be aware of the need to call
- * "kdtree_mark_as_outdated()" when the data points
- *   change to mark the cached KD-tree (an "index") as invalid, and also
- * implement the following interface
- *   (note that these are not virtual functions due to the usage of CRTP):
+ * Derived classes must call `kdtree_mark_as_outdated()` when data points change
+ * to mark the cached KD-tree (an "index") as invalid, and they must also
+ * implement the following interface (note that these are *not* virtual
+ * functions due to the usage of CRTP):
  *
  *  \code
  *   // Must return the number of data points
@@ -42,39 +40,36 @@ namespace mrpt::math
  *
  *   // Returns the distance between the vector "p1[0:size-1]" and the data
  * point with index "idx_p2" stored in the class:
- *   inline float kdtree_distance(const float *p1, const size_t idx_p2,size_t
- * size) const { ... }
+ *   inline float kdtree_distance(
+ *     const float *p1, const size_t idx_p2,size_t size) const { ... }
  *
  *   // Returns the dim'th component of the idx'th point in the class:
  *   inline num_t kdtree_get_pt(const size_t idx, int dim) const { ... }
  *
- *   // Optional bounding-box computation: return false to default to a standard
- * bbox computation loop.
- *   //   Return true if the BBOX was already computed by the class and returned
- * in "bb" so it can be avoided to redo it again.
- *   //   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3
- * for point clouds)
+ *   // Optional bounding-box computation: return false to default to a
+ *   // standard bbox computation loop. Return true if the BBOX was already
+ *   // computed by the class and returned in "bb" so it can be avoided to
+ *   // redo it again.
+ *   // Look at bb.size() to find out the expected dimensionality
+ *   // (e.g. 2 or 3 for point clouds):
  *   template <class BBOX>
  *   bool kdtree_get_bbox(BBOX &bb) const
  *   {
  *      bb[0].low = ...; bb[0].high = ...;  // "x" limits
  *      return true;
  *   }
- *
  *  \endcode
  *
  * The KD-tree index will be built on demand only upon call of any of the query
  * methods provided by this class.
  *
- *  Notice that there is only ONE internal cached KD-tree, so if a method to
- * query a 2D point is called,
- *  then another method for 3D points, then again the 2D method, three KD-trees
- * will be built. So, try
- *  to group all the calls for a given dimensionality together or build
- * different class instances for
- *  queries of each dimensionality, etc.
+ * Notice that there is only ONE internal cached KD-tree, so if a method to
+ * query a 2D point is called, then another method for 3D points, then again
+ * the 2D method, three KD-trees will be built. So, try to group all the calls
+ * for a given dimensionality together or build different class instances for
+ * queries of each dimensionality.
  *
- *  \sa See some of the derived classes for example implementations. See also
+ * \sa See some of the derived classes for example implementations. See also
  * the documentation of nanoflann
  * \ingroup mrpt_math_grp
  */
@@ -118,11 +113,11 @@ class KDTreeCapable
 		@{ */
 
 	/** KD Tree-based search for the closest point (only ONE) to some given 2D
-	 *coordinates.
-	 *  This method automatically build the "m_kdtree_data" structure when:
-	 *		- It is called for the first time
-	 *		- The map has changed
-	 *		- The KD-tree was build for 3D.
+	 * coordinates.
+	 * This method automatically build the "m_kdtree_data" structure when:
+	 *	- It is called for the first time
+	 *	- The map has changed
+	 *	- The KD-tree was build for 3D.
 	 *
 	 * \param x0  The X coordinate of the query.
 	 * \param y0  The Y coordinate of the query.
@@ -740,8 +735,8 @@ class KDTreeCapable
 
 		/** Free memory (if allocated)  */
 		inline void clear() noexcept { index.reset(); }
-		using kdtree_index_t =
-			nanoflann::KDTreeSingleIndexAdaptor<metric_t, Derived, _DIM>;
+		using kdtree_index_t = nanoflann::KDTreeSingleIndexAdaptor<
+			metric_t, Derived, _DIM, std::size_t /*index*/>;
 
 		/** nullptr or the up-to-date index */
 		std::unique_ptr<kdtree_index_t> index;
