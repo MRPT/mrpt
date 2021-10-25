@@ -115,7 +115,7 @@ endif ()
 
 # -- Install --
 # Using embedded version of libraries that need public headers?
-if(MRPT_EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+if(MRPT_EIGEN_USE_EMBEDDED_VERSION)
 	install(
 		DIRECTORY
 			"${MRPT_BINARY_DIR}/3rdparty/eigen3/Eigen"
