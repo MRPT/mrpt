@@ -98,7 +98,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: build-u18.04-minimal
+          key: build-u18.04-minimal:v2
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_DISABLE_PYTHON_BINDINGS=On -DMRPT_EIGEN_USE_EMBEDDED_VERSION=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u18.04-minimal
@@ -106,7 +106,7 @@ jobs:
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-minimal
       - run: make -C build-u18.04-minimal
       - save_cache:
-          key: build-u18.04-minimal
+          key: build-u18.04-minimal:v2
           paths:
             - /root/project/
   clang-format-lint:
@@ -130,7 +130,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: macos-12.0.0
+          key: macos-12.0.0:v2
       - run: git submodule sync
       - run: git submodule update --init --recursive
       - run: brew update
@@ -143,7 +143,7 @@ jobs:
       - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build-osx
       - run: make -j2 -C build-osx
       - save_cache:
-          key: macos-12.0.0
+          key: macos-12.0.0:v2
           paths:
             - /Users/distiller/project
 workflows:
