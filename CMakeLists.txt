@@ -79,12 +79,6 @@ mark_as_advanced(MRPT_EXCEPTIONS_CALL_STACK_MAX_DEPTH)
 # The root directory for all MRPT libraries/modules:
 set(MRPT_LIBS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
 
-# Windows default: lib. Debian pkgs: set from outside rules script
-if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
-	set(CMAKE_INSTALL_LIBDIR "lib")
-endif()
-
-
 # ----- Useful macros ------
 include(cmakemodules/UtilsMacros.cmake REQUIRED)
 include(cmakemodules/DebugMacros.cmake REQUIRED)
