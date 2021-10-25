@@ -126,14 +126,13 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 		FILE "${CMAKE_CURRENT_BINARY_DIR}/mrpt_rplidar-targets.cmake"
 	)
 	install(TARGETS mrpt_rplidar EXPORT mrpt_rplidar-targets
-		RUNTIME DESTINATION bin
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	)
 	install(EXPORT mrpt_rplidar-targets
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/mrpt_rplidar
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mrpt_rplidar
 	)
-
 
 	unset(SRCS_LIST)
 	unset(SRCS)
@@ -194,12 +193,12 @@ if(CMAKE_MRPT_HAS_xSENS)
 		FILE "${CMAKE_CURRENT_BINARY_DIR}/mrpt_xsens-targets.cmake"
 	)
 	install(TARGETS mrpt_xsens EXPORT mrpt_xsens-targets
-		RUNTIME DESTINATION bin
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	)
 	install(EXPORT mrpt_xsens-targets
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/mrpt_xsens
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mrpt_xsens
 	)
 
 	# Feature should be "cxx_std_11", but it's unknown to cmake 3.5.1 in Xenial:

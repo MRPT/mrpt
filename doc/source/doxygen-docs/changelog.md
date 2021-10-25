@@ -3,6 +3,7 @@
 # Version 2.4.0: UNRELEASED
 - Changes in build system:
   - Most important CMake variables now are prefixed with `MRPT_` to avoid name collisions if using MRPT as a git submodule in a larger project.
+  - `GNUInstallDirs` directories are now always honored when installing.
 - Changes in applications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
@@ -12,7 +13,7 @@
     - The `--info` command now also shows the first and last timestamp in a rawlog.
   - RawLogViewer:
     - Show mrpt::obs::CObservationPointCloud 3D point clouds in main window and scan animation dialog.
-    - Displays timestamp as the user tracks the timeline scroll bar. 
+    - Displays timestamp as the user tracks the timeline scroll bar.
   - rosbag2rawlog:
     - PointCloud2 messages are now only converted to mrpt::obs::CObservationRotatingScan is this latter class is specified in the YAML file.
 - Changes in libraries:
