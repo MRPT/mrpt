@@ -40,4 +40,3 @@ doc/source/global.rst
 doc/source/doxygen-index.rst
 .cmake
 doc/venv
-packaging/debian/changelog.new

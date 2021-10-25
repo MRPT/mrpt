@@ -12,7 +12,6 @@ Contributing
   ClangFormat.rst
   ClangFormat_internal.rst
   make_a_mrpt_release.rst
-  make_mrpt_fedora_updates.rst
 
 
 Did you find a bug in MRPT?

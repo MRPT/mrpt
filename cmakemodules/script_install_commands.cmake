@@ -3,19 +3,18 @@
 # ----------------------------------------------------------------------------
 
 # MRPTConfig.cmake: backwards-compatible file as it was named in mrpt v1.x
-if (NOT IS_DEBIAN_DBG_PKG)
-	if(WIN32)
-		set(cfg_ver_destdir "./")
-	else()
-		set(cfg_ver_destdir "${libmrpt_common_dev_INSTALL_PREFIX}share/mrpt")
-	endif()
-	install(
+if(WIN32)
+	set(cfg_ver_destdir "./")
+else()
+	set(cfg_ver_destdir "share/mrpt")
+endif()
+install(
 	FILES
 		"${MRPT_SOURCE_DIR}/parse-files/mrpt-config.cmake"
 		"${CMAKE_BINARY_DIR}/mrpt-config-version.cmake"
 	DESTINATION
-		${cfg_ver_destdir})
-endif()
+		${cfg_ver_destdir}
+	)
 
 # Docs, examples and the rest of files:
 if(WIN32)
@@ -58,40 +57,33 @@ if(WIN32)
 	endforeach()
 
 else(WIN32)
-	if (NOT IS_DEBIAN_DBG_PKG)
-		install(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
-		if(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
-			install(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
-		endif()
+	install(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION share/doc/mrpt-doc/)
 
-		# applications config files
+	# applications config files
+	install(
+		DIRECTORY
+			"${MRPT_SOURCE_DIR}/share/applications"
+			"${MRPT_SOURCE_DIR}/share/pixmaps"
+			"${MRPT_SOURCE_DIR}/share/metainfo"
+			"${MRPT_SOURCE_DIR}/share/mime"
+		DESTINATION
+			share
+		)
+
 		install(
 			DIRECTORY
-				"${MRPT_SOURCE_DIR}/share/applications"
-				"${MRPT_SOURCE_DIR}/share/pixmaps"
-				"${MRPT_SOURCE_DIR}/share/metainfo"
-				"${MRPT_SOURCE_DIR}/share/mime"
+				"${MRPT_SOURCE_DIR}/share/mrpt"
 			DESTINATION
-				${mrpt_apps_INSTALL_PREFIX}share
+				share
 			)
-
-			install(
-				DIRECTORY
-					"${MRPT_SOURCE_DIR}/share/mrpt"
-				DESTINATION
-					${mrpt_common_INSTALL_PREFIX}share
-				)
-	endif()
 endif()
 
 # Config-dependent headers: to /usr/include/mrpt root dir.
-if (NOT IS_DEBIAN_DBG_PKG)
-	install(
-		FILES
-			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h"
-			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h"
-			"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
-		DESTINATION
-			"${libmrpt_common_dev_INSTALL_PREFIX}include/mrpt/"
-		)
-endif()
+install(
+	FILES
+		"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h"
+		"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h"
+		"${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h"
+	DESTINATION
+		"include/mrpt/"
+	)
