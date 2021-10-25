@@ -3,13 +3,11 @@
 # intention of uploading them to:
 #   https://launchpad.net/~joseluisblancoc/+archive/mrpt
 #
-# JLBC, 2010
-# [Addition 2012:]
-#
 # You can declare a variable (in the caller shell) with extra flags for the
 # CMake in the final ./configure like:
 #  MRPT_PKG_CUSTOM_CMAKE_PARAMS="\"-DENABLE_SSE3=OFF\""
 #
+# TODO: Update script to work with gdb!
 
 set -e
 
