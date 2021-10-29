@@ -203,3 +203,12 @@ void mrpt::io::internal::free_fn_for_zmq(void* /* data*/, void* hint)
 	if (fd->do_free) delete fd->buf;
 	delete fd;
 }
+
+std::string CMemoryStream::getStreamDescription() const
+{
+	using namespace std::string_literals;
+	return "mrpt::io::CMemoryStream with size="s +
+		std::to_string(this->m_size) +
+		", readPosition=" + std::to_string(m_position) + ", bytesWritten="s +
+		std::to_string(m_bytesWritten);
+}

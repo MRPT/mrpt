@@ -423,15 +423,16 @@ void CArchive::internal_ReadObjectHeader(
 	{
 		if (lengthReadClassName == 255)
 		{
-			THROW_TYPED_EXCEPTION(
-				"Cannot read object due to EOF", CExceptionEOF);
+			THROW_TYPED_EXCEPTION_FMT(
+				CExceptionEOF, "Cannot read object due to EOF in %s",
+				getArchiveDescription().c_str());
 		}
 		else
 		{
 			THROW_EXCEPTION_FMT(
 				"Exception while parsing typed object '%s' from "
-				"stream!\nOriginal exception:\n%s",
-				readClassName, e.what());
+				"%s.\nOriginal exception:\n%s",
+				getArchiveDescription().c_str(), readClassName, e.what());
 		}
 	}
 }  // end method
@@ -451,8 +452,9 @@ void CArchive::internal_ReadObject(
 		{
 			uint8_t endFlag;
 			if (sizeof(endFlag) != ReadBuffer((void*)&endFlag, sizeof(endFlag)))
-				THROW_EXCEPTION(
-					"Cannot read object streaming version from stream!");
+				THROW_EXCEPTION_FMT(
+					"Cannot read object streaming version from %s",
+					getArchiveDescription().c_str());
 			if (endFlag != SERIALIZATION_END_FLAG)
 				THROW_EXCEPTION_FMT(
 					"end-flag missing: There is a bug in the deserialization "
@@ -472,8 +474,8 @@ void CArchive::internal_ReadObject(
 	{
 		THROW_EXCEPTION_FMT(
 			"Exception while parsing typed object '%s' from "
-			"stream!\nOriginal exception:\n%s",
-			strClassName.c_str(), e.what());
+			"%s\nOriginal exception:\n%s",
+			strClassName.c_str(), getArchiveDescription().c_str(), e.what());
 	}
 }
 
