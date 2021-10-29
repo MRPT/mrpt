@@ -129,7 +129,7 @@ jobs:
     working_directory: /Users/distiller/project
     steps:
       - restore_cache:
-          key: macos-12.0.0:v2
+          key: macos-12.0.0:v3
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
@@ -143,7 +143,7 @@ jobs:
       - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build-osx
       - run: make -j2 -C build-osx
       - save_cache:
-          key: macos-12.0.0:v2
+          key: macos-12.0.0:v3
           paths:
             - /Users/distiller/project
 workflows:
