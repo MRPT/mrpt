@@ -26,6 +26,7 @@ class CFileOutputStream : public CStream
    private:
 	/** The actual output file stream. */
 	std::ofstream m_of;
+	std::string m_filename;
 
    public:
 	/** Constructor
@@ -77,6 +78,8 @@ class CFileOutputStream : public CStream
 
 	/** Close the stream. */
 	void close();
+
+	std::string getStreamDescription() const override;
 
 	/** Destructor */
 	~CFileOutputStream() override;
