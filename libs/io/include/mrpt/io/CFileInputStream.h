@@ -24,6 +24,7 @@ class CFileInputStream : public CStream
    private:
 	/** The actual input file stream. */
 	std::ifstream m_if;
+	std::string m_filename;
 
    public:
 	/** Constructor
@@ -54,6 +55,8 @@ class CFileInputStream : public CStream
 	bool checkEOF();
 	/** Resets stream error status bits (e.g. after an EOF) */
 	void clearError();
+
+	std::string getStreamDescription() const override;
 
 	// See docs in base class
 	uint64_t Seek(

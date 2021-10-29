@@ -21,7 +21,8 @@ using namespace std;
 
 struct CFileGZOutputStream::Impl
 {
-	gzFile f{nullptr};
+	gzFile f = nullptr;
+	std::string filename;
 };
 
 CFileGZOutputStream::CFileGZOutputStream()
@@ -57,6 +58,9 @@ bool CFileGZOutputStream::open(
 			.c_str());
 	if (m_f->f == nullptr && error_msg)
 		error_msg.value().get() = std::string(strerror(errno));
+
+	m_f->filename = fileName;
+
 	return m_f->f != nullptr;
 
 	MRPT_END
@@ -101,4 +105,9 @@ uint64_t CFileGZOutputStream::Seek(int64_t, CStream::TSeekOrigin)
 uint64_t CFileGZOutputStream::getTotalBytesCount() const
 {
 	THROW_EXCEPTION("Method not available in this class.");
+}
+std::string CFileGZOutputStream::getStreamDescription() const
+{
+	return mrpt::format(
+		"mrpt::io::CFileGZOutputStream for file '%s'", m_f->filename.c_str());
 }

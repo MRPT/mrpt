@@ -38,12 +38,14 @@ bool CFileOutputStream::open(const string& fileName, const OpenMode mode)
 	if (mode == OpenMode::APPEND) openMode |= ios_base::app;
 
 	m_of.open(fileName.c_str(), openMode);
+	m_filename = fileName;
 	return m_of.is_open();
 }
 
 void CFileOutputStream::close()
 {
 	if (m_of.is_open()) m_of.close();
+	m_filename.clear();
 }
 
 CFileOutputStream::~CFileOutputStream() { close(); }
@@ -102,3 +104,9 @@ uint64_t CFileOutputStream::getPosition() const
 }
 
 bool CFileOutputStream::fileOpenCorrectly() const { return m_of.is_open(); }
+
+std::string CFileOutputStream::getStreamDescription() const
+{
+	return mrpt::format(
+		"mrpt::io::CFileOutputStream for file '%s'", m_filename.c_str());
+}

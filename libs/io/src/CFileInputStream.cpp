@@ -45,6 +45,7 @@ bool CFileInputStream::open(const string& fileName)
 	// Try to open the file:
 	// Open for input:
 	m_if.open(fileName.c_str(), ios_base::binary | ios_base::in);
+	m_filename = fileName;
 	return m_if.is_open();
 }
 
@@ -54,6 +55,7 @@ bool CFileInputStream::open(const string& fileName)
 void CFileInputStream::close()
 {
 	if (m_if.is_open()) m_if.close();
+	m_filename.clear();
 }
 
 /*---------------------------------------------------------------
@@ -162,4 +164,10 @@ bool CFileInputStream::checkEOF()
 void CFileInputStream::clearError()
 {
 	if (m_if.is_open()) m_if.clear();
+}
+
+std::string CFileInputStream::getStreamDescription() const
+{
+	return mrpt::format(
+		"mrpt::io::CFileInputStream for file '%s'", m_filename.c_str());
 }
