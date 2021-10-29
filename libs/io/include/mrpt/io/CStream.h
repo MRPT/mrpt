@@ -46,11 +46,10 @@ class CStream
 	 * number of bytes actually written. */
 	virtual size_t Write(const void* Buffer, size_t Count) = 0;
 
-	/* Constructor
-	 */
+	/** Constructor */
 	CStream() = default;
-	/* Destructor
-	 */
+
+	/** Destructor */
 	virtual ~CStream();
 
 	/** Reads a block of bytes from the stream into Buffer, and returns the
@@ -118,6 +117,12 @@ class CStream
 	 * \return false on EOF or any other read error.
 	 */
 	bool getline(std::string& out_str);
+
+	/** Returns a human-friendly description of the stream, e.g. a filename. */
+	virtual std::string getStreamDescription() const
+	{
+		return "Generic mrpt::io::CStream";
+	}
 
 };	// End of class def.
 

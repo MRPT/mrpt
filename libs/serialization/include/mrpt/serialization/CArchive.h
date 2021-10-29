@@ -219,6 +219,13 @@ class CArchive
 		}
 	}
 
+	/** If redefined in derived classes, allows finding a human-friendly
+	 * description of the underlying stream (e.g. filename) */
+	virtual std::string getArchiveDescription() const
+	{
+		return "generic CArchive";
+	}
+
    private:
 	template <typename RET>
 	RET ReadVariant_helper(CSerializable::Ptr& ptr)
@@ -600,6 +607,11 @@ class CArchiveStreamBase : public CArchive
 
    public:
 	CArchiveStreamBase(STREAM& s) : m_s(s) {}
+
+	std::string getArchiveDescription() const override
+	{
+		return m_s.getStreamDescription();
+	}
 
    protected:
 	size_t write(const void* d, size_t n) override { return m_s.Write(d, n); }

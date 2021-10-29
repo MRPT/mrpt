@@ -55,6 +55,8 @@ class CFileGZOutputStream : public CStream
 	/** Destructor */
 	~CFileGZOutputStream() override;
 
+	std::string getStreamDescription() const override;
+
 	/** Open a file for write, choosing the compression level
 	 * \param fileName The file to be open in this stream
 	 * \param compress_level 0:no compression, 1:fastest, 9:best

@@ -63,6 +63,8 @@ class CMemoryStream : public CStream
 	/** Clears the memory buffer. */
 	void clear();
 
+	std::string getStreamDescription() const override;
+
 	// See docs in base class
 	uint64_t Seek(
 		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
