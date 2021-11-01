@@ -163,6 +163,8 @@ void TCamera::saveToConfigFile(
 			dist[4], dist[5], dist[6], dist[7]));
 	if (focalLengthMeters != 0)
 		cfg.write(section, "focal_length", focalLengthMeters);
+
+	cfg.write(section, "distortion", distortion);
 }
 
 /**  Load all the params from a config source, in the format described in
@@ -205,6 +207,8 @@ void TCamera::loadFromConfigFile(
 
 	cameraName = cfg.read_string(
 		section, "camera_name", cameraName, false /* optional value */);
+
+	distortion = cfg.read_enum(section, "distortion", distortion);
 }
 
 /** Rescale all the parameters for a new camera resolution (it raises an
@@ -244,7 +248,7 @@ bool mrpt::img::operator==(
 	return a.ncols == b.ncols && a.nrows == b.nrows &&
 		a.intrinsicParams == b.intrinsicParams && a.dist == b.dist &&
 		a.focalLengthMeters == b.focalLengthMeters &&
-		a.cameraName == b.cameraName;
+		a.cameraName == b.cameraName && a.distortion == b.distortion;
 }
 bool mrpt::img::operator!=(
 	const mrpt::img::TCamera& a, const mrpt::img::TCamera& b)
@@ -261,6 +265,8 @@ TCamera TCamera::FromYAML(const mrpt::containers::yaml& p)
 
 	c.cameraName = p["camera_name"].as<std::string>();
 	p["camera_matrix"].toMatrix(c.intrinsicParams);
+
+	MCP_LOAD_OPT(p, distortion_model);
 
 	ASSERT_EQUAL_(p["distortion_model"].as<std::string>(), "plumb_bob");
 
