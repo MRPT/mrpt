@@ -10,6 +10,7 @@
 
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/containers/yaml_frwd.h>
+#include <mrpt/img/DistortionModel.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
 
@@ -18,11 +19,12 @@
 
 namespace mrpt::img
 {
-/** Intrinsic parameters for a pinhole projective camera model, plus
- * Brown-Conrady camera lens distortion model.
+/** Intrinsic parameters for a pinhole or fisheye camera model, plus its
+ *  associated lens distortion model. The type of camera distortion is defined
+ *  by the \a distortion field.
  *
- * The parameters obtained for one camera resolution can be used for any other
- * resolution by means of the method TCamera::scaleToResolution()
+ * Parameters for one camera resolution can be used for any other resolutions by
+ * means of the method TCamera::scaleToResolution()
  *
  * \sa The application camera-calib-gui for calibrating a camera
  * \ingroup mrpt_img_grp
@@ -40,7 +42,7 @@ class TCamera : public mrpt::serialization::CSerializable
 
 	/** Parse from yaml, in OpenCV calibration model.
 	 * Refer to
-	 * [this example](http://wiki.ros.org/camera_calibration_parsers#YAML).
+	 * [this example](https://wiki.ros.org/camera_calibration_parsers#YAML).
 	 */
 	static TCamera FromYAML(const mrpt::containers::yaml& params);
 
@@ -56,8 +58,8 @@ class TCamera : public mrpt::serialization::CSerializable
 	/** Camera resolution */
 	uint32_t ncols{640}, nrows{480};
 
-	/** Matrix of intrinsic parameters (containing the focal length and
-	 * principal point coordinates):
+	/** Camera matrix (intrinsic parameters), containing the focal length and
+	 * principal point coordinates:
 	 *
 	 *          [ fx  0 cx ]
 	 *      A = [  0 fy cy ]
@@ -65,6 +67,8 @@ class TCamera : public mrpt::serialization::CSerializable
 	 *
 	 */
 	mrpt::math::CMatrixDouble33 intrinsicParams;
+
+	DistortionModel distortion;
 
 	/** [k1 k2 t1 t2 k3 k4 k5 k6] -> k_i: parameters of radial distortion, t_i:
 	 * parameters of tangential distortion (default=0) */
@@ -95,6 +99,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	 *  dist       = [K1 K2 T1 T2 K3]
 	 *  focal_length = FOCAL_LENGTH
 	 *  camera_name = camera1
+	 *  distortion = KannalaBrandt
 	 *  \endcode
 	 */
 	void saveToConfigFile(
@@ -113,6 +118,7 @@ class TCamera : public mrpt::serialization::CSerializable
 	 *  dist       = [K1 K2 T1 T2 K3]
 	 *  focal_length = FOCAL_LENGTH  [optional]
 	 *  camera_name = camera1 [optional]
+	 *  distortion = KannalaBrandt
 	 *  \endcode
 	 *  \exception std::exception on missing fields
 	 */
