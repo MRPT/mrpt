@@ -8,7 +8,7 @@ complex STL compound types.
 [TOC]
 
 # Library mrpt-typemeta
-<small> [New in MRPT 2.0.0] </small>
+
 
 This library is part of MRPT but has no dependencies, so it can be installed
 in Debian-based systems with:

@@ -17,8 +17,8 @@ namespace io
 {
 class CStream;
 
-/** Compression using the "zip" algorithm and from/to gzip (gz) files. \ingroup
- * mrpt_io_grp */
+/** Compression using the "zip" algorithm and from/to gzip (gz) files.
+ * \ingroup mrpt_io_grp */
 namespace zip
 {
 /** Compress an array of bytes into another one. */
