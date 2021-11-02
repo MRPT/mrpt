@@ -3,6 +3,7 @@
 Graphs data structures (directed graphs, trees, graphs of pose constraints),
 graphs algorithms
 
+[TOC]
 
 # Library mrpt-graphs
 
@@ -18,8 +19,7 @@ trees (mrpt::graphs::CDirectedTree).
 
 Graphs of pose constraints are also defined in this library, via a generic
 template mrpt::graphs::CNetworkOfPoses, capable of reading and writing to both
-binary and <a href="http://www.mrpt.org/Robotics_file_formats" >text pose-graph
-file</a> formats.
+binary and [text pose-graph file](Robotics_file_formats.html) formats.
 
 Predefined typedefs exist for:
  - mrpt::graphs::CNetworkOfPoses2D     -> Edges are 2D graphs (x,y,phi), without

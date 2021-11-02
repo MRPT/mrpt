@@ -2,7 +2,7 @@
 
 Computer-vision detectors
 
-
+[TOC]
 
 # Library mrpt-detectors
 

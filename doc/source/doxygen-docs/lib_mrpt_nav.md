@@ -2,6 +2,8 @@
 
 Autonomous navigation, path planning
 
+[TOC]
+
 # Library mrpt-nav
 
 This library is part of MRPT and can be installed in Debian-based systems with:

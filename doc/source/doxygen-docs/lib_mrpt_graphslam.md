@@ -2,7 +2,7 @@
 
 GraphSLAM algorithms
 
-
+[TOC]
 
 # Library mrpt-graphslam
 

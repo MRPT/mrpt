@@ -2,6 +2,8 @@
 
 GUI support: 2D plots (Matlab-like), 3D rendering viewports, etc.
 
+[TOC]
+
 # Library mrpt-gui
 
 This C++ library is part of MRPT and can be installed in Debian-based systems

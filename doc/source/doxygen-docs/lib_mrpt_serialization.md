@@ -5,7 +5,7 @@ Serialization (marshalling) portable library for C++ objects persistence.
 [TOC]
 
 # Library mrpt-serialization
-<small> [New in MRPT 2.0.0] </small>
+
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 
