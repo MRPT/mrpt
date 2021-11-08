@@ -632,6 +632,9 @@ MRPT_TEST(yaml, fromYAML)
 		const auto p = mrpt::containers::yaml::FromText(sampleYamlBlock_4);
 
 		EXPECT_EQ(p["myMap"]["e1"].comment(), "Right comment for e1 value");
+		EXPECT_FALSE(p["myMap4"].hasComment());
+		EXPECT_TRUE(p["myMap5"].asMap().find("a4")->first.hasComment());
+		EXPECT_TRUE(p.asMap().find("myMap5")->first.hasComment());
 	}
 }
 MRPT_TEST_END()
