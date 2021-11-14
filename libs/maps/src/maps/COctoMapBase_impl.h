@@ -192,12 +192,8 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 	// Save as 3D Scene:
 	{
 		mrpt::opengl::COpenGLScene scene;
-		mrpt::opengl::CSetOfObjects::Ptr obj3D =
-			mrpt::opengl::CSetOfObjects::Create();
 
-		this->getAs3DObject(obj3D);
-
-		scene.insert(obj3D);
+		scene.insert(this->getVisualization());
 
 		const std::string fil = filNamePrefix + std::string("_3D.3Dscene");
 		scene.saveToFile(fil);

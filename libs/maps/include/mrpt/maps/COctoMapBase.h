@@ -290,11 +290,11 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Returns a 3D object representing the map.
 	 * \sa renderingOptions
 	 */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override
+	void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 	{
 		auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 		this->getAsOctoMapVoxels(*gl_obj);
-		outObj->insert(gl_obj);
+		o.insert(gl_obj);
 	}
 
 	/** Builds a renderizable representation of the octomap as a

@@ -910,10 +910,12 @@ class CPointsMap : public CMetricMap,
 
 	/** STL-like method to check whether the map is empty: */
 	inline bool empty() const { return isEmpty(); }
+
 	/** Returns a 3D object representing the map.
 	 *  The color of the points is controlled by renderOptions
 	 */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** This method returns the largest distance from the origin to any of the
 	 * points, such as a sphere centered at the origin with this radius cover

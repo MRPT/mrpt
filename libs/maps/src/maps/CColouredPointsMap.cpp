@@ -362,14 +362,9 @@ void CColouredPointsMap::insertPointRGB(
 	mark_as_modified();
 }
 
-/*---------------------------------------------------------------
-getAs3DObject
----------------------------------------------------------------*/
-void CColouredPointsMap::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CColouredPointsMap::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
-	ASSERT_(outObj);
-
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudColoured::Ptr obj =
@@ -380,7 +375,7 @@ void CColouredPointsMap::getAs3DObject(
 
 	obj->setPointSize(this->renderOptions.point_size);
 
-	outObj->insert(obj);
+	o.insert(obj);
 }
 
 /*---------------------------------------------------------------

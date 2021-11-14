@@ -300,7 +300,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	void saveToTextFile(const std::string& fil) const;
 
 	/** Returns a 3D object representing the map. */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Returns a pointer to the beacon with the given ID, or nullptr if it does
 	 * not exist. */
