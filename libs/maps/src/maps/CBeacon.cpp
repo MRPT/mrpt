@@ -180,10 +180,7 @@ void CBeacon::changeCoordinatesReference(const CPose3D& newReferenceBase)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					getAs3DObject
-  ---------------------------------------------------------------*/
-void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CBeacon::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
 
@@ -206,7 +203,7 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 					m_locationMC.m_particles[i].d->y,
 					m_locationMC.m_particles[i].d->z);
 
-			outObj->insert(obj);
+			o.insert(obj);
 		}
 		break;
 		case pdfGauss:
@@ -224,12 +221,14 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 			obj->enableDrawSolid3D(false);
 
 			obj->setColor(1, 0, 0, 0.85f);
-			outObj->insert(obj);
+			o.insert(obj);
 		}
 		break;
 		case pdfSOG:
 		{
-			m_locationSOG.getAs3DObject(outObj);
+			auto auxObjs = mrpt::opengl::CSetOfObjects::Create();
+			m_locationSOG.getAs3DObject(auxObjs);
+			o.insert(auxObjs);
 		}
 		break;
 		default: THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
@@ -241,7 +240,7 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 	CPoint3D meanP;
 	this->getMean(meanP);
 	obj2->setLocation(meanP.x() + 0.10, meanP.y() + 0.10, meanP.z());
-	outObj->insert(obj2);
+	o.insert(obj2);
 
 	MRPT_END
 }

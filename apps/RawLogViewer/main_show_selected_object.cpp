@@ -579,22 +579,22 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 #endif
 	}
 
-	MRPT_TODO("Replace by generic Visualizable interface");
-	if (classID == CLASS_ID(CObservation3DScene))
+	// Generic visualizable object:
+	if (auto viz =
+			std::dynamic_pointer_cast<mrpt::opengl::Visualizable>(sel_obj);
+		viz)
 	{
 		// ----------------------------------------------------------------------
-		//              CObservation3DScene
+		//              Generic visualizable object:
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(9);
-		CObservation3DScene::Ptr obs =
-			std::dynamic_pointer_cast<CObservation3DScene>(sel_obj);
 
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		if (obs->scene) *openGLSceneRef = *obs->scene;
-		else
-			openGLSceneRef->clear();
+
+		openGLSceneRef->clear();
+		openGLSceneRef->insert(viz->getVisualization());
 
 		this->m_gl3DRangeScan->Refresh();
 #endif

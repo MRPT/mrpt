@@ -750,10 +750,7 @@ void CPointsMap::TRenderOptions::loadFromConfigFile(
 	colormap = iniFile.read_enum(section, "colormap", this->colormap);
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
-void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CPointsMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
@@ -766,7 +763,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		obj->setColor(renderOptions.color);
 		obj->setPointSize(renderOptions.point_size);
 		obj->enableColorFromZ(false);
-		outObj->insert(obj);
+		o.insert(obj);
 	}
 	else
 	{
@@ -778,7 +775,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 
 		obj->recolorizeByCoordinate(
 			bb.min.z, bb.max.z, 2 /*z*/, renderOptions.colormap);
-		outObj->insert(obj);
+		o.insert(obj);
 	}
 	MRPT_END
 }

@@ -2406,14 +2406,11 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 
 	// 3D Scene:
 	opengl::COpenGLScene scene;
-	mrpt::opengl::CSetOfObjects::Ptr obj3D =
-		mrpt::opengl::CSetOfObjects::Create();
-	getAs3DObject(obj3D);
 
 	opengl::CGridPlaneXY::Ptr objGround =
 		std::make_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 1);
 
-	scene.insert(obj3D);
+	scene.insert(getVisualization());
 	scene.insert(objGround);
 
 	std::string fil2(filNamePrefix + std::string("_3D.3Dscene"));
@@ -2425,8 +2422,7 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 /*---------------------------------------------------------------
 						getAs3DObject
   ---------------------------------------------------------------*/
-void CLandmarksMap::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CLandmarksMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -2451,7 +2447,7 @@ void CLandmarksMap::getAs3DObject(
 			mrpt::format("LM.ID=%u", static_cast<unsigned int>(landmark.ID)));
 		ellip->enableShowName(true);
 
-		outObj->insert(ellip);
+		o.insert(ellip);
 	}
 }
 /**** FAMD ****/

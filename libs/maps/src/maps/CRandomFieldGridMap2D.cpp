@@ -1568,26 +1568,19 @@ void CRandomFieldGridMap2D::saveAsMatlab3DGraph(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
-void CRandomFieldGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CRandomFieldGridMap2D::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	// Returns only the mean map
-	mrpt::opengl::CSetOfObjects::Ptr other_obj =
-		mrpt::opengl::CSetOfObjects::Create();
-	getAs3DObject(outObj, other_obj);
+	mrpt::opengl::CSetOfObjects other_obj;
+	getAs3DObject(o, other_obj);
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
 void CRandomFieldGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& meanObj,
-	mrpt::opengl::CSetOfObjects::Ptr& varObj) const
+	mrpt::opengl::CSetOfObjects& meanObj,
+	mrpt::opengl::CSetOfObjects& varObj) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -1779,8 +1772,8 @@ void CRandomFieldGridMap2D::getAs3DObject(
 
 				}  // for cx
 			}  // for cy
-			meanObj->insert(obj_m);
-			varObj->insert(obj_v);
+			meanObj.insert(obj_m);
+			varObj.insert(obj_v);
 		}
 		break;	// end KF models
 
@@ -1948,8 +1941,8 @@ void CRandomFieldGridMap2D::getAs3DObject(
 
 				}  // for cx
 			}  // for cy
-			meanObj->insert(obj_m);
-			varObj->insert(obj_v);
+			meanObj.insert(obj_m);
+			varObj.insert(obj_v);
 		}
 		break;	// end Kernel models
 	};	// end switch maptype
