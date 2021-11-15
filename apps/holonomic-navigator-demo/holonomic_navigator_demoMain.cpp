@@ -587,8 +587,7 @@ void holonomic_navigator_demoFrame::OnAbout(wxCommandEvent&)
 
 void holonomic_navigator_demoFrame::updateMap3DView()
 {
-	gl_grid->clear();
-	m_gridMap.getAs3DObject(gl_grid);
+	gl_grid = m_gridMap.getVisualization();
 }
 
 void holonomic_navigator_demoFrame::OnbtnPlaceRobotClick(wxCommandEvent& event)

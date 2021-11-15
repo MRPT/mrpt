@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/graphslam/CGraphSlamEngine.h>  // for IDE parsers
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -1819,7 +1820,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 				// creating and inserting the observation in the CSetOfObjects
 				mrpt::maps::CSimplePointsMap m;
 				m.insertObservation(scan_decimated);
-				m.getAs3DObject(scan_obj);
+				m.getVisualizationInto(*scan_obj);
 
 				scan_obj->setName(scan_name.str());
 				this->setObjectPropsFromNodeID(node_it, scan_obj);

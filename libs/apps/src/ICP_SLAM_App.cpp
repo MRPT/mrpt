@@ -333,19 +333,11 @@ void ICP_SLAM_App_Base::run()
 			}
 
 			// The maps:
-			{
-				auto obj = opengl::CSetOfObjects::Create();
-				mostLikMap->getAs3DObject(obj);
-				view->insert(obj);
+			view->insert(mostLikMap->getVisualization());
 
-				// Only the point map:
-				auto ptsMap = opengl::CSetOfObjects::Create();
-				if (auto pMap = mostLikMap->mapByClass<CPointsMap>(); pMap)
-				{
-					pMap->getAs3DObject(ptsMap);
-					view_map->insert(ptsMap);
-				}
-			}
+			// Only the point map:
+			if (auto pMap = mostLikMap->mapByClass<CPointsMap>(); pMap)
+				view_map->insert(pMap->getVisualization());
 
 			// Draw the robot path:
 			{

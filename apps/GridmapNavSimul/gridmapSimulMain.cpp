@@ -749,9 +749,7 @@ gridmapSimulFrame::~gridmapSimulFrame()
 
 void gridmapSimulFrame::update_grid_map_3d()
 {
-	if (!gl_grid) gl_grid = std::make_shared<CSetOfObjects>();
-	gl_grid->clear();
-	the_grid.getAs3DObject(gl_grid);
+	gl_grid = the_grid.getVisualization();
 }
 
 void gridmapSimulFrame::OnbtnQuitClick(wxCommandEvent& event)
