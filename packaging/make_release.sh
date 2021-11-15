@@ -11,6 +11,21 @@
 
 set -e  # exit on error
 
+APPEND_SNAPSHOT_NUM=0
+
+while getopts "s" OPTION
+do
+     case $OPTION in
+         s)
+             APPEND_SNAPSHOT_NUM=1
+             ;;
+         ?)
+             echo "Unknown command line argument!"
+             exit 1
+             ;;
+     esac
+done
+
 # Sets the bash variables:
 # MRPT_VERSION_STR, MRPT_VER_MMP, MRPT_VERSION_{MAJOR,MINOR,PATCH}
 # --------------------------------
@@ -25,6 +40,15 @@ then
 else
 	echo "Error: cannot find version_prefix.txt!! Invoke scripts from mrpt sources root directory."
 	exit 1
+fi
+
+if [ $APPEND_SNAPSHOT_NUM == "1" ];
+then
+	# Get snapshot version number:
+	CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+	source $CUR_SCRIPT_DIR/generate_snapshot_version.sh # populate MRPT_SNAPSHOT_VERSION
+	
+	MRPT_VERSION_STR="${MRPT_VERSION_STR}~${MRPT_SNAPSHOT_VERSION}"
 fi
 
 MRPTSRC=$(pwd)
@@ -82,7 +106,6 @@ for guide in $LST_GUIDES; do
 done
 
 # Orig tarball:
-
 echo "> Creating source tarball: mrpt-${MRPT_VERSION_STR}.tar.gz"
 (cd "${OUT_RELEASES_DIR}" ; tar czf "mrpt-${MRPT_VERSION_STR}.tar.gz" "mrpt-${MRPT_VERSION_STR}" )
 
