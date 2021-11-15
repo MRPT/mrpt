@@ -174,7 +174,8 @@ class CPointsMapXYZI : public CPointsMap
 	/** Override of the default 3D scene builder to account for the individual
 	 * points' color.
 	 */
-	void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** @name PCL library support
 		@{ */

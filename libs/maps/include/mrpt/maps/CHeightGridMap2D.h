@@ -136,7 +136,8 @@ class CHeightGridMap2D
 	 * mrpt::opengl::CMesh object, unless
 	 *   it is specified otherwise in
 	 * mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH */
-	void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Return the type of the gas distribution map, according to parameters
 	 * passed on construction */
