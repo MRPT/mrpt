@@ -82,11 +82,10 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 
 				{
 					// Generate the metric maps 3D view...
-					opengl::CSetOfObjects::Ptr maps3D =
-						std::make_shared<opengl::CSetOfObjects>();
+					auto maps3D = std::make_shared<opengl::CSetOfObjects>();
 					maps3D->setName("metric-maps");
 					bestLMH->getMostLikelyParticle()
-						->d->metricMaps.getAs3DObject(maps3D);
+						->d->metricMaps.getVisualizationInto(*maps3D);
 					sceneLSLAM->insert(maps3D);
 
 					// ...and the robot poses, areas, etc:

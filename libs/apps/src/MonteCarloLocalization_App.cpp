@@ -429,9 +429,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 						std::max(
 							bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y));
 
-				CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
-				metricMap->getAs3DObject(gl_obj);
-				scene.insert(gl_obj);
+				scene.insert(metricMap->getVisualization());
 			}
 
 			// The experiment directory is:

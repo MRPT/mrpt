@@ -227,13 +227,8 @@ void CDocument::addMapToRenderizableMaps(
 		int index = 0;
 		for (auto& map : iter->second)
 		{
-			CMetricMap::Ptr ptr = std::dynamic_pointer_cast<CMetricMap>(map);
-			if (ptr.get())
-			{
-				auto obj = std::make_shared<CSetOfObjects>();
-				ptr->getAs3DObject(obj);
-				renderMaps.emplace(SType(type, index), obj);
-			}
+			if (map)
+				renderMaps.emplace(SType(type, index), map->getVisualization());
 			++index;
 		}
 	}
