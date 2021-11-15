@@ -12,18 +12,29 @@
 set -e  # exit on error
 
 APPEND_SNAPSHOT_NUM=0
+APPEND_LINUX_DISTRO=""
 
-while getopts "s" OPTION
+while getopts "hsd:" OPTION
 do
-     case $OPTION in
-         s)
-             APPEND_SNAPSHOT_NUM=1
-             ;;
-         ?)
-             echo "Unknown command line argument!"
-             exit 1
-             ;;
-     esac
+	case $OPTION in
+		s)
+			APPEND_SNAPSHOT_NUM=1
+			;;
+		d)
+			APPEND_LINUX_DISTRO=$OPTARG
+			;;
+		h)
+			echo "Usage: $0 [-d <DISTRIBUTION>] [-s]"
+			echo " With:"
+			echo "   - s: Appends a snapshot postfix to the tarball name."
+			echo
+			exit 0
+			;;
+		?)
+			echo "Unknown command line argument!"
+			exit 1
+			;;
+	esac
 done
 
 # Sets the bash variables:
@@ -46,9 +57,14 @@ if [ $APPEND_SNAPSHOT_NUM == "1" ];
 then
 	# Get snapshot version number:
 	CUR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-	source $CUR_SCRIPT_DIR/generate_snapshot_version.sh # populate MRPT_SNAPSHOT_VERSION
+	source "$CUR_SCRIPT_DIR/generate_snapshot_version.sh" # populate MRPT_SNAPSHOT_VERSION
 	
 	MRPT_VERSION_STR="${MRPT_VERSION_STR}~${MRPT_SNAPSHOT_VERSION}"
+fi
+
+if [ "$APPEND_LINUX_DISTRO" != "" ];
+then
+	MRPT_VERSION_STR="${MRPT_VERSION_STR}~${APPEND_LINUX_DISTRO}"
 fi
 
 MRPTSRC=$(pwd)
