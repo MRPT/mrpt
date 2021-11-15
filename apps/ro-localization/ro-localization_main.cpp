@@ -311,18 +311,14 @@ void TestParticlesLocalization()
 
 #ifdef SHOW_REAL_TIME_3D
 				{
-					opengl::CSetOfObjects::Ptr obj =
-						std::make_shared<opengl::CSetOfObjects>();
-					grid2d.getAs3DObject(obj);
+					auto obj = grid2d.getVisualization();
 					obj->setLocation(
 						initialPoseExperiment.x(), initialPoseExperiment.y(),
 						0);
 					sceneTR->insert(obj);
 				}
 #endif
-				opengl::CSetOfObjects::Ptr obj =
-					std::make_shared<opengl::CSetOfObjects>();
-				grid2d.getAs3DObject(obj);
+				auto obj = grid2d.getVisualization();
 				scene->insert(obj);
 			}
 			else

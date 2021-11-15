@@ -526,15 +526,12 @@ void CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 		iniFile.read_float(section.c_str(), "advectionFreq", 1, true);
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CGasConcentrationGridMap2D::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
-	CRandomFieldGridMap2D::getAs3DObject(outObj);
+	CRandomFieldGridMap2D::getVisualizationInto(o);
 	MRPT_END
 }
 
@@ -542,8 +539,7 @@ void CGasConcentrationGridMap2D::getAs3DObject(
 						getAs3DObject
 ---------------------------------------------------------------*/
 void CGasConcentrationGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& meanObj,
-	mrpt::opengl::CSetOfObjects::Ptr& varObj) const
+	opengl::CSetOfObjects& meanObj, opengl::CSetOfObjects& varObj) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;

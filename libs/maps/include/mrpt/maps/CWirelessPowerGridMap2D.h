@@ -59,7 +59,8 @@ class CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 	} insertionOptions;
 
 	/** Returns a 3D object representing the map  */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
    protected:
 	/** Get the part of the options common to all CRandomFieldGridMap2D classes

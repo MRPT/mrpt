@@ -47,3 +47,18 @@ void CObservation3DScene::getDescriptionAsText(std::ostream& o) const
 		d.printAsYAML(o);
 	}
 }
+
+void CObservation3DScene::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
+{
+	if (!scene) return;
+
+	auto mainView = scene->getViewport();
+	if (!mainView) return;
+
+	for (const auto& obj : *mainView)
+	{
+		if (!obj) continue;
+		o.insert(obj);
+	}
+}

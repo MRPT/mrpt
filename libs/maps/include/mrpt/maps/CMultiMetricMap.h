@@ -214,7 +214,8 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const override;
 	void auxParticleFilterCleanUp() override;
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override;
 
 	/** Returns a short description of the map. */

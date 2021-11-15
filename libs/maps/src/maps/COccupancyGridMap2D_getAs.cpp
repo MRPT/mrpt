@@ -136,11 +136,8 @@ void COccupancyGridMap2D::getAsImageFiltered(
 		img.filterMedian(img, round(insertionOptions.CFD_features_median_size));
 }
 
-/*---------------------------------------------------------------
-				getAs3DObject
-  ---------------------------------------------------------------*/
-void COccupancyGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outSetOfObj) const
+void COccupancyGridMap2D::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -173,7 +170,7 @@ void COccupancyGridMap2D::getAs3DObject(
 	}
 
 	outObj->assignImage(imgColor, imgTrans);
-	outSetOfObj->insert(outObj);
+	o.insert(outObj);
 
 	MRPT_END
 }

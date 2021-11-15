@@ -670,11 +670,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	insert_obs_into_map(obj_new, &newMapPt);
 
 	// Delete all existing draw layers:
-	m_gl_map_ref->clear();
-	m_gl_map_new->clear();
-
-	refMap->getAs3DObject(m_gl_map_ref);
-	newMapPt.getAs3DObject(m_gl_map_new);
+	m_gl_map_ref = refMap->getVisualization();
+	m_gl_map_new = newMapPt.getVisualization();
 
 	auto gl_ellipse = mrpt::opengl::CEllipsoid2D::Create();
 	gl_ellipse->setQuantiles(3.0f);

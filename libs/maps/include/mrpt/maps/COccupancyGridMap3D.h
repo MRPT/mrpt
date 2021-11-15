@@ -188,7 +188,8 @@ class COccupancyGridMap3D
 	void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels& gl_obj) const;
 
 	/** Returns a 3D object representing the map. \sa renderingOptions */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** With this struct options are provided to the observation insertion
 	 * process.

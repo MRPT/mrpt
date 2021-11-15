@@ -133,9 +133,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 				// ---------------------------------------------------------
 				if (nRound == 0)
 				{
-					opengl::CSetOfObjects::Ptr objMap =
-						std::make_shared<opengl::CSetOfObjects>();
-					obj_mmap->getAs3DObject(objMap);
+					auto objMap = obj_mmap->getVisualization();
 					objMap->setPose(refPoseThisArea.mean);
 					objs->insert(objMap);
 				}

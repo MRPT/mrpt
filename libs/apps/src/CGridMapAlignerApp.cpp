@@ -643,13 +643,8 @@ void CGridMapAlignerApp::run()
 
 							// Save as 3D scene:
 							COpenGLScene scene;
-							CSetOfObjects::Ptr obj1 =
-								std::make_shared<CSetOfObjects>();
-							the_map1.getAs3DObject(obj1);
-							CSetOfObjects::Ptr obj2 =
-								std::make_shared<CSetOfObjects>();
-							the_map2.getAs3DObject(obj2);
-
+							auto obj1 = the_map1.getVisualization();
+							auto obj2 = the_map2.getVisualization();
 							obj2->setPose(x);
 
 							scene.insert(obj1);

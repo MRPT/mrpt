@@ -1118,8 +1118,7 @@ void reactive_navigator_demoframe::OnAbout(wxCommandEvent&)
 
 void reactive_navigator_demoframe::updateMap3DView()
 {
-	gl_grid->clear();
-	m_gridMap.getAs3DObject(gl_grid);
+	gl_grid = m_gridMap.getVisualization();
 }
 
 void reactive_navigator_demoframe::OnbtnPlaceRobotClick(wxCommandEvent& event)

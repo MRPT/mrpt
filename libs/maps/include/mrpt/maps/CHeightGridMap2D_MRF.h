@@ -59,12 +59,13 @@ class CHeightGridMap2D_MRF : public CRandomFieldGridMap2D,
 	} insertionOptions;
 
 	/** Returns a 3D object representing the map */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Returns two 3D objects representing the mean and variance maps */
 	void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& meanObj,
-		mrpt::opengl::CSetOfObjects::Ptr& varObj) const override;
+		mrpt::opengl::CSetOfObjects& meanObj,
+		mrpt::opengl::CSetOfObjects& varObj) const override;
 
 	bool insertIndividualPoint(
 		const double x, const double y, const double z,

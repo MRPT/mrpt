@@ -1093,10 +1093,7 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 
 	// 3D Scene:
 	opengl::COpenGLScene scene;
-	opengl::CSetOfObjects::Ptr obj3D =
-		std::make_shared<opengl::CSetOfObjects>();
-
-	getAs3DObject(obj3D);
+	const opengl::CSetOfObjects::Ptr obj3D = getVisualization();
 	auto objGround = opengl::CGridPlaneXY::Create(
 		-100.0f, 100.0f, -100.0f, 100.0f, .0f, 1.f);
 
@@ -1142,10 +1139,7 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
-  ---------------------------------------------------------------*/
-void CBeaconMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CBeaconMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
 
@@ -1154,11 +1148,11 @@ void CBeaconMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 	// ------------------------------------------------
 	//  Add the XYZ corner for the current area:
 	// ------------------------------------------------
-	outObj->insert(opengl::stock_objects::CornerXYZ());
+	o.insert(opengl::stock_objects::CornerXYZ());
 
 	// Save 3D ellipsoids or whatever representation:
 	for (const auto& m_beacon : m_beacons)
-		m_beacon.getAs3DObject(outObj);
+		m_beacon.getVisualizationInto(o);
 
 	MRPT_END
 }
