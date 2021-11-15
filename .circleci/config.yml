@@ -4,8 +4,6 @@ jobs:
     docker:
       - image: mrpt/mrpt-build-env:full-focal
     steps:
-      - restore_cache:
-          key: build-u20.04:v2
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
@@ -15,16 +13,10 @@ jobs:
       - run: make gcov -C build-u20.04
       - run: make -C build-u20.04
       - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build-u20.04
-      - save_cache:
-          key: build-u20.04:v2
-          paths:
-            - /root/project/
   full-u21.10-impish:
     docker:
       - image: mrpt/mrpt-build-env:full-u21.10-impish
     steps:
-      - restore_cache:
-          key: build-u21.10:v2
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
@@ -32,16 +24,10 @@ jobs:
       - run: make -C build-u21.10 tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u21.10
       - run: make -C build-u21.10
-      - save_cache:
-          key: build-u21.10:v2
-          paths:
-            - /root/project/
   full-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
-      - restore_cache:
-          key: build-u18.04:v2
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
@@ -49,16 +35,10 @@ jobs:
       - run: make -C build-u18.04 tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04
       - run: make -C build-u18.04
-      - save_cache:
-          key: build-u18.04:v2
-          paths:
-            - /root/project/
   clang-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
     steps:
-      - restore_cache:
-          key: build-u18.04-clang:v2
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
@@ -71,16 +51,10 @@ jobs:
       - run: make -C build-u18.04-clang tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-clang
       - run: make -C build-u18.04-clang
-      - save_cache:
-          key: build-u18.04-clang:v2
-          paths:
-            - /root/project/
   headless-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:headless-bionic
     steps:
-      - restore_cache:
-          key: build-u18.04-headless:v2
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
@@ -88,16 +62,10 @@ jobs:
       - run: make -C build-u18.04-headless tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-headless
       - run: make -C build-u18.04-headless
-      - save_cache:
-          key: build-u18.04-headless:v2
-          paths:
-            - /root/project/
   minimal-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:minimal-bionic
     steps:
-      - restore_cache:
-          key: build-u18.04-minimal:v3
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
@@ -105,10 +73,6 @@ jobs:
       - run: make -C build-u18.04-minimal tests_build_all
       - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-minimal
       - run: make -C build-u18.04-minimal
-      - save_cache:
-          key: build-u18.04-minimal:v3
-          paths:
-            - /root/project/
   clang-format-lint:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
@@ -128,8 +92,6 @@ jobs:
       xcode: "12.0.0"
     working_directory: /Users/distiller/project
     steps:
-      - restore_cache:
-          key: macos-12.0.0:v4
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
@@ -142,10 +104,6 @@ jobs:
       - run: make -j2 -C build-osx tests_build_all
       - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build-osx
       - run: make -j2 -C build-osx
-      - save_cache:
-          key: macos-12.0.0:v4
-          paths:
-            - /Users/distiller/project
 workflows:
   version: 2
   build:
