@@ -698,7 +698,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	/** Returns a 3D object representing the map.
 	 * \sa COLOR_LANDMARKS_IN_3DSCENES
 	 */
-	void getVisualizationInto(mrpt::opengl::CSetOfObjects& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	// See base docs
 	void auxParticleFilterCleanUp() override;
