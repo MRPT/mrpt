@@ -352,14 +352,11 @@ void CWirelessPowerGridMap2D::TInsertionOptions::loadFromConfigFile(
 	internal_loadFromConfigFile_common(iniFile, section);
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
-void CWirelessPowerGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CWirelessPowerGridMap2D::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
-	CRandomFieldGridMap2D::getAs3DObject(outObj);
+	CRandomFieldGridMap2D::getVisualizationInto(o);
 	MRPT_END
 }

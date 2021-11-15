@@ -714,14 +714,8 @@ class CMyReactInterface
 		scene = window.get3DSceneAndLock();
 
 		// Maps are inserted
-		{
-			auto gl_grid = CSetOfObjects::Create();
-			for (unsigned int i = 0; i < maps.size(); i++)
-			{
-				maps[i].getAs3DObject(gl_grid);
-				scene->insert(gl_grid);
-			}
-		}
+		for (unsigned int i = 0; i < maps.size(); i++)
+			scene->insert(maps[i].getVisualization());
 
 		// A CornerXYZ object is inserted as an absolute frame of reference
 		{
@@ -729,16 +723,6 @@ class CMyReactInterface
 			obj->setLocation(0, 0, 0);
 			scene->insert(obj);
 		}
-
-		////A reference grid is inserted
-		//{
-		//	auto obj =
-		// opengl::CGridPlaneXY::Create(-16,16,-16,16,0,1);
-		//	obj->setColor(0.4,0.4,0.4);
-		//	obj->setLocation(0,0,0);
-		//	obj->setName("gridref");
-		//	scene->insert( obj );
-		//}
 
 		// The target is inserted
 		{

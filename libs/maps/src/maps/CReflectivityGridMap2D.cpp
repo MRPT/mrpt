@@ -346,11 +346,8 @@ void CReflectivityGridMap2D::getAsImage(
 	}
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
-void CReflectivityGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outSetOfObj) const
+void CReflectivityGridMap2D::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -384,7 +381,7 @@ void CReflectivityGridMap2D::getAs3DObject(
 	}
 
 	outObj->assignImage(imgColor, imgTrans);
-	outSetOfObj->insert(outObj);
+	o.insert(outObj);
 
 	MRPT_END
 }

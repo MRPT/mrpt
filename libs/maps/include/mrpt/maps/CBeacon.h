@@ -110,7 +110,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 		const mrpt::poses::CPose3D& newReferenceBase) override;
 
 	/** Saves a 3D representation of the beacon into a given OpenGL scene  */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const;
+	void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const;
 
 	/** Gets a set of MATLAB commands which draw the current state of the
 	 * beacon: */

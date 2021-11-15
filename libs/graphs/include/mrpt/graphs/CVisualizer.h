@@ -19,7 +19,7 @@
 
 namespace mrpt::graphs::detail
 {
-/**\brief Base class for C*Visualizer classes.
+/** \brief Base class for C*Visualizer classes.
  *
  * By default provides visualization for a CNetowrkOfPoses containing nodes and
  * edges as constructed by a single agent/robot. Derived classes can inherit

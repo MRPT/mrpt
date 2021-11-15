@@ -51,6 +51,7 @@
       - mrpt::opengl::CRenderizableShaderTriangles::cullFaces()
       - mrpt::opengl::CRenderizableShaderTexturedTriangles::cullFaces()
     - Remove specular light effects in the default shaders, to fix buggy behavior.
+    - **[API change]** New mrpt::opengl::Visualizable interface replaces former getAs3DObject() in all mrpt::maps and mrpt::poses classes with an uniform API, avoiding shared_ptr if possible.
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers

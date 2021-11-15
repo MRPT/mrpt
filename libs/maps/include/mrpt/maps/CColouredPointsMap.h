@@ -175,7 +175,8 @@ class CColouredPointsMap : public CPointsMap
 	/** Override of the default 3D scene builder to account for the individual
 	 * points' color.
 	 */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Colour a set of points from a CObservationImage and the global pose of
 	 * the robot */

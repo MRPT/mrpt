@@ -205,11 +205,8 @@ void CPointsMapXYZI::insertPointRGB(
 	mark_as_modified();
 }
 
-void CPointsMapXYZI::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CPointsMapXYZI::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
-	ASSERT_(outObj);
-
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	auto obj = mrpt::opengl::CPointCloudColoured::Create();
@@ -218,7 +215,7 @@ void CPointsMapXYZI::getAs3DObject(
 	obj->setColor(1, 1, 1, 1.0);
 	obj->setPointSize(this->renderOptions.point_size);
 
-	outObj->insert(obj);
+	o.insert(obj);
 }
 
 void CPointsMapXYZI::getPointRGB(

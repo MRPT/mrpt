@@ -425,11 +425,9 @@ void RBPF_SLAM_App_Base::run()
 					objCam->setElevationDegrees(30);
 					scene->insert(objCam);
 				}
+
 				// Draw the map(s):
-				mrpt::opengl::CSetOfObjects::Ptr objs =
-					mrpt::opengl::CSetOfObjects::Create();
-				mostLikMap->getAs3DObject(objs);
-				scene->insert(objs);
+				scene->insert(mostLikMap->getVisualization());
 
 				// Draw the robot particles:
 				size_t M = mapBuilder->mapPDF.particlesCount();

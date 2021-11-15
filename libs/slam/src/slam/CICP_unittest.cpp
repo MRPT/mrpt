@@ -179,17 +179,11 @@ TEST_F(ICPTests, RayTracingICP3D)
 	M2_noisy = M2;
 	M2_noisy.changeCoordinatesReference(SCAN2_POSE_ERROR);
 
-	CSetOfObjects::Ptr PTNS1 = std::make_shared<CSetOfObjects>();
-	CSetOfObjects::Ptr PTNS2 = std::make_shared<CSetOfObjects>();
-
 	M1.renderOptions.color = mrpt::img::TColorf(1, 0, 0);
-	M1.getAs3DObject(PTNS1);
-
 	M2_noisy.renderOptions.color = mrpt::img::TColorf(0, 0, 1);
-	M2_noisy.getAs3DObject(PTNS2);
 
-	scene2->insert(PTNS1);
-	scene2->insert(PTNS2);
+	scene2->insert(M1.getVisualization());
+	scene2->insert(M2_noisy.getVisualization());
 
 	// --------------------------------------
 	// Do the ICP-3D

@@ -532,9 +532,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 	// The built maps:
 	// ---------------------------
-	opengl::CSetOfObjects::Ptr objs = std::make_shared<opengl::CSetOfObjects>();
-	theMap.getAs3DObject(objs);
-	scene.insert(objs);
+	scene.insert(theMap.getVisualization());
 }
 
 // From slider moved:

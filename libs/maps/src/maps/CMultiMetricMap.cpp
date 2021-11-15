@@ -260,12 +260,11 @@ void CMultiMetricMap::saveMetricMapRepresentationToFile(
 	MRPT_END
 }
 
-void CMultiMetricMap::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CMultiMetricMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
 	std::for_each(maps.begin(), maps.end(), [&](auto& ptr) {
-		ptr->getAs3DObject(outObj);
+		ptr->getVisualizationInto(o);
 	});
 	MRPT_END
 }

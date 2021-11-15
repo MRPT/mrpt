@@ -136,17 +136,11 @@ void test_icp3D()
 	M2_noisy = M2;
 	M2_noisy.changeCoordinatesReference(SCAN2_POSE_ERROR);
 
-	CSetOfObjects::Ptr PTNS1 = CSetOfObjects::Create();
-	CSetOfObjects::Ptr PTNS2 = CSetOfObjects::Create();
-
 	M1.renderOptions.color = mrpt::img::TColorf(1, 0, 0);
-	M1.getAs3DObject(PTNS1);
-
 	M2_noisy.renderOptions.color = mrpt::img::TColorf(0, 0, 1);
-	M2_noisy.getAs3DObject(PTNS2);
 
-	scene2->insert(PTNS1);
-	scene2->insert(PTNS2);
+	scene2->insert(M1.getVisualization());
+	scene2->insert(M2_noisy.getVisualization());
 
 	// --------------------------------------
 	// Do the ICP-3D
@@ -179,13 +173,10 @@ void test_icp3D()
 	cout << "Real displacement: " << SCAN2_POSE_ERROR << endl;
 
 	// Aligned maps:
-	CSetOfObjects::Ptr PTNS2_ALIGN = CSetOfObjects::Create();
-
 	M2_noisy.changeCoordinatesReference(CPose3D() - mean);
-	M2_noisy.getAs3DObject(PTNS2_ALIGN);
 
-	scene3->insert(PTNS1);
-	scene3->insert(PTNS2_ALIGN);
+	scene3->insert(M1.getVisualization());
+	scene3->insert(M2_noisy.getVisualization());
 
 	// Show in Windows:
 	CDisplayWindow3D window("ICP-3D demo: scene", 500, 500);
