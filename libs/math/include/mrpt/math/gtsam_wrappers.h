@@ -55,7 +55,7 @@ static mrpt::math::CMatrixDouble66 to_mrpt_se3_cov6(
 	constexpr unsigned int mapping[6] = {5, 4, 3, 0, 1, 2};
 	for (int i = 0; i < 6; i++)
 		for (int j = 0; j < 6; j++)
-			C(i, j) = se3_cov(mapping[i], mapping[j]);
+			C(mapping[i], mapping[j]) = se3_cov(i, j);
 
 	return C;
 }
@@ -69,7 +69,7 @@ static gtsam::Matrix6 to_gtsam_se3_cov6(
 	constexpr unsigned int mapping[6] = {5, 4, 3, 0, 1, 2};
 	for (int i = 0; i < 6; i++)
 		for (int j = 0; j < 6; j++)
-			C(mapping[i], mapping[j]) = se3_cov(i, j);
+			C(i, j) = se3_cov(mapping[i], mapping[j]);
 
 	return C;
 }
