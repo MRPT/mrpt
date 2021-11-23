@@ -46,7 +46,7 @@ else()
     set(CMAKE_MRPT_HAS_NANOFLANN_SYSTEM 0)
 
     # install the embedded copy too (we need nanoflann-config.cmake, etc.)
-    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --install \"${nanoflann_EMBEDDED_BUILD_DIR}\")")
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build \"${nanoflann_EMBEDDED_BUILD_DIR}\" --target install)")
 endif()
 
 if ($ENV{VERBOSE})
