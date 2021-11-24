@@ -407,7 +407,7 @@ macro(internal_define_mrpt_lib name headers_only )
 		endif(MSVC)
 	else() # it IS headers_only:
 		install(TARGETS ${name} EXPORT mrpt-${name}-targets)
-	endif (NOT ${headers_only})
+	endif ()
 
 	# Create module CMake config file:
 	# For local usage from the BUILD directory (without "install"):
@@ -431,7 +431,7 @@ macro(internal_define_mrpt_lib name headers_only )
 
 	# Regular arch-dep libraries get to LIBDIR (/usr/lib), while
 	# arch-indep (headers-only) go to DATADIR (/usr/share):
-	if (headers_only)
+	if (${headers_only})
 		set(LIB_TARGET_INSTALL_DEST ${CMAKE_INSTALL_DATADIR})
 	else()
 		set(LIB_TARGET_INSTALL_DEST ${CMAKE_INSTALL_LIBDIR})
