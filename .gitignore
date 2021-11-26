@@ -7,6 +7,8 @@ CMakeLists.txt.user*
 SOURCE_DATE_EPOCH
 *.backup
 
+share/mrpt/config_files/rawlog-grabber/*.rawlog
+
 # OSX
 *.DS_Store
 .Spotlight-V100
