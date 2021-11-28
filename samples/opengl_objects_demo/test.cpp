@@ -914,6 +914,20 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
+		// a plane w/o a texture is a plain color plane:
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 8.0, 0, 0, 90.0_deg, 0));
+			obj->setColor_u8(0xff, 0x00, 0x00, 0xff);
+			theScene->insert(obj);
+		}
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 12.0, 0, 0, 90.0_deg, 0));
+			obj->setColor_u8(0xff, 0x00, 0x00, 0x40);
+			theScene->insert(obj);
+		}
+
 		auto gl_txt = opengl::CText::Create("CTexturedPlane");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);

@@ -24,8 +24,36 @@ IMPLEMENTS_SERIALIZABLE(CTexturedPlane, CRenderizable, mrpt::opengl)
 CTexturedPlane::CTexturedPlane(
 	float x_min, float x_max, float y_min, float y_max)
 {
-	this->enableLight(false);
+	CRenderizableShaderTriangles::enableLight(false);
+	CRenderizableShaderTexturedTriangles::enableLight(false);
+
 	setPlaneCorners(x_min, x_max, y_min, y_max);
+}
+
+void CTexturedPlane::render(const RenderContext& rc) const
+{
+	const bool hasTexture =
+		textureImageHasBeenAssigned() && !getTextureImage().isEmpty();
+
+	switch (rc.shader_id)
+	{
+		case DefaultShaderID::TRIANGLES:
+			if (!hasTexture) CRenderizableShaderTriangles::render(rc);
+			break;
+		case DefaultShaderID::TEXTURED_TRIANGLES:
+			if (hasTexture) CRenderizableShaderTexturedTriangles::render(rc);
+			break;
+	};
+}
+
+void CTexturedPlane::renderUpdateBuffers() const
+{
+	const bool hasTexture =
+		textureImageHasBeenAssigned() && !getTextureImage().isEmpty();
+
+	if (!hasTexture) CRenderizableShaderTriangles::renderUpdateBuffers();
+	else
+		CRenderizableShaderTexturedTriangles::renderUpdateBuffers();
 }
 
 void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
@@ -61,6 +89,38 @@ void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 
 		tris.emplace_back(t);
 	}
+
+	MRPT_END
+}
+
+void CTexturedPlane::onUpdateBuffers_Triangles()
+{
+	MRPT_START
+	using P3f = mrpt::math::TPoint3Df;
+
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+
+	TTriangle t;
+	for (int i = 0; i < 3; i++)
+	{
+		t.vertices[i].xyzrgba.r = this->m_color.R;
+		t.vertices[i].xyzrgba.g = this->m_color.G;
+		t.vertices[i].xyzrgba.b = this->m_color.B;
+		t.vertices[i].xyzrgba.a = this->m_color.A;
+	}
+
+	t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+	t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
+	t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+
+	tris.emplace_back(t);
+
+	t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
+	t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
+	t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
+
+	tris.emplace_back(t);
 
 	MRPT_END
 }
@@ -120,5 +180,8 @@ void CTexturedPlane::updatePoly() const
 
 auto CTexturedPlane::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	return trianglesBoundingBox().compose(m_pose);
+	return mrpt::math::TBoundingBox(
+			   mrpt::math::TPoint3D(m_xMin, m_yMin, 0),
+			   mrpt::math::TPoint3D(m_xMax, m_yMax, 0))
+		.compose(m_pose);
 }
