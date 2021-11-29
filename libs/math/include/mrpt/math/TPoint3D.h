@@ -88,7 +88,7 @@ struct TPoint3D_ : public TPoseOrPoint,
 
 	/** Return a copy of this object using type U for coordinates */
 	template <typename U>
-	TPoint3D_<U> cast() const
+	[[nodiscard]] TPoint3D_<U> cast() const
 	{
 		return TPoint3D_<U>(
 			static_cast<U>(this->x), static_cast<U>(this->y),
@@ -160,7 +160,7 @@ struct TPoint3D_ : public TPoseOrPoint,
 	T norm() const { return std::sqrt(sqrNorm()); }
 
 	/** Returns this vector with unit length: v/norm(v) */
-	TPoint3D_<T> unitarize() const
+	[[nodiscard]] TPoint3D_<T> unitarize() const
 	{
 		const T n = norm();
 		ASSERT_GT_(n, 0);
@@ -191,7 +191,7 @@ struct TPoint3D_ : public TPoseOrPoint,
 	}
 	/// \overload
 	template <typename Vector>
-	Vector asVector() const
+	[[nodiscard]] Vector asVector() const
 	{
 		Vector v;
 		asVector(v);
@@ -221,7 +221,7 @@ struct TPoint3D_ : public TPoseOrPoint,
 	/**
 	 * Points addition.
 	 */
-	constexpr TPoint3D_<T> operator+(const TPoint3D_<T>& p) const
+	[[nodiscard]] constexpr TPoint3D_<T> operator+(const TPoint3D_<T>& p) const
 	{
 		return {
 			TPoint3D_data<T>::x + p.x, TPoint3D_data<T>::y + p.y,
@@ -230,21 +230,21 @@ struct TPoint3D_ : public TPoseOrPoint,
 	/**
 	 * Points substraction.
 	 */
-	constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p) const
+	[[nodiscard]] constexpr TPoint3D_<T> operator-(const TPoint3D_<T>& p) const
 	{
 		return {
 			TPoint3D_data<T>::x - p.x, TPoint3D_data<T>::y - p.y,
 			TPoint3D_data<T>::z - p.z};
 	}
 
-	constexpr TPoint3D_<T> operator*(T d) const
+	[[nodiscard]] constexpr TPoint3D_<T> operator*(T d) const
 	{
 		return {
 			TPoint3D_data<T>::x * d, TPoint3D_data<T>::y * d,
 			TPoint3D_data<T>::z * d};
 	}
 
-	constexpr TPoint3D_<T> operator/(T d) const
+	[[nodiscard]] constexpr TPoint3D_<T> operator/(T d) const
 	{
 		return {
 			TPoint3D_data<T>::x / d, TPoint3D_data<T>::y / d,
@@ -263,7 +263,7 @@ struct TPoint3D_ : public TPoseOrPoint,
 			"[%f %f %f]", TPoint3D_data<T>::x, TPoint3D_data<T>::y,
 			TPoint3D_data<T>::z);
 	}
-	std::string asString() const
+	[[nodiscard]] std::string asString() const
 	{
 		std::string s;
 		asString(s);
@@ -277,7 +277,7 @@ struct TPoint3D_ : public TPoseOrPoint,
 	 */
 	void fromString(const std::string& s);
 
-	static TPoint3D_<T> FromString(const std::string& s)
+	[[nodiscard]] static TPoint3D_<T> FromString(const std::string& s)
 	{
 		TPoint3D_<T> o;
 		o.fromString(s);
