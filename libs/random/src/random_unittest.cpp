@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random/RandomGenerators.h>
+#include <mrpt/random/random_shuffle.h>
 
 TEST(Random, Randomize)
 {
@@ -104,4 +105,36 @@ TEST(Random, drawGaussianMultivariateMany)
 
 	EXPECT_EQ(samples.size(), nSamples);
 	EXPECT_EQ(samples.at(0).size(), static_cast<size_t>(cov.rows()));
+}
+
+TEST(Random, shuffle)
+{
+	// Fixed, platform-independent RNG, so we have reproducible results below:
+	mrpt::random::Generator_MT19937 rnd;
+	rnd.seed(1);
+
+	const std::vector<int> listOrg = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+	{
+		auto list2 = listOrg;
+		mrpt::random::shuffle(list2.begin(), list2.end(), rnd);
+		EXPECT_EQ(list2, std::vector<int>({3, 9, 2, 1, 7, 0, 6, 5, 8, 4}));
+	}
+
+	{
+		auto list2 = listOrg;
+		mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 0);
+		EXPECT_EQ(list2, listOrg);
+	}
+
+	{
+		auto list2 = listOrg;
+		mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 1);
+		EXPECT_EQ(list2, std::vector<int>({2, 1, 0, 3, 4, 5, 6, 7, 8, 9}));
+	}
+	{
+		auto list2 = listOrg;
+		mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 10);
+		EXPECT_EQ(list2, std::vector<int>({0, 4, 3, 5, 6, 8, 7, 9, 1, 2}));
+	}
 }

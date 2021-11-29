@@ -56,6 +56,8 @@
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers
+  - \ref mrpt_random_grp
+    - New function mrpt::random::partial_shuffle()
   - \ref mrpt_serialization_grp
     - Implemented serialization of mrpt::containers::bimap in the new header `#include <mrpt/serialization/bimap_serialization.h>`.
     - Enums can now be binary-serialized too via `>>` / `<<` streaming operators into an mrpt::serialization::CArchive.
