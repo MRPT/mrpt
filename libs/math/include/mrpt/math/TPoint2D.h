@@ -91,7 +91,7 @@ struct TPoint2D_ : public TPoseOrPoint,
 
 	/** Return a copy of this object using type U for coordinates */
 	template <typename U>
-	TPoint2D_<U> cast() const
+	[[nodiscard]] TPoint2D_<U> cast() const
 	{
 		return TPoint2D_<U>(static_cast<U>(this->x), static_cast<U>(this->y));
 	}
@@ -129,7 +129,7 @@ struct TPoint2D_ : public TPoseOrPoint,
 	}
 	/// \overload
 	template <typename Vector>
-	Vector asVector() const
+	[[nodiscard]] Vector asVector() const
 	{
 		Vector v;
 		asVector(v);
@@ -167,21 +167,21 @@ struct TPoint2D_ : public TPoseOrPoint,
 		return *this;
 	}
 
-	constexpr TPoint2D_ operator+(const TPoint2D_& p) const
+	[[nodiscard]] constexpr TPoint2D_ operator+(const TPoint2D_& p) const
 	{
 		return {this->x + p.x, this->y + p.y};
 	}
 
-	constexpr TPoint2D_ operator-(const TPoint2D_& p) const
+	[[nodiscard]] constexpr TPoint2D_ operator-(const TPoint2D_& p) const
 	{
 		return {this->x - p.x, this->y - p.y};
 	}
 
-	constexpr TPoint2D_ operator*(T d) const
+	[[nodiscard]] constexpr TPoint2D_ operator*(T d) const
 	{
 		return {d * this->x, d * this->y};
 	}
-	constexpr TPoint2D_ operator/(T d) const
+	[[nodiscard]] constexpr TPoint2D_ operator/(T d) const
 	{
 		ASSERT_(d != 0);
 		return {this->x / d, this->y / d};
@@ -195,7 +195,7 @@ struct TPoint2D_ : public TPoseOrPoint,
 		s = mrpt::format("[%f %f]", this->x, this->y);
 	}
 
-	std::string asString() const
+	[[nodiscard]] std::string asString() const
 	{
 		std::string s;
 		asString(s);
@@ -209,7 +209,7 @@ struct TPoint2D_ : public TPoseOrPoint,
 	 */
 	void fromString(const std::string& s);
 
-	static TPoint2D_ FromString(const std::string& s)
+	[[nodiscard]] static TPoint2D_ FromString(const std::string& s)
 	{
 		TPoint2D_ o;
 		o.fromString(s);
@@ -217,10 +217,13 @@ struct TPoint2D_ : public TPoseOrPoint,
 	}
 
 	/** Squared norm: `|v|^2 = x^2+y^2` */
-	T sqrNorm() const { return this->x * this->x + this->y * this->y; }
+	[[nodiscard]] T sqrNorm() const
+	{
+		return this->x * this->x + this->y * this->y;
+	}
 
 	/** Point norm: `|v| = sqrt(x^2+y^2)` */
-	T norm() const { return std::sqrt(sqrNorm()); }
+	[[nodiscard]] T norm() const { return std::sqrt(sqrNorm()); }
 };
 
 /**
