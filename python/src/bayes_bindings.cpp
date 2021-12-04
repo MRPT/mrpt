@@ -44,12 +44,12 @@ typedef std::deque<CProbabilityParticle<TPose3D, particle_storage_mode::VALUE>>
 
 // CParticleFilter
 CParticleFilter::TParticleFilterStats CParticleFilter_executeOn(
-	CParticleFilter& self, CParticleFilterCapable& obj,
+	CParticleFilter& me, CParticleFilterCapable& obj,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation)
 {
 	CParticleFilter::TParticleFilterStats stats;
-	self.executeOn(obj, action.get(), observation.get(), &stats);
+	me.executeOn(obj, action.get(), observation.get(), &stats);
 	return stats;
 }
 // end of CParticleFilter
