@@ -29,14 +29,14 @@ using namespace mrpt::serialization;
 using namespace mrpt::io;
 
 // CStream
-void CStream_ReadObject(CArchive& self, CSerializable::Ptr& obj)
+void CStream_ReadObject(CArchive& me, CSerializable::Ptr& obj)
 {
-	self.ReadObject(obj.get());
+	me.ReadObject(obj.get());
 }
 
-void CStream_WriteObject(CArchive& self, CSerializable::Ptr& obj)
+void CStream_WriteObject(CArchive& me, CSerializable::Ptr& obj)
 {
-	self.WriteObject(obj.get());
+	me.WriteObject(obj.get());
 }
 // end of CStream
 
@@ -65,9 +65,9 @@ double mrpt_utils_RAD2DEG(double rad) { return mrpt::RAD2DEG(rad); }
 // end of Utils
 
 // smart pointer contents
-CObject& CObjectPtr_get_ctx(CObject::Ptr& self) { return *self; }
-void CObjectPtr_set_ctx(CObject::Ptr& self, const CObject& ctx) { *self = ctx; }
-CObject* CObjectPtr_pointer(CObject::Ptr& self) { return self.get(); }
+CObject& CObjectPtr_get_ctx(CObject::Ptr& me) { return *me; }
+void CObjectPtr_set_ctx(CObject::Ptr& me, const CObject& ctx) { *me = ctx; }
+CObject* CObjectPtr_pointer(CObject::Ptr& me) { return me.get(); }
 MAKE_PTR_CTX(CSerializable)
 
 // exporter

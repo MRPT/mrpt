@@ -55,35 +55,26 @@
 		vector_indexing_suite<std::vector<class_name>>());
 
 #define MAKE_PTR_CTX(class_name)                                               \
-	class_name& class_name##Ptr_get_ctx(class_name::Ptr& self)                 \
+	class_name& class_name##Ptr_get_ctx(class_name::Ptr& me) { return *me; }   \
+	void class_name##Ptr_set_ctx(class_name::Ptr& me, class_name& ctx)         \
 	{                                                                          \
-		return *self;                                                          \
+		*me = ctx;                                                             \
 	}                                                                          \
-	void class_name##Ptr_set_ctx(class_name::Ptr& self, class_name& ctx)       \
+	class_name* class_name##Ptr_pointer(class_name::Ptr& me)                   \
 	{                                                                          \
-		*self = ctx;                                                           \
-	}                                                                          \
-	class_name* class_name##Ptr_pointer(class_name::Ptr& self)                 \
-	{                                                                          \
-		return self.get();                                                     \
+		return me.get();                                                       \
 	}
 
 #define MAKE_AS_STR(class_name)                                                \
-	std::string class_name##_asString(class_name& self)                        \
-	{                                                                          \
-		return self.asString();                                                \
-	}
+	std::string class_name##_asString(class_name& me) { return me.asString(); }
 
 #define MAKE_GETITEM(class_name, value_type)                                   \
-	value_type class_name##_getitem(class_name& self, size_t i)                \
-	{                                                                          \
-		return self[i];                                                        \
-	}
+	value_type class_name##_getitem(class_name& me, size_t i) { return me[i]; }
 
 #define MAKE_SETITEM(class_name, value_type)                                   \
-	void class_name##_setitem(class_name& self, size_t i, value_type value)    \
+	void class_name##_setitem(class_name& me, size_t i, value_type value)      \
 	{                                                                          \
-		self[i] = value;                                                       \
+		me[i] = value;                                                         \
 	}
 
 #define MAKE_SUBMODULE(mod)                                                    \
