@@ -32,30 +32,30 @@ using namespace mrpt::serialization;
 using namespace mrpt::io;
 
 // CRenderizable
-void CRenderizable_setPose(CRenderizable& self, mrpt::poses::CPose3D pose)
+void CRenderizable_setPose(CRenderizable& me, mrpt::poses::CPose3D pose)
 {
-	self.setPose(pose);
+	me.setPose(pose);
 }
 
-void CRenderizable_setLocation1(CRenderizable& self, mrpt::poses::CPoint3D pose)
+void CRenderizable_setLocation1(CRenderizable& me, mrpt::poses::CPoint3D pose)
 {
-	self.setLocation(pose.asTPoint());
+	me.setLocation(pose.asTPoint());
 }
 
-void CRenderizable_setLocation2(CRenderizable& self, float x, float y, float z)
+void CRenderizable_setLocation2(CRenderizable& me, float x, float y, float z)
 {
-	self.setLocation(x, y, z);
+	me.setLocation(x, y, z);
 }
 
-void CRenderizable_setColor1(CRenderizable& self, mrpt::img::TColorf& c)
+void CRenderizable_setColor1(CRenderizable& me, mrpt::img::TColorf& c)
 {
-	self.setColor(c);
+	me.setColor(c);
 }
 
 void CRenderizable_setColor2(
-	CRenderizable& self, double r, double g, double b, double alpha = 1.0)
+	CRenderizable& me, double r, double g, double b, double alpha = 1.0)
 {
-	self.setColor(r, g, b, alpha);
+	me.setColor(r, g, b, alpha);
 }
 
 BOOST_PYTHON_FUNCTION_OVERLOADS(
@@ -64,10 +64,10 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(
 
 // COpenGLScene
 void COpenGLScene_insert(
-	COpenGLScene& self, const CRenderizable::Ptr& newObject,
+	COpenGLScene& me, const CRenderizable::Ptr& newObject,
 	const std::string& viewportName = std::string("main"))
 {
-	self.insert(newObject, viewportName);
+	me.insert(newObject, viewportName);
 }
 
 BOOST_PYTHON_FUNCTION_OVERLOADS(
@@ -78,10 +78,9 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 
 // CSetOfLines
 void CSetOfLines_appendLine(
-	CSetOfLines& self, float x0, float y0, float z0, float x1, float y1,
-	float z1)
+	CSetOfLines& me, float x0, float y0, float z0, float x1, float y1, float z1)
 {
-	self.appendLine(x0, y0, z0, x1, y1, z1);
+	me.appendLine(x0, y0, z0, x1, y1, z1);
 }
 
 CSetOfLines::Ptr CSetOfLines_Create()
@@ -95,14 +94,14 @@ CEllipsoid3D::Ptr CEllipsoid3D_Create()
 {
 	return std::make_shared<CEllipsoid3D>();
 }
-void CEllipsoid3D_setFromPosePDF(CEllipsoid3D& self, CPose3DPDF& posePDF)
+void CEllipsoid3D_setFromPosePDF(CEllipsoid3D& me, CPose3DPDF& posePDF)
 {
 	CPose3D meanPose;
 	CMatrixDouble66 COV;
 	posePDF.getCovarianceAndMean(COV, meanPose);
 	CMatrixDouble33 COV3 = COV.extractMatrix<3, 3>(0, 0);
-	self.setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
-	self.setCovMatrix(COV3);
+	me.setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
+	me.setCovMatrix(COV3);
 }
 // end of CEllipsoid3D
 
@@ -111,14 +110,14 @@ CEllipsoid2D::Ptr CEllipsoid2D_Create()
 {
 	return std::make_shared<CEllipsoid2D>();
 }
-void CEllipsoid2D_setFromPosePDF(CEllipsoid2D& self, CPose3DPDF& posePDF)
+void CEllipsoid2D_setFromPosePDF(CEllipsoid2D& me, CPose3DPDF& posePDF)
 {
 	CPose3D meanPose;
 	CMatrixDouble66 COV;
 	posePDF.getCovarianceAndMean(COV, meanPose);
 	CMatrixDouble22 COV2 = COV.extractMatrix<2, 2>(0, 0);
-	self.setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
-	self.setCovMatrix(COV2);
+	me.setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001);
+	me.setCovMatrix(COV2);
 }
 // end of CEllipsoid2D
 

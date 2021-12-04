@@ -34,24 +34,22 @@ using namespace mrpt::obs;
 
 // CMetricMap
 bool CMetricMap_insertObservation(
-	CMetricMap& self, const CObservation& obs,
+	CMetricMap& me, const CObservation& obs,
 	const CPose3D& robotPose = CPose3D())
 {
-	return self.insertObservation(obs, robotPose);
+	return me.insertObservation(obs, robotPose);
 }
 
 bool CMetricMap_insertObservationPtr(
-	CMetricMap& self, const CObservation::Ptr& obs,
+	CMetricMap& me, const CObservation::Ptr& obs,
 	const CPose3D& robotPose = CPose3D())
 {
-	return self.insertObservationPtr(obs, robotPose);
+	return me.insertObservationPtr(obs, robotPose);
 }
 
-CSetOfObjects::Ptr CMetricMap_getAs3DObject(CMetricMap& self)
+CSetOfObjects::Ptr CMetricMap_getAs3DObject(CMetricMap& me)
 {
-	CSetOfObjects::Ptr outObj = std::make_shared<CSetOfObjects>();
-	self.getAs3DObject(outObj);
-	return outObj;
+	return me.getVisualization();
 }
 BOOST_PYTHON_FUNCTION_OVERLOADS(
 	CMetricMap_insertObservation_overloads, CMetricMap_insertObservation, 2, 3)
@@ -61,19 +59,19 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(
 // end of CMetricMap
 
 // COccupancyGridMap2D
-COccupancyGridMap2D* COccupancyGridMap2D_copy(COccupancyGridMap2D& self)
+COccupancyGridMap2D* COccupancyGridMap2D_copy(COccupancyGridMap2D& me)
 {
-	return (COccupancyGridMap2D*)self.clone();
+	return (COccupancyGridMap2D*)me.clone();
 }
 
 bool COccupancyGridMap2D_insertObservation(
-	COccupancyGridMap2D& self, CObservation& obs, CPose3D& pose)
+	COccupancyGridMap2D& me, CObservation& obs, CPose3D& pose)
 {
-	return self.insertObservation(obs, pose);
+	return me.insertObservation(obs, pose);
 }
 
 object COccupancyGridMap2D_to_ROS_OccupancyGrid_msg1(
-	COccupancyGridMap2D& self, str frame_id)
+	COccupancyGridMap2D& me, str frame_id)
 {
 	// import msg
 	dict locals;
@@ -83,25 +81,25 @@ object COccupancyGridMap2D_to_ROS_OccupancyGrid_msg1(
 		object(), locals);
 	object occupancy_grid_msg = locals["occupancy_grid_msg"];
 	// set info
-	int32_t width = self.getSizeX();
-	int32_t height = self.getSizeY();
+	int32_t width = me.getSizeX();
+	int32_t height = me.getSizeY();
 	occupancy_grid_msg.attr("header").attr("frame_id") = frame_id;
 	occupancy_grid_msg.attr("header").attr("stamp") =
 		TTimeStamp_to_ROS_Time(long_(mrpt::system::now()));
 	occupancy_grid_msg.attr("info").attr("width") = width;
 	occupancy_grid_msg.attr("info").attr("height") = height;
-	occupancy_grid_msg.attr("info").attr("resolution") = self.getResolution();
+	occupancy_grid_msg.attr("info").attr("resolution") = me.getResolution();
 	occupancy_grid_msg.attr("info").attr("origin").attr("position").attr("x") =
-		self.getXMin();
+		me.getXMin();
 	occupancy_grid_msg.attr("info").attr("origin").attr("position").attr("y") =
-		self.getYMin();
+		me.getYMin();
 	// set data
 	boost::python::list data;
 	for (int32_t y = 0; y < height; ++y)
 	{
 		for (int32_t x = 0; x < width; ++x)
 		{
-			float occupancy = self.getCell(x, y);
+			float occupancy = me.getCell(x, y);
 			if (occupancy < 0.45) { data.append(100); }
 			else if (occupancy > 0.55)
 			{
@@ -118,13 +116,13 @@ object COccupancyGridMap2D_to_ROS_OccupancyGrid_msg1(
 }
 
 #ifdef ROS_EXTENSIONS
-object COccupancyGridMap2D_to_ROS_OccupancyGrid_msg2(COccupancyGridMap2D& self)
+object COccupancyGridMap2D_to_ROS_OccupancyGrid_msg2(COccupancyGridMap2D& me)
 {
-	return COccupancyGridMap2D_to_ROS_OccupancyGrid_msg1(self, str("map"));
+	return COccupancyGridMap2D_to_ROS_OccupancyGrid_msg1(me, str("map"));
 }
 
 void COccupancyGridMap2D_from_ROS_OccupancyGrid_msg(
-	COccupancyGridMap2D& self, object occupancy_grid_msg)
+	COccupancyGridMap2D& me, object occupancy_grid_msg)
 {
 	// set info
 	float x_min = extract<float>(occupancy_grid_msg.attr("info")
@@ -143,7 +141,7 @@ void COccupancyGridMap2D_from_ROS_OccupancyGrid_msg(
 		extract<int32_t>(occupancy_grid_msg.attr("info").attr("height"));
 	float x_max = x_min + width * resolution;
 	float y_max = y_min + height * resolution;
-	self.setSize(x_min, x_max, y_min, y_max, resolution);
+	me.setSize(x_min, x_max, y_min, y_max, resolution);
 	// set data
 	int32_t idx = 0;
 	boost::python::list data =
@@ -153,11 +151,10 @@ void COccupancyGridMap2D_from_ROS_OccupancyGrid_msg(
 		for (int32_t x = 0; x < width; ++x)
 		{
 			int32_t occupancy = extract<int32_t>(data[idx]);
-			if (occupancy >= 0)
-			{ self.setCell(x, y, (100 - occupancy) / 100.0); }
+			if (occupancy >= 0) { me.setCell(x, y, (100 - occupancy) / 100.0); }
 			else
 			{
-				self.setCell(x, y, 0.5);
+				me.setCell(x, y, 0.5);
 			}
 			idx++;
 		}
@@ -176,35 +173,32 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 // end of COccupancyGridMap2D
 
 // CPointsMap
-mrpt::opengl::CSetOfObjects::Ptr CPointsMap_getAs3DObject(CPointsMap& self)
+mrpt::opengl::CSetOfObjects::Ptr CPointsMap_getAs3DObject(CPointsMap& me)
 {
-	mrpt::opengl::CSetOfObjects::Ptr outObj =
-		mrpt::opengl::CSetOfObjects::Create();
-	self.getAs3DObject(outObj);
-	return outObj;
+	return me.getVisualization();
 }
 // end of CPointsMap
 
 // CSimplePointsMap
 void CSimplePointsMap_loadFromRangeScan1(
-	CSimplePointsMap& self, const CObservation2DRangeScan& rangeScan)
+	CSimplePointsMap& me, const CObservation2DRangeScan& rangeScan)
 {
-	self.loadFromRangeScan(rangeScan);
+	me.loadFromRangeScan(rangeScan);
 }
 
 void CSimplePointsMap_loadFromRangeScan2(
-	CSimplePointsMap& self, const CObservation2DRangeScan& rangeScan,
+	CSimplePointsMap& me, const CObservation2DRangeScan& rangeScan,
 	const CPose3D& robotPose)
 {
-	self.loadFromRangeScan(rangeScan, robotPose);
+	me.loadFromRangeScan(rangeScan, robotPose);
 }
 
 boost::python::tuple CSimplePointsMap_getPointAllFieldsFast(
-	CSimplePointsMap& self, uint32_t index)
+	CSimplePointsMap& me, uint32_t index)
 {
 	boost::python::list ret_val;
 	std::vector<float> point_xyz;
-	self.getPointAllFieldsFast(index, point_xyz);
+	me.getPointAllFieldsFast(index, point_xyz);
 	ret_val.append(point_xyz[0]);
 	ret_val.append(point_xyz[1]);
 	ret_val.append(point_xyz[2]);
@@ -212,26 +206,26 @@ boost::python::tuple CSimplePointsMap_getPointAllFieldsFast(
 }
 
 boost::python::tuple CSimplePointsMap_getPointFast(
-	CSimplePointsMap& self, uint32_t index)
+	CSimplePointsMap& me, uint32_t index)
 {
 	boost::python::list ret_val;
 	float x, y, z;
-	self.getPointFast(index, x, y, z);
+	me.getPointFast(index, x, y, z);
 	ret_val.append(x);
 	ret_val.append(y);
 	ret_val.append(z);
 	return boost::python::tuple(ret_val);
 }
 
-uint32_t CSimplePointsMap_getSize(CSimplePointsMap& self)
+uint32_t CSimplePointsMap_getSize(CSimplePointsMap& me)
 {
-	return self.getPointsBufferRef_x().size();
+	return me.getPointsBufferRef_x().size();
 }
 // end of CSimplePointsMap
 
 // CSimpleMap
 void CSimpleMap_insert(
-	CSimpleMap& self, CPose3DPDF& in_posePDF, CSensoryFrame& in_SF)
+	CSimpleMap& me, CPose3DPDF& in_posePDF, CSensoryFrame& in_SF)
 {
 	// create smart pointers
 	CPose3DPDF::Ptr in_posePDFPtr = std::dynamic_pointer_cast<CPose3DPDF>(
@@ -239,66 +233,62 @@ void CSimpleMap_insert(
 	CSensoryFrame::Ptr in_SFPtr =
 		std::dynamic_pointer_cast<CSensoryFrame>(in_SF.duplicateGetSmartPtr());
 	// insert smart pointers
-	self.insert(in_posePDFPtr, in_SFPtr);
+	me.insert(in_posePDFPtr, in_SFPtr);
 }
 // end of CSimpleMap
 
 // CMultiMetricMapPDF
-CPose2D CMultiMetricMapPDF_getLastPose(CMultiMetricMapPDF& self, size_t i)
+CPose2D CMultiMetricMapPDF_getLastPose(CMultiMetricMapPDF& me, size_t i)
 {
 	bool is_valid;
-	mrpt::math::TPose3D last_pose = self.getLastPose(i, is_valid);
+	mrpt::math::TPose3D last_pose = me.getLastPose(i, is_valid);
 	return CPose2D(CPose3D(last_pose));
 }
 
-list CMultiMetricMapPDF_getPath(CMultiMetricMapPDF& self, size_t i)
+list CMultiMetricMapPDF_getPath(CMultiMetricMapPDF& me, size_t i)
 {
 	std::deque<mrpt::math::TPose3D> path;
 	list ret_val;
-	self.getPath(i, path);
+	me.getPath(i, path);
 	for (const auto& k : path)
 		ret_val.append(k);
 	return ret_val;
 }
 
 CPose3DPDFParticles CMultiMetricMapPDF_getEstimatedPosePDFAtTime(
-	CMultiMetricMapPDF& self, size_t timeStep)
+	CMultiMetricMapPDF& me, size_t timeStep)
 {
 	CPose3DPDFParticles out_estimation;
-	self.getEstimatedPosePDFAtTime(timeStep, out_estimation);
+	me.getEstimatedPosePDFAtTime(timeStep, out_estimation);
 	return out_estimation;
 }
 // end of CMultiMetricMapPDF
 
 // TSetOfMetricMapInitializers
 void TSetOfMetricMapInitializers_push_back(
-	TSetOfMetricMapInitializers& self, TMetricMapInitializer::Ptr& o)
+	TSetOfMetricMapInitializers& me, TMetricMapInitializer::Ptr& o)
 {
-	self.push_back(o);
+	me.push_back(o);
 }
 // end of TSetOfMetricMapInitializers
 
 // CMultiMetricMap
 mrpt::opengl::CSetOfObjects::Ptr CMultiMetricMap_getAs3DObject(
-	CMultiMetricMap& self)
+	CMultiMetricMap& me)
 {
-	mrpt::opengl::CSetOfObjects::Ptr outObj =
-		mrpt::opengl::CSetOfObjects::Create();
-	self.getAs3DObject(outObj);
-	return outObj;
+	return me.getVisualization();
 }
 
 void CMultiMetricMap_setListOfMaps(
-	CMultiMetricMap& self, TSetOfMetricMapInitializers& initializers)
+	CMultiMetricMap& me, TSetOfMetricMapInitializers& initializers)
 {
-	self.setListOfMaps(initializers);
+	me.setListOfMaps(initializers);
 }
 
-CSimplePointsMap::Ptr CMultiMetricMap_getAsSimplePointsMap(
-	CMultiMetricMap& self)
+CSimplePointsMap::Ptr CMultiMetricMap_getAsSimplePointsMap(CMultiMetricMap& me)
 {
 	CSimplePointsMap::Ptr points_map(new CSimplePointsMap);
-	const CSimplePointsMap* points_map_ptr = self.getAsSimplePointsMap();
+	const CSimplePointsMap* points_map_ptr = me.getAsSimplePointsMap();
 	*points_map = *points_map_ptr;
 	return points_map;
 }

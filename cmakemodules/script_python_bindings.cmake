@@ -13,7 +13,7 @@ endif()
 if(UNIX AND NOT MRPT_DISABLE_PYTHON_BINDINGS)
     #set( BUILD_PY_BINDINGS OFF CACHE BOOL "If you want to build the MRPT python bindings, enable this.")
     # find packages quiet
-    find_package(Boost QUIET COMPONENTS python3)
+    find_package(Boost QUIET COMPONENTS python)
 
 	# Requires CMake 3.13+
 	find_package (Python3 COMPONENTS Development QUIET)
