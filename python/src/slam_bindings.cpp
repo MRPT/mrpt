@@ -46,14 +46,14 @@ using namespace mrpt::io;
 
 // CICP
 tuple CICP_AlignPDF1(
-	CICP& self, COccupancyGridMap2D& m1, CSimplePointsMap& m2,
+	CICP& me, COccupancyGridMap2D& m1, CSimplePointsMap& m2,
 	CPosePDFGaussian& initialEstimationPDF)
 {
 	CPosePDFGaussian posePDF;
 	CICP::TReturnInfo info;
 
 	CPosePDF::Ptr posePDFPtr =
-		self.AlignPDF(&m1, &m2, initialEstimationPDF, info);
+		me.AlignPDF(&m1, &m2, initialEstimationPDF, info);
 	posePDF.copyFrom(*posePDFPtr);
 
 	boost::python::list ret_val;
@@ -63,14 +63,14 @@ tuple CICP_AlignPDF1(
 }
 
 tuple CICP_AlignPDF2(
-	CICP& self, CSimplePointsMap& m1, CSimplePointsMap& m2,
+	CICP& me, CSimplePointsMap& m1, CSimplePointsMap& m2,
 	CPosePDFGaussian& initialEstimationPDF)
 {
 	CPosePDFGaussian posePDF;
 	CICP::TReturnInfo info;
 
 	CPosePDF::Ptr posePDFPtr =
-		self.AlignPDF(&m1, &m2, initialEstimationPDF, info);
+		me.AlignPDF(&m1, &m2, initialEstimationPDF, info);
 	posePDF.copyFrom(*posePDFPtr);
 
 	boost::python::list ret_val;
@@ -112,40 +112,40 @@ struct CMetricMapBuilderWrap : CMetricMapBuilder, wrapper<CMetricMapBuilder>
 	}
 };
 
-CSimpleMap CMetricMapBuilder_getCurrentlyBuiltMap(CMetricMapBuilder& self)
+CSimpleMap CMetricMapBuilder_getCurrentlyBuiltMap(CMetricMapBuilder& me)
 {
 	CSimpleMap out_map;
-	self.getCurrentlyBuiltMap(out_map);
+	me.getCurrentlyBuiltMap(out_map);
 	return out_map;
 }
 
-CPose2D CMetricMapBuilder_getCurrentPose2D(CMetricMapBuilder& self)
+CPose2D CMetricMapBuilder_getCurrentPose2D(CMetricMapBuilder& me)
 {
-	return CPose2D(self.getCurrentPoseEstimation()->getMeanVal());
+	return CPose2D(me.getCurrentPoseEstimation()->getMeanVal());
 }
 
 void CMetricMapBuilderICP_initialize(
-	CMetricMapBuilderICP& self, CSimpleMap& initialMap, CPosePDFGaussian& x0)
+	CMetricMapBuilderICP& me, CSimpleMap& initialMap, CPosePDFGaussian& x0)
 {
-	self.initialize(initialMap, &x0);
+	me.initialize(initialMap, &x0);
 }
 
 void CMetricMapBuilderRBPF_initialize(
-	CMetricMapBuilderRBPF& self, CSimpleMap& initialMap, CPosePDFParticles& x0)
+	CMetricMapBuilderRBPF& me, CSimpleMap& initialMap, CPosePDFParticles& x0)
 {
-	self.initialize(initialMap, &x0);
+	me.initialize(initialMap, &x0);
 }
 
 CPose3DPDFParticles::Ptr CMetricMapBuilderRBPF_getCurrentPoseEstimation(
-	CMetricMapBuilderRBPF& self)
+	CMetricMapBuilderRBPF& me)
 {
 	return std::dynamic_pointer_cast<CPose3DPDFParticles>(
-		self.getCurrentPoseEstimation());
+		me.getCurrentPoseEstimation());
 }
 // end of CMetricMapBuilder
 
 // CRangeBearingKFSLAM2D
-tuple CRangeBearingKFSLAM2D_getCurrentState(CRangeBearingKFSLAM2D& self)
+tuple CRangeBearingKFSLAM2D_getCurrentState(CRangeBearingKFSLAM2D& me)
 {
 	list ret_val;
 
@@ -155,7 +155,7 @@ tuple CRangeBearingKFSLAM2D_getCurrentState(CRangeBearingKFSLAM2D& self)
 	mrpt::math::CVectorDouble out_fullState;
 	mrpt::math::CMatrixDouble out_fullCovariance;
 
-	self.getCurrentState(
+	me.getCurrentState(
 		out_robotPose, out_landmarksPositions, out_landmarkIDs, out_fullState,
 		out_fullCovariance);
 
@@ -169,19 +169,19 @@ tuple CRangeBearingKFSLAM2D_getCurrentState(CRangeBearingKFSLAM2D& self)
 }
 
 CPosePDFGaussian CRangeBearingKFSLAM2D_getCurrentRobotPose(
-	CRangeBearingKFSLAM2D& self)
+	CRangeBearingKFSLAM2D& me)
 {
 	CPosePDFGaussian out_robotPose;
-	self.getCurrentRobotPose(out_robotPose);
+	me.getCurrentRobotPose(out_robotPose);
 	return out_robotPose;
 }
 
 mrpt::opengl::CSetOfObjects::Ptr CRangeBearingKFSLAM2D_getAs3DObject(
-	CRangeBearingKFSLAM2D& self)
+	CRangeBearingKFSLAM2D& me)
 {
 	mrpt::opengl::CSetOfObjects::Ptr outObj =
 		mrpt::opengl::CSetOfObjects::Create();
-	self.getAs3DObject(outObj);
+	me.getAs3DObject(outObj);
 	return outObj;
 }
 
@@ -192,106 +192,105 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 
 // CMonteCarloLocalization2D
 void CMonteCarloLocalization2D_prediction_and_update_pfStandardProposal(
-	CMonteCarloLocalization2D& self,
+	CMonteCarloLocalization2D& me,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation,
 	const CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	self.prediction_and_update_pfStandardProposal(
+	me.prediction_and_update_pfStandardProposal(
 		action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFStandard(
-	CMonteCarloLocalization2D& self,
+	CMonteCarloLocalization2D& me,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation,
 	const CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	self.prediction_and_update_pfAuxiliaryPFStandard(
+	me.prediction_and_update_pfAuxiliaryPFStandard(
 		action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFOptimal(
-	CMonteCarloLocalization2D& self,
+	CMonteCarloLocalization2D& me,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation,
 	const CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	self.prediction_and_update_pfAuxiliaryPFOptimal(
+	me.prediction_and_update_pfAuxiliaryPFOptimal(
 		action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization2D_prediction_and_update(
-	CMonteCarloLocalization2D& self,
+	CMonteCarloLocalization2D& me,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation,
 	const CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	self.prediction_and_update(action.get(), observation.get(), PF_options);
+	me.prediction_and_update(action.get(), observation.get(), PF_options);
 }
 
-CPose2D CMonteCarloLocalization2D_getMean(CMonteCarloLocalization2D& self)
+CPose2D CMonteCarloLocalization2D_getMean(CMonteCarloLocalization2D& me)
 {
 	CPose2D mean;
-	self.getMean(mean);
+	me.getMean(mean);
 	return mean;
 }
 
 tuple CMonteCarloLocalization2D_getCovarianceAndMean(
-	CMonteCarloLocalization2D& self)
+	CMonteCarloLocalization2D& me)
 {
 	list ret_val;
-	const auto [cov, mean_point] = self.getCovarianceAndMean();
+	const auto [cov, mean_point] = me.getCovarianceAndMean();
 	ret_val.append(cov);
 	ret_val.append(mean_point);
 	return tuple(ret_val);
 }
 
 CPose2D CMonteCarloLocalization2D_drawSingleSample(
-	CMonteCarloLocalization2D& self)
+	CMonteCarloLocalization2D& me)
 {
 	CPose2D outPart;
-	self.drawSingleSample(outPart);
+	me.drawSingleSample(outPart);
 	return outPart;
 }
 
 CPosePDFParticles CMonteCarloLocalization2D_inverse(
-	CMonteCarloLocalization2D& self)
+	CMonteCarloLocalization2D& me)
 {
 	CPosePDFParticles o;
-	self.inverse(o);
+	me.inverse(o);
 	return o;
 }
 
 void CMonteCarloLocalization2D_writeParticlesToStream(
-	CMonteCarloLocalization2D& self, CStream& out)
+	CMonteCarloLocalization2D& me, CStream& out)
 {
 	auto arch = mrpt::serialization::archiveFrom(out);
-	self.writeParticlesToStream(arch);
+	me.writeParticlesToStream(arch);
 }
 
 void CMonteCarloLocalization2D_readParticlesFromStream(
-	CMonteCarloLocalization2D& self, CStream& in)
+	CMonteCarloLocalization2D& me, CStream& in)
 {
 	auto arch = mrpt::serialization::archiveFrom(in);
-	self.readParticlesFromStream(arch);
+	me.readParticlesFromStream(arch);
 }
 
 mrpt::opengl::CSetOfObjects::Ptr CMonteCarloLocalization2D_getAs3DObject(
-	CMonteCarloLocalization2D& self)
+	CMonteCarloLocalization2D& me)
 {
 	mrpt::opengl::CSetOfObjects::Ptr outObj =
 		mrpt::opengl::CSetOfObjects::Create();
-	self.getAs3DObject(outObj);
+	me.getAs3DObject(outObj);
 	return outObj;
 }
 
-tuple CMonteCarloLocalization2D_normalizeWeights(
-	CMonteCarloLocalization2D& self)
+tuple CMonteCarloLocalization2D_normalizeWeights(CMonteCarloLocalization2D& me)
 {
 	list ret_val;
 	double out_max_log_w;
-	double norm = self.normalizeWeights(&out_max_log_w);
+	double norm = me.normalizeWeights(&out_max_log_w);
 	ret_val.append(norm);
 	ret_val.append(out_max_log_w);
 	return tuple(ret_val);
@@ -312,106 +311,105 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
 
 // CMonteCarloLocalization3D
 void CMonteCarloLocalization3D_prediction_and_update_pfStandardProposal(
-	CMonteCarloLocalization3D& self,
+	CMonteCarloLocalization3D& me,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation,
 	const CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	self.prediction_and_update_pfStandardProposal(
+	me.prediction_and_update_pfStandardProposal(
 		action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFStandard(
-	CMonteCarloLocalization3D& self,
+	CMonteCarloLocalization3D& me,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation,
 	const CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	self.prediction_and_update_pfAuxiliaryPFStandard(
+	me.prediction_and_update_pfAuxiliaryPFStandard(
 		action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFOptimal(
-	CMonteCarloLocalization3D& self,
+	CMonteCarloLocalization3D& me,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation,
 	const CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	self.prediction_and_update_pfAuxiliaryPFOptimal(
+	me.prediction_and_update_pfAuxiliaryPFOptimal(
 		action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization3D_prediction_and_update(
-	CMonteCarloLocalization3D& self,
+	CMonteCarloLocalization3D& me,
 	const mrpt::obs::CActionCollection::Ptr action,
 	const mrpt::obs::CSensoryFrame::Ptr observation,
 	const CParticleFilter::TParticleFilterOptions& PF_options)
 {
-	self.prediction_and_update(action.get(), observation.get(), PF_options);
+	me.prediction_and_update(action.get(), observation.get(), PF_options);
 }
 
-CPose3D CMonteCarloLocalization3D_getMean(CMonteCarloLocalization3D& self)
+CPose3D CMonteCarloLocalization3D_getMean(CMonteCarloLocalization3D& me)
 {
 	CPose3D mean;
-	self.getMean(mean);
+	me.getMean(mean);
 	return mean;
 }
 
 tuple CMonteCarloLocalization3D_getCovarianceAndMean(
-	CMonteCarloLocalization3D& self)
+	CMonteCarloLocalization3D& me)
 {
 	list ret_val;
-	const auto [cov, mean_point] = self.getCovarianceAndMean();
+	const auto [cov, mean_point] = me.getCovarianceAndMean();
 	ret_val.append(cov);
 	ret_val.append(mean_point);
 	return tuple(ret_val);
 }
 
 CPose3D CMonteCarloLocalization3D_drawSingleSample(
-	CMonteCarloLocalization3D& self)
+	CMonteCarloLocalization3D& me)
 {
 	CPose3D outPart;
-	self.drawSingleSample(outPart);
+	me.drawSingleSample(outPart);
 	return outPart;
 }
 
 CPose3DPDFParticles CMonteCarloLocalization3D_inverse(
-	CMonteCarloLocalization3D& self)
+	CMonteCarloLocalization3D& me)
 {
 	CPose3DPDFParticles o;
-	self.inverse(o);
+	me.inverse(o);
 	return o;
 }
 
 void CMonteCarloLocalization3D_writeParticlesToStream(
-	CMonteCarloLocalization3D& self, CStream& out)
+	CMonteCarloLocalization3D& me, CStream& out)
 {
 	auto arch = mrpt::serialization::archiveFrom(out);
-	self.writeParticlesToStream(arch);
+	me.writeParticlesToStream(arch);
 }
 
 void CMonteCarloLocalization3D_readParticlesFromStream(
-	CMonteCarloLocalization3D& self, CStream& in)
+	CMonteCarloLocalization3D& me, CStream& in)
 {
 	auto arch = mrpt::serialization::archiveFrom(in);
-	self.readParticlesFromStream(arch);
+	me.readParticlesFromStream(arch);
 }
 
 mrpt::opengl::CSetOfObjects::Ptr CMonteCarloLocalization3D_getAs3DObject(
-	CMonteCarloLocalization3D& self)
+	CMonteCarloLocalization3D& me)
 {
 	mrpt::opengl::CSetOfObjects::Ptr outObj =
 		mrpt::opengl::CSetOfObjects::Create();
-	self.getAs3DObject(outObj);
+	me.getAs3DObject(outObj);
 	return outObj;
 }
 
-tuple CMonteCarloLocalization3D_normalizeWeights(
-	CMonteCarloLocalization3D& self)
+tuple CMonteCarloLocalization3D_normalizeWeights(CMonteCarloLocalization3D& me)
 {
 	list ret_val;
 	double out_max_log_w;
-	double norm = self.normalizeWeights(&out_max_log_w);
+	double norm = me.normalizeWeights(&out_max_log_w);
 	ret_val.append(norm);
 	ret_val.append(out_max_log_w);
 	return tuple(ret_val);
