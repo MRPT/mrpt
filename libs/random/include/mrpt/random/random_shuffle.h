@@ -9,6 +9,9 @@
 
 #pragma once
 
+#include <mrpt/random/portable_uniform_distribution.h>
+
+#include <cstdint>
 #include <iterator>	 // iterator_traits
 #include <random>  // uniform_int_distribution
 #include <utility>	// std::swap
@@ -21,13 +24,9 @@ namespace mrpt::random
 template <class RandomIt, class URBG>
 void shuffle(RandomIt first, RandomIt last, URBG&& g)
 {
-	using diff_t = typename std::iterator_traits<RandomIt>::difference_type;
-	using distr_t = std::uniform_int_distribution<diff_t>;
-	using param_t = typename distr_t::param_type;
-	distr_t D;
-	diff_t n = last - first;
-	for (diff_t i = n - 1; i > 0; --i)
-		std::swap(first[i], first[D(g, param_t(0, i))]);
+	const uint64_t n = last - first;
+	for (int64_t i = static_cast<int64_t>(n) - 1; i > 0; --i)
+		std::swap(first[i], first[portable_uniform_distribution(g, 0, i)]);
 }
 
 /** Uniform shuffle a sequence.
@@ -50,14 +49,10 @@ void shuffle(RandomIt first, RandomIt last)
 template <class RandomIt, class URBG>
 void partial_shuffle(RandomIt first, RandomIt last, URBG&& g, size_t N)
 {
-	using diff_t = typename std::iterator_traits<RandomIt>::difference_type;
-	using distr_t = std::uniform_int_distribution<diff_t>;
-	using param_t = typename distr_t::param_type;
-	distr_t D;
-	diff_t n = last - first;
-	const diff_t n_1 = n - 1;
-	for (diff_t i = 0; i < n && i < N; ++i)
-		std::swap(first[i], first[D(g, param_t(i, n_1))]);
+	const int64_t n = static_cast<int64_t>(last - first);
+	const int64_t n_1 = n - 1;
+	for (int64_t i = 0; i < n && i < static_cast<int64_t>(N); ++i)
+		std::swap(first[i], first[portable_uniform_distribution(g, i, n_1)]);
 }
 
 }  // namespace mrpt::random
