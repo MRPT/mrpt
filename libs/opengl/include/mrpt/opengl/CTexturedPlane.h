@@ -50,6 +50,19 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles,
 		CRenderizableShaderTriangles::freeOpenGLResources();
 		CRenderizableShaderTexturedTriangles::freeOpenGLResources();
 	}
+
+	/** Control whether to render the FRONT, BACK, or BOTH (default) set of
+	 * faces. Refer to docs for glCullFace() */
+	void cullFaces(const TCullFace& cf)
+	{
+		CRenderizableShaderTexturedTriangles::cullFaces(cf);
+		CRenderizableShaderTriangles::cullFaces(cf);
+	}
+	TCullFace cullFaces() const
+	{
+		return CRenderizableShaderTexturedTriangles::cullFaces();
+	}
+
 	/** @} */
 
 	CTexturedPlane(
