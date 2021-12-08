@@ -227,12 +227,12 @@ bool tfest::se3_l2(
 	std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
 	for (size_t i = 0; i < N; i++)
 	{
-		points_this[i].x = corrs[i].this_x;
-		points_this[i].y = corrs[i].this_y;
-		points_this[i].z = corrs[i].this_z;
-		points_other[i].x = corrs[i].other_x;
-		points_other[i].y = corrs[i].other_y;
-		points_other[i].z = corrs[i].other_z;
+		points_this[i].x = corrs[i].global.x;
+		points_this[i].y = corrs[i].global.y;
+		points_this[i].z = corrs[i].global.z;
+		points_other[i].x = corrs[i].local.x;
+		points_other[i].y = corrs[i].local.y;
+		points_other[i].z = corrs[i].local.z;
 	}
 	return se3_l2_internal(
 		points_this, points_other, out_transform, out_scale, forceScaleToUnity);
@@ -248,12 +248,12 @@ bool tfest::se3_l2(
 	std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
 	for (size_t i = 0; i < N; i++)
 	{
-		points_this[i].x = corrs[i].this_x;
-		points_this[i].y = corrs[i].this_y;
-		points_this[i].z = corrs[i].this_z;
-		points_other[i].x = corrs[i].other_x;
-		points_other[i].y = corrs[i].other_y;
-		points_other[i].z = corrs[i].other_z;
+		points_this[i].x = corrs[i].global.x;
+		points_this[i].y = corrs[i].global.y;
+		points_this[i].z = corrs[i].global.z;
+		points_other[i].x = corrs[i].local.x;
+		points_other[i].y = corrs[i].local.y;
+		points_other[i].z = corrs[i].local.z;
 	}
 	return se3_l2_internal(
 		points_this, points_other, out_transform, out_scale, forceScaleToUnity);

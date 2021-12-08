@@ -659,14 +659,14 @@ void COccupancyGridMap2D::determineMatching2D(
 							// save the correspondence:
 							nTotalCorrespondences++;
 							TMatchingPair mp;
-							mp.this_idx = cx + cy * size_x;
-							mp.this_x = idx2x(cx);
-							mp.this_y = idx2y(cy);
-							mp.this_z = z_local;
-							mp.other_idx = localIdx;
-							mp.other_x = otherMap_pxs[localIdx];
-							mp.other_y = otherMap_pys[localIdx];
-							mp.other_z = otherMap_pzs[localIdx];
+							mp.globalIdx = cx + cy * size_x;
+							mp.global.x = idx2x(cx);
+							mp.global.y = idx2y(cy);
+							mp.global.z = z_local;
+							mp.localIdx = localIdx;
+							mp.local.x = otherMap_pxs[localIdx];
+							mp.local.y = otherMap_pys[localIdx];
+							mp.local.z = otherMap_pzs[localIdx];
 							correspondences.push_back(mp);
 						}
 						else
@@ -676,14 +676,14 @@ void COccupancyGridMap2D::determineMatching2D(
 							{
 								min_dist = this_dist;
 
-								closestCorr.this_idx = cx + cy * size_x;
-								closestCorr.this_x = idx2x(cx);
-								closestCorr.this_y = idx2y(cy);
-								closestCorr.this_z = z_local;
-								closestCorr.other_idx = localIdx;
-								closestCorr.other_x = otherMap_pxs[localIdx];
-								closestCorr.other_y = otherMap_pys[localIdx];
-								closestCorr.other_z = otherMap_pzs[localIdx];
+								closestCorr.globalIdx = cx + cy * size_x;
+								closestCorr.global.x = idx2x(cx);
+								closestCorr.global.y = idx2y(cy);
+								closestCorr.global.z = z_local;
+								closestCorr.localIdx = localIdx;
+								closestCorr.local.x = otherMap_pxs[localIdx];
+								closestCorr.local.y = otherMap_pys[localIdx];
+								closestCorr.local.z = otherMap_pzs[localIdx];
 							}
 						}
 

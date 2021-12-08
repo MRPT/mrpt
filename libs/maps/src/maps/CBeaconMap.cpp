@@ -883,19 +883,19 @@ void CBeaconMap::computeMatchingWith3DLandmarks(
 					// OK: A correspondence found!!
 					otherCorrespondences[k] = true;
 
-					match.this_idx = j;
+					match.globalIdx = j;
 
 					CPoint3D mean_j = m_beacons[j].getMeanVal();
 
-					match.this_x = mean_j.x();
-					match.this_y = mean_j.y();
-					match.this_z = mean_j.z();
+					match.global.x = mean_j.x();
+					match.global.y = mean_j.y();
+					match.global.z = mean_j.z();
 
 					CPoint3D mean_k = anotherMap->m_beacons[k].getMeanVal();
-					match.other_idx = k;
-					match.other_x = mean_k.x();
-					match.other_y = mean_k.y();
-					match.other_z = mean_k.z();
+					match.localIdx = k;
+					match.local.x = mean_k.x();
+					match.local.y = mean_k.y();
+					match.local.z = mean_k.z();
 
 					correspondences.push_back(match);
 				}

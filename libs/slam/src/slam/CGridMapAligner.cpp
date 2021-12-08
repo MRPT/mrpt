@@ -307,15 +307,15 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 			 ++it1, ++it2)
 		{
 			mrpt::tfest::TMatchingPair mp;
-			mp.this_idx = *it1;
-			mp.this_x = lm1->landmarks.get(*it1)->pose_mean.x;
-			mp.this_y = lm1->landmarks.get(*it1)->pose_mean.y;
-			mp.this_z = lm1->landmarks.get(*it1)->pose_mean.z;
+			mp.globalIdx = *it1;
+			mp.global.x = lm1->landmarks.get(*it1)->pose_mean.x;
+			mp.global.y = lm1->landmarks.get(*it1)->pose_mean.y;
+			mp.global.z = lm1->landmarks.get(*it1)->pose_mean.z;
 
-			mp.other_idx = *it2;
-			mp.other_x = lm2->landmarks.get(*it2)->pose_mean.x;
-			mp.other_y = lm2->landmarks.get(*it2)->pose_mean.y;
-			mp.other_z = lm2->landmarks.get(*it2)->pose_mean.z;
+			mp.localIdx = *it2;
+			mp.local.x = lm2->landmarks.get(*it2)->pose_mean.x;
+			mp.local.y = lm2->landmarks.get(*it2)->pose_mean.y;
+			mp.local.z = lm2->landmarks.get(*it2)->pose_mean.z;
 			correspondences.push_back(mp);
 
 			if (!hasCorr[*it1])
@@ -497,11 +497,11 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					} while (idx1 == idx2);	 // Avoid a degenerated case!
 
 					// Uniqueness of features:
-					if (all_corrs[idx1].this_idx == all_corrs[idx2].this_idx ||
-						all_corrs[idx1].this_idx == all_corrs[idx2].other_idx)
+					if (all_corrs[idx1].globalIdx == all_corrs[idx2].globalIdx ||
+						all_corrs[idx1].globalIdx == all_corrs[idx2].localIdx)
 						continue;
-					if (all_corrs[idx1].other_idx == all_corrs[idx2].this_idx ||
-						all_corrs[idx1].other_idx == all_corrs[idx2].other_idx)
+					if (all_corrs[idx1].localIdx == all_corrs[idx2].globalIdx ||
+						all_corrs[idx1].localIdx == all_corrs[idx2].localIdx)
 						continue;
 
 					// Check the feasibility of this pair "idx1"-"idx2":
@@ -510,15 +510,15 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					//   to that of their correspondences in MAP2:
 					const double corrs_dist1 =
 						mrpt::math::distanceBetweenPoints(
-							all_corrs[idx1].this_x, all_corrs[idx1].this_y,
-							all_corrs[idx1].this_z, all_corrs[idx2].this_x,
-							all_corrs[idx2].this_y, all_corrs[idx2].this_z);
+							all_corrs[idx1].global.x, all_corrs[idx1].global.y,
+							all_corrs[idx1].global.z, all_corrs[idx2].global.x,
+							all_corrs[idx2].global.y, all_corrs[idx2].global.z);
 
 					const double corrs_dist2 =
 						mrpt::math::distanceBetweenPoints(
-							all_corrs[idx1].other_x, all_corrs[idx1].other_y,
-							all_corrs[idx1].other_z, all_corrs[idx2].other_x,
-							all_corrs[idx2].other_y, all_corrs[idx2].other_z);
+							all_corrs[idx1].local.x, all_corrs[idx1].local.y,
+							all_corrs[idx1].local.z, all_corrs[idx2].local.x,
+							all_corrs[idx2].local.y, all_corrs[idx2].local.z);
 
 					// Is is a consistent possibility?
 					//  We use a chi2 test (see paper for the derivation)
@@ -557,10 +557,10 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					std::vector<bool> used_landmarks1(nLM1, false);
 					std::vector<bool> used_landmarks2(nLM2, false);
 
-					used_landmarks1[all_corrs[idx1].this_idx] = true;
-					used_landmarks1[all_corrs[idx2].this_idx] = true;
-					used_landmarks2[all_corrs[idx1].other_idx] = true;
-					used_landmarks2[all_corrs[idx2].other_idx] = true;
+					used_landmarks1[all_corrs[idx1].globalIdx] = true;
+					used_landmarks1[all_corrs[idx2].globalIdx] = true;
+					used_landmarks2[all_corrs[idx1].localIdx] = true;
+					used_landmarks2[all_corrs[idx2].localIdx] = true;
 
 					// Build the transformation for these temptative
 					// correspondences:

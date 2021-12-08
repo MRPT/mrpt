@@ -478,15 +478,15 @@ void CPointsMap::determineMatching2D(
 
 			TMatchingPair& p = tempCorrs.back();
 
-			p.this_idx = tentativ_this_idx;
-			p.this_x = m_x[tentativ_this_idx];
-			p.this_y = m_y[tentativ_this_idx];
-			p.this_z = m_z[tentativ_this_idx];
+			p.globalIdx = tentativ_this_idx;
+			p.global.x = m_x[tentativ_this_idx];
+			p.global.y = m_y[tentativ_this_idx];
+			p.global.z = m_z[tentativ_this_idx];
 
-			p.other_idx = localIdx;
-			p.other_x = *x_other_it;
-			p.other_y = *y_other_it;
-			p.other_z = *z_other_it;
+			p.localIdx = localIdx;
+			p.local.x = *x_other_it;
+			p.local.y = *y_other_it;
+			p.local.z = *z_other_it;
 
 			p.errorSquareAfterTransformation = tentativ_err_sq;
 
@@ -1108,15 +1108,15 @@ void CPointsMap::determineMatching3D(
 
 				TMatchingPair& p = tempCorrs.back();
 
-				p.this_idx = tentativ_this_idx;
-				p.this_x = m_x[tentativ_this_idx];
-				p.this_y = m_y[tentativ_this_idx];
-				p.this_z = m_z[tentativ_this_idx];
+				p.globalIdx = tentativ_this_idx;
+				p.global.x = m_x[tentativ_this_idx];
+				p.global.y = m_y[tentativ_this_idx];
+				p.global.z = m_z[tentativ_this_idx];
 
-				p.other_idx = localIdx;
-				p.other_x = otherMap->m_x[localIdx];
-				p.other_y = otherMap->m_y[localIdx];
-				p.other_z = otherMap->m_z[localIdx];
+				p.localIdx = localIdx;
+				p.local.x = otherMap->m_x[localIdx];
+				p.local.y = otherMap->m_y[localIdx];
+				p.local.z = otherMap->m_z[localIdx];
 
 				p.errorSquareAfterTransformation = tentativ_err_sq;
 
@@ -1284,17 +1284,17 @@ void CPointsMap::compute3DDistanceToMesh(
 
 				TMatchingPair& p = tempCorrs.back();
 
-				p.this_idx = nOtherMapPointsWithCorrespondence++;  // insert a
+				p.globalIdx = nOtherMapPointsWithCorrespondence++;  // insert a
 				// consecutive index
 				// here
-				p.this_x = mX;
-				p.this_y = mY;
-				p.this_z = mZ;
+				p.global.x = mX;
+				p.global.y = mY;
+				p.global.z = mZ;
 
-				p.other_idx = localIdx;
-				p.other_x = otherMap->m_x[localIdx];
-				p.other_y = otherMap->m_y[localIdx];
-				p.other_z = otherMap->m_z[localIdx];
+				p.localIdx = localIdx;
+				p.local.x = otherMap->m_x[localIdx];
+				p.local.y = otherMap->m_y[localIdx];
+				p.local.z = otherMap->m_z[localIdx];
 
 				p.errorSquareAfterTransformation = distanceForThisPoint;
 
@@ -1314,9 +1314,9 @@ void CPointsMap::compute3DDistanceToMesh(
 	TMatchingPairList::iterator it;
 	for (it = tempCorrs.begin(); it != tempCorrs.end(); ++it)
 	{
-		const size_t i0 = vIdx[it->this_idx][0];
-		const size_t i1 = vIdx[it->this_idx][1];
-		const size_t i2 = vIdx[it->this_idx][2];
+		const size_t i0 = vIdx[it->globalIdx][0];
+		const size_t i1 = vIdx[it->globalIdx][1];
+		const size_t i2 = vIdx[it->globalIdx][2];
 
 		if (best.find(i0) != best.end() &&
 			best[i0].find(i1) != best[i0].end() &&
@@ -1326,24 +1326,24 @@ void CPointsMap::compute3DDistanceToMesh(
 		{
 			if (best[i0][i1][i2].second > it->errorSquareAfterTransformation)
 			{
-				best[i0][i1][i2].first = it->this_idx;
+				best[i0][i1][i2].first = it->globalIdx;
 				best[i0][i1][i2].second = it->errorSquareAfterTransformation;
 			}
 		}
 		else  // if there is no match
 		{
-			best[i0][i1][i2].first = it->this_idx;
+			best[i0][i1][i2].first = it->globalIdx;
 			best[i0][i1][i2].second = it->errorSquareAfterTransformation;
 		}
 	}  // end it correspondences
 
 	for (it = tempCorrs.begin(); it != tempCorrs.end(); ++it)
 	{
-		const size_t i0 = vIdx[it->this_idx][0];
-		const size_t i1 = vIdx[it->this_idx][1];
-		const size_t i2 = vIdx[it->this_idx][2];
+		const size_t i0 = vIdx[it->globalIdx][0];
+		const size_t i1 = vIdx[it->globalIdx][1];
+		const size_t i2 = vIdx[it->globalIdx][2];
 
-		if (best[i0][i1][i2].first == it->this_idx)
+		if (best[i0][i1][i2].first == it->globalIdx)
 			correspondences.push_back(*it);
 	}
 
@@ -2027,15 +2027,15 @@ void CPointsMap::fuseWith(
 		for (auto corrsIt = correspondences.begin();
 			 corrsIt != correspondences.end(); ++corrsIt)
 		{
-			if (corrsIt->other_idx == i)
+			if (corrsIt->localIdx == i)
 			{
-				float dist = square(corrsIt->other_x - corrsIt->this_x) +
-					square(corrsIt->other_y - corrsIt->this_y) +
-					square(corrsIt->other_z - corrsIt->this_z);
+				float dist = square(corrsIt->local.x - corrsIt->global.x) +
+					square(corrsIt->local.y - corrsIt->global.y) +
+					square(corrsIt->local.z - corrsIt->global.z);
 				if (dist < minDist)
 				{
 					minDist = dist;
-					closestCorr = corrsIt->this_idx;
+					closestCorr = corrsIt->globalIdx;
 				}
 			}
 		}  // End of for each correspondence...

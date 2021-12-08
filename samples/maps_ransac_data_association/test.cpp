@@ -222,14 +222,14 @@ void TestRANSAC()
 		{
 			TMatchingPair match;
 
-			match.other_idx = j;
-			match.other_x = observations[j].x;
-			match.other_y = observations[j].y;
+			match.localIdx = j;
+			match.local.x = observations[j].x;
+			match.local.y = observations[j].y;
 
 			for (size_t i = 0; i < nMapPts; i++)
 			{
-				match.this_idx = i;
-				the_map.getPoint(i, match.this_x, match.this_y);
+				match.globalIdx = i;
+				the_map.getPoint(i, match.global.x, match.global.y);
 
 				all_correspondences.push_back(match);
 			}
@@ -281,17 +281,17 @@ void TestRANSAC()
 		cout << "# of SOG modes: " << best_poses.size() << endl;
 		cout << "Best match has " << out_best_pairings.size() << " features:\n";
 		for (size_t i = 0; i < out_best_pairings.size(); i++)
-			cout << out_best_pairings[i].this_idx << " <-> "
-				 << out_best_pairings[i].other_idx << endl;
+			cout << out_best_pairings[i].globalIdx << " <-> "
+				 << out_best_pairings[i].localIdx << endl;
 		cout << endl;
 
 		// Generate "association vector":
 		vector<int> obs2map_pairings(nObs, -1);
 		for (size_t i = 0; i < out_best_pairings.size(); i++)
-			obs2map_pairings[out_best_pairings[i].other_idx] =
-				out_best_pairings[i].this_idx == ((unsigned int)-1)
+			obs2map_pairings[out_best_pairings[i].localIdx] =
+				out_best_pairings[i].globalIdx == ((unsigned int)-1)
 				? -1
-				: out_best_pairings[i].this_idx;
+				: out_best_pairings[i].globalIdx;
 
 		cout << "1\n";
 		for (size_t i = 0; i < nObs; i++)

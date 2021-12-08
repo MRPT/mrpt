@@ -219,15 +219,15 @@ double vision::computeMsd(
 	TPoint3D err;
 	for (it = feat_list.begin(); it != feat_list.end(); it++)
 	{
-		err.x = it->other_x -
-			(it->this_x * mat(0, 0) + it->this_y * mat(0, 1) +
-			 it->this_z * mat(0, 2) + Rt.x());
-		err.y = it->other_y -
-			(it->this_x * mat(1, 0) + it->this_y * mat(1, 1) +
-			 it->this_z * mat(1, 2) + Rt.y());
-		err.z = it->other_z -
-			(it->this_x * mat(2, 0) + it->this_y * mat(2, 1) +
-			 it->this_z * mat(2, 2) + Rt.z());
+		err.x = it->local.x -
+			(it->global.x * mat(0, 0) + it->global.y * mat(0, 1) +
+			 it->global.z * mat(0, 2) + Rt.x());
+		err.y = it->local.y -
+			(it->global.x * mat(1, 0) + it->global.y * mat(1, 1) +
+			 it->global.z * mat(1, 2) + Rt.y());
+		err.z = it->local.z -
+			(it->global.x * mat(2, 0) + it->global.y * mat(2, 1) +
+			 it->global.z * mat(2, 2) + Rt.z());
 
 		acum += err.norm();
 
@@ -252,15 +252,15 @@ void vision::cloudsToMatchedList(
 			if (itLand1->ID == itLand2->ID)
 			{
 				// Match found!
-				pair.this_idx = pair.other_idx = (unsigned int)itLand1->ID;
+				pair.globalIdx = pair.localIdx = (unsigned int)itLand1->ID;
 
-				pair.this_x = itLand1->pose_mean.x;
-				pair.this_y = itLand1->pose_mean.y;
-				pair.this_z = itLand1->pose_mean.z;
+				pair.global.x = itLand1->pose_mean.x;
+				pair.global.y = itLand1->pose_mean.y;
+				pair.global.z = itLand1->pose_mean.z;
 
-				pair.other_x = itLand2->pose_mean.x;
-				pair.other_y = itLand2->pose_mean.y;
-				pair.other_z = itLand2->pose_mean.z;
+				pair.local.x = itLand2->pose_mean.x;
+				pair.local.y = itLand2->pose_mean.y;
+				pair.local.z = itLand2->pose_mean.z;
 
 				outList.push_back(pair);
 			}  // end if
@@ -953,7 +953,9 @@ void vision::projectMatchedFeatures(
 
 		// Filter out bad points
 		if ((z3D < param.minZ) || (z3D > param.maxZ))
-		{ itList = mfList.erase(itList); }
+		{
+			itList = mfList.erase(itList);
+		}
 		else
 		{
 			TPoint3D p3D(x3D, y3D, z3D);

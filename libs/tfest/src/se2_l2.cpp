@@ -51,10 +51,10 @@ static mrpt::tfest::internal::se2_l2_impl_return_t<float> se2_l2_impl(
 	for (const auto& p : in_correspondences)
 	{
 		// Get the pair of points in the correspondence:
-		const float xa = p.this_x;
-		const float ya = p.this_y;
-		const float xb = p.other_x;
-		const float yb = p.other_y;
+		const float xa = p.global.x;
+		const float ya = p.global.y;
+		const float xb = p.local.x;
+		const float yb = p.local.y;
 
 		// Compute the terms:
 		SumXa += xa;
@@ -151,10 +151,10 @@ bool tfest::se2_l2(
 		// ----------------------------------------------------
 		for (const auto& in_correspondence : in_correspondences)
 		{
-			var_x_a += square(in_correspondence.this_x - implRet.mean_x_a);
-			var_y_a += square(in_correspondence.this_y - implRet.mean_y_a);
-			var_x_b += square(in_correspondence.other_x - implRet.mean_x_b);
-			var_y_b += square(in_correspondence.other_y - implRet.mean_y_b);
+			var_x_a += square(in_correspondence.global.x - implRet.mean_x_a);
+			var_y_a += square(in_correspondence.global.y - implRet.mean_y_a);
+			var_x_b += square(in_correspondence.local.x - implRet.mean_x_b);
+			var_y_b += square(in_correspondence.local.y - implRet.mean_y_b);
 		}
 		var_x_a *= N_1_inv;	 //  /= (N-1)
 		var_y_a *= N_1_inv;
