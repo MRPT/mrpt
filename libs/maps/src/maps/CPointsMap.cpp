@@ -1284,7 +1284,7 @@ void CPointsMap::compute3DDistanceToMesh(
 
 				TMatchingPair& p = tempCorrs.back();
 
-				p.globalIdx = nOtherMapPointsWithCorrespondence++;  // insert a
+				p.globalIdx = nOtherMapPointsWithCorrespondence++;	// insert a
 				// consecutive index
 				// here
 				p.global.x = mX;

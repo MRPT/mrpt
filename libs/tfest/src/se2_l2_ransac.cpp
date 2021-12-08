@@ -169,9 +169,12 @@ bool tfest::se2_l2_robust(
 		std::vector<int> duplis;
 		for (unsigned j = k; j < nCorrs - 1; j++)
 		{
-			if (in_correspondences[k].global.x == in_correspondences[j].global.x &&
-				in_correspondences[k].global.y == in_correspondences[j].global.y &&
-				in_correspondences[k].global.z == in_correspondences[j].global.z)
+			if (in_correspondences[k].global.x ==
+					in_correspondences[j].global.x &&
+				in_correspondences[k].global.y ==
+					in_correspondences[j].global.y &&
+				in_correspondences[k].global.z ==
+					in_correspondences[j].global.z)
 				duplis.push_back(in_correspondences[j].globalIdx);
 		}
 		listDuplicatedLandmarksThis[in_correspondences[k].globalIdx] = duplis;

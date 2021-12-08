@@ -51,7 +51,7 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
 		//                LO0    LO1     HI2    HI3
 		// Note: _MM_SHUFFLE(hi3,hi2,lo1,lo0)
 		const __m128 a_xyz =
-			_mm_loadu_ps(&in_correspondence.global.x);  // *Unaligned* load
+			_mm_loadu_ps(&in_correspondence.global.x);	// *Unaligned* load
 		const __m128 b_xyz =
 			_mm_loadu_ps(&in_correspondence.local.x);  // *Unaligned* load
 
