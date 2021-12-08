@@ -67,6 +67,8 @@
     - Backwards-compatible change: New function mrpt::system::InvalidTimeStamp() used now inside the macro INVALID_TIMESTAMP, so the macro always returns a const reference instead of returning by value.
     - New function mrpt::system::consoleColorAndStyle()
     - mrpt::system::intervalFormat() now generates more human-friendly strings for time periods larger than 1 second (e.g. "1 year, 3 days, 8 hours").
+  - \ref mrpt_tfest_grp
+    - **[API change]** mrpt::tfest::TMatchingPair members are now called "local" vs "global" instead of the former, more confusing, "this" vs "other".
   - \ref mrpt_vision_grp
     - SIFT descriptors can now be evaluated for arbitrary keypoint coordinates.
 - BUG FIXES:

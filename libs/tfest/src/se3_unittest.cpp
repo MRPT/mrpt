@@ -82,14 +82,14 @@ void generate_list_of_points(
 	TMatchingPairTempl<T> pair;
 	for (unsigned int i = 0; i < 5; ++i)
 	{
-		pair.this_idx = pair.other_idx = i;
-		pair.this_x = d2f(pA[i][0]);
-		pair.this_y = d2f(pA[i][1]);
-		pair.this_z = d2f(pA[i][2]);
+		pair.globalIdx = pair.localIdx = i;
+		pair.global.x = d2f(pA[i][0]);
+		pair.global.y = d2f(pA[i][1]);
+		pair.global.z = d2f(pA[i][2]);
 
-		pair.other_x = d2f(pB[i][0]);
-		pair.other_y = d2f(pB[i][1]);
-		pair.other_z = d2f(pB[i][2]);
+		pair.local.x = d2f(pB[i][0]);
+		pair.local.y = d2f(pB[i][1]);
+		pair.local.z = d2f(pB[i][2]);
 
 		list.push_back(pair);
 	}

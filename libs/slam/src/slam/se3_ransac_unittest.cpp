@@ -112,14 +112,14 @@ bool ransac_data_assoc_run()
 	for (size_t j = 0; j < nObs; j++)
 	{
 		TMatchingPair match;
-		match.other_idx = j;
-		match.other_x = observations[j].x;
-		match.other_y = observations[j].y;
+		match.localIdx = j;
+		match.local.x = observations[j].x;
+		match.local.y = observations[j].y;
 
 		for (size_t i = 0; i < nMapPts; i++)
 		{
-			match.this_idx = i;
-			the_map.getPoint(i, match.this_x, match.this_y);
+			match.globalIdx = i;
+			the_map.getPoint(i, match.global.x, match.global.y);
 			all_correspondences.push_back(match);
 		}
 	}
