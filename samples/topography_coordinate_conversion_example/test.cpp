@@ -331,7 +331,8 @@ void displayResults(
 			else
 				consoleColorAndStyle(ConsoleForegroundColor::RED);
 			cout << thisResults[3 * i + 2] << endl;
-			mrpt::system::setConsoleColor(CONCOL_NORMAL);
+
+			consoleColorAndStyle(ConsoleForegroundColor::DEFAULT);
 		}
 		cout << endl;
 	}
