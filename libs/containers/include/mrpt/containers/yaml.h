@@ -851,7 +851,7 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
 			Var__ = mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(       \
 				Var__)>>::name2value(Yaml__[#Var__].as<std::string>());        \
 	}                                                                          \
-	else if (!Yaml__.empty() && Yaml__.has(#Var__))                            \
+	else if (!Yaml__.isNullNode() && !Yaml__.empty() && Yaml__.has(#Var__))    \
 	Var__ = Yaml__[#Var__].as<decltype(Var__)>()
 
 /** Just like MCP_LOAD_REQ(), but converts the read number from degrees to
