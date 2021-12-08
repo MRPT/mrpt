@@ -953,9 +953,7 @@ void vision::projectMatchedFeatures(
 
 		// Filter out bad points
 		if ((z3D < param.minZ) || (z3D > param.maxZ))
-		{
-			itList = mfList.erase(itList);
-		}
+		{ itList = mfList.erase(itList); }
 		else
 		{
 			TPoint3D p3D(x3D, y3D, z3D);

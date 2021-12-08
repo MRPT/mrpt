@@ -742,8 +742,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					// q2 is alreay computed from above!
 					// q2 = m1->squareDistanceToClosestCorrespondence(
 					// *other_x_trans, w2 );
-					// q2= kernel( square(it->global.x - *other_x_trans)+ square(
-					// it->global.y - w2 ),  rho2 );
+					// q2= kernel( square(it->global.x - *other_x_trans)+
+					// square( it->global.y - w2 ),  rho2 );
 
 					w3 = *other_y_trans + Axy;
 #ifdef ICP_DISTANCES_TO_LINE

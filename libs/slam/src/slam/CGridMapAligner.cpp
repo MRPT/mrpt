@@ -497,7 +497,8 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 					} while (idx1 == idx2);	 // Avoid a degenerated case!
 
 					// Uniqueness of features:
-					if (all_corrs[idx1].globalIdx == all_corrs[idx2].globalIdx ||
+					if (all_corrs[idx1].globalIdx ==
+							all_corrs[idx2].globalIdx ||
 						all_corrs[idx1].globalIdx == all_corrs[idx2].localIdx)
 						continue;
 					if (all_corrs[idx1].localIdx == all_corrs[idx2].globalIdx ||
