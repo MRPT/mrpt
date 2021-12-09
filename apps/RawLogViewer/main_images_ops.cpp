@@ -349,8 +349,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 
 								// Set distortion parameters to zero ->
 								// indicating that the image is now rectified
-								obsIm->cameraParams
-									.setDistortionParamsFromValues(0, 0, 0, 0);
+								obsIm->cameraParams.dist.fill(0);
 
 								// Save image to file and free memory
 								if (obsIm->image.isExternallyStored())
@@ -388,8 +387,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 
 							// Set distortion parameters to zero -> indicating
 							// that the image is now rectified
-							obsIm->cameraParams.setDistortionParamsFromValues(
-								0, 0, 0, 0);
+							obsIm->cameraParams.dist.fill(0);
 
 							// Save image to file and free memory
 							if (obsIm->image.isExternallyStored())

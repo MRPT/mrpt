@@ -207,7 +207,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 		empty = true;
 		m_stereo_camera.leftCamera.dist.fill(0);
 	}
-	m_stereo_camera.leftCamera.setDistortionParamsFromValues(
+	m_stereo_camera.leftCamera.setDistortionPlumbBob(
 		aux_mat.at<double>(0, 0), aux_mat.at<double>(0, 1),
 		aux_mat.at<double>(0, 2), aux_mat.at<double>(0, 3),
 		aux_mat.at<double>(0, 4));
@@ -228,7 +228,7 @@ TCaptureOptions_DUO3D::TYMLReadResult
 		empty = true;
 		m_stereo_camera.rightCamera.dist.fill(0);
 	}
-	m_stereo_camera.rightCamera.setDistortionParamsFromValues(
+	m_stereo_camera.rightCamera.setDistortionPlumbBob(
 		aux_mat.at<double>(0, 0), aux_mat.at<double>(0, 1),
 		aux_mat.at<double>(0, 2), aux_mat.at<double>(0, 3),
 		aux_mat.at<double>(0, 4));

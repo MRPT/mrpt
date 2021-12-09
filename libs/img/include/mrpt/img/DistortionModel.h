@@ -21,15 +21,15 @@ namespace mrpt::img
  */
 enum class DistortionModel : uint8_t
 {
-	None = 0,  //!< No distortion applied
-	BrownConrady,  //!<  Brown-Conrady or Plumb-Bob pinhole distortion model
-	KannalaBrandt  //!< Four parameter Kannala Brandt distortion model
+	none = 0,  //!< No distortion applied
+	plumb_bob,	//!< 5-param Brown-Conrady or Plumb-Bob pinhole distortion model
+	kannala_brandt	//!< 4-parameter Kannala Brandt distortion model (fisheye)
 };
 
 }  // namespace mrpt::img
 
 MRPT_ENUM_TYPE_BEGIN(mrpt::img::DistortionModel)
-MRPT_FILL_ENUM_MEMBER(mrpt::img::DistortionModel, None);
-MRPT_FILL_ENUM_MEMBER(mrpt::img::DistortionModel, BrownConrady);
-MRPT_FILL_ENUM_MEMBER(mrpt::img::DistortionModel, KannalaBrandt);
+MRPT_FILL_ENUM_MEMBER(mrpt::img::DistortionModel, none);
+MRPT_FILL_ENUM_MEMBER(mrpt::img::DistortionModel, plumb_bob);
+MRPT_FILL_ENUM_MEMBER(mrpt::img::DistortionModel, kannala_brandt);
 MRPT_ENUM_TYPE_END()
