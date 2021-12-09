@@ -300,7 +300,7 @@ MARKDOWN_SUPPORT       = YES
 # Minimum value: 0, maximum value: 99, default value: 0.
 # This tag requires that the tag MARKDOWN_SUPPORT is set to YES.
 
-TOC_INCLUDE_HEADINGS   = YES
+TOC_INCLUDE_HEADINGS   = 3
 
 # When enabled doxygen tries to link words that correspond to documented
 # classes, or namespaces to their corresponding documentation. Such a link can
@@ -309,8 +309,6 @@ TOC_INCLUDE_HEADINGS   = YES
 # The default value is: YES.
 
 AUTOLINK_SUPPORT       = YES
-
-TOC_INCLUDE_HEADINGS   = 3
 
 # If you use STL classes (i.e. std::string, std::vector, etc.) but do not want
 # to include (a tag file for) the STL sources as input, then you should set this
@@ -2040,7 +2038,41 @@ SEARCH_INCLUDES        = YES
 # preprocessor.
 # This tag requires that the tag SEARCH_INCLUDES is set to YES.
 
-INCLUDE_PATH           = $(MRPT_LIST_DIRECTORIES)
+INCLUDE_PATH           = \
+	../../libs/apps \
+	../../libs/bayes \
+	../../libs/comms \
+	../../libs/config \
+	../../libs/containers \
+	../../libs/core \
+	../../libs/detectors \
+	../../libs/expr \
+	../../libs/graphs \
+	../../libs/graphslam \
+	../../libs/gui \
+	../../libs/hmtslam \
+	../../libs/hwdrivers \
+	../../libs/img \
+	../../libs/io \
+	../../libs/kinematics \
+	../../libs/maps \
+	../../libs/math \
+	../../libs/nav \
+	../../libs/obs \
+	../../libs/opengl \
+	../../libs/poses \
+	../../libs/random \
+	../../libs/ros1bridge \
+	../../libs/rtti \
+	../../libs/serialization \
+	../../libs/slam \
+	../../libs/system \
+	../../libs/tclap \
+	../../libs/tfest \
+	../../libs/topography \
+	../../libs/typemeta \
+	../../libs/vision \
+	../../libs/vision-lgpl
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the

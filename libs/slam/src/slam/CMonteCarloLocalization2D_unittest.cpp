@@ -150,8 +150,7 @@ void run_test_pf_localization(CPose2D& meanPose, CMatrixDouble33& cov)
 		tictacGlobal.Tic();
 		for (int repetition = 0; repetition < NUM_REPS; repetition++)
 		{
-			int M = PARTICLE_COUNT;
-			CMonteCarloLocalization2D pdf(M);
+			CMonteCarloLocalization2D pdf(PARTICLE_COUNT);
 
 			// PDF Options:
 			pdf.options = pdfPredictionOptions;

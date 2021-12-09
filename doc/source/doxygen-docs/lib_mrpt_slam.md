@@ -2,13 +2,10 @@
 
 SLAM and PF-localization algorithms
 
-<small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
-<br>
-
 [TOC]
 
 # Library mrpt-slam
-<small> [New in MRPT 2.0.0] </small>
+
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 

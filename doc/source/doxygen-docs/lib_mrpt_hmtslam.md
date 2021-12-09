@@ -1,6 +1,8 @@
 \defgroup mrpt_hmtslam_grp [mrpt-hmtslam]
 
-Hybrid Metric-Topological (HMT) SLAM implementation
+Hybrid Metric-Topological (HMT) SLAM reference implementation
+
+[TOC]
 
 # Library mrpt-hmtslam
 

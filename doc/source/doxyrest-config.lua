@@ -156,14 +156,14 @@ VERBATIM_TO_CODE_BLOCK = "cpp"
 --! in reStructuredText (asterisks are used to mark **bold** or *italic* blocks).
 --!
 
-ESCAPE_ASTERISKS = false
+ESCAPE_ASTERISKS = true
 
 --!
 --! If the original doxy comments contain pipe characters ``|``, they have to be
 --! escaped in reStructuredText (pipes are used for substitution references).
 --!
 
-ESCAPE_PIPES = false
+ESCAPE_PIPES = true
 
 --!
 --! If the original doxy comments contain trailingasterisks, they have to be
@@ -171,7 +171,7 @@ ESCAPE_PIPES = false
 --! links).
 --!
 
-ESCAPE_TRAILING_UNDERSCORES = false
+ESCAPE_TRAILING_UNDERSCORES = true
 
 --!
 --! Exclude items declared in specific locations. Use a regular expression to
@@ -266,7 +266,7 @@ EXCLUDE_DEFINE_PATTERN = nil
 --! included.
 --!
 
-EXCLUDE_DEFAULT_CONSTRUCTORS = true
+EXCLUDE_DEFAULT_CONSTRUCTORS = false
 
 --!
 --! Usually providing documentation blocks for a destructors is
@@ -288,7 +288,7 @@ EXCLUDE_DESTRUCTORS = true
 	included.
 ]]
 
-EXCLUDE_PRIMITIVE_TYPEDEFS = true
+EXCLUDE_PRIMITIVE_TYPEDEFS = false
 
 --!
 --! For a base class/struct, show all the types directly derived from it.

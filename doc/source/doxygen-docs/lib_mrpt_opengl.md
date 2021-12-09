@@ -2,8 +2,7 @@
 
 Visualization helpers for 3D rendering of all kind of primitives
 
-<small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
-<br>
+[TOC]
 
 # Library mrpt-opengl
 
@@ -28,7 +27,6 @@ See the full list of classes in mrpt::opengl.
 
 Below follows a table with the preview of most rendering primitive classes:
 
-<div align="center">
 <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
  <tr> <td> mrpt::opengl::CArrow </td> <td> \image html preview_CArrow.png </td> </tr>
  <tr> <td> mrpt::opengl::CAssimpModel </td> <td> \image html preview_CAssimpModel.png </td> </tr>
@@ -66,7 +64,6 @@ Below follows a table with the preview of most rendering primitive classes:
  <tr> <td> mrpt::opengl::stock_objects::Hokuyo_UTM() </td> <td> \image html preview_stock_objects_Hokuyo_UTM.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::Househam_Sprayer() </td> <td> \image html preview_stock_objects_Househam_Sprayer.png </td> </tr>
 </table>
-</div>
 
 Also, pose PDF classes can be converted into OpenGL objects with CSetOfObjects::posePDF2opengl():
 
@@ -78,7 +75,6 @@ Also, pose PDF classes can be converted into OpenGL objects with CSetOfObjects::
 
 
 Note: The following extra OpenGL classes are provided by other libraries:
-
 
 <div align="center">
 <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
