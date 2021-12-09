@@ -7,32 +7,33 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/obs/CObservationBearingRange.h>
-
+#include "apps-precomp.h"  // Precompiled headers
+//
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::poses;
+using namespace mrpt::io;
+using namespace mrpt::apps;
 using namespace std;
 using namespace mrpt::io;
 
 // ======================================================================
-//		op_list_rangebearing
+//		op_list_poses
 // ======================================================================
-DECLARE_OP_FUNCTION(op_list_rangebearing)
+DECLARE_OP_FUNCTION(op_list_poses)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_RangeBearing
-		: public CRawlogProcessorOnEachObservation
+	class CRawlogProcessor_ListPoses : public CRawlogProcessorOnEachObservation
 	{
 	   protected:
 		string m_out_file;
 		std::ofstream m_out;
 
 	   public:
-		CRawlogProcessor_RangeBearing(
+		CRawlogProcessor_ListPoses(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 			bool Verbose)
 			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
@@ -44,34 +45,14 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 
 			if (!m_out.is_open())
 				throw std::runtime_error(
-					"list-range-bearing: Cannot open output text file.");
-
-			// Header:
-			m_out << "%           TIMESTAMP                INDEX_IN_OBS    ID  "
-					 "  RANGE(m)    YAW(rad)   PITCH(rad) \n"
-				  << "%--------------------------------------------------------"
-					 "------------------------------------\n";
+					"list-poses: Cannot open output text file.");
 		}
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
-			if (IS_CLASS(*obs, CObservationBearingRange))
-			{
-				const CObservationBearingRange::Ptr obsRB_ =
-					std::dynamic_pointer_cast<CObservationBearingRange>(obs);
-				const CObservationBearingRange* obsRB = obsRB_.get();
-
-				const double tim =
-					mrpt::system::timestampToDouble(obsRB->timestamp);
-
-				for (size_t i = 0; i < obsRB->sensedData.size(); i++)
-					m_out << format(
-						"%35.22f %8i %10i %10f %12f %12f\n", tim, (int)i,
-						(int)obsRB->sensedData[i].landmarkID,
-						(double)obsRB->sensedData[i].range,
-						(double)obsRB->sensedData[i].yaw,
-						(double)obsRB->sensedData[i].pitch);
-			}
+			mrpt::poses::CPose3D pose;
+			obs->getSensorPose(pose);
+			m_out << pose.asString() << std::endl;
 
 			return true;
 		}
@@ -79,7 +60,7 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_RangeBearing proc(in_rawlog, cmdline, verbose);
+	CRawlogProcessor_ListPoses proc(in_rawlog, cmdline, verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:

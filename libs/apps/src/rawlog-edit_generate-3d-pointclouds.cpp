@@ -7,90 +7,83 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "apps-precomp.h"  // Precompiled headers
+//
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/obs/CObservationImage.h>
-#include <mrpt/obs/CObservationStereoImages.h>
 
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::apps;
 using namespace std;
 using namespace mrpt::io;
 
 // ======================================================================
-//		op_undistort
+//		op_generate_3d_pointclouds
 // ======================================================================
-DECLARE_OP_FUNCTION(op_undistort)
+DECLARE_OP_FUNCTION(op_generate_3d_pointclouds)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_Undistort : public CRawlogProcessorFilterObservations
+	class CRawlogProcessor_Generate3DPointClouds
+		: public CRawlogProcessorOnEachObservation
 	{
 	   protected:
-		string m_out_file;
+		TOutputRawlogCreator outrawlog;
 
 	   public:
-		CRawlogProcessor_Undistort(
-			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
-			bool Verbose, mrpt::io::CFileGZOutputStream& out_rawlog)
-			: CRawlogProcessorFilterObservations(
-				  in_rawlog, cmdline, Verbose, out_rawlog)
-		{
-		}
+		size_t entries_modified;
 
-		bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr& obs) override
+		CRawlogProcessor_Generate3DPointClouds(
+			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+			bool Verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
 		{
-			return true;
+			entries_modified = 0;
 		}
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
-			obs->load();
-
-			mrpt::img::CImage tmp;
-
-			if (auto obsSt =
-					std::dynamic_pointer_cast<CObservationStereoImages>(obs);
-				obsSt)
+			if (IS_CLASS(*obs, CObservation3DRangeScan))
 			{
-				// save image to file & convert into external storage:
-				obsSt->imageLeft.undistort(tmp, obsSt->leftCamera);
-				obsSt->imageLeft = std::move(tmp);
-
-				obsSt->imageRight.undistort(tmp, obsSt->rightCamera);
-				obsSt->imageRight = std::move(tmp);
-			}
-			else if (auto obsIm =
-						 std::dynamic_pointer_cast<CObservationImage>(obs);
-					 obsIm)
-			{
-				obsIm->image.undistort(tmp, obsIm->cameraParams);
-				obsIm->image = std::move(tmp);
-			}
-			else if (auto obs3D =
-						 std::dynamic_pointer_cast<CObservation3DRangeScan>(
-							 obs);
-					 obs3D)
-			{
-				obs3D->undistort();
+				CObservation3DRangeScan::Ptr obs3D =
+					std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
+				if (obs3D->hasRangeImage)
+				{
+					obs3D->load();	// We must be sure that depth has been
+					// loaded, if stored separately.
+					obs3D->unprojectInto(*obs3D);
+					entries_modified++;
+				}
 			}
 
-			obs->unload();
 			return true;
+		}
+
+		// This method can be reimplemented to save the modified object to an
+		// output stream.
+		void OnPostProcess(
+			mrpt::obs::CActionCollection::Ptr& actions,
+			mrpt::obs::CSensoryFrame::Ptr& SF,
+			mrpt::obs::CObservation::Ptr& obs) override
+		{
+			ASSERT_((actions && SF) || obs);
+			if (actions) (*outrawlog.out_rawlog) << actions << SF;
+			else
+				(*outrawlog.out_rawlog) << obs;
 		}
 	};
 
 	// Process
 	// ---------------------------------
-	TOutputRawlogCreator outrawlog;
-	CRawlogProcessor_Undistort proc(
-		in_rawlog, cmdline, verbose, outrawlog.out_rawlog_io);
+	CRawlogProcessor_Generate3DPointClouds proc(in_rawlog, cmdline, verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:
 	// ---------------------------------
 	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse
 				 << "\n";
+	VERBOSE_COUT << "Entries modified                  : "
+				 << proc.entries_modified << "\n";
 }

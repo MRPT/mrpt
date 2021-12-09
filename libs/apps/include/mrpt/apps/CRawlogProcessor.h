@@ -7,8 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#ifndef RAWLOG_PROCESSOR_H
-#define RAWLOG_PROCESSOR_H
+#pragma once
 
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
@@ -16,6 +15,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
+#include <iostream>
 
 // Aparently, TCLAP headers can't be included in more than one source file
 //  or duplicated linking symbols appear! -> Use forward declarations instead:
@@ -25,13 +26,11 @@ namespace TCLAP
 class CmdLine;
 }
 
-namespace mrpt
-{
-namespace rawlogtools
+namespace mrpt::apps
 {
 /** A virtual class that implements the common stuff around parsing a rawlog
- * file
- * and (optionally) display a progress indicator to the console.
+ * file and (optionally) display a progress indicator to the console.
+ * \ingroup mrpt_apps_grp
  */
 class CRawlogProcessor
 {
@@ -312,7 +311,4 @@ class CRawlogProcessorFilterObservations
 
 };	// end CRawlogProcessorOnEachObservation
 
-}  // namespace rawlogtools
-}  // namespace mrpt
-
-#endif
+}  // namespace mrpt::apps

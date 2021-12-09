@@ -7,6 +7,9 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "apps-precomp.h"  // Precompiled headers
+//
+
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TStereoCamera.h>
@@ -18,7 +21,7 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::apps;
 using namespace mrpt::io;
 using namespace std;
 

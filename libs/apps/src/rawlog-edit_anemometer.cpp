@@ -7,23 +7,25 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/obs/CObservation2DRangeScan.h>
+#include "apps-precomp.h"  // Precompiled headers
+//
+#include <mrpt/obs/CObservationWindSensor.h>
 
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::apps;
 using namespace mrpt::io;
 using namespace std;
 
 DECLARE_OP_FUNCTION(op_export_txt);
 
 // ======================================================================
-//		op_export_2d_scans_txt
+//		op_export_anemometer_txt
 // ======================================================================
-DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
+DECLARE_OP_FUNCTION(op_export_anemometer_txt)
 {
 	// Forward:
 	op_export_txt(in_rawlog, cmdline, verbose);

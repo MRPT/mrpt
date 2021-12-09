@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "apps-precomp.h"  // Precompiled headers
+//
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/interp_fit.h>
 #include <mrpt/obs/CObservationGPS.h>
@@ -18,7 +20,7 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::apps;
 using namespace mrpt::topography;
 using namespace std;
 using namespace mrpt::io;
