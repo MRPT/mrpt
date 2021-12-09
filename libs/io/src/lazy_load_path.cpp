@@ -38,15 +38,12 @@ std::string mrpt::io::lazy_load_absolute_path(
 	return out_path;
 }
 
-/** Gets the current path to be used to locate relative lazy-load externally
- * stored objects via lazy_load_absolute_path(). Default is `"."`.
- */
-const std::string& mrpt::io::getImagesPathBase() { return LAZY_LOAD_PATH_BASE; }
+const std::string& mrpt::io::getLazyLoadPathBase()
+{
+	return LAZY_LOAD_PATH_BASE;
+}
 
-/**  Changes the base path to be used to locate relative lazy-load externally
- * stored objects via lazy_load_absolute_path().
- */
-void mrpt::io::setImagesPathBase(const std::string& path)
+void mrpt::io::setLazyLoadPathBase(const std::string& path)
 {
 	LAZY_LOAD_PATH_BASE = path;
 }
