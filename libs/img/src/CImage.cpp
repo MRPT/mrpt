@@ -81,11 +81,11 @@ CExceptionExternalImageNotFound::CExceptionExternalImageNotFound(
 
 const std::string& CImage::getImagesPathBase()
 {
-	return mrpt::io::getImagesPathBase();
+	return mrpt::io::getLazyLoadPathBase();
 }
 void CImage::setImagesPathBase(const std::string& path)
 {
-	mrpt::io::setImagesPathBase(path);
+	mrpt::io::setLazyLoadPathBase(path);
 }
 
 // Do performance time logging?
