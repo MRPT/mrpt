@@ -1,4 +1,5 @@
 sphinx_rtd_theme
 sphinx-panels
 sphinxcontrib-bibtex
+mistune<2.0.0
 m2r2
