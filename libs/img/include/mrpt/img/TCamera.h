@@ -11,6 +11,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/img/DistortionModel.h>
+#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/serialization/CSerializable.h>
 
@@ -43,6 +44,9 @@ class TCamera : public mrpt::serialization::CSerializable
 	/** Parse from yaml, in OpenCV calibration model.
 	 * Refer to
 	 * [this example](https://wiki.ros.org/camera_calibration_parsers#YAML).
+	 *
+	 * For known distortion models see mrpt::img::DistortionModel
+	 *
 	 */
 	static TCamera FromYAML(const mrpt::containers::yaml& params);
 
@@ -56,7 +60,7 @@ class TCamera : public mrpt::serialization::CSerializable
 		@{ */
 
 	/** Camera resolution */
-	uint32_t ncols{640}, nrows{480};
+	uint32_t ncols = 640, nrows = 480;
 
 	/** Camera matrix (intrinsic parameters), containing the focal length and
 	 * principal point coordinates:
@@ -68,15 +72,30 @@ class TCamera : public mrpt::serialization::CSerializable
 	 */
 	mrpt::math::CMatrixDouble33 intrinsicParams;
 
-	DistortionModel distortion;
+	/** The distortion model: none (already rectified), plumb_bob (common
+	 * pin-hole radial and tangential distortion), or kannala_brandt (for
+	 * fish-eye cameras) */
+	DistortionModel distortion = DistortionModel::none;
 
-	/** [k1 k2 t1 t2 k3 k4 k5 k6] -> k_i: parameters of radial distortion, t_i:
-	 * parameters of tangential distortion (default=0) */
+	/** Depending on the distortion model stored in \a distortion, the indices
+	 *  of this array mean:
+	 *  - DistortionModel::none: Coefficients are ignored.
+	 *  - DistortionModel::`: [k1 k2 t1 t2 k3 k4 k5 k6] -> k_i:
+	 * parameters of radial distortion, t_i: parameters of tangential
+	 * distortion.
+	 *   - DistortionModel::kannala_brandt: [k1 k2 * * k3 k4] -> k_i: model
+	 * coefficients.
+	 *
+	 * It is recommended to access the specific terms via the getters k1(),
+	 * k2(),p1(),... to avoid mistakes.
+	 *
+	 * Default values is all to zero.
+	 */
 	std::array<double, 8> dist{{.0, .0, .0, .0, .0, .0, .0, .0}};
 
 	/** The focal length of the camera, in meters (can be used among
 	 * 'intrinsicParams' to determine the pixel size). */
-	double focalLengthMeters{.0};
+	double focalLengthMeters = .0;
 
 	/** Optional camera name. \note (New in MRPT 2.1.8) */
 	std::string cameraName = "camera1";
@@ -96,10 +115,9 @@ class TCamera : public mrpt::serialization::CSerializable
 	 *  cy         = CY
 	 *  fx         = FX
 	 *  fy         = FY
-	 *  dist       = [K1 K2 T1 T2 K3]
-	 *  focal_length = FOCAL_LENGTH
+	 *  dist       = [K1 K2 ...]
 	 *  camera_name = camera1
-	 *  distortion = KannalaBrandt
+	 *  distortion = {none|plumb_bob|kannala_brandt}
 	 *  \endcode
 	 */
 	void saveToConfigFile(
@@ -115,24 +133,26 @@ class TCamera : public mrpt::serialization::CSerializable
 	 *  cy         = CY
 	 *  fx         = FX
 	 *  fy         = FY
-	 *  dist       = [K1 K2 T1 T2 K3]
+	 *  dist       = { [K1 K2 T1 T2 K3] | [K1 K2 K3 K4]}
 	 *  focal_length = FOCAL_LENGTH  [optional]
 	 *  camera_name = camera1 [optional]
-	 *  distortion = KannalaBrandt
+	 *  distortion = {none|plumb_bob|kannala_brandt}
 	 *  \endcode
 	 *  \exception std::exception on missing fields
 	 */
 	void loadFromConfigFile(
 		const std::string& section, const mrpt::config::CConfigFileBase& cfg);
+
 	/** overload This signature is consistent with the rest of MRPT APIs */
-	inline void loadFromConfigFile(
+	void loadFromConfigFile(
 		const mrpt::config::CConfigFileBase& cfg, const std::string& section)
 	{
 		loadFromConfigFile(section, cfg);
 	}
 
-	/** Dumps all the parameters as a multi-line string, with the same format
-	 * than \a saveToConfigFile.  \sa saveToConfigFile */
+	/** Returns all parameters as a text block in the INI-file format.
+	 *  \sa asYAML()
+	 */
 	std::string dumpAsText() const;
 
 	/** Set the matrix of intrinsic params of the camera from the individual
@@ -149,38 +169,15 @@ class TCamera : public mrpt::serialization::CSerializable
 		intrinsicParams(2, 2) = 1.0;
 	}
 
-	/** Get the vector of distortion params of the camera  */
-	inline void getDistortionParamsVector(
-		mrpt::math::CMatrixDouble15& distParVector) const
-	{
-		for (size_t i = 0; i < distParVector.size(); i++)
-			distParVector(0, i) = dist[i];
-	}
-	/** Get the vector of distortion params of the camera  */
-	inline mrpt::math::CMatrixDouble15 getDistortionParamsVector() const
-	{
-		mrpt::math::CMatrixDouble15 d;
-		getDistortionParamsVector(d);
-		return d;
-	}
+	/** Get a vector with the distortion params of the camera, which depending
+	 * on the distortion model may be an empty vector (Distortion::none),
+	 * an 8-vector (Distortion::plumb_bob) or a 4-vector
+	 * (Distortion::kannala_brandt)
+	 */
+	std::vector<double> getDistortionParamsAsVector() const;
 
-	/** Get a vector with the distortion params of the camera  */
-	inline std::vector<double> getDistortionParamsAsVector() const
-	{
-		std::vector<double> v(8);
-		for (size_t i = 0; i < 8; i++)
-			v[i] = dist[i];
-		return v;
-	}
-
-	/** Set the whole vector of distortion params of the camera */
-	void setDistortionParamsVector(
-		const mrpt::math::CMatrixDouble15& distParVector)
-	{
-		dist.fill(0);
-		for (size_t i = 0; i < 5; i++)
-			dist[i] = distParVector(0, i);
-	}
+	/** Equivalent to getDistortionParamsAsVector()  */
+	mrpt::math::CMatrixDouble getDistortionParamsAsRowVector() const;
 
 	/** Set the whole vector of distortion params of the camera from a 4, 5, or
 	 * 8-vector (see definition of \a dist for parameter order) */
@@ -194,17 +191,29 @@ class TCamera : public mrpt::serialization::CSerializable
 			dist[i] = distParVector[i];
 	}
 
-	/** Set the vector of distortion params of the camera from the individual
-	 * values of the distortion coefficients
-	 */
-	inline void setDistortionParamsFromValues(
-		double k1, double k2, double p1, double p2, double k3 = 0)
+	/** Defines the distortion model and its parameters, in one call. */
+	void setDistortionPlumbBob(
+		double k1_, double k2_, double p1_, double p2_, double k3_ = 0)
 	{
-		dist[0] = k1;
-		dist[1] = k2;
-		dist[2] = p1;
-		dist[3] = p2;
-		dist[4] = k3;
+		distortion = DistortionModel::plumb_bob;
+		dist.fill(0);
+		k1(k1_);
+		k2(k2_);
+		k3(k3_);
+		p1(p1_);
+		p2(p2_);
+	}
+
+	/** Defines the distortion model and its parameters, in one call. */
+	void setDistortionKannalaBrandt(
+		double k1_, double k2_, double k3_, double k4_)
+	{
+		distortion = DistortionModel::kannala_brandt;
+		dist.fill(0);
+		k1(k1_);
+		k2(k2_);
+		k3(k3_);
+		k4(k4_);
 	}
 
 	/** Get the value of the principal point x-coordinate (in pixels). */
@@ -284,6 +293,7 @@ struct hash<mrpt::img::TCamera>
 			res = res * 31 + hash<double>()(k.dist[i]);
 		res = res * 31 + hash<std::string>()(k.cameraName);
 		res = res * 31 + hash<double>()(k.focalLengthMeters);
+		res = res * 31 + hash<uint8_t>()(static_cast<uint8_t>(k.distortion));
 		return res;
 	}
 };
