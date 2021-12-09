@@ -5,10 +5,9 @@ C++ library for configuration files in the "INI" file format.
 For YAML format, see mrpt::containers::yaml. For generic serialization to
 schema-based files, see \ref mrpt_serialization_grp
 
-
+[TOC]
 
 # Library mrpt-config
-<small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 

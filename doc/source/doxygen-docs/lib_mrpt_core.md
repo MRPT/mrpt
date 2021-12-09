@@ -1,9 +1,10 @@
 \defgroup mrpt_core_grp [mrpt-core]
 
-Core functions for MRPT.
+Core components for MRPT.
+
+[TOC]
 
 # Library mrpt-core
-<small> [New in MRPT 2.0.0] </small>
 
 This library is part of MRPT and can be installed in Debian-based systems with:
 

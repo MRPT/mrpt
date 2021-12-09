@@ -2,8 +2,9 @@
 
 Container and STL-helper classes.
 
+[TOC]
+
 # Library mrpt-containers
-<small> [New in MRPT 2.0.0] </small>
 
 This C++ library is part of MRPT and can be installed in Debian-based systems
 with:

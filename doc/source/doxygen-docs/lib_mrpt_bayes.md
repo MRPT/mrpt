@@ -2,6 +2,8 @@
 
 Bayesian filtering algorithms
 
+[TOC]
+
 # Library mrpt-bayes
 
 This C++ library is part of MRPT and can be installed in Debian-based systems with:
