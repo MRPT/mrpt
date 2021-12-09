@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "apps-precomp.h"  // Precompiled headers
+//
 #include <mrpt/io/lazy_load_path.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
@@ -18,7 +20,7 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::apps;
 using namespace std;
 using namespace mrpt::io;
 
@@ -83,7 +85,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 			outDir += "/";
 
 			// Establish as reference external path base:
-			mrpt::io::setImagesPathBase(outDir);
+			mrpt::io::setLazyLoadPathBase(outDir);
 		}
 
 		bool processOneObservation(CObservation::Ptr& obs) override

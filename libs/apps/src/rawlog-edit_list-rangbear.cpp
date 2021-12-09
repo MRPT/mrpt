@@ -7,31 +7,34 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "apps-precomp.h"  // Precompiled headers
+//
+#include <mrpt/obs/CObservationBearingRange.h>
+
 #include "rawlog-edit-declarations.h"
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::poses;
-using namespace mrpt::io;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::apps;
 using namespace std;
 using namespace mrpt::io;
 
 // ======================================================================
-//		op_list_poses
+//		op_list_rangebearing
 // ======================================================================
-DECLARE_OP_FUNCTION(op_list_poses)
+DECLARE_OP_FUNCTION(op_list_rangebearing)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_ListPoses : public CRawlogProcessorOnEachObservation
+	class CRawlogProcessor_RangeBearing
+		: public CRawlogProcessorOnEachObservation
 	{
 	   protected:
 		string m_out_file;
 		std::ofstream m_out;
 
 	   public:
-		CRawlogProcessor_ListPoses(
+		CRawlogProcessor_RangeBearing(
 			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
 			bool Verbose)
 			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, Verbose)
@@ -43,14 +46,34 @@ DECLARE_OP_FUNCTION(op_list_poses)
 
 			if (!m_out.is_open())
 				throw std::runtime_error(
-					"list-poses: Cannot open output text file.");
+					"list-range-bearing: Cannot open output text file.");
+
+			// Header:
+			m_out << "%           TIMESTAMP                INDEX_IN_OBS    ID  "
+					 "  RANGE(m)    YAW(rad)   PITCH(rad) \n"
+				  << "%--------------------------------------------------------"
+					 "------------------------------------\n";
 		}
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
-			mrpt::poses::CPose3D pose;
-			obs->getSensorPose(pose);
-			m_out << pose.asString() << std::endl;
+			if (IS_CLASS(*obs, CObservationBearingRange))
+			{
+				const CObservationBearingRange::Ptr obsRB_ =
+					std::dynamic_pointer_cast<CObservationBearingRange>(obs);
+				const CObservationBearingRange* obsRB = obsRB_.get();
+
+				const double tim =
+					mrpt::system::timestampToDouble(obsRB->timestamp);
+
+				for (size_t i = 0; i < obsRB->sensedData.size(); i++)
+					m_out << format(
+						"%35.22f %8i %10i %10f %12f %12f\n", tim, (int)i,
+						(int)obsRB->sensedData[i].landmarkID,
+						(double)obsRB->sensedData[i].range,
+						(double)obsRB->sensedData[i].yaw,
+						(double)obsRB->sensedData[i].pitch);
+			}
 
 			return true;
 		}
@@ -58,7 +81,7 @@ DECLARE_OP_FUNCTION(op_list_poses)
 
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_ListPoses proc(in_rawlog, cmdline, verbose);
+	CRawlogProcessor_RangeBearing proc(in_rawlog, cmdline, verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:

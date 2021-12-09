@@ -6,17 +6,15 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#ifndef RAWLOG_EDIT_DECLS_H
-#define RAWLOG_EDIT_DECLS_H
+#pragma once
 
+#include <mrpt/apps/CRawlogProcessor.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/system/filesystem.h>
-
-#include "CRawlogProcessor.h"
 
 // Declarations:
 #define VERBOSE_COUT                                                           \
@@ -47,5 +45,3 @@ template <typename T>
 bool getArgValue(
 	TCLAP::CmdLine& cmdline, const std::string& arg_name, T& out_val);
 bool isFlagSet(TCLAP::CmdLine& cmdline, const std::string& arg_name);
-
-#endif

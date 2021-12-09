@@ -6,25 +6,36 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#include <mrpt/obs/CObservationWindSensor.h>
+#include <cstddef>
 
-#include "rawlog-edit-declarations.h"
-
-using namespace mrpt;
-using namespace mrpt::obs;
-using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
-using namespace mrpt::io;
-using namespace std;
-
-DECLARE_OP_FUNCTION(op_export_txt);
-
-// ======================================================================
-//		op_export_anemometer_txt
-// ======================================================================
-DECLARE_OP_FUNCTION(op_export_anemometer_txt)
+namespace mrpt::apps
 {
-	// Forward:
-	op_export_txt(in_rawlog, cmdline, verbose);
-}
+/** The C++ class behinds the rawlog-edit CLI tool.
+ *
+ *  Refer to the online documentation for rawlog-edit.
+ * \ingroup mrpt_apps_grp
+ */
+class RawlogEditApp
+{
+   public:
+	RawlogEditApp() = default;
+
+	/** @name Main API
+	 * @{ */
+
+	/** Initializes and runs the application from CLI parameters. Refer to the
+	 * manpage of rawlog-edit. Throws on errors.
+	 */
+	void run(int argc, const char** argv);
+
+	void run(int argc, char** argv)
+	{
+		run(argc, const_cast<const char**>(argv));
+	}
+
+	/** @} */
+};
+
+}  // namespace mrpt::apps

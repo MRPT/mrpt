@@ -17,6 +17,8 @@
   - rosbag2rawlog:
     - PointCloud2 messages are now only converted to mrpt::obs::CObservationRotatingScan is this latter class is specified in the YAML file.
 - Changes in libraries:
+  - \ref mrpt_apps_grp
+    - Application rawlog-edit is now available as the C++ class mrpt::apps::RawlogEditApp
   - \ref mrpt_containers_grp
     - New methods mrpt::containers::bimap::erase_by_key(),mrpt::containers::bimap::erase_by_value()
     - mrpt::containers::vector_with_small_size_optimization has new methods `at()` and `push_back()` for a smoother transition from STL containers.

@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "apps-precomp.h"  // Precompiled headers
+//
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/poses/sensor_poses.h>
 
@@ -19,7 +21,7 @@ using namespace mrpt::obs;
 using namespace mrpt::config;
 using namespace mrpt::poses;
 using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::apps;
 using namespace std;
 using namespace mrpt::io;
 

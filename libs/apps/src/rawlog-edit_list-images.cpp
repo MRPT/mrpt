@@ -7,6 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include "apps-precomp.h"  // Precompiled headers
+//
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
@@ -16,7 +18,7 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::rawlogtools;
+using namespace mrpt::apps;
 using namespace std;
 using namespace mrpt::io;
 
