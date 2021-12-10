@@ -58,6 +58,7 @@ jobs:
                            libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
                            libdc1394-22-dev libavformat-dev libswscale-dev libpcap-dev \
                            liboctomap-dev libopenni2-dev \
+                           libtinyxml2-dev \
                            yamllint
 
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
