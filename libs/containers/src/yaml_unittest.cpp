@@ -692,13 +692,13 @@ MRPT_TEST(yaml, outOfRangeIntegers)
 MRPT_TEST_END()
 
 // clang-format off
-const auto testYamlParseEmit_1 = 
+const auto testYamlParseEmit_1 =
 R"xxx(# comment line 1, and
 # comment line 2
 1.0
 )xxx";
 
-const auto testYamlParseEmit_2 = 
+const auto testYamlParseEmit_2 =
 R"xxx(- a  # comment for A
 - b  # comment for B
 - c  # comment for C
@@ -707,12 +707,12 @@ R"xxx(- a  # comment for A
   d2: xxx  # facts
 )xxx";
 
-const auto testYamlParseEmit_3 = 
+const auto testYamlParseEmit_3 =
 R"xxx(a: 1.0  # A comment
 b: 2.0  # B comment
 )xxx";
 
-const auto testYamlParseEmit_4 = 
+const auto testYamlParseEmit_4 =
 R"xxx(plain scalars:
   - a string
   - a string with a \ backslash that doesn't need to be escaped
@@ -732,7 +732,7 @@ literal2: |-
   b
 )xxx";
 
-const auto testYamlParseEmit_6 = 
+const auto testYamlParseEmit_6 =
 R"xxx(release_platforms:
   ubuntu:
   - focal
@@ -859,8 +859,8 @@ MRPT_TEST(yaml, parseAndEmit)
 			{
 				p.printAsYAML(f);
 
-				const auto sCmd = mrpt::format(
-					"python3 -m yamllint %s -f parsable", tmpFil.c_str());
+				const auto sCmd =
+					mrpt::format("yamllint %s -f parsable", tmpFil.c_str());
 
 				// std::cout << "Running '" << sCmd << "'...\n";
 				std::string lintOut;

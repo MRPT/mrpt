@@ -57,7 +57,8 @@ jobs:
                            libxrandr-dev libxxf86vm-dev \
                            libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
                            libdc1394-22-dev libavformat-dev libswscale-dev libpcap-dev \
-                           liboctomap-dev libopenni2-dev
+                           liboctomap-dev libopenni2-dev \
+                           yamllint
 
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
             sudo apt install libicu-dev libsimpleini-dev
@@ -82,6 +83,7 @@ jobs:
                 -DMRPT_BUILD_TESTING=On \
                 -DMRPT_ENABLE_COVERAGE="${{ matrix.coverage }}" \
                 -DMRPT_ALLOW_LGPLV3=ON \
+                -DCMAKE_VERBOSE_MAKEFILE=ON \
                 -H. -Bbuild
       - name: Build (Linux)
         run: |
