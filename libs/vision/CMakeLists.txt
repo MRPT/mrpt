@@ -27,13 +27,7 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-vision)
-	# Ignore precompiled headers in faster sources:
-	if (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		set_source_files_properties(${faster_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-	endif ()
-
 	if(CMAKE_MRPT_HAS_OPENCV)
-		target_link_libraries(vision PRIVATE imp_opencv ${CVD_LIB})
+		target_link_libraries(vision PRIVATE imp_opencv)
 	endif()
-
 endif()

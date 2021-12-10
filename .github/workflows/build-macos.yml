@@ -1,0 +1,64 @@
+# Based on GTSAM file (by @ProfFan)
+name: macOS CI
+
+on: [pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.name }} ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+
+    env:
+      CTEST_OUTPUT_ON_FAILURE: ON
+      CTEST_PARALLEL_LEVEL: 2
+      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Github Actions requires a single row to be added to the build matrix.
+        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
+        name: [
+          macOS-10.15-xcode-11.3.1,
+        ]
+
+        build_type: [ Release ]
+        include:
+          - name: macOS-10.15-xcode-11.3.1
+            os: macOS-10.15
+            compiler: xcode
+            version: "11.3.1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Git submodule
+        run: |
+          git submodule sync
+          git submodule update --init --recursive
+
+      - name: Install Dependencies
+        run: |
+          brew install cmake ninja
+          brew install nasm
+          brew install eigen
+          brew install opencv
+          brew install assimp
+          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+
+      - name: CMake configure
+        run: |
+          cmake -DMRPT_BUILD_EXAMPLES=On \
+                -DMRPT_BUILD_TESTING=On \
+                -DMRPT_ALLOW_LGPLV3=ON \
+                -DCMAKE_VERBOSE_MAKEFILE=ON \
+                -H. -Bbuild
+
+      - name: Build
+        run: |
+          make -C build tests_build_all
+          make CTEST_OUTPUT_ON_FAILURE=1 test -C build
+          make -C build
