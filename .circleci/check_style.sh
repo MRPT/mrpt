@@ -11,6 +11,7 @@
 # This is run by travis automatically from the root of the project
 
 set +e
+set +x
 
 DIRS_IN="libs apps samples python"
 DIRS_OUT="3rdparty"
@@ -77,7 +78,4 @@ ${FORMAT_CODE_BIN} -g . --lang ${LANGS} \
 exit $?
 }
 
-case $TASK in
-  lint ) lint;;
-  lint_all) lint_all;;
-esac
+lint_all
