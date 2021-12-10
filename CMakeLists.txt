@@ -408,20 +408,23 @@ if (MRPT_COMPILER_IS_CLANG)
 	# High level of warnings.
 	# no-unused-private-field: clang seems to complain in templates without reason.
 	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wabi -Wno-unused-private-field -Wshadow-all)
-  add_compile_options(-Wreturn-stack-address   -Werror=return-stack-address)
+	add_compile_options(-Wreturn-stack-address   -Werror=return-stack-address)
 
- 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
- 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
-	if(NOT APPLE) # any reason for not using it in all platforms?
-	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
+	if(NOT APPLE)
+		# From: https://stackoverflow.com/a/16788372/1631514
+		# I would use the native library for each OS i.e. libstdc++ on GNU/Linux and libc++ on Mac OS X.
+		# libc++ is not 100% complete on GNU/Linux, and there's no real advantage to using it when libstdc++
+		# is more complete. Also, if you want to link to any other libraries written in C++ they will almost certainly have been built with libstdc++ so you'll need to link with that too to use them.
+		# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
 		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
 	endif()
-
 endif()
 
 # Shared options between GCC and CLANG:
