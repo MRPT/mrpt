@@ -10,7 +10,7 @@ jobs:
 
     env:
       CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 2
+      CTEST_PARALLEL_LEVEL: 1
       CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
       VERBOSE: 1  # to show all cmake scripts debug info
 
