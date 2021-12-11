@@ -59,39 +59,47 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR();
 
 	// Set up the vertex array:
-	const GLuint attr_position = rc.shader->attributeId("position");
-	m_vao.bind();
-	glEnableVertexAttribArray(attr_position);
-	m_vertexBuffer.bind();
-	glVertexAttribPointer(
-		attr_position, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		0, /* stride */
-		BUFFER_OFFSET(0) /* array buffer offset */
-	);
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_position;
+	if (rc.shader->hasAttribute("position"))
+	{
+		attr_position = rc.shader->attributeId("position");
+		m_vao.bind();
+		glEnableVertexAttribArray(*attr_position);
+		m_vertexBuffer.bind();
+		glVertexAttribPointer(
+			*attr_position, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			0, /* stride */
+			BUFFER_OFFSET(0) /* array buffer offset */
+		);
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the color array:
-	const GLuint attr_color = rc.shader->attributeId("vertexColor");
-	glEnableVertexAttribArray(attr_color);
-	m_colorBuffer.bind();
-	glVertexAttribPointer(
-		attr_color, /* attribute */
-		4, /* size */
-		GL_UNSIGNED_BYTE, /* type */
-		GL_TRUE, /* normalized? */
-		0, /* stride */
-		BUFFER_OFFSET(0) /* array buffer offset */
-	);
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_color;
+	if (rc.shader->hasAttribute("vertexColor"))
+	{
+		attr_color = rc.shader->attributeId("vertexColor");
+		glEnableVertexAttribArray(*attr_color);
+		m_colorBuffer.bind();
+		glVertexAttribPointer(
+			*attr_color, /* attribute */
+			4, /* size */
+			GL_UNSIGNED_BYTE, /* type */
+			GL_TRUE, /* normalized? */
+			0, /* stride */
+			BUFFER_OFFSET(0) /* array buffer offset */
+		);
+		CHECK_OPENGL_ERROR();
+	}
 
 	glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
 	CHECK_OPENGL_ERROR();
 
-	glDisableVertexAttribArray(attr_position);
-	glDisableVertexAttribArray(attr_color);
+	if (attr_position) glDisableVertexAttribArray(*attr_position);
+	if (attr_color) glDisableVertexAttribArray(*attr_color);
 	CHECK_OPENGL_ERROR();
 #endif
 }

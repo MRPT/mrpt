@@ -365,6 +365,21 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	void updateMatricesFromCamera() const;
 
+	/** Provides read access to the opengl shaders */
+	const std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders() const
+	{
+		return m_shaders;
+	}
+
+	/** Load all MPRT predefined shader programs into m_shaders */
+	void loadDefaultShaders() const;
+
+	/** Provides write access to the opengl shaders */
+	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders()
+	{
+		return m_shaders;
+	}
+
    protected:
 	/** Initializes all textures in the scene (See
 	 * opengl::CTexturedPlane::initializeTextures)
@@ -436,9 +451,6 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** Default shader program */
 	mutable std::map<shader_id_t, mrpt::opengl::Program::Ptr> m_shaders;
-
-	/** Load all MPRT predefined shader programs into m_shaders */
-	void loadDefaultShaders() const;
 
 	/** Unload shader programs in m_shaders */
 	void unloadShaders();

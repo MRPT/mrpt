@@ -77,6 +77,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	}
 
 	// Enable/disable lights:
+	if (rc.shader->hasUniform("enableLight"))
 	{
 		const Program& s = *rc.shader;
 		GLint enabled = m_enableLight ? 1 : 0;
@@ -84,7 +85,9 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		CHECK_OPENGL_ERROR();
 	}
 
-	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse"))
+	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
+		rc.shader->hasUniform("light_ambient") &&
+		rc.shader->hasUniform("light_direction"))
 	{
 		const Program& s = *rc.shader;
 		glUniform4fv(s.uniformId("light_diffuse"), 1, &rc.lights->diffuse.R);
@@ -97,44 +100,56 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	}
 
 	// Set up the vertex array:
-	const GLuint attr_position = rc.shader->attributeId("position");
-	m_vao.bind();
-	glEnableVertexAttribArray(attr_position);
-	m_vertexBuffer.bind();
-	glVertexAttribPointer(
-		attr_position, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_position;
+	if (rc.shader->hasAttribute("position"))
+	{
+		attr_position = rc.shader->attributeId("position");
+		m_vao.bind();
+		glEnableVertexAttribArray(*attr_position);
+		m_vertexBuffer.bind();
+		glVertexAttribPointer(
+			*attr_position, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the normals array:
-	const GLuint attr_normals = rc.shader->attributeId("vertexNormal");
-	glEnableVertexAttribArray(attr_normals);
-	m_vertexBuffer.bind();
-	glVertexAttribPointer(
-		attr_normals, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_normals;
+	if (rc.shader->hasAttribute("vertexNormal"))
+	{
+		attr_normals = rc.shader->attributeId("vertexNormal");
+		glEnableVertexAttribArray(*attr_normals);
+		m_vertexBuffer.bind();
+		glVertexAttribPointer(
+			*attr_normals, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the UV array:
-	const GLuint attr_uv = rc.shader->attributeId("vertexUV");
-	glEnableVertexAttribArray(attr_uv);
-	m_vertexBuffer.bind();
-	glVertexAttribPointer(
-		attr_uv, /* attribute */
-		2, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_uv;
+	if (rc.shader->hasAttribute("vertexUV"))
+	{
+		attr_uv = rc.shader->attributeId("vertexUV");
+		glEnableVertexAttribArray(*attr_uv);
+		m_vertexBuffer.bind();
+		glVertexAttribPointer(
+			*attr_uv, /* attribute */
+			2, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
+		CHECK_OPENGL_ERROR();
+	}
 
 	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
 	else
@@ -149,9 +164,9 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR();
 
 	glDisable(GL_CULL_FACE);
-	glDisableVertexAttribArray(attr_position);
-	glDisableVertexAttribArray(attr_uv);
-	glDisableVertexAttribArray(attr_normals);
+	if (attr_position) glDisableVertexAttribArray(*attr_position);
+	if (attr_uv) glDisableVertexAttribArray(*attr_uv);
+	if (attr_normals) glDisableVertexAttribArray(*attr_normals);
 
 #endif
 }
