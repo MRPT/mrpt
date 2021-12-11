@@ -1,5 +1,5 @@
 # Based on GTSAM file (by @ProfFan)
-name: CI macOS
+name: CI Windows
 
 on: [push, pull_request]
 
@@ -20,17 +20,24 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-          macOS-10.15-xcode-11.3.1,
-        ]
+            windows-latest,
+          ]
 
-        build_type: [ Release ]
+        build_type: [
+            Release
+          ]
         include:
-          - name: macOS-10.15-xcode-11.3.1
-            os: macOS-10.15
-            compiler: xcode
-            version: "11.3.1"
+          - name: windows-latest
+            os: windows-latest
+            compiler: cl
+            platform: 64
 
     steps:
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -39,27 +46,17 @@ jobs:
           git submodule sync
           git submodule update --init --recursive
 
-      - name: Install Dependencies
-        run: |
-          brew install cmake ninja
-          brew install nasm
-          brew install eigen
-          brew install opencv
-          brew install assimp
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
-          echo "CC=clang" >> $GITHUB_ENV
-          echo "CXX=clang++" >> $GITHUB_ENV
-
       - name: CMake configure
+        shell: bash
         run: |
-          cmake -DMRPT_BUILD_EXAMPLES=On \
-                -DMRPT_BUILD_TESTING=On \
+          cmake -DMRPT_BUILD_TESTING=On \
                 -DMRPT_ALLOW_LGPLV3=ON \
-                -DCMAKE_VERBOSE_MAKEFILE=ON \
-                -H. -Bbuild
+                -DDISABLE_ASSIMP=On \
+                -S . \
+                -B .
 
       - name: Build
+        shell: bash
         run: |
-          make -C build tests_build_all
-          make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-          make -C build
+          cmake --build . -j 4 --config ${{ matrix.build_type }} --target all_mrpt_libs
+          cmake --build . -j 4 --config ${{ matrix.build_type }} --target test_legacy
