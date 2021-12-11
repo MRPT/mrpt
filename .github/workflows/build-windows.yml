@@ -1,0 +1,67 @@
+# Based on GTSAM file (by @ProfFan)
+name: CI Windows
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.name }} ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+
+    env:
+      CTEST_OUTPUT_ON_FAILURE: ON
+      CTEST_PARALLEL_LEVEL: 2
+      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
+      VERBOSE: 1  # to show all cmake scripts debug info
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Github Actions requires a single row to be added to the build matrix.
+        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
+        name: [
+            windows-latest,
+          ]
+
+        build_type: [
+            Release
+          ]
+        include:
+          - name: windows-latest
+            os: windows-latest
+            compiler: cl
+            platform: 64
+
+    steps:
+      - name: Install Dependencies
+        shell: powershell
+        run: |
+          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          scoop install cmake --global  # So we don't get issues with CMP0074 policy
+          scoop install ninja --global
+
+          echo "CC=${{ matrix.compiler }}" >> $env:GITHUB_ENV
+          echo "CXX=${{ matrix.compiler }}" >> $env:GITHUB_ENV
+
+          # Scoop modifies the PATH so we make the modified PATH global.
+          echo "$env:PATH" >> $env:GITHUB_PATH
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Git submodule
+        run: |
+          git submodule sync
+          git submodule update --init --recursive
+
+      - name: CMake configure
+        run: |
+          cmake -E remove_directory build
+          cmake -DMRPT_BUILD_TESTING=On \
+                -DMRPT_ALLOW_LGPLV3=ON \
+                -H. -Bbuild
+
+      - name: Build
+        run: |
+          cmake --build build -j 4 --config ${{ matrix.build_type }} --target all
+          cmake --build build -j 4 --config ${{ matrix.build_type }} --target test_legacy

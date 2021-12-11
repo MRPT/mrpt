@@ -1,5 +1,5 @@
 # Based on GTSAM file (by @ProfFan)
-name: macOS CI
+name: CI macOS
 
 on: [push, pull_request]
 
