@@ -142,9 +142,9 @@ if(CMAKE_MRPT_HAS_FREENECT)
 	endif()
 endif()
 
-if(NOT "${LIBUSB10_LIBS}" STREQUAL "")
-	target_link_libraries(hwdrivers PRIVATE ${LIBUSB10_LIBS})
-endif()
+# Was: target_link_libraries(hwdrivers PRIVATE ${LIBUSB10_LIBS})
+# But: It's not really required since deps of freenect are already exposed
+#      via cmake public link deps.
 
 # build with link on Phidget21 lib
 if(CMAKE_MRPT_HAS_PHIDGET)
