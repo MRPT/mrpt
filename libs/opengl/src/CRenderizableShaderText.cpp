@@ -64,68 +64,85 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR();
 
 	// === LINES ===
+	std::optional<GLuint> attr_position;
+
 	// Set up the vertex array:
-	const GLuint attr_position = rc.shader->attributeId("position");
-	m_vao.bind();
-	glEnableVertexAttribArray(attr_position);
-	m_linesVertexBuffer.bind();
-	glVertexAttribPointer(
-		attr_position, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		0, /* stride */
-		BUFFER_OFFSET(0) /* array buffer offset */
-	);
-	CHECK_OPENGL_ERROR();
+	if (rc.shader->hasAttribute("position"))
+	{
+		attr_position = rc.shader->attributeId("position");
+		m_vao.bind();
+		glEnableVertexAttribArray(*attr_position);
+		m_linesVertexBuffer.bind();
+		glVertexAttribPointer(
+			*attr_position, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			0, /* stride */
+			BUFFER_OFFSET(0) /* array buffer offset */
+		);
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the color array:
-	const GLuint attr_color = rc.shader->attributeId("vertexColor");
-	glEnableVertexAttribArray(attr_color);
-	m_linesColorBuffer.bind();
-	glVertexAttribPointer(
-		attr_color, /* attribute */
-		4, /* size */
-		GL_UNSIGNED_BYTE, /* type */
-		GL_TRUE, /* normalized? */
-		0, /* stride */
-		BUFFER_OFFSET(0) /* array buffer offset */
-	);
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_color;
+	{
+		attr_color = rc.shader->attributeId("vertexColor");
+		glEnableVertexAttribArray(*attr_color);
+		m_linesColorBuffer.bind();
+		glVertexAttribPointer(
+			*attr_color, /* attribute */
+			4, /* size */
+			GL_UNSIGNED_BYTE, /* type */
+			GL_TRUE, /* normalized? */
+			0, /* stride */
+			BUFFER_OFFSET(0) /* array buffer offset */
+		);
+		CHECK_OPENGL_ERROR();
+	}
 
-	glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
-	CHECK_OPENGL_ERROR();
+	if (attr_position)
+	{
+		glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
+		CHECK_OPENGL_ERROR();
+	}
 
-	// === TRIANGLES ===
-	m_trianglesBuffer.bind();
-	glVertexAttribPointer(
-		attr_position, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
-	CHECK_OPENGL_ERROR();
+	if (attr_position)
+	{
+		// === TRIANGLES ===
+		m_trianglesBuffer.bind();
+		glVertexAttribPointer(
+			*attr_position, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
+		CHECK_OPENGL_ERROR();
 
-	// Set up the color array:
-	m_trianglesBuffer.bind();
-	glVertexAttribPointer(
-		attr_color, /* attribute */
-		4, /* size */
-		GL_UNSIGNED_BYTE, /* type */
-		GL_TRUE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.r)));
-	CHECK_OPENGL_ERROR();
+		if (attr_color)
+		{
+			// Set up the color array:
+			m_trianglesBuffer.bind();
+			glVertexAttribPointer(
+				*attr_color, /* attribute */
+				4, /* size */
+				GL_UNSIGNED_BYTE, /* type */
+				GL_TRUE, /* normalized? */
+				sizeof(TTriangle::Vertex), /* stride */
+				BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.r)));
+			CHECK_OPENGL_ERROR();
+		}
 
-	// normals array: not used to render text
+		// normals array: not used to render text
 
-	// Draw:
-	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
-	CHECK_OPENGL_ERROR();
+		// Draw:
+		glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
+		CHECK_OPENGL_ERROR();
+	}
 
-	glDisableVertexAttribArray(attr_position);
-	glDisableVertexAttribArray(attr_color);
+	if (attr_position) glDisableVertexAttribArray(*attr_position);
+	if (attr_color) glDisableVertexAttribArray(*attr_color);
 	CHECK_OPENGL_ERROR();
 #endif
 }

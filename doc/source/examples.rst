@@ -89,6 +89,7 @@ under `MRPT/samples <https://github.com/MRPT/mrpt/tree/develop/samples>`_.
   page_nav_circ_robot_path_planning.rst
   page_nav_rrt_planning_example.rst
   page_obs_mox_model_rawlog.rst
+  page_opengl_custom_shaders_demo.rst
   page_opengl_objects_demo.rst
   page_opengl_octree_render_huge_pointcloud.rst
   page_opengl_offscreen_render_example.rst

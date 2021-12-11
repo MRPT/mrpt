@@ -691,6 +691,21 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 					}
 					break;
 
+				case 800:
+				{
+					try
+					{
+						msg->userFunction();
+					}
+					catch (const std::exception& e)
+					{
+						std::cerr
+							<< "[WxSubsystem] Exception with userFunction():\n"
+							<< e.what();
+					}
+				}
+				break;
+
 				// wxSubsystem shutdown:
 				case 999:
 				{
