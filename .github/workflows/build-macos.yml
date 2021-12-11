@@ -1,7 +1,7 @@
 # Based on GTSAM file (by @ProfFan)
 name: macOS CI
 
-on: [pull_request]
+on: [push, pull_request]
 
 jobs:
   build:
