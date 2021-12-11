@@ -49,11 +49,14 @@ jobs:
       - name: CMake configure
         shell: bash
         run: |
-          mkdir build
-          cmake -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -H. -Bbuild
+          cmake -DMRPT_BUILD_TESTING=On \
+                -DMRPT_ALLOW_LGPLV3=ON \
+                -DDISABLE_ASSIMP=On \
+                -S . \
+                -B .
 
       - name: Build
         shell: bash
         run: |
-          cmake --build build -j 4 --config ${{ matrix.build_type }} --target all
-          cmake --build build -j 4 --config ${{ matrix.build_type }} --target test_legacy
+          cmake --build . -j 4 --config ${{ matrix.build_type }} --target all_mrpt_libs
+          cmake --build . -j 4 --config ${{ matrix.build_type }} --target test_legacy
