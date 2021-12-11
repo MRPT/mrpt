@@ -33,18 +33,10 @@ jobs:
             platform: 64
 
     steps:
-      - name: Install Dependencies
-        shell: powershell
+      - name: Print env
         run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-          scoop install cmake --global  # So we don't get issues with CMP0074 policy
-          scoop install ninja --global
-
-          echo "CC=${{ matrix.compiler }}" >> $env:GITHUB_ENV
-          echo "CXX=${{ matrix.compiler }}" >> $env:GITHUB_ENV
-
-          # Scoop modifies the PATH so we make the modified PATH global.
-          echo "$env:PATH" >> $env:GITHUB_PATH
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -55,11 +47,13 @@ jobs:
           git submodule update --init --recursive
 
       - name: CMake configure
+        shell: bash
         run: |
-          cmake -E remove_directory build
+          mkdir build
           cmake -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -H. -Bbuild
 
       - name: Build
+        shell: bash
         run: |
           cmake --build build -j 4 --config ${{ matrix.build_type }} --target all
           cmake --build build -j 4 --config ${{ matrix.build_type }} --target test_legacy
