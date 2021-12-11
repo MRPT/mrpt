@@ -14,6 +14,10 @@ endif()
 if(CMAKE_MRPT_HAS_FREENECT AND NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 
 	find_package(libusb-1.0)
+	if (NOT LIBUSB_1_FOUND)
+		# Error:
+		message(SEND_ERROR "*** ERROR *** Please, set libusb-1 variables, disable CMAKE_MRPT_HAS_FREENECT, or provide a system library for libfreenect.")
+	endif()
 
 	# Special stuff for windows:
 	set(SRCS
