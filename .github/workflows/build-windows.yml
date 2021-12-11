@@ -57,9 +57,7 @@ jobs:
       - name: CMake configure
         run: |
           cmake -E remove_directory build
-          cmake -DMRPT_BUILD_TESTING=On \
-                -DMRPT_ALLOW_LGPLV3=ON \
-                -H. -Bbuild
+          cmake -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -H. -Bbuild
 
       - name: Build
         run: |
