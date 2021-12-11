@@ -48,6 +48,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT
 
 	// Enable/disable lights:
+	if (rc.shader->hasUniform("enableLight"))
 	{
 		const Program& s = *rc.shader;
 		GLint enabled = m_enableLight ? 1 : 0;
@@ -55,7 +56,9 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		CHECK_OPENGL_ERROR();
 	}
 
-	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse"))
+	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
+		rc.shader->hasUniform("light_ambient") &&
+		rc.shader->hasUniform("light_direction"))
 	{
 		const Program& s = *rc.shader;
 
@@ -69,44 +72,56 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	}
 
 	// Set up the vertex array:
-	const GLuint attr_position = rc.shader->attributeId("position");
-	m_vao.bind();
-	glEnableVertexAttribArray(attr_position);
-	m_trianglesBuffer.bind();
-	glVertexAttribPointer(
-		attr_position, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_position;
+	if (rc.shader->hasAttribute("position"))
+	{
+		attr_position = rc.shader->attributeId("position");
+		m_vao.bind();
+		glEnableVertexAttribArray(*attr_position);
+		m_trianglesBuffer.bind();
+		glVertexAttribPointer(
+			*attr_position, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the color array:
-	const GLuint attr_color = rc.shader->attributeId("vertexColor");
-	glEnableVertexAttribArray(attr_color);
-	m_trianglesBuffer.bind();
-	glVertexAttribPointer(
-		attr_color, /* attribute */
-		4, /* size */
-		GL_UNSIGNED_BYTE, /* type */
-		GL_TRUE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.r)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_color;
+	if (rc.shader->hasAttribute("vertexColor"))
+	{
+		attr_color = rc.shader->attributeId("vertexColor");
+		glEnableVertexAttribArray(*attr_color);
+		m_trianglesBuffer.bind();
+		glVertexAttribPointer(
+			*attr_color, /* attribute */
+			4, /* size */
+			GL_UNSIGNED_BYTE, /* type */
+			GL_TRUE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.r)));
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the normals array:
-	const GLuint attr_normals = rc.shader->attributeId("vertexNormal");
-	glEnableVertexAttribArray(attr_normals);
-	m_trianglesBuffer.bind();
-	glVertexAttribPointer(
-		attr_normals, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_normals;
+	if (rc.shader->hasAttribute("vertexNormal"))
+	{
+		attr_normals = rc.shader->attributeId("vertexNormal");
+		glEnableVertexAttribArray(*attr_normals);
+		m_trianglesBuffer.bind();
+		glVertexAttribPointer(
+			*attr_normals, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
+		CHECK_OPENGL_ERROR();
+	}
 
 	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
 	else
@@ -120,9 +135,10 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR();
 
 	glDisable(GL_CULL_FACE);
-	glDisableVertexAttribArray(attr_position);
-	glDisableVertexAttribArray(attr_color);
-	glDisableVertexAttribArray(attr_normals);
+
+	if (attr_position) glDisableVertexAttribArray(*attr_position);
+	if (attr_color) glDisableVertexAttribArray(*attr_color);
+	if (attr_normals) glDisableVertexAttribArray(*attr_normals);
 
 #endif
 }

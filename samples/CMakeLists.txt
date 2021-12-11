@@ -164,6 +164,7 @@ if(MRPT_BUILD_EXAMPLES)
 		opengl_offscreen_render_example
 		opengl_octree_render_huge_pointcloud
 		opengl_texture_sizes_test
+		opengl_custom_shaders_demo
 		# -------
 		img_basic_example
 		img_convolution_fft

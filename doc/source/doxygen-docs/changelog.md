@@ -57,6 +57,8 @@
     - Remove specular light effects in the default shaders, to fix buggy behavior.
     - **[API change]** New mrpt::opengl::Visualizable interface replaces former getAs3DObject() in all mrpt::maps and mrpt::poses classes with an uniform API, avoiding shared_ptr if possible.
     - mrpt::opengl::CTexturedPlane now more efficiently renders as plain triangles if no texture has been assigned.
+    - Custom user OpenGL shaders can now be defined and installed to replace MRPT defaults.
+    Refer to example: \ref opengl_custom_shaders_demo
   - \ref mrpt_poses_grp
     - New function mrpt::poses::sensor_poses_from_yaml()
     - New header `<mrpt/poses/gtsam_wrappers.h>`, see \ref mrpt_gtsam_wrappers
