@@ -228,7 +228,15 @@ bool Program::linkProgram(
 #if MRPT_HAS_OPENGL_GLUT
 	clear();
 
+#if defined(MRPT_OS_LINUX)
+	// Workaround to enfore wxWidgets to use GLSL>=3.3 even for wxWidgets<3.0.4
+	// See CWxGLCanvasBase::CWxGLCanvasBase.
+	if (!::getenv("MESA_GL_VERSION_OVERRIDE"))
+	{ ::setenv("MESA_GL_VERSION_OVERRIDE", "3.3", 1 /*overwrite*/); }
+#endif
+
 	m_data->program = glCreateProgram();
+	CHECK_OPENGL_ERROR();
 	ASSERT_(m_data->program != 0);
 
 	// Take ownership of shaders:

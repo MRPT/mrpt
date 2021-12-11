@@ -195,8 +195,8 @@ void CWxGLCanvasBase::Render()
 	{ /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" << endl;*/
 		return;
 	}
-	else
-		SetCurrent(*m_gl_context);
+
+	SetCurrent(*m_gl_context);
 
 	// Init OpenGL once, but after SetCurrent
 	if (!m_init)

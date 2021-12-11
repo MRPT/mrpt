@@ -377,6 +377,12 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 */
 	void setImageView(mrpt::img::CImage&& img);
 
+	void sendFunctionToRunOnGUIThread(const std::function<void(void)>& f);
+
+	bool is_GL_context_created() const;
+
+	bool wait_for_GL_context(const double timeout_seconds = 1.0) const;
+
    protected:
 	/** Set the rendering FPS (users don't call this, the method is for internal
 	 * MRPT objects only) \sa getRenderingFPS */
