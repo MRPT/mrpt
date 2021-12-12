@@ -35,9 +35,9 @@ void TMatchingPairListTempl<T>::dumpToFile(const std::string& fileName) const
 	for (const auto& it : *this)
 	{
 		f << mrpt::format(
-			"%u %u %f %f %f %f %f %f %f\n", it.this_idx, it.other_idx,
-			it.this_x, it.this_y, it.this_z, it.other_x, it.other_y, it.other_z,
-			it.errorSquareAfterTransformation);
+			"%u %u %f %f %f %f %f %f %f\n", it.globalIdx, it.localIdx,
+			it.global.x, it.global.y, it.global.z, it.local.x, it.local.y,
+			it.local.z, it.errorSquareAfterTransformation);
 	}
 }
 
@@ -59,14 +59,14 @@ void TMatchingPairListTempl<T>::saveAsMATLABScript(
 	for (const auto& it : *this)
 	{
 		fprintf(
-			f, "line([%f %f %f],[%f %f %f],'Color',colorLines);\n", it.this_x,
-			it.other_x, it.other_z, it.this_y, it.other_y, it.other_z);
+			f, "line([%f %f %f],[%f %f %f],'Color',colorLines);\n", it.global.x,
+			it.local.x, it.local.z, it.global.y, it.local.y, it.local.z);
 		fprintf(
 			f,
 			"set(plot([%f %f %f],[%f %f "
 			"%f],'.'),'Color',colorLines,'MarkerSize',15);\n",
-			it.this_x, it.other_x, it.other_z, it.this_y, it.other_y,
-			it.other_z);
+			it.global.x, it.local.x, it.local.z, it.global.y, it.local.y,
+			it.local.z);
 	}
 	fprintf(f, "view(3); grid on; xlabel('x'); ylabel('y'); zlabel('z');");
 	os::fclose(f);
@@ -76,7 +76,7 @@ template <typename T>
 bool TMatchingPairListTempl<T>::indexOtherMapHasCorrespondence(size_t idx) const
 {
 	for (const auto& it : *this)
-		if (it.other_idx == idx) return true;
+		if (it.localIdx == idx) return true;
 	return false;
 }
 
@@ -122,9 +122,9 @@ void TMatchingPairListTempl<T>::squareErrorVector(
 	for (corresp = base_t::begin(), e_i = out_sqErrs.begin();
 		 corresp != base_t::end(); ++corresp, ++e_i)
 	{
-		T xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
-		T yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
-		*e_i = square(corresp->this_x - xx) + square(corresp->this_y - yy);
+		T xx = qx + ccos * corresp->local.x - csin * corresp->local.y;
+		T yy = qy + csin * corresp->local.x + ccos * corresp->local.y;
+		*e_i = square(corresp->global.x - xx) + square(corresp->global.y - yy);
 	}
 }
 
@@ -149,9 +149,10 @@ void TMatchingPairListTempl<T>::squareErrorVector(
 		yy = ys.begin();
 		 corresp != base_t::end(); ++corresp, ++e_i, ++xx, ++yy)
 	{
-		*xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
-		*yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
-		*e_i = square(corresp->this_x - *xx) + square(corresp->this_y - *yy);
+		*xx = qx + ccos * corresp->local.x - csin * corresp->local.y;
+		*yy = qy + csin * corresp->local.x + ccos * corresp->local.y;
+		*e_i =
+			square(corresp->global.x - *xx) + square(corresp->global.y - *yy);
 	}
 }
 
@@ -170,19 +171,19 @@ void TMatchingPairListTempl<T>::filterUniqueRobustPairs(
 	//    for each "global map" (this) point.
 	for (auto& c : *this)
 	{
-		if (bestMatchForThisMap[c.this_idx] == nullptr ||  // first one
+		if (bestMatchForThisMap[c.globalIdx] == nullptr ||	// first one
 			c.errorSquareAfterTransformation <
-				bestMatchForThisMap[c.this_idx]
+				bestMatchForThisMap[c.globalIdx]
 					->errorSquareAfterTransformation  // or better
 		)
-		{ bestMatchForThisMap[c.this_idx] = &c; }
+		{ bestMatchForThisMap[c.globalIdx] = &c; }
 	}
 
 	//   2) Go again through the list of correspondences and remove those
 	//       who are not the best one for their corresponding global map.
 	for (auto& c : *this)
 	{
-		if (bestMatchForThisMap[c.this_idx] == &c)
+		if (bestMatchForThisMap[c.globalIdx] == &c)
 			out_filtered_list.push_back(c);	 // Add to the output
 	}
 }
@@ -190,11 +191,11 @@ void TMatchingPairListTempl<T>::filterUniqueRobustPairs(
 template <typename T>
 void TMatchingPairTempl<T>::print(std::ostream& o) const
 {
-	o << "[" << this_idx << "->" << other_idx << "]"
+	o << "[" << globalIdx << "->" << localIdx << "]"
 	  << ": "
-	  << "(" << this_x << "," << this_y << "," << this_z << ")"
+	  << "(" << global.x << "," << global.y << "," << global.z << ")"
 	  << " -> "
-	  << "(" << other_x << "," << other_y << "," << other_z << ")";
+	  << "(" << local.x << "," << local.y << "," << local.z << ")";
 }
 
 // Explicit instantations:

@@ -478,15 +478,15 @@ void CPointsMap::determineMatching2D(
 
 			TMatchingPair& p = tempCorrs.back();
 
-			p.this_idx = tentativ_this_idx;
-			p.this_x = m_x[tentativ_this_idx];
-			p.this_y = m_y[tentativ_this_idx];
-			p.this_z = m_z[tentativ_this_idx];
+			p.globalIdx = tentativ_this_idx;
+			p.global.x = m_x[tentativ_this_idx];
+			p.global.y = m_y[tentativ_this_idx];
+			p.global.z = m_z[tentativ_this_idx];
 
-			p.other_idx = localIdx;
-			p.other_x = *x_other_it;
-			p.other_y = *y_other_it;
-			p.other_z = *z_other_it;
+			p.localIdx = localIdx;
+			p.local.x = *x_other_it;
+			p.local.y = *y_other_it;
+			p.local.z = *z_other_it;
 
 			p.errorSquareAfterTransformation = tentativ_err_sq;
 
@@ -750,10 +750,7 @@ void CPointsMap::TRenderOptions::loadFromConfigFile(
 	colormap = iniFile.read_enum(section, "colormap", this->colormap);
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
-void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CPointsMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
@@ -766,7 +763,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		obj->setColor(renderOptions.color);
 		obj->setPointSize(renderOptions.point_size);
 		obj->enableColorFromZ(false);
-		outObj->insert(obj);
+		o.insert(obj);
 	}
 	else
 	{
@@ -778,7 +775,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 
 		obj->recolorizeByCoordinate(
 			bb.min.z, bb.max.z, 2 /*z*/, renderOptions.colormap);
-		outObj->insert(obj);
+		o.insert(obj);
 	}
 	MRPT_END
 }
@@ -1111,15 +1108,15 @@ void CPointsMap::determineMatching3D(
 
 				TMatchingPair& p = tempCorrs.back();
 
-				p.this_idx = tentativ_this_idx;
-				p.this_x = m_x[tentativ_this_idx];
-				p.this_y = m_y[tentativ_this_idx];
-				p.this_z = m_z[tentativ_this_idx];
+				p.globalIdx = tentativ_this_idx;
+				p.global.x = m_x[tentativ_this_idx];
+				p.global.y = m_y[tentativ_this_idx];
+				p.global.z = m_z[tentativ_this_idx];
 
-				p.other_idx = localIdx;
-				p.other_x = otherMap->m_x[localIdx];
-				p.other_y = otherMap->m_y[localIdx];
-				p.other_z = otherMap->m_z[localIdx];
+				p.localIdx = localIdx;
+				p.local.x = otherMap->m_x[localIdx];
+				p.local.y = otherMap->m_y[localIdx];
+				p.local.z = otherMap->m_z[localIdx];
 
 				p.errorSquareAfterTransformation = tentativ_err_sq;
 
@@ -1287,17 +1284,17 @@ void CPointsMap::compute3DDistanceToMesh(
 
 				TMatchingPair& p = tempCorrs.back();
 
-				p.this_idx = nOtherMapPointsWithCorrespondence++;  // insert a
+				p.globalIdx = nOtherMapPointsWithCorrespondence++;	// insert a
 				// consecutive index
 				// here
-				p.this_x = mX;
-				p.this_y = mY;
-				p.this_z = mZ;
+				p.global.x = mX;
+				p.global.y = mY;
+				p.global.z = mZ;
 
-				p.other_idx = localIdx;
-				p.other_x = otherMap->m_x[localIdx];
-				p.other_y = otherMap->m_y[localIdx];
-				p.other_z = otherMap->m_z[localIdx];
+				p.localIdx = localIdx;
+				p.local.x = otherMap->m_x[localIdx];
+				p.local.y = otherMap->m_y[localIdx];
+				p.local.z = otherMap->m_z[localIdx];
 
 				p.errorSquareAfterTransformation = distanceForThisPoint;
 
@@ -1317,9 +1314,9 @@ void CPointsMap::compute3DDistanceToMesh(
 	TMatchingPairList::iterator it;
 	for (it = tempCorrs.begin(); it != tempCorrs.end(); ++it)
 	{
-		const size_t i0 = vIdx[it->this_idx][0];
-		const size_t i1 = vIdx[it->this_idx][1];
-		const size_t i2 = vIdx[it->this_idx][2];
+		const size_t i0 = vIdx[it->globalIdx][0];
+		const size_t i1 = vIdx[it->globalIdx][1];
+		const size_t i2 = vIdx[it->globalIdx][2];
 
 		if (best.find(i0) != best.end() &&
 			best[i0].find(i1) != best[i0].end() &&
@@ -1329,24 +1326,24 @@ void CPointsMap::compute3DDistanceToMesh(
 		{
 			if (best[i0][i1][i2].second > it->errorSquareAfterTransformation)
 			{
-				best[i0][i1][i2].first = it->this_idx;
+				best[i0][i1][i2].first = it->globalIdx;
 				best[i0][i1][i2].second = it->errorSquareAfterTransformation;
 			}
 		}
 		else  // if there is no match
 		{
-			best[i0][i1][i2].first = it->this_idx;
+			best[i0][i1][i2].first = it->globalIdx;
 			best[i0][i1][i2].second = it->errorSquareAfterTransformation;
 		}
 	}  // end it correspondences
 
 	for (it = tempCorrs.begin(); it != tempCorrs.end(); ++it)
 	{
-		const size_t i0 = vIdx[it->this_idx][0];
-		const size_t i1 = vIdx[it->this_idx][1];
-		const size_t i2 = vIdx[it->this_idx][2];
+		const size_t i0 = vIdx[it->globalIdx][0];
+		const size_t i1 = vIdx[it->globalIdx][1];
+		const size_t i2 = vIdx[it->globalIdx][2];
 
-		if (best[i0][i1][i2].first == it->this_idx)
+		if (best[i0][i1][i2].first == it->globalIdx)
 			correspondences.push_back(*it);
 	}
 
@@ -1529,7 +1526,7 @@ void internal_build_points_map_from_scan2D(
 		static_cast<CSimplePointsMap*>(out_map.get())->insertionOptions =
 			*static_cast<const CPointsMap::TInsertionOptions*>(insertOps);
 
-	out_map->insertObservation(obs, nullptr);
+	out_map->insertObservation(obs);
 }
 
 struct TAuxLoadFunctor
@@ -1638,6 +1635,10 @@ void CPointsMap::insertAnotherMap(
 	// Set the new size:
 	this->resize(N_this + N_other);
 
+	// Optimization: detect the case of no transformation needed and avoid the
+	// matrix multiplications:
+	const bool identity_tf = (otherPose == CPose3D::Identity());
+
 	mrpt::math::TPoint3Df pt;
 	size_t src, dst;
 	for (src = 0, dst = N_this; src < N_other; src++, dst++)
@@ -1646,11 +1647,17 @@ void CPointsMap::insertAnotherMap(
 		otherMap->getPointFast(src, pt.x, pt.y, pt.z);
 
 		// Translation:
-		double gx, gy, gz;
-		otherPose.composePoint(pt.x, pt.y, pt.z, gx, gy, gz);
+		mrpt::math::TPoint3D g;
+
+		if (!identity_tf)
+			otherPose.composePoint(pt.x, pt.y, pt.z, g.x, g.y, g.z);
+		else
+		{
+			g = pt;
+		}
 
 		// Add to this map:
-		this->setPointFast(dst, gx, gy, gz);
+		this->setPointFast(dst, g.x, g.y, g.z);
 	}
 
 	// Also copy other data fields (color, ...)
@@ -1688,7 +1695,7 @@ void CPointsMap::base_copyFrom(const CPointsMap& obj)
   Insert the observation information into this map.
  ---------------------------------------------------------------*/
 bool CPointsMap::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs, const std::optional<const CPose3D>& robotPose)
 {
 	MRPT_START
 
@@ -1737,7 +1744,7 @@ bool CPointsMap::internal_insertObservation(
 
 				auxMap.loadFromRangeScan(
 					o,	// The laser range scan observation
-					&robotPose3D  // The robot pose
+					robotPose3D	 // The robot pose
 				);
 
 				fuseWith(
@@ -1789,7 +1796,7 @@ bool CPointsMap::internal_insertObservation(
 				insertionOptions.addToExistingPointsMap = true;
 				loadFromRangeScan(
 					o,	// The laser range scan observation
-					&robotPose3D  // The robot pose
+					robotPose3D	 // The robot pose
 				);
 			}
 
@@ -1829,7 +1836,7 @@ bool CPointsMap::internal_insertObservation(
 
 				auxMap.loadFromRangeScan(
 					o,	// The laser range scan observation
-					&robotPose3D  // The robot pose
+					robotPose3D	 // The robot pose
 				);
 
 				fuseWith(
@@ -1846,7 +1853,7 @@ bool CPointsMap::internal_insertObservation(
 				insertionOptions.addToExistingPointsMap = true;
 				loadFromRangeScan(
 					o,	// The laser range scan observation
-					&robotPose3D  // The robot pose
+					robotPose3D	 // The robot pose
 				);
 			}
 
@@ -1920,7 +1927,7 @@ bool CPointsMap::internal_insertObservation(
 			CSimplePointsMap auxMap;
 			auxMap.insertionOptions = insertionOptions;
 			auxMap.insertionOptions.addToExistingPointsMap = false;
-			auxMap.loadFromVelodyneScan(o, &robotPose3D);
+			auxMap.loadFromVelodyneScan(o, robotPose3D);
 			fuseWith(
 				&auxMap, insertionOptions.minDistBetweenLaserPoints, nullptr /* rather than &checkForDeletion which we don't need for 3D observations */);
 		}
@@ -1928,7 +1935,7 @@ bool CPointsMap::internal_insertObservation(
 		{
 			// Don't fuse: Simply add
 			insertionOptions.addToExistingPointsMap = true;
-			loadFromVelodyneScan(o, &robotPose3D);
+			loadFromVelodyneScan(o, robotPose3D);
 		}
 		return true;
 	}
@@ -2020,15 +2027,15 @@ void CPointsMap::fuseWith(
 		for (auto corrsIt = correspondences.begin();
 			 corrsIt != correspondences.end(); ++corrsIt)
 		{
-			if (corrsIt->other_idx == i)
+			if (corrsIt->localIdx == i)
 			{
-				float dist = square(corrsIt->other_x - corrsIt->this_x) +
-					square(corrsIt->other_y - corrsIt->this_y) +
-					square(corrsIt->other_z - corrsIt->this_z);
+				float dist = square(corrsIt->local.x - corrsIt->global.x) +
+					square(corrsIt->local.y - corrsIt->global.y) +
+					square(corrsIt->local.z - corrsIt->global.z);
 				if (dist < minDist)
 				{
 					minDist = dist;
-					closestCorr = corrsIt->this_idx;
+					closestCorr = corrsIt->globalIdx;
 				}
 			}
 		}  // End of for each correspondence...
@@ -2061,7 +2068,7 @@ void CPointsMap::fuseWith(
 
 void CPointsMap::loadFromVelodyneScan(
 	const mrpt::obs::CObservationVelodyneScan& scan,
-	const mrpt::poses::CPose3D* robotPose)
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	ASSERT_EQUAL_(scan.point_cloud.x.size(), scan.point_cloud.y.size());
 	ASSERT_EQUAL_(scan.point_cloud.x.size(), scan.point_cloud.z.size());

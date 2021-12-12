@@ -77,6 +77,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	}
 
 	// Enable/disable lights:
+	if (rc.shader->hasUniform("enableLight"))
 	{
 		const Program& s = *rc.shader;
 		GLint enabled = m_enableLight ? 1 : 0;
@@ -84,64 +85,88 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		CHECK_OPENGL_ERROR();
 	}
 
-	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse"))
+	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
+		rc.shader->hasUniform("light_ambient") &&
+		rc.shader->hasUniform("light_direction"))
 	{
 		const Program& s = *rc.shader;
 		glUniform4fv(s.uniformId("light_diffuse"), 1, &rc.lights->diffuse.R);
 		glUniform4fv(s.uniformId("light_ambient"), 1, &rc.lights->ambient.R);
-		glUniform4fv(s.uniformId("light_specular"), 1, &rc.lights->specular.R);
+		// glUniform4fv(s.uniformId("light_specular"), 1,
+		// &rc.lights->specular.R);
 		glUniform3fv(
 			s.uniformId("light_direction"), 1, &rc.lights->direction.x);
 		CHECK_OPENGL_ERROR();
 	}
 
 	// Set up the vertex array:
-	const GLuint attr_position = rc.shader->attributeId("position");
-	m_vao.bind();
-	glEnableVertexAttribArray(attr_position);
-	m_vertexBuffer.bind();
-	glVertexAttribPointer(
-		attr_position, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_position;
+	if (rc.shader->hasAttribute("position"))
+	{
+		attr_position = rc.shader->attributeId("position");
+		m_vao.bind();
+		glEnableVertexAttribArray(*attr_position);
+		m_vertexBuffer.bind();
+		glVertexAttribPointer(
+			*attr_position, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the normals array:
-	const GLuint attr_normals = rc.shader->attributeId("vertexNormal");
-	glEnableVertexAttribArray(attr_normals);
-	m_vertexBuffer.bind();
-	glVertexAttribPointer(
-		attr_normals, /* attribute */
-		3, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_normals;
+	if (rc.shader->hasAttribute("vertexNormal"))
+	{
+		attr_normals = rc.shader->attributeId("vertexNormal");
+		glEnableVertexAttribArray(*attr_normals);
+		m_vertexBuffer.bind();
+		glVertexAttribPointer(
+			*attr_normals, /* attribute */
+			3, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Set up the UV array:
-	const GLuint attr_uv = rc.shader->attributeId("vertexUV");
-	glEnableVertexAttribArray(attr_uv);
-	m_vertexBuffer.bind();
-	glVertexAttribPointer(
-		attr_uv, /* attribute */
-		2, /* size */
-		GL_FLOAT, /* type */
-		GL_FALSE, /* normalized? */
-		sizeof(TTriangle::Vertex), /* stride */
-		BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
-	CHECK_OPENGL_ERROR();
+	std::optional<GLuint> attr_uv;
+	if (rc.shader->hasAttribute("vertexUV"))
+	{
+		attr_uv = rc.shader->attributeId("vertexUV");
+		glEnableVertexAttribArray(*attr_uv);
+		m_vertexBuffer.bind();
+		glVertexAttribPointer(
+			*attr_uv, /* attribute */
+			2, /* size */
+			GL_FLOAT, /* type */
+			GL_FALSE, /* normalized? */
+			sizeof(TTriangle::Vertex), /* stride */
+			BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
+		CHECK_OPENGL_ERROR();
+	}
+
+	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
+	else
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
+		CHECK_OPENGL_ERROR();
+	}
 
 	// Draw:
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
 	CHECK_OPENGL_ERROR();
 
-	glDisableVertexAttribArray(attr_position);
-	glDisableVertexAttribArray(attr_uv);
-	glDisableVertexAttribArray(attr_normals);
+	glDisable(GL_CULL_FACE);
+	if (attr_position) glDisableVertexAttribArray(*attr_position);
+	if (attr_uv) glDisableVertexAttribArray(*attr_uv);
+	if (attr_normals) glDisableVertexAttribArray(*attr_normals);
 
 #endif
 }
@@ -562,13 +587,14 @@ void CRenderizableShaderTexturedTriangles::unloadTexture()
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
 	mrpt::serialization::CArchive& out) const
 {
-	uint8_t ver = 1;
+	uint8_t ver = 2;
 
 	out << ver;
 	out << m_enableTransparency << m_textureInterpolate;
 	out << m_textureImage;
 	if (m_enableTransparency) out << m_textureImageAlpha;
 	out << m_textureImageAssigned;
+	out << m_enableLight << static_cast<uint8_t>(m_cullface);  // v2
 }
 
 void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
@@ -581,6 +607,7 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			in >> m_enableTransparency >> m_textureInterpolate;
 			in >> m_textureImage;
@@ -596,6 +623,12 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 			if (version >= 1) in >> m_textureImageAssigned;
 			else
 				m_textureImageAssigned = true;
+
+			if (version >= 2)
+			{
+				in >> m_enableLight;
+				m_cullface = static_cast<TCullFace>(in.ReadAs<uint8_t>());
+			}
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

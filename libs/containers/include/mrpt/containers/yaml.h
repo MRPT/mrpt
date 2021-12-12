@@ -199,6 +199,42 @@ class yaml
 				"'%s'",
 				typeName().c_str());
 		}
+
+		bool hasComment() const
+		{
+			for (const auto& c : comments)
+				if (c.has_value()) return true;
+			return false;
+		}
+		bool hasComment(CommentPosition pos) const
+		{
+			MRPT_START
+			int posIndex = static_cast<int>(pos);
+			ASSERT_GE_(posIndex, 0);
+			ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+			return comments[posIndex].has_value();
+			MRPT_END
+		}
+		const std::string& comment() const
+		{
+			MRPT_START
+			for (const auto& c : comments)
+				if (c.has_value()) return c.value();
+			THROW_EXCEPTION("Trying to access comment but this node has none.");
+			MRPT_END
+		}
+		const std::string& comment(CommentPosition pos) const
+		{
+			MRPT_START
+			int posIndex = static_cast<int>(pos);
+			ASSERT_GE_(posIndex, 0);
+			ASSERT_LT_(posIndex, static_cast<int>(CommentPosition::MAX));
+			ASSERTMSG_(
+				comments[posIndex].has_value(),
+				"Trying to access comment but this node has none.");
+			return comments[posIndex].value();
+			MRPT_END
+		}
 	};
 
 	/** @} */
@@ -318,11 +354,21 @@ class yaml
 	template <typename MATRIX>
 	inline void toMatrix(MATRIX& m) const;
 
+	/** Converts a sequence yaml node into a std::vector, trying to convert all
+	 *  nodes to the same given `Scalar` type.
+	 *  \note (New in MRPT 2.3.3)
+	 */
+	template <typename Scalar>
+	inline std::vector<Scalar> toStdVector() const;
+
 	/** @} */
 
 	/** @name Content and type checkers
 	 * @{ */
-	/** For map nodes, checks if the given key name exists */
+	/** For map nodes, checks if the given key name exists.
+	 *  Returns false if the node is a `null` node.
+	 *  Throws if the node is not a map or null.
+	 */
 	bool has(const std::string& key) const;
 
 	/** For map or sequence nodes, checks if the container is empty. Also
@@ -801,11 +847,11 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
 #define MCP_LOAD_OPT(Yaml__, Var__)                                            \
 	if constexpr (std::is_enum_v<decltype(Var__)>)                             \
 	{                                                                          \
-		if (Yaml__.has(#Var__))                                                \
+		if (!Yaml__.empty() && Yaml__.has(#Var__))                             \
 			Var__ = mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(       \
 				Var__)>>::name2value(Yaml__[#Var__].as<std::string>());        \
 	}                                                                          \
-	else if (Yaml__.has(#Var__))                                               \
+	else if (!Yaml__.isNullNode() && !Yaml__.empty() && Yaml__.has(#Var__))    \
 	Var__ = Yaml__[#Var__].as<decltype(Var__)>()
 
 /** Just like MCP_LOAD_REQ(), but converts the read number from degrees to
@@ -1025,6 +1071,20 @@ inline void yaml::toMatrix(MATRIX& m) const
 	for (int r = 0, idx = 0; r < nRows; r++)
 		for (int c = 0; c < nCols; c++, idx++)
 			m(r, c) = data.operator()(idx).as<entry_t>();
+}
+
+template <typename Scalar>
+inline std::vector<Scalar> yaml::toStdVector() const
+{
+	ASSERT_(isSequence());
+	const auto& seq = asSequence();
+
+	std::vector<Scalar> ret;
+	ret.reserve(seq.size());
+
+	for (const auto& n : seq)
+		ret.push_back(n.as<Scalar>());
+	return ret;
 }
 
 /** Sort operator required for std::map with node_t as key */

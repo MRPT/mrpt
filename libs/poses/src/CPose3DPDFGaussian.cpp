@@ -126,11 +126,11 @@ CPose3DPDFGaussian::CPose3DPDFGaussian(const CPose3DQuatPDFGaussian& o)
 /*---------------------------------------------------------------
 					asString
  ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::asString(std::string& s) const
+std::string CPose3DPDFGaussian::asString() const
 {
 	ostringstream ss;
 	ss << *this;
-	s = ss.str();
+	return ss.str();
 }
 
 /*---------------------------------------------------------------

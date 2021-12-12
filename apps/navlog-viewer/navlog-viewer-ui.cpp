@@ -206,12 +206,17 @@ NavlogViewerApp::NavlogViewerApp()
 		{
 			auto* panel = layer->add<nanogui::Widget>();
 			panel->setLayout(new nanogui::BoxLayout(
-				nanogui::Orientation::Horizontal, nanogui::Alignment::Fill, 5));
+				nanogui::Orientation::Horizontal, nanogui::Alignment::Fill, 0));
 			panel->add<nanogui::Label>("Min. dist. robot shapes:");
 			edShapeMinDist = panel->add<nanogui::TextBox>("1.0");
 			edShapeMinDist->setEditable(true);
 			edShapeMinDist->setFormat("[0-9.]*");
 		}
+
+		m_cbOrtho2DView = layer->add<nanogui::CheckBox>("Orthogonal 2D mode");
+		m_cbOrtho2DView->setChecked(true);
+		// No need to catch callbacks: the checkbox is checked in the GUI main
+		// loop.
 
 		layer->add<nanogui::Label>("Show for each PTG:");
 		const auto lst = std::vector<std::string>(
@@ -219,11 +224,6 @@ NavlogViewerApp::NavlogViewerApp()
 		m_rbPerPTGPlots = layer->add<nanogui::ComboBox>(lst, lst);
 		m_rbPerPTGPlots->setCallback([this](int) { updateVisualization(); });
 		m_rbPerPTGPlots->setSelectedIndex(2);
-
-		auto cbOrtho = layer->add<nanogui::CheckBox>("Orthogonal");
-		cbOrtho->setCallback([this](bool ortho) {
-			m_win->camera().setCameraProjective(!ortho);
-		});
 	}
 
 	// ===== TAB: Advanced
@@ -307,6 +307,16 @@ NavlogViewerApp::NavlogViewerApp()
 		m_win->camera().setAzimuthDegrees(-90.0f);
 		m_win->camera().setElevationDegrees(90.0f);
 		m_win->camera().setZoomDistance(25.0f);
+
+		{
+			auto vi = scene->createViewport("xyz");
+			vi->setViewportPosition(-0.1, 0.0, 0.1, 0.1);
+			vi->setTransparent(true);
+
+			auto glCorners =
+				mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 1.0f);
+			scene->insert(glCorners, "xyz");
+		}
 
 		// XY ground plane:
 		mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
@@ -467,6 +477,33 @@ void NavlogViewerApp::OnMainIdleLoop()
 	}
 
 	if (m_showCursorXY) { OntimMouseXY(); }
+
+	// Restrict camera motion:
+	if (m_win->background_scene)
+	{
+		auto& mainCam = m_win->camera();
+		if (m_cbOrtho2DView->checked())
+		{
+			mainCam.setElevationDegrees(90);
+			mainCam.setAzimuthDegrees(-90);
+		}
+		mainCam.setCameraProjective(!m_cbOrtho2DView->checked());
+	}
+
+	// Copy camera orientation from the main window into the small XYZ view:
+	if (m_win && m_win->background_scene)
+	{
+		if (auto view = m_win->background_scene->getViewport("xyz"); view)
+		{
+			auto& mainCam = m_win->camera();
+			auto& xyzCam = view->getCamera();
+
+			xyzCam.setAzimuthDegrees(mainCam.getAzimuthDegrees());
+			xyzCam.setElevationDegrees(mainCam.getElevationDegrees());
+			xyzCam.setOrthogonal(true);
+			xyzCam.setZoomDistance(2.0);
+		}
+	}
 }
 
 bool NavlogViewerApp::OnKeyboardCallback(
@@ -778,8 +815,7 @@ void NavlogViewerApp::updateVisualization()
 							uint32_t step;
 							if (!ptg->getPathStepForDist(selected_k, d, step))
 								continue;
-							mrpt::math::TPose2D p;
-							ptg->getPathPose(selected_k, step, p);
+							const auto p = ptg->getPathPose(selected_k, step);
 							ptg->add_robotShape_to_setOfLines(
 								*gl_path, mrpt::poses::CPose2D(p));
 						}
@@ -907,8 +943,7 @@ void NavlogViewerApp::updateVisualization()
 							uint32_t step;
 							if (!ptg->getPathStepForDist(selected_k, d, step))
 								continue;
-							mrpt::math::TPose2D p;
-							ptg->getPathPose(selected_k, step, p);
+							const auto p = ptg->getPathPose(selected_k, step);
 							ptg->add_robotShape_to_setOfLines(
 								*gl_path, mrpt::poses::CPose2D(p));
 						}
@@ -1093,6 +1128,14 @@ void NavlogViewerApp::updateVisualization()
 
 	if (m_cbShowAllDebugFields->checked())
 	{
+		ADD_WIN_TEXTMSG(
+			format(
+				"navDynState: curVelLocal=%s relTarget=%s targetRelSpeed=%.02f",
+				log.navDynState.curVelLocal.asString().c_str(),
+				log.navDynState.relTarget.asString().c_str(),
+				log.navDynState.targetRelSpeed)
+				.c_str());
+
 		for (const auto& e : log.values)
 			ADD_WIN_TEXTMSG(format(
 				"%-30s=%s ", e.first.c_str(),

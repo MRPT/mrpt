@@ -7,12 +7,23 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make gcov -C build
-      - run: make -C build
-      - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build
+      - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u20.04
+      - run: make -C build-u20.04 tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u20.04
+      - run: make gcov -C build-u20.04
+      - run: make -C build-u20.04
+      - run: bash <(curl -s https://codecov.io/bash) -X gcov -y .codecov.yml -s build-u20.04
+  full-u21.10-impish:
+    docker:
+      - image: mrpt/mrpt-build-env:full-u21.10-impish
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init --recursive
+      - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u21.10
+      - run: make -C build-u21.10 tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u21.10
+      - run: make -C build-u21.10
   full-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
@@ -20,10 +31,10 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -C build
+      - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u18.04
+      - run: make -C build-u18.04 tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04
+      - run: make -C build-u18.04
   clang-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
@@ -33,13 +44,13 @@ jobs:
       - run: git submodule update --init --recursive
       - run:
           name: Generate cmake files
-          command: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
+          command: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u18.04-clang
           environment:
             CC: /usr/bin/clang-6.0
             CXX: /usr/bin/clang++-6.0
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -C build
+      - run: make -C build-u18.04-clang tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-clang
+      - run: make -C build-u18.04-clang
   headless-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:headless-bionic
@@ -47,10 +58,10 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -C build
+      - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u18.04-headless
+      - run: make -C build-u18.04-headless tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-headless
+      - run: make -C build-u18.04-headless
   minimal-u18.04-bionic:
     docker:
       - image: mrpt/mrpt-build-env:minimal-bionic
@@ -58,10 +69,10 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init --recursive
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild
-      - run: make -C build tests_build_all
-      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -C build
+      - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_DISABLE_PYTHON_BINDINGS=On -DMRPT_EIGEN_USE_EMBEDDED_VERSION=On -DMRPT_ALLOW_LGPLV3=ON -DCMAKE_VERBOSE_MAKEFILE=ON -H. -Bbuild-u18.04-minimal
+      - run: make -C build-u18.04-minimal tests_build_all
+      - run: make CTEST_OUTPUT_ON_FAILURE=1 test -C build-u18.04-minimal
+      - run: make -C build-u18.04-minimal
   clang-format-lint:
     docker:
       - image: mrpt/mrpt-build-env:full-bionic
@@ -89,17 +100,16 @@ jobs:
       - run: brew install cmake
       - run: brew install boost
       - run: brew install nasm
-      - run: cmake -DBUILD_EXAMPLES=On -DBUILD_TESTING=On -DENABLE_COVERAGE=On -DDISABLE_PYTHON_BINDINGS=On -DEIGEN_USE_EMBEDDED_VERSION=On -DCMAKE_VERBOSE_MAKEFILE=ON -DMRPT_ALLOW_LGPLV3=ON -H. -Bbuild
-      - run: make -j2 -C build tests_build_all
-      - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build
-      - run: make -j2 -C build
+      - run: cmake -DMRPT_BUILD_EXAMPLES=On -DMRPT_BUILD_TESTING=On -DMRPT_ENABLE_COVERAGE=On -DMRPT_DISABLE_PYTHON_BINDINGS=On -DMRPT_EIGEN_USE_EMBEDDED_VERSION=On -DCMAKE_VERBOSE_MAKEFILE=ON -DMRPT_ALLOW_LGPLV3=ON -H. -Bbuild-osx
+      - run: make -j2 -C build-osx tests_build_all
+      - run: make -j2 CTEST_OUTPUT_ON_FAILURE=1 test -C build-osx
+      - run: make -j2 -C build-osx
 workflows:
   version: 2
   build:
     jobs:
       - full-u20.04-focal-codecov
-        # Disabled to avoid circle CI concurrency limit timeouts
-        #      - full-u18.04-bionic
+      - full-u21.10-impish
       - clang-u18.04-bionic
       - headless-u18.04-bionic
       - minimal-u18.04-bionic

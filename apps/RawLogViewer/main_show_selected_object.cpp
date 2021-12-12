@@ -184,6 +184,25 @@ void obsVelodyne_to_viz(
 	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
 }
 
+void obsPointCloud_to_viz(
+	const mrpt::obs::CObservationPointCloud::Ptr& obs,
+	const ParametersView3DPoints& p, mrpt::opengl::CSetOfObjects& out)
+{
+	out.clear();
+
+	add_common_to_viz(*obs, p, out);
+
+	auto pnts = mrpt::opengl::CPointCloudColoured::Create();
+	out.insert(pnts);
+
+	if (obs->pointcloud) pnts->loadFromPointsMap(obs->pointcloud.get());
+	pnts->setPose(obs->sensorPose);
+
+	pnts->setPointSize(p.pointSize);
+
+	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
+}
+
 void obs2Dscan_to_viz(
 	const CObservation2DRangeScan::Ptr& obs, const ParametersView3DPoints& p,
 	mrpt::opengl::CSetOfObjects& out)
@@ -258,6 +277,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	// "wxWindow::FindWindowByName" to run right!!! :-(
 	//  And update the required data:
 	const TRuntimeClassId* classID = sel_obj->GetRuntimeClass();
+	bool textDescriptionDone = false;
 
 	// Default selection:
 	Notebook1->ChangeSelection(0);
@@ -268,6 +288,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(sel_obj));
 		obs->load();
 		obs->getDescriptionAsText(cout);
+		textDescriptionDone = true;
 		curSelectedObservation =
 			std::dynamic_pointer_cast<CObservation>(sel_obj);
 	}
@@ -275,6 +296,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	{
 		CAction::Ptr act(std::dynamic_pointer_cast<CAction>(sel_obj));
 		cout << act->getDescriptionAsTextValue();
+		textDescriptionDone = true;
 	}
 
 	// Specific data:
@@ -534,21 +556,45 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 #endif
 	}
 
-	if (classID == CLASS_ID(CObservation3DScene))
+	if (classID == CLASS_ID(CObservationPointCloud))
 	{
 		// ----------------------------------------------------------------------
-		//              CObservation3DScene
+		//              CObservationPointCloud
 		// ----------------------------------------------------------------------
 		Notebook1->ChangeSelection(9);
-		CObservation3DScene::Ptr obs =
-			std::dynamic_pointer_cast<CObservation3DScene>(sel_obj);
+		auto obs = std::dynamic_pointer_cast<CObservationPointCloud>(sel_obj);
+
+		const auto& p = pnViewOptions->m_params;
+
+		auto glPts = mrpt::opengl::CSetOfObjects::Create();
+		obsPointCloud_to_viz(obs, p, *glPts);
 
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
-		if (obs->scene) *openGLSceneRef = *obs->scene;
-		else
-			openGLSceneRef->clear();
+		openGLSceneRef->clear();
+		openGLSceneRef->insert(glPts);
+
+		this->m_gl3DRangeScan->Refresh();
+#endif
+	}
+
+	// Generic visualizable object:
+	if (auto viz =
+			std::dynamic_pointer_cast<mrpt::opengl::Visualizable>(sel_obj);
+		viz)
+	{
+		// ----------------------------------------------------------------------
+		//              Generic visualizable object:
+		// ----------------------------------------------------------------------
+		Notebook1->ChangeSelection(9);
+
+// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+
+		openGLSceneRef->clear();
+		openGLSceneRef->insert(viz->getVisualization());
 
 		this->m_gl3DRangeScan->Refresh();
 #endif
@@ -585,6 +631,16 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	{
 		CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(sel_obj));
 		obs->unload();
+	}
+
+	// Stringifyable Interface as a fallback:
+	// ------------------------------------------
+	if (auto s = dynamic_cast<const mrpt::Stringifyable*>(sel_obj.get());
+		s != nullptr && !textDescriptionDone)
+	{
+		std::cout << "Generic object textual description from "
+					 "mrpt::Stringifyable::asString():\n\n"
+				  << s->asString() << std::endl;
 	}
 
 	myRedirector.reset();  // ensures cout is redirected to text box

@@ -35,8 +35,8 @@ template <class octomap_point3d, class octomap_pointcloud>
 bool COctoMapBase<OCTREE, OCTREE_NODE>::
 	internal_build_PointCloud_for_observation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
-		octomap_pointcloud& scan) const
+		const std::optional<const mrpt::poses::CPose3D>& robotPose,
+		octomap_point3d& sensorPt, octomap_pointcloud& scan) const
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::obs;
@@ -192,12 +192,8 @@ void COctoMapBase<OCTREE, OCTREE_NODE>::saveMetricMapRepresentationToFile(
 	// Save as 3D Scene:
 	{
 		mrpt::opengl::COpenGLScene scene;
-		mrpt::opengl::CSetOfObjects::Ptr obj3D =
-			mrpt::opengl::CSetOfObjects::Create();
 
-		this->getAs3DObject(obj3D);
-
-		scene.insert(obj3D);
+		scene.insert(this->getVisualization());
 
 		const std::string fil = filNamePrefix + std::string("_3D.3Dscene");
 		scene.saveToFile(fil);
@@ -220,7 +216,7 @@ double COctoMapBase<OCTREE, OCTREE_NODE>::internal_computeObservationLikelihood(
 	octomap::Pointcloud scan;
 
 	if (!internal_build_PointCloud_for_observation(
-			obs, &takenFrom, sensorPt, scan))
+			obs, takenFrom, sensorPt, scan))
 		return 0;  // Nothing to do.
 
 	octomap::OcTreeKey key;

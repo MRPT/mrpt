@@ -61,18 +61,10 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	 * \endcode
 	 */
 	const_iterator begin() const { return m_actions.begin(); }
-	/** Returns a iterator to the first action: this is an example of usage:
-	 * \code
-	 *   CActionCollection  acts;
-	 *   ...
-	 *   for (CActionCollection::iterator it=acts.begin();it!=acts.end();++it)
-	 *	  {
-	 *      (*it)->... // (*it) is a "CAction::Ptr"
-	 *   }
-	 *
-	 * \endcode
-	 */
+
+	/// \overload
 	iterator begin() { return m_actions.begin(); }
+
 	/** Returns a iterator pointing to the end of the list: this is an example
 	 *of usage:
 	 * \code
@@ -86,26 +78,16 @@ class CActionCollection : public mrpt::serialization::CSerializable
 	 * \endcode
 	 */
 	const_iterator end() const { return m_actions.end(); }
-	/** Returns a iterator pointing to the end of the list: this is an example
-	 *of usage:
-	 * \code
-	 *   CActionCollection  acts;
-	 *   ...
-	 *   for (CActionCollection::iterator it=acts.begin();it!=acts.end();++it)
-	 *	  {
-	 *      (*it)->... // (*it) is a "CAction::Ptr"
-	 *   }
-	 *
-	 * \endcode
-	 */
+
+	/// \overload
 	iterator end() { return m_actions.end(); }
+
 	/** Removes the given action in the list, and return an iterator to the next
 	 * element (or this->end() if it was the last one).
 	 */
 	iterator erase(const iterator& it);
 
-	/** Erase all actions from the list.
-	 */
+	/** Erase all actions from the list */
 	void clear();
 
 	/** Access the i'th action.DO NOT MODIFY the returned object, make a copy of

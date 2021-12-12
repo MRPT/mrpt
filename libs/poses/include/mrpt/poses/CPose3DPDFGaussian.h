@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 
@@ -36,7 +37,7 @@ class CPose3DQuatPDFGaussian;
  * \sa CPose3D, CPose3DPDF, CPose3DPDFParticles
  * \ingroup poses_pdf_grp
  */
-class CPose3DPDFGaussian : public CPose3DPDF
+class CPose3DPDFGaussian : public CPose3DPDF, public mrpt::Stringifyable
 {
 	DEFINE_SERIALIZABLE(CPose3DPDFGaussian, mrpt::poses)
 
@@ -97,13 +98,7 @@ class CPose3DPDFGaussian : public CPose3DPDF
 		return {this->cov, this->mean};
 	}
 
-	void asString(std::string& s) const;
-	inline std::string asString() const
-	{
-		std::string s;
-		asString(s);
-		return s;
-	}
+	std::string asString() const override;
 
 	/** Copy operator, translating if necesary (for example, between particles
 	 * and gaussian representations)

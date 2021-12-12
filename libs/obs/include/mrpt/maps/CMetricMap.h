@@ -8,13 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/maps/CMetricMapEvents.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/Visualizable.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/CObservable.h>
 #include <mrpt/tfest/TMatchingPair.h>
@@ -45,13 +46,15 @@ namespace mrpt::maps
  *
  * \note All derived class must implement a static class factory
  *`<metric_map_class>::MapDefinition()` that builds a default
- *TMetricMapInitializer [New in MRPT 1.3.0]
+ *TMetricMapInitializer
  *
  * \sa CObservation, CSensoryFrame, CMultiMetricMap
  * \ingroup mrpt_obs_grp
  */
 class CMetricMap : public mrpt::serialization::CSerializable,
-				   public mrpt::system::CObservable
+				   public mrpt::system::CObservable,
+				   public mrpt::Stringifyable,
+				   public mrpt::opengl::Visualizable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CMetricMap)
 
@@ -62,7 +65,8 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	/** Internal method called by insertObservation() */
 	virtual bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) = 0;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) = 0;
 
 	/** Internal method called by computeObservationLikelihood() */
 	virtual double internal_computeObservationLikelihood(
@@ -121,13 +125,15 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	 */
 	bool insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr);
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 
 	/** A wrapper for smart pointers, just calls the non-smart pointer version.
 	 * See: \ref maps_observations  */
 	bool insertObservationPtr(
 		const mrpt::obs::CObservation::Ptr& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr);
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 
 	/** Computes the log-likelihood of a given observation given an arbitrary
 	 * robot 3D pose.  See: \ref maps_observations
@@ -261,11 +267,6 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	 * implementing this virtual interface). */
 	virtual void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const = 0;
-
-	/** Returns a 3D object representing the map.
-	 * \sa genericMapParams, TMapGenericParams::enableSaveAs3DObject */
-	virtual void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& outObj) const = 0;
 
 	/** Common params to all maps */
 	TMapGenericParams genericMapParams;

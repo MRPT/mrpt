@@ -91,3 +91,54 @@ TEST(OpenGL, orthoMatrix)
 		<< rm.p_matrix << "\nExpected=\n"
 		<< P_GT << "\n";
 }
+
+TEST(OpenGL, perspectiveMatrixFromPinhole)
+{
+	float zmin = 0.1f, zmax = 100.0f;
+
+	mrpt::img::TCamera c1;
+	c1.ncols = 800;
+	c1.nrows = 600;
+	c1.fx(350);
+	c1.fy(340);
+	c1.cx(400);
+	c1.cy(300);
+
+	mrpt::opengl::TRenderMatrices rm;
+	rm.viewport_width = c1.ncols;
+	rm.viewport_height = c1.nrows;
+	rm.pinhole_model = c1;
+	rm.is_projective = true;
+
+	rm.computeProjectionMatrix(zmin, zmax);
+
+	// Camera axes: +Z forward, +X right, +Y down.
+	{
+		// Project point test:
+		mrpt::math::CMatrixFixed<float, 4, 1> pt1;
+		pt1.fromMatlabStringFormat("[0 ; 0; 10.0; 1.0]");
+		const Eigen::Vector4f pt1h = (rm.p_matrix * pt1);
+		const Eigen::Vector3f pt1v = pt1h.head<3>() * (1.0f / pt1h[3]);
+
+		EXPECT_NEAR(pt1v[0], 0, 1e-3f);
+		EXPECT_NEAR(pt1v[1], 0, 1e-3f);
+	}
+
+	{
+		// Project point test:
+		mrpt::math::CMatrixFixed<float, 4, 1> pt1;
+		const float fov_x = 2 * atan(c1.ncols / (2 * c1.fx()));
+		const float fov_y = 2 * atan(c1.nrows / (2 * c1.fy()));
+
+		const float z = 10.0f;
+		pt1[0] = tan(fov_x / 2) * z;
+		pt1[1] = tan(fov_y / 2) * z;
+		pt1[2] = z;
+		pt1[3] = 1.0;
+		const Eigen::Vector4f pt1h = (rm.p_matrix * pt1);
+		const Eigen::Vector3f pt1v = pt1h.head<3>() * (1.0f / pt1h[3]);
+
+		EXPECT_NEAR(pt1v[0], -1, 1e-3f);
+		EXPECT_NEAR(pt1v[1], -1, 1e-3f);
+	}
+}

@@ -70,12 +70,12 @@ bool DemoFeatures()
 			"11: AMAZE\n"
 			"12: LSD\n";
 
-	cout << endl << "Select the number for the desired method [8: FASTER-10]:";
+	cout << endl << "Select the number for the desired method [0: KLT]:";
 
 	string sel_method;
 	std::getline(cin, sel_method);
 
-	if (sel_method.empty()) fext.options.featsType = featFAST;
+	if (sel_method.empty()) fext.options.featsType = featKLT;
 	else
 		fext.options.featsType = TKeyPointMethod(atoi(sel_method.c_str()));
 
@@ -98,12 +98,12 @@ Descriptors:
 64: BLD
 128: LATCH)";
 
-		cout << endl << "Select the number for the desired method [0: Patch]:";
+		cout << endl << "Select the number for the desired method [1: SIFT]:";
 
 		string desc_method;
 		std::getline(cin, desc_method);
 
-		if (desc_method.empty()) desc_to_compute = TDescriptorType(0);
+		if (desc_method.empty()) desc_to_compute = descSIFT;
 		else
 			desc_to_compute = TDescriptorType(atoi(desc_method.c_str()));
 	}
@@ -382,12 +382,12 @@ Descriptors:
 		// win2: Show only best matches:
 
 		// CFeatureList  feats2_best;
-		img2_show_base = img2;
+		img2_show_base = img2.makeDeepCopy();
 
 		CVectorDouble xs_best, ys_best;
 		for (unsigned int i2 = 0; i2 < feats2.size(); i2++)
 		{
-			if (distances[i2] < min_dist + 0.1 * dist_std)
+			if (distances[i2] < min_dist + 0.3 * dist_std)
 			{
 				img2_show_base.drawMark(
 					feats2[i2].keypoint.pt.x, feats2[i2].keypoint.pt.y,

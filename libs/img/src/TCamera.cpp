@@ -39,7 +39,7 @@ std::string TCamera::dumpAsText() const
 	return cfg.getContent();
 }
 
-uint8_t TCamera::serializeGetVersion() const { return 5; }
+uint8_t TCamera::serializeGetVersion() const { return 6; }
 void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << focalLengthMeters;
@@ -51,6 +51,7 @@ void TCamera::serializeTo(mrpt::serialization::CArchive& out) const
 	// version 0 did serialize here a "CMatrixDouble15"
 	out << nrows << ncols;	// New in v2
 	out << cameraName;	// v5
+	out << static_cast<uint8_t>(distortion);  // v6
 }
 void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -62,6 +63,7 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 3:
 		case 4:
 		case 5:
+		case 6:
 		{
 			in >> focalLengthMeters;
 
@@ -102,6 +104,15 @@ void TCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				ncols = 640;
 			}
 			if (version >= 5) in >> cameraName;
+
+			if (version >= 6)
+			{
+				distortion = static_cast<DistortionModel>(in.ReadAs<uint8_t>());
+			}
+			else
+			{
+				distortion = DistortionModel::plumb_bob;
+			}
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -156,11 +167,11 @@ void TCamera::saveToConfigFile(
 	cfg.write(section, "cy", format("%.05f", cy()));
 	cfg.write(section, "fx", format("%.05f", fx()));
 	cfg.write(section, "fy", format("%.05f", fy()));
+
+	cfg.write(section, "distortion_model", distortion);
 	cfg.write(
-		section, "dist",
-		format(
-			"[%e %e %e %e %e %e %e %e]", dist[0], dist[1], dist[2], dist[3],
-			dist[4], dist[5], dist[6], dist[7]));
+		section, "dist", getDistortionParamsAsRowVector().inMatlabFormat());
+
 	if (focalLengthMeters != 0)
 		cfg.write(section, "focal_length", focalLengthMeters);
 }
@@ -171,6 +182,8 @@ void TCamera::saveToConfigFile(
 void TCamera::loadFromConfigFile(
 	const std::string& section, const mrpt::config::CConfigFileBase& cfg)
 {
+	*this = TCamera();	// reset to defaults
+
 	vector<uint64_t> out_res;
 	cfg.read_vector(section, "resolution", vector<uint64_t>(), out_res, true);
 	if (out_res.size() != 2)
@@ -191,14 +204,35 @@ void TCamera::loadFromConfigFile(
 
 	setIntrinsicParamsFromValues(fx, fy, cx, cy);
 
-	CVectorDouble dists;
-	cfg.read_vector(section, "dist", CVectorDouble(), dists, true);
-	if (dists.size() != 4 && dists.size() != 5 && dists.size() != 8)
-		THROW_EXCEPTION("Expected 4,5 or 8-length vector in field 'dist'");
+	distortion = cfg.read_enum(section, "distortion_model", distortion);
 
-	dist.fill(0);
-	for (CVectorDouble::Index i = 0; i < dists.size(); i++)
-		dist[i] = dists[i];
+	CVectorDouble v;
+	cfg.read_vector(section, "dist", CVectorDouble(), v, true);
+
+	switch (distortion)
+	{
+		case DistortionModel::none: break;
+		case DistortionModel::plumb_bob:
+			ASSERTMSG_(
+				v.size() == 5 || v.size() == 8,
+				"Expected 5 or 8 distortion parameters for plumb_bob");
+			for (int i = 0; i < v.size(); i++)
+				dist[i] = v[i];
+			break;
+		case DistortionModel::kannala_brandt:
+			ASSERTMSG_(
+				v.size() == 4,
+				"Expected 4 distortion parameters for kannala_brandt");
+			k1(v[0]);
+			k2(v[1]);
+			k3(v[2]);
+			k4(v[3]);
+			break;
+		default:
+		{
+			THROW_EXCEPTION("Invalid distortion model enum value.");
+		}
+	}
 
 	focalLengthMeters =
 		cfg.read_double(section, "focal_length", 0, false /* optional value */);
@@ -244,7 +278,7 @@ bool mrpt::img::operator==(
 	return a.ncols == b.ncols && a.nrows == b.nrows &&
 		a.intrinsicParams == b.intrinsicParams && a.dist == b.dist &&
 		a.focalLengthMeters == b.focalLengthMeters &&
-		a.cameraName == b.cameraName;
+		a.cameraName == b.cameraName && a.distortion == b.distortion;
 }
 bool mrpt::img::operator!=(
 	const mrpt::img::TCamera& a, const mrpt::img::TCamera& b)
@@ -262,11 +296,39 @@ TCamera TCamera::FromYAML(const mrpt::containers::yaml& p)
 	c.cameraName = p["camera_name"].as<std::string>();
 	p["camera_matrix"].toMatrix(c.intrinsicParams);
 
-	ASSERT_EQUAL_(p["distortion_model"].as<std::string>(), "plumb_bob");
+	{
+		DistortionModel distortion_model = c.distortion;
+		MCP_LOAD_OPT(p, distortion_model);
+		c.distortion = distortion_model;
+	}
 
-	mrpt::math::CMatrixDouble15 v;
+	mrpt::math::CMatrixDouble v;
 	p["distortion_coefficients"].toMatrix(v);
-	c.setDistortionParamsVector(v);
+
+	switch (c.distortion)
+	{
+		case DistortionModel::none: break;
+		case DistortionModel::plumb_bob:
+			ASSERTMSG_(
+				v.size() == 5 || v.size() == 8,
+				"Expected 5 or 8 distortion parameters for plumb_bob");
+			for (size_t i = 0; i < v.size(); i++)
+				c.dist[i] = v[i];
+			break;
+		case DistortionModel::kannala_brandt:
+			ASSERTMSG_(
+				v.size() == 4,
+				"Expected 4 distortion parameters for kannala_brandt");
+			c.k1(v[0]);
+			c.k2(v[1]);
+			c.k3(v[2]);
+			c.k4(v[3]);
+			break;
+		default:
+		{
+			THROW_EXCEPTION("Invalid distortion model enum value.");
+		}
+	}
 
 	c.focalLengthMeters = p.getOrDefault<double>("focal_length_meters", 0.0);
 
@@ -306,9 +368,9 @@ mrpt::containers::yaml TCamera::asYAML() const
 	p["image_height"] = nrows;
 	p["camera_name"] = cameraName;
 	p["camera_matrix"] = mrpt::containers::yaml::FromMatrix(intrinsicParams);
-	p["distortion_model"] = "plumb_bob";
+	p["distortion_model"] = mrpt::typemeta::enum2str(distortion);
 	p["distortion_coefficients"] =
-		mrpt::containers::yaml::FromMatrix(getDistortionParamsVector());
+		mrpt::containers::yaml::FromMatrix(getDistortionParamsAsRowVector());
 	p["rectification_matrix"] = mrpt::containers::yaml::FromMatrix(
 		mrpt::math::CMatrixDouble33::Identity());
 
@@ -320,4 +382,32 @@ mrpt::containers::yaml TCamera::asYAML() const
 	p["focal_length_meters"] = focalLengthMeters;
 
 	return p;
+}
+
+std::vector<double> TCamera::getDistortionParamsAsVector() const
+{
+	switch (distortion)
+	{
+		case DistortionModel::none: return {};
+		case DistortionModel::plumb_bob:
+			return {k1(), k2(), p1(), p2(), k3(), k4(), k5(), k6()};
+		case DistortionModel::kannala_brandt: return {k1(), k2(), k3(), k4()};
+		default:
+		{
+			THROW_EXCEPTION("Invalid distortion model enum value.");
+		}
+	}
+}
+
+mrpt::math::CMatrixDouble TCamera::getDistortionParamsAsRowVector() const
+{
+	const auto vals = getDistortionParamsAsVector();
+	mrpt::math::CMatrixDouble v;
+	if (!vals.empty())
+	{
+		v.resize(1, vals.size());
+		for (size_t i = 0; i < vals.size(); i++)
+			v(0, i) = vals[i];
+	}
+	return v;
 }

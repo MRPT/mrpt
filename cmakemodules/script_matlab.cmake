@@ -5,7 +5,7 @@ set(CMAKE_MRPT_HAS_MATLAB 0)
 
 # Natural option to set ON the building of Matlab wrapper
 # --------------------------------------------------------
-if(BUILD_MATLAB)
+if(MRPT_WITH_MATLAB_WRAPPER)
 
 # Set sensible initial path for Matlab
 if(NOT MATLAB_ROOT)
@@ -57,7 +57,7 @@ if(NOT CMAKE_MRPT_HAS_MATLAB)
 				add_subdirectory("${MRPT_SOURCE_DIR}/3rdparty/mexplus/")
 				include_directories("${MRPT_SOURCE_DIR}/3rdparty/mexplus/")
 		else(MATLAB_FOUND)
-			message("MATLAB not found. Either set MATLAB_ROOT correctly, or set BUILD_MATLAB=OFF")
+			message("MATLAB not found. Either set MATLAB_ROOT correctly, or set MRPT_WITH_MATLAB_WRAPPER=OFF")
 		endif(MATLAB_FOUND)
 endif(NOT CMAKE_MRPT_HAS_MATLAB)
 
@@ -73,12 +73,12 @@ endif(NOT CMAKE_MRPT_HAS_MATLAB)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Copy all .m files (classes, samples, helpers...) to the build directory
-file(COPY ${CMAKE_SOURCE_DIR}/mex/+mrpt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
-file(COPY ${CMAKE_SOURCE_DIR}/mex/samples DESTINATION ${CMAKE_BINARY_DIR}/mex)
+file(COPY ${MRPT_SOURCE_DIR}/mex/+mrpt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
+file(COPY ${MRPT_SOURCE_DIR}/mex/samples DESTINATION ${CMAKE_BINARY_DIR}/mex)
 # Copy setup file and README
-file(COPY ${CMAKE_SOURCE_DIR}/mex/mrpt_setup.m DESTINATION ${CMAKE_BINARY_DIR}/mex)
-file(COPY ${CMAKE_SOURCE_DIR}/mex/README.txt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
+file(COPY ${MRPT_SOURCE_DIR}/mex/mrpt_setup.m DESTINATION ${CMAKE_BINARY_DIR}/mex)
+file(COPY ${MRPT_SOURCE_DIR}/mex/README.txt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
 
 endif(NOT DISABLE_MATLAB)
 
-endif(BUILD_MATLAB)
+endif(MRPT_WITH_MATLAB_WRAPPER)

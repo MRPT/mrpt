@@ -1,5 +1,8 @@
 \defgroup mrpt_kinematics_grp [mrpt-kinematics]
+
 Kinematics of robot arms and mobile robots.
+
+[TOC]
 
 # Library mrpt-kinematics
 

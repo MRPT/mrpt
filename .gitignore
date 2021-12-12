@@ -7,6 +7,8 @@ CMakeLists.txt.user*
 SOURCE_DATE_EPOCH
 *.backup
 
+share/mrpt/config_files/rawlog-grabber/*.rawlog
+
 # OSX
 *.DS_Store
 .Spotlight-V100
@@ -40,4 +42,3 @@ doc/source/global.rst
 doc/source/doxygen-index.rst
 .cmake
 doc/venv
-packaging/debian/changelog.new

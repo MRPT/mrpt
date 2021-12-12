@@ -351,7 +351,8 @@ double CBeaconMap::internal_computeObservationLikelihood(
 						insertObservation
   ---------------------------------------------------------------*/
 bool CBeaconMap::internal_insertObservation(
-	const mrpt::obs::CObservation& obs, const CPose3D* robotPose)
+	const mrpt::obs::CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	MRPT_START
 
@@ -882,19 +883,19 @@ void CBeaconMap::computeMatchingWith3DLandmarks(
 					// OK: A correspondence found!!
 					otherCorrespondences[k] = true;
 
-					match.this_idx = j;
+					match.globalIdx = j;
 
 					CPoint3D mean_j = m_beacons[j].getMeanVal();
 
-					match.this_x = mean_j.x();
-					match.this_y = mean_j.y();
-					match.this_z = mean_j.z();
+					match.global.x = mean_j.x();
+					match.global.y = mean_j.y();
+					match.global.z = mean_j.z();
 
 					CPoint3D mean_k = anotherMap->m_beacons[k].getMeanVal();
-					match.other_idx = k;
-					match.other_x = mean_k.x();
-					match.other_y = mean_k.y();
-					match.other_z = mean_k.z();
+					match.localIdx = k;
+					match.local.x = mean_k.x();
+					match.local.y = mean_k.y();
+					match.local.z = mean_k.z();
 
 					correspondences.push_back(match);
 				}
@@ -1092,10 +1093,7 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 
 	// 3D Scene:
 	opengl::COpenGLScene scene;
-	opengl::CSetOfObjects::Ptr obj3D =
-		std::make_shared<opengl::CSetOfObjects>();
-
-	getAs3DObject(obj3D);
+	const opengl::CSetOfObjects::Ptr obj3D = getVisualization();
 	auto objGround = opengl::CGridPlaneXY::Create(
 		-100.0f, 100.0f, -100.0f, 100.0f, .0f, 1.f);
 
@@ -1141,10 +1139,7 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
-  ---------------------------------------------------------------*/
-void CBeaconMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CBeaconMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	MRPT_START
 
@@ -1153,11 +1148,11 @@ void CBeaconMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 	// ------------------------------------------------
 	//  Add the XYZ corner for the current area:
 	// ------------------------------------------------
-	outObj->insert(opengl::stock_objects::CornerXYZ());
+	o.insert(opengl::stock_objects::CornerXYZ());
 
 	// Save 3D ellipsoids or whatever representation:
 	for (const auto& m_beacon : m_beacons)
-		m_beacon.getAs3DObject(outObj);
+		m_beacon.getVisualizationInto(o);
 
 	MRPT_END
 }

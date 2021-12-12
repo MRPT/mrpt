@@ -128,7 +128,7 @@ void CPlanarLaserScan::onUpdateBuffers_Points()
 			.asTColor());
 }
 
-uint8_t CPlanarLaserScan::serializeGetVersion() const { return 2; }
+uint8_t CPlanarLaserScan::serializeGetVersion() const { return 3; }
 void CPlanarLaserScan::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -137,6 +137,7 @@ void CPlanarLaserScan::serializeTo(mrpt::serialization::CArchive& out) const
 		<< m_points_G << m_points_B << m_points_A << m_plane_R << m_plane_G
 		<< m_plane_B << m_plane_A << m_enable_points << m_enable_line
 		<< m_enable_surface;  // new in v1
+	CRenderizableShaderTriangles::params_serialize(out);  // v3
 }
 
 void CPlanarLaserScan::serializeFrom(
@@ -147,6 +148,7 @@ void CPlanarLaserScan::serializeFrom(
 		case 0:
 		case 1:
 		case 2:
+		case 3:
 		{
 			readFromStreamRender(in);
 			in >> m_scan;
@@ -176,6 +178,8 @@ void CPlanarLaserScan::serializeFrom(
 			{
 				m_enable_points = m_enable_line = m_enable_surface = true;
 			}
+			if (version >= 3)
+				CRenderizableShaderTriangles::params_deserialize(in);
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

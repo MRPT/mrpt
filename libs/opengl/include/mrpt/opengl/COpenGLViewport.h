@@ -101,10 +101,22 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * \sa setCloneView, setNormalMode
 	 */
 	inline void resetCloneView() { setNormalMode(); }
+
 	/** If set to true, and setCloneView() has been called, this viewport will
 	 * be rendered using the camera of the cloned viewport.
 	 */
-	inline void setCloneCamera(bool enable) { m_isClonedCamera = enable; }
+	void setCloneCamera(bool enable);
+
+	/** Use the camera of another viewport.
+	 *  Note this works even for viewports not in "clone" mode, so you can
+	 *  render different scenes but using the same camera.
+	 */
+	inline void setClonedCameraFrom(const std::string& viewPortName)
+	{
+		m_isClonedCamera = true;
+		m_clonedCameraViewport = viewPortName;
+	}
+
 	/** Resets the viewport to a normal 3D viewport \sa setCloneView,
 	 * setImageView */
 	void setNormalMode();
@@ -258,10 +270,20 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 */
 	void insert(const CRenderizable::Ptr& newObject);
 
-	/** Compute the current 3D camera pose.
+	/** Compute the current 3D camera pose: +Z points forward, +X to the right,
+	 * +Y down.
+	 *
 	 * \sa get3DRayForPixelCoord
 	 */
 	void getCurrentCameraPose(mrpt::poses::CPose3D& out_cameraPose) const;
+
+	/// \overload
+	mrpt::poses::CPose3D getCurrentCameraPose() const
+	{
+		mrpt::poses::CPose3D p;
+		getCurrentCameraPose(p);
+		return p;
+	}
 
 	/** Changes the point of view of the camera, from a given pose.
 	 * \sa getCurrentCameraPose
@@ -322,6 +344,9 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	mrpt::math::TBoundingBox getBoundingBox() const;
 
+	/** Returns a copy of the latest render matrices structure. */
+	TRenderMatrices getRenderMatrices() const { return m_state; }
+
 	/** @} */  // end of Contained objects set/get/search
 
 	/** Destructor: clears all objects. */
@@ -337,6 +362,23 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void render(
 		const int render_width, const int render_height,
 		const int render_offset_x = 0, const int render_offset_y = 0) const;
+
+	void updateMatricesFromCamera() const;
+
+	/** Provides read access to the opengl shaders */
+	const std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders() const
+	{
+		return m_shaders;
+	}
+
+	/** Load all MPRT predefined shader programs into m_shaders */
+	void loadDefaultShaders() const;
+
+	/** Provides write access to the opengl shaders */
+	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders()
+	{
+		return m_shaders;
+	}
 
    protected:
 	/** Initializes all textures in the scene (See
@@ -363,18 +405,29 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** The camera associated to the viewport */
 	opengl::CCamera m_camera;
+
 	/** The scene that contains this viewport. */
 	mrpt::safe_ptr<COpenGLScene> m_parent;
+
 	/** Set by setCloneView */
 	bool m_isCloned{false};
+
 	/** Set by setCloneCamera */
 	bool m_isClonedCamera{false};
+
 	/** Only if m_isCloned=true */
 	std::string m_clonedViewport;
+
+	/** If m_isClonedCamera && !m_isCloned, take the camera from another view,
+	 * to render a different scene. */
+	std::string m_clonedCameraViewport;
+
 	/** The viewport's name */
 	std::string m_name;
+
 	/** Whether to clear color buffer. */
 	bool m_isTransparent{false};
+
 	/** Default=0, the border around the viewport. */
 	uint32_t m_borderWidth{0};
 
@@ -398,9 +451,6 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** Default shader program */
 	mutable std::map<shader_id_t, mrpt::opengl::Program::Ptr> m_shaders;
-
-	/** Load all MPRT predefined shader programs into m_shaders */
-	void loadDefaultShaders() const;
 
 	/** Unload shader programs in m_shaders */
 	void unloadShaders();

@@ -29,8 +29,8 @@ using namespace mrpt::poses;
 
 // prototypes
 #ifdef ROS_EXTENSIONS
-object CPose3D_to_ROS_Pose_msg(CPose3D& self);
-void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg);
+object CPose3D_to_ROS_Pose_msg(CPose3D& me);
+void CPose3D_from_ROS_Pose_msg(CPose3D& me, object pose_msg);
 #endif
 // end of prototypes
 
@@ -45,17 +45,17 @@ void (CPose2D::*CPose2D_set_phi)(double) = &CPose2D::phi;
 MAKE_AS_STR(CPose2D)
 
 #ifdef ROS_EXTENSIONS
-object CPose2D_to_ROS_Pose_msg(CPose2D& self)
+object CPose2D_to_ROS_Pose_msg(CPose2D& me)
 {
-	CPose3D pose(self);
+	CPose3D pose(me);
 	return CPose3D_to_ROS_Pose_msg(pose);
 }
 
-void CPose2D_from_ROS_Pose_msg(CPose2D& self, object pose_msg)
+void CPose2D_from_ROS_Pose_msg(CPose2D& me, object pose_msg)
 {
 	CPose3D pose;
 	CPose3D_from_ROS_Pose_msg(pose, pose_msg);
-	self = CPose2D(pose);
+	me = CPose2D(pose);
 }
 #endif
 // end of CPose2D
@@ -68,11 +68,11 @@ void (CPose3D::*CPose3D_set_y)(double) = &CPose3D::y;
 double& (CPose3D::*CPose3D_get_z)() = &CPose3D::z;
 void (CPose3D::*CPose3D_set_z)(double) = &CPose3D::z;
 
-tuple CPose3D_getYawPitchRoll(CPose3D& self)
+tuple CPose3D_getYawPitchRoll(CPose3D& me)
 {
 	list ret_val;
 	double yaw, pitch, roll;
-	self.getYawPitchRoll(yaw, pitch, roll);
+	me.getYawPitchRoll(yaw, pitch, roll);
 	ret_val.append(yaw);
 	ret_val.append(pitch);
 	ret_val.append(roll);
@@ -83,9 +83,9 @@ MAKE_AS_STR(CPose3D)
 MAKE_GETITEM(CPose3D, double)
 
 #ifdef ROS_EXTENSIONS
-object CPose3D_to_ROS_Pose_msg(CPose3D& self)
+object CPose3D_to_ROS_Pose_msg(CPose3D& me)
 {
-	CPose3DQuat pose_quat(self);
+	CPose3DQuat pose_quat(me);
 	// import msg
 	dict locals;
 	exec(
@@ -103,7 +103,7 @@ object CPose3D_to_ROS_Pose_msg(CPose3D& self)
 	return pose_msg;
 }
 
-void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
+void CPose3D_from_ROS_Pose_msg(CPose3D& me, object pose_msg)
 {
 	CPose3DQuat pose_quat;
 	pose_quat[0] = extract<double>(pose_msg.attr("position").attr("x"));
@@ -113,7 +113,7 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
 	pose_quat[5] = extract<double>(pose_msg.attr("orientation").attr("y"));
 	pose_quat[6] = extract<double>(pose_msg.attr("orientation").attr("z"));
 	pose_quat[3] = extract<double>(pose_msg.attr("orientation").attr("w"));
-	self = CPose3D(pose_quat);
+	me = CPose3D(pose_quat);
 }
 #endif
 // end of CPose3D
@@ -254,51 +254,50 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& self, object pose_msg)
 // };
 
 // CPosePDFGaussian
-list CPosePDFGaussian_get_cov(CPosePDFGaussian& self)
+list CPosePDFGaussian_get_cov(CPosePDFGaussian& me)
 {
 	list cov;
 	for (int32_t i = 0; i < 9; ++i)
 	{
-		cov.append(self.cov(i));
+		cov.append(me.cov(i));
 	}
 	return cov;
 }
 
-void CPosePDFGaussian_set_cov(CPosePDFGaussian& self, list cov)
+void CPosePDFGaussian_set_cov(CPosePDFGaussian& me, list cov)
 {
 	for (int32_t i = 0; i < 9; ++i)
 	{
-		self.cov(i) = extract<double>(cov[i]);
+		me.cov(i) = extract<double>(cov[i]);
 	}
 }
 // end of CPosePDFGaussian
 
 // CPose3DPDFGaussian
-list CPose3DPDFGaussian_get_cov(CPose3DPDFGaussian& self)
+list CPose3DPDFGaussian_get_cov(CPose3DPDFGaussian& me)
 {
 	list cov;
 	for (int32_t i = 0; i < 36; ++i)
 	{
-		cov.append(self.cov(i));
+		cov.append(me.cov(i));
 	}
 	return cov;
 }
 
-void CPose3DPDFGaussian_set_cov(CPose3DPDFGaussian& self, list cov)
+void CPose3DPDFGaussian_set_cov(CPose3DPDFGaussian& me, list cov)
 {
 	for (int32_t i = 0; i < 36; ++i)
 	{
-		self.cov(i) = extract<double>(cov[i]);
+		me.cov(i) = extract<double>(cov[i]);
 	}
 }
 
 MAKE_AS_STR(CPose3DPDFGaussian)
 
 #ifdef ROS_EXTENSIONS
-object CPose3DPDFGaussian_to_ROS_PoseWithCovariance_msg(
-	CPose3DPDFGaussian& self)
+object CPose3DPDFGaussian_to_ROS_PoseWithCovariance_msg(CPose3DPDFGaussian& me)
 {
-	CPose3DQuat pose_quat(self.mean);
+	CPose3DQuat pose_quat(me.mean);
 	// import msg
 	dict locals;
 	exec(
@@ -306,7 +305,7 @@ object CPose3DPDFGaussian_to_ROS_PoseWithCovariance_msg(
 		"pose_msg = PoseWithCovariance()\n",
 		object(), locals);
 	object pose_msg = locals["pose_msg"];
-	pose_msg.attr("pose") = CPose3D_to_ROS_Pose_msg(self.mean);
+	pose_msg.attr("pose") = CPose3D_to_ROS_Pose_msg(me.mean);
 
 	// Read REP103: http://ros.org/reps/rep-0103.html#covariance-representation
 	// # Row-major representation of the 6x6 covariance matrix
@@ -323,7 +322,7 @@ object CPose3DPDFGaussian_to_ROS_PoseWithCovariance_msg(
 	const unsigned int indxs_map[6] = {0, 1, 2,
 									   5, 4, 3};  // X,Y,Z,YAW,PITCH,ROLL
 
-	list mrptcov = CPose3DPDFGaussian_get_cov(self);
+	list mrptcov = CPose3DPDFGaussian_get_cov(me);
 	pose_msg.attr("covariance") = list(mrptcov);
 
 	for (int i = 0; i < 6; i++)
@@ -339,10 +338,10 @@ object CPose3DPDFGaussian_to_ROS_PoseWithCovariance_msg(
 }
 
 void CPose3DPDFGaussian_from_ROS_PoseWithCovariance_msg(
-	CPose3DPDFGaussian& self, object pose_msg)
+	CPose3DPDFGaussian& me, object pose_msg)
 {
-	self = CPose3DPDFGaussian();
-	CPose3D_from_ROS_Pose_msg(self.mean, pose_msg.attr("pose"));
+	me = CPose3DPDFGaussian();
+	CPose3D_from_ROS_Pose_msg(me.mean, pose_msg.attr("pose"));
 
 	list roscov = list(pose_msg.attr("covariance"));
 
@@ -354,7 +353,7 @@ void CPose3DPDFGaussian_from_ROS_PoseWithCovariance_msg(
 	{
 		for (int j = 0; j < 6; j++)
 		{
-			self.cov(i, j) =
+			me.cov(i, j) =
 				extract<double>(roscov[indxs_map[i] * 6 + indxs_map[j]]);
 		}
 	}

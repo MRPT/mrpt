@@ -2,8 +2,8 @@ project(ALL_EXAMPLES)
 
 add_custom_target(examples ALL)
 
-set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples?")
-if(BUILD_EXAMPLES)
+set(MRPT_BUILD_EXAMPLES OFF CACHE BOOL "Build examples?")
+if(MRPT_BUILD_EXAMPLES)
 	set(CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 	# Generate examples_config.h
@@ -164,6 +164,7 @@ if(BUILD_EXAMPLES)
 		opengl_offscreen_render_example
 		opengl_octree_render_huge_pointcloud
 		opengl_texture_sizes_test
+		opengl_custom_shaders_demo
 		# -------
 		img_basic_example
 		img_convolution_fft

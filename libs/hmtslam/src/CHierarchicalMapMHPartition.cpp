@@ -1164,7 +1164,7 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		{
 			mrpt::opengl::CSetOfObjects::Ptr objTex =
 				mrpt::opengl::CSetOfObjects::Create();
-			metricMap->getAs3DObject(objTex);
+			metricMap->getVisualizationInto(*objTex);
 			objTex->setPose(pose);
 			outScene.insert(objTex);
 		}

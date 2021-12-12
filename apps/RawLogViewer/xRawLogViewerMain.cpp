@@ -2085,7 +2085,7 @@ void xRawLogViewerFrame::loadRawlogFile(const string& str, int first, int last)
 				progDia.Fit();
 				wxTheApp->Yield();	// Let the app. process messages
 
-				if (memUsg_Mb > 2600 && !alreadyWarnedTooLargeFile)
+				if (memUsg_Mb > 4000 && !alreadyWarnedTooLargeFile)
 				{
 					alreadyWarnedTooLargeFile = true;
 					string msg;
@@ -2381,7 +2381,12 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 			}  // end Observation
 			break;
-			default: break;
+			default:
+			{
+				auto obj = rawlog.getAsGeneric(i);
+				listOfObjects[obj->GetRuntimeClass()]++;
+			}
+			break;
 		};	// end switch type
 
 	}  // end for i
@@ -4449,10 +4454,9 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent&)
 					refMap->clear();
 					newMapPt.clear();
 
-					SF_ref->insertObservationsInto(refMap);
+					SF_ref->insertObservationsInto(*refMap);
 					CPose3D newMapRobotPose(initialEst);
-					SF_new->insertObservationsInto(
-						(CMetricMap*)&newMapPt, &newMapRobotPose);
+					SF_new->insertObservationsInto(newMapPt, newMapRobotPose);
 
 					poseEst = icp.Align(
 						refMap, (CMetricMap*)&newMapPt, initialEst, icpInfo);

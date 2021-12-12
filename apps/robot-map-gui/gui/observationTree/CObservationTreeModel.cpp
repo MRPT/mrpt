@@ -18,7 +18,7 @@ CObservationTreeModel::CObservationTreeModel(
 	if (!simplemap.empty())
 		for (auto iter = simplemap.begin(); iter != simplemap.end(); ++iter)
 		{
-			m_poses.push_back(iter->first->getMeanVal());
+			m_poses.emplace_back(iter->pose->getMeanVal());
 		}
 }
 

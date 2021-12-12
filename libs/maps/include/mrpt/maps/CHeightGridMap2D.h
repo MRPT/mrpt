@@ -76,6 +76,14 @@ class CHeightGridMap2D
 		return float(c.h);
 	}
 
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"HeightGridMap2D, extending from (%f,%f) to (%f,%f), resolution=%f",
+			getXMin(), getYMin(), getXMax(), getYMax(), getResolution());
+	}
+
 	/** The type of map representation to be used.
 	 *  See mrpt::maps::CHeightGridMap2D for discussion.
 	 */
@@ -128,7 +136,8 @@ class CHeightGridMap2D
 	 * mrpt::opengl::CMesh object, unless
 	 *   it is specified otherwise in
 	 * mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Return the type of the gas distribution map, according to parameters
 	 * passed on construction */
@@ -157,7 +166,8 @@ class CHeightGridMap2D
 	void internal_clear() override;
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) const override;

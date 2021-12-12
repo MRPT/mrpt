@@ -3,9 +3,10 @@
 Random number generator C++ library support uniform, Gaussian, multivariable
 distributions.
 
+[TOC]
 
 # Library mrpt-random
-<small> [New in MRPT 2.0.0] </small>
+
 
 This library is part of MRPT but it's pure C++11 and has no other dependencies.
 It can be installed in Debian-based systems with:

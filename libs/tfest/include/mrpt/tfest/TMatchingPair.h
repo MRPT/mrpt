@@ -9,7 +9,11 @@
 #pragma once
 
 #include <mrpt/core/common.h>  // MRPT_IS_X86_AMD64
+#include <mrpt/math/TPoint3D.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/serialization/serialization_frwds.h>
+#include <mrpt/typemeta/TTypeName.h>
+#include <mrpt/typemeta/static_string.h>
 
 #include <cstdint>
 #include <iosfwd>
@@ -29,6 +33,9 @@ namespace mrpt::tfest
 
 /** A structure for holding correspondences between two sets of points or
  * points-like entities in 2D or 3D. Templatized version for double or float.
+ *
+ * \note Before MRPT 2.4.0, "local" and "global" points were named "other", and
+ * "this", respectively, and were not packed into a TPoint structure.
  */
 template <typename T>
 struct TMatchingPairTempl
@@ -36,27 +43,61 @@ struct TMatchingPairTempl
 	TMatchingPairTempl() = default;
 
 	TMatchingPairTempl(
-		uint32_t _this_idx, uint32_t _other_idx, T _this_x, T _this_y,
-		T _this_z, T _other_x, T _other_y, T _other_z)
-		: this_idx(_this_idx),
-		  other_idx(_other_idx),
-		  this_x(_this_x),
-		  this_y(_this_y),
-		  this_z(_this_z),
-		  other_x(_other_x),
-		  other_y(_other_y),
-		  other_z(_other_z)
+		uint32_t _globalIdx, uint32_t _localIdx, T _global_x, T _global_y,
+		T _global_z, T _local_x, T _local_y, T _local_z)
+		: globalIdx(_globalIdx),
+		  localIdx(_localIdx),
+		  global(_global_x, _global_y, _global_z),
+		  local(_local_x, _local_y, _local_z)
 	{
 	}
 
-	uint32_t this_idx{0};
-	uint32_t other_idx{0};
-	T this_x{0}, this_y{0}, this_z{0};
-	T other_x{0}, other_y{0}, other_z{0};
+	TMatchingPairTempl(
+		uint32_t _globalIdx, uint32_t _localIdx,
+		const mrpt::math::TPoint3D_<T>& _global,
+		const mrpt::math::TPoint3D_<T>& _local)
+		: globalIdx(_globalIdx),
+		  localIdx(_localIdx),
+		  global(_global),
+		  local(_local)
+	{
+	}
+
+	uint32_t globalIdx{0};
+	uint32_t localIdx{0};
+	mrpt::math::TPoint3D_<T> global{0, 0, 0};
+	mrpt::math::TPoint3D_<T> local{0, 0, 0};
 	T errorSquareAfterTransformation{0};
 
 	void print(std::ostream& o) const;
+
+	constexpr static auto getClassName()
+	{
+		using namespace mrpt::typemeta;
+		return literal("TMatchingPairTempl<") + TTypeName<T>::get() +
+			literal(">");
+	}
 };
+
+template <typename T>
+mrpt::serialization::CArchive& operator<<(
+	mrpt::serialization::CArchive& out, const TMatchingPairTempl<T>& obj)
+{
+	out << obj.globalIdx << obj.localIdx << obj.global.x << obj.global.y
+		<< obj.global.z << obj.local.x << obj.local.y << obj.local.z
+		<< obj.errorSquareAfterTransformation;
+	return out;
+}
+
+template <typename T>
+mrpt::serialization::CArchive& operator>>(
+	mrpt::serialization::CArchive& in, TMatchingPairTempl<T>& obj)
+{
+	in >> obj.globalIdx >> obj.localIdx >> obj.global.x >> obj.global.y >>
+		obj.global.z >> obj.local.x >> obj.local.y >> obj.local.z >>
+		obj.errorSquareAfterTransformation;
+	return in;
+}
 
 /** A structure for holding correspondences between two sets of points or
  * points-like entities in 2D or 3D. Using `float` to save space since large
@@ -157,21 +198,21 @@ std::ostream& operator<<(
 	return o;
 }
 
-/** Comparison operator, first sorts by this_idx, if equals, by other_idx
+/** Comparison operator, first sorts by globalIdx, if equals, by localIdx
  */
 template <typename T>
 bool operator<(const TMatchingPairTempl<T>& a, const TMatchingPairTempl<T>& b)
 {
-	if (a.this_idx == b.this_idx) return (a.this_idx < b.this_idx);
+	if (a.globalIdx == b.globalIdx) return (a.localIdx < b.localIdx);
 	else
-		return (a.other_idx < b.other_idx);
+		return (a.globalIdx < b.globalIdx);
 }
 
 /** A comparison operator  */
 template <typename T>
 bool operator==(const TMatchingPairTempl<T>& a, const TMatchingPairTempl<T>& b)
 {
-	return (a.this_idx == b.this_idx) && (a.other_idx == b.other_idx);
+	return (a.globalIdx == b.globalIdx) && (a.localIdx == b.localIdx);
 }
 
 /** A comparison operator */

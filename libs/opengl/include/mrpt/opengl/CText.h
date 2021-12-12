@@ -13,16 +13,15 @@
 
 namespace mrpt::opengl
 {
-/** A 2D text (bitmap rendering): it always "faces the observer" despite it's at
- * some 3D location.
- * Use setString and setFont to change the text displayed by this object.
+/** A 2D text that always "faces the observer" despite it having a real 3D
+ * position, used to compute its position on the screen, and depth (so it can be
+ * occluded).
+ *
+ * Use setString() and setFont() to change the text and its appareance.
  *
  * ![mrpt::opengl::CText](preview_CText.png)
  *
- * \sa CText3D
- * \note All texts appear with the font GLUT_BITMAP_TIMES_ROMAN_10 for now
- * (i.e. setFont is ignored)
- * \sa opengl::COpenGLScene
+ * \sa CText3D, opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
 class CText : public CRenderizableShaderText
@@ -45,7 +44,8 @@ class CText : public CRenderizableShaderText
 	}
 	/** Return the current text associated to this label */
 	std::string getString() const { return m_str; }
-	/** Sets the font (It has no effect yet!) */
+
+	/** Sets the font among "sans", "serif", "mono". */
 	void setFont(const std::string& s, int height)
 	{
 		if (m_fontName == s && m_fontHeight == height) return;

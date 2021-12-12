@@ -57,7 +57,8 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	void internal_clear() override;
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) const override;
@@ -68,6 +69,9 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 
 	/** Resize the number of SOG modes */
 	void resize(const size_t N);
+
+	/** Returns a short description of the map. */
+	std::string asString() const override { return "CBeaconMap map"; }
 
 	/** Access to individual beacons */
 	const CBeacon& operator[](size_t i) const
@@ -296,7 +300,8 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	void saveToTextFile(const std::string& fil) const;
 
 	/** Returns a 3D object representing the map. */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Returns a pointer to the beacon with the given ID, or nullptr if it does
 	 * not exist. */

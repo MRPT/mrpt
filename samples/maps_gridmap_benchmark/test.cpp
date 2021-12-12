@@ -189,7 +189,7 @@ void BenchmarkGridmaps()
 			CPose3D pose3D;
 #endif
 
-			gridMap->insertObservation(scan1, &pose3D);
+			gridMap->insertObservation(scan1, pose3D);
 		}
 		double T = tictac.Tac();
 		cout << "-> " << 1000 * T / N << " ms/iter, scans/sec:" << N / T
@@ -197,7 +197,7 @@ void BenchmarkGridmaps()
 
 		CPose3D pose3D;
 		gridMap->clear();
-		gridMap->insertObservation(scan1, &pose3D);
+		gridMap->insertObservation(scan1, pose3D);
 		gridMap->saveAsBitmapFile("./gridmap_without_widening.png");
 	}
 
@@ -221,7 +221,7 @@ void BenchmarkGridmaps()
 #else
 			CPose3D pose3D;
 #endif
-			gridMap->insertObservation(scan1, &pose3D);
+			gridMap->insertObservation(scan1, pose3D);
 		}
 		double T = tictac.Tac();
 		cout << "-> " << 1000 * T / N << " ms/iter, scans/sec:" << N / T
@@ -229,7 +229,7 @@ void BenchmarkGridmaps()
 
 		CPose3D pose3D;
 		gridMap->clear();
-		gridMap->insertObservation(scan1, &pose3D);
+		gridMap->insertObservation(scan1, pose3D);
 		gridMap->saveAsBitmapFile("./gridmap_with_widening.png");
 	}
 
@@ -258,7 +258,7 @@ void BenchmarkGridmaps()
 
 		*gridMap = gridMapCopy;
 		CPose3D pose3D(0, 0, 0);
-		gridMap->insertObservation(scan1, &pose3D);
+		gridMap->insertObservation(scan1, pose3D);
 
 		cout << "Running test #8: Likelihood... ";
 		cout.flush();

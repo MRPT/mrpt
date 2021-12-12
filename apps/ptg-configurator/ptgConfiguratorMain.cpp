@@ -130,6 +130,7 @@ const long ptgConfiguratorframe::idMenuQuit = wxNewId();
 const long ptgConfiguratorframe::idMenuAbout = wxNewId();
 const long ptgConfiguratorframe::ID_STATUSBAR1 = wxNewId();
 //*)
+const long ID_TEXTCTRL_SEL_TRAJ = wxNewId();
 
 BEGIN_EVENT_TABLE(ptgConfiguratorframe, wxFrame)
 //(*EventTable(ptgConfiguratorframe)
@@ -252,8 +253,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		Panel1, ID_BUTTON5, _("Load Plugin"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_BUTTON5"));
 	FlexGridSizer4->Add(
-		btnLoadPlugin, 1,
-		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+		btnLoadPlugin, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
 	cbHighlightOnePath = new wxCheckBox(
 		Panel1, ID_CHECKBOX3, _("Highlight one trajectory:"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
@@ -275,6 +275,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer4->Add(
 		edIndexHighlightPath, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
 	cbShowOnlySelectedTraj = new wxCheckBox(
 		Panel1, ID_CHECKBOX4, _("Show only selected traj."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
@@ -282,9 +283,21 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer4->Add(
 		cbShowOnlySelectedTraj, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
 	FlexGridSizer4->Add(
 		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
+
+	edSelectedTrajCmd = new wxTextCtrl(
+		Panel1, ID_TEXTCTRL_SEL_TRAJ, _("Cmd: (none)"), wxDefaultPosition,
+		wxSize(50, -1), wxTE_READONLY, wxDefaultValidator,
+		_T("ID_TEXTCTRL_SEL_TRAJ"));
+	FlexGridSizer4->Add(
+		edSelectedTrajCmd, 1,
+		wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
+		5);
+	FlexGridSizer4->AddGrowableCol(5);
+
 	FlexGridSizer3->Add(
 		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 	FlexGridSizer8 = new wxFlexGridSizer(1, 0, 0, 0);
@@ -1067,13 +1080,26 @@ void ptgConfiguratorframe::rebuild3Dview()
 					}
 					uint32_t step;
 					if (!ptg->getPathStepForDist(k, d, step)) continue;
-					mrpt::math::TPose2D p;
-					ptg->getPathPose(k, step, p);
+					const auto p = ptg->getPathPose(k, step);
 					ptg->add_robotShape_to_setOfLines(
 						sol, mrpt::poses::CPose2D(p));
 				}
 			}
 		}
+
+		// selected PTG trajectory motion cmd:
+		std::string strMotionCmd;
+		try
+		{
+			const auto cmd =
+				ptg->directionToMotionCommand(edIndexHighlightPath->GetValue());
+			strMotionCmd = cmd->asString();
+		}
+		catch (const std::exception& e)
+		{
+			strMotionCmd = e.what();
+		}
+		edSelectedTrajCmd->SetValue(strMotionCmd);
 
 		// 2D angle to robot head plots:
 		std::vector<double> robotHeadAng_x, robotHeadAng_y,
@@ -1197,9 +1223,8 @@ void ptgConfiguratorframe::rebuild3Dview()
 			if (ptg->getPathStepForDist(
 					k, norm_d * ptg->getRefDistance(), check_step))
 			{
-				mrpt::math::TPose2D p;
-				ptg->getPathPose(k, check_step, p);
-				gl_WS_target_reprojected->setPose(p);
+				gl_WS_target_reprojected->setPose(
+					ptg->getPathPose(k, check_step));
 				gl_WS_target_reprojected->setName("WS-Target-reproj");
 			}
 			else

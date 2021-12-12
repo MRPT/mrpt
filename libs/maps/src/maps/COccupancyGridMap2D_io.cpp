@@ -375,14 +375,14 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	for (i = 0; i < n; i++)
 	{
 		// In M1:
-		px = m1->x2idx(corrs[i].this_x);
-		py = Ay1 + ly1 - 1 - m1->y2idx(corrs[i].this_y);
+		px = m1->x2idx(corrs[i].global.x);
+		py = Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y);
 		img.rectangle(px - 10, py - 10, px + 10, py + 10, lineColor);
 		img.rectangle(px - 11, py - 11, px + 11, py + 11, lineColor);
 
 		// In M2:
-		px = lx1 + 1 + m2->x2idx(corrs[i].other_x);
-		py = Ay2 + ly2 - 1 - m2->y2idx(corrs[i].other_y);
+		px = lx1 + 1 + m2->x2idx(corrs[i].local.x);
+		py = Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y);
 		img.rectangle(px - 10, py - 10, px + 10, py + 10, lineColor);
 		img.rectangle(px - 11, py - 11, px + 11, py + 11, lineColor);
 	}
@@ -397,11 +397,11 @@ bool COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 			static_cast<long>(getRandomGenerator().drawUniform(0, 255.0f)));
 
 		img.line(
-			m1->x2idx(corrs[i].this_x),
-			//				lx1+1+ m1->x2idx( corrs[i].this_x ),
-			Ay1 + ly1 - 1 - m1->y2idx(corrs[i].this_y),
-			lx1 + 1 + m2->x2idx(corrs[i].other_x),
-			Ay2 + ly2 - 1 - m2->y2idx(corrs[i].other_y), lineColor);
+			m1->x2idx(corrs[i].global.x),
+			//				lx1+1+ m1->x2idx( corrs[i].global.x ),
+			Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y),
+			lx1 + 1 + m2->x2idx(corrs[i].local.x),
+			Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y), lineColor);
 	}  // i
 
 	return img.saveToFile(fileName.c_str());
@@ -464,14 +464,14 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	for (i = 0; i < n; i++)
 	{
 		// In M1:
-		px = m1->x2idx(corrs[i].this_x);
-		py = Ay1 + ly1 - 1 - m1->y2idx(corrs[i].this_y);
+		px = m1->x2idx(corrs[i].global.x);
+		py = Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y);
 		emf.rectangle(px - 10, py - 10, px + 10, py + 10, lineColor);
 		emf.rectangle(px - 11, py - 11, px + 11, py + 11, lineColor);
 
 		// In M2:
-		px = lx1 + 1 + m2->x2idx(corrs[i].other_x);
-		py = Ay2 + ly2 - 1 - m2->y2idx(corrs[i].other_y);
+		px = lx1 + 1 + m2->x2idx(corrs[i].local.x);
+		py = Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y);
 		emf.rectangle(px - 10, py - 10, px + 10, py + 10, lineColor);
 		emf.rectangle(px - 11, py - 11, px + 11, py + 11, lineColor);
 	}
@@ -487,10 +487,10 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 				(((unsigned long)RandomUni(0,255.0f)) << 16 );
 
 			emf.line(
-				m1->x2idx( corrs[i].this_x ),
-				Ay1+ly1-1- m1->y2idx( corrs[i].this_y ),
-				lx1+1+ m2->x2idx( corrs[i].other_x ),
-				Ay2+ly2-1-m2->y2idx( corrs[i].other_y ),
+				m1->x2idx( corrs[i].global.x ),
+				Ay1+ly1-1- m1->y2idx( corrs[i].global.y ),
+				lx1+1+ m2->x2idx( corrs[i].local.x ),
+				Ay2+ly2-1-m2->y2idx( corrs[i].local.y ),
 				lineColor);
 		} // i
 	/ **/
@@ -503,13 +503,13 @@ bool COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 		os::sprintf(str, 100, "%i", i);
 
 		emf.textOut(
-			m1->x2idx(corrs[i].this_x) - 10,
-			Ay1 + ly1 - 1 - m1->y2idx(corrs[i].this_y) - 25, str,
+			m1->x2idx(corrs[i].global.x) - 10,
+			Ay1 + ly1 - 1 - m1->y2idx(corrs[i].global.y) - 25, str,
 			TColor::black());
 
 		emf.textOut(
-			lx1 + 1 + m2->x2idx(corrs[i].other_x) - 10,
-			Ay2 + ly2 - 1 - m2->y2idx(corrs[i].other_y) - 25, str,
+			lx1 + 1 + m2->x2idx(corrs[i].local.x) - 10,
+			Ay2 + ly2 - 1 - m2->y2idx(corrs[i].local.y) - 25, str,
 			TColor::black());
 	}  // i
 

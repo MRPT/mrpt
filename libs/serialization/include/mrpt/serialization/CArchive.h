@@ -13,6 +13,7 @@
 #include <mrpt/core/is_shared_ptr.h>
 #include <mrpt/core/reverse_bytes.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/typemeta/TEnumType.h>
 #include <mrpt/typemeta/TTypeName.h>
 
 #include <cstdint>
@@ -216,6 +217,13 @@ class CArchive
 		{
 			return std::dynamic_pointer_cast<T>(obj);
 		}
+	}
+
+	/** If redefined in derived classes, allows finding a human-friendly
+	 * description of the underlying stream (e.g. filename) */
+	virtual std::string getArchiveDescription() const
+	{
+		return "generic CArchive";
 	}
 
    private:
@@ -566,6 +574,30 @@ CArchive& operator>>(CArchive& in, std::shared_ptr<T>& pObj)
 	return in;
 }
 
+template <
+	class ENUM_TYPE, std::enable_if_t<std::is_enum_v<ENUM_TYPE>>* = nullptr>
+CArchive& operator<<(CArchive& out, const ENUM_TYPE& pEnum)
+{
+	const std::string value =
+		mrpt::typemeta::TEnumType<std::remove_cv_t<ENUM_TYPE>>::value2name(
+			pEnum);
+
+	out << value;
+	return out;
+}
+
+template <
+	class ENUM_TYPE, std::enable_if_t<std::is_enum_v<ENUM_TYPE>>* = nullptr>
+CArchive& operator>>(CArchive& in, ENUM_TYPE& pEnum)
+{
+	std::string readValue;
+	in >> readValue;
+
+	pEnum = mrpt::typemeta::TEnumType<std::remove_cv_t<ENUM_TYPE>>::name2value(
+		readValue);
+	return in;
+}
+
 /** CArchive for mrpt::io::CStream classes (use as template argument).
  * \sa Easier to use via function archiveFrom() */
 template <class STREAM>
@@ -576,6 +608,11 @@ class CArchiveStreamBase : public CArchive
    public:
 	CArchiveStreamBase(STREAM& s) : m_s(s) {}
 
+	std::string getArchiveDescription() const override
+	{
+		return m_s.getStreamDescription();
+	}
+
    protected:
 	size_t write(const void* d, size_t n) override { return m_s.Write(d, n); }
 	size_t read(void* d, size_t n) override { return m_s.Read(d, n); }
@@ -584,8 +621,8 @@ class CArchiveStreamBase : public CArchive
 /** Helper function to create a templatized wrapper CArchive object for a:
  * MRPT's `CStream`, `std::istream`, `std::ostream`, `std::stringstream`.
  * \note Use with `std::{.*}stream` requires including
- * `<mrpt/serialization/archiveFrom_std_streams.h>` and explicitly specifying
- * the template parameter like: `archiveFrom<std::istream>` or
+ * `<mrpt/serialization/archiveFrom_std_streams.h>` and explicitly
+ * specifying the template parameter like: `archiveFrom<std::istream>` or
  * `archiveFrom<std::ostream>`.
  * \sa \ref mrpt_serialization_grp, and example serialization_stl/test.cpp
  */

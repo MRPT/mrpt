@@ -2,6 +2,7 @@
 
 Observation classes for all kinds of robot sensors.
 
+[TOC]
 
 # Library mrpt-obs
 

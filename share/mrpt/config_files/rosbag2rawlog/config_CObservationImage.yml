@@ -1,0 +1,16 @@
+# Config file for rosbag2rawlog. It must contain a top-level "sensors" node
+sensors:
+  # Then, one node per sensor to convert. This name will be used as 
+  # sensorLabel in MRPT observations.
+  cam0:
+    # Type: C++ class name (see mrpt::obs)
+    type: 'CObservationImage'
+    # Parameters for this particular type of sensor.
+    # Topic for the raw image:
+    image_topic: '/image'
+    # Camera calibration topic:
+    cameraInfo: '/camera_info'
+    # Or alternatively, extrincics/intrinsics can be given via an yaml file 
+    # directly to rosbag2rawlog.
+
+

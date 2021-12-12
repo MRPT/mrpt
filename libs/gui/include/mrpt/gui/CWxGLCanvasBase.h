@@ -104,8 +104,11 @@ class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
 
 	virtual void OnRenderError([[maybe_unused]] const wxString& str) {}
 
+	bool is_GL_context_created() const { return m_init; }
+
    protected:
 	std::unique_ptr<wxGLContext> m_gl_context;
+	bool m_gl_context_assigned = false;
 	bool m_init = false;
 
 	long m_Key = 0;

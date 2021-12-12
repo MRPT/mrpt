@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
+#include <mrpt/containers/yaml.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/serialization/CArchive.h>
@@ -226,8 +227,7 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 	  << "Camera pose (YPR): " << CPose3D(cameraPose) << "\n"
 	  << "\n";
 
-	mrpt::img::TStereoCamera stParams;
-	getStereoCameraParams(stParams);
+	const mrpt::img::TStereoCamera stParams = getStereoCameraParams();
 	o << stParams.dumpAsText() << "\n";
 
 	o << "Right camera pose wrt left camera (YPR):"
@@ -270,6 +270,9 @@ void CObservationStereoImages::getDescriptionAsText(std::ostream& o) const
 			" Rows are stored in top-bottom order: %s\n",
 			imageLeft.isOriginTopLeft() ? "YES" : "NO");
 	}
+
+	o << "\n# Left camera calibration:\n" << stParams.leftCamera.asYAML();
+	o << "\n# Right camera calibration:\n" << stParams.rightCamera.asYAML();
 }
 
 void CObservationStereoImages::load() const

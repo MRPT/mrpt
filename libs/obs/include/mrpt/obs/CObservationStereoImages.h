@@ -92,6 +92,13 @@ class CObservationStereoImages : public mrpt::obs::CObservation
 	 * areImagesRectified() */
 	void getStereoCameraParams(mrpt::img::TStereoCamera& out_params) const;
 
+	mrpt::img::TStereoCamera getStereoCameraParams() const
+	{
+		mrpt::img::TStereoCamera sc;
+		getStereoCameraParams(sc);
+		return sc;
+	}
+
 	/** Sets \a leftCamera, \a rightCamera and \a rightCameraPose from a
 	 * TStereoCamera structure */
 	void setStereoCameraParams(const mrpt::img::TStereoCamera& in_params);

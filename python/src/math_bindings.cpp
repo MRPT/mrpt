@@ -33,13 +33,13 @@
 
 #define MAKE_FIXED_DOUBLE_MATRIX_GETITEM(rows, cols)                           \
 	double CMatrixDouble##rows##cols##_getitem1(                               \
-		CMatrixDouble##rows##cols& self, size_t i)                             \
+		CMatrixDouble##rows##cols& me, size_t i)                               \
 	{                                                                          \
-		return self(i);                                                        \
+		return me(i);                                                          \
 	}                                                                          \
                                                                                \
 	double CMatrixDouble##rows##cols##_getitem2(                               \
-		CMatrixDouble##rows##cols& self, const tuple& t)                       \
+		CMatrixDouble##rows##cols& me, const tuple& t)                         \
 	{                                                                          \
 		extract<int> eir(t[0]);                                                \
 		extract<int> eic(t[1]);                                                \
@@ -49,7 +49,7 @@
 			int col = eic();                                                   \
 			printf(STRINGIFY(rows cols % i % i), row, col);                    \
 			if ((0 <= row && row < rows) && (0 <= col && col < cols))          \
-				return self(row, col);                                         \
+				return me(row, col);                                           \
 			else                                                               \
 			{                                                                  \
 				printf("IndexError");                                          \
@@ -60,20 +60,20 @@
 		{                                                                      \
 			TypeError("Indeces must be integers!");                            \
 		}                                                                      \
-		return self(0, 0);                                                     \
+		return me(0, 0);                                                       \
 	}
 
 #define MAKE_FIXED_DOUBLE_MATRIX_SETITEM(rows, cols)                           \
 	void CMatrixDouble##rows##cols##_setitem1(                                 \
-		CMatrixDouble##rows##cols& self, size_t i, double value)               \
+		CMatrixDouble##rows##cols& me, size_t i, double value)                 \
 	{                                                                          \
-		self(i) = value;                                                       \
+		me(i) = value;                                                         \
 	}                                                                          \
                                                                                \
 	void CMatrixDouble##rows##cols##_setitem2(                                 \
-		CMatrixDouble##rows##cols& self, const tuple& t, double value)         \
+		CMatrixDouble##rows##cols& me, const tuple& t, double value)           \
 	{                                                                          \
-		self(extract<int>(t[0]), extract<int>(t[1])) = value;                  \
+		me(extract<int>(t[0]), extract<int>(t[1])) = value;                    \
 	}
 
 #define MAKE_FIXED_DOUBLE_MATRIX_GETSET(rows, cols)                            \

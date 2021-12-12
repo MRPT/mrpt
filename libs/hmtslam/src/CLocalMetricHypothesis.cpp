@@ -629,7 +629,7 @@ void CLocalMetricHypothesis::rebuildMetricMaps()
 				auto SFit = m_SFs.find(itP->first);
 				ASSERT_(SFit != m_SFs.end());
 				SFit->second.insertObservationsInto(
-					&m_particle.d->metricMaps, &itP->second);
+					m_particle.d->metricMaps, itP->second);
 			}
 		}
 	}

@@ -1118,8 +1118,7 @@ void reactive_navigator_demoframe::OnAbout(wxCommandEvent&)
 
 void reactive_navigator_demoframe::updateMap3DView()
 {
-	gl_grid->clear();
-	m_gridMap.getAs3DObject(gl_grid);
+	gl_grid = m_gridMap.getVisualization();
 }
 
 void reactive_navigator_demoframe::OnbtnPlaceRobotClick(wxCommandEvent& event)
@@ -1380,7 +1379,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	{
 		if (!m_log_trajectory_file.is_open())
 		{
-			if (m_log_trajectory_file.open("traj_log.txt"))
+			if (m_log_trajectory_file.open(
+					"traj_log.txt", mrpt::io::OpenMode::TRUNCATE))
 			{
 				m_log_trajectory_file.printf(
 					"%% File format: TIME  X   Y  PHI  VX  VY OMEGA\n");
@@ -1551,8 +1551,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 						uint32_t step;
 						if (!ptg->getPathStepForDist(selected_k, d, step))
 							continue;
-						mrpt::math::TPose2D p;
-						ptg->getPathPose(selected_k, step, p);
+						const auto p = ptg->getPathPose(selected_k, step);
 						ptg->add_robotShape_to_setOfLines(
 							*gl_robot_ptg_prediction, mrpt::poses::CPose2D(p));
 					}

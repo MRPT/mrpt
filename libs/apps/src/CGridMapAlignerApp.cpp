@@ -643,13 +643,8 @@ void CGridMapAlignerApp::run()
 
 							// Save as 3D scene:
 							COpenGLScene scene;
-							CSetOfObjects::Ptr obj1 =
-								std::make_shared<CSetOfObjects>();
-							the_map1.getAs3DObject(obj1);
-							CSetOfObjects::Ptr obj2 =
-								std::make_shared<CSetOfObjects>();
-							the_map2.getAs3DObject(obj2);
-
+							auto obj1 = the_map1.getVisualization();
+							auto obj2 = the_map2.getVisualization();
 							obj2->setPose(x);
 
 							scene.insert(obj1);
@@ -748,8 +743,10 @@ void CGridMapAlignerApp::run()
 				const CPose2D GT_Ap(GT_Ax, GT_Ay, GT_Aphi_rad);
 				TMatchingPairList gt_corrs;
 
-				CFileOutputStream fout_CORR("GT_EXP_CORR.txt", true);
-				CFileOutputStream fout_NCORR("GT_EXP_NCORR.txt", true);
+				CFileOutputStream fout_CORR(
+					"GT_EXP_CORR.txt", OpenMode::APPEND);
+				CFileOutputStream fout_NCORR(
+					"GT_EXP_NCORR.txt", OpenMode::APPEND);
 
 				// Compute the distances:
 				for (size_t i1 = 0; i1 < lmap1->landmarks.size(); i1++)

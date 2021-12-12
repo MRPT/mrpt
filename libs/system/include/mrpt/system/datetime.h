@@ -40,8 +40,18 @@ namespace mrpt::system
  */
 using TTimeStamp = mrpt::Clock::time_point;
 
-/** Represents an invalid timestamp, where applicable. */
-#define INVALID_TIMESTAMP mrpt::Clock::time_point()
+/** Required to ensure INVALID_TIMESTAMP returns a "const T&"
+ *  \note (New in MRPT 2.3.3)
+ */
+const TTimeStamp& InvalidTimeStamp();
+
+/** Represents an invalid timestamp, where applicable.
+ *
+ * \note It returns a const reference to a thread_local static object of type
+ * mrpt::Clock::time_point initialized with the default constructor, which is
+ * used as the reference "invalid" timestamp.
+ */
+#define INVALID_TIMESTAMP mrpt::system::InvalidTimeStamp()
 
 /** The parts of a date/time, like the standard `tm` but with fractional
  * (`double`) seconds. \sa TTimeStamp, timestampToParts, buildTimestampFromParts
@@ -121,8 +131,8 @@ inline double timestampToDouble(const mrpt::system::TTimeStamp t) noexcept
 /** Returns the time difference from t1 to t2 (positive if t2 is posterior to
  * t1), in seconds  */
 inline double timeDifference(
-	const mrpt::system::TTimeStamp t_first,
-	const mrpt::system::TTimeStamp t_later)
+	const mrpt::system::TTimeStamp& t_first,
+	const mrpt::system::TTimeStamp& t_later)
 {
 	MRPT_START
 	ASSERT_(t_later != INVALID_TIMESTAMP);
@@ -188,8 +198,14 @@ std::string timeLocalToString(
 /** This function implements time interval formatting: Given a time in seconds,
  * it will return a string describing the interval with the most appropriate
  * unit.
- * E.g.: 1.23 year, 3.50 days, 9.3 hours, 5.3 minutes, 3.34 sec, 178.1 ms,  87.1
- * us.
+ * E.g.:
+ *  - "1 year, 3 days, 4 minutes"
+ *  - "3 days, 8 hours"
+ *  - "9 hours, 4 minutes, 4.3 sec",
+ *  - "3.34 sec"
+ *  - "178.1 ms"
+ *  - "87.1 us"
+ *
  * \sa unitsFormat
  */
 std::string intervalFormat(const double seconds);

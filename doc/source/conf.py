@@ -23,9 +23,9 @@ project = u'MRPT'
 copyright = u'{year} MRPT authors'.format(year=datetime.now().year)
 
 # The short X.Y version
-version = u'v{VER}'.format(VER=os.environ['MRPT_VERSION_STR'])
+version = u'{VER}'.format(VER=os.environ['MRPT_VERSION_STR'])
 # The full version, including alpha/beta/rc tags
-release = u'v{VER}'.format(VER=os.environ['MRPT_VERSION_STR'])
+release = u'{VER}'.format(VER=os.environ['MRPT_VERSION_STR'])
 
 # -- General configuration ---------------------------------------------------
 

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/config/CLoadableOptions.h>
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/core/aligned_std_vector.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/core/safe_pointers.h>
@@ -823,7 +824,8 @@ class CPointsMap : public CMetricMap,
 	 */
 	virtual void loadFromRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose = nullptr) = 0;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) = 0;
 
 	/** Overload of \a loadFromRangeScan() for 3D range scans (for example,
 	 * Kinect observations).
@@ -843,7 +845,8 @@ class CPointsMap : public CMetricMap,
 	 */
 	virtual void loadFromRangeScan(
 		const mrpt::obs::CObservation3DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose = nullptr) = 0;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) = 0;
 
 	/** Like \a loadFromRangeScan() for Velodyne 3D scans. Points are translated
 	 * and rotated according to the \a sensorPose field in the observation and,
@@ -860,7 +863,8 @@ class CPointsMap : public CMetricMap,
 	 */
 	void loadFromVelodyneScan(
 		const mrpt::obs::CObservationVelodyneScan& scan,
-		const mrpt::poses::CPose3D* robotPose = nullptr);
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt);
 
 	/** Insert the contents of another map into this one, fusing the previous
 	 *content with the new one.
@@ -906,10 +910,12 @@ class CPointsMap : public CMetricMap,
 
 	/** STL-like method to check whether the map is empty: */
 	inline bool empty() const { return isEmpty(); }
+
 	/** Returns a 3D object representing the map.
 	 *  The color of the points is controlled by renderOptions
 	 */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** This method returns the largest distance from the origin to any of the
 	 * points, such as a sphere centered at the origin with this radius cover
@@ -1141,6 +1147,15 @@ class CPointsMap : public CMetricMap,
 		kdtree_mark_as_outdated();
 	}
 
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"Pointcloud map with %u points, bounding box:%s",
+			static_cast<unsigned int>(size()),
+			boundingBox().asString().c_str());
+	}
+
    protected:
 	/** The point coordinates */
 	mrpt::aligned_std_vector<float> m_x, m_y, m_z;
@@ -1169,7 +1184,8 @@ class CPointsMap : public CMetricMap,
 	 * which are accepted. */
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 
 	/** Helper method for ::copyFrom() */
 	void base_copyFrom(const CPointsMap& obj);

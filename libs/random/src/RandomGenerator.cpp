@@ -14,7 +14,7 @@
 using namespace mrpt::random;
 
 // The global instance of CRandomGenerator for single-thread programs:
-static CRandomGenerator randomGenerator;
+static thread_local CRandomGenerator randomGenerator;
 
 #if defined(_MSC_VER)
 #pragma warning(push)

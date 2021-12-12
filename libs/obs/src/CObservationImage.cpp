@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"  // Precompiled headers
 //
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/get_env.h>
 #include <mrpt/math/ops_vectors.h>	// << of std::vector()
 #include <mrpt/obs/CObservationImage.h>
@@ -131,17 +132,6 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 	o << cameraPose.getHomogeneousMatrixVal<CMatrixDouble44>() << "\n"
 	  << cameraPose << "\n";
 
-	o << format(
-		"Focal length: %.03f mm\n", cameraParams.focalLengthMeters * 1000);
-
-	o << "Intrinsic parameters matrix for the camera:"
-	  << "\n"
-	  << cameraParams.intrinsicParams.inMatlabFormat() << "\n"
-	  << cameraParams.intrinsicParams << "\n";
-
-	o << "Distorsion parameters for the camera: "
-	  << cameraParams.getDistortionParamsAsVector() << "\n";
-
 	if (image.isExternallyStored())
 		o << " Image is stored externally in file: "
 		  << image.getExternalStorageFile() << "\n";
@@ -158,6 +148,10 @@ void CObservationImage::getDescriptionAsText(std::ostream& o) const
 			" Rows are stored in top-bottom order: %s\n",
 			image.isOriginTopLeft() ? "YES" : "NO");
 	}
+
+	o << "\n# Camera calibration parameters\n"
+		 "# -----------------------------\n";
+	o << cameraParams.asYAML();
 }
 
 void CObservationImage::load() const
@@ -170,7 +164,7 @@ void CObservationImage::load() const
 
 	image.forceLoad();
 }
-void CObservationImage::unload()
+void CObservationImage::unload() const
 {
 	const thread_local bool MRPT_DEBUG_OBSIMG_LAZY_LOAD =
 		mrpt::get_env<bool>("MRPT_DEBUG_OBSIMG_LAZY_LOAD", false);

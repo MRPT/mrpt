@@ -63,6 +63,9 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		return m_impl->m_octomap;
 	}
 
+	/** Returns a short description of the map. */
+	std::string asString() const override { return "Octomap"; }
+
 	/** With this struct options are provided to the observation insertion
 	 * process.
 	 * \sa CObservation::insertObservationInto()
@@ -287,11 +290,11 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Returns a 3D object representing the map.
 	 * \sa renderingOptions
 	 */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override
+	void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 	{
 		auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 		this->getAsOctoMapVoxels(*gl_obj);
-		outObj->insert(gl_obj);
+		o.insert(gl_obj);
 	}
 
 	/** Builds a renderizable representation of the octomap as a
@@ -369,8 +372,8 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	template <class octomap_point3d, class octomap_pointcloud>
 	bool internal_build_PointCloud_for_observation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose, octomap_point3d& sensorPt,
-		octomap_pointcloud& scan) const;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose,
+		octomap_point3d& sensorPt, octomap_pointcloud& scan) const;
 
 	struct Impl;
 

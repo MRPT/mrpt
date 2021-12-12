@@ -12,6 +12,8 @@
 #include <mrpt/io/CMemoryStream.h>
 #include <mrpt/opengl.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
+#include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -78,4 +80,30 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 						 << e.what() << endl;
 		}
 	}
+}
+
+TEST(SerializeTestOpenGL, PredefinedSceneFile)
+{
+	using namespace std::string_literals;
+
+	const std::string fil =
+		mrpt::UNITTEST_BASEDIR + "/tests/default-scene.3Dscene"s;
+
+	mrpt::opengl::COpenGLScene scene;
+
+	ASSERT_FILE_EXISTS_(fil);
+	bool readOk = scene.loadFromFile(fil);
+	EXPECT_TRUE(readOk);
+
+	// scene.asYAML().printAsYAML();
+
+	EXPECT_EQ(scene.viewportsCount(), 2U);
+	size_t count = 0;
+	for (const auto& obj : *scene.getViewport())
+	{
+		(void)obj;
+		count++;
+	}
+
+	EXPECT_EQ(count, 2U);
 }

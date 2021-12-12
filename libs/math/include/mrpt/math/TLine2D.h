@@ -109,6 +109,9 @@ struct TLine2D
 
 	/** Returns "[A, B, C]"
 	 * \note [New in MRPT 2.1.0]
+	 *
+	 * \note Do not inherit from mrpt::Stringifyable to avoid virtual class
+	 * table and keeping the class trivially-copiable.
 	 */
 	std::string asString() const;
 };

@@ -360,28 +360,28 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 						 i < nCorrespondences; ++i, ++it)
 					{
 						float other_x_trans =
-							transf.x + ccos * it->other_x - csin * it->other_y;
+							transf.x + ccos * it->local.x - csin * it->local.y;
 						float other_y_trans =
-							transf.y + csin * it->other_x + ccos * it->other_y;
+							transf.y + csin * it->local.x + ccos * it->local.y;
 
 						// Jacobian: dR2_dx
 						// --------------------------------------
 						w1 = other_x_trans - Axy;
 						q1 = kernel(
-							square(it->this_x - w1) +
-								square(it->this_y - other_y_trans),
+							square(it->global.x - w1) +
+								square(it->global.y - other_y_trans),
 							rho2);
 
 						w2 = other_x_trans;
 						q2 = kernel(
-							square(it->this_x - w2) +
-								square(it->this_y - other_y_trans),
+							square(it->global.x - w2) +
+								square(it->global.y - other_y_trans),
 							rho2);
 
 						w3 = other_x_trans + Axy;
 						q3 = kernel(
-							square(it->this_x - w3) +
-								square(it->this_y - other_y_trans),
+							square(it->global.x - w3) +
+								square(it->global.y - other_y_trans),
 							rho2);
 
 						// interpolate
@@ -396,20 +396,20 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 						// --------------------------------------
 						w1 = other_y_trans - Axy;
 						q1 = kernel(
-							square(it->this_x - other_x_trans) +
-								square(it->this_y - w1),
+							square(it->global.x - other_x_trans) +
+								square(it->global.y - w1),
 							rho2);
 
 						w2 = other_y_trans;
 						q2 = kernel(
-							square(it->this_x - other_x_trans) +
-								square(it->this_y - w2),
+							square(it->global.x - other_x_trans) +
+								square(it->global.y - w2),
 							rho2);
 
 						w3 = other_y_trans + Axy;
 						q3 = kernel(
-							square(it->this_x - other_x_trans) +
-								square(it->this_y - w3),
+							square(it->global.x - other_x_trans) +
+								square(it->global.y - w3),
 							rho2);
 
 						// interpolate
@@ -423,8 +423,8 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 						// Jacobian: dR_dphi
 						// --------------------------------------
 						D(2, i) = D(0, i) *
-								(-csin * it->other_x - ccos * it->other_y) +
-							D(1, i) * (ccos * it->other_x - csin * it->other_y);
+								(-csin * it->local.x - ccos * it->local.y) +
+							D(1, i) * (ccos * it->local.x - csin * it->local.y);
 
 					}  // end for each corresp.
 
@@ -733,8 +733,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					q1 = kernel(q1, rho2);
 #else
 					q1 = kernel(
-						square(it->this_x - *other_x_trans) +
-							square(it->this_y - w1),
+						square(it->global.x - *other_x_trans) +
+							square(it->global.y - w1),
 						rho2);
 #endif
 
@@ -742,8 +742,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					// q2 is alreay computed from above!
 					// q2 = m1->squareDistanceToClosestCorrespondence(
 					// *other_x_trans, w2 );
-					// q2= kernel( square(it->this_x - *other_x_trans)+ square(
-					// it->this_y - w2 ),  rho2 );
+					// q2= kernel( square(it->global.x - *other_x_trans)+
+					// square( it->global.y - w2 ),  rho2 );
 
 					w3 = *other_y_trans + Axy;
 #ifdef ICP_DISTANCES_TO_LINE
@@ -752,8 +752,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					q3 = kernel(q3, rho2);
 #else
 					q3 = kernel(
-						square(it->this_x - *other_x_trans) +
-							square(it->this_y - w3),
+						square(it->global.x - *other_x_trans) +
+							square(it->global.y - w3),
 						rho2);
 #endif
 
@@ -767,8 +767,8 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					// Jacobian: dR_dphi
 					// --------------------------------------
 					dJ_dq(2, i) = dJ_dq(0, i) *
-							(-csin * it->other_x - ccos * it->other_y) +
-						dJ_dq(1, i) * (ccos * it->other_x - csin * it->other_y);
+							(-csin * it->local.x - ccos * it->local.y) +
+						dJ_dq(1, i) * (ccos * it->local.x - csin * it->local.y);
 
 				}  // end for each corresp.
 

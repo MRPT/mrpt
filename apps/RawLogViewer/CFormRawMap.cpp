@@ -532,9 +532,7 @@ void loadMapInto3DScene(COpenGLScene& scene)
 
 	// The built maps:
 	// ---------------------------
-	opengl::CSetOfObjects::Ptr objs = std::make_shared<opengl::CSetOfObjects>();
-	theMap.getAs3DObject(objs);
-	scene.insert(objs);
+	scene.insert(theMap.getVisualization());
 }
 
 // From slider moved:
@@ -658,7 +656,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 				{
 					CPose3D dumPose(curPose);
 					rawlog.getAsObservations(i)->insertObservationsInto(
-						&theMap, &dumPose);
+						theMap, dumPose);
 				}
 				addNewPathEntry = true;
 			}
@@ -678,7 +676,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent&)
 				{
 					CPose3D dumPose(curPose);
 					theMap.insertObservation(
-						*rawlog.getAsObservation(i), &dumPose);
+						*rawlog.getAsObservation(i), dumPose);
 					last_tim = rawlog.getAsObservation(i)->timestamp;
 				}
 				addNewPathEntry = true;
@@ -1070,7 +1068,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent&)
 					size_t& dec_cnt = decim_count[o->sensorLabel];
 
 					if ((++dec_cnt % decimate) == 0)
-						theMap.insertObservation(*o, &p);
+						theMap.insertObservation(*o, p);
 				}
 			}
 			break;

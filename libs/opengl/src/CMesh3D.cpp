@@ -273,7 +273,7 @@ void CMesh3D::onUpdateBuffers_Points()
 	cbd.assign(m_vertices.size(), vert_color.asTColor());
 }
 
-uint8_t CMesh3D::serializeGetVersion() const { return 0; }
+uint8_t CMesh3D::serializeGetVersion() const { return 1; }
 void CMesh3D::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -284,19 +284,34 @@ void CMesh3D::serializeTo(mrpt::serialization::CArchive& out) const
 		out.WriteBufferFixEndianness<uint32_t>(
 			m_face_verts[0].data(),
 			m_face_verts.size() * m_face_verts[0].size());
+	CRenderizableShaderTriangles::params_serialize(out);  // v1
 }
 
 void CMesh3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
-	readFromStreamRender(in);
-	in >> m_showEdges >> m_showFaces >> m_showVertices >> m_computeNormals;
-	in >> m_is_quad >> m_vertices >> m_normals;
-	const auto N = in.ReadAs<uint32_t>();
-	m_face_verts.resize(N);
-	if (!m_face_verts.empty())
-		in.ReadBufferFixEndianness<uint32_t>(
-			m_face_verts[0].data(),
-			m_face_verts.size() * m_face_verts[0].size());
+	switch (version)
+	{
+		case 0:
+		case 1:
+		{
+			readFromStreamRender(in);
+			in >> m_showEdges >> m_showFaces >> m_showVertices >>
+				m_computeNormals;
+			in >> m_is_quad >> m_vertices >> m_normals;
+			const auto N = in.ReadAs<uint32_t>();
+			m_face_verts.resize(N);
+			if (!m_face_verts.empty())
+				in.ReadBufferFixEndianness<uint32_t>(
+					m_face_verts[0].data(),
+					m_face_verts.size() * m_face_verts[0].size());
+
+			if (version >= 1)
+				CRenderizableShaderTriangles::params_deserialize(in);
+		}
+		break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+	};
+	CRenderizable::notifyChange();
 }
 
 auto CMesh3D::getBoundingBox() const -> mrpt::math::TBoundingBox

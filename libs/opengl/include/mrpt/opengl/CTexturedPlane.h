@@ -10,14 +10,17 @@
 
 #include <mrpt/math/TPolygonWithPlane.h>
 #include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
+#include <mrpt/opengl/CRenderizableShaderTriangles.h>
 
 namespace mrpt::opengl
 {
 /** A 2D plane in the XY plane with a texture image.
+ *  Lighting is disabled by default in this class.
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
-class CTexturedPlane : public CRenderizableShaderTexturedTriangles
+class CTexturedPlane : public CRenderizableShaderTexturedTriangles,
+					   public CRenderizableShaderTriangles
 {
 	DEFINE_SERIALIZABLE(CTexturedPlane, mrpt::opengl)
 
@@ -33,7 +36,33 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles
    public:
 	/** @name Renderizable shader API virtual methods
 	 * @{ */
+	void render(const RenderContext& rc) const override;
+	void renderUpdateBuffers() const override;
 	virtual void onUpdateBuffers_TexturedTriangles() override;
+	virtual void onUpdateBuffers_Triangles() override;
+	virtual shader_list_t requiredShaders() const override
+	{
+		return {
+			DefaultShaderID::TRIANGLES, DefaultShaderID::TEXTURED_TRIANGLES};
+	}
+	void freeOpenGLResources() override
+	{
+		CRenderizableShaderTriangles::freeOpenGLResources();
+		CRenderizableShaderTexturedTriangles::freeOpenGLResources();
+	}
+
+	/** Control whether to render the FRONT, BACK, or BOTH (default) set of
+	 * faces. Refer to docs for glCullFace() */
+	void cullFaces(const TCullFace& cf)
+	{
+		CRenderizableShaderTexturedTriangles::cullFaces(cf);
+		CRenderizableShaderTriangles::cullFaces(cf);
+	}
+	TCullFace cullFaces() const
+	{
+		return CRenderizableShaderTexturedTriangles::cullFaces();
+	}
+
 	/** @} */
 
 	CTexturedPlane(

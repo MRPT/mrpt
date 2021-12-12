@@ -20,15 +20,17 @@ TEST(WorkerThreadsPool, runTasks)
 	{
 		mrpt::WorkerThreadsPool pool(1);
 
-		pool.enqueue(f, 1);
-		pool.enqueue(f, 2);
-		pool.enqueue(f, 3);
+		auto fut1 = pool.enqueue(f, 1);
+		auto fut2 = pool.enqueue(f, 2);
+		auto fut3 = pool.enqueue(f, 3);
 
 		const auto n = pool.pendingTasks();
 		EXPECT_GE(n, 0);
 		EXPECT_LE(n, 3);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+		fut1.wait();
+		fut2.wait();
+		fut3.wait();
 	}
 	EXPECT_EQ(accum, 6);
 }

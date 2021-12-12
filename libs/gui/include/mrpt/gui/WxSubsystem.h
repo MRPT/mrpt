@@ -276,8 +276,11 @@ class WxSubsystem
 		 *to a "mrpt::gui::CPanelCameraSelection*" which will be filled with
 		 *the selection (the panel must be deleted by the caller)
 		 *
+		 *		- 800: Executes `userFunction` in the GUI thread.
 		 */
 		int OPCODE;
+
+		std::function<void(void)> userFunction;
 	};
 
 	/** Thread-safe method to return the next pending request, or nullptr if

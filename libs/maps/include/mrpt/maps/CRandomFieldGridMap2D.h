@@ -15,6 +15,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/typemeta/TEnumType.h>
 
@@ -168,6 +169,15 @@ class CRandomFieldGridMap2D
 	float cell2float(const TRandomFieldCell& c) const override
 	{
 		return mrpt::d2f(c.kf_mean());
+	}
+
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"RandomFieldGridMap2D, extending from (%f,%f) to (%f,%f), "
+			"resolution=%f",
+			getXMin(), getYMin(), getXMax(), getYMax(), getResolution());
 	}
 
 	/** The type of map representation to be used, see CRandomFieldGridMap2D for
@@ -389,12 +399,13 @@ class CRandomFieldGridMap2D
 	void getAsMatlab3DGraphScript(std::string& out_script) const;
 
 	/** Returns a 3D object representing the map (mean) */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Returns two 3D objects representing the mean and variance maps */
 	virtual void getAs3DObject(
-		mrpt::opengl::CSetOfObjects::Ptr& meanObj,
-		mrpt::opengl::CSetOfObjects::Ptr& varObj) const;
+		mrpt::opengl::CSetOfObjects& meanObj,
+		mrpt::opengl::CSetOfObjects& varObj) const;
 
 	/** Return the type of the random-field grid map, according to parameters
 	 * passed on construction. */

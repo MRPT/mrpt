@@ -69,6 +69,61 @@ TEST(CFileGZStreams, readwriteTmpFileCompressed)
 			EXPECT_TRUE(std::equal(
 				std::begin(tst_data), std::end(tst_data), std::begin(rd_buf)));
 		}
+
+		// Write for append =============================
+		{
+			mrpt::io::CFileGZOutputStream fil_out;
+			const bool open_ok = fil_out.open(
+				fil, compress_level, std::nullopt, mrpt::io::OpenMode::APPEND);
+			EXPECT_TRUE(open_ok);
+
+			const size_t wr_count =
+				fil_out.Write(&tst_data[0], tst_data_len / 2);
+			EXPECT_EQ(wr_count, tst_data_len / 2);
+		}
+		// Read all:
+		{
+			mrpt::io::CFileGZInputStream fil_in;
+			const bool open_ok = fil_in.open(fil);
+			EXPECT_TRUE(open_ok);
+
+			uint8_t rd_buf[tst_data_len + tst_data_len / 2];
+			const size_t rd_count =
+				fil_in.Read(rd_buf, tst_data_len + tst_data_len / 2);
+			EXPECT_EQ(rd_count, tst_data_len + tst_data_len / 2);
+
+			EXPECT_TRUE(std::equal(
+				std::begin(tst_data), std::end(tst_data), std::begin(rd_buf)));
+		}
+		// Write and truncate =============================
+		{
+			mrpt::io::CFileGZOutputStream fil_out;
+			const bool open_ok = fil_out.open(
+				fil, compress_level, std::nullopt,
+				mrpt::io::OpenMode::TRUNCATE);
+			EXPECT_TRUE(open_ok);
+
+			const size_t wr_count =
+				fil_out.Write(&tst_data[0], tst_data_len / 4);
+			EXPECT_EQ(wr_count, tst_data_len / 4);
+		}
+		// Read all:
+		{
+			mrpt::io::CFileGZInputStream fil_in;
+			const bool open_ok = fil_in.open(fil);
+			EXPECT_TRUE(open_ok);
+
+			uint8_t rd_buf[tst_data_len / 4];
+			const size_t rd_count = fil_in.Read(rd_buf, tst_data_len / 4);
+			EXPECT_EQ(rd_count, tst_data_len / 4);
+
+			EXPECT_TRUE(std::equal(
+				std::begin(tst_data), std::end(tst_data), std::begin(rd_buf)));
+
+			// next I should find an EOF:
+			const auto rdEof = fil_in.Read(rd_buf, 1);
+			EXPECT_EQ(rdEof, 0U);
+		}
 	}
 }
 

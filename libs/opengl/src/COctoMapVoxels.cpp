@@ -251,7 +251,7 @@ CArchive& operator>>(CArchive& in, COctoMapVoxels::TVoxel& a)
 }
 }  // end of namespace mrpt::opengl
 
-uint8_t COctoMapVoxels::serializeGetVersion() const { return 2; }
+uint8_t COctoMapVoxels::serializeGetVersion() const { return 3; }
 void COctoMapVoxels::serializeTo(CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -261,6 +261,7 @@ void COctoMapVoxels::serializeTo(CArchive& out) const
 		<< m_show_grids << m_grid_width << m_grid_color
 		<< m_enable_cube_transparency  // added in v1
 		<< uint32_t(m_visual_mode);	 // added in v2
+	CRenderizableShaderTriangles::params_serialize(out);  // v3
 }
 
 void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
@@ -270,6 +271,7 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 		case 0:
 		case 1:
 		case 2:
+		case 3:
 		{
 			readFromStreamRender(in);
 
@@ -291,6 +293,9 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 			}
 			else
 				m_visual_mode = COctoMapVoxels::COLOR_FROM_OCCUPANCY;
+
+			if (version >= 3)
+				CRenderizableShaderTriangles::params_deserialize(in);
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

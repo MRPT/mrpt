@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/poses/CPoseInterpolatorBase.h>  // to test with an enum
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/serialization/optional_serialization.h>
@@ -103,4 +104,19 @@ TEST(Serialization, optionalObjects)
 	EXPECT_EQ(b, b2);
 	EXPECT_EQ(c, c2);
 	EXPECT_EQ(d, d2);
+}
+
+TEST(Serialization, enums)
+{
+	mrpt::io::CMemoryStream buf;
+	auto arch = mrpt::serialization::archiveFrom(buf);
+
+	const mrpt::poses::TInterpolatorMethod im1 = mrpt::poses::imSpline;
+	arch << im1;
+
+	buf.Seek(0);
+	mrpt::poses::TInterpolatorMethod im2;
+	arch >> im2;
+
+	EXPECT_EQ(im1, im2);
 }

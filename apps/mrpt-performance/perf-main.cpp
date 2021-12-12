@@ -167,9 +167,13 @@ int main(int argc, char** argv)
 			{
 				const double t = it->func(it->arg1, it->arg2);	// Run it.
 
-				mrpt::system::setConsoleColor(CONCOL_GREEN);
+				mrpt::system::consoleColorAndStyle(
+					mrpt::system::ConsoleForegroundColor::GREEN);
+
 				cout << mrpt::system::intervalFormat(t);
-				mrpt::system::setConsoleColor(CONCOL_NORMAL);
+
+				mrpt::system::consoleColorAndStyle(
+					mrpt::system::ConsoleForegroundColor::DEFAULT);
 				cout << endl;
 
 				// Make list of all data:
@@ -280,23 +284,18 @@ int main(int argc, char** argv)
 	{
 		if (::strlen(e.what()))
 		{
-			setConsoleColor(CONCOL_RED, true);
+			mrpt::system::consoleColorAndStyle(
+				mrpt::system::ConsoleForegroundColor::RED);
+
 			std::cerr << "Program finished for an exception!!" << std::endl;
-			setConsoleColor(CONCOL_NORMAL, true);
+
+			mrpt::system::consoleColorAndStyle(
+				mrpt::system::ConsoleForegroundColor::DEFAULT);
 
 			std::cerr << mrpt::exception_to_str(e) << std::endl;
 
 			mrpt::system::pause();
 		}
-		return -1;
-	}
-	catch (...)
-	{
-		setConsoleColor(CONCOL_RED, true);
-		std::cerr << "Program finished for an untyped exception!!" << std::endl;
-		setConsoleColor(CONCOL_NORMAL, true);
-
-		mrpt::system::pause();
 		return -1;
 	}
 }
