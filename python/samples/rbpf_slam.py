@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys
+# import sys
 import pymrpt
 import argparse
 
@@ -30,8 +30,10 @@ options.dumpToConsole()
 map_builder = pymrpt.slam.CMetricMapBuilderRBPF(options)
 
 # get window resolution
-if args.resolution: resolution_str = args.resolution
-else: resolution_str = '800x600'
+if args.resolution:
+    resolution_str = args.resolution
+else:
+    resolution_str = '800x600'
 
 # gui
 try:
@@ -43,9 +45,12 @@ except:
 entry = 0
 while True:
     # get action observation pair
-    next_entry, act, obs, entry = pymrpt.obs.CRawlog.readActionObservationPair(rawlog_file, entry)
-    if not next_entry: break
-    else: entry += 1
+    next_entry, act, obs, entry = pymrpt.obs.CRawlog.readActionObservationPair(
+        rawlog_file, entry)
+    if not next_entry:
+        break
+    else:
+        entry += 1
     print(('Processing entry: {}.'.format(entry)))
 
     # process
@@ -70,7 +75,7 @@ while True:
             x = float(p.x)
             y = float(p.y)
             z = float(p.z)
-    lines_object.ctx().setColor(pymrpt.utils.TColorf(1.,0.,0.))
+    lines_object.ctx().setColor(pymrpt.utils.TColorf(1., 0., 0.))
 
     # get ellipsoids at time t
     dummy_path = map_builder.mapPDF.getPath(0)
@@ -78,10 +83,10 @@ while True:
     k_s.reverse()
     ellipsoid_objects = []
     for k in k_s:
-        pose_particles = map_builder.mapPDF.getEstimatedPosePDFAtTime(k);
-        ellipsoid_object = pymrpt.opengl.CEllipsoid.Create()
+        pose_particles = map_builder.mapPDF.getEstimatedPosePDFAtTime(k)
+        ellipsoid_object = pymrpt.opengl.CEllipsoid2D.Create()
         ellipsoid_object.ctx().setFromPosePDF(pose_particles)
-        ellipsoid_object.ctx().setColor(pymrpt.utils.TColorf(0.,1.,0.))
+        ellipsoid_object.ctx().setColor(pymrpt.utils.TColorf(0., 1., 0.))
         ellipsoid_objects.append(ellipsoid_object)
 
     # update gui

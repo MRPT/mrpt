@@ -375,7 +375,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			 * <---+--------------->|<--------------+-------->| |
 			 * estimator:                        |                |
 			 * |                                   |
-			 *                timoff_obstacles <-+                |
+			 *                timoff_obstacles <-   |
 			 * +--> timoff_curPoseVelAge           |
 			 *                                                    |<---------------------------------+--------------->|
 			 *                                                                                       +-->
@@ -1058,8 +1058,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	uint32_t nStep;
 	bool pt_in_range = cm.PTG->getPathStepForDist(move_k, d, nStep);
 	ASSERT_(pt_in_range);
-	mrpt::math::TPose2D pose;
-	cm.PTG->getPathPose(move_k, nStep, pose);
+	const mrpt::math::TPose2D pose = cm.PTG->getPathPose(move_k, nStep);
 
 	// Make sure that the target slow-down is honored, as seen in real-world
 	// Euclidean space
@@ -1223,10 +1222,9 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 					cm.starting_robot_dist = cur_norm_d;
 				}
 
-				mrpt::math::TPose2D predicted_rel_pose;
-				cm.PTG->getPathPose(
-					m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step,
-					predicted_rel_pose);
+				const mrpt::math::TPose2D predicted_rel_pose =
+					cm.PTG->getPathPose(
+						m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step);
 				const auto predicted_pose_global =
 					m_lastSentVelCmd.poseVel.rawOdometry + predicted_rel_pose;
 				const double predicted2real_dist = mrpt::hypot_fast(
@@ -1415,25 +1413,32 @@ double CAbstractPTGBasedReactive::generate_vel_cmd(
 		}
 		else
 		{
+			const bool is_slowdown = in_movement.props.count("is_slowdown") != 0
+				? in_movement.props.at("is_slowdown") != 0
+				: false;
+
 			// Take the normalized movement command:
 			new_vel_cmd = in_movement.PTG->directionToMotionCommand(
 				in_movement.PTG->alpha2index(in_movement.direction));
 
 			// Scale holonomic speeds to real-world one:
-			new_vel_cmd->cmdVel_scale(in_movement.speed);
-			cmdvel_speed_scale *= in_movement.speed;
+			if (!is_slowdown)
+			{
+				new_vel_cmd->cmdVel_scale(in_movement.speed);
+				cmdvel_speed_scale *= in_movement.speed;
 
-			if (!m_last_vel_cmd)  // first iteration? Use default values:
-				m_last_vel_cmd =
-					in_movement.PTG->getSupportedKinematicVelocityCommand();
+				if (!m_last_vel_cmd)  // first iteration? Use default values:
+					m_last_vel_cmd =
+						in_movement.PTG->getSupportedKinematicVelocityCommand();
 
-			// Honor user speed limits & "blending":
-			const double beta = meanExecutionPeriod.getLastOutput() /
-				(meanExecutionPeriod.getLastOutput() +
-				 params_abstract_ptg_navigator.speedfilter_tau);
-			cmdvel_speed_scale *= new_vel_cmd->cmdVel_limits(
-				*m_last_vel_cmd, beta,
-				params_abstract_ptg_navigator.robot_absolute_speed_limits);
+				// Honor user speed limits & "blending":
+				const double beta = meanExecutionPeriod.getLastOutput() /
+					(meanExecutionPeriod.getLastOutput() +
+					 params_abstract_ptg_navigator.speedfilter_tau);
+				cmdvel_speed_scale *= new_vel_cmd->cmdVel_limits(
+					*m_last_vel_cmd, beta,
+					params_abstract_ptg_navigator.robot_absolute_speed_limits);
+			}
 		}
 
 		m_last_vel_cmd = new_vel_cmd;  // Save for filtering in next step

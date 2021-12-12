@@ -10,11 +10,13 @@
 #include "img-precomp.h"  // Precompiled headers
 //
 #include <mrpt/core/cpu.h>
+#include <mrpt/core/get_env.h>
 #include <mrpt/core/round.h>  // for round()
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CFileInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/io/CMemoryStream.h>
+#include <mrpt/io/lazy_load_path.h>
 #include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
@@ -50,7 +52,9 @@ IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::img)
 
 static bool DISABLE_JPEG_COMPRESSION_value = true;
 static int SERIALIZATION_JPEG_QUALITY_value = 95;
-static std::string IMAGES_PATH_BASE(".");
+
+const thread_local bool MRPT_DEBUG_IMG_LAZY_LOAD =
+	mrpt::get_env<bool>("MRPT_DEBUG_IMG_LAZY_LOAD", false);
 
 void CImage::DISABLE_JPEG_COMPRESSION(bool val)
 {
@@ -75,10 +79,13 @@ CExceptionExternalImageNotFound::CExceptionExternalImageNotFound(
 {
 }
 
-const std::string& CImage::getImagesPathBase() { return IMAGES_PATH_BASE; }
+const std::string& CImage::getImagesPathBase()
+{
+	return mrpt::io::getLazyLoadPathBase();
+}
 void CImage::setImagesPathBase(const std::string& path)
 {
-	IMAGES_PATH_BASE = path;
+	mrpt::io::setLazyLoadPathBase(path);
 }
 
 // Do performance time logging?
@@ -1609,7 +1616,14 @@ void CImage::setExternalStorage(const std::string& fileName) noexcept
 void CImage::unload() const noexcept
 {
 #if MRPT_HAS_OPENCV
-	if (m_imgIsExternalStorage) const_cast<cv::Mat&>(m_impl->img) = cv::Mat();
+	if (m_imgIsExternalStorage)
+	{
+		if (MRPT_DEBUG_IMG_LAZY_LOAD)
+			std::cout << "[CImage::unload()] Called on this="
+					  << reinterpret_cast<const void*>(this) << std::endl;
+
+		const_cast<cv::Mat&>(m_impl->img) = cv::Mat();
+	}
 #endif
 }
 
@@ -1639,6 +1653,11 @@ void CImage::makeSureImageIsLoaded(bool allowNonInitialized) const
 				CExceptionExternalImageNotFound,
 				"Error loading externally-stored image from: %s",
 				wholeFile.c_str());
+
+		if (MRPT_DEBUG_IMG_LAZY_LOAD)
+			std::cout << "[CImage] Loaded lazy-load image file '" << wholeFile
+					  << "' on this=" << reinterpret_cast<const void*>(this)
+					  << std::endl;
 	}
 	else if (!allowNonInitialized)
 	{
@@ -1651,22 +1670,7 @@ void CImage::makeSureImageIsLoaded(bool allowNonInitialized) const
 
 void CImage::getExternalStorageFileAbsolutePath(std::string& out_path) const
 {
-	ASSERT_(m_externalFile.size() > 2);
-
-	if (m_externalFile[0] == '/' ||
-		(m_externalFile[1] == ':' &&
-		 (m_externalFile[2] == '\\' || m_externalFile[2] == '/')))
-	{ out_path = m_externalFile; }
-	else
-	{
-		out_path = IMAGES_PATH_BASE;
-
-		size_t N = IMAGES_PATH_BASE.size() - 1;
-		if (IMAGES_PATH_BASE[N] != '/' && IMAGES_PATH_BASE[N] != '\\')
-			out_path += "/";
-
-		out_path += m_externalFile;
-	}
+	out_path = mrpt::io::lazy_load_absolute_path(m_externalFile);
 }
 
 void CImage::flipVertical()
@@ -1918,13 +1922,13 @@ void CImage::joinImagesHorz(const CImage& img1, const CImage& img2)
 #if MRPT_HAS_OPENCV
 	ASSERT_(img1.getHeight() == img2.getHeight());
 
-	auto im1 = img1.m_impl->img, im2 = img2.m_impl->img, img = m_impl->img;
+	auto im1 = img1.m_impl->img, im2 = img2.m_impl->img;
 	ASSERT_(im1.type() == im2.type());
 
-	this->resize(im1.cols + im2.cols, im1.rows, getChannelCount());
+	this->resize(im1.cols + im2.cols, im1.rows, img1.getChannelCount());
 
-	im1.copyTo(img(cv::Rect(0, 0, im1.cols, im1.rows)));
-	im2.copyTo(img(cv::Rect(im1.cols, 0, im2.cols, im2.rows)));
+	im1.copyTo(m_impl->img(cv::Rect(0, 0, im1.cols, im1.rows)));
+	im2.copyTo(m_impl->img(cv::Rect(im1.cols, 0, im2.cols, im2.rows)));
 #endif
 }  // end
 

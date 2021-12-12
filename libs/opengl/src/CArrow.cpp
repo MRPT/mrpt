@@ -121,7 +121,7 @@ void CArrow::onUpdateBuffers_Triangles()
 		t.setColor(m_color);
 }
 
-uint8_t CArrow::serializeGetVersion() const { return 2; }
+uint8_t CArrow::serializeGetVersion() const { return 3; }
 void CArrow::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -129,6 +129,7 @@ void CArrow::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_x1 << m_y1 << m_z1;
 	out << m_headRatio << m_smallRadius << m_largeRadius;
 	out << m_slices;
+	CRenderizableShaderTriangles::params_serialize(out);  // v3
 }
 
 void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -138,6 +139,7 @@ void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 0:
 		case 1:
 		case 2:
+		case 3:
 		{
 			readFromStreamRender(in);
 			in >> m_x0 >> m_y0 >> m_z0;
@@ -149,6 +151,8 @@ void CArrow::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				in >> arrow_roll >> arrow_pitch >> arrow_yaw;
 			}
 			if (version >= 2) in >> m_slices;
+			if (version >= 3)
+				CRenderizableShaderTriangles::params_deserialize(in);
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

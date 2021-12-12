@@ -87,8 +87,7 @@ void Example_GMRF()
 	gasmap.updateMapEstimation();
 
 	// 3D view:
-	auto glObj = mrpt::opengl::CSetOfObjects::Create();
-	gasmap.getAs3DObject(glObj);
+	auto glObj = gasmap.getVisualization();
 
 	mrpt::gui::CDisplayWindow3D win("Map", 640, 480);
 

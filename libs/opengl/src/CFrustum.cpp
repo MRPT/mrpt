@@ -142,7 +142,7 @@ CFrustum::CFrustum(
 	this->setLineWidth(lineWidth);
 }
 
-uint8_t CFrustum::serializeGetVersion() const { return 0; }
+uint8_t CFrustum::serializeGetVersion() const { return 1; }
 void CFrustum::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
@@ -151,6 +151,7 @@ void CFrustum::serializeTo(mrpt::serialization::CArchive& out) const
 		<< m_fov_horz_right << m_fov_vert_down << m_fov_vert_up << m_draw_lines
 		<< m_draw_planes << m_lineWidth << m_planes_color.R << m_planes_color.G
 		<< m_planes_color.B << m_planes_color.A;
+	CRenderizableShaderTriangles::params_serialize(out);  // v1
 }
 
 void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -158,12 +159,17 @@ void CFrustum::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	switch (version)
 	{
 		case 0:
+		case 1:
 			readFromStreamRender(in);
 			in >> m_min_distance >> m_max_distance >> m_fov_horz_left >>
 				m_fov_horz_right >> m_fov_vert_down >> m_fov_vert_up >>
 				m_draw_lines >> m_draw_planes >> m_lineWidth >>
 				m_planes_color.R >> m_planes_color.G >> m_planes_color.B >>
 				m_planes_color.A;
+
+			if (version >= 1)
+				CRenderizableShaderTriangles::params_deserialize(in);
+
 			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};

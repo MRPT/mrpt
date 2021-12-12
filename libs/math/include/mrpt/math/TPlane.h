@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <mrpt/math/TSegment3D.h>
 

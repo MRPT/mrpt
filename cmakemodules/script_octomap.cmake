@@ -16,8 +16,8 @@ if (OCTOMAP_FOUND)
 endif()
 
 if (NOT OCTOMAP_FOUND)
-	set(BUILD_OCTOMAP ON CACHE BOOL "Build an embedded version of Octomap")
-	if (BUILD_OCTOMAP)
+	set(MRPT_BUILD_OCTOMAP ON CACHE BOOL "Build an embedded version of Octomap")
+	if (MRPT_BUILD_OCTOMAP)
 		# Use embedded version:
 		# --------------------------
 		if (MSVC)

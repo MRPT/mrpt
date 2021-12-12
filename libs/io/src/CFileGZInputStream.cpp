@@ -27,7 +27,8 @@ static_assert(
 
 struct CFileGZInputStream::Impl
 {
-	gzFile f{nullptr};
+	gzFile f = nullptr;
+	std::string filename;
 };
 
 CFileGZInputStream::CFileGZInputStream()
@@ -64,6 +65,8 @@ bool CFileGZInputStream::open(
 	m_f->f = gzopen(fileName.c_str(), "rb");
 	if (m_f->f == nullptr && error_msg)
 		error_msg.value().get() = std::string(strerror(errno));
+
+	m_f->filename = fileName;
 
 	return m_f->f != nullptr;
 	MRPT_END
@@ -115,4 +118,10 @@ bool CFileGZInputStream::checkEOF()
 uint64_t CFileGZInputStream::Seek(int64_t, CStream::TSeekOrigin)
 {
 	THROW_EXCEPTION("Method not available in this class.");
+}
+
+std::string CFileGZInputStream::getStreamDescription() const
+{
+	return mrpt::format(
+		"mrpt::io::CFileGZInputStream for file '%s'", m_f->filename.c_str());
 }

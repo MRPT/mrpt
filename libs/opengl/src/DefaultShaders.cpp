@@ -20,13 +20,6 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 {
 #if MRPT_HAS_OPENGL_GLUT
 
-#if defined(MRPT_OS_LINUX)
-	// Workaround to enfore wxWidgets to use GLSL>=3.3 even for wxWidgets<3.0.4
-	// See CWxGLCanvasBase::CWxGLCanvasBase.
-	if (!::getenv("MESA_GL_VERSION_OVERRIDE"))
-	{ ::setenv("MESA_GL_VERSION_OVERRIDE", "3.3", 1 /*overwrite*/); }
-#endif
-
 	// Vertex shader:
 	const char* vertex_shader = nullptr;
 	const char* fragment_shader = nullptr;
@@ -71,8 +64,8 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles.f.glsl"
 				;
-			uniforms = {"p_matrix",		 "mv_matrix",	   "light_diffuse",
-						"light_ambient", "light_specular", "light_direction"};
+			uniforms = {"p_matrix",		 "mv_matrix",		"light_diffuse",
+						"light_ambient", "light_direction", "enableLight"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 			// ==============================
@@ -83,9 +76,9 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/textured-triangles.f.glsl"
 				;
-			uniforms = {"p_matrix",		   "mv_matrix",		 "pmv_matrix",
-						"light_diffuse",   "light_ambient",	 "light_specular",
-						"light_direction", "textureSampler", "enableLight"};
+			uniforms = {"p_matrix",		  "mv_matrix",	   "pmv_matrix",
+						"light_diffuse",  "light_ambient", "light_direction",
+						"textureSampler", "enableLight"};
 			attribs = {"position", "vertexUV", "vertexNormal"};
 			break;
 			// ==============================

@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/random/RandomGenerators.h>
+#include <mrpt/random/random_shuffle.h>
 
 TEST(Random, Randomize)
 {
@@ -104,4 +105,78 @@ TEST(Random, drawGaussianMultivariateMany)
 
 	EXPECT_EQ(samples.size(), nSamples);
 	EXPECT_EQ(samples.at(0).size(), static_cast<size_t>(cov.rows()));
+}
+
+TEST(Random, portable_uniform_distribution)
+{
+	mrpt::random::Generator_MT19937 rnd;
+
+	const uint32_t seeds[5] = {0U, 1U, 3041022042U, 3206235417U, 2112818007U};
+
+	const uint32_t psr_seq[5][30] = {
+		{
+			63, 28, 27, 95, 95, 62, 75, 64, 44, 57, 15, 90, 45, 93, 84,
+			88, 8,	5,	11, 44, 31, 5,	73, 63, 43, 9,	49, 36, 94, 23,
+		},
+		{
+			14, 52, 16, 57, 76, 37, 59, 18, 68, 53, 23, 50, 14, 11, 68,
+			54, 35, 30, 34, 72, 34, 63, 8,	62, 35, 14, 48, 69, 30, 65,
+		},
+		{
+			12, 52, 18, 43, 43, 21, 48, 36, 29, 47, 49, 20, 32, 13, 22,
+			23, 32, 20, 45, 19, 46, 55, 42, 31, 49, 21, 28, 42, 59, 11,
+		},
+		{
+			20, 24, 30, 35, 34, 33, 19, 23, 22, 38, 35, 34, 28, 27, 35,
+			16, 15, 27, 19, 38, 26, 39, 26, 35, 31, 19, 24, 15, 31, 30,
+		},
+		{
+			20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+			20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+		},
+	};
+
+	for (int seed = 0; seed < 5; seed++)
+	{
+		rnd.seed(seeds[seed]);
+		for (int i = 0; i < 30; i++)
+		{
+			const auto v = mrpt::random::portable_uniform_distribution(
+				rnd, seed * 5, 100 - 20 * seed);
+			EXPECT_EQ(v, psr_seq[seed][i])
+				<< "seed=" << seed << " i=" << i << "\n";
+		}
+	}
+}
+
+TEST(Random, shuffle)
+{
+	// Fixed, platform-independent RNG, so we have reproducible results below:
+	mrpt::random::Generator_MT19937 rnd;
+	rnd.seed(1);
+
+	const std::vector<int> listOrg = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+	{
+		auto list2 = listOrg;
+		mrpt::random::shuffle(list2.begin(), list2.end(), rnd);
+		EXPECT_EQ(list2, std::vector<int>({7, 2, 9, 8, 5, 6, 1, 4, 0, 3}));
+	}
+
+	{
+		auto list2 = listOrg;
+		mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 0);
+		EXPECT_EQ(list2, listOrg);
+	}
+
+	{
+		auto list2 = listOrg;
+		mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 1);
+		EXPECT_EQ(list2, std::vector<int>({6, 1, 2, 3, 4, 5, 0, 7, 8, 9}));
+	}
+	{
+		auto list2 = listOrg;
+		mrpt::random::partial_shuffle(list2.begin(), list2.end(), rnd, 10);
+		EXPECT_EQ(list2, std::vector<int>({3, 5, 8, 0, 7, 1, 6, 2, 4, 9}));
+	}
 }

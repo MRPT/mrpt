@@ -197,7 +197,8 @@ class COccupancyGridMap2D
 	 */
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 
    public:
 	/** Read-only access to the raw cell contents (cells are in log-odd units)
@@ -1028,7 +1029,8 @@ class COccupancyGridMap2D
 	 * transparency proportional to "uncertainty" (i.e. a value of 0.5 is fully
 	 * transparent)
 	 */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Get a point cloud with all (border) occupied cells as points */
 	void getAsPointCloud(
@@ -1118,6 +1120,14 @@ class COccupancyGridMap2D
 		/** Their two first basis points coordinates. */
 		std::vector<int> x_basis1, y_basis1, x_basis2, y_basis2;
 	} CriticalPointsList;
+
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"2D gridmap, extending from (%f,%f) to (%f,%f), cell size=%f",
+			getXMin(), getYMin(), getXMax(), getYMax(), getResolution());
+	}
 
    private:
 	// See docs in base class

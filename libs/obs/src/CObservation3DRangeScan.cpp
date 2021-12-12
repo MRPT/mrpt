@@ -14,6 +14,7 @@
 #include <mrpt/core/bits_mem.h>	 // vector_strong_clear
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
+#include <mrpt/io/lazy_load_path.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/ops_containers.h>  // norm(), etc.
@@ -371,9 +372,28 @@ void CObservation3DRangeScan::serializeTo(
 	}
 }
 
+void CObservation3DRangeScan::internal_setRangeImageFromMatrixF(
+	const mrpt::math::CMatrixF& ri)
+{
+	const uint32_t rows = ri.rows(), cols = ri.cols();
+
+	// Call "rangeImage_setSize()" to exploit the mempool:
+	if (rows > 0 && cols > 0)
+	{
+		rangeImage_setSize(rows, cols);
+
+		for (uint32_t r = 0; r < rows; r++)
+			for (uint32_t c = 0; c < cols; c++)
+				rangeImage(r, c) =
+					static_cast<uint16_t>(mrpt::round(ri(r, c) / rangeUnits));
+	}
+}
+
 void CObservation3DRangeScan::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
+	m_deserializedFromVersionOlder_v9 = false;
+
 	switch (version)
 	{
 		case 0:
@@ -439,16 +459,8 @@ void CObservation3DRangeScan::serializeFrom(
 						// Convert from old format:
 						mrpt::math::CMatrixF ri;
 						in >> ri;
-						const uint32_t rows = ri.rows(), cols = ri.cols();
-						ASSERT_(rows > 0 && cols > 0);
-
-						// Call "rangeImage_setSize()" to exploit the mempool:
-						rangeImage_setSize(rows, cols);
-
-						for (uint32_t r = 0; r < rows; r++)
-							for (uint32_t c = 0; c < cols; c++)
-								rangeImage(r, c) = static_cast<uint16_t>(
-									mrpt::round(ri(r, c) / rangeUnits));
+						internal_setRangeImageFromMatrixF(ri);
+						m_deserializedFromVersionOlder_v9 = true;
 					}
 					else
 					{
@@ -660,6 +672,10 @@ void CObservation3DRangeScan::load() const
 				layerName = it->first;
 				ri = const_cast<mrpt::math::CMatrix_u16*>(&it->second);
 			}
+
+			// Already loaded? skip:
+			if (ri->rows() != 0) continue;
+
 			const string fil =
 				rangeImage_getExternalStorageFileAbsolutePath(layerName);
 			if (mrpt::system::strCmpI(
@@ -671,27 +687,58 @@ void CObservation3DRangeScan::load() const
 
 				mrpt::io::CFileGZInputStream fi(fil);
 				auto f = mrpt::serialization::archiveFrom(fi);
-				const uint32_t rows = f.ReadAs<uint32_t>();
-				const uint32_t cols = f.ReadAs<uint32_t>();
-				me.rangeImage_setSize(rows, cols);
-				if (ri->size() != 0)
-					f.ReadBufferFixEndianness<uint16_t>(ri->data(), ri->size());
-			}
 
+				if (!m_deserializedFromVersionOlder_v9)
+				{
+					// Normal case: deserialize matrix:
+					const uint32_t rows = f.ReadAs<uint32_t>();
+					const uint32_t cols = f.ReadAs<uint32_t>();
+					me.rangeImage_setSize(rows, cols);
+					if (ri->size() != 0)
+						f.ReadBufferFixEndianness<uint16_t>(
+							ri->data(), ri->size());
+				}
+				else
+				{
+					// Special case: Convert from old format (< v9):
+					mrpt::math::CMatrixF r;
+					f >> r;
+					const_cast<CObservation3DRangeScan*>(this)
+						->internal_setRangeImageFromMatrixF(r);
+
+					// Bug in old version of TUM RGBD rawlog datasets:
+					if (ri->cols() == 640 && ri->rows() == 480 &&
+						static_cast<int>(cameraParams.ncols) == ri->rows() &&
+						static_cast<int>(cameraParams.nrows) == ri->cols())
+					{
+						std::swap(
+							const_cast<uint32_t&>(cameraParams.ncols),
+							const_cast<uint32_t&>(cameraParams.nrows));
+					}
+				}
+			}
 		}  // end for each layer
 	}
+
+	// CImage: no need to force load, they are lazy-loaded automatically upon
+	// access.
+	// intensityImage.forceLoad();
+	// confidenceImage.forceLoad();
 }
 
-void CObservation3DRangeScan::unload()
+void CObservation3DRangeScan::unload() const
 {
+	auto& me = const_cast<CObservation3DRangeScan&>(*this);
+
 	if (hasPoints3D && m_points3D_external_stored)
 	{
-		mrpt::vector_strong_clear(points3D_x);
-		mrpt::vector_strong_clear(points3D_y);
-		mrpt::vector_strong_clear(points3D_z);
+		mrpt::vector_strong_clear(me.points3D_x);
+		mrpt::vector_strong_clear(me.points3D_y);
+		mrpt::vector_strong_clear(me.points3D_z);
 	}
 
-	if (hasRangeImage && m_rangeImage_external_stored) rangeImage.setSize(0, 0);
+	if (hasRangeImage && m_rangeImage_external_stored)
+		me.rangeImage.setSize(0, 0);
 
 	intensityImage.unload();
 	confidenceImage.unload();
@@ -715,36 +762,12 @@ void CObservation3DRangeScan::rangeImage_getExternalStorageFileAbsolutePath(
 {
 	std::string filName = rangeImage_getExternalStorageFile(rangeImageLayer);
 
-	ASSERT_(filName.size() > 2);
-	if (filName[0] == '/' || (filName[1] == ':' && filName[2] == '\\'))
-	{ out_path = filName; }
-	else
-	{
-		out_path = CImage::getImagesPathBase();
-		size_t N = CImage::getImagesPathBase().size() - 1;
-		if (CImage::getImagesPathBase()[N] != '/' &&
-			CImage::getImagesPathBase()[N] != '\\')
-			out_path += "/";
-		out_path += filName;
-	}
+	out_path = mrpt::io::lazy_load_absolute_path(filName);
 }
 void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(
 	std::string& out_path) const
 {
-	ASSERT_(m_points3D_external_file.size() > 2);
-	if (m_points3D_external_file[0] == '/' ||
-		(m_points3D_external_file[1] == ':' &&
-		 m_points3D_external_file[2] == '\\'))
-	{ out_path = m_points3D_external_file; }
-	else
-	{
-		out_path = CImage::getImagesPathBase();
-		size_t N = CImage::getImagesPathBase().size() - 1;
-		if (CImage::getImagesPathBase()[N] != '/' &&
-			CImage::getImagesPathBase()[N] != '\\')
-			out_path += "/";
-		out_path += m_points3D_external_file;
-	}
+	out_path = mrpt::io::lazy_load_absolute_path(m_points3D_external_file);
 }
 
 void CObservation3DRangeScan::points3D_convertToExternalStorage(

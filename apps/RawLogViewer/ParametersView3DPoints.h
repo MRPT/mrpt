@@ -16,6 +16,12 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 
+// JLBC: Unix X headers have these funny things...
+#ifdef None
+#undef None
+#endif
+#include <mrpt/obs/CObservationPointCloud.h>
+
 class ViewOptions3DPoints;
 
 struct ParametersView3DPoints
@@ -56,6 +62,10 @@ void obs3Dscan_to_viz(
 
 void obsVelodyne_to_viz(
 	const mrpt::obs::CObservationVelodyneScan::Ptr& obs,
+	const ParametersView3DPoints& p, mrpt::opengl::CSetOfObjects& out);
+
+void obsPointCloud_to_viz(
+	const mrpt::obs::CObservationPointCloud::Ptr& obs,
 	const ParametersView3DPoints& p, mrpt::opengl::CSetOfObjects& out);
 
 void obs2Dscan_to_viz(

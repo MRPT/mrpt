@@ -9,7 +9,7 @@ if (APPLE)
 else()
   set(def_ ON)
 endif()
-set(BUILD_NANOGUI ${def_} CACHE BOOL "Build an embedded version of nanogui (OpenGL GUIs)")
+set(MRPT_WITH_NANOGUI ${def_} CACHE BOOL "Build an embedded version of nanogui (OpenGL GUIs)")
 unset(def_)
 
 find_package(PkgConfig QUIET)
@@ -17,13 +17,13 @@ if (PKG_CONFIG_FOUND)
   pkg_search_module(GLFW glfw3)
 endif()
 
-if (BUILD_NANOGUI AND
+if (MRPT_WITH_NANOGUI AND
     (NOT CMAKE_MRPT_HAS_OPENGL_GLUT))
-    message(STATUS "Warning: Disabling BUILD_NANOGUI since requirements were not found.")
-    set(BUILD_NANOGUI OFF CACHE BOOL "" FORCE)
+    message(STATUS "Warning: Disabling MRPT_WITH_NANOGUI since requirements were not found.")
+    set(MRPT_WITH_NANOGUI OFF CACHE BOOL "" FORCE)
 endif()
 
-if (NOT BUILD_NANOGUI)
+if (NOT MRPT_WITH_NANOGUI)
 return()
 endif()
 

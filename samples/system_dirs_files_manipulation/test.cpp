@@ -46,7 +46,7 @@ void setupDirContents()
 	{
 		cout << "Creating directory... " << endl;
 		createDirectory(dir_name);
-		f.open(dir_name + "/" + file_name);
+		f.open(dir_name + "/" + file_name, OpenMode::TRUNCATE);
 		if (f.fileOpenCorrectly())
 		{  // checking for errors...
 			cout << "file was opened correctly" << endl;
@@ -109,7 +109,7 @@ void renameDirContents()
 	{
 		ss_tmp.str("");
 		ss_tmp << dir_name << "/" << fname << i;
-		f.open(ss_tmp.str());
+		f.open(ss_tmp.str(), OpenMode::TRUNCATE);
 		f.printf("dummy text in file...");
 		f.close();
 	}

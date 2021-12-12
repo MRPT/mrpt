@@ -214,15 +214,25 @@ class CMultiMetricMap : public mrpt::maps::CMetricMap
 	void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const override;
 	void auxParticleFilterCleanUp() override;
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 	const mrpt::maps::CSimplePointsMap* getAsSimplePointsMap() const override;
+
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return mrpt::format(
+			"Multi-map with %u children.",
+			static_cast<unsigned int>(maps.size()));
+	}
 
    protected:
 	// See base class docs:
 	void internal_clear() override;
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 	bool internal_canComputeObservationLikelihood(
 		const mrpt::obs::CObservation& obs) const override;
 	double internal_computeObservationLikelihood(

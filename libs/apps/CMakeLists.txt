@@ -6,6 +6,7 @@ set(lst_modules
 	mrpt-obs
 	mrpt-slam
 	mrpt-tclap
+	mrpt-topography
 )
 
 # Optional modules:

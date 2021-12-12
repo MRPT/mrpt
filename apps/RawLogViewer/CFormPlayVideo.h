@@ -93,6 +93,10 @@ class CFormPlayVideo : public wxDialog
 		mrpt::obs::CSensoryFrame& SF, size_t& nImgs,
 		mrpt::Clock::time_point& timestamp);
 
+	bool showSensoryFrameImpl(
+		mrpt::obs::CSensoryFrame& SF, size_t& nImgs,
+		mrpt::Clock::time_point& timestamp);
+
 	void drawHorzRules(mrpt::img::CImage& img);
 
 	//(*Declarations(CFormPlayVideo)

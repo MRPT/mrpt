@@ -141,7 +141,7 @@ void optimize_graph_spa_levmarq(
 	ASSERTDEB_GT_(nFreeNodes, 0);
 	if (verbose)
 	{
-		cout << "[" << __CURRENT_FUNCTION_NAME__ << "] " << nFreeNodes
+		cout << "[optimize_graph_spa_levmarq] " << nFreeNodes
 			 << " nodes to optimize: ";
 		if (nFreeNodes < 14)
 		{
@@ -333,7 +333,7 @@ void optimize_graph_spa_levmarq(
 			{
 				// Change is too small
 				if (verbose)
-					cout << "[" << __CURRENT_FUNCTION_NAME__ << "] "
+					cout << "[optimize_graph_spa_levmarq] "
 						 << mrpt::format(
 								"End condition #1: math::norm_inf(g)<=e1 "
 								":%f<=%f\n",
@@ -452,7 +452,7 @@ void optimize_graph_spa_levmarq(
 		}  // end "have_to_recompute_H_and_grad"
 
 		if (verbose)
-			cout << "[" << __CURRENT_FUNCTION_NAME__ << "] Iter: " << iter
+			cout << "[optimize_graph_spa_levmarq] Iter: " << iter
 				 << " ,total sqr. err: " << total_sqr_err
 				 << ", avrg. err per edge: "
 				 << std::sqrt(total_sqr_err / nObservations)
@@ -529,8 +529,8 @@ void optimize_graph_spa_levmarq(
 		{
 			// not positive definite so increase mu and try again
 			if (verbose)
-				cout << "[" << __CURRENT_FUNCTION_NAME__
-					 << "] Got non-definite positive matrix, retrying with a "
+				cout << "[optimize_graph_spa_levmarq] Got non-definite "
+						"positive matrix, retrying with a "
 						"larger lambda...\n";
 			lambda *= v;
 			v *= 2;
@@ -568,7 +568,7 @@ void optimize_graph_spa_levmarq(
 		{
 			// The change is too small: we're done here...
 			if (verbose)
-				cout << "[" << __CURRENT_FUNCTION_NAME__ << "] "
+				cout << "[optimize_graph_spa_levmarq] "
 					 << format(
 							"End condition #2: %e < %e\n", delta_norm,
 							thres_norm);
@@ -638,8 +638,8 @@ void optimize_graph_spa_levmarq(
 					graph.nodes[it->first] = it->second;
 
 				if (verbose)
-					cout << "[" << __CURRENT_FUNCTION_NAME__
-						 << "] Got larger error=" << new_total_sqr_err
+					cout << "[optimize_graph_spa_levmarq] Got larger error="
+						 << new_total_sqr_err
 						 << ", retrying with a larger lambda...\n";
 				// Change params and try again:
 				lambda *= v;

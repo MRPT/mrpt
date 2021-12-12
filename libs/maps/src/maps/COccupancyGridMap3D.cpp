@@ -13,6 +13,7 @@
 #include <mrpt/maps/COccupancyGridMap3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -346,12 +347,12 @@ void COccupancyGridMap3D::getAsOctoMapVoxels(
 	MRPT_END
 }
 
-void COccupancyGridMap3D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void COccupancyGridMap3D::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 	this->getAsOctoMapVoxels(*gl_obj);
-	outObj->insert(gl_obj);
+	o.insert(gl_obj);
 }
 
 uint8_t COccupancyGridMap3D::serializeGetVersion() const { return 0; }

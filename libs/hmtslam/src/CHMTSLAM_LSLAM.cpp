@@ -1765,7 +1765,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 		opengl::CSetOfObjects::Ptr maps3D =
 			std::make_shared<opengl::CSetOfObjects>();
 		maps3D->setName("metric-maps");
-		LMH->getMostLikelyParticle()->d->metricMaps.getAs3DObject(maps3D);
+		LMH->getMostLikelyParticle()->d->metricMaps.getVisualizationInto(
+			*maps3D);
 		sceneLSLAM.insert(maps3D);
 
 		// ...and the robot poses, areas, etc:
@@ -1833,7 +1834,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 						auto pose3D = partIt->d->robotPoses.find(poseToAdd);
 						ASSERT_(pose3D != partIt->d->robotPoses.end());
 						SF.insertObservationsInto(
-							&partIt->d->metricMaps, &pose3D->second);
+							partIt->d->metricMaps, pose3D->second);
 					}  // end for each particle
 				}
 			}  // end for each m_nodeIDmemberships

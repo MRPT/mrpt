@@ -8,8 +8,45 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'UA-21128561-10');
+</script>
+{% endblock %}
+
+
+{% block sidebartitle %}
+{{ super() }}
+<script>
+function onMRPTVersionChange() {
+    var selectBox = document.getElementById("docsVersionSelectBox");
+    const newVersion = selectBox.options[selectBox.selectedIndex].value;
+    var curURL = window.location.href;
+    const lastURLSegment = curURL;
+    const newURL = window.location.protocol + "//" + window.location.host + "/" +
+        "reference/" + newVersion + "/" +
+        window.location.pathname.split("/").pop();
+    window.location.href = newURL;
+}
+var req = new XMLHttpRequest();
+ req.onload = function(){
+     var versions = JSON.parse(this.responseText);
+     var versionDiv = document.getElementsByClassName('version')[0];
+     var curVer = versionDiv.innerHTML.trim();
+     var s='<select id="docsVersionSelectBox" onchange="onMRPTVersionChange();">\n';
+     for(var i = 0; i < versions.length; i++) {
+       var v = versions[i];
+       var vstr = v;
+       if (v.charAt(0)>='0' && v.charAt(0)<='9') {
+         vstr = 'v'+vstr;
+       }
+       s=s+ '<option value="' +v+'"';
+       if (curVer==v) {s=s+' selected';}
+       s=s+'">'+ vstr + '</option>\n';
+     }
+     s = s + '</select>\n';
+     versionDiv.innerHTML = s;
+ };
+ req.open('GET', '../versions.txt');
+ req.send();
 </script>
 {% endblock %}
 

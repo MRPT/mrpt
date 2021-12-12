@@ -211,7 +211,7 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 		CPose2D sensorPose2D(robotPose3D + o.sensorPose);
 
 		auxMap.loadOccupancyFeaturesFrom2DRangeScan(
-			o, &robotPose3D, likelihoodOptions.rangeScan2D_decimation);
+			o, robotPose3D, likelihoodOptions.rangeScan2D_decimation);
 
 		// And compute its likelihood:
 		return computeLikelihood_RSLC_2007(&auxMap, sensorPose2D);
@@ -437,7 +437,8 @@ double CLandmarksMap::internal_computeObservationLikelihood(
 						insertObservation
   ---------------------------------------------------------------*/
 bool CLandmarksMap::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	MRPT_START
 
@@ -962,8 +963,8 @@ void CLandmarksMap::fuseWith(CLandmarksMap& other, bool justInsertAllOfThem)
 		// ---------------------------------------------------------
 		for (corrIt = corrs.begin(); corrIt != corrs.end(); corrIt++)
 		{
-			thisLM = landmarks.get(corrIt->this_idx);
-			otherLM = other.landmarks.get(corrIt->other_idx);
+			thisLM = landmarks.get(corrIt->globalIdx);
+			otherLM = other.landmarks.get(corrIt->localIdx);
 
 			// Fuse their poses:
 			CPointPDFGaussian P, P1, P2;
@@ -973,14 +974,14 @@ void CLandmarksMap::fuseWith(CLandmarksMap& other, bool justInsertAllOfThem)
 
 			P.bayesianFusion(P1, P2);
 
-			landmarks.isToBeModified(corrIt->this_idx);
+			landmarks.isToBeModified(corrIt->globalIdx);
 			thisLM->setPose(P);
 
 			// Update "seen" data:
 			thisLM->seenTimesCount++;
 			thisLM->timestampLastSeen = otherLM->timestampLastSeen;
 
-			landmarks.hasBeenModified(corrIt->this_idx);
+			landmarks.hasBeenModified(corrIt->globalIdx);
 
 		}  // end foreach corrs
 	}
@@ -1239,17 +1240,17 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 							// OK: A correspondence found!!
 							otherCorrespondences[k] = true;
 
-							match.this_idx = maxIdx;
-							match.this_x = landmarks.get(maxIdx)->pose_mean.x;
-							match.this_y = landmarks.get(maxIdx)->pose_mean.y;
-							match.this_z = landmarks.get(maxIdx)->pose_mean.z;
+							match.globalIdx = maxIdx;
+							match.global.x = landmarks.get(maxIdx)->pose_mean.x;
+							match.global.y = landmarks.get(maxIdx)->pose_mean.y;
+							match.global.z = landmarks.get(maxIdx)->pose_mean.z;
 
-							match.other_idx = k;
-							match.other_x =
+							match.localIdx = k;
+							match.local.x =
 								anotherMap->landmarks.get(k)->pose_mean.x;
-							match.other_y =
+							match.local.y =
 								anotherMap->landmarks.get(k)->pose_mean.y;
-							match.other_z =
+							match.local.z =
 								anotherMap->landmarks.get(k)->pose_mean.z;
 
 							correspondences.push_back(match);
@@ -1321,17 +1322,17 @@ void CLandmarksMap::computeMatchingWith3DLandmarks(
 						otherIt->getPose(pointPDF_k);
 						thisIt->getPose(pointPDF_j);
 
-						match.this_idx = j;
-						match.this_x = landmarks.get(mEDDidx)->pose_mean.x;
-						match.this_y = landmarks.get(mEDDidx)->pose_mean.y;
-						match.this_z = landmarks.get(mEDDidx)->pose_mean.z;
+						match.globalIdx = j;
+						match.global.x = landmarks.get(mEDDidx)->pose_mean.x;
+						match.global.y = landmarks.get(mEDDidx)->pose_mean.y;
+						match.global.z = landmarks.get(mEDDidx)->pose_mean.z;
 
-						match.other_idx = k;
-						match.other_x =
+						match.localIdx = k;
+						match.local.x =
 							anotherMap->landmarks.get(k)->pose_mean.x;
-						match.other_y =
+						match.local.y =
 							anotherMap->landmarks.get(k)->pose_mean.y;
-						match.other_z =
+						match.local.z =
 							anotherMap->landmarks.get(k)->pose_mean.z;
 
 						correspondences.push_back(match);
@@ -1547,7 +1548,8 @@ bool CLandmarksMap::saveToMATLABScript2D(
 						loadOccupancyFeaturesFrom2DRangeScan
   ---------------------------------------------------------------*/
 void CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
-	const CObservation2DRangeScan& obs, const CPose3D* robotPose,
+	const CObservation2DRangeScan& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose,
 	unsigned int downSampleFactor)
 {
 	unsigned int i, n = obs.getScanSize();
@@ -2054,8 +2056,8 @@ double CLandmarksMap::computeLikelihood_SIFT_LandmarkMap(
 			for (itCorr = correspondences->begin();
 				 itCorr != correspondences->end(); itCorr++)
 			{
-				auto lm1 = theMap->landmarks.get(itCorr->other_idx);
-				auto lm2 = landmarks.get(itCorr->this_idx);
+				auto lm1 = theMap->landmarks.get(itCorr->localIdx);
+				auto lm2 = landmarks.get(itCorr->globalIdx);
 
 				dij(0, 0) = lm1->pose_mean.x - lm2->pose_mean.x;
 				dij(0, 1) = lm1->pose_mean.y - lm2->pose_mean.y;
@@ -2404,14 +2406,11 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 
 	// 3D Scene:
 	opengl::COpenGLScene scene;
-	mrpt::opengl::CSetOfObjects::Ptr obj3D =
-		mrpt::opengl::CSetOfObjects::Create();
-	getAs3DObject(obj3D);
 
 	opengl::CGridPlaneXY::Ptr objGround =
 		std::make_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 1);
 
-	scene.insert(obj3D);
+	scene.insert(getVisualization());
 	scene.insert(objGround);
 
 	std::string fil2(filNamePrefix + std::string("_3D.3Dscene"));
@@ -2423,8 +2422,7 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 /*---------------------------------------------------------------
 						getAs3DObject
   ---------------------------------------------------------------*/
-void CLandmarksMap::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CLandmarksMap::getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -2449,7 +2447,7 @@ void CLandmarksMap::getAs3DObject(
 			mrpt::format("LM.ID=%u", static_cast<unsigned int>(landmark.ID)));
 		ellip->enableShowName(true);
 
-		outObj->insert(ellip);
+		o.insert(ellip);
 	}
 }
 /**** FAMD ****/

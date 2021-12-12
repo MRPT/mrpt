@@ -83,9 +83,11 @@ class CParameterizedTrajectoryGenerator
 	DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
    public:
 	/** Default ctor. Must call `loadFromConfigFile()` before initialization */
-	CParameterizedTrajectoryGenerator();
+	CParameterizedTrajectoryGenerator() = default;
+
 	/**  Destructor  */
 	~CParameterizedTrajectoryGenerator() override = default;
+
 	/** The class factory for creating a PTG from a list of parameters in a
 	 *section of a given config file (physical file or in memory).
 	 *  Possible parameters are:
@@ -152,7 +154,11 @@ class CParameterizedTrajectoryGenerator
 
 	/** Returns true if a given TP-Space point maps to a unique point in
 	 * Workspace, and viceversa. Default implementation returns `true`. */
-	virtual bool isBijectiveAt(uint16_t k, uint32_t step) const { return true; }
+	virtual bool isBijectiveAt(
+		[[maybe_unused]] uint16_t k, [[maybe_unused]] uint32_t step) const
+	{
+		return true;
+	}
 	/** Converts a discretized "alpha" value into a feasible motion command or
 	 * action. See derived classes for the meaning of these actions */
 	virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(
@@ -204,15 +210,8 @@ class CParameterizedTrajectoryGenerator
 	/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): pose of the vehicle at
 	 * discrete step `step`.
 	 * \sa getPathStepCount(), getAlphaValuesCount(), getPathTwist() */
-	virtual void getPathPose(
-		uint16_t k, uint32_t step, mrpt::math::TPose2D& p) const = 0;
-	/** \overload */
-	virtual mrpt::math::TPose2D getPathPose(uint16_t k, uint32_t step) const
-	{
-		mrpt::math::TPose2D p;
-		getPathPose(k, step, p);
-		return p;
-	}
+	virtual mrpt::math::TPose2D getPathPose(
+		uint16_t k, uint32_t step) const = 0;
 
 	/** Gets velocity ("twist") for path `k` ([0,N-1]=>[-pi,pi] in alpha),
 	 * at vehicle discrete step `step`. The default implementation in this base
@@ -303,7 +302,8 @@ class CParameterizedTrajectoryGenerator
 	 * possible circular loops of the path (e.g. if it comes back to the
 	 * origin).
 	 * Default: refDistance */
-	virtual double getActualUnloopedPathLength(uint16_t k) const
+	virtual double getActualUnloopedPathLength(	 //
+		[[maybe_unused]] uint16_t k) const
 	{
 		return this->refDistance;
 	}
@@ -311,7 +311,8 @@ class CParameterizedTrajectoryGenerator
 	/** Query the PTG for the relative priority factor (0,1) of this PTG, in
 	 * comparison to others, if the k-th path is to be selected. */
 	virtual double evalPathRelativePriority(
-		uint16_t k, double target_distance) const
+		[[maybe_unused]] uint16_t k,
+		[[maybe_unused]] double target_distance) const
 	{
 		return 1.0;
 	}
@@ -463,19 +464,24 @@ class CParameterizedTrajectoryGenerator
 
    protected:
 	double refDistance{.0};
+
 	/** The number of discrete values for "alpha" between -PI and +PI. */
 	uint16_t m_alphaValuesCount{0};
 	double m_score_priority{1.0};
+
 	/** Number of steps for the piecewise-constant approximation of clearance
 	 * from TPS distances [0,1] (Default=5) \sa updateClearance() */
 	uint16_t m_clearance_num_points{5};
+
 	/** Number of paths for the decimated paths analysis of clearance */
 	uint16_t m_clearance_decimated_paths{15};
+
 	/** Updated before each nav step by  */
 	TNavDynamicState m_nav_dyn_state;
-	/** Update in updateNavDynamicState(), contains the path index (k) for the
+
+	/** Updated in updateNavDynamicState(), contains the path index (k) for the
 	 * target. */
-	uint16_t m_nav_dyn_state_target_k;
+	uint16_t m_nav_dyn_state_target_k = INVALID_PTG_PATH_INDEX;
 
 	static const uint16_t INVALID_PTG_PATH_INDEX = static_cast<uint16_t>(-1);
 

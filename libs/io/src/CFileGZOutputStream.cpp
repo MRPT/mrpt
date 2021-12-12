@@ -21,7 +21,8 @@ using namespace std;
 
 struct CFileGZOutputStream::Impl
 {
-	gzFile f{nullptr};
+	gzFile f = nullptr;
+	std::string filename;
 };
 
 CFileGZOutputStream::CFileGZOutputStream()
@@ -29,30 +30,37 @@ CFileGZOutputStream::CFileGZOutputStream()
 {
 }
 
-CFileGZOutputStream::CFileGZOutputStream(const string& fileName)
+CFileGZOutputStream::CFileGZOutputStream(
+	const std::string& fileName, const OpenMode mode, int compressionLevel)
 	: CFileGZOutputStream()
 {
 	MRPT_START
 	std::string err_msg;
-	if (!open(fileName, 1, err_msg))
-		THROW_EXCEPTION(mrpt::format(
+	if (!open(fileName, compressionLevel, err_msg, mode))
+		THROW_EXCEPTION_FMT(
 			"Error trying to open file: '%s', error: '%s'", fileName.c_str(),
-			err_msg.c_str()));
+			err_msg.c_str());
 	MRPT_END
 }
 
 bool CFileGZOutputStream::open(
 	const string& fileName, int compress_level,
-	mrpt::optional_ref<std::string> error_msg)
+	mrpt::optional_ref<std::string> error_msg, const OpenMode mode)
 {
 	MRPT_START
 
 	if (m_f->f) gzclose(m_f->f);
 
 	// Open gz stream:
-	m_f->f = gzopen(fileName.c_str(), format("wb%i", compress_level).c_str());
+	m_f->f = gzopen(
+		fileName.c_str(),
+		format("%cb%i", mode == OpenMode::APPEND ? 'a' : 'w', compress_level)
+			.c_str());
 	if (m_f->f == nullptr && error_msg)
 		error_msg.value().get() = std::string(strerror(errno));
+
+	m_f->filename = fileName;
+
 	return m_f->f != nullptr;
 
 	MRPT_END
@@ -97,4 +105,9 @@ uint64_t CFileGZOutputStream::Seek(int64_t, CStream::TSeekOrigin)
 uint64_t CFileGZOutputStream::getTotalBytesCount() const
 {
 	THROW_EXCEPTION("Method not available in this class.");
+}
+std::string CFileGZOutputStream::getStreamDescription() const
+{
+	return mrpt::format(
+		"mrpt::io::CFileGZOutputStream for file '%s'", m_f->filename.c_str());
 }

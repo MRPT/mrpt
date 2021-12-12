@@ -168,11 +168,10 @@ void CDocument::move(
 }
 
 void CDocument::move(
-	size_t index, const CSimpleMap::TPosePDFSensFramePair& posesObsPair,
+	size_t index, const CSimpleMap::Pair& posesObsPair,
 	bool disableUpdateMetricMap)
 {
-	m_simplemap.remove(index);
-	m_simplemap.insertToPos(index, posesObsPair.first, posesObsPair.second);
+	m_simplemap.set(index, posesObsPair);
 
 	m_changedFile = true;
 	if (!disableUpdateMetricMap) updateMetricMap();
@@ -182,43 +181,40 @@ void CDocument::insert(
 	const std::vector<size_t>& idx,
 	CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
 {
-	ASSERT_(idx.size() == posesObsPairs.size());
 	for (size_t i = 0; i < idx.size(); ++i)
-		m_simplemap.insertToPos(
-			idx[i], posesObsPairs[i].first, posesObsPairs[i].second);
+		m_simplemap.insert(posesObsPairs[i]);
 
 	updateMetricMap();
 }
 
 CSimpleMap::TPosePDFSensFramePairList CDocument::get(
-	const std::vector<size_t>& idx) const
+	const std::vector<size_t>& idxs)
 {
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
-	for (auto& it : idx)
+	for (auto& idx : idxs)
 	{
-		CSimpleMap::TPosePDFSensFramePair pair = get(it);
-		posesObsPairs.push_back(pair);
+		auto pair = get(idx);
+		posesObsPairs.emplace_back(pair);
 	}
 	return posesObsPairs;
 }
 
-CSimpleMap::TPosePDFSensFramePair CDocument::get(size_t idx) const
+CSimpleMap::ConstPair CDocument::get(size_t idx) const
 {
-	CSimpleMap::TPosePDFSensFramePair posesObsPair;
-	m_simplemap.get(idx, posesObsPair.first, posesObsPair.second);
-	return posesObsPair;
+	return m_simplemap.getAsPair(idx);
+}
+mrpt::maps::CSimpleMap::Pair CDocument::get(size_t idx)
+{
+	return m_simplemap.getAsPair(idx);
 }
 
 CSimpleMap::TPosePDFSensFramePairList CDocument::getReverse(
-	const std::vector<size_t>& idx) const
+	const std::vector<size_t>& idx)
 {
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
 	for (int i = idx.size() - 1; i >= 0; --i)
-	{
-		CSimpleMap::TPosePDFSensFramePair pair;
-		m_simplemap.get(idx[i], pair.first, pair.second);
-		posesObsPairs.push_back(pair);
-	}
+		posesObsPairs.emplace_back(m_simplemap.getAsPair(idx[i]));
+
 	return posesObsPairs;
 }
 
@@ -231,13 +227,8 @@ void CDocument::addMapToRenderizableMaps(
 		int index = 0;
 		for (auto& map : iter->second)
 		{
-			CMetricMap::Ptr ptr = std::dynamic_pointer_cast<CMetricMap>(map);
-			if (ptr.get())
-			{
-				auto obj = std::make_shared<CSetOfObjects>();
-				ptr->getAs3DObject(obj);
-				renderMaps.emplace(SType(type, index), obj);
-			}
+			if (map)
+				renderMaps.emplace(SType(type, index), map->getVisualization());
 			++index;
 		}
 	}

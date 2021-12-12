@@ -2,6 +2,8 @@
 
 SE(2)/SE(3) poses and probability distributions
 
+[TOC]
+
 # Library mrpt-poses
 
 This library is part of MRPT and can be installed in Debian-based systems with:

@@ -1,10 +1,10 @@
 # Check for Qt
 # If it is found, will set CMAKE_MRPT_HAS_Qt5=1
 
-set(USE_QT ON CACHE BOOL "Build Qt")
+set(MRPT_WITH_QT ON CACHE BOOL "Build Qt")
 set(CMAKE_MRPT_HAS_Qt5 0)
 
-if (USE_QT)
+if (MRPT_WITH_QT)
 	set(QT_MRPT_COMPONENTS_TO_SEARCH "Gui;Widgets;Core;OpenGL" CACHE STRING "Components to search in Qt")
 
 	find_package(Qt5 COMPONENTS ${QT_MRPT_COMPONENTS_TO_SEARCH})

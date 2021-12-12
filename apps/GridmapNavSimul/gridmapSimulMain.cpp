@@ -749,9 +749,7 @@ gridmapSimulFrame::~gridmapSimulFrame()
 
 void gridmapSimulFrame::update_grid_map_3d()
 {
-	if (!gl_grid) gl_grid = std::make_shared<CSetOfObjects>();
-	gl_grid->clear();
-	the_grid.getAs3DObject(gl_grid);
+	gl_grid = the_grid.getVisualization();
 }
 
 void gridmapSimulFrame::OnbtnQuitClick(wxCommandEvent& event)
@@ -916,7 +914,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			// Recording
 			if (!outs.fileOpenCorrectly())
 			{
-				if (!outs.open(string(edOutFile->GetValue().mb_str())))
+				if (!outs.open(edOutFile->GetValue().ToStdString()))
 				{
 					wxCommandEvent dum;
 					OnbtnEndClick(dum);
@@ -925,7 +923,9 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 						this);
 				}
 
-				if (!out_GT.open(string(edOutGT->GetValue().mb_str())))
+				if (!out_GT.open(
+						edOutGT->GetValue().ToStdString(),
+						mrpt::io::OpenMode::TRUNCATE))
 				{
 					outs.close();
 					wxCommandEvent dum;
@@ -937,7 +937,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 				// Save also the gridmap:
 				CFileGZOutputStream out_grid;
-				string grid_file = string(edOutFile->GetValue().mb_str()) +
+				string grid_file = edOutFile->GetValue().ToStdString() +
 					string("_grid.gridmap.gz");
 				if (!out_grid.open(grid_file))
 				{

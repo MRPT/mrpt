@@ -55,7 +55,7 @@ double octomap_insert2Dscan(int resolution_cm, int num_reps)
 			rnd.drawUniform(-L * 0.1, L * 0.1), rnd.drawUniform(-M_PI, M_PI), 0,
 			0);
 
-		map.insertObservation(scan1, &robot_pose);
+		map.insertObservation(scan1, robot_pose);
 	}
 	return tictac.Tac() / num_reps;
 }

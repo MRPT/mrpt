@@ -84,8 +84,8 @@ bool tfest::se3_l2_robust(
 			if (params.user_individual_compat_callback)
 			{
 				mrpt::tfest::TPotentialMatch pm;
-				pm.idx_this = in_correspondences[idx].this_idx;
-				pm.idx_other = in_correspondences[idx].other_idx;
+				pm.idx_this = in_correspondences[idx].globalIdx;
+				pm.idx_other = in_correspondences[idx].localIdx;
 				if (!params.user_individual_compat_callback(pm))
 					continue;  // Skip this one!
 			}
@@ -137,8 +137,8 @@ bool tfest::se3_l2_robust(
 			if (params.user_individual_compat_callback)
 			{
 				mrpt::tfest::TPotentialMatch pm;
-				pm.idx_this = in_correspondences[idx].this_idx;
-				pm.idx_other = in_correspondences[idx].other_idx;
+				pm.idx_this = in_correspondences[idx].globalIdx;
+				pm.idx_other = in_correspondences[idx].localIdx;
 				if (!params.user_individual_compat_callback(pm))
 					continue;  // Skip this one!
 			}

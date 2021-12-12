@@ -96,11 +96,13 @@ class CPointsMapXYZI : public CPointsMap
 	/** See CPointsMap::loadFromRangeScan() */
 	void loadFromRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 	/** See CPointsMap::loadFromRangeScan() */
 	void loadFromRangeScan(
 		const mrpt::obs::CObservation3DRangeScan& rangeScan,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 
    protected:
 	// See base class
@@ -172,7 +174,8 @@ class CPointsMapXYZI : public CPointsMap
 	/** Override of the default 3D scene builder to account for the individual
 	 * points' color.
 	 */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** @name PCL library support
 		@{ */
@@ -281,8 +284,8 @@ class CPointsMapXYZI : public CPointsMap
 namespace opengl
 {
 /** Specialization
- * mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMapXYZI> \ingroup
- * mrpt_adapters_grp */
+ * mrpt::opengl::PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
+ * \ingroup mrpt_adapters_grp */
 template <>
 class PointCloudAdapter<mrpt::maps::CPointsMapXYZI>
 {

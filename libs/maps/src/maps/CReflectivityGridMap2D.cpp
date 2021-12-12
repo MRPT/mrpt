@@ -107,7 +107,8 @@ bool CReflectivityGridMap2D::isEmpty() const { return false; }
 						insertObservation
   ---------------------------------------------------------------*/
 bool CReflectivityGridMap2D::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	MRPT_START
 
@@ -345,11 +346,8 @@ void CReflectivityGridMap2D::getAsImage(
 	}
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
-void CReflectivityGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outSetOfObj) const
+void CReflectivityGridMap2D::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -383,7 +381,7 @@ void CReflectivityGridMap2D::getAs3DObject(
 	}
 
 	outObj->assignImage(imgColor, imgTrans);
-	outSetOfObj->insert(outObj);
+	o.insert(outObj);
 
 	MRPT_END
 }

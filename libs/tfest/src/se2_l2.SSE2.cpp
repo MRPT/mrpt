@@ -29,8 +29,8 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
 	const float N_inv = 1.0f / N;  // For efficiency, keep this value.
 
 	// Ensure correct types:
-	static_assert(sizeof(TMatchingPair::this_x) == sizeof(float));
-	static_assert(sizeof(TMatchingPair::other_x) == sizeof(float));
+	static_assert(sizeof(TMatchingPair::global.x) == sizeof(float));
+	static_assert(sizeof(TMatchingPair::local.x) == sizeof(float));
 
 	internal::se2_l2_impl_return_t<float> ret;
 
@@ -51,9 +51,9 @@ internal::se2_l2_impl_return_t<float> internal::se2_l2_impl_SSE2(
 		//                LO0    LO1     HI2    HI3
 		// Note: _MM_SHUFFLE(hi3,hi2,lo1,lo0)
 		const __m128 a_xyz =
-			_mm_loadu_ps(&in_correspondence.this_x);  // *Unaligned* load
+			_mm_loadu_ps(&in_correspondence.global.x);	// *Unaligned* load
 		const __m128 b_xyz =
-			_mm_loadu_ps(&in_correspondence.other_x);  // *Unaligned* load
+			_mm_loadu_ps(&in_correspondence.local.x);  // *Unaligned* load
 
 		const auto a_xyxy =
 			_mm_shuffle_ps(a_xyz, a_xyz, _MM_SHUFFLE(1, 0, 1, 0));

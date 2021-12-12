@@ -414,8 +414,9 @@ bool CFFMPEG_InputStream::retrieveFrame(mrpt::img::CImage& out_img)
 			av_packet_unref(&packet);
 			return true;
 		}
+#if LIBAVFORMAT_VERSION_MAJOR >= 57
 	}
-
+#endif
 	return false;  // Error reading/ EOF
 #else
 	return false;

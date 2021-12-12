@@ -14,9 +14,9 @@
 
 namespace mrpt::obs
 {
-/** Declares a class for storing a "sensory frame", a set of "observations"
- * taken by the robot approximately at the same time as one "snapshot" of the
- * environment.
+/** A "sensory frame" is a set of observations taken by the robot
+ *  approximately at the same time, so they can be considered as a multi-sensor
+ *  "snapshot" of the environment.
  * It can contain "observations" of many different kinds.
  *
  *  New observations can be added using:
@@ -41,11 +41,8 @@ namespace mrpt::obs
  * - CSensoryFrame::begin : To iterate over all observations.
  * - CSensoryFrame::getObservationByIndex : To query by index.
  *
- * Notice that contained observations objects are automatically deleted on
- *  this object's destruction or clear.
- *
- * Note also that `shared_ptr<>` to the observations are stored here, so
- * if a copy of a CSensoryFrame will contain references to the **same** objects,
+ * Note that `shared_ptr<>`s to the observations are stored, so
+ * a copy of a CSensoryFrame will contain references to the **same** objects,
  * i.e. copies are shallows copies, not deep copies.
  *
  * \sa CObservation
@@ -56,28 +53,10 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	DEFINE_SERIALIZABLE(CSensoryFrame, mrpt::obs)
 
    public:
-	/** Default constructor
-	 */
-	CSensoryFrame() = default;
-
-	/** Copy constructor
-	 */
-	CSensoryFrame(const CSensoryFrame&);
+	CSensoryFrame() = default;	//!< Default ctor
 
 	/** @name Cached points map
 		@{  */
-   protected:
-	/** A points map, build only under demand by the methods getAuxPointsMap()
-	 * and buildAuxPointsMap().
-	 *  It's a generic smart pointer to avoid depending here in the library
-	 * mrpt-obs on classes on other libraries.
-	 */
-	mutable mrpt::maps::CMetricMap::Ptr m_cachedMap;
-
-	/** Internal method, used from buildAuxPointsMap() */
-	void internal_buildAuxPointsMap(const void* options = nullptr) const;
-
-   public:
 	/** Returns the cached points map representation of the scan, if already
 	 * build with buildAuxPointsMap(), or nullptr otherwise.
 	 * Usage:
@@ -115,12 +94,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 
 	/** @} */
 
-	/** Copy
-	 */
-	CSensoryFrame& operator=(const CSensoryFrame& o);
-
-	/** Clear all current observations.
-	 */
+	/** Clear the container, so it holds no observations. */
 	void clear();
 
 	/** Insert all the observations in this SF into a metric map or any kind
@@ -129,67 +103,43 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	 * \param theMap The map where this observation is to be inserted: the map
 	 *will be updated.
 	 * \param robotPose The pose of the robot base for this observation,
-	 *relative to the target metric map. Set to nullptr (default) to use
-	 *(0,0,0deg)
+	 *relative to the target metric map. Set to nullptr (default) to use SE(3)
+	 *identity, i.e. the origin.
 	 *
 	 * \return Returns true if the map has been updated, or false if this
-	 *observations
-	 *			has nothing to do with a metric map (for example, a sound
-	 *observation).
+	 *observations have nothing to do with the metric map (e.g. trying to insert
+	 *an image into a gridmap).
 	 *
 	 * \sa mrpt::maps::CMetricMap, CObservation::insertObservationInto,
 	 *CMetricMap::insertObservation
 	 */
 	bool insertObservationsInto(
-		mrpt::maps::CMetricMap* theMap,
-		const mrpt::poses::CPose3D* robotPose = nullptr) const;
+		mrpt::maps::CMetricMap& theMap,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) const;
 
-	/** Insert all the observations in this SF into a metric map or any kind
-	 *(see mrpt::maps::CMetricMap).
-	 *  It calls CObservation::insertObservationInto for all stored observation.
-	 * \param theMap The map where this observation is to be inserted: the map
-	 *will be updated.
-	 * \param robotPose The pose of the robot base for this observation,
-	 *relative to the target metric map. Set to nullptr (default) to use
-	 *(0,0,0deg)
-	 *
-	 * \return Returns true if the map has been updated, or false if this
-	 *observations
-	 *			has nothing to do with a metric map (for example, a sound
-	 *observation).
-	 *
-	 * \sa mrpt::maps::CMetricMap, CObservation::insertObservationInto,
-	 *CMetricMap::insertObservation
-	 */
+	/// \overload
 	inline bool insertObservationsInto(
 		mrpt::maps::CMetricMap::Ptr& theMap,
-		const mrpt::poses::CPose3D* robotPose = nullptr) const
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) const
 	{
-		return insertObservationsInto(theMap.get(), robotPose);
+		return insertObservationsInto(*theMap, robotPose);
 	}
 
-	/** You can use "sf1+=sf2;" to add observations in sf2 to sf1. Objects are
-	 * copied, not referenced, thus the source can be safely deleted next.
+	/** You can use "sf1+=sf2;" to add all observations in sf2 to sf1.
 	 */
 	void operator+=(const CSensoryFrame& sf);
 
 	/** You can use "sf+=obs;" to add the observation "obs" to the "sf1".
-	 * Objects are copied, using the smart pointer, thus the original pointer
-	 * can be safely deleted next.
 	 */
 	void operator+=(const CObservation::Ptr& obs);
 
-	/** Inserts a new observation to the list: The pointer to the objects is
-	 * copied, thus DO NOT delete the passed object, this class will do at
-	 * destructor or when appropriate.
-	 */
+	/** Insert a new observation to the sensory frame. */
 	void push_back(const CObservation::Ptr& obs);
 
-	/** Inserts a new observation to the list: The pointer to the objects is
-	 * copied, thus DO NOT delete the passed object, this class will do at
-	 * destructor or when appropriate.
-	 */
-	void insert(const CObservation::Ptr& obs);
+	/// Synonym with push_back()
+	inline void insert(const CObservation::Ptr& obs) { push_back(obs); }
 
 	/** Returns the i'th observation of a given class (or of a descendant
 	  class), or nullptr if there is no such observation in the array.
@@ -292,6 +242,7 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	void eraseByLabel(const std::string& label);
 
 	/** Returns the i'th observation in the list (0=first).
+	 *  \throw std::exception If out of range.
 	 * \sa begin, size
 	 */
 	const CObservation::Ptr& getObservationByIndex(size_t idx) const;
@@ -344,6 +295,16 @@ class CSensoryFrame : public mrpt::serialization::CSerializable
 	 * this page for instructions on accessing this.
 	 */
 	std::deque<CObservation::Ptr> m_observations;
+
+	/** A point cloud map, build only under demand by the methods
+	 * getAuxPointsMap() and buildAuxPointsMap(). It's a generic smart pointer
+	 * to avoid depending here in the library mrpt-obs on classes on other
+	 * libraries.
+	 */
+	mutable mrpt::maps::CMetricMap::Ptr m_cachedMap;
+
+	/** Internal method, used from buildAuxPointsMap() */
+	void internal_buildAuxPointsMap(const void* options = nullptr) const;
 
 };	// End of class def.
 

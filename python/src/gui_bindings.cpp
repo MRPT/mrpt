@@ -19,21 +19,21 @@ using namespace mrpt::opengl;
 
 // CDisplayWindow3D
 tuple CDisplayWindow3D_waitForKey(
-	CDisplayWindow3D& self, bool ignoreControlKeys = true)
+	CDisplayWindow3D& me, bool ignoreControlKeys = true)
 {
 	list ret_val;
 	mrptKeyModifier out_pushModifier = mrptKeyModifier::MRPTKMOD_NONE;
-	int key = self.waitForKey(ignoreControlKeys, &out_pushModifier);
+	int key = me.waitForKey(ignoreControlKeys, &out_pushModifier);
 	ret_val.append(key);
 	ret_val.append(out_pushModifier);
 	return tuple(ret_val);
 }
 
-tuple CDisplayWindow3D_getPushedKey(CDisplayWindow3D& self)
+tuple CDisplayWindow3D_getPushedKey(CDisplayWindow3D& me)
 {
 	list ret_val;
 	mrptKeyModifier out_pushModifier = mrptKeyModifier::MRPTKMOD_NONE;
-	int key = self.getPushedKey(&out_pushModifier);
+	int key = me.getPushedKey(&out_pushModifier);
 	ret_val.append(key);
 	ret_val.append(out_pushModifier);
 	return tuple(ret_val);

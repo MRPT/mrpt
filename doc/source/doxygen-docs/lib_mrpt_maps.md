@@ -2,6 +2,7 @@
 
 Map representations for localization and SLAM.
 
+[TOC]
 
 # Library mrpt-maps
 

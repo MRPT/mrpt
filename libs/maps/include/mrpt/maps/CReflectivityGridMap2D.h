@@ -93,7 +93,8 @@ class CReflectivityGridMap2D : public CMetricMap,
 	void saveMetricMapRepresentationToFile(
 		const std::string& filNamePrefix) const override;
 
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell
 	 * (output image is RGB only if forceRGB is true) */
@@ -101,12 +102,19 @@ class CReflectivityGridMap2D : public CMetricMap,
 		mrpt::img::CImage& img, bool verticalFlip = false,
 		bool forceRGB = false) const;
 
+	/** Returns a short description of the map. */
+	std::string asString() const override
+	{
+		return "ReflectivityGridMap2D map";
+	}
+
    protected:
 	// See docs in base class
 	void internal_clear() override;
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 	double internal_computeObservationLikelihood(
 		const mrpt::obs::CObservation& obs,
 		const mrpt::poses::CPose3D& takenFrom) const override;

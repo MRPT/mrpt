@@ -127,7 +127,8 @@ class COutputLogger
 	/** Map from VerbosityLevels to their corresponding
 	 * mrpt::system::TConsoleColor. Handy for coloring the input based on the
 	 * verbosity of the message */
-	static std::array<mrpt::system::TConsoleColor, NUMBER_OF_VERBOSITY_LEVELS>&
+	static std::array<
+		mrpt::system::ConsoleForegroundColor, NUMBER_OF_VERBOSITY_LEVELS>&
 		logging_levels_to_colors();
 
 	/** Map from VerbosityLevels to their corresponding names. Handy for

@@ -468,13 +468,15 @@ void CFormPlayVideo::OnbtnPickClick(wxCommandEvent& event)
 }
 
 // On stop:
-void CFormPlayVideo::OnbtnStopClick(wxCommandEvent& event)
+void CFormPlayVideo::OnbtnStopClick(wxCommandEvent&)
 {
 	m_nowPlaying = false;
+	btnPlay->Enable(true);
+	btnStop->Enable(false);
 }
 
 // On play:
-void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
+void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent&)
 {
 	btnPlay->Enable(false);
 	btnStop->Enable(true);
@@ -671,6 +673,25 @@ bool CFormPlayVideo::showSensoryFrame(
 {
 	WX_START_TRY
 
+	try
+	{
+		return showSensoryFrameImpl(SF, nImgs, timestamp);
+	}
+	catch (const std::exception& e)
+	{
+		// Make sure playback is stopped in the event of an error:
+		wxCommandEvent ev;
+		OnbtnStopClick(ev);
+		throw;
+	}
+
+	WX_END_TRY
+	return false;
+}
+
+bool CFormPlayVideo::showSensoryFrameImpl(
+	mrpt::obs::CSensoryFrame& SF, size_t& nImgs, Clock::time_point& timestamp)
+{
 	auto* sf = &SF;
 
 	bool doDelay = false;
@@ -1012,9 +1033,6 @@ bool CFormPlayVideo::showSensoryFrame(
 	}
 
 	return doDelay;
-
-	WX_END_TRY
-	return false;
 }
 
 void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent&)

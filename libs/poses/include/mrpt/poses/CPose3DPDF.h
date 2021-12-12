@@ -17,9 +17,8 @@ namespace mrpt::poses
 {
 class CPosePDF;
 
-/** Declares a class that represents a Probability Density Function (PDF) of a
- * 3D pose (6D actually).
- *   This class is just the base class for unifying many diferent
+/** A Probability Density Function (PDF) of a SE(3) pose.
+ * This class is just the base class for unifying many diferent
  *    ways this PDF can be implemented.
  *
  *  For convenience, a pose composition is also defined for any

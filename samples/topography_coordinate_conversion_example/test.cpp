@@ -25,6 +25,9 @@ std::vector<string> names;
 std::vector<CMatrixD> results;
 const double TH = 0.02;
 
+using mrpt::system::consoleColorAndStyle;
+using mrpt::system::ConsoleForegroundColor;
+
 void exampleResults()
 {
 	names.resize(6);
@@ -312,23 +315,24 @@ void displayResults(
 		{
 			cout << names[i] << "\t";
 			if (fabs(thisResults[3 * i + 0] - results[example - 1](i, 0)) < TH)
-				mrpt::system::setConsoleColor(CONCOL_GREEN);
+				consoleColorAndStyle(ConsoleForegroundColor::GREEN);
 			else
-				mrpt::system::setConsoleColor(CONCOL_RED);
+				consoleColorAndStyle(ConsoleForegroundColor::RED);
 			cout << thisResults[3 * i + 0] << "\t";
 
 			if (fabs(thisResults[3 * i + 1] - results[example - 1](i, 1)) < TH)
-				mrpt::system::setConsoleColor(CONCOL_GREEN);
+				consoleColorAndStyle(ConsoleForegroundColor::GREEN);
 			else
-				mrpt::system::setConsoleColor(CONCOL_RED);
+				consoleColorAndStyle(ConsoleForegroundColor::RED);
 			cout << thisResults[3 * i + 1] << "\t";
 
 			if (fabs(thisResults[3 * i + 2] - results[example - 1](i, 2)) < TH)
-				mrpt::system::setConsoleColor(CONCOL_GREEN);
+				consoleColorAndStyle(ConsoleForegroundColor::GREEN);
 			else
-				mrpt::system::setConsoleColor(CONCOL_RED);
+				consoleColorAndStyle(ConsoleForegroundColor::RED);
 			cout << thisResults[3 * i + 2] << endl;
-			mrpt::system::setConsoleColor(CONCOL_NORMAL);
+
+			consoleColorAndStyle(ConsoleForegroundColor::DEFAULT);
 		}
 		cout << endl;
 	}
@@ -1571,11 +1575,11 @@ int main(int argc, char** argv)
 	{
 		exampleResults();
 		TestCoordinatesConversions();
-		mrpt::system::setConsoleColor(CONCOL_BLUE);
+		consoleColorAndStyle(ConsoleForegroundColor::BLUE);
 		cout << "**************************************" << endl;
 		cout << "\tTOPCON with th = " << TH << endl;
 		cout << "**************************************" << endl;
-		mrpt::system::setConsoleColor(CONCOL_NORMAL);
+		consoleColorAndStyle(ConsoleForegroundColor::DEFAULT);
 		Examples_01();
 		Examples_02();
 		Examples_03();
@@ -1584,11 +1588,11 @@ int main(int argc, char** argv)
 		Examples_06();
 		Examples_07();
 		Examples_08();
-		mrpt::system::setConsoleColor(CONCOL_BLUE);
+		consoleColorAndStyle(ConsoleForegroundColor::BLUE);
 		cout << "**************************************" << endl;
 		cout << "\tLEICA with th = " << TH << endl;
 		cout << "**************************************" << endl;
-		mrpt::system::setConsoleColor(CONCOL_NORMAL);
+		consoleColorAndStyle(ConsoleForegroundColor::DEFAULT);
 		cout << "Example 09 missing in pdf" << endl;
 		Examples_10();
 		Examples_11();

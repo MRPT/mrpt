@@ -147,7 +147,8 @@ bool CHeightGridMap2D::insertIndividualPoint(
 }
 
 bool CHeightGridMap2D::internal_insertObservation(
-	const CObservation& obs, const CPose3D* robotPose)
+	const CObservation& obs,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	return dem_internal_insertObservation(obs, robotPose);
 }
@@ -280,11 +281,8 @@ void CHeightGridMap2D::saveMetricMapRepresentationToFile(
 	saveToTextFile(filNamePrefix + std::string("_mean.txt"));
 }
 
-/*---------------------------------------------------------------
-						getAs3DObject
----------------------------------------------------------------*/
-void CHeightGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CHeightGridMap2D::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -320,7 +318,7 @@ void CHeightGridMap2D::getAs3DObject(
 		mesh->setZ(Z);
 		mesh->setMask(mask);
 
-		outObj->insert(mesh);
+		o.insert(mesh);
 	}
 	else
 	{
@@ -353,7 +351,7 @@ void CHeightGridMap2D::getAs3DObject(
 				}
 			}
 
-		outObj->insert(obj);
+		o.insert(obj);
 	}
 }
 

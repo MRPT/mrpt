@@ -128,12 +128,21 @@ struct TEnumType
 	/** Singleton access */
 	static inline internal::bimap<ENUMTYPE, std::string>& getBimap()
 	{
-		static internal::bimap<ENUMTYPE, std::string> data;
+		static thread_local internal::bimap<ENUMTYPE, std::string> data;
 		if (data.m_k2v.empty()) TEnumTypeFiller<ENUMTYPE>::fill(data);
 		return data;
 	}
 #undef _MRPT_AUXTOSTR
 };
+
+/** Syntactic sugar for easy conversion of enum values to symbolic name strings.
+ * \note (New in MRPT 2.3.3)
+ */
+template <typename EnumType>
+std::string enum2str(const EnumType& value)
+{
+	return TEnumType<EnumType>::value2name(value);
+}
 
 }  // namespace typemeta
 }  // namespace mrpt

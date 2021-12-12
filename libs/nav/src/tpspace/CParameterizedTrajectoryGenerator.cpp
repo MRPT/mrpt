@@ -37,12 +37,6 @@ PTG_collision_behavior_t&
 	return ::COLLISION_BEHAVIOR;
 }
 
-CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator()
-	: m_nav_dyn_state(), m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX)
-
-{
-}
-
 void CParameterizedTrajectoryGenerator::loadDefaultParams()
 {
 	m_alphaValuesCount = 121;
@@ -244,8 +238,7 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 
 		last_added_dist = d;
 
-		mrpt::math::TPose2D p;
-		this->getPathPose(k, n, p);
+		const mrpt::math::TPose2D p = this->getPathPose(k, n);
 
 		if (first)
 		{
@@ -265,13 +258,10 @@ void CParameterizedTrajectoryGenerator::initTPObstacles(
 		initTPObstacleSingle(k, TP_Obstacles[k]);
 }
 void CParameterizedTrajectoryGenerator::initTPObstacleSingle(
-	uint16_t k, double& TP_Obstacle_k) const
+	[[maybe_unused]] uint16_t k, double& TP_Obstacle_k) const
 {
-	TP_Obstacle_k = std::min(
-		refDistance,
-		m_nav_dyn_state_target_k != INVALID_PTG_PATH_INDEX
-			? refDistance
-			: this->getPathDist(k, this->getPathStepCount(k) - 1));
+	// Always initialize to the maximum possible free space:
+	TP_Obstacle_k = refDistance;
 }
 
 bool CParameterizedTrajectoryGenerator::debugDumpInFiles(
@@ -335,8 +325,7 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles(
 		for (size_t n = 0; n < maxPoints; n++)
 		{
 			const size_t nn = std::min(n, path_length[k] - 1);
-			mrpt::math::TPose2D p;
-			this->getPathPose(k, nn, p);
+			const mrpt::math::TPose2D p = this->getPathPose(k, nn);
 			fx << p.x << " ";
 			fy << p.y << " ";
 			fp << p.phi << " ";
@@ -547,8 +536,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(
 			continue;
 		}
 
-		mrpt::math::TPose2D pose;
-		this->getPathPose(k, step, pose);
+		const mrpt::math::TPose2D pose = getPathPose(k, step);
 
 		// obstacle to robot clearance:
 		ol = pose.inverseComposePoint(og);

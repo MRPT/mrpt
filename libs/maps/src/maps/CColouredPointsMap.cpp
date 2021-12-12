@@ -362,14 +362,9 @@ void CColouredPointsMap::insertPointRGB(
 	mark_as_modified();
 }
 
-/*---------------------------------------------------------------
-getAs3DObject
----------------------------------------------------------------*/
-void CColouredPointsMap::getAs3DObject(
-	mrpt::opengl::CSetOfObjects::Ptr& outObj) const
+void CColouredPointsMap::getVisualizationInto(
+	mrpt::opengl::CSetOfObjects& o) const
 {
-	ASSERT_(outObj);
-
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudColoured::Ptr obj =
@@ -380,7 +375,7 @@ void CColouredPointsMap::getAs3DObject(
 
 	obj->setPointSize(this->renderOptions.point_size);
 
-	outObj->insert(obj);
+	o.insert(obj);
 }
 
 /*---------------------------------------------------------------
@@ -975,7 +970,8 @@ struct pointmap_traits<CColouredPointsMap>
 }  // namespace mrpt::maps::detail
 /** See CPointsMap::loadFromRangeScan() */
 void CColouredPointsMap::loadFromRangeScan(
-	const CObservation2DRangeScan& rangeScan, const CPose3D* robotPose)
+	const CObservation2DRangeScan& rangeScan,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	mrpt::maps::detail::loadFromRangeImpl<CColouredPointsMap>::
 		templ_loadFromRangeScan(*this, rangeScan, robotPose);
@@ -983,7 +979,8 @@ void CColouredPointsMap::loadFromRangeScan(
 
 /** See CPointsMap::loadFromRangeScan() */
 void CColouredPointsMap::loadFromRangeScan(
-	const CObservation3DRangeScan& rangeScan, const CPose3D* robotPose)
+	const CObservation3DRangeScan& rangeScan,
+	const std::optional<const mrpt::poses::CPose3D>& robotPose)
 {
 	mrpt::maps::detail::loadFromRangeImpl<CColouredPointsMap>::
 		templ_loadFromRangeScan(*this, rangeScan, robotPose);

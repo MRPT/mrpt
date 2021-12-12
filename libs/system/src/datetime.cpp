@@ -45,6 +45,13 @@ using namespace mrpt;
 using namespace mrpt::system;
 using namespace std;
 
+// Required to ensure INVALID_TIMESTAMP returns a "const T&":
+const TTimeStamp& mrpt::system::InvalidTimeStamp()
+{
+	static thread_local TTimeStamp t = TTimeStamp();
+	return t;
+}
+
 mrpt::system::TTimeStamp mrpt::system::time_tToTimestamp(const time_t& t)
 {
 	return time_tToTimestamp(static_cast<double>(t));
@@ -278,22 +285,34 @@ string mrpt::system::dateToString(const mrpt::system::TTimeStamp tt)
 		"%u/%02u/%02u", 1900 + ptm->tm_year, ptm->tm_mon + 1, ptm->tm_mday);
 }
 
-/** This function implements time interval formatting: Given a time in seconds,
- * it will return a string describing the interval with the most appropriate
- * unit.
- * E.g.: 1.23 year, 3.50 days, 9.3 hours, 5.3 minutes, 3.34 sec, 178.1 ms,  87.1
- * us.
- */
-std::string mrpt::system::intervalFormat(const double seconds)
+static std::string implIntervalFormat(const double seconds)
 {
+	using namespace std::string_literals;
+
 	if (seconds >= 365 * 24 * 3600)
-		return format("%.2f years", seconds / (365 * 24 * 3600));
+	{
+		const int i = static_cast<int>(seconds / (365 * 24 * 3600));
+		return format("%i year%s", i, i > 1 ? "s" : "") + ", "s +
+			implIntervalFormat(std::fmod(seconds, (365 * 24 * 3600)));
+	}
 	else if (seconds >= 24 * 3600)
-		return format("%.2f days", seconds / (24 * 3600));
+	{
+		const int i = static_cast<int>(seconds / (24 * 3600));
+		return format("%i day%s", i, i > 1 ? "s" : "") + ", "s +
+			implIntervalFormat(std::fmod(seconds, (24 * 3600)));
+	}
 	else if (seconds >= 3600)
-		return format("%.2f hours", seconds / 3600);
+	{
+		const int i = static_cast<int>(seconds / 3600);
+		return format("%i hour%s", i, i > 1 ? "s" : "") + ", "s +
+			implIntervalFormat(std::fmod(seconds, 3600));
+	}
 	else if (seconds >= 60)
-		return format("%.2f minutes", seconds / 60);
+	{
+		const int i = static_cast<int>(seconds / 60);
+		return format("%i minute%s", i, i > 1 ? "s" : "") + ", "s +
+			implIntervalFormat(std::fmod(seconds, 60));
+	}
 	else if (seconds >= 1)
 		return format("%.2f sec", seconds);
 	else if (seconds >= 1e-3)
@@ -302,6 +321,11 @@ std::string mrpt::system::intervalFormat(const double seconds)
 		return format("%.2f us", seconds * 1e6);
 	else
 		return format("%.2f ns", seconds * 1e9);
+}
+
+std::string mrpt::system::intervalFormat(const double seconds)
+{
+	return implIntervalFormat(seconds);
 }
 
 std::ostream& mrpt::system::operator<<(std::ostream& o, const TTimeStamp& t)

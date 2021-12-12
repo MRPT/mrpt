@@ -1,9 +1,6 @@
 [submodule "3rdparty/nanogui"]
 	path = 3rdparty/nanogui
 	url = https://github.com/MRPT/nanogui.git
-[submodule "3rdparty/libfyaml"]
-	path = 3rdparty/libfyaml
-	url = https://github.com/MRPT/libfyaml.git
 [submodule "3rdparty/libfreenect"]
 	path = 3rdparty/libfreenect
 	url = https://github.com/OpenKinect/libfreenect.git
@@ -22,3 +19,6 @@
 [submodule "3rdparty/nanoflann"]
 	path = 3rdparty/nanoflann
 	url = https://github.com/jlblancoc/nanoflann.git
+[submodule "3rdparty/libfyaml"]
+	path = 3rdparty/libfyaml
+	url = https://github.com/pantoniou/libfyaml.git

@@ -1,13 +1,13 @@
 # By default (non Windows): Use system version
 # In Windows: do use an embedded version.
 if (WIN32)
-	set(EIGEN_USE_EMBEDDED_VERSION_DEFAULT ON)
+	set(MRPT_EIGEN_USE_EMBEDDED_VERSION_DEFAULT ON)
 else()
-	set(EIGEN_USE_EMBEDDED_VERSION_DEFAULT OFF)
+	set(MRPT_EIGEN_USE_EMBEDDED_VERSION_DEFAULT OFF)
 endif()
 
-set(EIGEN_USE_EMBEDDED_VERSION ${EIGEN_USE_EMBEDDED_VERSION_DEFAULT} CACHE BOOL "Download Eigen3 and use it instead of system version")
-if (EIGEN_USE_EMBEDDED_VERSION)
+set(MRPT_EIGEN_USE_EMBEDDED_VERSION ${MRPT_EIGEN_USE_EMBEDDED_VERSION_DEFAULT} CACHE BOOL "Download Eigen3 and use it instead of system version")
+if (MRPT_EIGEN_USE_EMBEDDED_VERSION)
 	# Include embedded version headers:
 	include(ExternalProject)
 	# download Eigen from gitlab
@@ -70,19 +70,19 @@ else()
 	 		)
 		endif()
 	else()
-		message(FATAL_ERROR "eigen3 is required to build MRPT! Either install it and set EIGEN3_DIR or enable the variable EIGEN_USE_EMBEDDED_VERSION to automatically download it now.")
+		message(FATAL_ERROR "eigen3 is required to build MRPT! Either install it and set EIGEN3_DIR or enable the variable MRPT_EIGEN_USE_EMBEDDED_VERSION to automatically download it now.")
 	endif()
 endif()
 
 # Create variables just for the final summary of the configuration (see bottom of this file):
 set(CMAKE_MRPT_HAS_EIGEN 1)        # Always, it's a fundamental dep.!
 
-# Create numeric (0/1) variable EIGEN_USE_EMBEDDED_VERSION_BOOL for the .cmake.in file:
-if(EIGEN_USE_EMBEDDED_VERSION)
-	set(EIGEN_USE_EMBEDDED_VERSION_BOOL 1)
+# Create numeric (0/1) variable MRPT_EIGEN_USE_EMBEDDED_VERSION_BOOL for the .cmake.in file:
+if(MRPT_EIGEN_USE_EMBEDDED_VERSION)
+	set(MRPT_EIGEN_USE_EMBEDDED_VERSION_BOOL 1)
 	set(CMAKE_MRPT_HAS_EIGEN_SYSTEM 0)
 else()
-	set(EIGEN_USE_EMBEDDED_VERSION_BOOL 0)
+	set(MRPT_EIGEN_USE_EMBEDDED_VERSION_BOOL 0)
 	set(CMAKE_MRPT_HAS_EIGEN_SYSTEM 1)
 endif()
 
@@ -109,13 +109,13 @@ if (EXISTS ${EIGEN_VER_H})
 	endif()
 
 	if(${MRPT_EIGEN_VERSION} VERSION_LESS "3.3")
-		message(ERROR "Eigen ${MRPT_EIGEN_VERSION} detected, required >=3.3. Select EIGEN_USE_EMBEDDED_VERSION=ON.")
+		message(ERROR "Eigen ${MRPT_EIGEN_VERSION} detected, required >=3.3. Select MRPT_EIGEN_USE_EMBEDDED_VERSION=ON.")
 	endif()
 endif ()
 
 # -- Install --
 # Using embedded version of libraries that need public headers?
-if(EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+if(MRPT_EIGEN_USE_EMBEDDED_VERSION)
 	install(
 		DIRECTORY
 			"${MRPT_BINARY_DIR}/3rdparty/eigen3/Eigen"

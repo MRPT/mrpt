@@ -444,8 +444,8 @@ size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
 	return step;
 }
 
-void CPTG_Holo_Blend::getPathPose(
-	uint16_t k, uint32_t step, mrpt::math::TPose2D& p) const
+mrpt::math::TPose2D CPTG_Holo_Blend::getPathPose(
+	uint16_t k, uint32_t step) const
 {
 	const double t = PATH_TIME_STEP * step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
@@ -453,6 +453,7 @@ void CPTG_Holo_Blend::getPathPose(
 	const double wf = mrpt::signWithZero(dir) * this->internal_get_w(dir);
 	const double TR2_ = 1.0 / (2 * T_ramp);
 
+	mrpt::math::TPose2D p;
 	// Translational part:
 	if (t < T_ramp)
 	{
@@ -496,6 +497,7 @@ void CPTG_Holo_Blend::getPathPose(
 		else
 			p.phi = T_ramp * 0.5 * (wi + wf) + (t - T_ramp) * wf;
 	}
+	return p;
 }
 
 double CPTG_Holo_Blend::getPathDist(uint16_t k, uint32_t step) const

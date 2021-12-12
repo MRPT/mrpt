@@ -14,6 +14,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/typemeta/TEnumType.h>

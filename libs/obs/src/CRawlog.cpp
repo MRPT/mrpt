@@ -16,6 +16,8 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 
+#include <iostream>
+
 using namespace mrpt;
 using namespace mrpt::io;
 using namespace mrpt::obs;

@@ -1035,9 +1035,8 @@ void CRangeBearingKFSLAM::getAs3DObject(
 					CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(i);
 
 					// Look for the lm_ID in the SF:
-					CPose3DPDF::Ptr pdf;
-					CSensoryFrame::Ptr SF_i;
-					SFs->get(m_lastPartitionSet[p][w], pdf, SF_i);
+					const CSensoryFrame::ConstPtr& SF_i =
+						SFs->getAsPair(m_lastPartitionSet[p][w]).sf;
 
 					CObservationBearingRange::Ptr obs =
 						SF_i->getObservationByClass<CObservationBearingRange>();
@@ -1133,9 +1132,8 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarks(
 				CLandmark::TLandmarkID i_th_ID = m_IDs.inverse(i);
 
 				// Look for the lm_ID in the SF:
-				CPose3DPDF::Ptr pdf;
-				CSensoryFrame::Ptr SF_i;
-				SFs->get(m_lastPartitionSet[p][w], pdf, SF_i);
+				const CSensoryFrame::ConstPtr& SF_i =
+					SFs->getAsPair(m_lastPartitionSet[p][w]).sf;
 
 				CObservationBearingRange::Ptr obs =
 					SF_i->getObservationByClass<CObservationBearingRange>();
@@ -1286,12 +1284,7 @@ void CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile(
 		os::fprintf(f, "\nROB_PATH=[");
 		for (size_t i = 0; i < m_SFs.size(); i++)
 		{
-			CSensoryFrame::Ptr dummySF;
-			CPose3DPDF::Ptr pdf3D;
-			m_SFs.get(i, pdf3D, dummySF);
-
-			CPose3D p;
-			pdf3D->getMean(p);
+			CPose3D p = m_SFs.getAsPair(i).pose->getMeanVal();
 
 			os::fprintf(f, "%.04f %.04f", p.x(), p.y());
 			if (i < (m_SFs.size() - 1)) os::fprintf(f, ";");

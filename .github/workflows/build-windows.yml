@@ -1,0 +1,62 @@
+# Based on GTSAM file (by @ProfFan)
+name: CI Windows
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.name }} ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+
+    env:
+      CTEST_OUTPUT_ON_FAILURE: ON
+      CTEST_PARALLEL_LEVEL: 1
+      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
+      VERBOSE: 1  # to show all cmake scripts debug info
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Github Actions requires a single row to be added to the build matrix.
+        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
+        name: [
+            windows-latest,
+          ]
+
+        build_type: [
+            Release
+          ]
+        include:
+          - name: windows-latest
+            os: windows-latest
+            compiler: cl
+            platform: 64
+
+    steps:
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Git submodule
+        run: |
+          git submodule sync
+          git submodule update --init --recursive
+
+      - name: CMake configure
+        shell: bash
+        run: |
+          cmake -DMRPT_BUILD_TESTING=On \
+                -DMRPT_ALLOW_LGPLV3=ON \
+                -DDISABLE_ASSIMP=On \
+                -S . \
+                -B .
+
+      - name: Build
+        shell: bash
+        run: |
+          cmake --build . -j 4 --config ${{ matrix.build_type }} --target all_mrpt_libs
+          cmake --build . -j 4 --config ${{ matrix.build_type }} --target test_legacy

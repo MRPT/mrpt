@@ -833,3 +833,43 @@ CDisplayWindow3DLocker::~CDisplayWindow3DLocker()
 {
 	m_win.unlockAccess3DScene();
 }
+
+void CDisplayWindow3D::sendFunctionToRunOnGUIThread(
+	const std::function<void(void)>& f)
+{
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
+	if (!win) return;
+
+	// Send refresh request:
+	auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
+	REQ->source3D = this;
+	REQ->OPCODE = 800;
+	REQ->userFunction = f;
+	WxSubsystem::pushPendingWxRequest(REQ);
+
+#endif
+}
+
+bool CDisplayWindow3D::is_GL_context_created() const
+{
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	auto* win = (C3DWindowDialog*)m_hwnd.get();
+	if (!win || !win->m_canvas) return false;
+	return win->m_canvas->is_GL_context_created();
+#else
+	THROW_EXCEPTION("This function requires wxWidgets and OpenGL");
+#endif
+}
+
+bool CDisplayWindow3D::wait_for_GL_context(const double timeout_seconds) const
+{
+	const double t0 = mrpt::Clock::nowDouble();
+	bool ok = false;
+	while (!(ok = is_GL_context_created()) &&
+		   mrpt::Clock::nowDouble() - t0 < timeout_seconds)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+	return ok;
+}

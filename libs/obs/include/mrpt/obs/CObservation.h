@@ -8,9 +8,10 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/Stringifyable.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/math_frwds.h>
-#include <mrpt/poses/poses_frwds.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 
@@ -43,7 +44,8 @@ namespace obs
  * \sa CSensoryFrame, CMetricMap, mrpt::obs::CRawLog
  * \ingroup mrpt_obs_grp
  */
-class CObservation : public mrpt::serialization::CSerializable
+class CObservation : public mrpt::serialization::CSerializable,
+					 public mrpt::Stringifyable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CObservation)
 
@@ -100,10 +102,11 @@ class CObservation : public mrpt::serialization::CSerializable
 	 */
 	template <class METRICMAP>
 	inline bool insertObservationInto(
-		METRICMAP* theMap,
-		const mrpt::poses::CPose3D* robotPose = nullptr) const
+		METRICMAP& theMap,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) const
 	{
-		return theMap->insertObservation(*this, robotPose);
+		return theMap.insertObservation(*this, robotPose);
 	}
 
 	/** A general method to retrieve the sensor pose on the robot.
@@ -153,8 +156,9 @@ class CObservation : public mrpt::serialization::CSerializable
 	 * object in the dataset */
 	virtual void getDescriptionAsText(std::ostream& o) const;
 
-	/** Return by value version of getDescriptionAsText(std::ostream&) */
-	std::string getDescriptionAsTextValue() const;
+	/** Return by value version of getDescriptionAsText(std::ostream&).
+	 */
+	std::string asString() const override;
 
 	/** @name Export to TXT/CSV API (see the rawlog-edit app)
 		@{ */
@@ -194,7 +198,7 @@ class CObservation : public mrpt::serialization::CSerializable
 	 * external files (othewise, has no effect).
 	 * \sa load
 	 */
-	virtual void unload()
+	virtual void unload() const
 	{ /* Default implementation: do nothing */
 	}
 

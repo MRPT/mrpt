@@ -47,6 +47,8 @@ class CFileGZInputStream : public CStream
 	/** Dtor */
 	~CFileGZInputStream() override;
 
+	std::string getStreamDescription() const override;
+
 	/** Opens the file for read.
 	 * \param fileName The file to be open in this stream
 	 * \return false if there's an error opening the file, true otherwise

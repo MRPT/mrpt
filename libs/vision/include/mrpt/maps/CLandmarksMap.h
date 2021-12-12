@@ -79,7 +79,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	void internal_clear() override;
 	bool internal_insertObservation(
 		const mrpt::obs::CObservation& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt) override;
 
    public:
 	/** Computes the (logarithmic) likelihood that a given observation was taken
@@ -199,6 +200,9 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 
 	CLandmarksMap() = default;
 	~CLandmarksMap() override = default;
+
+	/** Returns a short description of the map. */
+	std::string asString() const override { return "LandmarksMap"; }
 
 	/**** FAMD ***/
 	/** Map of the Euclidean Distance between the descriptors of two SIFT-based
@@ -544,7 +548,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	 */
 	void loadOccupancyFeaturesFrom2DRangeScan(
 		const mrpt::obs::CObservation2DRangeScan& obs,
-		const mrpt::poses::CPose3D* robotPose = nullptr,
+		const std::optional<const mrpt::poses::CPose3D>& robotPose =
+			std::nullopt,
 		unsigned int downSampleFactor = 1);
 
 	// See docs in base class
@@ -693,7 +698,8 @@ class CLandmarksMap : public mrpt::maps::CMetricMap
 	/** Returns a 3D object representing the map.
 	 * \sa COLOR_LANDMARKS_IN_3DSCENES
 	 */
-	void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const override;
+	void getVisualizationInto(
+		mrpt::opengl::CSetOfObjects& outObj) const override;
 
 	// See base docs
 	void auxParticleFilterCleanUp() override;
