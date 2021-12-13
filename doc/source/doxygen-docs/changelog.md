@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.4.1: UNRELEASED
+- (No changes yet)
+
 # Version 2.4.0: Released Dec 12th, 2021
 - Changes in build system:
   - Most important CMake variables now are prefixed with `MRPT_` to avoid name collisions if using MRPT as a git submodule in a larger project.
