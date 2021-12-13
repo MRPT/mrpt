@@ -1,13 +1,15 @@
 \page changelog Change Log
 
 # Version 2.4.1: UNRELEASED
-- (No changes yet)
+- Changes in libraries:
+  - \ref mrpt_core_grp
+    - Remove unused header `<mrpt/3rdparty/llvm/propagate_const.h>`.
 
 # Version 2.4.0: Released Dec 12th, 2021
 - Changes in build system:
   - Most important CMake variables now are prefixed with `MRPT_` to avoid name collisions if using MRPT as a git submodule in a larger project.
   - `GNUInstallDirs` directories are now always honored when installing.
-- Changes in applications:
+- Changes in acpplications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
   - navlog-viewer:
