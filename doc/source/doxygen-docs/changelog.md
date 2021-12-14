@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.4.1: UNRELEASED
+- Changes in build system:
+    - Disable -flto in nanogui (to avoid an [Eigen regression](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1000780)).
 - Changes in libraries:
   - \ref mrpt_core_grp
     - Remove unused header `<mrpt/3rdparty/llvm/propagate_const.h>`.
