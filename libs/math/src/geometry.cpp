@@ -1063,8 +1063,11 @@ void getSegmentsWithLine(const TPolygon2D& poly, vector<TSegmentWithLine>& segs)
 }
 
 bool math::intersect(
-	const TPolygon2D& /*p1*/, const TPolygon2D& /*p2*/, TObject2D& /*obj*/)
+	const TPolygon2D& subject, const TPolygon2D& clipping, TObject2D& result)
 {
+	// Sutherland-Hodgman algorithm:
+	// https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
+
 	THROW_EXCEPTION("TODO");
 #if 0
 	return false;	//TODO
