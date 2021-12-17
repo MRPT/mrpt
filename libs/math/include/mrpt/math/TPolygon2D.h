@@ -11,6 +11,7 @@
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 
+#include <tuple>
 #include <vector>
 
 namespace mrpt::math
@@ -44,6 +45,15 @@ class TPolygon2D : public std::vector<TPoint2D>
 	/** Gets plot data, ready to use on a 2D plot. \sa
 	 * mrpt::gui::CDisplayWindowPlots */
 	void getPlotData(std::vector<double>& x, std::vector<double>& y) const;
+
+	/// \overload returning [x,y] as a tupple.
+	std::tuple<std::vector<double>, std::vector<double>> getPlotData() const
+	{
+		std::vector<double> x, y;
+		getPlotData(x, y);
+		return {x, y};
+	}
+
 	/** Get polygon bounding box. \exception On empty polygon */
 	void getBoundingBox(TPoint2D& min_coords, TPoint2D& max_coords) const;
 	/** Default constructor  */
