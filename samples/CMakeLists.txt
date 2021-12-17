@@ -124,6 +124,7 @@ if(MRPT_BUILD_EXAMPLES)
 		math_ransac_examples
 		math_model_search_example
 		math_polygon_split
+		math_polygon_intersection
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::math mrpt::random mrpt::gui mrpt::maps)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()

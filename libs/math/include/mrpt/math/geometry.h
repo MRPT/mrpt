@@ -465,8 +465,23 @@ void project2D(
 bool intersect(const TPolygon2D& p1, const TSegment2D& s2, TObject2D& obj);
 /** Gets the intersection between a 2D polygon and a 2D line. \sa TObject2D  */
 bool intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj);
-/** Gets the intersection between two 2D polygons. \sa TObject2D */
-bool intersect(const TPolygon2D& p1, const TPolygon2D& p2, TObject2D& obj);
+
+/** The [Sutherland-Hodgman
+ * algorithm](https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm)
+ *  for finding the intersection between two 2D polygons.
+ *
+ *  Note that at least one of the polygons (`clipping`) must be **convex**.
+ *  The other polygon (`subject`) may be convex or concave.
+ *
+ *  See code example: \ref math_polygon_intersection
+ *
+ *  \sa TObject2D
+ *
+ *  \return false if there is no intersection at all, true otherwise.
+ */
+bool intersect(
+	const TPolygon2D& subject, const TPolygon2D& clipping, TObject2D& result);
+
 /** Gets the intersection between a 2D segment and a 2D polygon.  \sa TObject2D
  */
 inline bool intersect(
