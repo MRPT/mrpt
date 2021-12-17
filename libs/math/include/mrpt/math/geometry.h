@@ -475,8 +475,14 @@ bool intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj);
  *
  *  See code example: \ref math_polygon_intersection
  *
- *  \sa TObject2D
+ *  \return The intersection, or an empty (no points) polygon if there is no
+ * intersection at all.
  *
+ * \note (New in MRPT 2.4.1)
+ */
+TPolygon2D intersect(const TPolygon2D& subject, const TPolygon2D& clipping);
+
+/** \overload, returning the intersection into `result`.
  *  \return false if there is no intersection at all, true otherwise.
  */
 bool intersect(
@@ -1105,6 +1111,13 @@ bool RectanglesIntersection(
   * (JLB @ 18-SEP-2007)
   */
 CMatrixDouble33 generateAxisBaseFromDirection(double dx, double dy, double dz);
+
+/** Returns the area of a polygon, positive if vertices listed in CCW ordering,
+ * negative if CW.
+ *
+ *  \note (New in MRPT 2.4.1)
+ */
+double signedArea(const mrpt::math::TPolygon2D& p);
 
 /** @} */  // end of misc. geom. methods
 
