@@ -1065,10 +1065,44 @@ void getSegmentsWithLine(const TPolygon2D& poly, vector<TSegmentWithLine>& segs)
 bool math::intersect(
 	const TPolygon2D& subject, const TPolygon2D& clipping, TObject2D& result)
 {
-	// Sutherland-Hodgman algorithm:
-	// https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
+	/* Sutherland-Hodgman algorithm:
+	 * https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
+	 *
+	 *List outputList = subjectPolygon;
+	 *
+	 *for (Edge clipEdge in clipPolygon) do
+	 *    List inputList = outputList;
+	 *    outputList.clear();
+	 *
+	 *    for (int i = 0; i < inputList.count; i += 1) do
+	 *        Point current_point = inputList[i];
+	 *        Point prev_point = inputList[(i − 1) % inputList.count];
+	 *
+	 *        Point Intersecting_point = ComputeIntersection(prev_point,
+	 *current_point, clipEdge)
+	 *
+	 *        if (current_point inside clipEdge) then
+	 *            if (prev_point not inside clipEdge) then
+	 *                outputList.add(Intersecting_point);
+	 *            end if
+	 *            outputList.add(current_point);
+	 *
+	 *        else if (prev_point inside clipEdge) then
+	 *            outputList.add(Intersecting_point);
+	 *        end if
+	 *
+	 *    done
+	 *done
+	 */
+	// We need polygons (may handle degenerated triangles=segments too)
+	ASSERT_GE_(subject.size(), 2);
+	ASSERT_GE_(clipping.size(), 2);
 
-	THROW_EXCEPTION("TODO");
+	TPolygon2D res = subject;
+
+	result = TObject2D::From(res);
+	return true;
+
 #if 0
 	return false;	//TODO
 
