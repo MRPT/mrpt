@@ -736,6 +736,7 @@ void assemblePolygons(
 
 /**
  * Splits a 2D polygon into convex components.
+ * \sa Example: math_polygon_split
  */
 bool splitInConvexComponents(
 	const TPolygon2D& poly, std::vector<TPolygon2D>& components);
