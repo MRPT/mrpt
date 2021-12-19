@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TObject2D.h>
@@ -524,4 +525,107 @@ TEST(Geometry, squaredDistancePointToLine)
 	EXPECT_NEAR(
 		squaredDistancePointToLine({0.5, 0.1}, {0, 1}, {1, 1}), 0.9 * 0.9,
 		1e-5);
+}
+
+TEST(TPolygon2D, toFromYAML)
+{
+	const mrpt::math::TPolygon2D p = {
+		{-6.0, 0.5}, {8.0, 2.0}, {10.0, 4.0}, {-7.0, 3.0}};
+
+	const auto py = p.asYAML();
+
+	EXPECT_TRUE(py.isSequence());
+	EXPECT_TRUE(py.asSequence().at(0).isSequence());
+
+	const auto p2 = mrpt::math::TPolygon2D::FromYAML(py);
+	EXPECT_EQ(p, p2);
+
+	EXPECT_ANY_THROW(mrpt::math::TPolygon3D::FromYAML(py));
+
+	EXPECT_TRUE(
+		mrpt::math::TPolygon2D::FromYAML(mrpt::containers::yaml::Sequence())
+			.empty());
+}
+
+TEST(TPolygon3D, toFromYAML)
+{
+	const mrpt::math::TPolygon3D p = {
+		{-6.0, 0.5, 1.0}, {8.0, 2.0, 0.0}, {10.0, 4.0, 3.0}};
+
+	const auto py = p.asYAML();
+
+	EXPECT_TRUE(py.isSequence());
+	EXPECT_TRUE(py.asSequence().at(0).isSequence());
+
+	const auto p2 = mrpt::math::TPolygon3D::FromYAML(py);
+	EXPECT_EQ(p, p2);
+
+	EXPECT_ANY_THROW(mrpt::math::TPolygon2D::FromYAML(py));
+	EXPECT_TRUE(
+		mrpt::math::TPolygon3D::FromYAML(mrpt::containers::yaml::Sequence())
+			.empty());
+}
+
+TEST(Geometry, polygonIntersection)
+{
+	using mrpt::math::TPoint2D;
+
+	// Define the polygons:
+	const mrpt::math::TPolygon2D subject = {{
+		{0.0, 0.0},
+		{5.0, 0.0},
+		{7.0, 3.0},
+		{3.0, 6.0},
+		{-4.0, 4.0},
+		{-1.0, -1.0}
+		//
+	}};
+
+	mrpt::math::TPolygon2D clipping = {{
+		{-6.0, 0.5}, {8.0, 2.0}, {10.0, 4.0}, {-7.0, 3.0}
+		//
+	}};
+
+	// Compute intersection #1 (in one winding order)
+	{
+		mrpt::math::TObject2D clippedObj;
+		bool doIntersect = mrpt::math::intersect(subject, clipping, clippedObj);
+		EXPECT_TRUE(doIntersect);
+
+		mrpt::math::TPolygon2D clippedPoly;
+		bool isPoly = clippedObj.getPolygon(clippedPoly);
+		EXPECT_TRUE(isPoly);
+
+		const auto expectedPoly = mrpt::math::TPolygon2D(
+			{{6.205128205128205, 1.807692307692308},
+			 {7.0, 3.0},
+			 {5.981818181818181, 3.763636363636364},
+			 {-3.522727272727272, 3.204545454545455},
+			 {-2.147651006711409, 0.912751677852349}});
+
+		EXPECT_EQ(clippedPoly.size(), expectedPoly.size());
+		for (size_t i = 0; i < expectedPoly.size(); i++)
+			EXPECT_NEAR(
+				(clippedPoly.at(i) - expectedPoly.at(i)).norm(), 0, 1e-3);
+	}
+
+	// Compute intersection #2 (in the other winding order)
+	{
+		std::reverse(clipping.begin(), clipping.end());
+
+		const mrpt::math::TPolygon2D clippedPoly =
+			mrpt::math::intersect(subject, clipping);
+
+		const auto expectedPoly = mrpt::math::TPolygon2D(
+			{{6.205128205128205, 1.807692307692308},
+			 {7.0, 3.0},
+			 {5.981818181818181, 3.763636363636364},
+			 {-3.522727272727272, 3.204545454545455},
+			 {-2.147651006711409, 0.912751677852349}});
+
+		EXPECT_EQ(clippedPoly.size(), expectedPoly.size());
+		for (size_t i = 0; i < expectedPoly.size(); i++)
+			EXPECT_NEAR(
+				(clippedPoly.at(i) - expectedPoly.at(i)).norm(), 0, 1e-3);
+	}
 }

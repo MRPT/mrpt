@@ -9,6 +9,7 @@
 
 #include "math-precomp.h"  // Precompiled headers
 //
+#include <mrpt/containers/yaml.h>
 #include <mrpt/math/TLine2D.h>
 #include <mrpt/math/TPolygon2D.h>
 #include <mrpt/math/TPolygon3D.h>
@@ -198,4 +199,35 @@ std::ostream& mrpt::math::operator<<(std::ostream& o, const TPolygon2D& p)
 	for (const auto& v : p)
 		o << " - " << v << "\n";
 	return o;
+}
+
+TPolygon2D TPolygon2D::FromYAML(const mrpt::containers::yaml& c)
+{
+	if (c.isNullNode() || c.empty()) return {};
+	TPolygon2D p;
+	ASSERT_(c.isSequence());
+	for (const auto& vertex : c.asSequence())
+	{
+		ASSERT_(vertex.isSequence());
+		const auto& vertexData = vertex.asSequence();
+		ASSERT_EQUAL_(vertexData.size(), 2U);
+		p.emplace_back(
+			vertexData.at(0).as<double>(), vertexData.at(1).as<double>());
+	}
+
+	return p;
+}
+
+mrpt::containers::yaml TPolygon2D::asYAML() const
+{
+	mrpt::containers::yaml c = mrpt::containers::yaml::Sequence();
+
+	for (const auto& vertex : *this)
+	{
+		auto pts = mrpt::containers::yaml::Sequence({vertex.x, vertex.y});
+		pts.printInShortFormat = true;
+		c.push_back(pts);
+	}
+
+	return c;
 }
