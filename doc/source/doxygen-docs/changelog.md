@@ -6,6 +6,12 @@
 - Changes in libraries:
   - \ref mrpt_core_grp
     - Remove unused header `<mrpt/3rdparty/llvm/propagate_const.h>`.
+  - \ref mrpt_math_grp
+    - New geometry functions:
+      - mrpt::math::intersect(const TPolygon2D& subject, const TPolygon2D& clipping)
+      - mrpt::math::signedArea(const mrpt::math::TPolygon2D& p)
+- BUG FIXES:
+  - Fix bug in mrpt::math::getAngle(const TPlane&, const TPlane&).
 
 # Version 2.4.0: Released Dec 12th, 2021
 - Changes in build system:
