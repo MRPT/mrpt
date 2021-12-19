@@ -79,6 +79,47 @@ TEST(Geometry, Line3DAngle)
 	EXPECT_NEAR(mrpt::RAD2DEG(mrpt::math::getAngle(l4, l1)), 30.0, 1e-5);
 }
 
+TEST(Geometry, PlaneAngle)
+{
+	const auto p1 = TPlane::From3Points({0, 0, 0}, {1, 0, 0}, {0, 0, 1});
+	const auto p2 = TPlane::From3Points({0, 0, 0}, {1, 1, 1}, {0, 1, 0});
+	EXPECT_NEAR(mrpt::math::getAngle(p1, p2), 90.0_deg, 1e-4);
+
+	const auto p3 = TPlane::From3Points({0, 0, 10}, {1, 1, 11}, {0, 1, 10});
+	EXPECT_NEAR(mrpt::math::getAngle(p1, p3), 90.0_deg, 1e-4);
+	EXPECT_NEAR(mrpt::math::getAngle(p2, p3), 0.0_deg, 1e-4);
+
+	EXPECT_NEAR(
+		mrpt::math::getAngle(
+			TPlane::FromPointAndNormal({0.0, 0.0, 0.0}, {0.0, +1.0, 0.0}),
+			TPlane::FromPointAndNormal({4.0, 4.0, 4.0}, {0.0, -1.0, 0.0})),
+		180.0_deg, 1e-4);
+	EXPECT_NEAR(
+		mrpt::math::getAngle(
+			TPlane::FromPointAndNormal({0.0, 0.0, 0.0}, {0.0, -1.0, 0.0}),
+			TPlane::FromPointAndNormal({4.0, 4.0, 4.0}, {0.0, -1.0, 0.0})),
+		0.0_deg, 1e-4);
+}
+
+TEST(Geometry, PlaneLineAngle)
+{
+	EXPECT_NEAR(
+		mrpt::math::getAngle(
+			TPlane::FromPointAndNormal({0.0, 0.0, 0.0}, {0.0, 0.0, 1.0}),
+			TLine3D::FromTwoPoints({0.0, 0.0, 4.0}, {0.0, 0.0, 5.0})),
+		90.0_deg, 1e-4);
+	EXPECT_NEAR(
+		mrpt::math::getAngle(
+			TPlane::FromPointAndNormal({0.0, 0.0, 0.0}, {0.0, 0.0, 1.0}),
+			TLine3D::FromTwoPoints({0.0, 0.0, 4.0}, {1.0, 0.0, 4.0})),
+		0.0_deg, 1e-4);
+	EXPECT_NEAR(
+		mrpt::math::getAngle(
+			TPlane::FromPointAndNormal({0.0, 0.0, 0.0}, {0.0, 0.0, 1.0}),
+			TLine3D::FromTwoPoints({0.0, 0.0, 4.0}, {1.0, 0.0, 5.0})),
+		45.0_deg, 1e-4);
+}
+
 TEST(Geometry, Line3DDistance)
 {
 	{
@@ -627,5 +668,166 @@ TEST(Geometry, polygonIntersection)
 		for (size_t i = 0; i < expectedPoly.size(); i++)
 			EXPECT_NEAR(
 				(clippedPoly.at(i) - expectedPoly.at(i)).norm(), 0, 1e-3);
+	}
+}
+
+TEST(Geometry, areAligned_TPoint2D)
+{
+	{
+		const std::vector<mrpt::math::TPoint2D> pts = {
+			{0.0, 0.0}, {1.0, 1.0}, {2.0, 2.0}};
+
+		EXPECT_TRUE(mrpt::math::areAligned(pts));
+	}
+
+	{
+		const std::vector<mrpt::math::TPoint2D> pts = {
+			{0.0, 0.0}, {1.0, 1.0}, {2.0, 2.1}};
+
+		EXPECT_FALSE(mrpt::math::areAligned(pts));
+	}
+}
+
+TEST(Geometry, areAligned_TPoint3D)
+{
+	{
+		const std::vector<mrpt::math::TPoint3D> pts = {
+			{0.0, 0.0, 0.0}, {1.0, 1.0, 0.0}, {2.0, 2.0, 0.0}};
+
+		EXPECT_TRUE(mrpt::math::areAligned(pts));
+	}
+
+	{
+		const std::vector<mrpt::math::TPoint3D> pts = {
+			{0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}, {2.0, 2.0, 3.1}};
+
+		EXPECT_FALSE(mrpt::math::areAligned(pts));
+	}
+}
+
+TEST(Geometry, project2D)
+{
+	using mrpt::math::TPoint2D;
+
+	const mrpt::math::TPose2D pose = {1.0, 1.0, 90.0_deg};
+
+	{
+		const auto o = mrpt::math::project2D(TPoint2D(1.0, 0.0), pose);
+		EXPECT_NEAR((o - mrpt::math::TPoint2D(1.0, 2.0)).norm(), 0.0, 1e-4);
+	}
+	{
+		const auto o = mrpt::math::project2D(
+			mrpt::math::TLine2D::FromTwoPoints({0.0, 0.0}, {1.0, 0.0}), pose);
+		EXPECT_TRUE(o.contains({1.0, 1.0}));
+		EXPECT_TRUE(o.contains({1.0, 2.0}));
+	}
+	{
+		const auto o = mrpt::math::project2D(
+			mrpt::math::TSegment2D::FromPoints({0.0, 0.0}, {1.0, 0.0}), pose);
+		EXPECT_NEAR((o.point1 - TPoint2D(1.0, 1.0)).norm(), 0.0, 1e-5);
+		EXPECT_NEAR((o.point2 - TPoint2D(1.0, 2.0)).norm(), 0.0, 1e-5);
+		EXPECT_TRUE(o.contains({1.0, 2.0}));
+	}
+	{
+		const auto o = mrpt::math::project2D(
+			mrpt::math::TPolygon2D({{0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}}), pose);
+		EXPECT_NEAR((o.at(0) - TPoint2D(1.0, 1.0)).norm(), 0.0, 1e-5);
+		EXPECT_NEAR((o.at(1) - TPoint2D(1.0, 2.0)).norm(), 0.0, 1e-5);
+		EXPECT_NEAR((o.at(2) - TPoint2D(0.0, 1.0)).norm(), 0.0, 1e-5);
+	}
+}
+TEST(Geometry, project3D)
+{
+	using mrpt::math::TPoint3D;
+	const mrpt::math::TPose3D pose = {1.0,		1.0,	 1.0,
+									  90.0_deg, 0.0_deg, 0.0_deg};
+
+	{
+		const auto o = mrpt::math::project3D(TPoint3D(1.0, 0.0, 0.0), pose);
+		EXPECT_NEAR(
+			(o - mrpt::math::TPoint3D(1.0, 2.0, 1.0)).norm(), 0.0, 1e-4);
+	}
+	{
+		const auto o = mrpt::math::project3D(
+			mrpt::math::TLine3D::FromTwoPoints(
+				{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}),
+			pose);
+		EXPECT_TRUE(o.contains({1.0, 1.0, 1.0}));
+		EXPECT_TRUE(o.contains({1.0, 2.0, 1.0}));
+	}
+	{
+		const auto o = mrpt::math::project3D(
+			mrpt::math::TSegment3D::FromPoints(
+				{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}),
+			pose);
+		EXPECT_NEAR((o.point1 - TPoint3D(1.0, 1.0, 1.0)).norm(), 0.0, 1e-5);
+		EXPECT_NEAR((o.point2 - TPoint3D(1.0, 2.0, 1.0)).norm(), 0.0, 1e-5);
+		EXPECT_TRUE(o.contains({1.0, 2.0, 1.0}));
+	}
+	{
+		const auto o = mrpt::math::project3D(
+			mrpt::math::TPolygon3D(
+				{{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}}),
+			pose);
+		EXPECT_NEAR((o.at(0) - TPoint3D(1.0, 1.0, 1.0)).norm(), 0.0, 1e-5);
+		EXPECT_NEAR((o.at(1) - TPoint3D(1.0, 2.0, 1.0)).norm(), 0.0, 1e-5);
+		EXPECT_NEAR((o.at(2) - TPoint3D(0.0, 1.0, 1.0)).norm(), 0.0, 1e-5);
+	}
+}
+
+TEST(Geometry, getRegressionLine2D)
+{
+	const std::vector<mrpt::math::TPoint2D> pts = {
+		{0.0, 0.0}, {1.0, 0.5}, {2.0, 1.0}, {-4.0, -2.0}};
+
+	mrpt::math::TLine2D lin;
+	const double err = mrpt::math::getRegressionLine(pts, lin);
+	EXPECT_NEAR(err, 0.0, 0.1);
+
+	EXPECT_TRUE(lin.contains({0, 0}));
+	EXPECT_TRUE(lin.contains({10.0, 5.0}));
+}
+
+TEST(Geometry, getRegressionLine3D)
+{
+	const std::vector<mrpt::math::TPoint3D> pts = {
+		{0.0, 0.0, 4.0}, {1.0, 0.5, 4.0}, {2.0, 1.0, 4.0}, {-4.0, -2.0, 4.0}};
+
+	mrpt::math::TLine3D lin;
+	const double err = mrpt::math::getRegressionLine(pts, lin);
+	EXPECT_NEAR(err, 0.0, 0.1);
+
+	EXPECT_TRUE(lin.contains({0, 0, 4.0}));
+	EXPECT_TRUE(lin.contains({10.0, 5.0, 4.0}));
+}
+
+TEST(Geometry, getRegressionPlane)
+{
+	{
+		const std::vector<mrpt::math::TPoint3D> pts = {
+			{0.0, 0.0, 0.0},
+			{1.0, 0.5, 0.0},
+			{-4.4, -10.0, 0.0},
+			{5.0, 17.0, 0.0}};
+
+		mrpt::math::TPlane pl;
+		const double err = mrpt::math::getRegressionPlane(pts, pl);
+		EXPECT_NEAR(err, 0.0, 1e-3);
+
+		EXPECT_TRUE(pl.contains({0, 0, 0}));
+		EXPECT_TRUE(pl.contains({1, 0, 0}));
+		EXPECT_TRUE(pl.contains({0, 1, 0}));
+	}
+
+	// aligned points should throw:
+	{
+		const std::vector<mrpt::math::TPoint3D> pts = {
+			{0.0, 0.0, 4.0},
+			{1.0, 0.5, 4.0},
+			{2.0, 1.0, 4.0},
+			{-4.0, -2.0, 4.0}};
+
+		mrpt::math::TPlane pl;
+		EXPECT_ANY_THROW(mrpt::math::getRegressionPlane(pts, pl));
 	}
 }

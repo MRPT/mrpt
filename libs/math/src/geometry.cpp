@@ -616,11 +616,11 @@ double math::getAngle(const TPlane& s1, const TPlane& s2)
 	{
 		c += s1.coefs[i] * s2.coefs[i];
 		n1 += s1.coefs[i] * s1.coefs[i];
-		n2 += s2.coefs[i] + s2.coefs[i];
+		n2 += s2.coefs[i] * s2.coefs[i];
 	}
 	double s = sqrt(n1 * n2);
-	if (s < geometryEpsilon) throw std::logic_error("Invalid plane(s)");
-	if (std::abs(s) < std::abs(c)) return (c / s < 0) ? M_PI : 0;
+	if (s < geometryEpsilon) THROW_EXCEPTION("Invalid plane(s)");
+	if (std::abs(s) < std::abs(c)) return (c > 0) ? 0 : M_PI;
 	else
 		return acos(c / s);
 }
@@ -635,8 +635,8 @@ double math::getAngle(const TPlane& s1, const TLine3D& r2)
 		n2 += r2.director[i] * r2.director[i];
 	}
 	double s = sqrt(n1 * n2);
-	if (s < geometryEpsilon) throw std::logic_error("Invalid plane or line");
-	if (std::abs(s) < std::abs(c)) return M_PI * sign(c / s) / 2;
+	if (s < geometryEpsilon) THROW_EXCEPTION("Invalid plane or line");
+	if (std::abs(s) < std::abs(c)) return (c > 0) ? 0 : M_PI;
 	else
 		return asin(c / s);
 }
@@ -651,7 +651,7 @@ double math::getAngle(const TLine3D& r1, const TLine3D& r2)
 		n2 += r2.director[i] * r2.director[i];
 	}
 	double s = sqrt(n1 * n2);
-	if (s < geometryEpsilon) throw std::logic_error("Invalid line(s)");
+	if (s < geometryEpsilon) THROW_EXCEPTION("Invalid line(s)");
 	if (std::abs(s) < std::abs(c)) return (c / s < 0) ? M_PI : 0;
 	else
 		return acos(c / s);
@@ -992,7 +992,7 @@ bool math::intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj)
 			obj.data = s;
 			return true;
 		}
-		default: throw std::logic_error("Polygon is not convex");
+		default: THROW_EXCEPTION("Polygon is not convex");
 	}
 }
 
@@ -1808,8 +1808,14 @@ double math::getRegressionPlane(const vector<TPoint3D>& points, TPlane& plane)
 	covars.eig_symmetric(eigenVec, eigenVal);
 
 	for (size_t i = 0; i < 3; ++i)
+	{
 		if (eigenVal[i] < 0 && std::abs(eigenVal[i]) < geometryEpsilon)
 			eigenVal[i] = 0;
+	}
+
+	if (std::abs(eigenVal.at(1)) < geometryEpsilon)
+		THROW_EXCEPTION(
+			"Points are aligned, cannot fit a plane (infinite solutions)");
 
 	const size_t selected = 0;	// sorted: minimum eigenVal
 	plane.coefs[3] = 0;
@@ -2149,7 +2155,7 @@ bool math::splitInConvexComponents(
 	const TPolygon3D& poly, vector<TPolygon3D>& components)
 {
 	TPlane p;
-	if (!poly.getPlane(p)) throw std::logic_error("Polygon is skew");
+	if (!poly.getPlane(p)) THROW_EXCEPTION("Polygon is skew");
 	TPose3D pose1;
 	p.getAsPose3DForcingOrigin(poly[0], pose1);
 	const TPose3D pose2 = -pose1;
