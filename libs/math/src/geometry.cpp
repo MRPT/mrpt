@@ -616,11 +616,11 @@ double math::getAngle(const TPlane& s1, const TPlane& s2)
 	{
 		c += s1.coefs[i] * s2.coefs[i];
 		n1 += s1.coefs[i] * s1.coefs[i];
-		n2 += s2.coefs[i] + s2.coefs[i];
+		n2 += s2.coefs[i] * s2.coefs[i];
 	}
 	double s = sqrt(n1 * n2);
-	if (s < geometryEpsilon) throw std::logic_error("Invalid plane(s)");
-	if (std::abs(s) < std::abs(c)) return (c / s < 0) ? M_PI : 0;
+	if (s < geometryEpsilon) THROW_EXCEPTION("Invalid plane(s)");
+	if (std::abs(s) < std::abs(c)) return (c > 0) ? 0 : M_PI;
 	else
 		return acos(c / s);
 }
@@ -635,8 +635,8 @@ double math::getAngle(const TPlane& s1, const TLine3D& r2)
 		n2 += r2.director[i] * r2.director[i];
 	}
 	double s = sqrt(n1 * n2);
-	if (s < geometryEpsilon) throw std::logic_error("Invalid plane or line");
-	if (std::abs(s) < std::abs(c)) return M_PI * sign(c / s) / 2;
+	if (s < geometryEpsilon) THROW_EXCEPTION("Invalid plane or line");
+	if (std::abs(s) < std::abs(c)) return (c > 0) ? 0 : M_PI;
 	else
 		return asin(c / s);
 }
@@ -651,7 +651,7 @@ double math::getAngle(const TLine3D& r1, const TLine3D& r2)
 		n2 += r2.director[i] * r2.director[i];
 	}
 	double s = sqrt(n1 * n2);
-	if (s < geometryEpsilon) throw std::logic_error("Invalid line(s)");
+	if (s < geometryEpsilon) THROW_EXCEPTION("Invalid line(s)");
 	if (std::abs(s) < std::abs(c)) return (c / s < 0) ? M_PI : 0;
 	else
 		return acos(c / s);
@@ -992,7 +992,7 @@ bool math::intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj)
 			obj.data = s;
 			return true;
 		}
-		default: throw std::logic_error("Polygon is not convex");
+		default: THROW_EXCEPTION("Polygon is not convex");
 	}
 }
 
@@ -1063,51 +1063,114 @@ void getSegmentsWithLine(const TPolygon2D& poly, vector<TSegmentWithLine>& segs)
 }
 
 bool math::intersect(
-	const TPolygon2D& /*p1*/, const TPolygon2D& /*p2*/, TObject2D& /*obj*/)
+	const TPolygon2D& subject, const TPolygon2D& clipping, TObject2D& result)
 {
-	THROW_EXCEPTION("TODO");
-#if 0
-	return false;	//TODO
+	const auto p = intersect(subject, clipping);
+	if (p.empty()) return false;
 
-	CSparseMatrixTemplate<TObject2D> intersections=CSparseMatrixTemplate<TObject2D>(p1.size(),p2.size());
-	std::vector<TSegmentWithLine> segs1,segs2;
-	getSegmentsWithLine(p1,segs1);
-	getSegmentsWithLine(p2,segs2);
-	unsigned int hmInters=0;
-	for (size_t i=0;i<segs1.size();i++)	{
-		const TSegmentWithLine &s1=segs1[i];
-		for (size_t j=0;j<segs2.size();j++) if (intersect(s1,segs2[j],obj))	{
-			intersections(i,j)=obj;
-			hmInters++;
+	result = TObject2D::From(p);
+	return true;
+}
+
+double mrpt::math::signedArea(const mrpt::math::TPolygon2D& p)
+{
+	if (p.size() <= 2) return 0;
+	double sa = 0;
+
+	for (int i = 0; i < static_cast<int>(p.size()); i++)
+	{
+		const auto cp = p.at(i);
+		const auto np = p.at((i + 1) % p.size());
+
+		sa += cp.x * np.y - np.x * cp.y;
+	}
+
+	return sa * 0.5;
+}
+
+TPolygon2D mrpt::math::intersect(
+	const TPolygon2D& subject, const TPolygon2D& clipping)
+{
+	/* Sutherland-Hodgman algorithm:
+	 * https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
+	 *
+	 *List outputList = subjectPolygon;
+	 *
+	 *for (Edge clipEdge in clipPolygon) do
+	 *    List inputList = outputList;
+	 *    outputList.clear();
+	 *
+	 *    for (int i = 0; i < inputList.count; i += 1) do
+	 *        Point current_point = inputList[i];
+	 *        Point prev_point = inputList[(i − 1) % inputList.count];
+	 *
+	 *        Point Intersecting_point = ComputeIntersection(prev_point,
+	 *current_point, clipEdge)
+	 *
+	 *        if (current_point inside clipEdge) then
+	 *            if (prev_point not inside clipEdge) then
+	 *                outputList.add(Intersecting_point);
+	 *            end if
+	 *            outputList.add(current_point);
+	 *
+	 *        else if (prev_point inside clipEdge) then
+	 *            outputList.add(Intersecting_point);
+	 *        end if
+	 *
+	 *    done
+	 *done
+	 */
+	// We need polygons (may handle degenerated triangles=segments too)
+	ASSERT_GE_(subject.size(), 2);
+	ASSERT_GE_(clipping.size(), 2);
+
+	TPolygon2D outputList = subject;
+
+	std::vector<TSegmentWithLine> segsClip;
+	getSegmentsWithLine(clipping, segsClip);
+
+	const bool clipIsCW = signedArea(clipping) < 0;
+
+	for (const auto& clipEdge : segsClip)
+	{
+		const auto inputList = outputList;
+		outputList.clear();
+
+		for (size_t i = 0; i < inputList.size(); i++)
+		{
+			const auto current_point = inputList.at(i);
+			const auto prev_point =
+				inputList.at(i > 0 ? (i - 1) : (inputList.size() - 1));
+
+			const bool curInside =
+				(clipEdge.line.signedDistance(current_point) < 0) ^ clipIsCW;
+			const bool prevInside =
+				(clipEdge.line.signedDistance(prev_point) < 0) ^ clipIsCW;
+
+			mrpt::math::TObject2D intersectPt;
+			const bool doIntersect = mrpt::math::intersect(
+				clipEdge.line,
+				mrpt::math::TLine2D::FromTwoPoints(current_point, prev_point),
+				intersectPt);
+			std::optional<mrpt::math::TPoint2D> iPt;
+			if (doIntersect) { intersectPt.getPoint(iPt.emplace()); }
+
+			if (curInside)
+			{
+				if (!prevInside)
+				{
+					if (iPt) outputList.push_back(*iPt);
+				}
+				outputList.push_back(current_point);
+			}
+			else if (prevInside)
+			{
+				if (iPt) outputList.push_back(*iPt);
+			}
 		}
 	}
-	for (size_t i=0;i<intersections.rows();i++)	{
-		for (size_t j=0;j<intersections.cols();j++) cout<<fromObject(intersections(i,j));
-		cout<<'\n';
-	}
-	if (hmInters==0)	{
-		if (p1.contains(p2[0]))	{
-			obj=p2;
-			return true;
-		}	else if (p2.contains(p1[0]))	{
-			obj=p1;
-			return true;
-		}	else return false;
-	}
-	//ESTO ES UNA PESADILLA, HAY CIEN MILLONES DE CASOS DISTINTOS A LA HORA DE RECORRER LAS POSIBILIDADES...
-	/*
-		Dividir cada segmento en sus distintas partes según sus intersecciones, y generar un nuevo polígono.
-		Recorrer de segmento en segmento, por cada uno de los dos lados (recorriendo desde un punto común a otro;
-			en un polígono se escoge el camino secuencial directo, mientras que del otro se escoge, de los dos posibles,
-			el que no se corta con ningún elemento del primero).
-		Seleccionar, para cada segmento, si está dentro o fuera.
-		Parece fácil, pero es una puta mierda.
-		TODO: hacer en algún momento de mucho tiempo libre...
-	*/
 
-	/* ¿Seguir? */
-	return false;
-#endif
+	return outputList;
 }
 
 bool math::intersect(const TPolygon3D& p1, const TSegment3D& s2, TObject3D& obj)
@@ -1745,8 +1808,14 @@ double math::getRegressionPlane(const vector<TPoint3D>& points, TPlane& plane)
 	covars.eig_symmetric(eigenVec, eigenVal);
 
 	for (size_t i = 0; i < 3; ++i)
+	{
 		if (eigenVal[i] < 0 && std::abs(eigenVal[i]) < geometryEpsilon)
 			eigenVal[i] = 0;
+	}
+
+	if (std::abs(eigenVal.at(1)) < geometryEpsilon)
+		THROW_EXCEPTION(
+			"Points are aligned, cannot fit a plane (infinite solutions)");
 
 	const size_t selected = 0;	// sorted: minimum eigenVal
 	plane.coefs[3] = 0;
@@ -2086,7 +2155,7 @@ bool math::splitInConvexComponents(
 	const TPolygon3D& poly, vector<TPolygon3D>& components)
 {
 	TPlane p;
-	if (!poly.getPlane(p)) throw std::logic_error("Polygon is skew");
+	if (!poly.getPlane(p)) THROW_EXCEPTION("Polygon is skew");
 	TPose3D pose1;
 	p.getAsPose3DForcingOrigin(poly[0], pose1);
 	const TPose3D pose2 = -pose1;
