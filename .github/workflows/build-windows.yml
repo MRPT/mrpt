@@ -59,4 +59,5 @@ jobs:
         shell: bash
         run: |
           cmake --build . -j 4 --config ${{ matrix.build_type }} --target all_mrpt_libs
+          cmake --build . -j 4 --config ${{ matrix.build_type }} --target tests_build_all
           cmake --build . -j 4 --config ${{ matrix.build_type }} --target test_legacy
