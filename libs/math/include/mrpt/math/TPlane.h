@@ -28,51 +28,30 @@ namespace mrpt::math
 struct TPlane
 {
    public:
-	/** Plane coefficients, stored as an array: \f$\left[A,B,C,D\right]\f$ */
-	std::array<double, 4> coefs{{.0, .0, .0, .0}};
-	/** Evaluate a point in the plane's equation */
-	double evaluatePoint(const TPoint3D& point) const;
-	/**
-	 * Check whether a point is contained into the plane.
-	 */
-	bool contains(const TPoint3D& point) const;
-	/**
-	 * Check whether a segment is fully contained into the plane.
-	 */
-	bool contains(const TSegment3D& segment) const
+	/** Fast default constructor (uninitialized coefficients). */
+	TPlane() = default;
+
+	/** Constructor from plane coefficients */
+	constexpr TPlane(double A, double B, double C, double D) : coefs{A, B, C, D}
 	{
-		return contains(segment.point1) && contains(segment.point2);
 	}
-	/**
-	 * Check whether a line is fully contained into the plane.
-	 */
-	bool contains(const TLine3D& line) const;
-	/**
-	 * Distance to 3D point.
-	 */
-	double distance(const TPoint3D& point) const;
-	/**
-	 * Distance to 3D line. Will be zero if the line is not parallel to the
-	 * plane.
-	 */
-	double distance(const TLine3D& line) const;
-	/** Get plane's normal vector */
-	TVector3D getNormalVector() const;
-	/**
-	 * Unitarize normal vector.
-	 */
-	void unitarize();
-	void getAsPose3D(mrpt::math::TPose3D& outPose) const;
-	void getAsPose3DForcingOrigin(const TPoint3D& center, TPose3D& pose) const;
-	TPose3D getAsPose3DForcingOrigin(const TPoint3D& center) const;
-	/** Get normal vector */
-	TVector3D getUnitaryNormalVector() const;
+
+	/** Constructor from an array of coefficients (A,B,C,D). */
+	TPlane(const double (&vec)[4])
+	{
+		for (size_t i = 0; i < 4; i++)
+			coefs[i] = vec[i];
+	}
+
 	/** Defines a plane which contains these three points.
 	 * \throw std::logic_error if the points are linearly dependants.
+	 * \sa mrpt::math::getRegressionPlane()
 	 */
 	TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3);
 
-	/** \note [New in MRPT 2.1.0] */
+	/** \note [New in MRPT 2.1.0]
+	 * \sa mrpt::math::getRegressionPlane()
+	 */
 	static TPlane From3Points(
 		const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3)
 	{
@@ -118,20 +97,45 @@ struct TPlane
 		return {r1, r2};
 	}
 
-	/** Fast default constructor. Initializes to garbage. */
-	TPlane() = default;
-	/** Constructor from plane coefficients */
-	constexpr TPlane(double A, double B, double C, double D) : coefs{A, B, C, D}
+	/** Plane coefficients, stored as an array: \f$\left[A,B,C,D\right]\f$ */
+	std::array<double, 4> coefs{{.0, .0, .0, .0}};
+	/** Evaluate a point in the plane's equation */
+	double evaluatePoint(const TPoint3D& point) const;
+	/**
+	 * Check whether a point is contained into the plane.
+	 */
+	bool contains(const TPoint3D& point) const;
+	/**
+	 * Check whether a segment is fully contained into the plane.
+	 */
+	bool contains(const TSegment3D& segment) const
 	{
+		return contains(segment.point1) && contains(segment.point2);
 	}
 	/**
-	 * Constructor from an array of coefficients.
+	 * Check whether a line is fully contained into the plane.
 	 */
-	TPlane(const double (&vec)[4])
-	{
-		for (size_t i = 0; i < 4; i++)
-			coefs[i] = vec[i];
-	}
+	bool contains(const TLine3D& line) const;
+	/**
+	 * Distance to 3D point.
+	 */
+	double distance(const TPoint3D& point) const;
+	/**
+	 * Distance to 3D line. Will be zero if the line is not parallel to the
+	 * plane.
+	 */
+	double distance(const TLine3D& line) const;
+	/** Get plane's normal vector */
+	TVector3D getNormalVector() const;
+	/**
+	 * Unitarize normal vector.
+	 */
+	void unitarize();
+	void getAsPose3D(mrpt::math::TPose3D& outPose) const;
+	void getAsPose3DForcingOrigin(const TPoint3D& center, TPose3D& pose) const;
+	TPose3D getAsPose3DForcingOrigin(const TPoint3D& center) const;
+	/** Get normal vector */
+	TVector3D getUnitaryNormalVector() const;
 
 	/** Returns "[A, B, C, D]"
 	 * \note [New in MRPT 2.1.0]

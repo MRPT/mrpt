@@ -25,6 +25,7 @@ struct TLine2D
    public:
 	/** Constructor from two points, through which the line will pass.
 	 * \throw logic_error if both points are the same
+	 * \sa mrpt::math::getRegressionLine()
 	 */
 	TLine2D(const TPoint2D& p1, const TPoint2D& p2);
 
