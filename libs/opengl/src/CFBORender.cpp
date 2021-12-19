@@ -122,8 +122,6 @@ void CFBORender::internal_render_RGBD(
 	glEnable(GL_DEPTH_TEST);
 	CHECK_OPENGL_ERROR();
 
-	scene.getViewport()->updateMatricesFromCamera();
-
 	// ---------------------------
 	// Render:
 	// ---------------------------

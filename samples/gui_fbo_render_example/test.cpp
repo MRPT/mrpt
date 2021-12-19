@@ -88,7 +88,7 @@ void TestDisplay3D()
 
 	mrpt::system::CTimeLogger tl;
 
-	int width = 640, height = 480;
+	int width = 500, height = 400;
 	const double cameraFOVdeg = 90.0;
 
 	CFBORender renderer(width, height);

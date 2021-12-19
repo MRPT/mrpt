@@ -12,6 +12,7 @@
       - mrpt::math::signedArea(const mrpt::math::TPolygon2D& p)
 - BUG FIXES:
   - Fix bug in mrpt::math::getAngle(const TPlane&, const TPlane&).
+  - Fix exception if mrpt::opengl::CFBORender is used with setProjectiveFromPinhole() camera models.
 
 # Version 2.4.0: Released Dec 12th, 2021
 - Changes in build system:
