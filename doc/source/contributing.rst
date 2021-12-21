@@ -9,7 +9,6 @@ Contributing
 
   MRPT_Coding_Style.rst
   mrpt_git_branches.rst
-  unit_testing.rst
   ClangFormat.rst
   ClangFormat_internal.rst
   make_a_mrpt_release.rst
