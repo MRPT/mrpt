@@ -44,4 +44,5 @@ Most are 3-clause-BSD too, but if some conflict with the desired license for
 your application, you will have to build MRPT without those conflicting sources.
 
 See detailed copyright information of portions of code from other authors in:
-https://github.com/MRPT/mrpt/blob/develop/packaging/debian/copyright
+https://salsa.debian.org/robotics-team/mrpt/-/blob/master/debian/copyright
+
