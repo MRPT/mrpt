@@ -13,6 +13,7 @@
 - BUG FIXES:
   - Fix bug in mrpt::math::getAngle(const TPlane&, const TPlane&).
   - Fix exception if mrpt::opengl::CFBORender is used with setProjectiveFromPinhole() camera models.
+  - Fix CMake Warning at cmakemodules/FindFilesystem.cmake and failure to detect the std::filesystem feature in some g++ versions.
 
 # Version 2.4.0: Released Dec 12th, 2021
 - Changes in build system:
