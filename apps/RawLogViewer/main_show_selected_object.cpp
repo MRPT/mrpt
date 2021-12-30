@@ -286,9 +286,18 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	if (classID->derivedFrom(CLASS_ID(CObservation)))
 	{
 		CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(sel_obj));
-		obs->load();
-		obs->getDescriptionAsText(cout);
-		textDescriptionDone = true;
+
+		try
+		{
+			obs->load();
+			obs->getDescriptionAsText(cout);
+			textDescriptionDone = true;
+		}
+		catch (const mrpt::img::CExceptionExternalImageNotFound& e)
+		{
+			std::cout << "Error with lazy-load object:\n" << e.what() << "\n";
+		}
+
 		curSelectedObservation =
 			std::dynamic_pointer_cast<CObservation>(sel_obj);
 	}
@@ -348,16 +357,33 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 		// Get bitmap:
 		// ----------------------
-		wxImage* img = mrpt::gui::MRPTImage2wxImage(obs->image);
-		bmpObsImage->SetBitmap(wxBitmap(*img));
-		bmpObsImage->SetSize(img->GetWidth(), img->GetHeight());
+		bool loadOk = false;
+		try
+		{
+			obs->load();
+			loadOk = true;
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << "Error with lazy-load image:\n" << e.what() << "\n";
+		}
+
+		if (loadOk)
+		{
+			wxImage* img = mrpt::gui::MRPTImage2wxImage(obs->image);
+			bmpObsImage->SetBitmap(wxBitmap(*img));
+			bmpObsImage->SetSize(img->GetWidth(), img->GetHeight());
+			delete img;
+		}
+		else
+		{
+			bmpObsImage->SetBitmap(wxBitmap());
+		}
+
 		FlexGridSizerImg->FitInside(ScrolledWindow2);
-		// bmpObsImage->FitInside();
-		// ScrolledWindow2->SetVirtualSize(img->GetWidth(), img->GetHeight());
 		ScrolledWindow2->SetScrollRate(1, 1);
 
 		bmpObsImage->Refresh();
-		delete img;
 		obs->image.unload();  // For externally-stored datasets
 	}
 
@@ -369,19 +395,37 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		Notebook1->ChangeSelection(4);
 		auto obs = std::dynamic_pointer_cast<CObservationStereoImages>(sel_obj);
 
+		bool loadOk = false;
+		try
+		{
+			obs->load();
+			loadOk = true;
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << "Error with lazy-load image:\n" << e.what() << "\n";
+		}
+
 		// Images:
 		// ----------------------
-		wxImage* imgLeft = mrpt::gui::MRPTImage2wxImage(obs->imageLeft);
-		bmpObsStereoLeft->SetBitmap(wxBitmap(*imgLeft));
-		bmpObsStereoLeft->Refresh();
-		delete imgLeft;
+		if (loadOk)
+		{
+			wxImage* imgLeft = mrpt::gui::MRPTImage2wxImage(obs->imageLeft);
+			bmpObsStereoLeft->SetBitmap(wxBitmap(*imgLeft));
+			bmpObsStereoLeft->Refresh();
+			delete imgLeft;
 
-		if (obs->hasImageRight)
+			obs->imageLeft.unload();  // For externally-stored datasets
+		}
+
+		if (obs->hasImageRight && loadOk)
 		{
 			wxImage* imgRight = mrpt::gui::MRPTImage2wxImage(obs->imageRight);
 			bmpObsStereoRight->SetBitmap(wxBitmap(*imgRight));
 			bmpObsStereoRight->Refresh();
 			delete imgRight;
+
+			obs->imageRight.unload();  // For externally-stored datasets
 		}
 
 		if (obs->hasImageDisparity)
@@ -391,6 +435,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			bmpObsStereoDisp->SetBitmap(wxBitmap(*imgDisp));
 			bmpObsStereoDisp->Refresh();
 			delete imgDisp;
+
+			obs->imageDisparity.unload();  // For externally-stored datasets
 		}
 	}
 
