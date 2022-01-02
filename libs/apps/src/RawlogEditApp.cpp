@@ -108,6 +108,14 @@ TCLAP::ValueArg<std::string> arg_outdir(
 TCLAP::ValueArg<std::string> arg_external_img_extension(
 	"", "image-format", "External image format", false, "png",
 	"jpg,png,pgm,...", cmd);
+
+TCLAP::ValueArg<std::string> arg_externals_filename_fmt(
+	"", "externals-filename-format",
+	"Format string for the command --rename-externals."
+	"(Default: \"${type}_${label}_%.06%f\"). Refer to docs for "
+	"mrpt::obs::format_externals_filename().",
+	false, "\"${type}_${label}_%.06%f\"", "\"${type}_${label}_%.06%f\"", cmd);
+
 TCLAP::SwitchArg arg_txt_externals(
 	"", "txt-externals",
 	"When externalizing CObservation3DRangeScan objects, switched from binary "

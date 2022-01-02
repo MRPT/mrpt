@@ -4,6 +4,8 @@
 - Changes in build system:
     - Disable -flto in nanogui (to avoid an [Eigen regression](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1000780)).
 - Changes in applications:
+  - rawlog-edit:
+    - New flag `--externals-filename-format`
   - RawlogViewer:
     - Better handling of exceptions failing to load delayed-load images.
 - Changes in libraries:
@@ -13,6 +15,8 @@
     - New geometry functions:
       - mrpt::math::intersect(const TPolygon2D& subject, const TPolygon2D& clipping)
       - mrpt::math::signedArea(const mrpt::math::TPolygon2D& p)
+  - \ref mrpt_obs_grp
+    - New function mrpt::obs::format_externals_filename()
   - Embedded copy of nanoflann: upgraded to v1.4.0.
 - BUG FIXES:
   - Fix bug in mrpt::math::getAngle(const TPlane&, const TPlane&).

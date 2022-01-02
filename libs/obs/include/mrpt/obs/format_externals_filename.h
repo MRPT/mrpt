@@ -6,29 +6,22 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-/*---------------------------------------------------------------
-   APPLICATION: rawlog-edit
-   For instructions and more: see manpage of rawlog-edit
-  ---------------------------------------------------------------*/
+#include <mrpt/obs/CObservation.h>
+#include <string>
 
-#include <mrpt/apps/RawlogEditApp.h>
-
-#include <iostream>
-
-int main(int argc, char** argv)
+namespace mrpt::obs
 {
-	try
-	{
-		mrpt::apps::RawlogEditApp app;
-
-		app.run(argc, argv);
-
-		return 0;
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
-		return 1;
-	}
-}
+/** Replaces format placeholders in a string according to an observation:
+ *  
+ *  For example, the default format string used in 
+ *  `rawlog-edit --rename-externals` is `"${type}_${label}_%.06%f"`.
+ *  
+ * \ingroup mrpt_obs_grp
+ * \note (new in MRPT 2.4.1)
+ */
+std::string format_externals_filename(
+	const mrpt::obs::CObservation& obs, const std::string& fmt);
+ 
+};	// End of class def.
