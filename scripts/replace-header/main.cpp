@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 				of << "   |                Mobile Robot Programming Toolkit (MRPT)                 |\n";
 				of << "   |                         https://www.mrpt.org/                           |\n";
 				of << "   |                                                                        |\n";
-				of << "   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |\n";
+				of << "   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |\n";
 				of << "   | See: https://www.mrpt.org/Authors - All rights reserved.               |\n";
 				of << "   | Released under BSD License. See: https://www.mrpt.org/License          |\n";
 				of << "   +------------------------------------------------------------------------+ */\n";
