@@ -13,6 +13,7 @@
     - New geometry functions:
       - mrpt::math::intersect(const TPolygon2D& subject, const TPolygon2D& clipping)
       - mrpt::math::signedArea(const mrpt::math::TPolygon2D& p)
+  - Embedded copy of nanoflann: upgraded to v1.4.0.
 - BUG FIXES:
   - Fix bug in mrpt::math::getAngle(const TPlane&, const TPlane&).
   - Fix exception if mrpt::opengl::CFBORender is used with setProjectiveFromPinhole() camera models.
