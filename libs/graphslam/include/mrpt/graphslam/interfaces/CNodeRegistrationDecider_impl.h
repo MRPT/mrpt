@@ -18,7 +18,7 @@ using namespace std;
 //
 template <class GRAPH_T>
 CNodeRegistrationDecider<GRAPH_T>::CNodeRegistrationDecider()
-	: m_prev_registered_nodeID(INVALID_NODEID)
+	: m_prev_registered_nodeID(mrpt::graphs::INVALID_NODEID)
 {
 	m_init_inf_mat.setIdentity();
 	m_init_inf_mat *= 10000;
@@ -56,7 +56,7 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 
 	// register the initial node if it doesn't exist.
 	// Runs only once.
-	if (this->m_prev_registered_nodeID == INVALID_NODEID)
+	if (this->m_prev_registered_nodeID == mrpt::graphs::INVALID_NODEID)
 	{  // root
 		MRPT_LOG_WARN("Registering root node...");
 		global_pose_t tmp_pose = this->getCurrentRobotPosEstimation();
@@ -150,7 +150,7 @@ typename GRAPH_T::global_pose_t
 {
 	global_pose_t pose_out;
 
-	if (this->m_prev_registered_nodeID != INVALID_NODEID)
+	if (this->m_prev_registered_nodeID != mrpt::graphs::INVALID_NODEID)
 	{ pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID); }
 
 	pose_out += m_since_prev_node_PDF.getMeanVal();

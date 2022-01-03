@@ -1280,7 +1280,8 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 	// debugging message
 	stringstream ss_debug("");
 	ss_debug << "Executing Dijkstra Projection: " << starting_node << " => ";
-	if (ending_node == INVALID_NODEID) { ss_debug << "..." << endl; }
+	if (ending_node == mrpt::graphs::INVALID_NODEID)
+	{ ss_debug << "..." << endl; }
 	else
 	{
 		ss_debug << ending_node << endl;
@@ -1336,7 +1337,7 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 		// if an ending nodeID has been specified, end the method when the path
 		// to
 		// it is found.
-		if (ending_node != INVALID_NODEID)
+		if (ending_node != mrpt::graphs::INVALID_NODEID)
 		{
 			if (visited_nodes.at(ending_node))
 			{

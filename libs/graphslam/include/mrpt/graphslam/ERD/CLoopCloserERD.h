@@ -716,7 +716,7 @@ class CLoopCloserERD : public virtual mrpt::graphslam::deciders::
 	 */
 	void execDijkstraProjection(
 		mrpt::graphs::TNodeID starting_node = 0,
-		mrpt::graphs::TNodeID ending_node = INVALID_NODEID);
+		mrpt::graphs::TNodeID ending_node = mrpt::graphs::INVALID_NODEID);
 	/**\brief Given two nodeIDs compute and return the path connecting them.
 	 *
 	 * Method takes care of multiple edges, as well as edges with 0 covariance

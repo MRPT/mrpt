@@ -21,11 +21,11 @@ namespace mrpt
 namespace obs
 {
 /** Used for CObservationBeaconRange, CBeacon, etc. \ingroup mrpt_obs_grp */
-#define INVALID_BEACON_ID (-1)
+static constexpr int INVALID_BEACON_ID = -1;
 
 /** Used for CObservationBearingRange::TMeasurement::beaconID and others.
  * \ingroup mrpt_obs_grp */
-#define INVALID_LANDMARK_ID (-1)
+static constexpr int INVALID_LANDMARK_ID = -1;
 
 /** Generic sensor observation.
  *
