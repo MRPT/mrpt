@@ -14,7 +14,11 @@ namespace mrpt::graphs
 {
 /** A generic numeric type for unique IDs of nodes or entities */
 using TNodeID = uint64_t;
+
 /** A pair of node IDs */
 using TPairNodeIDs = std::pair<TNodeID, TNodeID>;
-#define INVALID_NODEID static_cast<mrpt::graphs::TNodeID>(-1)
+
+constexpr static mrpt::graphs::TNodeID INVALID_NODEID =
+	static_cast<mrpt::graphs::TNodeID>(-1);
+
 }  // namespace mrpt::graphs
