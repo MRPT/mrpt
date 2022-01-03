@@ -88,7 +88,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	{
 		ASSERT_(!m_nodes.empty());
 		double min_d = std::numeric_limits<double>::max();
-		auto min_id = INVALID_NODEID;
+		auto min_id = mrpt::graphs::INVALID_NODEID;
 		for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it)
 		{
 			if (ignored_nodes &&
@@ -132,7 +132,8 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 	void insertNode(
 		const mrpt::graphs::TNodeID node_id, const NODE_TYPE_DATA& node_data)
 	{
-		m_nodes[node_id] = node_t(node_id, INVALID_NODEID, nullptr, node_data);
+		m_nodes[node_id] =
+			node_t(node_id, mrpt::graphs::INVALID_NODEID, nullptr, node_data);
 	}
 
 	mrpt::graphs::TNodeID getNextFreeNodeID() const { return m_nodes.size(); }
@@ -155,7 +156,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 			out_path.push_front(*node);
 
 			mrpt::graphs::TNodeID next_node_id = node->parent_id;
-			if (next_node_id == INVALID_NODEID)
+			if (next_node_id == mrpt::graphs::INVALID_NODEID)
 			{
 				break;	// finished
 			}
@@ -181,7 +182,7 @@ class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 struct TMoveEdgeSE2_TP
 {
 	/** The ID of the parent node in the tree */
-	mrpt::graphs::TNodeID parent_id;
+	mrpt::graphs::TNodeID parent_id = mrpt::graphs::INVALID_NODEID;
 	/** state in SE2 as 2D pose (x, y, phi)  - \note: it is not possible to
 	 * initialize a motion without a state */
 	mrpt::math::TPose2D end_state;
@@ -195,6 +196,8 @@ struct TMoveEdgeSE2_TP
 	/** identify the lenght of the trajectory for this motion */
 	double ptg_dist;
 
+	TMoveEdgeSE2_TP() = default;
+
 	TMoveEdgeSE2_TP(
 		const mrpt::graphs::TNodeID parent_id_,
 		const mrpt::math::TPose2D end_pose_)
@@ -206,7 +209,6 @@ struct TMoveEdgeSE2_TP
 		  ptg_dist(0.0)	 // these are all PTGs parameters
 	{
 	}
-	TMoveEdgeSE2_TP() : parent_id(INVALID_NODEID) {}
 };
 
 struct TNodeSE2

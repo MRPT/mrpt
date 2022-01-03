@@ -58,7 +58,7 @@ struct TPlannerResultTempl
 	TPlannerResultTempl()
 		: goal_distance(std::numeric_limits<double>::max()),
 		  path_cost(std::numeric_limits<double>::max()),
-		  best_goal_node_id(INVALID_NODEID)
+		  best_goal_node_id(mrpt::graphs::INVALID_NODEID)
 	{
 	}
 };
@@ -146,15 +146,17 @@ class PlannerTPS_VirtualBase
 	{
 		/** Highlight the path from root towards this node (usually, the target)
 		 */
-		mrpt::graphs::TNodeID highlight_path_to_node_id;
+		mrpt::graphs::TNodeID highlight_path_to_node_id =
+			mrpt::graphs::INVALID_NODEID;
+
 		/** (Default=1) Draw one out of N vehicle shapes along the highlighted
 		 * path */
 		size_t draw_shape_decimation{1};
 
-		const mrpt::poses::CPose2D* x_rand_pose;
-		const mrpt::poses::CPose2D* x_nearest_pose;
-		const mrpt::maps::CPointsMap* local_obs_from_nearest_pose;
-		const mrpt::poses::CPose2D* new_state;
+		const mrpt::poses::CPose2D* x_rand_pose = nullptr;
+		const mrpt::poses::CPose2D* x_nearest_pose = nullptr;
+		const mrpt::maps::CPointsMap* local_obs_from_nearest_pose = nullptr;
+		const mrpt::poses::CPose2D* new_state = nullptr;
 
 		/** A scale factor to all XYZ corners (default=0, means auto determien
 		 * from vehicle shape) */
@@ -197,12 +199,7 @@ class PlannerTPS_VirtualBase
 		double log_msg_scale{0.2};
 
 		TRenderPlannedPathOptions()
-			: highlight_path_to_node_id(INVALID_NODEID),
-			  x_rand_pose(nullptr),
-			  x_nearest_pose(nullptr),
-			  local_obs_from_nearest_pose(nullptr),
-			  new_state(nullptr),
-			  color_vehicle(0xFF, 0x00, 0x00, 0xFF),
+			: color_vehicle(0xFF, 0x00, 0x00, 0xFF),
 			  color_obstacles(0x00, 0x00, 0xFF, 0x40),
 			  color_local_obstacles(0x00, 0x00, 0xFF),
 			  color_start(0x00, 0x00, 0x00, 0x00),

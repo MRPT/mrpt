@@ -97,7 +97,8 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition()
 
 	// check that a node has already been registered - if not, default to
 	// (0,0,0)
-	pose_t last_pose_inserted = this->m_prev_registered_nodeID != INVALID_NODEID
+	pose_t last_pose_inserted =
+		this->m_prev_registered_nodeID != mrpt::graphs::INVALID_NODEID
 		? this->m_graph->nodes.at(this->m_prev_registered_nodeID)
 		: pose_t();
 

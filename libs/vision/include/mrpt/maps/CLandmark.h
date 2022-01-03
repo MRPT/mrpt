@@ -72,7 +72,7 @@ class CLandmark : public mrpt::serialization::CSerializable
 	 * Note that this field is never fill out automatically, it must be set by
 	 *the programmer if used.
 	 */
-	TLandmarkID ID{INVALID_LANDMARK_ID};
+	TLandmarkID ID = mrpt::obs::INVALID_LANDMARK_ID;
 
 	/** The last time that this landmark was observed. */
 	mrpt::system::TTimeStamp timestampLastSeen{INVALID_TIMESTAMP};
