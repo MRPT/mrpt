@@ -69,12 +69,17 @@ struct TBoundingBox_
 	}
 
 	/** Returns the intersection of this bounding box with "b", or std::nullopt
-	 * if no intersection exists. */
+	 * if no intersection exists.
+	 * Note that borders are enlarged by "epsilon" before to testing for
+	 * intersection to handle numerical innacuracies, for example on planar
+	 * bounding boxes with a fixed "z".
+	 */
 	std::optional<TBoundingBox_<T>> intersection(
-		const TBoundingBox_<T>& b) const
+		const TBoundingBox_<T>& b, const T epsilon = static_cast<T>(1e-4)) const
 	{
-		if (b.min.x > max.x || b.min.y > max.y || b.min.z > max.z ||
-			b.max.x < min.x || b.max.y < min.y || b.max.z < min.z)
+		if (b.min.x - epsilon > max.x || b.min.y - epsilon > max.y ||
+			b.min.z - epsilon > max.z || b.max.x + epsilon < min.x ||
+			b.max.y + epsilon < min.y || b.max.z + epsilon < min.z)
 			return {};
 
 		return {TBoundingBox_<T>(

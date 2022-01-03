@@ -68,6 +68,14 @@ void testIntersections()
 	}
 
 	{
+		mrpt::math::TBoundingBox_<T> bb1({0, 0, 0}, {1, 1, 0});
+		mrpt::math::TBoundingBox_<T> bb2({0.1, 0.2, 0}, {0.8, 0.9, 0});
+		const T epsilon = static_cast<T>(0.001);
+		const auto inter = bb1.intersection(bb2, epsilon);
+		EXPECT_TRUE(inter);
+	}
+
+	{
 		mrpt::math::TBoundingBox_<T> bb1({0, 1, 2}, {10, 10, 10});
 		mrpt::math::TBoundingBox_<T> bb2({5, 6, 7}, {6, 7, 8});
 		const auto inter = bb1.intersection(bb2);
