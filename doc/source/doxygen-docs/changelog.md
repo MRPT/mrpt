@@ -11,6 +11,8 @@
 - Changes in libraries:
   - \ref mrpt_core_grp
     - Remove unused header `<mrpt/3rdparty/llvm/propagate_const.h>`.
+  - \ref mrpt_graphs_grp
+    - mrpt::graphs::CDijkstra now has an optional maximum topological search range.
   - \ref mrpt_math_grp
     - New geometry functions:
       - mrpt::math::intersect(const TPolygon2D& subject, const TPolygon2D& clipping)
