@@ -28,20 +28,21 @@ which can store the raw observations gathered by an arbitrary mix of sensors
 for its posterior processing. The format is described in detail in the
 :ref:`Rawlog format page<rawlog_format>`.
 
-Related applications:
+See also:
 
 - :ref:`app_RawLogViewer`
-- All offline SLAM programs.
+- `class mrpt::obs::CRawlog <class_mrpt_obs_CRawlog.html>`_
+- All `offline SLAM programs <applications.html>`_.
 
 2. Graph SLAM maps
 --------------------
 
 **Typical extension(s)**: ``.graph``, ``.graphbin``
 
-Description: MRPT adopted the text format for 2D and 3D graphs (edges & nodes)
-used by TORO, G2O, and others.
+Description: MRPT adopted the plain-text format for 2D and 3D graphs (edges & nodes)
+introduced by TORO, G2O, and others in the 2010s.
 
-Related applications:
+See also:
 
 - :ref:`app_graph-slam`
 
@@ -55,7 +56,7 @@ pairs of poses and their associated observations. Implemented in the type
 mrpt::maps::CSimpleMap. Files can be transparently saved/loaded
 with gzip-compression to save disk space.
 
-Related applications:
+See also:
 
 - :ref:`app_robot-map-gui`
 - :ref:`app_observations2map`
@@ -75,7 +76,7 @@ Description: The serialization of an ``mrpt::maps::COccupancyGridMap2D`` object.
 Description: Files are usually transparently saved/loaded with
 gzip-compression to save disk space.
 
-Related applications:
+See also:
 
 - :ref:`doxid-app__scene_viewer3_d`.
 - See: :ref:`doxid-tutorial_3_d_scenes`.

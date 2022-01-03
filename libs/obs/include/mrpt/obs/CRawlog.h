@@ -23,43 +23,38 @@ using TTimeObservationPair =
 using TListTimeAndObservations =
 	std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>;
 
-/** This class stores a rawlog (robotic datasets) in one of two possible
+/** The main class for loading and processing robotics datasets, or "rawlogs".
+ *
+ * Please, refer to the [rawlog format specification](rawlog_format.html).
+ *
+ * In short, this class stores a sequence of objects, in one of two possible
  *formats:
- *		- Format #1: A sequence of actions and observations. There is a sequence
+ *  - Format #1: A sequence of actions and observations. There is a sequence
  *of objects, where each one can be of one type:
- *			- An action:	Implemented as a CActionCollection object, the
+ *    - An action:	Implemented as a CActionCollection object, the
  *actuation
  *of the robot (i.e. odometry increment).
- *			- Observations: Implemented as a CSensoryFrame, refering to a set of
+ *    - Observations: Implemented as a CSensoryFrame, refering to a set of
  *robot observations from the same pose.
- *		- Format #2: A sequence of actions and observations. There is a sequence
+ *  - Format #2: A sequence of actions and observations. There is a sequence
  *of objects, where each one can be of one type:
  *
- *	Refer to the wiki page about <a href="http://www.mrpt.org/Rawlog_Format"
- *>rawlog files</a>.
+ * See also [RawLogViewer](app_RawLogViewer.html) for a GUI application for
+ * quick inspection and analysis of rawlogs.
  *
- *  See also the application <a
- *href="http://www.mrpt.org/Application:RawLogViewer" >RawLogViewer</a > for the
- *GUI program that visualizes and manages rawlogs.
+ * There is a field for dataset plain-text comments (human-friendly description,
+ * blocks of parameters, etc.) accessible through CRawlog::getCommentText() and
+ * CRawlog::setCommentText().
  *
- *  This class also publishes a static helper method for loading rawlog files in
- *format #1: see CRawlog::readActionObservationPair
+ * This container provides a STL container-like interface (see CRawlog::begin,
+ * CRawlog::iterator, ...).
  *
- *  There is a field for comments and blocks of parameters (in ini-like format)
- *accessible through getCommentText and setCommentText
- *   (introduced in MRPT 0.6.4). When serialized to a rawlog file, the comments
- *are saved as an additional observation of the
- *   type CObservationComments at the beginning of the file, but this
- *observation does not appear after loading for clarity.
+ * \note There is a static helper method CRawlog::detectImagesDirectory() to
+ *       identify the directory where external images are stored.
  *
- * \note Since MRPT version 0.5.5, this class also provides a STL container-like
- *interface (see CRawlog::begin, CRawlog::iterator, ...).
- * \note The format #2 is supported since MRPT version 0.6.0.
- * \note There is a static helper method "detectImagesDirectory" for localizing
- *the external images directory of a rawlog.
+ * \sa CSensoryFrame,
+ *     [Dataset file format](robotics_file_formats.html#datasets).
  *
- * \sa CSensoryFrame, CPose2D, <a href="http://www.mrpt.org/Rawlog_Format">
- *RawLog file format</a>.
  * \ingroup mrpt_obs_grp
  */
 class CRawlog : public mrpt::serialization::CSerializable
