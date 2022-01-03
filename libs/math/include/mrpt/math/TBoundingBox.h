@@ -86,7 +86,8 @@ struct TBoundingBox_
 			{std::max(min.x, b.min.x), std::max(min.y, b.min.y),
 			 std::max(min.z, b.min.z)},
 			{std::min(max.x, b.max.x), std::min(max.y, b.max.y),
-			 std::min(max.z, b.max.z)})};
+			 std::min(max.z, b.max.z)},
+			CTOR_FLAGS::AllowUnordered)};
 	}
 
 	/** Returns the union of this bounding box with "b", i.e. a new bounding box
