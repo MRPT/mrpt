@@ -869,22 +869,12 @@ void _DSceneViewerFrame::loadFromFile(
 		// Save the path
 		saveLastUsedDirectoryToCfgFile(fil);
 
-		// static float
-		// old_cam_pX,old_cam_pY,old_cam_pZ,old_cam_d,old_cam_az,old_cam_el;
-		static bool first = true;
-
-		if (first)
-		{
-			first = false;
-			// old_cam_pX=old_cam_pY=old_cam_pZ=old_cam_d=old_cam_az=old_cam_el=0.0f;
-		}
-
 		CFileGZInputStream f(fil);
 
 		const auto oldCanvasCamera = m_canvas->cameraParams();
 
 		static mrpt::system::CTicTac tictac;
-		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+		auto& openGLSceneRef = m_canvas->getOpenGLSceneRef();
 		{
 			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
 
@@ -910,10 +900,8 @@ void _DSceneViewerFrame::loadFromFile(
 		if (openGLSceneRef->followCamera())
 		{
 			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
-			if (!view)
-				THROW_EXCEPTION(
-					"Fatal error: there is no 'main' viewport in the 3D "
-					"scene!");
+			ASSERTMSG_(
+				view, "ERROR: there is no 'main' viewport in the 3D scene!");
 
 			CCamera::Ptr cam = openGLSceneRef->getByClass<CCamera>();
 
@@ -960,6 +948,7 @@ void _DSceneViewerFrame::loadFromFile(
 			(format("File loaded in %.03fs", timeToLoad).c_str()), 0);
 
 		Refresh(false);
+		Update();
 	}
 	catch (const std::exception&)
 	{

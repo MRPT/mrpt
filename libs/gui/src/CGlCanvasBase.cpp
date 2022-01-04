@@ -192,14 +192,13 @@ void CGlCanvasBase::setZoomDistance(float zoom)
 
 CCamera& CGlCanvasBase::updateCameraParams(CCamera& cam) const
 {
-	cam.setPointingAt(
-		m_cameraParams.cameraPointingX, m_cameraParams.cameraPointingY,
-		m_cameraParams.cameraPointingZ);
-	cam.setZoomDistance(m_cameraParams.cameraZoomDistance);
-	cam.setAzimuthDegrees(m_cameraParams.cameraAzimuthDeg);
-	cam.setElevationDegrees(m_cameraParams.cameraElevationDeg);
-	cam.setProjectiveModel(m_cameraParams.cameraIsProjective);
-	cam.setProjectiveFOVdeg(m_cameraParams.cameraFOV);
+	const auto& _ = m_cameraParams;
+	cam.setPointingAt(_.cameraPointingX, _.cameraPointingY, _.cameraPointingZ);
+	cam.setZoomDistance(_.cameraZoomDistance);
+	cam.setAzimuthDegrees(_.cameraAzimuthDeg);
+	cam.setElevationDegrees(_.cameraElevationDeg);
+	cam.setProjectiveModel(_.cameraIsProjective);
+	cam.setProjectiveFOVdeg(_.cameraFOV);
 
 	return cam;
 }

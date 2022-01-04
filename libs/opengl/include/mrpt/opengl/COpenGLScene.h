@@ -104,12 +104,11 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 			insert(*it, vpn);
 	}
 
-	/**Creates a new viewport, adding it to the scene and returning a pointer to
-	 * the new object.
-	 *  Names (case-sensitive) cannot be duplicated: if the name provided
-	 * coincides with an already existing viewport, a pointer to the existing
-	 * object will be returned.
-	 *  The first, default viewport, is named "main".
+	/** Creates a new viewport, adding it to the scene and returning a pointer
+	 * to the new object. Names (case-sensitive) cannot be duplicated: if the
+	 * name provided coincides with an already existing viewport, a pointer to
+	 * the existing object will be returned. The first, default viewport, is
+	 * named "main".
 	 */
 	COpenGLViewport::Ptr createViewport(const std::string& viewportName);
 
