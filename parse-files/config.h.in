@@ -9,11 +9,12 @@
 
 #pragma once
 
-/** If defined, security checks (ASSERT_'s) will be performed in many MRPT classes even
+/** If defined, security checks (ASSERT_'s) will be performed in many MRPT
+ * classes even
   *  if "_DEBUG" is not declared, which is then the default behavior.
   */
-#define MRPT_ALWAYS_CHECKS_DEBUG                     ${CMAKE_MRPT_ALWAYS_CHECKS_DEBUG}
-#define MRPT_ALWAYS_CHECKS_DEBUG_MATRICES            ${CMAKE_MRPT_ALWAYS_CHECKS_DEBUG_MATRICES}
+#define MRPT_ALWAYS_CHECKS_DEBUG  ${CMAKE_MRPT_ALWAYS_CHECKS_DEBUG}
+#define MRPT_ALWAYS_CHECKS_DEBUG_MATRICES  ${CMAKE_MRPT_ALWAYS_CHECKS_DEBUG_MATRICES}
 
 /** MRPT_BUILT_AS_DLL is defined only if MRPT has been built
   *   as a shared library (.dll/.so) vs. a static library (.lib/.a).
@@ -73,7 +74,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Support for the liblas library (A standard for LiDAR data format)  */
 #define MRPT_HAS_LIBLAS           ${CMAKE_MRPT_HAS_LIBLAS}
 
-/** wxWidgets is present in the system (required for UTILS::CDisplayWindow, etc.) */
+/** wxWidgets is present in the system (required for mrpt::gui::CDisplayWindow, etc.) */
 #define MRPT_HAS_WXWIDGETS        ${CMAKE_MRPT_HAS_WXWIDGETS}
 
 #define MRPT_HAS_Qt5              ${CMAKE_MRPT_HAS_Qt5}

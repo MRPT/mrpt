@@ -107,8 +107,8 @@ class CRandomFieldGridMap3D
 		const std::string& filName_stddev = std::string()) const;
 
 	/** Parameters common to any derived class.
-	 *  Derived classes should derive a new struct from this one, plus "public
-	 * utils::CLoadableOptions",
+	 *  Derived classes should derive a new struct from this one, plus
+	 * mrpt::config::CLoadableOptions,
 	 *  and call the internal_* methods where appropiate to deal with the
 	 * variables declared here.
 	 *  Derived classes instantions of their "TInsertionOptions" MUST set the
@@ -119,12 +119,12 @@ class CRandomFieldGridMap3D
 		/** Default values loader */
 		TInsertionOptions();
 
-		/** See utils::CLoadableOptions */
+		/** See mrpt::config::CLoadableOptions */
 		void loadFromConfigFile(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section) override;
 
-		/** See utils::CLoadableOptions */
+		/** See mrpt::config::CLoadableOptions */
 		void dumpToTextStream(std::ostream& out) const override;
 
 		/** @name Gaussian Markov Random Fields method

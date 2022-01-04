@@ -288,7 +288,7 @@ mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG)
 option(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
 mark_as_advanced(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 
-# Include Asian fonts in utils::CMRPTCanvas ?
+# Include Asian fonts in CMRPTCanvas ?
 set( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in CMRPTCanvas (increases library size).")
 
 include(cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"

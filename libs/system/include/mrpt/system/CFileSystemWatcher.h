@@ -28,7 +28,7 @@ namespace mrpt::system
 class CFileSystemWatcher
 {
    public:
-	/** Each of the changes detected by utils::CFileSystemWatcher
+	/** Each of the changes detected by mrpt::system::CFileSystemWatcher
 	 */
 	struct TFileSystemChange
 	{

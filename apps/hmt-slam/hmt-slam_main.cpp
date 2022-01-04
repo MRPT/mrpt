@@ -135,9 +135,6 @@ void Run_HMT_SLAM()
 
 	//			INITIALIZATION
 	// ----------------------------------------
-	// utils::CRandomGenerator::Randomize( );	// Not necesary (called inside
-	// the
-	// classes)
 	mapping.initializeEmptyMap();
 
 	// The main loop:

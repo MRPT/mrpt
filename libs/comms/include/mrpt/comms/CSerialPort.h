@@ -13,7 +13,7 @@
 
 namespace mrpt::comms
 {
-/** A communications serial port built as an implementation of a utils::CStream.
+/** A communications serial port implementing the interface mrpt::io::CStream.
  * On communication errors (eg. the given port number does not exist,
  * timeouts,...), most of the methods will
  * raise an exception of the class `std::exception`

@@ -17,7 +17,7 @@
 
 namespace mrpt::hmtslam
 {
-/** Internal triplet for each property in utils::CMHPropertiesValuesList */
+/** Internal triplet for each property in CMHPropertiesValuesList */
 struct TPropertyValueIDTriplet
 {
 	TPropertyValueIDTriplet() = default;

@@ -244,7 +244,7 @@ class CRandomFieldGridMap2D
 
 	/** Parameters common to any derived class.
 	 *  Derived classes should derive a new struct from this one, plus "public
-	 * utils::CLoadableOptions",
+	 * CLoadableOptions",
 	 *  and call the internal_* methods where appropiate to deal with the
 	 * variables declared here.
 	 *  Derived classes instantions of their "TInsertionOptions" MUST set the
@@ -255,12 +255,12 @@ class CRandomFieldGridMap2D
 		/** Default values loader */
 		TInsertionOptionsCommon();
 
-		/** See utils::CLoadableOptions */
+		/** See mrpt::config::CLoadableOptions */
 		void internal_loadFromConfigFile_common(
 			const mrpt::config::CConfigFileBase& source,
 			const std::string& section);
 
-		/** See utils::CLoadableOptions */
+		/** See mrpt::config::CLoadableOptions */
 		void internal_dumpToTextStream_common(std::ostream& out) const;
 
 		/** @name Kernel methods (mrKernelDM, mrKernelDMV)

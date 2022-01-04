@@ -826,14 +826,6 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 
 					bool improved = OSE_new < OSE_initial;
 
-#if 0  // Debuggin'
-					cout << "_____________" << endl;
-					cout << "q -> q_new   : " << q << " -> " << q_new << endl;
-					printf("err: %f  -> %f    lambda: %e\n", OSE_initial ,OSE_new, lambda );
-					cout << "\\/J = "; utils::operator <<(cout,dJsq); cout << endl;
-					mrpt::system::pause();
-#endif
-
 					keepIteratingLM =
 						fabs(LM_delta[0]) > options.minAbsStep_trans ||
 						fabs(LM_delta[1]) > options.minAbsStep_trans ||
