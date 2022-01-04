@@ -3,15 +3,17 @@
 
 <a href="https://github.com/MRPT/mrpt/actions/workflows/build-linux.yml"><img src="https://github.com/MRPT/mrpt/actions/workflows/build-linux.yml/badge.svg" /></a>
 <a href="https://github.com/MRPT/mrpt/actions/workflows/build-macos.yml"><img src="https://github.com/MRPT/mrpt/actions/workflows/build-macos.yml/badge.svg" /></a>
+<a href="https://github.com/MRPT/mrpt/actions/workflows/build-windows.yml"><img src="https://github.com/MRPT/mrpt/actions/workflows/build-windows.yml/badge.svg" /></a>
 <a href="https://ci.appveyor.com/project/jlblancoc/mrpt" alt="AppVeyor:msvc"><img src="https://ci.appveyor.com/api/projects/status/yjs4lpj02f6a1ylg/branch/develop?svg=true" /></a> 
 <a href="https://codecov.io/gh/MRPT/mrpt" alt="codecov"><img src="https://codecov.io/gh/MRPT/mrpt/branch/develop/graph/badge.svg" /></a>
-<a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a>
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/MRPT/mrpt)
+[![CI Check clang-format](https://github.com/MRPT/mrpt/actions/workflows/check-clang-format.yml/badge.svg)](https://github.com/MRPT/mrpt/actions/workflows/check-clang-format.yml)
 
 <a href="https://github.com/MRPT/mrpt/releases" alt="Releases"><img src="https://img.shields.io/github/release/MRPT/mrpt.svg" /></a>
 <a href='https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds'><img src='https://img.shields.io/badge/Windows-Installer-orange?logo=Windows'></a>
 <a href="https://github.com/MRPT/mrpt/releases" alt="GitHub"><img src="https://img.shields.io/github/downloads/mrpt/mrpt/total.svg" /></a>
 <a href="https://sourceforge.net/projects/mrpt/files/" alt="SourceForge"><img src="https://img.shields.io/sourceforge/dt/mrpt.svg" /></a>
+<a href="https://gitter.im/MRPT/mrpt" alt="Gitter"><img src="https://badges.gitter.im/Join%20Chat.svg" /></a>
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/MRPT/mrpt)
 
 ## 1. Introduction
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
