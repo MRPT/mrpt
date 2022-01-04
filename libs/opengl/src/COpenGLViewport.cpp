@@ -962,21 +962,6 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	// Prepare camera (projection matrix):
 	COpenGLViewport* viewForGetCamera = nullptr;
 
-	if (m_isCloned)
-	{  // Clone: render someone's else objects.
-		ASSERT_(m_parent.get() != nullptr);
-
-		const auto view = m_parent->getViewport(m_clonedViewport);
-		if (!view)
-			THROW_EXCEPTION_FMT(
-				"Cloned viewport '%s' not found in parent COpenGLScene",
-				m_clonedViewport.c_str());
-	}
-	else
-	{  // Normal case: render our own objects:
-		viewForGetCamera = const_cast<COpenGLViewport*>(this);
-	}
-
 	if (!m_clonedCameraViewport.empty())
 	{
 		const auto view = m_parent->getViewport(m_clonedCameraViewport);
