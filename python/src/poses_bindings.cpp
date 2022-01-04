@@ -189,12 +189,12 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& me, object pose_msg)
 //         return this->get_override("duplicate")();
 //     }
 //
-//     void writeToStream(mrpt::utils::CStream& stream, int32_t* pos) const
+//     void writeToStream(mrpt::io::CStream& stream, int32_t* pos) const
 //     {
 //         this->get_override("writeToStream")(stream, pos);
 //     }
 //
-//     void readFromStream(mrpt::utils::CStream& stream, int32_t pos)
+//     void readFromStream(mrpt::io::CStream& stream, int32_t pos)
 //     {
 //         this->get_override("readFromStream")(stream, pos);
 //     }

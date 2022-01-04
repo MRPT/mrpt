@@ -31,7 +31,7 @@ namespace mrpt::opengl
  * increasing the possibilities of rendered scenes.
  *
  * An object of COpenGLScene always contains at least one viewport
- * (utils::COpenGLViewport), named "main". Optionally, any
+ * (mrpt::opengl::COpenGLViewport), named "main". Optionally, any
  * number of other viewports may exist. Viewports are referenced by their
  * names, case-sensitive strings. Each viewport contains
  * a different 3D scene (i.e. they render different objects), though a
