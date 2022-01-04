@@ -341,9 +341,9 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 							// img->GetHeight());
 						}
 						delete img;
-						wnd->m_image->Refresh(false);  // false: Do NOT erase
-						// background: avoid
-						// flickering
+						// false: Do NOT erase background: avoid flickering
+						wnd->m_image->Refresh(false);
+						wnd->m_image->Update();
 					}
 					break;
 				// Set position
