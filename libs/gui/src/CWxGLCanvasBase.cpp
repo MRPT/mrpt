@@ -108,11 +108,7 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		setMousePos(X, Y);
 		setCameraParams(params);
 
-#if wxCHECK_VERSION(2, 9, 5)
-		wxTheApp->SafeYieldFor(nullptr, wxEVT_CATEGORY_TIMER);
-#endif
-
-		Refresh();
+		Refresh(false);
 		Update();
 	}
 
@@ -137,6 +133,8 @@ void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 	setCameraParams(params);
 
 	Refresh(false);
+	Update();
+
 	// ensure we have the focus so we get keyboard events:
 	this->SetFocus();
 }
