@@ -107,7 +107,7 @@ class CCamera : public CRenderizable
 		m_pointingY = p.y();
 		m_pointingZ = p.is3DPoseOrPoint() ? p.m_coords[2] : 0;
 	}
-	inline void setPointingAt(const mrpt::math::TPoint3D& p)
+	void setPointingAt(const mrpt::math::TPoint3D& p)
 	{
 		setPointingAt(d2f(p.x), d2f(p.y), d2f(p.z));
 	}
