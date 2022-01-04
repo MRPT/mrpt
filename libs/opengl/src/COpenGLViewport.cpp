@@ -1023,7 +1023,6 @@ void COpenGLViewport::updateMatricesFromCamera() const
 		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
 		_.eye.z = _.pointing.z + dis * sin(_.elev);
 
-
 		_.up.x = -cos(_.azimuth) * sin(_.elev);
 		_.up.y = -sin(_.azimuth) * sin(_.elev);
 		_.up.z = cos(_.elev);
