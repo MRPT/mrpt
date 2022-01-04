@@ -1016,12 +1016,13 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	{
 		// Normal mode: use "camera orbit" parameters to compute pointing-to
 		// point:
+		_.pointing = myCamera->getPointingAt();
+
 		const double dis = std::max<double>(0.001, myCamera->getZoomDistance());
 		_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
 		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
 		_.eye.z = _.pointing.z + dis * sin(_.elev);
 
-		_.pointing = myCamera->getPointingAt();
 
 		_.up.x = -cos(_.azimuth) * sin(_.elev);
 		_.up.y = -sin(_.azimuth) * sin(_.elev);
