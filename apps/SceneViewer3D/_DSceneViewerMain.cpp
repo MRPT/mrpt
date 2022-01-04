@@ -292,42 +292,28 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 				if (!os::_strcmpi(it->name.c_str(), curFileName.c_str()))
 				{
 					// Look for the desired file:
+					std::optional<std::string> fil;
 					if (evkey == WXK_LEFT)
 					{
-						if (i > 0)
-							theWindow->loadFromFile(
-								lstFiles[i - 1].wholePath, true);
-						return;
+						if (i > 0) fil = lstFiles[i - 1].wholePath;
 					}
 					else
 					{
 						if (i < (lstFiles.size() - 1))
-							theWindow->loadFromFile(
-								lstFiles[i + 1].wholePath, true);
-						else
-						{
-							// This was the last file
-						}
-						return;
+							fil = lstFiles[i + 1].wholePath;
 					}
+
+					if (fil.has_value())
+						theWindow->loadFromFile(fil.value(), true);
+					return;
 				}
 			}
 		}
-		catch (std::exception&)
+		catch (const std::exception& e)
 		{
-			// cerr << "*EXCEPTION* while determining next/previous file:\n" <<
-			// mrpt::exception_to_str(e) << endl;
+			std::cerr << "*EXCEPTION* while determining next/previous file:\n"
+					  << e.what() << std::endl;
 		}
-		catch (...)
-		{
-		}
-	}
-
-	if (evkey == WXK_UP || evkey == WXK_DOWN)
-	{
-		// Move the camera forward-backward:
-		// ...
-		// Refresh(false);
 	}
 }
 
