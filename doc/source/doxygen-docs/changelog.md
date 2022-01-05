@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.4.2: UNRELEASED
+(No changes yet)
+
 # Version 2.4.1: Released Jan 5th, 2022
 - Changes in build system:
     - Disable -flto in nanogui (to avoid an [Eigen regression](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1000780)).
