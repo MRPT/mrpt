@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -69,19 +69,25 @@ struct TBoundingBox_
 	}
 
 	/** Returns the intersection of this bounding box with "b", or std::nullopt
-	 * if no intersection exists. */
+	 * if no intersection exists.
+	 * Note that borders are enlarged by "epsilon" before to testing for
+	 * intersection to handle numerical innacuracies, for example on planar
+	 * bounding boxes with a fixed "z".
+	 */
 	std::optional<TBoundingBox_<T>> intersection(
-		const TBoundingBox_<T>& b) const
+		const TBoundingBox_<T>& b, const T epsilon = static_cast<T>(1e-4)) const
 	{
-		if (b.min.x > max.x || b.min.y > max.y || b.min.z > max.z ||
-			b.max.x < min.x || b.max.y < min.y || b.max.z < min.z)
+		if (b.min.x - epsilon > max.x || b.min.y - epsilon > max.y ||
+			b.min.z - epsilon > max.z || b.max.x + epsilon < min.x ||
+			b.max.y + epsilon < min.y || b.max.z + epsilon < min.z)
 			return {};
 
 		return {TBoundingBox_<T>(
 			{std::max(min.x, b.min.x), std::max(min.y, b.min.y),
 			 std::max(min.z, b.min.z)},
 			{std::min(max.x, b.max.x), std::min(max.y, b.max.y),
-			 std::min(max.z, b.max.z)})};
+			 std::min(max.z, b.max.z)},
+			CTOR_FLAGS::AllowUnordered)};
 	}
 
 	/** Returns the union of this bounding box with "b", i.e. a new bounding box

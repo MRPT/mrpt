@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -465,8 +465,29 @@ void project2D(
 bool intersect(const TPolygon2D& p1, const TSegment2D& s2, TObject2D& obj);
 /** Gets the intersection between a 2D polygon and a 2D line. \sa TObject2D  */
 bool intersect(const TPolygon2D& p1, const TLine2D& r2, TObject2D& obj);
-/** Gets the intersection between two 2D polygons. \sa TObject2D */
-bool intersect(const TPolygon2D& p1, const TPolygon2D& p2, TObject2D& obj);
+
+/** The [Sutherland-Hodgman
+ * algorithm](https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm)
+ *  for finding the intersection between two 2D polygons.
+ *
+ *  Note that at least one of the polygons (`clipping`) must be **convex**.
+ *  The other polygon (`subject`) may be convex or concave.
+ *
+ *  See code example: \ref math_polygon_intersection
+ *
+ *  \return The intersection, or an empty (no points) polygon if there is no
+ * intersection at all.
+ *
+ * \note (New in MRPT 2.4.1)
+ */
+TPolygon2D intersect(const TPolygon2D& subject, const TPolygon2D& clipping);
+
+/** \overload, returning the intersection into `result`.
+ *  \return false if there is no intersection at all, true otherwise.
+ */
+bool intersect(
+	const TPolygon2D& subject, const TPolygon2D& clipping, TObject2D& result);
+
 /** Gets the intersection between a 2D segment and a 2D polygon.  \sa TObject2D
  */
 inline bool intersect(
@@ -736,6 +757,7 @@ void assemblePolygons(
 
 /**
  * Splits a 2D polygon into convex components.
+ * \sa Example: math_polygon_split
  */
 bool splitInConvexComponents(
 	const TPolygon2D& poly, std::vector<TPolygon2D>& components);
@@ -1089,6 +1111,13 @@ bool RectanglesIntersection(
   * (JLB @ 18-SEP-2007)
   */
 CMatrixDouble33 generateAxisBaseFromDirection(double dx, double dy, double dz);
+
+/** Returns the area of a polygon, positive if vertices listed in CCW ordering,
+ * negative if CW.
+ *
+ *  \note (New in MRPT 2.4.1)
+ */
+double signedArea(const mrpt::math::TPolygon2D& p);
 
 /** @} */  // end of misc. geom. methods
 

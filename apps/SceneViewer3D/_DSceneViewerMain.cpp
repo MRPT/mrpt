@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -292,42 +292,28 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 				if (!os::_strcmpi(it->name.c_str(), curFileName.c_str()))
 				{
 					// Look for the desired file:
+					std::optional<std::string> fil;
 					if (evkey == WXK_LEFT)
 					{
-						if (i > 0)
-							theWindow->loadFromFile(
-								lstFiles[i - 1].wholePath, true);
-						return;
+						if (i > 0) fil = lstFiles[i - 1].wholePath;
 					}
 					else
 					{
 						if (i < (lstFiles.size() - 1))
-							theWindow->loadFromFile(
-								lstFiles[i + 1].wholePath, true);
-						else
-						{
-							// This was the last file
-						}
-						return;
+							fil = lstFiles[i + 1].wholePath;
 					}
+
+					if (fil.has_value())
+						theWindow->loadFromFile(fil.value(), true);
+					return;
 				}
 			}
 		}
-		catch (std::exception&)
+		catch (const std::exception& e)
 		{
-			// cerr << "*EXCEPTION* while determining next/previous file:\n" <<
-			// mrpt::exception_to_str(e) << endl;
+			std::cerr << "*EXCEPTION* while determining next/previous file:\n"
+					  << e.what() << std::endl;
 		}
-		catch (...)
-		{
-		}
-	}
-
-	if (evkey == WXK_UP || evkey == WXK_DOWN)
-	{
-		// Move the camera forward-backward:
-		// ...
-		// Refresh(false);
 	}
 }
 
@@ -883,22 +869,12 @@ void _DSceneViewerFrame::loadFromFile(
 		// Save the path
 		saveLastUsedDirectoryToCfgFile(fil);
 
-		// static float
-		// old_cam_pX,old_cam_pY,old_cam_pZ,old_cam_d,old_cam_az,old_cam_el;
-		static bool first = true;
-
-		if (first)
-		{
-			first = false;
-			// old_cam_pX=old_cam_pY=old_cam_pZ=old_cam_d=old_cam_az=old_cam_el=0.0f;
-		}
-
 		CFileGZInputStream f(fil);
 
 		const auto oldCanvasCamera = m_canvas->cameraParams();
 
 		static mrpt::system::CTicTac tictac;
-		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+		auto& openGLSceneRef = m_canvas->getOpenGLSceneRef();
 		{
 			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
 
@@ -924,10 +900,8 @@ void _DSceneViewerFrame::loadFromFile(
 		if (openGLSceneRef->followCamera())
 		{
 			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
-			if (!view)
-				THROW_EXCEPTION(
-					"Fatal error: there is no 'main' viewport in the 3D "
-					"scene!");
+			ASSERTMSG_(
+				view, "ERROR: there is no 'main' viewport in the 3D scene!");
 
 			CCamera::Ptr cam = openGLSceneRef->getByClass<CCamera>();
 
@@ -974,6 +948,7 @@ void _DSceneViewerFrame::loadFromFile(
 			(format("File loaded in %.03fs", timeToLoad).c_str()), 0);
 
 		Refresh(false);
+		Update();
 	}
 	catch (const std::exception&)
 	{

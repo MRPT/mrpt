@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -189,12 +189,12 @@ void CPose3D_from_ROS_Pose_msg(CPose3D& me, object pose_msg)
 //         return this->get_override("duplicate")();
 //     }
 //
-//     void writeToStream(mrpt::utils::CStream& stream, int32_t* pos) const
+//     void writeToStream(mrpt::io::CStream& stream, int32_t* pos) const
 //     {
 //         this->get_override("writeToStream")(stream, pos);
 //     }
 //
-//     void readFromStream(mrpt::utils::CStream& stream, int32_t pos)
+//     void readFromStream(mrpt::io::CStream& stream, int32_t pos)
 //     {
 //         this->get_override("readFromStream")(stream, pos);
 //     }

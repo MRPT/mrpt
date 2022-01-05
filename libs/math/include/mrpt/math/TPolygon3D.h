@@ -2,12 +2,13 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 
@@ -22,6 +23,56 @@ namespace mrpt::math
 class TPolygon3D : public std::vector<TPoint3D>
 {
    public:
+	/** Default constructor. Creates a polygon with no vertices.  */
+	TPolygon3D() : std::vector<TPoint3D>() {}
+
+	/** Constructor for a given size. Creates a polygon with a fixed number of
+	 * vertices (uninitialized) */
+	explicit TPolygon3D(size_t N) : std::vector<TPoint3D>(N) {}
+
+	/** Implicit constructor from a 3D points vector. */
+	TPolygon3D(const std::vector<TPoint3D>& v) : std::vector<TPoint3D>(v) {}
+
+	/** Constructor from a 2D object. Zeroes the z. */
+	explicit TPolygon3D(const TPolygon2D& p);
+
+	/** Builds a polygon from a YAML sequence (vertices) of sequences (`[x y z]`
+	 * coordinates).
+	 * \sa asYAML
+	 * \note User must include `#include <mrpt/containers/yaml.h>` if using this
+	 *       method, only a forward declaration is defined here to speed up
+	 *       compilation \note (New in MRPT 2.4.1)
+	 */
+	static TPolygon3D FromYAML(const mrpt::containers::yaml& c);
+
+	/** Static method to create a regular polygon, given its size and radius.
+	 * \throw std::logic_error if number of edges is less than three, or radius
+	 * is near zero. */
+
+	/** Constructor from list of vertices data, for example:
+	 * \code
+	 * const mrpt::math::TPolygon3D p = {
+	 *  {-6.0, 0.5, 0.0}, {8.0, 2.0, 1.0}, {10.0, 4.0, 2.0}
+	 *  };
+	 * \endcode
+	 */
+	TPolygon3D(const std::initializer_list<TPoint3D>&& vertices)
+		: std::vector<TPoint3D>(
+			  std::forward<const std::initializer_list<TPoint3D>&>(vertices))
+	{
+	}
+
+	/** Returns a YAML representation of the polygon as a sequence (vertices) of
+	 * sequences (`[x y z]` coordinates).
+	 *
+	 * \sa FromYAML
+	 *
+	 * \note User must include `#include <mrpt/containers/yaml.h>` if using this
+	 *       method, only a forward declaration is defined here to speed up
+	 *       compilation \note (New in MRPT 2.4.1)
+	 */
+	mrpt::containers::yaml asYAML() const;
+
 	/** Distance to point (always >=0) */
 	double distance(const TPoint3D& point) const;
 	/** Check whether a point is inside (or within geometryEpsilon of a polygon
@@ -46,18 +97,6 @@ class TPolygon3D : public std::vector<TPoint3D>
 	void removeRepeatedVertices();
 	/** Erase every redundant vertex, thus saving space. */
 	void removeRedundantVertices();
-	/** Default constructor. Creates a polygon with no vertices.  */
-	TPolygon3D() : std::vector<TPoint3D>() {}
-	/** Constructor for a given size. Creates a polygon with a fixed number of
-	 * vertices, which are initialized to garbage. */
-	explicit TPolygon3D(size_t N) : std::vector<TPoint3D>(N) {}
-	/** Implicit constructor from a 3D points vector. */
-	TPolygon3D(const std::vector<TPoint3D>& v) : std::vector<TPoint3D>(v) {}
-	/** Constructor from a 2D object. Zeroes the z. */
-	explicit TPolygon3D(const TPolygon2D& p);
-	/** Static method to create a regular polygon, given its size and radius.
-	 * \throw std::logic_error if number of edges is less than three, or radius
-	 * is near zero. */
 	static void createRegularPolygon(
 		size_t numEdges, double radius, TPolygon3D& poly);
 	/** Static method to create a regular polygon, given its size and radius.

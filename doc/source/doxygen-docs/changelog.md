@@ -1,10 +1,37 @@
 \page changelog Change Log
 
+# Version 2.4.1: Released Jan 5th, 2022
+- Changes in build system:
+    - Disable -flto in nanogui (to avoid an [Eigen regression](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1000780)).
+- Changes in applications:
+  - rawlog-edit:
+    - New flag `--externals-filename-format`
+  - RawlogViewer:
+    - Better handling of exceptions failing to load delayed-load images.
+- Changes in libraries:
+  - \ref mrpt_core_grp
+    - Remove unused header `<mrpt/3rdparty/llvm/propagate_const.h>`.
+  - \ref mrpt_graphs_grp
+    - mrpt::graphs::CDijkstra now has an optional maximum topological search range.
+  - \ref mrpt_math_grp
+    - New geometry functions:
+      - mrpt::math::intersect(const TPolygon2D& subject, const TPolygon2D& clipping)
+      - mrpt::math::signedArea(const mrpt::math::TPolygon2D& p)
+  - \ref mrpt_obs_grp
+    - New function mrpt::obs::format_externals_filename()
+  - Embedded copy of nanoflann: upgraded to v1.4.0.
+- BUG FIXES:
+  - Fix bug in mrpt::math::getAngle(const TPlane&, const TPlane&).
+  - Fix exception if mrpt::opengl::CFBORender is used with setProjectiveFromPinhole() camera models.
+  - Fix CMake Warning at cmakemodules/FindFilesystem.cmake and failure to detect the std::filesystem feature in some g++ versions.
+  - Fix numerical innacuracies with planar bounding boxes, fixed via new `epsilon` parameter in mrpt::math::TBoundingBox::intersection()
+  - Fix sluggish rendering in opengl+wxWidgets controls (e.g. within RawLogViewer, etc.).
+
 # Version 2.4.0: Released Dec 12th, 2021
 - Changes in build system:
   - Most important CMake variables now are prefixed with `MRPT_` to avoid name collisions if using MRPT as a git submodule in a larger project.
   - `GNUInstallDirs` directories are now always honored when installing.
-- Changes in applications:
+- Changes in acpplications:
   - ptg-configurator:
     - Show selected PTG path output motion command.
   - navlog-viewer:

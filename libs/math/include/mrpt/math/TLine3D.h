@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -30,8 +30,10 @@ struct TLine3D
 
 	/** Constructor from two points, through which the line will pass.
 	 * \throw std::logic_error if both points are the same.
+	 * \sa mrpt::math::getRegressionLine()
 	 */
 	TLine3D(const TPoint3D& p1, const TPoint3D& p2);
+
 	/** Constructor from 3D segment  */
 	explicit TLine3D(const TSegment3D& s);
 
@@ -46,6 +48,7 @@ struct TLine3D
 
 	/** Static constructor from two points.
 	 * \note [New in MRPT 2.0.4]
+	 * \sa mrpt::math::getRegressionLine()
 	 */
 	static TLine3D FromTwoPoints(const TPoint3D& p1, const TPoint3D& p2);
 

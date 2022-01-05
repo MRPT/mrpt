@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -87,7 +87,7 @@ class CBeacon : public mrpt::poses::CPointPDF
 	 * Note that this field is never fill out automatically, it must be set by
 	 *the programmer if used.
 	 */
-	TBeaconID m_ID{INVALID_BEACON_ID};
+	TBeaconID m_ID = mrpt::obs::INVALID_BEACON_ID;
 
 	void getMean(mrpt::poses::CPoint3D& mean_point) const override;
 

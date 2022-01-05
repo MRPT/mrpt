@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -88,7 +88,7 @@ void TestDisplay3D()
 
 	mrpt::system::CTimeLogger tl;
 
-	int width = 640, height = 480;
+	int width = 500, height = 400;
 	const double cameraFOVdeg = 90.0;
 
 	CFBORender renderer(width, height);

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -21,11 +21,11 @@ namespace mrpt
 namespace obs
 {
 /** Used for CObservationBeaconRange, CBeacon, etc. \ingroup mrpt_obs_grp */
-#define INVALID_BEACON_ID (-1)
+static constexpr int INVALID_BEACON_ID = -1;
 
 /** Used for CObservationBearingRange::TMeasurement::beaconID and others.
  * \ingroup mrpt_obs_grp */
-#define INVALID_LANDMARK_ID (-1)
+static constexpr int INVALID_LANDMARK_ID = -1;
 
 /** Generic sensor observation.
  *

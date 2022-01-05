@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -962,21 +962,6 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	// Prepare camera (projection matrix):
 	COpenGLViewport* viewForGetCamera = nullptr;
 
-	if (m_isCloned)
-	{  // Clone: render someone's else objects.
-		ASSERT_(m_parent.get() != nullptr);
-
-		const auto view = m_parent->getViewport(m_clonedViewport);
-		if (!view)
-			THROW_EXCEPTION_FMT(
-				"Cloned viewport '%s' not found in parent COpenGLScene",
-				m_clonedViewport.c_str());
-	}
-	else
-	{  // Normal case: render our own objects:
-		viewForGetCamera = const_cast<COpenGLViewport*>(this);
-	}
-
 	if (!m_clonedCameraViewport.empty())
 	{
 		const auto view = m_parent->getViewport(m_clonedCameraViewport);
@@ -1031,12 +1016,12 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	{
 		// Normal mode: use "camera orbit" parameters to compute pointing-to
 		// point:
+		_.pointing = myCamera->getPointingAt();
+
 		const double dis = std::max<double>(0.001, myCamera->getZoomDistance());
 		_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
 		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
 		_.eye.z = _.pointing.z + dis * sin(_.elev);
-
-		_.pointing = myCamera->getPointingAt();
 
 		_.up.x = -cos(_.azimuth) * sin(_.elev);
 		_.up.y = -sin(_.azimuth) * sin(_.elev);

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -31,7 +31,7 @@ namespace mrpt::opengl
  * increasing the possibilities of rendered scenes.
  *
  * An object of COpenGLScene always contains at least one viewport
- * (utils::COpenGLViewport), named "main". Optionally, any
+ * (mrpt::opengl::COpenGLViewport), named "main". Optionally, any
  * number of other viewports may exist. Viewports are referenced by their
  * names, case-sensitive strings. Each viewport contains
  * a different 3D scene (i.e. they render different objects), though a
@@ -104,12 +104,11 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 			insert(*it, vpn);
 	}
 
-	/**Creates a new viewport, adding it to the scene and returning a pointer to
-	 * the new object.
-	 *  Names (case-sensitive) cannot be duplicated: if the name provided
-	 * coincides with an already existing viewport, a pointer to the existing
-	 * object will be returned.
-	 *  The first, default viewport, is named "main".
+	/** Creates a new viewport, adding it to the scene and returning a pointer
+	 * to the new object. Names (case-sensitive) cannot be duplicated: if the
+	 * name provided coincides with an already existing viewport, a pointer to
+	 * the existing object will be returned. The first, default viewport, is
+	 * named "main".
 	 */
 	COpenGLViewport::Ptr createViewport(const std::string& viewportName);
 

@@ -5,7 +5,14 @@ include(CheckIncludeFileCXX)
 include(CheckCXXSourceCompiles)
 
 cmake_push_check_state(RESET)
+
+# this seems not to affect check_cxx_source_compiles()...
 set(CMAKE_CXX_STANDARD 17)
+
+if(MRPT_COMPILER_IS_GCC_OR_CLANG)
+    set(CMAKE_REQUIRED_LINK_OPTIONS -std=c++17)
+    set(CMAKE_REQUIRED_FLAGS -std=c++17)
+endif()
 
 set(have_fs FALSE)
 
