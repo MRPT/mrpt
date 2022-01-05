@@ -79,6 +79,7 @@ under `MRPT/samples <https://github.com/MRPT/mrpt/tree/develop/samples>`_.
   page_math_matrix_example.rst
   page_math_model_search_example.rst
   page_math_optimize_lm_example.rst
+  page_math_polygon_intersection.rst
   page_math_polygon_split.rst
   page_math_polyhedron_intersection_example.rst
   page_math_ransac_examples.rst

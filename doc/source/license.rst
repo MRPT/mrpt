@@ -9,7 +9,7 @@ third-party embedded sources which have their own licenses (listed below).
 
 .. code-block:: text
 
-  Copyright (c) 2005-2021, Individual contributors, see AUTHORS file
+  Copyright (c) 2005-2022, Individual contributors, see AUTHORS file
   Copyright (c) 2005-2021, MAPIR group, University of Malaga
   Copyright (c) 2012-2020, University of Almeria
   All rights reserved.
@@ -44,4 +44,5 @@ Most are 3-clause-BSD too, but if some conflict with the desired license for
 your application, you will have to build MRPT without those conflicting sources.
 
 See detailed copyright information of portions of code from other authors in:
-https://github.com/MRPT/mrpt/blob/develop/packaging/debian/copyright
+https://salsa.debian.org/robotics-team/mrpt/-/blob/master/debian/copyright
+

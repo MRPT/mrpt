@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -65,6 +65,21 @@ void testIntersections()
 		mrpt::math::TBoundingBox_<T> bb2({1.1, 0, 0}, {1.2, 1, 1});
 		const auto inter = bb1.intersection(bb2);
 		EXPECT_FALSE(inter);
+	}
+
+	{
+		mrpt::math::TBoundingBox_<T> bb1({0, 0, 0}, {1, 1, 0});
+		mrpt::math::TBoundingBox_<T> bb2({0.1, 0.2, 0}, {0.8, 0.9, 0});
+		const T epsilon = static_cast<T>(0.001);
+		const auto inter = bb1.intersection(bb2, epsilon);
+		EXPECT_TRUE(inter);
+	}
+	{
+		mrpt::math::TBoundingBox_<T> bb1({0, 0, -1e-8}, {1, 1, -1e-8});
+		mrpt::math::TBoundingBox_<T> bb2({0.1, 0.2, -1e-9}, {0.8, 0.9, 2e-9});
+		const T epsilon = static_cast<T>(0.001);
+		const auto inter = bb1.intersection(bb2, epsilon);
+		EXPECT_TRUE(inter);
 	}
 
 	{

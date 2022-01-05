@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -72,7 +72,7 @@ class CLandmark : public mrpt::serialization::CSerializable
 	 * Note that this field is never fill out automatically, it must be set by
 	 *the programmer if used.
 	 */
-	TLandmarkID ID{INVALID_LANDMARK_ID};
+	TLandmarkID ID = mrpt::obs::INVALID_LANDMARK_ID;
 
 	/** The last time that this landmark was observed. */
 	mrpt::system::TTimeStamp timestampLastSeen{INVALID_TIMESTAMP};

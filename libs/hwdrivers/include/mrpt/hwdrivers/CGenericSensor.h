@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -298,7 +298,7 @@ static_assert(
 
 #define SENSOR_CLASS_ID(class_name)                                            \
 	static_cast<const mrpt::hwdrivers::TSensorClassId*>(                       \
-		&mrpt::hwdrivers::class_name::class##class_name)
+		&class_name::class##class_name)
 
 #define SENSOR_IS_CLASS(ptrObj, class_name)                                    \
 	(ptrObj->GetRuntimeClass() == SENSOR_CLASS_ID(class_name))
@@ -321,7 +321,7 @@ static_assert(
 #define IMPLEMENTS_GENERIC_SENSOR(class_name, NameSpace)                       \
 	mrpt::hwdrivers::CGenericSensor* NameSpace::class_name::CreateObject()     \
 	{                                                                          \
-		return static_cast<hwdrivers::CGenericSensor*>(                        \
+		return static_cast<mrpt::hwdrivers::CGenericSensor*>(                  \
 			new NameSpace::class_name);                                        \
 	}                                                                          \
 	mrpt::hwdrivers::TSensorClassId NameSpace::class_name::class##class_name = \

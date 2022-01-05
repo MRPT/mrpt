@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -103,10 +103,11 @@ class KDTreeCapable
 	{
 		TKDTreeSearchParams() = default;
 		/** Max points per leaf */
-		size_t leaf_max_size{10};
+		size_t leaf_max_size = 10;
 	};
 
-	/** Parameters to tune the ANN searches */
+	/** Parameters to tune KD-tree searches. Refer to nanoflann docs.
+	 */
 	TKDTreeSearchParams kdtree_search_params;
 
 	/** @name Public utility methods to query the KD-tree
@@ -777,10 +778,10 @@ class KDTreeCapable
 			m_kdtree2d_data.m_dim = 2;
 			if (N)
 			{
-				m_kdtree2d_data.index.reset(new tree2d_t(
+				m_kdtree2d_data.index = std::make_unique<tree2d_t>(
 					2, derived(),
 					nanoflann::KDTreeSingleIndexAdaptorParams(
-						kdtree_search_params.leaf_max_size)));
+						kdtree_search_params.leaf_max_size));
 				m_kdtree2d_data.index->buildIndex();
 			}
 			m_kdtree_is_uptodate = true;
@@ -811,10 +812,10 @@ class KDTreeCapable
 			m_kdtree3d_data.m_dim = 3;
 			if (N)
 			{
-				m_kdtree3d_data.index.reset(new tree3d_t(
+				m_kdtree3d_data.index = std::make_unique<tree3d_t>(
 					3, derived(),
 					nanoflann::KDTreeSingleIndexAdaptorParams(
-						kdtree_search_params.leaf_max_size)));
+						kdtree_search_params.leaf_max_size));
 				m_kdtree3d_data.index->buildIndex();
 			}
 			m_kdtree_is_uptodate = true;

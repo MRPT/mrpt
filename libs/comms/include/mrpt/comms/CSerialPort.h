@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -13,7 +13,7 @@
 
 namespace mrpt::comms
 {
-/** A communications serial port built as an implementation of a utils::CStream.
+/** A communications serial port implementing the interface mrpt::io::CStream.
  * On communication errors (eg. the given port number does not exist,
  * timeouts,...), most of the methods will
  * raise an exception of the class `std::exception`

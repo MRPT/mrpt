@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/format_externals_filename.h>
 
 #include "rawlog-edit-declarations.h"
 
@@ -37,6 +38,8 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 		string imgFileExtension;
 		string outDir;
 
+		std::string m_obsFmtString = "${type}_${label}_%.06%f";
+
 	   public:
 		size_t entries_converted;
 		size_t entries_skipped;	 // Already external
@@ -50,15 +53,19 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			entries_skipped = 0;
 
 			getArgValue<string>(cmdline, "image-format", imgFileExtension);
+			getArgValue<string>(
+				cmdline, "externals-filename-format", m_obsFmtString);
 		}
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
+			using namespace std::string_literals;
+
 			map<string, string> files2rename;
 
-			const string label_time = format(
-				"%s_%f", obs->sensorLabel.c_str(),
-				timestampTotime_t(obs->timestamp));
+			string prefix =
+				mrpt::obs::format_externals_filename(*obs, m_obsFmtString);
+
 			if (IS_CLASS(*obs, CObservationStereoImages))
 			{
 				CObservationStereoImages::Ptr obsSt =
@@ -70,8 +77,8 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 					obsSt->imageLeft.getExternalStorageFileAbsolutePath(
 						prevName);
 
-					const string fileName = string("img_") + label_time +
-						string("_left.") + imgFileExtension;
+					const string fileName = prefix =
+						"_left."s + imgFileExtension;
 					obsSt->imageLeft.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -88,8 +95,8 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 					obsSt->imageRight.getExternalStorageFileAbsolutePath(
 						prevName);
 
-					const string fileName = string("img_") + label_time +
-						string("_right.") + imgFileExtension;
+					const string fileName =
+						prefix + "_right."s + imgFileExtension;
 					obsSt->imageRight.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -110,8 +117,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 					string prevName, newName;
 					obsIm->image.getExternalStorageFileAbsolutePath(prevName);
 
-					const string fileName = string("img_") + label_time +
-						string(".") + imgFileExtension;
+					const string fileName = prefix + "."s + imgFileExtension;
 					obsIm->image.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -135,8 +141,8 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 					obs3D->intensityImage.getExternalStorageFileAbsolutePath(
 						prevName);
 
-					const string fileName = string("3DCAM_") + label_time +
-						string("_INT.") + imgFileExtension;
+					const string fileName =
+						prefix + "_INT."s + imgFileExtension;
 					obs3D->intensityImage.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -155,8 +161,8 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 					obs3D->confidenceImage.getExternalStorageFileAbsolutePath(
 						prevName);
 
-					const string fileName = string("3DCAM_") + label_time +
-						string("_CONF.") + imgFileExtension;
+					const string fileName =
+						prefix + "_CONF."s + imgFileExtension;
 					obs3D->confidenceImage.setExternalStorage(fileName);
 					entries_converted++;
 
@@ -169,10 +175,10 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			}
 
 			// Do the actual file renaming:
-			for (auto it = files2rename.begin(); it != files2rename.end(); ++it)
+			for (const auto& mapping : files2rename)
 			{
-				const string& prevFil = it->first;
-				const string& newFil = it->second;
+				const string& prevFil = mapping.first;
+				const string& newFil = mapping.second;
 
 				if (mrpt::system::fileExists(prevFil))
 				{
@@ -183,7 +189,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 				else
 				{
 					std::cerr << "Warning: Missing external file: " << prevFil
-							  << std::endl;
+							  << "( => '" << newFil << "')\n";
 				}
 			}
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -12,13 +12,15 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <limits>
 #include <vector>
 
 namespace mrpt::bayes
 {
-#define INVALID_LIKELIHOOD_VALUE                                               \
-	(-1e300)  // An invalid log-likelihood value, used to signal non-initialized
-// likelihood variables.
+/** invalid log-likelihood value, used to signal non-initialized likelihood
+ * variables. */
+static constexpr double INVALID_LIKELIHOOD_VALUE =
+	std::numeric_limits<double>::quiet_NaN();
 
 /** This virtual class defines the interface that any particles based PDF class
  * must implement in order to be executed by a mrpt::bayes::CParticleFilter.

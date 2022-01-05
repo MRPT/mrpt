@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -482,12 +482,8 @@ void CDisplayWindow3D::unlockAccess3DScene() { m_csAccess3DScene.unlock(); }
 void CDisplayWindow3D::forceRepaint()
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
-	auto* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win)
+	if (auto* win = (C3DWindowDialog*)m_hwnd.get(); win)
 	{
-		// win->Refresh(false); // Do not erase background
-		// We must do this from the wx thread!
-
 		// Send refresh request:
 		auto* REQ = new WxSubsystem::TRequestToWxMainThread[1];
 		REQ->source3D = this;

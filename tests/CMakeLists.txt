@@ -66,7 +66,7 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	# Add the required libraries for linking:
 	if (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 		# System vesion:
-		set(gtest_lib_name gtest)
+		set(gtest_lib_name GTest::GTest)
 	else ()
 		# Own version:
 		set(gtest_lib_name mrptgtest)

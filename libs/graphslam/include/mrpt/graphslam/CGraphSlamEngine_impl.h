@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -162,7 +162,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 	m_request_to_exit = false;
 
 	// max node number already in the graph
-	m_nodeID_max = INVALID_NODEID;
+	m_nodeID_max = mrpt::graphs::INVALID_NODEID;
 
 	m_is_paused = false;
 	m_GT_poses_index = 0;
@@ -815,7 +815,7 @@ void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
 
 	std::lock_guard<std::mutex> graph_lock(m_graph_section);
 	size_t listed_nodeCount =
-		(m_nodeID_max == INVALID_NODEID ? 0 : m_nodeID_max + 1);
+		(m_nodeID_max == mrpt::graphs::INVALID_NODEID ? 0 : m_nodeID_max + 1);
 
 	if (!registered)
 	{  // just check that it's the same.

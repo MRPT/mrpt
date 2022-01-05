@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -144,7 +144,7 @@ void PlannerRRT_SE2_TPS::solve(
 				result.move_tree.getNearestNode(query_node, distance_evaluator);
 			m_timelogger.leave("TMoveTree::getNearestNode");
 
-			if (x_nearest_id == INVALID_NODEID)
+			if (x_nearest_id == mrpt::graphs::INVALID_NODEID)
 			{
 				// We can't find any close node, at least with this PTG's paths:
 				// skip
@@ -299,7 +299,7 @@ void PlannerRRT_SE2_TPS::solve(
 					(goal_dist < end_criteria.acceptedDistToTarget) &&
 					(goal_ang < end_criteria.acceptedAngToTarget);
 
-				auto new_nearest_id = INVALID_NODEID;
+				auto new_nearest_id = mrpt::graphs::INVALID_NODEID;
 				if (!is_acceptable_goal)  // Only check for nearby nodes if this
 				// is not a solution!
 				{
@@ -312,7 +312,7 @@ void PlannerRRT_SE2_TPS::solve(
 						&new_nearest_dist, &result.acceptable_goal_node_ids);
 					m_timelogger.leave("TMoveTree::getNearestNode");
 
-					if (new_nearest_id != INVALID_NODEID)
+					if (new_nearest_id != mrpt::graphs::INVALID_NODEID)
 					{
 						// Also check angular distance:
 						const double new_nearest_ang =
@@ -331,7 +331,7 @@ void PlannerRRT_SE2_TPS::solve(
 				if (!accept_this_node)
 				{
 #ifdef DO_LOG_TXTS
-					if (new_nearest_id != INVALID_NODEID)
+					if (new_nearest_id != mrpt::graphs::INVALID_NODEID)
 					{
 						sLogTxt += mrpt::format(
 							" -> new node NOT accepted for closeness to: %s\n",

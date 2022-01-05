@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2021, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -825,14 +825,6 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 					float OSE_new = math::sum(new_sq_errors);
 
 					bool improved = OSE_new < OSE_initial;
-
-#if 0  // Debuggin'
-					cout << "_____________" << endl;
-					cout << "q -> q_new   : " << q << " -> " << q_new << endl;
-					printf("err: %f  -> %f    lambda: %e\n", OSE_initial ,OSE_new, lambda );
-					cout << "\\/J = "; utils::operator <<(cout,dJsq); cout << endl;
-					mrpt::system::pause();
-#endif
 
 					keepIteratingLM =
 						fabs(LM_delta[0]) > options.minAbsStep_trans ||

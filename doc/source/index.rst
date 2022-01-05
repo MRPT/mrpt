@@ -22,6 +22,7 @@ MRPT
   applications
   examples
   supported-sensors
+  unit_testing
   children-projects
 
 .. toctree::
