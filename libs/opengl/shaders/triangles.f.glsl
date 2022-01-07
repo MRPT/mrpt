@@ -8,7 +8,7 @@ R"XXX(
 uniform highp mat4 mv_matrix;
 uniform highp vec4 light_diffuse, light_ambient;
 uniform highp vec3 light_direction;
-uniform int enableLight;  // 0 or 1
+uniform lowp int enableLight;  // 0 or 1
 
 in highp vec3 frag_position, frag_normal;
 in highp vec4 frag_materialColor;
