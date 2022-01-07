@@ -227,7 +227,7 @@ static void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 	}
 }
 
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
 TEST(OpenGL, CFBORender_camera_intrinsics)
 #else
 TEST(OpenGL, DISABLED_CFBORender_camera_intrinsics)
@@ -236,7 +236,7 @@ TEST(OpenGL, DISABLED_CFBORender_camera_intrinsics)
 	test_opengl_CFBORender(true);
 }
 
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
 TEST(OpenGL, CFBORender_camera_fov)
 #else
 TEST(OpenGL, DISABLED_CFBORender_camera_fov)
