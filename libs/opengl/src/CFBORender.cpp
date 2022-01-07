@@ -9,38 +9,120 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/opengl_api.h>
+//
+#include <mrpt/config.h>
+
+#if MRPT_HAS_EGL
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#endif
+
+#define HAVE_FBO (MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL)
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 using mrpt::img::CImage;
 
+const thread_local bool MRPT_FBORENDER_SHOW_DEVICES =
+	mrpt::get_env<bool>("MRPT_FBORENDER_SHOW_DEVICES");
+
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/
 CFBORender::CFBORender(
-	unsigned int width, unsigned int height, const bool skip_glut_window)
+	unsigned int width, unsigned int height, const bool skip_create_egl_context)
 {
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT
+#if HAVE_FBO
 
 	MRPT_START
 
-	if (!skip_glut_window)
+	if (!skip_create_egl_context)
 	{
-		// check a previous initialization of the GLUT
-		if (!glutGet(GLUT_INIT_STATE))
+		static const EGLint configAttribs[] = {
+			EGL_SURFACE_TYPE,
+			EGL_PBUFFER_BIT,
+			EGL_BLUE_SIZE,
+			8,
+			EGL_GREEN_SIZE,
+			8,
+			EGL_RED_SIZE,
+			8,
+			EGL_DEPTH_SIZE,
+			8,
+			EGL_RENDERABLE_TYPE,
+			EGL_OPENGL_BIT,
+			EGL_NONE};
+
+		constexpr int pbufferWidth = 9;
+		constexpr int pbufferHeight = 9;
+
+		static const EGLint pbufferAttribs[] = {
+			EGL_WIDTH, pbufferWidth, EGL_HEIGHT, pbufferHeight, EGL_NONE,
+		};
+
+		static const int MAX_DEVICES = 4;
+		EGLDeviceEXT eglDevs[MAX_DEVICES];
+		EGLint numDevices;
+
+		PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT =
+			(PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress("eglQueryDevicesEXT");
+
+		eglQueryDevicesEXT(MAX_DEVICES, eglDevs, &numDevices);
+
+		if (MRPT_FBORENDER_SHOW_DEVICES)
+			printf("Detected %d devices\n", numDevices);
+
+		PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
+			(PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress(
+				"eglGetPlatformDisplayEXT");
+
+		EGLDisplay eglDpy =
+			eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, eglDevs[0], 0);
+
+		// 1. Initialize EGL
+		if (eglDpy == EGL_NO_DISPLAY)
+		{ THROW_EXCEPTION("Failed to get EGL display"); }
+
+		EGLint major, minor;
+
+		if (eglInitialize(eglDpy, &major, &minor) == EGL_FALSE)
 		{
-			// create the context (a little trick)
-			int argc = 1;
-			char* argv[1] = {nullptr};
-			glutInit(&argc, argv);
+			THROW_EXCEPTION_FMT(
+				"Failed to initialize EGL display: %x\n", eglGetError());
 		}
 
-		// create a hidden window
-		m_win = glutCreateWindow("CFBORender");
-		glutHideWindow();
+		// 2. Select an appropriate configuration
+		EGLint numConfigs;
+		EGLConfig eglCfg;
+
+		eglChooseConfig(eglDpy, configAttribs, &eglCfg, 1, &numConfigs);
+		if (numConfigs != 1)
+		{
+			THROW_EXCEPTION_FMT(
+				"Failed to choose exactly 1 config, chose %d\n", numConfigs);
+		}
+
+		// 3. Create a surface
+		EGLSurface eglSurf =
+			eglCreatePbufferSurface(eglDpy, eglCfg, pbufferAttribs);
+
+		// 4. Bind the API
+		if (!eglBindAPI(EGL_OPENGL_API))
+		{ THROW_EXCEPTION("no opengl api in egl"); }
+
+		// 5. Create a context and make it current
+		eglBindAPI(EGL_OPENGL_API);
+
+		EGLContext eglCtx =
+			eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, NULL);
+
+		eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
+
+		m_eglDpy = eglDpy;
 	}
 
 	// -------------------------------
@@ -79,17 +161,19 @@ CFBORender::CFBORender(
 
 	MRPT_END
 #else
-	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!");
+	THROW_EXCEPTION(
+		"This class requires MRPT built with: OpenCV; OpenGL, and EGL.");
 #endif
 }
 
 CFBORender::~CFBORender()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if HAVE_FBO
 	// delete the current texture, the framebuffer object and the GLUT window
 	glDeleteTextures(1, &m_texRGB);
 	m_fb.destroy();
-	if (m_win != 0) glutDestroyWindow(m_win);
+	// Terminate EGL when finished:
+	if (m_eglDpy) eglTerminate(m_eglDpy);
 #endif
 }
 
@@ -99,7 +183,7 @@ void CFBORender::internal_render_RGBD(
 	[[maybe_unused]] const mrpt::optional_ref<mrpt::math::CMatrixFloat>&
 		optoutDepth)
 {
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT
+#if HAVE_FBO
 
 	MRPT_START
 

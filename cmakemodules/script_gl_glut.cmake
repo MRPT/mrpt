@@ -10,6 +10,9 @@ set(CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM 0)
 set(CMAKE_MRPT_HAS_GLUT 0)
 set(CMAKE_MRPT_HAS_GLUT_SYSTEM 0)
 
+set(CMAKE_MRPT_HAS_EGL 0)
+set(CMAKE_MRPT_HAS_EGL_SYSTEM 0)
+
 if(DISABLE_OPENGL)
 	return()
 endif()
@@ -31,6 +34,13 @@ else()
 	set(MRPT_GL_LIB ${OPENGL_gl_LIBRARY})
 endif()
 
+# EGL:
+find_package(EGL)
+if (EGL_FOUND)
+	set(CMAKE_MRPT_HAS_EGL 1)
+	set(CMAKE_MRPT_HAS_EGL_SYSTEM 1)
+	list(APPEND MRPT_GL_LIB EGL::EGL)
+endif()
 
 if(UNIX)
 	find_package(GLUT)
