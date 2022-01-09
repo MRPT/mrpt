@@ -10,6 +10,9 @@ set(CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM 0)
 set(CMAKE_MRPT_HAS_GLUT 0)
 set(CMAKE_MRPT_HAS_GLUT_SYSTEM 0)
 
+set(CMAKE_MRPT_HAS_EGL 0)
+set(CMAKE_MRPT_HAS_EGL_SYSTEM 0)
+
 if(DISABLE_OPENGL)
 	return()
 endif()
@@ -31,6 +34,18 @@ else()
 	set(MRPT_GL_LIB ${OPENGL_gl_LIBRARY})
 endif()
 
+# EGL:
+if(CMAKE_VERSION VERSION_LESS 3.16.0)
+	message(WARNING "You need cmake >=3.16.0 to detect EGL. Disabling it, some features (FBO off-screen rendering) will not be enabled in MRPT.")
+else()
+	find_package(EGL)
+endif()
+
+if (EGL_FOUND)
+	set(CMAKE_MRPT_HAS_EGL 1)
+	set(CMAKE_MRPT_HAS_EGL_SYSTEM 1)
+	list(APPEND MRPT_GL_LIB EGL::EGL)
+endif()
 
 if(UNIX)
 	find_package(GLUT)
