@@ -35,7 +35,12 @@ else()
 endif()
 
 # EGL:
-find_package(EGL)
+if(CMAKE_VERSION VERSION_LESS 3.16.0)
+	message(WARNING "You need cmake >=3.16.0 to detect EGL. Disabling it, some features (FBO off-screen rendering) will not be enabled in MRPT.")
+else()
+	find_package(EGL)
+endif()
+
 if (EGL_FOUND)
 	set(CMAKE_MRPT_HAS_EGL 1)
 	set(CMAKE_MRPT_HAS_EGL_SYSTEM 1)
