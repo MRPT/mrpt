@@ -137,6 +137,7 @@ SHOW_CONFIG_LINE       ("mexplus                             " CMAKE_MRPT_HAS_MA
 SHOW_CONFIG_LINE_SYSTEM("Octomap                             " CMAKE_MRPT_HAS_OCTOMAP "[Version: ${OCTOMAP_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("OpenCV (Image manipulation)         " CMAKE_MRPT_HAS_OPENCV "[Version: ${MRPT_OPENCV_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("OpenGL                              " CMAKE_MRPT_HAS_OPENGL_GLUT)
+SHOW_CONFIG_LINE_SYSTEM("OpenGL EGL                          " CMAKE_MRPT_HAS_EGL "[Version: ${EGL_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("GLUT                                " CMAKE_MRPT_HAS_GLUT)
 SHOW_CONFIG_LINE_SYSTEM("PCAP (Wireshark logs for Velodyne)  " CMAKE_MRPT_HAS_LIBPCAP)
 SHOW_CONFIG_LINE_SYSTEM("SuiteSparse                         " CMAKE_MRPT_HAS_SUITESPARSE)

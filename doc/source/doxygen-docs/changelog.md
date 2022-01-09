@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.4.2: UNRELEASED
-(No changes yet)
+- Changes in libraries:
+  - \ref mrpt_opengl_grp
+    - mrpt::opengl::CFBORender now does not rely on GLUT to create opengl contexts, but on EGL.
 
 # Version 2.4.1: Released Jan 5th, 2022
 - Changes in build system:

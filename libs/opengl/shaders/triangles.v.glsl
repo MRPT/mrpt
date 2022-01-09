@@ -1,5 +1,5 @@
 R"XXX(
-#version 330 core
+#version 300 es
 
 // VERTEX SHADER: Default shader for MRPT CRenderizable objects
 // Jose Luis Blanco Claraco (C) 2019-2020

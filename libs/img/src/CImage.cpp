@@ -1233,13 +1233,9 @@ float CImage::correlate(
 	{
 		for (size_t j = 0; j < img2.getWidth(); j++)
 		{
-			m1 += *(*this)(
-				j + width_init,
-				i + height_init);  //(double)(ipl1->imageData[i*ipl1->widthStep
-			//+ j ]);
-			m2 += *img2(
-				j, i);	//(double)(ipl2->imageData[i*ipl2->widthStep + j ]);
-		}  //[ row * ipl->widthStep +  col * ipl->nChannels +  channel ];
+			m1 += *(*this)(j + width_init, i + height_init);
+			m2 += *img2(j, i);
+		}
 	}
 	m1 /= n;
 	m2 /= n;
@@ -1248,11 +1244,8 @@ float CImage::correlate(
 	{
 		for (size_t j = 0; j < img2.getWidth(); j++)
 		{
-			x1 = *(*this)(j + width_init, i + height_init) -
-				m1;	 //(double)(ipl1->imageData[i*ipl1->widthStep
-					 //+ j]) - m1;
-			x2 = *img2(j, i) - m2;	//(double)(ipl2->imageData[i*ipl2->widthStep
-									//+ j]) - m2;
+			x1 = *(*this)(j + width_init, i + height_init) - m1;
+			x2 = *img2(j, i) - m2;
 			sxx += x1 * x1;
 			syy += x2 * x2;
 			sxy += x1 * x2;
