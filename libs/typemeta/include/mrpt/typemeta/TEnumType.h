@@ -144,5 +144,14 @@ std::string enum2str(const EnumType& value)
 	return TEnumType<EnumType>::value2name(value);
 }
 
+/** Syntactic sugar for easy conversion of strings into enum values.
+ * \note (New in MRPT 2.4.2)
+ */
+template <typename EnumType>
+EnumType str2enum(const std::string& enumValueName)
+{
+	return TEnumType<EnumType>::name2value(enumValueName);
+}
+
 }  // namespace typemeta
 }  // namespace mrpt

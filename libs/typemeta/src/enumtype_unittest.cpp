@@ -65,6 +65,8 @@ TEST(TEnumType, value2str)
 
 	EXPECT_EQ(mrpt::typemeta::enum2str(East), "East");
 
+	EXPECT_EQ(mrpt::typemeta::str2enum<Directions>("East"), East);
+
 	EXPECT_THROW(
 		TEnumType<TestColors>::value2name(static_cast<TestColors>(5)),
 		std::exception);
