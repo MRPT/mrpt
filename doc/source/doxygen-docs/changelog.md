@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CFBORender now does not rely on GLUT to create opengl contexts, but on EGL.
+  - \ref mrpt_typemeta_grp
+    - Add syntactic sugar function mrpt::typemeta::str2enum<>().
 
 # Version 2.4.1: Released Jan 5th, 2022
 - Changes in build system:
