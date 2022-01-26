@@ -209,7 +209,8 @@ void CFBORender::internal_render_RGBD(
 	// ---------------------------
 	// Render:
 	// ---------------------------
-	scene.getViewport()->render(m_fb.width(), m_fb.height(), 0, 0);
+	for (const auto& viewport : scene.viewports())
+		viewport->render(m_fb.width(), m_fb.height(), 0, 0);
 
 	// ---------------------------
 	// RGB
