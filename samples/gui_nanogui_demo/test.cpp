@@ -28,6 +28,15 @@ void TestGUI()
 		mrpt::gui::CDisplayWindowGUI win(
 			"CDisplayWindowGUI demo", 800, 600, cp);
 
+#if 0
+// Define a custom icon image:
+		win.setIcon(mrpt::img::CImage::LoadFromFile("/path/to/icon.png"));
+#endif
+#if 0
+		// Define a custom icon from a GIMP header C source data block:
+		win.setIconFromData(header_data, 32, 32, 0);
+#endif
+
 		nanogui::FormHelper* fh = new nanogui::FormHelper(&win);
 
 		// Add subwindow:

@@ -2,6 +2,8 @@
 
 # Version 2.4.2: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_gui_grp
+    - GUI windows can now have custom icons via mrpt::gui::CDisplayWindowGUI::setIcon() or mrpt::gui::CDisplayWindowGUI::setIconFromData()
   - \ref mrpt_img_grp
     - New static method mrpt::img::CImage::LoadFromFile()
   - \ref mrpt_opengl_grp

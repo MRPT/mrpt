@@ -9,9 +9,14 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
+#include <mrpt/config.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
 #include <mrpt/gui/default_mrpt_glfw_icon.h>
+
+#if MRPT_HAS_OPENCV
+#include <mrpt/3rdparty/do_opencv_includes.h>
+#endif
 
 using namespace mrpt::gui;
 
@@ -25,17 +30,10 @@ CDisplayWindowGUI::CDisplayWindowGUI(
 		  p.colorBits, p.alphaBits, p.depthBits, p.stencilBits, p.nSamples,
 		  p.glMajor, p.glMinor, p.maximized)
 {
-	// Set MRPT icon:
-	GLFWimage images;
-	images.width = 64;
-	images.height = 64;
-	images.pixels = default_mrpt_glfw_icon();
-
-// glfwSetWindowIcon added in glfw 3.2
-#if GLFW_VERSION_MAJOR > 3 ||                                                  \
-	(GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR >= 2)
-	glfwSetWindowIcon(screen()->glfwWindow(), 1, &images);
-#endif
+	setIconFromData(
+		default_mrpt_glfw_icon, default_mrpt_glfw_icon_width,
+		default_mrpt_glfw_icon_height,
+		default_mrpt_glfw_icon_transparent_color);
 }
 
 CDisplayWindowGUI::~CDisplayWindowGUI()
@@ -100,6 +98,97 @@ void CDisplayWindowGUI::setPos(int x, int y) { Screen::setPosition({x, y}); }
 void CDisplayWindowGUI::setWindowTitle(const std::string& str)
 {
 	Screen::setCaption(str);
+}
+
+void CDisplayWindowGUI::setIcon(const mrpt::img::CImage& img)
+{
+#if MRPT_HAS_OPENCV
+	const cv::Mat& cvIn = img.asCvMatRef();
+
+	// We need the image to be in RGBA format:
+	cv::Mat icon;
+	if (cvIn.channels() == 3)
+	{
+		// BGR: add alpha
+		cv::cvtColor(cvIn, icon, cv::ColorConversionCodes::COLOR_BGR2RGBA);
+	}
+	else if (cvIn.channels() == 4)
+	{
+		// BGR: add alpha
+		cv::cvtColor(cvIn, icon, cv::ColorConversionCodes::COLOR_BGRA2RGBA);
+	}
+	else
+	{
+		THROW_EXCEPTION("Icon image: expected either RGB or RGBA input image.");
+	}
+
+	// Set MRPT icon:
+	const cv::Size iconSize = icon.size();
+
+	GLFWimage images;
+	images.width = iconSize.width;
+	images.height = iconSize.height;
+	images.pixels = icon.data;
+
+// glfwSetWindowIcon added in glfw 3.2
+#if GLFW_VERSION_MAJOR > 3 ||                                                  \
+	(GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR >= 2)
+	glfwSetWindowIcon(screen()->glfwWindow(), 1, &images);
+#endif
+
+#endif
+}
+
+void CDisplayWindowGUI::setIconFromData(
+	const char* imgData, unsigned int width, unsigned int height,
+	const uint8_t transp)
+{
+	std::vector<uint8_t> dat;
+
+	/* imgData: GIMP header image file format (RGB) */
+
+	/*  Call this macro repeatedly.  After each use, the pixel data can be
+	 * extracted  */
+#define HEADER_PIXEL(data, pixel)                                              \
+	{                                                                          \
+		pixel[0] = (((data[0] - 33) << 2) | ((data[1] - 33) >> 4));            \
+		pixel[1] = ((((data[1] - 33) & 0xF) << 4) | ((data[2] - 33) >> 2));    \
+		pixel[2] = ((((data[2] - 33) & 0x3) << 6) | ((data[3] - 33)));         \
+		data += 4;                                                             \
+	}
+
+	// GLFW image format: RGBA
+	dat.resize(width * height * 4);
+	const char* in = imgData;
+	uint8_t* out = dat.data();
+
+	for (unsigned int y = 0; y < height; y++)
+	{
+		for (unsigned int x = 0; x < width; x++)
+		{
+			// RGB
+			HEADER_PIXEL(in, out);
+			// alpha
+			out[3] = (out[0] == transp && out[1] == transp && out[2] == transp)
+				? 0x00
+				: 0xff;
+			out += 4;
+		}
+	}
+
+	// Set MRPT icon:
+	GLFWimage images;
+	images.width = width;
+	images.height = height;
+	images.pixels = dat.data();
+
+// glfwSetWindowIcon added in glfw 3.2
+#if GLFW_VERSION_MAJOR > 3 ||                                                  \
+	(GLFW_VERSION_MAJOR == 3 && GLFW_VERSION_MINOR >= 2)
+	glfwSetWindowIcon(screen()->glfwWindow(), 1, &images);
+#endif
+
+#undef HEADER_PIXEL
 }
 
 bool CDisplayWindowGUI::mouseButtonEvent(

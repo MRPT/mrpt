@@ -10,8 +10,10 @@
 
 namespace mrpt::gui
 {
-/** Returns the default MRPT icon data, as a 64x64 RGBA (32 bit/pixel) image,
- * compatible with GLFW */
-unsigned char* default_mrpt_glfw_icon();
+/** Returns the default MRPT icon data, as GIMP header format. */
+extern const char* default_mrpt_glfw_icon;
+extern unsigned int default_mrpt_glfw_icon_width;
+extern unsigned int default_mrpt_glfw_icon_height;
+extern unsigned int default_mrpt_glfw_icon_transparent_color;
 
 }  // namespace mrpt::gui
