@@ -2,6 +2,8 @@
 
 # Version 2.4.2: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_img_grp
+    - New static method mrpt::img::CImage::LoadFromFile()
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CFBORender now does not rely on GLUT to create opengl contexts, but on EGL.
   - \ref mrpt_typemeta_grp
