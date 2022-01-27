@@ -48,8 +48,8 @@ struct CDisplayWindowGUI_Params
  * background of the entire window by setting an object in field
  * `background_scene`, locking its mutex `background_scene_mtx`.
  *
- * Refer to nanogui API docs or MRPT examples for further usage examples.
- * A typical lifecycle of a GUI app with this class might look like:
+ * Refer to nanogui API docs or [MRPT examples](examples.html) for further usage
+ * examples. A typical lifecycle of a GUI app with this class might look like:
  *
  * \code
  * nanogui::init();
@@ -116,6 +116,25 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/**  Changes the window title. */
 	void setWindowTitle(const std::string& str);
+
+	/** Sets the window icon, which must must either RGB or (preferred) RGBA
+	 * channels. You can read it from a .png or .ico file using
+	 * mrpt::img::CImage::loadFromFile().
+	 *
+	 * The image will be resized as needed. Good sizes include 16x16, 32x32 and
+	 * 48x48.
+	 *
+	 * \note (New in MRPT 2.4.2)
+	 */
+	void setIcon(const mrpt::img::CImage& img);
+
+	/** \overload From an icon stored in code as `const char*` exported in the
+	 * "GIMP header image formar (RGB)", with a transparent color.
+	 * \note (New in MRPT 2.4.2)
+	 */
+	void setIconFromData(
+		const char* imgData, unsigned int width, unsigned int height,
+		const uint8_t transparent);
 
 	/** Every time the window is about to be repainted, an optional callback can
 	 * be called, if provided via this method. This method can be safely called
