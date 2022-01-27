@@ -959,6 +959,15 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 */
 	bool loadFromFile(const std::string& fileName, int isColor = -1);
 
+	/** Static method to construct an CImage object from a file.
+	 * See CImage::loadFromFile() for meaning of parameters.
+	 *
+	 * \exception std::exception On load error.
+	 * \note New in MRPT 2.4.2
+	 */
+	static mrpt::img::CImage LoadFromFile(
+		const std::string& fileName, int isColor = -1);
+
 	/** Loads a TGA true-color RGBA image as two CImage objects, one for the RGB
 	 * channels plus a separate gray-level image with A channel.
 	 * \return true on success

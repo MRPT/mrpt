@@ -322,6 +322,15 @@ PixelDepth CImage::getPixelDepth() const
 	MRPT_END
 }
 
+mrpt::img::CImage CImage::LoadFromFile(const std::string& fileName, int isColor)
+{
+	CImage im;
+	bool ok = im.loadFromFile(fileName, isColor);
+	if (!ok)
+		THROW_EXCEPTION_FMT("Error loading image from '%s'", fileName.c_str());
+	return im;
+}
+
 bool CImage::loadFromFile(const std::string& fileName, int isColor)
 {
 	MRPT_START
