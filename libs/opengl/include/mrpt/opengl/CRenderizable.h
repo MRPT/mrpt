@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPoint3D.h>
@@ -255,6 +256,10 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	}
 
 	/** @} */
+
+	/** Used from COpenGLScene::asYAML().
+	 * \note (New in MRPT 2.4.2) */
+	virtual void toYAMLMap(mrpt::containers::yaml& propertiesMap) const;
 
 	/** Default constructor:  */
 	CRenderizable();

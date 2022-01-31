@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -442,4 +443,11 @@ void CPointCloud::setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts)
 	m_minmax_valid = false;
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
+}
+
+void CPointCloud::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
+{
+	CRenderizable::toYAMLMap(propertiesMap);
+	propertiesMap["point_count"] = m_points.size();
+	propertiesMap["bounding_box"] = this->getBoundingBox().asString();
 }
