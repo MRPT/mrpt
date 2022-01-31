@@ -62,7 +62,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 	}
 	void setIdentity(const std::size_t N) { setDiagonal(N, 1); }
 
-	static Derived Identity()
+	[[nodiscard]] static Derived Identity()
 	{
 		ASSERTMSG_(
 			Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
@@ -72,7 +72,7 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		m.setIdentity();
 		return m;
 	}
-	static Derived Identity(const std::size_t N)
+	[[nodiscard]] static Derived Identity(const std::size_t N)
 	{
 		Derived m;
 		m.setIdentity(N);
