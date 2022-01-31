@@ -6,6 +6,8 @@
     - GUI windows can now have custom icons via mrpt::gui::CDisplayWindowGUI::setIcon() or mrpt::gui::CDisplayWindowGUI::setIconFromData()
   - \ref mrpt_img_grp
     - New static method mrpt::img::CImage::LoadFromFile()
+  - \ref mrpt_math_grp
+    - Vector and matrix classes: add [[nodiscard]] to static "constructor" methods to avoid mistakes.
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CFBORender now does not rely on GLUT to create opengl contexts, but on EGL.
   - \ref mrpt_typemeta_grp
