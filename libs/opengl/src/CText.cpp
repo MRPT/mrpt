@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <mrpt/containers/yaml.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
@@ -132,4 +133,9 @@ void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 auto CText::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
 	return mrpt::math::TBoundingBox({0, 0, 0}, {0, 0, 0}).compose(m_pose);
+}
+void CText::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
+{
+	CRenderizable::toYAMLMap(propertiesMap);
+	propertiesMap["text"] = m_str;
 }

@@ -698,6 +698,9 @@ mrpt::containers::yaml COpenGLViewport::asYAML() const
 		const auto obj = m_objects.at(i);
 		mrpt::containers::yaml de = mrpt::containers::yaml::Map();
 
+		// class-specific properties:
+		obj->toYAMLMap(de);
+
 		de["index"] = i;  // type for "i" must be a stdint type
 		if (!obj)
 		{
@@ -705,8 +708,6 @@ mrpt::containers::yaml COpenGLViewport::asYAML() const
 			continue;
 		}
 		de["class"] = obj->GetRuntimeClass()->className;
-		de["name"] = obj->m_name;
-		de["location"] = obj->getPose().asString();
 
 		// Single obj:
 		if (obj->GetRuntimeClass() ==

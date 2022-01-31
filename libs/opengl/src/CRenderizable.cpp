@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <mrpt/containers/yaml.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/opengl/CRenderizable.h>	// Include these before windows.h!!
@@ -239,4 +240,12 @@ CText& CRenderizable::labelObject() const
 		m_label_obj->setString(m_name);
 	}
 	return *m_label_obj;
+}
+
+void CRenderizable::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
+{
+	propertiesMap["name"] = m_name;
+	propertiesMap["show_name"] = m_show_name;
+	propertiesMap["location"] = getPose().asString();
+	propertiesMap["visible"] = m_visible;
 }
