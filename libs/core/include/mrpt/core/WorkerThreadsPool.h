@@ -30,7 +30,18 @@ namespace mrpt
 /** \addtogroup mrpt_core_grp
  * @{ */
 
-/** A thread pool.
+/** A thread pool: it defines a fixed number of threads, which will remain
+ *  blocked waiting for jobs to be assigned, via WorkerThreadsPool::enqueue(),
+ *  which accepts any function-like object with arbitrary parameters and
+ *  returns a std::future<ReturnType> which can be used to wait and/or retrieve
+ *  the function output at any moment in time afterwards.
+ *
+ *  In case of more tasks assigned than available free threads, two policies
+ *  exist:
+ *  - WorkerThreadsPool::POLICY_FIFO: All jobs are enqueued and wait for it turn
+ *    to be executed.
+ *  - WorkerThreadsPool::POLICY_DROP_OLD: Old jobs in the waiting queue are
+ *    discarded. Note that running jobs are never aborted.
  *
  * \note Partly based on: https://github.com/progschj/ThreadPool (ZLib license)
  *
