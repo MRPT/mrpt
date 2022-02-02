@@ -69,7 +69,11 @@ class WorkerThreadsPool
 		name(threadsName);
 	}
 	~WorkerThreadsPool() { clear(); }
+
 	void resize(std::size_t num_threads);
+	/** Get number of working threads \note (New in MRPT 2.4.2) */
+	std::size_t size() const { return threads_.size(); }
+
 	/** Stops and deletes all worker threads */
 	void clear();
 
