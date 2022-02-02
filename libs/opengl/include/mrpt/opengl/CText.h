@@ -70,7 +70,7 @@ class CText : public CRenderizableShaderText
 
 	virtual ~CText() override;
 
-	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const;
+	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 };
 
 }  // namespace mrpt::opengl
