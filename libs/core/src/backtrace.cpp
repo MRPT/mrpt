@@ -38,7 +38,7 @@
 #include <string>
 #endif
 
-#if MRPT_HAS_BFD
+#if MRPT_HAS_BFD && defined(_DEBUG)
 // Partially based on code from:
 // https://webcache.googleusercontent.com/search?q=cache:MXn9tpmIK5QJ:https://oroboro.com/printing-stack-traces-file-line/+&cd=2&hl=es&ct=clnk&gl=es
 
@@ -140,8 +140,8 @@ class FileLineDesc
 	void findAddressInSection(bfd* abfd, asection* section) noexcept;
 
 	bfd_vma mPc;
-	char* mFilename;
-	char* mFunctionname;
+	char* mFilename = nullptr;
+	char* mFunctionname = nullptr;
 	unsigned int mLine;
 	bool mFound = false;
 	asymbol** mSyms;
@@ -389,7 +389,8 @@ void mrpt::callStackBackTrace(
 	int nFrames = ::backtrace(callstack.data(), nMaxFrames);
 	char** symbols = ::backtrace_symbols(callstack.data(), nFrames);
 
-#if MRPT_HAS_BFD
+// Detailed callback stack traces with debug symbols: only in debug builds:
+#if MRPT_HAS_BFD && defined(_DEBUG)
 	static const bool MRPT_BACKTRACE_DISABLE_BFD =
 		mrpt::get_env<bool>("MRPT_BACKTRACE_DISABLE_BFD", false);
 	const bool use_bfd = !MRPT_BACKTRACE_DISABLE_BFD;
@@ -404,7 +405,7 @@ void mrpt::callStackBackTrace(
 		for (int i = (int)framesToSkip; i < nFrames; i++)
 			addrs.push_back(callstack[i]);
 
-#if MRPT_HAS_BFD
+#if MRPT_HAS_BFD && defined(_DEBUG)
 		// It seems BFD crashes if it is invoked from several threads in
 		// parallel!
 		static std::mutex bfdMtx;

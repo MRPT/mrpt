@@ -276,7 +276,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	 */
 	~CPointCloud() override = default;
 
-	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const;
+	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 
    private:
 	/** Buffer for min/max coords when m_colorFromDepth is true. */

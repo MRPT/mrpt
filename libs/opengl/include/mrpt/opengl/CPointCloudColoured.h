@@ -196,7 +196,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 		const bool all, const std::vector<size_t>& idxs,
 		const float render_area_sqpixels) const;
 
-	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const;
+	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 
    protected:
 	/** @name PLY Import virtual methods to implement in base classes
