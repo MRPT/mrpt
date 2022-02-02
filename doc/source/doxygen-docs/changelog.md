@@ -14,6 +14,7 @@
     - Add syntactic sugar function mrpt::typemeta::str2enum<>().
 - BUG FIXES:
   - mrpt::opengl::CFBORender did only render the `main` viewport, it now processes all of them.
+  - Fix FTBFS with ffmpeg 5.0 (Debian Bug #[1004585](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1004585))
 
 # Version 2.4.1: Released Jan 5th, 2022
 - Changes in build system:
