@@ -1,5 +1,5 @@
 R"XXX(
-#version 330 core
+#version 300 es
 
 // VERTEX SHADER: Default shader for MRPT CRenderizable objects
 // Jose Luis Blanco Claraco (C) 2019-2020
@@ -16,7 +16,7 @@ uniform mat4 pmv_matrix;
 
 out vec3 frag_position, frag_normal;
 out vec2 frag_UV; // Interpolated UV texture coords
-uniform int enableLight;  // 0 or 1
+uniform lowp int enableLight;  // 0 or 1
 
 void main()
 {

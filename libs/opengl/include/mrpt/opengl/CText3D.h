@@ -91,6 +91,8 @@ class CText3D : public CRenderizableShaderText
 		const double text_spacing = 1.5, const double text_kerning = 0.1);
 
 	~CText3D() override;
+
+	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 };
 
 }  // namespace mrpt::opengl

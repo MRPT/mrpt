@@ -87,7 +87,7 @@ class MatrixVectorBase
 		setConstant(nrows, 1, value);
 	}
 
-	static Derived Constant(const Scalar value)
+	[[nodiscard]] static Derived Constant(const Scalar value)
 	{
 		ASSERTMSG_(
 			Derived::RowsAtCompileTime > 0 && Derived::ColsAtCompileTime > 0,
@@ -97,7 +97,8 @@ class MatrixVectorBase
 		m.fill(value);
 		return m;
 	}
-	static Derived Constant(size_t nrows, size_t ncols, const Scalar value)
+	[[nodiscard]] static Derived Constant(
+		size_t nrows, size_t ncols, const Scalar value)
 	{
 		Derived m;
 		m.setConstant(nrows, ncols, value);
@@ -123,8 +124,8 @@ class MatrixVectorBase
 		setConstant(nrows, 1, 0);
 	}
 
-	static Derived Zero() { return Constant(0); }
-	static Derived Zero(size_t nrows, size_t ncols)
+	[[nodiscard]] static Derived Zero() { return Constant(0); }
+	[[nodiscard]] static Derived Zero(size_t nrows, size_t ncols)
 	{
 		return Constant(nrows, ncols, 0);
 	}

@@ -38,6 +38,18 @@ jobs:
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
 
+      - name: Install OpenCV
+        run: |
+          choco install --verbose opencv
+
+      - name: Install WxWidgets
+        run: |
+          choco install --verbose wxwidgets
+
+      - name: Install Qt5
+        run: |
+          choco install --verbose qt5-default
+
       - name: Checkout
         uses: actions/checkout@v2
 

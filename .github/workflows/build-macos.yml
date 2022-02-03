@@ -58,8 +58,11 @@ jobs:
                 -DCMAKE_VERBOSE_MAKEFILE=ON \
                 -H. -Bbuild
 
-      - name: Build
+      - name: Unit tests
         run: |
           make -C build tests_build_all
-          make CTEST_OUTPUT_ON_FAILURE=1 test -C build
+          make test_legacy -C build -j1
+
+      - name: Build all
+        run: |
           make -C build

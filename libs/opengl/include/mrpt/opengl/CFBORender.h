@@ -37,13 +37,13 @@ class CFBORender
 {
    public:
 	/** Constructor.
-	 * \param[in] skip_glut_window Should be set to true only if another GUI
-	 * windows already exist with an associated OpenGL context. If left to
-	 * false, a hidden GLUT window will be created.
+	 * \param[in] skip_create_egl_context Should be set to true only if another
+	 * GUI windows already exist with an associated OpenGL context. If left to
+	 * false, a display-less EGL context will be created.
 	 */
 	CFBORender(
 		unsigned int width = 800, unsigned int height = 600,
-		const bool skip_glut_window = false);
+		const bool skip_create_egl_context = false);
 
 	/** Destructor */
 	virtual ~CFBORender();
@@ -92,7 +92,7 @@ class CFBORender
    protected:
 	COpenGLFramebuffer m_fb;
 
-	int m_win = 0;
+	void* m_eglDpy = nullptr;
 	unsigned int m_texRGB = 0;
 
 	void internal_render_RGBD(

@@ -178,13 +178,13 @@ bool CFFMPEG_InputStream::openURL(
 #if LIBAVFORMAT_VERSION_MAJOR >= 57
 	ctx->pCodecPars = ctx->pFormatCtx->streams[ctx->videoStream]->codecpar;
 	// Find the decoder for the video stream
-	ctx->pCodec = avcodec_find_decoder(ctx->pCodecPars->codec_id);
+	const AVCodec* codec = avcodec_find_decoder(ctx->pCodecPars->codec_id);
 #else
 	ctx->pCodecCtx = ctx->pFormatCtx->streams[ctx->videoStream]->codec;
 	// Find the decoder for the video stream
-	ctx->pCodec = avcodec_find_decoder(ctx->pCodecCtx->codec_id);
+	codec = avcodec_find_decoder(ctx->pCodecCtx->codec_id);
 #endif
-	if (ctx->pCodec == nullptr)
+	if (codec == nullptr)
 	{
 		std::cerr << "[CFFMPEG_InputStream::openURL] Codec not found: " << url
 				  << std::endl;
@@ -213,11 +213,11 @@ bool CFFMPEG_InputStream::openURL(
 	}
 
 	// Make sure that Codecs are identical or  avcodec_open2 fails.
-	ctx->pCodecCtx->codec_id = ctx->pCodec->id;
+	ctx->pCodecCtx->codec_id = codec->id;
 #endif
 
 	// Open codec
-	if (avcodec_open2(ctx->pCodecCtx, ctx->pCodec, nullptr) < 0)
+	if (avcodec_open2(ctx->pCodecCtx, codec, nullptr) < 0)
 	{
 		std::cerr
 			<< "[CFFMPEG_InputStream::openURL] avcodec_open2() failed for: "

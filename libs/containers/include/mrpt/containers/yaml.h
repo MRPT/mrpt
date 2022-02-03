@@ -600,6 +600,21 @@ class yaml
 	yaml& operator=(int64_t v);
 	yaml& operator=(uint64_t v);
 
+	// Additional operator for "size_t", in systems/compilers where
+	// size_t != all other types above
+	// (e.g. OSX with clang, see https://stackoverflow.com/a/11603907/1631514 )
+	template <
+		typename = std::enable_if<
+			!std::is_same_v<std::size_t, uint64_t> &&
+			!std::is_same_v<std::size_t, int64_t> &&
+			!std::is_same_v<std::size_t, uint32_t> &&
+			!std::is_same_v<std::size_t, int32_t>>	//
+		>
+	yaml& operator=(std::size_t v)
+	{
+		return operator=(static_cast<uint64_t>(v));
+	}
+
 	yaml& operator=(const std::string& v);
 	inline yaml& operator=(const char* v) { return operator=(std::string(v)); }
 	inline yaml& operator=(const std::string_view& v)
