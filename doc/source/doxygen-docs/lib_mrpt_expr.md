@@ -1,6 +1,6 @@
 \defgroup mrpt_expr_grp [mrpt-expr]
 
-Dynamic expression analyzers for interpretting small scripts.
+Dynamic expression analyzers for interpreting small scripts.
 
 [TOC]
 

@@ -6,6 +6,9 @@
     - mrpt::container::yaml::operator(size_t) added, conditionally to `size_t` being a different type than `uint64_t` and such (Fixes build errors on OSX).
   - \ref mrpt_core_grp
     - mrpt::callStackBackTrace() (and exception backtraces) now only use BFD to solve for line numbers in DEBUG builds, to avoid the large delay in processing each exception.
+    - New method mrpt::WorkerThreadsPool::size().
+  - \ref mrpt_expr_grp
+    - ExprTk updated to latest version.
   - \ref mrpt_gui_grp
     - GUI windows can now have custom icons via mrpt::gui::CDisplayWindowGUI::setIcon() or mrpt::gui::CDisplayWindowGUI::setIconFromData()
   - \ref mrpt_img_grp
