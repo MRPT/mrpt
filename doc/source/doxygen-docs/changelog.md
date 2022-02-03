@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.4.2: UNRELEASED
+# Version 2.4.2: Released Feb 3rd, 2022
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - mrpt::container::yaml::operator(size_t) added, conditionally to `size_t` being a different type than `uint64_t` and such (Fixes build errors on OSX).
