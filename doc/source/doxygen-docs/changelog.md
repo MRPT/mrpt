@@ -1,5 +1,28 @@
 \page changelog Change Log
 
+# Version 2.4.2: Released Feb 3rd, 2022
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - mrpt::container::yaml::operator(size_t) added, conditionally to `size_t` being a different type than `uint64_t` and such (Fixes build errors on OSX).
+  - \ref mrpt_core_grp
+    - mrpt::callStackBackTrace() (and exception backtraces) now only use BFD to solve for line numbers in DEBUG builds, to avoid the large delay in processing each exception.
+    - New method mrpt::WorkerThreadsPool::size().
+  - \ref mrpt_expr_grp
+    - ExprTk updated to latest version.
+  - \ref mrpt_gui_grp
+    - GUI windows can now have custom icons via mrpt::gui::CDisplayWindowGUI::setIcon() or mrpt::gui::CDisplayWindowGUI::setIconFromData()
+  - \ref mrpt_img_grp
+    - New static method mrpt::img::CImage::LoadFromFile()
+  - \ref mrpt_math_grp
+    - Vector and matrix classes: add [[nodiscard]] to static "constructor" methods to avoid mistakes.
+  - \ref mrpt_opengl_grp
+    - mrpt::opengl::CFBORender now does not rely on GLUT to create opengl contexts, but on EGL.
+  - \ref mrpt_typemeta_grp
+    - Add syntactic sugar function mrpt::typemeta::str2enum<>().
+- BUG FIXES:
+  - mrpt::opengl::CFBORender did only render the `main` viewport, it now processes all of them.
+  - Fix FTBFS with ffmpeg 5.0 (Debian Bug #[1004585](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1004585))
+
 # Version 2.4.1: Released Jan 5th, 2022
 - Changes in build system:
     - Disable -flto in nanogui (to avoid an [Eigen regression](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1000780)).

@@ -69,6 +69,8 @@ class CText : public CRenderizableShaderText
 	CText(const std::string& str = std::string("")) : m_str(str) {}
 
 	virtual ~CText() override;
+
+	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 };
 
 }  // namespace mrpt::opengl
