@@ -31,6 +31,13 @@
 #if defined(__mips__) || defined(__mips)
 #undef RUN_OFFSCREEN_RENDER_TESTS
 #endif
+// Idem with PowerPC:
+#if defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) ||    \
+	defined(__POWERPC__) || defined(__ppc__) || defined(__PPC__) ||            \
+	defined(_ARCH_PPC) || defined(__PPC64__) || defined(__ppc64__) ||          \
+	defined(_ARCH_PPC64)
+#undef RUN_OFFSCREEN_RENDER_TESTS
+#endif
 
 static float imageDiff(
 	const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)
