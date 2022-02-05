@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.4.3: UNRELEASED
-(No changes yet)
+- BUG FIXES:
+  - Do not run offscreen rendering unit tests in MIPS arch, since they seem to fail in autobuilders.
 
 # Version 2.4.2: Released Feb 3rd, 2022
 - Changes in libraries:
