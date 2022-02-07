@@ -3,6 +3,7 @@
 # Version 2.4.3: UNRELEASED
 - BUG FIXES:
   - Do not run offscreen rendering unit tests in MIPS arch, since they seem to fail in autobuilders.
+  - mrpt::vision::checkerBoardCameraCalibration() did not return the distortion model (so if parameters are printed, it would look like no distortion at all!).
 
 # Version 2.4.2: Released Feb 3rd, 2022
 - Changes in libraries:
