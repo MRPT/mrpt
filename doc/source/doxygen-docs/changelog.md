@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.4.3: UNRELEASED
+- Changes in applications:
+  - navlog-viewer:
+    - The timestamp is now always shown.
 - BUG FIXES:
   - Do not run offscreen rendering unit tests in MIPS arch, since they seem to fail in autobuilders.
   - mrpt::vision::checkerBoardCameraCalibration() did not return the distortion model (so if parameters are printed, it would look like no distortion at all!).
