@@ -585,9 +585,19 @@ void NavlogViewerApp::updateVisualization()
 		std::to_string(log.nSelectedPTG) + "from [0-"s +
 		std::to_string(log.nPTGs - 1) + "]"s);
 
-	m_txtTimeIndex->setCaption(
-		"Time index: "s + std::to_string(log_idx) + " / "s +
-		std::to_string(std::max<size_t>(1U, m_logdata.size()) - 1));
+	{
+		std::string timeIndexStr = "Time index: "s + std::to_string(log_idx) +
+			" / "s + std::to_string(std::max<size_t>(1U, m_logdata.size()) - 1);
+
+		if (auto itTim = log.timestamps.find("tim_start_iteration");
+			itTim != log.timestamps.end())
+		{
+			timeIndexStr += " (tim_start_iteration="s +
+				mrpt::system::dateTimeLocalToString(itTim->second) +
+				" [local time])"s;
+		}
+		m_txtTimeIndex->setCaption(timeIndexStr);
+	}
 
 	const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
 	const int sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
