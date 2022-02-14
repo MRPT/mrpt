@@ -1070,8 +1070,28 @@ void NavlogViewerApp::updateVisualization()
 		"cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx,
 		log.cur_vel_local.vy, mrpt::RAD2DEG(log.cur_vel_local.omega)));
 
-	ADD_WIN_TEXTMSG(mrpt::format(
-		"robot_pose=%s", log.robotPoseLocalization.asString().c_str()));
+	{
+		static TPose2D formerPoseLoc = log.robotPoseLocalization;
+
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"robot_pose    =%35s | Increment since last step=%s",
+			log.robotPoseLocalization.asString().c_str(),
+			(log.robotPoseLocalization - formerPoseLoc).asString().c_str()));
+
+		formerPoseLoc = log.robotPoseLocalization;
+	}
+
+	{
+		static TPose2D formerPoseOdo = log.robotPoseOdometry;
+
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"robot_odometry=%35s | Increment since last step=%s",
+			log.robotPoseOdometry.asString().c_str(),
+			(log.robotPoseOdometry - formerPoseOdo).asString().c_str()));
+
+		formerPoseOdo = log.robotPoseOdometry;
+	}
+
 	{
 		for (unsigned int i = 0; i < log.WS_targets_relative.size(); i++)
 		{
