@@ -78,6 +78,7 @@ class NavlogViewerApp
 	void OnmnuMatlabPlotsSelected();
 	void OnmnuSeePTGParamsSelected();
 	void OnmnuSaveScoreMatrixSelected();
+	void OnmnuGenerateOdometryVsLocalizationReport();
 	void OntimMouseXY();
 	void OnmnuMatlabExportPaths();
 	void OnmnuExportSelected(std::string filename = {});

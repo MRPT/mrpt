@@ -259,6 +259,9 @@ NavlogViewerApp::NavlogViewerApp()
 		lambdaAddSmallFontBtn(layer, "Export current log entry...", [this]() {
 			OnmnuExportSelected();
 		});
+		lambdaAddSmallFontBtn(
+			layer, "Localization vs odom report...",
+			[this]() { OnmnuGenerateOdometryVsLocalizationReport(); });
 	}
 
 	// ===== TAB: Manually pick trajectory
@@ -1633,6 +1636,59 @@ void NavlogViewerApp::OnmnuSeePTGParamsSelected()
 
 	std::ofstream f(fileName);
 	f << sCfgText;
+
+	NANOGUI_END_TRY(*m_win)
+}
+
+void NavlogViewerApp::OnmnuGenerateOdometryVsLocalizationReport()
+{
+	NANOGUI_START_TRY
+
+	const std::string fileName = nanogui::file_dialog(
+		{{"txt", "Save localization vs odometry report"}}, true /*save*/);
+	if (fileName.empty()) return;
+
+	std::ofstream f(fileName);
+	ASSERT_(f.is_open());
+
+	f << "% timestamp  localizationPoseIncr  odometryPoseIncr\n";
+
+	std::optional<mrpt::math::TPose2D> lastOdo, lastLocPose;
+
+	const size_t N = m_logdata.size();
+	for (size_t i = 0; i < N; i++)
+	{
+		const CLogFileRecord::Ptr logsptr =
+			std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[i]);
+		const CLogFileRecord* logptr = logsptr.get();
+		if (!logptr) continue;
+		const auto& log = *logptr;
+
+		const auto& odo = log.robotPoseOdometry;
+		const auto& pose = log.robotPoseLocalization;
+
+		if (lastOdo && lastLocPose)
+		{
+			const auto odoIncr = odo - *lastOdo;
+			const auto locIncr = pose - *lastLocPose;
+
+			if (!log.timestamps.empty())
+				f << mrpt::format(
+					"%.03f ",
+					mrpt::Clock::toDouble(log.timestamps.begin()->second));
+			else
+				f << "0 ";
+
+			for (int k = 0; k < 3; k++)
+				f << locIncr[k] << " ";
+			for (int k = 0; k < 3; k++)
+				f << odoIncr[k] << " ";
+			f << "\n";
+		}
+
+		lastOdo = odo;
+		lastLocPose = pose;
+	}
 
 	NANOGUI_END_TRY(*m_win)
 }
