@@ -22,7 +22,7 @@ Next step: :ref:`compiling`
 Debian/Ubuntu official repositories
 ---------------------------------------
 
-Install the `official version <https://packages.ubuntu.com/source/groovy/mrpt>`_ for your distribution with:
+Install the `official version <https://packages.ubuntu.com/source/jammy/mrpt>`_ for your distribution with:
 
 .. code-block:: bash
 
@@ -30,7 +30,7 @@ Install the `official version <https://packages.ubuntu.com/source/groovy/mrpt>`_
 
 
 .. note::
-   Versions in `official repositories <https://packages.ubuntu.com/source/groovy/mrpt>`_
+   Versions in `official repositories <https://packages.ubuntu.com/source/jammy/mrpt>`_
    may be quite outdated. It is strongly
    recommended to use the PPAs (read below) or build from sources instead.
 
