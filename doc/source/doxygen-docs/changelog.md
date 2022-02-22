@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.4.3: UNRELEASED
+# Version 2.4.3: Released Feb 22nd, 2022
 - Changes in applications:
   - navlog-viewer:
     - The timestamp is now always shown.
