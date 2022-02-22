@@ -1,5 +1,14 @@
 \page changelog Change Log
 
+# Version 2.4.3: Released Feb 22nd, 2022
+- Changes in applications:
+  - navlog-viewer:
+    - The timestamp is now always shown.
+- BUG FIXES:
+  - Do not run offscreen rendering unit tests in MIPS arch, since they seem to fail in autobuilders.
+  - mrpt::vision::checkerBoardCameraCalibration() did not return the distortion model (so if parameters are printed, it would look like no distortion at all!).
+  - mrpt::gui::CDisplayWindowGUI::createManagedSubWindow() created the subwindows helper UI on top of the other user windows. It now remains on the back of other windows.
+
 # Version 2.4.2: Released Feb 3rd, 2022
 - Changes in libraries:
   - \ref mrpt_containers_grp

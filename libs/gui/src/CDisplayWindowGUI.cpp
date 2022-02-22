@@ -265,14 +265,15 @@ nanogui::Window* CDisplayWindowGUI::createManagedSubWindow(
 {
 	constexpr std::size_t MAX_MINIMIZED_TITLE_LEN = 20;
 
+	// Create UI on first call:
+	// Create it before the user-requested window so it doesn't get on top.
+	createSubWindowsControlUI();
+
 	// Create subwindow:
 	const int thisWinIndex = m_subWindows.windows.size();
 
 	auto w = new SubWindow(*this, thisWinIndex, this, title);
 	m_subWindows.windows.push_back(w);
-
-	// Create UI on first call:
-	createSubWindowsControlUI();
 
 	// Append to combo:
 	ASSERT_(m_subWindows.uiCombo);

@@ -259,6 +259,9 @@ NavlogViewerApp::NavlogViewerApp()
 		lambdaAddSmallFontBtn(layer, "Export current log entry...", [this]() {
 			OnmnuExportSelected();
 		});
+		lambdaAddSmallFontBtn(
+			layer, "Localization vs odom report...",
+			[this]() { OnmnuGenerateOdometryVsLocalizationReport(); });
 	}
 
 	// ===== TAB: Manually pick trajectory
@@ -585,9 +588,19 @@ void NavlogViewerApp::updateVisualization()
 		std::to_string(log.nSelectedPTG) + "from [0-"s +
 		std::to_string(log.nPTGs - 1) + "]"s);
 
-	m_txtTimeIndex->setCaption(
-		"Time index: "s + std::to_string(log_idx) + " / "s +
-		std::to_string(std::max<size_t>(1U, m_logdata.size()) - 1));
+	{
+		std::string timeIndexStr = "Time index: "s + std::to_string(log_idx) +
+			" / "s + std::to_string(std::max<size_t>(1U, m_logdata.size()) - 1);
+
+		if (auto itTim = log.timestamps.find("tim_start_iteration");
+			itTim != log.timestamps.end())
+		{
+			timeIndexStr += " (tim_start_iteration="s +
+				mrpt::system::dateTimeLocalToString(itTim->second) +
+				" [local time])"s;
+		}
+		m_txtTimeIndex->setCaption(timeIndexStr);
+	}
 
 	const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
 	const int sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
@@ -1060,8 +1073,28 @@ void NavlogViewerApp::updateVisualization()
 		"cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx,
 		log.cur_vel_local.vy, mrpt::RAD2DEG(log.cur_vel_local.omega)));
 
-	ADD_WIN_TEXTMSG(mrpt::format(
-		"robot_pose=%s", log.robotPoseLocalization.asString().c_str()));
+	{
+		static TPose2D formerPoseLoc = log.robotPoseLocalization;
+
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"robot_pose    =%35s | Increment since last step=%s",
+			log.robotPoseLocalization.asString().c_str(),
+			(log.robotPoseLocalization - formerPoseLoc).asString().c_str()));
+
+		formerPoseLoc = log.robotPoseLocalization;
+	}
+
+	{
+		static TPose2D formerPoseOdo = log.robotPoseOdometry;
+
+		ADD_WIN_TEXTMSG(mrpt::format(
+			"robot_odometry=%35s | Increment since last step=%s",
+			log.robotPoseOdometry.asString().c_str(),
+			(log.robotPoseOdometry - formerPoseOdo).asString().c_str()));
+
+		formerPoseOdo = log.robotPoseOdometry;
+	}
+
 	{
 		for (unsigned int i = 0; i < log.WS_targets_relative.size(); i++)
 		{
@@ -1603,6 +1636,59 @@ void NavlogViewerApp::OnmnuSeePTGParamsSelected()
 
 	std::ofstream f(fileName);
 	f << sCfgText;
+
+	NANOGUI_END_TRY(*m_win)
+}
+
+void NavlogViewerApp::OnmnuGenerateOdometryVsLocalizationReport()
+{
+	NANOGUI_START_TRY
+
+	const std::string fileName = nanogui::file_dialog(
+		{{"txt", "Save localization vs odometry report"}}, true /*save*/);
+	if (fileName.empty()) return;
+
+	std::ofstream f(fileName);
+	ASSERT_(f.is_open());
+
+	f << "% timestamp  localizationPoseIncr  odometryPoseIncr\n";
+
+	std::optional<mrpt::math::TPose2D> lastOdo, lastLocPose;
+
+	const size_t N = m_logdata.size();
+	for (size_t i = 0; i < N; i++)
+	{
+		const CLogFileRecord::Ptr logsptr =
+			std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[i]);
+		const CLogFileRecord* logptr = logsptr.get();
+		if (!logptr) continue;
+		const auto& log = *logptr;
+
+		const auto& odo = log.robotPoseOdometry;
+		const auto& pose = log.robotPoseLocalization;
+
+		if (lastOdo && lastLocPose)
+		{
+			const auto odoIncr = odo - *lastOdo;
+			const auto locIncr = pose - *lastLocPose;
+
+			if (!log.timestamps.empty())
+				f << mrpt::format(
+					"%.03f ",
+					mrpt::Clock::toDouble(log.timestamps.begin()->second));
+			else
+				f << "0 ";
+
+			for (int k = 0; k < 3; k++)
+				f << locIncr[k] << " ";
+			for (int k = 0; k < 3; k++)
+				f << odoIncr[k] << " ";
+			f << "\n";
+		}
+
+		lastOdo = odo;
+		lastLocPose = pose;
+	}
 
 	NANOGUI_END_TRY(*m_win)
 }
