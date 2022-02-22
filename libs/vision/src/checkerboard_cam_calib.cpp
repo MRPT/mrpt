@@ -293,6 +293,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			out_camera_params.intrinsicParams = M;
 		}
 
+		out_camera_params.distortion = DistortionModel::plumb_bob;
 		out_camera_params.dist.fill(0);
 		for (int k = 0; k < 5; k++)
 			out_camera_params.dist[k] = distCoeffs.ptr<double>()[k];

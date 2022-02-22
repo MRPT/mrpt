@@ -23,6 +23,22 @@
 #include <mrpt/config.h>  // for MRPT_HAS_*
 #include <test_mrpt_common.h>
 
+#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
+#define RUN_OFFSCREEN_RENDER_TESTS
+#endif
+
+// In MIPS, these tests crash in autobuilders, skip them:
+#if defined(__mips__) || defined(__mips)
+#undef RUN_OFFSCREEN_RENDER_TESTS
+#endif
+// Idem with PowerPC:
+#if defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) ||    \
+	defined(__POWERPC__) || defined(__ppc__) || defined(__PPC__) ||            \
+	defined(_ARCH_PPC) || defined(__PPC64__) || defined(__ppc64__) ||          \
+	defined(_ARCH_PPC64)
+#undef RUN_OFFSCREEN_RENDER_TESTS
+#endif
+
 static float imageDiff(
 	const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)
 {
@@ -228,7 +244,7 @@ static void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 	}
 }
 
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
+#if defined(RUN_OFFSCREEN_RENDER_TESTS)
 TEST(OpenGL, CFBORender_camera_intrinsics)
 #else
 TEST(OpenGL, DISABLED_CFBORender_camera_intrinsics)
@@ -237,7 +253,7 @@ TEST(OpenGL, DISABLED_CFBORender_camera_intrinsics)
 	test_opengl_CFBORender(true);
 }
 
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL
+#if defined(RUN_OFFSCREEN_RENDER_TESTS)
 TEST(OpenGL, CFBORender_camera_fov)
 #else
 TEST(OpenGL, DISABLED_CFBORender_camera_fov)
