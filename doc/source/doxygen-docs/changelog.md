@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.4.4: UNRELEASED
-(No changes yet)
+- 3rdparty libraries:
+  - Updated libfyaml to v0.7.12.
 
 # Version 2.4.3: Released Feb 22nd, 2022
 - Changes in applications:
