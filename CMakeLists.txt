@@ -34,7 +34,6 @@ if (POLICY CMP0075)
 endif()
 
 if ((NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
-    OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libfyaml/include")
     OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/sdk")
    )
   message(FATAL_ERROR "git submodules missing! "
