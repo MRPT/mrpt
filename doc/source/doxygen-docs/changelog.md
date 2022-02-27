@@ -3,6 +3,8 @@
 # Version 2.4.4: UNRELEASED
 - 3rdparty libraries:
   - Updated libfyaml to v0.7.12.
+- Build system:
+  - Allow using libfyaml-dev system package if found.
 
 # Version 2.4.3: Released Feb 22nd, 2022
 - Changes in applications:
