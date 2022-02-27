@@ -206,6 +206,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** Do we have libfyaml? */
 #define MRPT_HAS_FYAML          ${CMAKE_MRPT_HAS_LIBFYAML}
+#define MRPT_HAS_FYAML_SYSTEM   ${CMAKE_MRPT_HAS_LIBFYAML_SYSTEM}
 
 /** Do we have PCAP? */
 #define MRPT_HAS_LIBPCAP        ${CMAKE_MRPT_HAS_LIBPCAP}
