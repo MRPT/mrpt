@@ -608,10 +608,16 @@ add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
-set(MRPT_BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
+if (DEFINED BUILD_TESTING)
+	set(_def_value ${BUILD_TESTING})
+else()
+	set(_def_value ON)
+endif()
+set(MRPT_BUILD_TESTING ${_def_value} CACHE BOOL "Build MRPT tests")
 if(MRPT_BUILD_TESTING)
 	add_subdirectory(tests)  # Build my tests
 endif()
+unset(_def_value )
 
 #-----------------------------------
 # The python bindings

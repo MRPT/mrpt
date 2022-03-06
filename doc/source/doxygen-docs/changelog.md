@@ -6,6 +6,7 @@
 - Build system:
   - Allow using libfyaml-dev system package if found.
   - ROS package.xml: update dependencies so all sensors and mrpt-ros1bridge are enabled.
+  - Fix detection of ROS1 native `*_msgs` packages as build dependencies.
 
 # Version 2.4.3: Released Feb 22nd, 2022
 - Changes in applications:
