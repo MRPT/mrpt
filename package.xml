@@ -16,6 +16,7 @@
 
   <license>BSD</license>
 
+  <depend>assimp-dev</depend>
   <depend>eigen</depend>
   <depend>ffmpeg</depend>
   <depend>glut</depend>
@@ -27,12 +28,26 @@
   <depend>libglfw3-dev</depend>
   <depend>libxrandr</depend>
   <depend>libxxf86vm</depend>
+  <depend>libfreenect-dev</depend>
+  <depend>libopenni2-dev</depend>
+  <depend>octomap</depend>
   <depend>suitesparse</depend>
   <depend>wx-common</depend>
   <depend>wxwidgets</depend>
   <depend>zlib</depend>
-  <depend>assimp-dev</depend>
-  <!-- <depend>octomap</depend> -->
+
+  <!-- Deps for ros1bridge -->
+  <depend>cv_bridge</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>pcl_conversions</depend>
+  <depend>rosbag_storage</depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>stereo_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_msgs</depend>
 
   <doc_depend>doxygen</doc_depend>
 
