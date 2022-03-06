@@ -78,10 +78,10 @@ sudo apt install ros-$ROS_DISTRO-mrpt2
 
 `mrpt2` status in ROS build farms:
 
-| `develop` branch  | Stable release |
-|---|---|
-| ROS1 Noetic @ u20.04 [![Build Status](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/) | ROS1 Noetic @ u20.04  [![Build Status](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
-| ROS2 Rolling @ u22.04 [![Build Status](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/) | ROS2 Rolling @ u22.04 [![Build Status](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) |
+| Distro | `develop` branch  | Stable release |
+|---|---|---|
+| ROS1 Noetic @ u20.04 | [![Build Status](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/) | [![Build Status](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
+| ROS2 Rolling @ u22.04 | [![Build Status](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/) | [![Build Status](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) |
 
 ## 4. License
 MRPT is released under the [new BSD license](http://www.mrpt.org/License/).
