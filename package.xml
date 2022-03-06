@@ -3,7 +3,7 @@
      side-by-side to real ROS packages in a catkin environment.
      Real MRPT ROS packages are found elsewhere: https://github.com/mrpt-ros-pkg
 -->
-<package format="2">
+<package format="3">
   <name>mrpt2</name>
   <version>2.4.4</version>
   <description>Mobile Robot Programming Toolkit (MRPT) version 2.x</description>
@@ -41,8 +41,9 @@
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>pcl_conversions</depend>
-  <depend>rosbag_storage</depend>
-  <depend>roscpp</depend>
+  <depend condition="$ROS_VERSION == 1">rosbag_storage</depend>
+  <depend condition="$ROS_VERSION == 2">rosbag2_storage</depend>
+  <depend condition="$ROS_VERSION == 1">roscpp</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>stereo_msgs</depend>
