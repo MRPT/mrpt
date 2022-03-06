@@ -5,6 +5,7 @@
   - Updated libfyaml to v0.7.12.
 - Build system:
   - Allow using libfyaml-dev system package if found.
+  - ROS package.xml: update dependencies so all sensors and mrpt-ros1bridge are enabled.
 
 # Version 2.4.3: Released Feb 22nd, 2022
 - Changes in applications:
