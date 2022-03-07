@@ -98,7 +98,18 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 
 	# Run it:
 	set(GENERATED_EXE "$<TARGET_FILE:test_${_TSTLIB}>")
-	add_custom_target(run_tests_${_TSTLIB} COMMAND "${GENERATED_EXE}")
+	# If we are in Emscripten (wasm JavaScript code), run with the node.js interpreter:
+	if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+		find_program(NODEJS_EXE node)
+		if (NODEJS_EXE)
+			set(TEST_RUN_INTERPRETER ${NODEJS_EXE})
+		else()
+			message("Warning: Building JavaScript but node.js not found: target 'run_tests_${_TSTLIB}' will not work.")
+		endif()
+	endif()
+
+	add_custom_target(run_tests_${_TSTLIB} COMMAND ${TEST_RUN_INTERPRETER} ${GENERATED_EXE})
+
 	add_dependencies(run_tests_${_TSTLIB} test_${_TSTLIB})
 	add_dependencies(test_legacy run_tests_${_TSTLIB})
 	add_dependencies(tests_build_all test_${_TSTLIB})

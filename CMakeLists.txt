@@ -117,8 +117,15 @@ include(cmakemodules/script_select_app_to_build.cmake REQUIRED)		# Build (or not
 
 # Build static or dynamic libs?
 # ===================================================
-# Default: dynamic libraries:
-set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)")
+# Default: dynamic libraries (except if building to JavaScript code)
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+	set(_def_value OFF)
+else()
+	set(_def_value ON)
+endif()
+set(BUILD_SHARED_LIBS ${_def_value} CACHE BOOL "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)")
+unset(_def_value)
+
 if(BUILD_SHARED_LIBS)
 	set(CMAKE_MRPT_BUILD_SHARED_LIB "#define MRPT_BUILT_AS_DLL")
 	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 1)
