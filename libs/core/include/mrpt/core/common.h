@@ -152,13 +152,6 @@ need to account for this with an extra offset.
 #define MRPT_scanf_format_check(_FMT_, _VARARGS_)
 #endif
 
-/** Tells the compiler we really want to inline that function */
-#if (defined _MSC_VER) || (defined __INTEL_COMPILER)
-#define MRPT_FORCE_INLINE __forceinline
-#else
-#define MRPT_FORCE_INLINE inline
-#endif
-
 /** Determines whether this is an X86 or AMD64 platform */
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) ||           \
 	defined(__x86_64) || defined(_M_AMD64) || defined(_M_X64) ||               \
