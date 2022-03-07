@@ -19,9 +19,6 @@ CHECK_FUNCTION_EXISTS(gettid HAVE_GETTID)
 CHECK_FUNCTION_EXISTS(sincos HAVE_SINCOS)
 CHECK_FUNCTION_EXISTS(strtok_r HAVE_STRTOK_R)
 CHECK_FUNCTION_EXISTS(_aligned_malloc HAVE_ALIGNED_MALLOC)
-CHECK_FUNCTION_EXISTS(pthread_setname_np HAVE_PTHREAD_SETNAME_NP)
-CHECK_FUNCTION_EXISTS(pthread_getname_np HAVE_PTHREAD_GETNAME_NP)
-
 
 CHECK_INCLUDE_FILE("alloca.h" HAVE_ALLOCA_H)
 CHECK_INCLUDE_FILE("linux/serial.h" HAVE_LINUX_SERIAL_H)
@@ -96,3 +93,10 @@ check_type_size("long double"  HAVE_LONG_DOUBLE)
 # ---------------------------------------------------------------
 include(TestBigEndian)
 TEST_BIG_ENDIAN(CMAKE_MRPT_IS_BIG_ENDIAN)
+
+# Special systems:
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+	set(CMAKE_MRPT_IN_EMSCRIPTEN 1)
+else()
+	set(CMAKE_MRPT_IN_EMSCRIPTEN 0)
+endif()

@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/core/Clock.h>
 
 #include <chrono>
@@ -75,7 +76,13 @@ TEST(clock, checkSynchEpoch)
 		// it should be a really small number in a regular computer,
 		// but we set the threshold much higher due to spurious errors
 		// when running unit tests in VMs (build farms)
-		EXPECT_LT(std::abs(err), 70000);
+#if MRPT_IN_EMSCRIPTEN
+		const int64_t errLimit = 1000000;  // We are running on Javascript!
+#else
+		const int64_t errLimit = 70000;	 // We are running on Javascript!
+#endif
+
+		EXPECT_LT(std::abs(err), errLimit);
 	}
 }
 
