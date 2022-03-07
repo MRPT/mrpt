@@ -298,10 +298,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_LRINT
 #endif
 
-#ifndef HAVE_OPENTHREAD
-#cmakedefine HAVE_OPENTHREAD
-#endif
-
 #ifndef HAVE_STRTOK_R
 #cmakedefine HAVE_STRTOK_R
 #endif
