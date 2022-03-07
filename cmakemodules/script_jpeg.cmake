@@ -1,22 +1,27 @@
 # Check for system jpeglib:
 # ===================================================
-set(CMAKE_MRPT_HAS_JPEG 1)	# Always present: system or built-in
+set(CMAKE_MRPT_HAS_JPEG 0)
+
 if(MSVC OR APPLE)
+	set(CMAKE_MRPT_HAS_JPEG 1)
 	set(CMAKE_MRPT_HAS_JPEG_SYSTEM 0)
-else(MSVC OR APPLE)
+else()
 	find_package(JPEG)
 	if(JPEG_FOUND)
 		#message(STATUS "Found library: jpeg  - Include: ${JPEG_INCLUDE_DIR}")
 		include_directories("${JPEG_INCLUDE_DIR}")
 
+		set(CMAKE_MRPT_HAS_JPEG 1)
 		set(CMAKE_MRPT_HAS_JPEG_SYSTEM 1)
-	else(JPEG_FOUND)
+	else()
 		set(CMAKE_MRPT_HAS_JPEG_SYSTEM 0)
-	endif(JPEG_FOUND)
-endif(MSVC OR APPLE)
+	endif()
+endif()
 
-if(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
+if((NOT CMAKE_MRPT_HAS_JPEG_SYSTEM) AND NOT ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten"))
 	include(ExternalProject)
+
+	set(CMAKE_MRPT_HAS_JPEG 1)
 
 	find_program(NASM_PATH nasm)
 	if(NASM_PATH)
@@ -54,6 +59,5 @@ if(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 	set_property(TARGET JPEG PROPERTY IMPORTED_LOCATION ${JPEG_LIBRARIES})
 	add_dependencies(JPEG EP_JPEG)
 
-
 	include_directories("${JPEG_INCLUDE_DIRS}")
-endif(NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
+endif()

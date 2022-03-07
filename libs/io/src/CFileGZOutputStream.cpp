@@ -11,10 +11,17 @@
 //
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <zlib.h>
 
 #include <cerrno>
 #include <cstring>	// strerror
+#include <type_traits>
+//
+#include <mrpt/config.h>
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+//
+#include <zlib.h>
 
 using namespace mrpt::io;
 using namespace std;

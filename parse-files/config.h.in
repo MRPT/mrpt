@@ -239,6 +239,26 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_LINUX_INPUT_H 1
 #endif
 
+#ifndef HAVE_SYS_TIME_H
+#cmakedefine HAVE_SYS_TIME_H 1
+#endif
+
+#ifndef HAVE_PTHREAD_H
+#cmakedefine HAVE_PTHREAD_H 1
+#endif
+
+#ifndef HAVE_UNISTD_H
+#cmakedefine HAVE_UNISTD_H 1
+#endif
+
+#ifndef HAVE_PTHREAD_SETNAME_NP
+#cmakedefine HAVE_PTHREAD_SETNAME_NP 1
+#endif
+
+#ifndef HAVE_PTHREAD_GETNAME_NP
+#cmakedefine HAVE_PTHREAD_GETNAME_NP 1
+#endif
+
 // Has <malloc.h>?
 #ifndef HAVE_MALLOC_H
 #cmakedefine HAVE_MALLOC_H 1

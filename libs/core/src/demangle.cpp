@@ -19,8 +19,9 @@
 #else
 #include <cxxabi.h>	 // __cxa_demangle()
 #include <dlfcn.h>	// dladdr()
+#ifndef __EMSCRIPTEN__
 #include <execinfo.h>
-
+#endif
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -30,6 +31,10 @@
 std::string mrpt::demangle(const std::string& symbolName)
 {
 	if (symbolName.empty()) return {};
+
+#ifdef __EMSCRIPTEN__
+	return symbolName;
+#endif
 
 #if defined(_WIN32)
 	char undecorated_name[1024];

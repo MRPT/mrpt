@@ -38,6 +38,12 @@ if(BUILD_mrpt-io)
 		    target_link_libraries(io PRIVATE ${ZLIB_LIBRARIES})
 			target_include_directories(io PRIVATE ${ZLIB_INCLUDE_DIR})
 		endif()
+		if (NOT "${io/zlib_FILES}" STREQUAL "")
+			set_source_files_properties(
+				${io/zlib_FILES}
+				PROPERTIES COMPILE_FLAGS "-include unistd.h"
+				)
+		endif()
 	endif()
 
 	# Use wxWidgets version of libzip (gz* funtions)

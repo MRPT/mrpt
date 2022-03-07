@@ -23,19 +23,29 @@
 #elif defined(MRPT_OS_LINUX)
 #include <sys/prctl.h>
 
+#if HAVE_PTHREAD_H
+#include <pthread.h>
+#endif
+
 static void SetThreadName(std::thread& thread, const char* threadName)
 {
+#if HAVE_PTHREAD_SETNAME_NP
 	auto handle = thread.native_handle();
 	pthread_setname_np(handle, threadName);
+#endif
 }
 
 static std::string GetThreadName(std::thread& thread)
 {
+#if HAVE_PTHREAD_GETNAME_NP
 	auto handle = thread.native_handle();
 	char buf[1000];
 	buf[0] = '\0';
 	pthread_getname_np(handle, buf, sizeof(buf));
 	return std::string(buf);
+#else
+	return {};
+#endif
 }
 
 static void SetThreadName(const char* threadName)
