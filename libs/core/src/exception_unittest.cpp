@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/core/exceptions.h>
 
 #include <algorithm>  // count()
@@ -41,6 +42,7 @@ void test_except_toplevel()
 	MRPT_END
 }
 
+#if !MRPT_IN_EMSCRIPTEN
 TEST(exception, stackedExceptionComplex)
 {
 	try
@@ -67,6 +69,7 @@ TEST(exception, stackedExceptionComplex)
 #endif
 	}
 }
+#endif
 
 TEST(exception, assertException)
 {

@@ -214,6 +214,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_TINYXML2          ${CMAKE_MRPT_HAS_TINYXML2}
 #define MRPT_HAS_TINYXML2_SYSTEM   ${CMAKE_MRPT_HAS_TINYXML2_SYSTEM}
 
+/** Are we in an Emscripten build? */
+#define MRPT_IN_EMSCRIPTEN ${CMAKE_MRPT_IN_EMSCRIPTEN}
+
 /** Standard headers */
 #ifndef HAVE_INTTYPES_H
 #cmakedefine HAVE_INTTYPES_H 1
@@ -249,14 +252,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 #ifndef HAVE_UNISTD_H
 #cmakedefine HAVE_UNISTD_H 1
-#endif
-
-#ifndef HAVE_PTHREAD_SETNAME_NP
-#cmakedefine HAVE_PTHREAD_SETNAME_NP 1
-#endif
-
-#ifndef HAVE_PTHREAD_GETNAME_NP
-#cmakedefine HAVE_PTHREAD_GETNAME_NP 1
 #endif
 
 // Has <malloc.h>?
