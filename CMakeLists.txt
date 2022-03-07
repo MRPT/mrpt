@@ -415,7 +415,7 @@ if (MRPT_COMPILER_IS_CLANG)
 	# Use "modern" C99 ! ;-)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
-	if(NOT APPLE)
+	if(NOT APPLE AND NOT ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten"))
 		# From: https://stackoverflow.com/a/16788372/1631514
 		# I would use the native library for each OS i.e. libstdc++ on GNU/Linux and libc++ on Mac OS X.
 		# libc++ is not 100% complete on GNU/Linux, and there's no real advantage to using it when libstdc++

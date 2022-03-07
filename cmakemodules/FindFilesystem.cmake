@@ -12,7 +12,10 @@ set(CMAKE_CXX_STANDARD 17)
 if(MRPT_COMPILER_IS_GCC_OR_CLANG)
     set(CMAKE_REQUIRED_LINK_OPTIONS -std=c++17)
     set(CMAKE_REQUIRED_FLAGS -std=c++17)
-    if ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
+
+    set(LST_SYSTEMS_FOR_LIBCPP "Emscripten" "FreeBSD")
+
+    if ("${CMAKE_SYSTEM_NAME}" IN_LIST LST_SYSTEMS_FOR_LIBCPP)
         set(CMAKE_REQUIRED_LINK_OPTIONS -stdlib=libc++)
         set(CMAKE_REQUIRED_FLAGS -stdlib=libc++)
     endif()
