@@ -285,6 +285,8 @@ include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + 
 include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 
+include(cmakemodules/process_emscripten_embedded_files.cmake REQUIRED)
+
 # ---------------------------------------------------------------------------
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
