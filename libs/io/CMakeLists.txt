@@ -25,18 +25,28 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-io)
-	# Ignore precompiled headers in some sources:
-	if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		set_source_files_properties(
-			${io/zlib_FILES}
-			PROPERTIES COMPILE_FLAGS "/Y-"
-			)
-	endif()
-
 	if(CMAKE_MRPT_HAS_ZLIB)
 		if(NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX AND CMAKE_MRPT_HAS_ZLIB_SYSTEM)
 		    target_link_libraries(io PRIVATE ${ZLIB_LIBRARIES})
 			target_include_directories(io PRIVATE ${ZLIB_INCLUDE_DIR})
+		endif()
+
+		if (NOT "${io/zlib_FILES}" STREQUAL "")
+			# Ignore precompiled headers in some sources:
+			if(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+				set(extra_flags_ "/Y-")
+			endif()
+
+			if (HAVE_UNISTD_H)
+				set(extra_flags2_ "-include unistd.h")
+			endif()
+
+			set_source_files_properties(
+				${io/zlib_FILES}
+				PROPERTIES COMPILE_FLAGS "${extra_flags_} ${extra_flags2_}"
+				)
+			unset(extra_flags_)
+			unset(extra_flags2_)
 		endif()
 	endif()
 

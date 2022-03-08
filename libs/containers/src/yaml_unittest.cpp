@@ -255,7 +255,8 @@ MRPT_TEST(yaml, nested2)
 {
 	mrpt::containers::yaml p;
 	p["N"] = 10;
-	auto& pid = p["PID"] = mrpt::containers::yaml::Map();
+	p["PID"] = mrpt::containers::yaml::Map();
+	auto pid = p["PID"];
 	pid["Kp"] = 0.5;
 	p["PID"]["Ti"] = 2.0;
 	p["PID"]["N"] = 1000;
@@ -504,7 +505,8 @@ MRPT_TEST(yaml, assignmentsInCallee)
 {
 	mrpt::containers::yaml p;
 
-	auto& pp = p["params"] = mrpt::containers::yaml::Map();
+	p["params"] = mrpt::containers::yaml::Map();
+	auto pp = p["params"];
 	foo(pp);
 
 	EXPECT_FALSE(p.empty());
@@ -831,7 +833,11 @@ MRPT_TEST(yaml, parseAndEmit)
 		//
 	};
 
+#ifdef __EMSCRIPTEN__
+	const bool hasYamlLint = false;
+#else
 	const bool hasYamlLint = (0 == ::system("yamllint --version"));
+#endif
 
 	int idx = 0;
 	for (const auto& testText : tsts)

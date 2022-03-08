@@ -14,6 +14,11 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <test_mrpt_common.h>
+//
+#include <mrpt/config.h>
+#ifndef MRPT_BUILT_AS_DLL
+#include <mrpt/opengl/registerAllClasses.h>
+#endif
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -24,6 +29,10 @@ using namespace std;
 // bugs:
 TEST(SerializeTestOpenGL, WriteReadToMem)
 {
+#ifndef MRPT_BUILT_AS_DLL
+	mrpt::opengl::registerAllClasses_mrpt_opengl();
+#endif
+
 	const mrpt::rtti::TRuntimeClassId* lstClasses[] = {
 		CLASS_ID(CAxis),
 		CLASS_ID(CBox),
@@ -86,6 +95,7 @@ TEST(SerializeTestOpenGL, PredefinedSceneFile)
 {
 	using namespace std::string_literals;
 
+	//! JS_PRELOAD_FILE <tests/default-scene.3Dscene>
 	const std::string fil =
 		mrpt::UNITTEST_BASEDIR + "/tests/default-scene.3Dscene"s;
 

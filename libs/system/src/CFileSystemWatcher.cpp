@@ -7,10 +7,10 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/config.h>
-
 #include "system-precomp.h"	 // Precompiled headers
 //
+#include <mrpt/config.h>
+
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0400
@@ -22,7 +22,10 @@
 #include <sys/inotify.h>
 #endif
 
-//	#include <time.h>
+#if HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+
 #include <unistd.h>
 
 #include <cerrno>

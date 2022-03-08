@@ -13,6 +13,7 @@
 
 TEST(CSimpleMap, ParseFileInFormat_v1_5)
 {
+	//! JS_PRELOAD_FILE <share/mrpt/datasets/localization_demo.simplemap.gz>
 	const std::string fil = mrpt::UNITTEST_BASEDIR +
 		std::string("/share/mrpt/datasets/localization_demo.simplemap.gz");
 

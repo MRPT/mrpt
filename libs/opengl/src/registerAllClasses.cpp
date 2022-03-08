@@ -11,12 +11,14 @@
 //
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
+#include <mrpt/math/registerAllClasses.h>
 #include <mrpt/opengl.h>
-
-using namespace mrpt::opengl;
+#include <mrpt/opengl/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 {
+	using namespace mrpt::opengl;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// Opengl classes:
 	registerClass(CLASS_ID(CArrow));
@@ -60,4 +62,11 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 // registerClass( CLASS_ID( CPlanarLaserScan ) );
 // registerClass( CLASS_ID( CAngularObservationMesh ) );
 #endif
+}
+
+void mrpt::opengl::registerAllClasses_mrpt_opengl()
+{
+	::registerAllClasses_mrpt_opengl();
+	// deps:
+	mrpt::math::registerAllClasses_mrpt_math();
 }

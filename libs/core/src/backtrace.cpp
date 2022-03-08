@@ -27,7 +27,9 @@
 #else
 #include <dlfcn.h>	// dladdr()
 #include <dlfcn.h>
+#ifndef __EMSCRIPTEN__
 #include <execinfo.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -382,7 +384,7 @@ void mrpt::callStackBackTrace(
 
 		out_bt.backtrace_levels.emplace_back(cse);
 	}
-#else
+#elif !defined(__EMSCRIPTEN__)
 	// Based on: https://gist.github.com/fmela/591333
 	std::vector<void*> callstack(framesToCapture + 4);
 	const int nMaxFrames = framesToCapture;
@@ -438,6 +440,9 @@ void mrpt::callStackBackTrace(
 	}
 
 	free(symbols);
+#else
+	// Emscripten: do nothing.
+	return;
 #endif
 }
 
