@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.4.4: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_poses_grp
+    - mrpt::poses::CPose3DQuat: Remove use of obsolete base class std::iterator.
 - 3rdparty libraries:
   - Updated libfyaml to v0.7.12.
 - Build system:

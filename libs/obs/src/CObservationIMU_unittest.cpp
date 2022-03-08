@@ -34,6 +34,7 @@ TEST(CObservationIMU, Deserialize_v3)
 
 	mrpt::obs::CRawlog dataset;
 
+	//! JS_PRELOAD_FILE <tests/test-imu-obs-format3.rawlog>
 	const auto sFil =
 		mrpt::UNITTEST_BASEDIR + "/tests/test-imu-obs-format3.rawlog"s;
 
@@ -51,6 +52,7 @@ TEST(CObservationIMU, Deserialize_v4)
 
 	mrpt::obs::CRawlog dataset;
 
+	//! JS_PRELOAD_FILE <tests/test-imu-obs-format4.rawlog>
 	const auto sFil =
 		mrpt::UNITTEST_BASEDIR + "/tests/test-imu-obs-format4.rawlog"s;
 

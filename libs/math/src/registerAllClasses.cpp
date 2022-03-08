@@ -15,11 +15,12 @@
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSplineInterpolator1D.h>
-
-using namespace mrpt::math;
+#include <mrpt/math/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_math)
 {
+	using namespace mrpt::math;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// Abstract classes are not registered since they can not be
 	//   instanciated, nor loaded from streams.
@@ -32,4 +33,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_math)
 	registerClass(CLASS_ID(CPolygon));
 	registerClass(CLASS_ID(CSplineInterpolator1D));
 #endif
+}
+
+void mrpt::math::registerAllClasses_mrpt_math()
+{
+	::registerAllClasses_mrpt_math();
 }
