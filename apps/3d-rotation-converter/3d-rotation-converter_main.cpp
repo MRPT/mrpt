@@ -19,6 +19,15 @@
 #include <Eigen/SVD>
 #include <iostream>
 
+#ifdef __EMSCRIPTEN__  // are we actually in a Wasm JS instance?
+#include <emscripten.h>
+
+#include <functional>
+
+std::function<void()> loop;
+void main_loop() { loop(); }
+#endif
+
 static void AppRotationConverter()
 {
 	nanogui::init();
@@ -420,12 +429,39 @@ static void AppRotationConverter()
 
 	win.camera().setZoomDistance(5.0f);
 
+#ifndef __EMSCRIPTEN__	// are we in a Wasm JS instance?
+	// No: regular procedure:
+
 	// Update view and process events:
 	win.drawAll();
 	win.setVisible(true);
-	nanogui::mainloop();
 
+	nanogui::mainloop();
 	nanogui::shutdown();
+#else
+	// Yes, we are in a web browser running on JS:
+
+	loop = [&] {
+		// Check if any events have been activated (key pressed, mouse moved
+		// etc.) and call corresponding response functions
+		glfwPollEvents();
+
+		glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Draw nanogui
+		win.nanogui_screen()->drawContents();
+		win.drawWidgets();
+
+		glfwSwapBuffers(win.nanogui_screen()->glfwWindow());
+	};
+	emscripten_set_main_loop(main_loop, 0, true);
+
+	// Update view and process events:
+	win.drawAll();
+	win.setVisible(true);
+
+#endif
 }
 
 int main()
