@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------
-# CMake file for the MRPT application:  RawLogViewer
+# CMake file for the MRPT application:  camera-calib
 #
 #  Run with "cmake ." at the root directory
 #
