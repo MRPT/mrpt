@@ -32,6 +32,7 @@ MRPT
 
   modules
   contributing
+  bibliography
   doxygen-index
   Docs for other versions <https://docs.mrpt.org/reference/>
 
