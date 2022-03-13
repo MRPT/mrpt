@@ -67,10 +67,3 @@ Invoking the program without any flag will launch it in normal, interactive, mod
    
    2d-slam-demo
 
-
-
-Bibliography
-----------------
-
-.. bibliography::
-   :cited:

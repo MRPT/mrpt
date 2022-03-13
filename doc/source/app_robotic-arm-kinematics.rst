@@ -14,7 +14,7 @@ It is a useful tool for teaching and learning the basics of robotic arm kinemati
 As the rest of MRPT applications, it is included in source and binary packages in
 the download page.
 
-The main C++ class behinds this app is `mrpt::kinematics::CKinematicChain <class_mrpt_kinematics_CKinematicChain.html>`_
+The main C++ class behind this app is `mrpt::kinematics::CKinematicChain <class_mrpt_kinematics_CKinematicChain.html>`_
 
 2. Video tutorials
 -------------------
