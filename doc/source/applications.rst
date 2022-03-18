@@ -26,7 +26,6 @@ also provides many ready-to-use applications:
   page_app_holonomic-navigator-demo.rst
   page_app_icp-slam-live.rst
   page_app_icp-slam.rst
-  page_app_icp-slam.rst
   page_app_image2gridmap.rst
   page_app_kf-slam.rst
   page_app_kinect-3d-slam.rst
