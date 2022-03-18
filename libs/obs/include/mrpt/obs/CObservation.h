@@ -97,7 +97,8 @@ class CObservation : public mrpt::serialization::CSerializable,
 	 *			has nothing to do with a metric map (for example, a sound
 	 *observation).
 	 *
-	 * See: \ref maps_observations
+	 * See: [Maps-observations matrix](tutorial-maps-observations.html)
+	 *
 	 * \sa CMetricMap, CMetricMap::insertObservation
 	 */
 	template <class METRICMAP>
