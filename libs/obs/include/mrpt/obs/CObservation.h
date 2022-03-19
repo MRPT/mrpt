@@ -15,7 +15,7 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 
-/** This namespace contains representation of robot actions and observations 
+/** This namespace contains representation of robot actions and observations
  * \ingroup mrpt_obs_grp */
 namespace mrpt::obs
 {
