@@ -48,7 +48,7 @@ or individually like:
 For MRPT 1.x
 -------------------------
 
-Prior to MRPT 2.0.0, the correct way to find for MRPT was:
+Prior to MRPT 2.0.0, the correct way to search for MRPT was:
 
 .. code-block:: cmake
 

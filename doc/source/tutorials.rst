@@ -27,7 +27,7 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
   tutorial-mrpt-maps-model
   range_only_localization_mapping
   tutorial-icp-alignment
-  tutorial-maps-observations
+  page_maps_observations
 
 .. toctree::
   :maxdepth: 2

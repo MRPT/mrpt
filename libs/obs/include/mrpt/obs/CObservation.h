@@ -15,10 +15,9 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/datetime.h>
 
-namespace mrpt
-{
-/** This namespace contains representation of robot actions and observations */
-namespace obs
+/** This namespace contains representation of robot actions and observations 
+ * \ingroup mrpt_obs_grp */
+namespace mrpt::obs
 {
 /** Used for CObservationBeaconRange, CBeacon, etc. \ingroup mrpt_obs_grp */
 static constexpr int INVALID_BEACON_ID = -1;
@@ -97,7 +96,7 @@ class CObservation : public mrpt::serialization::CSerializable,
 	 *			has nothing to do with a metric map (for example, a sound
 	 *observation).
 	 *
-	 * See: [Maps-observations matrix](tutorial-maps-observations.html)
+	 * See: \ref maps_observations
 	 *
 	 * \sa CMetricMap, CMetricMap::insertObservation
 	 */
@@ -207,5 +206,4 @@ class CObservation : public mrpt::serialization::CSerializable,
 
 };	// End of class def.
 
-}  // namespace obs
-}  // namespace mrpt
+}  // namespace mrpt::obs
