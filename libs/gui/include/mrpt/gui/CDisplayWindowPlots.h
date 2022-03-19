@@ -89,7 +89,8 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 		const std::string& windowCaption = std::string(),
 		unsigned int initialWidth = 350, unsigned int initialHeight = 300);
 
-	/** Class factory returning a smart pointer */
+	/** Class factory returning a smart pointer, equivalent to
+	 * `std::make_shared<>(...)` */
 	static CDisplayWindowPlots::Ptr Create(
 		const std::string& windowCaption, unsigned int initialWindowWidth = 400,
 		unsigned int initialWindowHeight = 300);

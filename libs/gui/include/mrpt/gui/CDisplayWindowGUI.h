@@ -101,7 +101,8 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	virtual ~CDisplayWindowGUI() override;
 
-	/** Class factory returning a smart pointer */
+	/** Class factory returning a smart pointer, equivalent to
+	 * `std::make_shared<>(...)` */
 	template <typename... Args>
 	static Ptr Create(Args&&... args)
 	{
