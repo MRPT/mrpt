@@ -113,6 +113,9 @@ The MRPT CMake scripts automatically recognize those files under the src
 directory with the pattern ``*_unittest.cpp`` as files for unit testing.
 MRPT uses the Google’s gtest library to perform these tests.
 
+To see how to invoke the regular unit tests, or how to run them automatically
+under ``gdb`` or ``valgrind``, see: :ref:`unit_testing`.
+
 Note that the ``*_unittest.cpp`` files are not included in the "mrpt-<name>”
 library, but a new target ``test-<name>`` is automatically created which is
 invoked when doing ``make test`` or ``make test_legacy``.
