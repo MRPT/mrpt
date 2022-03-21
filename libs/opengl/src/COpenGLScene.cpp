@@ -106,7 +106,7 @@ void COpenGLScene::render() const
 
 #else
 	THROW_EXCEPTION(
-		"The MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL "
+		"MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL "
 		"functions are not implemented");
 #endif
 	MRPT_END
