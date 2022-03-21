@@ -83,10 +83,7 @@ class TexturesCache
 			entry.load_ok = mrpt::img::CImage::loadTGA(
 				texturePath, entry.img_rgb, *entry.img_alpha);
 		}
-		else
-		{
-			entry.load_ok = entry.img_rgb.loadFromFile(texturePath);
-		}
+		else { entry.load_ok = entry.img_rgb.loadFromFile(texturePath); }
 
 		if (entry.load_ok)
 		{
@@ -131,7 +128,7 @@ struct RenderElements
 
 struct CAssimpModel::Impl
 {
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL && MRPT_HAS_ASSIMP
 	Impl() = default;
 	~Impl() = default;
 
@@ -148,7 +145,7 @@ struct CAssimpModel::Impl
 #endif
 };
 
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL && MRPT_HAS_ASSIMP
 
 // Just return the diffuse color:
 static mrpt::img::TColor apply_material(const aiMaterial* mtl);
@@ -200,7 +197,7 @@ void CAssimpModel::onUpdateBuffers_all()
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL && MRPT_HAS_ASSIMP
 	if (!m_assimp_scene->scene) return;	 // No scene
 
 	mrpt::opengl::internal::RenderElements re;
@@ -243,7 +240,7 @@ uint8_t CAssimpModel::serializeGetVersion() const { return 1; }
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL && MRPT_HAS_ASSIMP
 	const bool empty = m_assimp_scene->scene != nullptr;
 	out << empty;
 	if (!empty)
@@ -286,7 +283,7 @@ void CAssimpModel::clear()
 {
 	CRenderizable::notifyChange();
 
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL && MRPT_HAS_ASSIMP
 	m_assimp_scene->importer.FreeScene();
 #endif
 	m_modelPath.clear();
@@ -296,7 +293,7 @@ void CAssimpModel::clear()
 
 void CAssimpModel::loadScene(const std::string& filepath, int flags)
 {
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL && MRPT_HAS_ASSIMP
 	clear();
 	CRenderizable::notifyChange();
 
@@ -361,7 +358,7 @@ bool CAssimpModel::traceRay(
 	return false;
 }
 
-#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL && MRPT_HAS_ASSIMP
 
 static void get_bounding_box_for_node(
 	const aiScene* scene, const aiNode* nd, aiVector3D* min, aiVector3D* max,
@@ -419,7 +416,9 @@ static mrpt::img::TColor apply_material(const aiMaterial* mtl)
 	aiColor4D diffuse;
 	if (AI_SUCCESS ==
 		aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
-	{ return color4_to_TColor(diffuse); }
+	{
+		return color4_to_TColor(diffuse);
+	}
 	else
 	{
 		// Default color:

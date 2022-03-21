@@ -24,7 +24,7 @@ using namespace mrpt::math;
 using namespace std;
 
 // Include libraries in linking:
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #ifdef _WIN32
 // WINDOWS:
 #if defined(_MSC_VER)
@@ -74,11 +74,14 @@ COpenGLScene& COpenGLScene::operator=(const COpenGLScene& obj)
 
 		clear();
 		m_viewports = obj.m_viewports;
-		for_each(m_viewports.begin(), m_viewports.end(), [](auto& ptr) {
-			// make a unique copy of each object (copied as a shared ptr)
-			ptr.reset(
-				dynamic_cast<mrpt::opengl::COpenGLViewport*>(ptr->clone()));
-		});
+		for_each(
+			m_viewports.begin(), m_viewports.end(),
+			[](auto& ptr)
+			{
+				// make a unique copy of each object (copied as a shared ptr)
+				ptr.reset(
+					dynamic_cast<mrpt::opengl::COpenGLViewport*>(ptr->clone()));
+			});
 	}
 	return *this;
 }
@@ -90,7 +93,7 @@ void COpenGLScene::render() const
 {
 	MRPT_START
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// We need the size of the viewport at the beginning: should be the whole
 	// window:
 	GLint win_dims[4];
@@ -343,9 +346,8 @@ auto COpenGLScene::getBoundingBox(const std::string& vpn) const
 
 void COpenGLScene::freeOpenGLResources()
 {
-	auto do_free = [](const mrpt::opengl::CRenderizable::Ptr& o) {
-		o->freeOpenGLResources();
-	};
+	auto do_free = [](const mrpt::opengl::CRenderizable::Ptr& o)
+	{ o->freeOpenGLResources(); };
 
 	visitAllObjects(do_free);
 }

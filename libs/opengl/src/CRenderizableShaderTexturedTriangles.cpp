@@ -36,14 +36,14 @@ const bool MRPT_OPENGL_VERBOSE =
 	mrpt::get_env<bool>("MRPT_OPENGL_VERBOSE", false);
 
 // Whether to profile memory allocations:
-//#define TEXTUREOBJ_PROFILE_MEM_ALLOC
+// #define TEXTUREOBJ_PROFILE_MEM_ALLOC
 
 // Whether to use a memory pool for the texture buffer:
 #define TEXTUREOBJ_USE_MEMPOOL
 
 void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// Generate vertices & colors into m_triangles
 	const_cast<CRenderizableShaderTexturedTriangles&>(*this)
 		.onUpdateBuffers_TexturedTriangles();
@@ -63,7 +63,7 @@ void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
 
 void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// This will load and/or select our texture, only once:
 	initializeTextures();
@@ -298,7 +298,7 @@ static unsigned char* reserveDataBuffer(
 
 void CRenderizableShaderTexturedTriangles::initializeTextures() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	unsigned char* dataAligned = nullptr;
 	vector<unsigned char> data;
 
@@ -488,7 +488,8 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 			// Reverse RGB <-> BGR order?
 			const bool is_RGB_order =
 				(m_textureImage.getChannelsOrder() == std::string("RGB"));
-			const GLenum img_format = [=]() {
+			const GLenum img_format = [=]()
+			{
 				switch (nBytesPerPixel)
 				{
 					case 1: return GL_LUMINANCE;
@@ -616,10 +617,7 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 				in >> m_textureImageAlpha;
 				assignImage(m_textureImage, m_textureImageAlpha);
 			}
-			else
-			{
-				assignImage(m_textureImage);
-			}
+			else { assignImage(m_textureImage); }
 			if (version >= 1) in >> m_textureImageAssigned;
 			else
 				m_textureImageAssigned = true;
@@ -651,7 +649,7 @@ class TextureResourceHandler
 	/// Return [textureName, textureUnit]
 	std::pair<unsigned int, unsigned int> generateTextureID()
 	{
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		auto lck = mrpt::lockHelper(m_texturesMtx);
 
 		processDestroyQueue();
@@ -678,10 +676,7 @@ class TextureResourceHandler
 				   "simultaneous OpenGL textures ("
 				<< m_maxTextureUnits << ")" << std::endl;
 		}
-		else
-		{
-			m_occupiedTextureUnits.insert(foundUnit);
-		}
+		else { m_occupiedTextureUnits.insert(foundUnit); }
 
 		if (MRPT_OPENGL_VERBOSE)
 			std::cout << "[mrpt generateTextureID] textureName:" << textureID
@@ -695,7 +690,7 @@ class TextureResourceHandler
 
 	void releaseTextureID(unsigned int texName, unsigned int texUnit)
 	{
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		MRPT_START
 		auto lck = mrpt::lockHelper(m_texturesMtx);
 
@@ -713,7 +708,7 @@ class TextureResourceHandler
    private:
 	TextureResourceHandler()
 	{
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
 		if (MRPT_OPENGL_VERBOSE)
 			std::cout << "[mrpt TextureResourceHandler] maxTextureUnits:"
@@ -723,7 +718,7 @@ class TextureResourceHandler
 
 	void processDestroyQueue()
 	{
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		if (auto itLst = m_destroyQueue.find(std::this_thread::get_id());
 			itLst != m_destroyQueue.end())
 		{
@@ -735,7 +730,7 @@ class TextureResourceHandler
 #endif
 	}
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	std::mutex m_texturesMtx;
 	std::map<GLuint, std::thread::id> m_textureReservedFrom;
 	std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;

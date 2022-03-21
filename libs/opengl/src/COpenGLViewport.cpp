@@ -33,7 +33,7 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(COpenGLViewport, CSerializable, mrpt::opengl)
 
-//#define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
+// #define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
 
 #if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
 mrpt::system::CTimeLogger glv_timlog;
@@ -134,7 +134,7 @@ static int startFromRatio(const double frac, const int dSize)
 // "Image mode" rendering:
 void COpenGLViewport::renderImageMode() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
 	mrpt::system::CTimeLoggerEntry tle(
 		glv_timlog, "COpenGLViewport::render imageview");
@@ -189,7 +189,7 @@ void COpenGLViewport::unloadShaders() { m_shaders.clear(); }
 
 void COpenGLViewport::loadDefaultShaders() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	std::vector<shader_id_t> lstShaderIDs = {
@@ -212,7 +212,7 @@ void COpenGLViewport::loadDefaultShaders() const
 /** Render a normal scene with 3D objects */
 void COpenGLViewport::renderNormalSceneMode() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	// Prepare camera (projection matrix):
@@ -285,7 +285,7 @@ void COpenGLViewport::renderNormalSceneMode() const
 
 void COpenGLViewport::renderViewportBorder() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 	if (m_borderWidth < 1) return;
 
@@ -326,7 +326,7 @@ void COpenGLViewport::renderViewportBorder() const
 
 void COpenGLViewport::renderTextMessages() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	// Ensure GL objects are up-to-date:
@@ -409,7 +409,7 @@ void COpenGLViewport::render(
 	[[maybe_unused]] const int render_offset_x,
 	[[maybe_unused]] const int render_offset_y) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	// Change viewport:
@@ -570,10 +570,7 @@ void COpenGLViewport::serializeFrom(
 					m_background_color.G >> m_background_color.B >>
 					m_background_color.A;
 			}
-			else
-			{
-				m_custom_backgb_color = false;
-			}
+			else { m_custom_backgb_color = false; }
 
 			// Load objects:
 			uint32_t n;
@@ -624,10 +621,7 @@ void COpenGLViewport::serializeFrom(
 
 			// Added in v5: image mode
 			if (in.ReadAs<bool>()) { in >> m_imageViewPlane; }
-			else
-			{
-				m_imageViewPlane.reset();
-			}
+			else { m_imageViewPlane.reset(); }
 
 			if (version >= 6) in >> m_clonedCameraViewport;
 			else

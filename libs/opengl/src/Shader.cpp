@@ -50,10 +50,7 @@ void clearPendingIfPossible()
 			it = pptc.erase(it);
 			continue;
 		}
-		else
-		{
-			++it;
-		}
+		else { ++it; }
 	}
 
 	for (auto it = spptc.begin(); it != spptc.end();)
@@ -69,10 +66,7 @@ void clearPendingIfPossible()
 			it = spptc.erase(it);
 			continue;
 		}
-		else
-		{
-			++it;
-		}
+		else { ++it; }
 	}
 	inClearPendingIfPossible = false;
 }
@@ -99,7 +93,9 @@ void Shader::clear()
 	// If we are in the same thread that created us, ok, clean up.
 	// Otherwise, postpone it for later on:
 	if (m_data->creationThread == std::this_thread::get_id())
-	{ m_data->destroy(); }
+	{
+		m_data->destroy();
+	}
 	else
 	{
 		// Postpone (except if we are already in the global dtor of the queue!)
@@ -119,7 +115,7 @@ void Shader::Data::destroy()
 {
 	if (!shader) return;
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// See clear() comments
 	ASSERT_(creationThread == std::this_thread::get_id());
 
@@ -132,7 +128,7 @@ bool Shader::compile(
 	unsigned int type, const std::string& shaderCode,
 	mrpt::optional_ref<std::string> outErrorMessages)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	clear();
 
 	m_data->creationThread = std::this_thread::get_id();
@@ -180,7 +176,9 @@ void Program::clear()
 	// If we are in the same thread that created us, ok, clean up.
 	// Otherwise, postpone it for later on:
 	if (m_data->linkedThread == std::this_thread::get_id())
-	{ m_data->destroy(); }
+	{
+		m_data->destroy();
+	}
 	else
 	{
 		// Postpone (except if we are already in the global dtor of the queue!)
@@ -198,7 +196,7 @@ void Program::clear()
 void Program::Data::destroy()
 {
 	if (!program) return;
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// See clear() comments
 	ASSERT_(linkedThread == std::this_thread::get_id());
@@ -225,14 +223,16 @@ bool Program::linkProgram(
 	std::vector<Shader>& shaders,
 	mrpt::optional_ref<std::string> outErrorMessages)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	clear();
 
 #if defined(MRPT_OS_LINUX)
 	// Workaround to enfore wxWidgets to use GLSL>=3.3 even for wxWidgets<3.0.4
 	// See CWxGLCanvasBase::CWxGLCanvasBase.
 	if (!::getenv("MESA_GL_VERSION_OVERRIDE"))
-	{ ::setenv("MESA_GL_VERSION_OVERRIDE", "3.3", 1 /*overwrite*/); }
+	{
+		::setenv("MESA_GL_VERSION_OVERRIDE", "3.3", 1 /*overwrite*/);
+	}
 #endif
 
 	m_data->program = glCreateProgram();
@@ -274,7 +274,7 @@ bool Program::linkProgram(
 
 void Program::declareUniform(const std::string& name)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(!empty());
 
 	if (m_data->uniforms.count(name) != 0)
@@ -294,7 +294,7 @@ void Program::declareUniform(const std::string& name)
 }
 void Program::declareAttribute(const std::string& name)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(!empty());
 
 	if (m_data->attribs.count(name) != 0)
@@ -316,7 +316,7 @@ void Program::declareAttribute(const std::string& name)
 
 void Program::dumpProgramDescription(std::ostream& o) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(!empty());
 
 	GLint count;

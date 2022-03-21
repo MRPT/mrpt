@@ -26,7 +26,7 @@ CRenderizableShaderTriangles::~CRenderizableShaderTriangles() = default;
 
 void CRenderizableShaderTriangles::renderUpdateBuffers() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// Generate vertices & colors into m_triangles
 	const_cast<CRenderizableShaderTriangles&>(*this)
 		.onUpdateBuffers_Triangles();
@@ -45,7 +45,7 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 
 void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// Enable/disable lights:
 	if (rc.shader->hasUniform("enableLight"))

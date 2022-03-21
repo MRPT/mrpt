@@ -18,7 +18,7 @@ using namespace mrpt::opengl;
 
 Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// Vertex shader:
 	const char* vertex_shader = nullptr;

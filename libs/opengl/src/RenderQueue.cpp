@@ -30,7 +30,7 @@ void mrpt::opengl::enqueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	using mrpt::math::CMatrixDouble44;
 
 	const char* curClassName = nullptr;
@@ -129,7 +129,7 @@ void mrpt::opengl::processRenderQueue(
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
 	const mrpt::opengl::TLightParameters& lights)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	for (const auto& rqSet : rq)
 	{
@@ -180,14 +180,20 @@ void mrpt::opengl::processRenderQueue(
 #endif
 }
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 void mrpt::opengl::checkOpenGLErr_impl(
 	unsigned int glErrorCode, const char* filename, int lineno)
 {
 	if (glErrorCode == GL_NO_ERROR) return;
+#if MRPT_HAS_OPENGL_GLUT
 	const std::string sErr = mrpt::format(
 		"[%s:%i] OpenGL error: %s", filename, lineno,
 		reinterpret_cast<const char*>(gluErrorString(glErrorCode)));
+#else
+	// w/o glu:
+	const std::string sErr =
+		mrpt::format("[%s:%i] OpenGL error: %u", filename, lineno, glErrorCode);
+#endif
 	std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
 	THROW_EXCEPTION(sErr);
 }
