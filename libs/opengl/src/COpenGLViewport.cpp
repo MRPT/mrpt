@@ -248,10 +248,12 @@ void COpenGLViewport::renderNormalSceneMode() const
 
 	// Global OpenGL settings:
 	// ---------------------------------
+#if !defined(__EMSCRIPTEN__)
 	glHint(
 		GL_POLYGON_SMOOTH_HINT,
 		m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
 	CHECK_OPENGL_ERROR();
+#endif
 
 	// Regular depth model:
 	// 0: far, 1: near
@@ -266,7 +268,7 @@ void COpenGLViewport::renderNormalSceneMode() const
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 // Enable point sizes>1
-#if defined(GL_PROGRAM_POINT_SIZE)	// it seems it's undefined in OSX (?)
+#if !defined(__EMSCRIPTEN__) && defined(GL_PROGRAM_POINT_SIZE)	// OSX undef?
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	CHECK_OPENGL_ERROR();
 #endif
@@ -570,7 +572,10 @@ void COpenGLViewport::serializeFrom(
 					m_background_color.G >> m_background_color.B >>
 					m_background_color.A;
 			}
-			else { m_custom_backgb_color = false; }
+			else
+			{
+				m_custom_backgb_color = false;
+			}
 
 			// Load objects:
 			uint32_t n;
@@ -621,7 +626,10 @@ void COpenGLViewport::serializeFrom(
 
 			// Added in v5: image mode
 			if (in.ReadAs<bool>()) { in >> m_imageViewPlane; }
-			else { m_imageViewPlane.reset(); }
+			else
+			{
+				m_imageViewPlane.reset();
+			}
 
 			if (version >= 6) in >> m_clonedCameraViewport;
 			else
