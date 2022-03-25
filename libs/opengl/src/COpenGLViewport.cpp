@@ -9,6 +9,8 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <Eigen/Dense>	// First! to avoid conflicts with X.h
+//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>	 // crossProduct3D()
 #include <mrpt/opengl/COpenGLScene.h>
@@ -21,8 +23,6 @@
 #include <mrpt/serialization/metaprogramming_serialization.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTimeLogger.h>
-
-#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::poses;

@@ -9,13 +9,14 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <Eigen/Dense>	// First! to avoid conflicts with X.h
+//
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/system/os.h>
 
-#include <Eigen/Dense>
 #include <map>
 
 using namespace std;

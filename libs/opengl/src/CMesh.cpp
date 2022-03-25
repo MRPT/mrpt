@@ -9,6 +9,8 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <Eigen/Dense>	// First! to avoid conflicts with X.h
+//
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/opengl/CMesh.h>
@@ -17,7 +19,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 
-#include <Eigen/Dense>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
