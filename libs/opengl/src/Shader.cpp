@@ -50,7 +50,10 @@ void clearPendingIfPossible()
 			it = pptc.erase(it);
 			continue;
 		}
-		else { ++it; }
+		else
+		{
+			++it;
+		}
 	}
 
 	for (auto it = spptc.begin(); it != spptc.end();)
@@ -66,7 +69,10 @@ void clearPendingIfPossible()
 			it = spptc.erase(it);
 			continue;
 		}
-		else { ++it; }
+		else
+		{
+			++it;
+		}
 	}
 	inClearPendingIfPossible = false;
 }
@@ -93,9 +99,7 @@ void Shader::clear()
 	// If we are in the same thread that created us, ok, clean up.
 	// Otherwise, postpone it for later on:
 	if (m_data->creationThread == std::this_thread::get_id())
-	{
-		m_data->destroy();
-	}
+	{ m_data->destroy(); }
 	else
 	{
 		// Postpone (except if we are already in the global dtor of the queue!)
@@ -176,9 +180,7 @@ void Program::clear()
 	// If we are in the same thread that created us, ok, clean up.
 	// Otherwise, postpone it for later on:
 	if (m_data->linkedThread == std::this_thread::get_id())
-	{
-		m_data->destroy();
-	}
+	{ m_data->destroy(); }
 	else
 	{
 		// Postpone (except if we are already in the global dtor of the queue!)
@@ -230,9 +232,7 @@ bool Program::linkProgram(
 	// Workaround to enfore wxWidgets to use GLSL>=3.3 even for wxWidgets<3.0.4
 	// See CWxGLCanvasBase::CWxGLCanvasBase.
 	if (!::getenv("MESA_GL_VERSION_OVERRIDE"))
-	{
-		::setenv("MESA_GL_VERSION_OVERRIDE", "3.3", 1 /*overwrite*/);
-	}
+	{ ::setenv("MESA_GL_VERSION_OVERRIDE", "3.3", 1 /*overwrite*/); }
 #endif
 
 	m_data->program = glCreateProgram();

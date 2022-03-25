@@ -83,7 +83,10 @@ class TexturesCache
 			entry.load_ok = mrpt::img::CImage::loadTGA(
 				texturePath, entry.img_rgb, *entry.img_alpha);
 		}
-		else { entry.load_ok = entry.img_rgb.loadFromFile(texturePath); }
+		else
+		{
+			entry.load_ok = entry.img_rgb.loadFromFile(texturePath);
+		}
 
 		if (entry.load_ok)
 		{
@@ -416,9 +419,7 @@ static mrpt::img::TColor apply_material(const aiMaterial* mtl)
 	aiColor4D diffuse;
 	if (AI_SUCCESS ==
 		aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
-	{
-		return color4_to_TColor(diffuse);
-	}
+	{ return color4_to_TColor(diffuse); }
 	else
 	{
 		// Default color:

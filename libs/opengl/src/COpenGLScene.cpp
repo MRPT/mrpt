@@ -74,14 +74,11 @@ COpenGLScene& COpenGLScene::operator=(const COpenGLScene& obj)
 
 		clear();
 		m_viewports = obj.m_viewports;
-		for_each(
-			m_viewports.begin(), m_viewports.end(),
-			[](auto& ptr)
-			{
-				// make a unique copy of each object (copied as a shared ptr)
-				ptr.reset(
-					dynamic_cast<mrpt::opengl::COpenGLViewport*>(ptr->clone()));
-			});
+		for_each(m_viewports.begin(), m_viewports.end(), [](auto& ptr) {
+			// make a unique copy of each object (copied as a shared ptr)
+			ptr.reset(
+				dynamic_cast<mrpt::opengl::COpenGLViewport*>(ptr->clone()));
+		});
 	}
 	return *this;
 }
@@ -346,8 +343,9 @@ auto COpenGLScene::getBoundingBox(const std::string& vpn) const
 
 void COpenGLScene::freeOpenGLResources()
 {
-	auto do_free = [](const mrpt::opengl::CRenderizable::Ptr& o)
-	{ o->freeOpenGLResources(); };
+	auto do_free = [](const mrpt::opengl::CRenderizable::Ptr& o) {
+		o->freeOpenGLResources();
+	};
 
 	visitAllObjects(do_free);
 }

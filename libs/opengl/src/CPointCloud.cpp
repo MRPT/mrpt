@@ -150,8 +150,8 @@ void CPointCloud::onUpdateBuffers_Points()
 	m_last_rendered_count = m_last_rendered_count_ongoing;
 }
 
-inline void CPointCloud::internal_render_one_point(
-	[[maybe_unused]] size_t i) const
+inline void CPointCloud::internal_render_one_point([
+	[maybe_unused]] size_t i) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #endif

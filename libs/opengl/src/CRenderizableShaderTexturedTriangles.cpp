@@ -488,8 +488,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 			// Reverse RGB <-> BGR order?
 			const bool is_RGB_order =
 				(m_textureImage.getChannelsOrder() == std::string("RGB"));
-			const GLenum img_format = [=]()
-			{
+			const GLenum img_format = [=]() {
 				switch (nBytesPerPixel)
 				{
 					case 1: return GL_LUMINANCE;
@@ -617,7 +616,10 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 				in >> m_textureImageAlpha;
 				assignImage(m_textureImage, m_textureImageAlpha);
 			}
-			else { assignImage(m_textureImage); }
+			else
+			{
+				assignImage(m_textureImage);
+			}
 			if (version >= 1) in >> m_textureImageAssigned;
 			else
 				m_textureImageAssigned = true;
@@ -676,7 +678,10 @@ class TextureResourceHandler
 				   "simultaneous OpenGL textures ("
 				<< m_maxTextureUnits << ")" << std::endl;
 		}
-		else { m_occupiedTextureUnits.insert(foundUnit); }
+		else
+		{
+			m_occupiedTextureUnits.insert(foundUnit);
+		}
 
 		if (MRPT_OPENGL_VERBOSE)
 			std::cout << "[mrpt generateTextureID] textureName:" << textureID

@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/core/abs_diff.h>	 // mrpt::abs_diff()
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/common.h>
 #include <mrpt/core/format.h>
@@ -100,13 +101,6 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
    private:
 	mutable std::string m_what;
 };
-
-/** Like std::abs(a-b) but without type ambiguities */
-template <typename T>
-T abs_diff(const T a, const T b)
-{
-	return std::abs(a - b);
-}
 
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
 #define THROW_TYPED_EXCEPTION(msg, exceptionClass)                             \
@@ -255,14 +249,8 @@ T abs_diff(const T a, const T b)
  */
 #define MRPT_TRY_END                                                           \
 	}                                                                          \
-	catch (std::bad_alloc&)                                                    \
-	{                                                                          \
-		throw;                                                                 \
-	}                                                                          \
-	catch (const mrpt::ExceptionWithCallBackBase&)                             \
-	{                                                                          \
-		throw;                                                                 \
-	}                                                                          \
+	catch (std::bad_alloc&) { throw; }                                         \
+	catch (const mrpt::ExceptionWithCallBackBase&) { throw; }                  \
 	catch (const std::exception& __e)                                          \
 	{                                                                          \
 		throw mrpt::ExceptionWithCallBack(__e);                                \
@@ -276,10 +264,7 @@ T abs_diff(const T a, const T b)
  */
 #define MRPT_TRY_END_WITH_CLEAN_UP(stuff)                                      \
 	}                                                                          \
-	catch (std::bad_alloc&)                                                    \
-	{                                                                          \
-		throw;                                                                 \
-	}                                                                          \
+	catch (std::bad_alloc&) { throw; }                                         \
 	catch (...)                                                                \
 	{                                                                          \
 		{                                                                      \
