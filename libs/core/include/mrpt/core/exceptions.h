@@ -13,6 +13,7 @@
 #include <mrpt/core/common.h>
 #include <mrpt/core/format.h>
 
+#include <cstdlib>	// std::abs
 #include <stdexcept>  // logic_error
 #include <string>  // std::string, to_string()
 #include <string_view>
@@ -100,6 +101,13 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
 	mutable std::string m_what;
 };
 
+/** Like std::abs(a-b) but without type ambiguities */
+template <typename T>
+T abs_diff(const T a, const T b)
+{
+	return std::abs(a - b);
+}
+
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass) */
 #define THROW_TYPED_EXCEPTION(msg, exceptionClass)                             \
 	throw mrpt::ExceptionWithCallBack<exceptionClass>(                         \
@@ -171,7 +179,7 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
 #define ASSERT_NEAR_(__A, __B, __TOLERANCE)                                    \
 	do                                                                         \
 	{                                                                          \
-		const auto diff = std::abs((__A) - (__B));                             \
+		const auto diff = mrpt::abs_diff((__A), (__B));                        \
 		if (diff > __TOLERANCE)                                                \
 			ASRT_FAIL("ASSERT_NEAR_", __A, __B, #__A, #__B)                    \
 	} while (0)
@@ -247,8 +255,14 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  */
 #define MRPT_TRY_END                                                           \
 	}                                                                          \
-	catch (std::bad_alloc&) { throw; }                                         \
-	catch (const mrpt::ExceptionWithCallBackBase&) { throw; }                  \
+	catch (std::bad_alloc&)                                                    \
+	{                                                                          \
+		throw;                                                                 \
+	}                                                                          \
+	catch (const mrpt::ExceptionWithCallBackBase&)                             \
+	{                                                                          \
+		throw;                                                                 \
+	}                                                                          \
 	catch (const std::exception& __e)                                          \
 	{                                                                          \
 		throw mrpt::ExceptionWithCallBack(__e);                                \
@@ -262,7 +276,10 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  */
 #define MRPT_TRY_END_WITH_CLEAN_UP(stuff)                                      \
 	}                                                                          \
-	catch (std::bad_alloc&) { throw; }                                         \
+	catch (std::bad_alloc&)                                                    \
+	{                                                                          \
+		throw;                                                                 \
+	}                                                                          \
 	catch (...)                                                                \
 	{                                                                          \
 		{                                                                      \
