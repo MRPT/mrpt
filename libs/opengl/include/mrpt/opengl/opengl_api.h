@@ -67,6 +67,8 @@
 // #define GL_GLEXT_PROTOTYPES // already def above
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#endif
+#if MRPT_HAS_GLES
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include <GLES3/gl3.h>

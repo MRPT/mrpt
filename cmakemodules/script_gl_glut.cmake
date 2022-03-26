@@ -13,6 +13,9 @@ set(CMAKE_MRPT_HAS_GLUT_SYSTEM 0)
 set(CMAKE_MRPT_HAS_EGL 0)
 set(CMAKE_MRPT_HAS_EGL_SYSTEM 0)
 
+set(CMAKE_MRPT_HAS_GLES 0)
+set(CMAKE_MRPT_HAS_GLES_SYSTEM 0)
+
 if(DISABLE_OPENGL)
 	return()
 endif()
@@ -47,6 +50,16 @@ if (EGL_FOUND)
 	list(APPEND MRPT_GL_LIB EGL::EGL)
 endif()
 
+# GLES:
+pkg_check_modules(GLESV2 QUIET IMPORTED_TARGET glesv2)
+
+if (GLESV2_FOUND)
+	set(CMAKE_MRPT_HAS_GLES 1)
+	set(CMAKE_MRPT_HAS_GLES_SYSTEM 1)
+	list(APPEND MRPT_GL_LIB PkgConfig::GLESV2)
+endif()
+
+# glut:
 if(UNIX)
 	find_package(GLUT)
 endif()
