@@ -5,8 +5,8 @@ R"XXX(#version 300 es
 // Part of the MRPT project
 
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec4 vertexColor;
+in vec3 position;
+in vec4 vertexColor;
 
 uniform mat4 p_matrix;
 uniform mat4 mv_matrix;
@@ -14,7 +14,7 @@ uniform float vertexPointSize;
 uniform int enableVariablePointSize;  // 0 or 1
 uniform float variablePointSize_K, variablePointSize_DepthScale;
 
-layout(location = 0) out mediump vec4 frag_color;
+out mediump vec4 frag_color;
 
 void main()
 {

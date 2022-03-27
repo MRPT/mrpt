@@ -5,7 +5,7 @@ R"XXX(#version 300 es
 // Part of the MRPT project
 
 in highp vec4 frag_color;
-layout(location = 0) out highp vec4 color;
+out highp vec4 color;
 
 void main()
 {

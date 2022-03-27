@@ -5,9 +5,9 @@ R"XXX(#version 300 es
 // Part of the MRPT project
 
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec4 vertexColor;
-layout(location = 2) in vec3 vertexNormal;
+in vec3 position;
+in vec4 vertexColor;
+in vec3 vertexNormal;
 
 uniform mediump mat4 p_matrix;
 uniform mediump mat4 mv_matrix;
