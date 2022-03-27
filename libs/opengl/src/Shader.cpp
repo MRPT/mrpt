@@ -119,7 +119,7 @@ void Shader::Data::destroy()
 {
 	if (!shader) return;
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// See clear() comments
 	ASSERT_(creationThread == std::this_thread::get_id());
 
@@ -132,7 +132,7 @@ bool Shader::compile(
 	unsigned int type, const std::string& shaderCode,
 	mrpt::optional_ref<std::string> outErrorMessages)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	clear();
 
 	m_data->creationThread = std::this_thread::get_id();
@@ -198,7 +198,7 @@ void Program::clear()
 void Program::Data::destroy()
 {
 	if (!program) return;
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// See clear() comments
 	ASSERT_(linkedThread == std::this_thread::get_id());
@@ -225,7 +225,7 @@ bool Program::linkProgram(
 	std::vector<Shader>& shaders,
 	mrpt::optional_ref<std::string> outErrorMessages)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	clear();
 
 #if defined(MRPT_OS_LINUX)
@@ -274,7 +274,7 @@ bool Program::linkProgram(
 
 void Program::declareUniform(const std::string& name)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(!empty());
 
 	if (m_data->uniforms.count(name) != 0)
@@ -294,7 +294,7 @@ void Program::declareUniform(const std::string& name)
 }
 void Program::declareAttribute(const std::string& name)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(!empty());
 
 	if (m_data->attribs.count(name) != 0)
@@ -316,7 +316,7 @@ void Program::declareAttribute(const std::string& name)
 
 void Program::dumpProgramDescription(std::ostream& o) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(!empty());
 
 	GLint count;

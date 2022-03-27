@@ -12,13 +12,15 @@
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/opengl_api.h>
 
+#include <regex>
+
 using namespace mrpt::opengl;
 
 // TODO: May be, allow users to register custom shaders?
 
 Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// Vertex shader:
 	const char* vertex_shader = nullptr;
@@ -101,6 +103,24 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			// Init GLEW if not already done:
 #ifdef _WIN32
 	glewInit();
+#endif
+
+#if defined(__EMSCRIPTEN__)
+	// in emscripten + GLES3 we need to insert this line after version:
+	std::string sOrgV = vertex_shader;
+	sOrgV = std::regex_replace(
+		sOrgV, std::regex("#version 300 es"),
+		"#version 300 es\r\nprecision mediump float;\r\n");
+
+	vertex_shader = sOrgV.c_str();
+
+	std::string sOrgF = fragment_shader;
+	sOrgF = std::regex_replace(
+		sOrgF, std::regex("#version 300 es"),
+		"#version 300 es\r\nprecision mediump float;\r\n");
+
+	fragment_shader = sOrgF.c_str();
+
 #endif
 
 	auto shader = std::make_shared<Program>();

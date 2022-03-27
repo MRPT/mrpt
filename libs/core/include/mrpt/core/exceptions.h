@@ -9,10 +9,12 @@
 
 #pragma once
 
+#include <mrpt/core/abs_diff.h>	 // mrpt::abs_diff()
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/common.h>
 #include <mrpt/core/format.h>
 
+#include <cstdlib>	// std::abs
 #include <stdexcept>  // logic_error
 #include <string>  // std::string, to_string()
 #include <string_view>
@@ -171,7 +173,7 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
 #define ASSERT_NEAR_(__A, __B, __TOLERANCE)                                    \
 	do                                                                         \
 	{                                                                          \
-		const auto diff = std::abs((__A) - (__B));                             \
+		const auto diff = mrpt::abs_diff((__A), (__B));                        \
 		if (diff > __TOLERANCE)                                                \
 			ASRT_FAIL("ASSERT_NEAR_", __A, __B, #__A, #__B)                    \
 	} while (0)
