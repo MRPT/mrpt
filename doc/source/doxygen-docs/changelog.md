@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.4.4: UNRELEASED
+- New web-based applications
+  - All MRPT modules (including \ref mrpt_opengl_grp and mrpt-nanogui) are now compatible with Emscripten so they can run as Javascript + wasm on any modern browser.
 - Changes in libraries:
   - \ref mrpt_poses_grp
     - mrpt::poses::CPose3DQuat: Remove use of obsolete base class std::iterator.
