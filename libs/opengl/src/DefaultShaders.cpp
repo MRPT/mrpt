@@ -105,7 +105,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 	glewInit();
 #endif
 
-#if defined(__EMSCRIPTEN__) || 1
+#if defined(__EMSCRIPTEN__)
 	// in emscripten + GLES3 we need to insert this line after version:
 	std::string sOrg = vertex_shader;
 	sOrg = std::regex_replace(

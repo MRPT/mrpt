@@ -9,11 +9,11 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 vertexColor;
 layout(location = 2) in vec3 vertexNormal;
 
-uniform mat4 p_matrix;
-uniform mat4 mv_matrix;
+uniform mediump mat4 p_matrix;
+uniform mediump mat4 mv_matrix;
 
-out vec3 frag_position, frag_normal;
-out vec4 frag_materialColor;
+out mediump vec3 frag_position, frag_normal;
+out mediump vec4 frag_materialColor;
 
 void main()
 {

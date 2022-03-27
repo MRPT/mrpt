@@ -14,7 +14,7 @@ uniform float vertexPointSize;
 uniform int enableVariablePointSize;  // 0 or 1
 uniform float variablePointSize_K, variablePointSize_DepthScale;
 
-out vec4 frag_color;
+out mediump vec4 frag_color;
 
 void main()
 {

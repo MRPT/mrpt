@@ -9,12 +9,12 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 vertexUV;
 layout(location = 2) in vec3 vertexNormal;
 
-uniform mat4 p_matrix;
-uniform mat4 mv_matrix;
-uniform mat4 pmv_matrix;
+uniform mediump mat4 p_matrix;
+uniform mediump mat4 mv_matrix;
+uniform mediump mat4 pmv_matrix;
 
-out vec3 frag_position, frag_normal;
-out vec2 frag_UV; // Interpolated UV texture coords
+out mediump vec3 frag_position, frag_normal;
+out mediump vec2 frag_UV; // Interpolated UV texture coords
 uniform lowp int enableLight;  // 0 or 1
 
 void main()
