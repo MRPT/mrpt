@@ -17,7 +17,7 @@ out mediump vec4 frag_materialColor;
 
 void main()
 {
-    vec4 eye_position = mv_matrix * vec4(position, 1.0);
+    mediump vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
 
     frag_position = eye_position.xyz;

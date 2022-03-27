@@ -13,17 +13,17 @@ uniform mediump sampler2D textureSampler;
 in mediump vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
 
-out mediump vec4 color;
+layout(location = 0) out mediump vec4 color;
 
 void main()
 {
     if (enableLight!=0)
     {
-        highp vec3 mv_light_direction = light_direction;
-        highp vec3 eye = normalize(frag_position);
-        highp vec3 fn = normalize(frag_normal);
+        mediump vec3 mv_light_direction = light_direction;
+        mediump vec3 eye = normalize(frag_position);
+        mediump vec3 fn = normalize(frag_normal);
 
-        highp vec4 diffuse_factor = max(-dot(fn, mv_light_direction), 0.0) * light_diffuse;
+        mediump vec4 diffuse_factor = max(-dot(fn, mv_light_direction), 0.0) * light_diffuse;
 
         color = texture( textureSampler, frag_UV ) * (diffuse_factor + light_ambient);
     }

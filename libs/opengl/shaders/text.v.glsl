@@ -10,11 +10,12 @@ layout(location = 1) in vec4 vertexColor;
 
 uniform mediump mat4 p_matrix;
 uniform mediump mat4 mv_matrix;
-out mediump vec4 frag_color;
+
+layout(location = 0) out mediump vec4 frag_color;
 
 void main()
 {
-    vec4 eye_position = mv_matrix * vec4(position, 1.0);
+    mediump vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
     frag_color = vertexColor;
 }
