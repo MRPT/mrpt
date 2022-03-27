@@ -34,8 +34,17 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** Includes OpenGL & GLUT libraries, required for CDisplayWindows3D to work. */
 #define MRPT_HAS_OPENGL_GLUT      ${CMAKE_MRPT_HAS_OPENGL_GLUT}
-
 #define MRPT_HAS_EGL ${CMAKE_MRPT_HAS_EGL}
+#define MRPT_HAS_GLES ${CMAKE_MRPT_HAS_GLES}
+
+#cmakedefine HAVE_GLES_GL_H 1
+#cmakedefine HAVE_GLES_GLEXT_H 1
+
+#cmakedefine HAVE_GLES2_GL2_H 1
+#cmakedefine HAVE_GLES_GL2EXT_H 1
+
+#cmakedefine HAVE_GLES3_GL3_H 1
+#cmakedefine HAVE_GLES3_GL3EXT_H 1
 
 /** Has PGR Fly Capture 2? */
 #define MRPT_HAS_FLYCAPTURE2 ${CMAKE_MRPT_HAS_FLYCAPTURE2}

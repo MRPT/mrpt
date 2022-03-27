@@ -24,7 +24,7 @@ CRenderizableShaderText::~CRenderizableShaderText() = default;
 
 void CRenderizableShaderText::renderUpdateBuffers() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// Generate vertices & colors:
 	const_cast<CRenderizableShaderText&>(*this).onUpdateBuffers_Text();
 
@@ -59,9 +59,12 @@ void CRenderizableShaderText::renderUpdateBuffers() const
 
 void CRenderizableShaderText::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+
+#if !defined(__EMSCRIPTEN__)
 	glEnable(GL_LINE_SMOOTH);
 	CHECK_OPENGL_ERROR();
+#endif
 
 	// === LINES ===
 	std::optional<GLuint> attr_position;

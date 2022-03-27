@@ -36,14 +36,14 @@ const bool MRPT_OPENGL_VERBOSE =
 	mrpt::get_env<bool>("MRPT_OPENGL_VERBOSE", false);
 
 // Whether to profile memory allocations:
-//#define TEXTUREOBJ_PROFILE_MEM_ALLOC
+// #define TEXTUREOBJ_PROFILE_MEM_ALLOC
 
 // Whether to use a memory pool for the texture buffer:
 #define TEXTUREOBJ_USE_MEMPOOL
 
 void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// Generate vertices & colors into m_triangles
 	const_cast<CRenderizableShaderTexturedTriangles&>(*this)
 		.onUpdateBuffers_TexturedTriangles();
@@ -63,7 +63,7 @@ void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
 
 void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// This will load and/or select our texture, only once:
 	initializeTextures();
@@ -90,12 +90,17 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		rc.shader->hasUniform("light_direction"))
 	{
 		const Program& s = *rc.shader;
-		glUniform4fv(s.uniformId("light_diffuse"), 1, &rc.lights->diffuse.R);
-		glUniform4fv(s.uniformId("light_ambient"), 1, &rc.lights->ambient.R);
+		glUniform4f(
+			s.uniformId("light_diffuse"), rc.lights->diffuse.R,
+			rc.lights->diffuse.G, rc.lights->diffuse.B, rc.lights->diffuse.A);
+		glUniform4f(
+			s.uniformId("light_ambient"), rc.lights->ambient.R,
+			rc.lights->ambient.G, rc.lights->ambient.B, rc.lights->ambient.A);
 		// glUniform4fv(s.uniformId("light_specular"), 1,
 		// &rc.lights->specular.R);
-		glUniform3fv(
-			s.uniformId("light_direction"), 1, &rc.lights->direction.x);
+		glUniform3f(
+			s.uniformId("light_direction"), rc.lights->direction.x,
+			rc.lights->direction.y, rc.lights->direction.z);
 		CHECK_OPENGL_ERROR();
 	}
 
@@ -298,7 +303,7 @@ static unsigned char* reserveDataBuffer(
 
 void CRenderizableShaderTexturedTriangles::initializeTextures() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	unsigned char* dataAligned = nullptr;
 	vector<unsigned char> data;
 
@@ -651,7 +656,7 @@ class TextureResourceHandler
 	/// Return [textureName, textureUnit]
 	std::pair<unsigned int, unsigned int> generateTextureID()
 	{
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		auto lck = mrpt::lockHelper(m_texturesMtx);
 
 		processDestroyQueue();
@@ -695,7 +700,7 @@ class TextureResourceHandler
 
 	void releaseTextureID(unsigned int texName, unsigned int texUnit)
 	{
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		MRPT_START
 		auto lck = mrpt::lockHelper(m_texturesMtx);
 
@@ -713,7 +718,7 @@ class TextureResourceHandler
    private:
 	TextureResourceHandler()
 	{
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &m_maxTextureUnits);
 		if (MRPT_OPENGL_VERBOSE)
 			std::cout << "[mrpt TextureResourceHandler] maxTextureUnits:"
@@ -723,7 +728,7 @@ class TextureResourceHandler
 
 	void processDestroyQueue()
 	{
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		if (auto itLst = m_destroyQueue.find(std::this_thread::get_id());
 			itLst != m_destroyQueue.end())
 		{
@@ -735,7 +740,7 @@ class TextureResourceHandler
 #endif
 	}
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	std::mutex m_texturesMtx;
 	std::map<GLuint, std::thread::id> m_textureReservedFrom;
 	std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;
