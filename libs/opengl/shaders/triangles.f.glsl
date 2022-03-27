@@ -12,7 +12,7 @@ uniform lowp int enableLight;  // 0 or 1
 in mediump vec3 frag_position, frag_normal;
 in mediump vec4 frag_materialColor;
 
-layout(location = 0) out mediump vec4 color;
+layout(location = 0) out highp vec4 color;
 
 void main()
 {

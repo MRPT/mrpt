@@ -107,12 +107,20 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 
 #if defined(__EMSCRIPTEN__)
 	// in emscripten + GLES3 we need to insert this line after version:
-	std::string sOrg = vertex_shader;
-	sOrg = std::regex_replace(
-		sOrg, std::regex("#version 300 es"),
+	std::string sOrgV = vertex_shader;
+	sOrgV = std::regex_replace(
+		sOrgV, std::regex("#version 300 es"),
 		"#version 300 es\r\nprecision mediump float;\r\n");
 
-	vertex_shader = sOrg.c_str();
+	vertex_shader = sOrgV.c_str();
+
+	std::string sOrgF = fragment_shader;
+	sOrgF = std::regex_replace(
+		sOrgF, std::regex("#version 300 es"),
+		"#version 300 es\r\nprecision mediump float;\r\n");
+
+	fragment_shader = sOrgF.c_str();
+
 #endif
 
 	auto shader = std::make_shared<Program>();
