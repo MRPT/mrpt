@@ -19,7 +19,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 
-
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;

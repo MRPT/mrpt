@@ -68,10 +68,26 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #endif
-#if MRPT_HAS_GLES
+
+#if HAVE_GLES_GL_H
 #include <GLES/gl.h>
+#if HAVE_GLES_GLEXT_H
 #include <GLES/glext.h>
+#endif
+#endif
+
+#if HAVE_GLES2_GL2_H
+#include <GLES2/gl2.h>
+#if HAVE_GLES2_GL2EXT_H
+#include <GLES2/gl2ext.h>
+#endif
+#endif
+
+#if HAVE_GLES3_GL3_H
 #include <GLES3/gl3.h>
+#if HAVE_GLES3_GL3EXT_H
+#include <GLES3/gl3ext.h>
+#endif
 #endif
 
 namespace mrpt::opengl
