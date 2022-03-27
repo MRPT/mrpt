@@ -62,12 +62,17 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	{
 		const Program& s = *rc.shader;
 
-		glUniform4fv(s.uniformId("light_diffuse"), 1, &rc.lights->diffuse.R);
-		glUniform4fv(s.uniformId("light_ambient"), 1, &rc.lights->ambient.R);
+		glUniform4f(
+			s.uniformId("light_diffuse"), rc.lights->diffuse.R,
+			rc.lights->diffuse.G, rc.lights->diffuse.B, rc.lights->diffuse.A);
+		glUniform4f(
+			s.uniformId("light_ambient"), rc.lights->ambient.R,
+			rc.lights->ambient.G, rc.lights->ambient.B, rc.lights->ambient.A);
 		// glUniform4fv(s.uniformId("light_specular"), 1,
 		// &rc.lights->specular.R);
-		glUniform3fv(
-			s.uniformId("light_direction"), 1, &rc.lights->direction.x);
+		glUniform3f(
+			s.uniformId("light_direction"), rc.lights->direction.x,
+			rc.lights->direction.y, rc.lights->direction.z);
 		CHECK_OPENGL_ERROR();
 	}
 

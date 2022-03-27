@@ -15,7 +15,7 @@ out vec4 frag_color;
 
 void main()
 {
-    mediump vec4 eye_position = mv_matrix * vec4(position, 1.0);
+    highp vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
     frag_color = vertexColor;
 }
