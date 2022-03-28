@@ -79,6 +79,11 @@ struct CDisplayWindowGUI_Params
 class CDisplayWindowGUI : public nanogui::Screen
 {
    public:
+	enum special_ctor_flag_t
+	{
+		CUSTOM_GLFW_INIT = 0
+	};
+
 	/** @name Callback functor types
 	 * @{ */
 
@@ -94,10 +99,16 @@ class CDisplayWindowGUI : public nanogui::Screen
 	using Ptr = std::shared_ptr<CDisplayWindowGUI>;
 	using ConstPtr = std::shared_ptr<const CDisplayWindowGUI>;
 
+	/// Regular ctor from caption and size
 	CDisplayWindowGUI(
 		const std::string& caption = std::string(), unsigned int width = 400,
 		unsigned int height = 300,
 		const CDisplayWindowGUI_Params& p = CDisplayWindowGUI_Params());
+
+	/// Special ctor for user-defined GLFWwindow to be used as "screen":
+	CDisplayWindowGUI(
+		special_ctor_flag_t flag, const std::string& caption = std::string(),
+		unsigned int width = 400, unsigned int height = 300);
 
 	virtual ~CDisplayWindowGUI() override;
 
@@ -287,7 +298,10 @@ class CDisplayWindowGUI : public nanogui::Screen
 	/** @name Direct access to underlying nanogui API
 	 * @{ */
 
-	nanogui::Screen* nanogui_screen() { return this; }
+	nanogui::Screen* nanogui_screen()
+	{
+		return dynamic_cast<nanogui::Screen*>(this);
+	}
 
 	/** @} */
 

@@ -7,6 +7,20 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#ifdef __EMSCRIPTEN__  // are we actually in a Wasm JS instance?
+#include <emscripten.h>
+#include <emscripten/html5.h>
+
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#include <GLFW/glfw3.h>
+
+#include <functional>
+
+std::function<void()> loop;
+void main_loop() { loop(); }
+#endif
+
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CDisplayWindowGUI.h>
@@ -18,15 +32,6 @@
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <iostream>
-
-#ifdef __EMSCRIPTEN__  // are we actually in a Wasm JS instance?
-#include <emscripten.h>
-
-#include <functional>
-
-std::function<void()> loop;
-void main_loop() { loop(); }
-#endif
 
 static void AppRotationConverter()
 {
@@ -155,7 +160,14 @@ static void AppRotationConverter()
 	};
 
 	// Create GUI:
+#if defined(__EMSCRIPTEN__) && 0  // are we in a wasm JS instance?
+	mrpt::gui::CDisplayWindowGUI win(
+		mrpt::gui::CDisplayWindowGUI::CUSTOM_GLFW_INIT, "3D rotation converter",
+		900, 700);
+#else
+
 	mrpt::gui::CDisplayWindowGUI win("3D rotation converter", 900, 700, cp);
+#endif
 
 	// Add INPUT window:
 	// -----------------------------
@@ -429,18 +441,58 @@ static void AppRotationConverter()
 
 	win.camera().setZoomDistance(5.0f);
 
-#ifndef __EMSCRIPTEN__	// are we in a Wasm JS instance?
-	// No: regular procedure:
-
 	// Update view and process events:
 	win.drawAll();
 	win.setVisible(true);
 
+#if !defined(__EMSCRIPTEN__)  // are we in a Wasm JS instance?
+	// No: regular procedure:
+
 	nanogui::mainloop();
 	nanogui::shutdown();
 #else
-	// Yes, we are in a web browser running on JS:
 
+	auto* screen = win.screen();
+	auto* window = screen->glfwWindow();
+	screen->setVisible(true);
+	screen->performLayout();
+
+#if 0
+	glfwSetCursorPosCallback(window, [screen](GLFWwindow*, double x, double y) {
+		screen->cursorPosCallbackEvent(x, y);
+	});
+
+	glfwSetMouseButtonCallback(
+		window, [screen](GLFWwindow*, int button, int action, int modifiers) {
+			screen->mouseButtonCallbackEvent(button, action, modifiers);
+		});
+
+	glfwSetKeyCallback(
+		window,
+		[screen](GLFWwindow*, int key, int scancode, int action, int mods) {
+			screen->keyCallbackEvent(key, scancode, action, mods);
+		});
+
+	glfwSetCharCallback(window, [screen](GLFWwindow*, unsigned int codepoint) {
+		screen->charCallbackEvent(codepoint);
+	});
+
+	glfwSetDropCallback(
+		window, [screen](GLFWwindow*, int count, const char** filenames) {
+			screen->dropCallbackEvent(count, filenames);
+		});
+
+	glfwSetScrollCallback(window, [screen](GLFWwindow*, double x, double y) {
+		screen->scrollCallbackEvent(x, y);
+	});
+
+	glfwSetFramebufferSizeCallback(
+		window, [screen](GLFWwindow*, int width, int height) {
+			screen->resizeCallbackEvent(width, height);
+		});
+#endif
+
+	// Yes, we are in a web browser running on JS:
 	loop = [&] {
 		// Check if any events have been activated (key pressed, mouse moved
 		// etc.) and call corresponding response functions
@@ -457,9 +509,10 @@ static void AppRotationConverter()
 	};
 	emscripten_set_main_loop(main_loop, 0, true);
 
-	// Update view and process events:
-	win.drawAll();
-	win.setVisible(true);
+	glfwDestroyWindow(win.nanogui_screen()->glfwWindow());
+
+	// Terminate GLFW, clearing any resources allocated by GLFW.
+	glfwTerminate();
 
 #endif
 }
