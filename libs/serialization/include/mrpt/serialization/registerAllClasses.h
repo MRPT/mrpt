@@ -6,26 +6,15 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#include "slam-precomp.h"  // Precompiled headers
-//
-#define MRPT_NO_WARN_BIG_HDR
-#include <mrpt/core/initializer.h>
-#include <mrpt/slam.h>
-#include <mrpt/slam/registerAllClasses.h>
-
-MRPT_INITIALIZER(registerAllClasses_mrpt_slam)
+namespace mrpt::serialization
 {
-	using namespace mrpt::slam;
-	using namespace mrpt::maps;
-
-#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass(CLASS_ID(CIncrementalMapPartitioner));
-	registerClass(CLASS_ID(CMultiMetricMapPDF));
-#endif
-}
-
-void mrpt::slam::registerAllClasses_mrpt_slam()
-{
-	::registerAllClasses_mrpt_slam();
-}
+/** Forces manual RTTI registration of all serializable classes in this
+ * namespace. Should never be required to be explicitly called by users, except
+ * if building MRPT as a static library.
+ *
+ * \ingroup mrpt_serialization_grp
+ */
+void registerAllClasses_mrpt_serialization();
+}  // namespace mrpt::serialization

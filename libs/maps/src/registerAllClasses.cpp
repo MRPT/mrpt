@@ -12,15 +12,16 @@
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
 #include <mrpt/maps.h>
+#include <mrpt/maps/registerAllClasses.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 
-using namespace mrpt::maps;
-using namespace mrpt::obs;
-using namespace mrpt::opengl;
-
 MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
+	using namespace mrpt::maps;
+	using namespace mrpt::obs;
+	using namespace mrpt::opengl;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass(CLASS_ID(CBeacon));
 	registerClass(CLASS_ID(CBeaconMap));
@@ -51,4 +52,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass(CLASS_ID(CMultiMetricMap));
 
 #endif
+}
+
+void mrpt::maps::registerAllClasses_mrpt_maps()
+{
+	::registerAllClasses_mrpt_maps();
 }

@@ -13,11 +13,12 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TStereoCamera.h>
+#include <mrpt/img/registerAllClasses.h>
 
-using namespace mrpt::img;
-
-MRPT_INITIALIZER(registerAllClasses_mrpt_imgs)
+MRPT_INITIALIZER(registerAllClasses_mrpt_img)
 {
+	using namespace mrpt::img;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	//   Hack to enable compatibility with an older name of this class:
 	registerClassCustomName("CMRPTImage", CLASS_ID(CImage));
@@ -25,4 +26,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_imgs)
 	registerClass(CLASS_ID(TCamera));
 	registerClass(CLASS_ID(TStereoCamera));
 #endif
+}
+
+void mrpt::img::registerAllClasses_mrpt_img()
+{
+	::registerAllClasses_mrpt_img();
 }

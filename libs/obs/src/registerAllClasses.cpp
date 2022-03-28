@@ -12,14 +12,16 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/core/initializer.h>
+#include <mrpt/math/registerAllClasses.h>
 #include <mrpt/obs.h>
+#include <mrpt/obs/registerAllClasses.h>
 #include <mrpt/serialization/CSerializable.h>
-
-using namespace mrpt::obs;
-using namespace mrpt::maps;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 {
+	using namespace mrpt::obs;
+	using namespace mrpt::maps;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass(CLASS_ID(CSensoryFrame));
 	registerClassCustomName("CSensorialFrame", CLASS_ID(CSensoryFrame));
@@ -66,4 +68,11 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 
 	registerClass(CLASS_ID(TMapGenericParams));
 #endif
+}
+
+void mrpt::obs::registerAllClasses_mrpt_obs()
+{
+	::registerAllClasses_mrpt_obs();
+	// deps:
+	mrpt::math::registerAllClasses_mrpt_math();
 }

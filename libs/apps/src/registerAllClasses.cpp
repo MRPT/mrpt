@@ -9,6 +9,7 @@
 
 #include "apps-precomp.h"  // Precompiled headers
 //
+#include <mrpt/apps/registerAllClasses.h>
 #include <mrpt/core/initializer.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_apps)
@@ -16,4 +17,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_apps)
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// registerClass(CLASS_ID(XXX));
 #endif
+}
+
+void mrpt::apps::registerAllClasses_mrpt_apps()
+{
+	::registerAllClasses_mrpt_apps();
 }

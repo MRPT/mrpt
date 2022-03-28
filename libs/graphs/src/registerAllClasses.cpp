@@ -10,6 +10,7 @@
 #include "graphs-precomp.h"	 // Precompiled headers
 //
 #include <mrpt/core/initializer.h>
+#include <mrpt/graphs/registerAllClasses.h>
 
 // using namespace mrpt::graphs;
 //
@@ -19,4 +20,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)
 	//	registerClass( CLASS_ID( ... ) );
 
 #endif
+}
+
+void mrpt::graphs::registerAllClasses_mrpt_graphs()
+{
+	::registerAllClasses_mrpt_graphs();
 }
