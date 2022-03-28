@@ -11,11 +11,12 @@
 //
 #include <mrpt/core/initializer.h>
 #include <mrpt/hmtslam.h>
-
-using namespace mrpt::hmtslam;
+#include <mrpt/hmtslam/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_hmtslam)
 {
+	using namespace mrpt::hmtslam;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass(CLASS_ID(CHMTSLAM));
 	registerClass(CLASS_ID(CLSLAMParticleData));
@@ -26,4 +27,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hmtslam)
 	registerClass(CLASS_ID(THypothesisIDSet));
 	registerClass(CLASS_ID(CLocalMetricHypothesis));
 #endif
+}
+
+void mrpt::hmtslam::registerAllClasses_mrpt_hmtslam()
+{
+	::registerAllClasses_mrpt_hmtslam();
 }

@@ -11,8 +11,14 @@
 //
 #include <mrpt/core/initializer.h>
 #include <mrpt/gui.h>
+#include <mrpt/gui/registerAllClasses.h>
 #include <mrpt/serialization/CSerializable.h>
 
 using namespace mrpt::gui;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_gui) {}
+
+void mrpt::gui::registerAllClasses_mrpt_gui()
+{
+	::registerAllClasses_mrpt_gui();
+}

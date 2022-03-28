@@ -11,11 +11,12 @@
 //
 #include <mrpt/core/initializer.h>
 #include <mrpt/kinematics.h>
-
-using namespace mrpt::kinematics;
+#include <mrpt/kinematics/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_kinematics)
 {
+	using namespace mrpt::kinematics;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass(CLASS_ID(CKinematicChain));
 
@@ -23,4 +24,9 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_kinematics)
 	registerClass(CLASS_ID(CVehicleVelCmd_DiffDriven));
 	registerClass(CLASS_ID(CVehicleVelCmd_Holo));
 #endif
+}
+
+void mrpt::kinematics::registerAllClasses_mrpt_kinematics()
+{
+	::registerAllClasses_mrpt_kinematics();
 }
