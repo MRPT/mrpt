@@ -36,46 +36,6 @@ CDisplayWindowGUI::CDisplayWindowGUI(
 		default_mrpt_glfw_icon_transparent_color);
 }
 
-/// Special ctor for user-defined GLFWwindow to be used as "screen":
-CDisplayWindowGUI::CDisplayWindowGUI(
-	special_ctor_flag_t flag, const std::string& caption, unsigned int width,
-	unsigned int height)
-{
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	glfwWindowHint(GLFW_SAMPLES, 0);
-	glfwWindowHint(GLFW_RED_BITS, 8);
-	glfwWindowHint(GLFW_GREEN_BITS, 8);
-	glfwWindowHint(GLFW_BLUE_BITS, 8);
-	glfwWindowHint(GLFW_ALPHA_BITS, 8);
-	glfwWindowHint(GLFW_STENCIL_BITS, 8);
-	glfwWindowHint(GLFW_DEPTH_BITS, 24);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-
-	// Create a GLFWwindow object
-	GLFWwindow* window =
-		glfwCreateWindow(width, height, caption.c_str(), nullptr, nullptr);
-
-	ASSERTMSG_(window != nullptr, "Failed to create GLFW window.");
-
-	glfwMakeContextCurrent(window);
-
-	glClearColor(0.2f, 0.25f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Create a nanogui screen and pass the glfw pointer to initialize
-	const bool shutdownGLFWOnDtor = true;
-	nanogui::Screen::initialize(window, shutdownGLFWOnDtor);
-
-	setIconFromData(
-		default_mrpt_glfw_icon, default_mrpt_glfw_icon_width,
-		default_mrpt_glfw_icon_height,
-		default_mrpt_glfw_icon_transparent_color);
-}
-
 CDisplayWindowGUI::~CDisplayWindowGUI()
 {
 	// Close window:
@@ -231,6 +191,7 @@ void CDisplayWindowGUI::setIconFromData(
 #undef HEADER_PIXEL
 }
 
+#if 0
 bool CDisplayWindowGUI::mouseButtonEvent(
 	const nanogui::Vector2i& p, int button, bool down, int modifiers)
 {
@@ -299,6 +260,7 @@ bool CDisplayWindowGUI::keyboardEvent(
 	// Process special key events?
 	return false;
 }
+#endif
 
 nanogui::Window* CDisplayWindowGUI::createManagedSubWindow(
 	const std::string& title)

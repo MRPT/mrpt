@@ -79,11 +79,6 @@ struct CDisplayWindowGUI_Params
 class CDisplayWindowGUI : public nanogui::Screen
 {
    public:
-	enum special_ctor_flag_t
-	{
-		CUSTOM_GLFW_INIT = 0
-	};
-
 	/** @name Callback functor types
 	 * @{ */
 
@@ -104,11 +99,6 @@ class CDisplayWindowGUI : public nanogui::Screen
 		const std::string& caption = std::string(), unsigned int width = 400,
 		unsigned int height = 300,
 		const CDisplayWindowGUI_Params& p = CDisplayWindowGUI_Params());
-
-	/// Special ctor for user-defined GLFWwindow to be used as "screen":
-	CDisplayWindowGUI(
-		special_ctor_flag_t flag, const std::string& caption = std::string(),
-		unsigned int width = 400, unsigned int height = 300);
 
 	virtual ~CDisplayWindowGUI() override;
 
@@ -305,6 +295,8 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/** @} */
 
+	virtual void drawContents() override;
+
    protected:
 	CDisplayWindowGUI(const CDisplayWindowGUI&) = delete;
 	CDisplayWindowGUI& operator=(const CDisplayWindowGUI&) = delete;
@@ -312,14 +304,11 @@ class CDisplayWindowGUI : public nanogui::Screen
 	CDisplayWindowGUI(CDisplayWindowGUI&&) = delete;
 	CDisplayWindowGUI& operator=(CDisplayWindowGUI&&) = delete;
 
-	/** the pointer is owned by the parent class Screen, no need to delete
-	 * it */
-	virtual bool keyboardEvent(
-		int key, int scancode, int action, int modifiers) override;
-	virtual void drawContents() override;
-
 	/** @name Internal virtual functions to handle GUI events
 	 * @{ */
+#if 0
+	virtual bool keyboardEvent(
+		int key, int scancode, int action, int modifiers) override;
 	virtual bool mouseMotionEvent(
 		const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button,
 		int modifiers) override;
@@ -329,6 +318,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 	virtual bool scrollEvent(
 		const nanogui::Vector2i& p, const nanogui::Vector2f& rel) override;
 	virtual bool dropEvent(const std::vector<std::string>& filenames) override;
+#endif
 	/** @} */
 
 	/** Used to keep track of mouse events on the camera */
