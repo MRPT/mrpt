@@ -160,18 +160,12 @@ static void AppRotationConverter()
 	};
 
 	// Create GUI:
-#if defined(__EMSCRIPTEN__) && 0  // are we in a wasm JS instance?
-	mrpt::gui::CDisplayWindowGUI win(
-		mrpt::gui::CDisplayWindowGUI::CUSTOM_GLFW_INIT, "3D rotation converter",
-		900, 700);
-#else
-
-	mrpt::gui::CDisplayWindowGUI win("3D rotation converter", 900, 700, cp);
-#endif
+	auto win = mrpt::gui::CDisplayWindowGUI::Create(
+		"3D rotation converter", 900, 700, cp);
 
 	// Add INPUT window:
 	// -----------------------------
-	nanogui::Window* winInput = new nanogui::Window(&win, "Rotation input");
+	nanogui::Window* winInput = new nanogui::Window(&(*win), "Rotation input");
 	winInput->setPosition(nanogui::Vector2i(10, 50));
 	winInput->setLayout(new nanogui::GroupLayout());
 	winInput->setFixedWidth(350);
@@ -340,17 +334,18 @@ static void AppRotationConverter()
 	// Add top menu subwindow:
 	// -----------------------------
 	{
-		nanogui::ref<nanogui::Window> winMenu = new nanogui::Window(&win, "");
+		nanogui::ref<nanogui::Window> winMenu =
+			new nanogui::Window(&(*win), "");
 		winMenu->setPosition(nanogui::Vector2i(0, 0));
 		winMenu->setLayout(new nanogui::BoxLayout(
 			nanogui::Orientation::Horizontal, nanogui::Alignment::Middle, 5));
 		nanogui::Theme* modTheme =
-			new nanogui::Theme(win.screen()->nvgContext());
+			new nanogui::Theme(win->screen()->nvgContext());
 		modTheme->mWindowHeaderHeight = 1;
 		winMenu->setTheme(modTheme);
 
 		winMenu->add<nanogui::Button>("Quit", ENTYPO_ICON_ARROW_BOLD_LEFT)
-			->setCallback([&win]() { win.setVisible(false); });
+			->setCallback([win]() { win->setVisible(false); });
 
 		winMenu->add<nanogui::Label>("      ");	 // separator
 
@@ -368,7 +363,7 @@ static void AppRotationConverter()
 		winMenu
 			->add<nanogui::CheckBox>(
 				"Ortho. view",
-				[&](bool b) { win.camera().setCameraProjective(!b); })
+				[&](bool b) { win->camera().setCameraProjective(!b); })
 			->setChecked(false);
 
 		winMenu->add<nanogui::Label>("Units:");
@@ -386,7 +381,7 @@ static void AppRotationConverter()
 	// -----------------------------
 	{
 		nanogui::Window* winOutput =
-			new nanogui::Window(&win, "Rotation output");
+			new nanogui::Window(&(*win), "Rotation output");
 		winOutput->setPosition(nanogui::Vector2i(10, 320));
 		auto layout = new nanogui::GridLayout(
 			nanogui::Orientation::Horizontal, 1, nanogui::Alignment::Fill, 5,
@@ -433,17 +428,17 @@ static void AppRotationConverter()
 		scene->insert(gl_corner_user);
 		scene->insert(gl_corner_reference);
 
-		auto lck = mrpt::lockHelper(win.background_scene_mtx);
-		win.background_scene = std::move(scene);
+		auto lck = mrpt::lockHelper(win->background_scene_mtx);
+		win->background_scene = std::move(scene);
 	}
 
-	win.performLayout();
+	win->performLayout();
 
-	win.camera().setZoomDistance(5.0f);
+	win->camera().setZoomDistance(5.0f);
 
 	// Update view and process events:
-	win.drawAll();
-	win.setVisible(true);
+	win->drawAll();
+	win->setVisible(true);
 
 #if !defined(__EMSCRIPTEN__)  // are we in a Wasm JS instance?
 	// No: regular procedure:
@@ -452,48 +447,10 @@ static void AppRotationConverter()
 	nanogui::shutdown();
 #else
 
-	auto* screen = win.screen();
-	auto* window = screen->glfwWindow();
-	screen->setVisible(true);
-	screen->performLayout();
-
-#if 0
-	glfwSetCursorPosCallback(window, [screen](GLFWwindow*, double x, double y) {
-		screen->cursorPosCallbackEvent(x, y);
-	});
-
-	glfwSetMouseButtonCallback(
-		window, [screen](GLFWwindow*, int button, int action, int modifiers) {
-			screen->mouseButtonCallbackEvent(button, action, modifiers);
-		});
-
-	glfwSetKeyCallback(
-		window,
-		[screen](GLFWwindow*, int key, int scancode, int action, int mods) {
-			screen->keyCallbackEvent(key, scancode, action, mods);
-		});
-
-	glfwSetCharCallback(window, [screen](GLFWwindow*, unsigned int codepoint) {
-		screen->charCallbackEvent(codepoint);
-	});
-
-	glfwSetDropCallback(
-		window, [screen](GLFWwindow*, int count, const char** filenames) {
-			screen->dropCallbackEvent(count, filenames);
-		});
-
-	glfwSetScrollCallback(window, [screen](GLFWwindow*, double x, double y) {
-		screen->scrollCallbackEvent(x, y);
-	});
-
-	glfwSetFramebufferSizeCallback(
-		window, [screen](GLFWwindow*, int width, int height) {
-			screen->resizeCallbackEvent(width, height);
-		});
-#endif
+	glfwSwapInterval(1);
 
 	// Yes, we are in a web browser running on JS:
-	loop = [&] {
+	loop = [win] {
 		// Check if any events have been activated (key pressed, mouse moved
 		// etc.) and call corresponding response functions
 		glfwPollEvents();
@@ -502,14 +459,14 @@ static void AppRotationConverter()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Draw nanogui
-		win.nanogui_screen()->drawContents();
-		win.drawWidgets();
+		win->drawContents();
+		win->drawWidgets();
 
-		glfwSwapBuffers(win.nanogui_screen()->glfwWindow());
+		glfwSwapBuffers(win->glfwWindow());
 	};
 	emscripten_set_main_loop(main_loop, 0, true);
 
-	glfwDestroyWindow(win.nanogui_screen()->glfwWindow());
+	glfwDestroyWindow(win->nanogui_screen()->glfwWindow());
 
 	// Terminate GLFW, clearing any resources allocated by GLFW.
 	glfwTerminate();
