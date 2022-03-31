@@ -55,6 +55,9 @@ void CObservation::getDescriptionAsText(std::ostream& o) const
 		 "Sensor label: '"
 	  << sensorLabel << "'"
 	  << "\n\n";
+
+	o << "ClassName: " << this->GetRuntimeClass()->className << "\n"
+	  << "\n";
 }
 
 std::string CObservation::asString() const
