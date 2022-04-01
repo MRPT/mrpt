@@ -28,8 +28,11 @@ void CAction::getDescriptionAsText(std::ostream& o) const
 	  << std::endl;
 	o << "  (as time_t): " << std::fixed << std::setprecision(5)
 	  << mrpt::system::timestampTotime_t(timestamp) << std::endl;
-	o << "  (as TTimestamp): " << timestamp << std::endl;
-	o << std::endl;
+	o << "  (as TTimestamp): " << timestamp << "\n";
+	o << "\n";
+
+	o << "ClassName: " << this->GetRuntimeClass()->className << "\n"
+	  << "\n";
 }
 
 std::string CAction::getDescriptionAsTextValue() const

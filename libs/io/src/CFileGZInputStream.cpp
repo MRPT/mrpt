@@ -85,6 +85,7 @@ void CFileGZInputStream::close()
 	{
 		gzclose(m_f->f);
 		m_f->f = nullptr;
+		m_f->filename.clear();
 	}
 }
 
@@ -131,4 +132,10 @@ std::string CFileGZInputStream::getStreamDescription() const
 {
 	return mrpt::format(
 		"mrpt::io::CFileGZInputStream for file '%s'", m_f->filename.c_str());
+}
+
+std::string CFileGZInputStream::filePathAtUse() const
+{
+	// Returns opened file:
+	return m_f->filename;
 }
