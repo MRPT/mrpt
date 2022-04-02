@@ -25,6 +25,7 @@ IMPLEMENT_DYNAMIC_CLASS(CRawlogTreeView, wxScrolledWindow)
 
 BEGIN_EVENT_TABLE(CRawlogTreeView, wxScrolledWindow)
 EVT_LEFT_DOWN(CRawlogTreeView::OnLeftDown)
+EVT_RIGHT_DOWN(CRawlogTreeView::OnRightDown)
 EVT_MOUSEWHEEL(CRawlogTreeView::OnMouseWheel)
 EVT_CHAR(CRawlogTreeView::OnKey)
 EVT_SCROLLWIN_THUMBTRACK(CRawlogTreeView::onScrollThumbTrack)
@@ -36,9 +37,17 @@ END_EVENT_TABLE()
 std::atomic_bool CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES{false};
 
 #define MRPT_NO_WARN_BIG_HDR  // It's ok here
+#include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs.h>
 #include <mrpt/obs/CObservationPointCloud.h>  // this one is in mrpt-maps
+#include <mrpt/serialization/CArchive.h>
+
+#include <regex>
+
+extern std::unique_ptr<mrpt::config::CConfigFile> iniFile;
+extern std::string iniFileSect;
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -49,6 +58,17 @@ using namespace std;
 
 const int CRawlogTreeView::ROW_HEIGHT = 17;
 const int CRawlogTreeView::TREE_HORZ_STEPS = 25;
+
+const long ID_MNU_EXPORT_ANOTHER_FILE = 1001;
+const long ID_MNU_EXPORT_LAST_FILE = 1002;
+
+static std::string shortenClassName(const std::string& s)
+{
+	auto ret = std::regex_replace(
+		s, std::regex("mrpt\\:\\:obs\\:\\:CObservation"), "");
+	ret = std::regex_replace(ret, std::regex("mrpt\\:\\:obs\\:\\:"), "");
+	return ret;
+}
 
 /* ------------------------------------------------------------
 						CRawlogTreeView
@@ -63,6 +83,19 @@ CRawlogTreeView::CRawlogTreeView(
 	  m_rawlog_last(INVALID_TIMESTAMP),
 	  m_tree_nodes()
 {
+	m_contextMenu.Append(
+		ID_MNU_EXPORT_ANOTHER_FILE, "Export to another .rawlog file...");
+
+	m_contextMenu.Append(
+		ID_MNU_EXPORT_LAST_FILE, "Append to same previous file");
+
+	Bind(
+		wxEVT_MENU, &CRawlogTreeView::onMnuExportToOtherFile, this,
+		ID_MNU_EXPORT_ANOTHER_FILE);
+
+	Bind(
+		wxEVT_MENU, &CRawlogTreeView::onMnuAppendSaveFile, this,
+		ID_MNU_EXPORT_LAST_FILE);
 }
 
 /* ------------------------------------------------------------
@@ -275,10 +308,9 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 				icon = iconIndexFromClass(d.data->GetRuntimeClass());
 
 				// Text:
-				if (d.level == 1)
-				{ s << "[" << std::to_string(d.index) << "] "; }
+				if (d.level == 1) s << "[" << std::to_string(d.index) << "] ";
 
-				s << d.data->GetRuntimeClass()->className;
+				s << shortenClassName(d.data->GetRuntimeClass()->className);
 
 				// Sensor label:
 				if (d.data->GetRuntimeClass()->derivedFrom(
@@ -484,10 +516,20 @@ void CRawlogTreeView::OnLeftDown(wxMouseEvent& e)
 	SetSelectedItem(sel_item);
 }
 
+void CRawlogTreeView::OnRightDown(wxMouseEvent& event)
+{
+	OnLeftDown(event);
+
+	if (m_selectedItem < 0) return;
+
+	this->PopupMenu(&m_contextMenu);
+}
+
 /* ------------------------------------------------------------
 						ConnectSelectedItemChange
    ------------------------------------------------------------ */
-void CRawlogTreeView::ConnectSelectedItemChange(wxRawlogTreeEventFunction func)
+void CRawlogTreeView::ConnectSelectedItemChange(
+	const wxRawlogTreeEventFunction& func)
 {
 	m_event_select_change = func;
 }
@@ -506,7 +548,7 @@ void CRawlogTreeView::SetSelectedItem(int sel_item, bool force_refresh)
 
 			if (m_event_select_change && m_win_parent)
 			{
-				(*m_event_select_change)(
+				m_event_select_change(
 					m_win_parent, this, evSelected, sel_item,
 					sel_item >= 0 ? m_tree_nodes[sel_item].data
 								  : CSerializable::Ptr());
@@ -599,4 +641,47 @@ void CRawlogTreeView::onScrollThumbRelease(wxScrollWinEvent& ev)
 {
 	m_is_thumb_tracking = false;
 	ev.Skip();	// keep processing in base class
+}
+
+void CRawlogTreeView::onMnuExportToOtherFile(wxCommandEvent&)
+{
+	if (m_selectedItem < 0) return;
+
+	const auto& obj = m_tree_nodes[m_selectedItem].data;
+
+	const wxString wildcard =
+		"RawLog files (*.rawlog,*.rawlog.gz)|*.rawlog;*.rawlog.gz|All "
+		"files (*.*)|*.*";
+
+	const wxString defaultDir =
+		iniFile->read_string(iniFileSect, "LastDir", ".");
+
+	wxFileDialog dialog(
+		this, "Save file...", defaultDir, {}, wildcard,
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+	if (dialog.ShowModal() != wxID_OK) return;
+
+	mrpt::io::CFileGZOutputStream fs(dialog.GetPath().ToStdString());
+	auto a = mrpt::serialization::archiveFrom(fs);
+
+	a << obj;
+
+	m_last_exported_rawlog_file = fs.filePathAtUse();
+}
+
+void CRawlogTreeView::onMnuAppendSaveFile(wxCommandEvent&)
+{
+	if (m_selectedItem < 0) return;
+	if (m_last_exported_rawlog_file.empty()) return;
+
+	const auto& obj = m_tree_nodes[m_selectedItem].data;
+
+	// open GZ file for append:
+	mrpt::io::CFileGZOutputStream fs(
+		m_last_exported_rawlog_file, mrpt::io::OpenMode::APPEND);
+
+	auto a = mrpt::serialization::archiveFrom(fs);
+
+	a << obj;
 }

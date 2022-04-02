@@ -64,6 +64,8 @@ class CFileGZInputStream : public CStream
 	bool is_open() { return fileOpenCorrectly(); }
 	/** Will be true if EOF has been already reached. */
 	bool checkEOF();
+	/** Returns the path of the filename passed to open(), or empty if none. */
+	std::string filePathAtUse() const;
 
 	/** Method for getting the total number of <b>compressed</b> bytes of in the
 	 * file (the physical size of the compressed file). */
