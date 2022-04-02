@@ -33,6 +33,27 @@ void main_loop() { loop(); }
 #include <Eigen/SVD>
 #include <iostream>
 
+// We need to define all variables here to avoid emscripten memory errors
+// if they are defined as *locals* in the function.
+struct AppData
+{
+	mrpt::gui::CDisplayWindowGUI::Ptr win;
+	mrpt::opengl::CSetOfObjects::Ptr gl_corner_user;
+	mrpt::opengl::CAxis::Ptr gl_corner_reference;
+
+	// Input variables (they are bound to the GUI controls):
+	mrpt::math::CQuaternionDouble in_quat;
+	mrpt::math::CMatrixFixed<double, 3, 3> in_rot;
+	std::array<double, 3> in_ypr = {0, 0, 0};
+	mrpt::math::TVector3D in_axisangle_ax{0, 0, 0};
+	double in_axisangle_ang = 0;
+	mrpt::math::CVectorFixed<double, 3> in_lie_log =
+		mrpt::math::CVectorFixed<double, 3>::Zero();
+	bool units_radians = true;
+};
+
+static AppData app;
+
 static void AppRotationConverter()
 {
 	nanogui::init();
@@ -41,21 +62,13 @@ static void AppRotationConverter()
 	mrpt::gui::CDisplayWindowGUI_Params cp;
 	// cp.fullscreen = true;
 
-	// Input variables (they are bound to the GUI controls):
-	mrpt::math::CQuaternionDouble in_quat;
-	mrpt::math::CMatrixFixed<double, 3, 3> in_rot;
-	in_rot.setIdentity();
-	std::array<double, 3> in_ypr = {0, 0, 0};
-	mrpt::math::TVector3D in_axisangle_ax(0, 0, 0);
-	double in_axisangle_ang = 0;
-	auto in_lie_log = mrpt::math::CVectorFixed<double, 3>::Zero();
-	bool units_radians = true;
+	// Init values:
+	app.in_rot.setIdentity();
 
-	mrpt::opengl::CSetOfObjects::Ptr gl_corner_user =
-		mrpt::opengl::stock_objects::CornerXYZ(1.0f);
-	mrpt::opengl::CAxis::Ptr gl_corner_reference = mrpt::opengl::CAxis::Create(
+	app.gl_corner_user = mrpt::opengl::stock_objects::CornerXYZ(1.0f);
+	app.gl_corner_reference = mrpt::opengl::CAxis::Create(
 		-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 0.2f, 1.0f, true);
-	gl_corner_reference->setTextScale(0.04);
+	app.gl_corner_reference->setTextScale(0.04);
 
 	// In/out UI control declarations (declared here so we can use them in the
 	// lambda below):
@@ -75,9 +88,10 @@ static void AppRotationConverter()
 			// YPR
 			case 0:
 			{
-				const double K = units_radians ? 1.0 : (M_PI / 180.0);
+				const double K = app.units_radians ? 1.0 : (M_PI / 180.0);
 				userPose.setFromValues(
-					0, 0, 0, in_ypr[0] * K, in_ypr[1] * K, in_ypr[2] * K);
+					0, 0, 0, app.in_ypr[0] * K, app.in_ypr[1] * K,
+					app.in_ypr[2] * K);
 			}
 			break;
 			// Rot matrix:
@@ -85,7 +99,7 @@ static void AppRotationConverter()
 			{
 				// Run a SVD to ensure we take the closest SO(3) matrix to the
 				// user input:
-				Eigen::Matrix3d M = in_rot.asEigen();
+				Eigen::Matrix3d M = app.in_rot.asEigen();
 				Eigen::JacobiSVD<Eigen::Matrix3d> svd(
 					M, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
@@ -101,15 +115,15 @@ static void AppRotationConverter()
 			// Quaternion
 			case 2:
 			{
-				userPose = mrpt::poses::CPose3D(in_quat, 0, 0, 0);
+				userPose = mrpt::poses::CPose3D(app.in_quat, 0, 0, 0);
 			}
 			break;
 			// axis+angle
 			case 3:
 			{
-				const double K = units_radians ? 1.0 : (M_PI / 180.0);
+				const double K = app.units_radians ? 1.0 : (M_PI / 180.0);
 				mrpt::math::TVector3D v =
-					in_axisangle_ax * (in_axisangle_ang * K);
+					app.in_axisangle_ax * (app.in_axisangle_ang * K);
 				mrpt::math::CVectorFixed<double, 3> vn;
 				for (int i = 0; i < 3; i++)
 					vn[i] = v[i];
@@ -121,13 +135,13 @@ static void AppRotationConverter()
 			case 4:
 			{
 				userPose.setRotationMatrix(
-					mrpt::poses::Lie::SO<3>::exp(in_lie_log));
+					mrpt::poses::Lie::SO<3>::exp(app.in_lie_log));
 			}
 			break;
 		};
 
 		// Set 3D view corner:
-		gl_corner_user->setPose(userPose);
+		app.gl_corner_user->setPose(userPose);
 
 		// Update text output:
 		const mrpt::math::CMatrixDouble33 Rout = userPose.getRotationMatrix();
@@ -155,17 +169,18 @@ static void AppRotationConverter()
 		edOutAxisAngle_Ax->setValue(
 			mrpt::format("[%.05f %.05f %.05f]", axis[0], axis[1], axis[2]));
 		edOutAxisAngle_An->setValue(mrpt::format(
-			"%.05f %s", log_R.norm() * (units_radians ? 1.0 : 180.0 / M_PI),
-			(units_radians ? "rad" : "deg")));
+			"%.05f %s", log_R.norm() * (app.units_radians ? 1.0 : 180.0 / M_PI),
+			(app.units_radians ? "rad" : "deg")));
 	};
 
 	// Create GUI:
-	auto win = mrpt::gui::CDisplayWindowGUI::Create(
+	app.win = mrpt::gui::CDisplayWindowGUI::Create(
 		"3D rotation converter", 900, 700, cp);
 
 	// Add INPUT window:
 	// -----------------------------
-	nanogui::Window* winInput = new nanogui::Window(&(*win), "Rotation input");
+	nanogui::Window* winInput =
+		new nanogui::Window(&(*app.win), "Rotation input");
 	winInput->setPosition(nanogui::Vector2i(10, 50));
 	winInput->setLayout(new nanogui::GroupLayout());
 	winInput->setFixedWidth(350);
@@ -184,23 +199,23 @@ static void AppRotationConverter()
 		for (int i = 0; i < 3; i++)
 		{
 			layer->add<nanogui::Label>(lb[i]);
-			nanogui::TextBox* ed =
-				layer->add<nanogui::TextBox>(mrpt::format("%.2f", in_quat[i]));
+			nanogui::TextBox* ed = layer->add<nanogui::TextBox>(
+				mrpt::format("%.2f", app.in_quat[i]));
 			ed->setEditable(true);
 			ed->setFormat("[-+]?[0-9.e+-]*");
-			ed->setCallback([&in_ypr, i, lambdaRecalcAll, &sl_in_ypr,
-							 &units_radians](const std::string& s) {
-				in_ypr[i] = std::stod(s);
-				sl_in_ypr[i]->setValue(
-					in_ypr[i] / (units_radians ? M_PIf : 180.0f));
-				lambdaRecalcAll();
-				return true;
-			});
+			ed->setCallback(
+				[i, lambdaRecalcAll, &sl_in_ypr](const std::string& s) {
+					app.in_ypr[i] = std::stod(s);
+					sl_in_ypr[i]->setValue(
+						app.in_ypr[i] / (app.units_radians ? M_PIf : 180.0f));
+					lambdaRecalcAll();
+					return true;
+				});
 			nanogui::Slider* sl = layer->add<nanogui::Slider>();
 			sl_in_ypr[i] = sl;
 			sl->setRange({-1.0f, 1.0f});
 			sl->setCallback([&, i, ed](float val) {
-				val *= units_radians ? M_PIf : 180.0f;
+				val *= app.units_radians ? M_PIf : 180.0f;
 				if (i == 1) val *= 0.5f;  // Pitch
 				ed->setValue(mrpt::format("%.03f", val));
 				ed->callback()(ed->value());
@@ -221,11 +236,11 @@ static void AppRotationConverter()
 			for (int c = 0; c < 3; c++)
 			{
 				nanogui::TextBox* ed = layer->add<nanogui::TextBox>(
-					mrpt::format("%.04f", in_rot(r, c)));
+					mrpt::format("%.04f", app.in_rot(r, c)));
 				ed->setEditable(true);
 				ed->setFormat("[-+]?[0-9.e+-]*");
-				ed->setCallback([&in_rot, r, c](const std::string& s) {
-					in_rot(r, c) = std::stod(s);
+				ed->setCallback([r, c](const std::string& s) {
+					app.in_rot(r, c) = std::stod(s);
 					return true;
 				});
 				ed_in_rot[r][c] = ed;
@@ -246,12 +261,12 @@ static void AppRotationConverter()
 		{
 			layer->add<nanogui::Label>(lb[i]);
 
-			nanogui::TextBox* ed =
-				layer->add<nanogui::TextBox>(mrpt::format("%.2f", in_quat[i]));
+			nanogui::TextBox* ed = layer->add<nanogui::TextBox>(
+				mrpt::format("%.2f", app.in_quat[i]));
 			ed->setEditable(true);
 			ed->setFormat("[-+]?[0-9.e+-]*");
-			ed->setCallback([&in_quat, i](const std::string& s) {
-				in_quat[i] = std::stod(s);
+			ed->setCallback([i](const std::string& s) {
+				app.in_quat[i] = std::stod(s);
 				return true;
 			});
 		}
@@ -273,11 +288,11 @@ static void AppRotationConverter()
 			for (int r = 0; r < 3; r++)
 			{
 				nanogui::TextBox* ed = panel->add<nanogui::TextBox>(
-					mrpt::format("%.04f", in_axisangle_ax[r]));
+					mrpt::format("%.04f", app.in_axisangle_ax[r]));
 				ed->setEditable(true);
 				ed->setFormat("[-+]?[0-9.e+-]*");
-				ed->setCallback([&in_axisangle_ax, r](const std::string& s) {
-					in_axisangle_ax[r] = std::stod(s);
+				ed->setCallback([r](const std::string& s) {
+					app.in_axisangle_ax[r] = std::stod(s);
 					return true;
 				});
 			}
@@ -285,11 +300,11 @@ static void AppRotationConverter()
 		{
 			layer->add<nanogui::Label>("Angle:");
 			nanogui::TextBox* ed = layer->add<nanogui::TextBox>(
-				mrpt::format("%.04f", in_axisangle_ang));
+				mrpt::format("%.04f", app.in_axisangle_ang));
 			ed->setEditable(true);
 			ed->setFormat("[-+]?[0-9.e+-]*");
-			ed->setCallback([&in_axisangle_ang](const std::string& s) {
-				in_axisangle_ang = std::stod(s);
+			ed->setCallback([](const std::string& s) {
+				app.in_axisangle_ang = std::stod(s);
 				return true;
 			});
 		}
@@ -314,11 +329,11 @@ static void AppRotationConverter()
 			for (int r = 0; r < 3; r++)
 			{
 				nanogui::TextBox* ed = layer->add<nanogui::TextBox>(
-					mrpt::format("%.04f", in_lie_log[r]));
+					mrpt::format("%.04f", app.in_lie_log[r]));
 				ed->setEditable(true);
 				ed->setFormat("[-+]?[0-9.e+-]*");
-				ed->setCallback([&in_lie_log, r](const std::string& s) {
-					in_lie_log[r] = std::stod(s);
+				ed->setCallback([r](const std::string& s) {
+					app.in_lie_log[r] = std::stod(s);
 					return true;
 				});
 			}
@@ -335,35 +350,37 @@ static void AppRotationConverter()
 	// -----------------------------
 	{
 		nanogui::ref<nanogui::Window> winMenu =
-			new nanogui::Window(&(*win), "");
+			new nanogui::Window(&(*app.win), "");
 		winMenu->setPosition(nanogui::Vector2i(0, 0));
 		winMenu->setLayout(new nanogui::BoxLayout(
 			nanogui::Orientation::Horizontal, nanogui::Alignment::Middle, 5));
 		nanogui::Theme* modTheme =
-			new nanogui::Theme(win->screen()->nvgContext());
+			new nanogui::Theme(app.win->screen()->nvgContext());
 		modTheme->mWindowHeaderHeight = 1;
 		winMenu->setTheme(modTheme);
 
+#ifndef __EMSCRIPTEN__	// are we actually in a Wasm JS instance?
 		winMenu->add<nanogui::Button>("Quit", ENTYPO_ICON_ARROW_BOLD_LEFT)
-			->setCallback([win]() { win->setVisible(false); });
+			->setCallback([]() { app.win->setVisible(false); });
+#endif
 
 		winMenu->add<nanogui::Label>("      ");	 // separator
 
 		winMenu
 			->add<nanogui::CheckBox>(
 				"Show reference frame",
-				[&](bool b) { gl_corner_reference->setVisibility(b); })
+				[&](bool b) { app.gl_corner_reference->setVisibility(b); })
 			->setChecked(true);
 
 		winMenu
 			->add<nanogui::CheckBox>(
 				"Show rotated frame",
-				[&](bool b) { gl_corner_user->setVisibility(b); })
+				[&](bool b) { app.gl_corner_user->setVisibility(b); })
 			->setChecked(true);
 		winMenu
 			->add<nanogui::CheckBox>(
 				"Ortho. view",
-				[&](bool b) { win->camera().setCameraProjective(!b); })
+				[&](bool b) { app.win->camera().setCameraProjective(!b); })
 			->setChecked(false);
 
 		winMenu->add<nanogui::Label>("Units:");
@@ -372,7 +389,7 @@ static void AppRotationConverter()
 				std::vector<std::string>({"radians", "degrees"}))
 			->setCallback([&](int index) {
 				// On units update:
-				units_radians = (index == 0);
+				app.units_radians = (index == 0);
 				lambdaRecalcAll();
 			});
 	}
@@ -381,7 +398,7 @@ static void AppRotationConverter()
 	// -----------------------------
 	{
 		nanogui::Window* winOutput =
-			new nanogui::Window(&(*win), "Rotation output");
+			new nanogui::Window(&(*app.win), "Rotation output");
 		winOutput->setPosition(nanogui::Vector2i(10, 320));
 		auto layout = new nanogui::GridLayout(
 			nanogui::Orientation::Horizontal, 1, nanogui::Alignment::Fill, 5,
@@ -425,20 +442,20 @@ static void AppRotationConverter()
 		auto scene = mrpt::opengl::COpenGLScene::Create();
 		scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 
-		scene->insert(gl_corner_user);
-		scene->insert(gl_corner_reference);
+		scene->insert(app.gl_corner_user);
+		scene->insert(app.gl_corner_reference);
 
-		auto lck = mrpt::lockHelper(win->background_scene_mtx);
-		win->background_scene = std::move(scene);
+		auto lck = mrpt::lockHelper(app.win->background_scene_mtx);
+		app.win->background_scene = std::move(scene);
 	}
 
-	win->performLayout();
+	app.win->performLayout();
 
-	win->camera().setZoomDistance(5.0f);
+	app.win->camera().setZoomDistance(5.0f);
 
 	// Update view and process events:
-	win->drawAll();
-	win->setVisible(true);
+	app.win->drawAll();
+	app.win->setVisible(true);
 
 #if !defined(__EMSCRIPTEN__)  // are we in a Wasm JS instance?
 	// No: regular procedure:
@@ -447,10 +464,8 @@ static void AppRotationConverter()
 	nanogui::shutdown();
 #else
 
-	glfwSwapInterval(1);
-
 	// Yes, we are in a web browser running on JS:
-	loop = [win] {
+	loop = [] {
 		// Check if any events have been activated (key pressed, mouse moved
 		// etc.) and call corresponding response functions
 		glfwPollEvents();
@@ -459,14 +474,14 @@ static void AppRotationConverter()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Draw nanogui
-		win->drawContents();
-		win->drawWidgets();
+		app.win->drawContents();
+		app.win->drawWidgets();
 
-		glfwSwapBuffers(win->glfwWindow());
+		glfwSwapBuffers(app.win->glfwWindow());
 	};
 	emscripten_set_main_loop(main_loop, 0, true);
 
-	glfwDestroyWindow(win->nanogui_screen()->glfwWindow());
+	glfwDestroyWindow(app.win->nanogui_screen()->glfwWindow());
 
 	// Terminate GLFW, clearing any resources allocated by GLFW.
 	glfwTerminate();

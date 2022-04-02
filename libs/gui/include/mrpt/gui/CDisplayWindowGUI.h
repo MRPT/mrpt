@@ -306,7 +306,6 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	/** @name Internal virtual functions to handle GUI events
 	 * @{ */
-#if 0
 	virtual bool keyboardEvent(
 		int key, int scancode, int action, int modifiers) override;
 	virtual bool mouseMotionEvent(
@@ -318,7 +317,6 @@ class CDisplayWindowGUI : public nanogui::Screen
 	virtual bool scrollEvent(
 		const nanogui::Vector2i& p, const nanogui::Vector2f& rel) override;
 	virtual bool dropEvent(const std::vector<std::string>& filenames) override;
-#endif
 	/** @} */
 
 	/** Used to keep track of mouse events on the camera */

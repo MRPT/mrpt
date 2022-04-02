@@ -191,7 +191,6 @@ void CDisplayWindowGUI::setIconFromData(
 #undef HEADER_PIXEL
 }
 
-#if 0
 bool CDisplayWindowGUI::mouseButtonEvent(
 	const nanogui::Vector2i& p, int button, bool down, int modifiers)
 {
@@ -260,7 +259,6 @@ bool CDisplayWindowGUI::keyboardEvent(
 	// Process special key events?
 	return false;
 }
-#endif
 
 nanogui::Window* CDisplayWindowGUI::createManagedSubWindow(
 	const std::string& title)
