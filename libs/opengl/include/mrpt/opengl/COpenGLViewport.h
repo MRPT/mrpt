@@ -307,22 +307,18 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	{
 		MRPT_START
 		size_t foundCount = 0;
-		const auto* class_ID = &T::GetRuntimeClassIdStatic();
 		for (const auto& o : m_objects)
-			if (o && o->GetRuntimeClass()->derivedFrom(class_ID))
-				if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(o);
+			if (const auto f = std::dynamic_pointer_cast<T>(o); f)
+			{
+				if (foundCount++ == ith) return f;
+			}
 
 		// If not found directly, search recursively:
 		for (const auto& o : m_objects)
 		{
-			if (o &&
-				o->GetRuntimeClass() ==
-					CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+			if (auto obj = std::dynamic_pointer_cast<CSetOfObjects>(o); obj)
 			{
-				typename T::Ptr obj = std::dynamic_pointer_cast<T>(
-					std::dynamic_pointer_cast<CSetOfObjects>(o)
-						->template getByClass<T>(ith));
-				if (obj) return obj;
+				if (auto f = obj->getByClass<T>(ith); f) return f;
 			}
 		}
 		return typename T::Ptr();  // Not found: return empty smart pointer
