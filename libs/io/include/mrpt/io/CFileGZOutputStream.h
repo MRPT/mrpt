@@ -77,6 +77,9 @@ class CFileGZOutputStream : public CStream
 	 * byte and TotalBytesCount-1 the last one. */
 	uint64_t getPosition() const override;
 
+	/** Returns the path of the filename passed to open(), or empty if none. */
+	std::string filePathAtUse() const;
+
 	/** This method is not implemented in this class */
 	uint64_t Seek(int64_t, CStream::TSeekOrigin = sFromBeginning) override;
 	/** This method is not implemented in this class */
