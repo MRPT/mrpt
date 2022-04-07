@@ -13,8 +13,6 @@
 #include <mrpt/topography.h>
 #include <mrpt/topography/registerAllClasses.h>
 
-using namespace mrpt::topography;
-
 MRPT_INITIALIZER(registerAllClasses_mrpt_topography)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
