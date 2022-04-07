@@ -134,6 +134,12 @@ else()
 	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
 endif()
 
+# Only for emscripten: build executables as .html demo pages:
+# =============================================================
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+	set(CMAKE_EXECUTABLE_SUFFIX ".html")
+endif()
+
 # Only for Unix: use pkg-config to find libraries
 # ===================================================
 include(FindPkgConfig OPTIONAL)

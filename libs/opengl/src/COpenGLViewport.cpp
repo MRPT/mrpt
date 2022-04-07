@@ -983,8 +983,8 @@ void COpenGLViewport::updateMatricesFromCamera() const
 
 	// Get camera:
 	// 1st: if there is a CCamera in the scene (nullptr if no camera found):
-	const CCamera* myCamera =
-		dynamic_cast<CCamera*>(viewForGetCamera->getByClass<CCamera>().get());
+	const auto camPtr = viewForGetCamera->getByClass<CCamera>();
+	auto myCamera = camPtr ? camPtr.get() : nullptr;
 
 	// 2nd: the internal camera of all viewports:
 	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
