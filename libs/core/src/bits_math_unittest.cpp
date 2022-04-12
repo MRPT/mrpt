@@ -90,6 +90,7 @@ TEST(bits_math, abs_diff)
 	EXPECT_EQ(mrpt::abs_diff(20, 10), 10);
 	EXPECT_DOUBLE_EQ(mrpt::abs_diff(20.0, 10.0), 10.0);
 	EXPECT_DOUBLE_EQ(mrpt::abs_diff(10.0, 20.0), 10.0);
+	EXPECT_DOUBLE_EQ(mrpt::abs_diff<float>(20.0, 10.0f), 10);
 }
 
 TEST(bits_math, min3)
