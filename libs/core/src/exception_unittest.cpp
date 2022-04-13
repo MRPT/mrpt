@@ -12,6 +12,7 @@
 #include <mrpt/core/exceptions.h>
 
 #include <algorithm>  // count()
+#include <array>
 #include <sstream>
 
 TEST(exception, stackedExceptionBasic)
