@@ -267,8 +267,7 @@ CScanAnimation::CScanAnimation(
 
 	Bind(
 		wxEVT_BUTTON,
-		[this](wxCommandEvent&)
-		{
+		[this](wxCommandEvent&) {
 			for (size_t i = 0; i < lstObsLabels->GetCount(); i++)
 				lstObsLabels->Check(i, true);
 			wxCommandEvent ev;
@@ -278,8 +277,7 @@ CScanAnimation::CScanAnimation(
 
 	Bind(
 		wxEVT_BUTTON,
-		[this](wxCommandEvent&)
-		{
+		[this](wxCommandEvent&) {
 			for (size_t i = 0; i < lstObsLabels->GetCount(); i++)
 				lstObsLabels->Check(i, false);
 			wxCommandEvent ev;
