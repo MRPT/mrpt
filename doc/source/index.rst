@@ -21,6 +21,7 @@ MRPT
   tutorials
   applications
   examples
+  wrappers
   supported-sensors
   unit_testing
   children-projects
@@ -63,8 +64,6 @@ Where to start
 - Dozens of examples: :ref:`examples`.
 - GitHub repository: https://github.com/MRPT/mrpt
 - Ask questions at the mail list `mrpt-users@googlegroups.com <https://groups.google.com/forum/#!forum/mrpt-users>`_ or at `stackoverflow <https://stackoverflow.com/search?q=mrpt>`_  using the tag `mrpt`.
-- ROS packages: `mrpt_navigation <https://wiki.ros.org/mrpt_navigation>`_, `mrpt_slam <https://wiki.ros.org/mrpt_slam>`_, `mrpt_sensors <https://wiki.ros.org/mrpt_sensors>`_.
-- `Bindings documentation <https://github.com/MRPT/mrpt/wiki>`_ (Python, Matlab)
 - Example configuration files for  MRPT applications can be found at:
   `MRPT/share/mrpt/config_files <https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files>`_.
 - Some sample datasets are stored in:
