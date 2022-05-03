@@ -13,6 +13,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TStereoCamera.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 
@@ -37,9 +38,13 @@ DECLARE_OP_FUNCTION(op_camera_params)
 		TOutputRawlogCreator outrawlog;
 
 		string target_label;
-		mrpt::img::TCamera new_cam_params;
-		mrpt::img::TStereoCamera new_stereo_cam_params;
-		bool is_stereo;
+
+		// Monocular:
+		std::optional<mrpt::img::TCamera> monoCam;
+		// Stereo:
+		std::optional<mrpt::img::TStereoCamera> stereoCam;
+		// 3D depth:
+		std::optional<mrpt::img::TCamera> depthCam, depthIntensity;
 
 	   public:
 		size_t m_changedCams;
@@ -66,68 +71,95 @@ DECLARE_OP_FUNCTION(op_camera_params)
 
 			const string& fil = lstTokens[1];
 			if (!fileExists(fil))
-				throw std::runtime_error(
-					string("--camera-params op: config file can't be open:") +
-					fil);
+				THROW_EXCEPTION_FMT(
+					"--camera-params op: config file can't be open: '%s'",
+					fil.c_str());
 
 			// Load:
 			mrpt::config::CConfigFile cfg(fil);
-			is_stereo = true;
-			string sErrorCam;
-			try
-			{
-				new_cam_params.loadFromConfigFile("CAMERA_PARAMS", cfg);
-				is_stereo = false;
-			}
-			catch (const std::exception& e)
-			{
-				sErrorCam = mrpt::exception_to_str(e);
-			}
 
-			if (!sErrorCam.empty())
+			if (cfg.sectionExists("CAMERA_PARAMS"))
 			{
-				// Try with STEREO PARAMS:
-				try
-				{
-					new_stereo_cam_params.loadFromConfigFile(
-						"CAMERA_PARAMS", cfg);
-					// cout << new_stereo_cam_params.dumpAsText() << endl;
-				}
-				catch (const std::exception& e)
-				{
-					throw std::runtime_error(
-						string("--camera-params op: Error loading monocular "
-							   "camera params:\n") +
-						sErrorCam +
-						string("\nBut also an error found loading "
-							   "stereo config:\n") +
-						string(mrpt::exception_to_str(e)));
-				}
+				// Monocular:
+				monoCam.emplace();
+				monoCam->loadFromConfigFile("CAMERA_PARAMS", cfg);
+
+				VERBOSE_COUT
+					<< "Found camera configuration file type: Monocular.\n";
 			}
-			VERBOSE_COUT << "Type of camera configuration file found: "
-						 << (is_stereo ? "stereo" : "monocular") << "\n";
+			else if (
+				cfg.sectionExists("CAMERA_PARAMS_LEFT") &&
+				cfg.sectionExists("CAMERA_PARAMS_RIGHT"))
+			{
+				// Stereo:
+				stereoCam.emplace();
+				stereoCam->loadFromConfigFile("CAMERA_PARAMS", cfg);
+
+				VERBOSE_COUT
+					<< "Found camera configuration file type: Stereo.\n";
+			}
+			else if (
+				cfg.sectionExists("DEPTH_CAM_PARAMS") &&
+				cfg.sectionExists("INTENSITY_CAM_PARAMS"))
+			{
+				// Depth:
+				depthCam.emplace();
+				depthCam->loadFromConfigFile("DEPTH_CAM_PARAMS", cfg);
+
+				depthIntensity.emplace();
+				depthIntensity->loadFromConfigFile("INTENSITY_CAM_PARAMS", cfg);
+
+				VERBOSE_COUT
+					<< "Found camera configuration file type: Depth.\n";
+			}
+			else
+			{
+				THROW_EXCEPTION(
+					"None of the expected INI file sections found: could not "
+					"identify "
+					"camera type.");
+			}
 		}
 
 		bool processOneObservation(CObservation::Ptr& obs) override
 		{
-			if (strCmpI(obs->sensorLabel, target_label))
+			ASSERT_(obs);
+
+			if (!strCmpI(obs->sensorLabel, target_label)) return true;
+
+			if (auto obsMono =
+					std::dynamic_pointer_cast<CObservationImage>(obs);
+				obsMono)
 			{
-				if (IS_CLASS(*obs, CObservationImage))
-				{
-					CObservationImage::Ptr o =
-						std::dynamic_pointer_cast<CObservationImage>(obs);
-					o->cameraParams = new_cam_params;
-					m_changedCams++;
-				}
-				else if (IS_CLASS(*obs, CObservationStereoImages))
-				{
-					CObservationStereoImages::Ptr o =
-						std::dynamic_pointer_cast<CObservationStereoImages>(
-							obs);
-					o->setStereoCameraParams(new_stereo_cam_params);
-					m_changedCams++;
-				}
+				obsMono->cameraParams = *monoCam;
+				m_changedCams++;
 			}
+			else if (auto obsStereo =
+						 std::dynamic_pointer_cast<CObservationStereoImages>(
+							 obs);
+					 obsStereo)
+			{
+				obsStereo->setStereoCameraParams(*stereoCam);
+				m_changedCams++;
+			}
+			else if (auto obsDepth =
+						 std::dynamic_pointer_cast<CObservation3DRangeScan>(
+							 obs);
+					 obsDepth)
+			{
+				obsDepth->cameraParams = *depthCam;
+				obsDepth->cameraParamsIntensity = *depthIntensity;
+				m_changedCams++;
+			}
+			else
+			{
+				THROW_EXCEPTION_FMT(
+					"Observation with matching sensorLabel '%s' found, but I "
+					"do not know how to change its camera parameters (class: "
+					"'%s')",
+					target_label.c_str(), obs->GetRuntimeClass()->className);
+			}
+
 			return true;
 		}
 
@@ -152,8 +184,6 @@ DECLARE_OP_FUNCTION(op_camera_params)
 
 	// Dump statistics:
 	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse
-				 << "\n";
-	VERBOSE_COUT << "Number of modified entries        : " << proc.m_changedCams
-				 << "\n";
+	VERBOSE_COUT << "Time to process file [s] : " << proc.m_timToParse << "\n";
+	VERBOSE_COUT << "Modified observations    : " << proc.m_changedCams << "\n";
 }

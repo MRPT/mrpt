@@ -422,11 +422,13 @@ void RawlogEditApp::run(int argc, const char** argv)
 
 	arg_ops.push_back(std::make_unique<TCLAP::ValueArg<std::string>>(
 		"", "camera-params",
-		"Op: change the camera parameters of all CObservationImage's "
+		"Op: change the camera intrinsic parameters of all CObservationImage "
 		"with the given SENSOR_LABEL, with new params loaded from the "
 		"given file, section '[CAMERA_PARAMS]' "
 		"for monocular cameras, or '[CAMERA_PARAMS_LEFT]' and "
-		"'[CAMERA_PARAMS_RIGHT]' for stereo.\n"
+		"'[CAMERA_PARAMS_RIGHT]' for CObservationStereoImage, "
+		"or '[DEPTH_CAM_PARAMS]' and '[INTENSITY_CAM_PARAMS]' for "
+		"CObservation3DRangeScan.\n"
 		"Requires: -o (or --output)\n",
 		false, "", "SENSOR_LABEL,file.ini", cmd));
 	ops_functors["camera-params"] = &op_camera_params;
