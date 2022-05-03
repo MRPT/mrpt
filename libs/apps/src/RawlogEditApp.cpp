@@ -50,6 +50,8 @@ DECLARE_OP_FUNCTION(op_camera_params);
 DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_deexternalize);
 
+DECLARE_OP_FUNCTION(op_describe);
+
 DECLARE_OP_FUNCTION(op_export_gps_all);
 DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
@@ -460,6 +462,13 @@ void RawlogEditApp::run(int argc, const char** argv)
 		"", "undistort", "Op: Undistort all images in the rawlog.\n", cmd,
 		false));
 	ops_functors["undistort"] = &op_undistort;
+
+	arg_ops.push_back(std::make_unique<TCLAP::SwitchArg>(
+		"", "describe",
+		"Op: Prints a human-readable description for *all* objects in the "
+		"dataset.",
+		cmd, false));
+	ops_functors["describe"] = &op_describe;
 
 	// --------------- End of list of possible operations --------
 

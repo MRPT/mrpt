@@ -168,7 +168,7 @@ class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 	}
 
 	bool processOneEntry(
-		[[maybe_unused]] mrpt::obs::CActionCollection::Ptr& actions,
+		mrpt::obs::CActionCollection::Ptr& actions,
 		mrpt::obs::CSensoryFrame::Ptr& SF,
 		mrpt::obs::CObservation::Ptr& obs) override
 	{
