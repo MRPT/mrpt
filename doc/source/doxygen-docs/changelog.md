@@ -8,6 +8,7 @@
     - Browse dialog: Smarter coloring of pointclouds; check all & none buttons for sensor layers.
   - rawlog-edit:
     - Operation `--camera-params` now also works for mrpt::obs::CObservation3DRangeScan observations.
+    - New operation `--describe`.
 - Changes in libraries:
   - \ref mrpt_poses_grp
     - mrpt::poses::CPose3DQuat: Remove use of obsolete base class std::iterator.
