@@ -18,6 +18,7 @@
 - BUG FIXES:
   - ASSERT_NEAR_() did not work correctly when arguments were expressions with operators.
   - Fixed incorrect parsing of strings with whitespaces in mrpt::from_string<>() when converting to std::string
+  - mrpt::obs::CObservation3DRangeScan::get_unproj_lut() was ignoring the depth camera distortion model and always assumed plumb_bob.
 
 # Version 2.4.3: Released Feb 22nd, 2022
 - Changes in applications:
