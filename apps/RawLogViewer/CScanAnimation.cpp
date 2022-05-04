@@ -549,7 +549,7 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 	}
 
 	// Check what observations are too old and must be deleted:
-	const double largest_period = 1.0;
+	const double largest_period = 2.5;
 	std::vector<std::string> lst_to_delete;
 	for (auto& o : m_gl_objects)
 	{
