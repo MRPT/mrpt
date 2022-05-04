@@ -138,8 +138,7 @@ const CObservation3DRangeScan::unproject_LUT_t&
 
 	switch (cameraParams.distortion)
 	{
-		case mrpt::img::DistortionModel::none: undistort_pts = pts; break;
-
+		case mrpt::img::DistortionModel::none:
 		case mrpt::img::DistortionModel::plumb_bob:
 			cv::undistortPoints(
 				pts, undistort_pts, cv_intrinsics, cv_distortion);
