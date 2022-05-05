@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.4.4: UNRELEASED
+# Version 2.4.4: Released March 5th, 2022
 - New web-based applications
   - All MRPT modules (including \ref mrpt_opengl_grp and mrpt-nanogui) are now compatible with Emscripten so they can run as Javascript + wasm on any modern browser.
 - Changes in applications:
