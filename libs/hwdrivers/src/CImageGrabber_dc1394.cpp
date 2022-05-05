@@ -539,7 +539,7 @@ bool CImageGrabber_dc1394::getObservation(
 
 	return true;
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
 	MRPT_END
 }
@@ -620,7 +620,7 @@ bool CImageGrabber_dc1394::getObservation(
 
 	return true;
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
 	MRPT_END
 }
@@ -681,7 +681,7 @@ bool CImageGrabber_dc1394::changeCaptureOptions(
 
 	return true;
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
 	MRPT_END
 }
@@ -705,7 +705,7 @@ bool CImageGrabber_dc1394::setSoftwareTriggerLevel(bool level)
 
 	return true;
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
 	MRPT_END
 }
@@ -801,7 +801,7 @@ void CImageGrabber_dc1394::enumerateCameras(TCameraInfoList& out_list)
 		throw;
 	}
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
 	MRPT_END
 }

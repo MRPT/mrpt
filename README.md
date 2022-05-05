@@ -53,66 +53,14 @@ See [this PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for 
 
         sudo add-apt-repository ppa:joseluisblancoc/mrpt   # develop branch
         #sudo add-apt-repository ppa:joseluisblancoc/mrpt-stable   # master (stable releases) branch
-        #sudo apt update # Only required for Ubuntu 16.04
         sudo apt install libmrpt-dev mrpt-apps
 
 Supported distributions:
-  * Ubuntu 20.04 LTS (Focal), Ubuntu 18.04 LTS (Bionic), 18.10 (Cosmic), 19.10 (Eoan)
-  * Ubuntu 16.04 LTS Xenial (EOL: April 2021)
-  	* Using 16.04 requires installing gcc-7 due to some bugs in gcc-5:
-
-          add-apt-repository ppa:ubuntu-toolchain-r/test
-          apt-get update
-          apt-get install -y g++-7
-
+  * Ubuntu 18.04 LTS (Bionic), Ubuntu 20.04 LTS (Focal), or newer.
 
 ### 3.2. Build from sources
 
-Minimum compiler requisites:
-  * gcc-7 or newer.
-    * Ubuntu 16.04LTS Xenial: [Instructions](https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5) for installing gcc-7 in this version of Ubuntu.
-    * Ubuntu 18.04 or newer: default gcc version is ok.
-  * clang-4 or newer.
-  * Windows: Visual Studio 2017 version 15.3 or newer.
-  * cmake >= 3.3 required (>=3.4 for Windows).
-  * Eigen >= 3.3 required.
-
-To build in Debian/Ubuntu follow the steps below. See [full build docs](http://www.mrpt.org/Building_and_Installing_Instructions) online
-for Windows instructions or to learn all the details.
-
-  * Install **minimum** recommended dependencies:
-
-```bash
-sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev libwxgtk3.0-gtk3-dev \
-libopencv-dev libeigen3-dev libgtest-dev
-```
-  MRPT builds against OpenCV 2.4.x, 3.x, 4.x, but it is recommended to use 3.0 or later.
-
-
-  * **Recommended**: Install additional dependencies to enable most MRPT features (except ROS bridges):
-
-```bash
-sudo apt install libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev \
-libudev-dev libfreenect-dev libdc1394-22-dev libavformat-dev libswscale-dev \
-libassimp-dev libjpeg-dev   libsuitesparse-dev libpcap-dev liboctomap-dev \
-libglfw3-dev
-```
-
-  * Install additional dependencies for `ros1bridge` using official Ubuntu repositories.
-  If you already have a ROS distribution installed, doing `source /opt/ros/xxx/setup.bash`
-  is enough, no further packages must be installed.
-
-```bash
-sudo apt install libcv-bridge-dev libgeometry-msgs-dev libnav-msgs-dev librosbag-storage-dev libroscpp-dev libsensor-msgs-dev libstd-srvs-dev libstereo-msgs-dev libtf2-dev libtf2-msgs-dev libbz2-dev
-```
-
-  * Build with `cmake` as usual:
-
-```bash
-mkdir build && cd build
-cmake ..
-make
-```
+See [build documentation](https://docs.mrpt.org/reference/latest/compiling.html) ([source](doc/source/compiling.rst)).
 
 ### 3.3. Windows precompiled versions
 
@@ -120,6 +68,20 @@ Executables (`.exe`s and `.dll`s) and development libraries (`.h`s and `.lib`s) 
 
 [Nightly built Windows installer](https://github.com/MRPT/mrpt/releases/tag/Windows-nightly-builds)
 
+### 3.4. As a ROS1/ROS2 package
+
+MRPT is also shipped as a ros1 & ros2 package named `mrpt2`, so it can be installed via: 
+
+```bash
+sudo apt install ros-$ROS_DISTRO-mrpt2
+```
+
+`mrpt2` status in ROS build farms:
+
+| Distro | `develop` branch  | Stable release |
+|---|---|---|
+| ROS1 Noetic @ u20.04 | [![Build Status](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/) | [![Build Status](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
+| ROS2 Rolling @ u22.04 | [![Build Status](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/) | [![Build Status](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) |
 
 ## 4. License
 MRPT is released under the [new BSD license](http://www.mrpt.org/License/).

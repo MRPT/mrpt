@@ -20,18 +20,14 @@ CHECK_FUNCTION_EXISTS(sincos HAVE_SINCOS)
 CHECK_FUNCTION_EXISTS(strtok_r HAVE_STRTOK_R)
 CHECK_FUNCTION_EXISTS(_aligned_malloc HAVE_ALIGNED_MALLOC)
 
-if(MSVC AND NOT MSVC6 AND NOT MSVC7)
-	set(HAVE_OPENTHREAD 1)
-else()
-	set(HAVE_OPENTHREAD 0)
-endif()
-
-
 CHECK_INCLUDE_FILE("alloca.h" HAVE_ALLOCA_H)
 CHECK_INCLUDE_FILE("linux/serial.h" HAVE_LINUX_SERIAL_H)
 CHECK_INCLUDE_FILE("linux/input.h" HAVE_LINUX_INPUT_H)
 CHECK_INCLUDE_FILE("malloc.h" HAVE_MALLOC_H)
 CHECK_INCLUDE_FILE("malloc/malloc.h" HAVE_MALLOC_MALLOC_H)
+CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
+CHECK_INCLUDE_FILE("pthread.h" HAVE_PTHREAD_H)
+CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 
 if(HAVE_ALLOCA_FUNC OR HAVE_ALLOCA_H)
 	set(HAVE_ALLOCA 1)
@@ -97,3 +93,10 @@ check_type_size("long double"  HAVE_LONG_DOUBLE)
 # ---------------------------------------------------------------
 include(TestBigEndian)
 TEST_BIG_ENDIAN(CMAKE_MRPT_IS_BIG_ENDIAN)
+
+# Special systems:
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+	set(CMAKE_MRPT_IN_EMSCRIPTEN 1)
+else()
+	set(CMAKE_MRPT_IN_EMSCRIPTEN 0)
+endif()

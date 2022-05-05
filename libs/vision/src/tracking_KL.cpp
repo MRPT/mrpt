@@ -115,7 +115,7 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 	}
 
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
 	MRPT_END

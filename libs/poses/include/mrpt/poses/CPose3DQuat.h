@@ -369,11 +369,16 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 	}
 
 	struct iterator
-		: public std::iterator<std::random_access_iterator_tag, value_type>
 	{
+	   public:
+		// iterator traits
+		using difference_type = std::ptrdiff_t;
+		using value_type = double;
+		using pointer = const double*;
+		using reference = const double&;
+		using iterator_category = std::random_access_iterator_tag;
+
 	   private:
-		using iterator_base =
-			std::iterator<std::random_access_iterator_tag, value_type>;
 		/** A reference to the source of this iterator */
 		CPose3DQuat* m_obj{nullptr};
 		/** The iterator points to this element. */
@@ -434,35 +439,33 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 			--*this;
 			return it;
 		}
-		inline iterator& operator+=(iterator_base::difference_type off)
+		inline iterator& operator+=(difference_type off)
 		{
 			m_cur_idx += off;
 			check_limits(true);
 			return *this;
 		}
-		inline iterator operator+(iterator_base::difference_type off) const
+		inline iterator operator+(difference_type off) const
 		{
 			iterator it = *this;
 			it += off;
 			return it;
 		}
-		inline iterator& operator-=(iterator_base::difference_type off)
+		inline iterator& operator-=(difference_type off)
 		{
 			return (*this) += (-off);
 		}
-		inline iterator operator-(iterator_base::difference_type off) const
+		inline iterator operator-(difference_type off) const
 		{
 			iterator it = *this;
 			it -= off;
 			return it;
 		}
-		inline iterator_base::difference_type operator-(
-			const iterator& it) const
+		inline difference_type operator-(const iterator& it) const
 		{
 			return m_cur_idx - it.m_cur_idx;
 		}
-		inline CPose3DQuat::reference operator[](
-			iterator_base::difference_type off) const
+		inline CPose3DQuat::reference operator[](difference_type off) const
 		{
 			return (*m_obj)[m_cur_idx + off];
 		}
@@ -477,11 +480,16 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 	};	// end iterator
 
 	struct const_iterator
-		: public std::iterator<std::random_access_iterator_tag, value_type>
 	{
+	   public:
+		// iterator traits
+		using difference_type = std::ptrdiff_t;
+		using value_type = double;
+		using pointer = const double*;
+		using reference = const double&;
+		using iterator_category = std::random_access_iterator_tag;
+
 	   private:
-		using iterator_base =
-			std::iterator<std::random_access_iterator_tag, value_type>;
 		/** A reference to the source of this iterator */
 		const CPose3DQuat* m_obj{nullptr};
 		/** The iterator points to this element. */
@@ -542,37 +550,34 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 			--*this;
 			return it;
 		}
-		inline const_iterator& operator+=(iterator_base::difference_type off)
+		inline const_iterator& operator+=(difference_type off)
 		{
 			m_cur_idx += off;
 			check_limits(true);
 			return *this;
 		}
-		inline const_iterator operator+(
-			iterator_base::difference_type off) const
+		inline const_iterator operator+(difference_type off) const
 		{
 			const_iterator it = *this;
 			it += off;
 			return it;
 		}
-		inline const_iterator& operator-=(iterator_base::difference_type off)
+		inline const_iterator& operator-=(difference_type off)
 		{
 			return (*this) += (-off);
 		}
-		inline const_iterator operator-(
-			iterator_base::difference_type off) const
+		inline const_iterator operator-(difference_type off) const
 		{
 			const_iterator it = *this;
 			it -= off;
 			return it;
 		}
-		inline iterator_base::difference_type operator-(
-			const const_iterator& it) const
+		inline difference_type operator-(const const_iterator& it) const
 		{
 			return m_cur_idx - it.m_cur_idx;
 		}
 		inline CPose3DQuat::const_reference operator[](
-			iterator_base::difference_type off) const
+			difference_type off) const
 		{
 			return (*m_obj)[m_cur_idx + off];
 		}

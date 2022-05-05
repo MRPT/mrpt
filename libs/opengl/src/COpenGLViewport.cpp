@@ -9,6 +9,8 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <Eigen/Dense>	// First! to avoid conflicts with X.h
+//
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>	 // crossProduct3D()
 #include <mrpt/opengl/COpenGLScene.h>
@@ -22,8 +24,6 @@
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/CTimeLogger.h>
 
-#include <Eigen/Dense>
-
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
@@ -33,7 +33,7 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(COpenGLViewport, CSerializable, mrpt::opengl)
 
-//#define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
+// #define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
 
 #if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
 mrpt::system::CTimeLogger glv_timlog;
@@ -134,7 +134,7 @@ static int startFromRatio(const double frac, const int dSize)
 // "Image mode" rendering:
 void COpenGLViewport::renderImageMode() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
 	mrpt::system::CTimeLoggerEntry tle(
 		glv_timlog, "COpenGLViewport::render imageview");
@@ -189,7 +189,7 @@ void COpenGLViewport::unloadShaders() { m_shaders.clear(); }
 
 void COpenGLViewport::loadDefaultShaders() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	std::vector<shader_id_t> lstShaderIDs = {
@@ -212,7 +212,7 @@ void COpenGLViewport::loadDefaultShaders() const
 /** Render a normal scene with 3D objects */
 void COpenGLViewport::renderNormalSceneMode() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	// Prepare camera (projection matrix):
@@ -248,10 +248,12 @@ void COpenGLViewport::renderNormalSceneMode() const
 
 	// Global OpenGL settings:
 	// ---------------------------------
+#if !defined(__EMSCRIPTEN__)
 	glHint(
 		GL_POLYGON_SMOOTH_HINT,
 		m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
 	CHECK_OPENGL_ERROR();
+#endif
 
 	// Regular depth model:
 	// 0: far, 1: near
@@ -266,7 +268,7 @@ void COpenGLViewport::renderNormalSceneMode() const
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 // Enable point sizes>1
-#if defined(GL_PROGRAM_POINT_SIZE)	// it seems it's undefined in OSX (?)
+#if !defined(__EMSCRIPTEN__) && defined(GL_PROGRAM_POINT_SIZE)	// OSX undef?
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	CHECK_OPENGL_ERROR();
 #endif
@@ -285,7 +287,7 @@ void COpenGLViewport::renderNormalSceneMode() const
 
 void COpenGLViewport::renderViewportBorder() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 	if (m_borderWidth < 1) return;
 
@@ -326,7 +328,7 @@ void COpenGLViewport::renderViewportBorder() const
 
 void COpenGLViewport::renderTextMessages() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	// Ensure GL objects are up-to-date:
@@ -409,7 +411,7 @@ void COpenGLViewport::render(
 	[[maybe_unused]] const int render_offset_x,
 	[[maybe_unused]] const int render_offset_y) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	// Change viewport:
@@ -492,7 +494,7 @@ void COpenGLViewport::render(
 	MRPT_END
 #else
 	THROW_EXCEPTION(
-		"The MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL "
+		"MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL "
 		"functions are not implemented");
 #endif
 }
@@ -981,8 +983,8 @@ void COpenGLViewport::updateMatricesFromCamera() const
 
 	// Get camera:
 	// 1st: if there is a CCamera in the scene (nullptr if no camera found):
-	const CCamera* myCamera =
-		dynamic_cast<CCamera*>(viewForGetCamera->getByClass<CCamera>().get());
+	const auto camPtr = viewForGetCamera->getByClass<CCamera>();
+	auto myCamera = camPtr ? camPtr.get() : nullptr;
 
 	// 2nd: the internal camera of all viewports:
 	if (!myCamera) myCamera = &viewForGetCamera->m_camera;

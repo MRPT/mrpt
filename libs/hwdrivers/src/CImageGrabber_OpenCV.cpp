@@ -151,7 +151,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 	// remember that we successfully initialized everything
 	m_bInitialized = true;
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
@@ -174,7 +174,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(const std::string& AVI_fileName)
 	// remember that we successfully initialized everything
 	m_bInitialized = true;
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
@@ -224,7 +224,7 @@ bool CImageGrabber_OpenCV::getObservation(
 	}
 	return false;
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }

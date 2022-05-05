@@ -16,7 +16,7 @@
 
 #include <mrpt/config.h>
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #ifdef _WIN32
 // WINDOWS:
 #if defined(_MSC_VER)
@@ -53,13 +53,40 @@
  * under osx
  */
 #ifdef __APPLE__
-//#include <3rdparty/freeglut/GL/freeglut_std.h>
+// #include <3rdparty/freeglut/GL/freeglut_std.h>
 #ifndef GLUT_INIT_STATE
 #define GLUT_INIT_STATE 0x007C
 #endif
 #else
-#ifdef HAVE_FREEGLUT_EXT_H
+#if defined(HAVE_FREEGLUT_EXT_H) && !(__EMSCRIPTEN__)
 #include <GL/freeglut_ext.h>
+#endif
+#endif
+
+#if MRPT_HAS_EGL
+// #define GL_GLEXT_PROTOTYPES // already def above
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#endif
+
+#if HAVE_GLES_GL_H
+#include <GLES/gl.h>
+#if HAVE_GLES_GLEXT_H
+#include <GLES/glext.h>
+#endif
+#endif
+
+#if HAVE_GLES2_GL2_H
+#include <GLES2/gl2.h>
+#if HAVE_GLES2_GL2EXT_H
+#include <GLES2/gl2ext.h>
+#endif
+#endif
+
+#if HAVE_GLES3_GL3_H
+#include <GLES3/gl3.h>
+#if HAVE_GLES3_GL3EXT_H
+#include <GLES3/gl3ext.h>
 #endif
 #endif
 

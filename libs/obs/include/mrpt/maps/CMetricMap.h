@@ -41,8 +41,8 @@ namespace mrpt::maps
  *that effectively modifies the map (e.g. inserting an image into a grid map
  *will NOT raise an event, inserting a laser scan will).
  *
- * To check what observations are supported by each metric map, see: \ref
- *maps_observations
+ * To check what observations are supported by each metric map, see
+ * \ref maps_observations.
  *
  * \note All derived class must implement a static class factory
  *`<metric_map_class>::MapDefinition()` that builds a default
@@ -115,8 +115,9 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 	}
 
 	/** Insert the observation information into this map. This method must be
-	 * implemented
-	 *    in derived classes. See: \ref maps_observations
+	 * implemented in derived classes.
+	 * See: \ref maps_observations
+	 *
 	 * \param obs The observation
 	 * \param robotPose The 3D pose of the robot mobile base in the map
 	 * reference system, or NULL (default) if you want to use the origin.
@@ -129,14 +130,15 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 			std::nullopt);
 
 	/** A wrapper for smart pointers, just calls the non-smart pointer version.
-	 * See: \ref maps_observations  */
+	 * See: \ref maps_observations */
 	bool insertObservationPtr(
 		const mrpt::obs::CObservation::Ptr& obs,
 		const std::optional<const mrpt::poses::CPose3D>& robotPose =
 			std::nullopt);
 
 	/** Computes the log-likelihood of a given observation given an arbitrary
-	 * robot 3D pose.  See: \ref maps_observations
+	 * robot 3D pose.
+	 * See: \ref maps_observations
 	 *
 	 * \param takenFrom The robot's pose the observation is supposed to be taken
 	 * from.
@@ -151,7 +153,9 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 
 	/** Returns true if this map is able to compute a sensible likelihood
 	 * function for this observation (i.e. an occupancy grid map cannot with an
-	 * image).  See: \ref maps_observations
+	 * image).
+	 * See: \ref maps_observations
+	 *
 	 * \param obs The observation.
 	 * \sa computeObservationLikelihood,
 	 * genericMapParams.enableObservationLikelihood
@@ -160,7 +164,8 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 		const mrpt::obs::CObservation& obs) const;
 
 	/** Returns the sum of the log-likelihoods of each individual observation
-	 * within a mrpt::obs::CSensoryFrame.  See: \ref maps_observations
+	 * within a mrpt::obs::CSensoryFrame.
+	 * See: \ref maps_observations
 	 *
 	 * \param takenFrom The robot's pose the observation is supposed to be taken
 	 * from.
@@ -174,7 +179,9 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 
 	/** Returns true if this map is able to compute a sensible likelihood
 	 * function for this observation (i.e. an occupancy grid map cannot with an
-	 * image).  See: \ref maps_observations
+	 * image).
+	 * See: \ref maps_observations
+	 *
 	 * \param sf The observations.
 	 * \sa canComputeObservationLikelihood
 	 */

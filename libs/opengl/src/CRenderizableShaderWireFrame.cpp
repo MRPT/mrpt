@@ -24,7 +24,7 @@ CRenderizableShaderWireFrame::~CRenderizableShaderWireFrame() = default;
 
 void CRenderizableShaderWireFrame::renderUpdateBuffers() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// Generate vertices & colors:
 	const_cast<CRenderizableShaderWireFrame&>(*this)
@@ -51,12 +51,14 @@ void CRenderizableShaderWireFrame::renderUpdateBuffers() const
 
 void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// TODO: Port thick lines to opengl3?
 	// glLineWidth(m_lineWidth);
 
+#if !defined(__EMSCRIPTEN__)
 	glEnable(GL_LINE_SMOOTH);
 	CHECK_OPENGL_ERROR();
+#endif
 
 	// Set up the vertex array:
 	std::optional<GLuint> attr_position;

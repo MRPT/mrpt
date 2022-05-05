@@ -21,7 +21,12 @@ if (UNIX)
 endif()
 
 
-add_definitions(-DCMAKE_UNITTEST_BASEDIR="${MRPT_SOURCE_DIR}")
+if (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+	add_definitions(-DCMAKE_UNITTEST_BASEDIR="${MRPT_SOURCE_DIR}")
+else()
+	# Use relative paths for embedded files:
+	add_definitions(-DCMAKE_UNITTEST_BASEDIR=".")
+endif()
 
 # Allow tests to include sources from examples directory:
 include_directories("${MRPT_SOURCE_DIR}")
@@ -46,7 +51,6 @@ if(MSVC)
 	add_definitions(/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
 endif()
 
-
 get_property(LST_LIB_TESTS GLOBAL PROPERTY "MRPT_TEST_LIBS")
 foreach(_TSTLIB ${LST_LIB_TESTS})
 	string(REGEX REPLACE "mrpt_(.*)" "mrpt-\\1" _TSTLIB_DASH ${_TSTLIB})
@@ -62,6 +66,8 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	set_tests_properties(test_${_TSTLIB}_run PROPERTIES DEPENDS test_${_TSTLIB}_build)
 
 	add_coverage(test_${_TSTLIB})
+
+	process_emscripten_embedded_files(test_${_TSTLIB})
 
 	# Add the required libraries for linking:
 	if (CMAKE_MRPT_HAS_GTEST_SYSTEM)
@@ -94,11 +100,22 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 		else()
 			target_link_libraries(test_${_TSTLIB} ${_DEPLIB})
 		endif()
-	endforeach(_DEPLIB)
+	endforeach()
 
 	# Run it:
 	set(GENERATED_EXE "$<TARGET_FILE:test_${_TSTLIB}>")
-	add_custom_target(run_tests_${_TSTLIB} COMMAND "${GENERATED_EXE}")
+	# If we are in Emscripten (wasm JavaScript code), run with the node.js interpreter:
+	if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+		find_program(NODEJS_EXE node)
+		if (NODEJS_EXE)
+			set(TEST_RUN_INTERPRETER ${NODEJS_EXE})
+		else()
+			message("Warning: Building JavaScript but node.js not found: target 'run_tests_${_TSTLIB}' will not work.")
+		endif()
+	endif()
+
+	add_custom_target(run_tests_${_TSTLIB} COMMAND ${TEST_RUN_INTERPRETER} ${GENERATED_EXE})
+
 	add_dependencies(run_tests_${_TSTLIB} test_${_TSTLIB})
 	add_dependencies(test_legacy run_tests_${_TSTLIB})
 	add_dependencies(tests_build_all test_${_TSTLIB})

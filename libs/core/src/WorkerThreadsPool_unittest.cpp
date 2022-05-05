@@ -8,8 +8,10 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/core/WorkerThreadsPool.h>
 
+#if !MRPT_IN_EMSCRIPTEN	 // No multithreading
 TEST(WorkerThreadsPool, runTasks)
 {
 	//
@@ -34,3 +36,4 @@ TEST(WorkerThreadsPool, runTasks)
 	}
 	EXPECT_EQ(accum, 6);
 }
+#endif	// !MRPT_IN_EMSCRIPTEN

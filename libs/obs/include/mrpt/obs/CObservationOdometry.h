@@ -18,10 +18,13 @@
 namespace mrpt::obs
 {
 /** An observation of the current (cumulative) odometry for a wheeled robot.
- *   This kind of observation will only occur in a "observation-only" rawlog
- * file, otherwise
- *    odometry are modeled with actions. Refer to the <a
- * href="http://www.mrpt.org/Rawlog_Format">page on rawlogs</a>.
+ * This provides the relative pose of the robot with respect to the `odom`
+ * frame of reference, in "ROS parlance".
+ *
+ * This kind of observation more naturally fits the "observation-only" rawlog
+ * format, since odometry increments are normally used in "sensory-frame based"
+ * datasets. However, the user is free to use them whenever it is useful. Refer
+ * to the [rawlog format description](rawlog_format.html).
  *
  * \sa CObservation, CActionRobotMovement2D
  * \ingroup mrpt_obs_grp

@@ -18,7 +18,7 @@ if (PKG_CONFIG_FOUND)
 endif()
 
 if (MRPT_WITH_NANOGUI AND
-    (NOT CMAKE_MRPT_HAS_OPENGL_GLUT))
+    (NOT CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_EGL))
     message(STATUS "Warning: Disabling MRPT_WITH_NANOGUI since requirements were not found.")
     set(MRPT_WITH_NANOGUI OFF CACHE BOOL "" FORCE)
 endif()

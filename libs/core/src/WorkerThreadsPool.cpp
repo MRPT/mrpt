@@ -91,7 +91,7 @@ static void mySetThreadName(const std::string& name, std::thread& theThread)
 	wchar_t wName[50];
 	std::mbstowcs(wName, name.c_str(), sizeof(wName) / sizeof(wName[0]));
 	SetThreadDescription(theThread.native_handle(), wName);
-#elif defined(MRPT_OS_LINUX)
+#elif defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 	auto handle = theThread.native_handle();
 	pthread_setname_np(handle, name.c_str());
 #endif

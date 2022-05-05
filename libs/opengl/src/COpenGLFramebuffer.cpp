@@ -16,7 +16,7 @@
 
 using namespace mrpt::opengl;
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 static bool isExtensionSupported([[maybe_unused]] const std::string& extension)
 {
 	MRPT_START
@@ -40,7 +40,7 @@ COpenGLFramebuffer::COpenGLFramebuffer() : m_impl(std::make_shared<RAII_Impl>())
 void COpenGLFramebuffer::RAII_Impl::create(
 	unsigned int width, unsigned int height, int nSamples)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	if (!isExtensionSupported("GL_EXT_framebuffer_object"))
 		THROW_EXCEPTION(
@@ -133,7 +133,7 @@ void COpenGLFramebuffer::RAII_Impl::destroy()
 {
 	if (!m_created) return;
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	static const bool showErrs =
 		(::getenv("MRPT_REVEAL_OPENGL_BUFFER_LEAKS") != nullptr);
 
@@ -175,7 +175,7 @@ void COpenGLFramebuffer::RAII_Impl::destroy()
 
 FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	const FrameBufferBinding ids = CurrentBinding();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
@@ -194,7 +194,7 @@ FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
 
 void COpenGLFramebuffer::RAII_Impl::unbind()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	if (m_Samples > 1) glDisable(GL_MULTISAMPLE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -204,7 +204,7 @@ void COpenGLFramebuffer::RAII_Impl::unbind()
 
 void COpenGLFramebuffer::blit()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_impl->m_Framebuffer);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDrawBuffer(GL_BACK);
@@ -220,7 +220,7 @@ void COpenGLFramebuffer::blit()
 
 void COpenGLFramebuffer::Bind(const FrameBufferBinding& ids)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, ids.readFbId);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ids.drawFbId);
 #endif
@@ -228,7 +228,7 @@ void COpenGLFramebuffer::Bind(const FrameBufferBinding& ids)
 
 FrameBufferBinding COpenGLFramebuffer::CurrentBinding()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	GLint drawFboId = 0, readFboId = 0;
 	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFboId);
 	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFboId);

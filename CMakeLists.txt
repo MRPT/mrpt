@@ -34,7 +34,6 @@ if (POLICY CMP0075)
 endif()
 
 if ((NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/nanogui/include")
-    OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libfyaml/include")
     OR (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/rplidar_sdk/sdk/sdk")
    )
   message(FATAL_ERROR "git submodules missing! "
@@ -118,14 +117,27 @@ include(cmakemodules/script_select_app_to_build.cmake REQUIRED)		# Build (or not
 
 # Build static or dynamic libs?
 # ===================================================
-# Default: dynamic libraries:
-set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)")
+# Default: dynamic libraries (except if building to JavaScript code)
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+	set(_def_value OFF)
+else()
+	set(_def_value ON)
+endif()
+set(BUILD_SHARED_LIBS ${_def_value} CACHE BOOL "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)")
+unset(_def_value)
+
 if(BUILD_SHARED_LIBS)
 	set(CMAKE_MRPT_BUILD_SHARED_LIB "#define MRPT_BUILT_AS_DLL")
 	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 1)
 else()
 	set(CMAKE_MRPT_BUILD_SHARED_LIB "/* #define MRPT_BUILT_AS_DLL */")
 	set(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
+endif()
+
+# Only for emscripten: build executables as .html demo pages:
+# =============================================================
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+	set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
 # Only for Unix: use pkg-config to find libraries
@@ -279,6 +291,8 @@ include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + 
 include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 
+include(cmakemodules/process_emscripten_embedded_files.cmake REQUIRED)
+
 # ---------------------------------------------------------------------------
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
@@ -416,7 +430,7 @@ if (MRPT_COMPILER_IS_CLANG)
 	# Use "modern" C99 ! ;-)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
-	if(NOT APPLE)
+	if(NOT APPLE AND NOT ("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten"))
 		# From: https://stackoverflow.com/a/16788372/1631514
 		# I would use the native library for each OS i.e. libstdc++ on GNU/Linux and libc++ on Mac OS X.
 		# libc++ is not 100% complete on GNU/Linux, and there's no real advantage to using it when libstdc++
@@ -609,10 +623,16 @@ add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
-set(MRPT_BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
+if (DEFINED BUILD_TESTING)
+	set(_def_value ${BUILD_TESTING})
+else()
+	set(_def_value ON)
+endif()
+set(MRPT_BUILD_TESTING ${_def_value} CACHE BOOL "Build MRPT tests")
 if(MRPT_BUILD_TESTING)
 	add_subdirectory(tests)  # Build my tests
 endif()
+unset(_def_value )
 
 #-----------------------------------
 # The python bindings

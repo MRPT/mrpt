@@ -163,7 +163,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	 * interacting with the display window
 	 * \param[in] rawlog_fname .rawlog dataset file, containing the robot
 	 * measurements. CGraphSlamEngine supports both
-	 * <a href="http://www.mrpt.org/Rawlog_Format"> MRPT rwalog formats </a>
+	 * <a href="rawlog_format.html">MRPT rawlog formats</a>
 	 * but in order for graphSLAM to work as expected the rawlog foromat has to
 	 * be supported by the every decider/optimizer class that
 	 * CGraphSlamEngine makes use of.

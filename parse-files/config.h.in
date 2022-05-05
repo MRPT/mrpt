@@ -34,8 +34,17 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** Includes OpenGL & GLUT libraries, required for CDisplayWindows3D to work. */
 #define MRPT_HAS_OPENGL_GLUT      ${CMAKE_MRPT_HAS_OPENGL_GLUT}
-
 #define MRPT_HAS_EGL ${CMAKE_MRPT_HAS_EGL}
+#define MRPT_HAS_GLES ${CMAKE_MRPT_HAS_GLES}
+
+#cmakedefine HAVE_GLES_GL_H 1
+#cmakedefine HAVE_GLES_GLEXT_H 1
+
+#cmakedefine HAVE_GLES2_GL2_H 1
+#cmakedefine HAVE_GLES_GL2EXT_H 1
+
+#cmakedefine HAVE_GLES3_GL3_H 1
+#cmakedefine HAVE_GLES3_GL3EXT_H 1
 
 /** Has PGR Fly Capture 2? */
 #define MRPT_HAS_FLYCAPTURE2 ${CMAKE_MRPT_HAS_FLYCAPTURE2}
@@ -206,12 +215,16 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** Do we have libfyaml? */
 #define MRPT_HAS_FYAML          ${CMAKE_MRPT_HAS_LIBFYAML}
+#define MRPT_HAS_FYAML_SYSTEM   ${CMAKE_MRPT_HAS_LIBFYAML_SYSTEM}
 
 /** Do we have PCAP? */
 #define MRPT_HAS_LIBPCAP        ${CMAKE_MRPT_HAS_LIBPCAP}
 
 #define MRPT_HAS_TINYXML2          ${CMAKE_MRPT_HAS_TINYXML2}
 #define MRPT_HAS_TINYXML2_SYSTEM   ${CMAKE_MRPT_HAS_TINYXML2_SYSTEM}
+
+/** Are we in an Emscripten build? */
+#define MRPT_IN_EMSCRIPTEN ${CMAKE_MRPT_IN_EMSCRIPTEN}
 
 /** Standard headers */
 #ifndef HAVE_INTTYPES_H
@@ -236,6 +249,18 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 #ifndef HAVE_LINUX_INPUT_H
 #cmakedefine HAVE_LINUX_INPUT_H 1
+#endif
+
+#ifndef HAVE_SYS_TIME_H
+#cmakedefine HAVE_SYS_TIME_H 1
+#endif
+
+#ifndef HAVE_PTHREAD_H
+#cmakedefine HAVE_PTHREAD_H 1
+#endif
+
+#ifndef HAVE_UNISTD_H
+#cmakedefine HAVE_UNISTD_H 1
 #endif
 
 // Has <malloc.h>?
@@ -275,10 +300,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 #ifndef HAVE_LRINT
 #cmakedefine HAVE_LRINT
-#endif
-
-#ifndef HAVE_OPENTHREAD
-#cmakedefine HAVE_OPENTHREAD
 #endif
 
 #ifndef HAVE_STRTOK_R

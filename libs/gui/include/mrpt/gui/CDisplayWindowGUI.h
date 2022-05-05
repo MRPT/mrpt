@@ -94,6 +94,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 	using Ptr = std::shared_ptr<CDisplayWindowGUI>;
 	using ConstPtr = std::shared_ptr<const CDisplayWindowGUI>;
 
+	/// Regular ctor from caption and size
 	CDisplayWindowGUI(
 		const std::string& caption = std::string(), unsigned int width = 400,
 		unsigned int height = 300,
@@ -101,7 +102,8 @@ class CDisplayWindowGUI : public nanogui::Screen
 
 	virtual ~CDisplayWindowGUI() override;
 
-	/** Class factory returning a smart pointer */
+	/** Class factory returning a smart pointer, equivalent to
+	 * `std::make_shared<>(...)` */
 	template <typename... Args>
 	static Ptr Create(Args&&... args)
 	{
@@ -286,9 +288,14 @@ class CDisplayWindowGUI : public nanogui::Screen
 	/** @name Direct access to underlying nanogui API
 	 * @{ */
 
-	nanogui::Screen* nanogui_screen() { return this; }
+	nanogui::Screen* nanogui_screen()
+	{
+		return dynamic_cast<nanogui::Screen*>(this);
+	}
 
 	/** @} */
+
+	virtual void drawContents() override;
 
    protected:
 	CDisplayWindowGUI(const CDisplayWindowGUI&) = delete;
@@ -297,14 +304,10 @@ class CDisplayWindowGUI : public nanogui::Screen
 	CDisplayWindowGUI(CDisplayWindowGUI&&) = delete;
 	CDisplayWindowGUI& operator=(CDisplayWindowGUI&&) = delete;
 
-	/** the pointer is owned by the parent class Screen, no need to delete
-	 * it */
-	virtual bool keyboardEvent(
-		int key, int scancode, int action, int modifiers) override;
-	virtual void drawContents() override;
-
 	/** @name Internal virtual functions to handle GUI events
 	 * @{ */
+	virtual bool keyboardEvent(
+		int key, int scancode, int action, int modifiers) override;
 	virtual bool mouseMotionEvent(
 		const nanogui::Vector2i& p, const nanogui::Vector2i& rel, int button,
 		int modifiers) override;
