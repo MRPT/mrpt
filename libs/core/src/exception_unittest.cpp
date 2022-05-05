@@ -8,9 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <gtest/gtest.h>
+#include <mrpt/config.h>
 #include <mrpt/core/exceptions.h>
 
 #include <algorithm>  // count()
+#include <array>
 #include <sstream>
 
 TEST(exception, stackedExceptionBasic)
@@ -41,6 +43,7 @@ void test_except_toplevel()
 	MRPT_END
 }
 
+#if !MRPT_IN_EMSCRIPTEN
 TEST(exception, stackedExceptionComplex)
 {
 	try
@@ -67,6 +70,7 @@ TEST(exception, stackedExceptionComplex)
 #endif
 	}
 }
+#endif
 
 TEST(exception, assertException)
 {
@@ -97,4 +101,58 @@ TEST(exception, infiniteRecurseBug)
 	// Should not crash:
 	const auto s = testFoo();
 	EXPECT_TRUE(s.find("Check it") != std::string::npos);
+}
+
+TEST(exception, assertMacros)
+{
+	// ASSERT_EQUAL_
+	EXPECT_NO_THROW(ASSERT_EQUAL_(1, 1));
+	EXPECT_NO_THROW(ASSERT_EQUAL_(1 + 3, 1 + 1 + 1 + 1));
+	EXPECT_ANY_THROW(ASSERT_EQUAL_(1, 2));
+	EXPECT_ANY_THROW(ASSERT_EQUAL_(1 + 3, 3 + 2));
+
+	// ASSERT_NOT_EQUAL_
+	EXPECT_ANY_THROW(ASSERT_NOT_EQUAL_(1, 1));
+	EXPECT_ANY_THROW(ASSERT_NOT_EQUAL_(1 + 3, 1 + 1 + 1 + 1));
+	EXPECT_NO_THROW(ASSERT_NOT_EQUAL_(1, 2));
+	EXPECT_NO_THROW(ASSERT_NOT_EQUAL_(1 + 3, 3 + 2));
+
+	// ASSERT_NEAR_
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0, 10.01, 0.2));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0 + 1.0, 10.0 + 1.01, 0.2));
+	EXPECT_NO_THROW(ASSERT_NEAR_(1, 1, 0));
+	EXPECT_ANY_THROW(ASSERT_NEAR_(1, 2, 0));
+	EXPECT_ANY_THROW(ASSERT_NEAR_(10.0, 10.01, 0.001));
+	EXPECT_ANY_THROW(ASSERT_NEAR_(10.0, 10.01f, 0.001));
+	EXPECT_ANY_THROW(ASSERT_NEAR_(10.0, 10.01f, 0.001f));
+	EXPECT_ANY_THROW(ASSERT_NEAR_(10.0f, 10.01, 0.001f));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0, 10.01f, 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0f, 10.01f, 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0f, 10.01, 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0, 10.01f, 0.1f));
+
+	const std::array<double, 2> arr_dc = {10.0, 10.01};
+	std::array<double, 2> arr_dnc = {10.0, 10.01};
+	EXPECT_NO_THROW(ASSERT_NEAR_(arr_dc[0], arr_dc[1], 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(arr_dc[0], arr_dnc[1], 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(arr_dnc[0], arr_dc[1], 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(arr_dnc[0], arr_dnc[1], 0.1));
+
+	// ASSERT_LT_
+	EXPECT_NO_THROW(ASSERT_LT_(1.0, 2.0));
+	EXPECT_ANY_THROW(ASSERT_LT_(3, 2));
+	EXPECT_ANY_THROW(ASSERT_LT_(-1, -3));
+
+	// ASSERT_LE_
+	EXPECT_NO_THROW(ASSERT_LE_(1.0, 2.0));
+	EXPECT_NO_THROW(ASSERT_LE_(1.0, 1.0));
+
+	// ASSERT_GT_
+	EXPECT_ANY_THROW(ASSERT_GT_(1.0, 2.0));
+	EXPECT_NO_THROW(ASSERT_GT_(3, 2));
+	EXPECT_NO_THROW(ASSERT_GT_(-1, -3));
+
+	// ASSERT_GE_
+	EXPECT_NO_THROW(ASSERT_GE_(2.0, 1.0));
+	EXPECT_NO_THROW(ASSERT_GE_(1.0, 1.0));
 }

@@ -25,7 +25,7 @@ CRenderizableShaderPoints::~CRenderizableShaderPoints() = default;
 
 void CRenderizableShaderPoints::renderUpdateBuffers() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// Generate vertices & colors:
 	const_cast<CRenderizableShaderPoints&>(*this).onUpdateBuffers_Points();
@@ -51,7 +51,7 @@ void CRenderizableShaderPoints::renderUpdateBuffers() const
 
 void CRenderizableShaderPoints::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// Point size as uniform:
 	glUniform1f(rc.shader->uniformId("vertexPointSize"), m_pointSize);

@@ -123,7 +123,7 @@ void vision::openCV_cross_correlation(
 	y_max = max_point.y + y_search_ini + (mrpt::round(patch_h - 1) >> 1);
 
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
 	MRPT_END
@@ -1886,7 +1886,7 @@ void vision::computeStereoRectificationMaps(
 		K2, D2, R2, P2, cv::Size(resX, resY), CV_32FC1, *mapx2, *mapy2);
 /**/
 #else
-	THROW_EXCEPTION("The MRPT has been compiled without OPENCV!");
+	THROW_EXCEPTION("MRPT has been compiled without OPENCV!");
 #endif
 }  // end computeStereoRectificationMaps
 

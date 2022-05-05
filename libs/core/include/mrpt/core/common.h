@@ -14,8 +14,7 @@
    ------------------------------------ */
 #if defined(_MSC_VER)
 #pragma warning(disable : 4127)	 // Disable conditional expression is constant
-// (it shows up in templates where it's
-// correct)
+// (it shows up in templates where it's correct)
 #pragma warning(disable : 4244)	 // argument conversion "possible loss of data"
 #pragma warning(disable : 4503)	 // (Compiler: Visual C++ 2010) Disable warning
 // for too long decorated name
@@ -26,9 +25,9 @@
 #pragma warning(disable : 4251)	 // Visual C++ 2003+ warnings on STL classes
 // when exporting to DLL...
 #pragma warning(disable : 4275)	 // DLL export class derived from STL
-#pragma warning(                                                               \
-	disable : 4251)	 // Warnings are emited even if a DLL export class
-// contains a *private* STL field (?)
+// Warnings are emited even if a DLL export class contains a *private* STL field
+#pragma warning(disable : 4251)
+
 #if (_MSC_VER >= 1400)
 // MS believes they have the right to deprecate functions in the C++ Standard
 // STL... disable their warnings:
@@ -58,8 +57,12 @@
 #define M_2PI 6.283185307179586476925286766559	// The 2*PI constant
 #endif
 
+#ifndef M_PIf
 #define M_PIf 3.14159265358979f
+#endif
+#ifndef M_2PIf
 #define M_2PIf 6.28318530717959f
+#endif
 
 /**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
@@ -148,13 +151,6 @@ need to account for this with an extra offset.
 	__attribute__((__format__(__scanf__, _FMT_, _VARARGS_)))
 #else
 #define MRPT_scanf_format_check(_FMT_, _VARARGS_)
-#endif
-
-/** Tells the compiler we really want to inline that function */
-#if (defined _MSC_VER) || (defined __INTEL_COMPILER)
-#define MRPT_FORCE_INLINE __forceinline
-#else
-#define MRPT_FORCE_INLINE inline
 #endif
 
 /** Determines whether this is an X86 or AMD64 platform */

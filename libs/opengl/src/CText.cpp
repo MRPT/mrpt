@@ -49,7 +49,7 @@ void CText::onUpdateBuffers_Text()
 
 void CText::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	// Compute pixel of (0,0,0) for this object:
 	// "px" will be given in the range:

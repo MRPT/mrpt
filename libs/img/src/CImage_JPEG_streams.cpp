@@ -9,6 +9,7 @@
 
 #include "img-precomp.h"  // Precompiled headers
 //
+#include <mrpt/config.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CStream.h>
 
@@ -29,12 +30,13 @@ using namespace mrpt::img;
 #undef FAR
 #define XMD_H
 
+using mrpt::io::CStream;
+
+#if MRPT_HAS_JPEG
 #include <jpeglib.h>
 
 #include <cstdio>
 #define mrpt_jpeg_source_mgr jpeg_source_mgr
-
-using mrpt::io::CStream;
 
 typedef struct
 {
@@ -341,10 +343,11 @@ jpeg_stdio_src(j_decompress_ptr cinfo, CStream* in)
 // ---------------------------------------------------------------------------------------
 //							END OF JPEG FUNCTIONS PART
 // ---------------------------------------------------------------------------------------
+#endif	// MRPT_HAS_JPEG
 
 void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 {
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_HAS_JPEG
 	MRPT_START
 
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
@@ -444,7 +447,7 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 
 void CImage::loadFromStreamAsJPEG(CStream& in)
 {
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_HAS_JPEG
 	MRPT_START
 
 	// This could have been ported to cv::imdecode(). But on a second thought,

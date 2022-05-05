@@ -24,7 +24,7 @@ using namespace mrpt::math;
 using namespace std;
 
 // Include libraries in linking:
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #ifdef _WIN32
 // WINDOWS:
 #if defined(_MSC_VER)
@@ -90,7 +90,7 @@ void COpenGLScene::render() const
 {
 	MRPT_START
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// We need the size of the viewport at the beginning: should be the whole
 	// window:
 	GLint win_dims[4];
@@ -106,7 +106,7 @@ void COpenGLScene::render() const
 
 #else
 	THROW_EXCEPTION(
-		"The MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL "
+		"MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL "
 		"functions are not implemented");
 #endif
 	MRPT_END

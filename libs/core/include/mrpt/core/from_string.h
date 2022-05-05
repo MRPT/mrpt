@@ -11,6 +11,7 @@
 
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 namespace mrpt
 {
@@ -32,12 +33,17 @@ template <typename T>
 inline T from_string(
 	const std::string& s, const T& defValue = T{}, bool throw_on_error = true)
 {
+	// shortcut that also fixes problems with strings with whitespaces:
+	if constexpr (std::is_same_v<std::string, T>) { return s; }
+
 	auto& iss(internal::get_istringstream());
+	iss.clear();  // Reset "bad" bit
 	iss.str(s);
 	iss.seekg(0);
 	T result = defValue;
 	if (!(iss >> result))
 	{
+		result = defValue;
 		if (throw_on_error)
 			throw std::runtime_error(
 				std::string("[from_string()] Cannot parse string: ") + s);

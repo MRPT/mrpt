@@ -180,7 +180,7 @@ SE<3>::matrix_MxM SE<3>::jacob_dAB_dA(
 	using namespace mrpt::math;
 
 	matrix_MxM J = matrix_MxM::Zero();
-	// J_wrt_A = kron(B,eye(3));
+	// J_wrt_A = kron(B',eye(3));
 	const auto B_HM =
 		B.getHomogeneousMatrixVal<CMatrixDouble44>().transpose().eval();
 	for (int c = 0; c < 4; c++)

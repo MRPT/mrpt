@@ -305,7 +305,7 @@ void CImage::resize(
 #endif
 
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
@@ -317,7 +317,7 @@ PixelDepth CImage::getPixelDepth() const
 	makeSureImageIsLoaded();  // For delayed loaded images stored externally
 	return cvDepth2PixelDepth(m_impl->img.depth());
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
@@ -358,7 +358,7 @@ bool CImage::loadFromFile(const std::string& fileName, int isColor)
 
 	return true;
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
@@ -379,7 +379,7 @@ bool CImage::saveToFile(const std::string& fileName, int jpeg_quality) const
 	return (0 != cvSaveImage(fileName.c_str(), &ipl, p));
 #endif
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
@@ -393,7 +393,7 @@ void CImage::internal_fromIPL(const IplImage* iplImage, copy_type_t c)
 	m_impl->img =
 		cv::cvarrToMat(iplImage, c == DEEP_COPY ? true : false /*copyData*/);
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }
@@ -456,7 +456,7 @@ void CImage::loadFromMemoryBuffer(
 		}
 	}
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	THROW_EXCEPTION("MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	MRPT_END
 }

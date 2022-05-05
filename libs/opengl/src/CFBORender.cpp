@@ -169,7 +169,7 @@ CFBORender::CFBORender(
 CFBORender::~CFBORender()
 {
 #if HAVE_FBO
-	// delete the current texture, the framebuffer object and the GLUT window
+	// delete the current texture, the framebuffer object and the EGL context
 	glDeleteTextures(1, &m_texRGB);
 	m_fb.destroy();
 	// Terminate EGL when finished:

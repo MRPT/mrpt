@@ -10,7 +10,7 @@ also provides many ready-to-use applications:
 .. toctree::
   :maxdepth: 1
 
-  page_app_2d-slam-demo.rst
+  app_2d-slam-demo.rst
   app_camera-calib.rst
   page_app_carmen2rawlog.rst
   page_app_carmen2rawlog.rst
@@ -25,7 +25,6 @@ also provides many ready-to-use applications:
   app_GridmapNavSimul.rst
   page_app_holonomic-navigator-demo.rst
   page_app_icp-slam-live.rst
-  page_app_icp-slam.rst
   page_app_icp-slam.rst
   page_app_image2gridmap.rst
   page_app_kf-slam.rst
@@ -44,7 +43,7 @@ also provides many ready-to-use applications:
   page_app_ReactiveNav3D-Demo.rst
   page_app_ReactiveNavigationDemo.rst
   page_app_ro-localization.rst
-  page_app_robotic-arm-kinematics.rst
+  app_robotic-arm-kinematics.rst
   page_app_SceneViewer3D.rst
   page_app_simul-landmarks.rst
   page_app_track-video-features.rst

@@ -14,7 +14,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #ifdef _WIN32
 // Windows:
 #include <windows.h>
@@ -34,7 +34,7 @@
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "GlU32.lib")
 #endif
-#endif	// MRPT_HAS_OPENGL_GLUT
+#endif
 
 using namespace mrpt;
 using namespace mrpt::obs;

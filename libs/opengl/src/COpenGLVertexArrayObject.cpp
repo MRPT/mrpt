@@ -31,7 +31,7 @@ COpenGLVertexArrayObject::RAII_Impl::~RAII_Impl()
 void COpenGLVertexArrayObject::RAII_Impl::create()
 {
 	destroy();
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	GLuint buffer;
 	glGenVertexArrays(1, &buffer);
 	this->buffer_id = buffer;
@@ -43,7 +43,7 @@ void COpenGLVertexArrayObject::RAII_Impl::create()
 void COpenGLVertexArrayObject::RAII_Impl::destroy()
 {
 	if (!created) return;
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	if (created_from == std::this_thread::get_id())
 	{
@@ -57,7 +57,7 @@ void COpenGLVertexArrayObject::RAII_Impl::destroy()
 
 void COpenGLVertexArrayObject::RAII_Impl::bind()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(created);
 	glBindVertexArray(buffer_id);
 #endif
@@ -65,7 +65,7 @@ void COpenGLVertexArrayObject::RAII_Impl::bind()
 
 void COpenGLVertexArrayObject::RAII_Impl::release()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	if (!created) return;
 	if (created_from != std::this_thread::get_id()) return;
 

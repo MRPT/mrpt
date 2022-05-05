@@ -36,14 +36,22 @@ if (NOT DISABLE_ROS)
 		set(tf2_FOUND 0)
 	endif()
 	# tf2_msgs: idem (header-only lib)
-	find_file(tf2_msgs name TFMessage.h PATHS /usr/include/tf2_msgs)
+	find_file(tf2_msgs name TFMessage.h
+		PATHS
+			/usr/include/tf2_msgs
+			$ENV{ROS_ROOT}/../../include/tf2_msgs
+	)
 	if (tf2_msgs)
 		set(tf2_msgs_FOUND 1)
 	else()
 		set(tf2_msgs_FOUND 0)
 	endif()
 	# nav_msgs: idem (header-only lib)
-	find_file(nav_msgs name OccupancyGrid.h  PATHS /usr/include/nav_msgs)
+	find_file(nav_msgs name OccupancyGrid.h
+		PATHS
+			/usr/include/nav_msgs
+			$ENV{ROS_ROOT}/../../include/nav_msgs
+	)
 	if (nav_msgs)
 		set(nav_msgs_FOUND 1)
 	else()

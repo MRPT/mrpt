@@ -11,10 +11,17 @@
 //
 #include <mrpt/core/exceptions.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <zlib.h>
 
 #include <cerrno>
 #include <cstring>	// strerror
+#include <type_traits>
+//
+#include <mrpt/config.h>
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+//
+#include <zlib.h>
 
 using namespace mrpt::io;
 using namespace std;
@@ -73,6 +80,7 @@ void CFileGZOutputStream::close()
 	{
 		gzclose(m_f->f);
 		m_f->f = nullptr;
+		m_f->filename.clear();
 	}
 }
 
@@ -110,4 +118,10 @@ std::string CFileGZOutputStream::getStreamDescription() const
 {
 	return mrpt::format(
 		"mrpt::io::CFileGZOutputStream for file '%s'", m_f->filename.c_str());
+}
+
+std::string CFileGZOutputStream::filePathAtUse() const
+{
+	// Returns opened file:
+	return m_f->filename;
 }

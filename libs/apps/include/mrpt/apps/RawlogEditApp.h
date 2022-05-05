@@ -12,7 +12,7 @@
 
 namespace mrpt::apps
 {
-/** The C++ class behinds the rawlog-edit CLI tool.
+/** The C++ class behind the rawlog-edit CLI tool.
  *
  *  Refer to the online documentation for rawlog-edit.
  * \ingroup mrpt_apps_grp

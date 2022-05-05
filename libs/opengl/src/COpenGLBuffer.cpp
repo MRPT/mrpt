@@ -36,7 +36,7 @@ COpenGLBuffer::RAII_Impl::~RAII_Impl()
 void COpenGLBuffer::RAII_Impl::create()
 {
 	destroy();
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	GLuint buffer;
 	glGenBuffers(1, &buffer);
 	this->buffer_id = buffer;
@@ -49,7 +49,7 @@ void COpenGLBuffer::RAII_Impl::destroy()
 {
 	if (!created) return;
 
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	static const bool showErrs =
 		(::getenv("MRPT_REVEAL_OPENGL_BUFFER_LEAKS") != nullptr);
 
@@ -83,7 +83,7 @@ void COpenGLBuffer::RAII_Impl::destroy()
 
 void COpenGLBuffer::RAII_Impl::bind()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(created);
 	glBindBuffer(static_cast<GLenum>(type), buffer_id);
 #endif
@@ -91,7 +91,7 @@ void COpenGLBuffer::RAII_Impl::bind()
 
 void COpenGLBuffer::RAII_Impl::unbind()
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	if (!created) return;
 	if (created_from != std::this_thread::get_id()) return;
 
@@ -101,7 +101,7 @@ void COpenGLBuffer::RAII_Impl::unbind()
 
 void COpenGLBuffer::RAII_Impl::allocate(const void* data, int byteCount)
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(created);
 	glBufferData(
 		static_cast<GLenum>(type), byteCount, data, static_cast<GLenum>(usage));

@@ -58,6 +58,8 @@ const long CScanAnimation::ID_STATICTEXT3 = wxNewId();
 const long CScanAnimation::ID_BUTTON7 = wxNewId();
 //*)
 const long CScanAnimation::ID_BUTTON_SAVE_SCENE = wxNewId();
+const long ID_BUTTON_CHECK_ALL = wxNewId();
+const long ID_BUTTON_CHECK_NONE = wxNewId();
 
 BEGIN_EVENT_TABLE(CScanAnimation, wxDialog)
 //(*EventTable(CScanAnimation)
@@ -93,7 +95,7 @@ CScanAnimation::CScanAnimation(
 	FlexGridSizer1->AddGrowableCol(0);
 	FlexGridSizer1->AddGrowableRow(1);
 
-	FlexGridSizer4 = new wxFlexGridSizer(1, 5, 0, 0);
+	FlexGridSizer4 = new wxFlexGridSizer(1, 6, 0, 0);
 	FlexGridSizer4->AddGrowableCol(4);
 	FlexGridSizer4->AddGrowableRow(0);
 
@@ -159,6 +161,24 @@ CScanAnimation::CScanAnimation(
 		this, ID_LIST_OBS_LABELS, wxDefaultPosition, wxDefaultSize, {});
 	FlexGridSizer4->Add(
 		lstObsLabels, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP);
+
+	auto FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
+	auto btnCheckAll = new wxButton(
+		this, ID_BUTTON_CHECK_ALL, _("Check all"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON_CHECK_ALL"));
+	FlexGridSizer5->Add(
+		btnCheckAll, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
+	auto btnCheckNone = new wxButton(
+		this, ID_BUTTON_CHECK_NONE, _("Check none"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON_CHECK_NONE"));
+	FlexGridSizer5->Add(
+		btnCheckNone, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
+	FlexGridSizer4->Add(
+		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 
 	FlexGridSizer1->Add(
 		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
@@ -245,6 +265,26 @@ CScanAnimation::CScanAnimation(
 	Bind(wxEVT_INIT_DIALOG, &CScanAnimation::OnInit, this, wxID_ANY);
 	//*)
 
+	Bind(
+		wxEVT_BUTTON,
+		[this](wxCommandEvent&) {
+			for (size_t i = 0; i < lstObsLabels->GetCount(); i++)
+				lstObsLabels->Check(i, true);
+			wxCommandEvent ev;
+			OncbViewOrthoClick(ev);
+		},
+		ID_BUTTON_CHECK_ALL);
+
+	Bind(
+		wxEVT_BUTTON,
+		[this](wxCommandEvent&) {
+			for (size_t i = 0; i < lstObsLabels->GetCount(); i++)
+				lstObsLabels->Check(i, false);
+			wxCommandEvent ev;
+			OncbViewOrthoClick(ev);
+		},
+		ID_BUTTON_CHECK_NONE);
+
 	Bind(wxEVT_BUTTON, &CScanAnimation::OnbtnVizOptions, this, ID_BUTTON6);
 	Bind(
 		wxEVT_BUTTON, &CScanAnimation::OnbtnSave3DScene, this,
@@ -263,6 +303,12 @@ CScanAnimation::CScanAnimation(
 		-50, 50, -50, 50, 0 /* z */, 5 /* freq */));
 	openGLSceneRef->insert(mrpt::opengl::stock_objects::CornerXYZSimple(
 		1.0 /*scale*/, 3.0 /*line width*/));
+
+	// Build initial view and populate list of sensors:
+	{
+		wxCommandEvent dummy;
+		OnslPosCmdScrollChanged(dummy);
+	}
 }
 
 CScanAnimation::~CScanAnimation()
@@ -503,7 +549,7 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 	}
 
 	// Check what observations are too old and must be deleted:
-	const double largest_period = 1.0;
+	const double largest_period = 2.5;
 	std::vector<std::string> lst_to_delete;
 	for (auto& o : m_gl_objects)
 	{

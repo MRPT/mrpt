@@ -290,7 +290,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/** Returns a 3D object representing the map.
 	 * \sa renderingOptions
 	 */
-	void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const
+	void getVisualizationInto(mrpt::opengl::CSetOfObjects& o) const override
 	{
 		auto gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 		this->getAsOctoMapVoxels(*gl_obj);

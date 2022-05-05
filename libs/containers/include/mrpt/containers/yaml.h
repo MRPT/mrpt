@@ -1047,7 +1047,8 @@ inline yaml yaml::FromMatrix(const MATRIX& m)
 	yaml r = mrpt::containers::yaml::Map();
 	r["rows"] = static_cast<int64_t>(m.rows());
 	r["cols"] = static_cast<int64_t>(m.cols());
-	auto& data = r["data"] = mrpt::containers::yaml::Sequence();
+	r["data"] = mrpt::containers::yaml::Sequence();
+	auto data = r["data"];
 	data.node().printInShortFormat = true;
 	for (int iRow = 0; iRow < m.rows(); iRow++)
 		for (int iCol = 0; iCol < m.cols(); iCol++)
