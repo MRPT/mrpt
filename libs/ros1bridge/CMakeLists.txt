@@ -4,8 +4,7 @@ if(
 	NOT cv_bridge_FOUND OR
 	NOT geometry_msgs_FOUND OR
 	NOT nav_msgs_FOUND OR
-	NOT rosbag_storage_FOUND OR
-	NOT roscpp_FOUND OR
+	(NOT rosbag_storage_FOUND AND NOT rosbag2_FOUND) OR
 	NOT sensor_msgs_FOUND OR
 	NOT std_msgs_FOUND OR
 	NOT stereo_msgs_FOUND OR
@@ -37,8 +36,13 @@ if(BUILD_mrpt-ros1bridge)
 		${rosbag_storage_LIBRARIES}
 		${cv_bridge_LIBRARIES}
 		${pcl_conversions_LIBRARIES}
-		${tf2_LIBRARIES}
 	)
+	if (tf2_LIBRARIES)
+		target_link_libraries(ros1bridge PUBLIC ${tf2_LIBRARIES})
+	endif()
+	if (TARGET tf2)
+		target_link_libraries(ros1bridge PUBLIC tf2)
+	endif()
 
 	target_include_directories(ros1bridge
 		SYSTEM
