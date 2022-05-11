@@ -21,6 +21,7 @@
   - Allow using libfyaml-dev system package if found.
   - ROS package.xml: update dependencies so all sensors and mrpt-ros1bridge are enabled.
   - Fix detection of ROS1 native `*_msgs` packages as build dependencies.
+  - If ROS environment variables are detected at CMake configure time, unit tests are disabled by default (to reduce build time in build farms).
 - BUG FIXES:
   - ASSERT_NEAR_() did not work correctly when arguments were expressions with operators.
   - Fixed incorrect parsing of strings with whitespaces in mrpt::from_string<>() when converting to std::string
