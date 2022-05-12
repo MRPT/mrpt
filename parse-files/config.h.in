@@ -112,6 +112,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_SIMPLEINI ${CMAKE_MRPT_HAS_SIMPLEINI}
 #define MRPT_HAS_SIMPLEINI_SYSTEM ${CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM}
 
+#cmakedefine MRPT_ROS_VERSION ${CMAKE_MRPT_ROS_VERSION}
+
 /** These two values are detected in Eigen when building MRPT, so we have
   the same settings given the user-provided flags  */
 #define MRPT_MAX_ALIGN_BYTES           ${EIGEN_MAX_ALIGN_BYTES}
