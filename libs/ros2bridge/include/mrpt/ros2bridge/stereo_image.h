@@ -16,8 +16,9 @@
 #pragma once
 
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <sensor_msgs/Image.h>
-#include <stereo_msgs/DisparityImage.h>
+
+#include <sensor_msgs/msg/image.hpp>
+#include <stereo_msgs/msg/disparity_image.hpp>
 
 namespace mrpt::ros2bridge
 {
@@ -26,8 +27,9 @@ namespace mrpt::ros2bridge
 
 bool toROS(
 	const mrpt::obs::CObservationStereoImages& obj,
-	const std_msgs::Header& msg_header, sensor_msgs::Image& left,
-	sensor_msgs::Image& right, stereo_msgs::DisparityImage& disparity);
+	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Image& left,
+	sensor_msgs::msg::Image& right,
+	stereo_msgs::msg::DisparityImage& disparity);
 
 /** @} */
 

@@ -14,12 +14,12 @@
   ---------------------------------------------------------------*/
 #pragma once
 
-#include <geometry_msgs/msg/pose.hpp>
-#include <geometry_msgs/msg/quaternion.hpp>
 #include <mrpt/obs/CObservationIMU.h>
-#include <sensor_msgs/msg/imu.hpp>
 
 #include <cstring>	// size_t
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
+#include <sensor_msgs/msg/imu.hpp>
 
 /// ROS message:    http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html
 /// MRPT message:
@@ -34,7 +34,7 @@ namespace mrpt::ros2bridge
  * // STILL NEED TO WRITE CODE FOR COVARIANCE
  * \return true on sucessful conversion, false on any error.
  */
-bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj);
+bool fromROS(const sensor_msgs::msg::Imu& msg, mrpt::obs::CObservationIMU& obj);
 
 /** Convert mrpt::obs::CObservationIMU -> sensor_msgs/Imu
  *  The user must supply the "msg_header" field to be copied into the output
@@ -44,8 +44,8 @@ bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj);
  * \return true on sucessful conversion, false on any error.
  */
 bool toROS(
-	const mrpt::obs::CObservationIMU& obj, const std_msgs::Header& msg_header,
-	sensor_msgs::Imu& msg);
+	const mrpt::obs::CObservationIMU& obj,
+	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Imu& msg);
 
 /** @} */
 

@@ -61,7 +61,7 @@ tf2::Transform toROS_tfTransform(const mrpt::poses::CPose2D& src)
 	return toROS_tfTransform(mrpt::poses::CPose3D(src));
 }
 
-geometry_msgs::msg::pose toROS_Pose(const mrpt::poses::CPose2D& src)
+geometry_msgs::msg::Pose toROS_Pose(const mrpt::poses::CPose2D& src)
 {
 	return toROS_Pose(mrpt::poses::CPose3D(src));
 }
@@ -71,9 +71,9 @@ tf2::Transform toROS_tfTransform(const mrpt::math::TPose2D& src)
 	return toROS_tfTransform(mrpt::poses::CPose3D(mrpt::math::TPose3D(src)));
 }
 
-geometry_msgs::msg::pose toROS_Pose(const mrpt::math::TPose2D& src)
+geometry_msgs::msg::Pose toROS_Pose(const mrpt::math::TPose2D& src)
 {
-	geometry_msgs::msg::pose des;
+	geometry_msgs::msg::Pose des;
 
 	des.position.x = src.x;
 	des.position.y = src.y;
@@ -108,9 +108,9 @@ tf2::Transform toROS_tfTransform(const mrpt::poses::CPose3D& src)
 	return des;
 }
 
-geometry_msgs::msg::pose toROS_Pose(const mrpt::poses::CPose3D& src)
+geometry_msgs::msg::Pose toROS_Pose(const mrpt::poses::CPose3D& src)
 {
-	geometry_msgs::msg::pose des;
+	geometry_msgs::msg::Pose des;
 	des.position.x = src.x();
 	des.position.y = src.y();
 	des.position.z = src.z();
@@ -131,15 +131,15 @@ tf2::Transform toROS_tfTransform(const mrpt::math::TPose3D& src)
 	return toROS_tfTransform(mrpt::poses::CPose3D(src));
 }
 
-geometry_msgs::msg::pose toROS_Pose(const mrpt::math::TPose3D& src)
+geometry_msgs::msg::Pose toROS_Pose(const mrpt::math::TPose3D& src)
 {
 	return toROS_Pose(mrpt::poses::CPose3D(src));
 }
 
-geometry_msgs::msg::poseWithCovariance toROS_Pose(
+geometry_msgs::msg::PoseWithCovariance toROS_Pose(
 	const mrpt::poses::CPose3DPDFGaussian& src)
 {
-	geometry_msgs::msg::poseWithCovariance des;
+	geometry_msgs::msg::PoseWithCovariance des;
 	des.pose = toROS_Pose(src.mean);
 
 	// Read REP103: http://ros.org/reps/rep-0103.html#covariance-representation
@@ -161,7 +161,7 @@ geometry_msgs::msg::poseWithCovariance toROS_Pose(
 	return des;
 }
 
-geometry_msgs::msg::poseWithCovariance toROS(
+geometry_msgs::msg::PoseWithCovariance toROS(
 	const mrpt::poses::CPose3DPDFGaussianInf& src)
 {
 	mrpt::poses::CPose3DPDFGaussian src2;
@@ -169,10 +169,10 @@ geometry_msgs::msg::poseWithCovariance toROS(
 	return toROS_Pose(src2);
 }
 
-geometry_msgs::msg::poseWithCovariance toROS(
+geometry_msgs::msg::PoseWithCovariance toROS(
 	const mrpt::poses::CPosePDFGaussian& src)
 {
-	geometry_msgs::msg::poseWithCovariance des;
+	geometry_msgs::msg::PoseWithCovariance des;
 
 	des.pose = toROS_Pose(src.mean);
 
@@ -204,7 +204,7 @@ geometry_msgs::msg::poseWithCovariance toROS(
 	return des;
 }
 
-geometry_msgs::msg::poseWithCovariance toROS(
+geometry_msgs::msg::PoseWithCovariance toROS(
 	const mrpt::poses::CPosePDFGaussianInf& src)
 {
 	mrpt::poses::CPosePDFGaussian src2;
@@ -213,9 +213,9 @@ geometry_msgs::msg::poseWithCovariance toROS(
 	return toROS(src2);
 }
 
-geometry_msgs::Quaternion toROS(const mrpt::math::CQuaternionDouble& src)
+geometry_msgs::msg::Quaternion toROS(const mrpt::math::CQuaternionDouble& src)
 {
-	geometry_msgs::Quaternion des;
+	geometry_msgs::msg::Quaternion des;
 	des.x = src.x();
 	des.y = src.y();
 	des.z = src.z();
@@ -247,7 +247,7 @@ mrpt::math::CMatrixDouble33 fromROS(const tf2::Matrix3x3& src)
 	return des;
 }
 
-mrpt::poses::CPose3D fromROS(const geometry_msgs::msg::pose& src)
+mrpt::poses::CPose3D fromROS(const geometry_msgs::msg::Pose& src)
 {
 	const mrpt::math::CQuaternionDouble q(
 		src.orientation.w, src.orientation.x, src.orientation.y,
@@ -257,7 +257,7 @@ mrpt::poses::CPose3D fromROS(const geometry_msgs::msg::pose& src)
 }
 
 mrpt::poses::CPose3DPDFGaussian fromROS(
-	const geometry_msgs::msg::poseWithCovariance& src)
+	const geometry_msgs::msg::PoseWithCovariance& src)
 {
 	mrpt::poses::CPose3DPDFGaussian des;
 
@@ -272,7 +272,7 @@ mrpt::poses::CPose3DPDFGaussian fromROS(
 	return des;
 }
 
-mrpt::math::CQuaternionDouble fromROS(const geometry_msgs::Quaternion& src)
+mrpt::math::CQuaternionDouble fromROS(const geometry_msgs::msg::Quaternion& src)
 {
 	mrpt::math::CQuaternionDouble des;
 	des.x(src.x);

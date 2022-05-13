@@ -65,7 +65,7 @@ std::set<std::string> extractFields(const sensor_msgs::msg::PointCloud2& msg);
  * \sa fromROS
  */
 bool toROS(
-	const mrpt::maps::CSimplePointsMap& obj, const std_msgs::Header& msg_header,
+	const mrpt::maps::CSimplePointsMap& obj, const std_msgs::msg::Header& msg_header,
 	sensor_msgs::msg::PointCloud2& msg);
 
 /** @} */

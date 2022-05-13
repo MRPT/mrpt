@@ -53,7 +53,7 @@ TEST(PoseConversions, copyCMatrixDouble33ToMatrix3x3)
 // Declare a test
 TEST(PoseConversions, reference_frame_change_with_rotations)
 {
-	geometry_msgs::msg::poseWithCovariance ros_msg_original_pose;
+	geometry_msgs::msg::PoseWithCovariance ros_msg_original_pose;
 
 	ros_msg_original_pose.pose.position.x = 1;
 	ros_msg_original_pose.pose.position.y = 0;
@@ -91,7 +91,7 @@ TEST(PoseConversions, reference_frame_change_with_rotations)
 	tf::Pose tf_result = rotation_pose_tf * tf_original_pose;
 	EXPECT_NEAR(tf_result.getOrigin()[1], 1.0, 0.01);
 
-	geometry_msgs::msg::pose mrpt_ros_result;
+	geometry_msgs::msg::Pose mrpt_ros_result;
 	mrpt_bridge::convert(mrpt_result, mrpt_ros_result);
 
 	EXPECT_NEAR(mrpt_ros_result.position.x, tf_result.getOrigin()[0], 0.01);
@@ -106,7 +106,7 @@ void check_CPose3D_tofrom_ROS(
 	const mrpt::poses::CPose3D p3D(x, y, z, yaw, pitch, roll);
 
 	// Convert MRPT->ROS
-	geometry_msgs::msg::pose ros_p3D = mrpt::ros2bridge::toROS_Pose(p3D);
+	geometry_msgs::msg::Pose ros_p3D = mrpt::ros2bridge::toROS_Pose(p3D);
 
 	// Compare ROS quat vs. MRPT quat:
 	mrpt::math::CQuaternionDouble q;
@@ -155,7 +155,7 @@ TEST(PoseConversions, check_CPose2D_to_ROS)
 	const mrpt::poses::CPose2D p2D(1, 2, 0.56);
 
 	// Convert MRPT->ROS
-	const geometry_msgs::msg::pose ros_p2D = mrpt::ros2bridge::toROS_Pose(p2D);
+	const geometry_msgs::msg::Pose ros_p2D = mrpt::ros2bridge::toROS_Pose(p2D);
 
 	// Compare vs. 3D pose:
 	const mrpt::poses::CPose3D p3D = mrpt::poses::CPose3D(p2D);

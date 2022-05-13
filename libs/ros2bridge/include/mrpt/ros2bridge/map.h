@@ -11,9 +11,9 @@
 
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <nav_msgs/OccupancyGrid.h>
 
 #include <cstdint>
+#include <nav_msgs/msg/occupancy_grid.hpp>
 #include <string>
 
 namespace mrpt::ros2bridge
@@ -95,7 +95,8 @@ class MapHdl
  * @param des
  */
 bool fromROS(
-	const nav_msgs::OccupancyGrid& src, mrpt::maps::COccupancyGridMap2D& des);
+	const nav_msgs::msg::OccupancyGrid& src,
+	mrpt::maps::COccupancyGridMap2D& des);
 
 /**
  * converts mrpt object to ros msg and updates the msg header
@@ -104,14 +105,15 @@ bool fromROS(
  * @param header
  */
 bool toROS(
-	const mrpt::maps::COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& msg,
-	const std_msgs::Header& header);
+	const mrpt::maps::COccupancyGridMap2D& src,
+	nav_msgs::msg::OccupancyGrid& msg, const std_msgs::msg::Header& header);
 /**
  * converts mrpt object to ros msg
  * @return true on sucessful conversion, false on any error.
  */
 bool toROS(
-	const mrpt::maps::COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& msg);
+	const mrpt::maps::COccupancyGridMap2D& src,
+	nav_msgs::msg::OccupancyGrid& msg);
 
 /** @}
  * @}

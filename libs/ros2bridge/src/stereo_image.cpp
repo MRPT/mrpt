@@ -16,10 +16,10 @@
 #include <cv_bridge/cv_bridge.h>
 #include <mrpt/ros2bridge/image.h>
 #include <mrpt/ros2bridge/stereo_image.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/image_encodings.h>
 
-using namespace ros;
+#include <sensor_msgs/image_encodings.hpp>
+#include <sensor_msgs/msg/image.hpp>
+
 using namespace sensor_msgs;
 using namespace cv;
 using namespace cv_bridge;
@@ -28,8 +28,8 @@ namespace mrpt::ros2bridge
 {
 bool toROS(
 	const mrpt::obs::CObservationStereoImages& obj,
-	const std_msgs::Header& msg_header, sensor_msgs::Image& left,
-	sensor_msgs::Image& right, stereo_msgs::DisparityImage& disparity)
+	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Image& left,
+	sensor_msgs::msg::Image& right, stereo_msgs::msg::DisparityImage& disparity)
 {
 	// left image
 	const Mat& cvImgL = obj.imageLeft.asCvMatRef();

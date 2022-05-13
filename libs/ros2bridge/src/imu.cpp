@@ -17,7 +17,7 @@
 
 namespace mrpt::ros2bridge
 {
-bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
+bool fromROS(const sensor_msgs::msg::Imu& msg, mrpt::obs::CObservationIMU& obj)
 {
 	using namespace mrpt::obs;
 
@@ -47,8 +47,8 @@ bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
 }
 
 bool toROS(
-	const mrpt::obs::CObservationIMU& obj, const std_msgs::Header& msg_header,
-	sensor_msgs::Imu& msg)
+	const mrpt::obs::CObservationIMU& obj,
+	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Imu& msg)
 {
 	using namespace mrpt::obs;
 
