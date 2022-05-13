@@ -1,6 +1,6 @@
 
 # Don't declare the library if dependencies are missing:
-if(NOT CMAKE_MRPT_ROS_VERSION EQUAL 1)
+if(NOT MRPT_ROS_VERSION EQUAL 1)
 	return()
 endif()
 if(

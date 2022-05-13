@@ -4,7 +4,7 @@
 option(DISABLE_ROS "Disable detection/usage of ROS libraries" "OFF")
 mark_as_advanced(DISABLE_ROS)
 
-set(CMAKE_MRPT_ROS_VERSION ) # empty=none
+set(MRPT_ROS_VERSION ) # empty=none
 
 if (NOT DISABLE_ROS)
 
@@ -17,11 +17,11 @@ if (NOT DISABLE_ROS)
 	# ROS libs:
 	find_package(ament_cmake QUIET)
 	if(ament_cmake_FOUND)
-		set(CMAKE_MRPT_ROS_VERSION 2)
+		set(MRPT_ROS_VERSION 2)
 	else()
 		find_package(roscpp QUIET)
 		if (roscpp_FOUND)
-			set(CMAKE_MRPT_ROS_VERSION 1)
+			set(MRPT_ROS_VERSION 1)
 		endif()
 	endif()
 	find_package(cv_bridge QUIET)
