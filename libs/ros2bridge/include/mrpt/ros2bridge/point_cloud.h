@@ -11,7 +11,8 @@
 
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <sensor_msgs/PointCloud.h>
+
+#include <sensor_msgs/msg/point_cloud.hpp>
 
 namespace mrpt::ros2bridge
 {
@@ -28,7 +29,7 @@ namespace mrpt::ros2bridge
  * \sa toROS
  */
 bool fromROS(
-	const sensor_msgs::PointCloud& msg, mrpt::maps::CSimplePointsMap& obj);
+	const sensor_msgs::msg::PointCloud& msg, mrpt::maps::CSimplePointsMap& obj);
 
 /** Convert mrpt::maps::CSimplePointsMap -> sensor_msgs/PointCloud
  *  The user must supply the "msg_header" field to be copied into the output
@@ -40,8 +41,8 @@ bool fromROS(
  * \sa fromROS
  */
 bool toROS(
-	const mrpt::maps::CSimplePointsMap& obj, const std_msgs::Header& msg_header,
-	sensor_msgs::PointCloud& msg);
+	const mrpt::maps::CSimplePointsMap& obj,
+	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::PointCloud& msg);
 
 /** @} @}
  */

@@ -18,8 +18,8 @@
 #include <mrpt/system/filesystem.h>	 // for fileExists()
 #include <mrpt/system/string_utils.h>  // for lowerCase()
 #include <mrpt/version.h>
-#include <nav_msgs/OccupancyGrid.h>
-#include <ros/console.h>
+
+#include <nav_msgs/msg/occupancy_grid.hpp>
 
 using namespace mrpt::config;
 using namespace mrpt::io;
@@ -81,7 +81,7 @@ MapHdl* MapHdl::instance()
 	return &m;
 }
 
-bool fromROS(const nav_msgs::OccupancyGrid& src, COccupancyGridMap2D& des)
+bool fromROS(const nav_msgs::msg::OccupancyGrid& src, COccupancyGridMap2D& des)
 {
 	MRPT_START
 	if ((src.info.origin.orientation.x != 0) ||
@@ -110,14 +110,14 @@ bool fromROS(const nav_msgs::OccupancyGrid& src, COccupancyGridMap2D& des)
 	MRPT_END
 }
 bool toROS(
-	const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des,
-	const std_msgs::Header& header)
+	const COccupancyGridMap2D& src, nav_msgs::msg::OccupancyGrid& des,
+	const std_msgs::msg::Header& header)
 {
 	des.header = header;
 	return toROS(src, des);
 }
 
-bool toROS(const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des)
+bool toROS(const COccupancyGridMap2D& src, nav_msgs::msg::OccupancyGrid& des)
 {
 	des.info.width = src.getSizeX();
 	des.info.height = src.getSizeY();

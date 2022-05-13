@@ -27,7 +27,6 @@ if (NOT DISABLE_ROS)
 	find_package(cv_bridge QUIET)
 	find_package(rosbag_storage QUIET)
 	find_package(rosbag2 QUIET)
-	find_package(pcl_conversions QUIET)
 
 	# ROS libs for msgs:
 	find_package(sensor_msgs QUIET)
@@ -80,6 +79,11 @@ if (NOT DISABLE_ROS)
 		unset(nav_msgs_INCLUDE_DIRS CACHE)
 		find_package(nav_msgs QUIET)
 	endif()
+	
+	find_package(rclcpp QUIET)
+
+	# optional, for tests only:
+	find_package(PCL QUIET COMPONENTS common)
 
 	# Compare flag:
 	get_directory_property(ROS_DEFINITIONS "COMPILE_DEFINITIONS")
@@ -96,11 +100,10 @@ if (NOT DISABLE_ROS)
 		message(STATUS "  rosbag_storage_LIBRARIES    :${rosbag_storage_LIBRARIES}")
 		message(STATUS "  cv_bridge_INCLUDE_DIRS :${cv_bridge_INCLUDE_DIRS}")
 		message(STATUS "  cv_bridge_LIBRARIES    :${cv_bridge_LIBRARIES}")
-		message(STATUS "  pcl_conversions_INCLUDE_DIRS :${pcl_conversions_INCLUDE_DIRS}")
-		message(STATUS "  pcl_conversions_LIBRARIES    :${pcl_conversions_LIBRARIES}")
 		message(STATUS "  tf2_INCLUDE_DIRS :${tf2_INCLUDE_DIRS}")
 		message(STATUS "  tf2_LIBRARIES    :${tf2_LIBRARIES}")
 		message(STATUS "  ROS definitions     :${ROS_DEFINITIONS}")
+		message(STATUS "  rclcpp_FOUND:        : ${rclcpp_FOUND}")
 		message(STATUS "  cv_bridge_FOUND      : ${cv_bridge_FOUND}")
 		message(STATUS "  geometry_msgs_FOUND  : ${geometry_msgs_FOUND}")
 		message(STATUS "  nav_msgs_FOUND       : ${nav_msgs_FOUND}")

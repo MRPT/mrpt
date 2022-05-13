@@ -86,6 +86,11 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	get_property(extra_deps GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_DEPS")
 	set(lst_deps ${lst_deps} ${extra_deps})
 
+	get_property(extra_definitions GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_DEFINITIONS")
+	if (extra_definitions)
+		target_compile_definitions(test_${_TSTLIB} PRIVATE ${extra_definitions})
+	endif()
+
 	# The order in this list is very important for linking!
 	# Otherwise, one may have the weird linking error:
 	# "error adding symbols: DSO missing from command line"

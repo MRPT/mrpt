@@ -8,13 +8,11 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/ros2bridge/point_cloud.h>
-#include <ros/console.h>
 
 using namespace mrpt::maps;
 
-namespace mrpt::ros2bridge
-{
-bool fromROS(const sensor_msgs::PointCloud& msg, CSimplePointsMap& obj)
+bool mrpt::ros2bridge::fromROS(
+	const sensor_msgs::msg::PointCloud& msg, CSimplePointsMap& obj)
 {
 	const size_t N = msg.points.size();
 
@@ -26,9 +24,9 @@ bool fromROS(const sensor_msgs::PointCloud& msg, CSimplePointsMap& obj)
 	return true;
 }
 
-bool toROS(
-	const CSimplePointsMap& obj, const std_msgs::Header& msg_header,
-	sensor_msgs::PointCloud& msg)
+bool mrpt::ros2bridge::toROS(
+	const CSimplePointsMap& obj, const std_msgs::msg::Header& msg_header,
+	sensor_msgs::msg::PointCloud& msg)
 {
 	// 1) sensor_msgs::PointCloud:: header
 	msg.header = msg_header;
@@ -38,7 +36,7 @@ bool toROS(
 	msg.points.resize(N);
 	for (size_t i = 0; i < N; i++)
 	{
-		geometry_msgs::Point32& pt = msg.points[i];
+		geometry_msgs::msg::Point32& pt = msg.points[i];
 		obj.getPoint(i, pt.x, pt.y, pt.z);
 	}
 
@@ -47,5 +45,3 @@ bool toROS(
 
 	return true;
 }
-
-}  // namespace mrpt::ros2bridge

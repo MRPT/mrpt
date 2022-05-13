@@ -41,7 +41,6 @@
   <depend>cv_bridge</depend>
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
-  <depend>pcl_conversions</depend>
   <depend condition="$ROS_VERSION == 1">rosbag_storage</depend>
   <depend condition="$ROS_VERSION == 2">rosbag2_storage</depend>
   <depend condition="$ROS_VERSION == 1">roscpp</depend>

@@ -15,31 +15,31 @@
 
 #include <cv_bridge/cv_bridge.h>
 #include <mrpt/ros2bridge/image.h>
-#include <sensor_msgs/Image.h>
-#include <sensor_msgs/image_encodings.h>
+
+#include <sensor_msgs/image_encodings.hpp>
+#include <sensor_msgs/msg/image.hpp>
 
 using namespace mrpt::img;
-using namespace ros;
 using namespace sensor_msgs;
 using namespace cv;
 using namespace cv_bridge;
 
 namespace mrpt::ros2bridge
 {
-mrpt::img::CImage fromROS(const sensor_msgs::Image& i)
+mrpt::img::CImage fromROS(const sensor_msgs::msg::Image& i)
 {
 	return mrpt::img::CImage(
 		cv_bridge::toCvCopy(i, "bgr8").get()->image, mrpt::img::DEEP_COPY);
 }
 
-sensor_msgs::Image toROS(
-	const mrpt::img::CImage& i, const std_msgs::Header& msg_header)
+sensor_msgs::msg::Image toROS(
+	const mrpt::img::CImage& i, const std_msgs::msg::Header& msg_header)
 {
 	const Mat& cvImg = i.asCvMatRef();
 
 	cv_bridge::CvImage img_bridge;
 
-	sensor_msgs::Image msg;
+	sensor_msgs::msg::Image msg;
 	img_bridge = CvImage(msg.header, sensor_msgs::image_encodings::BGR8, cvImg);
 
 	img_bridge.toImageMsg(msg);

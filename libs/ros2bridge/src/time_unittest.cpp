@@ -21,7 +21,7 @@ TEST(Time, basicTest)
 {
 	const auto org_time = mrpt::Clock::now();
 
-	ros::Time ros_tim = mrpt::ros2bridge::toROS(org_time);
+	rclcpp::Time ros_tim = mrpt::ros2bridge::toROS(org_time);
 	mrpt::system::TTimeStamp mrpt_tim = mrpt::ros2bridge::fromROS(ros_tim);
 
 	EXPECT_NEAR(mrpt::system::timeDifference(org_time, mrpt_tim), .0, 1e-6);

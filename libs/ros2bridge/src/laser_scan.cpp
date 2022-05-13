@@ -7,18 +7,19 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <geometry_msgs/msg/pose.hpp>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/ros2bridge/laser_scan.h>
 #include <mrpt/ros2bridge/pose.h>
 #include <mrpt/ros2bridge/time.h>
 #include <mrpt/version.h>
-#include <sensor_msgs/LaserScan.h>
+
+#include <geometry_msgs/msg/pose.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 namespace mrpt::ros2bridge
 {
 bool convert(
-	const sensor_msgs::msg::laser_scan& msg, const mrpt::poses::CPose3D& pose,
+	const sensor_msgs::msg::LaserScan& msg, const mrpt::poses::CPose3D& pose,
 	mrpt::obs::CObservation2DRangeScan& obj)
 {
 	obj.timestamp = fromROS(msg.header.stamp);
@@ -60,7 +61,8 @@ bool convert(
 }
 
 bool toROS(
-	const mrpt::obs::CObservation2DRangeScan& obj, sensor_msgs::msg::laser_scan& msg)
+	const mrpt::obs::CObservation2DRangeScan& obj,
+	sensor_msgs::msg::LaserScan& msg)
 {
 	const size_t nRays = obj.getScanSize();
 	if (!nRays) return false;
@@ -88,8 +90,8 @@ bool toROS(
 }
 
 bool toROS(
-	const mrpt::obs::CObservation2DRangeScan& obj, sensor_msgs::msg::laser_scan& msg,
-	geometry_msgs::msg::pose& pose)
+	const mrpt::obs::CObservation2DRangeScan& obj,
+	sensor_msgs::msg::LaserScan& msg, geometry_msgs::msg::Pose& pose)
 {
 	toROS(obj, msg);
 	pose = toROS_Pose(obj.sensorPose);

@@ -12,25 +12,25 @@
 #include <mrpt/ros2bridge/point_cloud2.h>
 #include <mrpt/ros2bridge/time.h>
 #include <mrpt/version.h>
-#include <ros/console.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/PointField.h>
+
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <sensor_msgs/msg/point_field.hpp>
 
 using namespace mrpt::maps;
 
 namespace mrpt::ros2bridge
 {
 static bool check_field(
-	const sensor_msgs::PointField& input_field, std::string check_name,
-	const sensor_msgs::PointField** output)
+	const sensor_msgs::msg::PointField& input_field, std::string check_name,
+	const sensor_msgs::msg::PointField** output)
 {
 	bool coherence_error = false;
 	if (input_field.name == check_name)
 	{
-		if (input_field.datatype != sensor_msgs::PointField::FLOAT32 &&
-			input_field.datatype != sensor_msgs::PointField::FLOAT64 &&
-			input_field.datatype != sensor_msgs::PointField::UINT16 &&
-			input_field.datatype != sensor_msgs::PointField::UINT8)
+		if (input_field.datatype != sensor_msgs::msg::PointField::FLOAT32 &&
+			input_field.datatype != sensor_msgs::msg::PointField::FLOAT64 &&
+			input_field.datatype != sensor_msgs::msg::PointField::UINT16 &&
+			input_field.datatype != sensor_msgs::msg::PointField::UINT8)
 		{
 			*output = nullptr;
 			coherence_error = true;
@@ -44,12 +44,12 @@ static bool check_field(
 }
 
 static void get_float_from_field(
-	const sensor_msgs::PointField* field, const unsigned char* data,
+	const sensor_msgs::msg::PointField* field, const unsigned char* data,
 	float& output)
 {
 	if (field != nullptr)
 	{
-		if (field->datatype == sensor_msgs::PointField::FLOAT32)
+		if (field->datatype == sensor_msgs::msg::PointField::FLOAT32)
 			output = *(reinterpret_cast<const float*>(&data[field->offset]));
 		else
 			output = (float)(*(
@@ -59,14 +59,14 @@ static void get_float_from_field(
 		output = 0.0;
 }
 static void get_uint16_from_field(
-	const sensor_msgs::PointField* field, const unsigned char* data,
+	const sensor_msgs::msg::PointField* field, const unsigned char* data,
 	uint16_t& output)
 {
 	if (field != nullptr)
 	{
-		if (field->datatype == sensor_msgs::PointField::UINT16)
+		if (field->datatype == sensor_msgs::msg::PointField::UINT16)
 			output = *(reinterpret_cast<const uint16_t*>(&data[field->offset]));
-		else if (field->datatype == sensor_msgs::PointField::UINT8)
+		else if (field->datatype == sensor_msgs::msg::PointField::UINT8)
 			output = *(reinterpret_cast<const uint8_t*>(&data[field->offset]));
 	}
 	else
@@ -93,8 +93,8 @@ bool fromROS(const sensor_msgs::msg::PointCloud2& msg, CSimplePointsMap& obj)
 	obj.reserve(num_points);
 
 	bool incompatible = false;
-	const sensor_msgs::PointField *x_field = nullptr, *y_field = nullptr,
-								  *z_field = nullptr;
+	const sensor_msgs::msg::PointField *x_field = nullptr, *y_field = nullptr,
+									   *z_field = nullptr;
 
 	for (unsigned int i = 0; i < msg.fields.size() && !incompatible; i++)
 	{
@@ -132,8 +132,8 @@ bool fromROS(const sensor_msgs::msg::PointCloud2& msg, CPointsMapXYZI& obj)
 	obj.reserve(num_points);
 
 	bool incompatible = false;
-	const sensor_msgs::PointField *x_field = nullptr, *y_field = nullptr,
-								  *z_field = nullptr, *i_field = nullptr;
+	const sensor_msgs::msg::PointField *x_field = nullptr, *y_field = nullptr,
+									   *z_field = nullptr, *i_field = nullptr;
 
 	for (unsigned int i = 0; i < msg.fields.size() && !incompatible; i++)
 	{
@@ -176,10 +176,10 @@ bool fromROS(const sensor_msgs::msg::PointCloud2& msg, CPointsMapXYZI& obj)
  * \return true on sucessful conversion, false on any error.
  */
 bool toROS(
-	const CSimplePointsMap& obj, const std_msgs::Header& msg_header,
+	const CSimplePointsMap& obj, const std_msgs::msg::Header& msg_header,
 	sensor_msgs::msg::PointCloud2& msg)
 {
-	throw ros::Exception("not implemented yet.");
+	THROW_EXCEPTION("not implemented yet.");
 }
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::obs::CObservationRotatingScan */
@@ -193,9 +193,9 @@ bool fromROS(
 	obj.timestamp = mrpt::ros2bridge::fromROS(msg.header.stamp);
 
 	bool incompatible = false;
-	const sensor_msgs::PointField *x_field = nullptr, *y_field = nullptr,
-								  *z_field = nullptr, *i_field = nullptr,
-								  *ring_field = nullptr;
+	const sensor_msgs::msg::PointField *x_field = nullptr, *y_field = nullptr,
+									   *z_field = nullptr, *i_field = nullptr,
+									   *ring_field = nullptr;
 
 	for (unsigned int i = 0; i < msg.fields.size() && !incompatible; i++)
 	{

@@ -17,12 +17,12 @@
 #include <gtest/gtest.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/ros2bridge/map.h>
-#include <nav_msgs/OccupancyGrid.h>
-#include <ros/console.h>
+#include <nav_msgs/msg/occupancy_grid.hpp>
+
 
 using mrpt::maps::COccupancyGridMap2D;
 
-void getEmptyRosMsg(nav_msgs::OccupancyGrid& msg)
+void getEmptyRosMsg(nav_msgs::msg::OccupancyGrid& msg)
 {
 	msg.info.width = 300;
 	msg.info.height = 500;
@@ -41,7 +41,7 @@ void getEmptyRosMsg(nav_msgs::OccupancyGrid& msg)
 
 TEST(Map, basicTestHeader)
 {
-	nav_msgs::OccupancyGrid srcRos;
+	nav_msgs::msg::OccupancyGrid srcRos;
 	COccupancyGridMap2D desMrpt;
 
 	getEmptyRosMsg(srcRos);
@@ -64,9 +64,9 @@ TEST(Map, basicTestHeader)
 
 TEST(Map, check_ros2mrpt_and_back)
 {
-	nav_msgs::OccupancyGrid srcRos;
+	nav_msgs::msg::OccupancyGrid srcRos;
 	COccupancyGridMap2D desMrpt;
-	nav_msgs::OccupancyGrid desRos;
+	nav_msgs::msg::OccupancyGrid desRos;
 
 	// Test empty gridmap:
 	getEmptyRosMsg(srcRos);
