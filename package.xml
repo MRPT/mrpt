@@ -22,6 +22,7 @@
   <build_depend>ffmpeg</build_depend>
   <build_depend>glut</build_depend>
   <build_depend>libjpeg</build_depend>
+  <build_depend>libjsoncpp-dev</build_depend>
   <build_depend>libopencv-dev</build_depend>
   <build_depend>libpcap</build_depend>
   <build_depend>libudev-dev</build_depend>
