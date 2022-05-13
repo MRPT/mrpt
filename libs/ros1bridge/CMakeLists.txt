@@ -35,7 +35,7 @@ if(BUILD_mrpt-ros1bridge)
 	# Add the required libraries for linking:
 	target_link_libraries(ros1bridge
 		PUBLIC
-		roscpp::roscpp
+		${roscpp_LIBRARIES}
 		${cv_bridge_LIBRARIES}
 	)
 	if (tf2_LIBRARIES)
