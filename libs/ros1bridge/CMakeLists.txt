@@ -18,9 +18,10 @@ if(
 endif()
 
 # Additional dependencies for tests only:
-if (PCL_FOUND)
-	set_property(GLOBAL PROPERTY mrpt_ros1bridge_UNIT_TEST_EXTRA_DEPS "${PCL_COMMON_LIBRARIES}")
-	set_property(GLOBAL PROPERTY mrpt_ros1bridge_UNIT_TEST_EXTRA_DEFINITIONS "HAVE_PCL")
+if (pcl_conversions_FOUND AND PCL_FOUND)
+	set_property(GLOBAL PROPERTY mrpt_ros1bridge_UNIT_TEST_EXTRA_DEPS ${pcl_conversions_LIBRARIES} ${PCL_COMMON_LIBRARIES})
+	set_property(GLOBAL PROPERTY mrpt_ros1bridge_UNIT_TEST_EXTRA_INCLUDE_DIRS ${pcl_conversions_INCLUDE_DIRS} ${PCL_COMMON_INCLUDE_DIRS})
+	set_property(GLOBAL PROPERTY mrpt_ros1bridge_UNIT_TEST_EXTRA_DEFINITIONS "HAVE_PCL_CONVERSIONS")
 endif()
 
 define_mrpt_lib(

@@ -18,10 +18,11 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/ros2bridge/point_cloud2.h>
 
-#if HAVE_PCL
+#if HAVE_PCL_CONVERSIONS
 #include <pcl/common/common_headers.h>
 #include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
 
 TEST(PointCloud2, basicTest)
 {
