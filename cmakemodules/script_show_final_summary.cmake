@@ -155,7 +155,7 @@ SHOW_CONFIG_LINE_SYSTEM("Matlab / mex files        " CMAKE_MRPT_HAS_MATLAB "[Ver
 SHOW_CONFIG_LINE("Python3 bindings (pymrpt)  " CMAKE_MRPT_HAS_PYTHON_BINDINGS "[Version: ${Python3_VERSION}]")
 SHOW_CONFIG_LINE(" - dep: Boost found?      " Boost_FOUND)
 SHOW_CONFIG_LINE(" - dep: Python3 found?    " Python3_FOUND)
-message(STATUS " ROS system detected: MRPT_ROS_VERSION=${CMAKE_MRPT_ROS_VERSION}")
+message(STATUS " ROS system detected: MRPT_ROS_VERSION=${MRPT_ROS_VERSION}")
 message(STATUS "  cv_bridge (${cv_bridge_FOUND})  geometry_msgs (${geometry_msgs_FOUND}) nav_msgs (${nav_msgs_FOUND})")
 message(STATUS "  rosbag_storage (${rosbag_storage_FOUND}) roscpp (${roscpp_FOUND}) rclcpp (${rclcpp_FOUND})")
 message(STATUS "  sensor_msgs (${sensor_msgs_FOUND})  std_msgs (${std_msgs_FOUND}) stereo_msgs (${stereo_msgs_FOUND}) ")
