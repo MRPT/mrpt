@@ -28,6 +28,10 @@ if (NOT DISABLE_ROS)
 	find_package(rosbag_storage QUIET)
 	find_package(rosbag2 QUIET)
 
+	# optional, for tests only:
+	find_package(pcl_conversions QUIET)
+	find_package(PCL QUIET COMPONENTS common)
+	
 	# ROS libs for msgs:
 	find_package(sensor_msgs QUIET)
 	find_package(std_msgs QUIET)
@@ -81,9 +85,6 @@ if (NOT DISABLE_ROS)
 	endif()
 	
 	find_package(rclcpp QUIET)
-
-	# optional, for tests only:
-	find_package(PCL QUIET COMPONENTS common)
 
 	# Compare flag:
 	get_directory_property(ROS_DEFINITIONS "COMPILE_DEFINITIONS")

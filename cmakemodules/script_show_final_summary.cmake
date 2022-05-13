@@ -159,7 +159,7 @@ message(STATUS " ROS system detected: MRPT_ROS_VERSION=${MRPT_ROS_VERSION}")
 message(STATUS "  cv_bridge (${cv_bridge_FOUND})  geometry_msgs (${geometry_msgs_FOUND}) nav_msgs (${nav_msgs_FOUND})")
 message(STATUS "  rosbag_storage (${rosbag_storage_FOUND}) roscpp (${roscpp_FOUND}) rclcpp (${rclcpp_FOUND})")
 message(STATUS "  sensor_msgs (${sensor_msgs_FOUND})  std_msgs (${std_msgs_FOUND}) stereo_msgs (${stereo_msgs_FOUND}) ")
-message(STATUS "  tf2 (${tf2_FOUND})  tf2_msgs (${tf2_msgs_FOUND})")
+message(STATUS "  tf2 (${tf2_FOUND})  tf2_msgs (${tf2_msgs_FOUND}) pcl_conversions (${pcl_conversions_FOUND})")
 
 MESSAGE(STATUS "")
 

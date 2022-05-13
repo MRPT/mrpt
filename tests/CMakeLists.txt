@@ -90,6 +90,11 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	if (extra_definitions)
 		target_compile_definitions(test_${_TSTLIB} PRIVATE ${extra_definitions})
 	endif()
+	
+	get_property(extra_include_dirs GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_INCLUDE_DIRS")
+	if (extra_include_dirs)
+		target_include_directories(test_${_TSTLIB} PRIVATE ${extra_include_dirs})
+	endif()
 
 	# The order in this list is very important for linking!
 	# Otherwise, one may have the weird linking error:
