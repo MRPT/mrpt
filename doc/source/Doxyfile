@@ -2063,6 +2063,7 @@ INCLUDE_PATH           = \
 	../../libs/poses \
 	../../libs/random \
 	../../libs/ros1bridge \
+	../../libs/ros2bridge \
 	../../libs/rtti \
 	../../libs/serialization \
 	../../libs/slam \

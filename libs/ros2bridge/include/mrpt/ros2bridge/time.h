@@ -7,26 +7,31 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/Clock.h>
-#include <mrpt/ros1bridge/time.h>
+#pragma once
 
-#include <cmath>  // std::fmod
+#include <mrpt/system/datetime.h>
 
-namespace mrpt::ros1bridge
-{
-mrpt::system::TTimeStamp fromROS(const ros::Time& src)
-{
-	return mrpt::Clock::fromDouble(src.sec + src.nsec * 1e-9);
-}
+#include <rclcpp/time.hpp>
 
-ros::Time toROS(const mrpt::system::TTimeStamp& src)
+namespace mrpt::ros2bridge
 {
-	// Convert to "double-version of time_t", then extract integer and
-	// fractional parts:
-	const double t = mrpt::Clock::toDouble(src);
-	ros::Time des;
-	des.sec = static_cast<uint64_t>(t);
-	des.nsec = static_cast<uint64_t>(std::fmod(t, 1.0) * 1e9 + 0.5 /*round*/);
-	return des;
-}
-}  // namespace mrpt::ros1bridge
+/** \addtogroup mrpt_ros2bridge_grp
+ * @{ */
+
+/**
+ * converts ros time to mrpt time
+ * @param src ros time
+ * @param des mrpt time
+ */
+mrpt::system::TTimeStamp fromROS(const rclcpp::Time& src);
+
+/**
+ * converts mrpt time to ros time
+ * @param src ros time
+ * @param des mrpt time
+ */
+rclcpp::Time toROS(const mrpt::system::TTimeStamp& src);
+
+/** @} */
+
+};	// namespace mrpt::ros2bridge
