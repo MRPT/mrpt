@@ -43,8 +43,8 @@ bool fromROS(
  * sucessful conversion, false on any error.
  */
 bool toROS(
-	const mrpt::obs::CObservationRange& obj, const std_msgs::msg::Header& msg_header,
-	sensor_msgs::msg::Range* msg);
+	const mrpt::obs::CObservationRange& obj,
+	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Range* msg);
 
 /** @} */
 

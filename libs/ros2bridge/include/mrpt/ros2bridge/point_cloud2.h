@@ -13,8 +13,8 @@
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
-#include <sensor_msgs/msg/point_cloud2.hpp>
 
+#include <sensor_msgs/msg/point_cloud2.hpp>
 #include <set>
 #include <string>
 
@@ -34,7 +34,8 @@ namespace mrpt::ros2bridge
  * \sa toROS
  */
 bool fromROS(
-	const sensor_msgs::msg::PointCloud2& msg, mrpt::maps::CSimplePointsMap& obj);
+	const sensor_msgs::msg::PointCloud2& msg,
+	mrpt::maps::CSimplePointsMap& obj);
 
 /** \overload For (x,y,z,intensity) channels.
  * Requires point cloud fields: x,y,z,intensity
@@ -46,7 +47,8 @@ bool fromROS(
  * Requires point cloud fields: x,y,z,intensity,ring
  */
 bool fromROS(
-	const sensor_msgs::msg::PointCloud2& m, mrpt::obs::CObservationRotatingScan& o,
+	const sensor_msgs::msg::PointCloud2& m,
+	mrpt::obs::CObservationRotatingScan& o,
 	const mrpt::poses::CPose3D& sensorPoseOnRobot,
 	unsigned int num_azimuth_divisions = 360);
 
@@ -65,7 +67,8 @@ std::set<std::string> extractFields(const sensor_msgs::msg::PointCloud2& msg);
  * \sa fromROS
  */
 bool toROS(
-	const mrpt::maps::CSimplePointsMap& obj, const std_msgs::msg::Header& msg_header,
+	const mrpt::maps::CSimplePointsMap& obj,
+	const std_msgs::msg::Header& msg_header,
 	sensor_msgs::msg::PointCloud2& msg);
 
 /** @} */

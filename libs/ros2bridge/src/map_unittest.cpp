@@ -17,8 +17,8 @@
 #include <gtest/gtest.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/ros2bridge/map.h>
-#include <nav_msgs/msg/occupancy_grid.hpp>
 
+#include <nav_msgs/msg/occupancy_grid.hpp>
 
 using mrpt::maps::COccupancyGridMap2D;
 

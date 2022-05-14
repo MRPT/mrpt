@@ -17,7 +17,8 @@
 
 namespace mrpt::ros2bridge
 {
-bool fromROS(const sensor_msgs::msg::Range& msg, mrpt::obs::CObservationRange& obj)
+bool fromROS(
+	const sensor_msgs::msg::Range& msg, mrpt::obs::CObservationRange& obj)
 {
 	obj.minSensorDistance = msg.min_range;
 	obj.maxSensorDistance = msg.max_range;
@@ -30,8 +31,8 @@ bool fromROS(const sensor_msgs::msg::Range& msg, mrpt::obs::CObservationRange& o
 }
 
 bool toROS(
-	const mrpt::obs::CObservationRange& obj, const std_msgs::msg::Header& msg_header,
-	sensor_msgs::msg::Range* msg)
+	const mrpt::obs::CObservationRange& obj,
+	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::Range* msg)
 {
 	long num_range = obj.sensedData.size();
 

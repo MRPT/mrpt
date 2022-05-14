@@ -14,9 +14,6 @@
  *      Author: Pablo Iñigo Blasco
  */
 
-#include <geometry_msgs/msg/pose.hpp>
-#include <geometry_msgs/msg/pose_with_covariance.hpp>
-#include <geometry_msgs/msg/quaternion.hpp>
 #include <gtest/gtest.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
@@ -24,6 +21,9 @@
 #include <mrpt/ros2bridge/pose.h>
 
 #include <Eigen/Dense>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/pose_with_covariance.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
 
 using namespace std;
 
