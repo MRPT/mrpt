@@ -16,6 +16,7 @@
 #pragma once
 
 #include <mrpt/obs/CObservationGPS.h>
+
 #include <sensor_msgs/msg/nav_sat_fix.hpp>
 
 /// ROS message:    http://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html
@@ -46,8 +47,8 @@ bool fromROS(
  * on sucessful conversion, false on any error.
  */
 bool toROS(
-	const mrpt::obs::CObservationGPS& obj, const std_msgs::msg::Header& msg_header,
-	sensor_msgs::msg::NavSatFix& msg);
+	const mrpt::obs::CObservationGPS& obj,
+	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::NavSatFix& msg);
 
 /** @} */
 
