@@ -16,12 +16,13 @@
 
 #include <gtest/gtest.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/ros1bridge/point_cloud2.h>
+#include <mrpt/ros2bridge/point_cloud2.h>
 
-#if HAVE_PCL
+#if HAVE_PCL_CONVERSIONS
 #include <pcl/common/common_headers.h>
 #include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
 
 TEST(PointCloud2, basicTest)
 {
@@ -44,12 +45,12 @@ TEST(PointCloud2, basicTest)
 		i_f += 1.0;
 	}
 
-	sensor_msgs::PointCloud2 point_cloud2_msg;
-	pcl::toROSMsg(point_cloud, point_cloud2_msg);
+	// pcl_conversions:
+	sensor_msgs::msg::PointCloud2 point_cloud2_msg;
+	toROSMsg(point_cloud, point_cloud2_msg);
 
 	mrpt::maps::CSimplePointsMap mrpt_pc;
-
-	mrpt::ros1bridge::fromROS(point_cloud2_msg, mrpt_pc);
+	mrpt::ros2bridge::fromROS(point_cloud2_msg, mrpt_pc);
 
 	i_f = 0;
 	for (int i = 0; i < num_points; i++)
@@ -64,5 +65,4 @@ TEST(PointCloud2, basicTest)
 	}
 	//;
 }
-
 #endif	// HAVE_PCL

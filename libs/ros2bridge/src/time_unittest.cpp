@@ -7,26 +7,22 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/core/Clock.h>
-#include <mrpt/ros1bridge/time.h>
+/*
+ * test_time.cpp
+ *
+ *  Created on: July 15, 2014
+ *      Author: Markus Bader
+ */
 
-#include <cmath>  // std::fmod
+#include <gtest/gtest.h>
+#include <mrpt/ros2bridge/time.h>
 
-namespace mrpt::ros1bridge
+TEST(Time, basicTest)
 {
-mrpt::system::TTimeStamp fromROS(const ros::Time& src)
-{
-	return mrpt::Clock::fromDouble(src.sec + src.nsec * 1e-9);
+	const auto org_time = mrpt::Clock::now();
+
+	rclcpp::Time ros_tim = mrpt::ros2bridge::toROS(org_time);
+	mrpt::system::TTimeStamp mrpt_tim = mrpt::ros2bridge::fromROS(ros_tim);
+
+	EXPECT_NEAR(mrpt::system::timeDifference(org_time, mrpt_tim), .0, 1e-6);
 }
-
-ros::Time toROS(const mrpt::system::TTimeStamp& src)
-{
-	// Convert to "double-version of time_t", then extract integer and
-	// fractional parts:
-	const double t = mrpt::Clock::toDouble(src);
-	ros::Time des;
-	des.sec = static_cast<uint64_t>(t);
-	des.nsec = static_cast<uint64_t>(std::fmod(t, 1.0) * 1e9 + 0.5 /*round*/);
-	return des;
-}
-}  // namespace mrpt::ros1bridge
