@@ -34,7 +34,7 @@
    Related papers:
 	- Matching likelihood. See:  https://www.mrpt.org/Paper:Matching_Likelihood
 
-	- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
+	- JCBB: Joint Compatibility Branch & Bound \cite neira2001data
 
 */
 
@@ -262,7 +262,7 @@ Computes the data-association between the prediction of a set of landmarks and
 their observations, all of them with covariance matrices.
 * Implemented methods include (see TDataAssociation)
 *		- NN: Nearest-neighbor
-*		- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
+*		- JCBB: Joint Compatibility Branch & Bound \cite neira2001data
 *
 *  With both a Mahalanobis-distance or Matching-likelihood metric (See paper:
 http://www.mrpt.org/Paper:Matching_Likelihood )

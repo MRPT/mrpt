@@ -30,17 +30,12 @@ enum TDataAssociationMethod
 {
 	/** Nearest-neighbor. */
 	assocNN = 0,
-	/** JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]. */
+	/** JCBB: Joint Compatibility Branch & Bound \cite neira2001data */
 	assocJCBB
 };
 
 /** Different metrics for data association, used in mrpt::slam::data_association
- *  For a comparison of both methods see paper:
- *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An
- * alternative to the Mahalanobis distance for determining optimal
- * correspondences in data association", IEEE Transactions on Robotics (T-RO),
- * (2012) DOI: 10.1109/TRO.2012.2193706 Draft:
- * http://ingmec.ual.es/~jlblanco/papers/blanco2012amd.pdf
+ *  For a comparison of both methods see paper \cite blanco2012amd
  */
 enum TDataAssociationMetric
 {
@@ -56,7 +51,7 @@ using observation_index_t = size_t;
 /** Used in mrpt::slam::TDataAssociationResults */
 using prediction_index_t = size_t;
 
-/** The results from mrpt::slam::data_association
+/** The results from mrpt::slam::data_association_independent_predictions()
  */
 struct TDataAssociationResults
 {
@@ -122,15 +117,10 @@ struct TDataAssociationResults
  *version with prediction full cross-covariances.
  * Implemented methods include (see TDataAssociation)
  *		- NN: Nearest-neighbor
- *		- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
+ *		- JCBB: Joint Compatibility Branch & Bound \cite neira2001data
  *
  *  With both a Mahalanobis-distance or Matching-likelihood metric. For a
- *comparison of both methods, see paper:
- *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An
- *alternative to the Mahalanobis distance for determining optimal
- *correspondences in data association", IEEE Transactions on Robotics (T-RO),
- *(2012) DOI: 10.1109/TRO.2012.2193706 Draft:
- *http://ingmec.ual.es/~jlblanco/papers/blanco2012amd.pdf
+ *comparison of both methods, see paper \cite blanco2012amd
  *
  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each
  *row containing the observation "mean".
@@ -173,15 +163,10 @@ void data_association_full_covariance(
  *version with NO prediction cross-covariances.
  * Implemented methods include (see TDataAssociation)
  *		- NN: Nearest-neighbor
- *		- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
+ *		- JCBB: Joint Compatibility Branch & Bound \cite neira2001data
  *
  *  With both a Mahalanobis-distance or Matching-likelihood metric. For a
- *comparison of both methods, see paper:
- *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An
- *alternative to the Mahalanobis distance for determining optimal
- *correspondences in data association", IEEE Transactions on Robotics (T-RO),
- *(2012) DOI: 10.1109/TRO.2012.2193706 Draft:
- *http://ingmec.ual.es/~jlblanco/papers/blanco2012amd.pdf
+ *comparison of both methods, see paper \cite blanco2012amd :
  *
  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each
  *row containing the observation "mean".
