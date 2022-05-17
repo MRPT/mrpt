@@ -28,6 +28,7 @@ void main_loop() { loop(); }
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
 
 #include <iostream>
@@ -42,16 +43,61 @@ struct AppData
 	mrpt::opengl::CAxis::Ptr gl_corner_reference;
 	mrpt::obs::CObservation3DRangeScan::Ptr obs;
 
-	std::vector<nanogui::Slider*> sl_dist;
+	mrpt::opengl::CPointCloudColoured::Ptr gl_pts;
+
+	std::vector<nanogui::TextBox*> edBoxes;	 // cx,cy,... dist[7]
+
+	void obs_params_to_gui();
+	void gui_params_to_obs();
 };
 
 static AppData app;
 
 // The main function: update all graphs
-static void recalcAll(){
+static void recalcAll()
+{
+	auto lck = mrpt::lockHelper(app.win->background_scene_mtx);
 
-	// app.edOutAxisAngle_An->setValue(mrpt::format());
+	if (!app.obs || !app.obs->hasRangeImage)
+	{
+		app.gl_pts->clear();
+		return;
+	}
+
+	// app.obs->cameraParams
 };
+
+void AppData::obs_params_to_gui()
+{
+	ASSERT_(obs);
+	ASSERT_EQUAL_(edBoxes.size(), 12U);
+
+	const auto& p = obs->cameraParams;
+
+	edBoxes[0]->setValue(mrpt::format("%.04f", p.cx()));
+	edBoxes[1]->setValue(mrpt::format("%.04f", p.cy()));
+	edBoxes[2]->setValue(mrpt::format("%.04f", p.fx()));
+	edBoxes[3]->setValue(mrpt::format("%.04f", p.fy()));
+
+	for (int i = 0; i < 8; i++)
+		edBoxes[3 + i]->setValue(mrpt::format("%.04g", p.dist[i]));
+}
+
+void AppData::gui_params_to_obs()
+{
+	ASSERT_(obs);
+	ASSERT_EQUAL_(edBoxes.size(), 12U);
+
+	auto& p = obs->cameraParams;
+
+	p.cx(std::stod(edBoxes[0]->value()));
+	p.cy(std::stod(edBoxes[1]->value()));
+	p.fx(std::stod(edBoxes[2]->value()));
+	p.fy(std::stod(edBoxes[3]->value()));
+
+	for (int i = 0; i < 8; i++)
+		p.dist.at(i) = std::stod(edBoxes[3 + i]);
+}
 
 static void AppDepthCamDemo()
 {
@@ -66,6 +112,8 @@ static void AppDepthCamDemo()
 		-5.0f, -5.0f, .0f, 5.0f, 5.0f, 2.0f, 0.2f, 1.0f, true);
 	app.gl_corner_reference->setTextScale(0.04);
 
+	app.gl_pts = mrpt::opengl::CPointCloudColoured::Create();
+
 	// Create GUI:
 	app.win = mrpt::gui::CDisplayWindowGUI::Create(
 		"Depth camera distortion demo", 900, 700, cp);
@@ -75,50 +123,72 @@ static void AppDepthCamDemo()
 	nanogui::Window* w = new nanogui::Window(&(*app.win), "Input");
 	w->setPosition(nanogui::Vector2i(10, 50));
 	w->setLayout(new nanogui::GridLayout(
-		nanogui::Orientation::Horizontal, 3, nanogui::Alignment::Fill, 5, 0));
+		nanogui::Orientation::Horizontal, 1, nanogui::Alignment::Fill, 5, 0));
 	w->setFixedWidth(350);
 
 	// Load button:
-	w->add<nanogui::Button>("Load...")->setCallback([]() {
-		const std::string loadFile = nanogui::file_dialog(
-			{{"rawlog", "MRPT rawlog dataset files"}, {"*", "Any file"}},
-			false);
-		if (loadFile.empty()) return;
+	w->add<nanogui::Button>("Load depth image from rawlog...")
+		->setCallback([w]() {
+			try
+			{
+				const std::string loadFile = nanogui::file_dialog(
+					{{"rawlog", "MRPT rawlog dataset files"},
+					 {"*", "Any file"}},
+					false);
+				if (loadFile.empty()) return;
 
-		mrpt::obs::CRawlog rawlog;
-		if (!rawlog.loadFromRawLogFile(loadFile)) return;
+				mrpt::obs::CRawlog rawlog;
+				if (!rawlog.loadFromRawLogFile(loadFile)) return;
 
-		ASSERT_(!rawlog.empty());
-		ASSERT_(rawlog.getType(0) == mrpt::obs::CRawlog::etSensoryFrame);
+				ASSERT_(!rawlog.empty());
+				ASSERT_(
+					rawlog.getType(0) == mrpt::obs::CRawlog::etSensoryFrame);
 
-		const auto obs =
-			rawlog.getAsObservations(0)
-				->getObservationByClass<mrpt::obs::CObservation3DRangeScan>();
-		ASSERT_(obs);
-		app.obs = obs;
-		recalcAll();
-	});
-	for (int i = 0; i < 3 - 1; i++)
-		w->add<nanogui::Label>(" ");
+				const auto obs = rawlog.getAsObservations(0)
+									 ->getObservationByClass<
+										 mrpt::obs::CObservation3DRangeScan>();
+				ASSERT_(obs);
+				app.obs = obs;
+				app.obs_params_to_gui();
+				recalcAll();
+			}
+			catch (const std::exception& e)
+			{
+				std::cerr << e.what() << std::endl;
+				auto msg = nanogui::MessageDialog(
+					w, nanogui::MessageDialog::Type::Warning, "Exception",
+					e.what());
+			}
+		});
+
+	// Sliders and value controls:
+	auto pn = w->add<nanogui::Widget>();
+	pn->setLayout(new nanogui::GridLayout(
+		nanogui::Orientation::Horizontal, 3, nanogui::Alignment::Fill, 5, 0));
 
 	{
-		std::vector<std::string> lb = {"cx=", "cy=", "fx=", "fy="};
+		std::vector<std::string> lb = {
+			"cx=",			 "cy=",			  "fx=",		   "fy=",
+			"dist[0] (k1)=", "dist[1] (k2)=", "dist[2] (t1)=", "dist[3] (t2)=",
+			"dist[4] (k3)=", "dist[5] (k4)=", "dist[6] (k5)=", "dist[7] (k6)=",
+		};
 
 		for (size_t i = 0; i < lb.size(); i++)
 		{
-			w->add<nanogui::Label>(lb[i]);
-			nanogui::TextBox* ed = w->add<nanogui::TextBox>(" ");
+			pn->add<nanogui::Label>(lb[i]);
+
+			nanogui::TextBox* ed = pn->add<nanogui::TextBox>(" ");
+			app.edBoxes.push_back(ed);
+
 			ed->setEditable(true);
 			ed->setFormat("[-+]?[0-9.e+-]*");
-			ed->setCallback([i](const std::string& s) {
-				auto val = std::stod(s);
+			ed->setCallback([](const std::string&) {
 				recalcAll();
 				return true;
 			});
-			nanogui::Slider* sl = w->add<nanogui::Slider>();
-			// app.sl_in_ypr[i] = sl;
+			nanogui::Slider* sl = pn->add<nanogui::Slider>();
 			sl->setRange({-1.0f, 1.0f});
-			sl->setCallback([&, i, ed](float val) {
+			sl->setCallback([&, ed](float val) {
 				ed->setValue(mrpt::format("%.03g", val));
 				ed->callback()(ed->value());
 			});
@@ -165,6 +235,7 @@ static void AppDepthCamDemo()
 		scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 
 		scene->insert(app.gl_corner_reference);
+		scene->insert(app.gl_pts);
 
 		auto lck = mrpt::lockHelper(app.win->background_scene_mtx);
 		app.win->background_scene = std::move(scene);
