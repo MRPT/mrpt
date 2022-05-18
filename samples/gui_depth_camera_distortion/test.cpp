@@ -34,6 +34,8 @@ void main_loop() { loop(); }
 
 #include <iostream>
 
+#if MRPT_HAS_NANOGUI
+
 constexpr int SMALL_FONT_SIZE = 15;
 constexpr int LARGE_FONT_SIZE = 20;
 
@@ -443,11 +445,17 @@ static void AppDepthCamDemo()
 #endif
 }
 
+#endif	// MRPT_HAS_NANOGUI
+
 int main()
 {
 	try
 	{
+#if MRPT_HAS_NANOGUI
 		AppDepthCamDemo();
+#else
+		std::cerr << "This example requires MRPT built with NANOGUI.\n";
+#endif
 		return 0;
 	}
 	catch (const std::exception& e)
