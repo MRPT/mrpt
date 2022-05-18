@@ -48,8 +48,9 @@ if(BUILD_mrpt-ros1bridge)
 	target_include_directories(ros1bridge
 		SYSTEM
 		PUBLIC
-		${tf2_INCLUDE_DIRS}
-		${cv_bridge_INCLUDE_DIRS}
+			${tf2_INCLUDE_DIRS}
+		PRIVATE
+			${cv_bridge_INCLUDE_DIRS}
 	)
 	target_compile_definitions(ros1bridge PRIVATE ${ROS_DEFINITIONS})
 	target_compile_definitions(ros1bridge PRIVATE IS_MRPT_ROS1BRIDGE)
