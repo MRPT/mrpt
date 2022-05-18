@@ -11,6 +11,7 @@ also provides many ready-to-use applications:
   :maxdepth: 1
 
   app_2d-slam-demo.rst
+  app_3d-rotation-converter.rst
   app_camera-calib.rst
   page_app_carmen2rawlog.rst
   page_app_carmen2rawlog.rst
