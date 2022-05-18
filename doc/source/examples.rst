@@ -27,6 +27,7 @@ under `MRPT/samples <https://github.com/MRPT/mrpt/tree/develop/samples>`_.
   page_graphs_dijkstra_example.rst
   page_graphslam_example.rst
   page_gui_capture_render_to_img_example.rst
+  page_gui_depth_camera_distortion.rst
   page_gui_display3D_custom_render.rst
   page_gui_display3D_example.rst
   page_gui_display_plots.rst
