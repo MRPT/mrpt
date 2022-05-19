@@ -21,11 +21,6 @@
 namespace mrpt::graphslam
 {
 template <class GRAPH_T>
-const std::string CGraphSlamEngine<GRAPH_T>::header_sep = std::string(80, '-');
-template <class GRAPH_T>
-const std::string CGraphSlamEngine<GRAPH_T>::report_sep = std::string(2, '\n');
-
-template <class GRAPH_T>
 CGraphSlamEngine<GRAPH_T>::CGraphSlamEngine(
 	const std::string& config_file, const std::string& rawlog_fname,
 	const std::string& fname_GT, mrpt::graphslam::CWindowManager* win_manager,
@@ -2464,10 +2459,13 @@ void CGraphSlamEngine<GRAPH_T>::getDescriptiveReport(
 	MRPT_START
 	using namespace std;
 
+	const static std::string report_sep(2, '\n');
+	const static std::string header_sep(80, '#');
+
 	// Summary of Results
 	stringstream results_ss;
 	results_ss << "Summary: " << std::endl;
-	results_ss << this->header_sep << std::endl;
+	results_ss << header_sep << std::endl;
 	results_ss << "\tProcessing time: "
 			   << m_time_logger.getMeanTime("proc_time") << std::endl;
 	;
@@ -2492,16 +2490,16 @@ void CGraphSlamEngine<GRAPH_T>::getDescriptiveReport(
 	report_str->clear();
 
 	*report_str += results_ss.str();
-	*report_str += this->report_sep;
+	*report_str += report_sep;
 
 	*report_str += config_params;
-	*report_str += this->report_sep;
+	*report_str += report_sep;
 
 	*report_str += time_res;
-	*report_str += this->report_sep;
+	*report_str += report_sep;
 
 	*report_str += output_res;
-	*report_str += this->report_sep;
+	*report_str += report_sep;
 
 	MRPT_END
 }
