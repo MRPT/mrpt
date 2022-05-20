@@ -13,7 +13,7 @@ add_executable(${PROJECT_NAME}
 	# Main:
 	rosbag2rawlog_main.cpp
 	${MRPT_VERSION_RC_FILE}
- 	)
+	)
 
 # Add the required libraries for linking:
 target_link_libraries(${PROJECT_NAME}
