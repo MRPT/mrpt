@@ -32,7 +32,7 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-ros1bridge)
-	# Add the required libraries for linking:
+# Add the required libraries for linking:
 	target_link_libraries(ros1bridge
 		PUBLIC
 		${roscpp_LIBRARIES}

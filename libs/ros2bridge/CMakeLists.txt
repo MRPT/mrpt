@@ -32,27 +32,18 @@ define_mrpt_lib(
 	)
 
 if(BUILD_mrpt-ros2bridge)
-	# Add the required libraries for linking:
-	target_link_libraries(ros2bridge
-		PUBLIC
-		rclcpp::rclcpp
-		${cv_bridge_LIBRARIES}
+	# Add the required libraries:
+	ament_target_dependencies(ros2bridge PUBLIC
+		rclcpp
+		tf2
+		cv_bridge
+		sensor_msgs
+		std_msgs
+		geometry_msgs
+		stereo_msgs
 	)
-	if (tf2_LIBRARIES)
-		target_link_libraries(ros2bridge PUBLIC ${tf2_LIBRARIES})
-	endif()
-	if (TARGET tf2)
-		target_link_libraries(ros2bridge PUBLIC tf2)
-	endif()
 
-	target_include_directories(ros2bridge
-		SYSTEM
-		PUBLIC
-			${tf2_INCLUDE_DIRS}
-		PRIVATE
-			${cv_bridge_INCLUDE_DIRS}
-	)
 	target_compile_definitions(ros2bridge PRIVATE ${ROS_DEFINITIONS})
-	target_compile_definitions(ros2bridge PRIVATE IS_MRPT_ROS2BRIDGE)
 
+	target_compile_definitions(ros2bridge PRIVATE IS_MRPT_ROS2BRIDGE)
 endif()

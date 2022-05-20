@@ -24,6 +24,10 @@ if (NOT DISABLE_ROS)
 			set(MRPT_ROS_VERSION 1)
 		endif()
 	endif()
+
+	# ======================================
+	# Search for common deps in ROS1 & ROS2
+	# ======================================
 	find_package(cv_bridge QUIET)
 	find_package(rosbag_storage QUIET)
 	find_package(rosbag2 QUIET)
@@ -38,53 +42,65 @@ if (NOT DISABLE_ROS)
 	find_package(geometry_msgs QUIET)
 	find_package(stereo_msgs QUIET)
 
-	# tf2: try to find w/o the need for catkin (so we can use it from
-	# Debian build servers w/o ROS installed under /opt/ etc.)
-	# (JLBC) For some reason calling find_package(tf2) leads to error
-	# in that case due to missing catkin stuff, while the lib & .h's are
-	# actually there and are usable.
-	find_library(tf2_LIBRARIES tf2)
-	if (tf2_LIBRARIES)
-		set(tf2_FOUND 1)
-	else()
-		set(tf2_FOUND 0)
-		# 2nd attempt via cmake:
-		unset(tf2_LIBRARIES CACHE)
-		unset(tf2_INCLUDE_DIRS CACHE)
+	if ("${MRPT_ROS_VERSION}" STREQUAL "1")
+		# =================================
+		# Search for deps in ROS1 style
+		# =================================
+
+		# tf2: try to find w/o the need for catkin (so we can use it from
+		# Debian build servers w/o ROS installed under /opt/ etc.)
+		# (JLBC) For some reason calling find_package(tf2) leads to error
+		# in that case due to missing catkin stuff, while the lib & .h's are
+		# actually there and are usable.
+		find_library(tf2_LIBRARIES tf2)
+		if (tf2_LIBRARIES)
+			set(tf2_FOUND 1)
+		else()
+			set(tf2_FOUND 0)
+			# 2nd attempt via cmake:
+			unset(tf2_LIBRARIES CACHE)
+			unset(tf2_INCLUDE_DIRS CACHE)
+			find_package(tf2 QUIET)
+		endif()
+		# tf2_msgs: idem (header-only lib)
+		find_file(tf2_msgs name TFMessage.h
+			PATHS
+				/usr/include/tf2_msgs
+				$ENV{ROS_ROOT}/../../include/tf2_msgs
+		)
+		if (tf2_msgs)
+			set(tf2_msgs_FOUND 1)
+		else()
+			set(tf2_msgs_FOUND 0)
+			# 2nd attempt via cmake:
+			unset(tf2_msgs_LIBRARIES CACHE)
+			unset(tf2_msgs_INCLUDE_DIRS CACHE)
+			find_package(tf2_msgs QUIET)
+		endif()
+		# nav_msgs: idem (header-only lib)
+		find_file(nav_msgs name OccupancyGrid.h
+			PATHS
+				/usr/include/nav_msgs
+				$ENV{ROS_ROOT}/../../include/nav_msgs
+		)
+		if (nav_msgs)
+			set(nav_msgs_FOUND 1)
+		else()
+			set(nav_msgs_FOUND 0)
+			# 2nd attempt via cmake:
+			unset(nav_msgs_LIBRARIES CACHE)
+			unset(nav_msgs_INCLUDE_DIRS CACHE)
+			find_package(nav_msgs QUIET)
+		endif()
+	elseif("${MRPT_ROS_VERSION}" STREQUAL "2")
+		# =================================
+		# Search for deps in ROS2 style
+		# =================================
+		find_package(rclcpp QUIET)
 		find_package(tf2 QUIET)
-	endif()
-	# tf2_msgs: idem (header-only lib)
-	find_file(tf2_msgs name TFMessage.h
-		PATHS
-			/usr/include/tf2_msgs
-			$ENV{ROS_ROOT}/../../include/tf2_msgs
-	)
-	if (tf2_msgs)
-		set(tf2_msgs_FOUND 1)
-	else()
-		set(tf2_msgs_FOUND 0)
-		# 2nd attempt via cmake:
-		unset(tf2_msgs_LIBRARIES CACHE)
-		unset(tf2_msgs_INCLUDE_DIRS CACHE)
 		find_package(tf2_msgs QUIET)
-	endif()
-	# nav_msgs: idem (header-only lib)
-	find_file(nav_msgs name OccupancyGrid.h
-		PATHS
-			/usr/include/nav_msgs
-			$ENV{ROS_ROOT}/../../include/nav_msgs
-	)
-	if (nav_msgs)
-		set(nav_msgs_FOUND 1)
-	else()
-		set(nav_msgs_FOUND 0)
-		# 2nd attempt via cmake:
-		unset(nav_msgs_LIBRARIES CACHE)
-		unset(nav_msgs_INCLUDE_DIRS CACHE)
 		find_package(nav_msgs QUIET)
 	endif()
-	
-	find_package(rclcpp QUIET)
 
 	# Compare flag:
 	get_directory_property(ROS_DEFINITIONS "COMPILE_DEFINITIONS")
@@ -114,6 +130,5 @@ if (NOT DISABLE_ROS)
 		message(STATUS "  std_msgs_FOUND       : ${std_msgs_FOUND}")
 		message(STATUS "  stereo_msgs_FOUND    : ${stereo_msgs_FOUND}")
 		message(STATUS "  tf2_FOUND            : ${tf2_FOUND}")
-		
 	endif()
 endif()
