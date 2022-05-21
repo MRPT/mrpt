@@ -10,6 +10,7 @@
 #include "hmtslam-precomp.h"  // Precomp header
 //
 #include <mrpt/core/initializer.h>
+#include <mrpt/graphslam/registerAllClasses.h>
 #include <mrpt/hmtslam.h>
 #include <mrpt/hmtslam/registerAllClasses.h>
 
@@ -32,4 +33,5 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hmtslam)
 void mrpt::hmtslam::registerAllClasses_mrpt_hmtslam()
 {
 	::registerAllClasses_mrpt_hmtslam();
+	mrpt::graphslam::registerAllClasses_mrpt_graphslam();
 }

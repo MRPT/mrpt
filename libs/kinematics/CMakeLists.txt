@@ -6,5 +6,4 @@ define_mrpt_lib(
 	kinematics
 	# Dependencies
 	mrpt-opengl
-#	mrpt-poses
 	)

@@ -39,6 +39,8 @@
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPoses3DSequence.h>
 #include <mrpt/poses/registerAllClasses.h>
+// deps:
+#include <mrpt/bayes/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_poses)
 {
@@ -86,4 +88,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_poses)
 void mrpt::poses::registerAllClasses_mrpt_poses()
 {
 	::registerAllClasses_mrpt_poses();
+	// deps:
+	mrpt::bayes::registerAllClasses_mrpt_bayes();
 }

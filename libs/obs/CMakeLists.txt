@@ -37,7 +37,6 @@ define_mrpt_lib(
 	obs
 	# Dependencies
 	mrpt-opengl
-	mrpt-poses
 	mrpt-tfest
 	)
 

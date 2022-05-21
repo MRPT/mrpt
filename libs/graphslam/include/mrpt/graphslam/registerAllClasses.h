@@ -8,6 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/gui/registerAllClasses.h>
+#include <mrpt/slam/registerAllClasses.h>
+
 namespace mrpt::graphslam
 {
 /** Forces manual RTTI registration of all serializable classes in this
@@ -16,5 +19,9 @@ namespace mrpt::graphslam
  *
  * \ingroup mrpt_graphslam_grp
  */
-void registerAllClasses_mrpt_graphslam();
+inline void registerAllClasses_mrpt_graphslam()
+{
+	mrpt::gui::registerAllClasses_mrpt_gui();
+	mrpt::slam::registerAllClasses_mrpt_slam();
+}
 }  // namespace mrpt::graphslam

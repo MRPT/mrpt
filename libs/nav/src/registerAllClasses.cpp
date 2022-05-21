@@ -13,6 +13,9 @@
 #include <mrpt/nav.h>
 #include <mrpt/nav/registerAllClasses.h>
 #include <mrpt/serialization/CSerializable.h>
+// deps:
+#include <mrpt/kinematics/registerAllClasses.h>
+#include <mrpt/maps/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_nav)
 {
@@ -48,4 +51,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_nav)
 void mrpt::nav::registerAllClasses_mrpt_nav()
 {
 	::registerAllClasses_mrpt_nav();
+	// deps:
+	mrpt::maps::registerAllClasses_mrpt_maps();
+	mrpt::kinematics::registerAllClasses_mrpt_kinematics();
 }

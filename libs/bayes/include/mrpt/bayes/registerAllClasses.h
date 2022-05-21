@@ -8,6 +8,9 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/config/registerAllClasses.h>
+#include <mrpt/math/registerAllClasses.h>
+
 namespace mrpt::bayes
 {
 /** Forces manual RTTI registration of all serializable classes in this
@@ -16,5 +19,11 @@ namespace mrpt::bayes
  *
  * \ingroup mrpt_bayes_grp
  */
-void registerAllClasses_mrpt_bayes();
+inline void registerAllClasses_mrpt_bayes()
+{
+	// None in this library
+	mrpt::config::registerAllClasses_mrpt_config();
+	mrpt::math::registerAllClasses_mrpt_math();
+}
+
 }  // namespace mrpt::bayes
