@@ -507,9 +507,10 @@ void CLoopCloserERD<GRAPH_T>::evaluatePartitionsForLC(
 
 	if (partitions.size() == 0) return;
 
+	const static std::string header_sep(80, '#');
+
 	MRPT_LOG_DEBUG_FMT(
-		"Evaluating partitions for loop closures...\n%s\n",
-		this->header_sep.c_str());
+		"Evaluating partitions for loop closures...\n%s\n", header_sep.c_str());
 
 	// for each partition to be evaulated...
 	for (auto partition : partitions)
@@ -549,7 +550,7 @@ void CLoopCloserERD<GRAPH_T>::evaluatePartitionsForLC(
 		}
 	}  // for each partition
 
-	MRPT_LOG_DEBUG_STREAM("\n" << this->header_sep);
+	MRPT_LOG_DEBUG_STREAM("\n" << header_sep);
 	this->m_time_logger.leave("LoopClosureEvaluation");
 
 	MRPT_END
@@ -1049,7 +1050,7 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 	}
 
 	// MRPT_LOG_WARN_STREAM("Consistency matrix:" << endl
-	//<< this->header_sep << endl
+	//<< header_sep << endl
 	//<< *consist_matrix << endl);
 
 	MRPT_END
@@ -2299,12 +2300,15 @@ void CLoopCloserERD<GRAPH_T>::getDescriptiveReport(
 {
 	MRPT_START
 
+	const static std::string report_sep(2, '\n');
+	const static std::string header_sep(80, '#');
+
 	// Report on graph
 	std::stringstream class_props_ss;
 	class_props_ss << "Pair-wise Consistency of ICP Edges - Registration "
 					  "Procedure Summary: "
 				   << std::endl;
-	class_props_ss << this->header_sep << std::endl;
+	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
 	const std::string time_res = this->m_time_logger.getStatsAsText();
@@ -2315,13 +2319,13 @@ void CLoopCloserERD<GRAPH_T>::getDescriptiveReport(
 	parent_t::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
-	*report_str += this->report_sep;
+	*report_str += report_sep;
 
 	*report_str += time_res;
-	*report_str += this->report_sep;
+	*report_str += report_sep;
 
 	*report_str += output_res;
-	*report_str += this->report_sep;
+	*report_str += report_sep;
 
 	MRPT_END
 }  // end of getDescriptiveReport

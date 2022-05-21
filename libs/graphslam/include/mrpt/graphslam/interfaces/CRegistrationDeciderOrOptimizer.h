@@ -165,11 +165,6 @@ class CRegistrationDeciderOrOptimizer : public mrpt::system::COutputLogger
 	 * multi-robot SLAM operations
 	 */
 	bool is_mr_slam_class = false;
-
-	/**\brief Separator string to be used in debugging messages
-	 */
-	static const std::string header_sep;
-	static const std::string report_sep;
 };
 }  // namespace mrpt::graphslam
 #include "CRegistrationDeciderOrOptimizer_impl.h"

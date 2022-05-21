@@ -38,6 +38,7 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
   group_mrpt_poses_grp.rst
   group_mrpt_random_grp.rst
   group_mrpt_ros1bridge_grp.rst
+  group_mrpt_ros2bridge_grp.rst
   group_mrpt_round.rst
   group_mrpt_rtti_grp.rst
   group_mrpt_serialization_grp.rst

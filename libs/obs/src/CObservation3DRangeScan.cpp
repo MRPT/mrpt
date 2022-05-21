@@ -136,7 +136,29 @@ const CObservation3DRangeScan::unproject_LUT_t&
 			p[1] = r;
 		}
 
-	cv::undistortPoints(pts, undistort_pts, cv_intrinsics, cv_distortion);
+	switch (cameraParams.distortion)
+	{
+		case mrpt::img::DistortionModel::none:
+			cv_distortion = cv::Mat::zeros(1, dist.size(), CV_64F);
+			cv::undistortPoints(
+				pts, undistort_pts, cv_intrinsics, cv_distortion);
+			break;
+
+		case mrpt::img::DistortionModel::plumb_bob:
+			cv::undistortPoints(
+				pts, undistort_pts, cv_intrinsics, cv_distortion);
+			break;
+
+		case mrpt::img::DistortionModel::kannala_brandt:
+			cv::fisheye::undistortPoints(
+				pts, undistort_pts, cv_intrinsics, cv_distortion);
+			break;
+
+		default:
+			THROW_EXCEPTION_FMT(
+				"Unknown cameraParams.distortion=%d",
+				static_cast<int>(cameraParams.distortion));
+	};
 
 	// Note: undistort_pts now holds point coordinates with (-1,-1)=top left,
 	// (1,1)=bottom-right

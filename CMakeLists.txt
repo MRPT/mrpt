@@ -279,7 +279,7 @@ include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
 include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
-include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS1
+include(cmakemodules/script_ros.cmake REQUIRED)        # Check for ROS1 / ROS2
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_simpleini.cmake REQUIRED)   # SimpleINI lib
 include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
@@ -626,7 +626,13 @@ add_subdirectory(doc)
 if (DEFINED BUILD_TESTING)
 	set(_def_value ${BUILD_TESTING})
 else()
-	set(_def_value ON)
+	if ("$ENV{ROS_DISTRO}" STREQUAL "")
+		# Regular case:
+		set(_def_value ON)
+	else()
+		# We are in a ROS environment: disable tests by default to reduce build time in ROS build farms.
+		set(_def_value OFF)
+	endif()
 endif()
 set(MRPT_BUILD_TESTING ${_def_value} CACHE BOOL "Build MRPT tests")
 if(MRPT_BUILD_TESTING)

@@ -1,8 +1,18 @@
 \page changelog Change Log
 
-# Version 2.4.4: UNRELEASED
+# Version 2.4.5: UNRELEASED
+- Changes in libraries:
+  - New module mrpt_ros2bridge_grp to support conversions to/from ROS2 data types and MRPT classes.
+
+# Version 2.4.4: Released March 5th, 2022
 - New web-based applications
   - All MRPT modules (including \ref mrpt_opengl_grp and mrpt-nanogui) are now compatible with Emscripten so they can run as Javascript + wasm on any modern browser.
+- Changes in applications:
+  - RawlogViewer:
+    - Browse dialog: Smarter coloring of pointclouds; check all & none buttons for sensor layers.
+  - rawlog-edit:
+    - Operation `--camera-params` now also works for mrpt::obs::CObservation3DRangeScan observations.
+    - New operation `--describe`.
 - Changes in libraries:
   - \ref mrpt_poses_grp
     - mrpt::poses::CPose3DQuat: Remove use of obsolete base class std::iterator.
@@ -12,8 +22,12 @@
   - Allow using libfyaml-dev system package if found.
   - ROS package.xml: update dependencies so all sensors and mrpt-ros1bridge are enabled.
   - Fix detection of ROS1 native `*_msgs` packages as build dependencies.
+  - If ROS environment variables are detected at CMake configure time, unit tests are disabled by default (to reduce build time in build farms).
 - BUG FIXES:
   - ASSERT_NEAR_() did not work correctly when arguments were expressions with operators.
+  - Fixed incorrect parsing of strings with whitespaces in mrpt::from_string<>() when converting to std::string
+  - mrpt::obs::CObservation3DRangeScan::get_unproj_lut() was ignoring the depth camera distortion model and always assumed plumb_bob.
+  - mrpt::ros1bridge converter for IMU observations now correctly handles missing IMU readings (ROS convention of "-1" in covariance).
 
 # Version 2.4.3: Released Feb 22nd, 2022
 - Changes in applications:

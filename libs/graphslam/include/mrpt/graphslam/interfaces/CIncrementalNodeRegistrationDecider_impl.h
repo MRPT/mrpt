@@ -101,7 +101,7 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 	using namespace std;
 
 	*report_str += params.getAsString();
-	*report_str += this->report_sep;
+	*report_str += report_sep;
 
 	MRPT_END
 }
