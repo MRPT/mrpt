@@ -12,13 +12,6 @@
 namespace mrpt::graphslam
 {
 template <class GRAPH_T>
-const std::string CRegistrationDeciderOrOptimizer<GRAPH_T>::header_sep =
-	std::string(80, '-');
-template <class GRAPH_T>
-const std::string CRegistrationDeciderOrOptimizer<GRAPH_T>::report_sep =
-	std::string(2, '\n');
-
-template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 	const std::string& name)
 {

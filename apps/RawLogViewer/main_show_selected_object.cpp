@@ -42,12 +42,32 @@ using namespace mrpt::poses;
 using namespace mrpt::rtti;
 using namespace std;
 
+// Bounding box memory so we have consistent coloring across different sensors:
+std::optional<mrpt::math::TBoundingBox> bbMemory;
+double bbMemoryFading = 0.99;
+
 void recolorize3Dpc(
 	const mrpt::opengl::CPointCloudColoured::Ptr& pnts,
 	const ParametersView3DPoints& p)
 {
-	const auto bb = pnts->getBoundingBox();
+	const auto newBb = pnts->getBoundingBox();
 
+	// Slowly update bb memory:
+	if (!bbMemory.has_value())
+	{
+		// first time:
+		bbMemory = newBb;
+	}
+	else
+	{
+		bbMemory.value().min = bbMemory.value().min * bbMemoryFading +
+			newBb.min * (1.0 - bbMemoryFading);
+		bbMemory.value().max = bbMemory.value().max * bbMemoryFading +
+			newBb.max * (1.0 - bbMemoryFading);
+	}
+	const auto& bb = bbMemory.value();
+
+	// actual colorize:
 	switch (p.colorizeByAxis)
 	{
 		case 0:

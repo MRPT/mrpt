@@ -12,6 +12,7 @@
 #include <mrpt/core/exceptions.h>
 
 #include <algorithm>  // count()
+#include <array>
 #include <sstream>
 
 TEST(exception, stackedExceptionBasic)
@@ -122,6 +123,20 @@ TEST(exception, assertMacros)
 	EXPECT_NO_THROW(ASSERT_NEAR_(1, 1, 0));
 	EXPECT_ANY_THROW(ASSERT_NEAR_(1, 2, 0));
 	EXPECT_ANY_THROW(ASSERT_NEAR_(10.0, 10.01, 0.001));
+	EXPECT_ANY_THROW(ASSERT_NEAR_(10.0, 10.01f, 0.001));
+	EXPECT_ANY_THROW(ASSERT_NEAR_(10.0, 10.01f, 0.001f));
+	EXPECT_ANY_THROW(ASSERT_NEAR_(10.0f, 10.01, 0.001f));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0, 10.01f, 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0f, 10.01f, 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0f, 10.01, 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(10.0, 10.01f, 0.1f));
+
+	const std::array<double, 2> arr_dc = {10.0, 10.01};
+	std::array<double, 2> arr_dnc = {10.0, 10.01};
+	EXPECT_NO_THROW(ASSERT_NEAR_(arr_dc[0], arr_dc[1], 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(arr_dc[0], arr_dnc[1], 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(arr_dnc[0], arr_dc[1], 0.1));
+	EXPECT_NO_THROW(ASSERT_NEAR_(arr_dnc[0], arr_dnc[1], 0.1));
 
 	// ASSERT_LT_
 	EXPECT_NO_THROW(ASSERT_LT_(1.0, 2.0));

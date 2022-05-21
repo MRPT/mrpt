@@ -169,11 +169,15 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
 		if (__A == __B) ASRT_FAIL("ASSERT_NOT_EQUAL_", __A, __B, #__A, #__B)   \
 	} while (0)
 
-/** Checks two float/double values, reporting their values upon failure */
+/** Checks two float/double values, reporting their values upon failure.
+ * \note If A, B, and Tolerance are of different types, keep in mind that they
+ *       will be compared after converting into typeof(A).
+ */
 #define ASSERT_NEAR_(__A, __B, __TOLERANCE)                                    \
 	do                                                                         \
 	{                                                                          \
-		const auto diff = mrpt::abs_diff((__A), (__B));                        \
+		const auto diff =                                                      \
+			mrpt::abs_diff<std::decay_t<decltype(__A)>>((__A), (__B));         \
 		if (diff > __TOLERANCE)                                                \
 			ASRT_FAIL("ASSERT_NEAR_", __A, __B, #__A, #__B)                    \
 	} while (0)
