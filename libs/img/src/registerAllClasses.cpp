@@ -14,6 +14,10 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TStereoCamera.h>
 #include <mrpt/img/registerAllClasses.h>
+// Deps:
+#include <mrpt/config/registerAllClasses.h>
+#include <mrpt/io/registerAllClasses.h>
+#include <mrpt/math/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_img)
 {
@@ -31,4 +35,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_img)
 void mrpt::img::registerAllClasses_mrpt_img()
 {
 	::registerAllClasses_mrpt_img();
+	mrpt::io::registerAllClasses_mrpt_io();
+	mrpt::math::registerAllClasses_mrpt_math();
+	mrpt::config::registerAllClasses_mrpt_config();
 }

@@ -20,7 +20,6 @@ set_property(GLOBAL PROPERTY mrpt_io_UNIT_TEST_EXTRA_DEPS mrpt-random)
 define_mrpt_lib(
 	io 		# Lib name
 	# Dependencies:
-	mrpt-core
 	mrpt-system
 	)
 

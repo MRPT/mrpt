@@ -13,10 +13,13 @@
 #include <mrpt/gui.h>
 #include <mrpt/gui/registerAllClasses.h>
 #include <mrpt/serialization/CSerializable.h>
+// deps:
+#include <mrpt/opengl/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_gui) {}
 
 void mrpt::gui::registerAllClasses_mrpt_gui()
 {
 	::registerAllClasses_mrpt_gui();
+	mrpt::opengl::registerAllClasses_mrpt_opengl();
 }

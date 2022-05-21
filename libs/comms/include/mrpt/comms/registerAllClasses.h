@@ -16,5 +16,8 @@ namespace mrpt::comms
  *
  * \ingroup mrpt_comms_grp
  */
-void registerAllClasses_mrpt_();
+inline void registerAllClasses_mrpt_comms()
+{
+	// None in this library
+}
 }  // namespace mrpt::comms

@@ -12,6 +12,8 @@
 #include <mrpt/core/initializer.h>
 #include <mrpt/tfest.h>
 #include <mrpt/tfest/registerAllClasses.h>
+// deps:
+#include <mrpt/poses/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_tfest)
 {
@@ -25,4 +27,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_tfest)
 void mrpt::tfest::registerAllClasses_mrpt_tfest()
 {
 	::registerAllClasses_mrpt_tfest();
+	// deps:
+	mrpt::poses::registerAllClasses_mrpt_poses();
 }

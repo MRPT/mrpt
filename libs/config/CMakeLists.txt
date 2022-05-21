@@ -5,7 +5,6 @@ list(APPEND config_EXTRA_SRCS_NAME 	"config" "config")
 define_mrpt_lib(
 	config 		# Lib name
 	# Dependencies:
-	mrpt-core
 	mrpt-system
 	mrpt-expr
 	)

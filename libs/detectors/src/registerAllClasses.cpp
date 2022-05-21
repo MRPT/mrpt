@@ -12,6 +12,9 @@
 #include <mrpt/core/initializer.h>
 #include <mrpt/detectors.h>
 #include <mrpt/detectors/registerAllClasses.h>
+// Deps:
+#include <mrpt/gui/registerAllClasses.h>
+#include <mrpt/slam/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_detectors)
 {
@@ -27,4 +30,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_detectors)
 void mrpt::detectors::registerAllClasses_mrpt_detectors()
 {
 	::registerAllClasses_mrpt_detectors();
+	// deps:
+	mrpt::gui::registerAllClasses_mrpt_gui();
+	mrpt::slam::registerAllClasses_mrpt_slam();
 }

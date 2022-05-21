@@ -13,6 +13,9 @@
 #include <mrpt/core/initializer.h>
 #include <mrpt/slam.h>
 #include <mrpt/slam/registerAllClasses.h>
+// deps:
+#include <mrpt/maps/registerAllClasses.h>
+#include <mrpt/vision/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_slam)
 {
@@ -28,4 +31,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_slam)
 void mrpt::slam::registerAllClasses_mrpt_slam()
 {
 	::registerAllClasses_mrpt_slam();
+	// deps:
+	mrpt::vision::registerAllClasses_mrpt_vision();
+	mrpt::maps::registerAllClasses_mrpt_maps();
 }

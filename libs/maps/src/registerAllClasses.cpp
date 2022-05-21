@@ -15,6 +15,9 @@
 #include <mrpt/maps/registerAllClasses.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
+// deps:
+#include <mrpt/graphs/registerAllClasses.h>
+#include <mrpt/obs/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
@@ -57,4 +60,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 void mrpt::maps::registerAllClasses_mrpt_maps()
 {
 	::registerAllClasses_mrpt_maps();
+	// deps:
+	mrpt::obs::registerAllClasses_mrpt_obs();
+	mrpt::graphs::registerAllClasses_mrpt_graphs();
 }

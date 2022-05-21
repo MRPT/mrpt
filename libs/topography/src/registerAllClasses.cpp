@@ -12,6 +12,8 @@
 #include <mrpt/core/initializer.h>
 #include <mrpt/topography.h>
 #include <mrpt/topography/registerAllClasses.h>
+// deps:
+#include <mrpt/obs/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_topography)
 {
@@ -23,4 +25,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_topography)
 void mrpt::topography::registerAllClasses_mrpt_topography()
 {
 	::registerAllClasses_mrpt_topography();
+	// deps:
+	mrpt::obs::registerAllClasses_mrpt_obs();
 }

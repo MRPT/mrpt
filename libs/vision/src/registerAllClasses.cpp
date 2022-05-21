@@ -14,6 +14,8 @@
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/vision.h>
 #include <mrpt/vision/registerAllClasses.h>
+// deps:
+#include <mrpt/obs/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_vision)
 {
@@ -35,4 +37,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_vision)
 void mrpt::vision::registerAllClasses_mrpt_vision()
 {
 	::registerAllClasses_mrpt_vision();
+	// deps:
+	mrpt::obs::registerAllClasses_mrpt_obs();
 }
