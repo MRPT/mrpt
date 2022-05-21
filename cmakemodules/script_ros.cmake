@@ -107,7 +107,7 @@ if (NOT DISABLE_ROS)
 	set_directory_properties(PROPERTIES "COMPILE_DEFINITIONS" "")
 
 
-	if ("$ENV{VERBOSE}" OR (NOT "${MRPT_ROS_VERSION}" STREQUAL ""))
+	if ("$ENV{VERBOSE}")
 		message(STATUS "ROS dependencies:")
 		message(STATUS "  roscpp_INCLUDE_DIRS :${roscpp_INCLUDE_DIRS}")
 		message(STATUS "  roscpp_LIBRARIES    :${roscpp_LIBRARIES}")

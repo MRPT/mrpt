@@ -27,8 +27,8 @@ TEST(WorkerThreadsPool, runTasks)
 		auto fut3 = pool.enqueue(f, 3);
 
 		const auto n = pool.pendingTasks();
-		EXPECT_GE(n, 0);
-		EXPECT_LE(n, 3);
+		EXPECT_GE(n, 0U);
+		EXPECT_LE(n, 3U);
 
 		fut1.wait();
 		fut2.wait();

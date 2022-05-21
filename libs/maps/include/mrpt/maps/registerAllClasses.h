@@ -6,27 +6,15 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#include "tfest-precomp.h"
-//
-#include <mrpt/core/initializer.h>
-#include <mrpt/tfest.h>
-#include <mrpt/tfest/registerAllClasses.h>
-// deps:
-#include <mrpt/poses/registerAllClasses.h>
-
-MRPT_INITIALIZER(registerAllClasses_mrpt_tfest)
+namespace mrpt::maps
 {
-	using namespace mrpt::tfest;
-
-#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-//	registerClass( CLASS_ID( XXXX ) );
-#endif
-}
-
-void mrpt::tfest::registerAllClasses_mrpt_tfest()
-{
-	::registerAllClasses_mrpt_tfest();
-	// deps:
-	mrpt::poses::registerAllClasses_mrpt_poses();
-}
+/** Forces manual RTTI registration of all serializable classes in this
+ * namespace. Should never be required to be explicitly called by users, except
+ * if building MRPT as a static library.
+ *
+ * \ingroup mrpt_maps_grp
+ */
+void registerAllClasses_mrpt_maps();
+}  // namespace mrpt::maps

@@ -11,14 +11,16 @@
 //
 #include <mrpt/core/initializer.h>
 #include <mrpt/nav.h>
+#include <mrpt/nav/registerAllClasses.h>
 #include <mrpt/serialization/CSerializable.h>
+// deps:
+#include <mrpt/kinematics/registerAllClasses.h>
+#include <mrpt/maps/registerAllClasses.h>
 
-using namespace mrpt;
-using namespace mrpt::nav;
-using namespace std;
-
-MRPT_INITIALIZER(registerAllNavigationClasses)
+MRPT_INITIALIZER(registerAllClasses_mrpt_nav)
 {
+	using namespace mrpt::nav;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// PTGs:
 	registerClass(CLASS_ID(CParameterizedTrajectoryGenerator));
@@ -44,4 +46,12 @@ MRPT_INITIALIZER(registerAllNavigationClasses)
 	registerClass(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
 	registerClass(CLASS_ID(CMultiObjMotionOpt_Scalarization));
 #endif
+}
+
+void mrpt::nav::registerAllClasses_mrpt_nav()
+{
+	::registerAllClasses_mrpt_nav();
+	// deps:
+	mrpt::maps::registerAllClasses_mrpt_maps();
+	mrpt::kinematics::registerAllClasses_mrpt_kinematics();
 }

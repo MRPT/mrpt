@@ -24,8 +24,6 @@ define_mrpt_lib(
 	# Dependencies:
 	mrpt-obs
 	mrpt-graphs
-	# Deps of deps:
-	mrpt-opengl
 	)
 
 if(BUILD_mrpt-maps)

@@ -6,31 +6,22 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
+#pragma once
 
-#include "detectors-precomp.h"	// Precompiled headers
-//
-#include <mrpt/core/initializer.h>
-#include <mrpt/detectors.h>
-#include <mrpt/detectors/registerAllClasses.h>
-// Deps:
 #include <mrpt/gui/registerAllClasses.h>
 #include <mrpt/slam/registerAllClasses.h>
 
-MRPT_INITIALIZER(registerAllClasses_mrpt_detectors)
+namespace mrpt::graphslam
 {
-	using namespace mrpt::detectors;
-
-#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass(CLASS_ID(CDetectableObject));
-	registerClass(CLASS_ID(CDetectable2D));
-	registerClass(CLASS_ID(CDetectable3D));
-#endif
-}
-
-void mrpt::detectors::registerAllClasses_mrpt_detectors()
+/** Forces manual RTTI registration of all serializable classes in this
+ * namespace. Should never be required to be explicitly called by users, except
+ * if building MRPT as a static library.
+ *
+ * \ingroup mrpt_graphslam_grp
+ */
+inline void registerAllClasses_mrpt_graphslam()
 {
-	::registerAllClasses_mrpt_detectors();
-	// deps:
 	mrpt::gui::registerAllClasses_mrpt_gui();
 	mrpt::slam::registerAllClasses_mrpt_slam();
 }
+}  // namespace mrpt::graphslam
