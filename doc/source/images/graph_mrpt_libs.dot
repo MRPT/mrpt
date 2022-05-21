@@ -18,7 +18,6 @@ digraph MRPT_LIBS {
 
 	config   [label="mrpt-config",URL="group_mrpt_config_grp.html"];
 	config -> expr;
-	config -> system;
 
 	containers  [label="mrpt-containers",URL="group_mrpt_containers_grp.html"];
 	containers -> core;

@@ -16,6 +16,8 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSplineInterpolator1D.h>
 #include <mrpt/math/registerAllClasses.h>
+// deps:
+#include <mrpt/serialization/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_math)
 {
@@ -38,4 +40,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_math)
 void mrpt::math::registerAllClasses_mrpt_math()
 {
 	::registerAllClasses_mrpt_math();
+	// deps:
+	mrpt::serialization::registerAllClasses_mrpt_serialization();
 }

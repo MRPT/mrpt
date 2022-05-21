@@ -2,8 +2,6 @@
 define_mrpt_lib(
 	img 		# Lib name
 	# Dependencies:
-	mrpt-core
-	mrpt-serialization
 	mrpt-io
 	mrpt-math
 	mrpt-config
