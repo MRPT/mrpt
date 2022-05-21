@@ -3,6 +3,8 @@
 # Version 2.4.5: UNRELEASED
 - Changes in libraries:
   - New module mrpt_ros2bridge_grp to support conversions to/from ROS2 data types and MRPT classes.
+- Build system:
+  - Fix detection of dependencies for both ROS1 and ROS2.
 
 # Version 2.4.4: Released March 5th, 2022
 - New web-based applications
