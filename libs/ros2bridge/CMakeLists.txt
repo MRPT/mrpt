@@ -41,6 +41,7 @@ if(BUILD_mrpt-ros2bridge)
 		std_msgs
 		geometry_msgs
 		stereo_msgs
+		nav_msgs
 	)
 
 	target_compile_definitions(ros2bridge PRIVATE ${ROS_DEFINITIONS})
