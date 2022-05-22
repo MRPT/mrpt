@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.4.5: UNRELEASED
+# Version 2.4.5: Released March 22nd, 2022
 - Changes in libraries:
   - New module mrpt_ros2bridge_grp to support conversions to/from ROS2 data types and MRPT classes.
 - Build system:
