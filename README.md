@@ -19,8 +19,8 @@
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
 
 Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
-in mobile robotics and computer vision. Libraries include [SLAM solutions](https://www.mrpt.org/List_of_SLAM_algorithms), [3D(6D) geometry](https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](https://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf),
-[probability density functions (pdfs)](https://docs.mrpt.org/reference/develop/classmrpt_1_1math_1_1_c_probability_density_function.html) over points, landmarks, poses and maps,
+in mobile robotics and computer vision. Libraries include [SLAM solutions](https://www.mrpt.org/List_of_SLAM_algorithms), [2D and 3D spatial transformations](https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](https://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf),
+[probability density functions (pdfs)](https://docs.mrpt.org/reference/latest/class_mrpt_math_CProbabilityDensityFunction.html) over points, landmarks, poses and maps,
 Bayesian inference ([Kalman filters](https://www.mrpt.org/Kalman_Filters), [particle filters](https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/)), [image processing](https://www.mrpt.org/tutorials/programming/images-image-processing-camera-models/), [obstacle avoidance](https://www.mrpt.org/Obstacle_avoidance), [etc](https://reference.mrpt.org/devel/modules.html).
 MRPT also provides GUI apps for [Stereo camera calibration](https://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/), [dataset inspection](https://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/),
 and [much more](https://www.mrpt.org/list-of-mrpt-apps/).
@@ -30,14 +30,14 @@ and [much more](https://www.mrpt.org/list-of-mrpt-apps/).
   * Ask questions at: [this Google group](https://www.mrpt.org/forum/) or at [stackoverflow](https://stackoverflow.com/search?q=mrpt) (please, use the tag `mrpt`!)
   * [Main project website](https://www.mrpt.org/), including [sources and Windows installer downloads](https://www.mrpt.org/download-mrpt/)
   * [C++ API reference](https://docs.mrpt.org/reference/)
-  * ROS packages: [`mrpt_navigation`](https://wiki.ros.org/mrpt_navigation), [`mrpt_slam`](https://wiki.ros.org/mrpt_slam)
+  * [ROS packages](https://docs.mrpt.org/reference/latest/wrappers.html#mrpt-ros-packages)
   * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
-  * Source code for [dozens of examples](https://www.mrpt.org/tutorials/mrpt-examples/)
+  * Source code for [dozens of examples](https://docs.mrpt.org/reference/latest/examples.html)
   * Example configuration files for  MRPT applications can be found at:
      [MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files)
   * Some sample datasets are stored in:
      [MRPT/share/mrpt/datasets](https://github.com/MRPT/mrpt/tree/master/share/mrpt/datasets).
-    A more complete dataset repository is [available online](http://www.mrpt.org/robotics_datasets).
+    A more complete dataset repository is [available online](https://www.mrpt.org/robotics_datasets).
   * [How to contribute](https://github.com/MRPT/mrpt/blob/master/.github/CONTRIBUTING.md) with your code for new feaures, bug fixes, etc.
   * MRPT is used in the [MOLA modular SLAM framework](https://github.com/MOLAorg/mola/).
 
