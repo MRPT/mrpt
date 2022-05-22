@@ -181,6 +181,7 @@ if(MRPT_BUILD_EXAMPLES)
 		gui_text_fonts_example
 		gui_gravity3d_example
 		gui_windows_events
+		gui_depth_camera_distortion
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::gui mrpt::maps)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()

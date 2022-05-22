@@ -86,21 +86,34 @@ foreach(_TSTLIB ${LST_LIB_TESTS})
 	get_property(extra_deps GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_DEPS")
 	set(lst_deps ${lst_deps} ${extra_deps})
 
+	get_property(extra_definitions GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_DEFINITIONS")
+	if (extra_definitions)
+		target_compile_definitions(test_${_TSTLIB} PRIVATE ${extra_definitions})
+	endif()
+	
+	get_property(extra_include_dirs GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_EXTRA_INCLUDE_DIRS")
+	if (extra_include_dirs)
+		target_include_directories(test_${_TSTLIB} PRIVATE ${extra_include_dirs})
+	endif()
+
 	# The order in this list is very important for linking!
 	# Otherwise, one may have the weird linking error:
 	# "error adding symbols: DSO missing from command line"
 	set(lst_deps ${_TSTLIB_DASH} ${lst_deps})
+	set(link_libs "") # Prepare a list so we can smoothly handle list of libs with "debug", "optimized", etc.
 	foreach(_DEPLIB ${lst_deps})
 		# Include dirs:
 		if (_DEPLIB MATCHES "^mrpt-?:*(.*)")
 			string(REGEX REPLACE "mrpt-?:*(.*)" "\\1" _DEPLIB_DASH ${_DEPLIB})
 			# This link command automatically imports all required "include directories"
 			# and other PUBLIC dependencies of the linked target:
-			target_link_libraries(test_${_TSTLIB} mrpt::${_DEPLIB_DASH})
+			list(APPEND link_libs mrpt::${_DEPLIB_DASH})
 		else()
-			target_link_libraries(test_${_TSTLIB} ${_DEPLIB})
+			list(APPEND link_libs ${_DEPLIB})
 		endif()
 	endforeach()
+	target_link_libraries(test_${_TSTLIB} ${link_libs})
+	unset(link_libs)
 
 	# Run it:
 	set(GENERATED_EXE "$<TARGET_FILE:test_${_TSTLIB}>")

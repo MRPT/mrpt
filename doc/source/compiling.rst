@@ -75,6 +75,10 @@ Minimum compiler requisites:
     		libstd-srvs-dev libstereo-msgs-dev libtf2-dev \
     		libtf2-msgs-dev libbz2-dev
 
+    **ROS2 support:** Invoke your ROS2 distribution ``setup.bash``` as usual before
+    running MRPT cmake configure to enable building of
+    the `mrpt::ros2bridge <group_mrpt_ros2bridge_grp.html>`_ module.
+
 .. dropdown:: Windows
 
     **CMake (Mandatory)**

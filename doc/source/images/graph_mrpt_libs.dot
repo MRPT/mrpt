@@ -18,7 +18,6 @@ digraph MRPT_LIBS {
 
 	config   [label="mrpt-config",URL="group_mrpt_config_grp.html"];
 	config -> expr;
-	config -> system;
 
 	containers  [label="mrpt-containers",URL="group_mrpt_containers_grp.html"];
 	containers -> core;
@@ -99,6 +98,9 @@ digraph MRPT_LIBS {
 
 	ros1bridge   [label="mrpt-ros1bridge", URL="group_mrpt_ros1bridge_grp.html"];
 	ros1bridge -> maps;
+
+	ros2bridge   [label="mrpt-ros2bridge", URL="group_mrpt_ros2bridge_grp.html"];
+	ros2bridge -> maps;
 
 	serialization [label="mrpt-serialization",URL="group_mrpt_serialization_grp.html"];
 	serialization -> rtti;

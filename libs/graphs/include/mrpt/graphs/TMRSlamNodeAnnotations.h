@@ -34,6 +34,12 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations
 	{
 		this->setAnnots(other);
 	}
+	TMRSlamNodeAnnotations& operator=(const TMRSlamNodeAnnotations& other)
+	{
+		parent_t::operator=(other);
+		this->setAnnots(other);
+		return *this;
+	}
 
 	TNodeAnnotations* getCopyOfAnnots() const
 	{
