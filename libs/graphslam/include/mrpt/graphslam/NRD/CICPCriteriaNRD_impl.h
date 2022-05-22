@@ -301,8 +301,8 @@ void CICPCriteriaNRD<GRAPH_T>::getDescriptiveReport(
 	MRPT_START
 	using namespace std;
 
-	const std::string report_sep(2, '\n');
-	const std::string header_sep(80, '#');
+	const static std::string report_sep(2, '\n');
+	const static std::string header_sep(80, '#');
 
 	// Report on graph
 	stringstream class_props_ss;

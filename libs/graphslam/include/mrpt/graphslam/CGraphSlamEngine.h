@@ -953,11 +953,6 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	/**\brief Type of constraint currently in use.
 	 */
 	std::string m_current_constraint_type;
-
-	/**\brief Separator string to be used in debugging messages
-	 */
-	static const std::string header_sep;
-	static const std::string report_sep;
 };
 }  // namespace mrpt::graphslam
 // pseudo-split the definition and implementation of template

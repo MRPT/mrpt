@@ -14,6 +14,9 @@
 #include <mrpt/math/registerAllClasses.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/registerAllClasses.h>
+// deps:
+#include <mrpt/img/registerAllClasses.h>
+#include <mrpt/poses/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 {
@@ -68,5 +71,6 @@ void mrpt::opengl::registerAllClasses_mrpt_opengl()
 {
 	::registerAllClasses_mrpt_opengl();
 	// deps:
-	mrpt::math::registerAllClasses_mrpt_math();
+	mrpt::img::registerAllClasses_mrpt_img();
+	mrpt::poses::registerAllClasses_mrpt_poses();
 }

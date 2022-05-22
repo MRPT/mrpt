@@ -38,11 +38,14 @@
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPoses3DSequence.h>
-
-using namespace mrpt::poses;
+#include <mrpt/poses/registerAllClasses.h>
+// deps:
+#include <mrpt/bayes/registerAllClasses.h>
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_poses)
 {
+	using namespace mrpt::poses;
+
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass(CLASS_ID(CPoint2D));
 	registerClass(CLASS_ID(CPoint3D));
@@ -80,4 +83,11 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_poses)
 	registerClass(CLASS_ID(CPose2DInterpolator));
 	registerClass(CLASS_ID(CPose3DInterpolator));
 #endif
+}
+
+void mrpt::poses::registerAllClasses_mrpt_poses()
+{
+	::registerAllClasses_mrpt_poses();
+	// deps:
+	mrpt::bayes::registerAllClasses_mrpt_bayes();
 }

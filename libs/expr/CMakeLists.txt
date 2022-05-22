@@ -7,7 +7,6 @@ define_mrpt_lib(
 	expr 		# Lib name
 	# Dependencies:
 	mrpt-system
-	mrpt-core
 	)
 
 if(BUILD_mrpt-expr)
