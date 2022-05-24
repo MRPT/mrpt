@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.4.7: UNRELEASED
-(None yet)
+- Examples:
+  - gui_depth_camera_distortion: Added option to change distortion model.
 
 # Version 2.4.6: Released May 24th, 2022
 - Build system
