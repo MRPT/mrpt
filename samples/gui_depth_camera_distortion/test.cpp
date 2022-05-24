@@ -62,6 +62,8 @@ struct AppData
 	std::vector<nanogui::Slider*> sliders /* cx,cy,... dist[7] */,
 		slidersExtrinsics /*x,y,... pitch, roll*/;
 
+	nanogui::ComboBox* cbDistType;
+
 	void obs_params_to_gui();
 	void gui_params_to_obs();
 };
@@ -107,6 +109,8 @@ void AppData::obs_params_to_gui()
 	edBoxes[2]->setValue(mrpt::format("%.04f", p.fx()));
 	edBoxes[3]->setValue(mrpt::format("%.04f", p.fy()));
 
+	cbDistType->setSelectedIndex(static_cast<int>(p.distortion));
+
 	for (int i = 0; i < 8; i++)
 		edBoxes[4 + i]->setValue(mrpt::format("%.04e", p.dist[i]));
 
@@ -117,7 +121,7 @@ void AppData::obs_params_to_gui()
 		std::min(std::min(p.cx(), p.cy()), std::min(p.fx(), p.fy()));
 	for (int i = 0; i < 4; i++)
 	{
-		sliders[i]->setRange({0.5 * minPixelRanges, 2.0 * maxPixelRanges});
+		sliders[i]->setRange({0.75 * minPixelRanges, 1.5 * maxPixelRanges});
 	}
 	for (int i = 4; i < 12; i++)
 	{
@@ -165,6 +169,9 @@ void AppData::gui_params_to_obs()
 
 	for (int i = 0; i < 8; i++)
 		p.dist.at(i) = std::stod(edBoxes[4 + i]->value());
+
+	p.distortion = mrpt::typemeta::str2enum<mrpt::img::DistortionModel>(
+		cbDistType->items().at((cbDistType->selectedIndex())));
 
 	// Extrinsics:
 	app.obs->sensorPose = mrpt::poses::CPose3D::FromXYZYawPitchRoll(
@@ -263,7 +270,8 @@ static void AppDepthCamDemo()
 			catch (const std::exception& e)
 			{
 				std::cerr << e.what() << std::endl;
-				auto dlg = new nanogui::MessageDialog(
+				// auto dlg =
+				new nanogui::MessageDialog(
 					app.win->screen(), nanogui::MessageDialog::Type::Warning,
 					"Exception", e.what());
 			}
@@ -286,6 +294,16 @@ static void AppDepthCamDemo()
 		pn->setLayout(new nanogui::GridLayout(
 			nanogui::Orientation::Horizontal, 3, nanogui::Alignment::Fill, 5,
 			0));
+
+		pn->add<nanogui::Label>("Distortion model");
+		app.cbDistType = pn->add<nanogui::ComboBox>(
+			std::vector<std::string>({"none", "plumb_bob", "kannala_brandt"}));
+		pn->add<nanogui::Label>(" ");
+
+		app.cbDistType->setCallback([](int) {
+			app.gui_params_to_obs();
+			recalcAll();
+		});
 
 		std::vector<std::string> lb = {
 			"cx=",			 "cy=",			  "fx=",		   "fy=",
