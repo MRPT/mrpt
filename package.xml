@@ -17,19 +17,29 @@
 
   <license>BSD</license>
 
+  <!-- Deps required by user code (they are in public headers)  -->
+  <depend>eigen</depend>
+  <depend>libglfw3-dev</depend>
+  <depend>libxrandr</depend>
+  <depend>libxxf86vm</depend>
+  <depend>glut</depend>
+  <depend>std_msgs</depend>
+  <depend>stereo_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+
+  <!-- Deps required by building only -->
   <build_depend>assimp-dev</build_depend>
-  <build_depend>eigen</build_depend>
   <build_depend>ffmpeg</build_depend>
-  <build_depend>glut</build_depend>
   <build_depend>libjpeg</build_depend>
   <build_depend>libjsoncpp-dev</build_depend>
   <build_depend>libopencv-dev</build_depend>
   <build_depend>libpcap</build_depend>
   <build_depend>libudev-dev</build_depend>
   <build_depend>libusb-1.0-dev</build_depend>
-  <build_depend>libglfw3-dev</build_depend>
-  <build_depend>libxrandr</build_depend>
-  <build_depend>libxxf86vm</build_depend>
   <build_depend>libfreenect-dev</build_depend>
   <build_depend>libopenni2-dev</build_depend>
   <build_depend>octomap</build_depend>
@@ -40,18 +50,12 @@
 
   <!-- Deps for ros1bridge/ros2bridge -->
   <build_depend>cv_bridge</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>nav_msgs</build_depend>
   <build_depend>pcl_conversions</build_depend> <!-- To run unit tests only -->
   
   <build_depend condition="$ROS_VERSION == 1">rosbag_storage</build_depend>
   <build_depend condition="$ROS_VERSION == 2">rosbag2_storage</build_depend>
   <build_depend condition="$ROS_VERSION == 1">roscpp</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>stereo_msgs</build_depend>
-  <build_depend>tf2</build_depend>
-  <build_depend>tf2_msgs</build_depend>
+
 
   <doc_depend>doxygen</doc_depend>
 
