@@ -233,8 +233,8 @@ void unprojectInto(
 			const auto img_stride = iimg.getRowStride();
 			for (size_t i = 0; i < nPts; i++)
 			{
-				int img_idx_x,
-					img_idx_y;	// projected pixel coordinates, in the
+				// projected pixel coordinates, in the
+				int img_idx_x, img_idx_y;
 				// RGB image plane
 				bool pointWithinImage = false;
 				if (isDirectCorresp)
@@ -264,6 +264,7 @@ void unprojectInto(
 					}
 				}
 
+				bool ptValid = true;
 				if (pointWithinImage)
 				{
 					if (hasColorIntensityImg)
@@ -283,9 +284,20 @@ void unprojectInto(
 				else
 				{
 					pCol.R = pCol.G = pCol.B = 255;
+					if (pp.onlyPointsWithIntensityColor) ptValid = false;
 				}
-				// Set color:
-				pca.setPointRGBu8(i, pCol.R, pCol.G, pCol.B);
+
+				if (ptValid)
+				{
+					// Set color:
+					pca.setPointRGBu8(i, pCol.R, pCol.G, pCol.B);
+				}
+				else
+				{
+					// Ignore this point:
+					pca.setInvalidPoint(i);
+				}
+
 			}  // end for each point
 		}  // end if src_obs has intensity image
 	}
