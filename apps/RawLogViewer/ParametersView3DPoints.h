@@ -39,6 +39,7 @@ struct ParametersView3DPoints
 	double pointSize = 4.0;
 	bool drawSensorPose = true;
 	double sensorPoseScale = 0.3;
+	bool onlyPointsWithColor = false;
 
 	bool showSurfaceIn2Dscans = true;
 	bool showPointsIn2Dscans = true;
