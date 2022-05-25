@@ -3,6 +3,8 @@
 # Version 2.4.7: UNRELEASED
 - Examples:
   - gui_depth_camera_distortion: Added option to change distortion model.
+- Build system
+  - Fixed ROS-level public dependency on suitesparse.
 
 # Version 2.4.6: Released May 24th, 2022
 - Build system
