@@ -102,7 +102,8 @@ class CSimplePointsMap : public CPointsMap
 	void impl_copyFrom(const CPointsMap& obj) override;
 	void addFrom_classSpecific(
 		[[maybe_unused]] const CPointsMap& anotherMap,
-		[[maybe_unused]] const size_t nPreviousPoints) override
+		[[maybe_unused]] const size_t nPreviousPoints,
+		[[maybe_unused]] const bool filterOutPointsAtZero) override
 	{
 		// No extra data.
 	}

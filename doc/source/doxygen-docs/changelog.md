@@ -5,6 +5,10 @@
   - gui_depth_camera_distortion: Added option to change distortion model.
 - Build system
   - Fixed ROS-level public dependency on suitesparse.
+- Changes in libraries:
+  - \ref mrpt_maps_grp
+    - Method mrpt::maps::CPointsMap::addFrom() removed, it overlapped with mrpt::maps::CPointsMap::insertAnotherMap()
+    - New optional parameter in mrpt::maps::CPointsMap::insertAnotherMap()
 
 # Version 2.4.6: Released May 24th, 2022
 - Build system

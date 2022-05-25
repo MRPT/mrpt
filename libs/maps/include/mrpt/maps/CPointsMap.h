@@ -200,7 +200,8 @@ class CPointsMap : public CMetricMap,
 	/** Auxiliary method called from within \a addFrom() automatically, to
 	 * finish the copying of class-specific data  */
 	virtual void addFrom_classSpecific(
-		const CPointsMap& anotherMap, const size_t nPreviousPoints) = 0;
+		const CPointsMap& anotherMap, const size_t nPreviousPoints,
+		const bool filterOutPointsAtZero) = 0;
 
    public:
 	/** @} */
@@ -335,34 +336,26 @@ class CPointsMap : public CMetricMap,
 	};
 	TRenderOptions renderOptions;
 
-	/** Adds all the points from \a anotherMap to this map, without fusing.
-	 *  This operation can be also invoked via the "+=" operator, for example:
-	 *  \code
-	 *   mrpt::maps::CSimplePointsMap m1, m2;
-	 *   ...
-	 *   m1.addFrom( m2 );  // Add all points of m2 to m1
-	 *   m1 += m2;          // Exactly the same than above
-	 *  \endcode
-	 * \note The method in CPointsMap is generic but derived classes may
-	 * redefine this virtual method to another one more optimized.
-	 */
-	virtual void addFrom(const CPointsMap& anotherMap);
-
-	/** This operator is synonymous with \a addFrom. \sa addFrom */
-	inline void operator+=(const CPointsMap& anotherMap)
-	{
-		this->addFrom(anotherMap);
-	}
-
 	/** Insert the contents of another map into this one with some geometric
 	 * transformation, without fusing close points.
 	 * \param otherMap The other map whose points are to be inserted into this
 	 * one.
 	 * \param otherPose The pose of the other map in the coordinates of THIS map
+	 * \param filterOutPointsAtZero If true, points at (0,0,0) (in the frame of
+	 * reference of `otherMap`) will be assumed to be invalid and will not be
+	 * copied.
+	 *
 	 * \sa fuseWith, addFrom
 	 */
 	void insertAnotherMap(
-		const CPointsMap* otherMap, const mrpt::poses::CPose3D& otherPose);
+		const CPointsMap* otherMap, const mrpt::poses::CPose3D& otherPose,
+		const bool filterOutPointsAtZero = false);
+
+	/** Inserts another map into this one. \sa insertAnotherMap() */
+	void operator+=(const CPointsMap& anotherMap)
+	{
+		insertAnotherMap(&anotherMap, mrpt::poses::CPose3D::Identity());
+	}
 
 	// --------------------------------------------------
 	/** @name File input/output methods

@@ -12,6 +12,7 @@
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CVectorFixed.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/T3DPointsProjectionParams.h>
 #include <mrpt/obs/TRangeImageFilter.h>
 #include <mrpt/opengl/pointcloud_adapters.h>
