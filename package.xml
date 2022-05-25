@@ -30,6 +30,7 @@
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>suitesparse</depend>
 
   <!-- Deps required by building only -->
   <build_depend>assimp-dev</build_depend>
@@ -43,7 +44,6 @@
   <build_depend>libfreenect-dev</build_depend>
   <build_depend>libopenni2-dev</build_depend>
   <build_depend>octomap</build_depend>
-  <build_depend>suitesparse</build_depend>
   <build_depend>wx-common</build_depend>
   <build_depend>wxwidgets</build_depend>
   <build_depend>zlib</build_depend>
