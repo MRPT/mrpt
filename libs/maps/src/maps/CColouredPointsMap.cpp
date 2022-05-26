@@ -627,7 +627,8 @@ void CColouredPointsMap::PLY_export_get_vertex(
 addFrom_classSpecific
 ---------------------------------------------------------------*/
 void CColouredPointsMap::addFrom_classSpecific(
-	const CPointsMap& anotherMap, const size_t nPreviousPoints)
+	const CPointsMap& anotherMap, const size_t nPreviousPoints,
+	const bool filterOutPointsAtZero)
 {
 	const size_t nOther = anotherMap.size();
 
@@ -637,11 +638,16 @@ void CColouredPointsMap::addFrom_classSpecific(
 
 	if (anotheMap_col)
 	{
-		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++, j++)
+		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
 		{
+			if (filterOutPointsAtZero && anotheMap_col->m_x[i] == 0 &&
+				anotheMap_col->m_y[i] == 0 && anotheMap_col->m_z[i] == 0)
+				continue;  // skip
+
 			m_color_R[j] = anotheMap_col->m_color_R[i];
 			m_color_G[j] = anotheMap_col->m_color_G[i];
 			m_color_B[j] = anotheMap_col->m_color_B[i];
+			j++;
 		}
 	}
 }

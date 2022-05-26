@@ -6,7 +6,7 @@
 -->
 <package format="3">
   <name>mrpt2</name>
-  <version>2.4.6</version>
+  <version>2.4.7</version>
   <description>Mobile Robot Programming Toolkit (MRPT) version 2.x</description>
 
   <author     email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>
@@ -30,6 +30,7 @@
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>suitesparse</depend>
 
   <!-- Deps required by building only -->
   <build_depend>assimp-dev</build_depend>
@@ -43,7 +44,7 @@
   <build_depend>libfreenect-dev</build_depend>
   <build_depend>libopenni2-dev</build_depend>
   <build_depend>octomap</build_depend>
-  <build_depend>suitesparse</build_depend>
+  <build_depend>tinyxml2</build_depend>
   <build_depend>wx-common</build_depend>
   <build_depend>wxwidgets</build_depend>
   <build_depend>zlib</build_depend>

@@ -46,6 +46,12 @@ struct T3DPointsProjectionParams
 	 * here the name of the layer you want to unproject, from those available in
 	 * rangeImageOtherLayers. */
 	std::string layer;
+
+	/** (Default=false) If set to `true`, depth image points without an
+	 * associated color image will not
+	 * \note (New in MRPT 2.4.7)
+	 */
+	bool onlyPointsWithIntensityColor = false;
 };
 
 }  // namespace mrpt::obs
