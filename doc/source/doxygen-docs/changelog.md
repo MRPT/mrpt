@@ -5,6 +5,7 @@
   - gui_depth_camera_distortion: Added option to change distortion model.
 - Build system
   - Fixed ROS-level public dependency on suitesparse.
+  - Enable tinyxml2 for ROS builds.
 - Changes in libraries:
   - \ref mrpt_maps_grp
     - Method mrpt::maps::CPointsMap::addFrom() removed, it overlapped with mrpt::maps::CPointsMap::insertAnotherMap()
