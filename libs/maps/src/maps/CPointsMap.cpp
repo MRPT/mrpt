@@ -1573,30 +1573,6 @@ void CPointsMap::PLY_export_get_vertex(
 	pt.z = m_z[idx];
 }
 
-// Generic implementation (a more optimized one should exist in derived
-// classes):
-void CPointsMap::addFrom(const CPointsMap& anotherMap)
-{
-	const size_t nThis = this->size();
-	const size_t nOther = anotherMap.size();
-
-	const size_t nTot = nThis + nOther;
-
-	this->resize(nTot);
-
-	for (size_t i = 0, j = nThis; i < nOther; i++, j++)
-	{
-		m_x[j] = anotherMap.m_x[i];
-		m_y[j] = anotherMap.m_y[i];
-		m_z[j] = anotherMap.m_z[i];
-	}
-
-	// Also copy other data fields (color, ...)
-	addFrom_classSpecific(anotherMap, nThis);
-
-	mark_as_modified();
-}
-
 /*---------------------------------------------------------------
 						applyDeletionMask
  ---------------------------------------------------------------*/
@@ -1627,24 +1603,27 @@ void CPointsMap::applyDeletionMask(const std::vector<bool>& mask)
 					insertAnotherMap
  ---------------------------------------------------------------*/
 void CPointsMap::insertAnotherMap(
-	const CPointsMap* otherMap, const CPose3D& otherPose)
+	const CPointsMap* otherMap, const CPose3D& otherPose,
+	const bool filterOutPointsAtZero)
 {
 	const size_t N_this = size();
 	const size_t N_other = otherMap->size();
 
 	// Set the new size:
-	this->resize(N_this + N_other);
+	this->reserve(N_this + N_other);
 
 	// Optimization: detect the case of no transformation needed and avoid the
 	// matrix multiplications:
 	const bool identity_tf = (otherPose == CPose3D::Identity());
 
 	mrpt::math::TPoint3Df pt;
-	size_t src, dst;
-	for (src = 0, dst = N_this; src < N_other; src++, dst++)
+	for (size_t src = 0; src < N_other; src++)
 	{
 		// Load the next point:
 		otherMap->getPointFast(src, pt.x, pt.y, pt.z);
+
+		if (filterOutPointsAtZero && pt.x == 0 && pt.y == 0 && pt.z == 0)
+			continue;  // Skip
 
 		// Translation:
 		mrpt::math::TPoint3D g;
@@ -1657,11 +1636,11 @@ void CPointsMap::insertAnotherMap(
 		}
 
 		// Add to this map:
-		this->setPointFast(dst, g.x, g.y, g.z);
+		this->insertPointFast(g.x, g.y, g.z);
 	}
 
 	// Also copy other data fields (color, ...)
-	addFrom_classSpecific(*otherMap, N_this);
+	addFrom_classSpecific(*otherMap, N_this, filterOutPointsAtZero);
 
 	mark_as_modified();
 }

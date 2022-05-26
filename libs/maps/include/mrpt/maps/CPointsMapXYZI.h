@@ -109,7 +109,8 @@ class CPointsMapXYZI : public CPointsMap
 	void impl_copyFrom(const CPointsMap& obj) override;
 	// See base class
 	void addFrom_classSpecific(
-		const CPointsMap& anotherMap, const size_t nPreviousPoints) override;
+		const CPointsMap& anotherMap, const size_t nPreviousPoints,
+		const bool filterOutPointsAtZero) override;
 
 	// Friend methods:
 	template <class Derived>

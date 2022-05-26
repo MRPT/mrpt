@@ -42,6 +42,7 @@ class ViewOptions3DPoints : public wxPanel
 	wxStaticText* StaticText3;
 	wxTextCtrl* edSensorPoseScale;
 	wxCheckBox* cbShowSensorPose;
+	wxCheckBox* cbOnlyPointsWithColor;
 	wxButton* btnApply;
 	wxColourPickerCtrl* colorSurface;
 	wxStaticText* StaticText4;
@@ -80,6 +81,7 @@ class ViewOptions3DPoints : public wxPanel
 	static const long ID_CHECKBOX5;
 	static const long ID_COLOURPICKERCTRL1;
 	static const long ID_CHECKBOX6;
+	static const long ID_CHECKBOX7;
 	static const long ID_COLOURPICKERCTRL2;
 	//*)
 

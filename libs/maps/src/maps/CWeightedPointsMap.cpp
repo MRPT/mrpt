@@ -111,7 +111,8 @@ void CWeightedPointsMap::impl_copyFrom(const CPointsMap& obj)
 						addFrom_classSpecific
  ---------------------------------------------------------------*/
 void CWeightedPointsMap::addFrom_classSpecific(
-	const CPointsMap& anotherMap, const size_t nPreviousPoints)
+	const CPointsMap& anotherMap, const size_t nPreviousPoints,
+	const bool filterOutPointsAtZero)
 {
 	const size_t nOther = anotherMap.size();
 
@@ -121,8 +122,17 @@ void CWeightedPointsMap::addFrom_classSpecific(
 
 	if (anotheMap_w)
 	{
-		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++, j++)
+		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
+		{
+			if (filterOutPointsAtZero &&
+				anotheMap_w->getPointsBufferRef_x()[i] == 0 &&
+				anotheMap_w->getPointsBufferRef_y()[i] == 0 &&
+				anotheMap_w->getPointsBufferRef_z()[i] == 0)
+				continue;
+
 			pointWeight[j] = anotheMap_w->pointWeight[i];
+			j++;
+		}
 	}
 }
 

@@ -30,11 +30,12 @@ const long ViewOptions3DPoints::ID_CHECKBOX2 = wxNewId();
 const long ViewOptions3DPoints::ID_STATICTEXT4 = wxNewId();
 const long ViewOptions3DPoints::ID_SPINCTRL1 = wxNewId();
 const long ViewOptions3DPoints::ID_CHECKBOX3 = wxNewId();
+const long ViewOptions3DPoints::ID_CHECKBOX5 = wxNewId();
 const long ViewOptions3DPoints::ID_STATICTEXT5 = wxNewId();
 const long ViewOptions3DPoints::ID_TEXTCTRL4 = wxNewId();
-const long ViewOptions3DPoints::ID_CHECKBOX5 = wxNewId();
-const long ViewOptions3DPoints::ID_COLOURPICKERCTRL1 = wxNewId();
 const long ViewOptions3DPoints::ID_CHECKBOX6 = wxNewId();
+const long ViewOptions3DPoints::ID_COLOURPICKERCTRL1 = wxNewId();
+const long ViewOptions3DPoints::ID_CHECKBOX7 = wxNewId();
 const long ViewOptions3DPoints::ID_COLOURPICKERCTRL2 = wxNewId();
 //*)
 
@@ -134,6 +135,15 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 		cbColorFromRGB, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	wxString __wxRadioBoxChoices_1[4] = {_("x"), _("y"), _("z"), _("none")};
+
+	cbOnlyPointsWithColor = new wxCheckBox(
+		this, ID_CHECKBOX7, _("Only points with RGB"), wxDefaultPosition,
+		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX7"));
+	cbOnlyPointsWithColor->SetValue(false);
+	FlexGridSizer3->Add(
+		cbOnlyPointsWithColor, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
 	rbColorByAxis = new wxRadioBox(
 		this, ID_RADIOBOX1, _("Otherwise, color from: "), wxDefaultPosition,
 		wxDefaultSize, 4, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
@@ -174,6 +184,7 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	StaticBoxSizer3 =
 		new wxStaticBoxSizer(wxHORIZONTAL, this, _("Sensor pose"));
 	FlexGridSizer6 = new wxFlexGridSizer(0, 1, 0, 0);
+
 	cbShowSensorPose = new wxCheckBox(
 		this, ID_CHECKBOX3, _("Show sensor pose"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
@@ -181,6 +192,7 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	FlexGridSizer6->Add(
 		cbShowSensorPose, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
 	StaticText5 = new wxStaticText(
 		this, ID_STATICTEXT5, _("XYZ corner scale [m]:"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT5"));
@@ -276,6 +288,7 @@ void ParametersView3DPoints::to_UI(ViewOptions3DPoints& ui) const
 	ui.edPointSize->SetValue(pointSize);
 
 	ui.cbShowSensorPose->SetValue(drawSensorPose);
+	ui.cbOnlyPointsWithColor->SetValue(onlyPointsWithColor);
 	ui.edSensorPoseScale->SetValue(wxString::Format("%.03f", sensorPoseScale));
 
 	ui.cbShowAxes->SetValue(showAxis);
@@ -307,6 +320,7 @@ void ParametersView3DPoints::from_UI(const ViewOptions3DPoints& ui)
 	pointSize = ui.edPointSize->GetValue();
 
 	drawSensorPose = ui.cbShowSensorPose->IsChecked();
+	onlyPointsWithColor = ui.cbOnlyPointsWithColor->IsChecked();
 	ui.edSensorPoseScale->GetValue().ToCDouble(&sensorPoseScale);
 
 	showAxis = ui.cbShowAxes->GetValue();
@@ -339,6 +353,7 @@ void ParametersView3DPoints::save_to_ini_file() const
 	MRPT_SAVE_CONFIG_VAR(showAxis, c, s);
 	MRPT_SAVE_CONFIG_VAR(showSurfaceIn2Dscans, c, s);
 	MRPT_SAVE_CONFIG_VAR(showPointsIn2Dscans, c, s);
+	MRPT_SAVE_CONFIG_VAR(onlyPointsWithColor, c, s);
 
 	MRPT_SAVE_CONFIG_VAR(surface2DscansColor.R, c, s);
 	MRPT_SAVE_CONFIG_VAR(surface2DscansColor.G, c, s);
@@ -369,6 +384,7 @@ void ParametersView3DPoints::load_from_ini_file()
 	MRPT_LOAD_CONFIG_VAR_CS(showAxis, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(showSurfaceIn2Dscans, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(showPointsIn2Dscans, bool);
+	MRPT_LOAD_CONFIG_VAR_CS(onlyPointsWithColor, bool);
 
 	MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.R, int);
 	MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.G, int);

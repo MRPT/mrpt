@@ -140,6 +140,7 @@ void obs3Dscan_to_viz(
 	mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
 	mrpt::obs::T3DPointsProjectionParams pp;
 	pp.takeIntoAccountSensorPoseOnRobot = true;
+	pp.onlyPointsWithIntensityColor = p.onlyPointsWithColor;
 
 	// Color from intensity image?
 	if (p.colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)

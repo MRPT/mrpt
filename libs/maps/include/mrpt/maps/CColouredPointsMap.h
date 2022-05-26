@@ -110,7 +110,8 @@ class CColouredPointsMap : public CPointsMap
    protected:
 	void impl_copyFrom(const CPointsMap& obj) override;
 	void addFrom_classSpecific(
-		const CPointsMap& anotherMap, const size_t nPreviousPoints) override;
+		const CPointsMap& anotherMap, const size_t nPreviousPoints,
+		const bool filterOutPointsAtZero) override;
 
 	// Friend methods:
 	template <class Derived>

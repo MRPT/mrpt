@@ -281,7 +281,8 @@ bool CPointsMapXYZI::loadXYZI_from_text_file(const std::string& file)
 addFrom_classSpecific
 ---------------------------------------------------------------*/
 void CPointsMapXYZI::addFrom_classSpecific(
-	const CPointsMap& anotherMap, const size_t nPreviousPoints)
+	const CPointsMap& anotherMap, const size_t nPreviousPoints,
+	const bool filterOutPointsAtZero)
 {
 	const size_t nOther = anotherMap.size();
 
@@ -291,8 +292,17 @@ void CPointsMapXYZI::addFrom_classSpecific(
 
 	if (anotheMap_col)
 	{
-		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++, j++)
+		for (size_t i = 0, j = nPreviousPoints; i < nOther; i++)
+		{
+			if (filterOutPointsAtZero &&
+				anotheMap_col->getPointsBufferRef_x()[i] == 0 &&
+				anotheMap_col->getPointsBufferRef_y()[i] == 0 &&
+				anotheMap_col->getPointsBufferRef_z()[i] == 0)
+				continue;
+
 			m_intensity[j] = anotheMap_col->m_intensity[i];
+			j++;
+		}
 	}
 }
 

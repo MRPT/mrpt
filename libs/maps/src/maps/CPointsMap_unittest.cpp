@@ -76,6 +76,45 @@ void do_test_insertPoints()
 			EXPECT_EQ(z2, z3);
 		}
 	}
+
+	// test 3: Insert a map into another
+	{
+		MAP pts1;
+		load_demo_9pts_map(pts1);
+
+		EXPECT_EQ(pts1.size(), demo9_N);
+
+		MAP pts;
+
+		// Insert with += syntax;
+		pts += pts1;
+
+		// Insert via method:
+		pts.insertAnotherMap(&pts1, {}, false /* filter out */);
+
+		for (size_t i = 0; i < 2 * demo9_N; i++)
+		{
+			float x, y, z;
+			pts.getPoint(i, x, y, z);
+			EXPECT_EQ(x, demo9_xs[i % demo9_N]);
+			EXPECT_EQ(y, demo9_ys[i % demo9_N]);
+			EXPECT_EQ(z, demo9_zs[i % demo9_N]);
+		}
+		EXPECT_EQ(pts.size(), 2 * demo9_N);
+	}
+
+	// test 4: Insert a map into another with (0,0,0) filter:
+	{
+		MAP pts1;
+		load_demo_9pts_map(pts1);
+
+		EXPECT_EQ(pts1.size(), demo9_N);
+
+		MAP pts;
+		pts.insertAnotherMap(&pts1, {}, true /* filter out */);
+
+		EXPECT_EQ(pts.size(), demo9_N - 1);
+	}
 }
 
 template <class MAP>
