@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.4.9: UNRELEASED
+(None yet)
+
 # Version 2.4.8: Released May 26th, 2022
 - Build system:
   - Fixed various ROS-level public dependencies.
