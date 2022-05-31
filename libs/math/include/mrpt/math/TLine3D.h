@@ -59,7 +59,7 @@ struct TLine3D
 	/** Check whether a point is inside the line */
 	bool contains(const TPoint3D& point) const;
 
-	/** Distance between the line and a point. */
+	/** Absolute distance between the line and a point. */
 	double distance(const TPoint3D& point) const;
 
 	/** Closest point to `p` along the line. It is computed as the intersection

@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.4.9: UNRELEASED
-(None yet)
+- Changes in libraries
+  - \ref mrpt_math_grp
+    - new method mrpt::math::TPlane::signedDistance()
 
 # Version 2.4.8: Released May 26th, 2022
 - Build system:
