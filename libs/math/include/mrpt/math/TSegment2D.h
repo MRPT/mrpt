@@ -48,14 +48,13 @@ struct TSegment2D
 	 * Segment length.
 	 */
 	double length() const;
-	/**
-	 * Distance to point.
-	 */
+
+	/** Absolute distance to point. */
 	double distance(const TPoint2D& point) const;
-	/**
-	 * Distance with sign to point (sign indicates which side the point is).
-	 */
+
+	/** Distance with sign to point (sign indicates which side the point is) */
 	double signedDistance(const TPoint2D& point) const;
+
 	/**
 	 * Check whether a point is inside a segment.
 	 */

@@ -73,11 +73,13 @@ class TPolygon3D : public std::vector<TPoint3D>
 	 */
 	mrpt::containers::yaml asYAML() const;
 
-	/** Distance to point (always >=0) */
+	/** Absolute distance to point */
 	double distance(const TPoint3D& point) const;
+
 	/** Check whether a point is inside (or within geometryEpsilon of a polygon
 	 * edge). This works for concave or convex polygons. */
 	bool contains(const TPoint3D& point) const;
+
 	/** Gets as set of segments, instead of set of points. */
 	void getAsSegmentList(std::vector<TSegment3D>& v) const;
 	/** Gets a plane which contains the polygon. Returns false if the polygon is
