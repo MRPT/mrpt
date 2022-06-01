@@ -4,6 +4,8 @@
 - Changes in libraries
   - \ref mrpt_math_grp
     - new method mrpt::math::TPlane::signedDistance()
+  - \ref mrpt_ros2bridge_grp
+    - Fixed missing `find_package()` in module config.cmake file.
 
 # Version 2.4.8: Released May 26th, 2022
 - Build system:
