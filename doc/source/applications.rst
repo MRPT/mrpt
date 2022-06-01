@@ -14,7 +14,6 @@ also provides many ready-to-use applications:
   app_3d-rotation-converter.rst
   app_camera-calib.rst
   page_app_carmen2rawlog.rst
-  page_app_carmen2rawlog.rst
   page_app_carmen2simplemap.rst
   page_app_DifOdometry-Camera.rst
   page_app_DifOdometry-Datasets.rst

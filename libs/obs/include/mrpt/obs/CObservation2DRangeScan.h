@@ -49,7 +49,6 @@ namespace obs
  *
  * Note that the *angle of each range* in the vectors above is implicitly
  * defined by the index within the vector.
- *
  * \sa CObservation, CPointsMap, T2DScanProperties
  * \ingroup mrpt_obs_grp
  */
