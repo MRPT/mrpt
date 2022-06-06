@@ -3,7 +3,11 @@ project(pymrpt)
 find_package(PythonInterp)
 
 # Note: relative paths are relative to ${CMAKE_INSTALL_PREFIX} (defaults to /usr/local on Ubuntu)
-set( PYMRPT_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/dist-packages" )
+#
+# According to debian policy https://debian-python.readthedocs.io/en/latest/debian-policy.html#module-path
+# this should be: /usr/lib/python3/dist-packages
+#
+set(PYMRPT_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages/")
 
 include_directories(include)
 include_directories(
