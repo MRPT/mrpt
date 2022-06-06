@@ -27,7 +27,7 @@ recommend the following online resources:
 .. raw:: html
 
     <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
-        <iframe src="https://www.youtube.com/embed/U6vr3iNrwRA?list=PLgnQpQtFTOGQrZ4O5QzbIHgl3b1JHimN_"" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+        <iframe src="https://www.youtube.com/embed/U6vr3iNrwRA" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
     </div> <br/> <hr><br/>
     
 
