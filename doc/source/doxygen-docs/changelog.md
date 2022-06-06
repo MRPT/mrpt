@@ -6,6 +6,8 @@
     - new method mrpt::math::TPlane::signedDistance()
   - \ref mrpt_ros2bridge_grp
     - Fixed missing `find_package()` in module config.cmake file.
+- BUG FIXES:
+  - Fix wrong handling of cmake exported built-in version of Eigen3 (Closes [#1235](https://github.com/MRPT/mrpt/issues/1235))
 
 # Version 2.4.8: Released May 26th, 2022
 - Build system:
