@@ -4,8 +4,32 @@
 #    TARGET_FILE  ="MRPT_version.h"
 # ----------------------------------------------------------------------------
 set(CMAKE_MRPT_COMPLETE_NAME "MRPT ${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}")
+
+# There is no built-in support for dec to hex in cmake, sigh...
+function(digit_to_hex DIGIT RET)
+  if (NOT ${DIGIT} GREATER 9)
+    set(${RET} ${DIGIT} PARENT_SCOPE)
+  elseif (${DIGIT} MATCHES "10")
+    set(${RET} "A" PARENT_SCOPE)
+  elseif (${DIGIT} MATCHES "11")
+    set(${RET} "B" PARENT_SCOPE)
+  elseif (${DIGIT} MATCHES "12")
+    set(${RET} "C" PARENT_SCOPE)
+  elseif (${DIGIT} MATCHES "13")
+    set(${RET} "D" PARENT_SCOPE)
+  elseif (${DIGIT} MATCHES "14")
+    set(${RET} "E" PARENT_SCOPE)
+  elseif (${DIGIT} MATCHES "15")
+    set(${RET} "F" PARENT_SCOPE)
+  endif()
+endfunction()
+
+digit_to_hex(${CMAKE_MRPT_VERSION_NUMBER_MAJOR} CMAKE_MRPT_VERSION_NUMBER_MAJOR_HEX)
+digit_to_hex(${CMAKE_MRPT_VERSION_NUMBER_MINOR} CMAKE_MRPT_VERSION_NUMBER_MINOR_HEX)
+digit_to_hex(${CMAKE_MRPT_VERSION_NUMBER_PATCH} CMAKE_MRPT_VERSION_NUMBER_PATCH_HEX)
+
 # Build a three digits version code, eg. 0.5.1 -> 051,  1.2.0 -> 120
-set(CMAKE_MRPT_VERSION_CODE "0x${CMAKE_MRPT_VERSION_NUMBER_MAJOR}${CMAKE_MRPT_VERSION_NUMBER_MINOR}${CMAKE_MRPT_VERSION_NUMBER_PATCH}")
+set(CMAKE_MRPT_VERSION_CODE "0x${CMAKE_MRPT_VERSION_NUMBER_MAJOR_HEX}${CMAKE_MRPT_VERSION_NUMBER_MINOR_HEX}${CMAKE_MRPT_VERSION_NUMBER_PATCH_HEX}")
 
 # SOURCE_DATE_EPOCH: See Specs in https://reproducible-builds.org/specs/source-date-epoch/
 # Take its value from:
