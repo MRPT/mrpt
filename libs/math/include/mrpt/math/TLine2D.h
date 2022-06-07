@@ -64,7 +64,7 @@ struct TLine2D
 	 */
 	bool contains(const TPoint2D& point) const;
 	/**
-	 * Distance from a given point.
+	 * Absolute distance from a given point.
 	 */
 	double distance(const TPoint2D& point) const;
 	/**

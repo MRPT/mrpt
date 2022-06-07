@@ -41,6 +41,12 @@ double TPlane::distance(const TPoint3D& point) const
 {
 	return std::abs(evaluatePoint(point)) / sqrt(squareNorm<3, double>(coefs));
 }
+
+double TPlane::signedDistance(const TPoint3D& point) const
+{
+	return evaluatePoint(point) / sqrt(squareNorm<3, double>(coefs));
+}
+
 double TPlane::distance(const TLine3D& line) const
 {
 	if (std::abs(getAngle(*this, line)) >= getEpsilon())

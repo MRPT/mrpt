@@ -18,7 +18,11 @@ The following ROS packages are provided wrapping MRPT functionality:
 - `mrpt_slam <https://wiki.ros.org/mrpt_slam>`_: Basic 2D and 3D SLAM algorithms.
 - `pose_cov_ops <https://wiki.ros.org/pose_cov_ops>`_: SE(2) and SE(3) pose probability density function manipulation library.
 
-2. Python 
+See also MRPT ROS packages status table for:
+- `Melodic <https://repositories.ros.org/status_page/ros_melodic_default.html?q=mrpt>`_
+- `Noetic <https://repositories.ros.org/status_page/ros_noetic_default.html?q=mrpt>`_
+
+1. Python 
 ----------------------
 
 At present, all MRPT libraries are wrapped into one single Python module `pymrpt`.

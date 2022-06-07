@@ -24,11 +24,31 @@ if (pcl_conversions_FOUND AND PCL_FOUND)
 	set_property(GLOBAL PROPERTY mrpt_ros2bridge_UNIT_TEST_EXTRA_DEFINITIONS "HAVE_PCL_CONVERSIONS")
 endif()
 
+set(EXTRA_CONFIG_CMDS
+"if (NOT TARGET imp_opencv)\n\
+	add_library(imp_opencv INTERFACE IMPORTED)\n\
+	set_target_properties(imp_opencv\n\
+		PROPERTIES\n\
+		INTERFACE_INCLUDE_DIRECTORIES \"${OpenCV_INCLUDE_DIRS}\"\n\
+		INTERFACE_LINK_LIBRARIES \"${OpenCV_LIBRARIES}\"\n\
+		)\n\
+endif()\n"
+)
+
 define_mrpt_lib(
 	ros2bridge  # Lib name
 	# Dependencies:
 	mrpt-maps
 	mrpt-obs
+	# Other imported targets,
+	# which will be mapped into find_package() commands
+	# in the xxx_config.cmake script.
+	rclcpp # find_package() lib names
+	nav_msgs
+	stereo_msgs
+	sensor_msgs
+	tf2
+	cv_bridge
 	)
 
 if(BUILD_mrpt-ros2bridge)

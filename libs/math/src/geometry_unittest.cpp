@@ -120,6 +120,49 @@ TEST(Geometry, PlaneLineAngle)
 		45.0_deg, 1e-4);
 }
 
+TEST(Geometry, PlanePointDistance)
+{
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({0.0, 0.0, 0.0}, {0.0, 0.0, 1.0})
+			.distance({0, 0, 0}),
+		0.0, 1e-4);
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({10.0, 20.0, 30.0}, {0.0, 0.0, 1.0})
+			.distance({11.0, 20.0, 30.0}),
+		0.0, 1e-4);
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({10.0, 20.0, 30.0}, {0.0, 0.0, -1.0})
+			.distance({11.0, 21.0, 31.0}),
+		1.0, 1e-4);
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({10.0, 20.0, 30.0}, {0.0, 0.0, +1.0})
+			.distance({11.0, 21.0, 31.0}),
+		1.0, 1e-4);
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({10.0, 20.0, 30.0}, {0.0, 0.0, +5.0})
+			.distance({11.0, 21.0, 31.0}),
+		1.0, 1e-4);
+}
+TEST(Geometry, PlanePointSignedDistance)
+{
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({0.0, 0.0, 0.0}, {0.0, 0.0, 1.0})
+			.signedDistance({0, 0, 0}),
+		0.0, 1e-4);
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({10.0, 20.0, 30.0}, {0.0, 0.0, 1.0})
+			.signedDistance({11.0, 20.0, 30.0}),
+		0.0, 1e-4);
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({10.0, 20.0, 30.0}, {0.0, 0.0, -1.0})
+			.signedDistance({11.0, 21.0, 31.0}),
+		-1.0, 1e-4);
+	EXPECT_NEAR(
+		TPlane::FromPointAndNormal({10.0, 20.0, 30.0}, {0.0, 0.0, +5.0})
+			.signedDistance({11.0, 21.0, 31.0}),
+		+1.0, 1e-4);
+}
+
 TEST(Geometry, Line3DDistance)
 {
 	{
