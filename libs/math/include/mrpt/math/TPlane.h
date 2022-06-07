@@ -116,10 +116,15 @@ struct TPlane
 	 * Check whether a line is fully contained into the plane.
 	 */
 	bool contains(const TLine3D& line) const;
-	/**
-	 * Distance to 3D point.
-	 */
+
+	/** Absolute distance to 3D point */
 	double distance(const TPoint3D& point) const;
+
+	/** Signed distance (positive on the normal vector side) to 3D point.
+	 *  \note (New in MRPT 2.4.9)
+	 */
+	double signedDistance(const TPoint3D& point) const;
+
 	/**
 	 * Distance to 3D line. Will be zero if the line is not parallel to the
 	 * plane.
