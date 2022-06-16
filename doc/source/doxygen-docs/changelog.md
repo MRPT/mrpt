@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.4.10: UNRELEASED
-- (None yet)
+- BUG FIXES:
+  - Fix mrpt-comms rare timeout in busy build farms.
 
 # Version 2.4.9: Released June 7th, 2022
 - Changes in libraries
