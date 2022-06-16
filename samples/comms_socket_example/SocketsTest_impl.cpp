@@ -90,7 +90,7 @@ void thread_client()
 		printf("[Client] Connecting\n");
 #endif
 
-		sock.connect("127.0.0.1", 35000);
+		sock.connect("127.0.0.1", 15000);
 
 #ifdef SOCKET_TEST_VERBOSE
 		printf("[Client] Connected. Waiting for a message...\n");
