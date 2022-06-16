@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.4.10: UNRELEASED
+- Changes in applications:
+  - ptg-configurator:
+    - New menu action to export selected path to matlab/octave script.
 - BUG FIXES:
   - Fix mrpt-comms rare timeout in busy build farms.
 
