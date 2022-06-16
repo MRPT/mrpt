@@ -61,6 +61,7 @@ class ptgConfiguratorframe : public wxFrame
 	//(*Handlers(ptgConfiguratorframe)
 	void OnAbout(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
+	void OnExportSelectedPath(wxCommandEvent& event);
 	void OnbtnReloadParamsClick(wxCommandEvent& event);
 	void OncbPTGClassSelect(wxCommandEvent& event);
 	void OnedPTGIndexChange(wxSpinEvent& event);
