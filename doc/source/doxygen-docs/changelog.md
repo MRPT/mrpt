@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - New menu action to export selected path to matlab/octave script.
+- Changes in libraries:
+  - Adds covariance mapping to SE(3) for GTSAM (Closes [#1229](https://github.com/MRPT/mrpt/issues/1229))
 - BUG FIXES:
   - Fix mrpt-comms rare timeout in busy build farms.
 
