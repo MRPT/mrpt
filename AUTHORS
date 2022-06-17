@@ -169,5 +169,8 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
 * Edward Rosten
   - Part of his libCVD (Free BSD) has been used in libs/opengl/src/gltext.cpp
 
+* Miguel Castillón, University of Girona (2022). https://miguelcastillon.github.io/ - https://github.com/miguelcastillon
+  - Added covariance mapping to se3 for GTSAM
+
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.
