@@ -24,12 +24,13 @@ void CAction::getDescriptionAsText(std::ostream& o) const
 {
 	using namespace mrpt::system;  // for the TTimeStamp << op
 
-	o << "Timestamp (UTC): " << mrpt::system::dateTimeToString(timestamp)
-	  << std::endl;
-	o << "  (as time_t): " << std::fixed << std::setprecision(5)
-	  << mrpt::system::timestampTotime_t(timestamp) << std::endl;
-	o << "  (as TTimestamp): " << timestamp << "\n";
-	o << "\n";
+	o << mrpt::format(
+		"Timestamp (UTC): %s\n"
+		"        (local): %s\n"
+		"    (as time_t): %.09f\n",
+		mrpt::system::dateTimeToString(timestamp).c_str(),
+		mrpt::system::dateTimeLocalToString(timestamp).c_str(),
+		mrpt::Clock::toDouble(timestamp));
 
 	o << "ClassName: " << this->GetRuntimeClass()->className << "\n"
 	  << "\n";
