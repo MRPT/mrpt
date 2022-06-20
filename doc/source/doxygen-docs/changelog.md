@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - New menu action to export selected path to matlab/octave script.
+- Build system
+  - Fix ROS version detection; select ROS2 if packages for both versions are found.
 - BUG FIXES:
   - Fix mrpt-comms rare timeout in busy build farms.
 
