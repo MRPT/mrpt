@@ -1219,7 +1219,10 @@ void ptgConfiguratorframe::rebuild3Dview()
 					cos(dir) * norm_d, sin(dir) * norm_d, .0);
 				gl_TP_target->setName("TP-target");
 			}
-			else { gl_TP_target->setName("TP-target (NOT EXACT)"); }
+			else
+			{
+				gl_TP_target->setName("TP-target (NOT EXACT)");
+			}
 			StatusBar1->SetStatusText(
 				wxString::Format(
 					wxT("TP-Target: k=%i (alpha=%.03f deg) norm_d=%.03f "
