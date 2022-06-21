@@ -667,6 +667,10 @@ class CPose3D : public CPose<CPose3D, 6>,
 		mrpt::optional_ref<mrpt::math::CMatrixDouble43> out_dq_dr =
 			std::nullopt) const;
 
+	mrpt::math::CMatrixDouble33 jacobian_rodrigues_from_YPR() const;
+
+	mrpt::math::CMatrixDouble66 jacobian_pose_rodrigues_from_YPR() const;
+
 	inline double operator[](unsigned int i) const
 	{
 		updateYawPitchRoll();
