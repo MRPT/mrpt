@@ -64,7 +64,7 @@ static void to_gtsam_se3_cov6(
 		out_pose_domega_dypr.asEigen() * in.cov.asEigen() *
 		out_pose_domega_dypr.asEigen().transpose());
 
-	cov_out = to_gtsam_se3_cov6_isotropic(cov_rod);	 // reordering
+	cov_out = to_gtsam_se3_cov6_reordering(cov_rod);
 }
 
 /** @} */
