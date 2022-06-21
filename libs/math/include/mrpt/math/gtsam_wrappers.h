@@ -9,11 +9,9 @@
 #pragma once
 
 #include <gtsam/geometry/Point3.h>
-#include <gtsam/geometry/Pose3.h>
 #include <gtsam/navigation/NavState.h>	// Velocity3
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPoint3D.h>
-#include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TTwist3D.h>
 
 namespace mrpt::gtsam_wrappers
@@ -60,7 +58,7 @@ static mrpt::math::CMatrixDouble66 to_mrpt_se3_cov6(
 	return C;
 }
 
-static gtsam::Matrix6 to_gtsam_se3_cov6(
+static gtsam::Matrix6 to_gtsam_se3_cov6_reordering(
 	const mrpt::math::CMatrixDouble66& se3_cov)
 {
 	gtsam::Matrix6 C;
@@ -70,6 +68,17 @@ static gtsam::Matrix6 to_gtsam_se3_cov6(
 	for (int i = 0; i < 6; i++)
 		for (int j = 0; j < 6; j++)
 			C(i, j) = se3_cov(mapping[i], mapping[j]);
+
+	return C;
+}
+
+static gtsam::Matrix6 to_gtsam_se3_cov6_isotropic(
+	const mrpt::math::CMatrixDouble66& se3_cov)
+{
+	gtsam::Matrix6 C = to_gtsam_se3_cov6_reordering(se3_cov);
+	for (int i = 0; i < 6; i++)
+		for (int j = 0; j < 6; j++)
+			if (i != j) ASSERT_EQUAL_(C(i, j), 0);
 
 	return C;
 }

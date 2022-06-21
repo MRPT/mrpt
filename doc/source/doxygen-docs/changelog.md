@@ -4,6 +4,8 @@
 - Changes in applications:
   - ptg-configurator:
     - New menu action to export selected path to matlab/octave script.
+- Changes in libraries:
+  - Adds covariance mapping to SE(3) for GTSAM (Closes [#1229](https://github.com/MRPT/mrpt/issues/1229))
 - Build system
   - Fix ROS version detection; select ROS2 if packages for both versions are found.
 - BUG FIXES:
