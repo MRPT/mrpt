@@ -512,6 +512,41 @@ void CPose3D::getAsQuaternion(
 		.getAsQuaternion(q, out_dq_dr);
 }
 
+mrpt::math::CMatrixDouble33 CPose3D::jacobian_rodrigues_from_YPR() const
+{
+	mrpt::math::CMatrixDouble34 out_domega_dq;
+	mrpt::math::CMatrixDouble43 out_dq_dypr;
+	mrpt::math::CMatrixDouble33 out_domega_dypr;
+	mrpt::math::CQuaternion<double> q;
+	this->getAsQuaternion(q, out_dq_dypr);
+	if (q.r() >= 1.0 - 1e-9)
+	{
+		out_domega_dypr = mrpt::math::CMatrixDouble33::Zero();
+		out_domega_dypr(0, 2) = 1.0;
+		out_domega_dypr(1, 1) = 1.0;
+		out_domega_dypr(2, 0) = 1.0;
+	}
+	else
+	{
+		out_domega_dq = q.jacobian_rodrigues_from_quat();
+		out_domega_dypr = out_domega_dq.asEigen() * out_dq_dypr.asEigen();
+	}
+	return out_domega_dypr;
+}
+
+mrpt::math::CMatrixDouble66 CPose3D::jacobian_pose_rodrigues_from_YPR() const
+{
+	mrpt::math::CMatrixDouble33 out_rotation_domega_dypr =
+		this->jacobian_rodrigues_from_YPR();
+	mrpt::math::CMatrixDouble66 out_pose_domega_dypr =
+		mrpt::math::CMatrixDouble66::Zero();
+	out_pose_domega_dypr.asEigen().block(0, 0, 3, 3) =
+		Eigen::Matrix3d::Identity();
+	out_pose_domega_dypr.asEigen().block(3, 3, 3, 3) =
+		out_rotation_domega_dypr.asEigen();
+	return out_pose_domega_dypr;
+}
+
 bool mrpt::poses::operator==(const CPose3D& p1, const CPose3D& p2)
 {
 	return (p1.m_coords == p2.m_coords) &&

@@ -67,49 +67,12 @@ static gtsam::Matrix6 to_gtsam_se3_cov6_isotropic(
 	constexpr unsigned int mapping[6] = {5, 4, 3, 0, 1, 2};
 	for (int i = 0; i < 6; i++)
 		for (int j = 0; j < 6; j++)
+		{
 			C(i, j) = se3_cov(mapping[i], mapping[j]);
+			if (i != j) ASSERT_EQUAL_(C(i, j), 0);
+		}
 
 	return C;
-}
-
-static void jacobian_rodrigues_from_quat(
-	mrpt::math::CMatrixFixed<double, 3, 4>& out_domega_dq,
-	const mrpt::math::CQuaternion<double>& quaternion)
-{
-	assert(quaternion.asEigen().isUnitary());
-
-	double qr = quaternion.r();
-	double qx = quaternion.x();
-	double qy = quaternion.y();
-	double qz = quaternion.z();
-
-	mrpt::math::CVectorFixed<double, 3> q_imaginary;
-	q_imaginary(0) = qx;
-	q_imaginary(1) = qy;
-	q_imaginary(2) = qz;
-	double q_imaginary_norm = q_imaginary.norm();
-	double q_imaginary_norm_cubic = std::pow(q_imaginary_norm, 3);
-
-	assert(1 - qr * qr >= 0.0);
-	assert(q_imaginary_norm > 0.0);
-
-	out_domega_dq(0, 0) = -qx;
-	out_domega_dq(1, 0) = qy;
-	out_domega_dq(2, 0) = -qz;
-	double denom_inv = 2.0 / q_imaginary_norm / std::sqrt(1 - qr * qr);
-	out_domega_dq.col(0).array() *= denom_inv;
-
-	out_domega_dq(0, 1) = qy * qy + qz * qz;
-	out_domega_dq(0, 2) = -qx * qy;
-	out_domega_dq(0, 3) = -qx * qz;
-	out_domega_dq(1, 2) = qx * qx + qz * qz;
-	out_domega_dq(1, 3) = -qy * qz;
-	out_domega_dq(2, 3) = qy * qy + qy * qy;
-	denom_inv = 2.0 * acos(qr) / q_imaginary_norm_cubic;
-	out_domega_dq.block(0, 1, 3, 3).array() *= denom_inv;
-	out_domega_dq(1, 1) = out_domega_dq(0, 2);
-	out_domega_dq(2, 1) = out_domega_dq(0, 3);
-	out_domega_dq(2, 2) = out_domega_dq(1, 3);
 }
 
 /** @} */
