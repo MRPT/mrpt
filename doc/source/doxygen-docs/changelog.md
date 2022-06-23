@@ -10,6 +10,7 @@
   - Fix ROS version detection; select ROS2 if packages for both versions are found.
 - BUG FIXES:
   - Fix mrpt-comms rare timeout in busy build farms.
+  - mrpt::ros1bridge and mrpt::ros2bridge were not correctly exporting the `fromROS()` function for LaserScan messages.
 
 # Version 2.4.9: Released June 7th, 2022
 - Changes in libraries

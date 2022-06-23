@@ -36,9 +36,8 @@
 #include <tf2/LinearMath/Matrix3x3.h>
 
 // MRPT -> ROS functions:
-namespace mrpt::ros1bridge
-{
-tf2::Matrix3x3 toROS(const mrpt::math::CMatrixDouble33& src)
+
+tf2::Matrix3x3 mrpt::ros1bridge::toROS(const mrpt::math::CMatrixDouble33& src)
 {
 	tf2::Matrix3x3 des;
 	for (int r = 0; r < 3; r++)
@@ -47,22 +46,25 @@ tf2::Matrix3x3 toROS(const mrpt::math::CMatrixDouble33& src)
 	return des;
 }
 
-tf2::Transform toROS_tfTransform(const mrpt::poses::CPose2D& src)
+tf2::Transform mrpt::ros1bridge::toROS_tfTransform(
+	const mrpt::poses::CPose2D& src)
 {
 	return toROS_tfTransform(mrpt::poses::CPose3D(src));
 }
 
-geometry_msgs::Pose toROS_Pose(const mrpt::poses::CPose2D& src)
+geometry_msgs::Pose mrpt::ros1bridge::toROS_Pose(
+	const mrpt::poses::CPose2D& src)
 {
 	return toROS_Pose(mrpt::poses::CPose3D(src));
 }
 
-tf2::Transform toROS_tfTransform(const mrpt::math::TPose2D& src)
+tf2::Transform mrpt::ros1bridge::toROS_tfTransform(
+	const mrpt::math::TPose2D& src)
 {
 	return toROS_tfTransform(mrpt::poses::CPose3D(mrpt::math::TPose3D(src)));
 }
 
-geometry_msgs::Pose toROS_Pose(const mrpt::math::TPose2D& src)
+geometry_msgs::Pose mrpt::ros1bridge::toROS_Pose(const mrpt::math::TPose2D& src)
 {
 	geometry_msgs::Pose des;
 
@@ -91,7 +93,8 @@ geometry_msgs::Pose toROS_Pose(const mrpt::math::TPose2D& src)
 	return des;
 }
 
-tf2::Transform toROS_tfTransform(const mrpt::poses::CPose3D& src)
+tf2::Transform mrpt::ros1bridge::toROS_tfTransform(
+	const mrpt::poses::CPose3D& src)
 {
 	tf2::Transform des;
 	des.setBasis(toROS(src.getRotationMatrix()));
@@ -99,7 +102,8 @@ tf2::Transform toROS_tfTransform(const mrpt::poses::CPose3D& src)
 	return des;
 }
 
-geometry_msgs::Pose toROS_Pose(const mrpt::poses::CPose3D& src)
+geometry_msgs::Pose mrpt::ros1bridge::toROS_Pose(
+	const mrpt::poses::CPose3D& src)
 {
 	geometry_msgs::Pose des;
 	des.position.x = src.x();
@@ -117,17 +121,18 @@ geometry_msgs::Pose toROS_Pose(const mrpt::poses::CPose3D& src)
 	return des;
 }
 
-tf2::Transform toROS_tfTransform(const mrpt::math::TPose3D& src)
+tf2::Transform mrpt::ros1bridge::toROS_tfTransform(
+	const mrpt::math::TPose3D& src)
 {
 	return toROS_tfTransform(mrpt::poses::CPose3D(src));
 }
 
-geometry_msgs::Pose toROS_Pose(const mrpt::math::TPose3D& src)
+geometry_msgs::Pose mrpt::ros1bridge::toROS_Pose(const mrpt::math::TPose3D& src)
 {
 	return toROS_Pose(mrpt::poses::CPose3D(src));
 }
 
-geometry_msgs::PoseWithCovariance toROS_Pose(
+geometry_msgs::PoseWithCovariance mrpt::ros1bridge::toROS_Pose(
 	const mrpt::poses::CPose3DPDFGaussian& src)
 {
 	geometry_msgs::PoseWithCovariance des;
@@ -152,7 +157,7 @@ geometry_msgs::PoseWithCovariance toROS_Pose(
 	return des;
 }
 
-geometry_msgs::PoseWithCovariance toROS(
+geometry_msgs::PoseWithCovariance mrpt::ros1bridge::toROS(
 	const mrpt::poses::CPose3DPDFGaussianInf& src)
 {
 	mrpt::poses::CPose3DPDFGaussian src2;
@@ -160,7 +165,7 @@ geometry_msgs::PoseWithCovariance toROS(
 	return toROS_Pose(src2);
 }
 
-geometry_msgs::PoseWithCovariance toROS(
+geometry_msgs::PoseWithCovariance mrpt::ros1bridge::toROS(
 	const mrpt::poses::CPosePDFGaussian& src)
 {
 	geometry_msgs::PoseWithCovariance des;
@@ -195,7 +200,7 @@ geometry_msgs::PoseWithCovariance toROS(
 	return des;
 }
 
-geometry_msgs::PoseWithCovariance toROS(
+geometry_msgs::PoseWithCovariance mrpt::ros1bridge::toROS(
 	const mrpt::poses::CPosePDFGaussianInf& src)
 {
 	mrpt::poses::CPosePDFGaussian src2;
@@ -204,7 +209,8 @@ geometry_msgs::PoseWithCovariance toROS(
 	return toROS(src2);
 }
 
-geometry_msgs::Quaternion toROS(const mrpt::math::CQuaternionDouble& src)
+geometry_msgs::Quaternion mrpt::ros1bridge::toROS(
+	const mrpt::math::CQuaternionDouble& src)
 {
 	geometry_msgs::Quaternion des;
 	des.x = src.x();
@@ -214,12 +220,8 @@ geometry_msgs::Quaternion toROS(const mrpt::math::CQuaternionDouble& src)
 	return des;
 }
 
-}  // namespace mrpt::ros1bridge
-
 // ROS -> MRPT functions:
-namespace mrpt::ros1bridge
-{
-mrpt::poses::CPose3D fromROS(const tf2::Transform& src)
+mrpt::poses::CPose3D mrpt::ros1bridge::fromROS(const tf2::Transform& src)
 {
 	mrpt::poses::CPose3D des;
 	const tf2::Vector3& t = src.getOrigin();
@@ -229,7 +231,7 @@ mrpt::poses::CPose3D fromROS(const tf2::Transform& src)
 	des.setRotationMatrix(fromROS(src.getBasis()));
 	return des;
 }
-mrpt::math::CMatrixDouble33 fromROS(const tf2::Matrix3x3& src)
+mrpt::math::CMatrixDouble33 mrpt::ros1bridge::fromROS(const tf2::Matrix3x3& src)
 {
 	mrpt::math::CMatrixDouble33 des;
 	for (int r = 0; r < 3; r++)
@@ -238,7 +240,7 @@ mrpt::math::CMatrixDouble33 fromROS(const tf2::Matrix3x3& src)
 	return des;
 }
 
-mrpt::poses::CPose3D fromROS(const geometry_msgs::Pose& src)
+mrpt::poses::CPose3D mrpt::ros1bridge::fromROS(const geometry_msgs::Pose& src)
 {
 	const mrpt::math::CQuaternionDouble q(
 		src.orientation.w, src.orientation.x, src.orientation.y,
@@ -247,7 +249,7 @@ mrpt::poses::CPose3D fromROS(const geometry_msgs::Pose& src)
 		q, src.position.x, src.position.y, src.position.z);
 }
 
-mrpt::poses::CPose3DPDFGaussian fromROS(
+mrpt::poses::CPose3DPDFGaussian mrpt::ros1bridge::fromROS(
 	const geometry_msgs::PoseWithCovariance& src)
 {
 	mrpt::poses::CPose3DPDFGaussian des;
@@ -263,7 +265,8 @@ mrpt::poses::CPose3DPDFGaussian fromROS(
 	return des;
 }
 
-mrpt::math::CQuaternionDouble fromROS(const geometry_msgs::Quaternion& src)
+mrpt::math::CQuaternionDouble mrpt::ros1bridge::fromROS(
+	const geometry_msgs::Quaternion& src)
 {
 	mrpt::math::CQuaternionDouble des;
 	des.x(src.x);
@@ -272,5 +275,3 @@ mrpt::math::CQuaternionDouble fromROS(const geometry_msgs::Quaternion& src)
 	des.r(src.w);
 	return des;
 }
-
-}  // namespace mrpt::ros1bridge

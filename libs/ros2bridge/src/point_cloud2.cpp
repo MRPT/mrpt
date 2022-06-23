@@ -18,8 +18,6 @@
 
 using namespace mrpt::maps;
 
-namespace mrpt::ros2bridge
-{
 static bool check_field(
 	const sensor_msgs::msg::PointField& input_field, std::string check_name,
 	const sensor_msgs::msg::PointField** output)
@@ -35,10 +33,7 @@ static bool check_field(
 			*output = nullptr;
 			coherence_error = true;
 		}
-		else
-		{
-			*output = &input_field;
-		}
+		else { *output = &input_field; }
 	}
 	return coherence_error;
 }
@@ -73,7 +68,8 @@ static void get_uint16_from_field(
 		output = 0;
 }
 
-std::set<std::string> extractFields(const sensor_msgs::msg::PointCloud2& msg)
+std::set<std::string> mrpt::ros2bridge::extractFields(
+	const sensor_msgs::msg::PointCloud2& msg)
 {
 	std::set<std::string> lst;
 	for (const auto& f : msg.fields)
@@ -85,7 +81,8 @@ std::set<std::string> extractFields(const sensor_msgs::msg::PointCloud2& msg)
  *
  * \return true on sucessful conversion, false on any error.
  */
-bool fromROS(const sensor_msgs::msg::PointCloud2& msg, CSimplePointsMap& obj)
+bool mrpt::ros2bridge::fromROS(
+	const sensor_msgs::msg::PointCloud2& msg, CSimplePointsMap& obj)
 {
 	// Copy point data
 	unsigned int num_points = msg.width * msg.height;
@@ -124,7 +121,8 @@ bool fromROS(const sensor_msgs::msg::PointCloud2& msg, CSimplePointsMap& obj)
 	return true;
 }
 
-bool fromROS(const sensor_msgs::msg::PointCloud2& msg, CPointsMapXYZI& obj)
+bool mrpt::ros2bridge::fromROS(
+	const sensor_msgs::msg::PointCloud2& msg, CPointsMapXYZI& obj)
 {
 	// Copy point data
 	unsigned int num_points = msg.width * msg.height;
@@ -175,7 +173,7 @@ bool fromROS(const sensor_msgs::msg::PointCloud2& msg, CPointsMapXYZI& obj)
  * sensor_msgs::msg::PointCloud2::channels will be empty.
  * \return true on sucessful conversion, false on any error.
  */
-bool toROS(
+bool mrpt::ros2bridge::toROS(
 	const CSimplePointsMap& obj, const std_msgs::msg::Header& msg_header,
 	sensor_msgs::msg::PointCloud2& msg)
 {
@@ -183,7 +181,7 @@ bool toROS(
 }
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::obs::CObservationRotatingScan */
-bool fromROS(
+bool mrpt::ros2bridge::fromROS(
 	const sensor_msgs::msg::PointCloud2& msg,
 	mrpt::obs::CObservationRotatingScan& obj,
 	const mrpt::poses::CPose3D& sensorPoseOnRobot,
@@ -284,5 +282,3 @@ bool fromROS(
 	}
 	return true;
 }
-
-}  // namespace mrpt::ros2bridge
