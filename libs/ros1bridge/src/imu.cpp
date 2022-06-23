@@ -15,9 +15,8 @@
 
 #include <mrpt/ros1bridge/imu.h>
 
-namespace mrpt::ros1bridge
-{
-bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
+bool mrpt::ros1bridge::fromROS(
+	const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
 {
 	using namespace mrpt::obs;
 
@@ -46,7 +45,7 @@ bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const mrpt::obs::CObservationIMU& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::Imu& msg)
 {
@@ -64,10 +63,7 @@ bool toROS(
 
 		msg.orientation_covariance.fill(0.01);
 	}
-	else
-	{
-		msg.orientation_covariance.fill(-1);
-	}
+	else { msg.orientation_covariance.fill(-1); }
 
 	if (obj.has(IMU_X_ACC))
 	{
@@ -77,10 +73,7 @@ bool toROS(
 
 		msg.linear_acceleration_covariance.fill(0.01);
 	}
-	else
-	{
-		msg.linear_acceleration_covariance.fill(-1);
-	}
+	else { msg.linear_acceleration_covariance.fill(-1); }
 
 	if (obj.has(IMU_WX))
 	{
@@ -90,15 +83,10 @@ bool toROS(
 
 		msg.angular_velocity_covariance.fill(0.01);
 	}
-	else
-	{
-		msg.angular_velocity_covariance.fill(-1);
-	}
+	else { msg.angular_velocity_covariance.fill(-1); }
 
 	return true;
 }
-
-}  // namespace mrpt::ros1bridge
 
 /*
 std_msgs/Header header

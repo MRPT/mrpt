@@ -12,9 +12,8 @@
 
 using namespace mrpt::maps;
 
-namespace mrpt::ros1bridge
-{
-bool fromROS(const sensor_msgs::PointCloud& msg, CSimplePointsMap& obj)
+bool mrpt::ros1bridge::fromROS(
+	const sensor_msgs::PointCloud& msg, CSimplePointsMap& obj)
 {
 	const size_t N = msg.points.size();
 
@@ -26,7 +25,7 @@ bool fromROS(const sensor_msgs::PointCloud& msg, CSimplePointsMap& obj)
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const CSimplePointsMap& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::PointCloud& msg)
 {
@@ -47,5 +46,3 @@ bool toROS(
 
 	return true;
 }
-
-}  // namespace mrpt::ros1bridge

@@ -15,9 +15,7 @@
 
 #include <mrpt/ros2bridge/gps.h>
 
-namespace mrpt::ros2bridge
-{
-bool fromROS(
+bool mrpt::ros2bridge::fromROS(
 	const sensor_msgs::msg::NavSatFix& msg, mrpt::obs::CObservationGPS& obj)
 {
 	mrpt::obs::gnss::Message_NMEA_GGA gga;
@@ -37,7 +35,7 @@ bool fromROS(
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros2bridge::toROS(
 	const mrpt::obs::CObservationGPS& obj,
 	const std_msgs::msg::Header& msg_header, sensor_msgs::msg::NavSatFix& msg)
 {
@@ -76,7 +74,6 @@ bool toROS(
 	/// position_covariance type is not available in mrpt
 	return true;
 }
-}  // namespace mrpt::ros2bridge
 
 /// NavSatFix ROS message
 /*

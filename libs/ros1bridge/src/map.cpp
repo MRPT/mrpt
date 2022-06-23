@@ -35,8 +35,8 @@ using mrpt::maps::CSimpleMap;
 #define INT16_MIN (-INT16_MAX - 1)
 #endif	// INT8_MAX
 
-namespace mrpt::ros1bridge
-{
+using namespace mrpt::ros1bridge;
+
 MapHdl::MapHdl()
 {
 	// MRPT -> ROS LUT:
@@ -81,7 +81,8 @@ MapHdl* MapHdl::instance()
 	return &m;
 }
 
-bool fromROS(const nav_msgs::OccupancyGrid& src, COccupancyGridMap2D& des)
+bool mrpt::ros1bridge::fromROS(
+	const nav_msgs::OccupancyGrid& src, COccupancyGridMap2D& des)
 {
 	MRPT_START
 	if ((src.info.origin.orientation.x != 0) ||
@@ -109,7 +110,7 @@ bool fromROS(const nav_msgs::OccupancyGrid& src, COccupancyGridMap2D& des)
 	return true;
 	MRPT_END
 }
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des,
 	const std_msgs::Header& header)
 {
@@ -117,7 +118,8 @@ bool toROS(
 	return toROS(src, des);
 }
 
-bool toROS(const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des)
+bool mrpt::ros1bridge::toROS(
+	const COccupancyGridMap2D& src, nav_msgs::OccupancyGrid& des)
 {
 	des.info.width = src.getSizeX();
 	des.info.height = src.getSizeY();
@@ -219,5 +221,3 @@ bool MapHdl::loadMap(
 	}
 	return true;
 }
-
-}  // namespace mrpt::ros1bridge
