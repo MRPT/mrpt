@@ -8,6 +8,7 @@
     - Visual improvements and display of timestamps in local time too.
 - Changes in libraries:
   - Adds covariance mapping to SE(3) for GTSAM (Closes [#1229](https://github.com/MRPT/mrpt/issues/1229))
+  - Import mrptToROSLoggerCallback() from the now obsolete mrpt_bridge package into mrpt::ros1bridge.
 - Build system
   - Fix ROS version detection; select ROS2 if packages for both versions are found.
 - BUG FIXES:
