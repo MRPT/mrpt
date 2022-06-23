@@ -1,9 +1,11 @@
 \page changelog Change Log
 
-# Version 2.4.10: UNRELEASED
+# Version 2.4.10: Relased June 23rd, 2022
 - Changes in applications:
   - ptg-configurator:
     - New menu action to export selected path to matlab/octave script.
+  - RawLogViewer:
+    - Visual improvements and display of timestamps in local time too.
 - Changes in libraries:
   - Adds covariance mapping to SE(3) for GTSAM (Closes [#1229](https://github.com/MRPT/mrpt/issues/1229))
 - Build system
