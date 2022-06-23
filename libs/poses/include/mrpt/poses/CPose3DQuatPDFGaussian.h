@@ -123,8 +123,15 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	void drawManySamples(
 		size_t N,
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
+	/** Compute the inverse Jacobian */
+	mrpt::math::CMatrixDouble77 inverseJacobian() const;
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	void inverse(CPose3DQuatPDF& o) const override;
+	/** Returns the displacement from the current pose to pose_to,
+	 * taking into account the cross-correlation in the uncertainty between
+	 * them, because x_k = x_k-1 \oplus \Delta x_k */
+	mrpt::poses::CPose3DQuatPDFGaussian relativeDisplacement(
+		const mrpt::poses::CPose3DQuatPDFGaussian& pose_to) const;
 
 	/** Unary - operator, returns the PDF of the inverse pose.  */
 	inline CPose3DQuatPDFGaussian operator-() const
