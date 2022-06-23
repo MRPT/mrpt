@@ -2,7 +2,7 @@
 
 # Version 2.4.11: Unreleased
 - Changes in libraries:
-  - Adds correct displacement covariance calculation between two poses with cross-correlation (Closes [#1229](https://github.com/MRPT/mrpt/issues/1242))
+  - Adds correct displacement covariance calculation between two poses with cross-correlation (Closes [#1242](https://github.com/MRPT/mrpt/issues/1242))
 
 
 # Version 2.4.10: Relased June 23rd, 2022
