@@ -181,7 +181,7 @@ bool mrpt::ros1bridge::toROS(
 }
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::obs::CObservationRotatingScan */
-bool fromROS(
+bool mrpt::ros1bridge::fromROS(
 	const sensor_msgs::PointCloud2& msg,
 	mrpt::obs::CObservationRotatingScan& obj,
 	const mrpt::poses::CPose3D& sensorPoseOnRobot,
