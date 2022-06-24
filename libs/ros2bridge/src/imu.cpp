@@ -63,7 +63,10 @@ bool mrpt::ros2bridge::toROS(
 
 		msg.orientation_covariance.fill(0.01);
 	}
-	else { msg.orientation_covariance.fill(-1); }
+	else
+	{
+		msg.orientation_covariance.fill(-1);
+	}
 
 	if (obj.has(IMU_X_ACC))
 	{
@@ -73,7 +76,10 @@ bool mrpt::ros2bridge::toROS(
 
 		msg.linear_acceleration_covariance.fill(0.01);
 	}
-	else { msg.linear_acceleration_covariance.fill(-1); }
+	else
+	{
+		msg.linear_acceleration_covariance.fill(-1);
+	}
 
 	if (obj.has(IMU_WX))
 	{
@@ -83,7 +89,10 @@ bool mrpt::ros2bridge::toROS(
 
 		msg.angular_velocity_covariance.fill(0.01);
 	}
-	else { msg.angular_velocity_covariance.fill(-1); }
+	else
+	{
+		msg.angular_velocity_covariance.fill(-1);
+	}
 
 	return true;
 }

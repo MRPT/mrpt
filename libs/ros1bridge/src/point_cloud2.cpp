@@ -33,7 +33,10 @@ static bool check_field(
 			*output = nullptr;
 			coherence_error = true;
 		}
-		else { *output = &input_field; }
+		else
+		{
+			*output = &input_field;
+		}
 	}
 	return coherence_error;
 }
