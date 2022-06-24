@@ -46,8 +46,10 @@ void CObservation::getDescriptionAsText(std::ostream& o) const
 
 	o << mrpt::format(
 		"Timestamp (UTC): %s\n"
-		"  (as time_t): %.09f\n",
+		"        (local): %s\n"
+		"    (as time_t): %.09f\n",
 		mrpt::system::dateTimeToString(timestamp).c_str(),
+		mrpt::system::dateTimeLocalToString(timestamp).c_str(),
 		mrpt::Clock::toDouble(timestamp));
 
 	o << "  (as TTimestamp): " << timestamp

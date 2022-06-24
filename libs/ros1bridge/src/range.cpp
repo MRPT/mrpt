@@ -15,9 +15,8 @@
 
 #include <mrpt/ros1bridge/range.h>
 
-namespace mrpt::ros1bridge
-{
-bool fromROS(const sensor_msgs::Range& msg, mrpt::obs::CObservationRange& obj)
+bool mrpt::ros1bridge::fromROS(
+	const sensor_msgs::Range& msg, mrpt::obs::CObservationRange& obj)
 {
 	obj.minSensorDistance = msg.min_range;
 	obj.maxSensorDistance = msg.max_range;
@@ -29,7 +28,7 @@ bool fromROS(const sensor_msgs::Range& msg, mrpt::obs::CObservationRange& obj)
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const mrpt::obs::CObservationRange& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::Range* msg)
 {
@@ -59,8 +58,6 @@ bool toROS(
 	// msg.radiation_type
 	return true;
 }
-
-}  // namespace mrpt::ros1bridge
 
 /// Range ROS message
 /*

@@ -535,6 +535,52 @@ class CQuaternion : public CVectorFixed<T, 4>
 		return q;
 	}
 
+	/** Computes the 3x4 rotation Jacobian that maps quaternion to SE(3)
+	 * It is obtained by partial differentiation of the following
+	 * equation wrt the quaternion components (quat=$[q_r, \bm{q}_v]^T):
+	 * $\boldsymbol{\omega} =
+	 *    \frac{2\arccos{q_r}}{|\mathbf{q}_v|}\mathbf{q}_v$
+	 */
+	mrpt::math::CMatrixFixed<double, 3, 4> jacobian_rodrigues_from_quat() const
+	{
+		ASSERT_NEAR_(this->normSqr(), 1.0, 1e-5);
+
+		double qr = this->r();
+		double qx = this->x();
+		double qy = this->y();
+		double qz = this->z();
+
+		mrpt::math::CVectorFixed<double, 3> q_imaginary;
+		q_imaginary(0) = qx;
+		q_imaginary(1) = qy;
+		q_imaginary(2) = qz;
+		double q_imaginary_norm = q_imaginary.norm();
+		double q_imaginary_norm_cubic = std::pow(q_imaginary_norm, 3);
+
+		ASSERT_(1 - qr * qr >= 0.0);
+		ASSERT_(q_imaginary_norm > 0.0);
+
+		mrpt::math::CMatrixFixed<double, 3, 4> out_domega_dq;
+		double denom_inv = 2.0 / (q_imaginary_norm * std::sqrt(1 - qr * qr));
+		out_domega_dq(0, 0) = -qx * denom_inv;
+		out_domega_dq(1, 0) = qy * denom_inv;
+		out_domega_dq(2, 0) = -qz * denom_inv;
+
+		denom_inv = 2.0 * acos(qr) / q_imaginary_norm_cubic;
+		out_domega_dq(0, 1) = (qy * qy + qz * qz) * denom_inv;
+		out_domega_dq(0, 2) = (-qx * qy) * denom_inv;
+		out_domega_dq(0, 3) = (-qx * qz) * denom_inv;
+		out_domega_dq(1, 2) = (qx * qx + qz * qz) * denom_inv;
+		out_domega_dq(1, 3) = (-qy * qz) * denom_inv;
+		out_domega_dq(2, 3) = (qy * qy + qy * qy) * denom_inv;
+
+		out_domega_dq(1, 1) = out_domega_dq(0, 2);
+		out_domega_dq(2, 1) = out_domega_dq(0, 3);
+		out_domega_dq(2, 2) = out_domega_dq(1, 3);
+
+		return out_domega_dq;
+	}
+
 };	// end class
 
 /** A quaternion of data type "double" */

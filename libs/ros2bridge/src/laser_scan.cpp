@@ -16,9 +16,7 @@
 #include <geometry_msgs/msg/pose.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 
-namespace mrpt::ros2bridge
-{
-bool convert(
+bool mrpt::ros2bridge::fromROS(
 	const sensor_msgs::msg::LaserScan& msg, const mrpt::poses::CPose3D& pose,
 	mrpt::obs::CObservation2DRangeScan& obj)
 {
@@ -60,7 +58,7 @@ bool convert(
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros2bridge::toROS(
 	const mrpt::obs::CObservation2DRangeScan& obj,
 	sensor_msgs::msg::LaserScan& msg)
 {
@@ -89,7 +87,7 @@ bool toROS(
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros2bridge::toROS(
 	const mrpt::obs::CObservation2DRangeScan& obj,
 	sensor_msgs::msg::LaserScan& msg, geometry_msgs::msg::Pose& pose)
 {
@@ -97,4 +95,3 @@ bool toROS(
 	pose = toROS_Pose(obj.sensorPose);
 	return true;
 }
-}  // namespace mrpt::ros2bridge

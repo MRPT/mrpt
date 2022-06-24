@@ -1,5 +1,22 @@
 \page changelog Change Log
 
+# Version 2.4.10: Relased June 24th, 2022
+- Changes in applications:
+  - ptg-configurator:
+    - New menu action to export selected path to matlab/octave script.
+  - RawLogViewer:
+    - Visual improvements and display of timestamps in local time too.
+- Changes in libraries:
+  - \ref mrpt_poses_grp
+    - Adds covariance mapping to SE(3) for GTSAM (Closes [#1229](https://github.com/MRPT/mrpt/issues/1229))
+  - \ref mrpt_ros1bridge_grp
+    - Import mrptToROSLoggerCallback() from the now obsolete mrpt_bridge package into mrpt::ros1bridge.
+- Build system
+  - Fix ROS version detection; select ROS2 if packages for both versions are found.
+- BUG FIXES:
+  - Fix mrpt-comms rare timeout in busy build farms.
+  - mrpt::ros1bridge and mrpt::ros2bridge were not correctly exporting the `fromROS()` function for LaserScan messages.
+
 # Version 2.4.9: Released June 7th, 2022
 - Changes in libraries
   - \ref mrpt_math_grp

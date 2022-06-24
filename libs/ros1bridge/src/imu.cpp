@@ -15,9 +15,8 @@
 
 #include <mrpt/ros1bridge/imu.h>
 
-namespace mrpt::ros1bridge
-{
-bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
+bool mrpt::ros1bridge::fromROS(
+	const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
 {
 	using namespace mrpt::obs;
 
@@ -46,7 +45,7 @@ bool fromROS(const sensor_msgs::Imu& msg, mrpt::obs::CObservationIMU& obj)
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const mrpt::obs::CObservationIMU& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::Imu& msg)
 {
@@ -97,8 +96,6 @@ bool toROS(
 
 	return true;
 }
-
-}  // namespace mrpt::ros1bridge
 
 /*
 std_msgs/Header header

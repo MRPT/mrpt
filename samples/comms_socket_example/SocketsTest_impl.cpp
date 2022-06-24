@@ -44,7 +44,7 @@ void thread_server()
 			mrpt::system::LVL_ERROR
 #endif
 		);
-		std::unique_ptr<CClientTCPSocket> client = server.accept(5000);
+		std::unique_ptr<CClientTCPSocket> client = server.accept(40000);
 
 		if (client)
 		{
@@ -100,7 +100,7 @@ void thread_client()
 		// cout << "pending: " << sock.getReadPendingBytes() << endl;
 
 		CMessage msg;
-		bool ok = sock.receiveMessage(msg, 2000, 2000);
+		bool ok = sock.receiveMessage(msg, 10000, 10000);
 
 		if (!ok) { printf("[Client] Error receiving message!!\n"); }
 		else
