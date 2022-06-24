@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.4.10: Relased June 23rd, 2022
+# Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:
   - ptg-configurator:
     - New menu action to export selected path to matlab/octave script.
