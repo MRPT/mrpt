@@ -15,9 +15,7 @@
 #include <mrpt/version.h>
 #include <sensor_msgs/LaserScan.h>
 
-namespace mrpt::ros1bridge
-{
-bool convert(
+bool mrpt::ros1bridge::fromROS(
 	const sensor_msgs::LaserScan& msg, const mrpt::poses::CPose3D& pose,
 	mrpt::obs::CObservation2DRangeScan& obj)
 {
@@ -59,7 +57,7 @@ bool convert(
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const mrpt::obs::CObservation2DRangeScan& obj, sensor_msgs::LaserScan& msg)
 {
 	const size_t nRays = obj.getScanSize();
@@ -87,7 +85,7 @@ bool toROS(
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const mrpt::obs::CObservation2DRangeScan& obj, sensor_msgs::LaserScan& msg,
 	geometry_msgs::Pose& pose)
 {
@@ -95,4 +93,3 @@ bool toROS(
 	pose = toROS_Pose(obj.sensorPose);
 	return true;
 }
-}  // namespace mrpt::ros1bridge

@@ -8,16 +8,15 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: mrpt_ros bridge
+	LIBRARY: mrpt_ros bridge
 	FILE: gps.cpp
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
 #include <mrpt/ros1bridge/gps.h>
 
-namespace mrpt::ros1bridge
-{
-bool fromROS(const sensor_msgs::NavSatFix& msg, mrpt::obs::CObservationGPS& obj)
+bool mrpt::ros1bridge::fromROS(
+	const sensor_msgs::NavSatFix& msg, mrpt::obs::CObservationGPS& obj)
 {
 	mrpt::obs::gnss::Message_NMEA_GGA gga;
 	gga.fields.altitude_meters = msg.altitude;
@@ -36,7 +35,7 @@ bool fromROS(const sensor_msgs::NavSatFix& msg, mrpt::obs::CObservationGPS& obj)
 	return true;
 }
 
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const mrpt::obs::CObservationGPS& obj, const std_msgs::Header& msg_header,
 	sensor_msgs::NavSatFix& msg)
 {
@@ -75,7 +74,6 @@ bool toROS(
 	/// position_covariance type is not available in mrpt
 	return true;
 }
-}  // namespace mrpt::ros1bridge
 
 /// NavSatFix ROS message
 /*

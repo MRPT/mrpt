@@ -6,7 +6,6 @@
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
-#define _CRT_SECURE_NO_WARNINGS
 
 #include <mrpt/graphs/CAStarAlgorithm.h>
 

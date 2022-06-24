@@ -15,8 +15,9 @@ if (NOT DISABLE_ROS)
 	endif()
 
 	# ROS libs:
+	find_package(rclcpp QUIET)
 	find_package(ament_cmake QUIET)
-	if(ament_cmake_FOUND)
+	if(ament_cmake_FOUND AND rclcpp_FOUND)
 		set(MRPT_ROS_VERSION 2)
 	else()
 		find_package(roscpp QUIET)

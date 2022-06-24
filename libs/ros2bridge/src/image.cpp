@@ -24,15 +24,13 @@ using namespace sensor_msgs;
 using namespace cv;
 using namespace cv_bridge;
 
-namespace mrpt::ros2bridge
-{
-mrpt::img::CImage fromROS(const sensor_msgs::msg::Image& i)
+mrpt::img::CImage mrpt::ros2bridge::fromROS(const sensor_msgs::msg::Image& i)
 {
 	return mrpt::img::CImage(
 		cv_bridge::toCvCopy(i, "bgr8").get()->image, mrpt::img::DEEP_COPY);
 }
 
-sensor_msgs::msg::Image toROS(
+sensor_msgs::msg::Image mrpt::ros2bridge::toROS(
 	const mrpt::img::CImage& i, const std_msgs::msg::Header& msg_header)
 {
 	const Mat& cvImg = i.asCvMatRef();
@@ -51,7 +49,6 @@ sensor_msgs::msg::Image toROS(
 
 	return msg;
 }
-}  // namespace mrpt::ros2bridge
 
 //
 /*

@@ -24,9 +24,7 @@ using namespace sensor_msgs;
 using namespace cv;
 using namespace cv_bridge;
 
-namespace mrpt::ros1bridge
-{
-bool toROS(
+bool mrpt::ros1bridge::toROS(
 	const mrpt::obs::CObservationStereoImages& obj,
 	const std_msgs::Header& msg_header, sensor_msgs::Image& left,
 	sensor_msgs::Image& right, stereo_msgs::DisparityImage& disparity)
@@ -70,7 +68,6 @@ bool toROS(
 	}
 	return true;
 }
-}  // namespace mrpt::ros1bridge
 
 //
 /*

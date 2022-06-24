@@ -77,13 +77,13 @@
 // this definition uses windows dll to export function.
 // WXDLLIMPEXP_MATHPLOT definition definition changed to WXDLLIMPEXP_MATHPLOT
 // mathplot_EXPORTS will be defined by cmake
-//#ifdef mathplot_EXPORTS
+// #ifdef mathplot_EXPORTS
 // #define WXDLLIMPEXP_MATHPLOT WXEXPORT
 // #define WXDLLIMPEXP_DATA_MATHPLOT(type) WXEXPORT type
-//#else // not making DLL
+// #else // not making DLL
 // #define WXDLLIMPEXP_MATHPLOT
 // #define WXDLLIMPEXP_DATA_MATHPLOT(type) type
-//#endif
+// #endif
 
 // Hack for MRPT: Link as part of mrpt-gui itself.
 #define WXDLLIMPEXP_MATHPLOT
@@ -1550,6 +1550,9 @@ class WXDLLIMPEXP_MATHPLOT mpFXYVector : public mpFXY
 	 * @sa SetData
 	 */
 	size_t GetDataLength() const { return m_xs.size(); }
+
+	const std::vector<double>& GetDataX() const { return m_xs; }
+	const std::vector<double>& GetDataY() const { return m_ys; }
 
 	/** Append a new data point (x,y)
 	 * @sa SetData

@@ -711,6 +711,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	}
 
 	myRedirector.reset();  // ensures cout is redirected to text box
+	wxTheApp->Yield(true);	// Let the app. process messages
+
 	memo->ShowPosition(0);
 }
 catch (CExceptionExternalImageNotFound& e)

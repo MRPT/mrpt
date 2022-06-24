@@ -28,6 +28,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 
+#include <fstream>
+
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/main_icon.xpm"
 
@@ -131,6 +133,7 @@ const long ptgConfiguratorframe::idMenuAbout = wxNewId();
 const long ptgConfiguratorframe::ID_STATUSBAR1 = wxNewId();
 //*)
 const long ID_TEXTCTRL_SEL_TRAJ = wxNewId();
+const long idMenuExportPath = wxNewId();
 
 BEGIN_EVENT_TABLE(ptgConfiguratorframe, wxFrame)
 //(*EventTable(ptgConfiguratorframe)
@@ -149,6 +152,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	wxFlexGridSizer* FlexGridSizer10;
 	wxFlexGridSizer* FlexGridSizer3;
 	wxMenuItem* MenuItem1;
+	wxMenuItem* mnuItemExportPath;
 	wxFlexGridSizer* FlexGridSizer9;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxMenu* Menu1;
@@ -169,7 +173,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		parent, wxID_ANY, _("PTG configurator - Part of the MRPT project"),
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE,
 		_T("wxID_ANY"));
-	// SetClientSize(wxSize(893, 576));
+
 	{
 		wxIcon FrameIcon;
 		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(
@@ -621,10 +625,17 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();
+
+	mnuItemExportPath = new wxMenuItem(
+		Menu1, idMenuExportPath, _("Export path to .m"),
+		_("Export selected path"), wxITEM_NORMAL);
+	Menu1->Append(mnuItemExportPath);
+
 	MenuItem1 = new wxMenuItem(
 		Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"),
 		wxITEM_NORMAL);
 	Menu1->Append(MenuItem1);
+
 	MenuBar1->Append(Menu1, _("&File"));
 	Menu2 = new wxMenu();
 	MenuItem2 = new wxMenuItem(
@@ -667,6 +678,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	Bind(wxEVT_CHECKBOX, &pcf::OnrbShowTPSelectSelect, this, ID_CHECKBOX7);
 	Bind(wxEVT_MENU, &pcf::OnQuit, this, idMenuQuit);
 	Bind(wxEVT_MENU, &pcf::OnAbout, this, idMenuAbout);
+	Bind(wxEVT_MENU, &pcf::OnExportSelectedPath, this, idMenuExportPath);
 	//*)
 
 	m_plot->Bind(wxEVT_MOTION, &pcf::Onplot3DMouseMove, this);
@@ -1454,4 +1466,105 @@ void ptgConfiguratorframe::OnrbShowTPSelectSelect(wxCommandEvent& event)
 
 	m_plotTPSpace->Refresh();
 	WX_END_TRY;
+}
+
+static std::string vectorToMatlab(
+	const std::string& varName, const std::vector<double>& v)
+{
+	std::string s;
+	s = varName;
+	s += "=[";
+
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		s += mrpt::format("%.04g", v[i]);
+		if (i + 1 != v.size()) s += ", ";
+		if ((i % 20) == 19) s += " ...\n  ";
+	}
+
+	s += "];\n";
+
+	return s;
+}
+
+void ptgConfiguratorframe::OnExportSelectedPath(wxCommandEvent&)
+{
+	WX_START_TRY
+
+	if (!ptg) return;
+
+	wxFileDialog openFileDialog(
+		this, _("Save selected path to .m"), wxT(""), wxT(""),
+		wxT("m files (*.m)|*.m"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+	if (openFileDialog.ShowModal() == wxID_CANCEL) return;
+
+	const std::string sFil = openFileDialog.GetPath().ToStdString();
+
+	std::ofstream f(sFil.c_str());
+	if (!f.is_open())
+		THROW_EXCEPTION_FMT(
+			"Cannot open file for writting: '%s'", sFil.c_str());
+
+	f << "%\n";
+	f << "% File generated automatically by ptg-configurator, MRPT project.\n";
+	f << "%\n";
+	f << "% For PTG path 0-based index " << edIndexHighlightPath->GetValue()
+	  << " out of " << ptg->getPathCount() << " alpha="
+	  << mrpt::RAD2DEG(ptg->index2alpha(edIndexHighlightPath->GetValue()))
+	  << " [deg]\n";
+	f << "% PTG details:\n%{\n";
+
+	const std::string sKeyPrefix =
+		mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
+	const std::string sSection = "PTG_PARAMS";
+	mrpt::config::CConfigFileMemory cfg;
+	mrpt::config::CConfigFilePrefixer cfp;
+	cfp.bind(cfg);
+	cfp.setPrefixes("", sKeyPrefix);
+	const int WN = 25, WV = 30;
+	cfp.write(
+		sSection, "Type", ptg->GetRuntimeClass()->className, WN, WV,
+		"PTG C++ class name");
+	ptg->saveToConfigFile(cfp, sSection);
+
+	f << cfg.getContent();
+	f << "%}\n";
+
+	const auto& ts = m_graph_path_x->GetDataX();
+	const auto& xs = m_graph_path_x->GetDataY();
+	const auto& ys = m_graph_path_y->GetDataY();
+	const auto& phis = m_graph_path_phi->GetDataY();
+
+	const auto& vxs = m_graph_path_vx->GetDataY();
+	const auto& vys = m_graph_path_vy->GetDataY();
+	const auto& ws = m_graph_path_omega->GetDataY();
+
+	f << vectorToMatlab("t", ts);
+	f << vectorToMatlab("x", xs);
+	f << vectorToMatlab("y", ys);
+	f << vectorToMatlab("phi", phis);
+	f << vectorToMatlab("vx", vxs);
+	f << vectorToMatlab("vy", vys);
+	f << vectorToMatlab("w", ws);
+
+	f <<
+		R"XX(
+figure();
+plot(x,y,'.');
+axis equal; grid minor;
+title('XY path');
+
+figure();
+subplot(3,1,1); plot(t,x,'.'); xlabel('t [s]');title('x(t) [m]'); grid minor;
+subplot(3,1,2); plot(t,y,'.'); xlabel('t [s]');title('y(t) [m]'); grid minor;
+subplot(3,1,3); plot(t,phi,'.'); xlabel('t [s]');title('phi(t) [deg]'); grid minor;
+
+figure();
+subplot(3,1,1); plot(t,vx,'.'); xlabel('t [s]');title('vx(t) [m/s]'); grid minor;
+subplot(3,1,2); plot(t,vy,'.'); xlabel('t [s]');title('vy(t) [m/s]'); grid minor;
+subplot(3,1,3); plot(t,w,'.'); xlabel('t [s]');title('w(t) [deg/s]'); grid minor;
+)XX";
+
+	WX_END_TRY
 }
