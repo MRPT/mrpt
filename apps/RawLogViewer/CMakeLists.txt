@@ -35,7 +35,6 @@ set(SRCS
  main_convert_ops.cpp
  main_show_selected_object.cpp
  CRawlogTreeView.cpp    CRawlogTreeView.h
- wxDoubleSlider.cpp     wxDoubleSlider.h
  CFormBatchSensorPose.cpp  CFormBatchSensorPose.h
  CIniEditor.cpp 		CIniEditor.h
  )

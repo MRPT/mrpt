@@ -1,7 +1,10 @@
 \page changelog Change Log
 
 # Version 2.4.11: UNRELEASED
-(none yet)
+- Changes in libraries:
+  - \ref mrpt_opengl_grp
+    - A new rendering mode for default no-perspective transformations. 
+      See mrpt::opengl::CCamera::setNoProjection()
 
 # Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:

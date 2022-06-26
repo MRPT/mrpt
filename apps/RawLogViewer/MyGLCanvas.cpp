@@ -29,10 +29,6 @@ CMyGLCanvas::~CMyGLCanvas() = default;
 void CMyGLCanvas::OnRenderError(const wxString& str) {}
 void CMyGLCanvas::OnPreRender() {}
 void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc) {}
-void CMyGLCanvas::OnPostRender()
-{
-	// Show credits on the screen??
-	//	renderTextBitmap(20, 20, "RoadBot GUI, Copyright 2008 UMA" );
-}
+void CMyGLCanvas::OnPostRender() {}
 
 #endif

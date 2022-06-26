@@ -1029,7 +1029,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		pnLeftTimeLine->SetSizer(fgs);
 		fgs->SetSizeHints(pnLeftTimeLine);
 
-		fgzBottomTimeLine->Add(pnLeftTimeLine);
+		fgzBottomTimeLine->Add(pnLeftTimeLine, 1, wxALL | wxEXPAND);
 	}
 
 	// bottom-right/main panel 3D view:
@@ -1037,7 +1037,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	{
 		static const long ID_PANEL_TIMELINE = wxNewId();
 		static const long ID_TIMELINE_GLCANVAS = wxNewId();
-		static const long ID_TIMELINE_DBL_SLIDER = wxNewId();
 
 		pnTimeLine = new wxPanel(
 			this, ID_PANEL_TIMELINE, wxDefaultPosition, wxDefaultSize,
@@ -1046,9 +1045,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		fgs->AddGrowableCol(0);
 		fgs->AddGrowableRow(1);
 
-		m_sliderTimeLineRange =
-			new wxDoubleSlider(pnTimeLine, ID_TIMELINE_DBL_SLIDER, 0, 1, 0, 1);
-		fgs->Add(m_sliderTimeLineRange, 1, wxALL | wxEXPAND, 1 /*border*/);
+		m_txtTimeLineRange =
+			new wxStaticText(pnTimeLine, ID_STATICTEXT4, "Selection");
+
+		fgs->Add(m_txtTimeLineRange, 1, wxALL | wxEXPAND, 1 /*border*/);
 
 		m_glTimeLine = new CMyGLCanvas(pnTimeLine, ID_TIMELINE_GLCANVAS);
 		pnTimeLine->SetMinSize(wxSize(-1, 100));
@@ -2532,6 +2532,28 @@ void xRawLogViewerFrame::rebuildTreeView()
 		const auto sensorLabel = obsPerSensorLabel.first;
 		m_lstObsLabels->AppendString(sensorLabel);
 	}
+
+	// Disable mouse-based click, drag, etc.
+	// TODO: Refactor into once ctor
+	m_glTimeLine->setUseCameraFromScene(true);
+
+	mrpt::opengl::COpenGLScene::Ptr& scene = m_glTimeLine->getOpenGLSceneRef();
+	scene->clear();
+	scene->getViewport()->setCustomBackgroundColor({1.0f, 1.0f, 1.0f});
+
+	{
+		auto glCam = mrpt::opengl::CCamera::Create();
+		glCam->setNoProjection();  // work with pixel coordinates
+		scene->insert(glCam);
+	}
+	{
+		auto glObj = mrpt::opengl::CBox::Create(
+			mrpt::math::TPoint3D(-1.0, 0., 0.),
+			mrpt::math::TPoint3D(0.9, 1., 0.), true);
+		scene->insert(glObj);
+	}
+
+	m_glTimeLine->Refresh();
 
 #if 0
 	{
