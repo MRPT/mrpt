@@ -252,7 +252,7 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	Bind(wxEVT_CHECKBOX, &Me::OnbtnApplyClick, this, ID_CHECKBOX3);
 	Bind(wxEVT_SPINCTRL, &Me::OnbtnApplyClick, this, ID_SPINCTRL1);
 
-	m_params.load_from_ini_file();
+	m_params.load_from_ini_file(*iniFile);
 	m_params.to_UI(*this);
 }
 
@@ -260,7 +260,7 @@ ViewOptions3DPoints::~ViewOptions3DPoints()
 {
 	//(*Destroy(ViewOptions3DPoints)
 	//*)
-	m_params.save_to_ini_file();
+	m_params.save_to_ini_file(*iniFile);
 }
 
 void ViewOptions3DPoints::OnbtnApplyClick(wxCommandEvent&)
@@ -333,66 +333,4 @@ void ParametersView3DPoints::from_UI(const ViewOptions3DPoints& ui)
 		mrpt::img::TColor(ui.color2DPoints->GetColour().GetRGBA());
 
 	WX_END_TRY
-}
-
-void ParametersView3DPoints::save_to_ini_file() const
-{
-	auto& c = *iniFile;
-	const std::string s = "ParametersView3DPoints";
-
-	MRPT_SAVE_CONFIG_VAR(axisTickFrequency, c, s);
-	MRPT_SAVE_CONFIG_VAR(axisLimits, c, s);
-	MRPT_SAVE_CONFIG_VAR(axisTickTextSize, c, s);
-	MRPT_SAVE_CONFIG_VAR(colorFromRGBimage, c, s);
-	MRPT_SAVE_CONFIG_VAR(colorizeByAxis, c, s);
-	MRPT_SAVE_CONFIG_VAR(invertColorMapping, c, s);
-	MRPT_SAVE_CONFIG_VAR(pointSize, c, s);
-	MRPT_SAVE_CONFIG_VAR(colorMap, c, s);
-	MRPT_SAVE_CONFIG_VAR(drawSensorPose, c, s);
-	MRPT_SAVE_CONFIG_VAR(sensorPoseScale, c, s);
-	MRPT_SAVE_CONFIG_VAR(showAxis, c, s);
-	MRPT_SAVE_CONFIG_VAR(showSurfaceIn2Dscans, c, s);
-	MRPT_SAVE_CONFIG_VAR(showPointsIn2Dscans, c, s);
-	MRPT_SAVE_CONFIG_VAR(onlyPointsWithColor, c, s);
-
-	MRPT_SAVE_CONFIG_VAR(surface2DscansColor.R, c, s);
-	MRPT_SAVE_CONFIG_VAR(surface2DscansColor.G, c, s);
-	MRPT_SAVE_CONFIG_VAR(surface2DscansColor.B, c, s);
-	MRPT_SAVE_CONFIG_VAR(surface2DscansColor.A, c, s);
-
-	MRPT_SAVE_CONFIG_VAR(points2DscansColor.R, c, s);
-	MRPT_SAVE_CONFIG_VAR(points2DscansColor.G, c, s);
-	MRPT_SAVE_CONFIG_VAR(points2DscansColor.B, c, s);
-	MRPT_SAVE_CONFIG_VAR(points2DscansColor.A, c, s);
-}
-
-void ParametersView3DPoints::load_from_ini_file()
-{
-	auto& c = *iniFile;
-	const std::string s = "ParametersView3DPoints";
-
-	MRPT_LOAD_CONFIG_VAR_CS(axisTickFrequency, double);
-	MRPT_LOAD_CONFIG_VAR_CS(axisLimits, double);
-	MRPT_LOAD_CONFIG_VAR_CS(axisTickTextSize, double);
-	MRPT_LOAD_CONFIG_VAR_CS(colorFromRGBimage, bool);
-	MRPT_LOAD_CONFIG_VAR_CS(colorizeByAxis, int);
-	MRPT_LOAD_CONFIG_VAR_CS(invertColorMapping, bool);
-	MRPT_LOAD_CONFIG_VAR_CS(pointSize, double);
-	MRPT_LOAD_CONFIG_VAR_CS(drawSensorPose, bool);
-	MRPT_LOAD_CONFIG_VAR_CS(sensorPoseScale, double);
-	colorMap = c.read_enum(s, "colorMap", colorMap);
-	MRPT_LOAD_CONFIG_VAR_CS(showAxis, bool);
-	MRPT_LOAD_CONFIG_VAR_CS(showSurfaceIn2Dscans, bool);
-	MRPT_LOAD_CONFIG_VAR_CS(showPointsIn2Dscans, bool);
-	MRPT_LOAD_CONFIG_VAR_CS(onlyPointsWithColor, bool);
-
-	MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.R, int);
-	MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.G, int);
-	MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.B, int);
-	MRPT_LOAD_CONFIG_VAR_CS(surface2DscansColor.A, int);
-
-	MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.R, int);
-	MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.G, int);
-	MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.B, int);
-	MRPT_LOAD_CONFIG_VAR_CS(points2DscansColor.A, int);
 }
