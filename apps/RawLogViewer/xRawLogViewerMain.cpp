@@ -420,7 +420,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	wxMenuItem* MenuItem24;
 	wxMenuItem* MenuItem69;
 	wxMenuItem* MenuItem27;
-	wxFlexGridSizer* FlexGridSizer15;
+	wxFlexGridSizer* fgzToolbar;
+	wxFlexGridSizer* fgzBottomTimeLine;
 	wxFlexGridSizer* FlexGridSizer8;
 	wxMenuItem* MenuItem70;
 	wxMenuItem* MenuItem67;
@@ -431,7 +432,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	wxMenu* MenuItem81;
 	wxMenuBar* MenuBar1;
 	wxFlexGridSizer* FlexGridSizer6;
-	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* fgzMain;
 	wxFlexGridSizer* FlexGridSizer11;
 	wxMenuItem* MenuItem43;
 	wxMenu* Menu2;
@@ -451,12 +452,13 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 			wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")), wxART_OTHER));
 		SetIcon(FrameIcon);
 	}
-	FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
-	FlexGridSizer1->AddGrowableCol(0);
-	FlexGridSizer1->AddGrowableRow(1);
-	FlexGridSizer15 = new wxFlexGridSizer(1, 17, 0, 0);
-	FlexGridSizer15->AddGrowableCol(15);
-	FlexGridSizer15->AddGrowableCol(16);
+	fgzMain = new wxFlexGridSizer(3, 1, 0, 0);
+	fgzMain->AddGrowableCol(0);
+	fgzMain->AddGrowableRow(1);
+	fgzToolbar = new wxFlexGridSizer(1, 17, 0, 0);
+	fgzToolbar->AddGrowableCol(15);
+	fgzToolbar->AddGrowableCol(16);
+
 	btnToolbarOpen = new wxCustomButton(
 		this, ID_BUTTON2, _("Load..."),
 		wxArtProvider::GetBitmap(
@@ -466,7 +468,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")), wxART_TOOLBAR));
 	btnToolbarOpen->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		btnToolbarOpen, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -481,7 +483,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button1->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")), wxART_TOOLBAR));
 	Button1->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button1, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -489,7 +491,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	StaticLine2 = new wxStaticLine(
 		this, ID_STATICLINE2, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL,
 		_T("ID_STATICLINE2"));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		StaticLine2, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
 	Button2 = new wxCustomButton(
@@ -501,7 +503,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button2->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")), wxART_TOOLBAR));
 	Button2->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button2, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -515,7 +517,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button3->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")), wxART_TOOLBAR));
 	Button3->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button3, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -529,7 +531,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button4->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")), wxART_TOOLBAR));
 	Button4->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button4, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -543,7 +545,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button5->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")), wxART_TOOLBAR));
 	Button5->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button5, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -551,7 +553,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	StaticLine3 = new wxStaticLine(
 		this, ID_STATICLINE3, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL,
 		_T("ID_STATICLINE3"));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		StaticLine3, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
 	Button6 = new wxCustomButton(
@@ -564,7 +566,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button6->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")), wxART_TOOLBAR));
 	Button6->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button6, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -578,7 +580,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button7->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")), wxART_TOOLBAR));
 	Button7->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button7, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -586,7 +588,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	StaticLine4 = new wxStaticLine(
 		this, ID_STATICLINE4, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL,
 		_T("ID_STATICLINE4"));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		StaticLine4, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
 	Button8 = new wxCustomButton(
@@ -598,7 +600,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button8->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")), wxART_TOOLBAR));
 	Button8->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button8, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -612,7 +614,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button9->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")), wxART_TOOLBAR));
 	Button9->SetMargins(wxSize(5, 5));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		Button9, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
@@ -620,7 +622,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	StaticLine1 = new wxStaticLine(
 		this, ID_STATICLINE1, wxDefaultPosition, wxSize(3, 70), wxLI_VERTICAL,
 		_T("ID_STATICLINE1"));
-	FlexGridSizer15->Add(
+	fgzToolbar->Add(
 		StaticLine1, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 1);
 	FlexGridSizer16 = new wxFlexGridSizer(2, 1, 0, 0);
@@ -634,14 +636,13 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		this, ID_COMBO_IMG_DIRS, wxEmptyString, wxDefaultPosition,
 		wxDefaultSize, 0, nullptr, 0, wxDefaultValidator,
 		_T("ID_COMBO_IMG_DIRS"));
-	toolbarcomboImages->SetMinSize(wxSize(250, -1));
+	toolbarcomboImages->SetMinSize(wxSize(150, -1));
 	toolbarcomboImages->SetToolTip(_("Found external images paths"));
 	toolbarcomboImages->SetHelpText(_("Found external images paths"));
 	FlexGridSizer16->Add(
 		toolbarcomboImages, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer15->Add(
-		FlexGridSizer16, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	fgzToolbar->Add(FlexGridSizer16, 1, wxALL | wxEXPAND);
 
 	edSelectedTimeInfo = new wxTextCtrl(
 		this, ID_TXT_SELECTED_INFO, wxEmptyString, wxDefaultPosition,
@@ -649,10 +650,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		_T("ID_TXT_SELECTED_INFO"));
 	edSelectedTimeInfo->SetFont(monoFont);
 
-	FlexGridSizer15->Add(edSelectedTimeInfo, 1, wxALL | wxEXPAND, 0);
+	fgzToolbar->Add(edSelectedTimeInfo, 1, wxALL | wxEXPAND, 0);
 
-	FlexGridSizer1->Add(
-		FlexGridSizer15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	fgzMain->Add(fgzToolbar, 1, wxALL | wxEXPAND);
 	//---
 	SplitterWindow1 = new wxSplitterWindow(
 		this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize,
@@ -668,8 +668,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	tree_view = new CRawlogTreeView(
 		Panel1, ID_CUSTOM5, wxDefaultPosition, wxDefaultSize, wxVSCROLL,
 		_T("ID_CUSTOM5"));
-	FlexGridSizer2->Add(
-		tree_view, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(tree_view, 1, wxALL | wxEXPAND);
 	Panel1->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->SetSizeHints(Panel1);
 	Panel2 = new wxPanel(
@@ -677,8 +676,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		wxTAB_TRAVERSAL, _T("ID_PANEL2"));
 	BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
 	SplitterWindow3 = new wxSplitterWindow(
-		Panel2, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize, wxSP_3D,
-		_T("ID_SPLITTERWINDOW3"));
+		Panel2, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize,
+		wxSP_3D | wxSP_3DBORDER | wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW3"));
 	SplitterWindow3->SetMinSize(wxSize(150, 150));
 	SplitterWindow3->SetMinimumPaneSize(150);
 	Panel3 = new wxPanel(
@@ -692,7 +691,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 			wxVSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	memo->SetFont(monoFont);
-	BoxSizer2->Add(memo, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer2->Add(memo, 1, wxALL | wxEXPAND);
 	Panel3->SetSizer(BoxSizer2);
 	BoxSizer2->Fit(Panel3);
 	BoxSizer2->SetSizeHints(Panel3);
@@ -715,8 +714,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	btnEditComments = new wxButton(
 		Panel9, ID_BUTTON1, _("Edit comments..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-	FlexGridSizer6->Add(
-		Panel9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(Panel9, 1, wxALL | wxEXPAND);
 	Notebook3 = new wxNotebook(
 		pn_CSensorialFrame, ID_NOTEBOOK3, wxDefaultPosition, wxSize(-1, 150), 0,
 		_T("ID_NOTEBOOK3"));
@@ -736,8 +734,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	txtException->SetFont(monoFont);
 	Notebook3->AddPage(memStats, _("Dataset statistics && info"), false);
 	Notebook3->AddPage(txtException, _("End of load message"), false);
-	FlexGridSizer6->Add(
-		Notebook3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(Notebook3, 1, wxALL | wxEXPAND);
 	pn_CSensorialFrame->SetSizer(FlexGridSizer6);
 	FlexGridSizer6->Fit(pn_CSensorialFrame);
 	FlexGridSizer6->SetSizeHints(pn_CSensorialFrame);
@@ -763,12 +760,11 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	plotScan2D = new mpWindow(
 		pn_CObservation2DRangeScan, ID_CUSTOM1, wxDefaultPosition,
 		wxDefaultSize, 0);
-	BoxSizer5->Add(
-		plotScan2D, 10, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer5->Add(plotScan2D, 10, wxALL | wxEXPAND);
 	Panel4 = new wxPanel(
 		pn_CObservation2DRangeScan, ID_PANEL4, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_PANEL4"));
-	BoxSizer5->Add(Panel4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer5->Add(Panel4, 1, wxALL | wxEXPAND);
 	pn_CObservation2DRangeScan->SetSizer(BoxSizer5);
 	BoxSizer5->Fit(pn_CObservation2DRangeScan);
 	BoxSizer5->SetSizeHints(pn_CObservation2DRangeScan);
@@ -803,8 +799,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizerImg->Fit(ScrolledWindow2);
 	FlexGridSizerImg->SetSizeHints(ScrolledWindow2);
 
-	FlexGridSizer3->Add(
-		ScrolledWindow2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(ScrolledWindow2, 1, wxALL | wxEXPAND);
 	pn_CObservationImage->SetSizer(FlexGridSizer3);
 	FlexGridSizer3->Fit(pn_CObservationImage);
 	FlexGridSizer3->SetSizeHints(pn_CObservationImage);
@@ -869,8 +864,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Notebook2->AddPage(Panel6, _("Left"), false);
 	Notebook2->AddPage(Panel7, _("Right"), false);
 	Notebook2->AddPage(Panel10, _("Disparity"), false);
-	FlexGridSizer4->Add(
-		Notebook2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(Notebook2, 1, wxALL | wxEXPAND);
 	pn_CObservationStereoImage->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->Fit(pn_CObservationStereoImage);
 	FlexGridSizer4->SetSizeHints(pn_CObservationStereoImage);
@@ -890,12 +884,11 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	plotRangeBearing = new mpWindow(
 		pn_CObservationBearingRange, ID_CUSTOM4, wxDefaultPosition,
 		wxDefaultSize, 0);
-	BoxSizer4->Add(
-		plotRangeBearing, 10, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer4->Add(plotRangeBearing, 10, wxALL | wxEXPAND);
 	Panel8 = new wxPanel(
 		pn_CObservationBearingRange, ID_PANEL17, wxDefaultPosition,
 		wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL17"));
-	BoxSizer4->Add(Panel8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer4->Add(Panel8, 1, wxALL | wxEXPAND);
 	pn_CObservationBearingRange->SetSizer(BoxSizer4);
 	BoxSizer4->Fit(pn_CObservationBearingRange);
 	BoxSizer4->SetSizeHints(pn_CObservationBearingRange);
@@ -992,21 +985,87 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Notebook1->AddPage(
 		pn_CObservationBearingRange, _("Obs: RangeBearing"), false);
 	Notebook1->AddPage(pn_CObservation3DRangeScan, _("Obs: 3D"), false);
-	BoxSizer3->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer3->Add(Notebook1, 1, wxALL | wxEXPAND);
 	Panel5->SetSizer(BoxSizer3);
 	BoxSizer3->Fit(Panel5);
 	BoxSizer3->SetSizeHints(Panel5);
 	SplitterWindow3->SplitHorizontally(Panel3, Panel5);
-	BoxSizer1->Add(
-		SplitterWindow3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer1->Add(SplitterWindow3, 1, wxALL | wxEXPAND);
 	Panel2->SetSizer(BoxSizer1);
 	BoxSizer1->Fit(Panel2);
 	BoxSizer1->SetSizeHints(Panel2);
 	SplitterWindow1->SplitVertically(Panel1, Panel2);
-	FlexGridSizer1->Add(
-		SplitterWindow1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	SetSizer(FlexGridSizer1);
+	fgzMain->Add(SplitterWindow1, 1, wxALL | wxEXPAND);
+
+	// -----------------------
+	// Bottom timeline
+	// -----------------------
+	fgzBottomTimeLine = new wxFlexGridSizer(1, 2, 0, 0);
+	fgzBottomTimeLine->AddGrowableRow(0);
+	fgzBottomTimeLine->AddGrowableCol(1);
+
+	// bottom-left panel:
+	{
+		static const long ID_PANEL_LEFT_TIMELINE = wxNewId();
+		static const long ID_TIMELINE_LIST_OBS_LABELS = wxNewId();
+
+		wxPanel* pnLeftTimeLine = new wxPanel(this, ID_PANEL_LEFT_TIMELINE);
+
+		auto fgs = new wxFlexGridSizer(2, 1, 0, 0);
+		fgs->AddGrowableCol(0);
+		fgs->AddGrowableRow(1);
+
+		auto stLabel = new wxStaticText(
+			pnLeftTimeLine, ID_STATICTEXT4, _("Show miniatures:"),
+			wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+		fgs->Add(stLabel, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+
+		m_lstObsLabels =
+			new wxCheckListBox(pnLeftTimeLine, ID_TIMELINE_LIST_OBS_LABELS);
+		fgs->Add(m_lstObsLabels, 1, wxALL | wxEXPAND, 1 /*border*/);
+
+		stLabel->SetMinSize(wxSize(200, -1));
+
+		pnLeftTimeLine->SetSizer(fgs);
+		fgs->SetSizeHints(pnLeftTimeLine);
+
+		fgzBottomTimeLine->Add(pnLeftTimeLine);
+	}
+
+	// bottom-right/main panel 3D view:
+	wxPanel* pnTimeLine;
+	{
+		static const long ID_PANEL_TIMELINE = wxNewId();
+		static const long ID_TIMELINE_GLCANVAS = wxNewId();
+
+		pnTimeLine = new wxPanel(
+			this, ID_PANEL_TIMELINE, wxDefaultPosition, wxDefaultSize,
+			wxTAB_TRAVERSAL, _T("ID_PANEL_TIMELINE"));
+		auto fgs = new wxFlexGridSizer(1, 1, 0, 0);
+		fgs->AddGrowableCol(0);
+		fgs->AddGrowableRow(0);
+
+		m_glTimeLine = new CMyGLCanvas(pnTimeLine, ID_TIMELINE_GLCANVAS);
+		pnTimeLine->SetMinSize(wxSize(-1, 100));
+		m_glTimeLine->SetMinSize(wxSize(-1, 100));
+		fgs->Add(m_glTimeLine, 1, wxALL | wxEXPAND, 2 /*border*/);
+
+		pnTimeLine->SetSizer(fgs);
+		fgs->SetSizeHints(pnTimeLine);
+
+		fgzBottomTimeLine->Add(pnTimeLine, 1, wxALL | wxEXPAND, 0);
+	}
+
+	fgzMain->Add(fgzBottomTimeLine, 1, wxALL | wxEXPAND, 0);
+
+	// ----
+	SetSizer(fgzMain);
+	fgzMain->SetSizeHints(this);
+	// ----
+
+	// -----------------------
+	// MENUS
+	// -----------------------
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();
 	MenuItem3 = new wxMenuItem(
@@ -1431,10 +1490,13 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		wxEmptyString, wxITEM_NORMAL);
 	MenuItem45->Append(MenuItem47);
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
+
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-	FlexGridSizer1->SetSizeHints(this);
 
+	// ----------------
+	// Events
+	// ----------------
 	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnFileOpen, this, ID_BUTTON2);
 	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnSaveFile, this, ID_BUTTON3);
 	Bind(wxEVT_BUTTON, &xRawLogViewerFrame::OnEditRawlog, this, ID_BUTTON4);
@@ -2456,7 +2518,16 @@ void xRawLogViewerFrame::rebuildTreeView()
 	SelectObjectInTreeView(CSerializable::Ptr());
 	tree_view->Refresh();
 
-	// Show plot of times:
+	// -----------------------------------------
+	// Bottom timeline view
+	// -----------------------------------------
+	m_lstObsLabels->Clear();
+	for (const auto& obsPerSensorLabel : listOfSensorLabels)
+	{
+		const auto sensorLabel = obsPerSensorLabel.first;
+		m_lstObsLabels->AppendString(sensorLabel);
+	}
+
 #if 0
 	{
 		plotRawlogSensorTimes->DelAllLayers(
