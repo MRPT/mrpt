@@ -1037,13 +1037,18 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	{
 		static const long ID_PANEL_TIMELINE = wxNewId();
 		static const long ID_TIMELINE_GLCANVAS = wxNewId();
+		static const long ID_TIMELINE_DBL_SLIDER = wxNewId();
 
 		pnTimeLine = new wxPanel(
 			this, ID_PANEL_TIMELINE, wxDefaultPosition, wxDefaultSize,
 			wxTAB_TRAVERSAL, _T("ID_PANEL_TIMELINE"));
-		auto fgs = new wxFlexGridSizer(1, 1, 0, 0);
+		auto fgs = new wxFlexGridSizer(2, 1, 0, 0);
 		fgs->AddGrowableCol(0);
-		fgs->AddGrowableRow(0);
+		fgs->AddGrowableRow(1);
+
+		m_sliderTimeLineRange =
+			new wxDoubleSlider(pnTimeLine, ID_TIMELINE_DBL_SLIDER, 0, 1, 0, 1);
+		fgs->Add(m_sliderTimeLineRange, 1, wxALL | wxEXPAND, 1 /*border*/);
 
 		m_glTimeLine = new CMyGLCanvas(pnTimeLine, ID_TIMELINE_GLCANVAS);
 		pnTimeLine->SetMinSize(wxSize(-1, 100));

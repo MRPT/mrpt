@@ -42,6 +42,7 @@
 #include <string>
 
 #include "ViewOptions3DPoints.h"
+#include "wxDoubleSlider.h"
 
 // General global variables:
 #include <mrpt/config/CConfigFile.h>
@@ -409,6 +410,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxTextCtrl* edSelectedTimeInfo = nullptr;
 	CMyGLCanvas* m_glTimeLine = nullptr;
 	wxCheckListBox* m_lstObsLabels = nullptr;
+	wxDoubleSlider* m_sliderTimeLineRange = nullptr;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
