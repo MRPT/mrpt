@@ -579,6 +579,7 @@ class xRawLogViewerFrame : public wxFrame
 	//*)
 	wxFlexGridSizer* FlexGridSizerImg = nullptr;
 	wxScrolledWindow* ScrolledWindow2 = nullptr;
+	wxTextCtrl* edSelectedTimeInfo = nullptr;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
@@ -603,8 +604,8 @@ class xRawLogViewerFrame : public wxFrame
 
 	std::map<std::string, TInfoPerSensorLabel> listOfSensorLabels;
 
-	// ALWAYS access this inside a "try" block, for the case...
-	mrpt::obs::CObservation::Ptr curSelectedObservation;
+	// ALWAYS access this inside a "try" block, just in case...
+	mrpt::obs::CObservation::Ptr m_selectedObj;
 	mrpt::serialization::CSerializable::Ptr curSelectedObject;
 	mrpt::gui::CDisplayWindow3D::Ptr winGPSPath;
 	mrpt::gui::CDisplayWindowPlots::Ptr winGPSPath2D_xy, winGPSPath2D_xz;
