@@ -468,14 +468,12 @@ class xRawLogViewerFrame : public wxFrame
 	mpWindow* plotAct2D_PHI;
 	wxMenuItem* MenuItem86;
 	wxMenu* MenuItem20;
-	wxSplitterWindow* SplitterWindow2;
 	wxMenuItem* MenuItem46;
 	wxStaticBitmapPopup* bmpObsStereoLeft;
 	wxMenuItem* MenuItem4;
 	wxMenuItem* MenuItem76;
 	wxPanel* pn_Action;
 	wxMenuItem* MenuItem14;
-	wxPanel* Panel11;
 	wxMenuItem* MenuItem36;
 	wxCustomButton* btnToolbarOpen;
 	wxMenuItem* mnuItemEnable3DCamAutoGenPoints;
@@ -511,7 +509,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxPanel* Panel3;
 	wxStaticLine* StaticLine4;
 	wxStaticLine* StaticLine2;
-	mpWindow* plotRawlogSensorTimes;
 	wxMenuItem* MenuItem72;
 	wxMenuItem* MenuItem44;
 	wxPanel* pn_CObservationBearingRange;
