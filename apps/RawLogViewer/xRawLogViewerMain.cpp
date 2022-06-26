@@ -375,6 +375,7 @@ const long xRawLogViewerFrame::ID_TIMER1 = wxNewId();
 //*)
 const long xRawLogViewerFrame::ID_MENUITEM_RENAME_BY_SF_IDX = wxNewId();
 static const long ID_SCROLLEDWINDOW2 = wxNewId();
+static const long ID_TXT_SELECTED_INFO = wxNewId();
 
 BEGIN_EVENT_TABLE(xRawLogViewerFrame, wxFrame)
 //(*EventTable(xRawLogViewerFrame)
@@ -456,8 +457,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
 	FlexGridSizer1->AddGrowableRow(1);
-	FlexGridSizer15 = new wxFlexGridSizer(1, 16, 0, 0);
-	FlexGridSizer15->AddGrowableCol(14);
+	FlexGridSizer15 = new wxFlexGridSizer(1, 17, 0, 0);
+	FlexGridSizer15->AddGrowableCol(15);
+	FlexGridSizer15->AddGrowableCol(16);
 	btnToolbarOpen = new wxCustomButton(
 		this, ID_BUTTON2, _("Load..."),
 		wxArtProvider::GetBitmap(
@@ -643,8 +645,18 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		5);
 	FlexGridSizer15->Add(
 		FlexGridSizer16, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+
+	edSelectedTimeInfo = new wxTextCtrl(
+		this, ID_TXT_SELECTED_INFO, wxEmptyString, wxDefaultPosition,
+		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY, wxDefaultValidator,
+		_T("ID_TXT_SELECTED_INFO"));
+	edSelectedTimeInfo->SetFont(monoFont);
+
+	FlexGridSizer15->Add(edSelectedTimeInfo, 1, wxALL | wxEXPAND, 0);
+
 	FlexGridSizer1->Add(
 		FlexGridSizer15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	//---
 	SplitterWindow1 = new wxSplitterWindow(
 		this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize,
 		wxSP_3D | wxSP_3DBORDER | wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
@@ -2241,7 +2253,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 	int countLoop = 0;
 
 	Notebook1->ChangeSelection(0);
-	curSelectedObservation.reset();	 // = nullptr;
+	m_selectedObj.reset();	// = nullptr;
 	curSelectedObject.reset();	// = nullptr;
 
 	wxProgressDialog progDia(
@@ -2399,24 +2411,24 @@ void xRawLogViewerFrame::rebuildTreeView()
 	memStats->Clear();
 
 	memStats->AppendText(format(
-		"Time to load file:                  %.03fms\n", 1000 * timeToLoad));
+		"Time to load file                 : %.03fms\n", 1000 * timeToLoad));
 	memStats->AppendText(format(
-		"Records loaded:                     %u\n", (unsigned)rawlog.size()));
+		"Rawlog entries                    : %u\n", (unsigned)rawlog.size()));
 	memStats->AppendText(format(
-		"Traveled distance (from odometry:  %.02f meters\n", totalDistance));
+		"Traveled distance (from odometry) : %.02f meters\n", totalDistance));
 
 	if (tree_view->getFirstTimestamp() != INVALID_TIMESTAMP)
 	{
 		rawlog_first_timestamp = tree_view->getFirstTimestamp();
 		memStats->AppendText(format(
-			"Dataset first time-stamp (UTC:     %s\n",
+			"Dataset first time-stamp (UTC)    : %s\n",
 			mrpt::system::dateTimeToString(tree_view->getFirstTimestamp())
 				.c_str()));
 	}
 
 	memStats->AppendText(format(
-		"Dataset length:                     %s (hh:mm:ss,  %.03f "
-		"secs.\n",
+		"Dataset duration                  : %s (hh:mm:ss,  %.03f "
+		"secs.)\n",
 		formatTimeInterval(experimentLenght).c_str(), experimentLenght));
 
 	// Stats of object classes:
@@ -3346,24 +3358,23 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent&)
 {
 	try
 	{
-		if (!theMainWindow || !theMainWindow->curSelectedObservation) return;
-		CObservation::Ptr curSelectedObservation =
-			theMainWindow->curSelectedObservation;
+		if (!theMainWindow || !theMainWindow->m_selectedObj) return;
+		CObservation::Ptr curSelObs = theMainWindow->m_selectedObj;
 
 		CImage* imgToSave = nullptr;
 
 		cout << "[xRawLogViewerFrame::OnPopupSaveImage] Current observation "
 				"class: "
-			 << curSelectedObservation->GetRuntimeClass()->className << endl;
+			 << curSelObs->GetRuntimeClass()->className << endl;
 
-		if (IS_CLASS(*curSelectedObservation, CObservationImage))
+		if (IS_CLASS(*curSelObs, CObservationImage))
 		{
-			auto* obs = (CObservationImage*)curSelectedObservation.get();
+			auto* obs = (CObservationImage*)curSelObs.get();
 			imgToSave = &obs->image;
 		}
-		else if (IS_CLASS(*curSelectedObservation, CObservationStereoImages))
+		else if (IS_CLASS(*curSelObs, CObservationStereoImages))
 		{
-			auto* obs = (CObservationStereoImages*)curSelectedObservation.get();
+			auto* obs = (CObservationStereoImages*)curSelObs.get();
 
 			switch (theMainWindow->Notebook2->GetSelection())
 			{
@@ -3372,9 +3383,9 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent&)
 				case 2: imgToSave = &obs->imageDisparity; break;
 			}
 		}
-		else if (IS_CLASS(*curSelectedObservation, CObservation3DRangeScan))
+		else if (IS_CLASS(*curSelObs, CObservation3DRangeScan))
 		{
-			auto* obs = (CObservation3DRangeScan*)curSelectedObservation.get();
+			auto* obs = (CObservation3DRangeScan*)curSelObs.get();
 			obs->load();
 			switch (theMainWindow->nb_3DObsChannels->GetSelection())
 			{
@@ -3424,9 +3435,8 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent&)
 {
 	try
 	{
-		if (!theMainWindow || !theMainWindow->curSelectedObservation) return;
-		CObservation::Ptr curSelectedObservation =
-			theMainWindow->curSelectedObservation;
+		if (!theMainWindow || !theMainWindow->m_selectedObj) return;
+		CObservation::Ptr curSelectedObservation = theMainWindow->m_selectedObj;
 
 		CImage* imgToLoad = nullptr;
 

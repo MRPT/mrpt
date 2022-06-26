@@ -277,6 +277,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				cout << s;
 			}
 		}
+
+		edSelectedTimeInfo->SetValue(
+			"(Timestamp information of selected object)");
+
 		// Set focus on the first line:
 		memo->ShowPosition(0);
 		memo->Thaw();  // Allow the window to redraw
@@ -303,30 +307,54 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	// Default selection:
 	Notebook1->ChangeSelection(0);
 
-	// Common data:
-	if (classID->derivedFrom(CLASS_ID(CObservation)))
-	{
-		CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(sel_obj));
+	std::optional<mrpt::Clock::time_point> obsStamp;
 
+	// Common data:
+	if (auto obs = std::dynamic_pointer_cast<CObservation>(sel_obj); obs)
+	{
 		try
 		{
 			obs->load();
 			obs->getDescriptionAsText(cout);
 			textDescriptionDone = true;
+
+			obsStamp = obs->timestamp;
 		}
 		catch (const mrpt::img::CExceptionExternalImageNotFound& e)
 		{
 			std::cout << "Error with lazy-load object:\n" << e.what() << "\n";
 		}
 
-		curSelectedObservation =
-			std::dynamic_pointer_cast<CObservation>(sel_obj);
+		m_selectedObj = std::dynamic_pointer_cast<CObservation>(sel_obj);
 	}
-	if (classID->derivedFrom(CLASS_ID(CAction)))
+	else if (auto act = std::dynamic_pointer_cast<CAction>(sel_obj); act)
 	{
-		CAction::Ptr act(std::dynamic_pointer_cast<CAction>(sel_obj));
-		cout << act->getDescriptionAsTextValue();
+		std::cout << act->getDescriptionAsTextValue();
 		textDescriptionDone = true;
+		obsStamp = act->timestamp;
+	}
+
+	// Handle timestamp info:
+	if (obsStamp.has_value() && obsStamp.value() != INVALID_TIMESTAMP)
+	{
+		auto s = wxString::Format(
+			"Timestamp (UTC): %s\n"
+			"        (local): %s\n"
+			"    (as time_t): %.09f\n",
+			mrpt::system::dateTimeToString(*obsStamp).c_str(),
+			mrpt::system::dateTimeLocalToString(*obsStamp).c_str(),
+			mrpt::Clock::toDouble(*obsStamp));
+
+		if (tree_view->getFirstTimestamp() != INVALID_TIMESTAMP)
+		{
+			const double posInSeconds = mrpt::system::timeDifference(
+				tree_view->getFirstTimestamp(), *obsStamp);
+
+			s += wxString::Format(
+				"Since rawlog beginning: %.03f [s]\n", posInSeconds);
+		}
+
+		edSelectedTimeInfo->SetValue(s);
 	}
 
 	// Specific data:
