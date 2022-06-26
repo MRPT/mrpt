@@ -397,7 +397,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 
 	//(*Initialize(xRawLogViewerFrame)
 	wxMenu* Menu39;
-	wxBoxSizer* BoxSizer6;
 	wxFlexGridSizer* FlexGridSizer4;
 	wxFlexGridSizer* FlexGridSizer16;
 	wxMenuItem* MenuItem33;
@@ -724,37 +723,20 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		pn_CSensorialFrame, ID_NOTEBOOK3, wxDefaultPosition, wxSize(-1, 150), 0,
 		_T("ID_NOTEBOOK3"));
 	Notebook3->SetMinSize(wxSize(-1, 150));
-	SplitterWindow2 = new wxSplitterWindow(
-		Notebook3, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize,
-		wxSP_3D, _T("ID_SPLITTERWINDOW2"));
-	SplitterWindow2->SetMinSize(wxSize(100, 100));
-	SplitterWindow2->SetMinimumPaneSize(100);
 	memStats = new wxTextCtrl(
-		SplitterWindow2, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition,
+		Notebook3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition,
 		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxVSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	memStats->SetMinSize(wxSize(-1, 150));
 	memStats->SetFont(monoFont);
 	memStats->SetToolTip(_("Statistics of the rawlog load"));
-	Panel11 = new wxPanel(
-		SplitterWindow2, ID_PANEL25, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL25"));
-	BoxSizer6 = new wxBoxSizer(wxHORIZONTAL);
-	plotRawlogSensorTimes = new mpWindow(
-		Panel11, ID_CUSTOM6, wxDefaultPosition, wxSize(315, 47), 0);
-	BoxSizer6->Add(
-		plotRawlogSensorTimes, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		0);
-	Panel11->SetSizer(BoxSizer6);
-	BoxSizer6->Fit(Panel11);
-	BoxSizer6->SetSizeHints(Panel11);
-	SplitterWindow2->SplitHorizontally(memStats, Panel11);
+
 	txtException = new wxTextCtrl(
 		Notebook3, ID_TEXTCTRL3, wxEmptyString, wxDefaultPosition,
 		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY, wxDefaultValidator,
 		_T("ID_TEXTCTRL3"));
 	txtException->SetFont(monoFont);
-	Notebook3->AddPage(SplitterWindow2, _("Dataset statistics && info"), false);
+	Notebook3->AddPage(memStats, _("Dataset statistics && info"), false);
 	Notebook3->AddPage(txtException, _("End of load message"), false);
 	FlexGridSizer6->Add(
 		Notebook3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
@@ -2477,6 +2459,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 	tree_view->Refresh();
 
 	// Show plot of times:
+#if 0
 	{
 		plotRawlogSensorTimes->DelAllLayers(
 			true /*delete objs*/, false /*dont refresh view*/);
@@ -2516,6 +2499,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 			min_t - At * 0.15, max_t + At * 0.15, -1.0, id + 1.0);
 		plotRawlogSensorTimes->Refresh();
 	}
+#endif
 
 	WX_END_TRY
 }
