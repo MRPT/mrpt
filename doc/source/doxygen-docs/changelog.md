@@ -10,6 +10,8 @@
   - RawLogViewer:
     - Visual improvements and display of timestamps in local time too.
 - Changes in libraries:
+  - \ref mrpt_obs_grp
+    - New set of functions to help visualize observations: \ref customizable_obs_viz_grp
   - \ref mrpt_poses_grp
     - Adds covariance mapping to SE(3) for GTSAM (Closes [#1229](https://github.com/MRPT/mrpt/issues/1229))
   - \ref mrpt_ros1bridge_grp

@@ -11,10 +11,6 @@
 #include <mrpt/math/ops_matrices.h>	 // << ops
 #include <mrpt/math/ops_vectors.h>	// << ops
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/datetime.h>
 
 #include "ParametersView3DPoints.h"
@@ -22,7 +18,6 @@
 
 #define MRPT_NO_WARN_BIG_HDR  // It's ok to include ALL hdrs here.
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs.h>
 #include <mrpt/obs/CObservationRotatingScan.h>	// not included in obs.h since it's in mrpt-maps
@@ -42,221 +37,13 @@ using namespace mrpt::poses;
 using namespace mrpt::rtti;
 using namespace std;
 
-// Bounding box memory so we have consistent coloring across different sensors:
-std::optional<mrpt::math::TBoundingBox> bbMemory;
-double bbMemoryFading = 0.99;
-
-void recolorize3Dpc(
-	const mrpt::opengl::CPointCloudColoured::Ptr& pnts,
-	const ParametersView3DPoints& p)
-{
-	const auto newBb = pnts->getBoundingBox();
-
-	// Slowly update bb memory:
-	if (!bbMemory.has_value())
-	{
-		// first time:
-		bbMemory = newBb;
-	}
-	else
-	{
-		bbMemory.value().min = bbMemory.value().min * bbMemoryFading +
-			newBb.min * (1.0 - bbMemoryFading);
-		bbMemory.value().max = bbMemory.value().max * bbMemoryFading +
-			newBb.max * (1.0 - bbMemoryFading);
-	}
-	const auto& bb = bbMemory.value();
-
-	// actual colorize:
-	switch (p.colorizeByAxis)
-	{
-		case 0:
-			pnts->recolorizeByCoordinate(
-				p.invertColorMapping ? bb.max.x : bb.min.x,
-				p.invertColorMapping ? bb.min.x : bb.max.x, 0 /* x */,
-				p.colorMap);
-			break;
-		case 1:
-			pnts->recolorizeByCoordinate(
-				p.invertColorMapping ? bb.max.y : bb.min.y,
-				p.invertColorMapping ? bb.min.y : bb.max.y, 1 /* y */,
-				p.colorMap);
-			break;
-		case 2:
-			pnts->recolorizeByCoordinate(
-				p.invertColorMapping ? bb.max.z : bb.min.z,
-				p.invertColorMapping ? bb.min.z : bb.max.z, 2 /* z */,
-				p.colorMap);
-			break;
-		default: break;
-	}
-}
-
-void add_common_to_viz(
-	const CObservation& obs, const ParametersView3DPoints& p,
-	mrpt::opengl::CSetOfObjects& out)
-{
-	if (p.showAxis)
-	{
-		const float L = p.axisLimits;
-		auto gl_axis = mrpt::opengl::CAxis::Create(
-			-L, -L, -L, L, L, L, p.axisTickFrequency, 2, true);
-		gl_axis->setTextScale(p.axisTickTextSize);
-		gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
-		out.insert(gl_axis);
-
-		// Show axis labels such that they can be read from the IIIrd-IVth
-		// quadrant:
-		const float yawIncrs[3] = {180.f, -90.f, 180.f};
-		for (int axis = 0; axis < 3; axis++)
-		{
-			float yaw_deg, pitch_deg, roll_deg;
-			gl_axis->getTextLabelOrientation(
-				axis, yaw_deg, pitch_deg, roll_deg);
-			yaw_deg += yawIncrs[axis];
-			gl_axis->setTextLabelOrientation(
-				axis, yaw_deg, pitch_deg, roll_deg);
-		}
-	}
-
-	if (p.drawSensorPose)
-	{
-		const auto glCorner =
-			mrpt::opengl::stock_objects::CornerXYZSimple(p.sensorPoseScale);
-		glCorner->setPose(obs.sensorPose());
-		out.insert(glCorner);
-	}
-}
-
-void obs3Dscan_to_viz(
-	const CObservation3DRangeScan::Ptr& obs, const ParametersView3DPoints& p,
-	mrpt::opengl::CSetOfObjects& out)
-{
-	out.clear();
-
-	// Generate/load 3D points
-	// ----------------------
-	mrpt::maps::CPointsMap::Ptr pointMap;
-	mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
-	mrpt::obs::T3DPointsProjectionParams pp;
-	pp.takeIntoAccountSensorPoseOnRobot = true;
-	pp.onlyPointsWithIntensityColor = p.onlyPointsWithColor;
-
-	// Color from intensity image?
-	if (p.colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)
-	{
-		pointMapCol = mrpt::maps::CColouredPointsMap::Create();
-		pointMapCol->colorScheme.scheme =
-			CColouredPointsMap::cmFromIntensityImage;
-
-		obs->unprojectInto(*pointMapCol, pp);
-		pointMap = pointMapCol;
-	}
-	else
-	{
-		// Empty point set, or load from XYZ in observation:
-		pointMap = mrpt::maps::CSimplePointsMap::Create();
-		if (obs->hasPoints3D)
-		{
-			for (size_t i = 0; i < obs->points3D_x.size(); i++)
-				pointMap->insertPoint(
-					obs->points3D_x[i], obs->points3D_y[i], obs->points3D_z[i]);
-		}
-		else if (obs->hasRangeImage)
-		{
-			obs->unprojectInto(*pointMap, pp);
-		}
-	}
-
-	add_common_to_viz(*obs, p, out);
-
-	auto gl_pnts = mrpt::opengl::CPointCloudColoured::Create();
-	// Load as RGB or grayscale points:
-	if (pointMapCol) gl_pnts->loadFromPointsMap(pointMapCol.get());
-	else
-	{
-		gl_pnts->loadFromPointsMap(pointMap.get());
-		recolorize3Dpc(gl_pnts, p);
-	}
-
-	// No need to further transform 3D points
-	gl_pnts->setPose(mrpt::poses::CPose3D());
-	gl_pnts->setPointSize(p.pointSize);
-
-	out.insert(gl_pnts);
-}
-
-void obsVelodyne_to_viz(
-	const CObservationVelodyneScan::Ptr& obs, const ParametersView3DPoints& p,
-	mrpt::opengl::CSetOfObjects& out)
-{
-	out.clear();
-
-	add_common_to_viz(*obs, p, out);
-
-	auto pnts = mrpt::opengl::CPointCloudColoured::Create();
-	out.insert(pnts);
-
-	CColouredPointsMap pntsMap;
-	pntsMap.loadFromVelodyneScan(*obs);
-	pnts->loadFromPointsMap(&pntsMap);
-	pnts->setPointSize(p.pointSize);
-
-	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
-}
-
-void obsPointCloud_to_viz(
-	const mrpt::obs::CObservationPointCloud::Ptr& obs,
-	const ParametersView3DPoints& p, mrpt::opengl::CSetOfObjects& out)
-{
-	out.clear();
-
-	add_common_to_viz(*obs, p, out);
-
-	auto pnts = mrpt::opengl::CPointCloudColoured::Create();
-	out.insert(pnts);
-
-	if (obs->pointcloud) pnts->loadFromPointsMap(obs->pointcloud.get());
-	pnts->setPose(obs->sensorPose);
-
-	pnts->setPointSize(p.pointSize);
-
-	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
-}
-
-void obs2Dscan_to_viz(
-	const CObservation2DRangeScan::Ptr& obs, const ParametersView3DPoints& p,
-	mrpt::opengl::CSetOfObjects& out)
-{
-	out.clear();
-
-	add_common_to_viz(*obs, p, out);
-
-	auto pnts = mrpt::opengl::CPlanarLaserScan::Create();
-	out.insert(pnts);
-
-	pnts->setScan(*obs);
-	pnts->setPointSize(p.pointSize);
-	pnts->enableSurface(p.showSurfaceIn2Dscans);
-	pnts->enablePoints(p.showPointsIn2Dscans);
-
-	pnts->setSurfaceColor(
-		mrpt::u8tof(p.surface2DscansColor.R),
-		mrpt::u8tof(p.surface2DscansColor.G),
-		mrpt::u8tof(p.surface2DscansColor.B),
-		mrpt::u8tof(p.surface2DscansColor.A));
-	pnts->setPointsColor(
-		mrpt::u8tof(p.points2DscansColor.R),
-		mrpt::u8tof(p.points2DscansColor.G),
-		mrpt::u8tof(p.points2DscansColor.B),
-		mrpt::u8tof(p.points2DscansColor.A));
-}
-
 // Update selected item display:
 void xRawLogViewerFrame::SelectObjectInTreeView(
 	const CSerializable::Ptr& sel_obj)
 {
 	WX_START_TRY
+
+	edSelectedTimeInfo->SetValue("(Timestamp information of selected object)");
 
 	if (!sel_obj)
 	{
@@ -277,9 +64,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				cout << s;
 			}
 		}
-
-		edSelectedTimeInfo->SetValue(
-			"(Timestamp information of selected object)");
 
 		// Set focus on the first line:
 		memo->ShowPosition(0);
