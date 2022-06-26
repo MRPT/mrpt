@@ -12,6 +12,7 @@
 
 //(*Headers(xRawLogViewerFrame)
 #include <wx/button.h>
+#include <wx/checklst.h>
 #include <wx/combobox.h>
 #include <wx/frame.h>
 #include <wx/menu.h>
@@ -406,6 +407,8 @@ class xRawLogViewerFrame : public wxFrame
 	wxFlexGridSizer* FlexGridSizerImg = nullptr;
 	wxScrolledWindow* ScrolledWindow2 = nullptr;
 	wxTextCtrl* edSelectedTimeInfo = nullptr;
+	CMyGLCanvas* m_glTimeLine = nullptr;
+	wxCheckListBox* m_lstObsLabels = nullptr;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
