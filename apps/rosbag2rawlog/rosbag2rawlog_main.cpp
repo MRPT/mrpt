@@ -360,7 +360,7 @@ Obs toTf(tf2::BufferCore& tfBuffer, const rosbag::MessageInstance& rosmsg)
 			{
 				tfBuffer.setTransform(tf, "bagfile", isStatic);
 			}
-			catch (tf2::TransformException& ex)
+			catch (const tf2::TransformException& ex)
 			{
 				std::cerr << ex.what() << std::endl;
 			}
