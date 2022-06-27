@@ -255,6 +255,12 @@ class xRawLogViewerFrame : public wxFrame
 	//*)
 	void OnMenuRenameBySFIndex(wxCommandEvent& event);
 
+	void OnTimeLineMouseMove(wxMouseEvent& e);
+	void OnTimeLineMouseLeftDown(wxMouseEvent& e);
+	void OnTimeLineMouseLeftUp(wxMouseEvent& e);
+	void OnTimeLineMouseRightDown(wxMouseEvent& e);
+	void OnTimeLineMouseRightUp(wxMouseEvent& e);
+
 	//(*Declarations(xRawLogViewerFrame)
 	wxMenu* MenuItem51;
 	wxBoxSizer* BoxSizer4;
