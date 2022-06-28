@@ -21,6 +21,8 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "xRawLogViewerMain.h"
+
 IMPLEMENT_DYNAMIC_CLASS(CRawlogTreeView, wxScrolledWindow)
 
 BEGIN_EVENT_TABLE(CRawlogTreeView, wxScrolledWindow)
@@ -48,6 +50,8 @@ std::atomic_bool CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES{false};
 
 extern std::unique_ptr<mrpt::config::CConfigFile> iniFile;
 extern std::string iniFileSect;
+
+extern xRawLogViewerFrame* theMainWindow;
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -203,6 +207,7 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 	try
 	{
 		OnDrawImpl(dc);
+		theMainWindow->bottomTimeLineUpdateCursorFromTreeScrollPos();
 	}
 	catch (...)
 	{
@@ -244,6 +249,9 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 	size_t last_item = first_item + n_visible_items - 1;
 
 	last_item = min(last_item, m_tree_nodes.size());
+
+	m_firstVisibleItem = first_item;
+	m_lastVisibleItem = last_item;
 
 	// Draw icons?
 	// ----------------------------

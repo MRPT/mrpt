@@ -160,6 +160,8 @@ class xRawLogViewerFrame : public wxFrame
 
 	ViewOptions3DPoints* getViewOptions() { return pnViewOptions; }
 
+	void bottomTimeLineUpdateCursorFromTreeScrollPos();
+
    private:
 	/** Loads the given file in memory, in the varibale "rawlog"
 	 */

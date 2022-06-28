@@ -2518,15 +2518,15 @@ void xRawLogViewerFrame::rebuildTreeView()
 	WX_END_TRY
 }
 
+constexpr int TL_BORDER = 2;  // pixels
+constexpr int TL_BORDER_BOTTOM = 17;  // pixels
+constexpr int TL_X_TICK_COUNT = 7;
+constexpr int XTICKS_FONT_SIZE = 16;
+constexpr double CURSOR_WIDTH_PIXELS = 5;
+
 // Resize and rebuild timeline view objects:
 void xRawLogViewerFrame::rebuildBottomTimeLine()
 {
-	constexpr int TL_BORDER = 2;  // pixels
-	constexpr int TL_BORDER_BOTTOM = 17;  // pixels
-	constexpr int TL_X_TICK_COUNT = 7;
-	constexpr int XTICKS_FONT_SIZE = 16;
-	constexpr double CURSOR_WIDTH_PIXELS = 5;
-
 	const auto clsz = m_glTimeLine->GetClientSize();
 
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
@@ -2621,16 +2621,43 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	}
 
 	// current time position cursor:
-	double xCursor = xLeft1 + 0.1;
-	const double cursorHalfWidth = px2width(CURSOR_WIDTH_PIXELS);
-
 	m_timeline_gl.cursor->setColor_u8(0xff, 0x00, 0x00, 0x50);
 	m_timeline_gl.cursor->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
-	m_timeline_gl.cursor->setBoxCorners(
-		mrpt::math::TPoint3D(xCursor - cursorHalfWidth, yLowerBorder1, 0),	//
-		mrpt::math::TPoint3D(xCursor + cursorHalfWidth, yTopBorder1, 0));
 
-	// repaint:
+	bottomTimeLineUpdateCursorFromTreeScrollPos();
+}
+
+void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
+{
+	const auto clsz = m_glTimeLine->GetClientSize();
+
+	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
+	auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v; };
+
+	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
+
+	const double xLeft1 = px2x(TL_BORDER + 1);
+	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
+	const double yLowerBorder1 = px2y(TL_BORDER_BOTTOM + 1);
+	const double yTopBorder1 = px2y(clsz.GetHeight() - TL_BORDER - 1);
+
+	// percent of view:
+	double pc = 0;
+	if (const double nItems = tree_view->getTotalTreeNodes(); nItems > 2)
+	{
+		// m_firstVisibleItem = 0, m_lastVisibleItem = 0;
+		pc = tree_view->m_firstVisibleItem / static_cast<double>(nItems - 1);
+	}
+
+	// move cursor:
+	double xCursor = xLeft1 + (xRight1 - xLeft1) * pc;
+
+	const double cursorWidth = px2width(CURSOR_WIDTH_PIXELS);
+
+	m_timeline_gl.cursor->setBoxCorners(
+		mrpt::math::TPoint3D(xCursor, yLowerBorder1, 0),  //
+		mrpt::math::TPoint3D(xCursor + cursorWidth, yTopBorder1, 0));
+
 	m_glTimeLine->Refresh();
 }
 
