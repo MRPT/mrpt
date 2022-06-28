@@ -5,6 +5,8 @@
   - \ref mrpt_opengl_grp
     - A new rendering mode for default no-perspective transformations. 
       See mrpt::opengl::CCamera::setNoProjection()
+- BUG FIXES:
+  - FIX: OpenGL API errors if several CWxGLCanvasBase instances are updated simultaneously in the same program.
 
 # Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:
