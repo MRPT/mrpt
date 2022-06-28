@@ -7,6 +7,7 @@
       See mrpt::opengl::CCamera::setNoProjection()
 - BUG FIXES:
   - FIX: OpenGL API errors if several CWxGLCanvasBase instances are updated simultaneously in the same program.
+  - mrpt::system::formatTimeInterval() reported an incorrect number of milliseconds.
 
 # Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:
