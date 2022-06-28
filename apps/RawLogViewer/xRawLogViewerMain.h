@@ -163,6 +163,9 @@ class xRawLogViewerFrame : public wxFrame
 	void bottomTimeLineUpdateCursorFromTreeScrollPos();
 
    private:
+	bool m_needsToRefreshTimeline = true;
+	bool m_needsToRefresh3DRangeScanView = true;
+
 	/** Loads the given file in memory, in the varibale "rawlog"
 	 */
 	void loadRawlogFile(const std::string& str, int first = 0, int last = -1);

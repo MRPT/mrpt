@@ -1074,6 +1074,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		m_glTimeLine->Bind(
 			wxEVT_RIGHT_DOWN, &This::OnTimeLineMouseRightDown, this);
 		m_glTimeLine->Bind(wxEVT_RIGHT_UP, &This::OnTimeLineMouseRightUp, this);
+
+		this->Bind(wxEVT_IDLE, &This::OnIdle, this);
 	}
 
 	fgzMain->Add(fgzBottomTimeLine, 1, wxALL | wxEXPAND, 0);
@@ -2473,48 +2475,6 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	rebuildBottomTimeLine();
 
-#if 0
-	{
-		plotRawlogSensorTimes->DelAllLayers(
-			true /*delete objs*/, false /*dont refresh view*/);
-		plotRawlogSensorTimes->AddLayer(new mpScaleX());
-		plotRawlogSensorTimes->AddLayer(new mpScaleY());
-
-		wxPen penBlue(wxColour(0, 0, 255), 5);
-		unsigned int id = 0;
-		double min_t = 0.0, max_t = 1.0;
-		for (auto it = listOfSensorLabels.begin();
-			 it != listOfSensorLabels.end(); ++it, ++id)
-		{
-			if (it->second.timOccurs.empty()) continue;
-
-			std::vector<double> yPts;
-			yPts.assign(it->second.timOccurs.size(), (double)id);
-
-			double this_min_t = 0.0, this_max_t = 1.0;
-			mrpt::math::minimum_maximum(
-				it->second.timOccurs, this_min_t, this_max_t);
-			mrpt::keep_max(max_t, this_max_t);
-			mrpt::keep_max(min_t, this_min_t);
-
-			mpFXYVector* lyRawlogInfo = new mpFXYVector();
-			lyRawlogInfo->SetPen(penBlue);
-			lyRawlogInfo->SetContinuity(false);
-			lyRawlogInfo->SetData(it->second.timOccurs, yPts);
-			lyRawlogInfo->SetName(it->first.c_str());
-			lyRawlogInfo->ShowName(true);
-			plotRawlogSensorTimes->AddLayer(
-				lyRawlogInfo, false /*dont refresh view*/);
-		}
-
-		const double At = std::max(1.0, max_t - min_t);
-
-		plotRawlogSensorTimes->Fit(
-			min_t - At * 0.15, max_t + At * 0.15, -1.0, id + 1.0);
-		plotRawlogSensorTimes->Refresh();
-	}
-#endif
-
 	WX_END_TRY
 }
 
@@ -2522,7 +2482,6 @@ constexpr int TL_BORDER = 2;  // pixels
 constexpr int TL_BORDER_BOTTOM = 17;  // pixels
 constexpr int TL_X_TICK_COUNT = 7;
 constexpr int XTICKS_FONT_SIZE = 16;
-constexpr double CURSOR_WIDTH_PIXELS = 5;
 
 // Resize and rebuild timeline view objects:
 void xRawLogViewerFrame::rebuildBottomTimeLine()
@@ -2532,7 +2491,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
 	auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v; };
 
-	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
+	//	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
 
 	const double xLeft = px2x(TL_BORDER);
 	const double xRight = px2x(clsz.GetWidth() - TL_BORDER);
@@ -2621,7 +2580,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	}
 
 	// current time position cursor:
-	m_timeline_gl.cursor->setColor_u8(0xff, 0x00, 0x00, 0x50);
+	m_timeline_gl.cursor->setColor_u8(0xff, 0x00, 0x00, 0x20);
 	m_timeline_gl.cursor->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
 
 	bottomTimeLineUpdateCursorFromTreeScrollPos();
@@ -2634,7 +2593,7 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
 	auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v; };
 
-	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
+	//	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
 
 	const double xLeft1 = px2x(TL_BORDER + 1);
 	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
@@ -2642,23 +2601,25 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 	const double yTopBorder1 = px2y(clsz.GetHeight() - TL_BORDER - 1);
 
 	// percent of view:
-	double pc = 0;
+	double pc0 = 0, pc1 = 0;
 	if (const double nItems = tree_view->getTotalTreeNodes(); nItems > 2)
 	{
-		// m_firstVisibleItem = 0, m_lastVisibleItem = 0;
-		pc = tree_view->m_firstVisibleItem / static_cast<double>(nItems - 1);
+		pc0 = tree_view->m_firstVisibleItem / static_cast<double>(nItems - 1);
+		pc1 = tree_view->m_lastVisibleItem / static_cast<double>(nItems - 1);
 	}
 
 	// move cursor:
-	double xCursor = xLeft1 + (xRight1 - xLeft1) * pc;
+	double xCursor0 = xLeft1 + (xRight1 - xLeft1) * pc0;
+	double xCursor1 = xLeft1 + (xRight1 - xLeft1) * pc1;
 
-	const double cursorWidth = px2width(CURSOR_WIDTH_PIXELS);
+	// const double cursorWidth = px2width(CURSOR_WIDTH_PIXELS);
 
 	m_timeline_gl.cursor->setBoxCorners(
-		mrpt::math::TPoint3D(xCursor, yLowerBorder1, 0),  //
-		mrpt::math::TPoint3D(xCursor + cursorWidth, yTopBorder1, 0));
+		mrpt::math::TPoint3D(xCursor0, yLowerBorder1, 0),  //
+		mrpt::math::TPoint3D(xCursor1, yTopBorder1, 0));
 
 	m_glTimeLine->Refresh();
+	// DONT: wxTheApp->Yield();
 }
 
 // Selection has changed:
@@ -2687,30 +2648,39 @@ class CMyTips : public wxTipProvider
 		{
 			case 0:
 				return _(
-					"To have a first overview of a dataset with odometry and "
-					"laser scans, select 'Tools' -> 'maps & paths generation "
-					"module' -> 'Map from odometry'.\n If the dataset is very "
-					"large, select a portion of it, or use the 'decimation' "
+					"To have a first overview of a dataset with odometry "
+					"and "
+					"laser scans, select 'Tools' -> 'maps & paths "
+					"generation "
+					"module' -> 'Map from odometry'.\n If the dataset is "
+					"very "
+					"large, select a portion of it, or use the "
+					"'decimation' "
 					"slide.");
 			case 1:
 				return _(
-					"When observations are selected in the tree-view at the "
+					"When observations are selected in the tree-view at "
+					"the "
 					"left, extended information will be shown for that "
 					"observation: timestamp, a visualization of the laser "
 					"scan/image, etc.");
 			case 2:
 				return _(
-					"Portions of a rawlog can be stripped out in Edit ->Edit "
+					"Portions of a rawlog can be stripped out in Edit "
+					"->Edit "
 					"Rawlog");
 			case 3:
 				return _(
-					"When a rawlog is loaded, the panel at the bottom displays "
+					"When a rawlog is loaded, the panel at the bottom "
+					"displays "
 					"a summary of the log, including approximate overall "
-					"distance traveled by the vehicle, overall time, and the "
+					"distance traveled by the vehicle, overall time, and "
+					"the "
 					"frequency of each sensor.");
 			case 4:
 				return _(
-					"There is an ICP experimenting module that can be opened "
+					"There is an ICP experimenting module that can be "
+					"opened "
 					"from the toolbar button 'ICP'");
 		}
 		return wxString();
@@ -2809,8 +2779,8 @@ void xRawLogViewerFrame::OnRawMapOdo(wxCommandEvent&)
 	}
 
 	// Set slider values:
-	//  If they have changed, we have a different rawlog loaded, thus we select
-	//  the whole range by default:
+	//  If they have changed, we have a different rawlog loaded, thus we
+	//  select the whole range by default:
 	bool selectMaxRange =
 		((size_t)formRawMap->slFrom->GetMax()) != rawlog.size() - 1;
 	formRawMap->slFrom->SetRange(0, (int)rawlog.size() - 1);
@@ -2985,7 +2955,8 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 	bool genTimes = rawlog_first_timestamp != INVALID_TIMESTAMP;
 	if (!genTimes)
 		::wxMessageBox(
-			_("It seems that there are no valid timestamps in the rawlog. The "
+			_("It seems that there are no valid timestamps in the rawlog. "
+			  "The "
 			  "time files will not be generated."));
 
 	FILE* f_odo = os::fopen(fil_odo, "wt");
@@ -2997,8 +2968,8 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 		ASSERT_(f_odo_times);
 	}
 
-	// Prepare for possibly several lasers: label -> < file: data, file: times,
-	// file: pose >
+	// Prepare for possibly several lasers: label -> < file: data, file:
+	// times, file: pose >
 	std::map<string, std::pair<FILE*, std::pair<FILE*, FILE*>>> lstFiles;
 
 	CPose2D lastOdo;
@@ -3066,7 +3037,8 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent&)
 						auto obs = sf->getObservationByIndexAs<
 							CObservation2DRangeScan::Ptr>(k);
 
-						// Get files from list, or create them the first time:
+						// Get files from list, or create them the first
+						// time:
 						std::pair<FILE*, std::pair<FILE*, FILE*>>* files =
 							nullptr;
 						std::map<
@@ -3554,7 +3526,8 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent&)
 					 .c_str()) /* defaultDir */,
 				_("image.png") /* defaultFilename */,
 				_("Image files "
-				  "(*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif)|*.bmp;*.gif;*.jpg;*."
+				  "(*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif)|*.bmp;*.gif;*."
+				  "jpg;*."
 				  "jpeg;*.png;*.tif") /* wildcard */,
 				wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 			if (dialog.ShowModal() != wxID_OK) return;
@@ -3606,7 +3579,8 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent&)
 					 .c_str()) /* defaultDir */,
 				_("image.png") /* defaultFilename */,
 				_("Image files "
-				  "(*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif)|*.bmp;*.gif;*.jpg;*."
+				  "(*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif)|*.bmp;*.gif;*."
+				  "jpg;*."
 				  "jpeg;*.png;*.tif|All files (*.*)|*.*") /* wildcard */,
 				wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 			if (dialog.ShowModal() != wxID_OK) return;
@@ -3644,7 +3618,8 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent&)
 	newRawLog.setCommentText(rawlog.getCommentText());
 
 	wxString strDecimation = wxGetTextFromUser(
-		_("The number of observations will be decimated (only 1 out of M will "
+		_("The number of observations will be decimated (only 1 out of M "
+		  "will "
 		  "be kept). Enter the decimation ratio M:"),
 		_("Decimation"), _("1"));
 	long DECIMATE_RATIO;
@@ -3658,9 +3633,8 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent&)
 
 	// ------------------------------------------------------------------------------
 	// METHOD TO BE MEMORY EFFICIENT:
-	//  To free the memory of the current rawlog entries as we create the new
-	//  one,
-	//  then call "clearWithoutDelete" at the end.
+	//  To free the memory of the current rawlog entries as we create the
+	//  new one, then call "clearWithoutDelete" at the end.
 	// ------------------------------------------------------------------------------
 	CSensoryFrame::Ptr last_sf;	 // empty ptr
 	CActionRobotMovement2D::TMotionModelOptions odometryOptions;
@@ -3690,7 +3664,8 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent&)
 				// Accumulate from odometry:
 				accumMovement = accumMovement + mov->poseChange->getMeanVal();
 
-				// Copy the probabilistic options from the first entry we find:
+				// Copy the probabilistic options from the first entry we
+				// find:
 				if (!cummMovementInit)
 				{
 					odometryOptions = mov->motionModelConfiguration;
@@ -4332,8 +4307,8 @@ void doFilterErrScans(
 			}
 		}
 
-		// Look for segments of 'K' consecutive ringing ranges, and mark them as
-		// not valid!!
+		// Look for segments of 'K' consecutive ringing ranges, and mark
+		// them as not valid!!
 		int ringingStart = -1;
 		for (k = 1; k < (obsScan->getScanSize() - 1); k++)
 		{
@@ -4377,7 +4352,8 @@ void xRawLogViewerFrame::OnFilterErroneousScans(wxCommandEvent&)
 	WX_START_TRY
 
 	wxMessageBox(
-		_("This process will look for spurious ranges, e.g. caused by \ndirect "
+		_("This process will look for spurious ranges, e.g. caused by "
+		  "\ndirect "
 		  "sunlight in an indoor laser scanner."),
 		_("Filter 2D range scans"), wxOK, this);
 
@@ -6623,8 +6599,7 @@ void xRawLogViewerFrame::On3DObsPagesChange(wxBookCtrlEvent& event)
 		SelectObjectInTreeView(curSelectedObject);
 
 		m_gl3DRangeScan->Refresh();
-		wxTheApp->Yield();	// Let the app. process messages
-		// m_gl3DRangeScan->Render();
+		// DONT!: wxTheApp->Yield();
 	}
 }
 

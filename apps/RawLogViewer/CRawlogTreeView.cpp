@@ -105,9 +105,9 @@ CRawlogTreeView::CRawlogTreeView(
 /* ------------------------------------------------------------
 						setRawlogSource
    ------------------------------------------------------------ */
-void CRawlogTreeView::setRawlogSource(CRawlog* rawlog)
+void CRawlogTreeView::setRawlogSource(CRawlog* theRawlog)
 {
-	m_rawlog = rawlog;
+	m_rawlog = theRawlog;
 	reloadFromRawlog();
 }
 
