@@ -299,7 +299,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 			<< p7_comp.cov << endl;
 	}
 
-	void testRelativeDisplacement(
+	void testInverseCompositionCrossCorrelation(
 		double x, double y, double z, double yaw, double pitch, double roll,
 		double std_scale, double x2, double y2, double z2, double yaw2,
 		double pitch2, double roll2, double std_scale2)
@@ -312,7 +312,7 @@ class Pose3DQuatPDFGaussTests : public ::testing::Test
 		CPose3DQuatPDFGaussian p7pdf2 = p7pdf1 + p7_displacement;
 
 		CPose3DQuatPDFGaussian p7_displacement_computed =
-			p7pdf1.relativeDisplacement(p7pdf2);
+			p7pdf1.inverseCompositionCrossCorrelation(p7pdf2);
 
 		// Compare:
 		EXPECT_NEAR(
@@ -515,36 +515,36 @@ TEST_F(Pose3DQuatPDFGaussTests, InverseComposition)
 
 TEST_F(Pose3DQuatPDFGaussTests, RelativeDisplacement)
 {
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		0, 0, 0, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, 0, 0, 0, 0.0_deg, 0.0_deg,
 		0.0_deg, 0.1);
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
 		0.0_deg, 0.1);
 
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.1, -8, 45, 10, 50.0_deg,
 		-10.0_deg, 30.0_deg, 0.1);
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 20.0_deg, 80.0_deg, 70.0_deg, 0.2, -8, 45, 10, 50.0_deg,
 		-10.0_deg, 30.0_deg, 0.2);
 
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 10.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
 		0.0_deg, 0.1);
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 0.0_deg, 10.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
 		0.0_deg, 0.1);
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 0.0_deg, 0.0_deg, 10.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
 		0.0_deg, 0.1);
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 10.0_deg, 0.0_deg,
 		0.0_deg, 0.1);
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 10.0_deg,
 		0.0_deg, 0.1);
-	testRelativeDisplacement(
+	testInverseCompositionCrossCorrelation(
 		1, 2, 3, 0.0_deg, 0.0_deg, 0.0_deg, 0.1, -8, 45, 10, 0.0_deg, 0.0_deg,
 		10.0_deg, 0.1);
 }

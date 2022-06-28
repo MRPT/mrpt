@@ -298,10 +298,10 @@ void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
 }
 
 /*---------------------------------------------------------------
-					relative displacement
+			inverse composition with cross correlation
  ---------------------------------------------------------------*/
 mrpt::poses::CPose3DQuatPDFGaussian
-	CPose3DQuatPDFGaussian::relativeDisplacement(
+	CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation(
 		const mrpt::poses::CPose3DQuatPDFGaussian& pose_to) const
 {
 	mrpt::poses::CPose3DQuatPDFGaussian pose_from_inv;
