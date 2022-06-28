@@ -48,6 +48,8 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/serialization/CSerializable.h>
 
 // JLBC: Unix X headers have these funny things...
@@ -166,6 +168,10 @@ class xRawLogViewerFrame : public wxFrame
 	/** Rebuilds the tree view with the data in "rawlog".
 	 */
 	void rebuildTreeView();
+
+	/// This needs to be called when thedataset changes
+	/// (automatically called from rebuildTreeView()).
+	void rebuildBottomTimeLine();
 
 	// Open most recent file
 	void OnMRUFile(wxCommandEvent& event);
@@ -439,6 +445,18 @@ class xRawLogViewerFrame : public wxFrame
 	wxFileHistory m_fileHistory;
 
 	std::map<std::string, TInfoPerSensorLabel> listOfSensorLabels;
+
+	struct TimeLineOpenGLData
+	{
+		TimeLineOpenGLData() = default;
+
+		mrpt::opengl::CBox::Ptr borderBox;
+		mrpt::opengl::CSetOfObjects::Ptr xTicks;
+		mrpt::opengl::CPointCloud::Ptr allSensorDots;
+		mrpt::opengl::CBox::Ptr cursor;
+	};
+
+	TimeLineOpenGLData m_timeline_gl;
 
 	// ALWAYS access this inside a "try" block, just in case...
 	mrpt::obs::CObservation::Ptr m_selectedObj;
