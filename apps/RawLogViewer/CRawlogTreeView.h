@@ -92,6 +92,9 @@ class CRawlogTreeView : public wxScrolledWindow
 	void SetSelectedItem(int index, bool force_refresh = false);
 	int GetSelectedItem() const { return m_selectedItem; }
 
+	size_t m_firstVisibleItem = 0, m_lastVisibleItem = 0;
+	size_t getTotalTreeNodes() const { return m_tree_nodes.size(); }
+
    protected:
 	void OnDrawImpl(wxDC& dc);
 
