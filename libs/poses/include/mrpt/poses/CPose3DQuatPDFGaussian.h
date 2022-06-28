@@ -149,7 +149,13 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	 * jacobiansPoseComposition ). */
 	void operator+=(const CPose3DQuatPDFGaussian& Ap);
 	/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
-	 * (both the mean, and the covariance matrix are updated). */
+	 * (both the mean, and the covariance matrix are updated).
+	 * This operation assumes statistical independence between the two
+	 * variables. If you want to take into account the cross-correlation between
+	 * the two variables, use the method:
+	 * thisPDF.inverseCompositionCrossCorrelation(Ap)
+	 * \sa inverseCompositionCrossCorrelation
+	 * */
 	void operator-=(const CPose3DQuatPDFGaussian& Ap);
 
 	/** Evaluates the PDF at a given point. */
