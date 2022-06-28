@@ -130,7 +130,7 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	/** Returns the displacement from the current pose to pose_to,
 	 * taking into account the cross-correlation in the uncertainty between
 	 * them, because x_k = x_k-1 \oplus \Delta x_k */
-	mrpt::poses::CPose3DQuatPDFGaussian relativeDisplacement(
+	mrpt::poses::CPose3DQuatPDFGaussian inverseCompositionCrossCorrelation(
 		const mrpt::poses::CPose3DQuatPDFGaussian& pose_to) const;
 
 	/** Unary - operator, returns the PDF of the inverse pose.  */
