@@ -341,6 +341,9 @@ mrpt::poses::CPose3DQuatPDFGaussian
 	displacement.cov.asEigen() += cov_correlation_jac.asEigen();
 	displacement.cov.asEigen() += cov_correlation_jac.asEigen().transpose();
 
+	for (size_t i = 0; i < displacement.cov.rows(); i++)
+		ASSERT_(displacement.cov(i, i) >= 0.0);
+
 	return displacement;
 }
 
