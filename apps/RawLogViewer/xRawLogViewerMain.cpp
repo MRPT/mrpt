@@ -30,6 +30,8 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CText3D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/serialization/CArchive.h>
@@ -1050,13 +1052,13 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		fgs->AddGrowableRow(1);
 
 		m_txtTimeLineRange =
-			new wxStaticText(pnTimeLine, ID_STATICTEXT4, "Selection");
+			new wxStaticText(pnTimeLine, ID_STATICTEXT4, "(Timeline)");
 
 		fgs->Add(m_txtTimeLineRange, 1, wxALL | wxEXPAND, 1 /*border*/);
 
 		m_glTimeLine = new CMyGLCanvas(pnTimeLine, ID_TIMELINE_GLCANVAS);
-		pnTimeLine->SetMinSize(wxSize(-1, 100));
-		m_glTimeLine->SetMinSize(wxSize(-1, 100));
+		pnTimeLine->SetMinSize(wxSize(-1, 125));
+		m_glTimeLine->SetMinSize(wxSize(-1, 125));
 		fgs->Add(m_glTimeLine, 1, wxALL | wxEXPAND, 2 /*border*/);
 
 		pnTimeLine->SetSizer(fgs);
@@ -1075,6 +1077,38 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	}
 
 	fgzMain->Add(fgzBottomTimeLine, 1, wxALL | wxEXPAND, 0);
+
+	// Set-up bottom timeline view opengl objects:
+	{
+		mrpt::opengl::COpenGLScene::Ptr& scene =
+			m_glTimeLine->getOpenGLSceneRef();
+		scene->clear();
+
+		// Enable no-projection mode in this viewport:
+		scene->getViewport()->setCustomBackgroundColor({1.0f, 1.0f, 1.0f});
+
+		m_glTimeLine->setUseCameraFromScene(true);
+
+		{
+			auto glCam = mrpt::opengl::CCamera::Create();
+			glCam->setNoProjection();  // work with pixel coordinates
+			scene->insert(glCam);
+		}
+
+		m_timeline_gl.borderBox = mrpt::opengl::CBox::Create(
+			mrpt::math::TPoint3D(-1.0, 0., 0.),
+			mrpt::math::TPoint3D(0.9, 1., 0.), true);
+		scene->insert(m_timeline_gl.borderBox);
+
+		m_timeline_gl.xTicks = mrpt::opengl::CSetOfObjects::Create();
+		scene->insert(m_timeline_gl.xTicks);
+
+		m_timeline_gl.allSensorDots = mrpt::opengl::CPointCloud::Create();
+		scene->insert(m_timeline_gl.allSensorDots);
+
+		m_timeline_gl.cursor = mrpt::opengl::CBox::Create();
+		scene->insert(m_timeline_gl.cursor);
+	}
 
 	// ----
 	SetSizer(fgzMain);
@@ -2384,8 +2418,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	// Stats of object classes:
 	memStats->AppendText(
-		"\nSummary of classes found in the "
-		"rawlog:\n-----------------------------------------\n");
+		"\nSummary of classes found in the rawlog:\n"
+		"-----------------------------------------\n");
 
 	if (experimentLenght == 0) experimentLenght = 1;
 
@@ -2400,8 +2434,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	// Stats of object classes:
 	memStats->AppendText(
-		"\nSummary of 'sensorLabels' found in the "
-		"rawlog:\n-----------------------------------------\n");
+		"\nSummary of 'sensorLabels' found in the rawlog:\n"
+		"-------------------------------------------------\n");
 
 	for (const auto& ipsl : listOfSensorLabels)
 	{
@@ -2428,7 +2462,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 	tree_view->Refresh();
 
 	// -----------------------------------------
-	// Bottom timeline view
+	// Rebuild bottom timeline view
 	// -----------------------------------------
 	m_lstObsLabels->Clear();
 	for (const auto& obsPerSensorLabel : listOfSensorLabels)
@@ -2437,27 +2471,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 		m_lstObsLabels->AppendString(sensorLabel);
 	}
 
-	// Disable mouse-based click, drag, etc.
-	// TODO: Refactor into once ctor
-	m_glTimeLine->setUseCameraFromScene(true);
-
-	mrpt::opengl::COpenGLScene::Ptr& scene = m_glTimeLine->getOpenGLSceneRef();
-	scene->clear();
-	scene->getViewport()->setCustomBackgroundColor({1.0f, 1.0f, 1.0f});
-
-	{
-		auto glCam = mrpt::opengl::CCamera::Create();
-		glCam->setNoProjection();  // work with pixel coordinates
-		scene->insert(glCam);
-	}
-	{
-		auto glObj = mrpt::opengl::CBox::Create(
-			mrpt::math::TPoint3D(-1.0, 0., 0.),
-			mrpt::math::TPoint3D(0.9, 1., 0.), true);
-		scene->insert(glObj);
-	}
-
-	m_glTimeLine->Refresh();
+	rebuildBottomTimeLine();
 
 #if 0
 	{
@@ -2502,6 +2516,122 @@ void xRawLogViewerFrame::rebuildTreeView()
 #endif
 
 	WX_END_TRY
+}
+
+// Resize and rebuild timeline view objects:
+void xRawLogViewerFrame::rebuildBottomTimeLine()
+{
+	constexpr int TL_BORDER = 2;  // pixels
+	constexpr int TL_BORDER_BOTTOM = 17;  // pixels
+	constexpr int TL_X_TICK_COUNT = 7;
+	constexpr int XTICKS_FONT_SIZE = 16;
+	constexpr double CURSOR_WIDTH_PIXELS = 5;
+
+	const auto clsz = m_glTimeLine->GetClientSize();
+
+	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
+	auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v; };
+
+	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
+
+	const double xLeft = px2x(TL_BORDER);
+	const double xRight = px2x(clsz.GetWidth() - TL_BORDER);
+	const double yLowerBorder = px2y(TL_BORDER_BOTTOM);
+	const double yTopBorder = px2y(clsz.GetHeight() - TL_BORDER);
+
+	const double xLeft1 = px2x(TL_BORDER + 1);
+	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
+	const double yLowerBorder1 = px2y(TL_BORDER_BOTTOM + 1);
+	const double yTopBorder1 = px2y(clsz.GetHeight() - TL_BORDER - 1);
+
+	const double yLowerBorder2 = px2y(TL_BORDER_BOTTOM + 5);
+	const double yTopBorder2 = px2y(clsz.GetHeight() - TL_BORDER - 5);
+
+	auto& tl = m_timeline_gl;
+
+	// outer border box:
+	tl.borderBox->setBoxCorners(
+		mrpt::math::TPoint3D(xLeft, yLowerBorder, 0),
+		mrpt::math::TPoint3D(xRight, yTopBorder, 0));
+
+	// find time limits:
+	double min_t = 0.0, max_t = 1.0;
+	for (const auto& e : listOfSensorLabels)
+	{
+		if (e.second.timOccurs.empty()) continue;
+		double this_min_t = 0.0, this_max_t = 1.0;
+		mrpt::math::minimum_maximum(e.second.timOccurs, this_min_t, this_max_t);
+		mrpt::keep_max(max_t, this_max_t);
+		mrpt::keep_max(min_t, this_min_t);
+	}
+
+	// x ticks:
+	tl.xTicks->clear();
+
+	for (int i = 0; i < (TL_X_TICK_COUNT - 1); i++)
+	{
+		// tick label:
+		auto glLb = mrpt::opengl::CText::Create();
+		glLb->setFont("mono", XTICKS_FONT_SIZE);
+		glLb->setString(mrpt::system::formatTimeInterval(
+			i * (max_t - min_t) / (TL_X_TICK_COUNT - 1)));
+		glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);
+
+		const double ptX =
+			xLeft1 + i * (xRight1 - xLeft1) / (TL_X_TICK_COUNT - 1);
+		glLb->setLocation(ptX, px2y(1), 0);
+
+		tl.xTicks->insert(glLb);
+
+		// tick line:
+		auto glTick = mrpt::opengl::CSimpleLine::Create();
+		glTick->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
+		glTick->setLineCoords(	//
+			ptX, yLowerBorder1, 0,	//
+			ptX, yTopBorder1, 0	 //
+		);
+		tl.xTicks->insert(glTick);
+	}
+
+	// Main per-sensor points:
+	tl.allSensorDots->clear();
+	tl.allSensorDots->setColor_u8(0x00, 0x00, 0xff, 0xff);
+	tl.allSensorDots->setPointSize(1.0f);
+	tl.allSensorDots->enableVariablePointSize(false);
+	if (!listOfSensorLabels.empty())
+	{
+		double y0 = yLowerBorder2;
+		const double dy = listOfSensorLabels.empty()
+			? .0
+			: (yTopBorder2 - yLowerBorder2) / (listOfSensorLabels.size() - 1);
+
+		for (const auto& e : listOfSensorLabels)
+		{
+			if (e.second.timOccurs.empty()) continue;
+
+			for (const double t : e.second.timOccurs)
+			{
+				const double x =
+					xLeft1 + (t - min_t) * (xRight1 - xLeft1) / (max_t - min_t);
+				tl.allSensorDots->insertPoint(x, y0, 0);
+			}
+
+			y0 += dy;
+		}
+	}
+
+	// current time position cursor:
+	double xCursor = xLeft1 + 0.1;
+	const double cursorHalfWidth = px2width(CURSOR_WIDTH_PIXELS);
+
+	m_timeline_gl.cursor->setColor_u8(0xff, 0x00, 0x00, 0x50);
+	m_timeline_gl.cursor->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
+	m_timeline_gl.cursor->setBoxCorners(
+		mrpt::math::TPoint3D(xCursor - cursorHalfWidth, yLowerBorder1, 0),	//
+		mrpt::math::TPoint3D(xCursor + cursorHalfWidth, yTopBorder1, 0));
+
+	// repaint:
+	m_glTimeLine->Refresh();
 }
 
 // Selection has changed:
