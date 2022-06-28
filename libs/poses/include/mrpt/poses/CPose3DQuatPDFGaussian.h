@@ -127,9 +127,13 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	mrpt::math::CMatrixDouble77 inverseJacobian() const;
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	void inverse(CPose3DQuatPDF& o) const override;
-	/** Returns the displacement from the current pose to pose_to,
-	 * taking into account the cross-correlation in the uncertainty between
-	 * them, because x_k = x_k-1 \oplus \Delta x_k */
+	/** Returns the displacement from the current pose (pose_from) to pose_to:
+	 * displacement = - pose_from + pose_to
+	 * It assumes that both poses are correlated via
+	 * the direct generative model:
+	 * pose_to = pose_from + displacement
+	 * For a deeper explanation, check https://github.com/MRPT/mrpt/pull/1243
+	 * */
 	mrpt::poses::CPose3DQuatPDFGaussian inverseCompositionCrossCorrelation(
 		const mrpt::poses::CPose3DQuatPDFGaussian& pose_to) const;
 
@@ -152,8 +156,10 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	 * (both the mean, and the covariance matrix are updated).
 	 * This operation assumes statistical independence between the two
 	 * variables. If you want to take into account the cross-correlation between
-	 * the two variables, use the method:
-	 * thisPDF.inverseCompositionCrossCorrelation(Ap)
+	 * pose_1 and pose_2, use:
+	 * displacement = pose_1.inverseCompositionCrossCorrelation(pose_2)
+	 * Note: Both poses are correlated if the direct generative model is
+	 * pose_2 = pose_1 + displacement
 	 * \sa inverseCompositionCrossCorrelation
 	 * */
 	void operator-=(const CPose3DQuatPDFGaussian& Ap);
