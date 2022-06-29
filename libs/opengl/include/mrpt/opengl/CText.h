@@ -70,6 +70,8 @@ class CText : public CRenderizableShaderText
 
 	virtual ~CText() override;
 
+	std::pair<double, double> computeTextExtension() const;
+
 	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 };
 
