@@ -1004,39 +1004,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	// -----------------------
 	// Bottom timeline
 	// -----------------------
-	fgzBottomTimeLine = new wxFlexGridSizer(1, 2, 0, 0);
+	fgzBottomTimeLine = new wxFlexGridSizer(1, 1, 0, 0);
 	fgzBottomTimeLine->AddGrowableRow(0);
-	fgzBottomTimeLine->AddGrowableCol(1);
-
-	// bottom-left panel:
-	{
-		static const long ID_PANEL_LEFT_TIMELINE = wxNewId();
-		static const long ID_TIMELINE_LIST_OBS_LABELS = wxNewId();
-
-		wxPanel* pnLeftTimeLine = new wxPanel(this, ID_PANEL_LEFT_TIMELINE);
-
-		auto fgs = new wxFlexGridSizer(2, 1, 0, 0);
-		fgs->AddGrowableCol(0);
-		fgs->AddGrowableRow(1);
-
-		auto stLabel = new wxStaticText(
-			pnLeftTimeLine, ID_STATICTEXT4, _("Show miniatures:"),
-			wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
-		fgs->Add(stLabel, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-
-		m_lstObsLabels =
-			new wxCheckListBox(pnLeftTimeLine, ID_TIMELINE_LIST_OBS_LABELS);
-		m_lstObsLabels->SetFont(monoFont);
-
-		fgs->Add(m_lstObsLabels, 1, wxALL | wxEXPAND, 1 /*border*/);
-
-		stLabel->SetMinSize(wxSize(200, -1));
-
-		pnLeftTimeLine->SetSizer(fgs);
-		fgs->SetSizeHints(pnLeftTimeLine);
-
-		fgzBottomTimeLine->Add(pnLeftTimeLine, 1, wxALL | wxEXPAND);
-	}
+	fgzBottomTimeLine->AddGrowableCol(0);
 
 	// bottom-right/main panel 3D view:
 	wxPanel* pnTimeLine;
@@ -1104,6 +1074,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 
 		m_timeline_gl.xTicks = mrpt::opengl::CSetOfObjects::Create();
 		scene->insert(m_timeline_gl.xTicks);
+
+		m_timeline_gl.ySensorLabels = mrpt::opengl::CSetOfObjects::Create();
+		scene->insert(m_timeline_gl.ySensorLabels);
 
 		m_timeline_gl.allSensorDots = mrpt::opengl::CPointCloud::Create();
 		scene->insert(m_timeline_gl.allSensorDots);
@@ -2466,22 +2439,16 @@ void xRawLogViewerFrame::rebuildTreeView()
 	// -----------------------------------------
 	// Rebuild bottom timeline view
 	// -----------------------------------------
-	m_lstObsLabels->Clear();
-	for (const auto& obsPerSensorLabel : listOfSensorLabels)
-	{
-		const auto sensorLabel = obsPerSensorLabel.first;
-		m_lstObsLabels->AppendString(sensorLabel);
-	}
-
 	rebuildBottomTimeLine();
 
 	WX_END_TRY
 }
 
 constexpr int TL_BORDER = 2;  // pixels
-constexpr int TL_BORDER_BOTTOM = 17;  // pixels
+constexpr int TL_BORDER_LEFT = 150;	 // pixels
+constexpr int TL_BORDER_BOTTOM = 11;  // pixels
 constexpr int TL_X_TICK_COUNT = 7;
-constexpr int XTICKS_FONT_SIZE = 16;
+constexpr int XTICKS_FONT_SIZE = 18;
 
 // Resize and rebuild timeline view objects:
 void xRawLogViewerFrame::rebuildBottomTimeLine()
@@ -2491,14 +2458,16 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
 	auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v; };
 
-	//	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
+	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
 
-	const double xLeft = px2x(TL_BORDER);
+	const double widthOf1Px = px2width(1);
+
+	const double xLeft = px2x(TL_BORDER_LEFT);
 	const double xRight = px2x(clsz.GetWidth() - TL_BORDER);
 	const double yLowerBorder = px2y(TL_BORDER_BOTTOM);
 	const double yTopBorder = px2y(clsz.GetHeight() - TL_BORDER);
 
-	const double xLeft1 = px2x(TL_BORDER + 1);
+	const double xLeft1 = px2x(TL_BORDER_LEFT + 1);
 	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
 	const double yLowerBorder1 = px2y(TL_BORDER_BOTTOM + 1);
 	const double yTopBorder1 = px2y(clsz.GetHeight() - TL_BORDER - 1);
@@ -2521,7 +2490,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 		double this_min_t = 0.0, this_max_t = 1.0;
 		mrpt::math::minimum_maximum(e.second.timOccurs, this_min_t, this_max_t);
 		mrpt::keep_max(max_t, this_max_t);
-		mrpt::keep_max(min_t, this_min_t);
+		mrpt::keep_min(min_t, this_min_t);
 	}
 
 	// x ticks:
@@ -2557,6 +2526,10 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	tl.allSensorDots->setColor_u8(0x00, 0x00, 0xff, 0xff);
 	tl.allSensorDots->setPointSize(1.0f);
 	tl.allSensorDots->enableVariablePointSize(false);
+
+	tl.yCoordToSensorLabel.clear();
+	tl.ySensorLabels->clear();
+
 	if (!listOfSensorLabels.empty())
 	{
 		double y0 = yLowerBorder2;
@@ -2568,11 +2541,38 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 		{
 			if (e.second.timOccurs.empty()) continue;
 
+			double lastX = -2;	// actual coords go in [-1,1]
 			for (const double t : e.second.timOccurs)
 			{
 				const double x =
 					xLeft1 + (t - min_t) * (xRight1 - xLeft1) / (max_t - min_t);
+
+				if (x - lastX < widthOf1Px)
+					continue;  // no worth adding so many points
+
+				lastX = x;
 				tl.allSensorDots->insertPoint(x, y0, 0);
+			}
+
+			// Keep a map between vertical coords and sensor labels:
+			tl.yCoordToSensorLabel[y0] = e.first;
+
+			// and add its visualization:
+			{
+				auto glLb = mrpt::opengl::CText::Create();
+				glLb->setFont("mono", XTICKS_FONT_SIZE);
+				glLb->setString(e.first);
+				glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);
+
+				// right-aligned text:
+				const auto [txtW, txtH] = glLb->computeTextExtension();
+
+				const double ptX = xLeft - widthOf1Px -
+					0.5 /*magic constant...*/ * px2width(XTICKS_FONT_SIZE) *
+						txtW;
+				glLb->setLocation(ptX, y0 - 0.4 * dy, 0);
+
+				tl.ySensorLabels->insert(glLb);
 			}
 
 			y0 += dy;
@@ -2588,14 +2588,23 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 
 void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 {
+	if (rawlog.empty())
+	{
+		m_timeline_gl.cursor->setVisibility(false);
+		return;
+	}
+	m_timeline_gl.cursor->setVisibility(true);
+
 	const auto clsz = m_glTimeLine->GetClientSize();
 
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
 	auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v; };
 
-	//	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
+	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
 
-	const double xLeft1 = px2x(TL_BORDER + 1);
+	const double widthOf1Px = px2width(1);
+
+	const double xLeft1 = px2x(TL_BORDER_LEFT + 1);
 	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
 	const double yLowerBorder1 = px2y(TL_BORDER_BOTTOM + 1);
 	const double yTopBorder1 = px2y(clsz.GetHeight() - TL_BORDER - 1);
@@ -2611,6 +2620,7 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 	// move cursor:
 	double xCursor0 = xLeft1 + (xRight1 - xLeft1) * pc0;
 	double xCursor1 = xLeft1 + (xRight1 - xLeft1) * pc1;
+	mrpt::keep_max(xCursor1, xCursor0 + 2 * widthOf1Px);  // Minimum width
 
 	// const double cursorWidth = px2width(CURSOR_WIDTH_PIXELS);
 
@@ -6603,25 +6613,39 @@ void xRawLogViewerFrame::On3DObsPagesChange(wxBookCtrlEvent& event)
 	}
 }
 
+void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(wxMouseEvent& e)
+{
+	const auto clsz = m_glTimeLine->GetClientSize();
+
+	const int mouseX = e.GetX();
+	if (mouseX < 0 || mouseX >= clsz.GetWidth()) return;
+
+	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
+	// auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v;
+	// };
+
+	const double xLeft1 = px2x(TL_BORDER_LEFT + 1);
+	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
+
+	double clickedX_pc = (px2x(mouseX) - xLeft1) / (xRight1 - xLeft1);
+
+	tree_view->m_is_thumb_tracking = true;
+	tree_view->ScrollToPercent(clickedX_pc);
+}
+
 void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)
 {
 	// left-btn down: drag and move thru timeline:
-	if (e.LeftIsDown())
-	{
-		const int widthPixels = m_glTimeLine->GetClientSize().GetWidth();
-		const int mouseX = e.GetX();
-		if (mouseX < 0 || mouseX >= widthPixels) return;
-
-		std::cout << "x: " << mouseX << "/" << widthPixels << "\n";
-	}
+	if (e.LeftIsDown()) { OnTimeLineDoScrollToMouseX(e); }
 }
 void xRawLogViewerFrame::OnTimeLineMouseLeftDown(wxMouseEvent& e)
 {
-	//
+	OnTimeLineDoScrollToMouseX(e);
 }
 void xRawLogViewerFrame::OnTimeLineMouseLeftUp(wxMouseEvent& e)
 {
-	//
+	tree_view->m_is_thumb_tracking = false;
+	tree_view->Refresh();
 }
 void xRawLogViewerFrame::OnTimeLineMouseRightDown(wxMouseEvent& e)
 {
