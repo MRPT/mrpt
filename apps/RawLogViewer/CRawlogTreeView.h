@@ -95,6 +95,10 @@ class CRawlogTreeView : public wxScrolledWindow
 	size_t m_firstVisibleItem = 0, m_lastVisibleItem = 0;
 	size_t getTotalTreeNodes() const { return m_tree_nodes.size(); }
 
+	bool m_is_thumb_tracking = false;
+
+	void ScrollToPercent(double pc);
+
    protected:
 	void OnDrawImpl(wxDC& dc);
 
@@ -135,8 +139,6 @@ class CRawlogTreeView : public wxScrolledWindow
 
 	static const int ROW_HEIGHT;
 	static const int TREE_HORZ_STEPS;
-
-	bool m_is_thumb_tracking = false;
 
 	wxMenu m_contextMenu;
 

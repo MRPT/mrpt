@@ -266,6 +266,8 @@ class xRawLogViewerFrame : public wxFrame
 	//*)
 	void OnMenuRenameBySFIndex(wxCommandEvent& event);
 
+	void OnTimeLineDoScrollToMouseX(wxMouseEvent& e);
+
 	void OnTimeLineMouseMove(wxMouseEvent& e);
 	void OnTimeLineMouseLeftDown(wxMouseEvent& e);
 	void OnTimeLineMouseLeftUp(wxMouseEvent& e);
@@ -425,7 +427,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxScrolledWindow* ScrolledWindow2 = nullptr;
 	wxTextCtrl* edSelectedTimeInfo = nullptr;
 	CMyGLCanvas* m_glTimeLine = nullptr;
-	wxCheckListBox* m_lstObsLabels = nullptr;
 	wxStaticText* m_txtTimeLineRange = nullptr;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
@@ -459,6 +460,9 @@ class xRawLogViewerFrame : public wxFrame
 		mrpt::opengl::CSetOfObjects::Ptr xTicks;
 		mrpt::opengl::CPointCloud::Ptr allSensorDots;
 		mrpt::opengl::CBox::Ptr cursor;
+		mrpt::opengl::CSetOfObjects::Ptr ySensorLabels;
+
+		std::map<double, std::string> yCoordToSensorLabel;
 	};
 
 	TimeLineOpenGLData m_timeline_gl;

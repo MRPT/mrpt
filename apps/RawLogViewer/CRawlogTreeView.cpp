@@ -582,6 +582,18 @@ void CRawlogTreeView::OnMouseWheel(wxMouseEvent& event)
 	if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
 }
 
+void CRawlogTreeView::ScrollToPercent(double pc)
+{
+	int x, y;
+	GetViewStart(&x, &y);
+
+	int ly = m_tree_nodes.size();
+
+	y = mrpt::round((ly - 1) * pc);
+
+	if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
+}
+
 /* ------------------------------------------------------------
 						OnKey
    ------------------------------------------------------------ */
