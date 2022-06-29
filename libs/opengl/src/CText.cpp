@@ -105,13 +105,13 @@ void CText::render(const RenderContext& rc) const
 #endif
 }
 
-uint8_t CText::serializeGetVersion() const { return 1; }
+uint8_t CText::serializeGetVersion() const { return 2; }
 void CText::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_str;
 	out << m_fontName;
-	out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
+	out << (uint32_t)m_fontHeight;
 }
 
 void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -120,6 +120,7 @@ void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			uint32_t i;
 			readFromStreamRender(in);
@@ -129,8 +130,12 @@ void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				in >> m_fontName;
 				in >> i;
 				m_fontHeight = i;
-				in >> i;
-				m_fontWidth = i;
+
+				if (version < 2)
+				{
+					in >> i;
+					// dummy, removed in v2: m_fontWidth = i;
+				}
 			}
 		}
 		break;
