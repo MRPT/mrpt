@@ -25,11 +25,11 @@ IMPLEMENTS_SERIALIZABLE(CText, CRenderizable, mrpt::opengl)
 
 CText::~CText() = default;
 
+constexpr double text_spacing = 1.5;
+constexpr double text_kerning = 0.1;
+
 void CText::onUpdateBuffers_Text()
 {
-	const double text_spacing = 1.5;
-	const double text_kerning = 0.1;
-
 	auto& vbd = CRenderizableShaderText::m_vertex_buffer_data;
 	auto& tris = CRenderizableShaderText::m_triangles;
 	auto& cbd = CRenderizableShaderText::m_color_buffer_data;
@@ -45,6 +45,14 @@ void CText::onUpdateBuffers_Text()
 	cbd.assign(vbd.size(), m_color);
 	for (auto& tri : m_triangles)
 		tri.setColor(m_color);
+}
+
+std::pair<double, double> CText::computeTextExtension() const
+{
+	mrpt::opengl::internal::glSetFont(m_fontName);
+	const auto [textW, textH] =
+		mrpt::opengl::internal::glGetExtends(m_str, text_spacing, text_kerning);
+	return {textW, textH};
 }
 
 void CText::render(const RenderContext& rc) const
