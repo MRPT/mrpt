@@ -289,10 +289,8 @@ class xRawLogViewerFrame : public wxFrame
 	wxPanel* pn_CSensorialFrame;
 	wxPanel* Panel5;
 	wxCustomButton* Button4;
-	wxPanel* pn_CObservation2DRangeScan;
 	wxMenuItem* MenuItem7;
 	wxMenuItem* MenuItem74;
-	wxBoxSizer* BoxSizer5;
 	wxMenuItem* MenuItem40;
 	wxNotebook* Notebook1;
 	wxPanel* pn_CObservationGasSensors;
@@ -303,10 +301,8 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenu* MenuItem84;
 	wxPanel* pn_CObservationBeaconRanges;
 	wxStaticText* StaticText2;
-	wxPanel* Panel4;
 	wxMenuItem* MenuItem49;
 	wxMenuItem* MenuItem50;
-	mpWindow* plotScan2D;
 	wxMenuItem* MenuItem68;
 	wxMenu* Menu14;
 	wxStaticBitmapPopup* bmp3Dobs_depth;
@@ -445,7 +441,7 @@ class xRawLogViewerFrame : public wxFrame
 	void showNextTip(bool forceShow = false);
 
 	// Layers for the 2D graphs:
-	mpFXYVector *lyScan2D, *lyRangeBearingLandmarks;
+	mpFXYVector* lyRangeBearingLandmarks;
 	mpFXYVector *lyAction2D_XY, *lyAction2D_PHI;
 
 	wxFileHistory m_fileHistory;
