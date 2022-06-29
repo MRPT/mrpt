@@ -45,6 +45,7 @@
 
 // General global variables:
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/containers/bimap.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxUtils.h>
@@ -72,14 +73,14 @@
 struct TInfoPerSensorLabel
 {
 	TInfoPerSensorLabel() = default;
-	std::vector<double> timOccurs;
+	std::vector<mrpt::Clock::time_point> timOccurs;
 	double max_ellapsed_tim_between_obs{.0};
-	mrpt::system::TTimeStamp first, last;
+	mrpt::Clock::time_point first, last;
 
 	size_t getOccurences() const;
 	void addOcurrence(
-		mrpt::system::TTimeStamp obs_tim,
-		mrpt::system::TTimeStamp first_dataset_tim);
+		mrpt::Clock::time_point obsTim,
+		mrpt::Clock::time_point firstDatasetTim);
 };
 
 class wxStaticBitmapPopup : public wxStaticBitmap
@@ -452,16 +453,22 @@ class xRawLogViewerFrame : public wxFrame
 	{
 		TimeLineOpenGLData() = default;
 
+		mrpt::Clock::time_point min_t = INVALID_TIMESTAMP;
+		mrpt::Clock::time_point max_t = INVALID_TIMESTAMP;
+
 		mrpt::opengl::CBox::Ptr borderBox;
 		mrpt::opengl::CSetOfObjects::Ptr xTicks;
 		mrpt::opengl::CPointCloud::Ptr allSensorDots;
 		mrpt::opengl::CBox::Ptr cursor;
 		mrpt::opengl::CSetOfObjects::Ptr ySensorLabels;
 
+		// correspondence between xs (-1,1 coordinates) and tree element index.
+		mrpt::containers::bimap<double, size_t> xs2treeIndices;
+
 		std::map<double, std::string> yCoordToSensorLabel;
 	};
 
-	TimeLineOpenGLData m_timeline_gl;
+	TimeLineOpenGLData m_timeline;
 
 	// ALWAYS access this inside a "try" block, just in case...
 	mrpt::obs::CObservation::Ptr m_selectedObj;

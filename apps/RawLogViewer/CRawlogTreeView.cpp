@@ -168,6 +168,10 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 					dSF.level = 2;
 					dSF.data = o;
 					lambdaCheckTimestamp(o->timestamp);
+					dSF.timestamp = o->timestamp;
+
+					if (!dEntry.timestamp.has_value())
+						dEntry.timestamp = o->timestamp;
 				}
 			}
 			else if (auto acts =
@@ -182,11 +186,16 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 					dAC.data = a.get_ptr();
 
 					lambdaCheckTimestamp(a->timestamp);
+					dAC.timestamp = a->timestamp;
+
+					if (!dEntry.timestamp.has_value())
+						dEntry.timestamp = a->timestamp;
 				}
 			}
 			else if (auto o = std::dynamic_pointer_cast<CObservation>(entry); o)
 			{
 				lambdaCheckTimestamp(o->timestamp);
+				dEntry.timestamp = o->timestamp;
 			}
 
 			rawlog_index++;

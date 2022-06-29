@@ -55,6 +55,7 @@
 
 #include <iomanip>
 #include <map>
+#include <mrpt/math/interp_fit.hpp>
 
 #include "CFormBatchSensorPose.h"
 #include "CFormChangeSensorPositions.h"
@@ -1052,22 +1053,22 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 			scene->insert(glCam);
 		}
 
-		m_timeline_gl.borderBox = mrpt::opengl::CBox::Create(
+		m_timeline.borderBox = mrpt::opengl::CBox::Create(
 			mrpt::math::TPoint3D(-1.0, 0., 0.),
 			mrpt::math::TPoint3D(0.9, 1., 0.), true);
-		scene->insert(m_timeline_gl.borderBox);
+		scene->insert(m_timeline.borderBox);
 
-		m_timeline_gl.xTicks = mrpt::opengl::CSetOfObjects::Create();
-		scene->insert(m_timeline_gl.xTicks);
+		m_timeline.xTicks = mrpt::opengl::CSetOfObjects::Create();
+		scene->insert(m_timeline.xTicks);
 
-		m_timeline_gl.ySensorLabels = mrpt::opengl::CSetOfObjects::Create();
-		scene->insert(m_timeline_gl.ySensorLabels);
+		m_timeline.ySensorLabels = mrpt::opengl::CSetOfObjects::Create();
+		scene->insert(m_timeline.ySensorLabels);
 
-		m_timeline_gl.allSensorDots = mrpt::opengl::CPointCloud::Create();
-		scene->insert(m_timeline_gl.allSensorDots);
+		m_timeline.allSensorDots = mrpt::opengl::CPointCloud::Create();
+		scene->insert(m_timeline.allSensorDots);
 
-		m_timeline_gl.cursor = mrpt::opengl::CBox::Create();
-		scene->insert(m_timeline_gl.cursor);
+		m_timeline.cursor = mrpt::opengl::CBox::Create();
+		scene->insert(m_timeline.cursor);
 	}
 
 	// ----
@@ -2187,7 +2188,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 	wxString s;
 	float totalDistance = 0;
 	bool firstSF = true;
-	TTimeStamp tim_start = INVALID_TIMESTAMP, tim_last = INVALID_TIMESTAMP;
+	TTimeStamp tim_start = INVALID_TIMESTAMP;
+	TTimeStamp tim_last = INVALID_TIMESTAMP;
 	int countLoop = 0;
 
 	Notebook1->ChangeSelection(0);
@@ -2453,7 +2455,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	const double yLowerBorder2 = px2y(TL_BORDER_BOTTOM + 5);
 	const double yTopBorder2 = px2y(clsz.GetHeight() - TL_BORDER - 5);
 
-	auto& tl = m_timeline_gl;
+	auto& tl = m_timeline;
 
 	// outer border box:
 	tl.borderBox->setBoxCorners(
@@ -2461,18 +2463,25 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 		mrpt::math::TPoint3D(xRight, yTopBorder, 0));
 
 	// find time limits:
-	double min_t = 0.0, max_t = 1.0;
+	auto& min_t = tl.min_t;
+	auto& max_t = tl.max_t;
+
 	for (const auto& e : listOfSensorLabels)
 	{
 		if (e.second.timOccurs.empty()) continue;
-		double this_min_t = 0.0, this_max_t = 1.0;
-		mrpt::math::minimum_maximum(e.second.timOccurs, this_min_t, this_max_t);
-		mrpt::keep_max(max_t, this_max_t);
-		mrpt::keep_min(min_t, this_min_t);
+
+		for (const auto& t : e.second.timOccurs)
+		{
+			if (min_t == INVALID_TIMESTAMP || t < min_t) { min_t = t; }
+			if (max_t == INVALID_TIMESTAMP || t > max_t) { max_t = t; }
+		}
 	}
 
 	// x ticks:
 	tl.xTicks->clear();
+
+	const double min_t_d = mrpt::Clock::toDouble(min_t);
+	const double max_t_d = mrpt::Clock::toDouble(max_t);
 
 	for (int i = 0; i < (TL_X_TICK_COUNT - 1); i++)
 	{
@@ -2480,7 +2489,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 		auto glLb = mrpt::opengl::CText::Create();
 		glLb->setFont("mono", XTICKS_FONT_SIZE);
 		glLb->setString(mrpt::system::formatTimeInterval(
-			i * (max_t - min_t) / (TL_X_TICK_COUNT - 1)));
+			i * (max_t_d - min_t_d) / (TL_X_TICK_COUNT - 1)));
 		glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);
 
 		const double ptX =
@@ -2510,20 +2519,21 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 
 	if (!listOfSensorLabels.empty())
 	{
-		double y0 = yLowerBorder2;
-		const double dy = listOfSensorLabels.empty()
-			? .0
-			: (yTopBorder2 - yLowerBorder2) / (listOfSensorLabels.size() - 1);
+		const double dy = (yTopBorder2 - yLowerBorder2) /
+			(listOfSensorLabels.size() > 1 ? listOfSensorLabels.size() : 1.0);
+		double y0 = yLowerBorder2 + 0.1 * dy;
 
 		for (const auto& e : listOfSensorLabels)
 		{
 			if (e.second.timOccurs.empty()) continue;
 
 			double lastX = -2;	// actual coords go in [-1,1]
-			for (const double t : e.second.timOccurs)
+			for (const auto& tim : e.second.timOccurs)
 			{
-				const double x =
-					xLeft1 + (t - min_t) * (xRight1 - xLeft1) / (max_t - min_t);
+				const double t = mrpt::Clock::toDouble(tim);
+
+				const double x = xLeft1 +
+					(t - min_t_d) * (xRight1 - xLeft1) / (max_t_d - min_t_d);
 
 				if (x - lastX < widthOf1Px)
 					continue;  // no worth adding so many points
@@ -2543,12 +2553,10 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 				glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);
 
 				// right-aligned text:
-				const auto [txtW, txtH] = glLb->computeTextExtension();
-
-				const double ptX = xLeft - widthOf1Px -
-					0.5 /*magic constant...*/ * px2width(XTICKS_FONT_SIZE) *
-						txtW;
-				glLb->setLocation(ptX, y0 - 0.4 * dy, 0);
+				// const auto [txtW, txtH] = glLb->computeTextExtension();
+				// xLeft - widthOf1Px - px2width(XTICKS_FONT_SIZE) * txtW;
+				const double ptX = -1.0 + 2 * widthOf1Px;
+				glLb->setLocation(ptX, y0, 0);
 
 				tl.ySensorLabels->insert(glLb);
 			}
@@ -2557,9 +2565,32 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 		}
 	}
 
+	// Build x <-> treeIndex map:
+	tl.xs2treeIndices.clear();
+	{
+		double lastX = -2;	// actual coords go in [-1,1]
+		for (size_t idx = 0; idx < tree_view->getTotalTreeNodes(); idx++)
+		{
+			const auto& tim = tree_view->treeNodes()[idx].timestamp;
+			if (!tim.has_value()) continue;
+
+			const double t = mrpt::Clock::toDouble(*tim);
+
+			const double x = xLeft1 +
+				(t - min_t_d) * (xRight1 - xLeft1) / (max_t_d - min_t_d);
+
+			if (x - lastX < widthOf1Px)
+				continue;  // no worth adding so many points
+
+			lastX = x;
+
+			tl.xs2treeIndices.insert(x, idx);
+		}
+	}
+
 	// current time position cursor:
-	m_timeline_gl.cursor->setColor_u8(0xff, 0x00, 0x00, 0x20);
-	m_timeline_gl.cursor->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
+	m_timeline.cursor->setColor_u8(0xff, 0x00, 0x00, 0x20);
+	m_timeline.cursor->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
 
 	bottomTimeLineUpdateCursorFromTreeScrollPos();
 }
@@ -2568,10 +2599,10 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 {
 	if (rawlog.empty())
 	{
-		m_timeline_gl.cursor->setVisibility(false);
+		m_timeline.cursor->setVisibility(false);
 		return;
 	}
-	m_timeline_gl.cursor->setVisibility(true);
+	m_timeline.cursor->setVisibility(true);
 
 	const auto clsz = m_glTimeLine->GetClientSize();
 
@@ -2595,14 +2626,19 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 		pc1 = tree_view->m_lastVisibleItem / static_cast<double>(nItems - 1);
 	}
 
+	auto itIdx = m_timeline.xs2treeIndices.getInverseMap().lower_bound(
+		tree_view->m_firstVisibleItem);
+	if (itIdx == m_timeline.xs2treeIndices.getInverseMap().end())
+		return;	 // no obs
+
 	// move cursor:
-	double xCursor0 = xLeft1 + (xRight1 - xLeft1) * pc0;
-	double xCursor1 = xLeft1 + (xRight1 - xLeft1) * pc1;
+	double xCursor0 = itIdx->second;  // the "x"
+	double xCursor1 = xCursor0 + (xRight1 - xLeft1) * (pc1 - pc0);
 	mrpt::keep_max(xCursor1, xCursor0 + 2 * widthOf1Px);  // Minimum width
 
 	// const double cursorWidth = px2width(CURSOR_WIDTH_PIXELS);
 
-	m_timeline_gl.cursor->setBoxCorners(
+	m_timeline.cursor->setBoxCorners(
 		mrpt::math::TPoint3D(xCursor0, yLowerBorder1, 0),  //
 		mrpt::math::TPoint3D(xCursor1, yTopBorder1, 0));
 
@@ -6536,17 +6572,14 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent&)
 
 size_t TInfoPerSensorLabel::getOccurences() const { return timOccurs.size(); }
 void TInfoPerSensorLabel::addOcurrence(
-	mrpt::system::TTimeStamp obs_tim,
-	mrpt::system::TTimeStamp first_dataset_tim)
+	Clock::time_point obsTim, Clock::time_point firstDatasetTim)
 {
-	double obs_t = .0;	// 0-based timestamp:
-	if (first_dataset_tim != INVALID_TIMESTAMP && obs_tim != INVALID_TIMESTAMP)
-		obs_t = mrpt::system::timeDifference(first_dataset_tim, obs_tim);
-
 	double ellapsed_tim = .0;
-	if (!timOccurs.empty()) ellapsed_tim = obs_t - timOccurs.back();
+	if (!timOccurs.empty())
+		ellapsed_tim = mrpt::system::timeDifference(timOccurs.back(), obsTim);
 
-	timOccurs.push_back(obs_t);
+	timOccurs.push_back(obsTim);
+
 	if (ellapsed_tim > max_ellapsed_tim_between_obs)
 		max_ellapsed_tim_between_obs = ellapsed_tim;
 }
@@ -6605,10 +6638,24 @@ void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(wxMouseEvent& e)
 	const double xLeft1 = px2x(TL_BORDER_LEFT + 1);
 	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
 
-	double clickedX_pc = (px2x(mouseX) - xLeft1) / (xRight1 - xLeft1);
+	double clickedX = px2x(mouseX);
+
+	if (m_timeline.xs2treeIndices.empty()) return;
+
+	const auto itLow =
+		m_timeline.xs2treeIndices.getDirectMap().lower_bound(clickedX);
+
+	if (itLow == m_timeline.xs2treeIndices.end()) return;
+
+	auto interpTreeIndex = itLow->second;
+
+	mrpt::keep_max(interpTreeIndex, 0);
+	mrpt::keep_min(interpTreeIndex, tree_view->getTotalTreeNodes() - 1);
 
 	tree_view->m_is_thumb_tracking = true;
-	tree_view->ScrollToPercent(clickedX_pc);
+	tree_view->ScrollToPercent(
+		interpTreeIndex /
+		static_cast<double>(tree_view->getTotalTreeNodes() - 1));
 }
 
 void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)
