@@ -757,21 +757,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	pn_Action->SetSizer(BoxSizer8);
 	BoxSizer8->Fit(pn_Action);
 	BoxSizer8->SetSizeHints(pn_Action);
-	pn_CObservation2DRangeScan = new wxPanel(
-		Notebook1, ID_PANEL8, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
-		_T("ID_PANEL8"));
-	BoxSizer5 = new wxBoxSizer(wxVERTICAL);
-	plotScan2D = new mpWindow(
-		pn_CObservation2DRangeScan, ID_CUSTOM1, wxDefaultPosition,
-		wxDefaultSize, 0);
-	BoxSizer5->Add(plotScan2D, 10, wxALL | wxEXPAND);
-	Panel4 = new wxPanel(
-		pn_CObservation2DRangeScan, ID_PANEL4, wxDefaultPosition, wxDefaultSize,
-		wxTAB_TRAVERSAL, _T("ID_PANEL4"));
-	BoxSizer5->Add(Panel4, 1, wxALL | wxEXPAND);
-	pn_CObservation2DRangeScan->SetSizer(BoxSizer5);
-	BoxSizer5->Fit(pn_CObservation2DRangeScan);
-	BoxSizer5->SetSizeHints(pn_CObservation2DRangeScan);
+
 	pn_CObservationImage = new wxPanel(
 		Notebook1, ID_PANEL9, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL9"));
@@ -978,7 +964,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer8->SetSizeHints(pn_CObservation3DRangeScan);
 	Notebook1->AddPage(pn_CSensorialFrame, _("Rawlog information"), true);
 	Notebook1->AddPage(pn_Action, _("2D Mov. Action"), false);
-	Notebook1->AddPage(pn_CObservation2DRangeScan, _("Obs: 2D scan"), false);
 	Notebook1->AddPage(pn_CObservationImage, _("Obs: Image"), false);
 	Notebook1->AddPage(
 		pn_CObservationStereoImage, _("Obs: Stereo Image"), false);
@@ -1656,17 +1641,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 
 	// The graphs:
 	// -----------------------------------
-	lyScan2D = new mpFXYVector();
 	lyAction2D_XY = new mpFXYVector();
 	lyAction2D_PHI = new mpFXYVector();
 
-	plotScan2D->AddLayer(new mpScaleX());
-	plotScan2D->AddLayer(new mpScaleY());
-	plotScan2D->AddLayer(lyScan2D);
-
-	plotScan2D->LockAspect(true);
 	wxPen penBlue(wxColour(0, 0, 255), 3);
-	lyScan2D->SetPen(penBlue);
 
 	plotAct2D_XY->AddLayer(new mpScaleX());
 	plotAct2D_XY->AddLayer(new mpScaleY());

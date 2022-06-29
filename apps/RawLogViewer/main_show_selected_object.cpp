@@ -147,7 +147,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservation2DRangeScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(2);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(sel_obj);
 
 		// Additional text description: This is not within
@@ -169,15 +169,19 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		cout << "]\n\n";
 
 		// The plot:
-		mrpt::maps::CSimplePointsMap dummMap;
-		dummMap.insertionOptions.minDistBetweenLaserPoints = 0;
-		dummMap.insertObservation(*obs);
+		obs->load();
+		const auto& p = pnViewOptions->m_params;
+		auto glPts = mrpt::opengl::CSetOfObjects::Create();
+		obs2Dscan_to_viz(obs, p, *glPts);
 
-		vector<float> Xs, Ys;
-		dummMap.getAllPoints(Xs, Ys);
+// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+		openGLSceneRef->clear();
+		openGLSceneRef->insert(glPts);
 
-		lyScan2D->SetData(Xs, Ys);
-		plotScan2D->Fit();	// Update the window to show the new data fitted.
+		m_gl3DRangeScan->Refresh();
+#endif
 	}
 
 	if (classID == CLASS_ID(CObservationImage))
@@ -185,7 +189,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationImage
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(3);
+		Notebook1->ChangeSelection(2);
 		auto obs = std::dynamic_pointer_cast<CObservationImage>(sel_obj);
 
 		// Get bitmap:
@@ -225,7 +229,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationStereoImages
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(4);
+		Notebook1->ChangeSelection(3);
 		auto obs = std::dynamic_pointer_cast<CObservationStereoImages>(sel_obj);
 
 		bool loadOk = false;
@@ -310,7 +314,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationBearingRange
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(8);
+		Notebook1->ChangeSelection(7);
 		auto obs = std::dynamic_pointer_cast<CObservationBearingRange>(sel_obj);
 
 		// The plot:
@@ -341,7 +345,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservation3DRangeScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(9);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservation3DRangeScan>(sel_obj);
 
 		obs->load();  // Make sure the 3D point cloud, etc... are all
@@ -413,7 +417,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationVelodyneScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(9);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationVelodyneScan>(sel_obj);
 
 		obs->generatePointCloud();
@@ -440,7 +444,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationPointCloud
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(9);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationPointCloud>(sel_obj);
 
 		const auto& p = pnViewOptions->m_params;
@@ -466,7 +470,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              Generic visualizable object:
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(9);
+		Notebook1->ChangeSelection(8);
 
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
@@ -484,7 +488,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationRotatingScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(4);
+		Notebook1->ChangeSelection(3);
 		auto obs = std::dynamic_pointer_cast<CObservationRotatingScan>(sel_obj);
 
 		// Get range image as bitmap:
