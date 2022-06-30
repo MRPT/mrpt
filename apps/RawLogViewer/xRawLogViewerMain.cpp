@@ -2441,6 +2441,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	const double yTopBorder2 = px2y(clsz.GetHeight() - TL_BORDER - 5);
 
 	auto& tl = m_timeline;
+	tl.clearStats();
 
 	// outer border box:
 	tl.borderBox->setBoxCorners(
