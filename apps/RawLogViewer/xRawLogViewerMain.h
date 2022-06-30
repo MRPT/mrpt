@@ -448,12 +448,21 @@ class xRawLogViewerFrame : public wxFrame
 
 	std::map<std::string, TInfoPerSensorLabel> listOfSensorLabels;
 
-	struct TimeLineOpenGLData
+	struct TimeLineData
 	{
-		TimeLineOpenGLData() = default;
+		TimeLineData() = default;
 
 		mrpt::Clock::time_point min_t = INVALID_TIMESTAMP;
 		mrpt::Clock::time_point max_t = INVALID_TIMESTAMP;
+		// correspondence between xs (-1,1 coordinates) and tree element index.
+		mrpt::containers::bimap<double, size_t> xs2treeIndices;
+
+		void clearStats()
+		{
+			min_t = INVALID_TIMESTAMP;
+			max_t = INVALID_TIMESTAMP;
+			xs2treeIndices.clear();
+		}
 
 		mrpt::opengl::CBox::Ptr borderBox;
 		mrpt::opengl::CSetOfObjects::Ptr xTicks;
@@ -461,13 +470,10 @@ class xRawLogViewerFrame : public wxFrame
 		mrpt::opengl::CBox::Ptr cursor;
 		mrpt::opengl::CSetOfObjects::Ptr ySensorLabels;
 
-		// correspondence between xs (-1,1 coordinates) and tree element index.
-		mrpt::containers::bimap<double, size_t> xs2treeIndices;
-
 		std::map<double, std::string> yCoordToSensorLabel;
 	};
 
-	TimeLineOpenGLData m_timeline;
+	TimeLineData m_timeline;
 
 	// ALWAYS access this inside a "try" block, just in case...
 	mrpt::obs::CObservation::Ptr m_selectedObj;
