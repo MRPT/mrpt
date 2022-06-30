@@ -1055,6 +1055,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 
 		m_timeline.cursor = mrpt::opengl::CBox::Create();
 		scene->insert(m_timeline.cursor);
+
+		m_timeline.visiblePage = mrpt::opengl::CBox::Create();
+		scene->insert(m_timeline.visiblePage);
 	}
 
 	// ----
@@ -2414,6 +2417,7 @@ constexpr int TL_BORDER_LEFT = 150;	 // pixels
 constexpr int TL_BORDER_BOTTOM = 11;  // pixels
 constexpr int TL_X_TICK_COUNT = 7;
 constexpr int XTICKS_FONT_SIZE = 18;
+constexpr int CURSOR_WIDTH_PIXELS = 2;
 
 // Resize and rebuild timeline view objects:
 void xRawLogViewerFrame::rebuildBottomTimeLine()
@@ -2553,6 +2557,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 
 	// Build x <-> treeIndex map:
 	tl.xs2treeIndices.clear();
+	tl.treeIndices2xs.clear();
 	{
 		double lastX = -2;	// actual coords go in [-1,1]
 		for (size_t idx = 0; idx < tree_view->getTotalTreeNodes(); idx++)
@@ -2565,18 +2570,24 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 			const double x = xLeft1 +
 				(t - min_t_d) * (xRight1 - xLeft1) / (max_t_d - min_t_d);
 
+			// Insert all indices, without the decimation below:
+			tl.treeIndices2xs[idx] = x;
+
 			if (x - lastX < widthOf1Px)
-				continue;  // no worth adding so many points
+				continue;  // decimation: no worth adding so many points
 
 			lastX = x;
 
-			tl.xs2treeIndices.insert(x, idx);
+			tl.xs2treeIndices.insert(tl.xs2treeIndices.end(), {x, idx});
 		}
 	}
 
-	// current time position cursor:
-	m_timeline.cursor->setColor_u8(0xff, 0x00, 0x00, 0x20);
-	m_timeline.cursor->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
+	// current time position page:
+	m_timeline.visiblePage->setColor_u8(0xff, 0x00, 0x00, 0x20);
+	m_timeline.visiblePage->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
+
+	m_timeline.cursor->setColor_u8(0x30, 0x30, 0x30, 0x50);
+	m_timeline.cursor->setBoxBorderColor({0x30, 0x30, 0x30, 0x50});
 
 	bottomTimeLineUpdateCursorFromTreeScrollPos();
 }
@@ -2585,10 +2596,10 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 {
 	if (rawlog.empty())
 	{
+		m_timeline.visiblePage->setVisibility(false);
 		m_timeline.cursor->setVisibility(false);
 		return;
 	}
-	m_timeline.cursor->setVisibility(true);
 
 	const auto clsz = m_glTimeLine->GetClientSize();
 
@@ -2612,21 +2623,44 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 		pc1 = tree_view->m_lastVisibleItem / static_cast<double>(nItems - 1);
 	}
 
-	auto itIdx = m_timeline.xs2treeIndices.getInverseMap().lower_bound(
-		tree_view->m_firstVisibleItem);
-	if (itIdx == m_timeline.xs2treeIndices.getInverseMap().end())
-		return;	 // no obs
+	// visible page shaded area:
+	if (auto itIdx = m_timeline.treeIndices2xs.lower_bound(
+			tree_view->m_firstVisibleItem);
+		itIdx != m_timeline.treeIndices2xs.end())
+	{
+		double xVisPage0 = itIdx->second;  // the "x"
+		double xVisPage1 = xVisPage0 + (xRight1 - xLeft1) * (pc1 - pc0);
+		mrpt::keep_max(xVisPage1, xVisPage0 + 2 * widthOf1Px);	// Minimum width
 
-	// move cursor:
-	double xCursor0 = itIdx->second;  // the "x"
-	double xCursor1 = xCursor0 + (xRight1 - xLeft1) * (pc1 - pc0);
-	mrpt::keep_max(xCursor1, xCursor0 + 2 * widthOf1Px);  // Minimum width
+		m_timeline.visiblePage->setVisibility(true);
+		m_timeline.visiblePage->setBoxCorners(
+			mrpt::math::TPoint3D(xVisPage0, yLowerBorder1, 0),	//
+			mrpt::math::TPoint3D(xVisPage1, yTopBorder1, 0));
+	}
+	else
+	{
+		m_timeline.visiblePage->setVisibility(false);
+	}
 
-	// const double cursorWidth = px2width(CURSOR_WIDTH_PIXELS);
+	// selected cursor line:
+	if (auto itIdxCursor =
+			m_timeline.treeIndices2xs.find(tree_view->GetSelectedItem());
+		itIdxCursor != m_timeline.treeIndices2xs.end())
+	{
+		const double cursorWidth = px2width(CURSOR_WIDTH_PIXELS);
 
-	m_timeline.cursor->setBoxCorners(
-		mrpt::math::TPoint3D(xCursor0, yLowerBorder1, 0),  //
-		mrpt::math::TPoint3D(xCursor1, yTopBorder1, 0));
+		double xCursor0 = itIdxCursor->second;	// the "x"
+		double xCursor1 = xCursor0 + cursorWidth;
+
+		m_timeline.cursor->setVisibility(true);
+		m_timeline.cursor->setBoxCorners(
+			mrpt::math::TPoint3D(xCursor0, yLowerBorder1, 0),  //
+			mrpt::math::TPoint3D(xCursor1, yTopBorder1, 0));
+	}
+	else
+	{
+		m_timeline.cursor->setVisibility(false);
+	}
 
 	m_glTimeLine->Refresh();
 	// DONT: wxTheApp->Yield();
@@ -6618,30 +6652,22 @@ void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(wxMouseEvent& e)
 	if (mouseX < 0 || mouseX >= clsz.GetWidth()) return;
 
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
-	// auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v;
-	// };
-
-	const double xLeft1 = px2x(TL_BORDER_LEFT + 1);
-	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
 
 	double clickedX = px2x(mouseX);
 
-	if (m_timeline.xs2treeIndices.empty()) return;
+	if (const auto itLow = m_timeline.xs2treeIndices.lower_bound(clickedX);
+		itLow != m_timeline.xs2treeIndices.end())
+	{
+		auto treeIndex = itLow->second;
 
-	const auto itLow =
-		m_timeline.xs2treeIndices.getDirectMap().lower_bound(clickedX);
+		mrpt::keep_max(treeIndex, 0U);
+		mrpt::keep_min(treeIndex, tree_view->getTotalTreeNodes() - 1);
 
-	if (itLow == m_timeline.xs2treeIndices.end()) return;
-
-	auto interpTreeIndex = itLow->second;
-
-	mrpt::keep_max(interpTreeIndex, 0);
-	mrpt::keep_min(interpTreeIndex, tree_view->getTotalTreeNodes() - 1);
-
-	tree_view->m_is_thumb_tracking = true;
-	tree_view->ScrollToPercent(
-		interpTreeIndex /
-		static_cast<double>(tree_view->getTotalTreeNodes() - 1));
+		tree_view->m_is_thumb_tracking = true;
+		tree_view->ScrollToPercent(
+			treeIndex /
+			static_cast<double>(tree_view->getTotalTreeNodes() - 1));
+	}
 }
 
 void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)

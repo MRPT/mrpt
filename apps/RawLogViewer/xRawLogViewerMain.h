@@ -455,19 +455,23 @@ class xRawLogViewerFrame : public wxFrame
 		mrpt::Clock::time_point min_t = INVALID_TIMESTAMP;
 		mrpt::Clock::time_point max_t = INVALID_TIMESTAMP;
 		// correspondence between xs (-1,1 coordinates) and tree element index.
-		mrpt::containers::bimap<double, size_t> xs2treeIndices;
+
+		std::multimap<double, size_t> xs2treeIndices;
+		std::map<size_t, double> treeIndices2xs;
 
 		void clearStats()
 		{
 			min_t = INVALID_TIMESTAMP;
 			max_t = INVALID_TIMESTAMP;
 			xs2treeIndices.clear();
+			treeIndices2xs.clear();
 		}
 
 		mrpt::opengl::CBox::Ptr borderBox;
 		mrpt::opengl::CSetOfObjects::Ptr xTicks;
 		mrpt::opengl::CPointCloud::Ptr allSensorDots;
 		mrpt::opengl::CBox::Ptr cursor;
+		mrpt::opengl::CBox::Ptr visiblePage;
 		mrpt::opengl::CSetOfObjects::Ptr ySensorLabels;
 
 		std::map<double, std::string> yCoordToSensorLabel;
