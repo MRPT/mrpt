@@ -460,9 +460,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	fgzMain = new wxFlexGridSizer(3, 1, 0, 0);
 	fgzMain->AddGrowableCol(0);
 	fgzMain->AddGrowableRow(1);
-	fgzToolbar = new wxFlexGridSizer(1, 17, 0, 0);
+	fgzToolbar = new wxFlexGridSizer(1, 16, 0, 0);
+	fgzToolbar->AddGrowableCol(14);
 	fgzToolbar->AddGrowableCol(15);
-	fgzToolbar->AddGrowableCol(16);
 
 	btnToolbarOpen = new wxCustomButton(
 		this, ID_BUTTON2, _("Load..."),
@@ -538,20 +538,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Button4->SetMargins(wxSize(5, 5));
 	fgzToolbar->Add(
 		Button4, 1,
-		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
-			wxALIGN_CENTER_VERTICAL,
-		1);
-	Button5 = new wxCustomButton(
-		this, ID_BUTTON7, _("ICP..."),
-		wxArtProvider::GetBitmap(
-			wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")), wxART_TOOLBAR),
-		wxDefaultPosition, wxSize(-1, 60), wxCUSTBUT_BUTTON | wxCUSTBUT_BOTTOM,
-		wxDefaultValidator, _T("ID_BUTTON7"));
-	Button5->SetBitmapDisabled(wxArtProvider::GetBitmap(
-		wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")), wxART_TOOLBAR));
-	Button5->SetMargins(wxSize(5, 5));
-	fgzToolbar->Add(
-		Button5, 1,
 		wxALL | wxFIXED_MINSIZE | wxALIGN_CENTER_HORIZONTAL |
 			wxALIGN_CENTER_VERTICAL,
 		1);
@@ -1515,7 +1501,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	Bind(wxEVT_BUTTON, &This::OnEditRawlog, this, ID_BUTTON4);
 	Bind(wxEVT_BUTTON, &This::OnRawMapOdo, this, ID_BUTTON5);
 	Bind(wxEVT_BUTTON, &This::OnChangeMotionModel, this, ID_BUTTON6);
-	Bind(wxEVT_BUTTON, &This::OnShowICP, this, ID_BUTTON7);
 	Bind(wxEVT_BUTTON, &This::OnShowAnimateScans, this, ID_BUTTON8);
 	Bind(wxEVT_BUTTON, &This::OnShowImagesAsVideo, this, ID_BUTTON9);
 	Bind(wxEVT_BUTTON, &This::OnAbout, this, ID_BUTTON10);
