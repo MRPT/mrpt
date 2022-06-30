@@ -381,7 +381,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxStatusBar* StatusBar1;
 	wxMenuItem* MenuItem52;
 	wxStaticBitmapPopup* bmpObsStereoDisp;
-	wxCustomButton* Button5;
 	wxStaticLine* StaticLine3;
 	wxMenuItem* MenuItem35;
 	wxStaticLine* StaticLine1;
