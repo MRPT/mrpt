@@ -45,8 +45,8 @@ IMPLEMENTS_SERIALIZABLE(CPose3DQuatPDFGaussian, CPose3DQuatPDF, mrpt::poses)
 /** Default constructor - set all values to zero. */
 CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian() : mean(), cov() {}
 // Un-initialized constructor:
-CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian([
-	[maybe_unused]] TConstructorFlags_Quaternions constructor_dummy_param)
+CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian(
+	[[maybe_unused]] TConstructorFlags_Quaternions constructor_dummy_param)
 	: mean(UNINITIALIZED_QUATERNION), cov(UNINITIALIZED_MATRIX)
 {
 }
@@ -253,17 +253,13 @@ void CPose3DQuatPDFGaussian::drawManySamples(
 }
 
 /*---------------------------------------------------------------
-					inverse
+					inverse Jacobian
  ---------------------------------------------------------------*/
-void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
+mrpt::math::CMatrixDouble77 CPose3DQuatPDFGaussian::inverseJacobian() const
 {
-	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DQuatPDFGaussian));
-	auto& out = dynamic_cast<CPose3DQuatPDFGaussian&>(o);
-
-	// COV:
 	CMatrixFixed<double, 3, 7> df_dpose(UNINITIALIZED_MATRIX);
 	double lx, ly, lz;
-	mean.inverseComposePoint(0, 0, 0, lx, ly, lz, nullptr, &df_dpose);
+	this->mean.inverseComposePoint(0, 0, 0, lx, ly, lz, nullptr, &df_dpose);
 
 	CMatrixFixed<double, 7, 7> jacob;
 	jacob.insertMatrix(0, 0, df_dpose);
@@ -276,6 +272,21 @@ void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
 	this->mean.quat().normalizationJacobian(norm_jacob);
 	jacob.asEigen().block<4, 4>(3, 3) *= norm_jacob.asEigen();
 
+	return jacob;
+}
+
+/*---------------------------------------------------------------
+					inverse
+ ---------------------------------------------------------------*/
+void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
+{
+	ASSERT_(o.GetRuntimeClass() == CLASS_ID(CPose3DQuatPDFGaussian));
+	auto& out = dynamic_cast<CPose3DQuatPDFGaussian&>(o);
+	double lx, ly, lz;
+	this->mean.inverseComposePoint(0, 0, 0, lx, ly, lz, nullptr, nullptr);
+
+	CMatrixFixed<double, 7, 7> jacob = this->inverseJacobian();
+
 	// C(0:2,0:2): H C H^t
 	out.cov = mrpt::math::multiply_HCHt(jacob, this->cov);
 
@@ -284,6 +295,56 @@ void CPose3DQuatPDFGaussian::inverse(CPose3DQuatPDF& o) const
 	out.mean.y(ly);
 	out.mean.z(lz);
 	this->mean.quat().conj(out.mean.quat());
+}
+
+/*---------------------------------------------------------------
+			inverse composition with cross correlation
+ ---------------------------------------------------------------*/
+mrpt::poses::CPose3DQuatPDFGaussian
+	CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation(
+		const mrpt::poses::CPose3DQuatPDFGaussian& pose_to) const
+{
+	mrpt::poses::CPose3DQuatPDFGaussian pose_from_inv;
+	this->inverse(pose_from_inv);
+
+	CMatrixFixed<double, 7, 7> jacob_inv = this->inverseJacobian();
+
+	mrpt::math::CMatrixDouble44 norm_jacob_pose_from(
+		mrpt::math::UNINITIALIZED_MATRIX);
+	this->mean.quat().normalizationJacobian(norm_jacob_pose_from);
+
+	mrpt::math::CMatrixDouble77 Hc1, Hc2, Hc1i, Hc2i;
+	mrpt::poses::CPose3DQuatPDFGaussian::jacobiansPoseComposition(
+		pose_from_inv.mean, pose_to.mean, Hc1, Hc2);
+
+	mrpt::math::CMatrixDouble44 norm_jacob_pose_from_inv(
+		mrpt::math::UNINITIALIZED_MATRIX);
+	pose_from_inv.mean.quat().normalizationJacobian(norm_jacob_pose_from_inv);
+	Hc1.asEigen().block<4, 4>(3, 3) *= norm_jacob_pose_from_inv.asEigen();
+
+	mrpt::math::CMatrixDouble44 norm_jacob_pose_to(
+		mrpt::math::UNINITIALIZED_MATRIX);
+	pose_to.mean.quat().normalizationJacobian(norm_jacob_pose_to);
+	Hc2.asEigen().block<4, 4>(3, 3) *= norm_jacob_pose_to.asEigen();
+
+	mrpt::poses::CPose3DQuatPDFGaussian displacement(pose_from_inv + pose_to);
+	mrpt::poses::CPose3DQuatPDFGaussian::jacobiansPoseComposition(
+		this->mean, displacement.mean, Hc1i, Hc2i);
+	Hc1i.asEigen().block<4, 4>(3, 3) *= norm_jacob_pose_from.asEigen();
+
+	mrpt::math::CMatrixDouble77 cov_correlation(
+		Hc1i.asEigen() * this->cov.asEigen());
+	mrpt::math::CMatrixDouble77 cov_correlation_jac(
+		Hc2.asEigen() * cov_correlation.asEigen() *
+		jacob_inv.asEigen().transpose() * Hc1.asEigen().transpose());
+
+	displacement.cov.asEigen() += cov_correlation_jac.asEigen();
+	displacement.cov.asEigen() += cov_correlation_jac.asEigen().transpose();
+
+	for (size_t i = 0; i < displacement.cov.rows(); i++)
+		ASSERT_(displacement.cov(i, i) >= 0.0);
+
+	return displacement;
 }
 
 /*---------------------------------------------------------------
