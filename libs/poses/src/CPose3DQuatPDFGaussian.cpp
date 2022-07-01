@@ -45,7 +45,7 @@ IMPLEMENTS_SERIALIZABLE(CPose3DQuatPDFGaussian, CPose3DQuatPDF, mrpt::poses)
 /** Default constructor - set all values to zero. */
 CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian() : mean(), cov() {}
 // Un-initialized constructor:
-CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian(
+CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian(	 //
 	[[maybe_unused]] TConstructorFlags_Quaternions constructor_dummy_param)
 	: mean(UNINITIALIZED_QUATERNION), cov(UNINITIALIZED_MATRIX)
 {
