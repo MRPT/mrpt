@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.4.11: UNRELEASED
-(none yet)
+- Changes in libraries:
+  - Adds correct displacement covariance calculation between two poses with cross-correlation (Closes [#1242](https://github.com/MRPT/mrpt/issues/1242))
 
 # Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:
