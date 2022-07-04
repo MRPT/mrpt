@@ -153,17 +153,20 @@ class TMatchingPairListTempl : public std::vector<TMatchingPairTempl<T>>
 	 * correspondences, given the 2D transformation "q"
 	 *    \f[ \sum\limits_i e_i  \f]
 	 *  Where \f$ e_i \f$ are the elements of the square error vector as
-	 * computed by computeSquareErrorVector
+	 * computed by squareErrorVector()
 	 * \sa squareErrorVector, overallSquareErrorAndPoints
 	 */
 	T overallSquareError(const mrpt::poses::CPose2D& q) const;
+
+	/// \overload for SE(3) pose transformation `q`
+	T overallSquareError(const mrpt::poses::CPose3D& q) const;
 
 	/** Computes the overall square error between the 2D points in the list of
 	 * correspondences, given the 2D transformation "q", and return the
 	 * transformed points as well.
 	 *    \f[ \sum\limits_i e_i  \f]
 	 *  Where \f$ e_i \f$ are the elements of the square error vector as
-	 * computed by computeSquareErrorVector
+	 * computed by squareErrorVector()
 	 * \sa squareErrorVector
 	 */
 	T overallSquareErrorAndPoints(
@@ -171,7 +174,7 @@ class TMatchingPairListTempl : public std::vector<TMatchingPairTempl<T>>
 		std::vector<T>& ys) const;
 
 	/**  Returns a vector with the square error between each pair of
-	 * correspondences in the list, given the 2D transformation "q"
+	 * correspondences in the list, given the SE(2) transformation `q`
 	 *    Each element \f$ e_i \f$ is the square distance between the "this"
 	 * (global) point and the "other" (local) point transformed through "q":
 	 *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
@@ -179,6 +182,10 @@ class TMatchingPairListTempl : public std::vector<TMatchingPairTempl<T>>
 	 */
 	void squareErrorVector(
 		const mrpt::poses::CPose2D& q, std::vector<T>& out_sqErrs) const;
+
+	/// \overload for SE(3) pose transformation `q`
+	void squareErrorVector(
+		const mrpt::poses::CPose3D& q, std::vector<T>& out_sqErrs) const;
 
 	/**  Returns a vector with the square error between each pair of
 	 * correspondences in the list and the transformed "other" (local) points,
