@@ -69,6 +69,9 @@ struct TMatchingPairTempl
 	mrpt::math::TPoint3D_<T> local{0, 0, 0};
 	T errorSquareAfterTransformation{0};
 
+	/** Print contents with format:
+	 *  `[globalIdx -> localIdx] (global.{x,y,z}) -> (local.{x,y,z})`
+	 */
 	void print(std::ostream& o) const;
 
 	constexpr static auto getClassName()
@@ -129,8 +132,20 @@ class TMatchingPairListTempl : public std::vector<TMatchingPairTempl<T>>
 
 	/** Checks if the given index from the "other" map appears in the list. */
 	bool indexOtherMapHasCorrespondence(size_t idx) const;
-	/** Saves the correspondences to a text file */
+
+	/** Saves the correspondences to a text file, with each line containing
+	 * these columns:
+	 *  `globalIdx localIdx gx gy gz lx ly lz errSqr`
+	 *
+	 * You can also use:
+	 * \code
+	 * for (const auto &c: corrs)
+	 *  std::cout << c << "\n";
+	 * \endcode
+	 * for a human-friendly description of contents.
+	 */
 	void dumpToFile(const std::string& fileName) const;
+
 	/** Saves the correspondences as a MATLAB script which draws them. */
 	void saveAsMATLABScript(const std::string& filName) const;
 
