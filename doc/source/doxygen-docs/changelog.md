@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_poses_grp
     - Add correct displacement covariance calculation between two poses with cross-correlation via new method mrpt::poses::CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation() (Closes [#1242](https://github.com/MRPT/mrpt/issues/1242))
+  - \ref mrpt_tfest_grp
+    - New method TMatchingPairList::overallSquareError() for SE(3) poses (CPose3D).
 
 # Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:
