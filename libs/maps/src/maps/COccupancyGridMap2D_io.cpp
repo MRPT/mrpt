@@ -10,12 +10,14 @@
 #include "maps-precomp.h"  // Precomp header
 //
 #include <mrpt/config.h>
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/round.h>  // round()
 #include <mrpt/img/CEnhancedMetaFile.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
 #include <iostream>
@@ -533,4 +535,30 @@ void COccupancyGridMap2D::saveMetricMapRepresentationToFile(
 	LIMITS.saveToTextFile(
 		fil, MATRIX_FORMAT_FIXED, false /* add mrpt header */,
 		"% Grid limits: [x_min x_max y_min y_max]\n");
+}
+
+bool COccupancyGridMap2D::loadFromROSMapServerYAML(
+	const std::string& yamlFilePath) const
+{
+	try
+	{
+		const auto f = mrpt::containers::yaml::FromFile(yamlFilePath);
+		ASSERT_(f.isMap());
+		ASSERT_(!f.empty());
+
+		auto imgFile = f["image"].as<std::string>();
+
+		// relative to absolute:
+		XX;
+
+		mrpt::system::extractFileDirectory(yamlFilePath);
+
+		return true;  // ok
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[COccupancyGridMap2D::loadFromROSMapServerYAML] Error:\n"
+				  << e.what();
+		return false;
+	}
 }

@@ -1069,6 +1069,38 @@ class COccupancyGridMap2D
 			std::numeric_limits<double>::max(),
 			std::numeric_limits<double>::max()));
 
+	/** Loads this gridmap from a .yaml file and an accompanying image file
+	 *  given in the
+	 *  [map_server YAML](http://wiki.ros.org/map_server#YAML_format) file
+	 *  format.
+	 *
+	 * \param yamlFilePath Absolute or relative path to the `.yaml` file.
+	 *
+	 * \return false on error, true on success.
+	 * \sa FromROSMapServerYAML()
+	 */
+	bool loadFromROSMapServerYAML(const std::string& yamlFilePath) const;
+
+	/** Creates a gridmap from a .yaml file and an accompanying image file
+	 *  given in the
+	 *  [map_server YAML](http://wiki.ros.org/map_server#YAML_format) file
+	 *  format.
+	 *
+	 * \param yamlFilePath Absolute or relative path to the `.yaml` file.
+	 *
+	 * \sa loadFromROSMapServerYAML()
+	 * \exception std::exception On error loading or parsing the files.
+	 */
+	static COccupancyGridMap2D FromROSMapServerYAML(
+		const std::string& yamlFilePath)
+	{
+		COccupancyGridMap2D grid;
+		if (!grid.loadFromROSMapServerYAML(yamlFilePath))
+			THROW_EXCEPTION_FMT(
+				"Error loading gridmap from '%s'", yamlFilePath.c_str());
+		return grid;
+	}
+
 	/** See the base class for more details: In this class it is implemented as
 	 * correspondences of the passed points map to occupied cells.
 	 * NOTICE: That the "z" dimension is ignored in the points. Clip the points

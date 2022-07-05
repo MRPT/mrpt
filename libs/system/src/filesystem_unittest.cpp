@@ -93,3 +93,15 @@ TEST(FileSystem, filePathSeparatorsToNative)
 		"/loco/perico/");
 #endif
 }
+
+TEST(FileSystem, toAbsolutePath)
+{
+	//
+	xx;
+}
+
+TEST(FileSystem, pathJoin)
+{
+	//
+	xx;
+}

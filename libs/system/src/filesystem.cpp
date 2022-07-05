@@ -21,6 +21,14 @@
 #include <string>
 #include <vector>
 
+#if STD_FS_IS_EXPERIMENTAL
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -377,244 +385,26 @@ std::string mrpt::system::fileNameChangeExtension(
 	return filePath + string(".") + newExtension;
 }
 
-/*---------------------------------------------------------------
-			copyFile
----------------------------------------------------------------*/
 bool mrpt::system::copyFile(
 	const std::string& sourceFile, const std::string& targetFile,
-	std::string* outErrStr, bool copyAttribs)
+	std::string* outErrStr)
 {
-	const std::string org =
-		mrpt::system::filePathSeparatorsToNative(sourceFile);
-	const std::string trg =
-		mrpt::system::filePathSeparatorsToNative(targetFile);
+	std::error_code ec;
+	bool ok = fs::copy_file(
+		fs::path(sourceFile), fs::path(targetFile),
+		fs::copy_options::overwrite_existing, ec);
 
-	const bool fil_exs = fileExists(org);
-	const bool dir_exs = directoryExists(org);
+	if (ok) return true;
 
-	// Is source a directory?
-	if (!fil_exs)
-	{
-		if (outErrStr)
-			*outErrStr =
-				string("Source does not exist or permission denied!: ") + org;
-		return false;
-	}
-	if (dir_exs)
-	{
-		if (outErrStr) *outErrStr = string("Is source a directory?: ") + org;
-		return false;
-	}
+	if (outErrStr) *outErrStr = ec.message();
 
-	// Check if source file exists and we have access to open it:
-	FILE* f_src = fopen(org.c_str(), "rb");
-	if (!f_src)
-	{
-		if (outErrStr)
-			*outErrStr = string(
-							 "Source file exists but cannot open it... is file "
-							 "being used?:  ") +
-				org;
-		return false;
-	}
-
-	// Assure that "target" is not an existing directory:
-	if (directoryExists(trg))
-	{
-		if (outErrStr)
-			*outErrStr = string("Target cannot be a directory: ") + trg;
-		fclose(f_src);
-		return false;
-	}
-
-	// Try to open the file for writting:
-	FILE* f_trg = fopen(trg.c_str(), "wb");
-	if (!f_trg)
-	{
-		if (!fileExists(trg))
-		{
-			// It does not exist and does not allow us to create it:
-			if (outErrStr)
-				*outErrStr = string("Cannot create target file: ") + trg;
-			fclose(f_src);
-			return false;
-		}
-		else
-		{
-			// It exists, but cannot overwrite it:
-
-#ifdef _WIN32
-			// Try changing the permissions of the target file:
-			DWORD dwProp = GetFileAttributesA(trg.c_str());
-			if (dwProp == INVALID_FILE_ATTRIBUTES)
-			{
-				if (outErrStr)
-					*outErrStr =
-						string(
-							"Cannot get file attributes for target file, "
-							"trying to remove a possible read-only attribute "
-							"after first attempt of copy failed, for: ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-
-			dwProp &= ~FILE_ATTRIBUTE_HIDDEN;
-			dwProp &= ~FILE_ATTRIBUTE_READONLY;
-			dwProp &= ~FILE_ATTRIBUTE_SYSTEM;
-
-			if (!SetFileAttributesA(trg.c_str(), dwProp))
-			{
-				if (outErrStr)
-					*outErrStr =
-						string(
-							"Cannot get file attributes for target file, "
-							"trying to remove a possible read-only attribute "
-							"after first attempt of copy failed, for: ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-
-			// Try again:
-			f_trg = fopen(trg.c_str(), "wb");
-			if (!f_trg)
-			{
-				if (outErrStr)
-					*outErrStr = string(
-									 "Cannot overwrite target file, even after "
-									 "changing file attributes! : ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-#else
-			// Try changing the permissions of the target file:
-			if (chmod(trg.c_str(), S_IRWXU | S_IRGRP | S_IROTH))
-			{
-				if (outErrStr)
-					*outErrStr =
-						string(
-							"Cannot set file permissions for target file, "
-							"trying to remove a possible read-only attribute "
-							"after first attempt of copy failed, for: ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-
-			// Try again:
-			f_trg = fopen(trg.c_str(), "wb");
-			if (!f_trg)
-			{
-				if (outErrStr)
-					*outErrStr = string(
-									 "Cannot overwrite target file, even after "
-									 "changing file permissions! : ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-#endif
-		}
-	}
-
-	// Ok, here we have both files open: Perform the copy:
-	char buf[66000];
-	size_t nBytes = 0;
-	while (0 != (nBytes = fread(buf, 1, 64 * 1024, f_src)))
-	{
-		if (nBytes != fwrite(buf, 1, nBytes, f_trg))
-		{
-			if (outErrStr)
-				*outErrStr = string(
-								 "Error writing the contents of the target "
-								 "file (disk full?): ") +
-					trg;
-			fclose(f_src);
-			fclose(f_trg);
-			return false;
-		}
-	}
-
-	// Close file handles:
-	fclose(f_src);
-	fclose(f_trg);
-
-	// In Windows only, copy the file attributes:
-	if (copyAttribs)
-	{
-#ifdef _WIN32
-		DWORD dwPropSrc = GetFileAttributesA(org.c_str());
-		if (dwPropSrc == INVALID_FILE_ATTRIBUTES)
-		{
-			if (outErrStr)
-				*outErrStr =
-					string(
-						"Cannot get the file attributes for source file:  ") +
-					org;
-			return false;
-		}
-		DWORD dwPropTrg = GetFileAttributesA(trg.c_str());
-		if (dwPropTrg == INVALID_FILE_ATTRIBUTES)
-		{
-			if (outErrStr)
-				*outErrStr =
-					string(
-						"Cannot get the file attributes for target file:  ") +
-					trg;
-			return false;
-		}
-
-		// Leave only those attributes which can be legally copied:
-		// (Refer to: http://msdn2.microsoft.com/en-us/library/aa365535.aspx )
-		dwPropSrc &= FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN |
-			FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED |
-			FILE_ATTRIBUTE_OFFLINE | FILE_ATTRIBUTE_READONLY |
-			FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY;
-
-		// Copy them to the target attributes:
-		dwPropTrg &=
-			~(FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN |
-			  FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED |
-			  FILE_ATTRIBUTE_OFFLINE | FILE_ATTRIBUTE_READONLY |
-			  FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY);
-		dwPropTrg |= dwPropSrc;
-
-		// Set attributes of target file:
-		if (!SetFileAttributesA(trg.c_str(), dwPropTrg))
-		{
-			if (outErrStr)
-				*outErrStr =
-					string("Cannot set file attributes for target file: ") +
-					trg;
-			return false;
-		}
-#else
-// Linux: No file attributes to copy.
-#endif
-	}  // end // if (copyAttribs)
-
-	return true;
+	return false;
 }
 
-// ---------------------------------------------------------------
-//    filePathSeparatorsToNative
-// ---------------------------------------------------------------
 std::string mrpt::system::filePathSeparatorsToNative(
 	const std::string& filePath)
 {
-	std::string ret = filePath;
-	const size_t N = ret.size();
-	for (size_t i = 0; i < N; i++)
-	{
-#ifdef _WIN32
-		if (ret[i] == '/') ret[i] = '\\';
-#else
-		if (ret[i] == '\\') ret[i] = '/';
-#endif
-	}
-	return ret;
+	return fs::path(filePath).native();
 }
 
 time_t mrpt::system::getFileModificationTime(const std::string& filename)
@@ -678,4 +468,16 @@ std::string mrpt::system::getShareMRPTDir()
 			}
 	}
 	return sDetectedPath;
+}
+
+std::string mrpt::system::toAbsolutePath(const std::string& path)
+{
+	//
+	x;
+}
+
+std::string mrpt::system::pathJoin(const std::vector<std::string>& paths)
+{
+	//
+	x;
 }
