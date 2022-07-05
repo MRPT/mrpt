@@ -6,7 +6,8 @@
 -->
 <package format="3">
   <name>mrpt2</name>
-  <version>2.4.11</version>
+  <!-- Before updating version number, read [MRPT_ROOT]/version_prefix.txt first -->
+  <version>2.5.0</version>
   <description>Mobile Robot Programming Toolkit (MRPT) version 2.x</description>
 
   <author     email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>

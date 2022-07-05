@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.4.11: UNRELEASED
+# Version 2.5.0: UNRELEASED
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CMesh supports having (x,y) limits with `maxCoord<minCoord` for flipped elevation and image meshes.
