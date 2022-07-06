@@ -210,13 +210,6 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
 		if (__A < __B) ASRT_FAIL("ASSERT_GE_", __A, __B, #__A, #__B)           \
 	} while (0)
 
-// ------- Deprecated ---------
-#define ASSERT_BELOW_(__A, __B) ASSERT_LT_(__A, __B)
-#define ASSERT_ABOVE_(__A, __B) ASSERT_GT_(__A, __B)
-#define ASSERT_BELOWEQ_(__A, __B) ASSERT_LE_(__A, __B)
-#define ASSERT_ABOVEEQ_(__A, __B) ASSERT_GE_(__A, __B)
-// ------- End deprecated -----
-
 #ifdef _DEBUG
 #define ASSERTDEB_(f) ASSERT_(f)
 #define ASSERTDEBMSG_(f, __ERROR_MSG) ASSERTMSG_(f, __ERROR_MSG)
@@ -253,8 +246,14 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  */
 #define MRPT_TRY_END                                                           \
 	}                                                                          \
-	catch (std::bad_alloc&) { throw; }                                         \
-	catch (const mrpt::ExceptionWithCallBackBase&) { throw; }                  \
+	catch (std::bad_alloc&)                                                    \
+	{                                                                          \
+		throw;                                                                 \
+	}                                                                          \
+	catch (const mrpt::ExceptionWithCallBackBase&)                             \
+	{                                                                          \
+		throw;                                                                 \
+	}                                                                          \
 	catch (const std::exception& __e)                                          \
 	{                                                                          \
 		throw mrpt::ExceptionWithCallBack(__e);                                \
@@ -268,7 +267,10 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  */
 #define MRPT_TRY_END_WITH_CLEAN_UP(stuff)                                      \
 	}                                                                          \
-	catch (std::bad_alloc&) { throw; }                                         \
+	catch (std::bad_alloc&)                                                    \
+	{                                                                          \
+		throw;                                                                 \
+	}                                                                          \
 	catch (...)                                                                \
 	{                                                                          \
 		{                                                                      \
