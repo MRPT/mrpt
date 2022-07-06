@@ -11,6 +11,9 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/stock_observations.h>
+//
+#include <mrpt/config.h>
+#include <test_mrpt_common.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -33,3 +36,24 @@ TEST(COccupancyGridMap2DTests, insert2DScan)
 		// should have a high "freeness"
 	}
 }
+
+// We need OPENCV to read the image.
+#if MRPT_HAS_OPENCV
+
+TEST(COccupancyGridMap2DTests, loadFromROSMapServerYAML)
+{
+	using namespace std::string_literals;
+	const auto fil = mrpt::UNITTEST_BASEDIR + "/tests/yaml_32.yaml"s;
+
+	auto grid = mrpt::maps::COccupancyGridMap2D::FromROSMapServerYAML(fil);
+
+	ASSERT_EQUAL_(grid.getResolution(), 0.15f);
+	ASSERT_NEAR_(grid.getXMin(), -4.5f, 0.01f);
+	ASSERT_NEAR_(grid.getXMax(), 0.f, 0.01f);
+	ASSERT_NEAR_(grid.getYMin(), 0.f, 0.01f);
+	ASSERT_NEAR_(grid.getYMax(), 9.9f, 0.01f);
+
+	ASSERT_EQUAL_(grid.getPos(2.0, 2.0), 0.5f);
+}
+
+#endif

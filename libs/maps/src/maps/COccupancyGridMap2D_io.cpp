@@ -20,6 +20,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <Eigen/Dense>
 #include <iostream>
 
 using namespace mrpt;
@@ -67,13 +68,14 @@ void COccupancyGridMap2D::serializeTo(mrpt::serialization::CArchive& out) const
 	out << uint8_t(16);
 #endif
 
-	out << size_x << size_y << x_min << x_max << y_min << y_max << resolution;
-	ASSERT_(size_x * size_y == map.size());
+	out << m_size_x << m_size_y << m_xMin << m_xMax << m_yMin << m_yMax
+		<< m_resolution;
+	ASSERT_(m_size_x * m_size_y == m_map.size());
 
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-	out.WriteBuffer(&map[0], sizeof(map[0]) * size_x * size_y);
+	out.WriteBuffer(&m_map[0], sizeof(m_map[0]) * m_size_x * m_size_y);
 #else
-	out.WriteBufferFixEndianness(&map[0], size_x * size_y);
+	out.WriteBufferFixEndianness(&map[0], size_x * m_size_y);
 #endif
 
 	// insertionOptions:
@@ -150,13 +152,13 @@ void COccupancyGridMap2D::serializeFrom(
 				new_x_min, new_x_max, new_y_min, new_y_max, new_resolution,
 				0.5);
 
-			ASSERT_(size_x * size_y == map.size());
+			ASSERT_(m_size_x * m_size_y == m_map.size());
 
 			if (bitsPerCellStream == MyBitsPerCell)
 			{
 // Perfect:
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-				in.ReadBuffer(&map[0], sizeof(map[0]) * map.size());
+				in.ReadBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
 #else
 				in.ReadBufferFixEndianness(&map[0], map.size());
 #endif
@@ -167,11 +169,11 @@ void COccupancyGridMap2D::serializeFrom(
 #ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 				// We are 8-bit, stream is 16-bit
 				ASSERT_(bitsPerCellStream == 16);
-				std::vector<uint16_t> auxMap(map.size());
+				std::vector<uint16_t> auxMap(m_map.size());
 				in.ReadBuffer(&auxMap[0], sizeof(auxMap[0]) * auxMap.size());
 
-				size_t i, N = map.size();
-				auto* ptrTrg = (uint8_t*)&map[0];
+				size_t i, N = m_map.size();
+				auto* ptrTrg = (uint8_t*)&m_map[0];
 				const auto* ptrSrc = (const uint16_t*)&auxMap[0];
 				for (i = 0; i < N; i++)
 					*ptrTrg++ = (*ptrSrc++) >> 8;
@@ -193,8 +195,8 @@ void COccupancyGridMap2D::serializeFrom(
 			// log-odds:
 			if (version < 3)
 			{
-				size_t i, N = map.size();
-				cellType* ptr = &map[0];
+				size_t i, N = m_map.size();
+				cellType* ptr = &m_map[0];
 				for (i = 0; i < N; i++)
 				{
 					double p = cellTypeUnsigned(*ptr) * (1.0f / 0xFF);
@@ -258,7 +260,9 @@ void COccupancyGridMap2D::serializeFrom(
 			}
 
 			if (version >= 5)
-			{ in >> insertionOptions.wideningBeamsWithDistance; }
+			{
+				in >> insertionOptions.wideningBeamsWithDistance;
+			}
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -291,7 +295,7 @@ bool COccupancyGridMap2D::loadFromBitmap(
 	size_t bmpWidth = imgFl.getWidth();
 	size_t bmpHeight = imgFl.getHeight();
 
-	if (size_x != bmpWidth || size_y != bmpHeight)
+	if (m_size_x != bmpWidth || m_size_y != bmpHeight)
 	{
 		auto origin = origin_;
 		// Middle of bitmap?
@@ -528,31 +532,96 @@ void COccupancyGridMap2D::saveMetricMapRepresentationToFile(
 
 	fil = filNamePrefix + std::string("_limits.txt");
 	CMatrixF LIMITS(1, 4);
-	LIMITS(0, 0) = x_min;
-	LIMITS(0, 1) = x_max;
-	LIMITS(0, 2) = y_min;
-	LIMITS(0, 3) = y_max;
+	LIMITS(0, 0) = m_xMin;
+	LIMITS(0, 1) = m_xMax;
+	LIMITS(0, 2) = m_yMin;
+	LIMITS(0, 3) = m_yMax;
 	LIMITS.saveToTextFile(
 		fil, MATRIX_FORMAT_FIXED, false /* add mrpt header */,
 		"% Grid limits: [x_min x_max y_min y_max]\n");
 }
 
 bool COccupancyGridMap2D::loadFromROSMapServerYAML(
-	const std::string& yamlFilePath) const
+	const std::string& yamlFilePath)
 {
+	// See format:
+	// http://wiki.ros.org/map_server#YAML_format
+
 	try
 	{
 		const auto f = mrpt::containers::yaml::FromFile(yamlFilePath);
 		ASSERT_(f.isMap());
 		ASSERT_(!f.empty());
 
-		auto imgFile = f["image"].as<std::string>();
-
 		// relative to absolute:
-		XX;
+		const auto imgFile = mrpt::system::pathJoin(
+			{mrpt::system::extractFileDirectory(yamlFilePath),
+			 f["image"].as<std::string>()});
 
-		mrpt::system::extractFileDirectory(yamlFilePath);
+		ASSERT_FILE_EXISTS_(imgFile);
 
+		const double resolution = f["resolution"].as<double>();
+		ASSERT_(resolution > 0);
+
+		const auto originPose = f["origin"].toStdVector<double>();
+		ASSERT_GE_(originPose.size(), 2);
+
+		const double xMin = originPose.at(0);
+		const double yMin = originPose.at(1);
+
+		const float occupied_thresh = f["occupied_thresh"].as<float>();
+		const float free_thresh = f["free_thresh"].as<float>();
+		const bool negate = f["negate"].as<bool>();
+		const std::string mode = f.getOrDefault<std::string>("mode", "trinary");
+
+		bool isScale = false;
+
+		if (mode == "trinary") isScale = false;
+		else if (mode == "scale")
+			isScale = true;
+		else
+		{
+			THROW_EXCEPTION_FMT(
+				"Unsupported value for 'mode'='%s' (supported: 'trinary', "
+				"'scale')",
+				mode.c_str());
+		}
+
+		// 1st: load image and convert to float:
+		const auto im = mrpt::img::CImage::LoadFromFile(imgFile);
+
+		// For the precomputed likelihood:
+		m_likelihoodCacheOutDated = true;
+
+		const size_t w = im.getWidth(), h = im.getHeight();
+
+		// Resize grid:
+		float xMax = xMin + w * resolution;
+		float yMax = yMin + h * resolution;
+
+		setSize(xMin, xMax, yMin, yMax, resolution);
+
+		// And load cells content:
+		for (size_t y = 0; y < h; y++)
+			for (size_t x = 0; x < w; x++)
+			{
+				float v = im.getAsFloat(x, h - 1 - y);
+				if (negate) v = 1.0f - v;
+				v = std::max(0.01f, v);
+				v = std::min(0.99f, v);
+
+				if (isScale) setCell(x, y, v);
+				else
+				{
+					if (1 - v > occupied_thresh) setCell(x, y, 0.0f);
+					else if (1 - v < free_thresh)
+						setCell(x, y, 1.0f);
+					else
+						setCell(x, y, 0.5f);
+				}
+			}
+
+		m_is_empty = false;
 		return true;  // ok
 	}
 	catch (const std::exception& e)

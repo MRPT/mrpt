@@ -186,14 +186,20 @@ class yaml
 			ASSERT_(isScalar());
 			if (const char* const* s = std::any_cast<const char*>(&asScalar());
 				s != nullptr)
-			{ return {*s}; }
+			{
+				return {*s};
+			}
 			if (const std::string* s = std::any_cast<std::string>(&asScalar());
 				s != nullptr)
-			{ return {*s}; }
+			{
+				return {*s};
+			}
 			if (const std::string_view* s =
 					std::any_cast<std::string_view>(&asScalar());
 				s != nullptr)
-			{ return {*s}; }
+			{
+				return {*s};
+			}
 			THROW_EXCEPTION_FMT(
 				"Used node_t as map key with a type non-convertible to string: "
 				"'%s'",
@@ -863,8 +869,9 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
 	if constexpr (std::is_enum_v<decltype(Var__)>)                             \
 	{                                                                          \
 		if (!Yaml__.empty() && Yaml__.has(#Var__))                             \
-			Var__ = mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(       \
-				Var__)>>::name2value(Yaml__[#Var__].as<std::string>());        \
+			Var__ =                                                            \
+				mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(Var__)>>:: \
+					name2value(Yaml__[#Var__].as<std::string>());              \
 	}                                                                          \
 	else if (!Yaml__.isNullNode() && !Yaml__.empty() && Yaml__.has(#Var__))    \
 	Var__ = Yaml__[#Var__].as<decltype(Var__)>()
@@ -1124,7 +1131,20 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 	// 1) Exact match?
 	if (storedType == expectedType) return std::any_cast<const T&>(s);
 
-	// 2) Recognize double/float:
+	// 2) bool:
+	if constexpr (std::is_same_v<T, bool>)
+	{
+		if (storedType == typeid(std::string))
+		{
+			const auto str = implAnyAsGetter<std::string>(s);
+			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
+				str == "YES" || str == "true" || str == "True" ||
+				str == "TRUE" || str == "on" || str == "ON" || str == "On" ||
+				std::stoi(str) != 0;
+		}
+	}
+
+	// 3) Recognize double/float:
 	if constexpr (std::is_same_v<T, double> || std::is_same_v<T, float>)
 	{
 		if (storedType == typeid(double))
@@ -1139,7 +1159,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		if (!ss.fail()) return ret;
 	}
 
-	// 3) Integers. Recognize hex or octal prefixes with strtol()
+	// 4) Integers. Recognize hex or octal prefixes with strtol()
 	if constexpr (std::is_convertible_v<int, T>)
 	{
 		std::stringstream ss;
@@ -1171,7 +1191,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		}
 	}
 
-	// 4) Strings:
+	// 5) Strings:
 	if constexpr (std::is_convertible_v<std::string, T>)
 	{
 		if (expectedType == typeid(std::string))
@@ -1179,17 +1199,6 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 			std::stringstream ss;
 			yaml::internalPrintAsYAML(s, ss, {}, {});
 			return ss.str();
-		}
-	}
-	// 5) bool:
-	if constexpr (std::is_same_v<T, bool>)
-	{
-		if (storedType == typeid(std::string))
-		{
-			const auto str = implAnyAsGetter<std::string>(s);
-			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
-				str == "YES" || str == "true" || str == "True" ||
-				str == "TRUE" || str == "on" || str == "ON" || str == "On";
 		}
 	}
 
