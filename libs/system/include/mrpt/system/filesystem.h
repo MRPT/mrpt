@@ -154,7 +154,12 @@ bool copyFile(
 	const std::string& sourceFile, const std::string& targetFile,
 	std::string* outErrStr = nullptr);
 
-/** Portable version of std::filesystem::absolute()
+/** Portable version of std::filesystem::absolute() and canonical()
+ *
+ * If `canonical==true` relative paths, symlinks, etc. will be resolved too,
+ * but an exception will be thrown if the referenced file/path does not exist.
+ * If `canonical==true`, an absolute path will be always returned, even if does
+ * not actually exist.
  *
  *  \code
  *  mrpt::system::toAbsolutePath("/home/joe"); // -> "/home/joe"
@@ -163,7 +168,8 @@ bool copyFile(
  *
  *  \note (New in MRPT 2.5.0)
  */
-std::string toAbsolutePath(const std::string& path);
+std::string toAbsolutePath(
+	const std::string& path, bool resolveToCanonical = false);
 
 /** Portable version of std::filesystem::path::append(), with Python-like name.
  *

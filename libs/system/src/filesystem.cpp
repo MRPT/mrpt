@@ -64,46 +64,18 @@ using namespace mrpt;
 using namespace mrpt::system;
 using namespace std;
 
-/*---------------------------------------------------------------
-					ExtractFileName
-	Extracts just the name of a filename from a
-	  complete path plus name plus extension.
-  ---------------------------------------------------------------*/
 string mrpt::system::extractFileName(const string& filePath)
 {
-	int i, dotPos = int(filePath.size());
-	if (filePath.size() < 2) return string("");
-
-	for (i = (int)filePath.size() - 1;
-		 i >= 0 && !(filePath[i] == '\\' || filePath[i] == '/'); i--)
-		if (dotPos == int(filePath.size()) && filePath[i] == '.') dotPos = i;
-	return filePath.substr(i + 1, dotPos - i - 1);
+	return fs::path(filePath).stem();
 }
 
-/*---------------------------------------------------------------
-					ExtractFileDirectory
-	Extracts just the directory of a filename from a
-	  complete path plus name plus extension.
-  ---------------------------------------------------------------*/
 string mrpt::system::extractFileDirectory(const string& filePath)
 {
-	if (filePath.size() < 2) return filePath;
-
-	// Search the first "/" or "\" from the right:
-	int i;
-	for (i = (int)filePath.size() - 1; i > 0; i--)
-		if (filePath[i] == '\\' || filePath[i] == '/') break;
-
-	if (!i) return string("./");
-	else
-		return filePath.substr(0, i + 1);
+	auto p = fs::path(filePath);
+	p.remove_filename();
+	return p;
 }
 
-/*---------------------------------------------------------------
-					ExtractFileName
-	Extracts just the name of a filename from a
-	  complete path plus name plus extension.
-  ---------------------------------------------------------------*/
 string mrpt::system::extractFileExtension(
 	const string& filePath, bool ignore_gz)
 {
@@ -118,10 +90,7 @@ string mrpt::system::extractFileExtension(
 		{
 			string the_ext = filePath.substr(i + 1, i_end - i);
 			if (!ignore_gz || the_ext != "gz") return the_ext;
-			else
-			{
-				i_end = --i;
-			}
+			else { i_end = --i; }
 		}
 		else
 			i--;
@@ -130,18 +99,12 @@ string mrpt::system::extractFileExtension(
 	return string("");
 }
 
-/*---------------------------------------------------------------
-					FileExists
-  ---------------------------------------------------------------*/
 bool mrpt::system::fileExists(const string& path)
 {
 	return 0 ==
 		_access(path.c_str(), 0x00);  // 0x00 = Check for existence only!
 }
 
-/*---------------------------------------------------------------
-					directoryExists
-  ---------------------------------------------------------------*/
 bool mrpt::system::directoryExists(const std::string& _path)
 {
 	std::string path = _path;
@@ -163,38 +126,16 @@ bool mrpt::system::directoryExists(const std::string& _path)
 #endif
 }
 
-/*---------------------------------------------------------------
-						createDirectory
- ---------------------------------------------------------------*/
 bool mrpt::system::createDirectory(const string& dirName)
 {
-#ifdef _WIN32
-	bool rc = 0 != CreateDirectoryA(dirName.c_str(), nullptr);
-	return (rc || GetLastError() == ERROR_ALREADY_EXISTS);
-#else
-	int ret = mkdir(dirName.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	if (ret && errno != EEXIST)	 // We ignore this error...
-	{
-		string str = format("[createDirectory %s]", dirName.c_str());
-		perror(str.c_str());
-		return false;
-	}
-	else
-		return true;  // OK
-#endif
+	return fs::create_directory(dirName);
 }
 
-/*---------------------------------------------------------------
-						deleteFile
- ---------------------------------------------------------------*/
 bool mrpt::system::deleteFile(const string& fileName)
 {
 	return 0 == remove(fileName.c_str());
 }
 
-/*---------------------------------------------------------------
-					mrpt::system::deleteFiles
----------------------------------------------------------------*/
 void mrpt::system::deleteFiles(const string& s)
 {
 	MRPT_START
@@ -255,31 +196,7 @@ bool mrpt::system::deleteFilesInDirectory(
 		return true;
 }
 
-std::string mrpt::system::getcwd()
-{
-	MRPT_START
-
-#ifdef _WIN32
-	char auxBuf[MAX_PATH] = "";
-	if (!::GetCurrentDirectoryA(sizeof(auxBuf) - 1, auxBuf))
-		THROW_EXCEPTION("Error getting current working directory!");
-	return std::string(auxBuf);
-
-#else
-	size_t size = 100;
-	for (;;)
-	{
-		std::string cwd;
-		cwd.resize(size);
-		if (::getcwd(&cwd[0], size) == &cwd[0]) { return cwd; }
-		if (errno != ERANGE)
-			THROW_EXCEPTION("Error getting current working directory!");
-		size *= 2;
-	}
-#endif
-
-	MRPT_END
-}
+std::string mrpt::system::getcwd() { return fs::current_path(); }
 
 /*---------------------------------------------------------------
 					getTempFileName
@@ -353,36 +270,14 @@ std::string mrpt::system::fileNameStripInvalidChars(
 ---------------------------------------------------------------*/
 uint64_t mrpt::system::getFileSize(const std::string& fileName)
 {
-#if defined(_MSC_VER)
-	// Visual Studio:
-	struct __stat64 filStat;
-	if (_stat64(fileName.c_str(), &filStat)) return uint64_t(-1);
-	else
-		return uint64_t(filStat.st_size);
-#else
-	// The rest of the world:
-	struct stat filStat
-	{
-	};
-	if (stat(fileName.c_str(), &filStat)) return uint64_t(-1);
-	else
-		return uint64_t(filStat.st_size);
-#endif
+	return fs::file_size(fs::path(fileName));
 }
 
 /** Replace the filename extension by another one.  */
 std::string mrpt::system::fileNameChangeExtension(
 	const std::string& filePath, const std::string& newExtension)
 {
-	if (filePath.size() < 2) return filePath;
-
-	const size_t i_end = filePath.size() - 1;
-
-	for (int i = int(i_end); i > 0; i--)
-		if (filePath[i] == '.') return filePath.substr(0, i + 1) + newExtension;
-
-	// No extension found: add it:
-	return filePath + string(".") + newExtension;
+	return fs::path(filePath).replace_extension(fs::path(newExtension));
 }
 
 bool mrpt::system::copyFile(
@@ -404,7 +299,17 @@ bool mrpt::system::copyFile(
 std::string mrpt::system::filePathSeparatorsToNative(
 	const std::string& filePath)
 {
-	return fs::path(filePath).native();
+	std::string ret = filePath;
+	const size_t N = ret.size();
+	for (size_t i = 0; i < N; i++)
+	{
+#ifdef _WIN32
+		if (ret[i] == '/') ret[i] = '\\';
+#else
+		if (ret[i] == '\\') ret[i] = '/';
+#endif
+	}
+	return fs::path(ret).native();
 }
 
 time_t mrpt::system::getFileModificationTime(const std::string& filename)
@@ -470,14 +375,18 @@ std::string mrpt::system::getShareMRPTDir()
 	return sDetectedPath;
 }
 
-std::string mrpt::system::toAbsolutePath(const std::string& path)
+std::string mrpt::system::toAbsolutePath(
+	const std::string& path, bool resolveToCanonical)
 {
-	//
-	x;
+	if (resolveToCanonical) return fs::canonical(fs::path(path));
+	return fs::absolute(fs::path(path));
 }
 
 std::string mrpt::system::pathJoin(const std::vector<std::string>& paths)
 {
-	//
-	x;
+	fs::path p;
+	for (const auto& d : paths)
+		p.append(d);
+
+	return p;
 }

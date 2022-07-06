@@ -6,6 +6,9 @@
     - mrpt::opengl::CMesh supports having (x,y) limits with `maxCoord<minCoord` for flipped elevation and image meshes.
   - \ref mrpt_poses_grp
     - Add correct displacement covariance calculation between two poses with cross-correlation via new method mrpt::poses::CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation() (Closes [#1242](https://github.com/MRPT/mrpt/issues/1242))
+  - \ref mrpt_system_grp
+    - New funtions mrpt::system::toAbsolutePath(), mrpt::system::pathJoin()
+    - Most functions in \ref filesystem ported to C++17 std::filesystem
   - \ref mrpt_tfest_grp
     - New method TMatchingPairList::overallSquareError() for SE(3) poses (CPose3D).
 

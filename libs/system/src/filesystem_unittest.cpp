@@ -22,10 +22,9 @@ TEST(FileSystem, fileNameChangeExtension)
 		"d:/dataset.log");
 	EXPECT_EQ(
 		mrpt::system::fileNameChangeExtension("d:/dataset.rawlog", ""),
-		"d:/dataset.");
+		"d:/dataset");
 	EXPECT_EQ(
-		mrpt::system::fileNameChangeExtension("d:/dataset.", ""),
-		"d:/dataset.");
+		mrpt::system::fileNameChangeExtension("d:/dataset.", ""), "d:/dataset");
 	EXPECT_EQ(
 		mrpt::system::fileNameChangeExtension("d:/dataset", "rawlog"),
 		"d:/dataset.rawlog");
@@ -47,18 +46,24 @@ TEST(FileSystem, extractFileExtension)
 
 TEST(FileSystem, extractFileDirectory)
 {
+#ifdef _WIN32
+	EXPECT_EQ(
+		mrpt::system::extractFileDirectory("D:\\imgs\\foo.txt"), "D:\\imgs\\");
+#else
 	EXPECT_EQ(
 		mrpt::system::extractFileDirectory("/home/pepe/foo.txt"),
 		"/home/pepe/");
-	EXPECT_EQ(
-		mrpt::system::extractFileDirectory("D:\\imgs\\foo.txt"), "D:\\imgs\\");
+#endif
 }
 
 TEST(FileSystem, extractFileName)
 {
-	EXPECT_EQ(mrpt::system::extractFileName("/home/pepe/foo.txt"), "foo");
+#ifdef _WIN32
 	EXPECT_EQ(
 		mrpt::system::extractFileName("d:\\imgs\\dataset.log"), "dataset");
+#else
+	EXPECT_EQ(mrpt::system::extractFileName("/home/pepe/foo.txt"), "foo");
+#endif
 }
 
 TEST(FileSystem, filePathSeparatorsToNative)
@@ -96,12 +101,20 @@ TEST(FileSystem, filePathSeparatorsToNative)
 
 TEST(FileSystem, toAbsolutePath)
 {
-	//
-	xx;
+	auto tmpFile = mrpt::system::getTempFileName();
+
+	EXPECT_EQ(
+		mrpt::system::toAbsolutePath(tmpFile),	//
+		tmpFile);
+
+	EXPECT_EQ(
+		mrpt::system::toAbsolutePath(".", true /*canonical*/),	//
+		mrpt::system::getcwd());
 }
 
 TEST(FileSystem, pathJoin)
 {
-	//
-	xx;
+	EXPECT_EQ(
+		mrpt::system::pathJoin({"/home", "joe", "p.ini"}),	//
+		"/home/joe/p.ini");
 }
