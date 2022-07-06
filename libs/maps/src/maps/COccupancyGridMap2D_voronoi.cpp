@@ -28,26 +28,26 @@ void COccupancyGridMap2D::buildVoronoiDiagram(
 	if (!x1 && !x2 && !y1 && !y2)
 	{
 		x1 = y1 = 0;
-		x2 = size_x - 1;
-		y2 = size_y - 1;
+		x2 = m_size_x - 1;
+		y2 = m_size_y - 1;
 	}
 	else
 	{
 		x1 = max(0, x1);
 		y1 = max(0, y1);
-		x2 = min(x2, static_cast<int>(size_x) - 1);
-		y2 = min(y2, static_cast<int>(size_y) - 1);
+		x2 = min(x2, static_cast<int>(m_size_x) - 1);
+		y2 = min(y2, static_cast<int>(m_size_y) - 1);
 	}
 
-	int robot_size_units = round(100 * robot_size / resolution);
+	int robot_size_units = round(100 * robot_size / m_resolution);
 
 	/* We store 0 in cells NOT belonging to Voronoi, or the closest distance
 	 * to obstacle otherwise, the "clearance" in "int" distance units.
 	 */
 	m_voronoi_diagram.setSize(
-		x_min, x_max, y_min, y_max, resolution);  // assign(size_x*size_y,0);
-	ASSERT_EQUAL_(m_voronoi_diagram.getSizeX(), size_x);
-	ASSERT_EQUAL_(m_voronoi_diagram.getSizeY(), size_y);
+		m_xMin, m_xMax, m_yMin, m_yMax, m_resolution);  // assign(size_x*m_size_y,0);
+	ASSERT_EQUAL_(m_voronoi_diagram.getSizeX(), m_size_x);
+	ASSERT_EQUAL_(m_voronoi_diagram.getSizeY(), m_size_y);
 	m_voronoi_diagram.fill(0);
 
 	// freeness threshold
@@ -98,15 +98,15 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
 {
 	int clear_xy, clear;
 
-	int filter_dist = round(filter_distance / resolution);
+	int filter_dist = round(filter_distance / m_resolution);
 	int min_clear_near, max_clear_near;
 
 	// Resize basis-points map & set to zero:
 	m_basis_map.setSize(
-		x_min, x_max, y_min, y_max,
-		resolution);  // m_basis_map.assign(size_x*size_y, 0);
-	ASSERT_EQUAL_(m_basis_map.getSizeX(), size_x);
-	ASSERT_EQUAL_(m_basis_map.getSizeY(), size_y);
+		m_xMin, m_xMax, m_yMin, m_yMax,
+		m_resolution);  // m_basis_map.assign(size_x*m_size_y, 0);
+	ASSERT_EQUAL_(m_basis_map.getSizeX(), m_size_x);
+	ASSERT_EQUAL_(m_basis_map.getSizeY(), m_size_y);
 	m_basis_map.fill(0);
 
 	// Temp list of candidate
@@ -114,9 +114,9 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
 
 	// Scan for critical points
 	// ---------------------------------------------
-	for (int x = 1; x < (static_cast<int>(size_x) - 1); x++)
+	for (int x = 1; x < (static_cast<int>(m_size_x) - 1); x++)
 	{
-		for (int y = 1; y < (static_cast<int>(size_y) - 1); y++)
+		for (int y = 1; y < (static_cast<int>(m_size_y) - 1); y++)
 		{
 			if (0 != (clear_xy = getVoroniClearance(x, y)))
 			{
@@ -258,11 +258,11 @@ int COccupancyGridMap2D::computeClearance(
 	static const cellType thresholdCellValue = p2l(0.5f);
 
 	// Si la celda esta ocupada, clearance de cero!
-	if (static_cast<unsigned>(cx) >= size_x ||
-		static_cast<unsigned>(cy) >= size_y)
+	if (static_cast<unsigned>(cx) >= m_size_x ||
+		static_cast<unsigned>(cy) >= m_size_y)
 		return 0;
 
-	if (map[cx + cy * size_y] < thresholdCellValue) return 0;
+	if (m_map[cx + cy * m_size_y] < thresholdCellValue) return 0;
 
 	// Truco para acelerar MUCHO:
 	//  Si miramos un punto junto al mirado antes,
@@ -345,11 +345,11 @@ int COccupancyGridMap2D::computeClearance(
 			int xx = cx + circs_x[idx];
 			int yy = cy + circs_y[idx];
 
-			if (xx >= 0 && xx < static_cast<int>(size_x) && yy >= 0 &&
-				yy < static_cast<int>(size_y))
+			if (xx >= 0 && xx < static_cast<int>(m_size_x) && yy >= 0 &&
+				yy < static_cast<int>(m_size_y))
 			{
 				// if ( getCell(xx,yy)<=voroni_free_threshold )
-				if (map[xx + yy * size_y] < thresholdCellValue)
+				if (m_map[xx + yy * m_size_y] < thresholdCellValue)
 				{
 					if (!dentro_obs)
 					{
@@ -545,11 +545,11 @@ float COccupancyGridMap2D::computeClearance(
 {
 	int xx1 = max(0, x2idx(x - maxSearchDistance));
 	int xx2 =
-		min(static_cast<unsigned>(size_x - 1),
+		min(static_cast<unsigned>(m_size_x - 1),
 			static_cast<unsigned>(x2idx(x + maxSearchDistance)));
 	int yy1 = max(0, y2idx(y - maxSearchDistance));
 	int yy2 =
-		min(static_cast<unsigned>(size_y - 1),
+		min(static_cast<unsigned>(m_size_y - 1),
 			static_cast<unsigned>(y2idx(y + maxSearchDistance)));
 
 	int cx = x2idx(x);
@@ -569,10 +569,10 @@ float COccupancyGridMap2D::computeClearance(
 
 	for (xx = xx1; xx <= xx2; xx++)
 		for (yy = yy1; yy <= yy2; yy++)
-			if (map[xx + yy * size_x] < thresholdCellValue)
+			if (m_map[xx + yy * m_size_x] < thresholdCellValue)
 				clearance_sq = min(
 					clearance_sq,
-					square(resolution) * (square(xx - cx) + square(yy - cy)));
+					square(m_resolution) * (square(xx - cx) + square(yy - cy)));
 
 	return sqrt(clearance_sq);
 }

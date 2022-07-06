@@ -184,9 +184,9 @@ double COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 		int cy0 = y2idx(pointGlobal.y);
 
 		int cxMin = max(0, cx0 - Acells);
-		int cxMax = min(static_cast<int>(size_x) - 1, cx0 + Acells);
+		int cxMax = min(static_cast<int>(m_size_x) - 1, cx0 + Acells);
 		int cyMin = max(0, cy0 - Acells);
-		int cyMax = min(static_cast<int>(size_y) - 1, cy0 + Acells);
+		int cyMax = min(static_cast<int>(m_size_y) - 1, cy0 + Acells);
 
 		double lik = 0;
 
@@ -252,7 +252,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
 		// Build a copy of this occupancy grid:
 		COccupancyGridMap2D compareGrid(
 			takenFrom.x() - 10, takenFrom.x() + 10, takenFrom.y() - 10,
-			takenFrom.y() + 10, resolution);
+			takenFrom.y() + 10, m_resolution);
 		CPose3D robotPose(takenFrom);
 		int Ax, Ay;
 
@@ -263,15 +263,15 @@ double COccupancyGridMap2D::computeObservationLikelihood_CellsDifference(
 		o.insertObservationInto(compareGrid, robotPose);
 
 		// Save Cells offset between the two grids:
-		Ax = round((x_min - compareGrid.x_min) / resolution);
-		Ay = round((y_min - compareGrid.y_min) / resolution);
+		Ax = round((m_xMin - compareGrid.m_xMin) / m_resolution);
+		Ay = round((m_yMin - compareGrid.m_yMin) / m_resolution);
 
 		int nCellsCompared = 0;
 		float cellsDifference = 0;
 		int x0 = max(0, Ax);
 		int y0 = max(0, Ay);
-		int x1 = min(compareGrid.size_x, size_x + Ax);
-		int y1 = min(compareGrid.size_y, size_y + Ay);
+		int x1 = min(compareGrid.m_size_x, m_size_x + Ax);
+		int y1 = min(compareGrid.m_size_y, m_size_y + Ay);
 
 		for (int x = x0; x < x1; x += 1)
 		{
@@ -439,7 +439,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 		// Assure we have a 2D points-map representation of the points from the
 		// scan:
 		CPointsMap::TInsertionOptions opts;
-		opts.minDistBetweenLaserPoints = resolution * 0.5f;
+		opts.minDistBetweenLaserPoints = m_resolution * 0.5f;
 		opts.isPlanarMap = true;  // Already filtered above!
 		opts.horizontalTolerance = insertionOptions.horizontalTolerance;
 
@@ -456,7 +456,7 @@ double COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 
 		// Create a point map representation of the observation:
 		CSimplePointsMap pts;
-		pts.insertionOptions.minDistBetweenLaserPoints = resolution * 0.5f;
+		pts.insertionOptions.minDistBetweenLaserPoints = m_resolution * 0.5f;
 		pts.insertObservation(o);
 
 		// Compute the likelihood of the points in this grid map:
@@ -517,7 +517,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 	size_t N = pm->size();
 	int K = (int)ceil(
 		likelihoodOptions.LF_maxCorrsDistance /*m*/ /
-		resolution);  // The size of the checking area for matchings:
+		m_resolution);  // The size of the checking area for matchings:
 
 	bool Product_T_OrSum_F = !likelihoodOptions.LF_alternateAverageMethod;
 
@@ -537,8 +537,8 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 	float Q = -0.5f / square(stdHit);
 	int M = 0;
 
-	unsigned int size_x_1 = size_x - 1;
-	unsigned int size_y_1 = size_y - 1;
+	unsigned int size_x_1 = m_size_x - 1;
+	unsigned int size_y_1 = m_size_y - 1;
 
 #define LIK_LF_CACHE_INVALID (66)
 
@@ -553,10 +553,10 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 		// Reset the precomputed likelihood values map
 		if (m_likelihoodCacheOutDated)
 		{
-			if (!map.empty())
-				precomputedLikelihood.assign(map.size(), LIK_LF_CACHE_INVALID);
+			if (!m_map.empty())
+				m_precomputedLikelihood.assign(m_map.size(), LIK_LF_CACHE_INVALID);
 			else
-				precomputedLikelihood.clear();
+				m_precomputedLikelihood.clear();
 
 			m_likelihoodCacheOutDated = false;
 		}
@@ -565,7 +565,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 	cellType thresholdCellValue = p2l(0.5f);
 	int decimation = likelihoodOptions.LF_decimation;
 
-	const double _resolution = this->resolution;
+	const double _resolution = this->m_resolution;
 	const double constDist2DiscrUnits = 100 / (_resolution * _resolution);
 	const double constDist2DiscrUnits_INV = 1.0 / constDist2DiscrUnits;
 
@@ -614,7 +614,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 		{
 			// We are into the map limits:
 			if (likelihoodOptions.enableLikelihoodCache)
-			{ thisLik = precomputedLikelihood[cx + cy * size_x]; }
+			{ thisLik = m_precomputedLikelihood[cx + cy * m_size_x]; }
 
 			if (!likelihoodOptions.enableLikelihoodCache ||
 				thisLik == LIK_LF_CACHE_INVALID)
@@ -632,8 +632,8 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 				float occupiedMinDist;
 				{
 					// Initial pointer position
-					const cellType* mapPtr = &map[xx1 + yy1 * size_x];
-					unsigned incrAfterRow = size_x - ((xx2 - xx1) + 1);
+					const cellType* mapPtr = &m_map[xx1 + yy1 * m_size_x];
+					unsigned incrAfterRow = m_size_x - ((xx2 - xx1) + 1);
 
 					signed int Ax0 = 10 * (xx1 - cx);
 					signed int Ay = 10 * (yy1 - cy);
@@ -675,7 +675,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 
 				if (likelihoodOptions.enableLikelihoodCache)
 					// And save it into the table and into "thisLik":
-					precomputedLikelihood[cx + cy * size_x] = thisLik;
+					m_precomputedLikelihood[cx + cy * m_size_x] = thisLik;
 			}
 		}
 
@@ -726,7 +726,7 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
 	int cx_min, cx_max;
 	int cy_min, cy_max;
 	int maxRangeInCells =
-		(int)ceil(likelihoodOptions.LF_maxCorrsDistance / resolution);
+		(int)ceil(likelihoodOptions.LF_maxCorrsDistance / m_resolution);
 	int nCells = 0;
 
 	// -----------------------------------------------------
@@ -754,9 +754,9 @@ double COccupancyGridMap2D::computeLikelihoodField_II(
 		// Compute the range of cells to compute:
 		// ---------------------------------------------
 		cx_min = max(cx0 - maxRangeInCells, 0);
-		cx_max = min(cx0 + maxRangeInCells, static_cast<int>(size_x));
+		cx_max = min(cx0 + maxRangeInCells, static_cast<int>(m_size_x));
 		cy_min = max(cy0 - maxRangeInCells, 0);
-		cy_max = min(cy0 + maxRangeInCells, static_cast<int>(size_y));
+		cy_max = min(cy0 + maxRangeInCells, static_cast<int>(m_size_y));
 
 		//		debugImg.rectangle(cx_min,cy_min,cx_max,cy_max,0xFF0000 );
 

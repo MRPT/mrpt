@@ -116,10 +116,7 @@ void CObservation2DRangeScan::serializeFrom(
 			}
 
 			if (version >= 2) { in >> stdError; }
-			else
-			{
-				stdError = 0.01f;
-			}
+			else { stdError = 0.01f; }
 
 			if (version >= 3) { in >> timestamp; }
 
@@ -171,7 +168,9 @@ void CObservation2DRangeScan::serializeFrom(
 				in >> hasIntensity;
 				setScanHasIntensity(hasIntensity);
 				if (hasIntensity && N)
-				{ in.ReadBufferFixEndianness(&m_intensity[0], N); }
+				{
+					in.ReadBufferFixEndianness(&m_intensity[0], N);
+				}
 			}
 		}
 		break;
@@ -314,7 +313,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 float CObservation2DRangeScan::getScanAngle(const size_t idx) const
 {
 	float Ang = -0.5f * aperture, dA = aperture / (m_scan.size() - 1);
-	ASSERT_BELOW_(idx, m_scan.size());
+	ASSERT_LT_(idx, m_scan.size());
 
 	if (!rightToLeft)
 	{
