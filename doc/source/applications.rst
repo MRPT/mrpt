@@ -43,6 +43,7 @@ also provides many ready-to-use applications:
   page_app_ReactiveNav3D-Demo.rst
   page_app_ReactiveNavigationDemo.rst
   page_app_ro-localization.rst
+  page_app_rosmapyaml2mrpt.rst
   app_robotic-arm-kinematics.rst
   page_app_SceneViewer3D.rst
   page_app_simul-landmarks.rst

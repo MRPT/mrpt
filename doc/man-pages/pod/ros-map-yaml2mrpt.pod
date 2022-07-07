@@ -1,0 +1,85 @@
+=head1 NAME
+
+ros-map-yaml2mrpt - Convert a ROS map_server .yaml file into MRPT gridmaps
+
+=head1 SYNOPSIS
+
+ros-map-yaml2mrpt  [--generate-3d] [-q] [-w] [-d <.>] -i <map.yaml> [--]
+                   [--version] [-h]
+
+=head1 USAGE EXAMPLES
+
+B<Convert a ROS yaml file into an MRPT .gridmap file in the same directory>
+
+ros-map-yaml2mrpt -i I<map.yaml>
+
+B<Convert it, and also generate a .3Dscene file for quick inspection>
+
+ros-map-yaml2mrpt -i I<map.png> --generate-3d
+
+=head1 DESCRIPTION
+
+B<ros-map-yaml2mrpt> is a command-line application to convert a yaml file
+and an image file (following ROS1 map_server YAML file format) into an 
+MRPT `.gridmap.gz` file. A `.gridmap.gz` file is just a
+gz-compressed file containing the serialization of an object of type
+`mrpt::maps::COccupancyGridMap2D`.
+
+USAGE:
+
+   ros-map-yaml2mrpt  [--generate-3d] [-q] [-w] [-d <.>] -i <map.yaml> [--]
+                      [--version] [-h]
+
+Where:
+
+   --generate-3d
+     Create a .3Dscene view of the gridmap, suitable for quick
+     visualization in the SceneViewer3D program.
+
+   -q,  --quiet
+     Do not print info messages to cout, only errors to cerr
+
+   -w,  --overwrite
+     Force overwrite target file without prompting.
+
+   -d <.>,  --output-directory <.>
+     If provided, output files will be written to the specified directory,
+     instead of the same directory of the input file, which is the default
+     behavior. The output directory must exist, it will not be created.
+
+   -i <map.yaml>,  --input <map.yaml>
+     (required)  Input map yaml file (required) (*.yaml)
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The application list and their documentation: https://docs.mrpt.org/reference/latest/applications.html
+
+=head1 AUTHORS
+
+B<ros-map-yaml2mrpt> is part of the Mobile Robot Programming Toolkit (MRPT), and
+was originally written by Jose Luis Blanco.
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be
+found in `/usr/share/common-licenses/BSD'.
+
+=cut

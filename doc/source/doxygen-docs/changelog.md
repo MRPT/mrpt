@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.5.0: UNRELEASED
+- Changes in applications:
+  - New application:
+    - ros-map-yaml2mrpt: CLI tool to import ROS map_server maps into MRPT formats.
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CMesh supports having (x,y) limits with `maxCoord<minCoord` for flipped elevation and image meshes.
