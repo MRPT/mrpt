@@ -90,7 +90,10 @@ string mrpt::system::extractFileExtension(
 		{
 			string the_ext = filePath.substr(i + 1, i_end - i);
 			if (!ignore_gz || the_ext != "gz") return the_ext;
-			else { i_end = --i; }
+			else
+			{
+				i_end = --i;
+			}
 		}
 		else
 			i--;

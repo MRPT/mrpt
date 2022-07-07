@@ -244,13 +244,17 @@ void COccupancyGridMap2D::resizeGrid(
 
 	// Adjust sizes to adapt them to full sized cells acording to the
 	// resolution:
-	if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) > 0.05f)
+	if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) >
+		0.05f)
 		new_x_min = m_resolution * round(new_x_min / m_resolution);
-	if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution)) > 0.05f)
+	if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution)) >
+		0.05f)
 		new_y_min = m_resolution * round(new_y_min / m_resolution);
-	if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution)) > 0.05f)
+	if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution)) >
+		0.05f)
 		new_x_max = m_resolution * round(new_x_max / m_resolution);
-	if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution)) > 0.05f)
+	if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution)) >
+		0.05f)
 		new_y_max = m_resolution * round(new_y_max / m_resolution);
 
 	// Change size: 4 sides extensions:

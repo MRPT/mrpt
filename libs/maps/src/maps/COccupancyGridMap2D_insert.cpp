@@ -458,7 +458,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					}
 					if (theR < m_resolution)
 						continue;  // Range must be larger than a cell...
-					theR -= m_resolution;	 // Remove one cell of length, which
+					theR -= m_resolution;  // Remove one cell of length, which
 					// will be filled with "occupied"
 					// later.
 
@@ -966,7 +966,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				}
 				if (theR < m_resolution)
 					continue;  // Range must be larger than a cell...
-				theR -= m_resolution;	 // Remove one cell of length, which will be
+				theR -=
+					m_resolution;  // Remove one cell of length, which will be
 				// filled with "occupied" later.
 
 				/* ---------------------------------------------------------

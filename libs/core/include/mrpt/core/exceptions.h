@@ -246,14 +246,8 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  */
 #define MRPT_TRY_END                                                           \
 	}                                                                          \
-	catch (std::bad_alloc&)                                                    \
-	{                                                                          \
-		throw;                                                                 \
-	}                                                                          \
-	catch (const mrpt::ExceptionWithCallBackBase&)                             \
-	{                                                                          \
-		throw;                                                                 \
-	}                                                                          \
+	catch (std::bad_alloc&) { throw; }                                         \
+	catch (const mrpt::ExceptionWithCallBackBase&) { throw; }                  \
 	catch (const std::exception& __e)                                          \
 	{                                                                          \
 		throw mrpt::ExceptionWithCallBack(__e);                                \
@@ -267,10 +261,7 @@ struct ExceptionWithCallBack : public BASE_EXCEPTION,
  */
 #define MRPT_TRY_END_WITH_CLEAN_UP(stuff)                                      \
 	}                                                                          \
-	catch (std::bad_alloc&)                                                    \
-	{                                                                          \
-		throw;                                                                 \
-	}                                                                          \
+	catch (std::bad_alloc&) { throw; }                                         \
 	catch (...)                                                                \
 	{                                                                          \
 		{                                                                      \

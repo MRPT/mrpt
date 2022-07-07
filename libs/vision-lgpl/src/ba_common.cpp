@@ -141,7 +141,10 @@ inline void reprojectionResidualsElement(
 		sum += kernel.eval(sum_2, kernel_1st_deriv, kernel_2nd_deriv);
 		if (out_kernel_1st_deriv) *out_kernel_1st_deriv = kernel_1st_deriv;
 	}
-	else { sum += sum_2; }
+	else
+	{
+		sum += sum_2;
+	}
 }
 
 /** Compute reprojection error vector (used from within Bundle Adjustment
