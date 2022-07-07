@@ -186,20 +186,14 @@ class yaml
 			ASSERT_(isScalar());
 			if (const char* const* s = std::any_cast<const char*>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			if (const std::string* s = std::any_cast<std::string>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			if (const std::string_view* s =
 					std::any_cast<std::string_view>(&asScalar());
 				s != nullptr)
-			{
-				return {*s};
-			}
+			{ return {*s}; }
 			THROW_EXCEPTION_FMT(
 				"Used node_t as map key with a type non-convertible to string: "
 				"'%s'",
@@ -869,9 +863,8 @@ std::ostream& operator<<(std::ostream& o, const yaml& p);
 	if constexpr (std::is_enum_v<decltype(Var__)>)                             \
 	{                                                                          \
 		if (!Yaml__.empty() && Yaml__.has(#Var__))                             \
-			Var__ =                                                            \
-				mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(Var__)>>:: \
-					name2value(Yaml__[#Var__].as<std::string>());              \
+			Var__ = mrpt::typemeta::TEnumType<std::remove_cv_t<decltype(       \
+				Var__)>>::name2value(Yaml__[#Var__].as<std::string>());        \
 	}                                                                          \
 	else if (!Yaml__.isNullNode() && !Yaml__.empty() && Yaml__.has(#Var__))    \
 	Var__ = Yaml__[#Var__].as<decltype(Var__)>()

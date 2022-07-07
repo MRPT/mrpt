@@ -517,7 +517,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 	size_t N = pm->size();
 	int K = (int)ceil(
 		likelihoodOptions.LF_maxCorrsDistance /*m*/ /
-		m_resolution);  // The size of the checking area for matchings:
+		m_resolution);	// The size of the checking area for matchings:
 
 	bool Product_T_OrSum_F = !likelihoodOptions.LF_alternateAverageMethod;
 
@@ -554,7 +554,8 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 		if (m_likelihoodCacheOutDated)
 		{
 			if (!m_map.empty())
-				m_precomputedLikelihood.assign(m_map.size(), LIK_LF_CACHE_INVALID);
+				m_precomputedLikelihood.assign(
+					m_map.size(), LIK_LF_CACHE_INVALID);
 			else
 				m_precomputedLikelihood.clear();
 

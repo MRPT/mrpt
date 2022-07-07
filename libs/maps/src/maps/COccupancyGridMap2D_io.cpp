@@ -260,9 +260,7 @@ void COccupancyGridMap2D::serializeFrom(
 			}
 
 			if (version >= 5)
-			{
-				in >> insertionOptions.wideningBeamsWithDistance;
-			}
+			{ in >> insertionOptions.wideningBeamsWithDistance; }
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

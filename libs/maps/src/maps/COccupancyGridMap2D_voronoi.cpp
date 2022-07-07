@@ -45,7 +45,8 @@ void COccupancyGridMap2D::buildVoronoiDiagram(
 	 * to obstacle otherwise, the "clearance" in "int" distance units.
 	 */
 	m_voronoi_diagram.setSize(
-		m_xMin, m_xMax, m_yMin, m_yMax, m_resolution);  // assign(size_x*m_size_y,0);
+		m_xMin, m_xMax, m_yMin, m_yMax,
+		m_resolution);	// assign(size_x*m_size_y,0);
 	ASSERT_EQUAL_(m_voronoi_diagram.getSizeX(), m_size_x);
 	ASSERT_EQUAL_(m_voronoi_diagram.getSizeY(), m_size_y);
 	m_voronoi_diagram.fill(0);
@@ -104,7 +105,7 @@ void COccupancyGridMap2D::findCriticalPoints(float filter_distance)
 	// Resize basis-points map & set to zero:
 	m_basis_map.setSize(
 		m_xMin, m_xMax, m_yMin, m_yMax,
-		m_resolution);  // m_basis_map.assign(size_x*m_size_y, 0);
+		m_resolution);	// m_basis_map.assign(size_x*m_size_y, 0);
 	ASSERT_EQUAL_(m_basis_map.getSizeX(), m_size_x);
 	ASSERT_EQUAL_(m_basis_map.getSizeY(), m_size_y);
 	m_basis_map.fill(0);
