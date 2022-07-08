@@ -39,8 +39,8 @@ int TestOffscreenRender(int argc, char* argv[])
 	const int height = atoi(argv[3]);
 	const string sOut = argv[4];
 
-	ASSERT_ABOVE_(width, 0);
-	ASSERT_ABOVE_(height, 0);
+	ASSERT_GT_(width, 0);
+	ASSERT_GT_(height, 0);
 
 	COpenGLScene scene;
 	CFileGZInputStream f(sFil);

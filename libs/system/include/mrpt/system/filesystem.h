@@ -144,20 +144,44 @@ std::string filePathSeparatorsToNative(const std::string& filePath);
 
 /** Copies file \a sourceFile to \a targetFile. If the target file exists, it
  * will be overwritten.
- *  If the target file cannot be overwritten, the function first tries to
- * change its permissions/attributes and retries opening it for write.
- *
- * \note Only for Windows: After a successful copy, if \a copyAttribs is true,
- * the attributes of the source file are also copied. Note that not all
- *   attributes can be copied:
- * http://msdn2.microsoft.com/en-us/library/aa365535.aspx
  *
  * \return true on success, false on any error, whose description can be
  * optionally get in outErrStr
+ *
+ * \note (In MRPT 2.5.0, the copyAttributes param was removed)
  */
 bool copyFile(
 	const std::string& sourceFile, const std::string& targetFile,
-	std::string* outErrStr = nullptr, bool copyAttribs = true);
+	std::string* outErrStr = nullptr);
+
+/** Portable version of std::filesystem::absolute() and canonical()
+ *
+ * If `canonical==true` relative paths, symlinks, etc. will be resolved too,
+ * but an exception will be thrown if the referenced file/path does not exist.
+ * If `canonical==true`, an absolute path will be always returned, even if does
+ * not actually exist.
+ *
+ *  \code
+ *  mrpt::system::toAbsolutePath("/home/joe"); // -> "/home/joe"
+ *  mrpt::system::toAbsolutePath("../mary"); // -> "/home/mary"
+ *  \endcode
+ *
+ *  \note (New in MRPT 2.5.0)
+ */
+std::string toAbsolutePath(
+	const std::string& path, bool resolveToCanonical = false);
+
+/** Portable version of std::filesystem::path::append(), with Python-like name.
+ *
+ *  \code
+ *  mrpt::system::pathJoin({"/home", "foo"}); // -> "/home/foo"
+ *  mrpt::system::pathJoin({"/home", "/tmp/a"}); // -> "/tmp/a"
+ *  mrpt::system::pathJoin({".", "sub","file.txt"}); // -> "./sub/file.txt"
+ *  \endcode
+ *
+ *  \note (New in MRPT 2.5.0)
+ */
+std::string pathJoin(const std::vector<std::string>& paths);
 
 /** @} */
 }  // namespace mrpt::system

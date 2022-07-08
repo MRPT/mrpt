@@ -344,7 +344,7 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 		// Reserve a float grid-map, add weight all maps
 		// -------------------------------------------------------------------------------------------
 		std::vector<float> floatMap;
-		floatMap.resize(avrg_grid->map.size(), 0);
+		floatMap.resize(avrg_grid->m_map.size(), 0);
 
 		// For each particle in the RBPF:
 		double sumW = 0;
@@ -358,14 +358,14 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 			auto grid = p.d->mapTillNow.mapByClass<COccupancyGridMap2D>(0);
 			// Variables:
 			std::vector<COccupancyGridMap2D::cellType>::iterator srcCell;
-			auto firstSrcCell = grid->map.begin();
-			auto lastSrcCell = grid->map.end();
+			auto firstSrcCell = grid->m_map.begin();
+			auto lastSrcCell = grid->m_map.end();
 			std::vector<float>::iterator destCell;
 
 			// The weight of particle:
 			float w = exp(p.log_w) / sumW;
 
-			ASSERT_(grid->map.size() == floatMap.size());
+			ASSERT_(grid->m_map.size() == floatMap.size());
 
 			// For each cell in individual maps:
 			for (srcCell = firstSrcCell, destCell = floatMap.begin();
@@ -375,9 +375,9 @@ void CMultiMetricMapPDF::rebuildAverageMap()
 
 		// Copy to fixed point map:
 		std::vector<float>::iterator srcCell;
-		auto destCell = avrg_grid->map.begin();
+		auto destCell = avrg_grid->m_map.begin();
 
-		ASSERT_(avrg_grid->map.size() == floatMap.size());
+		ASSERT_(avrg_grid->m_map.size() == floatMap.size());
 
 		for (srcCell = floatMap.begin(); srcCell != floatMap.end();
 			 srcCell++, destCell++)
