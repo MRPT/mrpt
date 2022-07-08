@@ -61,15 +61,14 @@ namespace fs = std::filesystem;
 #endif
 
 #if defined(WIN32)
-#include <string>
-#include <locale>
 #include <codecvt>
+#include <locale>
+#include <string>
 #endif
 
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace std;
-
 
 #if defined(WIN32)
 std::string ws2s(const std::wstring& wstr)
@@ -80,8 +79,10 @@ std::string ws2s(const std::wstring& wstr)
 }
 #endif
 
-// This is required since in Windows, the native representation of path -> string is std::wstring, not std::string:
-std::string p2s(const fs::path& p) {
+// This is required since in Windows, the native representation of path ->
+// string is std::wstring, not std::string:
+std::string p2s(const fs::path& p)
+{
 #if defined(WIN32)
 	return ws2s(p);
 #else
@@ -224,7 +225,7 @@ bool mrpt::system::deleteFilesInDirectory(
 		return true;
 }
 
-std::string mrpt::system::getcwd() {return p2s(fs::current_path()); }
+std::string mrpt::system::getcwd() { return p2s(fs::current_path()); }
 
 /*---------------------------------------------------------------
 					getTempFileName
