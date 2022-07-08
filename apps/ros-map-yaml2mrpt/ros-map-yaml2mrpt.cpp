@@ -75,14 +75,16 @@ int main(int argc, char** argv)
 
 		const std::string outGridFil = mrpt::system::pathJoin(
 			{outDir,
-			 mrpt::system::fileNameChangeExtension(inputFile, "gridmap.gz")});
+			 mrpt::system::fileNameChangeExtension(
+				 mrpt::system::extractFileName(inputFile), "gridmap.gz")});
 
 		std::string out3D;
 		if (argGenerate3D.isSet())
 		{
 			out3D = mrpt::system::pathJoin(
 				{outDir,
-				 mrpt::system::fileNameChangeExtension(inputFile, "3Dscene")});
+				 mrpt::system::fileNameChangeExtension(
+					 mrpt::system::extractFileName(inputFile), "3Dscene")});
 		}
 
 		if (!argQuiet.isSet())
