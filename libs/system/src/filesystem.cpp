@@ -60,20 +60,45 @@ namespace fs = std::filesystem;
 #endif
 #endif
 
+#if defined(WIN32)
+#include <string>
+#include <locale>
+#include <codecvt>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace std;
 
+
+#if defined(WIN32)
+std::string ws2s(const std::wstring& wstr)
+{
+	using convert_typeX = std::codecvt_utf8<wchar_t>;
+	std::wstring_convert<convert_typeX, wchar_t> converterX;
+	return converterX.to_bytes(wstr);
+}
+#endif
+
+// This is required since in Windows, the native representation of path -> string is std::wstring, not std::string:
+std::string p2s(const fs::path& p) {
+#if defined(WIN32)
+	return ws2s(p);
+#else
+	return p;
+#endif
+}
+
 string mrpt::system::extractFileName(const string& filePath)
 {
-	return fs::path(filePath).stem();
+	return p2s(fs::path(filePath).stem());
 }
 
 string mrpt::system::extractFileDirectory(const string& filePath)
 {
 	auto p = fs::path(filePath);
 	p.remove_filename();
-	return p;
+	return p2s(p);
 }
 
 string mrpt::system::extractFileExtension(
@@ -199,7 +224,7 @@ bool mrpt::system::deleteFilesInDirectory(
 		return true;
 }
 
-std::string mrpt::system::getcwd() { return fs::current_path(); }
+std::string mrpt::system::getcwd() {return p2s(fs::current_path()); }
 
 /*---------------------------------------------------------------
 					getTempFileName
@@ -280,7 +305,7 @@ uint64_t mrpt::system::getFileSize(const std::string& fileName)
 std::string mrpt::system::fileNameChangeExtension(
 	const std::string& filePath, const std::string& newExtension)
 {
-	return fs::path(filePath).replace_extension(fs::path(newExtension));
+	return p2s(fs::path(filePath).replace_extension(fs::path(newExtension)));
 }
 
 bool mrpt::system::copyFile(
@@ -312,7 +337,7 @@ std::string mrpt::system::filePathSeparatorsToNative(
 		if (ret[i] == '\\') ret[i] = '/';
 #endif
 	}
-	return fs::path(ret).native();
+	return p2s(fs::path(ret).native());
 }
 
 time_t mrpt::system::getFileModificationTime(const std::string& filename)
@@ -381,8 +406,8 @@ std::string mrpt::system::getShareMRPTDir()
 std::string mrpt::system::toAbsolutePath(
 	const std::string& path, bool resolveToCanonical)
 {
-	if (resolveToCanonical) return fs::canonical(fs::path(path));
-	return fs::absolute(fs::path(path));
+	if (resolveToCanonical) return p2s(fs::canonical(fs::path(path)));
+	return p2s(fs::absolute(fs::path(path)));
 }
 
 std::string mrpt::system::pathJoin(const std::vector<std::string>& paths)
@@ -391,5 +416,5 @@ std::string mrpt::system::pathJoin(const std::vector<std::string>& paths)
 	for (const auto& d : paths)
 		p.append(d);
 
-	return p;
+	return p2s(p);
 }
