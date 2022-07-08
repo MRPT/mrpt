@@ -33,15 +33,15 @@ void COccupancyGridMap2D::getAsImage(
 	{
 		if (!forceRGB)
 		{  // 8bit gray-scale
-			img.resize(size_x, size_y, mrpt::img::CH_GRAY);
-			const cellType* srcPtr = &map[0];
+			img.resize(m_size_x, m_size_y, mrpt::img::CH_GRAY);
+			const cellType* srcPtr = &m_map[0];
 			unsigned char* destPtr;
-			for (unsigned int y = 0; y < size_y; y++)
+			for (unsigned int y = 0; y < m_size_y; y++)
 			{
-				if (!verticalFlip) destPtr = img(0, size_y - 1 - y);
+				if (!verticalFlip) destPtr = img(0, m_size_y - 1 - y);
 				else
 					destPtr = img(0, y);
-				for (unsigned int x = 0; x < size_x; x++)
+				for (unsigned int x = 0; x < m_size_x; x++)
 				{
 					*destPtr++ = l2p_255(*srcPtr++);
 				}
@@ -49,15 +49,15 @@ void COccupancyGridMap2D::getAsImage(
 		}
 		else
 		{  // 24bit RGB:
-			img.resize(size_x, size_y, mrpt::img::CH_RGB);
-			const cellType* srcPtr = &map[0];
+			img.resize(m_size_x, m_size_y, mrpt::img::CH_RGB);
+			const cellType* srcPtr = &m_map[0];
 			unsigned char* destPtr;
-			for (unsigned int y = 0; y < size_y; y++)
+			for (unsigned int y = 0; y < m_size_y; y++)
 			{
-				if (!verticalFlip) destPtr = img(0, size_y - 1 - y);
+				if (!verticalFlip) destPtr = img(0, m_size_y - 1 - y);
 				else
 					destPtr = img(0, y);
-				for (unsigned int x = 0; x < size_x; x++)
+				for (unsigned int x = 0; x < m_size_x; x++)
 				{
 					uint8_t c = l2p_255(*srcPtr++);
 					*destPtr++ = c;
@@ -72,15 +72,15 @@ void COccupancyGridMap2D::getAsImage(
 		// TRICOLOR: 0, 0.5, 1
 		if (!forceRGB)
 		{  // 8bit gray-scale
-			img.resize(size_x, size_y, mrpt::img::CH_GRAY);
-			const cellType* srcPtr = &map[0];
+			img.resize(m_size_x, m_size_y, mrpt::img::CH_GRAY);
+			const cellType* srcPtr = &m_map[0];
 			unsigned char* destPtr;
-			for (unsigned int y = 0; y < size_y; y++)
+			for (unsigned int y = 0; y < m_size_y; y++)
 			{
-				if (!verticalFlip) destPtr = img(0, size_y - 1 - y);
+				if (!verticalFlip) destPtr = img(0, m_size_y - 1 - y);
 				else
 					destPtr = img(0, y);
-				for (unsigned int x = 0; x < size_x; x++)
+				for (unsigned int x = 0; x < m_size_x; x++)
 				{
 					uint8_t c = l2p_255(*srcPtr++);
 					if (c < 120) c = 0;
@@ -94,15 +94,15 @@ void COccupancyGridMap2D::getAsImage(
 		}
 		else
 		{  // 24bit RGB:
-			img.resize(size_x, size_y, mrpt::img::CH_RGB);
-			const cellType* srcPtr = &map[0];
+			img.resize(m_size_x, m_size_y, mrpt::img::CH_RGB);
+			const cellType* srcPtr = &m_map[0];
 			unsigned char* destPtr;
-			for (unsigned int y = 0; y < size_y; y++)
+			for (unsigned int y = 0; y < m_size_y; y++)
 			{
-				if (!verticalFlip) destPtr = img(0, size_y - 1 - y);
+				if (!verticalFlip) destPtr = img(0, m_size_y - 1 - y);
 				else
 					destPtr = img(0, y);
-				for (unsigned int x = 0; x < size_x; x++)
+				for (unsigned int x = 0; x < m_size_x; x++)
 				{
 					uint8_t c = l2p_255(*srcPtr++);
 					if (c < 120) c = 0;
@@ -145,21 +145,21 @@ void COccupancyGridMap2D::getVisualizationInto(
 
 	auto outObj = mrpt::opengl::CTexturedPlane::Create();
 
-	outObj->setPlaneCorners(x_min, x_max, y_min, y_max);
+	outObj->setPlaneCorners(m_xMin, m_xMax, m_yMin, m_yMax);
 
 	outObj->setLocation(0, 0, insertionOptions.mapAltitude);
 
 	// Create the color & transparecy (alpha) images:
-	CImage imgColor(size_x, size_y, mrpt::img::CH_GRAY);
-	CImage imgTrans(size_x, size_y, mrpt::img::CH_GRAY);
+	CImage imgColor(m_size_x, m_size_y, mrpt::img::CH_GRAY);
+	CImage imgTrans(m_size_x, m_size_y, mrpt::img::CH_GRAY);
 
-	const cellType* srcPtr = &map[0];
+	const cellType* srcPtr = &m_map[0];
 
-	for (unsigned int y = 0; y < size_y; y++)
+	for (unsigned int y = 0; y < m_size_y; y++)
 	{
 		unsigned char* destPtr_color = imgColor(0, y);
 		unsigned char* destPtr_trans = imgTrans(0, y);
-		for (unsigned int x = 0; x < size_x; x++)
+		for (unsigned int x = 0; x < m_size_x; x++)
 		{
 			uint8_t cell255 = l2p_255(*srcPtr++);
 			*destPtr_color++ = cell255;
@@ -183,10 +183,10 @@ void COccupancyGridMap2D::getAsPointCloud(
 	pm.reserve(1000);
 
 	// for all rows in the gridmap
-	for (size_t i = 1; i + 1 < size_x; i++)
+	for (size_t i = 1; i + 1 < m_size_x; i++)
 	{
 		// for all columns in the gridmap
-		for (size_t j = 1; j + 1 < size_y; j++)
+		for (size_t j = 1; j + 1 < m_size_y; j++)
 		{
 			// if there is an obstacle and *it is a borderline*:
 			bool is_surrounded = true;

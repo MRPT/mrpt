@@ -81,18 +81,18 @@ class COccupancyGridMap2D
 	static CLogOddsGridMapLUT<cellType>& get_logodd_lut();
 
 	/** Store of cell occupancy values. Order: row by row, from left to right */
-	std::vector<cellType> map;
+	std::vector<cellType> m_map;
 	/** The size of the grid in cells */
-	uint32_t size_x{0}, size_y{0};
+	uint32_t m_size_x = 0, m_size_y = 0;
 	/** The limits of the grid in "units" (meters) */
-	float x_min{}, x_max{}, y_min{}, y_max{};
+	float m_xMin = 0, m_xMax = 0, m_yMin = 0, m_yMax = 0;
 	/** Cell size, i.e. resolution of the grid map. */
-	float resolution{};
+	float m_resolution = 0;
 
 	/** Auxiliary variables to speed up the computation of observation
 	 * likelihood values for LF method among others, at a high cost in memory
 	 * (see TLikelihoodOptions::enableLikelihoodCache). */
-	mutable std::vector<double> precomputedLikelihood;
+	mutable std::vector<double> m_precomputedLikelihood;
 	mutable bool m_likelihoodCacheOutDated{true};
 
 	/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if
@@ -128,18 +128,18 @@ class COccupancyGridMap2D
 	/** Change the contents [0,1] of a cell, given its index */
 	inline void setCell_nocheck(int x, int y, float value)
 	{
-		map[x + y * size_x] = p2l(value);
+		m_map[x + y * m_size_x] = p2l(value);
 	}
 
 	/** Read the real valued [0,1] contents of a cell, given its index */
 	inline float getCell_nocheck(int x, int y) const
 	{
-		return l2p(map[x + y * size_x]);
+		return l2p(m_map[x + y * m_size_x]);
 	}
 	/** Changes a cell by its absolute index (Do not use it normally) */
 	inline void setRawCell(unsigned int cellIndex, cellType b)
 	{
-		if (cellIndex < size_x * size_y) map[cellIndex] = b;
+		if (cellIndex < m_size_x * m_size_y) m_map[cellIndex] = b;
 	}
 
 	/** One of the methods that can be selected for implementing
@@ -203,7 +203,7 @@ class COccupancyGridMap2D
    public:
 	/** Read-only access to the raw cell contents (cells are in log-odd units)
 	 */
-	const std::vector<cellType>& getRawMap() const { return this->map; }
+	const std::vector<cellType>& getRawMap() const { return this->m_map; }
 	/** Performs the Bayesian fusion of a new observation of a cell  \sa
 	 * updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free */
 	void updateCell(int x, int y, float v);
@@ -269,61 +269,61 @@ class COccupancyGridMap2D
 	/** Returns the area of the gridmap, in square meters */
 	inline double getArea() const
 	{
-		return size_x * size_y * mrpt::square(resolution);
+		return m_size_x * m_size_y * mrpt::square(m_resolution);
 	}
 
 	/** Returns the horizontal size of grid map in cells count */
-	inline unsigned int getSizeX() const { return size_x; }
+	inline unsigned int getSizeX() const { return m_size_x; }
 	/** Returns the vertical size of grid map in cells count */
-	inline unsigned int getSizeY() const { return size_y; }
+	inline unsigned int getSizeY() const { return m_size_y; }
 	/** Returns the "x" coordinate of left side of grid map */
-	inline float getXMin() const { return x_min; }
+	inline float getXMin() const { return m_xMin; }
 	/** Returns the "x" coordinate of right side of grid map */
-	inline float getXMax() const { return x_max; }
+	inline float getXMax() const { return m_xMax; }
 	/** Returns the "y" coordinate of top side of grid map */
-	inline float getYMin() const { return y_min; }
+	inline float getYMin() const { return m_yMin; }
 	/** Returns the "y" coordinate of bottom side of grid map */
-	inline float getYMax() const { return y_max; }
+	inline float getYMax() const { return m_yMax; }
 	/** Returns the resolution of the grid map */
-	inline float getResolution() const { return resolution; }
+	inline float getResolution() const { return m_resolution; }
 	/** Transform a coordinate value into a cell index */
 	inline int x2idx(float x) const
 	{
-		return static_cast<int>((x - x_min) / resolution);
+		return static_cast<int>((x - m_xMin) / m_resolution);
 	}
 	inline int y2idx(float y) const
 	{
-		return static_cast<int>((y - y_min) / resolution);
+		return static_cast<int>((y - m_yMin) / m_resolution);
 	}
 
 	inline int x2idx(double x) const
 	{
-		return static_cast<int>((x - x_min) / resolution);
+		return static_cast<int>((x - m_xMin) / m_resolution);
 	}
 	inline int y2idx(double y) const
 	{
-		return static_cast<int>((y - y_min) / resolution);
+		return static_cast<int>((y - m_yMin) / m_resolution);
 	}
 
 	/** Transform a cell index into a coordinate value */
 	inline float idx2x(const size_t cx) const
 	{
-		return x_min + (cx + 0.5f) * resolution;
+		return m_xMin + (cx + 0.5f) * m_resolution;
 	}
 	inline float idx2y(const size_t cy) const
 	{
-		return y_min + (cy + 0.5f) * resolution;
+		return m_yMin + (cy + 0.5f) * m_resolution;
 	}
 
 	/** Transform a coordinate value into a cell index, using a diferent "x_min"
 	 * value */
 	inline int x2idx(float x, float xmin) const
 	{
-		return static_cast<int>((x - xmin) / resolution);
+		return static_cast<int>((x - xmin) / m_resolution);
 	}
 	inline int y2idx(float y, float ymin) const
 	{
-		return static_cast<int>((y - ymin) / resolution);
+		return static_cast<int>((y - ymin) / m_resolution);
 	}
 
 	/** Scales an integer representation of the log-odd into a real valued
@@ -348,40 +348,40 @@ class COccupancyGridMap2D
 	inline void setCell(int x, int y, float value)
 	{
 		// The x> comparison implicitly holds if x<0
-		if (static_cast<unsigned int>(x) >= size_x ||
-			static_cast<unsigned int>(y) >= size_y)
+		if (static_cast<unsigned int>(x) >= m_size_x ||
+			static_cast<unsigned int>(y) >= m_size_y)
 			return;
 		else
-			map[x + y * size_x] = p2l(value);
+			m_map[x + y * m_size_x] = p2l(value);
 	}
 
 	/** Read the real valued [0,1] contents of a cell, given its index */
 	inline float getCell(int x, int y) const
 	{
 		// The x> comparison implicitly holds if x<0
-		if (static_cast<unsigned int>(x) >= size_x ||
-			static_cast<unsigned int>(y) >= size_y)
+		if (static_cast<unsigned int>(x) >= m_size_x ||
+			static_cast<unsigned int>(y) >= m_size_y)
 			return 0.5f;
 		else
-			return l2p(map[x + y * size_x]);
+			return l2p(m_map[x + y * m_size_x]);
 	}
 
 	/** Access to a "row": mainly used for drawing grid as a bitmap efficiently,
 	 * do not use it normally */
 	inline cellType* getRow(int cy)
 	{
-		if (cy < 0 || static_cast<unsigned int>(cy) >= size_y) return nullptr;
+		if (cy < 0 || static_cast<unsigned int>(cy) >= m_size_y) return nullptr;
 		else
-			return &map[0 + cy * size_x];
+			return &m_map[0 + cy * m_size_x];
 	}
 
 	/** Access to a "row": mainly used for drawing grid as a bitmap efficiently,
 	 * do not use it normally */
 	inline const cellType* getRow(int cy) const
 	{
-		if (cy < 0 || static_cast<unsigned int>(cy) >= size_y) return nullptr;
+		if (cy < 0 || static_cast<unsigned int>(cy) >= m_size_y) return nullptr;
 		else
-			return &map[0 + cy * size_x];
+			return &m_map[0 + cy * m_size_x];
 	}
 
 	/** Change the contents [0,1] of a cell, given its coordinates */
@@ -990,7 +990,7 @@ class COccupancyGridMap2D
 			const typename CLANDMARKSMAP::landmark_type* lm =
 				landmarks->landmarks.get(i);
 			int px = x2idx(lm->pose_mean.x);
-			int py = topleft ? size_y - 1 - y2idx(lm->pose_mean.y)
+			int py = topleft ? m_size_y - 1 - y2idx(lm->pose_mean.y)
 							 : y2idx(lm->pose_mean.y);
 			img.rectangle(px - 7, (py + 7), px + 7, (py - 7), marks_color);
 			img.rectangle(px - 6, (py + 6), px + 6, (py - 6), marks_color);
@@ -1068,6 +1068,38 @@ class COccupancyGridMap2D
 		const mrpt::math::TPoint2D& origin = mrpt::math::TPoint2D(
 			std::numeric_limits<double>::max(),
 			std::numeric_limits<double>::max()));
+
+	/** Loads this gridmap from a .yaml file and an accompanying image file
+	 *  given in the
+	 *  [map_server YAML](http://wiki.ros.org/map_server#YAML_format) file
+	 *  format.
+	 *
+	 * \param yamlFilePath Absolute or relative path to the `.yaml` file.
+	 *
+	 * \return false on error, true on success.
+	 * \sa FromROSMapServerYAML()
+	 */
+	bool loadFromROSMapServerYAML(const std::string& yamlFilePath);
+
+	/** Creates a gridmap from a .yaml file and an accompanying image file
+	 *  given in the
+	 *  [map_server YAML](http://wiki.ros.org/map_server#YAML_format) file
+	 *  format.
+	 *
+	 * \param yamlFilePath Absolute or relative path to the `.yaml` file.
+	 *
+	 * \sa loadFromROSMapServerYAML()
+	 * \exception std::exception On error loading or parsing the files.
+	 */
+	static COccupancyGridMap2D FromROSMapServerYAML(
+		const std::string& yamlFilePath)
+	{
+		COccupancyGridMap2D grid;
+		if (!grid.loadFromROSMapServerYAML(yamlFilePath))
+			THROW_EXCEPTION_FMT(
+				"Error loading gridmap from '%s'", yamlFilePath.c_str());
+		return grid;
+	}
 
 	/** See the base class for more details: In this class it is implemented as
 	 * correspondences of the passed points map to occupied cells.

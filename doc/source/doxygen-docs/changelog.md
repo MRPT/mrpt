@@ -1,13 +1,21 @@
 \page changelog Change Log
 
 # Version 2.5.0: UNRELEASED
+- Changes in applications:
+  - New application:
+    - ros-map-yaml2mrpt: CLI tool to import ROS map_server maps into MRPT formats.
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CMesh supports having (x,y) limits with `maxCoord<minCoord` for flipped elevation and image meshes.
   - \ref mrpt_poses_grp
     - Add correct displacement covariance calculation between two poses with cross-correlation via new method mrpt::poses::CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation() (Closes [#1242](https://github.com/MRPT/mrpt/issues/1242))
+  - \ref mrpt_system_grp
+    - New funtions mrpt::system::toAbsolutePath(), mrpt::system::pathJoin()
+    - Most functions in \ref filesystem ported to C++17 std::filesystem
   - \ref mrpt_tfest_grp
     - New method TMatchingPairList::overallSquareError() for SE(3) poses (CPose3D).
+  - Deprecated:
+    - The following macros, which were already deprecated, have been removed:  ASSERT_BELOW_, ASSERT_ABOVE_(), ASSERT_BELOWEQ_(), ASSERT_ABOVEEQ_()
 
 # Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:
