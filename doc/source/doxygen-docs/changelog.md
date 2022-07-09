@@ -14,8 +14,10 @@
     - Most functions in \ref filesystem ported to C++17 std::filesystem
   - \ref mrpt_tfest_grp
     - New method TMatchingPairList::overallSquareError() for SE(3) poses (CPose3D).
-  - Deprecated:
-    - The following macros, which were already deprecated, have been removed:  ASSERT_BELOW_, ASSERT_ABOVE_(), ASSERT_BELOWEQ_(), ASSERT_ABOVEEQ_()
+- Deprecations:
+    - The following macros, which were already deprecated, have been removed:  `ASSERT_BELOW_`, `ASSERT_ABOVE_()`, `ASSERT_BELOWEQ_()`, `ASSERT_ABOVEEQ_()`
+- Build system:
+  - Update fallback embedded version of octomap to v1.9.6
 
 # Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:
