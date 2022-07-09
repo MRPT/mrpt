@@ -50,10 +50,12 @@ jobs:
         run: |
           choco install --verbose qt5-default
           
-      - name: Install doxygen+graphviz
-        run: |
-          choco install --verbose doxygen 
-          choco install --verbose graphviz
+      # (Jul 2022: Disabled since find_package(Doxygen) in Octomap leads to 
+      #  internal Doxygen.exe errors leading to CI failure)
+      #- name: Install doxygen+graphviz
+      #  run: |
+      #    choco install --verbose doxygen 
+      #    choco install --verbose graphviz
 
       - name: Checkout
         uses: actions/checkout@v2
