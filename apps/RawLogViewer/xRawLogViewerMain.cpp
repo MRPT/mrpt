@@ -9,6 +9,7 @@
 
 #include "xRawLogViewerMain.h"
 
+#include <mrpt/containers/find_closest.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/about_box.h>
@@ -6695,55 +6696,6 @@ void xRawLogViewerFrame::OnTimeLineMouseRightDown(wxMouseEvent& e)
 void xRawLogViewerFrame::OnTimeLineMouseRightUp(wxMouseEvent& e)
 {
 	//
-}
-
-template <typename Container>
-std::optional<typename Container::key_type> find_closest_with_tolerance(
-	const Container& data, const double x, double tolerance)
-{
-	const auto t_min = x - tolerance;
-	const auto t_max = x + tolerance;
-
-	auto it_lo = data.lower_bound(t_min);
-	auto it_hi = data.upper_bound(t_max);
-
-	double min_distance = std::numeric_limits<double>::max();
-	std::optional<typename Container::mapped_type> best;
-
-	for (auto it = it_lo; it != it_hi; ++it)
-	{
-		const auto dist = std::abs(it->first - x);
-		if (dist < min_distance)
-		{
-			min_distance = dist;
-			best = it->second;
-		}
-	}
-
-	return best;
-}
-
-template <typename Container>
-std::optional<typename Container::key_type> find_closest(
-	const Container& data, const double x)
-{
-	auto it_lo = data.lower_bound(t_min);
-	auto it_hi = data.upper_bound(t_max);
-
-	double min_distance = std::numeric_limits<double>::max();
-	std::optional<typename Container::mapped_type> best;
-
-	for (auto it = it_lo; it != it_hi; ++it)
-	{
-		const auto dist = std::abs(it->first - x);
-		if (dist < min_distance)
-		{
-			min_distance = dist;
-			best = it->second;
-		}
-	}
-
-	return best;
 }
 
 std::optional<std::pair<double, size_t>>
