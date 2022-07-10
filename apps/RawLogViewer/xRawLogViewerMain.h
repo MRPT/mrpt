@@ -365,7 +365,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem38;
 	wxMenuItem* MenuItem3;
 	wxCustomButton* Button3;
-	CRawlogTreeView* tree_view;
+	CRawlogTreeView* m_treeView;
 	wxMenuItem* MenuItem64;
 	wxStaticBitmapPopup* bmp3Dobs_int;
 	wxTextCtrl* memo;
@@ -478,6 +478,10 @@ class xRawLogViewerFrame : public wxFrame
 	};
 
 	TimeLineData m_timeline;
+
+	/// Return (xsTime, TreeIndex) in xs2treeIndices, none if no match:
+	std::optional<std::pair<double, size_t>> timeLineMouseXToTreeIndex(
+		const wxMouseEvent& e) const;
 
 	// ALWAYS access this inside a "try" block, just in case...
 	mrpt::obs::CObservation::Ptr m_selectedObj;

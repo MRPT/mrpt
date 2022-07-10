@@ -116,6 +116,8 @@ class CRawlogTreeView : public wxScrolledWindow
 
 	const std::vector<TNodeData>& treeNodes() const { return m_tree_nodes; }
 
+	bool isItemIndexVisible(size_t idx) const;
+
    protected:
 	void OnDrawImpl(wxDC& dc);
 

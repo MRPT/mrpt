@@ -223,6 +223,11 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 	}
 }
 
+bool CRawlogTreeView::isItemIndexVisible(size_t idx) const
+{
+	return idx >= m_firstVisibleItem && idx <= m_lastVisibleItem;
+}
+
 void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 {
 	// The origin of the window:
