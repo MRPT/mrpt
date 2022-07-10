@@ -28,19 +28,19 @@ TEST(find_closest, testStdMap)
 	{
 		auto ret = mrpt::containers::find_closest(data, 1.0);
 		EXPECT_TRUE(ret.has_value());
-		EXPECT_EQ(ret.value(), 'A');
+		EXPECT_EQ(ret.value().second, 'A');
 	}
 	{
 		auto ret = mrpt::containers::find_closest(data, 1.4f);
 		EXPECT_TRUE(ret.has_value());
-		EXPECT_EQ(ret.value(), 'A');
+		EXPECT_EQ(ret.value().second, 'A');
 	}
-	EXPECT_EQ(mrpt::containers::find_closest(data, -100.0).value(), 'A');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 2.1).value(), 'B');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 2.45).value(), 'B');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 2.55).value(), 'C');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 90).value(), 'Z');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 1190).value(), 'Z');
+	EXPECT_EQ(mrpt::containers::find_closest(data, -100.0).value().second, 'A');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 2.1).value().second, 'B');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 2.45).value().second, 'B');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 2.55).value().second, 'C');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 90).value().second, 'Z');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 1190).value().second, 'Z');
 }
 
 TEST(find_closest, testStdMultiMap)
@@ -51,19 +51,19 @@ TEST(find_closest, testStdMultiMap)
 	{
 		auto ret = mrpt::containers::find_closest(data, 1.0);
 		EXPECT_TRUE(ret.has_value());
-		EXPECT_EQ(ret.value(), 'A');
+		EXPECT_EQ(ret.value().second, 'A');
 	}
 	{
 		auto ret = mrpt::containers::find_closest(data, 1.4f);
 		EXPECT_TRUE(ret.has_value());
-		EXPECT_EQ(ret.value(), 'A');
+		EXPECT_EQ(ret.value().second, 'A');
 	}
-	EXPECT_EQ(mrpt::containers::find_closest(data, -100.0).value(), 'A');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 2.1).value(), 'B');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 2.45).value(), 'B');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 2.55).value(), 'C');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 90).value(), 'Z');
-	EXPECT_EQ(mrpt::containers::find_closest(data, 1190).value(), 'Z');
+	EXPECT_EQ(mrpt::containers::find_closest(data, -100.0).value().second, 'A');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 2.1).value().second, 'B');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 2.45).value().second, 'B');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 2.55).value().second, 'C');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 90).value().second, 'Z');
+	EXPECT_EQ(mrpt::containers::find_closest(data, 1190).value().second, 'Z');
 }
 
 TEST(find_closest_with_tolerance, testStdMap)
@@ -83,28 +83,37 @@ TEST(find_closest_with_tolerance, testStdMap)
 		auto ret =
 			mrpt::containers::find_closest_with_tolerance(data, 1.0, 0.1);
 		EXPECT_TRUE(ret.has_value());
-		EXPECT_EQ(ret.value(), 'A');
+		EXPECT_EQ(ret.value().second, 'A');
 	}
 
 	EXPECT_FALSE(mrpt::containers::find_closest_with_tolerance(data, 0.9, 0.09)
 					 .has_value());
 	EXPECT_EQ(
-		mrpt::containers::find_closest_with_tolerance(data, 0.9, 0.11).value(),
+		mrpt::containers::find_closest_with_tolerance(data, 0.9, 0.11)
+			.value()
+			.second,
 		'A');
 	EXPECT_EQ(
 		mrpt::containers::find_closest_with_tolerance(data, 0.9f, 0.11f)
-			.value(),
+			.value()
+			.second,
 		'A');
 
 	EXPECT_EQ(
-		mrpt::containers::find_closest_with_tolerance(data, 1.0, 0.0).value(),
+		mrpt::containers::find_closest_with_tolerance(data, 1.0, 0.0)
+			.value()
+			.second,
 		'A');
 
 	EXPECT_EQ(
-		mrpt::containers::find_closest_with_tolerance(data, 2.4f, 0.5f).value(),
+		mrpt::containers::find_closest_with_tolerance(data, 2.4f, 0.5f)
+			.value()
+			.second,
 		'B');
 	EXPECT_EQ(
-		mrpt::containers::find_closest_with_tolerance(data, 2.6f, 0.5f).value(),
+		mrpt::containers::find_closest_with_tolerance(data, 2.6f, 0.5f)
+			.value()
+			.second,
 		'C');
 	EXPECT_FALSE(mrpt::containers::find_closest_with_tolerance(data, 2.6f, 0.3f)
 					 .has_value());
@@ -112,6 +121,8 @@ TEST(find_closest_with_tolerance, testStdMap)
 	EXPECT_FALSE(mrpt::containers::find_closest_with_tolerance(data, 200, 10)
 					 .has_value());
 	EXPECT_EQ(
-		mrpt::containers::find_closest_with_tolerance(data, 200, 110).value(),
+		mrpt::containers::find_closest_with_tolerance(data, 200, 110)
+			.value()
+			.second,
 		'Z');
 }
