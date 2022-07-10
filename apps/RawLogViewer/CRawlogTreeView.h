@@ -109,6 +109,7 @@ class CRawlogTreeView : public wxScrolledWindow
 		size_t index = 0;
 
 		std::optional<mrpt::Clock::time_point> timestamp;
+		std::optional<std::string> sensorLabel;
 	};
 
 	size_t m_firstVisibleItem = 0, m_lastVisibleItem = 0;

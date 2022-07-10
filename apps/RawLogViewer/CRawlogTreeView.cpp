@@ -152,8 +152,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 		size_t rawlog_index = 0;
 		for (const auto& entry : *m_rawlog)
 		{
-			m_tree_nodes.emplace_back();
-			TNodeData& dEntry = m_tree_nodes.back();
+			TNodeData& dEntry = m_tree_nodes.emplace_back();
 			dEntry.level = 1;
 			dEntry.data = entry;
 			dEntry.index = rawlog_index;
@@ -163,12 +162,12 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				for (auto& o : *sf)
 				{
-					m_tree_nodes.emplace_back();
-					TNodeData& dSF = m_tree_nodes.back();
-					dSF.level = 2;
-					dSF.data = o;
+					TNodeData& dObs = m_tree_nodes.emplace_back();
+					dObs.level = 2;
+					dObs.data = o;
 					lambdaCheckTimestamp(o->timestamp);
-					dSF.timestamp = o->timestamp;
+					dObs.timestamp = o->timestamp;
+					dObs.sensorLabel = o->sensorLabel;
 
 					if (!dEntry.timestamp.has_value())
 						dEntry.timestamp = o->timestamp;
@@ -180,8 +179,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				for (auto& a : *acts)
 				{
-					m_tree_nodes.emplace_back();
-					TNodeData& dAC = m_tree_nodes.back();
+					TNodeData& dAC = m_tree_nodes.emplace_back();
 					dAC.level = 2;
 					dAC.data = a.get_ptr();
 
@@ -196,6 +194,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				lambdaCheckTimestamp(o->timestamp);
 				dEntry.timestamp = o->timestamp;
+				dEntry.sensorLabel = o->sensorLabel;
 			}
 
 			rawlog_index++;
