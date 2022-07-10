@@ -656,10 +656,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer2 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer2->AddGrowableCol(0);
 	FlexGridSizer2->AddGrowableRow(0);
-	tree_view = new CRawlogTreeView(
+	m_treeView = new CRawlogTreeView(
 		Panel1, ID_CUSTOM5, wxDefaultPosition, wxDefaultSize, wxVSCROLL,
 		_T("ID_CUSTOM5"));
-	FlexGridSizer2->Add(tree_view, 1, wxALL | wxEXPAND);
+	FlexGridSizer2->Add(m_treeView, 1, wxALL | wxEXPAND);
 	Panel1->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->SetSizeHints(Panel1);
 	Panel2 = new wxPanel(
@@ -1620,10 +1620,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	imgList->Add(wxIcon(tree_icon11_xpm));
 	imgList->Add(wxIcon(tree_icon12_xpm));
 
-	tree_view->AssignImageList(imgList);
+	m_treeView->AssignImageList(imgList);
 
-	tree_view->ConnectSelectedItemChange(OntreeViewSelectionChanged);
-	tree_view->setWinParent(this);
+	m_treeView->ConnectSelectedItemChange(OntreeViewSelectionChanged);
+	m_treeView->setWinParent(this);
 
 	// Force this menu item starts checked.
 	mnuItemEnable3DCamAutoGenPoints->Check(true);
@@ -2199,8 +2199,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 	listOfSensorLabels.clear();
 
 	// Refresh the custom tree view:
-	tree_view->setRawlogName(loadedFileName);
-	tree_view->setRawlogSource(&rawlog);
+	m_treeView->setRawlogName(loadedFileName);
+	m_treeView->setRawlogSource(&rawlog);
 
 	// Does this need to be so complicated? -> Yes: In Linux (UNICODE) the
 	// straightforward
@@ -2345,12 +2345,12 @@ void xRawLogViewerFrame::rebuildTreeView()
 	memStats->AppendText(format(
 		"Traveled distance (from odometry) : %.02f meters\n", totalDistance));
 
-	if (tree_view->getFirstTimestamp() != INVALID_TIMESTAMP)
+	if (m_treeView->getFirstTimestamp() != INVALID_TIMESTAMP)
 	{
-		rawlog_first_timestamp = tree_view->getFirstTimestamp();
+		rawlog_first_timestamp = m_treeView->getFirstTimestamp();
 		memStats->AppendText(format(
 			"Dataset first time-stamp (UTC)    : %s\n",
-			mrpt::system::dateTimeToString(tree_view->getFirstTimestamp())
+			mrpt::system::dateTimeToString(m_treeView->getFirstTimestamp())
 				.c_str()));
 	}
 
@@ -2402,7 +2402,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 	memStats->ShowPosition(0);
 
 	SelectObjectInTreeView(CSerializable::Ptr());
-	tree_view->Refresh();
+	m_treeView->Refresh();
 
 	// -----------------------------------------
 	// Rebuild bottom timeline view
@@ -2560,9 +2560,9 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	tl.treeIndices2xs.clear();
 	{
 		double lastX = -2;	// actual coords go in [-1,1]
-		for (size_t idx = 0; idx < tree_view->getTotalTreeNodes(); idx++)
+		for (size_t idx = 0; idx < m_treeView->getTotalTreeNodes(); idx++)
 		{
-			const auto& tim = tree_view->treeNodes()[idx].timestamp;
+			const auto& tim = m_treeView->treeNodes()[idx].timestamp;
 			if (!tim.has_value()) continue;
 
 			const double t = mrpt::Clock::toDouble(*tim);
@@ -2617,15 +2617,15 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 
 	// percent of view:
 	double pc0 = 0, pc1 = 0;
-	if (const double nItems = tree_view->getTotalTreeNodes(); nItems > 2)
+	if (const double nItems = m_treeView->getTotalTreeNodes(); nItems > 2)
 	{
-		pc0 = tree_view->m_firstVisibleItem / static_cast<double>(nItems - 1);
-		pc1 = tree_view->m_lastVisibleItem / static_cast<double>(nItems - 1);
+		pc0 = m_treeView->m_firstVisibleItem / static_cast<double>(nItems - 1);
+		pc1 = m_treeView->m_lastVisibleItem / static_cast<double>(nItems - 1);
 	}
 
 	// visible page shaded area:
 	if (auto itIdx = m_timeline.treeIndices2xs.lower_bound(
-			tree_view->m_firstVisibleItem);
+			m_treeView->m_firstVisibleItem);
 		itIdx != m_timeline.treeIndices2xs.end())
 	{
 		double xVisPage0 = itIdx->second;  // the "x"
@@ -2644,7 +2644,7 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 
 	// selected cursor line:
 	if (auto itIdxCursor =
-			m_timeline.treeIndices2xs.find(tree_view->GetSelectedItem());
+			m_timeline.treeIndices2xs.find(m_treeView->GetSelectedItem());
 		itIdxCursor != m_timeline.treeIndices2xs.end())
 	{
 		const double cursorWidth = px2width(CURSOR_WIDTH_PIXELS);
@@ -5861,7 +5861,7 @@ void xRawLogViewerFrame::OnComboImageDirsChange(wxCommandEvent&)
 		// wxMessageBox( _("The current directory for external images has
 		// been set to:\n")+dir , _("External images"));
 
-		tree_view->SetSelectedItem(tree_view->GetSelectedItem(), true);
+		m_treeView->SetSelectedItem(m_treeView->GetSelectedItem(), true);
 	}
 	else
 	{
@@ -6646,27 +6646,17 @@ void xRawLogViewerFrame::On3DObsPagesChange(wxBookCtrlEvent& event)
 
 void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(wxMouseEvent& e)
 {
-	const auto clsz = m_glTimeLine->GetClientSize();
+	std::optional<std::pair<double, size_t>> selPt =
+		timeLineMouseXToTreeIndex(e);
 
-	const int mouseX = e.GetX();
-	if (mouseX < 0 || mouseX >= clsz.GetWidth()) return;
-
-	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
-
-	double clickedX = px2x(mouseX);
-
-	if (const auto itLow = m_timeline.xs2treeIndices.lower_bound(clickedX);
-		itLow != m_timeline.xs2treeIndices.end())
+	if (selPt.has_value())
 	{
-		auto treeIndex = itLow->second;
+		auto treeIndex = selPt->second;
 
-		mrpt::keep_max(treeIndex, 0U);
-		mrpt::keep_min(treeIndex, tree_view->getTotalTreeNodes() - 1);
-
-		tree_view->m_is_thumb_tracking = true;
-		tree_view->ScrollToPercent(
+		m_treeView->m_is_thumb_tracking = true;
+		m_treeView->ScrollToPercent(
 			treeIndex /
-			static_cast<double>(tree_view->getTotalTreeNodes() - 1));
+			static_cast<double>(m_treeView->getTotalTreeNodes() - 1));
 	}
 }
 
@@ -6677,12 +6667,26 @@ void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)
 }
 void xRawLogViewerFrame::OnTimeLineMouseLeftDown(wxMouseEvent& e)
 {
-	OnTimeLineDoScrollToMouseX(e);
+	std::optional<std::pair<double, size_t>> selPt =
+		timeLineMouseXToTreeIndex(e);
+
+	if (selPt.has_value())
+	{
+		auto treeIndex = selPt->second;
+
+		m_treeView->SetSelectedItem(treeIndex);
+		if (!m_treeView->isItemIndexVisible(treeIndex))
+		{
+			m_treeView->ScrollToPercent(
+				treeIndex /
+				static_cast<double>(m_treeView->getTotalTreeNodes() - 1));
+		}
+	}
 }
 void xRawLogViewerFrame::OnTimeLineMouseLeftUp(wxMouseEvent& e)
 {
-	tree_view->m_is_thumb_tracking = false;
-	tree_view->Refresh();
+	m_treeView->m_is_thumb_tracking = false;
+	m_treeView->Refresh();
 }
 void xRawLogViewerFrame::OnTimeLineMouseRightDown(wxMouseEvent& e)
 {
@@ -6691,4 +6695,83 @@ void xRawLogViewerFrame::OnTimeLineMouseRightDown(wxMouseEvent& e)
 void xRawLogViewerFrame::OnTimeLineMouseRightUp(wxMouseEvent& e)
 {
 	//
+}
+
+template <typename Container>
+std::optional<typename Container::key_type> find_closest_with_tolerance(
+	const Container& data, const double x, double tolerance)
+{
+	const auto t_min = x - tolerance;
+	const auto t_max = x + tolerance;
+
+	auto it_lo = data.lower_bound(t_min);
+	auto it_hi = data.upper_bound(t_max);
+
+	double min_distance = std::numeric_limits<double>::max();
+	std::optional<typename Container::mapped_type> best;
+
+	for (auto it = it_lo; it != it_hi; ++it)
+	{
+		const auto dist = std::abs(it->first - x);
+		if (dist < min_distance)
+		{
+			min_distance = dist;
+			best = it->second;
+		}
+	}
+
+	return best;
+}
+
+template <typename Container>
+std::optional<typename Container::key_type> find_closest(
+	const Container& data, const double x)
+{
+	auto it_lo = data.lower_bound(t_min);
+	auto it_hi = data.upper_bound(t_max);
+
+	double min_distance = std::numeric_limits<double>::max();
+	std::optional<typename Container::mapped_type> best;
+
+	for (auto it = it_lo; it != it_hi; ++it)
+	{
+		const auto dist = std::abs(it->first - x);
+		if (dist < min_distance)
+		{
+			min_distance = dist;
+			best = it->second;
+		}
+	}
+
+	return best;
+}
+
+std::optional<std::pair<double, size_t>>
+	xRawLogViewerFrame::timeLineMouseXToTreeIndex(const wxMouseEvent& e) const
+{
+	const auto clsz = m_glTimeLine->GetClientSize();
+
+	const int mouseX = e.GetX();
+	if (mouseX < 0 || mouseX >= clsz.GetWidth()) return {};
+
+	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
+
+	double clickedX = px2x(mouseX);
+
+	const auto itNext = m_timeline.xs2treeIndices.lower_bound(clickedX);
+	const auto itPrev = m_timeline.xs2treeIndices.upper_bound(clickedX);
+
+	if (itLow != m_timeline.xs2treeIndices.end())
+	{  //
+		auto treeIndex = itLow->second;
+
+		mrpt::keep_max(treeIndex, 0U);
+		mrpt::keep_min(treeIndex, m_treeView->getTotalTreeNodes() - 1);
+
+		return {{itLow->first, treeIndex}};
+	}
+	else
+	{
+		return {};
+	}
 }

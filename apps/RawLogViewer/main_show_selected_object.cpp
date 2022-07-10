@@ -129,10 +129,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			mrpt::system::dateTimeLocalToString(*obsStamp).c_str(),
 			mrpt::Clock::toDouble(*obsStamp));
 
-		if (tree_view->getFirstTimestamp() != INVALID_TIMESTAMP)
+		if (m_treeView->getFirstTimestamp() != INVALID_TIMESTAMP)
 		{
 			const double posInSeconds = mrpt::system::timeDifference(
-				tree_view->getFirstTimestamp(), *obsStamp);
+				m_treeView->getFirstTimestamp(), *obsStamp);
 
 			s += wxString::Format(
 				"Since rawlog beginning: %.03f [s]\n", posInSeconds);
