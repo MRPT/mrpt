@@ -10,6 +10,8 @@
 #include <mrpt/containers/find_closest.h>
 //#include <mrpt/system/CTimeLogger.h>
 
+#include <wx/tooltip.h>
+
 #include "xRawLogViewerMain.h"
 
 constexpr int TL_BORDER = 2;  // pixels
@@ -65,8 +67,7 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 
 		// timeline opengl area events:
 		m_glTimeLine->Bind(wxEVT_MOTION, &This::OnTimeLineMouseMove, this);
-		m_glTimeLine->Bind(
-			wxEVT_LEFT_DOWN, &This::OnTimeLineMouseLeftDown, this);
+		m_glTimeLine->Bind(wxEVT_LEFT_DOWN, &This::OnTimeLineMouseMove, this);
 		m_glTimeLine->Bind(wxEVT_LEFT_UP, &This::OnTimeLineMouseLeftUp, this);
 		m_glTimeLine->Bind(
 			wxEVT_RIGHT_DOWN, &This::OnTimeLineMouseRightDown, this);
@@ -381,11 +382,9 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 	// DONT: wxTheApp->Yield();
 }
 
-void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(wxMouseEvent& e)
+void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(
+	const std::optional<std::pair<double, size_t>>& selPt)
 {
-	std::optional<std::pair<double, size_t>> selPt =
-		timeLineMouseXYToTreeIndex(e);
-
 	if (selPt.has_value())
 	{
 		auto treeIndex = selPt->second;
@@ -399,14 +398,15 @@ void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(wxMouseEvent& e)
 
 void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)
 {
-	if (e.RightIsDown()) { OnTimeLineDoScrollToMouseX(e); }
-	if (e.LeftIsDown()) { OnTimeLineMouseLeftDown(e); }
-}
-void xRawLogViewerFrame::OnTimeLineMouseLeftDown(wxMouseEvent& e)
-{
 	std::optional<std::pair<double, size_t>> selPt =
 		timeLineMouseXYToTreeIndex(e);
 
+	if (e.RightIsDown()) { OnTimeLineDoScrollToMouseX(selPt); }
+	if (e.LeftIsDown()) { OnTimeLineMouseLeftDown(selPt); }
+}
+void xRawLogViewerFrame::OnTimeLineMouseLeftDown(
+	const std::optional<std::pair<double, size_t>>& selPt)
+{
 	if (selPt.has_value())
 	{
 		auto treeIndex = selPt->second;
@@ -425,13 +425,13 @@ void xRawLogViewerFrame::OnTimeLineMouseLeftUp(wxMouseEvent&)
 	m_treeView->m_is_thumb_tracking = false;
 	m_treeView->Refresh();
 }
-void xRawLogViewerFrame::OnTimeLineMouseRightDown(wxMouseEvent&)
+void xRawLogViewerFrame::OnTimeLineMouseRightDown(wxMouseEvent& e)
 {
-	//
+	OnTimeLineMouseMove(e);
 }
-void xRawLogViewerFrame::OnTimeLineMouseRightUp(wxMouseEvent&)
+void xRawLogViewerFrame::OnTimeLineMouseRightUp(wxMouseEvent& e)
 {
-	//
+	OnTimeLineMouseLeftUp(e);
 }
 
 std::optional<std::pair<double, size_t>>
@@ -456,6 +456,8 @@ std::optional<std::pair<double, size_t>>
 		m_timeline.yCoordToSensorLabel, clickedY,
 		TL_CLICK_SENSOR_LABEL_VERTICAL_TOLERANCE);
 
+	std::string matchedClickSensorLabel;
+
 	if (auto closestXIdx =
 			mrpt::containers::find_closest(m_timeline.xs2treeIndices, clickedX);
 		closestXIdx.has_value())
@@ -474,7 +476,7 @@ std::optional<std::pair<double, size_t>>
 			const int lastIdx = m_treeView->getTotalTreeNodes() - 1;
 
 			const auto lambdaTest = [&treeIndex, this, clickedSensorLabel,
-									 lastIdx](int i) {
+									 lastIdx, &matchedClickSensorLabel](int i) {
 				if (i < 0) return false;
 				if (i > lastIdx) return false;
 
@@ -484,7 +486,11 @@ std::optional<std::pair<double, size_t>>
 
 				bool found = sl.value() == clickedSensorLabel;
 
-				if (found) treeIndex = i;  // keep best match.
+				if (found)
+				{
+					treeIndex = i;	// keep best match.
+					matchedClickSensorLabel = clickedSensorLabel;
+				}
 
 				return found;
 			};
@@ -496,6 +502,17 @@ std::optional<std::pair<double, size_t>>
 				if (bool found = lambdaTest(ti0 + dist); found) break;
 				if (bool found = lambdaTest(ti0 - dist); found) break;
 			}
+		}
+
+		if (!matchedClickSensorLabel.empty())
+		{
+			m_glTimeLine->SetToolTip(matchedClickSensorLabel);
+			m_glTimeLine->GetToolTip()->SetReshow(10);
+			m_glTimeLine->GetToolTip()->SetDelay(10);
+		}
+		else
+		{
+			m_glTimeLine->UnsetToolTip();
 		}
 
 		// Search "x" in the treeIndices2xs again for the case where treeIndex
