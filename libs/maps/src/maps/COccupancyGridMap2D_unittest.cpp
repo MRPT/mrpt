@@ -38,7 +38,7 @@ TEST(COccupancyGridMap2DTests, insert2DScan)
 }
 
 // We need OPENCV to read the image.
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_HAS_FYAML
 
 TEST(COccupancyGridMap2DTests, loadFromROSMapServerYAML)
 {

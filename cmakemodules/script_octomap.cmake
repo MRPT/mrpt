@@ -36,11 +36,11 @@ if (NOT OCTOMAP_FOUND)
 		if (EXISTS "${MRPT_SOURCE_DIR}/3rdparty/octomap.zip")
 			set(OCTOMAP_EP_URL "${MRPT_SOURCE_DIR}/3rdparty/octomap.zip")
 		else()
-			set(OCTOMAP_EP_URL "https://github.com/OctoMap/octomap/archive/v1.9.1.zip")
+			set(OCTOMAP_EP_URL "https://github.com/OctoMap/octomap/archive/v1.9.6.zip")
 		endif()
 
 		ExternalProject_Add(EP_octomap
-		  URL               "${OCTOMAP_EP_URL}" #TO-DO: Switch back to original repo after next stable release.
+		  URL               "${OCTOMAP_EP_URL}"
 		  SOURCE_DIR        "${MRPT_BINARY_DIR}/3rdparty/octomap/"
 		  CMAKE_ARGS
 			-DBUILD_TESTING=OFF
