@@ -101,9 +101,9 @@ CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>&
   ---------------------------------------------------------------*/
 COccupancyGridMap2D::COccupancyGridMap2D(
 	float min_x, float max_x, float min_y, float max_y, float res)
-	: map(),
+	: m_map(),
 
-	  precomputedLikelihood(),
+	  m_precomputedLikelihood(),
 
 	  m_basis_map(),
 	  m_voronoi_diagram(),
@@ -122,14 +122,14 @@ COccupancyGridMap2D::COccupancyGridMap2D(
 void COccupancyGridMap2D::copyMapContentFrom(const COccupancyGridMap2D& o)
 {
 	freeMap();
-	resolution = o.resolution;
-	x_min = o.x_min;
-	x_max = o.x_max;
-	y_min = o.y_min;
-	y_max = o.y_max;
-	size_x = o.size_x;
-	size_y = o.size_y;
-	map = o.map;
+	m_resolution = o.m_resolution;
+	m_xMin = o.m_xMin;
+	m_xMax = o.m_xMax;
+	m_yMin = o.m_yMin;
+	m_yMax = o.m_yMax;
+	m_size_x = o.m_size_x;
+	m_size_y = o.m_size_y;
+	m_map = o.m_map;
 
 	m_basis_map.clear();
 	m_voronoi_diagram.clear();
@@ -161,15 +161,15 @@ void COccupancyGridMap2D::setSize(
 	ymax = res * round(ymax / res);
 
 	// Set parameters:
-	this->resolution = res;
-	this->x_min = xmin;
-	this->x_max = xmax;
-	this->y_min = ymin;
-	this->y_max = ymax;
+	this->m_resolution = res;
+	this->m_xMin = xmin;
+	this->m_xMax = xmax;
+	this->m_yMin = ymin;
+	this->m_yMax = ymax;
 
 	// Now the number of cells should be integers:
-	size_x = round((x_max - x_min) / resolution);
-	size_y = round((y_max - y_min) / resolution);
+	m_size_x = round((m_xMax - m_xMin) / m_resolution);
+	m_size_y = round((m_yMax - m_yMin) / m_resolution);
 
 #ifdef ROWSIZE_MULTIPLE_16
 	// map rows must be 16 bytes aligned:
@@ -183,7 +183,7 @@ void COccupancyGridMap2D::setSize(
 #endif
 
 	// Cells memory:
-	map.resize(size_x * size_y, p2l(default_value));
+	m_map.resize(m_size_x * m_size_y, p2l(default_value));
 
 	// Free these buffers also:
 	m_basis_map.clear();
@@ -220,8 +220,8 @@ void COccupancyGridMap2D::resizeGrid(
 	}
 
 	// Required?
-	if (new_x_min >= x_min && new_y_min >= y_min && new_x_max <= x_max &&
-		new_y_max <= y_max)
+	if (new_x_min >= m_xMin && new_y_min >= m_yMin && new_x_max <= m_xMax &&
+		new_y_max <= m_yMax)
 		return;
 
 	// For the precomputed likelihood trick:
@@ -230,37 +230,41 @@ void COccupancyGridMap2D::resizeGrid(
 	// Add an additional margin:
 	if (additionalMargin)
 	{
-		if (new_x_min < x_min) new_x_min = floor(new_x_min - 4);
-		if (new_x_max > x_max) new_x_max = ceil(new_x_max + 4);
-		if (new_y_min < y_min) new_y_min = floor(new_y_min - 4);
-		if (new_y_max > y_max) new_y_max = ceil(new_y_max + 4);
+		if (new_x_min < m_xMin) new_x_min = floor(new_x_min - 4);
+		if (new_x_max > m_xMax) new_x_max = ceil(new_x_max + 4);
+		if (new_y_min < m_yMin) new_y_min = floor(new_y_min - 4);
+		if (new_y_max > m_yMax) new_y_max = ceil(new_y_max + 4);
 	}
 
 	// We do not support grid shrinking... at least stay the same:
-	new_x_min = min(new_x_min, x_min);
-	new_x_max = max(new_x_max, x_max);
-	new_y_min = min(new_y_min, y_min);
-	new_y_max = max(new_y_max, y_max);
+	new_x_min = min(new_x_min, m_xMin);
+	new_x_max = max(new_x_max, m_xMax);
+	new_y_min = min(new_y_min, m_yMin);
+	new_y_max = max(new_y_max, m_yMax);
 
 	// Adjust sizes to adapt them to full sized cells acording to the
 	// resolution:
-	if (fabs(new_x_min / resolution - round(new_x_min / resolution)) > 0.05f)
-		new_x_min = resolution * round(new_x_min / resolution);
-	if (fabs(new_y_min / resolution - round(new_y_min / resolution)) > 0.05f)
-		new_y_min = resolution * round(new_y_min / resolution);
-	if (fabs(new_x_max / resolution - round(new_x_max / resolution)) > 0.05f)
-		new_x_max = resolution * round(new_x_max / resolution);
-	if (fabs(new_y_max / resolution - round(new_y_max / resolution)) > 0.05f)
-		new_y_max = resolution * round(new_y_max / resolution);
+	if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution)) >
+		0.05f)
+		new_x_min = m_resolution * round(new_x_min / m_resolution);
+	if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution)) >
+		0.05f)
+		new_y_min = m_resolution * round(new_y_min / m_resolution);
+	if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution)) >
+		0.05f)
+		new_x_max = m_resolution * round(new_x_max / m_resolution);
+	if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution)) >
+		0.05f)
+		new_y_max = m_resolution * round(new_y_max / m_resolution);
 
 	// Change size: 4 sides extensions:
-	extra_x_izq = round((x_min - new_x_min) / resolution);
-	extra_y_arr = round((y_min - new_y_min) / resolution);
+	extra_x_izq = round((m_xMin - new_x_min) / m_resolution);
+	extra_y_arr = round((m_yMin - new_y_min) / m_resolution);
 
-	new_size_x = round((new_x_max - new_x_min) / resolution);
-	new_size_y = round((new_y_max - new_y_min) / resolution);
+	new_size_x = round((new_x_max - new_x_min) / m_resolution);
+	new_size_y = round((new_y_max - new_y_min) / m_resolution);
 
-	assert(new_size_x >= size_x + extra_x_izq);
+	assert(new_size_x >= m_size_x + extra_x_izq);
 
 #ifdef ROWSIZE_MULTIPLE_16
 	// map rows must be 16 bytes aligned:
@@ -281,10 +285,10 @@ void COccupancyGridMap2D::resizeGrid(
 	// Copy all the old map rows into the new map:
 	{
 		cellType* dest_ptr = &new_map[extra_x_izq + extra_y_arr * new_size_x];
-		cellType* src_ptr = &map[0];
-		size_t row_size = size_x * sizeof(cellType);
+		cellType* src_ptr = &m_map[0];
+		size_t row_size = m_size_x * sizeof(cellType);
 
-		for (size_t y = 0; y < size_y; y++)
+		for (size_t y = 0; y < m_size_y; y++)
 		{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 			assert(dest_ptr + row_size - 1 <= &new_map[new_map.size() - 1]);
@@ -292,21 +296,21 @@ void COccupancyGridMap2D::resizeGrid(
 #endif
 			memcpy(dest_ptr, src_ptr, row_size);
 			dest_ptr += new_size_x;
-			src_ptr += size_x;
+			src_ptr += m_size_x;
 		}
 	}
 
 	// Move new values into the new map:
-	x_min = new_x_min;
-	x_max = new_x_max;
-	y_min = new_y_min;
-	y_max = new_y_max;
+	m_xMin = new_x_min;
+	m_xMax = new_x_max;
+	m_yMin = new_y_min;
+	m_yMax = new_y_max;
 
-	size_x = new_size_x;
-	size_y = new_size_y;
+	m_size_x = new_size_x;
+	m_size_y = new_size_y;
 
 	// Free old map, replace by new one:
-	map.swap(new_map);
+	m_map.swap(new_map);
 
 	// Free the other buffers:
 	m_basis_map.clear();
@@ -321,12 +325,12 @@ void COccupancyGridMap2D::freeMap()
 	MRPT_START
 
 	// Free map and sectors
-	map.clear();
+	m_map.clear();
 
 	m_basis_map.clear();
 	m_voronoi_diagram.clear();
 
-	size_x = size_y = 0;
+	m_size_x = m_size_y = 0;
 
 	// For the precomputed likelihood trick:
 	m_likelihoodCacheOutDated = true;
@@ -382,7 +386,7 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 
 	info.H = info.I = 0;
 	info.effectiveMappedCells = 0;
-	for (signed char it : map)
+	for (signed char it : m_map)
 	{
 		auto ctu = static_cast<cellTypeUnsigned>(it);
 		auto h = entropyTable[ctu];
@@ -401,7 +405,7 @@ void COccupancyGridMap2D::computeEntropy(TEntropyInfo& info) const
 	// Mean values:
 	// ------------------------------------------
 	info.effectiveMappedArea =
-		info.effectiveMappedCells * resolution * resolution;
+		info.effectiveMappedCells * m_resolution * m_resolution;
 	if (info.effectiveMappedCells)
 	{
 		info.mean_H = info.H / info.effectiveMappedCells;
@@ -430,7 +434,7 @@ void COccupancyGridMap2D::internal_clear()
 void COccupancyGridMap2D::fill(float default_value)
 {
 	cellType defValue = p2l(default_value);
-	for (auto it = map.begin(); it < map.end(); ++it)
+	for (auto it = m_map.begin(); it < m_map.end(); ++it)
 		*it = defValue;
 	// For the precomputed likelihood trick:
 	m_likelihoodCacheOutDated = true;
@@ -442,12 +446,12 @@ void COccupancyGridMap2D::fill(float default_value)
 void COccupancyGridMap2D::updateCell(int x, int y, float v)
 {
 	// Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
-	if (static_cast<unsigned int>(x) >= size_x ||
-		static_cast<unsigned int>(y) >= size_y)
+	if (static_cast<unsigned int>(x) >= m_size_x ||
+		static_cast<unsigned int>(y) >= m_size_y)
 		return;
 
 	// Get the current contents of the cell:
-	cellType& theCell = map[x + y * size_x];
+	cellType& theCell = m_map[x + y * m_size_x];
 
 	// Compute the new Bayesian-fused value of the cell:
 	if (updateInfoChangeOnly.enabled)
@@ -487,10 +491,10 @@ void COccupancyGridMap2D::subSample(int downRatio)
 
 	ASSERT_(downRatio > 0);
 
-	resolution *= downRatio;
+	m_resolution *= downRatio;
 
-	int newSizeX = round((x_max - x_min) / resolution);
-	int newSizeY = round((y_max - y_min) / resolution);
+	int newSizeX = round((m_xMax - m_xMin) / m_resolution);
+	int newSizeY = round((m_yMax - m_yMin) / m_resolution);
 
 	newMap.resize(newSizeX * newSizeY);
 
@@ -510,8 +514,8 @@ void COccupancyGridMap2D::subSample(int downRatio)
 		}
 	}
 
-	setSize(x_min, x_max, y_min, y_max, resolution);
-	map = newMap;
+	setSize(m_xMin, m_xMax, m_yMin, m_yMax, m_resolution);
+	m_map = newMap;
 }
 
 /*---------------------------------------------------------------
@@ -549,7 +553,7 @@ void COccupancyGridMap2D::determineMatching2D(
 
 	// The number of cells to look around each point:
 	const int cellsSearchRange =
-		round(params.maxDistForCorrespondence / resolution);
+		round(params.maxDistForCorrespondence / m_resolution);
 
 	// Initially there are no correspondences:
 	correspondences.clear();
@@ -590,8 +594,8 @@ void COccupancyGridMap2D::determineMatching2D(
 
 	// If the local map is entirely out of the grid,
 	//   do not even try to match them!!
-	if (local_x_min > x_max || local_x_max < x_min || local_y_min > y_max ||
-		local_y_max < y_min)
+	if (local_x_min > m_xMax || local_x_max < m_xMin || local_y_min > m_yMax ||
+		local_y_max < m_yMin)
 		return;	 // Matching is NULL!
 
 	const cellType thresholdCellValue = p2l(0.5f);
@@ -621,10 +625,10 @@ void COccupancyGridMap2D::determineMatching2D(
 		// Get the rectangle to look for into:
 		const int cx_min = max(0, cx0 - cellsSearchRange);
 		const int cx_max =
-			min(static_cast<int>(size_x) - 1, cx0 + cellsSearchRange);
+			min(static_cast<int>(m_size_x) - 1, cx0 + cellsSearchRange);
 		const int cy_min = max(0, cy0 - cellsSearchRange);
 		const int cy_max =
-			min(static_cast<int>(size_y) - 1, cy0 + cellsSearchRange);
+			min(static_cast<int>(m_size_y) - 1, cy0 + cellsSearchRange);
 
 		// Will be set to true if a corrs. is found:
 		bool thisLocalHasCorr = false;
@@ -635,7 +639,7 @@ void COccupancyGridMap2D::determineMatching2D(
 			for (int cy = cy_min; cy <= cy_max; cy++)
 			{
 				// Is an occupied cell?
-				if (map[cx + cy * size_x] <
+				if (m_map[cx + cy * m_size_x] <
 					thresholdCellValue)	 //  getCell(cx,cy)<0.49)
 				{
 					const float residual_x = idx2x(cx) - x_local;
@@ -659,7 +663,7 @@ void COccupancyGridMap2D::determineMatching2D(
 							// save the correspondence:
 							nTotalCorrespondences++;
 							TMatchingPair mp;
-							mp.globalIdx = cx + cy * size_x;
+							mp.globalIdx = cx + cy * m_size_x;
 							mp.global.x = idx2x(cx);
 							mp.global.y = idx2y(cy);
 							mp.global.z = z_local;
@@ -676,7 +680,7 @@ void COccupancyGridMap2D::determineMatching2D(
 							{
 								min_dist = this_dist;
 
-								closestCorr.globalIdx = cx + cy * size_x;
+								closestCorr.globalIdx = cx + cy * m_size_x;
 								closestCorr.global.x = idx2x(cx);
 								closestCorr.global.y = idx2y(cy);
 								closestCorr.global.z = z_local;
@@ -743,7 +747,7 @@ float COccupancyGridMap2D::computePathCost(
 	float sumCost = 0;
 
 	float dist = sqrt(square(x1 - x2) + square(y1 - y2));
-	int nSteps = round(1.5f * dist / resolution);
+	int nSteps = round(1.5f * dist / m_resolution);
 
 	for (int i = 0; i < nSteps; i++)
 	{

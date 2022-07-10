@@ -152,7 +152,9 @@ struct CAssimpModel::Impl
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
 
 // Just return the diffuse color:
-static mrpt::img::TColor apply_material(const aiMaterial* mtl);
+static mrpt::img::TColor apply_material(
+	const aiMaterial* mtl, const img::TColor& defaultColor,
+	const bool ignoreMaterialColor);
 static void get_bounding_box(
 	const aiScene* sc, aiVector3D* min, aiVector3D* max);
 static void get_bounding_box_for_node(
@@ -315,6 +317,7 @@ void CAssimpModel::loadScene(const std::string& filepath, int flags)
 
 	// Own flags:
 	m_verboseLoad = !!(flags & LoadFlags::Verbose);
+	m_ignoreMaterialColor = !!(flags & LoadFlags::IgnoreMaterialColor);
 
 	m_assimp_scene->scene =
 		m_assimp_scene->importer.ReadFile(filepath.c_str(), pFlags);
@@ -415,16 +418,20 @@ static mrpt::img::TColor color4_to_TColor(const aiColor4D& c)
 	return mrpt::img::TColorf(c.r, c.g, c.b, c.a).asTColor();
 }
 
-static mrpt::img::TColor apply_material(const aiMaterial* mtl)
+static mrpt::img::TColor apply_material(
+	const aiMaterial* mtl, const mrpt::img::TColor& defaultColor,
+	const bool ignoreMaterialColor)
 {
 	aiColor4D diffuse;
-	if (AI_SUCCESS ==
-		aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
-	{ return color4_to_TColor(diffuse); }
+	if (!ignoreMaterialColor &&
+		AI_SUCCESS ==
+			aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+	{  //
+		return color4_to_TColor(diffuse);
+	}
 	else
 	{
-		// Default color:
-		return {0xa0, 0xa0, 0xa0, 0xff};
+		return defaultColor;
 	}
 }
 
@@ -473,8 +480,9 @@ void CAssimpModel::recursive_render(
 	{
 		const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
 
-		mrpt::img::TColor color =
-			apply_material(sc->mMaterials[mesh->mMaterialIndex]);
+		mrpt::img::TColor color = apply_material(
+			sc->mMaterials[mesh->mMaterialIndex], m_color,
+			m_ignoreMaterialColor);
 
 		for (unsigned int t = 0; t < mesh->mNumFaces; ++t)
 		{
@@ -488,7 +496,8 @@ void CAssimpModel::recursive_render(
 					{
 						// get group index for current index
 						int vertexIndex = face->mIndices[i];
-						if (mesh->mColors[0] != nullptr)
+						if (mesh->mColors[0] != nullptr &&
+							!m_ignoreMaterialColor)
 							color =
 								color4_to_TColor(mesh->mColors[0][vertexIndex]);
 
@@ -504,7 +513,8 @@ void CAssimpModel::recursive_render(
 					{
 						// get group index for current index
 						int vertexIndex = face->mIndices[i];
-						if (mesh->mColors[0] != nullptr)
+						if (mesh->mColors[0] != nullptr &&
+							!m_ignoreMaterialColor)
 							color =
 								color4_to_TColor(mesh->mColors[0][vertexIndex]);
 
@@ -550,7 +560,8 @@ void CAssimpModel::recursive_render(
 							unsigned int i = iTri * 3 + v;
 							// get group index for current index
 							int vertexIndex = face->mIndices[i];
-							if (mesh->mColors[0] != nullptr)
+							if (mesh->mColors[0] != nullptr &&
+								!m_ignoreMaterialColor)
 								color = color4_to_TColor(
 									mesh->mColors[0][vertexIndex]);
 

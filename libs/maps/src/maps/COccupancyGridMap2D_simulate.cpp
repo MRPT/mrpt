@@ -129,7 +129,8 @@ void COccupancyGridMap2D::simulateScanRay(
 #endif
 
 	// Ray tracing, until collision, out of the map or out of range:
-	const unsigned int max_ray_len = mrpt::round(max_range_meters / resolution);
+	const unsigned int max_ray_len =
+		mrpt::round(max_range_meters / m_resolution);
 	unsigned int ray_len = 0;
 
 // Use integers for all ray tracing for efficiency
@@ -138,9 +139,9 @@ void COccupancyGridMap2D::simulateScanRay(
 #define int_y2idx(_Y) (_Y >> INTPRECNUMBIT)
 
 	auto rxi = static_cast<int64_t>(
-		((start_x - x_min) / resolution) * (1L << INTPRECNUMBIT));
+		((start_x - m_xMin) / m_resolution) * (1L << INTPRECNUMBIT));
 	auto ryi = static_cast<int64_t>(
-		((start_y - y_min) / resolution) * (1L << INTPRECNUMBIT));
+		((start_y - m_yMin) / m_resolution) * (1L << INTPRECNUMBIT));
 
 	const auto Arxi = static_cast<int64_t>(
 		RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Arx * (1L << INTPRECNUMBIT));
@@ -152,8 +153,8 @@ void COccupancyGridMap2D::simulateScanRay(
 	int x, y = int_y2idx(ryi);
 
 	while ((x = int_x2idx(rxi)) >= 0 && (y = int_y2idx(ryi)) >= 0 &&
-		   x < static_cast<int>(size_x) && y < static_cast<int>(size_y) &&
-		   (hitCellOcc_int = map[x + y * size_x]) > threshold_free_int &&
+		   x < static_cast<int>(m_size_x) && y < static_cast<int>(m_size_y) &&
+		   (hitCellOcc_int = m_map[x + y * m_size_x]) > threshold_free_int &&
 		   ray_len < max_ray_len)
 	{
 		rxi += Arxi;
@@ -164,15 +165,15 @@ void COccupancyGridMap2D::simulateScanRay(
 	// Store:
 	// Check out of the grid?
 	// Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
-	if (std::abs(hitCellOcc_int) <= 1 || static_cast<unsigned>(x) >= size_x ||
-		static_cast<unsigned>(y) >= size_y)
+	if (std::abs(hitCellOcc_int) <= 1 || static_cast<unsigned>(x) >= m_size_x ||
+		static_cast<unsigned>(y) >= m_size_y)
 	{
 		out_valid = false;
 		out_range = max_range_meters;
 	}
 	else
 	{  // No: The normal case:
-		out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS * ray_len * resolution;
+		out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS * ray_len * m_resolution;
 		out_valid = (ray_len < max_ray_len);  // out_range<max_range_meters;
 		// Add additive Gaussian noise:
 		if (noiseStd > 0 && out_valid)
@@ -300,5 +301,5 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 
 	// Add minimum uncertainty: grid cell resolution:
 	out_results.scanWithUncert.rangesCovar.asEigen().diagonal().array() +=
-		0.5 * resolution * resolution;
+		0.5 * m_resolution * m_resolution;
 }
