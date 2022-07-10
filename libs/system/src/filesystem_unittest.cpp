@@ -114,7 +114,13 @@ TEST(FileSystem, toAbsolutePath)
 
 TEST(FileSystem, pathJoin)
 {
+#ifdef _WIN32
+	EXPECT_EQ(
+		mrpt::system::pathJoin({"C:\\", "joe", "p.ini"}),  //
+		"C:\\joe\\p.ini");
+#else
 	EXPECT_EQ(
 		mrpt::system::pathJoin({"/home", "joe", "p.ini"}),	//
 		"/home/joe/p.ini");
+#endif
 }
