@@ -72,6 +72,8 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 		m_glTimeLine->Bind(
 			wxEVT_RIGHT_DOWN, &This::OnTimeLineMouseRightDown, this);
 		m_glTimeLine->Bind(wxEVT_RIGHT_UP, &This::OnTimeLineMouseRightUp, this);
+
+		m_glTimeLine->Bind(wxEVT_MOUSEWHEEL, &This::OnTimeLineMouseWheel, this);
 	}
 
 	fgzMain->Add(fgzBottomTimeLine, 1, wxALL | wxEXPAND, 0);
@@ -432,6 +434,12 @@ void xRawLogViewerFrame::OnTimeLineMouseRightDown(wxMouseEvent& e)
 void xRawLogViewerFrame::OnTimeLineMouseRightUp(wxMouseEvent& e)
 {
 	OnTimeLineMouseLeftUp(e);
+}
+
+void xRawLogViewerFrame::OnTimeLineMouseWheel(wxMouseEvent& e)
+{
+	const auto wheelIncr = e.GetWheelRotation();
+	std::cout << "wheelIncr: " << wheelIncr << std::endl;
 }
 
 std::optional<std::pair<double, size_t>>

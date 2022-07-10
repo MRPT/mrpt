@@ -274,6 +274,7 @@ class xRawLogViewerFrame : public wxFrame
 	void OnTimeLineMouseLeftUp(wxMouseEvent& e);
 	void OnTimeLineMouseRightDown(wxMouseEvent& e);
 	void OnTimeLineMouseRightUp(wxMouseEvent& e);
+	void OnTimeLineMouseWheel(wxMouseEvent& e);
 
 	//(*Declarations(xRawLogViewerFrame)
 	wxMenu* MenuItem51;
