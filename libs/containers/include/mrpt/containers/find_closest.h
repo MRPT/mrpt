@@ -29,8 +29,10 @@ namespace mrpt::containers
  * \note (New in MRPT 2.5.0)
  */
 template <typename Container>
-std::optional<typename Container::key_type> find_closest_with_tolerance(
-	const Container& data, const double x, double tolerance)
+std::optional<
+	std::pair<typename Container::key_type, typename Container::mapped_type>>
+	find_closest_with_tolerance(
+		const Container& data, const double x, double tolerance)
 {
 	const auto t_min = x - tolerance;
 	const auto t_max = x + tolerance;
@@ -39,7 +41,9 @@ std::optional<typename Container::key_type> find_closest_with_tolerance(
 	auto it_hi = data.upper_bound(t_max);
 
 	double min_distance = std::numeric_limits<double>::max();
-	std::optional<typename Container::mapped_type> best;
+	std::optional<std::pair<
+		typename Container::key_type, typename Container::mapped_type>>
+		best;
 
 	for (auto it = it_lo; it != it_hi; ++it)
 	{
@@ -48,7 +52,7 @@ std::optional<typename Container::key_type> find_closest_with_tolerance(
 		if (dist < min_distance)
 		{
 			min_distance = dist;
-			best = it->second;
+			best = {it->first, it->second};
 		}
 	}
 
@@ -68,8 +72,9 @@ std::optional<typename Container::key_type> find_closest_with_tolerance(
  * \note (New in MRPT 2.5.0)
  */
 template <typename Container>
-std::optional<typename Container::key_type> find_closest(
-	const Container& data, const double x)
+std::optional<
+	std::pair<typename Container::key_type, typename Container::mapped_type>>
+	find_closest(const Container& data, const double x)
 {
 	typename Container::const_iterator its[2] = {
 		data.lower_bound(x), data.upper_bound(x)};
@@ -77,7 +82,9 @@ std::optional<typename Container::key_type> find_closest(
 	if (!data.empty() && its[0] != data.begin()) --its[0];
 
 	double min_distance = std::numeric_limits<double>::max();
-	std::optional<typename Container::mapped_type> best;
+	std::optional<std::pair<
+		typename Container::key_type, typename Container::mapped_type>>
+		best;
 
 	for (const auto& it : its)
 	{
@@ -86,7 +93,7 @@ std::optional<typename Container::key_type> find_closest(
 		if (dist < min_distance)
 		{
 			min_distance = dist;
-			best = it->second;
+			best = {it->first, it->second};
 		}
 	}
 
