@@ -2,6 +2,8 @@
 
 # Version 2.4.11: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_containers_grp
+    - New functions mrpt::containers::find_closest() and mrpt::containers::find_closest_with_tolerance().
   - \ref mrpt_opengl_grp
     - A new rendering mode for default no-perspective transformations. 
       See mrpt::opengl::CCamera::setNoProjection()
