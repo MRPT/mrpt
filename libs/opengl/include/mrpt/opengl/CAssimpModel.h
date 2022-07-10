@@ -91,6 +91,10 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 			RealTimeMaxQuality = 0x0004,
 			/** See: aiProcess_FlipUVs */
 			FlipUVs = 0x0010,
+			/** MRPT-specific: ignore materials and replace by the base class
+			   CRenderizable uniform color that was defined before calling
+			   loadScene(). \note (New in MRPT 2.5.0) */
+			IgnoreMaterialColor = 0x0100,
 			/** Displays messages on loaded textures, etc. */
 			Verbose = 0x1000
 		};
@@ -140,6 +144,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	// handling to that class:
 	mutable std::vector<CSetOfTexturedTriangles::Ptr> m_texturedObjects;
 	bool m_verboseLoad = false;
+	bool m_ignoreMaterialColor = false;
 
 	void recursive_render(
 		const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,

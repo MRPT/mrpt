@@ -123,8 +123,19 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	void drawManySamples(
 		size_t N,
 		std::vector<mrpt::math::CVectorDouble>& outSamples) const override;
+	/** Compute the inverse Jacobian */
+	mrpt::math::CMatrixDouble77 inverseJacobian() const;
 	/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 	void inverse(CPose3DQuatPDF& o) const override;
+	/** Returns the displacement from the current pose (pose_from) to pose_to:
+	 * displacement = - pose_from + pose_to
+	 * It assumes that both poses are correlated via
+	 * the direct generative model:
+	 * pose_to = pose_from + displacement
+	 * For a deeper explanation, check https://github.com/MRPT/mrpt/pull/1243
+	 * */
+	mrpt::poses::CPose3DQuatPDFGaussian inverseCompositionCrossCorrelation(
+		const mrpt::poses::CPose3DQuatPDFGaussian& pose_to) const;
 
 	/** Unary - operator, returns the PDF of the inverse pose.  */
 	inline CPose3DQuatPDFGaussian operator-() const
@@ -142,7 +153,15 @@ class CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	 * jacobiansPoseComposition ). */
 	void operator+=(const CPose3DQuatPDFGaussian& Ap);
 	/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition
-	 * (both the mean, and the covariance matrix are updated). */
+	 * (both the mean, and the covariance matrix are updated).
+	 * This operation assumes statistical independence between the two
+	 * variables. If you want to take into account the cross-correlation between
+	 * pose_1 and pose_2, use:
+	 * displacement = pose_1.inverseCompositionCrossCorrelation(pose_2)
+	 * Note: Both poses are correlated if the direct generative model is
+	 * pose_2 = pose_1 + displacement
+	 * \sa inverseCompositionCrossCorrelation
+	 * */
 	void operator-=(const CPose3DQuatPDFGaussian& Ap);
 
 	/** Evaluates the PDF at a given point. */

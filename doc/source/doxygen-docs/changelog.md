@@ -1,12 +1,28 @@
 \page changelog Change Log
 
-# Version 2.4.11: UNRELEASED
+# Version 2.5.0: UNRELEASED
+- Changes in applications:
+  - New application:
+    - ros-map-yaml2mrpt: CLI tool to import ROS map_server maps into MRPT formats.
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - New functions mrpt::containers::find_closest() and mrpt::containers::find_closest_with_tolerance().
   - \ref mrpt_opengl_grp
+    - mrpt::opengl::CMesh supports having (x,y) limits with `maxCoord<minCoord` for flipped elevation and image meshes.
+    - New flag mrpt::opengl::CAssimpModel::LoadFlags::IgnoreMaterialColor for mrpt::opengl::CAssimpModel::loadScene()
     - A new rendering mode for default no-perspective transformations. 
       See mrpt::opengl::CCamera::setNoProjection()
+  - \ref mrpt_poses_grp
+    - Add correct displacement covariance calculation between two poses with cross-correlation via new method mrpt::poses::CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation() (Closes [#1242](https://github.com/MRPT/mrpt/issues/1242))
+  - \ref mrpt_system_grp
+    - New funtions mrpt::system::toAbsolutePath(), mrpt::system::pathJoin()
+    - Most functions in \ref filesystem ported to C++17 std::filesystem
+  - \ref mrpt_tfest_grp
+    - New method TMatchingPairList::overallSquareError() for SE(3) poses (CPose3D).
+- Deprecations:
+    - The following macros, which were already deprecated, have been removed:  `ASSERT_BELOW_`, `ASSERT_ABOVE_()`, `ASSERT_BELOWEQ_()`, `ASSERT_ABOVEEQ_()`
+- Build system:
+  - Update fallback embedded version of octomap to v1.9.6
 - BUG FIXES:
   - FIX: OpenGL API errors if several CWxGLCanvasBase instances are updated simultaneously in the same program.
   - mrpt::system::formatTimeInterval() reported an incorrect number of milliseconds.
