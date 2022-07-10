@@ -78,9 +78,7 @@ struct TInfoPerSensorLabel
 	mrpt::Clock::time_point first, last;
 
 	size_t getOccurences() const;
-	void addOcurrence(
-		mrpt::Clock::time_point obsTim,
-		mrpt::Clock::time_point firstDatasetTim);
+	void addOcurrence(mrpt::Clock::time_point obsTim);
 };
 
 class wxStaticBitmapPopup : public wxStaticBitmap
@@ -428,6 +426,12 @@ class xRawLogViewerFrame : public wxFrame
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
 
+	void OnSize(wxSizeEvent& event);
+	void OnMaximize(wxMaximizeEvent& event);
+	void OnSizeOrMaximize();
+
+	void createTimeLineObjects(wxFlexGridSizer* fgzMain);
+
 	// void OntreeViewItemRightClick(wxTreeEvent& event);
 
 	static void OntreeViewSelectionChanged(
@@ -458,6 +462,7 @@ class xRawLogViewerFrame : public wxFrame
 
 		std::multimap<double, size_t> xs2treeIndices;
 		std::map<size_t, double> treeIndices2xs;
+		size_t actualLeftBorderPixels = 10;
 
 		void clearStats()
 		{
