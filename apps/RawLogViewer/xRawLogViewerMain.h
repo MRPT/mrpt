@@ -265,10 +265,12 @@ class xRawLogViewerFrame : public wxFrame
 	//*)
 	void OnMenuRenameBySFIndex(wxCommandEvent& event);
 
-	void OnTimeLineDoScrollToMouseX(wxMouseEvent& e);
+	void OnTimeLineDoScrollToMouseX(
+		const std::optional<std::pair<double, size_t>>& selPt);
 
 	void OnTimeLineMouseMove(wxMouseEvent& e);
-	void OnTimeLineMouseLeftDown(wxMouseEvent& e);
+	void OnTimeLineMouseLeftDown(
+		const std::optional<std::pair<double, size_t>>& selPt);
 	void OnTimeLineMouseLeftUp(wxMouseEvent& e);
 	void OnTimeLineMouseRightDown(wxMouseEvent& e);
 	void OnTimeLineMouseRightUp(wxMouseEvent& e);
