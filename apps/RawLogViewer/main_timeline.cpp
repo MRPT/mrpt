@@ -20,6 +20,9 @@ constexpr int CURSOR_WIDTH_PIXELS = 2;
 constexpr int XTICKS_FONT_SIZE = 20;  // => 6x10 actual char, 9x10 incl spacing
 constexpr double XTICKS_FONT_WIDTH = 65.0 / 7.0;
 
+constexpr double TL_CLICK_SENSOR_LABEL_VERTICAL_TOLERANCE = 0.1;
+constexpr int TL_SEARCH_CLICK_RANGE = 200;
+
 void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 {
 	using This = xRawLogViewerFrame;  // shortcut!
@@ -129,7 +132,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	const auto clsz = m_glTimeLine->GetClientSize();
 
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
-	auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v; };
+	auto px2y = [clsz](int v) { return +1.0 - (2.0 / clsz.GetHeight()) * v; };
 
 	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
 
@@ -145,16 +148,16 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 
 	const double xLeft = px2x(tl.actualLeftBorderPixels);
 	const double xRight = px2x(clsz.GetWidth() - TL_BORDER);
-	const double yLowerBorder = px2y(TL_BORDER_BOTTOM);
-	const double yTopBorder = px2y(clsz.GetHeight() - TL_BORDER);
+	const double yLowerBorder = px2y(clsz.GetHeight() - TL_BORDER_BOTTOM);
+	const double yTopBorder = px2y(TL_BORDER);
 
 	const double xLeft1 = px2x(tl.actualLeftBorderPixels + 1);
 	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
-	const double yLowerBorder1 = px2y(TL_BORDER_BOTTOM + 1);
-	const double yTopBorder1 = px2y(clsz.GetHeight() - TL_BORDER - 1);
+	const double yLowerBorder1 = px2y(clsz.GetHeight() - TL_BORDER_BOTTOM - 1);
+	const double yTopBorder1 = px2y(TL_BORDER + 1);
 
-	const double yLowerBorder2 = px2y(TL_BORDER_BOTTOM + 5);
-	const double yTopBorder2 = px2y(clsz.GetHeight() - TL_BORDER - 5);
+	const double yLowerBorder2 = px2y(clsz.GetHeight() - TL_BORDER_BOTTOM - 5);
+	const double yTopBorder2 = px2y(TL_BORDER + 5);
 
 	// outer border box:
 	tl.borderBox->setBoxCorners(
@@ -193,7 +196,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 
 		const double ptX =
 			xLeft1 + i * (xRight1 - xLeft1) / (TL_X_TICK_COUNT - 1);
-		glLb->setLocation(ptX, px2y(1), 0);
+		glLb->setLocation(ptX, px2y(clsz.GetHeight() - 1), 0);
 
 		tl.xTicks->insert(glLb);
 
@@ -316,7 +319,7 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 	const auto clsz = m_glTimeLine->GetClientSize();
 
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
-	auto px2y = [clsz](int v) { return -1.0 + (2.0 / clsz.GetHeight()) * v; };
+	auto px2y = [clsz](int v) { return +1.0 - (2.0 / clsz.GetHeight()) * v; };
 
 	auto px2width = [clsz](int u) { return (2.0 / clsz.GetWidth()) * u; };
 
@@ -324,8 +327,8 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 
 	const double xLeft1 = px2x(m_timeline.actualLeftBorderPixels + 1);
 	const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
-	const double yLowerBorder1 = px2y(TL_BORDER_BOTTOM + 1);
-	const double yTopBorder1 = px2y(clsz.GetHeight() - TL_BORDER - 1);
+	const double yLowerBorder1 = px2y(clsz.GetHeight() - TL_BORDER_BOTTOM - 1);
+	const double yTopBorder1 = px2y(TL_BORDER + 1);
 
 	// percent of view:
 	double pc0 = 0, pc1 = 0;
@@ -381,7 +384,7 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(wxMouseEvent& e)
 {
 	std::optional<std::pair<double, size_t>> selPt =
-		timeLineMouseXToTreeIndex(e);
+		timeLineMouseXYToTreeIndex(e);
 
 	if (selPt.has_value())
 	{
@@ -396,13 +399,13 @@ void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(wxMouseEvent& e)
 
 void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)
 {
-	// left-btn down: drag and move thru timeline:
-	if (e.LeftIsDown()) { OnTimeLineDoScrollToMouseX(e); }
+	if (e.RightIsDown()) { OnTimeLineDoScrollToMouseX(e); }
+	if (e.LeftIsDown()) { OnTimeLineMouseLeftDown(e); }
 }
 void xRawLogViewerFrame::OnTimeLineMouseLeftDown(wxMouseEvent& e)
 {
 	std::optional<std::pair<double, size_t>> selPt =
-		timeLineMouseXToTreeIndex(e);
+		timeLineMouseXYToTreeIndex(e);
 
 	if (selPt.has_value())
 	{
@@ -432,27 +435,72 @@ void xRawLogViewerFrame::OnTimeLineMouseRightUp(wxMouseEvent&)
 }
 
 std::optional<std::pair<double, size_t>>
-	xRawLogViewerFrame::timeLineMouseXToTreeIndex(const wxMouseEvent& e) const
+	xRawLogViewerFrame::timeLineMouseXYToTreeIndex(const wxMouseEvent& e) const
 {
 	const auto clsz = m_glTimeLine->GetClientSize();
 
 	const int mouseX = e.GetX();
 	if (mouseX < 0 || mouseX >= clsz.GetWidth()) return {};
 
+	const int mouseY = e.GetY();
+	if (mouseY < 0 || mouseY >= clsz.GetHeight()) return {};
+
 	auto px2x = [clsz](int u) { return -1.0 + (2.0 / clsz.GetWidth()) * u; };
+	auto px2y = [clsz](int v) { return +1.0 - (2.0 / clsz.GetHeight()) * v; };
 
 	double clickedX = px2x(mouseX);
+	double clickedY = px2y(mouseY);
+
+	// find an approximate sensor type by vertical position:
+	auto closestSensorLabel = mrpt::containers::find_closest_with_tolerance(
+		m_timeline.yCoordToSensorLabel, clickedY,
+		TL_CLICK_SENSOR_LABEL_VERTICAL_TOLERANCE);
 
 	if (auto closestXIdx =
 			mrpt::containers::find_closest(m_timeline.xs2treeIndices, clickedX);
 		closestXIdx.has_value())
 	{
+		// Closest sensor by "x":
 		auto treeIndex = closestXIdx->second;
 
 		mrpt::keep_max(treeIndex, 0U);
 		mrpt::keep_min(treeIndex, m_treeView->getTotalTreeNodes() - 1);
 
-		return {{closestXIdx->first, treeIndex}};
+		// Look in the neighbors for the exact sensorLabel:
+		if (closestSensorLabel.has_value())
+		{
+			const std::string& clickedSensorLabel = closestSensorLabel->second;
+
+			const int lastIdx = m_treeView->getTotalTreeNodes() - 1;
+
+			const auto lambdaTest = [&treeIndex, this, clickedSensorLabel,
+									 lastIdx](int i) {
+				if (i < 0) return false;
+				if (i > lastIdx) return false;
+
+				const auto& sl = m_treeView->treeNodes().at(i).sensorLabel;
+
+				if (!sl.has_value()) return false;
+
+				bool found = sl.value() == clickedSensorLabel;
+
+				if (found) treeIndex = i;  // keep best match.
+
+				return found;
+			};
+
+			const int ti0 = static_cast<int>(treeIndex);
+
+			for (int dist = 0; dist < TL_SEARCH_CLICK_RANGE; dist++)
+			{
+				if (bool found = lambdaTest(ti0 + dist); found) break;
+				if (bool found = lambdaTest(ti0 - dist); found) break;
+			}
+		}
+
+		// Search "x" in the treeIndices2xs again for the case where treeIndex
+		// has been modified by the search-by-sensorLabel loop above
+		return {{m_timeline.treeIndices2xs.at(treeIndex), treeIndex}};
 	}
 	else
 	{

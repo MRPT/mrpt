@@ -485,7 +485,7 @@ class xRawLogViewerFrame : public wxFrame
 	TimeLineData m_timeline;
 
 	/// Return (xsTime, TreeIndex) in xs2treeIndices, none if no match:
-	std::optional<std::pair<double, size_t>> timeLineMouseXToTreeIndex(
+	std::optional<std::pair<double, size_t>> timeLineMouseXYToTreeIndex(
 		const wxMouseEvent& e) const;
 
 	// ALWAYS access this inside a "try" block, just in case...
