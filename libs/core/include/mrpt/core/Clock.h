@@ -41,7 +41,10 @@ class Clock
 
 	/** Create a timestamp from its double representation. \sa toDouble */
 	static time_point fromDouble(const double t) noexcept;
-	/** Converts a timestamp to a UNIX time_t-like number, with fractional part
+
+	/** Converts a timestamp to a UNIX time_t-like number, with fractional part.
+	 *  If t is an invalid (default-contructed) time_point, `0.0` will be
+	 * returned.
 	 * \sa fromDouble */
 	static double toDouble(const time_point t) noexcept;
 
