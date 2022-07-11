@@ -21,6 +21,7 @@ jobs:
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
           ubuntu-18.04-gcc,
+          ubuntu-22.04-gcc,
           ubuntu-latest-clang,
           ubuntu-latest-gcc
         ]
@@ -29,6 +30,11 @@ jobs:
         include:
           - name: ubuntu-18.04-gcc
             os: ubuntu-18.04
+            compiler: gcc
+            coverage: OFF
+
+          - name: ubuntu-22.04-gcc
+            os: ubuntu-22.04
             compiler: gcc
             coverage: OFF
 
