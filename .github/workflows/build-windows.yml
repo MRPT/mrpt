@@ -20,15 +20,15 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-            windows-latest,
+            windows-2019,
           ]
 
         build_type: [
             Release
           ]
         include:
-          - name: windows-latest
-            os: windows-latest
+          - name: windows-2019
+            os: windows-2019
             compiler: cl
             platform: 64
 

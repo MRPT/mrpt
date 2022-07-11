@@ -20,15 +20,14 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-          macOS-10.15-xcode-11.3.1,
+          macOS-latest,
         ]
 
         build_type: [ Release ]
         include:
-          - name: macOS-10.15-xcode-11.3.1
-            os: macOS-10.15
+          - name: macos-latest
+            os: macos-latest
             compiler: xcode
-            version: "11.3.1"
 
     steps:
       - name: Checkout
@@ -46,7 +45,6 @@ jobs:
           brew install eigen
           brew install opencv
           brew install assimp
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
           echo "CC=clang" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
 
