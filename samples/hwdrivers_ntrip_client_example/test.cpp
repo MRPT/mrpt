@@ -11,8 +11,10 @@
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <cstdio>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;

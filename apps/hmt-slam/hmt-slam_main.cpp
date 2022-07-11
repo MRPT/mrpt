@@ -24,6 +24,9 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
+#include <thread>
+
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::obs;

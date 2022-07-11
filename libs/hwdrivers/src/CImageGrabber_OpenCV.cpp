@@ -12,6 +12,7 @@
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 
+#include <chrono>
 #include <thread>
 
 #ifdef HAVE_OPENCV_VIDEOIO

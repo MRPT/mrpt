@@ -12,9 +12,11 @@
 #include <mrpt/hwdrivers/CLMS100eth.h>
 #include <mrpt/system/string_utils.h>
 
+#include <chrono>
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 #define APPERTURE 4.712385	// in radian <=> 270°
 

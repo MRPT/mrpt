@@ -11,6 +11,7 @@
 #include <mrpt/math/distributions.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

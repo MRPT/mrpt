@@ -23,7 +23,9 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/slam/CICP.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;

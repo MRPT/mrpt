@@ -18,6 +18,9 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/filesystem.h>
 
+#include <chrono>
+#include <thread>
+
 #if MRPT_HAS_NANOGUI
 
 using namespace mrpt;

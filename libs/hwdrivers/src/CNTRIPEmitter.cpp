@@ -13,7 +13,9 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CNTRIPEmitter, mrpt::hwdrivers)
 

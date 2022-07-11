@@ -20,6 +20,9 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CObserver.h>
 
+#include <chrono>
+#include <thread>
+
 using namespace mrpt;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;

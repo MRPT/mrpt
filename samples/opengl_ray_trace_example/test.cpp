@@ -30,7 +30,9 @@
 #include <mrpt/random.h>
 #include <mrpt/system/CTicTac.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 #define COLORR 1.0f
 #define COLORG 0.0f

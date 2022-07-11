@@ -14,6 +14,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/string_utils.h>
 
+#include <chrono>
 #include <cstring>
 #include <iostream>
 #include <thread>

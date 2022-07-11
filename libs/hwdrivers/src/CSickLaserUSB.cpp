@@ -14,6 +14,9 @@
 #include <mrpt/system/crc.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
+#include <thread>
+
 IMPLEMENTS_GENERIC_SENSOR(CSickLaserUSB, mrpt::hwdrivers)
 
 using namespace std;

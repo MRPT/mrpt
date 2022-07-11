@@ -14,6 +14,7 @@
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <thread>
 
 using namespace mrpt::hwdrivers;

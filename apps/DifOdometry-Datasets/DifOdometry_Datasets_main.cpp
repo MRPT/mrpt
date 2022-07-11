@@ -9,6 +9,9 @@
 
 #include <mrpt/config/CConfigFile.h>
 
+#include <chrono>
+#include <thread>
+
 #include "DifOdometry_Datasets.h"
 
 using namespace std;
