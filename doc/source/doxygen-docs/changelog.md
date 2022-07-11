@@ -5,9 +5,15 @@
   - New application:
     - ros-map-yaml2mrpt: CLI tool to import ROS map_server maps into MRPT formats.
 - Changes in libraries:
+  - \ref mrpt_containers_grp
+    - New functions mrpt::containers::find_closest() and mrpt::containers::find_closest_with_tolerance().
+  - \ref mrpt_core_grp
+    - mrpt::Clock::toDouble() now returns 0 for default-constructed (invalid) time_point.
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CMesh supports having (x,y) limits with `maxCoord<minCoord` for flipped elevation and image meshes.
     - New flag mrpt::opengl::CAssimpModel::LoadFlags::IgnoreMaterialColor for mrpt::opengl::CAssimpModel::loadScene()
+    - A new rendering mode for default no-perspective transformations. 
+      See mrpt::opengl::CCamera::setNoProjection()
   - \ref mrpt_poses_grp
     - Add correct displacement covariance calculation between two poses with cross-correlation via new method mrpt::poses::CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation() (Closes [#1242](https://github.com/MRPT/mrpt/issues/1242))
   - \ref mrpt_system_grp
@@ -19,6 +25,9 @@
     - The following macros, which were already deprecated, have been removed:  `ASSERT_BELOW_`, `ASSERT_ABOVE_()`, `ASSERT_BELOWEQ_()`, `ASSERT_ABOVEEQ_()`
 - Build system:
   - Update fallback embedded version of octomap to v1.9.6
+- BUG FIXES:
+  - FIX: OpenGL API errors if several CWxGLCanvasBase instances are updated simultaneously in the same program.
+  - mrpt::system::formatTimeInterval() reported an incorrect number of milliseconds.
 
 # Version 2.4.10: Relased June 24th, 2022
 - Changes in applications:
@@ -27,6 +36,8 @@
   - RawLogViewer:
     - Visual improvements and display of timestamps in local time too.
 - Changes in libraries:
+  - \ref mrpt_obs_grp
+    - New set of functions to help visualize observations: \ref customizable_obs_viz_grp
   - \ref mrpt_poses_grp
     - Adds covariance mapping to SE(3) for GTSAM (Closes [#1229](https://github.com/MRPT/mrpt/issues/1229))
   - \ref mrpt_ros1bridge_grp

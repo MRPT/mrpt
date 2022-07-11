@@ -81,6 +81,10 @@ struct TRenderMatrices
 		float left, float right, float bottom, float top, float znear,
 		float zfar);
 
+	/** Especial case: no projection, opengl coordinates are pixels from (0,0)
+	 * bottom-left corner.*/
+	void computeNoProjectionMatrix(float znear, float zfar);
+
 	/** Updates the current p_matrix such that it "looks at" pointing, with
 	 * up vector "up". Replacement for deprecated OpenGL gluLookAt(). */
 	void applyLookAt();

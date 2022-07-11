@@ -143,7 +143,7 @@ string mrpt::system::formatTimeInterval(const double t)
 	const auto nMins = static_cast<unsigned int>(timeSeconds / 60);
 	const auto nSecs = static_cast<unsigned int>(timeSeconds) % 60;
 	const auto milSecs =
-		static_cast<unsigned int>(1000 * timeSeconds - floor(timeSeconds));
+		static_cast<unsigned int>(1000 * (timeSeconds - floor(timeSeconds)));
 
 	if (nDays > 0) s += mrpt::format("%udays ", nDays);
 	if (nHours > 0) s += mrpt::format("%uh ", nHours);

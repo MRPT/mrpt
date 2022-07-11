@@ -35,6 +35,15 @@ void TRenderMatrices::computeOrthoProjectionMatrix(
 	p_matrix(2, 3) = -(zfar + znear) / (zfar - znear);
 }
 
+void TRenderMatrices::computeNoProjectionMatrix(float znear, float zfar)
+{
+	ASSERT_GT_(zfar, znear);
+	m_last_z_near = znear;
+	m_last_z_far = zfar;
+
+	p_matrix.setIdentity();
+}
+
 // Replacement for obsolete: gluPerspective() and glOrtho()
 void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 {
