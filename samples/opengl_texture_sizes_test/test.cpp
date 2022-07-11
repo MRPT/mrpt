@@ -13,7 +13,10 @@
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
+
 const std::string myTestFile(
 	MRPT_EXAMPLES_BASE_DIRECTORY +
 	std::string("img_basic_example/frame_color.jpg"));

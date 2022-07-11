@@ -10,8 +10,10 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/CFileSystemWatcher.h>
 
+#include <chrono>
 #include <cstdio>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::system;

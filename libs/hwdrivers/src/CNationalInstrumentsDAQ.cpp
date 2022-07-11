@@ -12,8 +12,10 @@
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <chrono>
 #include <iostream>
 #include <iterator>	 // advance()
+#include <thread>
 
 // If we have both, DAQmx & DAQmxBase, prefer DAQmx:
 #define MRPT_HAS_SOME_NIDAQMX (MRPT_HAS_NIDAQMXBASE || MRPT_HAS_NIDAQMX)

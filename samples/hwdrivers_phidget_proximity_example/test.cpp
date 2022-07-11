@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/system/CTicTac.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

@@ -14,6 +14,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/progress.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

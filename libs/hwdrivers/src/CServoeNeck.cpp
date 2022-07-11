@@ -15,6 +15,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
 
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <thread>

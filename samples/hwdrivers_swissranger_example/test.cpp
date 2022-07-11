@@ -18,7 +18,9 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/CTicTac.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

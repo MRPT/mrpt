@@ -23,6 +23,9 @@
 //*)
 #include <mrpt/gui/wx28-fixes.h>
 
+#include <chrono>
+#include <thread>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::obs;

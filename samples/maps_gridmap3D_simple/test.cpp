@@ -15,7 +15,9 @@
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 // ------------------------------------------------------
 //				TestGridMap3D

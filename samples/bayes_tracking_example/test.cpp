@@ -21,6 +21,7 @@
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

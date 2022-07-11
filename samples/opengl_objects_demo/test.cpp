@@ -15,7 +15,9 @@
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;

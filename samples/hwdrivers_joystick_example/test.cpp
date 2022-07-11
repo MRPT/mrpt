@@ -12,6 +12,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <cstdio>
 #include <iostream>
 #include <thread>

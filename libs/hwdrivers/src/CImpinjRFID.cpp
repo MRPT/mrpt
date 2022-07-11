@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

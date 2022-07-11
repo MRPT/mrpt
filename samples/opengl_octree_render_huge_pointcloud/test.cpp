@@ -13,7 +13,9 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/random.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;

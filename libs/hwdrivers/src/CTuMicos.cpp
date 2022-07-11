@@ -13,6 +13,7 @@
 #include <mrpt/hwdrivers/CTuMicos.h>
 #include <mrpt/system/string_utils.h>
 
+#include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <iostream>

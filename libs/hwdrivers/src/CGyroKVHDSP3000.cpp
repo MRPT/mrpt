@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 #include <mrpt/obs/CObservationIMU.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

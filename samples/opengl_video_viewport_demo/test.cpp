@@ -11,7 +11,9 @@
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/opengl.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;

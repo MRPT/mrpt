@@ -14,6 +14,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <iostream>
 #include <list>
 #include <mutex>

@@ -16,7 +16,9 @@
 #include <mrpt/vision/TKeyPoint.h>
 #include <mrpt/vision/types.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;
