@@ -28,11 +28,6 @@ jobs:
 
         build_type: [ Release ]
         include:
-          - name: ubuntu-18.04-gcc
-            os: ubuntu-18.04
-            compiler: gcc
-            coverage: OFF
-
           - name: ubuntu-22.04-gcc
             os: ubuntu-22.04
             compiler: gcc
@@ -68,7 +63,7 @@ jobs:
                            libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
                            libxrandr-dev libxxf86vm-dev \
                            libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
-                           libdc1394-22-dev libavformat-dev libswscale-dev libpcap-dev \
+                           libdc1394-dev libavformat-dev libswscale-dev libpcap-dev \
                            liboctomap-dev libopenni2-dev \
                            libtinyxml2-dev \
                            yamllint
