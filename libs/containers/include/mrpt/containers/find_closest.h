@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <cmath>  // std::abs
 #include <cstdlib>
 #include <limits>
 #include <optional>
@@ -49,7 +50,7 @@ std::optional<
 	for (auto it = it_lo; it != it_hi; ++it)
 	{
 		if (it == data.end()) continue;
-		const auto dist = std::abs(static_cast<double>(it->first - x));
+		const auto dist = std::abs(it->first - x);
 		if (dist < min_distance)
 		{
 			min_distance = dist;
@@ -90,7 +91,7 @@ std::optional<
 	for (const auto& it : its)
 	{
 		if (it == data.end()) continue;
-		const auto dist = std::abs(static_cast<double>(it->first - x));
+		const auto dist = std::abs(it->first - x);
 		if (dist < min_distance)
 		{
 			min_distance = dist;
