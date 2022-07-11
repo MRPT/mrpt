@@ -444,11 +444,33 @@ void xRawLogViewerFrame::OnTimeLineDoScrollToMouseX(
 
 void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)
 {
-	std::optional<std::pair<double, size_t>> selPt =
-		timeLineMouseXYToTreeIndex(e);
+	if (e.RightIsDown())
+	{
+		std::optional<std::pair<double, size_t>> selPt =
+			timeLineMouseXYToTreeIndex(e);
+		OnTimeLineDoScrollToMouseX(selPt);
+	}
 
-	if (e.RightIsDown()) { OnTimeLineDoScrollToMouseX(selPt); }
-	if (e.LeftIsDown()) { OnTimeLineMouseLeftDown(selPt); }
+	if (e.LeftIsDown())
+	{
+		std::optional<std::pair<double, size_t>> selPt;
+
+		if (!m_timeline.currentTrackedSensorLabel.has_value())
+		{
+			// select on first click:
+			std::string sel;
+			selPt = timeLineMouseXYToTreeIndex(e, true, std::nullopt, sel);
+			if (!sel.empty()) m_timeline.currentTrackedSensorLabel = sel;
+		}
+		else
+		{
+			// continue tracking the same sensor:
+			selPt = timeLineMouseXYToTreeIndex(
+				e, true, *m_timeline.currentTrackedSensorLabel);
+		}
+
+		OnTimeLineMouseLeftDown(selPt);
+	}
 }
 void xRawLogViewerFrame::OnTimeLineMouseLeftDown(
 	const std::optional<std::pair<double, size_t>>& selPt)
@@ -468,6 +490,8 @@ void xRawLogViewerFrame::OnTimeLineMouseLeftDown(
 }
 void xRawLogViewerFrame::OnTimeLineMouseLeftUp(wxMouseEvent&)
 {
+	m_timeline.currentTrackedSensorLabel.reset();
+
 	m_treeView->m_is_thumb_tracking = false;
 	m_treeView->Refresh();
 }
@@ -562,7 +586,9 @@ void xRawLogViewerFrame::OnTimelineZoomScroolBar(const wxScrollEvent&)
 
 std::optional<std::pair<double, size_t>>
 	xRawLogViewerFrame::timeLineMouseXYToTreeIndex(
-		const wxMouseEvent& e, bool refineBySensorLabelVerticalMatch) const
+		const wxMouseEvent& e, bool refineBySensorLabelVerticalMatch,
+		const std::optional<std::string>& forceThisSensorLabel,
+		const mrpt::optional_ref<std::string>& outSelectedSensorLabel) const
 {
 	const auto clsz = m_glTimeLine->GetClientSize();
 
@@ -579,9 +605,24 @@ std::optional<std::pair<double, size_t>>
 	double clickedY = px2y(mouseY);
 
 	// find an approximate sensor type by vertical position:
-	auto closestSensorLabel = mrpt::containers::find_closest_with_tolerance(
-		m_timeline.yCoordToSensorLabel, clickedY,
-		TL_CLICK_SENSOR_LABEL_VERTICAL_TOLERANCE);
+	std::optional<std::string> trackedSensorLabel;
+
+	if (forceThisSensorLabel.has_value())
+	{ trackedSensorLabel = *forceThisSensorLabel; }
+	else
+	{
+		auto closestSensorLabel = mrpt::containers::find_closest_with_tolerance(
+			m_timeline.yCoordToSensorLabel, clickedY,
+			TL_CLICK_SENSOR_LABEL_VERTICAL_TOLERANCE);
+
+		if (closestSensorLabel.has_value())
+		{
+			trackedSensorLabel = closestSensorLabel->second;
+
+			if (outSelectedSensorLabel)
+				outSelectedSensorLabel.value().get() = *trackedSensorLabel;
+		}
+	}
 
 	std::string matchedClickSensorLabel;
 
@@ -597,9 +638,9 @@ std::optional<std::pair<double, size_t>>
 		mrpt::keep_min(treeIndex, m_treeView->getTotalTreeNodes() - 1);
 
 		// Look in the neighbors for the exact sensorLabel:
-		if (closestSensorLabel.has_value() && refineBySensorLabelVerticalMatch)
+		if (trackedSensorLabel.has_value() && refineBySensorLabelVerticalMatch)
 		{
-			const std::string& clickedSensorLabel = closestSensorLabel->second;
+			const std::string& clickedSensorLabel = *trackedSensorLabel;
 
 			const int lastIdx = m_treeView->getTotalTreeNodes() - 1;
 

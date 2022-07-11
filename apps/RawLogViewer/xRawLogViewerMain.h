@@ -468,6 +468,7 @@ class xRawLogViewerFrame : public wxFrame
 		std::multimap<double, size_t> xs2treeIndices;
 		std::map<size_t, double> treeIndices2xs;
 		size_t actualLeftBorderPixels = 10;
+		std::optional<std::string> currentTrackedSensorLabel;
 
 		void clearStats()
 		{
@@ -501,8 +502,10 @@ class xRawLogViewerFrame : public wxFrame
 
 	/// Return (xsTime, TreeIndex) in xs2treeIndices, none if no match:
 	std::optional<std::pair<double, size_t>> timeLineMouseXYToTreeIndex(
-		const wxMouseEvent& e,
-		bool refineBySensorLabelVerticalMatch = true) const;
+		const wxMouseEvent& e, bool refineBySensorLabelVerticalMatch = true,
+		const std::optional<std::string>& forceThisSensorLabel = std::nullopt,
+		const mrpt::optional_ref<std::string>& outSelectedSensorLabel =
+			std::nullopt) const;
 
 	// ALWAYS access this inside a "try" block, just in case...
 	mrpt::obs::CObservation::Ptr m_selectedObj;
