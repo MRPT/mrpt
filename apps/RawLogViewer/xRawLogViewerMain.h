@@ -38,6 +38,7 @@
 #include <wx/docview.h>
 #include <wx/image.h>
 #include <wx/scrolbar.h>
+#include <wx/simplebook.h>
 
 #include <map>
 #include <string>
@@ -296,7 +297,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem7;
 	wxMenuItem* MenuItem74;
 	wxMenuItem* MenuItem40;
-	wxNotebook* Notebook1;
+	wxSimplebook* Notebook1;
 	wxPanel* pn_CObservationGasSensors;
 	wxMenuItem* MenuItem80;
 	wxBoxSizer* BoxSizer8;

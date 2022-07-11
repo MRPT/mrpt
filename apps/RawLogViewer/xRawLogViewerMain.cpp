@@ -684,7 +684,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 		SplitterWindow3, ID_PANEL5, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_PANEL5"));
 	BoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
-	Notebook1 = new wxNotebook(
+	Notebook1 = new wxSimplebook(
 		Panel5, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM,
 		_T("ID_NOTEBOOK1"));
 	pn_CSensorialFrame = new wxPanel(
