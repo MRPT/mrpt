@@ -20,7 +20,6 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-          ubuntu-18.04-gcc,
           ubuntu-22.04-gcc,
           ubuntu-latest-clang,
           ubuntu-latest-gcc
