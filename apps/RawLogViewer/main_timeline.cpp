@@ -25,11 +25,13 @@ constexpr double XTICKS_FONT_WIDTH = 65.0 / 7.0;
 constexpr double TL_CLICK_SENSOR_LABEL_VERTICAL_TOLERANCE = 0.1;
 constexpr int TL_SEARCH_CLICK_RANGE = 200;
 
+constexpr double TL_MAXIMUM_TIME_ZOOM = 0.001;	// in [0,1] ratio
+
 void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 {
 	using This = xRawLogViewerFrame;  // shortcut!
 
-	static const long ID_STATICTEXT4 = wxNewId();
+	static const long ID_TIMELINE_SCROLL_BAR = wxNewId();
 
 	wxFlexGridSizer* fgzBottomTimeLine;
 
@@ -50,10 +52,17 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 		fgs->AddGrowableCol(0);
 		fgs->AddGrowableRow(1);
 
-		m_txtTimeLineRange =
-			new wxStaticText(pnTimeLine, ID_STATICTEXT4, "(Timeline)");
+		m_timeline.sbTimeLineRange =
+			new wxScrollBar(pnTimeLine, ID_TIMELINE_SCROLL_BAR);
 
-		fgs->Add(m_txtTimeLineRange, 1, wxALL | wxEXPAND, 1 /*border*/);
+		m_timeline.sbTimeLineRange->Bind(
+			wxEVT_SCROLL_CHANGED, &This::OnTimelineZoomScroolBar, this);
+		m_timeline.sbTimeLineRange->Bind(
+			wxEVT_SCROLL_THUMBTRACK, &This::OnTimelineZoomScroolBar, this);
+
+		// scrollbar properties set in rebuildBottomTimeLine().
+
+		fgs->Add(m_timeline.sbTimeLineRange, 1, wxALL | wxEXPAND, 0 /*border*/);
 
 		m_glTimeLine = new CMyGLCanvas(pnTimeLine, ID_TIMELINE_GLCANVAS);
 		pnTimeLine->SetMinSize(wxSize(-1, 125));
@@ -185,8 +194,28 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	// x ticks:
 	tl.xTicks->clear();
 
-	const double min_t_d = mrpt::Clock::toDouble(min_t);
-	const double max_t_d = mrpt::Clock::toDouble(max_t);
+	// absolute limits of dataset:
+	const double abs_min_t_d = mrpt::Clock::toDouble(min_t);
+	const double abs_max_t_d = mrpt::Clock::toDouble(max_t);
+	const double absDatasetDuration = std::max(1.0, abs_max_t_d - abs_min_t_d);
+
+	// Zoomed-in time range:
+	const double min_t_d =
+		abs_min_t_d + m_timeline.scrollBarStartPercent * absDatasetDuration;
+	const double max_t_d =
+		min_t_d + m_timeline.scrollBarZoomVisiblePercent * absDatasetDuration;
+
+	// Scrollbar properties:
+	m_timeline.sbTimeLineRange->SetScrollbar(
+		// thumb position:
+		mrpt::round(absDatasetDuration * m_timeline.scrollBarStartPercent),
+		// thumbSize: visible part (seconds).
+		mrpt::round(
+			absDatasetDuration * m_timeline.scrollBarZoomVisiblePercent),
+		// range:
+		mrpt::round(absDatasetDuration),
+		// page size
+		1);
 
 	for (int i = 0; i < (TL_X_TICK_COUNT - 1); i++)
 	{
@@ -194,7 +223,8 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 		auto glLb = mrpt::opengl::CText::Create();
 		glLb->setFont("mono", XTICKS_FONT_SIZE);
 		glLb->setString(mrpt::system::formatTimeInterval(
-			i * (max_t_d - min_t_d) / (TL_X_TICK_COUNT - 1)));
+			i * (max_t_d - min_t_d) / (TL_X_TICK_COUNT - 1) + min_t_d -
+			abs_min_t_d));
 		glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);
 
 		const double ptX =
@@ -237,8 +267,10 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 			{
 				const double t = mrpt::Clock::toDouble(tim);
 
-				const double x = xLeft1 +
-					(t - min_t_d) * (xRight1 - xLeft1) / (max_t_d - min_t_d);
+				const double dx = (t - min_t_d) / (max_t_d - min_t_d);
+				if (dx < 0 || dx > 1) continue;	 // out of zoomed-in area
+
+				const double x = xLeft1 + dx * (xRight1 - xLeft1);
 
 				if (x - lastX < widthOf1Px)
 					continue;  // no worth adding so many points
@@ -285,8 +317,10 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 
 			const double t = mrpt::Clock::toDouble(*tim);
 
-			const double x = xLeft1 +
-				(t - min_t_d) * (xRight1 - xLeft1) / (max_t_d - min_t_d);
+			const double dx = (t - min_t_d) / (max_t_d - min_t_d);
+			if (dx < 0 || dx > 1) continue;	 // out of zoomed-in area
+
+			const double x = xLeft1 + dx * (xRight1 - xLeft1);
 
 			// Insert all indices, without the decimation below:
 			tl.treeIndices2xs[idx] = x;
@@ -307,7 +341,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	m_timeline.cursor->setColor_u8(0x30, 0x30, 0x30, 0x50);
 	m_timeline.cursor->setBoxBorderColor({0x30, 0x30, 0x30, 0x50});
 
-	bottomTimeLineUpdateCursorFromTreeScrollPos();
+	bottomTimeLineUpdateCursorFromTreeScrollPos();	// this does a Refresh()
 }
 
 void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
@@ -347,8 +381,18 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 		itIdx != m_timeline.treeIndices2xs.end())
 	{
 		double xVisPage0 = itIdx->second;  // the "x"
-		double xVisPage1 = xVisPage0 + (xRight1 - xLeft1) * (pc1 - pc0);
+		double xVisPage1 = xVisPage0 +
+			(xRight1 - xLeft1) * (pc1 - pc0) /
+				m_timeline.scrollBarZoomVisiblePercent;
+
 		mrpt::keep_max(xVisPage1, xVisPage0 + 2 * widthOf1Px);	// Minimum width
+
+		// borders for zoomed-in views.
+		mrpt::keep_max(xVisPage1, xLeft1);
+		mrpt::keep_min(xVisPage1, xRight1);
+
+		mrpt::keep_max(xVisPage0, xLeft1);
+		mrpt::keep_min(xVisPage0, xRight1);
 
 		m_timeline.visiblePage->setVisibility(true);
 		m_timeline.visiblePage->setBoxCorners(
@@ -439,11 +483,86 @@ void xRawLogViewerFrame::OnTimeLineMouseRightUp(wxMouseEvent& e)
 void xRawLogViewerFrame::OnTimeLineMouseWheel(wxMouseEvent& e)
 {
 	const auto wheelIncr = e.GetWheelRotation();
-	std::cout << "wheelIncr: " << wheelIncr << std::endl;
+
+	if (!e.ShiftDown())
+	{
+		// Zoom in/out:
+		const double incrRatio = 1.0 -
+			0.2 * (std::max(1.1, std::abs(wheelIncr) / 100.0) - 1.0) *
+				mrpt::sign(wheelIncr);
+
+		const double R = m_timeline.scrollBarZoomVisiblePercent;
+
+		m_timeline.scrollBarZoomVisiblePercent *= incrRatio;
+		mrpt::keep_min(m_timeline.scrollBarZoomVisiblePercent, 1.0);
+		mrpt::keep_max(
+			m_timeline.scrollBarZoomVisiblePercent, TL_MAXIMUM_TIME_ZOOM);
+
+		const double Rnew = m_timeline.scrollBarZoomVisiblePercent;
+
+		// Try to keep the hover-on point in the same position before vs after
+		// zoom:
+		if (std::optional<std::pair<double, size_t>> selPt =
+				timeLineMouseXYToTreeIndex(e, false);
+			selPt.has_value())
+		{
+			double xFocus = selPt->first;
+			mrpt::keep_max(xFocus, -1.0);
+			mrpt::keep_min(xFocus, 1.0);
+
+			const auto clsz = m_glTimeLine->GetClientSize();
+
+			auto px2x = [clsz](int u) {
+				return -1.0 + (2.0 / clsz.GetWidth()) * u;
+			};
+			const double xLeft1 = px2x(m_timeline.actualLeftBorderPixels + 1);
+			const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
+
+			const double c = (xFocus - xLeft1) / (xRight1 - xLeft1);
+
+			// -------------------------------------------------------
+			// Equation for keeping the same focused point:
+			// s'+c*R' = s+c*R
+			// -------------------------------------------------------
+			const double s = m_timeline.scrollBarStartPercent;
+
+			const double sNew = s + c * (R - Rnew);
+
+			m_timeline.scrollBarStartPercent = sNew;
+		}
+	}
+	else
+	{
+		// Pan left/right:
+		const double incrRatio = -0.2 *
+			(std::max(1.1, std::abs(wheelIncr) / 100.0) - 1.0) *
+			mrpt::sign(wheelIncr) * m_timeline.scrollBarZoomVisiblePercent;
+
+		m_timeline.scrollBarStartPercent += incrRatio;
+	}
+
+	// limits:
+	mrpt::keep_max(m_timeline.scrollBarStartPercent, 0.0);
+	mrpt::keep_min(
+		m_timeline.scrollBarStartPercent,
+		1.0 - m_timeline.scrollBarZoomVisiblePercent);
+
+	// Update
+	rebuildBottomTimeLine();
+}
+
+void xRawLogViewerFrame::OnTimelineZoomScroolBar(const wxScrollEvent&)
+{
+	int pos = m_timeline.sbTimeLineRange->GetThumbPosition();
+	int maxRange = m_timeline.sbTimeLineRange->GetRange();
+	m_timeline.scrollBarStartPercent = static_cast<double>(pos) / maxRange;
+
+	rebuildBottomTimeLine();
 }
 
 std::optional<std::pair<double, size_t>>
-	xRawLogViewerFrame::timeLineMouseXYToTreeIndex(const wxMouseEvent& e) const
+	xRawLogViewerFrame::timeLineMouseXYToTreeIndex(
+		const wxMouseEvent& e, bool refineBySensorLabelVerticalMatch) const
 {
 	const auto clsz = m_glTimeLine->GetClientSize();
 
@@ -468,7 +587,8 @@ std::optional<std::pair<double, size_t>>
 
 	if (auto closestXIdx =
 			mrpt::containers::find_closest(m_timeline.xs2treeIndices, clickedX);
-		closestXIdx.has_value())
+		closestXIdx.has_value() &&
+		m_timeline.treeIndices2xs.count(closestXIdx->second) != 0)
 	{
 		// Closest sensor by "x":
 		auto treeIndex = closestXIdx->second;
@@ -477,7 +597,7 @@ std::optional<std::pair<double, size_t>>
 		mrpt::keep_min(treeIndex, m_treeView->getTotalTreeNodes() - 1);
 
 		// Look in the neighbors for the exact sensorLabel:
-		if (closestSensorLabel.has_value())
+		if (closestSensorLabel.has_value() && refineBySensorLabelVerticalMatch)
 		{
 			const std::string& clickedSensorLabel = closestSensorLabel->second;
 
@@ -494,7 +614,7 @@ std::optional<std::pair<double, size_t>>
 
 				bool found = sl.value() == clickedSensorLabel;
 
-				if (found)
+				if (found && m_timeline.treeIndices2xs.count(i) != 0)
 				{
 					treeIndex = i;	// keep best match.
 					matchedClickSensorLabel = clickedSensorLabel;

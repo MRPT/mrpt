@@ -37,6 +37,7 @@
 #include <wx/combobox.h>
 #include <wx/docview.h>
 #include <wx/image.h>
+#include <wx/scrolbar.h>
 
 #include <map>
 #include <string>
@@ -275,6 +276,7 @@ class xRawLogViewerFrame : public wxFrame
 	void OnTimeLineMouseRightDown(wxMouseEvent& e);
 	void OnTimeLineMouseRightUp(wxMouseEvent& e);
 	void OnTimeLineMouseWheel(wxMouseEvent& e);
+	void OnTimelineZoomScroolBar(const wxScrollEvent& e);
 
 	//(*Declarations(xRawLogViewerFrame)
 	wxMenu* MenuItem51;
@@ -424,7 +426,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxScrolledWindow* ScrolledWindow2 = nullptr;
 	wxTextCtrl* edSelectedTimeInfo = nullptr;
 	CMyGLCanvas* m_glTimeLine = nullptr;
-	wxStaticText* m_txtTimeLineRange = nullptr;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
@@ -463,6 +464,7 @@ class xRawLogViewerFrame : public wxFrame
 		mrpt::Clock::time_point max_t = INVALID_TIMESTAMP;
 		// correspondence between xs (-1,1 coordinates) and tree element index.
 
+		/// opengl [-1,1] xCoords => indices
 		std::multimap<double, size_t> xs2treeIndices;
 		std::map<size_t, double> treeIndices2xs;
 		size_t actualLeftBorderPixels = 10;
@@ -474,6 +476,16 @@ class xRawLogViewerFrame : public wxFrame
 			xs2treeIndices.clear();
 			treeIndices2xs.clear();
 		}
+
+		void resetAfterDatasetChanged()
+		{
+			scrollBarZoomVisiblePercent = 1.0;
+			scrollBarStartPercent = .0;
+		}
+
+		wxScrollBar* sbTimeLineRange = nullptr;
+		double scrollBarZoomVisiblePercent = 1.0;  // [0-1]: visible range
+		double scrollBarStartPercent = 0.0;	 // [0-1]: left-most part
 
 		mrpt::opengl::CBox::Ptr borderBox;
 		mrpt::opengl::CSetOfObjects::Ptr xTicks;
@@ -489,7 +501,8 @@ class xRawLogViewerFrame : public wxFrame
 
 	/// Return (xsTime, TreeIndex) in xs2treeIndices, none if no match:
 	std::optional<std::pair<double, size_t>> timeLineMouseXYToTreeIndex(
-		const wxMouseEvent& e) const;
+		const wxMouseEvent& e,
+		bool refineBySensorLabelVerticalMatch = true) const;
 
 	// ALWAYS access this inside a "try" block, just in case...
 	mrpt::obs::CObservation::Ptr m_selectedObj;

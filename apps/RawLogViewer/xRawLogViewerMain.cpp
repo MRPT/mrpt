@@ -2319,6 +2319,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 	// -----------------------------------------
 	// Rebuild bottom timeline view
 	// -----------------------------------------
+	m_timeline.resetAfterDatasetChanged();
 	rebuildBottomTimeLine();
 
 	WX_END_TRY
