@@ -12,6 +12,7 @@
 
 //(*Headers(xRawLogViewerFrame)
 #include <wx/button.h>
+#include <wx/checklst.h>
 #include <wx/combobox.h>
 #include <wx/frame.h>
 #include <wx/menu.h>
@@ -36,6 +37,8 @@
 #include <wx/combobox.h>
 #include <wx/docview.h>
 #include <wx/image.h>
+#include <wx/scrolbar.h>
+#include <wx/simplebook.h>
 
 #include <map>
 #include <string>
@@ -44,9 +47,12 @@
 
 // General global variables:
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/containers/bimap.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/serialization/CSerializable.h>
 
 // JLBC: Unix X headers have these funny things...
@@ -69,40 +75,12 @@
 struct TInfoPerSensorLabel
 {
 	TInfoPerSensorLabel() = default;
-	std::vector<double> timOccurs;
+	std::vector<mrpt::Clock::time_point> timOccurs;
 	double max_ellapsed_tim_between_obs{.0};
-	mrpt::system::TTimeStamp first, last;
+	mrpt::Clock::time_point first, last;
 
 	size_t getOccurences() const;
-	void addOcurrence(
-		mrpt::system::TTimeStamp obs_tim,
-		mrpt::system::TTimeStamp first_dataset_tim);
-};
-
-class wxStaticBitmapPopup : public wxStaticBitmap
-{
-   public:
-	wxStaticBitmapPopup() = default;
-	wxStaticBitmapPopup(
-		wxWindow* parent, wxWindowID id, const wxBitmap& img,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, int flags = 0,
-		const wxString& name = wxT(""));
-	~wxStaticBitmapPopup() override;
-
-	void OnShowPopupMenu(wxMouseEvent& event);
-
-   protected:
-	wxMenu mnuImages;
-
-	void OnPopupSaveImage(wxCommandEvent& event);
-	void OnPopupLoadImage(wxCommandEvent& event);
-
-	static const long ID_MENUITEM_IMG_LOAD;
-	static const long ID_MENUITEM_IMG_SAVE;
-
-	DECLARE_DYNAMIC_CLASS(wxStaticBitmapPopup)
-	DECLARE_EVENT_TABLE()
+	void addOcurrence(mrpt::Clock::time_point obsTim);
 };
 
 // A custom Art provider for customizing the icons:
@@ -130,8 +108,6 @@ struct TAlogRecord
 
 class xRawLogViewerFrame : public wxFrame
 {
-	friend class wxStaticBitmapPopup;
-
    public:
 	xRawLogViewerFrame(wxWindow* parent, wxWindowID id = -1);
 	~xRawLogViewerFrame() override;
@@ -157,7 +133,12 @@ class xRawLogViewerFrame : public wxFrame
 
 	ViewOptions3DPoints* getViewOptions() { return pnViewOptions; }
 
+	void bottomTimeLineUpdateCursorFromTreeScrollPos();
+
    private:
+	bool m_needsToRefreshTimeline = true;
+	bool m_needsToRefresh3DRangeScanView = true;
+
 	/** Loads the given file in memory, in the varibale "rawlog"
 	 */
 	void loadRawlogFile(const std::string& str, int first = 0, int last = -1);
@@ -165,6 +146,10 @@ class xRawLogViewerFrame : public wxFrame
 	/** Rebuilds the tree view with the data in "rawlog".
 	 */
 	void rebuildTreeView();
+
+	/// This needs to be called when thedataset changes
+	/// (automatically called from rebuildTreeView()).
+	void rebuildBottomTimeLine();
 
 	// Open most recent file
 	void OnMRUFile(wxCommandEvent& event);
@@ -254,176 +239,17 @@ class xRawLogViewerFrame : public wxFrame
 	//*)
 	void OnMenuRenameBySFIndex(wxCommandEvent& event);
 
-	//(*Identifiers(xRawLogViewerFrame)
-	static const long ID_BUTTON2;
-	static const long ID_BUTTON3;
-	static const long ID_STATICLINE2;
-	static const long ID_BUTTON4;
-	static const long ID_BUTTON5;
-	static const long ID_BUTTON6;
-	static const long ID_BUTTON7;
-	static const long ID_STATICLINE3;
-	static const long ID_BUTTON8;
-	static const long ID_BUTTON9;
-	static const long ID_STATICLINE4;
-	static const long ID_BUTTON10;
-	static const long ID_BUTTON11;
-	static const long ID_STATICLINE1;
-	static const long ID_STATICTEXT4;
-	static const long ID_COMBO_IMG_DIRS;
-	static const long ID_CUSTOM5;
-	static const long ID_PANEL1;
-	static const long ID_TEXTCTRL1;
-	static const long ID_PANEL3;
-	static const long ID_BUTTON1;
-	static const long ID_PANEL18;
-	static const long ID_TEXTCTRL2;
-	static const long ID_CUSTOM6;
-	static const long ID_PANEL25;
-	static const long ID_SPLITTERWINDOW2;
-	static const long ID_TEXTCTRL3;
-	static const long ID_NOTEBOOK3;
-	static const long ID_PANEL6;
-	static const long ID_CUSTOM2;
-	static const long ID_CUSTOM3;
-	static const long ID_PANEL7;
-	static const long ID_CUSTOM1;
-	static const long ID_PANEL4;
-	static const long ID_PANEL8;
-	static const long ID_STATICTEXT2;
-	static const long ID_STATICBITMAP1;
-	static const long ID_PANEL9;
-	static const long ID_STATICTEXT1;
-	static const long ID_STATICBITMAP2;
-	static const long ID_PANEL13;
-	static const long ID_STATICBITMAP3;
-	static const long ID_PANEL14;
-	static const long ID_STATICBITMAP7;
-	static const long ID_PANEL24;
-	static const long ID_NOTEBOOK2;
-	static const long ID_PANEL10;
-	static const long ID_PANEL11;
-	static const long ID_PANEL12;
-	static const long ID_PANEL15;
-	static const long ID_CUSTOM4;
-	static const long ID_PANEL17;
-	static const long ID_PANEL16;
-	static const long ID_XY_GLCANVAS;
-	static const long ID_STATICTEXT3;
-	static const long ID_SLIDER1;
-	static const long ID_PANEL20;
-	static const long ID_STATICBITMAP4;
-	static const long ID_PANEL21;
-	static const long ID_STATICBITMAP5;
-	static const long ID_PANEL22;
-	static const long ID_STATICBITMAP6;
-	static const long ID_PANEL23;
-	static const long ID_PANEL_VIEW_3D_POINT_OPTIONS;
-	static const long ID_NOTEBOOK_3DOBS;
-	static const long ID_PANEL19;
-	static const long ID_NOTEBOOK1;
-	static const long ID_PANEL5;
-	static const long ID_SPLITTERWINDOW3;
-	static const long ID_PANEL2;
-	static const long ID_SPLITTERWINDOW1;
-	static const long ID_MENUITEM1;
-	static const long ID_MENUITEM2;
-	static const long ID_MENUITEM11;
-	static const long ID_MENUITEM4;
-	static const long ID_MENUITEM76;
-	static const long ID_MENUITEM7;
-	static const long ID_MENUITEM8;
-	static const long ID_MENUITEM10;
-	static const long ID_MENUITEM62;
-	static const long ID_MENUITEM64;
-	static const long ID_MENUITEM13;
-	static const long ID_MENUITEM60;
-	static const long ID_MENUITEM61;
-	static const long ID_MENUITEM6;
-	static const long ID_MENUITEM5;
-	static const long ID_MENUITEM47;
-	static const long ID_MENUITEM56;
-	static const long ID_MENUITEM63;
-	static const long ID_MENUITEM87;
-	static const long ID_MENUITEM3;
-	static const long ID_MENUITEM58;
-	static const long ID_MENUITEM55;
-	static const long ID_MENUITEM54;
-	static const long idMenuQuit;
-	static const long ID_MENUITEM14;
-	static const long ID_MENUITEM51;
-	static const long ID_MENUITEM69;
-	static const long ID_MENUITEM91;
-	static const long ID_MENUITEM15;
-	static const long ID_MENUITEM70;
-	static const long ID_MENUITEM16;
-	static const long ID_MENUITEM59;
-	static const long ID_MENUITEM57;
-	static const long ID_MENUITEM75;
-	static const long ID_MENUITEM67;
-	static const long ID_MENUITEM68;
-	static const long ID_MENUITEM82;
-	static const long ID_MENUITEM20;
-	static const long ID_MENUITEM22;
-	static const long ID_MENUITEM53;
-	static const long ID_MENUITEM23;
-	static const long ID_MENUITEM41;
-	static const long ID_MENUITEM84;
-	static const long ID_MENUITEM12;
-	static const long ID_MENUITEM17;
-	static const long ID_MENUITEM44;
-	static const long ID_MENUITEM19;
-	static const long ID_MENUITEM25;
-	static const long ID_MENUITEM73;
-	static const long ID_MENUITEM74;
-	static const long ID_MENUITEM77;
-	static const long ID_MENUITEM79;
-	static const long ID_MENUITEM18;
-	static const long ID_MENUITEM86;
-	static const long ID_MENUITEM90;
-	static const long ID_MENUITEM85;
-	static const long ID_MENUITEM29;
-	static const long ID_MENUITEM9;
-	static const long ID_MENUITEM28;
-	static const long ID_MENUITEM71;
-	static const long ID_MENUITEM72;
-	static const long ID_MENUITEM78;
-	static const long ID_MENUITEM83;
-	static const long ID_MENUITEM21;
-	static const long ID_MENUITEM30;
-	static const long ID_MENUITEM24;
-	static const long ID_MENUITEM35;
-	static const long ID_MENUITEM31;
-	static const long ID_MENUITEM34;
-	static const long ID_MENUITEM65;
-	static const long ID_MENUITEM66;
-	static const long ID_MENUITEM52;
-	static const long ID_MENUITEM80;
-	static const long ID_MENUITEM36;
-	static const long ID_MENUITEM33;
-	static const long ID_MENUITEM38;
-	static const long ID_MENUITEM37;
-	static const long ID_MENUITEM40;
-	static const long ID_MENUITEM81;
-	static const long ID_MENUITEM39;
-	static const long ID_MENUITEM46;
-	static const long ID_MENUITEM45;
-	static const long ID_MENUITEM43;
-	static const long ID_MENUITEM42;
-	static const long ID_MENUITEM89;
-	static const long ID_MENUITEM88;
-	static const long ID_MENUITEM26;
-	static const long ID_MENUITEM32;
-	static const long ID_MENUITEM27;
-	static const long idMenuAbout;
-	static const long ID_STATUSBAR1;
-	static const long MNU_1;
-	static const long ID_MENUITEM49;
-	static const long ID_MENUITEM50;
-	static const long ID_MENUITEM48;
-	static const long ID_TIMER1;
-	//*)
-	static const long ID_MENUITEM_RENAME_BY_SF_IDX;
+	void OnTimeLineDoScrollToMouseX(
+		const std::optional<std::pair<double, size_t>>& selPt);
+
+	void OnTimeLineMouseMove(wxMouseEvent& e);
+	void OnTimeLineMouseLeftDown(
+		const std::optional<std::pair<double, size_t>>& selPt);
+	void OnTimeLineMouseLeftUp(wxMouseEvent& e);
+	void OnTimeLineMouseRightDown(wxMouseEvent& e);
+	void OnTimeLineMouseRightUp(wxMouseEvent& e);
+	void OnTimeLineMouseWheel(wxMouseEvent& e);
+	void OnTimelineZoomScroolBar(const wxScrollEvent& e);
 
 	//(*Declarations(xRawLogViewerFrame)
 	wxMenu* MenuItem51;
@@ -433,19 +259,17 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem61;
 	wxMenuItem* MenuItem31;
 	wxMenuItem* MenuItem57;
-	wxStaticBitmapPopup* bmpObsImage;
+	CMyGLCanvas* bmpObsImage;
 	wxPanel* pn3Dobs_Conf;
 	ViewOptions3DPoints* pnViewOptions;
 	wxMenuItem* MenuItem59;
 	wxPanel* pn_CSensorialFrame;
 	wxPanel* Panel5;
 	wxCustomButton* Button4;
-	wxPanel* pn_CObservation2DRangeScan;
 	wxMenuItem* MenuItem7;
 	wxMenuItem* MenuItem74;
-	wxBoxSizer* BoxSizer5;
 	wxMenuItem* MenuItem40;
-	wxNotebook* Notebook1;
+	wxSimplebook* Notebook1;
 	wxPanel* pn_CObservationGasSensors;
 	wxMenuItem* MenuItem80;
 	wxBoxSizer* BoxSizer8;
@@ -454,13 +278,11 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenu* MenuItem84;
 	wxPanel* pn_CObservationBeaconRanges;
 	wxStaticText* StaticText2;
-	wxPanel* Panel4;
 	wxMenuItem* MenuItem49;
 	wxMenuItem* MenuItem50;
-	mpWindow* plotScan2D;
 	wxMenuItem* MenuItem68;
 	wxMenu* Menu14;
-	wxStaticBitmapPopup* bmp3Dobs_depth;
+	CMyGLCanvas* bmp3Dobs_depth;
 	wxMenu* Menu3;
 	wxCustomButton* Button6;
 	wxMenu* Menu20;
@@ -468,14 +290,12 @@ class xRawLogViewerFrame : public wxFrame
 	mpWindow* plotAct2D_PHI;
 	wxMenuItem* MenuItem86;
 	wxMenu* MenuItem20;
-	wxSplitterWindow* SplitterWindow2;
 	wxMenuItem* MenuItem46;
-	wxStaticBitmapPopup* bmpObsStereoLeft;
+	CMyGLCanvas* bmpObsStereoLeft;
 	wxMenuItem* MenuItem4;
 	wxMenuItem* MenuItem76;
 	wxPanel* pn_Action;
 	wxMenuItem* MenuItem14;
-	wxPanel* Panel11;
 	wxMenuItem* MenuItem36;
 	wxCustomButton* btnToolbarOpen;
 	wxMenuItem* mnuItemEnable3DCamAutoGenPoints;
@@ -511,7 +331,6 @@ class xRawLogViewerFrame : public wxFrame
 	wxPanel* Panel3;
 	wxStaticLine* StaticLine4;
 	wxStaticLine* StaticLine2;
-	mpWindow* plotRawlogSensorTimes;
 	wxMenuItem* MenuItem72;
 	wxMenuItem* MenuItem44;
 	wxPanel* pn_CObservationBearingRange;
@@ -522,9 +341,9 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem38;
 	wxMenuItem* MenuItem3;
 	wxCustomButton* Button3;
-	CRawlogTreeView* tree_view;
+	CRawlogTreeView* m_treeView;
 	wxMenuItem* MenuItem64;
-	wxStaticBitmapPopup* bmp3Dobs_int;
+	CMyGLCanvas* bmp3Dobs_int;
 	wxTextCtrl* memo;
 	wxMenuItem* MenuItem28;
 	wxMenuItem* MenuItem63;
@@ -537,15 +356,14 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenu* MenuItem45;
 	wxStatusBar* StatusBar1;
 	wxMenuItem* MenuItem52;
-	wxStaticBitmapPopup* bmpObsStereoDisp;
-	wxCustomButton* Button5;
+	CMyGLCanvas* bmpObsStereoDisp;
 	wxStaticLine* StaticLine3;
 	wxMenuItem* MenuItem35;
 	wxStaticLine* StaticLine1;
 	wxSplitterWindow* SplitterWindow3;
 	wxMenuItem* MenuItem23;
 	wxBoxSizer* BoxSizer1;
-	wxStaticBitmapPopup* bmp3Dobs_conf;
+	CMyGLCanvas* bmp3Dobs_conf;
 	wxMenuItem* MenuItem58;
 	wxPanel* pn3Dobs_Int;
 	wxTextCtrl* memStats;
@@ -566,7 +384,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxPanel* pn_CObservation3DRangeScan;
 	wxMenuItem* MenuItem47;
 	wxMenuItem* MenuItem30;
-	wxStaticBitmapPopup* bmpObsStereoRight;
+	CMyGLCanvas* bmpObsStereoRight;
 	wxMenuItem* MenuItem77;
 	wxMenuItem* MenuItem66;
 	wxMenuItem* MenuItem53;
@@ -579,9 +397,17 @@ class xRawLogViewerFrame : public wxFrame
 	//*)
 	wxFlexGridSizer* FlexGridSizerImg = nullptr;
 	wxScrolledWindow* ScrolledWindow2 = nullptr;
+	wxTextCtrl* edSelectedTimeInfo = nullptr;
+	CMyGLCanvas* m_glTimeLine = nullptr;
 
 	void OnComboImageDirsChange(wxCommandEvent& event);
 	void On3DObsPagesChange(wxBookCtrlEvent& event);
+
+	void OnSize(wxSizeEvent& event);
+	void OnMaximize(wxMaximizeEvent& event);
+	void OnSizeOrMaximize();
+
+	void createTimeLineObjects(wxFlexGridSizer* fgzMain);
 
 	// void OntreeViewItemRightClick(wxTreeEvent& event);
 
@@ -596,15 +422,66 @@ class xRawLogViewerFrame : public wxFrame
 	void showNextTip(bool forceShow = false);
 
 	// Layers for the 2D graphs:
-	mpFXYVector *lyScan2D, *lyRangeBearingLandmarks;
+	mpFXYVector* lyRangeBearingLandmarks;
 	mpFXYVector *lyAction2D_XY, *lyAction2D_PHI;
 
 	wxFileHistory m_fileHistory;
 
 	std::map<std::string, TInfoPerSensorLabel> listOfSensorLabels;
 
-	// ALWAYS access this inside a "try" block, for the case...
-	mrpt::obs::CObservation::Ptr curSelectedObservation;
+	struct TimeLineData
+	{
+		TimeLineData() = default;
+
+		mrpt::Clock::time_point min_t = INVALID_TIMESTAMP;
+		mrpt::Clock::time_point max_t = INVALID_TIMESTAMP;
+		// correspondence between xs (-1,1 coordinates) and tree element index.
+
+		/// opengl [-1,1] xCoords => indices
+		std::multimap<double, size_t> xs2treeIndices;
+		std::map<size_t, double> treeIndices2xs;
+		size_t actualLeftBorderPixels = 10;
+		std::optional<std::string> currentTrackedSensorLabel;
+
+		void clearStats()
+		{
+			min_t = INVALID_TIMESTAMP;
+			max_t = INVALID_TIMESTAMP;
+			xs2treeIndices.clear();
+			treeIndices2xs.clear();
+		}
+
+		void resetAfterDatasetChanged()
+		{
+			scrollBarZoomVisiblePercent = 1.0;
+			scrollBarStartPercent = .0;
+		}
+
+		wxScrollBar* sbTimeLineRange = nullptr;
+		double scrollBarZoomVisiblePercent = 1.0;  // [0-1]: visible range
+		double scrollBarStartPercent = 0.0;	 // [0-1]: left-most part
+
+		mrpt::opengl::CBox::Ptr borderBox;
+		mrpt::opengl::CSetOfObjects::Ptr xTicks;
+		mrpt::opengl::CPointCloud::Ptr allSensorDots;
+		mrpt::opengl::CBox::Ptr cursor;
+		mrpt::opengl::CBox::Ptr visiblePage;
+		mrpt::opengl::CSetOfObjects::Ptr ySensorLabels;
+
+		std::map<double, std::string> yCoordToSensorLabel;
+	};
+
+	TimeLineData m_timeline;
+
+	/// Return (xsTime, TreeIndex) in xs2treeIndices, none if no match:
+	std::optional<std::pair<double, size_t>> timeLineMouseXYToTreeIndex(
+		const wxMouseEvent& e, bool refineBySensorLabelVerticalMatch = true,
+		const std::optional<std::string>& forceThisSensorLabel = std::nullopt,
+		const mrpt::optional_ref<std::string>& outSelectedSensorLabel =
+			std::nullopt) const;
+
+	// ALWAYS access this inside a "try" block, just in case...
+	mrpt::obs::CObservation::Ptr m_selectedObj;
 	mrpt::serialization::CSerializable::Ptr curSelectedObject;
 	mrpt::gui::CDisplayWindow3D::Ptr winGPSPath;
 	mrpt::gui::CDisplayWindowPlots::Ptr winGPSPath2D_xy, winGPSPath2D_xz;

@@ -24,15 +24,17 @@ namespace mrpt::opengl
  *  COpenGLViewport::getCamera(), but if a CCamera object is added as an object
  *  to be rendered, it will override the internal viewport camera.
  *
- *  Projection models:
+ *  Available projection models:
  *  - Projective model, parameterized via setProjectiveFOVdeg() (vertical field
- * of view, in degrees), or
+ * of view, in degrees)
  *  - Projective model, by means of a computer vision pinhole intrinsic
- * parameter set (see `setProjectiveFromPinhole()`), or
- *  - Orthogonal projection model (use `setProjectiveModel(false)`, or
- * `setOrthogonal()`).
+ * parameter set: see setProjectiveFromPinhole()
+ *  - Orthogonal projection model: use setProjectiveModel(false), or
+ *  setOrthogonal(), or
+ *  - No projection mode: use `setNoProjection()`. Viewport coordinates are
+ *    fixed to bottomLeft=(-1,-1) to rightTop=(+1,+1).
  *
- * Placing cameras can be done:
+ * Defining the position and orientation of a camera is possible by:
  * - Using an "orbit" model: defined by a "pointing to" point, a distance to
  * object, and azimuth + elevation angles; or
  * - Directly giving the SE(3) camera pose, setting the set6DOFMode() to `true`
@@ -59,16 +61,34 @@ class CCamera : public CRenderizable
 	 *  @{ */
 
 	/** Enable/Disable projective mode (vs. orthogonal). */
-	void setProjectiveModel(bool v = true) { m_projectiveModel = v; }
+	void setProjectiveModel(bool v = true)
+	{
+		m_projectiveModel = v;
+		m_useNoProjection = false;
+	}
 
 	/** Enable/Disable orthogonal mode (vs. projective)*/
-	void setOrthogonal(bool v = true) { m_projectiveModel = !v; }
+	void setOrthogonal(bool v = true)
+	{
+		m_projectiveModel = !v;
+		m_useNoProjection = false;
+	}
 
 	void setProjectiveFromPinhole(const mrpt::img::TCamera& camIntrinsics)
 	{
 		m_projectiveModel = true;
+		m_useNoProjection = false;
 		m_pinholeModel = camIntrinsics;
 	}
+
+	/** Disable all coordinate transformations and allow direct use of pixel
+	 * coordinates, that is, the projection matrix is the identity.
+	 *
+	 * In this mode, (-1,-1) is the bottom-left corner and (+1,+1) the top-right
+	 * corner, per OpenGL defaults. This mode can be disabled calling
+	 * setProjectiveModel() or setOrthogonal()
+	 */
+	void setNoProjection() { m_useNoProjection = true; }
 
 	/** Vertical field-of-View in degs, only when projectiveModel=true
 	 * (default=30 deg).
@@ -87,6 +107,7 @@ class CCamera : public CRenderizable
 
 	bool isProjective() const { return m_projectiveModel; }
 	bool isOrthogonal() const { return !m_projectiveModel; }
+	bool isNoProjection() const { return m_useNoProjection; }
 
 	/** @} */
 
@@ -140,7 +161,7 @@ class CCamera : public CRenderizable
 	/** @} */
 
 	/** Render does nothing here. */
-	void render(const RenderContext& rc) const override {}
+	void render(const RenderContext& /*rc*/) const override {}
 
 	/** Render does nothing here. */
 	void renderUpdateBuffers() const override {}
@@ -158,6 +179,9 @@ class CCamera : public CRenderizable
 	/** If set to true (default), camera model is projective, otherwise, it's
 	 * orthogonal. */
 	bool m_projectiveModel{true};
+
+	/// See setNoProjection()
+	bool m_useNoProjection = false;
 
 	/** If defined, it overrides m_projectiveFOVdeg. */
 	std::optional<mrpt::img::TCamera> m_pinholeModel;

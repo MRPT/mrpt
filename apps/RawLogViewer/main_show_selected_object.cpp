@@ -11,10 +11,6 @@
 #include <mrpt/math/ops_matrices.h>	 // << ops
 #include <mrpt/math/ops_vectors.h>	// << ops
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/datetime.h>
 
 #include "ParametersView3DPoints.h"
@@ -22,7 +18,6 @@
 
 #define MRPT_NO_WARN_BIG_HDR  // It's ok to include ALL hdrs here.
 #include <mrpt/gui/WxUtils.h>
-#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs.h>
 #include <mrpt/obs/CObservationRotatingScan.h>	// not included in obs.h since it's in mrpt-maps
@@ -42,214 +37,11 @@ using namespace mrpt::poses;
 using namespace mrpt::rtti;
 using namespace std;
 
-// Bounding box memory so we have consistent coloring across different sensors:
-std::optional<mrpt::math::TBoundingBox> bbMemory;
-double bbMemoryFading = 0.99;
-
-void recolorize3Dpc(
-	const mrpt::opengl::CPointCloudColoured::Ptr& pnts,
-	const ParametersView3DPoints& p)
+static void showImageInGLView(CMyGLCanvas& canvas, const mrpt::img::CImage& im)
 {
-	const auto newBb = pnts->getBoundingBox();
-
-	// Slowly update bb memory:
-	if (!bbMemory.has_value())
-	{
-		// first time:
-		bbMemory = newBb;
-	}
-	else
-	{
-		bbMemory.value().min = bbMemory.value().min * bbMemoryFading +
-			newBb.min * (1.0 - bbMemoryFading);
-		bbMemory.value().max = bbMemory.value().max * bbMemoryFading +
-			newBb.max * (1.0 - bbMemoryFading);
-	}
-	const auto& bb = bbMemory.value();
-
-	// actual colorize:
-	switch (p.colorizeByAxis)
-	{
-		case 0:
-			pnts->recolorizeByCoordinate(
-				p.invertColorMapping ? bb.max.x : bb.min.x,
-				p.invertColorMapping ? bb.min.x : bb.max.x, 0 /* x */,
-				p.colorMap);
-			break;
-		case 1:
-			pnts->recolorizeByCoordinate(
-				p.invertColorMapping ? bb.max.y : bb.min.y,
-				p.invertColorMapping ? bb.min.y : bb.max.y, 1 /* y */,
-				p.colorMap);
-			break;
-		case 2:
-			pnts->recolorizeByCoordinate(
-				p.invertColorMapping ? bb.max.z : bb.min.z,
-				p.invertColorMapping ? bb.min.z : bb.max.z, 2 /* z */,
-				p.colorMap);
-			break;
-		default: break;
-	}
-}
-
-void add_common_to_viz(
-	const CObservation& obs, const ParametersView3DPoints& p,
-	mrpt::opengl::CSetOfObjects& out)
-{
-	if (p.showAxis)
-	{
-		const float L = p.axisLimits;
-		auto gl_axis = mrpt::opengl::CAxis::Create(
-			-L, -L, -L, L, L, L, p.axisTickFrequency, 2, true);
-		gl_axis->setTextScale(p.axisTickTextSize);
-		gl_axis->setColor_u8(0xa0, 0xa0, 0xa0, 0x80);
-		out.insert(gl_axis);
-
-		// Show axis labels such that they can be read from the IIIrd-IVth
-		// quadrant:
-		const float yawIncrs[3] = {180.f, -90.f, 180.f};
-		for (int axis = 0; axis < 3; axis++)
-		{
-			float yaw_deg, pitch_deg, roll_deg;
-			gl_axis->getTextLabelOrientation(
-				axis, yaw_deg, pitch_deg, roll_deg);
-			yaw_deg += yawIncrs[axis];
-			gl_axis->setTextLabelOrientation(
-				axis, yaw_deg, pitch_deg, roll_deg);
-		}
-	}
-
-	if (p.drawSensorPose)
-	{
-		const auto glCorner =
-			mrpt::opengl::stock_objects::CornerXYZSimple(p.sensorPoseScale);
-		glCorner->setPose(obs.sensorPose());
-		out.insert(glCorner);
-	}
-}
-
-void obs3Dscan_to_viz(
-	const CObservation3DRangeScan::Ptr& obs, const ParametersView3DPoints& p,
-	mrpt::opengl::CSetOfObjects& out)
-{
-	out.clear();
-
-	// Generate/load 3D points
-	// ----------------------
-	mrpt::maps::CPointsMap::Ptr pointMap;
-	mrpt::maps::CColouredPointsMap::Ptr pointMapCol;
-	mrpt::obs::T3DPointsProjectionParams pp;
-	pp.takeIntoAccountSensorPoseOnRobot = true;
-	pp.onlyPointsWithIntensityColor = p.onlyPointsWithColor;
-
-	// Color from intensity image?
-	if (p.colorFromRGBimage && obs->hasRangeImage && obs->hasIntensityImage)
-	{
-		pointMapCol = mrpt::maps::CColouredPointsMap::Create();
-		pointMapCol->colorScheme.scheme =
-			CColouredPointsMap::cmFromIntensityImage;
-
-		obs->unprojectInto(*pointMapCol, pp);
-		pointMap = pointMapCol;
-	}
-	else
-	{
-		// Empty point set, or load from XYZ in observation:
-		pointMap = mrpt::maps::CSimplePointsMap::Create();
-		if (obs->hasPoints3D)
-		{
-			for (size_t i = 0; i < obs->points3D_x.size(); i++)
-				pointMap->insertPoint(
-					obs->points3D_x[i], obs->points3D_y[i], obs->points3D_z[i]);
-		}
-		else if (obs->hasRangeImage)
-		{
-			obs->unprojectInto(*pointMap, pp);
-		}
-	}
-
-	add_common_to_viz(*obs, p, out);
-
-	auto gl_pnts = mrpt::opengl::CPointCloudColoured::Create();
-	// Load as RGB or grayscale points:
-	if (pointMapCol) gl_pnts->loadFromPointsMap(pointMapCol.get());
-	else
-	{
-		gl_pnts->loadFromPointsMap(pointMap.get());
-		recolorize3Dpc(gl_pnts, p);
-	}
-
-	// No need to further transform 3D points
-	gl_pnts->setPose(mrpt::poses::CPose3D());
-	gl_pnts->setPointSize(p.pointSize);
-
-	out.insert(gl_pnts);
-}
-
-void obsVelodyne_to_viz(
-	const CObservationVelodyneScan::Ptr& obs, const ParametersView3DPoints& p,
-	mrpt::opengl::CSetOfObjects& out)
-{
-	out.clear();
-
-	add_common_to_viz(*obs, p, out);
-
-	auto pnts = mrpt::opengl::CPointCloudColoured::Create();
-	out.insert(pnts);
-
-	CColouredPointsMap pntsMap;
-	pntsMap.loadFromVelodyneScan(*obs);
-	pnts->loadFromPointsMap(&pntsMap);
-	pnts->setPointSize(p.pointSize);
-
-	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
-}
-
-void obsPointCloud_to_viz(
-	const mrpt::obs::CObservationPointCloud::Ptr& obs,
-	const ParametersView3DPoints& p, mrpt::opengl::CSetOfObjects& out)
-{
-	out.clear();
-
-	add_common_to_viz(*obs, p, out);
-
-	auto pnts = mrpt::opengl::CPointCloudColoured::Create();
-	out.insert(pnts);
-
-	if (obs->pointcloud) pnts->loadFromPointsMap(obs->pointcloud.get());
-	pnts->setPose(obs->sensorPose);
-
-	pnts->setPointSize(p.pointSize);
-
-	if (!p.colorFromRGBimage) recolorize3Dpc(pnts, p);
-}
-
-void obs2Dscan_to_viz(
-	const CObservation2DRangeScan::Ptr& obs, const ParametersView3DPoints& p,
-	mrpt::opengl::CSetOfObjects& out)
-{
-	out.clear();
-
-	add_common_to_viz(*obs, p, out);
-
-	auto pnts = mrpt::opengl::CPlanarLaserScan::Create();
-	out.insert(pnts);
-
-	pnts->setScan(*obs);
-	pnts->setPointSize(p.pointSize);
-	pnts->enableSurface(p.showSurfaceIn2Dscans);
-	pnts->enablePoints(p.showPointsIn2Dscans);
-
-	pnts->setSurfaceColor(
-		mrpt::u8tof(p.surface2DscansColor.R),
-		mrpt::u8tof(p.surface2DscansColor.G),
-		mrpt::u8tof(p.surface2DscansColor.B),
-		mrpt::u8tof(p.surface2DscansColor.A));
-	pnts->setPointsColor(
-		mrpt::u8tof(p.points2DscansColor.R),
-		mrpt::u8tof(p.points2DscansColor.G),
-		mrpt::u8tof(p.points2DscansColor.B),
-		mrpt::u8tof(p.points2DscansColor.A));
+	auto scene = canvas.getOpenGLSceneRef();
+	scene->getViewport()->setImageView(im);
+	canvas.Refresh();
 }
 
 // Update selected item display:
@@ -257,6 +49,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	const CSerializable::Ptr& sel_obj)
 {
 	WX_START_TRY
+
+	edSelectedTimeInfo->SetValue("(Timestamp information of selected object)");
 
 	if (!sel_obj)
 	{
@@ -277,6 +71,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				cout << s;
 			}
 		}
+
 		// Set focus on the first line:
 		memo->ShowPosition(0);
 		memo->Thaw();  // Allow the window to redraw
@@ -303,30 +98,54 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 	// Default selection:
 	Notebook1->ChangeSelection(0);
 
-	// Common data:
-	if (classID->derivedFrom(CLASS_ID(CObservation)))
-	{
-		CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(sel_obj));
+	std::optional<mrpt::Clock::time_point> obsStamp;
 
+	// Common data:
+	if (auto obs = std::dynamic_pointer_cast<CObservation>(sel_obj); obs)
+	{
 		try
 		{
 			obs->load();
 			obs->getDescriptionAsText(cout);
 			textDescriptionDone = true;
+
+			obsStamp = obs->timestamp;
 		}
 		catch (const mrpt::img::CExceptionExternalImageNotFound& e)
 		{
 			std::cout << "Error with lazy-load object:\n" << e.what() << "\n";
 		}
 
-		curSelectedObservation =
-			std::dynamic_pointer_cast<CObservation>(sel_obj);
+		m_selectedObj = std::dynamic_pointer_cast<CObservation>(sel_obj);
 	}
-	if (classID->derivedFrom(CLASS_ID(CAction)))
+	else if (auto act = std::dynamic_pointer_cast<CAction>(sel_obj); act)
 	{
-		CAction::Ptr act(std::dynamic_pointer_cast<CAction>(sel_obj));
-		cout << act->getDescriptionAsTextValue();
+		std::cout << act->getDescriptionAsTextValue();
 		textDescriptionDone = true;
+		obsStamp = act->timestamp;
+	}
+
+	// Handle timestamp info:
+	if (obsStamp.has_value() && obsStamp.value() != INVALID_TIMESTAMP)
+	{
+		auto s = wxString::Format(
+			"Timestamp (UTC): %s\n"
+			"        (local): %s\n"
+			"    (as time_t): %.09f\n",
+			mrpt::system::dateTimeToString(*obsStamp).c_str(),
+			mrpt::system::dateTimeLocalToString(*obsStamp).c_str(),
+			mrpt::Clock::toDouble(*obsStamp));
+
+		if (m_treeView->getFirstTimestamp() != INVALID_TIMESTAMP)
+		{
+			const double posInSeconds = mrpt::system::timeDifference(
+				m_treeView->getFirstTimestamp(), *obsStamp);
+
+			s += wxString::Format(
+				"Since rawlog beginning: %.03f [s]\n", posInSeconds);
+		}
+
+		edSelectedTimeInfo->SetValue(s);
 	}
 
 	// Specific data:
@@ -335,7 +154,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservation2DRangeScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(2);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(sel_obj);
 
 		// Additional text description: This is not within
@@ -357,15 +176,19 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		cout << "]\n\n";
 
 		// The plot:
-		mrpt::maps::CSimplePointsMap dummMap;
-		dummMap.insertionOptions.minDistBetweenLaserPoints = 0;
-		dummMap.insertObservation(*obs);
+		obs->load();
+		const auto& p = pnViewOptions->m_params;
+		auto glPts = mrpt::opengl::CSetOfObjects::Create();
+		obs2Dscan_to_viz(obs, p, *glPts);
 
-		vector<float> Xs, Ys;
-		dummMap.getAllPoints(Xs, Ys);
+// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+		auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+		openGLSceneRef->clear();
+		openGLSceneRef->insert(glPts);
 
-		lyScan2D->SetData(Xs, Ys);
-		plotScan2D->Fit();	// Update the window to show the new data fitted.
+		m_gl3DRangeScan->Refresh();
+#endif
 	}
 
 	if (classID == CLASS_ID(CObservationImage))
@@ -373,7 +196,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationImage
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(3);
+		Notebook1->ChangeSelection(2);
 		auto obs = std::dynamic_pointer_cast<CObservationImage>(sel_obj);
 
 		// Get bitmap:
@@ -389,17 +212,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			std::cout << "Error with lazy-load image:\n" << e.what() << "\n";
 		}
 
-		if (loadOk)
-		{
-			wxImage* img = mrpt::gui::MRPTImage2wxImage(obs->image);
-			bmpObsImage->SetBitmap(wxBitmap(*img));
-			bmpObsImage->SetSize(img->GetWidth(), img->GetHeight());
-			delete img;
-		}
+		if (loadOk)	 //
+			showImageInGLView(*bmpObsImage, obs->image);
 		else
-		{
-			bmpObsImage->SetBitmap(wxBitmap());
-		}
+			showImageInGLView(*bmpObsImage, mrpt::img::CImage());
 
 		FlexGridSizerImg->FitInside(ScrolledWindow2);
 		ScrolledWindow2->SetScrollRate(1, 1);
@@ -413,7 +229,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationStereoImages
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(4);
+		Notebook1->ChangeSelection(3);
 		auto obs = std::dynamic_pointer_cast<CObservationStereoImages>(sel_obj);
 
 		bool loadOk = false;
@@ -431,31 +247,19 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------
 		if (loadOk)
 		{
-			wxImage* imgLeft = mrpt::gui::MRPTImage2wxImage(obs->imageLeft);
-			bmpObsStereoLeft->SetBitmap(wxBitmap(*imgLeft));
-			bmpObsStereoLeft->Refresh();
-			delete imgLeft;
-
+			showImageInGLView(*bmpObsStereoLeft, obs->imageLeft);
 			obs->imageLeft.unload();  // For externally-stored datasets
 		}
 
 		if (obs->hasImageRight && loadOk)
 		{
-			wxImage* imgRight = mrpt::gui::MRPTImage2wxImage(obs->imageRight);
-			bmpObsStereoRight->SetBitmap(wxBitmap(*imgRight));
-			bmpObsStereoRight->Refresh();
-			delete imgRight;
-
+			showImageInGLView(*bmpObsStereoRight, obs->imageRight);
 			obs->imageRight.unload();  // For externally-stored datasets
 		}
 
 		if (obs->hasImageDisparity)
 		{
-			wxImage* imgDisp =
-				mrpt::gui::MRPTImage2wxImage(obs->imageDisparity);
-			bmpObsStereoDisp->SetBitmap(wxBitmap(*imgDisp));
-			bmpObsStereoDisp->Refresh();
-			delete imgDisp;
+			showImageInGLView(*bmpObsStereoDisp, obs->imageDisparity);
 
 			obs->imageDisparity.unload();  // For externally-stored datasets
 		}
@@ -498,7 +302,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationBearingRange
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(8);
+		Notebook1->ChangeSelection(7);
 		auto obs = std::dynamic_pointer_cast<CObservationBearingRange>(sel_obj);
 
 		// The plot:
@@ -529,7 +333,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservation3DRangeScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(9);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservation3DRangeScan>(sel_obj);
 
 		obs->load();  // Make sure the 3D point cloud, etc... are all
@@ -558,10 +362,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			if (obs->hasIntensityImage) im = obs->intensityImage;
 			else
 				im.resize(1, 1, CH_GRAY);
-			wxImage* img = mrpt::gui::MRPTImage2wxImage(im);
-			if (img->IsOk()) bmp3Dobs_int->SetBitmap(wxBitmap(*img));
-			bmp3Dobs_int->Refresh();
-			delete img;
+
+			showImageInGLView(*bmp3Dobs_int, im);
+
 			obs->intensityImage.unload();  // For externally-stored datasets
 		}
 		// Update depth image ======
@@ -573,24 +376,15 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			else
 				auxImg.resize(1, 1, CH_GRAY);
 
-			wxImage* img = mrpt::gui::MRPTImage2wxImage(auxImg);
-			if (img->IsOk()) bmp3Dobs_depth->SetBitmap(wxBitmap(*img));
-			bmp3Dobs_depth->Refresh();
-			delete img;
+			showImageInGLView(*bmp3Dobs_depth, auxImg);
 		}
 		// Update confidence image ======
 		{
-			wxImage* img;
 			if (obs->hasConfidenceImage)
-				img = mrpt::gui::MRPTImage2wxImage(obs->confidenceImage);
+				showImageInGLView(*bmp3Dobs_conf, obs->confidenceImage);
 			else
-			{
-				mrpt::img::CImage dumm(1, 1);
-				img = mrpt::gui::MRPTImage2wxImage(dumm);
-			}
-			if (img->IsOk()) bmp3Dobs_conf->SetBitmap(wxBitmap(*img));
-			bmp3Dobs_conf->Refresh();
-			delete img;
+				showImageInGLView(*bmp3Dobs_conf, {});
+
 			obs->confidenceImage.unload();	// For externally-stored datasets
 		}
 		obs->unload();
@@ -601,7 +395,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationVelodyneScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(9);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationVelodyneScan>(sel_obj);
 
 		obs->generatePointCloud();
@@ -628,7 +422,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationPointCloud
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(9);
+		Notebook1->ChangeSelection(8);
 		auto obs = std::dynamic_pointer_cast<CObservationPointCloud>(sel_obj);
 
 		const auto& p = pnViewOptions->m_params;
@@ -654,7 +448,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              Generic visualizable object:
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(9);
+		Notebook1->ChangeSelection(8);
 
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
@@ -672,7 +466,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------------------------------------------------------
 		//              CObservationRotatingScan
 		// ----------------------------------------------------------------------
-		Notebook1->ChangeSelection(4);
+		Notebook1->ChangeSelection(3);
 		auto obs = std::dynamic_pointer_cast<CObservationRotatingScan>(sel_obj);
 
 		// Get range image as bitmap:
@@ -680,18 +474,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		mrpt::img::CImage img_range;
 		img_range.setFromMatrix(obs->rangeImage, false);
 
-		auto imgL =
-			std::unique_ptr<wxBitmap>(mrpt::gui::MRPTImage2wxBitmap(img_range));
-		bmpObsStereoLeft->SetBitmap(*imgL);
-		bmpObsStereoLeft->Refresh();
+		showImageInGLView(*bmpObsStereoLeft, img_range);
 
 		mrpt::img::CImage img_intensity;
 		img_intensity.setFromMatrix(obs->intensityImage, false);
 
-		auto imgR = std::unique_ptr<wxBitmap>(
-			mrpt::gui::MRPTImage2wxBitmap(img_intensity));
-		bmpObsStereoRight->SetBitmap(*imgR);
-		bmpObsStereoRight->Refresh();
+		showImageInGLView(*bmpObsStereoRight, img_intensity);
 	}
 
 	if (classID->derivedFrom(CLASS_ID(CObservation)))

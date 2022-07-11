@@ -25,11 +25,11 @@ IMPLEMENTS_SERIALIZABLE(CText, CRenderizable, mrpt::opengl)
 
 CText::~CText() = default;
 
+constexpr double text_spacing = 1.5;
+constexpr double text_kerning = 0.1;
+
 void CText::onUpdateBuffers_Text()
 {
-	const double text_spacing = 1.5;
-	const double text_kerning = 0.1;
-
 	auto& vbd = CRenderizableShaderText::m_vertex_buffer_data;
 	auto& tris = CRenderizableShaderText::m_triangles;
 	auto& cbd = CRenderizableShaderText::m_color_buffer_data;
@@ -45,6 +45,14 @@ void CText::onUpdateBuffers_Text()
 	cbd.assign(vbd.size(), m_color);
 	for (auto& tri : m_triangles)
 		tri.setColor(m_color);
+}
+
+std::pair<double, double> CText::computeTextExtension() const
+{
+	mrpt::opengl::internal::glSetFont(m_fontName);
+	const auto [textW, textH] =
+		mrpt::opengl::internal::glGetExtends(m_str, text_spacing, text_kerning);
+	return {textW, textH};
 }
 
 void CText::render(const RenderContext& rc) const
@@ -97,13 +105,13 @@ void CText::render(const RenderContext& rc) const
 #endif
 }
 
-uint8_t CText::serializeGetVersion() const { return 1; }
+uint8_t CText::serializeGetVersion() const { return 2; }
 void CText::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_str;
 	out << m_fontName;
-	out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
+	out << (uint32_t)m_fontHeight;
 }
 
 void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -112,6 +120,7 @@ void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 0:
 		case 1:
+		case 2:
 		{
 			uint32_t i;
 			readFromStreamRender(in);
@@ -121,8 +130,12 @@ void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 				in >> m_fontName;
 				in >> i;
 				m_fontHeight = i;
-				in >> i;
-				m_fontWidth = i;
+
+				if (version < 2)
+				{
+					in >> i;
+					// dummy, removed in v2: m_fontWidth = i;
+				}
 			}
 		}
 		break;

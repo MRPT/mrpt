@@ -23,8 +23,6 @@ namespace mrpt
 /** \ingroup mrpt_maps_grp */
 namespace opengl
 {
-class CPlanarLaserScan;
-
 /** This object renders a 2D laser scan by means of three elements: the points,
  * the line along end-points and the 2D scanned surface.
  *

@@ -14,14 +14,10 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/opengl_fonts.h>
 
-namespace mrpt
-{
-namespace gui
-{
-}
-}  // namespace mrpt
-// have wxWidgets libs
+#include <atomic>
+#include <mutex>
 
+// have wxWidgets libs
 #if MRPT_HAS_WXWIDGETS
 
 #include <wx/artprov.h>
@@ -51,9 +47,7 @@ namespace gui
 #undef Success
 #endif
 
-namespace mrpt
-{
-namespace gui
+namespace mrpt::gui
 {
 /** This class implements a OpenGL canvas, and it's used in
  * gui::CDisplayWindow3D and a number of standalone applications in the MRPT
@@ -107,9 +101,10 @@ class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
 	bool is_GL_context_created() const { return m_init; }
 
    protected:
-	std::unique_ptr<wxGLContext> m_gl_context;
-	bool m_gl_context_assigned = false;
-	bool m_init = false;
+	static std::unique_ptr<wxGLContext> m_gl_context;
+	static std::recursive_mutex m_gl_context_mtx;
+
+	std::atomic_bool m_init = false;
 
 	long m_Key = 0;
 	unsigned long m_StartTime = 0;
@@ -125,8 +120,7 @@ class CWxGLCanvasBase : public CGlCanvasBase, public wxGLCanvas
 
 };	// end of class
 
-}  // namespace gui
-}  // namespace mrpt
+}  // namespace mrpt::gui
 
 #endif	// wxUSE_GLCANVAS
 #endif	// MRPT_HAS_WXWIDGETS
