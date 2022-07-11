@@ -15,6 +15,7 @@
 namespace mrpt::containers
 {
 /** \addtogroup mrpt_containers_find_closest Find closest utility functions
+ *  \ingroup mrpt_containers_grp
  * @{ */
 
 /** For an associate container `Container` mapping real number keys to `T`
