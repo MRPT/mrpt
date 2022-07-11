@@ -99,44 +99,6 @@
 #include "imgs/tree_icon8.xpm"
 #include "imgs/tree_icon9.xpm"
 
-//-----------------------------------------------------------------------------
-// wxStaticBitmapPopup
-//-----------------------------------------------------------------------------
-const long wxStaticBitmapPopup::ID_MENUITEM_IMG_LOAD = wxNewId();
-const long wxStaticBitmapPopup::ID_MENUITEM_IMG_SAVE = wxNewId();
-
-IMPLEMENT_DYNAMIC_CLASS(wxStaticBitmapPopup, wxStaticBitmap)
-
-BEGIN_EVENT_TABLE(wxStaticBitmapPopup, wxStaticBitmap)
-EVT_MIDDLE_UP(wxStaticBitmapPopup::OnShowPopupMenu)
-EVT_RIGHT_UP(wxStaticBitmapPopup::OnShowPopupMenu)
-EVT_MENU(ID_MENUITEM_IMG_SAVE, wxStaticBitmapPopup::OnPopupSaveImage)
-EVT_MENU(ID_MENUITEM_IMG_LOAD, wxStaticBitmapPopup::OnPopupLoadImage)
-END_EVENT_TABLE()
-
-// Constructors
-wxStaticBitmapPopup::wxStaticBitmapPopup(
-	wxWindow* parent, wxWindowID id, const wxBitmap& img, const wxPoint& pos,
-	const wxSize& size, int flag, const wxString& name)
-	: wxStaticBitmap(parent, id, img, pos, size, flag, name)
-{
-	wxMenuItem* mnu1 = new wxMenuItem(
-		(&mnuImages), ID_MENUITEM_IMG_SAVE, _("Save image to file..."),
-		wxEmptyString, wxITEM_NORMAL);
-	wxMenuItem* mnu2 = new wxMenuItem(
-		(&mnuImages), ID_MENUITEM_IMG_LOAD,
-		_("Replace image by another one from file..."), wxEmptyString,
-		wxITEM_NORMAL);
-
-	mnuImages.Append(mnu1);
-	mnuImages.Append(mnu2);
-}
-wxStaticBitmapPopup::~wxStaticBitmapPopup() = default;
-void wxStaticBitmapPopup::OnShowPopupMenu(wxMouseEvent&)
-{
-	PopupMenu(&mnuImages);
-}
-
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
@@ -760,12 +722,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizerImg->AddGrowableCol(0);
 	FlexGridSizerImg->AddGrowableRow(0);
 
-	bmpObsImage = new wxStaticBitmapPopup(
-		ScrolledWindow2, ID_STATICBITMAP1, wxNullBitmap, wxPoint(0, 0),
-		wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP1"));
+	bmpObsImage = new CMyGLCanvas(ScrolledWindow2, ID_STATICBITMAP1);
 
-	FlexGridSizerImg->Add(
-		bmpObsImage, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizerImg->Add(bmpObsImage, 1, wxALL | wxEXPAND, 0);
 	ScrolledWindow2->SetSizer(FlexGridSizerImg);
 	FlexGridSizerImg->Fit(ScrolledWindow2);
 	FlexGridSizerImg->SetSizeHints(ScrolledWindow2);
@@ -796,11 +755,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer5->AddGrowableRow(0);
-	bmpObsStereoLeft = new wxStaticBitmapPopup(
-		Panel6, ID_STATICBITMAP2, wxNullBitmap, wxPoint(0, 0), wxDefaultSize,
-		wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP2"));
-	FlexGridSizer5->Add(
-		bmpObsStereoLeft, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	bmpObsStereoLeft = new CMyGLCanvas(Panel6, ID_STATICBITMAP2);
+	FlexGridSizer5->Add(bmpObsStereoLeft, 1, wxALL | wxEXPAND, 0);
 	Panel6->SetSizer(FlexGridSizer5);
 	FlexGridSizer5->Fit(Panel6);
 	FlexGridSizer5->SetSizeHints(Panel6);
@@ -810,11 +766,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer7 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
 	FlexGridSizer7->AddGrowableRow(0);
-	bmpObsStereoRight = new wxStaticBitmapPopup(
-		Panel7, ID_STATICBITMAP3, wxNullBitmap, wxPoint(0, 0), wxDefaultSize,
-		wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP3"));
-	FlexGridSizer7->Add(
-		bmpObsStereoRight, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	bmpObsStereoRight = new CMyGLCanvas(Panel7, ID_STATICBITMAP3);
+	FlexGridSizer7->Add(bmpObsStereoRight, 1, wxALL | wxEXPAND, 0);
 	Panel7->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->Fit(Panel7);
 	FlexGridSizer7->SetSizeHints(Panel7);
@@ -824,11 +777,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer13 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer13->AddGrowableCol(0);
 	FlexGridSizer13->AddGrowableRow(0);
-	bmpObsStereoDisp = new wxStaticBitmapPopup(
-		Panel10, ID_STATICBITMAP7, wxNullBitmap, wxPoint(0, 0), wxDefaultSize,
-		wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP7"));
-	FlexGridSizer13->Add(
-		bmpObsStereoDisp, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	bmpObsStereoDisp = new CMyGLCanvas(Panel10, ID_STATICBITMAP7);
+	FlexGridSizer13->Add(bmpObsStereoDisp, 1, wxALL | wxEXPAND, 0);
 	Panel10->SetSizer(FlexGridSizer13);
 	FlexGridSizer13->Fit(Panel10);
 	FlexGridSizer13->SetSizeHints(Panel10);
@@ -892,11 +842,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer10 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer10->AddGrowableCol(0);
 	FlexGridSizer10->AddGrowableRow(0);
-	bmp3Dobs_depth = new wxStaticBitmapPopup(
-		pn3Dobs_Depth, ID_STATICBITMAP4, wxNullBitmap, wxPoint(0, 0),
-		wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP4"));
-	FlexGridSizer10->Add(
-		bmp3Dobs_depth, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	bmp3Dobs_depth = new CMyGLCanvas(pn3Dobs_Depth, ID_STATICBITMAP4);
+	FlexGridSizer10->Add(bmp3Dobs_depth, 1, wxALL | wxEXPAND, 0);
 	pn3Dobs_Depth->SetSizer(FlexGridSizer10);
 	FlexGridSizer10->Fit(pn3Dobs_Depth);
 	FlexGridSizer10->SetSizeHints(pn3Dobs_Depth);
@@ -906,11 +853,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer11 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer11->AddGrowableCol(0);
 	FlexGridSizer11->AddGrowableRow(0);
-	bmp3Dobs_int = new wxStaticBitmapPopup(
-		pn3Dobs_Int, ID_STATICBITMAP5, wxNullBitmap, wxPoint(0, 0),
-		wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP5"));
-	FlexGridSizer11->Add(
-		bmp3Dobs_int, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	bmp3Dobs_int = new CMyGLCanvas(pn3Dobs_Int, ID_STATICBITMAP5);
+	FlexGridSizer11->Add(bmp3Dobs_int, 1, wxALL | wxEXPAND, 0);
 	pn3Dobs_Int->SetSizer(FlexGridSizer11);
 	FlexGridSizer11->Fit(pn3Dobs_Int);
 	FlexGridSizer11->SetSizeHints(pn3Dobs_Int);
@@ -920,11 +864,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer14 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer14->AddGrowableCol(0);
 	FlexGridSizer14->AddGrowableRow(0);
-	bmp3Dobs_conf = new wxStaticBitmapPopup(
-		pn3Dobs_Conf, ID_STATICBITMAP6, wxNullBitmap, wxPoint(0, 0),
-		wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP6"));
-	FlexGridSizer14->Add(
-		bmp3Dobs_conf, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	bmp3Dobs_conf = new CMyGLCanvas(pn3Dobs_Conf, ID_STATICBITMAP6);
+	FlexGridSizer14->Add(bmp3Dobs_conf, 1, wxALL | wxEXPAND, 0);
 	pn3Dobs_Conf->SetSizer(FlexGridSizer14);
 	FlexGridSizer14->Fit(pn3Dobs_Conf);
 	FlexGridSizer14->SetSizeHints(pn3Dobs_Conf);
@@ -3168,137 +3109,6 @@ void xRawLogViewerFrame::OnMRUFile(wxCommandEvent& event)
 {
 	wxString f(m_fileHistory.GetHistoryFile(event.GetId() - wxID_FILE1));
 	if (!f.empty()) loadRawlogFile(string(f.mb_str()));
-}
-
-void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent&)
-{
-	try
-	{
-		if (!theMainWindow || !theMainWindow->m_selectedObj) return;
-		CObservation::Ptr curSelObs = theMainWindow->m_selectedObj;
-
-		CImage* imgToSave = nullptr;
-
-		cout << "[xRawLogViewerFrame::OnPopupSaveImage] Current observation "
-				"class: "
-			 << curSelObs->GetRuntimeClass()->className << endl;
-
-		if (IS_CLASS(*curSelObs, CObservationImage))
-		{
-			auto* obs = (CObservationImage*)curSelObs.get();
-			imgToSave = &obs->image;
-		}
-		else if (IS_CLASS(*curSelObs, CObservationStereoImages))
-		{
-			auto* obs = (CObservationStereoImages*)curSelObs.get();
-
-			switch (theMainWindow->Notebook2->GetSelection())
-			{
-				case 0: imgToSave = &obs->imageLeft; break;
-				case 1: imgToSave = &obs->imageRight; break;
-				case 2: imgToSave = &obs->imageDisparity; break;
-			}
-		}
-		else if (IS_CLASS(*curSelObs, CObservation3DRangeScan))
-		{
-			auto* obs = (CObservation3DRangeScan*)curSelObs.get();
-			obs->load();
-			switch (theMainWindow->nb_3DObsChannels->GetSelection())
-			{
-				case 1:
-					if (obs->hasRangeImage)
-					{
-						static CImage auxImg = obs->rangeImage_getAsImage(
-							mrpt::img::TColormap::cmHOT);
-						imgToSave = &auxImg;
-					}
-					break;
-				case 2:
-					if (obs->hasIntensityImage)
-						imgToSave = &obs->intensityImage;
-					break;
-			}
-			obs->unload();
-		}
-
-		if (imgToSave)
-		{
-			wxFileDialog dialog(
-				this, _("Save image as...") /*caption*/,
-				(iniFile->read_string(iniFileSect, "LastDir", ".")
-					 .c_str()) /* defaultDir */,
-				_("image.png") /* defaultFilename */,
-				_("Image files "
-				  "(*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif)|*.bmp;*.gif;*."
-				  "jpg;*."
-				  "jpeg;*.png;*.tif") /* wildcard */,
-				wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-			if (dialog.ShowModal() != wxID_OK) return;
-
-			// Save image:
-			string filName(dialog.GetPath().mb_str());
-			imgToSave->saveToFile(filName);
-		}
-	}
-	catch (...)
-	{
-		cerr << "[xRawLogViewerFrame::OnPopupSaveImage] Ignoring untyped "
-				"exception!"
-			 << endl;
-	}
-}
-
-void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent&)
-{
-	try
-	{
-		if (!theMainWindow || !theMainWindow->m_selectedObj) return;
-		CObservation::Ptr curSelectedObservation = theMainWindow->m_selectedObj;
-
-		CImage* imgToLoad = nullptr;
-
-		if (IS_CLASS(*curSelectedObservation, CObservationImage))
-		{
-			auto* obs = (CObservationImage*)curSelectedObservation.get();
-			imgToLoad = &obs->image;
-		}
-		else if (IS_CLASS(*curSelectedObservation, CObservationStereoImages))
-		{
-			auto* obs = (CObservationStereoImages*)curSelectedObservation.get();
-
-			switch (theMainWindow->Notebook2->GetSelection())
-			{
-				case 0: imgToLoad = &obs->imageLeft; break;
-				case 1: imgToLoad = &obs->imageRight; break;
-				case 2: imgToLoad = &obs->imageDisparity; break;
-			}
-		}
-
-		if (imgToLoad)
-		{
-			wxFileDialog dialog(
-				this, _("Load image...") /*caption*/,
-				(iniFile->read_string(iniFileSect, "LastDir", ".")
-					 .c_str()) /* defaultDir */,
-				_("image.png") /* defaultFilename */,
-				_("Image files "
-				  "(*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.tif)|*.bmp;*.gif;*."
-				  "jpg;*."
-				  "jpeg;*.png;*.tif|All files (*.*)|*.*") /* wildcard */,
-				wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-			if (dialog.ShowModal() != wxID_OK) return;
-
-			// Replace image:
-			string filName(dialog.GetPath().mb_str());
-			imgToLoad->loadFromFile(filName);
-		}
-	}
-	catch (...)
-	{
-		cerr << "[xRawLogViewerFrame::OnPopupSaveImage] Ignoring untyped "
-				"exception!"
-			 << endl;
-	}
 }
 
 void xRawLogViewerFrame::OnChangeSensorPositions(wxCommandEvent&)

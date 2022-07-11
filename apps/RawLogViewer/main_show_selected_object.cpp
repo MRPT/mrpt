@@ -37,6 +37,13 @@ using namespace mrpt::poses;
 using namespace mrpt::rtti;
 using namespace std;
 
+static void showImageInGLView(CMyGLCanvas& canvas, const mrpt::img::CImage& im)
+{
+	auto scene = canvas.getOpenGLSceneRef();
+	scene->getViewport()->setImageView(im);
+	canvas.Refresh();
+}
+
 // Update selected item display:
 void xRawLogViewerFrame::SelectObjectInTreeView(
 	const CSerializable::Ptr& sel_obj)
@@ -205,17 +212,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			std::cout << "Error with lazy-load image:\n" << e.what() << "\n";
 		}
 
-		if (loadOk)
-		{
-			wxImage* img = mrpt::gui::MRPTImage2wxImage(obs->image);
-			bmpObsImage->SetBitmap(wxBitmap(*img));
-			bmpObsImage->SetSize(img->GetWidth(), img->GetHeight());
-			delete img;
-		}
+		if (loadOk)	 //
+			showImageInGLView(*bmpObsImage, obs->image);
 		else
-		{
-			bmpObsImage->SetBitmap(wxBitmap());
-		}
+			showImageInGLView(*bmpObsImage, mrpt::img::CImage());
 
 		FlexGridSizerImg->FitInside(ScrolledWindow2);
 		ScrolledWindow2->SetScrollRate(1, 1);
@@ -247,31 +247,19 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		// ----------------------
 		if (loadOk)
 		{
-			wxImage* imgLeft = mrpt::gui::MRPTImage2wxImage(obs->imageLeft);
-			bmpObsStereoLeft->SetBitmap(wxBitmap(*imgLeft));
-			bmpObsStereoLeft->Refresh();
-			delete imgLeft;
-
+			showImageInGLView(*bmpObsStereoLeft, obs->imageLeft);
 			obs->imageLeft.unload();  // For externally-stored datasets
 		}
 
 		if (obs->hasImageRight && loadOk)
 		{
-			wxImage* imgRight = mrpt::gui::MRPTImage2wxImage(obs->imageRight);
-			bmpObsStereoRight->SetBitmap(wxBitmap(*imgRight));
-			bmpObsStereoRight->Refresh();
-			delete imgRight;
-
+			showImageInGLView(*bmpObsStereoRight, obs->imageRight);
 			obs->imageRight.unload();  // For externally-stored datasets
 		}
 
 		if (obs->hasImageDisparity)
 		{
-			wxImage* imgDisp =
-				mrpt::gui::MRPTImage2wxImage(obs->imageDisparity);
-			bmpObsStereoDisp->SetBitmap(wxBitmap(*imgDisp));
-			bmpObsStereoDisp->Refresh();
-			delete imgDisp;
+			showImageInGLView(*bmpObsStereoDisp, obs->imageDisparity);
 
 			obs->imageDisparity.unload();  // For externally-stored datasets
 		}
@@ -374,10 +362,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			if (obs->hasIntensityImage) im = obs->intensityImage;
 			else
 				im.resize(1, 1, CH_GRAY);
-			wxImage* img = mrpt::gui::MRPTImage2wxImage(im);
-			if (img->IsOk()) bmp3Dobs_int->SetBitmap(wxBitmap(*img));
-			bmp3Dobs_int->Refresh();
-			delete img;
+
+			showImageInGLView(*bmp3Dobs_int, im);
+
 			obs->intensityImage.unload();  // For externally-stored datasets
 		}
 		// Update depth image ======
@@ -389,24 +376,15 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 			else
 				auxImg.resize(1, 1, CH_GRAY);
 
-			wxImage* img = mrpt::gui::MRPTImage2wxImage(auxImg);
-			if (img->IsOk()) bmp3Dobs_depth->SetBitmap(wxBitmap(*img));
-			bmp3Dobs_depth->Refresh();
-			delete img;
+			showImageInGLView(*bmp3Dobs_depth, auxImg);
 		}
 		// Update confidence image ======
 		{
-			wxImage* img;
 			if (obs->hasConfidenceImage)
-				img = mrpt::gui::MRPTImage2wxImage(obs->confidenceImage);
+				showImageInGLView(*bmp3Dobs_conf, obs->confidenceImage);
 			else
-			{
-				mrpt::img::CImage dumm(1, 1);
-				img = mrpt::gui::MRPTImage2wxImage(dumm);
-			}
-			if (img->IsOk()) bmp3Dobs_conf->SetBitmap(wxBitmap(*img));
-			bmp3Dobs_conf->Refresh();
-			delete img;
+				showImageInGLView(*bmp3Dobs_conf, {});
+
 			obs->confidenceImage.unload();	// For externally-stored datasets
 		}
 		obs->unload();
@@ -496,18 +474,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 		mrpt::img::CImage img_range;
 		img_range.setFromMatrix(obs->rangeImage, false);
 
-		auto imgL =
-			std::unique_ptr<wxBitmap>(mrpt::gui::MRPTImage2wxBitmap(img_range));
-		bmpObsStereoLeft->SetBitmap(*imgL);
-		bmpObsStereoLeft->Refresh();
+		showImageInGLView(*bmpObsStereoLeft, img_range);
 
 		mrpt::img::CImage img_intensity;
 		img_intensity.setFromMatrix(obs->intensityImage, false);
 
-		auto imgR = std::unique_ptr<wxBitmap>(
-			mrpt::gui::MRPTImage2wxBitmap(img_intensity));
-		bmpObsStereoRight->SetBitmap(*imgR);
-		bmpObsStereoRight->Refresh();
+		showImageInGLView(*bmpObsStereoRight, img_intensity);
 	}
 
 	if (classID->derivedFrom(CLASS_ID(CObservation)))

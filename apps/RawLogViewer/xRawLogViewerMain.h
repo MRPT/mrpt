@@ -83,32 +83,6 @@ struct TInfoPerSensorLabel
 	void addOcurrence(mrpt::Clock::time_point obsTim);
 };
 
-class wxStaticBitmapPopup : public wxStaticBitmap
-{
-   public:
-	wxStaticBitmapPopup() = default;
-	wxStaticBitmapPopup(
-		wxWindow* parent, wxWindowID id, const wxBitmap& img,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, int flags = 0,
-		const wxString& name = wxT(""));
-	~wxStaticBitmapPopup() override;
-
-	void OnShowPopupMenu(wxMouseEvent& event);
-
-   protected:
-	wxMenu mnuImages;
-
-	void OnPopupSaveImage(wxCommandEvent& event);
-	void OnPopupLoadImage(wxCommandEvent& event);
-
-	static const long ID_MENUITEM_IMG_LOAD;
-	static const long ID_MENUITEM_IMG_SAVE;
-
-	DECLARE_DYNAMIC_CLASS(wxStaticBitmapPopup)
-	DECLARE_EVENT_TABLE()
-};
-
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
 {
@@ -134,8 +108,6 @@ struct TAlogRecord
 
 class xRawLogViewerFrame : public wxFrame
 {
-	friend class wxStaticBitmapPopup;
-
    public:
 	xRawLogViewerFrame(wxWindow* parent, wxWindowID id = -1);
 	~xRawLogViewerFrame() override;
@@ -287,7 +259,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem61;
 	wxMenuItem* MenuItem31;
 	wxMenuItem* MenuItem57;
-	wxStaticBitmapPopup* bmpObsImage;
+	CMyGLCanvas* bmpObsImage;
 	wxPanel* pn3Dobs_Conf;
 	ViewOptions3DPoints* pnViewOptions;
 	wxMenuItem* MenuItem59;
@@ -310,7 +282,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem50;
 	wxMenuItem* MenuItem68;
 	wxMenu* Menu14;
-	wxStaticBitmapPopup* bmp3Dobs_depth;
+	CMyGLCanvas* bmp3Dobs_depth;
 	wxMenu* Menu3;
 	wxCustomButton* Button6;
 	wxMenu* Menu20;
@@ -319,7 +291,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenuItem* MenuItem86;
 	wxMenu* MenuItem20;
 	wxMenuItem* MenuItem46;
-	wxStaticBitmapPopup* bmpObsStereoLeft;
+	CMyGLCanvas* bmpObsStereoLeft;
 	wxMenuItem* MenuItem4;
 	wxMenuItem* MenuItem76;
 	wxPanel* pn_Action;
@@ -371,7 +343,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxCustomButton* Button3;
 	CRawlogTreeView* m_treeView;
 	wxMenuItem* MenuItem64;
-	wxStaticBitmapPopup* bmp3Dobs_int;
+	CMyGLCanvas* bmp3Dobs_int;
 	wxTextCtrl* memo;
 	wxMenuItem* MenuItem28;
 	wxMenuItem* MenuItem63;
@@ -384,14 +356,14 @@ class xRawLogViewerFrame : public wxFrame
 	wxMenu* MenuItem45;
 	wxStatusBar* StatusBar1;
 	wxMenuItem* MenuItem52;
-	wxStaticBitmapPopup* bmpObsStereoDisp;
+	CMyGLCanvas* bmpObsStereoDisp;
 	wxStaticLine* StaticLine3;
 	wxMenuItem* MenuItem35;
 	wxStaticLine* StaticLine1;
 	wxSplitterWindow* SplitterWindow3;
 	wxMenuItem* MenuItem23;
 	wxBoxSizer* BoxSizer1;
-	wxStaticBitmapPopup* bmp3Dobs_conf;
+	CMyGLCanvas* bmp3Dobs_conf;
 	wxMenuItem* MenuItem58;
 	wxPanel* pn3Dobs_Int;
 	wxTextCtrl* memStats;
@@ -412,7 +384,7 @@ class xRawLogViewerFrame : public wxFrame
 	wxPanel* pn_CObservation3DRangeScan;
 	wxMenuItem* MenuItem47;
 	wxMenuItem* MenuItem30;
-	wxStaticBitmapPopup* bmpObsStereoRight;
+	CMyGLCanvas* bmpObsStereoRight;
 	wxMenuItem* MenuItem77;
 	wxMenuItem* MenuItem66;
 	wxMenuItem* MenuItem53;
