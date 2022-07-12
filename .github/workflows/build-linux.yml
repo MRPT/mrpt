@@ -65,7 +65,7 @@ jobs:
                            libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
                            libxrandr-dev libxxf86vm-dev \
                            libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
-                           libdc1394-dev libavformat-dev libswscale-dev libpcap-dev \
+                           libavformat-dev libswscale-dev libpcap-dev \
                            liboctomap-dev libopenni2-dev \
                            libtinyxml2-dev \
                            yamllint
