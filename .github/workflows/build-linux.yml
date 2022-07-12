@@ -31,16 +31,19 @@ jobs:
             os: ubuntu-22.04
             compiler: gcc
             coverage: OFF
-
+            extra_pkgs_to_install: libdc1394-dev
+            
           - name: ubuntu-latest-clang
             os: ubuntu-latest
             compiler: clang
             coverage: OFF
+            extra_pkgs_to_install: libdc1394-22-dev
 
           - name: ubuntu-latest-gcc
             os: ubuntu-latest
             compiler: gcc
             coverage: ON
+            extra_pkgs_to_install: libdc1394-22-dev
 
     steps:
       - name: Checkout
@@ -66,7 +69,9 @@ jobs:
                            liboctomap-dev libopenni2-dev \
                            libtinyxml2-dev \
                            yamllint
-
+                           
+          sudo apt install ${{ matrix.extra_pkgs_to_install }}
+          
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
             sudo apt install libicu-dev libsimpleini-dev
             # to enable pymrpt:
