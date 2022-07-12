@@ -7,6 +7,7 @@
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - New functions mrpt::containers::find_closest() and mrpt::containers::find_closest_with_tolerance().
+    - mrpt::containers::yaml now also keeps information about line and column positions for each token, see mrpt::containers::yaml::node_t::marks
   - \ref mrpt_core_grp
     - mrpt::Clock::toDouble() now returns 0 for default-constructed (invalid) time_point.
   - \ref mrpt_opengl_grp
