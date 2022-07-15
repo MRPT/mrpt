@@ -148,8 +148,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	txtInputFile = new wxTextCtrl(
 		this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL11"));
-	FlexGridSizer7->Add(
-		txtInputFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer7->Add(txtInputFile, 1, wxEXPAND, 5);
 	btnPickInput = new wxButton(
 		this, ID_BUTTON9, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON9"));
@@ -167,22 +166,17 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	txtOutputFile = new wxTextCtrl(
 		this, ID_TEXTCTRL12, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL12"));
-	FlexGridSizer7->Add(
-		txtOutputFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer7->Add(txtOutputFile, 1, wxEXPAND, 5);
 	btnPickOut = new wxButton(
 		this, ID_BUTTON11, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON11"));
 	FlexGridSizer7->Add(
 		btnPickOut, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 0);
-	BoxSizer5->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	BoxSizer4->Add(
-		BoxSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	StaticBoxSizer6->Add(
-		BoxSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer12->Add(
-		StaticBoxSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	BoxSizer5->Add(FlexGridSizer7, 1, wxEXPAND, 0);
+	BoxSizer4->Add(BoxSizer5, 1, wxEXPAND, 0);
+	StaticBoxSizer6->Add(BoxSizer4, 1, wxEXPAND, 0);
+	FlexGridSizer12->Add(StaticBoxSizer6, 1, wxEXPAND, 5);
 	StaticBoxSizer1 = new wxStaticBoxSizer(
 		wxHORIZONTAL, this, _("Apply changes to this range:"));
 	FlexGridSizer2 = new wxFlexGridSizer(2, 3, 0, 0);
@@ -197,8 +191,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	slFrom = new wxSlider(
 		this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer2->Add(
-		slFrom, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer2->Add(slFrom, 1, wxEXPAND, 5);
 	spinFirst = new wxSpinCtrl(
 		this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
 		100, 0, _T("ID_SPINCTRL1"));
@@ -213,8 +206,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	slTo = new wxSlider(
 		this, ID_SLIDER2, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_SLIDER2"));
-	FlexGridSizer2->Add(
-		slTo, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer2->Add(slTo, 1, wxEXPAND, 5);
 	spinLast = new wxSpinCtrl(
 		this, ID_SPINCTRL2, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
 		100, 0, _T("ID_SPINCTRL2"));
@@ -222,14 +214,10 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer2->Add(
 		spinLast, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer12->Add(
-		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	BoxSizer1->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		BoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
+	FlexGridSizer12->Add(StaticBoxSizer1, 1, wxEXPAND, 5);
+	BoxSizer1->Add(FlexGridSizer12, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(BoxSizer1, 1, wxEXPAND, 0);
 	BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
 	btnKeep = new wxButton(
 		this, ID_BUTTON1, _("Keep the selected range only..."),
@@ -244,8 +232,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	BoxSizer2->Add(
 		btnDelete, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(
-		BoxSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(BoxSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer8 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer8->AddGrowableCol(0);
 	FlexGridSizer8->AddGrowableCol(1);
@@ -294,10 +281,8 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer3->Add(
 		btnDelObsIndx, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer3->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer8->Add(
-		StaticBoxSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	StaticBoxSizer3->Add(FlexGridSizer3, 1, wxEXPAND, 0);
+	FlexGridSizer8->Add(StaticBoxSizer3, 1, wxEXPAND, 5);
 	StaticBoxSizer4 = new wxStaticBoxSizer(
 		wxHORIZONTAL, this,
 		_("Remove actions by index in collection of actions:"));
@@ -345,12 +330,9 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer4->Add(
 		btnRemActsIndx, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer4->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer8->Add(
-		StaticBoxSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer4->Add(FlexGridSizer4, 1, wxEXPAND, 0);
+	FlexGridSizer8->Add(StaticBoxSizer4, 1, wxEXPAND, 5);
+	FlexGridSizer1->Add(FlexGridSizer8, 1, wxEXPAND, 0);
 	FlexGridSizer9 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer9->AddGrowableCol(0);
 	FlexGridSizer9->AddGrowableCol(1);
@@ -365,10 +347,8 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 		this, ID_CHECKLISTBOX2, wxDefaultPosition, wxSize(-1, 200), 0, nullptr,
 		0, wxDefaultValidator, _T("ID_CHECKLISTBOX2"));
 	cbObsClass->SetMaxSize(wxSize(-1, 200));
-	FlexGridSizer5->Add(
-		cbObsClass, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer6->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer5->Add(cbObsClass, 1, wxEXPAND, 5);
+	FlexGridSizer6->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	FlexGridSizer10 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer10->AddGrowableCol(0);
 	FlexGridSizer10->AddGrowableCol(1);
@@ -384,12 +364,9 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer10->Add(
 		btnRemoveAllButByClass, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer6->Add(
-		FlexGridSizer10, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	StaticBoxSizer5->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer9->Add(
-		StaticBoxSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(FlexGridSizer10, 1, wxEXPAND, 0);
+	StaticBoxSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
+	FlexGridSizer9->Add(StaticBoxSizer5, 1, wxEXPAND, 5);
 	StaticBoxSizer7 = new wxStaticBoxSizer(
 		wxHORIZONTAL, this, _("Remove observations by LABEL:"));
 	FlexGridSizer11 = new wxFlexGridSizer(2, 1, 0, 0);
@@ -401,10 +378,8 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 		this, ID_CHECKLISTBOX1, wxDefaultPosition, wxSize(-1, 200), 0, nullptr,
 		0, wxDefaultValidator, _T("ID_CHECKLISTBOX1"));
 	cbObsLabel->SetMaxSize(wxSize(-1, 200));
-	FlexGridSizer13->Add(
-		cbObsLabel, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer11->Add(
-		FlexGridSizer13, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer13->Add(cbObsLabel, 1, wxEXPAND, 5);
+	FlexGridSizer11->Add(FlexGridSizer13, 1, wxEXPAND, 0);
 	FlexGridSizer14 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer14->AddGrowableCol(0);
 	FlexGridSizer14->AddGrowableCol(1);
@@ -420,14 +395,10 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer14->Add(
 		btnRemByLabelNon, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer11->Add(
-		FlexGridSizer14, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	StaticBoxSizer7->Add(
-		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer9->Add(
-		StaticBoxSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer11->Add(FlexGridSizer14, 1, wxEXPAND, 0);
+	StaticBoxSizer7->Add(FlexGridSizer11, 1, wxEXPAND, 0);
+	FlexGridSizer9->Add(StaticBoxSizer7, 1, wxEXPAND, 5);
+	FlexGridSizer1->Add(FlexGridSizer9, 1, wxEXPAND, 0);
 	FlexGridSizer16 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer16->AddGrowableCol(1);
 	StaticBoxSizer2 =
@@ -437,9 +408,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 		this, ID_BUTTON13, _("Leave horizontal laser scans only..."),
 		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
 		_T("ID_BUTTON13"));
-	FlexGridSizer15->Add(
-		btnLeaveHorizScans, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		5);
+	FlexGridSizer15->Add(btnLeaveHorizScans, 1, wxEXPAND, 5);
 	StaticText2 = new wxStaticText(
 		this, ID_STATICTEXT2, _("Max. pitch (deg):"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT2"));
@@ -459,8 +428,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 	FlexGridSizer15->Add(
 		btnImgSwap, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer2->Add(
-		FlexGridSizer15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer2->Add(FlexGridSizer15, 1, wxEXPAND, 0);
 	FlexGridSizer16->Add(
 		StaticBoxSizer2, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
@@ -469,8 +437,7 @@ CFormEdit::CFormEdit(wxWindow* parent, wxWindowID id)
 		wxDefaultValidator, _T("ID_BUTTON6"));
 	FlexGridSizer16->Add(
 		btnClose, 1, wxALL | wxALIGN_RIGHT | wxALIGN_BOTTOM, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer16, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer16, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
@@ -814,7 +781,7 @@ void CFormEdit::OnInit(wxInitDialogEvent& event)
 		rbLoaded->SetValue(true);
 	}  // end there is loaded rawlog
 
-	FlexGridSizer1->RecalcSizes();
+	FlexGridSizer1->Layout();
 }
 
 void CFormEdit::OnrbLoadedSelect(wxCommandEvent& event)

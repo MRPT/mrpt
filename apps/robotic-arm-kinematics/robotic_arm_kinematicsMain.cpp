@@ -175,8 +175,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 		this, ID_RADIOBOX2, _(" Orientation of first DOF "), wxDefaultPosition,
 		wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL,
 		wxDefaultValidator, _T("ID_RADIOBOX2"));
-	FlexGridSizer2->Add(
-		RadioBox1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer2->Add(RadioBox1, 1, wxEXPAND, 2);
 	StaticText1 = new wxStaticText(
 		this, ID_STATICTEXT1, _("List of kinematic links:"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT1"));
@@ -190,8 +189,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	listLinks->Append(_("aasas"));
 	listLinks->Append(_("a<font color=\"red\">s</font>asas"));
 	listLinks->SetMinSize(wxSize(360, 30));
-	FlexGridSizer2->Add(
-		listLinks, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer2->Add(listLinks, 1, wxEXPAND, 2);
 	FlexGridSizer15 = new wxFlexGridSizer(1, 3, 0, 0);
 	btnAddLink = new wxButton(
 		this, ID_BUTTON5, _("Add new link"), wxDefaultPosition, wxDefaultSize,
@@ -211,8 +209,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer15->Add(
 		btnDelete, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer2->Add(
-		FlexGridSizer15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(FlexGridSizer15, 1, wxEXPAND, 0);
 	panelProperties = new wxPanel(
 		this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL1"));
@@ -226,13 +223,11 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 		panelProperties, ID_RADIOBOX1, _("Type"), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_2, 2, wxRA_HORIZONTAL,
 		wxDefaultValidator, _T("ID_RADIOBOX1"));
-	FlexGridSizer3->Add(
-		rbType, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer3->Add(rbType, 1, wxEXPAND, 2);
 	StaticLine4 = new wxStaticLine(
 		panelProperties, ID_STATICLINE4, wxDefaultPosition, wxSize(10, -1),
 		wxLI_HORIZONTAL, _T("ID_STATICLINE4"));
-	FlexGridSizer3->Add(
-		StaticLine4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer3->Add(StaticLine4, 1, wxEXPAND, 1);
 	FlexGridSizer5 = new wxFlexGridSizer(3, 1, 0, 0);
 	FlexGridSizer5->AddGrowableCol(0);
 	SimpleHtmlListBox2 = new wxSimpleHtmlListBox(
@@ -245,16 +240,13 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	SimpleHtmlListBox2->Disable();
 	SimpleHtmlListBox2->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-	FlexGridSizer5->Add(
-		SimpleHtmlListBox2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		2);
+	FlexGridSizer5->Add(SimpleHtmlListBox2, 1, wxEXPAND, 2);
 	FlexGridSizer6 = new wxFlexGridSizer(0, 3, 0, 0);
 	FlexGridSizer6->AddGrowableCol(0);
 	edTheta = new wxTextCtrl(
 		panelProperties, ID_TEXTCTRL1, _("0"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	FlexGridSizer6->Add(
-		edTheta, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(edTheta, 1, wxEXPAND, 5);
 	StaticText3 = new wxStaticText(
 		panelProperties, ID_STATICTEXT3, _("(deg)"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT3"));
@@ -268,20 +260,16 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer6->Add(
 		btnTh, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer5->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
 	slTheta = new wxSlider(
 		panelProperties, ID_SLIDER1, 0, -180, 180, wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer5->Add(
-		slTheta, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer3->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer5->Add(slTheta, 1, wxEXPAND, 2);
+	FlexGridSizer3->Add(FlexGridSizer5, 1, wxEXPAND, 1);
 	StaticLine1 = new wxStaticLine(
 		panelProperties, ID_STATICLINE1, wxDefaultPosition, wxSize(10, -1),
 		wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
-	FlexGridSizer3->Add(
-		StaticLine1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer3->Add(StaticLine1, 1, wxEXPAND, 1);
 	FlexGridSizer8 = new wxFlexGridSizer(3, 1, 0, 0);
 	FlexGridSizer8->AddGrowableCol(0);
 	SimpleHtmlListBox3 = new wxSimpleHtmlListBox(
@@ -292,16 +280,13 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	SimpleHtmlListBox3->Disable();
 	SimpleHtmlListBox3->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-	FlexGridSizer8->Add(
-		SimpleHtmlListBox3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		2);
+	FlexGridSizer8->Add(SimpleHtmlListBox3, 1, wxEXPAND, 2);
 	FlexGridSizer9 = new wxFlexGridSizer(0, 3, 0, 0);
 	FlexGridSizer9->AddGrowableCol(0);
 	edD = new wxTextCtrl(
 		panelProperties, ID_TEXTCTRL2, _("0"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer9->Add(
-		edD, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer9->Add(edD, 1, wxEXPAND, 5);
 	StaticText5 = new wxStaticText(
 		panelProperties, ID_STATICTEXT5, _("(mm)"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT5"));
@@ -315,20 +300,16 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer9->Add(
 		btnD, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer8->Add(
-		FlexGridSizer9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer8->Add(FlexGridSizer9, 1, wxEXPAND, 0);
 	slD = new wxSlider(
 		panelProperties, ID_SLIDER2, 0, -2000, 2000, wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER2"));
-	FlexGridSizer8->Add(
-		slD, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer3->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer8->Add(slD, 1, wxEXPAND, 2);
+	FlexGridSizer3->Add(FlexGridSizer8, 1, wxEXPAND, 0);
 	StaticLine2 = new wxStaticLine(
 		panelProperties, ID_STATICLINE2, wxDefaultPosition, wxSize(10, -1),
 		wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
-	FlexGridSizer3->Add(
-		StaticLine2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer3->Add(StaticLine2, 1, wxEXPAND, 1);
 	FlexGridSizer10 = new wxFlexGridSizer(3, 1, 0, 0);
 	FlexGridSizer10->AddGrowableCol(0);
 	SimpleHtmlListBox4 = new wxSimpleHtmlListBox(
@@ -339,16 +320,13 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	SimpleHtmlListBox4->Disable();
 	SimpleHtmlListBox4->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-	FlexGridSizer10->Add(
-		SimpleHtmlListBox4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		2);
+	FlexGridSizer10->Add(SimpleHtmlListBox4, 1, wxEXPAND, 2);
 	FlexGridSizer11 = new wxFlexGridSizer(0, 3, 0, 0);
 	FlexGridSizer11->AddGrowableCol(0);
 	edA = new wxTextCtrl(
 		panelProperties, ID_TEXTCTRL3, _("0"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-	FlexGridSizer11->Add(
-		edA, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(edA, 1, wxEXPAND, 5);
 	StaticText7 = new wxStaticText(
 		panelProperties, ID_STATICTEXT7, _("(mm)"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT7"));
@@ -362,20 +340,16 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer11->Add(
 		btnA, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer10->Add(
-		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer10->Add(FlexGridSizer11, 1, wxEXPAND, 0);
 	slA = new wxSlider(
 		panelProperties, ID_SLIDER3, 0, -2000, 2000, wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER3"));
-	FlexGridSizer10->Add(
-		slA, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer3->Add(
-		FlexGridSizer10, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer10->Add(slA, 1, wxEXPAND, 2);
+	FlexGridSizer3->Add(FlexGridSizer10, 1, wxEXPAND, 0);
 	StaticLine3 = new wxStaticLine(
 		panelProperties, ID_STATICLINE3, wxDefaultPosition, wxSize(10, -1),
 		wxLI_HORIZONTAL, _T("ID_STATICLINE3"));
-	FlexGridSizer3->Add(
-		StaticLine3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer3->Add(StaticLine3, 1, wxEXPAND, 1);
 	FlexGridSizer12 = new wxFlexGridSizer(3, 1, 0, 0);
 	FlexGridSizer12->AddGrowableCol(0);
 	SimpleHtmlListBox5 = new wxSimpleHtmlListBox(
@@ -387,16 +361,13 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	SimpleHtmlListBox5->Disable();
 	SimpleHtmlListBox5->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-	FlexGridSizer12->Add(
-		SimpleHtmlListBox5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		2);
+	FlexGridSizer12->Add(SimpleHtmlListBox5, 1, wxEXPAND, 2);
 	FlexGridSizer13 = new wxFlexGridSizer(0, 3, 0, 0);
 	FlexGridSizer13->AddGrowableCol(0);
 	edAlpha = new wxTextCtrl(
 		panelProperties, ID_TEXTCTRL4, _("0"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-	FlexGridSizer13->Add(
-		edAlpha, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer13->Add(edAlpha, 1, wxEXPAND, 5);
 	StaticText9 = new wxStaticText(
 		panelProperties, ID_STATICTEXT9, _("(deg)"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT9"));
@@ -410,32 +381,25 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer13->Add(
 		btnAlpha, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer12->Add(
-		FlexGridSizer13, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(FlexGridSizer13, 1, wxEXPAND, 0);
 	slAlpha = new wxSlider(
 		panelProperties, ID_SLIDER4, 0, -180, 180, wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER4"));
-	FlexGridSizer12->Add(
-		slAlpha, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer3->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	boxProperties->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(slAlpha, 1, wxEXPAND, 2);
+	FlexGridSizer3->Add(FlexGridSizer12, 1, wxEXPAND, 0);
+	boxProperties->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	panelProperties->SetSizer(boxProperties);
 	boxProperties->Fit(panelProperties);
 	boxProperties->SetSizeHints(panelProperties);
-	FlexGridSizer2->Add(
-		panelProperties, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(panelProperties, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer4->AddGrowableCol(0);
 	FlexGridSizer4->AddGrowableRow(0);
 	m_plot3D = new CMyGLCanvas(
 		this, ID_XY_GLCANVAS, wxDefaultPosition, wxSize(450, 350),
 		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
-	FlexGridSizer4->Add(
-		m_plot3D, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(m_plot3D, 1, wxEXPAND, 0);
 	FlexGridSizer16 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer16->AddGrowableCol(0);
 	FlexGridSizer16->AddGrowableRow(0);
@@ -459,8 +423,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer14->Add(
 		StaticText10, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(
-		FlexGridSizer14, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer7->Add(FlexGridSizer14, 1, wxEXPAND, 0);
 	FlexGridSizer7->Add(
 		3, 55, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		0);
@@ -471,10 +434,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	pnDOFs->SetSizer(boxSizerDOFs);
 	boxSizerDOFs->Fit(pnDOFs);
 	boxSizerDOFs->SetSizeHints(pnDOFs);
-	FlexGridSizer7->Add(
-		pnDOFs, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer16->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer7->Add(pnDOFs, 1, wxEXPAND, 0);
+	FlexGridSizer16->Add(FlexGridSizer7, 1, wxEXPAND, 0);
 	FlexGridSizer17 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer17->AddGrowableCol(0);
 	FlexGridSizer17->AddGrowableRow(1);
@@ -492,8 +453,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	FlexGridSizer18->Add(
 		StaticText2, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer17->Add(
-		FlexGridSizer18, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer17->Add(FlexGridSizer18, 1, wxEXPAND, 0);
 	Notebook1 = new wxNotebook(
 		this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM,
 		_T("ID_NOTEBOOK1"));
@@ -506,33 +466,28 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	lbXYZs = new wxListBox(
 		Panel1, ID_LISTBOX1, wxDefaultPosition, wxSize(45, -1), 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_LISTBOX1"));
-	wxFont lbXYZsFont(7, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
+	wxFont lbXYZsFont(
+		7, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	lbXYZs->SetFont(lbXYZsFont);
-	FlexGridSizer19->Add(
-		lbXYZs, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer19->Add(lbXYZs, 1, wxEXPAND, 0);
 	edMatrix = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL5, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP | wxALWAYS_SHOW_SB,
 		wxDefaultValidator, _T("ID_TEXTCTRL5"));
 	edMatrix->SetMinSize(wxSize(300, -1));
 	wxFont edMatrixFont(
-		7, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		_T("Monospace"), wxFONTENCODING_DEFAULT);
+		7, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, _T("Monospace"), wxFONTENCODING_DEFAULT);
 	edMatrix->SetFont(edMatrixFont);
-	FlexGridSizer19->Add(
-		edMatrix, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer19->Add(edMatrix, 1, wxEXPAND, 0);
 	Panel1->SetSizer(FlexGridSizer19);
 	FlexGridSizer19->Fit(Panel1);
 	FlexGridSizer19->SetSizeHints(Panel1);
 	Notebook1->AddPage(Panel1, _("Transf. matrices"), false);
-	FlexGridSizer17->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer16->Add(
-		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer4->Add(
-		FlexGridSizer16, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer17->Add(Notebook1, 1, wxEXPAND, 0);
+	FlexGridSizer16->Add(FlexGridSizer17, 1, wxEXPAND, 0);
+	FlexGridSizer4->Add(FlexGridSizer16, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();

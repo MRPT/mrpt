@@ -62,17 +62,17 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 
 		// scrollbar properties set in rebuildBottomTimeLine().
 
-		fgs->Add(m_timeline.sbTimeLineRange, 1, wxALL | wxEXPAND, 0 /*border*/);
+		fgs->Add(m_timeline.sbTimeLineRange, 1, wxEXPAND, 0 /*border*/);
 
 		m_glTimeLine = new CMyGLCanvas(pnTimeLine, ID_TIMELINE_GLCANVAS);
 		pnTimeLine->SetMinSize(wxSize(-1, 125));
 		m_glTimeLine->SetMinSize(wxSize(-1, 125));
-		fgs->Add(m_glTimeLine, 1, wxALL | wxEXPAND, 2 /*border*/);
+		fgs->Add(m_glTimeLine, 1, wxEXPAND, 2 /*border*/);
 
 		pnTimeLine->SetSizer(fgs);
 		fgs->SetSizeHints(pnTimeLine);
 
-		fgzBottomTimeLine->Add(pnTimeLine, 1, wxALL | wxEXPAND, 0);
+		fgzBottomTimeLine->Add(pnTimeLine, 1, wxEXPAND, 0);
 
 		// timeline opengl area events:
 		m_glTimeLine->Bind(wxEVT_MOTION, &This::OnTimeLineMouseMove, this);
@@ -85,7 +85,7 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 		m_glTimeLine->Bind(wxEVT_MOUSEWHEEL, &This::OnTimeLineMouseWheel, this);
 	}
 
-	fgzMain->Add(fgzBottomTimeLine, 1, wxALL | wxEXPAND, 0);
+	fgzMain->Add(fgzBottomTimeLine, 1, wxEXPAND, 0);
 
 	// Set-up bottom timeline view opengl objects:
 	{

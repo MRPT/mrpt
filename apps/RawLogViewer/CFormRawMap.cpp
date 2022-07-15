@@ -157,8 +157,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 	slFrom = new wxSlider(
 		Panel2, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer3->Add(
-		slFrom, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer3->Add(slFrom, 1, wxEXPAND, 1);
 	edFirst = new wxSpinCtrl(
 		Panel2, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
 		100, 0, _T("ID_SPINCTRL1"));
@@ -174,8 +173,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 	slTo = new wxSlider(
 		Panel2, ID_SLIDER2, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_SLIDER2"));
-	FlexGridSizer3->Add(
-		slTo, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer3->Add(slTo, 1, wxEXPAND, 1);
 	edLast = new wxSpinCtrl(
 		Panel2, ID_SPINCTRL2, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
 		100, 0, _T("ID_SPINCTRL2"));
@@ -191,8 +189,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 	slDecimate = new wxSlider(
 		Panel2, ID_SLIDER3, 0, 1, 200, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_SLIDER3"));
-	FlexGridSizer3->Add(
-		slDecimate, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(slDecimate, 1, wxEXPAND, 0);
 	edDec = new wxSpinCtrl(
 		Panel2, ID_SPINCTRL3, _T("1"), wxDefaultPosition, wxDefaultSize, 0, 1,
 		200, 1, _T("ID_SPINCTRL3"));
@@ -200,8 +197,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 	FlexGridSizer3->Add(
 		edDec, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer4->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer6 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -215,26 +211,20 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 		Panel2, ID_BUTTON2, _("Map from odometry"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
 	btnGenerate->SetDefault();
-	FlexGridSizer8->Add(
-		btnGenerate, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer8->Add(btnGenerate, 1, wxEXPAND, 5);
 	btnGenerateRTK = new wxButton(
 		Panel2, ID_BUTTON6, _("Map from RTK GPS"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON6"));
 	btnGenerateRTK->SetDefault();
-	FlexGridSizer8->Add(
-		btnGenerateRTK, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer8->Add(btnGenerateRTK, 1, wxEXPAND, 5);
 	btnGeneratePaths = new wxButton(
 		Panel2, ID_BUTTON5, _("Random paths..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
 	btnGeneratePaths->SetDefault();
-	FlexGridSizer8->Add(
-		btnGeneratePaths, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	StaticBoxSizer1->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer6->Add(
-		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
-	FlexGridSizer5->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer8->Add(btnGeneratePaths, 1, wxEXPAND, 5);
+	StaticBoxSizer1->Add(FlexGridSizer8, 1, wxEXPAND, 0);
+	FlexGridSizer6->Add(StaticBoxSizer1, 1, wxEXPAND, 3);
+	FlexGridSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
 	FlexGridSizer7 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
 	FlexGridSizer7->AddGrowableRow(0);
@@ -246,38 +236,32 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 		Panel2, ID_BUTTON1, _("Save map as text..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
 	btnSaveTxt->Disable();
-	FlexGridSizer11->Add(
-		btnSaveTxt, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(btnSaveTxt, 1, wxEXPAND, 5);
 	btnSave3D = new wxButton(
 		Panel2, ID_BUTTON3, _("Save map as 3D scene..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
 	btnSave3D->Disable();
-	FlexGridSizer11->Add(
-		btnSave3D, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(btnSave3D, 1, wxEXPAND, 5);
 	btnSavePath = new wxButton(
 		Panel2, ID_BUTTON7, _("Save vehicle path..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON7"));
 	btnSavePath->Disable();
-	FlexGridSizer11->Add(
-		btnSavePath, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(btnSavePath, 1, wxEXPAND, 5);
 	btnSaveObsPath = new wxButton(
 		Panel2, ID_BUTTON8, _("Save observations poses..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON8"));
 	btnSaveObsPath->Disable();
-	FlexGridSizer11->Add(
-		btnSaveObsPath, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(btnSaveObsPath, 1, wxEXPAND, 5);
 	btnView3D = new wxButton(
 		Panel2, ID_BUTTON9, _("Preview map in 3D"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON9"));
 	btnView3D->Disable();
-	FlexGridSizer11->Add(
-		btnView3D, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(btnView3D, 1, wxEXPAND, 5);
 
 	btnClose = new wxButton(
 		Panel2, ID_BUTTON4, _("Close"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON4"));
-	FlexGridSizer11->Add(
-		btnClose, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(btnClose, 1, wxEXPAND, 5);
 
 	lbCount = new wxStaticText(
 		Panel2, ID_STATICTEXT8, _("Point count=0 \n (No decimation)"),
@@ -291,18 +275,12 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 	FlexGridSizer11->Add(
 		lbLength, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer9->Add(
-		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	boxResults->Add(
-		FlexGridSizer9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer7->Add(
-		boxResults, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer5->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
-	FlexGridSizer4->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(FlexGridSizer11, 1, wxEXPAND, 0);
+	boxResults->Add(FlexGridSizer9, 1, wxEXPAND, 0);
+	FlexGridSizer7->Add(boxResults, 1, wxEXPAND, 0);
+	FlexGridSizer5->Add(FlexGridSizer7, 1, wxEXPAND, 3);
+	FlexGridSizer4->Add(FlexGridSizer5, 1, wxEXPAND, 0);
+	FlexGridSizer2->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	edOpts = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL1,
 		_("; ====================================================\n; "
@@ -345,29 +323,25 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 		wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE | wxHSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	wxFont edOptsFont(
-		8, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false,
+		_T("Courier New"), wxFONTENCODING_DEFAULT);
 	edOpts->SetFont(edOptsFont);
-	FlexGridSizer2->Add(
-		edOpts, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(edOpts, 1, wxEXPAND, 1);
 	Panel2->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(Panel2);
 	FlexGridSizer2->SetSizeHints(Panel2);
-	FlexGridSizer1->Add(
-		Panel2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(Panel2, 1, wxEXPAND, 0);
 	Panel3 = new wxPanel(
 		this, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL3"));
 	BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
 	plotMap = new mpWindow(
 		Panel3, ID_CUSTOM2, wxDefaultPosition, wxSize(742, 380), 0);
-	BoxSizer1->Add(
-		plotMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer1->Add(plotMap, 1, wxEXPAND, 0);
 	Panel3->SetSizer(BoxSizer1);
 	BoxSizer1->Fit(Panel3);
 	BoxSizer1->SetSizeHints(Panel3);
-	FlexGridSizer1->Add(
-		Panel3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(Panel3, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
@@ -403,7 +377,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent, wxWindowID)
 	//*)
 
 	Maximize();
-	FlexGridSizer1->RecalcSizes();
+	FlexGridSizer1->Layout();
 }
 
 CFormRawMap::~CFormRawMap()

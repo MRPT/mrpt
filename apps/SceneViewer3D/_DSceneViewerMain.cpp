@@ -424,8 +424,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnNew->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")), wxART_TOOLBAR));
 	btnNew->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnNew, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnNew, 1, wxEXPAND, 1);
 	btnToolbarOpen = new wxCustomButton(
 		this, ID_BUTTON2, _("  Open... "),
 		wxArtProvider::GetBitmap(
@@ -435,8 +434,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")), wxART_TOOLBAR));
 	btnToolbarOpen->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnToolbarOpen, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnToolbarOpen, 1, wxEXPAND, 1);
 	StaticLine1 = new wxStaticLine(
 		this, ID_STATICLINE1, wxDefaultPosition, wxSize(50, -1),
 		wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
@@ -452,8 +450,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnPrev->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")), wxART_TOOLBAR));
 	btnPrev->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnPrev, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnPrev, 1, wxEXPAND, 1);
 	btnNext = new wxCustomButton(
 		this, ID_BUTTON4, _("  Next  "),
 		wxArtProvider::GetBitmap(
@@ -463,8 +460,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnNext->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")), wxART_TOOLBAR));
 	btnNext->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnNext, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnNext, 1, wxEXPAND, 1);
 	btnReload = new wxCustomButton(
 		this, ID_BUTTON5, _("  Reload  "),
 		wxArtProvider::GetBitmap(
@@ -475,8 +471,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")), wxART_TOOLBAR));
 	btnReload->SetMargins(wxSize(5, 5));
 	FlexGridSizer2->Add(
-		btnReload, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		wxDLG_UNIT(this, wxSize(1, 0)).GetWidth());
+		btnReload, 1, wxEXPAND, wxDLG_UNIT(this, wxSize(1, 0)).GetWidth());
 	StaticLine2 = new wxStaticLine(
 		this, ID_STATICLINE2, wxDefaultPosition, wxSize(50, -1),
 		wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
@@ -492,8 +487,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnOptions->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")), wxART_TOOLBAR));
 	btnOptions->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnOptions, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnOptions, 1, wxEXPAND, 1);
 	btnOrtho = new wxCustomButton(
 		this, ID_BUTTON7, _("  Ortho  "),
 		wxArtProvider::GetBitmap(
@@ -503,8 +497,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnOrtho->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")), wxART_TOOLBAR));
 	btnOrtho->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnOrtho, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnOrtho, 1, wxEXPAND, 1);
 	btnAutoplay = new wxCustomButton(
 		this, ID_BUTTON8, _("  Autoplay  "),
 		wxArtProvider::GetBitmap(
@@ -514,8 +507,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnAutoplay->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")), wxART_TOOLBAR));
 	btnAutoplay->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnAutoplay, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnAutoplay, 1, wxEXPAND, 1);
 	btnCapture = new wxCustomButton(
 		this, ID_BUTTON9, _("  Capture  "),
 		wxArtProvider::GetBitmap(
@@ -525,8 +517,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnCapture->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")), wxART_TOOLBAR));
 	btnCapture->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnCapture, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnCapture, 1, wxEXPAND, 1);
 	StaticLine3 = new wxStaticLine(
 		this, ID_STATICLINE3, wxDefaultPosition, wxSize(50, -1),
 		wxLI_HORIZONTAL, _T("ID_STATICLINE3"));
@@ -542,8 +533,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnAbout->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")), wxART_TOOLBAR));
 	btnAbout->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnAbout, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(btnAbout, 1, wxEXPAND, 1);
 	btnQuit = new wxCustomButton(
 		this, ID_BUTTON11, _("  Quit  "),
 		wxArtProvider::GetBitmap(
@@ -553,10 +543,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	btnQuit->SetBitmapDisabled(wxArtProvider::GetBitmap(
 		wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")), wxART_TOOLBAR));
 	btnQuit->SetMargins(wxSize(5, 5));
-	FlexGridSizer2->Add(
-		btnQuit, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(btnQuit, 1, wxEXPAND, 1);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();
@@ -775,8 +763,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent, wxWindowID id)
 	m_canvas->SetMinClientSize(wxSize(100, 100));
 #endif
 	m_canvas->setMinimumZoom(0.1);
-	FlexGridSizer1->Add(
-		m_canvas, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(m_canvas, 1, wxEXPAND, 0);
 
 	// Load an empty scene:
 	wxCommandEvent dummEvent;
