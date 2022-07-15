@@ -121,6 +121,9 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 		m_timeline.cursor = mrpt::opengl::CBox::Create();
 		scene->insert(m_timeline.cursor);
 
+		m_timeline.horizontalCursor = mrpt::opengl::CBox::Create();
+		scene->insert(m_timeline.horizontalCursor);
+
 		m_timeline.visiblePage = mrpt::opengl::CBox::Create();
 		scene->insert(m_timeline.visiblePage);
 	}
@@ -280,7 +283,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 			}
 
 			// Keep a map between vertical coords and sensor labels:
-			tl.yCoordToSensorLabel[y0] = e.first;
+			tl.yCoordToSensorLabel.insert(y0, e.first);
 
 			// and add its visualization:
 			if (!e.first.empty())
@@ -297,6 +300,8 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 #endif
 				const double ptX = -1.0 + 4 * widthOf1Px;
 				glLb->setLocation(ptX, y0, 0);
+
+				glLb->setName(e.first);
 
 				tl.ySensorLabels->insert(glLb);
 			}
@@ -335,11 +340,14 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 	}
 
 	// current time position page:
-	m_timeline.visiblePage->setColor_u8(0xff, 0x00, 0x00, 0x20);
-	m_timeline.visiblePage->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
+	tl.visiblePage->setColor_u8(0xff, 0x00, 0x00, 0x20);
+	tl.visiblePage->setBoxBorderColor({0xff, 0x00, 0x00, 0x20});
 
-	m_timeline.cursor->setColor_u8(0x30, 0x30, 0x30, 0x50);
-	m_timeline.cursor->setBoxBorderColor({0x30, 0x30, 0x30, 0x50});
+	tl.horizontalCursor->setColor_u8(0xc0, 0x00, 0x00, 0x20);
+	tl.horizontalCursor->setBoxBorderColor({0xc0, 0x00, 0x00, 0x20});
+
+	tl.cursor->setColor_u8(0x30, 0x30, 0x30, 0x50);
+	tl.cursor->setBoxBorderColor({0x30, 0x30, 0x30, 0x50});
 
 	bottomTimeLineUpdateCursorFromTreeScrollPos();	// this does a Refresh()
 }
@@ -350,6 +358,7 @@ void xRawLogViewerFrame::bottomTimeLineUpdateCursorFromTreeScrollPos()
 	{
 		m_timeline.visiblePage->setVisibility(false);
 		m_timeline.cursor->setVisibility(false);
+		m_timeline.horizontalCursor->setVisibility(false);
 		return;
 	}
 
@@ -450,8 +459,7 @@ void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)
 			timeLineMouseXYToTreeIndex(e);
 		OnTimeLineDoScrollToMouseX(selPt);
 	}
-
-	if (e.LeftIsDown())
+	else if (e.LeftIsDown())
 	{
 		std::optional<std::pair<double, size_t>> selPt;
 
@@ -470,6 +478,18 @@ void xRawLogViewerFrame::OnTimeLineMouseMove(wxMouseEvent& e)
 		}
 
 		OnTimeLineMouseLeftDown(selPt);
+	}
+	else
+	{
+		static double lastUpdate = .0;
+		const double t = mrpt::Clock::nowDouble();
+		if (t - lastUpdate > 0.05)
+		{
+			lastUpdate = t;
+			std::string sel;
+			timeLineMouseXYToTreeIndex(e, true, std::nullopt, sel);
+			bottomTimeLineUpdateCursorFromTreeScrollPos();	// Refresh()
+		}
 	}
 }
 void xRawLogViewerFrame::OnTimeLineMouseLeftDown(
@@ -592,6 +612,8 @@ std::optional<std::pair<double, size_t>>
 {
 	const auto clsz = m_glTimeLine->GetClientSize();
 
+	auto& tl = m_timeline;
+
 	const int mouseX = e.GetX();
 	if (mouseX < 0 || mouseX >= clsz.GetWidth()) return {};
 
@@ -608,11 +630,13 @@ std::optional<std::pair<double, size_t>>
 	std::optional<std::string> trackedSensorLabel;
 
 	if (forceThisSensorLabel.has_value())
-	{ trackedSensorLabel = *forceThisSensorLabel; }
+	{  //
+		trackedSensorLabel = *forceThisSensorLabel;
+	}
 	else
 	{
 		auto closestSensorLabel = mrpt::containers::find_closest_with_tolerance(
-			m_timeline.yCoordToSensorLabel, clickedY,
+			tl.yCoordToSensorLabel.getDirectMap(), clickedY,
 			TL_CLICK_SENSOR_LABEL_VERTICAL_TOLERANCE);
 
 		if (closestSensorLabel.has_value())
@@ -624,6 +648,44 @@ std::optional<std::pair<double, size_t>>
 		}
 	}
 
+	// vertical line highlight:
+	for (size_t i = 0;; i++)
+	{
+		auto glLb = tl.ySensorLabels->getByClass<mrpt::opengl::CText>(i);
+		if (!glLb) break;
+
+		if (trackedSensorLabel.has_value() &&
+			glLb->getString() == *trackedSensorLabel)
+			glLb->setColor_u8(0xff, 0x00, 0x00, 0xff);
+		else
+			glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);
+	}
+
+	m_timeline.horizontalCursor->setVisibility(false);
+	if (trackedSensorLabel.has_value())
+	{
+		const double xLeft1 = px2x(tl.actualLeftBorderPixels + 1);
+		const double xRight1 = px2x(clsz.GetWidth() - TL_BORDER - 1);
+
+		auto px2height = [clsz](int v) { return (2.0 / clsz.GetHeight()) * v; };
+
+		const double heightOf1Px = px2height(1);
+
+		const auto& im = tl.yCoordToSensorLabel.getInverseMap();
+		if (auto it = im.find(*trackedSensorLabel); it != im.end())
+		{
+			const double y = it->second;
+			const double ym1 = y - heightOf1Px;
+			const double yp1 = y + heightOf1Px;
+
+			m_timeline.horizontalCursor->setVisibility(true);
+			m_timeline.horizontalCursor->setBoxCorners(
+				mrpt::math::TPoint3D(xLeft1, ym1, 0),
+				mrpt::math::TPoint3D(xRight1, yp1, 0));
+		}
+	}
+
+	// ---
 	std::string matchedClickSensorLabel;
 
 	if (auto closestXIdx =

@@ -467,8 +467,9 @@ class xRawLogViewerFrame : public wxFrame
 		mrpt::opengl::CBox::Ptr cursor;
 		mrpt::opengl::CBox::Ptr visiblePage;
 		mrpt::opengl::CSetOfObjects::Ptr ySensorLabels;
+		mrpt::opengl::CBox::Ptr horizontalCursor;
 
-		std::map<double, std::string> yCoordToSensorLabel;
+		mrpt::containers::bimap<double, std::string> yCoordToSensorLabel;
 	};
 
 	TimeLineData m_timeline;
