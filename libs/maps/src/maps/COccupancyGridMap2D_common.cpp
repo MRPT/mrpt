@@ -292,7 +292,7 @@ void COccupancyGridMap2D::resizeGrid(
 		{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 			assert(dest_ptr + row_size - 1 <= &new_map[new_map.size() - 1]);
-			assert(src_ptr + row_size - 1 <= &map[map.size() - 1]);
+			assert(src_ptr + row_size - 1 <= &m_map[m_map.size() - 1]);
 #endif
 			memcpy(dest_ptr, src_ptr, row_size);
 			dest_ptr += new_size_x;

@@ -203,8 +203,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnStart->SetBitmapDisabled(
 		btnStart->CreateBitmapDisabled(btnStart->GetBitmapLabel()));
 	btnStart->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer4->Add(
-		btnStart, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer4->Add(btnStart, 1, wxEXPAND, 2);
 	btnStop = new wxCustomButton(
 		this, ID_BUTTON5, _("STOP"),
 		wxArtProvider::GetBitmap(
@@ -215,8 +214,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnStop->SetBitmapDisabled(
 		btnStop->CreateBitmapDisabled(btnStop->GetBitmapLabel()));
 	btnStop->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer4->Add(
-		btnStop, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer4->Add(btnStop, 1, wxEXPAND, 2);
 	FlexGridSizer4->Add(
 		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		1);
@@ -230,8 +228,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnPlaceTarget->SetBitmapDisabled(
 		btnPlaceTarget->CreateBitmapDisabled(btnPlaceTarget->GetBitmapLabel()));
 	btnPlaceTarget->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer4->Add(
-		btnPlaceTarget, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer4->Add(btnPlaceTarget, 1, wxEXPAND, 2);
 	btnSetWaypointSeq = new wxCustomButton(
 		this, ID_BUTTON12, _("Waypoint list..."),
 		wxArtProvider::GetBitmap(
@@ -243,8 +240,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		btnSetWaypointSeq->CreateBitmapDisabled(
 			btnSetWaypointSeq->GetBitmapLabel()));
 	btnSetWaypointSeq->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer4->Add(
-		btnSetWaypointSeq, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer4->Add(btnSetWaypointSeq, 1, wxEXPAND, 2);
 	StaticText8 = new wxStaticText(
 		this, ID_STATICTEXT10, _("(non-skip:SHIFT+click)"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT10"));
@@ -276,8 +272,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnPlaceRobot->SetBitmapDisabled(
 		btnPlaceRobot->CreateBitmapDisabled(btnPlaceRobot->GetBitmapLabel()));
 	btnPlaceRobot->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer4->Add(
-		btnPlaceRobot, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer4->Add(btnPlaceRobot, 1, wxEXPAND, 2);
 	FlexGridSizer4->Add(
 		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		1);
@@ -291,8 +286,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnDrawMapObs->SetBitmapDisabled(
 		btnDrawMapObs->CreateBitmapDisabled(btnDrawMapObs->GetBitmapLabel()));
 	btnDrawMapObs->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer4->Add(
-		btnDrawMapObs, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer4->Add(btnDrawMapObs, 1, wxEXPAND, 2);
 	btnDrawEmpty = new wxCustomButton(
 		this, ID_BUTTON11, _("Draw empty..."),
 		wxArtProvider::GetBitmap(
@@ -303,8 +297,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnDrawEmpty->SetBitmapDisabled(
 		btnDrawEmpty->CreateBitmapDisabled(btnDrawEmpty->GetBitmapLabel()));
 	btnDrawEmpty->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer4->Add(
-		btnDrawEmpty, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer4->Add(btnDrawEmpty, 1, wxEXPAND, 2);
 	FlexGridSizer12 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer12->AddGrowableCol(0);
 	FlexGridSizer12->AddGrowableCol(1);
@@ -317,8 +310,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnLoadMap->SetBitmapDisabled(
 		btnLoadMap->CreateBitmapDisabled(btnLoadMap->GetBitmapLabel()));
 	btnLoadMap->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer12->Add(
-		btnLoadMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer12->Add(btnLoadMap, 1, wxEXPAND, 2);
 	btnEmptyMap = new wxCustomButton(
 		this, ID_BUTTON9, _("New map..."),
 		wxArtProvider::GetBitmap(
@@ -329,8 +321,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnEmptyMap->SetBitmapDisabled(
 		btnEmptyMap->CreateBitmapDisabled(btnEmptyMap->GetBitmapLabel()));
 	btnEmptyMap->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer12->Add(
-		btnEmptyMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer12->Add(btnEmptyMap, 1, wxEXPAND, 2);
 	btnSaveMap = new wxCustomButton(
 		this, ID_BUTTON10, _("Save map..."),
 		wxArtProvider::GetBitmap(
@@ -340,8 +331,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnSaveMap->SetBitmapDisabled(
 		btnSaveMap->CreateBitmapDisabled(btnSaveMap->GetBitmapLabel()));
 	btnSaveMap->SetBitmapMargin(wxSize(2, 4));
-	FlexGridSizer12->Add(
-		btnSaveMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer12->Add(btnSaveMap, 1, wxEXPAND, 2);
 	btnHelp = new wxCustomButton(
 		this, ID_BUTTON2, _("About..."),
 		wxArtProvider::GetBitmap(
@@ -352,8 +342,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	btnHelp->SetBitmapDisabled(
 		btnHelp->CreateBitmapDisabled(btnHelp->GetBitmapLabel()));
 	btnHelp->SetBitmapMargin(wxSize(5, 4));
-	FlexGridSizer12->Add(
-		btnHelp, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer12->Add(btnHelp, 1, wxEXPAND, 2);
 	btnQuit = new wxCustomButton(
 		this, ID_BUTTON3, _("Exit"),
 		wxArtProvider::GetBitmap(
@@ -363,12 +352,9 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		wxDefaultValidator, _T("ID_BUTTON3"));
 	btnQuit->SetBitmapDisabled(
 		btnQuit->CreateBitmapDisabled(btnQuit->GetBitmapLabel()));
-	FlexGridSizer12->Add(
-		btnQuit, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer4->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(btnQuit, 1, wxEXPAND, 2);
+	FlexGridSizer4->Add(FlexGridSizer12, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	SplitterWindow1 = new wxSplitterWindow(
 		this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D,
 		_T("ID_SPLITTERWINDOW1"));
@@ -391,8 +377,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		pnNavSelButtons, ID_RADIOBOX2, _("Navigator"), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, wxRA_SPECIFY_COLS,
 		wxDefaultValidator, _T("ID_RADIOBOX2"));
-	FlexGridSizer9->Add(
-		rbNavMode, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer9->Add(rbNavMode, 1, wxEXPAND, 5);
 	FlexGridSizer3 = new wxFlexGridSizer(0, 2, 0, 0);
 	cbEnableLog = new wxCheckBox(
 		pnNavSelButtons, ID_CHECKBOX1, _("Log trajectory"), wxDefaultPosition,
@@ -434,11 +419,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
 		_T("ID_CHECKBOX5"));
 	cbWaypointsAllowSkip->SetValue(true);
-	FlexGridSizer3->Add(
-		cbWaypointsAllowSkip, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		5);
-	FlexGridSizer9->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer3->Add(cbWaypointsAllowSkip, 1, wxEXPAND, 5);
+	FlexGridSizer9->Add(FlexGridSizer3, 1, wxEXPAND, 5);
 	wxString __wxRadioBoxChoices_2[2] = {
 		_("Differential (Ackermann) drive"), _("Holonomic")};
 	rbKinType = new wxRadioBox(
@@ -456,8 +438,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	pnNavSelButtons->SetSizer(FlexGridSizer9);
 	FlexGridSizer9->Fit(pnNavSelButtons);
 	FlexGridSizer9->SetSizeHints(pnNavSelButtons);
-	FlexGridSizer2->Add(
-		pnNavSelButtons, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(pnNavSelButtons, 1, wxEXPAND, 0);
 	Notebook1 = new wxNotebook(
 		Panel1, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_NOTEBOOK1"));
@@ -476,11 +457,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	edParamsGeneral->SetMinSize(wxSize(-1, 100));
 	wxFont edParamsGeneralFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, wxEmptyString,
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, wxEmptyString, wxFONTENCODING_DEFAULT);
 	edParamsGeneral->SetFont(edParamsGeneralFont);
-	FlexGridSizer7->Add(
-		edParamsGeneral, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer7->Add(edParamsGeneral, 1, wxEXPAND, 2);
 	pnParamsGeneral->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->SetSizeHints(pnParamsGeneral);
 	pnParamsReactive = new wxPanel(
@@ -617,11 +597,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		wxDefaultValidator, _T("ID_TEXTCTRL4"));
 	edParamsReactive->SetMinSize(wxSize(-1, 100));
 	wxFont edParamsReactiveFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, wxEmptyString,
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, wxEmptyString, wxFONTENCODING_DEFAULT);
 	edParamsReactive->SetFont(edParamsReactiveFont);
-	FlexGridSizer8->Add(
-		edParamsReactive, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer8->Add(edParamsReactive, 1, wxEXPAND, 2);
 	pnParamsReactive->SetSizer(FlexGridSizer8);
 	FlexGridSizer8->Fit(pnParamsReactive);
 	FlexGridSizer8->SetSizeHints(pnParamsReactive);
@@ -650,11 +629,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 		wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	edManualSeqs->SetMinSize(wxSize(-1, 100));
 	wxFont edManualSeqsFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, wxEmptyString,
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, wxEmptyString, wxFONTENCODING_DEFAULT);
 	edManualSeqs->SetFont(edManualSeqsFont);
-	FlexGridSizer6->Add(
-		edManualSeqs, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(edManualSeqs, 1, wxEXPAND, 0);
 	pnParamsPreprog->SetSizer(FlexGridSizer6);
 	FlexGridSizer6->Fit(pnParamsPreprog);
 	FlexGridSizer6->SetSizeHints(pnParamsPreprog);
@@ -662,8 +640,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	Notebook1->AddPage(
 		pnParamsReactive, _("Params: Reactive navigator"), false);
 	Notebook1->AddPage(pnParamsPreprog, _("Params: Preprogrammed seq."), false);
-	FlexGridSizer2->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer2->Add(Notebook1, 1, wxEXPAND, 2);
 	Panel1->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->SetSizeHints(Panel1);
 	Panel5 = new wxPanel(
@@ -694,11 +671,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	edLog->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	wxFont edLogFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, wxEmptyString,
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, wxEmptyString, wxFONTENCODING_DEFAULT);
 	edLog->SetFont(edLogFont);
-	FlexGridSizer10->Add(
-		edLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer10->Add(edLog, 1, wxEXPAND, 0);
 	Panel2->SetSizer(FlexGridSizer10);
 	FlexGridSizer10->Fit(Panel2);
 	FlexGridSizer10->SetSizeHints(Panel2);
@@ -733,18 +709,15 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	StaticText4 = new wxStaticText(
 		Panel3, ID_STATICTEXT4, _("Show for PTG:"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT4"));
-	FlexGridSizer11->Add(
-		StaticText4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(StaticText4, 1, wxEXPAND, 5);
 	cbSelPTG = new wxChoice(
 		Panel3, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr, 0,
 		wxDefaultValidator, _T("ID_CHOICE1"));
-	FlexGridSizer11->Add(
-		cbSelPTG, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(cbSelPTG, 1, wxEXPAND, 5);
 	m_plotLocalView = new CMyGLCanvas(
 		Panel3, ID_CUSTOM1, wxDefaultPosition, wxSize(150, 150),
 		wxTAB_TRAVERSAL, _T("ID_CUSTOM1"));
-	FlexGridSizer11->Add(
-		m_plotLocalView, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer11->Add(m_plotLocalView, 1, wxEXPAND, 1);
 	edInfoLocalView = new wxTextCtrl(
 		Panel3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP | wxALWAYS_SHOW_SB,
@@ -753,25 +726,21 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	edInfoLocalView->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	wxFont edInfoLocalViewFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, wxEmptyString,
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, wxEmptyString, wxFONTENCODING_DEFAULT);
 	edInfoLocalView->SetFont(edInfoLocalViewFont);
-	FlexGridSizer11->Add(
-		edInfoLocalView, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer5->Add(
-		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer11->Add(edInfoLocalView, 1, wxEXPAND, 2);
+	FlexGridSizer5->Add(FlexGridSizer11, 1, wxEXPAND, 0);
 	Panel3->SetSizer(FlexGridSizer5);
 	FlexGridSizer5->Fit(Panel3);
 	FlexGridSizer5->SetSizeHints(Panel3);
 	SplitterWindow2->SplitHorizontally(Panel2, Panel3);
-	BoxSizer3->Add(
-		SplitterWindow2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer3->Add(SplitterWindow2, 1, wxEXPAND, 0);
 	Panel5->SetSizer(BoxSizer3);
 	BoxSizer3->Fit(Panel5);
 	BoxSizer3->SetSizeHints(Panel5);
 	SplitterWindow1->SplitHorizontally(Panel1, Panel5);
-	FlexGridSizer1->Add(
-		SplitterWindow1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(SplitterWindow1, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();
@@ -1581,7 +1550,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				wxDefaultValidator, _T("ID_TEXTCTRL_WP"));
 			edWpLog->SetMinSize(wxSize(190, 60));
 			wxFont edLogFont(
-				8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
+				8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL,
+				wxFONTWEIGHT_NORMAL);
 			edWpLog->SetFont(edLogFont);
 		}
 

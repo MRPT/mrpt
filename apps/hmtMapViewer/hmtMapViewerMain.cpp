@@ -234,10 +234,8 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 		(int)(StaticText1Font.GetPointSize() * 1.000000));
 	StaticText1Font.SetWeight(wxFONTWEIGHT_BOLD);
 	StaticText1->SetFont(StaticText1Font);
-	BoxSizer2->Add(
-		StaticText1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer4->Add(
-		BoxSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer2->Add(StaticText1, 1, wxEXPAND, 5);
+	FlexGridSizer4->Add(BoxSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
 	StaticText2 = new wxStaticText(
 		Panel5, ID_STATICTEXT2, _("Select hypothesis:"), wxDefaultPosition,
@@ -251,13 +249,11 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer5->Add(
 		cbHypos, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer4->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	Panel5->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->Fit(Panel5);
 	FlexGridSizer4->SetSizeHints(Panel5);
-	FlexGridSizer1->Add(
-		Panel5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(Panel5, 1, wxEXPAND, 0);
 	SplitterWindow3 = new wxSplitterWindow(
 		Panel1, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize,
 		wxSP_3D | wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW3"));
@@ -274,8 +270,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 		wxTR_LINES_AT_ROOT | wxTR_MULTIPLE | wxTR_DEFAULT_STYLE | wxVSCROLL |
 			wxHSCROLL,
 		wxDefaultValidator, _T("ID_TREECTRL1"));
-	FlexGridSizer9->Add(
-		treeView, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(treeView, 1, wxEXPAND, 0);
 	Panel9->SetSizer(FlexGridSizer9);
 	FlexGridSizer9->Fit(Panel9);
 	FlexGridSizer9->SetSizeHints(Panel9);
@@ -295,13 +290,11 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 		edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 	edLogFont.SetPointSize((int)(edLogFont.GetPointSize() * 1.000000));
 	edLog->SetFont(edLogFont);
-	FlexGridSizer8->Add(
-		edLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer8->Add(edLog, 1, wxEXPAND, 1);
 	Panel8->SetSizer(FlexGridSizer8);
 	FlexGridSizer8->SetSizeHints(Panel8);
 	SplitterWindow3->SplitHorizontally(Panel9, Panel8);
-	FlexGridSizer1->Add(
-		SplitterWindow3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(SplitterWindow3, 1, wxEXPAND, 0);
 	Panel1->SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(Panel1);
 	FlexGridSizer1->SetSizeHints(Panel1);
@@ -342,8 +335,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	Panel6->SetSizer(FlexGridSizer6);
 	FlexGridSizer6->Fit(Panel6);
 	FlexGridSizer6->SetSizeHints(Panel6);
-	FlexGridSizer2->Add(
-		Panel6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(Panel6, 1, wxEXPAND, 0);
 	Panel3->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(Panel3);
 	FlexGridSizer2->SetSizeHints(Panel3);
@@ -375,14 +367,12 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	Panel7->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->Fit(Panel7);
 	FlexGridSizer7->SetSizeHints(Panel7);
-	FlexGridSizer3->Add(
-		Panel7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(Panel7, 1, wxEXPAND, 0);
 	Panel4->SetSizer(FlexGridSizer3);
 	FlexGridSizer3->Fit(Panel4);
 	FlexGridSizer3->SetSizeHints(Panel4);
 	SplitterWindow2->SplitHorizontally(Panel3, Panel4);
-	BoxSizer1->Add(
-		SplitterWindow2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer1->Add(SplitterWindow2, 1, wxEXPAND, 0);
 	Panel2->SetSizer(BoxSizer1);
 	BoxSizer1->Fit(Panel2);
 	BoxSizer1->SetSizeHints(Panel2);
@@ -499,8 +489,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	m_canvas_HMAP->getOpenGLSceneRef()->insert(
 		std::make_shared<opengl::CGridPlaneXY>());
 
-	FlexGridSizer6->Add(
-		m_canvas_HMAP, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(m_canvas_HMAP, 1, wxEXPAND, 0);
 
 	m_canvas_LMH =
 		new CMyGLCanvas(Panel7, wxID_ANY, wxDefaultPosition, wxDefaultSize);
@@ -508,8 +497,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 	m_canvas_LMH->SetMinSize(wxSize(200, 200));
 	m_canvas_LMH->getOpenGLSceneRef()->insert(
 		std::make_shared<opengl::CGridPlaneXY>());
-	FlexGridSizer7->Add(
-		m_canvas_LMH, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer7->Add(m_canvas_LMH, 1, wxEXPAND, 0);
 
 	m_canvas_LMH->setCameraPointing(0.0f, 0.0f, 0.0f);
 	m_canvas_LMH->setZoomDistance(100.0f);

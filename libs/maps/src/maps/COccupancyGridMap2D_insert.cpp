@@ -491,13 +491,13 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 					// The x> comparison implicitly holds if x<0
 					ASSERT_(
-						static_cast<unsigned int>(P0.cx) < size_x &&
+						static_cast<unsigned int>(P0.cx) < m_size_x &&
 						static_cast<unsigned int>(P0.cy) < m_size_y);
 					ASSERT_(
-						static_cast<unsigned int>(P1.cx) < size_x &&
+						static_cast<unsigned int>(P1.cx) < m_size_x &&
 						static_cast<unsigned int>(P1.cy) < m_size_y);
 					ASSERT_(
-						static_cast<unsigned int>(P2.cx) < size_x &&
+						static_cast<unsigned int>(P2.cx) < m_size_x &&
 						static_cast<unsigned int>(P2.cy) < m_size_y);
 #endif
 
@@ -731,10 +731,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 						// The x> comparison implicitly holds if x<0
 						ASSERT_(
-							static_cast<unsigned int>(P1.cx) < size_x &&
+							static_cast<unsigned int>(P1.cx) < m_size_x &&
 							static_cast<unsigned int>(P1.cy) < m_size_y);
 						ASSERT_(
-							static_cast<unsigned int>(P2.cx) < size_x &&
+							static_cast<unsigned int>(P2.cx) < m_size_x &&
 							static_cast<unsigned int>(P2.cy) < m_size_y);
 #endif
 
@@ -998,13 +998,13 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 				// The x> comparison implicitly holds if x<0
 				ASSERT_(
-					static_cast<unsigned int>(P0.cx) < size_x &&
+					static_cast<unsigned int>(P0.cx) < m_size_x &&
 					static_cast<unsigned int>(P0.cy) < m_size_y);
 				ASSERT_(
-					static_cast<unsigned int>(P1.cx) < size_x &&
+					static_cast<unsigned int>(P1.cx) < m_size_x &&
 					static_cast<unsigned int>(P1.cy) < m_size_y);
 				ASSERT_(
-					static_cast<unsigned int>(P2.cx) < size_x &&
+					static_cast<unsigned int>(P2.cx) < m_size_x &&
 					static_cast<unsigned int>(P2.cy) < m_size_y);
 #endif
 
@@ -1235,10 +1235,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 					// The x> comparison implicitly holds if x<0
 					ASSERT_(
-						static_cast<unsigned int>(P1.cx) < size_x &&
+						static_cast<unsigned int>(P1.cx) < m_size_x &&
 						static_cast<unsigned int>(P1.cy) < m_size_y);
 					ASSERT_(
-						static_cast<unsigned int>(P2.cx) < size_x &&
+						static_cast<unsigned int>(P2.cx) < m_size_x &&
 						static_cast<unsigned int>(P2.cy) < m_size_y);
 #endif
 

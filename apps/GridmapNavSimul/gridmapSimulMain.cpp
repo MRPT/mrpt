@@ -362,8 +362,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 		wxDefaultValidator, _T("ID_BUTTON5"));
 	FlexGridSizer5->Add(
 		btnSetLaser, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer1->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer1->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	FlexGridSizer12->Add(
 		StaticBoxSizer1, 1,
 		wxALL | wxEXPAND | wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL, 5);
@@ -383,12 +382,9 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer13->Add(
 		edDecimate, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer6->Add(
-		FlexGridSizer13, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer12->Add(
-		StaticBoxSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer4->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer6->Add(FlexGridSizer13, 1, wxEXPAND, 0);
+	FlexGridSizer12->Add(StaticBoxSizer6, 1, wxEXPAND, 5);
+	FlexGridSizer4->Add(FlexGridSizer12, 1, wxEXPAND, 0);
 	FlexGridSizer7 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
 	StaticBoxSizer3 =
@@ -460,8 +456,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->Add(
 		edAps, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	StaticBoxSizer3->Add(
-		FlexGridSizer9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer3->Add(FlexGridSizer9, 1, wxEXPAND, 0);
 	FlexGridSizer7->Add(
 		StaticBoxSizer3, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
@@ -475,20 +470,16 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 		  "scans will be simulated \nagain with the current laser sensor "
 		  "errors."),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
-	FlexGridSizer11->Add(
-		StaticText4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(StaticText4, 1, wxEXPAND, 5);
 	btnResimulate = new wxButton(
 		Panel3, ID_BUTTON4, _("Re-simulate..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON4"));
 	FlexGridSizer11->Add(
 		btnResimulate, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer5->Add(
-		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer7->Add(
-		StaticBoxSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer4->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer5->Add(FlexGridSizer11, 1, wxEXPAND, 0);
+	FlexGridSizer7->Add(StaticBoxSizer5, 1, wxEXPAND, 5);
+	FlexGridSizer4->Add(FlexGridSizer7, 1, wxEXPAND, 0);
 	StaticBoxSizer2 = new wxStaticBoxSizer(wxHORIZONTAL, Panel3, _("Controls"));
 	FlexGridSizer8 = new wxFlexGridSizer(0, 1, 0, 0);
 	cbJoy = new wxCheckBox(
@@ -520,8 +511,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer8->Add(
 		edInput, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
 
-	StaticBoxSizer2->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer2->Add(FlexGridSizer8, 1, wxEXPAND, 0);
 	FlexGridSizer4->Add(
 		StaticBoxSizer2, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	btnExit = new wxButton(
@@ -530,8 +520,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer4->Add(btnExit, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	Panel3->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->SetSizeHints(Panel3);
-	FlexGridSizer3->Add(
-		Panel3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(Panel3, 1, wxEXPAND, 0);
 	Panel4 = new wxPanel(
 		Panel2, ID_PANEL4, wxDefaultPosition, wxSize(622, 55), wxTAB_TRAVERSAL,
 		_T("ID_PANEL4"));
@@ -565,8 +554,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	edOutFile = new wxTextCtrl(
 		Panel5, ID_TEXTCTRL4, _("./simul.rawlog"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-	FlexGridSizer10->Add(
-		edOutFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer10->Add(edOutFile, 1, wxEXPAND, 5);
 	btnExplore = new wxButton(
 		Panel5, ID_BUTTON3, _("Browse..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON3"));
@@ -597,24 +585,19 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 		Panel5, ID_TEXTCTRL12, _("./simul.rawlog.GT.txt"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL12"));
 	edOutGT->Disable();
-	FlexGridSizer10->Add(
-		edOutGT, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer10->Add(edOutGT, 1, wxEXPAND, 5);
 	Panel5->SetSizer(FlexGridSizer10);
 	FlexGridSizer10->Fit(Panel5);
 	FlexGridSizer10->SetSizeHints(Panel5);
-	StaticBoxSizer4->Add(
-		Panel5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer6->Add(
-		StaticBoxSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	StaticBoxSizer4->Add(Panel5, 1, wxEXPAND, 0);
+	FlexGridSizer6->Add(StaticBoxSizer4, 1, wxEXPAND, 5);
 	Panel4->SetSizer(FlexGridSizer6);
 	FlexGridSizer6->SetSizeHints(Panel4);
-	FlexGridSizer3->Add(
-		Panel4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(Panel4, 1, wxEXPAND, 0);
 	Panel2->SetSizer(FlexGridSizer3);
 	FlexGridSizer3->Fit(Panel2);
 	FlexGridSizer3->SetSizeHints(Panel2);
-	FlexGridSizer2->Add(
-		Panel2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(Panel2, 1, wxEXPAND, 0);
 	Panel1->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->SetSizeHints(Panel1);
 	panelGL = new wxPanel(
@@ -627,8 +610,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	flexGL->Fit(panelGL);
 	flexGL->SetSizeHints(panelGL);
 	SplitterWindow1->SplitHorizontally(Panel1, panelGL);
-	FlexGridSizer1->Add(
-		SplitterWindow1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(SplitterWindow1, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	timRun.SetOwner(this, ID_TIMER1);
 	timRun.Start(10, true);
@@ -695,7 +677,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 		new CMyGLCanvas(panelGL, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	panelGL->SetMinSize(wxSize(200, 200));
 	m_canvas->SetMinSize(wxSize(200, 200));
-	flexGL->Add(m_canvas, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	flexGL->Add(m_canvas, 1, wxEXPAND, 0);
 
 	m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
 	m_canvas->setElevationDegrees(60.0f);

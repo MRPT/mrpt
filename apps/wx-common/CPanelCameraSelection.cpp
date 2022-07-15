@@ -162,8 +162,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 		Panel3, ID_TEXTCTRL1, _("rtsp://192.168.0.1/live.sdp"),
 		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
 		_T("ID_TEXTCTRL1"));
-	FlexGridSizer11->Add(
-		edIPcamURL, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer11->Add(edIPcamURL, 1, wxEXPAND, 5);
 	Panel3->SetSizer(FlexGridSizer11);
 	FlexGridSizer11->Fit(Panel3);
 	FlexGridSizer11->SetSizeHints(Panel3);
@@ -192,8 +191,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 			wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 	edCustomCamConfigFont.SetPointSize(7);
 	edCustomCamConfig->SetFont(edCustomCamConfigFont);
-	FlexGridSizer16->Add(
-		edCustomCamConfig, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer16->Add(edCustomCamConfig, 1, wxEXPAND, 5);
 	Panel4->SetSizer(FlexGridSizer16);
 	FlexGridSizer16->Fit(Panel4);
 	FlexGridSizer16->SetSizeHints(Panel4);
@@ -210,8 +208,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	edVideoFile = new wxTextCtrl(
 		Panel5, ID_TEXTCTRL2, _("test.avi"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer12->Add(
-		edVideoFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer12->Add(edVideoFile, 1, wxEXPAND, 5);
 	btnBrowseVideo = new wxButton(
 		Panel5, ID_BUTTON7, _("Browse..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON7"));
@@ -234,8 +231,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	edRawlogFile = new wxTextCtrl(
 		Panel6, ID_TEXTCTRL3, _("test.rawlog"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-	FlexGridSizer13->Add(
-		edRawlogFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer13->Add(edRawlogFile, 1, wxEXPAND, 5);
 	btnBrowseRawlog = new wxButton(
 		Panel6, ID_BUTTON8, _("Browse..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON8"));
@@ -250,8 +246,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	edRawlogImgDir = new wxTextCtrl(
 		Panel6, ID_TEXTCTRL7, _("./Images"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_TEXTCTRL7"));
-	FlexGridSizer13->Add(
-		edRawlogImgDir, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer13->Add(edRawlogImgDir, 1, wxEXPAND, 5);
 	btnBrowseRawlogDir = new wxButton(
 		Panel6, ID_BUTTON9, _("Browse..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON9"));
@@ -266,8 +261,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	edRawlogLabel = new wxTextCtrl(
 		Panel6, ID_TEXTCTRL8, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_TEXTCTRL8"));
-	FlexGridSizer13->Add(
-		edRawlogLabel, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer13->Add(edRawlogLabel, 1, wxEXPAND, 5);
 	StaticText11 = new wxStaticText(
 		Panel6, ID_STATICTEXT11, _("(empty=any)"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT11"));
@@ -356,10 +350,9 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	FlexGridSizer3->Add(
 		cbSR_chConf, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	StaticBoxSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		FlexGridSizer3, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	FlexGridSizer2->Add(
-		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		5);
+		StaticBoxSizer1, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	pnSwissRanger->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(pnSwissRanger);
 	FlexGridSizer2->SetSizeHints(pnSwissRanger);
@@ -390,10 +383,9 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 	FlexGridSizer5->Add(
 		cbKinect_Depth, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	StaticBoxSizer2->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		FlexGridSizer5, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	FlexGridSizer4->Add(
-		StaticBoxSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		5);
+		StaticBoxSizer2, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	wxString __wxRadioBoxChoices_3[2] = {_("RGB camera"), _("IR camera")};
 	rbKinect_int = new wxRadioBox(
 		pnKinect, ID_RADIOBOX3, _("Intensity channel:"), wxDefaultPosition,
@@ -419,8 +411,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent, wxWindowID id)
 		this, ID_CHECKBOX2, _("Capture in grayscale"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
 	cbGrayscale->SetValue(true);
-	FlexGridSizer1->Add(
-		cbGrayscale, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer1->Add(cbGrayscale, 1, wxEXPAND, 5);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);

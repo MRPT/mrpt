@@ -159,8 +159,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	btnLoadMap->SetBitmapDisabled(
 		btnLoadMap->CreateBitmapDisabled(btnLoadMap->GetBitmapLabel()));
 	btnLoadMap->SetBitmapMargin(wxSize(2, 4));
-	BoxSizer1->Add(
-		btnLoadMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	BoxSizer1->Add(btnLoadMap, 1, wxEXPAND, 1);
 	btnHelp = new wxCustomButton(
 		this, ID_BUTTON2, _("About..."),
 		wxArtProvider::GetBitmap(
@@ -171,8 +170,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	btnHelp->SetBitmapDisabled(
 		btnHelp->CreateBitmapDisabled(btnHelp->GetBitmapLabel()));
 	btnHelp->SetBitmapMargin(wxSize(5, 4));
-	BoxSizer1->Add(
-		btnHelp, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	BoxSizer1->Add(btnHelp, 1, wxEXPAND, 1);
 	btnQuit = new wxCustomButton(
 		this, ID_BUTTON3, _("Exit"),
 		wxArtProvider::GetBitmap(
@@ -182,10 +180,8 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		wxDefaultValidator, _T("ID_BUTTON3"));
 	btnQuit->SetBitmapDisabled(
 		btnQuit->CreateBitmapDisabled(btnQuit->GetBitmapLabel()));
-	BoxSizer1->Add(
-		btnQuit, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
-	FlexGridSizer4->Add(
-		BoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer1->Add(btnQuit, 1, wxEXPAND, 1);
+	FlexGridSizer4->Add(BoxSizer1, 1, wxEXPAND, 0);
 	BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
 	btnPlaceRobot = new wxCustomButton(
 		this, ID_BUTTON6, _("Place robot..."),
@@ -197,8 +193,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	btnPlaceRobot->SetBitmapDisabled(
 		btnPlaceRobot->CreateBitmapDisabled(btnPlaceRobot->GetBitmapLabel()));
 	btnPlaceRobot->SetBitmapMargin(wxSize(2, 4));
-	BoxSizer2->Add(
-		btnPlaceRobot, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	BoxSizer2->Add(btnPlaceRobot, 1, wxEXPAND, 2);
 	btnPlaceTarget = new wxCustomButton(
 		this, ID_BUTTON7, _("Set target..."),
 		wxArtProvider::GetBitmap(
@@ -209,8 +204,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	btnPlaceTarget->SetBitmapDisabled(
 		btnPlaceTarget->CreateBitmapDisabled(btnPlaceTarget->GetBitmapLabel()));
 	btnPlaceTarget->SetBitmapMargin(wxSize(2, 4));
-	BoxSizer2->Add(
-		btnPlaceTarget, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	BoxSizer2->Add(btnPlaceTarget, 1, wxEXPAND, 2);
 	btnStart = new wxCustomButton(
 		this, ID_BUTTON4, _("START"),
 		wxArtProvider::GetBitmap(
@@ -221,8 +215,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	btnStart->SetBitmapDisabled(
 		btnStart->CreateBitmapDisabled(btnStart->GetBitmapLabel()));
 	btnStart->SetBitmapMargin(wxSize(2, 4));
-	BoxSizer2->Add(
-		btnStart, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	BoxSizer2->Add(btnStart, 1, wxEXPAND, 2);
 	btnStop = new wxCustomButton(
 		this, ID_BUTTON5, _("STOP"),
 		wxArtProvider::GetBitmap(
@@ -233,12 +226,9 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	btnStop->SetBitmapDisabled(
 		btnStop->CreateBitmapDisabled(btnStop->GetBitmapLabel()));
 	btnStop->SetBitmapMargin(wxSize(2, 4));
-	BoxSizer2->Add(
-		btnStop, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer4->Add(
-		BoxSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer2->Add(btnStop, 1, wxEXPAND, 2);
+	FlexGridSizer4->Add(BoxSizer2, 1, wxEXPAND, 0);
+	FlexGridSizer2->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	Notebook1 = new wxNotebook(
 		this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_NOTEBOOK1"));
@@ -264,10 +254,9 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	edHoloParams->SetMinSize(wxSize(-1, 100));
 	wxFont edHoloParamsFont(
-		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	edHoloParams->SetFont(edHoloParamsFont);
-	FlexGridSizer7->Add(
-		edHoloParams, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer7->Add(edHoloParams, 1, wxEXPAND, 2);
 	Panel1->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->Fit(Panel1);
 	FlexGridSizer7->SetSizeHints(Panel1);
@@ -276,10 +265,8 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		_T("ID_PANEL2"));
 	Notebook1->AddPage(Panel1, _("Configuration"), true);
 	Notebook1->AddPage(Panel2, _("Stats"), false);
-	FlexGridSizer2->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(Notebook1, 1, wxEXPAND, 2);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(2, 2, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableCol(1);
@@ -308,8 +295,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	m_plotScan = new CMyGLCanvas(
 		this, ID_CUSTOM1, wxDefaultPosition, wxSize(150, 150), wxTAB_TRAVERSAL,
 		_T("ID_CUSTOM1"));
-	FlexGridSizer5->Add(
-		m_plotScan, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer5->Add(m_plotScan, 1, wxEXPAND, 1);
 	edInfoLocalView = new wxTextCtrl(
 		this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP | wxALWAYS_SHOW_SB,
@@ -318,14 +304,11 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	edInfoLocalView->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	wxFont edInfoLocalViewFont(
-		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	edInfoLocalView->SetFont(edInfoLocalViewFont);
-	FlexGridSizer5->Add(
-		edInfoLocalView, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
-	FlexGridSizer3->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer5->Add(edInfoLocalView, 1, wxEXPAND, 2);
+	FlexGridSizer3->Add(FlexGridSizer5, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();

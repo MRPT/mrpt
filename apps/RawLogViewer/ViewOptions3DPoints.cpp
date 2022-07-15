@@ -121,8 +121,8 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	FlexGridSizer2->Add(
 		btnApply, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer1->Add(FlexGridSizer2, 1, wxALL | wxEXPAND, 5);
-	FlexGridSizer1->Add(StaticBoxSizer1, 1, wxALL | wxEXPAND, 5);
+	StaticBoxSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 5);
+	FlexGridSizer1->Add(StaticBoxSizer1, 1, wxEXPAND, 5);
 	StaticBoxSizer2 =
 		new wxStaticBoxSizer(wxHORIZONTAL, this, _("Point cloud"));
 	FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
@@ -148,7 +148,7 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 		this, ID_RADIOBOX1, _("Otherwise, color from: "), wxDefaultPosition,
 		wxDefaultSize, 4, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
 		_T("ID_RADIOBOX1"));
-	FlexGridSizer3->Add(rbColorByAxis, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer3->Add(rbColorByAxis, 1, wxEXPAND, 5);
 	wxString __wxRadioBoxChoices_2[3] = {
 		_("cmGRAYSCALE"), _("cmJET"), _("cmHOT")};
 	RadioBox1 = new wxRadioBox(
@@ -177,9 +177,9 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	FlexGridSizer4->Add(
 		edPointSize, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(FlexGridSizer4, 1, wxALL | wxEXPAND, 0);
-	StaticBoxSizer2->Add(FlexGridSizer3, 1, wxALL | wxEXPAND, 5);
-	FlexGridSizer1->Add(StaticBoxSizer2, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer3->Add(FlexGridSizer4, 1, wxEXPAND, 0);
+	StaticBoxSizer2->Add(FlexGridSizer3, 1, wxEXPAND, 5);
+	FlexGridSizer1->Add(StaticBoxSizer2, 1, wxEXPAND, 5);
 	FlexGridSizer5 = new wxFlexGridSizer(0, 1, 0, 0);
 	StaticBoxSizer3 =
 		new wxStaticBoxSizer(wxHORIZONTAL, this, _("Sensor pose"));
@@ -201,9 +201,9 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	edSensorPoseScale = new wxTextCtrl(
 		this, ID_TEXTCTRL4, _("0.1"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL4"));
-	FlexGridSizer6->Add(edSensorPoseScale, 1, wxALL | wxEXPAND, 5);
-	StaticBoxSizer3->Add(FlexGridSizer6, 1, wxALL | wxEXPAND, 5);
-	FlexGridSizer5->Add(StaticBoxSizer3, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer6->Add(edSensorPoseScale, 1, wxEXPAND, 5);
+	StaticBoxSizer3->Add(FlexGridSizer6, 1, wxEXPAND, 5);
+	FlexGridSizer5->Add(StaticBoxSizer3, 1, wxEXPAND, 5);
 	StaticBoxSizer4 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("2D lidars"));
 	FlexGridSizer7 = new wxFlexGridSizer(0, 2, 0, 0);
 	cb2DShowSurf = new wxCheckBox(
@@ -235,8 +235,8 @@ ViewOptions3DPoints::ViewOptions3DPoints(wxWindow* parent, wxWindowID id)
 	StaticBoxSizer4->Add(
 		FlexGridSizer7, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer5->Add(StaticBoxSizer4, 1, wxALL | wxEXPAND, 5);
-	FlexGridSizer1->Add(FlexGridSizer5, 1, wxALL | wxEXPAND, 0);
+	FlexGridSizer5->Add(StaticBoxSizer4, 1, wxEXPAND, 5);
+	FlexGridSizer1->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);

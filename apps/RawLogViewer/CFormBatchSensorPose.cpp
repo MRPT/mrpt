@@ -89,13 +89,11 @@ CFormBatchSensorPose::CFormBatchSensorPose(wxWindow* parent, wxWindowID id)
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	edText->SetMinSize(wxSize(500, 300));
 	wxFont edTextFont(
-		9, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false,
-		_T("FreeMono"), wxFONTENCODING_DEFAULT);
+		9, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, _T("FreeMono"), wxFONTENCODING_DEFAULT);
 	edText->SetFont(edTextFont);
-	FlexGridSizer2->Add(
-		edText, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(edText, 1, wxEXPAND, 5);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(0, 5, 0, 0);
 	FlexGridSizer3->AddGrowableCol(1);
 	btnOpen = new wxBitmapButton(
@@ -124,8 +122,7 @@ CFormBatchSensorPose::CFormBatchSensorPose(wxWindow* parent, wxWindowID id)
 	FlexGridSizer3->Add(
 		btnCancel, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->SetSizeHints(this);
 	Center();

@@ -159,7 +159,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	StaticText1 = new wxStaticText(
 		this, ID_STATICTEXT1, _("Select the motion model and its parameters:"),
 		wxPoint(9, 12), wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer4->Add(StaticText1, 1, wxALL | wxEXPAND, 2);
+	FlexGridSizer4->Add(StaticText1, 1, wxEXPAND, 2);
 	btnOk = new wxButton(
 		this, ID_BUTTON1, _("CLOSE"), wxPoint(338, 9), wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON1"));
@@ -175,8 +175,8 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 		wxDefaultPosition, wxDefaultSize,
 		wxHL_CONTEXTMENU | wxHL_ALIGN_CENTRE | wxNO_BORDER,
 		_T("ID_HYPERLINKCTRL1"));
-	FlexGridSizer4->Add(HyperlinkCtrl1, 1, wxALL | wxEXPAND, 1);
-	FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL | wxEXPAND, 0);
+	FlexGridSizer4->Add(HyperlinkCtrl1, 1, wxEXPAND, 1);
+	FlexGridSizer2->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	PageControl1 = new wxNotebook(
 		this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_NOTEBOOK1"));
@@ -188,7 +188,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	StaticText4 = new wxStaticText(
 		Panel2, ID_STATICTEXT4, _("Ratio motion to x/y std.dev (alpha_1)="),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT4"));
-	FlexGridSizer11->Add(StaticText4, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer11->Add(StaticText4, 1, wxEXPAND, 5);
 	edG_A1 = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL1, _("0.01"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
@@ -204,7 +204,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	StaticText3 = new wxStaticText(
 		Panel2, ID_STATICTEXT3, _("Ratio rotation to x/y std.dev (alpha_2)="),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT3"));
-	FlexGridSizer11->Add(StaticText3, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer11->Add(StaticText3, 1, wxEXPAND, 5);
 	edG_A2 = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL2, _("0.001"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
@@ -220,7 +220,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	StaticText6 = new wxStaticText(
 		Panel2, ID_STATICTEXT6, _("Ratio motion x/y to phi std.dev (alpha_3)="),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT6"));
-	FlexGridSizer11->Add(StaticText6, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer11->Add(StaticText6, 1, wxEXPAND, 5);
 	edG_A3 = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL3, _("1.0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL3"));
@@ -236,7 +236,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	StaticText26 = new wxStaticText(
 		Panel2, ID_STATICTEXT26, _("Ratio rotation to phi std.dev (alpha_4)="),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT26"));
-	FlexGridSizer11->Add(StaticText26, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer11->Add(StaticText26, 1, wxEXPAND, 5);
 	edG_A4 = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL15, _("0.05"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL15"));
@@ -252,7 +252,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	StaticText8 = new wxStaticText(
 		Panel2, ID_STATICTEXT8, _("Minimum std.dev. of x/y (min_std_XY)="),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT8"));
-	FlexGridSizer11->Add(StaticText8, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer11->Add(StaticText8, 1, wxEXPAND, 5);
 	edMinStdXY = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL4, _("0.010"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL4"));
@@ -268,7 +268,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	StaticText10 = new wxStaticText(
 		Panel2, ID_STATICTEXT10, _("Minimum std.dev. of phi (min_std_PHI)="),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT10"));
-	FlexGridSizer11->Add(StaticText10, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer11->Add(StaticText10, 1, wxEXPAND, 5);
 	edMinStdPHI = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL5, _("0.2"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL5"));
@@ -301,8 +301,8 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	btnSimulate = new wxButton(
 		Panel2, ID_BUTTON8, _("Draw samples"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_BUTTON8"));
-	FlexGridSizer11->Add(btnSimulate, 1, wxALL | wxEXPAND, 5);
-	FlexGridSizer3->Add(FlexGridSizer11, 1, wxALL | wxEXPAND, 0);
+	FlexGridSizer11->Add(btnSimulate, 1, wxEXPAND, 5);
+	FlexGridSizer3->Add(FlexGridSizer11, 1, wxEXPAND, 0);
 	Panel2->SetSizer(FlexGridSizer3);
 	FlexGridSizer3->Fit(Panel2);
 	FlexGridSizer3->SetSizeHints(Panel2);
@@ -457,7 +457,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	FlexGridSizer5->SetSizeHints(Panel3);
 	PageControl1->AddPage(Panel2, _("Gaussian model"), false);
 	PageControl1->AddPage(Panel3, _("Thrun\'s book model"), false);
-	FlexGridSizer2->Add(PageControl1, 1, wxALL | wxEXPAND, 1);
+	FlexGridSizer2->Add(PageControl1, 1, wxEXPAND, 1);
 	BoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Apply to:"));
 	BoxSizer4 = new wxBoxSizer(wxVERTICAL);
@@ -517,9 +517,9 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	FlexGridSizer10->Add(
 		edRangeTo, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer9->Add(FlexGridSizer10, 1, wxALL | wxEXPAND, 0);
-	boxRanges->Add(FlexGridSizer9, 1, wxALL | wxEXPAND, 0);
-	FlexGridSizer6->Add(boxRanges, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer9->Add(FlexGridSizer10, 1, wxEXPAND, 0);
+	boxRanges->Add(FlexGridSizer9, 1, wxEXPAND, 0);
+	FlexGridSizer6->Add(boxRanges, 1, wxEXPAND, 5);
 	FlexGridSizer6->Add(
 		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
@@ -536,7 +536,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	txtInputFile = new wxTextCtrl(
 		this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL11"));
-	FlexGridSizer6->Add(txtInputFile, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer6->Add(txtInputFile, 1, wxEXPAND, 5);
 	btnPickInput = new wxButton(
 		this, ID_BUTTON4, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON4"));
@@ -559,18 +559,18 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	txtOutputFile = new wxTextCtrl(
 		this, ID_TEXTCTRL12, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL12"));
-	FlexGridSizer6->Add(txtOutputFile, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer6->Add(txtOutputFile, 1, wxEXPAND, 5);
 	btnPickOut = new wxButton(
 		this, ID_BUTTON5, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON5"));
 	FlexGridSizer6->Add(
 		btnPickOut, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	BoxSizer5->Add(FlexGridSizer6, 1, wxALL | wxEXPAND, 0);
-	BoxSizer4->Add(BoxSizer5, 1, wxALL | wxEXPAND, 0);
-	StaticBoxSizer1->Add(BoxSizer4, 1, wxALL | wxEXPAND, 0);
-	BoxSizer3->Add(StaticBoxSizer1, 1, wxALL | wxEXPAND, 0);
-	FlexGridSizer2->Add(BoxSizer3, 1, wxALL | wxEXPAND, 0);
-	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL | wxEXPAND, 0);
+	BoxSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
+	BoxSizer4->Add(BoxSizer5, 1, wxEXPAND, 0);
+	StaticBoxSizer1->Add(BoxSizer4, 1, wxEXPAND, 0);
+	BoxSizer3->Add(StaticBoxSizer1, 1, wxEXPAND, 0);
+	FlexGridSizer2->Add(BoxSizer3, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer7 = new wxFlexGridSizer(5, 1, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
 	FlexGridSizer7->AddGrowableRow(2);
@@ -614,22 +614,22 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 	Panel1->SetSizer(FlexGridSizer8);
 	FlexGridSizer8->Fit(Panel1);
 	FlexGridSizer8->SetSizeHints(Panel1);
-	FlexGridSizer7->Add(Panel1, 1, wxALL | wxEXPAND, 0);
+	FlexGridSizer7->Add(Panel1, 1, wxEXPAND, 0);
 	StaticText24 = new wxStaticText(
 		this, ID_STATICTEXT24, _("Random samples (X-Y view):"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT24"));
-	FlexGridSizer7->Add(StaticText24, 1, wxALL | wxEXPAND, 0);
+	FlexGridSizer7->Add(StaticText24, 1, wxEXPAND, 0);
 	plotSamplesXY =
 		new mpWindow(this, ID_CUSTOM1, wxDefaultPosition, wxSize(313, 327), 0);
-	FlexGridSizer7->Add(plotSamplesXY, 1, wxALL | wxEXPAND, 0);
+	FlexGridSizer7->Add(plotSamplesXY, 1, wxEXPAND, 0);
 	StaticText28 = new wxStaticText(
 		this, ID_STATICTEXT28, _("Random samples (PHI view):"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT28"));
-	FlexGridSizer7->Add(StaticText28, 1, wxALL | wxEXPAND, 0);
+	FlexGridSizer7->Add(StaticText28, 1, wxEXPAND, 0);
 	plotSamplesPHI =
 		new mpWindow(this, ID_CUSTOM2, wxDefaultPosition, wxSize(336, 130), 0);
-	FlexGridSizer7->Add(plotSamplesPHI, 1, wxALL | wxEXPAND, 0);
-	FlexGridSizer1->Add(FlexGridSizer7, 1, wxALL | wxEXPAND, 0);
+	FlexGridSizer7->Add(plotSamplesPHI, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer7, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	SetSizer(FlexGridSizer1);
 	Layout();

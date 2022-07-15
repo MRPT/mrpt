@@ -56,8 +56,7 @@ CIniEditor::CIniEditor(
 	FlexGridSizer2->Add(
 		btnCancel, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	edText = new wxTextCtrl(
 		this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(516, 372),
 		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL | wxTE_PROCESS_TAB,
@@ -67,8 +66,7 @@ CIniEditor::CIniEditor(
 		edTextFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 	edTextFont.SetPointSize((int)(edTextFont.GetPointSize() * 1.000000));
 	edText->SetFont(edTextFont);
-	FlexGridSizer1->Add(
-		edText, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer1->Add(edText, 1, wxEXPAND, 5);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
