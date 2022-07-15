@@ -28,6 +28,7 @@
   - Update fallback embedded version of octomap to v1.9.6
 - BUG FIXES:
   - FIX: OpenGL API errors if several CWxGLCanvasBase instances are updated simultaneously in the same program.
+  - mrpt::opengl::COpenGLViewport would throw if an uninitialized image is passed for rendering in "image mode".
   - mrpt::system::formatTimeInterval() reported an incorrect number of milliseconds.
   - Fix detection of Boost python module.
   - Calling mrpt::opengl::CRenderizable::setColor_u8() did not force a regeneration of opengl buffer objects in all cases.

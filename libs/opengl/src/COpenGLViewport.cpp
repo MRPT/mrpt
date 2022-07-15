@@ -141,7 +141,8 @@ void COpenGLViewport::renderImageMode() const
 #endif
 
 	// Do we have an actual image to render?
-	if (!m_imageViewPlane) return;
+	if (!m_imageViewPlane || m_imageViewPlane->getTextureImage().isEmpty())
+		return;
 
 	auto _ = m_state;
 
