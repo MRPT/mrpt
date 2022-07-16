@@ -362,7 +362,9 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 
 		dc.DrawText(s, Ax0_img + x0 + TREE_HORZ_STEPS * d.level, y);
 		if (m_imageList && icon >= 0)
-			m_imageList->Draw(icon, dc, x0 + TREE_HORZ_STEPS * d.level + 1, y);
+			m_imageList->Draw(
+				icon, dc, x0 + TREE_HORZ_STEPS * d.level + 1, y,
+				wxIMAGELIST_DRAW_TRANSPARENT);
 	}
 
 	// timestamps in time-line:
