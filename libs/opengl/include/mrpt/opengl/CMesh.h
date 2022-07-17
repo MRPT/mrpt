@@ -22,6 +22,12 @@ namespace mrpt::opengl
  * a texture map. A typical usage example would be an elevation map or a 3D
  * model of a terrain.
  *
+ * The height of each cell/pixel is provided via an elevation `Z` matrix,
+ * where the z coordinate of the grid cell (x,y) is given by `Z(x,y)`
+ * (not `Z(y,x)`!!), that is:
+ * - Z column count = number of cells in direction "+y"
+ * - Z row count = number of cells in direction "+x"
+ *
  * ![mrpt::opengl::CMesh](preview_CMesh.png)
  *
  *  \sa opengl::COpenGLScene
