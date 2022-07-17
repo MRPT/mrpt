@@ -270,7 +270,8 @@ void CMyGLCanvas::OnCharCustom(wxKeyEvent& event)
 				timeDifference(lastUpdateOfList, curTime) > 2)
 			{
 				CDirectoryExplorer::explore(
-					extractFileDirectory(loadedFileName),  // path
+					extractFileDirectory(
+						mrpt::system::toAbsolutePath(loadedFileName)),	// path
 					FILE_ATTRIB_ARCHIVE,  // mask
 					lstFiles);
 
