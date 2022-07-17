@@ -48,11 +48,10 @@ TEST(FileSystem, extractFileDirectory)
 {
 #ifdef _WIN32
 	EXPECT_EQ(
-		mrpt::system::extractFileDirectory("D:\\imgs\\foo.txt"), "D:\\imgs\\");
+		mrpt::system::extractFileDirectory("D:\\imgs\\foo.txt"), "D:\\imgs");
 #else
 	EXPECT_EQ(
-		mrpt::system::extractFileDirectory("/home/pepe/foo.txt"),
-		"/home/pepe/");
+		mrpt::system::extractFileDirectory("/home/pepe/foo.txt"), "/home/pepe");
 #endif
 }
 

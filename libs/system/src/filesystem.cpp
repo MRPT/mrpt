@@ -97,9 +97,7 @@ string mrpt::system::extractFileName(const string& filePath)
 
 string mrpt::system::extractFileDirectory(const string& filePath)
 {
-	auto p = fs::path(filePath);
-	p.remove_filename();
-	return p2s(p);
+	return p2s(fs::path(filePath).parent_path());
 }
 
 string mrpt::system::extractFileExtension(
