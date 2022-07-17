@@ -128,12 +128,9 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 	rbLoaded->SetValue(true);
 	FlexGridSizer6->Add(
 		rbLoaded, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer6->Add(
-		-1, -1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer6->Add(
-		-1, -1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer6->Add(
-		-1, -1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
+	FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
+	FlexGridSizer6->Add(-1, -1, 1, wxEXPAND, 5);
 	rbFile = new wxRadioButton(
 		this, ID_RADIOBUTTON2, _("Rawlog in file:"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
@@ -147,22 +144,17 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 	edFile = new wxTextCtrl(
 		this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL11"));
-	FlexGridSizer6->Add(
-		edFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(edFile, 1, wxEXPAND, 5);
 	btnPickInput = new wxButton(
 		this, ID_BUTTON4, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON4"));
 	FlexGridSizer6->Add(
 		btnPickInput, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 0);
-	BoxSizer5->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	BoxSizer4->Add(
-		BoxSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	StaticBoxSizer1->Add(
-		BoxSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
+	BoxSizer4->Add(BoxSizer5, 1, wxEXPAND, 0);
+	StaticBoxSizer1->Add(BoxSizer4, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(StaticBoxSizer1, 1, wxEXPAND, 0);
 	FlexGridSizer9 = new wxFlexGridSizer(3, 3, 0, 0);
 	cbOrderByYaw = new wxCheckBox(
 		this, ID_CHECKBOX1,
@@ -221,8 +213,7 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->Add(
 		cbImageDirs, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer9, 1, wxEXPAND, 0);
 	FlexGridSizer8 = new wxFlexGridSizer(2, 7, 0, 0);
 	FlexGridSizer8->AddGrowableCol(5);
 	btnPlay = new wxButton(
@@ -237,8 +228,7 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 	btnStop->Disable();
 	FlexGridSizer8->Add(
 		btnStop, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer8->Add(
-		-1, -1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer8->Add(-1, -1, 1, wxEXPAND, 5);
 	StaticText6 = new wxStaticText(
 		this, ID_STATICTEXT7, _("Additional delay (ms):"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT7"));
@@ -251,16 +241,14 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 	FlexGridSizer8->Add(
 		edDelay, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer8->Add(
-		-1, -1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer8->Add(-1, -1, 1, wxEXPAND, 5);
 	btnClose = new wxButton(
 		this, ID_BUTTON5, _("CLOSE"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON5"));
 	FlexGridSizer8->Add(
 		btnClose, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer8, 1, wxEXPAND, 0);
 	FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer4->AddGrowableCol(0);
 	FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -268,10 +256,8 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 	progressBar = new wxSlider(
 		this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer5->Add(
-		progressBar, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer4->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer5->Add(progressBar, 1, wxEXPAND, 5);
+	FlexGridSizer4->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	FlexGridSizer7 = new wxFlexGridSizer(1, 4, 0, 0);
 	FlexGridSizer7->AddGrowableCol(3);
 	StaticText1 = new wxStaticText(
@@ -298,10 +284,8 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 		0, _T("ID_STATICTEXT3"));
 	FlexGridSizer7->Add(
 		lbProgress, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer4->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(FlexGridSizer7, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(2, 3, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableCol(1);
@@ -322,10 +306,8 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 		wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator,
 		_T("ID_BITMAPBUTTON1"));
 	btnSaveCam1->SetDefault();
-	FlexGridSizer10->Add(
-		btnSaveCam1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer10, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer10->Add(btnSaveCam1, 1, wxEXPAND, 5);
+	FlexGridSizer3->Add(FlexGridSizer10, 1, wxEXPAND, 0);
 	FlexGridSizer11 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer11->AddGrowableCol(0);
 	lbCam2 = new wxStaticText(
@@ -341,10 +323,8 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 		wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator,
 		_T("ID_BITMAPBUTTON2"));
 	btnSaveCam2->SetDefault();
-	FlexGridSizer11->Add(
-		btnSaveCam2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer11->Add(btnSaveCam2, 1, wxEXPAND, 5);
+	FlexGridSizer3->Add(FlexGridSizer11, 1, wxEXPAND, 0);
 	FlexGridSizer12 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer12->AddGrowableCol(0);
 	lbCam3 = new wxStaticText(
@@ -360,30 +340,24 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent, wxWindowID id)
 		wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator,
 		_T("ID_BITMAPBUTTON3"));
 	btnSaveCam3->SetDefault();
-	FlexGridSizer12->Add(
-		btnSaveCam3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(btnSaveCam3, 1, wxEXPAND, 5);
+	FlexGridSizer3->Add(FlexGridSizer12, 1, wxEXPAND, 0);
 	pnLeft = new wxPanel(
 		this, ID_PANEL3, wxDefaultPosition, wxSize(320, 240),
 		wxSUNKEN_BORDER | wxTAB_TRAVERSAL, _T("ID_PANEL3"));
 	pnLeft->SetMinSize(wxSize(-1, 240));
-	FlexGridSizer3->Add(
-		pnLeft, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer3->Add(pnLeft, 1, wxEXPAND, 1);
 	pnRight = new wxPanel(
 		this, ID_PANEL4, wxDefaultPosition, wxSize(320, 240),
 		wxSUNKEN_BORDER | wxTAB_TRAVERSAL, _T("ID_PANEL4"));
 	pnRight->SetMinSize(wxSize(-1, 240));
-	FlexGridSizer3->Add(
-		pnRight, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer3->Add(pnRight, 1, wxEXPAND, 1);
 	pnRight2 = new wxPanel(
 		this, ID_PANEL2, wxDefaultPosition, wxSize(320, 240),
 		wxSUNKEN_BORDER | wxTAB_TRAVERSAL, _T("ID_PANEL2"));
 	pnRight2->SetMinSize(wxSize(-1, 240));
-	FlexGridSizer3->Add(
-		pnRight2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
-	FlexGridSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(pnRight2, 1, wxEXPAND, 1);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);

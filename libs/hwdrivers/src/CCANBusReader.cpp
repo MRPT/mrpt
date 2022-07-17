@@ -17,6 +17,7 @@
 #include <mrpt/system/crc.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <cstdio>  // printf
 #include <cstring>	// memset
 #include <iostream>

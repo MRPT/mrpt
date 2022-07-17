@@ -9,6 +9,7 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/system/CTicTac.h>
@@ -49,13 +50,20 @@ using namespace std;
   Implementation of Test-GLCanvas
 -----------------------------------------------------------------*/
 
+std::unique_ptr<wxGLContext> CWxGLCanvasBase::m_gl_context;
+std::recursive_mutex CWxGLCanvasBase::m_gl_context_mtx;
+
 void CWxGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
 {
+	auto lck = mrpt::lockHelper(m_gl_context_mtx);
+
 	if (!m_gl_context) m_gl_context = std::make_unique<wxGLContext>(this);
 }
 
 void CWxGLCanvasBase::swapBuffers()
 {
+	auto lck = mrpt::lockHelper(m_gl_context_mtx);
+
 	if (m_gl_context)
 	{
 		SetCurrent(*m_gl_context);
@@ -189,6 +197,8 @@ void CWxGLCanvasBase::Render()
 {
 	wxPaintDC dc(this);
 
+	auto lck = mrpt::lockHelper(m_gl_context_mtx);
+
 	if (!m_gl_context)
 	{ /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" << endl;*/
 		return;
@@ -202,6 +212,8 @@ void CWxGLCanvasBase::Render()
 		InitGL();
 		m_init = true;
 	}
+
+	lck.unlock();
 
 	int width, height;
 	GetClientSize(&width, &height);
@@ -231,7 +243,10 @@ void CWxGLCanvasBase::OnSize(wxSizeEvent& event)
 			return;
 		}
 		else
+		{
+			auto lck = mrpt::lockHelper(m_gl_context_mtx);
 			SetCurrent(*m_gl_context);
+		}
 
 		resizeViewport(w, h);
 	}
@@ -244,6 +259,8 @@ void CWxGLCanvasBase::OnEraseBackground(wxEraseEvent& WXUNUSED(event))
 
 void CWxGLCanvasBase::InitGL()
 {
+	auto lck = mrpt::lockHelper(m_gl_context_mtx);
+
 	if (!m_gl_context)
 	{ /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" << endl;*/
 		return;

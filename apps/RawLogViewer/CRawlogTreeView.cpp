@@ -21,6 +21,8 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "xRawLogViewerMain.h"
+
 IMPLEMENT_DYNAMIC_CLASS(CRawlogTreeView, wxScrolledWindow)
 
 BEGIN_EVENT_TABLE(CRawlogTreeView, wxScrolledWindow)
@@ -49,6 +51,8 @@ std::atomic_bool CRawlogTreeView::RAWLOG_UNDERGOING_CHANGES{false};
 extern std::unique_ptr<mrpt::config::CConfigFile> iniFile;
 extern std::string iniFileSect;
 
+extern xRawLogViewerFrame* theMainWindow;
+
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::serialization;
@@ -57,10 +61,10 @@ using namespace mrpt::rtti;
 using namespace std;
 
 const int CRawlogTreeView::ROW_HEIGHT = 17;
-const int CRawlogTreeView::TREE_HORZ_STEPS = 25;
+const int CRawlogTreeView::TREE_HORZ_STEPS = 20;
 
-const long ID_MNU_EXPORT_ANOTHER_FILE = 1001;
-const long ID_MNU_EXPORT_LAST_FILE = 1002;
+const long ID_MNU_EXPORT_ANOTHER_FILE = wxNewId();
+const long ID_MNU_EXPORT_LAST_FILE = wxNewId();
 
 static std::string shortenClassName(const std::string& s)
 {
@@ -101,9 +105,9 @@ CRawlogTreeView::CRawlogTreeView(
 /* ------------------------------------------------------------
 						setRawlogSource
    ------------------------------------------------------------ */
-void CRawlogTreeView::setRawlogSource(CRawlog* rawlog)
+void CRawlogTreeView::setRawlogSource(CRawlog* theRawlog)
 {
-	m_rawlog = rawlog;
+	m_rawlog = theRawlog;
 	reloadFromRawlog();
 }
 
@@ -148,8 +152,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 		size_t rawlog_index = 0;
 		for (const auto& entry : *m_rawlog)
 		{
-			m_tree_nodes.emplace_back();
-			TNodeData& dEntry = m_tree_nodes.back();
+			TNodeData& dEntry = m_tree_nodes.emplace_back();
 			dEntry.level = 1;
 			dEntry.data = entry;
 			dEntry.index = rawlog_index;
@@ -159,11 +162,15 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				for (auto& o : *sf)
 				{
-					m_tree_nodes.emplace_back();
-					TNodeData& dSF = m_tree_nodes.back();
-					dSF.level = 2;
-					dSF.data = o;
+					TNodeData& dObs = m_tree_nodes.emplace_back();
+					dObs.level = 2;
+					dObs.data = o;
 					lambdaCheckTimestamp(o->timestamp);
+					dObs.timestamp = o->timestamp;
+					dObs.sensorLabel = o->sensorLabel;
+
+					if (!dEntry.timestamp.has_value())
+						dEntry.timestamp = o->timestamp;
 				}
 			}
 			else if (auto acts =
@@ -172,17 +179,22 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 			{
 				for (auto& a : *acts)
 				{
-					m_tree_nodes.emplace_back();
-					TNodeData& dAC = m_tree_nodes.back();
+					TNodeData& dAC = m_tree_nodes.emplace_back();
 					dAC.level = 2;
 					dAC.data = a.get_ptr();
 
 					lambdaCheckTimestamp(a->timestamp);
+					dAC.timestamp = a->timestamp;
+
+					if (!dEntry.timestamp.has_value())
+						dEntry.timestamp = a->timestamp;
 				}
 			}
 			else if (auto o = std::dynamic_pointer_cast<CObservation>(entry); o)
 			{
 				lambdaCheckTimestamp(o->timestamp);
+				dEntry.timestamp = o->timestamp;
+				dEntry.sensorLabel = o->sensorLabel;
 			}
 
 			rawlog_index++;
@@ -203,10 +215,16 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 	try
 	{
 		OnDrawImpl(dc);
+		theMainWindow->bottomTimeLineUpdateCursorFromTreeScrollPos();
 	}
 	catch (...)
 	{
 	}
+}
+
+bool CRawlogTreeView::isItemIndexVisible(size_t idx) const
+{
+	return idx >= m_firstVisibleItem && idx <= m_lastVisibleItem;
 }
 
 void CRawlogTreeView::OnDrawImpl(wxDC& dc)
@@ -245,9 +263,12 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 
 	last_item = min(last_item, m_tree_nodes.size());
 
+	m_firstVisibleItem = first_item;
+	m_lastVisibleItem = last_item;
+
 	// Draw icons?
 	// ----------------------------
-	int x0 = 30;
+	int x0 = 3;
 	int Ax0_img = 0;  // Increment in x for the icons, if any.
 
 	if (m_imageList && m_imageList->GetImageCount() > 0)
@@ -319,15 +340,6 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 					CObservation::Ptr obs =
 						std::dynamic_pointer_cast<CObservation>(d.data);
 
-					/*if (first_tim==INVALID_TIMESTAMP)
-					{
-						first_tim = obs->timestamp;
-						first_tim_y = y+1;
-					}
-
-					last_tim = obs->timestamp;
-					last_tim_y = y+1;*/
-
 					if (!obs->sensorLabel.empty())
 						s << wxT(" : ") << obs->sensorLabel.c_str();
 				}
@@ -342,39 +354,24 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 			dc.DrawRectangle(
 				x0 + TREE_HORZ_STEPS * d.level, y, w - x0, ROW_HEIGHT);
 			dc.SetTextBackground(brush_SELECTED_COLOR);
-
-			dc.SetPen(gray_thick);
-			dc.DrawLine(x0, y + 1, x0 + TREE_HORZ_STEPS * d.level, y + 1);
 		}
 		else
 		{
 			dc.SetTextBackground(GetBackgroundColour());
-
-			dc.SetPen(gray_thin);
-			dc.DrawLine(x0, y + 1, x0 + TREE_HORZ_STEPS * d.level, y + 1);
 		}
 
 		dc.DrawText(s, Ax0_img + x0 + TREE_HORZ_STEPS * d.level, y);
 		if (m_imageList && icon >= 0)
-			m_imageList->Draw(icon, dc, x0 + TREE_HORZ_STEPS * d.level + 1, y);
+			m_imageList->Draw(
+				icon, dc, x0 + TREE_HORZ_STEPS * d.level + 1, y,
+				wxIMAGELIST_DRAW_TRANSPARENT);
 	}
-
-	// Draw time-line:
-	// -----------------------------------------------
-	dc.SetPen(*wxLIGHT_GREY_PEN);
-	dc.DrawLine(15, visibleArea.GetTop(), 15, visibleArea.GetBottom());
-
-	dc.SetTextForeground(wxColorGray);
-	dc.SetFont(font_normal);
-	dc.DrawRotatedText(_("Time"), 17, 10, -90);
 
 	// timestamps in time-line:
 	// -----------------------------------------------
 	if (m_rawlog_start == INVALID_TIMESTAMP ||
 		m_rawlog_last == INVALID_TIMESTAMP || last_tim_y <= first_tim_y)
 		return;
-
-	dc.SetFont(font_normal);
 
 	const double len_tim =
 		mrpt::system::timeDifference(m_rawlog_start, m_rawlog_last);
@@ -383,48 +380,20 @@ void CRawlogTreeView::OnDrawImpl(wxDC& dc)
 
 	for (size_t i = first_item; i < last_item; i++)
 	{
-		const int y = i * ROW_HEIGHT;  // y= bottom of that row
 		TNodeData& d = m_tree_nodes[i];
 
-		if (d.data)
+		if (!d.data) continue;
+
+		TTimeStamp t_this = INVALID_TIMESTAMP;
+		if (auto obs = std::dynamic_pointer_cast<CObservation>(d.data); obs)
+			t_this = obs->timestamp;
+
+		if (t_this == INVALID_TIMESTAMP) continue;
+
+		if (!firstTim)
 		{
-			TTimeStamp t_this = INVALID_TIMESTAMP;
-			if (d.data->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
-			{
-				CObservation::Ptr obs =
-					std::dynamic_pointer_cast<CObservation>(d.data);
-				t_this = obs->timestamp;
-			}
-
-			if (t_this == INVALID_TIMESTAMP) continue;
-
-			if (!firstTim) firstTim = t_this;
-
-			// Draw line:
-			if (m_selectedItem == int(i)) dc.SetPen(gray_thick);
-			else
-				dc.SetPen(gray_thin);
-
-			// Calc. the "y" coordinate for this time:
-			const double At =
-				mrpt::system::timeDifference(m_rawlog_start, t_this);
-			double rat = At / len_tim;
-			int ty = first_tim_y + (last_tim_y - first_tim_y) * rat;
-
-			dc.DrawLine(15, ty, x0, y + 1);
-
-			// Draw some text labels with times:
-			if ((i % 5) == 0)
-			{
-				dc.DrawLine(10, ty, 15, ty);
-
-				// Seconds from start of rawlog:
-				if (m_rawlog_start != INVALID_TIMESTAMP)
-				{
-					wxString s = (format("%.03fs", At).c_str());
-					dc.DrawRotatedText(s, 17, ty + 3, -90);
-				}
-			}
+			firstTim = t_this;
+			break;
 		}
 	}  // end for i
 
@@ -570,6 +539,18 @@ void CRawlogTreeView::OnMouseWheel(wxMouseEvent& event)
 		y++;
 
 	int ly = m_tree_nodes.size();
+
+	if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
+}
+
+void CRawlogTreeView::ScrollToPercent(double pc)
+{
+	int x, y;
+	GetViewStart(&x, &y);
+
+	int ly = m_tree_nodes.size();
+
+	y = mrpt::round((ly - 1) * pc);
 
 	if (y >= 0 && y < ly) SetScrollbars(ROW_HEIGHT, ROW_HEIGHT, 50, ly, x, y);
 }

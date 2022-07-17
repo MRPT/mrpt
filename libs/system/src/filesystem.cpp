@@ -21,6 +21,14 @@
 #include <string>
 #include <vector>
 
+#if STD_FS_IS_EXPERIMENTAL
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
+namespace fs = std::filesystem;
+#endif
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -52,50 +60,46 @@
 #endif
 #endif
 
+#if defined(WIN32)
+#include <codecvt>
+#include <locale>
+#include <string>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace std;
 
-/*---------------------------------------------------------------
-					ExtractFileName
-	Extracts just the name of a filename from a
-	  complete path plus name plus extension.
-  ---------------------------------------------------------------*/
+#if defined(WIN32)
+std::string ws2s(const std::wstring& wstr)
+{
+	using convert_typeX = std::codecvt_utf8<wchar_t>;
+	std::wstring_convert<convert_typeX, wchar_t> converterX;
+	return converterX.to_bytes(wstr);
+}
+#endif
+
+// This is required since in Windows, the native representation of path ->
+// string is std::wstring, not std::string:
+std::string p2s(const fs::path& p)
+{
+#if defined(WIN32)
+	return ws2s(p);
+#else
+	return p;
+#endif
+}
+
 string mrpt::system::extractFileName(const string& filePath)
 {
-	int i, dotPos = int(filePath.size());
-	if (filePath.size() < 2) return string("");
-
-	for (i = (int)filePath.size() - 1;
-		 i >= 0 && !(filePath[i] == '\\' || filePath[i] == '/'); i--)
-		if (dotPos == int(filePath.size()) && filePath[i] == '.') dotPos = i;
-	return filePath.substr(i + 1, dotPos - i - 1);
+	return p2s(fs::path(filePath).stem());
 }
 
-/*---------------------------------------------------------------
-					ExtractFileDirectory
-	Extracts just the directory of a filename from a
-	  complete path plus name plus extension.
-  ---------------------------------------------------------------*/
 string mrpt::system::extractFileDirectory(const string& filePath)
 {
-	if (filePath.size() < 2) return filePath;
-
-	// Search the first "/" or "\" from the right:
-	int i;
-	for (i = (int)filePath.size() - 1; i > 0; i--)
-		if (filePath[i] == '\\' || filePath[i] == '/') break;
-
-	if (!i) return string("./");
-	else
-		return filePath.substr(0, i + 1);
+	return p2s(fs::path(filePath).parent_path());
 }
 
-/*---------------------------------------------------------------
-					ExtractFileName
-	Extracts just the name of a filename from a
-	  complete path plus name plus extension.
-  ---------------------------------------------------------------*/
 string mrpt::system::extractFileExtension(
 	const string& filePath, bool ignore_gz)
 {
@@ -122,18 +126,12 @@ string mrpt::system::extractFileExtension(
 	return string("");
 }
 
-/*---------------------------------------------------------------
-					FileExists
-  ---------------------------------------------------------------*/
 bool mrpt::system::fileExists(const string& path)
 {
 	return 0 ==
 		_access(path.c_str(), 0x00);  // 0x00 = Check for existence only!
 }
 
-/*---------------------------------------------------------------
-					directoryExists
-  ---------------------------------------------------------------*/
 bool mrpt::system::directoryExists(const std::string& _path)
 {
 	std::string path = _path;
@@ -155,38 +153,16 @@ bool mrpt::system::directoryExists(const std::string& _path)
 #endif
 }
 
-/*---------------------------------------------------------------
-						createDirectory
- ---------------------------------------------------------------*/
 bool mrpt::system::createDirectory(const string& dirName)
 {
-#ifdef _WIN32
-	bool rc = 0 != CreateDirectoryA(dirName.c_str(), nullptr);
-	return (rc || GetLastError() == ERROR_ALREADY_EXISTS);
-#else
-	int ret = mkdir(dirName.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	if (ret && errno != EEXIST)	 // We ignore this error...
-	{
-		string str = format("[createDirectory %s]", dirName.c_str());
-		perror(str.c_str());
-		return false;
-	}
-	else
-		return true;  // OK
-#endif
+	return fs::create_directory(dirName);
 }
 
-/*---------------------------------------------------------------
-						deleteFile
- ---------------------------------------------------------------*/
 bool mrpt::system::deleteFile(const string& fileName)
 {
 	return 0 == remove(fileName.c_str());
 }
 
-/*---------------------------------------------------------------
-					mrpt::system::deleteFiles
----------------------------------------------------------------*/
 void mrpt::system::deleteFiles(const string& s)
 {
 	MRPT_START
@@ -247,31 +223,7 @@ bool mrpt::system::deleteFilesInDirectory(
 		return true;
 }
 
-std::string mrpt::system::getcwd()
-{
-	MRPT_START
-
-#ifdef _WIN32
-	char auxBuf[MAX_PATH] = "";
-	if (!::GetCurrentDirectoryA(sizeof(auxBuf) - 1, auxBuf))
-		THROW_EXCEPTION("Error getting current working directory!");
-	return std::string(auxBuf);
-
-#else
-	size_t size = 100;
-	for (;;)
-	{
-		std::string cwd;
-		cwd.resize(size);
-		if (::getcwd(&cwd[0], size) == &cwd[0]) { return cwd; }
-		if (errno != ERANGE)
-			THROW_EXCEPTION("Error getting current working directory!");
-		size *= 2;
-	}
-#endif
-
-	MRPT_END
-}
+std::string mrpt::system::getcwd() { return p2s(fs::current_path()); }
 
 /*---------------------------------------------------------------
 					getTempFileName
@@ -345,262 +297,32 @@ std::string mrpt::system::fileNameStripInvalidChars(
 ---------------------------------------------------------------*/
 uint64_t mrpt::system::getFileSize(const std::string& fileName)
 {
-#if defined(_MSC_VER)
-	// Visual Studio:
-	struct __stat64 filStat;
-	if (_stat64(fileName.c_str(), &filStat)) return uint64_t(-1);
-	else
-		return uint64_t(filStat.st_size);
-#else
-	// The rest of the world:
-	struct stat filStat
-	{
-	};
-	if (stat(fileName.c_str(), &filStat)) return uint64_t(-1);
-	else
-		return uint64_t(filStat.st_size);
-#endif
+	return fs::file_size(fs::path(fileName));
 }
 
 /** Replace the filename extension by another one.  */
 std::string mrpt::system::fileNameChangeExtension(
 	const std::string& filePath, const std::string& newExtension)
 {
-	if (filePath.size() < 2) return filePath;
-
-	const size_t i_end = filePath.size() - 1;
-
-	for (int i = int(i_end); i > 0; i--)
-		if (filePath[i] == '.') return filePath.substr(0, i + 1) + newExtension;
-
-	// No extension found: add it:
-	return filePath + string(".") + newExtension;
+	return p2s(fs::path(filePath).replace_extension(fs::path(newExtension)));
 }
 
-/*---------------------------------------------------------------
-			copyFile
----------------------------------------------------------------*/
 bool mrpt::system::copyFile(
 	const std::string& sourceFile, const std::string& targetFile,
-	std::string* outErrStr, bool copyAttribs)
+	std::string* outErrStr)
 {
-	const std::string org =
-		mrpt::system::filePathSeparatorsToNative(sourceFile);
-	const std::string trg =
-		mrpt::system::filePathSeparatorsToNative(targetFile);
+	std::error_code ec;
+	bool ok = fs::copy_file(
+		fs::path(sourceFile), fs::path(targetFile),
+		fs::copy_options::overwrite_existing, ec);
 
-	const bool fil_exs = fileExists(org);
-	const bool dir_exs = directoryExists(org);
+	if (ok) return true;
 
-	// Is source a directory?
-	if (!fil_exs)
-	{
-		if (outErrStr)
-			*outErrStr =
-				string("Source does not exist or permission denied!: ") + org;
-		return false;
-	}
-	if (dir_exs)
-	{
-		if (outErrStr) *outErrStr = string("Is source a directory?: ") + org;
-		return false;
-	}
+	if (outErrStr) *outErrStr = ec.message();
 
-	// Check if source file exists and we have access to open it:
-	FILE* f_src = fopen(org.c_str(), "rb");
-	if (!f_src)
-	{
-		if (outErrStr)
-			*outErrStr = string(
-							 "Source file exists but cannot open it... is file "
-							 "being used?:  ") +
-				org;
-		return false;
-	}
-
-	// Assure that "target" is not an existing directory:
-	if (directoryExists(trg))
-	{
-		if (outErrStr)
-			*outErrStr = string("Target cannot be a directory: ") + trg;
-		fclose(f_src);
-		return false;
-	}
-
-	// Try to open the file for writting:
-	FILE* f_trg = fopen(trg.c_str(), "wb");
-	if (!f_trg)
-	{
-		if (!fileExists(trg))
-		{
-			// It does not exist and does not allow us to create it:
-			if (outErrStr)
-				*outErrStr = string("Cannot create target file: ") + trg;
-			fclose(f_src);
-			return false;
-		}
-		else
-		{
-			// It exists, but cannot overwrite it:
-
-#ifdef _WIN32
-			// Try changing the permissions of the target file:
-			DWORD dwProp = GetFileAttributesA(trg.c_str());
-			if (dwProp == INVALID_FILE_ATTRIBUTES)
-			{
-				if (outErrStr)
-					*outErrStr =
-						string(
-							"Cannot get file attributes for target file, "
-							"trying to remove a possible read-only attribute "
-							"after first attempt of copy failed, for: ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-
-			dwProp &= ~FILE_ATTRIBUTE_HIDDEN;
-			dwProp &= ~FILE_ATTRIBUTE_READONLY;
-			dwProp &= ~FILE_ATTRIBUTE_SYSTEM;
-
-			if (!SetFileAttributesA(trg.c_str(), dwProp))
-			{
-				if (outErrStr)
-					*outErrStr =
-						string(
-							"Cannot get file attributes for target file, "
-							"trying to remove a possible read-only attribute "
-							"after first attempt of copy failed, for: ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-
-			// Try again:
-			f_trg = fopen(trg.c_str(), "wb");
-			if (!f_trg)
-			{
-				if (outErrStr)
-					*outErrStr = string(
-									 "Cannot overwrite target file, even after "
-									 "changing file attributes! : ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-#else
-			// Try changing the permissions of the target file:
-			if (chmod(trg.c_str(), S_IRWXU | S_IRGRP | S_IROTH))
-			{
-				if (outErrStr)
-					*outErrStr =
-						string(
-							"Cannot set file permissions for target file, "
-							"trying to remove a possible read-only attribute "
-							"after first attempt of copy failed, for: ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-
-			// Try again:
-			f_trg = fopen(trg.c_str(), "wb");
-			if (!f_trg)
-			{
-				if (outErrStr)
-					*outErrStr = string(
-									 "Cannot overwrite target file, even after "
-									 "changing file permissions! : ") +
-						trg;
-				fclose(f_src);
-				return false;
-			}
-#endif
-		}
-	}
-
-	// Ok, here we have both files open: Perform the copy:
-	char buf[66000];
-	size_t nBytes = 0;
-	while (0 != (nBytes = fread(buf, 1, 64 * 1024, f_src)))
-	{
-		if (nBytes != fwrite(buf, 1, nBytes, f_trg))
-		{
-			if (outErrStr)
-				*outErrStr = string(
-								 "Error writing the contents of the target "
-								 "file (disk full?): ") +
-					trg;
-			fclose(f_src);
-			fclose(f_trg);
-			return false;
-		}
-	}
-
-	// Close file handles:
-	fclose(f_src);
-	fclose(f_trg);
-
-	// In Windows only, copy the file attributes:
-	if (copyAttribs)
-	{
-#ifdef _WIN32
-		DWORD dwPropSrc = GetFileAttributesA(org.c_str());
-		if (dwPropSrc == INVALID_FILE_ATTRIBUTES)
-		{
-			if (outErrStr)
-				*outErrStr =
-					string(
-						"Cannot get the file attributes for source file:  ") +
-					org;
-			return false;
-		}
-		DWORD dwPropTrg = GetFileAttributesA(trg.c_str());
-		if (dwPropTrg == INVALID_FILE_ATTRIBUTES)
-		{
-			if (outErrStr)
-				*outErrStr =
-					string(
-						"Cannot get the file attributes for target file:  ") +
-					trg;
-			return false;
-		}
-
-		// Leave only those attributes which can be legally copied:
-		// (Refer to: http://msdn2.microsoft.com/en-us/library/aa365535.aspx )
-		dwPropSrc &= FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN |
-			FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED |
-			FILE_ATTRIBUTE_OFFLINE | FILE_ATTRIBUTE_READONLY |
-			FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY;
-
-		// Copy them to the target attributes:
-		dwPropTrg &=
-			~(FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN |
-			  FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED |
-			  FILE_ATTRIBUTE_OFFLINE | FILE_ATTRIBUTE_READONLY |
-			  FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY);
-		dwPropTrg |= dwPropSrc;
-
-		// Set attributes of target file:
-		if (!SetFileAttributesA(trg.c_str(), dwPropTrg))
-		{
-			if (outErrStr)
-				*outErrStr =
-					string("Cannot set file attributes for target file: ") +
-					trg;
-			return false;
-		}
-#else
-// Linux: No file attributes to copy.
-#endif
-	}  // end // if (copyAttribs)
-
-	return true;
+	return false;
 }
 
-// ---------------------------------------------------------------
-//    filePathSeparatorsToNative
-// ---------------------------------------------------------------
 std::string mrpt::system::filePathSeparatorsToNative(
 	const std::string& filePath)
 {
@@ -614,7 +336,7 @@ std::string mrpt::system::filePathSeparatorsToNative(
 		if (ret[i] == '\\') ret[i] = '/';
 #endif
 	}
-	return ret;
+	return p2s(fs::path(ret).native());
 }
 
 time_t mrpt::system::getFileModificationTime(const std::string& filename)
@@ -678,4 +400,20 @@ std::string mrpt::system::getShareMRPTDir()
 			}
 	}
 	return sDetectedPath;
+}
+
+std::string mrpt::system::toAbsolutePath(
+	const std::string& path, bool resolveToCanonical)
+{
+	if (resolveToCanonical) return p2s(fs::canonical(fs::path(path)));
+	return p2s(fs::absolute(fs::path(path)));
+}
+
+std::string mrpt::system::pathJoin(const std::vector<std::string>& paths)
+{
+	fs::path p;
+	for (const auto& d : paths)
+		p.append(d);
+
+	return p2s(p);
 }

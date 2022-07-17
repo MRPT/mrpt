@@ -8,10 +8,14 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/core/exceptions.h>
+
 #include <cstdio>  // EOF
 #include <fstream>
 #include <iostream>
+#include <mutex>
 #include <streambuf>
+#include <vector>
 
 namespace mrpt::system
 {

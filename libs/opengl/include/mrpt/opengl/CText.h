@@ -30,7 +30,7 @@ class CText : public CRenderizableShaderText
    protected:
 	std::string m_str;
 	std::string m_fontName = "sans";
-	int m_fontHeight = 20, m_fontWidth = 0;
+	int m_fontHeight = 20;
 
 	void onUpdateBuffers_Text() override;
 
@@ -69,6 +69,8 @@ class CText : public CRenderizableShaderText
 	CText(const std::string& str = std::string("")) : m_str(str) {}
 
 	virtual ~CText() override;
+
+	std::pair<double, double> computeTextExtension() const;
 
 	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
 };

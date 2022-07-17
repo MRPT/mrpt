@@ -24,6 +24,9 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/poses/CPoint3D.h>
 
+#include <chrono>
+#include <thread>
+
 IMPLEMENTS_GENERIC_SENSOR(CSkeletonTracker, mrpt::hwdrivers)
 
 using namespace mrpt::hwdrivers;

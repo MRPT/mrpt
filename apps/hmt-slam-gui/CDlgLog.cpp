@@ -63,7 +63,7 @@ CDlgLog::CDlgLog(
 		wxDefaultValidator, _T("ID_BUTTON2"));
 	FlexGridSizer2->Add(btnSave, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		FlexGridSizer2, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableRow(0);
@@ -72,12 +72,12 @@ CDlgLog::CDlgLog(
 		wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE | wxTE_READONLY |
 			wxHSCROLL | wxALWAYS_SHOW_SB,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	wxFont edLogFont(8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
+	wxFont edLogFont(
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	edLog->SetFont(edLogFont);
-	FlexGridSizer3->Add(
-		edLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);
+	FlexGridSizer3->Add(edLog, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);
 	FlexGridSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		FlexGridSizer3, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	SetSizer(FlexGridSizer1);
 	timDumpLog.SetOwner(this, ID_TIMER1);
 	timDumpLog.Start(250, false);

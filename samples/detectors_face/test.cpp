@@ -20,7 +20,9 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/stock_objects.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -171,21 +173,21 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 						else
 						{
 							vector<float> xs, ys, zs;
-							unsigned int i = 0;
+							unsigned int ii = 0;
 							for (unsigned int j = 0;
 								 j < face.confidenceImage.getHeight(); j++)
 								for (unsigned int k = 0;
 									 k < face.confidenceImage.getWidth();
-									 k++, i++)
+									 k++, ii++)
 								{
 									unsigned char c =
 										*(face.confidenceImage(k, j, 0));
 									if (c > faceDetector.m_options
 												.confidenceThreshold)
 									{
-										xs.push_back(face.points3D_x[i]);
-										ys.push_back(face.points3D_y[i]);
-										zs.push_back(face.points3D_z[i]);
+										xs.push_back(face.points3D_x[ii]);
+										ys.push_back(face.points3D_y[ii]);
+										zs.push_back(face.points3D_z[ii]);
 									}
 								}
 
@@ -273,24 +275,24 @@ void TestCameraFaceDetection()
 	{
 		if (!counter) tictac.Tic();
 
-		mrpt::obs::CObservation::Ptr obs;
+		mrpt::obs::CObservation::Ptr obsIm;
 		try
 		{
-			obs = cam->getNextFrame();
+			obsIm = cam->getNextFrame();
 		}
 		catch (CExceptionEOF&)	// Check if eof, f.i. for RawLog files
 		{
 			break;
 		}
-		ASSERT_(obs);
+		ASSERT_(obsIm);
 
-		if (IS_CLASS(*obs, CObservationImage))
+		if (IS_CLASS(*obsIm, CObservationImage))
 		{
 			vector_detectable_object detected;
-			faceDetector.detectObjects(obs, detected);
+			faceDetector.detectObjects(obsIm, detected);
 
 			CObservationImage::Ptr o =
-				std::dynamic_pointer_cast<CObservationImage>(obs);
+				std::dynamic_pointer_cast<CObservationImage>(obsIm);
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
 				ASSERT_(IS_CLASS(*detected[i], CDetectable2D));
@@ -303,13 +305,13 @@ void TestCameraFaceDetection()
 
 			win.showImage(o->image);
 		}
-		else if (IS_CLASS(*obs, CObservationStereoImages))
+		else if (IS_CLASS(*obsIm, CObservationStereoImages))
 		{
 			vector_detectable_object detected;
-			faceDetector.detectObjects(obs, detected);
+			faceDetector.detectObjects(obsIm, detected);
 
 			CObservationStereoImages::Ptr o =
-				std::dynamic_pointer_cast<CObservationStereoImages>(obs);
+				std::dynamic_pointer_cast<CObservationStereoImages>(obsIm);
 
 			for (unsigned int i = 0; i < detected.size(); i++)
 			{
@@ -364,11 +366,11 @@ void TestImagesFaceDetection(int argc, char* argv[])
 
 		cout << "Detection time: " << tictac.Tac() << " s" << endl;
 
-		for (unsigned int i = 0; i < detected.size(); i++)
+		for (unsigned int idx = 0; idx < detected.size(); idx++)
 		{
-			ASSERT_(IS_CLASS(*detected[i], CDetectable2D));
+			ASSERT_(IS_CLASS(*detected[idx], CDetectable2D));
 			CDetectable2D::Ptr obj =
-				std::dynamic_pointer_cast<CDetectable2D>(detected[i]);
+				std::dynamic_pointer_cast<CDetectable2D>(detected[idx]);
 			img.rectangle(
 				obj->m_x, obj->m_y, obj->m_x + obj->m_width,
 				obj->m_y + obj->m_height, TColor(255, 0, 0));

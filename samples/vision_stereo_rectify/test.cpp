@@ -15,7 +15,9 @@
 #include <mrpt/system/filesystem.h>	 // for ASSERT_FILE_EXISTS_
 #include <mrpt/vision/CStereoRectifyMap.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::opengl;

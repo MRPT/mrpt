@@ -28,7 +28,9 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::obs;

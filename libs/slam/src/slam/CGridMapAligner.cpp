@@ -28,6 +28,8 @@
 #include <mrpt/tfest/se2.h>
 
 #include <Eigen/Dense>
+#include <chrono>
+#include <thread>
 
 using namespace mrpt::math;
 using namespace mrpt::slam;

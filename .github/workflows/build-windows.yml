@@ -20,15 +20,15 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-            windows-latest,
+            windows-2019,
           ]
 
         build_type: [
             Release
           ]
         include:
-          - name: windows-latest
-            os: windows-latest
+          - name: windows-2019
+            os: windows-2019
             compiler: cl
             platform: 64
 
@@ -49,6 +49,13 @@ jobs:
       - name: Install Qt5
         run: |
           choco install --verbose qt5-default
+          
+      # (Jul 2022: Disabled since find_package(Doxygen) in Octomap leads to 
+      #  internal Doxygen.exe errors leading to CI failure)
+      #- name: Install doxygen+graphviz
+      #  run: |
+      #    choco install --verbose doxygen 
+      #    choco install --verbose graphviz
 
       - name: Checkout
         uses: actions/checkout@v2

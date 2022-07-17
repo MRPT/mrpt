@@ -247,12 +247,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel3->SetSizer(GridSizer1);
 	GridSizer1->Fit(Panel3);
 	GridSizer1->SetSizeHints(Panel3);
-	FlexGridSizer4->Add(
-		Panel3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer4->Add(Panel3, 1, wxEXPAND, 1);
 	plotGT =
 		new mpWindow(this, ID_CUSTOM1, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer4->Add(
-		plotGT, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	FlexGridSizer4->Add(plotGT, 1, wxEXPAND, 3);
 	Panel4 = new wxPanel(
 		this, ID_PANEL4, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL4"));
@@ -270,14 +268,11 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel4->SetSizer(GridSizer2);
 	GridSizer2->Fit(Panel4);
 	GridSizer2->SetSizeHints(Panel4);
-	FlexGridSizer4->Add(
-		Panel4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer4->Add(Panel4, 1, wxEXPAND, 1);
 	plotObs =
 		new mpWindow(this, ID_CUSTOM2, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer4->Add(
-		plotObs, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
-	FlexGridSizer3->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(plotObs, 1, wxEXPAND, 3);
+	FlexGridSizer3->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	FlexGridSizer5 = new wxFlexGridSizer(4, 1, 0, 0);
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer5->AddGrowableRow(1);
@@ -299,12 +294,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel5->SetSizer(GridSizer3);
 	GridSizer3->Fit(Panel5);
 	GridSizer3->SetSizeHints(Panel5);
-	FlexGridSizer5->Add(
-		Panel5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer5->Add(Panel5, 1, wxEXPAND, 1);
 	plotMap =
 		new mpWindow(this, ID_CUSTOM3, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer5->Add(
-		plotMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	FlexGridSizer5->Add(plotMap, 1, wxEXPAND, 3);
 	Panel6 = new wxPanel(
 		this, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL6"));
@@ -322,14 +315,11 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel6->SetSizer(GridSizer4);
 	GridSizer4->Fit(Panel6);
 	GridSizer4->SetSizeHints(Panel6);
-	FlexGridSizer5->Add(
-		Panel6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer5->Add(Panel6, 1, wxEXPAND, 1);
 	plotIndivCompat =
 		new mpWindow(this, ID_CUSTOM4, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer5->Add(
-		plotIndivCompat, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
-	FlexGridSizer3->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer5->Add(plotIndivCompat, 1, wxEXPAND, 3);
+	FlexGridSizer3->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	FlexGridSizer6 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer6->AddGrowableCol(0);
 	FlexGridSizer6->AddGrowableRow(1);
@@ -350,8 +340,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel7->SetSizer(GridSizer5);
 	GridSizer5->Fit(Panel7);
 	GridSizer5->SetSizeHints(Panel7);
-	FlexGridSizer6->Add(
-		Panel7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer6->Add(Panel7, 1, wxEXPAND, 1);
 	gridDA = new wxGrid(
 		this, ID_GRID1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_GRID1"));
 	gridDA->CreateGrid(3, 3);
@@ -362,10 +351,8 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	gridDA->SetDefaultColSize(40, true);
 	gridDA->SetDefaultCellFont(gridDA->GetFont());
 	gridDA->SetDefaultCellTextColour(gridDA->GetForegroundColour());
-	FlexGridSizer6->Add(
-		gridDA, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer3->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(gridDA, 1, wxEXPAND, 0);
+	FlexGridSizer3->Add(FlexGridSizer6, 1, wxEXPAND, 0);
 	FlexGridSizer7 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
 	FlexGridSizer7->AddGrowableRow(0);
@@ -397,12 +384,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel8->SetSizer(GridSizer7);
 	GridSizer7->Fit(Panel8);
 	GridSizer7->SetSizeHints(Panel8);
-	FlexGridSizer8->Add(
-		Panel8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer8->Add(Panel8, 1, wxEXPAND, 1);
 	plotErrorX =
 		new mpWindow(Panel1, ID_CUSTOM7, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer8->Add(
-		plotErrorX, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	FlexGridSizer8->Add(plotErrorX, 1, wxEXPAND, 3);
 	Panel9 = new wxPanel(
 		Panel1, ID_PANEL10, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL10"));
@@ -420,12 +405,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel9->SetSizer(GridSizer8);
 	GridSizer8->Fit(Panel9);
 	GridSizer8->SetSizeHints(Panel9);
-	FlexGridSizer8->Add(
-		Panel9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer8->Add(Panel9, 1, wxEXPAND, 1);
 	plotErrorY =
 		new mpWindow(Panel1, ID_CUSTOM8, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer8->Add(
-		plotErrorY, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	FlexGridSizer8->Add(plotErrorY, 1, wxEXPAND, 3);
 	Panel10 = new wxPanel(
 		Panel1, ID_PANEL11, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL11"));
@@ -443,12 +426,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel10->SetSizer(GridSizer9);
 	GridSizer9->Fit(Panel10);
 	GridSizer9->SetSizeHints(Panel10);
-	FlexGridSizer8->Add(
-		Panel10, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer8->Add(Panel10, 1, wxEXPAND, 1);
 	plotErrorPhi =
 		new mpWindow(Panel1, ID_CUSTOM9, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer8->Add(
-		plotErrorPhi, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	FlexGridSizer8->Add(plotErrorPhi, 1, wxEXPAND, 3);
 	Panel1->SetSizer(FlexGridSizer8);
 	FlexGridSizer8->Fit(Panel1);
 	FlexGridSizer8->SetSizeHints(Panel1);
@@ -478,12 +459,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel13->SetSizer(GridSizer6);
 	GridSizer6->Fit(Panel13);
 	GridSizer6->SetSizeHints(Panel13);
-	FlexGridSizer9->Add(
-		Panel13, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer9->Add(Panel13, 1, wxEXPAND, 1);
 	plotDaTP =
 		new mpWindow(Panel2, ID_CUSTOM5, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer9->Add(
-		plotDaTP, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	FlexGridSizer9->Add(plotDaTP, 1, wxEXPAND, 3);
 	Panel14 = new wxPanel(
 		Panel2, ID_PANEL14, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL14"));
@@ -501,12 +480,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel14->SetSizer(GridSizer11);
 	GridSizer11->Fit(Panel14);
 	GridSizer11->SetSizeHints(Panel14);
-	FlexGridSizer9->Add(
-		Panel14, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(Panel14, 1, wxEXPAND, 0);
 	plotDaTN =
 		new mpWindow(Panel2, ID_CUSTOM6, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer9->Add(
-		plotDaTN, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer9->Add(plotDaTN, 1, wxEXPAND, 5);
 	Panel15 = new wxPanel(
 		Panel2, ID_PANEL15, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL15"));
@@ -524,12 +501,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel15->SetSizer(GridSizer12);
 	GridSizer12->Fit(Panel15);
 	GridSizer12->SetSizeHints(Panel15);
-	FlexGridSizer9->Add(
-		Panel15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(Panel15, 1, wxEXPAND, 0);
 	plotDaFP =
 		new mpWindow(Panel2, ID_CUSTOM11, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer9->Add(
-		plotDaFP, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer9->Add(plotDaFP, 1, wxEXPAND, 5);
 	Panel16 = new wxPanel(
 		Panel2, ID_PANEL16, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL16"));
@@ -547,12 +522,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel16->SetSizer(GridSizer13);
 	GridSizer13->Fit(Panel16);
 	GridSizer13->SetSizeHints(Panel16);
-	FlexGridSizer9->Add(
-		Panel16, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(Panel16, 1, wxEXPAND, 0);
 	plotDaFN =
 		new mpWindow(Panel2, ID_CUSTOM12, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer9->Add(
-		plotDaFN, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer9->Add(plotDaFN, 1, wxEXPAND, 5);
 	Panel2->SetSizer(FlexGridSizer9);
 	FlexGridSizer9->Fit(Panel2);
 	FlexGridSizer9->SetSizeHints(Panel2);
@@ -579,12 +552,10 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	Panel12->SetSizer(GridSizer10);
 	GridSizer10->Fit(Panel12);
 	GridSizer10->SetSizeHints(Panel12);
-	FlexGridSizer2->Add(
-		Panel12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer2->Add(Panel12, 1, wxEXPAND, 1);
 	plotStatTime =
 		new mpWindow(Panel11, ID_CUSTOM10, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer2->Add(
-		plotStatTime, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	FlexGridSizer2->Add(plotStatTime, 1, wxEXPAND, 3);
 	Panel17 = new wxPanel(
 		Panel11, ID_PANEL17, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL17"));
@@ -604,23 +575,20 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent, wxWindowID id)
 	GridSizer14->Fit(Panel17);
 	GridSizer14->SetSizeHints(Panel17);
 	FlexGridSizer2->Add(
-		Panel17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		Panel17, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	plotDaJCBB =
 		new mpWindow(Panel11, ID_CUSTOM13, wxDefaultPosition, wxDefaultSize, 0);
 	FlexGridSizer2->Add(
-		plotDaJCBB, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 3);
+		plotDaJCBB, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 3);
 	Panel11->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(Panel11);
 	FlexGridSizer2->SetSizeHints(Panel11);
 	Notebook1->AddPage(Panel1, _("Errors"), true);
 	Notebook1->AddPage(Panel2, _("Data assoc."), false);
 	Notebook1->AddPage(Panel11, _("Stats"), false);
-	FlexGridSizer7->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer3->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer7->Add(Notebook1, 1, wxEXPAND, 0);
+	FlexGridSizer3->Add(FlexGridSizer7, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();

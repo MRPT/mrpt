@@ -78,8 +78,12 @@ void CMesh::updateTriangles() const
 	if (cols == 0 && rows == 0) return;	 // empty mesh
 
 	ASSERT_(cols > 0 && rows > 0);
-	ASSERT_GT_(m_xMax, m_xMin);
-	ASSERT_GT_(m_yMax, m_yMin);
+	ASSERT_NOT_EQUAL_(m_xMax, m_xMin);
+	ASSERT_NOT_EQUAL_(m_yMax, m_yMin);
+
+	float normalSign = 1.0f;
+	if (m_xMax < m_xMin) normalSign *= -1.0f;
+	if (m_yMax < m_yMin) normalSign *= -1.0f;
 
 	// we have 1 more row & col of vertices than of triangles:
 	vertex_normals.assign(
@@ -190,7 +194,7 @@ void CMesh::updateTriangles() const
 				// For averaging normals:
 				for (unsigned long k : tvi.vind)
 				{
-					vertex_normals[k].first += this_normal;
+					vertex_normals[k].first += this_normal * normalSign;
 					vertex_normals[k].second++;
 				}
 			}
@@ -271,7 +275,7 @@ void CMesh::updateTriangles() const
 				// For averaging normals:
 				for (unsigned long k : tvi.vind)
 				{
-					vertex_normals[k].first += this_normal;
+					vertex_normals[k].first += this_normal * normalSign;
 					vertex_normals[k].second++;
 				}
 			}

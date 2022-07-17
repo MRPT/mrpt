@@ -92,6 +92,33 @@ class CRawlogTreeView : public wxScrolledWindow
 	void SetSelectedItem(int index, bool force_refresh = false);
 	int GetSelectedItem() const { return m_selectedItem; }
 
+	bool m_is_thumb_tracking = false;
+
+	void ScrollToPercent(double pc);
+
+	struct TNodeData
+	{
+		TNodeData() = default;
+
+		/** Hierarchy level: 0,1,2. */
+		uint8_t level = 0;
+
+		/** The object, or nullptr */
+		mrpt::serialization::CSerializable::Ptr data;
+
+		size_t index = 0;
+
+		std::optional<mrpt::Clock::time_point> timestamp;
+		std::optional<std::string> sensorLabel;
+	};
+
+	size_t m_firstVisibleItem = 0, m_lastVisibleItem = 0;
+	size_t getTotalTreeNodes() const { return m_tree_nodes.size(); }
+
+	const std::vector<TNodeData>& treeNodes() const { return m_tree_nodes; }
+
+	bool isItemIndexVisible(size_t idx) const;
+
    protected:
 	void OnDrawImpl(wxDC& dc);
 
@@ -111,16 +138,6 @@ class CRawlogTreeView : public wxScrolledWindow
 	mrpt::system::TTimeStamp m_rawlog_start;
 	mrpt::system::TTimeStamp m_rawlog_last;
 
-	struct TNodeData
-	{
-		TNodeData() = default;
-		/** Hierarchy level: 0,1,2. */
-		uint8_t level{0};
-		/** The object, or nullptr */
-		mrpt::serialization::CSerializable::Ptr data;
-		size_t index{0};
-	};
-
 	/** The nuimber of rows to display for the rawlog, used to compute the
 	 * height */
 	std::vector<TNodeData> m_tree_nodes;
@@ -132,8 +149,6 @@ class CRawlogTreeView : public wxScrolledWindow
 
 	static const int ROW_HEIGHT;
 	static const int TREE_HORZ_STEPS;
-
-	bool m_is_thumb_tracking = false;
 
 	wxMenu m_contextMenu;
 

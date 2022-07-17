@@ -46,10 +46,10 @@ CLogView::CLogView(
 		this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(835, 437),
 		wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL | wxTE_DONTWRAP,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	wxFont edLogFont(-1, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
+	wxFont edLogFont(
+		-1, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	edLog->SetFont(edLogFont);
-	FlexGridSizer1->Add(
-		edLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer1->Add(edLog, 1, wxEXPAND, 5);
 	btnOk = new wxButton(
 		this, ID_BUTTON1, _("Close"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON1"));

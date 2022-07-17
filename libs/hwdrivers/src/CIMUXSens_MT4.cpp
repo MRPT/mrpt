@@ -13,6 +13,7 @@
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationIMU.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

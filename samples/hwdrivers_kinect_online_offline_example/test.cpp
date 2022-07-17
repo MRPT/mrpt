@@ -32,8 +32,10 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/CTimeLogger.h>
 
+#include <chrono>
 #include <iostream>
 #include <memory>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

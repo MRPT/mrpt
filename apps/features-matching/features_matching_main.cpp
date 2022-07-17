@@ -16,6 +16,7 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
+#include <chrono>
 #include <thread>
 
 using namespace mrpt::math;

@@ -11,6 +11,7 @@
 #include <mrpt/core/Clock.h>
 #include <mrpt/system/datetime.h>
 
+#include <chrono>
 #include <thread>
 
 TEST(DateTime, dateTimeVsClock)

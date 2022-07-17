@@ -452,6 +452,8 @@ void yaml::internalPrintDebugStructure(
 		o << " top='" << shortenComment(cs.at(0)) << "' right:'"
 		  << shortenComment(cs.at(1)) << "'. ";
 
+	o << " (line,col):(" << p.marks.line << "," << p.marks.column << ") ";
+
 	// Dispatch:
 	if (p.isScalar())
 	{
@@ -807,20 +809,29 @@ static std::optional<std::string> extractComment(
 	return c;
 }
 
-static void parseTokenComments(struct fy_token* tk, yaml::node_t& n)
+static void parseTokenCommentsAndMarks(struct fy_token* tk, yaml::node_t& n)
 {
 	if (!tk) return;
+
 	{
 		auto cT = extractComment(tk, fycp_top);
 		if (cT)
 			n.comments[static_cast<size_t>(CommentPosition::TOP)] =
 				std::move(cT.value());
 	}
+
 	{
 		auto cR = extractComment(tk, fycp_right);
 		if (cR)
 			n.comments[static_cast<size_t>(CommentPosition::RIGHT)] =
 				std::move(cR.value());
+	}
+
+	if (const struct fy_mark* mrk = fy_token_start_mark(tk); mrk)
+	{
+		n.marks.column = mrk->column;
+		n.marks.line = mrk->line;
+		n.marks.input_pos = mrk->input_pos;
 	}
 }
 
@@ -877,7 +888,7 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 			yaml::node_t n;
 			yaml::map_t& m = n.d.emplace<yaml::map_t>();
 
-			parseTokenComments(event->scalar.value, n);
+			parseTokenCommentsAndMarks(event->scalar.value, n);
 
 			for (;;)
 			{
@@ -915,7 +926,7 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 			yaml::node_t n;
 			yaml::sequence_t& s = n.d.emplace<yaml::sequence_t>();
 
-			parseTokenComments(event->scalar.value, n);
+			parseTokenCommentsAndMarks(event->scalar.value, n);
 
 			for (;;)
 			{
@@ -955,7 +966,7 @@ static std::optional<yaml::node_t> recursiveParse(struct fy_parser* p)
 				yaml::node_t n;
 				n.d.emplace<yaml::scalar_t>(textToScalar(sValue));
 
-				parseTokenComments(event->scalar.value, n);
+				parseTokenCommentsAndMarks(event->scalar.value, n);
 
 				fy_parser_event_free(p, event);	 // free event
 				return n;

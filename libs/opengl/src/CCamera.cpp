@@ -21,7 +21,7 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CCamera, CRenderizable, mrpt::opengl)
 
-uint8_t CCamera::serializeGetVersion() const { return 2; }
+uint8_t CCamera::serializeGetVersion() const { return 3; }
 void CCamera::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -29,6 +29,7 @@ void CCamera::serializeTo(mrpt::serialization::CArchive& out) const
 		<< m_azimuthDeg << m_elevationDeg << m_projectiveModel
 		<< m_projectiveFOVdeg;
 	out << m_pinholeModel;	// v2
+	out << m_useNoProjection;  // v3
 }
 
 void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -37,6 +38,7 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	{
 		case 1:
 		case 2:
+		case 3:
 		{
 			// Load data:
 			in >> m_pointingX >> m_pointingY >> m_pointingZ >> m_eyeDistance >>
@@ -45,6 +47,10 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			if (version >= 2) in >> m_pinholeModel;
 			else
 				m_pinholeModel.reset();
+
+			if (version >= 3) in >> m_useNoProjection;
+			else
+				m_useNoProjection = false;
 		}
 		break;
 		case 0:

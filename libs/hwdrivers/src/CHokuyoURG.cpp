@@ -17,6 +17,9 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
+#include <thread>
+
 IMPLEMENTS_GENERIC_SENSOR(CHokuyoURG, mrpt::hwdrivers)
 
 using namespace mrpt::obs;

@@ -141,7 +141,8 @@ void COpenGLViewport::renderImageMode() const
 #endif
 
 	// Do we have an actual image to render?
-	if (!m_imageViewPlane) return;
+	if (!m_imageViewPlane || m_imageViewPlane->getTextureImage().isEmpty())
+		return;
 
 	auto _ = m_state;
 
@@ -989,53 +990,63 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	// 2nd: the internal camera of all viewports:
 	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
 
-	ASSERT_(m_camera.getZoomDistance() > 0);
-
-	_.is_projective = myCamera->isProjective();
-
-	_.FOV = myCamera->getProjectiveFOVdeg();
-	_.pinhole_model = myCamera->getPinholeModel();
-	_.eyeDistance = myCamera->getZoomDistance();
-	_.azimuth = DEG2RAD(myCamera->getAzimuthDegrees());
-	_.elev = DEG2RAD(myCamera->getElevationDegrees());
-
-	if (myCamera->is6DOFMode())
+	if (myCamera->isNoProjection())
 	{
-		// In 6DOFMode eye is set viewing towards the direction of the
-		// positive Z axis
-		// Up is set as -Y axis
-		const auto pose = mrpt::poses::CPose3D(myCamera->getPose());
-		const auto viewDirection =
-			mrpt::poses::CPose3D::FromTranslation(0, 0, 1);
-		const auto at = pose + viewDirection;
-
-		_.eye = pose.translation();
-		_.pointing = at.translation();
-		// "UP" = -Y axis
-		pose.getRotationMatrix().extractColumn(1, _.up);
-		_.up *= -1.0;
+		// No translation nor rotation nor perspective:
+		_.computeNoProjectionMatrix(m_clip_min, m_clip_max);
 	}
 	else
 	{
-		// Normal mode: use "camera orbit" parameters to compute pointing-to
-		// point:
-		_.pointing = myCamera->getPointingAt();
+		// Projective or orthogonal camera models:
+		ASSERT_(myCamera->getZoomDistance() > 0);
 
-		const double dis = std::max<double>(0.001, myCamera->getZoomDistance());
-		_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
-		_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
-		_.eye.z = _.pointing.z + dis * sin(_.elev);
+		_.is_projective = myCamera->isProjective();
 
-		_.up.x = -cos(_.azimuth) * sin(_.elev);
-		_.up.y = -sin(_.azimuth) * sin(_.elev);
-		_.up.z = cos(_.elev);
+		_.FOV = myCamera->getProjectiveFOVdeg();
+		_.pinhole_model = myCamera->getPinholeModel();
+		_.eyeDistance = myCamera->getZoomDistance();
+		_.azimuth = DEG2RAD(myCamera->getAzimuthDegrees());
+		_.elev = DEG2RAD(myCamera->getElevationDegrees());
+
+		if (myCamera->is6DOFMode())
+		{
+			// In 6DOFMode eye is set viewing towards the direction of the
+			// positive Z axis
+			// Up is set as -Y axis
+			const auto pose = mrpt::poses::CPose3D(myCamera->getPose());
+			const auto viewDirection =
+				mrpt::poses::CPose3D::FromTranslation(0, 0, 1);
+			const auto at = pose + viewDirection;
+
+			_.eye = pose.translation();
+			_.pointing = at.translation();
+			// "UP" = -Y axis
+			pose.getRotationMatrix().extractColumn(1, _.up);
+			_.up *= -1.0;
+		}
+		else
+		{
+			// Normal mode: use "camera orbit" parameters to compute pointing-to
+			// point:
+			_.pointing = myCamera->getPointingAt();
+
+			const double dis =
+				std::max<double>(0.001, myCamera->getZoomDistance());
+			_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
+			_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
+			_.eye.z = _.pointing.z + dis * sin(_.elev);
+
+			_.up.x = -cos(_.azimuth) * sin(_.elev);
+			_.up.y = -sin(_.azimuth) * sin(_.elev);
+			_.up.z = cos(_.elev);
+		}
+
+		// Compute the projection matrix (p_matrix):
+		_.computeProjectionMatrix(m_clip_min, m_clip_max);
+
+		// Apply eye center and lookAt to p_matrix:
+		_.applyLookAt();
 	}
-
-	// Compute the projection matrix (p_matrix):
-	_.computeProjectionMatrix(m_clip_min, m_clip_max);
-
-	// Apply eye center and lookAt to p_matrix:
-	_.applyLookAt();
 
 	// Reset model-view 4x4 matrix to the identity transformation:
 	_.mv_matrix.setIdentity();

@@ -23,6 +23,9 @@
 //*)
 #include <mrpt/gui/wx28-fixes.h>
 
+#include <chrono>
+#include <thread>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -104,10 +107,8 @@ CDlgPoseEst::CDlgPoseEst(
 	StaticBoxSizer1->Add(
 		m_panelCamera, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer4->Add(
-		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer2->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(StaticBoxSizer1, 1, wxEXPAND, 5);
+	FlexGridSizer2->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	StaticBoxSizer3 = new wxStaticBoxSizer(
 		wxHORIZONTAL, this, _("Checkerboard detection parameters"));
 	FlexGridSizer6 = new wxFlexGridSizer(2, 2, 0, 0);
@@ -142,8 +143,7 @@ CDlgPoseEst::CDlgPoseEst(
 	FlexGridSizer17->Add(
 		edSizeY, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	StaticBoxSizer4->Add(
-		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer4->Add(FlexGridSizer17, 1, wxEXPAND, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
 	wxString __wxRadioBoxChoices_1[2] = {
@@ -152,8 +152,7 @@ CDlgPoseEst::CDlgPoseEst(
 		this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
 		_T("ID_RADIOBOX1"));
-	FlexGridSizer6->Add(
-		rbMethod, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer6->Add(rbMethod, 1, wxEXPAND, 2);
 	StaticBoxSizer5 =
 		new wxStaticBoxSizer(wxHORIZONTAL, this, _(" Size of quads (in mm): "));
 	FlexGridSizer18 = new wxFlexGridSizer(1, 4, 0, 0);
@@ -181,8 +180,7 @@ CDlgPoseEst::CDlgPoseEst(
 	FlexGridSizer18->Add(
 		edLengthY, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer5->Add(
-		FlexGridSizer18, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer5->Add(FlexGridSizer18, 1, wxEXPAND, 0);
 	FlexGridSizer6->Add(
 		StaticBoxSizer5, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 2);
 	cbNormalize = new wxCheckBox(
@@ -192,8 +190,7 @@ CDlgPoseEst::CDlgPoseEst(
 	FlexGridSizer6->Add(
 		cbNormalize, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer3->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer3->Add(FlexGridSizer6, 1, wxEXPAND, 0);
 	FlexGridSizer2->Add(
 		StaticBoxSizer3, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
@@ -221,13 +218,10 @@ CDlgPoseEst::CDlgPoseEst(
 	m_3Dview_cam = new CMyGLCanvas(
 		this, ID_CAMPOSEVIEW, wxDefaultPosition, wxSize(300, 300),
 		wxTAB_TRAVERSAL, _T("ID_CAMPOSEVIEW"));
-	FlexGridSizer7->Add(
-		m_3Dview_cam, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer7->Add(m_3Dview_cam, 1, wxEXPAND, 0);
 
-	StaticBoxSizer2->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(
-		StaticBoxSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	StaticBoxSizer2->Add(FlexGridSizer7, 1, wxEXPAND, 0);
+	FlexGridSizer2->Add(StaticBoxSizer2, 1, wxEXPAND, 5);
 	txtLog = new wxTextCtrl(
 		this, ID_TEXTCTRL2, _("(debug output)"), wxDefaultPosition,
 		wxSize(239, 78), wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL | wxVSCROLL,
@@ -237,10 +231,8 @@ CDlgPoseEst::CDlgPoseEst(
 		txtLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 	txtLogFont.SetPointSize(12);
 	txtLog->SetFont(txtLogFont);
-	FlexGridSizer2->Add(
-		txtLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(txtLog, 1, wxEXPAND, 5);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableRow(1);
@@ -267,15 +259,13 @@ CDlgPoseEst::CDlgPoseEst(
 		wxDefaultValidator, _T("ID_BUTTON3"));
 	FlexGridSizer5->Add(
 		btnClose, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	m_realtimeview = new mrpt::gui::wxMRPTImageControl(
 		this, ID_CUSTOM1, wxDefaultPosition.x, wxDefaultPosition.y,
 		wxSize(468, 286).GetWidth(), wxSize(468, 286).GetHeight());
 	FlexGridSizer3->Add(
 		m_realtimeview, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	timCapture.SetOwner(this, ID_TIMER1);
 	FlexGridSizer1->Fit(this);
@@ -496,7 +486,7 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 				img_to_show.getWidth(), img_to_show.getHeight());
 			this->m_realtimeview->SetMinSize(
 				wxSize(img_to_show.getWidth(), img_to_show.getHeight()));
-			this->FlexGridSizer1->RecalcSizes();
+			this->FlexGridSizer1->Layout();
 			this->Fit();
 		}
 		// Get on...

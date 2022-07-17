@@ -76,8 +76,7 @@ CDlgCamTracking::CDlgCamTracking(
 		this, ID_BUTTON4, _("Grab current"), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_BUTTON4"));
 	FlexGridSizer2->Add(btnGrab, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer4 = new wxFlexGridSizer(0, 5, 0, 0);
 	FlexGridSizer4->AddGrowableCol(2);
 	cbConstVel = new wxCheckBox(
@@ -100,14 +99,12 @@ CDlgCamTracking::CDlgCamTracking(
 		wxDefaultValidator, _T("ID_BUTTON5"));
 	btnStop->Disable();
 	FlexGridSizer4->Add(btnStop, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	gridPoses = new wxGrid(
 		this, ID_GRID1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_GRID1"));
 	gridPoses->CreateGrid(0, 7);
 	gridPoses->SetMinSize(wxSize(600, 200));
-	FlexGridSizer1->Add(
-		gridPoses, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer1->Add(gridPoses, 1, wxEXPAND, 5);
 	FlexGridSizer3 = new wxFlexGridSizer(0, 3, 0, 0);
 	btnClose = new wxButton(
 		this, ID_BUTTON1, _("Close"), wxDefaultPosition, wxDefaultSize, 0,

@@ -16,7 +16,9 @@
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 // We need OpenGL headers for "GL_VERTEX_SHADER","GL_FRAGMENT_SHADER"
 #include <mrpt/config.h>

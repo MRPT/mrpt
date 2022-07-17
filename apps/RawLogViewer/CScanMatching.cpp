@@ -155,36 +155,28 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 	FlexGridSizer13->Add(
 		btnHelp, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer5->Add(
-		FlexGridSizer13, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer5->Add(FlexGridSizer13, 1, wxEXPAND, 0);
 	FlexGridSizer6 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer6->AddGrowableCol(1);
 	StaticText3 = new wxStaticText(
 		Panel1, ID_STATICTEXT3, _("First (reference):"), wxDefaultPosition,
 		wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT3"));
-	FlexGridSizer6->Add(
-		StaticText3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(StaticText3, 1, wxEXPAND, 5);
 	edFirst = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL2, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer6->Add(
-		edFirst, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(edFirst, 1, wxEXPAND, 5);
 	StaticText4 = new wxStaticText(
 		Panel1, ID_STATICTEXT4, _("Second (to align with first):"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT4"));
-	FlexGridSizer6->Add(
-		StaticText4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(StaticText4, 1, wxEXPAND, 5);
 	edSecond = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL3, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL3"));
-	FlexGridSizer6->Add(
-		edSecond, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer5->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	StaticBoxSizer1->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(
-		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(edSecond, 1, wxEXPAND, 5);
+	FlexGridSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
+	StaticBoxSizer1->Add(FlexGridSizer5, 1, wxEXPAND, 0);
+	FlexGridSizer2->Add(StaticBoxSizer1, 1, wxEXPAND, 5);
 	StaticBoxSizer5 = new wxStaticBoxSizer(
 		wxHORIZONTAL, Panel1, _("Config of the ICP algorithm:"));
 	edOptICP = new wxTextCtrl(
@@ -220,13 +212,11 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL, wxDefaultValidator,
 		_T("ID_TEXTCTRL6"));
 	wxFont edOptICPFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, _T("Monospace"), wxFONTENCODING_DEFAULT);
 	edOptICP->SetFont(edOptICPFont);
-	StaticBoxSizer5->Add(
-		edOptICP, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(
-		StaticBoxSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	StaticBoxSizer5->Add(edOptICP, 1, wxEXPAND, 0);
+	FlexGridSizer2->Add(StaticBoxSizer5, 1, wxEXPAND, 2);
 	StaticBoxSizer3 = new wxStaticBoxSizer(
 		wxHORIZONTAL, Panel1, _("Config of the first (reference) map:"));
 	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
@@ -252,8 +242,7 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
 	FlexGridSizer8->Add(
 		rbGrid, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(FlexGridSizer8, 1, wxEXPAND, 0);
 	Notebook1 = new wxNotebook(
 		Panel1, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_NOTEBOOK1"));
@@ -280,8 +269,8 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL, wxDefaultValidator,
 		_T("ID_TEXTCTRL4"));
 	wxFont edOptRefPntFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, _T("Monospace"), wxFONTENCODING_DEFAULT);
 	edOptRefPnt->SetFont(edOptRefPntFont);
 	edOptRefGrid = new wxTextCtrl(
 		Notebook1, ID_TEXTCTRL9,
@@ -304,17 +293,14 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL, wxDefaultValidator,
 		_T("ID_TEXTCTRL9"));
 	wxFont edOptRefGridFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, _T("Monospace"), wxFONTENCODING_DEFAULT);
 	edOptRefGrid->SetFont(edOptRefGridFont);
 	Notebook1->AddPage(edOptRefPnt, _("Point map config"), false);
 	Notebook1->AddPage(edOptRefGrid, _("Grid map config"), false);
-	FlexGridSizer3->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
-	StaticBoxSizer3->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
-	FlexGridSizer2->Add(
-		StaticBoxSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer3->Add(Notebook1, 1, wxEXPAND, 1);
+	StaticBoxSizer3->Add(FlexGridSizer3, 1, wxEXPAND, 1);
+	FlexGridSizer2->Add(StaticBoxSizer3, 1, wxEXPAND, 2);
 	StaticBoxSizer4 = new wxStaticBoxSizer(
 		wxHORIZONTAL, Panel1, _("Config of the second (to align) point map:"));
 	edOptAlignMap = new wxTextCtrl(
@@ -340,13 +326,11 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		wxTE_MULTILINE | wxHSCROLL | wxVSCROLL, wxDefaultValidator,
 		_T("ID_TEXTCTRL7"));
 	wxFont edOptAlignMapFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, _T("Monospace"), wxFONTENCODING_DEFAULT);
 	edOptAlignMap->SetFont(edOptAlignMapFont);
-	StaticBoxSizer4->Add(
-		edOptAlignMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(
-		StaticBoxSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	StaticBoxSizer4->Add(edOptAlignMap, 1, wxEXPAND, 0);
+	FlexGridSizer2->Add(StaticBoxSizer4, 1, wxEXPAND, 2);
 	Panel1->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(Panel1);
 	FlexGridSizer2->SetSizeHints(Panel1);
@@ -372,13 +356,11 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		_("Scan Matching Status:\n(Reference map: Blue "
 		  "or gridmap; Map to be aligned: Red)"),
 		wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT6"));
-	FlexGridSizer9->Add(
-		StaticText6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 3);
+	FlexGridSizer9->Add(StaticText6, 1, wxEXPAND, 3);
 	m_plot3D = new CMyGLCanvas(
 		Panel3, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
-	FlexGridSizer9->Add(
-		m_plot3D, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(m_plot3D, 1, wxEXPAND, 0);
 	Panel5 = new wxPanel(
 		Panel3, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL5"));
@@ -406,8 +388,7 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		wxDefaultValidator, _T("ID_BUTTON2"));
 	FlexGridSizer11->Add(
 		btnClose, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(
-		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer7->Add(FlexGridSizer11, 1, wxEXPAND, 0);
 	FlexGridSizer12 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer12->AddGrowableCol(1);
 	txtStep = new wxStaticText(
@@ -419,15 +400,12 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 	pbSteps = new wxGauge(
 		Panel5, ID_GAUGE1, 100, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_GAUGE1"));
-	FlexGridSizer12->Add(
-		pbSteps, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer7->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(pbSteps, 1, wxEXPAND, 5);
+	FlexGridSizer7->Add(FlexGridSizer12, 1, wxEXPAND, 0);
 	Panel5->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->Fit(Panel5);
 	FlexGridSizer7->SetSizeHints(Panel5);
-	FlexGridSizer9->Add(
-		Panel5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(Panel5, 1, wxEXPAND, 0);
 	Panel3->SetSizer(FlexGridSizer9);
 	FlexGridSizer9->Fit(Panel3);
 	FlexGridSizer9->SetSizeHints(Panel3);
@@ -442,22 +420,19 @@ CScanMatching::CScanMatching(wxWindow* parent, wxWindowID)
 		wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL | wxVSCROLL,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	wxFont txtLogFont(
-		8, wxTELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Monospace"),
-		wxFONTENCODING_DEFAULT);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+		false, _T("Monospace"), wxFONTENCODING_DEFAULT);
 	txtLog->SetFont(txtLogFont);
-	FlexGridSizer10->Add(
-		txtLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer10->Add(txtLog, 1, wxEXPAND, 0);
 	Panel4->SetSizer(FlexGridSizer10);
 	FlexGridSizer10->Fit(Panel4);
 	FlexGridSizer10->SetSizeHints(Panel4);
 	SplitterWindow2->SplitHorizontally(Panel3, Panel4);
-	FlexGridSizer4->Add(
-		SplitterWindow2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(SplitterWindow2, 1, wxEXPAND, 0);
 	Panel2->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->SetSizeHints(Panel2);
 	SplitterWindow1->SplitVertically(Panel1, Panel2);
-	FlexGridSizer1->Add(
-		SplitterWindow1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(SplitterWindow1, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);

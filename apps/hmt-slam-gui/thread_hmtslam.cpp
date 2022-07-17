@@ -12,7 +12,9 @@
 #include <mrpt/system/filesystem.h>
 #include <wx/msgdlg.h>
 
+#include <chrono>
 #include <memory>
+#include <thread>
 
 #include "hmt_slam_guiMain.h"
 

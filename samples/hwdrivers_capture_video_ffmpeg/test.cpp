@@ -12,6 +12,7 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>	 // pause()
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

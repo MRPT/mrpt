@@ -12,6 +12,7 @@
 #include <mrpt/3rdparty/do_opencv_includes.h>
 #include <mrpt/hwdrivers/CMyntEyeCamera.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

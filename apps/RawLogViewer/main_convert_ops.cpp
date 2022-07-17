@@ -882,7 +882,7 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 	// Update the views:
 	rebuildTreeView();
 
-	tree_view->Refresh();
+	m_treeView->Refresh();
 
 	WX_END_TRY
 }

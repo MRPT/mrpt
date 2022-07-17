@@ -15,7 +15,9 @@
 #include <mrpt/hwdrivers/CLMS100eth.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // [mrpt-maps]
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::obs;
