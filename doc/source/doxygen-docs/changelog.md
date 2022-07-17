@@ -1,7 +1,9 @@
 \page changelog Change Log
 
-# Version 2.5.0: UNRELEASED
+# Version 2.5.0: Released July 18th, 2022
 - Changes in applications:
+  - RawLogViewer:
+    - New time-line UI for quickly navigating and selecting observations.
   - New application:
     - ros-map-yaml2mrpt: CLI tool to import ROS map_server maps into MRPT formats.
 - Changes in libraries:
