@@ -41,6 +41,17 @@ class CArrow : public CRenderizableShaderTriangles
 		m_z1 = z1;
 		CRenderizable::notifyChange();
 	}
+	template <typename Vector3Like>
+	void setArrowEnds(const Vector3Like&start, const Vector3Like&end) 
+	{
+		m_x0 = start[0];
+		m_y0 = start[1];
+		m_z0 = start[2];
+		m_x1 = end[0];
+		m_y1 = end[1];
+		m_z1 = end[2];
+		CRenderizable::notifyChange();
+	}
 	void setHeadRatio(float rat)
 	{
 		m_headRatio = rat;
