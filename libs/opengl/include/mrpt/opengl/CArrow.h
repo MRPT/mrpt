@@ -42,7 +42,7 @@ class CArrow : public CRenderizableShaderTriangles
 		CRenderizable::notifyChange();
 	}
 	template <typename Vector3Like>
-	void setArrowEnds(const Vector3Like&start, const Vector3Like&end) 
+	void setArrowEnds(const Vector3Like& start, const Vector3Like& end)
 	{
 		m_x0 = start[0];
 		m_y0 = start[1];
