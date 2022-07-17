@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/serialization/CArchive.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

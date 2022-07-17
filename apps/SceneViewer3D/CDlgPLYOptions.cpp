@@ -131,8 +131,7 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent, wxWindowID id)
 	FlexGridSizer6->Add(
 		edRoll, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	StaticBoxSizer1->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer1->Add(FlexGridSizer6, 1, wxEXPAND, 0);
 	FlexGridSizer4->Add(
 		StaticBoxSizer1, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
@@ -146,8 +145,7 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent, wxWindowID id)
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator,
 		_T("ID_RADIOBOX2"));
 	rbClass->SetSelection(0);
-	FlexGridSizer7->Add(
-		rbClass, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer7->Add(rbClass, 1, wxEXPAND, 5);
 	Panel1 = new wxPanel(
 		this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL1"));
@@ -160,8 +158,7 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent, wxWindowID id)
 	FlexGridSizer7->Add(
 		Panel1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		0);
-	FlexGridSizer2->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(FlexGridSizer7, 1, wxEXPAND, 0);
 	FlexGridSizer1->Add(
 		FlexGridSizer2, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 0);

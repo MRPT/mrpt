@@ -11,6 +11,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 
+#include <chrono>
 #include <cstdio>
 #include <iostream>
 #include <thread>

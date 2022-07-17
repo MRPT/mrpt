@@ -314,7 +314,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 float CObservation2DRangeScan::getScanAngle(const size_t idx) const
 {
 	float Ang = -0.5f * aperture, dA = aperture / (m_scan.size() - 1);
-	ASSERT_BELOW_(idx, m_scan.size());
+	ASSERT_LT_(idx, m_scan.size());
 
 	if (!rightToLeft)
 	{

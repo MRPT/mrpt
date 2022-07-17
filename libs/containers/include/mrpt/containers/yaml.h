@@ -95,8 +95,19 @@ class yaml
 	using comments_t = std::array<
 		std::optional<std::string>, static_cast<size_t>(CommentPosition::MAX)>;
 
+	struct mark_t
+	{
+		/// Position from the start of the input file
+		std::size_t input_pos = 0;
+		int line = 0;  //!< Line position (0-based index)
+		int column = 0;	 //!< Column  position (0-based index)
+	};
+
 	struct node_t
 	{
+		/** @name Data
+		 *  @{ */
+
 		/** Node data */
 		std::variant<std::monostate, sequence_t, map_t, scalar_t> d;
 
@@ -106,6 +117,14 @@ class yaml
 		/** Optional flag to print collections in short form (e.g. [A,B] for
 		 * sequences) \note (New in MRPT 2.1.8) */
 		bool printInShortFormat = false;
+
+		/** Positioning information about the placement of the element in the
+		 * original input file/stream, i.e. line and column number
+		 * \note (New in MRPT 2.5.0)
+		 */
+		mark_t marks;
+
+		/** @} */
 
 		node_t() = default;
 		~node_t() = default;
@@ -163,11 +182,11 @@ class yaml
 		 * sequence or map nodes. */
 		size_t size() const;
 
-		/** Returns a copy of the existing value of the given type, or tries to
-		 * convert it between easily-compatible types (e.g. double<->int,
+		/** Returns a copy of the existing value of the given type, or tries
+		 * to convert it between easily-compatible types (e.g. double<->int,
 		 * string<->int).
-		 * \exception std::exception If the contained type does not  match and
-		 * there is no obvious conversion.
+		 * \exception std::exception If the contained type does not  match
+		 * and there is no obvious conversion.
 		 */
 		template <typename T>
 		T as() const
@@ -195,7 +214,8 @@ class yaml
 				s != nullptr)
 			{ return {*s}; }
 			THROW_EXCEPTION_FMT(
-				"Used node_t as map key with a type non-convertible to string: "
+				"Used node_t as map key with a type non-convertible to "
+				"string: "
 				"'%s'",
 				typeName().c_str());
 		}
@@ -290,8 +310,8 @@ class yaml
 	 */
 	void loadFromText(const std::string& yamlTextBlock);
 
-	/** Parses the stream as YAML or JSON (autodetected) and returns a document.
-	 * \exception std::exception Upon format errors
+	/** Parses the stream as YAML or JSON (autodetected) and returns a
+	 * document. \exception std::exception Upon format errors
 	 */
 	static yaml FromStream(std::istream& i);
 
@@ -308,16 +328,16 @@ class yaml
 	 */
 	static yaml FromFile(const std::string& fileName);
 
-	/** Parses the stream as YAML or JSON (autodetected) and stores the contents
-	 * into this document.
+	/** Parses the stream as YAML or JSON (autodetected) and stores the
+	 * contents into this document.
 	 *
 	 * \exception std::exception Upon format errors
 	 */
 	void loadFromStream(std::istream& i);
 
 	/** Builds an object copying the structure and contents from an existing
-	 * YAMLCPP Node. Requires user to #include yamlcpp from your calling program
-	 * (does NOT requires yamlcpp while compiling mrpt itself).
+	 * YAMLCPP Node. Requires user to #include yamlcpp from your calling
+	 * program (does NOT requires yamlcpp while compiling mrpt itself).
 	 *
 	 * \tparam YAML_NODE Must be `YAML::Node`. Made a template just to avoid
 	 * build-time depedencies.
@@ -354,9 +374,8 @@ class yaml
 	template <typename MATRIX>
 	inline void toMatrix(MATRIX& m) const;
 
-	/** Converts a sequence yaml node into a std::vector, trying to convert all
-	 *  nodes to the same given `Scalar` type.
-	 *  \note (New in MRPT 2.3.3)
+	/** Converts a sequence yaml node into a std::vector, trying to convert
+	 * all nodes to the same given `Scalar` type. \note (New in MRPT 2.3.3)
 	 */
 	template <typename Scalar>
 	inline std::vector<Scalar> toStdVector() const;
@@ -375,8 +394,8 @@ class yaml
 	 * returns true for null(empty) nodes. */
 	bool empty() const;
 
-	/** Resets to empty (can be called on a root node or any other node to clear
-	 * that subtree only). */
+	/** Resets to empty (can be called on a root node or any other node to
+	 * clear that subtree only). */
 	void clear();
 
 	bool isNullNode() const;
@@ -384,8 +403,8 @@ class yaml
 	bool isSequence() const;
 	bool isMap() const;
 
-	/** For scalar nodes, returns its type, or typeid(void) if an empty node.
-	 * \exception std::exception If called on a map or sequence. */
+	/** For scalar nodes, returns its type, or typeid(void) if an empty
+	 * node. \exception std::exception If called on a map or sequence. */
 	const std::type_info& scalarType() const;
 
 	/** @} */
@@ -407,8 +426,8 @@ class yaml
 	scalar_t& asScalar();
 	const scalar_t& asScalar() const;
 
-	/** Returns 1 for null or scalar nodes, the number of children for sequence
-	 * or map nodes. */
+	/** Returns 1 for null or scalar nodes, the number of children for
+	 * sequence or map nodes. */
 	size_t size() const;
 
 	/** For a master yaml document, returns the root node; otherwise, the
@@ -474,7 +493,8 @@ class yaml
 		if (n->isNullNode()) return defaultValue;
 		if (!n->isMap())
 			THROW_EXCEPTION_FMT(
-				"getOrDefault() is only for map nodes, invoked on a node of "
+				"getOrDefault() is only for map nodes, invoked on a node "
+				"of "
 				"type: '%s'",
 				n->typeName().c_str());
 
@@ -489,7 +509,8 @@ class yaml
 		catch (const std::bad_any_cast& e)
 		{
 			throw std::logic_error(mrpt::format(
-				"getOrDefault(): Trying to access key `%s` holding type `%s` "
+				"getOrDefault(): Trying to access key `%s` holding type "
+				"`%s` "
 				"as the wrong type: `%s`",
 				key.c_str(), n->typeName().c_str(), e.what()));
 		}
@@ -532,8 +553,8 @@ class yaml
 	/** @name Internal proxy
 	 * @{ */
 
-	/** Returns the pointer to the referenced node data, if a proxy, or to the
-	 * root node otherwise. Will never return nullptr. */
+	/** Returns the pointer to the referenced node data, if a proxy, or to
+	 * the root node otherwise. Will never return nullptr. */
 	const node_t* dereferenceProxy() const;
 	node_t* dereferenceProxy();
 
@@ -563,8 +584,8 @@ class yaml
 	/** Returns a copy of the existing value of the given type, or tries to
 	 * convert it between easily-compatible types (e.g. double<->int,
 	 * string<->int).
-	 * \exception std::exception If the contained type does not  match and there
-	 * is no obvious conversion.
+	 * \exception std::exception If the contained type does not  match and
+	 * there is no obvious conversion.
 	 */
 	template <typename T>
 	T as() const
@@ -572,17 +593,17 @@ class yaml
 		return internal::implAsGetter<T>(*this);
 	}
 
-	/** Returns a ref to the existing or new value of the given type. If types
-	 * do not match, the old content will be discarded and a new variable
-	 * created into this scalar node.
-	 * \exception std::exception If accessing to a non-scalar node.
+	/** Returns a ref to the existing or new value of the given type. If
+	 * types do not match, the old content will be discarded and a new
+	 * variable created into this scalar node. \exception std::exception If
+	 * accessing to a non-scalar node.
 	 */
 	template <typename T>
 	T& asRef();
 
-	/** const version of asRef(). Unlike `as<T>()`, this version will NOT try to
-	 * convert between types if T does not match exactly the stored type, and
-	 * will raise an exception instead. */
+	/** const version of asRef(). Unlike `as<T>()`, this version will NOT
+	 * try to convert between types if T does not match exactly the stored
+	 * type, and will raise an exception instead. */
 	template <typename T>
 	const T& asRef() const;
 
@@ -602,7 +623,8 @@ class yaml
 
 	// Additional operator for "size_t", in systems/compilers where
 	// size_t != all other types above
-	// (e.g. OSX with clang, see https://stackoverflow.com/a/11603907/1631514 )
+	// (e.g. OSX with clang, see
+	// https://stackoverflow.com/a/11603907/1631514 )
 	template <
 		typename = std::enable_if<
 			!std::is_same_v<std::size_t, uint64_t> &&
@@ -640,7 +662,8 @@ class yaml
 		if (isNullNode()) node().d.emplace<map_t>();
 		ASSERTMSG_(
 			isMap(),
-			"<< operator with ValueKeyCommentPair requires a map (dictionary) "
+			"<< operator with ValueKeyCommentPair requires a map "
+			"(dictionary) "
 			"on the left hand.");
 		operator[](vc.keyname) = vc.value;
 		// keyComment:
@@ -672,16 +695,16 @@ class yaml
 	/** @name Leaf node comments API
 	 * @{ */
 
-	/** Returns true if the proxied node has an associated comment block, at any
-	 * location */
+	/** Returns true if the proxied node has an associated comment block, at
+	 * any location */
 	bool hasComment() const;
 
-	/** Returns true if the proxied node has an associated comment block at a
-	 * particular position */
+	/** Returns true if the proxied node has an associated comment block at
+	 * a particular position */
 	bool hasComment(CommentPosition pos) const;
 
-	/** Gets the comment associated to the proxied node. This version returns
-	 * the first comment, of all possible (top, right).
+	/** Gets the comment associated to the proxied node. This version
+	 * returns the first comment, of all possible (top, right).
 	 *
 	 * \exception std::exception If there is no comment attached.
 	 * \sa hasComment()
@@ -709,33 +732,33 @@ class yaml
 	/** @name Map key node comments API
 	 * @{ */
 
-	/** Maps only: returns true if the given key node has an associated comment
-	 * block, at any location.
-	 * \exception std::exception If called on a non-map or key does not exist.
+	/** Maps only: returns true if the given key node has an associated
+	 * comment block, at any location. \exception std::exception If called
+	 * on a non-map or key does not exist.
 	 */
 	bool keyHasComment(const std::string& key) const;
 
-	/** Maps only: Returns true if the given key has an associated comment block
-	 * at a particular position.
-	 * \exception std::exception If called on a non-map or key does not exist.
+	/** Maps only: Returns true if the given key has an associated comment
+	 * block at a particular position. \exception std::exception If called
+	 * on a non-map or key does not exist.
 	 */
 	bool keyHasComment(const std::string& key, CommentPosition pos) const;
 
-	/** Maps only: Gets the comment associated to the given key. This version
-	 * returns the first comment, of all possible (top, right).
+	/** Maps only: Gets the comment associated to the given key. This
+	 * version returns the first comment, of all possible (top, right).
 	 *
-	 * \exception std::exception If called on a non-map or key does not exist.
-	 * \exception std::exception If there is no comment attached.
-	 * \sa hasComment()
+	 * \exception std::exception If called on a non-map or key does not
+	 * exist. \exception std::exception If there is no comment attached. \sa
+	 * hasComment()
 	 */
 	const std::string& keyComment(const std::string& key) const;
 
 	/** Maps only: Gets the comment associated to the given key, at the
 	 * particular position. See code examples in mrpt::containers::yaml.
 	 *
-	 * \exception std::exception If called on a non-map or key does not exist.
-	 * \exception std::exception If there is no comment attached.
-	 * \sa hasComment()
+	 * \exception std::exception If called on a non-map or key does not
+	 * exist. \exception std::exception If there is no comment attached. \sa
+	 * hasComment()
 	 */
 	const std::string& keyComment(
 		const std::string& key, CommentPosition pos) const;
@@ -743,8 +766,8 @@ class yaml
 	/** Maps only: Sets the comment attached to a given key.
 	 * See code examples in mrpt::containers::yaml
 	 *
-	 * \exception std::exception If called on a non-map or key does not exist.
-	 * \sa hasComment()
+	 * \exception std::exception If called on a non-map or key does not
+	 * exist. \sa hasComment()
 	 */
 	void keyComment(
 		const std::string& key, const std::string& c,
@@ -812,8 +835,8 @@ class yaml
 };
 
 /** Prints a scalar, a part of a yaml tree, or the entire structure,
- * in YAML-like format. This version does NOT emit neither the YAML header nor
- * the final end line.
+ * in YAML-like format. This version does NOT emit neither the YAML header
+ * nor the final end line.
  *
  * \sa yaml::PrintAsYAML
  */
@@ -1124,7 +1147,20 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 	// 1) Exact match?
 	if (storedType == expectedType) return std::any_cast<const T&>(s);
 
-	// 2) Recognize double/float:
+	// 2) bool:
+	if constexpr (std::is_same_v<T, bool>)
+	{
+		if (storedType == typeid(std::string))
+		{
+			const auto str = implAnyAsGetter<std::string>(s);
+			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
+				str == "YES" || str == "true" || str == "True" ||
+				str == "TRUE" || str == "on" || str == "ON" || str == "On" ||
+				std::stoi(str) != 0;
+		}
+	}
+
+	// 3) Recognize double/float:
 	if constexpr (std::is_same_v<T, double> || std::is_same_v<T, float>)
 	{
 		if (storedType == typeid(double))
@@ -1139,7 +1175,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		if (!ss.fail()) return ret;
 	}
 
-	// 3) Integers. Recognize hex or octal prefixes with strtol()
+	// 4) Integers. Recognize hex or octal prefixes with strtol()
 	if constexpr (std::is_convertible_v<int, T>)
 	{
 		std::stringstream ss;
@@ -1171,7 +1207,7 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		}
 	}
 
-	// 4) Strings:
+	// 5) Strings:
 	if constexpr (std::is_convertible_v<std::string, T>)
 	{
 		if (expectedType == typeid(std::string))
@@ -1179,17 +1215,6 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 			std::stringstream ss;
 			yaml::internalPrintAsYAML(s, ss, {}, {});
 			return ss.str();
-		}
-	}
-	// 5) bool:
-	if constexpr (std::is_same_v<T, bool>)
-	{
-		if (storedType == typeid(std::string))
-		{
-			const auto str = implAnyAsGetter<std::string>(s);
-			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
-				str == "YES" || str == "true" || str == "True" ||
-				str == "TRUE" || str == "on" || str == "ON" || str == "On";
 		}
 	}
 

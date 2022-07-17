@@ -17,7 +17,9 @@
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/random.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::graphs;

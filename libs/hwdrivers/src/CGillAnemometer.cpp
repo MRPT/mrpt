@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CGillAnemometer.h>
 #include <mrpt/system/datetime.h>
 
+#include <chrono>
 #include <iostream>
 #include <iterator>
 #include <sstream>

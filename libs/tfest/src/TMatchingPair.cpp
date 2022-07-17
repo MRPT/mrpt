@@ -11,6 +11,7 @@
 //
 #include <mrpt/core/format.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/tfest/TMatchingPair.h>
 
@@ -89,6 +90,14 @@ T TMatchingPairListTempl<T>::overallSquareError(const CPose2D& q) const
 }
 
 template <typename T>
+T TMatchingPairListTempl<T>::overallSquareError(const CPose3D& q) const
+{
+	vector<T> errs(base_t::size());
+	squareErrorVector(q, errs);
+	return std::accumulate(errs.begin(), errs.end(), T(0));
+}
+
+template <typename T>
 T TMatchingPairListTempl<T>::overallSquareErrorAndPoints(
 	const CPose2D& q, vector<T>& xs, vector<T>& ys) const
 {
@@ -126,6 +135,17 @@ void TMatchingPairListTempl<T>::squareErrorVector(
 		T yy = qy + csin * corresp->local.x + ccos * corresp->local.y;
 		*e_i = square(corresp->global.x - xx) + square(corresp->global.y - yy);
 	}
+}
+
+template <typename T>
+void TMatchingPairListTempl<T>::squareErrorVector(
+	const CPose3D& q, vector<T>& out_sqErrs) const
+{
+	out_sqErrs.clear();
+	out_sqErrs.reserve(base_t::size());
+
+	for (const auto& c : *this)
+		out_sqErrs.push_back(c.global.sqrDistanceTo(q.composePoint(c.local)));
 }
 
 template <typename T>

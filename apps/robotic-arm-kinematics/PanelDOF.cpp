@@ -44,8 +44,7 @@ PanelDOF::PanelDOF(wxWindow* parent, wxWindowID id)
 	Label1->Disable();
 	Label1->SetBackgroundColour(
 		wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-	FlexGridSizer1->Add(
-		Label1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer1->Add(Label1, 1, wxEXPAND, 2);
 	Slider1 = new wxSlider(
 		this, ID_SLIDER1, 0, -180, 180, wxDefaultPosition, wxSize(35, 150),
 		wxSL_VERTICAL | wxSL_INVERSE, wxDefaultValidator, _T("ID_SLIDER1"));

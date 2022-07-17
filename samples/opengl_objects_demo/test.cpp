@@ -15,7 +15,10 @@
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 
+#include <Eigen/Dense>	// transpose()
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;
@@ -447,7 +450,10 @@ void TestOpenGLObjects()
 		const std::string texture_file = mrpt::system::getShareMRPTDir() +
 			"datasets/sample-texture-terrain.jpg"s;
 
-		mrpt::img::CImage im;
+		const std::string texture_file2 = mrpt::system::getShareMRPTDir() +
+			"datasets/sample-texture-corners.jpg"s;
+
+		mrpt::img::CImage im, im2;
 
 		// obj1:
 		obj1->setZ(Z);
@@ -487,6 +493,34 @@ void TestOpenGLObjects()
 			obj4->setLocation(off_x, 3, 0);
 			obj4->cullFaces(mrpt::opengl::TCullFace::BACK);
 			theScene->insert(obj4);
+		}
+
+		mrpt::math::CMatrixDynamic<float> Z2(H, W);
+
+		if (im2.loadFromFile(texture_file2))
+		{
+			im2.getAsMatrix(Z2);
+			Z2 = Z2.transpose().eval();	 // mesh assumes z(x,y) vs z(y,x)!
+
+			opengl::CMesh::Ptr obj = opengl::CMesh::Create(
+				false /*transparency*/,	 //
+				-1, 1,	// x: Min Max
+				1, -1  // y: Min Max
+			);
+			obj->assignImageAndZ(im2, Z2);
+			obj->setLocation(off_x, 6, 0);
+			theScene->insert(obj);
+		}
+		if (im2.loadFromFile(texture_file2))
+		{
+			opengl::CMesh::Ptr obj = opengl::CMesh::Create(
+				false /*transparency*/,	 //
+				1, -1,	// x: Min Max
+				-1, 1  // y: Min Max
+			);
+			obj->assignImageAndZ(im2, Z2);
+			obj->setLocation(off_x, 9, 0);
+			theScene->insert(obj);
 		}
 
 		{

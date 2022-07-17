@@ -229,6 +229,7 @@ CRenderizable& CRenderizable::setColor_u8(const mrpt::img::TColor& c)
 	m_color.G = c.G;
 	m_color.B = c.B;
 	m_color.A = c.A;
+	notifyChange();
 	return *this;
 }
 

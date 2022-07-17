@@ -17,6 +17,7 @@
 #include <mrpt/3rdparty/do_opencv_includes.h>
 
 #include <atomic>
+#include <chrono>
 #include <mutex>
 #include <thread>
 

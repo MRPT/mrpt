@@ -176,7 +176,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 		Panel1, ID_STATICLINE3, wxDefaultPosition, wxSize(1, -1), wxLI_VERTICAL,
 		_T("ID_STATICLINE3"));
 	FlexGridSizer2->Add(
-		StaticLine3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
+		StaticLine3, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	btnLoad = new wxCustomButton(
 		Panel1, ID_BUTTON2, _("Load state..."),
 		wxArtProvider::GetBitmap(
@@ -207,7 +207,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 		Panel1, ID_STATICLINE1, wxDefaultPosition, wxSize(1, -1), wxLI_VERTICAL,
 		_T("ID_STATICLINE1"));
 	FlexGridSizer2->Add(
-		StaticLine1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
+		StaticLine1, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	btnStart = new wxCustomButton(
 		Panel1, ID_BUTTON4, _("START"),
 		wxArtProvider::GetBitmap(
@@ -238,7 +238,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 		Panel1, ID_STATICLINE2, wxDefaultPosition, wxSize(1, -1), wxLI_VERTICAL,
 		_T("ID_STATICLINE2"));
 	FlexGridSizer2->Add(
-		StaticLine2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
+		StaticLine2, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	btnShowLogWin = new wxCustomButton(
 		Panel1, ID_BUTTON12, _("Show log"),
 		wxArtProvider::GetBitmap(
@@ -253,8 +253,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 	btnShowLogWin->SetBitmapMargin(wxSize(-1, 3));
 	FlexGridSizer2->Add(
 		btnShowLogWin, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
-	FlexGridSizer2->Add(
-		-1, -1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
+	FlexGridSizer2->Add(-1, -1, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	btnAbout = new wxCustomButton(
 		Panel1, ID_BUTTON10, _("About..."),
 		wxArtProvider::GetBitmap(
@@ -284,8 +283,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 	Panel1->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(Panel1);
 	FlexGridSizer2->SetSizeHints(Panel1);
-	FlexGridSizer1->Add(
-		Panel1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+	FlexGridSizer1->Add(Panel1, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	Panel2 = new wxPanel(
 		this, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL2"));
@@ -312,15 +310,14 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 		panConfig, ID_TEXTCTRL1, _("dataset.rawlog"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	FlexGridSizer17->Add(
-		edInputRawlog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
+		edInputRawlog, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	btnPickRawlog = new wxButton(
 		panConfig, ID_BUTTON11, _("Pick..."), wxDefaultPosition, wxDefaultSize,
 		0, wxDefaultValidator, _T("ID_BUTTON11"));
 	FlexGridSizer17->Add(
 		btnPickRawlog, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer16->Add(
-		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		0);
+		FlexGridSizer17, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	FlexGridSizer18 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer18->AddGrowableCol(0);
 	FlexGridSizer18->AddGrowableRow(1);
@@ -484,13 +481,12 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 			wxALWAYS_SHOW_SB,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	wxFont edRestParamsFont(
-		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxNORMAL);
+		8, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
 	edRestParams->SetFont(edRestParamsFont);
 	FlexGridSizer18->Add(
-		edRestParams, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);
+		edRestParams, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);
 	FlexGridSizer16->Add(
-		FlexGridSizer18, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		0);
+		FlexGridSizer18, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	panConfig->SetSizer(FlexGridSizer16);
 	FlexGridSizer16->Fit(panConfig);
 	FlexGridSizer16->SetSizeHints(panConfig);
@@ -525,7 +521,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 		cbHypos, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
 	FlexGridSizer5->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		FlexGridSizer7, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	Notebook2 = new wxNotebook(
 		Panel3, ID_NOTEBOOK2, wxDefaultPosition, wxDefaultSize, wxNB_MULTILINE,
 		_T("ID_NOTEBOOK2"));
@@ -541,7 +537,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 			wxHSCROLL,
 		wxDefaultValidator, _T("ID_TREECTRL1"));
 	FlexGridSizer15->Add(
-		treeView, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		treeView, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	panTreeView->SetSizer(FlexGridSizer15);
 	FlexGridSizer15->Fit(panTreeView);
 	FlexGridSizer15->SetSizeHints(panTreeView);
@@ -555,7 +551,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 	Notebook2->AddPage(Panel15, _("All nodes"), false);
 	Notebook2->AddPage(Panel14, _("All arcs"), false);
 	FlexGridSizer5->Add(
-		Notebook2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);
+		Notebook2, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);
 	Panel8 = new wxPanel(
 		Panel3, ID_PANEL8, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_PANEL8"));
@@ -594,7 +590,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer6->Add(
 		btnImportArea, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	FlexGridSizer14->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		FlexGridSizer6, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	FlexGridSizer9 = new wxFlexGridSizer(0, 3, 0, 0);
 	btnAddNode = new wxCustomButton(
 		Panel12, ID_BUTTON8, _("Add node..."), wxNullBitmap, wxDefaultPosition,
@@ -612,17 +608,16 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 	btnAddArc->SetBitmapMargin(wxSize(-1, 3));
 	FlexGridSizer9->Add(btnAddArc, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 5);
 	FlexGridSizer14->Add(
-		FlexGridSizer9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		FlexGridSizer9, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	Panel12->SetSizer(FlexGridSizer14);
 	FlexGridSizer14->Fit(Panel12);
 	FlexGridSizer14->SetSizeHints(Panel12);
 	FlexGridSizer8->Add(
-		Panel12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		Panel12, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	Panel8->SetSizer(FlexGridSizer8);
 	FlexGridSizer8->Fit(Panel8);
 	FlexGridSizer8->SetSizeHints(Panel8);
-	FlexGridSizer5->Add(
-		Panel8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+	FlexGridSizer5->Add(Panel8, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	Panel3->SetSizer(FlexGridSizer5);
 	FlexGridSizer5->Fit(Panel3);
 	FlexGridSizer5->SetSizeHints(Panel3);
@@ -665,13 +660,11 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 		Panel7, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize,
 		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
 	FlexGridSizer11->Add(
-		m_glGlobalHMTMap, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		0);
+		m_glGlobalHMTMap, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	Panel7->SetSizer(FlexGridSizer11);
 	FlexGridSizer11->Fit(Panel7);
 	FlexGridSizer11->SetSizeHints(Panel7);
-	FlexGridSizer10->Add(
-		Panel7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer10->Add(Panel7, 1, wxEXPAND, 0);
 	Panel6->SetSizer(FlexGridSizer10);
 	FlexGridSizer10->SetSizeHints(Panel6);
 	Panel10 = new wxPanel(
@@ -704,36 +697,32 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent, wxWindowID id)
 		Panel11, ID_CUSTOM1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_CUSTOM1"));
 	FlexGridSizer13->Add(
-		m_glLocalArea, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+		m_glLocalArea, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	Panel11->SetSizer(FlexGridSizer13);
 	FlexGridSizer13->Fit(Panel11);
 	FlexGridSizer13->SetSizeHints(Panel11);
-	FlexGridSizer12->Add(
-		Panel11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(Panel11, 1, wxEXPAND, 0);
 	Panel10->SetSizer(FlexGridSizer12);
 	FlexGridSizer12->SetSizeHints(Panel10);
 	SplitterWindow2->SplitHorizontally(Panel6, Panel10);
-	BoxSizer1->Add(
-		SplitterWindow2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	BoxSizer1->Add(SplitterWindow2, 1, wxEXPAND, 0);
 	Panel4->SetSizer(BoxSizer1);
 	BoxSizer1->Fit(Panel4);
 	BoxSizer1->SetSizeHints(Panel4);
 	SplitterWindow1->SplitVertically(Panel3, Panel4);
 	FlexGridSizer4->Add(
-		SplitterWindow1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		0);
+		SplitterWindow1, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	panMapView->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->Fit(panMapView);
 	FlexGridSizer4->SetSizeHints(panMapView);
 	Notebook1->AddPage(panConfig, _("SLAM parameters"), false);
 	Notebook1->AddPage(panMapView, _("HMT-MAP view"), true);
 	FlexGridSizer3->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);
+		Notebook1, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 1);
 	Panel2->SetSizer(FlexGridSizer3);
 	FlexGridSizer3->Fit(Panel2);
 	FlexGridSizer3->SetSizeHints(Panel2);
-	FlexGridSizer1->Add(
-		Panel2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
+	FlexGridSizer1->Add(Panel2, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();

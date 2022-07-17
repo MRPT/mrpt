@@ -29,6 +29,9 @@
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 
+#include <chrono>
+#include <thread>
+
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;

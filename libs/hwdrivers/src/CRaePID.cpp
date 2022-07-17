@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/system/datetime.h>
 
+#include <chrono>
 #include <iostream>
 #include <iterator>
 #include <memory>

@@ -38,6 +38,9 @@ accurate.
 #include <mrpt/tfest/se3.h>
 #include <mrpt/vision/tracking.h>
 
+#include <chrono>
+#include <thread>
+
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::hwdrivers;

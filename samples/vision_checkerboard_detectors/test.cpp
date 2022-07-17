@@ -12,7 +12,9 @@
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt;

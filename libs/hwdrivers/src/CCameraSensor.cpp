@@ -25,7 +25,9 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/thread_name.h>
 
+#include <chrono>
 #include <memory>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

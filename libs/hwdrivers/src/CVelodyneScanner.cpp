@@ -17,6 +17,7 @@
 #include <mrpt/system/datetime.h>  // timeDifference
 #include <mrpt/system/filesystem.h>
 
+#include <chrono>
 #include <iostream>
 #include <thread>
 

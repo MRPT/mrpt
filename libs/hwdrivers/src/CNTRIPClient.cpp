@@ -17,8 +17,10 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/string_utils.h>
 
+#include <chrono>
 #include <cstring>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::comms;

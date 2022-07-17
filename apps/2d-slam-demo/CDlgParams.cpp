@@ -169,8 +169,7 @@ CDlgParams::CDlgParams(
 	FlexGridSizer4->Add(
 		edIKFiters, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	rbIKFdavison = new wxRadioButton(
 		this, ID_RADIOBUTTON4, _("IKF (one scalar at a time)"),
 		wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator,
@@ -196,8 +195,7 @@ CDlgParams::CDlgParams(
 	cbJacobObs->SetValue(false);
 	FlexGridSizer3->Add(cbJacobObs, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	FlexGridSizer3->Add(-1, -1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	StaticBoxSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	FlexGridSizer16->Add(
 		StaticBoxSizer1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	StaticBoxSizer3 =
@@ -248,8 +246,7 @@ CDlgParams::CDlgParams(
 	FlexGridSizer10->Add(
 		edStdOdomPhi, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer3->Add(
-		FlexGridSizer10, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer3->Add(FlexGridSizer10, 1, wxEXPAND, 0);
 	FlexGridSizer16->Add(
 		StaticBoxSizer3, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	StaticBoxSizer5 =
@@ -265,8 +262,7 @@ CDlgParams::CDlgParams(
 		panelDA, ID_RADIOBOX3, _("Indiv. compat. gating"), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL,
 		wxDefaultValidator, _T("ID_RADIOBOX3"));
-	FlexGridSizer9->Add(
-		rbICmetric, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer9->Add(rbICmetric, 1, wxEXPAND, 5);
 	FlexGridSizer9->Add(-1, -1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	StaticText17 = new wxStaticText(
 		panelDA, ID_STATICTEXT17, _("Chi2 threshold (inv.cdf) [0-1]"),
@@ -294,8 +290,7 @@ CDlgParams::CDlgParams(
 		panelDA, ID_RADIOBOX1, _("D.A. method  "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_2, 1, wxRA_VERTICAL,
 		wxDefaultValidator, _T("ID_RADIOBOX1"));
-	FlexGridSizer9->Add(
-		rbDAMethod, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer9->Add(rbDAMethod, 1, wxEXPAND, 5);
 	FlexGridSizer9->Add(-1, -1, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	wxString __wxRadioBoxChoices_3[2] = {
 		_("Mahalanobis"), _("Matching likelihood")};
@@ -303,17 +298,14 @@ CDlgParams::CDlgParams(
 		panelDA, ID_RADIOBOX2, _("D.A. Distance measure "), wxDefaultPosition,
 		wxDefaultSize, 2, __wxRadioBoxChoices_3, 1, wxRA_VERTICAL,
 		wxDefaultValidator, _T("ID_RADIOBOX2"));
-	FlexGridSizer9->Add(
-		rbDAMetric, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer9->Add(rbDAMetric, 1, wxEXPAND, 5);
 	panelDA->SetSizer(FlexGridSizer9);
 	FlexGridSizer9->Fit(panelDA);
 	FlexGridSizer9->SetSizeHints(panelDA);
-	StaticBoxSizer5->Add(
-		panelDA, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer5->Add(panelDA, 1, wxEXPAND, 0);
 	FlexGridSizer16->Add(
 		StaticBoxSizer5, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer16, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer16, 1, wxEXPAND, 0);
 	FlexGridSizer17 = new wxFlexGridSizer(4, 1, 0, 0);
 	FlexGridSizer17->AddGrowableRow(3);
 	StaticBoxSizer2 =
@@ -369,8 +361,7 @@ CDlgParams::CDlgParams(
 	FlexGridSizer7->Add(
 		edSeed, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer6->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer6->Add(FlexGridSizer7, 1, wxEXPAND, 5);
 	rbMapFile = new wxRadioButton(
 		this, ID_RADIOBUTTON7, _("Text file..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON7"));
@@ -381,20 +372,16 @@ CDlgParams::CDlgParams(
 	edMapFile = new wxTextCtrl(
 		this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer8->Add(
-		edMapFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer8->Add(edMapFile, 1, wxEXPAND, 5);
 	btnBrowse = new wxButton(
 		this, ID_BUTTON3, _("Browse..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON3"));
 	FlexGridSizer8->Add(
 		btnBrowse, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer6->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer5->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	StaticBoxSizer2->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(FlexGridSizer8, 1, wxEXPAND, 5);
+	FlexGridSizer5->Add(FlexGridSizer6, 1, wxEXPAND, 0);
+	StaticBoxSizer2->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	FlexGridSizer17->Add(
 		StaticBoxSizer2, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	StaticBoxSizer4 =
@@ -412,8 +399,7 @@ CDlgParams::CDlgParams(
 	FlexGridSizer13->Add(
 		cbSensorDistin, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer12->Add(
-		FlexGridSizer13, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(FlexGridSizer13, 1, wxEXPAND, 0);
 	FlexGridSizer14 = new wxFlexGridSizer(0, 4, 0, 0);
 	StaticText11 = new wxStaticText(
 		this, ID_STATICTEXT11, _("Range noise sigma (m):"), wxDefaultPosition,
@@ -468,8 +454,7 @@ CDlgParams::CDlgParams(
 	FlexGridSizer14->Add(
 		edFOV, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer12->Add(
-		FlexGridSizer14, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(FlexGridSizer14, 1, wxEXPAND, 0);
 	StaticText13 = new wxStaticText(
 		this, ID_STATICTEXT13, _("Sensor pose on the robot:"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT13"));
@@ -513,8 +498,7 @@ CDlgParams::CDlgParams(
 	FlexGridSizer15->Add(
 		edSenPhi, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer12->Add(
-		FlexGridSizer15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(FlexGridSizer15, 1, wxEXPAND, 0);
 	StaticBoxSizer7 =
 		new wxStaticBoxSizer(wxHORIZONTAL, this, _(" Spurious readings: "));
 	FlexGridSizer20 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -555,15 +539,12 @@ CDlgParams::CDlgParams(
 		edSpuriousStd, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL,
 		5);
 	FlexGridSizer20->Add(
-		FlexGridSizer21, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		0);
+		FlexGridSizer21, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	StaticBoxSizer7->Add(
 		FlexGridSizer20, 1, wxALL | wxALIGN_LEFT | wxALIGN_BOTTOM, 0);
 	FlexGridSizer12->Add(
-		StaticBoxSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM,
-		2);
-	StaticBoxSizer4->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+		StaticBoxSizer7, 1, wxEXPAND | wxALIGN_LEFT | wxALIGN_BOTTOM, 2);
+	StaticBoxSizer4->Add(FlexGridSizer12, 1, wxEXPAND, 0);
 	FlexGridSizer17->Add(
 		StaticBoxSizer4, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	StaticBoxSizer6 = new wxStaticBoxSizer(
@@ -612,10 +593,8 @@ CDlgParams::CDlgParams(
 	FlexGridSizer18->Add(
 		StaticText22, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer6->Add(
-		FlexGridSizer18, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer17->Add(
-		StaticBoxSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	StaticBoxSizer6->Add(FlexGridSizer18, 1, wxEXPAND, 0);
+	FlexGridSizer17->Add(StaticBoxSizer6, 1, wxEXPAND, 5);
 	FlexGridSizer2 = new wxFlexGridSizer(0, 3, 0, 0);
 	btnOk = new wxButton(
 		this, ID_BUTTON1, _("Accept"), wxDefaultPosition, wxDefaultSize, 0,
@@ -631,8 +610,7 @@ CDlgParams::CDlgParams(
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer17->Add(
 		FlexGridSizer2, 1, wxALL | wxALIGN_RIGHT | wxALIGN_BOTTOM, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer17, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);

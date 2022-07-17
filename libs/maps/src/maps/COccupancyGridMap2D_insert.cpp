@@ -217,23 +217,23 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				}
 
 				// Add an extra margin:
-				float securMargen = 15 * resolution;
+				float securMargen = 15 * m_resolution;
 
-				if (new_x_max > x_max - securMargen)
+				if (new_x_max > m_xMax - securMargen)
 					new_x_max += 2 * securMargen;
 				else
-					new_x_max = x_max;
-				if (new_x_min < x_min + securMargen) new_x_min -= 2;
+					new_x_max = m_xMax;
+				if (new_x_min < m_xMin + securMargen) new_x_min -= 2;
 				else
-					new_x_min = x_min;
+					new_x_min = m_xMin;
 
-				if (new_y_max > y_max - securMargen)
+				if (new_y_max > m_yMax - securMargen)
 					new_y_max += 2 * securMargen;
 				else
-					new_y_max = y_max;
-				if (new_y_min < y_min + securMargen) new_y_min -= 2;
+					new_y_max = m_yMax;
+				if (new_y_min < m_yMin + securMargen) new_y_min -= 2;
 				else
-					new_y_min = y_min;
+					new_y_min = m_yMin;
 
 				// -----------------------
 				//   Resize to make room:
@@ -241,8 +241,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				resizeGrid(new_x_min, new_x_max, new_y_min, new_y_max, 0.5);
 
 				// For updateCell_fast methods:
-				cellType* theMapArray = &map[0];
-				unsigned theMapSize_x = size_x;
+				cellType* theMapArray = &m_map[0];
+				unsigned theMapSize_x = m_size_x;
 
 				int cx0 =
 					x2idx(px);	// Remember: This must be after the resizeGrid!!
@@ -264,8 +264,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 
 					// The x> comparison implicitly holds if x<0
 					ASSERT_(
-						static_cast<unsigned int>(trg_cx) < size_x &&
-						static_cast<unsigned int>(trg_cy) < size_y);
+						static_cast<unsigned int>(trg_cx) < m_size_x &&
+						static_cast<unsigned int>(trg_cy) < m_size_y);
 
 					// Use "fractional integers" to approximate float operations
 					//  during the ray tracing:
@@ -383,23 +383,23 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				}
 
 				// Add an extra margin:
-				float securMargen = 15 * resolution;
+				float securMargen = 15 * m_resolution;
 
-				if (new_x_max > x_max - securMargen)
+				if (new_x_max > m_xMax - securMargen)
 					new_x_max += 2 * securMargen;
 				else
-					new_x_max = x_max;
-				if (new_x_min < x_min + securMargen) new_x_min -= 2;
+					new_x_max = m_xMax;
+				if (new_x_min < m_xMin + securMargen) new_x_min -= 2;
 				else
-					new_x_min = x_min;
+					new_x_min = m_xMin;
 
-				if (new_y_max > y_max - securMargen)
+				if (new_y_max > m_yMax - securMargen)
 					new_y_max += 2 * securMargen;
 				else
-					new_y_max = y_max;
-				if (new_y_min < y_min + securMargen) new_y_min -= 2;
+					new_y_max = m_yMax;
+				if (new_y_min < m_yMin + securMargen) new_y_min -= 2;
 				else
-					new_y_min = y_min;
+					new_y_min = m_yMin;
 
 				// -----------------------
 				//   Resize to make room:
@@ -407,8 +407,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				resizeGrid(new_x_min, new_x_max, new_y_min, new_y_max, 0.5);
 
 				// For updateCell_fast methods:
-				cellType* theMapArray = &map[0];
-				unsigned theMapSize_x = size_x;
+				cellType* theMapArray = &m_map[0];
+				unsigned theMapSize_x = m_size_x;
 
 				// int  cx0 = x2idx(px);		// Remember: This must be after
 				// the
@@ -456,9 +456,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 						else
 							continue;  // Nothing to do
 					}
-					if (theR < resolution)
+					if (theR < m_resolution)
 						continue;  // Range must be larger than a cell...
-					theR -= resolution;	 // Remove one cell of length, which
+					theR -= m_resolution;  // Remove one cell of length, which
 					// will be filled with "occupied"
 					// later.
 
@@ -491,14 +491,14 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 					// The x> comparison implicitly holds if x<0
 					ASSERT_(
-						static_cast<unsigned int>(P0.cx) < size_x &&
-						static_cast<unsigned int>(P0.cy) < size_y);
+						static_cast<unsigned int>(P0.cx) < m_size_x &&
+						static_cast<unsigned int>(P0.cy) < m_size_y);
 					ASSERT_(
-						static_cast<unsigned int>(P1.cx) < size_x &&
-						static_cast<unsigned int>(P1.cy) < size_y);
+						static_cast<unsigned int>(P1.cx) < m_size_x &&
+						static_cast<unsigned int>(P1.cy) < m_size_y);
 					ASSERT_(
-						static_cast<unsigned int>(P2.cx) < size_x &&
-						static_cast<unsigned int>(P2.cy) < size_y);
+						static_cast<unsigned int>(P2.cx) < m_size_x &&
+						static_cast<unsigned int>(P2.cy) < m_size_y);
 #endif
 
 					struct
@@ -715,7 +715,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					if (o.getScanRangeValidity(idx) &&
 						o.getScanRange(idx) < maxDistanceInsertion)
 					{
-						theR += resolution;
+						theR += m_resolution;
 
 						P1.x = px + cos(A - dA_2) * theR;
 						P1.y = py + sin(A - dA_2) * theR;
@@ -731,11 +731,11 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 						// The x> comparison implicitly holds if x<0
 						ASSERT_(
-							static_cast<unsigned int>(P1.cx) < size_x &&
-							static_cast<unsigned int>(P1.cy) < size_y);
+							static_cast<unsigned int>(P1.cx) < m_size_x &&
+							static_cast<unsigned int>(P1.cy) < m_size_y);
 						ASSERT_(
-							static_cast<unsigned int>(P2.cx) < size_x &&
-							static_cast<unsigned int>(P2.cy) < size_y);
+							static_cast<unsigned int>(P2.cx) < m_size_x &&
+							static_cast<unsigned int>(P2.cy) < m_size_y);
 #endif
 
 						// Special case: Only one cell:
@@ -902,21 +902,21 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			}
 
 			// Add an extra margin:
-			float securMargen = 15 * resolution;
+			float securMargen = 15 * m_resolution;
 
-			if (new_x_max > x_max - securMargen) new_x_max += 2 * securMargen;
+			if (new_x_max > m_xMax - securMargen) new_x_max += 2 * securMargen;
 			else
-				new_x_max = x_max;
-			if (new_x_min < x_min + securMargen) new_x_min -= 2;
+				new_x_max = m_xMax;
+			if (new_x_min < m_xMin + securMargen) new_x_min -= 2;
 			else
-				new_x_min = x_min;
+				new_x_min = m_xMin;
 
-			if (new_y_max > y_max - securMargen) new_y_max += 2 * securMargen;
+			if (new_y_max > m_yMax - securMargen) new_y_max += 2 * securMargen;
 			else
-				new_y_max = y_max;
-			if (new_y_min < y_min + securMargen) new_y_min -= 2;
+				new_y_max = m_yMax;
+			if (new_y_min < m_yMin + securMargen) new_y_min -= 2;
 			else
-				new_y_min = y_min;
+				new_y_min = m_yMin;
 
 			// -----------------------
 			//   Resize to make room:
@@ -924,8 +924,8 @@ bool COccupancyGridMap2D::internal_insertObservation(
 			resizeGrid(new_x_min, new_x_max, new_y_min, new_y_max, 0.5);
 
 			// For updateCell_fast methods:
-			cellType* theMapArray = &map[0];
-			unsigned theMapSize_x = size_x;
+			cellType* theMapArray = &m_map[0];
+			unsigned theMapSize_x = m_size_x;
 
 			// int  cx0 = x2idx(px);		// Remember: This must be after the
 			// resizeGrid!!
@@ -964,9 +964,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					else
 						continue;  // Nothing to do
 				}
-				if (theR < resolution)
+				if (theR < m_resolution)
 					continue;  // Range must be larger than a cell...
-				theR -= resolution;	 // Remove one cell of length, which will be
+				theR -=
+					m_resolution;  // Remove one cell of length, which will be
 				// filled with "occupied" later.
 
 				/* ---------------------------------------------------------
@@ -997,14 +998,14 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 				// The x> comparison implicitly holds if x<0
 				ASSERT_(
-					static_cast<unsigned int>(P0.cx) < size_x &&
-					static_cast<unsigned int>(P0.cy) < size_y);
+					static_cast<unsigned int>(P0.cx) < m_size_x &&
+					static_cast<unsigned int>(P0.cy) < m_size_y);
 				ASSERT_(
-					static_cast<unsigned int>(P1.cx) < size_x &&
-					static_cast<unsigned int>(P1.cy) < size_y);
+					static_cast<unsigned int>(P1.cx) < m_size_x &&
+					static_cast<unsigned int>(P1.cy) < m_size_y);
 				ASSERT_(
-					static_cast<unsigned int>(P2.cx) < size_x &&
-					static_cast<unsigned int>(P2.cy) < size_y);
+					static_cast<unsigned int>(P2.cx) < m_size_x &&
+					static_cast<unsigned int>(P2.cy) < m_size_y);
 #endif
 
 				struct
@@ -1218,7 +1219,7 @@ bool COccupancyGridMap2D::internal_insertObservation(
 				// ----------------------------------------------------
 				if (o.sensedData[idx].sensedDistance < maxDistanceInsertion)
 				{
-					theR += resolution;
+					theR += m_resolution;
 
 					P1.x = px + cos(A - dA_2) * theR;
 					P1.y = py + sin(A - dA_2) * theR;
@@ -1234,11 +1235,11 @@ bool COccupancyGridMap2D::internal_insertObservation(
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 					// The x> comparison implicitly holds if x<0
 					ASSERT_(
-						static_cast<unsigned int>(P1.cx) < size_x &&
-						static_cast<unsigned int>(P1.cy) < size_y);
+						static_cast<unsigned int>(P1.cx) < m_size_x &&
+						static_cast<unsigned int>(P1.cy) < m_size_y);
 					ASSERT_(
-						static_cast<unsigned int>(P2.cx) < size_x &&
-						static_cast<unsigned int>(P2.cy) < size_y);
+						static_cast<unsigned int>(P2.cx) < m_size_x &&
+						static_cast<unsigned int>(P2.cy) < m_size_y);
 #endif
 
 					// Special case: Only one cell:

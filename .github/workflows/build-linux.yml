@@ -20,27 +20,30 @@ jobs:
         # Github Actions requires a single row to be added to the build matrix.
         # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
         name: [
-          ubuntu-18.04-gcc,
+          ubuntu-22.04-gcc,
           ubuntu-latest-clang,
           ubuntu-latest-gcc
         ]
 
         build_type: [ Release ]
         include:
-          - name: ubuntu-18.04-gcc
-            os: ubuntu-18.04
+          - name: ubuntu-22.04-gcc
+            os: ubuntu-22.04
             compiler: gcc
             coverage: OFF
-
+            extra_pkgs_to_install: libdc1394-dev
+            
           - name: ubuntu-latest-clang
             os: ubuntu-latest
             compiler: clang
             coverage: OFF
+            extra_pkgs_to_install: libdc1394-22-dev
 
           - name: ubuntu-latest-gcc
             os: ubuntu-latest
             compiler: gcc
             coverage: ON
+            extra_pkgs_to_install: libdc1394-22-dev
 
     steps:
       - name: Checkout
@@ -62,11 +65,13 @@ jobs:
                            libglu1-mesa-dev libqt5opengl5-dev qtbase5-dev \
                            libxrandr-dev libxxf86vm-dev \
                            libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
-                           libdc1394-22-dev libavformat-dev libswscale-dev libpcap-dev \
+                           libavformat-dev libswscale-dev libpcap-dev \
                            liboctomap-dev libopenni2-dev \
                            libtinyxml2-dev \
                            yamllint
-
+                           
+          sudo apt install ${{ matrix.extra_pkgs_to_install }}
+          
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
             sudo apt install libicu-dev libsimpleini-dev
             # to enable pymrpt:

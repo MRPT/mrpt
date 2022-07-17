@@ -125,8 +125,7 @@ CScanAnimation::CScanAnimation(
 	FlexGridSizer4a->Add(
 		btnSaveScene, 1, wxALL | wxALIGN_BOTTOM | wxALIGN_CENTER_HORIZONTAL, 5);
 
-	FlexGridSizer4->Add(
-		FlexGridSizer4a, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP);
+	FlexGridSizer4->Add(FlexGridSizer4a, 1, wxEXPAND);
 
 	FlexGridSizer4b = new wxFlexGridSizer(1, 2, 0, 0);
 
@@ -143,8 +142,7 @@ CScanAnimation::CScanAnimation(
 	FlexGridSizer4b->Add(
 		edDelay, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer4->Add(
-		FlexGridSizer4b, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP);
+	FlexGridSizer4->Add(FlexGridSizer4b, 1, wxEXPAND);
 
 	btnVizOptions = new wxButton(
 		this, ID_BUTTON6, _("Visual options..."), wxDefaultPosition,
@@ -159,8 +157,7 @@ CScanAnimation::CScanAnimation(
 		StaticText3, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_TOP, 5);
 	lstObsLabels = new wxCheckListBox(
 		this, ID_LIST_OBS_LABELS, wxDefaultPosition, wxDefaultSize, {});
-	FlexGridSizer4->Add(
-		lstObsLabels, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP);
+	FlexGridSizer4->Add(lstObsLabels, 1, wxEXPAND);
 
 	auto FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
 	auto btnCheckAll = new wxButton(
@@ -177,21 +174,17 @@ CScanAnimation::CScanAnimation(
 		btnCheckNone, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 
-	FlexGridSizer4->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 
-	FlexGridSizer1->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	FlexGridSizer2 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer2->AddGrowableCol(0);
 	FlexGridSizer2->AddGrowableRow(0);
 	m_plot3D = new CMyGLCanvas(
 		this, ID_XY_GLCANVAS, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL,
 		_T("ID_XY_GLCANVAS"));
-	FlexGridSizer2->Add(
-		m_plot3D, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(m_plot3D, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer6 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -199,10 +192,8 @@ CScanAnimation::CScanAnimation(
 	slPos = new wxSlider(
 		this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer6->Add(
-		slPos, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(slPos, 1, wxEXPAND, 5);
+	FlexGridSizer3->Add(FlexGridSizer6, 1, wxEXPAND, 0);
 	FlexGridSizer7 = new wxFlexGridSizer(1, 5, 0, 0);
 	FlexGridSizer7->AddGrowableCol(4);
 	StaticText1 = new wxStaticText(
@@ -237,12 +228,10 @@ CScanAnimation::CScanAnimation(
 		wxDefaultValidator, _T("ID_TEXTCTRL11"));
 	edTimestamp->SetValue("Timestamp: ");
 	edTimestamp->SetEditable(false);
-	FlexGridSizer7->Add(edTimestamp, 1, wxALL | wxEXPAND, 5);
+	FlexGridSizer7->Add(edTimestamp, 1, wxEXPAND, 5);
 
-	FlexGridSizer3->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(FlexGridSizer7, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
@@ -686,15 +675,15 @@ void CScanAnimation::OnbtnVizOptions(wxCommandEvent&)
 	sizer1->AddGrowableCol(0);
 
 	auto panel = new ViewOptions3DPoints(&dlg);
-	sizer1->Add(panel, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	sizer1->Add(panel, 1, wxEXPAND, 0);
 
 	auto pn2 = new wxPanel(&dlg);
-	sizer1->Add(pn2, 1, wxALL | wxEXPAND, 5);
+	sizer1->Add(pn2, 1, wxEXPAND, 5);
 
 	auto btnOk = new wxButton(
 		&dlg, ID_BUTTON7, _("Close"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON7"));
-	sizer1->Add(btnOk, 1, wxALL | wxEXPAND, 5);
+	sizer1->Add(btnOk, 1, wxEXPAND, 5);
 
 	dlg.SetSizer(sizer1);
 	sizer1->Fit(&dlg);

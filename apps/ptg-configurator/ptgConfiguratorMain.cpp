@@ -202,8 +202,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	cbPTGClass = new wxChoice(
 		Panel1, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, nullptr,
 		wxCB_SORT, wxDefaultValidator, _T("ID_CHOICE1"));
-	FlexGridSizer7->Add(
-		cbPTGClass, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer7->Add(cbPTGClass, 1, wxEXPAND, 5);
 	StaticText5 = new wxStaticText(
 		Panel1, ID_STATICTEXT5,
 		_("then change params as desired and click `Initialize PTG`"),
@@ -220,8 +219,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer7->Add(
 		btnReloadParams, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer7, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(FlexGridSizer7, 1, wxEXPAND, 0);
 	FlexGridSizer4 = new wxFlexGridSizer(0, 6, 0, 0);
 	StaticText2 = new wxStaticText(
 		Panel1, ID_STATICTEXT2, _("PTG index for cfg file:"), wxDefaultPosition,
@@ -232,8 +230,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		Panel1, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
 		100, 0, _T("ID_SPINCTRL1"));
 	edPTGIndex->SetValue(_T("0"));
-	FlexGridSizer4->Add(
-		edPTGIndex, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer4->Add(edPTGIndex, 1, wxEXPAND, 5);
 	cbDrawShapePath = new wxCheckBox(
 		Panel1, ID_CHECKBOX1, _("Draw robot shape"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
@@ -302,8 +299,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		5);
 	FlexGridSizer4->AddGrowableCol(5);
 
-	FlexGridSizer3->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(FlexGridSizer4, 1, wxEXPAND, 0);
 	FlexGridSizer8 = new wxFlexGridSizer(1, 0, 0, 0);
 	cbBuildTPObs = new wxCheckBox(
 		Panel1, ID_CHECKBOX2, _("Obstacle point: x="), wxDefaultPosition,
@@ -387,8 +383,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer8->Add(
 		btnPlaceTarget, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(FlexGridSizer8, 1, wxEXPAND, 0);
 	FlexGridSizer6 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer6->AddGrowableCol(0);
 	FlexGridSizer6->AddGrowableCol(1);
@@ -404,8 +399,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	edCfgFont.SetPointSize(8);
 	edCfgFont.SetFamily(wxFONTFAMILY_TELETYPE);
 	edCfg->SetFont(edCfgFont);
-	FlexGridSizer6->Add(
-		edCfg, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	FlexGridSizer6->Add(edCfg, 1, wxEXPAND, 2);
 	edLog = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxSize(-1, 100),
 		wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE | wxTE_READONLY |
@@ -417,17 +411,13 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	edLogFont.SetPointSize(8);
 	edLogFont.SetFamily(wxFONTFAMILY_TELETYPE);
 	edLog->SetFont(edLogFont);
-	FlexGridSizer6->Add(
-		edLog, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer3->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer2->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(edLog, 1, wxEXPAND, 0);
+	FlexGridSizer3->Add(FlexGridSizer6, 1, wxEXPAND, 0);
+	FlexGridSizer2->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	Panel1->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(Panel1);
 	FlexGridSizer2->SetSizeHints(Panel1);
-	FlexGridSizer1->Add(
-		Panel1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(Panel1, 1, wxEXPAND, 0);
 	FlexGridSizer9 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer9->AddGrowableCol(0);
 	FlexGridSizer9->AddGrowableCol(1);
@@ -435,8 +425,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	m_plot = new CMyGLCanvas(
 		this, ID_XY_GLCANVAS, wxDefaultPosition, wxSize(150, 300),
 		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
-	FlexGridSizer9->Add(
-		m_plot, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(m_plot, 1, wxEXPAND, 0);
 	Notebook1 = new wxNotebook(
 		this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_NOTEBOOK1"));
@@ -470,15 +459,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer15->Add(
 		cbClearanceInterp, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer1->Add(
-		FlexGridSizer15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer10->Add(
-		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 2);
+	StaticBoxSizer1->Add(FlexGridSizer15, 1, wxEXPAND, 0);
+	FlexGridSizer10->Add(StaticBoxSizer1, 1, wxEXPAND, 2);
 	m_plotTPSpace = new CMyGLCanvas(
 		Panel2, ID_CUSTOM2, wxDefaultPosition, wxSize(150, 300),
 		wxTAB_TRAVERSAL, _T("ID_CUSTOM2"));
-	FlexGridSizer10->Add(
-		m_plotTPSpace, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer10->Add(m_plotTPSpace, 1, wxEXPAND, 0);
 	Panel2->SetSizer(FlexGridSizer10);
 	FlexGridSizer10->Fit(Panel2);
 	FlexGridSizer10->SetSizeHints(Panel2);
@@ -490,8 +476,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer11->AddGrowableRow(0);
 	m_plotVelCmds =
 		new mpWindow(Panel3, ID_CUSTOM1, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer11->Add(
-		m_plotVelCmds, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer11->Add(m_plotVelCmds, 1, wxEXPAND, 0);
 	Panel3->SetSizer(FlexGridSizer11);
 	FlexGridSizer11->Fit(Panel3);
 	FlexGridSizer11->SetSizeHints(Panel3);
@@ -510,9 +495,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer12->Add(StaticText8, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	m_plotHeadAngIndiv =
 		new mpWindow(Panel4, ID_CUSTOM3, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer12->Add(
-		m_plotHeadAngIndiv, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		0);
+	FlexGridSizer12->Add(m_plotHeadAngIndiv, 1, wxEXPAND, 0);
 	StaticText9 = new wxStaticText(
 		Panel4, ID_STATICTEXT9,
 		_("Motion direction to robot heading angle: "
@@ -521,8 +504,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer12->Add(StaticText9, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	m_plotHeadAngAll =
 		new mpWindow(Panel4, ID_CUSTOM4, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer12->Add(
-		m_plotHeadAngAll, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer12->Add(m_plotHeadAngAll, 1, wxEXPAND, 0);
 	Panel4->SetSizer(FlexGridSizer12);
 	FlexGridSizer12->Fit(Panel4);
 	FlexGridSizer12->SetSizeHints(Panel4);
@@ -542,8 +524,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		StaticText10, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	m_plotPathX =
 		new mpWindow(Panel5, ID_CUSTOM5, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer13->Add(
-		m_plotPathX, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer13->Add(m_plotPathX, 1, wxEXPAND, 0);
 	StaticText11 = new wxStaticText(
 		Panel5, ID_STATICTEXT11, _("Selected path trajectory: Y [m]"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT11"));
@@ -551,27 +532,22 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		StaticText11, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	m_plotPathY =
 		new mpWindow(Panel5, ID_CUSTOM6, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer13->Add(
-		m_plotPathY, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer13->Add(m_plotPathY, 1, wxEXPAND, 0);
 	StaticText12 = new wxStaticText(
 		Panel5, ID_STATICTEXT12, _("Selected path trajectory: Phi [deg]"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT12"));
-	FlexGridSizer13->Add(
-		StaticText12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer13->Add(StaticText12, 1, wxEXPAND, 5);
 	m_plotPathPhi =
 		new mpWindow(Panel5, ID_CUSTOM7, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer13->Add(
-		m_plotPathPhi, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer13->Add(m_plotPathPhi, 1, wxEXPAND, 0);
 	StaticText16 = new wxStaticText(
 		Panel5, ID_STATICTEXT16,
 		_("Selected path trajectory: traversed distance [m]"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT16"));
-	FlexGridSizer13->Add(
-		StaticText16, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer13->Add(StaticText16, 1, wxEXPAND, 5);
 	m_plotPathDist =
 		new mpWindow(Panel5, ID_CUSTOM11, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer13->Add(
-		m_plotPathDist, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer13->Add(m_plotPathDist, 1, wxEXPAND, 0);
 	Panel5->SetSizer(FlexGridSizer13);
 	FlexGridSizer13->Fit(Panel5);
 	FlexGridSizer13->SetSizeHints(Panel5);
@@ -590,8 +566,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		StaticText13, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	m_plotPathXp =
 		new mpWindow(Panel6, ID_CUSTOM8, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer14->Add(
-		m_plotPathXp, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer14->Add(m_plotPathXp, 1, wxEXPAND, 0);
 	StaticText14 = new wxStaticText(
 		Panel6, ID_STATICTEXT14, _("Selected path trajectory: dY/dt [m/s]"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT14"));
@@ -599,17 +574,14 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		StaticText14, 1, wxALL | wxALIGN_LEFT | wxALIGN_TOP, 5);
 	m_plotPathYp =
 		new mpWindow(Panel6, ID_CUSTOM9, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer14->Add(
-		m_plotPathYp, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer14->Add(m_plotPathYp, 1, wxEXPAND, 0);
 	StaticText15 = new wxStaticText(
 		Panel6, ID_STATICTEXT15, _("Selected path trajectory: w [deg/s]"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT15"));
-	FlexGridSizer14->Add(
-		StaticText15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer14->Add(StaticText15, 1, wxEXPAND, 5);
 	m_plotPathW =
 		new mpWindow(Panel6, ID_CUSTOM10, wxDefaultPosition, wxDefaultSize, 0);
-	FlexGridSizer14->Add(
-		m_plotPathW, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer14->Add(m_plotPathW, 1, wxEXPAND, 0);
 	Panel6->SetSizer(FlexGridSizer14);
 	FlexGridSizer14->Fit(Panel6);
 	FlexGridSizer14->SetSizeHints(Panel6);
@@ -618,10 +590,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	Notebook1->AddPage(Panel4, _("Head angle"), false);
 	Notebook1->AddPage(Panel5, _("Robot path"), false);
 	Notebook1->AddPage(Panel6, _("Robot velocity components"), false);
-	FlexGridSizer9->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		FlexGridSizer9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer9->Add(Notebook1, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(FlexGridSizer9, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();

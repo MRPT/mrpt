@@ -178,6 +178,8 @@ mrpt::Clock::time_point mrpt::Clock::fromDouble(const double t) noexcept
 // Convert to time_t UNIX timestamp, with fractional part.
 double mrpt::Clock::toDouble(const mrpt::Clock::time_point t) noexcept
 {
+	if (t == mrpt::Clock::time_point()) return .0;	// invalid time point
+
 	return double(
 			   t.time_since_epoch().count() -
 			   UINT64_C(116444736) * UINT64_C(1000000000)) /

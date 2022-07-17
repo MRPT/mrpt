@@ -187,8 +187,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	txtInputFile = new wxTextCtrl(
 		this, ID_TEXTCTRL16, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL16"));
-	FlexGridSizer14->Add(
-		txtInputFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer14->Add(txtInputFile, 1, wxEXPAND, 5);
 	btnPickInput = new wxButton(
 		this, ID_BUTTON9, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON9"));
@@ -206,21 +205,18 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	txtOutputFile = new wxTextCtrl(
 		this, ID_TEXTCTRL17, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL17"));
-	FlexGridSizer14->Add(
-		txtOutputFile, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer14->Add(txtOutputFile, 1, wxEXPAND, 5);
 	btnPickOut = new wxButton(
 		this, ID_BUTTON11, _("Select..."), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_BUTTON11"));
 	FlexGridSizer14->Add(
 		btnPickOut, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 0);
-	FlexGridSizer13->Add(
-		FlexGridSizer14, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer13->Add(FlexGridSizer14, 1, wxEXPAND, 0);
 	StaticLine1 = new wxStaticLine(
 		this, ID_STATICLINE1, wxDefaultPosition, wxSize(10, -1),
 		wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
-	FlexGridSizer13->Add(
-		StaticLine1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer13->Add(StaticLine1, 1, wxEXPAND, 0);
 	FlexGridSizer16 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer16->AddGrowableCol(1);
 	FlexGridSizer16->AddGrowableRow(0);
@@ -233,10 +229,8 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 		this, ID_RADIOBOX1, _("Apply to..."), wxDefaultPosition,
 		wxSize(202, 67), 2, __wxRadioBoxChoices_1, 1, wxRA_HORIZONTAL,
 		wxDefaultValidator, _T("ID_RADIOBOX1"));
-	FlexGridSizer3->Add(
-		rbApply, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer16->Add(
-		FlexGridSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer3->Add(rbApply, 1, wxEXPAND, 5);
+	FlexGridSizer16->Add(FlexGridSizer3, 1, wxEXPAND, 0);
 	FlexGridSizer17 = new wxFlexGridSizer(2, 2, 0, 0);
 	FlexGridSizer17->AddGrowableCol(1);
 	StaticText15 = new wxStaticText(
@@ -249,8 +243,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 		this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
 		100, 0, _T("ID_SPINCTRL1"));
 	scIndex->SetValue(_T("0"));
-	FlexGridSizer17->Add(
-		scIndex, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer17->Add(scIndex, 1, wxEXPAND, 5);
 	StaticText30 = new wxStaticText(
 		this, ID_STATICTEXT30, _("Observations by label:"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT30"));
@@ -260,16 +253,11 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 		this, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0,
 		nullptr, 0, wxDefaultValidator, _T("ID_COMBOBOX1"));
 	edLabel->Disable();
-	FlexGridSizer17->Add(
-		edLabel, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer16->Add(
-		FlexGridSizer17, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer13->Add(
-		FlexGridSizer16, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	StaticBoxSizer1->Add(
-		FlexGridSizer13, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer1->Add(
-		StaticBoxSizer1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer17->Add(edLabel, 1, wxEXPAND, 5);
+	FlexGridSizer16->Add(FlexGridSizer17, 1, wxEXPAND, 0);
+	FlexGridSizer13->Add(FlexGridSizer16, 1, wxEXPAND, 0);
+	StaticBoxSizer1->Add(FlexGridSizer13, 1, wxEXPAND, 0);
+	FlexGridSizer1->Add(StaticBoxSizer1, 1, wxEXPAND, 5);
 	StaticText16 = new wxStaticText(
 		this, ID_STATICTEXT16,
 		_("What should be changed in those observations\?"), wxDefaultPosition,
@@ -293,8 +281,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	StaticText1 = new wxStaticText(
 		Panel1, ID_STATICTEXT1, _("3D position:"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer5->Add(
-		StaticText1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(StaticText1, 1, wxEXPAND, 5);
 	FlexGridSizer5->Add(
 		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
@@ -304,8 +291,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	StaticText2 = new wxStaticText(
 		Panel1, ID_STATICTEXT2, _("3D angles (if applicable):"),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-	FlexGridSizer5->Add(
-		StaticText2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(StaticText2, 1, wxEXPAND, 5);
 	FlexGridSizer5->Add(
 		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
@@ -317,8 +303,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edX = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL1, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	FlexGridSizer5->Add(
-		edX, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(edX, 1, wxEXPAND, 5);
 	StaticText4 = new wxStaticText(
 		Panel1, ID_STATICTEXT4, _("(meters)"), wxDefaultPosition, wxDefaultSize,
 		0, _T("ID_STATICTEXT4"));
@@ -333,8 +318,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edYaw = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL2, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer5->Add(
-		edYaw, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(edYaw, 1, wxEXPAND, 5);
 	StaticText6 = new wxStaticText(
 		Panel1, ID_STATICTEXT6, _("(deg)"), wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_STATICTEXT6"));
@@ -349,8 +333,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edY = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL3, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL3"));
-	FlexGridSizer5->Add(
-		edY, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(edY, 1, wxEXPAND, 5);
 	StaticText8 = new wxStaticText(
 		Panel1, ID_STATICTEXT8, _("(meters)"), wxDefaultPosition, wxDefaultSize,
 		0, _T("ID_STATICTEXT8"));
@@ -365,8 +348,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edPitch = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL4, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL4"));
-	FlexGridSizer5->Add(
-		edPitch, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(edPitch, 1, wxEXPAND, 5);
 	StaticText10 = new wxStaticText(
 		Panel1, ID_STATICTEXT10, _("(deg)"), wxDefaultPosition, wxDefaultSize,
 		0, _T("ID_STATICTEXT10"));
@@ -381,8 +363,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edZ = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL5, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL5"));
-	FlexGridSizer5->Add(
-		edZ, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(edZ, 1, wxEXPAND, 5);
 	StaticText12 = new wxStaticText(
 		Panel1, ID_STATICTEXT12, _("(meters)"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT12"));
@@ -397,16 +378,14 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edRoll = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL6, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL6"));
-	FlexGridSizer5->Add(
-		edRoll, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(edRoll, 1, wxEXPAND, 5);
 	StaticText14 = new wxStaticText(
 		Panel1, ID_STATICTEXT14, _("(deg)"), wxDefaultPosition, wxDefaultSize,
 		0, _T("ID_STATICTEXT14"));
 	FlexGridSizer5->Add(
 		StaticText14, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer4->Add(
-		FlexGridSizer5, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(FlexGridSizer5, 1, wxEXPAND, 0);
 	FlexGridSizer15 = new wxFlexGridSizer(0, 3, 0, 0);
 	cbOnlyXYZ = new wxCheckBox(
 		Panel1, ID_CHECKBOX1, _("Change X,Y,Z only"), wxDefaultPosition,
@@ -415,8 +394,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	FlexGridSizer15->Add(
 		cbOnlyXYZ, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer4->Add(
-		FlexGridSizer15, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(FlexGridSizer15, 1, wxEXPAND, 0);
 	FlexGridSizer6 = new wxFlexGridSizer(0, 3, 0, 0);
 	FlexGridSizer6->AddGrowableCol(2);
 	FlexGridSizer6->Add(
@@ -431,10 +409,8 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	btnOK = new wxButton(
 		Panel1, ID_BUTTON1, _("Apply changes..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-	FlexGridSizer6->Add(
-		btnOK, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer4->Add(
-		FlexGridSizer6, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(btnOK, 1, wxEXPAND, 5);
+	FlexGridSizer4->Add(FlexGridSizer6, 1, wxEXPAND, 0);
 	Panel1->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->Fit(Panel1);
 	FlexGridSizer4->SetSizeHints(Panel1);
@@ -468,8 +444,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edFX = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL7, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL7"));
-	FlexGridSizer10->Add(
-		edFX, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer10->Add(edFX, 1, wxEXPAND, 5);
 	StaticText19 = new wxStaticText(
 		Panel2, ID_STATICTEXT19, _("f_y="), wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_STATICTEXT19"));
@@ -478,8 +453,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edFY = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL8, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL8"));
-	FlexGridSizer10->Add(
-		edFY, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer10->Add(edFY, 1, wxEXPAND, 5);
 	StaticText20 = new wxStaticText(
 		Panel2, ID_STATICTEXT20, _("c_x="), wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_STATICTEXT20"));
@@ -488,8 +462,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edCX = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL9, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL9"));
-	FlexGridSizer10->Add(
-		edCX, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer10->Add(edCX, 1, wxEXPAND, 5);
 	StaticText21 = new wxStaticText(
 		Panel2, ID_STATICTEXT21, _("c_y="), wxDefaultPosition, wxDefaultSize, 0,
 		_T("ID_STATICTEXT21"));
@@ -498,12 +471,9 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	edCY = new wxTextCtrl(
 		Panel2, ID_TEXTCTRL10, _("0"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL10"));
-	FlexGridSizer10->Add(
-		edCY, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	StaticBoxSizer2->Add(
-		FlexGridSizer10, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer9->Add(
-		StaticBoxSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer10->Add(edCY, 1, wxEXPAND, 5);
+	StaticBoxSizer2->Add(FlexGridSizer10, 1, wxEXPAND, 0);
+	FlexGridSizer9->Add(StaticBoxSizer2, 1, wxEXPAND, 5);
 	StaticBoxSizer3 =
 		new wxStaticBoxSizer(wxHORIZONTAL, Panel2, _("Distortion parameters"));
 	FlexGridSizer11 = new wxFlexGridSizer(0, 4, 0, 0);
@@ -555,12 +525,9 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	FlexGridSizer11->Add(
 		edP2, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	StaticBoxSizer3->Add(
-		FlexGridSizer11, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
-	FlexGridSizer9->Add(
-		StaticBoxSizer3, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
-	FlexGridSizer7->Add(
-		FlexGridSizer9, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	StaticBoxSizer3->Add(FlexGridSizer11, 1, wxEXPAND, 0);
+	FlexGridSizer9->Add(StaticBoxSizer3, 1, wxEXPAND, 5);
+	FlexGridSizer7->Add(FlexGridSizer9, 1, wxEXPAND, 0);
 	FlexGridSizer12 = new wxFlexGridSizer(0, 2, 0, 0);
 	StaticText22 = new wxStaticText(
 		Panel2, ID_STATICTEXT22, _("Focal length (in meters) ="),
@@ -574,8 +541,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	FlexGridSizer12->Add(
 		edFocalLen, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(
-		FlexGridSizer12, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer7->Add(FlexGridSizer12, 1, wxEXPAND, 0);
 	FlexGridSizer8 = new wxFlexGridSizer(0, 3, 0, 0);
 	FlexGridSizer8->AddGrowableCol(2);
 	FlexGridSizer8->Add(
@@ -590,18 +556,14 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	btnApplyCameraParams = new wxButton(
 		Panel2, ID_BUTTON5, _("Apply changes..."), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
-	FlexGridSizer8->Add(
-		btnApplyCameraParams, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP,
-		5);
-	FlexGridSizer7->Add(
-		FlexGridSizer8, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer8->Add(btnApplyCameraParams, 1, wxEXPAND, 5);
+	FlexGridSizer7->Add(FlexGridSizer8, 1, wxEXPAND, 0);
 	Panel2->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->Fit(Panel2);
 	FlexGridSizer7->SetSizeHints(Panel2);
 	Notebook1->AddPage(Panel1, _("Sensor pose on robot"), false);
 	Notebook1->AddPage(Panel2, _("Camera parameters"), false);
-	FlexGridSizer1->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer1->Add(Notebook1, 1, wxEXPAND, 5);
 	FlexGridSizer2 = new wxFlexGridSizer(0, 3, 0, 0);
 	FlexGridSizer2->AddGrowableCol(0);
 	FlexGridSizer2->Add(
@@ -613,8 +575,7 @@ CFormChangeSensorPositions::CFormChangeSensorPositions(
 	FlexGridSizer2->Add(
 		btnCancel, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);

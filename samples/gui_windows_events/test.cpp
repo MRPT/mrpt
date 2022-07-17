@@ -11,7 +11,9 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/system/CObserver.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::gui;

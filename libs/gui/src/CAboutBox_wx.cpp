@@ -86,8 +86,7 @@ CAboutBox::CAboutBox(
 		_T("ID_STATICTEXT2"));
 	FlexGridSizer2->Add(
 		lbBuild, 1, wxALL | wxALIGN_TOP | wxALIGN_CENTER_HORIZONTAL, 5);
-	FlexGridSizer4->Add(
-		FlexGridSizer2, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(FlexGridSizer2, 1, wxEXPAND, 0);
 	StaticBitmap1 = new wxStaticBitmap(
 		this, ID_STATICBITMAP1,
 		wxArtProvider::GetBitmap(
@@ -96,13 +95,11 @@ CAboutBox::CAboutBox(
 	FlexGridSizer4->Add(
 		StaticBitmap1, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(
-		FlexGridSizer4, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 1);
+	FlexGridSizer1->Add(FlexGridSizer4, 1, wxEXPAND, 1);
 	StaticLine1 = new wxStaticLine(
 		this, ID_STATICLINE1, wxPoint(3, 86), wxSize(627, 2), wxLI_HORIZONTAL,
 		_T("ID_STATICLINE1"));
-	FlexGridSizer1->Add(
-		StaticLine1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer1->Add(StaticLine1, 1, wxEXPAND, 5);
 	Notebook1 = new wxNotebook(
 		this, ID_NOTEBOOK1, wxPoint(6, 91), wxSize(625, 250), 0,
 		_T("ID_NOTEBOOK1"));
@@ -133,8 +130,7 @@ CAboutBox::CAboutBox(
 	Notebook1->AddPage(lbInfo, _("Information"), false);
 	Notebook1->AddPage(lbLicense, _("License"), false);
 	Notebook1->AddPage(TextCtrl1, _("Tutorial"), false);
-	FlexGridSizer1->Add(
-		Notebook1, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 5);
+	FlexGridSizer1->Add(Notebook1, 1, wxEXPAND, 5);
 	Button11 = new wxButton(
 		this, ID_BUTTON1, _("OK"), wxPoint(250, 345), wxSize(76, 26), 0,
 		wxDefaultValidator, _T("ID_BUTTON1"));
@@ -182,7 +178,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 	lbProgName->SetLabel(m_appName.c_str());
 	lbProgName->SetForegroundColour(wxColour(0, 0, 128));
 
-	FlexGridSizer1->RecalcSizes();
+	FlexGridSizer1->Layout();
 	this->Fit();
 }
 

@@ -99,11 +99,11 @@ double mrpt::vision::bundle_adj_full(
 	const size_t num_frames = frame_poses.size();
 	const size_t num_obs = observations.size();
 
-	ASSERT_ABOVE_(num_frames, 0);
-	ASSERT_ABOVE_(num_points, 0);
+	ASSERT_GT_(num_frames, 0);
+	ASSERT_GT_(num_points, 0);
 	ASSERT_(num_fix_frames >= 1);
-	ASSERT_ABOVEEQ_(num_frames, num_fix_frames);
-	ASSERT_ABOVEEQ_(num_points, num_fix_points);
+	ASSERT_GE_(num_frames, num_fix_frames);
+	ASSERT_GE_(num_points, num_fix_points);
 
 #ifdef USE_INVERSE_POSES
 	// *Warning*: This implementation assumes inverse camera poses: inverse them

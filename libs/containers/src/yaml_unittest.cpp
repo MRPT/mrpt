@@ -617,6 +617,10 @@ MRPT_TEST(yaml, fromYAML)
 		EXPECT_EQ(e.comment(CommentPosition::RIGHT), "comment for a");
 		EXPECT_THROW(e.comment(CommentPosition::TOP), std::exception);
 
+		EXPECT_EQ(e.node().marks.line, 13);
+		EXPECT_EQ(e.node().marks.column, 7);
+		EXPECT_EQ(e.node().marks.input_pos, 147);
+
 #if 0
 		p.printDebugStructure(std::cout);
 		p.printAsYAML();
