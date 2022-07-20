@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.5.1: UNRELEASED
+- (none yet)
+
 # Version 2.5.0: Released July 18th, 2022
 - Changes in applications:
   - RawLogViewer:
