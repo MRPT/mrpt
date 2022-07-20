@@ -364,9 +364,9 @@ void CMesh::onUpdateBuffers_TexturedTriangles()
 
 		for (int k = 0; k < 3; k++)
 		{
-			tri.vertices[k].uv.x =
-				(tri.vertices[k].xyzrgba.pt.x - m_xMin) / (m_xMax - m_xMin);
 			tri.vertices[k].uv.y =
+				(tri.vertices[k].xyzrgba.pt.x - m_xMin) / (m_xMax - m_xMin);
+			tri.vertices[k].uv.x =
 				(tri.vertices[k].xyzrgba.pt.y - m_yMin) / (m_yMax - m_yMin);
 		}
 
