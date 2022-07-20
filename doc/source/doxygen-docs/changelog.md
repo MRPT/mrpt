@@ -3,6 +3,7 @@
 # Version 2.5.1: UNRELEASED
 - BUG FIXES:
   - Fix regression: mrpt::opengl::CAssimpModel may fail to resolve texture relative paths.
+  - mrpt::opengl::CMesh was implementing texture coordinates flipping (u,v) wrt documented behavior.
 
 # Version 2.5.0: Released July 18th, 2022
 - Changes in applications:
