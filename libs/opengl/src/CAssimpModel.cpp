@@ -84,10 +84,7 @@ class TexturesCache
 			entry.load_ok = mrpt::img::CImage::loadTGA(
 				texturePath, entry.img_rgb, *entry.img_alpha);
 		}
-		else
-		{
-			entry.load_ok = entry.img_rgb.loadFromFile(texturePath);
-		}
+		else { entry.load_ok = entry.img_rgb.loadFromFile(texturePath); }
 
 		if (entry.load_ok)
 		{
@@ -429,10 +426,7 @@ static mrpt::img::TColor apply_material(
 	{  //
 		return color4_to_TColor(diffuse);
 	}
-	else
-	{
-		return defaultColor;
-	}
+	else { return defaultColor; }
 }
 
 static mrpt::math::CMatrixDouble44 aiMatrix_to_mrpt(const aiMatrix4x4& m)
@@ -655,8 +649,7 @@ void CAssimpModel::process_textures(const aiScene* scene)
 		}
 	}
 
-	const auto basepath = mrpt::system::filePathSeparatorsToNative(
-		mrpt::system::extractFileDirectory(m_modelPath));
+	const auto basepath = mrpt::system::extractFileDirectory(m_modelPath);
 
 	for (auto& kv : m_textureIdMap)
 	{
@@ -671,7 +664,7 @@ void CAssimpModel::process_textures(const aiScene* scene)
 			m_texturedObjects.emplace_back(CSetOfTexturedTriangles::Create());
 
 		const std::string fileloc =
-			mrpt::system::filePathSeparatorsToNative(basepath + filename);
+			mrpt::system::pathJoin({basepath, filename});
 
 		// Query textureCache:
 		auto& cache = internal::TexturesCache::Instance();
