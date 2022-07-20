@@ -1,7 +1,8 @@
 \page changelog Change Log
 
 # Version 2.5.1: UNRELEASED
-- (none yet)
+- BUG FIXES:
+  - Fix regression: mrpt::opengl::CAssimpModel may fail to resolve texture relative paths.
 
 # Version 2.5.0: Released July 18th, 2022
 - Changes in applications:
