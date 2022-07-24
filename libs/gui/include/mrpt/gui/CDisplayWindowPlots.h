@@ -253,7 +253,7 @@ class CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 	 * \sa plot, hold_on, hold_off
 	 */
 	inline void clf() { clear(); }
-	/** Enables keeping all the graphs, instead of overwritting them.
+	/** Enables keeping all the graphs, instead of overwriting them.
 	 * \sa hold_off, plot
 	 */
 	void hold_on();

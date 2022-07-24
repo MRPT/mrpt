@@ -413,7 +413,7 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 
 		this->total_vocab_size_org = len_train_words;
 		this->training_file_written_flag = true;
-	}  // end of writting training features to a file
+	}  // end of writing training features to a file
 
 	CTicTac testing_time;
 	testing_time.Tic();
