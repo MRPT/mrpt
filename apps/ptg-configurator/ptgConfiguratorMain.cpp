@@ -1473,8 +1473,7 @@ void ptgConfiguratorframe::OnExportSelectedPath(wxCommandEvent&)
 
 	std::ofstream f(sFil.c_str());
 	if (!f.is_open())
-		THROW_EXCEPTION_FMT(
-			"Cannot open file for writting: '%s'", sFil.c_str());
+		THROW_EXCEPTION_FMT("Cannot open file for writing: '%s'", sFil.c_str());
 
 	f << "%\n";
 	f << "% File generated automatically by ptg-configurator, MRPT project.\n";

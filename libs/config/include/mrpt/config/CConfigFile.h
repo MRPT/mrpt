@@ -62,7 +62,7 @@ class CConfigFile : public CConfigFileBase
 	CConfigFile(const std::string& fileName);
 
 	/** Constructor, does not open any file. You should call "setFileName"
-	 * before reading or writting or otherwise nothing will be read and write
+	 * before reading or writing or otherwise nothing will be read and write
 	 * operations will be eventually lost.
 	 * However, it's perfectly right to use this object without an associated
 	 * file, in which case it will behave as an "in-memory" file.
