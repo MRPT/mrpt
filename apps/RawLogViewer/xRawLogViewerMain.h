@@ -463,7 +463,8 @@ class xRawLogViewerFrame : public wxFrame
 
 		mrpt::opengl::CBox::Ptr borderBox;
 		mrpt::opengl::CSetOfObjects::Ptr xTicks;
-		mrpt::opengl::CPointCloud::Ptr allSensorDots;
+		/// one pointcloud per sensorLabel
+		mrpt::opengl::CSetOfObjects::Ptr allSensorDots;
 		mrpt::opengl::CBox::Ptr cursor;
 		mrpt::opengl::CBox::Ptr visiblePage;
 		mrpt::opengl::CSetOfObjects::Ptr ySensorLabels;
