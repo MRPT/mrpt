@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.5.1: UNRELEASED
+- Changes in libraries:
+  - Embedded nanoflann version upgraded to v1.4.3
 - BUG FIXES:
   - Fix regression: mrpt::opengl::CAssimpModel may fail to resolve texture relative paths.
   - mrpt::opengl::CMesh was implementing texture coordinates flipping (u,v) wrt documented behavior.
