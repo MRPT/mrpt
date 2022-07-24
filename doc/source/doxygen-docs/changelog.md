@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.5.1: UNRELEASED
+- Changes in applications:
+  - RawLogViewer:
+    - Bold points when selecting a sensor in the timeline UI.
 - Changes in libraries:
   - Embedded nanoflann version upgraded to v1.4.3
 - BUG FIXES:
