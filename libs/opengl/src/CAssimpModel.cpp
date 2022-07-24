@@ -84,7 +84,10 @@ class TexturesCache
 			entry.load_ok = mrpt::img::CImage::loadTGA(
 				texturePath, entry.img_rgb, *entry.img_alpha);
 		}
-		else { entry.load_ok = entry.img_rgb.loadFromFile(texturePath); }
+		else
+		{
+			entry.load_ok = entry.img_rgb.loadFromFile(texturePath);
+		}
 
 		if (entry.load_ok)
 		{
@@ -426,7 +429,10 @@ static mrpt::img::TColor apply_material(
 	{  //
 		return color4_to_TColor(diffuse);
 	}
-	else { return defaultColor; }
+	else
+	{
+		return defaultColor;
+	}
 }
 
 static mrpt::math::CMatrixDouble44 aiMatrix_to_mrpt(const aiMatrix4x4& m)
