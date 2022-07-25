@@ -939,4 +939,33 @@ MRPT_TEST(yaml, fromJSON)
 }
 MRPT_TEST_END()
 
+MRPT_TEST(yaml, booleanVersions)
+{
+	mrpt::containers::yaml p;
+	p["b01"] = "0";
+	p["b02"] = "False";
+	p["b03"] = "false";
+	p["b04"] = "FALSE";
+	p["b05"] = "No";
+
+	p["b11"] = "1";
+	p["b12"] = "True";
+	p["b13"] = "true";
+	p["b14"] = "TRUE";
+	p["b15"] = "Yes";
+
+	EXPECT_EQ(p["b01"].as<bool>(), false);
+	EXPECT_EQ(p["b02"].as<bool>(), false);
+	EXPECT_EQ(p["b03"].as<bool>(), false);
+	EXPECT_EQ(p["b04"].as<bool>(), false);
+	EXPECT_EQ(p["b05"].as<bool>(), false);
+
+	EXPECT_EQ(p["b11"].as<bool>(), true);
+	EXPECT_EQ(p["b12"].as<bool>(), true);
+	EXPECT_EQ(p["b13"].as<bool>(), true);
+	EXPECT_EQ(p["b14"].as<bool>(), true);
+	EXPECT_EQ(p["b15"].as<bool>(), true);
+}
+MRPT_TEST_END()
+
 #endif	// MRPT_HAS_FYAML
