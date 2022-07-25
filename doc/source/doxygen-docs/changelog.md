@@ -10,6 +10,7 @@
   - Fix regression: mrpt::opengl::CAssimpModel may fail to resolve texture relative paths.
   - mrpt::opengl::CMesh was implementing texture coordinates flipping (u,v) wrt documented behavior.
   - Fix `static_assert()` failure in CTicTac when building with latest emscripten clang compiler.
+  - Fix regression: yaml parsing boolean values may throw an exception inside `std::stoi()`.
 
 # Version 2.5.0: Released July 18th, 2022
 - Changes in applications:
