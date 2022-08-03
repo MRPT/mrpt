@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.5.1: UNRELEASED
+# Version 2.5.1: Released August 4th, 2022
 - Changes in applications:
   - RawLogViewer:
     - Bold points when selecting a sensor in the timeline UI.
