@@ -30,7 +30,7 @@ class CTicTac
 	double Tac() const noexcept;
 
    private:
-	alignas(16) unsigned long largeInts[2]{0, 0};
+	alignas(16) unsigned long largeInts[4]{0, 0};
 };	// End of class def.
 
 }  // namespace mrpt::system

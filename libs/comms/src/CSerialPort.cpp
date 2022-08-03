@@ -358,7 +358,7 @@ void CSerialPort::setConfig(
 	else
 	{
 		// Normal baudrate: Just in case, undo possible custom divisors:
-		//#ifdef HAVE_LINUX_SERIAL_H
+		// #ifdef HAVE_LINUX_SERIAL_H
 		//		struct serial_struct serial;
 		//		if (ioctl(hCOM, TIOCGSERIAL, &serial) < 0)
 		//            THROW_EXCEPTION("error on TIOCGSERIAL ioctl");
@@ -367,7 +367,7 @@ void CSerialPort::setConfig(
 		//
 		//		if (ioctl(hCOM, TIOCSSERIAL, &serial) < 0)
 		//            THROW_EXCEPTION("error on TIOCSSERIAL ioctl");
-		//#endif
+		// #endif
 	}
 
 	termios port_settings;
@@ -777,8 +777,8 @@ size_t CSerialPort::Write(const void* Buffer, size_t Count)
 				usecs = (end.tv_sec - start.tv_sec) * 1000000 +
 					(end.tv_usec - start.tv_usec);
 			} while (usecs < 60);
-			// std::this_thread::sleep_for(1ms); // we'll continue writting is a
-			// ms.
+			// std::this_thread::sleep_for(1ms);
+			// we'll continue writing in 1 ms.
 		}
 	} while ((total_bytes_written < Count) && (!errno || EAGAIN == errno));
 	//
