@@ -500,7 +500,6 @@ void TestOpenGLObjects()
 		if (im2.loadFromFile(texture_file2))
 		{
 			im2.getAsMatrix(Z2);
-			Z2 = Z2.transpose().eval();	 // mesh assumes z(x,y) vs z(y,x)!
 
 			opengl::CMesh::Ptr obj = opengl::CMesh::Create(
 				false /*transparency*/,	 //

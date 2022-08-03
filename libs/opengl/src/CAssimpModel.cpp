@@ -655,8 +655,7 @@ void CAssimpModel::process_textures(const aiScene* scene)
 		}
 	}
 
-	const auto basepath = mrpt::system::filePathSeparatorsToNative(
-		mrpt::system::extractFileDirectory(m_modelPath));
+	const auto basepath = mrpt::system::extractFileDirectory(m_modelPath);
 
 	for (auto& kv : m_textureIdMap)
 	{
@@ -671,7 +670,7 @@ void CAssimpModel::process_textures(const aiScene* scene)
 			m_texturedObjects.emplace_back(CSetOfTexturedTriangles::Create());
 
 		const std::string fileloc =
-			mrpt::system::filePathSeparatorsToNative(basepath + filename);
+			mrpt::system::pathJoin({basepath, filename});
 
 		// Query textureCache:
 		auto& cache = internal::TexturesCache::Instance();

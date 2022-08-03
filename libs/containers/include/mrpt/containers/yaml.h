@@ -1153,10 +1153,18 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		if (storedType == typeid(std::string))
 		{
 			const auto str = implAnyAsGetter<std::string>(s);
+			std::optional<int> intVal;
+			try
+			{
+				intVal = std::stoi(str);
+			}
+			catch (...)
+			{
+			}
 			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
 				str == "YES" || str == "true" || str == "True" ||
 				str == "TRUE" || str == "on" || str == "ON" || str == "On" ||
-				std::stoi(str) != 0;
+				(intVal.has_value() && intVal.value() != 0);
 		}
 	}
 

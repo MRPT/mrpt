@@ -115,7 +115,7 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 		m_timeline.ySensorLabels = mrpt::opengl::CSetOfObjects::Create();
 		scene->insert(m_timeline.ySensorLabels);
 
-		m_timeline.allSensorDots = mrpt::opengl::CPointCloud::Create();
+		m_timeline.allSensorDots = mrpt::opengl::CSetOfObjects::Create();
 		scene->insert(m_timeline.allSensorDots);
 
 		m_timeline.cursor = mrpt::opengl::CBox::Create();
@@ -248,10 +248,6 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 
 	// Main per-sensor points:
 	tl.allSensorDots->clear();
-	tl.allSensorDots->setColor_u8(0x00, 0x00, 0xff, 0xff);
-	tl.allSensorDots->setPointSize(1.0f);
-	tl.allSensorDots->enableVariablePointSize(false);
-
 	tl.yCoordToSensorLabel.clear();
 	tl.ySensorLabels->clear();
 
@@ -264,6 +260,14 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 		for (const auto& e : listOfSensorLabels)
 		{
 			if (e.second.timOccurs.empty()) continue;
+
+			auto glDots = mrpt::opengl::CPointCloud::Create();
+			tl.allSensorDots->insert(glDots);
+
+			glDots->setColor_u8(0x00, 0x00, 0xff, 0xff);
+			glDots->setPointSize(1.0f);
+			glDots->enableVariablePointSize(false);
+			glDots->setName(e.first);
 
 			double lastX = -2;	// actual coords go in [-1,1]
 			for (const auto& tim : e.second.timOccurs)
@@ -279,7 +283,7 @@ void xRawLogViewerFrame::rebuildBottomTimeLine()
 					continue;  // no worth adding so many points
 
 				lastX = x;
-				tl.allSensorDots->insertPoint(x, y0, 0);
+				glDots->insertPoint(x, y0, 0);
 			}
 
 			// Keep a map between vertical coords and sensor labels:
@@ -656,9 +660,24 @@ std::optional<std::pair<double, size_t>>
 
 		if (trackedSensorLabel.has_value() &&
 			glLb->getString() == *trackedSensorLabel)
-			glLb->setColor_u8(0xff, 0x00, 0x00, 0xff);
+		{ glLb->setColor_u8(0xff, 0x00, 0x00, 0xff); }
 		else
+		{
 			glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);
+		}
+	}
+
+	// bold dots in selected line:
+	for (size_t i = 0;; i++)
+	{
+		auto glPts = tl.allSensorDots->getByClass<mrpt::opengl::CPointCloud>(i);
+		if (!glPts) break;
+
+		glPts->setPointSize(
+			(trackedSensorLabel.has_value() &&
+			 glPts->getName() == *trackedSensorLabel)
+				? 4.0f
+				: 1.0f);
 	}
 
 	m_timeline.horizontalCursor->setVisibility(false);

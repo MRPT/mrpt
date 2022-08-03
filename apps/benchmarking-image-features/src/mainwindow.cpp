@@ -776,7 +776,7 @@ void MainWindow::on_detector_choose(int choice)
 	{
 		param1->setText("Threshold: ");
 		param2->setText("MinimumDistance: ");
-		// param3->setText("Enable non maximal supression (true/false): ");
+		// param3->setText("Enable non maximal suppression (true/false): ");
 		// param4->setText("Enable use KLT response (true/false): ");
 		param1_edit->setText("20");
 		param2_edit->setText("5");
@@ -784,7 +784,8 @@ void MainWindow::on_detector_choose(int choice)
 		// param4_edit->setText("true");
 
 		param1_boolean->setChecked(true);
-		param1_boolean->setText("Enable non maximal supression (true/false): ");
+		param1_boolean->setText(
+			"Enable non maximal suppression (true/false): ");
 		param1_boolean->setVisible(true);
 		param2_boolean->setChecked(true);
 		param2_boolean->setText("Enable use KLT response (true/false):  ");
