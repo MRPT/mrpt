@@ -136,6 +136,7 @@ TEST(Matrices, eig_symmetric)
 
 		EXPECT_EQ(eig_vals.size(), 2UL);
 		EXPECT_NEAR(eig_vals[0], 0, 1e-3);
+		EXPECT_TRUE(eig_vals[0] >= 0);
 		EXPECT_NEAR(eig_vals[1], 1.25, 1e-3);
 
 		EXPECT_NEAR(
