@@ -3,6 +3,7 @@
 # Version 2.5.2: UNRELEASED
 - BUG FIXES:
   - mrpt::math::MatrixBase::eig_symmetric() now is ensured not to return negative eigenvalues due to numerical innacuracies in some platforms (i386).
+  - mrpt::maps::COccupancyGridMap2D::getAsPointCloud() did not return the outermost cells as obstacles.
 
 # Version 2.5.1: Released August 4th, 2022
 - Changes in applications:
