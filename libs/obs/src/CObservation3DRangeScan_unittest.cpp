@@ -238,7 +238,7 @@ TEST(CObservation3DRangeScan, Project3D_filterMax)
 TEST(CObservation3DRangeScan, LoadAndCheckFloorPoints)
 {
 	const string rawlog_fil =
-		UNITTEST_BASEDIR + string("/tests/test-3d-obs-ground.rawlog");
+		UNITTEST_BASEDIR() + string("/tests/test-3d-obs-ground.rawlog");
 	if (!mrpt::system::fileExists(rawlog_fil))
 	{
 		GTEST_FAIL() << "ERROR: test due to missing file: " << rawlog_fil

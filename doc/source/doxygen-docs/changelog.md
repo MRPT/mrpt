@@ -4,6 +4,7 @@
 - BUG FIXES:
   - mrpt::math::MatrixBase::eig_symmetric() now is ensured not to return negative eigenvalues due to numerical innacuracies in some platforms (i386).
   - mrpt::maps::COccupancyGridMap2D::getAsPointCloud() did not return the outermost cells as obstacles.
+  - Fix unit test errors when compiling with LTO (Closes [Debian bug #1015550](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1015550))
 
 # Version 2.5.1: Released August 4th, 2022
 - Changes in applications:

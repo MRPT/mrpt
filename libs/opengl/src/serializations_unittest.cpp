@@ -97,7 +97,7 @@ TEST(SerializeTestOpenGL, PredefinedSceneFile)
 
 	//! JS_PRELOAD_FILE <tests/default-scene.3Dscene>
 	const std::string fil =
-		mrpt::UNITTEST_BASEDIR + "/tests/default-scene.3Dscene"s;
+		mrpt::UNITTEST_BASEDIR() + "/tests/default-scene.3Dscene"s;
 
 	mrpt::opengl::COpenGLScene scene;
 

@@ -22,12 +22,12 @@ void generic_kf_slam_test(
 {
 	using namespace std::string_literals;
 
-	const auto ini_fil = mrpt::UNITTEST_BASEDIR +
+	const auto ini_fil = mrpt::UNITTEST_BASEDIR() +
 		"/share/mrpt/config_files/kf-slam/"s + ini_filename;
 	EXPECT_TRUE(mrpt::system::fileExists(ini_fil));
 
 	const auto rawlog_fil =
-		mrpt::UNITTEST_BASEDIR + "/share/mrpt/datasets/"s + rawlog_filename;
+		mrpt::UNITTEST_BASEDIR() + "/share/mrpt/datasets/"s + rawlog_filename;
 	EXPECT_TRUE(mrpt::system::fileExists(rawlog_fil));
 
 	try

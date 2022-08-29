@@ -11,13 +11,11 @@
 #include <gtest/gtest.h>
 #include <test_mrpt_common.h>
 
-std::string mrpt::UNITTEST_BASEDIR = CMAKE_UNITTEST_BASEDIR;
+std::string mrpt::UNITTEST_BASEDIR() { return CMAKE_UNITTEST_BASEDIR; }
 
 int main(int argc, char** argv)
 {
 	testing::InitGoogleTest(&argc, argv);
-
-	if (argc > 1) mrpt::UNITTEST_BASEDIR = std::string(argv[1]);
 
 	return RUN_ALL_TESTS();
 }
