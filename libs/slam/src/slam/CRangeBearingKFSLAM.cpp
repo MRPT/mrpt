@@ -11,9 +11,8 @@
 //
 
 // ----------------------------------------------------------------------------------------
-// For the theory behind this implementation, see the technical report in:
-//
-//            https://www.mrpt.org/6D-SLAM
+// For the theory behind this implementation, see the
+// technical report cited in the .h file.
 // ----------------------------------------------------------------------------------------
 
 #include <mrpt/math/ops_containers.h>

@@ -256,7 +256,9 @@ class CLevenbergMarquardtTempl : public mrpt::system::COutputLogger
 
 };	// End of class def.
 
-/** The default name for the LM class is an instantiation for "double" */
+/** The default name for the LM class is an instantiation for "double"
+ * \ingroup mrpt_math_grp
+ */
 using CLevenbergMarquardt = CLevenbergMarquardtTempl<mrpt::math::CVectorDouble>;
 
 }  // namespace mrpt::math
