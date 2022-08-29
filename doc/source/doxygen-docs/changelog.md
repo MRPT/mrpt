@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.5.2: UNRELEASED
+# Version 2.5.2: Released August 30th, 2022
 - BUG FIXES:
   - mrpt::math::MatrixBase::eig_symmetric() now is ensured not to return negative eigenvalues due to numerical innacuracies in some platforms (i386).
   - mrpt::maps::COccupancyGridMap2D::getAsPointCloud() did not return the outermost cells as obstacles.
