@@ -28,20 +28,21 @@
 namespace mrpt::slam
 {
 /** An implementation of EKF-based SLAM with range-bearing sensors, odometry, a
- * full 6D robot pose, and 3D landmarks.
- *  The main method is "processActionObservation" which processes pairs of
- * action/observation.
- *  The state vector comprises: 3D robot position, a quaternion for its
+ * SE(3) robot pose, and 3D landmarks.
+ * The main method is processActionObservation() which processes pairs of
+ * actions/observations.
+ *
+ * The state vector comprises: 3D robot position, a quaternion for its
  * attitude, and the 3D landmarks in the map.
  *
- *   The following Wiki page describes an front-end application based on this
- * class:
- *     https://www.mrpt.org/Application:kf-slam
+ * The front-end application [kf-slam](page_app_kf-slam.html) is based on this
+ * class.
  *
- *  For the theory behind this implementation, see the technical report in:
- *     https://www.mrpt.org/6D-SLAM
+ * For the theory behind this implementation, see the technical report:
+ * \cite blanco2008ekf
  *
- * \sa An implementation for 2D only: CRangeBearingKFSLAM2D
+ * \sa An implementation for 2D and SE(2) is in CRangeBearingKFSLAM2D
+ *
  * \ingroup metric_slam_grp
  */
 class CRangeBearingKFSLAM

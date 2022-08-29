@@ -26,28 +26,28 @@ class TSetOfMetricMapInitializers;
  * evaluate the likelihood of one observation by fusing (multiplying) the
  *likelihoods over the different maps, etc.
  *
- *  <b>These kinds of metric maps can be kept inside</b> (list may be
- *incomplete, refer to classes derived from mrpt::maps::CMetricMap):
- *		- mrpt::maps::CSimplePointsMap: For 2D or 3D range scans, ...
- *		- mrpt::maps::COccupancyGridMap2D: 2D, <b>horizontal</b>  laser range
- *scans, at different altitudes.
- *		- mrpt::maps::COctoMap: For 3D occupancy grids of variable resolution,
- *with octrees (based on the library `octomap`).
- *		- mrpt::maps::CColouredOctoMap: The same than above, but nodes can store
- *RGB data appart from occupancy.
- *		- mrpt::maps::CLandmarksMap: For visual landmarks,etc...
- *		- mrpt::maps::CGasConcentrationGridMap2D: For gas concentration maps.
- *		- mrpt::maps::CWirelessPowerGridMap2D: For wifi power maps.
- *		- mrpt::maps::CBeaconMap: For range-only SLAM.
- *		- mrpt::maps::CHeightGridMap2D: For elevation maps of height for each
- *(x,y) location (Digital elevation model, DEM)
- *		- mrpt::maps::CHeightGridMap2D_MRF: DEMs as Markov Random Field (MRF)
- *		- mrpt::maps::CReflectivityGridMap2D: For maps of "reflectivity" for
- *each
- *(x,y) location.
- *		- mrpt::maps::CColouredPointsMap: For point map with color.
- *		- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of
- *"fusing").
+ * <b>These kinds of metric maps can be kept inside</b> (list may be
+ * incomplete, refer to classes derived from mrpt::maps::CMetricMap):
+ *	- mrpt::maps::CSimplePointsMap: For 2D or 3D range scans, ...
+ *	- mrpt::maps::COccupancyGridMap2D: 2D, <b>horizontal</b>  laser range
+ *    scans, at different altitudes.
+ *	- mrpt::maps::COccupancyGridMap3D: 3D occupancy voxel map.
+ *	- mrpt::maps::COctoMap: For 3D occupancy grids of variable resolution,
+ *    with octrees (based on the library `octomap`).
+ *	- mrpt::maps::CColouredOctoMap: The same than above, but nodes can store
+ *    RGB data appart from occupancy.
+ *	- mrpt::maps::CLandmarksMap: For visual landmarks,etc...
+ *	- mrpt::maps::CGasConcentrationGridMap2D: For gas concentration maps.
+ *	- mrpt::maps::CWirelessPowerGridMap2D: For wifi power maps.
+ *	- mrpt::maps::CBeaconMap: For range-only SLAM.
+ *	- mrpt::maps::CHeightGridMap2D: For elevation maps of height for each
+ *    (x,y) location (Digital elevation model, DEM)
+ *	- mrpt::maps::CHeightGridMap2D_MRF: DEMs as Markov Random Field (MRF)
+ *	- mrpt::maps::CReflectivityGridMap2D: For maps of "reflectivity" for
+ *    each (x,y) location.
+ *	- mrpt::maps::CColouredPointsMap: For point map with color.
+ *	- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of
+ *    "fusing").
  *
  * See CMultiMetricMap::setListOfMaps() for the method for initializing this
  *class programmatically.

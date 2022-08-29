@@ -89,10 +89,12 @@ the change in the parameter vector is very small.
 
 # 4. C++ Implementation
 
-The LM algorithm is implemented in the C++ template class mrpt::math::CLevenbergMarquardtTempl<T>,
+The LM algorithm is implemented in the C++ template class
+[`mrpt::math::CLevenbergMarquardtTempl<T>`](class_mrpt_math_CLevenbergMarquardtTempl.html),
 and there is an example in MRPT/samples/optimize-lm, which is described next.
 
-The type mrpt::math::CLevenbergMarquard is actually a shortcut for the template instantiation mrpt::math::CLevenbergMarquardtTempl<double>.
+The type [`mrpt::math::CLevenbergMarquard`](namespace_mrpt_math.html#doxid-namespacemrpt-1-1math-1ae54dd61d03206aef14cfbea53165d239)
+is actually a shortcut for the template instantiation `mrpt::math::CLevenbergMarquardtTempl<double>`.
 
 The image below represents the resulting path from the initial guess to the minimum for this example.
 The displayed equation is the one-dimensional error (cost) function,
