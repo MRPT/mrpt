@@ -20,7 +20,8 @@
 TEST(CObservationRotatingScan, fromKittiUndistorted)
 {
 	using namespace std::string_literals;
-	const auto fil = mrpt::UNITTEST_BASEDIR() + "/tests/kitti_00_000000.bin.gz"s;
+	const auto fil =
+		mrpt::UNITTEST_BASEDIR() + "/tests/kitti_00_000000.bin.gz"s;
 
 	auto pts = mrpt::maps::CPointsMapXYZI::Create();
 	bool read_ok = pts->loadFromKittiVelodyneFile(fil);
