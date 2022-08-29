@@ -22,12 +22,12 @@ TEST(CGridMapAligner, DISABLED_alignGridMaps)
 #endif
 {
 	const std::string ini_fil =
-		mrpt::UNITTEST_BASEDIR +
+		mrpt::UNITTEST_BASEDIR() +
 		std::string(
 			"/share/mrpt/config_files/grid-matching/gridmatch_example.ini");
 	EXPECT_TRUE(mrpt::system::fileExists(ini_fil));
 
-	const std::string gridmap1_fil = mrpt::UNITTEST_BASEDIR +
+	const std::string gridmap1_fil = mrpt::UNITTEST_BASEDIR() +
 		std::string("/share/mrpt/datasets/malaga-cs-fac-building.simplemap.gz");
 	EXPECT_TRUE(mrpt::system::fileExists(gridmap1_fil));
 

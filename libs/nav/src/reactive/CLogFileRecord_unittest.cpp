@@ -83,7 +83,7 @@ TEST(SerializeTestObs, WriteReadToOctectVectors)
 TEST(NavTests, NavLogLoadFromTestFile)
 {
 	const string navlog_file =
-		UNITTEST_BASEDIR + string("/tests/serialize_test_data.reactivenavlog");
+		UNITTEST_BASEDIR() + string("/tests/serialize_test_data.reactivenavlog");
 	if (!mrpt::system::fileExists(navlog_file))
 	{
 		cerr << "WARNING: Skipping test due to missing file: " << navlog_file

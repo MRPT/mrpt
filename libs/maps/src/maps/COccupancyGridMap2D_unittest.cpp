@@ -43,7 +43,7 @@ TEST(COccupancyGridMap2DTests, insert2DScan)
 TEST(COccupancyGridMap2DTests, loadFromROSMapServerYAML)
 {
 	using namespace std::string_literals;
-	const auto fil = mrpt::UNITTEST_BASEDIR + "/tests/yaml_32.yaml"s;
+	const auto fil = mrpt::UNITTEST_BASEDIR() + "/tests/yaml_32.yaml"s;
 
 	auto grid = mrpt::maps::COccupancyGridMap2D::FromROSMapServerYAML(fil);
 

@@ -26,7 +26,7 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset)
 	mrpt::obs::CRawlog rawlog;
 
 	const string dataset_fil =
-		UNITTEST_BASEDIR + string("/share/mrpt/datasets/test_rtk_path.rawlog");
+		UNITTEST_BASEDIR() + string("/share/mrpt/datasets/test_rtk_path.rawlog");
 	if (!mrpt::system::fileExists(dataset_fil))
 	{
 		cerr << "WARNING: Skipping test due to missing file: " << dataset_fil
