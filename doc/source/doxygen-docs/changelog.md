@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.5.3: UNRELEASED
-(No changes yet)
+- Changes in libraries:
+  - \ref mrpt_obs_grp
+    - Not all `CObservation*` classes were declared in `<mrpt/obs/obs_frwds.h>`. Now it is corrected.
 
 # Version 2.5.2: Released August 30th, 2022
 - BUG FIXES:
