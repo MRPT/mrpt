@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.5.3: UNRELEASED
+(No changes yet)
+
 # Version 2.5.2: Released August 30th, 2022
 - BUG FIXES:
   - mrpt::math::MatrixBase::eig_symmetric() now is ensured not to return negative eigenvalues due to numerical innacuracies in some platforms (i386).
