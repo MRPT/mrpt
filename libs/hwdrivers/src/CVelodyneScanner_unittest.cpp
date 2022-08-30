@@ -22,7 +22,7 @@ using namespace std;
 TEST(CVelodyneScanner, sample_vlp16_dataset)
 {
 	const string fil =
-		UNITTEST_BASEDIR + string("/tests/sample_velodyne_vlp16_gps.pcap");
+		UNITTEST_BASEDIR() + string("/tests/sample_velodyne_vlp16_gps.pcap");
 
 	if (!mrpt::system::fileExists(fil))
 	{
@@ -62,7 +62,7 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 TEST(CVelodyneScanner, sample_hdl32_dataset)
 {
 	const string fil =
-		UNITTEST_BASEDIR + string("/tests/sample_velodyne_hdl32.pcap");
+		UNITTEST_BASEDIR() + string("/tests/sample_velodyne_hdl32.pcap");
 
 	if (!mrpt::system::fileExists(fil))
 	{

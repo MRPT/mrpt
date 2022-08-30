@@ -41,7 +41,7 @@ TEST(COccupancyGridMap3DTests, insertScan3D)
 {
 	using namespace std::string_literals;
 	const auto fil =
-		mrpt::UNITTEST_BASEDIR + "/tests/test-3d-obs-ground.rawlog"s;
+		mrpt::UNITTEST_BASEDIR() + "/tests/test-3d-obs-ground.rawlog"s;
 	if (!mrpt::system::fileExists(fil))
 	{
 		GTEST_FAIL() << "ERROR: test due to missing file: " << fil << "\n";

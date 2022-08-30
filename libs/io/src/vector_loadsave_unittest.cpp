@@ -17,7 +17,7 @@
 TEST(file_get_contents, readTestFile)
 {
 	const std::string fil = mrpt::format(
-		"%s/tests/sample_text_file.txt", mrpt::UNITTEST_BASEDIR.c_str());
+		"%s/tests/sample_text_file.txt", mrpt::UNITTEST_BASEDIR().c_str());
 
 	std::string contents = mrpt::io::file_get_contents(fil);
 	contents = std::regex_replace(contents, std::regex("\r\n"), "\n");
@@ -30,7 +30,7 @@ TEST(file_get_contents, readTestFile)
 TEST(file_get_contents, throwOnError)
 {
 	const std::string fil = mrpt::format(
-		"%s/tests/sample_text_file_bis.txt", mrpt::UNITTEST_BASEDIR.c_str());
+		"%s/tests/sample_text_file_bis.txt", mrpt::UNITTEST_BASEDIR().c_str());
 
 	EXPECT_ANY_THROW(mrpt::io::file_get_contents(fil));
 }

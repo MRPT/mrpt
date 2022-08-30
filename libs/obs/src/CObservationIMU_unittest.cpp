@@ -36,7 +36,7 @@ TEST(CObservationIMU, Deserialize_v3)
 
 	//! JS_PRELOAD_FILE <tests/test-imu-obs-format3.rawlog>
 	const auto sFil =
-		mrpt::UNITTEST_BASEDIR + "/tests/test-imu-obs-format3.rawlog"s;
+		mrpt::UNITTEST_BASEDIR() + "/tests/test-imu-obs-format3.rawlog"s;
 
 	bool loadOk = dataset.loadFromRawLogFile(sFil);
 	EXPECT_TRUE(loadOk);
@@ -54,7 +54,7 @@ TEST(CObservationIMU, Deserialize_v4)
 
 	//! JS_PRELOAD_FILE <tests/test-imu-obs-format4.rawlog>
 	const auto sFil =
-		mrpt::UNITTEST_BASEDIR + "/tests/test-imu-obs-format4.rawlog"s;
+		mrpt::UNITTEST_BASEDIR() + "/tests/test-imu-obs-format4.rawlog"s;
 
 	bool loadOk = dataset.loadFromRawLogFile(sFil);
 	EXPECT_TRUE(loadOk);

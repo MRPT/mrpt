@@ -200,4 +200,18 @@ void COccupancyGridMap2D::getAsPointCloud(
 				pm.insertPoint(idx2x(i), idx2y(j));
 		}
 	}
+
+	// Now, all outermost cells, without the surrounded condition:
+	for (size_t i = 0; i < m_size_x; i++)
+	{
+		if (getCell(i, 0) < occup_threshold) pm.insertPoint(idx2x(i), idx2y(0));
+		if (getCell(i, m_size_y - 1) < occup_threshold)
+			pm.insertPoint(idx2x(i), idx2y(m_size_y - 1));
+	}
+	for (size_t j = 1; j + 1 < m_size_y; j++)
+	{
+		if (getCell(0, j) < occup_threshold) pm.insertPoint(idx2x(0), idx2y(j));
+		if (getCell(m_size_x - 1, j) < occup_threshold)
+			pm.insertPoint(idx2x(m_size_x - 1), idx2y(j));
+	}
 }

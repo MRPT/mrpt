@@ -26,7 +26,7 @@ template class mrpt::CTraitsTest<mrpt::img::CImage>;
 
 using namespace std::string_literals;
 const auto tstImgFileColor =
-	mrpt::UNITTEST_BASEDIR + "/samples/img_basic_example/frame_color.jpg"s;
+	mrpt::UNITTEST_BASEDIR() + "/samples/img_basic_example/frame_color.jpg"s;
 
 // Generate random img:
 static void fillImagePseudoRandom(uint32_t seed, mrpt::img::CImage& img)
@@ -482,7 +482,7 @@ TEST(CImage, LoadAndComparePseudoRnd)
 	using namespace std::string_literals;
 
 	const auto tstimg =
-		mrpt::UNITTEST_BASEDIR + "/tests/test_pseudorandom_img_seed70.png"s;
+		mrpt::UNITTEST_BASEDIR() + "/tests/test_pseudorandom_img_seed70.png"s;
 
 	CImage a;
 	bool load_ok = a.loadFromFile(tstimg);
