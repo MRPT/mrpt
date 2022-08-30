@@ -59,11 +59,11 @@ static void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 	using namespace std::string_literals;  // s
 	using namespace mrpt::opengl;
 
-	const std::string expected_RGB_img_file = UNITTEST_BASEDIR +
+	const std::string expected_RGB_img_file = UNITTEST_BASEDIR() +
 		"/tests/CFBORender_expected_rgb_"s +
 		(useCameraFromIntrinsics ? "camInt"s : "camFOV"s) + ".png"s;
 
-	const std::string expected_depth_img_file = UNITTEST_BASEDIR +
+	const std::string expected_depth_img_file = UNITTEST_BASEDIR() +
 		"/tests/CFBORender_expected_depth_"s +
 		(useCameraFromIntrinsics ? "camInt"s : "camFOV"s) + ".png"s;
 

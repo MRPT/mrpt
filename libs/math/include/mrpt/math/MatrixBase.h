@@ -179,7 +179,11 @@ class MatrixBase : public MatrixVectorBase<Scalar, Derived>
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 
 	/** Read: eig()
-	 * \note This only uses the **lower-triangular** part of the matrix */
+	 * \note This only uses the **lower-triangular** part of the matrix
+	 * \note (Since MRPT 2.5.2) If sorted==true, the smallest eigenvalue is
+	 * checked to be non-negative, and resetted to zero if found to be negative
+	 * due to rounding errors in the internal Eigen3 routines.
+	 **/
 	bool eig_symmetric(
 		Derived& eVecs, std::vector<Scalar>& eVals, bool sorted = true) const;
 

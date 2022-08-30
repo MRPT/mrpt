@@ -145,6 +145,9 @@ bool MatrixBase<Scalar, Derived>::eig_symmetric(
 	{
 		detail::sortEigResults(
 			eigenVal, es.eigenvectors().real(), eVals, eVecs);
+
+		// Avoid numerical issues on some platforms (e.g. i386 arch)
+		if (eVals.at(0) < 0) eVals.at(0) = 0;
 	}
 	else
 	{

@@ -18,7 +18,7 @@ TEST(CPointsMapXYZI, loadFromKittiVelodyneFile)
 {
 	using namespace std;
 	const string kitti_fil =
-		mrpt::UNITTEST_BASEDIR + string("/tests/kitti_00_000000.bin.gz");
+		mrpt::UNITTEST_BASEDIR() + string("/tests/kitti_00_000000.bin.gz");
 	if (!mrpt::system::fileExists(kitti_fil))
 	{
 		cerr << "WARNING: Skipping test due to missing file: " << kitti_fil

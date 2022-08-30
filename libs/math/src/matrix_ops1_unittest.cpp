@@ -127,6 +127,25 @@ TEST(Matrices, eig_symmetric)
 		EXPECT_NEAR(eig_vals[0], 9.83232131811656, 1e-4);
 		EXPECT_NEAR(eig_vals[1], 21.67527868188344, 1e-4);
 	}
+	{
+		CMatrixDouble22 C({1.0, 0.5, 0.5, 0.25});
+
+		CMatrixDouble22 eig_vecs;
+		std::vector<double> eig_vals;
+		C.eig_symmetric(eig_vecs, eig_vals);
+
+		EXPECT_EQ(eig_vals.size(), 2UL);
+		EXPECT_NEAR(eig_vals[0], 0, 1e-3);
+		EXPECT_TRUE(eig_vals[0] >= 0);
+		EXPECT_NEAR(eig_vals[1], 1.25, 1e-3);
+
+		EXPECT_NEAR(
+			std::atan(eig_vecs(1, 0) / eig_vecs(0, 0)),
+			std::atan(-0.894427 / 0.447213), 1e-3);
+		EXPECT_NEAR(
+			std::atan(eig_vecs(1, 1) / eig_vecs(0, 1)),
+			std::atan(-0.447213 / -0.894427), 1e-3);
+	}
 }
 
 TEST(Matrices, EigenVal3x3dyn)

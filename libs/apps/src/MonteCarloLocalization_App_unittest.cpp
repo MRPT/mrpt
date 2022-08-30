@@ -28,16 +28,16 @@ void generic_pf_test(
 {
 	using namespace std::string_literals;
 
-	const auto ini_fil = mrpt::UNITTEST_BASEDIR +
+	const auto ini_fil = mrpt::UNITTEST_BASEDIR() +
 		"/share/mrpt/config_files/pf-localization/"s + ini_filename;
 	ASSERT_FILE_EXISTS_(ini_fil);
 
 	const auto rawlog_fil =
-		mrpt::UNITTEST_BASEDIR + "/share/mrpt/datasets/"s + rawlog_filename;
+		mrpt::UNITTEST_BASEDIR() + "/share/mrpt/datasets/"s + rawlog_filename;
 	ASSERT_FILE_EXISTS_(rawlog_fil);
 
 	const auto map_fil =
-		mrpt::UNITTEST_BASEDIR + "/share/mrpt/datasets/"s + map_filename;
+		mrpt::UNITTEST_BASEDIR() + "/share/mrpt/datasets/"s + map_filename;
 	ASSERT_FILE_EXISTS_(map_fil);
 
 	try

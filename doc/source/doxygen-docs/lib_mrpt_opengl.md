@@ -21,7 +21,7 @@ A good starting point to explore this library is the base class for all the
 A 3D scene is represented by an object of the type mrpt::opengl::COpenGLScene,
 which in turn can contain one or several "viewports" in such a way that the
 rendering area is divided into several spaces, each displaying the same or different
-objects. See the tutorial online: https://www.mrpt.org/Tutorial_3D_Scenes
+objects. See the tutorial: \ref tutorial_3D_scenes
 
 See the full list of classes in mrpt::opengl.
 

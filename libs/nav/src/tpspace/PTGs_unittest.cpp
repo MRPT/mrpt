@@ -20,7 +20,7 @@ TEST(NavTests, PTGs_tests)
 	using namespace mrpt::nav;
 
 	const string sFil =
-		mrpt::UNITTEST_BASEDIR + string("/tests/PTGs_for_tests.ini");
+		mrpt::UNITTEST_BASEDIR() + string("/tests/PTGs_for_tests.ini");
 	if (!mrpt::system::fileExists(sFil))
 	{
 		cerr << "**WARNING* Skipping tests since file cannot be found: '"

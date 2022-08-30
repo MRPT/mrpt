@@ -17,7 +17,7 @@ TEST(PlannerSimple2D, findPath)
 {
 	using namespace std::string_literals;
 
-	const auto fil = mrpt::UNITTEST_BASEDIR +
+	const auto fil = mrpt::UNITTEST_BASEDIR() +
 		"/share/mrpt/datasets/2006-MalagaCampus.gridmap.gz"s;
 
 	// Load the gridmap:
