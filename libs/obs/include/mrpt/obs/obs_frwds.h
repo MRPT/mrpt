@@ -17,16 +17,33 @@ namespace obs
 class CObservation;
 class CSensoryFrame;
 class CObservation2DRangeScan;
+class CObservation2DRangeScanWithUncertainty;
 class CObservation3DRangeScan;
-class CObservationVelodyneScan;
-class CObservationRotatingScan;
-class CObservationRange;
+class CObservation3DScene;
+class CObservation6DFeatures;
+class CObservationBatteryState;
 class CObservationBeaconRanges;
 class CObservationBearingRange;
-class CObservationStereoImages;
+class CObservationCANBusJ1939;
+class CObservationComment;
 class CObservationGPS;
-class CObservationPointCloud;
+class CObservationGasSensors;
 class CObservationIMU;
+class CObservationImage;
+class CObservationOdometry;
+class CObservationRFID;
+class CObservationRGBD360;
+class CObservationRange;
+class CObservationRawDAQ;
+class CObservationReflectivity;
+class CObservationRobotPose;
+class CObservationSkeleton;
+class CObservationStereoImages;
+class CObservationStereoImagesFeatures;
+class CObservationVelodyneScan;
+class CObservationWindSensor;
+class CObservationWirelessPower;
+
 }  // namespace obs
 namespace maps
 {
