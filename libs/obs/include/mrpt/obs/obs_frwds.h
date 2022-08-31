@@ -37,6 +37,7 @@ class CObservationRange;
 class CObservationRawDAQ;
 class CObservationReflectivity;
 class CObservationRobotPose;
+class CObservationRotatingScan;
 class CObservationSkeleton;
 class CObservationStereoImages;
 class CObservationStereoImagesFeatures;
