@@ -2,6 +2,8 @@
 
 # Version 2.5.3: UNRELEASED
 - Changes in libraries:
+  - \ref mrpt_gui_grp
+    - nanogui::mainloop() (and mrpt::gui::CDisplayWindowGUI()) now allows defining a minimum period for calls to user callback functions via a new second optional parameter.
   - \ref mrpt_obs_grp
     - Not all `CObservation*` classes were declared in `<mrpt/obs/obs_frwds.h>`. Now it is corrected.
 
