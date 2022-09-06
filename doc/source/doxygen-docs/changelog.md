@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.5.4: UNRELEASED
+(No changes yet)
+
 # Version 2.5.3: Released September 6th, 2022
 - Changes in libraries:
   - \ref mrpt_gui_grp
