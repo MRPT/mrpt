@@ -296,6 +296,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 	/** @} */
 
 	virtual void drawContents() override;
+	virtual void onIdleLoopTasks() override;
 
    protected:
 	CDisplayWindowGUI(const CDisplayWindowGUI&) = delete;

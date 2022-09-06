@@ -42,7 +42,7 @@ CDisplayWindowGUI::~CDisplayWindowGUI()
 	nanogui::Screen::setVisible(false);
 }
 
-void CDisplayWindowGUI::drawContents()
+void CDisplayWindowGUI::onIdleLoopTasks()
 {
 	// If provided, call the user loop code:
 	for (const auto& callback : m_loopCallbacks)
@@ -57,7 +57,10 @@ void CDisplayWindowGUI::drawContents()
 					  << e.what() << std::endl;
 		}
 	}
+}
 
+void CDisplayWindowGUI::drawContents()
+{
 	// Optional: render background scene.
 	std::lock_guard<std::mutex> lck(background_scene_mtx);
 	if (!background_scene) return;
