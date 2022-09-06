@@ -1,5 +1,14 @@
 \page changelog Change Log
 
+# Version 2.5.3: Released September 6th, 2022
+- Changes in libraries:
+  - \ref mrpt_gui_grp
+    - nanogui::mainloop() (and mrpt::gui::CDisplayWindowGUI()) now allows defining a minimum period for calls to user callback functions via a new second optional parameter.
+  - \ref mrpt_obs_grp
+    - Not all `CObservation*` classes were declared in `<mrpt/obs/obs_frwds.h>`. Now it is corrected.
+- BUG FIXES:
+  - Fix build on hppa (parisc64) architecture (not supported flag `-mtune=native`)
+
 # Version 2.5.2: Released August 30th, 2022
 - BUG FIXES:
   - mrpt::math::MatrixBase::eig_symmetric() now is ensured not to return negative eigenvalues due to numerical innacuracies in some platforms (i386).

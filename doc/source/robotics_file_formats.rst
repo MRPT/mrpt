@@ -12,10 +12,6 @@ different programs and C++ classes.
 
 .. toctree::
   :maxdepth: 1
-  :caption: For more details:
-
-  rawlog_format.rst
-
 
 
 1. Datasets
