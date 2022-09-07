@@ -92,7 +92,7 @@ class CFileOutputStream : public CStream
 	uint64_t Seek(
 		int64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 
-	/** Method for getting the total number of bytes writen to buffer */
+	/** Method for getting the total number of bytes written to buffer */
 	uint64_t getTotalBytesCount() const override;
 
 	/** Method for getting the current cursor position, where 0 is the first

@@ -364,8 +364,7 @@ class CSparseMatrix
 	 *  \endcode
 	 *
 	 *  Instructions for loading from MATLAB in triplet form will be
-	 * automatically writen to the
-	 *  output file as comments in th first lines:
+	 * automatically written to the output file as comments in th first lines:
 	 *
 	 *   \code
 	 *      D=load('file.txt');
