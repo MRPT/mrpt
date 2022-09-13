@@ -22,7 +22,7 @@ namespace mrpt::opengl
  * - render_RGB(): Renders a scene into an RGB image.
  * - render_RGBD(): Renders a scene into an RGB and depth images.
  *
- *  To define a background color, define it in your
+ * To define a background color, define it in your
  * `scene.getViewport()->setCustomBackgroundColor()`. You can add overlaid text
  * messages, see base class CTextMessageCapable
  *

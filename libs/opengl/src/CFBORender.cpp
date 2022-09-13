@@ -15,6 +15,16 @@
 //
 #include <mrpt/config.h>
 
+#include <mutex>
+#include <unordered_map>
+
+#define FBO_USE_LUT
+//#define FBO_PROFILER
+
+#ifdef FBO_PROFILER
+#include <mrpt/system/CTimeLogger.h>
+#endif
+
 #if MRPT_HAS_EGL
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -29,6 +39,63 @@ using mrpt::img::CImage;
 
 const thread_local bool MRPT_FBORENDER_SHOW_DEVICES =
 	mrpt::get_env<bool>("MRPT_FBORENDER_SHOW_DEVICES");
+
+const thread_local bool MRPT_FBORENDER_USE_LUT =
+	mrpt::get_env<bool>("MRPT_FBORENDER_USE_LUT", true);
+
+class OpenGLDepth2Linear_LUTs
+{
+   public:
+	constexpr static std::size_t NUM_ENTRIES = 1 << 18;
+
+	static OpenGLDepth2Linear_LUTs& Instance()
+	{
+		thread_local OpenGLDepth2Linear_LUTs lut;
+		return lut;
+	}
+
+	using lut_t = std::vector<float>;
+
+	lut_t& lut_from_zn_zf(float zn, float zf)
+	{
+		const auto p = std::pair<float, float>(zn, zf);
+		// reuse?
+		if (auto it = m_pool.find(p); it != m_pool.end()) return it->second;
+
+		// create new:
+		auto& lut = m_pool[p];
+		lut.resize(NUM_ENTRIES);
+
+		const auto linearDepth = [zn, zf](float depthSample) -> float {
+			if (depthSample == 1.0f) return 0.0f;  // no echo
+
+			depthSample = 2.0f * depthSample - 1.0f;
+			float zLinear =
+				2.0f * zn * zf / (zf + zn - depthSample * (zf - zn));
+			return zLinear;
+		};
+
+		for (size_t i = 0; i < NUM_ENTRIES; i++)
+		{
+			float f = -1.0f + 2.0f * static_cast<float>(i) / (NUM_ENTRIES - 1);
+			lut.at(i) = linearDepth(f);
+		}
+
+		return lut;
+	}
+
+   private:
+	struct MyHash
+	{
+		template <typename T>
+		std::size_t operator()(const std::pair<T, T>& x) const
+		{
+			return std::hash<T>()(x.first) ^ std::hash<T>()(x.second);
+		}
+	};
+
+	std::unordered_map<std::pair<float, float>, lut_t, MyHash> m_pool;
+};
 
 /*---------------------------------------------------------------
 						Constructor
@@ -189,6 +256,17 @@ void CFBORender::internal_render_RGBD(
 
 	ASSERT_(optoutRGB.has_value() || optoutDepth.has_value());
 
+#ifdef FBO_PROFILER
+	thread_local mrpt::system::CTimeLogger profiler(true, "FBO_RENDERER");
+
+	using namespace std::string_literals;
+	const std::string sSec =
+		mrpt::format("%ux%u_", m_fb.width(), m_fb.height());
+
+	auto tleR =
+		mrpt::system::CTimeLoggerEntry(profiler, sSec + ".prepAndRender"s);
+#endif
+
 	const auto oldFBs = m_fb.bind();
 
 	// Get former viewport
@@ -212,6 +290,10 @@ void CFBORender::internal_render_RGBD(
 	for (const auto& viewport : scene.viewports())
 		viewport->render(m_fb.width(), m_fb.height(), 0, 0);
 
+#ifdef FBO_PROFILER
+	tleR.stop();
+#endif
+
 	// ---------------------------
 	// RGB
 	// ---------------------------
@@ -233,12 +315,23 @@ void CFBORender::internal_render_RGBD(
 		ASSERT_EQUAL_(outRGB.getHeight(), static_cast<size_t>(m_fb.height()));
 		ASSERT_EQUAL_(outRGB.getChannelCount(), 3);
 
+#ifdef FBO_PROFILER
+		auto tle1 = mrpt::system::CTimeLoggerEntry(
+			profiler, sSec + ".glReadPixels_rgb"s);
+#endif
+
 		// TODO NOTE: This should fail if the image has padding bytes. See
 		// glPixelStore() etc.
 		glReadPixels(
 			0, 0, m_fb.width(), m_fb.height(), GL_BGR_EXT, GL_UNSIGNED_BYTE,
 			outRGB(0, 0));
 		CHECK_OPENGL_ERROR();
+
+#ifdef FBO_PROFILER
+		tle1.stop();
+		auto tle2 =
+			mrpt::system::CTimeLoggerEntry(profiler, sSec + ".flip_rgb"s);
+#endif
 
 		// Flip vertically:
 		outRGB.flipVertical();
@@ -250,6 +343,12 @@ void CFBORender::internal_render_RGBD(
 	if (optoutDepth.has_value())
 	{
 		auto& outDepth = optoutDepth.value().get();
+
+#ifdef FBO_PROFILER
+		auto tle1 = mrpt::system::CTimeLoggerEntry(
+			profiler, sSec + ".glReadPixels_float"s);
+#endif
+
 		outDepth.resize(m_fb.height(), m_fb.width());
 
 		glReadPixels(
@@ -257,25 +356,63 @@ void CFBORender::internal_render_RGBD(
 			outDepth.data());
 		CHECK_OPENGL_ERROR();
 
+#ifdef FBO_PROFILER
+		tle1.stop();
+#endif
+
 		// Transform from OpenGL clip depths into linear distances:
 		const auto mats = scene.getViewport()->getRenderMatrices();
-
 		const float zn = mats.getLastClipZNear();
 		const float zf = mats.getLastClipZFar();
 
-		// Depth buffer -> linear depth:
-		const auto linearDepth = [zn, zf](float depthSample) -> float {
-			depthSample = 2.0 * depthSample - 1.0;
-			float zLinear = 2.0 * zn * zf / (zf + zn - depthSample * (zf - zn));
-			return zLinear;
-		};
+		const OpenGLDepth2Linear_LUTs::lut_t* lut = nullptr;
 
-		for (auto& d : outDepth)
+#if !defined(FBO_USE_LUT)
+		const bool do_use_lut = false;
+#else
+		bool do_use_lut = MRPT_FBORENDER_USE_LUT;
+		// dont use LUT for really small image areas:
+		if (m_fb.height() * m_fb.width() < 10000) { do_use_lut = false; }
+#endif
+
+		if (do_use_lut)
+			lut = &OpenGLDepth2Linear_LUTs::Instance().lut_from_zn_zf(zn, zf);
+
+#ifdef FBO_PROFILER
+		auto tle2 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".linear"s);
+#endif
+
+		if (!do_use_lut)
 		{
-			if (d == 1) d = 0;	// no "echo return"
-			else
-				d = linearDepth(d);
+			// Depth buffer -> linear depth:
+			const auto linearDepth = [zn, zf](float depthSample) -> float {
+				depthSample = 2.0 * depthSample - 1.0;
+				float zLinear =
+					2.0 * zn * zf / (zf + zn - depthSample * (zf - zn));
+				return zLinear;
+			};
+			for (auto& d : outDepth)
+			{
+				if (d == 1) d = 0;	// no "echo return"
+				else
+					d = linearDepth(d);
+			}
 		}
+		else
+		{
+			// map d in [-1.0f,+1.0f] ==> real depth values:
+			for (auto& d : outDepth)
+			{
+				d = (*lut)
+					[(d + 1.0f) * (OpenGLDepth2Linear_LUTs::NUM_ENTRIES - 1) /
+					 2];
+			}
+		}
+
+#ifdef FBO_PROFILER
+		tle2.stop();
+		auto tle3 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".flip"s);
+#endif
 
 		// flip lines:
 		std::vector<float> bufLine(m_fb.width());
@@ -287,6 +424,9 @@ void CFBORender::internal_render_RGBD(
 			::memcpy(&outDepth(y, 0), &outDepth(yFlipped, 0), bytesPerLine);
 			::memcpy(&outDepth(yFlipped, 0), bufLine.data(), bytesPerLine);
 		}
+#ifdef FBO_PROFILER
+		tle3.stop();
+#endif
 	}
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not
