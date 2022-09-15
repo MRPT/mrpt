@@ -490,7 +490,8 @@ if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		# If enabled, and NOT in an arch that doesn't support the flag:
     	if(MRPT_TUNE_NATIVE AND
 			(NOT "${CMAKE_MRPT_ARCH}" STREQUAL "riscv64") AND
-			(NOT "${CMAKE_MRPT_ARCH}" STREQUAL "parisc64") # hppa
+			(NOT "${CMAKE_MRPT_ARCH}" STREQUAL "parisc64") AND # hppa
+			(NOT "${CMAKE_MRPT_ARCH}" STREQUAL "parisc") # hppa
 		)
     		add_compile_options(-mtune=native)
     	endif()
