@@ -4,6 +4,8 @@
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CFBORender is now faster, using a LUT for converting from logarithmic to linear depth values.
+- BUG FIXES:
+  - Fix build on hppa for parisc architecture too (not supported flag `-mtune=native`)
 
 # Version 2.5.3: Released September 6th, 2022
 - Changes in libraries:
