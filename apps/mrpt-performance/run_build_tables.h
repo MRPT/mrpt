@@ -33,6 +33,7 @@ bool func_comp_entries(const TPerfField& a, const TPerfField& b)
 int run_build_tables()
 {
 	using namespace std;
+	using namespace std::string_literals;
 	using namespace mrpt;
 	using namespace mrpt::system;
 	using namespace mrpt::serialization;
@@ -72,7 +73,7 @@ int run_build_tables()
 	std::sort(
 		lstConfigurations.begin(), lstConfigurations.end(), func_comp_entries);
 
-	ASSERT_(directoryExists(PERF_DATA_DIR + string("/perf-html/")));
+	ASSERT_DIRECTORY_EXISTS_(PERF_DATA_DIR + "/perf-html/"s);
 	CFileOutputStream fo;
 	// ====================================================
 	//                  index.html
