@@ -4,6 +4,10 @@
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CFBORender is now faster, using a LUT for converting from logarithmic to linear depth values.
+  - \ref mrpt_ros1bridge_grp
+    - Implemented missing mrpt::ros1bridge::toROS()
+  - \ref mrpt_ros2bridge_grp
+    - Implemented missing mrpt::ros2bridge::toROS()
 - BUG FIXES:
   - Fix build on hppa for parisc architecture too (not supported flag `-mtune=native`)
   - nanogui: Fix mismatched memory allocator/free in serialization code.
