@@ -150,7 +150,7 @@ std::unique_ptr<CClientTCPSocket> CServerTCPSocket::accept(int timeout_ms)
 		if (aceptdSock == INVALID_SOCKET)
 		{
 			MRPT_LOG_ERROR_FMT("%s\n", getLastErrorStr().c_str());
-			return std::unique_ptr<CClientTCPSocket>();
+			return {};
 		}
 
 		auto ret = std::make_unique<CClientTCPSocket>();
