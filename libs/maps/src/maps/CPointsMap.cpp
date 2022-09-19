@@ -474,9 +474,7 @@ void CPointsMap::determineMatching2D(
 		if (tentativ_err_sq < maxDistForCorrespondenceSquared)
 		{
 			// Save all the correspondences:
-			tempCorrs.resize(tempCorrs.size() + 1);
-
-			TMatchingPair& p = tempCorrs.back();
+			TMatchingPair& p = tempCorrs.emplace_back();
 
 			p.globalIdx = tentativ_this_idx;
 			p.global.x = m_x[tentativ_this_idx];
@@ -1104,9 +1102,7 @@ void CPointsMap::determineMatching3D(
 			if (tentativ_err_sq < maxDistForCorrespondenceSquared)
 			{
 				// Save all the correspondences:
-				tempCorrs.resize(tempCorrs.size() + 1);
-
-				TMatchingPair& p = tempCorrs.back();
+				TMatchingPair& p = tempCorrs.emplace_back();
 
 				p.globalIdx = tentativ_this_idx;
 				p.global.x = m_x[tentativ_this_idx];
@@ -1280,9 +1276,7 @@ void CPointsMap::compute3DDistanceToMesh(
 			if (distanceForThisPoint < maxDistForCorrespondence)
 			{
 				// Save all the correspondences:
-				tempCorrs.resize(tempCorrs.size() + 1);
-
-				TMatchingPair& p = tempCorrs.back();
+				TMatchingPair& p = tempCorrs.emplace_back();
 
 				p.globalIdx = nOtherMapPointsWithCorrespondence++;	// insert a
 				// consecutive index

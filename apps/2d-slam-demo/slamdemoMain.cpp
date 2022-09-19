@@ -1930,8 +1930,7 @@ void slamdemoFrame::executeOneStep()
 		}
 
 		// Save historic data ------------------------
-		m_historicData.emplace_back();
-		THistoric& hist = m_historicData.back();
+		THistoric& hist = m_historicData.emplace_back();
 
 		hist.GT_robot_pose = m_GT_pose;
 		m_SLAM.getCurrentRobotPose(hist.estimate_robot_pose);
