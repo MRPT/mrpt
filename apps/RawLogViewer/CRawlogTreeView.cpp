@@ -114,20 +114,13 @@ void CRawlogTreeView::setRawlogSource(CRawlog* theRawlog)
 /* ------------------------------------------------------------
 						reloadFromRawlog
    ------------------------------------------------------------ */
-void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
+void CRawlogTreeView::reloadFromRawlog()
 {
 	// Recompute the total height of the scroll area:
 	//  We also compute a list for each index with:
 	//    - Pointer to data
 	//	  - level in the hierarchy (0,1,2)
 	// --------------------------------------------------------
-
-	if (m_rawlog)
-	{
-		if (hint_rawlog_items < 0) m_tree_nodes.reserve(m_rawlog->size() + 100);
-		else
-			m_tree_nodes.reserve(hint_rawlog_items + 100);
-	}
 
 	// Create a "tree node" for each element in the rawlog:
 	// ---------------------------------------------------------
@@ -137,8 +130,7 @@ void CRawlogTreeView::reloadFromRawlog(int hint_rawlog_items)
 	m_rawlog_last = INVALID_TIMESTAMP;
 
 	// Root:
-	m_tree_nodes.emplace_back();
-	m_tree_nodes.back().level = 0;
+	m_tree_nodes.emplace_back().level = 0;
 
 	auto lambdaCheckTimestamp = [this](const mrpt::Clock::time_point& t) {
 		if (t == INVALID_TIMESTAMP) return;

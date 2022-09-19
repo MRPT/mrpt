@@ -11,6 +11,7 @@
 - BUG FIXES:
   - Fix build on hppa for parisc architecture too (not supported flag `-mtune=native`)
   - nanogui: Fix mismatched memory allocator/free in serialization code.
+  - Fix potential segfault in RawLogViewer while building the tree view.
 
 # Version 2.5.3: Released September 6th, 2022
 - Changes in libraries:
@@ -54,7 +55,7 @@
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CMesh supports having (x,y) limits with `maxCoord<minCoord` for flipped elevation and image meshes.
     - New flag mrpt::opengl::CAssimpModel::LoadFlags::IgnoreMaterialColor for mrpt::opengl::CAssimpModel::loadScene()
-    - A new rendering mode for default no-perspective transformations. 
+    - A new rendering mode for default no-perspective transformations.
       See mrpt::opengl::CCamera::setNoProjection()
   - \ref mrpt_poses_grp
     - Add correct displacement covariance calculation between two poses with cross-correlation via new method mrpt::poses::CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation() (Closes [#1242](https://github.com/MRPT/mrpt/issues/1242))
