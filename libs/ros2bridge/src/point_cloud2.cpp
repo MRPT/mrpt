@@ -15,6 +15,8 @@
 
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <sensor_msgs/msg/point_field.hpp>
+//
+#include <mrpt/config.h>  // MRPT_IS_BIG_ENDIAN
 
 using namespace mrpt::maps;
 
@@ -180,7 +182,52 @@ bool mrpt::ros2bridge::toROS(
 	const CSimplePointsMap& obj, const std_msgs::msg::Header& msg_header,
 	sensor_msgs::msg::PointCloud2& msg)
 {
-	THROW_EXCEPTION("not implemented yet.");
+	msg.header = msg_header;
+
+	// 2D structure of the point cloud. If the cloud is unordered, height is
+	//  1 and width is the length of the point cloud.
+	msg.height = 1;
+	msg.width = obj.size();
+
+	std::array<std::string, 3> names = {"x", "y", "z"};
+	std::array<size_t, 3> offsets = {0, sizeof(float) * 1, sizeof(float) * 2};
+
+	msg.fields.resize(3);
+	for (size_t i = 0; i < 3; i++)
+	{
+		auto& f = msg.fields.at(i);
+
+		f.count = 1;
+		f.offset = offsets[i];
+		f.datatype = sensor_msgs::msg::PointField::FLOAT32;
+		f.name = names[i];
+	}
+
+#if MRPT_IS_BIG_ENDIAN
+	msg.is_bigendian = true;
+#else
+	msg.is_bigendian = false;
+#endif
+
+	msg.point_step = sizeof(float) * 3;
+	msg.row_step = msg.width * msg.point_step;
+
+	// data:
+	msg.data.resize(msg.row_step * msg.height);
+
+	const auto& xs = obj.getPointsBufferRef_x();
+	const auto& ys = obj.getPointsBufferRef_y();
+	const auto& zs = obj.getPointsBufferRef_z();
+
+	float* pointDest = reinterpret_cast<float*>(msg.data.data());
+	for (size_t i = 0; i < xs.size(); i++)
+	{
+		*pointDest++ = xs[i];
+		*pointDest++ = ys[i];
+		*pointDest++ = zs[i];
+	}
+
+	return true;
 }
 
 /** Convert sensor_msgs/PointCloud2 -> mrpt::obs::CObservationRotatingScan */
