@@ -32,11 +32,9 @@ endif()
 # -------------------------
 #        Setup CMake
 # -------------------------
-if (WIN32)
-	cmake_minimum_required(VERSION 3.4) # required for CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS
-else()
-	cmake_minimum_required(VERSION 3.3)
-endif()
+# Minimum version required for:
+# - target_compile_features() => 3.8.0
+cmake_minimum_required(VERSION 3.8)
 
 # CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
 if (POLICY CMP0075)

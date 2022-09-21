@@ -16,14 +16,9 @@ function(mrpt_lib_target_requires_cpp17 _TARGET)
 		set(INTERF_TYPE "PUBLIC")
 	endif()
 
+	# Modern, clean way to do this:
+	target_compile_features(${_TARGET} ${INTERF_TYPE} cxx_std_17)
 
-	if(NOT ${CMAKE_VERSION} VERSION_LESS "3.8.0")
-		# Modern, clean way to do this:
-		get_target_property(target_type ${_TARGET} TYPE)
-		target_compile_features(${_TARGET} ${INTERF_TYPE} cxx_std_17)
-	else()
-		message(FATAL_ERROR "MRPT requires CMake >=3.8.0 to build since MRPT 2.2.1, so libraries compile features regarding C++ versions are handled properly. For Ubuntu Xenial, check out e.g. this PPA: https://launchpad.net/~andrew-fuller/+archive/ubuntu/cmake/+packages")
-	endif()
 endfunction()
 
 # Minimize the time and memory required to build and load debug info:
