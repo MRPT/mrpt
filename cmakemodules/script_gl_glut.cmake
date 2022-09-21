@@ -31,11 +31,7 @@ if (POLICY CMP0072)
 endif()
 find_package(OpenGL)
 
-if (NOT "${CMAKE_VERSION}" VERSION_LESS "3.8.2")
-	set(MRPT_GL_LIB OpenGL::GL)
-else()
-	set(MRPT_GL_LIB ${OPENGL_gl_LIBRARY})
-endif()
+set(MRPT_GL_LIB OpenGL::GL)
 
 # EGL:
 if(CMAKE_VERSION VERSION_LESS 3.16.0)
