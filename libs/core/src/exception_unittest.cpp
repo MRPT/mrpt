@@ -65,8 +65,7 @@ TEST(exception, stackedExceptionComplex)
 // This test doesn't pass in Windows if building w/o debug symbols:
 #if defined(MRPT_EXCEPTIONS_WITH_CALL_STACK) &&                                \
 	(!defined(_WIN32) || defined(_DEBUG))
-		EXPECT_TRUE(sExc.find("test_except_toplevel") != std::string::npos)
-			<< sExc;
+		EXPECT_TRUE(sExc.find("test_except") != std::string::npos) << sExc;
 #endif
 	}
 }
