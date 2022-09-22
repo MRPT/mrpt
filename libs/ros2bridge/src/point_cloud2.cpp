@@ -170,14 +170,6 @@ bool mrpt::ros2bridge::fromROS(
 	return true;
 }
 
-/** Convert mrpt::slam::CSimplePointsMap -> sensor_msgs/PointCloud2
- *  The user must supply the "msg_header" field to be copied into the output
- * message object, since that part does not appear in MRPT classes.
- *
- *  Since CSimplePointsMap only contains (x,y,z) data,
- * sensor_msgs::msg::PointCloud2::channels will be empty.
- * \return true on sucessful conversion, false on any error.
- */
 bool mrpt::ros2bridge::toROS(
 	const CSimplePointsMap& obj, const std_msgs::msg::Header& msg_header,
 	sensor_msgs::msg::PointCloud2& msg)
@@ -225,6 +217,61 @@ bool mrpt::ros2bridge::toROS(
 		*pointDest++ = xs[i];
 		*pointDest++ = ys[i];
 		*pointDest++ = zs[i];
+	}
+
+	return true;
+}
+
+bool mrpt::ros2bridge::toROS(
+	const CPointsMapXYZI& obj, const std_msgs::msg::Header& msg_header,
+	sensor_msgs::msg::PointCloud2& msg)
+{
+	msg.header = msg_header;
+
+	// 2D structure of the point cloud. If the cloud is unordered, height is
+	//  1 and width is the length of the point cloud.
+	msg.height = 1;
+	msg.width = obj.size();
+
+	std::array<std::string, 4> names = {"x", "y", "z", "intensity"};
+	std::array<size_t, 4> offsets = {
+		0, sizeof(float) * 1, sizeof(float) * 2, sizeof(float) * 3};
+
+	msg.fields.resize(4);
+	for (size_t i = 0; i < 4; i++)
+	{
+		auto& f = msg.fields.at(i);
+
+		f.count = 1;
+		f.offset = offsets[i];
+		f.datatype = sensor_msgs::msg::PointField::FLOAT32;
+		f.name = names[i];
+	}
+
+#if MRPT_IS_BIG_ENDIAN
+	msg.is_bigendian = true;
+#else
+	msg.is_bigendian = false;
+#endif
+
+	msg.point_step = sizeof(float) * 4;
+	msg.row_step = msg.width * msg.point_step;
+
+	// data:
+	msg.data.resize(msg.row_step * msg.height);
+
+	const auto& xs = obj.getPointsBufferRef_x();
+	const auto& ys = obj.getPointsBufferRef_y();
+	const auto& zs = obj.getPointsBufferRef_z();
+	const auto& Is = obj.getPointsBufferRef_intensity();
+
+	float* pointDest = reinterpret_cast<float*>(msg.data.data());
+	for (size_t i = 0; i < xs.size(); i++)
+	{
+		*pointDest++ = xs[i];
+		*pointDest++ = ys[i];
+		*pointDest++ = zs[i];
+		*pointDest++ = Is[i];
 	}
 
 	return true;
