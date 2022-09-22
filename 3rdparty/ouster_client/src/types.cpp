@@ -18,14 +18,14 @@
 #include <utility>
 #include <vector>
 
-#include "ouster/impl/build.h"
+//#include "ouster/impl/build.h" [mrpt]
 #include "ouster/version.h"
 
 namespace ouster {
 
-using nonstd::make_optional;
-using nonstd::nullopt;
-using nonstd::optional;
+using std::make_optional;  // [mrpt]
+using std::nullopt;        // [mrpt]
+using std::optional;       // [mrpt]
 
 namespace sensor {
 
@@ -309,7 +309,7 @@ int frequency_of_lidar_mode(lidar_mode mode) {
 }
 
 std::string client_version() {
-    return std::string("ouster_client ").append(ouster::SDK_VERSION);
+    return std::string("ouster_client ").append(OUSTER_SDK_VERSION_STRING);
 }
 
 /* String conversion */

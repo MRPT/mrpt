@@ -309,6 +309,16 @@ if(MRPT_WITH_OUSTER_LIDAR)
 	file(GLOB SRCS ${SRCS_LIST})
 
 	add_library(mrpt_ouster_client STATIC ${SRCS})
+	
+	target_link_libraries(mrpt_ouster_client
+		PUBLIC
+			Eigen3::Eigen
+		PRIVATE
+			CURL::libcurl
+			jsoncpp_lib
+	)
+	set(OusterSDK_VERSION_STRING 0.5.1)
+	target_compile_definitions(mrpt_ouster_client PRIVATE OUSTER_SDK_VERSION_STRING=\"${OusterSDK_VERSION_STRING}\")
 
 	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		target_compile_options(mrpt_ouster_client PRIVATE

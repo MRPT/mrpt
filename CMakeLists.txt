@@ -175,15 +175,6 @@ else()
 	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
 endif()
 
-set(MRPT_WITH_OUSTER_LIDAR ON CACHE BOOL "Build support for OUSTER Lidar sensors")
-
-# Create config vars:
-set(CMAKE_MRPT_HAS_OUSTER 0)
-if(MRPT_WITH_OUSTER_LIDAR)
-	set(CMAKE_MRPT_HAS_OUSTER 1)
-endif()
-
-
 #-----------------------------------
 #  Build with MRPT-MEX compatibility?
 #-----------------------------------
@@ -293,6 +284,7 @@ include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 librar
 include(cmakemodules/script_octomap.cmake REQUIRED)     # Check for the octomap library
 include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
+include(cmakemodules/script_ouster.cmake REQUIRED)      # Check for the OUSTER deps
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
 include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL

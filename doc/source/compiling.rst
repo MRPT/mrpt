@@ -51,7 +51,8 @@ Minimum compiler requisites:
        # Support most common sensors:
        sudo apt install libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
             libdc1394-22-dev libavformat-dev libswscale-dev libpcap-dev \
-            liboctomap-dev libopenni2-dev
+            liboctomap-dev libopenni2-dev \
+            libjsoncpp-dev libcurl4-openssl-dev
 
        # Support showing debug information in call stacks upon exceptions:
        sudo apt install binutils-dev libiberty-dev

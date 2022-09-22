@@ -19,11 +19,12 @@
 #include <utility>
 #include <vector>
 
-#include "nonstd/optional.hpp"
+//#include "nonstd/optional.hpp" // [for mrpt]
+#include <optional>  // [for mrpt]
 
 namespace ouster {
 
-using nonstd::optional;
+using std::optional;  // [for mrpt]
 
 /**
  * For image operations.
