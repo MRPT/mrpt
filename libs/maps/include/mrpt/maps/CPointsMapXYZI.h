@@ -169,6 +169,14 @@ class CPointsMapXYZI : public CPointsMap
 		return m_intensity[index];
 	}
 
+	/** Provides a direct access to a read-only reference of the internal
+	 * intensity point buffer. \sa getPointsBufferRef_x() */
+	auto getPointsBufferRef_intensity() const
+		-> const mrpt::aligned_std_vector<float>&
+	{
+		return m_intensity;
+	}
+
 	/** Returns true if the point map has a color field for each point */
 	bool hasColorPoints() const override { return true; }
 
