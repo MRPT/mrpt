@@ -175,6 +175,15 @@ else()
 	set(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
 endif()
 
+set(MRPT_WITH_OUSTER_LIDAR ON CACHE BOOL "Build support for OUSTER Lidar sensors")
+
+# Create config vars:
+set(CMAKE_MRPT_HAS_OUSTER 0)
+if(MRPT_WITH_OUSTER_LIDAR)
+	set(CMAKE_MRPT_HAS_OUSTER 1)
+endif()
+
+
 #-----------------------------------
 #  Build with MRPT-MEX compatibility?
 #-----------------------------------

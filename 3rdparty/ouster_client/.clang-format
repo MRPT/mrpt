@@ -1,0 +1,8 @@
+---
+BasedOnStyle: Google
+IndentWidth: 4
+---
+Language: Cpp
+DerivePointerAlignment: false
+PointerAlignment: Left
+Cpp11BracedListStyle: true

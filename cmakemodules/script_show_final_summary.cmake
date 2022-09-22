@@ -178,6 +178,7 @@ SHOW_CONFIG_LINE("...NIDAQmx Base?                    " CMAKE_MRPT_HAS_NIDAQMXBA
 SHOW_CONFIG_LINE_SYSTEM("NITE2 library                       " CMAKE_MRPT_HAS_NITE2)
 SHOW_CONFIG_LINE_SYSTEM("OpenKinect libfreenect              " CMAKE_MRPT_HAS_FREENECT)
 SHOW_CONFIG_LINE_SYSTEM("OpenNI2                             " CMAKE_MRPT_HAS_OPENNI2)
+SHOW_CONFIG_LINE_SYSTEM("OUSTER Lidars                       " CMAKE_MRPT_HAS_OUSTER)
 SHOW_CONFIG_LINE_SYSTEM("Phidgets                            " CMAKE_MRPT_HAS_PHIDGET)
 SHOW_CONFIG_LINE("RoboPeak LIDAR                      " CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 SHOW_CONFIG_LINE_SYSTEM("SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HAS_SWISSRANGE )

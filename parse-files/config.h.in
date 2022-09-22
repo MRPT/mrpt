@@ -5,9 +5,12 @@
    | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
 #pragma once
+
+// clang-format off
 
 /** If defined, security checks (ASSERT_'s) will be performed in many MRPT
  * classes even
@@ -73,6 +76,10 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /* OpenNI2 lib: */
 #define MRPT_HAS_OPENNI2                 ${CMAKE_MRPT_HAS_OPENNI2}
+
+/* ouster_client lib */
+#define MRPT_HAS_OUSTER                  ${CMAKE_MRPT_HAS_OUSTER}
+
 
 /* PCL (The pointclouds library): */
 #define MRPT_HAS_PCL           ${CMAKE_MRPT_HAS_PCL}
@@ -336,3 +343,5 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #if !defined(MRPT_OS_WINDOWS) && !defined(MRPT_OS_LINUX) && !defined(MRPT_OS_APPLE)
 #error Neither OS detected from MRPT_OS_LINUX, MRPT_OS_APPLE or MRPT_OS_WINDOWS!
 #endif
+
+// clang-format on

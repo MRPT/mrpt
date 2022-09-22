@@ -121,7 +121,7 @@ if(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 	)
 	set_target_properties(mrpt_rplidar PROPERTIES FOLDER "3rd party")
 
-	target_link_libraries(mrpt_rplidar PRIVATE mrpt::core) # To enforce c++17
+	mrpt_lib_target_requires_cpp17(mrpt_rplidar) # enforce c++17
 
 	# needs to be exported, even if private, to make cmake happy since it wants
 	# libraries to be statically-linkable:
@@ -295,6 +295,56 @@ if(WIN32)
 	set_target_properties(mrpt_glew PROPERTIES FOLDER "3rd party")
 	unset(SRCS)
 endif()
+
+# ----------------------------------
+# Build OUSTER?
+# ----------------------------------
+if(MRPT_WITH_OUSTER_LIDAR)
+	set(OUSTER_ROOT ${MRPT_SOURCE_DIR}/3rdparty/ouster_client/)
+	set(SRCS_LIST
+		${OUSTER_ROOT}/src/*.cpp
+		${OUSTER_ROOT}/src/*.h
+		${OUSTER_ROOT}/include/ouster/*.h
+	)
+	file(GLOB SRCS ${SRCS_LIST})
+
+	add_library(mrpt_ouster_client STATIC ${SRCS})
+
+	if (MRPT_COMPILER_IS_GCC_OR_CLANG)
+		target_compile_options(mrpt_ouster_client PRIVATE
+			-fPIC
+		)
+	endif()
+
+	# Embedded version:
+	target_include_directories(mrpt_ouster_client SYSTEM PUBLIC
+		$<BUILD_INTERFACE:${OUSTER_ROOT}/include/>
+		$<BUILD_INTERFACE:${OUSTER_ROOT}/src/>
+	)
+	set_target_properties(mrpt_ouster_client PROPERTIES FOLDER "3rd party")
+
+	mrpt_lib_target_requires_cpp17(mrpt_ouster_client) # enforce c++17
+
+	# needs to be exported, even if private, to make cmake happy since it wants
+	# libraries to be statically-linkable:
+	export(
+		TARGETS mrpt_ouster_client
+		FILE "${CMAKE_CURRENT_BINARY_DIR}/mrpt_ouster_client-targets.cmake"
+	)
+	install(TARGETS mrpt_ouster_client EXPORT mrpt_ouster_client-targets
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	)
+	install(EXPORT mrpt_ouster_client-targets
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mrpt_ouster_client
+	)
+
+	unset(SRCS_LIST)
+	unset(SRCS)
+	unset(OUSTER_ROOT)
+endif()
+
 
 # ----------------------------------
 # nanogui:
