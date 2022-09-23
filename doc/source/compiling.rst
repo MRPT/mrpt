@@ -34,10 +34,16 @@ Minimum compiler requisites:
     **Minimum recommended** requisites:
 
     .. code-block:: bash
-
-       sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev \
-         libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev zlib1g-dev \
+       # Any Ubuntu versions:
+       sudo apt install build-essential pkg-config cmake \
+         libopencv-dev libeigen3-dev zlib1g-dev \
          libsuitesparse-dev libjpeg-dev
+         
+       # plus, only for Ubuntu < 22.04:
+       sudo apt install libwxgtk3.0-gtk3-dev
+
+       # plus, only for Ubuntu >= 22.04:
+       sudo apt install libwxgtk3.2-dev
 
     **Recommended additional** packages to enable most MRPT features:
 
