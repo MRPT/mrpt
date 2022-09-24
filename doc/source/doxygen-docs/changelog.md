@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.5.5: UNRELEASED
+(none yet)
+
 # Version 2.5.4: Released September 24th, 2022
 - Changes in libraries:
   - \ref mrpt_opengl_grp
