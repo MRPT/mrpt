@@ -24,6 +24,7 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
   :caption: Robotics, SLAM
 
   tutorial-slam-for-beginners-the-basics
+  tutorial-slam-algorithms
   tutorial-mrpt-maps-model
   range_only_localization_mapping
   tutorial-icp-alignment
@@ -41,6 +42,7 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
 
   page_tutorial_math_levenberg_marquardt
   tutorial-ransac
+  tutorial-pdf-over-poses
 
 .. toctree::
   :maxdepth: 2

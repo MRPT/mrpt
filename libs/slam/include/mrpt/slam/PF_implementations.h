@@ -269,7 +269,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 			//   ADAPTIVE SAMPLE SIZE
 			// Implementation of Dieter Fox's KLD algorithm
 			//  31-Oct-2006 (JLBC): First version
-			//  19-Jan-2009 (JLBC): Rewriten within a generic template
+			//  19-Jan-2009 (JLBC): Rewritten within a generic template
 			// -------------------------------------------------------------
 			TSetStateSpaceBins stateSpaceBins;
 

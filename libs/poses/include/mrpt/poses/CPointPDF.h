@@ -26,9 +26,8 @@ namespace mrpt::poses
  *
  *  For a similar class for 6D poses (a 3D point with attitude), see CPose3DPDF
  *
- *  See also the tutorial on <a
- * href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations">probabilistic
- * spatial representations in the MRPT</a>.
+ *  See also:
+ *  [probabilistic spatial representations](tutorial-pdf-over-poses.html)
  *
  * \sa CPoint3D
  * \ingroup poses_pdf_grp

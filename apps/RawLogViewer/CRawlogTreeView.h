@@ -69,10 +69,10 @@ class CRawlogTreeView : public wxScrolledWindow
 
 	/** Sets the name of the rawlog file, used for the root item */
 	void setRawlogName(const std::string& s) { m_rawlog_name = s; }
+
 	/** Reloads from the rawlog: it adapts the size of the scroll window and
-	 * refresh the view.
-	 */
-	void reloadFromRawlog(int hint_rawlog_items = -1);
+	 * refresh the view */
+	void reloadFromRawlog();
 
 	/** Sets a handler for the event of selected item changes.
 	 */
@@ -115,7 +115,7 @@ class CRawlogTreeView : public wxScrolledWindow
 	size_t m_firstVisibleItem = 0, m_lastVisibleItem = 0;
 	size_t getTotalTreeNodes() const { return m_tree_nodes.size(); }
 
-	const std::vector<TNodeData>& treeNodes() const { return m_tree_nodes; }
+	const std::deque<TNodeData>& treeNodes() const { return m_tree_nodes; }
 
 	bool isItemIndexVisible(size_t idx) const;
 
@@ -140,7 +140,7 @@ class CRawlogTreeView : public wxScrolledWindow
 
 	/** The nuimber of rows to display for the rawlog, used to compute the
 	 * height */
-	std::vector<TNodeData> m_tree_nodes;
+	std::deque<TNodeData> m_tree_nodes;
 
 	/** Returns an icon index depending on the class of the object in the tree
 	 * view

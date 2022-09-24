@@ -27,6 +27,15 @@ numerical value (e.g. ``1``) will be interpreted as "true".
 - ``MRPT_EXPR_VERBOSE``: Set to ``1`` to enable extra verbose debug traces for
   `mrpt::expr::CRuntimeCompiledExpression::eval() <class_mrpt_expr_CRuntimeCompiledExpression.html>`_.
 
+- ``MRPT_FBORENDER_SHOW_DEVICES``: If set to ``true``,
+  `mrpt::opengl::CFBORender <class_mrpt_opengl_CFBORender.html>`_ will print the
+  number of detected GPU devices to the console upon constructions.
+
+- ``MRPT_FBORENDER_USE_LUT``: If set to ``false``,
+  `mrpt::opengl::CFBORender <class_mrpt_opengl_CFBORender.html>`_ will never use
+  the discretized LUT to convert OpenGL depth values to linear distances, but
+  the exact (slower for large images) formula.
+
 - ``MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS``: In mrpt::hwdrivers::CGPSInterface, the
   default offset from GPS time to UTC time, for use before any GNSS especific
   message informs on this offset. Default: 17 (valid for 01/2016)

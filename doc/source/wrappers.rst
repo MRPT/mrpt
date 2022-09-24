@@ -22,7 +22,7 @@ See also MRPT ROS packages status table for:
 - `Melodic <https://repositories.ros.org/status_page/ros_melodic_default.html?q=mrpt>`_
 - `Noetic <https://repositories.ros.org/status_page/ros_noetic_default.html?q=mrpt>`_
 
-1. Python 
+2. Python 
 ----------------------
 
 At present, all MRPT libraries are wrapped into one single Python module `pymrpt`.

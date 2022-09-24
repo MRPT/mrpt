@@ -19,14 +19,22 @@ endif()
 # Tell CMake we'll use both C & C++ for use in its tests/flags.
 project(MRPT LANGUAGES C CXX)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+	set(default_build_type "Release")
+	message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+	set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+		STRING "Choose the type of build." FORCE)
+	# Set the possible values of build type for cmake-gui
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+	"Debug" "Release" "MinSizeRel" "RelWithDebInfo" "Coverage")
+endif()
+
 # -------------------------
 #        Setup CMake
 # -------------------------
-if (WIN32)
-	cmake_minimum_required(VERSION 3.4) # required for CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS
-else()
-	cmake_minimum_required(VERSION 3.3)
-endif()
+# Minimum version required for:
+# - target_compile_features() => 3.8.0
+cmake_minimum_required(VERSION 3.8)
 
 # CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
 if (POLICY CMP0075)
@@ -379,9 +387,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
-	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall  -Wno-long-long -Wno-variadic-macros -Wshadow)
-  add_compile_options(-Wreturn-local-addr   -Werror=return-local-addr)
-  add_compile_options(-Wno-psabi)
+	add_compile_options(-Wall  -Wno-long-long -Wno-variadic-macros -Wshadow)
+	add_compile_options(-Wreturn-local-addr   -Werror=return-local-addr)
+	add_compile_options(-Wno-psabi)
 
 	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
 	if (NOT ${CMAKE_CXX_COMPILER_VERSION} LESS "6.0" AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
@@ -392,14 +400,14 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 		# This causes the option "-Wnowrite-strings" to be set on gcc-4.9 on OS X
 		add_compile_options(-Wno-write-strings)
 	endif()
- 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
- 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+	string(APPEND CMAKE_C_FLAGS " -std=c99")
 
 	if(MRPT_BUILD_GCC_PEDANTIC)
 		# Only for C++ sources:
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
+		string(APPEND CMAKE_CXX_FLAGS " -pedantic")
+
 		# No need to be pendantic in old C files, most of them from 3rd parties anyway...
  		#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	endif()
@@ -422,10 +430,8 @@ if (MRPT_COMPILER_IS_CLANG)
 
 	# High level of warnings.
 	# no-unused-private-field: clang seems to complain in templates without reason.
-	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wabi -Wno-unused-private-field -Wshadow-all)
+	add_compile_options(-Wall -Wabi -Wno-unused-private-field -Wshadow-all)
 	add_compile_options(-Wreturn-stack-address   -Werror=return-stack-address)
-
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -490,7 +496,8 @@ if (MRPT_COMPILER_IS_GCC_OR_CLANG)
 		# If enabled, and NOT in an arch that doesn't support the flag:
     	if(MRPT_TUNE_NATIVE AND
 			(NOT "${CMAKE_MRPT_ARCH}" STREQUAL "riscv64") AND
-			(NOT "${CMAKE_MRPT_ARCH}" STREQUAL "parisc64") # hppa
+			(NOT "${CMAKE_MRPT_ARCH}" STREQUAL "parisc64") AND # hppa
+			(NOT "${CMAKE_MRPT_ARCH}" STREQUAL "parisc") # hppa
 		)
     		add_compile_options(-mtune=native)
     	endif()
@@ -505,10 +512,6 @@ if (MRPT_COMPILER_IS_GCC_OR_CLANG)
     		endif()
     	endif()
     endif()
-
-	if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-		add_compile_options(-O3)
-	endif()
 
 	# Was: add_compile_options(-mfpmath=sse)
 	# No need to add this flag: it's enabled by default in 64bit builds.

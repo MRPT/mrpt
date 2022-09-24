@@ -175,7 +175,7 @@ void CClientTCPSocket::sendString(const std::string& str)
 #if defined(MRPT_OS_LINUX)
 void CClientTCPSocket::internal_attach_epoll_to_hsock()
 {
-	struct epoll_event event;
+	struct epoll_event event = {0, 0};
 	event.data.fd = m_hSock;
 
 	event.events = EPOLLOUT;  // EPOLLERR is always waited for.

@@ -66,3 +66,40 @@ TEST(PointCloud2, basicTest)
 }
 
 #endif	// HAVE_PCL
+
+TEST(PointCloud2, toROS)
+{
+	mrpt::maps::CSimplePointsMap pc1;
+
+	const size_t num_points = 1000;
+	pc1.resize(num_points);
+
+	float i_f = 0;
+	for (size_t i = 0; i < num_points; i++)
+	{
+		pc1.setPoint(i, i_f, -i_f, -2 * i_f);
+		i_f += 1.0;
+	}
+
+	sensor_msgs::PointCloud2 pc_msg;
+	std_msgs::Header hdr;
+	hdr.frame_id = "map";
+	bool ok = mrpt::ros1bridge::toROS(pc1, hdr, pc_msg);
+	ASSERT_(ok);
+
+	EXPECT_EQ(pc_msg.header.frame_id, hdr.frame_id);
+
+	//
+	mrpt::maps::CSimplePointsMap pc2;
+	bool ok2 = mrpt::ros1bridge::fromROS(pc_msg, pc2);
+	ASSERT_(ok2);
+
+	EXPECT_EQ(pc1.size(), pc2.size());
+	for (size_t i = 0; i < pc1.size(); i++)
+	{
+		mrpt::math::TPoint3D pt1, pt2;
+		pc1.getPoint(i, pt1);
+		pc2.getPoint(i, pt2);
+		EXPECT_TRUE(pt1 == pt2);
+	}
+}

@@ -34,10 +34,16 @@ Minimum compiler requisites:
     **Minimum recommended** requisites:
 
     .. code-block:: bash
-
-       sudo apt install build-essential pkg-config cmake libwxgtk3.0-dev \
-         libwxgtk3.0-gtk3-dev libopencv-dev libeigen3-dev zlib1g-dev \
+       # All Ubuntu versions:
+       sudo apt install build-essential pkg-config cmake \
+         libopencv-dev libeigen3-dev zlib1g-dev \
          libsuitesparse-dev libjpeg-dev
+         
+       # plus, only for Ubuntu < 22.04:
+       sudo apt install libwxgtk3.0-gtk3-dev
+
+       # plus, only for Ubuntu >= 22.04:
+       sudo apt install libwxgtk3.2-dev
 
     **Recommended additional** packages to enable most MRPT features:
 
@@ -75,7 +81,7 @@ Minimum compiler requisites:
     		libstd-srvs-dev libstereo-msgs-dev libtf2-dev \
     		libtf2-msgs-dev libbz2-dev
 
-    **ROS2 support:** Invoke your ROS2 distribution ``setup.bash``` as usual before
+    **ROS2 support:** Invoke your ROS2 distribution ``setup.bash`` as usual before
     running MRPT cmake configure to enable building of
     the `mrpt::ros2bridge <group_mrpt_ros2bridge_grp.html>`_ module.
 
