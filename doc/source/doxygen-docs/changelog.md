@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.5.4: UNRELEASED
+# Version 2.5.4: Released September 24th, 2022
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - mrpt::opengl::CFBORender is now faster, using a LUT for converting from logarithmic to linear depth values.
