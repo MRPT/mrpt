@@ -61,13 +61,27 @@ std::set<std::string> extractFields(const sensor_msgs::msg::PointCloud2& msg);
  *  The user must supply the "msg_header" field to be copied into the output
  * message object, since that part does not appear in MRPT classes.
  *
- *  Since CSimplePointsMap only contains (x,y,z) data,
- * sensor_msgs::msg::PointCloud2::channels will be empty.
+ * Generated sensor_msgs::PointCloud2::channels: `x`, `y`, `z`.
+ *
  * \return true on sucessful conversion, false on any error.
  * \sa fromROS
  */
 bool toROS(
 	const mrpt::maps::CSimplePointsMap& obj,
+	const std_msgs::msg::Header& msg_header,
+	sensor_msgs::msg::PointCloud2& msg);
+
+/** Convert mrpt::slam::CSimplePointsMap -> sensor_msgs/PointCloud2
+ *  The user must supply the "msg_header" field to be copied into the output
+ * message object, since that part does not appear in MRPT classes.
+ *
+ * Generated sensor_msgs::PointCloud2::channels: `x`, `y`, `z`, `intensity`
+ *
+ * \return true on sucessful conversion, false on any error.
+ * \sa fromROS
+ */
+bool toROS(
+	const mrpt::maps::CPointsMapXYZI& obj,
 	const std_msgs::msg::Header& msg_header,
 	sensor_msgs::msg::PointCloud2& msg);
 

@@ -16,9 +16,7 @@ namespace mrpt::io
 {
 /** Transparently opens a compressed "gz" file and reads uncompressed data from
  * it.
- *   If the file is not a .gz file, it silently reads data from the file.
- *  This class requires compiling MRPT with wxWidgets. If wxWidgets is not
- * available then the class is actually mapped to the standard CFileInputStream
+ * If the file is not a .gz file, it silently reads data from the file.
  *
  * \sa CFileInputStream
  * \ingroup mrpt_io_grp

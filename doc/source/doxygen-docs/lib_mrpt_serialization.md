@@ -44,7 +44,7 @@ serialization mechanisms.
 
 Serializing `shared_ptr<T>` is supported for any arbitrary type `T`. It is legal
 to serialize an empty (`nullptr`) smart pointer; an empty pointer will be read
-back. Polymorphic classes can be also writen and read, although reading a smart
+back. Polymorphic classes can be also written and read, although reading a smart
 pointer to a polymorphic base class is only supported for classes derived from
 MRPT's CSerializable, since that operation requires registering types in a class
 factory (see \a mrpt_rtti_grp and mrpt::serialization::CSerializable).

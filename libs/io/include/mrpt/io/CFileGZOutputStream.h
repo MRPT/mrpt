@@ -17,9 +17,7 @@ namespace mrpt::io
 {
 /** Saves data to a file and transparently compress the data using the given
  * compression level.
- *   The generated files are in gzip format ("file.gz").
- *  This class requires compiling MRPT with wxWidgets. If wxWidgets is not
- * available then the class is actually mapped to the standard CFileOutputStream
+ * The generated files are in gzip format ("file.gz").
  *
  * \sa CFileOutputStream
  * \ingroup mrpt_io_grp

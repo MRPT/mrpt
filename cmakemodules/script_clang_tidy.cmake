@@ -1,4 +1,3 @@
-if (CMAKE_VERSION VERSION_GREATER "3.6.0")
 find_program(
   CLANG_TIDY_EXE
   NAMES "clang-tidy"
@@ -26,7 +25,4 @@ else()
     mark_as_advanced(CLANG_TIDY_CHECKS)
     set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "${CLANG_TIDY_CHECKS}")
   endif()
-endif()
-else()
-message(STATUS "clang-tidy: not using. CMake version must be >=3.6")
 endif()
