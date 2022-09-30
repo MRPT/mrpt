@@ -43,10 +43,6 @@ and [much more](https://www.mrpt.org/list-of-mrpt-apps/).
 
 ## 3. Install
 
-<a href="https://repology.org/project/mrpt/versions"> 
-  <img align="right" src="https://repology.org/badge/vertical-allrepos/mrpt.svg" alt="Packaging status">
-</a>
-
 ### 3.1. Ubuntu
 
 See [this PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for nightly builds from the `develop` branch, or [this one](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable) for stable releases.
@@ -78,19 +74,18 @@ sudo apt install ros-$ROS_DISTRO-mrpt2
 
 `mrpt2` status in ROS build farms:
 
-| Distro | `develop` branch  | Stable release |
-|---|---|---|
-| ROS1 Melodic @ u18.04 | [![Build Status](https://build.ros.org/job/Mdev__mrpt2__ubuntu_bionic_amd64/badge/icon)](https://build.ros.org/job/Mdev__mrpt2__ubuntu_bionic_amd64/) | [![Build Status](https://build.ros.org/job/Mbin_ubv8_uBv8__mrpt2__ubuntu_bionic_arm64__binary/badge/icon)](https://build.ros.org/job/Mbin_ubv8_uBv8__mrpt2__ubuntu_bionic_arm64__binary/) |
-| ROS1 Noetic @ u20.04 | [![Build Status](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/) | [![Build Status](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
-| ROS2 Foxy @ u20.04 | [![Build Status](https://build.ros2.org/job/Fdev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros2.org/job/Fdev__mrpt2__ubuntu_focal_amd64/) | [![Build Status](https://build.ros2.org/job/Fbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Fbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
-| ROS2 Galactic @ u20.04 | [![Build Status](https://build.ros2.org/job/Gdev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros2.org/job/Gdev__mrpt2__ubuntu_focal_amd64/) | [![Build Status](https://build.ros2.org/job/Gbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Gbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
-| ROS2 Humble @ u22.04 | [![Build Status](https://build.ros2.org/job/Hdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Hdev__mrpt2__ubuntu_jammy_amd64/) | [![Build Status](https://build.ros2.org/job/Hbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Hbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) |
-| ROS2 Rolling @ u22.04 | [![Build Status](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/) | [![Build Status](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) |
+| Distro | `develop` branch  | Stable release | Next builds |
+|---|---|---|---|
+| ROS1 Melodic @ u18.04 | [![Build Status](https://build.ros.org/job/Mdev__mrpt2__ubuntu_bionic_amd64/badge/icon)](https://build.ros.org/job/Mdev__mrpt2__ubuntu_bionic_amd64/) | [![Version](https://img.shields.io/ros/v/melodic/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros.org/job/Mbin_uB64__mrpt2__ubuntu_bionic_amd64__binary/badge/icon)](https://build.ros.org/job/Mbin_uB64__mrpt2__ubuntu_bionic_amd64__binary/) |
+| ROS1 Noetic @ u20.04 | [![Build Status](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/) | [![Version](https://img.shields.io/ros/v/noetic/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
+| ROS2 Foxy @ u20.04 | [![Build Status](https://build.ros2.org/job/Fdev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros2.org/job/Fdev__mrpt2__ubuntu_focal_amd64/) | [![Version](https://img.shields.io/ros/v/foxy/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros2.org/job/Fbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Fbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
+| ROS2 Galactic @ u20.04 | [![Build Status](https://build.ros2.org/job/Gdev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros2.org/job/Gdev__mrpt2__ubuntu_focal_amd64/) |  [![Version](https://img.shields.io/ros/v/galactic/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros2.org/job/Gbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Gbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
+| ROS2 Humble @ u22.04 | [![Build Status](https://build.ros2.org/job/Hdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Hdev__mrpt2__ubuntu_jammy_amd64/) | [![Version](https://img.shields.io/ros/v/humble/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros2.org/job/Hbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Hbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) | 
+| ROS2 Rolling @ u22.04 | [![Build Status](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/) |  [![Version](https://img.shields.io/ros/v/rolling/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) | 
 
 ## 4. License
 MRPT is released under the [new BSD license](http://www.mrpt.org/License/).
 
+## 5. Versions in repositories
 
-## Stargazers over time
-
-[![Stargazers over time](https://starchart.cc/MRPT/mrpt.svg)](https://starchart.cc/MRPT/mrpt)
+![Repology](https://repology.org/badge/vertical-allrepos/mrpt.svg)
