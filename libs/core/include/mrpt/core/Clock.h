@@ -30,10 +30,12 @@ class Clock
 	static constexpr bool is_steady = std::chrono::system_clock::is_steady;
 
 	/** Returns the current time using the currently selected Clock source.
+	 *  (Performance: call typ. takes 33 nanoseconds)
 	 * \sa setActiveClock(), mrpt::Clock::Source, nowDouble()  */
 	static time_point now() noexcept;
 
-	/** Equivalent to `Clock::toDouble(Clock::now())`
+	/** Equivalent to `Clock::toDouble(Clock::now())`.
+	 *  (Performance: call typ. takes 38 nanoseconds)
 	 * \sa setActiveClock(), mrpt::Clock::Source, now()
 	 * \note (New in MRPT 2.1.5)
 	 */

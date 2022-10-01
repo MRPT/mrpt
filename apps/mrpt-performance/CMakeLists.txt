@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
 	perf-CObservation3DRangeScan.cpp
 	perf-atan2lut.cpp
 	perf-strings.cpp
+	perf-system.cpp
 	perf-yaml.cpp
 	${MRPT_VERSION_RC_FILE}
 	)
