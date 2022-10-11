@@ -869,7 +869,6 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 
 	const std::string sKeyPrefix =
 		mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
-	const std::string sSection = "PTG_PARAMS";
 
 	mrpt::config::CConfigFileMemory cfg;
 	mrpt::config::CConfigFilePrefixer cfp;
@@ -878,7 +877,7 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 
 	cfg.setContent(std::string(edCfg->GetValue().mb_str()));
 
-	ptg->loadFromConfigFile(cfp, sSection);
+	ptg->loadFromConfigFile(cfp, m_cfgFileSection);
 
 	ptg->initialize();
 
@@ -929,7 +928,7 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
 	// Set some common defaults:
 	ptg->loadDefaultParams();
 
-	dumpPTGcfgToTextBox();
+	if (!m_disableLoadDefaultParams) dumpPTGcfgToTextBox();
 
 	WX_END_TRY;
 
@@ -1312,7 +1311,7 @@ void ptgConfiguratorframe::dumpPTGcfgToTextBox()
 	// Wrapper to transparently add prefixes to all config keys:
 	const std::string sKeyPrefix =
 		mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
-	const std::string sSection = "PTG_PARAMS";
+	const std::string sSection = m_cfgFileSection;
 
 	mrpt::config::CConfigFileMemory cfg;
 	mrpt::config::CConfigFilePrefixer cfp;
@@ -1509,7 +1508,7 @@ void ptgConfiguratorframe::OnExportSelectedPath(wxCommandEvent&)
 
 	const std::string sKeyPrefix =
 		mrpt::format("PTG%d_", (int)edPTGIndex->GetValue());
-	const std::string sSection = "PTG_PARAMS";
+	const std::string sSection = m_cfgFileSection;
 	mrpt::config::CConfigFileMemory cfg;
 	mrpt::config::CConfigFilePrefixer cfp;
 	cfp.bind(cfg);

@@ -31,18 +31,19 @@ bool ptgConfiguratorApp::OnInit()
 		{wxCMD_LINE_OPTION, "l", "load", "load a library",
 		 wxCMD_LINE_VAL_STRING, 0},
 #endif
+		{wxCMD_LINE_OPTION, "i", "ini", "INI file to load",
+		 wxCMD_LINE_VAL_STRING, 0},
+		{wxCMD_LINE_OPTION, "s", "ini-section",
+		 "INI file section to load (default=\"PTG_PARAMS\")",
+		 wxCMD_LINE_VAL_STRING, 0},
 		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}};
 
 	wxCmdLineParser parser(cmdLineDesc, argc, argv);
 	parser.Parse(true);
 	wxString libraryPath;
 	if (parser.Found("l", &libraryPath))
-	{
-		const std::string sLib = std::string(libraryPath.mb_str());
-		mrpt::system::loadPluginModules(sLib);
-	}
+		mrpt::system::loadPluginModules(libraryPath.ToStdString());
 
-	//(*AppInitialize
 	bool wxsOK = true;
 	wxInitAllImageHandlers();
 	if (wxsOK)
@@ -50,7 +51,18 @@ bool ptgConfiguratorApp::OnInit()
 		auto* Frame = new ptgConfiguratorframe(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
+
+		wxString iniFilePath;
+		if (parser.Found("i", &iniFilePath))
+		{
+			Frame->getCfgBox()->LoadFile(iniFilePath);
+			Frame->m_disableLoadDefaultParams = true;
+		}
+
+		wxString iniSection;
+		if (parser.Found("s", &iniSection))
+			Frame->m_cfgFileSection = iniSection.ToStdString();
 	}
-	//*)
+
 	return wxsOK;
 }
