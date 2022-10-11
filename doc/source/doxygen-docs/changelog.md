@@ -1,7 +1,9 @@
 \page changelog Change Log
 
 # Version 2.5.5: UNRELEASED
-(none yet)
+- Changes in applications:
+  - prg-configurator:
+    - A maximum trajectory time can be specified now for rendering PTGs.
 
 # Version 2.5.4: Released September 24th, 2022
 - Changes in libraries:
