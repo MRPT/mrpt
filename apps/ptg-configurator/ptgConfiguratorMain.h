@@ -212,6 +212,7 @@ class ptgConfiguratorframe : public wxFrame
 	wxSlider* slidPathHighlight;
 	//*)
 	wxTextCtrl* edSelectedTrajCmd = nullptr;
+	wxTextCtrl* edDrawMaxTime = nullptr;
 
 	DECLARE_EVENT_TABLE()
 

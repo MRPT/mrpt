@@ -194,7 +194,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer3->AddGrowableRow(3);
 	FlexGridSizer7 = new wxFlexGridSizer(1, 0, 0, 0);
 	StaticText1 = new wxStaticText(
-		Panel1, ID_STATICTEXT1, _("Select a PTG class:"), wxDefaultPosition,
+		Panel1, ID_STATICTEXT1, _("Pick a PTG:"), wxDefaultPosition,
 		wxDefaultSize, 0, _T("ID_STATICTEXT1"));
 	FlexGridSizer7->Add(
 		StaticText1, 1,
@@ -204,8 +204,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		wxCB_SORT, wxDefaultValidator, _T("ID_CHOICE1"));
 	FlexGridSizer7->Add(cbPTGClass, 1, wxEXPAND, 5);
 	StaticText5 = new wxStaticText(
-		Panel1, ID_STATICTEXT5,
-		_("then change params as desired and click `Initialize PTG`"),
+		Panel1, ID_STATICTEXT5, _(", change params, click: "),
 		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT5"));
 	FlexGridSizer7->Add(
 		StaticText5, 1,
@@ -219,11 +218,16 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer7->Add(
 		btnReloadParams, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
+	btnLoadPlugin = new wxButton(Panel1, ID_BUTTON5, _("Load Plugin"));
+	FlexGridSizer7->Add(
+		btnLoadPlugin, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+
 	FlexGridSizer3->Add(FlexGridSizer7, 1, wxEXPAND, 0);
-	FlexGridSizer4 = new wxFlexGridSizer(0, 6, 0, 0);
-	StaticText2 = new wxStaticText(
-		Panel1, ID_STATICTEXT2, _("PTG index for cfg file:"), wxDefaultPosition,
-		wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+
+	FlexGridSizer4 = new wxFlexGridSizer(0, 7, 0, 0);
+	StaticText2 =
+		new wxStaticText(Panel1, ID_STATICTEXT2, _("PTG index for cfg file:"));
 	FlexGridSizer4->Add(
 		StaticText2, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	edPTGIndex = new wxSpinCtrl(
@@ -238,9 +242,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer4->Add(
 		cbDrawShapePath, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	StaticText4 = new wxStaticText(
-		Panel1, ID_STATICTEXT4, _("Dist. btw. robot shapes:"),
-		wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+
+	StaticText4 =
+		new wxStaticText(Panel1, ID_STATICTEXT4, _("Dist. btw. robot shapes:"));
 	FlexGridSizer4->Add(
 		StaticText4, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
@@ -250,22 +254,30 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer4->Add(
 		edMinDistBtwShapes, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	btnLoadPlugin = new wxButton(
-		Panel1, ID_BUTTON5, _("Load Plugin"), wxDefaultPosition, wxDefaultSize,
-		0, wxDefaultValidator, _T("ID_BUTTON5"));
+
 	FlexGridSizer4->Add(
-		btnLoadPlugin, 1, wxALL | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, 5);
+		new wxStaticText(Panel1, wxNewId(), "Draw max. time [s]:"), 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
+	edDrawMaxTime = new wxTextCtrl(Panel1, wxNewId(), "100.0");
+	FlexGridSizer4->Add(
+		edDrawMaxTime, 1,
+		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
+
+	FlexGridSizer3->Add(FlexGridSizer4, 1, wxEXPAND, 0);
+
+	// ---
+	auto FlexGridSizer4b = new wxFlexGridSizer(0, 5, 0, 0);
+
 	cbHighlightOnePath = new wxCheckBox(
 		Panel1, ID_CHECKBOX3, _("Highlight one trajectory:"), wxDefaultPosition,
 		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
 	cbHighlightOnePath->SetValue(true);
-	FlexGridSizer4->Add(
+	FlexGridSizer4b->Add(
 		cbHighlightOnePath, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-	slidPathHighlight = new wxSlider(
-		Panel1, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0,
-		wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer4->Add(
+	slidPathHighlight = new wxSlider(Panel1, ID_SLIDER1, 0, 0, 100);
+	FlexGridSizer4b->Add(
 		slidPathHighlight, 1,
 		wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
@@ -273,33 +285,31 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		Panel1, ID_SPINCTRL2, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0,
 		100, 0, _T("ID_SPINCTRL2"));
 	edIndexHighlightPath->SetValue(_T("0"));
-	FlexGridSizer4->Add(
+	FlexGridSizer4b->Add(
 		edIndexHighlightPath, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
 
-	cbShowOnlySelectedTraj = new wxCheckBox(
-		Panel1, ID_CHECKBOX4, _("Show only selected traj."), wxDefaultPosition,
-		wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
+	cbShowOnlySelectedTraj =
+		new wxCheckBox(Panel1, ID_CHECKBOX4, _("Show only selected traj."));
 	cbShowOnlySelectedTraj->SetValue(false);
-	FlexGridSizer4->Add(
+	FlexGridSizer4b->Add(
 		cbShowOnlySelectedTraj, 1,
 		wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL, 5);
-
-	FlexGridSizer4->Add(
-		-1, -1, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
-		5);
 
 	edSelectedTrajCmd = new wxTextCtrl(
 		Panel1, ID_TEXTCTRL_SEL_TRAJ, _("Cmd: (none)"), wxDefaultPosition,
 		wxSize(50, -1), wxTE_READONLY, wxDefaultValidator,
 		_T("ID_TEXTCTRL_SEL_TRAJ"));
-	FlexGridSizer4->Add(
+	FlexGridSizer4b->Add(
 		edSelectedTrajCmd, 1,
 		wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
 		5);
-	FlexGridSizer4->AddGrowableCol(5);
 
-	FlexGridSizer3->Add(FlexGridSizer4, 1, wxEXPAND, 0);
+	FlexGridSizer4b->AddGrowableCol(1);
+	FlexGridSizer4b->AddGrowableCol(4);
+
+	FlexGridSizer3->Add(FlexGridSizer4b, 1, wxEXPAND, 0);
+	// ---
 	FlexGridSizer8 = new wxFlexGridSizer(1, 0, 0, 0);
 	cbBuildTPObs = new wxCheckBox(
 		Panel1, ID_CHECKBOX2, _("Obstacle point: x="), wxDefaultPosition,
@@ -389,7 +399,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer6->AddGrowableCol(1);
 	FlexGridSizer6->AddGrowableRow(0);
 	edCfg = new wxTextCtrl(
-		Panel1, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(-1, 150),
+		Panel1, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(-1, 100),
 		wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE | wxHSCROLL |
 			wxTE_DONTWRAP | wxALWAYS_SHOW_SB,
 		wxDefaultValidator, _T("ID_TEXTCTRL1"));
@@ -423,7 +433,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->AddGrowableCol(1);
 	FlexGridSizer9->AddGrowableRow(0);
 	m_plot = new CMyGLCanvas(
-		this, ID_XY_GLCANVAS, wxDefaultPosition, wxSize(150, 300),
+		this, ID_XY_GLCANVAS, wxDefaultPosition, wxSize(150, 200),
 		wxTAB_TRAVERSAL, _T("ID_XY_GLCANVAS"));
 	FlexGridSizer9->Add(m_plot, 1, wxEXPAND, 0);
 	Notebook1 = new wxNotebook(
@@ -462,7 +472,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	StaticBoxSizer1->Add(FlexGridSizer15, 1, wxEXPAND, 0);
 	FlexGridSizer10->Add(StaticBoxSizer1, 1, wxEXPAND, 2);
 	m_plotTPSpace = new CMyGLCanvas(
-		Panel2, ID_CUSTOM2, wxDefaultPosition, wxSize(150, 300),
+		Panel2, ID_CUSTOM2, wxDefaultPosition, wxSize(150, 200),
 		wxTAB_TRAVERSAL, _T("ID_CUSTOM2"));
 	FlexGridSizer10->Add(m_plotTPSpace, 1, wxEXPAND, 0);
 	Panel2->SetSizer(FlexGridSizer10);
@@ -1028,7 +1038,14 @@ void ptgConfiguratorframe::rebuild3Dview()
 		{
 		}
 
+		double max_draw_ptg_time = 100.0;
+		edDrawMaxTime->GetValue().ToCDouble(&max_draw_ptg_time);
+
 		const size_t nPTGPaths = ptg->getPathCount();
+
+		const double stepTime = ptg->getPathStepDuration();
+		ASSERT_(stepTime > 0);
+
 		// All paths:
 		gl_robot_ptg_prediction->clear();
 		gl_robot_ptg_prediction_highlight->clear();
@@ -1038,7 +1055,13 @@ void ptgConfiguratorframe::rebuild3Dview()
 				k != size_t(edIndexHighlightPath->GetValue()))
 				continue;
 
-			const double max_dist = TP_Obstacles[k];
+			double max_dist = TP_Obstacles[k];
+
+			{
+				const uint32_t maxStepByTime = max_draw_ptg_time / stepTime;
+				double maxRenderDist = ptg->getPathDist(k, maxStepByTime);
+				mrpt::keep_min(max_dist, maxRenderDist);
+			}
 
 			mrpt::opengl::CSetOfLines& sol = cbHighlightOnePath->IsChecked() &&
 					k == size_t(edIndexHighlightPath->GetValue())
