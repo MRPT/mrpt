@@ -28,7 +28,7 @@ bool ptgConfiguratorApp::OnInit()
 	wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
 	static const wxCmdLineEntryDesc cmdLineDesc[] = {
 #ifdef MRPT_OS_LINUX
-		{wxCMD_LINE_OPTION, wxT_2("l"), wxT_2("load"), wxT_2("load a library"),
+		{wxCMD_LINE_OPTION, "l", "load", "load a library",
 		 wxCMD_LINE_VAL_STRING, 0},
 #endif
 		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}};
@@ -36,7 +36,7 @@ bool ptgConfiguratorApp::OnInit()
 	wxCmdLineParser parser(cmdLineDesc, argc, argv);
 	parser.Parse(true);
 	wxString libraryPath;
-	if (parser.Found(wxT_2("l"), &libraryPath))
+	if (parser.Found("l", &libraryPath))
 	{
 		const std::string sLib = std::string(libraryPath.mb_str());
 		mrpt::system::loadPluginModules(sLib);
