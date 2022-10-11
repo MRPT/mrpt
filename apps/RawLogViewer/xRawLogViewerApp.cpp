@@ -47,16 +47,16 @@ bool xRawLogViewerApp::OnInit()
 	wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
 
 	static const wxCmdLineEntryDesc cmdLineDesc[] = {
-		{wxCMD_LINE_OPTION, wxT_2("l"), wxT_2("load"), wxT_2("load a library"),
+		{wxCMD_LINE_OPTION, "l", "load", "load a library",
 		 wxCMD_LINE_VAL_STRING, 0},
-		{wxCMD_LINE_PARAM, nullptr, nullptr, wxT_2("Input File"),
+		{wxCMD_LINE_PARAM, nullptr, nullptr, "Input File",
 		 wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
 		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}};
 
 	wxCmdLineParser parser(cmdLineDesc, argc, argv);
 	parser.Parse(true);
 	wxString libraryPath;
-	if (parser.Found(wxT_2("l"), &libraryPath))
+	if (parser.Found("l", &libraryPath))
 	{
 		const std::string sLib = std::string(libraryPath.mb_str());
 		std::cout << "Loading plugin libraries: " << sLib << "...\n";
