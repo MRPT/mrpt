@@ -46,7 +46,7 @@ Next follows a list with the preview of most rendering primitive classes:
 - mrpt::opengl::CSetOfLines: ![mrpt::opengl::CSetOfLines screenshot](_static/preview_CSetOfLines.png)
 - mrpt::opengl::CSphere: ![mrpt::opengl::CSphere screenshot](_static/preview_CSphere.png)
 - mrpt::opengl::CText: ![mrpt::opengl::CText screenshot](_static/preview_CText.png)
-- mrpt::opengl::CText3D: ![mrpt::opengl::CText3D screenshot](_static/CText3D.png)
+- mrpt::opengl::CText3D: ![mrpt::opengl::CText3D screenshot](_static/preview_CText3D.png)
 - mrpt::opengl::CEllipsoidRangeBearing2D: ![mrpt::opengl::CEllipsoidRangeBearing2D screenshot](_static/preview_CEllipsoidRangeBearing2D.png)
 - mrpt::opengl::CEllipsoidInverseDepth2D: ![mrpt::opengl::CEllipsoidInverseDepth2D screenshot](_static/preview_CEllipsoidInverseDepth2D.png)
 - mrpt::opengl::CEllipsoidInverseDepth3D: ![mrpt::opengl::CEllipsoidInverseDepth3D screenshot](_static/preview_CEllipsoidInverseDepth3D.png)
