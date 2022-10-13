@@ -20,6 +20,7 @@
 #include <any>
 #include <array>
 #include <cstdint>
+#include <cstdlib>
 #include <iosfwd>
 #include <limits>
 #include <map>
@@ -969,12 +970,17 @@ const T& yaml::asRef() const
 	const auto& storedType = s.type();
 
 	if (storedType != expectedType)
+	{
+		std::stringstream ss;
+		yaml::internalPrintAsYAML(s, ss, {}, {});
+
 		THROW_EXCEPTION_FMT(
-			"Trying to read parameter `%s` of type `%s` as if it was "
-			"`%s` and no obvious conversion found.",
-			proxiedMapEntryName_.c_str(),
+			"Trying to read parameter `%s` (value='%s') of type `%s` as if it "
+			"was `%s` and no obvious conversion found .",
+			proxiedMapEntryName_.c_str(), ss.str().c_str(),
 			mrpt::demangle(storedType.name()).c_str(),
 			mrpt::demangle(expectedType.name()).c_str());
+	}
 
 	return *std::any_cast<T>(&s);
 }
@@ -1154,13 +1160,12 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 		{
 			const auto str = implAnyAsGetter<std::string>(s);
 			std::optional<int> intVal;
-			try
-			{
-				intVal = std::stoi(str);
-			}
-			catch (...)
-			{
-			}
+
+			char* retStr = nullptr;
+			const long long ret =
+				std::strtoll(str.c_str(), &retStr, 0 /*auto base*/);
+			if (retStr != 0 && retStr != str.c_str()) intVal = ret;
+
 			return str == "y" || str == "Y" || str == "yes" || str == "Yes" ||
 				str == "YES" || str == "true" || str == "True" ||
 				str == "TRUE" || str == "on" || str == "ON" || str == "On" ||
@@ -1227,10 +1232,12 @@ T implAnyAsGetter(const mrpt::containers::yaml::scalar_t& s)
 	}
 
 	// No known way to convert it:
+	std::stringstream ss;
+	yaml::internalPrintAsYAML(s, ss, {}, {});
 	THROW_EXCEPTION_FMT(
-		"Trying to access scalar of type `%s` as if it was "
-		"`%s` and no obvious conversion found.",
-		mrpt::demangle(storedType.name()).c_str(),
+		"Trying to access scalar (value='%s') of type `%s` as if it was `%s` "
+		"and no obvious conversion found .",
+		ss.str().c_str(), mrpt::demangle(storedType.name()).c_str(),
 		mrpt::demangle(expectedType.name()).c_str());
 }
 
