@@ -5,6 +5,11 @@
   - prg-configurator:
     - A maximum trajectory time can be specified now for rendering PTGs.
     - New CLI arguments `--ini`, `--ini-section` to automate loading custom INI files.
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - mrpt::container::yaml:
+      - Clearer error messages when an invalid type conversion is requested.
+      - It now does not throw internal exceptions when trying to convert strings to bool.
 
 # Version 2.5.4: Released September 24th, 2022
 - Changes in libraries:
