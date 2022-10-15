@@ -10,6 +10,8 @@
     - mrpt::container::yaml:
       - Clearer error messages when an invalid type conversion is requested.
       - It now does not throw internal exceptions when trying to convert strings to bool.
+  - \ref mrpt_imgs_grp
+      - mrpt::img::CImage::filledRectangle() is now implemented using the fast opencv draw function instead of the slow mrpt::img::CCanvas default base implementation.
 
 # Version 2.5.4: Released September 24th, 2022
 - Changes in libraries:
