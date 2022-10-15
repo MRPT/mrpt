@@ -12,6 +12,8 @@
       - It now does not throw internal exceptions when trying to convert strings to bool.
   - \ref mrpt_imgs_grp
       - mrpt::img::CImage::filledRectangle() is now implemented using the fast opencv draw function instead of the slow mrpt::img::CCanvas default base implementation.
+  - \ref mrpt_typemeta_grp
+      - mrpt::typemeta::TEnumType<> on invalid names, it now prints all valid known enum names in its exception error message.
 
 # Version 2.5.4: Released September 24th, 2022
 - Changes in libraries:
