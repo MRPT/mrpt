@@ -8,7 +8,8 @@ RANSAC C++ examples
 ----------------------
 
 Random sample consensus (RANSAC) was originally presented in the 
-seminal work :cite:`fischler1981random` and is still widely used.
+seminal work :cite:`fischler1981random` and is still widely used nowadays 
+(e.g. in the front-end of Visual SLAM or Visual Odometry systems).
 For a theoretical description of the algorithm, refer to 
 :cite:`fischler1981random` or to 
 `this Wikipedia article <https://en.wikipedia.org/wiki/Random_sample_consensus>`_
@@ -40,7 +41,7 @@ through the template class `mrpt::math::ModelSearch <class_mrpt_math_ModelSearch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Refer to the `example source code <page_math_ransac_plane3d_example2.html>`_ 
-for a direct usage of the generic C++ RANSACA template to see how to define
+for a direct usage of the generic C++ RANSAC template to see how to define
 custom models and test functions.
 
 .. image:: images/math_ransac_plane3d_example_screenshot.gif
