@@ -34,5 +34,5 @@ Do you want to contribute new code to MRPT?
   * Small commits with a proper description are preferred.
   
 * **Verify that your code builds**. It will anyway be tested upon pull request by our CI.
-* Most changes are relevant enough to be shown in the `CHANGELOG <https://github.com/MRPT/mrpt/blob/master/doc/doxygen-pages/changeLog_doc.h>`_. Modify it as well to reflect what is new.
+* Most changes are relevant enough to be shown in the `doc/source/doxygen-docs/changelog.md <https://github.com/MRPT/mrpt/blob/master/doc/source/doxygen-docs/changelog.md>`_. Modify it as well to reflect what is new.
 * Open a pull-request.
