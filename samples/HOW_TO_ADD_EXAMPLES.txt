@@ -21,7 +21,8 @@ How to create new examples under the MRPT tree:
    git add [MRPT]/samples/foo/test.cpp [MRPT]/samples/foo/CMakeLists.txt
 
 8) Optional: Add a [MRPT]/samples/foo/README.md and a screenshot in
-   [MRPT]/doc/source/images/foo_screenshot.png, then rerun [MRPT]/scripts/generate_rst_docs_examples.sh
+   [MRPT]/doc/source/images/foo_screenshot.{png,gif},
+   then rerun [MRPT]/scripts/generate_rst_docs_examples.sh
    and add it to the list in [MRPT]/doc/source/examples.rst
 
 done!

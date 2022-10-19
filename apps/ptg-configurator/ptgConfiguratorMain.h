@@ -57,6 +57,11 @@ class ptgConfiguratorframe : public wxFrame
 	ptgConfiguratorframe(wxWindow* parent, wxWindowID id = -1);
 	~ptgConfiguratorframe() override;
 
+	wxTextCtrl* getCfgBox() { return edCfg; }
+	bool m_disableLoadDefaultParams = false;
+
+	std::string m_cfgFileSection = "PTG_PARAMS";
+
    private:
 	//(*Handlers(ptgConfiguratorframe)
 	void OnAbout(wxCommandEvent& event);
@@ -212,6 +217,7 @@ class ptgConfiguratorframe : public wxFrame
 	wxSlider* slidPathHighlight;
 	//*)
 	wxTextCtrl* edSelectedTrajCmd = nullptr;
+	wxTextCtrl* edDrawMaxTime = nullptr;
 
 	DECLARE_EVENT_TABLE()
 

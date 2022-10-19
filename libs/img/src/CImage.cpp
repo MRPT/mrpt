@@ -1186,6 +1186,17 @@ void CImage::drawCircle(
 #endif
 }
 
+void CImage::filledRectangle(
+	int x0, int y0, int x1, int y1, const mrpt::img::TColor color)
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();  // For delayed loaded images stored externally
+	cv::rectangle(
+		m_impl->img, {x0, y0}, {x1, y1}, CV_RGB(color.R, color.G, color.B),
+		cv::FILLED);
+#endif
+}
+
 void CImage::drawImage(int x, int y, const mrpt::img::CImage& img)
 {
 #if MRPT_HAS_OPENCV

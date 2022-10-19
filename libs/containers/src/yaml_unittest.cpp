@@ -551,6 +551,10 @@ myMap:
     # comment for b
     b: 2
     c: 3
+  R: 123
+  S: -123
+  T: 123 # foo
+  V: 456 # bar
 )xxx";
 
 const auto sampleYamlBlock_4 = R"xxx(
@@ -965,6 +969,53 @@ MRPT_TEST(yaml, booleanVersions)
 	EXPECT_EQ(p["b13"].as<bool>(), true);
 	EXPECT_EQ(p["b14"].as<bool>(), true);
 	EXPECT_EQ(p["b15"].as<bool>(), true);
+}
+MRPT_TEST_END()
+
+MRPT_TEST(yaml, integerConversions)
+{
+	{
+		mrpt::containers::yaml p;
+		p["a1"] = "0x1122";
+		p["a2"] = 0x1122;
+
+		EXPECT_EQ(p["a1"].as<int>(), 0x1122);
+		EXPECT_EQ(p["a2"].as<int>(), 0x1122);
+
+		p["b1"] = +12345;
+		p["b2"] = "+12345";
+		p["b3"] = "+12345";
+		p["b4"] = "12345abc";
+		p["b5_bad"] = "abc12345";
+
+		EXPECT_EQ(p["b1"].as<int>(), 12345);
+		EXPECT_EQ(p["b2"].as<int>(), 12345);
+		EXPECT_EQ(p["b3"].as<int>(), 12345);
+		EXPECT_EQ(p["b4"].as<int>(), 12345);
+		EXPECT_ANY_THROW(p["b5_bad"].as<int>());
+
+		p["c1"] = -12345;
+		p["c2"] = "-12345";
+		p["c3"] = " -12345";
+
+		EXPECT_EQ(p["c1"].as<int>(), -12345);
+		EXPECT_EQ(p["c2"].as<int>(), -12345);
+		EXPECT_EQ(p["c3"].as<int>(), -12345);
+	}
+
+	// Make sure the comments do not affect the result:
+	//  R: 123
+	//  S: -123
+	//  T: 123 # foo
+	//  V: 456 # bar
+	{
+		auto p = mrpt::containers::yaml::FromText(sampleYamlBlock_3);
+
+		EXPECT_EQ(p["myMap"]["R"].as<int>(), 123);
+		EXPECT_EQ(p["myMap"]["S"].as<int>(), -123);
+		EXPECT_EQ(p["myMap"]["T"].as<int>(), 123);
+		EXPECT_EQ(p["myMap"]["V"].as<int>(), 456);
+	}
 }
 MRPT_TEST_END()
 

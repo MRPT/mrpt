@@ -7,13 +7,21 @@ RANSAC C++ examples
 1. RANSAC algorithm
 ----------------------
 
-MRPT comprises a generic, template-based C++ implementation of this
-robust model fit algorithm, useful for outliers rejection.
+Random sample consensus (RANSAC) was originally presented in the 
+seminal work :cite:`fischler1981random` and is still widely used nowadays 
+(e.g. in the front-end of Visual SLAM or Visual Odometry systems).
 For a theoretical description of the algorithm, refer to 
+:cite:`fischler1981random` or to 
 `this Wikipedia article <https://en.wikipedia.org/wiki/Random_sample_consensus>`_
 and the cites herein.
+
+MRPT comprises a generic, template-based C++ implementation of this
+robust model fit algorithm, useful for outliers rejection.
 See also `this excellent MATLAB toolkit <https://www.peterkovesi.com/matlabfns/>`_
 by Peter Kovesi, on which MRPT implementation is strongly based.
+
+.. image:: images/math_ransac_examples_screenshot.png
+  :alt: RANSAC C++ examples
 
 2. C++ API
 ----------------------
@@ -29,16 +37,64 @@ through the template class `mrpt::math::ModelSearch <class_mrpt_math_ModelSearch
 3. Particular applications
 ----------------------------
 
+3.1. Fit a plane from 3D points
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-3.1. Fit a 3D plane
+Refer to the `example source code <page_math_ransac_plane3d_example2.html>`_ 
+for a direct usage of the generic C++ RANSAC template to see how to define
+custom models and test functions.
+
+.. image:: images/math_ransac_plane3d_example_screenshot.gif
+  :alt: RANSAC C++ detect 3D plane from point cloud
+
+
+3.2. Fit many planes from 3D points
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+MRPT provides the following functions for detecting planes
+(see `their C++ API documentation <group_ransac_grp.html#global-functions>`_
+or the `complete example <page_math_ransac_examples.html>`_):
+
+.. code-block:: cpp
+   :caption: Fit planes C++ API
+
+   template <typename NUMTYPE>
+   void mrpt::math::ransac_detect_3D_planes(
+       const CVectorDynamic<NUMTYPE>& x,
+       const CVectorDynamic<NUMTYPE>& y,
+       const CVectorDynamic<NUMTYPE>& z,
+       std::vector<std::pair<size_t, TPlane>>& out_detected_planes,
+       const double threshold,
+       const size_t min_inliers_for_valid_plane = 10
+       )
+   
+   template <class POINTSMAP>
+   void mrpt::math::ransac_detect_3D_planes(
+       const POINTSMAP* points_map,
+       std::vector<std::pair<size_t, TPlane>>& out_detected_planes,
+       const double threshold,
+       const size_t min_inliers_for_valid_plane
+       )
+
+
+3.3. Fit 2D lines
 ~~~~~~~~~~~~~~~~~~~~~
 
-3.2. Fit many 3D planes
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+MRPT provides the following function to detect lines
+(see `their C++ API documentation <group_ransac_grp.html#global-functions>`_
+or the `complete example <page_math_ransac_examples.html>`_):
 
-3.3. Fit many 2D lines
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: cpp
+   :caption: Fit lines C++ API
 
+   template <typename NUMTYPE>
+   void mrpt::math::ransac_detect_2D_lines(
+       const CVectorDynamic<NUMTYPE>& x,
+       const CVectorDynamic<NUMTYPE>& y,
+       std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,
+       const double threshold,
+       const size_t min_inliers_for_valid_line = 5
+       )
 
 3.4. Data association with RANSAC
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -14,6 +14,6 @@
     * Commit often. 
     * Small commits with a good log description are preferred.
   * **Verify that your code builds**, at least in one the major supported compilers: MSVC, GCC, CLANG.
-  * Most changes are relevant enough to be shown in the [CHANGELOG](https://github.com/MRPT/mrpt/blob/master/doc/doxygen-pages/changeLog_doc.h). Modify it as well to reflect what is new.
+  * Most changes are relevant enough to be shown in the [doc/source/doxygen-docs/changelog.md](https://github.com/MRPT/mrpt/blob/develop/doc/source/doxygen-docs/changelog.md). Modify it as well to reflect what is new.
   * Open a pull-request.
 
