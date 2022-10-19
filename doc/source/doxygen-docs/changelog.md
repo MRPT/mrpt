@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.5.6: UNRELEASED
+(None yet)
+
 # Version 2.5.5: Released October 19th, 2022
 - Changes in applications:
   - prg-configurator:
