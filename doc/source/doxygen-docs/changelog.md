@@ -1,5 +1,22 @@
 \page changelog Change Log
 
+# Version 2.5.5: Released October 19th, 2022
+- Changes in applications:
+  - prg-configurator:
+    - A maximum trajectory time can be specified now for rendering PTGs.
+    - New CLI arguments `--ini`, `--ini-section` to automate loading custom INI files.
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - mrpt::container::yaml:
+      - Clearer error messages when an invalid type conversion is requested.
+      - It now does not throw internal exceptions when trying to convert strings to bool.
+  - \ref mrpt_imgs_grp
+      - mrpt::img::CImage::filledRectangle() is now implemented using the fast opencv draw function instead of the slow mrpt::img::CCanvas default base implementation.
+  - \ref mrpt_math_grp
+      - Correct copyright notes for embedded version of the CSparse sources (PR [#1255](https://github.com/MRPT/mrpt/pull/1255)).
+  - \ref mrpt_typemeta_grp
+      - mrpt::typemeta::TEnumType<> on invalid names, it now prints all valid known enum names in its exception error message.
+
 # Version 2.5.4: Released September 24th, 2022
 - Changes in libraries:
   - \ref mrpt_opengl_grp

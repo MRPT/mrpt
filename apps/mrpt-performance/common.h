@@ -46,6 +46,7 @@ void register_tests_CObservation3DRangeScan();
 void register_tests_atan2lut();
 void register_tests_strings();
 void register_tests_octomaps();
+void register_tests_system();
 void register_tests_yaml();
 // -------------------------------------------------
 

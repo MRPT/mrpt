@@ -141,6 +141,7 @@ int main(int argc, char** argv)
 		register_tests_atan2lut();
 		register_tests_strings();
 		register_tests_octomaps();
+		register_tests_system();
 		register_tests_yaml();
 
 		if (doLog)

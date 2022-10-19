@@ -99,13 +99,17 @@ struct TEnumType
 	 * std::exception on unknown enum name */
 	static ENUMTYPE name2value(const std::string& name)
 	{
+		using namespace std::string_literals;
 		ENUMTYPE val;
 		if (!getBimap().inverse(name, val))
 		{
-			throw std::runtime_error(
-				std::string("TEnumType<" _MRPT_AUXTOSTR(
-					TEnumType) ">::name2value(): Unknown name: ") +
-				name);
+			std::string s = std::string("TEnumType<" _MRPT_AUXTOSTR(
+								TEnumType) ">::name2value(): Unknown name '") +
+				name + "' (Valid ones:";
+			for (const auto& kv : getBimap().m_v2k)
+				s += " '"s + kv.first + "',"s;
+			s += ")."s;
+			throw std::runtime_error(s);
 		}
 		return val;
 	}

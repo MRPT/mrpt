@@ -303,6 +303,10 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	// See CCanvas docs
 	void drawImage(int x, int y, const mrpt::img::CImage& img) override;
 
+	// See CCanvas docs
+	void filledRectangle(
+		int x0, int y0, int x1, int y1, const mrpt::img::TColor color) override;
+
 	/** Equalize the image histogram, saving the new image in the given output
 	 * object.  \note RGB images are first converted to HSV color space, then
 	 * equalized for brightness (V) */

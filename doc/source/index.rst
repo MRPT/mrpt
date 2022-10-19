@@ -60,6 +60,7 @@ Get it
 Where to start
 ------------------
 
+- `Tutorials <tutorials.html>`_
 - C++ API reference: :ref:`modules`.
 - Dozens of examples: :ref:`examples`.
 - GitHub repository: https://github.com/MRPT/mrpt

@@ -13,7 +13,7 @@
 
 I acknowledge to have:
 * Read the [`CONTRIBUTING`](https://github.com/MRPT/mrpt/blob/master/.github/CONTRIBUTING.md) page
-* Updated [`doc/doxygen-pages/changeLog_doc.h`](https://github.com/MRPT/mrpt/blob/master/doc/doxygen-pages/changeLog_doc.h) to describe these changes (if applicable)
+* Updated [`doc/source/doxygen-docs/changelog.md`](https://github.com/MRPT/mrpt/blob/develop/doc/source/doxygen-docs/changelog.md) to describe these changes (if applicable)
 * Updated [`AUTHORS`](https://github.com/MRPT/mrpt/blob/master/AUTHORS) (if applicable)
 
 (Notify: @MRPT/owners )

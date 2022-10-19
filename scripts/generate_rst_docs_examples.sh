@@ -14,8 +14,9 @@ for d in samples/*/ ; do
         echo "" >> $F
     fi
 
-    FILE_SCREENSHOT="doc/source/images/${NAME}_screenshot.png"
+    FILE_SCREENSHOT="doc/source/images/${NAME}_screenshot.*"
     if [ -f $FILE_SCREENSHOT ]; then
+        FILE_SCREENSHOT=$(ls -1 $FILE_SCREENSHOT)
         echo "" >> $F
         echo "![$NAME screenshot]($FILE_SCREENSHOT)" >> $F
     fi
