@@ -5,6 +5,7 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckTypeSize)
+include(CheckSymbolExists)
 
 
 set(CMAKE_REQUIRED_INCLUDES "math.h")
@@ -28,6 +29,8 @@ CHECK_INCLUDE_FILE("malloc/malloc.h" HAVE_MALLOC_MALLOC_H)
 CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
 CHECK_INCLUDE_FILE("pthread.h" HAVE_PTHREAD_H)
 CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
+
+check_symbol_exists(localtime_r "time.h" HAVE_LOCALTIME_R)
 
 if(HAVE_ALLOCA_FUNC OR HAVE_ALLOCA_H)
 	set(HAVE_ALLOCA 1)
