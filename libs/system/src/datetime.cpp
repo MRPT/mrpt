@@ -9,6 +9,7 @@
 
 #include "system-precomp.h"	 // Precompiled headers
 //
+#include <mrpt/config.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
@@ -28,6 +29,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <termios.h>
+#include <time.h>
 #include <unistd.h>
 #include <utime.h>
 
@@ -65,7 +67,13 @@ void mrpt::system::timestampToParts(TTimeStamp t, TTimeParts& p, bool localTime)
 
 	const auto tt = time_t(T);
 
+#if !defined(HAVE_LOCALTIME_R)
 	struct tm* parts = localTime ? localtime(&tt) : gmtime(&tt);
+#else
+	tm myTm;
+	tm* parts = localTime ? localtime_r(&tt, &myTm) : gmtime_r(&tt, &myTm);
+#endif
+
 	ASSERTMSG_(parts, "Malformed timestamp");
 
 	p.year = parts->tm_year + 1900;
@@ -191,7 +199,13 @@ string mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 		(t.time_since_epoch().count() - ((uint64_t)116444736 * 1000000000));
 	time_t auxTime = tmp / (uint64_t)10000000;
 	auto secFractions = calcSecFractions(tmp);
+
+#if !defined(HAVE_LOCALTIME_R)
 	tm* ptm = localtime(&auxTime);
+#else
+	tm myTm;
+	tm* ptm = localtime_r(&auxTime, &myTm);
+#endif
 
 	if (!ptm) return "(Malformed timestamp)";
 
@@ -237,7 +251,14 @@ string mrpt::system::timeLocalToString(
 
 	uint64_t tmp = (t - ((uint64_t)116444736 * 1000000000));
 	const time_t auxTime = tmp / (uint64_t)10000000;
+
+#if !defined(HAVE_LOCALTIME_R)
 	const tm* ptm = localtime(&auxTime);
+#else
+	tm myTm;
+	const tm* ptm = localtime_r(&auxTime, &myTm);
+#endif
+
 	auto secFractions = calcSecFractions(tmp);
 	// We start with 10^{-6} second units: reduce if requested by user:
 	const unsigned int user_secondFractionDigits = secondFractionDigits;

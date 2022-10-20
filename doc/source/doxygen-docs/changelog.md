@@ -1,7 +1,12 @@
 \page changelog Change Log
 
 # Version 2.5.6: UNRELEASED
-(None yet)
+- Changes in libraries:
+  - \ref mrpt_system_grp
+    - These functions are now thread-safe if built in a system with the `localtime_r()` variant of `localtime()`:
+      - mrpt::system::timestampToParts()
+      - mrpt::system::dateTimeLocalToString()
+      - mrpt::system::timeLocalToString()
 
 # Version 2.5.5: Released October 19th, 2022
 - Changes in applications:
