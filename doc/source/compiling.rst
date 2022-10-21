@@ -40,10 +40,10 @@ Minimum compiler requisites:
          libopencv-dev libeigen3-dev zlib1g-dev \
          libsuitesparse-dev libjpeg-dev
          
-       # plus, only for Ubuntu < 22.04:
+       # plus, only for Ubuntu < 22.10:
        sudo apt install libwxgtk3.0-gtk3-dev
 
-       # plus, only for Ubuntu >= 22.04:
+       # plus, only for Ubuntu >= 22.10:
        sudo apt install libwxgtk3.2-dev
 
     **Recommended additional** packages to enable most MRPT features:
