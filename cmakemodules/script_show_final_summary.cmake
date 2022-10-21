@@ -79,7 +79,10 @@ if(NOT CMAKE_GENERATOR MATCHES "Xcode|Visual Studio")
 	message(STATUS " Configuration               : "  ${CMAKE_BUILD_TYPE})
 endif()
 
-message(STATUS " C++ flags                   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+message(STATUS " C++ flags (active config.)  : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+message(STATUS " EXE link flags (active)     : ${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
+message(STATUS " Shared link flags (active)  : ${CMAKE_SHARED_LINKER} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
+
 message(STATUS " clang-tidy checks           : ${CLANG_TIDY_CHECKS}")
 
 message(STATUS "")
