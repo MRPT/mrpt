@@ -34,6 +34,7 @@ Minimum compiler requisites:
     **Minimum recommended** requisites:
 
     .. code-block:: bash
+    
        # All Ubuntu versions:
        sudo apt install build-essential pkg-config cmake \
          libopencv-dev libeigen3-dev zlib1g-dev \
