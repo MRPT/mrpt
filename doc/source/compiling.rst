@@ -17,14 +17,10 @@ binaries for your system or install via ``apt`` in Ubuntu.
 
 Minimum compiler requisites:
 
-- gcc-7 or newer. Only for Ubuntu 16.04LTS Xenial, you will have to
-  follow `these instructions <https://gist.github.com/jlblancoc/99521194aba975286c80f93e47966dc5>`_ for
-  installing gcc-7 in this version of Ubuntu.
-
-- clang-4 or newer.
+- A modern C++17 compiler: gcc (>=7) or clang (>=4).
 - Windows: Visual Studio 2017 version 15.3 or newer.
-- cmake >= 3.3 required (>=3.4 for Windows).
-- Eigen >= 3.3 required.
+- cmake (>=3.8)
+- Eigen (>=3.3) required.
 - Other libraries: See :ref:`doxid-dependencies`
 - On SIMD optimizations, read: :ref:`doxid-simd`
 
