@@ -12,7 +12,6 @@
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/containers/stl_containers_utils.h>  // find_in_vector
-#include <mrpt/io/vector_loadsave.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorFixed.h>
@@ -279,7 +278,7 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 */
 	inline void getLandmarkCov(size_t idx, KFMatrix_FxF& feat_cov) const
 	{
-		feat_cov = m_pkk.blockCopy<FEAT_SIZE, FEAT_SIZE>(
+		feat_cov = m_pkk.template blockCopy<FEAT_SIZE, FEAT_SIZE>(
 			VEH_SIZE + idx * FEAT_SIZE, VEH_SIZE + idx * FEAT_SIZE);
 	}
 

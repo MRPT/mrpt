@@ -11,15 +11,14 @@
 #ifndef CKalmanFilterCapable_H
 #error Include this file only from 'CKalmanFilterCapable.h'
 #endif
-
+//
+#include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/containers/stl_containers_utils.h>
 #include <mrpt/math/ops_matrices.h>	 // extractSubmatrixSymmetrical()
 
 #include <Eigen/Dense>
 
-namespace mrpt
-{
-namespace bayes
+namespace mrpt::bayes
 {
 // The main entry point in the Kalman Filter class:
 template <
@@ -1148,5 +1147,4 @@ inline bool isMapEmpty(
 	return true;
 }
 }  // namespace detail
-}  // namespace bayes
-}  // namespace mrpt
+}  // namespace mrpt::bayes
