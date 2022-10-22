@@ -187,17 +187,17 @@ by:
 
 where the optimizer that minimizes the average square error between
 pairings is implemented following the
-`Levenberg-Marquardt <http://www.mrpt.org/Levenberg-Marquardt_algorithm>`__
+`Levenberg-Marquardt <page_tutorial_math_levenberg_marquardt.html>`_
 algorithm. Jacobians are determined numerically to capture as well as
 possible the actual distribution of points. Credits for this algorithm
-are due to Dr. `Paul Newman <https://ori.ox.ac.uk/ori-people/paul-newman/>`__, on
+are due to Dr. `Paul Newman <https://business-asset.com/eng/wiki-blog/varia/paul-newman-1001.html>`_, on
 whose code was MRPT's implementation based.
 
 Optimizing sets of correspondences
 ########################################
 
 .. note::
-   More general registration algorithms are provided in the more recent project `MP2P_ICP <https://github.com/MOLAorg/mp2p_icp>`_
+   More general registration algorithms are provided in the more recent project `mp2p_icp <https://github.com/MOLAorg/mp2p_icp>`_
 
 SE(2) Least Square Rigid transformation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -205,7 +205,7 @@ SE(2) Least Square Rigid transformation
 Given a set of correspondences between two sets of points, this method
 computes the transformation that minimizes the square error. Implemented
 in
-`tfest <group__mrpt__tfest__grp.html>`__::leastSquareErrorRigidTransformation.
+`tfest <group__mrpt__tfest__grp.html>`_::leastSquareErrorRigidTransformation.
 
 
 SE(3) Least Square Rigid transformation
@@ -214,7 +214,7 @@ SE(3) Least Square Rigid transformation
 Given a set of correspondences between two sets of points, this method
 computes the transformation that minimizes the square error. Implemented
 in
-`tfest <group__mrpt__tfest__grp.html>`__::leastSquareErrorRigidTransformation6D.
+`tfest <group__mrpt__tfest__grp.html>`_::leastSquareErrorRigidTransformation6D.
 
 
 SE(2) Robust Rigid transformation
@@ -223,5 +223,5 @@ SE(2) Robust Rigid transformation
 Given a set of correspondences between two sets of points, this method
 computes a Sum of Gaussians (SOG) over the potential transformations
 using a **robust RANSAC stage**. Implemented
-in\ `tfest <group__mrpt__tfest__grp.html>`__::robustRigidTransformation.
+in\ `tfest <group__mrpt__tfest__grp.html>`_::robustRigidTransformation.
 
