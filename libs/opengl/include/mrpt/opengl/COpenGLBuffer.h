@@ -18,6 +18,7 @@ namespace mrpt::opengl
  *
  * \sa COpenGLFramebuffer
  * \ingroup mrpt_opengl_grp
+ * \note OpenGL Buffer Objects *can* be shared among threads.
  */
 class COpenGLBuffer
 {

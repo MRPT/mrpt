@@ -17,6 +17,7 @@ namespace mrpt::opengl
  * Refer to docs for glGenVertexArrays().
  *
  * \ingroup mrpt_opengl_grp
+ * \note OpenGL VAOs *cannot* be shared among threads/GL contexts.
  */
 class COpenGLVertexArrayObject
 {
