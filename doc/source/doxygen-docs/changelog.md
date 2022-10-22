@@ -8,7 +8,7 @@
       - mrpt::system::dateTimeLocalToString()
       - mrpt::system::timeLocalToString()
 - Build system:
-  - Provive CMAKE_BUILD_TYPES `SanitizeThread` and `SanitizeAddress`.
+  - Provide CMAKE_BUILD_TYPES `SanitizeThread` and `SanitizeAddress`.
 
 # Version 2.5.5: Released October 19th, 2022
 - Changes in applications:
