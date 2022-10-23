@@ -21,7 +21,9 @@
 #include <vector>
 
 #elif defined(MRPT_OS_LINUX)
+#if !MRPT_IN_EMSCRIPTEN
 #include <sys/prctl.h>
+#endif
 
 #if HAVE_PTHREAD_H
 #include <pthread.h>
