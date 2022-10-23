@@ -69,9 +69,11 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState navDynState;
 	/** The number of PTGS: */
 	uint32_t nPTGs{0};
+
 	/** The info for each applied PTG: must contain "nPTGs * nSecDistances"
 	 * elements */
 	std::vector<TInfoPerPTG> infoPerPTG;
+
 	/** The selected PTG. */
 	int32_t nSelectedPTG{-1};
 
@@ -80,6 +82,7 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	 *	- "estimatedExecutionPeriod": The estimated execution period.
 	 */
 	std::map<std::string, double> values;
+
 	/** Known values:
 	 *	- "tim_start_iteration": Time of start of navigationStep()
 	 *implementation.
@@ -87,17 +90,22 @@ class CLogFileRecord : public mrpt::serialization::CSerializable
 	 *	- "curPoseAndVel":  Time of querying robot pose and velocities.
 	 */
 	std::map<std::string, mrpt::system::TTimeStamp> timestamps;
+
 	/** Additional debug traces */
 	std::map<std::string, std::string> additional_debug_msgs;
-	/** The WS-Obstacles */
+
+	/** The WS-Obstacles (in the local robot frame of reference) */
 	mrpt::maps::CSimplePointsMap WS_Obstacles, WS_Obstacles_original;
+
 	/** The robot pose (from odometry and from the localization/SLAM system). */
 	mrpt::math::TPose2D robotPoseLocalization, robotPoseOdometry;
-	mrpt::math::TPose2D relPoseSense,
-		relPoseVelCmd;	//! Relative poses (wrt to robotPoseLocalization) for
-	//! extrapolated paths at two instants: time of obstacle
-	//! sense, and future pose of motion comman
-	/** The relative location of target(s) in Workspace. */
+
+	/** Relative poses (wrt to robotPoseLocalization) for extrapolated paths at
+	 * two instants: time of obstacle sense, and future pose of motion command
+	 */
+	mrpt::math::TPose2D relPoseSense, relPoseVelCmd;
+
+	/** The relative location of target(s) in Workspace (wrt the robot). */
 	std::vector<mrpt::math::TPose2D> WS_targets_relative;
 
 	/** The final motion command sent to robot, in "m/sec" and "rad/sec". */
