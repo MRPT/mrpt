@@ -26,7 +26,7 @@ MRPT also provides GUI apps for [Stereo camera calibration](https://www.mrpt.org
 and [much more](https://www.mrpt.org/list-of-mrpt-apps/).
 
 ## 2. Resources
-  * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --depth 1`
+  * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --recursive`
   * Ask questions at: [this Google group](https://www.mrpt.org/forum/) or at [stackoverflow](https://stackoverflow.com/search?q=mrpt) (please, use the tag `mrpt`!)
   * [Main project website](https://www.mrpt.org/), including [sources and Windows installer downloads](https://www.mrpt.org/download-mrpt/)
   * [C++ API reference](https://docs.mrpt.org/reference/)
