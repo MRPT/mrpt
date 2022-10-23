@@ -9,6 +9,8 @@
       - mrpt::system::timeLocalToString()
 - Build system:
   - Provide CMAKE_BUILD_TYPES `SanitizeThread` and `SanitizeAddress`.
+- BUG FIXES:
+  - Fix build against latest version of EMSDK (Emscripten).
 
 # Version 2.5.5: Released October 19th, 2022
 - Changes in applications:

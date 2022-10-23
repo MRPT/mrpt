@@ -43,7 +43,7 @@
 #endif
 
 // Linux only:
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 #include <sys/epoll.h>	// epoll_create1()
 #endif
 
@@ -72,7 +72,7 @@ CClientTCPSocket::CClientTCPSocket()
 	m_hSock = INVALID_SOCKET;
 #endif
 
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 	// Linux:
 	m_epoll4read_fd = epoll_create1(0);
 	m_epoll4write_fd = epoll_create1(0);
@@ -131,7 +131,7 @@ void CClientTCPSocket::close()
 	// Delete socket:
 	if (m_hSock != -1)
 	{
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 		epoll_ctl(m_epoll4write_fd, EPOLL_CTL_DEL, m_hSock, nullptr);
 		epoll_ctl(m_epoll4read_fd, EPOLL_CTL_DEL, m_hSock, nullptr);
 #endif
@@ -172,7 +172,7 @@ void CClientTCPSocket::sendString(const std::string& str)
 	Write(str.c_str(), str.size());
 }
 
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 void CClientTCPSocket::internal_attach_epoll_to_hsock()
 {
 	struct epoll_event event = {0, 0};
@@ -252,7 +252,7 @@ void CClientTCPSocket::connect(
 			remotePartAddress.c_str(), remotePartTCPPort, strerror(er), er);
 
 		// socket is created:
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 	internal_attach_epoll_to_hsock();
 
 	// Wait for connect:
@@ -365,7 +365,7 @@ size_t CClientTCPSocket::readAsync(
 	int readNow;
 	bool timeoutExpired = false;
 
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 	std::array<struct epoll_event, 1> events;
 #else
 	struct timeval timeoutSelect = {0, 0};
@@ -396,7 +396,7 @@ size_t CClientTCPSocket::readAsync(
 		}
 #endif
 		// Wait for received data
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 		int event_count;
 		do
 		{
@@ -475,7 +475,7 @@ size_t CClientTCPSocket::writeAsync(
 	int writtenNow;
 	bool timeoutExpired = false;
 
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 	std::array<struct epoll_event, 1> events;
 #else
 	struct timeval timeoutSelect = {0, 0};
@@ -488,7 +488,7 @@ size_t CClientTCPSocket::writeAsync(
 #endif
 
 	// The timeout:
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 	const int epoll_timeout_ms = timeout_ms < 0 ? -1 : timeout_ms;
 #else
 	if (timeout_ms < 0) { ptrTimeout = nullptr; }
@@ -504,7 +504,7 @@ size_t CClientTCPSocket::writeAsync(
 	while (alreadyWritten < Count && !timeoutExpired)
 	{
 		// Wait for received data
-#if defined(MRPT_OS_LINUX)
+#if defined(MRPT_OS_LINUX) && !MRPT_IN_EMSCRIPTEN
 		int event_count;
 		do
 		{
