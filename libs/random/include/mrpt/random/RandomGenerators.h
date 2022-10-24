@@ -318,7 +318,7 @@ class CRandomGenerator
 		{
 			const auto s = std::sqrt(eigVals[c]);
 			for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++)
-				eigVecs(c, r) *= s;
+				eigVecs(r, c) *= s;
 		}
 
 		// Set size of output vector:
@@ -366,7 +366,7 @@ class CRandomGenerator
 		{
 			const auto s = std::sqrt(eigVals[c]);
 			for (typename COVMATRIX::Index r = 0; r < eigVecs.rows(); r++)
-				eigVecs(c, r) *= s;
+				eigVecs(r, c) *= s;
 		}
 
 		// Set size of output vector:
