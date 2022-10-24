@@ -511,11 +511,7 @@ int main(int argc, char** argv)
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
 	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
-		return -1;
-	}
+	
 }
 
 mrpt::opengl::CSetOfObjects::Ptr framePosesVecVisualize(
