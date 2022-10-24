@@ -191,5 +191,4 @@ int main(int num_arg, char* argv[])
 				  << std::endl;
 		return -1;
 	}
-	
 }

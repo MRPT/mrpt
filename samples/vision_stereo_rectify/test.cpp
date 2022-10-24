@@ -240,5 +240,4 @@ int main(int argc, char** argv)
 		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
 		return -1;
 	}
-	
 }
