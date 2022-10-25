@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TBoundingBox.h>
@@ -310,21 +311,21 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void updateBuffers() const
 	{
 		renderUpdateBuffers();
-		const_cast<CRenderizable&>(*this).m_outdatedBuffers = false;
+		const_cast<CRenderizable&>(*this).m_state.get().outdatedBuffers = false;
 	}
 
 	/** Call to enable calling renderUpdateBuffers() before the next
 	 * render() rendering iteration. */
 	void notifyChange() const
 	{
-		const_cast<CRenderizable&>(*this).m_outdatedBuffers = true;
+		const_cast<CRenderizable&>(*this).m_state.get().outdatedBuffers = true;
 	}
 
 	/** Returns whether notifyChange() has been invoked since the last call
 	 * to renderUpdateBuffers(), meaning the latter needs to be called again
 	 * before rendering.
 	 */
-	bool hasToUpdateBuffers() const { return m_outdatedBuffers; }
+	bool hasToUpdateBuffers() const { return m_state.get().outdatedBuffers; }
 
 	/** Simulation of ray-trace, given a pose. Returns true if the ray
 	 * effectively collisions with the object (returning the distance to the
@@ -377,7 +378,12 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
 
-	bool m_outdatedBuffers = true;
+	struct State
+	{
+		bool outdatedBuffers = true;
+	};
+	mrpt::containers::PerThreadDataHolder<State> m_state;
+
 	mrpt::math::TPoint3Df m_representativePoint{0, 0, 0};
 
 	/** Optional pointer to a mrpt::opengl::CText */

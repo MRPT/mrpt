@@ -83,7 +83,10 @@ void CPlanarLaserScan::onUpdateBuffers_Wireframe()
 
 void CPlanarLaserScan::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	size_t n;

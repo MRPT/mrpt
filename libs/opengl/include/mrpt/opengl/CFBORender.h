@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/core/format.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLFramebuffer.h>
@@ -48,17 +49,16 @@ class CFBORender
 	/** Destructor */
 	virtual ~CFBORender();
 
-	/** Change the scene camera */
+	/** Change the scene camera to be used when rendering the scene through this
+	 * particular instance of CFBORender. */
 	void setCamera(const COpenGLScene& scene, const CCamera& camera)
 	{
-		scene.getViewport("main")->getCamera() = camera;
+		m_renderFromCamera = camera;
 	}
 
-	/** Get a reference to the scene camera */
-	CCamera& getCamera(const COpenGLScene& scene)
-	{
-		return scene.getViewport("main")->getCamera();
-	}
+	/** Get a reference to the scene camera to be used when rendering the scene
+	 * through this particular instance of CFBORender. */
+	CCamera& getCamera(const COpenGLScene& scene) { return m_renderFromCamera; }
 
 	/** Render the scene and get the rendered RGB image. Resizes the image
 	 *  buffer if necessary to the configured render resolution.
@@ -91,6 +91,7 @@ class CFBORender
 
    protected:
 	COpenGLFramebuffer m_fb;
+	mrpt::opengl::CCamera m_renderFromCamera;
 
 	void* m_eglDpy = nullptr;
 	unsigned int m_texRGB = 0;

@@ -28,7 +28,10 @@ void CArrow::onUpdateBuffers_Triangles()
 	using P3f = mrpt::math::TPoint3Df;
 	using V3f = mrpt::math::TVector3Df;
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	// Compute the XYZ local frame of reference for the arrow:

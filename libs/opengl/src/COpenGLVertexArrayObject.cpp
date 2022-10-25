@@ -34,41 +34,35 @@ void COpenGLVertexArrayObject::RAII_Impl::create()
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	GLuint buffer;
 	glGenVertexArrays(1, &buffer);
-	this->buffer_id = buffer;
-	this->created_from = std::this_thread::get_id();
-	created = true;
+	m_state.get().buffer_id = buffer;
+	m_state.get().created = true;
 #endif
 }
 
 void COpenGLVertexArrayObject::RAII_Impl::destroy()
 {
-	if (!created) return;
+	if (!m_state.get().created) return;
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
-	if (created_from == std::this_thread::get_id())
-	{
-		release();
-		glDeleteVertexArrays(1, &buffer_id);
-	}
+	release();
+	glDeleteVertexArrays(1, &m_state.get().buffer_id);
 #endif
-	buffer_id = 0;
-	created = false;
+	m_state.get().buffer_id = 0;
+	m_state.get().created = false;
 }
 
 void COpenGLVertexArrayObject::RAII_Impl::bind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	ASSERT_(created);
-	glBindVertexArray(buffer_id);
+	ASSERT_(m_state.get().created);
+	glBindVertexArray(m_state.get().buffer_id);
 #endif
 }
 
 void COpenGLVertexArrayObject::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	if (!created) return;
-	if (created_from != std::this_thread::get_id()) return;
-
+	if (!m_state.get().created) return;
 	glBindVertexArray(0);
 #endif
 }

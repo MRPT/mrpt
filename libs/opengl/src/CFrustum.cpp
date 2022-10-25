@@ -80,7 +80,10 @@ void CFrustum::onUpdateBuffers_Wireframe()
 }
 void CFrustum::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();

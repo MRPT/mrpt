@@ -242,7 +242,10 @@ void CMesh3D::onUpdateBuffers_Wireframe()
 
 void CMesh3D::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	for (size_t f = 0; f < m_is_quad.size(); f++)
