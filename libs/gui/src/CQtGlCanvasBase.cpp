@@ -121,13 +121,13 @@ void CQtGlCanvasBase::wheelEvent(QWheelEvent* event)
 	if (event->modifiers() != Qt::ShiftModifier)
 	{
 		// regular zoom:
-		updateZoom(params, event->delta());
+		updateZoom(params, event->angleDelta().y());
 	}
 	else
 	{
 		// Move vertically +-Z:
 		params.cameraPointingZ +=
-			event->delta() * params.cameraZoomDistance * 1e-4;
+			event->angleDelta().y() * params.cameraZoomDistance * 1e-4;
 	}
 
 	setCameraParams(params);
