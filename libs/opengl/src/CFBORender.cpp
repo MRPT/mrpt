@@ -195,7 +195,7 @@ CFBORender::CFBORender(
 	// -------------------------------
 	// Create frame buffer object:
 	// -------------------------------
-	m_fb.create(width, height);
+	m_fb.create(width, height);	 // TODO: Multisample doesn't work...
 	const auto oldFB = m_fb.bind();
 
 	// -------------------------------
