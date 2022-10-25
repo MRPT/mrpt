@@ -55,7 +55,6 @@ class COpenGLVertexArrayObject
 		void destroy();
 		void bind();
 		void release();
-		void allocate(const void* data, int byteCount);
 
 		bool created = false;
 		unsigned int buffer_id = 0;

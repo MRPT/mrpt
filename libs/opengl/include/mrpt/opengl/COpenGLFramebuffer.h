@@ -92,7 +92,6 @@ class COpenGLFramebuffer
 		void destroy();
 		FrameBufferBinding bind();
 		void unbind();
-		void allocate(const void* data, int byteCount);
 
 		bool m_created = false;
 		unsigned int m_Framebuffer = 0, m_Depth = 0, m_Color = 0;
