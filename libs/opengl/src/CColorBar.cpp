@@ -85,7 +85,10 @@ void CColorBar::renderUpdateBuffers() const
 
 void CColorBar::onUpdateBuffers_all()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	auto& lines_vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& lines_cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	lines_vbd.clear();

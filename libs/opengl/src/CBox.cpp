@@ -84,7 +84,10 @@ void CBox::onUpdateBuffers_Wireframe()
 }
 void CBox::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const auto &c0 = m_corner_min, &c1 = m_corner_max;

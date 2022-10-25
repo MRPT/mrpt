@@ -200,7 +200,10 @@ void CAssimpModel::onUpdateBuffers_all()
 	pts_vbd.clear();
 	pts_cbd.clear();
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP

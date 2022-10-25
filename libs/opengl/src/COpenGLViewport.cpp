@@ -214,13 +214,14 @@ void COpenGLViewport::loadDefaultShaders() const
 }
 
 /** Render a normal scene with 3D objects */
-void COpenGLViewport::renderNormalSceneMode() const
+void COpenGLViewport::renderNormalSceneMode(
+	const CCamera* forceThisCamera) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	// Prepare camera (projection matrix):
-	updateMatricesFromCamera();
+	updateMatricesFromCamera(forceThisCamera);
 	auto& _ = m_threadedData.get().state;
 
 	// Get objects to render:
@@ -416,7 +417,8 @@ void COpenGLViewport::render(
 	[[maybe_unused]] const int render_width,
 	[[maybe_unused]] const int render_height,
 	[[maybe_unused]] const int render_offset_x,
-	[[maybe_unused]] const int render_offset_y) const
+	[[maybe_unused]] const int render_offset_y,
+	[[maybe_unused]] const CCamera* forceThisCamera) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
@@ -484,7 +486,7 @@ void COpenGLViewport::render(
 	//  ortho projection and render the image quad:
 	if (isImageViewMode()) renderImageMode();
 	else
-		renderNormalSceneMode();
+		renderNormalSceneMode(forceThisCamera);
 
 	// Draw text messages, if any:
 	renderTextMessages();
@@ -965,7 +967,8 @@ void COpenGLViewport::setCloneCamera(bool enable)
 	}
 }
 
-void COpenGLViewport::updateMatricesFromCamera() const
+void COpenGLViewport::updateMatricesFromCamera(
+	const CCamera* forceThisCamera) const
 {
 	auto& _ = m_threadedData.get().state;
 
@@ -991,10 +994,13 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	// Get camera:
 	// 1st: if there is a CCamera in the scene (nullptr if no camera found):
 	const auto camPtr = viewForGetCamera->getByClass<CCamera>();
-	auto myCamera = camPtr ? camPtr.get() : nullptr;
+	const auto* myCamera = camPtr ? camPtr.get() : nullptr;
 
 	// 2nd: the internal camera of all viewports:
 	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
+
+	// forced cam?
+	if (forceThisCamera) myCamera = forceThisCamera;
 
 	if (myCamera->isNoProjection())
 	{

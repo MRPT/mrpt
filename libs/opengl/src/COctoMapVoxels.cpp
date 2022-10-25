@@ -134,7 +134,10 @@ void COctoMapVoxels::onUpdateBuffers_Wireframe()
 
 void COctoMapVoxels::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	for (const auto& m_voxel_set : m_voxel_sets)

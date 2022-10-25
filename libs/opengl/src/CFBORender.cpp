@@ -288,7 +288,8 @@ void CFBORender::internal_render_RGBD(
 	// Render:
 	// ---------------------------
 	for (const auto& viewport : scene.viewports())
-		viewport->render(m_fb.width(), m_fb.height(), 0, 0);
+		viewport->render(
+			m_fb.width(), m_fb.height(), 0, 0, &m_renderFromCamera);
 
 #ifdef FBO_PROFILER
 	tleR.stop();

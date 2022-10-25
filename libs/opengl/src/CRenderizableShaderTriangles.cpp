@@ -31,12 +31,17 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 	const_cast<CRenderizableShaderTriangles&>(*this)
 		.onUpdateBuffers_Triangles();
 
-	const auto n = m_triangles.size();
+	std::shared_lock<std::shared_mutex> trisReadLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
+
+	const auto& tris = shaderTrianglesBuffer();
+
+	const auto n = tris.size();
 
 	// Define OpenGL buffers:
 	m_trianglesBuffer.createOnce();
 	m_trianglesBuffer.bind();
-	m_trianglesBuffer.allocate(m_triangles.data(), sizeof(m_triangles[0]) * n);
+	m_trianglesBuffer.allocate(tris.data(), sizeof(tris[0]) * n);
 
 	// VAO: required to use glEnableVertexAttribArray()
 	m_vao.createOnce();
@@ -46,6 +51,9 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+
+	std::shared_lock<std::shared_mutex> trisReadLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 
 	// Enable/disable lights:
 	if (rc.shader->hasUniform("enableLight"))
@@ -136,7 +144,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		CHECK_OPENGL_ERROR();
 	}
 
-	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
+	glDrawArrays(GL_TRIANGLES, 0, 3 * shaderTrianglesBuffer().size());
 	CHECK_OPENGL_ERROR();
 
 	glDisable(GL_CULL_FACE);
@@ -153,7 +161,10 @@ const mrpt::math::TBoundingBox
 {
 	mrpt::math::TBoundingBox bb;
 
-	if (m_triangles.empty()) return bb;
+	std::shared_lock<std::shared_mutex> trisReadLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
+
+	if (shaderTrianglesBuffer().empty()) return bb;
 
 	bb.min = mrpt::math::TPoint3D(
 		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
@@ -163,7 +174,7 @@ const mrpt::math::TBoundingBox
 		-std::numeric_limits<double>::max(),
 		-std::numeric_limits<double>::max());
 
-	for (const auto& t : m_triangles)
+	for (const auto& t : shaderTrianglesBuffer())
 	{
 		keep_min(bb.min.x, t.x(0));
 		keep_max(bb.max.x, t.x(0));

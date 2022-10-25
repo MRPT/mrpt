@@ -117,7 +117,10 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 	const auto& pts = m_render_pts;
 
 	// Render precomputed points in m_render_pts:
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const auto N = pts.size();
@@ -140,7 +143,10 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 	const auto& pts = m_render_pts;
 
 	// Render precomputed points in m_render_pts:
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const auto slices = m_numSegments, stacks = m_numSegments;

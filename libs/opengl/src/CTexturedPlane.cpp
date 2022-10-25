@@ -98,6 +98,8 @@ void CTexturedPlane::onUpdateBuffers_Triangles()
 	MRPT_START
 	using P3f = mrpt::math::TPoint3Df;
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 

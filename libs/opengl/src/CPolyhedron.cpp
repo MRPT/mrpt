@@ -2231,7 +2231,10 @@ void CPolyhedron::onUpdateBuffers_Wireframe()
 
 void CPolyhedron::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	for (const auto& face : m_Faces)

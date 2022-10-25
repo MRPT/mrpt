@@ -7,6 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/containers/yaml.h>
 #include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/opengl/CAxis.h>
@@ -14,6 +15,8 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/random.h>
+#include <mrpt/system/CTimeLogger.h>
+#include <mrpt/system/thread_name.h>
 
 #include <iostream>
 #include <list>
@@ -33,9 +36,15 @@ static mrpt::opengl::COpenGLScene::Ptr generate_example_scene()
 		s->insert(obj);
 	}
 	{
-		auto obj = mrpt::opengl::CSphere::Create();
+		auto obj = mrpt::opengl::CSphere::Create(1.0f);
 		obj->setColor_u8(0xff, 0x00, 0x00);
 		obj->setLocation({1.0, 1.0, 1.0});
+		s->insert(obj);
+	}
+	{
+		auto obj = mrpt::opengl::CSphere::Create(0.25f);
+		obj->setColor_u8(0x00, 0x00, 0xff);
+		obj->setLocation({-1.0, -1.0, 0.25});
 		s->insert(obj);
 	}
 
@@ -43,6 +52,7 @@ static mrpt::opengl::COpenGLScene::Ptr generate_example_scene()
 }
 
 mrpt::opengl::COpenGLScene::Ptr commonScene;
+mrpt::system::CTimeLogger profiler;
 
 struct RenderResult
 {
@@ -56,27 +66,48 @@ struct RenderResult
 std::list<RenderResult> renderOutputs;
 std::mutex renderOutputs_mtx;
 
+auto& rng = mrpt::random::getRandomGenerator();
+std::mutex rngMtx;
+
 static void renderer_thread_impl(
 	const std::string name, const int period_ms, const int numImgs)
 {
+	using namespace std::string_literals;
+
+	mrpt::system::thread_name(name);  // for debuggers
+
 	mrpt::opengl::CFBORender render(RENDER_WIDTH, RENDER_HEIGHT);
 	mrpt::img::CImage frame(RENDER_WIDTH, RENDER_HEIGHT, mrpt::img::CH_RGB);
-
-	auto& rng = mrpt::random::getRandomGenerator();
 
 	// here you can put your preferred camera rendering position
 	{
 		auto& camera = render.getCamera(*commonScene);
 		camera.setOrthogonal(false);
-		camera.setZoomDistance(rng.drawUniform(5.0, 20.0));
-		camera.setElevationDegrees(rng.drawUniform(10.0, 80.0));
-		camera.setAzimuthDegrees(rng.drawUniform(0.0, 360.0));
+
+		auto lck = mrpt::lockHelper(rngMtx);
+		camera.setZoomDistance(rng.drawUniform(15.0, 40.0));
+		camera.setElevationDegrees(rng.drawUniform(20.0, 70.0));
+		camera.setAzimuthDegrees(rng.drawUniform(-60.0, 60.0));
+
+#if 0
+		mrpt::containers::yaml d = mrpt::containers::yaml::Map();
+		camera.toYAMLMap(d);
+		std::cout << "Thread: " << name << "\nCamera:\n"
+				  << d << "\n"
+				  << std::endl;
+#endif
 	}
+
+	const auto nameProfiler = name + "_render"s;
 
 	for (int i = 0; i < numImgs; i++)
 	{
 		// render the scene
+		if (i > 0) profiler.enter(nameProfiler);
+
 		render.render_RGB(*commonScene, frame);
+
+		if (i > 0) profiler.leave(nameProfiler);
 
 		RenderResult res;
 		res.img = frame.makeDeepCopy();
@@ -158,10 +189,10 @@ static int TestOffscreenRender()
 	allThreads.emplace_back(&viz_thread);
 
 	allThreads.emplace_back(
-		&renderer_thread, "one", 100 /*period*/, 50 /*nImgs*/);
+		&renderer_thread, "one", 20 /*period*/, 400 /*nImgs*/);
 
 	allThreads.emplace_back(
-		&renderer_thread, "two", 45 /*period*/, 100 /*nImgs*/);
+		&renderer_thread, "two", 10 /*period*/, 700 /*nImgs*/);
 
 	for (auto& t : allThreads)
 		if (t.joinable()) t.join();

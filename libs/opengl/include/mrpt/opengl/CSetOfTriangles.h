@@ -37,26 +37,28 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	void updatePolygons() const;
 
 	/** Clear this object, removing all triangles. */
-	void clearTriangles()
-	{
-		m_triangles.clear();
-		polygonsUpToDate = false;
-		CRenderizable::notifyChange();
-	}
+	void clearTriangles();
 
 	/** Get triangle count */
-	size_t getTrianglesCount() const { return m_triangles.size(); }
+	size_t getTrianglesCount() const;
 
 	/** Gets the i-th triangle */
 	void getTriangle(size_t idx, TTriangle& t) const
 	{
-		ASSERT_LT_(idx, m_triangles.size());
-		t = m_triangles[idx];
+		std::shared_lock<std::shared_mutex> trisReadLock(
+			CRenderizableShaderTriangles::m_trianglesMtx);
+
+		ASSERT_LT_(idx, shaderTrianglesBuffer().size());
+		t = shaderTrianglesBuffer().at(idx);
 	}
 	/** Inserts a triangle into the set */
 	void insertTriangle(const TTriangle& t)
 	{
-		m_triangles.push_back(t);
+		std::unique_lock<std::shared_mutex> trisLck(
+			CRenderizableShaderTriangles::m_trianglesMtx);
+		auto& tris = CRenderizableShaderTriangles::m_triangles;
+
+		tris.push_back(t);
 		polygonsUpToDate = false;
 		CRenderizable::notifyChange();
 	}
@@ -67,7 +69,11 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	template <class InputIterator>
 	void insertTriangles(const InputIterator& begin, const InputIterator& end)
 	{
-		m_triangles.insert(m_triangles.end(), begin, end);
+		std::unique_lock<std::shared_mutex> trisLck(
+			CRenderizableShaderTriangles::m_trianglesMtx);
+		auto& tris = CRenderizableShaderTriangles::m_triangles;
+
+		tris.insert(tris.end(), begin, end);
 		polygonsUpToDate = false;
 		CRenderizable::notifyChange();
 	}
@@ -81,7 +87,11 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	 */
 	inline void reserve(size_t t)
 	{
-		m_triangles.reserve(t);
+		std::unique_lock<std::shared_mutex> trisLck(
+			CRenderizableShaderTriangles::m_trianglesMtx);
+		auto& tris = CRenderizableShaderTriangles::m_triangles;
+
+		tris.reserve(t);
 		CRenderizable::notifyChange();
 	}
 
@@ -116,27 +126,6 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 		CRenderizable::notifyChange();
 	}
 
-	/**
-	 * Gets the beginning iterator to this object.
-	 */
-	inline const_iterator begin() const { return m_triangles.begin(); }
-	/**
-	 * Gets the ending iterator to this object.
-	 */
-	inline const_iterator end() const { return m_triangles.end(); }
-	/**
-	 * Gets the reverse beginning iterator to this object, which points to the
-	 * last triangle.
-	 */
-	inline const_reverse_iterator rbegin() const
-	{
-		return m_triangles.rbegin();
-	}
-	/**
-	 * Gets the reverse ending iterator to this object, which points to the
-	 * beginning of the actual set.
-	 */
-	inline const_reverse_iterator rend() const { return m_triangles.rend(); }
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
 	mrpt::math::TBoundingBox getBoundingBox() const override;

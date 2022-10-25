@@ -361,9 +361,11 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Render the objects in this viewport (called from COpenGLScene) */
 	void render(
 		const int render_width, const int render_height,
-		const int render_offset_x = 0, const int render_offset_y = 0) const;
+		const int render_offset_x = 0, const int render_offset_y = 0,
+		const CCamera* forceThisCamera = nullptr) const;
 
-	void updateMatricesFromCamera() const;
+	void updateMatricesFromCamera(
+		const CCamera* forceThisCamera = nullptr) const;
 
 	/** Provides read access to the opengl shaders */
 	const std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders() const
@@ -398,7 +400,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void renderImageMode() const;
 
 	/** Render a normal scene with 3D objects */
-	void renderNormalSceneMode() const;
+	void renderNormalSceneMode(const CCamera* forceThisCamera = nullptr) const;
 
 	/** Render the viewport border, if enabled */
 	void renderViewportBorder() const;

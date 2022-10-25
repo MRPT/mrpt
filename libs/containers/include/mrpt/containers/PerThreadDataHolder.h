@@ -32,6 +32,13 @@ class PerThreadDataHolder
 		m_dataMtx.unlock();
 		return d;
 	}
+	const T& get() const
+	{
+		m_dataMtx.lock();
+		const T& d = m_data[std::this_thread::get_id()];
+		m_dataMtx.unlock();
+		return d;
+	}
 
 	void clear()
 	{
@@ -40,9 +47,22 @@ class PerThreadDataHolder
 		m_dataMtx.unlock();
 	}
 
+	/// Copy the data, leave mutexes apart.
+	PerThreadDataHolder<T>& operator=(const PerThreadDataHolder<T>& o)
+	{
+		if (this == &o) return *this;
+
+		m_dataMtx.lock();
+		o.m_dataMtx.lock();
+		m_data = o.m_data;
+		m_dataMtx.unlock();
+		o.m_dataMtx.unlock();
+		return *this;
+	}
+
    private:
-	std::map<std::thread::id, T> m_data;
-	std::mutex m_dataMtx;
+	mutable std::map<std::thread::id, T> m_data;
+	mutable std::mutex m_dataMtx;
 };
 
 }  // namespace mrpt::containers
