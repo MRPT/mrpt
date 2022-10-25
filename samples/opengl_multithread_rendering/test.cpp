@@ -27,6 +27,7 @@ static mrpt::opengl::COpenGLScene::Ptr generate_example_scene()
 {
 	auto s = mrpt::opengl::COpenGLScene::Create();
 
+	if (0)
 	{
 		auto obj = mrpt::opengl::CAxis::Create(-5, -5, -5, 5, 5, 5);
 		s->insert(obj);
@@ -55,7 +56,7 @@ struct RenderResult
 std::list<RenderResult> renderOutputs;
 std::mutex renderOutputs_mtx;
 
-static void renderer_thread(
+static void renderer_thread_impl(
 	const std::string name, const int period_ms, const int numImgs)
 {
 	mrpt::opengl::CFBORender render(RENDER_WIDTH, RENDER_HEIGHT);
@@ -87,6 +88,20 @@ static void renderer_thread(
 			renderOutputs.emplace_back(std::move(res));
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(period_ms));
+	}
+}
+
+static void renderer_thread(
+	const std::string name, const int period_ms, const int numImgs)
+{
+	try
+	{
+		renderer_thread_impl(name, period_ms, numImgs);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Thread '" << name << "' exception: " << e.what()
+				  << std::endl;
 	}
 }
 
