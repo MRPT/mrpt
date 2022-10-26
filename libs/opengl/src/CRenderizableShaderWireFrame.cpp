@@ -30,6 +30,9 @@ void CRenderizableShaderWireFrame::renderUpdateBuffers() const
 	const_cast<CRenderizableShaderWireFrame&>(*this)
 		.onUpdateBuffers_Wireframe();
 
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx);
+
 	// Define OpenGL buffers:
 	m_vertexBuffer.createOnce();
 	m_vertexBuffer.bind();
@@ -54,6 +57,9 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	// TODO: Port thick lines to opengl3?
 	// glLineWidth(m_lineWidth);
+
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx);
 
 #if !defined(__EMSCRIPTEN__)
 	glEnable(GL_LINE_SMOOTH);
@@ -110,6 +116,8 @@ const mrpt::math::TBoundingBox
 	CRenderizableShaderWireFrame::wireframeVerticesBoundingBox() const
 {
 	mrpt::math::TBoundingBox bb;
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx);
 
 	if (m_vertex_buffer_data.empty()) return bb;
 

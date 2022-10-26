@@ -192,6 +192,9 @@ void CAssimpModel::onUpdateBuffers_all()
 {
 	auto& lines_vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& lines_cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx);
+
 	lines_vbd.clear();
 	lines_cbd.clear();
 
