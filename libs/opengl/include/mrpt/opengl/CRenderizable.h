@@ -318,7 +318,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 * render() rendering iteration. */
 	void notifyChange() const
 	{
-		const_cast<CRenderizable&>(*this).m_state.get().outdatedBuffers = true;
+		const_cast<CRenderizable&>(*this).m_state.run_on_all(
+			[](auto& state) { state.outdatedBuffers = true; });
 	}
 
 	/** Returns whether notifyChange() has been invoked since the last call

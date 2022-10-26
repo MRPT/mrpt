@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <functional>
 #include <map>
 #include <mutex>
 #include <thread>
@@ -38,6 +39,14 @@ class PerThreadDataHolder
 		const T& d = m_data[std::this_thread::get_id()];
 		m_dataMtx.unlock();
 		return d;
+	}
+
+	void run_on_all(const std::function<void(T&)>& f)
+	{
+		m_dataMtx.lock();
+		for (auto& kv : m_data)
+			f(kv.second);
+		m_dataMtx.unlock();
 	}
 
 	void clear()

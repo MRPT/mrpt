@@ -191,8 +191,9 @@ static int TestOffscreenRender()
 	allThreads.emplace_back(
 		&renderer_thread, "one", 20 /*period*/, 400 /*nImgs*/);
 
-	allThreads.emplace_back(
-		&renderer_thread, "two", 10 /*period*/, 700 /*nImgs*/);
+	if (0)
+		allThreads.emplace_back(
+			&renderer_thread, "two", 10 /*period*/, 700 /*nImgs*/);
 
 	for (auto& t : allThreads)
 		if (t.joinable()) t.join();
