@@ -38,13 +38,12 @@ class CFBORender
 {
    public:
 	/** Constructor.
-	 * \param[in] skip_create_egl_context Should be set to true only if another
-	 * GUI windows already exist with an associated OpenGL context. If left to
-	 * false, a display-less EGL context will be created.
+	 *
+	 * Run with the environment variable MRPT_FBORENDER_SHOW_DEVICES=true to see
+	 * a list of available and detected GPU devices.
 	 */
-	CFBORender(
-		unsigned int width = 800, unsigned int height = 600,
-		const bool skip_create_egl_context = false);
+	CFBORender(unsigned int width = 800, unsigned int height = 600,
+		int deviceIndexToUse = 0);
 
 	/** Destructor */
 	virtual ~CFBORender();

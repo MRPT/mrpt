@@ -78,12 +78,12 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
 	/** @} */
 
    protected:
-	float m_lineWidth = 1.0f;
-	bool m_antiAliasing = false;
-
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
 	mutable std::shared_mutex m_wireframeMtx;
+
+	float m_lineWidth = 1.0f;
+	bool m_antiAliasing = false;
 
 	/** Returns the bounding box of m_vertex_buffer_data, or (0,0,0)-(0,0,0) if
 	 * empty. */
