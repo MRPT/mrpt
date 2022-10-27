@@ -12,12 +12,12 @@
 #include <functional>
 #include <map>
 #include <mutex>
+#include <shared_mutex>
 #include <thread>
 
 namespace mrpt::containers
 {
 /** Creates an instance of the data type T per requesting thread.
- *
  * \ingroup mrpt_containers_grp
  */
 template <class T>
@@ -41,6 +41,8 @@ class PerThreadDataHolder
 		return d;
 	}
 
+	/// Note: you should define your own mutex for the part of the user data T
+	/// that is read & writen from different threads.
 	void run_on_all(const std::function<void(T&)>& f)
 	{
 		m_dataMtx.lock();
@@ -68,10 +70,27 @@ class PerThreadDataHolder
 		o.m_dataMtx.unlock();
 		return *this;
 	}
+	/// Copy the data, leave mutexes apart.
+	PerThreadDataHolder(const PerThreadDataHolder<T>& o) { *this = o; }
+
+	/// Move the data, leave mutexes apart.
+	PerThreadDataHolder<T>& operator=(PerThreadDataHolder<T>&& o)
+	{
+		if (this == &o) return *this;
+
+		m_dataMtx.lock();
+		o.m_dataMtx.lock();
+		m_data = std::move(o.m_data);
+		m_dataMtx.unlock();
+		o.m_dataMtx.unlock();
+		return *this;
+	}
+	/// Move the data, leave mutexes apart.
+	PerThreadDataHolder(PerThreadDataHolder<T>&& o) { *this = std::move(o); }
 
    private:
 	mutable std::map<std::thread::id, T> m_data;
-	mutable std::mutex m_dataMtx;
+	mutable std::mutex m_dataMtx;  // Mutex for m_data itself only
 };
 
 }  // namespace mrpt::containers
