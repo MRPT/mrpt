@@ -71,11 +71,8 @@ class COpenGLBuffer
 	/** Calls create() only if the buffer has not been created yet. */
 	void createOnce()
 	{
-		if (!initialized())
-		{
-			auto lck = mrpt::lockHelper(m_implMtx);
-			m_impl->create();
-		}
+		auto lck = mrpt::lockHelper(m_implMtx);
+		if (!m_impl->created) m_impl->create();
 	}
 	bool initialized() const
 	{

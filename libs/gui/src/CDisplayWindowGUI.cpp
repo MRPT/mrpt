@@ -28,7 +28,7 @@ CDisplayWindowGUI::CDisplayWindowGUI(
 	: nanogui::Screen(
 		  Eigen::Vector2i(width, height), caption, p.resizable, p.fullscreen,
 		  p.colorBits, p.alphaBits, p.depthBits, p.stencilBits, p.nSamples,
-		  p.glMajor, p.glMinor, p.maximized)
+		  p.glMajor, p.glMinor, p.maximized, p.gles_context)
 {
 	setIconFromData(
 		default_mrpt_glfw_icon, default_mrpt_glfw_icon_width,
