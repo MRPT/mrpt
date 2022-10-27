@@ -116,10 +116,10 @@ CFBORender::CFBORender(
 			EGL_RED_SIZE,
 			8,
 			EGL_DEPTH_SIZE,
-			16,
-			EGL_RENDERABLE_TYPE,
-			EGL_OPENGL_ES2_BIT,
+			24,
 			EGL_CONFORMANT,
+			EGL_OPENGL_ES2_BIT,
+			EGL_RENDERABLE_TYPE,
 			EGL_OPENGL_ES2_BIT,
 			EGL_NONE};
 
@@ -199,7 +199,7 @@ CFBORender::CFBORender(
 			eglCreatePbufferSurface(eglDpy, eglCfg, pbufferAttribs);
 
 		// 4. Bind the API
-		if (!eglBindAPI(EGL_OPENGL_API))
+		if (!eglBindAPI(EGL_OPENGL_ES_API))
 		{ THROW_EXCEPTION("no opengl api in egl"); }
 
 		// 5. Create a context and make it current

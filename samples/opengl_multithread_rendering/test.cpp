@@ -21,7 +21,6 @@
 
 #ifdef USE_NANOGUI_WINDOW
 #include <mrpt/gui/CDisplayWindowGUI.h>
-using my_window_t = mrpt::gui::CDisplayWindowGUI;
 #else
 #include <mrpt/gui/CDisplayWindow.h>
 using my_window_t = mrpt::gui::CDisplayWindow;
@@ -197,7 +196,13 @@ static void viz_thread()
 	{
 		nanogui::init();
 
-		auto win = my_window_t::Create("main", 800, 600);
+		mrpt::gui::CDisplayWindowGUI_Params winP;
+
+		// winP.gles_context = true;
+		// winP.glMajor = 2;
+		// winP.glMinor = 0;
+
+		auto win = mrpt::gui::CDisplayWindowGUI::Create("main", 800, 600, winP);
 
 		nanogui::Window* winInput = new nanogui::Window(win.get(), "Dummy win");
 		winInput->setPosition(nanogui::Vector2i(10, 50));
@@ -208,7 +213,7 @@ static void viz_thread()
 		win->drawAll();
 		win->setVisible(true);
 
-#if 0
+#if 1
 		win->background_scene_mtx.lock();
 		win->background_scene = commonScene;
 		win->background_scene_mtx.unlock();
@@ -237,9 +242,9 @@ static int TestOffscreenRender()
 	std::vector<std::thread> allThreads;
 
 	allThreads.emplace_back(&viz_thread);
-	// std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 #if 1
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	allThreads.emplace_back(
 		&renderer_thread, "one", 20 /*period*/, 400 /*nImgs*/);
 
