@@ -9,7 +9,6 @@
 
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/lock_helper.h>
-#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -17,6 +16,16 @@
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/thread_name.h>
+
+#define USE_NANOGUI_WINDOW
+
+#ifdef USE_NANOGUI_WINDOW
+#include <mrpt/gui/CDisplayWindowGUI.h>
+using my_window_t = mrpt::gui::CDisplayWindowGUI;
+#else
+#include <mrpt/gui/CDisplayWindow.h>
+using my_window_t = mrpt::gui::CDisplayWindow;
+#endif
 
 #include <iostream>
 #include <list>
@@ -45,6 +54,7 @@ static mrpt::opengl::COpenGLScene::Ptr generate_example_scene()
 		auto obj = mrpt::opengl::CSphere::Create(0.25f);
 		obj->setColor_u8(0x00, 0x00, 0xff);
 		obj->setLocation({-1.0, -1.0, 0.25});
+		obj->enableDrawSolid3D(false);
 		s->insert(obj);
 	}
 
@@ -120,6 +130,7 @@ static void renderer_thread_impl(
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(period_ms));
 	}
+	std::cout << "\nRendering thread '" << name << "' ends." << std::endl;
 }
 
 static void renderer_thread(
@@ -136,12 +147,14 @@ static void renderer_thread(
 	}
 }
 
+#ifndef USE_NANOGUI_WINDOW
+// wxWidgets frontend:
 static void viz_thread()
 {
 	const double MAX_TIME = 10.0;
 	const double t0 = mrpt::Clock::nowDouble();
 
-	std::map<std::string, mrpt::gui::CDisplayWindow::Ptr> wins;
+	std::map<std::string, my_window_t::Ptr> wins;
 
 	double t = 0;
 
@@ -159,7 +172,7 @@ static void viz_thread()
 			if (!win)
 			{
 				// first time:
-				win = mrpt::gui::CDisplayWindow::Create(
+				win = my_window_t::Create(
 					r.threadName, r.img.getWidth(), r.img.getHeight());
 			}
 
@@ -174,8 +187,45 @@ static void viz_thread()
 				  << MAX_TIME << "  \r";
 	};
 
-	std::cout << "\nRendering thread ends." << std::endl;
+	std::cout << "\nVisualization thread ends." << std::endl;
 }
+#else
+// nanogui frontend
+static void viz_thread()
+{
+	try
+	{
+		nanogui::init();
+
+		auto win = my_window_t::Create("main", 800, 600);
+
+		nanogui::Window* winInput = new nanogui::Window(win.get(), "Dummy win");
+		winInput->setPosition(nanogui::Vector2i(10, 50));
+		winInput->setLayout(new nanogui::GroupLayout());
+		winInput->setFixedWidth(350);
+
+		win->performLayout();
+		win->drawAll();
+		win->setVisible(true);
+
+#if 0
+		win->background_scene_mtx.lock();
+		win->background_scene = commonScene;
+		win->background_scene_mtx.unlock();
+#endif
+
+		nanogui::mainloop();
+		nanogui::shutdown();
+
+		std::cout << "\nVisualization thread ends." << std::endl;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[viz_thread] Error:\n" << e.what() << std::endl;
+	}
+}
+
+#endif
 
 // ------------------------------------------------------
 //				TestMultithreadRendering
@@ -187,13 +237,15 @@ static int TestOffscreenRender()
 	std::vector<std::thread> allThreads;
 
 	allThreads.emplace_back(&viz_thread);
+	// std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
+#if 1
 	allThreads.emplace_back(
 		&renderer_thread, "one", 20 /*period*/, 400 /*nImgs*/);
 
-	if (0)
-		allThreads.emplace_back(
-			&renderer_thread, "two", 10 /*period*/, 700 /*nImgs*/);
+	allThreads.emplace_back(
+		&renderer_thread, "two", 10 /*period*/, 700 /*nImgs*/);
+#endif
 
 	for (auto& t : allThreads)
 		if (t.joinable()) t.join();

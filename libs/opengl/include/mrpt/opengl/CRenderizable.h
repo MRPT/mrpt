@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/img/TColor.h>
@@ -25,18 +26,19 @@
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <deque>
+#include <shared_mutex>
 
 namespace mrpt::opengl
 {
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
- * - A name (m_name): A name that can be optionally asigned to objects for
+ * - Its SE(3) pose (x,y,z,yaw,pitch,roll), relative to the parent object,
+ * or the global frame of reference for root objects (inserted into a
+ *mrpt::opengl::COpenGLScene).
+ * - A name: A name that can be optionally asigned to objects for
  *easing its reference.
- * - 6D coordinates (x,y,z,yaw,pitch,roll), relative to the "current"
- *reference framework. By default, any object is referenced to global scene
- *coordinates.
- * - A RGB color: This field will be used in simple elements (points,
+ * - A RGBA color: This field will be used in simple elements (points,
  *lines, text,...) but is ignored in more complex objects that carry their own
  *color information (triangle sets,...)
  *
@@ -311,6 +313,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void updateBuffers() const
 	{
 		renderUpdateBuffers();
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
 		const_cast<CRenderizable&>(*this).m_state.get().outdatedBuffers = false;
 	}
 
@@ -318,6 +321,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 * render() rendering iteration. */
 	void notifyChange() const
 	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
 		const_cast<CRenderizable&>(*this).m_state.run_on_all(
 			[](auto& state) { state.outdatedBuffers = true; });
 	}
@@ -326,7 +330,11 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 * to renderUpdateBuffers(), meaning the latter needs to be called again
 	 * before rendering.
 	 */
-	bool hasToUpdateBuffers() const { return m_state.get().outdatedBuffers; }
+	bool hasToUpdateBuffers() const
+	{
+		std::shared_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		return m_state.get().outdatedBuffers;
+	}
 
 	/** Simulation of ray-trace, given a pose. Returns true if the ray
 	 * effectively collisions with the object (returning the distance to the
@@ -384,6 +392,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		bool outdatedBuffers = true;
 	};
 	mrpt::containers::PerThreadDataHolder<State> m_state;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_stateMtx;
 
 	mrpt::math::TPoint3Df m_representativePoint{0, 0, 0};
 

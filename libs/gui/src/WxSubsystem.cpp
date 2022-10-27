@@ -38,12 +38,24 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace std;
 
-std::mutex WxSubsystem::CWXMainFrame::cs_windowCount;
-int WxSubsystem::CWXMainFrame::m_windowCount = 0;
+class WxSubSystemGlobalData
+{
+   public:
+	static WxSubSystemGlobalData& Instance()
+	{
+		static WxSubSystemGlobalData d;
+		return d;
+	}
 
-std::queue<WxSubsystem::TRequestToWxMainThread*>*
-	WxSubsystem::listPendingWxRequests = nullptr;
-std::mutex* WxSubsystem::cs_listPendingWxRequests = nullptr;
+	int windowCount = 0;
+	std::mutex cs_windowCount;
+
+	std::queue<WxSubsystem::TRequestToWxMainThread*> listPendingWxRequests;
+	std::mutex cs_listPendingWxRequests;
+
+   private:
+	WxSubSystemGlobalData() = default;
+};
 
 volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance =
 	nullptr;
@@ -80,11 +92,6 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 #ifdef WXSUBSYSTEM_VERBOSE
 	printf("[~CAuxWxSubsystemShutdowner] Deleting static objects.\n");
 #endif
-	// This is the final point where all dynamic memory must be deleted:
-	// delete &WxSubsystem::GetWxMainThreadInstance(); // may cause crashes at
-	// app end...
-	delete WxSubsystem::listPendingWxRequests;
-	delete WxSubsystem::cs_listPendingWxRequests;
 }
 
 // ---------------------------------------------------------------------------------------
@@ -191,16 +198,20 @@ WxSubsystem::CWXMainFrame::~CWXMainFrame()
 
 int WxSubsystem::CWXMainFrame::notifyWindowCreation()
 {
-	std::lock_guard<std::mutex> lock(cs_windowCount);
-	return ++m_windowCount;
+	auto& wxd = WxSubSystemGlobalData::Instance();
+
+	std::lock_guard<std::mutex> lock(wxd.cs_windowCount);
+	return ++wxd.windowCount;
 }
 
 int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 {
+	auto& wxd = WxSubSystemGlobalData::Instance();
+
 	int ret;
 	{
-		std::lock_guard<std::mutex> lock(cs_windowCount);
-		ret = --m_windowCount;
+		std::lock_guard<std::mutex> lock(wxd.cs_windowCount);
+		ret = --wxd.windowCount;
 	}
 
 	if (ret == 0)
@@ -230,19 +241,15 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
  */
 WxSubsystem::TRequestToWxMainThread* WxSubsystem::popPendingWxRequest()
 {
-	if (!cs_listPendingWxRequests)
-	{
-		cs_listPendingWxRequests = new std::mutex();
-		listPendingWxRequests = new std::queue<TRequestToWxMainThread*>;
-	}
+	auto& wxd = WxSubSystemGlobalData::Instance();
 
-	std::lock_guard<std::mutex> locker(*cs_listPendingWxRequests);
+	std::lock_guard<std::mutex> locker(wxd.cs_listPendingWxRequests);
 
 	// Is empty?
-	if (listPendingWxRequests->empty()) return nullptr;
+	if (wxd.listPendingWxRequests.empty()) return nullptr;
 
-	TRequestToWxMainThread* ret = listPendingWxRequests->front();
-	listPendingWxRequests->pop();  // Remove from the queue
+	TRequestToWxMainThread* ret = wxd.listPendingWxRequests.front();
+	wxd.listPendingWxRequests.pop();  // Remove from the queue
 
 	return ret;
 }
@@ -263,14 +270,10 @@ void WxSubsystem::pushPendingWxRequest(
 		return;	 // wx subsystem already closed, ignore.
 	}
 
-	if (!cs_listPendingWxRequests)
-	{
-		cs_listPendingWxRequests = new std::mutex();
-		listPendingWxRequests = new std::queue<TRequestToWxMainThread*>;
-	}
+	auto& wxd = WxSubSystemGlobalData::Instance();
 
-	std::lock_guard<std::mutex> locker(*cs_listPendingWxRequests);
-	listPendingWxRequests->push(data);
+	std::lock_guard<std::mutex> locker(wxd.cs_listPendingWxRequests);
+	wxd.listPendingWxRequests.push(data);
 }
 
 /** This method processes the pending requests from the main MRPT application
@@ -901,10 +904,10 @@ extern CDisplayWindow_WXAPP& wxGetApp();
 
 // Aux. funcs used in WxSubsystem::wxMainThread
 // --------------------------------------------------
-int mrpt_wxEntryReal(int argc, char** argv)
+int mrpt_wxEntryReal()
 {
 	// library initialization
-	if (!wxEntryStart(argc, argv))
+	if (!wxInitialize())
 	{
 #if wxUSE_LOG
 		// flush any log messages explaining why we failed
@@ -950,12 +953,7 @@ int mrpt_wxEntryReal(int argc, char** argv)
 void WxSubsystem::wxMainThread()
 {
 	MRPT_START
-
 	// Prepare wxWidgets:
-	int argc = 1;
-	static const char* dummy_prog_name = "./MRPT";
-	char* argv[2] = {const_cast<char*>(dummy_prog_name), nullptr};
-
 #ifdef WXSUBSYSTEM_VERBOSE
 	cout << "[wxMainThread] Starting..." << endl;
 #endif
@@ -975,7 +973,7 @@ void WxSubsystem::wxMainThread()
 		// applications:
 		wxApp::SetInitializerFunction(
 			(wxAppInitializerFunction)mrpt_wxCreateApp);
-		mrpt_wxEntryReal(argc, argv);
+		mrpt_wxEntryReal();
 
 #ifdef WXSUBSYSTEM_VERBOSE
 		cout << "[wxMainThread] Finished" << endl;
@@ -1077,9 +1075,10 @@ bool WxSubsystem::createOneInstanceMainThread()
 			const char* envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
 			if (envVal) maxTimeout = atoi(envVal);
 
+			// A few secs should be enough...
 			if (wxmtd.m_semWxMainThreadReady.get_future().wait_for(
 					std::chrono::milliseconds(maxTimeout)) ==
-				std::future_status::timeout)  // A few secs should be enough...
+				std::future_status::timeout)
 			{
 				cerr << "[WxSubsystem::createOneInstanceMainThread] Timeout "
 						"waiting wxApplication to start up!"
