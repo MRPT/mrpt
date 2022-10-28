@@ -35,7 +35,7 @@ set(MRPT_GL_LIB OpenGL::GL)
 
 # EGL:
 if(CMAKE_VERSION VERSION_LESS 3.16.0)
-	message(WARNING "You need cmake >=3.16.0 to detect EGL. Disabling it, some features (FBO off-screen rendering) will not be enabled in MRPT.")
+	message(WARNING "You need cmake >=3.16.0 to detect EGL. Disabling it.")
 else()
 	find_package(EGL)
 endif()
@@ -60,6 +60,27 @@ if (GLESV2_FOUND)
 	set(CMAKE_MRPT_HAS_GLES 1)
 	set(CMAKE_MRPT_HAS_GLES_SYSTEM 1)
 	list(APPEND MRPT_GL_LIB PkgConfig::GLESV2)
+endif()
+
+if (GLESV2_FOUND)
+	CHECK_INCLUDE_FILE("GLES/gl.h"       HAVE_GLES_GL_H)
+	CHECK_INCLUDE_FILE("GLES/glext.h"    HAVE_GLES_GLEXT_H)
+	CHECK_INCLUDE_FILE("GLES2/gl2.h"     HAVE_GLES2_GL2_H)
+	CHECK_INCLUDE_FILE("GLES2/gl2ext.h"  HAVE_GLES2_GL2EXT_H)
+	CHECK_INCLUDE_FILE("GLES3/gl3.h"     HAVE_GLES3_GL3_H)
+	CHECK_INCLUDE_FILE("GLES3/gl3ext.h"  HAVE_GLES3_GL3EXT_H)
+
+	set(CMAKE_MRPT_HAS_GLES 1)
+	set(CMAKE_MRPT_HAS_GLES_SYSTEM 1)
+	list(APPEND MRPT_GL_LIB PkgConfig::GLESV2)
+endif()
+
+# glfw3:
+pkg_check_modules(GLFW QUIET IMPORTED_TARGET glfw3)
+if (GLFW_FOUND)
+	set(CMAKE_MRPT_HAS_GLFW3 1)
+	set(CMAKE_MRPT_HAS_GLFW3_SYSTEM 1)
+	set(MRPT_GLFW_LIB PkgConfig::GLFW)
 endif()
 
 # glut:

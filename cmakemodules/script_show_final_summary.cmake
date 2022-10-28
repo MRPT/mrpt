@@ -130,6 +130,7 @@ SHOW_CONFIG_LINE_SYSTEM("Assimp (3D models)                  " CMAKE_MRPT_HAS_AS
 SHOW_CONFIG_LINE_SYSTEM("BFD (Binary File Descriptor lib.)   " CMAKE_MRPT_HAS_BFD)
 SHOW_CONFIG_LINE_SYSTEM("ffmpeg libs (Video streaming)       " CMAKE_MRPT_HAS_FFMPEG "[avcodec ${LIBAVCODEC_VERSION}, avutil ${LIBAVUTIL_VERSION}, avformat ${LIBAVFORMAT_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("fyaml (YAML/JSON parsing)           " CMAKE_MRPT_HAS_LIBFYAML)
+SHOW_CONFIG_LINE_SYSTEM("glfw3                               " CMAKE_MRPT_HAS_GLFW3 "[Version: ${GLFW_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("gtest (Google unit testing library) " CMAKE_MRPT_HAS_GTEST)
 SHOW_CONFIG_LINE_SYSTEM("jsoncpp (JSON format serialization) " CMAKE_MRPT_HAS_JSONCPP "[Version: ${jsoncpp_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("libjpeg (jpeg)                      " CMAKE_MRPT_HAS_JPEG)

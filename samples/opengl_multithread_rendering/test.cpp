@@ -127,6 +127,8 @@ static void renderer_thread_impl(
 			auto lck = mrpt::lockHelper(renderOutputs_mtx);
 			renderOutputs.emplace_back(std::move(res));
 		}
+		std::cerr << "Thread '" << name << "' img #" << i << " done."
+				  << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(period_ms));
 	}
 	std::cout << "\nRendering thread '" << name << "' ends." << std::endl;
@@ -197,10 +199,6 @@ static void viz_thread()
 		nanogui::init();
 
 		mrpt::gui::CDisplayWindowGUI_Params winP;
-
-		// winP.gles_context = true;
-		// winP.glMajor = 2;
-		// winP.glMinor = 0;
 
 		auto win = mrpt::gui::CDisplayWindowGUI::Create("main", 800, 600, winP);
 

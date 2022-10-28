@@ -42,7 +42,7 @@ if(NOT BUILD_mrpt-opengl)
 endif()
 
 # https://developer.apple.com/macos/whats-new/#deprecationofopenglandopencl
-	if (APPLE)
+if (APPLE)
 	target_compile_definitions(opengl PRIVATE GL_SILENCE_DEPRECATION)
 endif()
 
@@ -52,6 +52,11 @@ target_link_libraries(opengl PRIVATE
 	)
 if (TARGET mrpt_glew) # Basically, for Windows
 	target_link_libraries(opengl PRIVATE mrpt_glew)
+endif()
+
+# glfw3: (for FBO rendering)
+if (CMAKE_MRPT_HAS_GLFW3)
+	target_link_libraries(opengl PRIVATE ${MRPT_GLFW_LIB})
 endif()
 
 # Link against assimp:

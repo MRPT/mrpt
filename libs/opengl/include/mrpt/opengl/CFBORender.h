@@ -15,6 +15,9 @@
 #include <mrpt/opengl/COpenGLFramebuffer.h>
 #include <mrpt/opengl/COpenGLScene.h>
 
+// forward decl of opaque ptr type:
+typedef struct GLFWwindow GLFWwindow;
+
 namespace mrpt::opengl
 {
 /** Render 3D scenes off-screen directly to RGB and/or RGB+D images.
@@ -42,7 +45,8 @@ class CFBORender
 	 * Run with the environment variable MRPT_FBORENDER_SHOW_DEVICES=true to see
 	 * a list of available and detected GPU devices.
 	 */
-	CFBORender(unsigned int width = 800, unsigned int height = 600,
+	CFBORender(
+		unsigned int width = 800, unsigned int height = 600,
 		int deviceIndexToUse = 0);
 
 	/** Destructor */
@@ -92,7 +96,8 @@ class CFBORender
 	COpenGLFramebuffer m_fb;
 	mrpt::opengl::CCamera m_renderFromCamera;
 
-	void* m_eglDpy = nullptr;
+	GLFWwindow* m_glfwWindow = nullptr;
+
 	unsigned int m_texRGB = 0;
 
 	void internal_render_RGBD(

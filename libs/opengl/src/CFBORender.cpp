@@ -12,9 +12,11 @@
 #include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/opengl_api.h>
+#include <mrpt/system/thread_name.h>
 //
 #include <mrpt/config.h>
 
+#include <atomic>
 #include <mutex>
 #include <unordered_map>
 
@@ -25,12 +27,11 @@
 #include <mrpt/system/CTimeLogger.h>
 #endif
 
-#if MRPT_HAS_EGL
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
+#if MRPT_HAS_GLFW3
+#include <GLFW/glfw3.h>
 #endif
 
-#define HAVE_FBO (MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_EGL)
+#define HAVE_FBO (MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT && MRPT_HAS_GLFW3)
 
 using namespace std;
 using namespace mrpt;
@@ -97,6 +98,64 @@ class OpenGLDepth2Linear_LUTs
 	std::unordered_map<std::pair<float, float>, lut_t, MyHash> m_pool;
 };
 
+class GLFW_GlobalData
+{
+   public:
+	static GLFW_GlobalData& Instance()
+	{
+		static GLFW_GlobalData d;
+		return d;
+	}
+
+	std::mutex glfwMtx;
+	int initCounter = 0;
+	bool destroying = false;
+
+   private:
+	GLFW_GlobalData()
+	{
+#if 0
+		m_glfw_poll =
+			std::thread(&GLFW_GlobalData::thread_poll_glfw_events, this);
+#endif
+	}
+	~GLFW_GlobalData()
+	{
+#if 0
+		glfwMtx.lock();
+		destroying = true;
+		glfwMtx.unlock();
+#endif
+	}
+
+	std::thread m_glfw_poll;
+
+	void thread_poll_glfw_events()
+	{
+		mrpt::system::thread_name("mrpt_glfw_poll");
+
+		for (;;)
+		{
+			bool mustExit;
+			int initCnt;
+			glfwMtx.lock();
+			mustExit = destroying;
+			initCnt = initCounter;
+			glfwMtx.unlock();
+			if (mustExit) return;
+
+			// process events
+			if (initCnt > 0)
+			{
+				// only if glfw is initialized:
+				glfwPollEvents();
+				std::cout << "[CFBORender::thread] GLFW events ok."
+						  << std::endl;
+			}
+		}
+	}
+};
+
 CFBORender::CFBORender(
 	unsigned int width, unsigned int height, int deviceIndexToUse)
 {
@@ -104,114 +163,59 @@ CFBORender::CFBORender(
 
 	MRPT_START
 
-	if (!deviceIndexToUse)
+	std::cout << "[CFBORender] start." << std::endl;
+
 	{
-		static const EGLint configAttribs[] = {
-			EGL_SURFACE_TYPE,
-			EGL_PBUFFER_BIT,
-			EGL_BLUE_SIZE,
-			8,
-			EGL_GREEN_SIZE,
-			8,
-			EGL_RED_SIZE,
-			8,
-			EGL_DEPTH_SIZE,
-			24,
-			EGL_CONFORMANT,
-			EGL_OPENGL_ES2_BIT,
-			EGL_RENDERABLE_TYPE,
-			EGL_OPENGL_ES2_BIT,
-			EGL_NONE};
-
-		constexpr int pbufferWidth = 9;
-		constexpr int pbufferHeight = 9;
-
-		static const EGLint pbufferAttribs[] = {
-			EGL_WIDTH, pbufferWidth, EGL_HEIGHT, pbufferHeight, EGL_NONE,
-		};
-
-		static const int MAX_DEVICES = 32;
-		EGLDeviceEXT eglDevs[MAX_DEVICES];
-		EGLint numDevices = 0;
-
-		PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT =
-			(PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress("eglQueryDevicesEXT");
-		ASSERT_(eglQueryDevicesEXT);
-
-		eglQueryDevicesEXT(MAX_DEVICES, eglDevs, &numDevices);
-
-		if (MRPT_FBORENDER_SHOW_DEVICES)
+		auto& glfwData = GLFW_GlobalData::Instance();
+		auto lckGlfw = mrpt::lockHelper(glfwData.glfwMtx);
+		if (glfwData.initCounter == 0)
 		{
-			printf("[mrpt EGL] Detected %d devices\n", numDevices);
+			if (!glfwInit()) THROW_EXCEPTION("Could not initialize GLFW!");
+			glfwSetTime(0);
 
-			PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT =
-				(PFNEGLQUERYDEVICESTRINGEXTPROC)eglGetProcAddress(
-					"eglQueryDeviceStringEXT");
-			ASSERT_(eglQueryDeviceStringEXT);
-
-			for (int i = 0; i < numDevices; i++)
-			{
-				const char* devExts =
-					eglQueryDeviceStringEXT(eglDevs[i], EGL_EXTENSIONS);
-
-				printf(
-					"[mrpt EGL] Device #%i. Extensions: %s\n", i,
-					devExts ? devExts : "(None)");
-			}
+			glfwSetErrorCallback([](int error, const char* descr) {
+				if (error == GLFW_NOT_INITIALIZED) return; /* Ignore */
+				std::cerr << "GLFW error " << error << ": " << descr
+						  << std::endl;
+			});
 		}
-
-		ASSERT_LT_(deviceIndexToUse, numDevices);
-
-		PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
-			(PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress(
-				"eglGetPlatformDisplayEXT");
-
-		EGLDisplay eglDpy = eglGetPlatformDisplayEXT(
-			EGL_PLATFORM_DEVICE_EXT, eglDevs[deviceIndexToUse], 0);
-
-		// 1. Initialize EGL
-		if (eglDpy == EGL_NO_DISPLAY)
-		{ THROW_EXCEPTION("Failed to get EGL display"); }
-
-		EGLint major, minor;
-
-		if (eglInitialize(eglDpy, &major, &minor) == EGL_FALSE)
-		{
-			THROW_EXCEPTION_FMT(
-				"Failed to initialize EGL display: %x\n", eglGetError());
-		}
-
-		// printf("[mrpt EGL] version: %i.%i\n", major, minor);
-
-		// 2. Select an appropriate configuration
-		EGLint numConfigs;
-		EGLConfig eglCfg;
-
-		eglChooseConfig(eglDpy, configAttribs, &eglCfg, 1, &numConfigs);
-		if (numConfigs != 1)
-		{
-			THROW_EXCEPTION_FMT(
-				"Failed to choose exactly 1 config, chose %d\n", numConfigs);
-		}
-
-		// 3. Create a surface
-		EGLSurface eglSurf =
-			eglCreatePbufferSurface(eglDpy, eglCfg, pbufferAttribs);
-
-		// 4. Bind the API
-		if (!eglBindAPI(EGL_OPENGL_ES_API))
-		{ THROW_EXCEPTION("no opengl api in egl"); }
-
-		// 5. Create a context and make it current
-		eglBindAPI(EGL_OPENGL_API);
-
-		EGLContext eglCtx =
-			eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, NULL);
-
-		eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
-
-		m_eglDpy = eglDpy;
+		glfwData.initCounter++;
 	}
+
+	std::cout << "[CFBORender] GLFW ok." << std::endl;
+
+	const int glMajor = 3, glMinor = 3;
+	const int winWidth = 1, winHeight = 1;
+
+	/* Request a forward compatible OpenGL glMajor.glMinor core profile
+	   context. Default value is an OpenGL 3.3 core profile context. */
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajor);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glMinor);
+
+	glfwWindowHint(GLFW_RED_BITS, 8);
+	glfwWindowHint(GLFW_GREEN_BITS, 8);
+	glfwWindowHint(GLFW_BLUE_BITS, 8);
+	glfwWindowHint(GLFW_ALPHA_BITS, 8);
+	glfwWindowHint(GLFW_STENCIL_BITS, 8);
+	glfwWindowHint(GLFW_DEPTH_BITS, 24);
+	glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
+	m_glfwWindow = glfwCreateWindow(
+		winWidth, winHeight, "mrpt::opengl::CFBORender", nullptr, nullptr);
+
+	std::cout << "[CFBORender] Create window..." << std::endl;
+
+	using namespace std::string_literals;
+
+	if (!m_glfwWindow)
+	{
+		THROW_EXCEPTION_FMT(
+			"Could not create an OpenGL %i.%i context.", glMajor, glMinor);
+	}
+
+	glfwMakeContextCurrent(m_glfwWindow);
 
 	// -------------------------------
 	// Create frame buffer object:
@@ -238,7 +242,8 @@ CFBORender::CFBORender(
 		GL_UNSIGNED_BYTE, nullptr);
 	CHECK_OPENGL_ERROR();
 
-	// bind this texture to the current framebuffer obj. as color_attachement_0
+	// bind this texture to the current framebuffer obj. as
+	// color_attachement_0
 	glFramebufferTexture2D(
 		GL_FRAMEBUFFER,	 // DRAW + READ FB
 		GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texRGB, 0);
@@ -257,11 +262,23 @@ CFBORender::CFBORender(
 CFBORender::~CFBORender()
 {
 #if HAVE_FBO
-	// delete the current texture, the framebuffer object and the EGL context
+	// delete the current texture, the framebuffer object and the EGL
+	// context
 	glDeleteTextures(1, &m_texRGB);
 	m_fb.destroy();
-	// Terminate EGL when finished:
-	if (m_eglDpy) eglTerminate(m_eglDpy);
+
+	glfwDestroyWindow(m_glfwWindow);
+	m_glfwWindow = nullptr;
+
+	{
+		auto& glfwData = GLFW_GlobalData::Instance();
+		auto lckGlfw = mrpt::lockHelper(glfwData.glfwMtx);
+		if (--glfwData.initCounter == 0)
+		{
+			// de-init glfw on dtor of the last object using it:
+			glfwTerminate();
+		}
+	}
 #endif
 }
 
