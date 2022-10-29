@@ -80,7 +80,7 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
    protected:
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
-	mutable std::shared_mutex m_wireframeMtx;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_wireframeMtx;
 
 	float m_lineWidth = 1.0f;
 	bool m_antiAliasing = false;

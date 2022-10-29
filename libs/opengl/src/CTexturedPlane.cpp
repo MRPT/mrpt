@@ -64,7 +64,7 @@ void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 
 	auto& tris = CRenderizableShaderTexturedTriangles::m_triangles;
 	std::unique_lock<std::shared_mutex> writeLock(
-		CRenderizableShaderTexturedTriangles::m_trianglesMtx);
+		CRenderizableShaderTexturedTriangles::m_trianglesMtx.data);
 
 	tris.clear();
 
@@ -102,7 +102,7 @@ void CTexturedPlane::onUpdateBuffers_Triangles()
 	using P3f = mrpt::math::TPoint3Df;
 
 	std::unique_lock<std::shared_mutex> trisWriteLock(
-		CRenderizableShaderTriangles::m_trianglesMtx);
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 

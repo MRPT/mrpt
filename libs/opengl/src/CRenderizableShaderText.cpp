@@ -28,7 +28,7 @@ void CRenderizableShaderText::renderUpdateBuffers() const
 	// Generate vertices & colors:
 	const_cast<CRenderizableShaderText&>(*this).onUpdateBuffers_Text();
 
-	std::shared_lock<std::shared_mutex> readLock(m_textDataMtx);
+	std::shared_lock<std::shared_mutex> readLock(m_textDataMtx.data);
 
 	// ======== LINES ========
 	// Define OpenGL buffers:
@@ -68,7 +68,7 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR();
 #endif
 
-	std::shared_lock<std::shared_mutex> readLock(m_textDataMtx);
+	std::shared_lock<std::shared_mutex> readLock(m_textDataMtx.data);
 
 	// === LINES ===
 	std::optional<GLuint> attr_position;

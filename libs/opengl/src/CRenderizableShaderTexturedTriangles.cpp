@@ -48,7 +48,7 @@ void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
 	const_cast<CRenderizableShaderTexturedTriangles&>(*this)
 		.onUpdateBuffers_TexturedTriangles();
 
-	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx);
+	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	const auto n = m_triangles.size();
 
@@ -71,7 +71,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	initializeTextures();
 	ASSERT_(m_glTexture.get().has_value());
 
-	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx);
+	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	// Set the texture uniform:
 	{
@@ -774,7 +774,7 @@ const mrpt::math::TBoundingBox
 {
 	mrpt::math::TBoundingBox bb;
 
-	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx);
+	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	if (m_triangles.empty()) return bb;
 

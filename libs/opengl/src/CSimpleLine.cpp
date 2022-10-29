@@ -33,7 +33,7 @@ void CSimpleLine::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderWireFrame::m_wireframeMtx);
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
 	vbd.resize(2);
 

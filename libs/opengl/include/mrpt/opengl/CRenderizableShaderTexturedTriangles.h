@@ -111,7 +111,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
-	mutable std::shared_mutex m_trianglesMtx;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_trianglesMtx;
 
 	/** Returns the bounding box of m_triangles, or (0,0,0)-(0,0,0) if empty. */
 	const mrpt::math::TBoundingBox trianglesBoundingBox() const;

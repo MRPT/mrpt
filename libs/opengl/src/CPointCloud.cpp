@@ -52,7 +52,7 @@ CPointCloud::CPointCloud() { markAllPointsAsNew(); }
 void CPointCloud::onUpdateBuffers_Points()
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	{
 		mrpt::math::TPoint3Df tst[2];
@@ -255,7 +255,7 @@ uint8_t CPointCloud::serializeGetVersion() const { return 6; }
 void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	writeToStreamRender(out);
 	// Changed from bool to enum/int32_t in version 3.
@@ -283,7 +283,7 @@ void CPointCloud::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	switch (version)
 	{
@@ -362,7 +362,7 @@ void CPointCloud::clear()
 {
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		m_points.clear();
 	}
@@ -374,7 +374,7 @@ void CPointCloud::clear()
 void CPointCloud::insertPoint(float x, float y, float z)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	m_points.emplace_back(x, y, z);
 
@@ -394,7 +394,7 @@ void CPointCloud::setPoint(
 	size_t i, const float x, const float y, const float z)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	m_points.at(i) = {x, y, z};
 
@@ -421,7 +421,7 @@ void CPointCloud::setGradientColors(
 void CPointCloud::markAllPointsAsNew()
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	m_minmax_valid = false;
 	octree_mark_as_outdated();
@@ -433,7 +433,7 @@ void CPointCloud::markAllPointsAsNew()
 void CPointCloud::PLY_import_set_vertex_count(const size_t N)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	this->resize(N);
 }
@@ -447,7 +447,7 @@ void CPointCloud::PLY_import_set_vertex(
 	[[maybe_unused]] const mrpt::img::TColorf* pt_color)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	this->setPoint(idx, pt.x, pt.y, pt.z);
 }
@@ -463,7 +463,7 @@ void CPointCloud::PLY_export_get_vertex(
 	[[maybe_unused]] mrpt::img::TColorf& pt_color) const
 {
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	pt_has_color = false;
 
@@ -473,7 +473,7 @@ void CPointCloud::PLY_export_get_vertex(
 void CPointCloud::setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	const auto N = pts.size();
 	m_points.resize(N);

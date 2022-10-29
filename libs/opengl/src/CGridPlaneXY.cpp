@@ -41,7 +41,7 @@ void CGridPlaneXY::onUpdateBuffers_Wireframe()
 	m_vertex_buffer_data.clear();
 	m_color_buffer_data.clear();
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderWireFrame::m_wireframeMtx);
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
 	for (float y = m_yMin; y <= m_yMax; y += m_frequency)
 	{

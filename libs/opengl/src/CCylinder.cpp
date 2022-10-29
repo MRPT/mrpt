@@ -25,7 +25,7 @@ IMPLEMENTS_SERIALIZABLE(CCylinder, CRenderizable, mrpt::opengl)
 void CCylinder::onUpdateBuffers_Triangles()
 {
 	std::unique_lock<std::shared_mutex> trisWriteLock(
-		CRenderizableShaderTriangles::m_trianglesMtx);
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 
 	tris.clear();

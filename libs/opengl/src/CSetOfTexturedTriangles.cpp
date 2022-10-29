@@ -29,7 +29,7 @@ uint8_t CSetOfTexturedTriangles::serializeGetVersion() const { return 2; }
 void CSetOfTexturedTriangles::serializeTo(
 	mrpt::serialization::CArchive& out) const
 {
-	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx);
+	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	uint32_t n;
 
@@ -47,7 +47,7 @@ void CSetOfTexturedTriangles::serializeTo(
 void CSetOfTexturedTriangles::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
-	std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx);
+	std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx.data);
 
 	switch (version)
 	{

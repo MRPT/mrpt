@@ -105,7 +105,7 @@ uint8_t CPointCloudColoured::serializeGetVersion() const { return 4; }
 void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	writeToStreamRender(out);
 	out << m_points << m_point_colors;
@@ -116,7 +116,7 @@ void CPointCloudColoured::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	switch (version)
 	{
@@ -150,7 +150,7 @@ void CPointCloudColoured::serializeFrom(
 void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 #ifdef _DEBUG
 	ASSERT_LT_(i, size());
@@ -174,7 +174,7 @@ void CPointCloudColoured::push_back(
 	float x, float y, float z, float R, float G, float B, float A)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	m_points.emplace_back(x, y, z);
 	m_point_colors.emplace_back(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
@@ -189,7 +189,7 @@ void CPointCloudColoured::push_back(
 void CPointCloudColoured::insertPoint(const mrpt::math::TPointXYZfRGBAu8& p)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	m_points.emplace_back(p.pt);
 	m_point_colors.emplace_back(p.r, p.g, p.b, p.a);

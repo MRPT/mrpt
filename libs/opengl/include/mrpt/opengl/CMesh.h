@@ -234,7 +234,7 @@ class CMesh : public CRenderizableShaderTexturedTriangles,
 	/** Mesh bounds */
 	float m_xMin, m_xMax, m_yMin, m_yMax;
 
-	mutable std::shared_mutex m_meshDataMtx;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_meshDataMtx;
 
 	/** List of triangles in the mesh */
 	mutable std::vector<
