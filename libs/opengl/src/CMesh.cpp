@@ -348,6 +348,8 @@ void CMesh::onUpdateBuffers_Wireframe()
 void CMesh::onUpdateBuffers_TexturedTriangles()
 {
 	auto& tris = CRenderizableShaderTexturedTriangles::m_triangles;
+	std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx);
+
 	tris.clear();
 
 	for (auto& i : actualMesh)

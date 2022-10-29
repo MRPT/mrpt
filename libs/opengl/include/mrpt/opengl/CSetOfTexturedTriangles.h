@@ -37,23 +37,31 @@ class CSetOfTexturedTriangles : public CRenderizableShaderTexturedTriangles
 
 	void clearTriangles()
 	{
+		std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx);
 		m_triangles.clear();
 		CRenderizable::notifyChange();
 	}
-	size_t getTrianglesCount() const { return m_triangles.size(); }
-	const TTriangle& getTriangle(size_t idx) const
+	size_t getTrianglesCount() const
 	{
+		std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx);
+		return m_triangles.size();
+	}
+	TTriangle getTriangle(size_t idx) const
+	{
+		std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx);
 		ASSERT_LT_(idx, m_triangles.size());
 		return m_triangles[idx];
 	}
 	void getTriangle(size_t idx, TTriangle& t) const
 	{
+		std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx);
 		ASSERT_LT_(idx, m_triangles.size());
 		t = m_triangles[idx];
 		CRenderizable::notifyChange();
 	}
 	void insertTriangle(const TTriangle& t)
 	{
+		std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx);
 		m_triangles.push_back(t);
 		CRenderizable::notifyChange();
 	}

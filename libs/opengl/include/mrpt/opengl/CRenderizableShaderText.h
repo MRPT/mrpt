@@ -14,6 +14,8 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/TTriangle.h>
 
+#include <shared_mutex>
+
 namespace mrpt::opengl
 {
 /** Renderizable generic renderer for objects using the "text shader".
@@ -54,10 +56,11 @@ class CRenderizableShaderText : public virtual CRenderizable
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
-
 	/** List of lines */
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
+
+	mutable std::shared_mutex m_textDataMtx;
 
    private:
 	mutable COpenGLBuffer m_trianglesBuffer, m_trianglesColorBuffer;

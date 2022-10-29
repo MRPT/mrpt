@@ -30,6 +30,8 @@ constexpr double text_kerning = 0.1;
 
 void CText::onUpdateBuffers_Text()
 {
+	std::unique_lock<std::shared_mutex> writeLock(m_textDataMtx);
+
 	auto& vbd = CRenderizableShaderText::m_vertex_buffer_data;
 	auto& tris = CRenderizableShaderText::m_triangles;
 	auto& cbd = CRenderizableShaderText::m_color_buffer_data;
