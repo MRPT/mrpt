@@ -48,6 +48,8 @@ void CRenderizableShaderTexturedTriangles::renderUpdateBuffers() const
 	const_cast<CRenderizableShaderTexturedTriangles&>(*this)
 		.onUpdateBuffers_TexturedTriangles();
 
+	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
+
 	const auto n = m_triangles.size();
 
 	// Define OpenGL buffers:
@@ -67,13 +69,15 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 
 	// This will load and/or select our texture, only once:
 	initializeTextures();
-	ASSERT_(m_glTexture.has_value());
+	ASSERT_(m_glTexture.get().has_value());
+
+	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	// Set the texture uniform:
 	{
 		const Program& s = *rc.shader;
 		// bound to GL_TEXTURE0 + "i":
-		glUniform1i(s.uniformId("textureSampler"), m_glTexture->unit);
+		glUniform1i(s.uniformId("textureSampler"), m_glTexture.get()->unit);
 	}
 
 	// Enable/disable lights:
@@ -327,11 +331,11 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 
 	try
 	{
-		if (m_glTexture.has_value())
+		if (m_glTexture.get().has_value())
 		{
 			// activate the texture unit first before binding texture
-			glActiveTexture(GL_TEXTURE0 + m_glTexture->unit);
-			glBindTexture(GL_TEXTURE_2D, m_glTexture->name);
+			glActiveTexture(GL_TEXTURE0 + m_glTexture.get()->unit);
+			glBindTexture(GL_TEXTURE_2D, m_glTexture.get()->name);
 			CHECK_OPENGL_ERROR();
 			return;
 		}
@@ -343,12 +347,12 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		ASSERT_(m_textureImage.getPixelDepth() == mrpt::img::PixelDepth::D8U);
 
 		// allocate texture names:
-		m_glTexture = getNewTextureNumber();
+		m_glTexture.get() = getNewTextureNumber();
 
 		// activate the texture unit first before binding texture
-		glActiveTexture(GL_TEXTURE0 + m_glTexture->unit);
+		glActiveTexture(GL_TEXTURE0 + m_glTexture.get()->unit);
 		// select our current texture
-		glBindTexture(GL_TEXTURE_2D, m_glTexture->name);
+		glBindTexture(GL_TEXTURE_2D, m_glTexture.get()->name);
 		CHECK_OPENGL_ERROR();
 
 		// when texture area is small, linear interpolation. Default is
@@ -557,8 +561,8 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	catch (exception& e)
 	{
 		THROW_EXCEPTION(format(
-			"m_glTextureName=%i\n%s", m_glTexture ? m_glTexture->name : 0,
-			e.what()));
+			"m_glTextureName=%i\n%s",
+			m_glTexture.get() ? m_glTexture.get()->name : 0, e.what()));
 	}
 	catch (...)
 	{
@@ -582,11 +586,11 @@ CRenderizableShaderTexturedTriangles::~CRenderizableShaderTexturedTriangles()
 }
 void CRenderizableShaderTexturedTriangles::unloadTexture()
 {
-	if (!m_glTexture.has_value()) return;
+	if (!m_glTexture.get().has_value()) return;
 
-	releaseTextureName(*m_glTexture);
+	releaseTextureName(*m_glTexture.get());
 
-	m_glTexture.reset();
+	m_glTexture.get().reset();
 }
 
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
@@ -769,6 +773,8 @@ const mrpt::math::TBoundingBox
 	CRenderizableShaderTexturedTriangles::trianglesBoundingBox() const
 {
 	mrpt::math::TBoundingBox bb;
+
+	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	if (m_triangles.empty()) return bb;
 

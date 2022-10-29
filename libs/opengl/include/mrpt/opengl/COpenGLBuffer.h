@@ -8,7 +8,11 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/NonCopiableData.h>
+#include <mrpt/core/lock_helper.h>
+
 #include <memory>
+#include <mutex>
 #include <thread>
 
 namespace mrpt::opengl
@@ -18,6 +22,7 @@ namespace mrpt::opengl
  *
  * \sa COpenGLFramebuffer
  * \ingroup mrpt_opengl_grp
+ * \note OpenGL Buffer Objects *can* be shared among threads.
  */
 class COpenGLBuffer
 {
@@ -47,37 +52,66 @@ class COpenGLBuffer
 	COpenGLBuffer() : COpenGLBuffer(Type::Vertex) {}
 	~COpenGLBuffer() = default;
 
-	Type type() const { return m_impl->type; }
+	Type type() const
+	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		return m_impl->type;
+	}
 
-	Usage usage() const { return m_impl->usage; }
-	void setUsage(const Usage u) { m_impl->usage = u; }
-
-	/** Actually create the buffer, destroying any previously existing buffer.
-	 * Call after setting the type and usage. \sa allocate()
-	 */
-	void create() { m_impl->create(); }
+	Usage usage() const
+	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		return m_impl->usage;
+	}
+	void setUsage(const Usage u)
+	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		m_impl->usage = u;
+	}
 
 	/** Calls create() only if the buffer has not been created yet. */
 	void createOnce()
 	{
-		if (!initialized()) create();
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		if (!m_impl->created) m_impl->create();
 	}
-	bool initialized() const { return m_impl->created; }
+	bool initialized() const
+	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		return m_impl->created;
+	}
 
 	/** Automatically called upon destructor, no need for the user to call it in
 	 * normal situations. */
-	void destroy() { m_impl->destroy(); }
+	void destroy()
+	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		m_impl->destroy();
+	}
 
-	void bind() { m_impl->bind(); }
-	void unbind() { m_impl->unbind(); }
+	void bind()
+	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		m_impl->bind();
+	}
+	void unbind()
+	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		m_impl->unbind();
+	}
 
-	unsigned int bufferId() const { return m_impl->buffer_id; }
+	unsigned int bufferId() const
+	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
+		return m_impl->buffer_id;
+	}
 
 	/** Reserves byteCount bytes in the buffer and copy to it the provided data.
 	 * create() and bind() must be called before using this method.
 	 */
 	void allocate(const void* data, int byteCount)
 	{
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		m_impl->allocate(data, byteCount);
 	}
 
@@ -101,6 +135,7 @@ class COpenGLBuffer
 		std::thread::id created_from;
 	};
 	std::shared_ptr<RAII_Impl> m_impl;
+	mrpt::containers::NonCopiableData<std::mutex> m_implMtx;
 };
 
 // For use in glVertexAttribPointer()

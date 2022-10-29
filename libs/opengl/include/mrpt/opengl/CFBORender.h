@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/core/format.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLFramebuffer.h>
@@ -37,28 +38,27 @@ class CFBORender
 {
    public:
 	/** Constructor.
-	 * \param[in] skip_create_egl_context Should be set to true only if another
-	 * GUI windows already exist with an associated OpenGL context. If left to
-	 * false, a display-less EGL context will be created.
+	 *
+	 * Run with the environment variable MRPT_FBORENDER_SHOW_DEVICES=true to see
+	 * a list of available and detected GPU devices.
 	 */
 	CFBORender(
 		unsigned int width = 800, unsigned int height = 600,
-		const bool skip_create_egl_context = false);
+		int deviceIndexToUse = 0);
 
 	/** Destructor */
 	virtual ~CFBORender();
 
-	/** Change the scene camera */
+	/** Change the scene camera to be used when rendering the scene through this
+	 * particular instance of CFBORender. */
 	void setCamera(const COpenGLScene& scene, const CCamera& camera)
 	{
-		scene.getViewport("main")->getCamera() = camera;
+		m_renderFromCamera = camera;
 	}
 
-	/** Get a reference to the scene camera */
-	CCamera& getCamera(const COpenGLScene& scene)
-	{
-		return scene.getViewport("main")->getCamera();
-	}
+	/** Get a reference to the scene camera to be used when rendering the scene
+	 * through this particular instance of CFBORender. */
+	CCamera& getCamera(const COpenGLScene& scene) { return m_renderFromCamera; }
 
 	/** Render the scene and get the rendered RGB image. Resizes the image
 	 *  buffer if necessary to the configured render resolution.
@@ -91,6 +91,7 @@ class CFBORender
 
    protected:
 	COpenGLFramebuffer m_fb;
+	mrpt::opengl::CCamera m_renderFromCamera;
 
 	void* m_eglDpy = nullptr;
 	unsigned int m_texRGB = 0;

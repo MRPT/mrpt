@@ -233,10 +233,14 @@ class CMesh : public CRenderizableShaderTexturedTriangles,
 
 	/** Mesh bounds */
 	float m_xMin, m_xMax, m_yMin, m_yMax;
+
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_meshDataMtx;
+
 	/** List of triangles in the mesh */
 	mutable std::vector<
 		std::pair<mrpt::opengl::TTriangle, TTriangleVertexIndices>>
 		actualMesh;
+
 	/** The accumulated normals & counts for each vertex, so normals can be
 	 * averaged. */
 	mutable std::vector<std::pair<mrpt::math::TPoint3D, size_t>> vertex_normals;

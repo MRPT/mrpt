@@ -61,6 +61,9 @@ void CFrustum::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	const std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();
@@ -80,7 +83,10 @@ void CFrustum::onUpdateBuffers_Wireframe()
 }
 void CFrustum::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();

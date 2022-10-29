@@ -192,15 +192,24 @@ void CAssimpModel::onUpdateBuffers_all()
 {
 	auto& lines_vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& lines_cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	lines_vbd.clear();
 	lines_cbd.clear();
 
 	auto& pts_vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& pts_cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLockPts(
+		CRenderizableShaderPoints::m_pointsMtx.data);
+
 	pts_vbd.clear();
 	pts_cbd.clear();
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP

@@ -13,6 +13,8 @@
 #include <mrpt/opengl/COpenGLVertexArrayObject.h>
 #include <mrpt/opengl/CRenderizable.h>
 
+#include <shared_mutex>
+
 namespace mrpt::opengl
 {
 /** Renderizable generic renderer for objects using the wireframe shader.
@@ -71,13 +73,17 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
 	{
 		return m_color_buffer_data;
 	}
+	auto& shaderWireframeBuffersMutex() const { return m_wireframeMtx; }
+
 	/** @} */
 
    protected:
-	float m_lineWidth = 1.0f;
-	bool m_antiAliasing = false;
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_wireframeMtx;
+
+	float m_lineWidth = 1.0f;
+	bool m_antiAliasing = false;
 
 	/** Returns the bounding box of m_vertex_buffer_data, or (0,0,0)-(0,0,0) if
 	 * empty. */

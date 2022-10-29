@@ -64,6 +64,9 @@ void CVectorField2D::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	vbd.reserve(xcomp.size() * 2);
@@ -86,7 +89,10 @@ void CVectorField2D::onUpdateBuffers_Triangles()
 {
 	using P3f = mrpt::math::TPoint3Df;
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	tris.reserve(xcomp.size());
@@ -128,6 +134,8 @@ void CVectorField2D::onUpdateBuffers_Points()
 {
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	vbd.clear();
 	vbd.reserve(xcomp.size());

@@ -144,7 +144,7 @@ void COpenGLViewport::renderImageMode() const
 	if (!m_imageViewPlane || m_imageViewPlane->getTextureImage().isEmpty())
 		return;
 
-	auto _ = m_state;
+	auto _ = m_threadedData.get().state;
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -181,12 +181,13 @@ void COpenGLViewport::renderImageMode() const
 	mrpt::opengl::enqueForRendering(lst, _, rq);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+	mrpt::opengl::processRenderQueue(
+		rq, m_threadedData.get().shaders, m_lights);
 
 #endif
 }
 
-void COpenGLViewport::unloadShaders() { m_shaders.clear(); }
+void COpenGLViewport::unloadShaders() { m_threadedData.get().shaders.clear(); }
 
 void COpenGLViewport::loadDefaultShaders() const
 {
@@ -198,12 +199,14 @@ void COpenGLViewport::loadDefaultShaders() const
 		DefaultShaderID::TRIANGLES, DefaultShaderID::TEXTURED_TRIANGLES,
 		DefaultShaderID::TEXT};
 
+	auto& shaders = m_threadedData.get().shaders;
+
 	for (const auto& id : lstShaderIDs)
 	{
-		m_shaders[id] = mrpt::opengl::LoadDefaultShader(id);
+		shaders[id] = mrpt::opengl::LoadDefaultShader(id);
 
-		ASSERT_(m_shaders[id]);
-		ASSERT_(!m_shaders[id]->empty());
+		ASSERT_(shaders[id]);
+		ASSERT_(!shaders[id]->empty());
 	}
 
 	MRPT_END
@@ -211,14 +214,15 @@ void COpenGLViewport::loadDefaultShaders() const
 }
 
 /** Render a normal scene with 3D objects */
-void COpenGLViewport::renderNormalSceneMode() const
+void COpenGLViewport::renderNormalSceneMode(
+	const CCamera* forceThisCamera) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 	// Prepare camera (projection matrix):
-	updateMatricesFromCamera();
-	auto& _ = m_state;
+	updateMatricesFromCamera(forceThisCamera);
+	auto& _ = m_threadedData.get().state;
 
 	// Get objects to render:
 	const CListOpenGLObjects* objectsToRender = nullptr;
@@ -279,7 +283,8 @@ void COpenGLViewport::renderNormalSceneMode() const
 	mrpt::opengl::enqueForRendering(*objectsToRender, _, rq);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+	mrpt::opengl::processRenderQueue(
+		rq, m_threadedData.get().shaders, m_lights);
 
 	MRPT_END
 
@@ -292,7 +297,7 @@ void COpenGLViewport::renderViewportBorder() const
 	MRPT_START
 	if (m_borderWidth < 1) return;
 
-	auto _ = m_state;
+	auto _ = m_threadedData.get().state;
 
 	_.mv_matrix.setIdentity();
 	_.p_matrix.setIdentity();
@@ -322,7 +327,8 @@ void COpenGLViewport::renderViewportBorder() const
 	mrpt::opengl::enqueForRendering(lst, _, rq);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+	mrpt::opengl::processRenderQueue(
+		rq, m_threadedData.get().shaders, m_lights);
 	MRPT_END
 #endif
 }
@@ -336,10 +342,10 @@ void COpenGLViewport::renderTextMessages() const
 	m_2D_texts.regenerateGLobjects();
 
 	// Prepare shaders upon first invokation:
-	if (m_shaders.empty()) loadDefaultShaders();
+	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
 	// Prepare camera (projection matrix):
-	TRenderMatrices _ = m_state;  // make a copy
+	TRenderMatrices _ = m_threadedData.get().state;	 // make a copy
 
 	// Compute the projection matrix (p_matrix):
 	// was: glLoadIdentity(); glOrtho(0, w, 0, h, -1, 1);
@@ -401,7 +407,8 @@ void COpenGLViewport::renderTextMessages() const
 	mrpt::opengl::enqueForRendering(objs, _, rq);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+	mrpt::opengl::processRenderQueue(
+		rq, m_threadedData.get().shaders, m_lights);
 	MRPT_END
 #endif
 }
@@ -410,7 +417,8 @@ void COpenGLViewport::render(
 	[[maybe_unused]] const int render_width,
 	[[maybe_unused]] const int render_height,
 	[[maybe_unused]] const int render_offset_x,
-	[[maybe_unused]] const int render_offset_y) const
+	[[maybe_unused]] const int render_offset_y,
+	[[maybe_unused]] const CCamera* forceThisCamera) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
@@ -427,8 +435,9 @@ void COpenGLViewport::render(
 
 	// Clear depth&/color buffers:
 	// -------------------------------------------
-	m_state.viewport_width = vw;
-	m_state.viewport_height = vh;
+	auto& _ = m_threadedData.get().state;
+	_.viewport_width = vw;
+	_.viewport_height = vh;
 
 	glScissor(vx, vy, vw, vh);
 	CHECK_OPENGL_ERROR();
@@ -471,13 +480,13 @@ void COpenGLViewport::render(
 	CHECK_OPENGL_ERROR();
 
 	// Prepare shaders upon first invokation:
-	if (m_shaders.empty()) loadDefaultShaders();
+	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
 	if (isImageViewMode()) renderImageMode();
 	else
-		renderNormalSceneMode();
+		renderNormalSceneMode(forceThisCamera);
 
 	// Draw text messages, if any:
 	renderTextMessages();
@@ -764,35 +773,36 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	const double x_coord, const double y_coord, mrpt::math::TLine3D& out_ray,
 	mrpt::poses::CPose3D* out_cameraPose) const
 {
-	if (!m_state.initialized)
+	auto& _ = m_threadedData.get().state;
+
+	if (!_.initialized)
 	{
 		updateMatricesFromCamera();
-		ASSERT_(m_state.initialized);
+		ASSERT_(_.initialized);
 	}
 
-	ASSERTDEB_(m_state.viewport_height > 0 && m_state.viewport_width > 0);
+	ASSERTDEB_(_.viewport_height > 0 && _.viewport_width > 0);
 
-	const double ASPECT =
-		m_state.viewport_width / double(m_state.viewport_height);
+	const double ASPECT = _.viewport_width / double(_.viewport_height);
 
 	// unitary vector between (eye) -> (pointing):
 	const TPoint3D pointing_dir = {
-		-cos(m_state.azimuth) * cos(m_state.elev),
-		-sin(m_state.azimuth) * cos(m_state.elev), -sin(m_state.elev)};
+		-cos(_.azimuth) * cos(_.elev), -sin(_.azimuth) * cos(_.elev),
+		-sin(_.elev)};
 
 	// The camera X vector (in 3D) can be computed from the camera azimuth
 	// angle:
-	const TPoint3D cam_x_3d = {-sin(m_state.azimuth), cos(m_state.azimuth), 0};
+	const TPoint3D cam_x_3d = {-sin(_.azimuth), cos(_.azimuth), 0};
 
 	// The camera real UP vector (in 3D) is the cross product:
 	//     X3d x pointing_dir:
 	const auto cam_up_3d = mrpt::math::crossProduct3D(cam_x_3d, pointing_dir);
 
-	if (!m_state.is_projective)
+	if (!_.is_projective)
 	{
 		// Ortho projection:
 		// -------------------------------
-		double Ax = m_state.eyeDistance * 0.25;
+		double Ax = _.eyeDistance * 0.25;
 		double Ay = Ax;
 
 		if (ASPECT > 1) Ax *= ASPECT;
@@ -801,15 +811,13 @@ void COpenGLViewport::get3DRayForPixelCoord(
 			if (ASPECT != 0) Ay /= ASPECT;
 		}
 
-		const double point_lx =
-			(-0.5 + x_coord / m_state.viewport_width) * 2 * Ax;
-		const double point_ly =
-			-(-0.5 + y_coord / m_state.viewport_height) * 2 * Ay;
+		const double point_lx = (-0.5 + x_coord / _.viewport_width) * 2 * Ax;
+		const double point_ly = -(-0.5 + y_coord / _.viewport_height) * 2 * Ay;
 
 		const TPoint3D ray_origin(
-			m_state.eye.x + point_lx * cam_x_3d.x + point_ly * cam_up_3d.x,
-			m_state.eye.y + point_lx * cam_x_3d.y + point_ly * cam_up_3d.y,
-			m_state.eye.z + point_lx * cam_x_3d.z + point_ly * cam_up_3d.z);
+			_.eye.x + point_lx * cam_x_3d.x + point_ly * cam_up_3d.x,
+			_.eye.y + point_lx * cam_x_3d.y + point_ly * cam_up_3d.y,
+			_.eye.z + point_lx * cam_x_3d.z + point_ly * cam_up_3d.z);
 
 		out_ray.pBase = ray_origin;
 		out_ray.director[0] = pointing_dir.x;
@@ -826,11 +834,11 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		//  where one arrives to:
 		//    tan(FOVx/2) = ASPECT_RATIO * tan(FOVy/2)
 		//
-		const double FOVy = DEG2RAD(m_state.FOV);
+		const double FOVy = DEG2RAD(_.FOV);
 		const double FOVx = 2.0 * atan(ASPECT * tan(FOVy * 0.5));
 
-		const auto vw = m_state.viewport_width;
-		const auto vh = m_state.viewport_height;
+		const auto vw = _.viewport_width;
+		const auto vh = _.viewport_height;
 		const double len_horz = 2.0 * (-0.5 + x_coord / vw) * tan(0.5 * FOVx);
 		const double len_vert = -2.0 * (-0.5 + y_coord / vh) * tan(0.5 * FOVy);
 		// Point in camera local reference frame
@@ -842,7 +850,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 			l.x * cam_x_3d.z + l.y * cam_up_3d.z + l.z * pointing_dir.z);
 
 		// Set out ray:
-		out_ray.pBase = m_state.eye;
+		out_ray.pBase = _.eye;
 		out_ray.director[0] = ray_director.x;
 		out_ray.director[1] = ray_director.y;
 		out_ray.director[2] = ray_director.z;
@@ -868,9 +876,9 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		M(2, 2) = pointing_dir.z;
 		M(3, 2) = 0;
 
-		M(0, 3) = m_state.eye.x;
-		M(1, 3) = m_state.eye.y;
-		M(2, 3) = m_state.eye.z;
+		M(0, 3) = _.eye.x;
+		M(1, 3) = _.eye.y;
+		M(2, 3) = _.eye.z;
 		M(3, 3) = 1;
 
 		*out_cameraPose = CPose3D(M);
@@ -959,9 +967,10 @@ void COpenGLViewport::setCloneCamera(bool enable)
 	}
 }
 
-void COpenGLViewport::updateMatricesFromCamera() const
+void COpenGLViewport::updateMatricesFromCamera(
+	const CCamera* forceThisCamera) const
 {
-	auto& _ = m_state;
+	auto& _ = m_threadedData.get().state;
 
 	// Prepare camera (projection matrix):
 	COpenGLViewport* viewForGetCamera = nullptr;
@@ -985,10 +994,13 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	// Get camera:
 	// 1st: if there is a CCamera in the scene (nullptr if no camera found):
 	const auto camPtr = viewForGetCamera->getByClass<CCamera>();
-	auto myCamera = camPtr ? camPtr.get() : nullptr;
+	const auto* myCamera = camPtr ? camPtr.get() : nullptr;
 
 	// 2nd: the internal camera of all viewports:
 	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
+
+	// forced cam?
+	if (forceThisCamera) myCamera = forceThisCamera;
 
 	if (myCamera->isNoProjection())
 	{

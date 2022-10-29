@@ -24,6 +24,9 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Wireframe()
 
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	// Line loop:
@@ -46,6 +49,9 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Wireframe()
 
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	const auto slices = m_numSegments, stacks = m_numSegments;
@@ -117,7 +123,10 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 	const auto& pts = m_render_pts;
 
 	// Render precomputed points in m_render_pts:
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const auto N = pts.size();
@@ -140,7 +149,10 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 	const auto& pts = m_render_pts;
 
 	// Render precomputed points in m_render_pts:
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const auto slices = m_numSegments, stacks = m_numSegments;
