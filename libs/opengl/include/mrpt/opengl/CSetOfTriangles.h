@@ -46,7 +46,7 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	void getTriangle(size_t idx, TTriangle& t) const
 	{
 		std::shared_lock<std::shared_mutex> trisReadLock(
-			CRenderizableShaderTriangles::m_trianglesMtx);
+			CRenderizableShaderTriangles::m_trianglesMtx.data);
 
 		ASSERT_LT_(idx, shaderTrianglesBuffer().size());
 		t = shaderTrianglesBuffer().at(idx);
@@ -55,7 +55,7 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	void insertTriangle(const TTriangle& t)
 	{
 		std::unique_lock<std::shared_mutex> trisLck(
-			CRenderizableShaderTriangles::m_trianglesMtx);
+			CRenderizableShaderTriangles::m_trianglesMtx.data);
 		auto& tris = CRenderizableShaderTriangles::m_triangles;
 
 		tris.push_back(t);
@@ -70,7 +70,7 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	void insertTriangles(const InputIterator& begin, const InputIterator& end)
 	{
 		std::unique_lock<std::shared_mutex> trisLck(
-			CRenderizableShaderTriangles::m_trianglesMtx);
+			CRenderizableShaderTriangles::m_trianglesMtx.data);
 		auto& tris = CRenderizableShaderTriangles::m_triangles;
 
 		tris.insert(tris.end(), begin, end);
@@ -88,7 +88,7 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 	inline void reserve(size_t t)
 	{
 		std::unique_lock<std::shared_mutex> trisLck(
-			CRenderizableShaderTriangles::m_trianglesMtx);
+			CRenderizableShaderTriangles::m_trianglesMtx.data);
 		auto& tris = CRenderizableShaderTriangles::m_triangles;
 
 		tris.reserve(t);

@@ -24,7 +24,7 @@ void CDisk::onUpdateBuffers_Triangles()
 	using mrpt::math::TPoint3Df;
 
 	std::unique_lock<std::shared_mutex> trisWriteLock(
-		CRenderizableShaderTriangles::m_trianglesMtx);
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 
 	tris.clear();

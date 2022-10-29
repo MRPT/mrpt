@@ -60,7 +60,7 @@ void CMesh::updateTriangles() const
 
 	CRenderizable::notifyChange();
 
-	std::unique_lock<std::shared_mutex> lckWrite(m_meshDataMtx);
+	std::unique_lock<std::shared_mutex> lckWrite(m_meshDataMtx.data);
 
 	// Remember:
 	/** List of triangles in the mesh */
@@ -324,12 +324,12 @@ void CMesh::onUpdateBuffers_Wireframe()
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderWireFrame::m_wireframeMtx);
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
 	vbd.clear();
 	cbd.clear();
 
-	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx);
+	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx.data);
 
 	for (auto& i : actualMesh)
 	{
@@ -352,11 +352,11 @@ void CMesh::onUpdateBuffers_Wireframe()
 void CMesh::onUpdateBuffers_TexturedTriangles()
 {
 	auto& tris = CRenderizableShaderTexturedTriangles::m_triangles;
-	std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx);
+	std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx.data);
 
 	tris.clear();
 
-	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx);
+	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx.data);
 
 	for (auto& i : actualMesh)
 	{
@@ -599,7 +599,7 @@ void CMesh::updatePolygons() const
 {
 	if (!m_trianglesUpToDate) updateTriangles();
 
-	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx);
+	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx.data);
 	size_t N = actualMesh.size();
 	tmpPolys.resize(N);
 	transform(

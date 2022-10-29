@@ -32,7 +32,7 @@ void CRenderizableShaderTriangles::renderUpdateBuffers() const
 		.onUpdateBuffers_Triangles();
 
 	std::shared_lock<std::shared_mutex> trisReadLock(
-		CRenderizableShaderTriangles::m_trianglesMtx);
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 
 	const auto& tris = shaderTrianglesBuffer();
 
@@ -53,7 +53,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	std::shared_lock<std::shared_mutex> trisReadLock(
-		CRenderizableShaderTriangles::m_trianglesMtx);
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 
 	// Enable/disable lights:
 	if (rc.shader->hasUniform("enableLight"))
@@ -162,7 +162,7 @@ const mrpt::math::TBoundingBox
 	mrpt::math::TBoundingBox bb;
 
 	std::shared_lock<std::shared_mutex> trisReadLock(
-		CRenderizableShaderTriangles::m_trianglesMtx);
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 
 	if (shaderTrianglesBuffer().empty()) return bb;
 

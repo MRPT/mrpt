@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/NonCopiableData.h>
 #include <mrpt/core/lock_helper.h>
 
 #include <memory>
@@ -53,30 +54,30 @@ class COpenGLBuffer
 
 	Type type() const
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		return m_impl->type;
 	}
 
 	Usage usage() const
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		return m_impl->usage;
 	}
 	void setUsage(const Usage u)
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		m_impl->usage = u;
 	}
 
 	/** Calls create() only if the buffer has not been created yet. */
 	void createOnce()
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		if (!m_impl->created) m_impl->create();
 	}
 	bool initialized() const
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		return m_impl->created;
 	}
 
@@ -84,24 +85,24 @@ class COpenGLBuffer
 	 * normal situations. */
 	void destroy()
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		m_impl->destroy();
 	}
 
 	void bind()
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		m_impl->bind();
 	}
 	void unbind()
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		m_impl->unbind();
 	}
 
 	unsigned int bufferId() const
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		return m_impl->buffer_id;
 	}
 
@@ -110,7 +111,7 @@ class COpenGLBuffer
 	 */
 	void allocate(const void* data, int byteCount)
 	{
-		auto lck = mrpt::lockHelper(m_implMtx);
+		auto lck = mrpt::lockHelper(m_implMtx.data);
 		m_impl->allocate(data, byteCount);
 	}
 
@@ -134,7 +135,7 @@ class COpenGLBuffer
 		std::thread::id created_from;
 	};
 	std::shared_ptr<RAII_Impl> m_impl;
-	std::mutex m_implMtx;
+	mrpt::containers::NonCopiableData<std::mutex> m_implMtx;
 };
 
 // For use in glVertexAttribPointer()

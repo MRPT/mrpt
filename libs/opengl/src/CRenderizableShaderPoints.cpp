@@ -31,7 +31,7 @@ void CRenderizableShaderPoints::renderUpdateBuffers() const
 	const_cast<CRenderizableShaderPoints&>(*this).onUpdateBuffers_Points();
 
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	// Define OpenGL buffers:
 	m_vertexBuffer.createOnce();
@@ -57,7 +57,7 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	// Point size as uniform:
 	glUniform1f(rc.shader->uniformId("vertexPointSize"), m_pointSize);
@@ -145,7 +145,7 @@ const mrpt::math::TBoundingBox CRenderizableShaderPoints::verticesBoundingBox()
 	const
 {
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderPoints::m_pointsMtx);
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	mrpt::math::TBoundingBox bb;
 

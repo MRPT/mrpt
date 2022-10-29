@@ -31,7 +31,7 @@ void CRenderizableShaderWireFrame::renderUpdateBuffers() const
 		.onUpdateBuffers_Wireframe();
 
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderWireFrame::m_wireframeMtx);
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
 	// Define OpenGL buffers:
 	m_vertexBuffer.createOnce();
@@ -59,7 +59,7 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 	// glLineWidth(m_lineWidth);
 
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderWireFrame::m_wireframeMtx);
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
 #if !defined(__EMSCRIPTEN__)
 	glEnable(GL_LINE_SMOOTH);
@@ -117,7 +117,7 @@ const mrpt::math::TBoundingBox
 {
 	mrpt::math::TBoundingBox bb;
 	std::shared_lock<std::shared_mutex> wfReadLock(
-		CRenderizableShaderWireFrame::m_wireframeMtx);
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
 	if (m_vertex_buffer_data.empty()) return bb;
 

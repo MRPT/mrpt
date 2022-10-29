@@ -109,7 +109,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	size_t size() const
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		return m_points.size();
 	}
 	/// Like size(), but without locking the data mutex (internal usage)
@@ -119,7 +119,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	void resize(size_t N)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		m_points.resize(N);
 		m_minmax_valid = false;
 		wfWriteLock.unlock();
@@ -130,7 +130,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	void reserve(size_t N)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		m_points.reserve(N);
 	}
 
@@ -142,7 +142,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 		const std::vector<T>& z)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		const auto N = x.size();
 		m_points.resize(N);
@@ -163,7 +163,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	void setAllPointsFast(std::vector<mrpt::math::TPoint3Df>& pts)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		this->clear();
 		m_points.swap(pts);
@@ -177,7 +177,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	const std::vector<mrpt::math::TPoint3Df>& getArrayPoints() const
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		return m_points;
 	}
@@ -188,7 +188,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	bool empty() const
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		return m_points.empty();
 	}
 
@@ -198,13 +198,13 @@ class CPointCloud : public CRenderizableShaderPoints,
 	void insertPoint(const mrpt::math::TPoint3Df& p)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		insertPoint(p.x, p.y, p.z);
 	}
 	void insertPoint(const mrpt::math::TPoint3D& p)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		insertPoint(p.x, p.y, p.z);
 	}
 
@@ -235,7 +235,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	void setPoint_fast(size_t i, const float x, const float y, const float z)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		m_points[i] = {x, y, z};
 		m_minmax_valid = false;
 		wfWriteLock.unlock();
@@ -254,7 +254,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	void loadFromPointsList(LISTOFPOINTS& pointsList)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		MRPT_START
 		const size_t N = pointsList.size();

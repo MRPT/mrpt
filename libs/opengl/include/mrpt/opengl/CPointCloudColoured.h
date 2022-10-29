@@ -63,7 +63,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	mrpt::math::TBoundingBox getBoundingBox() const override
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		if (empty()) return {};
 		if (auto bb = this->octree_getBoundingBox(); bb) return *bb;
@@ -85,7 +85,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void resize(size_t N)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		m_points.resize(N);
 		m_point_colors.resize(N);
@@ -98,7 +98,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void reserve(size_t N)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		m_points.reserve(N);
 		m_point_colors.reserve(N);
@@ -120,7 +120,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void setPoint_fast(const size_t i, const mrpt::math::TPointXYZfRGBAu8& p)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		m_points[i] = p.pt;
 		m_point_colors[i] = mrpt::img::TColor(p.r, p.g, p.b, p.a);
@@ -133,7 +133,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 		const size_t i, const float x, const float y, const float z)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		m_points[i] = {x, y, z};
 		wfWriteLock.unlock();
 		markAllPointsAsNew();
@@ -144,7 +144,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 		size_t index, float R, float G, float B, float A = 1)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		m_point_colors[index].R = f2u8(R);
 		m_point_colors[index].G = f2u8(G);
 		m_point_colors[index].B = f2u8(B);
@@ -154,7 +154,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 		size_t index, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xff)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		m_point_colors[index].R = r;
 		m_point_colors[index].G = g;
 		m_point_colors[index].B = b;
@@ -164,7 +164,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void getPointColor_fast(size_t index, float& R, float& G, float& B) const
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		R = u8tof(m_point_colors[index].R);
 		G = u8tof(m_point_colors[index].G);
 		B = u8tof(m_point_colors[index].B);
@@ -173,7 +173,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 		size_t index, uint8_t& r, uint8_t& g, uint8_t& b) const
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		r = m_point_colors[index].R;
 		g = m_point_colors[index].B;
 		b = m_point_colors[index].B;
@@ -181,7 +181,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	mrpt::img::TColor getPointColor(size_t index) const
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		return m_point_colors[index];
 	}
 
@@ -189,7 +189,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	size_t size() const
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		return m_points.size();
 	}
 	/// Like size(), but without locking the data mutex (internal usage)
@@ -198,7 +198,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	bool empty() const
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		return m_points.empty();
 	}
 
@@ -206,7 +206,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void clear()
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
-			CRenderizableShaderPoints::m_pointsMtx);
+			CRenderizableShaderPoints::m_pointsMtx.data);
 		m_points.clear();
 		m_point_colors.clear();
 		wfWriteLock.unlock();

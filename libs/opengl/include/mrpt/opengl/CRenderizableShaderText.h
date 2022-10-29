@@ -60,7 +60,7 @@ class CRenderizableShaderText : public virtual CRenderizable
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
 
-	mutable std::shared_mutex m_textDataMtx;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_textDataMtx;
 
    private:
 	mutable COpenGLBuffer m_trianglesBuffer, m_trianglesColorBuffer;

@@ -37,7 +37,7 @@ CGridPlaneXZ::CGridPlaneXZ(
 void CGridPlaneXZ::onUpdateBuffers_Wireframe()
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
-		CRenderizableShaderWireFrame::m_wireframeMtx);
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
 	// Generate vertices:
 	m_vertex_buffer_data.clear();
