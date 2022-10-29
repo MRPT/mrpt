@@ -42,7 +42,8 @@ class CFBORender
 	 * Run with the environment variable MRPT_FBORENDER_SHOW_DEVICES=true to see
 	 * a list of available and detected GPU devices.
 	 */
-	CFBORender(unsigned int width = 800, unsigned int height = 600,
+	CFBORender(
+		unsigned int width = 800, unsigned int height = 600,
 		int deviceIndexToUse = 0);
 
 	/** Destructor */
