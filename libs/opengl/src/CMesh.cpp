@@ -60,6 +60,8 @@ void CMesh::updateTriangles() const
 
 	CRenderizable::notifyChange();
 
+	std::unique_lock<std::shared_mutex> lckWrite(m_meshDataMtx);
+
 	// Remember:
 	/** List of triangles in the mesh */
 	// mutable
@@ -327,6 +329,8 @@ void CMesh::onUpdateBuffers_Wireframe()
 	vbd.clear();
 	cbd.clear();
 
+	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx);
+
 	for (auto& i : actualMesh)
 	{
 		const mrpt::opengl::TTriangle& t = i.first;
@@ -351,6 +355,8 @@ void CMesh::onUpdateBuffers_TexturedTriangles()
 	std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx);
 
 	tris.clear();
+
+	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx);
 
 	for (auto& i : actualMesh)
 	{
@@ -592,6 +598,8 @@ mrpt::math::TPolygonWithPlane createPolygonFromTriangle(
 void CMesh::updatePolygons() const
 {
 	if (!m_trianglesUpToDate) updateTriangles();
+
+	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx);
 	size_t N = actualMesh.size();
 	tmpPolys.resize(N);
 	transform(
