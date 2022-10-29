@@ -196,18 +196,7 @@ static void viz_thread()
 	{
 		nanogui::init();
 
-		mrpt::gui::CDisplayWindowGUI_Params winP;
-
-		// winP.gles_context = true;
-		// winP.glMajor = 2;
-		// winP.glMinor = 0;
-
-		auto win = mrpt::gui::CDisplayWindowGUI::Create("main", 800, 600, winP);
-
-		nanogui::Window* winInput = new nanogui::Window(win.get(), "Dummy win");
-		winInput->setPosition(nanogui::Vector2i(10, 50));
-		winInput->setLayout(new nanogui::GroupLayout());
-		winInput->setFixedWidth(350);
+		auto win = mrpt::gui::CDisplayWindowGUI::Create("main", 800, 600);
 
 		win->performLayout();
 		win->drawAll();
@@ -218,6 +207,58 @@ static void viz_thread()
 		win->background_scene = commonScene;
 		win->background_scene_mtx.unlock();
 #endif
+
+		struct SubWindowData
+		{
+			SubWindowData() = default;
+
+			nanogui::Window* win = nullptr;
+			mrpt::gui::MRPT2NanoguiGLCanvas* glControl = nullptr;
+			nanogui::Label* label = nullptr;
+		};
+
+		std::map<std::string, SubWindowData> subWindows;
+
+		win->addLoopCallback([&]() {
+			std::list<RenderResult> done;
+			{
+				auto lck = mrpt::lockHelper(renderOutputs_mtx);
+				std::swap(done, renderOutputs);
+			}
+			if (done.empty()) return;
+
+			for (auto& r : done)
+			{
+				auto& sw = subWindows[r.threadName];
+				if (!sw.win)
+				{
+					// Add subwindow:
+					sw.win = new nanogui::Window(win.get(), r.threadName);
+					sw.win->setLayout(new nanogui::GroupLayout());
+
+					sw.label = sw.win->add<nanogui::Label>("label");
+
+					sw.glControl =
+						sw.win->add<mrpt::gui::MRPT2NanoguiGLCanvas>();
+					sw.win->setPosition(
+						{5 + 100 * (subWindows.size() - 1), 10});
+					sw.win->setFixedWidth(350);
+					{
+						auto scene = mrpt::opengl::COpenGLScene::Create();
+						auto lck = mrpt::lockHelper(sw.glControl->scene_mtx);
+						sw.glControl->scene = std::move(scene);
+					}
+					win->performLayout();
+				}
+
+				{
+					auto lck = mrpt::lockHelper(sw.glControl->scene_mtx);
+					sw.glControl->scene->getViewport()->setImageView(
+						std::move(r.img));
+				}
+				sw.label->setCaption(r.labelText);
+			}
+		});
 
 		nanogui::mainloop();
 		nanogui::shutdown();
@@ -241,16 +282,24 @@ static int TestOffscreenRender()
 
 	std::vector<std::thread> allThreads;
 
+	{
+		// ==================================================================
+		//                         ** CRITICAL **
+		// Create dummy FBO Renderer to init GL as required by FBOs *before*
+		// nanogui initializes it. Otherwise, GL context errors will be
+		// raised by FBOs later on.
+		// ==================================================================
+		mrpt::opengl::CFBORender render(320, 240);
+	}
+
 	allThreads.emplace_back(&viz_thread);
-
-#if 1
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-	allThreads.emplace_back(
-		&renderer_thread, "one", 20 /*period*/, 400 /*nImgs*/);
+	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
 	allThreads.emplace_back(
-		&renderer_thread, "two", 10 /*period*/, 700 /*nImgs*/);
-#endif
+		&renderer_thread, "one", 5 /*period*/, 600 /*nImgs*/);
+
+	allThreads.emplace_back(
+		&renderer_thread, "two", 6 /*period*/, 700 /*nImgs*/);
 
 	for (auto& t : allThreads)
 		if (t.joinable()) t.join();
