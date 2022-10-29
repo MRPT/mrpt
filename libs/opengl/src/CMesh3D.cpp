@@ -214,6 +214,9 @@ void CMesh3D::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	for (size_t f = 0; f < m_face_verts.size(); f++)
@@ -242,7 +245,10 @@ void CMesh3D::onUpdateBuffers_Wireframe()
 
 void CMesh3D::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	for (size_t f = 0; f < m_is_quad.size(); f++)
@@ -268,6 +274,8 @@ void CMesh3D::onUpdateBuffers_Points()
 {
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	vbd = m_vertices;
 	cbd.assign(m_vertices.size(), vert_color.asTColor());

@@ -75,7 +75,8 @@ class CAxis : public CRenderizableShaderWireFrame
 	float m_textRot[3][3];	// {x,y,z},{yaw,pitch,roll}
 	float m_markLen{0.07f};
 
-	mrpt::opengl::CListOpenGLObjects m_gl_labels;
+	mrpt::containers::PerThreadDataHolder<mrpt::opengl::CListOpenGLObjects>
+		m_gl_labels;
 };
 
 }  // namespace mrpt::opengl

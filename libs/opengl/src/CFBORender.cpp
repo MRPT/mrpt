@@ -97,17 +97,14 @@ class OpenGLDepth2Linear_LUTs
 	std::unordered_map<std::pair<float, float>, lut_t, MyHash> m_pool;
 };
 
-/*---------------------------------------------------------------
-						Constructor
----------------------------------------------------------------*/
 CFBORender::CFBORender(
-	unsigned int width, unsigned int height, const bool skip_create_egl_context)
+	unsigned int width, unsigned int height, int deviceIndexToUse)
 {
 #if HAVE_FBO
 
 	MRPT_START
 
-	if (!skip_create_egl_context)
+	if (!deviceIndexToUse)
 	{
 		static const EGLint configAttribs[] = {
 			EGL_SURFACE_TYPE,
@@ -119,9 +116,11 @@ CFBORender::CFBORender(
 			EGL_RED_SIZE,
 			8,
 			EGL_DEPTH_SIZE,
-			8,
+			24,
+			EGL_CONFORMANT,
+			EGL_OPENGL_ES2_BIT,
 			EGL_RENDERABLE_TYPE,
-			EGL_OPENGL_BIT,
+			EGL_OPENGL_ES2_BIT,
 			EGL_NONE};
 
 		constexpr int pbufferWidth = 9;
@@ -131,24 +130,44 @@ CFBORender::CFBORender(
 			EGL_WIDTH, pbufferWidth, EGL_HEIGHT, pbufferHeight, EGL_NONE,
 		};
 
-		static const int MAX_DEVICES = 4;
+		static const int MAX_DEVICES = 32;
 		EGLDeviceEXT eglDevs[MAX_DEVICES];
-		EGLint numDevices;
+		EGLint numDevices = 0;
 
 		PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT =
 			(PFNEGLQUERYDEVICESEXTPROC)eglGetProcAddress("eglQueryDevicesEXT");
+		ASSERT_(eglQueryDevicesEXT);
 
 		eglQueryDevicesEXT(MAX_DEVICES, eglDevs, &numDevices);
 
 		if (MRPT_FBORENDER_SHOW_DEVICES)
-			printf("Detected %d devices\n", numDevices);
+		{
+			printf("[mrpt EGL] Detected %d devices\n", numDevices);
+
+			PFNEGLQUERYDEVICESTRINGEXTPROC eglQueryDeviceStringEXT =
+				(PFNEGLQUERYDEVICESTRINGEXTPROC)eglGetProcAddress(
+					"eglQueryDeviceStringEXT");
+			ASSERT_(eglQueryDeviceStringEXT);
+
+			for (int i = 0; i < numDevices; i++)
+			{
+				const char* devExts =
+					eglQueryDeviceStringEXT(eglDevs[i], EGL_EXTENSIONS);
+
+				printf(
+					"[mrpt EGL] Device #%i. Extensions: %s\n", i,
+					devExts ? devExts : "(None)");
+			}
+		}
+
+		ASSERT_LT_(deviceIndexToUse, numDevices);
 
 		PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
 			(PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress(
 				"eglGetPlatformDisplayEXT");
 
-		EGLDisplay eglDpy =
-			eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, eglDevs[0], 0);
+		EGLDisplay eglDpy = eglGetPlatformDisplayEXT(
+			EGL_PLATFORM_DEVICE_EXT, eglDevs[deviceIndexToUse], 0);
 
 		// 1. Initialize EGL
 		if (eglDpy == EGL_NO_DISPLAY)
@@ -161,6 +180,8 @@ CFBORender::CFBORender(
 			THROW_EXCEPTION_FMT(
 				"Failed to initialize EGL display: %x\n", eglGetError());
 		}
+
+		// printf("[mrpt EGL] version: %i.%i\n", major, minor);
 
 		// 2. Select an appropriate configuration
 		EGLint numConfigs;
@@ -178,7 +199,7 @@ CFBORender::CFBORender(
 			eglCreatePbufferSurface(eglDpy, eglCfg, pbufferAttribs);
 
 		// 4. Bind the API
-		if (!eglBindAPI(EGL_OPENGL_API))
+		if (!eglBindAPI(EGL_OPENGL_ES_API))
 		{ THROW_EXCEPTION("no opengl api in egl"); }
 
 		// 5. Create a context and make it current
@@ -195,7 +216,7 @@ CFBORender::CFBORender(
 	// -------------------------------
 	// Create frame buffer object:
 	// -------------------------------
-	m_fb.create(width, height);
+	m_fb.create(width, height);	 // TODO: Multisample doesn't work...
 	const auto oldFB = m_fb.bind();
 
 	// -------------------------------
@@ -288,7 +309,8 @@ void CFBORender::internal_render_RGBD(
 	// Render:
 	// ---------------------------
 	for (const auto& viewport : scene.viewports())
-		viewport->render(m_fb.width(), m_fb.height(), 0, 0);
+		viewport->render(
+			m_fb.width(), m_fb.height(), 0, 0, &m_renderFromCamera);
 
 #ifdef FBO_PROFILER
 	tleR.stop();

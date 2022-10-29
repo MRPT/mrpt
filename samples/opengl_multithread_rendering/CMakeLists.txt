@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /opengl_offscreen_render_example
+# CMake file for the MRPT example:  /opengl_multithread_rendering
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-set(sampleName opengl_offscreen_render_example)
+set(sampleName opengl_multithread_rendering)
 project(EXAMPLE_${sampleName})
 
 cmake_minimum_required(VERSION 3.1)

@@ -62,6 +62,8 @@ class CGeneralizedEllipsoidTemplate
 
 	void renderUpdateBuffers() const override
 	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+
 		// 1) Update eigenvectors/values:
 		if (m_needToRecomputeEigenVals)
 		{
@@ -139,6 +141,8 @@ class CGeneralizedEllipsoidTemplate
 	void setCovMatrixAndMean(const MATRIX& new_cov, const VECTOR& new_mean)
 	{
 		MRPT_START
+		std::unique_lock<std::shared_mutex> lckWrite(m_ellipsoidDataMtx.data);
+
 		ASSERT_EQUAL_(new_cov.cols(), new_cov.rows());
 		ASSERT_EQUAL_(new_cov.cols(), DIM);
 		m_cov = new_cov;
@@ -149,7 +153,11 @@ class CGeneralizedEllipsoidTemplate
 	}
 
 	/** Gets the current uncertainty covariance of parameter space */
-	const cov_matrix_t& getCovMatrix() const { return m_cov; }
+	cov_matrix_t getCovMatrix() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+		return m_cov;
+	}
 
 	/** Like setCovMatrixAndMean(), for mean=zero.
 	 */
@@ -187,25 +195,36 @@ class CGeneralizedEllipsoidTemplate
 	 */
 	void setQuantiles(float q)
 	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_ellipsoidDataMtx.data);
 		m_quantiles = q;
 		CRenderizable::notifyChange();
 	}
 	/** Refer to documentation of \a setQuantiles() */
-	float getQuantiles() const { return m_quantiles; }
+	float getQuantiles() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+		return m_quantiles;
+	}
 
 	/** Set the number of segments of the surface/curve (higher means with
 	 * greater resolution) */
 	void setNumberOfSegments(const uint32_t numSegments)
 	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_ellipsoidDataMtx.data);
 		m_numSegments = numSegments;
 		CRenderizable::notifyChange();
 	}
-	uint32_t getNumberOfSegments() { return m_numSegments; }
+	uint32_t getNumberOfSegments()
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+		return m_numSegments;
+	}
 
 	/** If set to "true", a whole ellipsoid surface will be drawn, or if
 	 * set to "false" (default) it will be drawn as a "wireframe". */
 	void enableDrawSolid3D(bool v)
 	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_ellipsoidDataMtx.data);
 		m_drawSolid3D = v;
 		CRenderizable::notifyChange();
 	}
@@ -233,6 +252,9 @@ class CGeneralizedEllipsoidTemplate
 	virtual void transformFromParameterSpace(
 		const std::vector<array_point_t>& params_pts,
 		std::vector<array_point_t>& out_pts) const = 0;
+
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex>
+		m_ellipsoidDataMtx;
 
 	mutable cov_matrix_t m_cov;
 	mean_vector_t m_mean;

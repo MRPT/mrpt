@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>
@@ -341,7 +342,10 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	mrpt::math::TBoundingBox getBoundingBox() const;
 
 	/** Returns a copy of the latest render matrices structure. */
-	TRenderMatrices getRenderMatrices() const { return m_state; }
+	TRenderMatrices getRenderMatrices() const
+	{
+		return m_threadedData.get().state;
+	}
 
 	/** @} */  // end of Contained objects set/get/search
 
@@ -357,14 +361,16 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Render the objects in this viewport (called from COpenGLScene) */
 	void render(
 		const int render_width, const int render_height,
-		const int render_offset_x = 0, const int render_offset_y = 0) const;
+		const int render_offset_x = 0, const int render_offset_y = 0,
+		const CCamera* forceThisCamera = nullptr) const;
 
-	void updateMatricesFromCamera() const;
+	void updateMatricesFromCamera(
+		const CCamera* forceThisCamera = nullptr) const;
 
 	/** Provides read access to the opengl shaders */
 	const std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders() const
 	{
-		return m_shaders;
+		return m_threadedData.get().shaders;
 	}
 
 	/** Load all MPRT predefined shader programs into m_shaders */
@@ -373,7 +379,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Provides write access to the opengl shaders */
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders()
 	{
-		return m_shaders;
+		return m_threadedData.get().shaders;
 	}
 
    protected:
@@ -394,7 +400,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void renderImageMode() const;
 
 	/** Render a normal scene with 3D objects */
-	void renderNormalSceneMode() const;
+	void renderNormalSceneMode(const CCamera* forceThisCamera = nullptr) const;
 
 	/** Render the viewport border, if enabled */
 	void renderViewportBorder() const;
@@ -442,11 +448,19 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	mutable mrpt::opengl::CSetOfLines::Ptr m_borderLines;
 
-	/** Info updated with each "render()" and used in "get3DRayForPixelCoord" */
-	mutable TRenderMatrices m_state;
+	struct PerThreadData
+	{
+		PerThreadData() = default;
 
-	/** Default shader program */
-	mutable std::map<shader_id_t, mrpt::opengl::Program::Ptr> m_shaders;
+		/** Info updated with each "render()" and used in
+		 * "get3DRayForPixelCoord" */
+		TRenderMatrices state;
+
+		/** Default shader program */
+		std::map<shader_id_t, mrpt::opengl::Program::Ptr> shaders;
+	};
+
+	mutable mrpt::containers::PerThreadDataHolder<PerThreadData> m_threadedData;
 
 	/** Unload shader programs in m_shaders */
 	void unloadShaders();

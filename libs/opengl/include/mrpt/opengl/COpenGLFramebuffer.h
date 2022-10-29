@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -63,11 +64,11 @@ class COpenGLFramebuffer
 	/// Blit the framebuffer object onto the screen
 	void blit();
 
-	bool initialized() { return m_impl->m_created; }
+	bool initialized() { return m_impl->m_state.get().m_created; }
 
-	unsigned int width() const { return m_impl->m_width; }
-	unsigned int height() const { return m_impl->m_height; }
-	int numSamples() const { return m_impl->m_Samples; }
+	unsigned int width() const { return m_impl->m_state.get().m_width; }
+	unsigned int height() const { return m_impl->m_state.get().m_height; }
+	int numSamples() const { return m_impl->m_state.get().m_Samples; }
 
 	/** @} */
 
@@ -92,13 +93,15 @@ class COpenGLFramebuffer
 		void destroy();
 		FrameBufferBinding bind();
 		void unbind();
-		void allocate(const void* data, int byteCount);
 
-		bool m_created = false;
-		unsigned int m_Framebuffer = 0, m_Depth = 0, m_Color = 0;
-		unsigned int m_width = 0, m_height = 0;	 /// In pixels
-		int m_Samples = 0;
-		std::thread::id m_created_from;
+		struct State
+		{
+			bool m_created = false;
+			unsigned int m_Framebuffer = 0, m_Depth = 0, m_Color = 0;
+			unsigned int m_width = 0, m_height = 0;	 /// In pixels
+			int m_Samples = 0;
+		};
+		mrpt::containers::PerThreadDataHolder<State> m_state;
 	};
 	std::shared_ptr<RAII_Impl> m_impl;
 };
