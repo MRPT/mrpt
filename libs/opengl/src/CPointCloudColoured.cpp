@@ -104,6 +104,9 @@ void CPointCloudColoured::render_subset(
 uint8_t CPointCloudColoured::serializeGetVersion() const { return 4; }
 void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 {
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	writeToStreamRender(out);
 	out << m_points << m_point_colors;
 	CRenderizableShaderPoints::params_serialize(out);
@@ -112,6 +115,9 @@ void CPointCloudColoured::serializeTo(mrpt::serialization::CArchive& out) const
 void CPointCloudColoured::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	switch (version)
 	{
 		case 0:
@@ -133,6 +139,8 @@ void CPointCloudColoured::serializeFrom(
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
+
+	wfWriteLock.unlock();
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }
@@ -141,6 +149,9 @@ void CPointCloudColoured::serializeFrom(
  */
 void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 #ifdef _DEBUG
 	ASSERT_LT_(i, size());
 #endif
@@ -153,6 +164,7 @@ void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
+	wfWriteLock.unlock();
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }
@@ -161,20 +173,28 @@ void CPointCloudColoured::setPoint(size_t i, const TPointXYZfRGBAu8& p)
 void CPointCloudColoured::push_back(
 	float x, float y, float z, float R, float G, float B, float A)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	m_points.emplace_back(x, y, z);
 	m_point_colors.emplace_back(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
+	wfWriteLock.unlock();
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }
 
 void CPointCloudColoured::insertPoint(const mrpt::math::TPointXYZfRGBAu8& p)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	m_points.emplace_back(p.pt);
 	m_point_colors.emplace_back(p.r, p.g, p.b, p.a);
 
+	wfWriteLock.unlock();
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }

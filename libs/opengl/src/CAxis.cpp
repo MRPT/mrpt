@@ -69,7 +69,7 @@ void CAxis::onUpdateBuffers_Wireframe()
 
 	vbd.clear();
 
-	m_gl_labels.clear();
+	m_gl_labels.get().clear();
 
 	// X axis
 	vbd.emplace_back(m_xmin, 0.0f, 0.0f);
@@ -127,7 +127,7 @@ void CAxis::onUpdateBuffers_Wireframe()
 				mrpt::DEG2RAD(m_textRot[axis][1]),
 				mrpt::DEG2RAD(m_textRot[axis][2])));
 			label->setString(n);
-			m_gl_labels.emplace_back(label);
+			m_gl_labels.get().emplace_back(label);
 
 			// tick line:
 			vbd.emplace_back(cur_tf + tick0[axis]);
@@ -143,12 +143,12 @@ void CAxis::onUpdateBuffers_Wireframe()
 			mrpt::DEG2RAD(m_textRot[axis][1]),
 			mrpt::DEG2RAD(m_textRot[axis][2])));
 		label->setString(axis2name[axis]);
-		m_gl_labels.emplace_back(label);
+		m_gl_labels.get().emplace_back(label);
 	}
 
 	cbd.assign(vbd.size(), m_color);
 
-	for (auto& lb : m_gl_labels)
+	for (auto& lb : m_gl_labels.get())
 		lb->updateBuffers();
 }
 
@@ -156,7 +156,7 @@ void CAxis::enqueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
 {
 	// Enque rendering all text labels:
-	mrpt::opengl::enqueForRendering(m_gl_labels, state, rq);
+	mrpt::opengl::enqueForRendering(m_gl_labels.get(), state, rq);
 }
 
 void CAxis::render(const RenderContext& rc) const

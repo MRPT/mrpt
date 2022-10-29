@@ -100,11 +100,14 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 	{
 		return m_color_buffer_data;
 	}
+	auto& shaderPointsBuffersMutex() const { return m_pointsMtx; }
+
 	/** @} */
 
    protected:
 	mutable std::vector<mrpt::math::TPoint3Df> m_vertex_buffer_data;
 	mutable std::vector<mrpt::img::TColor> m_color_buffer_data;
+	mutable std::shared_mutex m_pointsMtx;
 
 	/** Returns the bounding box of m_vertex_buffer_data, or (0,0,0)-(0,0,0) if
 	 * empty. */

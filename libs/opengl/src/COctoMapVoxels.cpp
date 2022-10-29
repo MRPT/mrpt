@@ -198,6 +198,8 @@ void COctoMapVoxels::onUpdateBuffers_Points()
 {
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
 
 	for (const auto& m_voxel_set : m_voxel_sets)
 	{

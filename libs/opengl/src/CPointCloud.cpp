@@ -51,6 +51,9 @@ CPointCloud::CPointCloud() { markAllPointsAsNew(); }
 
 void CPointCloud::onUpdateBuffers_Points()
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	{
 		mrpt::math::TPoint3Df tst[2];
 		// was static_assert(), error in gcc9.1, cannot use ptr+3 in constexpr.
@@ -251,6 +254,9 @@ void CPointCloud::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 uint8_t CPointCloud::serializeGetVersion() const { return 6; }
 void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 {
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	writeToStreamRender(out);
 	// Changed from bool to enum/int32_t in version 3.
 	out.WriteAs<int32_t>(m_colorFromDepth);
@@ -276,6 +282,9 @@ void CPointCloud::serializeTo(mrpt::serialization::CArchive& out) const
 void CPointCloud::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	switch (version)
 	{
 		case 0:
@@ -344,25 +353,36 @@ void CPointCloud::serializeFrom(
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 
+	wfWriteLock.unlock();
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }
 
 void CPointCloud::clear()
 {
-	m_points.clear();
+	{
+		std::unique_lock<std::shared_mutex> wfWriteLock(
+			CRenderizableShaderPoints::m_pointsMtx);
+
+		m_points.clear();
+	}
+
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }
 
 void CPointCloud::insertPoint(float x, float y, float z)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	m_points.emplace_back(x, y, z);
 
 	m_minmax_valid = false;
 
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
+	wfWriteLock.unlock();
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }
@@ -373,12 +393,16 @@ void CPointCloud::insertPoint(float x, float y, float z)
 void CPointCloud::setPoint(
 	size_t i, const float x, const float y, const float z)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	m_points.at(i) = {x, y, z};
 
 	m_minmax_valid = false;
 
 	// JL: TODO note: Well, this can be clearly done much more efficiently
 	// but...I don't have time! :-(
+	wfWriteLock.unlock();
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }
@@ -396,6 +420,9 @@ void CPointCloud::setGradientColors(
 // Do needed internal work if all points are new (octree rebuilt,...)
 void CPointCloud::markAllPointsAsNew()
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	m_minmax_valid = false;
 	octree_mark_as_outdated();
 	CRenderizable::notifyChange();
@@ -405,6 +432,9 @@ void CPointCloud::markAllPointsAsNew()
  * PLY_import_set_vertex */
 void CPointCloud::PLY_import_set_vertex_count(const size_t N)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	this->resize(N);
 }
 
@@ -416,6 +446,9 @@ void CPointCloud::PLY_import_set_vertex(
 	const size_t idx, const mrpt::math::TPoint3Df& pt,
 	[[maybe_unused]] const mrpt::img::TColorf* pt_color)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	this->setPoint(idx, pt.x, pt.y, pt.z);
 }
 
@@ -429,6 +462,9 @@ void CPointCloud::PLY_export_get_vertex(
 	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	[[maybe_unused]] mrpt::img::TColorf& pt_color) const
 {
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	pt_has_color = false;
 
 	pt = m_points[idx];
@@ -436,11 +472,15 @@ void CPointCloud::PLY_export_get_vertex(
 
 void CPointCloud::setAllPoints(const std::vector<mrpt::math::TPoint3D>& pts)
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	const auto N = pts.size();
 	m_points.resize(N);
 	for (size_t i = 0; i < N; i++)
 		m_points[i] = pts[i];
 	m_minmax_valid = false;
+	wfWriteLock.unlock();
 	markAllPointsAsNew();
 	CRenderizable::notifyChange();
 }

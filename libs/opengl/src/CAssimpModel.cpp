@@ -200,6 +200,9 @@ void CAssimpModel::onUpdateBuffers_all()
 
 	auto& pts_vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& pts_cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLockPts(
+		CRenderizableShaderPoints::m_pointsMtx);
+
 	pts_vbd.clear();
 	pts_cbd.clear();
 
