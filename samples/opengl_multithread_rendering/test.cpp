@@ -228,7 +228,7 @@ static void viz_thread()
 
 	std::cout << "\nVisualization thread ends." << std::endl;
 }
-#else
+#elif MRPT_HAS_NANOGUI
 // nanogui frontend
 static void viz_thread()
 {
@@ -356,7 +356,12 @@ int main(int argc, char* argv[])
 {
 	try
 	{
+#if MRPT_HAS_NANOGUI
 		return TestOffscreenRender();
+#else
+		std::cerr << "This example requires MRPT built with NANOGUI.\n";
+		return 1;
+#endif
 	}
 	catch (const std::exception& e)
 	{
