@@ -6,6 +6,7 @@
     - New template class mrpt::containers::PerThreadDataHolder
   - \ref mrpt_opengl_grp
     - All opengl shaders, objects, and renderers are now multithread capable, including rendering several FBOs in different threads.
+    - mrpt::opengl::CFBORender constructor now takes a parameters struct making it much more configurable.
   - \ref mrpt_system_grp
     - These functions are now thread-safe if built in a system with the `localtime_r()` variant of `localtime()`:
       - mrpt::system::timestampToParts()

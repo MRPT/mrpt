@@ -125,7 +125,17 @@ static void renderer_thread_impl(
 
 	mrpt::system::thread_name(name);  // for debuggers
 
-	mrpt::opengl::CFBORender render(RENDER_WIDTH, RENDER_HEIGHT);
+	mrpt::opengl::CFBORender::Parameters fboParams;
+	fboParams.width = RENDER_WIDTH;
+	fboParams.height = RENDER_HEIGHT;
+	// fboParams.contextMajorVersion = 3;
+	// fboParams.contextMinorVersion = 3;
+	// fboParams.deviceIndexToUse = 0;
+#ifdef _DEBUG
+	fboParams.contextDebug = true;
+#endif
+
+	mrpt::opengl::CFBORender render(fboParams);
 	mrpt::img::CImage frame(RENDER_WIDTH, RENDER_HEIGHT, mrpt::img::CH_RGB);
 
 	// here you can put your preferred camera rendering position
@@ -332,8 +342,10 @@ static int TestOffscreenRender()
 		mrpt::opengl::CFBORender render(10, 10);
 	}
 
+#if 1
 	allThreads.emplace_back(&viz_thread);
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+#endif
 
 	allThreads.emplace_back(
 		&renderer_thread, "one", 5 /*period*/, 600 /*nImgs*/);

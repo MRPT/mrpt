@@ -97,31 +97,34 @@ class OpenGLDepth2Linear_LUTs
 	std::unordered_map<std::pair<float, float>, lut_t, MyHash> m_pool;
 };
 
-CFBORender::CFBORender(
-	unsigned int width, unsigned int height, int deviceIndexToUse)
+CFBORender::CFBORender(const Parameters& p) : m_params(p)
 {
 #if HAVE_FBO
 
 	MRPT_START
 
-	if (!deviceIndexToUse)
+	if (p.create_EGL_context)
 	{
-		static const EGLint configAttribs[] = {
-			EGL_SURFACE_TYPE,
-			EGL_PBUFFER_BIT,
-			EGL_BLUE_SIZE,
-			8,
-			EGL_GREEN_SIZE,
-			8,
-			EGL_RED_SIZE,
-			8,
-			EGL_DEPTH_SIZE,
-			24,
-			EGL_CONFORMANT,
-			EGL_OPENGL_ES2_BIT,
-			EGL_RENDERABLE_TYPE,
-			EGL_OPENGL_ES2_BIT,
-			EGL_NONE};
+		// clang-format off
+		std::vector<EGLint> configAttribs = {
+			EGL_SURFACE_TYPE,    EGL_PBUFFER_BIT,
+			EGL_BLUE_SIZE,       p.blueSize,
+			EGL_GREEN_SIZE,      p.greenSize,
+			EGL_RED_SIZE,        p.redSize,
+			EGL_DEPTH_SIZE,      p.depthSize
+		};
+		// clang-format on
+		if (p.conformantOpenGLES2)
+		{
+			configAttribs.push_back(EGL_CONFORMANT);
+			configAttribs.push_back(EGL_OPENGL_ES2_BIT);
+		}
+		if (p.renderableOpenGLES2)
+		{
+			configAttribs.push_back(EGL_RENDERABLE_TYPE);
+			configAttribs.push_back(EGL_OPENGL_ES2_BIT);
+		}
+		configAttribs.push_back(EGL_NONE);
 
 		constexpr int pbufferWidth = 9;
 		constexpr int pbufferHeight = 9;
@@ -160,22 +163,22 @@ CFBORender::CFBORender(
 			}
 		}
 
-		ASSERT_LT_(deviceIndexToUse, numDevices);
+		ASSERT_LT_(p.deviceIndexToUse, numDevices);
 
 		PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
 			(PFNEGLGETPLATFORMDISPLAYEXTPROC)eglGetProcAddress(
 				"eglGetPlatformDisplayEXT");
 
-		EGLDisplay eglDpy = eglGetPlatformDisplayEXT(
-			EGL_PLATFORM_DEVICE_EXT, eglDevs[deviceIndexToUse], 0);
+		m_eglDpy = eglGetPlatformDisplayEXT(
+			EGL_PLATFORM_DEVICE_EXT, eglDevs[p.deviceIndexToUse], 0);
 
 		// 1. Initialize EGL
-		if (eglDpy == EGL_NO_DISPLAY)
+		if (m_eglDpy == EGL_NO_DISPLAY)
 		{ THROW_EXCEPTION("Failed to get EGL display"); }
 
 		EGLint major, minor;
 
-		if (eglInitialize(eglDpy, &major, &minor) == EGL_FALSE)
+		if (eglInitialize(m_eglDpy, &major, &minor) == EGL_FALSE)
 		{
 			THROW_EXCEPTION_FMT(
 				"Failed to initialize EGL display: %x\n", eglGetError());
@@ -185,9 +188,9 @@ CFBORender::CFBORender(
 
 		// 2. Select an appropriate configuration
 		EGLint numConfigs;
-		EGLConfig eglCfg;
 
-		eglChooseConfig(eglDpy, configAttribs, &eglCfg, 1, &numConfigs);
+		eglChooseConfig(
+			m_eglDpy, configAttribs.data(), &m_eglCfg, 1, &numConfigs);
 		if (numConfigs != 1)
 		{
 			THROW_EXCEPTION_FMT(
@@ -195,28 +198,45 @@ CFBORender::CFBORender(
 		}
 
 		// 3. Create a surface
-		EGLSurface eglSurf =
-			eglCreatePbufferSurface(eglDpy, eglCfg, pbufferAttribs);
+		m_eglSurf = eglCreatePbufferSurface(m_eglDpy, m_eglCfg, pbufferAttribs);
 
 		// 4. Bind the API
-		if (!eglBindAPI(EGL_OPENGL_ES_API))
-		{ THROW_EXCEPTION("no opengl api in egl"); }
+		if (!eglBindAPI(
+				p.bindOpenGLES_API ? EGL_OPENGL_ES_API : EGL_OPENGL_API))
+		{
+			// error:
+			THROW_EXCEPTION("no opengl api in egl");
+		}
 
 		// 5. Create a context and make it current
-		eglBindAPI(EGL_OPENGL_API);
 
-		EGLContext eglCtx =
-			eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, NULL);
+		// clang-format off
+		std::vector<EGLint> ctxAttribs = {
+			EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+			EGL_CONTEXT_OPENGL_DEBUG, p.contextDebug ? EGL_TRUE: EGL_FALSE
+		};
+		// clang-format on
+		if (p.contextMajorVersion != 0 && p.contextMinorVersion != 0)
+		{
+			ctxAttribs.push_back(EGL_CONTEXT_MAJOR_VERSION);
+			ctxAttribs.push_back(p.contextMajorVersion);
+			ctxAttribs.push_back(EGL_CONTEXT_MINOR_VERSION);
+			ctxAttribs.push_back(p.contextMinorVersion);
+		}
+		ctxAttribs.push_back(EGL_NONE);
 
-		eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
+		m_eglContext = eglCreateContext(
+			m_eglDpy, m_eglCfg, EGL_NO_CONTEXT, ctxAttribs.data());
 
-		m_eglDpy = eglDpy;
+		ASSERT_(m_eglContext != EGL_NO_CONTEXT);
+
+		eglMakeCurrent(m_eglDpy, m_eglSurf, m_eglSurf, m_eglContext);
 	}
 
 	// -------------------------------
 	// Create frame buffer object:
 	// -------------------------------
-	m_fb.create(width, height);	 // TODO: Multisample doesn't work...
+	m_fb.create(p.width, p.height);	 // TODO: Multisample doesn't work...
 	const auto oldFB = m_fb.bind();
 
 	// -------------------------------
