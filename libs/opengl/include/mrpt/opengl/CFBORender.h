@@ -88,7 +88,7 @@ class CFBORender
 	}
 
 	/** Destructor */
-	virtual ~CFBORender();
+	~CFBORender();
 
 	/** Change the scene camera to be used when rendering the scene through this
 	 * particular instance of CFBORender. */
