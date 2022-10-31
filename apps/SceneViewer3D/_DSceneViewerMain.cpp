@@ -1874,7 +1874,12 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			std::string sH = std::string(ssH.mb_str());
 			const long height = atoi(sH.c_str());
 
-			CFBORender render(width, height, true /* skip Glut extra window */);
+			CFBORender::Parameters params;
+			params.width = width;
+			params.height = height;
+			params.create_EGL_context = false;	// dont, will reuse existing one
+
+			CFBORender render(params);
 			CImage frame(width, height, CH_RGB);
 
 			m_canvas->getOpenGLSceneRef()
