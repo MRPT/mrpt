@@ -20,7 +20,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/thread_name.h>
 
-#define USE_NANOGUI_WINDOW
+//#define USE_NANOGUI_WINDOW
 
 #ifdef USE_NANOGUI_WINDOW
 #include <mrpt/gui/CDisplayWindowGUI.h>
@@ -322,6 +322,7 @@ static void viz_thread()
 		std::cerr << "[viz_thread] Error:\n" << e.what() << std::endl;
 	}
 }
+#endif
 
 // ------------------------------------------------------
 //				TestMultithreadRendering
@@ -332,6 +333,7 @@ static int TestOffscreenRender()
 
 	std::vector<std::thread> allThreads;
 
+#ifdef USE_NANOGUI_WINDOW
 	{
 		// ==================================================================
 		//                         ** CRITICAL **
@@ -341,11 +343,10 @@ static int TestOffscreenRender()
 		// ==================================================================
 		mrpt::opengl::CFBORender render(10, 10);
 	}
+#endif
 
-#if 1
 	allThreads.emplace_back(&viz_thread);
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-#endif
 
 	allThreads.emplace_back(
 		&renderer_thread, "one", 5 /*period*/, 600 /*nImgs*/);
@@ -358,7 +359,6 @@ static int TestOffscreenRender()
 
 	return 0;
 }
-#endif
 
 // ------------------------------------------------------
 //						MAIN
