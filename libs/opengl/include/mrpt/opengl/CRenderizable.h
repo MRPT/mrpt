@@ -28,6 +28,10 @@
 #include <deque>
 #include <shared_mutex>
 
+#ifdef MRPT_OPENGL_PROFILER
+#include <mrpt/system/CTimeLogger.h>
+#endif
+
 namespace mrpt::opengl
 {
 /** The base class of 3D objects that can be directly rendered through OpenGL.
@@ -446,6 +450,10 @@ void processRenderQueue(
 	const RenderQueue& rq,
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
 	const mrpt::opengl::TLightParameters& lights);
+
+#ifdef MRPT_OPENGL_PROFILER
+mrpt::system::CTimeLogger& opengl_profiler();
+#endif
 
 /** @} */
 
