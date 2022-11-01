@@ -143,13 +143,6 @@ void CGlCanvasBase::resizeViewport(int w, int h)
 #endif
 }
 
-void CGlCanvasBase::clearColors()
-{
-#if MRPT_HAS_OPENGL_GLUT
-	glClearColor(clearColorR, clearColorG, clearColorB, clearColorA);
-#endif
-}
-
 void CGlCanvasBase::updatePan(CamaraParams& params, int x, int y) const
 {
 	float Ay = -(x - m_mouseClickX);
@@ -235,18 +228,7 @@ bool CGlCanvasBase::isCameraProjective() const
 
 void CGlCanvasBase::setCameraFOV(float FOV) { m_cameraParams.cameraFOV = FOV; }
 float CGlCanvasBase::cameraFOV() const { return m_cameraParams.cameraFOV; }
-void CGlCanvasBase::setClearColors(float r, float g, float b, float a)
-{
-	clearColorR = r;
-	clearColorG = g;
-	clearColorB = b;
-	clearColorA = a;
-}
 
-float CGlCanvasBase::getClearColorR() const { return clearColorR; }
-float CGlCanvasBase::getClearColorG() const { return clearColorG; }
-float CGlCanvasBase::getClearColorB() const { return clearColorB; }
-float CGlCanvasBase::getClearColorA() const { return clearColorA; }
 void CGlCanvasBase::setOpenGLSceneRef(COpenGLScene::Ptr scene)
 {
 	m_openGLScene = scene;
@@ -287,15 +269,8 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 		preRender();
 		CHECK_OPENGL_ERROR();
 
-		// Set static configs:
-		glEnable(GL_DEPTH_TEST);
-		CHECK_OPENGL_ERROR();
-
 		// Set the viewport
 		resizeViewport((GLsizei)width, (GLsizei)height);
-
-		// Set the background color:
-		clearColors();
 
 		if (m_openGLScene)
 		{

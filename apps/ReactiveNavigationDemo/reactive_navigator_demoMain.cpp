@@ -1043,8 +1043,6 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	gl_nd_gaps->setColor_u8(TColor(255, 0, 0));
 	openGLSceneRef->insert(gl_nd_gaps);
 
-	m_plotLocalView->setClearColors(0.9f, 0.9f, 0.9f);
-
 	// Set camera:
 	m_plotLocalView->setCameraPointing(0.0f, 0.0f, 0.0f);
 	m_plotLocalView->setZoomDistance(2.2f);

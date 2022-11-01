@@ -33,7 +33,6 @@ CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent)
 void CQtGlCanvasBase::initializeGL()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	clearColors();
 
 	QOpenGLWidget::initializeGL();
 #endif

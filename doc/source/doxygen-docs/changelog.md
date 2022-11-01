@@ -7,6 +7,8 @@
   - \ref mrpt_opengl_grp
     - All opengl shaders, objects, and renderers are now multithread capable, including rendering several FBOs in different threads.
     - mrpt::opengl::CFBORender constructor now takes a parameters struct making it much more configurable.
+  - \ref mrpt_gui_grp
+    - mrpt::gui OpenGL canvas windows and components no longer have a background color property. It is now always handled by the mrpt::opengl::COpenGLViewport to avoid duplicated functionalities.
   - \ref mrpt_system_grp
     - These functions are now thread-safe if built in a system with the `localtime_r()` variant of `localtime()`:
       - mrpt::system::timestampToParts()

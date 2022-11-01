@@ -56,7 +56,7 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_pressedPos(0, 0),
 	  m_lastPos(0, 0)
 {
-	setClearColors(1.0, 1.0, 1.0);
+	// setClearColors(1.0, 1.0, 1.0);
 	setMinimumZoom(1.0f);
 	setMaximumZoom(3200.0f);
 
@@ -264,7 +264,7 @@ void CGlWidget::setElevationDegrees(float ang)
 
 void CGlWidget::setBackgroundColor(float r, float g, float b, float a)
 {
-	setClearColors(r, g, b, a);
+	// setClearColors(r, g, b, a);
 
 	update();
 }
