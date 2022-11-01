@@ -26,6 +26,8 @@ if (CMAKE_MRPT_HAS_ASSIMP)
 	endif()
 endif ()
 
+option(MRPT_OPENGL_PROFILER OFF)
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
@@ -41,8 +43,12 @@ if(NOT BUILD_mrpt-opengl)
   return()
 endif()
 
+if (MRPT_OPENGL_PROFILER)
+	target_compile_definitions(opengl PRIVATE MRPT_OPENGL_PROFILER)
+endif()
+
 # https://developer.apple.com/macos/whats-new/#deprecationofopenglandopencl
-	if (APPLE)
+if (APPLE)
 	target_compile_definitions(opengl PRIVATE GL_SILENCE_DEPRECATION)
 endif()
 

@@ -261,16 +261,37 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 #if MRPT_HAS_OPENGL_GLUT
 	double At = 0.1;
 
+#ifdef MRPT_OPENGL_PROFILER
+	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "renderCanvas");
+#endif
+
 	try
 	{
 		const double t0 = mrpt::Clock::nowDouble();
+
+#ifdef MRPT_OPENGL_PROFILER
+		mrpt::system::CTimeLoggerEntry tle1(
+			opengl_profiler(), "renderCanvas.1_preRender");
+#endif
 
 		// Call PreRender user code:
 		preRender();
 		CHECK_OPENGL_ERROR();
 
+#ifdef MRPT_OPENGL_PROFILER
+		tle1.stop();
+		mrpt::system::CTimeLoggerEntry tle2(
+			opengl_profiler(), "renderCanvas.2_resizeViewport");
+#endif
+
 		// Set the viewport
 		resizeViewport((GLsizei)width, (GLsizei)height);
+
+#ifdef MRPT_OPENGL_PROFILER
+		tle2.stop();
+		mrpt::system::CTimeLoggerEntry tle3(
+			opengl_profiler(), "renderCanvas.3_renderScene");
+#endif
 
 		if (m_openGLScene)
 		{
@@ -297,12 +318,30 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 
 		}  // end if "m_openGLScene!=nullptr"
 
+#ifdef MRPT_OPENGL_PROFILER
+		tle3.stop();
+		mrpt::system::CTimeLoggerEntry tle4(
+			opengl_profiler(), "renderCanvas.4_postRender");
+#endif
+
 		postRender();
 
-		// Flush & swap buffers to disply new image:
-		glFinish();
+		// Swap buffers to disply new image:
+		// Was: glFinish();
+		// It's not actually required and we return from this function faster.
+
+#ifdef MRPT_OPENGL_PROFILER
+		tle4.stop();
+		mrpt::system::CTimeLoggerEntry tle5(
+			opengl_profiler(), "renderCanvas.5_swapBuffers");
+#endif
+
 		swapBuffers();
 		CHECK_OPENGL_ERROR();
+
+#ifdef MRPT_OPENGL_PROFILER
+		tle5.stop();
+#endif
 
 		const double t1 = mrpt::Clock::nowDouble();
 

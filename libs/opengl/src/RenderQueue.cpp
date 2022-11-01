@@ -34,6 +34,10 @@ void mrpt::opengl::enqueForRendering(
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	using mrpt::math::CMatrixDouble44;
 
+#ifdef MRPT_OPENGL_PROFILER
+	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "enqueForRendering");
+#endif
+
 	const char* curClassName = nullptr;
 	try
 	{
@@ -131,6 +135,10 @@ void mrpt::opengl::processRenderQueue(
 	const mrpt::opengl::TLightParameters& lights)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+
+#ifdef MRPT_OPENGL_PROFILER
+	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "processRenderQueue");
+#endif
 
 	for (const auto& rqSet : rq)
 	{

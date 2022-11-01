@@ -250,3 +250,11 @@ void CRenderizable::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
 	propertiesMap["location"] = getPose().asString();
 	propertiesMap["visible"] = m_visible;
 }
+
+#ifdef MRPT_OPENGL_PROFILER
+mrpt::system::CTimeLogger& mrpt::opengl::opengl_profiler()
+{
+	static mrpt::system::CTimeLogger tl;
+	return tl;
+}
+#endif

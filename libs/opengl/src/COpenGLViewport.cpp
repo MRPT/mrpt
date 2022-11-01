@@ -220,6 +220,11 @@ void COpenGLViewport::renderNormalSceneMode(
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
+#ifdef MRPT_OPENGL_PROFILER
+	mrpt::system::CTimeLoggerEntry tle(
+		opengl_profiler(), "COpenGLViewport.renderNormalSceneMode");
+#endif
+
 	// Prepare camera (projection matrix):
 	updateMatricesFromCamera(forceThisCamera);
 	auto& _ = m_threadedData.get().state;
@@ -422,6 +427,11 @@ void COpenGLViewport::render(
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
+
+#ifdef MRPT_OPENGL_PROFILER
+	mrpt::system::CTimeLoggerEntry tle(
+		opengl_profiler(), "COpenGLViewport.render");
+#endif
 
 	// Change viewport:
 	// -------------------------------------------
