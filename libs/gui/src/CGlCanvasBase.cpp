@@ -11,7 +11,6 @@
 //
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/opengl/opengl_api.h>
-#include <mrpt/system/CTicTac.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -40,7 +39,6 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace std;
-using mrpt::system::CTicTac;
 
 float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
@@ -279,11 +277,12 @@ float CGlCanvasBase::getCameraPointingZ() const
 double CGlCanvasBase::renderCanvas(int width, int height)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	CTicTac tictac;
 	double At = 0.1;
 
 	try
 	{
+		const double t0 = mrpt::Clock::nowDouble();
+
 		// Call PreRender user code:
 		preRender();
 		CHECK_OPENGL_ERROR();
@@ -318,8 +317,6 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 				}
 			}
 
-			tictac.Tic();
-
 			// Draw primitives:
 			m_openGLScene->render();
 
@@ -332,7 +329,9 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 		swapBuffers();
 		CHECK_OPENGL_ERROR();
 
-		At = tictac.Tac();
+		const double t1 = mrpt::Clock::nowDouble();
+
+		At = t1 - t0;
 	}
 	catch (const std::exception& e)
 	{
