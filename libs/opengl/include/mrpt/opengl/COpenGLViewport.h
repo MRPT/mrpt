@@ -213,11 +213,13 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * viewports.
 	 */
 	inline bool isTransparent() { return m_isTransparent; }
+
 	/** Set the transparency, that is, whether the viewport will be rendered
 	 * transparent over previous viewports (default=false).
 	 */
 	inline void setTransparent(bool trans) { m_isTransparent = trans; }
-	/** Set a background color different from that of the parent GUI window */
+
+	/** Defines the viewport background color */
 	inline void setCustomBackgroundColor(const mrpt::img::TColorf& color)
 	{
 		m_custom_backgb_color = true;
@@ -439,9 +441,12 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
 	/** The min/max clip depth distances (default: 0.1 - 10000) */
 	float m_clip_min = 0.1f, m_clip_max = 10000.0f;
-	bool m_custom_backgb_color{false};
+
+	/// Note MRPT 2.5.6: kept for backwards compat. Always true.
+	bool m_custom_backgb_color = true;
+
 	/** used only if m_custom_backgb_color */
-	mrpt::img::TColorf m_background_color = {0.6f, 0.6f, 0.6f};
+	mrpt::img::TColorf m_background_color = {0.4f, 0.4f, 0.4f};
 
 	/** The image to display, after calling \a setImageView() */
 	mrpt::opengl::CTexturedPlane::Ptr m_imageViewPlane;

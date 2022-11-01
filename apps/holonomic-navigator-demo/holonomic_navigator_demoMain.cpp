@@ -523,8 +523,6 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	gl_nd_gaps->setColor_u8(TColor(204, 102, 51));
 	openGLScanRef->insert(gl_nd_gaps);
 
-	m_plotScan->setClearColors(0.9f, 0.9f, 0.9f);
-
 	// Set camera:
 	m_plotScan->setCameraPointing(0.0f, 0.0f, 0.0f);
 	m_plotScan->setZoomDistance(2.2f);

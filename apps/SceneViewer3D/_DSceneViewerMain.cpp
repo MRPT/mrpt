@@ -1012,10 +1012,12 @@ void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
 {
 	wxColourData colourData;
 	wxColour color;
-	color.Set(
-		(int)(255 * m_canvas->getClearColorR()),
-		(int)(255 * m_canvas->getClearColorG()),
-		(int)(255 * m_canvas->getClearColorB()));
+
+	auto bkCol = m_canvas->getOpenGLSceneRef()
+					 ->getViewport()
+					 ->getCustomBackgroundColor();
+
+	color.Set((int)(255 * bkCol.R), (int)(255 * bkCol.G), (int)(255 * bkCol.B));
 
 	colourData.SetColour(color);
 	colourData.SetChooseFull(true);
@@ -1025,8 +1027,9 @@ void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
 	if (wxID_OK == colDial.ShowModal())
 	{
 		wxColour col = colDial.GetColourData().GetColour();
-		m_canvas->setClearColors(
-			col.Red() / 255.0f, col.Green() / 255.0f, col.Blue() / 255.0f);
+
+		m_canvas->getOpenGLSceneRef()->getViewport()->setCustomBackgroundColor(
+			{col.Red() / 255.0f, col.Green() / 255.0f, col.Blue() / 255.0f});
 
 		int w, h;
 		m_canvas->GetSize(&w, &h);
@@ -1881,12 +1884,6 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 
 			CFBORender render(params);
 			CImage frame(width, height, CH_RGB);
-
-			m_canvas->getOpenGLSceneRef()
-				->getViewport()
-				->setCustomBackgroundColor(
-					{m_canvas->getClearColorR(), m_canvas->getClearColorG(),
-					 m_canvas->getClearColorB(), 1.0});
 
 			// render the scene
 			render.render_RGB(*m_canvas->getOpenGLSceneRef(), frame);

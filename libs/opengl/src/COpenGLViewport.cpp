@@ -449,27 +449,14 @@ void COpenGLViewport::render(
 	{  // Clear color & depth buffers:
 		// Save?
 
-		GLclampf prevCol[4];
-		if (m_custom_backgb_color)
-		{
-			glGetFloatv(GL_COLOR_CLEAR_VALUE, prevCol);
-			CHECK_OPENGL_ERROR();
-			glClearColor(
-				m_background_color.R, m_background_color.G,
-				m_background_color.B, m_background_color.A);
-			CHECK_OPENGL_ERROR();
-		}
+		glClearColor(
+			m_background_color.R, m_background_color.G, m_background_color.B,
+			m_background_color.A);
+		CHECK_OPENGL_ERROR();
 
 		glClear(
 			GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		CHECK_OPENGL_ERROR();
-
-		// Restore old colors:
-		if (m_custom_backgb_color)
-		{
-			glClearColor(prevCol[0], prevCol[1], prevCol[2], prevCol[3]);
-			CHECK_OPENGL_ERROR();
-		}
 	}
 	else
 	{  // Clear depth buffer only:
@@ -586,6 +573,9 @@ void COpenGLViewport::serializeFrom(
 			{
 				m_custom_backgb_color = false;
 			}
+
+			// Change in MRPT 2.5.6
+			if (!m_custom_backgb_color) { m_custom_backgb_color = true; }
 
 			// Load objects:
 			uint32_t n;
