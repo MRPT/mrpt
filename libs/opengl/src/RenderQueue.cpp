@@ -91,32 +91,40 @@ void mrpt::opengl::enqueForRendering(
 			const float depth =
 				(lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
 
-			// Enqeue this object...
-			const auto lst_shaders = obj->requiredShaders();
-			for (const auto shader_id : lst_shaders)
+			// If the object is behind the camera, do not even enqeue for
+			// rendering:
+			MRPT_TODO("check for the bouding box!");
+			bool mayObjectBeVisible = lrp_proj(3) >= 0;
+
+			if (mayObjectBeVisible)
 			{
-				// eye-to-object depth:
-				rq[shader_id].emplace(depth, RenderQueueElement(obj, _));
+				// Enqeue this object...
+				const auto lst_shaders = obj->requiredShaders();
+				for (const auto shader_id : lst_shaders)
+				{
+					// eye-to-object depth:
+					rq[shader_id].emplace(depth, RenderQueueElement(obj, _));
+				}
+
+				if (obj->isShowNameEnabled())
+				{
+					CText& label = obj->labelObject();
+
+					// Update the label, only if it changed:
+					if (label.getString() != obj->getName())
+						label.setString(obj->getName());
+
+					// Regenerate opengl vertex buffers, if first time or label
+					// changed:
+					if (label.hasToUpdateBuffers()) label.updateBuffers();
+
+					rq[DefaultShaderID::TEXT].emplace(
+						depth, RenderQueueElement(&label, _));
+				}
 			}
 
 			// ...and its children:
 			obj->enqueForRenderRecursive(_, rq);
-
-			if (obj->isShowNameEnabled())
-			{
-				CText& label = obj->labelObject();
-
-				// Update the label, only if it changed:
-				if (label.getString() != obj->getName())
-					label.setString(obj->getName());
-
-				// Regenerate opengl vertex buffers, if first time or label
-				// changed:
-				if (label.hasToUpdateBuffers()) label.updateBuffers();
-
-				rq[DefaultShaderID::TEXT].emplace(
-					depth, RenderQueueElement(&label, _));
-			}
 
 		}  // end foreach object
 	}
