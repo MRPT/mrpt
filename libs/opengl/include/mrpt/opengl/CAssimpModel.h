@@ -151,6 +151,8 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		mrpt::opengl::internal::RenderElements& re);
 	void process_textures(const aiScene* scene);
 
+	void after_load_model();
+
 };	// namespace mrpt::opengl
 
 }  // namespace mrpt::opengl
