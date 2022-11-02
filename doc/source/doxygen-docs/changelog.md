@@ -19,6 +19,7 @@
 - BUG FIXES:
   - Fix build against latest version of EMSDK (Emscripten).
   - Fix wrong scaling of samples in mrpt::random::CRandomGenerator::drawGaussianMultivariate() and mrpt::random::CRandomGenerator::drawGaussianMultivariateMany()
+  - mrpt::opengl::CSetOfTexturedTriangles was not automatically registered in the mrpt::rtti system
 
 # Version 2.5.5: Released October 19th, 2022
 - Changes in applications:

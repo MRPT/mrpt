@@ -53,6 +53,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 	registerClass(CLASS_ID(CSetOfLines));
 	registerClass(CLASS_ID(CSetOfObjects));
 	registerClass(CLASS_ID(CSetOfTriangles));
+	registerClass(CLASS_ID(CSetOfTexturedTriangles));
 	registerClass(CLASS_ID(CSimpleLine));
 	registerClass(CLASS_ID(CSphere));
 	registerClass(CLASS_ID(CText));
