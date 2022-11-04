@@ -312,7 +312,7 @@ void CAssimpModel::serializeFrom(
 					ASSERT_(blobSize);
 					std::vector<uint8_t> buf(blobSize);
 					in.ReadBuffer(buf.data(), buf.size());
-
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
 					m_assimp_scene->scene =
 						m_assimp_scene->importer.ReadFileFromMemory(
 							buf.data(), buf.size(), 0 /*flags*/);
@@ -325,6 +325,10 @@ void CAssimpModel::serializeFrom(
 							m_modelPath.c_str(),
 							m_assimp_scene->importer.GetErrorString());
 					}
+#else
+					THROW_EXCEPTION(
+						"MRPT compiled without OpenGL and/or Assimp");
+#endif
 				}
 			}
 		}
