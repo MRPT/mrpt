@@ -58,7 +58,7 @@ jobs:
       #    choco install --verbose graphviz
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
 
       - name: Git submodule
         run: |
