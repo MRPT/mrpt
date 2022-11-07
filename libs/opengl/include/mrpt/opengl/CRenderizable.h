@@ -439,7 +439,8 @@ enum class TCullFace : uint8_t
  */
 void enqueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq);
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	RenderQueueStats* stats = nullptr);
 
 /** After enqueForRendering(), actually executes the rendering tasks, grouped
  * shader by shader.

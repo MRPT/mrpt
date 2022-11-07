@@ -46,4 +46,11 @@ struct RenderQueueElement
 using RenderQueue =
 	std::map<shader_id_t, std::multimap<float, RenderQueueElement>>;
 
+struct RenderQueueStats
+{
+	RenderQueueStats() = default;
+
+	size_t numObjTotal = 0, numObjRendered = 0;
+};
+
 }  // namespace mrpt::opengl
