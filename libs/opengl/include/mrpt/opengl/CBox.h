@@ -55,7 +55,7 @@ class CBox : public CRenderizableShaderTriangles,
 	}
 	/** @} */
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	/**
 	 * Ray tracing.

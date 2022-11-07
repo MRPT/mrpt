@@ -769,22 +769,16 @@ void CRenderizableShaderTexturedTriangles::releaseTextureName(
 	TextureResourceHandler::Instance().releaseTextureID(t.name, t.unit);
 }
 
-const mrpt::math::TBoundingBox
+const mrpt::math::TBoundingBoxf
 	CRenderizableShaderTexturedTriangles::trianglesBoundingBox() const
 {
-	mrpt::math::TBoundingBox bb;
+	mrpt::math::TBoundingBoxf bb;
 
 	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	if (m_triangles.empty()) return bb;
 
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& t : m_triangles)
 	{

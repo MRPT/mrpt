@@ -196,9 +196,10 @@ void CVectorField2D::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CVectorField2D::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CVectorField2D::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return verticesBoundingBox().compose(m_pose);
+	return verticesBoundingBox();
 }
 
 void CVectorField2D::adjustVectorFieldToGrid()

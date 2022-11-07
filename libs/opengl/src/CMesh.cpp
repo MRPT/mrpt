@@ -76,6 +76,8 @@ void CMesh::updateTriangles() const
 	const auto cols = Z.cols();
 	const auto rows = Z.rows();
 
+	m_zMin = m_zMax = 0;
+
 	actualMesh.clear();
 	if (cols == 0 && rows == 0) return;	 // empty mesh
 
@@ -104,6 +106,9 @@ void CMesh::updateTriangles() const
 	const float sCellY = (m_yMax - m_yMin) / (cols - 1);
 
 	mrpt::opengl::TTriangle tri;
+
+	m_zMin = std::numeric_limits<float>::max();
+	m_zMax = -std::numeric_limits<float>::max();
 
 	for (int iX = 0; iX < rows - 1; iX++)
 		for (int iY = 0; iY < cols - 1; iY++)
@@ -193,6 +198,13 @@ void CMesh::updateTriangles() const
 				// Add triangle:
 				actualMesh.emplace_back(tri, tvi);
 
+				// ... and update z bbox:
+				for (int i = 0; i < 3; i++)
+				{
+					mrpt::keep_min(m_zMin, tri.z(i));
+					mrpt::keep_max(m_zMax, tri.z(i));
+				}
+
 				// For averaging normals:
 				for (unsigned long k : tvi.vind)
 				{
@@ -274,6 +286,13 @@ void CMesh::updateTriangles() const
 				// Add triangle:
 				actualMesh.emplace_back(tri, tvi);
 
+				// ... and update z bbox:
+				for (int i = 0; i < 3; i++)
+				{
+					mrpt::keep_min(m_zMin, tri.z(i));
+					mrpt::keep_max(m_zMax, tri.z(i));
+				}
+
 				// For averaging normals:
 				for (unsigned long k : tvi.vind)
 				{
@@ -347,6 +366,8 @@ void CMesh::onUpdateBuffers_Wireframe()
 			cbd.emplace_back(t.r(k1), t.g(k1), t.b(k1), t.a(k1));
 		}
 	}
+
+	notifyBBoxChange();
 }
 
 void CMesh::onUpdateBuffers_TexturedTriangles()
@@ -383,6 +404,8 @@ void CMesh::onUpdateBuffers_TexturedTriangles()
 
 		tris.emplace_back(std::move(tri));
 	}
+
+	notifyBBoxChange();
 }
 
 /*---------------------------------------------------------------
@@ -609,9 +632,10 @@ void CMesh::updatePolygons() const
 	CRenderizable::notifyChange();
 }
 
-auto CMesh::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CMesh::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return trianglesBoundingBox().compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{m_xMin, m_yMin, m_zMin}, {m_xMax, m_yMax, m_zMax});
 }
 
 void CMesh::adjustGridToImageAR()

@@ -231,8 +231,7 @@ void CColorBar::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CColorBar::getBoundingBox() const -> mrpt::math::TBoundingBox
+mrpt::math::TBoundingBoxf CColorBar::internalBoundingBoxLocal() const
 {
-	return mrpt::math::TBoundingBox({0, 0, 0}, {m_width, m_height, .0})
-		.compose(m_pose);
+	return {{.0f, .0f, .0f}, {d2f(m_width), d2f(m_height), .0f}};
 }

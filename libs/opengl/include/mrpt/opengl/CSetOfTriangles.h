@@ -128,7 +128,7 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	CSetOfTriangles() = default;
 	virtual ~CSetOfTriangles() override = default;

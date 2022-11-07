@@ -111,7 +111,7 @@ class CFrustum : public CRenderizableShaderTriangles,
 	float getVertFOVUp() const { return mrpt::RAD2DEG(m_fov_vert_up); }
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	/** Basic empty constructor. Set all parameters to default. */
 	CFrustum();

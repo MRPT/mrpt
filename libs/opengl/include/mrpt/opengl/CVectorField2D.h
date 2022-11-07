@@ -219,7 +219,7 @@ class CVectorField2D : public CRenderizableShaderPoints,
 	 */
 	inline size_t rows() const { return xcomp.rows(); }
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	void enableAntiAliasing(bool enable = true)
 	{

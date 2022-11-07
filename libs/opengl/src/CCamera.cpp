@@ -65,9 +65,9 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 }
 
 /** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
-auto CCamera::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CCamera::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox::PlusMinusInfinity();
+	return mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 }
 
 void CCamera::toYAMLMap(mrpt::containers::yaml& p) const

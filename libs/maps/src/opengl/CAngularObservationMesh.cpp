@@ -63,7 +63,11 @@ void CAngularObservationMesh::addTriangle(
 void CAngularObservationMesh::updateMesh() const
 {
 	CRenderizable::notifyChange();
+	updateMeshImpl();
+}
 
+void CAngularObservationMesh::updateMeshImpl() const
+{
 	size_t numRows = scanSet.size();
 	triangles.clear();
 	if (numRows <= 1)
@@ -426,9 +430,9 @@ void CAngularObservationMesh::generateSetOfTriangles(
 		triangles.begin(), triangles.end(), res.begin(), createFromTriangle);
 }
 
-auto CAngularObservationMesh::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CAngularObservationMesh::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	if (!meshUpToDate) updateMesh();
-
-	return trianglesBoundingBox().compose(m_pose);
+	updateMeshImpl();
+	return trianglesBoundingBox();
 }

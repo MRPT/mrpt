@@ -93,8 +93,7 @@ void CGridPlaneXY::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CGridPlaneXY::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CGridPlaneXY::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox({m_xMin, m_yMin, 0}, {m_xMax, m_yMax, 0})
-		.compose(m_pose);
+	return {{m_xMin, m_yMin, 0}, {m_xMax, m_yMax, 0}};
 }

@@ -238,9 +238,16 @@ void CFrustum::setVertFOVAsymmetric(
 	CRenderizable::notifyChange();
 }
 
-auto CFrustum::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CFrustum::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return trianglesBoundingBox().compose(m_pose);
+	std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();
+
+	auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+
+	for (const auto& pt : pts)
+		bb.updateWithPoint(pt);
+
+	return bb;
 }
 
 CFrustum::CFrustum(const mrpt::img::TCamera& i, double focalScale)

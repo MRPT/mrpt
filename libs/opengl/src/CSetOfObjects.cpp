@@ -256,23 +256,22 @@ CRenderizable::Ptr CSetOfObjects::getByName(const string& str)
 	return CRenderizable::Ptr();
 }
 
-/** Evaluates the bounding box of this object (including possible children) in
- * the coordinate frame of the object parent. */
-auto CSetOfObjects::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSetOfObjects::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	mrpt::math::TBoundingBox bb;
+	mrpt::math::TBoundingBoxf bb;
 	bool first = true;
 
 	for (const auto& o : m_objects)
 	{
 		if (first)
 		{
-			bb = o->getBoundingBox();
+			bb = o->getBoundingBoxLocalf();
 			first = false;
 		}
 		else
-			bb.unionWith(o->getBoundingBox());
+			bb.unionWith(o->getBoundingBoxLocalf());
 	}
 
-	return bb.compose(m_pose);
+	return bb;
 }

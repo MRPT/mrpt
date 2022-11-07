@@ -143,7 +143,7 @@ class CPolyhedron : public CRenderizableShaderWireFrame,
    public:
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	// Static methods to create frequent polyhedra. More bizarre polyhedra are
 	// intended to be added in a near future.

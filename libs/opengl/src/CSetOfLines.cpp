@@ -178,17 +178,9 @@ void CSetOfLines::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CSetOfLines::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSetOfLines::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	mrpt::math::TBoundingBox bb;
-
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& s : m_Segments)
 	{
@@ -203,8 +195,7 @@ auto CSetOfLines::getBoundingBox() const -> mrpt::math::TBoundingBox
 		}
 	}
 
-	// Convert to coordinates of my parent:
-	return bb.compose(m_pose);
+	return bb;
 }
 
 void CSetOfLines::getLineByIndex(

@@ -258,3 +258,24 @@ mrpt::system::CTimeLogger& mrpt::opengl::opengl_profiler()
 	return tl;
 }
 #endif
+
+auto CRenderizable::getBoundingBoxLocalf() const -> mrpt::math::TBoundingBoxf
+{
+	if (!m_cachedLocalBBox)
+	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_cachedLocalBBox = internalBoundingBoxLocal();
+		return m_cachedLocalBBox.value();
+	}
+	else
+	{
+		std::shared_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		return m_cachedLocalBBox.value();
+	}
+}
+
+auto CRenderizable::getBoundingBoxLocal() const -> mrpt::math::TBoundingBox
+{
+	const auto& bb = getBoundingBoxLocalf();
+	return {bb.min.cast<double>(), bb.max.cast<double>()};
+}
