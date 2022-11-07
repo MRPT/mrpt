@@ -185,7 +185,7 @@ void CTexturedPlane::updatePoly() const
 
 auto CTexturedPlane::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
-	return mrpt::math::TBoundingBox(
+	return mrpt::math::TBoundingBox::FromUnsortedPoints(
 			   mrpt::math::TPoint3D(m_xMin, m_yMin, 0),
 			   mrpt::math::TPoint3D(m_xMax, m_yMax, 0))
 		.compose(m_pose);
