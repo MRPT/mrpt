@@ -46,11 +46,22 @@ struct RenderQueueElement
 using RenderQueue =
 	std::map<shader_id_t, std::multimap<float, RenderQueueElement>>;
 
+/** Stats for the rendering queue
+ * \ingroup mrpt_opengl_grp
+ */
 struct RenderQueueStats
 {
 	RenderQueueStats() = default;
 
 	size_t numObjTotal = 0, numObjRendered = 0;
 };
+
+/** Computes the eye-view depth of an object, and whether any part of its
+ * bounding box is visible by the camera in the current state.
+ *
+ * \ingroup mrpt_opengl_grp
+ */
+std::tuple<double, bool> depthAndVisibleInView(
+	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& state);
 
 }  // namespace mrpt::opengl
