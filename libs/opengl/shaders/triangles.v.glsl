@@ -9,11 +9,11 @@ in vec3 position;
 in vec4 vertexColor;
 in vec3 vertexNormal;
 
-uniform highp mat4 p_matrix;
-uniform highp mat4 mv_matrix;
+uniform mediump mat4 p_matrix;
+uniform mediump mat4 mv_matrix;
 
-out highp vec3 frag_position, frag_normal;
-out highp vec4 frag_materialColor;
+out mediump vec3 frag_position, frag_normal;
+out mediump vec4 frag_materialColor;
 
 void main()
 {
