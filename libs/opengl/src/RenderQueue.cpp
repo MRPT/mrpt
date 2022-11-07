@@ -26,6 +26,46 @@ using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
 
+// Returns the
+std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
+	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& _)
+{
+	// Get a representative depth for this object (to sort objects from
+	// eye-distance):
+	const mrpt::math::TPoint3Df lrp = obj->getLocalRepresentativePoint();
+
+	const Eigen::Vector4f lrp_hm(lrp.x, lrp.y, lrp.z, 1.0f);
+	const auto lrp_proj = (_.pmv_matrix.asEigen() * lrp_hm).eval();
+	const float depth = (lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
+
+	// If the object is behind the camera, do not even enqeue for
+	// rendering:
+	bool visible = lrp_proj(3) > 0;
+
+	if (lrp_proj(3) > 0)
+	{
+		// (U,V) normalized screen coordinates:
+		//
+		// +----------------------+
+		// |(-1,+1)        (+1,+1)|
+		// |                      |
+		// |                      |
+		// |                      |
+		// |(-1,-1)        (+1,-1)|
+		// +----------------------+
+		//
+		const auto projUV = mrpt::math::TPoint2D(
+			lrp_proj(0) / lrp_proj(3), lrp_proj(1) / lrp_proj(3));
+
+		visible =
+			projUV.x >= -1 && projUV.x <= 1 && projUV.y >= -1 && projUV.y < 1;
+
+		MRPT_TODO("check for the bouding box!");
+	}
+
+	return {depth, visible};
+}
+
 // Render a set of objects
 void mrpt::opengl::enqueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
@@ -88,21 +128,9 @@ void mrpt::opengl::enqueForRendering(
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
-			// Get a representative depth for this object (to sort objects from
-			// eye-distance):
-			mrpt::math::TPoint3Df lrp = obj->getLocalRepresentativePoint();
+			const auto [depth, withinView] = depthAndVisibleInView(obj, _);
 
-			Eigen::Vector4f lrp_hm(lrp.x, lrp.y, lrp.z, 1.0f);
-			const auto lrp_proj = (_.pmv_matrix.asEigen() * lrp_hm).eval();
-			const float depth =
-				(lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
-
-			// If the object is behind the camera, do not even enqeue for
-			// rendering:
-			MRPT_TODO("check for the bouding box!");
-			bool mayObjectBeVisible = lrp_proj(3) >= 0;
-
-			if (mayObjectBeVisible)
+			if (withinView)
 			{
 #ifdef MRPT_OPENGL_PROFILER
 				if (stats) stats->numObjRendered++;
