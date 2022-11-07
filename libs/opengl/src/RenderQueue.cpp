@@ -26,40 +26,75 @@ using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
 
+// (U,V) normalized screen coordinates:
+//
+// +----------------------+
+// |(-1,+1)        (+1,+1)|
+// |                      |
+// |                      |
+// |                      |
+// |(-1,-1)        (+1,-1)|
+// +----------------------+
+//
+static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
+	const mrpt::math::TPoint3Df& localPt,
+	const mrpt::opengl::TRenderMatrices& objState)
+{
+	const Eigen::Vector4f lrp_hm(localPt.x, localPt.y, localPt.z, 1.0f);
+	const auto lrp_proj = (objState.pmv_matrix.asEigen() * lrp_hm).eval();
+
+	const float depth = (lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
+
+	const auto uv = (lrp_proj(3) != 0)
+		? mrpt::math::TPoint2Df(
+			  lrp_proj(0) / lrp_proj(3), lrp_proj(1) / lrp_proj(3))
+		: mrpt::math::TPoint2Df(.001f, .001f);
+
+	return {uv, depth};
+}
+
 std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
-	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& _)
+	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState,
+	const mrpt::opengl::TRenderMatrices& parentState)
 {
 	// Get a representative depth for this object (to sort objects from
 	// eye-distance):
 	const mrpt::math::TPoint3Df lrp = obj->getLocalRepresentativePoint();
 
-	const Eigen::Vector4f lrp_hm(lrp.x, lrp.y, lrp.z, 1.0f);
-	const auto lrp_proj = (_.pmv_matrix.asEigen() * lrp_hm).eval();
-	const float depth = (lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
+	const auto [lrpUV, depth] = projectToScreenCoordsAndDepth(lrp, objState);
 
-	// If the object is behind the camera, do not even enqeue for
-	// rendering.
-	bool visible = lrp_proj(3) > 0;
+	// If the object is outside of the camera frustrum, do not even send it for
+	// rendering:
+	// NOTE! bbox It's in the parent frame of coordinates:
+	const auto bbox = obj->getBoundingBox();
 
-	if (lrp_proj(3) > 0)
+	const mrpt::math::TPoint3Df ends[2] = {bbox.min, bbox.max};
+
+	// for each of the 8 corners:
+	bool visible = false;
+	int idx = 0;
+	for (int ix = 0; !visible && ix < 2; ix++)
 	{
-		// (U,V) normalized screen coordinates:
-		//
-		// +----------------------+
-		// |(-1,+1)        (+1,+1)|
-		// |                      |
-		// |                      |
-		// |                      |
-		// |(-1,-1)        (+1,-1)|
-		// +----------------------+
-		//
-		const auto projUV = mrpt::math::TPoint2D(
-			lrp_proj(0) / lrp_proj(3), lrp_proj(1) / lrp_proj(3));
+		const float x = ends[ix].x;
+		for (int iy = 0; !visible && iy < 2; iy++)
+		{
+			const float y = ends[iy].y;
+			for (int iz = 0; !visible && iz < 2; iz++, idx++)
+			{
+				const float z = ends[iz].z;
 
-		visible =
-			projUV.x >= -1 && projUV.x <= 1 && projUV.y >= -1 && projUV.y < 1;
+				const auto [uv, bboxDepth] =
+					projectToScreenCoordsAndDepth({x, y, z}, parentState);
 
-		MRPT_TODO("check for the bouding box!");
+				const bool inside =
+					uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1;
+				if (inside)
+				{
+					visible = true;
+					break;
+				}
+			}
+		}
 	}
 
 	return {depth, visible};
@@ -127,7 +162,8 @@ void mrpt::opengl::enqueForRendering(
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
-			const auto [depth, withinView] = depthAndVisibleInView(obj, _);
+			const auto [depth, withinView] =
+				depthAndVisibleInView(obj, _, state);
 
 			if (withinView)
 			{

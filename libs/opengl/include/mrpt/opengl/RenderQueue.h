@@ -62,6 +62,7 @@ struct RenderQueueStats
  * \ingroup mrpt_opengl_grp
  */
 std::tuple<double, bool> depthAndVisibleInView(
-	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& state);
+	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState,
+	const TRenderMatrices& parentState);
 
 }  // namespace mrpt::opengl
