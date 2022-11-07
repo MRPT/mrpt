@@ -77,9 +77,10 @@ TEST(clock, checkSynchEpoch)
 		// but we set the threshold much higher due to spurious errors
 		// when running unit tests in VMs (build farms)
 #if MRPT_IN_EMSCRIPTEN
-		const int64_t errLimit = 1000000;  // We are running on Javascript!
+		const int64_t errLimit = 1000 * 1000;  // We are running on Javascript!
 #else
-		const int64_t errLimit = 70000;	 // We are running on Javascript!
+		// normally much smaller, but for busy build servers
+		const int64_t errLimit = 90 * 1000;
 #endif
 
 		EXPECT_LT(std::abs(err), errLimit);
