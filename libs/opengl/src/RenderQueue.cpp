@@ -26,7 +26,6 @@ using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
 
-// Returns the
 std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& _)
 {
@@ -39,7 +38,7 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	const float depth = (lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
 
 	// If the object is behind the camera, do not even enqeue for
-	// rendering:
+	// rendering.
 	bool visible = lrp_proj(3) > 0;
 
 	if (lrp_proj(3) > 0)
