@@ -70,7 +70,7 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_trianglesMtx;
 
 	/** Returns the bounding box of m_triangles, or (0,0,0)-(0,0,0) if empty. */
-	const mrpt::math::TBoundingBox trianglesBoundingBox() const;
+	const mrpt::math::TBoundingBoxf trianglesBoundingBox() const;
 
 	void params_serialize(mrpt::serialization::CArchive& out) const;
 	void params_deserialize(mrpt::serialization::CArchive& in);

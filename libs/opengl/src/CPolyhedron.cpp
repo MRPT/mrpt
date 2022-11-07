@@ -1944,9 +1944,12 @@ void CPolyhedron::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CPolyhedron::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CPolyhedron::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox({0, 0, 0}, {0, 0, 0}).compose(m_pose);
+	auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+	for (const auto& pt : m_Vertices)
+		bb.updateWithPoint(pt);
+	return bb;
 }
 
 /*CPolyhedron::Ptr CPolyhedron::CreateCuboctahedron(double radius)	{

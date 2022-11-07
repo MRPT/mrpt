@@ -117,7 +117,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	/* Simulation of ray-trace. */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	struct TInfoPerTexture
 	{

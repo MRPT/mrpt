@@ -256,7 +256,7 @@ void CMeshFast::setZ(const mrpt::math::CMatrixDynamic<float>& in_Z)
 	CRenderizable::notifyChange();
 }
 
-auto CMeshFast::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CMeshFast::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return verticesBoundingBox().compose(m_pose);
+	return verticesBoundingBox();
 }

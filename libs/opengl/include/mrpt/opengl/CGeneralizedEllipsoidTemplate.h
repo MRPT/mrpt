@@ -105,9 +105,6 @@ class CGeneralizedEllipsoidTemplate
 				mrpt::keep_min(m_bb_min[k], m_render_pts[i][k]);
 				mrpt::keep_max(m_bb_max[k], m_render_pts[i][k]);
 			}
-		// Convert to coordinates of my parent:
-		m_pose.composePoint(m_bb_min, m_bb_min);
-		m_pose.composePoint(m_bb_max, m_bb_max);
 
 		CRenderizableShaderTriangles::renderUpdateBuffers();
 		CRenderizableShaderWireFrame::renderUpdateBuffers();
@@ -229,13 +226,6 @@ class CGeneralizedEllipsoidTemplate
 		CRenderizable::notifyChange();
 	}
 
-	/** Evaluates the bounding box of this object (including possible
-	 * children) in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBox getBoundingBox() const override
-	{
-		return mrpt::math::TBoundingBox(m_bb_min, m_bb_max).compose(m_pose);
-	}
-
 	/** Ray tracing  */
 	virtual bool traceRay(
 		[[maybe_unused]] const mrpt::poses::CPose3D& o,
@@ -264,6 +254,8 @@ class CGeneralizedEllipsoidTemplate
 	float m_quantiles{3.f};
 	/** Number of segments in 2D/3D ellipsoids (default=20) */
 	uint32_t m_numSegments{20};
+
+	/// bounding boxes, in object local coordinates
 	mutable mrpt::math::TPoint3D m_bb_min{0, 0, 0}, m_bb_max{0, 0, 0};
 
 	/** If set to "true", a whole ellipsoid surface will be drawn, or
@@ -313,6 +305,11 @@ class CGeneralizedEllipsoidTemplate
 
 	void implUpdate_Wireframe();
 	void implUpdate_Triangles();
+
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override
+	{
+		return {m_bb_min, m_bb_max};
+	}
 
    public:
 	// Solve virtual public inheritance ambiguity:

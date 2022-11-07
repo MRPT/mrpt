@@ -141,23 +141,17 @@ void CRenderizableShaderPoints::params_deserialize(
 	};
 }
 
-const mrpt::math::TBoundingBox CRenderizableShaderPoints::verticesBoundingBox()
+const mrpt::math::TBoundingBoxf CRenderizableShaderPoints::verticesBoundingBox()
 	const
 {
 	std::shared_lock<std::shared_mutex> wfReadLock(
 		CRenderizableShaderPoints::m_pointsMtx.data);
 
-	mrpt::math::TBoundingBox bb;
+	mrpt::math::TBoundingBoxf bb;
 
 	if (m_vertex_buffer_data.empty()) return bb;
 
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& p : m_vertex_buffer_data)
 	{

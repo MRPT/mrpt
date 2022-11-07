@@ -93,8 +93,7 @@ void CGridPlaneXZ::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CGridPlaneXZ::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CGridPlaneXZ::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox({m_xMin, 0, m_zMin}, {m_xMax, 0, m_zMax})
-		.compose(m_pose);
+	return {{m_xMin, 0, m_zMin}, {m_xMax, 0, m_zMax}};
 }

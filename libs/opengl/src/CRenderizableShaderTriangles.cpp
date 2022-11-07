@@ -156,23 +156,17 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 #endif
 }
 
-const mrpt::math::TBoundingBox
-	CRenderizableShaderTriangles::trianglesBoundingBox() const
+const math::TBoundingBoxf CRenderizableShaderTriangles::trianglesBoundingBox()
+	const
 {
-	mrpt::math::TBoundingBox bb;
+	mrpt::math::TBoundingBoxf bb;
 
 	std::shared_lock<std::shared_mutex> trisReadLock(
 		CRenderizableShaderTriangles::m_trianglesMtx.data);
 
 	if (shaderTrianglesBuffer().empty()) return bb;
 
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& t : shaderTrianglesBuffer())
 	{

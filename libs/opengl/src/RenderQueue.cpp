@@ -43,7 +43,8 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 	const Eigen::Vector4f lrp_hm(localPt.x, localPt.y, localPt.z, 1.0f);
 	const auto lrp_proj = (objState.pmv_matrix.asEigen() * lrp_hm).eval();
 
-	const float depth = (lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
+	const float depth =
+		(lrp_proj(3) != 0) ? lrp_proj(2) / std::abs(lrp_proj(3)) : .001f;
 
 	const auto uv = (lrp_proj(3) != 0)
 		? mrpt::math::TPoint2Df(
@@ -54,37 +55,50 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 }
 
 std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
-	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState,
-	const mrpt::opengl::TRenderMatrices& parentState)
+	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState)
 {
+	// This profiler has a too-high impact. Only for very ^low-level debugging.
+	/*#ifdef MRPT_OPENGL_PROFILER
+		mrpt::system::CTimeLoggerEntry tle(
+			opengl_profiler(), "depthAndVisibleInView");
+	#endif*/
+
 	// Get a representative depth for this object (to sort objects from
 	// eye-distance):
 	const mrpt::math::TPoint3Df lrp = obj->getLocalRepresentativePoint();
 
 	const auto [lrpUV, depth] = projectToScreenCoordsAndDepth(lrp, objState);
 
-	// If the object is outside of the camera frustrum, do not even send it for
-	// rendering:
-	// NOTE! bbox It's in the parent frame of coordinates:
-	const auto bbox = obj->getBoundingBox();
+	// If the object is outside of the camera frustrum, do not even send
+	// it for rendering:
+	// bbox is in local object frame of reference.
+	/*#ifdef MRPT_OPENGL_PROFILER
+		mrpt::system::CTimeLoggerEntry tle2(
+			opengl_profiler(), "depthAndVisibleInView.bbox");
+	#endif*/
+	const auto bbox = obj->getBoundingBoxLocalf();
+	/*#ifdef MRPT_OPENGL_PROFILER
+		tle2.stop();
+	#endif*/
 
 	const mrpt::math::TPoint3Df ends[2] = {bbox.min, bbox.max};
 
 	// for each of the 8 corners:
 	bool visible = false;
-	int idx = 0;
+	bool anyNorth = false, anySouth = false, anyEast = false, anyWest = false;
+
 	for (int ix = 0; !visible && ix < 2; ix++)
 	{
 		const float x = ends[ix].x;
 		for (int iy = 0; !visible && iy < 2; iy++)
 		{
 			const float y = ends[iy].y;
-			for (int iz = 0; !visible && iz < 2; iz++, idx++)
+			for (int iz = 0; !visible && iz < 2; iz++)
 			{
 				const float z = ends[iz].z;
 
 				const auto [uv, bboxDepth] =
-					projectToScreenCoordsAndDepth({x, y, z}, parentState);
+					projectToScreenCoordsAndDepth({x, y, z}, objState);
 
 				const bool inside =
 					uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1;
@@ -93,8 +107,21 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 					visible = true;
 					break;
 				}
+				if (uv.x < -1) anyWest = true;
+				if (uv.x > +1) anyEast = true;
+				if (uv.y < -1) anySouth = true;
+				if (uv.y > +1) anyNorth = true;
 			}
 		}
+	}
+
+	// if we already had *any* bbox corner inside the frustrum, it's visible.
+	// if not, *but* the corners are in opposed sides of the frustrum, then the
+	// (central part of the) object may be still visible:
+	if (!visible)
+	{
+		// This is still a bit conservative, but easy to check:
+		if ((anyWest && anyEast) || (anyNorth && anySouth)) visible = true;
 	}
 
 	return {depth, visible};
@@ -151,8 +178,8 @@ void mrpt::opengl::enqueForRendering(
 				HM.asEigen() = HM.asEigen() * scale.asEigen();
 			}
 
-			// Make a copy of rendering state, so we always have the original
-			// version of my parent intact.
+			// Make a copy of rendering state, so we always have the
+			// original version of my parent intact.
 			auto _ = state;
 
 			// Compose relative to my parent pose:
@@ -162,8 +189,7 @@ void mrpt::opengl::enqueForRendering(
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
-			const auto [depth, withinView] =
-				depthAndVisibleInView(obj, _, state);
+			const auto [depth, withinView] = depthAndVisibleInView(obj, _);
 
 			if (withinView)
 			{
@@ -187,8 +213,8 @@ void mrpt::opengl::enqueForRendering(
 					if (label.getString() != obj->getName())
 						label.setString(obj->getName());
 
-					// Regenerate opengl vertex buffers, if first time or label
-					// changed:
+					// Regenerate opengl vertex buffers, if first time or
+					// label changed:
 					if (label.hasToUpdateBuffers()) label.updateBuffers();
 
 					rq[DefaultShaderID::TEXT].emplace(

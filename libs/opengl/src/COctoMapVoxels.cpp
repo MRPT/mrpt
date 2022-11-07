@@ -312,9 +312,10 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-auto COctoMapVoxels::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto COctoMapVoxels::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(m_bb_min, m_bb_max).compose(m_pose);
+	return {m_bb_min, m_bb_max};
 }
 
 bool sort_voxels_z(

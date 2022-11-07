@@ -326,9 +326,12 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void notifyChange() const
 	{
 		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_cachedLocalBBox.reset();
 		const_cast<CRenderizable&>(*this).m_state.run_on_all(
 			[](auto& state) { state.outdatedBuffers = true; });
 	}
+
+	void notifyBBoxChange() const { m_cachedLocalBBox.reset(); }
 
 	/** Returns whether notifyChange() has been invoked since the last call
 	 * to renderUpdateBuffers(), meaning the latter needs to be called again
@@ -348,8 +351,25 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const;
 
 	/** Evaluates the bounding box of this object (including possible
-	 * children) in the coordinate frame of the object parent. */
-	virtual auto getBoundingBox() const -> mrpt::math::TBoundingBox = 0;
+	 * children) in the coordinate frame of my parent object,
+	 * i.e. if this object pose changes, the bbox returned here will change too.
+	 * This is in contrast with the local bbox returned by getBoundingBoxLocal()
+	 */
+	auto getBoundingBox() const -> mrpt::math::TBoundingBox
+	{
+		return getBoundingBoxLocal().compose(m_pose);
+	}
+
+	/** Evaluates the bounding box of this object (including possible
+	 * children) in the coordinate frame of my parent object,
+	 * i.e. if this object pose changes, the bbox returned here will change too.
+	 * This is in contrast with the local bbox returned by getBoundingBoxLocal()
+	 */
+	auto getBoundingBoxLocal() const -> mrpt::math::TBoundingBox;
+
+	/// \overload Fastest method, returning a copy of the float version of
+	/// the bbox. const refs are not returned for multi-thread safety.
+	auto getBoundingBoxLocalf() const -> mrpt::math::TBoundingBoxf;
 
 	[[deprecated(
 		"Use getBoundingBox() const -> mrpt::math::TBoundingBox instead.")]]  //
@@ -391,6 +411,15 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
 
+	/** Must be implemented by derived classes to provide the updated bounding
+	 * box in the object local frame of coordinates.
+	 * This will be called only once after each time the derived class reports
+	 * to notifyChange() that the object geometry changed.
+	 *
+	 * \sa getBoundingBox(), getBoundingBoxLocal(), getBoundingBoxLocalf()
+	 */
+	virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const = 0;
+
 	struct State
 	{
 		bool outdatedBuffers = true;
@@ -399,6 +428,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_stateMtx;
 
 	mrpt::math::TPoint3Df m_representativePoint{0, 0, 0};
+
+	mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedLocalBBox;
 
 	/** Optional pointer to a mrpt::opengl::CText */
 	mutable std::shared_ptr<mrpt::opengl::CText> m_label_obj;

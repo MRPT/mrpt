@@ -173,7 +173,7 @@ class CMesh : public CRenderizableShaderTexturedTriangles,
 		CRenderizable::notifyChange();
 	}
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	/** Assigns a texture image.
 	 */
@@ -233,6 +233,8 @@ class CMesh : public CRenderizableShaderTexturedTriangles,
 
 	/** Mesh bounds */
 	float m_xMin, m_xMax, m_yMin, m_yMax;
+
+	mutable float m_zMin = 0, m_zMax = 0;  //!< Updated in updateTriangles()
 
 	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_meshDataMtx;
 

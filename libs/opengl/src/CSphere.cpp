@@ -85,10 +85,10 @@ bool CSphere::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 		return false;
 }
 
-auto CSphere::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSphere::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	const double R = m_radius;
-	return mrpt::math::TBoundingBox({-R, -R, -R}, {R, R, R}).compose(m_pose);
+	const float R = m_radius;
+	return {{-R, -R, -R}, {R, R, R}};
 }
 
 void CSphere::renderUpdateBuffers() const

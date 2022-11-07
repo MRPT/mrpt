@@ -285,9 +285,8 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	return fnd;
 }
 
-auto CCylinder::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CCylinder::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	const double R = std::max(m_baseRadius, m_topRadius);
-	return mrpt::math::TBoundingBox({-R, -R, 0}, {R, R, m_height})
-		.compose(m_pose);
+	const float R = std::max(m_baseRadius, m_topRadius);
+	return {{-R, -R, 0}, {R, R, m_height}};
 }

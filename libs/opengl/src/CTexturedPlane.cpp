@@ -183,10 +183,9 @@ void CTexturedPlane::updatePoly() const
 	polygonUpToDate = true;
 }
 
-auto CTexturedPlane::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CTexturedPlane::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox::FromUnsortedPoints(
-			   mrpt::math::TPoint3D(m_xMin, m_yMin, 0),
-			   mrpt::math::TPoint3D(m_xMax, m_yMax, 0))
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{m_xMin, m_yMin, 0.f}, {m_xMax, m_yMax, 0.f});
 }

@@ -154,7 +154,7 @@ class CMeshFast : public CRenderizableShaderPoints
 		CRenderizable::notifyChange();
 	}
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	/** Assigns a texture image, and disable transparency.
 	 */

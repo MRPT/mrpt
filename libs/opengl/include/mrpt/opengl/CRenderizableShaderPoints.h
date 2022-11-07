@@ -111,7 +111,7 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 
 	/** Returns the bounding box of m_vertex_buffer_data, or (0,0,0)-(0,0,0) if
 	 * empty. */
-	const mrpt::math::TBoundingBox verticesBoundingBox() const;
+	const mrpt::math::TBoundingBoxf verticesBoundingBox() const;
 
 	float m_pointSize = 1.0f;
 	bool m_variablePointSize = true;
