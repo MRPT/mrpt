@@ -29,7 +29,8 @@ using namespace mrpt::opengl;
 // Render a set of objects
 void mrpt::opengl::enqueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq)
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	RenderQueueStats* stats)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	using mrpt::math::CMatrixDouble44;
@@ -44,6 +45,11 @@ void mrpt::opengl::enqueForRendering(
 		for (const auto& objPtr : objs)
 		{
 			if (!objPtr) continue;
+
+#ifdef MRPT_OPENGL_PROFILER
+			if (stats) stats->numObjTotal++;
+#endif
+
 			// Use plain pointers, faster than smart pointers:
 			const CRenderizable* obj = objPtr.get();
 			// Save class name: just in case we have an exception, for error
@@ -98,6 +104,10 @@ void mrpt::opengl::enqueForRendering(
 
 			if (mayObjectBeVisible)
 			{
+#ifdef MRPT_OPENGL_PROFILER
+				if (stats) stats->numObjRendered++;
+#endif
+
 				// Enqeue this object...
 				const auto lst_shaders = obj->requiredShaders();
 				for (const auto shader_id : lst_shaders)
@@ -134,6 +144,7 @@ void mrpt::opengl::enqueForRendering(
 			"Exception while rendering class '%s':\n%s",
 			curClassName ? curClassName : "(undefined)", e.what());
 	}
+
 #endif
 }
 

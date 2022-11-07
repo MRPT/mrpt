@@ -285,11 +285,24 @@ void COpenGLViewport::renderNormalSceneMode(
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueForRendering(*objectsToRender, _, rq);
+	mrpt::opengl::RenderQueueStats rqStats;
+	mrpt::opengl::enqueForRendering(*objectsToRender, _, rq, &rqStats);
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(
 		rq, m_threadedData.get().shaders, m_lights);
+
+#ifdef MRPT_OPENGL_PROFILER
+	opengl_profiler().registerUserMeasure(
+		"render.totalObjects", rqStats.numObjTotal);
+	opengl_profiler().registerUserMeasure(
+		"render.numObjRendered", rqStats.numObjRendered);
+	opengl_profiler().registerUserMeasure(
+		"render.ObjRenderedPercent",
+		rqStats.numObjTotal != 0
+			? 100.0 * rqStats.numObjRendered / rqStats.numObjTotal
+			: 0);
+#endif
 
 	MRPT_END
 
