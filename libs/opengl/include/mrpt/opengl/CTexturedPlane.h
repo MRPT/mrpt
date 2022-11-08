@@ -15,7 +15,9 @@
 namespace mrpt::opengl
 {
 /** A 2D plane in the XY plane with a texture image.
- *  Lighting is disabled by default in this class.
+ *  Lighting is disabled in this class, so the plane color or texture will be
+ *  independent of its orientation.
+ *
  *  \sa opengl::COpenGLScene
  * \ingroup mrpt_opengl_grp
  */
@@ -43,7 +45,8 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles,
 	virtual shader_list_t requiredShaders() const override
 	{
 		return {
-			DefaultShaderID::TRIANGLES, DefaultShaderID::TEXTURED_TRIANGLES};
+			DefaultShaderID::TRIANGLES_NO_LIGHT,
+			DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT};
 	}
 	void freeOpenGLResources() override
 	{

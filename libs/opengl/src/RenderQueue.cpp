@@ -256,6 +256,11 @@ void mrpt::opengl::processRenderQueue(
 		glUseProgram(shader.programId());
 		CHECK_OPENGL_ERROR();
 
+		CRenderizable::RenderContext rc;
+		rc.shader = &shader;
+		rc.shader_id = rqSet.first;
+		rc.lights = &lights;
+
 		// Process all objects using this shader:
 		const auto& rqMap = rqSet.second;
 
@@ -266,24 +271,22 @@ void mrpt::opengl::processRenderQueue(
 
 			// Load matrices in shader:
 			const auto IS_TRANSPOSED = GL_TRUE;
-			glUniformMatrix4fv(
-				shader.uniformId("p_matrix"), 1, IS_TRANSPOSED,
-				rqe.renderState.p_matrix.data());
+			if (shader.hasUniform("p_matrix"))
+				glUniformMatrix4fv(
+					shader.uniformId("p_matrix"), 1, IS_TRANSPOSED,
+					rqe.renderState.p_matrix.data());
 
-			glUniformMatrix4fv(
-				shader.uniformId("mv_matrix"), 1, IS_TRANSPOSED,
-				rqe.renderState.mv_matrix.data());
+			if (shader.hasUniform("mv_matrix"))
+				glUniformMatrix4fv(
+					shader.uniformId("mv_matrix"), 1, IS_TRANSPOSED,
+					rqe.renderState.mv_matrix.data());
 
 			if (shader.hasUniform("pmv_matrix"))
 				glUniformMatrix4fv(
 					shader.uniformId("pmv_matrix"), 1, IS_TRANSPOSED,
 					rqe.renderState.pmv_matrix.data());
 
-			CRenderizable::RenderContext rc;
-			rc.shader = &shader;
-			rc.shader_id = rqSet.first;
 			rc.state = &rqe.renderState;
-			rc.lights = &lights;
 
 			// Render object:
 			ASSERT_(rqe.object != nullptr);

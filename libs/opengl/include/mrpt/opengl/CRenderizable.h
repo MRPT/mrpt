@@ -297,6 +297,9 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		const mrpt::opengl::TLightParameters* lights = nullptr;
 
 		mutable std::optional<TCullFace> activeCullFace;
+		mutable std::optional<const mrpt::opengl::TLightParameters*>
+			activeLights;
+		mutable std::optional<int> activeTextureUnit;
 	};
 
 	/** Implements the rendering of 3D objects in each class derived from

@@ -321,7 +321,7 @@ void CMesh::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TEXTURED_TRIANGLES:
+		case DefaultShaderID::TEXTURED_TRIANGLES_LIGHT:
 			if (!m_isWireFrame)
 				CRenderizableShaderTexturedTriangles::render(rc);
 			break;

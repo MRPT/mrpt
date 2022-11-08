@@ -46,7 +46,7 @@ void COctoMapVoxels::render(const RenderContext& rc) const
 		case DefaultShaderID::POINTS:
 			if (m_showVoxelsAsPoints) CRenderizableShaderPoints::render(rc);
 			break;
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (!m_showVoxelsAsPoints) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
