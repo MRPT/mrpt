@@ -266,17 +266,17 @@ void COpenGLViewport::renderNormalSceneMode(
 	glHint(
 		GL_POLYGON_SMOOTH_HINT,
 		m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
 	// Regular depth model:
 	// 0: far, 1: near
 	// -------------------------------
 	glEnable(GL_DEPTH_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glDepthFunc(GL_LEQUAL);	 // GL_LESS
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -284,7 +284,7 @@ void COpenGLViewport::renderNormalSceneMode(
 // Enable point sizes>1
 #if !defined(__EMSCRIPTEN__) && defined(GL_PROGRAM_POINT_SIZE)	// OSX undef?
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
 	// Pass 1: Process all objects (recursively for sets of objects):
@@ -382,11 +382,11 @@ void COpenGLViewport::renderTextMessages() const
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Text messages should always be visible on top the rest:
 	glDisable(GL_DEPTH_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Collect all 2D text objects, and update their properties:
 	CListOpenGLObjects objs;
@@ -458,7 +458,7 @@ void COpenGLViewport::render(
 	const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
 
 	glViewport(vx, vy, vw, vh);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Clear depth&/color buffers:
 	// -------------------------------------------
@@ -467,10 +467,10 @@ void COpenGLViewport::render(
 	_.viewport_height = vh;
 
 	glScissor(vx, vy, vw, vh);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glEnable(GL_SCISSOR_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (!m_isTransparent)
 	{  // Clear color & depth buffers:
@@ -479,19 +479,19 @@ void COpenGLViewport::render(
 		glClearColor(
 			m_background_color.R, m_background_color.G, m_background_color.B,
 			m_background_color.A);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		glClear(
 			GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	else
 	{  // Clear depth buffer only:
 		glClear(GL_DEPTH_BUFFER_BIT);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	glDisable(GL_SCISSOR_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Prepare shaders upon first invokation:
 	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();

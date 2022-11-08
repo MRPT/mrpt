@@ -95,7 +95,7 @@ void COpenGLScene::render() const
 	// window:
 	GLint win_dims[4];
 	glGetIntegerv(GL_VIEWPORT, win_dims);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	for (const auto& m_viewport : m_viewports)
 		m_viewport->render(win_dims[2], win_dims[3]);

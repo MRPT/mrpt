@@ -290,10 +290,7 @@ void mrpt::opengl::processRenderQueue(
 
 			// Render object:
 			ASSERT_(rqe.object != nullptr);
-			{
-				rqe.object->render(rc);
-				CHECK_OPENGL_ERROR();
-			}
+			rqe.object->render(rc);
 		}
 	}
 

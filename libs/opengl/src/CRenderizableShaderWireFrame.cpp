@@ -63,7 +63,7 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 
 #if !defined(__EMSCRIPTEN__)
 	glEnable(GL_LINE_SMOOTH);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
 	// Set up the vertex array:
@@ -82,7 +82,7 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the color array:
@@ -100,15 +100,15 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_color) glDisableVertexAttribArray(*attr_color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 }
 

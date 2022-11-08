@@ -65,7 +65,7 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 
 #if !defined(__EMSCRIPTEN__)
 	glEnable(GL_LINE_SMOOTH);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
 	std::shared_lock<std::shared_mutex> readLock(m_textDataMtx.data);
@@ -90,7 +90,7 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the color array:
@@ -107,13 +107,13 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	if (attr_position)
 	{
 		glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	if (attr_position)
@@ -127,7 +127,7 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 			GL_FALSE, /* normalized? */
 			sizeof(TTriangle::Vertex), /* stride */
 			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		if (attr_color)
 		{
@@ -140,18 +140,18 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 				GL_TRUE, /* normalized? */
 				sizeof(TTriangle::Vertex), /* stride */
 				BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.r)));
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 		}
 
 		// normals array: not used to render text
 
 		// Draw:
 		glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_color) glDisableVertexAttribArray(*attr_color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 }
