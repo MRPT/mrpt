@@ -149,8 +149,8 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	// CPose's line intersection is SLOWER than the used method.
 }
 
-auto CDisk::getBoundingBox() const -> mrpt::math::TBoundingBox
+mrpt::math::TBoundingBoxf CDisk::internalBoundingBoxLocal() const
 {
-	const double R = std::max(m_radiusIn, m_radiusOut);
-	return mrpt::math::TBoundingBox({-R, -R, 0}, {R, R, .0}).compose(m_pose);
+	const float R = std::max(m_radiusIn, m_radiusOut);
+	return {{-R, -R, 0}, {R, R, .0}};
 }

@@ -182,9 +182,10 @@ void CSetOfTriangles::updatePolygons() const
 	CRenderizable::notifyChange();
 }
 
-auto CSetOfTriangles::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSetOfTriangles::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return trianglesBoundingBox().compose(m_pose);
+	return trianglesBoundingBox();
 }
 
 void CSetOfTriangles::insertTriangles(const CSetOfTriangles::Ptr& p)

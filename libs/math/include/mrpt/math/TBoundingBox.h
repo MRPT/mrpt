@@ -62,6 +62,25 @@ struct TBoundingBox_
 		return {{i, i, i}, {-i, -i, -i}, CTOR_FLAGS::AllowUnordered};
 	}
 
+	/** Construct a bounding box from two points, by selecting their minimum and
+	 * maximum (x,y,z) coordinates, so the point coordinates do not need to be
+	 * already sorted by the user as one being the minimum and maximum corners.
+	 * \note (New in MRPT 2.5.6)
+	 */
+	static TBoundingBox_<T> FromUnsortedPoints(
+		const mrpt::math::TPoint3D_<T>& pt1,
+		const mrpt::math::TPoint3D_<T>& pt2)
+	{
+		TBoundingBox_<T> r;
+		r.min.x = std::min(pt1.x, pt2.x);
+		r.min.y = std::min(pt1.y, pt2.y);
+		r.min.z = std::min(pt1.z, pt2.z);
+		r.max.x = std::max(pt1.x, pt2.x);
+		r.max.y = std::max(pt1.y, pt2.y);
+		r.max.z = std::max(pt1.z, pt2.z);
+		return r;
+	}
+
 	/** Returns the volume of the box */
 	T volume() const
 	{
@@ -138,7 +157,8 @@ struct TBoundingBox_
 	template <typename POSE_T>
 	TBoundingBox_<T> compose(const POSE_T& pose) const
 	{
-		return {pose.composePoint(min), pose.composePoint(max)};
+		return FromUnsortedPoints(
+			pose.composePoint(min), pose.composePoint(max));
 	}
 
 	/** Returns a new bounding box, transforming `this` from global coordinates
@@ -156,7 +176,8 @@ struct TBoundingBox_
 	template <typename POSE_T>
 	TBoundingBox_<T> inverseCompose(const POSE_T& pose) const
 	{
-		return {pose.inverseComposePoint(min), pose.inverseComposePoint(max)};
+		return FromUnsortedPoints(
+			pose.inverseComposePoint(min), pose.inverseComposePoint(max));
 	}
 
 	/** Print bounding box as a string with format

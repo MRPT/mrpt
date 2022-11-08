@@ -192,7 +192,7 @@ void CMesh3D::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (m_showFaces) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -269,6 +269,8 @@ void CMesh3D::onUpdateBuffers_Triangles()
 
 	for (auto& t : tris)
 		t.setColor(face_color);
+
+	notifyBBoxChange();
 }
 void CMesh3D::onUpdateBuffers_Points()
 {
@@ -322,7 +324,7 @@ void CMesh3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-auto CMesh3D::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CMesh3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return trianglesBoundingBox().compose(m_pose);
+	return trianglesBoundingBox();
 }

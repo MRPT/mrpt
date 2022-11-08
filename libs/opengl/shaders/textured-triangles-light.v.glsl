@@ -6,22 +6,23 @@ R"XXX(#version 300 es
 
 
 in vec3 position;
-in vec4 vertexColor;
+in vec2 vertexUV;
 in vec3 vertexNormal;
 
-uniform highp mat4 p_matrix;
-uniform highp mat4 mv_matrix;
+uniform mediump mat4 p_matrix;
+uniform mediump mat4 mv_matrix;
 
-out highp vec3 frag_position, frag_normal;
-out highp vec4 frag_materialColor;
+out mediump vec3 frag_position, frag_normal;
+out mediump vec2 frag_UV; // Interpolated UV texture coords
 
 void main()
 {
+    frag_UV = vertexUV;
+
     mediump vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
-
     frag_position = eye_position.xyz;
-    frag_materialColor = vertexColor;
     frag_normal   = (mv_matrix * vec4(normalize(vertexNormal), 0.0)).xyz;
 }
+
 )XXX"

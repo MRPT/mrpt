@@ -4,11 +4,15 @@ R"XXX(#version 300 es
 // Jose Luis Blanco Claraco (C) 2019-2020
 // Part of the MRPT project
 
-in mediump vec4 frag_color;
+uniform mediump sampler2D textureSampler;
+
+in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
+
 out mediump vec4 color;
 
 void main()
 {
-    color = frag_color;
+    color = texture( textureSampler, frag_UV );
 }
+
 )XXX"

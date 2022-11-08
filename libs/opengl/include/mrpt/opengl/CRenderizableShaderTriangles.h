@@ -34,7 +34,9 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 
 	virtual shader_list_t requiredShaders() const override
 	{
-		return {DefaultShaderID::TRIANGLES};
+		return {
+			m_enableLight ? DefaultShaderID::TRIANGLES_LIGHT
+						  : DefaultShaderID::TRIANGLES_NO_LIGHT};
 	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
@@ -54,7 +56,10 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	void enableLight(bool enable = true) { m_enableLight = enable; }
 
 	/** Control whether to render the FRONT, BACK, or BOTH (default) set of
-	 * faces. Refer to docs for glCullFace() */
+	 * faces. Refer to docs for glCullFace().
+	 * Example: If set to `cullFaces(TCullFace::BACK);`, back faces will not be
+	 * drawn ("culled")
+	 */
 	void cullFaces(const TCullFace& cf) { m_cullface = cf; }
 	TCullFace cullFaces() const { return m_cullface; }
 
@@ -70,7 +75,7 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_trianglesMtx;
 
 	/** Returns the bounding box of m_triangles, or (0,0,0)-(0,0,0) if empty. */
-	const mrpt::math::TBoundingBox trianglesBoundingBox() const;
+	const mrpt::math::TBoundingBoxf trianglesBoundingBox() const;
 
 	void params_serialize(mrpt::serialization::CArchive& out) const;
 	void params_deserialize(mrpt::serialization::CArchive& in);

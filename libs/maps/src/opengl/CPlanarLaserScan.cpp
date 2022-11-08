@@ -29,7 +29,7 @@ void CPlanarLaserScan::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			if (m_enable_surface) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -195,7 +195,8 @@ void CPlanarLaserScan::serializeFrom(
 	};
 }
 
-auto CPlanarLaserScan::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CPlanarLaserScan::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
 	// Load into cache:
 	if (!m_cache_valid)
@@ -211,18 +212,12 @@ auto CPlanarLaserScan::getBoundingBox() const -> mrpt::math::TBoundingBox
 	size_t n;
 	const float *x, *y, *z;
 
-	mrpt::math::TBoundingBox bb;
+	mrpt::math::TBoundingBoxf bb;
 
 	m_cache_points.getPointsBuffer(n, x, y, z);
 	if (!n || !x) return bb;
 
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (size_t i = 0; i < n; i++)
 	{
@@ -234,8 +229,7 @@ auto CPlanarLaserScan::getBoundingBox() const -> mrpt::math::TBoundingBox
 		keep_max(bb.max.z, z[i]);
 	}
 
-	// Convert to coordinates of my parent:
-	return bb.compose(m_pose);
+	return bb;
 }
 
 mrpt::math::TPoint3Df CPlanarLaserScan::getLocalRepresentativePoint() const

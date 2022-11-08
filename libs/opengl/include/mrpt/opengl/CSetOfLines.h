@@ -222,7 +222,7 @@ class CSetOfLines : public CRenderizableShaderWireFrame,
 	inline const_reverse_iterator rend() const { return m_Segments.rend(); }
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	void enableAntiAliasing(bool enable = true)
 	{

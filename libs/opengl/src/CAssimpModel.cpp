@@ -171,7 +171,7 @@ void CAssimpModel::render(const RenderContext& rc) const
 		case DefaultShaderID::POINTS:
 			CRenderizableShaderPoints::render(rc);
 			break;
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -420,9 +420,9 @@ void CAssimpModel::after_load_model()
 #endif
 }
 
-auto CAssimpModel::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CAssimpModel::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(m_bbox_min, m_bbox_max).compose(m_pose);
+	return {m_bbox_min, m_bbox_max};
 }
 
 bool CAssimpModel::traceRay(

@@ -274,12 +274,14 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 		}
 	};
 
-	auto getBoundingBox() const -> mrpt::math::TBoundingBox override;
+	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
    protected:
 	/** Updates the mesh, if needed. It's a const method, but modifies mutable
 	 * content. */
 	void updateMesh() const;
+	void updateMeshImpl() const;
+
 	/** Actual set of triangles to be displayed. */
 	mutable std::vector<mrpt::opengl::TTriangle> triangles;
 	/** Internal method to add a triangle to the mutable mesh. */
@@ -352,7 +354,7 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT};
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;

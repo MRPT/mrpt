@@ -34,6 +34,20 @@
 
 namespace mrpt::opengl
 {
+/** Enum for cull face modes in triangle-based shaders.
+ *  \sa CRenderizableShaderTriangles, CRenderizableShaderTexturedTriangles
+ *  \ingroup mrpt_opengl_grp
+ */
+enum class TCullFace : uint8_t
+{
+	/** The default: culls none, so all front and back faces are visible. */
+	NONE = 0,
+	/** Skip back faces (those that are NOT seen in the CCW direction) */
+	BACK,
+	/** Skip front faces (those that ARE seen in the CCW direction) */
+	FRONT
+};
+
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
@@ -281,6 +295,11 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		const mrpt::opengl::Program* shader = nullptr;
 		mrpt::opengl::shader_id_t shader_id;
 		const mrpt::opengl::TLightParameters* lights = nullptr;
+
+		mutable std::optional<TCullFace> activeCullFace;
+		mutable std::optional<const mrpt::opengl::TLightParameters*>
+			activeLights;
+		mutable std::optional<int> activeTextureUnit;
 	};
 
 	/** Implements the rendering of 3D objects in each class derived from
@@ -326,9 +345,12 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void notifyChange() const
 	{
 		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_cachedLocalBBox.reset();
 		const_cast<CRenderizable&>(*this).m_state.run_on_all(
 			[](auto& state) { state.outdatedBuffers = true; });
 	}
+
+	void notifyBBoxChange() const { m_cachedLocalBBox.reset(); }
 
 	/** Returns whether notifyChange() has been invoked since the last call
 	 * to renderUpdateBuffers(), meaning the latter needs to be called again
@@ -348,8 +370,25 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const;
 
 	/** Evaluates the bounding box of this object (including possible
-	 * children) in the coordinate frame of the object parent. */
-	virtual auto getBoundingBox() const -> mrpt::math::TBoundingBox = 0;
+	 * children) in the coordinate frame of my parent object,
+	 * i.e. if this object pose changes, the bbox returned here will change too.
+	 * This is in contrast with the local bbox returned by getBoundingBoxLocal()
+	 */
+	auto getBoundingBox() const -> mrpt::math::TBoundingBox
+	{
+		return getBoundingBoxLocal().compose(m_pose);
+	}
+
+	/** Evaluates the bounding box of this object (including possible
+	 * children) in the coordinate frame of my parent object,
+	 * i.e. if this object pose changes, the bbox returned here will change too.
+	 * This is in contrast with the local bbox returned by getBoundingBoxLocal()
+	 */
+	auto getBoundingBoxLocal() const -> mrpt::math::TBoundingBox;
+
+	/// \overload Fastest method, returning a copy of the float version of
+	/// the bbox. const refs are not returned for multi-thread safety.
+	auto getBoundingBoxLocalf() const -> mrpt::math::TBoundingBoxf;
 
 	[[deprecated(
 		"Use getBoundingBox() const -> mrpt::math::TBoundingBox instead.")]]  //
@@ -391,6 +430,15 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
 
+	/** Must be implemented by derived classes to provide the updated bounding
+	 * box in the object local frame of coordinates.
+	 * This will be called only once after each time the derived class reports
+	 * to notifyChange() that the object geometry changed.
+	 *
+	 * \sa getBoundingBox(), getBoundingBoxLocal(), getBoundingBoxLocalf()
+	 */
+	virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const = 0;
+
 	struct State
 	{
 		bool outdatedBuffers = true;
@@ -400,26 +448,14 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	mrpt::math::TPoint3Df m_representativePoint{0, 0, 0};
 
+	mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedLocalBBox;
+
 	/** Optional pointer to a mrpt::opengl::CText */
 	mutable std::shared_ptr<mrpt::opengl::CText> m_label_obj;
 };
 
 /** A list of smart pointers to renderizable objects */
 using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
-
-/** Enum for cull face modes in triangle-based shaders.
- *  \sa CRenderizableShaderTriangles, CRenderizableShaderTexturedTriangles
- *  \ingroup mrpt_opengl_grp
- */
-enum class TCullFace : uint8_t
-{
-	/** The default: culls none, so all front and back faces are visible. */
-	NONE = 0,
-	/** Skip back faces (those that are NOT seen in the CCW direction) */
-	BACK,
-	/** Skip front faces (those that ARE seen in the CCW direction) */
-	FRONT
-};
 
 /** @name Miscellaneous rendering methods
 @{ */
@@ -439,7 +475,8 @@ enum class TCullFace : uint8_t
  */
 void enqueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq);
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	RenderQueueStats* stats = nullptr);
 
 /** After enqueForRendering(), actually executes the rendering tasks, grouped
  * shader by shader.

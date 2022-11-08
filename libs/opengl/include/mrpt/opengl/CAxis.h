@@ -63,7 +63,7 @@ class CAxis : public CRenderizableShaderWireFrame
 	void setTickMarksLength(float len);
 	float getTickMarksLength(float len) { return m_markLen; }
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
    protected:
 	float m_xmin, m_ymin, m_zmin;

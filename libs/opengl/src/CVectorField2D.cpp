@@ -42,7 +42,7 @@ void CVectorField2D::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -196,9 +196,10 @@ void CVectorField2D::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CVectorField2D::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CVectorField2D::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return verticesBoundingBox().compose(m_pose);
+	return verticesBoundingBox();
 }
 
 void CVectorField2D::adjustVectorFieldToGrid()
