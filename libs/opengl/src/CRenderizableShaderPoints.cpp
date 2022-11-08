@@ -89,7 +89,7 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the color array:
@@ -107,15 +107,15 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	glDrawArrays(GL_POINTS, 0, m_vertex_buffer_data.size());
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_color) glDisableVertexAttribArray(*attr_color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 }
 

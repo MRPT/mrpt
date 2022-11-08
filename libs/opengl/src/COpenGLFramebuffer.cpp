@@ -57,64 +57,65 @@ void COpenGLFramebuffer::RAII_Impl::create(
 
 	// Render buffer: RGB
 	glGenRenderbuffers(1, &_.m_Color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 	glBindRenderbuffer(GL_RENDERBUFFER, _.m_Color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (nSamples <= 1)
 	{
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, _.m_width, _.m_height);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	else
 	{
 		glRenderbufferStorageMultisample(
 			GL_RENDERBUFFER, nSamples, GL_RGBA8, _.m_width, _.m_height);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Render buffer: DEPTH
 	glGenRenderbuffers(1, &_.m_Depth);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 	glBindRenderbuffer(GL_RENDERBUFFER, _.m_Depth);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (nSamples <= 1)
 	{
 		glRenderbufferStorage(
 			GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _.m_width, _.m_height);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	else
 	{
 		glRenderbufferStorageMultisample(
 			GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, _.m_width,
 			_.m_height);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Frame buffer:
 	glGenFramebuffers(1, &_.m_Framebuffer);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindFramebuffer(GL_FRAMEBUFFER, _.m_Framebuffer);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glFramebufferRenderbuffer(
 		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _.m_Color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glFramebufferRenderbuffer(
 		GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _.m_Depth);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glFramebufferRenderbuffer(
 		GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _.m_Depth);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	CHECK_OPENGL_ERROR();
 
@@ -141,9 +142,9 @@ void COpenGLFramebuffer::RAII_Impl::destroy()
 	unbind();
 
 	glDeleteRenderbuffers(1, &_.m_Color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 	glDeleteRenderbuffers(1, &_.m_Depth);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 	glDeleteFramebuffers(1, &_.m_Framebuffer);
 	CHECK_OPENGL_ERROR();
 #endif
@@ -160,11 +161,11 @@ FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
 	auto& _ = m_state.get();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, _.m_Framebuffer);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 	if (_.m_Samples > 1)
 	{
 		glEnable(GL_MULTISAMPLE);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	return ids;

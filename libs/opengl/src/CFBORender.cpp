@@ -243,20 +243,20 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
 	// Create texture:
 	// -------------------------------
 	glGenTextures(1, &m_texRGB);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glBindTexture(GL_TEXTURE_2D, m_texRGB);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glTexImage2D(
 		GL_TEXTURE_2D, 0, GL_RGB, m_fb.width(), m_fb.height(), 0, GL_RGB,
 		GL_UNSIGNED_BYTE, nullptr);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// bind this texture to the current framebuffer obj. as color_attachement_0
 	glFramebufferTexture2D(
@@ -316,14 +316,14 @@ void CFBORender::internal_render_RGBD(
 
 	// change viewport size (in pixels)
 	glViewport(0, 0, m_fb.width(), m_fb.height());
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindTexture(GL_TEXTURE_2D, m_texRGB);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glEnable(GL_DEPTH_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// ---------------------------
 	// Render:
