@@ -84,8 +84,8 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 
 	// for each of the 8 corners:
 	bool visible = false;
-	bool quadrants[3][3] = {
-		{false, false, false}, {false, false, false}, {false, false, false}};
+	bool quadrants[9] = {false, false, false, false, false,
+						 false, false, false, false};
 
 	// dont go thru the (min,max) dimensions of one axis if it's negligible:
 	const auto diag = bbox.max - bbox.min;
@@ -110,25 +110,18 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 			{
 				const float z = ends[iz].z;
 
-				const auto [uv, bboxDepth] =
+				auto [uv, bboxDepth] =
 					projectToScreenCoordsAndDepth({x, y, z}, objState);
 
-				const bool goodDepth = bboxDepth > .0f && bboxDepth < 1.0f;
+				const bool goodDepth = bboxDepth > -1.0f && bboxDepth < 1.0f;
 				anyGoodDepth = anyGoodDepth | goodDepth;
 
-				if (std::string(obj->GetRuntimeClass()->className) ==
-					"mrpt::opengl::CGridPlaneXY")
-				{
-					std::cout << "obj: " << mrpt::format("%p ", ((void*)obj))
-							  << obj->GetRuntimeClass()->className
-							  << " uv: " << uv << " (ix,iy,iz)=" << ix << ","
-							  << iy << "," << iz << " bboxDepth: " << bboxDepth
-							  << "\n";
-				}
+				if (!goodDepth)	 // continue;
+					uv *= -1.0;
 
 				const bool inside =
 					uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1;
-				if (inside && goodDepth)
+				if (inside)
 				{
 					visible = true;
 					break;
@@ -136,7 +129,7 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 				// quadrants:
 				int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
 				int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
-				quadrants[qx][qy] = true;
+				quadrants[qx + 3 * qy] = true;
 			}
 		}
 	}
@@ -146,27 +139,66 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	// (central part of the) object may be still visible:
 	if (!visible)
 	{
-		const auto& q = quadrants;
-		if ((q[0][0] && (q[2][1] || q[2][2])) ||  //
-			(q[0][1] && (q[2][0] || q[2][1] || q[2][2])) ||	 //
-			(q[0][2] && (q[2][0] || q[2][1])) ||  //
-			(q[0][0] && (q[1][2] || q[2][2])) ||  //
-			(q[0][2] && (q[1][0] || q[2][0])) ||  //
-			(q[0][1] && (q[2][1] || q[1][0] || q[1][2])) ||	 //
-			(q[2][1] && (q[0][1] || q[1][0] || q[1][0]))  //
-		)
+		using Bools3x3_bits = uint32_t;
+		constexpr Bools3x3_bits quadPairs[9] = {
+			// clang-format off
+			// 0:
+			(0b011 << 6) |
+			(0b011 << 3) |
+			(0b000 << 0),
+			// 1:
+			(0b111 << 6) |
+			(0b111 << 3) |
+			(0b000 << 0),
+			// 2:
+			(0b110 << 6) |
+			(0b110 << 3) |
+			(0b000 << 0),
+			// 3:
+			(0b011 << 6) |
+			(0b011 << 3) |
+			(0b011 << 0),
+			// 4:
+			(0b111 << 6) |
+			(0b101 << 3) |
+			(0b111 << 0),
+			// 5:
+			(0b110 << 6) |
+			(0b110 << 3) |
+			(0b110 << 0),
+			// 6:
+			(0b000 << 6) |
+			(0b011 << 3) |
+			(0b011 << 0),
+			// 7:
+			(0b000 << 6) |
+			(0b111 << 3) |
+			(0b111 << 0),
+			// 8:
+			(0b000 << 6) |
+			(0b110 << 3) |
+			(0b110 << 0),
+			// clang-format on
+		};
+
+		uint32_t q = 0;
+		for (int i = 0; i < 9; i++)
 		{
-			visible = true;
-			if (std::string(obj->GetRuntimeClass()->className) ==
-				"mrpt::opengl::CGridPlaneXY")
-			{ std::cout << " visible due to cross!\n"; }
+			if (quadrants[i]) q = q | (1 << i);
+		}
+
+		for (int i = 0; i < 9 && !visible; i++)
+		{
+			if (!quadrants[i]) continue;
+			if ((q & quadPairs[i]) != 0)
+			{
+				// at least one match for a potential edge crossing the visible
+				// area of the frustum:
+				visible = true;
+			}
 		}
 	}
 	if (!anyGoodDepth) visible = false;
-
-	if (std::string(obj->GetRuntimeClass()->className) ==
-		"mrpt::opengl::CGridPlaneXY")
-	{ std::cout << "RESULT: " << visible << "\n"; }
 
 	return {depth, visible};
 }
