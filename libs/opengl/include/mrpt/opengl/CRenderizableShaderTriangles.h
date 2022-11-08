@@ -54,7 +54,10 @@ class CRenderizableShaderTriangles : public virtual CRenderizable
 	void enableLight(bool enable = true) { m_enableLight = enable; }
 
 	/** Control whether to render the FRONT, BACK, or BOTH (default) set of
-	 * faces. Refer to docs for glCullFace() */
+	 * faces. Refer to docs for glCullFace().
+	 * Example: If set to `cullFaces(TCullFace::BACK);`, back faces will not be
+	 * drawn ("culled")
+	 */
 	void cullFaces(const TCullFace& cf) { m_cullface = cf; }
 	TCullFace cullFaces() const { return m_cullface; }
 

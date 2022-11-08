@@ -24,6 +24,8 @@ IMPLEMENTS_SERIALIZABLE(CCylinder, CRenderizable, mrpt::opengl)
 
 void CCylinder::onUpdateBuffers_Triangles()
 {
+	cullFaces(TCullFace::BACK);	 // dont render back faces
+
 	std::unique_lock<std::shared_mutex> trisWriteLock(
 		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;

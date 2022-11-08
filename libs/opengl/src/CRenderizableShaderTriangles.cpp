@@ -136,18 +136,21 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		CHECK_OPENGL_ERROR();
 	}
 
-	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
-	else
+	if (m_cullface == TCullFace::NONE && rc.activeCullFace != TCullFace::NONE)
+	{
+		rc.activeCullFace = TCullFace::NONE;
+		glDisable(GL_CULL_FACE);
+	}
+	if (m_cullface != TCullFace::NONE && rc.activeCullFace != m_cullface)
 	{
 		glEnable(GL_CULL_FACE);
 		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
 		CHECK_OPENGL_ERROR();
+		rc.activeCullFace = m_cullface;
 	}
 
 	glDrawArrays(GL_TRIANGLES, 0, 3 * shaderTrianglesBuffer().size());
 	CHECK_OPENGL_ERROR();
-
-	glDisable(GL_CULL_FACE);
 
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_color) glDisableVertexAttribArray(*attr_color);
