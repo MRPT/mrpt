@@ -57,7 +57,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	{
 		// May use up to two shaders (triangles and lines):
 		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT,
 			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;
@@ -117,7 +117,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	/* Simulation of ray-trace. */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	struct TInfoPerTexture
 	{

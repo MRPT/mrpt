@@ -24,6 +24,8 @@ IMPLEMENTS_SERIALIZABLE(CCylinder, CRenderizable, mrpt::opengl)
 
 void CCylinder::onUpdateBuffers_Triangles()
 {
+	cullFaces(TCullFace::BACK);	 // dont render back faces
+
 	std::unique_lock<std::shared_mutex> trisWriteLock(
 		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
@@ -83,8 +85,8 @@ void CCylinder::onUpdateBuffers_Triangles()
 			if (m_hasBottomBase)
 				tris.emplace_back(
 					TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
-					TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
-					TPoint3Df(.0f, .0f, .0f));
+					TPoint3Df(.0f, .0f, .0f),
+					TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f));
 
 			if (m_hasTopBase)
 				tris.emplace_back(
@@ -285,9 +287,8 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	return fnd;
 }
 
-auto CCylinder::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CCylinder::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	const double R = std::max(m_baseRadius, m_topRadius);
-	return mrpt::math::TBoundingBox({-R, -R, 0}, {R, R, m_height})
-		.compose(m_pose);
+	const float R = std::max(m_baseRadius, m_topRadius);
+	return {{-R, -R, 0}, {R, R, m_height}};
 }

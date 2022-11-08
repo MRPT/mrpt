@@ -8,6 +8,7 @@
     - All opengl shaders, objects, and renderers are now multithread capable, including rendering several FBOs in different threads.
     - mrpt::opengl::CFBORender constructor now takes a parameters struct making it much more configurable.
     - mrpt::opengl::CAssimpModel now supports (de)serializing, storing itself in the Assimp binary format (`assbin`).
+    - New opengl shaders: one set for light-enabled objects and another for objects without diffuse reflection effects (to avoid conditionals inside the GPU shader programs).
   - \ref mrpt_gui_grp
     - mrpt::gui OpenGL canvas windows and components no longer have a background color property. It is now always handled by the mrpt::opengl::COpenGLViewport to avoid duplicated functionalities.
   - \ref mrpt_system_grp

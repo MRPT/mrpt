@@ -74,25 +74,25 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	// Set the texture uniform:
+	if (!rc.activeTextureUnit ||
+		*rc.activeTextureUnit != m_glTexture.get()->unit)
 	{
+		rc.activeTextureUnit = m_glTexture.get()->unit;	 // buffer it
 		const Program& s = *rc.shader;
 		// bound to GL_TEXTURE0 + "i":
 		glUniform1i(s.uniformId("textureSampler"), m_glTexture.get()->unit);
 	}
 
-	// Enable/disable lights:
-	if (rc.shader->hasUniform("enableLight"))
-	{
-		const Program& s = *rc.shader;
-		GLint enabled = m_enableLight ? 1 : 0;
-		glUniform1i(s.uniformId("enableLight"), enabled);
-		CHECK_OPENGL_ERROR();
-	}
-
+	// Lights:
 	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
 		rc.shader->hasUniform("light_ambient") &&
-		rc.shader->hasUniform("light_direction"))
+		rc.shader->hasUniform("light_direction") &&
+		(!rc.activeLights || rc.activeLights.value() != rc.lights))
 	{
+		// buffered pointer, to prevent re-setting the opengl state with the
+		// same values, a performance killer:
+		rc.activeLights = rc.lights;
+
 		const Program& s = *rc.shader;
 		glUniform4f(
 			s.uniformId("light_diffuse"), rc.lights->diffuse.R,
@@ -105,7 +105,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		glUniform3f(
 			s.uniformId("light_direction"), rc.lights->direction.x,
 			rc.lights->direction.y, rc.lights->direction.z);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the vertex array:
@@ -123,7 +123,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 			GL_FALSE, /* normalized? */
 			sizeof(TTriangle::Vertex), /* stride */
 			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the normals array:
@@ -140,7 +140,7 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 			GL_FALSE, /* normalized? */
 			sizeof(TTriangle::Vertex), /* stride */
 			BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the UV array:
@@ -157,22 +157,28 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 			GL_FALSE, /* normalized? */
 			sizeof(TTriangle::Vertex), /* stride */
 			BUFFER_OFFSET(offsetof(TTriangle::Vertex, uv.x)));
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
-	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
-	else
+	if (m_cullface == TCullFace::NONE &&
+		(!rc.activeCullFace || *rc.activeCullFace != TCullFace::NONE))
+	{
+		rc.activeCullFace = TCullFace::NONE;
+		glDisable(GL_CULL_FACE);
+	}
+	if (m_cullface != TCullFace::NONE &&
+		(!rc.activeCullFace || *rc.activeCullFace != m_cullface))
 	{
 		glEnable(GL_CULL_FACE);
 		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+		rc.activeCullFace = m_cullface;
 	}
 
 	// Draw:
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
-	glDisable(GL_CULL_FACE);
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_uv) glDisableVertexAttribArray(*attr_uv);
 	if (attr_normals) glDisableVertexAttribArray(*attr_normals);
@@ -336,7 +342,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 			// activate the texture unit first before binding texture
 			glActiveTexture(GL_TEXTURE0 + m_glTexture.get()->unit);
 			glBindTexture(GL_TEXTURE_2D, m_glTexture.get()->name);
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 			return;
 		}
 
@@ -353,7 +359,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		glActiveTexture(GL_TEXTURE0 + m_glTexture.get()->unit);
 		// select our current texture
 		glBindTexture(GL_TEXTURE_2D, m_glTexture.get()->name);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		// when texture area is small, linear interpolation. Default is
 		// GL_LINEAR_MIPMAP_NEAREST but we
@@ -361,7 +367,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		//  See also:
 		//  http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=133116&page=1
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		// when texture area is large, NEAREST: this is mainly thinking of
 		// rendering
@@ -370,15 +376,15 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 		glTexParameterf(
 			GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 			m_textureInterpolate ? GL_LINEAR : GL_NEAREST);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		// if wrap is true, the texture wraps over at the edges (repeat)
 		//       ... false, the texture ends at the edges (clamp)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		// Assure that the images do not overpass the maximum dimensions allowed
 		// by OpenGL:
@@ -481,9 +487,9 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 			glTexImage2D(
 				GL_TEXTURE_2D, 0 /*level*/, GL_RGBA8 /* RGB components */,
 				width, height, 0 /*border*/, img_format, img_type, dataAligned);
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);	 // Reset
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		}  // End of color texture WITH trans.
 		else
@@ -509,19 +515,19 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 
 			// Send image data to OpenGL:
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 			glPixelStorei(
 				GL_UNPACK_ROW_LENGTH,
 				m_textureImage.getRowStride() / nBytesPerPixel);
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 			glTexImage2D(
 				GL_TEXTURE_2D, 0 /*level*/,
 				nBytesPerPixel == 3 ? GL_RGB8 : GL_RGBA8 /* RGB components */,
 				width, height, 0 /*border*/, img_format, img_type,
 				m_textureImage.ptrLine<uint8_t>(0));
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);	 // Reset
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		}  // End of color texture WITHOUT trans.
 
@@ -668,7 +674,7 @@ class TextureResourceHandler
 		// Create one OpenGL texture
 		GLuint textureID;
 		glGenTextures(1, &textureID);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 		m_textureReservedFrom[textureID] = std::this_thread::get_id();
 
 		int foundUnit = -1;
@@ -738,7 +744,7 @@ class TextureResourceHandler
 		{
 			auto& lst = itLst->second;
 			glDeleteTextures(lst.size(), lst.data());
-			CHECK_OPENGL_ERROR();
+			CHECK_OPENGL_ERROR_IN_DEBUG();
 			lst.clear();
 		}
 #endif
@@ -769,22 +775,16 @@ void CRenderizableShaderTexturedTriangles::releaseTextureName(
 	TextureResourceHandler::Instance().releaseTextureID(t.name, t.unit);
 }
 
-const mrpt::math::TBoundingBox
+const mrpt::math::TBoundingBoxf
 	CRenderizableShaderTexturedTriangles::trianglesBoundingBox() const
 {
-	mrpt::math::TBoundingBox bb;
+	mrpt::math::TBoundingBoxf bb;
 
 	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	if (m_triangles.empty()) return bb;
 
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& t : m_triangles)
 	{

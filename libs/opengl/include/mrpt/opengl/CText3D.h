@@ -81,7 +81,7 @@ class CText3D : public CRenderizableShaderText
 	}
 	double setTextKerning() const { return m_text_kerning; }
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	CText3D(
 		const std::string& str = std::string(""),

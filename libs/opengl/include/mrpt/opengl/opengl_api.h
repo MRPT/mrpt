@@ -105,4 +105,12 @@ void checkOpenGLErr_impl(
 			mrpt::opengl::checkOpenGLErr_impl(openglErr, __FILE__, __LINE__);  \
 	}
 
+#ifdef DEBUG_
+#define CHECK_OPENGL_ERROR_IN_DEBUG() CHECK_OPENGL_ERROR()
+#else
+#define CHECK_OPENGL_ERROR_IN_DEBUG()                                          \
+	{                                                                          \
+	}
+#endif
+
 #endif	// MRPT_HAS_OPENGL_GLUT

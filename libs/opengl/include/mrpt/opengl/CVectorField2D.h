@@ -58,7 +58,7 @@ class CVectorField2D : public CRenderizableShaderPoints,
 	virtual shader_list_t requiredShaders() const override
 	{
 		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_NO_LIGHT,
 			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;
@@ -219,7 +219,7 @@ class CVectorField2D : public CRenderizableShaderPoints,
 	 */
 	inline size_t rows() const { return xcomp.rows(); }
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	void enableAntiAliasing(bool enable = true)
 	{

@@ -218,11 +218,9 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-auto CAxis::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CAxis::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(
-			   {m_xmin, m_ymin, m_zmin}, {m_xmax, m_ymax, m_zmax})
-		.compose(m_pose);
+	return {{m_xmin, m_ymin, m_zmin}, {m_xmax, m_ymax, m_zmax}};
 }
 
 void CAxis::setFrequency(float f)

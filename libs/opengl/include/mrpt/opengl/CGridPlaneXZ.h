@@ -65,7 +65,7 @@ class CGridPlaneXZ : public CRenderizableShaderWireFrame
 
 	void onUpdateBuffers_Wireframe() override;
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	/** Constructor */
 	CGridPlaneXZ(

@@ -48,7 +48,7 @@ class CMesh3D : public CRenderizableShaderTriangles,
 	virtual shader_list_t requiredShaders() const override
 	{
 		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT,
 			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;
@@ -126,7 +126,7 @@ class CMesh3D : public CRenderizableShaderTriangles,
 		vert_color = mrpt::img::TColorf(r, g, b, a);
 	}
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
    protected:
 	using vertex_indices_t = mrpt::math::CMatrixFixed<uint32_t, 1, 4>;

@@ -8,15 +8,13 @@ R"XXX(#version 300 es
 in vec3 position;
 in vec4 vertexColor;
 
-uniform mediump mat4 p_matrix;
-uniform mediump mat4 mv_matrix;
+uniform mediump mat4 pmv_matrix;
 
-out vec4 frag_color;
+out mediump vec4 frag_materialColor;
 
 void main()
 {
-    mediump vec4 eye_position = mv_matrix * vec4(position, 1.0);
-    gl_Position = p_matrix * eye_position;
-    frag_color = vertexColor;
+    gl_Position = pmv_matrix * vec4(position, 1.0);
+    frag_materialColor = vertexColor;
 }
 )XXX"

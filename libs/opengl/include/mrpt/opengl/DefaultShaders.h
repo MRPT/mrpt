@@ -25,8 +25,10 @@ struct DefaultShaderID
 	static constexpr shader_id_t POINTS = 0;
 	static constexpr shader_id_t WIREFRAME = 1;
 	static constexpr shader_id_t TEXT = 2;
-	static constexpr shader_id_t TRIANGLES = 3;
-	static constexpr shader_id_t TEXTURED_TRIANGLES = 4;
+	static constexpr shader_id_t TRIANGLES_LIGHT = 3;
+	static constexpr shader_id_t TEXTURED_TRIANGLES_LIGHT = 4;
+	static constexpr shader_id_t TRIANGLES_NO_LIGHT = 5;
+	static constexpr shader_id_t TEXTURED_TRIANGLES_NO_LIGHT = 6;
 };
 
 /** Loads a set of OpenGL Vertex+Fragment shaders from the default library

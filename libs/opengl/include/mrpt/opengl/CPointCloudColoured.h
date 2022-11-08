@@ -58,15 +58,14 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void markAllPointsAsNew();
 
    public:
-	/** Evaluates the bounding box of this object (including possible children)
-	 * in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBox getBoundingBox() const override
+	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override
 	{
 		std::shared_lock<std::shared_mutex> wfReadLock(
 			CRenderizableShaderPoints::m_pointsMtx.data);
 
 		if (empty()) return {};
-		if (auto bb = this->octree_getBoundingBox(); bb) return *bb;
+		if (auto bb = this->octree_getBoundingBox(); bb)
+			return {bb->min.cast<float>(), bb->max.cast<float>()};
 		else
 			return {};
 	}

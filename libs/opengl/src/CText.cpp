@@ -145,10 +145,11 @@ void CText::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	};
 }
 
-auto CText::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CText::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox({0, 0, 0}, {0, 0, 0}).compose(m_pose);
+	return {{0.f, 0.f, 0.f}, {0.f, 0.f, 0.f}};
 }
+
 void CText::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
 {
 	CRenderizable::toYAMLMap(propertiesMap);

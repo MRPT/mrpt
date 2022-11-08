@@ -35,7 +35,7 @@ void CBox::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (!m_wireframe) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -198,7 +198,7 @@ bool CBox::traceRay(
 	THROW_EXCEPTION("TO DO");
 }
 
-auto CBox::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CBox::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(m_corner_min, m_corner_max).compose(m_pose);
+	return {m_corner_min, m_corner_max};
 }

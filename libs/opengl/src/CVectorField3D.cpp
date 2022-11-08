@@ -167,7 +167,8 @@ void CVectorField3D::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CVectorField3D::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CVectorField3D::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return verticesBoundingBox().compose(m_pose);
+	return verticesBoundingBox();
 }

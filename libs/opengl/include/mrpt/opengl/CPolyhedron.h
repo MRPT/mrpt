@@ -53,7 +53,7 @@ class CPolyhedron : public CRenderizableShaderWireFrame,
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT};
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;
@@ -143,7 +143,7 @@ class CPolyhedron : public CRenderizableShaderWireFrame,
    public:
 	/** Evaluates the bounding box of this object (including possible children)
 	 * in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	// Static methods to create frequent polyhedra. More bizarre polyhedra are
 	// intended to be added in a near future.

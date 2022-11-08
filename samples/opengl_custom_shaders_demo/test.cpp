@@ -143,7 +143,8 @@ void main()
 	vp->loadDefaultShaders();
 
 	// Overwrite the shaders we want to customize:
-	vp->shaders()[mrpt::opengl::DefaultShaderID::TRIANGLES] = std::move(shader);
+	const auto id = mrpt::opengl::DefaultShaderID::TRIANGLES_NO_LIGHT;
+	vp->shaders()[id] = std::move(shader);
 
 #endif
 }

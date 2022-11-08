@@ -55,19 +55,16 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	std::shared_lock<std::shared_mutex> trisReadLock(
 		CRenderizableShaderTriangles::m_trianglesMtx.data);
 
-	// Enable/disable lights:
-	if (rc.shader->hasUniform("enableLight"))
-	{
-		const Program& s = *rc.shader;
-		GLint enabled = m_enableLight ? 1 : 0;
-		glUniform1i(s.uniformId("enableLight"), enabled);
-		CHECK_OPENGL_ERROR();
-	}
-
+	// Lights:
 	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
 		rc.shader->hasUniform("light_ambient") &&
-		rc.shader->hasUniform("light_direction"))
+		rc.shader->hasUniform("light_direction") &&
+		(!rc.activeLights || rc.activeLights.value() != rc.lights))
 	{
+		// buffered pointer, to prevent re-setting the opengl state with the
+		// same values, a performance killer:
+		rc.activeLights = rc.lights;
+
 		const Program& s = *rc.shader;
 
 		glUniform4f(
@@ -81,7 +78,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		glUniform3f(
 			s.uniformId("light_direction"), rc.lights->direction.x,
 			rc.lights->direction.y, rc.lights->direction.z);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the vertex array:
@@ -99,7 +96,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 			GL_FALSE, /* normalized? */
 			sizeof(TTriangle::Vertex), /* stride */
 			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.pt.x)));
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the color array:
@@ -116,7 +113,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 			GL_TRUE, /* normalized? */
 			sizeof(TTriangle::Vertex), /* stride */
 			BUFFER_OFFSET(offsetof(TTriangle::Vertex, xyzrgba.r)));
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the normals array:
@@ -133,21 +130,24 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 			GL_FALSE, /* normalized? */
 			sizeof(TTriangle::Vertex), /* stride */
 			BUFFER_OFFSET(offsetof(TTriangle::Vertex, normal.x)));
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
-	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
-	else
+	if (m_cullface == TCullFace::NONE && rc.activeCullFace != TCullFace::NONE)
+	{
+		rc.activeCullFace = TCullFace::NONE;
+		glDisable(GL_CULL_FACE);
+	}
+	if (m_cullface != TCullFace::NONE && rc.activeCullFace != m_cullface)
 	{
 		glEnable(GL_CULL_FACE);
 		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+		rc.activeCullFace = m_cullface;
 	}
 
 	glDrawArrays(GL_TRIANGLES, 0, 3 * shaderTrianglesBuffer().size());
-	CHECK_OPENGL_ERROR();
-
-	glDisable(GL_CULL_FACE);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_color) glDisableVertexAttribArray(*attr_color);
@@ -156,23 +156,17 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 #endif
 }
 
-const mrpt::math::TBoundingBox
-	CRenderizableShaderTriangles::trianglesBoundingBox() const
+const math::TBoundingBoxf CRenderizableShaderTriangles::trianglesBoundingBox()
+	const
 {
-	mrpt::math::TBoundingBox bb;
+	mrpt::math::TBoundingBoxf bb;
 
 	std::shared_lock<std::shared_mutex> trisReadLock(
 		CRenderizableShaderTriangles::m_trianglesMtx.data);
 
 	if (shaderTrianglesBuffer().empty()) return bb;
 
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& t : shaderTrianglesBuffer())
 	{

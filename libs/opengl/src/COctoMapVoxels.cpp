@@ -46,7 +46,7 @@ void COctoMapVoxels::render(const RenderContext& rc) const
 		case DefaultShaderID::POINTS:
 			if (m_showVoxelsAsPoints) CRenderizableShaderPoints::render(rc);
 			break;
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (!m_showVoxelsAsPoints) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -312,9 +312,10 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-auto COctoMapVoxels::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto COctoMapVoxels::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(m_bb_min, m_bb_max).compose(m_pose);
+	return {m_bb_min, m_bb_max};
 }
 
 bool sort_voxels_z(

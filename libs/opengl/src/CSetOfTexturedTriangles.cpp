@@ -83,7 +83,8 @@ bool CSetOfTexturedTriangles::traceRay(
 		"TODO: TraceRay not implemented in CSetOfTexturedTriangles");
 }
 
-auto CSetOfTexturedTriangles::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSetOfTexturedTriangles::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return trianglesBoundingBox().compose(m_pose);
+	return trianglesBoundingBox();
 }
