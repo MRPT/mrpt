@@ -86,7 +86,8 @@ void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 auto CText3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return {{0.f, 0.f, 0.f}, {m_str.size() * m_scale_x, 1.0f * m_scale_y, 0.f}};
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{0.f, 0.f, 0.f}, {m_str.size() * m_scale_x, 1.0f * m_scale_y, 0.f});
 }
 
 void CText3D::toYAMLMap(mrpt::containers::yaml& propertiesMap) const

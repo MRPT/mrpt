@@ -95,5 +95,6 @@ void CGridPlaneXZ::serializeFrom(
 
 auto CGridPlaneXZ::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return {{m_xMin, 0, m_zMin}, {m_xMax, 0, m_zMax}};
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{m_xMin, 0, m_zMin}, {m_xMax, 0, m_zMax});
 }

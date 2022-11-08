@@ -422,7 +422,8 @@ void CAssimpModel::after_load_model()
 
 auto CAssimpModel::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return {m_bbox_min, m_bbox_max};
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		m_bbox_min, m_bbox_max);
 }
 
 bool CAssimpModel::traceRay(

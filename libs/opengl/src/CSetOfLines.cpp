@@ -187,11 +187,7 @@ auto CSetOfLines::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 		for (size_t p = 0; p < 2; p++)
 		{
 			const TPoint3D& pt = s[p];
-			for (size_t j = 0; j < 3; j++)
-			{
-				keep_min(bb.min[j], pt[j]);
-				keep_max(bb.max[j], pt[j]);
-			}
+			bb.updateWithPoint(pt);
 		}
 	}
 

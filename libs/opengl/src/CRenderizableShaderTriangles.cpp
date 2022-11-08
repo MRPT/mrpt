@@ -169,28 +169,9 @@ const math::TBoundingBoxf CRenderizableShaderTriangles::trianglesBoundingBox()
 	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& t : shaderTrianglesBuffer())
-	{
-		keep_min(bb.min.x, t.x(0));
-		keep_max(bb.max.x, t.x(0));
-		keep_min(bb.min.y, t.y(0));
-		keep_max(bb.max.y, t.y(0));
-		keep_min(bb.min.z, t.z(0));
-		keep_max(bb.max.z, t.z(0));
+		for (int i = 0; i < 3; i++)
+			bb.updateWithPoint(t.vertices[i].xyzrgba.pt);
 
-		keep_min(bb.min.x, t.x(1));
-		keep_max(bb.max.x, t.x(1));
-		keep_min(bb.min.y, t.y(1));
-		keep_max(bb.max.y, t.y(1));
-		keep_min(bb.min.z, t.z(1));
-		keep_max(bb.max.z, t.z(1));
-
-		keep_min(bb.min.x, t.x(2));
-		keep_max(bb.max.x, t.x(2));
-		keep_min(bb.min.y, t.y(2));
-		keep_max(bb.max.y, t.y(2));
-		keep_min(bb.min.z, t.z(2));
-		keep_max(bb.max.z, t.z(2));
-	}
 	return bb;
 }
 

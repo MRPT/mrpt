@@ -233,5 +233,6 @@ void CColorBar::serializeFrom(
 
 mrpt::math::TBoundingBoxf CColorBar::internalBoundingBoxLocal() const
 {
-	return {{.0f, .0f, .0f}, {d2f(m_width), d2f(m_height), .0f}};
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{.0f, .0f, .0f}, {d2f(m_width), d2f(m_height), .0f});
 }

@@ -200,5 +200,6 @@ bool CBox::traceRay(
 
 auto CBox::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return {m_corner_min, m_corner_max};
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		m_corner_min, m_corner_max);
 }

@@ -220,7 +220,8 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 
 auto CAxis::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return {{m_xmin, m_ymin, m_zmin}, {m_xmax, m_ymax, m_zmax}};
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{m_xmin, m_ymin, m_zmin}, {m_xmax, m_ymax, m_zmax});
 }
 
 void CAxis::setFrequency(float f)
