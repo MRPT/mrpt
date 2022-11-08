@@ -45,10 +45,15 @@ void CCylinder::onUpdateBuffers_Triangles()
 		circle[i].y = sin(a);
 	}
 
-	const float r0 = m_baseRadius, r1 = m_topRadius;
+	// Handle negative heights so triangles winding is OK for GL culling:
+	const float r0 = m_height > 0 ? m_baseRadius : m_topRadius;
+	const float r1 = m_height > 0 ? m_topRadius : m_baseRadius;
+	const float z0 = m_height > 0 ? .0f : m_height;
+	const float z1 = m_height > 0 ? m_height : .0f;
 
 	const float wall_tilt = std::atan2(r0 - r1, m_height);
-	const float coswt = std::cos(wall_tilt), sinwt = std::sin(wall_tilt);
+	const float coswt = std::cos(wall_tilt) * mrpt::sign(m_height),
+				sinwt = std::sin(wall_tilt) * mrpt::sign(m_height);
 
 	// cylinder walls:
 	for (unsigned int i = 0; i < m_slices; i++)
@@ -57,9 +62,9 @@ void CCylinder::onUpdateBuffers_Triangles()
 
 		tris.emplace_back(
 			// Points:
-			TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
-			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
-			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
+			TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, z0),
+			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, z0),
+			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, z1),
 			// Normals:
 			TVector3Df(-coswt * circle[i].y, coswt * circle[i].x, sinwt),
 			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
@@ -67,9 +72,9 @@ void CCylinder::onUpdateBuffers_Triangles()
 
 		tris.emplace_back(
 			// Points:
-			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
-			TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, m_height),
-			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
+			TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, z0),
+			TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, z1),
+			TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, z1),
 			// Normals:
 			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
 			TVector3Df(-coswt * circle[ip].y, coswt * circle[ip].x, sinwt),
@@ -84,15 +89,15 @@ void CCylinder::onUpdateBuffers_Triangles()
 			const auto ip = (i + 1) % m_slices;
 			if (m_hasBottomBase)
 				tris.emplace_back(
-					TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
-					TPoint3Df(.0f, .0f, .0f),
-					TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f));
+					TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, z0),
+					TPoint3Df(.0f, .0f, z0),
+					TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, z0));
 
 			if (m_hasTopBase)
 				tris.emplace_back(
-					TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, m_height),
-					TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, m_height),
-					TPoint3Df(.0f, .0f, m_height));
+					TPoint3Df(r1 * circle[i].x, r1 * circle[i].y, z1),
+					TPoint3Df(r1 * circle[ip].x, r1 * circle[ip].y, z1),
+					TPoint3Df(.0f, .0f, z1));
 		}
 	}
 
