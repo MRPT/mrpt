@@ -21,9 +21,9 @@
 Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
 in mobile robotics and computer vision. Libraries include [SLAM solutions](https://www.mrpt.org/List_of_SLAM_algorithms), [2D and 3D spatial transformations](https://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](https://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf),
 [probability density functions (pdfs)](https://docs.mrpt.org/reference/latest/class_mrpt_math_CProbabilityDensityFunction.html) over points, landmarks, poses and maps,
-Bayesian inference ([Kalman filters](https://www.mrpt.org/Kalman_Filters), [particle filters](https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/)), [image processing](https://www.mrpt.org/tutorials/programming/images-image-processing-camera-models/), [obstacle avoidance](https://www.mrpt.org/Obstacle_avoidance), [etc](https://reference.mrpt.org/devel/modules.html).
-MRPT also provides GUI apps for [Stereo camera calibration](https://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/), [dataset inspection](https://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/),
-and [much more](https://www.mrpt.org/list-of-mrpt-apps/).
+Bayesian inference ([Kalman filters](https://www.mrpt.org/Kalman_Filters), [particle filters](https://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/)), [image processing](https://www.mrpt.org/tutorials/programming/images-image-processing-camera-models/), [obstacle avoidance](https://www.mrpt.org/Obstacle_avoidance), [etc](https://docs.mrpt.org/reference/latest/modules.html).
+MRPT also provides GUI apps for [camera calibration](https://docs.mrpt.org/reference/latest/app_camera-calib.html), [dataset inspection](https://docs.mrpt.org/reference/latest/app_RawLogViewer.html),
+and [much more](https://docs.mrpt.org/reference/latest/applications.html).
 
 ## 2. Resources
   * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --recursive`
