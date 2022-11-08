@@ -67,7 +67,7 @@ void CColorBar::render(const RenderContext& rc) const
 	// colobars are typically displayed on-top
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:

@@ -74,25 +74,25 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	// Set the texture uniform:
+	if (!rc.activeTextureUnit ||
+		*rc.activeTextureUnit != m_glTexture.get()->unit)
 	{
+		rc.activeTextureUnit = m_glTexture.get()->unit;	 // buffer it
 		const Program& s = *rc.shader;
 		// bound to GL_TEXTURE0 + "i":
 		glUniform1i(s.uniformId("textureSampler"), m_glTexture.get()->unit);
 	}
 
-	// Enable/disable lights:
-	if (rc.shader->hasUniform("enableLight"))
-	{
-		const Program& s = *rc.shader;
-		GLint enabled = m_enableLight ? 1 : 0;
-		glUniform1i(s.uniformId("enableLight"), enabled);
-		CHECK_OPENGL_ERROR();
-	}
-
+	// Lights:
 	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
 		rc.shader->hasUniform("light_ambient") &&
-		rc.shader->hasUniform("light_direction"))
+		rc.shader->hasUniform("light_direction") &&
+		(!rc.activeLights || rc.activeLights.value() != rc.lights))
 	{
+		// buffered pointer, to prevent re-setting the opengl state with the
+		// same values, a performance killer:
+		rc.activeLights = rc.lights;
+
 		const Program& s = *rc.shader;
 		glUniform4f(
 			s.uniformId("light_diffuse"), rc.lights->diffuse.R,

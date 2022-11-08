@@ -195,8 +195,12 @@ void COpenGLViewport::loadDefaultShaders() const
 	MRPT_START
 
 	std::vector<shader_id_t> lstShaderIDs = {
-		DefaultShaderID::POINTS, DefaultShaderID::WIREFRAME,
-		DefaultShaderID::TRIANGLES, DefaultShaderID::TEXTURED_TRIANGLES,
+		DefaultShaderID::POINTS,
+		DefaultShaderID::WIREFRAME,
+		DefaultShaderID::TRIANGLES_NO_LIGHT,
+		DefaultShaderID::TRIANGLES_LIGHT,
+		DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT,
+		DefaultShaderID::TEXTURED_TRIANGLES_LIGHT,
 		DefaultShaderID::TEXT};
 
 	auto& shaders = m_threadedData.get().shaders;

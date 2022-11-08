@@ -85,8 +85,8 @@ void CCylinder::onUpdateBuffers_Triangles()
 			if (m_hasBottomBase)
 				tris.emplace_back(
 					TPoint3Df(r0 * circle[i].x, r0 * circle[i].y, .0f),
-					TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f),
-					TPoint3Df(.0f, .0f, .0f));
+					TPoint3Df(.0f, .0f, .0f),
+					TPoint3Df(r0 * circle[ip].x, r0 * circle[ip].y, .0f));
 
 			if (m_hasTopBase)
 				tris.emplace_back(

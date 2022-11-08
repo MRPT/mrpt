@@ -34,7 +34,9 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 
 	virtual shader_list_t requiredShaders() const override
 	{
-		return {DefaultShaderID::TEXTURED_TRIANGLES};
+		return {
+			m_enableLight ? DefaultShaderID::TEXTURED_TRIANGLES_LIGHT
+						  : DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT};
 	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;

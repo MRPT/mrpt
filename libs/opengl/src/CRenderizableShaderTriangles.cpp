@@ -55,19 +55,16 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	std::shared_lock<std::shared_mutex> trisReadLock(
 		CRenderizableShaderTriangles::m_trianglesMtx.data);
 
-	// Enable/disable lights:
-	if (rc.shader->hasUniform("enableLight"))
-	{
-		const Program& s = *rc.shader;
-		GLint enabled = m_enableLight ? 1 : 0;
-		glUniform1i(s.uniformId("enableLight"), enabled);
-		CHECK_OPENGL_ERROR();
-	}
-
+	// Lights:
 	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
 		rc.shader->hasUniform("light_ambient") &&
-		rc.shader->hasUniform("light_direction"))
+		rc.shader->hasUniform("light_direction") &&
+		(!rc.activeLights || rc.activeLights.value() != rc.lights))
 	{
+		// buffered pointer, to prevent re-setting the opengl state with the
+		// same values, a performance killer:
+		rc.activeLights = rc.lights;
+
 		const Program& s = *rc.shader;
 
 		glUniform4f(

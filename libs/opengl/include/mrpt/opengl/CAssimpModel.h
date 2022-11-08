@@ -57,7 +57,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	{
 		// May use up to two shaders (triangles and lines):
 		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT,
 			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;

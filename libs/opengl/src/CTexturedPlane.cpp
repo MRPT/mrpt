@@ -37,10 +37,10 @@ void CTexturedPlane::render(const RenderContext& rc) const
 
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			if (!hasTexture) CRenderizableShaderTriangles::render(rc);
 			break;
-		case DefaultShaderID::TEXTURED_TRIANGLES:
+		case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:
 			if (hasTexture) CRenderizableShaderTexturedTriangles::render(rc);
 			break;
 	};

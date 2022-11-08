@@ -73,7 +73,7 @@ class CPlanarLaserScan : public CRenderizableShaderPoints,
 	virtual shader_list_t requiredShaders() const override
 	{
 		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_NO_LIGHT,
 			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;

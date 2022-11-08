@@ -52,7 +52,8 @@ class CColorBar : public CRenderizableShaderTriangles,
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+		return {
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_NO_LIGHT};
 	}
 	void onUpdateBuffers_Wireframe() override;
 	void onUpdateBuffers_Triangles() override;

@@ -46,7 +46,7 @@ class CGeneralizedEllipsoidTemplate
 	{
 		switch (rc.shader_id)
 		{
-			case DefaultShaderID::TRIANGLES:
+			case DefaultShaderID::TRIANGLES_LIGHT:
 				if (m_drawSolid3D) CRenderizableShaderTriangles::render(rc);
 				break;
 			case DefaultShaderID::WIREFRAME:
@@ -112,7 +112,7 @@ class CGeneralizedEllipsoidTemplate
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT};
 	}
 	// Render precomputed points in m_render_pts:
 	void onUpdateBuffers_Wireframe() override { implUpdate_Wireframe(); }

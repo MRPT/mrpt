@@ -171,7 +171,7 @@ void CAssimpModel::render(const RenderContext& rc) const
 		case DefaultShaderID::POINTS:
 			CRenderizableShaderPoints::render(rc);
 			break;
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
