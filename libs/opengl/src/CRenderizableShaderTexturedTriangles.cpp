@@ -160,19 +160,25 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		CHECK_OPENGL_ERROR();
 	}
 
-	if (m_cullface == TCullFace::NONE) { glDisable(GL_CULL_FACE); }
-	else
+	if (m_cullface == TCullFace::NONE &&
+		(!rc.activeCullFace || *rc.activeCullFace != TCullFace::NONE))
+	{
+		rc.activeCullFace = TCullFace::NONE;
+		glDisable(GL_CULL_FACE);
+	}
+	if (m_cullface != TCullFace::NONE &&
+		(!rc.activeCullFace || *rc.activeCullFace != m_cullface))
 	{
 		glEnable(GL_CULL_FACE);
 		glCullFace(m_cullface == TCullFace::FRONT ? GL_FRONT : GL_BACK);
 		CHECK_OPENGL_ERROR();
+		rc.activeCullFace = m_cullface;
 	}
 
 	// Draw:
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_triangles.size());
 	CHECK_OPENGL_ERROR();
 
-	glDisable(GL_CULL_FACE);
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_uv) glDisableVertexAttribArray(*attr_uv);
 	if (attr_normals) glDisableVertexAttribArray(*attr_normals);

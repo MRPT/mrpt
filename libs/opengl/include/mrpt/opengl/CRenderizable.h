@@ -34,6 +34,20 @@
 
 namespace mrpt::opengl
 {
+/** Enum for cull face modes in triangle-based shaders.
+ *  \sa CRenderizableShaderTriangles, CRenderizableShaderTexturedTriangles
+ *  \ingroup mrpt_opengl_grp
+ */
+enum class TCullFace : uint8_t
+{
+	/** The default: culls none, so all front and back faces are visible. */
+	NONE = 0,
+	/** Skip back faces (those that are NOT seen in the CCW direction) */
+	BACK,
+	/** Skip front faces (those that ARE seen in the CCW direction) */
+	FRONT
+};
+
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
@@ -281,6 +295,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		const mrpt::opengl::Program* shader = nullptr;
 		mrpt::opengl::shader_id_t shader_id;
 		const mrpt::opengl::TLightParameters* lights = nullptr;
+
+		mutable std::optional<TCullFace> activeCullFace;
 	};
 
 	/** Implements the rendering of 3D objects in each class derived from
@@ -437,20 +453,6 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 /** A list of smart pointers to renderizable objects */
 using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
-
-/** Enum for cull face modes in triangle-based shaders.
- *  \sa CRenderizableShaderTriangles, CRenderizableShaderTexturedTriangles
- *  \ingroup mrpt_opengl_grp
- */
-enum class TCullFace : uint8_t
-{
-	/** The default: culls none, so all front and back faces are visible. */
-	NONE = 0,
-	/** Skip back faces (those that are NOT seen in the CCW direction) */
-	BACK,
-	/** Skip front faces (those that ARE seen in the CCW direction) */
-	FRONT
-};
 
 /** @name Miscellaneous rendering methods
 @{ */

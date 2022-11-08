@@ -73,6 +73,8 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 	// === LINES ===
 	std::optional<GLuint> attr_position;
 
+	glDisable(GL_CULL_FACE);
+
 	// Set up the vertex array:
 	if (rc.shader->hasAttribute("position"))
 	{
