@@ -152,5 +152,6 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 mrpt::math::TBoundingBoxf CDisk::internalBoundingBoxLocal() const
 {
 	const float R = std::max(m_radiusIn, m_radiusOut);
-	return {{-R, -R, 0}, {R, R, .0}};
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{-R, -R, 0}, {R, R, .0});
 }

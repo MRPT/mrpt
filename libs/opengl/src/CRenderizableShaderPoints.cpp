@@ -154,13 +154,7 @@ const mrpt::math::TBoundingBoxf CRenderizableShaderPoints::verticesBoundingBox()
 	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& p : m_vertex_buffer_data)
-	{
-		keep_min(bb.min.x, p.x);
-		keep_max(bb.max.x, p.x);
-		keep_min(bb.min.y, p.y);
-		keep_max(bb.max.y, p.y);
-		keep_min(bb.min.z, p.z);
-		keep_max(bb.max.z, p.z);
-	}
+		bb.updateWithPoint(p);
+
 	return bb;
 }

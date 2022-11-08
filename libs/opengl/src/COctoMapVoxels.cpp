@@ -315,7 +315,7 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 auto COctoMapVoxels::internalBoundingBoxLocal() const
 	-> mrpt::math::TBoundingBoxf
 {
-	return {m_bb_min, m_bb_max};
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(m_bb_min, m_bb_max);
 }
 
 bool sort_voxels_z(

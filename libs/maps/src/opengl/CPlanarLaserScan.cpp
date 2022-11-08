@@ -209,27 +209,9 @@ auto CPlanarLaserScan::internalBoundingBoxLocal() const
 		m_cache_points.insertObservation(m_scan);
 	}
 
-	size_t n;
-	const float *x, *y, *z;
+	if (m_cache_points.empty()) return {};
 
-	mrpt::math::TBoundingBoxf bb;
-
-	m_cache_points.getPointsBuffer(n, x, y, z);
-	if (!n || !x) return bb;
-
-	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
-
-	for (size_t i = 0; i < n; i++)
-	{
-		keep_min(bb.min.x, x[i]);
-		keep_max(bb.max.x, x[i]);
-		keep_min(bb.min.y, y[i]);
-		keep_max(bb.max.y, y[i]);
-		keep_min(bb.min.z, z[i]);
-		keep_max(bb.max.z, z[i]);
-	}
-
-	return bb;
+	return m_cache_points.boundingBox();
 }
 
 mrpt::math::TPoint3Df CPlanarLaserScan::getLocalRepresentativePoint() const

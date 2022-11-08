@@ -75,7 +75,7 @@ void CSimpleLine::serializeFrom(
 
 auto CSimpleLine::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return {
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
 		{std::min(m_x0, m_x1), std::min(m_y0, m_y1), std::min(m_z0, m_z1)},
-		{std::max(m_x0, m_x1), std::max(m_y0, m_y1), std::max(m_z0, m_z1)}};
+		{std::max(m_x0, m_x1), std::max(m_y0, m_y1), std::max(m_z0, m_z1)});
 }
