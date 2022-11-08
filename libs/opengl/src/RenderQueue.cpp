@@ -43,8 +43,7 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 	const Eigen::Vector4f lrp_hm(localPt.x, localPt.y, localPt.z, 1.0f);
 	const auto lrp_proj = (objState.pmv_matrix.asEigen() * lrp_hm).eval();
 
-	const float depth =
-		(lrp_proj(3) != 0) ? lrp_proj(2) / std::abs(lrp_proj(3)) : .001f;
+	const float depth = (lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
 
 	const auto uv = (lrp_proj(3) != 0)
 		? mrpt::math::TPoint2Df(
@@ -85,20 +84,40 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 
 	// for each of the 8 corners:
 	bool visible = false;
-	bool anyNorth = false, anySouth = false, anyEast = false, anyWest = false;
+	bool quadrants[9] = {false, false, false, false, false,
+						 false, false, false, false};
 
-	for (int ix = 0; !visible && ix < 2; ix++)
+	// dont go thru the (min,max) dimensions of one axis if it's negligible:
+	const auto diag = bbox.max - bbox.min;
+	const float maxLen = mrpt::max3(diag.x, diag.y, diag.z);
+	int numLayersX = 1, numLayersY = 1, numLayersZ = 1;
+	bool anyGoodDepth = false;
+
+	if (maxLen > 0)
+	{
+		numLayersX = (diag.x / maxLen) > 1e-3f ? 2 : 1;
+		numLayersY = (diag.y / maxLen) > 1e-3f ? 2 : 1;
+		numLayersZ = (diag.z / maxLen) > 1e-3f ? 2 : 1;
+	}
+
+	for (int ix = 0; !visible && ix < numLayersX; ix++)
 	{
 		const float x = ends[ix].x;
-		for (int iy = 0; !visible && iy < 2; iy++)
+		for (int iy = 0; !visible && iy < numLayersY; iy++)
 		{
 			const float y = ends[iy].y;
-			for (int iz = 0; !visible && iz < 2; iz++)
+			for (int iz = 0; !visible && iz < numLayersZ; iz++)
 			{
 				const float z = ends[iz].z;
 
-				const auto [uv, bboxDepth] =
+				auto [uv, bboxDepth] =
 					projectToScreenCoordsAndDepth({x, y, z}, objState);
+
+				const bool goodDepth = bboxDepth > -1.0f && bboxDepth < 1.0f;
+				anyGoodDepth = anyGoodDepth | goodDepth;
+
+				if (!goodDepth)	 // continue;
+					uv *= -1.0;
 
 				const bool inside =
 					uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1;
@@ -107,10 +126,10 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 					visible = true;
 					break;
 				}
-				if (uv.x < -1) anyWest = true;
-				if (uv.x > +1) anyEast = true;
-				if (uv.y < -1) anySouth = true;
-				if (uv.y > +1) anyNorth = true;
+				// quadrants:
+				int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
+				int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
+				quadrants[qx + 3 * qy] = true;
 			}
 		}
 	}
@@ -120,9 +139,66 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	// (central part of the) object may be still visible:
 	if (!visible)
 	{
-		// This is still a bit conservative, but easy to check:
-		if ((anyWest && anyEast) || (anyNorth && anySouth)) visible = true;
+		using Bools3x3_bits = uint32_t;
+		constexpr Bools3x3_bits quadPairs[9] = {
+			// clang-format off
+			// 0:
+			(0b011 << 6) |
+			(0b011 << 3) |
+			(0b000 << 0),
+			// 1:
+			(0b111 << 6) |
+			(0b111 << 3) |
+			(0b000 << 0),
+			// 2:
+			(0b110 << 6) |
+			(0b110 << 3) |
+			(0b000 << 0),
+			// 3:
+			(0b011 << 6) |
+			(0b011 << 3) |
+			(0b011 << 0),
+			// 4:
+			(0b111 << 6) |
+			(0b101 << 3) |
+			(0b111 << 0),
+			// 5:
+			(0b110 << 6) |
+			(0b110 << 3) |
+			(0b110 << 0),
+			// 6:
+			(0b000 << 6) |
+			(0b011 << 3) |
+			(0b011 << 0),
+			// 7:
+			(0b000 << 6) |
+			(0b111 << 3) |
+			(0b111 << 0),
+			// 8:
+			(0b000 << 6) |
+			(0b110 << 3) |
+			(0b110 << 0),
+			// clang-format on
+		};
+
+		uint32_t q = 0;
+		for (int i = 0; i < 9; i++)
+		{
+			if (quadrants[i]) q = q | (1 << i);
+		}
+
+		for (int i = 0; i < 9 && !visible; i++)
+		{
+			if (!quadrants[i]) continue;
+			if ((q & quadPairs[i]) != 0)
+			{
+				// at least one match for a potential edge crossing the visible
+				// area of the frustum:
+				visible = true;
+			}
+		}
 	}
+	if (!anyGoodDepth) visible = false;
 
 	return {depth, visible};
 }
