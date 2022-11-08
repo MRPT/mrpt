@@ -43,8 +43,7 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 	const Eigen::Vector4f lrp_hm(localPt.x, localPt.y, localPt.z, 1.0f);
 	const auto lrp_proj = (objState.pmv_matrix.asEigen() * lrp_hm).eval();
 
-	const float depth =
-		(lrp_proj(3) != 0) ? lrp_proj(2) / std::abs(lrp_proj(3)) : .001f;
+	const float depth = (lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
 
 	const auto uv = (lrp_proj(3) != 0)
 		? mrpt::math::TPoint2Df(
@@ -85,32 +84,59 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 
 	// for each of the 8 corners:
 	bool visible = false;
-	bool anyNorth = false, anySouth = false, anyEast = false, anyWest = false;
+	bool quadrants[3][3] = {
+		{false, false, false}, {false, false, false}, {false, false, false}};
 
-	for (int ix = 0; !visible && ix < 2; ix++)
+	// dont go thru the (min,max) dimensions of one axis if it's negligible:
+	const auto diag = bbox.max - bbox.min;
+	const float maxLen = mrpt::max3(diag.x, diag.y, diag.z);
+	int numLayersX = 1, numLayersY = 1, numLayersZ = 1;
+	bool anyGoodDepth = false;
+
+	if (maxLen > 0)
+	{
+		numLayersX = (diag.x / maxLen) > 1e-3f ? 2 : 1;
+		numLayersY = (diag.y / maxLen) > 1e-3f ? 2 : 1;
+		numLayersZ = (diag.z / maxLen) > 1e-3f ? 2 : 1;
+	}
+
+	for (int ix = 0; !visible && ix < numLayersX; ix++)
 	{
 		const float x = ends[ix].x;
-		for (int iy = 0; !visible && iy < 2; iy++)
+		for (int iy = 0; !visible && iy < numLayersY; iy++)
 		{
 			const float y = ends[iy].y;
-			for (int iz = 0; !visible && iz < 2; iz++)
+			for (int iz = 0; !visible && iz < numLayersZ; iz++)
 			{
 				const float z = ends[iz].z;
 
 				const auto [uv, bboxDepth] =
 					projectToScreenCoordsAndDepth({x, y, z}, objState);
 
+				const bool goodDepth = bboxDepth > .0f && bboxDepth < 1.0f;
+				anyGoodDepth = anyGoodDepth | goodDepth;
+
+				if (std::string(obj->GetRuntimeClass()->className) ==
+					"mrpt::opengl::CGridPlaneXY")
+				{
+					std::cout << "obj: " << mrpt::format("%p ", ((void*)obj))
+							  << obj->GetRuntimeClass()->className
+							  << " uv: " << uv << " (ix,iy,iz)=" << ix << ","
+							  << iy << "," << iz << " bboxDepth: " << bboxDepth
+							  << "\n";
+				}
+
 				const bool inside =
 					uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1;
-				if (inside)
+				if (inside && goodDepth)
 				{
 					visible = true;
 					break;
 				}
-				if (uv.x < -1) anyWest = true;
-				if (uv.x > +1) anyEast = true;
-				if (uv.y < -1) anySouth = true;
-				if (uv.y > +1) anyNorth = true;
+				// quadrants:
+				int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
+				int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
+				quadrants[qx][qy] = true;
 			}
 		}
 	}
@@ -120,9 +146,27 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	// (central part of the) object may be still visible:
 	if (!visible)
 	{
-		// This is still a bit conservative, but easy to check:
-		if ((anyWest && anyEast) || (anyNorth && anySouth)) visible = true;
+		const auto& q = quadrants;
+		if ((q[0][0] && (q[2][1] || q[2][2])) ||  //
+			(q[0][1] && (q[2][0] || q[2][1] || q[2][2])) ||	 //
+			(q[0][2] && (q[2][0] || q[2][1])) ||  //
+			(q[0][0] && (q[1][2] || q[2][2])) ||  //
+			(q[0][2] && (q[1][0] || q[2][0])) ||  //
+			(q[0][1] && (q[2][1] || q[1][0] || q[1][2])) ||	 //
+			(q[2][1] && (q[0][1] || q[1][0] || q[1][0]))  //
+		)
+		{
+			visible = true;
+			if (std::string(obj->GetRuntimeClass()->className) ==
+				"mrpt::opengl::CGridPlaneXY")
+			{ std::cout << " visible due to cross!\n"; }
+		}
 	}
+	if (!anyGoodDepth) visible = false;
+
+	if (std::string(obj->GetRuntimeClass()->className) ==
+		"mrpt::opengl::CGridPlaneXY")
+	{ std::cout << "RESULT: " << visible << "\n"; }
 
 	return {depth, visible};
 }
