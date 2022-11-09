@@ -70,7 +70,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		CRenderizableShaderWireFrame::freeOpenGLResources();
 		CRenderizableShaderPoints::freeOpenGLResources();
 	}
-	void enqueForRenderRecursive(
+	void enqueueForRenderRecursive(
 		const mrpt::opengl::TRenderMatrices& state,
 		RenderQueue& rq) const override;
 	/** @} */

@@ -204,7 +204,7 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 }
 
 // Render a set of objects
-void mrpt::opengl::enqueForRendering(
+void mrpt::opengl::enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
 	RenderQueueStats* stats)
@@ -213,7 +213,8 @@ void mrpt::opengl::enqueForRendering(
 	using mrpt::math::CMatrixDouble44;
 
 #ifdef MRPT_OPENGL_PROFILER
-	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "enqueForRendering");
+	mrpt::system::CTimeLoggerEntry tle(
+		opengl_profiler(), "enqueueForRendering");
 #endif
 
 	const char* curClassName = nullptr;
@@ -299,7 +300,7 @@ void mrpt::opengl::enqueForRendering(
 			}
 
 			// ...and its children:
-			obj->enqueForRenderRecursive(_, rq);
+			obj->enqueueForRenderRecursive(_, rq);
 
 		}  // end foreach object
 	}

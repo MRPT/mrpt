@@ -36,13 +36,13 @@ void CSetOfObjects::renderUpdateBuffers() const
 
 void CSetOfObjects::render(const RenderContext& rc) const
 {
-	// Do nothing: the enqueForRenderRecursive() does the actual job.
+	// Do nothing: the enqueueForRenderRecursive() does the actual job.
 }
 
-void CSetOfObjects::enqueForRenderRecursive(
+void CSetOfObjects::enqueueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
 {
-	mrpt::opengl::enqueForRendering(m_objects, state, rq);
+	mrpt::opengl::enqueueForRendering(m_objects, state, rq);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }
