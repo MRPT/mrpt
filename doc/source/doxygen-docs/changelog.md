@@ -5,6 +5,7 @@
   - \ref mrpt_containers_grp
     - New template class mrpt::containers::PerThreadDataHolder
   - \ref mrpt_opengl_grp
+    - The rendering pipeline (mrpt::opengl::enqueueForRendering) is now more optimized to cull earlier, achieving faster rendering of large and complex 3D scenes.
     - All opengl shaders, objects, and renderers are now multithread capable, including rendering several FBOs in different threads.
     - mrpt::opengl::CFBORender constructor now takes a parameters struct making it much more configurable.
     - mrpt::opengl::CAssimpModel now supports (de)serializing, storing itself in the Assimp binary format (`assbin`).

@@ -56,7 +56,7 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState)
 {
-	// This profiler has a too-high impact. Only for very ^low-level debugging.
+	// This profiler has a too-high impact. Only for very low-level debugging.
 	/*#ifdef MRPT_OPENGL_PROFILER
 		mrpt::system::CTimeLoggerEntry tle(
 			opengl_profiler(), "depthAndVisibleInView");
@@ -119,8 +119,8 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 				if (!goodDepth)	 // continue;
 					uv *= -1.0;
 
-				const bool inside =
-					uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1;
+				const bool inside = goodDepth &&
+					(uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1);
 				if (inside)
 				{
 					visible = true;
@@ -198,7 +198,7 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 			}
 		}
 	}
-	if (!anyGoodDepth) visible = false;
+	if (!anyGoodDepth) { visible = false; }
 
 	return {depth, visible};
 }
