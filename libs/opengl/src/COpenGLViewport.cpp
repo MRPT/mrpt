@@ -178,7 +178,7 @@ void COpenGLViewport::renderImageMode() const
 	CListOpenGLObjects lst;
 	lst.push_back(m_imageViewPlane);
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueForRendering(lst, _, rq);
+	mrpt::opengl::enqueueForRendering(lst, _, rq);
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(
@@ -290,7 +290,7 @@ void COpenGLViewport::renderNormalSceneMode(
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
 	mrpt::opengl::RenderQueueStats rqStats;
-	mrpt::opengl::enqueForRendering(*objectsToRender, _, rq, &rqStats);
+	mrpt::opengl::enqueueForRendering(*objectsToRender, _, rq, &rqStats);
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(
@@ -346,7 +346,7 @@ void COpenGLViewport::renderViewportBorder() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueForRendering(lst, _, rq);
+	mrpt::opengl::enqueueForRendering(lst, _, rq);
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(
@@ -426,7 +426,7 @@ void COpenGLViewport::renderTextMessages() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueForRendering(objs, _, rq);
+	mrpt::opengl::enqueueForRendering(objs, _, rq);
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(

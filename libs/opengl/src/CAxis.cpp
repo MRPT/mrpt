@@ -152,11 +152,11 @@ void CAxis::onUpdateBuffers_Wireframe()
 		lb->updateBuffers();
 }
 
-void CAxis::enqueForRenderRecursive(
+void CAxis::enqueueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
 {
 	// Enque rendering all text labels:
-	mrpt::opengl::enqueForRendering(m_gl_labels.get(), state, rq);
+	mrpt::opengl::enqueueForRendering(m_gl_labels.get(), state, rq);
 }
 
 void CAxis::render(const RenderContext& rc) const
@@ -164,8 +164,8 @@ void CAxis::render(const RenderContext& rc) const
 	// Base lines render:
 	CRenderizableShaderWireFrame::render(rc);
 
-	// Do nothing for text labels: the enqueForRenderRecursive() does the actual
-	// job.
+	// Do nothing for text labels: the enqueueForRenderRecursive() does the
+	// actual job.
 }
 
 uint8_t CAxis::serializeGetVersion() const { return 2; }

@@ -241,7 +241,7 @@ void CAssimpModel::onUpdateBuffers_Wireframe() {}
 void CAssimpModel::onUpdateBuffers_Points() {}
 void CAssimpModel::onUpdateBuffers_Triangles() {}
 
-void CAssimpModel::enqueForRenderRecursive(
+void CAssimpModel::enqueueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
 {
 	// Enque rendering all textured meshes:
@@ -250,7 +250,7 @@ void CAssimpModel::enqueForRenderRecursive(
 		lst.emplace_back(
 			std::dynamic_pointer_cast<mrpt::opengl::CRenderizable>(o));
 
-	mrpt::opengl::enqueForRendering(lst, state, rq);
+	mrpt::opengl::enqueueForRendering(lst, state, rq);
 }
 
 uint8_t CAssimpModel::serializeGetVersion() const { return 2; }

@@ -29,7 +29,7 @@ class CAxis : public CRenderizableShaderWireFrame
 	 * @{ */
 	void onUpdateBuffers_Wireframe() override;
 	void render(const RenderContext& rc) const override;
-	void enqueForRenderRecursive(
+	void enqueueForRenderRecursive(
 		const mrpt::opengl::TRenderMatrices& state,
 		RenderQueue& rq) const override;
 	/** @} */

@@ -75,7 +75,7 @@ class CSetOfObjects : public CRenderizable
 	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
-	void enqueForRenderRecursive(
+	void enqueueForRenderRecursive(
 		const mrpt::opengl::TRenderMatrices& state,
 		RenderQueue& rq) const override;
 	void freeOpenGLResources() override

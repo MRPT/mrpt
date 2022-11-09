@@ -311,7 +311,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Process all children objects recursively, if the object is a container
 	 */
-	virtual void enqueForRenderRecursive(
+	virtual void enqueueForRenderRecursive(
 		[[maybe_unused]] const mrpt::opengl::TRenderMatrices& state,
 		[[maybe_unused]] RenderQueue& rq) const
 	{
@@ -473,12 +473,12 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
  *
  * \sa processPendingRendering
  */
-void enqueForRendering(
+void enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
 	RenderQueueStats* stats = nullptr);
 
-/** After enqueForRendering(), actually executes the rendering tasks, grouped
+/** After enqueueForRendering(), actually executes the rendering tasks, grouped
  * shader by shader.
  *
  *  \note Used by COpenGLViewport
