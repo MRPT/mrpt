@@ -25,6 +25,10 @@
 #include <cstring>	// memcpy
 #include <vector>
 
+#if defined(_DEBUG)
+#include <mrpt/io/vector_loadsave.h>
+#endif
+
 namespace mrpt
 {
 namespace bayes
