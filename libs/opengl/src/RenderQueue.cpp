@@ -43,12 +43,15 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 	const Eigen::Vector4f lrp_hm(localPt.x, localPt.y, localPt.z, 1.0f);
 	const auto lrp_proj = (objState.pmv_matrix.asEigen() * lrp_hm).eval();
 
-	const float depth = (lrp_proj(3) != 0) ? lrp_proj(2) / lrp_proj(3) : .001f;
+	const float depth =
+		(lrp_proj(3) != 0) ? lrp_proj(2) / std::abs(lrp_proj(3)) : .001f;
 
-	const auto uv = (lrp_proj(3) != 0)
+	auto uv = (lrp_proj(3) != 0)
 		? mrpt::math::TPoint2Df(
 			  lrp_proj(0) / lrp_proj(3), lrp_proj(1) / lrp_proj(3))
 		: mrpt::math::TPoint2Df(.001f, .001f);
+
+	if (depth < -1.0f) uv *= -1.0;
 
 	return {uv, depth};
 }
@@ -66,11 +69,12 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	// eye-distance):
 	const mrpt::math::TPoint3Df lrp = obj->getLocalRepresentativePoint();
 
-	const auto [lrpUV, depth] = projectToScreenCoordsAndDepth(lrp, objState);
+	const auto [lrpUV, lrpDepth] = projectToScreenCoordsAndDepth(lrp, objState);
 
 	// If the object is outside of the camera frustrum, do not even send
 	// it for rendering:
 	// bbox is in local object frame of reference.
+
 	/*#ifdef MRPT_OPENGL_PROFILER
 		mrpt::system::CTimeLoggerEntry tle2(
 			opengl_profiler(), "depthAndVisibleInView.bbox");
@@ -80,25 +84,48 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 		tle2.stop();
 	#endif*/
 
-	const mrpt::math::TPoint3Df ends[2] = {bbox.min, bbox.max};
-
 	// for each of the 8 corners:
 	bool visible = false;
 	bool quadrants[9] = {false, false, false, false, false,
 						 false, false, false, false};
 
+	bool anyGoodDepth = false;
+
+	const auto lambdaProcessSample = [&visible, &anyGoodDepth, &quadrants](
+										 const mrpt::math::TPoint2Df& uv,
+										 const float sampleDepth) {
+		// Do not check for "bboxDepth < 1.0f" since that may only mean
+		// the object is still visible, but farther away than the
+		// farPlane:
+		const bool goodDepth = sampleDepth > -1.0f;
+		anyGoodDepth = anyGoodDepth | goodDepth;
+
+		const bool inside =
+			goodDepth && (uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1);
+		if (inside) { visible = true; }
+		// quadrants:
+		int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
+		int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
+		quadrants[qx + 3 * qy] = true;
+	};
+
+	// 1st) Process the local-representative-point (~body center) sample:
+	// -----------------------------------------------------------------------
+	lambdaProcessSample(lrpUV, lrpDepth);
+
+	// 2nd) then, the rest of 4 or 8 bbox corners:
+	// ------------------------------------------------
 	// dont go thru the (min,max) dimensions of one axis if it's negligible:
 	const auto diag = bbox.max - bbox.min;
 	const float maxLen = mrpt::max3(diag.x, diag.y, diag.z);
 	int numLayersX = 1, numLayersY = 1, numLayersZ = 1;
-	bool anyGoodDepth = false;
-
 	if (maxLen > 0)
 	{
 		numLayersX = (diag.x / maxLen) > 1e-3f ? 2 : 1;
 		numLayersY = (diag.y / maxLen) > 1e-3f ? 2 : 1;
 		numLayersZ = (diag.z / maxLen) > 1e-3f ? 2 : 1;
 	}
+	const mrpt::math::TPoint3Df ends[2] = {bbox.min, bbox.max};
 
 	for (int ix = 0; !visible && ix < numLayersX; ix++)
 	{
@@ -110,29 +137,10 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 			{
 				const float z = ends[iz].z;
 
-				auto [uv, bboxDepth] =
+				const auto [uv, bboxDepth] =
 					projectToScreenCoordsAndDepth({x, y, z}, objState);
 
-				// Do not check for "bboxDepth < 1.0f" since that may only mean
-				// the object is still visible, but farther away than the
-				// farPlane:
-				const bool goodDepth = bboxDepth > -1.0f;
-				anyGoodDepth = anyGoodDepth | goodDepth;
-
-				if (!goodDepth)	 // continue;
-					uv *= -1.0;
-
-				const bool inside = goodDepth &&
-					(uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1);
-				if (inside)
-				{
-					visible = true;
-					break;
-				}
-				// quadrants:
-				int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
-				int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
-				quadrants[qx + 3 * qy] = true;
+				lambdaProcessSample(uv, bboxDepth);
 			}
 		}
 	}
@@ -146,41 +154,41 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 		constexpr Bools3x3_bits quadPairs[9] = {
 			// clang-format off
 			// 0:
-			(0b011 << 6) |
-			(0b011 << 3) |
-			(0b000 << 0),
+			(0b110 << 6) |
+			(0b110 << 3) |
+			(0b000 << 0),   // 0b001 <= I'm here
 			// 1:
 			(0b111 << 6) |
 			(0b111 << 3) |
-			(0b000 << 0),
+			(0b000 << 0),   // 0b010 <= I'm here
 			// 2:
-			(0b110 << 6) |
-			(0b110 << 3) |
-			(0b000 << 0),
-			// 3:
 			(0b011 << 6) |
 			(0b011 << 3) |
-			(0b011 << 0),
+			(0b000 << 0),   // 0b100 <= I'm here
+			// 3:
+			(0b110 << 6) |
+			(0b110 << 3) |  // 0b001 <= I'm here
+			(0b110 << 0),
 			// 4:
 			(0b111 << 6) |
-			(0b101 << 3) |
+			(0b101 << 3) |  // 0b010 <= I'm here
 			(0b111 << 0),
 			// 5:
-			(0b110 << 6) |
+			(0b011 << 6) |
+			(0b011 << 3) |  // 0b100 <= I'm here
+			(0b011 << 0),
+			// 6:
+			(0b000 << 6) |  // 0b001 <= I'm here
 			(0b110 << 3) |
 			(0b110 << 0),
-			// 6:
-			(0b000 << 6) |
-			(0b011 << 3) |
-			(0b011 << 0),
 			// 7:
-			(0b000 << 6) |
+			(0b000 << 6) |  // 0b010 <= I'm here
 			(0b111 << 3) |
 			(0b111 << 0),
 			// 8:
-			(0b000 << 6) |
-			(0b110 << 3) |
-			(0b110 << 0),
+			(0b000 << 6) |  // 0b100 <= I'm here
+			(0b011 << 3) |
+			(0b011 << 0),
 			// clang-format on
 		};
 
@@ -203,7 +211,7 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	}
 	if (!anyGoodDepth) { visible = false; }
 
-	return {depth, visible};
+	return {lrpDepth, visible};
 }
 
 // Render a set of objects
