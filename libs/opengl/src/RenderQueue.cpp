@@ -263,9 +263,10 @@ void mrpt::opengl::enqueueForRendering(
 			auto _ = state;
 
 			// Compose relative to my parent pose:
-			_.mv_matrix.asEigen() = _.mv_matrix.asEigen() * HM.asEigen();
+			_.m_matrix.asEigen() = _.m_matrix.asEigen() * HM.asEigen();
 
-			// Precompute pmv_matrix to be used in shaders:
+			// Precompute matrices to be used in shaders:
+			_.mv_matrix.asEigen() = _.v_matrix.asEigen() * _.m_matrix.asEigen();
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
@@ -351,10 +352,20 @@ void mrpt::opengl::processRenderQueue(
 
 			// Load matrices in shader:
 			const auto IS_TRANSPOSED = GL_TRUE;
+			if (shader.hasUniform("m_matrix"))
+				glUniformMatrix4fv(
+					shader.uniformId("m_matrix"), 1, IS_TRANSPOSED,
+					rqe.renderState.m_matrix.data());
+
 			if (shader.hasUniform("p_matrix"))
 				glUniformMatrix4fv(
 					shader.uniformId("p_matrix"), 1, IS_TRANSPOSED,
 					rqe.renderState.p_matrix.data());
+
+			if (shader.hasUniform("v_matrix"))
+				glUniformMatrix4fv(
+					shader.uniformId("v_matrix"), 1, IS_TRANSPOSED,
+					rqe.renderState.v_matrix.data());
 
 			if (shader.hasUniform("mv_matrix"))
 				glUniformMatrix4fv(

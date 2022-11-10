@@ -157,8 +157,7 @@ void COpenGLViewport::renderImageMode() const
 	const double vw_ratio = double(_.viewport_width) / _.viewport_height;
 	const double ratio = vw_ratio / img_ratio;
 
-	_.mv_matrix.setIdentity();
-	_.p_matrix.setIdentity();
+	_.matricesSetIdentity();
 
 	if (ratio > 1) _.p_matrix(1, 1) *= ratio;
 	else if (ratio > 0)
@@ -172,7 +171,8 @@ void COpenGLViewport::renderImageMode() const
 		p11 /= s;
 	}
 
-	_.pmv_matrix.asEigen() = _.p_matrix.asEigen() * _.mv_matrix.asEigen();
+	_.pmv_matrix.asEigen() =
+		_.p_matrix.asEigen() * _.v_matrix.asEigen() * _.m_matrix.asEigen();
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	CListOpenGLObjects lst;
@@ -321,9 +321,7 @@ void COpenGLViewport::renderViewportBorder() const
 
 	auto _ = m_threadedData.get().state;
 
-	_.mv_matrix.setIdentity();
-	_.p_matrix.setIdentity();
-	_.pmv_matrix.setIdentity();
+	_.matricesSetIdentity();
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -374,11 +372,9 @@ void COpenGLViewport::renderTextMessages() const
 	const auto w = _.viewport_width, h = _.viewport_height;
 	_.is_projective = false;
 
-	_.p_matrix.setIdentity();
-	//_.computeOrthoProjectionMatrix(0, w, 0, h, m_clip_min, m_clip_max);
-
 	// Reset model-view 4x4 matrix to the identity transformation:
-	_.mv_matrix.setIdentity();
+	_.matricesSetIdentity();
+	//_.computeOrthoProjectionMatrix(0, w, 0, h, m_clip_min, m_clip_max);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1077,8 +1073,8 @@ void COpenGLViewport::updateMatricesFromCamera(
 		_.applyLookAt();
 	}
 
-	// Reset model-view 4x4 matrix to the identity transformation:
-	_.mv_matrix.setIdentity();
+	// Reset model4x4 matrix to the identity transformation:
+	_.m_matrix.setIdentity();
 
 	_.initialized = true;
 }

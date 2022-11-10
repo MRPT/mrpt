@@ -98,9 +98,9 @@ void CBox::onUpdateBuffers_Triangles()
 
 	// Front face:
 	tris.emplace_back(
-		P3(c1.x, c0.y, c0.z), P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z));
+		P3(c1.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z), P3(c0.x, c0.y, c0.z));
 	tris.emplace_back(
-		P3(c0.x, c0.y, c0.z), P3(c0.x, c0.y, c1.z), P3(c1.x, c0.y, c1.z));
+		P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z), P3(c0.x, c0.y, c1.z));
 
 	// Back face:
 	tris.emplace_back(
@@ -110,9 +110,9 @@ void CBox::onUpdateBuffers_Triangles()
 
 	// Left face:
 	tris.emplace_back(
-		P3(c0.x, c0.y, c0.z), P3(c0.x, c1.y, c0.z), P3(c0.x, c1.y, c1.z));
+		P3(c0.x, c0.y, c0.z), P3(c0.x, c1.y, c1.z), P3(c0.x, c1.y, c0.z));
 	tris.emplace_back(
-		P3(c0.x, c0.y, c1.z), P3(c0.x, c0.y, c0.z), P3(c0.x, c1.y, c1.z));
+		P3(c0.x, c0.y, c1.z), P3(c0.x, c1.y, c1.z), P3(c0.x, c0.y, c0.z));
 
 	// Right face:
 	tris.emplace_back(
@@ -122,11 +122,11 @@ void CBox::onUpdateBuffers_Triangles()
 
 	// Bottom face:
 	tris.emplace_back(
-		P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z));
+		P3(c0.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z), P3(c1.x, c0.y, c0.z));
 	tris.emplace_back(
-		P3(c0.x, c1.y, c0.z), P3(c0.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z));
-	// Top face:
+		P3(c0.x, c1.y, c0.z), P3(c1.x, c1.y, c0.z), P3(c0.x, c0.y, c0.z));
 
+	// Top face:
 	tris.emplace_back(
 		P3(c0.x, c0.y, c1.z), P3(c1.x, c0.y, c1.z), P3(c1.x, c1.y, c1.z));
 	tris.emplace_back(

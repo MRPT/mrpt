@@ -66,9 +66,8 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles-light.f.glsl"
 				;
-			uniforms = {
-				"p_matrix", "mv_matrix", "light_diffuse", "light_ambient",
-				"light_direction"};
+			uniforms = {"p_matrix",		 "v_matrix",	  "m_matrix",
+						"light_diffuse", "light_ambient", "light_direction"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 			// ==============================
@@ -90,8 +89,9 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/textured-triangles-light.f.glsl"
 				;
-			uniforms = {"p_matrix",		 "mv_matrix",		"light_diffuse",
-						"light_ambient", "light_direction", "textureSampler"};
+			uniforms = {"p_matrix",		 "v_matrix",	  "m_matrix",
+						"light_diffuse", "light_ambient", "light_direction",
+						"textureSampler"};
 			attribs = {"position", "vertexUV", "vertexNormal"};
 			break;
 			// ==============================
