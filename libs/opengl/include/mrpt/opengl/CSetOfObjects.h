@@ -199,7 +199,6 @@ typename T::Ptr CSetOfObjects::getByClass(size_t ith) const
 {
 	MRPT_START
 	size_t foundCount = 0;
-	const auto class_ID = &T::GetRuntimeClassIdStatic();
 	for (const auto& o : m_objects)
 		if (auto obj = std::dynamic_pointer_cast<T>(o); obj)
 			if (foundCount++ == ith) return obj;
