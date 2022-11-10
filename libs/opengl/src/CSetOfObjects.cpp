@@ -264,6 +264,7 @@ auto CSetOfObjects::internalBoundingBoxLocal() const
 
 	for (const auto& o : m_objects)
 	{
+		if (!o) continue;
 		if (first)
 		{
 			bb = o->getBoundingBoxLocalf();
