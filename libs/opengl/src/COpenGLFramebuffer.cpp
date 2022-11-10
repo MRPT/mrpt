@@ -33,10 +33,6 @@ static bool isExtensionSupported([[maybe_unused]] const std::string& extension)
 }
 #endif
 
-COpenGLFramebuffer::COpenGLFramebuffer() : m_impl(std::make_shared<RAII_Impl>())
-{
-}
-
 void COpenGLFramebuffer::RAII_Impl::create(
 	unsigned int width, unsigned int height, int nSamples)
 {
@@ -188,7 +184,7 @@ void COpenGLFramebuffer::RAII_Impl::unbind()
 void COpenGLFramebuffer::blit()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	auto& _ = m_impl->m_state.get();
+	auto& _ = m_impl.m_state.get();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, _.m_Framebuffer);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

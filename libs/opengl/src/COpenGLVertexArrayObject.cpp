@@ -17,10 +17,7 @@
 
 using namespace mrpt::opengl;
 
-COpenGLVertexArrayObject::COpenGLVertexArrayObject()
-{
-	m_impl = std::make_shared<RAII_Impl>();
-}
+COpenGLVertexArrayObject::COpenGLVertexArrayObject() {}
 
 COpenGLVertexArrayObject::RAII_Impl::~RAII_Impl()
 {
