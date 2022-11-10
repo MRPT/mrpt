@@ -71,8 +71,9 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		CRenderizableShaderPoints::freeOpenGLResources();
 	}
 	void enqueueForRenderRecursive(
-		const mrpt::opengl::TRenderMatrices& state,
-		RenderQueue& rq) const override;
+		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+		bool wholeInView) const override;
+	bool isCompositeObject() const override { return true; }
 	/** @} */
 
 	CAssimpModel();

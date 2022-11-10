@@ -58,10 +58,13 @@ struct RenderQueueStats
 
 /** Computes the eye-view depth of an object, and whether any part of its
  * bounding box is visible by the camera in the current state.
- *
- * \ingroup mrpt_opengl_grp
- */
-std::tuple<double, bool> depthAndVisibleInView(
-	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState);
+ * Return:
+ *  - double: Depth of representative point.
+ *  - bool: visible (at least in part)
+ *  - bool: the whole bbox is visible (only checked for CSetOfObjects)
+ * \ingroup mrpt_opengl_grp */
+std::tuple<double, bool, bool> depthAndVisibleInView(
+	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState,
+	const bool skipCullChecks);
 
 }  // namespace mrpt::opengl

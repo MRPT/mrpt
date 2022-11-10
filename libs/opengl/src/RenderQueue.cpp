@@ -56,8 +56,10 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 	return {uv, depth};
 }
 
-std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
-	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState)
+// See docs in .h
+std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(
+	const CRenderizable* obj, const mrpt::opengl::TRenderMatrices& objState,
+	const bool skipCullChecks)
 {
 	// This profiler has a too-high impact. Only for very low-level debugging.
 	/*#ifdef MRPT_OPENGL_PROFILER
@@ -65,11 +67,19 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 			opengl_profiler(), "depthAndVisibleInView");
 	#endif*/
 
+	const bool mustCheckWholeBbox = obj->isCompositeObject();
+
 	// Get a representative depth for this object (to sort objects from
 	// eye-distance):
 	const mrpt::math::TPoint3Df lrp = obj->getLocalRepresentativePoint();
 
 	const auto [lrpUV, lrpDepth] = projectToScreenCoordsAndDepth(lrp, objState);
+
+	if (skipCullChecks)
+	{
+		// direct return:
+		return {lrpDepth, true, true};
+	}
 
 	// If the object is outside of the camera frustrum, do not even send
 	// it for rendering:
@@ -85,29 +95,33 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	#endif*/
 
 	// for each of the 8 corners:
-	bool visible = false;
+	bool anyVisible = false, allVisible = true;
 	bool quadrants[9] = {false, false, false, false, false,
 						 false, false, false, false};
 
 	bool anyGoodDepth = false;
 
-	const auto lambdaProcessSample = [&visible, &anyGoodDepth, &quadrants](
-										 const mrpt::math::TPoint2Df& uv,
-										 const float sampleDepth) {
-		// Do not check for "bboxDepth < 1.0f" since that may only mean
-		// the object is still visible, but farther away than the
-		// farPlane:
-		const bool goodDepth = sampleDepth > -1.0f;
-		anyGoodDepth = anyGoodDepth | goodDepth;
+	const auto lambdaProcessSample =
+		[&anyVisible, &allVisible, &anyGoodDepth, &quadrants](
+			const mrpt::math::TPoint2Df& uv, const float sampleDepth) {
+			// Do not check for "bboxDepth < 1.0f" since that may only mean
+			// the object is still visible, but farther away than the
+			// farPlane:
+			const bool goodDepth = sampleDepth > -1.0f;
+			anyGoodDepth = anyGoodDepth | goodDepth;
 
-		const bool inside =
-			goodDepth && (uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1);
-		if (inside) { visible = true; }
-		// quadrants:
-		int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
-		int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
-		quadrants[qx + 3 * qy] = true;
-	};
+			const bool inside = goodDepth &&
+				(uv.x >= -1 && uv.x <= 1 && uv.y >= -1 && uv.y < 1);
+
+			if (inside) anyVisible = true;
+			else
+				allVisible = false;
+
+			// quadrants:
+			int qx = uv.x < -1 ? 0 : (uv.x > 1 ? 2 : 1);
+			int qy = uv.y < -1 ? 0 : (uv.y > 1 ? 2 : 1);
+			quadrants[qx + 3 * qy] = true;
+		};
 
 	// 1st) Process the local-representative-point (~body center) sample:
 	// -----------------------------------------------------------------------
@@ -127,13 +141,16 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	}
 	const mrpt::math::TPoint3Df ends[2] = {bbox.min, bbox.max};
 
-	for (int ix = 0; !visible && ix < numLayersX; ix++)
+	for (int ix = 0; (mustCheckWholeBbox || !anyVisible) && ix < numLayersX;
+		 ix++)
 	{
 		const float x = ends[ix].x;
-		for (int iy = 0; !visible && iy < numLayersY; iy++)
+		for (int iy = 0; (mustCheckWholeBbox || !anyVisible) && iy < numLayersY;
+			 iy++)
 		{
 			const float y = ends[iy].y;
-			for (int iz = 0; !visible && iz < numLayersZ; iz++)
+			for (int iz = 0;
+				 (mustCheckWholeBbox || !anyVisible) && iz < numLayersZ; iz++)
 			{
 				const float z = ends[iz].z;
 
@@ -148,7 +165,7 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 	// if we already had *any* bbox corner inside the frustrum, it's visible.
 	// if not, *but* the corners are in opposed sides of the frustrum, then the
 	// (central part of the) object may be still visible:
-	if (!visible)
+	if (!anyVisible)
 	{
 		using Bools3x3_bits = uint32_t;
 		constexpr Bools3x3_bits quadPairs[9] = {
@@ -198,27 +215,27 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 			if (quadrants[i]) q = q | (1 << i);
 		}
 
-		for (int i = 0; i < 9 && !visible; i++)
+		for (int i = 0; i < 9 && !anyVisible; i++)
 		{
 			if (!quadrants[i]) continue;
 			if ((q & quadPairs[i]) != 0)
 			{
 				// at least one match for a potential edge crossing the visible
 				// area of the frustum:
-				visible = true;
+				anyVisible = true;
 			}
 		}
 	}
-	if (!anyGoodDepth) { visible = false; }
+	if (!anyGoodDepth) { anyVisible = false; }
 
-	return {lrpDepth, visible};
+	return {lrpDepth, anyVisible, allVisible};
 }
 
 // Render a set of objects
 void mrpt::opengl::enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	RenderQueueStats* stats)
+	const bool skipCullChecks, RenderQueueStats* stats)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	using mrpt::math::CMatrixDouble44;
@@ -278,7 +295,8 @@ void mrpt::opengl::enqueueForRendering(
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
 
-			const auto [depth, withinView] = depthAndVisibleInView(obj, _);
+			const auto [depth, withinView, wholeInView] =
+				depthAndVisibleInView(obj, _, skipCullChecks);
 
 			if (withinView)
 			{
@@ -312,7 +330,7 @@ void mrpt::opengl::enqueueForRendering(
 			}
 
 			// ...and its children:
-			obj->enqueueForRenderRecursive(_, rq);
+			obj->enqueueForRenderRecursive(_, rq, wholeInView);
 
 		}  // end foreach object
 	}
