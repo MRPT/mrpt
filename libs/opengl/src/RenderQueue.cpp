@@ -113,7 +113,10 @@ std::tuple<double, bool> mrpt::opengl::depthAndVisibleInView(
 				auto [uv, bboxDepth] =
 					projectToScreenCoordsAndDepth({x, y, z}, objState);
 
-				const bool goodDepth = bboxDepth > -1.0f && bboxDepth < 1.0f;
+				// Do not check for "bboxDepth < 1.0f" since that may only mean
+				// the object is still visible, but farther away than the
+				// farPlane:
+				const bool goodDepth = bboxDepth > -1.0f;
 				anyGoodDepth = anyGoodDepth | goodDepth;
 
 				if (!goodDepth)	 // continue;
