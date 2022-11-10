@@ -321,7 +321,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		{
 			if (auto obj = std::dynamic_pointer_cast<CSetOfObjects>(o); obj)
 			{
-				if (auto f = obj->getByClass<T>(ith); f) return f;
+				if (auto f = obj->template getByClass<T>(ith); f) return f;
 			}
 		}
 		return typename T::Ptr();  // Not found: return empty smart pointer
