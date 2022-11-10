@@ -42,6 +42,7 @@ void TRenderMatrices::computeNoProjectionMatrix(float znear, float zfar)
 	m_last_z_far = zfar;
 
 	p_matrix.setIdentity();
+	v_matrix.setIdentity();
 }
 
 // Replacement for obsolete: gluPerspective() and glOrtho()
