@@ -55,30 +55,30 @@ class COpenGLBuffer
 	Type type() const
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		return m_impl->type;
+		return m_impl.type;
 	}
 
 	Usage usage() const
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		return m_impl->usage;
+		return m_impl.usage;
 	}
 	void setUsage(const Usage u)
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl->usage = u;
+		m_impl.usage = u;
 	}
 
 	/** Calls create() only if the buffer has not been created yet. */
 	void createOnce()
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		if (!m_impl->created) m_impl->create();
+		if (!m_impl.created) m_impl.create();
 	}
 	bool initialized() const
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		return m_impl->created;
+		return m_impl.created;
 	}
 
 	/** Automatically called upon destructor, no need for the user to call it in
@@ -86,24 +86,24 @@ class COpenGLBuffer
 	void destroy()
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl->destroy();
+		m_impl.destroy();
 	}
 
 	void bind()
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl->bind();
+		m_impl.bind();
 	}
 	void unbind()
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl->unbind();
+		m_impl.unbind();
 	}
 
 	unsigned int bufferId() const
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		return m_impl->buffer_id;
+		return m_impl.buffer_id;
 	}
 
 	/** Reserves byteCount bytes in the buffer and copy to it the provided data.
@@ -112,7 +112,7 @@ class COpenGLBuffer
 	void allocate(const void* data, int byteCount)
 	{
 		auto lck = mrpt::lockHelper(m_implMtx.data);
-		m_impl->allocate(data, byteCount);
+		m_impl.allocate(data, byteCount);
 	}
 
    private:
@@ -134,7 +134,7 @@ class COpenGLBuffer
 		unsigned int buffer_id = 0;
 		std::thread::id created_from;
 	};
-	std::shared_ptr<RAII_Impl> m_impl;
+	RAII_Impl m_impl;
 	mrpt::containers::NonCopiableData<std::mutex> m_implMtx;
 };
 

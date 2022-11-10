@@ -30,18 +30,18 @@ class COpenGLVertexArrayObject
 	/** Calls create() only if the buffer has not been created yet. */
 	void createOnce()
 	{
-		if (!isCreated()) m_impl->create();
+		if (!isCreated()) m_impl.create();
 	}
-	bool isCreated() const { return m_impl->m_state.get().created; }
+	bool isCreated() const { return m_impl.m_state.get().created; }
 
 	/** Automatically called upon destructor, no need for the user to call it in
 	 * normal situations. */
-	void destroy() { m_impl->destroy(); }
+	void destroy() { m_impl.destroy(); }
 
-	void bind() { m_impl->bind(); }
-	void release() { m_impl->bind(); }
+	void bind() { m_impl.bind(); }
+	void release() { m_impl.bind(); }
 
-	unsigned int bufferId() const { return m_impl->m_state.get().buffer_id; }
+	unsigned int bufferId() const { return m_impl.m_state.get().buffer_id; }
 
    private:
 	struct RAII_Impl
@@ -62,7 +62,7 @@ class COpenGLVertexArrayObject
 
 		mrpt::containers::PerThreadDataHolder<State> m_state;
 	};
-	std::shared_ptr<RAII_Impl> m_impl;
+	RAII_Impl m_impl;
 };
 
 }  // namespace mrpt::opengl
