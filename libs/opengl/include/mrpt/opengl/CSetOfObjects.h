@@ -201,18 +201,15 @@ typename T::Ptr CSetOfObjects::getByClass(size_t ith) const
 	size_t foundCount = 0;
 	const auto class_ID = &T::GetRuntimeClassIdStatic();
 	for (const auto& o : m_objects)
-		if (o && o->GetRuntimeClass()->derivedFrom(class_ID))
-			if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(o);
+		if (auto obj = std::dynamic_pointer_cast<T>(o); obj)
+			if (foundCount++ == ith) return obj;
 
 	// If not found directly, search recursively:
 	for (const auto& o : m_objects)
 	{
-		if (o &&
-			o->GetRuntimeClass() ==
-				CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+		if (auto objs = std::dynamic_pointer_cast<CSetOfObjects>(o); objs)
 		{
-			typename T::Ptr obj = std::dynamic_pointer_cast<CSetOfObjects>(o)
-									  ->template getByClass<T>(ith);
+			typename T::Ptr obj = objs->template getByClass<T>(ith);
 			if (obj) return obj;
 		}
 	}
