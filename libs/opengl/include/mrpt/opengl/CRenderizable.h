@@ -310,13 +310,21 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual void render(const RenderContext& rc) const = 0;
 
 	/** Process all children objects recursively, if the object is a container
+	 *  \param wholeInView If true, it means that the render engine has already
+	 * verified that the whole bounding box lies within the visible part of the
+	 * viewport, so further culling checks can be discarded.
 	 */
 	virtual void enqueueForRenderRecursive(
 		[[maybe_unused]] const mrpt::opengl::TRenderMatrices& state,
-		[[maybe_unused]] RenderQueue& rq) const
+		[[maybe_unused]] RenderQueue& rq,
+		[[maybe_unused]] bool wholeInView) const
 	{
 		// do thing
 	}
+	/** Should return true if enqueueForRenderRecursive() is defined since
+	 *  the object has inner children. Examples: CSetOfObjects, CAssimpModel.
+	 */
+	virtual bool isCompositeObject() const { return false; }
 
 	/** Called whenever m_outdatedBuffers is true: used to re-generate
 	 * OpenGL vertex buffers, etc. before they are sent for rendering in
@@ -469,6 +477,10 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
  *   - call its ::render()
  *   - shows its name (if enabled).
  *
+ * \param skipCullChecks Will be true if the render engine already checked that
+ *        the object lies within the viewport area, so it is pointless to waste
+ *        more time checking.
+ *
  * \note Used by CSetOfObjects and COpenGLViewport
  *
  * \sa processPendingRendering
@@ -476,7 +488,7 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 void enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	RenderQueueStats* stats = nullptr);
+	const bool skipCullChecks, RenderQueueStats* stats = nullptr);
 
 /** After enqueueForRendering(), actually executes the rendering tasks, grouped
  * shader by shader.

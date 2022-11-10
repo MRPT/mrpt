@@ -40,9 +40,10 @@ void CSetOfObjects::render(const RenderContext& rc) const
 }
 
 void CSetOfObjects::enqueueForRenderRecursive(
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	bool wholeInView) const
 {
-	mrpt::opengl::enqueueForRendering(m_objects, state, rq);
+	mrpt::opengl::enqueueForRendering(m_objects, state, rq, wholeInView);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }

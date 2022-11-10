@@ -153,10 +153,12 @@ void CAxis::onUpdateBuffers_Wireframe()
 }
 
 void CAxis::enqueueForRenderRecursive(
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	bool wholeInView) const
 {
 	// Enque rendering all text labels:
-	mrpt::opengl::enqueueForRendering(m_gl_labels.get(), state, rq);
+	mrpt::opengl::enqueueForRendering(
+		m_gl_labels.get(), state, rq, wholeInView);
 }
 
 void CAxis::render(const RenderContext& rc) const
