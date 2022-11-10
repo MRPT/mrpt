@@ -18,15 +18,49 @@ namespace mrpt::opengl
 /** Rendering state related to the projection and model-view matrices.
  * Used to store matrices that will be sent to shaders.
  *
- * The homogeneous coordinates of a rendered point comes from:
+ * The homogeneous coordinates of a rendered point comes from the product
+ * (from right to left) of MODEL, VIEW and PROJECTION matrices:
  *
- *  p = p_matrix * mv_matrix * [x y z 1.0]'
+ *  p = p_matrix * v_matrix * m_matrix * [x y z 1.0]'
  *
  * \ingroup mrpt_opengl_grp
  */
 struct TRenderMatrices
 {
 	TRenderMatrices() = default;
+
+	/** Projection matrix, computed by renderNormalScene() from all the
+	 * parameters above. Used in shaders. */
+	mrpt::math::CMatrixFloat44 p_matrix;
+
+	/** Model matrix. */
+	mrpt::math::CMatrixFloat44 m_matrix;
+
+	/** View matrix. */
+	mrpt::math::CMatrixFloat44 v_matrix;
+
+	/** Result of p_matrix * mv_matrix. Used in shaders.
+	 * Updated by renderSetOfObjects()
+	 */
+	mrpt::math::CMatrixFloat44 pmv_matrix;
+
+	/** Result of v_matrix * m_matrix. Used in shaders.
+	 * Updated by renderSetOfObjects()
+	 */
+	mrpt::math::CMatrixFloat44 mv_matrix;
+
+	void matricesSetIdentity()
+	{
+		p_matrix.setIdentity();
+		m_matrix.setIdentity();
+		v_matrix.setIdentity();
+		mv_matrix.setIdentity();
+		pmv_matrix.setIdentity();
+	}
+
+	/** Use the intrinsics (cx,cy,fx,fy) from this model instead of FOV, if
+	 * defined. */
+	std::optional<mrpt::img::TCamera> pinhole_model;
 
 	/** Is set to true by  COpenGLViewport::updateMatricesFromCamera() */
 	bool initialized = false;
@@ -46,28 +80,12 @@ struct TRenderMatrices
 	/** Vertical FOV in degrees, used only if pinhole_model is not set. */
 	double FOV = 30.0f;
 
-	/** Use the intrinsics (cx,cy,fx,fy) from this model instead of FOV, if
-	 * defined. */
-	std::optional<mrpt::img::TCamera> pinhole_model;
-
 	/** Camera elev & azimuth, in radians. */
 	double azimuth = .0, elev = .0;
 	double eyeDistance = 1.0f;
 
 	/** true: projective, false: ortho */
 	bool is_projective = true;
-
-	/** Projection matrix, computed by renderNormalScene() from all the
-	 * parameters above. Used in shaders. */
-	mrpt::math::CMatrixFloat44 p_matrix;
-
-	/** Model-view matrix. */
-	mrpt::math::CMatrixFloat44 mv_matrix;
-
-	/** Result of p_matrix * mv_matrix. Used in shaders.
-	 * Updated by renderSetOfObjects()
-	 */
-	mrpt::math::CMatrixFloat44 pmv_matrix;
 
 	/** Uses is_projective , vw,vh, etc. and computes p_matrix from either:
 	 *  - pinhole_model if set, or
