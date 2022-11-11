@@ -519,7 +519,7 @@ void COpenGLViewport::render(
 #endif
 }
 
-uint8_t COpenGLViewport::serializeGetVersion() const { return 6; }
+uint8_t COpenGLViewport::serializeGetVersion() const { return 7; }
 void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -528,8 +528,8 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 		<< m_view_width << m_view_height;
 
 	// Added in v1:
-	out << m_custom_backgb_color << m_background_color.R << m_background_color.G
-		<< m_background_color.B << m_background_color.A;
+	out << m_background_color.R << m_background_color.G << m_background_color.B
+		<< m_background_color.A;
 
 	// Save objects:
 	uint32_t n;
@@ -588,17 +588,16 @@ void COpenGLViewport::serializeFrom(
 			// in v1:
 			if (version >= 1)
 			{
-				in >> m_custom_backgb_color >> m_background_color.R >>
-					m_background_color.G >> m_background_color.B >>
-					m_background_color.A;
-			}
-			else
-			{
-				m_custom_backgb_color = false;
-			}
+				if (version < 7)
+				{
+					// field removed in v7:
+					bool was_m_custom_backgb_color;
+					in >> was_m_custom_backgb_color;
+				}
 
-			// Change in MRPT 2.5.6
-			if (!m_custom_backgb_color) { m_custom_backgb_color = true; }
+				in >> m_background_color.R >> m_background_color.G >>
+					m_background_color.B >> m_background_color.A;
+			}
 
 			// Load objects:
 			uint32_t n;
