@@ -51,7 +51,7 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 			  lrp_proj(0) / lrp_proj(3), lrp_proj(1) / lrp_proj(3))
 		: mrpt::math::TPoint2Df(.001f, .001f);
 
-	if (depth < -1.0f) uv *= -1.0;
+	if (depth < -1.0f && objState.is_projective) uv *= -1.0;
 
 	return {uv, depth};
 }
