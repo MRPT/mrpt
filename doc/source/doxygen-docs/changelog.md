@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.5.6: UNRELEASED
+# Version 2.5.6: Released November 12th, 2022
 - Changes in libraries:
   - \ref mrpt_containers_grp
     - New template class mrpt::containers::PerThreadDataHolder
