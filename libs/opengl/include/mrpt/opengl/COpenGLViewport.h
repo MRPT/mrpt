@@ -222,7 +222,6 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Defines the viewport background color */
 	inline void setCustomBackgroundColor(const mrpt::img::TColorf& color)
 	{
-		m_custom_backgb_color = true;
 		m_background_color = color;
 	}
 
@@ -439,13 +438,10 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** The viewport position [0,1] */
 	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
-	/** The min/max clip depth distances (default: 0.1 - 10000) */
-	float m_clip_min = 0.1f, m_clip_max = 10000.0f;
 
-	/// Note MRPT 2.5.6: kept for backwards compat. Always true.
-	bool m_custom_backgb_color = true;
+	/** The min/max clip depth distances (default: 0.01 - 10000) */
+	float m_clip_min = 0.01f, m_clip_max = 10000.0f;
 
-	/** used only if m_custom_backgb_color */
 	mrpt::img::TColorf m_background_color = {0.4f, 0.4f, 0.4f};
 
 	/** The image to display, after calling \a setImageView() */
