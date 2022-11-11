@@ -19,6 +19,7 @@
       - mrpt::system::timeLocalToString()
 - Build system:
   - Provide CMAKE_BUILD_TYPES `SanitizeThread` and `SanitizeAddress`.
+  - Fix build against latest (Debian/sid) libglut-dev.
 - BUG FIXES:
   - Fix build against latest version of EMSDK (Emscripten).
   - Fix wrong scaling of samples in mrpt::random::CRandomGenerator::drawGaussianMultivariate() and mrpt::random::CRandomGenerator::drawGaussianMultivariateMany()

@@ -77,6 +77,11 @@ if(OpenGL_FOUND)
 	list(APPEND MRPT_OPENGL_LIBS imp_opengl)
 endif()
 
+# Fix for latest libglut-dev packages on debian/unstable (Dec 2022)
+if (NOT GLUT_glut_LIBRARY AND GLUT_LIBRARIES)
+	set(GLUT_glut_LIBRARY ${GLUT_LIBRARIES})
+endif()
+
 if(UNIX AND GLUT_FOUND AND OpenGL_FOUND AND OPENGL_glu_LIBRARY AND GLUT_glut_LIBRARY)
 	set(CMAKE_MRPT_HAS_OPENGL_GLUT 1)
 	set(CMAKE_MRPT_HAS_OPENGL_GLUT_SYSTEM 1)
