@@ -62,8 +62,26 @@ struct TRenderMatrices
 	 * defined. */
 	std::optional<mrpt::img::TCamera> pinhole_model;
 
+	/** Vertical FOV in degrees, used only if pinhole_model is not set. */
+	double FOV = 30.0f;
+
+	/** Camera elev & azimuth, in radians. */
+	double azimuth = .0, elev = .0;
+	double eyeDistance = 1.0f;
+
+	/** In pixels. This may be smaller than the total render window. */
+	uint32_t viewport_width = 640, viewport_height = 480;
+
+   private:
+	// (private fields reordered here to minimize padding)
+	float m_last_z_near = 0, m_last_z_far = 0;
+
+   public:
 	/** Is set to true by  COpenGLViewport::updateMatricesFromCamera() */
 	bool initialized = false;
+
+	/** true: projective, false: ortho */
+	bool is_projective = true;
 
 	/** The camera is here. */
 	mrpt::math::TPoint3D eye = {0, 0, 0};
@@ -73,19 +91,6 @@ struct TRenderMatrices
 
 	/** Up vector of the camera. */
 	mrpt::math::TPoint3D up = {0, 0, 0};
-
-	/** In pixels. This may be smaller than the total render window. */
-	uint32_t viewport_width = 640, viewport_height = 480;
-
-	/** Vertical FOV in degrees, used only if pinhole_model is not set. */
-	double FOV = 30.0f;
-
-	/** Camera elev & azimuth, in radians. */
-	double azimuth = .0, elev = .0;
-	double eyeDistance = 1.0f;
-
-	/** true: projective, false: ortho */
-	bool is_projective = true;
 
 	/** Uses is_projective , vw,vh, etc. and computes p_matrix from either:
 	 *  - pinhole_model if set, or
@@ -128,9 +133,6 @@ struct TRenderMatrices
 
 	void saveToYaml(mrpt::containers::yaml& c) const;
 	void print(std::ostream& o) const;
-
-   private:
-	float m_last_z_near = 0, m_last_z_far = 0;
 };
 
 }  // namespace mrpt::opengl
