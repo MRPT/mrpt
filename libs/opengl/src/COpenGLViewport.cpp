@@ -578,6 +578,7 @@ void COpenGLViewport::serializeFrom(
 		case 4:
 		case 5:
 		case 6:
+		case 7:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
