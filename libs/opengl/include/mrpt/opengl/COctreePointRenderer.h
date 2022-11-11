@@ -168,7 +168,7 @@ class COctreePointRenderer
 		mrpt::math::TPoint3Df center;
 		/** [is_leaf=false] The indices in \a m_octree_nodes of the 8 children.
 		 */
-		size_t child_id[8];
+		size_t child_id[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 		/** update bounding box with a new point: */
 		inline void update_bb(const mrpt::math::TPoint3Df& p)
