@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.5.7: Unreleased
+(None)
+
 # Version 2.5.6: Released November 12th, 2022
 - Changes in libraries:
   - \ref mrpt_containers_grp
