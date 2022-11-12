@@ -9,6 +9,7 @@
 
 #include "opengl-precomp.h"	 // Precompiled header
 //
+#include <mrpt/containers/yaml.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
@@ -64,7 +65,24 @@ void CCamera::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 }
 
 /** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
-auto CCamera::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CCamera::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox::PlusMinusInfinity();
+	return {};
+}
+
+void CCamera::toYAMLMap(mrpt::containers::yaml& p) const
+{
+	CRenderizable::toYAMLMap(p);
+
+	MCP_SAVE(p, m_pointingX);
+	MCP_SAVE(p, m_pointingY);
+	MCP_SAVE(p, m_pointingZ);
+	MCP_SAVE(p, m_eyeDistance);
+	MCP_SAVE(p, m_azimuthDeg);
+	MCP_SAVE(p, m_elevationDeg);
+	MCP_SAVE(p, m_projectiveModel);
+	MCP_SAVE(p, m_projectiveFOVdeg);
+	MCP_SAVE(p, m_useNoProjection);
+
+	if (m_pinholeModel) p["pinholeModel"] = m_pinholeModel->asYAML();
 }

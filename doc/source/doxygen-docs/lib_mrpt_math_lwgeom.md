@@ -3,12 +3,12 @@
 
 Lightweight SE(2)/SE(3) data types, geometry functions, etc.
 
-The "lightweight" name comes from the fact that these classes are simple
-structures without special memory alignment requirements and do not have a deep
-hiearchy of class heritance.
-
-This is in contrast to classes derived from mrpt::poses::CPoseOrPoint, which in
-turn offer:
+The "lightweight" adjective is used here in contrast to classes derived
+from mrpt::poses::CPoseOrPoint. 
+The "lightweight" alternative types here, defined in mrpt::math, are simple
+C++ structures without special memory alignment requirements and without 
+a deep hiearchy of class inheritance, as the "heavier" classes in mrpt::poses have.
+In turn, the latter ones offer:
  - Serialization (see: \ref mrpt_serialization_grp)
  - Buffered trigronometric calculations (e.g. mrpt::poses::CPose3D), hence they
 will be preferred to lightweight alternaives (e.g. mrpt::math::TPose3D) if the

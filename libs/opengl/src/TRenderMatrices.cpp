@@ -42,6 +42,7 @@ void TRenderMatrices::computeNoProjectionMatrix(float znear, float zfar)
 	m_last_z_far = zfar;
 
 	p_matrix.setIdentity();
+	v_matrix.setIdentity();
 }
 
 // Replacement for obsolete: gluPerspective() and glOrtho()
@@ -179,7 +180,8 @@ void TRenderMatrices::applyLookAt()
 
 	// Homogeneous matrices composition:
 	// Overwrite projection matrix:
-	p_matrix.asEigen() = p_matrix.asEigen() * m.asEigen();
+	// p_matrix.asEigen() = p_matrix.asEigen() * m.asEigen();
+	v_matrix = m;
 }
 
 void TRenderMatrices::projectPoint(
@@ -221,7 +223,8 @@ void TRenderMatrices::saveToYaml(mrpt::containers::yaml& c) const
 	c["up"] = up.asString();
 
 	c["p_matrix"] = mrpt::containers::yaml::FromMatrix(p_matrix);
-	c["mv_matrix"] = mrpt::containers::yaml::FromMatrix(mv_matrix);
+	c["v_matrix"] = mrpt::containers::yaml::FromMatrix(v_matrix);
+	c["m_matrix"] = mrpt::containers::yaml::FromMatrix(m_matrix);
 }
 
 void TRenderMatrices::print(std::ostream& o) const

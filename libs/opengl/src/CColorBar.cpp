@@ -67,7 +67,7 @@ void CColorBar::render(const RenderContext& rc) const
 	// colobars are typically displayed on-top
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -85,9 +85,15 @@ void CColorBar::renderUpdateBuffers() const
 
 void CColorBar::onUpdateBuffers_all()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	auto& lines_vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& lines_cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	lines_vbd.clear();
 	lines_cbd.clear();
 
@@ -225,8 +231,8 @@ void CColorBar::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CColorBar::getBoundingBox() const -> mrpt::math::TBoundingBox
+mrpt::math::TBoundingBoxf CColorBar::internalBoundingBoxLocal() const
 {
-	return mrpt::math::TBoundingBox({0, 0, 0}, {m_width, m_height, .0})
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{.0f, .0f, .0f}, {d2f(m_width), d2f(m_height), .0f});
 }

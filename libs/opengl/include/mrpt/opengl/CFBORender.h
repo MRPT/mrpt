@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <mrpt/core/format.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLFramebuffer.h>
@@ -36,29 +37,69 @@ namespace mrpt::opengl
 class CFBORender
 {
    public:
-	/** Constructor.
-	 * \param[in] skip_create_egl_context Should be set to true only if another
-	 * GUI windows already exist with an associated OpenGL context. If left to
-	 * false, a display-less EGL context will be created.
-	 */
-	CFBORender(
-		unsigned int width = 800, unsigned int height = 600,
-		const bool skip_create_egl_context = false);
+	/** Parameters for CFBORender constructor */
+	struct Parameters
+	{
+		Parameters() = default;
+
+		Parameters(unsigned int Width, unsigned int Height)
+			: width(Width), height(Height)
+		{
+		}
+
+		unsigned int width = 800;  //!< Width of images to render.
+		unsigned int height = 600;	//!< Height of images to render.
+
+		/** By default, each CFBORender constructor will create its own EGL
+		 * context, which enables using them in different threads, use in
+		 * head-less applications, etc.
+		 *
+		 *  Set this to false to save that effort, only if it is ensured that
+		 * render calls will always happen from a thread where OpenGL has been
+		 * already initialized and a context created.
+		 */
+		bool create_EGL_context = true;
+
+		/** Can be used to select a particular GPU (or software-emulated)
+		 * device.
+		 *
+		 * Create a CFBORender object with the environment variable
+		 * MRPT_FBORENDER_SHOW_DEVICES=true to see a list of available and
+		 * detected GPU devices. */
+		int deviceIndexToUse = 0;
+
+		int blueSize = 8, redSize = 8, greenSize = 8, depthSize = 24;
+		bool conformantOpenGLES2 = false;  //!< Default: EGL_OPENGL_ES_BIT
+		bool renderableOpenGLES2 = false;  //!< Default: EGL_OPENGL_ES_BIT
+		bool bindOpenGLES_API = false;	//!< Default: EGL_OPENGL_API
+		int contextMajorVersion = 0;  //!< 0=default
+		int contextMinorVersion = 0;  //!< 0=default
+		/// See https://www.khronos.org/opengl/wiki/Debug_Output
+		bool contextDebug = false;
+	};
+
+	/** Main constructor */
+	CFBORender(const Parameters& p);
+
+	/** Constructor */
+	CFBORender(unsigned int width = 800, unsigned int height = 600)
+		: CFBORender(Parameters(width, height))
+	{
+	}
 
 	/** Destructor */
-	virtual ~CFBORender();
+	~CFBORender();
 
-	/** Change the scene camera */
+	/** Change the scene camera to be used when rendering the scene through this
+	 * particular instance of CFBORender. */
 	void setCamera(const COpenGLScene& scene, const CCamera& camera)
 	{
-		scene.getViewport("main")->getCamera() = camera;
+		m_renderFromCamera = camera;
 	}
 
-	/** Get a reference to the scene camera */
-	CCamera& getCamera(const COpenGLScene& scene)
-	{
-		return scene.getViewport("main")->getCamera();
-	}
+	/** Get a reference to the scene camera to be used when rendering the scene
+	 * through this particular instance of CFBORender. */
+	CCamera& getCamera(const COpenGLScene& scene) { return m_renderFromCamera; }
 
 	/** Render the scene and get the rendered RGB image. Resizes the image
 	 *  buffer if necessary to the configured render resolution.
@@ -90,10 +131,17 @@ class CFBORender
 		const COpenGLScene& scene, mrpt::math::CMatrixFloat& outDepth);
 
    protected:
-	COpenGLFramebuffer m_fb;
-
 	void* m_eglDpy = nullptr;
+	void* m_eglCfg = nullptr;  // EGLConfig
+	void* m_eglContext = nullptr;
+	void* m_eglSurf = nullptr;	// EGLSurface
+
 	unsigned int m_texRGB = 0;
+
+	const Parameters m_params;	//!< Parameters used in the ctor
+
+	COpenGLFramebuffer m_fb;
+	mrpt::opengl::CCamera m_renderFromCamera;
 
 	void internal_render_RGBD(
 		const COpenGLScene& scene,

@@ -16,6 +16,7 @@
 
 #include <atomic>
 #include <deque>
+#include <shared_mutex>
 
 namespace mrpt
 {
@@ -167,7 +168,7 @@ class COctreePointRenderer
 		mrpt::math::TPoint3Df center;
 		/** [is_leaf=false] The indices in \a m_octree_nodes of the 8 children.
 		 */
-		size_t child_id[8];
+		size_t child_id[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 		/** update bounding box with a new point: */
 		inline void update_bb(const mrpt::math::TPoint3Df& p)
@@ -277,13 +278,15 @@ class COctreePointRenderer
 	/** The list of elements that really are visible and will be rendered. */
 	mutable std::vector<TRenderQueueElement> m_render_queue;
 
-	bool m_octree_has_to_rebuild_all{true};
+	bool m_octree_has_to_rebuild_all = true;
 	/** First one [0] is always the root node */
 	std::deque<TNode> m_octree_nodes;
 
 	// Counters of visible octrees for each render:
 	mutable std::atomic<size_t> m_visible_octree_nodes = 0;
 	mutable size_t m_visible_octree_nodes_ongoing = 0;
+
+	std::shared_mutex m_ptsOctreeMtx;
 
 	/** Render a given node. */
 	void octree_recursive_render(
@@ -569,7 +572,12 @@ class COctreePointRenderer
 	// octree_assure_uptodate()
 	void internal_octree_assure_uptodate()
 	{
+		std::shared_lock<std::shared_mutex> readLock(m_ptsOctreeMtx);
 		if (!m_octree_has_to_rebuild_all) return;
+
+		readLock.unlock();
+
+		std::unique_lock<std::shared_mutex> writeLock(m_ptsOctreeMtx);
 		m_octree_has_to_rebuild_all = false;
 
 		// Reset list of nodes:
@@ -588,7 +596,8 @@ class COctreePointRenderer
 		const size_t node_id, const bool all_pts = false)
 	{
 		TNode& node = m_octree_nodes[node_id];
-		const size_t N = all_pts ? octree_derived().size() : node.pts.size();
+		const size_t N =
+			all_pts ? octree_derived().size_unprotected() : node.pts.size();
 
 		const bool has_to_compute_bb = (node_id == OCTREE_ROOT_NODE);
 
@@ -720,6 +729,7 @@ class COctreePointRenderer
 	 * cloud or any global octree parameter) */
 	inline void octree_mark_as_outdated()
 	{
+		std::unique_lock<std::shared_mutex> writeLock(m_ptsOctreeMtx);
 		m_octree_has_to_rebuild_all = true;
 	}
 
@@ -766,7 +776,7 @@ class COctreePointRenderer
 				if (node.all)
 				{
 					o << "(all)\n";
-					total_elements += octree_derived().size();
+					total_elements += octree_derived().size_unprotected();
 				}
 				else
 				{

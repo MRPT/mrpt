@@ -81,6 +81,9 @@ void CSetOfLines::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 	vbd.reserve(m_Segments.size() * 2);
 
@@ -98,6 +101,9 @@ void CSetOfLines::onUpdateBuffers_Points()
 {
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
+
 	vbd.clear();
 	cbd.clear();
 
@@ -172,33 +178,20 @@ void CSetOfLines::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CSetOfLines::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSetOfLines::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	mrpt::math::TBoundingBox bb;
-
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& s : m_Segments)
 	{
 		for (size_t p = 0; p < 2; p++)
 		{
 			const TPoint3D& pt = s[p];
-			for (size_t j = 0; j < 3; j++)
-			{
-				keep_min(bb.min[j], pt[j]);
-				keep_max(bb.max[j], pt[j]);
-			}
+			bb.updateWithPoint(pt);
 		}
 	}
 
-	// Convert to coordinates of my parent:
-	return bb.compose(m_pose);
+	return bb;
 }
 
 void CSetOfLines::getLineByIndex(

@@ -1,5 +1,30 @@
 \page changelog Change Log
 
+# Version 2.5.6: Released November 12th, 2022
+- Changes in libraries:
+  - \ref mrpt_containers_grp
+    - New template class mrpt::containers::PerThreadDataHolder
+  - \ref mrpt_opengl_grp
+    - The rendering pipeline (mrpt::opengl::enqueueForRendering) is now more optimized to cull earlier, achieving faster rendering of large and complex 3D scenes.
+    - All opengl shaders, objects, and renderers are now multithread capable, including rendering several FBOs in different threads.
+    - mrpt::opengl::CFBORender constructor now takes a parameters struct making it much more configurable.
+    - mrpt::opengl::CAssimpModel now supports (de)serializing, storing itself in the Assimp binary format (`assbin`).
+    - New opengl shaders: one set for light-enabled objects and another for objects without diffuse reflection effects (to avoid conditionals inside the GPU shader programs).
+  - \ref mrpt_gui_grp
+    - mrpt::gui OpenGL canvas windows and components no longer have a background color property. It is now always handled by the mrpt::opengl::COpenGLViewport to avoid duplicated functionalities.
+  - \ref mrpt_system_grp
+    - These functions are now thread-safe if built in a system with the `localtime_r()` variant of `localtime()`:
+      - mrpt::system::timestampToParts()
+      - mrpt::system::dateTimeLocalToString()
+      - mrpt::system::timeLocalToString()
+- Build system:
+  - Provide CMAKE_BUILD_TYPES `SanitizeThread` and `SanitizeAddress`.
+  - Fix build against latest (Debian/sid) libglut-dev.
+- BUG FIXES:
+  - Fix build against latest version of EMSDK (Emscripten).
+  - Fix wrong scaling of samples in mrpt::random::CRandomGenerator::drawGaussianMultivariate() and mrpt::random::CRandomGenerator::drawGaussianMultivariateMany()
+  - mrpt::opengl::CSetOfTexturedTriangles was not automatically registered in the mrpt::rtti system
+
 # Version 2.5.5: Released October 19th, 2022
 - Changes in applications:
   - prg-configurator:

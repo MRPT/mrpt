@@ -21,8 +21,7 @@
 
 namespace mrpt::math
 {
-/** \addtogroup geometry_grp Geometry: lines, planes, intersections, SLERP,
- * "lightweight" point & pose classes
+/** \addtogroup geometry_grp Geometry: lines, planes, intersections, SLERP
  *  \ingroup mrpt_math_grp
  * @{ */
 

@@ -29,7 +29,7 @@ void CPlanarLaserScan::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			if (m_enable_surface) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -62,6 +62,9 @@ void CPlanarLaserScan::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 	cbd.clear();
 
@@ -83,7 +86,10 @@ void CPlanarLaserScan::onUpdateBuffers_Wireframe()
 
 void CPlanarLaserScan::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	size_t n;
@@ -113,6 +119,9 @@ void CPlanarLaserScan::onUpdateBuffers_Points()
 {
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
+
 	vbd.clear();
 
 	size_t n;
@@ -186,7 +195,8 @@ void CPlanarLaserScan::serializeFrom(
 	};
 }
 
-auto CPlanarLaserScan::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CPlanarLaserScan::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
 	// Load into cache:
 	if (!m_cache_valid)
@@ -199,34 +209,9 @@ auto CPlanarLaserScan::getBoundingBox() const -> mrpt::math::TBoundingBox
 		m_cache_points.insertObservation(m_scan);
 	}
 
-	size_t n;
-	const float *x, *y, *z;
+	if (m_cache_points.empty()) return {};
 
-	mrpt::math::TBoundingBox bb;
-
-	m_cache_points.getPointsBuffer(n, x, y, z);
-	if (!n || !x) return bb;
-
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
-
-	for (size_t i = 0; i < n; i++)
-	{
-		keep_min(bb.min.x, x[i]);
-		keep_max(bb.max.x, x[i]);
-		keep_min(bb.min.y, y[i]);
-		keep_max(bb.max.y, y[i]);
-		keep_min(bb.min.z, z[i]);
-		keep_max(bb.max.z, z[i]);
-	}
-
-	// Convert to coordinates of my parent:
-	return bb.compose(m_pose);
+	return m_cache_points.boundingBox();
 }
 
 mrpt::math::TPoint3Df CPlanarLaserScan::getLocalRepresentativePoint() const

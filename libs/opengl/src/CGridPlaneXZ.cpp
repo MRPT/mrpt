@@ -36,6 +36,9 @@ CGridPlaneXZ::CGridPlaneXZ(
 
 void CGridPlaneXZ::onUpdateBuffers_Wireframe()
 {
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	// Generate vertices:
 	m_vertex_buffer_data.clear();
 	m_color_buffer_data.clear();
@@ -90,8 +93,8 @@ void CGridPlaneXZ::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CGridPlaneXZ::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CGridPlaneXZ::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox({m_xMin, 0, m_zMin}, {m_xMax, 0, m_zMax})
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{m_xMin, 0, m_zMin}, {m_xMax, 0, m_zMax});
 }

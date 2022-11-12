@@ -26,6 +26,7 @@
 #include <assimp/types.h>
 
 #include <assimp/DefaultLogger.hpp>
+#include <assimp/Exporter.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/LogStream.hpp>
 #endif
@@ -145,6 +146,7 @@ struct CAssimpModel::Impl
 	}
 
 	Assimp::Importer importer;
+	Assimp::Exporter exporter;
 	const aiScene* scene = nullptr;	 // Memory owned by "importer"
 #endif
 };
@@ -169,7 +171,7 @@ void CAssimpModel::render(const RenderContext& rc) const
 		case DefaultShaderID::POINTS:
 			CRenderizableShaderPoints::render(rc);
 			break;
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -192,15 +194,24 @@ void CAssimpModel::onUpdateBuffers_all()
 {
 	auto& lines_vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& lines_cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	lines_vbd.clear();
 	lines_cbd.clear();
 
 	auto& pts_vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& pts_cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLockPts(
+		CRenderizableShaderPoints::m_pointsMtx.data);
+
 	pts_vbd.clear();
 	pts_cbd.clear();
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
@@ -230,8 +241,9 @@ void CAssimpModel::onUpdateBuffers_Wireframe() {}
 void CAssimpModel::onUpdateBuffers_Points() {}
 void CAssimpModel::onUpdateBuffers_Triangles() {}
 
-void CAssimpModel::enqueForRenderRecursive(
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+void CAssimpModel::enqueueForRenderRecursive(
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	bool wholeInView) const
 {
 	// Enque rendering all textured meshes:
 	mrpt::opengl::CListOpenGLObjects lst;
@@ -239,20 +251,40 @@ void CAssimpModel::enqueForRenderRecursive(
 		lst.emplace_back(
 			std::dynamic_pointer_cast<mrpt::opengl::CRenderizable>(o));
 
-	mrpt::opengl::enqueForRendering(lst, state, rq);
+	mrpt::opengl::enqueueForRendering(lst, state, rq, wholeInView);
 }
 
-uint8_t CAssimpModel::serializeGetVersion() const { return 1; }
+uint8_t CAssimpModel::serializeGetVersion() const { return 2; }
 void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 #if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
-	const bool empty = m_assimp_scene->scene != nullptr;
+	const bool empty = m_assimp_scene->scene == nullptr;
 	out << empty;
+	out << m_modelPath;	 // v2
 	if (!empty)
 	{
-		// aiScene *scene = (aiScene *) m_assimp_scene->scene;
-		THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
+#if 0
+		for (size_t i = 0; i < m_assimp_scene->exporter.GetExportFormatCount();
+			 i++)
+		{
+			const aiExportFormatDesc* d =
+				m_assimp_scene->exporter.GetExportFormatDescription(i);
+			std::cout << "format #" << i << ": " << d->description << " *."
+					  << d->fileExtension << " id: '" << d->id << "'"
+					  << std::endl;
+		}
+#endif
+		// new in v2: save as blob:
+		const char* formatId = "assbin";
+		const auto blob =
+			const_cast<Assimp::Exporter&>(m_assimp_scene->exporter)
+				.ExportToBlob(m_assimp_scene->scene, formatId);
+		ASSERT_(blob);
+
+		out.WriteAs<uint32_t>(blob->size);
+		ASSERT_(blob->size);
+		out.WriteBuffer(blob->data, blob->size);
 	}
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
@@ -262,20 +294,50 @@ void CAssimpModel::serializeTo(mrpt::serialization::CArchive& out) const
 void CAssimpModel::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
-	THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!");
-
 	switch (version)
 	{
 		case 0:
+		case 1:
+		case 2:
 		{
 			readFromStreamRender(in);
-
 			clear();
+
+			if (version >= 2)  // saved as blob
+			{
+				const bool empty = in.ReadAs<bool>();
+				in >> m_modelPath;
+				if (!empty)
+				{
+					const auto blobSize = in.ReadAs<uint32_t>();
+					ASSERT_(blobSize);
+					std::vector<uint8_t> buf(blobSize);
+					in.ReadBuffer(buf.data(), buf.size());
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
+					m_assimp_scene->scene =
+						m_assimp_scene->importer.ReadFileFromMemory(
+							buf.data(), buf.size(), 0 /*flags*/);
+
+					if (!m_assimp_scene->scene)
+					{
+						THROW_EXCEPTION_FMT(
+							"Error importing assimp blob data originally from "
+							"file '%s': %s",
+							m_modelPath.c_str(),
+							m_assimp_scene->importer.GetErrorString());
+					}
+#else
+					THROW_EXCEPTION(
+						"MRPT compiled without OpenGL and/or Assimp");
+#endif
+				}
+			}
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 	CRenderizable::notifyChange();
+	after_load_model();
 }
 
 CAssimpModel::CAssimpModel()
@@ -330,6 +392,16 @@ void CAssimpModel::loadScene(const std::string& filepath, int flags)
 	}
 	m_modelPath = filepath;
 
+	after_load_model();
+
+#else
+	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
+#endif
+}
+
+void CAssimpModel::after_load_model()
+{
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL) && MRPT_HAS_ASSIMP
 	// Evaluate overall bbox:
 	{
 		aiVector3D scene_min, scene_max;
@@ -346,15 +418,13 @@ void CAssimpModel::loadScene(const std::string& filepath, int flags)
 	// This populates the structures that will be attached to opengl
 	// buffers
 	const_cast<CAssimpModel&>(*this).onUpdateBuffers_all();
-
-#else
-	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp");
 #endif
 }
 
-auto CAssimpModel::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CAssimpModel::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(m_bbox_min, m_bbox_max).compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		m_bbox_min, m_bbox_max);
 }
 
 bool CAssimpModel::traceRay(

@@ -51,6 +51,8 @@ class CCamera : public CRenderizable
 	CCamera() = default;
 	~CCamera() override = default;
 
+	void toYAMLMap(mrpt::containers::yaml& propertiesMap) const override;
+
 	virtual shader_list_t requiredShaders() const override
 	{
 		// None: a camera is a non-visual element.
@@ -167,7 +169,7 @@ class CCamera : public CRenderizable
 	void renderUpdateBuffers() const override {}
 
 	/** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	void freeOpenGLResources() override {}
 

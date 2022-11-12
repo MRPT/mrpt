@@ -40,6 +40,11 @@ struct CDisplayWindowGUI_Params
 	unsigned int glMajor = 3;
 	unsigned int glMinor = 3;
 	bool maximized = false;
+
+	/// If true, will try to use GLES instead of OpenGL.
+	/// Note that the glMajor and glMinor version should then be changed
+	/// accordingly (e.g. to 1.5 instead of 3.3)
+	bool gles_context = false;
 };
 
 /** A window with powerful GUI capabilities, via the nanogui library.

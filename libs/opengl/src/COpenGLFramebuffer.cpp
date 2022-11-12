@@ -33,10 +33,6 @@ static bool isExtensionSupported([[maybe_unused]] const std::string& extension)
 }
 #endif
 
-COpenGLFramebuffer::COpenGLFramebuffer() : m_impl(std::make_shared<RAII_Impl>())
-{
-}
-
 void COpenGLFramebuffer::RAII_Impl::create(
 	unsigned int width, unsigned int height, int nSamples)
 {
@@ -47,71 +43,75 @@ void COpenGLFramebuffer::RAII_Impl::create(
 			"Framebuffer Object extension unsupported "
 			"(GL_EXT_framebuffer_object)");
 
-	m_width = width;
-	m_height = height;
-	m_Samples = nSamples;
+	auto& _ = m_state.get();
+
+	_.m_width = width;
+	_.m_height = height;
+	_.m_Samples = nSamples;
 
 	const auto oldFBs = CurrentBinding();
 
 	// Render buffer: RGB
-	glGenRenderbuffers(1, &m_Color);
-	CHECK_OPENGL_ERROR();
-	glBindRenderbuffer(GL_RENDERBUFFER, m_Color);
-	CHECK_OPENGL_ERROR();
+	glGenRenderbuffers(1, &_.m_Color);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+	glBindRenderbuffer(GL_RENDERBUFFER, _.m_Color);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (nSamples <= 1)
 	{
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, m_width, m_height);
-		CHECK_OPENGL_ERROR();
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, _.m_width, _.m_height);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	else
 	{
 		glRenderbufferStorageMultisample(
-			GL_RENDERBUFFER, nSamples, GL_RGBA8, m_width, m_height);
-		CHECK_OPENGL_ERROR();
+			GL_RENDERBUFFER, nSamples, GL_RGBA8, _.m_width, _.m_height);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Render buffer: DEPTH
-	glGenRenderbuffers(1, &m_Depth);
-	CHECK_OPENGL_ERROR();
-	glBindRenderbuffer(GL_RENDERBUFFER, m_Depth);
-	CHECK_OPENGL_ERROR();
+	glGenRenderbuffers(1, &_.m_Depth);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+	glBindRenderbuffer(GL_RENDERBUFFER, _.m_Depth);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (nSamples <= 1)
 	{
 		glRenderbufferStorage(
-			GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width, m_height);
-		CHECK_OPENGL_ERROR();
+			GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _.m_width, _.m_height);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	else
 	{
 		glRenderbufferStorageMultisample(
-			GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, m_width, m_height);
-		CHECK_OPENGL_ERROR();
+			GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, _.m_width,
+			_.m_height);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Frame buffer:
-	glGenFramebuffers(1, &m_Framebuffer);
-	CHECK_OPENGL_ERROR();
+	glGenFramebuffers(1, &_.m_Framebuffer);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// bind the framebuffer, fbo, so operations will now occur on it
-	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
-	CHECK_OPENGL_ERROR();
+	glBindFramebuffer(GL_FRAMEBUFFER, _.m_Framebuffer);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glFramebufferRenderbuffer(
-		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_Color);
-	CHECK_OPENGL_ERROR();
+		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _.m_Color);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glFramebufferRenderbuffer(
-		GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_Depth);
-	CHECK_OPENGL_ERROR();
+		GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _.m_Depth);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glFramebufferRenderbuffer(
-		GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_Depth);
-	CHECK_OPENGL_ERROR();
+		GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _.m_Depth);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	CHECK_OPENGL_ERROR();
 
@@ -119,8 +119,7 @@ void COpenGLFramebuffer::RAII_Impl::create(
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 		THROW_EXCEPTION("Could not create framebuffer object.");
 
-	m_created = true;
-	m_created_from = std::this_thread::get_id();
+	_.m_created = true;
 
 	// Restore:
 	Bind(oldFBs);
@@ -131,46 +130,23 @@ void COpenGLFramebuffer::RAII_Impl::create(
 
 void COpenGLFramebuffer::RAII_Impl::destroy()
 {
-	if (!m_created) return;
+	auto& _ = m_state.get();
+
+	if (!_.m_created) return;
 
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	static const bool showErrs =
-		(::getenv("MRPT_REVEAL_OPENGL_BUFFER_LEAKS") != nullptr);
+	unbind();
 
-	if (m_created_from == std::this_thread::get_id())
-	{
-		unbind();
-
-		glDeleteRenderbuffers(1, &m_Color);
-		CHECK_OPENGL_ERROR();
-		glDeleteRenderbuffers(1, &m_Depth);
-		CHECK_OPENGL_ERROR();
-		glDeleteFramebuffers(1, &m_Framebuffer);
-		CHECK_OPENGL_ERROR();
-	}
-	else if (showErrs)
-	{
-		// at least, emit a warning:
-		static thread_local double tLast = 0;
-		auto tNow = mrpt::Clock::nowDouble();
-		if (tNow - tLast > 2.0)
-		{
-			tLast = tNow;
-
-			mrpt::TCallStackBackTrace bt;
-			mrpt::callStackBackTrace(bt);
-
-			std::cerr
-				<< "[COpenGLFramebuffer::RAII_Impl] *Warning* Leaking OpenGL "
-				   "resources: FBO was created from a different thread "
-				   "and cannot free it from this thread, call stack:"
-				<< bt.asString() << std::endl;
-		}
-	}
+	glDeleteRenderbuffers(1, &_.m_Color);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+	glDeleteRenderbuffers(1, &_.m_Depth);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+	glDeleteFramebuffers(1, &_.m_Framebuffer);
+	CHECK_OPENGL_ERROR();
 #endif
-	m_Color = m_Depth = 0;
-	m_Framebuffer = 0;
-	m_created = false;
+	_.m_Color = _.m_Depth = 0;
+	_.m_Framebuffer = 0;
+	_.m_created = false;
 }
 
 FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
@@ -178,12 +154,14 @@ FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	const FrameBufferBinding ids = CurrentBinding();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
-	CHECK_OPENGL_ERROR();
-	if (m_Samples > 1)
+	auto& _ = m_state.get();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, _.m_Framebuffer);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+	if (_.m_Samples > 1)
 	{
 		glEnable(GL_MULTISAMPLE);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	return ids;
@@ -195,7 +173,8 @@ FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
 void COpenGLFramebuffer::RAII_Impl::unbind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	if (m_Samples > 1) glDisable(GL_MULTISAMPLE);
+	auto& _ = m_state.get();
+	if (_.m_Samples > 1) glDisable(GL_MULTISAMPLE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	CHECK_OPENGL_ERROR();
@@ -205,14 +184,15 @@ void COpenGLFramebuffer::RAII_Impl::unbind()
 void COpenGLFramebuffer::blit()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_impl->m_Framebuffer);
+	auto& _ = m_impl.m_state.get();
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, _.m_Framebuffer);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDrawBuffer(GL_BACK);
 
 	glBlitFramebuffer(
-		0, 0, m_impl->m_width, m_impl->m_height, 0, 0, m_impl->m_width,
-		m_impl->m_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
-		GL_NEAREST);
+		0, 0, _.m_width, _.m_height, 0, 0, _.m_width, _.m_height,
+		GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif

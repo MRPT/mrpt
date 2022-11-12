@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/core/safe_pointers.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/CCamera.h>
@@ -212,14 +213,15 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	 * viewports.
 	 */
 	inline bool isTransparent() { return m_isTransparent; }
+
 	/** Set the transparency, that is, whether the viewport will be rendered
 	 * transparent over previous viewports (default=false).
 	 */
 	inline void setTransparent(bool trans) { m_isTransparent = trans; }
-	/** Set a background color different from that of the parent GUI window */
+
+	/** Defines the viewport background color */
 	inline void setCustomBackgroundColor(const mrpt::img::TColorf& color)
 	{
-		m_custom_backgb_color = true;
 		m_background_color = color;
 	}
 
@@ -318,7 +320,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 		{
 			if (auto obj = std::dynamic_pointer_cast<CSetOfObjects>(o); obj)
 			{
-				if (auto f = obj->getByClass<T>(ith); f) return f;
+				if (auto f = obj->template getByClass<T>(ith); f) return f;
 			}
 		}
 		return typename T::Ptr();  // Not found: return empty smart pointer
@@ -341,7 +343,10 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	mrpt::math::TBoundingBox getBoundingBox() const;
 
 	/** Returns a copy of the latest render matrices structure. */
-	TRenderMatrices getRenderMatrices() const { return m_state; }
+	TRenderMatrices getRenderMatrices() const
+	{
+		return m_threadedData.get().state;
+	}
 
 	/** @} */  // end of Contained objects set/get/search
 
@@ -357,14 +362,16 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Render the objects in this viewport (called from COpenGLScene) */
 	void render(
 		const int render_width, const int render_height,
-		const int render_offset_x = 0, const int render_offset_y = 0) const;
+		const int render_offset_x = 0, const int render_offset_y = 0,
+		const CCamera* forceThisCamera = nullptr) const;
 
-	void updateMatricesFromCamera() const;
+	void updateMatricesFromCamera(
+		const CCamera* forceThisCamera = nullptr) const;
 
 	/** Provides read access to the opengl shaders */
 	const std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders() const
 	{
-		return m_shaders;
+		return m_threadedData.get().shaders;
 	}
 
 	/** Load all MPRT predefined shader programs into m_shaders */
@@ -373,7 +380,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** Provides write access to the opengl shaders */
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders()
 	{
-		return m_shaders;
+		return m_threadedData.get().shaders;
 	}
 
    protected:
@@ -394,7 +401,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void renderImageMode() const;
 
 	/** Render a normal scene with 3D objects */
-	void renderNormalSceneMode() const;
+	void renderNormalSceneMode(const CCamera* forceThisCamera = nullptr) const;
 
 	/** Render the viewport border, if enabled */
 	void renderViewportBorder() const;
@@ -431,22 +438,30 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 
 	/** The viewport position [0,1] */
 	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
-	/** The min/max clip depth distances (default: 0.1 - 10000) */
-	float m_clip_min = 0.1f, m_clip_max = 10000.0f;
-	bool m_custom_backgb_color{false};
-	/** used only if m_custom_backgb_color */
-	mrpt::img::TColorf m_background_color = {0.6f, 0.6f, 0.6f};
+
+	/** The min/max clip depth distances (default: 0.01 - 10000) */
+	float m_clip_min = 0.01f, m_clip_max = 10000.0f;
+
+	mrpt::img::TColorf m_background_color = {0.4f, 0.4f, 0.4f};
 
 	/** The image to display, after calling \a setImageView() */
 	mrpt::opengl::CTexturedPlane::Ptr m_imageViewPlane;
 
 	mutable mrpt::opengl::CSetOfLines::Ptr m_borderLines;
 
-	/** Info updated with each "render()" and used in "get3DRayForPixelCoord" */
-	mutable TRenderMatrices m_state;
+	struct PerThreadData
+	{
+		PerThreadData() = default;
 
-	/** Default shader program */
-	mutable std::map<shader_id_t, mrpt::opengl::Program::Ptr> m_shaders;
+		/** Info updated with each "render()" and used in
+		 * "get3DRayForPixelCoord" */
+		TRenderMatrices state;
+
+		/** Default shader program */
+		std::map<shader_id_t, mrpt::opengl::Program::Ptr> shaders;
+	};
+
+	mutable mrpt::containers::PerThreadDataHolder<PerThreadData> m_threadedData;
 
 	/** Unload shader programs in m_shaders */
 	void unloadShaders();

@@ -14,6 +14,8 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/TTriangle.h>
 
+#include <shared_mutex>
+
 namespace mrpt::opengl
 {
 /** Renderizable generic renderer for objects using the triangles-with-a-texture
@@ -32,7 +34,9 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 
 	virtual shader_list_t requiredShaders() const override
 	{
-		return {DefaultShaderID::TEXTURED_TRIANGLES};
+		return {
+			m_enableLight ? DefaultShaderID::TEXTURED_TRIANGLES_LIGHT
+						  : DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT};
 	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
@@ -103,14 +107,16 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	/** @name Raw access to textured-triangle shader buffer data
 	 * @{ */
 	const auto& shaderTexturedTrianglesBuffer() const { return m_triangles; }
+	auto& shaderTexturedTrianglesBufferMutex() const { return m_trianglesMtx; }
 	/** @} */
 
    protected:
 	/** List of triangles  \sa TTriangle */
 	mutable std::vector<mrpt::opengl::TTriangle> m_triangles;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_trianglesMtx;
 
 	/** Returns the bounding box of m_triangles, or (0,0,0)-(0,0,0) if empty. */
-	const mrpt::math::TBoundingBox trianglesBoundingBox() const;
+	const mrpt::math::TBoundingBoxf trianglesBoundingBox() const;
 
 	void writeToStreamTexturedObject(mrpt::serialization::CArchive& out) const;
 	void readFromStreamTexturedObject(mrpt::serialization::CArchive& in);
@@ -136,7 +142,9 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	bool m_enableLight = true;
 	TCullFace m_cullface = TCullFace::NONE;
 
-	mutable std::optional<texture_name_unit_t> m_glTexture;
+	mutable mrpt::containers::PerThreadDataHolder<
+		std::optional<texture_name_unit_t>>
+		m_glTexture;
 	bool m_textureImageAssigned = false;
 	mutable mrpt::img::CImage m_textureImage{4, 4};
 	mutable mrpt::img::CImage m_textureImageAlpha;

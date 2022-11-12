@@ -57,7 +57,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	{
 		// May use up to two shaders (triangles and lines):
 		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT,
 			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;
@@ -70,9 +70,10 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		CRenderizableShaderWireFrame::freeOpenGLResources();
 		CRenderizableShaderPoints::freeOpenGLResources();
 	}
-	void enqueForRenderRecursive(
-		const mrpt::opengl::TRenderMatrices& state,
-		RenderQueue& rq) const override;
+	void enqueueForRenderRecursive(
+		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+		bool wholeInView) const override;
+	bool isCompositeObject() const override { return true; }
 	/** @} */
 
 	CAssimpModel();
@@ -117,7 +118,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	/* Simulation of ray-trace. */
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	struct TInfoPerTexture
 	{
@@ -150,6 +151,8 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		const aiScene* sc, const aiNode* nd, const mrpt::poses::CPose3D& transf,
 		mrpt::opengl::internal::RenderElements& re);
 	void process_textures(const aiScene* scene);
+
+	void after_load_model();
 
 };	// namespace mrpt::opengl
 

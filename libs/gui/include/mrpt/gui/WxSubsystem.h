@@ -150,9 +150,6 @@ class WxSubsystem
 		static volatile CWXMainFrame* oneInstance;
 
 	   private:
-		static std::mutex cs_windowCount;
-		static int m_windowCount;
-
 		wxTimer* m_theTimer;
 
 		void OnTimerProcessRequests(wxTimerEvent& event);
@@ -299,12 +296,6 @@ class WxSubsystem
 	static bool createOneInstanceMainThread();
 
 	static wxBitmap getMRPTDefaultIcon();
-
-   private:
-	/** Do not access directly to this, use the thread-safe functions
-	 */
-	static std::queue<TRequestToWxMainThread*>* listPendingWxRequests;
-	static std::mutex* cs_listPendingWxRequests;
 #endif
 };	// End of class def.
 

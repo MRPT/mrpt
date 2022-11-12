@@ -46,7 +46,7 @@ void COctoMapVoxels::render(const RenderContext& rc) const
 		case DefaultShaderID::POINTS:
 			if (m_showVoxelsAsPoints) CRenderizableShaderPoints::render(rc);
 			break;
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (!m_showVoxelsAsPoints) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -104,6 +104,9 @@ void COctoMapVoxels::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	CRenderizableShaderWireFrame::setLineWidth(m_grid_width);
@@ -134,7 +137,10 @@ void COctoMapVoxels::onUpdateBuffers_Wireframe()
 
 void COctoMapVoxels::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	for (const auto& m_voxel_set : m_voxel_sets)
@@ -192,6 +198,8 @@ void COctoMapVoxels::onUpdateBuffers_Points()
 {
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	for (const auto& m_voxel_set : m_voxel_sets)
 	{
@@ -304,9 +312,10 @@ void COctoMapVoxels::serializeFrom(CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-auto COctoMapVoxels::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto COctoMapVoxels::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(m_bb_min, m_bb_max).compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(m_bb_min, m_bb_max);
 }
 
 bool sort_voxels_z(

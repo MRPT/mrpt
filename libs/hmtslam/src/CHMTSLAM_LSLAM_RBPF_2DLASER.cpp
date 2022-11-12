@@ -476,7 +476,7 @@ void CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 		else
 			newParticlesWeight[i] = LMH->m_particles[k].log_w + weightFact;
 
-		// and its heritance:
+		// and its inheritance:
 		newParticlesDerivedFromIdx[i] = (unsigned int)k;
 
 	}  // for i

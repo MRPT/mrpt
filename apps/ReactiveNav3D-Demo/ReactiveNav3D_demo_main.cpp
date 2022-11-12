@@ -173,9 +173,4 @@ int main(int num_arg, char* argv[])
 				  << std::endl;
 		return -1;
 	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
-		return -1;
-	}
 }

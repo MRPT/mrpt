@@ -38,6 +38,10 @@
 	defined(_ARCH_PPC64)
 #undef RUN_OFFSCREEN_RENDER_TESTS
 #endif
+// Idem with 32bit ARM archs:
+#if defined(__arm__) && MRPT_WORD_SIZE == 32
+#undef RUN_OFFSCREEN_RENDER_TESTS
+#endif
 
 static float imageDiff(
 	const mrpt::img::CImage& im1, const mrpt::img::CImage& im2)

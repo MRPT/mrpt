@@ -23,7 +23,7 @@ void CFrustum::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (m_draw_planes) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -61,6 +61,9 @@ void CFrustum::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	const std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();
@@ -80,7 +83,10 @@ void CFrustum::onUpdateBuffers_Wireframe()
 }
 void CFrustum::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();
@@ -232,9 +238,16 @@ void CFrustum::setVertFOVAsymmetric(
 	CRenderizable::notifyChange();
 }
 
-auto CFrustum::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CFrustum::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return trianglesBoundingBox().compose(m_pose);
+	std::array<mrpt::math::TPoint3Df, 8> pts = computeFrustumCorners();
+
+	auto bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
+
+	for (const auto& pt : pts)
+		bb.updateWithPoint(pt);
+
+	return bb;
 }
 
 CFrustum::CFrustum(const mrpt::img::TCamera& i, double focalScale)

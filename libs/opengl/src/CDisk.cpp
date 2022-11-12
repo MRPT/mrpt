@@ -23,7 +23,10 @@ void CDisk::onUpdateBuffers_Triangles()
 {
 	using mrpt::math::TPoint3Df;
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	// precomputed table:
@@ -146,8 +149,9 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	// CPose's line intersection is SLOWER than the used method.
 }
 
-auto CDisk::getBoundingBox() const -> mrpt::math::TBoundingBox
+mrpt::math::TBoundingBoxf CDisk::internalBoundingBoxLocal() const
 {
-	const double R = std::max(m_radiusIn, m_radiusOut);
-	return mrpt::math::TBoundingBox({-R, -R, 0}, {R, R, .0}).compose(m_pose);
+	const float R = std::max(m_radiusIn, m_radiusOut);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{-R, -R, 0}, {R, R, .0});
 }

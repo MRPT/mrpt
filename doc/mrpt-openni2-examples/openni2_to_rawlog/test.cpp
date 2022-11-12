@@ -351,11 +351,7 @@ int main(int argc, char** argv)
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
 	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
-		return -1;
-	}
+	
 }
 
 bool setONI2StreamMode(

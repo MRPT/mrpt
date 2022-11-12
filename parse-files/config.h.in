@@ -308,6 +308,10 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_STRTOK_R
 #endif
 
+#ifndef HAVE_LOCALTIME_R
+#cmakedefine HAVE_LOCALTIME_R
+#endif
+
 #ifndef HAVE_ALIGNED_MALLOC
 #cmakedefine HAVE_ALIGNED_MALLOC
 #endif

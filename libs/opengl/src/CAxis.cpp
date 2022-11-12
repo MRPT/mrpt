@@ -64,9 +64,12 @@ void CAxis::onUpdateBuffers_Wireframe()
 
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
-	m_gl_labels.clear();
+	m_gl_labels.get().clear();
 
 	// X axis
 	vbd.emplace_back(m_xmin, 0.0f, 0.0f);
@@ -124,7 +127,7 @@ void CAxis::onUpdateBuffers_Wireframe()
 				mrpt::DEG2RAD(m_textRot[axis][1]),
 				mrpt::DEG2RAD(m_textRot[axis][2])));
 			label->setString(n);
-			m_gl_labels.emplace_back(label);
+			m_gl_labels.get().emplace_back(label);
 
 			// tick line:
 			vbd.emplace_back(cur_tf + tick0[axis]);
@@ -140,20 +143,22 @@ void CAxis::onUpdateBuffers_Wireframe()
 			mrpt::DEG2RAD(m_textRot[axis][1]),
 			mrpt::DEG2RAD(m_textRot[axis][2])));
 		label->setString(axis2name[axis]);
-		m_gl_labels.emplace_back(label);
+		m_gl_labels.get().emplace_back(label);
 	}
 
 	cbd.assign(vbd.size(), m_color);
 
-	for (auto& lb : m_gl_labels)
+	for (auto& lb : m_gl_labels.get())
 		lb->updateBuffers();
 }
 
-void CAxis::enqueForRenderRecursive(
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+void CAxis::enqueueForRenderRecursive(
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	bool wholeInView) const
 {
 	// Enque rendering all text labels:
-	mrpt::opengl::enqueForRendering(m_gl_labels, state, rq);
+	mrpt::opengl::enqueueForRendering(
+		m_gl_labels.get(), state, rq, wholeInView);
 }
 
 void CAxis::render(const RenderContext& rc) const
@@ -161,8 +166,8 @@ void CAxis::render(const RenderContext& rc) const
 	// Base lines render:
 	CRenderizableShaderWireFrame::render(rc);
 
-	// Do nothing for text labels: the enqueForRenderRecursive() does the actual
-	// job.
+	// Do nothing for text labels: the enqueueForRenderRecursive() does the
+	// actual job.
 }
 
 uint8_t CAxis::serializeGetVersion() const { return 2; }
@@ -215,11 +220,10 @@ void CAxis::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-auto CAxis::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CAxis::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(
-			   {m_xmin, m_ymin, m_zmin}, {m_xmax, m_ymax, m_zmax})
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{m_xmin, m_ymin, m_zmin}, {m_xmax, m_ymax, m_zmax});
 }
 
 void CAxis::setFrequency(float f)

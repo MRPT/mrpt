@@ -29,18 +29,43 @@ void CSetOfTriangles::onUpdateBuffers_Triangles()
 	// buffers.
 }
 
+void CSetOfTriangles::clearTriangles()
+{
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	tris.clear();
+	polygonsUpToDate = false;
+	CRenderizable::notifyChange();
+}
+
+size_t CSetOfTriangles::getTrianglesCount() const
+{
+	std::shared_lock<std::shared_mutex> trisReadLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	return shaderTrianglesBuffer().size();
+}
+
 uint8_t CSetOfTriangles::serializeGetVersion() const { return 0; }
 void CSetOfTriangles::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-	auto n = (uint32_t)m_triangles.size();
+
+	std::shared_lock<std::shared_mutex> trisReadLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+
+	auto n = (uint32_t)shaderTrianglesBuffer().size();
 	out << n;
 	for (size_t i = 0; i < n; i++)
-		m_triangles[i].writeTo(out);
+		shaderTrianglesBuffer()[i].writeTo(out);
 }
 void CSetOfTriangles::serializeFrom(
 	mrpt::serialization::CArchive& in, uint8_t version)
 {
+	std::unique_lock<std::shared_mutex> trisLck(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	switch (version)
 	{
 		case 0:
@@ -48,9 +73,9 @@ void CSetOfTriangles::serializeFrom(
 			readFromStreamRender(in);
 			uint32_t n;
 			in >> n;
-			m_triangles.assign(n, TTriangle());
+			tris.assign(n, TTriangle());
 			for (size_t i = 0; i < n; i++)
-				m_triangles[i].readFrom(in);
+				tris[i].readFrom(in);
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -68,8 +93,12 @@ bool CSetOfTriangles::traceRay(
 CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 {
 	CRenderizable::notifyChange();
+	std::unique_lock<std::shared_mutex> trisLck(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	m_color = c;
-	for (auto& t : m_triangles)
+	for (auto& t : tris)
 		t.setColor(c);
 	return *this;
 }
@@ -77,8 +106,11 @@ CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::img::TColor& c)
 CRenderizable& CSetOfTriangles::setColorR_u8(const uint8_t r)
 {
 	CRenderizable::notifyChange();
+	std::unique_lock<std::shared_mutex> trisLck(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	m_color.R = r;
-	for (auto& t : m_triangles)
+	for (auto& t : tris)
 		t.setColor(m_color);
 	return *this;
 }
@@ -86,8 +118,11 @@ CRenderizable& CSetOfTriangles::setColorR_u8(const uint8_t r)
 CRenderizable& CSetOfTriangles::setColorG_u8(const uint8_t g)
 {
 	CRenderizable::notifyChange();
+	std::unique_lock<std::shared_mutex> trisLck(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	m_color.G = g;
-	for (auto& t : m_triangles)
+	for (auto& t : tris)
 		t.setColor(m_color);
 	return *this;
 }
@@ -95,8 +130,11 @@ CRenderizable& CSetOfTriangles::setColorG_u8(const uint8_t g)
 CRenderizable& CSetOfTriangles::setColorB_u8(const uint8_t b)
 {
 	CRenderizable::notifyChange();
+	std::unique_lock<std::shared_mutex> trisLck(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	m_color.B = b;
-	for (auto& t : m_triangles)
+	for (auto& t : tris)
 		t.setColor(m_color);
 	return *this;
 }
@@ -104,8 +142,11 @@ CRenderizable& CSetOfTriangles::setColorB_u8(const uint8_t b)
 CRenderizable& CSetOfTriangles::setColorA_u8(const uint8_t a)
 {
 	CRenderizable::notifyChange();
+	std::unique_lock<std::shared_mutex> trisLck(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	m_color.A = a;
-	for (auto& t : m_triangles)
+	for (auto& t : tris)
 		t.setColor(m_color);
 	return *this;
 }
@@ -121,13 +162,17 @@ void CSetOfTriangles::getPolygons(
 
 void CSetOfTriangles::updatePolygons() const
 {
+	std::unique_lock<std::shared_mutex> trisLck(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	TPolygon3D tmp(3);
-	size_t N = m_triangles.size();
+	size_t N = tris.size();
 	m_polygons.resize(N);
 	for (size_t i = 0; i < N; i++)
 		for (size_t j = 0; j < 3; j++)
 		{
-			const TTriangle& t = m_triangles[i];
+			const TTriangle& t = tris[i];
 			tmp[j].x = t.x(j);
 			tmp[j].y = t.y(j);
 			tmp[j].z = t.z(j);
@@ -137,16 +182,26 @@ void CSetOfTriangles::updatePolygons() const
 	CRenderizable::notifyChange();
 }
 
-auto CSetOfTriangles::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSetOfTriangles::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return trianglesBoundingBox().compose(m_pose);
+	return trianglesBoundingBox();
 }
 
 void CSetOfTriangles::insertTriangles(const CSetOfTriangles::Ptr& p)
 {
-	reserve(m_triangles.size() + p->m_triangles.size());
-	m_triangles.insert(
-		m_triangles.end(), p->m_triangles.begin(), p->m_triangles.end());
+	ASSERT_(p);
+
+	std::unique_lock<std::shared_mutex> trisLck(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
+
+	std::shared_lock<std::shared_mutex> trisOtherLck(p->m_trianglesMtx.data);
+
+	auto& tris = CRenderizableShaderTriangles::m_triangles;
+	auto& trisOther = p->shaderTrianglesBuffer();
+
+	reserve(tris.size() + trisOther.size());
+	tris.insert(tris.end(), trisOther.begin(), trisOther.end());
 	polygonsUpToDate = false;
 	CRenderizable::notifyChange();
 }

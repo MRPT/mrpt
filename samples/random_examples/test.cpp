@@ -135,14 +135,14 @@ void TestRandomGenerators()
 #endif
 
 		// pass to (x,y) vectors:
-		CVectorDouble x(v1.size()), y(v1.size());
+		CVectorDouble vx(v1.size()), vy(v1.size());
 		for (size_t i = 0; i < v1.size(); i++)
 		{
-			x[i] = v1[i][0];
-			y[i] = v1[i][1];
+			vx[i] = v1[i][0];
+			vy[i] = v1[i][1];
 		}
 
-		win4.plot(x, y, "b.3");
+		win4.plot(vx, vy, "b.3");
 
 		win4.plotEllipse(
 			Mean[0], Mean[1], cov, 3.0, "k-2", "99% ellipse", true);
@@ -150,7 +150,7 @@ void TestRandomGenerators()
 		win4.axis_fit();
 	}
 
-	mrpt::system::pause();
+	win4.waitForKey();
 }
 
 // ------------------------------------------------------
@@ -168,11 +168,6 @@ int main()
 	catch (const std::exception& e)
 	{
 		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
 		return -1;
 	}
 }
