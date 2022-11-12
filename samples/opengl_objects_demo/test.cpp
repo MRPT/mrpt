@@ -1013,9 +1013,9 @@ void TestOpenGLObjects()
 	// Arrow to show the light direction:
 	auto glLightArrow = opengl::CArrow::Create(
 		mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(1, 0, 0));
-	glLightArrow->setLocation(off_x / 2, 0, 10.0);
+	glLightArrow->setLocation(off_x / 5, -4.0, 5.0);
 	glLightArrow->setColor(0, 1, 0);
-	glLightArrow->setName("Light");
+	glLightArrow->setName("Light dir.");
 	glLightArrow->enableShowName();
 	theScene->insert(glLightArrow);
 
@@ -1090,11 +1090,6 @@ int main()
 	catch (const std::exception& e)
 	{
 		std::cerr << "MRPT error: " << mrpt::exception_to_str(e) << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
 		return -1;
 	}
 }

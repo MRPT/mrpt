@@ -106,6 +106,12 @@ if(MRPT_BUILD_EXAMPLES)
 	# === Depending on: system+math+gui ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		system_control_rate_timer_example
+		# -------
+		# Plus: a couple of other opengl_* samples listed below since they need mrpt::maps also
+		opengl_offscreen_render_example
+		opengl_multithread_rendering
+		opengl_octree_render_huge_pointcloud
+		opengl_texture_sizes_test
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::system mrpt::math mrpt::gui mrpt::tclap)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
@@ -161,10 +167,8 @@ if(MRPT_BUILD_EXAMPLES)
 	# === Depending on: mrpt::gui, mrpt::img, mrpt::opengl, mrpt::maps ===
 	set(LIST_EXAMPLES_IN_THIS_DIR
 		# -------
+		# opengl demos that also requires mrpt::maps
 		opengl_objects_demo
-		opengl_offscreen_render_example
-		opengl_octree_render_huge_pointcloud
-		opengl_texture_sizes_test
 		opengl_custom_shaders_demo
 		# -------
 		img_basic_example

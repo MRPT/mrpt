@@ -63,7 +63,11 @@ void CAngularObservationMesh::addTriangle(
 void CAngularObservationMesh::updateMesh() const
 {
 	CRenderizable::notifyChange();
+	updateMeshImpl();
+}
 
+void CAngularObservationMesh::updateMeshImpl() const
+{
 	size_t numRows = scanSet.size();
 	triangles.clear();
 	if (numRows <= 1)
@@ -163,7 +167,7 @@ void CAngularObservationMesh::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (!m_Wireframe) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -181,6 +185,9 @@ void CAngularObservationMesh::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 	cbd.clear();
 
@@ -198,6 +205,8 @@ void CAngularObservationMesh::onUpdateBuffers_Wireframe()
 
 void CAngularObservationMesh::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 
 	tris = this->triangles;
@@ -421,9 +430,9 @@ void CAngularObservationMesh::generateSetOfTriangles(
 		triangles.begin(), triangles.end(), res.begin(), createFromTriangle);
 }
 
-auto CAngularObservationMesh::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CAngularObservationMesh::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	if (!meshUpToDate) updateMesh();
-
-	return trianglesBoundingBox().compose(m_pose);
+	updateMeshImpl();
+	return trianglesBoundingBox();
 }

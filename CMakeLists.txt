@@ -24,9 +24,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 	message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
 	set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
 		STRING "Choose the type of build." FORCE)
-	# Set the possible values of build type for cmake-gui
+endif()
+# Set the possible values of build type for cmake-gui
+if (DEFINED CACHE{CMAKE_BUILD_TYPE})
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-	"Debug" "Release" "MinSizeRel" "RelWithDebInfo" "Coverage")
+		"Debug" "Release" "MinSizeRel" "RelWithDebInfo" "Coverage" "SanitizeAddress" "SanitizeThread")
 endif()
 
 # -------------------------
@@ -422,6 +424,16 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
 	set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
 	set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
+
+	# BUILD_TYPE: SanitizeAddress
+	set(CMAKE_CXX_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak -g")
+	set(CMAKE_EXE_LINKER_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak")
+	set(CMAKE_SHARED_LINKER_FLAGS_SANITIZEADDRESS "-fsanitize=address  -fsanitize=leak")
+
+	# BUILD_TYPE: SanitizeThread
+	set(CMAKE_CXX_FLAGS_SANITIZETHREAD "-fsanitize=thread -g")
+	set(CMAKE_EXE_LINKER_FLAGS_SANITIZETHREAD "-fsanitize=thread")
+	set(CMAKE_SHARED_LINKER_FLAGS_SANITIZETHREAD "-fsanitize=thread")
 endif()
 
 # CLang options ================================

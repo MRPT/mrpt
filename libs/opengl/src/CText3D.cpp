@@ -38,6 +38,8 @@ CText3D::~CText3D() = default;
 
 void CText3D::onUpdateBuffers_Text()
 {
+	std::unique_lock<std::shared_mutex> writeLock(m_textDataMtx.data);
+
 	auto& vbd = CRenderizableShaderText::m_vertex_buffer_data;
 	auto& tris = CRenderizableShaderText::m_triangles;
 	auto& cbd = CRenderizableShaderText::m_color_buffer_data;
@@ -82,11 +84,10 @@ void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-auto CText3D::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CText3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(
-			   {0, 0, 0}, {m_str.size() * m_scale_x, 1.0 * m_scale_y, 0})
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{0.f, 0.f, 0.f}, {m_str.size() * m_scale_x, 1.0f * m_scale_y, 0.f});
 }
 
 void CText3D::toYAMLMap(mrpt::containers::yaml& propertiesMap) const

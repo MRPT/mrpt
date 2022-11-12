@@ -144,7 +144,7 @@ void COpenGLViewport::renderImageMode() const
 	if (!m_imageViewPlane || m_imageViewPlane->getTextureImage().isEmpty())
 		return;
 
-	auto _ = m_state;
+	auto _ = m_threadedData.get().state;
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -157,8 +157,7 @@ void COpenGLViewport::renderImageMode() const
 	const double vw_ratio = double(_.viewport_width) / _.viewport_height;
 	const double ratio = vw_ratio / img_ratio;
 
-	_.mv_matrix.setIdentity();
-	_.p_matrix.setIdentity();
+	_.matricesSetIdentity();
 
 	if (ratio > 1) _.p_matrix(1, 1) *= ratio;
 	else if (ratio > 0)
@@ -172,21 +171,23 @@ void COpenGLViewport::renderImageMode() const
 		p11 /= s;
 	}
 
-	_.pmv_matrix.asEigen() = _.p_matrix.asEigen() * _.mv_matrix.asEigen();
+	_.pmv_matrix.asEigen() =
+		_.p_matrix.asEigen() * _.v_matrix.asEigen() * _.m_matrix.asEigen();
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	CListOpenGLObjects lst;
 	lst.push_back(m_imageViewPlane);
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueForRendering(lst, _, rq);
+	mrpt::opengl::enqueueForRendering(lst, _, rq, true);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+	mrpt::opengl::processRenderQueue(
+		rq, m_threadedData.get().shaders, m_lights);
 
 #endif
 }
 
-void COpenGLViewport::unloadShaders() { m_shaders.clear(); }
+void COpenGLViewport::unloadShaders() { m_threadedData.get().shaders.clear(); }
 
 void COpenGLViewport::loadDefaultShaders() const
 {
@@ -194,16 +195,22 @@ void COpenGLViewport::loadDefaultShaders() const
 	MRPT_START
 
 	std::vector<shader_id_t> lstShaderIDs = {
-		DefaultShaderID::POINTS, DefaultShaderID::WIREFRAME,
-		DefaultShaderID::TRIANGLES, DefaultShaderID::TEXTURED_TRIANGLES,
+		DefaultShaderID::POINTS,
+		DefaultShaderID::WIREFRAME,
+		DefaultShaderID::TRIANGLES_NO_LIGHT,
+		DefaultShaderID::TRIANGLES_LIGHT,
+		DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT,
+		DefaultShaderID::TEXTURED_TRIANGLES_LIGHT,
 		DefaultShaderID::TEXT};
+
+	auto& shaders = m_threadedData.get().shaders;
 
 	for (const auto& id : lstShaderIDs)
 	{
-		m_shaders[id] = mrpt::opengl::LoadDefaultShader(id);
+		shaders[id] = mrpt::opengl::LoadDefaultShader(id);
 
-		ASSERT_(m_shaders[id]);
-		ASSERT_(!m_shaders[id]->empty());
+		ASSERT_(shaders[id]);
+		ASSERT_(!shaders[id]->empty());
 	}
 
 	MRPT_END
@@ -211,14 +218,20 @@ void COpenGLViewport::loadDefaultShaders() const
 }
 
 /** Render a normal scene with 3D objects */
-void COpenGLViewport::renderNormalSceneMode() const
+void COpenGLViewport::renderNormalSceneMode(
+	const CCamera* forceThisCamera) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
+#ifdef MRPT_OPENGL_PROFILER
+	mrpt::system::CTimeLoggerEntry tle(
+		opengl_profiler(), "COpenGLViewport.renderNormalSceneMode");
+#endif
+
 	// Prepare camera (projection matrix):
-	updateMatricesFromCamera();
-	auto& _ = m_state;
+	updateMatricesFromCamera(forceThisCamera);
+	auto& _ = m_threadedData.get().state;
 
 	// Get objects to render:
 	const CListOpenGLObjects* objectsToRender = nullptr;
@@ -253,17 +266,17 @@ void COpenGLViewport::renderNormalSceneMode() const
 	glHint(
 		GL_POLYGON_SMOOTH_HINT,
 		m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
 	// Regular depth model:
 	// 0: far, 1: near
 	// -------------------------------
 	glEnable(GL_DEPTH_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glDepthFunc(GL_LEQUAL);	 // GL_LESS
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -271,15 +284,29 @@ void COpenGLViewport::renderNormalSceneMode() const
 // Enable point sizes>1
 #if !defined(__EMSCRIPTEN__) && defined(GL_PROGRAM_POINT_SIZE)	// OSX undef?
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueForRendering(*objectsToRender, _, rq);
+	mrpt::opengl::RenderQueueStats rqStats;
+	mrpt::opengl::enqueueForRendering(*objectsToRender, _, rq, false, &rqStats);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+	mrpt::opengl::processRenderQueue(
+		rq, m_threadedData.get().shaders, m_lights);
+
+#ifdef MRPT_OPENGL_PROFILER
+	opengl_profiler().registerUserMeasure(
+		"render.totalObjects", rqStats.numObjTotal);
+	opengl_profiler().registerUserMeasure(
+		"render.numObjRendered", rqStats.numObjRendered);
+	opengl_profiler().registerUserMeasure(
+		"render.ObjRenderedPercent",
+		rqStats.numObjTotal != 0
+			? 100.0 * rqStats.numObjRendered / rqStats.numObjTotal
+			: 0);
+#endif
 
 	MRPT_END
 
@@ -292,11 +319,9 @@ void COpenGLViewport::renderViewportBorder() const
 	MRPT_START
 	if (m_borderWidth < 1) return;
 
-	auto _ = m_state;
+	auto _ = m_threadedData.get().state;
 
-	_.mv_matrix.setIdentity();
-	_.p_matrix.setIdentity();
-	_.pmv_matrix.setIdentity();
+	_.matricesSetIdentity();
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -319,10 +344,11 @@ void COpenGLViewport::renderViewportBorder() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueForRendering(lst, _, rq);
+	mrpt::opengl::enqueueForRendering(lst, _, rq, true);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+	mrpt::opengl::processRenderQueue(
+		rq, m_threadedData.get().shaders, m_lights);
 	MRPT_END
 #endif
 }
@@ -336,29 +362,27 @@ void COpenGLViewport::renderTextMessages() const
 	m_2D_texts.regenerateGLobjects();
 
 	// Prepare shaders upon first invokation:
-	if (m_shaders.empty()) loadDefaultShaders();
+	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
 	// Prepare camera (projection matrix):
-	TRenderMatrices _ = m_state;  // make a copy
+	TRenderMatrices _ = m_threadedData.get().state;	 // make a copy
 
 	// Compute the projection matrix (p_matrix):
 	// was: glLoadIdentity(); glOrtho(0, w, 0, h, -1, 1);
 	const auto w = _.viewport_width, h = _.viewport_height;
 	_.is_projective = false;
 
-	_.p_matrix.setIdentity();
-	//_.computeOrthoProjectionMatrix(0, w, 0, h, m_clip_min, m_clip_max);
-
 	// Reset model-view 4x4 matrix to the identity transformation:
-	_.mv_matrix.setIdentity();
+	_.matricesSetIdentity();
+	//_.computeOrthoProjectionMatrix(0, w, 0, h, m_clip_min, m_clip_max);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Text messages should always be visible on top the rest:
 	glDisable(GL_DEPTH_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Collect all 2D text objects, and update their properties:
 	CListOpenGLObjects objs;
@@ -398,10 +422,11 @@ void COpenGLViewport::renderTextMessages() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueForRendering(objs, _, rq);
+	mrpt::opengl::enqueueForRendering(objs, _, rq, false);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_shaders, m_lights);
+	mrpt::opengl::processRenderQueue(
+		rq, m_threadedData.get().shaders, m_lights);
 	MRPT_END
 #endif
 }
@@ -410,10 +435,16 @@ void COpenGLViewport::render(
 	[[maybe_unused]] const int render_width,
 	[[maybe_unused]] const int render_height,
 	[[maybe_unused]] const int render_offset_x,
-	[[maybe_unused]] const int render_offset_y) const
+	[[maybe_unused]] const int render_offset_y,
+	[[maybe_unused]] const CCamera* forceThisCamera) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
+
+#ifdef MRPT_OPENGL_PROFILER
+	mrpt::system::CTimeLoggerEntry tle(
+		opengl_profiler(), "COpenGLViewport.render");
+#endif
 
 	// Change viewport:
 	// -------------------------------------------
@@ -423,61 +454,49 @@ void COpenGLViewport::render(
 	const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
 
 	glViewport(vx, vy, vw, vh);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Clear depth&/color buffers:
 	// -------------------------------------------
-	m_state.viewport_width = vw;
-	m_state.viewport_height = vh;
+	auto& _ = m_threadedData.get().state;
+	_.viewport_width = vw;
+	_.viewport_height = vh;
 
 	glScissor(vx, vy, vw, vh);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glEnable(GL_SCISSOR_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (!m_isTransparent)
 	{  // Clear color & depth buffers:
 		// Save?
 
-		GLclampf prevCol[4];
-		if (m_custom_backgb_color)
-		{
-			glGetFloatv(GL_COLOR_CLEAR_VALUE, prevCol);
-			CHECK_OPENGL_ERROR();
-			glClearColor(
-				m_background_color.R, m_background_color.G,
-				m_background_color.B, m_background_color.A);
-			CHECK_OPENGL_ERROR();
-		}
+		glClearColor(
+			m_background_color.R, m_background_color.G, m_background_color.B,
+			m_background_color.A);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		glClear(
 			GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		CHECK_OPENGL_ERROR();
-
-		// Restore old colors:
-		if (m_custom_backgb_color)
-		{
-			glClearColor(prevCol[0], prevCol[1], prevCol[2], prevCol[3]);
-			CHECK_OPENGL_ERROR();
-		}
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	else
 	{  // Clear depth buffer only:
 		glClear(GL_DEPTH_BUFFER_BIT);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	glDisable(GL_SCISSOR_TEST);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Prepare shaders upon first invokation:
-	if (m_shaders.empty()) loadDefaultShaders();
+	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
 	if (isImageViewMode()) renderImageMode();
 	else
-		renderNormalSceneMode();
+		renderNormalSceneMode(forceThisCamera);
 
 	// Draw text messages, if any:
 	renderTextMessages();
@@ -500,7 +519,7 @@ void COpenGLViewport::render(
 #endif
 }
 
-uint8_t COpenGLViewport::serializeGetVersion() const { return 6; }
+uint8_t COpenGLViewport::serializeGetVersion() const { return 7; }
 void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -509,8 +528,8 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 		<< m_view_width << m_view_height;
 
 	// Added in v1:
-	out << m_custom_backgb_color << m_background_color.R << m_background_color.G
-		<< m_background_color.B << m_background_color.A;
+	out << m_background_color.R << m_background_color.G << m_background_color.B
+		<< m_background_color.A;
 
 	// Save objects:
 	uint32_t n;
@@ -559,6 +578,7 @@ void COpenGLViewport::serializeFrom(
 		case 4:
 		case 5:
 		case 6:
+		case 7:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
@@ -569,13 +589,15 @@ void COpenGLViewport::serializeFrom(
 			// in v1:
 			if (version >= 1)
 			{
-				in >> m_custom_backgb_color >> m_background_color.R >>
-					m_background_color.G >> m_background_color.B >>
-					m_background_color.A;
-			}
-			else
-			{
-				m_custom_backgb_color = false;
+				if (version < 7)
+				{
+					// field removed in v7:
+					bool was_m_custom_backgb_color;
+					in >> was_m_custom_backgb_color;
+				}
+
+				in >> m_background_color.R >> m_background_color.G >>
+					m_background_color.B >> m_background_color.A;
 			}
 
 			// Load objects:
@@ -764,35 +786,36 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	const double x_coord, const double y_coord, mrpt::math::TLine3D& out_ray,
 	mrpt::poses::CPose3D* out_cameraPose) const
 {
-	if (!m_state.initialized)
+	auto& _ = m_threadedData.get().state;
+
+	if (!_.initialized)
 	{
 		updateMatricesFromCamera();
-		ASSERT_(m_state.initialized);
+		ASSERT_(_.initialized);
 	}
 
-	ASSERTDEB_(m_state.viewport_height > 0 && m_state.viewport_width > 0);
+	ASSERTDEB_(_.viewport_height > 0 && _.viewport_width > 0);
 
-	const double ASPECT =
-		m_state.viewport_width / double(m_state.viewport_height);
+	const double ASPECT = _.viewport_width / double(_.viewport_height);
 
 	// unitary vector between (eye) -> (pointing):
 	const TPoint3D pointing_dir = {
-		-cos(m_state.azimuth) * cos(m_state.elev),
-		-sin(m_state.azimuth) * cos(m_state.elev), -sin(m_state.elev)};
+		-cos(_.azimuth) * cos(_.elev), -sin(_.azimuth) * cos(_.elev),
+		-sin(_.elev)};
 
 	// The camera X vector (in 3D) can be computed from the camera azimuth
 	// angle:
-	const TPoint3D cam_x_3d = {-sin(m_state.azimuth), cos(m_state.azimuth), 0};
+	const TPoint3D cam_x_3d = {-sin(_.azimuth), cos(_.azimuth), 0};
 
 	// The camera real UP vector (in 3D) is the cross product:
 	//     X3d x pointing_dir:
 	const auto cam_up_3d = mrpt::math::crossProduct3D(cam_x_3d, pointing_dir);
 
-	if (!m_state.is_projective)
+	if (!_.is_projective)
 	{
 		// Ortho projection:
 		// -------------------------------
-		double Ax = m_state.eyeDistance * 0.25;
+		double Ax = _.eyeDistance * 0.25;
 		double Ay = Ax;
 
 		if (ASPECT > 1) Ax *= ASPECT;
@@ -801,15 +824,13 @@ void COpenGLViewport::get3DRayForPixelCoord(
 			if (ASPECT != 0) Ay /= ASPECT;
 		}
 
-		const double point_lx =
-			(-0.5 + x_coord / m_state.viewport_width) * 2 * Ax;
-		const double point_ly =
-			-(-0.5 + y_coord / m_state.viewport_height) * 2 * Ay;
+		const double point_lx = (-0.5 + x_coord / _.viewport_width) * 2 * Ax;
+		const double point_ly = -(-0.5 + y_coord / _.viewport_height) * 2 * Ay;
 
 		const TPoint3D ray_origin(
-			m_state.eye.x + point_lx * cam_x_3d.x + point_ly * cam_up_3d.x,
-			m_state.eye.y + point_lx * cam_x_3d.y + point_ly * cam_up_3d.y,
-			m_state.eye.z + point_lx * cam_x_3d.z + point_ly * cam_up_3d.z);
+			_.eye.x + point_lx * cam_x_3d.x + point_ly * cam_up_3d.x,
+			_.eye.y + point_lx * cam_x_3d.y + point_ly * cam_up_3d.y,
+			_.eye.z + point_lx * cam_x_3d.z + point_ly * cam_up_3d.z);
 
 		out_ray.pBase = ray_origin;
 		out_ray.director[0] = pointing_dir.x;
@@ -826,11 +847,11 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		//  where one arrives to:
 		//    tan(FOVx/2) = ASPECT_RATIO * tan(FOVy/2)
 		//
-		const double FOVy = DEG2RAD(m_state.FOV);
+		const double FOVy = DEG2RAD(_.FOV);
 		const double FOVx = 2.0 * atan(ASPECT * tan(FOVy * 0.5));
 
-		const auto vw = m_state.viewport_width;
-		const auto vh = m_state.viewport_height;
+		const auto vw = _.viewport_width;
+		const auto vh = _.viewport_height;
 		const double len_horz = 2.0 * (-0.5 + x_coord / vw) * tan(0.5 * FOVx);
 		const double len_vert = -2.0 * (-0.5 + y_coord / vh) * tan(0.5 * FOVy);
 		// Point in camera local reference frame
@@ -842,7 +863,7 @@ void COpenGLViewport::get3DRayForPixelCoord(
 			l.x * cam_x_3d.z + l.y * cam_up_3d.z + l.z * pointing_dir.z);
 
 		// Set out ray:
-		out_ray.pBase = m_state.eye;
+		out_ray.pBase = _.eye;
 		out_ray.director[0] = ray_director.x;
 		out_ray.director[1] = ray_director.y;
 		out_ray.director[2] = ray_director.z;
@@ -868,9 +889,9 @@ void COpenGLViewport::get3DRayForPixelCoord(
 		M(2, 2) = pointing_dir.z;
 		M(3, 2) = 0;
 
-		M(0, 3) = m_state.eye.x;
-		M(1, 3) = m_state.eye.y;
-		M(2, 3) = m_state.eye.z;
+		M(0, 3) = _.eye.x;
+		M(1, 3) = _.eye.y;
+		M(2, 3) = _.eye.z;
 		M(3, 3) = 1;
 
 		*out_cameraPose = CPose3D(M);
@@ -959,9 +980,10 @@ void COpenGLViewport::setCloneCamera(bool enable)
 	}
 }
 
-void COpenGLViewport::updateMatricesFromCamera() const
+void COpenGLViewport::updateMatricesFromCamera(
+	const CCamera* forceThisCamera) const
 {
-	auto& _ = m_state;
+	auto& _ = m_threadedData.get().state;
 
 	// Prepare camera (projection matrix):
 	COpenGLViewport* viewForGetCamera = nullptr;
@@ -985,10 +1007,13 @@ void COpenGLViewport::updateMatricesFromCamera() const
 	// Get camera:
 	// 1st: if there is a CCamera in the scene (nullptr if no camera found):
 	const auto camPtr = viewForGetCamera->getByClass<CCamera>();
-	auto myCamera = camPtr ? camPtr.get() : nullptr;
+	const auto* myCamera = camPtr ? camPtr.get() : nullptr;
 
 	// 2nd: the internal camera of all viewports:
 	if (!myCamera) myCamera = &viewForGetCamera->m_camera;
+
+	// forced cam?
+	if (forceThisCamera) myCamera = forceThisCamera;
 
 	if (myCamera->isNoProjection())
 	{
@@ -1048,8 +1073,8 @@ void COpenGLViewport::updateMatricesFromCamera() const
 		_.applyLookAt();
 	}
 
-	// Reset model-view 4x4 matrix to the identity transformation:
-	_.mv_matrix.setIdentity();
+	// Reset model4x4 matrix to the identity transformation:
+	_.m_matrix.setIdentity();
 
 	_.initialized = true;
 }

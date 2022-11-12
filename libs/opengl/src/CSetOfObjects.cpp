@@ -36,13 +36,14 @@ void CSetOfObjects::renderUpdateBuffers() const
 
 void CSetOfObjects::render(const RenderContext& rc) const
 {
-	// Do nothing: the enqueForRenderRecursive() does the actual job.
+	// Do nothing: the enqueueForRenderRecursive() does the actual job.
 }
 
-void CSetOfObjects::enqueForRenderRecursive(
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq) const
+void CSetOfObjects::enqueueForRenderRecursive(
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	bool wholeInView) const
 {
-	mrpt::opengl::enqueForRendering(m_objects, state, rq);
+	mrpt::opengl::enqueueForRendering(m_objects, state, rq, wholeInView);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }
@@ -256,23 +257,23 @@ CRenderizable::Ptr CSetOfObjects::getByName(const string& str)
 	return CRenderizable::Ptr();
 }
 
-/** Evaluates the bounding box of this object (including possible children) in
- * the coordinate frame of the object parent. */
-auto CSetOfObjects::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSetOfObjects::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	mrpt::math::TBoundingBox bb;
+	mrpt::math::TBoundingBoxf bb;
 	bool first = true;
 
 	for (const auto& o : m_objects)
 	{
+		if (!o) continue;
 		if (first)
 		{
-			bb = o->getBoundingBox();
+			bb = o->getBoundingBoxLocalf();
 			first = false;
 		}
 		else
-			bb.unionWith(o->getBoundingBox());
+			bb.unionWith(o->getBoundingBoxLocalf());
 	}
 
-	return bb.compose(m_pose);
+	return bb;
 }

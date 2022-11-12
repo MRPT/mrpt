@@ -65,6 +65,9 @@ void CMeshFast::onUpdateBuffers_Points()
 
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
+
 	vbd.clear();
 	cbd.clear();
 
@@ -253,7 +256,7 @@ void CMeshFast::setZ(const mrpt::math::CMatrixDynamic<float>& in_Z)
 	CRenderizable::notifyChange();
 }
 
-auto CMeshFast::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CMeshFast::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return verticesBoundingBox().compose(m_pose);
+	return verticesBoundingBox();
 }

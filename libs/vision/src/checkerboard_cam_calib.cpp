@@ -165,11 +165,9 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			unsigned corners_count;
 			bool corners_found = false;
 
-			corners_count = CORNERS_COUNT;
-
-			vector<cv::Point2f> this_img_pts(
-				CORNERS_COUNT);	 // Temporary buffer for points, to be added if
-			// the points pass the checks.
+			// Temporary buffer for points, to be added if the points pass the
+			// checks.
+			vector<cv::Point2f> this_img_pts(CORNERS_COUNT);
 
 			dat.detected_corners.clear();
 

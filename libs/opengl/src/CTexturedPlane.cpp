@@ -37,10 +37,10 @@ void CTexturedPlane::render(const RenderContext& rc) const
 
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			if (!hasTexture) CRenderizableShaderTriangles::render(rc);
 			break;
-		case DefaultShaderID::TEXTURED_TRIANGLES:
+		case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:
 			if (hasTexture) CRenderizableShaderTexturedTriangles::render(rc);
 			break;
 	};
@@ -63,6 +63,9 @@ void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 	using P3f = mrpt::math::TPoint3Df;
 
 	auto& tris = CRenderizableShaderTexturedTriangles::m_triangles;
+	std::unique_lock<std::shared_mutex> writeLock(
+		CRenderizableShaderTexturedTriangles::m_trianglesMtx.data);
+
 	tris.clear();
 
 	{
@@ -98,6 +101,8 @@ void CTexturedPlane::onUpdateBuffers_Triangles()
 	MRPT_START
 	using P3f = mrpt::math::TPoint3Df;
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 
@@ -178,10 +183,9 @@ void CTexturedPlane::updatePoly() const
 	polygonUpToDate = true;
 }
 
-auto CTexturedPlane::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CTexturedPlane::internalBoundingBoxLocal() const
+	-> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(
-			   mrpt::math::TPoint3D(m_xMin, m_yMin, 0),
-			   mrpt::math::TPoint3D(m_xMax, m_yMax, 0))
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{m_xMin, m_yMin, 0.f}, {m_xMax, m_yMax, 0.f});
 }

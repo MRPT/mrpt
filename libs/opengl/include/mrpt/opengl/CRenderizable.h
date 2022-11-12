@@ -8,6 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/containers/NonCopiableData.h>
+#include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/containers/yaml_frwd.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/math/TBoundingBox.h>
@@ -24,18 +26,37 @@
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <deque>
+#include <shared_mutex>
+
+#ifdef MRPT_OPENGL_PROFILER
+#include <mrpt/system/CTimeLogger.h>
+#endif
 
 namespace mrpt::opengl
 {
+/** Enum for cull face modes in triangle-based shaders.
+ *  \sa CRenderizableShaderTriangles, CRenderizableShaderTexturedTriangles
+ *  \ingroup mrpt_opengl_grp
+ */
+enum class TCullFace : uint8_t
+{
+	/** The default: culls none, so all front and back faces are visible. */
+	NONE = 0,
+	/** Skip back faces (those that are NOT seen in the CCW direction) */
+	BACK,
+	/** Skip front faces (those that ARE seen in the CCW direction) */
+	FRONT
+};
+
 /** The base class of 3D objects that can be directly rendered through OpenGL.
  *  In this class there are a set of common properties to all 3D objects,
  *mainly:
- * - A name (m_name): A name that can be optionally asigned to objects for
+ * - Its SE(3) pose (x,y,z,yaw,pitch,roll), relative to the parent object,
+ * or the global frame of reference for root objects (inserted into a
+ *mrpt::opengl::COpenGLScene).
+ * - A name: A name that can be optionally asigned to objects for
  *easing its reference.
- * - 6D coordinates (x,y,z,yaw,pitch,roll), relative to the "current"
- *reference framework. By default, any object is referenced to global scene
- *coordinates.
- * - A RGB color: This field will be used in simple elements (points,
+ * - A RGBA color: This field will be used in simple elements (points,
  *lines, text,...) but is ignored in more complex objects that carry their own
  *color information (triangle sets,...)
  *
@@ -274,6 +295,11 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		const mrpt::opengl::Program* shader = nullptr;
 		mrpt::opengl::shader_id_t shader_id;
 		const mrpt::opengl::TLightParameters* lights = nullptr;
+
+		mutable std::optional<TCullFace> activeCullFace;
+		mutable std::optional<const mrpt::opengl::TLightParameters*>
+			activeLights;
+		mutable std::optional<int> activeTextureUnit;
 	};
 
 	/** Implements the rendering of 3D objects in each class derived from
@@ -284,13 +310,21 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual void render(const RenderContext& rc) const = 0;
 
 	/** Process all children objects recursively, if the object is a container
+	 *  \param wholeInView If true, it means that the render engine has already
+	 * verified that the whole bounding box lies within the visible part of the
+	 * viewport, so further culling checks can be discarded.
 	 */
-	virtual void enqueForRenderRecursive(
+	virtual void enqueueForRenderRecursive(
 		[[maybe_unused]] const mrpt::opengl::TRenderMatrices& state,
-		[[maybe_unused]] RenderQueue& rq) const
+		[[maybe_unused]] RenderQueue& rq,
+		[[maybe_unused]] bool wholeInView) const
 	{
 		// do thing
 	}
+	/** Should return true if enqueueForRenderRecursive() is defined since
+	 *  the object has inner children. Examples: CSetOfObjects, CAssimpModel.
+	 */
+	virtual bool isCompositeObject() const { return false; }
 
 	/** Called whenever m_outdatedBuffers is true: used to re-generate
 	 * OpenGL vertex buffers, etc. before they are sent for rendering in
@@ -310,21 +344,31 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void updateBuffers() const
 	{
 		renderUpdateBuffers();
-		const_cast<CRenderizable&>(*this).m_outdatedBuffers = false;
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		const_cast<CRenderizable&>(*this).m_state.get().outdatedBuffers = false;
 	}
 
 	/** Call to enable calling renderUpdateBuffers() before the next
 	 * render() rendering iteration. */
 	void notifyChange() const
 	{
-		const_cast<CRenderizable&>(*this).m_outdatedBuffers = true;
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_cachedLocalBBox.reset();
+		const_cast<CRenderizable&>(*this).m_state.run_on_all(
+			[](auto& state) { state.outdatedBuffers = true; });
 	}
+
+	void notifyBBoxChange() const { m_cachedLocalBBox.reset(); }
 
 	/** Returns whether notifyChange() has been invoked since the last call
 	 * to renderUpdateBuffers(), meaning the latter needs to be called again
 	 * before rendering.
 	 */
-	bool hasToUpdateBuffers() const { return m_outdatedBuffers; }
+	bool hasToUpdateBuffers() const
+	{
+		std::shared_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		return m_state.get().outdatedBuffers;
+	}
 
 	/** Simulation of ray-trace, given a pose. Returns true if the ray
 	 * effectively collisions with the object (returning the distance to the
@@ -334,8 +378,25 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const;
 
 	/** Evaluates the bounding box of this object (including possible
-	 * children) in the coordinate frame of the object parent. */
-	virtual auto getBoundingBox() const -> mrpt::math::TBoundingBox = 0;
+	 * children) in the coordinate frame of my parent object,
+	 * i.e. if this object pose changes, the bbox returned here will change too.
+	 * This is in contrast with the local bbox returned by getBoundingBoxLocal()
+	 */
+	auto getBoundingBox() const -> mrpt::math::TBoundingBox
+	{
+		return getBoundingBoxLocal().compose(m_pose);
+	}
+
+	/** Evaluates the bounding box of this object (including possible
+	 * children) in the coordinate frame of my parent object,
+	 * i.e. if this object pose changes, the bbox returned here will change too.
+	 * This is in contrast with the local bbox returned by getBoundingBoxLocal()
+	 */
+	auto getBoundingBoxLocal() const -> mrpt::math::TBoundingBox;
+
+	/// \overload Fastest method, returning a copy of the float version of
+	/// the bbox. const refs are not returned for multi-thread safety.
+	auto getBoundingBoxLocalf() const -> mrpt::math::TBoundingBoxf;
 
 	[[deprecated(
 		"Use getBoundingBox() const -> mrpt::math::TBoundingBox instead.")]]  //
@@ -377,8 +438,25 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void writeToStreamRender(mrpt::serialization::CArchive& out) const;
 	void readFromStreamRender(mrpt::serialization::CArchive& in);
 
-	bool m_outdatedBuffers = true;
+	/** Must be implemented by derived classes to provide the updated bounding
+	 * box in the object local frame of coordinates.
+	 * This will be called only once after each time the derived class reports
+	 * to notifyChange() that the object geometry changed.
+	 *
+	 * \sa getBoundingBox(), getBoundingBoxLocal(), getBoundingBoxLocalf()
+	 */
+	virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const = 0;
+
+	struct State
+	{
+		bool outdatedBuffers = true;
+	};
+	mrpt::containers::PerThreadDataHolder<State> m_state;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_stateMtx;
+
 	mrpt::math::TPoint3Df m_representativePoint{0, 0, 0};
+
+	mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedLocalBBox;
 
 	/** Optional pointer to a mrpt::opengl::CText */
 	mutable std::shared_ptr<mrpt::opengl::CText> m_label_obj;
@@ -386,20 +464,6 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 /** A list of smart pointers to renderizable objects */
 using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
-
-/** Enum for cull face modes in triangle-based shaders.
- *  \sa CRenderizableShaderTriangles, CRenderizableShaderTexturedTriangles
- *  \ingroup mrpt_opengl_grp
- */
-enum class TCullFace : uint8_t
-{
-	/** The default: culls none, so all front and back faces are visible. */
-	NONE = 0,
-	/** Skip back faces (those that are NOT seen in the CCW direction) */
-	BACK,
-	/** Skip front faces (those that ARE seen in the CCW direction) */
-	FRONT
-};
 
 /** @name Miscellaneous rendering methods
 @{ */
@@ -413,15 +477,20 @@ enum class TCullFace : uint8_t
  *   - call its ::render()
  *   - shows its name (if enabled).
  *
+ * \param skipCullChecks Will be true if the render engine already checked that
+ *        the object lies within the viewport area, so it is pointless to waste
+ *        more time checking.
+ *
  * \note Used by CSetOfObjects and COpenGLViewport
  *
  * \sa processPendingRendering
  */
-void enqueForRendering(
+void enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
-	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq);
+	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+	const bool skipCullChecks, RenderQueueStats* stats = nullptr);
 
-/** After enqueForRendering(), actually executes the rendering tasks, grouped
+/** After enqueueForRendering(), actually executes the rendering tasks, grouped
  * shader by shader.
  *
  *  \note Used by COpenGLViewport
@@ -430,6 +499,10 @@ void processRenderQueue(
 	const RenderQueue& rq,
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
 	const mrpt::opengl::TLightParameters& lights);
+
+#ifdef MRPT_OPENGL_PROFILER
+mrpt::system::CTimeLogger& opengl_profiler();
+#endif
 
 /** @} */
 

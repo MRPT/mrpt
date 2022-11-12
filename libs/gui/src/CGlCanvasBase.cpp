@@ -11,7 +11,6 @@
 //
 #include <mrpt/gui/CGlCanvasBase.h>
 #include <mrpt/opengl/opengl_api.h>
-#include <mrpt/system/CTicTac.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -40,7 +39,6 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace std;
-using mrpt::system::CTicTac;
 
 float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
@@ -145,13 +143,6 @@ void CGlCanvasBase::resizeViewport(int w, int h)
 #endif
 }
 
-void CGlCanvasBase::clearColors()
-{
-#if MRPT_HAS_OPENGL_GLUT
-	glClearColor(clearColorR, clearColorG, clearColorB, clearColorA);
-#endif
-}
-
 void CGlCanvasBase::updatePan(CamaraParams& params, int x, int y) const
 {
 	float Ay = -(x - m_mouseClickX);
@@ -237,18 +228,7 @@ bool CGlCanvasBase::isCameraProjective() const
 
 void CGlCanvasBase::setCameraFOV(float FOV) { m_cameraParams.cameraFOV = FOV; }
 float CGlCanvasBase::cameraFOV() const { return m_cameraParams.cameraFOV; }
-void CGlCanvasBase::setClearColors(float r, float g, float b, float a)
-{
-	clearColorR = r;
-	clearColorG = g;
-	clearColorB = b;
-	clearColorA = a;
-}
 
-float CGlCanvasBase::getClearColorR() const { return clearColorR; }
-float CGlCanvasBase::getClearColorG() const { return clearColorG; }
-float CGlCanvasBase::getClearColorB() const { return clearColorB; }
-float CGlCanvasBase::getClearColorA() const { return clearColorA; }
 void CGlCanvasBase::setOpenGLSceneRef(COpenGLScene::Ptr scene)
 {
 	m_openGLScene = scene;
@@ -279,24 +259,39 @@ float CGlCanvasBase::getCameraPointingZ() const
 double CGlCanvasBase::renderCanvas(int width, int height)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	CTicTac tictac;
 	double At = 0.1;
+
+#ifdef MRPT_OPENGL_PROFILER
+	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "renderCanvas");
+#endif
 
 	try
 	{
+		const double t0 = mrpt::Clock::nowDouble();
+
+#ifdef MRPT_OPENGL_PROFILER
+		mrpt::system::CTimeLoggerEntry tle1(
+			opengl_profiler(), "renderCanvas.1_preRender");
+#endif
+
 		// Call PreRender user code:
 		preRender();
 		CHECK_OPENGL_ERROR();
 
-		// Set static configs:
-		glEnable(GL_DEPTH_TEST);
-		CHECK_OPENGL_ERROR();
+#ifdef MRPT_OPENGL_PROFILER
+		tle1.stop();
+		mrpt::system::CTimeLoggerEntry tle2(
+			opengl_profiler(), "renderCanvas.2_resizeViewport");
+#endif
 
 		// Set the viewport
 		resizeViewport((GLsizei)width, (GLsizei)height);
 
-		// Set the background color:
-		clearColors();
+#ifdef MRPT_OPENGL_PROFILER
+		tle2.stop();
+		mrpt::system::CTimeLoggerEntry tle3(
+			opengl_profiler(), "renderCanvas.3_renderScene");
+#endif
 
 		if (m_openGLScene)
 		{
@@ -318,21 +313,39 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 				}
 			}
 
-			tictac.Tic();
-
 			// Draw primitives:
 			m_openGLScene->render();
 
 		}  // end if "m_openGLScene!=nullptr"
 
+#ifdef MRPT_OPENGL_PROFILER
+		tle3.stop();
+		mrpt::system::CTimeLoggerEntry tle4(
+			opengl_profiler(), "renderCanvas.4_postRender");
+#endif
+
 		postRender();
 
-		// Flush & swap buffers to disply new image:
-		glFinish();
+		// Swap buffers to disply new image:
+		// Was: glFinish();
+		// It's not actually required and we return from this function faster.
+
+#ifdef MRPT_OPENGL_PROFILER
+		tle4.stop();
+		mrpt::system::CTimeLoggerEntry tle5(
+			opengl_profiler(), "renderCanvas.5_swapBuffers");
+#endif
+
 		swapBuffers();
 		CHECK_OPENGL_ERROR();
 
-		At = tictac.Tac();
+#ifdef MRPT_OPENGL_PROFILER
+		tle5.stop();
+#endif
+
+		const double t1 = mrpt::Clock::nowDouble();
+
+		At = t1 - t0;
 	}
 	catch (const std::exception& e)
 	{

@@ -36,6 +36,10 @@ void testFromCorners()
 {
 	mrpt::math::TBoundingBox_<T> bb({-1, -2, -3}, {9, 8, 7});
 	EXPECT_NEAR(bb.volume(), 10 * 10 * 10, 1e-3);
+
+	auto bb2 = mrpt::math::TBoundingBox_<T>::FromUnsortedPoints(
+		{9, 8, 7}, {-1, -2, -3});
+	EXPECT_NEAR(bb2.volume(), 10 * 10 * 10, 1e-3);
 }
 
 TEST(TBoundingBox, fromCorners)
@@ -127,10 +131,27 @@ TEST(TBoundingBox, compose)
 
 TEST(TBoundingBox, inverseCompose)
 {
-	mrpt::math::TBoundingBox bb1({0, 1, 2}, {3, 4, 5});
-	const auto bb2 =
-		bb1.inverseCompose(mrpt::math::TPose3D(10, 20, 30, 0, 0, 0));
+	using namespace mrpt;
 
-	EXPECT_EQ(bb2.min, mrpt::math::TPoint3D(-10, -19, -28));
-	EXPECT_EQ(bb2.max, mrpt::math::TPoint3D(-7, -16, -25));
+	mrpt::math::TBoundingBox bb1({0, 1, 2}, {3, 4, 5});
+	{
+		const auto bb2 =
+			bb1.inverseCompose(mrpt::math::TPose3D(10, 20, 30, 0, 0, 0));
+
+		EXPECT_EQ(bb2.min, mrpt::math::TPoint3D(-10, -19, -28));
+		EXPECT_EQ(bb2.max, mrpt::math::TPoint3D(-7, -16, -25));
+	}
+	{
+		const auto bb2 = bb1.inverseCompose(
+			mrpt::math::TPose3D(10, 20, 30, 180.0_deg, 0, 0));
+
+		EXPECT_NEAR(
+			(bb2.min - mrpt::math::TPoint3D(7.0, 16.0, -28.0)).norm(), 0.0,
+			1e-4)
+			<< bb2.min << std::endl;
+		EXPECT_NEAR(
+			(bb2.max - mrpt::math::TPoint3D(10.0, 19.0, -25.0)).norm(), 0.0,
+			1e-4)
+			<< bb2.max << std::endl;
+	}
 }

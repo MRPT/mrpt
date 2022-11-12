@@ -73,7 +73,7 @@ class CPlanarLaserScan : public CRenderizableShaderPoints,
 	virtual shader_list_t requiredShaders() const override
 	{
 		return {
-			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES,
+			DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_NO_LIGHT,
 			DefaultShaderID::POINTS};
 	}
 	void onUpdateBuffers_Wireframe() override;
@@ -139,7 +139,7 @@ class CPlanarLaserScan : public CRenderizableShaderPoints,
 		m_scan = scan;
 	}
 
-	auto getBoundingBox() const -> mrpt::math::TBoundingBox override;
+	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
    protected:
 	mrpt::obs::CObservation2DRangeScan m_scan;

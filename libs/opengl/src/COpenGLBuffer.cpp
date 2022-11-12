@@ -21,10 +21,7 @@
 
 using namespace mrpt::opengl;
 
-COpenGLBuffer::COpenGLBuffer(const COpenGLBuffer::Type type)
-{
-	m_impl = std::make_shared<RAII_Impl>(type);
-}
+COpenGLBuffer::COpenGLBuffer(const COpenGLBuffer::Type type) : m_impl(type) {}
 
 COpenGLBuffer::RAII_Impl::RAII_Impl(COpenGLBuffer::Type t) : type(t) {}
 COpenGLBuffer::RAII_Impl::~RAII_Impl()

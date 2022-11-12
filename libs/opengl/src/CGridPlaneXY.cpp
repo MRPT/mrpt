@@ -40,6 +40,9 @@ void CGridPlaneXY::onUpdateBuffers_Wireframe()
 
 	m_vertex_buffer_data.clear();
 	m_color_buffer_data.clear();
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	for (float y = m_yMin; y <= m_yMax; y += m_frequency)
 	{
 		m_vertex_buffer_data.emplace_back(m_xMin, y, m_plane_z);
@@ -90,8 +93,8 @@ void CGridPlaneXY::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CGridPlaneXY::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CGridPlaneXY::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox({m_xMin, m_yMin, 0}, {m_xMax, m_yMax, 0})
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{m_xMin, m_yMin, 0}, {m_xMax, m_yMax, 0});
 }

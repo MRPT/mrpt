@@ -19,7 +19,7 @@ working as usual after updating to MRPT 2.*:
    - `<mrpt/math/TPoint2D.h>`
    -  (and so on)
 
- - **Smart pointers** are now standard [`std::shared_ptr<>`](http://en.cppreference.com/w/cpp/memory/shared_ptr) instead of those based on `stlplus`. Required changes:
+ - **Smart pointers** are now standard [std::shared_ptr<>](http://en.cppreference.com/w/cpp/memory/shared_ptr) instead of those based on `stlplus`. Required changes:
     - `ptr.clear()`  --> `ptr.reset()`. Also, notice that the former `stlplus` semantics of `clear()` deleting **all** copies
 of the object, as hold by different smart pointers, is no longer maintained. There is no longer such a possibility, since the
 C++11 standard does not allow it to happen (and it makes sense in this way).

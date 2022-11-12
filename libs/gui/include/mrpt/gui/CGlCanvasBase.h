@@ -66,9 +66,6 @@ class CGlCanvasBase
 	void updateLastPos(int x, int y);
 	/** Calls the glViewport function*/
 	void resizeViewport(int w, int h);
-	/** Calls the glClearColor function
-	 * See also setClearColors(float, float, float, float)*/
-	void clearColors();
 
 	/** This function for the mouse event
 	 * It gets a reference to CamaraParams, x, y
@@ -180,16 +177,6 @@ class CGlCanvasBase
 	virtual void setCameraFOV(float FOV);
 	float cameraFOV() const;
 
-	/** Sets the RGBA colors for glClearColor
-	 * See also clearColors(), getClearColorR(),
-	 * getClearColorG(),getClearColorB(), getClearColorA()
-	 */
-	void setClearColors(float r, float g, float b, float a = 1.0f);
-	float getClearColorR() const;
-	float getClearColorG() const;
-	float getClearColorB() const;
-	float getClearColorA() const;
-
 	static float SENSIBILITY_DEG_PER_PIXEL;	 // Default = 0.1
 
 	/** Overload this method to limit the capabilities of the user to move the
@@ -247,8 +234,6 @@ class CGlCanvasBase
 	virtual double renderCanvas(int width = -1, int height = -1);
 
    private:
-	float clearColorR = .4f, clearColorG = .4f, clearColorB = .4f,
-		  clearColorA = 1.f;
 	bool useCameraFromScene = false;
 	mrpt::opengl::COpenGLScene::Ptr m_openGLScene =
 		mrpt::opengl::COpenGLScene::Create();

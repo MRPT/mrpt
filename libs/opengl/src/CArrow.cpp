@@ -28,7 +28,10 @@ void CArrow::onUpdateBuffers_Triangles()
 	using P3f = mrpt::math::TPoint3Df;
 	using V3f = mrpt::math::TVector3Df;
 
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	// Compute the XYZ local frame of reference for the arrow:
@@ -201,12 +204,9 @@ void CArrow::serializeFrom(mrpt::serialization::CSchemeArchiveBase& in)
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	}
 }
-auto CArrow::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CArrow::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(
-			   {std::min(m_x0, m_x1), std::min(m_y0, m_y1),
-				std::min(m_z0, m_z1)},
-			   {std::max(m_x0, m_x1), std::max(m_y0, m_y1),
-				std::max(m_z0, m_z1)})
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{std::min(m_x0, m_x1), std::min(m_y0, m_y1), std::min(m_z0, m_z1)},
+		{std::max(m_x0, m_x1), std::max(m_y0, m_y1), std::max(m_z0, m_z1)});
 }

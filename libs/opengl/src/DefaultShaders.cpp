@@ -59,29 +59,51 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			break;
 
 			// ==============================
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			vertex_shader =
-#include "../shaders/triangles.v.glsl"
+#include "../shaders/triangles-light.v.glsl"
 				;
 			fragment_shader =
-#include "../shaders/triangles.f.glsl"
+#include "../shaders/triangles-light.f.glsl"
 				;
-			uniforms = {"p_matrix",		 "mv_matrix",		"light_diffuse",
-						"light_ambient", "light_direction", "enableLight"};
+			uniforms = {"p_matrix",		 "v_matrix",	  "m_matrix",
+						"light_diffuse", "light_ambient", "light_direction"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 			// ==============================
-		case DefaultShaderID::TEXTURED_TRIANGLES:
+		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			vertex_shader =
-#include "../shaders/textured-triangles.v.glsl"
+#include "../shaders/triangles-no-light.v.glsl"
 				;
 			fragment_shader =
-#include "../shaders/textured-triangles.f.glsl"
+#include "../shaders/triangles-no-light.f.glsl"
 				;
-			uniforms = {"p_matrix",		  "mv_matrix",	   "pmv_matrix",
-						"light_diffuse",  "light_ambient", "light_direction",
-						"textureSampler", "enableLight"};
+			uniforms = {"pmv_matrix"};
+			attribs = {"position", "vertexColor"};
+			break;
+			// ==============================
+		case DefaultShaderID::TEXTURED_TRIANGLES_LIGHT:
+			vertex_shader =
+#include "../shaders/textured-triangles-light.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/textured-triangles-light.f.glsl"
+				;
+			uniforms = {"p_matrix",		 "v_matrix",	  "m_matrix",
+						"light_diffuse", "light_ambient", "light_direction",
+						"textureSampler"};
 			attribs = {"position", "vertexUV", "vertexNormal"};
+			break;
+			// ==============================
+		case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:
+			vertex_shader =
+#include "../shaders/textured-triangles-no-light.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/textured-triangles-no-light.f.glsl"
+				;
+			uniforms = {"pmv_matrix", "textureSampler"};
+			attribs = {"position", "vertexUV"};
 			break;
 			// ==============================
 		case DefaultShaderID::TEXT:

@@ -75,9 +75,10 @@ class CSetOfObjects : public CRenderizable
 	}
 	void render(const RenderContext& rc) const override;
 	void renderUpdateBuffers() const override;
-	void enqueForRenderRecursive(
-		const mrpt::opengl::TRenderMatrices& state,
-		RenderQueue& rq) const override;
+	void enqueueForRenderRecursive(
+		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+		bool wholeInView) const override;
+	bool isCompositeObject() const override { return true; }
 	void freeOpenGLResources() override
 	{
 		for (auto& o : m_objects)
@@ -135,7 +136,7 @@ class CSetOfObjects : public CRenderizable
 	CRenderizable& setColorB_u8(const uint8_t b) override;
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 	bool contains(const CRenderizable::Ptr& obj) const;
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	/** @name pose_pdf -> 3d objects auxiliary templates
 		@{ */
@@ -198,20 +199,16 @@ typename T::Ptr CSetOfObjects::getByClass(size_t ith) const
 {
 	MRPT_START
 	size_t foundCount = 0;
-	const auto class_ID = &T::GetRuntimeClassIdStatic();
 	for (const auto& o : m_objects)
-		if (o && o->GetRuntimeClass()->derivedFrom(class_ID))
-			if (foundCount++ == ith) return std::dynamic_pointer_cast<T>(o);
+		if (auto obj = std::dynamic_pointer_cast<T>(o); obj)
+			if (foundCount++ == ith) return obj;
 
 	// If not found directly, search recursively:
 	for (const auto& o : m_objects)
 	{
-		if (o &&
-			o->GetRuntimeClass() ==
-				CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
+		if (auto objs = std::dynamic_pointer_cast<CSetOfObjects>(o); objs)
 		{
-			typename T::Ptr obj = std::dynamic_pointer_cast<CSetOfObjects>(o)
-									  ->template getByClass<T>(ith);
+			typename T::Ptr obj = objs->template getByClass<T>(ith);
 			if (obj) return obj;
 		}
 	}

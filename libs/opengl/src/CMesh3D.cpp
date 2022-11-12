@@ -192,7 +192,7 @@ void CMesh3D::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (m_showFaces) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -214,6 +214,9 @@ void CMesh3D::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	for (size_t f = 0; f < m_face_verts.size(); f++)
@@ -242,7 +245,10 @@ void CMesh3D::onUpdateBuffers_Wireframe()
 
 void CMesh3D::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	for (size_t f = 0; f < m_is_quad.size(); f++)
@@ -263,11 +269,15 @@ void CMesh3D::onUpdateBuffers_Triangles()
 
 	for (auto& t : tris)
 		t.setColor(face_color);
+
+	notifyBBoxChange();
 }
 void CMesh3D::onUpdateBuffers_Points()
 {
 	auto& vbd = CRenderizableShaderPoints::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	vbd = m_vertices;
 	cbd.assign(m_vertices.size(), vert_color.asTColor());
@@ -314,7 +324,7 @@ void CMesh3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 	CRenderizable::notifyChange();
 }
 
-auto CMesh3D::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CMesh3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return trianglesBoundingBox().compose(m_pose);
+	return trianglesBoundingBox();
 }

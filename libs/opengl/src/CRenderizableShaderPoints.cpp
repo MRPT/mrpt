@@ -30,6 +30,9 @@ void CRenderizableShaderPoints::renderUpdateBuffers() const
 	// Generate vertices & colors:
 	const_cast<CRenderizableShaderPoints&>(*this).onUpdateBuffers_Points();
 
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
+
 	// Define OpenGL buffers:
 	m_vertexBuffer.createOnce();
 	m_vertexBuffer.bind();
@@ -52,6 +55,9 @@ void CRenderizableShaderPoints::renderUpdateBuffers() const
 void CRenderizableShaderPoints::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
 
 	// Point size as uniform:
 	glUniform1f(rc.shader->uniformId("vertexPointSize"), m_pointSize);
@@ -83,7 +89,7 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the color array:
@@ -101,15 +107,15 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	glDrawArrays(GL_POINTS, 0, m_vertex_buffer_data.size());
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_color) glDisableVertexAttribArray(*attr_color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 }
 
@@ -135,29 +141,20 @@ void CRenderizableShaderPoints::params_deserialize(
 	};
 }
 
-const mrpt::math::TBoundingBox CRenderizableShaderPoints::verticesBoundingBox()
+const mrpt::math::TBoundingBoxf CRenderizableShaderPoints::verticesBoundingBox()
 	const
 {
-	mrpt::math::TBoundingBox bb;
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderPoints::m_pointsMtx.data);
+
+	mrpt::math::TBoundingBoxf bb;
 
 	if (m_vertex_buffer_data.empty()) return bb;
 
-	bb.min = mrpt::math::TPoint3D(
-		std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-		std::numeric_limits<double>::max());
-	bb.max = mrpt::math::TPoint3D(
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max(),
-		-std::numeric_limits<double>::max());
+	bb = mrpt::math::TBoundingBoxf::PlusMinusInfinity();
 
 	for (const auto& p : m_vertex_buffer_data)
-	{
-		keep_min(bb.min.x, p.x);
-		keep_max(bb.max.x, p.x);
-		keep_min(bb.min.y, p.y);
-		keep_max(bb.max.y, p.y);
-		keep_min(bb.min.z, p.z);
-		keep_max(bb.max.z, p.z);
-	}
+		bb.updateWithPoint(p);
+
 	return bb;
 }

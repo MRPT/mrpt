@@ -32,6 +32,9 @@ CSimpleLine::CSimpleLine(
 void CSimpleLine::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.resize(2);
 
 	vbd[0] = {m_x0, m_y0, m_z0};
@@ -70,12 +73,9 @@ void CSimpleLine::serializeFrom(
 	CRenderizable::notifyChange();
 }
 
-auto CSimpleLine::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CSimpleLine::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(
-			   {std::min(m_x0, m_x1), std::min(m_y0, m_y1),
-				std::min(m_z0, m_z1)},
-			   {std::max(m_x0, m_x1), std::max(m_y0, m_y1),
-				std::max(m_z0, m_z1)})
-		.compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		{std::min(m_x0, m_x1), std::min(m_y0, m_y1), std::min(m_z0, m_z1)},
+		{std::max(m_x0, m_x1), std::max(m_y0, m_y1), std::max(m_z0, m_z1)});
 }

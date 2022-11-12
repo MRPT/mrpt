@@ -30,6 +30,9 @@ void CRenderizableShaderWireFrame::renderUpdateBuffers() const
 	const_cast<CRenderizableShaderWireFrame&>(*this)
 		.onUpdateBuffers_Wireframe();
 
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	// Define OpenGL buffers:
 	m_vertexBuffer.createOnce();
 	m_vertexBuffer.bind();
@@ -55,9 +58,12 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 	// TODO: Port thick lines to opengl3?
 	// glLineWidth(m_lineWidth);
 
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 #if !defined(__EMSCRIPTEN__)
 	glEnable(GL_LINE_SMOOTH);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
 	// Set up the vertex array:
@@ -76,7 +82,7 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	// Set up the color array:
@@ -94,15 +100,15 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 			0, /* stride */
 			BUFFER_OFFSET(0) /* array buffer offset */
 		);
-		CHECK_OPENGL_ERROR();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
 	glDrawArrays(GL_LINES, 0, m_vertex_buffer_data.size());
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	if (attr_position) glDisableVertexAttribArray(*attr_position);
 	if (attr_color) glDisableVertexAttribArray(*attr_color);
-	CHECK_OPENGL_ERROR();
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 }
 
@@ -110,6 +116,8 @@ const mrpt::math::TBoundingBox
 	CRenderizableShaderWireFrame::wireframeVerticesBoundingBox() const
 {
 	mrpt::math::TBoundingBox bb;
+	std::shared_lock<std::shared_mutex> wfReadLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
 
 	if (m_vertex_buffer_data.empty()) return bb;
 

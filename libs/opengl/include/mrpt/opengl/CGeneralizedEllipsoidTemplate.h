@@ -46,7 +46,7 @@ class CGeneralizedEllipsoidTemplate
 	{
 		switch (rc.shader_id)
 		{
-			case DefaultShaderID::TRIANGLES:
+			case DefaultShaderID::TRIANGLES_LIGHT:
 				if (m_drawSolid3D) CRenderizableShaderTriangles::render(rc);
 				break;
 			case DefaultShaderID::WIREFRAME:
@@ -62,6 +62,8 @@ class CGeneralizedEllipsoidTemplate
 
 	void renderUpdateBuffers() const override
 	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+
 		// 1) Update eigenvectors/values:
 		if (m_needToRecomputeEigenVals)
 		{
@@ -103,9 +105,6 @@ class CGeneralizedEllipsoidTemplate
 				mrpt::keep_min(m_bb_min[k], m_render_pts[i][k]);
 				mrpt::keep_max(m_bb_max[k], m_render_pts[i][k]);
 			}
-		// Convert to coordinates of my parent:
-		m_pose.composePoint(m_bb_min, m_bb_min);
-		m_pose.composePoint(m_bb_max, m_bb_max);
 
 		CRenderizableShaderTriangles::renderUpdateBuffers();
 		CRenderizableShaderWireFrame::renderUpdateBuffers();
@@ -113,7 +112,7 @@ class CGeneralizedEllipsoidTemplate
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
-		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES};
+		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT};
 	}
 	// Render precomputed points in m_render_pts:
 	void onUpdateBuffers_Wireframe() override { implUpdate_Wireframe(); }
@@ -139,6 +138,8 @@ class CGeneralizedEllipsoidTemplate
 	void setCovMatrixAndMean(const MATRIX& new_cov, const VECTOR& new_mean)
 	{
 		MRPT_START
+		std::unique_lock<std::shared_mutex> lckWrite(m_ellipsoidDataMtx.data);
+
 		ASSERT_EQUAL_(new_cov.cols(), new_cov.rows());
 		ASSERT_EQUAL_(new_cov.cols(), DIM);
 		m_cov = new_cov;
@@ -149,7 +150,11 @@ class CGeneralizedEllipsoidTemplate
 	}
 
 	/** Gets the current uncertainty covariance of parameter space */
-	const cov_matrix_t& getCovMatrix() const { return m_cov; }
+	cov_matrix_t getCovMatrix() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+		return m_cov;
+	}
 
 	/** Like setCovMatrixAndMean(), for mean=zero.
 	 */
@@ -187,34 +192,38 @@ class CGeneralizedEllipsoidTemplate
 	 */
 	void setQuantiles(float q)
 	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_ellipsoidDataMtx.data);
 		m_quantiles = q;
 		CRenderizable::notifyChange();
 	}
 	/** Refer to documentation of \a setQuantiles() */
-	float getQuantiles() const { return m_quantiles; }
+	float getQuantiles() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+		return m_quantiles;
+	}
 
 	/** Set the number of segments of the surface/curve (higher means with
 	 * greater resolution) */
 	void setNumberOfSegments(const uint32_t numSegments)
 	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_ellipsoidDataMtx.data);
 		m_numSegments = numSegments;
 		CRenderizable::notifyChange();
 	}
-	uint32_t getNumberOfSegments() { return m_numSegments; }
+	uint32_t getNumberOfSegments()
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+		return m_numSegments;
+	}
 
 	/** If set to "true", a whole ellipsoid surface will be drawn, or if
 	 * set to "false" (default) it will be drawn as a "wireframe". */
 	void enableDrawSolid3D(bool v)
 	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_ellipsoidDataMtx.data);
 		m_drawSolid3D = v;
 		CRenderizable::notifyChange();
-	}
-
-	/** Evaluates the bounding box of this object (including possible
-	 * children) in the coordinate frame of the object parent. */
-	mrpt::math::TBoundingBox getBoundingBox() const override
-	{
-		return mrpt::math::TBoundingBox(m_bb_min, m_bb_max).compose(m_pose);
 	}
 
 	/** Ray tracing  */
@@ -234,6 +243,9 @@ class CGeneralizedEllipsoidTemplate
 		const std::vector<array_point_t>& params_pts,
 		std::vector<array_point_t>& out_pts) const = 0;
 
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex>
+		m_ellipsoidDataMtx;
+
 	mutable cov_matrix_t m_cov;
 	mean_vector_t m_mean;
 	mutable bool m_needToRecomputeEigenVals{true};
@@ -242,6 +254,8 @@ class CGeneralizedEllipsoidTemplate
 	float m_quantiles{3.f};
 	/** Number of segments in 2D/3D ellipsoids (default=20) */
 	uint32_t m_numSegments{20};
+
+	/// bounding boxes, in object local coordinates
 	mutable mrpt::math::TPoint3D m_bb_min{0, 0, 0}, m_bb_max{0, 0, 0};
 
 	/** If set to "true", a whole ellipsoid surface will be drawn, or
@@ -291,6 +305,11 @@ class CGeneralizedEllipsoidTemplate
 
 	void implUpdate_Wireframe();
 	void implUpdate_Triangles();
+
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override
+	{
+		return {m_bb_min, m_bb_max};
+	}
 
    public:
 	// Solve virtual public inheritance ambiguity:

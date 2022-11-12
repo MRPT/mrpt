@@ -65,4 +65,8 @@ if(BUILD_mrpt-gui)
 		target_link_libraries(gui PUBLIC mrpt::nanogui)
 	endif()
 
+	# Use the mrpt::opengl profiler option here too for the opengl GUIs:
+	if (MRPT_OPENGL_PROFILER)
+		target_compile_definitions(gui PRIVATE MRPT_OPENGL_PROFILER)
+	endif()
 endif()

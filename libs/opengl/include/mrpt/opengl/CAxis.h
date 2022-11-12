@@ -29,9 +29,10 @@ class CAxis : public CRenderizableShaderWireFrame
 	 * @{ */
 	void onUpdateBuffers_Wireframe() override;
 	void render(const RenderContext& rc) const override;
-	void enqueForRenderRecursive(
-		const mrpt::opengl::TRenderMatrices& state,
-		RenderQueue& rq) const override;
+	void enqueueForRenderRecursive(
+		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
+		bool wholeInView) const override;
+	bool isCompositeObject() const override { return true; }
 	/** @} */
 
 	/** Constructor */
@@ -63,7 +64,7 @@ class CAxis : public CRenderizableShaderWireFrame
 	void setTickMarksLength(float len);
 	float getTickMarksLength(float len) { return m_markLen; }
 
-	mrpt::math::TBoundingBox getBoundingBox() const override;
+	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
    protected:
 	float m_xmin, m_ymin, m_zmin;
@@ -75,7 +76,8 @@ class CAxis : public CRenderizableShaderWireFrame
 	float m_textRot[3][3];	// {x,y,z},{yaw,pitch,roll}
 	float m_markLen{0.07f};
 
-	mrpt::opengl::CListOpenGLObjects m_gl_labels;
+	mrpt::containers::PerThreadDataHolder<mrpt::opengl::CListOpenGLObjects>
+		m_gl_labels;
 };
 
 }  // namespace mrpt::opengl

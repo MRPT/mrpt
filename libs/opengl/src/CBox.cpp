@@ -35,7 +35,7 @@ void CBox::render(const RenderContext& rc) const
 {
 	switch (rc.shader_id)
 	{
-		case DefaultShaderID::TRIANGLES:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (!m_wireframe) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::WIREFRAME:
@@ -54,6 +54,9 @@ void CBox::onUpdateBuffers_Wireframe()
 {
 	auto& vbd = CRenderizableShaderWireFrame::m_vertex_buffer_data;
 	auto& cbd = CRenderizableShaderWireFrame::m_color_buffer_data;
+	std::unique_lock<std::shared_mutex> wfWriteLock(
+		CRenderizableShaderWireFrame::m_wireframeMtx.data);
+
 	vbd.clear();
 
 	const std::array<mrpt::math::TPoint3D, 2> corner = {
@@ -84,7 +87,10 @@ void CBox::onUpdateBuffers_Wireframe()
 }
 void CBox::onUpdateBuffers_Triangles()
 {
+	std::unique_lock<std::shared_mutex> trisWriteLock(
+		CRenderizableShaderTriangles::m_trianglesMtx.data);
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
+
 	tris.clear();
 
 	const auto &c0 = m_corner_min, &c1 = m_corner_max;
@@ -92,9 +98,9 @@ void CBox::onUpdateBuffers_Triangles()
 
 	// Front face:
 	tris.emplace_back(
-		P3(c1.x, c0.y, c0.z), P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z));
+		P3(c1.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z), P3(c0.x, c0.y, c0.z));
 	tris.emplace_back(
-		P3(c0.x, c0.y, c0.z), P3(c0.x, c0.y, c1.z), P3(c1.x, c0.y, c1.z));
+		P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c1.z), P3(c0.x, c0.y, c1.z));
 
 	// Back face:
 	tris.emplace_back(
@@ -104,9 +110,9 @@ void CBox::onUpdateBuffers_Triangles()
 
 	// Left face:
 	tris.emplace_back(
-		P3(c0.x, c0.y, c0.z), P3(c0.x, c1.y, c0.z), P3(c0.x, c1.y, c1.z));
+		P3(c0.x, c0.y, c0.z), P3(c0.x, c1.y, c1.z), P3(c0.x, c1.y, c0.z));
 	tris.emplace_back(
-		P3(c0.x, c0.y, c1.z), P3(c0.x, c0.y, c0.z), P3(c0.x, c1.y, c1.z));
+		P3(c0.x, c0.y, c1.z), P3(c0.x, c1.y, c1.z), P3(c0.x, c0.y, c0.z));
 
 	// Right face:
 	tris.emplace_back(
@@ -116,11 +122,11 @@ void CBox::onUpdateBuffers_Triangles()
 
 	// Bottom face:
 	tris.emplace_back(
-		P3(c0.x, c0.y, c0.z), P3(c1.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z));
+		P3(c0.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z), P3(c1.x, c0.y, c0.z));
 	tris.emplace_back(
-		P3(c0.x, c1.y, c0.z), P3(c0.x, c0.y, c0.z), P3(c1.x, c1.y, c0.z));
-	// Top face:
+		P3(c0.x, c1.y, c0.z), P3(c1.x, c1.y, c0.z), P3(c0.x, c0.y, c0.z));
 
+	// Top face:
 	tris.emplace_back(
 		P3(c0.x, c0.y, c1.z), P3(c1.x, c0.y, c1.z), P3(c1.x, c1.y, c1.z));
 	tris.emplace_back(
@@ -192,7 +198,8 @@ bool CBox::traceRay(
 	THROW_EXCEPTION("TO DO");
 }
 
-auto CBox::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto CBox::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
-	return mrpt::math::TBoundingBox(m_corner_min, m_corner_max).compose(m_pose);
+	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
+		m_corner_min, m_corner_max);
 }
