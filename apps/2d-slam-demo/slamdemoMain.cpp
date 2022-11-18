@@ -1908,7 +1908,9 @@ void slamdemoFrame::executeOneStep()
 
 			// Save dataset to file?
 			if (m_rawlog_out_file.fileOpenCorrectly())
-			{ archiveFrom(m_rawlog_out_file) << act << sf; }
+			{
+				archiveFrom(m_rawlog_out_file) << act << sf;
+			}
 		}
 
 		// For the case of doing D.A., save the correspondences REAL_MAP <->

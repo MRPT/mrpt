@@ -302,7 +302,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				const CWaypointsNavigator::TNavigationParamsWaypoints*>(
 				m_navigationParams.get());
 			if (p && !p->multiple_targets.empty())
-			{ targets = p->multiple_targets; }
+			{
+				targets = p->multiple_targets;
+			}
 			else
 			{
 				targets.push_back(m_navigationParams->target);
@@ -738,7 +740,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Pick best movement (or null if none is good)
 		const TCandidateMovementPTG* selectedHolonomicMovement = nullptr;
 		if (best_ptg_idx >= 0)
-		{ selectedHolonomicMovement = &candidate_movs[best_ptg_idx]; }
+		{
+			selectedHolonomicMovement = &candidate_movs[best_ptg_idx];
+		}
 
 		// If the selected PTG is (N+1), it means the NOP cmd. vel is selected
 		// as the best alternative, i.e. do NOT send any new motion command.
@@ -1118,8 +1122,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		? m_lastSentVelCmd.original_holo_eval
 		: (hlfr && !hlfr->dirs_eval.empty() &&
 		   hlfr->dirs_eval.rbegin()->size() == in_TPObstacles.size())
-			? hlfr->dirs_eval.rbegin()->at(move_k)
-			: .0;
+		? hlfr->dirs_eval.rbegin()->at(move_k)
+		: .0;
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
 	double& colfree = cm.props["collision_free_distance"];
@@ -1317,7 +1321,9 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	hysteresis = .0;
 
 	if (cm.PTG->supportVelCmdNOP())
-	{ hysteresis = this_is_PTG_continuation ? 1.0 : 0.; }
+	{
+		hysteresis = this_is_PTG_continuation ? 1.0 : 0.;
+	}
 	else if (m_last_vel_cmd)
 	{
 		mrpt::kinematics::CVehicleVelCmd::Ptr desired_cmd;
@@ -1590,7 +1596,9 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			const size_t Ki = ptg->getAlphaValuesCount();
 			ptg->initTPObstacles(ipf.TP_Obstacles);
 			if (params_abstract_ptg_navigator.evaluate_clearance)
-			{ ptg->initClearanceDiagram(ipf.clearance); }
+			{
+				ptg->initClearanceDiagram(ipf.clearance);
+			}
 
 			// Implementation-dependent conversion:
 			STEP3_WSpaceToTPSpace(
@@ -1599,7 +1607,9 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				params_abstract_ptg_navigator.evaluate_clearance);
 
 			if (params_abstract_ptg_navigator.evaluate_clearance)
-			{ ptg->updateClearancePost(ipf.clearance, ipf.TP_Obstacles); }
+			{
+				ptg->updateClearancePost(ipf.clearance, ipf.TP_Obstacles);
+			}
 
 			// Distances in TP-Space are normalized to [0,1]:
 			const double _refD = 1.0 / ptg->getRefDistance();

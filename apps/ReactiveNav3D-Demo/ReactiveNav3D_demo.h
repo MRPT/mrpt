@@ -153,7 +153,9 @@ class CRobotKinects
 		{
 			if ((kinectrelpose.distance3DTo(x[i], y[i], z[i]) < m_min_range) ||
 				(kinectrelpose.distance3DTo(x[i], y[i], z[i]) > m_max_range))
-			{ deletion.push_back(1); }
+			{
+				deletion.push_back(1);
+			}
 			else
 			{
 				deletion.push_back(0);
@@ -217,18 +219,24 @@ class CRobotKinects
 							if (k == 0)
 							{
 								if (point.z < heights[k])
-								{ m_points.insertPoint(point); }
+								{
+									m_points.insertPoint(point);
+								}
 							}
 							else if (k == m_maps.size() - 1)
 							{
 								if (point.z >= h)
-								{ m_points.insertPoint(point); }
+								{
+									m_points.insertPoint(point);
+								}
 							}
 							else
 							{
 								if ((point.z >= h) &&
 									(point.z < h + heights[k]))
-								{ m_points.insertPoint(point); }
+								{
+									m_points.insertPoint(point);
+								}
 							}
 						}
 					}

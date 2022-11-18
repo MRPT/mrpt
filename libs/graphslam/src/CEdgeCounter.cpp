@@ -91,7 +91,9 @@ void CEdgeCounter::setEdgesManually(const std::string& name, int num_of_edges)
 	// Update the visualization if the user has already set the vizualization
 	// parameters
 	if (m_has_read_textmessage_params && m_win_manager)
-	{ this->updateTextMessages(); }
+	{
+		this->updateTextMessages();
+	}
 }
 
 void CEdgeCounter::addEdge(
@@ -142,7 +144,9 @@ void CEdgeCounter::addEdge(
 	// Update the visualization if the user has already set the vizualization
 	// parameters
 	if (m_has_read_textmessage_params && m_win_manager)
-	{ updateTextMessages(); }
+	{
+		updateTextMessages();
+	}
 }
 
 void CEdgeCounter::addEdgeType(const std::string& name)

@@ -549,7 +549,9 @@ bool CScanAnimation::update_opengl_viz(const CSensoryFrame& sf)
 			(tim_last != INVALID_TIMESTAMP &&
 			 fabs(mrpt::system::timeDifference(ro.timestamp, tim_last)) >
 				 largest_period))
-		{ lst_to_delete.push_back(o.first); }
+		{
+			lst_to_delete.push_back(o.first);
+		}
 	}
 
 	// Remove too old observations:

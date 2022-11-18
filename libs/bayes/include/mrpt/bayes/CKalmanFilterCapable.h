@@ -329,8 +329,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * size of the whole state vector (for non-SLAM problems) or VEH_SIZE (for
 	 * SLAM problems).
 	 */
-	virtual void OnTransitionJacobian([
-		[maybe_unused]] KFMatrix_VxV& out_F) const
+	virtual void OnTransitionJacobian(
+		[[maybe_unused]] KFMatrix_VxV& out_F) const
 	{
 		m_user_didnt_implement_jacobian = true;
 	}

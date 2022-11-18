@@ -1012,7 +1012,9 @@ void CHierarchicalMapMHPartition::findArcsBetweenNodes(
 		if ((*itArc)->m_hypotheses.has(hypothesisID))
 			if ((*itArc)->m_nodeFrom == node2id ||
 				(*itArc)->m_nodeTo == node2id)
-			{ ret.push_back(*itArc); }
+			{
+				ret.push_back(*itArc);
+			}
 	}
 
 	MRPT_END
@@ -1607,7 +1609,9 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 				r1_x_min, r1_x_max, r1_y_min, r1_y_max, r2_x_min, r2_x_max,
 				r2_y_min, r2_y_max, posePDF.m_particles[i].d.x,
 				posePDF.m_particles[i].d.y, posePDF.m_particles[i].d.yaw))
-		{ hits++; }
+		{
+			hits++;
+		}
 	}
 
 	return static_cast<double>(hits) / monteCarloSamples;

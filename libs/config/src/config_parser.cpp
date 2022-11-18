@@ -152,7 +152,9 @@ std::string mrpt::config::config_parser(const std::string& input)
 					{
 						// not whitespace
 						if (!in_var_name && !done_var_name)
-						{ in_var_name = true; }
+						{
+							in_var_name = true;
+						}
 					}
 					else
 					{

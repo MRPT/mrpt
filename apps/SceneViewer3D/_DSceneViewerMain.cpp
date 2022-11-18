@@ -966,7 +966,9 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent&)
 				"3Dscene",
 				mrpt::system::extractFileExtension(
 					global_fileToOpen, true /*ignore .gz*/)))
-		{ loadFromFile(global_fileToOpen); }
+		{
+			loadFromFile(global_fileToOpen);
+		}
 		else
 		{
 			std::cout << "Filename extension does not match `3Dscene`, "
@@ -1207,7 +1209,9 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 		if ((openGLSceneRef->viewportsCount() == 0) ||
 			!openGLSceneRef->getViewport("main") ||
 			(openGLSceneRef->getViewport("main")->size() == 0))
-		{ wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this); }
+		{
+			wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this);
+		}
 		else
 		{
 			// Change the camera
@@ -1293,7 +1297,9 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 		if ((openGLSceneRef->viewportsCount() == 0) ||
 			!openGLSceneRef->getViewport("main") ||
 			(openGLSceneRef->getViewport("main")->size() == 0))
-		{ wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this); }
+		{
+			wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this);
+		}
 		else
 		{
 			// Change the camera

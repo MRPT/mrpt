@@ -226,7 +226,9 @@ fill_input_buffer(j_decompress_ptr cinfo)
 	if (nbytes <= 0)
 	{
 		if (src->start_of_file) /* Treat empty input file as fatal error */
-		{ THROW_EXCEPTION("Error looking for JPEG start data!"); }
+		{
+			THROW_EXCEPTION("Error looking for JPEG start data!");
+		}
 
 		/* Insert a fake EOI marker */
 		src->buffer[0] = (JOCTET)0xFF;
@@ -416,7 +418,9 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 			}
 
 			if (1 != jpeg_write_scanlines(&cinfo, row_pointer, 1))
-			{ THROW_EXCEPTION("jpeg_write_scanlines: didn't work!!"); }
+			{
+				THROW_EXCEPTION("jpeg_write_scanlines: didn't work!!");
+			}
 		}
 
 		delete[] row_pointer[0];
@@ -431,7 +435,9 @@ void CImage::saveToStreamAsJPEG(CStream& out, const int jpeg_quality) const
 
 			// Gray scale:
 			if (1 != jpeg_write_scanlines(&cinfo, row_pointer, 1))
-			{ THROW_EXCEPTION("jpeg_write_scanlines: didn't work!!"); }
+			{
+				THROW_EXCEPTION("jpeg_write_scanlines: didn't work!!");
+			}
 		}
 	}
 

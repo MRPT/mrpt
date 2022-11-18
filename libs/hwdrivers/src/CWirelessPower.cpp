@@ -158,7 +158,9 @@ std::string GUID2Str(const GUID& ifaceGuid)
 	{
 		wctostr = wcstombs_s(&sizeGUID, GuidChar, 100, GuidString, 100);
 		if ((wctostr == EINVAL) || (wctostr == ERANGE))
-		{ THROW_EXCEPTION("wcstombs_s failed\n"); }
+		{
+			THROW_EXCEPTION("wcstombs_s failed\n");
+		}
 		else
 		{
 			outputString = std::string(GuidChar);

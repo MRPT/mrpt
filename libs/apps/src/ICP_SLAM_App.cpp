@@ -53,7 +53,9 @@ void ICP_SLAM_App_Base::initialize(int argc, const char** argv)
 
 	// Process arguments:
 	if (argc < 2)
-	{ THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str()); }
+	{
+		THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str());
+	}
 
 	// Config file:
 	const std::string configFile = std::string(argv[1]);
@@ -494,7 +496,9 @@ void ICP_SLAM_App_Live::impl_initialize(int argc, const char** argv)
 	MRPT_START
 
 	if (argc != 2)
-	{ THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str()); }
+	{
+		THROW_EXCEPTION_FMT("Usage: %s", impl_get_usage().c_str());
+	}
 
 	// Config file already loaded into "params".
 

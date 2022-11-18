@@ -151,7 +151,9 @@ typename GRAPH_T::global_pose_t
 	global_pose_t pose_out;
 
 	if (this->m_prev_registered_nodeID != mrpt::graphs::INVALID_NODEID)
-	{ pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID); }
+	{
+		pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID);
+	}
 
 	pose_out += m_since_prev_node_PDF.getMeanVal();
 	return pose_out;

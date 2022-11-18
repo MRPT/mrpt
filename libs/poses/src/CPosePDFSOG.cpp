@@ -161,7 +161,9 @@ void CPosePDFSOG::copyFrom(const CPosePDF& o)
 	if (this == &o) return;	 // It may be used sometimes
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPosePDFSOG))
-	{ m_modes = dynamic_cast<const CPosePDFSOG*>(&o)->m_modes; }
+	{
+		m_modes = dynamic_cast<const CPosePDFSOG*>(&o)->m_modes;
+	}
 	else
 	{
 		// Approximate as a mono-modal gaussian pdf:

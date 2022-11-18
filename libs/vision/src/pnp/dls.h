@@ -506,7 +506,9 @@ class EigenvalueDecomposition
 							(std::abs(p) *
 							 (std::abs(H[m - 1][m - 1]) + std::abs(z) +
 							  std::abs(H[m + 1][m + 1]))))
-					{ break; }
+					{
+						break;
+					}
 					m--;
 				}
 
@@ -646,7 +648,9 @@ class EigenvalueDecomposition
 							t = (x * s - z * r) / q;
 							H[i][n1] = t;
 							if (std::abs(x) > std::abs(z))
-							{ H[i + 1][n1] = (-r - w * t) / x; }
+							{
+								H[i + 1][n1] = (-r - w * t) / x;
+							}
 							else
 							{
 								H[i + 1][n1] = (-s - y * t) / z;

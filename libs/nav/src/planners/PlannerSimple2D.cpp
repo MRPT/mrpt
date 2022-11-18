@@ -110,7 +110,9 @@ void PlannerSimple2D::computePath(
 					grid[x + 1 + row__1] >= val || grid[x - 1 + row] >= val ||
 					grid[x + 1 + row] >= val || grid[x - 1 + row_1] >= val ||
 					grid[x + row_1] >= val || grid[x + 1 + row_1] >= val)
-				{ grid[x + row] = std::max(grid[x + row], val - 1); }
+				{
+					grid[x + row] = std::max(grid[x + row], val - 1);
+				}
 			}
 		}
 	}

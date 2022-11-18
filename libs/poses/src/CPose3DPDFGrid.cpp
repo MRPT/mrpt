@@ -149,8 +149,8 @@ bool CPose3DPDFGrid::saveToTextFile(const std::string& dataFile) const
 	//	return true;  // Done!
 }
 
-void CPose3DPDFGrid::changeCoordinatesReference([
-	[maybe_unused]] const CPose3D& newReferenceBase)
+void CPose3DPDFGrid::changeCoordinatesReference(
+	[[maybe_unused]] const CPose3D& newReferenceBase)
 {
 	THROW_EXCEPTION("Not implemented yet!");
 }

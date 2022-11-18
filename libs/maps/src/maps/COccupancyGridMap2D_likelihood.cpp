@@ -615,7 +615,9 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 		{
 			// We are into the map limits:
 			if (likelihoodOptions.enableLikelihoodCache)
-			{ thisLik = m_precomputedLikelihood[cx + cy * m_size_x]; }
+			{
+				thisLik = m_precomputedLikelihood[cx + cy * m_size_x];
+			}
 
 			if (!likelihoodOptions.enableLikelihoodCache ||
 				thisLik == LIK_LF_CACHE_INVALID)

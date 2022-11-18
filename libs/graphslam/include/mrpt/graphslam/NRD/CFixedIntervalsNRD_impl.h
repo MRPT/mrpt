@@ -107,7 +107,9 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition()
 
 	if (this->checkRegistrationCondition(
 			last_pose_inserted, this->getCurrentRobotPosEstimation()))
-	{ registered = this->registerNewNodeAtEnd(); }
+	{
+		registered = this->registerNewNodeAtEnd();
+	}
 
 	return registered;
 	MRPT_END
@@ -122,7 +124,9 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 	bool res = false;
 	if ((p1.distanceTo(p2) > params.registration_max_distance) ||
 		(fabs(wrapToPi(p1.phi() - p2.phi())) > params.registration_max_angle))
-	{ res = true; }
+	{
+		res = true;
+	}
 
 	return res;
 }  // end of checkRegistrationCondition2D
@@ -140,7 +144,9 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 		(fabs(wrapToPi(p1.pitch() - p2.pitch())) >
 		 params.registration_max_angle) ||
 		(fabs(wrapToPi(p1.yaw() - p2.yaw())) > params.registration_max_angle))
-	{ res = true; }
+	{
+		res = true;
+	}
 
 	return res;
 }  // end of checkRegistrationCondition3D

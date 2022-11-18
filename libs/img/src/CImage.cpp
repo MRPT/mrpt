@@ -1139,7 +1139,9 @@ void CImage::setPixel(int x, int y, size_t color)
 	{
 		// The pixel coordinates is valid:
 		if (img.channels() == 1)
-		{ img.ptr<uint8_t>(y)[x] = static_cast<uint8_t>(color); }
+		{
+			img.ptr<uint8_t>(y)[x] = static_cast<uint8_t>(color);
+		}
 		else
 		{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)

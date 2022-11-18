@@ -812,7 +812,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 						 &dBuf[0], dBuf.size(), &pointsReadPerChan, nullptr)) <
 						0 &&
 					err != DAQmxErrorSamplesNotYetAvailable)
-				{ MRPT_DAQmx_ErrChk(err) }
+				{
+					MRPT_DAQmx_ErrChk(err)
+				}
 				else if (pointsReadPerChan > 0)
 				{
 					ASSERT_EQUAL_(
@@ -837,7 +839,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 						 DAQmx_Val_GroupByChannel, &u8Buf[0], u8Buf.size(),
 						 &pointsReadPerChan, nullptr)) < 0 &&
 					err != DAQmxErrorSamplesNotYetAvailable)
-				{ MRPT_DAQmx_ErrChk(err) }
+				{
+					MRPT_DAQmx_ErrChk(err)
+				}
 				else if (pointsReadPerChan > 0)
 				{
 					ASSERT_EQUAL_(
@@ -860,7 +864,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask& ipt)
 						 taskHandle, totalSamplesToRead, timeout, &dBuf[0],
 						 dBuf.size(), &pointsReadPerChan, nullptr)) < 0 &&
 					err != DAQmxErrorSamplesNotYetAvailable)
-				{ MRPT_DAQmx_ErrChk(err) }
+				{
+					MRPT_DAQmx_ErrChk(err)
+				}
 				else if (pointsReadPerChan > 0)
 				{
 					ASSERT_EQUAL_(totalSamplesToRead, pointsReadPerChan);
@@ -932,7 +938,9 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(
 			groupedByChannel ? DAQmx_Val_GroupByChannel
 							 : DAQmx_Val_GroupByScanNumber,
 			const_cast<float64*>(volt_values), &samplesWritten, nullptr))
-	{ MRPT_DAQmx_ErrChk(err) }
+	{
+		MRPT_DAQmx_ErrChk(err)
+	}
 #endif
 }
 
@@ -955,7 +963,9 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(
 	if (err = MRPT_DAQmxWriteDigitalLines(
 			taskHandle, nSamplesPerChannel, FALSE, timeout,
 			DAQmx_Val_GroupByScanNumber, &dat, &samplesWritten, nullptr))
-	{ MRPT_DAQmx_ErrChk(err) }
+	{
+		MRPT_DAQmx_ErrChk(err)
+	}
 #endif
 }
 

@@ -270,7 +270,9 @@ inline void
 	const size_t nElms = elements.size();
 	const T NORM = 1.0 / nElms;
 	if (weights_mean)
-	{ ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms)); }
+	{
+		ASSERTDEB_(size_t(weights_mean->size()) == size_t(nElms));
+	}
 	// The mean goes first:
 	for (size_t i = 0; i < DIM; i++)
 	{

@@ -838,7 +838,8 @@ void hmtMapViewerFrame::updateLocalMapView()
 					// ---------------------------------------------------------
 					for (auto it = obj_robposes->begin();
 						 it != obj_robposes->end(); ++it)
-					{}
+					{
+					}
 				}
 
 			}  // end for nSelItem

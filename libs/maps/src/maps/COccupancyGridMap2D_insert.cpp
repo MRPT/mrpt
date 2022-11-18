@@ -105,7 +105,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 		// Check the altitude of the map (if feature enabled!)
 		if (insertionOptions.useMapAltitude &&
 			fabs(insertionOptions.mapAltitude - sensorPose3D.z()) > 0.001)
-		{ reallyInsert = false; }
+		{
+			reallyInsert = false;
+		}
 
 		// Manage horizontal scans, but with the sensor bottom-up:
 		//  Use the z-axis direction of the transformed Z axis of the sensor
@@ -815,7 +817,9 @@ bool COccupancyGridMap2D::internal_insertObservation(
 		// Check the altitude of the map (if feature enabled!)
 		if (insertionOptions.useMapAltitude &&
 			fabs(insertionOptions.mapAltitude - sensorPose3D.z()) > 0.001)
-		{ reallyInsert = false; }
+		{
+			reallyInsert = false;
+		}
 		if (reallyInsert)
 		{
 			// ---------------------------------------------

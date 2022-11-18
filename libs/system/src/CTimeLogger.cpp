@@ -192,7 +192,9 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width) const
 		{
 			const auto parent_pos = line.find(last_parent);
 			if (parent_pos != std::string::npos && !last_parent.empty())
-			{ line = "+-> "s + line.substr(dot_pos); }
+			{
+				line = "+-> "s + line.substr(dot_pos);
+			}
 		}
 
 		const string sMinT = unitsFormat(i.second.min_t, 1, false);
