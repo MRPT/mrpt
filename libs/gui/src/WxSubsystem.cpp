@@ -167,7 +167,9 @@ WxSubsystem::CWXMainFrame::CWXMainFrame(wxWindow* parent, wxWindowID id)
 		_T("id"));
 
 	if (oneInstance)
-	{ cerr << "[CWXMainFrame] More than one instance running!" << endl; }
+	{
+		cerr << "[CWXMainFrame] More than one instance running!" << endl;
+	}
 	oneInstance = this;
 
 	// ------------------------------------------------------------------------------------------

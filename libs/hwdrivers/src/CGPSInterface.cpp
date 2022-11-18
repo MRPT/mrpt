@@ -301,7 +301,9 @@ void CGPSInterface::doProcess()
 		{
 			std::lock_guard<std::mutex> lock(*m_data_stream_cs);
 			if (stream_tcpip)
-			{ nRead = stream_tcpip->readAsync(buf, to_read, 100, 10); }
+			{
+				nRead = stream_tcpip->readAsync(buf, to_read, 100, 10);
+			}
 			else if (stream_serial)
 			{
 				nRead = stream_serial->Read(buf, to_read);
@@ -337,7 +339,9 @@ void CGPSInterface::doProcess()
 			m_raw_output_file.open(sFileName, mrpt::io::OpenMode::TRUNCATE);
 		}
 		if (nRead && m_raw_output_file.fileOpenCorrectly())
-		{ m_raw_output_file.Write(buf, nRead); }
+		{
+			m_raw_output_file.Write(buf, nRead);
+		}
 	}
 	catch (std::exception&)
 	{
@@ -606,7 +610,9 @@ bool CGPSInterface::OnConnectionEstablished()
 	// Legacy behavior:
 	if (!os::_strcmpi(m_customInit.c_str(), "JAVAD") ||
 		!os::_strcmpi(m_customInit.c_str(), "TOPCON"))
-	{ return legacy_topcon_setup_commands(); }
+	{
+		return legacy_topcon_setup_commands();
+	}
 
 	// Purge input:
 	auto* stream_serial = dynamic_cast<CSerialPort*>(m_data_stream.get());

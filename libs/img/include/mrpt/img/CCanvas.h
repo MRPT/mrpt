@@ -302,7 +302,9 @@ class CCanvas
 						static_cast<unsigned int>(list.getFeatureResponse(i))),
 					TColor::red());
 			if (!list.isPointFeature(i))
-			{ this->drawCircle(x, y, list.getScale(i), TColor::red()); }
+			{
+				this->drawCircle(x, y, list.getScale(i), TColor::red());
+			}
 			else if (showScale)
 			{
 				this->textOut(

@@ -114,7 +114,9 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 				CObservation::Ptr o =
 					sf->getObservationBySensorLabel(the_label);
 				if (o && IS_CLASS(*o, CObservationGPS))
-				{ obs = std::dynamic_pointer_cast<CObservationGPS>(o); }
+				{
+					obs = std::dynamic_pointer_cast<CObservationGPS>(o);
+				}
 			}
 			break;
 
@@ -124,7 +126,9 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 
 				if (!os::_strcmpi(o->sensorLabel.c_str(), the_label.c_str()) &&
 					IS_CLASS(*o, CObservationGPS))
-				{ obs = std::dynamic_pointer_cast<CObservationGPS>(o); }
+				{
+					obs = std::dynamic_pointer_cast<CObservationGPS>(o);
+				}
 			}
 			break;
 
@@ -134,7 +138,9 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 		// If we had a GPS obs, process it:
 		const mrpt::obs::gnss::Message_NMEA_GGA* gga = nullptr;
 		if (obs && obs->hasMsgClass<mrpt::obs::gnss::Message_NMEA_GGA>())
-		{ gga = &obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>(); }
+		{
+			gga = &obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
+		}
 
 		if (gga &&
 			(!only_rtk || gga->fields.fix_quality == 4 ||
@@ -219,10 +225,14 @@ void fixGPStimestamp(
 
 	const gnss::Message_NMEA_GGA* gga = nullptr;
 	if (obs && obs->hasMsgClass<gnss::Message_NMEA_GGA>())
-	{ gga = &obs->getMsgByClass<gnss::Message_NMEA_GGA>(); }
+	{
+		gga = &obs->getMsgByClass<gnss::Message_NMEA_GGA>();
+	}
 	const gnss::Message_NMEA_RMC* rmc = nullptr;
 	if (obs && obs->hasMsgClass<gnss::Message_NMEA_RMC>())
-	{ rmc = &obs->getMsgByClass<gnss::Message_NMEA_RMC>(); }
+	{
+		rmc = &obs->getMsgByClass<gnss::Message_NMEA_RMC>();
+	}
 
 	if (gga && gga->fields.fix_quality > 0)
 	{
@@ -354,7 +364,9 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 				  "Do you want to re-order by timestamp?"),
 				nChanges, average_time_change, std_time_change),
 			_("Done"), wxYES_NO, this))
-	{ OnMenuResortByTimestamp(event); }
+	{
+		OnMenuResortByTimestamp(event);
+	}
 
 	WX_END_TRY
 }

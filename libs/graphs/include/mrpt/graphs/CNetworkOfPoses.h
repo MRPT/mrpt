@@ -448,7 +448,9 @@ class CNetworkOfPoses
 		bool is_fully_connected_graph = true;
 		std::set<TNodeID> node_IDs_real;  // actual set of nodes to be used.
 		if (*node_IDs.rbegin() - *node_IDs.begin() + 1 == node_IDs.size())
-		{ node_IDs_real = node_IDs; }
+		{
+			node_IDs_real = node_IDs;
+		}
 		else
 		{  // contains non-consecutive nodes
 			is_fully_connected_graph = false;
@@ -511,7 +513,9 @@ class CNetworkOfPoses
 			// if both nodes exist in the given set, add the corresponding edge
 			if (sub_graph->nodes.find(from) != sub_graph->nodes.end() &&
 				sub_graph->nodes.find(to) != sub_graph->nodes.end())
-			{ sub_graph->insertEdge(from, to, curr_edge); }
+			{
+				sub_graph->insertEdge(from, to, curr_edge);
+			}
 		}
 
 		if (!auto_expand_set && !is_fully_connected_graph)
@@ -755,7 +759,9 @@ class CNetworkOfPoses
 
 		// If given, use the old_to_new_nodeID_mappings map.
 		if (old_to_new_nodeID_mappings_out)
-		{ old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_out; }
+		{
+			old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_out;
+		}
 		else
 		{
 			old_to_new_nodeID_mappings = &mappings_tmp;

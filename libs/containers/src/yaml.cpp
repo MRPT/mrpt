@@ -676,7 +676,9 @@ bool yaml::internalPrintStringScalar(
 			if (const auto& rc =
 					cs[static_cast<size_t>(CommentPosition::RIGHT)];
 				rc.has_value())
-			{ internalPrintRightComment(o, rc.value()); }
+			{
+				internalPrintRightComment(o, rc.value());
+			}
 			else
 				o << "\n";
 		}
@@ -697,7 +699,9 @@ bool yaml::internalPrintAsYAML(
 	const comments_t& cs)
 {
 	if (!v.has_value())
-	{ return internalPrintAsYAML(std::monostate(), o, ps, cs); }
+	{
+		return internalPrintAsYAML(std::monostate(), o, ps, cs);
+	}
 
 	if (v.type() == typeid(yaml))
 		return internalPrintNodeAsYAML(

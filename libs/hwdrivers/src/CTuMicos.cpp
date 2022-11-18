@@ -705,7 +705,9 @@ bool CTuMicos::radAsign(char axis, char command, double nRad)
 	char command2[300];
 
 	if (command == 'v')
-	{ sprintf(command2, "%f %u %s", RAD2DEG(nRad), axis_index, "snv"); }
+	{
+		sprintf(command2, "%f %u %s", RAD2DEG(nRad), axis_index, "snv");
+	}
 
 	return transmit(command2);
 }

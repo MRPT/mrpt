@@ -1328,7 +1328,9 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 			kinect.getNextObservation(*obs, there_is_obs, hard_error);
 
 			if (!hard_error && there_is_obs)
-			{ std::atomic_store(&p.new_obs, obs); }
+			{
+				std::atomic_store(&p.new_obs, obs);
+			}
 
 			if (old_tilt_ang_deg != p.tilt_ang_deg)
 			{
@@ -1910,7 +1912,9 @@ void myCalibCallback(
 	};
 
 	if (d.calibRound == 0 || d.calibRound == 1)
-	{ s += mrpt::format(" (RMSE=%.05f px)", d.current_rmse); }
+	{
+		s += mrpt::format(" (RMSE=%.05f px)", d.current_rmse);
+	}
 
 	dat->pd->Update(d.current_iter, s.c_str());
 	dat->pd->SetSize(500, 100);

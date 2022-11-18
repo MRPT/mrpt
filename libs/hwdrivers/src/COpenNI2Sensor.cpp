@@ -120,13 +120,17 @@ void COpenNI2Sensor::initialize()
 		{
 			if (getDepthSensorParam(
 					m_cameraParamsDepth, m_user_device_number) == false)
-			{ THROW_EXCEPTION("Failed to get Depth camera parameters."); }
+			{
+				THROW_EXCEPTION("Failed to get Depth camera parameters.");
+			}
 		}
 		if (isValidParameter(m_cameraParamsRGB) == false)
 		{
 			if (getColorSensorParam(m_cameraParamsRGB, m_user_device_number) ==
 				false)
-			{ THROW_EXCEPTION("Failed to get RGB camera parameters."); }
+			{
+				THROW_EXCEPTION("Failed to get RGB camera parameters.");
+			}
 		}
 	}
 	catch (std::logic_error& e)
@@ -343,8 +347,8 @@ void COpenNI2Sensor::getNextObservation(
 /* -----------------------------------------------------
 setPathForExternalImages
 ----------------------------------------------------- */
-void COpenNI2Sensor::setPathForExternalImages([
-	[maybe_unused]] const std::string& directory)
+void COpenNI2Sensor::setPathForExternalImages(
+	[[maybe_unused]] const std::string& directory)
 {
 	// Ignore for now. It seems performance is better grabbing everything
 	// to a single big file than creating hundreds of smaller files per

@@ -129,7 +129,9 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 		this->evaluatePartitionsForLC(partitions_for_LC);
 
 		if (m_visualize_curr_node_covariance)
-		{ this->execDijkstraProjection(); }
+		{
+			this->execDijkstraProjection();
+		}
 
 		this->m_last_total_num_nodes = this->m_graph->nodeCount();
 	}
@@ -215,7 +217,9 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 
 		// criterion for registering a new node
 		if (accept_goodness && accept_mahal_distance)
-		{ this->registerNewEdge(node_it, curr_nodeID, rel_edge); }
+		{
+			this->registerNewEdge(node_it, curr_nodeID, rel_edge);
+		}
 	}
 
 	MRPT_END
@@ -662,7 +666,9 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 		TNodeID curr_nodeID = *it;
 
 		if ((curr_nodeID - prev_nodeID) > m_lc_params.LC_min_nodeid_diff)
-		{ break; }
+		{
+			break;
+		}
 		// update the last nodeID
 		prev_nodeID = curr_nodeID;
 	}
@@ -1225,7 +1231,9 @@ mrpt::graphs::detail::THypothesis<GRAPH_T>*
 
 	// not found.
 	if (throw_exc)
-	{ throw mrpt::graphs::HypothesisNotFoundException(from, to); }
+	{
+		throw mrpt::graphs::HypothesisNotFoundException(from, to);
+	}
 	else
 	{
 		return nullptr;
@@ -1282,7 +1290,9 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 	stringstream ss_debug("");
 	ss_debug << "Executing Dijkstra Projection: " << starting_node << " => ";
 	if (ending_node == mrpt::graphs::INVALID_NODEID)
-	{ ss_debug << "..." << endl; }
+	{
+		ss_debug << "..." << endl;
+	}
 	else
 	{
 		ss_debug << ending_node << endl;
@@ -1703,10 +1713,14 @@ void CLoopCloserERD<GRAPH_T>::notifyOfWindowEvents(
 
 	// laser scans
 	if (events_occurred.at(m_laser_params.keystroke_laser_scans))
-	{ this->toggleLaserScansVisualization(); }
+	{
+		this->toggleLaserScansVisualization();
+	}
 	// map partitions
 	if (events_occurred.at(m_lc_params.keystroke_map_partitions))
-	{ this->toggleMapPartitionsVisualization(); }
+	{
+		this->toggleMapPartitionsVisualization();
+	}
 
 	MRPT_END
 }
@@ -2120,12 +2134,18 @@ void CLoopCloserERD<GRAPH_T>::initializeVisuals()
 		m_laser_params.has_read_config,
 		"Configuration parameters aren't loaded yet");
 	if (m_laser_params.visualize_laser_scans)
-	{ this->initLaserScansVisualization(); }
+	{
+		this->initLaserScansVisualization();
+	}
 	if (m_lc_params.visualize_map_partitions)
-	{ this->initMapPartitionsVisualization(); }
+	{
+		this->initMapPartitionsVisualization();
+	}
 
 	if (m_visualize_curr_node_covariance)
-	{ this->initCurrCovarianceVisualization(); }
+	{
+		this->initCurrCovarianceVisualization();
+	}
 
 	this->m_time_logger.leave("Visuals");
 	MRPT_END
@@ -2139,11 +2159,17 @@ void CLoopCloserERD<GRAPH_T>::updateVisuals()
 	this->m_time_logger.enter("Visuals");
 
 	if (m_laser_params.visualize_laser_scans)
-	{ this->updateLaserScansVisualization(); }
+	{
+		this->updateLaserScansVisualization();
+	}
 	if (m_lc_params.visualize_map_partitions)
-	{ this->updateMapPartitionsVisualization(); }
+	{
+		this->updateMapPartitionsVisualization();
+	}
 	if (m_visualize_curr_node_covariance)
-	{ this->updateCurrCovarianceVisualization(); }
+	{
+		this->updateCurrCovarianceVisualization();
+	}
 
 	this->m_time_logger.leave("Visuals");
 	MRPT_END

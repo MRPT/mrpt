@@ -117,7 +117,9 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 			// Evaluate:
 			double val;
 			if (m.speed <= 0)  // Invalid candidate
-			{ val = .0; }
+			{
+				val = .0;
+			}
 			else
 			{
 				val = sc.second.eval();
@@ -303,7 +305,9 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(
 		scores_to_normalize.clear();
 		std::string sLst = c.read_string(s, "scores_to_normalize", "");
 		if (!sLst.empty())
-		{ mrpt::system::tokenize(sLst, ", \t", scores_to_normalize); }
+		{
+			mrpt::system::tokenize(sLst, ", \t", scores_to_normalize);
+		}
 	}
 }
 

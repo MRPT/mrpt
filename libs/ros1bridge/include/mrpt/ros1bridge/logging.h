@@ -35,7 +35,9 @@ static inline mrpt::system::VerbosityLevel rosLoggerLvlToMRPTLoggerLvl(
 	mrpt::system::VerbosityLevel mrpt_lvl;
 
 	if (lvl == Level::getFatal() || lvl == Level::getError())
-	{ mrpt_lvl = mrpt::system::LVL_ERROR; }
+	{
+		mrpt_lvl = mrpt::system::LVL_ERROR;
+	}
 	else if (lvl == Level::getWarn())
 	{
 		mrpt_lvl = mrpt::system::LVL_WARN;
@@ -74,7 +76,9 @@ static inline void mrptToROSLoggerCallback(
 	std::string tmsg = msg;
 	if (!tmsg.empty() &&
 		tmsg.compare(tmsg.length() - 1, tmsg.length(), "\n") == 0)
-	{ tmsg.erase(tmsg.end() - 1); }
+	{
+		tmsg.erase(tmsg.end() - 1);
+	}
 
 	switch (level)
 	{

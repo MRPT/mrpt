@@ -97,7 +97,9 @@ bool MatrixVectorBase<Scalar, Derived>::fromMatlabStringFormat(
 			// Append to the matrix:
 			if (Derived::RowsAtCompileTime == Eigen::Dynamic ||
 				Derived::ColsAtCompileTime == Eigen::Dynamic)
-			{ mvbDerived().resize(nRow + 1, N); }
+			{
+				mvbDerived().resize(nRow + 1, N);
+			}
 			else if (
 				Derived::RowsAtCompileTime != Eigen::Dynamic &&
 				int(nRow) >= Derived::RowsAtCompileTime)
@@ -467,7 +469,9 @@ Derived MatrixVectorBase<Scalar, Derived>::operator*(const Derived& m2) const
 		"B.asEigen()` for general matrix products.");
 	Derived ret(mvbDerived().rows(), mvbDerived().rows());
 	if constexpr (Derived::RowsAtCompileTime == Derived::ColsAtCompileTime)
-	{ ret.asEigen() = mvbDerived().asEigen() * m2.asEigen(); }
+	{
+		ret.asEigen() = mvbDerived().asEigen() * m2.asEigen();
+	}
 	return ret;
 }
 
@@ -502,7 +506,9 @@ Scalar MatrixVectorBase<Scalar, Derived>::dot(
 	const CVectorDynamic<Scalar>& v) const
 {
 	if constexpr (Derived::ColsAtCompileTime == 1)
-	{ return mvbDerived().asEigen().dot(v.mvbDerived().asEigen()); }
+	{
+		return mvbDerived().asEigen().dot(v.mvbDerived().asEigen());
+	}
 	else
 	{
 		ASSERTMSG_(false, "dot(): Implemented for column vectors only.");
@@ -513,7 +519,9 @@ Scalar MatrixVectorBase<Scalar, Derived>::dot(
 	const MatrixVectorBase<Scalar, Derived>& v) const
 {
 	if constexpr (Derived::ColsAtCompileTime == 1)
-	{ return mvbDerived().asEigen().dot(v.mvbDerived().asEigen()); }
+	{
+		return mvbDerived().asEigen().dot(v.mvbDerived().asEigen());
+	}
 	else
 	{
 		ASSERTMSG_(false, "dot(): Implemented for column vectors only.");

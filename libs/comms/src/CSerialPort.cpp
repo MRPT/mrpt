@@ -705,7 +705,9 @@ std::string CSerialPort::ReadString(
 			// Read just 1 byte:
 			char buf[1];
 			if ((nRead = ::read(hCOM, buf, 1)) < 0)
-			{ cerr << "[CSerialPort] Error reading from port..." << endl; }
+			{
+				cerr << "[CSerialPort] Error reading from port..." << endl;
+			}
 			if (nRead)
 			{  // Append to string, if it's not a control char:
 				if (!strchr(eol_chars, buf[0])) receivedStr.push_back(buf[0]);
