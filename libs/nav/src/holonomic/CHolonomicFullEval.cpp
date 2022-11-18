@@ -316,7 +316,9 @@ void CHolonomicFullEval::evalSingleTarget(
 					 last_phase_threshold)	// thresholding of the previous
 				// phase
 			)
-			{ this_dir_eval = .0; }
+			{
+				this_dir_eval = .0;
+			}
 			else
 			{
 				// Weighted avrg of factors:
@@ -451,7 +453,9 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 
 				if (best_gap_idx == std::string::npos ||
 					val > gaps[best_gap_idx].max_eval)
-				{ best_gap_idx = gaps.size() - 1; }
+				{
+					best_gap_idx = gaps.size() - 1;
+				}
 			}
 		}  // end for i
 
@@ -574,7 +578,9 @@ void CLogFileRecord_FullEval::serializeFrom(
 				CHolonomicLogFileRecord::dirs_eval.resize(2);
 				in >> CHolonomicLogFileRecord::dirs_eval[0];
 				if (version >= 1)
-				{ in >> CHolonomicLogFileRecord::dirs_eval[1]; }
+				{
+					in >> CHolonomicLogFileRecord::dirs_eval[1];
+				}
 			}
 			in >> dirs_scores >> selectedSector >> evaluation;
 			if (version >= 3) { in >> selectedTarget; }

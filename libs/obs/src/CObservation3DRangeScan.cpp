@@ -702,7 +702,9 @@ void CObservation3DRangeScan::load() const
 				rangeImage_getExternalStorageFileAbsolutePath(layerName);
 			if (mrpt::system::strCmpI(
 					"txt", mrpt::system::extractFileExtension(fil, true)))
-			{ ri->loadFromTextFile(fil); }
+			{
+				ri->loadFromTextFile(fil);
+			}
 			else
 			{
 				auto& me = const_cast<CObservation3DRangeScan&>(*this);
@@ -874,7 +876,9 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage(
 			rangeImage_getExternalStorageFileAbsolutePath(layerName);
 
 		if (EXTERNALS_AS_TEXT_value)
-		{ ri->saveToTextFile(real_absolute_path, MATRIX_FORMAT_FIXED); }
+		{
+			ri->saveToTextFile(real_absolute_path, MATRIX_FORMAT_FIXED);
+		}
 		else
 		{
 			mrpt::io::CFileGZOutputStream fo(real_absolute_path);
@@ -1621,7 +1625,9 @@ mrpt::img::CImage CObservation3DRangeScan::rangeImageAsImage(
 			// Normalized value in the range [0,1]:
 			const float val_01 = (ri.coeff(r, c) - val_min) * range_inv;
 			if (is_gray)
-			{ img.setPixel(c, r, static_cast<uint8_t>(val_01 * 255)); }
+			{
+				img.setPixel(c, r, static_cast<uint8_t>(val_01 * 255));
+			}
 			else
 			{
 				float R, G, B;

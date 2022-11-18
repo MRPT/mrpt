@@ -275,7 +275,9 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 	// if we are talking about covariances then the *lower*.
 	bool has_lower = false;
 	if (curr_pose_pdf.isInfType())
-	{ has_lower = this->getDeterminant() > other.getDeterminant(); }
+	{
+		has_lower = this->getDeterminant() > other.getDeterminant();
+	}
 	else
 	{
 		has_lower = this->getDeterminant() < other.getDeterminant();

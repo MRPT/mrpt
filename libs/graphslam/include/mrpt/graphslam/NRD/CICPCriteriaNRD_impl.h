@@ -260,7 +260,9 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition()
 	// actual check
 	bool registered = false;
 	if (distance_crit || angle_crit)
-	{ registered = this->registerNewNodeAtEnd(); }
+	{
+		registered = this->registerNewNodeAtEnd();
+	}
 
 	return registered;
 	MRPT_END

@@ -77,7 +77,9 @@ void CLevMarqGSO<GRAPH_T>::updateVisuals()
 	parent::updateVisuals();
 
 	if (opt_params.optimization_distance > 0)
-	{ this->updateOptDistanceVisualization(); }
+	{
+		this->updateOptDistanceVisualization();
+	}
 
 	this->updateGraphVisualization();
 
@@ -99,15 +101,21 @@ void CLevMarqGSO<GRAPH_T>::notifyOfWindowEvents(
 	{
 		if (events_occurred.find(opt_params.keystroke_optimization_distance)
 				->second)
-		{ this->toggleOptDistanceVisualization(); }
+		{
+			this->toggleOptDistanceVisualization();
+		}
 
 		if (events_occurred.find(opt_params.keystroke_optimize_graph)->second)
-		{ this->_optimizeGraph(/*is_full_update=*/true); }
+		{
+			this->_optimizeGraph(/*is_full_update=*/true);
+		}
 	}
 
 	// graph toggling
 	if (events_occurred.find(viz_params.keystroke_graph_toggle)->second)
-	{ this->toggleGraphVisualization(); }
+	{
+		this->toggleGraphVisualization();
+	}
 
 	// if mouse event, let the user decide about the camera
 	if (events_occurred.find("mouse_clicked")->second)
@@ -505,7 +513,9 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 	if (!added_lc)
 	{  // reset both ignored and used counters
 		if (m_curr_used_consec_lcs != 0 || m_curr_ignored_consec_lcs != 0)
-		{ MRPT_LOG_DEBUG_STREAM("No new Loop Closure found."); }
+		{
+			MRPT_LOG_DEBUG_STREAM("No new Loop Closure found.");
+		}
 
 		m_curr_used_consec_lcs = 0;
 		m_curr_ignored_consec_lcs = 0;
@@ -530,7 +540,9 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 
 			// decide of the my policy on full optimization
 			if (ignore_limit_reached)
-			{ m_optimization_policy = OptimizationPolicy::UseLoopClosures; }
+			{
+				m_optimization_policy = OptimizationPolicy::UseLoopClosures;
+			}
 			if (use_limit_reached)
 			{
 				m_optimization_policy = OptimizationPolicy::IgnoreLoopClosures;
@@ -539,7 +551,9 @@ bool CLevMarqGSO<GRAPH_T>::checkForFullOptimization()
 		else
 		{  // no limits reached yet.
 			if (m_optimization_policy == OptimizationPolicy::UseLoopClosures)
-			{ m_curr_used_consec_lcs += 1; }
+			{
+				m_curr_used_consec_lcs += 1;
+			}
 			else
 			{
 				m_curr_ignored_consec_lcs += 1;

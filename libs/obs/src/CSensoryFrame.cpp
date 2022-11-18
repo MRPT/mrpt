@@ -190,7 +190,9 @@ void CSensoryFrame::eraseByLabel(const std::string& label)
 	for (auto it = begin(); it != end();)
 	{
 		if (!os::_strcmpi((*it)->sensorLabel.c_str(), label.c_str()))
-		{ it = erase(it); }
+		{
+			it = erase(it);
+		}
 		else
 			it++;
 	}

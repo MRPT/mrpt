@@ -260,8 +260,8 @@ void CPhidgetInterfaceKitProximitySensors::doProcess()
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-void CPhidgetInterfaceKitProximitySensors::getObservation([
-	[maybe_unused]] mrpt::obs::CObservationRange& obs)
+void CPhidgetInterfaceKitProximitySensors::getObservation(
+	[[maybe_unused]] mrpt::obs::CObservationRange& obs)
 {
 #if MRPT_HAS_PHIDGET
 	obs.timestamp = mrpt::system::getCurrentTime();

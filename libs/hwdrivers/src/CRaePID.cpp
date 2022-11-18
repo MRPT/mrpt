@@ -274,7 +274,9 @@ bool CRaePID::errorStatus(std::string& errorString)
 	// Take the first part and check the possible error condition
 	if ((strcmp(errors_text[0].c_str(), "0") == 0) &&
 		(strcmp(errors_text[1].c_str(), "0") == 0))	 // no error
-	{ return false; }
+	{
+		return false;
+	}
 	else
 	{
 		// By the moment, return the raw error; note that if necessary a

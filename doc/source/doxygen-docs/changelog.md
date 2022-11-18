@@ -1,7 +1,13 @@
 \page changelog Change Log
 
 # Version 2.5.7: Unreleased
-(None)
+- Changes in libraries:
+  - Upgrade embedded version of nanoflann to current `master` (2022-Nov-18).
+  - \ref mrpt_maps_grp
+    - mrpt::math::KDTreeCapable updated to build against nanoflann v1.5.0
+- General build changes:
+  - clang-format: enforce and upgraded to use clang-format-11.
+
 
 # Version 2.5.6: Released November 12th, 2022
 - Changes in libraries:

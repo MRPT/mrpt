@@ -273,8 +273,8 @@ void COpenNI2Generic::open([[maybe_unused]] unsigned sensor_id)
 #endif	// MRPT_HAS_OPENNI2
 }
 
-unsigned int COpenNI2Generic::openDevicesBySerialNum([
-	[maybe_unused]] const std::set<unsigned>& serial_required)
+unsigned int COpenNI2Generic::openDevicesBySerialNum(
+	[[maybe_unused]] const std::set<unsigned>& serial_required)
 {
 #if MRPT_HAS_OPENNI2
 	std::lock_guard<std::recursive_mutex> lock(vDevices_mx);
@@ -752,11 +752,15 @@ bool COpenNI2Generic::CDevice::getNextFrameRGB(
 {
 	MRPT_START
 	if (!hasColor())
-	{ THROW_EXCEPTION("This OpenNI2 device does not support color imaging"); }
+	{
+		THROW_EXCEPTION("This OpenNI2 device does not support color imaging");
+	}
 	openni::VideoFrameRef frame;
 	if (m_streams[COLOR_STREAM]->getFrame(
 			frame, timestamp, there_is_obs, hardware_error) == false)
-	{ return false; }
+	{
+		return false;
+	}
 	copyFrame<openni::RGB888Pixel, mrpt::img::CImage>(frame, img);
 
 	return true;
@@ -769,11 +773,15 @@ bool COpenNI2Generic::CDevice::getNextFrameD(
 {
 	MRPT_START
 	if (!hasDepth())
-	{ THROW_EXCEPTION("This OpenNI2 device does not support depth imaging"); }
+	{
+		THROW_EXCEPTION("This OpenNI2 device does not support depth imaging");
+	}
 	openni::VideoFrameRef frame;
 	if (m_streams[DEPTH_STREAM]->getFrame(
 			frame, timestamp, there_is_obs, hardware_error) == false)
-	{ return false; }
+	{
+		return false;
+	}
 	copyFrame<openni::DepthPixel, mrpt::math::CMatrix_u16>(frame, depth_mm);
 
 	return true;
@@ -790,9 +798,13 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 	hardware_error = false;
 
 	if (!hasColor())
-	{ THROW_EXCEPTION("This OpenNI2 device does not support color imaging"); }
+	{
+		THROW_EXCEPTION("This OpenNI2 device does not support color imaging");
+	}
 	if (!hasDepth())
-	{ THROW_EXCEPTION("This OpenNI2 device does not support depth imaging"); }
+	{
+		THROW_EXCEPTION("This OpenNI2 device does not support depth imaging");
+	}
 	// Read a frame (depth + rgb)
 	mrpt::system::TTimeStamp tm;
 	openni::VideoFrameRef frame[STREAM_TYPE_SIZE];
@@ -801,7 +813,9 @@ bool COpenNI2Generic::CDevice::getNextFrameRGBD(
 		if (!m_streams[i] || !m_streams[i]->isValid()) continue;
 		if (m_streams[i]->getFrame(
 				frame[i], tm, there_is_obs, hardware_error) == false)
-		{ return false; }
+		{
+			return false;
+		}
 		if (there_is_obs == false || hardware_error == true) { return false; }
 	}
 
@@ -940,7 +954,9 @@ bool COpenNI2Generic::CDevice::CStream::setMirror(bool flag)
 	}
 	if (m_stream.isPropertySupported(openni::STREAM_PROPERTY_MIRRORING) ==
 		false)
-	{ return false; }
+	{
+		return false;
+	}
 	if (m_stream.setMirroringEnabled(flag) != openni::STATUS_OK)
 	{
 		m_log << "[" << __FUNCTION__ << "]" << std::endl

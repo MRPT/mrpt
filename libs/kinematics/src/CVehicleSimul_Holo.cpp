@@ -58,7 +58,9 @@ void CVehicleSimul_Holo::internal_simulControlStep(const double dt)
 			const double wf =
 				mrpt::sign(Aang) * std::abs(m_vel_ramp_cmd.rot_speed);
 			if (t <= m_vel_ramp_cmd.ramp_time)
-			{ m_odometric_vel.omega = wi + t * (wf - wi) / T; }
+			{
+				m_odometric_vel.omega = wi + t * (wf - wi) / T;
+			}
 			else
 			{
 				m_odometric_vel.omega = wf;

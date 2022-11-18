@@ -41,7 +41,9 @@ std::string mrpt::demangle(const std::string& symbolName)
 	if (!UnDecorateSymbolName(
 			symbolName.c_str(), undecorated_name, sizeof(undecorated_name),
 			UNDNAME_COMPLETE))
-	{ return symbolName; }
+	{
+		return symbolName;
+	}
 	else
 	{
 		return std::string(undecorated_name);

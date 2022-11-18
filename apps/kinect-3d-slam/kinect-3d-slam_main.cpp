@@ -114,7 +114,9 @@ void thread_grabbing(TThreadParam& p)
 			kinect.getNextObservation(*obs, there_is_obs, hard_error);
 
 			if (!hard_error && there_is_obs)
-			{ std::atomic_store(&p.new_obs, obs); }
+			{
+				std::atomic_store(&p.new_obs, obs);
+			}
 
 			if (p.pushed_key != 0)
 			{
@@ -333,7 +335,9 @@ void Test_Kinect()
 								 MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
 							y > (last_obs->cameraParamsIntensity.nrows -
 								 MIN_DIST_MARGIN_TO_STOP_TRACKING))
-						{ eras = true; }
+						{
+							eras = true;
+						}
 					}
 					if (eras)  // Erase or keep?
 						itFeat = trackedFeats.erase(itFeat);

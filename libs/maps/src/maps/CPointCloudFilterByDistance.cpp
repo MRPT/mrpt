@@ -63,7 +63,9 @@ void CPointCloudFilterByDistance::filter(
 	}
 
 	if (prev_pc.size() < static_cast<size_t>(options.previous_keyframes))
-	{ can_do_filter = false; }
+	{
+		can_do_filter = false;
+	}
 	else
 	{
 		for (int i = 0; can_do_filter && i < options.previous_keyframes; ++i)
@@ -161,11 +163,15 @@ void CPointCloudFilterByDistance::filter(
 			// points, it may be that the filter
 			// is plainly wrong
 		)
-		{ pc->applyDeletionMask(deletion_mask); }
+		{
+			pc->applyDeletionMask(deletion_mask);
+		}
 	}  // we can do filter
 
 	if (params != nullptr && params->out_deletion_mask != nullptr)
-	{ *params->out_deletion_mask = deletion_mask; }
+	{
+		*params->out_deletion_mask = deletion_mask;
+	}
 
 	// 2) Add PC to list
 	// ---------------------
@@ -183,7 +189,9 @@ void CPointCloudFilterByDistance::filter(
 	{
 		if (mrpt::system::timeDifference(it->first, pc_timestamp) >
 			options.too_old_seconds)
-		{ it = m_last_frames.erase(it); }
+		{
+			it = m_last_frames.erase(it);
+		}
 		else
 		{
 			++it;

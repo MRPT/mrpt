@@ -250,7 +250,9 @@ void display_graph(const GRAPHTYPE& g)
 		}
 		if (win_feedback.request_to_quit) break;
 		if (win_feedback.showing_help || win_feedback.hiding_help)
-		{ win.repaint(); }
+		{
+			win.repaint();
+		}
 		std::this_thread::sleep_for(10ms);
 	}
 }

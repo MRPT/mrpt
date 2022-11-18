@@ -206,14 +206,20 @@ class yaml
 			ASSERT_(isScalar());
 			if (const char* const* s = std::any_cast<const char*>(&asScalar());
 				s != nullptr)
-			{ return {*s}; }
+			{
+				return {*s};
+			}
 			if (const std::string* s = std::any_cast<std::string>(&asScalar());
 				s != nullptr)
-			{ return {*s}; }
+			{
+				return {*s};
+			}
 			if (const std::string_view* s =
 					std::any_cast<std::string_view>(&asScalar());
 				s != nullptr)
-			{ return {*s}; }
+			{
+				return {*s};
+			}
 			THROW_EXCEPTION_FMT(
 				"Used node_t as map key with a type non-convertible to "
 				"string: "

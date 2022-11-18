@@ -89,7 +89,9 @@ void PlannerRRT_SE2_TPS::solve(
 			 elap_tim >= end_criteria.minComputationTime)  // Reach closer than
 			// this to target
 		)
-		{ break; }
+		{
+			break;
+		}
 
 		// [Algo `tp_space_rrt`: Line 3]: sample random state (with goal
 		// biasing)

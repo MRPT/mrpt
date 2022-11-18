@@ -251,8 +251,8 @@ void COpenNI2_RGBD360::getNextObservation(
 /* -----------------------------------------------------
 setPathForExternalImages
 ----------------------------------------------------- */
-void COpenNI2_RGBD360::setPathForExternalImages([
-	[maybe_unused]] const std::string& directory)
+void COpenNI2_RGBD360::setPathForExternalImages(
+	[[maybe_unused]] const std::string& directory)
 {
 	// Ignore for now. It seems performance is better grabbing everything
 	// to a single big file than creating hundreds of smaller files per
