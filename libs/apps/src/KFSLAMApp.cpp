@@ -44,7 +44,9 @@ void KFSLAMApp::initialize(int argc, const char** argv)
 
 	// Process arguments:
 	if (argc < 2)
-	{ THROW_EXCEPTION("Usage: kf-slam <config_file> [dataset.rawlog]"); }
+	{
+		THROW_EXCEPTION("Usage: kf-slam <config_file> [dataset.rawlog]");
+	}
 
 	// Config file:
 	const std::string configFile = std::string(argv[1]);

@@ -70,7 +70,9 @@ CStereoGrabber_SVS::CStereoGrabber_SVS(
 
 		if (!(static_cast<svsVideoImages*>(m_videoObject)
 				  ->SetExposure(0, 0, true, true)))
-		{ cout << "Can't set Auto exposure" << endl; }
+		{
+			cout << "Can't set Auto exposure" << endl;
+		}
 		else
 		{
 			cout << "Autoexposure set to 0 0" << endl;
@@ -173,8 +175,8 @@ CStereoGrabber_SVS::~CStereoGrabber_SVS()
 /*-------------------------------------------------------------
 					get the image
  -------------------------------------------------------------*/
-bool CStereoGrabber_SVS::getStereoObservation([
-	[maybe_unused]] mrpt::obs::CObservationStereoImages& out_observation)
+bool CStereoGrabber_SVS::getStereoObservation(
+	[[maybe_unused]] mrpt::obs::CObservationStereoImages& out_observation)
 {
 #if MRPT_HAS_SVS
 	if ((m_stereoImage =

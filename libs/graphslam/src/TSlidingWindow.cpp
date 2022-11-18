@@ -131,7 +131,9 @@ void TSlidingWindow::addNewMeasurement(double measurement)
 
 	// if I haven't already filled up to win_size the vector, just add it
 	if (m_win_size > m_measurements_vec.size())
-	{ m_measurements_vec.push_back(measurement); }
+	{
+		m_measurements_vec.push_back(measurement);
+	}
 	else
 	{
 		// remove first element - add it as last element

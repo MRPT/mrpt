@@ -185,7 +185,9 @@ class vector_with_small_size_optimization
 		if (m_size)
 		{
 			if (m_is_small && n > small_size)
-			{ m_v.assign(m_a.begin(), m_a.begin() + m_size); }
+			{
+				m_v.assign(m_a.begin(), m_a.begin() + m_size);
+			}
 			else if (!m_is_small && n <= small_size)
 			{
 				std::copy(m_v.begin(), m_v.begin() + n, m_a.begin());

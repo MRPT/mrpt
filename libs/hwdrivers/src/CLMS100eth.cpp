@@ -250,7 +250,9 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 				break;
 			case 6:
 				if (!strcmp(next, "1"))
-				{ MRPT_LOG_ERROR_FMT("STATUS error on LMS100: '%s'", next); }
+				{
+					MRPT_LOG_ERROR_FMT("STATUS error on LMS100: '%s'", next);
+				}
 				else if (!strcmp(next, "4"))
 				{
 					MRPT_LOG_ERROR_FMT(

@@ -267,8 +267,8 @@ double CPointPDFParticles::computeKurtosis()
 /*---------------------------------------------------------------
 					drawSingleSample
   ---------------------------------------------------------------*/
-void CPointPDFParticles::drawSingleSample([
-	[maybe_unused]] CPoint3D& outSample) const
+void CPointPDFParticles::drawSingleSample(
+	[[maybe_unused]] CPoint3D& outSample) const
 {
 	THROW_EXCEPTION("TO DO!");
 }

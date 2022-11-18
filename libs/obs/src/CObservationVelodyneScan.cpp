@@ -468,7 +468,9 @@ void Velo::generatePointCloud(const TGeneratePointCloudParameters& params)
 			me_.point_cloud.z.push_back(pt_z);
 			me_.point_cloud.intensity.push_back(pt_intensity);
 			if (params_.generatePerPointTimestamp)
-			{ me_.point_cloud.timestamp.push_back(tim); }
+			{
+				me_.point_cloud.timestamp.push_back(tim);
+			}
 			if (params_.generatePerPointAzimuth)
 			{
 				const int azimuth_corrected =

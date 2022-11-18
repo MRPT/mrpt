@@ -708,7 +708,9 @@ struct pointmap_traits<CColouredPointsMap>
 
 				if (me.colorScheme.scheme ==
 					CColouredPointsMap::cmFromHeightRelativeToSensorGray)
-				{ pR = pG = pB = q; }
+				{
+					pR = pG = pB = q;
+				}
 				else
 				{
 					jet2rgb(q, pR, pG, pB);
@@ -872,7 +874,9 @@ struct pointmap_traits<CColouredPointsMap>
 
 				if (me.colorScheme.scheme ==
 					CColouredPointsMap::cmFromHeightRelativeToSensorGray)
-				{ pR = pG = pB = q; }
+				{
+					pR = pG = pB = q;
+				}
 				else
 				{
 					jet2rgb(q, pR, pG, pB);

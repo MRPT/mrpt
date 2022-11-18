@@ -252,14 +252,18 @@ http_errorcode mrpt::comms::net::http_request(
 					// Process the headers:
 					// ------------------------------
 					if (!::strncmp("HTTP/", (const char*)&buf[0], 5))
-					{ http_code = ::atoi((const char*)&buf[9]); }
+					{
+						http_code = ::atoi((const char*)&buf[9]);
+					}
 					else
 					{
 						// May it be a "SOURCETABLE " answer for NTRIP
 						// protocol??
 						if (!::strncmp(
 								"SOURCETABLE ", (const char*)&buf[0], 12))
-						{ http_code = ::atoi((const char*)&buf[12]); }
+						{
+							http_code = ::atoi((const char*)&buf[12]);
+						}
 						else
 						{
 							if (output)

@@ -245,8 +245,8 @@ void CPose3DPDFParticles::changeCoordinatesReference(
 		p.d = (newReferenceBase + CPose3D(p.d)).asTPose();
 }
 
-void CPose3DPDFParticles::drawSingleSample([
-	[maybe_unused]] CPose3D& outPart) const
+void CPose3DPDFParticles::drawSingleSample(
+	[[maybe_unused]] CPose3D& outPart) const
 {
 	THROW_EXCEPTION("TO DO!");
 }

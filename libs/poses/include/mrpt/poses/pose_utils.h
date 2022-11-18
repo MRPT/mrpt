@@ -200,7 +200,9 @@ void readFileWithPoses(
 
 		// scalar substraction of initial offset
 		if (substract_init_offset)
-		{ curr_pose.addComponents(pose_offset_opposite); }
+		{
+			curr_pose.addComponents(pose_offset_opposite);
+		}
 
 		// push the newly created pose
 		poses_vec->push_back(curr_pose);

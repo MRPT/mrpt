@@ -493,7 +493,9 @@ void CVelodyneScanner::initialize()
 				m_pcap_input_file.c_str());
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf)) ==
 			nullptr)
-		{ THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'", errbuf); }
+		{
+			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'", errbuf);
+		}
 
 		// Build PCAP filter:
 		{
@@ -822,7 +824,9 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 						mrpt::comms::net::getLastSocketErrorStr().c_str()));
 			}
 			if (retval == 0)  // poll() timeout?
-			{ return INVALID_TIMESTAMP; }
+			{
+				return INVALID_TIMESTAMP;
+			}
 			if ((fds[0].revents & POLLERR) || (fds[0].revents & POLLHUP) ||
 				(fds[0].revents & POLLNVAL))  // device error?
 			{
@@ -980,7 +984,9 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 		pcap_close(reinterpret_cast<pcap_t*>(m_pcap));
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf)) ==
 			nullptr)
-		{ THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'", errbuf); }
+		{
+			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'", errbuf);
+		}
 		m_pcap_file_empty = true;  // maybe the file disappeared?
 	}  // loop back and try again
 #else

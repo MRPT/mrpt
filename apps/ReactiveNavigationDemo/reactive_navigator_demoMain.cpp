@@ -1335,7 +1335,9 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
 	static int decim_path = 0;
 	if (gl_robot_path->empty() || ++decim_path > 10)
-	{ gl_robot_path->appendLine(cur_pt, cur_pt); }
+	{
+		gl_robot_path->appendLine(cur_pt, cur_pt);
+	}
 	else
 	{
 		gl_robot_path->appendLineStrip(cur_pt);

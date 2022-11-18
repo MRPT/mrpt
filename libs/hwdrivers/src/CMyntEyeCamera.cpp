@@ -58,7 +58,9 @@ CMyntEyeCamera::CMyntEyeCamera(const TMyntEyeCameraParameters& p)
 	MRPT_START
 #if MRPT_HAS_MYNTEYE_D
 	if (!mynteyed::util::select(*m_capture->cam, &m_capture->dev_info))
-	{ THROW_EXCEPTION("No MYNTEYE-D cameras was found!"); }
+	{
+		THROW_EXCEPTION("No MYNTEYE-D cameras was found!");
+	}
 	mynteyed::util::print_stream_infos(
 		*m_capture->cam, m_capture->dev_info.index);
 
@@ -71,7 +73,9 @@ CMyntEyeCamera::CMyntEyeCamera(const TMyntEyeCameraParameters& p)
 	m_capture->cam->Open(params);
 	std::cout << std::endl;
 	if (!m_capture->cam->IsOpened())
-	{ THROW_EXCEPTION("Error: Open camera failed"); }
+	{
+		THROW_EXCEPTION("Error: Open camera failed");
+	}
 	std::cout << "[CMyntEyeCamera] Open device successful.\n";
 
 	mynteyed::StreamIntrinsics si =

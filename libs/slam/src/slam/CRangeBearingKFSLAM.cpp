@@ -211,7 +211,9 @@ void CRangeBearingKFSLAM::processActionObservation(
 	CPose3DPDFGaussian::Ptr auxPosePDF = CPose3DPDFGaussian::Create(q);
 
 	if (options.create_simplemap)
-	{ m_SFs.insert(CPose3DPDF::Ptr(auxPosePDF), SF); }
+	{
+		m_SFs.insert(CPose3DPDF::Ptr(auxPosePDF), SF);
+	}
 
 	// =============================================================
 	//  UPDATE THE PARTITION GRAPH EXPERIMENT
@@ -267,7 +269,9 @@ CPose3DQuat CRangeBearingKFSLAM::getIncrementFromOdometry() const
 	CActionRobotMovement3D::Ptr actMov3D =
 		m_action->getActionByClass<CActionRobotMovement3D>();
 	if (actMov3D && !options.force_ignore_odometry)
-	{ return CPose3DQuat(actMov3D->poseChange.mean); }
+	{
+		return CPose3DQuat(actMov3D->poseChange.mean);
+	}
 	else if (actMov2D && !options.force_ignore_odometry)
 	{
 		CPose2D estMovMean;
@@ -306,7 +310,9 @@ void CRangeBearingKFSLAM::OnTransitionModel(
 	// otherwise, we are imposing a lower bound to the best uncertainty from now
 	// on:
 	if (size_t(m_xkk.size()) == get_vehicle_size())
-	{ out_skipPrediction = true; }
+	{
+		out_skipPrediction = true;
+	}
 
 	// Current pose: copy xyz+quat
 	CPose3DQuat robotPose = getCurrentRobotPoseMean();
@@ -1384,7 +1390,9 @@ void CRangeBearingKFSLAM::OnPreComputingPredictions(
 				(30.0_deg + 0.5 * fov_yaw + 4 * options.std_sensor_yaw) &&
 			fabs(prediction_means[i][2]) <
 				(30.0_deg + 0.5 * fov_pitch + 4 * options.std_sensor_pitch))
-		{ out_LM_indices_to_predict.push_back(i); }
+		{
+			out_LM_indices_to_predict.push_back(i);
+		}
 #endif
 	}
 }

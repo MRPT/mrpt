@@ -71,8 +71,8 @@ void CObservationBatteryState::getSensorPose(CPose3D& out_sensorPose) const
 }
 
 // See base class docs
-void CObservationBatteryState::setSensorPose([
-	[maybe_unused]] const CPose3D& newSensorPose)
+void CObservationBatteryState::setSensorPose(
+	[[maybe_unused]] const CPose3D& newSensorPose)
 {
 }
 

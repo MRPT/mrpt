@@ -220,7 +220,9 @@ void TestParticlesLocalization()
 			size_t real_offsets_rows = 0;
 			double accum_xy_err_sqr = 0;
 			if (Pc_range_ini != Pc_range_end)
-			{ pdf.options.probabilityChangingBias = range_Pc; }
+			{
+				pdf.options.probabilityChangingBias = range_Pc;
+			}
 
 			pdf.options.metricMap = &metricMap;
 

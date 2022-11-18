@@ -101,7 +101,9 @@ void CObservationOdometry::getDescriptionAsText(std::ostream& o) const
 		o << "Encoder info: Not available!\n";
 
 	if (hasVelocities)
-	{ o << format("Velocity info: %s\n", velocityLocal.asString().c_str()); }
+	{
+		o << format("Velocity info: %s\n", velocityLocal.asString().c_str());
+	}
 	else
 		o << "Velocity info: Not available!\n";
 }

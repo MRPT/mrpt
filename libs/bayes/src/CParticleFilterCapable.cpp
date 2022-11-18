@@ -181,7 +181,9 @@ void CParticleFilterCapable::computeResampling(
 				while (i < N_rnd)
 				{
 					if (T[i] < Q[j])
-					{ out_indexes[M_fixed + i++] = (unsigned int)j; }
+					{
+						out_indexes[M_fixed + i++] = (unsigned int)j;
+					}
 					else
 					{
 						j++;

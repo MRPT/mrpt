@@ -317,7 +317,9 @@ bool CSickLaserSerial::waitContinuousSampleFrame(
 		// Era la primera?
 		if (nFrameBytes > 1 || (!nFrameBytes && buf[0] == 0x02) ||
 			(nFrameBytes == 1 && buf[1] == 0x80))
-		{ nFrameBytes += nRead; }
+		{
+			nFrameBytes += nRead;
+		}
 		else
 		{
 			nFrameBytes = 0;  // No es cabecera de trama correcta
@@ -565,7 +567,9 @@ bool CSickLaserSerial::LMS_waitIncomingFrame(uint16_t timeout)
 				m_received_frame_buffer[nBytes] = b;
 				nBytes++;
 				if (m_verbose)
-				{ printf("[CSickLaserSerial::Receive] RX: %02X\n", b); }
+				{
+					printf("[CSickLaserSerial::Receive] RX: %02X\n", b);
+				}
 			}
 		}
 		if (tictac.Tac() >= maxTime) return false;	// Timeout

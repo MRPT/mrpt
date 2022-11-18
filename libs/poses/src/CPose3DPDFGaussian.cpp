@@ -49,8 +49,8 @@ CPose3DPDFGaussian::CPose3DPDFGaussian() : mean(0, 0, 0), cov() {}
 /*---------------------------------------------------------------
 	Constructor
   ---------------------------------------------------------------*/
-CPose3DPDFGaussian::CPose3DPDFGaussian([
-	[maybe_unused]] TConstructorFlags_Poses constructor_dummy_param)
+CPose3DPDFGaussian::CPose3DPDFGaussian(
+	[[maybe_unused]] TConstructorFlags_Poses constructor_dummy_param)
 	: mean(UNINITIALIZED_POSE), cov(UNINITIALIZED_MATRIX)
 {
 }
@@ -523,8 +523,8 @@ double CPose3DPDFGaussian::evaluatePDF([[maybe_unused]] const CPose3D& x) const
 /*---------------------------------------------------------------
 						evaluateNormalizedPDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussian::evaluateNormalizedPDF([
-	[maybe_unused]] const CPose3D& x) const
+double CPose3DPDFGaussian::evaluateNormalizedPDF(
+	[[maybe_unused]] const CPose3D& x) const
 {
 	THROW_EXCEPTION("TO DO!!!");
 	/*	CMatrixD	X(3,1);

@@ -174,7 +174,9 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
 
 		// 1. Initialize EGL
 		if (m_eglDpy == EGL_NO_DISPLAY)
-		{ THROW_EXCEPTION("Failed to get EGL display"); }
+		{
+			THROW_EXCEPTION("Failed to get EGL display");
+		}
 
 		EGLint major, minor;
 

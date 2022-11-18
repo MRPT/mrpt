@@ -165,7 +165,9 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 
 			mrpt::math::TPose2D parent_state;
 			if (node.parent_id != mrpt::graphs::INVALID_NODEID)
-			{ parent_state = lstNodes.find(node.parent_id)->second.state; }
+			{
+				parent_state = lstNodes.find(node.parent_id)->second.state;
+			}
 			const mrpt::math::TPose2D& trg_state = node.state;
 
 			const bool is_new_one = (itNode == (lstNodes.end() - 1));
