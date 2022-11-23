@@ -233,7 +233,8 @@ class COutputLogger
 
 	bool isLoggingLevelVisible(VerbosityLevel level) const
 	{
-		return m_min_verbosity_level <= level;
+		return (m_min_verbosity_level <= level) ||
+			(m_min_verbosity_level_callbacks <= level);
 	}
 
 	/** Fill the provided string with the contents of the logger's history in
@@ -401,9 +402,7 @@ struct COutputLoggerStreamWrapper
 	do                                                                         \
 	{                                                                          \
 		if (this->isLoggingLevelVisible(_LVL))                                 \
-		{                                                                      \
-			this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__);                      \
-		}                                                                      \
+		{ this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__); }                      \
 	} while (0)
 
 #define INTERNAL_MRPT_LOG_STREAM(_LVL, __CONTENTS)                             \
