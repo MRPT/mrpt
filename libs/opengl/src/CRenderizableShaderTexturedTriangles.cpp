@@ -747,6 +747,16 @@ class TextureResourceHandler
 			CHECK_OPENGL_ERROR_IN_DEBUG();
 			lst.clear();
 		}
+		if (MRPT_OPENGL_VERBOSE)
+		{
+			std::cout << "[mrpt processDestroyQueue] threadId="
+					  << std::this_thread::get_id() << ". At output: ";
+			for (const auto& lst : m_destroyQueue)
+				std::cout << "[" << lst.first << "]=" << lst.second.size()
+						  << " ";
+			std::cout << "\n Texture units: " << m_occupiedTextureUnits.size()
+					  << "\n";
+		}
 #endif
 	}
 
