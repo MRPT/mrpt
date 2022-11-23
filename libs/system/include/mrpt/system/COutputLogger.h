@@ -401,7 +401,9 @@ struct COutputLoggerStreamWrapper
 	do                                                                         \
 	{                                                                          \
 		if (this->isLoggingLevelVisible(_LVL))                                 \
-		{ this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__); }                      \
+		{                                                                      \
+			this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__);                      \
+		}                                                                      \
 	} while (0)
 
 #define INTERNAL_MRPT_LOG_STREAM(_LVL, __CONTENTS)                             \
