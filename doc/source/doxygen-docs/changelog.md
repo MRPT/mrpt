@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.5.7: Unreleased
+- Changes in applications:
+  - navlog-viewer:
+    - It now shows custom visualization artifacts stored in the new field mrpt::nav::CLogFileRecord::visuals.
 - Changes in libraries:
   - Upgrade embedded version of nanoflann to current `master` (2022-Nov-18).
   - \ref mrpt_maps_grp
