@@ -1925,7 +1925,9 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 
 			const auto it = logptr->timestamps.find("curPoseAndVel");
 			if (it != logptr->timestamps.end())
-			{ tim_pose = mrpt::system::timestampToDouble(it->second); }
+			{
+				tim_pose = mrpt::system::timestampToDouble(it->second);
+			}
 
 			auto& p = global_local_vel[tim_pose];
 			p.pose = logptr->robotPoseLocalization;
@@ -1955,7 +1957,9 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 
 	double t_ref = 0;
 	if (!selected_PTG_over_time.empty())
-	{ t_ref = selected_PTG_over_time.begin()->first; }
+	{
+		t_ref = selected_PTG_over_time.begin()->first;
+	}
 
 	f << "clear; close all;\n";
 

@@ -315,7 +315,9 @@ void CLogFileRecord::serializeFrom(
 				ptg_index_NOP = -1;
 			}
 			if (version >= 17 && version < 24)
-			{ in >> ptg_last_navDynState.curVelLocal; }
+			{
+				in >> ptg_last_navDynState.curVelLocal;
+			}
 			if (version >= 24) { ptg_last_navDynState.readFromStream(in); }
 
 			if (version >= 10)
