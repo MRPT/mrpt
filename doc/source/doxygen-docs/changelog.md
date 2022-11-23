@@ -14,6 +14,7 @@
   - clang-format: enforce and upgraded to use clang-format-11.
 - BUG FIXES:
   - Fix crash if calling mrpt::opengl::CSetOfObjects::getByName() with null pointers as children objects.
+  - Fix opengl resources leak if mrpt::opengl::CRenderizableShaderTexturedTriangles instance is destroyed from a thread different than the one used to render.
 
 # Version 2.5.6: Released November 12th, 2022
 - Changes in libraries:
