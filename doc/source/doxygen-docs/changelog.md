@@ -10,7 +10,8 @@
     - mrpt::math::KDTreeCapable updated to build against nanoflann v1.5.0
 - General build changes:
   - clang-format: enforce and upgraded to use clang-format-11.
-
+- BUG FIXES:
+  - Fix crash if calling mrpt::opengl::CSetOfObjects::getByName() with null pointers as children objects.
 
 # Version 2.5.6: Released November 12th, 2022
 - Changes in libraries:
@@ -39,7 +40,7 @@
 
 # Version 2.5.5: Released October 19th, 2022
 - Changes in applications:
-  - prg-configurator:
+  - ptg-configurator:
     - A maximum trajectory time can be specified now for rendering PTGs.
     - New CLI arguments `--ini`, `--ini-section` to automate loading custom INI files.
 - Changes in libraries:

@@ -92,17 +92,18 @@ void CSetOfObjects::insert(const CRenderizable::Ptr& newObject)
 
 void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst) const
 {
-	for (auto& obj : m_objects)
+	for (auto& o : m_objects)
 	{
+		if (!o) continue;
 		// Single obj:
-		string s(obj->GetRuntimeClass()->className);
-		if (obj->m_name.size()) s += string(" (") + obj->m_name + string(")");
+		string s(o->GetRuntimeClass()->className);
+		if (o->m_name.size()) s += string(" (") + o->m_name + string(")");
 		lst.emplace_back(s);
 
-		if (obj->GetRuntimeClass() ==
+		if (o->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, mrpt::opengl))
 		{
-			auto* objs = dynamic_cast<CSetOfObjects*>(obj.get());
+			auto* objs = dynamic_cast<CSetOfObjects*>(o.get());
 
 			std::vector<std::string> auxLst;
 			objs->dumpListOfObjects(auxLst);
@@ -211,29 +212,41 @@ bool CSetOfObjects::contains(const CRenderizable::Ptr& obj) const
 
 CRenderizable& CSetOfObjects::setColorR_u8(const uint8_t r)
 {
-	for (auto& m_object : m_objects)
-		m_object->setColorR_u8(m_color.R = r);
+	for (auto& o : m_objects)
+	{
+		if (!o) continue;
+		o->setColorR_u8(m_color.R = r);
+	}
 	return *this;
 }
 
 CRenderizable& CSetOfObjects::setColorG_u8(const uint8_t g)
 {
-	for (auto& m_object : m_objects)
-		m_object->setColorG_u8(m_color.G = g);
+	for (auto& o : m_objects)
+	{
+		if (!o) continue;
+		o->setColorG_u8(m_color.G = g);
+	}
 	return *this;
 }
 
 CRenderizable& CSetOfObjects::setColorB_u8(const uint8_t b)
 {
-	for (auto& m_object : m_objects)
-		m_object->setColorB_u8(m_color.B = b);
+	for (auto& o : m_objects)
+	{
+		if (!o) continue;
+		o->setColorB_u8(m_color.B = b);
+	}
 	return *this;
 }
 
 CRenderizable& CSetOfObjects::setColorA_u8(const uint8_t a)
 {
-	for (auto& m_object : m_objects)
-		m_object->setColorA_u8(m_color.A = a);
+	for (auto& o : m_objects)
+	{
+		if (!o) continue;
+		o->setColorA_u8(m_color.A = a);
+	}
 	return *this;
 }
 
@@ -242,15 +255,13 @@ CRenderizable& CSetOfObjects::setColorA_u8(const uint8_t a)
   ---------------------------------------------------------------*/
 CRenderizable::Ptr CSetOfObjects::getByName(const string& str)
 {
-	for (auto& m_object : m_objects)
+	for (auto& o : m_objects)
 	{
-		if (m_object->m_name == str) return m_object;
-		else if (
-			m_object->GetRuntimeClass() ==
-			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
+		if (!o) continue;
+		if (o->m_name == str) return o;
+		else if (auto objs = dynamic_cast<CSetOfObjects*>(o.get()))
 		{
-			CRenderizable::Ptr ret =
-				dynamic_cast<CSetOfObjects*>(m_object.get())->getByName(str);
+			CRenderizable::Ptr ret = objs->getByName(str);
 			if (ret) return ret;
 		}
 	}
