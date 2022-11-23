@@ -8,6 +8,8 @@
   - Upgrade embedded version of nanoflann to current `master` (2022-Nov-18).
   - \ref mrpt_maps_grp
     - mrpt::math::KDTreeCapable updated to build against nanoflann v1.5.0
+  - \ref mrpt_system_grp
+    - New method mrpt::system::COutputLogger::setVerbosityLevelForCallbacks()
 - General build changes:
   - clang-format: enforce and upgraded to use clang-format-11.
 - BUG FIXES:
