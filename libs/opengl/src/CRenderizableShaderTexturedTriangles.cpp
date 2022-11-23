@@ -592,11 +592,13 @@ CRenderizableShaderTexturedTriangles::~CRenderizableShaderTexturedTriangles()
 }
 void CRenderizableShaderTexturedTriangles::unloadTexture()
 {
-	if (!m_glTexture.get().has_value()) return;
-
-	releaseTextureName(*m_glTexture.get());
-
-	m_glTexture.get().reset();
+	m_glTexture.run_on_all(
+		[](std::optional<texture_name_unit_t>& tnu)
+		{
+			if (!tnu) return;
+			releaseTextureName(tnu.value());
+			tnu.reset();
+		});
 }
 
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
