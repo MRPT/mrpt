@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.5.7: Unreleased
+# Version 2.5.7: Released November 25th, 2022
 - Changes in applications:
   - navlog-viewer:
     - It now shows custom visualization artifacts stored in the new field mrpt::nav::CLogFileRecord::visuals.
