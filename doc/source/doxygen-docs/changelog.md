@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.5.8: UNRELEASED
+(None yet)
+
 # Version 2.5.7: Released November 25th, 2022
 - Changes in applications:
   - navlog-viewer:
