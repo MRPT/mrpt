@@ -1,5 +1,21 @@
 \page changelog Change Log
 
+# Version 2.5.7: Released November 25th, 2022
+- Changes in applications:
+  - navlog-viewer:
+    - It now shows custom visualization artifacts stored in the new field mrpt::nav::CLogFileRecord::visuals.
+- Changes in libraries:
+  - Upgrade embedded version of nanoflann to current `master` (2022-Nov-18).
+  - \ref mrpt_maps_grp
+    - mrpt::math::KDTreeCapable updated to build against nanoflann v1.5.0
+  - \ref mrpt_system_grp
+    - New method mrpt::system::COutputLogger::setVerbosityLevelForCallbacks()
+- General build changes:
+  - clang-format: enforce and upgraded to use clang-format-11.
+- BUG FIXES:
+  - Fix crash if calling mrpt::opengl::CSetOfObjects::getByName() with null pointers as children objects.
+  - Fix opengl resources leak if mrpt::opengl::CRenderizableShaderTexturedTriangles instance is destroyed from a thread different than the one used to render.
+
 # Version 2.5.6: Released November 12th, 2022
 - Changes in libraries:
   - \ref mrpt_containers_grp
@@ -27,7 +43,7 @@
 
 # Version 2.5.5: Released October 19th, 2022
 - Changes in applications:
-  - prg-configurator:
+  - ptg-configurator:
     - A maximum trajectory time can be specified now for rendering PTGs.
     - New CLI arguments `--ini`, `--ini-section` to automate loading custom INI files.
 - Changes in libraries:

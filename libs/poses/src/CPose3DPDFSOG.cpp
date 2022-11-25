@@ -144,7 +144,9 @@ void CPose3DPDFSOG::copyFrom(const CPose3DPDF& o)
 	if (this == &o) return;	 // It may be used sometimes
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG))
-	{ *this = dynamic_cast<const CPose3DPDFSOG&>(o); }
+	{
+		*this = dynamic_cast<const CPose3DPDFSOG&>(o);
+	}
 	else
 	{
 		this->resize(1);

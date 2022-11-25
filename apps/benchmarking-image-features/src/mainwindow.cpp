@@ -237,14 +237,18 @@ void MainWindow::on_button_generate_clicked()
 					auxImg1 = *ft1.patch;
 					if (currentInputIndex == 1 || currentInputIndex == 4 ||
 						(currentInputIndex == 2 && rawlog_type == 1))
-					{ auxImg2 = *best_ft2.patch; }
+					{
+						auxImg2 = *best_ft2.patch;
+					}
 				}
 				else if (descriptor_selected == 3)	// descPolarImages
 				{
 					auxImg1.setFromMatrix(*ft1.descriptors.PolarImg);
 					if (currentInputIndex == 1 || currentInputIndex == 4 ||
 						(currentInputIndex == 2 && rawlog_type == 1))
-					{ auxImg2.setFromMatrix(*best_ft2.descriptors.PolarImg); }
+					{
+						auxImg2.setFromMatrix(*best_ft2.descriptors.PolarImg);
+					}
 				}
 				else if (descriptor_selected == 4)	// descLogPolarImages
 				{
@@ -1875,7 +1879,9 @@ void MainWindow::ReadInputFormat()
 	// numFeatures = numFeaturesLineEdit->text().toInt();
 
 	if (currentInputIndex == 0)
-	{ file_path1 = inputFilePath->text().toStdString(); }
+	{
+		file_path1 = inputFilePath->text().toStdString();
+	}
 	else if (currentInputIndex == 1)  // only read the single images if a single
 	// image or stereo image input is
 	// specified
@@ -4086,7 +4092,9 @@ void MainWindow::Mouse_Pressed()
 		images_static = images1[pos];
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
-		{ images_static2 = images2[pos]; }
+		{
+			images_static2 = images2[pos];
+		}
 
 		/// this is done to fix the overlaying of labels on top of each other.
 		if (flag_descriptor_match) featureMatched->setVisible(false);

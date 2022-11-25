@@ -6,7 +6,7 @@ The following instructions offer a summary of the formatting/style changes
 applied on July 7th 2017, as well as handy solutions for solving formatting
 problems and for making this transition as smooth as possible.
 
-As of Jan 2020, we use clang-format-10.
+As of Nov 2022, we now use clang-format-11.
 
 Line-wrapping
 --------------

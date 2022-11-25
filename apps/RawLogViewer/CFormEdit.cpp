@@ -1174,7 +1174,9 @@ void leave_horizontalScans(
 				auto* o = static_cast<CObservation2DRangeScan*>(obs.get());
 
 				if (fabs(o->sensorPose.pitch()) > minPitchToDeleteLaserScan)
-				{ it = SF->erase(it); }
+				{
+					it = SF->erase(it);
+				}
 				else
 				{
 					changesCount++;	 // Count success

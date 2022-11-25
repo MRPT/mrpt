@@ -548,7 +548,9 @@ void CArchive::sendMessage(const CMessage& msg)
 	buf[nBytesTx++] = (unsigned char)(msg.type);
 
 	if (msg_format_is_tiny)
-	{ buf[nBytesTx++] = (unsigned char)msg.content.size(); }
+	{
+		buf[nBytesTx++] = (unsigned char)msg.content.size();
+	}
 	else
 	{
 		buf[nBytesTx++] = msg.content.size() & 0xff;  // lo

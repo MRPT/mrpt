@@ -500,7 +500,9 @@ bool mrpt::img::CImage::loadFromXPM(
 			xpm_data[0], "%u %u %u %u", &width, &height, &colors_cnt,
 			&chars_per_pixel);
 		if (count != 4 || width * height * colors_cnt == 0)
-		{ THROW_EXCEPTION("XPM: incorrect header format!"); }
+		{
+			THROW_EXCEPTION("XPM: incorrect header format!");
+		}
 
 		// VS: XPM color map this large would be insane, since XPMs are encoded
 		// with 92 possible values on each position, 92^64 is *way* larger space
@@ -570,7 +572,9 @@ bool mrpt::img::CImage::loadFromXPM(
 			for (rgb = 0; rgb <= 0xffffff && rgb_table.count(rgb); ++rgb)
 				;
 			if (rgb > 0xffffff)
-			{ THROW_EXCEPTION("XPM: no colors left to use for mask!"); }
+			{
+				THROW_EXCEPTION("XPM: no colors left to use for mask!");
+			}
 
 			XPMColorMapData& maskData = clr_tbl[maskKey];
 			maskData.R = uint8_t(rgb >> 16);

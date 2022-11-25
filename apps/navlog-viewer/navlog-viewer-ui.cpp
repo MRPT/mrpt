@@ -670,6 +670,31 @@ void NavlogViewerApp::updateVisualization()
 			}
 		}
 
+		// custom visuals:
+		{
+			mrpt::opengl::CSetOfObjects::Ptr gl_custom_vizs;
+			{
+				// Get or create if new
+				auto gl_r = gl_robot_frame->getByName("custom_viz");
+				if (!gl_r)
+				{
+					gl_custom_vizs = mrpt::opengl::CSetOfObjects::Create();
+					gl_custom_vizs->setName("custom_viz");
+					gl_robot_frame->insert(gl_custom_vizs);
+				}
+				else
+				{
+					gl_custom_vizs =
+						std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(
+							gl_r);
+				}
+
+				gl_custom_vizs->clear();
+				for (const auto& viz : log.visuals)
+					gl_custom_vizs->insert(viz);
+			}
+		}
+
 		// Extrapolated poses from delay models:
 		{
 			mrpt::opengl::CSetOfObjects::Ptr gl_relposes;
@@ -1161,13 +1186,13 @@ void NavlogViewerApp::updateVisualization()
 
 	if (m_cbShowAllDebugFields->checked())
 	{
-		ADD_WIN_TEXTMSG(
-			format(
-				"navDynState: curVelLocal=%s relTarget=%s targetRelSpeed=%.02f",
-				log.navDynState.curVelLocal.asString().c_str(),
-				log.navDynState.relTarget.asString().c_str(),
-				log.navDynState.targetRelSpeed)
-				.c_str());
+		ADD_WIN_TEXTMSG(format(
+							"navDynState: curVelLocal=%s relTarget=%s "
+							"targetRelSpeed=%.02f",
+							log.navDynState.curVelLocal.asString().c_str(),
+							log.navDynState.relTarget.asString().c_str(),
+							log.navDynState.targetRelSpeed)
+							.c_str());
 
 		for (const auto& e : log.values)
 			ADD_WIN_TEXTMSG(format(
@@ -1900,7 +1925,9 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 
 			const auto it = logptr->timestamps.find("curPoseAndVel");
 			if (it != logptr->timestamps.end())
-			{ tim_pose = mrpt::system::timestampToDouble(it->second); }
+			{
+				tim_pose = mrpt::system::timestampToDouble(it->second);
+			}
 
 			auto& p = global_local_vel[tim_pose];
 			p.pose = logptr->robotPoseLocalization;
@@ -1930,7 +1957,9 @@ void NavlogViewerApp::OnmnuMatlabExportPaths()
 
 	double t_ref = 0;
 	if (!selected_PTG_over_time.empty())
-	{ t_ref = selected_PTG_over_time.begin()->first; }
+	{
+		t_ref = selected_PTG_over_time.begin()->first;
+	}
 
 	f << "clear; close all;\n";
 

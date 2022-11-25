@@ -213,8 +213,8 @@ void CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	}
 }
 
-bool CSwissRanger3DCamera::getMesaLibVersion([
-	[maybe_unused]] std::string& out_version) const
+bool CSwissRanger3DCamera::getMesaLibVersion(
+	[[maybe_unused]] std::string& out_version) const
 {
 #if MRPT_HAS_SWISSRANGE
 	unsigned short version[4];
@@ -556,8 +556,8 @@ void CSwissRanger3DCamera::getNextObservation(
 /* -----------------------------------------------------
 				setPathForExternalImages
 ----------------------------------------------------- */
-void CSwissRanger3DCamera::setPathForExternalImages([
-	[maybe_unused]] const std::string& directory)
+void CSwissRanger3DCamera::setPathForExternalImages(
+	[[maybe_unused]] const std::string& directory)
 {
 	return;
 	// Ignore for now. It seems performance is better grabbing everything

@@ -25,7 +25,9 @@ void CTextMessageCapable::TListTextMessages::regenerateGLobjects() const
 		if (labelData.gl_text && labelData.gl_text_outdated) continue;
 
 		if (!labelData.gl_text)
-		{ labelData.gl_text = mrpt::opengl::CText::Create(); }
+		{
+			labelData.gl_text = mrpt::opengl::CText::Create();
+		}
 		if (labelData.draw_shadow && !labelData.gl_text_shadow)
 			labelData.gl_text_shadow = mrpt::opengl::CText::Create();
 

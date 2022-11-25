@@ -45,7 +45,9 @@ void RawlogGrabberApp::initialize(int argc, const char** argv)
 
 	if ((getenv("MRPT_HWDRIVERS_VERBOSE") != nullptr) &&
 		atoi(getenv("MRPT_HWDRIVERS_VERBOSE")) != 0)
-	{ this->setMinLoggingLevel(mrpt::system::LVL_DEBUG); }
+	{
+		this->setMinLoggingLevel(mrpt::system::LVL_DEBUG);
+	}
 
 	MRPT_LOG_INFO(" rawlog-grabber - Part of the MRPT");
 	MRPT_LOG_INFO_FMT(
@@ -271,7 +273,9 @@ void RawlogGrabberApp::dump_verbose_info(
 
 	if (auto gps = std::dynamic_pointer_cast<mrpt::obs::CObservationGPS>(o);
 		gps)
-	{ dump_GPS_mode_info(*gps); }
+	{
+		dump_GPS_mode_info(*gps);
+	}
 	else if (auto imu =
 				 std::dynamic_pointer_cast<mrpt::obs::CObservationIMU>(o);
 			 imu)
@@ -401,7 +405,9 @@ void RawlogGrabberApp::SensorThread(std::string sensor_label)
 	catch (...)
 	{
 		if (show_sensor_thread_exceptions)
-		{ MRPT_LOG_ERROR("Untyped exception in SensorThread."); }
+		{
+			MRPT_LOG_ERROR("Untyped exception in SensorThread.");
+		}
 		allThreadsMustExit(true);
 	}
 }
@@ -546,5 +552,7 @@ void RawlogGrabberApp::process_observations_for_nonsf(
 	}
 
 	if (!list_obs.empty())
-	{ MRPT_LOG_INFO_STREAM("Saved " << list_obs.size() << " objects."); }
+	{
+		MRPT_LOG_INFO_STREAM("Saved " << list_obs.size() << " objects.");
+	}
 }

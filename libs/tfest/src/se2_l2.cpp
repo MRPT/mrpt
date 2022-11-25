@@ -118,7 +118,9 @@ bool tfest::se2_l2(
 	internal::se2_l2_impl_return_t<float> implRet;
 #if MRPT_ARCH_INTEL_COMPATIBLE
 	if (mrpt::cpu::supports(mrpt::cpu::feature::SSE2))
-	{ implRet = mrpt::tfest::internal::se2_l2_impl_SSE2(in_correspondences); }
+	{
+		implRet = mrpt::tfest::internal::se2_l2_impl_SSE2(in_correspondences);
+	}
 	else
 #endif
 	{

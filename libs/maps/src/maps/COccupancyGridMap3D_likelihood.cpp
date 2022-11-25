@@ -28,7 +28,9 @@ bool COccupancyGridMap3D::internal_canComputeObservationLikelihood(
 {
 	if (auto* o = dynamic_cast<const mrpt::obs::CObservation2DRangeScan*>(&obs);
 		o != nullptr)
-	{ return true; }
+	{
+		return true;
+	}
 
 	return false;
 }

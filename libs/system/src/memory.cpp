@@ -126,7 +126,9 @@ unsigned long mrpt::system::getMemoryUsage()
 
 	if (PSAPI_LOADER.GetProcessMemoryInfo(
 			GetCurrentProcess(), &pmc, sizeof(pmc)))
-	{ MEM = (long)pmc.PagefileUsage; }
+	{
+		MEM = (long)pmc.PagefileUsage;
+	}
 #endif
 
 #ifdef MRPT_OS_LINUX
@@ -154,7 +156,9 @@ unsigned long mrpt::system::getMemoryUsage()
 	if (task_info(
 			mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info,
 			&count) == 0)
-	{ MEM = info.virtual_size; }
+	{
+		MEM = info.virtual_size;
+	}
 #endif
 	return MEM;
 	MRPT_END

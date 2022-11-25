@@ -523,7 +523,9 @@ catch (CExceptionExternalImageNotFound& e)
 			this, _("Choose the base directory for relative image paths"),
 			CImage::getImagesPathBase().c_str(), 0, wxDefaultPosition);
 		if (dirDialog.ShowModal() == wxID_OK)
-		{ CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str())); }
+		{
+			CImage::setImagesPathBase(string(dirDialog.GetPath().mb_str()));
+		}
 	}
 }
 catch (const std::exception& e)

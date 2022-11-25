@@ -283,7 +283,9 @@ class MatrixVectorBase
 		if constexpr (
 			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
 			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
-		{ return impl_op_add(m2); }
+		{
+			return impl_op_add(m2);
+		}
 		else
 		{
 			throw std::runtime_error(
@@ -296,7 +298,9 @@ class MatrixVectorBase
 		if constexpr (
 			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
 			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
-		{ impl_op_selfadd(m2); }
+		{
+			impl_op_selfadd(m2);
+		}
 		else
 		{
 			throw std::runtime_error(
@@ -309,7 +313,9 @@ class MatrixVectorBase
 		if constexpr (
 			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
 			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
-		{ return impl_op_subs(m2); }
+		{
+			return impl_op_subs(m2);
+		}
 		else
 		{
 			throw std::runtime_error(
@@ -322,7 +328,9 @@ class MatrixVectorBase
 		if constexpr (
 			Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
 			Derived::ColsAtCompileTime == 1 || Derived::ColsAtCompileTime == -1)
-		{ impl_op_selfsubs(m2); }
+		{
+			impl_op_selfsubs(m2);
+		}
 		else
 		{
 			throw std::runtime_error(

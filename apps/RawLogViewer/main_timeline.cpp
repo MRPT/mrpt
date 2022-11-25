@@ -660,7 +660,9 @@ std::optional<std::pair<double, size_t>>
 
 		if (trackedSensorLabel.has_value() &&
 			glLb->getString() == *trackedSensorLabel)
-		{ glLb->setColor_u8(0xff, 0x00, 0x00, 0xff); }
+		{
+			glLb->setColor_u8(0xff, 0x00, 0x00, 0xff);
+		}
 		else
 		{
 			glLb->setColor_u8(0x00, 0x00, 0x00, 0xff);

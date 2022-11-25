@@ -80,10 +80,11 @@ void COutputLogger::logStr(
 	}
 
 	if (level >= m_min_verbosity_level && logging_enable_console_output)
-	{
 		msg.dumpToConsole();
 
-		// User callbacks:
+	// User callbacks:
+	if (level >= m_min_verbosity_level_callbacks)
+	{
 		for (const auto& c : m_listCallbacks)
 			c(msg.body, msg.level, msg.name, msg.timestamp);
 	}
@@ -139,14 +140,16 @@ void COutputLogger::setLoggerName(const std::string& name)
 }
 
 std::string COutputLogger::getLoggerName() const { return m_logger_name; }
-void COutputLogger::setMinLoggingLevel(
-	const VerbosityLevel level /*= LVL_INFO */)
+
+void COutputLogger::setMinLoggingLevel(const VerbosityLevel level)
 {
 	m_min_verbosity_level = level;
+	m_min_verbosity_level_callbacks = level;
 }
-void COutputLogger::setVerbosityLevel(const VerbosityLevel level)
+
+void COutputLogger::setVerbosityLevelForCallbacks(const VerbosityLevel level)
 {
-	m_min_verbosity_level = level;
+	m_min_verbosity_level_callbacks = level;
 }
 
 void COutputLogger::getLogAsString(std::string& fname) const

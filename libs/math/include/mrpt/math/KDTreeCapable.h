@@ -20,6 +20,15 @@
 #include <mutex>
 #include <nanoflann.hpp>
 
+// Smooth transition to nanoflann>=1.5.0 for older versions:
+namespace nanoflann
+{
+#if NANOFLANN_VERSION < 0x150
+template <typename T1, typename T2>
+using ResultItem = std::pair<T1, T2>;
+#endif
+}  // namespace nanoflann
+
 namespace mrpt::math
 {
 /** \addtogroup kdtree_grp KD-Trees
@@ -145,8 +154,7 @@ class KDTreeCapable
 		resultSet.init(&ret_index, &out_dist_sqr);
 
 		const std::array<num_t, 2> query_point{{x0, y0}};
-		m_kdtree2d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
 
 		// Copy output to user vars:
 		out_x = derived().kdtree_get_pt(ret_index, 0);
@@ -171,8 +179,7 @@ class KDTreeCapable
 		resultSet.init(&ret_index, &out_dist_sqr);
 
 		const std::array<num_t, 2> query_point{{x0, y0}};
-		m_kdtree2d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
 
 		return ret_index;
 		MRPT_END
@@ -241,8 +248,7 @@ class KDTreeCapable
 		resultSet.init(&ret_indexes[0], &ret_sqdist[0]);
 
 		const std::array<num_t, 2> query_point{{x0, y0}};
-		m_kdtree2d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
 
 		// Copy output to user vars:
 		out_x1 = derived().kdtree_get_pt(ret_indexes[0], 0);
@@ -308,8 +314,7 @@ class KDTreeCapable
 		resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
 
 		const std::array<num_t, 2> query_point{{x0, y0}};
-		m_kdtree2d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
 
 		for (size_t i = 0; i < knn; i++)
 		{
@@ -367,8 +372,7 @@ class KDTreeCapable
 		resultSet.init(&out_idx[0], &out_dist_sqr[0]);
 
 		const std::array<num_t, 2> query_point{{x0, y0}};
-		m_kdtree2d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree2d_data.index->findNeighbors(resultSet, &query_point[0], {});
 		MRPT_END
 	}
 
@@ -414,8 +418,7 @@ class KDTreeCapable
 		resultSet.init(&ret_index, &out_dist_sqr);
 
 		const std::array<num_t, 3> query_point{{x0, y0, z0}};
-		m_kdtree3d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
 
 		// Copy output to user vars:
 		out_x = derived().kdtree_get_pt(ret_index, 0);
@@ -441,8 +444,7 @@ class KDTreeCapable
 		resultSet.init(&ret_index, &out_dist_sqr);
 
 		const std::array<num_t, 3> query_point{{x0, y0, z0}};
-		m_kdtree3d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
 
 		return ret_index;
 		MRPT_END
@@ -503,8 +505,7 @@ class KDTreeCapable
 		resultSet.init(&ret_indexes[0], &out_dist_sqr[0]);
 
 		const std::array<num_t, 3> query_point{{x0, y0, z0}};
-		m_kdtree3d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
 
 		for (size_t i = 0; i < knn; i++)
 		{
@@ -558,8 +559,7 @@ class KDTreeCapable
 		resultSet.init(&out_idx[0], &out_dist_sqr[0]);
 
 		const std::array<num_t, 3> query_point{{x0, y0, z0}};
-		m_kdtree3d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
 
 		for (size_t i = 0; i < knn; i++)
 		{
@@ -606,7 +606,8 @@ class KDTreeCapable
 	inline size_t kdTreeRadiusSearch3D(
 		const num_t x0, const num_t y0, const num_t z0,
 		const num_t maxRadiusSqr,
-		std::vector<std::pair<size_t, num_t>>& out_indices_dist) const
+		std::vector<nanoflann::ResultItem<size_t, num_t>>& out_indices_dist)
+		const
 	{
 		MRPT_START
 		rebuild_kdTree_3D();  // First: Create the 3D KD-Tree if required
@@ -615,8 +616,7 @@ class KDTreeCapable
 		{
 			const num_t xyz[3] = {x0, y0, z0};
 			m_kdtree3d_data.index->radiusSearch(
-				&xyz[0], maxRadiusSqr, out_indices_dist,
-				nanoflann::SearchParams());
+				&xyz[0], maxRadiusSqr, out_indices_dist, {});
 		}
 		return out_indices_dist.size();
 		MRPT_END
@@ -640,7 +640,8 @@ class KDTreeCapable
 	 */
 	inline size_t kdTreeRadiusSearch2D(
 		const num_t x0, const num_t y0, const num_t maxRadiusSqr,
-		std::vector<std::pair<size_t, num_t>>& out_indices_dist) const
+		std::vector<nanoflann::ResultItem<size_t, num_t>>& out_indices_dist)
+		const
 	{
 		MRPT_START
 		rebuild_kdTree_2D();  // First: Create the 2D KD-Tree if required
@@ -649,8 +650,7 @@ class KDTreeCapable
 		{
 			const num_t xyz[2] = {x0, y0};
 			m_kdtree2d_data.index->radiusSearch(
-				&xyz[0], maxRadiusSqr, out_indices_dist,
-				nanoflann::SearchParams());
+				&xyz[0], maxRadiusSqr, out_indices_dist, {});
 		}
 		return out_indices_dist.size();
 		MRPT_END
@@ -688,8 +688,7 @@ class KDTreeCapable
 		resultSet.init(&out_idx[0], &out_dist_sqr[0]);
 
 		const std::array<num_t, 3> query_point{{x0, y0, z0}};
-		m_kdtree3d_data.index->findNeighbors(
-			resultSet, &query_point[0], nanoflann::SearchParams());
+		m_kdtree3d_data.index->findNeighbors(resultSet, &query_point[0], {});
 		MRPT_END
 	}
 

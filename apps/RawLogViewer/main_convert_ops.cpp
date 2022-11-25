@@ -964,7 +964,9 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 				_("%u changes. Do you want to re-order by timestamp?"),
 				nChanges),
 			_("Done"), wxYES_NO, this))
-	{ OnMenuResortByTimestamp(event); }
+	{
+		OnMenuResortByTimestamp(event);
+	}
 
 	WX_END_TRY
 }
@@ -1016,7 +1018,9 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 					countLoop,
 					wxString::Format(
 						wxT("Parsing rawlog... %u objects"), countLoop)))
-			{ return; }
+			{
+				return;
+			}
 			wxTheApp->Yield();	// Let the app. process messages
 		}
 

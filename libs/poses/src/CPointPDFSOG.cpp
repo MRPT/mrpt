@@ -162,7 +162,9 @@ void CPointPDFSOG::copyFrom(const CPointPDF& o)
 	if (this == &o) return;	 // It may be used sometimes
 
 	if (o.GetRuntimeClass() == CLASS_ID(CPointPDFSOG))
-	{ m_modes = dynamic_cast<const CPointPDFSOG*>(&o)->m_modes; }
+	{
+		m_modes = dynamic_cast<const CPointPDFSOG*>(&o)->m_modes;
+	}
 	else
 	{
 		// Approximate as a mono-modal gaussian pdf:

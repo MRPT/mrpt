@@ -889,7 +889,9 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
 		{
 			// Date and/or time axis representation
 			if (m_labelType == mpX_DATETIME)
-			{ fmt = (wxT("%04.0f-%02.0f-%02.0fT%02.0f:%02.0f:%02.0f")); }
+			{
+				fmt = (wxT("%04.0f-%02.0f-%02.0fT%02.0f:%02.0f:%02.0f"));
+			}
 			else if (m_labelType == mpX_DATE)
 			{
 				fmt = (wxT("%04.0f-%02.0f-%02.0f"));
@@ -953,11 +955,15 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
 #endif
 					dc.SetPen(m_pen);
 					if ((m_flags == mpALIGN_BOTTOM) && !m_drawOutsideMargins)
-					{ dc.DrawLine(p, orgy + 4, p, minYpx); }
+					{
+						dc.DrawLine(p, orgy + 4, p, minYpx);
+					}
 					else
 					{
 						if ((m_flags == mpALIGN_TOP) && !m_drawOutsideMargins)
-						{ dc.DrawLine(p, orgy - 4, p, maxYpx); }
+						{
+							dc.DrawLine(p, orgy - 4, p, maxYpx);
+						}
 						else
 						{
 							dc.DrawLine(p, 0 /*-w.GetScrY()*/, p, w.GetScrY());
@@ -1081,7 +1087,9 @@ void mpScaleX::Plot(wxDC& dc, mpWindow& w)
 				dc.GetTextExtent(s, &tx, &ty);
 				if ((m_flags == mpALIGN_BORDER_BOTTOM) ||
 					(m_flags == mpALIGN_TOP))
-				{ dc.DrawText(s, p - tx / 2, orgy - 4 - ty); }
+				{
+					dc.DrawText(s, p - tx / 2, orgy - 4 - ty);
+				}
 				else
 				{
 					dc.DrawText(s, p - tx / 2, orgy + 4);
@@ -1259,7 +1267,9 @@ void mpScaleY::Plot(wxDC& dc, mpWindow& w)
 				if (m_ticks)
 				{  // Draw axis ticks
 					if (m_flags == mpALIGN_BORDER_LEFT)
-					{ dc.DrawLine(orgx, p, orgx + 4, p); }
+					{
+						dc.DrawLine(orgx, p, orgx + 4, p);
+					}
 					else
 					{
 						dc.DrawLine(
@@ -1275,11 +1285,15 @@ void mpScaleY::Plot(wxDC& dc, mpWindow& w)
 #endif
 					dc.SetPen(m_pen);
 					if ((m_flags == mpALIGN_LEFT) && !m_drawOutsideMargins)
-					{ dc.DrawLine(orgx - 4, p, endPx, p); }
+					{
+						dc.DrawLine(orgx - 4, p, endPx, p);
+					}
 					else
 					{
 						if ((m_flags == mpALIGN_RIGHT) && !m_drawOutsideMargins)
-						{ dc.DrawLine(minYpx, p, orgx + 4, p); }
+						{
+							dc.DrawLine(minYpx, p, orgx + 4, p);
+						}
 						else
 						{
 							dc.DrawLine(0 /*-w.GetScrX()*/, p, w.GetScrX(), p);
@@ -3328,7 +3342,9 @@ void mpBitmapLayer::SetBitmap(
 	const wxImage& inBmp, double x, double y, double lx, double ly)
 {
 	if (!inBmp.Ok())
-	{ wxLogError(wxT("[mpBitmapLayer] Assigned bitmap is not Ok()!")); }
+	{
+		wxLogError(wxT("[mpBitmapLayer] Assigned bitmap is not Ok()!"));
+	}
 	else
 	{
 		if (lx < 0)

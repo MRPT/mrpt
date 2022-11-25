@@ -39,8 +39,8 @@ CPose3DPDFGaussianInf::CPose3DPDFGaussianInf() : mean(0, 0, 0), cov_inv() {}
 /*---------------------------------------------------------------
 	Constructor
   ---------------------------------------------------------------*/
-CPose3DPDFGaussianInf::CPose3DPDFGaussianInf([
-	[maybe_unused]] TConstructorFlags_Poses constructor_dummy_param)
+CPose3DPDFGaussianInf::CPose3DPDFGaussianInf(
+	[[maybe_unused]] TConstructorFlags_Poses constructor_dummy_param)
 	: mean(UNINITIALIZED_POSE), cov_inv(UNINITIALIZED_MATRIX)
 {
 }
@@ -189,8 +189,8 @@ void CPose3DPDFGaussianInf::changeCoordinatesReference(
 /*---------------------------------------------------------------
 					drawSingleSample
  ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::drawSingleSample([
-	[maybe_unused]] CPose3D& outPart) const
+void CPose3DPDFGaussianInf::drawSingleSample(
+	[[maybe_unused]] CPose3D& outPart) const
 {
 	MRPT_START
 
@@ -314,8 +314,8 @@ void CPose3DPDFGaussianInf::operator-=(const CPose3DPDFGaussianInf& Ap)
 /*---------------------------------------------------------------
 						evaluatePDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussianInf::evaluatePDF([
-	[maybe_unused]] const CPose3D& x) const
+double CPose3DPDFGaussianInf::evaluatePDF(
+	[[maybe_unused]] const CPose3D& x) const
 {
 	THROW_EXCEPTION("TO DO!!!");
 }
@@ -323,8 +323,8 @@ double CPose3DPDFGaussianInf::evaluatePDF([
 /*---------------------------------------------------------------
 						evaluateNormalizedPDF
  ---------------------------------------------------------------*/
-double CPose3DPDFGaussianInf::evaluateNormalizedPDF([
-	[maybe_unused]] const CPose3D& x) const
+double CPose3DPDFGaussianInf::evaluateNormalizedPDF(
+	[[maybe_unused]] const CPose3D& x) const
 {
 	THROW_EXCEPTION("TO DO!!!");
 }

@@ -349,7 +349,9 @@ void CGraphSlamHandler<GRAPH_T>::saveResults(
 
 	// get the occupancy map that was built
 	if (m_save_map)
-	{ this->saveMap(output_dir_fname + "/" + m_save_map_fname); }
+	{
+		this->saveMap(output_dir_fname + "/" + m_save_map_fname);
+	}
 
 	m_logger->logFmt(mrpt::system::LVL_INFO, "Generated report.");
 }

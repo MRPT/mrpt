@@ -551,7 +551,9 @@ void CImageGrabber_FlyCapture2::startCapture()
 {
 #if MRPT_HAS_FLYCAPTURE2
 	if (!m_camera)
-	{ THROW_EXCEPTION("Camera is not opened. Call open() first."); }
+	{
+		THROW_EXCEPTION("Camera is not opened. Call open() first.");
+	}
 
 	FlyCapture2::Error error = FC2_CAM->StartCapture();
 	CHECK_FC2_ERROR(error)

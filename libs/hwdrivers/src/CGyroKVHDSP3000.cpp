@@ -154,7 +154,9 @@ void CGyroKVHDSP3000::changeMode(GYRO_MODE _newMode)
 	// we send the command four times to be sure that the command will be
 	// interpreted by the sensor.
 	if (m_serialPort->Write(commande, 3 * sizeof(char)) <= 0)
-	{ THROW_EXCEPTION("can't write on serial port"); }
+	{
+		THROW_EXCEPTION("can't write on serial port");
+	}
 }
 
 void CGyroKVHDSP3000::resetIncrementalAngle()
@@ -166,6 +168,8 @@ void CGyroKVHDSP3000::resetIncrementalAngle()
 		commande[1] = '\n';
 		commande[2] = 0;
 		if (m_serialPort->Write(commande, 3 * sizeof(char)) <= 0)
-		{ THROW_EXCEPTION("can't write on serial port"); }
+		{
+			THROW_EXCEPTION("can't write on serial port");
+		}
 	}
 }

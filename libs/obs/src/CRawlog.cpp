@@ -304,7 +304,9 @@ bool CRawlog::readActionObservationPair(
 			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID(CActionCollection))
-			{ action = std::dynamic_pointer_cast<CActionCollection>(obj); }
+			{
+				action = std::dynamic_pointer_cast<CActionCollection>(obj);
+			}
 			else
 			{
 				obj.reset();
@@ -319,7 +321,9 @@ bool CRawlog::readActionObservationPair(
 			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-			{ observations = std::dynamic_pointer_cast<CSensoryFrame>(obj); }
+			{
+				observations = std::dynamic_pointer_cast<CSensoryFrame>(obj);
+			}
 			else
 			{
 				obj.reset();
@@ -362,7 +366,9 @@ bool CRawlog::getActionObservationPairOrObservation(
 			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (IS_CLASS(*obj, CActionCollection))
-			{ action = std::dynamic_pointer_cast<CActionCollection>(obj); }
+			{
+				action = std::dynamic_pointer_cast<CActionCollection>(obj);
+			}
 			else if (IS_DERIVED(*obj, CObservation))
 			{
 				observation = std::dynamic_pointer_cast<CObservation>(obj);
@@ -381,7 +387,9 @@ bool CRawlog::getActionObservationPairOrObservation(
 			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-			{ observations = std::dynamic_pointer_cast<CSensoryFrame>(obj); }
+			{
+				observations = std::dynamic_pointer_cast<CSensoryFrame>(obj);
+			}
 			rawlogEntry++;
 		}
 		return true;
