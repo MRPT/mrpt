@@ -67,7 +67,9 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
 	if (initial_pose_in)
-	{ initial_pose = mrpt::poses::CPose3D(*initial_pose_in); }
+	{
+		initial_pose = mrpt::poses::CPose3D(*initial_pose_in);
+	}
 
 	mrpt::poses::CPose3DPDF::Ptr pdf =
 		params.icp.Align3D(&m1, &m2, initial_pose, info);
@@ -128,7 +130,9 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 	bool success = false;
 	// if it doesn't exist, create it
 	if (!*scan2D_out)
-	{ *scan2D_out = mrpt::obs::CObservation2DRangeScan::Create(); }
+	{
+		*scan2D_out = mrpt::obs::CObservation2DRangeScan::Create();
+	}
 
 	if (scan3D_in->hasRangeImage)
 	{

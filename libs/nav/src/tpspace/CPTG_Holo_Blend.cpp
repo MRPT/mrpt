@@ -276,7 +276,9 @@ void CPTG_Holo_Blend::serializeFrom(
 		case 3:
 		case 4:
 			if (version >= 1)
-			{ CPTG_RobotShape_Circular::internal_shape_loadFromStream(in); }
+			{
+				CPTG_RobotShape_Circular::internal_shape_loadFromStream(in);
+			}
 
 			in >> T_ramp_max >> V_MAX >> W_MAX >> turningRadiusReference;
 			if (version == 2)
@@ -439,7 +441,9 @@ size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
 	}
 	ASSERT_(step > 0);
 	if (m_pathStepCountCache.size() != m_alphaValuesCount)
-	{ m_pathStepCountCache.assign(m_alphaValuesCount, -1); }
+	{
+		m_pathStepCountCache.assign(m_alphaValuesCount, -1);
+	}
 	m_pathStepCountCache[k] = step;
 	return step;
 }
@@ -512,7 +516,9 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint32_t step) const
 	const double k4 = (vyf - vyi) * TR2_;
 
 	if (t < T_ramp)
-	{ return calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, t); }
+	{
+		return calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, t);
+	}
 	else
 	{
 		const double dist_trans = (t - T_ramp) * V_MAX +

@@ -171,7 +171,9 @@ void CObservation2DRangeScan::serializeFrom(
 				in >> hasIntensity;
 				setScanHasIntensity(hasIntensity);
 				if (hasIntensity && N)
-				{ in.ReadBufferFixEndianness(&m_intensity[0], N); }
+				{
+					in.ReadBufferFixEndianness(&m_intensity[0], N);
+				}
 			}
 		}
 		break;

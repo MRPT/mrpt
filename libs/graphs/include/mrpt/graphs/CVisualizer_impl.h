@@ -61,7 +61,9 @@ void CVisualizer<
 	if (nodes_point_size > 0) { this->drawNodePoints(object, &viz_params); }
 
 	if (show_node_corners || show_ID_labels)
-	{ this->drawNodeCorners(object, &viz_params); }
+	{
+		this->drawNodeCorners(object, &viz_params);
+	}
 
 	if (show_edge_rel_poses) { this->drawEdgeRelPoses(object, &viz_params); }
 

@@ -206,7 +206,9 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 					countLoop,
 					wxString::Format(
 						wxT("Parsing rawlog... %u objects"), countLoop)))
-			{ return; }
+			{
+				return;
+			}
 			wxTheApp->Yield();	// Let the app. process messages
 		}
 

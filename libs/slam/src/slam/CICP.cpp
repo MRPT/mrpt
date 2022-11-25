@@ -308,7 +308,9 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 			if (outInfo.nIterations >= options.maxIterations &&
 				matchParams.maxDistForCorrespondence >
 					options.smallestThresholdDist)
-			{ matchParams.maxDistForCorrespondence *= options.ALFA; }
+			{
+				matchParams.maxDistForCorrespondence *= options.ALFA;
+			}
 
 		} while (
 			(keepApproaching && outInfo.nIterations < options.maxIterations) ||
@@ -450,7 +452,9 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 		outInfo.goodness = matchExtraResults.correspondencesRatio;
 
 		if (!nCorrespondences || options.skip_quality_calculation)
-		{ outInfo.quality = matchExtraResults.correspondencesRatio; }
+		{
+			outInfo.quality = matchExtraResults.correspondencesRatio;
+		}
 		else
 		{
 			// Compute a crude estimate of the quality of scan matching at this
@@ -878,7 +882,9 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 			if (outInfo.nIterations >= options.maxIterations &&
 				matchParams.maxDistForCorrespondence >
 					options.smallestThresholdDist)
-			{ matchParams.maxDistForCorrespondence *= options.ALFA; }
+			{
+				matchParams.maxDistForCorrespondence *= options.ALFA;
+			}
 
 		} while (
 			(keepIteratingICP && outInfo.nIterations < options.maxIterations) ||
@@ -1069,7 +1075,9 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 			if (outInfo.nIterations >= options.maxIterations &&
 				matchParams.maxDistForCorrespondence >
 					options.smallestThresholdDist)
-			{ matchParams.maxDistForCorrespondence *= options.ALFA; }
+			{
+				matchParams.maxDistForCorrespondence *= options.ALFA;
+			}
 
 		} while (
 			(keepApproaching && outInfo.nIterations < options.maxIterations) ||

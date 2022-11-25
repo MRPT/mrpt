@@ -875,7 +875,9 @@ float CPointsMap::squareDistanceToClosestCorrespondence(
 	// If the two points are too far, do not interpolate:
 	float d12 = square(x1 - x2) + square(y1 - y2);
 	if (d12 > 0.20f * 0.20f || d12 < 0.03f * 0.03f)
-	{ return square(x1 - x0) + square(y1 - y0); }
+	{
+		return square(x1 - x0) + square(y1 - y0);
+	}
 	else
 	{  // Interpolate
 		double interp_x, interp_y;

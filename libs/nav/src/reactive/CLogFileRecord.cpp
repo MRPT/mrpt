@@ -12,6 +12,7 @@
 #include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 #include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/stl_serialization.h>
@@ -20,26 +21,7 @@ using namespace mrpt::nav;
 
 IMPLEMENTS_SERIALIZABLE(CLogFileRecord, CSerializable, mrpt::nav)
 
-/*---------------------------------------------------------------
-					Constructor
-  ---------------------------------------------------------------*/
-CLogFileRecord::CLogFileRecord()
-	: robotPoseLocalization(0, 0, 0),
-	  robotPoseOdometry(0, 0, 0),
-	  relPoseSense(0, 0, 0),
-	  relPoseVelCmd(0, 0, 0),
-	  WS_targets_relative(),
-	  cur_vel(0, 0, 0),
-	  cur_vel_local(0, 0, 0),
-
-	  rel_cur_pose_wrt_last_vel_cmd_NOP(0, 0, 0),
-	  rel_pose_PTG_origin_wrt_sense_NOP(0, 0, 0)
-{
-	infoPerPTG.clear();
-	WS_Obstacles.clear();
-}
-
-uint8_t CLogFileRecord::serializeGetVersion() const { return 26; }
+uint8_t CLogFileRecord::serializeGetVersion() const { return 27; }
 void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	uint32_t i, n;
@@ -131,6 +113,8 @@ void CLogFileRecord::serializeTo(mrpt::serialization::CArchive& out) const
 	out << additional_debug_msgs;  // v18
 
 	navDynState.writeToStream(out);	 // v24
+
+	out << visuals;	 // v27
 }
 
 void CLogFileRecord::serializeFrom(
@@ -165,6 +149,7 @@ void CLogFileRecord::serializeFrom(
 		case 24:
 		case 25:
 		case 26:
+		case 27:
 		{
 			// Version 0 --------------
 			uint32_t i, n;
@@ -330,7 +315,9 @@ void CLogFileRecord::serializeFrom(
 				ptg_index_NOP = -1;
 			}
 			if (version >= 17 && version < 24)
-			{ in >> ptg_last_navDynState.curVelLocal; }
+			{
+				in >> ptg_last_navDynState.curVelLocal;
+			}
 			if (version >= 24) { ptg_last_navDynState.readFromStream(in); }
 
 			if (version >= 10)
@@ -537,6 +524,13 @@ void CLogFileRecord::serializeFrom(
 				if (!WS_targets_relative.empty())
 					navDynState.relTarget = WS_targets_relative[0];
 			}
+
+			if (version >= 27)
+			{  // read:
+				in >> visuals;
+			}
+			else
+				visuals.clear();
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

@@ -705,8 +705,8 @@ void CKinect::getNextObservation(
 /* -----------------------------------------------------
 				setPathForExternalImages
 ----------------------------------------------------- */
-void CKinect::setPathForExternalImages([
-	[maybe_unused]] const std::string& directory)
+void CKinect::setPathForExternalImages(
+	[[maybe_unused]] const std::string& directory)
 {
 	// Ignore for now. It seems performance is better grabbing everything
 	// to a single big file than creating hundreds of smaller files per

@@ -199,18 +199,42 @@ class COutputLogger
 	 * going to be taken into account.
 	 *
 	 * String messages with specified VerbosityLevel smaller than the min, will
-	 * not be outputted to the screen and neither will a record of them be
-	 * stored in by the COutputLogger instance
+	 * not be:
+	 *  - printed out to the terminal,
+	 *  - stored in the internal record,
+	 *  - sent out to user-provided callbacks.
+	 *
+	 * Since MRPT 2.5.7, the minimum verbosity level for user callbacks can be
+	 * independently changed afterwards via setVerbosityLevelForCallbacks()
+	 * \sa setVerbosityLevelForCallbacks(), setVerbosityLevel()
 	 */
+	void setVerbosityLevel(const VerbosityLevel level)
+	{
+		setMinLoggingLevel(level);
+	}
+
+	/** Overrides the minimum verbosity level for user callbacks.
+	 * \sa logRegisterCallback()
+	 * \note (New in MRPT 2.5.7)
+	 */
+	void setVerbosityLevelForCallbacks(const VerbosityLevel level);
+
+	/** alias of setVerbosityLevel() */
 	void setMinLoggingLevel(const VerbosityLevel level);
-	/** alias of setMinLoggingLevel() */
-	void setVerbosityLevel(const VerbosityLevel level);
 
 	/** \sa setMinLoggingLevel */
 	VerbosityLevel getMinLoggingLevel() const { return m_min_verbosity_level; }
+
+	/** \sa setVerbosityLevelForCallbacks */
+	VerbosityLevel getMinLoggingLevelForCallbacks() const
+	{
+		return m_min_verbosity_level_callbacks;
+	}
+
 	bool isLoggingLevelVisible(VerbosityLevel level) const
 	{
-		return m_min_verbosity_level <= level;
+		return (m_min_verbosity_level <= level) ||
+			(m_min_verbosity_level_callbacks <= level);
 	}
 
 	/** Fill the provided string with the contents of the logger's history in
@@ -260,7 +284,10 @@ class COutputLogger
    protected:
 	/** \brief Provided messages with VerbosityLevel smaller than this value
 	 * shall be ignored */
-	VerbosityLevel m_min_verbosity_level{LVL_INFO};
+	VerbosityLevel m_min_verbosity_level = LVL_INFO;
+
+	/** The verbosity level that applies to callback calls */
+	VerbosityLevel m_min_verbosity_level_callbacks = LVL_INFO;
 
    private:
 	/**
@@ -375,7 +402,9 @@ struct COutputLoggerStreamWrapper
 	do                                                                         \
 	{                                                                          \
 		if (this->isLoggingLevelVisible(_LVL))                                 \
-		{ this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__); }                      \
+		{                                                                      \
+			this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__);                      \
+		}                                                                      \
 	} while (0)
 
 #define INTERNAL_MRPT_LOG_STREAM(_LVL, __CONTENTS)                             \

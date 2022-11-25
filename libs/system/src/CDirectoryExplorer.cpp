@@ -184,7 +184,9 @@ CDirectoryExplorer::TFileInfoList CDirectoryExplorer::explore(
 
 				// Is it a symbolic link?? Need to call "lstat":
 				if (!lstat(newEntry.wholePath.c_str(), &lstatDat))
-				{ newEntry.isSymLink = S_ISLNK(lstatDat.st_mode); }
+				{
+					newEntry.isSymLink = S_ISLNK(lstatDat.st_mode);
+				}
 				else
 					newEntry.isSymLink = false;
 

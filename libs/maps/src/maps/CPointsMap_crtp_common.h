@@ -51,7 +51,9 @@ struct loadFromRangeImpl
 
 		// For a great gain in efficiency:
 		if (obj.m_x.size() + sizeRangeScan > obj.m_x.capacity())
-		{ obj.reserve((size_t)(obj.m_x.size() * 1.2f) + 3 * sizeRangeScan); }
+		{
+			obj.reserve((size_t)(obj.m_x.size() * 1.2f) + 3 * sizeRangeScan);
+		}
 
 		// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
 		//  Specialize a bit the equations since we know that z=0 always for the

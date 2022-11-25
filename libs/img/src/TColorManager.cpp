@@ -34,7 +34,9 @@ TColor TColorManager::getNextTColor()
 	// start updating by the step if we don't use (or have already used) the
 	// standard colors
 	if (!use_standard_colors_first || have_used_standard_colors)
-	{ this->advanceRGBCounters(); }
+	{
+		this->advanceRGBCounters();
+	}
 	else
 	{
 		bool used_red = used_colors.find(TColor::red()) != used_colors.end();
@@ -93,7 +95,9 @@ void TColorManager::advanceRGBCounters()
 	if (use_standard_colors_first &&
 		(curr_color == TColor::red() || curr_color == TColor::green() ||
 		 curr_color == TColor::blue()))
-	{ this->advanceRGBCounters(); }
+	{
+		this->advanceRGBCounters();
+	}
 
 }  // end of advanceRGBCounters
 

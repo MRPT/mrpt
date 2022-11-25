@@ -150,7 +150,9 @@ class RosSynchronizer
 	Obs checkAndSignal()
 	{
 		if (check(std::make_index_sequence<sizeof...(Args)>{}))
-		{ return signal(); }
+		{
+			return signal();
+		}
 		return {};
 	}
 

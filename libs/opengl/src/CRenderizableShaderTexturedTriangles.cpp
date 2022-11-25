@@ -592,11 +592,11 @@ CRenderizableShaderTexturedTriangles::~CRenderizableShaderTexturedTriangles()
 }
 void CRenderizableShaderTexturedTriangles::unloadTexture()
 {
-	if (!m_glTexture.get().has_value()) return;
-
-	releaseTextureName(*m_glTexture.get());
-
-	m_glTexture.get().reset();
+	m_glTexture.run_on_all([](std::optional<texture_name_unit_t>& tnu) {
+		if (!tnu) return;
+		releaseTextureName(tnu.value());
+		tnu.reset();
+	});
 }
 
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
@@ -746,6 +746,16 @@ class TextureResourceHandler
 			glDeleteTextures(lst.size(), lst.data());
 			CHECK_OPENGL_ERROR_IN_DEBUG();
 			lst.clear();
+		}
+		if (MRPT_OPENGL_VERBOSE)
+		{
+			std::cout << "[mrpt processDestroyQueue] threadId="
+					  << std::this_thread::get_id() << ". At output: ";
+			for (const auto& lst : m_destroyQueue)
+				std::cout << "[" << lst.first << "]=" << lst.second.size()
+						  << " ";
+			std::cout << "\n Texture units: " << m_occupiedTextureUnits.size()
+					  << "\n";
 		}
 #endif
 	}

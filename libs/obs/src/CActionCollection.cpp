@@ -107,7 +107,9 @@ CActionRobotMovement2D::Ptr CActionCollection::getBestMovementEstimation() const
 
 			if (temp->estimationMethod ==
 				CActionRobotMovement2D::emScan2DMatching)
-			{ return temp; }
+			{
+				return temp;
+			}
 
 			double det = temp->poseChange->getCovariance().det();
 

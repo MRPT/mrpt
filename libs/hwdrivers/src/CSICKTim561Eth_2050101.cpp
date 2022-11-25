@@ -395,7 +395,9 @@ bool CSICKTim561Eth::decodeScan(
 			case 1:
 				// If no "sRA" and also no "sSN", return false reading
 				if (strncmp(&next[1], "sRA", 3) && strncmp(&next[1], "sSN", 3))
-				{ return false; }
+				{
+					return false;
+				}
 				break;
 			case 2:
 				if (strcmp(next, "LMDscandata")) { return false; }

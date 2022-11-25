@@ -148,7 +148,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 			robot_move_seg.point1.x = m_curPoseVel.pose.x;
 			robot_move_seg.point1.y = m_curPoseVel.pose.y;
 			if (wps.last_robot_pose.x == TWaypoint::INVALID_NUM)
-			{ robot_move_seg.point2 = robot_move_seg.point1; }
+			{
+				robot_move_seg.point2 = robot_move_seg.point1;
+			}
 			else
 			{
 				robot_move_seg.point2.x = wps.last_robot_pose.x;
@@ -188,7 +190,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 							/* give some time for the alignment (if supported in
 							   this robot) to finish)*/
 							tim_since_last_align > ALIGN_WAIT_TIME)
-						{ consider_wp_reached = true; }
+						{
+							consider_wp_reached = true;
+						}
 						else
 						{
 							m_is_aligning = true;
@@ -216,7 +220,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 								// do a
 								// "stop"
 								if (align_cmd)
-								{ this->changeSpeeds(*align_cmd); }
+								{
+									this->changeSpeeds(*align_cmd);
+								}
 								else
 								{
 									consider_wp_reached =
@@ -261,7 +267,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						// Was this the final goal??
 						if (wps.waypoint_index_current_goal <
 							int(wps.waypoints.size() - 1))
-						{ wps.waypoint_index_current_goal++; }
+						{
+							wps.waypoint_index_current_goal++;
+						}
 						else
 						{
 							wps.final_goal_reached = true;
@@ -314,7 +322,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						if (++wps.waypoints[idx].counter_seen_reachable >
 							params_waypoints_navigator
 								.min_timesteps_confirm_skip_waypoints)
-						{ most_advanced_wp = idx; }
+						{
+							most_advanced_wp = idx;
+						}
 					}
 
 					// Is allowed to skip it?
@@ -408,7 +418,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					// For backwards compat. with single-target code, write
 					// single target info too for the first, next, waypoint:
 					if (wp_idx == wps.waypoint_index_current_goal)
-					{ nav_cmd.target = ti; }
+					{
+						nav_cmd.target = ti;
+					}
 					// Append to list of targets:
 					nav_cmd.multiple_targets.emplace_back(ti);
 				}
@@ -528,7 +540,9 @@ bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 	const TWaypointStatus* wp = nullptr;
 	const auto& wps = m_waypoint_nav_status;
 	if (m_navigationParams->target.targetIsIntermediaryWaypoint)
-	{ ret = false; }
+	{
+		ret = false;
+	}
 	else if (wps.timestamp_nav_started != INVALID_TIMESTAMP)
 	{
 		wp = (!wps.waypoints.empty() && wps.waypoint_index_current_goal >= 0 &&

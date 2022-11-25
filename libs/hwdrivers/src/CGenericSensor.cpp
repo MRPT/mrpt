@@ -57,7 +57,9 @@ void CGenericSensor::appendObservations(
 			TTimeStamp timestamp;
 
 			if (obj->GetRuntimeClass()->derivedFrom(CLASS_ID(CAction)))
-			{ timestamp = dynamic_cast<CAction*>(obj.get())->timestamp; }
+			{
+				timestamp = dynamic_cast<CAction*>(obj.get())->timestamp;
+			}
 			else if (obj->GetRuntimeClass()->derivedFrom(
 						 CLASS_ID(CObservation)))
 			{

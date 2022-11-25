@@ -1693,7 +1693,9 @@ void CFaceDetection::experimental_segmentFace(
 		{
 			if (face.confidenceImage.at<uint8_t>(j, i) >
 				m_options.confidenceThreshold)
-			{ toExpand(i, j) = 1; }
+			{
+				toExpand(i, j) = 1;
+			}
 		}
 		cont += faceWidth - x2;
 	}

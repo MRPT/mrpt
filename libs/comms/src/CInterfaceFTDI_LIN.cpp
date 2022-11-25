@@ -82,8 +82,8 @@ CInterfaceFTDI::~CInterfaceFTDI()
 #endif
 }
 
-void CInterfaceFTDI::OpenBySerialNumber([
-	[maybe_unused]] const std::string& serialNumber)
+void CInterfaceFTDI::OpenBySerialNumber(
+	[[maybe_unused]] const std::string& serialNumber)
 {
 #if MRPT_HAS_FTDI
 	MRPT_TRY_START

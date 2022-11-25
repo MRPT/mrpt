@@ -464,7 +464,9 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 					_("The desired number of frames have been "
 					  "grabbed.\nOkay to accept these frames?"),
 					_("Done"), wxCANCEL | wxOK, this))
-			{ EndModal(wxID_OK); }
+			{
+				EndModal(wxID_OK);
+			}
 			else
 			{
 				try

@@ -346,7 +346,9 @@ inline size_t trackFeatures_deleteOOB_impl_simple_feat(
 						img_width - MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
 				y > static_cast<int>(
 						img_height - MIN_DIST_MARGIN_TO_STOP_TRACKING))
-			{ eras = true; }
+			{
+				eras = true;
+			}
 		}
 		if (!eras) survival_idxs.push_back(i);
 	}
@@ -400,7 +402,9 @@ inline size_t trackFeatures_deleteOOB(
 				y < MIN_DIST_MARGIN_TO_STOP_TRACKING ||
 				x > (img_width - MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
 				y > (img_height - MIN_DIST_MARGIN_TO_STOP_TRACKING))
-			{ eras = true; }
+			{
+				eras = true;
+			}
 		}
 		if (eras)  // Erase or keep?
 		{

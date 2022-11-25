@@ -652,7 +652,9 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			{
 				// loop closure
 				if (mrpt::system::strCmpI(it->first, "lc"))
-				{ m_edge_counter.setLoopClosureEdgesManually(it->second); }
+				{
+					m_edge_counter.setLoopClosureEdgesManually(it->second);
+				}
 				else
 				{
 					m_edge_counter.setEdgesManually(it->first, it->second);
@@ -725,7 +727,9 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 
 	// Odometry visualization
 	if (m_visualize_odometry_poses && m_odometry_poses.size())
-	{ this->updateOdometryVisualization(); }
+	{
+		this->updateOdometryVisualization();
+	}
 
 	// ensure that the GT is visualized at the same rate as the SLAM procedure
 	// handle RGBD-TUM datasets manually. Advance the GT index accordingly
@@ -772,10 +776,14 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum"))
 	{
 		if (m_enable_range_viewport && m_last_laser_scan3D)
-		{ this->updateRangeImageViewport(); }
+		{
+			this->updateRangeImageViewport();
+		}
 
 		if (m_enable_intensity_viewport && m_last_laser_scan3D)
-		{ this->updateIntensityImageViewport(); }
+		{
+			this->updateIntensityImageViewport();
+		}
 	}
 
 	// Query for events and take corresponding actions
@@ -1522,14 +1530,18 @@ void CGraphSlamEngine<GRAPH_T>::queryObserverForEvents()
 
 	// odometry visualization
 	if (events_occurred[m_keystroke_odometry])
-	{ this->toggleOdometryVisualization(); }
+	{
+		this->toggleOdometryVisualization();
+	}
 	// GT visualization
 	if (events_occurred[m_keystroke_GT]) { this->toggleGTVisualization(); }
 	// Map visualization
 	if (events_occurred[m_keystroke_map]) { this->toggleMapVisualization(); }
 	// Estimated Trajectory Visualization
 	if (events_occurred[m_keystroke_estimated_trajectory])
-	{ this->toggleEstimatedTrajectoryVisualization(); }
+	{
+		this->toggleEstimatedTrajectoryVisualization();
+	}
 	// pause/resume program execution
 	if (events_occurred[m_keystroke_pause_exec]) { this->togglePause(); }
 
@@ -1831,7 +1843,9 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 					CRenderizable::Ptr prev_obj =
 						map_obj->getByName(prev_scan_name.str());
 					if (prev_obj)
-					{ scan_obj->setVisibility(prev_obj->isVisible()); }
+					{
+						scan_obj->setVisibility(prev_obj->isVisible());
+					}
 				}
 
 				map_obj->insert(scan_obj);
@@ -2081,7 +2095,9 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization()
 	// insert objects in the graph
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 	if (m_visualize_estimated_trajectory)
-	{ scene->insert(estimated_traj_setoflines); }
+	{
+		scene->insert(estimated_traj_setoflines);
+	}
 	scene->insert(robot_model);
 	m_win->unlockAccess3DScene();
 
@@ -2234,7 +2250,9 @@ void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::parseFile()
 		for (auto it = fields.begin(); it != fields.end(); ++it)
 		{
 			if (mrpt::system::strCmpI(it->first, literal_part))
-			{ it->second = value_part; }
+			{
+				it->second = value_part;
+			}
 		}
 
 		line_cnt++;

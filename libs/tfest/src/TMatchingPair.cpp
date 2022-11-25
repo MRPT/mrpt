@@ -196,7 +196,9 @@ void TMatchingPairListTempl<T>::filterUniqueRobustPairs(
 				bestMatchForThisMap[c.globalIdx]
 					->errorSquareAfterTransformation  // or better
 		)
-		{ bestMatchForThisMap[c.globalIdx] = &c; }
+		{
+			bestMatchForThisMap[c.globalIdx] = &c;
+		}
 	}
 
 	//   2) Go again through the list of correspondences and remove those

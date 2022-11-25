@@ -211,7 +211,9 @@ class COpenNI2Generic::CDevice
 	{
 		if (streamType < 0 || streamType >= STREAM_TYPE_SIZE) { return false; }
 		if (!m_streams[streamType] || m_streams[streamType]->isValid() == false)
-		{ return false; }
+		{
+			return false;
+		}
 		m_streams[streamType]->getCameraParam(param);
 		return true;
 	}

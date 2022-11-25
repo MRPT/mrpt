@@ -215,7 +215,9 @@ bool CGasConcentrationGridMap2D::internal_insertObservation(
 					}
 
 					if (i < it->sensorTypes.size())
-					{ sensorReading = it->readingsVoltage[i]; }
+					{
+						sensorReading = it->readingsVoltage[i];
+					}
 					else
 					{
 						cout << "Sensor especified not found, compute default "
@@ -941,7 +943,9 @@ that models the propagation of the gas comming from cell_i.
 				float r = r_indx * LUT.r_inc;
 
 				if (debug)
-				{ fprintf(debug_file, "\n[%.2f] [%.2f] ---> ", phi, r); }
+				{
+					fprintf(debug_file, "\n[%.2f] [%.2f] ---> ", phi, r);
+				}
 
 				// Estimates Cell_i_position
 				// unsigned int cell_i_cx = 0;

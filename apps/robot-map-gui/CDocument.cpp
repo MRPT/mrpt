@@ -278,7 +278,9 @@ void CDocument::updateMetricMap()
 			if (ptr.get()) type = TypeOfConfig::Landmarks;
 		}
 		if (type != TypeOfConfig::None)
-		{ m_typeConfigs.find(type)->second.push_back(m); }
+		{
+			m_typeConfigs.find(type)->second.push_back(m);
+		}
 	}
 
 	m_hasPointsMap = addedPointsMap;
