@@ -43,9 +43,11 @@ and [much more](https://docs.mrpt.org/reference/latest/applications.html).
 
 ## 3. Install
 
-### 3.1. Ubuntu
+### 3.1. Ubuntu/Debian
 
-See [this PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for nightly builds from the `develop` branch, or [this one](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable) for stable releases.
+Install simply with `sudo apt install libmrpt-dev mrpt-apps`, but check first what MRPT version exists in your [Ubuntu](https://packages.ubuntu.com/search?keywords=mrpt&searchon=sourcenames) or [Debian](https://qa.debian.org/madison.php?package=mrpt) ([tracker](https://tracker.debian.org/pkg/mrpt)) distribution.
+
+If you want a more recent version, check out [this PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for nightly builds from the `develop` branch, or [this one](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt-stable) for stable releases.
 
         sudo add-apt-repository ppa:joseluisblancoc/mrpt   # develop branch
         #sudo add-apt-repository ppa:joseluisblancoc/mrpt-stable   # master (stable releases) branch
