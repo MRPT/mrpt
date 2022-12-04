@@ -413,6 +413,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	gl_scan3D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan3D->enableLine(false);
 	gl_scan3D->setPointSize(2.0);
+	gl_scan3D->setLocation(0, 0, 0.01);	 // to avoid z-fighting in rendering
 	gl_robot->insert(gl_scan3D);
 
 	gl_robot_sensor_range = mrpt::opengl::CDisk::Create(0, 0);
@@ -633,9 +634,7 @@ void holonomic_navigator_demoFrame::OntimRunSimulTrigger(wxTimerEvent& event)
 	try
 	{
 		if (btnStop->IsEnabled())
-		{
-			simulateOneStep(event.GetInterval() * 1e-3);
-		}
+		{ simulateOneStep(event.GetInterval() * 1e-3); }
 		updateViewsDynamicObjects();
 	}
 	catch (const std::exception& e)
