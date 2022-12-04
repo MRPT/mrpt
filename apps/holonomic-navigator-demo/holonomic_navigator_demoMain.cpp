@@ -634,7 +634,9 @@ void holonomic_navigator_demoFrame::OntimRunSimulTrigger(wxTimerEvent& event)
 	try
 	{
 		if (btnStop->IsEnabled())
-		{ simulateOneStep(event.GetInterval() * 1e-3); }
+		{
+			simulateOneStep(event.GetInterval() * 1e-3);
+		}
 		updateViewsDynamicObjects();
 	}
 	catch (const std::exception& e)
