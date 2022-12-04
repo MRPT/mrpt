@@ -21,7 +21,8 @@
 #include <thread>
 
 using namespace std;
-using namespace mrpt;
+using namespace mrpt::literals;	 // _deg
+using namespace mrpt;  // opengl::
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::math;

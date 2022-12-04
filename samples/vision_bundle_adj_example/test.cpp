@@ -39,6 +39,7 @@
 
 #include <iostream>
 
+using namespace mrpt::literals;	 // _deg
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
