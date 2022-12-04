@@ -81,11 +81,15 @@ constexpr inline long double RAD2DEG(const long double x)
 #define DEG2RAD DEG2RAD
 #define RAD2DEG RAD2DEG
 
+namespace literals
+{
 /** degrees to radian literal operator (e.g. `x=90.0_deg;`) */
 constexpr inline double operator"" _deg(long double v)
 {
 	return static_cast<double>(mrpt::DEG2RAD(v));
 }
+}  // namespace literals
+using namespace mrpt::literals;	 // for backwards compatib.
 
 /** Returns the sign of X as "1" or "-1" */
 template <typename T>

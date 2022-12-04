@@ -21,6 +21,7 @@
 #include <iostream>
 #include <thread>
 
+using namespace mrpt::literals;	 // _deg
 using namespace mrpt;
 using namespace mrpt::graphs;
 using namespace mrpt::graphslam;
