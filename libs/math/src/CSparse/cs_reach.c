@@ -1,5 +1,5 @@
 // CSparse/Source/cs_reach: find the reach of a set in an arbitrary graph
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* xi [top...n-1] = nodes reachable from graph of G*P' via nodes in B(:,k).

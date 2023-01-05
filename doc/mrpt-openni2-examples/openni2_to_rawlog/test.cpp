@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -14,15 +14,15 @@
 #endif
 #include <OpenNI.h>
 #include <PS1080.h>
-
-#include <mrpt/system/filesystem.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/system/CTicTac.h>
-#include <mrpt/system/os.h>
-#include <mrpt/opengl.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/opengl.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/system/CTicTac.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -108,24 +108,14 @@ int main(int argc, char** argv)
 		if (initONI2Stream(
 				device, openni::SENSOR_COLOR, rgb, width, height, fps,
 				openni::PIXEL_FORMAT_RGB888) == false)
-		{
-			return 1;
-		}
+		{ return 1; }
 		if (initONI2Stream(
 				device, openni::SENSOR_DEPTH, depth, width, height, fps,
 				openni::PIXEL_FORMAT_DEPTH_1_MM) == false)
-		{
-			return 1;
-		}
+		{ return 1; }
 		bool isMirror;
-		if (synchONI2MirrorMode(rgb, depth, isMirror) == false)
-		{
-			return 1;
-		}
-		if (startONI2Streams(rgb, depth) == false)
-		{
-			return 1;
-		}
+		if (synchONI2MirrorMode(rgb, depth, isMirror) == false) { return 1; }
+		if (startONI2Streams(rgb, depth) == false) { return 1; }
 		if (device.isImageRegistrationModeSupported(
 				openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR))
 		{
@@ -247,15 +237,13 @@ int main(int argc, char** argv)
 			while (!sampleinsync)
 			{
 				tictac.Tic();
-				if (depthfirst)
-					depth.readFrame(&framed);
+				if (depthfirst) depth.readFrame(&framed);
 				else
 					rgb.readFrame(&framergb);
 				double t1 = tictac.Tac() * 1000;
 
 				tictac.Tic();
-				if (depthfirst)
-					rgb.readFrame(&framergb);
+				if (depthfirst) rgb.readFrame(&framergb);
 				else
 					depth.readFrame(&framed);
 
@@ -278,9 +266,7 @@ int main(int argc, char** argv)
 
 			if ((framed.getWidth() != framergb.getWidth()) ||
 				(framed.getHeight() != framergb.getHeight()))
-			{
-				cout << "\nBoth frames don't have the same size.";
-			}
+			{ cout << "\nBoth frames don't have the same size."; }
 			else
 			{
 				// Read one frame
@@ -313,10 +299,7 @@ int main(int argc, char** argv)
 						 ++xc, ++pDepth, ++pRgb)
 					{
 						int _x = xc;
-						if (isMirror)
-						{
-							_x = width - _x - 1;
-						}
+						if (isMirror) { _x = width - _x - 1; }
 						obs.rangeImage(yc, _x) = (*pDepth) * 1.0 / 1000;
 						iimage.setPixel(
 							_x, yc, (pRgb->r << 16) + (pRgb->g << 8) + pRgb->b);
@@ -351,7 +334,6 @@ int main(int argc, char** argv)
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
 	}
-	
 }
 
 bool setONI2StreamMode(
@@ -372,18 +354,9 @@ bool setONI2StreamMode(
 		stream.getSensorInfo().getSupportedVideoModes();
 	for (int i = 0, i_end = modes.getSize(); i < i_end; ++i)
 	{
-		if (modes[i].getResolutionX() != w)
-		{
-			continue;
-		}
-		if (modes[i].getResolutionY() != h)
-		{
-			continue;
-		}
-		if (modes[i].getPixelFormat() != format)
-		{
-			continue;
-		}
+		if (modes[i].getResolutionX() != w) { continue; }
+		if (modes[i].getResolutionY() != h) { continue; }
+		if (modes[i].getPixelFormat() != format) { continue; }
 		openni::Status rc = stream.setVideoMode(modes[i]);
 		if (rc != openni::STATUS_OK)
 		{
@@ -460,9 +433,7 @@ bool initONI2Stream(
 	openni::Status rc = openni::STATUS_OK;
 	const char* strSensor;
 	if (sensorType == openni::SENSOR_COLOR)
-	{
-		strSensor = "openni::SENSOR_COLOR";
-	}
+	{ strSensor = "openni::SENSOR_COLOR"; }
 	else if (sensorType == openni::SENSOR_DEPTH)
 	{
 		strSensor = "openni::SENSOR_DEPTH";
@@ -503,8 +474,8 @@ bool synchONI2MirrorMode(
 {
 	static const int SIZE = 2;
 	openni::VideoStream* streams[SIZE] = {&rgb, &depth};
-	static const char* strNames[SIZE] = {"openni::SENSOR_COLOR",
-										 "openni::SENSOR_DEPTH"};
+	static const char* strNames[SIZE] = {
+		"openni::SENSOR_COLOR", "openni::SENSOR_DEPTH"};
 	isMirrorMode = false;
 	// Check whether both stream support mirroring.
 	for (int i = 0; i < SIZE; ++i)
@@ -528,9 +499,7 @@ bool synchONI2MirrorMode(
 	{
 		if (streams[i]->isPropertySupported(
 				openni::STREAM_PROPERTY_MIRRORING) == false)
-		{
-			break;
-		}
+		{ break; }
 		if (streams[i]->setMirroringEnabled(isMirrorMode) != openni::STATUS_OK)
 		{
 			printf(
@@ -546,8 +515,8 @@ bool startONI2Streams(openni::VideoStream& rgb, openni::VideoStream& depth)
 {
 	static const int SIZE = 2;
 	openni::VideoStream* streams[SIZE] = {&rgb, &depth};
-	static const char* strNames[SIZE] = {"openni::SENSOR_COLOR",
-										 "openni::SENSOR_DEPTH"};
+	static const char* strNames[SIZE] = {
+		"openni::SENSOR_COLOR", "openni::SENSOR_DEPTH"};
 	for (int i = 0; i < SIZE; ++i)
 	{
 		openni::Status rc = streams[i]->start();
