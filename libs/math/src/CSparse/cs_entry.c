@@ -1,5 +1,5 @@
 // CSparse/Source/cs_entry: add an entry to a sparse matrix in triplet-form
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* add an entry to a triplet matrix; return 1 if ok, 0 otherwise */

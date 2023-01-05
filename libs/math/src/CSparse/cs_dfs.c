@@ -1,5 +1,5 @@
 // CSparse/Source/cs_dfs: depth-first search
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* depth-first-search of the graph of a matrix, starting at node j */

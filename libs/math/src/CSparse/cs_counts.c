@@ -1,5 +1,5 @@
 // CSparse/Source/cs_counts: column counts for sparse Cholesky
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* column counts of LL'=A or LL'=A'A, given parent & post ordering */
