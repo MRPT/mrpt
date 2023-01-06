@@ -10,40 +10,35 @@
 
 #pragma once
 
+// clang-format off
+
 /** If defined, security checks (ASSERT_'s) will be performed in many MRPT
  * classes even
- *  if "_DEBUG" is not declared, which is then the default behavior.
- */
-#define MRPT_ALWAYS_CHECKS_DEBUG                                               \
-	$ { CMAKE_MRPT_ALWAYS_CHECKS_DEBUG }
-#define MRPT_ALWAYS_CHECKS_DEBUG_MATRICES                                      \
-	$ { CMAKE_MRPT_ALWAYS_CHECKS_DEBUG_MATRICES }
+  *  if "_DEBUG" is not declared, which is then the default behavior.
+  */
+#define MRPT_ALWAYS_CHECKS_DEBUG  ${CMAKE_MRPT_ALWAYS_CHECKS_DEBUG}
+#define MRPT_ALWAYS_CHECKS_DEBUG_MATRICES  ${CMAKE_MRPT_ALWAYS_CHECKS_DEBUG_MATRICES}
 
 /** MRPT_BUILT_AS_DLL is defined only if MRPT has been built
- *   as a shared library (.dll/.so) vs. a static library (.lib/.a).
- *  Additionally, MRPT_EXPORTS will be defined only when compiling
- *   the DLLs, not when the user imports them.
- */
-$ { CMAKE_MRPT_BUILD_SHARED_LIB }
+  *   as a shared library (.dll/.so) vs. a static library (.lib/.a).
+  *  Additionally, MRPT_EXPORTS will be defined only when compiling
+  *   the DLLs, not when the user imports them.
+  */
+${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** Includes the OpenCV library, required for image manipulation. */
-#define MRPT_HAS_OPENCV                                                        \
-	$ { CMAKE_MRPT_HAS_OPENCV }
+#define MRPT_HAS_OPENCV          ${CMAKE_MRPT_HAS_OPENCV}
 
 // Version as text:
-#define MRPT_OPENCV_VERSION "${MRPT_OPENCV_VERSION}"
+#define MRPT_OPENCV_VERSION      "${MRPT_OPENCV_VERSION}"
 
 // Version as hexadecimal number: eg. 1.0.0 -> 0x100
-#define MRPT_OPENCV_VERSION_NUM                                                \
-	$ { MRPT_OPENCV_VERSION_HEX }
+#define MRPT_OPENCV_VERSION_NUM  ${MRPT_OPENCV_VERSION_HEX}
 
 /** Includes OpenGL & GLUT libraries, required for CDisplayWindows3D to work. */
-#define MRPT_HAS_OPENGL_GLUT                                                   \
-	$ { CMAKE_MRPT_HAS_OPENGL_GLUT }
-#define MRPT_HAS_EGL                                                           \
-	$ { CMAKE_MRPT_HAS_EGL }
-#define MRPT_HAS_GLES                                                          \
-	$ { CMAKE_MRPT_HAS_GLES }
+#define MRPT_HAS_OPENGL_GLUT      ${CMAKE_MRPT_HAS_OPENGL_GLUT}
+#define MRPT_HAS_EGL ${CMAKE_MRPT_HAS_EGL}
+#define MRPT_HAS_GLES ${CMAKE_MRPT_HAS_GLES}
 
 #cmakedefine HAVE_GLES_GL_H 1
 #cmakedefine HAVE_GLES_GLEXT_H 1
@@ -55,263 +50,186 @@ $ { CMAKE_MRPT_BUILD_SHARED_LIB }
 #cmakedefine HAVE_GLES3_GL3EXT_H 1
 
 /** Has PGR Fly Capture 2? */
-#define MRPT_HAS_FLYCAPTURE2                                                   \
-	$ { CMAKE_MRPT_HAS_FLYCAPTURE2 }
+#define MRPT_HAS_FLYCAPTURE2 ${CMAKE_MRPT_HAS_FLYCAPTURE2}
 
 /** Has PGR Triclops? */
-#define MRPT_HAS_TRICLOPS                                                      \
-	$ { CMAKE_MRPT_HAS_TRICLOPS }
+#define MRPT_HAS_TRICLOPS ${CMAKE_MRPT_HAS_TRICLOPS}
 
-/** Define for including Phidget interface kit interface through the vendor's
- * proprietary API (libPhidget). \sa CStereoGrabber_SVS  */
-#define MRPT_HAS_PHIDGET                                                       \
-	$ { CMAKE_MRPT_HAS_PHIDGET }
+/** Define for including Phidget interface kit interface through the vendor's proprietary API (libPhidget). \sa CStereoGrabber_SVS  */
+#define MRPT_HAS_PHIDGET        ${CMAKE_MRPT_HAS_PHIDGET}
 
-/** Define for including SVS interface through the vendor's proprietary API. \sa
- * CStereoGrabber_SVS */
-#define MRPT_HAS_SVS                                                           \
-	$ { CMAKE_MRPT_HAS_SVS }
+/** Define for including SVS interface through the vendor's proprietary API. \sa CStereoGrabber_SVS */
+#define MRPT_HAS_SVS        ${CMAKE_MRPT_HAS_SVS}
 
 /* do we have MESA Imaging SwissRange 3D camera driver? */
-#define MRPT_HAS_SWISSRANGE                                                    \
-	$ { CMAKE_MRPT_HAS_SWISSRANGE }
+#define MRPT_HAS_SWISSRANGE       ${CMAKE_MRPT_HAS_SWISSRANGE}
 
 /* do we have support for XBox Kinect? */
-#define MRPT_HAS_KINECT                                                        \
-	$ { CMAKE_MRPT_HAS_KINECT }
+#define MRPT_HAS_KINECT       ${CMAKE_MRPT_HAS_KINECT}
 
-/** Define for including DUO3D interface through the vendor's proprietary API,
- * which enables the definition of some classes in the MRVL namespace. \sa
- * CDUO3DCamera  */
-#define MRPT_HAS_DUO3D                                                         \
-	$ { CMAKE_MRPT_HAS_DUO3D }
+/** Define for including DUO3D interface through the vendor's proprietary API, which enables the definition of some classes in the MRVL namespace. \sa CDUO3DCamera  */
+#define MRPT_HAS_DUO3D        ${CMAKE_MRPT_HAS_DUO3D}
 
 /* Kinect SDK variants: */
-#define MRPT_HAS_KINECT_FREENECT                                               \
-	$ { CMAKE_MRPT_HAS_FREENECT }
-#define MRPT_HAS_KINECT_FREENECT_SYSTEM                                        \
-	$ { CMAKE_MRPT_HAS_FREENECT_SYSTEM }
+#define MRPT_HAS_KINECT_FREENECT         ${CMAKE_MRPT_HAS_FREENECT}
+#define MRPT_HAS_KINECT_FREENECT_SYSTEM  ${CMAKE_MRPT_HAS_FREENECT_SYSTEM}
 
 /* OpenNI2 lib: */
-#define MRPT_HAS_OPENNI2                                                       \
-	$ { CMAKE_MRPT_HAS_OPENNI2 }
+#define MRPT_HAS_OPENNI2                 ${CMAKE_MRPT_HAS_OPENNI2}
 
 /* PCL (The pointclouds library): */
-#define MRPT_HAS_PCL                                                           \
-	$ { CMAKE_MRPT_HAS_PCL }
+#define MRPT_HAS_PCL           ${CMAKE_MRPT_HAS_PCL}
 
 /** The file ftdi.h exists (Linux only) */
-#define MRPT_HAS_FTDI                                                          \
-	$ { CMAKE_MRPT_HAS_FTDI }
-#define MRPT_FTDI_VERSION                                                      \
-	0x ${LIBFTDI_VERSION_MAJOR} $ { LIBFTDI_VERSION_MINOR }                    \
-	0
+#define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}
+#define MRPT_FTDI_VERSION         0x${LIBFTDI_VERSION_MAJOR}${LIBFTDI_VERSION_MINOR}0
+
 
 /** Support for the liblas library (A standard for LiDAR data format)  */
-#define MRPT_HAS_LIBLAS                                                        \
-	$ { CMAKE_MRPT_HAS_LIBLAS }
+#define MRPT_HAS_LIBLAS           ${CMAKE_MRPT_HAS_LIBLAS}
 
-/** wxWidgets is present in the system (required for mrpt::gui::CDisplayWindow,
- * etc.) */
-#define MRPT_HAS_WXWIDGETS                                                     \
-	$ { CMAKE_MRPT_HAS_WXWIDGETS }
+/** wxWidgets is present in the system (required for mrpt::gui::CDisplayWindow, etc.) */
+#define MRPT_HAS_WXWIDGETS        ${CMAKE_MRPT_HAS_WXWIDGETS}
 
-#define MRPT_HAS_Qt5                                                           \
-	$ { CMAKE_MRPT_HAS_Qt5 }
+#define MRPT_HAS_Qt5              ${CMAKE_MRPT_HAS_Qt5}
 
-#define MRPT_HAS_NANOGUI                                                       \
-	$ { CMAKE_MRPT_HAS_NANOGUI }
-#define MRPT_HAS_NANOGUI_SYSTEM                                                \
-	$ { CMAKE_MRPT_HAS_NANOGUI_SYSTEM }
+#define MRPT_HAS_NANOGUI          ${CMAKE_MRPT_HAS_NANOGUI}
+#define MRPT_HAS_NANOGUI_SYSTEM   ${CMAKE_MRPT_HAS_NANOGUI_SYSTEM}
 
-#define MRPT_HAS_NANOFLANN                                                     \
-	$ { CMAKE_MRPT_HAS_NANOFLANN }
-#define MRPT_HAS_NANOFLANN_SYSTEM                                              \
-	$ { CMAKE_MRPT_HAS_NANOFLANN_SYSTEM }
+#define MRPT_HAS_NANOFLANN          ${CMAKE_MRPT_HAS_NANOFLANN}
+#define MRPT_HAS_NANOFLANN_SYSTEM   ${CMAKE_MRPT_HAS_NANOFLANN_SYSTEM}
 
-/** Has MRPT libjpeg? And whether it's in the system (Linux) or built-in
- * (Windows, some rare cases in Linux). */
-#define MRPT_HAS_JPEG                                                          \
-	$ { CMAKE_MRPT_HAS_JPEG }
-#define MRPT_HAS_JPEG_SYSTEM                                                   \
-	$ { CMAKE_MRPT_HAS_JPEG_SYSTEM }
+/** Has MRPT libjpeg? And whether it's in the system (Linux) or built-in (Windows, some rare cases in Linux). */
+#define MRPT_HAS_JPEG             ${CMAKE_MRPT_HAS_JPEG}
+#define MRPT_HAS_JPEG_SYSTEM      ${CMAKE_MRPT_HAS_JPEG_SYSTEM}
 
 /** Matlab wrapper is available */
-#define MRPT_HAS_MATLAB                                                        \
-	$ { CMAKE_MRPT_HAS_MATLAB }
+#define MRPT_HAS_MATLAB           ${CMAKE_MRPT_HAS_MATLAB}
 
 /** MYNTEYE-Depth SDK is available */
-#define MRPT_HAS_MYNTEYE_D                                                     \
-	$ { CMAKE_MRPT_HAS_MYNTEYE_D }
+#define MRPT_HAS_MYNTEYE_D          ${CMAKE_MRPT_HAS_MYNTEYE_D}
 
-/** jsoncpp is present */
-#define MRPT_HAS_JSONCPP                                                       \
-	$ { CMAKE_MRPT_HAS_JSONCPP }
+/** jsoncpp is present */ 
+#define MRPT_HAS_JSONCPP ${CMAKE_MRPT_HAS_JSONCPP}
 
-#define MRPT_HAS_SIMPLEINI                                                     \
-	$ { CMAKE_MRPT_HAS_SIMPLEINI }
-#define MRPT_HAS_SIMPLEINI_SYSTEM                                              \
-	$ { CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM }
+#define MRPT_HAS_SIMPLEINI ${CMAKE_MRPT_HAS_SIMPLEINI}
+#define MRPT_HAS_SIMPLEINI_SYSTEM ${CMAKE_MRPT_HAS_SIMPLEINI_SYSTEM}
 
-#cmakedefine MRPT_ROS_VERSION ${MRPT_ROS_VERSION }
+#cmakedefine MRPT_ROS_VERSION ${MRPT_ROS_VERSION}
 
 /** These two values are detected in Eigen when building MRPT, so we have
   the same settings given the user-provided flags  */
-#define MRPT_MAX_ALIGN_BYTES                                                   \
-	$ { EIGEN_MAX_ALIGN_BYTES }
-#define MRPT_MAX_STATIC_ALIGN_BYTES                                            \
-	$ { EIGEN_MAX_STATIC_ALIGN_BYTES }
+#define MRPT_MAX_ALIGN_BYTES           ${EIGEN_MAX_ALIGN_BYTES}
+#define MRPT_MAX_STATIC_ALIGN_BYTES    ${EIGEN_MAX_STATIC_ALIGN_BYTES}
 
 /* Automatic definition of OS-macros */
-#if defined(_WIN32) || defined(_WIN32_) || defined(WIN32) || defined(_WIN64)
-#define MRPT_OS_WINDOWS
+#if defined(_WIN32) || defined(_WIN32_)  || defined(WIN32) || defined(_WIN64)
+    #define MRPT_OS_WINDOWS
 #elif defined(unix) || defined(__unix__) || defined(__unix)
-#define MRPT_OS_LINUX
+    #define MRPT_OS_LINUX
 #elif defined(__APPLE__)
-#define MRPT_OS_APPLE
+    #define MRPT_OS_APPLE
 #else
-#error Unsupported platform (Found neither _WIN32_, __unix__ or __APPLE__)
+    #error Unsupported platform (Found neither _WIN32_, __unix__ or __APPLE__)
 #endif
 
+
 /** The size of cells in mrpt::maps::COccupancyGridMap2D */
-#define OCCUPANCY_GRIDMAP_CELL_SIZE_$ {MRPT_OCCUPANCY_GRID_CELLSIZE} BITS
+#define	OCCUPANCY_GRIDMAP_CELL_SIZE_${MRPT_OCCUPANCY_GRID_CELLSIZE}BITS
 
 /** Enable Katakana, Hiragana & Kanji character sets in CMRPTCanvas.
- *  Disable this to save executable sizes if these fonts will be not used. */
-#define MRPT_HAS_ASIAN_FONTS                                                   \
-	$ { CMAKE_MRPT_HAS_ASIAN_FONTS }
+  *  Disable this to save executable sizes if these fonts will be not used. */
+#define MRPT_HAS_ASIAN_FONTS ${CMAKE_MRPT_HAS_ASIAN_FONTS}
 
-/** Only for Linux: the inotify kernel module has been found. Requires
- * kernel 2.6.13.  */
-#define MRPT_HAS_INOTIFY                                                       \
-	$ { CMAKE_MRPT_HAS_INOTIFY }
+/** Only for Linux: the inotify kernel module has been found. Requires kernel 2.6.13.  */
+#define MRPT_HAS_INOTIFY ${CMAKE_MRPT_HAS_INOTIFY}
 
 /** The architecture is 32 or 64 bit wordsize:  */
-#define MRPT_WORD_SIZE                                                         \
-	$ { CMAKE_MRPT_WORD_SIZE }
+#define MRPT_WORD_SIZE	${CMAKE_MRPT_WORD_SIZE}
+
 
 /** True if we are in amd64 or i386 architectures */
-#define MRPT_ARCH_INTEL_COMPATIBLE                                             \
-	$ { MRPT_ARCH_INTEL_COMPATIBLE }
+#define MRPT_ARCH_INTEL_COMPATIBLE ${MRPT_ARCH_INTEL_COMPATIBLE}
 
 /** Use optimized functions with the SSE2 machine instructions set */
-#if defined WIN32 && (!defined WIN64 || defined EM64T) &&                      \
-		(_MSC_VER >= 1400) ||                                                  \
-	(defined __SSE2__ && defined __GNUC__ && __GNUC__ >= 4)
-#define MRPT_HAS_SSE2                                                          \
-	$                                                                          \
-	{                                                                          \
-		CMAKE_MRPT_HAS_SSE2                                                    \
-	}  // This value can be set to 0 from CMake with ENABLE_SSE2
+#if defined WIN32 && (!defined WIN64 || defined EM64T) && \
+ (_MSC_VER >= 1400) || (defined __SSE2__ && defined __GNUC__ && __GNUC__ >= 4)
+	#define MRPT_HAS_SSE2  ${CMAKE_MRPT_HAS_SSE2}   // This value can be set to 0 from CMake with ENABLE_SSE2
 #else
-#define MRPT_HAS_SSE2 0
+	#define MRPT_HAS_SSE2  0
 #endif
 
 /** Use optimized functions with the SSE3 machine instructions set */
-#if defined WIN32 && (!defined WIN64 || defined EM64T) &&                      \
-		(_MSC_VER >= 1500) ||                                                  \
-	(defined __SSE3__ && defined __GNUC__ && __GNUC__ >= 4)
-#define MRPT_HAS_SSE3                                                          \
-	$                                                                          \
-	{                                                                          \
-		CMAKE_MRPT_HAS_SSE3                                                    \
-	}  // This value can be set to 0 from CMake with ENABLE_SSE3
+#if defined WIN32 && (!defined WIN64 || defined EM64T) && \
+ (_MSC_VER >= 1500) || (defined __SSE3__ && defined __GNUC__ && __GNUC__ >= 4)
+	#define MRPT_HAS_SSE3  ${CMAKE_MRPT_HAS_SSE3}   // This value can be set to 0 from CMake with ENABLE_SSE3
 #else
-#define MRPT_HAS_SSE3 0
+	#define MRPT_HAS_SSE3  0
 #endif
 
 // This value can be set to 0 from CMake with ENABLE_XXX
-#define MRPT_HAS_SSE4_1                                                        \
-	$ { CMAKE_MRPT_HAS_SSE4_1 }
-#define MRPT_HAS_SSE4_2                                                        \
-	$ { CMAKE_MRPT_HAS_SSE4_2 }
-#define MRPT_HAS_SSE4_A                                                        \
-	$ { CMAKE_MRPT_HAS_SSE4_A }
-#define MRPT_HAS_AVX                                                           \
-	$ { CMAKE_MRPT_HAS_AVX }
-#define MRPT_HAS_AVX2                                                          \
-	$ { CMAKE_MRPT_HAS_AVX2 }
-#define MRPT_HAS_NEON                                                          \
-	$ { CMAKE_MRPT_HAS_NEON }
+#define MRPT_HAS_SSE4_1  ${CMAKE_MRPT_HAS_SSE4_1}
+#define MRPT_HAS_SSE4_2  ${CMAKE_MRPT_HAS_SSE4_2}
+#define MRPT_HAS_SSE4_A  ${CMAKE_MRPT_HAS_SSE4_A}
+#define MRPT_HAS_AVX     ${CMAKE_MRPT_HAS_AVX}
+#define MRPT_HAS_AVX2    ${CMAKE_MRPT_HAS_AVX2}
+#define MRPT_HAS_NEON    ${CMAKE_MRPT_HAS_NEON}
 
 /** Whether to include RoboPeak LIDAR: */
-#define MRPT_HAS_ROBOPEAK_LIDAR                                                \
-	$ { CMAKE_MRPT_HAS_ROBOPEAK_LIDAR }
+#define MRPT_HAS_ROBOPEAK_LIDAR ${CMAKE_MRPT_HAS_ROBOPEAK_LIDAR}
 
 /** Whether to include the xSens MTi device interface: */
-#define MRPT_HAS_xSENS                                                         \
-	$ { CMAKE_MRPT_HAS_xSENS }
+#define MRPT_HAS_xSENS ${CMAKE_MRPT_HAS_xSENS}
 
 /** Whether to include the Intersense device interface: */
-#define MRPT_HAS_INTERSENSE                                                    \
-	$ { CMAKE_MRPT_HAS_INTERSENSE }
+#define MRPT_HAS_INTERSENSE ${CMAKE_MRPT_HAS_INTERSENSE}
 
 /** Whether to include the NITE2 library: */
-#define MRPT_HAS_NITE2                                                         \
-	$ { CMAKE_MRPT_HAS_NITE2 }
+#define MRPT_HAS_NITE2 ${CMAKE_MRPT_HAS_NITE2}
 
 /** Whether to compile support for .gz compressed I/O streams: */
-#define MRPT_HAS_GZ_STREAMS                                                    \
-	$ { CMAKE_MRPT_HAS_ZLIB }
+#define MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_ZLIB}
 
 /** Whether ZLIB is present.  */
-#define MRPT_HAS_ZLIB                                                          \
-	$ { CMAKE_MRPT_HAS_ZLIB }
-#define MRPT_HAS_ZLIB_SYSTEM                                                   \
-	$ { CMAKE_MRPT_HAS_ZLIB_SYSTEM }
+#define MRPT_HAS_ZLIB ${CMAKE_MRPT_HAS_ZLIB}
+#define MRPT_HAS_ZLIB_SYSTEM ${CMAKE_MRPT_HAS_ZLIB_SYSTEM}
 
 /** Whether libassimp is present.  */
-#define MRPT_HAS_ASSIMP                                                        \
-	$ { CMAKE_MRPT_HAS_ASSIMP }
-#define MRPT_HAS_ASSIMP_SYSTEM                                                 \
-	$ { CMAKE_MRPT_HAS_ASSIMP_SYSTEM }
+#define MRPT_HAS_ASSIMP ${CMAKE_MRPT_HAS_ASSIMP}
+#define MRPT_HAS_ASSIMP_SYSTEM ${CMAKE_MRPT_HAS_ASSIMP_SYSTEM}
 
 /** Whether libdc1394-2 is installed in the system.  */
-#define MRPT_HAS_LIBDC1394_2                                                   \
-	$ { CMAKE_MRPT_HAS_LIBDC1394_2 }
+#define MRPT_HAS_LIBDC1394_2 ${CMAKE_MRPT_HAS_LIBDC1394_2}
 
 /** Whether libudev-dev is installed in the system.  */
-#define MRPT_HAS_LIBUDEV                                                       \
-	$ { CMAKE_MRPT_HAS_LIBUDEV }
+#define MRPT_HAS_LIBUDEV ${CMAKE_MRPT_HAS_LIBUDEV}
 
-/** Whether ffmpeg C libraries are installed in the system or (in win32), their
- * precompiled libraries.
- */
-#define MRPT_HAS_FFMPEG                                                        \
-	$ { CMAKE_MRPT_HAS_FFMPEG }
+/** Whether ffmpeg C libraries are installed in the system or (in win32), their precompiled libraries.
+  */
+#define MRPT_HAS_FFMPEG ${CMAKE_MRPT_HAS_FFMPEG}
 
 /** Are we in a big-endian system? (Intel, amd, etc.. are little-endian) */
-#define MRPT_IS_BIG_ENDIAN                                                     \
-	$ { CMAKE_MRPT_IS_BIG_ENDIAN }
+#define MRPT_IS_BIG_ENDIAN ${CMAKE_MRPT_IS_BIG_ENDIAN}
 
 /** Has SuiteSparse sublibs? */
-#define MRPT_HAS_SUITESPARSE                                                   \
-	$ { CMAKE_MRPT_HAS_SUITESPARSE }
+#define MRPT_HAS_SUITESPARSE ${CMAKE_MRPT_HAS_SUITESPARSE}
 
 /** Has NationalInstruments headers/libraries? */
-#define MRPT_HAS_NIDAQMXBASE                                                   \
-	$ { CMAKE_MRPT_HAS_NIDAQMXBASE }
-#define MRPT_HAS_NIDAQMX                                                       \
-	$ { CMAKE_MRPT_HAS_NIDAQMX }
+#define MRPT_HAS_NIDAQMXBASE ${CMAKE_MRPT_HAS_NIDAQMXBASE}
+#define MRPT_HAS_NIDAQMX ${CMAKE_MRPT_HAS_NIDAQMX}
 
 /** Do we have libfyaml? */
-#define MRPT_HAS_FYAML                                                         \
-	$ { CMAKE_MRPT_HAS_LIBFYAML }
-#define MRPT_HAS_FYAML_SYSTEM                                                  \
-	$ { CMAKE_MRPT_HAS_LIBFYAML_SYSTEM }
+#define MRPT_HAS_FYAML          ${CMAKE_MRPT_HAS_LIBFYAML}
+#define MRPT_HAS_FYAML_SYSTEM   ${CMAKE_MRPT_HAS_LIBFYAML_SYSTEM}
 
 /** Do we have PCAP? */
-#define MRPT_HAS_LIBPCAP                                                       \
-	$ { CMAKE_MRPT_HAS_LIBPCAP }
+#define MRPT_HAS_LIBPCAP        ${CMAKE_MRPT_HAS_LIBPCAP}
 
-#define MRPT_HAS_TINYXML2                                                      \
-	$ { CMAKE_MRPT_HAS_TINYXML2 }
-#define MRPT_HAS_TINYXML2_SYSTEM                                               \
-	$ { CMAKE_MRPT_HAS_TINYXML2_SYSTEM }
+#define MRPT_HAS_TINYXML2          ${CMAKE_MRPT_HAS_TINYXML2}
+#define MRPT_HAS_TINYXML2_SYSTEM   ${CMAKE_MRPT_HAS_TINYXML2_SYSTEM}
 
 /** Are we in an Emscripten build? */
-#define MRPT_IN_EMSCRIPTEN                                                     \
-	$ { CMAKE_MRPT_IN_EMSCRIPTEN }
+#define MRPT_IN_EMSCRIPTEN ${CMAKE_MRPT_IN_EMSCRIPTEN}
 
 /** Standard headers */
 #ifndef HAVE_INTTYPES_H
@@ -407,22 +325,23 @@ $ { CMAKE_MRPT_BUILD_SHARED_LIB }
 #endif
 
 /* BFD library for debug symbols */
-#define MRPT_HAS_BFD                                                           \
-	$ { CMAKE_MRPT_HAS_BFD }
+#define MRPT_HAS_BFD ${CMAKE_MRPT_HAS_BFD}
 #cmakedefine HAVE_DECL_BFD_SECTION_FLAGS 1
 #cmakedefine HAVE_DECL_BFD_GET_SECTION_FLAGS 1
 #cmakedefine HAVE_DECL_BFD_GET_SECTION_VMA 1
 #cmakedefine HAVE_DECL_BFD_SECTION_VMA 1
 #cmakedefine HAVE_1_ARG_BFD_SECTION_SIZE 1
 
+
 /* Defined only if MRPT is being build/was built with precompiled
-	headers enabled */
+    headers enabled */
 #cmakedefine MRPT_ENABLE_PRECOMPILED_HDRS 1
 
 // -------------------------------
 //			Some checks:
 // -------------------------------
-#if !defined(MRPT_OS_WINDOWS) && !defined(MRPT_OS_LINUX) &&                    \
-	!defined(MRPT_OS_APPLE)
+#if !defined(MRPT_OS_WINDOWS) && !defined(MRPT_OS_LINUX) && !defined(MRPT_OS_APPLE)
 #error Neither OS detected from MRPT_OS_LINUX, MRPT_OS_APPLE or MRPT_OS_WINDOWS!
 #endif
+
+// clang-format on
