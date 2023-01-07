@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.5.9: UNRELEASED
+(None yet)
+
 # Version 2.5.8: Released January 7th, 2023
 - Changes in libraries:
     - \ref mrpt_core_grp
