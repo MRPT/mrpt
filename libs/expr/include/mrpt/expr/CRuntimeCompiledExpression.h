@@ -10,6 +10,7 @@
 
 #include <mrpt/core/pimpl.h>
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -41,6 +42,7 @@ namespace expr
  *  - Only expressions returning `double` are supported.
  *  - Variables must be provided via a `std::map` container **or** pointers to
  * user-stored variables.
+ *  - Custom user-defined functions taking 0-3 arguments (New in MRPT 2.5.8).
  *
  * See examples of usage in the [unit test
  * file](https://github.com/MRPT/mrpt/blob/master/libs/base/src/math/CRuntimeCompiledExpression_unittest.cpp).
@@ -72,17 +74,16 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 	 * exactly the problem.
 	 * \sa register_symbol_table()
 	 */
-	void compile(
-		/** [in] The expression to be compiled. */
-		const std::string& expression,
-		/** [in] Map of variables/constants by `name` ->  `value`. The
-		   references to the values in this map **must** be ensured to be
-		   valid thoughout all the life of the compiled expression. */
-		const std::map<std::string, double>& variables =
-			std::map<std::string, double>(),
-		/** A descriptive name of this formula, to be used when generating
-		   error reports via an  exception, if needed */
-		const std::string& expr_name_for_error_reporting = std::string());
+	void compile(/** [in] The expression to be compiled. */
+				 const std::string& expression,
+				 /** [in] Map of variables/constants by `name` ->  `value`. The
+					references to the values in this map **must** be ensured to
+					be
+					valid thoughout all the life of the compiled expression. */
+				 const std::map<std::string, double>& variables = {},
+				 /** [in] A descriptive name of this formula, to be used when
+					generating error reports via an  exception, if needed */
+				 const std::string& expr_name_for_error_reporting = {});
 
 	/** Can be used **before** calling compile() to register additional
 	 * variables by means of **pointers** instead of a std::map  */
@@ -91,6 +92,36 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 		   references to the values in this map **must** be ensured to be
 		   valid thoughout all the life of the compiled expression. */
 		const std::map<std::string, double*>& variables);
+
+	/** Register a user-defined nullary function. (New in MRPT 2.5.8) */
+	void register_function(
+		const std::string& name, const std::function<double()>& func)
+	{
+		m_funcs_0[name] = func;
+	}
+
+	/** Register a user-defined unary function. (New in MRPT 2.5.8) */
+	void register_function(
+		const std::string& name, const std::function<double(double)>& func)
+	{
+		m_funcs_1[name] = func;
+	}
+
+	/** Register a user-defined binary function. (New in MRPT 2.5.8) */
+	void register_function(
+		const std::string& name,
+		const std::function<double(double, double)>& func)
+	{
+		m_funcs_2[name] = func;
+	}
+
+	/** Register a user-defined ternary function. (New in MRPT 2.5.8) */
+	void register_function(
+		const std::string& name,
+		const std::function<double(double, double, double)>& func)
+	{
+		m_funcs_3[name] = func;
+	}
 
 	/** Evaluates the current value of the precompiled formula.
 	 * \exception std::runtime_error If the formula has not been compiled yet.
@@ -113,6 +144,13 @@ class MRPT_EXPR_EXPORT CRuntimeCompiledExpression
 	mrpt::pimpl<Impl> m_impl;
 	struct ExprVerbose;
 	friend struct ExprVerbose;
+
+	std::map<std::string, std::function<double()>> m_funcs_0;
+	std::map<std::string, std::function<double(double)>> m_funcs_1;
+	std::map<std::string, std::function<double(double, double)>> m_funcs_2;
+	std::map<std::string, std::function<double(double, double, double)>>
+		m_funcs_3;
+
 };	// End of class def.
 
 }  // namespace expr

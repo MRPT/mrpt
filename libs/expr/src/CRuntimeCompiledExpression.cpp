@@ -73,14 +73,8 @@ CRuntimeCompiledExpression::CRuntimeCompiledExpression()
 CRuntimeCompiledExpression::~CRuntimeCompiledExpression() = default;
 
 void CRuntimeCompiledExpression::compile(
-	/** [in] The expression to be compiled. */
 	const std::string& expression,
-	/** [in] Map of variables/constants by `name` ->  `value`. The references to
-	   the values in this map **must** be ensured to be valid thoughout all the
-	   life of the compiled expression. */
 	const std::map<std::string, double>& variables,
-	/** A descriptive name of this formula, to be used when generating error
-	   reports via an  exception, if needed */
 	const std::string& expr_name_for_error_reporting)
 {
 	m_impl->m_original_expr_str = expression;
@@ -93,6 +87,24 @@ void CRuntimeCompiledExpression::compile(
 	}
 	symbol_table.add_constant("M_PI", M_PI);
 	symbol_table.add_constants();
+
+	// Convert from std::function<> to raw functors:
+	for (const auto& kv : m_funcs_0)
+		if (auto ptr = kv.second.target<double (*)()>(); ptr)
+			symbol_table.add_function(kv.first, *ptr);
+
+	for (const auto& kv : m_funcs_1)
+		if (auto ptr = kv.second.target<double (*)(double)>(); ptr)
+			symbol_table.add_function(kv.first, *ptr);
+
+	for (const auto& kv : m_funcs_2)
+		if (auto ptr = kv.second.target<double (*)(double, double)>(); ptr)
+			symbol_table.add_function(kv.first, *ptr);
+
+	for (const auto& kv : m_funcs_3)
+		if (auto ptr = kv.second.target<double (*)(double, double, double)>();
+			ptr)
+			symbol_table.add_function(kv.first, *ptr);
 
 	m_impl->m_compiled_formula.register_symbol_table(symbol_table);
 
