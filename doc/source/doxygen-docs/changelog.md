@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.5.8: UNRELEASED
+# Version 2.5.8: Released January 7th, 2023
 - Changes in libraries:
     - \ref mrpt_core_grp
       - Move the `_deg` literal to a new namespace mrpt::literals to allow finer-grained `using namespace mrpt::literals;` instead of `using namespace mrpt;`. This change is backwards compatible, no user code change required, but recommended.
