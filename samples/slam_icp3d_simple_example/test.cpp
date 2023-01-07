@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -28,7 +28,7 @@
 #include <thread>
 
 using namespace std;
-using namespace mrpt;
+using namespace mrpt::literals;	 // _deg
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
@@ -59,14 +59,14 @@ void generateObjects(CSetOfObjects::Ptr& world)
 	sph->setColor(1, 0, 0);
 	world->insert(sph);
 
-	CDisk::Ptr pln = opengl::CDisk::Create();
+	CDisk::Ptr pln = CDisk::Create();
 	pln->setDiskRadius(2);
 	pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
 	pln->setColor(0.8, 0, 0);
 	world->insert(pln);
 
 	{
-		CDisk::Ptr pln = opengl::CDisk::Create();
+		CDisk::Ptr pln = CDisk::Create();
 		pln->setDiskRadius(2);
 		pln->setPose(CPose3D(0, 0, 0, 30.0_deg, -20.0_deg, -2.0_deg));
 		pln->setColor(0.9, 0, 0);
@@ -81,8 +81,7 @@ void test_icp3D()
 	COpenGLScene::Ptr scene2 = COpenGLScene::Create();
 	COpenGLScene::Ptr scene3 = COpenGLScene::Create();
 
-	opengl::CGridPlaneXY::Ptr plane1 =
-		CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+	auto plane1 = CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
 	plane1->setColor(0.3f, 0.3f, 0.3f);
 	scene1->insert(plane1);
 	scene2->insert(plane1);
@@ -93,8 +92,8 @@ void test_icp3D()
 	scene1->insert(world);
 
 	// Perform the 3D scans:
-	CAngularObservationMesh::Ptr aom1 = CAngularObservationMesh::Create();
-	CAngularObservationMesh::Ptr aom2 = CAngularObservationMesh::Create();
+	auto aom1 = CAngularObservationMesh::Create();
+	auto aom2 = CAngularObservationMesh::Create();
 
 	cout << "Performing ray-tracing..." << endl;
 	CAngularObservationMesh::trace2DSetOfRays(
@@ -113,14 +112,14 @@ void test_icp3D()
 
 	// Put the viewpoints origins:
 	{
-		CSetOfObjects::Ptr origin1 = opengl::stock_objects::CornerXYZ();
+		CSetOfObjects::Ptr origin1 = stock_objects::CornerXYZ();
 		origin1->setPose(viewpoint1);
 		origin1->setScale(0.6);
 		scene1->insert(origin1);
 		scene2->insert(origin1);
 	}
 	{
-		CSetOfObjects::Ptr origin2 = opengl::stock_objects::CornerXYZ();
+		CSetOfObjects::Ptr origin2 = stock_objects::CornerXYZ();
 		origin2->setPose(viewpoint2);
 		origin2->setScale(0.6);
 		scene1->insert(origin2);
@@ -228,11 +227,6 @@ int main()
 	catch (exception& e)
 	{
 		cout << "Error: " << e.what() << '.' << endl;
-		return -1;
-	}
-	catch (...)
-	{
-		cout << "Unknown Error.\n";
 		return -1;
 	}
 }

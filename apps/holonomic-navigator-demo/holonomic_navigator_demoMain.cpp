@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -413,6 +413,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	gl_scan3D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan3D->enableLine(false);
 	gl_scan3D->setPointSize(2.0);
+	gl_scan3D->setLocation(0, 0, 0.01);	 // to avoid z-fighting in rendering
 	gl_robot->insert(gl_scan3D);
 
 	gl_robot_sensor_range = mrpt::opengl::CDisk::Create(0, 0);

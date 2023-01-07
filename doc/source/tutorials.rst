@@ -38,6 +38,12 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
 
 .. toctree::
   :maxdepth: 2
+  :caption: Motion planning
+
+  tutorial-motion-planning
+
+.. toctree::
+  :maxdepth: 2
   :caption: Maths, Geometry
 
   page_tutorial_math_levenberg_marquardt

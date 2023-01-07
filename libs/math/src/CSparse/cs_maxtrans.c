@@ -1,5 +1,5 @@
 // CSparse/Source/cs_maxtrans: maximum transversal of a graph
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* find an augmenting path starting at column k and extend the match if found */

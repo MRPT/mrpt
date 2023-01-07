@@ -1,5 +1,5 @@
 // CSparse/Source/cs_scatter: scatter a scaled sparse vector into a dense vector
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* x = x + beta * A(:,j), where x is a dense vector and A(:,j) is sparse */

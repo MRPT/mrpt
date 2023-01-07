@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -24,7 +24,7 @@
 #include <thread>
 
 using namespace std;
-using namespace mrpt;
+using namespace mrpt::literals;	 // _deg
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
@@ -48,7 +48,7 @@ void TestSLERP()
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		auto obj = opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
+		auto obj = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
 		obj->setColor(0.4f, 0.4f, 0.4f);
 		theScene->insert(obj);
 	}
@@ -59,22 +59,19 @@ void TestSLERP()
 
 	{
 		// XYZ corner at A:
-		opengl::CSetOfObjects::Ptr obj =
-			opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
+		auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
 		obj->setPose(pose_a);
 		theScene->insert(obj);
 	}
 	{
 		// XYZ corner at B:
-		opengl::CSetOfObjects::Ptr obj =
-			opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
+		auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
 		obj->setPose(pose_b);
 		theScene->insert(obj);
 	}
 	{
 		// SLERP animated corner:
-		opengl::CSetOfObjects::Ptr obj =
-			opengl::stock_objects::CornerXYZSimple(1.0, 4.0);
+		auto obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 4.0);
 		obj->setName("slerp_obj");
 		obj->setPose(pose_a);
 		theScene->insert(obj);
@@ -104,11 +101,11 @@ void TestSLERP()
 		// Move the scene:
 		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 
-		opengl::CRenderizable::Ptr obj1 = theScene->getByName("slerp_obj");
+		auto obj1 = theScene->getByName("slerp_obj");
 		obj1->setPose(pose_interp);
 
 		// Show text:
-		win.addTextMessage(5, 5, format("t=%.03f", t), 0 /*id*/);
+		win.addTextMessage(5, 5, mrpt::format("t=%.03f", t), 0 /*id*/);
 
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 		win.unlockAccess3DScene();

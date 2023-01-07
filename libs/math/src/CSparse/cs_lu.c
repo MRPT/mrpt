@@ -1,5 +1,5 @@
 // CSparse/Source/cs_lu: sparse left-looking LU factorization
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* [L,U,pinv]=lu(A, [q lnz unz]). lnz and unz can be guess */

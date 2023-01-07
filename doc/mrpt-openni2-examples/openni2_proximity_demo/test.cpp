@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -13,10 +13,10 @@
 #define linux 1
 #endif
 #include <OpenNI.h>
-
 #include <mrpt/gui.h>
-#include <mrpt/opengl.h>
 #include <mrpt/maps.h>
+#include <mrpt/opengl.h>
+
 #include <iostream>
 
 using namespace mrpt;
@@ -179,9 +179,7 @@ int main(int argc, char** argv)
 		// Read one frame
 		if ((framed.getWidth() != frameir.getWidth()) ||
 			(framed.getHeight() != frameir.getHeight()))
-		{
-			cout << endl << "Both frames don't have the same size.";
-		}
+		{ cout << endl << "Both frames don't have the same size."; }
 		else
 		{
 			const openni::DepthPixel* pDepthRow =

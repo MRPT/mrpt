@@ -1,5 +1,5 @@
 // CSparse/Source/cs_load: load a triplet matrix from a file
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* load a triplet matrix from a file */

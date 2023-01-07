@@ -9,7 +9,7 @@ third-party embedded sources which have their own licenses (listed below).
 
 .. code-block:: text
 
-  Copyright (c) 2005-2022, Individual contributors, see AUTHORS file
+  Copyright (c) 2005-2023, Individual contributors, see AUTHORS file
   Copyright (c) 2005-2021, MAPIR group, University of Malaga
   Copyright (c) 2012-2020, University of Almeria
   All rights reserved.

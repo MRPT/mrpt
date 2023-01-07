@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          https://www.mrpt.org/                         |
    |                                                                        |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file     |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file     |
    | See: https://www.mrpt.org/Authors - All rights reserved.               |
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-using namespace mrpt;
+using namespace mrpt::literals;	 // _deg
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;
@@ -40,10 +40,10 @@ void TestGeometry3D()
 	CPoint3D L(0, 4, 2);
 
 	// Robot pose: 2D (x,y,phi)
-	CPose2D R(2, 1, DEG2RAD(45.0f));
+	CPose2D R(2, 1, 45.0_deg);
 
 	// Camera pose relative to the robot: 6D (x,y,z,yaw,pitch,roll).
-	CPose3D C(0.5f, 0.5f, 1.5f, DEG2RAD(-90.0f), 0.0_deg, DEG2RAD(-90.0f));
+	CPose3D C(0.5f, 0.5f, 1.5f, -90.0_deg, 0.0_deg, -90.0_deg);
 
 	// TEST 1. Relative position L' of the landmark wrt the camera
 	// --------------------------------------------------------------

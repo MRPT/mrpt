@@ -2,17 +2,17 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          https://www.mrpt.org/                            |
    |                                                                           |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
-   +---------------------------------------------------------------------------+ */
+   +---------------------------------------------------------------------------+
+ */
 
 /**
   This file is used by mrpt::system::find_mrpt_shared_dir().
 */
-   
+
 #pragma once
 
 #define MRPT_SOURCE_BASE_DIRECTORY "${MRPT_SOURCE_DIR}"
 #define MRPT_INSTALL_PREFIX_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
-
