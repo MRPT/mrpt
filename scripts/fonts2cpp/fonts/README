@@ -129,7 +129,7 @@ East Asian users:
      ISO 8859-1,2,3,4,5,7,9,10,15, CP437, CP850 and CP1252 characters,
      plus a few more, where priority was given to Japanese han style
      variants. This font should have everything needed to cover the
-     full ISO-2022-JP-2 (RFC 1554) repertoire. This font is primarily
+     full ISO-2023-JP-2 (RFC 1554) repertoire. This font is primarily
      intended to provide Japanese full-width Hiragana, Katakana, and
      Kanji for applications that take the remaining ("halfwidth")
      characters from 9x18.bdf.

@@ -1,7 +1,7 @@
 R"XXX(#version 300 es
 
 // FRAGMENT SHADER: Default shader for MRPT CRenderizable objects
-// Jose Luis Blanco Claraco (C) 2019-2022
+// Jose Luis Blanco Claraco (C) 2019-2023
 // Part of the MRPT project
 
 uniform mediump vec4 light_diffuse, light_ambient;

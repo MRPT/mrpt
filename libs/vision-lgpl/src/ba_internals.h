@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2010  Hauke Strasdat
  *                     Imperial College London
- * Copyright (c) 2005-2022, Individual contributors, see AUTHORS file
+ * Copyright (c) 2005-2023, Individual contributors, see AUTHORS file
  *   See: https://www.mrpt.org/Authors - All rights reserved.
  *
  * bundle_adjuster.h is part of RobotVision.

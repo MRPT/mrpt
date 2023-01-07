@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          https://www.mrpt.org/                            |
    |                                                                           |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+
@@ -40,10 +40,11 @@ NUMTYPE spline(
 	ASSERT_(t > x[0] && t < x[3]);
 
 	NUMTYPE h[3];
-	for (unsigned int i = 0; i < 3; i++) h[i] = x[i + 1] - x[i];
+	for (unsigned int i = 0; i < 3; i++)
+		h[i] = x[i + 1] - x[i];
 
-	double k = 1 / (4 * h[0] * h[1] + 4 * h[0] * h[2] + 3 * h[1] * h[1] +
-					4 * h[1] * h[2]);
+	double k = 1 /
+		(4 * h[0] * h[1] + 4 * h[0] * h[2] + 3 * h[1] * h[1] + 4 * h[1] * h[2]);
 	double a11 = 2 * (h[1] + h[2]) * k;
 	double a12 = -h[1] * k;
 	double a22 = 2 * (h[0] + h[1]) * k;
@@ -68,20 +69,17 @@ NUMTYPE spline(
 		double Ay;
 
 		Ay = y1 - y0;
-		if (Ay > M_PI)
-			y1 -= M_2PI;
+		if (Ay > M_PI) y1 -= M_2PI;
 		else if (Ay < -M_PI)
 			y1 += M_2PI;
 
 		Ay = y2 - y1;
-		if (Ay > M_PI)
-			y2 -= M_2PI;
+		if (Ay > M_PI) y2 -= M_2PI;
 		else if (Ay < -M_PI)
 			y2 += M_2PI;
 
 		Ay = y3 - y2;
-		if (Ay > M_PI)
-			y3 -= M_2PI;
+		if (Ay > M_PI) y3 -= M_2PI;
 		else if (Ay < -M_PI)
 			y3 += M_2PI;
 	}
@@ -97,20 +95,20 @@ NUMTYPE spline(
 	double res = 0;
 	if (t < x[1])
 		res = (z1 * pow((t - x[0]), 3) + z0 * pow((x[1] - t), 3)) / (6 * h[0]) +
-			  (y1 / h[0] - h[0] / 6 * z1) * (t - x[0]) +
-			  (y0 / h[0] - h[0] / 6 * z0) * (x[1] - t);
+			(y1 / h[0] - h[0] / 6 * z1) * (t - x[0]) +
+			(y0 / h[0] - h[0] / 6 * z0) * (x[1] - t);
 	else
 	{
 		if (t < x[2])
 			res = (z2 * pow((t - x[1]), 3) + z1 * pow((x[2] - t), 3)) /
-					  (6 * h[1]) +
-				  (y2 / h[1] - h[1] / 6 * z2) * (t - x[1]) +
-				  (y1 / h[1] - h[1] / 6 * z1) * (x[2] - t);
+					(6 * h[1]) +
+				(y2 / h[1] - h[1] / 6 * z2) * (t - x[1]) +
+				(y1 / h[1] - h[1] / 6 * z1) * (x[2] - t);
 		else if (t < x[3])
 			res = (z3 * pow((t - x[2]), 3) + z2 * pow((x[3] - t), 3)) /
-					  (6 * h[2]) +
-				  (y3 / h[2] - h[2] / 6 * z3) * (t - x[2]) +
-				  (y2 / h[2] - h[2] / 6 * z2) * (x[3] - t);
+					(6 * h[2]) +
+				(y3 / h[2] - h[2] / 6 * z3) * (t - x[2]) +
+				(y2 / h[2] - h[2] / 6 * z2) * (x[3] - t);
 	}
 	return wrap2pi ? mrpt::math::wrapToPi(res) : res;
 }
@@ -144,8 +142,7 @@ NUMTYPE leastSquareLinearFit(
 	NUMTYPE ret = B[0] + B[1] * (t - x_min);
 
 	// wrap?
-	if (!wrap2pi)
-		return ret;
+	if (!wrap2pi) return ret;
 	else
 		return mrpt::math::wrapToPi(ret);
 

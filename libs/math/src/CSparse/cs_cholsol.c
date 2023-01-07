@@ -1,5 +1,5 @@
 // CSparse/Source/cs_cholsol: x=A\b using a sparse Cholesky factorization
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* x=A\b where A is symmetric positive definite; b overwritten with solution */

@@ -2,15 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          https://www.mrpt.org/                            |
    |                                                                           |
-   | Copyright (c) 2005-2022, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2023, Individual contributors, see AUTHORS file        |
    | See: https://www.mrpt.org/Authors - All rights reserved.                  |
    | Released under BSD License. See details in https://www.mrpt.org/License   |
    +---------------------------------------------------------------------------+
  */
 
-#include <mrpt/poses/CPoseInterpolatorBase.h>
-
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/poses/CPoseInterpolatorBase.h>
 //#include <mrpt/math/eigen_extensions.h>
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/wrap2pi.h>
@@ -19,6 +18,7 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/serialization/stl_serialization.h>
 #include <mrpt/system/datetime.h>
+
 #include <fstream>
 #include <mrpt/math/interp_fit.hpp>
 
@@ -87,12 +87,8 @@ typename CPoseInterpolatorBase<DIM>::pose_t&
 	{
 		case imLinear2Neig:
 		case imSplineSlerp:
-		case imLinearSlerp:
-			interp_method_requires_4pts = false;
-			break;
-		default:
-			interp_method_requires_4pts = true;
-			break;
+		case imLinearSlerp: interp_method_requires_4pts = false; break;
+		default: interp_method_requires_4pts = true; break;
 	};
 
 	// Out of range?
@@ -126,7 +122,7 @@ typename CPoseInterpolatorBase<DIM>::pose_t&
 	}
 	else
 	{
-		p4 = *(it_ge2);  // Fourth pair
+		p4 = *(it_ge2);	 // Fourth pair
 	}
 
 	p2 = *(--it_ge1);  // Second pair
@@ -147,12 +143,12 @@ typename CPoseInterpolatorBase<DIM>::pose_t&
 	// Test if the difference between the desired timestamp and the next
 	// timestamp is lower than a certain (configurable) value
 	const mrpt::Clock::duration dt12 = interp_method_requires_4pts
-										   ? (p2.first - p1.first)
-										   : mrpt::Clock::duration(0);
+		? (p2.first - p1.first)
+		: mrpt::Clock::duration(0);
 	const mrpt::Clock::duration dt23 = (p3.first - p2.first);
 	const mrpt::Clock::duration dt34 = interp_method_requires_4pts
-										   ? (p4.first - p3.first)
-										   : mrpt::Clock::duration(0);
+		? (p4.first - p3.first)
+		: mrpt::Clock::duration(0);
 
 	if (maxTimeInterpolation.count() > 0 &&
 		(dt12 > maxTimeInterpolation || dt23 > maxTimeInterpolation ||
@@ -197,8 +193,7 @@ bool CPoseInterpolatorBase<DIM>::getPreviousPoseWithMinDistance(
 
 	// Search for the desired timestamp
 	auto it = m_path.find(t);
-	if (it != m_path.end() && it != m_path.begin())
-		myPose = it->second;
+	if (it != m_path.end() && it != m_path.begin()) myPose = it->second;
 	else
 		return false;
 
@@ -411,24 +406,14 @@ void CPoseInterpolatorBase<DIM>::filter(
 			particles.m_particles[i].d = it1->second;
 			switch (component)
 			{
-				case 0:
-					particles.m_particles[i].d.x = it2->second[0];
-					break;
-				case 1:
-					particles.m_particles[i].d.y = it2->second[1];
-					break;
-				case 2:
-					particles.m_particles[i].d.z = it2->second[2];
-					break;
-				case 3:
-					particles.m_particles[i].d.yaw = it2->second[3];
-					break;
+				case 0: particles.m_particles[i].d.x = it2->second[0]; break;
+				case 1: particles.m_particles[i].d.y = it2->second[1]; break;
+				case 2: particles.m_particles[i].d.z = it2->second[2]; break;
+				case 3: particles.m_particles[i].d.yaw = it2->second[3]; break;
 				case 4:
 					particles.m_particles[i].d.pitch = it2->second[4];
 					break;
-				case 5:
-					particles.m_particles[i].d.roll = it2->second[5];
-					break;
+				case 5: particles.m_particles[i].d.roll = it2->second[5]; break;
 			}  // end switch
 		}  // end for it2
 

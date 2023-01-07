@@ -1,5 +1,5 @@
 // CSparse/Source/cs_compress: convert triplet to sparse compressed-column
-// CSparse, Copyright (c) 2006-2022, Timothy A. Davis. All Rights Reserved.
+// CSparse, Copyright (c) 2006-2023, Timothy A. Davis. All Rights Reserved.
 // SPDX-License-Identifier: LGPL-2.1+
 #include "cs.h"
 /* C = compressed-column form of a triplet matrix T */
