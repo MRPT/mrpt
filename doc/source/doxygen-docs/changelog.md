@@ -4,6 +4,8 @@
 - Changes in libraries:
     - \ref mrpt_core_grp
       - Move the `_deg` literal to a new namespace mrpt::literals to allow finer-grained `using namespace mrpt::literals;` instead of `using namespace mrpt;`. This change is backwards compatible, no user code change required, but recommended.
+    - \ref mrpt_expr_grp
+      - New mrpt::expr::CRuntimeCompiledExpression::register_function() to allow user-defined functions in runtime-compiled formulas.
 
 # Version 2.5.7: Released November 25th, 2022
 - Changes in applications:
