@@ -4,6 +4,8 @@
 - Changes in libraries:
     - \ref mrpt_opengl_grp
       - New method mrpt::opengl::CAssimpModel::texturedObjects()
+- BUG FIXES:
+    - Fix wrong evaluation of the pivor point for the angular threshold parameters in ICP (Closes [#1264](https://github.com/MRPT/mrpt/issues/1264))
 
 # Version 2.5.8: Released January 7th, 2023
 - Changes in libraries:
