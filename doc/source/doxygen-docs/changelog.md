@@ -2,6 +2,8 @@
 
 # Version 2.6.0: UNRELEASED
 - Changes in libraries:
+    - \ref mrpt_math_grp
+      - Remove unused header: `<mrpt/math/bits_math.h>`
     - \ref mrpt_opengl_grp
       - New method mrpt::opengl::CAssimpModel::texturedObjects()
 - BUG FIXES:
