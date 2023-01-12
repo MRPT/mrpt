@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.6.1: UNRELEASED
+None
+
 # Version 2.6.0: Released January 12th, 2023
 - Changes in libraries:
     - \ref mrpt_math_grp
