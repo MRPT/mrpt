@@ -247,9 +247,8 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 			// ------------------------------------------------------
 			//		Find the matching (for a points map)
 			// ------------------------------------------------------
-			matchParams.angularDistPivotPoint = TPoint3D(
-				gaussPdf->mean.x(), gaussPdf->mean.y(),
-				0);	 // Pivot point for angular measurements
+			// Pivot point for angular measurements
+			matchParams.angularDistPivotPoint = gaussPdf->mean.translation();
 
 			m1->determineMatching2D(
 				m2,	 // The other map
@@ -472,8 +471,9 @@ CPosePDF::Ptr CICP::ICP_Method_Classic(
 			CPose2D PY2(P0);
 			PY2.y_incr(+Axy);
 
-			matchParams.angularDistPivotPoint =
-				TPoint3D(gaussPdf->mean.x(), gaussPdf->mean.y(), 0);
+			// Pivot point for angular measurements
+			matchParams.angularDistPivotPoint = gaussPdf->mean.translation();
+
 			m1->determineMatching2D(
 				m2,	 // The other map
 				P0,	 // The other map pose
@@ -594,8 +594,6 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 		options.thresholdDist;	// Distance threshold
 	matchParams.maxAngularDistForCorrespondence =
 		options.thresholdAng;  // Angular threshold
-	matchParams.angularDistPivotPoint =
-		TPoint3D(q.x(), q.y(), 0);	// Pivot point for angular measurements
 	matchParams.onlyKeepTheClosest = true;
 	matchParams.onlyUniqueRobust = onlyUniqueRobust;
 	matchParams.decimation_other_map_points =
@@ -624,6 +622,9 @@ CPosePDF::Ptr CICP::ICP_Method_LM(
 			// ------------------------------------------------------
 			//		Find the matching (for a points map)
 			// ------------------------------------------------------
+			// Pivot point for angular measurements:
+			matchParams.angularDistPivotPoint = q.translation();
+
 			m1->determineMatching2D(
 				m2,	 // The other map
 				q,	// The other map pose
@@ -1006,8 +1007,8 @@ CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 		// ------------------------------------------------------
 		do
 		{
-			matchParams.angularDistPivotPoint = TPoint3D(
-				gaussPdf->mean.x(), gaussPdf->mean.y(), gaussPdf->mean.z());
+			// Pivot point for angular measurements:
+			matchParams.angularDistPivotPoint = gaussPdf->mean.translation();
 
 			// ------------------------------------------------------
 			//		Find the matching (for a points map)
