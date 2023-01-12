@@ -129,6 +129,12 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 		std::optional<mrpt::img::CImage> img_alpha;
 	};
 
+	/** Read-only access to textured objects \note [New in MRPT 2.6.0] */
+	auto texturedObjects() -> const std::vector<CSetOfTexturedTriangles::Ptr>&
+	{
+		return m_texturedObjects;
+	}
+
    private:
 	/** The interface to the file: */
 	struct Impl;
