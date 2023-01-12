@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.6.0: UNRELEASED
+# Version 2.6.0: Released January 12th, 2023
 - Changes in libraries:
     - \ref mrpt_math_grp
       - Remove unused header: `<mrpt/math/bits_math.h>`
