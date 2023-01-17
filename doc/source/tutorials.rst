@@ -29,6 +29,7 @@ Note: This page is in the process of being imported from https://www.mrpt.org/tu
   range_only_localization_mapping
   tutorial-icp-alignment
   page_maps_observations
+  tutorial-motion-models
 
 .. toctree::
   :maxdepth: 2
