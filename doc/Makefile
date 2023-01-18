@@ -34,8 +34,13 @@ all:
 	make html
 
 python-venv: requirements.txt
+	# Note: the DEB_PYTHON_INSTALL_LAYOUT=deb below 
+	# is required in u22.04 to fix a bug in virtualenv.
+	# That env var can be removed once virtualenv > 20.16.5 is everywhere.
+	# Read: https://askubuntu.com/a/1415153/97996
+	
 	# Create virtual env for building the docs
-	virtualenv -p /usr/bin/python3 venv
+	DEB_PYTHON_INSTALL_LAYOUT=deb virtualenv -p /usr/bin/python3 venv
 	bash -c "source venv/bin/activate && pip install -r requirements.txt"
 
 html-and-view:
