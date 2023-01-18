@@ -20,7 +20,6 @@ namespace mrpt::nav
  * - **Compatible robot shape**: Circular robots
  * - **PTG parameters**: Use the app `ptg-configurator`
  *
- * \note [New in MRPT 1.5.0]
  *  \ingroup nav_tpspace
  */
 class CPTG_Holo_Blend : public CPTG_RobotShape_Circular
