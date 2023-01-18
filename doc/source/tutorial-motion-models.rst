@@ -9,36 +9,48 @@ Probabilistic motion models
 1. Overview
 ========================================
 
-Within a particle filter, the samples are propagated at each time step using some 
-given proposal distribution. 
-A common approach for mobile robots is taking the probabilistic motion model directly as this proposal.
+For data fusion, SLAM, and localization 
+(for example using a particle filter such as the well-known ``amcl`` Adaptive MonteCarlo Localization), 
+we need to handle the uncertainty in SE(2) or SE(3) pose increments.
 
-In MRPT there are two models for probabilistic motion in SE(2) or SE(3),
-implemented in <a class="externallink" title="https://docs.mrpt.org/reference/stable/classmrpt_1_1slam_1_1_c_action_robot_movement2_d.html" href="https://docs.mrpt.org/reference/stable/classmrpt_1_1obs_1_1_c_action_robot_movement2_d.html" rel="nofollow">mrpt::slam::CActionRobotMovement2D</a>. To use them just fill out the option structure "motionModelConfiguration" and select the method in "<a class="externallink" title="https://docs.mrpt.org/reference/stable/structmrpt_1_1slam_1_1_c_action_robot_movement2_d_1_1_t_motion_model_options.html" href="https://docs.mrpt.org/reference/stable/structmrpt_1_1obs_1_1_c_action_robot_movement2_d_1_1_t_motion_model_options.html" rel="nofollow">CActionRobotMovement2D::TMotionModelOptions</a>::modelSelection".
+Within a particle filter, pose samples are propagated at each time step using some 
+given proposal distribution. A common approach for mobile robots is taking the
+probabilistic motion model directly as this proposal.
+In EKF or other graphical models (factor graphs) we would also 
+need a probability distribution for pose increments, in this case, 
+typically a parametric unimodal one such as the multivariate Gaussian distribution, 
+defined via one mean pose and one covariance matrix for the "noise" (uncertainty).
 
-An example of usage would be like:
+In MRPT there are two **motion models** for probabilistic motion in SE(2), and 
+one for SE(3), with the relevant classes being
+`mrpt::obs::CActionRobotMovement2D <class_mrpt_obs_CActionRobotMovement2D.html>`_
+and
+`mrpt::obs::CActionRobotMovement3D <class_mrpt_obs_CActionRobotMovement3D.html>`_
+, respectively. 
 
-   using namespace mrpt::slam;
-   using namespace mrpt::poses;
+The rest of this page explains the different theoretical models and equations for
+those motion models. A C++ API usage example would be:
 
-   CPose2D actualOdometryReading(0.20f, 0.05f, DEG2RAD(1.2f) );
+.. code:: lang:c++
 
-   // Prepare the "options" structure:
-   CActionRobotMovement2D                      actMov;
-   CActionRobotMovement2D::TMotionModelOptions opts;
+    using namespace mrpt::literals; // _deg
 
-   opts.modelSelection = CActionRobotMovement2D::mmThrun;
-   opts.thrunModel.alfa3_trans_trans = 0.10f;
+    mrpt::poses::CPose2D actualOdometryReading(0.20, 0.05, 1.2_deg );
+    
+    // Prepare the "options" structure:
+    mrpt::obs::CActionRobotMovement2D                      actMov;
+    mrpt::obs::CActionRobotMovement2D::TMotionModelOptions opts;
+    
+    opts.modelSelection = mrpt::obs::CActionRobotMovement2D::mmThrun;
+    opts.thrunModel.alfa3_trans_trans = 0.10f;
+    
+    // Create the probability density distribution (PDF) from a 2D odometry reading:
+    actMov.computeFromOdometry( actualOdometryReading, opts );
+    
+    // For example, draw one sample from the PDF:
+    mrpt::poses::CPose2D sample;
+    actMov.drawSingleSample( sample );
 
-   // Create the probability density distribution (PDF) from a 2D odometry reading:
-   actMov.computeFromOdometry( actualOdometryReading, opts );
-
-   // For example, draw one sample from the PDF:
-   CPose2D sample;
-   actMov.drawSingleSample( sample );
-
-
-This page provides a description of the internal workings of these methods.
 
 
 2. Gaussian probabilistic motion model
