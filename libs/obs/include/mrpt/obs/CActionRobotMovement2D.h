@@ -22,8 +22,9 @@ namespace mrpt::obs
  *  See docs:
  * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
  *
- * \note [New in MRPT 1.5.0] Velocity is now encoded as mrpt::math::TTwist2D as
- * a more general version of the old (linVel, angVel).
+ * Velocity is encoded as mrpt::math::TTwist2D in the optional field
+ * velocityLocal.
+ *
  * \sa CAction
  * \ingroup mrpt_obs_grp
  */
