@@ -36,10 +36,23 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 		nextOdometry.phi += m_odometric_vel.omega * m_firmware_control_period;
 		mrpt::math::wrapToPiInPlace(nextOdometry.phi);
 
-		TPose2D nextGT = m_GT_pose;
-		nextGT.x += m_GT_vel.vx * m_firmware_control_period;
-		nextGT.y += m_GT_vel.vy * m_firmware_control_period;
-		nextGT.phi += m_GT_vel.omega * m_firmware_control_period;
+		TPose2D gtDelta = m_GT_vel * m_firmware_control_period;
+		// Add some errors
+		if (m_use_odo_error)
+		{
+			auto& rng = mrpt::random::getRandomGenerator();
+			gtDelta.x *= 1.0 + m_Ax_err_bias +
+				m_Ax_err_std * rng.drawGaussian1D_normalized();
+			gtDelta.y *= 1.0 + m_Ay_err_bias +
+				m_Ay_err_std * rng.drawGaussian1D_normalized();
+			gtDelta.phi *= 1.0 + m_Aphi_err_bias +
+				m_Aphi_err_std * rng.drawGaussian1D_normalized();
+			mrpt::math::wrapToPiInPlace(gtDelta.phi);
+		}
+
+		TPose2D nextGT = {
+			m_GT_pose.x + gtDelta.x, m_GT_pose.y + gtDelta.y,
+			m_GT_pose.phi + gtDelta.phi};
 		mrpt::math::wrapToPiInPlace(nextGT.phi);
 
 		this->internal_simulControlStep(m_firmware_control_period);
@@ -47,24 +60,6 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 		// Now rotate our current Odo velocity into GT coordinates
 		m_GT_vel = getCurrentOdometricVelLocal();
 		m_GT_vel.rotate(m_GT_pose.phi);
-
-		// Add some errors
-		if (m_use_odo_error)
-		{
-			nextGT.x += m_Ax_err_bias +
-				m_Ax_err_std *
-					mrpt::random::getRandomGenerator()
-						.drawGaussian1D_normalized();
-			nextGT.y += m_Ay_err_bias +
-				m_Ay_err_std *
-					mrpt::random::getRandomGenerator()
-						.drawGaussian1D_normalized();
-			nextGT.phi += m_Aphi_err_bias +
-				m_Aphi_err_std *
-					mrpt::random::getRandomGenerator()
-						.drawGaussian1D_normalized();
-			mrpt::math::wrapToPiInPlace(nextGT.phi);
-		}
 
 		m_odometry = nextOdometry;
 		m_GT_pose = nextGT;
