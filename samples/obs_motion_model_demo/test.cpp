@@ -38,6 +38,9 @@ void DemoMotionModel(int argc, const char** argv)
 		"../share/mrpt/datasets/intel_2003_partial.rawlog.gz"s;
 	if (argc > 1) datasetFile = argv[1];
 
+	std::string legendText;
+	if (argc > 2) legendText = argv[2];
+
 	ASSERT_FILE_EXISTS_(datasetFile);
 
 	mrpt::obs::CRawlog dataset;
@@ -56,11 +59,12 @@ void DemoMotionModel(int argc, const char** argv)
 	parts.resetDeterministic({0, 0, 0}, NUM_PARTICLES);
 
 	// gui:
-	mrpt::gui::CDisplayWindow3D win("Motion model uncertainty demo", 800, 600);
+	mrpt::gui::CDisplayWindow3D win("Motion model uncertainty demo", 500, 1000);
 
 	auto glPartsGroup = mrpt::opengl::CSetOfObjects::Create();
 	auto glLidar = mrpt::opengl::CPlanarLaserScan::Create();
 	auto glOdoTrack = mrpt::opengl::CSetOfLines::Create();
+	mrpt::opengl::COpenGLViewport::Ptr glBottomView;
 	glOdoTrack->appendLine(0, 0, 0, 0, 0, 0);
 	glOdoTrack->setColor_u8(0x00, 0x00, 0x00);
 	{
@@ -69,6 +73,27 @@ void DemoMotionModel(int argc, const char** argv)
 		scene->insert(glPartsGroup);
 		scene->insert(glLidar);
 		scene->insert(glOdoTrack);
+
+		// Create the two views:
+		auto glMainView = scene->getViewport();
+		glBottomView = scene->createViewport("bottom");
+
+		glMainView->setViewportPosition(0, 0.5, 1.0, 0.5);
+		glBottomView->setViewportPosition(0.01, 0.01, 0.98, 0.48);
+		glBottomView->setCloneView("main");
+
+		auto& glCloseCam = glBottomView->getCamera();
+		glCloseCam.setAzimuthDegrees(90.0f);
+		glCloseCam.setElevationDegrees(90.0f);
+		glCloseCam.setZoomDistance(1.5f);
+
+		win.setCameraAzimuthDeg(90.0f);
+		win.setCameraElevationDeg(90.0f);
+		win.setCameraZoom(15.0f);
+		win.setCameraPointingToPoint(1.0f, -2.0f, .0f);
+
+		win.addTextMessage(5, 5, legendText);
+
 		win.unlockAccess3DScene();
 	}
 
@@ -125,6 +150,9 @@ void DemoMotionModel(int argc, const char** argv)
 			glOdoTrack->appendLineStrip(
 				deadReckoning.x(), deadReckoning.y(), 0.01);
 
+			auto& glCloseCam = glBottomView->getCamera();
+			glCloseCam.setPointingAt(deadReckoning.x(), deadReckoning.y(), .0);
+
 			win.unlockAccess3DScene();
 			win.forceRepaint();
 
@@ -140,6 +168,8 @@ void DemoMotionModel(int argc, const char** argv)
 			switch (win.getPushedKey())
 			{
 				case ' ': paused = !paused; break;
+				case 'R':
+				case 'r': win.grabImagesStart(); break;
 			}
 		}
 
