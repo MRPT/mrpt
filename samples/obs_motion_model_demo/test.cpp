@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/pose_pdfs.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
@@ -59,13 +60,20 @@ void DemoMotionModel(int argc, const char** argv)
 
 	auto glPartsGroup = mrpt::opengl::CSetOfObjects::Create();
 	auto glLidar = mrpt::opengl::CPlanarLaserScan::Create();
+	auto glOdoTrack = mrpt::opengl::CSetOfLines::Create();
+	glOdoTrack->appendLine(0, 0, 0, 0, 0, 0);
+	glOdoTrack->setColor_u8(0x00, 0x00, 0x00);
 	{
 		auto& scene = win.get3DSceneAndLock();
 		scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 		scene->insert(glPartsGroup);
 		scene->insert(glLidar);
+		scene->insert(glOdoTrack);
 		win.unlockAccess3DScene();
 	}
+
+	std::optional<double> lastObsTime;
+	bool paused = false;
 
 	// iterate over the dataset:
 	while (position + 1 < dataset.size() &&
@@ -79,19 +87,27 @@ void DemoMotionModel(int argc, const char** argv)
 			sf->getObservationByClass<mrpt::obs::CObservation2DRangeScan>();
 		ASSERT_(obsLidar);
 
-		// Accumulate the mean pose increments, as a gross pose estimation (no
-		// filtering, no localization, no SLAM, just dead reckoning):
-		deadReckoning += actMotion->poseChange->getMeanVal();
+		const double thisObsTime = mrpt::Clock::toDouble(obsLidar->timestamp);
+		const double obsPeriod =
+			std::max(1e-3, lastObsTime ? (thisObsTime - *lastObsTime) : .01);
+		lastObsTime = thisObsTime;
 
-		// Propagate random samples:
-		actMotion->prepareFastDrawSingleSamples();
-
-		for (auto& part : parts.m_particles)
+		if (!paused)
 		{
-			mrpt::poses::CPose2D odoSample;
-			actMotion->fastDrawSingleSample(odoSample);
+			// Accumulate the mean pose increments, as a gross pose estimation
+			// (no filtering, no localization, no SLAM, just dead reckoning):
+			deadReckoning += actMotion->poseChange->getMeanVal();
 
-			part.d = part.d + odoSample.asTPose();
+			// Propagate random samples:
+			actMotion->prepareFastDrawSingleSamples();
+
+			for (auto& part : parts.m_particles)
+			{
+				mrpt::poses::CPose2D odoSample;
+				actMotion->fastDrawSingleSample(odoSample);
+
+				part.d = part.d + odoSample.asTPose();
+			}
 		}
 
 		const auto glParticles =
@@ -106,14 +122,28 @@ void DemoMotionModel(int argc, const char** argv)
 			glLidar->setScan(*obsLidar);
 			glLidar->setPose(deadReckoning);
 
+			glOdoTrack->appendLineStrip(
+				deadReckoning.x(), deadReckoning.y(), 0.01);
+
 			win.unlockAccess3DScene();
 			win.forceRepaint();
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+			std::this_thread::sleep_for(
+				std::chrono::microseconds(static_cast<int>(1e6 * obsPeriod)));
 		}
 
 		std::cout << "timestep: " << position
 				  << " deadRecoking: " << deadReckoning << "\n";
+
+		if (win.keyHit())
+		{
+			switch (win.getPushedKey())
+			{
+				case ' ': paused = !paused; break;
+			}
+		}
+
+		if (paused) position -= 2;
 	}
 }
 
