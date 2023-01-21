@@ -42,7 +42,7 @@ and the **Thrun's sample-based** (right) motion models:
 The rest of this page explains the **different theoretical models and equations** for
 those motion models. A C++ API usage example would be:
 
-.. code-block:: guess
+.. code-block:: cpp
 
     using namespace mrpt::literals; // _deg
 
