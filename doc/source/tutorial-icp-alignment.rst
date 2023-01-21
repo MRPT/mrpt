@@ -37,7 +37,7 @@ associated to the optimal registration. An example of typical usage is
 (see also the example in the directory
 `MRPT/samples/icp <https://github.com/MRPT/mrpt/tree/master/samples/slam_icp_simple_example>`__):
 
-.. code:: lang:c++
+.. code-block:: cpp
 
     CICP icp;
     // set ICP parameters:
@@ -102,7 +102,7 @@ parameter ``ALFA=0``. We show first a simplified version of the method
 in **pseudo-code**, then we'll describe the more interesting parts and
 finally we give the complete list of parameters and their meaning:
 
-.. code:: lang:default
+.. code-block:: cpp
 
     i=0 // Iteration counter
     P(i)=P0 // Initial guess given by the user
