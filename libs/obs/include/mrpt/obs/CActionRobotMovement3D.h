@@ -13,15 +13,16 @@
 
 namespace mrpt::obs
 {
-/** Represents a probabilistic 3D (6D) movement.
- *   Currently this can be determined from visual odometry for full 6D, or from
- * wheel encoders for 2D movements only.
- * Here implemented the  motion model from the next article: A. L. Ballardini,
- * A. Furlan, A. Galbiati, M. Matteucci, F. Sacchi, D. G. Sorrenti An effective
- * 6DoF motion model for 3D-6DoF Monte Carlo Localization 4th Workshop on
- * Planning, Perception and Navigation for Intelligent Vehicles, IROS, 2012
+/** Represents a probabilistic motion increment in SE(3).
+ *
+ * Odometry increments might be determined from visual odometry for full 3D, or
+ * from wheel encoders for 2D movements only.
+ *
+ * The implemented model for creating a SE(3) Gaussian from an odometry
+ * increment is based on \cite ballardini2012effective
+ *
  * \ingroup mrpt_obs_grp
- * \sa CAction
+ * \sa CAction, CActionRobotMovement3D,
  */
 class CActionRobotMovement3D : public CAction
 {
@@ -59,12 +60,7 @@ class CActionRobotMovement3D : public CAction
 	};
 
 	/** The parameter to be passed to "computeFromOdometry".
-	 * Based ont he motion model:
-	 * A. L. Ballardini, A. Furlan, A. Galbiati, M. Matteucci, F. Sacchi, D.
-	 * G. Sorrenti, "An effective 6DoF motion model for 3D-6DoF Monte Carlo
-	 * Localization", 4th Workshop on Planning, Perception and Navigation for
-	 * Intelligent Vehicles, IROS, 2012
-	 */
+	 * See: \cite ballardini2012effective */
 	struct TMotionModelOptions
 	{
 		TMotionModelOptions() = default;
@@ -101,12 +97,12 @@ class CActionRobotMovement3D : public CAction
 	void computeFromOdometry(
 		const mrpt::poses::CPose3D& odometryIncrement,
 		const TMotionModelOptions& options);
+
 	/** Computes the PDF of the pose increment from an odometry reading, using
 	 * the motion model for 6 DOF.
-	 *  The source: A. L. Ballardini, A. Furlan, A. Galbiati, M. Matteucci, F.
-	 * Sacchi, D. G. Sorrenti An effective 6DoF motion model for 3D-6DoF Monte
-	 * Carlo Localization 4th Workshop on Planning, Perception and Navigation
-	 * for Intelligent Vehicles, IROS, 2012
+	 *
+	 * Based on: \cite ballardini2012effective
+	 *
 	 * \sa computeFromOdometry
 	 */
 	void computeFromOdometry_model6DOF(

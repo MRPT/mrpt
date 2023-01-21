@@ -168,10 +168,8 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent, wxWindowID id)
 		btnOk, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	HyperlinkCtrl1 = new wxHyperlinkCtrl(
 		this, ID_HYPERLINKCTRL1,
-		_("http://www.mrpt.org/tutorials/programming/"
-		  "odometry-and-motion-models/probabilistic_motion_models/"),
-		_("http://www.mrpt.org/tutorials/programming/"
-		  "odometry-and-motion-models/probabilistic_motion_models/"),
+		_("https://docs.mrpt.org/reference/latest/tutorial-motion-models.html"),
+		_("https://docs.mrpt.org/reference/latest/tutorial-motion-models.html"),
 		wxDefaultPosition, wxDefaultSize,
 		wxHL_CONTEXTMENU | wxHL_ALIGN_CENTRE | wxNO_BORDER,
 		_T("ID_HYPERLINKCTRL1"));

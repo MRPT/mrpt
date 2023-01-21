@@ -91,6 +91,8 @@ void CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	// F. Sacchi, D. G. Sorrenti An effective 6DoF motion model for 3D-6DoF
 	// Monte Carlo Localization 4th Workshop on Planning, Perception and
 	// Navigation for Intelligent Vehicles, IROS, 2012
+	//
+	// \cite ballardini2012effective
 
 	/*
 		The brief description:
