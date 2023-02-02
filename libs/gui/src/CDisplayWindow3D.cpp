@@ -84,14 +84,16 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name)
 	: CWxGLCanvasBase(parent, id, pos, size, style, name), m_win3D(win3D)
 {
-	this->Bind(wxEVT_CHAR, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
-	this->Bind(
-		wxEVT_CHAR_HOOK, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
-	this->Bind(
-		wxEVT_LEFT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
-	this->Bind(
-		wxEVT_RIGHT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
-	this->Bind(wxEVT_MOTION, &CMyGLCanvas_DisplayWindow3D::OnMouseMove, this);
+	using Me = CMyGLCanvas_DisplayWindow3D;
+
+	this->Bind(wxEVT_CHAR, &Me::OnCharCustom, this);
+	this->Bind(wxEVT_CHAR_HOOK, &Me::OnCharCustom, this);
+
+	this->Bind(wxEVT_LEFT_DOWN, &Me::OnMouseDown, this);
+	this->Bind(wxEVT_MIDDLE_DOWN, &Me::OnMouseDown, this);
+	this->Bind(wxEVT_RIGHT_DOWN, &Me::OnMouseDown, this);
+
+	this->Bind(wxEVT_MOTION, &Me::OnMouseMove, this);
 }
 
 void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
@@ -105,7 +107,6 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
 					m_win3D->m_lastFullScreen, mrpt::system::now()) > 0.2)
 			{
 				m_win3D->m_lastFullScreen = mrpt::system::now();
-				cout << "[CDisplayWindow3D] Switching fullscreen...\n";
 				auto* win = (C3DWindowDialog*)m_win3D->m_hwnd.get();
 				if (win) { win->ShowFullScreen(!win->IsFullScreen()); }
 			}

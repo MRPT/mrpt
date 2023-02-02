@@ -24,13 +24,14 @@ void NanoGUICanvasHeadless::mouseMotionEvent(
 	m_lastModifiers = modifiers;
 
 	const bool leftIsDown = button & (1 << GLFW_MOUSE_BUTTON_LEFT);
+	const bool middleIsDown = button & (1 << GLFW_MOUSE_BUTTON_MIDDLE);
 	const bool rightIsDown = button & (1 << GLFW_MOUSE_BUTTON_RIGHT);
 
 	const int X = p.x();
 	const int Y = p.y();
 	updateLastPos(X, Y);
 
-	if (leftIsDown || rightIsDown)
+	if (leftIsDown || rightIsDown || middleIsDown)
 	{
 		// Proxy variables to cache the changes:
 		CGlCanvasBase::CamaraParams params = cameraParams();

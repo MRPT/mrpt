@@ -54,6 +54,7 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 	virtual void removeFromMap(const opengl::CRenderizable::Ptr& newObject);
 
 	bool isPressLMouseButton() const;
+	bool isPressMMouseButton() const;
 	bool isPressRMouseButton() const;
 	/** m_isPressLMouseButton and m_isPressRMouseButton are saved in
 	 * mousePressEvent for mouseMoveEvent as true
@@ -61,8 +62,9 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 	void unpressMouseButtons();
 
    private:
-	bool m_isPressLMouseButton{false};
-	bool m_isPressRMouseButton{false};
+	bool m_isPressLMouseButton = false;
+	bool m_isPressRMouseButton = false;
+	bool m_isPressMMouseButton = false;
 
 	mrpt::opengl::COpenGLViewport::Ptr m_mainViewport;
 

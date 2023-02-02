@@ -66,6 +66,7 @@ void CQtGlCanvasBase::mousePressEvent(QMouseEvent* event)
 	setMouseClicked(true);
 
 	m_isPressLMouseButton = (event->button() == Qt::LeftButton);
+	m_isPressMMouseButton = (event->button() == Qt::MiddleButton);
 	m_isPressRMouseButton = (event->button() == Qt::RightButton);
 
 	QOpenGLWidget::mousePressEvent(event);
@@ -77,7 +78,7 @@ void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
 	int Y = event->pos().y();
 	updateLastPos(X, Y);
 
-	if (m_isPressLMouseButton || m_isPressRMouseButton)
+	if (m_isPressLMouseButton || m_isPressRMouseButton || m_isPressMMouseButton)
 	{
 		// Proxy variables to cache the changes:
 		CamaraParams params = cameraParams();
@@ -110,6 +111,7 @@ void CQtGlCanvasBase::mouseReleaseEvent(QMouseEvent* event)
 {
 	setMouseClicked(false);
 	m_isPressLMouseButton = false;
+	m_isPressMMouseButton = false;
 	m_isPressRMouseButton = false;
 	QOpenGLWidget::mouseReleaseEvent(event);
 }
@@ -165,6 +167,11 @@ bool CQtGlCanvasBase::isPressLMouseButton() const
 	return m_isPressLMouseButton;
 }
 
+bool CQtGlCanvasBase::isPressMMouseButton() const
+{
+	return m_isPressMMouseButton;
+}
+
 bool CQtGlCanvasBase::isPressRMouseButton() const
 {
 	return m_isPressRMouseButton;
@@ -174,6 +181,7 @@ void CQtGlCanvasBase::unpressMouseButtons()
 {
 	m_isPressLMouseButton = false;
 	m_isPressRMouseButton = false;
+	m_isPressMMouseButton = false;
 }
 
 #endif	// MRPT_HAS_Qt5

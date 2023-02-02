@@ -79,6 +79,7 @@ void CWxGLCanvasBase::renderError(const string& err_msg)
 
 void CWxGLCanvasBase::OnMouseDown(wxMouseEvent& event)
 {
+	updateLastPos(event.GetX(), event.GetY());
 	setMousePos(event.GetX(), event.GetY());
 	setMouseClicked(true);
 }
@@ -95,7 +96,7 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 	int Y = event.GetY();
 	updateLastPos(X, Y);
 
-	if (leftIsDown || event.RightIsDown())
+	if (leftIsDown || event.RightIsDown() || event.MiddleIsDown())
 	{
 		// Proxy variables to cache the changes:
 		CamaraParams params = cameraParams();
@@ -103,10 +104,8 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		if (leftIsDown)
 		{
 			if (event.ShiftDown()) updateZoom(params, X, Y);
-
 			else if (event.ControlDown())
 				updateRotate(params, X, Y);
-
 			else
 				updateOrbitCamera(params, X, Y);
 		}
@@ -126,6 +125,11 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 
 void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 {
+	int X = event.GetX();
+	int Y = event.GetY();
+	updateLastPos(X, Y);
+	setMousePos(X, Y);
+
 	CamaraParams params = cameraParams();
 	if (!event.ShiftDown())
 	{
@@ -169,9 +173,13 @@ CWxGLCanvasBase::CWxGLCanvasBase(
 		  style | wxFULL_REPAINT_ON_RESIZE, name)
 {
 	this->Bind(wxEVT_LEFT_DOWN, &CWxGLCanvasBase::OnMouseDown, this);
+	this->Bind(wxEVT_MIDDLE_DOWN, &CWxGLCanvasBase::OnMouseDown, this);
 	this->Bind(wxEVT_RIGHT_DOWN, &CWxGLCanvasBase::OnMouseDown, this);
+
 	this->Bind(wxEVT_LEFT_UP, &CWxGLCanvasBase::OnMouseUp, this);
+	this->Bind(wxEVT_MIDDLE_UP, &CWxGLCanvasBase::OnMouseUp, this);
 	this->Bind(wxEVT_RIGHT_UP, &CWxGLCanvasBase::OnMouseUp, this);
+
 	this->Bind(wxEVT_MOTION, &CWxGLCanvasBase::OnMouseMove, this);
 	this->Bind(wxEVT_MOUSEWHEEL, &CWxGLCanvasBase::OnMouseWheel, this);
 	this->Bind(wxEVT_CHAR, &CWxGLCanvasBase::OnChar, this);
