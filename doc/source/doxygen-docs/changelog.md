@@ -1,6 +1,9 @@
 \page changelog Change Log
 
-# Version 2.6.1: UNRELEASED
+# Version 2.7.0: UNRELEASED
+- Changes in libraries:
+    - \ref mrpt_gui_grp
+      - All OpenGL viewports: pan is now also achieved by pressing the mouse middle button (wheel) + dragging, for similarity with many other CAD UIs.
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 
