@@ -4,8 +4,8 @@ R"XXX(#version 300 es
 // Jose Luis Blanco Claraco (C) 2019-2023
 // Part of the MRPT project
 
-in mediump vec4 frag_color;
-out mediump vec4 color;
+in lowp vec4 frag_color;
+out lowp vec4 color;
 
 void main()
 {

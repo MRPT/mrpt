@@ -8,7 +8,7 @@ uniform mediump sampler2D textureSampler;
 
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
 
-out mediump vec4 color;
+out lowp vec4 color;
 
 void main()
 {

@@ -4,13 +4,14 @@ R"XXX(#version 300 es
 // Jose Luis Blanco Claraco (C) 2019-2023
 // Part of the MRPT project
 
-uniform mediump vec4 light_diffuse, light_ambient;
-uniform mediump vec3 light_direction;
+uniform lowp vec4 light_diffuse, light_ambient;
+uniform highp vec3 light_direction;
 
-in mediump vec3 frag_position, frag_normal;
-in mediump vec4 frag_materialColor;
 
-out mediump vec4 color;
+in highp vec3 frag_position, frag_normal;
+in lowp vec4 frag_materialColor;
+
+out lowp vec4 color;
 
 void main()
 {

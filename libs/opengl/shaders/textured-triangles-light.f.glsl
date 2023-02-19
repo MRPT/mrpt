@@ -4,14 +4,14 @@ R"XXX(#version 300 es
 // Jose Luis Blanco Claraco (C) 2019-2023
 // Part of the MRPT project
 
-uniform mediump vec4 light_diffuse, light_ambient;
-uniform mediump vec3 light_direction;
-uniform mediump sampler2D textureSampler;
+uniform lowp vec4 light_diffuse, light_ambient;
+uniform highp vec3 light_direction;
+uniform lowp sampler2D textureSampler;
 
-in mediump vec3 frag_position, frag_normal;
+in highp vec3 frag_position, frag_normal;
 in mediump vec2 frag_UV; // Interpolated values from the vertex shaders
 
-out mediump vec4 color;
+out lowp vec4 color;
 
 void main()
 {
