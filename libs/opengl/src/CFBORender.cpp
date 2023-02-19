@@ -404,57 +404,71 @@ void CFBORender::internal_render_RGBD(
 		tle1.stop();
 #endif
 
-		// Transform from OpenGL clip depths into linear distances:
-		const auto mats = scene.getViewport()->getRenderMatrices();
-		const float zn = mats.getLastClipZNear();
-		const float zf = mats.getLastClipZFar();
+		// Dont create LUT if we are not about to use it anyway:
+		if (!m_params.raw_depth)
+		{
+			// Transform from OpenGL clip depths into linear distances:
+			const auto mats = scene.getViewport()->getRenderMatrices();
+			const float zn = mats.getLastClipZNear();
+			const float zf = mats.getLastClipZFar();
 
-		const OpenGLDepth2Linear_LUTs::lut_t* lut = nullptr;
+			const OpenGLDepth2Linear_LUTs::lut_t* lut = nullptr;
 
 #if !defined(FBO_USE_LUT)
-		const bool do_use_lut = false;
+			const bool do_use_lut = false;
 #else
-		bool do_use_lut = MRPT_FBORENDER_USE_LUT;
-		// dont use LUT for really small image areas:
-		if (m_fb.height() * m_fb.width() < 10000) { do_use_lut = false; }
+			bool do_use_lut = MRPT_FBORENDER_USE_LUT;
+			// dont use LUT for really small image areas:
+			if (m_fb.height() * m_fb.width() < 10000) { do_use_lut = false; }
 #endif
 
-		if (do_use_lut)
-			lut = &OpenGLDepth2Linear_LUTs::Instance().lut_from_zn_zf(zn, zf);
+			if (do_use_lut)
+			{
+#ifdef FBO_PROFILER
+				auto tle_lut = mrpt::system::CTimeLoggerEntry(
+					profiler, sSec + ".get_lut"s);
+#endif
+				lut =
+					&OpenGLDepth2Linear_LUTs::Instance().lut_from_zn_zf(zn, zf);
+			}
 
 #ifdef FBO_PROFILER
-		auto tle2 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".linear"s);
+			auto tle2 =
+				mrpt::system::CTimeLoggerEntry(profiler, sSec + ".linear"s);
 #endif
 
-		if (!do_use_lut)
-		{
-			// Depth buffer -> linear depth:
-			const auto linearDepth = [zn, zf](float depthSample) -> float {
-				depthSample = 2.0 * depthSample - 1.0;
-				float zLinear =
-					2.0 * zn * zf / (zf + zn - depthSample * (zf - zn));
-				return zLinear;
-			};
-			for (auto& d : outDepth)
+			if (!do_use_lut)
 			{
-				if (d == 1) d = 0;	// no "echo return"
-				else
-					d = linearDepth(d);
+				// Depth buffer -> linear depth:
+				const auto linearDepth = [zn, zf](float depthSample) -> float {
+					depthSample = 2.0 * depthSample - 1.0;
+					float zLinear =
+						2.0 * zn * zf / (zf + zn - depthSample * (zf - zn));
+					return zLinear;
+				};
+				for (auto& d : outDepth)
+				{
+					if (d == 1) d = 0;	// no "echo return"
+					else
+						d = linearDepth(d);
+				}
 			}
-		}
-		else
-		{
-			// map d in [-1.0f,+1.0f] ==> real depth values:
-			for (auto& d : outDepth)
+			else
 			{
-				d = (*lut)
-					[(d + 1.0f) * (OpenGLDepth2Linear_LUTs::NUM_ENTRIES - 1) /
-					 2];
+				// map d in [-1.0f,+1.0f] ==> real depth values:
+				for (auto& d : outDepth)
+				{
+					d = (*lut)
+						[(d + 1.0f) *
+						 (OpenGLDepth2Linear_LUTs::NUM_ENTRIES - 1) / 2];
+				}
 			}
+#ifdef FBO_PROFILER
+			tle2.stop();
+#endif
 		}
 
 #ifdef FBO_PROFILER
-		tle2.stop();
 		auto tle3 = mrpt::system::CTimeLoggerEntry(profiler, sSec + ".flip"s);
 #endif
 

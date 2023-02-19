@@ -50,6 +50,17 @@ class CFBORender
 		unsigned int width = 800;  //!< Width of images to render.
 		unsigned int height = 600;	//!< Height of images to render.
 
+		/** If false (default), depth values returned in
+		 * CFBORender::render_RGBD() or CFBORender::render_depth() are real
+		 * depth values (e.g. units=meters).
+		 * If this is "true", raw OpenGL depth values in the range [-1,1] are
+		 * left in the returned depth matrix, so it is the user responsibility
+		 * to map those logarithm depths to linear ones. Useful when only
+		 * a subset of all depths are required.
+		 *
+		 */
+		bool raw_depth = false;
+
 		/** By default, each CFBORender constructor will create its own EGL
 		 * context, which enables using them in different threads, use in
 		 * head-less applications, etc.
@@ -118,7 +129,7 @@ class CFBORender
 	 * Pixels without any observed object in the valid viewport {clipMin,
 	 * clipMax} range will be returned with a range of `0.0`.
 	 *
-	 *  \sa render_RGB()
+	 *  \sa render_RGB(), Parameters::raw_depth
 	 */
 	void render_RGBD(
 		const COpenGLScene& scene, mrpt::img::CImage& outRGB,
