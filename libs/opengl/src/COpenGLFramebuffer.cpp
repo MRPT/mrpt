@@ -78,13 +78,13 @@ void COpenGLFramebuffer::RAII_Impl::create(
 	if (nSamples <= 1)
 	{
 		glRenderbufferStorage(
-			GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _.m_width, _.m_height);
+			GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, _.m_width, _.m_height);
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	else
 	{
 		glRenderbufferStorageMultisample(
-			GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, _.m_width,
+			GL_RENDERBUFFER, nSamples, GL_DEPTH_COMPONENT24, _.m_width,
 			_.m_height);
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
@@ -105,9 +105,11 @@ void COpenGLFramebuffer::RAII_Impl::create(
 		GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _.m_Depth);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
+#if 0
 	glFramebufferRenderbuffer(
 		GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _.m_Depth);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
+#endif
 
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
