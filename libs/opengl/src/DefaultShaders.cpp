@@ -16,8 +16,6 @@
 
 using namespace mrpt::opengl;
 
-// TODO: May be, allow users to register custom shaders?
-
 Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL

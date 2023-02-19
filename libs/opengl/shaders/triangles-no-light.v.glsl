@@ -8,9 +8,9 @@ R"XXX(#version 300 es
 in vec3 position;
 in vec4 vertexColor;
 
-uniform mediump mat4 pmv_matrix;
+uniform highp mat4 pmv_matrix;
 
-out mediump vec4 frag_materialColor;
+out lowp vec4 frag_materialColor;
 
 void main()
 {

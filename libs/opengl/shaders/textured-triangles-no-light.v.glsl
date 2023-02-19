@@ -8,9 +8,8 @@ R"XXX(#version 300 es
 in vec3 position;
 in vec2 vertexUV;
 
-uniform mediump mat4 pmv_matrix;
+uniform highp mat4 pmv_matrix;
 
-out mediump vec3 frag_position, frag_normal;
 out mediump vec2 frag_UV; // Interpolated UV texture coords
 
 void main()
