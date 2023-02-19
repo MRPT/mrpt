@@ -11,12 +11,10 @@
 //
 #include <mrpt/core/get_env.h>
 #include <mrpt/opengl/CFBORender.h>
+#include <mrpt/opengl/OpenGLDepth2LinearLUTs.h>
 #include <mrpt/opengl/opengl_api.h>
 //
 #include <mrpt/config.h>
-
-#include <mutex>
-#include <unordered_map>
 
 #define FBO_USE_LUT
 //#define FBO_PROFILER
@@ -42,60 +40,6 @@ const thread_local bool MRPT_FBORENDER_SHOW_DEVICES =
 
 const thread_local bool MRPT_FBORENDER_USE_LUT =
 	mrpt::get_env<bool>("MRPT_FBORENDER_USE_LUT", true);
-
-class OpenGLDepth2Linear_LUTs
-{
-   public:
-	constexpr static std::size_t NUM_ENTRIES = 1 << 18;
-
-	static OpenGLDepth2Linear_LUTs& Instance()
-	{
-		thread_local OpenGLDepth2Linear_LUTs lut;
-		return lut;
-	}
-
-	using lut_t = std::vector<float>;
-
-	lut_t& lut_from_zn_zf(float zn, float zf)
-	{
-		const auto p = std::pair<float, float>(zn, zf);
-		// reuse?
-		if (auto it = m_pool.find(p); it != m_pool.end()) return it->second;
-
-		// create new:
-		auto& lut = m_pool[p];
-		lut.resize(NUM_ENTRIES);
-
-		const auto linearDepth = [zn, zf](float depthSample) -> float {
-			if (depthSample == 1.0f) return 0.0f;  // no echo
-
-			depthSample = 2.0f * depthSample - 1.0f;
-			float zLinear =
-				2.0f * zn * zf / (zf + zn - depthSample * (zf - zn));
-			return zLinear;
-		};
-
-		for (size_t i = 0; i < NUM_ENTRIES; i++)
-		{
-			float f = -1.0f + 2.0f * static_cast<float>(i) / (NUM_ENTRIES - 1);
-			lut.at(i) = linearDepth(f);
-		}
-
-		return lut;
-	}
-
-   private:
-	struct MyHash
-	{
-		template <typename T>
-		std::size_t operator()(const std::pair<T, T>& x) const
-		{
-			return std::hash<T>()(x.first) ^ std::hash<T>()(x.second);
-		}
-	};
-
-	std::unordered_map<std::pair<float, float>, lut_t, MyHash> m_pool;
-};
 
 CFBORender::CFBORender(const Parameters& p) : m_params(p)
 {
@@ -404,6 +348,8 @@ void CFBORender::internal_render_RGBD(
 		tle1.stop();
 #endif
 
+		using depth_lut_t = OpenGLDepth2LinearLUTs<18>;
+
 		// Dont create LUT if we are not about to use it anyway:
 		if (!m_params.raw_depth)
 		{
@@ -412,7 +358,7 @@ void CFBORender::internal_render_RGBD(
 			const float zn = mats.getLastClipZNear();
 			const float zf = mats.getLastClipZFar();
 
-			const OpenGLDepth2Linear_LUTs::lut_t* lut = nullptr;
+			const depth_lut_t::lut_t* lut = nullptr;
 
 #if !defined(FBO_USE_LUT)
 			const bool do_use_lut = false;
@@ -428,8 +374,7 @@ void CFBORender::internal_render_RGBD(
 				auto tle_lut = mrpt::system::CTimeLoggerEntry(
 					profiler, sSec + ".get_lut"s);
 #endif
-				lut =
-					&OpenGLDepth2Linear_LUTs::Instance().lut_from_zn_zf(zn, zf);
+				lut = &depth_lut_t::Instance().lut_from_zn_zf(zn, zf);
 			}
 
 #ifdef FBO_PROFILER
@@ -458,9 +403,7 @@ void CFBORender::internal_render_RGBD(
 				// map d in [-1.0f,+1.0f] ==> real depth values:
 				for (auto& d : outDepth)
 				{
-					d = (*lut)
-						[(d + 1.0f) *
-						 (OpenGLDepth2Linear_LUTs::NUM_ENTRIES - 1) / 2];
+					d = (*lut)[(d + 1.0f) * (depth_lut_t::NUM_ENTRIES - 1) / 2];
 				}
 			}
 #ifdef FBO_PROFILER

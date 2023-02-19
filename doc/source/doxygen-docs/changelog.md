@@ -8,6 +8,7 @@
       - OpenGL shaders: more rational use of GLSL precision specifiers: highp for positions, lowp for colors.
       - New flag mrpt::opengl::CFBORender::Parameters::raw_depth
       - mrpt::opengl::COpenGLFramebuffer: Remove stencil bit for faster off-screen rendering.
+      - New class mrpt::opengl::OpenGLDepth2LinearLUTs
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 
