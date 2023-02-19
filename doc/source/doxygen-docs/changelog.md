@@ -6,6 +6,7 @@
       - All OpenGL viewports: pan is now also achieved by pressing the mouse middle button (wheel) + dragging, for similarity with many other CAD UIs.
     - \ref mrpt_opengl_grp
       - OpenGL shaders: more rational use of GLSL precision specifiers: highp for positions, lowp for colors.
+      - New flag mrpt::opengl::CFBORender::Parameters::raw_depth
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 
