@@ -9,6 +9,7 @@
       - New flag mrpt::opengl::CFBORender::Parameters::raw_depth
       - mrpt::opengl::COpenGLFramebuffer: Remove stencil bit for faster off-screen rendering.
       - New class mrpt::opengl::OpenGLDepth2LinearLUTs
+      - mrpt::opengl::CMesh now supports texture wrapping over the mesh extension.
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 
