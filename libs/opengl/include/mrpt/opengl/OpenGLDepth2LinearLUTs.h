@@ -8,13 +8,12 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <vector>
-#include <unordered_map>
 #include <cstdlib>
+#include <unordered_map>
+#include <vector>
 
 namespace mrpt::opengl
 {
-
 /** Creates look-up-tables (LUTs) to map raw OpenGL depth values in the
  *  range [-1,1] to real, linear, depth values.
  *
@@ -76,4 +75,4 @@ class OpenGLDepth2LinearLUTs
 	std::unordered_map<std::pair<float, float>, lut_t, MyHash> m_pool;
 };
 
-}
+}  // namespace mrpt::opengl
