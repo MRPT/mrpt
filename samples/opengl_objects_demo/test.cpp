@@ -436,6 +436,7 @@ void TestOpenGLObjects()
 		opengl::CMeshFast::Ptr obj2 = opengl::CMeshFast::Create();
 		opengl::CMesh::Ptr obj3 = opengl::CMesh::Create();
 		opengl::CMesh::Ptr obj4 = opengl::CMesh::Create();
+		opengl::CMesh::Ptr obj5 = opengl::CMesh::Create();
 
 		obj1->setXBounds(-1, 1);
 		obj1->setYBounds(-1, 1);
@@ -494,6 +495,14 @@ void TestOpenGLObjects()
 			obj4->setLocation(off_x, 3, 0);
 			obj4->cullFaces(mrpt::opengl::TCullFace::BACK);
 			theScene->insert(obj4);
+		}
+		// obj 5:
+		if (im.getWidth() > 1)
+		{
+			obj5->assignImageAndZ(im, Z);
+			obj5->setMeshTextureExtension(0.25, 0.5);
+			obj5->setLocation(off_x + 3, 3, 0);
+			theScene->insert(obj5);
 		}
 
 		mrpt::math::CMatrixDynamic<float> Z2(H, W);

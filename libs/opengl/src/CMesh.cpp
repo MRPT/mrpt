@@ -379,16 +379,20 @@ void CMesh::onUpdateBuffers_TexturedTriangles()
 
 	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx.data);
 
+	// Default: texture over the whole extension.
+	const float textureSizeX =
+		(m_textureSize_x != 0) ? m_textureSize_x : (m_xMax - m_xMin);
+	const float textureSizeY =
+		(m_textureSize_y != 0) ? m_textureSize_y : (m_xMax - m_xMin);
+
 	for (auto& i : actualMesh)
 	{
-		const mrpt::opengl::TTriangle& t = i.first;
+		mrpt::opengl::TTriangle& tri = i.first;
 		const TTriangleVertexIndices& tvi = i.second;
 
 		const auto& n0 = vertex_normals.at(tvi.vind[0]).first;
 		const auto& n1 = vertex_normals.at(tvi.vind[1]).first;
 		const auto& n2 = vertex_normals.at(tvi.vind[2]).first;
-
-		auto tri = t;
 
 		tri.vertices[0].normal = n0;
 		tri.vertices[1].normal = n1;
@@ -396,13 +400,15 @@ void CMesh::onUpdateBuffers_TexturedTriangles()
 
 		for (int k = 0; k < 3; k++)
 		{
+			// NOTE: These texture coordinates assume the use of WRAPPED texture
+			// (U,V) in the shader. This is GL_REPEAT, the default.
 			tri.vertices[k].uv.y =
-				(tri.vertices[k].xyzrgba.pt.x - m_xMin) / (m_xMax - m_xMin);
+				(tri.vertices[k].xyzrgba.pt.x - m_xMin) / textureSizeX;
 			tri.vertices[k].uv.x =
-				(tri.vertices[k].xyzrgba.pt.y - m_yMin) / (m_yMax - m_yMin);
+				(tri.vertices[k].xyzrgba.pt.y - m_yMin) / textureSizeY;
 		}
 
-		tris.emplace_back(std::move(tri));
+		tris.emplace_back(tri);
 	}
 
 	notifyBBoxChange();
@@ -437,9 +443,8 @@ void CMesh::assignImageAndZ(
 {
 	MRPT_START
 
-	ASSERT_(
-		(img.getWidth() == static_cast<size_t>(in_Z.cols())) &&
-		(img.getHeight() == static_cast<size_t>(in_Z.rows())));
+	// In MRPT<2.7.0, img size must be = to in_z size.
+	// This condition was removed, and custom texture coordinates added.
 
 	Z = in_Z;
 

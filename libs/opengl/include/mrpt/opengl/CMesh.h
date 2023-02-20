@@ -28,6 +28,9 @@ namespace mrpt::opengl
  * - Z column count = number of cells in direction "+y"
  * - Z row count = number of cells in direction "+x"
  *
+ * Since MRPT 2.7.0, the texture can be wrapped over the mesh using
+ * setMeshTextureExtension().
+ *
  * ![mrpt::opengl::CMesh](preview_CMesh.png)
  *
  *  \sa opengl::COpenGLScene
@@ -87,6 +90,23 @@ class CMesh : public CRenderizableShaderTexturedTriangles,
 		xMax = m_xMax;
 		yMin = m_yMin;
 		yMax = m_yMax;
+	}
+
+	/** Sets the texture physical size (in "meters) using to wrap it over the
+	 * mesh extension.
+	 *  The default (0) means texture size is equal to whole grid extension. */
+	void setMeshTextureExtension(float textureSize_x, float textureSize_y)
+	{
+		m_textureSize_x = textureSize_x;
+		m_textureSize_y = textureSize_y;
+		CRenderizable::notifyChange();
+	}
+
+	void getMeshTextureExtension(
+		float& textureSize_x, float& textureSize_y) const
+	{
+		textureSize_x = m_textureSize_x;
+		textureSize_y = m_textureSize_y;
 	}
 
 	void enableTransparency(bool v)
@@ -234,6 +254,10 @@ class CMesh : public CRenderizableShaderTexturedTriangles,
 
 	/** Mesh bounds */
 	float m_xMin, m_xMax, m_yMin, m_yMax;
+
+	/** Texture wrap physical size (in "meters). 0=texture size equal to whole
+	 * grid extension. */
+	float m_textureSize_x = 0, m_textureSize_y = 0;
 
 	mutable float m_zMin = 0, m_zMax = 0;  //!< Updated in updateTriangles()
 
