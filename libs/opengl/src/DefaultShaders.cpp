@@ -114,6 +114,17 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			uniforms = {"p_matrix", "mv_matrix"};
 			attribs = {"position", "vertexColor"};
 			break;
+			// ==============================
+		case DefaultShaderID::SKYBOX:
+			vertex_shader =
+#include "../shaders/skybox.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/skybox.f.glsl"
+				;
+			uniforms = {"pmv_matrix", "skybox"};
+			attribs = {"position"};
+			break;
 
 		default:
 			THROW_EXCEPTION_FMT(

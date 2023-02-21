@@ -201,7 +201,8 @@ void COpenGLViewport::loadDefaultShaders() const
 		DefaultShaderID::TRIANGLES_LIGHT,
 		DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT,
 		DefaultShaderID::TEXTURED_TRIANGLES_LIGHT,
-		DefaultShaderID::TEXT};
+		DefaultShaderID::TEXT,
+		DefaultShaderID::SKYBOX};
 
 	auto& shaders = m_threadedData.get().shaders;
 
