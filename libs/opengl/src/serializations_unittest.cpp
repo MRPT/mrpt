@@ -63,7 +63,8 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(CEllipsoidInverseDepth2D),
 		CLASS_ID(CEllipsoidInverseDepth3D),
 		CLASS_ID(CEllipsoidRangeBearing2D),
-		CLASS_ID(COctoMapVoxels)
+		CLASS_ID(COctoMapVoxels),
+		CLASS_ID(CSkyBox)
 	};
 
 	for (auto& cl : lstClasses)
