@@ -82,7 +82,7 @@ void CSkyBox::renderUpdateBuffers() const
 
 void CSkyBox::render(const RenderContext& rc) const
 {
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+#if 0 && (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
 
 	// This will load and/or select our texture, only once:
 	initializeTextures();
@@ -207,7 +207,7 @@ uint8_t CSkyBox::serializeGetVersion() const { return 0; }
 void CSkyBox::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-	out << m_textureImage;
+	// out << m_textureImage;
 }
 
 void CSkyBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -217,7 +217,7 @@ void CSkyBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 0:
 		{
 			readFromStreamRender(in);
-			in >> m_textureImage;
+			// in >> m_textureImage;
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);

@@ -29,6 +29,9 @@ class CSkyBox : public CRenderizable
 	DEFINE_SERIALIZABLE(CSkyBox, mrpt::opengl)
 
    public:
+	CSkyBox() = default;
+	virtual ~CSkyBox() override = default;
+
 	/** @name Renderizable shader API virtual methods
 	 * @{ */
 	void render(const RenderContext& rc) const override;
@@ -37,12 +40,11 @@ class CSkyBox : public CRenderizable
 	{
 		return {DefaultShaderID::SKYBOX};
 	}
-	void freeOpenGLResources() override;
+
+	// Not needed, only for VAO and VBO
+	void freeOpenGLResources() override {}
 
 	/** @} */
-
-	CSkyBox();
-	virtual ~CSkyBox() override = default;
 
 	enum class TEXTURE_FACE
 	{
