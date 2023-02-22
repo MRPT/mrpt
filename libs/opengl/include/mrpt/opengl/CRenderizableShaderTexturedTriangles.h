@@ -10,6 +10,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLBuffer.h>
+#include <mrpt/opengl/COpenGLTexture.h>
 #include <mrpt/opengl/COpenGLVertexArrayObject.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/TTriangle.h>
@@ -121,30 +122,12 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	void writeToStreamTexturedObject(mrpt::serialization::CArchive& out) const;
 	void readFromStreamTexturedObject(mrpt::serialization::CArchive& in);
 
-	using texture_name_t = unsigned int;
-	/// the "i" in GL_TEXTUREi
-	using texture_unit_t = int;
-
-	struct texture_name_unit_t
-	{
-		texture_name_unit_t() = default;
-		texture_name_unit_t(texture_name_t Name, texture_unit_t Unit)
-			: name(Name), unit(Unit)
-		{
-		}
-
-		texture_name_t name = 0;
-		/// the "i" in GL_TEXTUREi
-		texture_unit_t unit = 0;
-	};
-
    private:
 	bool m_enableLight = true;
 	TCullFace m_cullface = TCullFace::NONE;
 
-	mutable mrpt::containers::PerThreadDataHolder<
-		std::optional<texture_name_unit_t>>
-		m_glTexture;
+	mutable COpenGLTexture m_glTexture;
+
 	bool m_textureImageAssigned = false;
 	mutable mrpt::img::CImage m_textureImage{4, 4};
 	mutable mrpt::img::CImage m_textureImageAlpha;
@@ -155,10 +138,6 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	bool m_textureInterpolate = false;
 
 	void unloadTexture();
-
-	/// Returns: [texture name, texture unit]
-	static texture_name_unit_t getNewTextureNumber();
-	static void releaseTextureName(const texture_name_unit_t& t);
 
 	mutable COpenGLBuffer m_vertexBuffer;
 	mutable COpenGLVertexArrayObject m_vao;
