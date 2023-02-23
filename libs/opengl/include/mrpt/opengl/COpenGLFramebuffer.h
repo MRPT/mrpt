@@ -26,7 +26,7 @@ struct FrameBufferBinding
 	unsigned int readFbId = 0;
 };
 
-/** An OpenGL FrameBuffer resource with RGBA+depth/stencil render buffers.
+/** An OpenGL FrameBuffer resource with RGBA+depth render buffers.
  *
  * Refer to docs for glGenFramebuffers() and glGenRenderbuffers().
  *
@@ -42,7 +42,7 @@ class COpenGLFramebuffer
 	/** @name Main API
 	 *  @{ */
 
-	/** Creates a new FB object and the two (RGBA+depth/stencil) render buffers.
+	/** Creates a new FB object and the two (RGBA+depth) render buffers.
 	 */
 	void create(unsigned int width, unsigned int height, int nSamples = 1)
 	{
