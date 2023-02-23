@@ -49,7 +49,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	// See base docs
 	void freeOpenGLResources() override
 	{
-		m_vertexBuffer.destroy();
+		m_vbo.destroy();
 		m_vao.destroy();
 	}
 
@@ -137,9 +137,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 
 	bool m_textureInterpolate = false;
 
-	void unloadTexture();
-
-	mutable COpenGLBuffer m_vertexBuffer;
+	mutable COpenGLBuffer m_vbo;
 	mutable COpenGLVertexArrayObject m_vao;
 };
 

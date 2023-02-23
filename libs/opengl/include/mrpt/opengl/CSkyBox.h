@@ -10,6 +10,7 @@
 
 #include <mrpt/img/CImage.h>
 #include <mrpt/opengl/COpenGLBuffer.h>
+#include <mrpt/opengl/COpenGLTexture.h>
 #include <mrpt/opengl/COpenGLVertexArrayObject.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/TTriangle.h>
@@ -64,6 +65,10 @@ class CSkyBox : public CRenderizable
 	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
    private:
+	/// The textures for the 6 faces
+	mutable std::array<COpenGLTexture, 6> m_texs;
+	std::array<mrpt::img::CImage, 6> m_textureImage;
+
 	mutable COpenGLBuffer m_vbo;
 	mutable COpenGLVertexArrayObject m_vao;
 };

@@ -17,7 +17,7 @@
 
 namespace mrpt::opengl
 {
-/** A wrapper for an OpenGL buffer object.
+/** A wrapper for an OpenGL buffer object (eg Vertex Buffer Object or VBO)
  * Refer to docs for glGenBuffers() and glBufferData().
  *
  * \sa COpenGLFramebuffer
