@@ -7,11 +7,11 @@ R"XXX(#version 300 es
 in vec3 position;
 out highp vec3 TexCoords;
 
-uniform highp mat4 pmv_matrix;
+uniform highp mat4 p_matrix, v_matrix_no_translation;
 
 void main()
 {
-    highp vec4 pos = pmv_matrix * vec4(position, 1.0);
+    highp vec4 pos = p_matrix * v_matrix_no_translation * vec4(position, 1.0);
     gl_Position = pos.xyww;
     TexCoords = position;
 }

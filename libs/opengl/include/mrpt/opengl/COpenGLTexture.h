@@ -11,6 +11,7 @@
 #include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/img/CImage.h>
 
+#include <array>
 #include <optional>
 
 namespace mrpt::opengl
@@ -31,7 +32,10 @@ struct texture_name_unit_t
 	texture_unit_t unit = 0;  //!< the "i" in GL_TEXTUREi
 };
 
-/** Resource management for OpenGL textures.
+/** Resource management for OpenGL 2D or Cube textures.
+ *
+ * The texture is generated when images are assigned via
+ * assignImage2D() or assignCubeImages().
  *
  * \sa CRenderizableShaderTexturedTriangles
  * \ingroup mrpt_opengl_grp
@@ -58,23 +62,35 @@ class COpenGLTexture
 		bool enableTransparency = false;
 	};
 
-	/** This is how an image is loaded into this object, and a texture ID is
-	 * generated underneath.
-	 * Valid image formats are 8bit per channel RGB or RGBA.
+	/** This is how an 2D texture image is loaded into this object, and a
+	 * texture ID is generated underneath. Valid image formats are 8bit per
+	 * channel RGB or RGBA.
 	 */
-	void assignImage(const mrpt::img::CImage& rgb, const Options& o);
+	void assignImage2D(const mrpt::img::CImage& rgb, const Options& o);
 
 	/// \overload With alpha (transparency) channel as an independent image
-	void assignImage(
+	void assignImage2D(
 		const mrpt::img::CImage& rgb, const mrpt::img::CImage& alpha,
 		const Options& o);
+
+	/** This is how an Cube texture is loaded into this object, and a
+	 * texture ID is generated underneath. Valid image formats are 8bit per
+	 * channel RGB or RGBA.
+	 *
+	 * Indices of faces in the array follow the numeric ordering of
+	 * mrpt::opengl::CUBE_TEXTURE_FACE values.
+	 */
+	void assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs);
 
 	/** Returns true if an image has been already assigned and an OpenGL
 	 * texture ID was already generated. */
 	bool initialized() const;
 
-	/** Binds the texture */
-	void bind();
+	/** Binds the texture to GL_TEXTURE_2D */
+	void bindAsTexture2D();
+
+	/** Binds the texture to GL_TEXTURE_CUBE_MAP */
+	void bindAsCubeTexture();
 
 	void unloadTexture();
 
@@ -91,7 +107,7 @@ class COpenGLTexture
 	const auto& get() const { return m_tex.get(); }
 	auto& get() { return m_tex.get(); }
 
-	void internalAssignImage(
+	void internalAssignImage_2D(
 		const mrpt::img::CImage* in_rgb, const mrpt::img::CImage* in_alpha,
 		const Options& o);
 };

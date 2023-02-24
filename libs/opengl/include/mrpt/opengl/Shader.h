@@ -120,8 +120,22 @@ class Program
 		return m_data->program;
 	}
 
-	int uniformId(const char* name) const { return m_data->uniforms.at(name); }
-	int attributeId(const char* name) const { return m_data->attribs.at(name); }
+	int uniformId(const char* name) const
+	{
+#ifdef _DEBUG
+		if (!hasUniform(name))
+			THROW_EXCEPTION_FMT("Shader: No such uniform '%s'", name);
+#endif
+		return m_data->uniforms.at(name);
+	}
+	int attributeId(const char* name) const
+	{
+#ifdef _DEBUG
+		if (!hasAttribute(name))
+			THROW_EXCEPTION_FMT("Shader: No such attribute '%s'", name);
+#endif
+		return m_data->attribs.at(name);
+	}
 
 	bool hasUniform(const char* name) const
 	{

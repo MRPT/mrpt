@@ -278,6 +278,12 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** @} */
 
+	/** Return false if this object should never be checked for being culled out
+	 * (=not rendered if its bbox are out of the screen limits).
+	 * For example, skyboxes or other special effects.
+	 */
+	virtual bool cullElegible() const { return true; }
+
 	/** Used from COpenGLScene::asYAML().
 	 * \note (New in MRPT 2.4.2) */
 	virtual void toYAMLMap(mrpt::containers::yaml& propertiesMap) const;

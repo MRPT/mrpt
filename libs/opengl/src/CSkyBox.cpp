@@ -88,10 +88,14 @@ void CSkyBox::render(const RenderContext& rc) const
 	initializeTextures();
 	ASSERT_(m_cubeTexture.initialized());
 
+	// Needed to draw only "free" pixels:
+	glDepthFunc(GL_LEQUAL);
+	glDisable(GL_CULL_FACE);
+
 	{
 		const Program& s = *rc.shader;
 		// bound to GL_TEXTURE0 + "i":
-		glUniform1i(s.uniformId("textureSampler"), m_cubeTexture.textureUnit());
+		glUniform1i(s.uniformId("skybox"), m_cubeTexture.textureUnit());
 	}
 
 	// Set up the vertex array:
@@ -117,6 +121,7 @@ void CSkyBox::render(const RenderContext& rc) const
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glDisableVertexAttribArray(attr_position);
+	glDepthFunc(GL_LESS);  // restore
 
 #endif
 }
@@ -126,6 +131,7 @@ void CSkyBox::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	// out << m_textureImage;
+	THROW_EXCEPTION("TODO");
 }
 
 void CSkyBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -150,7 +156,51 @@ auto CSkyBox::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 }
 
 void CSkyBox::assignImage(
-	const CSkyBox::TEXTURE_FACE face, const mrpt::img::CImage& img)
+	const CUBE_TEXTURE_FACE face, const mrpt::img::CImage& img)
 {
-	// xx;
+	const int faceIdx = static_cast<int>(face);
+	ASSERT_GE_(faceIdx, 0);
+	ASSERT_LT_(faceIdx, 6);
+
+	m_textureImages[faceIdx] = img;
+	CRenderizable::notifyChange();
+}
+
+void CSkyBox::assignImage(const CUBE_TEXTURE_FACE face, mrpt::img::CImage&& img)
+{
+	const int faceIdx = static_cast<int>(face);
+	ASSERT_GE_(faceIdx, 0);
+	ASSERT_LT_(faceIdx, 6);
+
+	m_textureImages[faceIdx] = std::move(img);
+	CRenderizable::notifyChange();
+}
+
+void CSkyBox::initializeTextures() const
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+
+	if (m_cubeTexture.initialized())
+	{
+		m_cubeTexture.bindAsCubeTexture();
+		return;
+	}
+
+	// Reserve the new one --------------------------
+	m_cubeTexture.assignCubeImages(m_textureImages);
+
+#endif
+}
+
+CSkyBox::~CSkyBox()
+{
+	try
+	{
+		m_cubeTexture.unloadTexture();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[~CSkyBox] Ignoring exception: "
+				  << mrpt::exception_to_str(e);
+	}
 }

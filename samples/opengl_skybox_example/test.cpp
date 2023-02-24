@@ -7,31 +7,87 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
+#include <mrpt/core/format.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CSkyBox.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/system/filesystem.h>
 
 #include <iostream>
 #include <thread>
+
+/* Download and extract the sky box textures, so we dont need to add them
+  to the already too large MRPT git repo:
+
+CloudyLightRays/
+├── CloudyLightRaysBack.jpg
+├── CloudyLightRaysDown.jpg
+├── CloudyLightRaysFront.jpg
+├── CloudyLightRaysLeft.jpg
+├── CloudyLightRaysRight.jpg
+├── CloudyLightRaysUp.jpg
+├── LICENSE.txt
+└── README.txt
+ */
+const char* urlZip =
+	"https://mrpt.github.io/mvsim-models/skyboxes/CloudyLightRays.zip";
+const char* textureDir = "./CloudyLightRays/";
+const char* textureFilePattern = "./CloudyLightRays/CloudyLightRays%s.jpg";
+
+void downloadTextures()
+{
+	if (mrpt::system::directoryExists(textureDir)) return;	// already there
+
+	int ret = ::system(mrpt::format("wget %s -O texture.zip", urlZip).c_str());
+	if (ret)
+		THROW_EXCEPTION("Error invoking wget to download the texture package.");
+
+	ret = ::system("unzip texture.zip");
+	if (ret)
+		THROW_EXCEPTION("Error invoking unzip to extract the texture package.");
+}
 
 // ------------------------------------------------------
 //				TestSkyBox
 // ------------------------------------------------------
 void TestSkyBox()
 {
+	downloadTextures();
+
 	mrpt::gui::CDisplayWindow3D win("Example of MRPT skybox", 800, 600);
 
 	mrpt::opengl::COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 
-	// Modify the scene:
+	// Create the 3D scene:
 	// ------------------------------------------------------
-	{
-		auto obj = mrpt::opengl::CSkyBox::Create();
 
-		theScene->insert(obj);
+	// Create the SkyBox:
+	{
+		using mrpt::opengl::CUBE_TEXTURE_FACE;
+
+		auto sb = mrpt::opengl::CSkyBox::Create();
+
+		std::vector<std::pair<CUBE_TEXTURE_FACE, const char*>> faceImages = {
+			{CUBE_TEXTURE_FACE::FRONT, "Front"},
+			{CUBE_TEXTURE_FACE::BACK, "Back"},
+			{CUBE_TEXTURE_FACE::BOTTOM, "Down"},
+			{CUBE_TEXTURE_FACE::TOP, "Up"},
+			{CUBE_TEXTURE_FACE::LEFT, "Left"},
+			{CUBE_TEXTURE_FACE::RIGHT, "Right"},
+		};
+
+		for (const auto& p : faceImages)
+		{
+			const auto fil = mrpt::format(textureFilePattern, p.second);
+			std::cout << "Loading face texture: " << fil << std::endl;
+
+			sb->assignImage(p.first, mrpt::img::CImage::LoadFromFile(fil));
+		}
+
+		theScene->insert(sb);
 	}
 
 	{
@@ -62,6 +118,10 @@ void TestSkyBox()
 
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 	win.unlockAccess3DScene();
+
+	// change camera parasm:
+	win.setCameraAzimuthDeg(40.0f);
+	win.setFOV(90.0f);
 
 	// Update window:
 	win.forceRepaint();
