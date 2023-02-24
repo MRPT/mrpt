@@ -57,7 +57,9 @@ class CSkyBox : public CRenderizable
 		FRONT
 	};
 
-	/** Assigns a texture.
+	/** Assigns a texture. It is mandatory to assign all 6 faces before
+	 * initializing/rendering the texture.
+	 *
 	 * \note Images are copied, the original ones can be deleted.
 	 */
 	void assignImage(const TEXTURE_FACE face, const mrpt::img::CImage& img);
@@ -65,8 +67,8 @@ class CSkyBox : public CRenderizable
 	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override;
 
    private:
-	/// The textures for the 6 faces
-	mutable std::array<COpenGLTexture, 6> m_texs;
+	/// The cube texture for the 6 faces
+	mutable COpenGLTexture m_cubeTexture;
 	std::array<mrpt::img::CImage, 6> m_textureImage;
 
 	mutable COpenGLBuffer m_vbo;

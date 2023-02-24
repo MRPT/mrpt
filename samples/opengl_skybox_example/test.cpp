@@ -11,6 +11,7 @@
 #include <mrpt/img/TColor.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CSkyBox.h>
 #include <mrpt/opengl/CSphere.h>
 
 #include <iostream>
@@ -21,21 +22,20 @@
 // ------------------------------------------------------
 void TestSkyBox()
 {
-	using namespace mrpt;
-	using namespace mrpt::gui;
-	using namespace mrpt::math;
-	using namespace mrpt::opengl;
-	using namespace mrpt::img;
-	using namespace mrpt::system;
+	mrpt::gui::CDisplayWindow3D win("Example of MRPT skybox", 800, 600);
 
-	CDisplayWindow3D win("Example of MRPT skybox", 800, 600);
-
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
 
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CAxis::Ptr obj = opengl::CAxis::Create();
+		auto obj = mrpt::opengl::CSkyBox::Create();
+
+		theScene->insert(obj);
+	}
+
+	{
+		auto obj = mrpt::opengl::CAxis::Create();
 		obj->setFrequency(5);
 		obj->enableTickMarks();
 		obj->setAxisLimits(-10, -10, -10, 10, 10, 10);
@@ -43,16 +43,16 @@ void TestSkyBox()
 	}
 
 	{
-		opengl::CBox::Ptr obj = opengl::CBox::Create();
+		auto obj = mrpt::opengl::CBox::Create();
 		obj->setWireframe(false);
 		obj->setColor(1, 0, 0);
 		obj->setLineWidth(3.0);
-		obj->setPose(TPose3D(1, 2, 3, 0.2, 0.3, 0.1));
+		obj->setPose(mrpt::math::TPose3D(1, 2, 3, 0.2, 0.3, 0.1));
 		theScene->insert(obj);
 	}
 
 	{
-		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
+		auto obj = mrpt::opengl::CSphere::Create();
 		obj->setColor(0, 0, 1);
 		obj->setRadius(0.3f);
 		obj->setLocation(0, -2, 0);

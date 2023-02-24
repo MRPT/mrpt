@@ -62,13 +62,13 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	// Set the texture uniform:
-	if (!rc.activeTextureUnit ||
-		*rc.activeTextureUnit != m_glTexture.get()->unit)
+	const auto texUnit = m_glTexture.textureUnit();
+	if (!rc.activeTextureUnit || *rc.activeTextureUnit != texUnit)
 	{
-		rc.activeTextureUnit = m_glTexture.get()->unit;	 // buffer it
+		rc.activeTextureUnit = texUnit;	 // buffer it
 		const Program& s = *rc.shader;
 		// bound to GL_TEXTURE0 + "i":
-		glUniform1i(s.uniformId("textureSampler"), m_glTexture.get()->unit);
+		glUniform1i(s.uniformId("textureSampler"), texUnit);
 	}
 
 	// Lights:
@@ -82,17 +82,17 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		rc.activeLights = rc.lights;
 
 		const Program& s = *rc.shader;
+		const auto& diff = rc.lights->diffuse;
+		const auto& amb = rc.lights->ambient;
+		// const auto& spc = rc.lights->specular;
+		const auto& dir = rc.lights->direction;
+
 		glUniform4f(
-			s.uniformId("light_diffuse"), rc.lights->diffuse.R,
-			rc.lights->diffuse.G, rc.lights->diffuse.B, rc.lights->diffuse.A);
-		glUniform4f(
-			s.uniformId("light_ambient"), rc.lights->ambient.R,
-			rc.lights->ambient.G, rc.lights->ambient.B, rc.lights->ambient.A);
-		// glUniform4fv(s.uniformId("light_specular"), 1,
-		// &rc.lights->specular.R);
-		glUniform3f(
-			s.uniformId("light_direction"), rc.lights->direction.x,
-			rc.lights->direction.y, rc.lights->direction.z);
+			s.uniformId("light_diffuse"), diff.R, diff.G, diff.B, diff.A);
+		glUniform4f(s.uniformId("light_ambient"), amb.R, amb.G, amb.B, amb.A);
+		// glUniform4f(s.uniformId("light_specular"), spc.R, spc.G, spc.B,
+		// spc.A);
+		glUniform3f(s.uniformId("light_direction"), dir.x, dir.y, dir.z);
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
@@ -269,7 +269,12 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	}
 
 	// Reserve the new one --------------------------
-	m_glTexture.assignImage(m_textureImage, m_textureImageAlpha);
+	mrpt::opengl::COpenGLTexture::Options opts;
+	opts.enableTransparency = m_enableTransparency;
+	opts.magnifyLinearFilter = m_textureInterpolate;
+	opts.generateMipMaps = m_textureUseMipMaps;
+
+	m_glTexture.assignImage(m_textureImage, m_textureImageAlpha, opts);
 
 #endif
 }
@@ -291,10 +296,10 @@ CRenderizableShaderTexturedTriangles::~CRenderizableShaderTexturedTriangles()
 void CRenderizableShaderTexturedTriangles::writeToStreamTexturedObject(
 	mrpt::serialization::CArchive& out) const
 {
-	uint8_t ver = 2;
+	uint8_t ver = 3;
 
 	out << ver;
-	out << m_enableTransparency << m_textureInterpolate;
+	out << m_enableTransparency << m_textureInterpolate << m_textureUseMipMaps;
 	out << m_textureImage;
 	if (m_enableTransparency) out << m_textureImageAlpha;
 	out << m_textureImageAssigned;
@@ -312,8 +317,14 @@ void CRenderizableShaderTexturedTriangles::readFromStreamTexturedObject(
 		case 0:
 		case 1:
 		case 2:
+		case 3:
 		{
 			in >> m_enableTransparency >> m_textureInterpolate;
+			if (version >= 3) { in >> m_textureUseMipMaps; }
+			else
+			{
+				m_textureUseMipMaps = true;
+			}
 			in >> m_textureImage;
 			if (m_enableTransparency)
 			{

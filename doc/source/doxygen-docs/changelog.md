@@ -10,6 +10,9 @@
       - mrpt::opengl::COpenGLFramebuffer: Remove stencil bit for faster off-screen rendering.
       - New class mrpt::opengl::OpenGLDepth2LinearLUTs
       - mrpt::opengl::CMesh now supports texture wrapping over the mesh extension.
+      - Texture handling refactored into a new class mrpt::opengl::COpenGLTexture
+      - Enabled GL MipMap texture generation.
+      - New class mrpt::opengl::CSkyBox for rendering "3D background" as sky boxes. Refer to example \ref opengl_skybox_example
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 
