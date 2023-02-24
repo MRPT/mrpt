@@ -90,6 +90,9 @@ void CSkyBox::render(const RenderContext& rc) const
 
 	// Needed to draw only "free" pixels:
 	glDepthFunc(GL_LEQUAL);
+
+	// Disable cull:
+	rc.activeCullFace = TCullFace::NONE;
 	glDisable(GL_CULL_FACE);
 
 	{

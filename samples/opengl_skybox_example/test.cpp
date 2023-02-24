@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CSkyBox.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/system/filesystem.h>
 
 #include <iostream>
@@ -32,10 +33,9 @@ CloudyLightRays/
 ├── LICENSE.txt
 └── README.txt
  */
-const char* urlZip =
-	"https://mrpt.github.io/mvsim-models/skyboxes/CloudyLightRays.zip";
-const char* textureDir = "./CloudyLightRays/";
-const char* textureFilePattern = "./CloudyLightRays/CloudyLightRays%s.jpg";
+const char* urlZip = "https://mrpt.github.io/mvsim-models/skyboxes/SunSet.zip";
+const char* textureDir = "./SunSet/";
+const char* textureFilePattern = "./SunSet/SunSet%s.jpg";
 
 void downloadTextures()
 {
@@ -98,6 +98,8 @@ void TestSkyBox()
 		theScene->insert(obj);
 	}
 
+	theScene->insert(mrpt::opengl::stock_objects::CornerXYZ(3.0));
+
 	{
 		auto obj = mrpt::opengl::CBox::Create();
 		obj->setWireframe(false);
@@ -121,7 +123,9 @@ void TestSkyBox()
 
 	// change camera parasm:
 	win.setCameraAzimuthDeg(40.0f);
-	win.setFOV(90.0f);
+	win.setCameraElevationDeg(10.0f);
+	win.setCameraZoom(4.0f);
+	win.setFOV(70.0f);
 
 	// Update window:
 	win.forceRepaint();
