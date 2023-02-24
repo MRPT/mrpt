@@ -104,6 +104,10 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	{
 		m_textureInterpolate = enable;
 	}
+	bool textureLinearInterpolation() const { return m_textureInterpolate; }
+
+	void enableTextureMipMap(bool enable) { m_textureUseMipMaps = enable; }
+	bool textureMipMap() const { return m_textureUseMipMaps; }
 
 	/** @name Raw access to textured-triangle shader buffer data
 	 * @{ */
@@ -134,8 +138,8 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 
 	/** Of the texture using "m_textureImageAlpha" */
 	mutable bool m_enableTransparency{false};
-
 	bool m_textureInterpolate = false;
+	bool m_textureUseMipMaps = true;
 
 	mutable COpenGLBuffer m_vbo;
 	mutable COpenGLVertexArrayObject m_vao;

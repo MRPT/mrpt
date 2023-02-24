@@ -486,6 +486,7 @@ void TestOpenGLObjects()
 		obj3->enableWireFrame(true);
 		obj3->setLocation(off_x, 0, 0);
 		obj3->cullFaces(mrpt::opengl::TCullFace::BACK);
+		// obj3->enableTextureMipMap(false);
 		theScene->insert(obj3);
 
 		// obj 4:
@@ -494,6 +495,7 @@ void TestOpenGLObjects()
 			obj4->assignImageAndZ(im, Z);
 			obj4->setLocation(off_x, 3, 0);
 			obj4->cullFaces(mrpt::opengl::TCullFace::BACK);
+			// obj4->enableTextureMipMap(false);
 			theScene->insert(obj4);
 		}
 		// obj 5:
@@ -502,6 +504,7 @@ void TestOpenGLObjects()
 			obj5->assignImageAndZ(im, Z);
 			obj5->setMeshTextureExtension(0.25, 0.5);
 			obj5->setLocation(off_x + 3, 3, 0);
+			// obj5->enableTextureMipMap(false);
 			theScene->insert(obj5);
 		}
 

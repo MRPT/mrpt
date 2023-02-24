@@ -290,17 +290,20 @@ void COpenGLTexture::internalAssignImage(
 	// activate the texture unit first before binding texture
 	bind();
 
-	// when texture area is small, linear interpolation. Default is
-	// GL_LINEAR_MIPMAP_NEAREST but we
-	// are not building mipmaps.
-	MRPT_TODO("mipmaps!");
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	CHECK_OPENGL_ERROR_IN_DEBUG();
+	// when texture area is small, linear interpolation:
+	if (o.generateMipMaps)
+	{
+		glTexParameterf(
+			GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+	}
+	else
+	{
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+	}
 
-	// when texture area is large, NEAREST: this is mainly thinking of
-	// rendering
-	//  occupancy grid maps, such as we want those "big pixels" to be
-	//  clearly visible ;-)
+	// when texture area is large:
 	glTexParameterf(
 		GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 		o.magnifyLinearFilter ? GL_LINEAR : GL_NEAREST);
@@ -445,8 +448,13 @@ void COpenGLTexture::internalAssignImage(
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);	 // Reset
 		CHECK_OPENGL_ERROR_IN_DEBUG();
-
 	}  // End of color texture WITHOUT trans.
+
+	if (o.generateMipMaps)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+	}
 
 	// Was: m_texture_is_loaded = true;
 	// Now this situation is represented by the optional m_glTexture having

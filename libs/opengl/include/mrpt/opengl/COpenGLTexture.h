@@ -78,6 +78,7 @@ class COpenGLTexture
 
 	void unloadTexture();
 
+	/**  Texture unit = the "i" in GL_TEXTUREi */
 	texture_unit_t textureUnit() const { return m_tex.get()->unit; }
 	texture_name_t textureNameID() const { return m_tex.get()->name; }
 
