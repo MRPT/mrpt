@@ -12,7 +12,10 @@ uniform highp mat4 p_matrix, v_matrix_no_translation;
 void main()
 {
     highp vec4 pos = p_matrix * v_matrix_no_translation * vec4(position, 1.0);
+    // (x,y,w,w), such that depth z/w=1
     gl_Position = pos.xyww;
-    TexCoords = position;
+    
+    // This change of coordinates is required to have sky boxes in their place:
+    TexCoords = vec3(position.x,position.z,position.y);
 }
 )XXX"
