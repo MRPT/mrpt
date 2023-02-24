@@ -180,11 +180,12 @@ bool COpenGLTexture::initialized() const
 	return m_tex.get().has_value();
 }
 
-void COpenGLTexture::assignImage(const mrpt::img::CImage& rgb, const Options& o)
+void COpenGLTexture::assignImage2D(
+	const mrpt::img::CImage& rgb, const Options& o)
 {
 	try
 	{
-		internalAssignImage(&rgb, nullptr, o);
+		internalAssignImage_2D(&rgb, nullptr, o);
 	}
 	catch (std::exception& e)
 	{
@@ -192,13 +193,13 @@ void COpenGLTexture::assignImage(const mrpt::img::CImage& rgb, const Options& o)
 	}
 }
 
-void COpenGLTexture::assignImage(
+void COpenGLTexture::assignImage2D(
 	const mrpt::img::CImage& rgb, const mrpt::img::CImage& alpha,
 	const Options& o)
 {
 	try
 	{
-		internalAssignImage(&rgb, &alpha, o);
+		internalAssignImage_2D(&rgb, &alpha, o);
 	}
 	catch (std::exception& e)
 	{
@@ -259,7 +260,7 @@ static unsigned char* reserveDataBuffer(
 		std::align(16, 1 /*dummy size*/, ptr, space));
 }
 
-void COpenGLTexture::internalAssignImage(
+void COpenGLTexture::internalAssignImage_2D(
 	const mrpt::img::CImage* in_rgb, const mrpt::img::CImage* in_alpha,
 	const Options& o)
 {
@@ -288,7 +289,7 @@ void COpenGLTexture::internalAssignImage(
 	get() = getNewTextureNumber();
 
 	// activate the texture unit first before binding texture
-	bind();
+	bindAsTexture2D();
 
 	// when texture area is small, linear interpolation:
 	if (o.generateMipMaps)
@@ -490,11 +491,102 @@ void COpenGLTexture::internalAssignImage(
 #endif
 }
 
-void COpenGLTexture::bind()
+void COpenGLTexture::bindAsTexture2D()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glActiveTexture(GL_TEXTURE0 + get()->unit);
 	glBindTexture(GL_TEXTURE_2D, get()->name);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
+#endif
+}
+
+void COpenGLTexture::bindAsCubeTexture()
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glActiveTexture(GL_TEXTURE0 + get()->unit);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, get()->name);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+#endif
+}
+
+void COpenGLTexture::assignCubeImages(
+	const std::array<mrpt::img::CImage, 6>& imgs)
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+
+	// just in case they are lazy-load imgs
+	for (auto& im : imgs)
+	{
+		im.forceLoad();
+		ASSERT_(im.getPixelDepth() == mrpt::img::PixelDepth::D8U);
+		ASSERT_(im.isColor());
+	}
+
+	// allocate texture "name" (ID):
+	get() = getNewTextureNumber();
+
+	// activate the texture unit first before binding texture
+	bindAsCubeTexture();
+
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Special "wrap" for cube skybox textures:
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+
+	// Check max hardware-allowed texture size:
+	{
+		GLint maxTexSize;
+		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+		ASSERT_LE_(imgs[0].getHeight(), (unsigned int)maxTexSize);
+		ASSERT_LE_(imgs[0].getWidth(), (unsigned int)maxTexSize);
+	}
+
+	for (int face = 0; face < 6; face++)
+	{
+		const auto& rgb = imgs.at(face);
+
+		const int width = rgb.getWidth();
+		const int height = rgb.getHeight();
+
+		// Format: color texture without transparency, or with integrated
+		// RGBA alpha channel
+
+		// Prepare image data types:
+		const GLenum img_type = GL_UNSIGNED_BYTE;
+		const int nBytesPerPixel = rgb.channelCount();
+		// Reverse RGB <-> BGR order?
+		const bool is_RGB_order =
+			(rgb.getChannelsOrder() == std::string("RGB"));
+		const GLenum img_format = [=]() {
+			switch (nBytesPerPixel)
+			{
+				case 1: return GL_LUMINANCE;
+				case 3: return (is_RGB_order ? GL_RGB : GL_BGR);
+				case 4: return GL_BGRA;
+			};
+			THROW_EXCEPTION("Invalid texture image channel count.");
+		}();
+
+		// Send image data to OpenGL:
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+		glPixelStorei(
+			GL_UNPACK_ROW_LENGTH, rgb.getRowStride() / nBytesPerPixel);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+		glTexImage2D(
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0 /*level*/,
+			nBytesPerPixel == 3 ? GL_RGB8 : GL_RGBA8 /* RGB components */,
+			width, height, 0 /*border*/, img_format, img_type,
+			rgb.ptrLine<uint8_t>(0));
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);	 // Reset
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+
+	}  // end for each "face"
+
 #endif
 }

@@ -122,7 +122,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/skybox.f.glsl"
 				;
-			uniforms = {"pmv_matrix", "skybox"};
+			uniforms = {"p_matrix", "v_matrix_no_translation", "skybox"};
 			attribs = {"position"};
 			break;
 

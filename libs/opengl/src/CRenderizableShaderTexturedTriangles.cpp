@@ -264,7 +264,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 
 	if (m_glTexture.initialized())
 	{
-		m_glTexture.bind();	 // activate it:
+		m_glTexture.bindAsTexture2D();	// activate it:
 		return;
 	}
 
@@ -274,7 +274,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	opts.magnifyLinearFilter = m_textureInterpolate;
 	opts.generateMipMaps = m_textureUseMipMaps;
 
-	m_glTexture.assignImage(m_textureImage, m_textureImageAlpha, opts);
+	m_glTexture.assignImage2D(m_textureImage, m_textureImageAlpha, opts);
 
 #endif
 }

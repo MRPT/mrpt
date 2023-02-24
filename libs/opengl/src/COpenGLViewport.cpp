@@ -276,7 +276,7 @@ void COpenGLViewport::renderNormalSceneMode(
 	glEnable(GL_DEPTH_TEST);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
-	glDepthFunc(GL_LEQUAL);	 // GL_LESS
+	glDepthFunc(GL_LESS);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	glEnable(GL_BLEND);
