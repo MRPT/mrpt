@@ -90,6 +90,7 @@ under `MRPT/samples <https://github.com/MRPT/mrpt/tree/develop/samples>`_.
   page_math_spline_interpolation.rst
   page_nav_circ_robot_path_planning.rst
   page_nav_rrt_planning_example.rst
+  page_obs_motion_model_demo.rst
   page_obs_mox_model_rawlog.rst
   page_opengl_custom_shaders_demo.rst
   page_opengl_objects_demo.rst
@@ -99,6 +100,8 @@ under `MRPT/samples <https://github.com/MRPT/mrpt/tree/develop/samples>`_.
   page_opengl_texture_sizes_test.rst
   page_opengl_video_demo.rst
   page_opengl_video_viewport_demo.rst
+  page_opengl_multithread_rendering.rst
+  page_opengl_skybox_example.rst
   page_poses_geometry_3D_example.rst
   page_poses_pdfs_example.rst
   page_poses_quaternions_example.rst
