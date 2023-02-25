@@ -73,10 +73,10 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	friend class mrpt::opengl::CSetOfObjects;
 
    protected:
-	std::string m_name;
-	bool m_show_name{false};
+	std::string m_name = {};
+	bool m_show_name = false;
 	/** Color components in the range [0,255] */
-	mrpt::img::TColor m_color;
+	mrpt::img::TColor m_color = {0xff, 0xff, 0xff, 0xff};
 	/** 6D pose wrt the parent coordinate reference. This class automatically
 	 * holds the cached 3x3 rotation matrix for quick load into opengl stack. */
 	mrpt::poses::CPose3D m_pose;
@@ -289,7 +289,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual void toYAMLMap(mrpt::containers::yaml& propertiesMap) const;
 
 	/** Default constructor:  */
-	CRenderizable();
+	CRenderizable() = default;
 	~CRenderizable() override;
 
 	/** Context for calls to render() */
