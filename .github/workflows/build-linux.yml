@@ -47,6 +47,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          # See bug/issue: https://github.com/orgs/community/discussions/47863
+          sudo apt-mark hold grub-efi-amd64-signed 
+
           sudo apt-get -y update
           sudo apt-get -y upgrade
 
