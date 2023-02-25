@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/opengl/Scene.h>
+#include <mrpt/opengl/COpenGLViewport.h>
 
 namespace mrpt::opengl
 {
