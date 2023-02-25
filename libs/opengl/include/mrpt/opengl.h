@@ -25,8 +25,6 @@
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/opengl/CMeshFast.h>
-#include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CRenderizable.h>
@@ -39,6 +37,8 @@
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/CText3D.h>
 #include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/Scene.h>
+#include <mrpt/opengl/Viewport.h>
 //#include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps
 // now
 //#include <mrpt/opengl/CAngularObservationMesh.h>	// It's in the lib mrpt-maps

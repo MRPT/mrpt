@@ -138,7 +138,7 @@ class CDlgPoseEst : public wxDialog
 	mrpt::vision::pnp::CPnP pnp_algos;
 	Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
 
-	mrpt::opengl::COpenGLScene::Ptr scene;
+	mrpt::opengl::Scene::Ptr scene;
 	mrpt::opengl::CSetOfObjects::Ptr cor, cor1;
 	mrpt::opengl::CGridPlaneXY::Ptr grid;
 

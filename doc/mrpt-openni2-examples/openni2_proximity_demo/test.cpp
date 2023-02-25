@@ -124,7 +124,7 @@ int main(int argc, char** argv)
 	//										Create scene
 	//========================================================================================
 	gui::CDisplayWindow3D window;
-	opengl::COpenGLScene::Ptr scene;
+	opengl::Scene::Ptr scene;
 	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE(1000000);
 	window.setWindowTitle("RGB-D camera frame");
 	window.resize(800, 600);
@@ -179,7 +179,9 @@ int main(int argc, char** argv)
 		// Read one frame
 		if ((framed.getWidth() != frameir.getWidth()) ||
 			(framed.getHeight() != frameir.getHeight()))
-		{ cout << endl << "Both frames don't have the same size."; }
+		{
+			cout << endl << "Both frames don't have the same size.";
+		}
 		else
 		{
 			const openni::DepthPixel* pDepthRow =

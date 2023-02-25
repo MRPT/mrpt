@@ -406,8 +406,8 @@ void CGraphSlamHandler<GRAPH_T>::initVisualization()
 	m_win->setPos(400, 200);
 	m_win_observer->observeBegin(*m_win);
 	{
-		COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
-		COpenGLViewport::Ptr main_view = scene->getViewport("main");
+		Scene::Ptr& scene = m_win->get3DSceneAndLock();
+		Viewport::Ptr main_view = scene->getViewport("main");
 		m_win_observer->observeBegin(*main_view);
 		m_win->unlockAccess3DScene();
 	}

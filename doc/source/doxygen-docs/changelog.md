@@ -5,12 +5,15 @@
     - \ref mrpt_gui_grp
       - All OpenGL viewports: pan is now also achieved by pressing the mouse middle button (wheel) + dragging, for similarity with many other CAD UIs.
     - \ref mrpt_opengl_grp
+      - These class names have been shortened for ease of use (typedefs with the older names still exist for backwards compatibility, including deserialization of old files):
+        - mrpt::opengl::COpenGLScene ==> mrpt::opengl::Scene
+        - mrpt::opengl::COpenGLViewport ==> mrpt::opengl::Viewport
       - OpenGL shaders: more rational use of GLSL precision specifiers: highp for positions, lowp for colors.
       - New flag mrpt::opengl::CFBORender::Parameters::raw_depth
-      - mrpt::opengl::COpenGLFramebuffer: Remove stencil bit for faster off-screen rendering.
+      - mrpt::opengl::FrameBuffer: Remove stencil bit for faster off-screen rendering.
       - New class mrpt::opengl::OpenGLDepth2LinearLUTs
       - mrpt::opengl::CMesh now supports texture wrapping over the mesh extension.
-      - Texture handling refactored into a new class mrpt::opengl::COpenGLTexture
+      - Texture handling refactored into a new class mrpt::opengl::Texture
       - Enabled GL MipMap texture generation.
       - New class mrpt::opengl::CSkyBox for rendering "3D background" as sky boxes. Refer to example \ref opengl_skybox_example
 - BUG FIXES:
@@ -59,7 +62,7 @@
     - mrpt::opengl::CAssimpModel now supports (de)serializing, storing itself in the Assimp binary format (`assbin`).
     - New opengl shaders: one set for light-enabled objects and another for objects without diffuse reflection effects (to avoid conditionals inside the GPU shader programs).
   - \ref mrpt_gui_grp
-    - mrpt::gui OpenGL canvas windows and components no longer have a background color property. It is now always handled by the mrpt::opengl::COpenGLViewport to avoid duplicated functionalities.
+    - mrpt::gui OpenGL canvas windows and components no longer have a background color property. It is now always handled by the mrpt::opengl::Viewport to avoid duplicated functionalities.
   - \ref mrpt_system_grp
     - These functions are now thread-safe if built in a system with the `localtime_r()` variant of `localtime()`:
       - mrpt::system::timestampToParts()
@@ -160,7 +163,7 @@
   - Update fallback embedded version of octomap to v1.9.6
 - BUG FIXES:
   - FIX: OpenGL API errors if several CWxGLCanvasBase instances are updated simultaneously in the same program.
-  - mrpt::opengl::COpenGLViewport would throw if an uninitialized image is passed for rendering in "image mode".
+  - mrpt::opengl::Viewport would throw if an uninitialized image is passed for rendering in "image mode".
   - mrpt::system::formatTimeInterval() reported an incorrect number of milliseconds.
   - Fix detection of Boost python module.
   - Calling mrpt::opengl::CRenderizable::setColor_u8() did not force a regeneration of opengl buffer objects in all cases.
@@ -350,12 +353,12 @@
     - Fix const-correctness of mrpt::obs::CObservation::unload() for consistency with load().
     - **[API change]** Replaced all API signatures taking an optional mrpt::poses::CPose3D as pointers (with default=nullptr) with a modern `std::optional<>`.
   - \ref mrpt_opengl_grp
-    - New method mrpt::opengl::COpenGLViewport::setClonedCameraFrom()
+    - New method mrpt::opengl::Viewport::setClonedCameraFrom()
     - mrpt::opengl::CFBORender changes:
       - More consistent naming of API methods: mrpt::opengl::CFBORender::render_RGB().
       - New method to render into a depth image mrpt::opengl::CFBORender::render_RGBD().
     - mrpt::opengl::CCamera::setProjectiveFromPinhole() now allows defining a camera by means of a pinhole model.
-    - New class mrpt::opengl::COpenGLFramebuffer, used to refactor mrpt::opengl::CFBORender
+    - New class mrpt::opengl::FrameBuffer, used to refactor mrpt::opengl::CFBORender
     - New methods to control face culling:
       - mrpt::opengl::CRenderizableShaderTriangles::cullFaces()
       - mrpt::opengl::CRenderizableShaderTexturedTriangles::cullFaces()
@@ -387,12 +390,12 @@
     - mrpt::rtti class registry
     - The global mrpt::random::getRandomGenerator()
     - mrpt::typemeta::TEnumTypeFiller
-  - Image-mode was not serialized in mrpt::opengl::COpenGLViewport
+  - Image-mode was not serialized in mrpt::opengl::Viewport
   - nanogui: avoid potential divide by zero.
   - mrpt::comms::CClientTCPSocket crashed if socket handle >=1024 in Linux (Closes [#1157](https://github.com/MRPT/mrpt/issues/1157))
   - Fix error generating and parsing TUM RGBD dataset rawlog files.
   - Fix regresion in mrpt::opengl::CFBORender::render() throwing an exception if the input image was empty.
-  - Fix incorrect handling of negative, fractional viewport sizes in mrpt::opengl::COpenGLViewport
+  - Fix incorrect handling of negative, fractional viewport sizes in mrpt::opengl::Viewport
   - Fix: Should not scale velocity commands when in slow down, in CAbstractPTGBasedReactive::generate_vel_cmd() (Closes [#1175](https://github.com/MRPT/mrpt/issues/1175)).
   - mrpt::system::CDirectoryExplorer did not fill in correct absolute paths if a relative path was passed as starting directory to scan.
   - Fix mrpt::obs::CSensoryFrame::operator+=() did not perform what it was supposed to do.
@@ -464,7 +467,7 @@
     - New class mrpt::obs::CObservation3DScene.
     - mrpt::obs::CObservationIMU now uses std::array instead of std::vector (faster due to less dynamic memory).
   - \ref mrpt_opengl_grp
-    - Deprecate mrpt::opengl::COpenGLScene::dumpListOfObjects() in favor of new mrpt::opengl::COpenGLScene::asYAML()
+    - Deprecate mrpt::opengl::Scene::dumpListOfObjects() in favor of new mrpt::opengl::Scene::asYAML()
     - New method mrpt::opengl::CSimpleLine::setLineCoords() accepting mrpt::math::TPoint3D (older signature deprecated).
   - \ref mrpt_system_grp
     - New return-by-value signature for mrpt::system::CDirectoryExplorer::explore(), older version deprecated.
@@ -502,7 +505,7 @@
     - New function mrpt::system::progress()
 - BUG FIXES:
   - ptg-configurator: Fix failure to list existing PTGs, due to RTTI unregistered name "CParameterizedTrajectoryGenerator".
-  - mrpt::opengl::COpenGLViewport::get3DRayForPixelCoord() returned wrong pixel coordinates when in orthogonal projection mode.
+  - mrpt::opengl::Viewport::get3DRayForPixelCoord() returned wrong pixel coordinates when in orthogonal projection mode.
   - mrpt::opengl::CArrow: Fix wrong normal calculation (wrong rendering reflections).
   - mrpt::opengl::CPointCloud::markAllPointsAsNew() and mrpt::opengl::CPointCloudColoured::markAllPointsAsNew() did not refresh OpenGL buffers.
   - mrpt::nav::CPTG_DiffDrive_CollisionGridBased::getPathTwist() returned much larger velocities than the actual values.
@@ -718,7 +721,7 @@
     - CObservation3DRangeScan::points3D_convertToExternalStorage() stores point clouds with points as rows (vs as columns as it did before).
   - \ref mrpt_opengl_grp
     - Emit warnings to std::cerr whenever opengl memory is leaked due to OpenGL buffers being created and destroyed in different threads.
-    - Overlaid text messages are now also (de)serialized in mrpt::opengl::COpenGLViewport, and hence in 3D scenes in general.
+    - Overlaid text messages are now also (de)serialized in mrpt::opengl::Viewport, and hence in 3D scenes in general.
     - All opengl shader base classes now expose their internal buffers as const ref. See children of mrpt::opengl::CRenderizable
   - \ref mrpt_system_grp
     - New class: mrpt::system::CControlledRateTimer (+ associated example)
@@ -1987,7 +1990,7 @@ Mariano Jaimez Tarifa)
 Angel Moreno).
     - [mrpt-opengl]
       - mrpt::opengl::CLight - OpenGL scenes now allow customization of
-OpenGL lighting. See also new lighting methods in mrpt::opengl::COpenGLViewport
+OpenGL lighting. See also new lighting methods in mrpt::opengl::Viewport
 - <a href="http://code.google.com/p/mrpt/source/detail?r=3409" >r3409</a>
     - [mrpt-reactivenav]
       - mrpt::reactivenav::CReactiveNavigationSystem3D - By Mariano Jaimez
@@ -2305,13 +2308,13 @@ Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3050"
         - Evaluation of bounding box of opengl objects. New methods: -
 <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
           - mrpt::opengl::CRenderizable::getBoundingBox()
-          - mrpt::opengl::COpenGLScene::getBoundingBox()
-          - mrpt::opengl::COpenGLViewport::getBoundingBox()
+          - mrpt::opengl::Scene::getBoundingBox()
+          - mrpt::opengl::Viewport::getBoundingBox()
         -
 mrpt::opengl::COctreePointRenderer::octree_get_graphics_boundingboxes() has a
 new flag to draw solid boxes at each leaf node - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3033" >r3033</a>
-        - mrpt::opengl::COpenGLViewport has a new set of "global OpenGL
+        - mrpt::opengl::Viewport has a new set of "global OpenGL
 switches" that affect the rendering of entire scenes - <a
 href="http://code.google.com/p/mrpt/source/detail?r=3185" >r3185</a>
         - Classes drawing lines now by default enable anti-aliasing (can

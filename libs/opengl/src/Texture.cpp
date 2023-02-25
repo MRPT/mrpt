@@ -11,7 +11,7 @@
 //
 #include <mrpt/core/get_env.h>
 #include <mrpt/core/lock_helper.h>
-#include <mrpt/opengl/COpenGLTexture.h>
+#include <mrpt/opengl/Texture.h>
 #include <mrpt/opengl/opengl_api.h>
 
 #include <iostream>
@@ -33,7 +33,7 @@ const bool MRPT_OPENGL_VERBOSE =
 #include <mrpt/system/CGenericMemoryPool.h>
 #endif
 
-void COpenGLTexture::unloadTexture()
+void Texture::unloadTexture()
 {
 	m_tex.run_on_all([](std::optional<texture_name_unit_t>& tnu) {
 		if (!tnu) return;
@@ -174,14 +174,13 @@ void mrpt::opengl::releaseTextureName(const texture_name_unit_t& t)
 	TextureResourceHandler::Instance().releaseTextureID(t.name, t.unit);
 }
 
-bool COpenGLTexture::initialized() const
+bool Texture::initialized() const
 {
 	// already assigned an ID?
 	return m_tex.get().has_value();
 }
 
-void COpenGLTexture::assignImage2D(
-	const mrpt::img::CImage& rgb, const Options& o)
+void Texture::assignImage2D(const mrpt::img::CImage& rgb, const Options& o)
 {
 	try
 	{
@@ -193,7 +192,7 @@ void COpenGLTexture::assignImage2D(
 	}
 }
 
-void COpenGLTexture::assignImage2D(
+void Texture::assignImage2D(
 	const mrpt::img::CImage& rgb, const mrpt::img::CImage& alpha,
 	const Options& o)
 {
@@ -260,7 +259,7 @@ static unsigned char* reserveDataBuffer(
 		std::align(16, 1 /*dummy size*/, ptr, space));
 }
 
-void COpenGLTexture::internalAssignImage_2D(
+void Texture::internalAssignImage_2D(
 	const mrpt::img::CImage* in_rgb, const mrpt::img::CImage* in_alpha,
 	const Options& o)
 {
@@ -491,7 +490,7 @@ void COpenGLTexture::internalAssignImage_2D(
 #endif
 }
 
-void COpenGLTexture::bindAsTexture2D()
+void Texture::bindAsTexture2D()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glActiveTexture(GL_TEXTURE0 + get()->unit);
@@ -500,7 +499,7 @@ void COpenGLTexture::bindAsTexture2D()
 #endif
 }
 
-void COpenGLTexture::bindAsCubeTexture()
+void Texture::bindAsCubeTexture()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glActiveTexture(GL_TEXTURE0 + get()->unit);
@@ -509,8 +508,7 @@ void COpenGLTexture::bindAsCubeTexture()
 #endif
 }
 
-void COpenGLTexture::assignCubeImages(
-	const std::array<mrpt::img::CImage, 6>& imgs)
+void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 

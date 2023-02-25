@@ -193,10 +193,10 @@ void Test_Kinect()
 	const double aspect_ratio =
 		480.0 / 640.0;	// kinect.rows() / double( kinect.cols() );
 
-	opengl::COpenGLViewport::Ptr viewRange,
+	opengl::Viewport::Ptr viewRange,
 		viewInt;  // Extra viewports for the RGB & D images.
 	{
-		mrpt::opengl::COpenGLScene::Ptr& scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 		scene->insert(gl_voxels);

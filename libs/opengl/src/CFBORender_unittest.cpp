@@ -71,7 +71,7 @@ static void test_opengl_CFBORender(const bool useCameraFromIntrinsics)
 		"/tests/CFBORender_expected_depth_"s +
 		(useCameraFromIntrinsics ? "camInt"s : "camFOV"s) + ".png"s;
 
-	COpenGLScene scene;
+	Scene scene;
 
 	{
 		auto obj = mrpt::opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 5);

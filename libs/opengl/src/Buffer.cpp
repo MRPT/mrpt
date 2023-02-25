@@ -13,7 +13,7 @@
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/exceptions.h>
 #include <mrpt/core/get_env.h>
-#include <mrpt/opengl/COpenGLBuffer.h>
+#include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/opengl_api.h>
 
 #include <cstdlib>
@@ -21,16 +21,16 @@
 
 using namespace mrpt::opengl;
 
-COpenGLBuffer::COpenGLBuffer(const COpenGLBuffer::Type type) : m_impl(type) {}
+Buffer::Buffer(const Buffer::Type type) : m_impl(type) {}
 
-COpenGLBuffer::RAII_Impl::RAII_Impl(COpenGLBuffer::Type t) : type(t) {}
-COpenGLBuffer::RAII_Impl::~RAII_Impl()
+Buffer::RAII_Impl::RAII_Impl(Buffer::Type t) : type(t) {}
+Buffer::RAII_Impl::~RAII_Impl()
 {
 	// Free opengl resources:
 	destroy();
 }
 
-void COpenGLBuffer::RAII_Impl::create()
+void Buffer::RAII_Impl::create()
 {
 	destroy();
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
@@ -42,7 +42,7 @@ void COpenGLBuffer::RAII_Impl::create()
 #endif
 }
 
-void COpenGLBuffer::RAII_Impl::destroy()
+void Buffer::RAII_Impl::destroy()
 {
 	if (!created) return;
 
@@ -67,7 +67,7 @@ void COpenGLBuffer::RAII_Impl::destroy()
 			mrpt::TCallStackBackTrace bt;
 			mrpt::callStackBackTrace(bt);
 
-			std::cerr << "[COpenGLBuffer::RAII_Impl] *Warning* Leaking memory "
+			std::cerr << "[Buffer::RAII_Impl] *Warning* Leaking memory "
 						 "since Buffer was acquired from a different thread "
 						 "and cannot free it from this thread, call stack:"
 					  << bt.asString() << std::endl;
@@ -78,7 +78,7 @@ void COpenGLBuffer::RAII_Impl::destroy()
 	created = false;
 }
 
-void COpenGLBuffer::RAII_Impl::bind()
+void Buffer::RAII_Impl::bind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(created);
@@ -86,7 +86,7 @@ void COpenGLBuffer::RAII_Impl::bind()
 #endif
 }
 
-void COpenGLBuffer::RAII_Impl::unbind()
+void Buffer::RAII_Impl::unbind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	if (!created) return;
@@ -96,7 +96,7 @@ void COpenGLBuffer::RAII_Impl::unbind()
 #endif
 }
 
-void COpenGLBuffer::RAII_Impl::allocate(const void* data, int byteCount)
+void Buffer::RAII_Impl::allocate(const void* data, int byteCount)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(created);

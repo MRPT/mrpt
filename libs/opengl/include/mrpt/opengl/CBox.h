@@ -27,7 +27,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CBox](preview_CBox.png)
  *
- * \sa opengl::COpenGLScene,opengl::CRenderizable
+ * \sa opengl::Scene,opengl::CRenderizable
  * \ingroup mrpt_opengl_grp
  */
 class CBox : public CRenderizableShaderTriangles,

@@ -19,7 +19,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CSetOfLines](preview_CSetOfLines.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfLines : public CRenderizableShaderWireFrame,

@@ -57,13 +57,13 @@ void TestDisplay3D()
 {
 	CDisplayWindow3D win("Example of 3D Scene Visualization - MRPT", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	// The unique instance of the observer class:
 	TMyExtraRenderingStuff my_extra_rendering;
 
 	// And start subscribing to the viewport events:
-	opengl::COpenGLViewport::Ptr the_main_view = theScene->getViewport("main");
+	opengl::Viewport::Ptr the_main_view = theScene->getViewport("main");
 	my_extra_rendering.observeBegin(*the_main_view);
 
 	// Modify the scene:
@@ -123,7 +123,7 @@ void TestDisplay3D()
 	while (!end && win.isOpen())
 	{
 		// Move the scene:
-		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 		opengl::CRenderizable::Ptr obj1 = theScene->getByName("ball_1");
 		const double t = timer.Tac();

@@ -10,7 +10,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/CImagePyramid.h>
 #include <mrpt/vision/TKeyPoint.h>
@@ -61,9 +61,9 @@ void TestVideoBuildPyr()
 
 	//  Get the smart pointer to the main viewport object in this window,
 	//   and create other viewports for the smaller images:
-	std::vector<COpenGLViewport::Ptr> gl_views(N_OCTAVES);
+	std::vector<Viewport::Ptr> gl_views(N_OCTAVES);
 	{
-		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& theScene = win.get3DSceneAndLock();
 		gl_views[0] = theScene->getViewport("main");
 		ASSERT_(gl_views[0]);
 
@@ -84,7 +84,7 @@ void TestVideoBuildPyr()
 		double W = W0;
 		for (size_t i = 0; i < N_OCTAVES; i++)
 		{
-			COpenGLViewport* vw = gl_views[i].get();
+			Viewport* vw = gl_views[i].get();
 			vw->setViewportPosition(X, .0, W, 1.);
 			// cout << "Created viewport " << i << " at X=" << X << " with
 			// Width=" << W << endl;
@@ -134,7 +134,7 @@ void TestVideoBuildPyr()
 
 				for (size_t i = 0; i < N_OCTAVES; i++)
 				{
-					COpenGLViewport* vw = gl_views[i].get();
+					Viewport* vw = gl_views[i].get();
 					vw->setImageView(imgpyr.images[i]);
 				}
 

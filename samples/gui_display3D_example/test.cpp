@@ -38,11 +38,11 @@ void TestDisplay3D()
 {
 	CDisplayWindow3D win("Example of 3D Scene Visualization - MRPT", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
 	{
-		COpenGLViewport::Ptr vi = theScene->createViewport("myClone");
+		Viewport::Ptr vi = theScene->createViewport("myClone");
 		vi->setViewportPosition(0.7, 0.05, 0.28, 0.28);
 		vi->setCloneView("main");
 		vi->setTransparent(true);
@@ -53,7 +53,7 @@ void TestDisplay3D()
 
 	// Another clone viewport, using absolute coordinates
 	{
-		COpenGLViewport::Ptr vi = theScene->createViewport("myClone2");
+		Viewport::Ptr vi = theScene->createViewport("myClone2");
 		vi->setViewportPosition(
 			/*x px*/ -250, /*y px*/ -250, /*width px*/ 250,
 			/*height px*/ 200);	 // x,y negative means pixels from the
@@ -69,7 +69,7 @@ void TestDisplay3D()
 	if (false)
 	{
 		mrpt::opengl::CText::Ptr txt1 = mrpt::opengl::CText::Create();
-		COpenGLViewport::Ptr vi = theScene->createViewport("flat_viewport");
+		Viewport::Ptr vi = theScene->createViewport("flat_viewport");
 		vi->setViewportPosition(0, 0, 0.3, 0.3);
 		vi->setTransparent(true);
 		vi->setBorderSize(0);

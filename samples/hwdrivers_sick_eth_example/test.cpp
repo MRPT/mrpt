@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 
 	CDisplayWindow3D win3D("Scan", 200, 200);
 
-	COpenGLScene::Ptr ptr_scene = win3D.get3DSceneAndLock();
+	Scene::Ptr ptr_scene = win3D.get3DSceneAndLock();
 
 	opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
 	obj->clear();

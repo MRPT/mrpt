@@ -9,11 +9,11 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/COpenGLBuffer.h>
-#include <mrpt/opengl/COpenGLTexture.h>
-#include <mrpt/opengl/COpenGLVertexArrayObject.h>
+#include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/TTriangle.h>
+#include <mrpt/opengl/Texture.h>
+#include <mrpt/opengl/VertexArrayObject.h>
 
 #include <shared_mutex>
 
@@ -130,7 +130,7 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	bool m_enableLight = true;
 	TCullFace m_cullface = TCullFace::NONE;
 
-	mutable COpenGLTexture m_glTexture;
+	mutable Texture m_glTexture;
 
 	bool m_textureImageAssigned = false;
 	mutable mrpt::img::CImage m_textureImage{4, 4};
@@ -141,8 +141,8 @@ class CRenderizableShaderTexturedTriangles : public virtual CRenderizable
 	bool m_textureInterpolate = false;
 	bool m_textureUseMipMaps = true;
 
-	mutable COpenGLBuffer m_vbo;
-	mutable COpenGLVertexArrayObject m_vao;
+	mutable Buffer m_vbo;
+	mutable VertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl

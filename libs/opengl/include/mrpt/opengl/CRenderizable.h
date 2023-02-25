@@ -53,23 +53,23 @@ enum class TCullFace : uint8_t
  *mainly:
  * - Its SE(3) pose (x,y,z,yaw,pitch,roll), relative to the parent object,
  * or the global frame of reference for root objects (inserted into a
- *mrpt::opengl::COpenGLScene).
+ *mrpt::opengl::Scene).
  * - A name: A name that can be optionally asigned to objects for
  *easing its reference.
  * - A RGBA color: This field will be used in simple elements (points,
  *lines, text,...) but is ignored in more complex objects that carry their own
  *color information (triangle sets,...)
  *
- * See the main class opengl::COpenGLScene
+ * See the main class opengl::Scene
  *
- *  \sa opengl::COpenGLScene, mrpt::opengl
+ *  \sa opengl::Scene, mrpt::opengl
  * \ingroup mrpt_opengl_grp
  */
 class CRenderizable : public mrpt::serialization::CSerializable
 {
 	DEFINE_VIRTUAL_SERIALIZABLE(CRenderizable)
 
-	friend class mrpt::opengl::COpenGLViewport;
+	friend class mrpt::opengl::Viewport;
 	friend class mrpt::opengl::CSetOfObjects;
 
    protected:
@@ -284,7 +284,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	virtual bool cullElegible() const { return true; }
 
-	/** Used from COpenGLScene::asYAML().
+	/** Used from Scene::asYAML().
 	 * \note (New in MRPT 2.4.2) */
 	virtual void toYAMLMap(mrpt::containers::yaml& propertiesMap) const;
 
@@ -487,7 +487,7 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
  *        the object lies within the viewport area, so it is pointless to waste
  *        more time checking.
  *
- * \note Used by CSetOfObjects and COpenGLViewport
+ * \note Used by CSetOfObjects and Viewport
  *
  * \sa processPendingRendering
  */
@@ -499,7 +499,7 @@ void enqueueForRendering(
 /** After enqueueForRendering(), actually executes the rendering tasks, grouped
  * shader by shader.
  *
- *  \note Used by COpenGLViewport
+ *  \note Used by Viewport
  */
 void processRenderQueue(
 	const RenderQueue& rq,

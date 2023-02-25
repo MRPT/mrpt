@@ -77,9 +77,9 @@ void generateObjects(CSetOfObjects::Ptr& world)
 void test_icp3D()
 {
 	// Create the reference objects:
-	COpenGLScene::Ptr scene1 = COpenGLScene::Create();
-	COpenGLScene::Ptr scene2 = COpenGLScene::Create();
-	COpenGLScene::Ptr scene3 = COpenGLScene::Create();
+	Scene::Ptr scene1 = Scene::Create();
+	Scene::Ptr scene2 = Scene::Create();
+	Scene::Ptr scene3 = Scene::Create();
 
 	auto plane1 = CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1);
 	plane1->setColor(0.3f, 0.3f, 0.3f);

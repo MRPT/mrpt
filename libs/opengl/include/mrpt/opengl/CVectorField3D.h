@@ -25,7 +25,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CVectorField3D](preview_CVectorField3D.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 
