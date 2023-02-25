@@ -19,7 +19,7 @@ namespace mrpt::opengl
 using texture_name_t = unsigned int;
 using texture_unit_t = int;	 //!< the "i" in GL_TEXTUREi
 
-/** Texture "name" and "unit". \sa COpenGLTexture \ingroup mrpt_opengl_grp */
+/** Texture "name" and "unit". \sa Texture \ingroup mrpt_opengl_grp */
 struct texture_name_unit_t
 {
 	texture_name_unit_t() = default;
@@ -40,11 +40,11 @@ struct texture_name_unit_t
  * \sa CRenderizableShaderTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
-class COpenGLTexture
+class Texture
 {
    public:
-	COpenGLTexture() = default;
-	~COpenGLTexture() = default;
+	Texture() = default;
+	~Texture() = default;
 
 	/// Options while creating a texture from an image.
 	struct Options

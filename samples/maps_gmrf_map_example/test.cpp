@@ -91,7 +91,7 @@ void Example_GMRF()
 
 	mrpt::gui::CDisplayWindow3D win("Map", 640, 480);
 
-	mrpt::opengl::COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
 	scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 4.0f));
 	scene->insert(gl_data);
 	scene->insert(glObj);

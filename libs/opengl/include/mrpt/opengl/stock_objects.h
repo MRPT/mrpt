@@ -15,13 +15,13 @@ namespace mrpt
 namespace opengl
 {
 /** A collection of pre-built 3D objects for quick insertion in
- * opengl::COpenGLScene objects.
+ * opengl::Scene objects.
  * \ingroup mrpt_opengl_grp
  */
 namespace stock_objects
 {
 /** Returns a representation of Rhodon.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  *  <div align="center">
  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
@@ -34,7 +34,7 @@ namespace stock_objects
 CSetOfObjects::Ptr RobotRhodon();
 
 /** Returns a representation of RobotGiraff.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  *  <div align="center">
  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
@@ -47,7 +47,7 @@ CSetOfObjects::Ptr RobotRhodon();
 CSetOfObjects::Ptr RobotGiraff();
 
 /** Returns a representation of a Pioneer II mobile base.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  *  <div align="center">
  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
@@ -60,7 +60,7 @@ CSetOfObjects::Ptr RobotGiraff();
 CSetOfObjects::Ptr RobotPioneer();
 
 /** Returns three arrows representing a X,Y,Z 3D corner.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZSimple, CornerXYSimple, CornerXYZEye
  *  <div align="center">
@@ -78,7 +78,7 @@ CSetOfObjects::Ptr CornerXYZ(float scale = 1.0);
  * placed.
  *  This is useful if you want to place this object with the same position and
  * orientation of a camera.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZSimple, CornerXYSimple
  *  <div align="center">
@@ -93,7 +93,7 @@ CSetOfObjects::Ptr CornerXYZEye();
 
 /** Returns three arrows representing a X,Y,Z 3D corner (just thick lines
  * instead of complex arrows for faster rendering than CornerXYZ).
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZ, CornerXYSimple
  *  <div align="center">
@@ -108,7 +108,7 @@ CSetOfObjects::Ptr CornerXYZSimple(float scale = 1.0, float lineWidth = 1.0);
 
 /** Returns two arrows representing a X,Y 2D corner (just thick lines, fast to
  * render).
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  * \sa CornerXYZSimple, CornerXYZ, CornerXYZEye
  *  <div align="center">
@@ -122,7 +122,7 @@ CSetOfObjects::Ptr CornerXYZSimple(float scale = 1.0, float lineWidth = 1.0);
 CSetOfObjects::Ptr CornerXYSimple(float scale = 1.0, float lineWidth = 1.0);
 
 /** Returns a simple 3D model of a PointGrey Bumblebee stereo camera.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  *  <div align="center">
  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
@@ -135,7 +135,7 @@ CSetOfObjects::Ptr CornerXYSimple(float scale = 1.0, float lineWidth = 1.0);
 CSetOfObjects::Ptr BumblebeeCamera();
 
 /** Returns a simple 3D model of a Hokuyo URG scanner.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  *  <div align="center">
  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
@@ -148,7 +148,7 @@ CSetOfObjects::Ptr BumblebeeCamera();
 CSetOfObjects::Ptr Hokuyo_URG();
 
 /** Returns a simple 3D model of a Hokuyo UTM scanner.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  *  <div align="center">
  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;
@@ -161,7 +161,7 @@ CSetOfObjects::Ptr Hokuyo_URG();
 CSetOfObjects::Ptr Hokuyo_UTM();
 
 /** Returns a simple 3D model of a househam sprayer.
- *  The generated object must be inserted in a opengl::COpenGLScene or
+ *  The generated object must be inserted in a opengl::Scene or
  * opengl::CSetOfObjects.
  *  <div align="center">
  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px;

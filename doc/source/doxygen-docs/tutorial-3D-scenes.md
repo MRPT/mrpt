@@ -10,40 +10,44 @@ If you prefer directly jumping to example code, see:
 
 # 2. Relevant C++ classes
 
-The main class behind 3D scenes is mrpt::opengl::COpenGLScene, which allows the user to create, load, save, and render 3D scenes using predefined 3D entities.
-The class can be understood as a program to be run on the OpenGL system,
+The main class behind 3D scenes is mrpt::opengl::Scene, which allows the user to create, load, save, and render 3D scenes using predefined 3D entities.
+The class can be understood as a program to be run on the OpenGL system,
 containing a sequence of viewport definitions, primitive objects, shaders, etc...
 
 An "OpenGL scene" contains from 1 up to any number of **Viewports**, each one
 associated a set of visual objects and, optionally, a preferred camera position.
 Both orthogonal (2D/3D) and projective camera models can be used for each
 viewport independently, greatly increasing the possibilities of rendered scenes.
-An instance of mrpt::opengl::COpenGLScene always contains **at least one viewport** (mrpt::opengl::COpenGLViewport), named `"main"`, covering the entire window area by default.
+An instance of mrpt::opengl::Scene always contains **at least one viewport** 
+(mrpt::opengl::Viewport) named `"main"`, covering the entire window area by default.
 If you do not provide a viewport name in API calls, `"main"` will be always be used by default,
 so do not worry on remembering that name.
 
+Note: Before  MRPT 2.7.0, viewport and scene classes were named mrpt::opengl::COpenGLViewport
+and mrpt::opengl::COpenGLScene, respectively, and those names are still provided as aliases for backwards compatibility.
+
 Viewports are referenced by their names, case-sensitive strings. Each viewport contains a different
-"3D scene" (i.e. they render different objects), though a mechanism exists to share the same 3D scene by a number of viewports so memory is not wasted replicating the same smart pointers (see mrpt::opengl::COpenGLViewport::setCloneView()).
+"3D scene" (i.e. they render different objects), though a mechanism exists to share the same 3D scene by a number of viewports so memory is not wasted replicating the same smart pointers (see mrpt::opengl::Viewport::setCloneView()).
 
-The main rendering method, COpenGLScene::render(), assumes that a viewport has been set-up for the entire target window. That method will internally make the required calls to opengl for creating the additional viewports. Note that only the depth buffer is cleared by default for each (non-main) viewport, to allow transparencies. This can be disabled by the approppriate member in COpenGLViewport.
+The main rendering method, Scene::render(), assumes that a viewport has been set-up for the entire target window. That method will internally make the required calls to opengl for creating the additional viewports. Note that only the depth buffer is cleared by default for each (non-main) viewport, to allow transparencies. This can be disabled by the approppriate member in Viewport.
 
-Users will never normally need to invoke COpenGLScene::render() manually, but use instead:
+Users will never normally need to invoke Scene::render() manually, but use instead:
 - the 3D standalone viewer: \ref app_SceneViewer3D
 - the basic runtime 3D display windows mrpt::gui::CDisplayWindow3D
 - the advanced GUI-controls capable display  mrpt::gui::CDisplayWindowGUI
 - wxWidgets / Qt controls also exist for integration into custom GUIs (see mrpt::gui:: mrpt::gui::CGlCanvasBase)
 
-An object mrpt::opengl::COpenGLScene can be saved to a `.3Dscene` file using 
-mrpt::opengl::COpenGLScene::saveToFile(), for posterior visualization from
+An object mrpt::opengl::Scene can be saved to a `.3Dscene` file using 
+mrpt::opengl::Scene::saveToFile(), for posterior visualization from
 the standalone application [SceneViewer3D](app_SceneViewer3D.html).
 
-# 3. Creating, populating and updating a COpenGLScene
+# 3. Creating, populating and updating a Scene
 
-Since 3D rendering is performed in a detached thread, especial care must be taken when updating the 3D scene to be rendered. Updating here means either (i) inserting/removing new primitives to the COpenGLScene object associated with a CDisplayWindow3D, or (ii) modifying the pose, color, contents, etc. of any of the primitives previously inserted into such COpenGLScene object.
+Since 3D rendering is performed in a detached thread, especial care must be taken when updating the 3D scene to be rendered. Updating here means either (i) inserting/removing new primitives to the Scene object associated with a CDisplayWindow3D, or (ii) modifying the pose, color, contents, etc. of any of the primitives previously inserted into such Scene object.
 
 To avoid rance conditions (rendering always happens on an standalone thread),
 the process of updating a 3D scene must make use of a mechanism that
-locks/unlocks an internal critical section, and it comprises these steps:
+locks/unlocks an internal critical section, and it comprises these steps:
 
     // Create the GUI window object.
     // This will lock until the detached MRPT GUI thread creates
@@ -61,7 +65,7 @@ locks/unlocks an internal critical section, and it comprises these steps:
     //    kept a copy of all mrpt::opengl::XXX::Ptr pointers for direct access),
     //    just ignore the return value.
     // c) Replace the entire 3D scene (read below after the code snippet)
-    mrpt::opengl::COpenGLScene::Ptr &ptrScene = win.get3DSceneAndLock();
+    mrpt::opengl::Scene::Ptr &ptrScene = win.get3DSceneAndLock();
 
     // Modify the scene or the primitives therein:
     ptrScene->...
@@ -74,7 +78,7 @@ locks/unlocks an internal critical section, and it comprises these steps:
     win.forceRepaint();
 
 An alternative way of updating the scene is by creating,
-before locking the 3D window, a new object of class COpenGLScene, then locking
+before locking the 3D window, a new object of class Scene, then locking
 the window only for replacing the smart pointer. This may be advantageous
 is generating the 3D scene takes a long time, since while the window is locked
 it will not be responsive to the user input or window redraw.
@@ -87,7 +91,7 @@ or inspect the example: \ref opengl_objects_demo
 
 ![MRPT opengl primitives](opengl_objects_demo_screenshot.png)
 
-# 5. Text messages
+# 5. Text messages
 
 GUI windows offer the possibility of displaying any number of text labels on
 top of the rendered scene. Refer to:
@@ -95,7 +99,7 @@ top of the rendered scene. Refer to:
 - \ref gui_display3D_example
 - API: mrpt::gui::CDisplayWindow3D::addTextMessage()
 
-# 6. Advanced UI controls
+# 6. Advanced UI controls
 
 For more advanced UI controls, including subwindows that can be dragged,
 minimized and restored, etc. see:

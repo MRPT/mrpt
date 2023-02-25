@@ -16,7 +16,7 @@ namespace mrpt::opengl
 /** A set of colored triangles, able to draw any solid, arbitrarily complex
  * object without textures. For textures, see CSetOfTexturedTriangles
  *
- * \sa opengl::COpenGLScene, CSetOfTexturedTriangles
+ * \sa opengl::Scene, CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfTriangles : public CRenderizableShaderTriangles

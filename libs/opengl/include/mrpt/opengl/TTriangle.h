@@ -30,7 +30,7 @@ namespace mrpt::opengl
  * The structure is memory packed to 1-byte, to ensure it can be used in GPU
  * memory vertex arrays without unexpected paddings.
  *
- * \sa opengl::COpenGLScene, CSetOfTexturedTriangles
+ * \sa opengl::Scene, CSetOfTexturedTriangles
  * \ingroup mrpt_opengl_grp
  */
 struct TTriangle

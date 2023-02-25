@@ -13,11 +13,11 @@
 //
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>	 // crossProduct3D()
-#include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/DefaultShaders.h>
+#include <mrpt/opengl/Scene.h>
+#include <mrpt/opengl/Viewport.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
@@ -31,7 +31,7 @@ using namespace mrpt::math;
 using namespace mrpt::serialization::metaprogramming;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(COpenGLViewport, CSerializable, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(Viewport, CSerializable, mrpt::opengl)
 
 // #define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
 
@@ -41,28 +41,28 @@ mrpt::system::CTimeLogger glv_timlog;
 
 /*--------------------------------------------------------------
 
-			IMPLEMENTATION OF COpenGLViewport
+			IMPLEMENTATION OF Viewport
 
   ---------------------------------------------------------------*/
 
 /*--------------------------------------------------------------
 					Constructor
   ---------------------------------------------------------------*/
-COpenGLViewport::COpenGLViewport(COpenGLScene* parent, const string& name)
+Viewport::Viewport(Scene* parent, const string& name)
 	: m_parent(parent), m_name(name)
 {
 }
 
-COpenGLViewport::~COpenGLViewport() { clear(); }
+Viewport::~Viewport() { clear(); }
 
-void COpenGLViewport::setCloneView(const string& clonedViewport)
+void Viewport::setCloneView(const string& clonedViewport)
 {
 	clear();
 	m_isCloned = true;
 	m_clonedViewport = clonedViewport;
 }
 
-void COpenGLViewport::setViewportPosition(
+void Viewport::setViewportPosition(
 	const double x, const double y, const double width, const double height)
 {
 	MRPT_START
@@ -80,7 +80,7 @@ void COpenGLViewport::setViewportPosition(
 /*--------------------------------------------------------------
 					getViewportPosition
   ---------------------------------------------------------------*/
-void COpenGLViewport::getViewportPosition(
+void Viewport::getViewportPosition(
 	double& x, double& y, double& width, double& height)
 {
 	x = m_view_x;
@@ -92,11 +92,11 @@ void COpenGLViewport::getViewportPosition(
 /*--------------------------------------------------------------
 					clear
   ---------------------------------------------------------------*/
-void COpenGLViewport::clear() { m_objects.clear(); }
+void Viewport::clear() { m_objects.clear(); }
 /*--------------------------------------------------------------
 					insert
   ---------------------------------------------------------------*/
-void COpenGLViewport::insert(const CRenderizable::Ptr& newObject)
+void Viewport::insert(const CRenderizable::Ptr& newObject)
 {
 	m_objects.push_back(newObject);
 }
@@ -132,12 +132,12 @@ static int startFromRatio(const double frac, const int dSize)
 }
 
 // "Image mode" rendering:
-void COpenGLViewport::renderImageMode() const
+void Viewport::renderImageMode() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 #if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
 	mrpt::system::CTimeLoggerEntry tle(
-		glv_timlog, "COpenGLViewport::render imageview");
+		glv_timlog, "Viewport::render imageview");
 #endif
 
 	// Do we have an actual image to render?
@@ -187,9 +187,9 @@ void COpenGLViewport::renderImageMode() const
 #endif
 }
 
-void COpenGLViewport::unloadShaders() { m_threadedData.get().shaders.clear(); }
+void Viewport::unloadShaders() { m_threadedData.get().shaders.clear(); }
 
-void COpenGLViewport::loadDefaultShaders() const
+void Viewport::loadDefaultShaders() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
@@ -219,15 +219,14 @@ void COpenGLViewport::loadDefaultShaders() const
 }
 
 /** Render a normal scene with 3D objects */
-void COpenGLViewport::renderNormalSceneMode(
-	const CCamera* forceThisCamera) const
+void Viewport::renderNormalSceneMode(const CCamera* forceThisCamera) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
 #ifdef MRPT_OPENGL_PROFILER
 	mrpt::system::CTimeLoggerEntry tle(
-		opengl_profiler(), "COpenGLViewport.renderNormalSceneMode");
+		opengl_profiler(), "Viewport.renderNormalSceneMode");
 #endif
 
 	// Prepare camera (projection matrix):
@@ -244,7 +243,7 @@ void COpenGLViewport::renderNormalSceneMode(
 		const auto view = m_parent->getViewport(m_clonedViewport);
 		if (!view)
 			THROW_EXCEPTION_FMT(
-				"Cloned viewport '%s' not found in parent COpenGLScene",
+				"Cloned viewport '%s' not found in parent Scene",
 				m_clonedViewport.c_str());
 
 		objectsToRender = &view->m_objects;
@@ -314,7 +313,7 @@ void COpenGLViewport::renderNormalSceneMode(
 #endif
 }
 
-void COpenGLViewport::renderViewportBorder() const
+void Viewport::renderViewportBorder() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
@@ -354,7 +353,7 @@ void COpenGLViewport::renderViewportBorder() const
 #endif
 }
 
-void COpenGLViewport::renderTextMessages() const
+void Viewport::renderTextMessages() const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
@@ -432,7 +431,7 @@ void COpenGLViewport::renderTextMessages() const
 #endif
 }
 
-void COpenGLViewport::render(
+void Viewport::render(
 	[[maybe_unused]] const int render_width,
 	[[maybe_unused]] const int render_height,
 	[[maybe_unused]] const int render_offset_x,
@@ -443,8 +442,7 @@ void COpenGLViewport::render(
 	MRPT_START
 
 #ifdef MRPT_OPENGL_PROFILER
-	mrpt::system::CTimeLoggerEntry tle(
-		opengl_profiler(), "COpenGLViewport.render");
+	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "Viewport.render");
 #endif
 
 	// Change viewport:
@@ -520,8 +518,8 @@ void COpenGLViewport::render(
 #endif
 }
 
-uint8_t COpenGLViewport::serializeGetVersion() const { return 7; }
-void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t Viewport::serializeGetVersion() const { return 7; }
+void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
 	out << m_camera << m_isCloned << m_isClonedCamera << m_clonedViewport
@@ -567,8 +565,7 @@ void COpenGLViewport::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_clonedCameraViewport;
 }
 
-void COpenGLViewport::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -667,7 +664,7 @@ void COpenGLViewport::serializeFrom(
 /*---------------------------------------------------------------
 							getByName
   ---------------------------------------------------------------*/
-CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
+CRenderizable::Ptr Viewport::getByName(const string& str)
 {
 	for (auto& m_object : m_objects)
 	{
@@ -685,13 +682,13 @@ CRenderizable::Ptr COpenGLViewport::getByName(const string& str)
 	return CRenderizable::Ptr();
 }
 
-void COpenGLViewport::initializeTextures()
+void Viewport::initializeTextures()
 {
 	for (auto& obj : m_objects)
 		obj->initializeTextures();
 }
 
-void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst) const
+void Viewport::dumpListOfObjects(std::vector<std::string>& lst) const
 {
 	for (auto& obj : m_objects)
 	{
@@ -713,7 +710,7 @@ void COpenGLViewport::dumpListOfObjects(std::vector<std::string>& lst) const
 	}
 }
 
-mrpt::containers::yaml COpenGLViewport::asYAML() const
+mrpt::containers::yaml Viewport::asYAML() const
 {
 	mrpt::containers::yaml d = mrpt::containers::yaml::Sequence();
 
@@ -750,7 +747,7 @@ mrpt::containers::yaml COpenGLViewport::asYAML() const
 /*--------------------------------------------------------------
 					removeObject
   ---------------------------------------------------------------*/
-void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
+void Viewport::removeObject(const CRenderizable::Ptr& obj)
 {
 	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 		if (*it == obj)
@@ -764,7 +761,7 @@ void COpenGLViewport::removeObject(const CRenderizable::Ptr& obj)
 			dynamic_cast<CSetOfObjects*>(it->get())->removeObject(obj);
 }
 
-void COpenGLViewport::setViewportClipDistances(
+void Viewport::setViewportClipDistances(
 	const float clip_min, const float clip_max)
 {
 	ASSERT_GT_(clip_max, clip_min);
@@ -773,8 +770,7 @@ void COpenGLViewport::setViewportClipDistances(
 	m_clip_max = clip_max;
 }
 
-void COpenGLViewport::getViewportClipDistances(
-	float& clip_min, float& clip_max) const
+void Viewport::getViewportClipDistances(float& clip_min, float& clip_max) const
 {
 	clip_min = m_clip_min;
 	clip_max = m_clip_max;
@@ -783,7 +779,7 @@ void COpenGLViewport::getViewportClipDistances(
 /*--------------------------------------------------------------
 					get3DRayForPixelCoord
   ---------------------------------------------------------------*/
-void COpenGLViewport::get3DRayForPixelCoord(
+void Viewport::get3DRayForPixelCoord(
 	const double x_coord, const double y_coord, mrpt::math::TLine3D& out_ray,
 	mrpt::poses::CPose3D* out_cameraPose) const
 {
@@ -899,14 +895,13 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	}
 }
 
-void COpenGLViewport::setCurrentCameraFromPose(mrpt::poses::CPose3D& p)
+void Viewport::setCurrentCameraFromPose(mrpt::poses::CPose3D& p)
 {
 	m_camera.set6DOFMode(true);
 	m_camera.setPose(p);
 }
 
-void COpenGLViewport::getCurrentCameraPose(
-	mrpt::poses::CPose3D& out_cameraPose) const
+void Viewport::getCurrentCameraPose(mrpt::poses::CPose3D& out_cameraPose) const
 {
 	mrpt::math::TLine3D dum;
 	get3DRayForPixelCoord(0, 0, dum, &out_cameraPose);
@@ -914,7 +909,7 @@ void COpenGLViewport::getCurrentCameraPose(
 
 /** Resets the viewport to a normal 3D viewport \sa setCloneView, setImageView
  */
-void COpenGLViewport::setNormalMode()
+void Viewport::setNormalMode()
 {
 	// If this was an image-mode viewport, remove the quad object to disable it.
 	m_imageViewPlane.reset();
@@ -923,18 +918,18 @@ void COpenGLViewport::setNormalMode()
 	m_isClonedCamera = false;
 }
 
-void COpenGLViewport::setImageView(const mrpt::img::CImage& img)
+void Viewport::setImageView(const mrpt::img::CImage& img)
 {
 	internal_enableImageView();
 	m_imageViewPlane->assignImage(img);
 }
-void COpenGLViewport::setImageView(mrpt::img::CImage&& img)
+void Viewport::setImageView(mrpt::img::CImage&& img)
 {
 	internal_enableImageView();
 	m_imageViewPlane->assignImage(img);
 }
 
-void COpenGLViewport::internal_enableImageView()
+void Viewport::internal_enableImageView()
 {
 	// If this is the first time, we have to create the quad object:
 	if (!m_imageViewPlane)
@@ -947,7 +942,7 @@ void COpenGLViewport::internal_enableImageView()
 
 /** Evaluates the bounding box of this object (including possible children) in
  * the coordinate frame of the object parent. */
-auto COpenGLViewport::getBoundingBox() const -> mrpt::math::TBoundingBox
+auto Viewport::getBoundingBox() const -> mrpt::math::TBoundingBox
 {
 	mrpt::math::TBoundingBox bb;
 	bool first = true;
@@ -966,7 +961,7 @@ auto COpenGLViewport::getBoundingBox() const -> mrpt::math::TBoundingBox
 	return bb;
 }
 
-void COpenGLViewport::setCloneCamera(bool enable)
+void Viewport::setCloneCamera(bool enable)
 {
 	m_isClonedCamera = enable;
 	if (!enable) { m_clonedCameraViewport.clear(); }
@@ -981,28 +976,27 @@ void COpenGLViewport::setCloneCamera(bool enable)
 	}
 }
 
-void COpenGLViewport::updateMatricesFromCamera(
-	const CCamera* forceThisCamera) const
+void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 {
 	auto& _ = m_threadedData.get().state;
 
 	// Prepare camera (projection matrix):
-	COpenGLViewport* viewForGetCamera = nullptr;
+	Viewport* viewForGetCamera = nullptr;
 
 	if (!m_clonedCameraViewport.empty())
 	{
 		const auto view = m_parent->getViewport(m_clonedCameraViewport);
 		if (!view)
 			THROW_EXCEPTION_FMT(
-				"Cloned viewport '%s' not found in parent COpenGLScene",
+				"Cloned viewport '%s' not found in parent Scene",
 				m_clonedViewport.c_str());
 
 		viewForGetCamera =
-			m_isClonedCamera ? view.get() : const_cast<COpenGLViewport*>(this);
+			m_isClonedCamera ? view.get() : const_cast<Viewport*>(this);
 	}
 	else
 	{  // Normal case: render our own objects:
-		viewForGetCamera = const_cast<COpenGLViewport*>(this);
+		viewForGetCamera = const_cast<Viewport*>(this);
 	}
 
 	// Get camera:

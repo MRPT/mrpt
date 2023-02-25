@@ -115,11 +115,10 @@ int main(int argc, char** argv)
 				mrpt::opengl::CPointCloudColoured::Create();
 			gl_points->setPointSize(2.5);
 
-			opengl::COpenGLViewport::Ptr
+			opengl::Viewport::Ptr
 				viewInt;  // Extra viewports for the RGB images.
 			{
-				mrpt::opengl::COpenGLScene::Ptr& scene =
-					win3D.get3DSceneAndLock();
+				mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
 				// Create the Opengl object for the point cloud:
 				scene->insert(gl_points);

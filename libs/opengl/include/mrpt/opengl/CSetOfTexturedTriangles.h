@@ -15,7 +15,7 @@ namespace mrpt::opengl
 /** A set of textured triangles.
  *  This class can be used to draw any solid, arbitrarily complex object with
  * textures.
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfTexturedTriangles : public CRenderizableShaderTexturedTriangles

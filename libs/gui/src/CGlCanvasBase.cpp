@@ -229,7 +229,7 @@ bool CGlCanvasBase::isCameraProjective() const
 void CGlCanvasBase::setCameraFOV(float FOV) { m_cameraParams.cameraFOV = FOV; }
 float CGlCanvasBase::cameraFOV() const { return m_cameraParams.cameraFOV; }
 
-void CGlCanvasBase::setOpenGLSceneRef(COpenGLScene::Ptr scene)
+void CGlCanvasBase::setOpenGLSceneRef(Scene::Ptr scene)
 {
 	m_openGLScene = scene;
 }
@@ -298,8 +298,7 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 			// Set the camera params in the scene:
 			if (!useCameraFromScene)
 			{
-				if (COpenGLViewport::Ptr view =
-						m_openGLScene->getViewport("main");
+				if (Viewport::Ptr view = m_openGLScene->getViewport("main");
 					view)
 				{
 					mrpt::opengl::CCamera& cam = view->getCamera();

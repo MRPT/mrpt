@@ -72,7 +72,7 @@ void CDisplayWindowGUI::drawContents()
 		glGetIntegerv(GL_VIEWPORT, win_dims);
 
 		// Set the camera params in the scene:
-		mrpt::opengl::COpenGLViewport::Ptr view =
+		mrpt::opengl::Viewport::Ptr view =
 			background_scene->getViewport("main");
 		if (!view)
 			THROW_EXCEPTION(

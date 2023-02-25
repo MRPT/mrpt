@@ -76,8 +76,8 @@ void TestCamera3DFaceDetection(CCameraSensor::Ptr cam)
 	win3D.setCameraZoom(6.0);
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
-	mrpt::opengl::COpenGLScene::Ptr& scene = win3D.get3DSceneAndLock();
-	mrpt::opengl::COpenGLScene::Ptr scene2;
+	mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr scene2;
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
 		mrpt::opengl::CPointCloudColoured::Create();

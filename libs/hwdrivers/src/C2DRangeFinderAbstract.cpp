@@ -221,7 +221,7 @@ void C2DRangeFinderAbstract::processPreview(
 			m_win = mrpt::gui::CDisplayWindow3D::Create(caption, 640, 480);
 			m_win->setCameraAzimuthDeg(180);
 			m_win->setCameraElevationDeg(90);
-			COpenGLScene::Ptr& theScene = m_win->get3DSceneAndLock();
+			Scene::Ptr& theScene = m_win->get3DSceneAndLock();
 			theScene->insert(std::make_shared<CAxis>(
 				-300, -300, -50, 300, 300, 50, 1.0, 3, true));
 			m_win->unlockAccess3DScene();
@@ -229,7 +229,7 @@ void C2DRangeFinderAbstract::processPreview(
 
 		if (m_win && m_win->isOpen())
 		{
-			COpenGLScene::Ptr& theScene = m_win->get3DSceneAndLock();
+			Scene::Ptr& theScene = m_win->get3DSceneAndLock();
 			opengl::CPlanarLaserScan::Ptr laser;
 			CRenderizable::Ptr obj = theScene->getByName("laser");
 			if (!obj)

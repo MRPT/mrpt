@@ -25,7 +25,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CMeshFast](preview_CMeshFast.png)
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CMeshFast : public CRenderizableShaderPoints

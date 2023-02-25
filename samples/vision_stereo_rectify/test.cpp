@@ -10,7 +10,7 @@
 #include <mrpt/config/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>	 // for ASSERT_FILE_EXISTS_
 #include <mrpt/vision/CStereoRectifyMap.h>
@@ -80,9 +80,9 @@ void TestStereoRectify(int argc, char** argv)
 	CDisplayWindow3D win("Demo of stereo rectification", 1280, 600);
 
 	// Create 2 viewports, one for each image:
-	std::vector<COpenGLViewport::Ptr> gl_views(2);
+	std::vector<Viewport::Ptr> gl_views(2);
 	{
-		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& theScene = win.get3DSceneAndLock();
 		gl_views[0] = theScene->getViewport("main");
 		ASSERT_(gl_views[0]);
 		gl_views[1] = theScene->createViewport("right_image");

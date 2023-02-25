@@ -24,7 +24,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CMesh3D](preview_CMesh3D.png)
  *
- * \sa opengl::COpenGLScene,opengl::CMesh,opengl::CAssimpModel
+ * \sa opengl::Scene,opengl::CMesh,opengl::CAssimpModel
  * \ingroup mrpt_opengl_grp
  */
 class CMesh3D : public CRenderizableShaderTriangles,

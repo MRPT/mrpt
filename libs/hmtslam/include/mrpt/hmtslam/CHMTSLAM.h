@@ -16,7 +16,7 @@
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/obs/CActionCollection.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/TKLDParams.h>
@@ -423,7 +423,7 @@ class CHMTSLAM : public mrpt::system::COutputLogger,
 	/** Gets a 3D representation of the current state of the whole mapping
 	 * framework.
 	 */
-	void getAs3DScene(mrpt::opengl::COpenGLScene& outScene);
+	void getAs3DScene(mrpt::opengl::Scene& outScene);
 
    protected:
 	/** A variety of options and configuration params (private, use

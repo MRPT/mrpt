@@ -165,7 +165,7 @@ inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization()
 		mrpt::system::LVL_DEBUG, "In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
-	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr& scene = this->m_win->get3DSceneAndLock();
 
 	// remove previous graph and insert the new instance
 	// TODO - make this an incremental proocecure
@@ -208,7 +208,7 @@ void CLevMarqGSO<GRAPH_T>::toggleGraphVisualization()
 	MRPT_START
 	using namespace mrpt::opengl;
 
-	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr& scene = this->m_win->get3DSceneAndLock();
 
 	CRenderizable::Ptr graph_obj = scene->getByName("optimized_graph");
 	graph_obj->setVisibility(!graph_obj->isVisible());
@@ -231,7 +231,7 @@ void CLevMarqGSO<GRAPH_T>::fitGraphInView()
 		"was given\n");
 
 	// first fetch the graph object
-	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr& scene = this->m_win->get3DSceneAndLock();
 	CRenderizable::Ptr obj = scene->getByName("optimized_graph");
 	CSetOfObjects::Ptr graph_obj =
 		std::dynamic_pointer_cast<CSetOfObjects>(obj);
@@ -281,7 +281,7 @@ void CLevMarqGSO<GRAPH_T>::initOptDistanceVisualization()
 	obj->setPose(initial_pose);
 	obj->setName("optimization_distance_obj");
 
-	COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 	scene->insert(obj);
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
@@ -340,7 +340,7 @@ void CLevMarqGSO<GRAPH_T>::updateOptDistanceVisualization()
 	using namespace mrpt::opengl;
 
 	// update ICP_max_distance Disk
-	COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 	CRenderizable::Ptr obj = scene->getByName("optimization_distance_obj");
 	obj->setPose(this->m_graph->nodes.rbegin()->second);
@@ -357,7 +357,7 @@ void CLevMarqGSO<GRAPH_T>::toggleOptDistanceVisualization()
 	MRPT_START
 	using namespace mrpt::opengl;
 
-	COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 	CRenderizable::Ptr obj = scene->getByName("optimization_distance_obj");
 	obj->setVisibility(!obj->isVisible());

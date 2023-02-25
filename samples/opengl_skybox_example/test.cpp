@@ -59,7 +59,7 @@ void TestSkyBox()
 
 	mrpt::gui::CDisplayWindow3D win("Example of MRPT skybox", 800, 600);
 
-	mrpt::opengl::COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	// Create the 3D scene:
 	// ------------------------------------------------------

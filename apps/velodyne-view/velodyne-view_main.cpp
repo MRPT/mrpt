@@ -241,7 +241,7 @@ int VelodyneView(int argc, char** argv)
 	gl_points->setPointSize(2.5);
 
 	{
-		mrpt::opengl::COpenGLScene::Ptr& scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 		scene->insert(gl_points);

@@ -671,7 +671,7 @@ void CGlWidget::updateMinimapPos()
 	GLint win_dims[4];
 	glGetIntegerv(GL_VIEWPORT, win_dims);
 
-	COpenGLViewport::Ptr miniMap = getOpenGLSceneRef()->getViewport("miniMap");
+	Viewport::Ptr miniMap = getOpenGLSceneRef()->getViewport("miniMap");
 	float w = m_miniMapSize / win_dims[2];
 	float h = m_miniMapSize / win_dims[3];
 	miniMap->setViewportPosition(0.01, 0.01, w, h);

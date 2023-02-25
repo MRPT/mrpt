@@ -135,7 +135,7 @@ void Test_HOKUYO()
 			// map.save2D_to_text_file("_out_scan.txt");
 
 			/*
-			COpenGLScene			scene3D;
+			Scene			scene3D;
 			opengl::CPointCloud::Ptr	points =
 			opengl::CPointCloud::Create();
 			points->loadFromPointsMap(&map);

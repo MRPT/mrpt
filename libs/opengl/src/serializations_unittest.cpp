@@ -43,7 +43,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(CMesh),
 		CLASS_ID(CTexturedPlane),
 #endif
-		CLASS_ID(COpenGLViewport),
+		CLASS_ID(Viewport),
 		CLASS_ID(CPointCloud),
 		CLASS_ID(CPointCloudColoured),
 		CLASS_ID(CSetOfLines),
@@ -55,7 +55,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(CCamera),
 		CLASS_ID(CEllipsoid3D),
 		CLASS_ID(CGridPlaneXZ),
-		CLASS_ID(COpenGLScene),
+		CLASS_ID(Scene),
 		CLASS_ID(CSetOfObjects),
 		CLASS_ID(CSimpleLine),
 		CLASS_ID(CText),
@@ -100,7 +100,7 @@ TEST(SerializeTestOpenGL, PredefinedSceneFile)
 	const std::string fil =
 		mrpt::UNITTEST_BASEDIR() + "/tests/default-scene.3Dscene"s;
 
-	mrpt::opengl::COpenGLScene scene;
+	mrpt::opengl::Scene scene;
 
 	ASSERT_FILE_EXISTS_(fil);
 	bool readOk = scene.loadFromFile(fil);

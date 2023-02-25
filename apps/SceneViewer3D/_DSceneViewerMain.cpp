@@ -77,10 +77,10 @@ const std::string iniFileSect("CONF_LIN");
 #include <mrpt/opengl/CAssimpModel.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // It's in lib mrpt-maps
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/CDirectoryExplorer.h>
@@ -817,7 +817,7 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
 	openGLSceneRef->insert(stock_objects::CornerXYZ());
 
 	// Add a clone viewport:
-	COpenGLViewport::Ptr vi = openGLSceneRef->createViewport("clone");
+	Viewport::Ptr vi = openGLSceneRef->createViewport("clone");
 	vi->setViewportPosition(0.05, 0.05, 0.2, 0.2);
 	vi->setCloneView("main");
 	vi->setCloneCamera(true);
@@ -887,7 +887,7 @@ void _DSceneViewerFrame::loadFromFile(
 		// Change the camera if necesary:
 		if (openGLSceneRef->followCamera())
 		{
-			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
+			Viewport::Ptr view = openGLSceneRef->getViewport("main");
 			ASSERTMSG_(
 				view, "ERROR: there is no 'main' viewport in the 3D scene!");
 
@@ -1215,7 +1215,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 		else
 		{
 			// Change the camera
-			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
+			Viewport::Ptr view = openGLSceneRef->getViewport("main");
 
 			if (!view)
 				THROW_EXCEPTION(
@@ -1303,7 +1303,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 		else
 		{
 			// Change the camera
-			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
+			Viewport::Ptr view = openGLSceneRef->getViewport("main");
 
 			if (!view)
 				THROW_EXCEPTION(
@@ -1705,7 +1705,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		{
 			auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
 			// Set the point cloud as the only object in scene:
-			openGLSceneRef = std::make_shared<opengl::COpenGLScene>();
+			openGLSceneRef = std::make_shared<opengl::Scene>();
 
 			if (dlgPLY.cbXYGrid->GetValue())
 			{
@@ -2099,7 +2099,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		const double scene_size = bb.min.distanceTo(bb.max);
 
 		// Set the point cloud as the only object in scene:
-		auto scene = std::make_shared<opengl::COpenGLScene>();
+		auto scene = std::make_shared<opengl::Scene>();
 		m_canvas->setOpenGLSceneRef(scene);
 
 		if (dlgPLY.cbXYGrid->GetValue())
@@ -2154,7 +2154,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		m_canvas->setAzimuthDegrees(45);
 		m_canvas->setElevationDegrees(30);
 
-		COpenGLViewport::Ptr gl_view = scene->getViewport();
+		Viewport::Ptr gl_view = scene->getViewport();
 		gl_view->setViewportClipDistances(0.01, 10 * scene_size);
 
 		loadedFileName =
@@ -2198,7 +2198,7 @@ void _DSceneViewerFrame::OnmnuImportImageView(wxCommandEvent&)
 {
 	try
 	{
-		auto scene = std::make_shared<opengl::COpenGLScene>();
+		auto scene = std::make_shared<opengl::Scene>();
 		m_canvas->setOpenGLSceneRef(scene);
 		wxFileDialog dialog(
 			this, _("Choose the LAS file to import"),
@@ -2217,7 +2217,7 @@ void _DSceneViewerFrame::OnmnuImportImageView(wxCommandEvent&)
 		if (!im.loadFromFile(fil))
 			THROW_EXCEPTION_FMT("Error loading image file: '%s'", fil.c_str());
 
-		COpenGLViewport::Ptr gl_view = scene->getViewport();
+		Viewport::Ptr gl_view = scene->getViewport();
 		gl_view->setImageView(im);
 
 		Refresh();

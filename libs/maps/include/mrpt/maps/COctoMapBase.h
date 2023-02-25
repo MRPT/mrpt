@@ -15,7 +15,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 
 namespace mrpt::maps
 {

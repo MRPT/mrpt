@@ -12,8 +12,8 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/img/TColor.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/random.h>
 
@@ -349,7 +349,7 @@ struct ExampleDemoGraphSLAM
 			1002 /* arbitrary, unique text label ID */);
 
 		{
-			COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
+			Scene::Ptr& scene = win.get3DSceneAndLock();
 			scene->insert(gl_graph1);
 			scene->insert(gl_graph3);
 			scene->insert(gl_graph2);

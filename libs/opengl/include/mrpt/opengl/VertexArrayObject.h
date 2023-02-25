@@ -21,11 +21,11 @@ namespace mrpt::opengl
  * \ingroup mrpt_opengl_grp
  * \note OpenGL VAOs *cannot* be shared among threads/GL contexts.
  */
-class COpenGLVertexArrayObject
+class VertexArrayObject
 {
    public:
-	COpenGLVertexArrayObject();
-	~COpenGLVertexArrayObject() = default;
+	VertexArrayObject();
+	~VertexArrayObject() = default;
 
 	/** Calls create() only if the buffer has not been created yet. */
 	void createOnce()

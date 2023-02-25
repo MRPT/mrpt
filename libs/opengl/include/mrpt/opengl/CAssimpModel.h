@@ -38,7 +38,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CAssimpModel](preview_CAssimpModel.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CAssimpModel : public CRenderizableShaderTriangles,

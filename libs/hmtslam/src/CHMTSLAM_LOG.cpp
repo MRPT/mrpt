@@ -61,7 +61,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			string filLocalAreas = format(
 				"%s/LSLAM_3D/mostLikelyLMH_LSLAM_%05u.3Dscene",
 				m_options.LOG_OUTPUT_DIR.c_str(), nIteration);
-			COpenGLScene::Ptr sceneLSLAM = std::make_shared<COpenGLScene>();
+			Scene::Ptr sceneLSLAM = std::make_shared<Scene>();
 
 			// Look for the most likely LMH:
 			for (auto& m : m_LMHs)
@@ -107,7 +107,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 				{
 					std::lock_guard<std::mutex>  lock(bestLMH->m_robotPosesGraph.lock );
 					string filSSO = format("%s/ASSO/mostLikelyLMH_ASSO_%05u.3Dscene", m_options.LOG_OUTPUT_DIR.c_str(), nIteration );
-					COpenGLScene	sceneSSO;
+					Scene	sceneSSO;
 					opengl::CSetOfObjects::Ptr sso3D = std::make_shared<opengl::CSetOfObjects>();
 					bestLMH->m_robotPosesGraph.partitioner.getAs3DScene( sso3D, &bestLMH->m_robotPosesGraph.idx2pose );
 					sceneSSO.insert(sso3D);
@@ -161,7 +161,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 				bestLMH->updateAreaFromLMH(*n);
 
 			// Save global map for most likely hypothesis:
-			COpenGLScene sceneGlobalHMTMAP;
+			Scene sceneGlobalHMTMAP;
 			{
 				std::lock_guard<std::mutex> lock(m_map_cs);
 				MRPT_LOG_INFO_STREAM(

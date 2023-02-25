@@ -1760,7 +1760,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 	}
 	if (false)
 	{
-		COpenGLScene sceneLSLAM;
+		Scene sceneLSLAM;
 		// Generate the metric maps 3D view...
 		opengl::CSetOfObjects::Ptr maps3D =
 			std::make_shared<opengl::CSetOfObjects>();

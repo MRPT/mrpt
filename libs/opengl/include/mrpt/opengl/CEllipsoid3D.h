@@ -26,7 +26,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CEllipsoid3D](preview_CEllipsoid.png)
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CEllipsoid3D : public CGeneralizedEllipsoidTemplate<3>

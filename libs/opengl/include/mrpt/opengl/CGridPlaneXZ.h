@@ -17,7 +17,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CGridPlaneXZ](preview_CGridPlaneXZ.png)
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CGridPlaneXZ : public CRenderizableShaderWireFrame

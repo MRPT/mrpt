@@ -165,7 +165,7 @@ void Test_3DCamICP()
 		std::mutex strStatuses_mtx;
 		std::array<std::string, 4> strStatuses;
 
-		opengl::COpenGLViewport::Ptr viewInt;
+		opengl::Viewport::Ptr viewInt;
 		std::mutex* viewInt_mtx = nullptr;
 
 		// Set defaults:
@@ -185,7 +185,7 @@ void Test_3DCamICP()
 		gl_points_map->setPointSize(1.5f);
 
 		{
-			auto scene = mrpt::opengl::COpenGLScene::Create();
+			auto scene = mrpt::opengl::Scene::Create();
 
 			// Create the Opengl object for the point cloud:
 			scene->insert(gl_points_map);
@@ -516,7 +516,7 @@ void Test_3DCamICP()
 		// Create the Opengl objects for the planar images each in a
 		// separate viewport:
 
-		glCanvasRGBView->scene = mrpt::opengl::COpenGLScene::Create();
+		glCanvasRGBView->scene = mrpt::opengl::Scene::Create();
 		ui_data.viewInt = glCanvasRGBView->scene->getViewport();
 		ui_data.viewInt_mtx = &glCanvasRGBView->scene_mtx;
 

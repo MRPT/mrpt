@@ -27,7 +27,7 @@
 #endif
 
 // Demo of how to install a custom shader program:
-static void installCustomShader(mrpt::opengl::COpenGLScene& scene)
+static void installCustomShader(mrpt::opengl::Scene& scene)
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -163,7 +163,7 @@ void DemoCustomShaders()
 
 	CDisplayWindow3D win("Demo of MRPT's custom shaders", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	float off_x = 0;
 	// Box

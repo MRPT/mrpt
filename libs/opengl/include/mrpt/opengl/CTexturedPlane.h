@@ -18,7 +18,7 @@ namespace mrpt::opengl
  *  Lighting is disabled in this class, so the plane color or texture will be
  *  independent of its orientation.
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CTexturedPlane : public CRenderizableShaderTexturedTriangles,

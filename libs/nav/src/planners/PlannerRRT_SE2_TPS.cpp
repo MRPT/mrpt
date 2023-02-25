@@ -168,7 +168,7 @@ void PlannerRRT_SE2_TPS::solve(
 						pi.world_bbox_min.x, pi.world_bbox_min.y, 0);
 					render_options.ground_xy_grid_frequency = 1.0;
 
-					mrpt::opengl::COpenGLScene scene;
+					mrpt::opengl::Scene scene;
 					renderMoveTree(scene, pi, result, render_options);
 					mrpt::system::createDirectory("./rrt_log_trees");
 					scene.saveToFile(mrpt::format(
@@ -447,7 +447,7 @@ void PlannerRRT_SE2_TPS::solve(
 			render_options.log_msg_position = mrpt::math::TPoint3D(
 				pi.world_bbox_min.x, pi.world_bbox_min.y, 0);
 
-			mrpt::opengl::COpenGLScene scene;
+			mrpt::opengl::Scene scene;
 			renderMoveTree(scene, pi, result, render_options);
 
 			mrpt::system::createDirectory("./rrt_log_trees");

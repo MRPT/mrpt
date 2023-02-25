@@ -18,7 +18,7 @@ inserted into a 3D scene, which can be then rendered or streamed to disk or what
 A good starting point to explore this library is the base class for all the
 3D objects: mrpt::opengl::CRenderizable
 
-A 3D scene is represented by an object of the type mrpt::opengl::COpenGLScene,
+A 3D scene is represented by an object of the type mrpt::opengl::Scene,
 which in turn can contain one or several "viewports" in such a way that the
 rendering area is divided into several spaces, each displaying the same or different
 objects. See the tutorial: \ref tutorial_3D_scenes

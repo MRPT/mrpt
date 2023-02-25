@@ -24,6 +24,12 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// Opengl classes:
+	registerClass(CLASS_ID(Scene));
+	registerClassCustomName("COpenGLScene", CLASS_ID(Scene));
+
+	registerClass(CLASS_ID(Viewport));
+	registerClassCustomName("COpenGLViewport", CLASS_ID(Viewport));
+
 	registerClass(CLASS_ID(CArrow));
 	registerClass(CLASS_ID(CAssimpModel));
 	registerClass(CLASS_ID(CAxis));
@@ -44,8 +50,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 	registerClass(CLASS_ID(CMesh3D));
 	registerClass(CLASS_ID(CMeshFast));
 	registerClass(CLASS_ID(COctoMapVoxels));
-	registerClass(CLASS_ID(COpenGLScene));
-	registerClass(CLASS_ID(COpenGLViewport));
 	registerClass(CLASS_ID(CPointCloud));
 	registerClass(CLASS_ID(CPointCloudColoured));
 	registerClass(CLASS_ID(CPolyhedron));

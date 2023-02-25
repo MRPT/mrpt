@@ -68,7 +68,7 @@ void TextureSizes_test()
 
 	CDisplayWindow3D win("Test of MRPT's OpenGL textures", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	double off_x = 0;
 	const double off_y_label = 4;

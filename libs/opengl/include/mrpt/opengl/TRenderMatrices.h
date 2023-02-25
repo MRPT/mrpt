@@ -29,7 +29,7 @@ struct TRenderMatrices
 {
 	TRenderMatrices() = default;
 
-	/** Projection matrix, computed by COpenGLViewport from camera parameters */
+	/** Projection matrix, computed by Viewport from camera parameters */
 	mrpt::math::CMatrixFloat44 p_matrix;
 
 	/** Model matrix. */
@@ -80,7 +80,7 @@ struct TRenderMatrices
 	float m_last_z_near = 0, m_last_z_far = 0;
 
    public:
-	/** Is set to true by  COpenGLViewport::updateMatricesFromCamera() */
+	/** Is set to true by  Viewport::updateMatricesFromCamera() */
 	bool initialized = false;
 
 	/** true: projective, false: ortho */

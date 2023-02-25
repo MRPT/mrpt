@@ -17,8 +17,8 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // from lib [mrpt-maps]
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
@@ -297,12 +297,12 @@ void ICP_SLAM_App_Base::run()
 		if ((LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY)) ||
 			(SAVE_3D_SCENE || win3D))
 		{
-			auto scene = mrpt::opengl::COpenGLScene::Create();
+			auto scene = mrpt::opengl::Scene::Create();
 
-			COpenGLViewport::Ptr view = scene->getViewport("main");
+			Viewport::Ptr view = scene->getViewport("main");
 			ASSERT_(view);
 
-			COpenGLViewport::Ptr view_map = scene->createViewport("mini-map");
+			Viewport::Ptr view_map = scene->createViewport("mini-map");
 			view_map->setBorderSize(2);
 			view_map->setViewportPosition(0.01, 0.01, 0.35, 0.35);
 			view_map->setTransparent(false);
@@ -381,8 +381,7 @@ void ICP_SLAM_App_Base::run()
 			// Show 3D?
 			if (win3D)
 			{
-				opengl::COpenGLScene::Ptr& ptrScene =
-					win3D->get3DSceneAndLock();
+				opengl::Scene::Ptr& ptrScene = win3D->get3DSceneAndLock();
 				ptrScene = scene;
 
 				win3D->unlockAccess3DScene();

@@ -10,22 +10,22 @@
 #include "opengl-precomp.h"	 // Precompiled header
 //
 #include <mrpt/core/exceptions.h>
-#include <mrpt/opengl/COpenGLVertexArrayObject.h>
+#include <mrpt/opengl/VertexArrayObject.h>
 #include <mrpt/opengl/opengl_api.h>
 
 #include <thread>
 
 using namespace mrpt::opengl;
 
-COpenGLVertexArrayObject::COpenGLVertexArrayObject() {}
+VertexArrayObject::VertexArrayObject() {}
 
-COpenGLVertexArrayObject::RAII_Impl::~RAII_Impl()
+VertexArrayObject::RAII_Impl::~RAII_Impl()
 {
 	// Free resources:
 	destroy();
 }
 
-void COpenGLVertexArrayObject::RAII_Impl::create()
+void VertexArrayObject::RAII_Impl::create()
 {
 	destroy();
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
@@ -36,7 +36,7 @@ void COpenGLVertexArrayObject::RAII_Impl::create()
 #endif
 }
 
-void COpenGLVertexArrayObject::RAII_Impl::destroy()
+void VertexArrayObject::RAII_Impl::destroy()
 {
 	if (!m_state.get().created) return;
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
@@ -48,7 +48,7 @@ void COpenGLVertexArrayObject::RAII_Impl::destroy()
 	m_state.get().created = false;
 }
 
-void COpenGLVertexArrayObject::RAII_Impl::bind()
+void VertexArrayObject::RAII_Impl::bind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	ASSERT_(m_state.get().created);
@@ -56,7 +56,7 @@ void COpenGLVertexArrayObject::RAII_Impl::bind()
 #endif
 }
 
-void COpenGLVertexArrayObject::RAII_Impl::release()
+void VertexArrayObject::RAII_Impl::release()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	if (!m_state.get().created) return;

@@ -269,7 +269,7 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	}
 
 	// Reserve the new one --------------------------
-	mrpt::opengl::COpenGLTexture::Options opts;
+	mrpt::opengl::Texture::Options opts;
 	opts.enableTransparency = m_enableTransparency;
 	opts.magnifyLinearFilter = m_textureInterpolate;
 	opts.generateMipMaps = m_textureUseMipMaps;

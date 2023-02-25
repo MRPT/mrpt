@@ -20,11 +20,11 @@ namespace mrpt::opengl
 /** A wrapper for an OpenGL buffer object (eg Vertex Buffer Object or VBO)
  * Refer to docs for glGenBuffers() and glBufferData().
  *
- * \sa COpenGLFramebuffer
+ * \sa FrameBuffer
  * \ingroup mrpt_opengl_grp
  * \note OpenGL Buffer Objects *can* be shared among threads.
  */
-class COpenGLBuffer
+class Buffer
 {
    public:
 	enum class Type : unsigned int
@@ -48,9 +48,9 @@ class COpenGLBuffer
 		DynamicCopy = 0x88EA  // GL_DYNAMIC_COPY
 	};
 
-	explicit COpenGLBuffer(const Type type);
-	COpenGLBuffer() : COpenGLBuffer(Type::Vertex) {}
-	~COpenGLBuffer() = default;
+	explicit Buffer(const Type type);
+	Buffer() : Buffer(Type::Vertex) {}
+	~Buffer() = default;
 
 	Type type() const
 	{
@@ -118,11 +118,11 @@ class COpenGLBuffer
    private:
 	struct RAII_Impl
 	{
-		RAII_Impl(COpenGLBuffer::Type t);
+		RAII_Impl(Buffer::Type t);
 		~RAII_Impl();
 
-		COpenGLBuffer::Type type;
-		COpenGLBuffer::Usage usage = COpenGLBuffer::Usage::StaticDraw;
+		Buffer::Type type;
+		Buffer::Usage usage = Buffer::Usage::StaticDraw;
 
 		void create();
 		void destroy();

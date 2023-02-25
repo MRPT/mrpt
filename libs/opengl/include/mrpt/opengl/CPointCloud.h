@@ -28,7 +28,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CPointCloud](preview_CPointCloud.png)
  *
- *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene,
+ *  \sa opengl::CPlanarLaserScan, opengl::Scene,
  * opengl::CPointCloudColoured, mrpt::maps::CPointsMap \ingroup mrpt_opengl_grp
  */
 class CPointCloud : public CRenderizableShaderPoints,

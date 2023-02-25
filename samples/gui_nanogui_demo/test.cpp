@@ -49,7 +49,7 @@ void TestGUI()
 		subWin2->setPosition({10, 300});
 
 		{
-			auto scene = mrpt::opengl::COpenGLScene::Create();
+			auto scene = mrpt::opengl::Scene::Create();
 			scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple());
 
 			glControl->camera().setZoomDistance(5.0f);
@@ -73,7 +73,7 @@ void TestGUI()
 
 		// add a background scene:
 		{
-			auto scene = mrpt::opengl::COpenGLScene::Create();
+			auto scene = mrpt::opengl::Scene::Create();
 			scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 
 			std::lock_guard<std::mutex> lck(win.background_scene_mtx);

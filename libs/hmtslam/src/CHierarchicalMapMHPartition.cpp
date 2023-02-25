@@ -1088,7 +1088,7 @@ bool CHierarchicalMapMHPartition::areNodesNeightbour(
   ---------------------------------------------------------------*/
 
 void CHierarchicalMapMHPartition::getAs3DScene(
-	COpenGLScene& outScene, const CHMHMapNode::TNodeID& idReferenceNode,
+	Scene& outScene, const CHMHMapNode::TNodeID& idReferenceNode,
 	const THypothesisID& hypothesisID,
 	const unsigned int& numberOfIterationsForOptimalGlobalPoses,
 	bool showRobotPoseIDs) const

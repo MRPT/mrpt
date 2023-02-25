@@ -402,10 +402,10 @@ void RBPF_SLAM_App_Base::run()
 			}
 
 			// Save a 3D scene view of the mapping process:
-			COpenGLScene::Ptr scene;
+			Scene::Ptr scene;
 			if (SAVE_3D_SCENE || SHOW_PROGRESS_IN_WINDOW)
 			{
-				scene = std::make_shared<COpenGLScene>();
+				scene = std::make_shared<Scene>();
 
 				// The ground:
 				mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
@@ -509,7 +509,7 @@ void RBPF_SLAM_App_Base::run()
 
 			if (SHOW_PROGRESS_IN_WINDOW)
 			{
-				COpenGLScene::Ptr& scenePtr = win3D->get3DSceneAndLock();
+				Scene::Ptr& scenePtr = win3D->get3DSceneAndLock();
 				scenePtr = scene;
 				win3D->unlockAccess3DScene();
 

@@ -37,7 +37,7 @@ void TestOpenGLObjects()
 
 	CDisplayWindow3D win("Demo of MRPT's OpenGL objects", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	auto& rng = mrpt::random::getRandomGenerator();
 

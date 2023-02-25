@@ -9,19 +9,19 @@
 #pragma once
 
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/COpenGLBuffer.h>
-#include <mrpt/opengl/COpenGLTexture.h>
-#include <mrpt/opengl/COpenGLVertexArrayObject.h>
+#include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CUBE_TEXTURE_FACE.h>
 #include <mrpt/opengl/TTriangle.h>
+#include <mrpt/opengl/Texture.h>
+#include <mrpt/opengl/VertexArrayObject.h>
 
 namespace mrpt::opengl
 {
 /** A Sky Box: 6 textures that are always rendered at "infinity" to give the
  *  impression of the scene to be much larger.
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CSkyBox : public CRenderizable
@@ -62,11 +62,11 @@ class CSkyBox : public CRenderizable
 
    private:
 	/// The cube texture for the 6 faces
-	mutable COpenGLTexture m_cubeTexture;
+	mutable Texture m_cubeTexture;
 	std::array<mrpt::img::CImage, 6> m_textureImages;
 
-	mutable COpenGLBuffer m_vbo;
-	mutable COpenGLVertexArrayObject m_vao;
+	mutable Buffer m_vbo;
+	mutable VertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl

@@ -212,7 +212,7 @@ class CGraphSlamEngine : public mrpt::system::COutputLogger
 	 * \sa save3DScene, https://www.mrpt.org/Robotics_file_formats
 	 */
 	void saveGraph(const std::string* fname_in = nullptr) const;
-	/**\brief Wrapper method around the COpenGLScene::saveToFile method.
+	/**\brief Wrapper method around the Scene::saveToFile method.
 	 *
 	 * \param[in] Name of the generated graph file - Defaults to "output_graph"
 	 * if not

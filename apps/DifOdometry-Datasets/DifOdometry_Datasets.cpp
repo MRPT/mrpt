@@ -269,7 +269,7 @@ void CDifodoDatasets::initializeScene()
 	// User-interface information
 	CImage img_legend;
 	img_legend.loadFromXPM(legend_xpm);
-	COpenGLViewport::Ptr legend = scene->createViewport("legend");
+	Viewport::Ptr legend = scene->createViewport("legend");
 	legend->setViewportPosition(20, 20, 332, 164);
 	legend->setImageView(img_legend);
 

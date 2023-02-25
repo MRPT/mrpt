@@ -21,7 +21,7 @@ namespace mrpt::opengl
  * a 3D scene.
  *
  *  By default, each viewport has its own camera, accesible via
- *  COpenGLViewport::getCamera(), but if a CCamera object is added as an object
+ *  Viewport::getCamera(), but if a CCamera object is added as an object
  *  to be rendered, it will override the internal viewport camera.
  *
  *  Available projection models:
@@ -41,7 +41,7 @@ namespace mrpt::opengl
  * and storing the desired pose with CRenderizable::setPose(). Pose axis
  * convention is +Z pointing forwards, +X right, +Y down.
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CCamera : public CRenderizable
