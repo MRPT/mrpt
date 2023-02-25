@@ -31,10 +31,10 @@
 #include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/Viewport.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -245,7 +245,7 @@ class ptgConfiguratorframe : public wxFrame
 	TCursorPickState m_cursorPickState;
 
 	// ========= Opengl View =======
-	mrpt::opengl::COpenGLViewport::Ptr gl_view_WS, gl_view_TPSpace;
+	mrpt::opengl::Viewport::Ptr gl_view_WS, gl_view_TPSpace;
 	mrpt::opengl::CSetOfObjects::Ptr gl_TPSpace_TP_obstacles;
 	mrpt::opengl::CMesh::Ptr gl_TPSpace_clearance, gl_TPSpace_clearance_interp;
 	mrpt::opengl::CCamera::Ptr gl_view_TPSpace_cam;

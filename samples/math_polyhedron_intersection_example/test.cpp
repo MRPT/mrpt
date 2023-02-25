@@ -151,7 +151,7 @@ void display()
 {
 	CDisplayWindow3D window("Polyhedra Intersection demo", 640, 480);
 	window.resize(640, 480);
-	COpenGLScene::Ptr scene1 = COpenGLScene::Create();
+	Scene::Ptr scene1 = Scene::Create();
 	opengl::CGridPlaneXY::Ptr plane1 =
 		CGridPlaneXY::Create(-25, 25, -25, 25, 0, 1);
 	plane1->setColor(GRID_R, GRID_G, GRID_B);

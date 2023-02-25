@@ -183,7 +183,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 		"GPS path, %i points (%s) %.03f meters length", int(M),
 		the_label.c_str(), overall_distance));
 
-	COpenGLScene scene;
+	Scene scene;
 	CPointCloud::Ptr gl_path = std::make_shared<CPointCloud>();
 	gl_path->setAllPoints(xs, ys, zs);
 	gl_path->setColor(0, 0, 1);
@@ -195,7 +195,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	scene.insert(
 		std::make_shared<CAxis>(-300, -300, -50, 300, 300, 50, 1.0, 3, true));
 
-	COpenGLScene::Ptr the_scene = winGPSPath->get3DSceneAndLock();
+	Scene::Ptr the_scene = winGPSPath->get3DSceneAndLock();
 	*the_scene = scene;
 	winGPSPath->unlockAccess3DScene();
 	winGPSPath->repaint();

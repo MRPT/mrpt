@@ -33,7 +33,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CMesh](preview_CMesh.png)
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CMesh : public CRenderizableShaderTexturedTriangles,

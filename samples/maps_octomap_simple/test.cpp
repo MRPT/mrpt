@@ -79,7 +79,7 @@ void TestOctoMap()
 		mrpt::opengl::COctoMapVoxels::Create();
 
 	{
-		mrpt::opengl::COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
+		mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
 
 		{
 			mrpt::opengl::CGridPlaneXY::Ptr gl_grid =

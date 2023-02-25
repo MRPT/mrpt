@@ -361,7 +361,7 @@ void CICPCriteriaERD<GRAPH_T>::toggleLaserScansVisualization()
 	this->logFmt(
 		mrpt::system::LVL_INFO, "Toggling LaserScans visualization...");
 
-	COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 	if (params.visualize_laser_scans)
 	{
@@ -408,7 +408,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 	// ICP_max_distance disk
 	if (params.ICP_max_distance > 0)
 	{
-		COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+		Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 		CDisk::Ptr obj = std::make_shared<CDisk>();
 		pose_t initial_pose;
@@ -426,7 +426,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 	// laser scan visualization
 	if (params.visualize_laser_scans)
 	{
-		COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+		Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 		CPlanarLaserScan::Ptr laser_scan_viz =
 			mrpt::opengl::CPlanarLaserScan::Create();
@@ -472,7 +472,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 	// update ICP_max_distance Disk
 	if (this->m_win && params.ICP_max_distance > 0)
 	{
-		COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+		Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 		CRenderizable::Ptr obj = scene->getByName("ICP_max_distance");
 		CDisk::Ptr disk_obj = std::dynamic_pointer_cast<CDisk>(obj);
@@ -487,7 +487,7 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 	if (this->m_win && params.visualize_laser_scans &&
 		(m_last_laser_scan2D || m_fake_laser_scan2D))
 	{
-		COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+		Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 		CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
 		CPlanarLaserScan::Ptr laser_scan_viz =

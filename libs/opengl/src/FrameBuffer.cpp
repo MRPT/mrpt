@@ -11,7 +11,7 @@
 //
 #include <mrpt/core/backtrace.h>
 #include <mrpt/core/get_env.h>
-#include <mrpt/opengl/COpenGLFramebuffer.h>
+#include <mrpt/opengl/FrameBuffer.h>
 #include <mrpt/opengl/opengl_api.h>
 
 using namespace mrpt::opengl;
@@ -33,7 +33,7 @@ static bool isExtensionSupported([[maybe_unused]] const std::string& extension)
 }
 #endif
 
-void COpenGLFramebuffer::RAII_Impl::create(
+void FrameBuffer::RAII_Impl::create(
 	unsigned int width, unsigned int height, int nSamples)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
@@ -130,7 +130,7 @@ void COpenGLFramebuffer::RAII_Impl::create(
 #endif
 }
 
-void COpenGLFramebuffer::RAII_Impl::destroy()
+void FrameBuffer::RAII_Impl::destroy()
 {
 	auto& _ = m_state.get();
 
@@ -151,7 +151,7 @@ void COpenGLFramebuffer::RAII_Impl::destroy()
 	_.m_created = false;
 }
 
-FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
+FrameBufferBinding FrameBuffer::RAII_Impl::bind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	const FrameBufferBinding ids = CurrentBinding();
@@ -172,7 +172,7 @@ FrameBufferBinding COpenGLFramebuffer::RAII_Impl::bind()
 #endif
 }
 
-void COpenGLFramebuffer::RAII_Impl::unbind()
+void FrameBuffer::RAII_Impl::unbind()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	auto& _ = m_state.get();
@@ -183,7 +183,7 @@ void COpenGLFramebuffer::RAII_Impl::unbind()
 #endif
 }
 
-void COpenGLFramebuffer::blit()
+void FrameBuffer::blit()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	auto& _ = m_impl.m_state.get();
@@ -200,7 +200,7 @@ void COpenGLFramebuffer::blit()
 #endif
 }
 
-void COpenGLFramebuffer::Bind(const FrameBufferBinding& ids)
+void FrameBuffer::Bind(const FrameBufferBinding& ids)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, ids.readFbId);
@@ -208,7 +208,7 @@ void COpenGLFramebuffer::Bind(const FrameBufferBinding& ids)
 #endif
 }
 
-FrameBufferBinding COpenGLFramebuffer::CurrentBinding()
+FrameBufferBinding FrameBuffer::CurrentBinding()
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	GLint drawFboId = 0, readFboId = 0;

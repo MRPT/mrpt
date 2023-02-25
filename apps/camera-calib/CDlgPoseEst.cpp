@@ -282,7 +282,7 @@ CDlgPoseEst::CDlgPoseEst(
 	pose_mat << -25, 25, 100, -0.1, 0.25, 0.5;
 	//*)
 
-	scene = mrpt::opengl::COpenGLScene::Create();
+	scene = mrpt::opengl::Scene::Create();
 	cor = mrpt::opengl::stock_objects::CornerXYZ();
 	cor1 = mrpt::opengl::stock_objects::CornerXYZ();
 

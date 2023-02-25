@@ -9,8 +9,8 @@
 #pragma once
 
 #include <mrpt/containers/yaml.h>
-#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/Viewport.h>
 
 /** The namespace for 3D scene representation and rendering. See also the <a
  * href="mrpt-opengl.html" > summary page</a> of the mrpt-opengl library for
@@ -30,26 +30,26 @@ namespace mrpt::opengl
  * camera models can be used for each viewport independently, greatly
  * increasing the possibilities of rendered scenes.
  *
- * An object of COpenGLScene always contains at least one viewport
- * (mrpt::opengl::COpenGLViewport), named "main". Optionally, any
+ * An object of Scene always contains at least one viewport
+ * (mrpt::opengl::Viewport), named "main". Optionally, any
  * number of other viewports may exist. Viewports are referenced by their
  * names, case-sensitive strings. Each viewport contains
  * a different 3D scene (i.e. they render different objects), though a
  * mechanism exist to share the same 3D scene by a number of
  * viewports so memory is not wasted replicating the same objects (see
- * COpenGLViewport::setCloneView ).
+ * Viewport::setCloneView ).
  *
- * The main rendering method, COpenGLScene::render(), assumes a viewport has
+ * The main rendering method, Scene::render(), assumes a viewport has
  * been set-up for the entire target window. That
  * method will internally make the required calls to opengl for creating the
  * additional viewports. Note that only the depth
  * buffer is cleared by default for each (non-main) viewport, to allow
  * transparencies. This can be disabled by the approppriate
- * member in COpenGLViewport.
+ * member in Viewport.
  *
- * An object COpenGLScene can be saved to a [".3Dscene"
+ * An object Scene can be saved to a [".3Dscene"
  * file](robotics_file_formats.html) using CFileOutputStream or with the direct
- * method COpenGLScene::saveToFile() for posterior visualization from the
+ * method Scene::saveToFile() for posterior visualization from the
  * standalone application \ref app_SceneViewer3D.
  *
  * It can be also displayed in real-time using windows in mrpt::gui or
@@ -57,16 +57,16 @@ namespace mrpt::opengl
  *
  * \ingroup mrpt_opengl_grp
  */
-class COpenGLScene : public mrpt::serialization::CSerializable
+class Scene : public mrpt::serialization::CSerializable
 {
-	DEFINE_SERIALIZABLE(COpenGLScene, mrpt::opengl)
+	DEFINE_SERIALIZABLE(Scene, mrpt::opengl)
    public:
-	using TListViewports = std::vector<COpenGLViewport::Ptr>;
+	using TListViewports = std::vector<Viewport::Ptr>;
 
-	COpenGLScene();
-	~COpenGLScene() override;
-	COpenGLScene& operator=(const COpenGLScene& obj);
-	COpenGLScene(const COpenGLScene& obj);
+	Scene();
+	~Scene() override;
+	Scene& operator=(const Scene& obj);
+	Scene(const Scene& obj);
 
 	/**
 	 * Inserts a set of objects into the scene, in the given viewport ("main"
@@ -110,13 +110,13 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	 * the existing object will be returned. The first, default viewport, is
 	 * named "main".
 	 */
-	COpenGLViewport::Ptr createViewport(const std::string& viewportName);
+	Viewport::Ptr createViewport(const std::string& viewportName);
 
 	/** Returns the viewport with the given name, or nullptr if it does not
 	 * exist; note that the default viewport is named "main" and initially
 	 * occupies the entire rendering area.
 	 */
-	COpenGLViewport::Ptr getViewport(
+	Viewport::Ptr getViewport(
 		const std::string& viewportName = std::string("main")) const;
 
 	const TListViewports& viewports() const { return m_viewports; }
@@ -235,7 +235,7 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 	void freeOpenGLResources();
 
    protected:
-	bool m_followCamera{false};
+	bool m_followCamera = false;
 
 	/** The list of viewports, indexed by name. */
 	TListViewports m_viewports;
@@ -247,25 +247,26 @@ class COpenGLScene : public mrpt::serialization::CSerializable
 		functor(o);
 		if (auto objs = std::dynamic_pointer_cast<CSetOfObjects>(o); objs)
 		{
-			for (auto obj : *objs)
+			for (auto& obj : *objs)
 				internal_visitAllObjects(functor, obj);
 		}
 	}
 };
 
+/// Alias for Scene for backwards compatibility with MRPT <2.7.0.
+using COpenGLScene = Scene;
+
 /** Inserts an openGL object into a scene. Allows call chaining. \sa
- * mrpt::opengl::COpenGLScene::insert  */
-inline COpenGLScene::Ptr& operator<<(
-	COpenGLScene::Ptr& s, const CRenderizable::Ptr& r)
+ * mrpt::opengl::Scene::insert  */
+inline Scene::Ptr& operator<<(Scene::Ptr& s, const CRenderizable::Ptr& r)
 {
 	s->insert(r);
 	return s;
 }
 /**Inserts any iterable collection of openGL objects into a scene, allowing call
- * chaining.  \sa mrpt::opengl::COpenGLScene::insert */
+ * chaining.  \sa mrpt::opengl::Scene::insert */
 template <class T>
-inline COpenGLScene::Ptr& operator<<(
-	COpenGLScene::Ptr& s, const std::vector<T>& v)
+inline Scene::Ptr& operator<<(Scene::Ptr& s, const std::vector<T>& v)
 {
 	s->insert(v.begin(), v.end());
 	return s;

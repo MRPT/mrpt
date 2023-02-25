@@ -31,12 +31,12 @@ void TestDisplay3D()
 {
 	CDisplayWindow3D win("Example of 3D Scene Visualization - MRPT", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	// Add a clone viewport:
 	if (true)
 	{
-		COpenGLViewport::Ptr vi = theScene->createViewport("myClone");
+		Viewport::Ptr vi = theScene->createViewport("myClone");
 		vi->setViewportPosition(0.7, 0.05, 0.28, 0.28);
 		vi->setCloneView("main");
 		vi->setTransparent(true);
@@ -122,7 +122,7 @@ void TestDisplay3D()
 	while (!end && win.isOpen())
 	{
 		// Move the scene:
-		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 		opengl::CRenderizable::Ptr obj1 = theScene->getByName("ball_1");
 		obj1->setLocation(

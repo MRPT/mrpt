@@ -126,7 +126,7 @@ void TestRRT1()
 
 #if MRPT_HAS_WXWIDGETS
 		// Show result in a GUI:
-		mrpt::opengl::COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
+		mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
 
 		scene->clear();
 

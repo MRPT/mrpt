@@ -18,9 +18,9 @@ namespace mrpt::opengl
  * established in this object.
  * It can be established a hierarchy of "CSetOfObjects", where the coordinates
  * framework of each one will be referenced to the parent's one.
- * The list of child objects is accessed directly as in the class COpenGLScene
+ * The list of child objects is accessed directly as in the class Scene
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfObjects : public CRenderizable

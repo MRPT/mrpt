@@ -28,16 +28,6 @@ using namespace mrpt::opengl;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRenderizable, CSerializable, mrpt::opengl)
 
-// Default constructor:
-CRenderizable::CRenderizable()
-	: m_name(),
-
-	  m_color(255, 255, 255, 255),
-	  m_pose()
-
-{
-}
-
 // Destructor:
 CRenderizable::~CRenderizable() = default;
 

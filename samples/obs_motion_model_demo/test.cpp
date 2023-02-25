@@ -12,9 +12,9 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/pose_pdfs.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
@@ -64,7 +64,7 @@ void DemoMotionModel(int argc, const char** argv)
 	auto glPartsGroup = mrpt::opengl::CSetOfObjects::Create();
 	auto glLidar = mrpt::opengl::CPlanarLaserScan::Create();
 	auto glOdoTrack = mrpt::opengl::CSetOfLines::Create();
-	mrpt::opengl::COpenGLViewport::Ptr glBottomView;
+	mrpt::opengl::Viewport::Ptr glBottomView;
 	glOdoTrack->appendLine(0, 0, 0, 0, 0, 0);
 	glOdoTrack->setColor_u8(0x00, 0x00, 0x00);
 	{

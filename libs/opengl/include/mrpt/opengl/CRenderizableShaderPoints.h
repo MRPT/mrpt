@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include <mrpt/opengl/COpenGLBuffer.h>
-#include <mrpt/opengl/COpenGLVertexArrayObject.h>
+#include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/VertexArrayObject.h>
 
 namespace mrpt::opengl
 {
@@ -31,7 +31,7 @@ namespace mrpt::opengl
  * setVariablePointSize_k(), and setVariablePointSize_DepthScale(),
  * respectively.
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  *
  * \ingroup mrpt_opengl_grp
  */
@@ -122,8 +122,8 @@ class CRenderizableShaderPoints : public virtual CRenderizable
 	void params_deserialize(mrpt::serialization::CArchive& in);
 
    private:
-	mutable COpenGLBuffer m_vertexBuffer, m_colorBuffer;
-	mutable COpenGLVertexArrayObject m_vao;
+	mutable Buffer m_vertexBuffer, m_colorBuffer;
+	mutable VertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl

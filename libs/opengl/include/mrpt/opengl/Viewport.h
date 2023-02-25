@@ -32,10 +32,10 @@ class CImage;
 }
 namespace mrpt::opengl
 {
-/** A viewport within a COpenGLScene, containing a set of OpenGL objects to
+/** A viewport within a Scene, containing a set of OpenGL objects to
  *render.
  *   This class has protected constuctor, thus it cannot be created by users.
- *Use COpenGLScene::createViewport instead.
+ *Use Scene::createViewport instead.
  *  A viewport has these "operation modes":
  *		- Normal (default): It renders the contained objects.
  *		- Cloned: It clones the objects from another viewport. See \a
@@ -45,7 +45,7 @@ namespace mrpt::opengl
  *
  * In any case, the viewport can be resized to only fit a part of the entire
  *parent viewport.
- *  There will be always at least one viewport in a COpenGLScene named "main".
+ *  There will be always at least one viewport in a Scene named "main".
  *
  * This class can be observed (see mrpt::system::CObserver) for the following
  *events (see mrpt::system::mrptEvent):
@@ -57,15 +57,15 @@ namespace mrpt::opengl
  *
  * Lighting parameters are accessible via lightParameters().
  *
- *  Refer to mrpt::opengl::COpenGLScene for further details.
+ *  Refer to mrpt::opengl::Scene for further details.
  * \ingroup mrpt_opengl_grp
  */
-class COpenGLViewport : public mrpt::serialization::CSerializable,
-						public mrpt::system::CObservable,
-						public mrpt::opengl::CTextMessageCapable
+class Viewport : public mrpt::serialization::CSerializable,
+				 public mrpt::system::CObservable,
+				 public mrpt::opengl::CTextMessageCapable
 {
-	DEFINE_SERIALIZABLE(COpenGLViewport, mrpt::opengl)
-	friend class COpenGLScene;
+	DEFINE_SERIALIZABLE(Viewport, mrpt::opengl)
+	friend class Scene;
 
    public:
 	/** @name Viewport "modes"
@@ -351,15 +351,14 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	/** @} */  // end of Contained objects set/get/search
 
 	/** Destructor: clears all objects. */
-	~COpenGLViewport() override;
+	~Viewport() override;
 
-	/** Constructor, invoked from COpenGLScene only.
+	/** Constructor, invoked from Scene only.
 	 */
-	COpenGLViewport(
-		COpenGLScene* parent = nullptr,
-		const std::string& name = std::string(""));
+	Viewport(
+		Scene* parent = nullptr, const std::string& name = std::string(""));
 
-	/** Render the objects in this viewport (called from COpenGLScene) */
+	/** Render the objects in this viewport (called from Scene) */
 	void render(
 		const int render_width, const int render_height,
 		const int render_offset_x = 0, const int render_offset_y = 0,
@@ -410,7 +409,7 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	opengl::CCamera m_camera;
 
 	/** The scene that contains this viewport. */
-	mrpt::safe_ptr<COpenGLScene> m_parent;
+	mrpt::safe_ptr<Scene> m_parent;
 
 	/** Set by setCloneView */
 	bool m_isCloned{false};
@@ -483,12 +482,14 @@ class COpenGLViewport : public mrpt::serialization::CSerializable,
 	void renderTextMessages() const;
 };
 
+/// Alias for Viewport for backwards compatibility with MRPT <2.7.0.
+using COpenGLViewport = Viewport;
+
 /**
  * Inserts an openGL object into a viewport. Allows call chaining.
- * \sa mrpt::opengl::COpenGLViewport::insert
+ * \sa mrpt::opengl::Viewport::insert
  */
-inline COpenGLViewport::Ptr& operator<<(
-	COpenGLViewport::Ptr& s, const CRenderizable::Ptr& r)
+inline Viewport::Ptr& operator<<(Viewport::Ptr& s, const CRenderizable::Ptr& r)
 {
 	s->insert(r);
 	return s;
@@ -496,20 +497,20 @@ inline COpenGLViewport::Ptr& operator<<(
 /**
  * Inserts any iterable set of openGL objects into a viewport. Allows call
  * chaining.
- * \sa mrpt::opengl::COpenGLViewport::insert
+ * \sa mrpt::opengl::Viewport::insert
  */
-inline COpenGLViewport::Ptr& operator<<(
-	COpenGLViewport::Ptr& s, const std::vector<CRenderizable::Ptr>& v)
+inline Viewport::Ptr& operator<<(
+	Viewport::Ptr& s, const std::vector<CRenderizable::Ptr>& v)
 {
 	for (const auto& it : v)
 		s->insert(it);
 	return s;
 }
 
-/** @name Events emitted by COpenGLViewport
+/** @name Events emitted by Viewport
 	@{  */
 
-/**  An event sent by an mrpt::opengl::COpenGLViewport just after clearing the
+/**  An event sent by an mrpt::opengl::Viewport just after clearing the
  * viewport and setting the GL_PROJECTION matrix, and before calling the scene
  * OpenGL drawing primitives.
  *
@@ -526,20 +527,17 @@ class mrptEventGLPreRender : public mrpt::system::mrptEvent
 	void do_nothing() override {}
 
    public:
-	inline mrptEventGLPreRender(const COpenGLViewport* obj)
-		: source_viewport(obj)
-	{
-	}
-	const COpenGLViewport* const source_viewport;
+	inline mrptEventGLPreRender(const Viewport* obj) : source_viewport(obj) {}
+	const Viewport* const source_viewport;
 };	// End of class def.
 
-/**  An event sent by an mrpt::opengl::COpenGLViewport after calling the scene
+/**  An event sent by an mrpt::opengl::Viewport after calling the scene
  * OpenGL drawing primitives and before doing a glSwapBuffers
  *
  *  While handling this event you can call OpenGL glBegin(),glEnd(),gl*
  * functions or those in mrpt::opengl::gl_utils to draw stuff *on the top* of
  * the normal
- *   objects contained in the COpenGLScene.
+ *   objects contained in the Scene.
  *
  *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely
  * be invoked from an internal GUI thread of MRPT,
@@ -552,11 +550,8 @@ class mrptEventGLPostRender : public mrpt::system::mrptEvent
 	void do_nothing() override {}
 
    public:
-	inline mrptEventGLPostRender(const COpenGLViewport* obj)
-		: source_viewport(obj)
-	{
-	}
-	const COpenGLViewport* const source_viewport;
+	inline mrptEventGLPostRender(const Viewport* obj) : source_viewport(obj) {}
+	const Viewport* const source_viewport;
 };	// End of class def.
 
 /** @} */

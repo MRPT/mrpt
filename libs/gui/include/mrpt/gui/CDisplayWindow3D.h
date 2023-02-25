@@ -10,7 +10,7 @@
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/system/datetime.h>
 
@@ -23,7 +23,7 @@ class CMyGLCanvas_DisplayWindow3D;
 
 /** A graphical user interface (GUI) for efficiently rendering 3D scenes in
  * real-time.
- *  This class always contains internally an instance of opengl::COpenGLScene,
+ *  This class always contains internally an instance of opengl::Scene,
  * which
  *   the objects, viewports, etc. to be rendered.
  *
@@ -34,7 +34,7 @@ class CMyGLCanvas_DisplayWindow3D;
  *  A short-cut for displaying 2D images (using the OpenGL rendering hardware)
  * is available
  *  through \a setImageView() . Internally, these methods call methods
- *  in the "main" viewport of the window (see \a COpenGLViewport).
+ *  in the "main" viewport of the window (see \a Viewport).
  *
  *  Since the 3D rendering is performed in a detached thread, especial care
  * must be taken
@@ -46,7 +46,7 @@ class CMyGLCanvas_DisplayWindow3D;
  *   mrpt::gui::CDisplayWindow3D	win("My window");
  *
  *   // Adquire the scene:
- *   mrpt::opengl::COpenGLScene::Ptr &ptrScene = win.get3DSceneAndLock();
+ *   mrpt::opengl::Scene::Ptr &ptrScene = win.get3DSceneAndLock();
  *
  *   // Modify the scene:
  *   ptrScene->...
@@ -62,7 +62,7 @@ class CMyGLCanvas_DisplayWindow3D;
  *
  * An alternative way of updating the scene is by creating, before locking the
  * 3D window, a new object
- *  of class COpenGLScene, then locking the window only for replacing the smart
+ *  of class Scene, then locking the window only for replacing the smart
  * pointer. This may be
  *  advantageous is generating the 3D scene takes a long time, since while the
  * window
@@ -74,7 +74,7 @@ class CMyGLCanvas_DisplayWindow3D;
  *   mrpt::gui::CDisplayWindow3D	win("My window");
  *   // ...
  *   { // The scene is adquired in this scope
- *      mrpt::opengl::COpenGLScene::Ptr ptrScene;
+ *      mrpt::opengl::Scene::Ptr ptrScene;
  *      mrpt::gui::CDisplayWindow3DLocker  locker(win,ptrScene);
  *      //...
  *      // Either:
@@ -120,7 +120,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	/** Internal OpenGL object (see general discussion in about usage of this
 	 * object) */
-	mrpt::opengl::COpenGLScene::Ptr m_3Dscene;
+	mrpt::opengl::Scene::Ptr m_3Dscene;
 	/** Critical section for accessing m_3Dscene */
 	mutable std::recursive_timed_mutex m_csAccess3DScene;
 
@@ -167,7 +167,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 *  This also locks the critical section for accessing the scene, thus the
 	 * window will not be repainted until it is unlocked.
 	 * \note It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.*/
-	mrpt::opengl::COpenGLScene::Ptr& get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr& get3DSceneAndLock();
 
 	/** Unlocks the access to the internal 3D scene. It is safer to use
 	 * mrpt::gui::CDisplayWindow3DLocker instead.
@@ -297,9 +297,9 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	bool isCapturingImgs() const { return m_is_capturing_imgs; }
 
-	/** A shortcut for calling mrpt::opengl::COpenGLViewport::addTextMessage()
+	/** A shortcut for calling mrpt::opengl::Viewport::addTextMessage()
 	 * in the "main" viewport of the 3D scene.
-	 * \sa clearTextMessages, mrpt::opengl::COpenGLViewport::addTextMessage()
+	 * \sa clearTextMessages, mrpt::opengl::Viewport::addTextMessage()
 	 */
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
@@ -314,7 +314,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	}
 
 	/** Clear all text messages created with addTextMessage(). A shortcut for
-	 * calling mrpt::opengl::COpenGLViewport::clearTextMessages().
+	 * calling mrpt::opengl::Viewport::clearTextMessages().
 	 *
 	 * \sa addTextMessage
 	 */
@@ -328,7 +328,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	/** Just updates the text of a given text message, without touching the
 	 * other parameters. A shortcut for
-	 * calling mrpt::opengl::COpenGLViewport::updateTextMessage()
+	 * calling mrpt::opengl::Viewport::updateTextMessage()
 	 *
 	 * \return false if given ID doesn't exist.
 	 */
@@ -346,12 +346,12 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	/** A short cut for getting the "main" viewport of the scene object, it is
 	 * equivalent to:
 	 *  \code
-	 *    mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
+	 *    mrpt::opengl::Scene::Ptr &scene = win3D.get3DSceneAndLock();
 	 *    viewport = scene->getViewport("main");
 	 *    win3D.unlockAccess3DScene();
 	 *  \endcode
 	 */
-	mrpt::opengl::COpenGLViewport::Ptr getDefaultViewport();
+	mrpt::opengl::Viewport::Ptr getDefaultViewport();
 
 	/** Set the "main" viewport into "image view"-mode, where an image is
 	 * efficiently drawn (fitting the viewport area) using an OpenGL textured
@@ -362,7 +362,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
 	 *  The viewport can be reverted to behave like a normal viewport by
 	 * calling setNormalMode()
-	 * \sa COpenGLViewport
+	 * \sa Viewport
 	 * \note This method already locks/unlocks the 3D scene of the window, so
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
@@ -371,7 +371,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	/** Just like \a setImageView but moves the internal image memory instead of
 	 * making a copy, so it's faster but empties the input image.
-	 * \sa setImageView, COpenGLViewport
+	 * \sa setImageView, Viewport
 	 * \note This method already locks/unlocks the 3D scene of the window, so
 	 * the user must NOT call get3DSceneAndLock() / unlockAccess3DScene()
 	 * before/after calling it.
@@ -439,7 +439,7 @@ class CDisplayWindow3DLocker
 	/** Acquires the lock of the 3D scene of the referenced window, and returns
 	 * a copy of the smart pointer to it. */
 	CDisplayWindow3DLocker(
-		CDisplayWindow3D& win, mrpt::opengl::COpenGLScene::Ptr& out_scene_ptr);
+		CDisplayWindow3D& win, mrpt::opengl::Scene::Ptr& out_scene_ptr);
 	/** Acquires the lock of the 3D scene of the referenced window. Use this
 	 * signature when the scene object is not required. */
 	CDisplayWindow3DLocker(CDisplayWindow3D& win);

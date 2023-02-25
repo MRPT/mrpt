@@ -9,10 +9,10 @@
 
 #pragma once
 
-#include <mrpt/opengl/COpenGLBuffer.h>
-#include <mrpt/opengl/COpenGLVertexArrayObject.h>
+#include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/TTriangle.h>
+#include <mrpt/opengl/VertexArrayObject.h>
 
 #include <shared_mutex>
 
@@ -20,7 +20,7 @@ namespace mrpt::opengl
 {
 /** Renderizable generic renderer for objects using the "text shader".
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  *
  * \ingroup mrpt_opengl_grp
  */
@@ -63,9 +63,9 @@ class CRenderizableShaderText : public virtual CRenderizable
 	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_textDataMtx;
 
    private:
-	mutable COpenGLBuffer m_trianglesBuffer, m_trianglesColorBuffer;
-	mutable COpenGLBuffer m_linesVertexBuffer, m_linesColorBuffer;
-	mutable COpenGLVertexArrayObject m_vao;
+	mutable Buffer m_trianglesBuffer, m_trianglesColorBuffer;
+	mutable Buffer m_linesVertexBuffer, m_linesColorBuffer;
+	mutable VertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl

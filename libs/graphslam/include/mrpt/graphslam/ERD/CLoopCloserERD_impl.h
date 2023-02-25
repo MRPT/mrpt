@@ -1742,7 +1742,7 @@ void CLoopCloserERD<GRAPH_T>::initMapPartitionsVisualization()
 	CSetOfObjects::Ptr map_partitions_obj = std::make_shared<CSetOfObjects>();
 	map_partitions_obj->setName("map_partitions");
 
-	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr& scene = this->m_win->get3DSceneAndLock();
 	scene->insert(map_partitions_obj);
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
@@ -1766,7 +1766,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization()
 		m_lc_params.text_index_map_partitions);
 
 	// update the partitioning visualization
-	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
+	Scene::Ptr& scene = this->m_win->get3DSceneAndLock();
 
 	// fetch the partitions CSetOfObjects
 	CSetOfObjects::Ptr map_partitions_obj;
@@ -1968,7 +1968,7 @@ void CLoopCloserERD<GRAPH_T>::toggleMapPartitionsVisualization()
 	using namespace mrpt::opengl;
 
 	MRPT_LOG_INFO("Toggling map partitions  visualization...");
-	mrpt::opengl::COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 	if (m_lc_params.visualize_map_partitions)
 	{
@@ -2022,8 +2022,7 @@ void CLoopCloserERD<GRAPH_T>::initLaserScansVisualization()
 	// laser scan visualization
 	if (m_laser_params.visualize_laser_scans)
 	{
-		mrpt::opengl::COpenGLScene::Ptr scene =
-			this->m_win->get3DSceneAndLock();
+		mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CPlanarLaserScan::Ptr laser_scan_viz =
 			mrpt::opengl::CPlanarLaserScan::Create();
@@ -2054,8 +2053,7 @@ void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization()
 	// update laser scan visual
 	if (m_laser_params.visualize_laser_scans && m_last_laser_scan2D)
 	{
-		mrpt::opengl::COpenGLScene::Ptr scene =
-			this->m_win->get3DSceneAndLock();
+		mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CRenderizable::Ptr obj =
 			scene->getByName("laser_scan_viz");
@@ -2094,7 +2092,7 @@ void CLoopCloserERD<GRAPH_T>::toggleLaserScansVisualization()
 
 	MRPT_LOG_INFO("Toggling LaserScans visualization...");
 
-	mrpt::opengl::COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 
 	if (m_laser_params.visualize_laser_scans)
 	{
@@ -2199,7 +2197,7 @@ void CLoopCloserERD<GRAPH_T>::initCurrCovarianceVisualization()
 	cov_ellipsis_obj->setLocation(0, 0, 0);
 	// cov_ellipsis_obj->setQuantiles(2.0);
 
-	mrpt::opengl::COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 	scene->insert(cov_ellipsis_obj);
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
@@ -2233,7 +2231,7 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization()
 		   "determinant : "
 		<< mat.det());
 
-	mrpt::opengl::COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr scene = this->m_win->get3DSceneAndLock();
 	CRenderizable::Ptr obj = scene->getByName("cov_ellipsis_obj");
 	CEllipsoid3D::Ptr cov_ellipsis_obj =
 		std::dynamic_pointer_cast<CEllipsoid3D>(obj);

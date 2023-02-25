@@ -81,8 +81,7 @@ void Test_SUT()
 	cout << "y_cov: " << endl << y_cov << endl << endl;
 
 	// 3D view:
-	mrpt::opengl::COpenGLScene::Ptr scene =
-		mrpt::opengl::COpenGLScene::Create();
+	mrpt::opengl::Scene::Ptr scene = mrpt::opengl::Scene::Create();
 	scene->insert(opengl::CGridPlaneXY::Create(-10, 10, -10, 10, 0, 1));
 
 	{

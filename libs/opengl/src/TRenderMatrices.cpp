@@ -168,15 +168,18 @@ void TRenderMatrices::applyLookAt()
 	m(2, 0) = d2f(-forward[0]);
 	m(2, 1) = d2f(-forward[1]);
 	m(2, 2) = d2f(-forward[2]);
-	// Translation:
-	m(0, 3) = d2f(-mrpt::math::dotProduct<3, double>(side, eye));
-	m(1, 3) = d2f(-mrpt::math::dotProduct<3, double>(up2, eye));
-	m(2, 3) = d2f(mrpt::math::dotProduct<3, double>(forward, eye));
 	// Last row:
 	m(3, 0) = .0f;
 	m(3, 1) = .0f;
 	m(3, 2) = .0f;
 	m(3, 3) = 1.f;
+
+	v_matrix_no_translation = m;
+
+	// Translation:
+	m(0, 3) = d2f(-mrpt::math::dotProduct<3, double>(side, eye));
+	m(1, 3) = d2f(-mrpt::math::dotProduct<3, double>(up2, eye));
+	m(2, 3) = d2f(mrpt::math::dotProduct<3, double>(forward, eye));
 
 	// Homogeneous matrices composition:
 	// Overwrite projection matrix:

@@ -49,7 +49,7 @@ void CQtGlCanvasBase::resizeGL(int width, int height)
 #endif
 }
 
-opengl::COpenGLViewport::Ptr CQtGlCanvasBase::mainViewport() const
+opengl::Viewport::Ptr CQtGlCanvasBase::mainViewport() const
 {
 	return m_mainViewport;
 }

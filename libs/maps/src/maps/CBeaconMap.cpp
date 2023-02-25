@@ -19,8 +19,8 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
@@ -1092,7 +1092,7 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 	saveToMATLABScript3D(fil1);
 
 	// 3D Scene:
-	opengl::COpenGLScene scene;
+	opengl::Scene scene;
 	const opengl::CSetOfObjects::Ptr obj3D = getVisualization();
 	auto objGround = opengl::CGridPlaneXY::Create(
 		-100.0f, 100.0f, -100.0f, 100.0f, .0f, 1.f);

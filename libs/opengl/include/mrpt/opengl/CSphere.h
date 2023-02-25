@@ -16,7 +16,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CSphere](preview_CSphere.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CSphere : public CGeneralizedEllipsoidTemplate<3>

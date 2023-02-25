@@ -211,7 +211,7 @@ CFBORender::CFBORender(const Parameters& p) : m_params(p)
 	CHECK_OPENGL_ERROR();
 
 	// unbind:
-	COpenGLFramebuffer::Bind(oldFB);
+	FrameBuffer::Bind(oldFB);
 
 	MRPT_END
 #else
@@ -232,7 +232,7 @@ CFBORender::~CFBORender()
 }
 
 void CFBORender::internal_render_RGBD(
-	[[maybe_unused]] const COpenGLScene& scene,
+	[[maybe_unused]] const Scene& scene,
 	[[maybe_unused]] const mrpt::optional_ref<mrpt::img::CImage>& optoutRGB,
 	[[maybe_unused]] const mrpt::optional_ref<mrpt::math::CMatrixFloat>&
 		optoutDepth)
@@ -432,7 +432,7 @@ void CFBORender::internal_render_RGBD(
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not
 	// drawn into the FBO.
-	COpenGLFramebuffer::Bind(oldFBs);
+	FrameBuffer::Bind(oldFBs);
 
 	// Restore viewport:
 	glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
@@ -441,19 +441,19 @@ void CFBORender::internal_render_RGBD(
 #endif
 }
 
-void CFBORender::render_RGB(const COpenGLScene& scene, CImage& outRGB)
+void CFBORender::render_RGB(const Scene& scene, CImage& outRGB)
 {
 	internal_render_RGBD(scene, outRGB, std::nullopt);
 }
 
 void CFBORender::render_RGBD(
-	const COpenGLScene& scene, mrpt::img::CImage& outRGB,
+	const Scene& scene, mrpt::img::CImage& outRGB,
 	mrpt::math::CMatrixFloat& outDepth)
 {
 	internal_render_RGBD(scene, outRGB, outDepth);
 }
 void CFBORender::render_depth(
-	const COpenGLScene& scene, mrpt::math::CMatrixFloat& outDepth)
+	const Scene& scene, mrpt::math::CMatrixFloat& outDepth)
 {
 	internal_render_RGBD(scene, std::nullopt, outDepth);
 }

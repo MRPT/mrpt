@@ -18,11 +18,11 @@ namespace mrpt::opengl
 /** A colorbar indicator. This class renders a colorbar as a 3D object, in the
  * XY plane.
  * For an overlay indicator that can be easily added to any display, see
- * COpenGLScene::addColorBar()
+ * Scene::addColorBar()
  *
  * ![mrpt::opengl::CColorBar](preview_CColorBar.png)
  *
- * \sa opengl::COpenGLScene,opengl::CRenderizable, COpenGLScene::addColorBar()
+ * \sa opengl::Scene,opengl::CRenderizable, Scene::addColorBar()
  * \ingroup mrpt_opengl_grp
  */
 class CColorBar : public CRenderizableShaderTriangles,

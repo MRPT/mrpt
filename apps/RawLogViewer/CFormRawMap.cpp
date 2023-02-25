@@ -386,7 +386,7 @@ CFormRawMap::~CFormRawMap()
 	//*)
 }
 
-void loadMapInto3DScene(COpenGLScene& scene)
+void loadMapInto3DScene(Scene& scene)
 {
 	{
 		TPoint3D minC, maxC;
@@ -779,7 +779,7 @@ void CFormRawMap::OnbtnSave3DClick(wxCommandEvent&)
 			wxBusyCursor waitCursor;
 
 			CFileGZOutputStream fil(std::string(dialog.GetPath().mb_str()));
-			COpenGLScene scene;
+			Scene scene;
 
 			loadMapInto3DScene(scene);
 
@@ -1387,12 +1387,12 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent&)
 void CFormRawMap::OnbtnSaveObsPathClick(wxCommandEvent&) {}
 void CFormRawMap::OnbtnView3DClick(wxCommandEvent&)
 {
-	COpenGLScene scene;
+	Scene scene;
 
 	loadMapInto3DScene(scene);
 
 	win3Dmap = CDisplayWindow3D::Create("Raw-map 3D preview");
-	COpenGLScene::Ptr the_scene = win3Dmap->get3DSceneAndLock();
+	Scene::Ptr the_scene = win3Dmap->get3DSceneAndLock();
 	*the_scene = scene;
 	win3Dmap->unlockAccess3DScene();
 	win3Dmap->repaint();

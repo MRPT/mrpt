@@ -28,7 +28,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CPointCloudColoured](preview_CPointCloudColoured.png)
  *
- * \sa opengl::COpenGLScene, opengl::CPointCloud
+ * \sa opengl::Scene, opengl::CPointCloud
  * \ingroup mrpt_opengl_grp
  */
 class CPointCloudColoured : public CRenderizableShaderPoints,

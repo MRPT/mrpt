@@ -12,8 +12,8 @@
 #include <mrpt/core/format.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/COpenGLFramebuffer.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/FrameBuffer.h>
+#include <mrpt/opengl/Scene.h>
 
 namespace mrpt::opengl
 {
@@ -103,21 +103,21 @@ class CFBORender
 
 	/** Change the scene camera to be used when rendering the scene through this
 	 * particular instance of CFBORender. */
-	void setCamera(const COpenGLScene& scene, const CCamera& camera)
+	void setCamera(const Scene& scene, const CCamera& camera)
 	{
 		m_renderFromCamera = camera;
 	}
 
 	/** Get a reference to the scene camera to be used when rendering the scene
 	 * through this particular instance of CFBORender. */
-	CCamera& getCamera(const COpenGLScene& scene) { return m_renderFromCamera; }
+	CCamera& getCamera(const Scene& scene) { return m_renderFromCamera; }
 
 	/** Render the scene and get the rendered RGB image. Resizes the image
 	 *  buffer if necessary to the configured render resolution.
 	 *
 	 *  \sa render_RGBD()
 	 */
-	void render_RGB(const COpenGLScene& scene, mrpt::img::CImage& outRGB);
+	void render_RGB(const Scene& scene, mrpt::img::CImage& outRGB);
 
 	/** Render the scene and get the rendered RGB and depth images.
 	 * Resizes the provided buffers if necessary to the configured render
@@ -132,14 +132,13 @@ class CFBORender
 	 *  \sa render_RGB(), Parameters::raw_depth
 	 */
 	void render_RGBD(
-		const COpenGLScene& scene, mrpt::img::CImage& outRGB,
+		const Scene& scene, mrpt::img::CImage& outRGB,
 		mrpt::math::CMatrixFloat& outDepth);
 
 	/** Like render_RGBD(), but only renders the depth image.
 	 *  \sa render_RGBD()
 	 */
-	void render_depth(
-		const COpenGLScene& scene, mrpt::math::CMatrixFloat& outDepth);
+	void render_depth(const Scene& scene, mrpt::math::CMatrixFloat& outDepth);
 
    protected:
 	void* m_eglDpy = nullptr;
@@ -151,12 +150,11 @@ class CFBORender
 
 	const Parameters m_params;	//!< Parameters used in the ctor
 
-	COpenGLFramebuffer m_fb;
+	FrameBuffer m_fb;
 	mrpt::opengl::CCamera m_renderFromCamera;
 
 	void internal_render_RGBD(
-		const COpenGLScene& scene,
-		const mrpt::optional_ref<mrpt::img::CImage>& outRGB,
+		const Scene& scene, const mrpt::optional_ref<mrpt::img::CImage>& outRGB,
 		const mrpt::optional_ref<mrpt::math::CMatrixFloat>& outDepth);
 };
 }  // namespace mrpt::opengl

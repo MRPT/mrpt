@@ -75,7 +75,7 @@ std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(
 
 	const auto [lrpUV, lrpDepth] = projectToScreenCoordsAndDepth(lrp, objState);
 
-	if (skipCullChecks)
+	if (skipCullChecks || !obj->cullElegible())
 	{
 		// direct return:
 		return {lrpDepth, true, true};
@@ -392,6 +392,12 @@ void mrpt::opengl::processRenderQueue(
 				glUniformMatrix4fv(
 					shader.uniformId("v_matrix"), 1, IS_TRANSPOSED,
 					rqe.renderState.v_matrix.data());
+
+			if (shader.hasUniform("v_matrix_no_translation"))
+				glUniformMatrix4fv(
+					shader.uniformId("v_matrix_no_translation"), 1,
+					IS_TRANSPOSED,
+					rqe.renderState.v_matrix_no_translation.data());
 
 			if (shader.hasUniform("mv_matrix"))
 				glUniformMatrix4fv(

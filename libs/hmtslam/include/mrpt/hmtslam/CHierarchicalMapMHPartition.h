@@ -251,7 +251,7 @@ class CHierarchicalMapMHPartition : public mrpt::system::COutputLogger
 	 * "numberOfIterationsForOptimalGlobalPoses"
 	 */
 	void getAs3DScene(
-		mrpt::opengl::COpenGLScene& outScene,
+		mrpt::opengl::Scene& outScene,
 		const CHMHMapNode::TNodeID& idReferenceNode,
 		const THypothesisID& hypothesisID,
 		const unsigned int& numberOfIterationsForOptimalGlobalPoses = 5,

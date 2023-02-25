@@ -15,7 +15,7 @@
 namespace mrpt::opengl
 {
 /** Draw a 3D world axis, with coordinate marks at some regular interval
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  *
  *  ![mrpt::opengl::CAxis](preview_CAxis.png)
  *

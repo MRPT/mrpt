@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include <mrpt/opengl/COpenGLBuffer.h>
-#include <mrpt/opengl/COpenGLVertexArrayObject.h>
+#include <mrpt/opengl/Buffer.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/VertexArrayObject.h>
 
 #include <shared_mutex>
 
@@ -19,7 +19,7 @@ namespace mrpt::opengl
 {
 /** Renderizable generic renderer for objects using the wireframe shader.
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  *
  * \ingroup mrpt_opengl_grp
  */
@@ -90,8 +90,8 @@ class CRenderizableShaderWireFrame : public virtual CRenderizable
 	const mrpt::math::TBoundingBox wireframeVerticesBoundingBox() const;
 
    private:
-	mutable COpenGLBuffer m_vertexBuffer, m_colorBuffer;
-	mutable COpenGLVertexArrayObject m_vao;
+	mutable Buffer m_vertexBuffer, m_colorBuffer;
+	mutable VertexArrayObject m_vao;
 };
 
 }  // namespace mrpt::opengl
