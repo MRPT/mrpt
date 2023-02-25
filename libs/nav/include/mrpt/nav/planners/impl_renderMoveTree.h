@@ -11,17 +11,17 @@
 
 // For 3D log files
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CText3D.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/stock_objects.h>
 
 namespace mrpt::nav
 {
 template <typename node_pose_t, typename world_limits_t, typename tree_t>
 void PlannerTPS_VirtualBase::renderMoveTree(
-	mrpt::opengl::COpenGLScene& scene,
+	mrpt::opengl::Scene& scene,
 	const TPlannerInputTempl<node_pose_t, world_limits_t>& pi,
 	const TPlannerResultTempl<tree_t>& result,
 	const TRenderPlannedPathOptions& options)

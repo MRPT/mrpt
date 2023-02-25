@@ -195,7 +195,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 	auto& openGLSceneRef = getOpenGLSceneRef();
 	if (openGLSceneRef) openGLSceneRef.reset();
 
-	COpenGLScene::Ptr& ptrScene = m_win3D->get3DSceneAndLock();
+	Scene::Ptr& ptrScene = m_win3D->get3DSceneAndLock();
 	if (ptrScene) openGLSceneRef = ptrScene;
 }
 
@@ -376,7 +376,7 @@ CDisplayWindow3D::CDisplayWindow3D(
 	: CBaseGUIWindow(static_cast<void*>(this), 300, 399, windowCaption),
 	  m_lastFullScreen(mrpt::system::now())
 {
-	m_3Dscene = COpenGLScene::Create();
+	m_3Dscene = Scene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth, initialWindowHeight);
 }
 
@@ -472,7 +472,7 @@ void CDisplayWindow3D::setWindowTitle([[maybe_unused]] const std::string& str)
 #endif
 }
 
-opengl::COpenGLScene::Ptr& CDisplayWindow3D::get3DSceneAndLock()
+opengl::Scene::Ptr& CDisplayWindow3D::get3DSceneAndLock()
 {
 	m_csAccess3DScene.lock();
 	return m_3Dscene;
@@ -563,8 +563,7 @@ void CDisplayWindow3D::setMinRange(float new_min)
 {
 	if (m_3Dscene)
 	{
-		mrpt::opengl::COpenGLViewport::Ptr gl_view =
-			m_3Dscene->getViewport("main");
+		mrpt::opengl::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
 		if (gl_view)
 		{
 			float m, M;
@@ -577,8 +576,7 @@ void CDisplayWindow3D::setMaxRange(float new_max)
 {
 	if (m_3Dscene)
 	{
-		mrpt::opengl::COpenGLViewport::Ptr gl_view =
-			m_3Dscene->getViewport("main");
+		mrpt::opengl::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
 		if (gl_view)
 		{
 			float m, M;
@@ -797,7 +795,7 @@ void CDisplayWindow3D::internal_emitGrabImageEvent(const std::string& fil)
 }
 
 // Returns the "main" viewport of the scene.
-mrpt::opengl::COpenGLViewport::Ptr CDisplayWindow3D::getDefaultViewport()
+mrpt::opengl::Viewport::Ptr CDisplayWindow3D::getDefaultViewport()
 {
 	std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
 	return m_3Dscene->getViewport("main");
@@ -816,7 +814,7 @@ void CDisplayWindow3D::setImageView(mrpt::img::CImage&& img)
 }
 
 CDisplayWindow3DLocker::CDisplayWindow3DLocker(
-	CDisplayWindow3D& win, mrpt::opengl::COpenGLScene::Ptr& out_scene_ptr)
+	CDisplayWindow3D& win, mrpt::opengl::Scene::Ptr& out_scene_ptr)
 	: m_win(win)
 {
 	out_scene_ptr = m_win.get3DSceneAndLock();

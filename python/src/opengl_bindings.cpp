@@ -13,10 +13,10 @@
 #include <mrpt/opengl/CEllipsoid2D.h>
 #include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -62,19 +62,17 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(
 	CRenderizable_setColor2_overloads, CRenderizable_setColor2, 4, 5)
 // end of CRenderizable
 
-// COpenGLScene
-void COpenGLScene_insert(
-	COpenGLScene& me, const CRenderizable::Ptr& newObject,
+// Scene
+void Scene_insert(
+	Scene& me, const CRenderizable::Ptr& newObject,
 	const std::string& viewportName = std::string("main"))
 {
 	me.insert(newObject, viewportName);
 }
 
-BOOST_PYTHON_FUNCTION_OVERLOADS(
-	COpenGLScene_insert_overloads, COpenGLScene_insert, 2, 3)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
-	COpenGLScene_clear_overloads, clear, 0, 1)
-// end of COpenGLScene
+BOOST_PYTHON_FUNCTION_OVERLOADS(Scene_insert_overloads, Scene_insert, 2, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(Scene_clear_overloads, clear, 0, 1)
+// end of Scene
 
 // CSetOfLines
 void CSetOfLines_appendLine(
@@ -134,7 +132,7 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(
 // end of CGridPlaneXY
 
 // smart pointer contents
-MAKE_PTR_CTX(COpenGLScene)
+MAKE_PTR_CTX(Scene)
 MAKE_PTR_CTX(CRenderizable)
 MAKE_PTR_CTX(CSetOfObjects)
 MAKE_PTR_CTX(CSetOfLines)
@@ -270,29 +268,29 @@ void export_opengl()
 			.def("setFromPosePDF", CEllipsoid2D_setFromPosePDF);
 	}
 
-	// COpenGLScene
+	// Scene
 	{
-		MAKE_PTR(COpenGLScene)
+		MAKE_PTR(Scene)
 
-		class_<COpenGLScene>(
-			"COpenGLScene",
+		class_<Scene>(
+			"Scene",
 			"This class allows the user to create, load, save, and render 3D "
 			"scenes using OpenGL primitives.",
 			init<>("Constructor."))
 			.def(
-				"insert", &COpenGLScene_insert,
-				COpenGLScene_insert_overloads())  //, "Insert a new object into
+				"insert", &Scene_insert,
+				Scene_insert_overloads())  //, "Insert a new object into
 			// the scene, in the given
 			// viewport (by default, into
 			// the \"main\" viewport).")
 			.def(
-				"clear", &COpenGLScene::clear,
-				COpenGLScene_clear_overloads())	 //, "Clear the list of objects
+				"clear", &Scene::clear,
+				Scene_clear_overloads())  //, "Clear the list of objects
 			// and viewports in the scene,
 			// deleting objects' memory, and
 			// leaving just the default
 			// viewport with the default
 			// values.")
-			MAKE_CREATE(COpenGLScene);
+			MAKE_CREATE(Scene);
 	}
 }

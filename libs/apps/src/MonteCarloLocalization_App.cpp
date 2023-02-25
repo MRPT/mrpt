@@ -415,7 +415,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 
 			// Create the 3D scene and get the map only once, later we'll modify
 			// only the particles, etc..
-			COpenGLScene scene;
+			Scene scene;
 			if (SCENE3D_FREQ > 0 || SHOW_PROGRESS_3D_REAL_TIME)
 			{
 				mrpt::math::TBoundingBoxf bbox({-50, -50, 0}, {50, 50, 0});
@@ -710,8 +710,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 								meanPose.x(), meanPose.y(), ellipse_z);
 						}
 
-						COpenGLScene::Ptr ptrSceneWin =
-							win3D->get3DSceneAndLock();
+						Scene::Ptr ptrSceneWin = win3D->get3DSceneAndLock();
 
 						win3D->setCameraPointingToPoint(
 							meanPose.x(), meanPose.y(), 0);
@@ -1020,7 +1019,7 @@ void MonteCarloLocalization_Base::do_pf_localization()
 					scene.enableFollowCamera(SCENE3D_FOLLOW);
 
 					// Views:
-					COpenGLViewport::Ptr view1 = scene.getViewport("main");
+					Viewport::Ptr view1 = scene.getViewport("main");
 					{
 						CCamera& cam = view1->getCamera();
 						cam.setAzimuthDegrees(-90);

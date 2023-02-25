@@ -42,7 +42,7 @@ int TestOffscreenRender(int argc, char* argv[])
 	ASSERT_GT_(width, 0);
 	ASSERT_GT_(height, 0);
 
-	COpenGLScene scene;
+	Scene scene;
 	CFileGZInputStream f(sFil);
 	archiveFrom(f) >> scene;
 

@@ -556,7 +556,7 @@ void CGridMapAlignerApp::run()
 
 					if (SAVE_SOG_3DSCENE)
 					{
-						COpenGLScene scene3D;
+						Scene scene3D;
 						opengl::CSetOfObjects::Ptr thePDF3D =
 							std::make_shared<opengl::CSetOfObjects>();
 						pdf_SOG->getAs3DObject(thePDF3D);
@@ -642,7 +642,7 @@ void CGridMapAlignerApp::run()
 								RESULTS_DIR.c_str(), (unsigned int)nNode));
 
 							// Save as 3D scene:
-							COpenGLScene scene;
+							Scene scene;
 							auto obj1 = the_map1.getVisualization();
 							auto obj2 = the_map2.getVisualization();
 							obj2->setPose(x);

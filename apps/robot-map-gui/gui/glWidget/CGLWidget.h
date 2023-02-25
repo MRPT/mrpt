@@ -108,7 +108,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	bool deselectAll();
 	CRobotPose::Ptr getRobotPose(size_t index);
 
-	mrpt::opengl::COpenGLViewport::Ptr m_miniMapViewport;
+	mrpt::opengl::Viewport::Ptr m_miniMapViewport;
 	mrpt::opengl::CSetOfObjects::Ptr m_map;
 	mrpt::opengl::CGridPlaneXY::Ptr m_groundPlane;
 

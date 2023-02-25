@@ -32,7 +32,7 @@ class CPolyhedron;
  *
  * ![mrpt::opengl::CPolyhedron](preview_CPolyhedron.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CPolyhedron : public CRenderizableShaderWireFrame,

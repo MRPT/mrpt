@@ -81,7 +81,7 @@ void display_graph(const GRAPHTYPE& g)
 		}
 	}
 
-	mrpt::opengl::COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr& scene = win.get3DSceneAndLock();
 	scene->insert(objGraph);
 
 	win.unlockAccess3DScene();
@@ -153,7 +153,7 @@ void display_graph(const GRAPHTYPE& g)
 						std::cout << "Dumping scene to file: " << sFil
 								  << std::endl;
 
-						mrpt::opengl::COpenGLScene scene;
+						mrpt::opengl::Scene scene;
 						scene.insert(m_new_3dobj);
 						mrpt::io::CFileGZOutputStream f(sFil);
 						mrpt::serialization::archiveFrom(f) << scene;
@@ -225,9 +225,8 @@ void display_graph(const GRAPHTYPE& g)
 	win_feedback.observeBegin(win);
 	// and openglviewport events:
 	{
-		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
-		opengl::COpenGLViewport::Ptr the_main_view =
-			theScene->getViewport("main");
+		Scene::Ptr& theScene = win.get3DSceneAndLock();
+		opengl::Viewport::Ptr the_main_view = theScene->getViewport("main");
 		win_feedback.observeBegin(*the_main_view);
 		win.unlockAccess3DScene();
 	}

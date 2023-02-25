@@ -29,8 +29,7 @@ struct TRenderMatrices
 {
 	TRenderMatrices() = default;
 
-	/** Projection matrix, computed by renderNormalScene() from all the
-	 * parameters above. Used in shaders. */
+	/** Projection matrix, computed by Viewport from camera parameters */
 	mrpt::math::CMatrixFloat44 p_matrix;
 
 	/** Model matrix. */
@@ -38,6 +37,9 @@ struct TRenderMatrices
 
 	/** View matrix. */
 	mrpt::math::CMatrixFloat44 v_matrix;
+
+	/** View matrix with null translation */
+	mrpt::math::CMatrixFloat44 v_matrix_no_translation;
 
 	/** Result of p_matrix * mv_matrix. Used in shaders.
 	 * Updated by renderSetOfObjects()
@@ -54,6 +56,7 @@ struct TRenderMatrices
 		p_matrix.setIdentity();
 		m_matrix.setIdentity();
 		v_matrix.setIdentity();
+		v_matrix_no_translation.setIdentity();
 		mv_matrix.setIdentity();
 		pmv_matrix.setIdentity();
 	}
@@ -77,7 +80,7 @@ struct TRenderMatrices
 	float m_last_z_near = 0, m_last_z_far = 0;
 
    public:
-	/** Is set to true by  COpenGLViewport::updateMatricesFromCamera() */
+	/** Is set to true by  Viewport::updateMatricesFromCamera() */
 	bool initialized = false;
 
 	/** true: projective, false: ortho */

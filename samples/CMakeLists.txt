@@ -112,6 +112,7 @@ if(MRPT_BUILD_EXAMPLES)
 		opengl_multithread_rendering
 		opengl_octree_render_huge_pointcloud
 		opengl_texture_sizes_test
+		opengl_skybox_example
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::system mrpt::math mrpt::gui mrpt::tclap)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()

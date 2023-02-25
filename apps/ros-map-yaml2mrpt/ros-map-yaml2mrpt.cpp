@@ -11,7 +11,7 @@
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 
 		if (!out3D.empty())
 		{
-			mrpt::opengl ::COpenGLScene scene;
+			mrpt::opengl ::Scene scene;
 			scene.insert(grid.getVisualization());
 			scene.saveToFile(out3D);
 		}

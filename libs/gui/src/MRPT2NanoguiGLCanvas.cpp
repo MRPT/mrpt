@@ -43,7 +43,7 @@ void MRPT2NanoguiGLCanvas::drawGL()
 		glGetIntegerv(GL_VIEWPORT, win_dims);
 
 		// Set the camera params in the scene:
-		mrpt::opengl::COpenGLViewport::Ptr view = scene->getViewport("main");
+		mrpt::opengl::Viewport::Ptr view = scene->getViewport("main");
 		if (!view)
 			THROW_EXCEPTION(
 				"Fatal error: there is no 'main' viewport in the 3D scene!");

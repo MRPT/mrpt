@@ -13,8 +13,8 @@
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/CTimeLogger.h>
 
 #include <chrono>
@@ -32,7 +32,7 @@ using namespace std::literals;
 // ------------------------------------------------------
 void TestDisplay3D()
 {
-	COpenGLScene scene;
+	Scene scene;
 
 	// Modify the scene:
 	// ------------------------------------------------------
