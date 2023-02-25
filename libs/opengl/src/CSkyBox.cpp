@@ -13,6 +13,7 @@
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSchemeArchiveBase.h>
+#include <mrpt/serialization/stl_serialization.h>
 
 #include <memory>
 
@@ -133,8 +134,7 @@ uint8_t CSkyBox::serializeGetVersion() const { return 0; }
 void CSkyBox::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
-	// out << m_textureImage;
-	THROW_EXCEPTION("TODO");
+	out << m_textureImages;	 // <mrpt/serialization/stl_serialization.h>
 }
 
 void CSkyBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -144,7 +144,7 @@ void CSkyBox::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 0:
 		{
 			readFromStreamRender(in);
-			// in >> m_textureImage;
+			in >> m_textureImages;
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
