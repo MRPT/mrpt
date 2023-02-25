@@ -482,9 +482,6 @@ class Viewport : public mrpt::serialization::CSerializable,
 	void renderTextMessages() const;
 };
 
-/// Alias for Viewport for backwards compatibility with MRPT <2.7.0.
-using COpenGLViewport = Viewport;
-
 /**
  * Inserts an openGL object into a viewport. Allows call chaining.
  * \sa mrpt::opengl::Viewport::insert
