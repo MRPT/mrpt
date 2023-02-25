@@ -42,6 +42,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 #if MRPT_HAS_OPENCV	 // These classes need CImage serialization
 		CLASS_ID(CMesh),
 		CLASS_ID(CTexturedPlane),
+		CLASS_ID(CSkyBox),
 #endif
 		CLASS_ID(Viewport),
 		CLASS_ID(CPointCloud),
@@ -63,8 +64,7 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID(CEllipsoidInverseDepth2D),
 		CLASS_ID(CEllipsoidInverseDepth3D),
 		CLASS_ID(CEllipsoidRangeBearing2D),
-		CLASS_ID(COctoMapVoxels),
-		CLASS_ID(CSkyBox)
+		CLASS_ID(COctoMapVoxels)
 	};
 
 	for (auto& cl : lstClasses)
