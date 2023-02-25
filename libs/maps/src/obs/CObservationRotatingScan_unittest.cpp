@@ -30,8 +30,11 @@ TEST(CObservationRotatingScan, fromKittiUndistorted)
 	//	read_ok = pts->loadXYZI_from_text_file("0000000060.txt");
 	EXPECT_TRUE(read_ok);
 
-	pts->saveToKittiVelodyneFile("/tmp/a.bin.gz");
-	pts->saveXYZI_to_text_file("/tmp/a.txt");
+	const auto filBin = mrpt::system::getTempFileName();
+	const auto filTxt = mrpt::system::getTempFileName();
+
+	pts->saveToKittiVelodyneFile(filBin);
+	pts->saveXYZI_to_text_file(filTxt);
 
 	mrpt::obs::CObservationPointCloud obsPcl;
 	//	obsPcl.
