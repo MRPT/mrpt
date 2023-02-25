@@ -253,9 +253,6 @@ class Scene : public mrpt::serialization::CSerializable
 	}
 };
 
-/// Alias for Scene for backwards compatibility with MRPT <2.7.0.
-using COpenGLScene = Scene;
-
 /** Inserts an openGL object into a scene. Allows call chaining. \sa
  * mrpt::opengl::Scene::insert  */
 inline Scene::Ptr& operator<<(Scene::Ptr& s, const CRenderizable::Ptr& r)
