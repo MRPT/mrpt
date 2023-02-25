@@ -5,6 +5,7 @@
 If you prefer directly jumping to example code, see:
 
 - \ref opengl_objects_demo
+- \ref opengl_skybox_example
 - \ref gui_display3D_example
 - \ref gui_nanogui_demo
 

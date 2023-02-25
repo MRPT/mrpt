@@ -8,6 +8,7 @@
       - These class names have been shortened for ease of use (typedefs with the older names still exist for backwards compatibility, including deserialization of old files):
         - mrpt::opengl::COpenGLScene ==> mrpt::opengl::Scene
         - mrpt::opengl::COpenGLViewport ==> mrpt::opengl::Viewport
+      - New class mrpt::opengl::CSkyBox for rendering "3D background" as sky boxes. Refer to example \ref opengl_skybox_example
       - OpenGL shaders: more rational use of GLSL precision specifiers: highp for positions, lowp for colors.
       - New flag mrpt::opengl::CFBORender::Parameters::raw_depth
       - mrpt::opengl::FrameBuffer: Remove stencil bit for faster off-screen rendering.
@@ -15,7 +16,6 @@
       - mrpt::opengl::CMesh now supports texture wrapping over the mesh extension.
       - Texture handling refactored into a new class mrpt::opengl::Texture
       - Enabled GL MipMap texture generation.
-      - New class mrpt::opengl::CSkyBox for rendering "3D background" as sky boxes. Refer to example \ref opengl_skybox_example
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 
