@@ -16,6 +16,7 @@
       - mrpt::opengl::CMesh now supports texture wrapping over the mesh extension.
       - Texture handling refactored into a new class mrpt::opengl::Texture
       - Enabled GL MipMap texture generation.
+      - Triangles shaders now also account for shininess of material to generate specular reflections. See new method mrpt::opengl::CRenderizable::materialShininess()
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 

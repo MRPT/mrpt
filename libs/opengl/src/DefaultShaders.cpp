@@ -64,8 +64,9 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles-light.f.glsl"
 				;
-			uniforms = {"p_matrix",		 "v_matrix",	  "m_matrix",
-						"light_diffuse", "light_ambient", "light_direction"};
+			uniforms = {"p_matrix",		   "v_matrix",		"m_matrix",
+						"light_diffuse",   "light_ambient", "light_specular",
+						"light_direction", "cam_position",	"materialSpecular"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 			// ==============================
@@ -87,9 +88,10 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/textured-triangles-light.f.glsl"
 				;
-			uniforms = {"p_matrix",		 "v_matrix",	  "m_matrix",
-						"light_diffuse", "light_ambient", "light_direction",
-						"textureSampler"};
+			uniforms = {"p_matrix",		   "v_matrix",		  "m_matrix",
+						"light_diffuse",   "light_ambient",	  "light_specular",
+						"cam_position",	   "light_direction", "textureSampler",
+						"materialSpecular"};
 			attribs = {"position", "vertexUV", "vertexNormal"};
 			break;
 			// ==============================
@@ -184,7 +186,18 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 
 	// Uniforms:
 	for (const auto& name : uniforms)
-		shader->declareUniform(name);
+	{
+		try
+		{
+			shader->declareUniform(name);
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "Exception while declaring Uniform of shader ID #"
+					  << static_cast<int>(id) << std::endl;
+			throw;
+		}
+	}
 
 	// Attributes:
 	for (const auto& name : attribs)

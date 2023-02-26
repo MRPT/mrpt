@@ -249,8 +249,22 @@ void TestOpenGLObjects()
 			auto obj = opengl::CEllipsoid3D::Create();
 			obj->setCovMatrix(cov3d);
 			obj->setQuantiles(2.0);
+			obj->materialShininess(0.99f);
+			obj->setName("Ellipsoid shininess=0.99");
+			obj->enableShowName();
 			obj->enableDrawSolid3D(true);
 			obj->setLocation(off_x, -6, 0);
+			theScene->insert(obj);
+		}
+		{
+			auto obj = opengl::CEllipsoid3D::Create();
+			obj->setCovMatrix(cov3d);
+			obj->setQuantiles(2.0);
+			obj->materialShininess(0.01f);
+			obj->setName("Ellipsoid shininess=0.01");
+			obj->enableShowName();
+			obj->enableDrawSolid3D(true);
+			obj->setLocation(off_x, -12, 0);
 			theScene->insert(obj);
 		}
 
