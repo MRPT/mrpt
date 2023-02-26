@@ -8,8 +8,8 @@
    +------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/COpenGLViewport.h>
+#include <mrpt/opengl/Scene.h>
 
 namespace mrpt::opengl
 {
