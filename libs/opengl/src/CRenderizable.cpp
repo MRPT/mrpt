@@ -44,8 +44,8 @@ void CRenderizable::writeToStreamRender(
 	// (float)(m_color.B) << (float)(m_color.A);
 	// ...
 
-	// can't be >31 (but it would be mad geting to that situation!)
-	const uint8_t serialization_version = 1;
+	// can't be >31 (but it would be mad getting to that situation!)
+	const uint8_t serialization_version = 2;
 
 	const bool all_scales_equal =
 		(m_scale_x == m_scale_y && m_scale_z == m_scale_x);
@@ -83,6 +83,7 @@ void CRenderizable::writeToStreamRender(
 
 	out << m_show_name << m_visible;
 	out << m_representativePoint;  // v1
+	out << m_materialShininess;	 // v2
 }
 
 void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
@@ -119,6 +120,7 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 		{
 			case 0:
 			case 1:
+			case 2:
 			{
 				// "m_name"
 				uint16_t nameLen;
@@ -153,6 +155,10 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 				if (serialization_version >= 1) in >> m_representativePoint;
 				else
 					m_representativePoint = mrpt::math::TPoint3Df(0, 0, 0);
+
+				if (serialization_version >= 2) in >> m_materialShininess;
+				else
+					m_materialShininess = 0.2f;	 // default
 			}
 			break;
 			default:
@@ -176,6 +182,7 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 CRenderizable& CRenderizable::setPose(const mrpt::poses::CPose3D& o)
 {
 	m_pose = o;
+	notifyChange();
 	return *this;
 }
 CRenderizable& CRenderizable::setPose(const mrpt::poses::CPose2D& o)

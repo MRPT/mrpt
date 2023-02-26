@@ -66,17 +66,17 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		rc.activeLights = rc.lights;
 
 		const Program& s = *rc.shader;
-		const auto& diff = rc.lights->diffuse;
+		const auto& dif = rc.lights->diffuse;
 		const auto& amb = rc.lights->ambient;
-		// const auto& spc = rc.lights->specular;
+		const auto& spc = rc.lights->specular;
 		const auto& dir = rc.lights->direction;
 
-		glUniform4f(
-			s.uniformId("light_diffuse"), diff.R, diff.G, diff.B, diff.A);
+		glUniform4f(s.uniformId("light_diffuse"), dif.R, dif.G, dif.B, dif.A);
 		glUniform4f(s.uniformId("light_ambient"), amb.R, amb.G, amb.B, amb.A);
-		// glUniform4f(s.uniformId("light_specular"), spc.R, spc.G, spc.B,
-		// spc.A);
 		glUniform3f(s.uniformId("light_direction"), dir.x, dir.y, dir.z);
+		if (rc.shader->hasUniform("light_specular"))
+			glUniform4f(
+				s.uniformId("light_specular"), spc.R, spc.G, spc.B, spc.A);
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
