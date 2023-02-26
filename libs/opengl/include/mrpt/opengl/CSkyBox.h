@@ -21,6 +21,10 @@ namespace mrpt::opengl
 /** A Sky Box: 6 textures that are always rendered at "infinity" to give the
  *  impression of the scene to be much larger.
  *
+ * Refer to example \ref opengl_skybox_example
+ *
+ *  <img src="mrpt-skybox-demo.gif" />
+ *
  * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
