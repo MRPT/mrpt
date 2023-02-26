@@ -62,3 +62,6 @@ html: python-venv
 	# Doxygen has this limitation, images cannot be parsed into XML/HTML with
 	# a relative path, so we must copy them to the root directory.
 	cp source/images/* html/
+	# Copy remote images also:
+	bash remote-static-files.sh
+
