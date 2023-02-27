@@ -59,6 +59,7 @@ enum class TCullFace : uint8_t
  * - A RGBA color: This field will be used in simple elements (points,
  *lines, text,...) but is ignored in more complex objects that carry their own
  *color information (triangle sets,...)
+ * - Shininess: See materialShininess(float)
  *
  * See the main class opengl::Scene
  *
@@ -77,6 +78,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	bool m_show_name = false;
 	/** Color components in the range [0,255] */
 	mrpt::img::TColor m_color = {0xff, 0xff, 0xff, 0xff};
+	float m_materialShininess = 0.2f;
 	/** 6D pose wrt the parent coordinate reference. This class automatically
 	 * holds the cached 3x3 rotation matrix for quick load into opengl stack. */
 	mrpt::poses::CPose3D m_pose;
@@ -93,23 +95,21 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void setName(const std::string& n) { m_name = n; }
 	/** Returns the name of the object */
 	const std::string& getName() const { return m_name; }
-	inline bool isVisible()
-		const /** Is the object visible? \sa setVisibility */
+	bool isVisible() const /** Is the object visible? \sa setVisibility */
 	{
 		return m_visible;
 	}
-	inline void setVisibility(
-		bool visible =
-			true) /** Set object visibility (default=true) \sa isVisible */
+	void setVisibility(bool visible = true) /** Set object visibility
+											   (default=true) \sa isVisible */
 	{
 		m_visible = visible;
 	}
 
 	/** Enables or disables showing the name of the object as a label when
 	 * rendering */
-	inline void enableShowName(bool showName = true) { m_show_name = showName; }
+	void enableShowName(bool showName = true) { m_show_name = showName; }
 	/** \sa enableShowName */
-	inline bool isShowNameEnabled() const { return m_show_name; }
+	bool isShowNameEnabled() const { return m_show_name; }
 	/** Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to
 	 * this) */
 	CRenderizable& setPose(const mrpt::poses::CPose3D& o);
@@ -134,11 +134,11 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Returns a const ref to the 3D pose of the object as mrpt::poses::CPose3D
 	 * (which explicitly contains the 3x3 rotation matrix) */
-	inline const mrpt::poses::CPose3D& getPoseRef() const { return m_pose; }
+	const mrpt::poses::CPose3D& getPoseRef() const { return m_pose; }
 
 	/** Changes the location of the object, keeping untouched the orientation
 	 * \return a ref to this */
-	inline CRenderizable& setLocation(double x, double y, double z)
+	CRenderizable& setLocation(double x, double y, double z)
 	{
 		m_pose.x(x);
 		m_pose.y(y);
@@ -148,7 +148,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Changes the location of the object, keeping untouched the orientation
 	 * \return a ref to this  */
-	inline CRenderizable& setLocation(const mrpt::math::TPoint3D& p)
+	CRenderizable& setLocation(const mrpt::math::TPoint3D& p)
 	{
 		m_pose.x(p.x);
 		m_pose.y(p.y);
@@ -157,39 +157,39 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	}
 
 	/** Translation relative to parent coordinate origin. */
-	inline double getPoseX() const { return m_pose.x(); }
+	double getPoseX() const { return m_pose.x(); }
 	/** Translation relative to parent coordinate origin. */
-	inline double getPoseY() const { return m_pose.y(); }
+	double getPoseY() const { return m_pose.y(); }
 	/** Translation relative to parent coordinate origin. */
-	inline double getPoseZ() const { return m_pose.z(); }
+	double getPoseZ() const { return m_pose.z(); }
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	inline double getPoseYaw() const { return mrpt::RAD2DEG(m_pose.yaw()); }
+	double getPoseYaw() const { return mrpt::RAD2DEG(m_pose.yaw()); }
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	inline double getPosePitch() const { return mrpt::RAD2DEG(m_pose.pitch()); }
+	double getPosePitch() const { return mrpt::RAD2DEG(m_pose.pitch()); }
 	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	inline double getPoseRoll() const { return mrpt::RAD2DEG(m_pose.roll()); }
+	double getPoseRoll() const { return mrpt::RAD2DEG(m_pose.roll()); }
 	/** Rotation relative to parent coordinate origin, in radians. */
-	inline double getPoseYawRad() const { return m_pose.yaw(); }
+	double getPoseYawRad() const { return m_pose.yaw(); }
 	/** Rotation relative to parent coordinate origin, in radians. */
-	inline double getPosePitchRad() const { return m_pose.pitch(); }
+	double getPosePitchRad() const { return m_pose.pitch(); }
 	/** Rotation relative to parent coordinate origin, in radians. */
-	inline double getPoseRollRad() const { return m_pose.roll(); }
+	double getPoseRollRad() const { return m_pose.roll(); }
 	/** Color components in the range [0,1] */
-	inline float getColorR() const { return u8tof(m_color.R); }
+	float getColorR() const { return u8tof(m_color.R); }
 	/** Color components in the range [0,1] */
-	inline float getColorG() const { return u8tof(m_color.G); }
+	float getColorG() const { return u8tof(m_color.G); }
 	/** Color components in the range [0,1] */
-	inline float getColorB() const { return u8tof(m_color.B); }
+	float getColorB() const { return u8tof(m_color.B); }
 	/** Color components in the range [0,1] */
-	inline float getColorA() const { return u8tof(m_color.A); }
+	float getColorA() const { return u8tof(m_color.A); }
 	/** Color components in the range [0,255] */
-	inline uint8_t getColorR_u8() const { return m_color.R; }
+	uint8_t getColorR_u8() const { return m_color.R; }
 	/** Color components in the range [0,255] */
-	inline uint8_t getColorG_u8() const { return m_color.G; }
+	uint8_t getColorG_u8() const { return m_color.G; }
 	/** Color components in the range [0,255] */
-	inline uint8_t getColorB_u8() const { return m_color.B; }
+	uint8_t getColorB_u8() const { return m_color.B; }
 	/** Color components in the range [0,255] */
-	inline uint8_t getColorA_u8() const { return m_color.A; }
+	uint8_t getColorA_u8() const { return m_color.A; }
 	/**Color components in the range [0,1] \return a ref to this */
 	CRenderizable& setColorR(const float r) { return setColorR_u8(f2u8(r)); }
 	/**Color components in the range [0,1] \return a ref to this */
@@ -202,54 +202,65 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	virtual CRenderizable& setColorR_u8(const uint8_t r)
 	{
 		m_color.R = r;
+		notifyChange();
 		return *this;
 	}
 	/**Color components in the range [0,255] \return a ref to this */
 	virtual CRenderizable& setColorG_u8(const uint8_t g)
 	{
 		m_color.G = g;
+		notifyChange();
 		return *this;
 	}
 	/**Color components in the range [0,255] \return a ref to this */
 	virtual CRenderizable& setColorB_u8(const uint8_t b)
 	{
 		m_color.B = b;
+		notifyChange();
 		return *this;
 	}
 	/**Color components in the range [0,255] \return a ref to this */
 	virtual CRenderizable& setColorA_u8(const uint8_t a)
 	{
 		m_color.A = a;
+		notifyChange();
 		return *this;
 	}
 
+	/** Material shininess (for specular lights in shaders that support it),
+	 *  between 0.0f (none) to 1.0f (shiny) */
+	float materialShininess() const { return m_materialShininess; }
+
+	/** Material shininess (for specular lights in shaders that support it),
+	 *  between 0.0f (none) to 1.0f (shiny) */
+	void materialShininess(float shininess) { m_materialShininess = shininess; }
+
 	/** Scale to apply to the object, in all three axes (default=1)  \return a
 	 * ref to this */
-	inline CRenderizable& setScale(float s)
+	CRenderizable& setScale(float s)
 	{
 		m_scale_x = m_scale_y = m_scale_z = s;
+		notifyChange();
 		return *this;
 	}
 	/** Scale to apply to the object in each axis (default=1)  \return a ref to
 	 * this */
-	inline CRenderizable& setScale(float sx, float sy, float sz)
+	CRenderizable& setScale(float sx, float sy, float sz)
 	{
 		m_scale_x = sx;
 		m_scale_y = sy;
 		m_scale_z = sz;
+		notifyChange();
 		return *this;
 	}
 	/** Get the current scaling factor in one axis */
-	inline float getScaleX() const { return m_scale_x; }
+	float getScaleX() const { return m_scale_x; }
 	/** Get the current scaling factor in one axis */
-	inline float getScaleY() const { return m_scale_y; }
+	float getScaleY() const { return m_scale_y; }
 	/** Get the current scaling factor in one axis */
-	inline float getScaleZ() const { return m_scale_z; }
+	float getScaleZ() const { return m_scale_z; }
 	/** Returns the object color property as a TColorf */
-	inline mrpt::img::TColorf getColor() const
-	{
-		return mrpt::img::TColorf(m_color);
-	}
+	mrpt::img::TColorf getColor() const { return mrpt::img::TColorf(m_color); }
 	/** Changes the default object color \return a ref to this */
 	CRenderizable& setColor(const mrpt::img::TColorf& c)
 	{
@@ -259,13 +270,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)
 	 * \return a ref to this */
-	inline CRenderizable& setColor(float R, float G, float B, float A = 1)
+	CRenderizable& setColor(float R, float G, float B, float A = 1)
 	{
 		return setColor_u8(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 	}
 
 	/** Returns the object color property as a TColor */
-	inline const mrpt::img::TColor& getColor_u8() const { return m_color; }
+	const mrpt::img::TColor& getColor_u8() const { return m_color; }
 	/*** Changes the default object color \return a ref to this */
 	virtual CRenderizable& setColor_u8(const mrpt::img::TColor& c);
 
@@ -325,7 +336,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		[[maybe_unused]] RenderQueue& rq,
 		[[maybe_unused]] bool wholeInView) const
 	{
-		// do thing
+		// do nothing
 	}
 	/** Should return true if enqueueForRenderRecursive() is defined since
 	 *  the object has inner children. Examples: CSetOfObjects, CAssimpModel.
