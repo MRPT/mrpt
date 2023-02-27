@@ -287,6 +287,10 @@ void Viewport::renderNormalSceneMode(const CCamera* forceThisCamera) const
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
+	// Enables Multisampling
+	glEnable(GL_MULTISAMPLE);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
 	mrpt::opengl::RenderQueueStats rqStats;
