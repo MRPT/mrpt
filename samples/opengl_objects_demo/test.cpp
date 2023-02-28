@@ -1037,6 +1037,16 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+	// ground plane (to test shadows):
+	// A plane w/o a texture is a plain color plane:
+	{
+		opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+		obj->setColor_u8(0xa0, 0xa0, 0xa0, 0xff);
+		obj->setLocation(0, 0, -5.0f);
+		obj->setPlaneCorners(-20.0f, off_x + 20.f, -20.0f, 40.0f);
+		theScene->insert(obj);
+	}
+
 	// Arrow to show the light direction:
 	auto glLightArrow = opengl::CArrow::Create(
 		mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(1, 0, 0));
@@ -1076,8 +1086,9 @@ void TestOpenGLObjects()
 	fp.draw_shadow = true;
 	win.addTextMessage(5, 5, "", 0 /*id*/, fp);
 
-	mrpt::opengl::TLightParameters& lights =
-		theScene->getViewport()->lightParameters();
+	auto viewport = theScene->getViewport();
+
+	mrpt::opengl::TLightParameters& lights = viewport->lightParameters();
 
 	lights.ambient = {0.2, 0.2, 0.2, 1};
 
@@ -1095,9 +1106,25 @@ void TestOpenGLObjects()
 			lightDir.getRotationMatrix().extractColumn<mrpt::math::TVector3Df>(
 				0);
 
+		if (win.keyHit())
+		{
+			switch (win.getPushedKey())
+			{
+				case 'S':
+				case 's':
+					// toggle shadows:
+					viewport->enableShadowCasting(
+						!viewport->isShadowCastingEnabled());
+					break;
+			};
+		}
+
 		win.updateTextMessage(
 			0 /*id*/,
-			format("Render time=%.03fms", 1e3 / win.getRenderingFPS()));
+			format(
+				"Render time=%.03fms | Shadows: %s",
+				1e3 / win.getRenderingFPS(),
+				viewport->isShadowCastingEnabled() ? "On" : "Off"));
 		std::this_thread::sleep_for(2ms);
 		win.repaint();
 	}

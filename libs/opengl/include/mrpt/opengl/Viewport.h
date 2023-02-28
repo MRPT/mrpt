@@ -137,8 +137,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 	}
 	bool isPolygonNicestEnabled() const { return m_OpenGL_enablePolygonNicest; }
 
-	const TLightParameters& lightParameters() const { return m_lights; }
-	TLightParameters& lightParameters() { return m_lights; }
+	const TLightParameters& lightParameters() const { return m_light; }
+	TLightParameters& lightParameters() { return m_light; }
 
 	/** @} */
 
@@ -188,13 +188,13 @@ class Viewport : public mrpt::serialization::CSerializable,
 		double& x, double& y, double& width, double& height);
 
 	/** Set the min/max clip depth distances of the rendering frustum (default:
-	 * 0.1 - 10000)
+	 * 0.1 - 1000)
 	 * \sa getViewportClipDistances
 	 */
 	void setViewportClipDistances(const float clip_min, const float clip_max);
 
 	/** Get the current min/max clip depth distances of the rendering frustum
-	 * (default: 0.1 - 10000)
+	 * (default: 0.1 - 1000)
 	 * \sa setViewportClipDistances
 	 */
 	void getViewportClipDistances(float& clip_min, float& clip_max) const;
@@ -249,6 +249,22 @@ class Viewport : public mrpt::serialization::CSerializable,
 		const double x_coord, const double y_coord,
 		mrpt::math::TLine3D& out_ray,
 		mrpt::poses::CPose3D* out_cameraPose = nullptr) const;
+
+	/** Enables or disables rendering of shadows cast by the unidirectional
+	 * light.
+	 * \param enabled Set to true to enable shadow casting
+	 *          (default at ctor=false).
+	 * \param SHADOW_MAP_SIZE_X Width of the shadow cast map (1st pass of
+	 *          rendering with shadows). Larger values are slower but gives
+	 *          more precise shadows.
+	 * \param SHADOW_MAP_SIZE_Y Like SHADOW_MAP_SIZE_X but defines the height.
+	 *
+	 */
+	void enableShadowCasting(
+		bool enabled = true, unsigned int SHADOW_MAP_SIZE_X = 1024,
+		unsigned int SHADOW_MAP_SIZE_Y = 1024);
+
+	bool isShadowCastingEnabled() const { return m_shadowsEnabled; }
 
 	/** @} */  // end of Change or read viewport properties
 
@@ -438,8 +454,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 	/** The viewport position [0,1] */
 	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
 
-	/** The min/max clip depth distances (default: 0.01 - 10000) */
-	float m_clip_min = 0.01f, m_clip_max = 10000.0f;
+	/** The min/max clip depth distances (default: 0.01 - 1000) */
+	float m_clip_min = 0.01f, m_clip_max = 1000.0f;
 
 	mrpt::img::TColorf m_background_color = {0.4f, 0.4f, 0.4f};
 
@@ -476,7 +492,10 @@ class Viewport : public mrpt::serialization::CSerializable,
 	// OpenGL global settings:
 	bool m_OpenGL_enablePolygonNicest{true};
 
-	TLightParameters m_lights;
+	TLightParameters m_light;
+
+	bool m_shadowsEnabled = false;
+	uint32_t m_ShadowMapSizeX = 1024, m_ShadowMapSizeY = 1024;
 
 	/** Renders all messages in the underlying class CTextMessageCapable */
 	void renderTextMessages() const;
