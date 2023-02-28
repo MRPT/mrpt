@@ -31,7 +31,7 @@ class CAxis : public CRenderizableShaderWireFrame
 	void render(const RenderContext& rc) const override;
 	void enqueueForRenderRecursive(
 		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-		bool wholeInView) const override;
+		bool wholeInView, bool is1stShadowMapPass) const override;
 	bool isCompositeObject() const override { return true; }
 	/** @} */
 

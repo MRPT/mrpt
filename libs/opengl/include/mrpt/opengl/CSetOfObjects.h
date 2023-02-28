@@ -77,7 +77,7 @@ class CSetOfObjects : public CRenderizable
 	void renderUpdateBuffers() const override;
 	void enqueueForRenderRecursive(
 		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-		bool wholeInView) const override;
+		bool wholeInView, bool is1stShadowMapPass) const override;
 	bool isCompositeObject() const override { return true; }
 	void freeOpenGLResources() override
 	{

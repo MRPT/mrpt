@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 #include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/FrameBuffer.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
@@ -416,7 +417,9 @@ class Viewport : public mrpt::serialization::CSerializable,
 	void renderImageMode() const;
 
 	/** Render a normal scene with 3D objects */
-	void renderNormalSceneMode(const CCamera* forceThisCamera = nullptr) const;
+	void renderNormalSceneMode(
+		const CCamera* forceThisCamera = nullptr,
+		bool is1stShadowMapPass = false) const;
 
 	/** Render the viewport border, if enabled */
 	void renderViewportBorder() const;
@@ -472,8 +475,13 @@ class Viewport : public mrpt::serialization::CSerializable,
 		 * "get3DRayForPixelCoord" */
 		TRenderMatrices state;
 
-		/** Default shader program */
+		/** Default shader programs */
 		std::map<shader_id_t, mrpt::opengl::Program::Ptr> shaders;
+
+		/** Shader programs for 1st and 2nd passes while rendering with shadows
+		 */
+		std::map<shader_id_t, mrpt::opengl::Program::Ptr> shadersShadow1st,
+			shadersShadow2nd;
 	};
 
 	mutable mrpt::containers::PerThreadDataHolder<PerThreadData> m_threadedData;
@@ -496,6 +504,7 @@ class Viewport : public mrpt::serialization::CSerializable,
 
 	bool m_shadowsEnabled = false;
 	uint32_t m_ShadowMapSizeX = 1024, m_ShadowMapSizeY = 1024;
+	mutable FrameBuffer m_ShadowMapFBO;
 
 	/** Renders all messages in the underlying class CTextMessageCapable */
 	void renderTextMessages() const;

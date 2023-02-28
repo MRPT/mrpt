@@ -76,16 +76,22 @@ class CRenderizable : public mrpt::serialization::CSerializable
    protected:
 	std::string m_name = {};
 	bool m_show_name = false;
+
 	/** Color components in the range [0,255] */
 	mrpt::img::TColor m_color = {0xff, 0xff, 0xff, 0xff};
+
 	float m_materialShininess = 0.2f;
+
 	/** 6D pose wrt the parent coordinate reference. This class automatically
 	 * holds the cached 3x3 rotation matrix for quick load into opengl stack. */
 	mrpt::poses::CPose3D m_pose;
+
 	/** Scale components to apply to the object (default=1) */
 	float m_scale_x{1}, m_scale_y{1}, m_scale_z{1};
-	/** Is the object visible? (default=true) */
-	bool m_visible{true};
+
+	bool m_visible = true;	//!< Is the object visible? (default=true)
+
+	bool m_castShadows = true;
 
    public:
 	/** @name Changes the appearance of the object to render
@@ -95,15 +101,16 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void setName(const std::string& n) { m_name = n; }
 	/** Returns the name of the object */
 	const std::string& getName() const { return m_name; }
-	bool isVisible() const /** Is the object visible? \sa setVisibility */
-	{
-		return m_visible;
-	}
-	void setVisibility(bool visible = true) /** Set object visibility
-											   (default=true) \sa isVisible */
-	{
-		m_visible = visible;
-	}
+
+	/** Is the object visible? \sa setVisibility */
+	bool isVisible() const { return m_visible; }
+	/** Set object visibility (default=true) \sa isVisible */
+	void setVisibility(bool visible = true) { m_visible = visible; }
+
+	/** Does the object cast shadows? (default=true) */
+	bool castShadows() const { return m_castShadows; }
+	/** Enable/disable casting shadows by this object (default=true) */
+	void castShadows(bool doCast = true) { m_castShadows = doCast; }
 
 	/** Enables or disables showing the name of the object as a label when
 	 * rendering */
@@ -333,8 +340,9 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	virtual void enqueueForRenderRecursive(
 		[[maybe_unused]] const mrpt::opengl::TRenderMatrices& state,
-		[[maybe_unused]] RenderQueue& rq,
-		[[maybe_unused]] bool wholeInView) const
+		[[maybe_unused]] RenderQueue& rq,  //
+		[[maybe_unused]] bool wholeInView,	//
+		[[maybe_unused]] bool is1stShadowMapPass) const
 	{
 		// do nothing
 	}
@@ -505,7 +513,8 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 void enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	const bool skipCullChecks, RenderQueueStats* stats = nullptr);
+	const bool skipCullChecks, const bool is1stShadowMapPass,
+	RenderQueueStats* stats = nullptr);
 
 /** After enqueueForRendering(), actually executes the rendering tasks, grouped
  * shader by shader.

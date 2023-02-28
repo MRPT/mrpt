@@ -178,7 +178,8 @@ void Viewport::renderImageMode() const
 	CListOpenGLObjects lst;
 	lst.push_back(m_imageViewPlane);
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueueForRendering(lst, _, rq, true);
+	mrpt::opengl::enqueueForRendering(
+		lst, _, rq, true /*skip cull*/, false /* isShadowMap*/);
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
@@ -203,8 +204,11 @@ void Viewport::loadDefaultShaders() const
 		DefaultShaderID::TEXT,
 		DefaultShaderID::SKYBOX};
 
+	// -----------------------------------------------------------
+	// Load general list of shaders
+	// (and use it for the "no shadows" case):
+	// -----------------------------------------------------------
 	auto& shaders = m_threadedData.get().shaders;
-
 	for (const auto& id : lstShaderIDs)
 	{
 		shaders[id] = mrpt::opengl::LoadDefaultShader(id);
@@ -213,12 +217,26 @@ void Viewport::loadDefaultShaders() const
 		ASSERT_(!shaders[id]->empty());
 	}
 
+	// -----------------------------------------------------------
+	// Shaders for rendering with shadows: 1st and 2nd passes use
+	// different shader programs.
+	// -----------------------------------------------------------
+	auto& shadowShaders1st = m_threadedData.get().shadersShadow1st;
+	shadowShaders1st = shaders;
+	// Replace shaders: we only need depth in the 1st stage:
+
+	auto& shadowShaders2nd = m_threadedData.get().shadersShadow2nd;
+	shadowShaders2nd = shaders;
+	// Replace shaders: we need to account for the shadow map:
+	MRPT_TODO("cont here");
+
 	MRPT_END
 #endif
 }
 
 /** Render a normal scene with 3D objects */
-void Viewport::renderNormalSceneMode(const CCamera* forceThisCamera) const
+void Viewport::renderNormalSceneMode(
+	const CCamera* forceThisCamera, bool is1stShadowMapPass) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
@@ -290,13 +308,31 @@ void Viewport::renderNormalSceneMode(const CCamera* forceThisCamera) const
 	glEnable(GL_MULTISAMPLE);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
+	// Is this the 2nd pass of shadow rendering?
+	if (m_shadowsEnabled && !is1stShadowMapPass)
+	{
+		ASSERT_(m_ShadowMapFBO.initialized());
+
+		MRPT_TODO("Move this to the setUniform*() place");
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+	}
+
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
 	mrpt::opengl::RenderQueueStats rqStats;
-	mrpt::opengl::enqueueForRendering(*objectsToRender, _, rq, false, &rqStats);
+	mrpt::opengl::enqueueForRendering(
+		*objectsToRender, _, rq, false /*skip cull checks*/,
+		is1stShadowMapPass /* is shadow map pass */, &rqStats);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
+	auto& shaders = m_shadowsEnabled
+		? (is1stShadowMapPass ? m_threadedData.get().shadersShadow1st
+							  : m_threadedData.get().shadersShadow2nd)
+		: m_threadedData.get().shaders;
+
+	mrpt::opengl::processRenderQueue(rq, shaders, m_light);
 
 #ifdef MRPT_OPENGL_PROFILER
 	opengl_profiler().registerUserMeasure(
@@ -346,7 +382,8 @@ void Viewport::renderViewportBorder() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueueForRendering(lst, _, rq, true);
+	mrpt::opengl::enqueueForRendering(
+		lst, _, rq, true /*skip cull*/, false /* isShadowMap*/);
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
@@ -423,7 +460,8 @@ void Viewport::renderTextMessages() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueueForRendering(objs, _, rq, false);
+	mrpt::opengl::enqueueForRendering(
+		objs, _, rq, true /*skip cull*/, false /* isShadowMap*/);
 
 	// pass 2: render, sorted by shader program:
 	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
@@ -448,13 +486,28 @@ void Viewport::render(
 	// Prepare shaders upon first invokation:
 	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
-	// If we are rendering with shadows, run a camera-view depth map first:
+	// If we are rendering with shadows, run a camera-view depth map first
 	// (Shadows 1st pass)
-	// -------------------------------------------
-	if (m_shadowsEnabled)
+	// ----------------------------------------------------------------------
+	if (m_shadowsEnabled && !isImageViewMode())
 	{
-		//
-		MRPT_TODO("xx");
+		if (!m_ShadowMapFBO.initialized())
+		{
+			m_ShadowMapFBO.createDepthMap(m_ShadowMapSizeX, m_ShadowMapSizeY);
+		}
+
+		// Render scene to depth map, as seen from the light point of view:
+		glViewport(0, 0, m_ShadowMapSizeX, m_ShadowMapSizeY);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+
+		const auto prevFBBind = m_ShadowMapFBO.bind();
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		renderNormalSceneMode(forceThisCamera, true /* is1stShadowMapPass */);
+
+		m_ShadowMapFBO.Bind(prevFBBind);
+
+		// The 2nd pass is done inside renderNormalSceneMode()
 	}
 
 	// Change viewport:
