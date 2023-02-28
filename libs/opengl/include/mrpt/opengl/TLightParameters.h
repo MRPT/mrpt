@@ -15,7 +15,7 @@
 
 namespace mrpt::opengl
 {
-/** Lighting parameters, mostly for triangle shaders.
+/** Unidirectional lighting model parameters for triangle shaders.
  * Refer to standard OpenGL literature and tutorials for the meaning of each
  * field, and to the shader GLSL code itself.
  * \ingroup mrpt_opengl_grp

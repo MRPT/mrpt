@@ -181,8 +181,7 @@ void Viewport::renderImageMode() const
 	mrpt::opengl::enqueueForRendering(lst, _, rq, true);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(
-		rq, m_threadedData.get().shaders, m_lights);
+	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
 
 #endif
 }
@@ -297,8 +296,7 @@ void Viewport::renderNormalSceneMode(const CCamera* forceThisCamera) const
 	mrpt::opengl::enqueueForRendering(*objectsToRender, _, rq, false, &rqStats);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(
-		rq, m_threadedData.get().shaders, m_lights);
+	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
 
 #ifdef MRPT_OPENGL_PROFILER
 	opengl_profiler().registerUserMeasure(
@@ -351,8 +349,7 @@ void Viewport::renderViewportBorder() const
 	mrpt::opengl::enqueueForRendering(lst, _, rq, true);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(
-		rq, m_threadedData.get().shaders, m_lights);
+	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
 	MRPT_END
 #endif
 }
@@ -429,8 +426,7 @@ void Viewport::renderTextMessages() const
 	mrpt::opengl::enqueueForRendering(objs, _, rq, false);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(
-		rq, m_threadedData.get().shaders, m_lights);
+	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
 	MRPT_END
 #endif
 }
@@ -448,6 +444,18 @@ void Viewport::render(
 #ifdef MRPT_OPENGL_PROFILER
 	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "Viewport.render");
 #endif
+
+	// Prepare shaders upon first invokation:
+	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
+
+	// If we are rendering with shadows, run a camera-view depth map first:
+	// (Shadows 1st pass)
+	// -------------------------------------------
+	if (m_shadowsEnabled)
+	{
+		//
+		MRPT_TODO("xx");
+	}
 
 	// Change viewport:
 	// -------------------------------------------
@@ -492,9 +500,6 @@ void Viewport::render(
 	glDisable(GL_SCISSOR_TEST);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
-	// Prepare shaders upon first invokation:
-	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
-
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
 	if (isImageViewMode()) renderImageMode();
@@ -522,7 +527,7 @@ void Viewport::render(
 #endif
 }
 
-uint8_t Viewport::serializeGetVersion() const { return 7; }
+uint8_t Viewport::serializeGetVersion() const { return 8; }
 void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -545,7 +550,7 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_OpenGL_enablePolygonNicest;
 
 	// Added in v3: Lights
-	out << m_lights;
+	out << m_light;
 
 	// Added in v4: text messages:
 	out.WriteAs<uint32_t>(m_2D_texts.messages.size());
@@ -567,6 +572,9 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// Added in v6:
 	out << m_clonedCameraViewport;
+
+	// Added in v8:
+	out << m_shadowsEnabled << m_ShadowMapSizeX << m_ShadowMapSizeY;
 }
 
 void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -581,6 +589,7 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 5:
 		case 6:
 		case 7:
+		case 8:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
@@ -619,11 +628,11 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			}
 
 			// Added in v3: Lights
-			if (version >= 3) in >> m_lights;
+			if (version >= 3) in >> m_light;
 			else
 			{
 				// Default:
-				m_lights = TLightParameters();
+				m_light = TLightParameters();
 			}
 
 			// v4: text:
@@ -659,6 +668,15 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			if (version >= 6) in >> m_clonedCameraViewport;
 			else
 				m_clonedCameraViewport.clear();
+
+			if (version >= 8)
+			{
+				in >> m_shadowsEnabled >> m_ShadowMapSizeX >> m_ShadowMapSizeY;
+			}
+			else
+			{
+				m_shadowsEnabled = false;
+			}
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -1076,4 +1094,13 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 	_.m_matrix.setIdentity();
 
 	_.initialized = true;
+}
+
+void Viewport::enableShadowCasting(
+	bool enabled, unsigned int SHADOW_MAP_SIZE_X,
+	unsigned int SHADOW_MAP_SIZE_Y)
+{
+	m_shadowsEnabled = enabled;
+	m_ShadowMapSizeX = SHADOW_MAP_SIZE_X;
+	m_ShadowMapSizeY = SHADOW_MAP_SIZE_Y;
 }
