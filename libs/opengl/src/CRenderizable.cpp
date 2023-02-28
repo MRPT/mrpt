@@ -83,7 +83,7 @@ void CRenderizable::writeToStreamRender(
 
 	out << m_show_name << m_visible;
 	out << m_representativePoint;  // v1
-	out << m_materialShininess;	 // v2
+	out << m_materialShininess << m_castShadows;  // v2
 }
 
 void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
@@ -156,9 +156,14 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 				else
 					m_representativePoint = mrpt::math::TPoint3Df(0, 0, 0);
 
-				if (serialization_version >= 2) in >> m_materialShininess;
+				if (serialization_version >= 2)
+					in >> m_materialShininess >> m_castShadows;
 				else
-					m_materialShininess = 0.2f;	 // default
+				{
+					// default
+					m_materialShininess = 0.2f;
+					m_castShadows = true;
+				}
 			}
 			break;
 			default:

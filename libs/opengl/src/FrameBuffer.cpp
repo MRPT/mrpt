@@ -182,6 +182,7 @@ void FrameBuffer::RAII_Impl::createDepthMap(
 
 	// Restore:
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Restore:
 	Bind(oldFBs);
 #else
 	THROW_EXCEPTION("MRPT built without OpenGL support");

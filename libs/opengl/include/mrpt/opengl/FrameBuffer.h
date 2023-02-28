@@ -12,7 +12,7 @@
 #include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/opengl/Buffer.h>
 
 namespace mrpt::opengl
 {
@@ -72,11 +72,16 @@ class FrameBuffer
 	/// Blit the framebuffer object onto the screen
 	void blit();
 
-	bool initialized() { return m_impl.m_state.get().m_created; }
+	bool initialized() const { return m_impl.m_state.get().m_created; }
 
 	unsigned int width() const { return m_impl.m_state.get().m_width; }
 	unsigned int height() const { return m_impl.m_state.get().m_height; }
 	int numSamples() const { return m_impl.m_state.get().m_Samples; }
+
+	unsigned int depthMapTextureId() const
+	{
+		return m_impl.m_state.get().m_DepthMapTexture;
+	}
 
 	/** @} */
 

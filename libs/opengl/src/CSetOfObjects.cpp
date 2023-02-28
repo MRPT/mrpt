@@ -41,9 +41,10 @@ void CSetOfObjects::render(const RenderContext& rc) const
 
 void CSetOfObjects::enqueueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	bool wholeInView) const
+	bool wholeInView, bool is1stShadowMapPass) const
 {
-	mrpt::opengl::enqueueForRendering(m_objects, state, rq, wholeInView);
+	mrpt::opengl::enqueueForRendering(
+		m_objects, state, rq, wholeInView, is1stShadowMapPass);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }

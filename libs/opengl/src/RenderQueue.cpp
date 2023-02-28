@@ -235,7 +235,8 @@ std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(
 void mrpt::opengl::enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	const bool skipCullChecks, RenderQueueStats* stats)
+	const bool skipCullChecks, const bool is1stShadowMapPass,
+	RenderQueueStats* stats)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	using mrpt::math::CMatrixDouble44;
@@ -262,10 +263,14 @@ void mrpt::opengl::enqueueForRendering(
 			// reporting:
 			curClassName = obj->GetRuntimeClass()->className;
 
+			if (!obj->isVisible()) continue;
+
+			// Skip objects that do not cast shadows, if we are in that first
+			// shadow map pass.
+			if (is1stShadowMapPass && !obj->castShadows()) continue;
+
 			// Regenerate opengl vertex buffers?
 			if (obj->hasToUpdateBuffers()) obj->updateBuffers();
-
-			if (!obj->isVisible()) continue;
 
 			const CPose3D& thisPose = obj->getPoseRef();
 			CMatrixFloat44 HM =
@@ -330,7 +335,7 @@ void mrpt::opengl::enqueueForRendering(
 			}
 
 			// ...and its children:
-			obj->enqueueForRenderRecursive(_, rq, wholeInView);
+			obj->enqueueForRenderRecursive(_, rq, wholeInView, is1stShadowMapPass);
 
 		}  // end foreach object
 	}
