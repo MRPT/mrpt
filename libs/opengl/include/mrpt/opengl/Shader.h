@@ -99,6 +99,9 @@ class Program
 	/** Activates the program, calling glUseProgram() with this program ID. */
 	void use();
 
+	/** Sets a uniform variable */
+	void setInt(const char* uniformName, int value);
+
 	/** Links an OpenGL program with all shader code fragments previously
 	 * inserted into shaders.
 	 * \param[in,out] shaders The shader code fragments. Will be moved into this

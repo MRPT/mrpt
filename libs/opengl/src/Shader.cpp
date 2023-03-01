@@ -369,3 +369,10 @@ void Program::use()
 	CHECK_OPENGL_ERROR();
 #endif
 }
+
+void Program::setInt(const char* uniformName, int value)
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUniform1i(uniformId(uniformName), value);
+#endif
+}
