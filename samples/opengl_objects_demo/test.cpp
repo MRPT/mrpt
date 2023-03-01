@@ -1040,10 +1040,11 @@ void TestOpenGLObjects()
 	// ground plane (to test shadows):
 	// A plane w/o a texture is a plain color plane:
 	{
-		opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+		auto obj = mrpt::opengl::CBox::Create();
 		obj->setColor_u8(0xa0, 0xa0, 0xa0, 0xff);
 		obj->setLocation(0, 0, -5.0f);
-		obj->setPlaneCorners(-20.0f, off_x + 20.f, -20.0f, 40.0f);
+		obj->setBoxCorners({-20.0f, -20.0f, .0f}, {off_x + 20.f, 40.0f, -0.1f});
+		obj->cullFaces(TCullFace::BACK);  // avoid z-fighting
 		theScene->insert(obj);
 	}
 

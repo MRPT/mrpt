@@ -335,7 +335,8 @@ void mrpt::opengl::enqueueForRendering(
 			}
 
 			// ...and its children:
-			obj->enqueueForRenderRecursive(_, rq, wholeInView, is1stShadowMapPass);
+			obj->enqueueForRenderRecursive(
+				_, rq, wholeInView, is1stShadowMapPass);
 
 		}  // end foreach object
 	}
@@ -352,7 +353,8 @@ void mrpt::opengl::enqueueForRendering(
 void mrpt::opengl::processRenderQueue(
 	const RenderQueue& rq,
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
-	const mrpt::opengl::TLightParameters& lights)
+	const mrpt::opengl::TLightParameters& lights,
+	const std::optional<unsigned int>& depthMapTextureId)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
@@ -365,8 +367,16 @@ void mrpt::opengl::processRenderQueue(
 		// bind the shader for this sequence of objects:
 		mrpt::opengl::Program& shader = *shaders.at(rqSet.first);
 
-		glUseProgram(shader.programId());
-		CHECK_OPENGL_ERROR();
+		shader.use();
+
+		if (depthMapTextureId)
+		{
+			// We are in the 2nd pass of shadow rendering:
+			// bind depthmap texture
+			glActiveTexture(GL_TEXTURE0 + SHADOW_MAP_TEXTURE_UNIT);
+			glBindTexture(GL_TEXTURE_2D, *depthMapTextureId);
+			CHECK_OPENGL_ERROR_IN_DEBUG();
+		}
 
 		CRenderizable::RenderContext rc;
 		rc.shader = &shader;
@@ -419,6 +429,11 @@ void mrpt::opengl::processRenderQueue(
 				glUniform3f(
 					shader.uniformId("cam_position"), rqe.renderState.eye.x,
 					rqe.renderState.eye.y, rqe.renderState.eye.z);
+
+			if (shader.hasUniform("light_pv_matrix"))
+				glUniformMatrix4fv(
+					shader.uniformId("light_pv_matrix"), 1, IS_TRANSPOSED,
+					rqe.renderState.light_pv.data());
 
 			if (shader.hasUniform("materialSpecular"))
 				glUniform1f(

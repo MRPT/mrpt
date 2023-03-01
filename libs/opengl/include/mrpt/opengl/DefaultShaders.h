@@ -39,6 +39,7 @@ struct DefaultShaderID
 
 	// Special effects:
 	static constexpr shader_id_t SKYBOX = 20;
+	static constexpr shader_id_t DEBUG_TEXTURE_TO_SCREEN = 30;
 };
 
 /** Loads a set of OpenGL Vertex+Fragment shaders from the default library
@@ -48,5 +49,11 @@ struct DefaultShaderID
  * \ingroup mrpt_opengl_grp
  */
 Program::Ptr LoadDefaultShader(const shader_id_t id);
+
+// Use GL_TEXTURE0 for diffuse map material textures:
+static constexpr int MATERIAL_DIFFUSE_TEXTURE_UNIT = 0;
+
+// Use GL_TEXTURE1 for shadow map:
+static constexpr int SHADOW_MAP_TEXTURE_UNIT = 1;
 
 }  // namespace mrpt::opengl

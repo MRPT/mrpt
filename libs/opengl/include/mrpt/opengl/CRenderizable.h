@@ -26,6 +26,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <deque>
+#include <optional>
 #include <shared_mutex>
 
 #ifdef MRPT_OPENGL_PROFILER
@@ -524,7 +525,8 @@ void enqueueForRendering(
 void processRenderQueue(
 	const RenderQueue& rq,
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
-	const mrpt::opengl::TLightParameters& lights);
+	const mrpt::opengl::TLightParameters& lights,
+	const std::optional<unsigned int>& depthMapTextureId = std::nullopt);
 
 #ifdef MRPT_OPENGL_PROFILER
 mrpt::system::CTimeLogger& opengl_profiler();

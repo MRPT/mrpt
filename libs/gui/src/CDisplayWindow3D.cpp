@@ -783,7 +783,7 @@ CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
 
 void CDisplayWindow3D::internal_setRenderingFPS(double FPS)
 {
-	const double ALPHA = 0.99;
+	const double ALPHA = 0.95;
 	m_last_FPS = ALPHA * m_last_FPS + (1 - ALPHA) * FPS;
 }
 

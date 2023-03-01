@@ -96,6 +96,9 @@ class Program
 	/** Frees the shader program in OpenGL. */
 	void clear();
 
+	/** Activates the program, calling glUseProgram() with this program ID. */
+	void use();
+
 	/** Links an OpenGL program with all shader code fragments previously
 	 * inserted into shaders.
 	 * \param[in,out] shaders The shader code fragments. Will be moved into this
