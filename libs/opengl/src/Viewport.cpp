@@ -549,12 +549,14 @@ void Viewport::render(
 			m_ShadowMapFBO.createDepthMap(m_ShadowMapSizeX, m_ShadowMapSizeY);
 		}
 
+		glEnable(GL_DEPTH_TEST);
+
 		// Render scene to depth map, as seen from the light point of view:
 		glViewport(0, 0, m_ShadowMapSizeX, m_ShadowMapSizeY);
 
 		const auto prevFBBind = m_ShadowMapFBO.bind();
-
 		CHECK_OPENGL_ERROR_IN_DEBUG();
+
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		renderNormalSceneMode(forceThisCamera, true /* is1stShadowMapPass */);
@@ -580,6 +582,22 @@ void Viewport::render(
 	auto& _ = m_threadedData.get().state;
 	_.viewport_width = vw;
 	_.viewport_height = vh;
+
+#if 0
+  // Debug:
+	if (m_shadowsEnabled)
+	{
+		// render Depth map to quad for visual debugging
+		auto& sh = shaders().at(DefaultShaderID::DEBUG_TEXTURE_TO_SCREEN);
+		sh->use();
+
+		glUniform1i(sh->uniformId("textureId"), 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
+		debugRenderQuad();
+		return;
+	}
+#endif
 
 	glScissor(vx, vy, vw, vh);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
@@ -607,19 +625,6 @@ void Viewport::render(
 	}
 	glDisable(GL_SCISSOR_TEST);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
-
-	// Debug:
-	if (m_shadowsEnabled && 0)
-	{
-		// render Depth map to quad for visual debugging
-		auto& sh = shaders().at(DefaultShaderID::DEBUG_TEXTURE_TO_SCREEN);
-		sh->use();
-		glUniform1i(sh->uniformId("textureId"), 0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
-		debugRenderQuad();
-		return;
-	}
 
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
@@ -1214,7 +1219,7 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 	// Reset model4x4 matrix to the identity transformation:
 	_.m_matrix.setIdentity();
 
-	// Compute the directional light projection matrix (light_pv):
+	// Compute the directional light projection matrix (light_pv)
 	_.computeLightProjectionMatrix(m_clip_min, m_clip_max, m_light.direction);
 
 	_.initialized = true;

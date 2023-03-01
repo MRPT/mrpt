@@ -116,7 +116,7 @@ class FrameBuffer
 			// Regular FBO:
 			unsigned int m_Framebuffer = 0, m_Depth = 0, m_Color = 0;
 			// DepthMap rendering to texture:
-			unsigned int m_DepthMapFBO = 0, m_DepthMapTexture = 0;
+			unsigned int m_DepthMapTexture = 0;
 
 			unsigned int m_width = 0, m_height = 0;	 /// In pixels
 			int m_Samples = 0;

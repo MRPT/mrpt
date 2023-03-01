@@ -148,7 +148,7 @@ void FrameBuffer::RAII_Impl::createDepthMap(
 	// const auto oldFBs = CurrentBinding();
 
 	// Depth FBO:
-	glGenFramebuffers(1, &_.m_DepthMapFBO);
+	glGenFramebuffers(1, &_.m_Framebuffer);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Create depth texture:
@@ -167,7 +167,7 @@ void FrameBuffer::RAII_Impl::createDepthMap(
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 	// attach depth texture as FBO's depth buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, _.m_DepthMapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, _.m_Framebuffer);
 	glFramebufferTexture2D(
 		GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _.m_DepthMapTexture,
 		0);
@@ -200,7 +200,7 @@ void FrameBuffer::RAII_Impl::destroy()
 
 	if (_.m_isDepthMap)
 	{
-		glDeleteFramebuffers(1, &_.m_DepthMapFBO);
+		glDeleteFramebuffers(1, &_.m_Framebuffer);
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 	else
@@ -214,8 +214,7 @@ void FrameBuffer::RAII_Impl::destroy()
 	}
 #endif
 	_.m_Color = _.m_Depth = 0;
-	_.m_Framebuffer = 0;
-	_.m_DepthMapFBO = _.m_DepthMapTexture = 0;
+	_.m_Framebuffer = _.m_DepthMapTexture = 0;
 	_.m_created = false;
 }
 
