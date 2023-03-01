@@ -9,6 +9,7 @@ uniform highp vec3 light_direction;
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;
 
+
 in Fragment {
     highp vec3 position, normal;
     lowp vec4 materialColor;
@@ -29,6 +30,6 @@ void main()
     mediump float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
     mediump float specular = specAmount * materialSpecular;
 
-    color = frag.materialColor * (diffuse_factor + light_ambient) + specular * light_specular;
+    color = frag.materialColor * 0.1*(diffuse_factor + light_ambient) + specular * light_specular;
 }
 )XXX"

@@ -144,7 +144,7 @@ void Viewport::renderImageMode() const
 	if (!m_imageViewPlane || m_imageViewPlane->getTextureImage().isEmpty())
 		return;
 
-	auto _ = m_threadedData.get().state;
+	auto _ = m_threadedData.get().state;  // make a copy
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -194,19 +194,23 @@ void Viewport::loadDefaultShaders() const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
+	using ID = DefaultShaderID;	 // save space below
+
 	std::vector<shader_id_t> lstShaderIDs = {
-		DefaultShaderID::POINTS,
-		DefaultShaderID::WIREFRAME,
-		DefaultShaderID::TRIANGLES_NO_LIGHT,
-		DefaultShaderID::TRIANGLES_LIGHT,
-		DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT,
-		DefaultShaderID::TEXTURED_TRIANGLES_LIGHT,
-		DefaultShaderID::TEXT,
-		DefaultShaderID::SKYBOX};
+		ID::POINTS,
+		ID::WIREFRAME,
+		ID::TRIANGLES_NO_LIGHT,
+		ID::TRIANGLES_LIGHT,
+		ID::TEXTURED_TRIANGLES_NO_LIGHT,
+		ID::TEXTURED_TRIANGLES_LIGHT,
+		ID::TEXT,
+		ID::TRIANGLES_SHADOW_1ST,
+		ID::TRIANGLES_SHADOW_2ND,
+		ID::SKYBOX};
 
 	// -----------------------------------------------------------
 	// Load general list of shaders
-	// (and use it for the "no shadows" case):
+	// (and use them for the "no shadows" case):
 	// -----------------------------------------------------------
 	auto& shaders = m_threadedData.get().shaders;
 	for (const auto& id : lstShaderIDs)
@@ -219,16 +223,25 @@ void Viewport::loadDefaultShaders() const
 
 	// -----------------------------------------------------------
 	// Shaders for rendering with shadows: 1st and 2nd passes use
-	// different shader programs.
+	// different shader programs. Apply a replacement table.
 	// -----------------------------------------------------------
+	const std::map<shader_id_t, std::pair<shader_id_t, shader_id_t>>
+		replacements = {
+			{ID::TRIANGLES_LIGHT,
+			 {ID::TRIANGLES_SHADOW_1ST, ID::TRIANGLES_SHADOW_2ND}}};
+
+	// 1st pass. Replace shaders: we only need depth in the 1st stage.
+	// 2nd pass. Replace shaders: we need to account for the shadow map.
 	auto& shadowShaders1st = m_threadedData.get().shadersShadow1st;
 	shadowShaders1st = shaders;
-	// Replace shaders: we only need depth in the 1st stage:
-
 	auto& shadowShaders2nd = m_threadedData.get().shadersShadow2nd;
 	shadowShaders2nd = shaders;
-	// Replace shaders: we need to account for the shadow map:
-	MRPT_TODO("cont here");
+
+	for (const auto& kv : replacements)
+	{
+		shadowShaders1st[kv.first] = shaders.at(kv.second.first);
+		shadowShaders2nd[kv.first] = shaders.at(kv.second.second);
+	}
 
 	MRPT_END
 #endif
@@ -248,7 +261,7 @@ void Viewport::renderNormalSceneMode(
 
 	// Prepare camera (projection matrix):
 	updateMatricesFromCamera(forceThisCamera);
-	auto& _ = m_threadedData.get().state;
+	const auto& _ = m_threadedData.get().state;
 
 	// Get objects to render:
 	const CListOpenGLObjects* objectsToRender = nullptr;
@@ -504,10 +517,10 @@ void Viewport::render(
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		renderNormalSceneMode(forceThisCamera, true /* is1stShadowMapPass */);
-
 		m_ShadowMapFBO.Bind(prevFBBind);
 
 		// The 2nd pass is done inside renderNormalSceneMode()
+		MRPT_TODO("Refactor to avoid recursive rendering twice?");
 	}
 
 	// Change viewport:

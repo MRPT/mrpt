@@ -5,10 +5,9 @@ R"XXX(#version 300 es
 // Part of the MRPT project
 
 in vec3 position;
-in vec4 vertexColor;
 
 uniform highp mat4 m_matrix;
-uniform highp mat4 light_matrix;
+uniform highp mat4 light_matrix; // =p*v matrices
 
 void main()
 {

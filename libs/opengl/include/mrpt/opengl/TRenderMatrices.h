@@ -41,7 +41,7 @@ struct TRenderMatrices
 	/** View matrix with null translation */
 	mrpt::math::CMatrixFloat44 v_matrix_no_translation;
 
-	/** Result of p_matrix * mv_matrix. Used in shaders.
+	/** Result of p_matrix * mv_matrix (=P*V*M). Used in shaders.
 	 * Updated by renderSetOfObjects()
 	 */
 	mrpt::math::CMatrixFloat44 pmv_matrix;

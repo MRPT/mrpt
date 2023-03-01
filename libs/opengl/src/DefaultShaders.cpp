@@ -27,6 +27,9 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 
 	switch (id)
 	{
+		// ==============================
+		// Regular geometric elements
+		// ==============================
 		case DefaultShaderID::POINTS:
 			vertex_shader =
 #include "../shaders/points.v.glsl"
@@ -44,7 +47,6 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			attribs = {"position", "vertexColor"};
 			break;
 
-			// ==============================
 		case DefaultShaderID::WIREFRAME:
 			vertex_shader =
 #include "../shaders/wireframe.v.glsl"
@@ -56,7 +58,6 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			attribs = {"position", "vertexColor"};
 			break;
 
-			// ==============================
 		case DefaultShaderID::TRIANGLES_LIGHT:
 			vertex_shader =
 #include "../shaders/triangles-light.v.glsl"
@@ -69,7 +70,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 						"light_direction", "cam_position",	"materialSpecular"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
-			// ==============================
+
 		case DefaultShaderID::TRIANGLES_NO_LIGHT:
 			vertex_shader =
 #include "../shaders/triangles-no-light.v.glsl"
@@ -80,7 +81,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			uniforms = {"pmv_matrix"};
 			attribs = {"position", "vertexColor"};
 			break;
-			// ==============================
+
 		case DefaultShaderID::TEXTURED_TRIANGLES_LIGHT:
 			vertex_shader =
 #include "../shaders/textured-triangles-light.v.glsl"
@@ -94,7 +95,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 						"materialSpecular"};
 			attribs = {"position", "vertexUV", "vertexNormal"};
 			break;
-			// ==============================
+
 		case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:
 			vertex_shader =
 #include "../shaders/textured-triangles-no-light.v.glsl"
@@ -105,7 +106,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			uniforms = {"pmv_matrix", "textureSampler"};
 			attribs = {"position", "vertexUV"};
 			break;
-			// ==============================
+
 		case DefaultShaderID::TEXT:
 			vertex_shader =
 #include "../shaders/text.v.glsl"
@@ -116,7 +117,37 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			uniforms = {"p_matrix", "mv_matrix"};
 			attribs = {"position", "vertexColor"};
 			break;
-			// ==============================
+
+		// ===========================================
+		// Shadow generation 1st/2nd pass shaders
+		// ===========================================
+		case DefaultShaderID::TRIANGLES_SHADOW_1ST:
+			vertex_shader =
+#include "../shaders/triangles-shadow-1st.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/triangles-shadow-1st.f.glsl"
+				;
+			uniforms = {"m_matrix", "light_matrix"};
+			attribs = {"position"};
+			break;
+
+		case DefaultShaderID::TRIANGLES_SHADOW_2ND:
+			vertex_shader =
+#include "../shaders/triangles-shadow-2nd.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/triangles-shadow-2nd.f.glsl"
+				;
+			uniforms = {"p_matrix",		   "v_matrix",		"m_matrix",
+						"light_diffuse",   "light_ambient", "light_specular",
+						"light_direction", "cam_position",	"materialSpecular"};
+			attribs = {"position", "vertexColor", "vertexNormal"};
+			break;
+
+		// ===========================================
+		// Special effects
+		// ===========================================
 		case DefaultShaderID::SKYBOX:
 			vertex_shader =
 #include "../shaders/skybox.v.glsl"
