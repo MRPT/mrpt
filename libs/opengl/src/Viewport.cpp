@@ -206,6 +206,8 @@ void Viewport::loadDefaultShaders() const
 		ID::TEXT,
 		ID::TRIANGLES_SHADOW_1ST,
 		ID::TRIANGLES_SHADOW_2ND,
+		ID::TEXTURED_TRIANGLES_SHADOW_1ST,
+		ID::TEXTURED_TRIANGLES_SHADOW_2ND,
 		ID::SKYBOX,
 		ID::DEBUG_TEXTURE_TO_SCREEN};
 
@@ -229,7 +231,10 @@ void Viewport::loadDefaultShaders() const
 	const std::map<shader_id_t, std::pair<shader_id_t, shader_id_t>>
 		replacements = {
 			{ID::TRIANGLES_LIGHT,
-			 {ID::TRIANGLES_SHADOW_1ST, ID::TRIANGLES_SHADOW_2ND}}};
+			 {ID::TRIANGLES_SHADOW_1ST, ID::TRIANGLES_SHADOW_2ND}},
+			{ID::TEXTURED_TRIANGLES_LIGHT,
+			 {ID::TEXTURED_TRIANGLES_SHADOW_1ST,
+			  ID::TEXTURED_TRIANGLES_SHADOW_2ND}}};
 
 	// 1st pass. Replace shaders: we only need depth in the 1st stage.
 	// 2nd pass. Replace shaders: we need to account for the shadow map.

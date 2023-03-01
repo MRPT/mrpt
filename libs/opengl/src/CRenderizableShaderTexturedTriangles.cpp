@@ -62,13 +62,14 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	// Set the texture uniform:
+	const Program& s = *rc.shader;
 	const auto texUnit = m_glTexture.textureUnit();
-	if (!rc.activeTextureUnit || *rc.activeTextureUnit != texUnit)
+	if (s.hasUniform("textureSampler") &&
+		(!rc.activeTextureUnit || *rc.activeTextureUnit != texUnit))
 	{
 		rc.activeTextureUnit = texUnit;	 // buffer it
-		const Program& s = *rc.shader;
 		// bound to GL_TEXTURE0 + "i":
-		glUniform1i(s.uniformId("textureSampler"), texUnit);
+		s.setInt("textureSampler", texUnit);
 	}
 
 	// Lights:

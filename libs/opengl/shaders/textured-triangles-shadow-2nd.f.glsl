@@ -9,15 +9,15 @@ out lowp vec4 color;
 // TODO: Refactor as struct and single vec3 light color!!
 uniform lowp vec4 light_diffuse, light_ambient, light_specular;
 uniform highp vec3 light_direction;
-
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;  //  [0,1]
 
+uniform lowp sampler2D textureSampler;
 uniform lowp sampler2D shadowMap;
 
 in Fragment {
     highp vec3 position, normal;
-    lowp vec4 materialColor;
+    mediump vec2 UV; // Interpolated UV texture coords
     highp vec4 posLightSpace;
 } frag;
 
@@ -74,6 +74,6 @@ void main()
     // calculate shadow
     mediump float shadow = ShadowCalculation(frag.posLightSpace);
     
-    color = frag.materialColor * vec4((vec3(light_ambient) + (1.0 - shadow)*(vec3(diffuse_factor + specular_factor))), 1);
+    color = texture( textureSampler, frag.UV ) * vec4((vec3(light_ambient) + (1.0 - shadow)*(vec3(diffuse_factor + specular_factor))), 1);
 }
 )XXX"
