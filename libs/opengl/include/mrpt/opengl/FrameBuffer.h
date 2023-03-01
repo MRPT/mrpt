@@ -89,6 +89,7 @@ class FrameBuffer
 	 *  @{ */
 
 	static void Bind(const FrameBufferBinding& ids);
+	static void Unbind();  //!< Calls glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	static FrameBufferBinding CurrentBinding();
 
 	/** @} */

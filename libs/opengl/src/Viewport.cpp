@@ -374,9 +374,8 @@ void Viewport::renderNormalSceneMode(
 
 	// pass 2: render, sorted by shader program:
 	auto& shaders = m_shadowsEnabled
-		? (is1stShadowMapPass
-			   ? m_threadedData.get().shaders  // shadersShadow1st
-			   : m_threadedData.get().shadersShadow2nd)
+		? (is1stShadowMapPass ? m_threadedData.get().shadersShadow1st
+							  : m_threadedData.get().shadersShadow2nd)
 		: m_threadedData.get().shaders;
 
 	// shadow map, if enabled:
@@ -554,14 +553,14 @@ void Viewport::render(
 		// Render scene to depth map, as seen from the light point of view:
 		glViewport(0, 0, m_ShadowMapSizeX, m_ShadowMapSizeY);
 
-		const auto prevFBBind = m_ShadowMapFBO.bind();
+		const auto oldFBs = m_ShadowMapFBO.bind();
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		renderNormalSceneMode(forceThisCamera, true /* is1stShadowMapPass */);
 
-		m_ShadowMapFBO.Bind(prevFBBind);
+		m_ShadowMapFBO.Bind(oldFBs);
 
 		// The 2nd pass is done inside renderNormalSceneMode()
 		MRPT_TODO("Refactor to avoid recursive rendering twice?");
@@ -582,22 +581,6 @@ void Viewport::render(
 	auto& _ = m_threadedData.get().state;
 	_.viewport_width = vw;
 	_.viewport_height = vh;
-
-#if 0
-  // Debug:
-	if (m_shadowsEnabled)
-	{
-		// render Depth map to quad for visual debugging
-		auto& sh = shaders().at(DefaultShaderID::DEBUG_TEXTURE_TO_SCREEN);
-		sh->use();
-
-		glUniform1i(sh->uniformId("textureId"), 0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
-		debugRenderQuad();
-		return;
-	}
-#endif
 
 	glScissor(vx, vy, vw, vh);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
@@ -644,6 +627,21 @@ void Viewport::render(
 		mrptEventGLPostRender ev(this);
 		this->publishEvent(ev);
 	}
+
+#if 0
+	// Debug:
+	if (m_shadowsEnabled)
+	{
+		// render Depth map to quad for visual debugging
+		auto& sh = shaders().at(DefaultShaderID::DEBUG_TEXTURE_TO_SCREEN);
+		sh->use();
+		sh->setInt("textureId", 0 /* Use GL_TEXTURE0 */);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
+		debugRenderQuad();
+		return;
+	}
+#endif
 
 	MRPT_END
 #else

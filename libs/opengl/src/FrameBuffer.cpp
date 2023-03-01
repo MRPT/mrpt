@@ -48,6 +48,7 @@ void FrameBuffer::RAII_Impl::create(
 	_.m_width = width;
 	_.m_height = height;
 	_.m_Samples = nSamples;
+	_.m_isDepthMap = false;
 
 	const auto oldFBs = CurrentBinding();
 
@@ -153,6 +154,7 @@ void FrameBuffer::RAII_Impl::createDepthMap(
 
 	// Create depth texture:
 	glGenTextures(1, &_.m_DepthMapTexture);
+
 	glBindTexture(GL_TEXTURE_2D, _.m_DepthMapTexture);
 
 	glTexImage2D(
@@ -272,6 +274,13 @@ void FrameBuffer::Bind(const FrameBufferBinding& ids)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, ids.readFbId);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ids.drawFbId);
+#endif
+}
+
+void FrameBuffer::Unbind()
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
 }
 
