@@ -253,7 +253,8 @@ void Viewport::loadDefaultShaders() const
 #endif
 }
 
-#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+// for debugging only
+#if 0 && (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
 // From: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
 
 // debugRenderQuad() renders a 1x1 XY quad in NDC
