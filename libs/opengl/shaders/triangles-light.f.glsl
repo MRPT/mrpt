@@ -19,15 +19,15 @@ out lowp vec4 color;
 void main()
 {
     // diffuse lighting
-    mediump vec3 normal = normalize(frag.normal);
-    mediump float diff = max(dot(normal, -light_direction), 0.0f);
-    mediump vec4 diffuse_factor = diff * light_diffuse;
+    highp vec3 normal = normalize(frag.normal);
+    highp float diff = max(dot(normal, -light_direction), 0.0f);
+    highp vec4 diffuse_factor = diff * light_diffuse;
 
     // specular lighting
     highp vec3 viewDirection = normalize(cam_position - frag.position);
     highp vec3 reflectionDirection = reflect(light_direction, normal);
-    mediump float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
-    mediump float specular = specAmount * materialSpecular;
+    highp float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
+    highp float specular = specAmount * materialSpecular;
 
     color = frag.materialColor * (diffuse_factor + light_ambient) + specular * light_specular;
 }

@@ -7,6 +7,6 @@ R"XXX(#version 300 es
 void main()
 {
     // Already done automatically:
-    // gl_FragDepth = gl_FragCoord.z;
+    //gl_FragDepth = gl_FragCoord.z;
 }
 )XXX"

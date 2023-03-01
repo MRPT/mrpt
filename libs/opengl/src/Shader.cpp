@@ -361,3 +361,11 @@ void Program::dumpProgramDescription(std::ostream& o) const
 	}
 #endif
 }
+
+void Program::use()
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUseProgram(programId());
+	CHECK_OPENGL_ERROR();
+#endif
+}

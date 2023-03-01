@@ -42,14 +42,20 @@ struct TRenderMatrices
 	mrpt::math::CMatrixFloat44 v_matrix_no_translation;
 
 	/** Result of p_matrix * mv_matrix (=P*V*M). Used in shaders.
-	 * Updated by renderSetOfObjects()
+	 * Updated by Viewport::updateMatricesFromCamera()
 	 */
 	mrpt::math::CMatrixFloat44 pmv_matrix;
 
 	/** Result of v_matrix * m_matrix. Used in shaders.
-	 * Updated by renderSetOfObjects()
+	 * Updated by Viewport::updateMatricesFromCamera()
 	 */
 	mrpt::math::CMatrixFloat44 mv_matrix;
+
+	/** Result of p_matrix * v_matrix (=P*V) for the directional light
+	 * point-of-view. Used in shadow-generation shaders.
+	 * Updated by Viewport::updateMatricesFromCamera()
+	 */
+	mrpt::math::CMatrixFloat44 light_pv, light_p, light_v;
 
 	void matricesSetIdentity()
 	{
@@ -59,6 +65,9 @@ struct TRenderMatrices
 		v_matrix_no_translation.setIdentity();
 		mv_matrix.setIdentity();
 		pmv_matrix.setIdentity();
+		light_pv.setIdentity();
+		light_p.setIdentity();
+		light_v.setIdentity();
 	}
 
 	/** Use the intrinsics (cx,cy,fx,fy) from this model instead of FOV, if
@@ -101,9 +110,22 @@ struct TRenderMatrices
 	 * Replacement for obsolete: gluPerspective() and glOrtho() */
 	void computeProjectionMatrix(float zmin, float zmax);
 
+	/** Updates light_pv */
+	void computeLightProjectionMatrix(
+		float zmin, float zmax, const mrpt::math::TVector3Df& direction);
+
 	/** Especial case for custom parameters of Orthographic projection.
+	 *  Equivalent to `p_matrix = ortho(...);`.
+	 *
 	 * Replacement for obsolete: glOrtho()*/
 	void computeOrthoProjectionMatrix(
+		float left, float right, float bottom, float top, float znear,
+		float zfar);
+
+	/** Computes and returns an orthographic projection matrix.
+	 *  Equivalent to obsolete glOrtho() or glm::ortho().
+	 */
+	[[nodiscard]] static mrpt::math::CMatrixFloat44 OrthoProjectionMatrix(
 		float left, float right, float bottom, float top, float znear,
 		float zfar);
 
@@ -111,9 +133,18 @@ struct TRenderMatrices
 	 * bottom-left corner.*/
 	void computeNoProjectionMatrix(float znear, float zfar);
 
-	/** Updates the current p_matrix such that it "looks at" pointing, with
-	 * up vector "up". Replacement for deprecated OpenGL gluLookAt(). */
-	void applyLookAt();
+	/** Updates v_matrix (and v_matrix_no_translation) using the current
+	 *  camera position and pointing-to coordinates.
+	 *  Replacement for deprecated OpenGL gluLookAt(). */
+	void computeViewMatrix();
+
+	/** Computes the view matrix from a "forward" and an "up" vector.
+	 *  Equivalent to obsolete gluLookAt() or glm::lookAt().
+	 */
+	[[nodiscard]] static mrpt::math::CMatrixFloat44 LookAt(
+		const mrpt::math::TVector3D& lookFrom,
+		const mrpt::math::TVector3D& lookAt, const mrpt::math::TVector3D& up,
+		mrpt::math::CMatrixFloat44* viewWithoutTranslation = nullptr);
 
 	/** Computes the normalized coordinates (range=[0,1]) on the current
 	 * rendering viewport of a

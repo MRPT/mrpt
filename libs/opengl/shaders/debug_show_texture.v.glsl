@@ -5,12 +5,13 @@ R"XXX(#version 300 es
 // Part of the MRPT project
 
 in vec3 position;
+in vec2 vertexUV;
 
-uniform highp mat4 m_matrix;
-uniform highp mat4 light_pv_matrix; // =p*v matrices
+out mediump vec2 frag_UV; // Interpolated UV texture coords
 
 void main()
 {
-    gl_Position = light_pv_matrix * m_matrix * vec4(position, 1.0);
+    frag_UV = vertexUV;
+    gl_Position = vec4(position, 1.0);
 }
 )XXX"

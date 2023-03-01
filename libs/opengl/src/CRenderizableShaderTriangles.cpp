@@ -80,6 +80,14 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
+	// Set the texture uniform:
+	if (rc.shader->hasUniform("shadowMap"))
+	{
+		const Program& s = *rc.shader;
+		// bound to GL_TEXTURE0 + "i":
+		glUniform1i(s.uniformId("shadowMap"), SHADOW_MAP_TEXTURE_UNIT);
+	}
+
 	// Set up the vertex array:
 	std::optional<GLuint> attr_position;
 	if (rc.shader->hasAttribute("position"))

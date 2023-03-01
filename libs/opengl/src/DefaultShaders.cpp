@@ -128,7 +128,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles-shadow-1st.f.glsl"
 				;
-			uniforms = {"m_matrix", "light_matrix"};
+			uniforms = {"m_matrix", "light_pv_matrix"};
 			attribs = {"position"};
 			break;
 
@@ -139,9 +139,10 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles-shadow-2nd.f.glsl"
 				;
-			uniforms = {"p_matrix",		   "v_matrix",		"m_matrix",
-						"light_diffuse",   "light_ambient", "light_specular",
-						"light_direction", "cam_position",	"materialSpecular"};
+			uniforms = {"p_matrix",		   "v_matrix",		  "m_matrix",
+						"light_pv_matrix", "shadowMap",		  "light_diffuse",
+						"light_ambient",   "light_specular",  "light_direction",
+						"cam_position",	   "materialSpecular"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 
@@ -157,6 +158,17 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 				;
 			uniforms = {"p_matrix", "v_matrix_no_translation", "skybox"};
 			attribs = {"position"};
+			break;
+
+		case DefaultShaderID::DEBUG_TEXTURE_TO_SCREEN:
+			vertex_shader =
+#include "../shaders/debug_show_texture.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/debug_show_texture.f.glsl"
+				;
+			uniforms = {"textureId"};
+			attribs = {"position", "vertexUV"};
 			break;
 
 		default:

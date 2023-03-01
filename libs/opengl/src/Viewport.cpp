@@ -206,7 +206,8 @@ void Viewport::loadDefaultShaders() const
 		ID::TEXT,
 		ID::TRIANGLES_SHADOW_1ST,
 		ID::TRIANGLES_SHADOW_2ND,
-		ID::SKYBOX};
+		ID::SKYBOX,
+		ID::DEBUG_TEXTURE_TO_SCREEN};
 
 	// -----------------------------------------------------------
 	// Load general list of shaders
@@ -246,6 +247,49 @@ void Viewport::loadDefaultShaders() const
 	MRPT_END
 #endif
 }
+
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+// From: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+
+// debugRenderQuad() renders a 1x1 XY quad in NDC
+// -----------------------------------------
+static unsigned int quadVAO = 0;
+static unsigned int quadVBO;
+static void debugRenderQuad()
+{
+	if (quadVAO == 0)
+	{
+		// clang-format off
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+		// clang-format on
+
+		// setup plane VAO
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(
+			GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices,
+			GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(
+			0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(
+			1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+			(void*)(3 * sizeof(float)));
+	}
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+}
+#endif
 
 /** Render a normal scene with 3D objects */
 void Viewport::renderNormalSceneMode(
@@ -321,17 +365,6 @@ void Viewport::renderNormalSceneMode(
 	glEnable(GL_MULTISAMPLE);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
-	// Is this the 2nd pass of shadow rendering?
-	if (m_shadowsEnabled && !is1stShadowMapPass)
-	{
-		ASSERT_(m_ShadowMapFBO.initialized());
-
-		MRPT_TODO("Move this to the setUniform*() place");
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
-		CHECK_OPENGL_ERROR_IN_DEBUG();
-	}
-
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
 	mrpt::opengl::RenderQueueStats rqStats;
@@ -341,11 +374,18 @@ void Viewport::renderNormalSceneMode(
 
 	// pass 2: render, sorted by shader program:
 	auto& shaders = m_shadowsEnabled
-		? (is1stShadowMapPass ? m_threadedData.get().shadersShadow1st
-							  : m_threadedData.get().shadersShadow2nd)
+		? (is1stShadowMapPass
+			   ? m_threadedData.get().shaders  // shadersShadow1st
+			   : m_threadedData.get().shadersShadow2nd)
 		: m_threadedData.get().shaders;
 
-	mrpt::opengl::processRenderQueue(rq, shaders, m_light);
+	// shadow map, if enabled:
+	std::optional<unsigned int> depthMapTextureId;
+	if (m_shadowsEnabled && m_ShadowMapFBO.initialized())
+		depthMapTextureId = m_ShadowMapFBO.depthMapTextureId();
+
+	// go render:
+	mrpt::opengl::processRenderQueue(rq, shaders, m_light, depthMapTextureId);
 
 #ifdef MRPT_OPENGL_PROFILER
 	opengl_profiler().registerUserMeasure(
@@ -511,12 +551,14 @@ void Viewport::render(
 
 		// Render scene to depth map, as seen from the light point of view:
 		glViewport(0, 0, m_ShadowMapSizeX, m_ShadowMapSizeY);
-		CHECK_OPENGL_ERROR_IN_DEBUG();
 
 		const auto prevFBBind = m_ShadowMapFBO.bind();
+
+		CHECK_OPENGL_ERROR_IN_DEBUG();
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		renderNormalSceneMode(forceThisCamera, true /* is1stShadowMapPass */);
+
 		m_ShadowMapFBO.Bind(prevFBBind);
 
 		// The 2nd pass is done inside renderNormalSceneMode()
@@ -565,6 +607,19 @@ void Viewport::render(
 	}
 	glDisable(GL_SCISSOR_TEST);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
+
+	// Debug:
+	if (m_shadowsEnabled && 0)
+	{
+		// render Depth map to quad for visual debugging
+		auto& sh = shaders().at(DefaultShaderID::DEBUG_TEXTURE_TO_SCREEN);
+		sh->use();
+		glUniform1i(sh->uniformId("textureId"), 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
+		debugRenderQuad();
+		return;
+	}
 
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
@@ -1153,11 +1208,14 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 		_.computeProjectionMatrix(m_clip_min, m_clip_max);
 
 		// Apply eye center and lookAt to p_matrix:
-		_.applyLookAt();
+		_.computeViewMatrix();
 	}
 
 	// Reset model4x4 matrix to the identity transformation:
 	_.m_matrix.setIdentity();
+
+	// Compute the directional light projection matrix (light_pv):
+	_.computeLightProjectionMatrix(m_clip_min, m_clip_max, m_light.direction);
 
 	_.initialized = true;
 }

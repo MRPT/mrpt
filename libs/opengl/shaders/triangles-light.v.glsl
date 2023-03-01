@@ -20,10 +20,11 @@ out Fragment {
 
 void main()
 {
-    frag.position = vec3(m_matrix * vec4(position, 1.0));
-    frag.normal   = normalize(mat3(m_matrix) * vertexNormal);
+    highp vec4 vPos    = m_matrix * vec4(position, 1.0);
+    frag.position      = vec3(vPos);
+    frag.normal        = normalize(mat3(m_matrix) * vertexNormal);
     frag.materialColor = vertexColor;
 
-    gl_Position = p_matrix * v_matrix * vec4(frag.position, 1.0);
+    gl_Position = p_matrix * v_matrix * vPos;
 }
 )XXX"
