@@ -146,6 +146,33 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 
+			// 1st stage is the same for textured and non-textured triangles:
+		case DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_1ST:
+			vertex_shader =
+#include "../shaders/triangles-shadow-1st.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/triangles-shadow-1st.f.glsl"
+				;
+			uniforms = {"m_matrix", "light_pv_matrix"};
+			attribs = {"position"};
+			break;
+
+		case DefaultShaderID::TEXTURED_TRIANGLES_SHADOW_2ND:
+			vertex_shader =
+#include "../shaders/textured-triangles-shadow-2nd.v.glsl"
+				;
+			fragment_shader =
+#include "../shaders/textured-triangles-shadow-2nd.f.glsl"
+				;
+			uniforms = {
+				"p_matrix",		   "v_matrix",		   "m_matrix",
+				"light_pv_matrix", "shadowMap",		   "light_diffuse",
+				"light_ambient",   "light_specular",   "light_direction",
+				"cam_position",	   "materialSpecular", "textureSampler"};
+			attribs = {"position", "vertexNormal", "vertexUV"};
+			break;
+
 		// ===========================================
 		// Special effects
 		// ===========================================

@@ -370,7 +370,7 @@ void Program::use()
 #endif
 }
 
-void Program::setInt(const char* uniformName, int value)
+void Program::setInt(const char* uniformName, int value) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glUniform1i(uniformId(uniformName), value);

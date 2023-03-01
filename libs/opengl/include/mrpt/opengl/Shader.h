@@ -100,7 +100,7 @@ class Program
 	void use();
 
 	/** Sets a uniform variable */
-	void setInt(const char* uniformName, int value);
+	void setInt(const char* uniformName, int value) const;
 
 	/** Links an OpenGL program with all shader code fragments previously
 	 * inserted into shaders.

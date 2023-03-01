@@ -5,6 +5,7 @@
     - \ref mrpt_gui_grp
       - All OpenGL viewports: pan is now also achieved by pressing the mouse middle button (wheel) + dragging, for similarity with many other CAD UIs.
     - \ref mrpt_opengl_grp
+      - Shadows can now be rendered for directional lights. See mrpt::opengl::Viewport::enableShadowCasting()
       - These class names have been shortened for ease of use (typedefs with the older names still exist for backwards compatibility, including deserialization of old files):
         - mrpt::opengl::COpenGLScene ==> mrpt::opengl::Scene
         - mrpt::opengl::COpenGLViewport ==> mrpt::opengl::Viewport

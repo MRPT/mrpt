@@ -153,8 +153,8 @@ static void azimuthElevationFromDirection(
 void TRenderMatrices::computeLightProjectionMatrix(
 	float zmin, float zmax, const mrpt::math::TVector3Df& direction)
 {
-	const float dist = 0.5 * (zmin + zmax);
-	light_p = OrthoProjectionMatrix(-50.0f, 50.0f, -50.0f, 50.0f, zmin, zmax);
+	float dist = eyeDistance * 1.5;
+	light_p = OrthoProjectionMatrix(-dist, dist, -dist, dist, zmin, zmax);
 
 	// "up" vector from elevation:
 
@@ -167,7 +167,7 @@ void TRenderMatrices::computeLightProjectionMatrix(
 		cos(elevation)	// z
 	);
 
-	light_v = LookAt(pointing - direction * dist, pointing, lightUp);
+	light_v = LookAt(pointing - direction * zmax * 0.5, pointing, lightUp);
 
 	light_pv.asEigen() = light_p.asEigen() * light_v.asEigen();
 }

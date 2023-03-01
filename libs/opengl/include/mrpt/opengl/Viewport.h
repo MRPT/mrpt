@@ -262,8 +262,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 	 *
 	 */
 	void enableShadowCasting(
-		bool enabled = true, unsigned int SHADOW_MAP_SIZE_X = 1024,
-		unsigned int SHADOW_MAP_SIZE_Y = 1024);
+		bool enabled = true, unsigned int SHADOW_MAP_SIZE_X = 2048,
+		unsigned int SHADOW_MAP_SIZE_Y = 2048);
 
 	bool isShadowCastingEnabled() const { return m_shadowsEnabled; }
 
