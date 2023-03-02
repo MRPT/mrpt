@@ -38,9 +38,11 @@ void CTexturedPlane::render(const RenderContext& rc) const
 	switch (rc.shader_id)
 	{
 		case DefaultShaderID::TRIANGLES_NO_LIGHT:
+		case DefaultShaderID::TRIANGLES_LIGHT:
 			if (!hasTexture) CRenderizableShaderTriangles::render(rc);
 			break;
 		case DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT:
+		case DefaultShaderID::TEXTURED_TRIANGLES_LIGHT:
 			if (hasTexture) CRenderizableShaderTexturedTriangles::render(rc);
 			break;
 	};
@@ -78,6 +80,7 @@ void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 		t.vertices[1].uv = P2f(1, 0);
 		t.vertices[2].uv = P2f(1, 1);
 
+		t.computeNormals();
 		tris.emplace_back(t);
 	}
 	{
@@ -90,6 +93,7 @@ void CTexturedPlane::onUpdateBuffers_TexturedTriangles()
 		t.vertices[1].uv = P2f(1, 1);
 		t.vertices[2].uv = P2f(0, 1);
 
+		t.computeNormals();
 		tris.emplace_back(t);
 	}
 
@@ -119,12 +123,14 @@ void CTexturedPlane::onUpdateBuffers_Triangles()
 	t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMin, 0);
 	t.vertices[2].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
 
+	t.computeNormals();
 	tris.emplace_back(t);
 
 	t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
 	t.vertices[1].xyzrgba.pt = P3f(m_xMax, m_yMax, 0);
 	t.vertices[2].xyzrgba.pt = P3f(m_xMin, m_yMax, 0);
 
+	t.computeNormals();
 	tris.emplace_back(t);
 
 	MRPT_END

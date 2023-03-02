@@ -11,6 +11,7 @@
 //
 #include <Eigen/Dense>	// First! to avoid conflicts with X.h
 //
+#include <mrpt/core/get_env.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>	 // crossProduct3D()
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -33,7 +34,8 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(Viewport, CSerializable, mrpt::opengl)
 
-//#define OPENGLVIEWPORT_DEBUG_SHOW_SHADOWMAP 1
+const bool MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP =
+	mrpt::get_env<bool>("MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP", false);
 
 // #define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
 
@@ -264,8 +266,8 @@ void Viewport::loadDefaultShaders() const
 #endif
 }
 
-// for debugging only
-#if OPENGLVIEWPORT_DEBUG_SHOW_SHADOWMAP && (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
+// for debugging only if MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
 // From: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
 
 // debugRenderQuad() renders a 1x1 XY quad in NDC
@@ -279,10 +281,10 @@ static void debugRenderQuad()
 		// clang-format off
         float quadVertices[] = {
             // positions        // texture Coords
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -0.5f, 0.0f, 0.0f, 1.0f,
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
+            -0.5f, -1.0f, 0.0f, 1.0f, 0.0f,
         };
 		// clang-format on
 
@@ -645,9 +647,8 @@ void Viewport::render(
 		this->publishEvent(ev);
 	}
 
-#if OPENGLVIEWPORT_DEBUG_SHOW_SHADOWMAP
 	// Debug:
-	if (m_shadowsEnabled)
+	if (MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP && m_shadowsEnabled)
 	{
 		// render Depth map to quad for visual debugging
 		auto& sh = shaders().at(DefaultShaderID::DEBUG_TEXTURE_TO_SCREEN);
@@ -656,9 +657,7 @@ void Viewport::render(
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
 		debugRenderQuad();
-		return;
 	}
-#endif
 
 	MRPT_END
 #else

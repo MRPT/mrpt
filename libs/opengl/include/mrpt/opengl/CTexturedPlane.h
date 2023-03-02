@@ -46,9 +46,16 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles,
 	virtual void onUpdateBuffers_Triangles() override;
 	virtual shader_list_t requiredShaders() const override
 	{
-		return {
-			DefaultShaderID::TRIANGLES_NO_LIGHT,
-			DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT};
+		shader_list_t lst;
+		lst.push_back(
+			CRenderizableShaderTriangles::isLightEnabled()
+				? DefaultShaderID::TRIANGLES_LIGHT
+				: DefaultShaderID::TRIANGLES_NO_LIGHT);
+		lst.push_back(
+			CRenderizableShaderTexturedTriangles::isLightEnabled()
+				? DefaultShaderID::TEXTURED_TRIANGLES_LIGHT
+				: DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT);
+		return lst;
 	}
 	void freeOpenGLResources() override
 	{
