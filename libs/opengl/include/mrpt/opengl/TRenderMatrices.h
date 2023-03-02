@@ -92,6 +92,7 @@ struct TRenderMatrices
    private:
 	// (private fields reordered here to minimize padding)
 	float m_last_z_near = 0, m_last_z_far = 0;
+	float m_last_light_z_near = 0, m_last_light_z_far = 0;
 
    public:
 	/** Is set to true by  Viewport::updateMatricesFromCamera() */
@@ -169,6 +170,9 @@ struct TRenderMatrices
 
 	float getLastClipZNear() const { return m_last_z_near; }
 	float getLastClipZFar() const { return m_last_z_far; }
+
+	float getLastLightClipZNear() const { return m_last_light_z_near; }
+	float getLastLightClipZFar() const { return m_last_light_z_far; }
 
 	void saveToYaml(mrpt::containers::yaml& c) const;
 	void print(std::ostream& o) const;

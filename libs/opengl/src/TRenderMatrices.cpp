@@ -153,6 +153,9 @@ static void azimuthElevationFromDirection(
 void TRenderMatrices::computeLightProjectionMatrix(
 	float zmin, float zmax, const mrpt::math::TVector3Df& direction)
 {
+	m_last_light_z_near = zmin;
+	m_last_light_z_far = zmax;
+
 	float dist = eyeDistance * eyeDistance2lightShadowExtension;
 	light_p = OrthoProjectionMatrix(-dist, dist, -dist, dist, zmin, zmax);
 

@@ -140,11 +140,11 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles-shadow-2nd.f.glsl"
 				;
-			uniforms = {
-				"p_matrix",		   "v_matrix",		 "m_matrix",
-				"light_pv_matrix", "shadowMap",		 "light_diffuse",
-				"light_ambient",   "light_specular", "light_direction",
-				"light_color",	   "cam_position",	 "materialSpecular"};
+			uniforms = {"p_matrix",		   "v_matrix",		 "m_matrix",
+						"light_pv_matrix", "shadowMap",		 "light_diffuse",
+						"light_ambient",   "light_specular", "light_direction",
+						"light_color",	   "light_zmax",	 "cam_position",
+						"materialSpecular"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 
@@ -167,11 +167,11 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/textured-triangles-shadow-2nd.f.glsl"
 				;
-			uniforms = {"p_matrix",		   "v_matrix",		 "m_matrix",
-						"light_pv_matrix", "shadowMap",		 "light_diffuse",
-						"light_ambient",   "light_specular", "light_direction",
-						"light_color",	   "cam_position",	 "materialSpecular",
-						"textureSampler"};
+			uniforms = {"p_matrix",			"v_matrix",		  "m_matrix",
+						"light_pv_matrix",	"shadowMap",	  "light_diffuse",
+						"light_ambient",	"light_specular", "light_direction",
+						"light_color",		"light_zmax",	  "cam_position",
+						"materialSpecular", "textureSampler"};
 			attribs = {"position", "vertexNormal", "vertexUV"};
 			break;
 
