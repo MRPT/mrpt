@@ -228,13 +228,19 @@ void Viewport::loadDefaultShaders() const
 	// Shaders for rendering with shadows: 1st and 2nd passes use
 	// different shader programs. Apply a replacement table.
 	// -----------------------------------------------------------
+	// clang-format off
 	const std::map<shader_id_t, std::pair<shader_id_t, shader_id_t>>
-		replacements = {
-			{ID::TRIANGLES_LIGHT,
-			 {ID::TRIANGLES_SHADOW_1ST, ID::TRIANGLES_SHADOW_2ND}},
-			{ID::TEXTURED_TRIANGLES_LIGHT,
-			 {ID::TEXTURED_TRIANGLES_SHADOW_1ST,
-			  ID::TEXTURED_TRIANGLES_SHADOW_2ND}}};
+	  replacements = {
+		{ID::TRIANGLES_LIGHT,             {ID::TRIANGLES_SHADOW_1ST, ID::TRIANGLES_SHADOW_2ND}},
+		{ID::TEXTURED_TRIANGLES_LIGHT,    {ID::TEXTURED_TRIANGLES_SHADOW_1ST, ID::TEXTURED_TRIANGLES_SHADOW_2ND}},
+		{ID::POINTS,                      {ID::NONE, ID::POINTS}},
+		{ID::WIREFRAME,                   {ID::NONE, ID::WIREFRAME}},
+		{ID::TEXT,                        {ID::NONE, ID::TEXT}},
+		{ID::TRIANGLES_NO_LIGHT,          {ID::TRIANGLES_SHADOW_1ST, ID::TRIANGLES_NO_LIGHT}},
+		{ID::TEXTURED_TRIANGLES_NO_LIGHT, {ID::TRIANGLES_SHADOW_1ST, ID::TEXTURED_TRIANGLES_NO_LIGHT}},
+		{ID::SKYBOX,                      {ID::NONE, ID::SKYBOX}}
+		};
+	//clang-format on
 
 	// 1st pass. Replace shaders: we only need depth in the 1st stage.
 	// 2nd pass. Replace shaders: we need to account for the shadow map.
@@ -245,8 +251,11 @@ void Viewport::loadDefaultShaders() const
 
 	for (const auto& kv : replacements)
 	{
-		shadowShaders1st[kv.first] = shaders.at(kv.second.first);
-		shadowShaders2nd[kv.first] = shaders.at(kv.second.second);
+		if (kv.second.first!=ID::NONE)
+			shadowShaders1st[kv.first] = shaders.at(kv.second.first);
+
+		if (kv.second.second!=ID::NONE)
+			shadowShaders2nd[kv.first] = shaders.at(kv.second.second);
 	}
 
 	MRPT_END

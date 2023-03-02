@@ -1,4 +1,5 @@
 R"XXX(#version 300 es
+#extension GL_OES_shader_io_blocks: require
 
 // VERTEX SHADER: Default shader for MRPT CRenderizable objects
 // Jose Luis Blanco Claraco (C) 2019-2023

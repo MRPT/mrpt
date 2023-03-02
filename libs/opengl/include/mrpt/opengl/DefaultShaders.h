@@ -40,6 +40,7 @@ struct DefaultShaderID
 	// Special effects:
 	static constexpr shader_id_t SKYBOX = 20;
 	static constexpr shader_id_t DEBUG_TEXTURE_TO_SCREEN = 30;
+	static constexpr shader_id_t NONE = 31;	 //!< Skip rendering
 };
 
 /** Loads a set of OpenGL Vertex+Fragment shaders from the default library
