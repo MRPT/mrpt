@@ -259,6 +259,14 @@ void mrpt::opengl::enqueueForRendering(
 
 			// Use plain pointers, faster than smart pointers:
 			const CRenderizable* obj = objPtr.get();
+
+			// Quick check: if we are in a shadow generation pass where this
+			// object does not render, skip it:
+			const auto lst_shaders = obj->requiredShaders();
+			if (lst_shaders.size() == 1 &&
+				lst_shaders.at(0) == DefaultShaderID::NONE)
+				continue;
+
 			// Save class name: just in case we have an exception, for error
 			// reporting:
 			curClassName = obj->GetRuntimeClass()->className;
@@ -309,8 +317,7 @@ void mrpt::opengl::enqueueForRendering(
 				if (stats) stats->numObjRendered++;
 #endif
 
-				// Enqeue this object...
-				const auto lst_shaders = obj->requiredShaders();
+				// Enqueue this object...
 				for (const auto shader_id : lst_shaders)
 				{
 					// eye-to-object depth:

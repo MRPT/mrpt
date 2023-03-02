@@ -146,7 +146,7 @@ void FrameBuffer::RAII_Impl::createDepthMap(
 	_.m_width = width;
 	_.m_height = height;
 
-	// const auto oldFBs = CurrentBinding();
+	const auto oldFBs = CurrentBinding();
 
 	// Depth FBO:
 	glGenFramebuffers(1, &_.m_Framebuffer);
@@ -185,7 +185,7 @@ void FrameBuffer::RAII_Impl::createDepthMap(
 	// Restore:
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	// Restore:
-	// Bind(oldFBs);
+	Bind(oldFBs);
 #else
 	THROW_EXCEPTION("MRPT built without OpenGL support");
 #endif
