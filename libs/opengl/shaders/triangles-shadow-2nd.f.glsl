@@ -9,6 +9,7 @@ out lowp vec4 color;
 uniform lowp vec3 light_color;
 uniform mediump float light_ambient, light_diffuse, light_specular;
 uniform highp vec3 light_direction;
+uniform highp float light_zmax;
 
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;  //  [0,1]
@@ -37,7 +38,8 @@ mediump float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
     highp float currentDepth = projCoords.z;
 
     // check whether current frag pos is in shadow
-    highp float bias = max(0.05 * (1.0 - dot(normal, -light_direction)), 0.005);
+    highp float bias = light_zmax*0.001/500.0;
+    //0.0001; //max(0.05 * (1.0 - dot(normal, -light_direction)), 0.001);
 #if 0
     mediump float shadow = currentDepth-bias > closestDepth  ? 1.0 : 0.0;
 #else

@@ -90,6 +90,9 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 		if (rc.shader->hasUniform("light_specular"))
 			s.setFloat("light_specular", l->specular);
 
+		if (rc.shader->hasUniform("light_zmax"))
+			s.setFloat("light_zmax", rc.state->getLastLightClipZFar());
+
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 
