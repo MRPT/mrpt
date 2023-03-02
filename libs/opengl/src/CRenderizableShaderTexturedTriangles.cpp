@@ -73,27 +73,23 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	}
 
 	// Lights:
-	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
-		rc.shader->hasUniform("light_ambient") &&
-		rc.shader->hasUniform("light_direction") &&
+	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_color") &&
 		(!rc.activeLights || rc.activeLights.value() != rc.lights))
 	{
 		// buffered pointer, to prevent re-setting the opengl state with the
 		// same values, a performance killer:
 		rc.activeLights = rc.lights;
 
-		const Program& s = *rc.shader;
-		const auto& dif = rc.lights->diffuse;
-		const auto& amb = rc.lights->ambient;
-		const auto& spc = rc.lights->specular;
-		const auto& dir = rc.lights->direction;
+		const auto& l = rc.lights;
 
-		glUniform4f(s.uniformId("light_diffuse"), dif.R, dif.G, dif.B, dif.A);
-		glUniform4f(s.uniformId("light_ambient"), amb.R, amb.G, amb.B, amb.A);
-		glUniform3f(s.uniformId("light_direction"), dir.x, dir.y, dir.z);
+		s.setFloat3("light_color", l->color.R, l->color.G, l->color.B);
+		s.setFloat3(
+			"light_direction", l->direction.x, l->direction.y, l->direction.z);
+		s.setFloat("light_ambient", l->ambient);
+		s.setFloat("light_diffuse", l->diffuse);
 		if (rc.shader->hasUniform("light_specular"))
-			glUniform4f(
-				s.uniformId("light_specular"), spc.R, spc.G, spc.B, spc.A);
+			s.setFloat("light_specular", l->specular);
+
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}
 

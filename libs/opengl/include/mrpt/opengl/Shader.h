@@ -99,8 +99,12 @@ class Program
 	/** Activates the program, calling glUseProgram() with this program ID. */
 	void use();
 
-	/** Sets a uniform variable */
+	/** Set uniform variables: */
 	void setInt(const char* uniformName, int value) const;
+	void setFloat(const char* uniformName, float value) const;
+	void setFloat3(const char* uniformName, float v1, float v2, float v3) const;
+	void setFloat4(
+		const char* uniformName, float v1, float v2, float v3, float v4) const;
 
 	/** Links an OpenGL program with all shader code fragments previously
 	 * inserted into shaders.

@@ -13,17 +13,15 @@ uniform highp mat4 p_matrix;
 uniform highp mat4 v_matrix;
 uniform highp mat4 m_matrix;
 
-out Fragment {
-    highp vec3 position, normal;
-    lowp vec4 materialColor;
-} frag;
+out highp vec3 frag_position, frag_normal;
+out lowp vec4 frag_materialColor;
 
 void main()
 {
     highp vec4 vPos    = m_matrix * vec4(position, 1.0);
-    frag.position      = vec3(vPos);
-    frag.normal        = normalize(mat3(m_matrix) * vertexNormal);
-    frag.materialColor = vertexColor;
+    frag_position      = vec3(vPos);
+    frag_normal        = normalize(mat3(m_matrix) * vertexNormal);
+    frag_materialColor = vertexColor;
 
     gl_Position = p_matrix * v_matrix * vPos;
 }

@@ -81,6 +81,11 @@ struct TRenderMatrices
 	double azimuth = .0, elev = .0;
 	double eyeDistance = 1.0f;
 
+	/** Multiplier from eye distance to the length size of the squared area in
+	 * which to evaluate shadow casting by unidirectional light.
+	 */
+	double eyeDistance2lightShadowExtension = 1.5;
+
 	/** In pixels. This may be smaller than the total render window. */
 	uint32_t viewport_width = 640, viewport_height = 480;
 

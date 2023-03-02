@@ -1091,7 +1091,7 @@ void TestOpenGLObjects()
 
 	mrpt::opengl::TLightParameters& lights = viewport->lightParameters();
 
-	lights.ambient = {0.2, 0.2, 0.2, 1};
+	lights.ambient = 0.2;
 
 	while (win.isOpen())
 	{

@@ -200,6 +200,10 @@ class Viewport : public mrpt::serialization::CSerializable,
 	 */
 	void getViewportClipDistances(float& clip_min, float& clip_max) const;
 
+	void setLightShadowClipDistances(
+		const float clip_min, const float clip_max);
+	void getLightShadowClipDistances(float& clip_min, float& clip_max) const;
+
 	/** Set the border size ("frame") of the viewport (default=0) */
 	inline void setBorderSize(unsigned int lineWidth)
 	{
@@ -254,16 +258,17 @@ class Viewport : public mrpt::serialization::CSerializable,
 	/** Enables or disables rendering of shadows cast by the unidirectional
 	 * light.
 	 * \param enabled Set to true to enable shadow casting
-	 *          (default at ctor=false).
+	 *         (default at ctor=false).
 	 * \param SHADOW_MAP_SIZE_X Width of the shadow cast map (1st pass of
-	 *          rendering with shadows). Larger values are slower but gives
-	 *          more precise shadows.
+	 *         rendering with shadows). Larger values are slower but gives
+	 *         more precise shadows. Default=2048x2048.
+	 *         Zero means do not change.
 	 * \param SHADOW_MAP_SIZE_Y Like SHADOW_MAP_SIZE_X but defines the height.
 	 *
 	 */
 	void enableShadowCasting(
-		bool enabled = true, unsigned int SHADOW_MAP_SIZE_X = 2048,
-		unsigned int SHADOW_MAP_SIZE_Y = 2048);
+		bool enabled = true, unsigned int SHADOW_MAP_SIZE_X = 0,
+		unsigned int SHADOW_MAP_SIZE_Y = 0);
 
 	bool isShadowCastingEnabled() const { return m_shadowsEnabled; }
 
@@ -460,6 +465,10 @@ class Viewport : public mrpt::serialization::CSerializable,
 	/** The min/max clip depth distances (default: 0.01 - 1000) */
 	float m_clip_min = 0.01f, m_clip_max = 1000.0f;
 
+	/** The near/far plane clip distances for unidirectional light shadow
+	 * casting */
+	float m_lightShadowClipMin = 0.1f, m_lightShadowClipMax = 200.0f;
+
 	mrpt::img::TColorf m_background_color = {0.4f, 0.4f, 0.4f};
 
 	/** The image to display, after calling \a setImageView() */
@@ -503,7 +512,7 @@ class Viewport : public mrpt::serialization::CSerializable,
 	TLightParameters m_light;
 
 	bool m_shadowsEnabled = false;
-	uint32_t m_ShadowMapSizeX = 1024, m_ShadowMapSizeY = 1024;
+	uint32_t m_ShadowMapSizeX = 2048, m_ShadowMapSizeY = 2048;
 	mutable FrameBuffer m_ShadowMapFBO;
 
 	/** Renders all messages in the underlying class CTextMessageCapable */

@@ -25,9 +25,11 @@ struct TLightParameters
 	TLightParameters() = default;
 	~TLightParameters() = default;
 
-	mrpt::img::TColorf diffuse = {0.8f, 0.8f, 0.8f, 1.0f};
-	mrpt::img::TColorf ambient = {0.2f, 0.2f, 0.2f, 1.0f};
-	mrpt::img::TColorf specular = {1.0f, 1.0f, 1.0f, 1.0f};
+	mrpt::img::TColorf color = {1.0f, 1.0f, 1.0f};
+
+	float diffuse = 0.8f;
+	float ambient = 0.2f;
+	float specular = 0.95f;
 
 	/** Light direction (must be normalized) */
 	mrpt::math::TVector3Df direction = {-0.40825f, -0.40825f, -0.81650f};

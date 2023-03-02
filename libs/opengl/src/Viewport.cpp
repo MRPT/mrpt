@@ -33,6 +33,8 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(Viewport, CSerializable, mrpt::opengl)
 
+//#define OPENGLVIEWPORT_DEBUG_SHOW_SHADOWMAP 1
+
 // #define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
 
 #if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
@@ -263,7 +265,7 @@ void Viewport::loadDefaultShaders() const
 }
 
 // for debugging only
-#if 0 && (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
+#if OPENGLVIEWPORT_DEBUG_SHOW_SHADOWMAP && (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
 // From: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
 
 // debugRenderQuad() renders a 1x1 XY quad in NDC
@@ -643,7 +645,7 @@ void Viewport::render(
 		this->publishEvent(ev);
 	}
 
-#if 0
+#if OPENGLVIEWPORT_DEBUG_SHOW_SHADOWMAP
 	// Debug:
 	if (m_shadowsEnabled)
 	{
@@ -666,7 +668,7 @@ void Viewport::render(
 #endif
 }
 
-uint8_t Viewport::serializeGetVersion() const { return 8; }
+uint8_t Viewport::serializeGetVersion() const { return 9; }
 void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -714,6 +716,10 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// Added in v8:
 	out << m_shadowsEnabled << m_ShadowMapSizeX << m_ShadowMapSizeY;
+
+	// Added in v9:
+	out << m_clip_max << m_clip_min << m_lightShadowClipMin
+		<< m_lightShadowClipMax;
 }
 
 void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -729,6 +735,7 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 6:
 		case 7:
 		case 8:
+		case 9:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
@@ -815,6 +822,12 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			else
 			{
 				m_shadowsEnabled = false;
+			}
+
+			if (version >= 9)
+			{
+				in >> m_clip_max >> m_clip_min >> m_lightShadowClipMin >>
+					m_lightShadowClipMax;
 			}
 		}
 		break;
@@ -935,6 +948,22 @@ void Viewport::getViewportClipDistances(float& clip_min, float& clip_max) const
 {
 	clip_min = m_clip_min;
 	clip_max = m_clip_max;
+}
+
+void Viewport::setLightShadowClipDistances(
+	const float clip_min, const float clip_max)
+{
+	ASSERT_GT_(clip_max, clip_min);
+
+	m_lightShadowClipMin = clip_min;
+	m_lightShadowClipMax = clip_max;
+}
+
+void Viewport::getLightShadowClipDistances(
+	float& clip_min, float& clip_max) const
+{
+	clip_min = m_lightShadowClipMin;
+	clip_max = m_lightShadowClipMax;
 }
 
 /*--------------------------------------------------------------
@@ -1233,7 +1262,8 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 	_.m_matrix.setIdentity();
 
 	// Compute the directional light projection matrix (light_pv)
-	_.computeLightProjectionMatrix(m_clip_min, m_clip_max, m_light.direction);
+	_.computeLightProjectionMatrix(
+		m_lightShadowClipMin, m_lightShadowClipMax, m_light.direction);
 
 	_.initialized = true;
 }
@@ -1243,6 +1273,6 @@ void Viewport::enableShadowCasting(
 	unsigned int SHADOW_MAP_SIZE_Y)
 {
 	m_shadowsEnabled = enabled;
-	m_ShadowMapSizeX = SHADOW_MAP_SIZE_X;
-	m_ShadowMapSizeY = SHADOW_MAP_SIZE_Y;
+	if (SHADOW_MAP_SIZE_X) m_ShadowMapSizeX = SHADOW_MAP_SIZE_X;
+	if (SHADOW_MAP_SIZE_Y) m_ShadowMapSizeY = SHADOW_MAP_SIZE_Y;
 }
