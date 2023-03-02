@@ -376,3 +376,26 @@ void Program::setInt(const char* uniformName, int value) const
 	glUniform1i(uniformId(uniformName), value);
 #endif
 }
+
+void Program::setFloat(const char* uniformName, float value) const
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUniform1f(uniformId(uniformName), value);
+#endif
+}
+
+void Program::setFloat3(
+	const char* uniformName, float v1, float v2, float v3) const
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUniform3f(uniformId(uniformName), v1, v2, v3);
+#endif
+}
+
+void Program::setFloat4(
+	const char* uniformName, float v1, float v2, float v3, float v4) const
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUniform4f(uniformId(uniformName), v1, v2, v3, v4);
+#endif
+}

@@ -65,9 +65,10 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles-light.f.glsl"
 				;
-			uniforms = {"p_matrix",		   "v_matrix",		"m_matrix",
-						"light_diffuse",   "light_ambient", "light_specular",
-						"light_direction", "cam_position",	"materialSpecular"};
+			uniforms = {"p_matrix",		   "v_matrix",		  "m_matrix",
+						"light_diffuse",   "light_ambient",	  "light_specular",
+						"light_color",	   "light_direction", "cam_position",
+						"materialSpecular"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 
@@ -89,10 +90,10 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/textured-triangles-light.f.glsl"
 				;
-			uniforms = {"p_matrix",		   "v_matrix",		  "m_matrix",
-						"light_diffuse",   "light_ambient",	  "light_specular",
-						"cam_position",	   "light_direction", "textureSampler",
-						"materialSpecular"};
+			uniforms = {"p_matrix",		  "v_matrix",		 "m_matrix",
+						"light_diffuse",  "light_ambient",	 "light_specular",
+						"light_color",	  "cam_position",	 "light_direction",
+						"textureSampler", "materialSpecular"};
 			attribs = {"position", "vertexUV", "vertexNormal"};
 			break;
 
@@ -139,10 +140,11 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles-shadow-2nd.f.glsl"
 				;
-			uniforms = {"p_matrix",		   "v_matrix",		  "m_matrix",
-						"light_pv_matrix", "shadowMap",		  "light_diffuse",
-						"light_ambient",   "light_specular",  "light_direction",
-						"cam_position",	   "materialSpecular"};
+			uniforms = {
+				"p_matrix",		   "v_matrix",		 "m_matrix",
+				"light_pv_matrix", "shadowMap",		 "light_diffuse",
+				"light_ambient",   "light_specular", "light_direction",
+				"light_color",	   "cam_position",	 "materialSpecular"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 
@@ -165,11 +167,11 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/textured-triangles-shadow-2nd.f.glsl"
 				;
-			uniforms = {
-				"p_matrix",		   "v_matrix",		   "m_matrix",
-				"light_pv_matrix", "shadowMap",		   "light_diffuse",
-				"light_ambient",   "light_specular",   "light_direction",
-				"cam_position",	   "materialSpecular", "textureSampler"};
+			uniforms = {"p_matrix",		   "v_matrix",		 "m_matrix",
+						"light_pv_matrix", "shadowMap",		 "light_diffuse",
+						"light_ambient",   "light_specular", "light_direction",
+						"light_color",	   "cam_position",	 "materialSpecular",
+						"textureSampler"};
 			attribs = {"position", "vertexNormal", "vertexUV"};
 			break;
 
@@ -234,17 +236,20 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 	if (!lstShaders[0].compile(GL_VERTEX_SHADER, vertex_shader, errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
-			"Error compiling GL_VERTEX_SHADER:\n%s", errMsgs.c_str());
+			"Error compiling GL_VERTEX_SHADER (%s):\n%s", vertex_shader,
+			errMsgs.c_str());
 	}
 	if (!lstShaders[1].compile(GL_FRAGMENT_SHADER, fragment_shader, errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
-			"Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
+			"Error compiling GL_FRAGMENT_SHADER (%s):\n%s", fragment_shader,
+			errMsgs.c_str());
 	}
 	if (!shader->linkProgram(lstShaders, errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
-			"Error linking Opengl Shader programs:\n%s", errMsgs.c_str());
+			"Error linking Opengl Shader programs (%s, %s):\n%s", vertex_shader,
+			fragment_shader, errMsgs.c_str());
 	}
 
 #if 0

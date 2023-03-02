@@ -18,10 +18,10 @@ using namespace std;
 
 void TLightParameters::writeToStream(mrpt::serialization::CArchive& out) const
 {
-	const uint8_t version = 0;
+	const uint8_t version = 1;
 	out << version;
 
-	out << diffuse << ambient << specular << direction;
+	out << diffuse << ambient << specular << direction << color;
 }
 
 void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
@@ -31,7 +31,12 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
 
 	switch (version)
 	{
-		case 0: in >> diffuse >> ambient >> specular >> direction; break;
+		case 0:
+			// Just ignore.
+			break;
+		case 1:
+			in >> diffuse >> ambient >> specular >> direction >> color;
+			break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
 }
