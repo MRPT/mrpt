@@ -82,7 +82,7 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	if (rc.shader->hasUniform("shadowMap"))
 	{
 		// bound to GL_TEXTURE0 + "i":
-		glUniform1i(s.uniformId("shadowMap"), SHADOW_MAP_TEXTURE_UNIT);
+		s.setInt("shadowMap", SHADOW_MAP_TEXTURE_UNIT);
 	}
 
 	// Set up the vertex array:

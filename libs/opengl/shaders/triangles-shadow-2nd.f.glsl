@@ -61,7 +61,7 @@ void main()
     // diffuse lighting
     mediump vec3 normal = normalize(frag_normal);
     mediump float diff = max(dot(normal, -light_direction), 0.0f);
-    highp float diffuse_factor = diff * light_diffuse;
+    mediump float diffuse_factor = diff * light_diffuse;
 
     // specular lighting
     highp vec3 viewDirection = normalize(cam_position - frag_position);

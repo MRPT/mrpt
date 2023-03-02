@@ -988,6 +988,21 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 6.0, -3.0, 0, 0.0_deg, 0));
+			obj->assignImage(pic);
+			obj->enableLighting(true);
+			theScene->insert(obj);
+		}
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 3.9, -3.0, 0, 0.0_deg, 0));
+			obj->setColor_u8(0xff, 0x00, 0x00, 0xff);
+			obj->enableLighting(true);
+			theScene->insert(obj);
+		}
+
 		auto gl_txt = opengl::CText::Create("CTexturedPlane");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
