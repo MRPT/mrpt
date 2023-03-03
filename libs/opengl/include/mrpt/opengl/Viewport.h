@@ -386,8 +386,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 		const int render_offset_x = 0, const int render_offset_y = 0,
 		const CCamera* forceThisCamera = nullptr) const;
 
-	void updateMatricesFromCamera(
-		const CCamera* forceThisCamera = nullptr) const;
+	/// myCamera must come from internalResolveActiveCamera()
+	void updateMatricesFromCamera(const CCamera& myCamera) const;
 
 	/** Provides read access to the opengl shaders */
 	const std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders() const
@@ -423,8 +423,7 @@ class Viewport : public mrpt::serialization::CSerializable,
 
 	/** Render a normal scene with 3D objects */
 	void renderNormalSceneMode(
-		const CCamera* forceThisCamera = nullptr,
-		bool is1stShadowMapPass = false) const;
+		const CCamera& useThisCamera, bool is1stShadowMapPass = false) const;
 
 	/** Render the viewport border, if enabled */
 	void renderViewportBorder() const;
@@ -475,6 +474,9 @@ class Viewport : public mrpt::serialization::CSerializable,
 	mrpt::opengl::CTexturedPlane::Ptr m_imageViewPlane;
 
 	mutable mrpt::opengl::CSetOfLines::Ptr m_borderLines;
+
+	const CCamera* internalResolveActiveCamera(
+		const CCamera* forceThisCamera = nullptr) const;
 
 	struct PerThreadData
 	{

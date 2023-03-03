@@ -312,7 +312,7 @@ static void debugRenderQuad()
 
 /** Render a normal scene with 3D objects */
 void Viewport::renderNormalSceneMode(
-	const CCamera* forceThisCamera, bool is1stShadowMapPass) const
+	const CCamera& useThisCamera, bool is1stShadowMapPass) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
@@ -327,7 +327,7 @@ void Viewport::renderNormalSceneMode(
 	{
 		// Note: if we were in the 1st stage of shadow rendering,
 		// the projection matrix is actually the light proj
-		updateMatricesFromCamera(forceThisCamera);
+		updateMatricesFromCamera(useThisCamera);
 	}
 
 	const auto& _ = m_threadedData.get().state;
@@ -566,6 +566,11 @@ void Viewport::render(
 	// Prepare shaders upon first invokation:
 	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
+	auto* activeCameraPtr = internalResolveActiveCamera(forceThisCamera);
+
+	// make a copy so the camera remains const over the rendering:
+	auto activeCamera = *activeCameraPtr;
+
 	// If we are rendering with shadows, run a camera-view depth map first
 	// (Shadows 1st pass)
 	// ----------------------------------------------------------------------
@@ -590,7 +595,7 @@ void Viewport::render(
 
 		glClear(GL_DEPTH_BUFFER_BIT);
 
-		renderNormalSceneMode(forceThisCamera, true /* is1stShadowMapPass */);
+		renderNormalSceneMode(activeCamera, true /* is1stShadowMapPass */);
 
 		m_ShadowMapFBO.Bind(oldFBs);
 
@@ -651,7 +656,7 @@ void Viewport::render(
 	//  ortho projection and render the image quad:
 	if (isImageViewMode()) renderImageMode();
 	else
-		renderNormalSceneMode(forceThisCamera);
+		renderNormalSceneMode(activeCamera);
 
 	// Draw text messages, if any:
 	renderTextMessages();
@@ -1000,7 +1005,7 @@ void Viewport::get3DRayForPixelCoord(
 
 	if (!_.initialized)
 	{
-		updateMatricesFromCamera();
+		updateMatricesFromCamera(*internalResolveActiveCamera());
 		ASSERT_(_.initialized);
 	}
 
@@ -1189,10 +1194,9 @@ void Viewport::setCloneCamera(bool enable)
 	}
 }
 
-void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
+const CCamera* Viewport::internalResolveActiveCamera(
+	const CCamera* forceThisCamera) const
 {
-	auto& _ = m_threadedData.get().state;
-
 	// Prepare camera (projection matrix):
 	Viewport* viewForGetCamera = nullptr;
 
@@ -1223,7 +1227,14 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 	// forced cam?
 	if (forceThisCamera) myCamera = forceThisCamera;
 
-	if (myCamera->isNoProjection())
+	return myCamera;
+}
+
+void Viewport::updateMatricesFromCamera(const CCamera& myCamera) const
+{
+	auto& _ = m_threadedData.get().state;
+
+	if (myCamera.isNoProjection())
 	{
 		// No translation nor rotation nor perspective:
 		_.computeNoProjectionMatrix(m_clip_min, m_clip_max);
@@ -1231,22 +1242,22 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 	else
 	{
 		// Projective or orthogonal camera models:
-		ASSERT_(myCamera->getZoomDistance() > 0);
+		ASSERT_(myCamera.getZoomDistance() > 0);
 
-		_.is_projective = myCamera->isProjective();
+		_.is_projective = myCamera.isProjective();
 
-		_.FOV = myCamera->getProjectiveFOVdeg();
-		_.pinhole_model = myCamera->getPinholeModel();
-		_.eyeDistance = myCamera->getZoomDistance();
-		_.azimuth = DEG2RAD(myCamera->getAzimuthDegrees());
-		_.elev = DEG2RAD(myCamera->getElevationDegrees());
+		_.FOV = myCamera.getProjectiveFOVdeg();
+		_.pinhole_model = myCamera.getPinholeModel();
+		_.eyeDistance = myCamera.getZoomDistance();
+		_.azimuth = DEG2RAD(myCamera.getAzimuthDegrees());
+		_.elev = DEG2RAD(myCamera.getElevationDegrees());
 
-		if (myCamera->is6DOFMode())
+		if (myCamera.is6DOFMode())
 		{
 			// In 6DOFMode eye is set viewing towards the direction of the
 			// positive Z axis
 			// Up is set as -Y axis
-			const auto pose = mrpt::poses::CPose3D(myCamera->getPose());
+			const auto pose = mrpt::poses::CPose3D(myCamera.getPose());
 			const auto viewDirection =
 				mrpt::poses::CPose3D::FromTranslation(0, 0, 1);
 			const auto at = pose + viewDirection;
@@ -1261,10 +1272,10 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 		{
 			// Normal mode: use "camera orbit" parameters to compute pointing-to
 			// point:
-			_.pointing = myCamera->getPointingAt();
+			_.pointing = myCamera.getPointingAt();
 
 			const double dis =
-				std::max<double>(0.001, myCamera->getZoomDistance());
+				std::max<double>(0.001, myCamera.getZoomDistance());
 			_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
 			_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
 			_.eye.z = _.pointing.z + dis * sin(_.elev);
