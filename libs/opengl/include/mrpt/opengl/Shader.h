@@ -52,14 +52,15 @@ class Shader
 
 	/** Build a shader from source code.
 	 * \param[in] type Any valid argument to glCreateShader()
-	 * \param[in] shaderCode The shading source code. Tip: users can read it
-	 * from a file with mrpt::io::file_get_contents().
-	 * \param[out] outErrorMessages If provided, build errors will be saved
-	 * here. If not, they will dumped to std::cerr
+	 * \param[in] shaderCode The shading source code(s). One or more code blocks
+	 * are allowed, that will be merged together. Tip: users can read it from a
+	 * file with mrpt::io::file_get_contents().
+	 * \param[out] outErrorMessages If provided,
+	 * build errors will be saved here. If not, they will dumped to std::cerr
 	 * \return false on error.
 	 */
 	bool compile(
-		unsigned int type, const std::string& shaderCode,
+		unsigned int type, const std::vector<std::string>& shaderCode,
 		mrpt::optional_ref<std::string> outErrorMessages = std::nullopt);
 
 	unsigned int handle() const { return m_data->shader; }

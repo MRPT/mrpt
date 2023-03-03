@@ -43,6 +43,9 @@ numerical value (e.g. ``1``) will be interpreted as "true".
 - ``MRPT_HWDRIVERS_VERBOSE``: Set to ``1`` to enable verbose output to ``std::cout``
   from all mrpt::hwdrivers classes. Default: ``0``.
 
+- ``MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP``: Set to 1 to show an overlay image of
+  the shadow depth map whenever rendering with shadows enabled.
+
 - ``MRPT_REVEAL_OPENGL_BUFFER_LEAKS``: If enabled, prints warnings whenever an
   OpenGL resource is destroyed from a thread different to that one on which it 
   was created. Trying to destroy such a resource would lead to a SEGFAULT, so

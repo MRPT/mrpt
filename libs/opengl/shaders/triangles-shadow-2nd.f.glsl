@@ -1,62 +1,24 @@
-R"XXX(#version 300 es
+R"XXX(// #version 300 es (already in the included header)
 
 // FRAGMENT SHADER: Default shader for MRPT CRenderizable objects
 // Jose Luis Blanco Claraco (C) 2019-2023
 // Part of the MRPT project
 
+// This file will be merged with shadow-calculation.f.glsl
+
 out lowp vec4 color;
 
 uniform lowp vec3 light_color;
 uniform mediump float light_ambient, light_diffuse, light_specular;
-uniform highp vec3 light_direction;
-uniform highp float light_zmax;
+//uniform highp vec3 light_direction; // already in #include
 
 uniform highp vec3 cam_position;
 uniform lowp float materialSpecular;  //  [0,1]
-
-uniform highp sampler2D shadowMap;
 
 // JLBC: Was "struct" Frag .... but that requires #version 320 es. Let's keep it minimum.
 in highp vec3 frag_position, frag_normal;
 in lowp vec4 frag_materialColor;
 in highp vec4 frag_posLightSpace;
-
-
-mediump float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
-{
-   // perform perspective divide
-    highp vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
-
-    if(projCoords.z > 1.0) return 0.0;
-
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    highp float closestDepth = texture(shadowMap, projCoords.xy).r;
-    // get depth of current fragment from light's perspective
-    highp float currentDepth = projCoords.z;
-
-    // check whether current frag pos is in shadow
-    highp float bias = light_zmax*0.001/500.0;
-    //0.0001; //max(0.05 * (1.0 - dot(normal, -light_direction)), 0.001);
-#if 0
-    mediump float shadow = currentDepth-bias > closestDepth  ? 1.0 : 0.0;
-#else
-    mediump float shadow = 0.0f;
-    mediump vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
-    for(int x = -1; x <= 1; ++x)
-    {
-        for(int y = -1; y <= 1; ++y)
-        {
-            highp float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
-        }
-    }
-    shadow /= 9.0;
-#endif
-    return shadow;
-}
 
 void main()
 {
@@ -66,16 +28,18 @@ void main()
     mediump float diffuse_factor = diff * light_diffuse;
 
     // specular lighting
-    highp vec3 viewDirection = normalize(cam_position - frag_position);
+    highp vec3 cam2frag = cam_position - frag_position;
+    mediump float cam2fragDist = length(cam2frag);
+    highp vec3 viewDirection = normalize(cam2frag);
     highp vec3 reflectionDirection = reflect(light_direction, normal);
     mediump float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16.0f);
     mediump float specular = specAmount * materialSpecular;
     mediump float specular_factor = specAmount * materialSpecular * light_specular;
  
     // calculate shadow
-    mediump float shadow = ShadowCalculation(frag_posLightSpace, normal);
+    mediump float shadow = ShadowCalculation(frag_posLightSpace, normal, cam2fragDist);
     mediump vec3 finalLight = (light_ambient + (1.0-shadow)*(diffuse_factor+specular_factor))*light_color;
-   
+
     color = vec4(frag_materialColor.rgb * finalLight, frag_materialColor.a);
 }
 )XXX"
