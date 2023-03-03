@@ -41,7 +41,13 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 	const mrpt::opengl::TRenderMatrices& objState)
 {
 	const Eigen::Vector4f lrp_hm(localPt.x, localPt.y, localPt.z, 1.0f);
-	const auto lrp_proj = (objState.pmv_matrix.asEigen() * lrp_hm).eval();
+
+	// Looking from the light (1st pass in a shadow mapping), or the camera
+	// (regular case):
+	const auto& pmv_matrix =
+		objState.is1stShadowMapPass ? objState.light_pmv : objState.pmv_matrix;
+
+	const auto lrp_proj = (pmv_matrix.asEigen() * lrp_hm).eval();
 
 	const float depth =
 		(lrp_proj(3) != 0) ? lrp_proj(2) / std::abs(lrp_proj(3)) : .001f;
@@ -51,7 +57,10 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 			  lrp_proj(0) / lrp_proj(3), lrp_proj(1) / lrp_proj(3))
 		: mrpt::math::TPoint2Df(.001f, .001f);
 
-	if (depth < -1.0f && objState.is_projective) uv *= -1.0;
+	if (!objState.is1stShadowMapPass)
+	{
+		if (depth < -1.0f && objState.is_projective) uv *= -1.0;
+	}
 
 	return {uv, depth};
 }
@@ -305,8 +314,17 @@ void mrpt::opengl::enqueueForRendering(
 
 			// Precompute matrices to be used in shaders:
 			_.mv_matrix.asEigen() = _.v_matrix.asEigen() * _.m_matrix.asEigen();
+
+			// PMV = P*V*M (observe the weird notation order)
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
+
+			// PMV for the light = P*V*M (observe the weird notation order)
+			_.light_pmv.asEigen() = _.light_pv.asEigen() * _.m_matrix.asEigen();
+
+			// Let the culling algorithm know whether we are looking from the
+			// camera or from the light:
+			_.is1stShadowMapPass = is1stShadowMapPass;
 
 			const auto [depth, withinView, wholeInView] =
 				depthAndVisibleInView(obj, _, skipCullChecks);

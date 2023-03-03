@@ -55,7 +55,9 @@ struct TRenderMatrices
 	 * point-of-view. Used in shadow-generation shaders.
 	 * Updated by Viewport::updateMatricesFromCamera()
 	 */
-	mrpt::math::CMatrixFloat44 light_pv, light_p, light_v;
+	mrpt::math::CMatrixFloat44 light_pv, light_p, light_v, light_pmv;
+
+	bool is1stShadowMapPass = false;
 
 	void matricesSetIdentity()
 	{
@@ -68,6 +70,7 @@ struct TRenderMatrices
 		light_pv.setIdentity();
 		light_p.setIdentity();
 		light_v.setIdentity();
+		light_pmv.setIdentity();
 	}
 
 	/** Use the intrinsics (cx,cy,fx,fy) from this model instead of FOV, if
