@@ -32,8 +32,15 @@ void TLightParameters::readFromStream(mrpt::serialization::CArchive& in)
 	switch (version)
 	{
 		case 0:
-			// Just ignore.
-			break;
+		{
+			mrpt::img::TColorf diffuseCol, ambientCol, specularCol;
+			in >> diffuseCol >> ambientCol >> specularCol >> direction;
+			ambient = ambientCol.R;
+			specular = specularCol.R;
+			diffuse = 1.0f;
+			color = diffuseCol;
+		}
+		break;
 		case 1:
 			in >> diffuse >> ambient >> specular >> direction >> color;
 			break;
