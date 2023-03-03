@@ -44,9 +44,9 @@ void CText::onUpdateBuffers_Text()
 		m_str, tris, vbd, mrpt::opengl::FILL, text_spacing, text_kerning);
 
 	// All lines & triangles, the same color:
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 	for (auto& tri : m_triangles)
-		tri.setColor(m_color);
+		tri.setColor(getColor_u8());
 }
 
 std::pair<double, double> CText::computeTextExtension() const

@@ -289,7 +289,7 @@ void mrpt::opengl::enqueueForRendering(
 			// Regenerate opengl vertex buffers?
 			if (obj->hasToUpdateBuffers()) obj->updateBuffers();
 
-			const CPose3D& thisPose = obj->getPoseRef();
+			const CPose3D thisPose = obj->getCPose();
 			CMatrixFloat44 HM =
 				thisPose.getHomogeneousMatrixVal<CMatrixDouble44>()
 					.cast_float();

@@ -19,6 +19,7 @@
       - Enabled GL MipMap texture generation.
       - Triangles shaders now also account for shininess of material to generate specular reflections. See new method mrpt::opengl::CRenderizable::materialShininess()
       - mrpt::opengl::TLightParameters has been modified to make it more consistent: just one light color and three floats (diffuse, ambient, specular).
+      - mrpt::opengl::CRenderizable base methods are now 100% thread-safe. getPoseRef() method has been removed since it was not safe.
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 

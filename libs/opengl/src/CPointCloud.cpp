@@ -118,6 +118,8 @@ void CPointCloud::onUpdateBuffers_Points()
 	// "CRenderizableShaderPoints::m_vertex_buffer_data" is already done, since
 	// "m_points" is an alias for it.
 
+	const auto myColor = getColor_u8();
+
 	// color buffer:
 	auto& cbd = CRenderizableShaderPoints::m_color_buffer_data;
 	cbd.clear();
@@ -141,13 +143,13 @@ void CPointCloud::onUpdateBuffers_Points()
 				{f2u8(m_colorFromDepth_min.R + f * m_col_slop_inv.R),
 				 f2u8(m_colorFromDepth_min.G + f * m_col_slop_inv.G),
 				 f2u8(m_colorFromDepth_min.B + f * m_col_slop_inv.B),
-				 m_color.A});
+				 myColor.A});
 		}
 	}
 	else
 	{
 		// all points: same color
-		cbd.assign(N, m_color);
+		cbd.assign(N, myColor);
 	}
 
 	m_last_rendered_count = m_last_rendered_count_ongoing;
@@ -340,9 +342,7 @@ void CPointCloud::serializeFrom(
 			else
 			{
 				m_colorFromDepth_min = TColorf(0, 0, 0);
-				m_colorFromDepth_max.R = m_color.R * 255.f;
-				m_colorFromDepth_max.G = m_color.G * 255.f;
-				m_colorFromDepth_max.B = m_color.B * 255.f;
+				m_colorFromDepth_max = getColor();
 			}
 
 			if (version >= 4) in >> m_pointSmooth;

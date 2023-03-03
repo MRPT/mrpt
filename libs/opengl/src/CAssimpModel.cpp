@@ -552,7 +552,7 @@ void CAssimpModel::recursive_render(
 		const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
 
 		mrpt::img::TColor color = apply_material(
-			sc->mMaterials[mesh->mMaterialIndex], m_color,
+			sc->mMaterials[mesh->mMaterialIndex], getColor_u8(),
 			m_ignoreMaterialColor);
 
 		for (unsigned int t = 0; t < mesh->mNumFaces; ++t)

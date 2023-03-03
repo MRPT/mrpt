@@ -1112,9 +1112,10 @@ void TestOpenGLObjects()
 	{
 		// Lights:
 		const double t = mrpt::Clock::nowDouble();
+		const auto p = glLightArrow->getPose();
+
 		const auto lightDir = mrpt::poses::CPose3D::FromXYZYawPitchRoll(
-			glLightArrow->getPoseX(), glLightArrow->getPoseY(),
-			glLightArrow->getPoseZ(), t * 10.0_deg, 45.0_deg, 0.0_deg);
+			p.x, p.y, p.z, t * 10.0_deg, 45.0_deg, 0.0_deg);
 
 		glLightArrow->setPose(lightDir);
 

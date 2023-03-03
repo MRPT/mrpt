@@ -110,13 +110,14 @@ void CTexturedPlane::onUpdateBuffers_Triangles()
 	auto& tris = CRenderizableShaderTriangles::m_triangles;
 	tris.clear();
 
+	const auto col = getColor_u8();
 	TTriangle t;
 	for (int i = 0; i < 3; i++)
 	{
-		t.vertices[i].xyzrgba.r = this->m_color.R;
-		t.vertices[i].xyzrgba.g = this->m_color.G;
-		t.vertices[i].xyzrgba.b = this->m_color.B;
-		t.vertices[i].xyzrgba.a = this->m_color.A;
+		t.vertices[i].xyzrgba.r = col.R;
+		t.vertices[i].xyzrgba.g = col.G;
+		t.vertices[i].xyzrgba.b = col.B;
+		t.vertices[i].xyzrgba.a = col.A;
 	}
 
 	t.vertices[0].xyzrgba.pt = P3f(m_xMin, m_yMin, 0);
@@ -172,7 +173,7 @@ void CTexturedPlane::serializeFrom(
 bool CTexturedPlane::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!polygonUpToDate) updatePoly();
-	return math::traceRay(tmpPoly, (o - this->m_pose).asTPose(), dist);
+	return math::traceRay(tmpPoly, (o - getCPose()).asTPose(), dist);
 }
 
 void CTexturedPlane::updatePoly() const

@@ -24,10 +24,8 @@ IMPLEMENTS_SERIALIZABLE(CVectorField3D, CRenderizable, mrpt::opengl)
 CVectorField3D::CVectorField3D()
 	: x_vf(0, 0), y_vf(0, 0), z_vf(0, 0), x_p(0, 0), y_p(0, 0), z_p(0, 0)
 {
-	m_point_color = m_color;
-	m_field_color = m_color;
-	m_still_color = m_color;
-	m_maxspeed_color = m_color;
+	m_point_color = m_field_color = m_still_color = m_maxspeed_color =
+		getColor_u8();
 	m_maxspeed = 1.f;
 }
 
@@ -43,10 +41,8 @@ CVectorField3D::CVectorField3D(
 	x_p = x_p_ini;
 	y_p = y_p_ini;
 	z_p = z_p_ini;
-	m_point_color = m_color;
-	m_field_color = m_color;
-	m_still_color = m_color;
-	m_maxspeed_color = m_color;
+	m_point_color = m_field_color = m_still_color = m_maxspeed_color =
+		getColor_u8();
 	m_maxspeed = 1.f;
 }
 

@@ -131,9 +131,6 @@ class CSetOfObjects : public CRenderizable
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
-	CRenderizable& setColorR_u8(const uint8_t r) override;
-	CRenderizable& setColorG_u8(const uint8_t g) override;
-	CRenderizable& setColorB_u8(const uint8_t b) override;
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 	bool contains(const CRenderizable::Ptr& obj) const;
 	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;

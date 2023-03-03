@@ -94,9 +94,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 
 	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override
 	{
-		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx.data);
-
+		// m_pointsMtx.data: already held by calls inside.
 		if (empty()) return {};
 		if (auto bb = this->octree_getBoundingBox(); bb)
 			return {bb->min.cast<float>(), bb->max.cast<float>()};

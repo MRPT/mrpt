@@ -34,6 +34,9 @@ CRenderizable::~CRenderizable() = default;
 void CRenderizable::writeToStreamRender(
 	mrpt::serialization::CArchive& out) const
 {
+	std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+	const auto& _ = m_state;
+
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// Added support of versioning at this level of serialization too.
 	// Should have been done from the beginning, terrible mistake on my part.
@@ -48,8 +51,8 @@ void CRenderizable::writeToStreamRender(
 	const uint8_t serialization_version = 2;
 
 	const bool all_scales_equal =
-		(m_scale_x == m_scale_y && m_scale_z == m_scale_x);
-	const bool all_scales_unity = (all_scales_equal && m_scale_x == 1.0f);
+		(_.scale_x == _.scale_y && _.scale_z == _.scale_x);
+	const bool all_scales_unity = (all_scales_equal && _.scale_x == 1.0f);
 
 	const uint8_t magic_signature[2] = {
 		0xFF,
@@ -63,27 +66,27 @@ void CRenderizable::writeToStreamRender(
 	out << magic_signature[0] << magic_signature[1];
 
 	// "m_name"
-	const auto nameLen = static_cast<uint16_t>(m_name.size());
+	const auto nameLen = static_cast<uint16_t>(_.name.size());
 	out << nameLen;
-	if (nameLen) out.WriteBuffer(m_name.c_str(), m_name.size());
+	if (nameLen) out.WriteBuffer(_.name.c_str(), _.name.size());
 
 	// Color, as u8:
-	out << m_color.R << m_color.G << m_color.B << m_color.A;
+	out << _.color.R << _.color.G << _.color.B << _.color.A;
 
 	// the rest of fields:
-	out << (float)m_pose.x() << (float)m_pose.y() << (float)m_pose.z()
-		<< (float)m_pose.yaw() << (float)m_pose.pitch() << (float)m_pose.roll();
+	out << (float)_.pose.x() << (float)_.pose.y() << (float)_.pose.z()
+		<< (float)_.pose.yaw() << (float)_.pose.pitch() << (float)_.pose.roll();
 
 	if (!all_scales_unity)
 	{
-		if (all_scales_equal) out << m_scale_x;
+		if (all_scales_equal) out << _.scale_x;
 		else
-			out << m_scale_x << m_scale_y << m_scale_z;
+			out << _.scale_x << _.scale_y << _.scale_z;
 	}
 
-	out << m_show_name << m_visible;
-	out << m_representativePoint;  // v1
-	out << m_materialShininess << m_castShadows;  // v2
+	out << _.show_name << _.visible;
+	out << _.representativePoint;  // v1
+	out << _.materialShininess << _.castShadows;  // v2
 }
 
 void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
@@ -108,6 +111,9 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 	const bool is_new_format =
 		(magic_signature[0] == 0xFF) && ((magic_signature[1] & 0x80) != 0);
 
+	std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+	auto& _ = m_state;
+
 	if (is_new_format)
 	{
 		// NEW FORMAT:
@@ -125,44 +131,44 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
 				// "m_name"
 				uint16_t nameLen;
 				in >> nameLen;
-				m_name.resize(nameLen);
-				if (nameLen) in.ReadBuffer((void*)(&m_name[0]), m_name.size());
+				_.name.resize(nameLen);
+				if (nameLen) in.ReadBuffer((void*)(&_.name[0]), _.name.size());
 
 				// Color, as u8:
-				in >> m_color.R >> m_color.G >> m_color.B >> m_color.A;
+				in >> _.color.R >> _.color.G >> _.color.B >> _.color.A;
 
 				// the rest of fields:
 				float x, y, z, yaw, pitch, roll;
 				in >> x >> y >> z >> yaw >> pitch >> roll;
-				m_pose.x(x);
-				m_pose.y(y);
-				m_pose.z(z);
-				m_pose.setYawPitchRoll(yaw, pitch, roll);
+				_.pose.x(x);
+				_.pose.y(y);
+				_.pose.z(z);
+				_.pose.setYawPitchRoll(yaw, pitch, roll);
 
-				if (all_scales_unity) m_scale_x = m_scale_y = m_scale_z = 1;
+				if (all_scales_unity) _.scale_x = _.scale_y = _.scale_z = 1;
 				else
 				{
 					if (all_scales_equal_but_not_unity)
 					{
-						in >> m_scale_x;
-						m_scale_y = m_scale_z = m_scale_x;
+						in >> _.scale_x;
+						_.scale_y = _.scale_z = _.scale_x;
 					}
 					else
-						in >> m_scale_x >> m_scale_y >> m_scale_z;
+						in >> _.scale_x >> _.scale_y >> _.scale_z;
 				}
 
-				in >> m_show_name >> m_visible;
-				if (serialization_version >= 1) in >> m_representativePoint;
+				in >> _.show_name >> _.visible;
+				if (serialization_version >= 1) in >> _.representativePoint;
 				else
-					m_representativePoint = mrpt::math::TPoint3Df(0, 0, 0);
+					_.representativePoint = mrpt::math::TPoint3Df(0, 0, 0);
 
 				if (serialization_version >= 2)
-					in >> m_materialShininess >> m_castShadows;
+					in >> _.materialShininess >> _.castShadows;
 				else
 				{
 					// default
-					m_materialShininess = 0.2f;
-					m_castShadows = true;
+					_.materialShininess = 0.2f;
+					_.castShadows = true;
 				}
 			}
 			break;
@@ -186,40 +192,44 @@ void CRenderizable::readFromStreamRender(mrpt::serialization::CArchive& in)
   ---------------------------------------------------------------*/
 CRenderizable& CRenderizable::setPose(const mrpt::poses::CPose3D& o)
 {
-	m_pose = o;
-	notifyChange();
+	m_stateMtx.data.lock();
+	m_state.pose = o;
+	m_stateMtx.data.unlock();
 	return *this;
 }
 CRenderizable& CRenderizable::setPose(const mrpt::poses::CPose2D& o)
 {
-	m_pose = mrpt::poses::CPose3D(o);
-	return *this;
+	return setPose(mrpt::poses::CPose3D(o));
 }
 CRenderizable& CRenderizable::setPose(const mrpt::math::TPose3D& o)
 {
-	m_pose = mrpt::poses::CPose3D(o);
-	return *this;
+	return setPose(mrpt::poses::CPose3D(o));
 }
 CRenderizable& CRenderizable::setPose(const mrpt::math::TPose2D& o)
 {
-	m_pose = mrpt::poses::CPose3D(o);
-	return *this;
+	return setPose(mrpt::poses::CPose3D(o));
 }
 
-/** Set the 3D pose from a mrpt::poses::CPose3D object */
 CRenderizable& CRenderizable::setPose(const mrpt::poses::CPoint3D& o)
 {
-	m_pose.setFromValues(o.x(), o.y(), o.z(), 0, 0, 0);
+	m_stateMtx.data.lock();
+	m_state.pose.setFromValues(o.x(), o.y(), o.z(), 0, 0, 0);
+	m_stateMtx.data.unlock();
 	return *this;
 }
-/** Set the 3D pose from a mrpt::poses::CPose3D object */
 CRenderizable& CRenderizable::setPose(const mrpt::poses::CPoint2D& o)
 {
-	m_pose.setFromValues(o.x(), o.y(), 0, 0, 0, 0);
+	m_stateMtx.data.lock();
+	m_state.pose.setFromValues(o.x(), o.y(), 0, 0, 0, 0);
+	m_stateMtx.data.unlock();
 	return *this;
 }
 
-mrpt::math::TPose3D CRenderizable::getPose() const { return m_pose.asTPose(); }
+mrpt::math::TPose3D CRenderizable::getPose() const
+{
+	std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+	return m_state.pose.asTPose();
+}
 bool CRenderizable::traceRay(const mrpt::poses::CPose3D&, double&) const
 {
 	return false;
@@ -227,10 +237,11 @@ bool CRenderizable::traceRay(const mrpt::poses::CPose3D&, double&) const
 
 CRenderizable& CRenderizable::setColor_u8(const mrpt::img::TColor& c)
 {
-	m_color.R = c.R;
-	m_color.G = c.G;
-	m_color.B = c.B;
-	m_color.A = c.A;
+	std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+	m_state.color.R = c.R;
+	m_state.color.G = c.G;
+	m_state.color.B = c.B;
+	m_state.color.A = c.A;
 	notifyChange();
 	return *this;
 }
@@ -240,17 +251,17 @@ CText& CRenderizable::labelObject() const
 	if (!m_label_obj)
 	{
 		m_label_obj = std::make_shared<mrpt::opengl::CText>();
-		m_label_obj->setString(m_name);
+		m_label_obj->setString(getName());
 	}
 	return *m_label_obj;
 }
 
 void CRenderizable::toYAMLMap(mrpt::containers::yaml& propertiesMap) const
 {
-	propertiesMap["name"] = m_name;
-	propertiesMap["show_name"] = m_show_name;
+	propertiesMap["name"] = getName();
+	propertiesMap["show_name"] = isShowNameEnabled();
 	propertiesMap["location"] = getPose().asString();
-	propertiesMap["visible"] = m_visible;
+	propertiesMap["visible"] = isVisible();
 }
 
 #ifdef MRPT_OPENGL_PROFILER
@@ -265,13 +276,13 @@ auto CRenderizable::getBoundingBoxLocalf() const -> mrpt::math::TBoundingBoxf
 {
 	if (!m_cachedLocalBBox)
 	{
-		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
 		m_cachedLocalBBox = internalBoundingBoxLocal();
 		return m_cachedLocalBBox.value();
 	}
 	else
 	{
-		std::shared_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		std::shared_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
 		return m_cachedLocalBBox.value();
 	}
 }
