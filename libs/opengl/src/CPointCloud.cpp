@@ -313,7 +313,9 @@ void CPointCloud::serializeFrom(
 			{
 				std::vector<float> xs, ys, zs;
 				in >> xs >> ys >> zs;
+				wfWriteLock.unlock();  // avoid recursive lock
 				this->setAllPoints(xs, ys, zs);
+				wfWriteLock.lock();
 			}
 			else
 			{
