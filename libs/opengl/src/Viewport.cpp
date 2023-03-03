@@ -323,7 +323,13 @@ void Viewport::renderNormalSceneMode(
 #endif
 
 	// Prepare camera (projection matrix):
-	updateMatricesFromCamera(forceThisCamera);
+	if (!is1stShadowMapPass)
+	{
+		// Note: if we were in the 1st stage of shadow rendering,
+		// the projection matrix is actually the light proj
+		updateMatricesFromCamera(forceThisCamera);
+	}
+
 	const auto& _ = m_threadedData.get().state;
 
 	// Get objects to render:
@@ -569,6 +575,10 @@ void Viewport::render(
 
 		glEnable(GL_DEPTH_TEST);
 
+		// Get former viewport
+		GLint oldViewport[4];
+		glGetIntegerv(GL_VIEWPORT, oldViewport);
+
 		// Render scene to depth map, as seen from the light point of view:
 		glViewport(0, 0, m_ShadowMapSizeX, m_ShadowMapSizeY);
 
@@ -581,8 +591,14 @@ void Viewport::render(
 
 		m_ShadowMapFBO.Bind(oldFBs);
 
+		// Restore viewport:
+		glViewport(
+			oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+
 		// The 2nd pass is done inside renderNormalSceneMode()
-		MRPT_TODO("Refactor to avoid recursive rendering twice?");
+
+		// TODO: Any way to refactor the whole pipeline to avoid recursive
+		// rendering twice?
 	}
 
 	// Change viewport:
