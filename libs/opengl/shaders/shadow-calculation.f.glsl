@@ -7,7 +7,10 @@ R"XXX(#version 300 es
 uniform highp sampler2D shadowMap;
 uniform highp vec3 light_direction;
 
-mediump float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, float cam2fragDist)
+mediump float ShadowCalculation(
+    highp vec4 fragPosLightSpace,
+    mediump vec3 normal,
+    mediump float cam2fragDist)
 {
    // perform perspective divide
     highp vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
