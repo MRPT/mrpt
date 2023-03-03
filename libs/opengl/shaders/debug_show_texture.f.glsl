@@ -6,7 +6,7 @@ R"XXX(#version 300 es
 
 out mediump vec4 FragColor;
 in mediump vec2 frag_UV;
-mediump uniform sampler2D textureId;
+uniform sampler2D textureId;
 
 highp float near_plane = 0.1;
 highp float far_plane = 30.0;
