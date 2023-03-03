@@ -173,6 +173,8 @@ void TRenderMatrices::computeLightProjectionMatrix(
 	light_v = LookAt(pointing - direction * zmax * 0.5, pointing, lightUp);
 
 	light_pv.asEigen() = light_p.asEigen() * light_v.asEigen();
+
+	// light_pmv is updated in RenderQueue
 }
 
 // Replacement for deprecated OpenGL gluLookAt():
