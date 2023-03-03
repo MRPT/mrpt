@@ -123,7 +123,7 @@ void Test_HOKUYO()
 
 		if (thereIsObservation)
 		{
-			double FPS = 1.0 / tictac.Tac();
+			// double FPS = 1.0 / tictac.Tac();
 
 			obs.getDescriptionAsText(std::cout);
 

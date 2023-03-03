@@ -189,8 +189,8 @@ void TestDisplay3D()
 			0.02, 0.02,	 // X,Y<=1 means coordinates are factors over the entire
 			// viewport area.
 			format(
-				"ball#1 pos: %.02f %.02f %.02f ", obj1->getPoseX(),
-				obj1->getPoseY(), obj1->getPoseZ()),
+				"ball#1 pos: %s ",
+				obj1->getPose().translation().asString().c_str()),
 			10 /*id*/, fp2);
 
 		win.addTextMessage(

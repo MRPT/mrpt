@@ -80,7 +80,7 @@ void export_utils()
 	{
 		class_<TColorf>(
 			"TColorf",
-			init<optional<float, float, float, float>>(
+			init<float, float, float, float>(
 				args("r", "g", "b", "alpha"),
 				"A RGB color - floats in the range [0,1]."))
 			.def_readwrite("R", &TColorf::R, "red")
