@@ -98,12 +98,12 @@ void main()
 	std::string errMsgs;
 	std::vector<mrpt::opengl::Shader> lstShaders;
 	lstShaders.resize(2);
-	if (!lstShaders[0].compile(GL_VERTEX_SHADER, vertex_shader, errMsgs))
+	if (!lstShaders[0].compile(GL_VERTEX_SHADER, {vertex_shader}, errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
 			"Error compiling GL_VERTEX_SHADER:\n%s", errMsgs.c_str());
 	}
-	if (!lstShaders[1].compile(GL_FRAGMENT_SHADER, fragment_shader, errMsgs))
+	if (!lstShaders[1].compile(GL_FRAGMENT_SHADER, {fragment_shader}, errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
 			"Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
