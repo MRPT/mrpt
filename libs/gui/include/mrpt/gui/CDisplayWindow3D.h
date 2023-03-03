@@ -142,7 +142,8 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	mrpt::system::TTimeStamp m_lastFullScreen;
 
 	/** \sa getRenderingFPS */
-	double m_last_FPS{10};
+	double m_last_FPS = 10.0;
+	std::mutex m_last_FPS_mtx;
 
 	void internalSetMinMaxRange();
 
@@ -342,7 +343,8 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 
 	/** Get the average Frames Per Second (FPS) value from the last 250
 	 * rendering events */
-	double getRenderingFPS() const { return m_last_FPS; }
+	double getRenderingFPS() const;
+
 	/** A short cut for getting the "main" viewport of the scene object, it is
 	 * equivalent to:
 	 *  \code

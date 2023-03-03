@@ -10,6 +10,7 @@
 #include "gui-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
@@ -121,6 +122,7 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
 		const int code = ev.GetKeyCode();
 		const mrptKeyModifier mod = mrpt::gui::keyEventToMrptKeyModifier(ev);
 
+		auto lck = mrpt::lockHelper(m_win3D->m_mtx);
 		m_win3D->m_keyPushedCode = code;
 		m_win3D->m_keyPushedModifier = mod;
 		m_win3D->m_keyPushed = true;
@@ -783,8 +785,16 @@ CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
 
 void CDisplayWindow3D::internal_setRenderingFPS(double FPS)
 {
+	auto lck = mrpt::lockHelper(m_last_FPS_mtx);
+
 	const double ALPHA = 0.95;
 	m_last_FPS = ALPHA * m_last_FPS + (1 - ALPHA) * FPS;
+}
+
+double CDisplayWindow3D::getRenderingFPS() const
+{
+	auto lck = mrpt::lockHelper(m_last_FPS_mtx);
+	return m_last_FPS;
 }
 
 // Called by CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers
