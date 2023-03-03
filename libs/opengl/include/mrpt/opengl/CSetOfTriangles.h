@@ -60,6 +60,7 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 
 		tris.push_back(t);
 		polygonsUpToDate = false;
+		trisLck.unlock();
 		CRenderizable::notifyChange();
 	}
 
@@ -75,6 +76,7 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 
 		tris.insert(tris.end(), begin, end);
 		polygonsUpToDate = false;
+		trisLck.unlock();
 		CRenderizable::notifyChange();
 	}
 
@@ -92,17 +94,12 @@ class CSetOfTriangles : public CRenderizableShaderTriangles
 		auto& tris = CRenderizableShaderTriangles::m_triangles;
 
 		tris.reserve(t);
+		trisLck.unlock();
 		CRenderizable::notifyChange();
 	}
 
 	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
-	/** Overwrite all triangles colors with the one provided */
-	CRenderizable& setColorR_u8(const uint8_t r) override;
-	/** Overwrite all triangles colors with the one provided */
-	CRenderizable& setColorG_u8(const uint8_t g) override;
-	/** Overwrite all triangles colors with the one provided */
-	CRenderizable& setColorB_u8(const uint8_t b) override;
 	/** Overwrite all triangles colors with the one provided */
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 

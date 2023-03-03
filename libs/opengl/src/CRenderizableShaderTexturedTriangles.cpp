@@ -263,10 +263,10 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	{
 		mrpt::img::CImage im_rgb(4, 4, mrpt::img::CH_RGB),
 			im_a(4, 4, mrpt::img::CH_GRAY);
-		im_rgb.filledRectangle(0, 0, 3, 3, m_color);
+		const auto col = getColor_u8();
+		im_rgb.filledRectangle(0, 0, 3, 3, col);
 		im_a.filledRectangle(
-			0, 0, 3, 3,
-			mrpt::img::TColor(m_color.A, m_color.A, m_color.A, m_color.A));
+			0, 0, 3, 3, mrpt::img::TColor(col.A, col.A, col.A, col.A));
 		const_cast<CRenderizableShaderTexturedTriangles*>(this)->assignImage(
 			std::move(im_rgb), std::move(im_a));
 	}

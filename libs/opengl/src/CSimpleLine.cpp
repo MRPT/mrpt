@@ -41,7 +41,7 @@ void CSimpleLine::onUpdateBuffers_Wireframe()
 	vbd[1] = {m_x1, m_y1, m_z1};
 
 	// The same color to all vertices:
-	m_color_buffer_data.assign(vbd.size(), m_color);
+	m_color_buffer_data.assign(vbd.size(), getColor_u8());
 }
 
 uint8_t CSimpleLine::serializeGetVersion() const { return 1; }

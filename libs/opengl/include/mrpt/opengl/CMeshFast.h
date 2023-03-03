@@ -57,10 +57,7 @@ class CMeshFast : public CRenderizableShaderPoints
 		  yMin(yMin_p),
 		  yMax(yMax_p)
 	{
-		m_color.A = 255;
-		m_color.R = 0;
-		m_color.G = 0;
-		m_color.B = 150;
+		setColor_u8(0, 0, 150);
 	}
 	virtual ~CMeshFast() override = default;
 

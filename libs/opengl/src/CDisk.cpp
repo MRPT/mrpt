@@ -76,7 +76,7 @@ void CDisk::onUpdateBuffers_Triangles()
 
 	// All faces, same color:
 	for (auto& t : tris)
-		t.setColor(m_color);
+		t.setColor(getColor_u8());
 }
 
 uint8_t CDisk::serializeGetVersion() const { return 2; }
@@ -123,7 +123,7 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	//( cos(w)*cos(p)+x, sin(w)*cos(p)*y, -sin(p)+z )
 	//( -sin(w)*cos(r)+cos(w)*sin(p)*sin(r)+x,
 	// cos(w)*cos(r)+sin(w)*sin(p)*sin(r)+y, cos(p)*sin(r)*z )
-	CPose3D transf = this->m_pose - o;
+	CPose3D transf = getCPose() - o;
 	double x = transf.x(), y = transf.y(), z = transf.z(), w = transf.yaw(),
 		   p = transf.pitch(), r = transf.roll();
 	double coef = sin(w) * sin(r) + cos(w) * sin(p) * cos(r);

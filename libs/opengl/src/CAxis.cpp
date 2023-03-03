@@ -146,7 +146,7 @@ void CAxis::onUpdateBuffers_Wireframe()
 		m_gl_labels.get().emplace_back(label);
 	}
 
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 
 	for (auto& lb : m_gl_labels.get())
 		lb->updateBuffers();

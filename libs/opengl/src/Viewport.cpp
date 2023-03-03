@@ -857,18 +857,19 @@ CRenderizable::Ptr Viewport::getByName(const string& str)
 {
 	for (auto& m_object : m_objects)
 	{
-		if (m_object->m_name == str) return m_object;
+		if (m_object->getName() == str) return m_object;
 		else if (
 			m_object->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
 		{
-			CRenderizable::Ptr ret =
-				std::dynamic_pointer_cast<CSetOfObjects>(m_object)->getByName(
-					str);
-			if (ret) return ret;
+			if (CRenderizable::Ptr ret =
+					std::dynamic_pointer_cast<CSetOfObjects>(m_object)
+						->getByName(str);
+				ret)
+				return ret;
 		}
 	}
-	return CRenderizable::Ptr();
+	return {};
 }
 
 void Viewport::initializeTextures()
@@ -883,7 +884,8 @@ void Viewport::dumpListOfObjects(std::vector<std::string>& lst) const
 	{
 		// Single obj:
 		string s(obj->GetRuntimeClass()->className);
-		if (obj->m_name.size()) s += string(" (") + obj->m_name + string(")");
+		if (!obj->getName().empty())
+			s += string(" (") + obj->getName() + string(")");
 		lst.emplace_back(s);
 
 		if (obj->GetRuntimeClass() ==

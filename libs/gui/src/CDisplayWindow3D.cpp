@@ -394,7 +394,7 @@ CDisplayWindow3D::~CDisplayWindow3D()
 {
 	// get lock so we make sure nobody else is touching the window right now.
 	bool lock_ok = m_csAccess3DScene.try_lock_for(std::chrono::seconds(2));
-	m_csAccess3DScene.unlock();
+	if (lock_ok) m_csAccess3DScene.unlock();
 
 	CBaseGUIWindow::destroyWxWindow();
 
