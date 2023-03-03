@@ -501,6 +501,8 @@ void Viewport::renderTextMessages() const
 
 	// Collect all 2D text objects, and update their properties:
 	CListOpenGLObjects objs;
+
+	std::shared_lock<std::shared_mutex> lckRead2DTexts(m_2D_texts.mtx.data);
 	for (auto& kv : m_2D_texts.messages)
 	{
 		const DataPerText& label = kv.second;
@@ -534,6 +536,7 @@ void Viewport::renderTextMessages() const
 			objs.push_back(o);
 		}
 	}
+	lckRead2DTexts.unlock();
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
@@ -709,6 +712,8 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_light;
 
 	// Added in v4: text messages:
+	std::shared_lock<std::shared_mutex> lckRead2DTexts(m_2D_texts.mtx.data);
+
 	out.WriteAs<uint32_t>(m_2D_texts.messages.size());
 	for (auto& kv : m_2D_texts.messages)
 	{
@@ -721,6 +726,7 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 			<< fp.shadow_color << fp.vfont_spacing << fp.vfont_kerning;
 		out.WriteAs<uint8_t>(static_cast<uint8_t>(fp.vfont_style));
 	}
+	lckRead2DTexts.unlock();
 
 	// Added in v5: image mode
 	out.WriteAs<bool>(m_imageViewPlane);

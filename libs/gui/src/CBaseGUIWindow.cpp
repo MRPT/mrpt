@@ -9,6 +9,7 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/system/os.h>
@@ -143,19 +144,28 @@ void CBaseGUIWindow::destroyWxWindow()
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					notifyChildWindowDestruction
- ---------------------------------------------------------------*/
-void CBaseGUIWindow::notifyChildWindowDestruction() { m_hwnd = nullptr; }
-/*---------------------------------------------------------------
-					waitForKey
- ---------------------------------------------------------------*/
+void* CBaseGUIWindow::getWxObject()
+{
+	auto lck = mrpt::lockHelper(m_mtx);
+	return m_hwnd.get();
+}
+
+void CBaseGUIWindow::notifyChildWindowDestruction()
+{
+	auto lck = mrpt::lockHelper(m_mtx);
+	m_hwnd = nullptr;
+}
+
 int CBaseGUIWindow::waitForKey(
 	bool ignoreControlKeys, mrptKeyModifier* out_pushModifier)
 {
 	int k = 0;
 	if (out_pushModifier) *out_pushModifier = MRPTKMOD_NONE;
-	m_keyPushed = false;
+
+	{
+		auto lck = mrpt::lockHelper(m_mtx);
+		m_keyPushed = false;
+	}
 
 	for (;;)
 	{
@@ -164,6 +174,8 @@ int CBaseGUIWindow::waitForKey(
 			k = os::getch();
 			return k;
 		}
+
+		auto lck = mrpt::lockHelper(m_mtx);
 		if (m_keyPushed)
 		{
 			k = m_keyPushedCode;
@@ -175,6 +187,8 @@ int CBaseGUIWindow::waitForKey(
 			}
 			// Ignore and keep waiting
 		}
+		lck.unlock();
+
 		std::this_thread::sleep_for(10ms);
 		// Are we still alive?
 		if (!isOpen()) return 0;
@@ -186,6 +200,8 @@ int CBaseGUIWindow::waitForKey(
  ---------------------------------------------------------------*/
 int CBaseGUIWindow::getPushedKey(mrptKeyModifier* out_pushModifier)
 {
+	auto lck = mrpt::lockHelper(m_mtx);
+
 	if (out_pushModifier) *out_pushModifier = MRPTKMOD_NONE;
 
 	if (!m_keyPushed) return 0;

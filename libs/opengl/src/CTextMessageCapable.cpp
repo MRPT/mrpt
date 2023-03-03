@@ -18,6 +18,8 @@ using namespace mrpt::opengl;
 
 void CTextMessageCapable::TListTextMessages::regenerateGLobjects() const
 {
+	std::unique_lock<std::shared_mutex> lckWrite2DTexts(mtx.data);
+
 	// (re)generate the opengl CText objects for each label:
 	for (auto& kv : messages)
 	{
@@ -38,7 +40,11 @@ void CTextMessageCapable::TListTextMessages::regenerateGLobjects() const
 	}
 }
 
-void CTextMessageCapable::clearTextMessages() { m_2D_texts.messages.clear(); }
+void CTextMessageCapable::clearTextMessages()
+{
+	std::unique_lock<std::shared_mutex> lckWrite2DTexts(m_2D_texts.mtx.data);
+	m_2D_texts.messages.clear();
+}
 
 /** Just updates the text of a given text message, without touching the other
  * parameters.
@@ -47,6 +53,8 @@ void CTextMessageCapable::clearTextMessages() { m_2D_texts.messages.clear(); }
 bool CTextMessageCapable::updateTextMessage(
 	const size_t unique_index, const std::string& text)
 {
+	std::unique_lock<std::shared_mutex> lckWrite2DTexts(m_2D_texts.mtx.data);
+
 	auto it = m_2D_texts.messages.find(unique_index);
 	if (it == m_2D_texts.messages.end()) return false;
 	else
@@ -69,5 +77,6 @@ void CTextMessageCapable::addTextMessage(
 	d.x = x_frac;
 	d.y = y_frac;
 
+	std::unique_lock<std::shared_mutex> lckWrite2DTexts(m_2D_texts.mtx.data);
 	m_2D_texts.messages[unique_index] = std::move(d);
 }

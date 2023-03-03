@@ -16,7 +16,6 @@
 #include <mrpt/system/CObservable.h>
 #include <mrpt/system/mrptEvent.h>
 
-#include <atomic>
 #include <future>
 #include <mutex>
 
@@ -57,15 +56,18 @@ class CBaseGUIWindow : public mrpt::system::CObservable
 	mutable std::promise<void> m_threadReady;
 	/** This semaphore will be signaled when the wx window is destroyed. */
 	mutable std::promise<void> m_windowDestroyed;
+
+	mutable std::mutex m_mtx;  //!< this protects access to the fields below
+
 	/** The caption of the window */
 	std::string m_caption;
 	/** The window handle */
 	mrpt::void_ptr_noncopy m_hwnd;
 
 	/* Auxiliary */
-	std::atomic_bool m_keyPushed = false;
-	std::atomic_int m_keyPushedCode = 0;
-	std::atomic<mrptKeyModifier> m_keyPushedModifier;
+	bool m_keyPushed = false;
+	int m_keyPushedCode = 0;
+	mrptKeyModifier m_keyPushedModifier;
 
 	/** Must be called by child classes just within the constructor. */
 	void createWxWindow(unsigned int initialWidth, unsigned int initialHeight);
@@ -75,7 +77,7 @@ class CBaseGUIWindow : public mrpt::system::CObservable
 
    public:
 	/** Read-only access to the wxDialog object. */
-	void* getWxObject() { return m_hwnd.get(); }
+	void* getWxObject();
 	/** Called by wx main thread to set m_hwnd to NULL. */
 	void notifyChildWindowDestruction();
 	/** Called by wx main thread to signal the semaphore that the wx window is
