@@ -77,6 +77,8 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 
 		if (rc.shader->hasUniform("light_zmax"))
 			s.setFloat("light_zmax", rc.state->getLastLightClipZFar());
+		if (rc.shader->hasUniform("camera_far_plane"))
+			s.setFloat("camera_far_plane", rc.state->getLastClipZFar());
 
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 	}

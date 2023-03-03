@@ -23,6 +23,7 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 	// Vertex shader:
 	const char* vertex_shader = nullptr;
 	const char* fragment_shader = nullptr;
+	const char* fragShaderIncludes = nullptr;
 	std::vector<std::string> attribs, uniforms;
 
 	switch (id)
@@ -140,11 +141,14 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/triangles-shadow-2nd.f.glsl"
 				;
-			uniforms = {"p_matrix",		   "v_matrix",		 "m_matrix",
-						"light_pv_matrix", "shadowMap",		 "light_diffuse",
-						"light_ambient",   "light_specular", "light_direction",
-						"light_color",	   "light_zmax",	 "cam_position",
-						"materialSpecular"};
+			fragShaderIncludes =
+#include "../shaders/shadow-calculation.f.glsl"
+				;
+			uniforms = {
+				"p_matrix",		   "v_matrix",		 "m_matrix",
+				"light_pv_matrix", "shadowMap",		 "light_diffuse",
+				"light_ambient",   "light_specular", "light_direction",
+				"light_color",	   "cam_position",	 "materialSpecular"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 
@@ -167,11 +171,14 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragment_shader =
 #include "../shaders/textured-triangles-shadow-2nd.f.glsl"
 				;
-			uniforms = {"p_matrix",			"v_matrix",		  "m_matrix",
-						"light_pv_matrix",	"shadowMap",	  "light_diffuse",
-						"light_ambient",	"light_specular", "light_direction",
-						"light_color",		"light_zmax",	  "cam_position",
-						"materialSpecular", "textureSampler"};
+			fragShaderIncludes =
+#include "../shaders/shadow-calculation.f.glsl"
+				;
+			uniforms = {"p_matrix",		   "v_matrix",		 "m_matrix",
+						"light_pv_matrix", "shadowMap",		 "light_diffuse",
+						"light_ambient",   "light_specular", "light_direction",
+						"light_color",	   "cam_position",	 "materialSpecular",
+						"textureSampler"};
 			attribs = {"position", "vertexNormal", "vertexUV"};
 			break;
 
@@ -233,13 +240,16 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 	std::string errMsgs;
 	std::vector<Shader> lstShaders;
 	lstShaders.resize(2);
-	if (!lstShaders[0].compile(GL_VERTEX_SHADER, vertex_shader, errMsgs))
+	if (!lstShaders[0].compile(GL_VERTEX_SHADER, {vertex_shader}, errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
 			"Error compiling GL_VERTEX_SHADER (%s):\n%s", vertex_shader,
 			errMsgs.c_str());
 	}
-	if (!lstShaders[1].compile(GL_FRAGMENT_SHADER, fragment_shader, errMsgs))
+	if (!lstShaders[1].compile(
+			GL_FRAGMENT_SHADER,
+			{fragShaderIncludes ? fragShaderIncludes : "", fragment_shader},
+			errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
 			"Error compiling GL_FRAGMENT_SHADER (%s):\n%s", fragment_shader,

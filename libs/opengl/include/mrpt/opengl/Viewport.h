@@ -467,7 +467,7 @@ class Viewport : public mrpt::serialization::CSerializable,
 
 	/** The near/far plane clip distances for unidirectional light shadow
 	 * casting */
-	float m_lightShadowClipMin = 0.1f, m_lightShadowClipMax = 200.0f;
+	float m_lightShadowClipMin = 0.01f, m_lightShadowClipMax = 1000.0f;
 
 	mrpt::img::TColorf m_background_color = {0.4f, 0.4f, 0.4f};
 
