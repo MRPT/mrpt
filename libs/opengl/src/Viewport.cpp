@@ -323,12 +323,11 @@ void Viewport::renderNormalSceneMode(
 #endif
 
 	// Prepare camera (projection matrix):
-	if (!is1stShadowMapPass)
-	{
-		// Note: if we were in the 1st stage of shadow rendering,
-		// the projection matrix is actually the light proj
-		updateMatricesFromCamera(useThisCamera);
-	}
+	// Needed for both, regular, and 1st/2nd shadow passes:
+	// Note: if we were in the 1st stage of shadow rendering,
+	// the projection matrix is actually the light projection matrix,
+	// but that's handled by the shaders themselves, not here.
+	updateMatricesFromCamera(useThisCamera);
 
 	const auto& _ = m_threadedData.get().state;
 
@@ -569,7 +568,7 @@ void Viewport::render(
 	auto* activeCameraPtr = internalResolveActiveCamera(forceThisCamera);
 
 	// make a copy so the camera remains const over the rendering:
-	auto activeCamera = *activeCameraPtr;
+	const CCamera activeCamera = *activeCameraPtr;
 
 	// If we are rendering with shadows, run a camera-view depth map first
 	// (Shadows 1st pass)

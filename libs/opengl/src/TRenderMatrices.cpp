@@ -284,6 +284,8 @@ void TRenderMatrices::saveToYaml(mrpt::containers::yaml& c) const
 	c["p_matrix"] = mrpt::containers::yaml::FromMatrix(p_matrix);
 	c["v_matrix"] = mrpt::containers::yaml::FromMatrix(v_matrix);
 	c["m_matrix"] = mrpt::containers::yaml::FromMatrix(m_matrix);
+	c["light_p_matrix"] = mrpt::containers::yaml::FromMatrix(light_p);
+	c["light_v_matrix"] = mrpt::containers::yaml::FromMatrix(light_v);
 }
 
 void TRenderMatrices::print(std::ostream& o) const
