@@ -11,6 +11,7 @@
 //
 #include <Eigen/Dense>	// First! to avoid conflicts with X.h
 //
+#include <mrpt/core/get_env.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/geometry.h>	 // crossProduct3D()
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -32,6 +33,9 @@ using namespace mrpt::serialization::metaprogramming;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(Viewport, CSerializable, mrpt::opengl)
+
+const bool MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP =
+	mrpt::get_env<bool>("MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP", false);
 
 // #define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
 
@@ -144,7 +148,7 @@ void Viewport::renderImageMode() const
 	if (!m_imageViewPlane || m_imageViewPlane->getTextureImage().isEmpty())
 		return;
 
-	auto _ = m_threadedData.get().state;
+	auto _ = m_threadedData.get().state;  // make a copy
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -178,11 +182,11 @@ void Viewport::renderImageMode() const
 	CListOpenGLObjects lst;
 	lst.push_back(m_imageViewPlane);
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueueForRendering(lst, _, rq, true);
+	mrpt::opengl::enqueueForRendering(
+		lst, _, rq, true /*skip cull*/, false /* isShadowMap*/);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(
-		rq, m_threadedData.get().shaders, m_lights);
+	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
 
 #endif
 }
@@ -194,18 +198,28 @@ void Viewport::loadDefaultShaders() const
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
 
+	using ID = DefaultShaderID;	 // save space below
+
 	std::vector<shader_id_t> lstShaderIDs = {
-		DefaultShaderID::POINTS,
-		DefaultShaderID::WIREFRAME,
-		DefaultShaderID::TRIANGLES_NO_LIGHT,
-		DefaultShaderID::TRIANGLES_LIGHT,
-		DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT,
-		DefaultShaderID::TEXTURED_TRIANGLES_LIGHT,
-		DefaultShaderID::TEXT,
-		DefaultShaderID::SKYBOX};
+		ID::POINTS,
+		ID::WIREFRAME,
+		ID::TRIANGLES_NO_LIGHT,
+		ID::TRIANGLES_LIGHT,
+		ID::TEXTURED_TRIANGLES_NO_LIGHT,
+		ID::TEXTURED_TRIANGLES_LIGHT,
+		ID::TEXT,
+		ID::TRIANGLES_SHADOW_1ST,
+		ID::TRIANGLES_SHADOW_2ND,
+		ID::TEXTURED_TRIANGLES_SHADOW_1ST,
+		ID::TEXTURED_TRIANGLES_SHADOW_2ND,
+		ID::SKYBOX,
+		ID::DEBUG_TEXTURE_TO_SCREEN};
 
+	// -----------------------------------------------------------
+	// Load general list of shaders
+	// (and use them for the "no shadows" case):
+	// -----------------------------------------------------------
 	auto& shaders = m_threadedData.get().shaders;
-
 	for (const auto& id : lstShaderIDs)
 	{
 		shaders[id] = mrpt::opengl::LoadDefaultShader(id);
@@ -214,12 +228,91 @@ void Viewport::loadDefaultShaders() const
 		ASSERT_(!shaders[id]->empty());
 	}
 
+	// -----------------------------------------------------------
+	// Shaders for rendering with shadows: 1st and 2nd passes use
+	// different shader programs. Apply a replacement table.
+	// -----------------------------------------------------------
+	// clang-format off
+	const std::map<shader_id_t, std::pair<shader_id_t, shader_id_t>>
+	  replacements = {
+		{ID::TRIANGLES_LIGHT,             {ID::TRIANGLES_SHADOW_1ST, ID::TRIANGLES_SHADOW_2ND}},
+		{ID::TEXTURED_TRIANGLES_LIGHT,    {ID::TEXTURED_TRIANGLES_SHADOW_1ST, ID::TEXTURED_TRIANGLES_SHADOW_2ND}},
+		{ID::POINTS,                      {ID::NONE, ID::POINTS}},
+		{ID::WIREFRAME,                   {ID::NONE, ID::WIREFRAME}},
+		{ID::TEXT,                        {ID::NONE, ID::TEXT}},
+		{ID::TRIANGLES_NO_LIGHT,          {ID::TRIANGLES_SHADOW_1ST, ID::TRIANGLES_NO_LIGHT}},
+		{ID::TEXTURED_TRIANGLES_NO_LIGHT, {ID::TRIANGLES_SHADOW_1ST, ID::TEXTURED_TRIANGLES_NO_LIGHT}},
+		{ID::SKYBOX,                      {ID::NONE, ID::SKYBOX}}
+		};
+	//clang-format on
+
+	// 1st pass. Replace shaders: we only need depth in the 1st stage.
+	// 2nd pass. Replace shaders: we need to account for the shadow map.
+	auto& shadowShaders1st = m_threadedData.get().shadersShadow1st;
+	shadowShaders1st = shaders;
+	auto& shadowShaders2nd = m_threadedData.get().shadersShadow2nd;
+	shadowShaders2nd = shaders;
+
+	for (const auto& kv : replacements)
+	{
+		if (kv.second.first!=ID::NONE)
+			shadowShaders1st[kv.first] = shaders.at(kv.second.first);
+
+		if (kv.second.second!=ID::NONE)
+			shadowShaders2nd[kv.first] = shaders.at(kv.second.second);
+	}
+
 	MRPT_END
 #endif
 }
 
+// for debugging only if MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP
+#if (MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL)
+// From: https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+
+// debugRenderQuad() renders a 1x1 XY quad in NDC
+// -----------------------------------------
+static unsigned int quadVAO = 0;
+static unsigned int quadVBO;
+static void debugRenderQuad()
+{
+	if (quadVAO == 0)
+	{
+		// clang-format off
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f, -0.5f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
+            -0.5f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+		// clang-format on
+
+		// setup plane VAO
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(
+			GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices,
+			GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(
+			0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(
+			1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+			(void*)(3 * sizeof(float)));
+	}
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+}
+#endif
+
 /** Render a normal scene with 3D objects */
-void Viewport::renderNormalSceneMode(const CCamera* forceThisCamera) const
+void Viewport::renderNormalSceneMode(
+	const CCamera& useThisCamera, bool is1stShadowMapPass) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	MRPT_START
@@ -230,8 +323,13 @@ void Viewport::renderNormalSceneMode(const CCamera* forceThisCamera) const
 #endif
 
 	// Prepare camera (projection matrix):
-	updateMatricesFromCamera(forceThisCamera);
-	auto& _ = m_threadedData.get().state;
+	// Needed for both, regular, and 1st/2nd shadow passes:
+	// Note: if we were in the 1st stage of shadow rendering,
+	// the projection matrix is actually the light projection matrix,
+	// but that's handled by the shaders themselves, not here.
+	updateMatricesFromCamera(useThisCamera);
+
+	const auto& _ = m_threadedData.get().state;
 
 	// Get objects to render:
 	const CListOpenGLObjects* objectsToRender = nullptr;
@@ -294,11 +392,23 @@ void Viewport::renderNormalSceneMode(const CCamera* forceThisCamera) const
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
 	mrpt::opengl::RenderQueueStats rqStats;
-	mrpt::opengl::enqueueForRendering(*objectsToRender, _, rq, false, &rqStats);
+	mrpt::opengl::enqueueForRendering(
+		*objectsToRender, _, rq, false /*skip cull checks*/,
+		is1stShadowMapPass /* is shadow map pass */, &rqStats);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(
-		rq, m_threadedData.get().shaders, m_lights);
+	auto& shaders = m_shadowsEnabled
+		? (is1stShadowMapPass ? m_threadedData.get().shadersShadow1st
+							  : m_threadedData.get().shadersShadow2nd)
+		: m_threadedData.get().shaders;
+
+	// shadow map, if enabled:
+	std::optional<unsigned int> depthMapTextureId;
+	if (m_shadowsEnabled && m_ShadowMapFBO.initialized())
+		depthMapTextureId = m_ShadowMapFBO.depthMapTextureId();
+
+	// go render:
+	mrpt::opengl::processRenderQueue(rq, shaders, m_light, depthMapTextureId);
 
 #ifdef MRPT_OPENGL_PROFILER
 	opengl_profiler().registerUserMeasure(
@@ -348,11 +458,11 @@ void Viewport::renderViewportBorder() const
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueueForRendering(lst, _, rq, true);
+	mrpt::opengl::enqueueForRendering(
+		lst, _, rq, true /*skip cull*/, false /* isShadowMap*/);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(
-		rq, m_threadedData.get().shaders, m_lights);
+	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
 	MRPT_END
 #endif
 }
@@ -390,6 +500,8 @@ void Viewport::renderTextMessages() const
 
 	// Collect all 2D text objects, and update their properties:
 	CListOpenGLObjects objs;
+
+	std::shared_lock<std::shared_mutex> lckRead2DTexts(m_2D_texts.mtx.data);
 	for (auto& kv : m_2D_texts.messages)
 	{
 		const DataPerText& label = kv.second;
@@ -423,14 +535,15 @@ void Viewport::renderTextMessages() const
 			objs.push_back(o);
 		}
 	}
+	lckRead2DTexts.unlock();
 
 	// Pass 1: Process all objects (recursively for sets of objects):
 	mrpt::opengl::RenderQueue rq;
-	mrpt::opengl::enqueueForRendering(objs, _, rq, false);
+	mrpt::opengl::enqueueForRendering(
+		objs, _, rq, true /*skip cull*/, false /* isShadowMap*/);
 
 	// pass 2: render, sorted by shader program:
-	mrpt::opengl::processRenderQueue(
-		rq, m_threadedData.get().shaders, m_lights);
+	mrpt::opengl::processRenderQueue(rq, m_threadedData.get().shaders, m_light);
 	MRPT_END
 #endif
 }
@@ -449,21 +562,67 @@ void Viewport::render(
 	mrpt::system::CTimeLoggerEntry tle(opengl_profiler(), "Viewport.render");
 #endif
 
-	// Change viewport:
-	// -------------------------------------------
+	// Prepare shaders upon first invokation:
+	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
+
+	auto& _ = m_threadedData.get().state;
+
+	auto* activeCameraPtr = internalResolveActiveCamera(forceThisCamera);
+
+	// make a copy so the camera remains const over the rendering:
+	const CCamera activeCamera = *activeCameraPtr;
+
+	// Get former viewport
+	GLint oldViewport[4];
+	glGetIntegerv(GL_VIEWPORT, oldViewport);
+
 	const GLint vx = render_offset_x + startFromRatio(m_view_x, render_width);
 	const GLint vy = render_offset_y + startFromRatio(m_view_y, render_height);
 	const GLint vw = sizeFromRatio(vx, m_view_width, render_width);
 	const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
 
+	// Let the matrix generation stuff what's the viewport size (for real
+	// rendering, not shadow 1st pass shadow map)
+	_.viewport_width = vw;
+	_.viewport_height = vh;
+
+	// If we are rendering with shadows, run a camera-view depth map first
+	// (Shadows 1st pass)
+	// ----------------------------------------------------------------------
+	if (m_shadowsEnabled && !isImageViewMode())
+	{
+		if (!m_ShadowMapFBO.initialized())
+		{
+			m_ShadowMapFBO.createDepthMap(m_ShadowMapSizeX, m_ShadowMapSizeY);
+		}
+
+		glEnable(GL_DEPTH_TEST);
+
+		// Render scene to depth map, as seen from the light point of view:
+		glViewport(0, 0, m_ShadowMapSizeX, m_ShadowMapSizeY);
+
+		const auto oldFBs = m_ShadowMapFBO.bind();
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		renderNormalSceneMode(activeCamera, true /* is1stShadowMapPass */);
+
+		m_ShadowMapFBO.Bind(oldFBs);
+
+		// The 2nd pass is done inside renderNormalSceneMode()
+
+		// TODO: Any way to refactor the whole pipeline to avoid recursive
+		// rendering twice?
+	}
+
+	// Change viewport:
+	// -------------------------------------------
 	glViewport(vx, vy, vw, vh);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Clear depth&/color buffers:
 	// -------------------------------------------
-	auto& _ = m_threadedData.get().state;
-	_.viewport_width = vw;
-	_.viewport_height = vh;
 
 	glScissor(vx, vy, vw, vh);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
@@ -492,14 +651,11 @@ void Viewport::render(
 	glDisable(GL_SCISSOR_TEST);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
-	// Prepare shaders upon first invokation:
-	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
-
 	// If we are in "image mode", rendering is much simpler: just set
 	//  ortho projection and render the image quad:
 	if (isImageViewMode()) renderImageMode();
 	else
-		renderNormalSceneMode(forceThisCamera);
+		renderNormalSceneMode(activeCamera);
 
 	// Draw text messages, if any:
 	renderTextMessages();
@@ -514,6 +670,21 @@ void Viewport::render(
 		this->publishEvent(ev);
 	}
 
+	// Debug:
+	if (MRPT_OPENGL_DEBUG_SHOW_SHADOW_MAP && m_shadowsEnabled)
+	{
+		// render Depth map to quad for visual debugging
+		auto& sh = shaders().at(DefaultShaderID::DEBUG_TEXTURE_TO_SCREEN);
+		sh->use();
+		sh->setInt("textureId", 0 /* Use GL_TEXTURE0 */);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
+		debugRenderQuad();
+	}
+
+	// Restore viewport:
+	glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
+
 	MRPT_END
 #else
 	THROW_EXCEPTION(
@@ -522,7 +693,7 @@ void Viewport::render(
 #endif
 }
 
-uint8_t Viewport::serializeGetVersion() const { return 7; }
+uint8_t Viewport::serializeGetVersion() const { return 9; }
 void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	// Save data:
@@ -545,9 +716,11 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 	out << m_OpenGL_enablePolygonNicest;
 
 	// Added in v3: Lights
-	out << m_lights;
+	out << m_light;
 
 	// Added in v4: text messages:
+	std::shared_lock<std::shared_mutex> lckRead2DTexts(m_2D_texts.mtx.data);
+
 	out.WriteAs<uint32_t>(m_2D_texts.messages.size());
 	for (auto& kv : m_2D_texts.messages)
 	{
@@ -560,6 +733,7 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 			<< fp.shadow_color << fp.vfont_spacing << fp.vfont_kerning;
 		out.WriteAs<uint8_t>(static_cast<uint8_t>(fp.vfont_style));
 	}
+	lckRead2DTexts.unlock();
 
 	// Added in v5: image mode
 	out.WriteAs<bool>(m_imageViewPlane);
@@ -567,6 +741,13 @@ void Viewport::serializeTo(mrpt::serialization::CArchive& out) const
 
 	// Added in v6:
 	out << m_clonedCameraViewport;
+
+	// Added in v8:
+	out << m_shadowsEnabled << m_ShadowMapSizeX << m_ShadowMapSizeY;
+
+	// Added in v9:
+	out << m_clip_max << m_clip_min << m_lightShadowClipMin
+		<< m_lightShadowClipMax;
 }
 
 void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
@@ -581,6 +762,8 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 5:
 		case 6:
 		case 7:
+		case 8:
+		case 9:
 		{
 			// Load data:
 			in >> m_camera >> m_isCloned >> m_isClonedCamera >>
@@ -619,11 +802,11 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			}
 
 			// Added in v3: Lights
-			if (version >= 3) in >> m_lights;
+			if (version >= 3) in >> m_light;
 			else
 			{
 				// Default:
-				m_lights = TLightParameters();
+				m_light = TLightParameters();
 			}
 
 			// v4: text:
@@ -659,6 +842,21 @@ void Viewport::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 			if (version >= 6) in >> m_clonedCameraViewport;
 			else
 				m_clonedCameraViewport.clear();
+
+			if (version >= 8)
+			{
+				in >> m_shadowsEnabled >> m_ShadowMapSizeX >> m_ShadowMapSizeY;
+			}
+			else
+			{
+				m_shadowsEnabled = false;
+			}
+
+			if (version >= 9)
+			{
+				in >> m_clip_max >> m_clip_min >> m_lightShadowClipMin >>
+					m_lightShadowClipMax;
+			}
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
@@ -672,18 +870,19 @@ CRenderizable::Ptr Viewport::getByName(const string& str)
 {
 	for (auto& m_object : m_objects)
 	{
-		if (m_object->m_name == str) return m_object;
+		if (m_object->getName() == str) return m_object;
 		else if (
 			m_object->GetRuntimeClass() ==
 			CLASS_ID_NAMESPACE(CSetOfObjects, opengl))
 		{
-			CRenderizable::Ptr ret =
-				std::dynamic_pointer_cast<CSetOfObjects>(m_object)->getByName(
-					str);
-			if (ret) return ret;
+			if (CRenderizable::Ptr ret =
+					std::dynamic_pointer_cast<CSetOfObjects>(m_object)
+						->getByName(str);
+				ret)
+				return ret;
 		}
 	}
-	return CRenderizable::Ptr();
+	return {};
 }
 
 void Viewport::initializeTextures()
@@ -698,7 +897,8 @@ void Viewport::dumpListOfObjects(std::vector<std::string>& lst) const
 	{
 		// Single obj:
 		string s(obj->GetRuntimeClass()->className);
-		if (obj->m_name.size()) s += string(" (") + obj->m_name + string(")");
+		if (!obj->getName().empty())
+			s += string(" (") + obj->getName() + string(")");
 		lst.emplace_back(s);
 
 		if (obj->GetRuntimeClass() ==
@@ -780,6 +980,22 @@ void Viewport::getViewportClipDistances(float& clip_min, float& clip_max) const
 	clip_max = m_clip_max;
 }
 
+void Viewport::setLightShadowClipDistances(
+	const float clip_min, const float clip_max)
+{
+	ASSERT_GT_(clip_max, clip_min);
+
+	m_lightShadowClipMin = clip_min;
+	m_lightShadowClipMax = clip_max;
+}
+
+void Viewport::getLightShadowClipDistances(
+	float& clip_min, float& clip_max) const
+{
+	clip_min = m_lightShadowClipMin;
+	clip_max = m_lightShadowClipMax;
+}
+
 /*--------------------------------------------------------------
 					get3DRayForPixelCoord
   ---------------------------------------------------------------*/
@@ -791,7 +1007,7 @@ void Viewport::get3DRayForPixelCoord(
 
 	if (!_.initialized)
 	{
-		updateMatricesFromCamera();
+		updateMatricesFromCamera(*internalResolveActiveCamera());
 		ASSERT_(_.initialized);
 	}
 
@@ -980,10 +1196,9 @@ void Viewport::setCloneCamera(bool enable)
 	}
 }
 
-void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
+const CCamera* Viewport::internalResolveActiveCamera(
+	const CCamera* forceThisCamera) const
 {
-	auto& _ = m_threadedData.get().state;
-
 	// Prepare camera (projection matrix):
 	Viewport* viewForGetCamera = nullptr;
 
@@ -1014,7 +1229,14 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 	// forced cam?
 	if (forceThisCamera) myCamera = forceThisCamera;
 
-	if (myCamera->isNoProjection())
+	return myCamera;
+}
+
+void Viewport::updateMatricesFromCamera(const CCamera& myCamera) const
+{
+	auto& _ = m_threadedData.get().state;
+
+	if (myCamera.isNoProjection())
 	{
 		// No translation nor rotation nor perspective:
 		_.computeNoProjectionMatrix(m_clip_min, m_clip_max);
@@ -1022,22 +1244,22 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 	else
 	{
 		// Projective or orthogonal camera models:
-		ASSERT_(myCamera->getZoomDistance() > 0);
+		ASSERT_(myCamera.getZoomDistance() > 0);
 
-		_.is_projective = myCamera->isProjective();
+		_.is_projective = myCamera.isProjective();
 
-		_.FOV = myCamera->getProjectiveFOVdeg();
-		_.pinhole_model = myCamera->getPinholeModel();
-		_.eyeDistance = myCamera->getZoomDistance();
-		_.azimuth = DEG2RAD(myCamera->getAzimuthDegrees());
-		_.elev = DEG2RAD(myCamera->getElevationDegrees());
+		_.FOV = myCamera.getProjectiveFOVdeg();
+		_.pinhole_model = myCamera.getPinholeModel();
+		_.eyeDistance = myCamera.getZoomDistance();
+		_.azimuth = DEG2RAD(myCamera.getAzimuthDegrees());
+		_.elev = DEG2RAD(myCamera.getElevationDegrees());
 
-		if (myCamera->is6DOFMode())
+		if (myCamera.is6DOFMode())
 		{
 			// In 6DOFMode eye is set viewing towards the direction of the
 			// positive Z axis
 			// Up is set as -Y axis
-			const auto pose = mrpt::poses::CPose3D(myCamera->getPose());
+			const auto pose = mrpt::poses::CPose3D(myCamera.getPose());
 			const auto viewDirection =
 				mrpt::poses::CPose3D::FromTranslation(0, 0, 1);
 			const auto at = pose + viewDirection;
@@ -1052,10 +1274,10 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 		{
 			// Normal mode: use "camera orbit" parameters to compute pointing-to
 			// point:
-			_.pointing = myCamera->getPointingAt();
+			_.pointing = myCamera.getPointingAt();
 
 			const double dis =
-				std::max<double>(0.001, myCamera->getZoomDistance());
+				std::max<double>(0.001, myCamera.getZoomDistance());
 			_.eye.x = _.pointing.x + dis * cos(_.azimuth) * cos(_.elev);
 			_.eye.y = _.pointing.y + dis * sin(_.azimuth) * cos(_.elev);
 			_.eye.z = _.pointing.z + dis * sin(_.elev);
@@ -1069,11 +1291,24 @@ void Viewport::updateMatricesFromCamera(const CCamera* forceThisCamera) const
 		_.computeProjectionMatrix(m_clip_min, m_clip_max);
 
 		// Apply eye center and lookAt to p_matrix:
-		_.applyLookAt();
+		_.computeViewMatrix();
 	}
 
 	// Reset model4x4 matrix to the identity transformation:
 	_.m_matrix.setIdentity();
 
+	// Compute the directional light projection matrix (light_pv)
+	_.computeLightProjectionMatrix(
+		m_lightShadowClipMin, m_lightShadowClipMax, m_light.direction);
+
 	_.initialized = true;
+}
+
+void Viewport::enableShadowCasting(
+	bool enabled, unsigned int SHADOW_MAP_SIZE_X,
+	unsigned int SHADOW_MAP_SIZE_Y)
+{
+	m_shadowsEnabled = enabled;
+	if (SHADOW_MAP_SIZE_X) m_ShadowMapSizeX = SHADOW_MAP_SIZE_X;
+	if (SHADOW_MAP_SIZE_Y) m_ShadowMapSizeY = SHADOW_MAP_SIZE_Y;
 }

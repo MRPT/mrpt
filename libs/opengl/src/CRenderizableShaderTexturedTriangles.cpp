@@ -62,38 +62,47 @@ void CRenderizableShaderTexturedTriangles::render(const RenderContext& rc) const
 	std::shared_lock<std::shared_mutex> readLock(m_trianglesMtx.data);
 
 	// Set the texture uniform:
+	const Program& s = *rc.shader;
 	const auto texUnit = m_glTexture.textureUnit();
-	if (!rc.activeTextureUnit || *rc.activeTextureUnit != texUnit)
+	if (s.hasUniform("textureSampler") &&
+		(!rc.activeTextureUnit || *rc.activeTextureUnit != texUnit))
 	{
 		rc.activeTextureUnit = texUnit;	 // buffer it
-		const Program& s = *rc.shader;
 		// bound to GL_TEXTURE0 + "i":
-		glUniform1i(s.uniformId("textureSampler"), texUnit);
+		s.setInt("textureSampler", texUnit);
 	}
 
 	// Lights:
-	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
-		rc.shader->hasUniform("light_ambient") &&
-		rc.shader->hasUniform("light_direction") &&
+	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_color") &&
 		(!rc.activeLights || rc.activeLights.value() != rc.lights))
 	{
 		// buffered pointer, to prevent re-setting the opengl state with the
 		// same values, a performance killer:
 		rc.activeLights = rc.lights;
 
-		const Program& s = *rc.shader;
-		const auto& dif = rc.lights->diffuse;
-		const auto& amb = rc.lights->ambient;
-		const auto& spc = rc.lights->specular;
-		const auto& dir = rc.lights->direction;
+		const auto& l = rc.lights;
 
-		glUniform4f(s.uniformId("light_diffuse"), dif.R, dif.G, dif.B, dif.A);
-		glUniform4f(s.uniformId("light_ambient"), amb.R, amb.G, amb.B, amb.A);
-		glUniform3f(s.uniformId("light_direction"), dir.x, dir.y, dir.z);
+		s.setFloat3("light_color", l->color.R, l->color.G, l->color.B);
+		s.setFloat3(
+			"light_direction", l->direction.x, l->direction.y, l->direction.z);
+		s.setFloat("light_ambient", l->ambient);
+		s.setFloat("light_diffuse", l->diffuse);
 		if (rc.shader->hasUniform("light_specular"))
-			glUniform4f(
-				s.uniformId("light_specular"), spc.R, spc.G, spc.B, spc.A);
+			s.setFloat("light_specular", l->specular);
+
+		if (rc.shader->hasUniform("light_zmax"))
+			s.setFloat("light_zmax", rc.state->getLastLightClipZFar());
+		if (rc.shader->hasUniform("camera_far_plane"))
+			s.setFloat("camera_far_plane", rc.state->getLastClipZFar());
+
 		CHECK_OPENGL_ERROR_IN_DEBUG();
+	}
+
+	// Set the texture uniform:
+	if (rc.shader->hasUniform("shadowMap"))
+	{
+		// bound to GL_TEXTURE0 + "i":
+		s.setInt("shadowMap", SHADOW_MAP_TEXTURE_UNIT);
 	}
 
 	// Set up the vertex array:
@@ -254,10 +263,10 @@ void CRenderizableShaderTexturedTriangles::initializeTextures() const
 	{
 		mrpt::img::CImage im_rgb(4, 4, mrpt::img::CH_RGB),
 			im_a(4, 4, mrpt::img::CH_GRAY);
-		im_rgb.filledRectangle(0, 0, 3, 3, m_color);
+		const auto col = getColor_u8();
+		im_rgb.filledRectangle(0, 0, 3, 3, col);
 		im_a.filledRectangle(
-			0, 0, 3, 3,
-			mrpt::img::TColor(m_color.A, m_color.A, m_color.A, m_color.A));
+			0, 0, 3, 3, mrpt::img::TColor(col.A, col.A, col.A, col.A));
 		const_cast<CRenderizableShaderTexturedTriangles*>(this)->assignImage(
 			std::move(im_rgb), std::move(im_a));
 	}

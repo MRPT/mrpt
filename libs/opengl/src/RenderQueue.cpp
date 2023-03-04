@@ -41,7 +41,13 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 	const mrpt::opengl::TRenderMatrices& objState)
 {
 	const Eigen::Vector4f lrp_hm(localPt.x, localPt.y, localPt.z, 1.0f);
-	const auto lrp_proj = (objState.pmv_matrix.asEigen() * lrp_hm).eval();
+
+	// Looking from the light (1st pass in a shadow mapping), or the camera
+	// (regular case):
+	const auto& pmv_matrix =
+		objState.is1stShadowMapPass ? objState.light_pmv : objState.pmv_matrix;
+
+	const auto lrp_proj = (pmv_matrix.asEigen() * lrp_hm).eval();
 
 	const float depth =
 		(lrp_proj(3) != 0) ? lrp_proj(2) / std::abs(lrp_proj(3)) : .001f;
@@ -51,7 +57,10 @@ static std::tuple<mrpt::math::TPoint2Df, float> projectToScreenCoordsAndDepth(
 			  lrp_proj(0) / lrp_proj(3), lrp_proj(1) / lrp_proj(3))
 		: mrpt::math::TPoint2Df(.001f, .001f);
 
-	if (depth < -1.0f && objState.is_projective) uv *= -1.0;
+	if (!objState.is1stShadowMapPass)
+	{
+		if (depth < -1.0f && objState.is_projective) uv *= -1.0;
+	}
 
 	return {uv, depth};
 }
@@ -235,7 +244,8 @@ std::tuple<double, bool, bool> mrpt::opengl::depthAndVisibleInView(
 void mrpt::opengl::enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	const bool skipCullChecks, RenderQueueStats* stats)
+	const bool skipCullChecks, const bool is1stShadowMapPass,
+	RenderQueueStats* stats)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	using mrpt::math::CMatrixDouble44;
@@ -258,16 +268,28 @@ void mrpt::opengl::enqueueForRendering(
 
 			// Use plain pointers, faster than smart pointers:
 			const CRenderizable* obj = objPtr.get();
+
+			// Quick check: if we are in a shadow generation pass where this
+			// object does not render, skip it:
+			const auto lst_shaders = obj->requiredShaders();
+			if (lst_shaders.size() == 1 &&
+				lst_shaders.at(0) == DefaultShaderID::NONE)
+				continue;
+
 			// Save class name: just in case we have an exception, for error
 			// reporting:
 			curClassName = obj->GetRuntimeClass()->className;
 
+			if (!obj->isVisible()) continue;
+
+			// Skip objects that do not cast shadows, if we are in that first
+			// shadow map pass.
+			if (is1stShadowMapPass && !obj->castShadows()) continue;
+
 			// Regenerate opengl vertex buffers?
 			if (obj->hasToUpdateBuffers()) obj->updateBuffers();
 
-			if (!obj->isVisible()) continue;
-
-			const CPose3D& thisPose = obj->getPoseRef();
+			const CPose3D thisPose = obj->getCPose();
 			CMatrixFloat44 HM =
 				thisPose.getHomogeneousMatrixVal<CMatrixDouble44>()
 					.cast_float();
@@ -292,8 +314,17 @@ void mrpt::opengl::enqueueForRendering(
 
 			// Precompute matrices to be used in shaders:
 			_.mv_matrix.asEigen() = _.v_matrix.asEigen() * _.m_matrix.asEigen();
+
+			// PMV = P*V*M (observe the weird notation order)
 			_.pmv_matrix.asEigen() =
 				_.p_matrix.asEigen() * _.mv_matrix.asEigen();
+
+			// PMV for the light = P*V*M (observe the weird notation order)
+			_.light_pmv.asEigen() = _.light_pv.asEigen() * _.m_matrix.asEigen();
+
+			// Let the culling algorithm know whether we are looking from the
+			// camera or from the light:
+			_.is1stShadowMapPass = is1stShadowMapPass;
 
 			const auto [depth, withinView, wholeInView] =
 				depthAndVisibleInView(obj, _, skipCullChecks);
@@ -304,8 +335,7 @@ void mrpt::opengl::enqueueForRendering(
 				if (stats) stats->numObjRendered++;
 #endif
 
-				// Enqeue this object...
-				const auto lst_shaders = obj->requiredShaders();
+				// Enqueue this object...
 				for (const auto shader_id : lst_shaders)
 				{
 					// eye-to-object depth:
@@ -330,7 +360,8 @@ void mrpt::opengl::enqueueForRendering(
 			}
 
 			// ...and its children:
-			obj->enqueueForRenderRecursive(_, rq, wholeInView);
+			obj->enqueueForRenderRecursive(
+				_, rq, wholeInView, is1stShadowMapPass);
 
 		}  // end foreach object
 	}
@@ -347,7 +378,8 @@ void mrpt::opengl::enqueueForRendering(
 void mrpt::opengl::processRenderQueue(
 	const RenderQueue& rq,
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
-	const mrpt::opengl::TLightParameters& lights)
+	const mrpt::opengl::TLightParameters& lights,
+	const std::optional<unsigned int>& depthMapTextureId)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
@@ -360,8 +392,16 @@ void mrpt::opengl::processRenderQueue(
 		// bind the shader for this sequence of objects:
 		mrpt::opengl::Program& shader = *shaders.at(rqSet.first);
 
-		glUseProgram(shader.programId());
-		CHECK_OPENGL_ERROR();
+		shader.use();
+
+		if (depthMapTextureId)
+		{
+			// We are in the 2nd pass of shadow rendering:
+			// bind depthmap texture
+			glActiveTexture(GL_TEXTURE0 + SHADOW_MAP_TEXTURE_UNIT);
+			glBindTexture(GL_TEXTURE_2D, *depthMapTextureId);
+			CHECK_OPENGL_ERROR_IN_DEBUG();
+		}
 
 		CRenderizable::RenderContext rc;
 		rc.shader = &shader;
@@ -414,6 +454,11 @@ void mrpt::opengl::processRenderQueue(
 				glUniform3f(
 					shader.uniformId("cam_position"), rqe.renderState.eye.x,
 					rqe.renderState.eye.y, rqe.renderState.eye.z);
+
+			if (shader.hasUniform("light_pv_matrix"))
+				glUniformMatrix4fv(
+					shader.uniformId("light_pv_matrix"), 1, IS_TRANSPOSED,
+					rqe.renderState.light_pv.data());
 
 			if (shader.hasUniform("materialSpecular"))
 				glUniform1f(

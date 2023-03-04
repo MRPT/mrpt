@@ -395,8 +395,8 @@ void CSkeletonTracker::processPreview(
 					ASSERT_(s0 && s1);
 
 					lines->appendLine(
-						s0->getPoseX(), s0->getPoseY(), s0->getPoseZ(),
-						s1->getPoseX(), s1->getPoseY(), s1->getPoseZ());
+						s0->getPose().translation(),
+						s1->getPose().translation());
 				}
 			}  // end-get3DSceneAndLock
 			m_win->unlockAccess3DScene();

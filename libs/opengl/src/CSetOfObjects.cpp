@@ -41,9 +41,10 @@ void CSetOfObjects::render(const RenderContext& rc) const
 
 void CSetOfObjects::enqueueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	bool wholeInView) const
+	bool wholeInView, bool is1stShadowMapPass) const
 {
-	mrpt::opengl::enqueueForRendering(m_objects, state, rq, wholeInView);
+	mrpt::opengl::enqueueForRendering(
+		m_objects, state, rq, wholeInView, is1stShadowMapPass);
 }
 
 uint8_t CSetOfObjects::serializeGetVersion() const { return 0; }
@@ -97,7 +98,8 @@ void CSetOfObjects::dumpListOfObjects(std::vector<std::string>& lst) const
 		if (!o) continue;
 		// Single obj:
 		string s(o->GetRuntimeClass()->className);
-		if (o->m_name.size()) s += string(" (") + o->m_name + string(")");
+		if (!o->getName().empty())
+			s += string(" (") + o->getName() + string(")");
 		lst.emplace_back(s);
 
 		if (o->GetRuntimeClass() ==
@@ -166,7 +168,7 @@ void CSetOfObjects::removeObject(const CRenderizable::Ptr& obj)
 
 bool CSetOfObjects::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
-	CPose3D nueva = (CPose3D() - this->m_pose) + o;
+	CPose3D nueva = (CPose3D() - getCPose()) + o;
 	bool found = false;
 	double tmp;
 	for (const auto& m_object : m_objects)
@@ -183,69 +185,35 @@ bool CSetOfObjects::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	return found;
 }
 
-class FSetColor
-{
-   public:
-	uint8_t r, g, b, a;
-	void operator()(CRenderizable::Ptr& p) { p->setColor_u8(r, g, b, a); }
-	FSetColor(uint8_t R, uint8_t G, uint8_t B, uint8_t A)
-		: r(R), g(G), b(B), a(A)
-	{
-	}
-	~FSetColor() = default;
-};
-
-CRenderizable& CSetOfObjects::setColor_u8(const mrpt::img::TColor& c)
-{
-	for_each(
-		m_objects.begin(), m_objects.end(),
-		FSetColor(
-			m_color.R = c.R, m_color.G = c.G, m_color.B = c.B,
-			m_color.A = c.A));
-	return *this;
-}
-
 bool CSetOfObjects::contains(const CRenderizable::Ptr& obj) const
 {
 	return find(m_objects.begin(), m_objects.end(), obj) != m_objects.end();
 }
 
-CRenderizable& CSetOfObjects::setColorR_u8(const uint8_t r)
+CRenderizable& CSetOfObjects::setColor_u8(const mrpt::img::TColor& c)
 {
-	for (auto& o : m_objects)
 	{
-		if (!o) continue;
-		o->setColorR_u8(m_color.R = r);
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.color = c;
 	}
-	return *this;
-}
-
-CRenderizable& CSetOfObjects::setColorG_u8(const uint8_t g)
-{
 	for (auto& o : m_objects)
 	{
 		if (!o) continue;
-		o->setColorG_u8(m_color.G = g);
-	}
-	return *this;
-}
-
-CRenderizable& CSetOfObjects::setColorB_u8(const uint8_t b)
-{
-	for (auto& o : m_objects)
-	{
-		if (!o) continue;
-		o->setColorB_u8(m_color.B = b);
+		o->setColor_u8(c);
 	}
 	return *this;
 }
 
 CRenderizable& CSetOfObjects::setColorA_u8(const uint8_t a)
 {
+	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.color.A = a;
+	}
 	for (auto& o : m_objects)
 	{
 		if (!o) continue;
-		o->setColorA_u8(m_color.A = a);
+		o->setColorA_u8(a);
 	}
 	return *this;
 }
@@ -258,14 +226,14 @@ CRenderizable::Ptr CSetOfObjects::getByName(const string& str)
 	for (auto& o : m_objects)
 	{
 		if (!o) continue;
-		if (o->m_name == str) return o;
+		if (o->getName() == str) return o;
 		else if (auto objs = dynamic_cast<CSetOfObjects*>(o.get()))
 		{
 			CRenderizable::Ptr ret = objs->getByName(str);
 			if (ret) return ret;
 		}
 	}
-	return CRenderizable::Ptr();
+	return {};
 }
 
 auto CSetOfObjects::internalBoundingBoxLocal() const

@@ -37,7 +37,7 @@ void Texture::unloadTexture()
 {
 	m_tex.run_on_all([](std::optional<texture_name_unit_t>& tnu) {
 		if (!tnu) return;
-		releaseTextureName(tnu.value());
+		releaseTextureName(tnu.value().name);
 		tnu.reset();
 	});
 }
@@ -54,7 +54,7 @@ class TextureResourceHandler
 	}
 
 	/// Return [textureName, textureUnit]
-	std::pair<unsigned int, unsigned int> generateTextureID()
+	texture_name_t generateTextureID()
 	{
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		auto lck = mrpt::lockHelper(m_texturesMtx);
@@ -67,38 +67,17 @@ class TextureResourceHandler
 		CHECK_OPENGL_ERROR_IN_DEBUG();
 		m_textureReservedFrom[textureID] = std::this_thread::get_id();
 
-		int foundUnit = -1;
-		for (int i = 0; i < m_maxTextureUnits; i++)
-			if (!m_occupiedTextureUnits.count(i))
-			{
-				foundUnit = i;
-				break;
-			}
-		if (foundUnit < 0)
-		{
-			foundUnit = 0;
-			std::cerr
-				<< "[mrpt TextureResourceHandler] **WARNING**: Apparently "
-				   "your program reached the maximum number of allowed "
-				   "simultaneous OpenGL textures ("
-				<< m_maxTextureUnits << ")" << std::endl;
-		}
-		else
-		{
-			m_occupiedTextureUnits.insert(foundUnit);
-		}
-
 		if (MRPT_OPENGL_VERBOSE)
 			std::cout << "[mrpt generateTextureID] textureName:" << textureID
-					  << " unit: " << foundUnit << std::endl;
+					  << std::endl;
 
-		return {textureID, foundUnit};
+		return textureID;
 #else
 		THROW_EXCEPTION("This function needs OpenGL");
 #endif
 	}
 
-	void releaseTextureID(unsigned int texName, unsigned int texUnit)
+	void releaseTextureID(unsigned int texName)
 	{
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 		MRPT_START
@@ -106,11 +85,10 @@ class TextureResourceHandler
 
 		if (MRPT_OPENGL_VERBOSE)
 			std::cout << "[mrpt releaseTextureID] textureName: " << texName
-					  << " unit: " << texUnit << std::endl;
+					  << std::endl;
 
 		m_destroyQueue[m_textureReservedFrom.at(texName)].push_back(texName);
 		processDestroyQueue();
-		m_occupiedTextureUnits.erase(texUnit);
 		MRPT_END
 #endif
 	}
@@ -144,8 +122,6 @@ class TextureResourceHandler
 			for (const auto& lst : m_destroyQueue)
 				std::cout << "[" << lst.first << "]=" << lst.second.size()
 						  << " ";
-			std::cout << "\n Texture units: " << m_occupiedTextureUnits.size()
-					  << "\n";
 		}
 #endif
 	}
@@ -154,24 +130,19 @@ class TextureResourceHandler
 	std::mutex m_texturesMtx;
 	std::map<GLuint, std::thread::id> m_textureReservedFrom;
 	std::map<std::thread::id, std::vector<GLuint>> m_destroyQueue;
-	std::set<GLint> m_occupiedTextureUnits;
 	GLint m_maxTextureUnits;
 #endif
 };
 
 /// Returns: [texture name, texture unit]
-texture_name_unit_t mrpt::opengl::getNewTextureNumber()
+texture_name_t mrpt::opengl::getNewTextureNumber()
 {
-	texture_name_unit_t ret;
-	const auto r = TextureResourceHandler::Instance().generateTextureID();
-	ret.name = r.first;
-	ret.unit = r.second;
-	return ret;
+	return TextureResourceHandler::Instance().generateTextureID();
 }
 
-void mrpt::opengl::releaseTextureName(const texture_name_unit_t& t)
+void mrpt::opengl::releaseTextureName(const texture_name_t& t)
 {
-	TextureResourceHandler::Instance().releaseTextureID(t.name, t.unit);
+	TextureResourceHandler::Instance().releaseTextureID(t);
 }
 
 bool Texture::initialized() const
@@ -180,11 +151,12 @@ bool Texture::initialized() const
 	return m_tex.get().has_value();
 }
 
-void Texture::assignImage2D(const mrpt::img::CImage& rgb, const Options& o)
+void Texture::assignImage2D(
+	const mrpt::img::CImage& rgb, const Options& o, int textureUnit)
 {
 	try
 	{
-		internalAssignImage_2D(&rgb, nullptr, o);
+		internalAssignImage_2D(&rgb, nullptr, o, textureUnit);
 	}
 	catch (std::exception& e)
 	{
@@ -194,11 +166,11 @@ void Texture::assignImage2D(const mrpt::img::CImage& rgb, const Options& o)
 
 void Texture::assignImage2D(
 	const mrpt::img::CImage& rgb, const mrpt::img::CImage& alpha,
-	const Options& o)
+	const Options& o, int textureUnit)
 {
 	try
 	{
-		internalAssignImage_2D(&rgb, &alpha, o);
+		internalAssignImage_2D(&rgb, &alpha, o, textureUnit);
 	}
 	catch (std::exception& e)
 	{
@@ -261,7 +233,7 @@ static unsigned char* reserveDataBuffer(
 
 void Texture::internalAssignImage_2D(
 	const mrpt::img::CImage* in_rgb, const mrpt::img::CImage* in_alpha,
-	const Options& o)
+	const Options& o, int textureUnit)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	unsigned char* dataAligned = nullptr;
@@ -286,6 +258,7 @@ void Texture::internalAssignImage_2D(
 
 	// allocate texture names:
 	get() = getNewTextureNumber();
+	get()->unit = textureUnit;
 
 	// activate the texture unit first before binding texture
 	bindAsTexture2D();
@@ -508,7 +481,8 @@ void Texture::bindAsCubeTexture()
 #endif
 }
 
-void Texture::assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs)
+void Texture::assignCubeImages(
+	const std::array<mrpt::img::CImage, 6>& imgs, int textureUnit)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 

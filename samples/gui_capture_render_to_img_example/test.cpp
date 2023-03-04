@@ -122,25 +122,24 @@ void TestDisplay3D()
 	while (!end && win.isOpen())
 	{
 		// Move the scene:
-		Scene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& scene = win.get3DSceneAndLock();
 
-		opengl::CRenderizable::Ptr obj1 = theScene->getByName("ball_1");
+		auto obj1 = scene->getByName("ball_1");
+		const auto p1 = obj1->getPose();
 		obj1->setLocation(
-			obj1->getPoseX() + cos(obj1->getPoseY() / 2) * 0.05,
-			obj1->getPoseY() - sin(obj1->getPoseX() / 2) * 0.09,
-			obj1->getPoseZ() - sin(obj1->getPoseX() / 2) * 0.08);
+			p1.x + cos(p1.y / 2) * 0.05, p1.y - sin(p1.x / 2) * 0.09,
+			p1.z - sin(p1.x / 2) * 0.08);
 
-		obj1 = theScene->getByName("ball_2");
-		obj1->setLocation(
-			obj1->getPoseX() + cos(obj1->getPoseY() / 2) * 0.05,
-			obj1->getPoseY() - sin(obj1->getPoseX() / 2) * 0.09,
-			obj1->getPoseZ() - sin(obj1->getPoseX() / 2) * 0.08);
+		auto obj2 = scene->getByName("ball_2");
+		const auto p2 = obj2->getPose();
+		obj2->setLocation(
+			p2.x + cos(p2.y / 2) * 0.05, p2.y - sin(p2.x / 2) * 0.09,
+			p2.z - sin(p2.x / 2) * 0.08);
 
 		win.addTextMessage(
 			0.02, 0.98,
 			mrpt::format(
-				"ball#1 pos: %.02f %.02f %.02f ", obj1->getPoseX(),
-				obj1->getPoseY(), obj1->getPoseZ()),
+				"ball#1 pos: %s ", p1.translation().asString().c_str()),
 			10,	 // An arbitrary ID
 			fp);
 

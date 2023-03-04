@@ -65,7 +65,7 @@ bool CSphere::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	// whose distance to that transformed point
 	// equals the sphere's radius.
 
-	CPose3D transf = this->m_pose - o;
+	CPose3D transf = getCPose() - o;
 	double x = transf.x(), y = transf.y(), z = transf.z();
 	double r2 = m_radius * m_radius;
 	double dyz = y * y + z * z;

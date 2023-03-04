@@ -79,7 +79,7 @@ void CFrustum::onUpdateBuffers_Wireframe()
 		vbd.emplace_back(pts[draw_path[idx_next]]);
 	}
 
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 }
 void CFrustum::onUpdateBuffers_Triangles()
 {

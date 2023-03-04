@@ -12,7 +12,7 @@
 #include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/Scene.h>
+#include <mrpt/opengl/Buffer.h>
 
 namespace mrpt::opengl
 {
@@ -26,11 +26,12 @@ struct FrameBufferBinding
 	unsigned int readFbId = 0;
 };
 
-/** An OpenGL FrameBuffer resource with RGBA+depth render buffers.
+/** An OpenGL FrameBuffer resource (FBO) with either RGBA+depth or depth only
+ * render buffers.
  *
  * Refer to docs for glGenFramebuffers() and glGenRenderbuffers().
  *
- * \sa Buffer
+ * \sa Buffer, DepthMapFBO
  * \ingroup mrpt_opengl_grp
  */
 class FrameBuffer
@@ -49,6 +50,13 @@ class FrameBuffer
 		m_impl.create(width, height, nSamples);
 	}
 
+	/** Creates a new depth-only FBO.
+	 */
+	void createDepthMap(unsigned int width, unsigned int height)
+	{
+		m_impl.createDepthMap(width, height);
+	}
+
 	/** Release resources */
 	void destroy() { m_impl.destroy(); }
 
@@ -64,11 +72,16 @@ class FrameBuffer
 	/// Blit the framebuffer object onto the screen
 	void blit();
 
-	bool initialized() { return m_impl.m_state.get().m_created; }
+	bool initialized() const { return m_impl.m_state.get().m_created; }
 
 	unsigned int width() const { return m_impl.m_state.get().m_width; }
 	unsigned int height() const { return m_impl.m_state.get().m_height; }
 	int numSamples() const { return m_impl.m_state.get().m_Samples; }
+
+	unsigned int depthMapTextureId() const
+	{
+		return m_impl.m_state.get().m_DepthMapTexture;
+	}
 
 	/** @} */
 
@@ -76,6 +89,7 @@ class FrameBuffer
 	 *  @{ */
 
 	static void Bind(const FrameBufferBinding& ids);
+	static void Unbind();  //!< Calls glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	static FrameBufferBinding CurrentBinding();
 
 	/** @} */
@@ -90,6 +104,7 @@ class FrameBuffer
 		Buffer::Usage usage = Buffer::Usage::StaticDraw;
 
 		void create(unsigned int width, unsigned int height, int nSamples);
+		void createDepthMap(unsigned int width, unsigned int height);
 		void destroy();
 		FrameBufferBinding bind();
 		void unbind();
@@ -97,7 +112,13 @@ class FrameBuffer
 		struct State
 		{
 			bool m_created = false;
+			bool m_isDepthMap = false;
+
+			// Regular FBO:
 			unsigned int m_Framebuffer = 0, m_Depth = 0, m_Color = 0;
+			// DepthMap rendering to texture:
+			unsigned int m_DepthMapTexture = 0;
+
 			unsigned int m_width = 0, m_height = 0;	 /// In pixels
 			int m_Samples = 0;
 		};

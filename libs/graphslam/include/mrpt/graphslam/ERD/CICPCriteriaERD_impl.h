@@ -507,15 +507,12 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 		auto search = this->m_graph->nodes.find(this->m_graph->nodeCount() - 1);
 		if (search != this->m_graph->nodes.end())
 		{
-			laser_scan_viz->setPose(
-				this->m_graph->nodes[this->m_graph->nodeCount() - 1]);
+			auto p = mrpt::math::TPose3D(
+				this->m_graph->nodes[this->m_graph->nodeCount() - 1].asTPose());
 			// put the laser scan *underneath* the graph, so that you can still
 			// visualize the loop closures with the nodes ahead
-			laser_scan_viz->setPose(CPose3D(
-				laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.15,
-				DEG2RAD(laser_scan_viz->getPoseYaw()),
-				DEG2RAD(laser_scan_viz->getPosePitch()),
-				DEG2RAD(laser_scan_viz->getPoseRoll())));
+			p.z = -0.15;
+			laser_scan_viz->setPose(p);
 		}
 
 		this->m_win->unlockAccess3DScene();
