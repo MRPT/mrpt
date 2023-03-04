@@ -256,13 +256,9 @@ void CFBORender::internal_render_RGBD(
 
 	const auto oldFBs = m_fb.bind();
 
-	// Get former viewport
-	GLint oldViewport[4];
-	glGetIntegerv(GL_VIEWPORT, oldViewport);
-
 	// change viewport size (in pixels)
-	glViewport(0, 0, m_fb.width(), m_fb.height());
-	CHECK_OPENGL_ERROR_IN_DEBUG();
+	// glViewport(0, 0, m_fb.width(), m_fb.height());
+	// CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindTexture(GL_TEXTURE_2D, m_texRGB);
@@ -433,9 +429,6 @@ void CFBORender::internal_render_RGBD(
 	//'unbind' the frambuffer object, so subsequent drawing ops are not
 	// drawn into the FBO.
 	FrameBuffer::Bind(oldFBs);
-
-	// Restore viewport:
-	glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
 
 	MRPT_END
 #endif
