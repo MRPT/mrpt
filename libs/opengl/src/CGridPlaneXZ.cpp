@@ -55,7 +55,7 @@ void CGridPlaneXZ::onUpdateBuffers_Wireframe()
 		m_vertex_buffer_data.emplace_back(x, m_plane_y, m_zMax);
 	}
 	// The same color to all vertices:
-	m_color_buffer_data.assign(m_vertex_buffer_data.size(), m_color);
+	m_color_buffer_data.assign(m_vertex_buffer_data.size(), getColor_u8());
 }
 
 uint8_t CGridPlaneXZ::serializeGetVersion() const { return 1; }

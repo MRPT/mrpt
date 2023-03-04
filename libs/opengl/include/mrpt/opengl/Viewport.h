@@ -16,6 +16,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 #include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/FrameBuffer.h>
 #include <mrpt/opengl/Shader.h>
 #include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
@@ -137,8 +138,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 	}
 	bool isPolygonNicestEnabled() const { return m_OpenGL_enablePolygonNicest; }
 
-	const TLightParameters& lightParameters() const { return m_lights; }
-	TLightParameters& lightParameters() { return m_lights; }
+	const TLightParameters& lightParameters() const { return m_light; }
+	TLightParameters& lightParameters() { return m_light; }
 
 	/** @} */
 
@@ -188,16 +189,20 @@ class Viewport : public mrpt::serialization::CSerializable,
 		double& x, double& y, double& width, double& height);
 
 	/** Set the min/max clip depth distances of the rendering frustum (default:
-	 * 0.1 - 10000)
+	 * 0.1 - 1000)
 	 * \sa getViewportClipDistances
 	 */
 	void setViewportClipDistances(const float clip_min, const float clip_max);
 
 	/** Get the current min/max clip depth distances of the rendering frustum
-	 * (default: 0.1 - 10000)
+	 * (default: 0.1 - 1000)
 	 * \sa setViewportClipDistances
 	 */
 	void getViewportClipDistances(float& clip_min, float& clip_max) const;
+
+	void setLightShadowClipDistances(
+		const float clip_min, const float clip_max);
+	void getLightShadowClipDistances(float& clip_min, float& clip_max) const;
 
 	/** Set the border size ("frame") of the viewport (default=0) */
 	inline void setBorderSize(unsigned int lineWidth)
@@ -249,6 +254,23 @@ class Viewport : public mrpt::serialization::CSerializable,
 		const double x_coord, const double y_coord,
 		mrpt::math::TLine3D& out_ray,
 		mrpt::poses::CPose3D* out_cameraPose = nullptr) const;
+
+	/** Enables or disables rendering of shadows cast by the unidirectional
+	 * light.
+	 * \param enabled Set to true to enable shadow casting
+	 *         (default at ctor=false).
+	 * \param SHADOW_MAP_SIZE_X Width of the shadow cast map (1st pass of
+	 *         rendering with shadows). Larger values are slower but gives
+	 *         more precise shadows. Default=2048x2048.
+	 *         Zero means do not change.
+	 * \param SHADOW_MAP_SIZE_Y Like SHADOW_MAP_SIZE_X but defines the height.
+	 *
+	 */
+	void enableShadowCasting(
+		bool enabled = true, unsigned int SHADOW_MAP_SIZE_X = 0,
+		unsigned int SHADOW_MAP_SIZE_Y = 0);
+
+	bool isShadowCastingEnabled() const { return m_shadowsEnabled; }
 
 	/** @} */  // end of Change or read viewport properties
 
@@ -364,8 +386,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 		const int render_offset_x = 0, const int render_offset_y = 0,
 		const CCamera* forceThisCamera = nullptr) const;
 
-	void updateMatricesFromCamera(
-		const CCamera* forceThisCamera = nullptr) const;
+	/// myCamera must come from internalResolveActiveCamera()
+	void updateMatricesFromCamera(const CCamera& myCamera) const;
 
 	/** Provides read access to the opengl shaders */
 	const std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders() const
@@ -400,7 +422,8 @@ class Viewport : public mrpt::serialization::CSerializable,
 	void renderImageMode() const;
 
 	/** Render a normal scene with 3D objects */
-	void renderNormalSceneMode(const CCamera* forceThisCamera = nullptr) const;
+	void renderNormalSceneMode(
+		const CCamera& useThisCamera, bool is1stShadowMapPass = false) const;
 
 	/** Render the viewport border, if enabled */
 	void renderViewportBorder() const;
@@ -438,8 +461,12 @@ class Viewport : public mrpt::serialization::CSerializable,
 	/** The viewport position [0,1] */
 	double m_view_x{0}, m_view_y{0}, m_view_width{1}, m_view_height{1};
 
-	/** The min/max clip depth distances (default: 0.01 - 10000) */
-	float m_clip_min = 0.01f, m_clip_max = 10000.0f;
+	/** The min/max clip depth distances (default: 0.01 - 1000) */
+	float m_clip_min = 0.01f, m_clip_max = 1000.0f;
+
+	/** The near/far plane clip distances for unidirectional light shadow
+	 * casting */
+	float m_lightShadowClipMin = 0.01f, m_lightShadowClipMax = 1000.0f;
 
 	mrpt::img::TColorf m_background_color = {0.4f, 0.4f, 0.4f};
 
@@ -447,6 +474,9 @@ class Viewport : public mrpt::serialization::CSerializable,
 	mrpt::opengl::CTexturedPlane::Ptr m_imageViewPlane;
 
 	mutable mrpt::opengl::CSetOfLines::Ptr m_borderLines;
+
+	const CCamera* internalResolveActiveCamera(
+		const CCamera* forceThisCamera = nullptr) const;
 
 	struct PerThreadData
 	{
@@ -456,8 +486,13 @@ class Viewport : public mrpt::serialization::CSerializable,
 		 * "get3DRayForPixelCoord" */
 		TRenderMatrices state;
 
-		/** Default shader program */
+		/** Default shader programs */
 		std::map<shader_id_t, mrpt::opengl::Program::Ptr> shaders;
+
+		/** Shader programs for 1st and 2nd passes while rendering with shadows
+		 */
+		std::map<shader_id_t, mrpt::opengl::Program::Ptr> shadersShadow1st,
+			shadersShadow2nd;
 	};
 
 	mutable mrpt::containers::PerThreadDataHolder<PerThreadData> m_threadedData;
@@ -476,7 +511,11 @@ class Viewport : public mrpt::serialization::CSerializable,
 	// OpenGL global settings:
 	bool m_OpenGL_enablePolygonNicest{true};
 
-	TLightParameters m_lights;
+	TLightParameters m_light;
+
+	bool m_shadowsEnabled = false;
+	uint32_t m_ShadowMapSizeX = 2048, m_ShadowMapSizeY = 2048;
+	mutable FrameBuffer m_ShadowMapFBO;
 
 	/** Renders all messages in the underlying class CTextMessageCapable */
 	void renderTextMessages() const;

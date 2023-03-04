@@ -46,10 +46,7 @@ CMesh::CMesh(
 	enableTextureLinearInterpolation(true);
 	enableLight(true);
 
-	m_color.A = 255;
-	m_color.R = 0;
-	m_color.G = 0;
-	m_color.B = 150;
+	setColor_u8(0, 0, 150);
 }
 
 CMesh::~CMesh() = default;
@@ -105,6 +102,8 @@ void CMesh::updateTriangles() const
 	const float sCellX = (m_xMax - m_xMin) / (rows - 1);
 	const float sCellY = (m_yMax - m_yMin) / (cols - 1);
 
+	const auto myColor = getColor_u8();
+
 	mrpt::opengl::TTriangle tri;
 
 	m_zMin = std::numeric_limits<float>::max();
@@ -139,7 +138,7 @@ void CMesh::updateTriangles() const
 				tri.z(1) = Z(iX + 1, iY);
 				// Assign alpha channel
 				for (int i = 0; i < 3; i++)
-					tri.a(i) = m_color.A;
+					tri.a(i) = myColor.A;
 
 				if (m_colorFromZ)
 				{
@@ -175,9 +174,9 @@ void CMesh::updateTriangles() const
 				}
 				else
 				{
-					tri.r(0) = tri.r(1) = tri.r(2) = m_color.R / 255.f;
-					tri.g(0) = tri.g(1) = tri.g(2) = m_color.G / 255.f;
-					tri.b(0) = tri.b(1) = tri.b(2) = m_color.B / 255.f;
+					tri.r(0) = tri.r(1) = tri.r(2) = u8tof(myColor.R);
+					tri.g(0) = tri.g(1) = tri.g(2) = u8tof(myColor.G);
+					tri.b(0) = tri.b(1) = tri.b(2) = u8tof(myColor.B);
 				}
 
 				// Compute normal of this triangle, and add it up to the 3
@@ -262,9 +261,9 @@ void CMesh::updateTriangles() const
 				}
 				else
 				{
-					tri.r(0) = tri.r(1) = tri.r(2) = m_color.R / 255.f;
-					tri.g(0) = tri.g(1) = tri.g(2) = m_color.G / 255.f;
-					tri.b(0) = tri.b(1) = tri.b(2) = m_color.B / 255.f;
+					tri.r(0) = tri.r(1) = tri.r(2) = u8tof(myColor.R);
+					tri.g(0) = tri.g(1) = tri.g(2) = u8tof(myColor.G);
+					tri.b(0) = tri.b(1) = tri.b(2) = u8tof(myColor.B);
 				}
 
 				// Compute normal of this triangle, and add it up to the 3
@@ -529,8 +528,10 @@ void CMesh::updateColorsMatrix() const
 		const int rows = getTextureImage().getHeight();
 
 		if ((cols != Z.cols()) || (rows != Z.rows()))
-			printf("\nTexture Image and Z sizes have to be equal");
-
+		{
+			std::cerr
+				<< "[CMesh] Texture image and Z matrix have different sizes.\n";
+		}
 		else if (getTextureImage().isColor())
 		{
 			C_r.setSize(rows, cols);
@@ -610,7 +611,7 @@ void CMesh::setMask(const mrpt::math::CMatrixDynamic<float>& in_mask)
 bool CMesh::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!m_trianglesUpToDate || !m_polygonsUpToDate) updatePolygons();
-	return mrpt::math::traceRay(tmpPolys, (o - this->m_pose).asTPose(), dist);
+	return mrpt::math::traceRay(tmpPolys, (o - getCPose()).asTPose(), dist);
 }
 
 static math::TPolygon3D tmpPoly(3);

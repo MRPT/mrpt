@@ -167,27 +167,6 @@ void export_opengl()
 				"Changes the location of the object, keeping untouched the "
 				"orientation.")
 			.def(
-				"getPoseX", &CRenderizable::getPoseX,
-				"Translation relative to parent coordinate origin.")
-			.def(
-				"getPoseY", &CRenderizable::getPoseY,
-				"Translation relative to parent coordinate origin.")
-			.def(
-				"getPoseZ", &CRenderizable::getPoseZ,
-				"Translation relative to parent coordinate origin.")
-			.def(
-				"getPoseYaw", &CRenderizable::getPoseYaw,
-				"Rotation relative to parent coordinate origin, in "
-				"**DEGREES**.")
-			.def(
-				"getPosePitch", &CRenderizable::getPosePitch,
-				"Rotation relative to parent coordinate origin, in "
-				"**DEGREES**.")
-			.def(
-				"getPoseRoll", &CRenderizable::getPoseRoll,
-				"Rotation relative to parent coordinate origin, in "
-				"**DEGREES**.")
-			.def(
 				"setColor", &CRenderizable_setColor1,
 				"Set the color of this object.")
 			.def(

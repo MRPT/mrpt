@@ -2066,14 +2066,11 @@ void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization()
 			this->m_graph->nodes.find(this->m_graph->nodeCount() - 1);
 		if (search != this->m_graph->nodes.end())
 		{
-			laser_scan_viz->setPose(search->second);
+			auto p = mrpt::math::TPose3D(search->second.asTPose());
 			// put the laser scan underneath the graph, so that you can still
 			// visualize the loop closures with the nodes ahead
-			laser_scan_viz->setPose(mrpt::poses::CPose3D(
-				laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.15,
-				mrpt::DEG2RAD(laser_scan_viz->getPoseYaw()),
-				mrpt::DEG2RAD(laser_scan_viz->getPosePitch()),
-				mrpt::DEG2RAD(laser_scan_viz->getPoseRoll())));
+			p.z = -0.15;
+			laser_scan_viz->setPose(p);
 		}
 
 		this->m_win->unlockAccess3DScene();

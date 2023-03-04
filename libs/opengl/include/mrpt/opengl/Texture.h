@@ -23,7 +23,7 @@ using texture_unit_t = int;	 //!< the "i" in GL_TEXTUREi
 struct texture_name_unit_t
 {
 	texture_name_unit_t() = default;
-	texture_name_unit_t(texture_name_t Name, texture_unit_t Unit)
+	texture_name_unit_t(texture_name_t Name, texture_unit_t Unit = 0)
 		: name(Name), unit(Unit)
 	{
 	}
@@ -66,12 +66,13 @@ class Texture
 	 * texture ID is generated underneath. Valid image formats are 8bit per
 	 * channel RGB or RGBA.
 	 */
-	void assignImage2D(const mrpt::img::CImage& rgb, const Options& o);
+	void assignImage2D(
+		const mrpt::img::CImage& rgb, const Options& o, int textureUnit = 0);
 
 	/// \overload With alpha (transparency) channel as an independent image
 	void assignImage2D(
 		const mrpt::img::CImage& rgb, const mrpt::img::CImage& alpha,
-		const Options& o);
+		const Options& o, int textureUnit = 0);
 
 	/** This is how an Cube texture is loaded into this object, and a
 	 * texture ID is generated underneath. Valid image formats are 8bit per
@@ -80,7 +81,8 @@ class Texture
 	 * Indices of faces in the array follow the numeric ordering of
 	 * mrpt::opengl::CUBE_TEXTURE_FACE values.
 	 */
-	void assignCubeImages(const std::array<mrpt::img::CImage, 6>& imgs);
+	void assignCubeImages(
+		const std::array<mrpt::img::CImage, 6>& imgs, int textureUnit = 0);
 
 	/** Returns true if an image has been already assigned and an OpenGL
 	 * texture ID was already generated. */
@@ -109,12 +111,12 @@ class Texture
 
 	void internalAssignImage_2D(
 		const mrpt::img::CImage* in_rgb, const mrpt::img::CImage* in_alpha,
-		const Options& o);
+		const Options& o, int textureUnit);
 };
 
 // Normally users should not need to call these, but they are exposed just in
 // case they are useful someday.
-texture_name_unit_t getNewTextureNumber();
-void releaseTextureName(const texture_name_unit_t& t);
+texture_name_t getNewTextureNumber();
+void releaseTextureName(const texture_name_t& t);
 
 }  // namespace mrpt::opengl

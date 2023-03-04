@@ -988,6 +988,21 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 6.0, -3.0, 0, 0.0_deg, 0));
+			obj->assignImage(pic);
+			obj->enableLighting(true);
+			theScene->insert(obj);
+		}
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 3.9, -3.0, 0, 0.0_deg, 0));
+			obj->setColor_u8(0xff, 0x00, 0x00, 0xff);
+			obj->enableLighting(true);
+			theScene->insert(obj);
+		}
+
 		auto gl_txt = opengl::CText::Create("CTexturedPlane");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -1037,6 +1052,17 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+	// ground plane (to test shadows):
+	// A plane w/o a texture is a plain color plane:
+	{
+		auto obj = mrpt::opengl::CBox::Create();
+		obj->setColor_u8(0xa0, 0xa0, 0xa0, 0xff);
+		obj->setLocation(0, 0, -5.0f);
+		obj->setBoxCorners({-20.0f, -20.0f, .0f}, {off_x + 20.f, 40.0f, -0.1f});
+		obj->cullFaces(TCullFace::BACK);  // avoid z-fighting
+		theScene->insert(obj);
+	}
+
 	// Arrow to show the light direction:
 	auto glLightArrow = opengl::CArrow::Create(
 		mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(1, 0, 0));
@@ -1076,18 +1102,20 @@ void TestOpenGLObjects()
 	fp.draw_shadow = true;
 	win.addTextMessage(5, 5, "", 0 /*id*/, fp);
 
-	mrpt::opengl::TLightParameters& lights =
-		theScene->getViewport()->lightParameters();
+	auto viewport = theScene->getViewport();
 
-	lights.ambient = {0.2, 0.2, 0.2, 1};
+	mrpt::opengl::TLightParameters& lights = viewport->lightParameters();
+
+	lights.ambient = 0.2;
 
 	while (win.isOpen())
 	{
 		// Lights:
 		const double t = mrpt::Clock::nowDouble();
+		const auto p = glLightArrow->getPose();
+
 		const auto lightDir = mrpt::poses::CPose3D::FromXYZYawPitchRoll(
-			glLightArrow->getPoseX(), glLightArrow->getPoseY(),
-			glLightArrow->getPoseZ(), t * 10.0_deg, 45.0_deg, 0.0_deg);
+			p.x, p.y, p.z, t * 10.0_deg, 45.0_deg, 0.0_deg);
 
 		glLightArrow->setPose(lightDir);
 
@@ -1095,9 +1123,25 @@ void TestOpenGLObjects()
 			lightDir.getRotationMatrix().extractColumn<mrpt::math::TVector3Df>(
 				0);
 
+		if (win.keyHit())
+		{
+			switch (win.getPushedKey())
+			{
+				case 'S':
+				case 's':
+					// toggle shadows:
+					viewport->enableShadowCasting(
+						!viewport->isShadowCastingEnabled());
+					break;
+			};
+		}
+
 		win.updateTextMessage(
 			0 /*id*/,
-			format("Render time=%.03fms", 1e3 / win.getRenderingFPS()));
+			format(
+				"Render time=%.03fms | Shadows: %s",
+				1e3 / win.getRenderingFPS(),
+				viewport->isShadowCastingEnabled() ? "On" : "Off"));
 		std::this_thread::sleep_for(2ms);
 		win.repaint();
 	}

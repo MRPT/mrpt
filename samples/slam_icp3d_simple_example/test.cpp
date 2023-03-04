@@ -59,11 +59,13 @@ void generateObjects(CSetOfObjects::Ptr& world)
 	sph->setColor(1, 0, 0);
 	world->insert(sph);
 
-	CDisk::Ptr pln = CDisk::Create();
-	pln->setDiskRadius(2);
-	pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
-	pln->setColor(0.8, 0, 0);
-	world->insert(pln);
+	{
+		CDisk::Ptr pln = CDisk::Create();
+		pln->setDiskRadius(2);
+		pln->setPose(CPose3D(0, 0, 0, 0, 5.0_deg, 5.0_deg));
+		pln->setColor(0.8, 0, 0);
+		world->insert(pln);
+	}
 
 	{
 		CDisk::Ptr pln = CDisk::Create();

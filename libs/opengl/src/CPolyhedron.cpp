@@ -1035,7 +1035,7 @@ CPolyhedron::Ptr CPolyhedron::CreateJohnsonSolidWithConstantBase(
 bool CPolyhedron::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!polygonsUpToDate) updatePolygons();
-	return math::traceRay(tempPolygons, (o - this->m_pose).asTPose(), dist);
+	return math::traceRay(tempPolygons, (o - getCPose()).asTPose(), dist);
 }
 
 void CPolyhedron::getEdgesLength(std::vector<double>& lengths) const
@@ -1090,7 +1090,7 @@ void CPolyhedron::getSetOfPolygonsAbsolute(
 	size_t N = m_Vertices.size();
 	vector<TPoint3D> nVerts;
 	nVerts.resize(N);
-	CPose3D pose = this->m_pose;
+	CPose3D pose = getCPose();
 	for (size_t i = 0; i < N; i++)
 		pose.composePoint(m_Vertices[i], nVerts[i]);
 	transform(
@@ -2232,7 +2232,7 @@ void CPolyhedron::onUpdateBuffers_Wireframe()
 		vbd.emplace_back(m_Vertices[edge.v2]);
 	}
 
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 }
 
 void CPolyhedron::onUpdateBuffers_Triangles()
@@ -2271,5 +2271,5 @@ void CPolyhedron::onUpdateBuffers_Triangles()
 
 	// All faces, all vertices, same color:
 	for (auto& t : tris)
-		t.setColor(m_color);
+		t.setColor(getColor_u8());
 }

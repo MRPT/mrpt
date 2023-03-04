@@ -243,7 +243,7 @@ void CAssimpModel::onUpdateBuffers_Triangles() {}
 
 void CAssimpModel::enqueueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	bool wholeInView) const
+	bool wholeInView, bool is1stShadowMapPass) const
 {
 	// Enque rendering all textured meshes:
 	mrpt::opengl::CListOpenGLObjects lst;
@@ -251,7 +251,8 @@ void CAssimpModel::enqueueForRenderRecursive(
 		lst.emplace_back(
 			std::dynamic_pointer_cast<mrpt::opengl::CRenderizable>(o));
 
-	mrpt::opengl::enqueueForRendering(lst, state, rq, wholeInView);
+	mrpt::opengl::enqueueForRendering(
+		lst, state, rq, wholeInView, is1stShadowMapPass);
 }
 
 uint8_t CAssimpModel::serializeGetVersion() const { return 2; }
@@ -551,7 +552,7 @@ void CAssimpModel::recursive_render(
 		const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
 
 		mrpt::img::TColor color = apply_material(
-			sc->mMaterials[mesh->mMaterialIndex], m_color,
+			sc->mMaterials[mesh->mMaterialIndex], getColor_u8(),
 			m_ignoreMaterialColor);
 
 		for (unsigned int t = 0; t < mesh->mNumFaces; ++t)

@@ -94,7 +94,7 @@ void CSetOfLines::onUpdateBuffers_Wireframe()
 	}
 
 	// The same color to all vertices:
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 }
 
 void CSetOfLines::onUpdateBuffers_Points()
@@ -119,7 +119,7 @@ void CSetOfLines::onUpdateBuffers_Points()
 	}
 
 	// The same color to all vertices:
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 }
 
 uint8_t CSetOfLines::serializeGetVersion() const { return 4; }

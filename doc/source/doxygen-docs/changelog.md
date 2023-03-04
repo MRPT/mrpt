@@ -5,6 +5,7 @@
     - \ref mrpt_gui_grp
       - All OpenGL viewports: pan is now also achieved by pressing the mouse middle button (wheel) + dragging, for similarity with many other CAD UIs.
     - \ref mrpt_opengl_grp
+      - Shadows can now be rendered for directional lights. See mrpt::opengl::Viewport::enableShadowCasting()
       - These class names have been shortened for ease of use (typedefs with the older names still exist for backwards compatibility, including deserialization of old files):
         - mrpt::opengl::COpenGLScene ==> mrpt::opengl::Scene
         - mrpt::opengl::COpenGLViewport ==> mrpt::opengl::Viewport
@@ -17,6 +18,8 @@
       - Texture handling refactored into a new class mrpt::opengl::Texture
       - Enabled GL MipMap texture generation.
       - Triangles shaders now also account for shininess of material to generate specular reflections. See new method mrpt::opengl::CRenderizable::materialShininess()
+      - mrpt::opengl::TLightParameters has been modified to make it more consistent: just one light color and three floats (diffuse, ambient, specular).
+      - mrpt::opengl::CRenderizable base methods are now 100% thread-safe. getPoseRef() method has been removed since it was not safe.
 - BUG FIXES:
     - Fix unrealistic odometry error simulation in mrpt::kinematics::CVehicleSimulVirtualBase (it affected the app GridmapNavSimul).
 

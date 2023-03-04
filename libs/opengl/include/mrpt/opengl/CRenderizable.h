@@ -26,6 +26,7 @@
 #include <mrpt/typemeta/TEnumType.h>
 
 #include <deque>
+#include <optional>
 #include <shared_mutex>
 
 #ifdef MRPT_OPENGL_PROFILER
@@ -74,59 +75,104 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	friend class mrpt::opengl::CSetOfObjects;
 
    protected:
-	std::string m_name = {};
-	bool m_show_name = false;
-	/** Color components in the range [0,255] */
-	mrpt::img::TColor m_color = {0xff, 0xff, 0xff, 0xff};
-	float m_materialShininess = 0.2f;
-	/** 6D pose wrt the parent coordinate reference. This class automatically
-	 * holds the cached 3x3 rotation matrix for quick load into opengl stack. */
-	mrpt::poses::CPose3D m_pose;
-	/** Scale components to apply to the object (default=1) */
-	float m_scale_x{1}, m_scale_y{1}, m_scale_z{1};
-	/** Is the object visible? (default=true) */
-	bool m_visible{true};
+	struct State
+	{
+		std::string name = {};
+		bool show_name = false;
+
+		/** RGBA components in the range [0,255] */
+		mrpt::img::TColor color = {0xff, 0xff, 0xff, 0xff};
+
+		float materialShininess = 0.2f;
+
+		/** SE(3) pose wrt the parent coordinate reference. This class
+		 * automatically holds the cached 3x3 rotation matrix for quick load
+		 * into opengl stack. */
+		mrpt::poses::CPose3D pose;
+
+		/** Scale components to apply to the object (default=1) */
+		float scale_x = 1.0f, scale_y = 1.0f, scale_z = 1.0f;
+
+		bool visible = true;  //!< Is the object visible? (default=true)
+
+		bool castShadows = true;
+
+		mrpt::math::TPoint3Df representativePoint{0, 0, 0};
+	};
+
+	/// All relevant rendering state that needs to get protected by m_stateMtx
+	State m_state;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_stateMtx;
 
    public:
 	/** @name Changes the appearance of the object to render
 		@{ */
 
 	/** Changes the name of the object */
-	void setName(const std::string& n) { m_name = n; }
-	/** Returns the name of the object */
-	const std::string& getName() const { return m_name; }
-	bool isVisible() const /** Is the object visible? \sa setVisibility */
+	void setName(const std::string& n)
 	{
-		return m_visible;
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.name = n;
 	}
-	void setVisibility(bool visible = true) /** Set object visibility
-											   (default=true) \sa isVisible */
+	/** Returns the name of the object */
+	std::string getName() const
 	{
-		m_visible = visible;
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.name;
+	}
+
+	/** Is the object visible? \sa setVisibility */
+	bool isVisible() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.visible;
+	}
+	/** Set object visibility (default=true) \sa isVisible */
+	void setVisibility(bool visible = true)
+	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.visible = visible;
+	}
+
+	/** Does the object cast shadows? (default=true) */
+	bool castShadows() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.castShadows;
+	}
+	/** Enable/disable casting shadows by this object (default=true) */
+	void castShadows(bool doCast = true)
+	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.castShadows = doCast;
 	}
 
 	/** Enables or disables showing the name of the object as a label when
 	 * rendering */
-	void enableShowName(bool showName = true) { m_show_name = showName; }
+	void enableShowName(bool showName = true)
+	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.show_name = showName;
+	}
 	/** \sa enableShowName */
-	bool isShowNameEnabled() const { return m_show_name; }
-	/** Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to
-	 * this) */
+	bool isShowNameEnabled() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.show_name;
+	}
+
+	/** Defines the SE(3) (pose=translation+rotation) of the object with respect
+	 * to its parent */
 	CRenderizable& setPose(const mrpt::poses::CPose3D& o);
-	/** Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to
-	 * this) */
+	/// \overload
 	CRenderizable& setPose(const mrpt::poses::CPose2D& o);
-	/** Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to
-	 * this) */
+	/// \overload
 	CRenderizable& setPose(const mrpt::math::TPose3D& o);
-	/** Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to
-	 * this) */
+	/// \overload
 	CRenderizable& setPose(const mrpt::math::TPose2D& o);
-	/** Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to
-	 * this) */
+	/// \overload
 	CRenderizable& setPose(const mrpt::poses::CPoint3D& o);
-	/** Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to
-	 * this) */
+	/// \overload
 	CRenderizable& setPose(const mrpt::poses::CPoint2D& o);
 
 	/** Returns the 3D pose of the object as TPose3D */
@@ -134,15 +180,20 @@ class CRenderizable : public mrpt::serialization::CSerializable
 
 	/** Returns a const ref to the 3D pose of the object as mrpt::poses::CPose3D
 	 * (which explicitly contains the 3x3 rotation matrix) */
-	const mrpt::poses::CPose3D& getPoseRef() const { return m_pose; }
+	mrpt::poses::CPose3D getCPose() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.pose;
+	}
 
 	/** Changes the location of the object, keeping untouched the orientation
 	 * \return a ref to this */
 	CRenderizable& setLocation(double x, double y, double z)
 	{
-		m_pose.x(x);
-		m_pose.y(y);
-		m_pose.z(z);
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.pose.x(x);
+		m_state.pose.y(y);
+		m_state.pose.z(z);
 		return *this;
 	}
 
@@ -150,117 +201,100 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 * \return a ref to this  */
 	CRenderizable& setLocation(const mrpt::math::TPoint3D& p)
 	{
-		m_pose.x(p.x);
-		m_pose.y(p.y);
-		m_pose.z(p.z);
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.pose.x(p.x);
+		m_state.pose.y(p.y);
+		m_state.pose.z(p.z);
 		return *this;
 	}
 
-	/** Translation relative to parent coordinate origin. */
-	double getPoseX() const { return m_pose.x(); }
-	/** Translation relative to parent coordinate origin. */
-	double getPoseY() const { return m_pose.y(); }
-	/** Translation relative to parent coordinate origin. */
-	double getPoseZ() const { return m_pose.z(); }
-	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	double getPoseYaw() const { return mrpt::RAD2DEG(m_pose.yaw()); }
-	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	double getPosePitch() const { return mrpt::RAD2DEG(m_pose.pitch()); }
-	/** Rotation relative to parent coordinate origin, in **DEGREES**. */
-	double getPoseRoll() const { return mrpt::RAD2DEG(m_pose.roll()); }
-	/** Rotation relative to parent coordinate origin, in radians. */
-	double getPoseYawRad() const { return m_pose.yaw(); }
-	/** Rotation relative to parent coordinate origin, in radians. */
-	double getPosePitchRad() const { return m_pose.pitch(); }
-	/** Rotation relative to parent coordinate origin, in radians. */
-	double getPoseRollRad() const { return m_pose.roll(); }
-	/** Color components in the range [0,1] */
-	float getColorR() const { return u8tof(m_color.R); }
-	/** Color components in the range [0,1] */
-	float getColorG() const { return u8tof(m_color.G); }
-	/** Color components in the range [0,1] */
-	float getColorB() const { return u8tof(m_color.B); }
-	/** Color components in the range [0,1] */
-	float getColorA() const { return u8tof(m_color.A); }
-	/** Color components in the range [0,255] */
-	uint8_t getColorR_u8() const { return m_color.R; }
-	/** Color components in the range [0,255] */
-	uint8_t getColorG_u8() const { return m_color.G; }
-	/** Color components in the range [0,255] */
-	uint8_t getColorB_u8() const { return m_color.B; }
-	/** Color components in the range [0,255] */
-	uint8_t getColorA_u8() const { return m_color.A; }
-	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorR(const float r) { return setColorR_u8(f2u8(r)); }
-	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorG(const float g) { return setColorG_u8(f2u8(g)); }
-	/**Color components in the range [0,1] \return a ref to this */
-	CRenderizable& setColorB(const float b) { return setColorB_u8(f2u8(b)); }
-	/**Color components in the range [0,1] \return a ref to this */
+	/** Get color components as floats in the range [0,1] */
+	mrpt::img::TColorf getColor() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return mrpt::img::TColorf(m_state.color);
+	}
+
+	/** Get color components as uint8_t in the range [0,255] */
+	mrpt::img::TColor getColor_u8() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.color;
+	}
+
+	/** Set alpha (transparency) color component in the range [0,1]
+	 *  \return a ref to this */
 	CRenderizable& setColorA(const float a) { return setColorA_u8(f2u8(a)); }
-	/**Color components in the range [0,255] \return a ref to this */
-	virtual CRenderizable& setColorR_u8(const uint8_t r)
-	{
-		m_color.R = r;
-		notifyChange();
-		return *this;
-	}
-	/**Color components in the range [0,255] \return a ref to this */
-	virtual CRenderizable& setColorG_u8(const uint8_t g)
-	{
-		m_color.G = g;
-		notifyChange();
-		return *this;
-	}
-	/**Color components in the range [0,255] \return a ref to this */
-	virtual CRenderizable& setColorB_u8(const uint8_t b)
-	{
-		m_color.B = b;
-		notifyChange();
-		return *this;
-	}
-	/**Color components in the range [0,255] \return a ref to this */
+
+	/** Set alpha (transparency) color component in the range [0,255]
+	 *  \return a ref to this */
 	virtual CRenderizable& setColorA_u8(const uint8_t a)
 	{
-		m_color.A = a;
+		m_stateMtx.data.lock();
+		m_state.color.A = a;
+		m_stateMtx.data.unlock();
 		notifyChange();
 		return *this;
 	}
 
 	/** Material shininess (for specular lights in shaders that support it),
 	 *  between 0.0f (none) to 1.0f (shiny) */
-	float materialShininess() const { return m_materialShininess; }
+	float materialShininess() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.materialShininess;
+	}
 
 	/** Material shininess (for specular lights in shaders that support it),
 	 *  between 0.0f (none) to 1.0f (shiny) */
-	void materialShininess(float shininess) { m_materialShininess = shininess; }
+	void materialShininess(float shininess)
+	{
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.materialShininess = shininess;
+	}
 
 	/** Scale to apply to the object, in all three axes (default=1)  \return a
 	 * ref to this */
 	CRenderizable& setScale(float s)
 	{
-		m_scale_x = m_scale_y = m_scale_z = s;
+		m_stateMtx.data.lock();
+		m_state.scale_x = m_state.scale_y = m_state.scale_z = s;
+		m_stateMtx.data.unlock();
 		notifyChange();
 		return *this;
 	}
+
 	/** Scale to apply to the object in each axis (default=1)  \return a ref to
 	 * this */
 	CRenderizable& setScale(float sx, float sy, float sz)
 	{
-		m_scale_x = sx;
-		m_scale_y = sy;
-		m_scale_z = sz;
+		m_stateMtx.data.lock();
+		m_state.scale_x = sx;
+		m_state.scale_y = sy;
+		m_state.scale_z = sz;
+		m_stateMtx.data.unlock();
 		notifyChange();
 		return *this;
 	}
 	/** Get the current scaling factor in one axis */
-	float getScaleX() const { return m_scale_x; }
+	float getScaleX() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.scale_x;
+	}
 	/** Get the current scaling factor in one axis */
-	float getScaleY() const { return m_scale_y; }
+	float getScaleY() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.scale_y;
+	}
 	/** Get the current scaling factor in one axis */
-	float getScaleZ() const { return m_scale_z; }
-	/** Returns the object color property as a TColorf */
-	mrpt::img::TColorf getColor() const { return mrpt::img::TColorf(m_color); }
+	float getScaleZ() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.scale_z;
+	}
+
 	/** Changes the default object color \return a ref to this */
 	CRenderizable& setColor(const mrpt::img::TColorf& c)
 	{
@@ -275,8 +309,6 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		return setColor_u8(f2u8(R), f2u8(G), f2u8(B), f2u8(A));
 	}
 
-	/** Returns the object color property as a TColor */
-	const mrpt::img::TColor& getColor_u8() const { return m_color; }
 	/*** Changes the default object color \return a ref to this */
 	virtual CRenderizable& setColor_u8(const mrpt::img::TColor& c);
 
@@ -314,8 +346,11 @@ class CRenderizable : public mrpt::serialization::CSerializable
 		const mrpt::opengl::TLightParameters* lights = nullptr;
 
 		mutable std::optional<TCullFace> activeCullFace;
+
+		/// The light that is currently bound to the shader uniforms:
 		mutable std::optional<const mrpt::opengl::TLightParameters*>
 			activeLights;
+		/// The texture that is currently bound to the shader uniforms:
 		mutable std::optional<int> activeTextureUnit;
 	};
 
@@ -333,8 +368,9 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	virtual void enqueueForRenderRecursive(
 		[[maybe_unused]] const mrpt::opengl::TRenderMatrices& state,
-		[[maybe_unused]] RenderQueue& rq,
-		[[maybe_unused]] bool wholeInView) const
+		[[maybe_unused]] RenderQueue& rq,  //
+		[[maybe_unused]] bool wholeInView,	//
+		[[maybe_unused]] bool is1stShadowMapPass) const
 	{
 		// do nothing
 	}
@@ -361,17 +397,19 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	void updateBuffers() const
 	{
 		renderUpdateBuffers();
-		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
-		const_cast<CRenderizable&>(*this).m_state.get().outdatedBuffers = false;
+		std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
+		const_cast<CRenderizable&>(*this)
+			.m_outdatedBuffersState.get()
+			.outdatedBuffers = false;
 	}
 
 	/** Call to enable calling renderUpdateBuffers() before the next
 	 * render() rendering iteration. */
 	void notifyChange() const
 	{
-		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		std::unique_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
 		m_cachedLocalBBox.reset();
-		const_cast<CRenderizable&>(*this).m_state.run_on_all(
+		const_cast<CRenderizable&>(*this).m_outdatedBuffersState.run_on_all(
 			[](auto& state) { state.outdatedBuffers = true; });
 	}
 
@@ -383,8 +421,8 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	bool hasToUpdateBuffers() const
 	{
-		std::shared_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
-		return m_state.get().outdatedBuffers;
+		std::shared_lock<std::shared_mutex> lckWrite(m_outdatedStateMtx.data);
+		return m_outdatedBuffersState.get().outdatedBuffers;
 	}
 
 	/** Simulation of ray-trace, given a pose. Returns true if the ray
@@ -401,7 +439,7 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	auto getBoundingBox() const -> mrpt::math::TBoundingBox
 	{
-		return getBoundingBoxLocal().compose(m_pose);
+		return getBoundingBoxLocal().compose(getCPose());
 	}
 
 	/** Evaluates the bounding box of this object (including possible
@@ -430,13 +468,15 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 * (Default=[0,0,0]) */
 	virtual mrpt::math::TPoint3Df getLocalRepresentativePoint() const
 	{
-		return m_representativePoint;
+		std::shared_lock<std::shared_mutex> lckRead(m_stateMtx.data);
+		return m_state.representativePoint;
 	}
 
 	/** See getLocalRepresentativePoint() */
 	void setLocalRepresentativePoint(const mrpt::math::TPoint3Df& p)
 	{
-		m_representativePoint = p;
+		std::unique_lock<std::shared_mutex> lckWrite(m_stateMtx.data);
+		m_state.representativePoint = p;
 	}
 
 	/** Returns or constructs (in its first invokation) the associated
@@ -464,14 +504,13 @@ class CRenderizable : public mrpt::serialization::CSerializable
 	 */
 	virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const = 0;
 
-	struct State
+	struct OutdatedState
 	{
 		bool outdatedBuffers = true;
 	};
-	mrpt::containers::PerThreadDataHolder<State> m_state;
-	mutable mrpt::containers::NonCopiableData<std::shared_mutex> m_stateMtx;
-
-	mrpt::math::TPoint3Df m_representativePoint{0, 0, 0};
+	mrpt::containers::PerThreadDataHolder<OutdatedState> m_outdatedBuffersState;
+	mutable mrpt::containers::NonCopiableData<std::shared_mutex>
+		m_outdatedStateMtx;
 
 	mutable std::optional<mrpt::math::TBoundingBoxf> m_cachedLocalBBox;
 
@@ -505,7 +544,8 @@ using CListOpenGLObjects = std::deque<CRenderizable::Ptr>;
 void enqueueForRendering(
 	const mrpt::opengl::CListOpenGLObjects& objs,
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	const bool skipCullChecks, RenderQueueStats* stats = nullptr);
+	const bool skipCullChecks, const bool is1stShadowMapPass,
+	RenderQueueStats* stats = nullptr);
 
 /** After enqueueForRendering(), actually executes the rendering tasks, grouped
  * shader by shader.
@@ -515,7 +555,8 @@ void enqueueForRendering(
 void processRenderQueue(
 	const RenderQueue& rq,
 	std::map<shader_id_t, mrpt::opengl::Program::Ptr>& shaders,
-	const mrpt::opengl::TLightParameters& lights);
+	const mrpt::opengl::TLightParameters& lights,
+	const std::optional<unsigned int>& depthMapTextureId = std::nullopt);
 
 #ifdef MRPT_OPENGL_PROFILER
 mrpt::system::CTimeLogger& opengl_profiler();

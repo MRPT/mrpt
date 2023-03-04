@@ -21,10 +21,9 @@ IMPLEMENTS_SERIALIZABLE(CVectorField2D, CRenderizable, mrpt::opengl)
 
 /** Constructor */
 CVectorField2D::CVectorField2D() : xcomp(0, 0), ycomp(0, 0)
-
 {
-	m_point_color = m_color;
-	m_field_color = m_color;
+	m_point_color = getColor_u8();
+	m_field_color = getColor_u8();
 }
 
 /** Constructor with a initial set of lines. */
@@ -34,8 +33,8 @@ CVectorField2D::CVectorField2D(
 	[[maybe_unused]] float xmax, [[maybe_unused]] float ymin,
 	[[maybe_unused]] float ymax)
 {
-	m_point_color = m_color;
-	m_field_color = m_color;
+	m_point_color = getColor_u8();
+	m_field_color = getColor_u8();
 }
 
 void CVectorField2D::render(const RenderContext& rc) const

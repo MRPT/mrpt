@@ -48,6 +48,7 @@ void FrameBuffer::RAII_Impl::create(
 	_.m_width = width;
 	_.m_height = height;
 	_.m_Samples = nSamples;
+	_.m_isDepthMap = false;
 
 	const auto oldFBs = CurrentBinding();
 
@@ -130,6 +131,66 @@ void FrameBuffer::RAII_Impl::create(
 #endif
 }
 
+void FrameBuffer::RAII_Impl::createDepthMap(
+	unsigned int width, unsigned int height)
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	if (!isExtensionSupported("GL_EXT_framebuffer_object"))
+		THROW_EXCEPTION(
+			"Framebuffer Object extension unsupported "
+			"(GL_EXT_framebuffer_object)");
+
+	auto& _ = m_state.get();
+
+	_.m_isDepthMap = true;
+	_.m_width = width;
+	_.m_height = height;
+
+	const auto oldFBs = CurrentBinding();
+
+	// Depth FBO:
+	glGenFramebuffers(1, &_.m_Framebuffer);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
+
+	// Create depth texture:
+	glGenTextures(1, &_.m_DepthMapTexture);
+
+	glBindTexture(GL_TEXTURE_2D, _.m_DepthMapTexture);
+
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0,
+		GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	const float borderColor[4] = {1.0, 1.0, 1.0, 1.0};
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	// attach depth texture as FBO's depth buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, _.m_Framebuffer);
+	glFramebufferTexture2D(
+		GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _.m_DepthMapTexture,
+		0);
+	glDrawBuffer(GL_NONE);	// dont draw color
+	glReadBuffer(GL_NONE);
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+		THROW_EXCEPTION("Could not create depth map FBO.");
+
+	_.m_created = true;
+
+	// Restore:
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Restore:
+	Bind(oldFBs);
+#else
+	THROW_EXCEPTION("MRPT built without OpenGL support");
+#endif
+}
+
 void FrameBuffer::RAII_Impl::destroy()
 {
 	auto& _ = m_state.get();
@@ -139,15 +200,23 @@ void FrameBuffer::RAII_Impl::destroy()
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	unbind();
 
-	glDeleteRenderbuffers(1, &_.m_Color);
-	CHECK_OPENGL_ERROR_IN_DEBUG();
-	glDeleteRenderbuffers(1, &_.m_Depth);
-	CHECK_OPENGL_ERROR_IN_DEBUG();
-	glDeleteFramebuffers(1, &_.m_Framebuffer);
-	CHECK_OPENGL_ERROR();
+	if (_.m_isDepthMap)
+	{
+		glDeleteFramebuffers(1, &_.m_Framebuffer);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+	}
+	else
+	{
+		glDeleteRenderbuffers(1, &_.m_Color);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+		glDeleteRenderbuffers(1, &_.m_Depth);
+		CHECK_OPENGL_ERROR_IN_DEBUG();
+		glDeleteFramebuffers(1, &_.m_Framebuffer);
+		CHECK_OPENGL_ERROR();
+	}
 #endif
 	_.m_Color = _.m_Depth = 0;
-	_.m_Framebuffer = 0;
+	_.m_Framebuffer = _.m_DepthMapTexture = 0;
 	_.m_created = false;
 }
 
@@ -205,6 +274,13 @@ void FrameBuffer::Bind(const FrameBufferBinding& ids)
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, ids.readFbId);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, ids.drawFbId);
+#endif
+}
+
+void FrameBuffer::Unbind()
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
 }
 
