@@ -1158,7 +1158,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 	// Prepare 3D scene: (of live view)
 	// ------------------------------------------
 	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
-	openGLSceneRef = mrpt::opengl::COpenGLScene::Create();
+	openGLSceneRef = mrpt::opengl::Scene::Create();
 
 	// Ground plane:
 	{
@@ -2697,8 +2697,7 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 {
 	WX_START_TRY
 
-	mrpt::opengl::COpenGLScene::Ptr scene =
-		mrpt::opengl::COpenGLScene::Create();
+	mrpt::opengl::Scene::Ptr scene = mrpt::opengl::Scene::Create();
 
 	// Ground plane:
 	{

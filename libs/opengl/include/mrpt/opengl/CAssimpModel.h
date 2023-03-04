@@ -38,7 +38,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CAssimpModel](preview_CAssimpModel.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CAssimpModel : public CRenderizableShaderTriangles,
@@ -72,7 +72,7 @@ class CAssimpModel : public CRenderizableShaderTriangles,
 	}
 	void enqueueForRenderRecursive(
 		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-		bool wholeInView) const override;
+		bool wholeInView, bool is1stShadowMapPass) const override;
 	bool isCompositeObject() const override { return true; }
 	/** @} */
 

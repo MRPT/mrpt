@@ -15,7 +15,7 @@ namespace mrpt::opengl
 /** A set of textured triangles.
  *  This class can be used to draw any solid, arbitrarily complex object with
  * textures.
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfTexturedTriangles : public CRenderizableShaderTexturedTriangles
@@ -37,8 +37,10 @@ class CSetOfTexturedTriangles : public CRenderizableShaderTexturedTriangles
 
 	void clearTriangles()
 	{
-		std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx.data);
-		m_triangles.clear();
+		{
+			std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx.data);
+			m_triangles.clear();
+		}
 		CRenderizable::notifyChange();
 	}
 	size_t getTrianglesCount() const
@@ -61,8 +63,10 @@ class CSetOfTexturedTriangles : public CRenderizableShaderTexturedTriangles
 	}
 	void insertTriangle(const TTriangle& t)
 	{
-		std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx.data);
-		m_triangles.push_back(t);
+		{
+			std::unique_lock<std::shared_mutex> writeLock(m_trianglesMtx.data);
+			m_triangles.push_back(t);
+		}
 		CRenderizable::notifyChange();
 	}
 

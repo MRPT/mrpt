@@ -439,7 +439,7 @@ static void AppRotationConverter()
 	// Add a background scene:
 	// -----------------------------
 	{
-		auto scene = mrpt::opengl::COpenGLScene::Create();
+		auto scene = mrpt::opengl::Scene::Create();
 		scene->insert(mrpt::opengl::CGridPlaneXY::Create());
 
 		scene->insert(app.gl_corner_user);

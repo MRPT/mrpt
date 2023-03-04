@@ -14,7 +14,7 @@
 namespace mrpt::opengl
 {
 /** A line segment
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CSimpleLine : public CRenderizableShaderWireFrame

@@ -493,7 +493,7 @@ class CMyReactInterface
 	std::vector<CRobotKinects> kinects;
 	CShortTermMemory stm;
 	gui::CDisplayWindow3D window;
-	COpenGLScene::Ptr scene;
+	Scene::Ptr scene;
 
 	bool getCurrentPoseAndSpeeds(
 		mrpt::math::TPose2D& curPose, mrpt::math::TTwist2D& curVel,

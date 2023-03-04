@@ -11,7 +11,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/gui/MRPT2NanoguiGLCanvas.h>
 #include <mrpt/gui/internal/NanoGUICanvasHeadless.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/string_utils.h>  // firstNLines()
 
 #include <mutex>
@@ -49,7 +49,7 @@ struct CDisplayWindowGUI_Params
 
 /** A window with powerful GUI capabilities, via the nanogui library.
  *
- * You can add a background mrpt::opengl::COpenGLScene object rendered on the
+ * You can add a background mrpt::opengl::Scene object rendered on the
  * background of the entire window by setting an object in field
  * `background_scene`, locking its mutex `background_scene_mtx`.
  *
@@ -282,7 +282,7 @@ class CDisplayWindowGUI : public nanogui::Screen
 	/** @name Access to full-window (background) GL scene
 	 * @{ */
 
-	mrpt::opengl::COpenGLScene::Ptr background_scene;
+	mrpt::opengl::Scene::Ptr background_scene;
 	std::mutex background_scene_mtx;
 
 	CGlCanvasBase& camera() { return m_background_canvas; }

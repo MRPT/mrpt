@@ -12,9 +12,9 @@
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/random.h>
 #include <mrpt/system/CTimeLogger.h>
 #include <mrpt/system/filesystem.h>
@@ -40,9 +40,9 @@ auto& rng = mrpt::random::getRandomGenerator();
 std::mutex rngMtx;
 
 // sample scene:
-static mrpt::opengl::COpenGLScene::Ptr generate_example_scene()
+static mrpt::opengl::Scene::Ptr generate_example_scene()
 {
-	auto s = mrpt::opengl::COpenGLScene::Create();
+	auto s = mrpt::opengl::Scene::Create();
 
 	{
 		auto obj = mrpt::opengl::CAxis::Create(-5, -5, -5, 5, 5, 5);
@@ -103,7 +103,7 @@ static mrpt::opengl::COpenGLScene::Ptr generate_example_scene()
 	return s;
 }
 
-mrpt::opengl::COpenGLScene::Ptr commonScene;
+mrpt::opengl::Scene::Ptr commonScene;
 mrpt::system::CTimeLogger profiler;
 
 struct RenderResult
@@ -296,7 +296,7 @@ static void viz_thread()
 						{5 + 100 * (subWindows.size() - 1), 10});
 					sw.win->setFixedWidth(350);
 					{
-						auto scene = mrpt::opengl::COpenGLScene::Create();
+						auto scene = mrpt::opengl::Scene::Create();
 						auto lck = mrpt::lockHelper(sw.glControl->scene_mtx);
 						sw.glControl->scene = std::move(scene);
 					}

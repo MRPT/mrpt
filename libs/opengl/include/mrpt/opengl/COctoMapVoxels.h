@@ -57,7 +57,7 @@ enum predefined_voxel_sets_t
  *
  * ![mrpt::opengl::COctoMapVoxels](preview_COctoMapVoxels.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class COctoMapVoxels : public CRenderizableShaderTriangles,

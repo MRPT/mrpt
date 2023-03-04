@@ -60,7 +60,7 @@ void GravityDemo()
 	win.setCameraElevationDeg(50.0f);
 	win.setCameraZoom(1000);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	// Modify the scene:
 	// ------------------------------------------------------

@@ -49,7 +49,7 @@ namespace opengl
  * "scan" object, so this CPlanarLaserScan object should be placed at the exact
  * pose of the robot coordinates origin.
  *
- *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
+ *  \sa mrpt::opengl::CPointCloud, opengl::Scene
  * \ingroup mrpt_maps_grp
  */
 class CPlanarLaserScan : public CRenderizableShaderPoints,

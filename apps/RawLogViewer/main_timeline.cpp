@@ -89,8 +89,7 @@ void xRawLogViewerFrame::createTimeLineObjects(wxFlexGridSizer* fgzMain)
 
 	// Set-up bottom timeline view opengl objects:
 	{
-		mrpt::opengl::COpenGLScene::Ptr& scene =
-			m_glTimeLine->getOpenGLSceneRef();
+		mrpt::opengl::Scene::Ptr& scene = m_glTimeLine->getOpenGLSceneRef();
 		scene->clear();
 
 		// Enable no-projection mode in this viewport:

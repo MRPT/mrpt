@@ -124,7 +124,7 @@ void CArrow::onUpdateBuffers_Triangles()
 
 	// All faces, same color:
 	for (auto& t : tris)
-		t.setColor(m_color);
+		t.setColor(getColor_u8());
 }
 
 uint8_t CArrow::serializeGetVersion() const { return 3; }

@@ -409,8 +409,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 	auto* aux = dynamic_cast<CPosePDFGaussian*>(poseChange.get());
 	ASSERT_(aux != nullptr);
 
-	// See https://www.mrpt.org/Probabilistic_Motion_Models
-	// -----------------------------------
+	// See: https://docs.mrpt.org/reference/latest/tutorial-motion-models.html
 
 	// Build the odometry noise matrix:
 	double Al = odometryIncrement.norm();

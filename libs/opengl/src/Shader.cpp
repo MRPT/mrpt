@@ -131,20 +131,30 @@ void Shader::Data::destroy()
 }
 
 bool Shader::compile(
-	unsigned int type, const std::string& shaderCode,
+	unsigned int type, const std::vector<std::string>& shaderCode,
 	mrpt::optional_ref<std::string> outErrorMessages)
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 	clear();
 
+	const auto nShaderCodes = shaderCode.size();
+	ASSERT_(nShaderCodes >= 1);
+
 	m_data->creationThread = std::this_thread::get_id();
 
 	m_data->shader = glCreateShader(static_cast<GLenum>(type));
 
-	const GLchar* source = shaderCode.c_str();
-	const GLint length = shaderCode.size();
+	std::vector<const GLchar*> sources(nShaderCodes);
+	std::vector<GLint> lengths(nShaderCodes);
 
-	glShaderSource(m_data->shader, 1, &source, &length);
+	for (size_t i = 0; i < nShaderCodes; i++)
+	{
+		sources[i] = shaderCode[i].c_str();
+		lengths[i] = shaderCode[i].size();
+	}
+
+	glShaderSource(
+		m_data->shader, nShaderCodes, sources.data(), lengths.data());
 	glCompileShader(m_data->shader);
 
 	GLint shader_ok;
@@ -359,5 +369,43 @@ void Program::dumpProgramDescription(std::ostream& o) const
 
 		o << mrpt::format("Uniform #%d Type: %u Name: %s\n", i, type, name);
 	}
+#endif
+}
+
+void Program::use()
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUseProgram(programId());
+	CHECK_OPENGL_ERROR();
+#endif
+}
+
+void Program::setInt(const char* uniformName, int value) const
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUniform1i(uniformId(uniformName), value);
+#endif
+}
+
+void Program::setFloat(const char* uniformName, float value) const
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUniform1f(uniformId(uniformName), value);
+#endif
+}
+
+void Program::setFloat3(
+	const char* uniformName, float v1, float v2, float v3) const
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUniform3f(uniformId(uniformName), v1, v2, v3);
+#endif
+}
+
+void Program::setFloat4(
+	const char* uniformName, float v1, float v2, float v3, float v4) const
+{
+#if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	glUniform4f(uniformId(uniformName), v1, v2, v3, v4);
 #endif
 }

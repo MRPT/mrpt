@@ -109,7 +109,7 @@ void CSkeletonTracker::processPreviewNone()
 			string caption = string("Preview of ") + m_sensorLabel;
 			m_win = mrpt::gui::CDisplayWindow3D::Create(caption, 800, 600);
 
-			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
+			Scene::Ptr& scene = m_win->get3DSceneAndLock();
 			scene->insert(std::make_shared<CGridPlaneXZ>(-3, 3, 0, 5, -1.5));
 
 			// set camera parameters
@@ -141,7 +141,7 @@ void CSkeletonTracker::processPreviewNone()
 
 		if (m_win && m_win->isOpen())
 		{
-			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
+			Scene::Ptr& scene = m_win->get3DSceneAndLock();
 			{
 				m_win->addTextMessage(0.35, 0.9, "Please, adopt this position");
 
@@ -297,7 +297,7 @@ void CSkeletonTracker::processPreview(
 			string caption = string("Preview of ") + m_sensorLabel;
 			m_win = mrpt::gui::CDisplayWindow3D::Create(caption, 800, 600);
 
-			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
+			Scene::Ptr& scene = m_win->get3DSceneAndLock();
 			scene->insert(std::make_shared<CGridPlaneXZ>(-3, 3, 0, 5, -1.5));
 
 			// set camera parameters
@@ -329,7 +329,7 @@ void CSkeletonTracker::processPreview(
 
 		if (m_win && m_win->isOpen())
 		{
-			COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
+			Scene::Ptr& scene = m_win->get3DSceneAndLock();
 
 			// remove help text and dummy
 			m_win->clearTextMessages();
@@ -395,8 +395,8 @@ void CSkeletonTracker::processPreview(
 					ASSERT_(s0 && s1);
 
 					lines->appendLine(
-						s0->getPoseX(), s0->getPoseY(), s0->getPoseZ(),
-						s1->getPoseX(), s1->getPoseY(), s1->getPoseZ());
+						s0->getPose().translation(),
+						s1->getPose().translation());
 				}
 			}  // end-get3DSceneAndLock
 			m_win->unlockAccess3DScene();

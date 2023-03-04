@@ -41,7 +41,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CFrustum](preview_CFrustum.png)
  *
- * \sa opengl::COpenGLScene,opengl::CRenderizable
+ * \sa opengl::Scene,opengl::CRenderizable
  * \ingroup mrpt_opengl_grp
  */
 class CFrustum : public CRenderizableShaderTriangles,

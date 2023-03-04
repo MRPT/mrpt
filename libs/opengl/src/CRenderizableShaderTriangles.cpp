@@ -55,30 +55,39 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	std::shared_lock<std::shared_mutex> trisReadLock(
 		CRenderizableShaderTriangles::m_trianglesMtx.data);
 
+	const Program& s = *rc.shader;
+
 	// Lights:
-	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_diffuse") &&
-		rc.shader->hasUniform("light_ambient") &&
-		rc.shader->hasUniform("light_direction") &&
+	if (m_enableLight && rc.lights && rc.shader->hasUniform("light_color") &&
 		(!rc.activeLights || rc.activeLights.value() != rc.lights))
 	{
 		// buffered pointer, to prevent re-setting the opengl state with the
 		// same values, a performance killer:
 		rc.activeLights = rc.lights;
 
-		const Program& s = *rc.shader;
+		const auto& l = rc.lights;
 
-		glUniform4f(
-			s.uniformId("light_diffuse"), rc.lights->diffuse.R,
-			rc.lights->diffuse.G, rc.lights->diffuse.B, rc.lights->diffuse.A);
-		glUniform4f(
-			s.uniformId("light_ambient"), rc.lights->ambient.R,
-			rc.lights->ambient.G, rc.lights->ambient.B, rc.lights->ambient.A);
-		// glUniform4fv(s.uniformId("light_specular"), 1,
-		// &rc.lights->specular.R);
-		glUniform3f(
-			s.uniformId("light_direction"), rc.lights->direction.x,
-			rc.lights->direction.y, rc.lights->direction.z);
+		s.setFloat3("light_color", l->color.R, l->color.G, l->color.B);
+		s.setFloat3(
+			"light_direction", l->direction.x, l->direction.y, l->direction.z);
+		s.setFloat("light_ambient", l->ambient);
+		s.setFloat("light_diffuse", l->diffuse);
+		if (rc.shader->hasUniform("light_specular"))
+			s.setFloat("light_specular", l->specular);
+
+		if (rc.shader->hasUniform("light_zmax"))
+			s.setFloat("light_zmax", rc.state->getLastLightClipZFar());
+		if (rc.shader->hasUniform("camera_far_plane"))
+			s.setFloat("camera_far_plane", rc.state->getLastClipZFar());
+
 		CHECK_OPENGL_ERROR_IN_DEBUG();
+	}
+
+	// Set the texture uniform:
+	if (rc.shader->hasUniform("shadowMap"))
+	{
+		// bound to GL_TEXTURE0 + "i":
+		s.setInt("shadowMap", SHADOW_MAP_TEXTURE_UNIT);
 	}
 
 	// Set up the vertex array:

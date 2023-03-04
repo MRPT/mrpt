@@ -21,7 +21,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CText](preview_CText.png)
  *
- * \sa CText3D, opengl::COpenGLScene
+ * \sa CText3D, opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CText : public CRenderizableShaderText

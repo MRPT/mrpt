@@ -37,7 +37,6 @@ namespace mrpt::graphs
  *   - Call updateEstimation() to run one step of the linear SparseQR solver.
  *
  * \ingroup mrpt_graph_grp
- * \note [New in MRPT 1.5.0] Requires Eigen>=3.1
  */
 class ScalarFactorGraph : public mrpt::system::COutputLogger
 {

@@ -10,7 +10,7 @@
 
 /* MRPT */
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 
 /* namespaces */
 using namespace boost::python;

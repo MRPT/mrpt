@@ -17,7 +17,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CGridPlaneXY](preview_CGridPlaneXY.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CGridPlaneXY : public CRenderizableShaderWireFrame

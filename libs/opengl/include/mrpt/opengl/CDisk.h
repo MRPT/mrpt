@@ -18,7 +18,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CDisk](preview_CDisk.png)
  *
- *  \sa opengl::COpenGLScene
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CDisk : public CRenderizableShaderTriangles

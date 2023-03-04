@@ -16,7 +16,7 @@ namespace mrpt::opengl
  *
  *  ![mrpt::opengl::CArrow](preview_CArrow.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CArrow : public CRenderizableShaderTriangles

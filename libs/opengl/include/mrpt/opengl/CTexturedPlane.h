@@ -15,10 +15,12 @@
 namespace mrpt::opengl
 {
 /** A 2D plane in the XY plane with a texture image.
- *  Lighting is disabled in this class, so the plane color or texture will be
- *  independent of its orientation.
  *
- *  \sa opengl::COpenGLScene
+ * Lighting is disabled by default in this class, so the plane color or texture
+ * will be independent of its orientation or shadows cast on it.
+ * This can be changed calling enableLighting(true)
+ *
+ *  \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CTexturedPlane : public CRenderizableShaderTexturedTriangles,
@@ -44,9 +46,16 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles,
 	virtual void onUpdateBuffers_Triangles() override;
 	virtual shader_list_t requiredShaders() const override
 	{
-		return {
-			DefaultShaderID::TRIANGLES_NO_LIGHT,
-			DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT};
+		shader_list_t lst;
+		lst.push_back(
+			CRenderizableShaderTriangles::isLightEnabled()
+				? DefaultShaderID::TRIANGLES_LIGHT
+				: DefaultShaderID::TRIANGLES_NO_LIGHT);
+		lst.push_back(
+			CRenderizableShaderTexturedTriangles::isLightEnabled()
+				? DefaultShaderID::TEXTURED_TRIANGLES_LIGHT
+				: DefaultShaderID::TEXTURED_TRIANGLES_NO_LIGHT);
+		return lst;
 	}
 	void freeOpenGLResources() override
 	{
@@ -95,6 +104,12 @@ class CTexturedPlane : public CRenderizableShaderTexturedTriangles,
 		xMax = m_xMax;
 		yMin = m_yMin;
 		yMax = m_yMax;
+	}
+
+	void enableLighting(bool enable = true)
+	{
+		CRenderizableShaderTriangles::enableLight(enable);
+		CRenderizableShaderTexturedTriangles::enableLight(enable);
 	}
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;

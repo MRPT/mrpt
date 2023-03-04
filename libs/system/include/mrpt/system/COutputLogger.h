@@ -117,7 +117,6 @@ using output_logger_callback_t = std::function<void(
  * logging_enable_console_output class variable if that's not the desired
  * behavior
  *
- * \note [New in MRPT 1.5.0]
  * \sa TMsg
  * \ingroup mrpt_system_grp
  */

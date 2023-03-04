@@ -146,7 +146,7 @@ void CAxis::onUpdateBuffers_Wireframe()
 		m_gl_labels.get().emplace_back(label);
 	}
 
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 
 	for (auto& lb : m_gl_labels.get())
 		lb->updateBuffers();
@@ -154,11 +154,11 @@ void CAxis::onUpdateBuffers_Wireframe()
 
 void CAxis::enqueueForRenderRecursive(
 	const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-	bool wholeInView) const
+	bool wholeInView, bool is1stShadowMapPass) const
 {
 	// Enque rendering all text labels:
 	mrpt::opengl::enqueueForRendering(
-		m_gl_labels.get(), state, rq, wholeInView);
+		m_gl_labels.get(), state, rq, wholeInView, is1stShadowMapPass);
 }
 
 void CAxis::render(const RenderContext& rc) const

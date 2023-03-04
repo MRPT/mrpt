@@ -21,7 +21,7 @@ optionally sets of points over them, etc.
    ![mrpt::gui::CDisplayWindow screenshot](_static/preview_CDisplayWindow.jpg)
 
  - mrpt::gui::CDisplayWindow3D: A powerful 3D rendering window capable of
-displaying a mrpt::opengl::COpenGLScene, or efficiently displaying 2D images
+displaying a mrpt::opengl::Scene, or efficiently displaying 2D images
 using graphics card acceleration. It features mouse navigation, Alt+Enter
 fullscreen switching, multiple viewports, etc. See \ref tutorial_3D_scenes.
    ![mrpt::gui::CDisplayWindow3D screenshot](_static/preview_CDisplayWindow3D.png)

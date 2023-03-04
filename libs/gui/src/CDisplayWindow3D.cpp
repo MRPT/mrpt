@@ -10,6 +10,7 @@
 #include "gui-precomp.h"  // Precompiled headers
 //
 #include <mrpt/config.h>
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
@@ -84,14 +85,16 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name)
 	: CWxGLCanvasBase(parent, id, pos, size, style, name), m_win3D(win3D)
 {
-	this->Bind(wxEVT_CHAR, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
-	this->Bind(
-		wxEVT_CHAR_HOOK, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
-	this->Bind(
-		wxEVT_LEFT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
-	this->Bind(
-		wxEVT_RIGHT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
-	this->Bind(wxEVT_MOTION, &CMyGLCanvas_DisplayWindow3D::OnMouseMove, this);
+	using Me = CMyGLCanvas_DisplayWindow3D;
+
+	this->Bind(wxEVT_CHAR, &Me::OnCharCustom, this);
+	this->Bind(wxEVT_CHAR_HOOK, &Me::OnCharCustom, this);
+
+	this->Bind(wxEVT_LEFT_DOWN, &Me::OnMouseDown, this);
+	this->Bind(wxEVT_MIDDLE_DOWN, &Me::OnMouseDown, this);
+	this->Bind(wxEVT_RIGHT_DOWN, &Me::OnMouseDown, this);
+
+	this->Bind(wxEVT_MOTION, &Me::OnMouseMove, this);
 }
 
 void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
@@ -105,7 +108,6 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
 					m_win3D->m_lastFullScreen, mrpt::system::now()) > 0.2)
 			{
 				m_win3D->m_lastFullScreen = mrpt::system::now();
-				cout << "[CDisplayWindow3D] Switching fullscreen...\n";
 				auto* win = (C3DWindowDialog*)m_win3D->m_hwnd.get();
 				if (win) { win->ShowFullScreen(!win->IsFullScreen()); }
 			}
@@ -120,6 +122,7 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
 		const int code = ev.GetKeyCode();
 		const mrptKeyModifier mod = mrpt::gui::keyEventToMrptKeyModifier(ev);
 
+		auto lck = mrpt::lockHelper(m_win3D->m_mtx);
 		m_win3D->m_keyPushedCode = code;
 		m_win3D->m_keyPushedModifier = mod;
 		m_win3D->m_keyPushed = true;
@@ -194,7 +197,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 	auto& openGLSceneRef = getOpenGLSceneRef();
 	if (openGLSceneRef) openGLSceneRef.reset();
 
-	COpenGLScene::Ptr& ptrScene = m_win3D->get3DSceneAndLock();
+	Scene::Ptr& ptrScene = m_win3D->get3DSceneAndLock();
 	if (ptrScene) openGLSceneRef = ptrScene;
 }
 
@@ -375,7 +378,7 @@ CDisplayWindow3D::CDisplayWindow3D(
 	: CBaseGUIWindow(static_cast<void*>(this), 300, 399, windowCaption),
 	  m_lastFullScreen(mrpt::system::now())
 {
-	m_3Dscene = COpenGLScene::Create();
+	m_3Dscene = Scene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth, initialWindowHeight);
 }
 
@@ -393,7 +396,7 @@ CDisplayWindow3D::~CDisplayWindow3D()
 {
 	// get lock so we make sure nobody else is touching the window right now.
 	bool lock_ok = m_csAccess3DScene.try_lock_for(std::chrono::seconds(2));
-	m_csAccess3DScene.unlock();
+	if (lock_ok) m_csAccess3DScene.unlock();
 
 	CBaseGUIWindow::destroyWxWindow();
 
@@ -471,7 +474,7 @@ void CDisplayWindow3D::setWindowTitle([[maybe_unused]] const std::string& str)
 #endif
 }
 
-opengl::COpenGLScene::Ptr& CDisplayWindow3D::get3DSceneAndLock()
+opengl::Scene::Ptr& CDisplayWindow3D::get3DSceneAndLock()
 {
 	m_csAccess3DScene.lock();
 	return m_3Dscene;
@@ -562,8 +565,7 @@ void CDisplayWindow3D::setMinRange(float new_min)
 {
 	if (m_3Dscene)
 	{
-		mrpt::opengl::COpenGLViewport::Ptr gl_view =
-			m_3Dscene->getViewport("main");
+		mrpt::opengl::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
 		if (gl_view)
 		{
 			float m, M;
@@ -576,8 +578,7 @@ void CDisplayWindow3D::setMaxRange(float new_max)
 {
 	if (m_3Dscene)
 	{
-		mrpt::opengl::COpenGLViewport::Ptr gl_view =
-			m_3Dscene->getViewport("main");
+		mrpt::opengl::Viewport::Ptr gl_view = m_3Dscene->getViewport("main");
 		if (gl_view)
 		{
 			float m, M;
@@ -784,8 +785,16 @@ CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
 
 void CDisplayWindow3D::internal_setRenderingFPS(double FPS)
 {
-	const double ALPHA = 0.99;
+	auto lck = mrpt::lockHelper(m_last_FPS_mtx);
+
+	const double ALPHA = 0.95;
 	m_last_FPS = ALPHA * m_last_FPS + (1 - ALPHA) * FPS;
+}
+
+double CDisplayWindow3D::getRenderingFPS() const
+{
+	auto lck = mrpt::lockHelper(m_last_FPS_mtx);
+	return m_last_FPS;
 }
 
 // Called by CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers
@@ -796,7 +805,7 @@ void CDisplayWindow3D::internal_emitGrabImageEvent(const std::string& fil)
 }
 
 // Returns the "main" viewport of the scene.
-mrpt::opengl::COpenGLViewport::Ptr CDisplayWindow3D::getDefaultViewport()
+mrpt::opengl::Viewport::Ptr CDisplayWindow3D::getDefaultViewport()
 {
 	std::lock_guard<std::recursive_timed_mutex> lck(m_csAccess3DScene);
 	return m_3Dscene->getViewport("main");
@@ -815,7 +824,7 @@ void CDisplayWindow3D::setImageView(mrpt::img::CImage&& img)
 }
 
 CDisplayWindow3DLocker::CDisplayWindow3DLocker(
-	CDisplayWindow3D& win, mrpt::opengl::COpenGLScene::Ptr& out_scene_ptr)
+	CDisplayWindow3D& win, mrpt::opengl::Scene::Ptr& out_scene_ptr)
 	: m_win(win)
 {
 	out_scene_ptr = m_win.get3DSceneAndLock();

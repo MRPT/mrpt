@@ -12,7 +12,7 @@
 #include <mrpt/img/CImage.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/vision/CDifodo.h>
 
 #include <Eigen/Dense>
@@ -28,7 +28,7 @@ class CDifodoDatasets : public mrpt::vision::CDifodo
 	mrpt::poses::CPose3D gt_oldpose;
 
 	/** Opengl scene */
-	mrpt::opengl::COpenGLScene::Ptr scene;
+	mrpt::opengl::Scene::Ptr scene;
 	mrpt::gui::CDisplayWindow3D window;
 	mrpt::obs::CRawlog dataset;
 	std::ifstream f_gt;

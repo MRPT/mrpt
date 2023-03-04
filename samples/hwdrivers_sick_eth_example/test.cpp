@@ -43,14 +43,16 @@ int main(int argc, char* argv[])
 
 	CDisplayWindow3D win3D("Scan", 200, 200);
 
-	COpenGLScene::Ptr ptr_scene = win3D.get3DSceneAndLock();
+	Scene::Ptr ptr_scene = win3D.get3DSceneAndLock();
 
-	opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
-	obj->clear();
-	obj->setColor(0, 0, 1);
-	obj->setName("scan_LMS100");
-	obj->setScan(outObs);
-	ptr_scene->insert(obj);
+	{
+		opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
+		obj->clear();
+		obj->setColor(0, 0, 1);
+		obj->setName("scan_LMS100");
+		obj->setScan(outObs);
+		ptr_scene->insert(obj);
+	}
 
 	win3D.unlockAccess3DScene();
 	win3D.forceRepaint();

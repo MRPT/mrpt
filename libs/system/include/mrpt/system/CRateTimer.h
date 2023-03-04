@@ -13,9 +13,7 @@
 namespace mrpt::system
 {
 /** A class for calling sleep() in a loop, such that the amount of sleep time
- * will be computed
- *  to make the loop run at the desired rate (in Hz).
- * \note [New in MRPT 1.5.0]
+ * will be computed to make the loop run at the desired rate (in Hz).
  * \ingroup mrpt_system_grp
  */
 class CRateTimer

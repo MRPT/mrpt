@@ -134,7 +134,7 @@ void CBox::onUpdateBuffers_Triangles()
 
 	// All faces, all vertices, same color:
 	for (auto& t : tris)
-		t.setColor(m_color);
+		t.setColor(getColor_u8());
 }
 
 uint8_t CBox::serializeGetVersion() const { return 2; }

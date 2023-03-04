@@ -32,7 +32,7 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 	void paintGL() override;
 	void resizeGL(int width, int height) override;
 
-	mrpt::opengl::COpenGLViewport::Ptr mainViewport() const;
+	mrpt::opengl::Viewport::Ptr mainViewport() const;
 
 	/** Returns the zoom distance of the camera
 	 * See also setZoomDistance(float), getZoomDistance()*/
@@ -54,6 +54,7 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 	virtual void removeFromMap(const opengl::CRenderizable::Ptr& newObject);
 
 	bool isPressLMouseButton() const;
+	bool isPressMMouseButton() const;
 	bool isPressRMouseButton() const;
 	/** m_isPressLMouseButton and m_isPressRMouseButton are saved in
 	 * mousePressEvent for mouseMoveEvent as true
@@ -61,10 +62,11 @@ class CQtGlCanvasBase : public QOpenGLWidget, public mrpt::gui::CGlCanvasBase
 	void unpressMouseButtons();
 
    private:
-	bool m_isPressLMouseButton{false};
-	bool m_isPressRMouseButton{false};
+	bool m_isPressLMouseButton = false;
+	bool m_isPressRMouseButton = false;
+	bool m_isPressMMouseButton = false;
 
-	mrpt::opengl::COpenGLViewport::Ptr m_mainViewport;
+	mrpt::opengl::Viewport::Ptr m_mainViewport;
 
 };	// end of class
 

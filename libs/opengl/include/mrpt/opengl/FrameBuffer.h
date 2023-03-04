@@ -12,11 +12,11 @@
 #include <mrpt/containers/PerThreadDataHolder.h>
 #include <mrpt/core/optional_ref.h>
 #include <mrpt/img/CImage.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Buffer.h>
 
 namespace mrpt::opengl
 {
-/** IDs of FrameBuffers, as used in COpenGLFramebuffer
+/** IDs of FrameBuffers, as used in FrameBuffer
  *
  * \ingroup mrpt_opengl_grp
  */
@@ -26,27 +26,35 @@ struct FrameBufferBinding
 	unsigned int readFbId = 0;
 };
 
-/** An OpenGL FrameBuffer resource with RGBA+depth/stencil render buffers.
+/** An OpenGL FrameBuffer resource (FBO) with either RGBA+depth or depth only
+ * render buffers.
  *
  * Refer to docs for glGenFramebuffers() and glGenRenderbuffers().
  *
- * \sa COpenGLBuffer
+ * \sa Buffer, DepthMapFBO
  * \ingroup mrpt_opengl_grp
  */
-class COpenGLFramebuffer
+class FrameBuffer
 {
    public:
-	COpenGLFramebuffer() = default;
-	~COpenGLFramebuffer() = default;
+	FrameBuffer() = default;
+	~FrameBuffer() = default;
 
 	/** @name Main API
 	 *  @{ */
 
-	/** Creates a new FB object and the two (RGBA+depth/stencil) render buffers.
+	/** Creates a new FB object and the two (RGBA+depth) render buffers.
 	 */
 	void create(unsigned int width, unsigned int height, int nSamples = 1)
 	{
 		m_impl.create(width, height, nSamples);
+	}
+
+	/** Creates a new depth-only FBO.
+	 */
+	void createDepthMap(unsigned int width, unsigned int height)
+	{
+		m_impl.createDepthMap(width, height);
 	}
 
 	/** Release resources */
@@ -64,11 +72,16 @@ class COpenGLFramebuffer
 	/// Blit the framebuffer object onto the screen
 	void blit();
 
-	bool initialized() { return m_impl.m_state.get().m_created; }
+	bool initialized() const { return m_impl.m_state.get().m_created; }
 
 	unsigned int width() const { return m_impl.m_state.get().m_width; }
 	unsigned int height() const { return m_impl.m_state.get().m_height; }
 	int numSamples() const { return m_impl.m_state.get().m_Samples; }
+
+	unsigned int depthMapTextureId() const
+	{
+		return m_impl.m_state.get().m_DepthMapTexture;
+	}
 
 	/** @} */
 
@@ -76,6 +89,7 @@ class COpenGLFramebuffer
 	 *  @{ */
 
 	static void Bind(const FrameBufferBinding& ids);
+	static void Unbind();  //!< Calls glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	static FrameBufferBinding CurrentBinding();
 
 	/** @} */
@@ -86,10 +100,11 @@ class COpenGLFramebuffer
 		RAII_Impl() = default;
 		~RAII_Impl() { destroy(); }
 
-		COpenGLBuffer::Type type;
-		COpenGLBuffer::Usage usage = COpenGLBuffer::Usage::StaticDraw;
+		Buffer::Type type;
+		Buffer::Usage usage = Buffer::Usage::StaticDraw;
 
 		void create(unsigned int width, unsigned int height, int nSamples);
+		void createDepthMap(unsigned int width, unsigned int height);
 		void destroy();
 		FrameBufferBinding bind();
 		void unbind();
@@ -97,7 +112,13 @@ class COpenGLFramebuffer
 		struct State
 		{
 			bool m_created = false;
+			bool m_isDepthMap = false;
+
+			// Regular FBO:
 			unsigned int m_Framebuffer = 0, m_Depth = 0, m_Color = 0;
+			// DepthMap rendering to texture:
+			unsigned int m_DepthMapTexture = 0;
+
 			unsigned int m_width = 0, m_height = 0;	 /// In pixels
 			int m_Samples = 0;
 		};

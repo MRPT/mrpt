@@ -199,9 +199,8 @@ void hmt_slam_guiFrame::updateLocalMapView()
 
 						ellip->setCovMatrix(C);
 						ellip->setQuantiles(3);
-						ellip->setLocation(
-							ellip->getPoseX(), ellip->getPoseY(),
-							ellip->getPoseZ() + 0.5);
+						const auto p = ellip->getPose().translation();
+						ellip->setLocation(p.x, p.y, p.z + 0.5);
 						ellip->setColor(1, 0, 0);
 						ellip->setLineWidth(3);
 
