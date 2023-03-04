@@ -528,8 +528,10 @@ void CMesh::updateColorsMatrix() const
 		const int rows = getTextureImage().getHeight();
 
 		if ((cols != Z.cols()) || (rows != Z.rows()))
-			printf("\nTexture Image and Z sizes have to be equal");
-
+		{
+			std::cerr
+				<< "[CMesh] Texture image and Z matrix have different sizes.\n";
+		}
 		else if (getTextureImage().isColor())
 		{
 			C_r.setSize(rows, cols);

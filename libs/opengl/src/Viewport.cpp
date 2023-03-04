@@ -565,10 +565,26 @@ void Viewport::render(
 	// Prepare shaders upon first invokation:
 	if (m_threadedData.get().shaders.empty()) loadDefaultShaders();
 
+	auto& _ = m_threadedData.get().state;
+
 	auto* activeCameraPtr = internalResolveActiveCamera(forceThisCamera);
 
 	// make a copy so the camera remains const over the rendering:
 	const CCamera activeCamera = *activeCameraPtr;
+
+	// Get former viewport
+	GLint oldViewport[4];
+	glGetIntegerv(GL_VIEWPORT, oldViewport);
+
+	const GLint vx = render_offset_x + startFromRatio(m_view_x, render_width);
+	const GLint vy = render_offset_y + startFromRatio(m_view_y, render_height);
+	const GLint vw = sizeFromRatio(vx, m_view_width, render_width);
+	const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
+
+	// Let the matrix generation stuff what's the viewport size (for real
+	// rendering, not shadow 1st pass shadow map)
+	_.viewport_width = vw;
+	_.viewport_height = vh;
 
 	// If we are rendering with shadows, run a camera-view depth map first
 	// (Shadows 1st pass)
@@ -582,10 +598,6 @@ void Viewport::render(
 
 		glEnable(GL_DEPTH_TEST);
 
-		// Get former viewport
-		GLint oldViewport[4];
-		glGetIntegerv(GL_VIEWPORT, oldViewport);
-
 		// Render scene to depth map, as seen from the light point of view:
 		glViewport(0, 0, m_ShadowMapSizeX, m_ShadowMapSizeY);
 
@@ -598,10 +610,6 @@ void Viewport::render(
 
 		m_ShadowMapFBO.Bind(oldFBs);
 
-		// Restore viewport:
-		glViewport(
-			oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
-
 		// The 2nd pass is done inside renderNormalSceneMode()
 
 		// TODO: Any way to refactor the whole pipeline to avoid recursive
@@ -610,19 +618,11 @@ void Viewport::render(
 
 	// Change viewport:
 	// -------------------------------------------
-	const GLint vx = render_offset_x + startFromRatio(m_view_x, render_width);
-	const GLint vy = render_offset_y + startFromRatio(m_view_y, render_height);
-	const GLint vw = sizeFromRatio(vx, m_view_width, render_width);
-	const GLint vh = sizeFromRatio(vy, m_view_height, render_height);
-
 	glViewport(vx, vy, vw, vh);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
 
 	// Clear depth&/color buffers:
 	// -------------------------------------------
-	auto& _ = m_threadedData.get().state;
-	_.viewport_width = vw;
-	_.viewport_height = vh;
 
 	glScissor(vx, vy, vw, vh);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
@@ -681,6 +681,9 @@ void Viewport::render(
 		glBindTexture(GL_TEXTURE_2D, m_ShadowMapFBO.depthMapTextureId());
 		debugRenderQuad();
 	}
+
+	// Restore viewport:
+	glViewport(oldViewport[0], oldViewport[1], oldViewport[2], oldViewport[3]);
 
 	MRPT_END
 #else
