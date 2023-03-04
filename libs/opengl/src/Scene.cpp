@@ -11,8 +11,8 @@
 //
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/opengl_api.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/metaprogramming_serialization.h>
@@ -34,29 +34,26 @@ using namespace std;
 #endif	// _WIN32
 #endif	// MRPT_HAS_OPENGL_GLUT
 
-IMPLEMENTS_SERIALIZABLE(COpenGLScene, CRenderizable, mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(Scene, CRenderizable, mrpt::opengl)
 
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/
-COpenGLScene::COpenGLScene() { createViewport("main"); }
+Scene::Scene() { createViewport("main"); }
 /*--------------------------------------------------------------
 					Copy constructor
   ---------------------------------------------------------------*/
-COpenGLScene::COpenGLScene(const COpenGLScene& obj) : CSerializable()
-{
-	(*this) = obj;
-}
+Scene::Scene(const Scene& obj) : CSerializable() { (*this) = obj; }
 
-COpenGLScene::~COpenGLScene() { m_viewports.clear(); }
+Scene::~Scene() { m_viewports.clear(); }
 
-void COpenGLScene::unloadShaders()
+void Scene::unloadShaders()
 {
 	for (auto& v : m_viewports)
 		if (v) v->unloadShaders();
 }
 
-void COpenGLScene::clear(bool createMainViewport)
+void Scene::clear(bool createMainViewport)
 {
 	m_viewports.clear();
 
@@ -66,7 +63,7 @@ void COpenGLScene::clear(bool createMainViewport)
 /*---------------------------------------------------------------
 						  =
  ---------------------------------------------------------------*/
-COpenGLScene& COpenGLScene::operator=(const COpenGLScene& obj)
+Scene& Scene::operator=(const Scene& obj)
 {
 	if (this != &obj)
 	{
@@ -76,8 +73,7 @@ COpenGLScene& COpenGLScene::operator=(const COpenGLScene& obj)
 		m_viewports = obj.m_viewports;
 		for_each(m_viewports.begin(), m_viewports.end(), [](auto& ptr) {
 			// make a unique copy of each object (copied as a shared ptr)
-			ptr.reset(
-				dynamic_cast<mrpt::opengl::COpenGLViewport*>(ptr->clone()));
+			ptr.reset(dynamic_cast<mrpt::opengl::Viewport*>(ptr->clone()));
 		});
 	}
 	return *this;
@@ -86,7 +82,7 @@ COpenGLScene& COpenGLScene::operator=(const COpenGLScene& obj)
 /*---------------------------------------------------------------
 						render
  ---------------------------------------------------------------*/
-void COpenGLScene::render() const
+void Scene::render() const
 {
 	MRPT_START
 
@@ -112,8 +108,8 @@ void COpenGLScene::render() const
 	MRPT_END
 }
 
-uint8_t COpenGLScene::serializeGetVersion() const { return 1; }
-void COpenGLScene::serializeTo(mrpt::serialization::CArchive& out) const
+uint8_t Scene::serializeGetVersion() const { return 1; }
+void Scene::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	out << m_followCamera;
 
@@ -124,8 +120,7 @@ void COpenGLScene::serializeTo(mrpt::serialization::CArchive& out) const
 		out << *m_viewport;
 }
 
-void COpenGLScene::serializeFrom(
-	mrpt::serialization::CArchive& in, uint8_t version)
+void Scene::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
 	switch (version)
 	{
@@ -133,7 +128,7 @@ void COpenGLScene::serializeFrom(
 		{
 			// Old style: Just one viewport:
 			clear(true);
-			COpenGLViewport::Ptr view = m_viewports[0];
+			Viewport::Ptr view = m_viewports[0];
 
 			// Load objects:
 			uint32_t n;
@@ -159,8 +154,8 @@ void COpenGLScene::serializeFrom(
 				CSerializable::Ptr newObj;
 				in >> newObj;
 
-				COpenGLViewport::Ptr newView =
-					std::dynamic_pointer_cast<COpenGLViewport>(newObj);
+				Viewport::Ptr newView =
+					std::dynamic_pointer_cast<Viewport>(newObj);
 				newView->m_parent = this;
 				m_viewports.push_back(newView);
 			}
@@ -173,7 +168,7 @@ void COpenGLScene::serializeFrom(
 /*---------------------------------------------------------------
 							insert
   ---------------------------------------------------------------*/
-void COpenGLScene::insert(
+void Scene::insert(
 	const CRenderizable::Ptr& newObject, const std::string& viewportName)
 {
 	MRPT_START
@@ -193,7 +188,7 @@ void COpenGLScene::insert(
 /*---------------------------------------------------------------
 							getByName
   ---------------------------------------------------------------*/
-CRenderizable::Ptr COpenGLScene::getByName(
+CRenderizable::Ptr Scene::getByName(
 	const string& str, [[maybe_unused]] const string& viewportName)
 {
 	CRenderizable::Ptr obj;
@@ -202,7 +197,7 @@ CRenderizable::Ptr COpenGLScene::getByName(
 	return obj;
 }
 
-void COpenGLScene::initializeTextures()
+void Scene::initializeTextures()
 {
 	for (auto& m_viewport : m_viewports)
 		m_viewport->initializeTextures();
@@ -211,7 +206,7 @@ void COpenGLScene::initializeTextures()
 /*--------------------------------------------------------------
 					dumpListOfObjects
   ---------------------------------------------------------------*/
-void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst) const
+void Scene::dumpListOfObjects(std::vector<std::string>& lst) const
 {
 	using namespace std::string_literals;
 	lst.clear();
@@ -224,7 +219,7 @@ void COpenGLScene::dumpListOfObjects(std::vector<std::string>& lst) const
 	}
 }
 
-mrpt::containers::yaml COpenGLScene::asYAML() const
+mrpt::containers::yaml Scene::asYAML() const
 {
 	mrpt::containers::yaml d = mrpt::containers::yaml::Map();
 	auto vs = d["viewports"];
@@ -238,14 +233,14 @@ mrpt::containers::yaml COpenGLScene::asYAML() const
 /*--------------------------------------------------------------
 					createViewport
   ---------------------------------------------------------------*/
-COpenGLViewport::Ptr COpenGLScene::createViewport(const string& viewportName)
+Viewport::Ptr Scene::createViewport(const string& viewportName)
 {
 	MRPT_START
 
-	COpenGLViewport::Ptr old = getViewport(viewportName);
+	Viewport::Ptr old = getViewport(viewportName);
 	if (old) return old;
 
-	auto theNew = std::make_shared<COpenGLViewport>(this, viewportName);
+	auto theNew = std::make_shared<Viewport>(this, viewportName);
 	m_viewports.push_back(theNew);
 	return theNew;
 
@@ -255,32 +250,31 @@ COpenGLViewport::Ptr COpenGLScene::createViewport(const string& viewportName)
 /*--------------------------------------------------------------
 					getViewport
   ---------------------------------------------------------------*/
-COpenGLViewport::Ptr COpenGLScene::getViewport(
-	const std::string& viewportName) const
+Viewport::Ptr Scene::getViewport(const std::string& viewportName) const
 {
 	MRPT_START
 	for (const auto& m_viewport : m_viewports)
 		if (m_viewport->m_name == viewportName) return m_viewport;
-	return COpenGLViewport::Ptr();
+	return Viewport::Ptr();
 	MRPT_END
 }
 
 /*--------------------------------------------------------------
 					removeObject
   ---------------------------------------------------------------*/
-void COpenGLScene::removeObject(
+void Scene::removeObject(
 	const CRenderizable::Ptr& obj, const std::string& viewportName)
 {
 	MRPT_START
 
-	COpenGLViewport::Ptr view = getViewport(viewportName);
+	Viewport::Ptr view = getViewport(viewportName);
 	ASSERT_(view);
 	view->removeObject(obj);
 
 	MRPT_END
 }
 
-bool COpenGLScene::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
+bool Scene::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	bool found = false;
 	double tmp;
@@ -302,7 +296,7 @@ bool COpenGLScene::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 	return found;
 }
 
-bool COpenGLScene::saveToFile(const std::string& fil) const
+bool Scene::saveToFile(const std::string& fil) const
 {
 	try
 	{
@@ -316,7 +310,7 @@ bool COpenGLScene::saveToFile(const std::string& fil) const
 	}
 }
 
-bool COpenGLScene::loadFromFile(const std::string& fil)
+bool Scene::loadFromFile(const std::string& fil)
 {
 	try
 	{
@@ -332,16 +326,16 @@ bool COpenGLScene::loadFromFile(const std::string& fil)
 
 /** Evaluates the bounding box of this object (including possible children) in
  * the coordinate frame of the object parent. */
-auto COpenGLScene::getBoundingBox(const std::string& vpn) const
+auto Scene::getBoundingBox(const std::string& vpn) const
 	-> mrpt::math::TBoundingBox
 {
-	COpenGLViewport::Ptr vp = this->getViewport(vpn);
+	Viewport::Ptr vp = this->getViewport(vpn);
 	ASSERTMSG_(vp, "No opengl viewport exists with the given name");
 
 	return vp->getBoundingBox();
 }
 
-void COpenGLScene::freeOpenGLResources()
+void Scene::freeOpenGLResources()
 {
 	auto do_free = [](const mrpt::opengl::CRenderizable::Ptr& o) {
 		o->freeOpenGLResources();

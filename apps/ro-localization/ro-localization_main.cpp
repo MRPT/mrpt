@@ -273,7 +273,7 @@ void TestParticlesLocalization()
 
 // 3D World
 #ifdef STORE_3D
-			COpenGLScene::Ptr scene = std::make_shared<COpenGLScene>();
+			Scene::Ptr scene = std::make_shared<Scene>();
 
 #ifdef SHOW_REAL_TIME_3D
 			CDisplayWindow3D window("ro-localization - Part of MRPT");
@@ -288,7 +288,7 @@ void TestParticlesLocalization()
 
 			if (SAVE_3D_TO_VIDEO) { window.grabImagesStart(); }
 
-			COpenGLScene::Ptr sceneTR = window.get3DSceneAndLock();
+			Scene::Ptr sceneTR = window.get3DSceneAndLock();
 #endif
 			// World Axis
 			{

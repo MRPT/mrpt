@@ -52,9 +52,9 @@ void CText3D::onUpdateBuffers_Text()
 		m_str, tris, vbd, m_text_style, m_text_spacing, m_text_kerning);
 
 	// All lines & triangles, the same color:
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 	for (auto& tri : m_triangles)
-		tri.setColor(m_color);
+		tri.setColor(getColor_u8());
 }
 
 uint8_t CText3D::serializeGetVersion() const { return 0; }
@@ -87,7 +87,7 @@ void CText3D::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 auto CText3D::internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf
 {
 	return mrpt::math::TBoundingBoxf::FromUnsortedPoints(
-		{0.f, 0.f, 0.f}, {m_str.size() * m_scale_x, 1.0f * m_scale_y, 0.f});
+		{0.f, 0.f, 0.f}, {m_str.size() * getScaleX(), 1.0f * getScaleY(), 0.f});
 }
 
 void CText3D::toYAMLMap(mrpt::containers::yaml& propertiesMap) const

@@ -304,8 +304,7 @@ NavlogViewerApp::NavlogViewerApp()
 	// Add a background scene:
 	// -----------------------------
 	{
-		mrpt::opengl::COpenGLScene::Ptr scene =
-			mrpt::opengl::COpenGLScene::Create();
+		mrpt::opengl::Scene::Ptr scene = mrpt::opengl::Scene::Create();
 
 		m_win->camera().setAzimuthDegrees(-90.0f);
 		m_win->camera().setElevationDegrees(90.0f);
@@ -610,7 +609,7 @@ void NavlogViewerApp::updateVisualization()
 	// Update 3D view:
 	{
 		auto lck = mrpt::lockHelper(m_win->background_scene_mtx);
-		mrpt::opengl::COpenGLScene::Ptr& scene = m_win->background_scene;
+		mrpt::opengl::Scene::Ptr& scene = m_win->background_scene;
 
 		const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
 
@@ -1247,7 +1246,7 @@ void NavlogViewerApp::updateVisualization()
 					m_win->performLayout();
 				});
 
-			viz.glCanvas->scene = mrpt::opengl::COpenGLScene::Create();
+			viz.glCanvas->scene = mrpt::opengl::Scene::Create();
 			auto& scene = viz.glCanvas->scene;
 
 			// win
@@ -1332,7 +1331,7 @@ void NavlogViewerApp::updateVisualization()
 #endif
 		}
 
-		mrpt::opengl::COpenGLScene::Ptr& scene = viz.glCanvas->scene;
+		mrpt::opengl::Scene::Ptr& scene = viz.glCanvas->scene;
 		auto view = scene->getViewport();
 
 		// Draw dynamic stuff:

@@ -1410,7 +1410,7 @@ void CFaceDetection::experimental_viewFacePointsScanned(
 		mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
-	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr scene = win3D.get3DSceneAndLock();
 
 	scene->insert(gl_points);
 	scene->insert(mrpt::opengl::CGridPlaneXY::Create());
@@ -1498,7 +1498,7 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(
 		mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
-	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr scene = win3D.get3DSceneAndLock();
 
 	CSphere::Ptr sphere = std::make_shared<CSphere>(0.005f);
 	sphere->setLocation(center);
@@ -1577,7 +1577,7 @@ void CFaceDetection::experimental_viewRegions(
 		mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(6);
 
-	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::Scene::Ptr scene = win3D.get3DSceneAndLock();
 
 	if (meanPos != nullptr)
 	{

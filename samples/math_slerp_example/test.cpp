@@ -38,7 +38,7 @@ void TestSLERP()
 {
 	CDisplayWindow3D win("Example of SLERP animation", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	win.setCameraAzimuthDeg(-50);
 	win.setCameraElevationDeg(40);
@@ -99,7 +99,7 @@ void TestSLERP()
 		mrpt::math::slerp(pose_a, pose_b, t, pose_interp);
 
 		// Move the scene:
-		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 		auto obj1 = theScene->getByName("slerp_obj");
 		obj1->setPose(pose_interp);

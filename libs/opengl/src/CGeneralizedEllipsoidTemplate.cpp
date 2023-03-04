@@ -39,7 +39,7 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Wireframe()
 	}
 
 	// All lines, same color:
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 }
 
 template <>
@@ -113,7 +113,7 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Wireframe()
 	}
 
 	// All lines, same color:
-	cbd.assign(vbd.size(), m_color);
+	cbd.assign(vbd.size(), getColor_u8());
 }
 
 template <>
@@ -140,7 +140,7 @@ void CGeneralizedEllipsoidTemplate<2>::implUpdate_Triangles()
 
 	// All faces, all vertices, same color:
 	for (auto& t : tris)
-		t.setColor(m_color);
+		t.setColor(getColor_u8());
 }
 
 template <>
@@ -222,7 +222,7 @@ void CGeneralizedEllipsoidTemplate<3>::implUpdate_Triangles()
 
 	// All faces, all vertices, same color:
 	for (auto& t : tris)
-		t.setColor(m_color);
+		t.setColor(getColor_u8());
 }
 
 template <>

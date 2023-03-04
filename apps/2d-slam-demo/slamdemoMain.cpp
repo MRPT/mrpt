@@ -32,7 +32,7 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/obs/CObservationComment.h>
-#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
 
@@ -2256,7 +2256,7 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
 		auto obj3D = mrpt::opengl::CSetOfObjects::Create();
 		m_SLAM.getAs3DObject(obj3D);
 
-		mrpt::opengl::COpenGLScene scene;
+		mrpt::opengl::Scene scene;
 		scene.insert(obj3D);
 
 		scene.saveToFile(filName);

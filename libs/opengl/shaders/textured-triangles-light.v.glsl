@@ -9,11 +9,11 @@ in vec3 position;
 in vec2 vertexUV;
 in vec3 vertexNormal;
 
-uniform mediump mat4 p_matrix;
-uniform mediump mat4 v_matrix;
-uniform mediump mat4 m_matrix;
+uniform highp mat4 p_matrix;
+uniform highp mat4 v_matrix;
+uniform highp mat4 m_matrix;
 
-out mediump vec3 frag_position, frag_normal;
+out highp vec3 frag_position, frag_normal;
 out mediump vec2 frag_UV; // Interpolated UV texture coords
 
 void main()

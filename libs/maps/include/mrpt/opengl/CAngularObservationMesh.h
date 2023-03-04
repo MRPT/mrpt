@@ -528,9 +528,9 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 	 * 2D ray tracing (will generate a 3D mesh). Given an object and two
 	 * ranges, realizes a scan from the initial pose and stores it in a
 	 * CAngularObservationMesh object.
-	 * The objective may be a COpenGLScene, a CRenderizable or any children of
+	 * The objective may be a Scene, a CRenderizable or any children of
 	 * its.
-	 * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
+	 * \sa mrpt::opengl::CRenderizable,mrpt::opengl::Scene.
 	 */
 	template <class T>
 	static void trace2DSetOfRays(
@@ -541,9 +541,9 @@ class CAngularObservationMesh : public CRenderizableShaderTriangles,
 	 * 2D ray tracing (will generate a vectorial mesh inside a plane). Given an
 	 * object and a range, realizes a scan from the initial pose and stores it
 	 * in a CObservation2DRangeScan object.
-	 * The objective may be a COpenGLScene, a CRenderizable or any children of
+	 * The objective may be a Scene, a CRenderizable or any children of
 	 * its.
-	 * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
+	 * \sa mrpt::opengl::CRenderizable,mrpt::opengl::Scene.
 	 */
 	template <class T>
 	static void trace1DSetOfRays(

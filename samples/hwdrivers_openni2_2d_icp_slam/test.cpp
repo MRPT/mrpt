@@ -87,10 +87,9 @@ int main(int argc, char** argv)
 		gl_2d_scan->enableSurface(true);
 		gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3);	// RGBA
 
-		opengl::COpenGLViewport::Ptr
-			viewInt;  // Extra viewports for the RGB images.
+		opengl::Viewport::Ptr viewInt;	// Extra viewports for the RGB images.
 		{
-			mrpt::opengl::COpenGLScene::Ptr& scene = win3D.get3DSceneAndLock();
+			mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
 			// Create the Opengl object for the point cloud:
 			scene->insert(gl_points);

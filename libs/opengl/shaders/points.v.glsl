@@ -8,17 +8,17 @@ R"XXX(#version 300 es
 in vec3 position;
 in vec4 vertexColor;
 
-uniform mediump mat4 p_matrix;
-uniform mediump mat4 mv_matrix;
+uniform highp mat4 p_matrix;
+uniform highp mat4 mv_matrix;
 uniform float vertexPointSize;
 uniform int enableVariablePointSize;  // 0 or 1
 uniform float variablePointSize_K, variablePointSize_DepthScale;
 
-out mediump vec4 frag_color;
+out lowp vec4 frag_color;
 
 void main()
 {
-    mediump vec4 eye_position = mv_matrix * vec4(position, 1.0);
+    highp vec4 eye_position = mv_matrix * vec4(position, 1.0);
     gl_Position = p_matrix * eye_position;
     if (enableVariablePointSize!=0)
       gl_PointSize = vertexPointSize +

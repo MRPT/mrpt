@@ -101,7 +101,7 @@ void Test_SwissRanger()
 			0.5, -0.5, -0.5 * aspect_ratio, 0.5 * aspect_ratio);
 
 	{
-		mrpt::opengl::COpenGLScene::Ptr& scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::Scene::Ptr& scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 		scene->insert(gl_points);
@@ -116,8 +116,7 @@ void Test_SwissRanger()
 		// each in a separate viewport:
 		win3D.addTextMessage(
 			30, -10 - 1 * (VW_GAP + VW_HEIGHT), "Range data", 1);
-		opengl::COpenGLViewport::Ptr viewRange =
-			scene->createViewport("view2d_range");
+		opengl::Viewport::Ptr viewRange = scene->createViewport("view2d_range");
 		scene->insert(gl_img_range, "view2d_range");
 		viewRange->setViewportPosition(
 			5, -10 - 1 * (VW_GAP + VW_HEIGHT), VW_WIDTH, VW_HEIGHT);
@@ -129,8 +128,7 @@ void Test_SwissRanger()
 
 		win3D.addTextMessage(
 			30, -10 - 2 * (VW_GAP + VW_HEIGHT), "Intensity data", 2);
-		opengl::COpenGLViewport::Ptr viewInt =
-			scene->createViewport("view2d_int");
+		opengl::Viewport::Ptr viewInt = scene->createViewport("view2d_int");
 		scene->insert(gl_img_intensity, "view2d_int");
 		viewInt->setViewportPosition(
 			5, -10 - 2 * (VW_GAP + VW_HEIGHT), VW_WIDTH, VW_HEIGHT);
@@ -143,7 +141,7 @@ void Test_SwissRanger()
 		win3D.addTextMessage(
 			30, -10 - 3 * (VW_GAP + VW_HEIGHT), "Intensity data (undistorted)",
 			3);
-		opengl::COpenGLViewport::Ptr viewIntRect =
+		opengl::Viewport::Ptr viewIntRect =
 			scene->createViewport("view2d_intrect");
 		scene->insert(gl_img_intensity_rect, "view2d_intrect");
 		viewIntRect->setViewportPosition(

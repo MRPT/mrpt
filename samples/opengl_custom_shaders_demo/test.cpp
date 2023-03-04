@@ -27,7 +27,7 @@
 #endif
 
 // Demo of how to install a custom shader program:
-static void installCustomShader(mrpt::opengl::COpenGLScene& scene)
+static void installCustomShader(mrpt::opengl::Scene& scene)
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -98,12 +98,12 @@ void main()
 	std::string errMsgs;
 	std::vector<mrpt::opengl::Shader> lstShaders;
 	lstShaders.resize(2);
-	if (!lstShaders[0].compile(GL_VERTEX_SHADER, vertex_shader, errMsgs))
+	if (!lstShaders[0].compile(GL_VERTEX_SHADER, {vertex_shader}, errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
 			"Error compiling GL_VERTEX_SHADER:\n%s", errMsgs.c_str());
 	}
-	if (!lstShaders[1].compile(GL_FRAGMENT_SHADER, fragment_shader, errMsgs))
+	if (!lstShaders[1].compile(GL_FRAGMENT_SHADER, {fragment_shader}, errMsgs))
 	{
 		THROW_EXCEPTION_FMT(
 			"Error compiling GL_FRAGMENT_SHADER:\n%s", errMsgs.c_str());
@@ -163,7 +163,7 @@ void DemoCustomShaders()
 
 	CDisplayWindow3D win("Demo of MRPT's custom shaders", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	float off_x = 0;
 	// Box

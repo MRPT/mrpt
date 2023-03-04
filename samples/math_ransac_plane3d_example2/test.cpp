@@ -160,7 +160,7 @@ void TestRANSAC()
 	// Show GUI
 	// --------------------------
 	mrpt::gui::CDisplayWindow3D win("Set of points", 500, 500);
-	opengl::COpenGLScene::Ptr scene = opengl::COpenGLScene::Create();
+	opengl::Scene::Ptr scene = opengl::Scene::Create();
 
 	scene->insert(opengl::CGridPlaneXY::Create(-20, 20, -20, 20, 0, 1));
 	scene->insert(opengl::stock_objects::CornerXYZ());

@@ -18,9 +18,9 @@ namespace mrpt::opengl
  * established in this object.
  * It can be established a hierarchy of "CSetOfObjects", where the coordinates
  * framework of each one will be referenced to the parent's one.
- * The list of child objects is accessed directly as in the class COpenGLScene
+ * The list of child objects is accessed directly as in the class Scene
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 class CSetOfObjects : public CRenderizable
@@ -77,7 +77,7 @@ class CSetOfObjects : public CRenderizable
 	void renderUpdateBuffers() const override;
 	void enqueueForRenderRecursive(
 		const mrpt::opengl::TRenderMatrices& state, RenderQueue& rq,
-		bool wholeInView) const override;
+		bool wholeInView, bool is1stShadowMapPass) const override;
 	bool isCompositeObject() const override { return true; }
 	void freeOpenGLResources() override
 	{
@@ -131,9 +131,6 @@ class CSetOfObjects : public CRenderizable
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 
 	CRenderizable& setColor_u8(const mrpt::img::TColor& c) override;
-	CRenderizable& setColorR_u8(const uint8_t r) override;
-	CRenderizable& setColorG_u8(const uint8_t g) override;
-	CRenderizable& setColorB_u8(const uint8_t b) override;
 	CRenderizable& setColorA_u8(const uint8_t a) override;
 	bool contains(const CRenderizable::Ptr& obj) const;
 	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;

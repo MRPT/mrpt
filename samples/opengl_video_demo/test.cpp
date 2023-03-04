@@ -65,7 +65,7 @@ void TestOpenGLVideo()
 
 	// Insert objects in scene:
 	{
-		COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+		Scene::Ptr& theScene = win.get3DSceneAndLock();
 		theScene->insert(gl_ground);
 		theScene->insert(gl_plane1);
 		theScene->insert(gl_plane2);

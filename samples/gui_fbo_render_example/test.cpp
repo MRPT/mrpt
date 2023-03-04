@@ -13,8 +13,8 @@
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/CTimeLogger.h>
 
 #include <chrono>
@@ -32,7 +32,7 @@ using namespace std::literals;
 // ------------------------------------------------------
 void TestDisplay3D()
 {
-	COpenGLScene scene;
+	Scene scene;
 
 	// Modify the scene:
 	// ------------------------------------------------------
@@ -153,10 +153,10 @@ void TestDisplay3D()
 			1 + cos(t + 0.2) * 2, -2 + sin(t + 0.9) * 4, sin(t + 1.2) * 5);
 
 		obj = scene.getByName("ball_2");
+		const auto p1 = obj->getPose();
 		obj->setLocation(
-			obj->getPoseX() + cos(obj->getPoseY() / 2) * 0.01,
-			obj->getPoseY() - sin(obj->getPoseX() / 2) * 0.09,
-			obj->getPoseZ() - sin(obj->getPoseX() / 2) * 0.08);
+			p1.x + cos(p1.y / 2) * 0.01, p1.y - sin(p1.x / 2) * 0.09,
+			p1.z - sin(p1.x / 2) * 0.08);
 
 		tl.enter("render_RGBD");
 		renderer.render_RGBD(scene, frame, depth);

@@ -25,7 +25,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CVectorField3D](preview_CVectorField3D.png)
  *
- * \sa opengl::COpenGLScene
+ * \sa opengl::Scene
  * \ingroup mrpt_opengl_grp
  */
 
@@ -133,8 +133,8 @@ class CVectorField3D : public CRenderizableShaderPoints,
 	inline void getVectorFieldColor(
 		mrpt::img::TColorf Cmin, mrpt::img::TColorf Cmax) const
 	{
-		Cmin = m_still_color / 255;
-		Cmax = m_maxspeed_color / 255;
+		Cmin = mrpt::img::TColorf{m_still_color};
+		Cmax = mrpt::img::TColorf{m_maxspeed_color};
 	}
 
 	/**

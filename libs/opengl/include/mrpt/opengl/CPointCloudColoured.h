@@ -28,7 +28,7 @@ namespace mrpt::opengl
  *
  * ![mrpt::opengl::CPointCloudColoured](preview_CPointCloudColoured.png)
  *
- * \sa opengl::COpenGLScene, opengl::CPointCloud
+ * \sa opengl::Scene, opengl::CPointCloud
  * \ingroup mrpt_opengl_grp
  */
 class CPointCloudColoured : public CRenderizableShaderPoints,
@@ -60,9 +60,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
    public:
 	auto internalBoundingBoxLocal() const -> mrpt::math::TBoundingBoxf override
 	{
-		std::shared_lock<std::shared_mutex> wfReadLock(
-			CRenderizableShaderPoints::m_pointsMtx.data);
-
+		// m_pointsMtx.data: already held by calls inside.
 		if (empty()) return {};
 		if (auto bb = this->octree_getBoundingBox(); bb)
 			return {bb->min.cast<float>(), bb->max.cast<float>()};

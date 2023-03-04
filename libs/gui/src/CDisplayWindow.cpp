@@ -9,6 +9,7 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 //
+#include <mrpt/core/lock_helper.h>
 #include <mrpt/core/round.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/WxSubsystem.h>
@@ -201,6 +202,7 @@ void CWindowDialog::OnChar(wxKeyEvent& event)
 		const int code = event.GetKeyCode();
 		const mrptKeyModifier mod = mrpt::gui::keyEventToMrptKeyModifier(event);
 
+		auto lck = mrpt::lockHelper(m_win2D->m_mtx);
 		m_win2D->m_keyPushedCode = code;
 		m_win2D->m_keyPushedModifier = mod;
 		m_win2D->m_keyPushed = true;

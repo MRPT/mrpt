@@ -17,7 +17,7 @@ class CCylinder;
  *
  * ![mrpt::opengl::CCylinder](preview_CCylinder.png)
  *
- * \sa opengl::COpenGLScene,opengl::CDisk
+ * \sa opengl::Scene,opengl::CDisk
  * \ingroup mrpt_opengl_grp
  */
 class CCylinder : public CRenderizableShaderTriangles

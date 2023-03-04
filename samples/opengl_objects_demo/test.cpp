@@ -37,7 +37,7 @@ void TestOpenGLObjects()
 
 	CDisplayWindow3D win("Demo of MRPT's OpenGL objects", 640, 480);
 
-	COpenGLScene::Ptr& theScene = win.get3DSceneAndLock();
+	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
 	auto& rng = mrpt::random::getRandomGenerator();
 
@@ -249,8 +249,22 @@ void TestOpenGLObjects()
 			auto obj = opengl::CEllipsoid3D::Create();
 			obj->setCovMatrix(cov3d);
 			obj->setQuantiles(2.0);
+			obj->materialShininess(0.99f);
+			obj->setName("Ellipsoid shininess=0.99");
+			obj->enableShowName();
 			obj->enableDrawSolid3D(true);
 			obj->setLocation(off_x, -6, 0);
+			theScene->insert(obj);
+		}
+		{
+			auto obj = opengl::CEllipsoid3D::Create();
+			obj->setCovMatrix(cov3d);
+			obj->setQuantiles(2.0);
+			obj->materialShininess(0.01f);
+			obj->setName("Ellipsoid shininess=0.01");
+			obj->enableShowName();
+			obj->enableDrawSolid3D(true);
+			obj->setLocation(off_x, -12, 0);
 			theScene->insert(obj);
 		}
 
@@ -436,6 +450,7 @@ void TestOpenGLObjects()
 		opengl::CMeshFast::Ptr obj2 = opengl::CMeshFast::Create();
 		opengl::CMesh::Ptr obj3 = opengl::CMesh::Create();
 		opengl::CMesh::Ptr obj4 = opengl::CMesh::Create();
+		opengl::CMesh::Ptr obj5 = opengl::CMesh::Create();
 
 		obj1->setXBounds(-1, 1);
 		obj1->setYBounds(-1, 1);
@@ -485,6 +500,7 @@ void TestOpenGLObjects()
 		obj3->enableWireFrame(true);
 		obj3->setLocation(off_x, 0, 0);
 		obj3->cullFaces(mrpt::opengl::TCullFace::BACK);
+		// obj3->enableTextureMipMap(false);
 		theScene->insert(obj3);
 
 		// obj 4:
@@ -493,7 +509,17 @@ void TestOpenGLObjects()
 			obj4->assignImageAndZ(im, Z);
 			obj4->setLocation(off_x, 3, 0);
 			obj4->cullFaces(mrpt::opengl::TCullFace::BACK);
+			// obj4->enableTextureMipMap(false);
 			theScene->insert(obj4);
+		}
+		// obj 5:
+		if (im.getWidth() > 1)
+		{
+			obj5->assignImageAndZ(im, Z);
+			obj5->setMeshTextureExtension(0.25, 0.5);
+			obj5->setLocation(off_x + 3, 3, 0);
+			// obj5->enableTextureMipMap(false);
+			theScene->insert(obj5);
 		}
 
 		mrpt::math::CMatrixDynamic<float> Z2(H, W);
@@ -962,6 +988,21 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 6.0, -3.0, 0, 0.0_deg, 0));
+			obj->assignImage(pic);
+			obj->enableLighting(true);
+			theScene->insert(obj);
+		}
+		{
+			opengl::CTexturedPlane::Ptr obj = opengl::CTexturedPlane::Create();
+			obj->setPose(mrpt::poses::CPose3D(off_x, 3.9, -3.0, 0, 0.0_deg, 0));
+			obj->setColor_u8(0xff, 0x00, 0x00, 0xff);
+			obj->enableLighting(true);
+			theScene->insert(obj);
+		}
+
 		auto gl_txt = opengl::CText::Create("CTexturedPlane");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -1011,6 +1052,17 @@ void TestOpenGLObjects()
 	}
 	off_x += STEP_X;
 
+	// ground plane (to test shadows):
+	// A plane w/o a texture is a plain color plane:
+	{
+		auto obj = mrpt::opengl::CBox::Create();
+		obj->setColor_u8(0xa0, 0xa0, 0xa0, 0xff);
+		obj->setLocation(0, 0, -5.0f);
+		obj->setBoxCorners({-20.0f, -20.0f, .0f}, {off_x + 20.f, 40.0f, -0.1f});
+		obj->cullFaces(TCullFace::BACK);  // avoid z-fighting
+		theScene->insert(obj);
+	}
+
 	// Arrow to show the light direction:
 	auto glLightArrow = opengl::CArrow::Create(
 		mrpt::math::TPoint3Df(0, 0, 0), mrpt::math::TPoint3Df(1, 0, 0));
@@ -1050,18 +1102,20 @@ void TestOpenGLObjects()
 	fp.draw_shadow = true;
 	win.addTextMessage(5, 5, "", 0 /*id*/, fp);
 
-	mrpt::opengl::TLightParameters& lights =
-		theScene->getViewport()->lightParameters();
+	auto viewport = theScene->getViewport();
 
-	lights.ambient = {0.2, 0.2, 0.2, 1};
+	mrpt::opengl::TLightParameters& lights = viewport->lightParameters();
+
+	lights.ambient = 0.2;
 
 	while (win.isOpen())
 	{
 		// Lights:
 		const double t = mrpt::Clock::nowDouble();
+		const auto p = glLightArrow->getPose();
+
 		const auto lightDir = mrpt::poses::CPose3D::FromXYZYawPitchRoll(
-			glLightArrow->getPoseX(), glLightArrow->getPoseY(),
-			glLightArrow->getPoseZ(), t * 10.0_deg, 45.0_deg, 0.0_deg);
+			p.x, p.y, p.z, t * 10.0_deg, 45.0_deg, 0.0_deg);
 
 		glLightArrow->setPose(lightDir);
 
@@ -1069,9 +1123,25 @@ void TestOpenGLObjects()
 			lightDir.getRotationMatrix().extractColumn<mrpt::math::TVector3Df>(
 				0);
 
+		if (win.keyHit())
+		{
+			switch (win.getPushedKey())
+			{
+				case 'S':
+				case 's':
+					// toggle shadows:
+					viewport->enableShadowCasting(
+						!viewport->isShadowCastingEnabled());
+					break;
+			};
+		}
+
 		win.updateTextMessage(
 			0 /*id*/,
-			format("Render time=%.03fms", 1e3 / win.getRenderingFPS()));
+			format(
+				"Render time=%.03fms | Shadows: %s",
+				1e3 / win.getRenderingFPS(),
+				viewport->isShadowCastingEnabled() ? "On" : "Off"));
 		std::this_thread::sleep_for(2ms);
 		win.repaint();
 	}

@@ -46,10 +46,7 @@ CMesh::CMesh(
 	enableTextureLinearInterpolation(true);
 	enableLight(true);
 
-	m_color.A = 255;
-	m_color.R = 0;
-	m_color.G = 0;
-	m_color.B = 150;
+	setColor_u8(0, 0, 150);
 }
 
 CMesh::~CMesh() = default;
@@ -105,6 +102,8 @@ void CMesh::updateTriangles() const
 	const float sCellX = (m_xMax - m_xMin) / (rows - 1);
 	const float sCellY = (m_yMax - m_yMin) / (cols - 1);
 
+	const auto myColor = getColor_u8();
+
 	mrpt::opengl::TTriangle tri;
 
 	m_zMin = std::numeric_limits<float>::max();
@@ -139,7 +138,7 @@ void CMesh::updateTriangles() const
 				tri.z(1) = Z(iX + 1, iY);
 				// Assign alpha channel
 				for (int i = 0; i < 3; i++)
-					tri.a(i) = m_color.A;
+					tri.a(i) = myColor.A;
 
 				if (m_colorFromZ)
 				{
@@ -175,9 +174,9 @@ void CMesh::updateTriangles() const
 				}
 				else
 				{
-					tri.r(0) = tri.r(1) = tri.r(2) = m_color.R / 255.f;
-					tri.g(0) = tri.g(1) = tri.g(2) = m_color.G / 255.f;
-					tri.b(0) = tri.b(1) = tri.b(2) = m_color.B / 255.f;
+					tri.r(0) = tri.r(1) = tri.r(2) = u8tof(myColor.R);
+					tri.g(0) = tri.g(1) = tri.g(2) = u8tof(myColor.G);
+					tri.b(0) = tri.b(1) = tri.b(2) = u8tof(myColor.B);
 				}
 
 				// Compute normal of this triangle, and add it up to the 3
@@ -262,9 +261,9 @@ void CMesh::updateTriangles() const
 				}
 				else
 				{
-					tri.r(0) = tri.r(1) = tri.r(2) = m_color.R / 255.f;
-					tri.g(0) = tri.g(1) = tri.g(2) = m_color.G / 255.f;
-					tri.b(0) = tri.b(1) = tri.b(2) = m_color.B / 255.f;
+					tri.r(0) = tri.r(1) = tri.r(2) = u8tof(myColor.R);
+					tri.g(0) = tri.g(1) = tri.g(2) = u8tof(myColor.G);
+					tri.b(0) = tri.b(1) = tri.b(2) = u8tof(myColor.B);
 				}
 
 				// Compute normal of this triangle, and add it up to the 3
@@ -379,16 +378,20 @@ void CMesh::onUpdateBuffers_TexturedTriangles()
 
 	std::shared_lock<std::shared_mutex> lckRead(m_meshDataMtx.data);
 
+	// Default: texture over the whole extension.
+	const float textureSizeX =
+		(m_textureSize_x != 0) ? m_textureSize_x : (m_xMax - m_xMin);
+	const float textureSizeY =
+		(m_textureSize_y != 0) ? m_textureSize_y : (m_xMax - m_xMin);
+
 	for (auto& i : actualMesh)
 	{
-		const mrpt::opengl::TTriangle& t = i.first;
+		mrpt::opengl::TTriangle& tri = i.first;
 		const TTriangleVertexIndices& tvi = i.second;
 
 		const auto& n0 = vertex_normals.at(tvi.vind[0]).first;
 		const auto& n1 = vertex_normals.at(tvi.vind[1]).first;
 		const auto& n2 = vertex_normals.at(tvi.vind[2]).first;
-
-		auto tri = t;
 
 		tri.vertices[0].normal = n0;
 		tri.vertices[1].normal = n1;
@@ -396,13 +399,15 @@ void CMesh::onUpdateBuffers_TexturedTriangles()
 
 		for (int k = 0; k < 3; k++)
 		{
+			// NOTE: These texture coordinates assume the use of WRAPPED texture
+			// (U,V) in the shader. This is GL_REPEAT, the default.
 			tri.vertices[k].uv.y =
-				(tri.vertices[k].xyzrgba.pt.x - m_xMin) / (m_xMax - m_xMin);
+				(tri.vertices[k].xyzrgba.pt.x - m_xMin) / textureSizeX;
 			tri.vertices[k].uv.x =
-				(tri.vertices[k].xyzrgba.pt.y - m_yMin) / (m_yMax - m_yMin);
+				(tri.vertices[k].xyzrgba.pt.y - m_yMin) / textureSizeY;
 		}
 
-		tris.emplace_back(std::move(tri));
+		tris.emplace_back(tri);
 	}
 
 	notifyBBoxChange();
@@ -437,9 +442,8 @@ void CMesh::assignImageAndZ(
 {
 	MRPT_START
 
-	ASSERT_(
-		(img.getWidth() == static_cast<size_t>(in_Z.cols())) &&
-		(img.getHeight() == static_cast<size_t>(in_Z.rows())));
+	// In MRPT<2.7.0, img size must be = to in_z size.
+	// This condition was removed, and custom texture coordinates added.
 
 	Z = in_Z;
 
@@ -524,8 +528,10 @@ void CMesh::updateColorsMatrix() const
 		const int rows = getTextureImage().getHeight();
 
 		if ((cols != Z.cols()) || (rows != Z.rows()))
-			printf("\nTexture Image and Z sizes have to be equal");
-
+		{
+			std::cerr
+				<< "[CMesh] Texture image and Z matrix have different sizes.\n";
+		}
 		else if (getTextureImage().isColor())
 		{
 			C_r.setSize(rows, cols);
@@ -605,7 +611,7 @@ void CMesh::setMask(const mrpt::math::CMatrixDynamic<float>& in_mask)
 bool CMesh::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
 {
 	if (!m_trianglesUpToDate || !m_polygonsUpToDate) updatePolygons();
-	return mrpt::math::traceRay(tmpPolys, (o - this->m_pose).asTPose(), dist);
+	return mrpt::math::traceRay(tmpPolys, (o - getCPose()).asTPose(), dist);
 }
 
 static math::TPolygon3D tmpPoly(3);

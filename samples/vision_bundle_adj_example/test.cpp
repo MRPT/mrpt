@@ -449,7 +449,7 @@ int main(int argc, char** argv)
 		// -------------------------------
 		gui::CDisplayWindow3D win("Bundle adjustment demo", 800, 600);
 
-		COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
+		Scene::Ptr& scene = win.get3DSceneAndLock();
 
 		{  // Ground plane:
 			auto obj = CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5);

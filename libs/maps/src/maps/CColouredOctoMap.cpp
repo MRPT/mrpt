@@ -15,8 +15,8 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/system/filesystem.h>
 #include <octomap/ColorOcTree.h>
 #include <octomap/octomap.h>

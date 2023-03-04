@@ -20,10 +20,11 @@ namespace mrpt::obs
 /** Represents a probabilistic 2D movement of the robot mobile base
  *
  *  See docs:
- * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
+ * https://docs.mrpt.org/reference/latest/tutorial-motion-models.html
  *
- * \note [New in MRPT 1.5.0] Velocity is now encoded as mrpt::math::TTwist2D as
- * a more general version of the old (linVel, angVel).
+ * Velocity is encoded as mrpt::math::TTwist2D in the optional field
+ * velocityLocal.
+ *
  * \sa CAction
  * \ingroup mrpt_obs_grp
  */
@@ -86,7 +87,7 @@ class CActionRobotMovement2D : public CAction
 		/** Options for the gaussian model, which generates a CPosePDFGaussian
 		 * object in poseChange using a closed-form linear Gaussian model.
 		 * See docs in:
-		 * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
+		 * https://docs.mrpt.org/reference/latest/tutorial-motion-models.html
 		 */
 		struct TOptions_GaussianModel
 		{
@@ -122,7 +123,7 @@ class CActionRobotMovement2D : public CAction
 		/** Options for the Thrun's model, which generates a CPosePDFParticles
 		 * object in poseChange using a MonteCarlo simulation.
 		 * See docs in:
-		 * https://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
+		 * https://docs.mrpt.org/reference/latest/tutorial-motion-models.html
 		 */
 		struct TOptions_ThrunModel
 		{

@@ -396,7 +396,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->Add(
 		StaticText9, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	edAxb = new wxTextCtrl(
-		Panel3, ID_TEXTCTRL6, _("1e-5"), wxDefaultPosition, wxDefaultSize, 0,
+		Panel3, ID_TEXTCTRL6, _("1e-2"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL6"));
 	FlexGridSizer9->Add(
 		edAxb, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -407,7 +407,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->Add(
 		StaticText13, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	edAxs = new wxTextCtrl(
-		Panel3, ID_TEXTCTRL7, _("10e-4"), wxDefaultPosition, wxDefaultSize, 0,
+		Panel3, ID_TEXTCTRL7, _("0.01"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL7"));
 	FlexGridSizer9->Add(
 		edAxs, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -418,7 +418,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->Add(
 		StaticText10, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	edAyb = new wxTextCtrl(
-		Panel3, ID_TEXTCTRL8, _("1e-5"), wxDefaultPosition, wxDefaultSize, 0,
+		Panel3, ID_TEXTCTRL8, _("0.01"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL8"));
 	FlexGridSizer9->Add(
 		edAyb, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -429,7 +429,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->Add(
 		StaticText11, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	edAys = new wxTextCtrl(
-		Panel3, ID_TEXTCTRL9, _("10e-4"), wxDefaultPosition, wxDefaultSize, 0,
+		Panel3, ID_TEXTCTRL9, _("0.10"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL9"));
 	FlexGridSizer9->Add(
 		edAys, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -440,7 +440,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->Add(
 		StaticText12, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	edApb = new wxTextCtrl(
-		Panel3, ID_TEXTCTRL10, _("5e-4"), wxDefaultPosition, wxDefaultSize, 0,
+		Panel3, ID_TEXTCTRL10, _("0.01"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL10"));
 	FlexGridSizer9->Add(
 		edApb, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,
@@ -451,7 +451,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	FlexGridSizer9->Add(
 		StaticText14, 1, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
 	edAps = new wxTextCtrl(
-		Panel3, ID_TEXTCTRL11, _("10e-4"), wxDefaultPosition, wxDefaultSize, 0,
+		Panel3, ID_TEXTCTRL11, _("0.01"), wxDefaultPosition, wxDefaultSize, 0,
 		wxDefaultValidator, _T("ID_TEXTCTRL11"));
 	FlexGridSizer9->Add(
 		edAps, 1, wxALL | wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL,

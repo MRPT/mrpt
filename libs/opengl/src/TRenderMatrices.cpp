@@ -15,24 +15,34 @@
 #include <mrpt/opengl/TRenderMatrices.h>
 
 #include <Eigen/Dense>
+#include <cmath>  // atan2
 
 using namespace mrpt::opengl;
+
+mrpt::math::CMatrixFloat44 TRenderMatrices::OrthoProjectionMatrix(
+	float left, float right, float bottom, float top, float znear, float zfar)
+{
+	ASSERT_GT_(zfar, znear);
+
+	mrpt::math::CMatrixFloat44 p = mrpt::math::CMatrixFloat44::Identity();
+
+	p(0, 0) = 2.0f / (right - left);
+	p(1, 1) = 2.0f / (top - bottom);
+	p(2, 2) = -2.0f / (zfar - znear);
+	p(0, 3) = -(right + left) / (right - left);
+	p(1, 3) = -(top + bottom) / (top - bottom);
+	p(2, 3) = -(zfar + znear) / (zfar - znear);
+
+	return p;
+}
 
 void TRenderMatrices::computeOrthoProjectionMatrix(
 	float left, float right, float bottom, float top, float znear, float zfar)
 {
-	ASSERT_GT_(zfar, znear);
 	m_last_z_near = znear;
 	m_last_z_far = zfar;
 
-	p_matrix.setIdentity();
-
-	p_matrix(0, 0) = 2.0f / (right - left);
-	p_matrix(1, 1) = 2.0f / (top - bottom);
-	p_matrix(2, 2) = -2.0f / (zfar - znear);
-	p_matrix(0, 3) = -(right + left) / (right - left);
-	p_matrix(1, 3) = -(top + bottom) / (top - bottom);
-	p_matrix(2, 3) = -(zfar + znear) / (zfar - znear);
+	p_matrix = OrthoProjectionMatrix(left, right, bottom, top, znear, zfar);
 }
 
 void TRenderMatrices::computeNoProjectionMatrix(float znear, float zfar)
@@ -128,15 +138,58 @@ void TRenderMatrices::computeProjectionMatrix(float znear, float zfar)
 	}
 }
 
+static void azimuthElevationFromDirection(
+	const mrpt::math::TVector3Df& v, float& elevation, float& azimuth)
+{
+	// Compute the elevation angle
+	elevation = atan2(v.z, sqrt(v.x * v.x + v.y * v.y));
+
+	// Compute the azimuth angle
+	if (v.x == 0 && v.y == 0) azimuth = 0;
+	else
+		azimuth = atan2(v.y, v.x);
+}
+
+void TRenderMatrices::computeLightProjectionMatrix(
+	float zmin, float zmax, const mrpt::math::TVector3Df& direction)
+{
+	m_last_light_z_near = zmin;
+	m_last_light_z_far = zmax;
+
+	float dist = eyeDistance * eyeDistance2lightShadowExtension;
+	light_p = OrthoProjectionMatrix(-dist, dist, -dist, dist, zmin, zmax);
+
+	// "up" vector from elevation:
+
+	float azim = 0, elevation = 0;
+	azimuthElevationFromDirection(direction, elevation, azim);
+
+	const auto lightUp = mrpt::math::TVector3Df(
+		-cos(azim) * sin(elevation),  // x
+		-sin(azim) * sin(elevation),  // y
+		cos(elevation)	// z
+	);
+
+	light_v = LookAt(pointing - direction * zmax * 0.5, pointing, lightUp);
+
+	light_pv.asEigen() = light_p.asEigen() * light_v.asEigen();
+
+	// light_pmv is updated in RenderQueue
+}
+
 // Replacement for deprecated OpenGL gluLookAt():
-void TRenderMatrices::applyLookAt()
+mrpt::math::CMatrixFloat44 TRenderMatrices::LookAt(
+	const mrpt::math::TVector3D& lookFrom, const mrpt::math::TVector3D& lookAt,
+	const mrpt::math::TVector3D& up,
+	mrpt::math::CMatrixFloat44* viewWithoutTranslation)
 {
 	using mrpt::math::TVector3D;
 
 	// Note: Use double instead of float to avoid numerical innacuracies that
 	// are really noticeable with the naked eye when elevation is close to 90
 	// deg (!)
-	TVector3D forward = TVector3D(pointing - eye);
+	TVector3D forward = TVector3D(lookAt - lookFrom);
+
 	const double fn = forward.norm();
 	ASSERT_(fn != 0);
 	forward *= 1.0 / fn;
@@ -168,20 +221,26 @@ void TRenderMatrices::applyLookAt()
 	m(2, 0) = d2f(-forward[0]);
 	m(2, 1) = d2f(-forward[1]);
 	m(2, 2) = d2f(-forward[2]);
-	// Translation:
-	m(0, 3) = d2f(-mrpt::math::dotProduct<3, double>(side, eye));
-	m(1, 3) = d2f(-mrpt::math::dotProduct<3, double>(up2, eye));
-	m(2, 3) = d2f(mrpt::math::dotProduct<3, double>(forward, eye));
 	// Last row:
 	m(3, 0) = .0f;
 	m(3, 1) = .0f;
 	m(3, 2) = .0f;
 	m(3, 3) = 1.f;
 
-	// Homogeneous matrices composition:
-	// Overwrite projection matrix:
-	// p_matrix.asEigen() = p_matrix.asEigen() * m.asEigen();
-	v_matrix = m;
+	if (viewWithoutTranslation) *viewWithoutTranslation = m;
+
+	// Translation:
+	m(0, 3) = d2f(-mrpt::math::dotProduct<3, double>(side, lookFrom));
+	m(1, 3) = d2f(-mrpt::math::dotProduct<3, double>(up2, lookFrom));
+	m(2, 3) = d2f(mrpt::math::dotProduct<3, double>(forward, lookFrom));
+
+	return m;
+}
+
+// Replacement for deprecated OpenGL gluLookAt():
+void TRenderMatrices::computeViewMatrix()
+{
+	v_matrix = LookAt(eye, pointing, up, &v_matrix_no_translation);
 }
 
 void TRenderMatrices::projectPoint(
@@ -225,6 +284,8 @@ void TRenderMatrices::saveToYaml(mrpt::containers::yaml& c) const
 	c["p_matrix"] = mrpt::containers::yaml::FromMatrix(p_matrix);
 	c["v_matrix"] = mrpt::containers::yaml::FromMatrix(v_matrix);
 	c["m_matrix"] = mrpt::containers::yaml::FromMatrix(m_matrix);
+	c["light_p_matrix"] = mrpt::containers::yaml::FromMatrix(light_p);
+	c["light_v_matrix"] = mrpt::containers::yaml::FromMatrix(light_v);
 }
 
 void TRenderMatrices::print(std::ostream& o) const

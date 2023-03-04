@@ -71,6 +71,8 @@ void CMeshFast::onUpdateBuffers_Points()
 	vbd.clear();
 	cbd.clear();
 
+	const auto myColor = getColor_u8();
+
 	for (int i = 0; i < X.rows(); i++)
 	{
 		for (int j = 0; j < X.cols(); j++)
@@ -78,17 +80,17 @@ void CMeshFast::onUpdateBuffers_Points()
 			TColor col;
 
 			if (m_isImage && m_textureImage.isColor())
-				col = TColor(C_r(i, j), C_g(i, j), C_b(i, j), m_color.A);
+				col = TColor(C_r(i, j), C_g(i, j), C_b(i, j), myColor.A);
 			else if (m_isImage)
-				col = TColor(C(i, j), C(i, j), C(i, j), m_color.A);
+				col = TColor(C(i, j), C(i, j), C(i, j), myColor.A);
 			else if (m_colorFromZ)
 			{
 				float rz, gz, bz;
 				colormap(m_colorMap, C(i, j) / 255.0f, rz, gz, bz);
-				col = TColorf(rz, gz, bz, m_color.A / 255.f).asTColor();
+				col = TColorf(rz, gz, bz, myColor.A / 255.f).asTColor();
 			}
 			else
-				col = m_color;
+				col = myColor;
 
 			cbd.emplace_back(col);
 			vbd.emplace_back(X(i, j), Y(i, j), Z(i, j));
