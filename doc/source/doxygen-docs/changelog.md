@@ -4,6 +4,7 @@
 - Changes in libraries:
     - \ref mrpt_opengl_grp
       - Header `<mrpt/opengl.h>` has been updated to include the backwards-compatible type `mrpt::opengl::COpenGLScene` to smooth transition of existing code bases.
+      - mrpt::opengl::CSphere now has a number of divisions property instead of two (one of them was not actually used).
 - BUG FIXES:
     - Fix regression in CRawlog::detectImagesDirectory() leading to RawLogViewer and other apps not finding the external image directories for datasets.
 

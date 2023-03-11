@@ -20,12 +20,12 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CSphere, CRenderizable, mrpt::opengl)
 
-uint8_t CSphere::serializeGetVersion() const { return 2; }
+uint8_t CSphere::serializeGetVersion() const { return 3; }
 void CSphere::serializeTo(mrpt::serialization::CArchive& out) const
 {
 	writeToStreamRender(out);
 	out << m_radius;
-	out << (uint32_t)m_nDivsLongitude << (uint32_t)m_nDivsLatitude;
+	out << (uint32_t)m_nDivs;
 }
 void CSphere::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 {
@@ -34,13 +34,15 @@ void CSphere::serializeFrom(mrpt::serialization::CArchive& in, uint8_t version)
 		case 0:
 		case 1:
 		case 2:
+		case 3:
 		{
 			readFromStreamRender(in);
 			in >> m_radius;
-			uint32_t i, j;
-			in >> i >> j;
-			m_nDivsLongitude = i;
-			m_nDivsLatitude = j;
+			m_nDivs = in.ReadAs<uint32_t>();
+			if (version < 3)
+			{
+				in.ReadAs<uint32_t>();	// dummy old value, now unused
+			}
 			if (version == 1)
 			{
 				bool keepRadiusIndependentEyeDistance;
