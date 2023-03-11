@@ -1185,15 +1185,13 @@ void CHierarchicalMapMHPartition::getAs3DScene(
 		const CPose3D meanPose = CPose3D(it2->second);
 
 		// The sphere of the node:
-		mrpt::opengl::CSphere::Ptr objSphere = mrpt::opengl::CSphere::Create();
+		mrpt::opengl::CSphere::Ptr objSphere =
+			mrpt::opengl::CSphere::Create(nodes_radius, 16);
 
 		objSphere->setName(node->m_label);
 		objSphere->setColor(0, 0, 1);
 		objSphere->setLocation(
 			meanPose.x(), meanPose.y(), meanPose.z() + nodes_height);
-		objSphere->setRadius(nodes_radius);
-		objSphere->setNumberDivsLongitude(16);
-		objSphere->setNumberDivsLatitude(16);
 
 		outScene.insert(objSphere);
 
