@@ -58,13 +58,11 @@ void CRenderizableShaderWireFrame::render(const RenderContext& rc) const
 	// TODO: Port thick lines to opengl3?
 	// glLineWidth(m_lineWidth);
 
+	// Skip these geometric entities when in the 1st pass of shadow map:
+	if (rc.state->is1stShadowMapPass) return;
+
 	std::shared_lock<std::shared_mutex> wfReadLock(
 		CRenderizableShaderWireFrame::m_wireframeMtx.data);
-
-#if !defined(__EMSCRIPTEN__)
-	glEnable(GL_LINE_SMOOTH);
-	CHECK_OPENGL_ERROR_IN_DEBUG();
-#endif
 
 	// Set up the vertex array:
 	std::optional<GLuint> attr_position;

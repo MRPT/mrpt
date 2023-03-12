@@ -7,6 +7,7 @@
       - mrpt::opengl::CSphere now has a number of divisions property instead of two (one of them was not actually used).
 - BUG FIXES:
     - Fix regression in CRawlog::detectImagesDirectory() leading to RawLogViewer and other apps not finding the external image directories for datasets.
+    - Fix wrong rendering of shadows of lines when in orthographic projection.
 
 # Version 2.7.0: Released March 4th, 2023
 - Changes in libraries:
