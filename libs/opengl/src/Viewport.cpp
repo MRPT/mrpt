@@ -365,6 +365,9 @@ void Viewport::renderNormalSceneMode(
 		GL_POLYGON_SMOOTH_HINT,
 		m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
 	CHECK_OPENGL_ERROR_IN_DEBUG();
+
+	glEnable(GL_LINE_SMOOTH);
+	CHECK_OPENGL_ERROR_IN_DEBUG();
 #endif
 
 	// Regular depth model:

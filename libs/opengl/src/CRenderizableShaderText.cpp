@@ -63,10 +63,8 @@ void CRenderizableShaderText::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
-#if !defined(__EMSCRIPTEN__)
-	glEnable(GL_LINE_SMOOTH);
-	CHECK_OPENGL_ERROR_IN_DEBUG();
-#endif
+	// Skip these geometric entities when in the 1st pass of shadow map:
+	if (rc.state->is1stShadowMapPass) return;
 
 	std::shared_lock<std::shared_mutex> readLock(m_textDataMtx.data);
 
