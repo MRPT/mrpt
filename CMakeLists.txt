@@ -36,7 +36,8 @@ endif()
 # -------------------------
 # Minimum version required for:
 # - target_compile_features() => 3.8.0
-cmake_minimum_required(VERSION 3.8)
+# - cmakemodules/ECMFindModuleHelpers.cmake:112  => 3.16.0  (Available in Ubuntu >=20.04)
+cmake_minimum_required(VERSION 3.16.0)
 
 # CheckIncludeFile: Yes, we will set "CMAKE_REQUIRED_LIBRARIES".
 if (POLICY CMP0075)
