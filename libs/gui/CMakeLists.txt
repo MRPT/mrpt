@@ -44,7 +44,6 @@ if(BUILD_mrpt-gui)
 	endif()
 
 	if(CMAKE_MRPT_HAS_Qt5)
-		#qt5_use_modules(mrpt-gui Widgets OpenGL) # deprecated!
 		target_link_libraries(gui PRIVATE Qt5::Widgets Qt5::OpenGL)
 	endif()
 
