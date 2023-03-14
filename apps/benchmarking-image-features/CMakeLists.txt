@@ -34,7 +34,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENCV AND NOT "${MRPT_OPENCV_VERSION}"
 
 
         # Add the required libraries for linking:
-        qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
+        target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL)
 
         target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
 
