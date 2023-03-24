@@ -13,6 +13,7 @@
 - BUG FIXES:
     - Fix regression in CRawlog::detectImagesDirectory() leading to RawLogViewer and other apps not finding the external image directories for datasets.
     - Fix wrong rendering of shadows of lines when in orthographic projection.
+    - mrpt::opengl::CSphere: onUpdateBuffers_Triangles() did not update the list of points
 
 # Version 2.7.0: Released March 4th, 2023
 - Changes in libraries:
