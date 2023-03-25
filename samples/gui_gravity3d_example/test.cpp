@@ -25,15 +25,15 @@ using namespace mrpt::gui;
 using namespace mrpt::random;
 using namespace mrpt::opengl;
 
-const size_t N_MASSES = 750;
+const size_t N_MASSES = 1500;
 
-const double BOX = 500;
-const double V0 = 100;
-const double MASS_MIN = log(40.0), MASS_MAX = log(100.0);
-const double M2R = 2.0;
-const double LARGEST_STEP = 0.001;
+const double BOX = 1000;
+const double V0 = 300;
+const double MASS_MIN = log(300.0), MASS_MAX = log(5000.0);
+const double M2R = 0.5;
+const double LARGEST_STEP = 0.0005;
 const double G = 300;
-const double COLLIS_LOSS = 0.98;
+const double COLLIS_LOSS = 0.99;
 
 struct TMass
 {
@@ -59,6 +59,7 @@ void GravityDemo()
 
 	win.setCameraElevationDeg(50.0f);
 	win.setCameraZoom(1000);
+	win.getDefaultViewport()->setViewportClipDistances(1, 10000);
 
 	Scene::Ptr& theScene = win.get3DSceneAndLock();
 
@@ -86,9 +87,9 @@ void GravityDemo()
 		double a = atan2(masses[i].y, masses[i].x);
 
 		masses[i].vx = -V0 * sin(a) +
-			getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
+			getRandomGenerator().drawUniform(-V0 * 0.05, V0 * 0.05);
 		masses[i].vy = V0 * cos(a) +
-			getRandomGenerator().drawUniform(-V0 * 0.01, V0 * 0.01);
+			getRandomGenerator().drawUniform(-V0 * 0.05, V0 * 0.05);
 		masses[i].vz = 0;  // getRandomGenerator().drawUniform(-V0,V0);
 
 		masses[i].mass =

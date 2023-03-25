@@ -158,7 +158,7 @@ const std::string& getMRPTLicense();
  * searches in (1) source code tree, (2) install target paths. */
 std::string find_mrpt_shared_dir();
 
-/** For use in setConsoleColor().
+/** For use in consoleColorAndStyle().
  *  \note Numerical values from vt100-console escape codes.
  */
 enum class ConsoleForegroundColor : uint8_t
@@ -182,7 +182,7 @@ enum class ConsoleForegroundColor : uint8_t
 	BRIGHT_WHITE = 97,
 };
 
-/** For use in setConsoleColor().
+/** For use in consoleColorAndStyle().
  *  \note Numerical values from vt100-console escape codes.
  */
 enum class ConsoleBackgroundColor : uint8_t
@@ -206,7 +206,7 @@ enum class ConsoleBackgroundColor : uint8_t
 	BRIGHT_WHITE = 107,
 };
 
-/** For use in setConsoleColor().
+/** For use in consoleColorAndStyle().
  *  \note Numerical values from vt100-console escape codes.
  */
 enum class ConsoleTextStyle : uint8_t
@@ -221,26 +221,9 @@ enum class ConsoleTextStyle : uint8_t
 	INVISIBLE = 8
 };
 
-/** For use in  setConsoleColor()
- *  \deprecated Prefer ConsoleForegroundColor (since MRPT 2.3.3)
- */
-enum TConsoleColor
-{
-	CONCOL_NORMAL = 0,
-	CONCOL_BLUE = 1,
-	CONCOL_GREEN = 2,
-	CONCOL_RED = 4
-};
-
-/** Changes the text color in the console for the text written from now on.
- * \deprecated Since MRPT 2.3.3, prefer consoleColorAndStyle()
- *
- */
-[[deprecated("Use consoleColorAndStyle()")]]  //
-void setConsoleColor(TConsoleColor color, bool changeStdErr = false);
-
 /** Changes the text color and style in the console for the text written from
- * now on. The parameter "color" can be any value in TConsoleColor.
+ * now on. See available colors in ConsoleForegroundColor and
+ * ConsoleBackgroundColor.
  *
  * By default the color of "cout" is changed, unless changeStdErr=true, in
  * which case "cerr" is changed.
