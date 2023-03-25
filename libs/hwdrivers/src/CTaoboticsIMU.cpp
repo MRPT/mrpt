@@ -49,7 +49,7 @@ void CTaoboticsIMU::doProcess()
 {
 	using namespace std::chrono_literals;
 
-	ASSERTMSG_(m_serialPort, "initialize() must be called first");
+	ASSERTMSG_(m_activeParser, "initialize() must be called first");
 
 	if (m_state == ssError)
 	{
@@ -61,9 +61,19 @@ void CTaoboticsIMU::doProcess()
 
 	// try to read and parse a frame from the serial port:
 	std::vector<uint8_t> buf(m_rx_buffer.available());
-	const auto nRead =
-		m_serialPort->ReadBufferImmediate(buf.data(), buf.size());
-	m_rx_buffer.push_many(buf.data(), nRead);
+
+	try
+	{
+		const auto nRead =
+			m_serialPort->ReadBufferImmediate(buf.data(), buf.size());
+		m_rx_buffer.push_many(buf.data(), nRead);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[CTaobotics] Error readingopen serial port " << m_com_port
+				  << std::endl;
+		m_state = ssError;
+	}
 
 	// Parse:
 	ASSERT_(m_activeParser);
@@ -90,17 +100,25 @@ void CTaoboticsIMU::initialize()
 		std::cout << "[CTaoboticsIMU] Opening port: " << m_com_port << " at "
 				  << m_baudRate << " bauds.\n";
 
-	m_serialPort = std::make_unique<CSerialPort>(m_com_port);
-	if (!(m_serialPort->isOpen()))
-		THROW_EXCEPTION_FMT("can't open serial port %s", m_com_port.c_str());
+	try
+	{
+		m_serialPort = std::make_unique<CSerialPort>(m_com_port);
+		ASSERT_(m_serialPort && m_serialPort->isOpen());
 
-	m_serialPort->setConfig(m_baudRate);
-	m_serialPort->setTimeouts(1, 1, 1, 1, 1);
+		m_serialPort->setConfig(m_baudRate);
+		m_serialPort->setTimeouts(1, 1, 1, 1, 1);
 
-	m_serialPort->purgeBuffers();
-	m_rx_buffer.clear();
+		m_serialPort->purgeBuffers();
+		m_rx_buffer.clear();
 
-	m_state = ssWorking;
+		m_state = ssWorking;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[CTaobotics] Can't open serial port " << m_com_port
+				  << std::endl;
+		m_state = ssError;
+	}
 }
 
 void CTaoboticsIMU::loadConfig_sensorSpecific(

@@ -37,7 +37,6 @@ void TestIMU()
 
 	std::cout << "Trying to initialize the sensor..." << std::endl;
 	imu.initialize();  // This will raise an exception on error
-	std::cout << "Initialized OK!" << std::endl;
 
 	mrpt::gui::CDisplayWindow3D win("IMU", 1024, 800);
 
