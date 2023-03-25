@@ -483,27 +483,6 @@ uint64_t mrpt::system::os::_strtoull(const char* nptr, char** endptr, int base)
 #endif
 }
 
-void mrpt::system::setConsoleColor(TConsoleColor color, bool changeStdErr)
-{
-	ConsoleForegroundColor fgCol;
-
-	switch (color)
-	{
-		case CONCOL_BLUE: fgCol = ConsoleForegroundColor::BLUE; break;
-		case CONCOL_RED: fgCol = ConsoleForegroundColor::RED; break;
-		case CONCOL_GREEN: fgCol = ConsoleForegroundColor::GREEN; break;
-
-		case CONCOL_NORMAL:
-		default:  //
-			fgCol = ConsoleForegroundColor::DEFAULT;
-			break;
-	};
-
-	consoleColorAndStyle(
-		fgCol, ConsoleBackgroundColor::DEFAULT, ConsoleTextStyle::REGULAR,
-		changeStdErr);
-}
-
 void mrpt::system::consoleColorAndStyle(
 	ConsoleForegroundColor fg, ConsoleBackgroundColor bg,
 	ConsoleTextStyle style, bool applyToStdErr)

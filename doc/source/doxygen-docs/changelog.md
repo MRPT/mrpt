@@ -7,12 +7,15 @@
     - \ref mrpt_opengl_grp
       - Header `<mrpt/opengl.h>` has been updated to include the backwards-compatible type `mrpt::opengl::COpenGLScene` to smooth transition of existing code bases.
       - mrpt::opengl::CSphere now has a number of divisions property instead of two (one of them was not actually used).
+    - \ref mrpt_system_grp
+      - Removed mrpt::system::setConsoleColor() (Deprecated since MRPT 2.3.3)
 - Build system:
   - Fix use of obsolete `qt5_use_modules()`.
   - New minimum CMake version required is CMake 3.16.0
 - BUG FIXES:
     - Fix regression in CRawlog::detectImagesDirectory() leading to RawLogViewer and other apps not finding the external image directories for datasets.
     - Fix wrong rendering of shadows of lines when in orthographic projection.
+    - mrpt::opengl::CSphere: onUpdateBuffers_Triangles() did not update the list of points
 
 # Version 2.7.0: Released March 4th, 2023
 - Changes in libraries:

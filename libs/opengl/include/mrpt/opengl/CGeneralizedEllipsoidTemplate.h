@@ -62,62 +62,30 @@ class CGeneralizedEllipsoidTemplate
 
 	void renderUpdateBuffers() const override
 	{
+		recomputeRenderPoints();
+
 		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
-
-		// 1) Update eigenvectors/values:
-		if (m_needToRecomputeEigenVals)
-		{
-			m_needToRecomputeEigenVals = false;
-			// Handle the special case of an ellipsoid of volume = 0
-			const double d = m_cov.det();
-			// Note: "d!=d" is a great test for invalid numbers, don't remove!
-			if (std::abs(d) < 1e-20 || d != d)
-			{
-				// All zeros:
-				m_U.setZero(DIM, DIM);
-			}
-			else
-			{
-				// A valid matrix:
-				m_cov.chol(m_U);
-			}
-		}
-
-		// 2) Generate "standard" ellipsoid:
-		std::vector<array_parameter_t> params_pts;
-		cov_matrix_t Uscaled = m_U;
-		Uscaled *= static_cast<double>(m_quantiles);
-		generatePoints(Uscaled, params_pts);
-
-		// 3) Transform into 2D/3D render space:
-		this->transformFromParameterSpace(params_pts, m_render_pts);
-
-		// 3.5) Save bounding box:
-		m_bb_min = mrpt::math::TPoint3D(
-			std::numeric_limits<double>::max(),
-			std::numeric_limits<double>::max(), 0);
-		m_bb_max = mrpt::math::TPoint3D(
-			-std::numeric_limits<double>::max(),
-			-std::numeric_limits<double>::max(), 0);
-		for (size_t i = 0; i < m_render_pts.size(); i++)
-			for (int k = 0; k < DIM; k++)
-			{
-				mrpt::keep_min(m_bb_min[k], m_render_pts[i][k]);
-				mrpt::keep_max(m_bb_max[k], m_render_pts[i][k]);
-			}
-
 		CRenderizableShaderTriangles::renderUpdateBuffers();
 		CRenderizableShaderWireFrame::renderUpdateBuffers();
 	}
+
 	virtual shader_list_t requiredShaders() const override
 	{
 		// May use up to two shaders (triangles and lines):
 		return {DefaultShaderID::WIREFRAME, DefaultShaderID::TRIANGLES_LIGHT};
 	}
 	// Render precomputed points in m_render_pts:
-	void onUpdateBuffers_Wireframe() override { implUpdate_Wireframe(); }
+	void onUpdateBuffers_Wireframe() override
+	{
+		recomputeRenderPoints();
+		implUpdate_Wireframe();
+	}
 	// Render precomputed points in m_render_pts:
-	void onUpdateBuffers_Triangles() override { implUpdate_Triangles(); }
+	void onUpdateBuffers_Triangles() override
+	{
+		recomputeRenderPoints();
+		implUpdate_Triangles();
+	}
 	/** @} */
 
 	/** The type of fixed-size covariance matrices for this representation
@@ -249,6 +217,7 @@ class CGeneralizedEllipsoidTemplate
 	mutable cov_matrix_t m_cov;
 	mean_vector_t m_mean;
 	mutable bool m_needToRecomputeEigenVals{true};
+
 	/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3)
 	 */
 	float m_quantiles{3.f};
@@ -305,6 +274,55 @@ class CGeneralizedEllipsoidTemplate
 
 	void implUpdate_Wireframe();
 	void implUpdate_Triangles();
+
+	/// When called, if m_needToRecomputeEigenVals==true, the points in
+	/// m_render_pts will be regenerated.
+	void recomputeRenderPoints() const
+	{
+		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
+
+		// 1) Update eigenvectors/values:
+		if (m_needToRecomputeEigenVals)
+		{
+			m_needToRecomputeEigenVals = false;
+			// Handle the special case of an ellipsoid of volume = 0
+			const double d = m_cov.det();
+			// Note: "d!=d" is a great test for invalid numbers, don't remove!
+			if (std::abs(d) < 1e-20 || d != d)
+			{
+				// All zeros:
+				m_U.setZero(DIM, DIM);
+			}
+			else
+			{
+				// A valid matrix:
+				m_cov.chol(m_U);
+			}
+		}
+
+		// 2) Generate "standard" ellipsoid:
+		std::vector<array_parameter_t> params_pts;
+		cov_matrix_t Uscaled = m_U;
+		Uscaled *= static_cast<double>(m_quantiles);
+		generatePoints(Uscaled, params_pts);
+
+		// 3) Transform into 2D/3D render space:
+		this->transformFromParameterSpace(params_pts, m_render_pts);
+
+		// 3.5) Save bounding box:
+		m_bb_min = mrpt::math::TPoint3D(
+			std::numeric_limits<double>::max(),
+			std::numeric_limits<double>::max(), 0);
+		m_bb_max = mrpt::math::TPoint3D(
+			-std::numeric_limits<double>::max(),
+			-std::numeric_limits<double>::max(), 0);
+		for (size_t i = 0; i < m_render_pts.size(); i++)
+			for (int k = 0; k < DIM; k++)
+			{
+				mrpt::keep_min(m_bb_min[k], m_render_pts[i][k]);
+				mrpt::keep_max(m_bb_max[k], m_render_pts[i][k]);
+			}
+	}
 
 	mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override
 	{
