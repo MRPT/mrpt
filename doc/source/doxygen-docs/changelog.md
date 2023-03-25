@@ -2,6 +2,8 @@
 
 # Version 2.7.1: UNRELEASED
 - Changes in libraries:
+    - \ref mrpt_hwdrivers_grp
+      - New driver for TAObotics IMU sensors. See mrpt::hwdrivers::CTaoboticsIMU and the example \ref hwdrivers_taobotics_imu
     - \ref mrpt_opengl_grp
       - Header `<mrpt/opengl.h>` has been updated to include the backwards-compatible type `mrpt::opengl::COpenGLScene` to smooth transition of existing code bases.
       - mrpt::opengl::CSphere now has a number of divisions property instead of two (one of them was not actually used).
