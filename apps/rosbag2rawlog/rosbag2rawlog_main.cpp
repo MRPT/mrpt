@@ -24,17 +24,20 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/ros1bridge/imu.h>
 #include <mrpt/ros1bridge/point_cloud2.h>
+#include <mrpt/ros1bridge/pose.h>
 #include <mrpt/ros1bridge/time.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/progress.h>
+#include <nav_msgs/Odometry.h>
 #include <rosbag/bag.h>	 // rosbag_storage C++ lib
 #include <rosbag/view.h>
 #include <sensor_msgs/CameraInfo.h>
@@ -280,6 +283,27 @@ Obs toIMU(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 	return {mrptObs};
 }
 
+Obs toOdometry(std::string_view msg, const rosbag::MessageInstance& rosmsg)
+{
+	auto odo = rosmsg.instantiate<nav_msgs::Odometry>();
+
+	auto mrptObs = mrpt::obs::CObservationOdometry::Create();
+
+	mrptObs->sensorLabel = msg;
+	mrptObs->timestamp = mrpt::ros1bridge::fromROS(odo->header.stamp);
+
+	// Convert data:
+	const auto pose = mrpt::ros1bridge::fromROS(odo->pose);
+	mrptObs->odometry = {pose.mean.x(), pose.mean.y(), pose.mean.yaw()};
+
+	mrptObs->hasVelocities = true;
+	mrptObs->velocityLocal.vx = odo->twist.twist.linear.x;
+	mrptObs->velocityLocal.vy = odo->twist.twist.linear.y;
+	mrptObs->velocityLocal.omega = odo->twist.twist.angular.z;
+
+	return {mrptObs};
+}
+
 Obs toRangeImage(
 	std::string_view msg, const sensor_msgs::Image::Ptr& image,
 	const sensor_msgs::CameraInfo::Ptr& cameraInfo, bool rangeIsDepth)
@@ -447,6 +471,14 @@ class Transcriber
 				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
 				// m_lookup["/tf"].emplace_back(sync->bindTfSync());
+			}
+			else if (sensorType == "CObservationOdometry")
+			{
+				auto callback = [=](const rosbag::MessageInstance& m) {
+					return toOdometry(sensorName, m);
+				};
+				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
+					callback);
 			}
 			// TODO: Handle more cases?
 		}

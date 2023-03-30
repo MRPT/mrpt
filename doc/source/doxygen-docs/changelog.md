@@ -1,14 +1,16 @@
 \page changelog Change Log
 
 # Version 2.7.1: UNRELEASED
+- Changes in apps:
+  - rosbag2rawlog: Added support for converting nav_msgs/Odometry topics to mrpt::obs::CObservationOdometry
 - Changes in libraries:
-    - \ref mrpt_hwdrivers_grp
-      - New driver for TAObotics IMU sensors. See mrpt::hwdrivers::CTaoboticsIMU and the example \ref hwdrivers_taobotics_imu
-    - \ref mrpt_opengl_grp
-      - Header `<mrpt/opengl.h>` has been updated to include the backwards-compatible type `mrpt::opengl::COpenGLScene` to smooth transition of existing code bases.
-      - mrpt::opengl::CSphere now has a number of divisions property instead of two (one of them was not actually used).
-    - \ref mrpt_system_grp
-      - Removed mrpt::system::setConsoleColor() (Deprecated since MRPT 2.3.3)
+  - \ref mrpt_hwdrivers_grp
+    - New driver for TAObotics IMU sensors. See mrpt::hwdrivers::CTaoboticsIMU and the example \ref hwdrivers_taobotics_imu
+  - \ref mrpt_opengl_grp
+    - Header `<mrpt/opengl.h>` has been updated to include the backwards-compatible type `mrpt::opengl::COpenGLScene` to smooth transition of existing code bases.
+    - mrpt::opengl::CSphere now has a number of divisions property instead of two (one of them was not actually used).
+  - \ref mrpt_system_grp
+    - Removed mrpt::system::setConsoleColor() (Deprecated since MRPT 2.3.3)
 - Build system:
   - Fix use of obsolete `qt5_use_modules()`.
   - New minimum CMake version required is CMake 3.16.0
