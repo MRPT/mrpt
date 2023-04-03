@@ -179,7 +179,7 @@ class CGeneralizedEllipsoidTemplate
 		m_numSegments = numSegments;
 		CRenderizable::notifyChange();
 	}
-	uint32_t getNumberOfSegments()
+	uint32_t getNumberOfSegments() const
 	{
 		std::shared_lock<std::shared_mutex> lckRead(m_ellipsoidDataMtx.data);
 		return m_numSegments;
