@@ -1,5 +1,10 @@
 \page changelog Change Log
 
+# Version 2.8.1: UNRELEASED
+
+(None yet)
+
+
 # Version 2.8.0: Released April 8th, 2023
 - Changes in apps:
   - rosbag2rawlog: Added support for converting nav_msgs/Odometry topics to mrpt::obs::CObservationOdometry
