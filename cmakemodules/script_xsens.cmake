@@ -12,8 +12,9 @@ if (WIN32)
 else()
 	set(DEFAULT_BUILD_MT4 "OFF")
 	if (PKG_CONFIG_FOUND)
-		PKG_CHECK_MODULES(PKG_LIBUSB10 QUIET libusb-1.0)
-		PKG_CHECK_MODULES(PKG_LIBUDEV  QUIET libudev)
+		PKG_CHECK_MODULES(PKG_LIBUSB10 QUIET libusb-1.0 IMPORTED_TARGET GLOBAL) # PkgConfig::PKG_LIBUSB10
+		PKG_CHECK_MODULES(PKG_LIBUDEV  QUIET libudev IMPORTED_TARGET GLOBAL) # PkgConfig::PKG_LIBUDEV
+		
 		if(PKG_LIBUSB10_FOUND AND PKG_LIBUDEV_FOUND)
 			set(DEFAULT_BUILD_MT4 "ON")
 		endif()
@@ -46,14 +47,14 @@ if (MRPT_WITH_XSENS)
 		# In Linux: libusb-1.0
 		if(PKG_LIBUSB10_FOUND)
 			# Perfect, we have libusb-1.0
-			set(XSENS4_LIBS ${XSENS4_LIBS} ${PKG_LIBUDEV_LIBRARIES})
+			set(XSENS4_LIBS ${XSENS4_LIBS} PkgConfig::PKG_LIBUSB10)
 		else()
 			message(SEND_ERROR "MRPT_WITH_XSENS requires libusb-1.0. Install it or disable MRPT_WITH_XSENS")
 		endif()
 
 		# In Linux: libdev
 		if (PKG_LIBUDEV_FOUND)
-			set(XSENS4_LIBS ${XSENS4_LIBS} ${PKG_LIBUDEV_LIBRARIES})
+			set(XSENS4_LIBS ${XSENS4_LIBS} PkgConfig::PKG_LIBUDEV)
 		endif ()
 	endif()
 endif ()

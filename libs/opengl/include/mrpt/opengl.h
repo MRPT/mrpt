@@ -39,10 +39,16 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/Scene.h>
 #include <mrpt/opengl/Viewport.h>
-//#include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps
-// now
-//#include <mrpt/opengl/CAngularObservationMesh.h>	// It's in the lib mrpt-maps
-// now
+
+// These two are for easy backwards compatibility (MRPT <2.7.0)
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/COpenGLViewport.h>
+
+// #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib
+// mrpt-maps
+//  now
+// #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in the lib mrpt-maps
+//  now
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
 #include <mrpt/opengl/CEllipsoidInverseDepth3D.h>

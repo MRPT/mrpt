@@ -33,26 +33,18 @@ class CSphere : public CGeneralizedEllipsoidTemplate<3>
 		CRenderizable::notifyChange();
 	}
 	float getRadius() const { return m_radius; }
-	void setNumberDivsLongitude(int N)
+	void setNumberDivs(int N)
 	{
-		m_nDivsLongitude = N;
-		BASE::setNumberOfSegments(m_nDivsLongitude);
-	}
-	void setNumberDivsLatitude(int N)
-	{
-		m_nDivsLatitude = N;
-		CRenderizable::notifyChange();
+		m_nDivs = N;
+		regenerateBaseParams();
 	}
 
 	bool traceRay(const mrpt::poses::CPose3D& o, double& dist) const override;
 	virtual mrpt::math::TBoundingBoxf internalBoundingBoxLocal() const override;
 
 	/** Constructor */
-	CSphere(
-		float radius = 1.0f, int nDivsLongitude = 20, int nDivsLatitude = 20)
-		: m_radius(radius),
-		  m_nDivsLongitude(nDivsLongitude),
-		  m_nDivsLatitude(nDivsLatitude)
+	CSphere(float radius = 1.0f, int nDivs = 20)
+		: m_radius(radius), m_nDivs(nDivs)
 	{
 		regenerateBaseParams();
 		BASE::enableDrawSolid3D(true);	// default
@@ -62,13 +54,13 @@ class CSphere : public CGeneralizedEllipsoidTemplate<3>
 
    protected:
 	float m_radius;
-	int m_nDivsLongitude, m_nDivsLatitude;
+	int m_nDivs;
 
 	void regenerateBaseParams()
 	{
 		BASE::setCovMatrix(mrpt::math::CMatrixDouble33::Identity());
 		BASE::setQuantiles(m_radius);
-		BASE::setNumberOfSegments(m_nDivsLongitude);
+		BASE::setNumberOfSegments(m_nDivs);
 	}
 
 	void transformFromParameterSpace(

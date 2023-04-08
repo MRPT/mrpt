@@ -535,23 +535,23 @@ void CRawlog::getCommentTextAsConfigFile(
 }
 
 void CRawlog::setCommentText(const std::string& t) { m_commentTexts.text = t; }
+
 std::string CRawlog::detectImagesDirectory(const std::string& str)
 {
-	const std::string rawlog_path = extractFileDirectory(str);
-	std::string temptative_img_path =
-		rawlog_path + extractFileName(str) + std::string("_Images");
-	if (mrpt::system::fileExists(temptative_img_path))
-		return temptative_img_path;
-	else if (mrpt::system::fileExists(
-				 temptative_img_path =
-					 (rawlog_path + extractFileName(str) +
-					  std::string("_images"))))
-		return temptative_img_path;
-	else if (mrpt::system::fileExists(
-				 temptative_img_path =
-					 (rawlog_path + extractFileName(str) +
-					  std::string("_IMAGES"))))
-		return temptative_img_path;
-	else
-		return rawlog_path + "Images";
+	using namespace std::string_literals;
+	using mrpt::system::pathJoin;
+
+	const std::string rawlogPath = extractFileDirectory(str);
+
+	std::vector<std::string> temptativeImgPaths = {
+		pathJoin({rawlogPath, extractFileName(str) + "_Images"s}),
+		pathJoin({rawlogPath, extractFileName(str) + "_images"s}),
+		pathJoin({rawlogPath, extractFileName(str) + "_IMAGES"s}),
+		pathJoin({rawlogPath, "Images"})};
+
+	for (const auto& p : temptativeImgPaths)
+		if (mrpt::system::directoryExists(p)) return p;
+
+	// fallback:
+	return temptativeImgPaths.back();
 }

@@ -6,7 +6,7 @@ mark_as_advanced(DISABLE_LIBUSB)
 if (NOT DISABLE_LIBUSB)
 	if(UNIX)
 		if(PKG_CONFIG_FOUND)
-			PKG_CHECK_MODULES(PKG_LIBUSB10 QUIET libusb-1.0)
+			PKG_CHECK_MODULES(PKG_LIBUSB10 QUIET libusb-1.0 IMPORTED_TARGET GLOBAL) # PkgConfig::PKG_LIBUSB10
 		endif()
 	endif(UNIX)
 else ()
@@ -21,7 +21,7 @@ mark_as_advanced(DISABLE_DETECT_LIBFREENECT)
 if (NOT DISABLE_DETECT_LIBFREENECT)
 	if(UNIX)
 		if(PKG_CONFIG_FOUND)
-			PKG_CHECK_MODULES(PKG_LIBFREENECT QUIET libfreenect)
+			PKG_CHECK_MODULES(PKG_LIBFREENECT QUIET libfreenect IMPORTED_TARGET GLOBAL)  # PkgConfig::PKG_LIBFREENECT
 		endif()
 	endif()
 else ()
@@ -57,9 +57,9 @@ if(MRPT_WITH_KINECT)
 		else()
 			# If a system version is found, use it:
 			if(PKG_LIBFREENECT_FOUND)
-					set(FREENECT_LIBS ${PKG_LIBFREENECT_LIBRARIES})
+					set(FREENECT_LIBS PkgConfig::PKG_LIBFREENECT)
 					if($ENV{VERBOSE})
-						message(STATUS "- PKG_LIBFREENECT_LIBRARIES: ${PKG_LIBFREENECT_LIBRARIES}")
+						message(STATUS "- PKG_LIBFREENECT_LIBRARIES: PkgConfig::PKG_LIBFREENECT")
 					endif()
 
 				set(CMAKE_MRPT_HAS_KINECT 1)
@@ -70,9 +70,9 @@ if(MRPT_WITH_KINECT)
 					set(CMAKE_MRPT_HAS_KINECT 1)
 					set(CMAKE_MRPT_HAS_FREENECT 1)
 
-					set(LIBUSB10_LIBS ${PKG_LIBUSB10_LIBRARIES})
+					set(LIBUSB10_LIBS PkgConfig::PKG_LIBUSB10)
 					if($ENV{VERBOSE})
-						message(STATUS "- PKG_LIBUSB10_LIBRARIES: ${PKG_LIBUSB10_LIBRARIES}")
+						message(STATUS "- PKG_LIBUSB10_LIBRARIES: PkgConfig::PKG_LIBUSB10")
 					endif()
 				else()
 					message(SEND_ERROR "MRPT_WITH_KINECT requires libusb-1.0. Install it or disable MRPT_WITH_KINECT")
@@ -85,10 +85,10 @@ if(MRPT_WITH_KINECT)
 
 		if (MRPT_WITH_KINECT_USE_FREENECT)
 			# Find packages needed to build library in Windows
-			find_package(libusb-1.0 REQUIRED)
+			PKG_CHECK_MODULES(PKG_LIBUSB10 QUIET libusb-1.0 IMPORTED_TARGET GLOBAL) # PkgConfig::PKG_LIBUSB10
 
 			if (LIBUSB_1_FOUND)
-				set(FREENECT_LIBS ${LIBUSB_1_LIBRARIES})
+				set(FREENECT_LIBS PkgConfig::PKG_LIBUSB10)
 
 				# All OK:
 				set(CMAKE_MRPT_HAS_KINECT 1)

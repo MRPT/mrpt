@@ -333,6 +333,7 @@ if(MRPT_BUILD_EXAMPLES)
 		hwdrivers_hokuyo_example
 		hwdrivers_robopeaklidar_example
 		hwdrivers_kinect_to_2d_scan_example
+		hwdrivers_taobotics_imu
 		)
 	set(CMAKE_EXAMPLE_DEPS mrpt::hwdrivers mrpt::maps)
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
