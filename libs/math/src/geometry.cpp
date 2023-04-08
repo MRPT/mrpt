@@ -1825,7 +1825,8 @@ double math::getRegressionPlane(const vector<TPoint3D>& points, TPlane& plane)
 		plane.coefs[3] -= plane.coefs[i] * means[i];
 	}
 	size_t i1 = (selected + 1) % 3, i2 = (selected + 2) % 3;
-	return std::sqrt(eigenVal[selected] / (eigenVal[i1] + eigenVal[i2]));
+	const auto condNumbInv = eigenVal[selected] / (eigenVal[i1] + eigenVal[i2]);
+	return condNumbInv;
 }
 
 void math::assemblePolygons(

@@ -140,6 +140,12 @@ if(CMAKE_MRPT_HAS_FREENECT)
 	if(NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 		target_link_libraries(hwdrivers PRIVATE mrpt_freenect)
 	endif()
+
+	# In theory, the exported targets should take care of everything... but I still 
+	# find missing linking against -ludev here after upgrading to u22.04 (?). 
+	# workaround: 
+	#target_link_directories(hwdrivers PRIVATE "${PKG_LIBUDEV_LIBDIR}")
+
 endif()
 
 # Was: target_link_libraries(hwdrivers PRIVATE ${LIBUSB10_LIBS})

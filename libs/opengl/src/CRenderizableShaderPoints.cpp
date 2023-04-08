@@ -56,6 +56,9 @@ void CRenderizableShaderPoints::render(const RenderContext& rc) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
 
+	// Skip these geometric entities when in the 1st pass of shadow map:
+	if (rc.state->is1stShadowMapPass) return;
+
 	std::shared_lock<std::shared_mutex> wfReadLock(
 		CRenderizableShaderPoints::m_pointsMtx.data);
 
