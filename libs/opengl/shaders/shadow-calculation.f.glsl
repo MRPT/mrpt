@@ -26,7 +26,7 @@ mediump float ShadowCalculation(
     highp float currentDepth = projCoords.z;
     
     // check whether current frag pos is in shadow1D
-    highp float bias = 1e-5 + 1e-5*cam2fragDist + 1e-4*(1.0-max(0.0,dot(normal, -light_direction)));
+    highp float bias = 2e-5 + 1e-5*cam2fragDist + 1e-4*(1.0-max(0.0,dot(normal, light_direction)));
 #if 0
     mediump float shadow = currentDepth-bias > closestDepth  ? 1.0 : 0.0;
 #else

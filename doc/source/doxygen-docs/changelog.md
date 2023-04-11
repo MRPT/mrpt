@@ -1,8 +1,8 @@
 \page changelog Change Log
 
 # Version 2.8.1: UNRELEASED
-
-(None yet)
+- BUG FIXES:
+  - OpenGL shadow rendering: Fix error in calculation of anti peter-panning and shadow acne effects.
 
 
 # Version 2.8.0: Released April 8th, 2023
