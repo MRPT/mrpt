@@ -145,10 +145,21 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 #include "../shaders/shadow-calculation.f.glsl"
 				;
 			uniforms = {
-				"p_matrix",		   "v_matrix",		 "m_matrix",
-				"light_pv_matrix", "shadowMap",		 "light_diffuse",
-				"light_ambient",   "light_specular", "light_direction",
-				"light_color",	   "cam_position",	 "materialSpecular"};
+				"p_matrix",
+				"v_matrix",
+				"m_matrix",
+				"light_pv_matrix",
+				"shadowMap",
+				"light_diffuse",
+				"light_ambient",
+				"light_specular",
+				"light_direction",
+				"shadow_bias",
+				"shadow_bias_cam2frag",
+				"shadow_bias_normal",
+				"light_color",
+				"cam_position",
+				"materialSpecular"};
 			attribs = {"position", "vertexColor", "vertexNormal"};
 			break;
 
@@ -174,11 +185,23 @@ Program::Ptr mrpt::opengl::LoadDefaultShader(const shader_id_t id)
 			fragShaderIncludes =
 #include "../shaders/shadow-calculation.f.glsl"
 				;
-			uniforms = {"p_matrix",		   "v_matrix",		 "m_matrix",
-						"light_pv_matrix", "shadowMap",		 "light_diffuse",
-						"light_ambient",   "light_specular", "light_direction",
-						"light_color",	   "cam_position",	 "materialSpecular",
-						"textureSampler"};
+			uniforms = {
+				"p_matrix",
+				"v_matrix",
+				"m_matrix",
+				"light_pv_matrix",
+				"shadowMap",
+				"light_diffuse",
+				"light_ambient",
+				"light_specular",
+				"light_direction",
+				"shadow_bias",
+				"shadow_bias_cam2frag",
+				"shadow_bias_normal",
+				"light_color",
+				"cam_position",
+				"materialSpecular",
+				"textureSampler"};
 			attribs = {"position", "vertexNormal", "vertexUV"};
 			break;
 

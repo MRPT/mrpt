@@ -34,6 +34,10 @@ struct TLightParameters
 	/** Light direction (must be normalized) */
 	mrpt::math::TVector3Df direction = {-0.40825f, -0.40825f, -0.81650f};
 
+	/** Shadow tuning parameters ("anti shadow acne") */
+	float shadow_bias = 1e-5, shadow_bias_cam2frag = 1e-5,
+		  shadow_bias_normal = 1e-4;
+
 	void writeToStream(mrpt::serialization::CArchive& out) const;
 	void readFromStream(mrpt::serialization::CArchive& in);
 
