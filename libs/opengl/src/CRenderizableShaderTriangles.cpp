@@ -88,6 +88,15 @@ void CRenderizableShaderTriangles::render(const RenderContext& rc) const
 	{
 		// bound to GL_TEXTURE0 + "i":
 		s.setInt("shadowMap", SHADOW_MAP_TEXTURE_UNIT);
+
+		// Shadow params:
+		if (const auto& l = rc.lights; l)
+		{
+			rc.shader->setFloat("shadow_bias", l->shadow_bias);
+			rc.shader->setFloat(
+				"shadow_bias_cam2frag", l->shadow_bias_cam2frag);
+			rc.shader->setFloat("shadow_bias_normal", l->shadow_bias_normal);
+		}
 	}
 
 	// Set up the vertex array:
