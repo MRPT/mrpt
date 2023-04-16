@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.8.1: UNRELEASED
+# Version 2.8.1: Released April 17th, 2023
 - Changes in libraries:
   - \ref mrpt_opengl_grp
     - Expose shadow bias parameters into mrpt::opengl::TLightParameters
