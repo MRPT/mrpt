@@ -1,5 +1,13 @@
 \page changelog Change Log
 
+# Version 2.8.1: Released April 17th, 2023
+- Changes in libraries:
+  - \ref mrpt_opengl_grp
+    - Expose shadow bias parameters into mrpt::opengl::TLightParameters
+- BUG FIXES:
+  - OpenGL shadow rendering: Fix error in calculation of anti peter-panning and shadow acne effects.
+
+
 # Version 2.8.0: Released April 8th, 2023
 - Changes in apps:
   - rosbag2rawlog: Added support for converting nav_msgs/Odometry topics to mrpt::obs::CObservationOdometry

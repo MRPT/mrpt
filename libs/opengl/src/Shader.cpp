@@ -387,9 +387,12 @@ void Program::setInt(const char* uniformName, int value) const
 #endif
 }
 
-void Program::setFloat(const char* uniformName, float value) const
+void Program::setFloat(
+	const char* uniformName, float value, bool failIfNotExists) const
 {
 #if MRPT_HAS_OPENGL_GLUT || MRPT_HAS_EGL
+	if (!failIfNotExists && !hasUniform(uniformName)) return;
+
 	glUniform1f(uniformId(uniformName), value);
 #endif
 }
