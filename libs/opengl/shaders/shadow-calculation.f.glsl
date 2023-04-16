@@ -7,6 +7,8 @@ R"XXX(#version 300 es
 uniform highp sampler2D shadowMap;
 uniform highp vec3 light_direction;
 
+uniform highp float shadow_bias, shadow_bias_cam2frag, shadow_bias_normal;
+
 mediump float ShadowCalculation(
     highp vec4 fragPosLightSpace,
     mediump vec3 normal,
@@ -26,7 +28,7 @@ mediump float ShadowCalculation(
     highp float currentDepth = projCoords.z;
     
     // check whether current frag pos is in shadow1D
-    highp float bias = 1e-5 + 1e-5*cam2fragDist + 1e-4*(1.0-max(0.0,dot(normal, -light_direction)));
+    highp float bias = shadow_bias + shadow_bias_cam2frag*cam2fragDist + shadow_bias_normal*(1.0-max(0.0,dot(normal, light_direction)));
 #if 0
     mediump float shadow = currentDepth-bias > closestDepth  ? 1.0 : 0.0;
 #else

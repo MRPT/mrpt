@@ -102,7 +102,9 @@ class Program
 
 	/** Set uniform variables: */
 	void setInt(const char* uniformName, int value) const;
-	void setFloat(const char* uniformName, float value) const;
+	void setFloat(
+		const char* uniformName, float value,
+		bool failIfNotExists = true) const;
 	void setFloat3(const char* uniformName, float v1, float v2, float v3) const;
 	void setFloat4(
 		const char* uniformName, float v1, float v2, float v3, float v4) const;
