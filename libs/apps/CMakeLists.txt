@@ -8,9 +8,6 @@ set(lst_modules
 )
 
 # Optional modules:
-if (BUILD_mrpt-hmtslam)
-	list(APPEND lst_modules mrpt-hmtslam)
-endif()
 if (BUILD_mrpt-graphslam)
 	list(APPEND lst_modules mrpt-graphslam)
 endif()

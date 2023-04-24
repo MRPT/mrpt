@@ -25,7 +25,6 @@ Each MRPT library source code can be found under ``${MRPT_ROOT}/libs``.
   group_mrpt_graphs_grp.rst
   group_mrpt_graphslam_grp.rst
   group_mrpt_gui_grp.rst
-  group_mrpt_hmtslam_grp.rst
   group_mrpt_hwdrivers_grp.rst
   group_mrpt_img_grp.rst
   group_mrpt_io_grp.rst
