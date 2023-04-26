@@ -1,0 +1,10 @@
+--- generated-sources-pybind/mrpt/maps/COctoMapBase.cpp	2023-04-27 00:54:44.080520471 +0200
++++ generated-sources-pybind/mrpt/maps/COctoMapBase.new.cpp	2023-04-27 01:00:54.078049124 +0200
+@@ -1,3 +1,7 @@
++#include <mrpt/obs/CSensoryFrame.h>
++#include <mrpt/maps/CSimpleMap.h>
++#include <mrpt/maps/CSimplePointsMap.h>
++
+ #include <bits/refwrap.h>
+ #include <ios>
+ #include <istream>
