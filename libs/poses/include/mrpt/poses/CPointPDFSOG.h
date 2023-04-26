@@ -13,6 +13,8 @@
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 
+#include <deque>
+
 namespace mrpt::poses
 {
 /** Declares a class that represents a Probability Density function (PDF) of a

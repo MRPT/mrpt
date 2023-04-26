@@ -289,6 +289,7 @@ include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV l
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
+include(cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
 include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
 include(cmakemodules/script_ros.cmake REQUIRED)        # Check for ROS1 / ROS2
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
@@ -656,11 +657,6 @@ if(MRPT_BUILD_TESTING)
 	add_subdirectory(tests)  # Build my tests
 endif()
 unset(_def_value )
-
-#-----------------------------------
-# The python bindings
-# *Note*: This must be AFTER the generation of mrpt-xxx-config.cmake files
-include(cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
 
 # Prepare CPack params for building binary packages (has to be after the apps/)
 include(cmakemodules/script_setup_cpack.cmake REQUIRED)

@@ -49,6 +49,40 @@ function(handle_special_simd_flags lst_files FILE_PATTERN FLAGS_TO_ADD)
 	endif()
 endfunction()
 
+
+# From: https://github.com/ament/ament_cmake/blob/rolling/ament_cmake_python/ament_cmake_python-extras.cmake
+macro(mrpt_ament_cmake_python_get_python_install_dir)
+  if(NOT DEFINED PYTHON_INSTALL_DIR)
+    # avoid storing backslash in cached variable since CMake will interpret it as escape character
+    set(_python_code
+      "import os"
+      "import sysconfig"
+      "print(os.path.relpath(sysconfig.get_path('purelib', vars={'base': '${CMAKE_INSTALL_PREFIX}'}), start='${CMAKE_INSTALL_PREFIX}').replace(os.sep, '/'))"
+    )
+    # JL Was: get_executable_path(_python_interpreter Python3::Interpreter CONFIGURE)
+	set(_python_interpreter ${Python3_EXECUTABLE})
+    execute_process(
+      COMMAND
+      "${_python_interpreter}"
+      "-c"
+      "${_python_code}"
+      OUTPUT_VARIABLE _output
+      RESULT_VARIABLE _result
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(NOT _result EQUAL 0)
+      message(FATAL_ERROR
+        "execute_process(${_python_interpreter} -c '${_python_code}') returned "
+        "error code ${_result}")
+    endif()
+
+    set(PYTHON_INSTALL_DIR
+      "${_output}"
+      CACHE INTERNAL
+      "The directory for Python library installation. This needs to be in PYTHONPATH when 'setup.py install' is called.")
+  endif()
+endmacro()
+
 # define_mrpt_lib(): Declares an MRPT library target:
 #-----------------------------------------------------------------------
 macro(define_mrpt_lib name)
