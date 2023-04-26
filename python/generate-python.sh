@@ -61,5 +61,10 @@ $HOME/code/binder/build/source/binder \
 	-I$HOME/code/mrpt/libs/typemeta/include \
 	-I$HOME/code/mrpt/libs/vision/include/ \
 
+# applying manual patches:
+echo "Applying manual patches..."
+find . -name "*.diff" | xargs -I FIL bash -c "patch -s -p0 < FIL"
+
+
 # Enforce formatting:
 #find generated-sources-pybind -name "*.cpp" | xargs -I FIL clang-format-11 -i FIL
