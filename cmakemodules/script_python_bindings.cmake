@@ -10,9 +10,22 @@ if(MRPT_DISABLE_PYTHON_BINDINGS)
     set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 0)
 endif()
 
+if (NOT MRPT_DISABLE_PYTHON_BINDINGS AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"))
+    set(MRPT_DISABLE_PYTHON_BINDINGS ON CACHE BOOL "Disable python wrappers" FORCE)
+    message(STATUS "*WARNING* Disabling Python wrappers: not supported if built using clang (it leads to pybind11-generated code errors)")
+endif()
+
+
 if(UNIX AND NOT MRPT_DISABLE_PYTHON_BINDINGS)
 	# Requires CMake 3.13+
-	find_package(Python3 COMPONENTS Development QUIET)
+    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.12.0")
+        find_package(Python3 COMPONENTS Interpreter Development)
+    else()
+        # When cmake 3.12 is available everywhere, delete this branch of the if()
+        find_program(Python3_EXECUTABLE NAMES python3)
+        set(Python3_VERSION_MAJOR ${Python_VERSION_MAJOR})
+        set(Python3_VERSION_MINOR ${Python_VERSION_MINOR})
+    endif()
 
     if (Python3_FOUND)
         string(REGEX MATCHALL "[0-9]+" MY_PYTHON3_VERSION_PARTS "${Python3_VERSION}")
@@ -20,15 +33,29 @@ if(UNIX AND NOT MRPT_DISABLE_PYTHON_BINDINGS)
         list(GET MY_PYTHON3_VERSION_PARTS 0 MY_PYTHON3_MAJOR_VERSION)
         list(GET MY_PYTHON3_VERSION_PARTS 1 MY_PYTHON3_MINOR_VERSION)
 
-        set(BOOST_PYTHON_MODULE_NAME python${MY_PYTHON3_MAJOR_VERSION}${MY_PYTHON3_MINOR_VERSION})
+        if ("${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}" VERSION_LESS "3.8")
+            message(ERROR "Disable Python wrappers: requires Python version >=3.8, but found: ${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}")
+        endif()
+        
+        # Enforce using python3:
+        set(Python_ADDITIONAL_VERSIONS ${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
+        set(PYBIND11_PYTHON_VERSION ${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
+        find_package(pybind11 CONFIG)
+        
+        # The PYTHON build dir must be exactly at the same level than the root binary dir
+        # in order for the different build tools (debuild,...) pass the correct relative 
+        # path where to install the built python packages (e.g. under <build>/debian/tmp )
+        set(MRPT_PYTHON_BUILD_DIRECTORY ${MRPT_BINARY_DIR})
     
-        # find packages quiet
-        find_package(Boost COMPONENTS ${BOOST_PYTHON_MODULE_NAME} QUIET)
-    endif()
-
-    # build python bindings if we have all requirements
-    if(Boost_FOUND AND Python3_FOUND)
-        set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 1)
-    add_subdirectory(python)
+        if (pybind11_FOUND AND pybind11_VERSION VERSION_LESS 2.2)
+            message(ERROR "Disable Python bindings: pybind11 >=2.2 is required but only found version ${pybind11_VERSION}")
+            set(pybind11_FOUND OFF)
+        endif()
+    
+        if (pybind11_FOUND)
+            # build python bindings if we have all requirements
+            set(CMAKE_MRPT_HAS_PYTHON_BINDINGS 1)
+            add_subdirectory(python)
+        endif()
     endif()
 endif()

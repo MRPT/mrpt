@@ -511,12 +511,6 @@ uint8_t* CImage::internal_get(int col, int row, uint8_t channel) const
 #endif
 }
 
-uint8_t* CImage::get_unsafe(
-	unsigned int col, unsigned int row, uint8_t channel) const
-{
-	return internal_get(col, row, channel);
-}
-
 uint8_t CImage::serializeGetVersion() const
 {
 #if !MRPT_HAS_OPENCV

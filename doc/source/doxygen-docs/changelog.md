@@ -1,9 +1,9 @@
 \page changelog Change Log
 
-# Version 2.8.2: UNRELEASED
+# Version 2.9.0: UNRELEASED
 - Changes in libraries:
   - Removed the legacy module mrpt::hmtslam and associated applications. Please refer to older MRPT releases if needed.
-
+  - Removed all deprecated functions and headers.
 
 # Version 2.8.1: Released April 17th, 2023
 - Changes in libraries:

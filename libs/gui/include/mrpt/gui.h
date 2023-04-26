@@ -11,6 +11,7 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowGUI.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 
 // Include these ones manually in your code only if you need them, since they

@@ -54,11 +54,6 @@ int solve_poly4(double* x, double a, double b, double c, double d) noexcept;
 int solve_poly5(
 	double* x, double a, double b, double c, double d, double e) noexcept;
 
-/** Solve equation x^4 + b*x^2 + d = 0 */
-int solve_poly4Bi(double* x, double b, double d) noexcept;
-/** Solve equation x^4 + b*x^2 + c*x + d = 0 */
-int solve_poly4De(double* x, double b, double c, double d) noexcept;
-
 /** Solves equation `a*x^2 + b*x + c = 0`.
  * Returns the number of real roots: either 0 or 2; or 1 if a=0 (in this case
  * the root is in r1).

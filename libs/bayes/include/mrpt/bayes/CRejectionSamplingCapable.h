@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/bayes/CProbabilityParticle.h>
+#include <mrpt/core/exceptions.h>
 #include <mrpt/random.h>
 
 namespace mrpt
