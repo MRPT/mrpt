@@ -18,6 +18,7 @@
 #include <mrpt/opengl/DefaultShaders.h>
 #include <mrpt/opengl/RenderQueue.h>
 #include <mrpt/opengl/Shader.h>
+#include <mrpt/opengl/TLightParameters.h>
 #include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/opengl/opengl_frwds.h>
