@@ -453,17 +453,28 @@ void internalAssertEigenDefined()
 	}
 }
 
+namespace internal
+{
+void printMatrixNoPrintErrorMsg(std::ostream& o);
+}
+
 /** Stream as text. Implemented for all matrices and vectors, except for
  * non-square fixed-size matrices. */
-template <
-	typename Scalar, class Derived,
-	typename = std::enable_if_t<
-		Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
-		(Derived::ColsAtCompileTime == 1)>>
+template <typename Scalar, class Derived>
 std::ostream& operator<<(
 	std::ostream& o, const MatrixVectorBase<Scalar, Derived>& m)
 {
-	return o << m.asString();
+	if constexpr (
+		Derived::RowsAtCompileTime == Derived::ColsAtCompileTime ||
+		(Derived::ColsAtCompileTime == 1))
+	{
+		return o << m.asString();
+	}
+	else
+	{
+		internal::printMatrixNoPrintErrorMsg(o);
+		return o;
+	}
 }
 
 }  // namespace mrpt::math

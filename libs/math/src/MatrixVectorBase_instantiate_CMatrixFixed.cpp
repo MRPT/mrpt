@@ -31,3 +31,8 @@
 
 DO_MATFIXED_INSTANTIATION(float);
 DO_MATFIXED_INSTANTIATION(double);
+
+void mrpt::math::internal::printMatrixNoPrintErrorMsg(std::ostream& o)
+{
+	o << "(Dimensions not supported, cast to dynamic matrix)\n";
+}
