@@ -22,9 +22,10 @@
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/slam/PF_aux_structs.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
+#include "PF_aux_structs.h"
 
 using namespace mrpt;
 using namespace mrpt::math;

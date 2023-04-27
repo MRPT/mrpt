@@ -414,7 +414,6 @@
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
-#include <mrpt/slam/PF_aux_structs.h>
 #include <mrpt/slam/PF_implementations.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TKLDParams.h>

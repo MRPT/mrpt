@@ -13,7 +13,8 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
-#include <mrpt/slam/PF_aux_structs.h>
+
+#include "PF_aux_structs.h"
 
 using namespace std;
 using namespace mrpt;

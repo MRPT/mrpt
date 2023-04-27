@@ -31,6 +31,9 @@ target_link_libraries(pymrpt PUBLIC
   mrpt::gui
   mrpt::nav
 )
+
+target_include_directories(pymrpt PRIVATE ".")
+
 target_compile_definitions(pymrpt PRIVATE 
   PYBIND11_MAJOR_VERSION=${PYBIND11_MAJOR_VERSION}
   PYBIND11_MINOR_VERSION=${PYBIND11_MINOR_VERSION}
