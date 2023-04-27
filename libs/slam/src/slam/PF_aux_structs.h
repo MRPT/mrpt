@@ -15,7 +15,6 @@
 namespace mrpt::slam::detail
 {
 using namespace mrpt;
-using namespace mrpt::math;
 using namespace std;
 
 /** Auxiliary structure used in KLD-sampling in particle filters \sa
