@@ -362,12 +362,12 @@ class CParameterizedTrajectoryGenerator
 	uint16_t getPathCount() const { return m_alphaValuesCount; }
 	/** Alpha value for the discrete corresponding value \sa alpha2index */
 	double index2alpha(uint16_t k) const;
-	static double index2alpha(uint16_t k, const unsigned int num_paths);
+	static double Index2alpha(uint16_t k, const unsigned int num_paths);
 
 	/** Discrete index value for the corresponding alpha value \sa index2alpha
 	 */
 	uint16_t alpha2index(double alpha) const;
-	static uint16_t alpha2index(double alpha, const unsigned int num_paths);
+	static uint16_t Alpha2index(double alpha, const unsigned int num_paths);
 
 	inline double getRefDistance() const { return refDistance; }
 	/** Resizes and populates the initial appropriate contents in a vector of

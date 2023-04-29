@@ -215,14 +215,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	/** @name Behavior-changing global flags
 		@{ */
 
-	/** By default, when storing images through the CSerializable interface,
-	 * grayscale images will be ZIP compressed if they are larger than 16Kb:
-	 * this flag can be turn on to disable ZIP compression and gain speed versus
-	 * occupied space.
-	 *  (Default = false) */
-	static void DISABLE_ZIP_COMPRESSION(bool val);
-	static bool DISABLE_ZIP_COMPRESSION();
-
 	/** By default, when storing images through the CSerializable interface, RGB
 	 * images are JPEG-compressed to save space. If for some reason you prefer
 	 * storing RAW image data, disable this feature by setting this flag to

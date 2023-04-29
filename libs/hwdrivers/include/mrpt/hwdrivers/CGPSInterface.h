@@ -163,9 +163,6 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	/** Returns true if communications work, i.e. if some message has been
 	 * received. */
 	bool isGPS_connected();
-	/** Returns true if the last message from the GPS indicates that the signal
-	 * from sats has been acquired. */
-	bool isGPS_signalAcquired();
 
 	/** \name Set-up and configuration
 	 * @{ */
