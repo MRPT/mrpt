@@ -416,3 +416,8 @@ float CHeightGridMap2D::compute3DMatchingRatio(
 {
 	return 0;
 }
+
+CHeightGridMap2D::TMapRepresentation CHeightGridMap2D::getMapType()
+{
+	return m_mapType;
+}

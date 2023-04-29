@@ -227,7 +227,7 @@ class CGenericSensor
 	 *  \exception This method throws an exception with a descriptive message
 	 * if some critical parameter is missing or has an invalid value.
 	 */
-	void loadConfig(
+	virtual void loadConfig(
 		const mrpt::config::CConfigFileBase& configSource,
 		const std::string& section);
 
@@ -245,15 +245,7 @@ class CGenericSensor
 
 	/** Returns a list of enqueued objects, emptying it (thread-safe).
 	 */
-	void getObservations(TListObservations& lstObjects);
-
-	/// \overload returning by value.
-	TListObservations getObservations()
-	{
-		TListObservations obs;
-		getObservations(obs);
-		return obs;
-	}
+	virtual TListObservations getObservations();
 
 	/**  Set the path where to save off-rawlog image files (will be ignored in
 	 * those sensors where this is not applicable).
@@ -272,18 +264,18 @@ class CGenericSensor
 	 * images saved externally. Default: "png".
 	 * \sa setPathForExternalImages, setExternalImageJPEGQuality
 	 */
-	void setExternalImageFormat(const std::string& ext)
+	virtual void setExternalImageFormat(const std::string& ext)
 	{
 		m_external_images_format = ext;
 	}
 
 	/** The quality of JPEG compression, when external images is enabled and the
 	 * format is "jpg". \sa setExternalImageFormat */
-	void setExternalImageJPEGQuality(const unsigned int quality)
+	virtual void setExternalImageJPEGQuality(const unsigned int quality)
 	{
 		m_external_images_jpeg_quality = quality;
 	}
-	unsigned int getExternalImageJPEGQuality() const
+	virtual unsigned int getExternalImageJPEGQuality() const
 	{
 		return m_external_images_jpeg_quality;
 	}

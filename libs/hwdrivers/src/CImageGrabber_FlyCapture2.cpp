@@ -139,8 +139,6 @@ const char* fc2_defnum2str(const T& val)
 }
 #endif
 
-//  Options: TCaptureOptions_bumblebee
-// -------------------------------------------------------------
 TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2()
 	: videomode(),	//("VIDEOMODE_640x480Y8"),
 	  framerate(),	// ("FRAMERATE_30"),

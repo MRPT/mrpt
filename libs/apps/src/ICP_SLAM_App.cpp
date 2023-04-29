@@ -611,13 +611,12 @@ void ICP_SLAM_App_Live::SensorThread(ICP_SLAM_App_Live::TThreadParams tp)
 		{
 			sensor->doProcess();  // Process
 			// Get new observations
-			CGenericSensor::TListObservations lstObjs;
-			sensor->getObservations(lstObjs);
+			const CGenericSensor::TListObservations lstObjs =
+				sensor->getObservations();
 			{
 				std::lock_guard<std::mutex> lock(m_cs_global_list_obs);
 				m_global_list_obs.insert(lstObjs.begin(), lstObjs.end());
 			}
-			lstObjs.clear();
 
 			// wait for the process period:
 			rate.sleep();

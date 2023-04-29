@@ -80,7 +80,7 @@ void CHolonomicFullEval::evalSingleTarget(
 
 	const double target_dir = ::atan2(target.y, target.x);
 	const unsigned int target_k =
-		CParameterizedTrajectoryGenerator::alpha2index(target_dir, nDirs);
+		CParameterizedTrajectoryGenerator::Alpha2index(target_dir, nDirs);
 	const double target_dist = target.norm();
 
 	m_dirs_scores.resize(nDirs, options.factorWeights.size() + 2);
@@ -495,7 +495,7 @@ void CHolonomicFullEval::navigate(const NavInput& ni, NavOutput& no)
 		const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
 
 		no.desiredDirection =
-			CParameterizedTrajectoryGenerator::index2alpha(best_dir_k, nDirs);
+			CParameterizedTrajectoryGenerator::Index2alpha(best_dir_k, nDirs);
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------

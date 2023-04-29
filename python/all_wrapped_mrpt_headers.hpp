@@ -44,8 +44,6 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 
 // apps
-#include <mrpt/apps/CGridMapAlignerApp.h>
-#include <mrpt/apps/CRawlogProcessor.h>
 #include <mrpt/apps/ICP_SLAM_App.h>
 #include <mrpt/apps/KFSLAMApp.h>
 #include <mrpt/apps/MonteCarloLocalization_App.h>
@@ -123,7 +121,6 @@
 #include <mrpt/hwdrivers/CTuMicos.h>
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/hwdrivers/CWirelessPower.h>
-#include <mrpt/hwdrivers/TCaptureOptions_bumblebee.h>
 
 // img
 #include <mrpt/img/CImage.h>
