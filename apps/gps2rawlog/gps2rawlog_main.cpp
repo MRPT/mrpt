@@ -98,16 +98,14 @@ int main(int argc, char** argv)
 		{
 			gps_if.doProcess();
 
-			CGenericSensor::TListObservations lst_obs;
-			gps_if.getObservations(lst_obs);
+			const auto lst_obs = gps_if.getObservations();
 
 			printf(
 				"%u bytes parsed, %u new observations identified...\n",
 				(unsigned)fil_input->getPosition(), (unsigned)lst_obs.size());
-			for (auto it = lst_obs.begin(); it != lst_obs.end(); ++it)
-			{
-				arch << *it->second;
-			}
+
+			for (const auto& kv : lst_obs)
+				arch << *kv.second;
 		}
 
 		// successful end of program.

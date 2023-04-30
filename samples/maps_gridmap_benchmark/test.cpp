@@ -145,7 +145,7 @@ void BenchmarkGridmaps()
 		tictac.Tic();
 		for (i = 0; i < N; i++)
 		{
-			gridMap.updateCell_fast_occupied(
+			gridMap->updateCell_fast_occupied(
 				2, 2, logodd_obs, logodd_thres_occupied, theMapArray,
 				theMapSize_x);
 		}
