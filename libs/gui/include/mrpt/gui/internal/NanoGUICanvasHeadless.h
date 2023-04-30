@@ -13,7 +13,7 @@
 // Expose nanogui API to mrpt users, for direct use of nanogui classes.
 #include <mrpt/config.h>
 #if MRPT_HAS_NANOGUI
-#undef None  // Fix X11 macros?
+#undef None	 // Fix X11 macros?
 #undef Top
 #undef Bottom
 #include <nanogui/nanogui.h>
