@@ -7,7 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/fourier.h>
@@ -17,7 +16,6 @@
 
 using namespace mrpt;
 using namespace mrpt::math;
-using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::img;
 using namespace std;

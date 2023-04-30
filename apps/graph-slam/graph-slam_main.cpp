@@ -19,7 +19,7 @@
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/graphs.h>
 #include <mrpt/graphslam/levmarq.h>
-#include <mrpt/gui.h>
+#include <mrpt/system/datetime.h>
 
 using namespace mrpt;
 using namespace mrpt::graphslam;
