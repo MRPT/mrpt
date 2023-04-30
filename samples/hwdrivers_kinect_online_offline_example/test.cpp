@@ -17,7 +17,7 @@
 			  of the grabbing thread in Test_KinectOnlineOffline()
 */
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/io/CFileGZInputStream.h>

@@ -12,7 +12,6 @@
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/apps/CGridMapAlignerApp.h>
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/gui.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
@@ -26,6 +25,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/Scene.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
@@ -219,7 +219,6 @@ void CGridMapAlignerApp::run()
 	using namespace mrpt::math;
 	using namespace mrpt::serialization;
 	using namespace mrpt::config;
-	using namespace mrpt::gui;
 	using namespace mrpt::img;
 	using namespace mrpt::io;
 	using namespace mrpt::random;

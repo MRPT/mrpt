@@ -7,7 +7,8 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
 

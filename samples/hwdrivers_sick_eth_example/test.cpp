@@ -11,7 +11,7 @@
    This example was contributed by Adrien Barral - Robopec (France)
 */
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CLMS100eth.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // [mrpt-maps]
 
