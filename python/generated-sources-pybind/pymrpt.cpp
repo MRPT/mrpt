@@ -12,6 +12,7 @@ typedef std::function< pybind11::module & (std::string const &) > ModuleGetter;
 void bind_std_chrono(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_core_Clock(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_core_Stringifyable(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_std_array(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_std_stl_vector(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_std_std_thread(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_core_WorkerThreadsPool(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -441,6 +442,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_std_chrono(M);
 	bind_mrpt_core_Clock(M);
 	bind_mrpt_core_Stringifyable(M);
+	bind_std_array(M);
 	bind_std_stl_vector(M);
 	bind_std_std_thread(M);
 	bind_mrpt_core_WorkerThreadsPool(M);
