@@ -415,7 +415,8 @@ std::vector<std::string> CWirelessPower::ListNetworks()
 
 	PWLAN_INTERFACE_INFO iface;	 // Information element for an interface
 
-	iface = GetInterfaceW(guid, (HANDLE)hClient);  // Get the interface handler
+	iface =
+		GetInterfaceW(m_guid, (HANDLE)hClient);	 // Get the interface handler
 
 	// Get the list of networks
 	std::vector<PWLAN_AVAILABLE_NETWORK> pBssList =
@@ -497,7 +498,7 @@ int CWirelessPower::GetPower()
 	PWLAN_AVAILABLE_NETWORK wlan;  // handler to the network
 
 	// Get a handler to the network
-	wlan = GetNetworkW((HANDLE)hClient, ssid, guid);
+	wlan = GetNetworkW((HANDLE)hClient, m_ssid, m_guid);
 
 	return wlan->wlanSignalQuality;
 #endif
