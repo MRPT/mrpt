@@ -25,7 +25,7 @@ void bind_mrpt_math_math_frwds(std::function< pybind11::module &(std::string con
 ;
 
 	{ // mrpt::math::matrix_size_t file:mrpt/math/matrix_size_t.h line:20
-		pybind11::class_<mrpt::math::matrix_size_t, std::shared_ptr<mrpt::math::matrix_size_t>> cl(M("mrpt::math"), "matrix_size_t", "Auxiliary class used in CMatrixDynamic:size(), CMatrixDynamic::resize(),\n CMatrixFixed::size(), CMatrixFixed::resize(), to mimic the\n behavior of STL-containers.\n \n\n\n ");
+		pybind11::class_<mrpt::math::matrix_size_t, std::shared_ptr<mrpt::math::matrix_size_t>, std::array<unsigned long,2>> cl(M("mrpt::math"), "matrix_size_t", "Auxiliary class used in CMatrixDynamic:size(), CMatrixDynamic::resize(),\n CMatrixFixed::size(), CMatrixFixed::resize(), to mimic the\n behavior of STL-containers.\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::matrix_size_t(); } ) );
 		cl.def( pybind11::init<const unsigned long, const unsigned long>(), pybind11::arg("rows"), pybind11::arg("cols") );
 

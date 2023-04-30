@@ -41,7 +41,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::gui::MRPT2NanoguiGLCanvas file:mrpt/gui/MRPT2NanoguiGLCanvas.h line:32
+// mrpt::gui::MRPT2NanoguiGLCanvas file:mrpt/gui/MRPT2NanoguiGLCanvas.h line:35
 struct PyCallBack_mrpt_gui_MRPT2NanoguiGLCanvas : public mrpt::gui::MRPT2NanoguiGLCanvas {
 	using mrpt::gui::MRPT2NanoguiGLCanvas::MRPT2NanoguiGLCanvas;
 
@@ -125,7 +125,7 @@ struct PyCallBack_mrpt_gui_MRPT2NanoguiGLCanvas : public mrpt::gui::MRPT2Nanogui
 	}
 };
 
-// mrpt::gui::CDisplayWindowGUI file:mrpt/gui/CDisplayWindowGUI.h line:84
+// mrpt::gui::CDisplayWindowGUI file:mrpt/gui/CDisplayWindowGUI.h line:88
 struct PyCallBack_mrpt_gui_CDisplayWindowGUI : public mrpt::gui::CDisplayWindowGUI {
 	using mrpt::gui::CDisplayWindowGUI::CDisplayWindowGUI;
 
@@ -321,13 +321,13 @@ struct PyCallBack_mrpt_gui_CDisplayWindowPlots : public mrpt::gui::CDisplayWindo
 
 void bind_mrpt_gui_MRPT2NanoguiGLCanvas(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::gui::MRPT2NanoguiGLCanvas file:mrpt/gui/MRPT2NanoguiGLCanvas.h line:32
+	{ // mrpt::gui::MRPT2NanoguiGLCanvas file:mrpt/gui/MRPT2NanoguiGLCanvas.h line:35
 		pybind11::class_<mrpt::gui::MRPT2NanoguiGLCanvas, std::shared_ptr<mrpt::gui::MRPT2NanoguiGLCanvas>, PyCallBack_mrpt_gui_MRPT2NanoguiGLCanvas, nanogui::GLCanvas> cl(M("mrpt::gui"), "MRPT2NanoguiGLCanvas", "An extension of nanogui::GLCanvas to render MRPT OpenGL scenes.\n\n Directly access `scene` (locking its mutex `scene_mtx` first) to update the\n scene to be rendered.\n\n \n CDisplayWindowGUI\n \n\n\n ");
 		cl.def_readwrite("scene", &mrpt::gui::MRPT2NanoguiGLCanvas::scene);
 		cl.def("drawGL", (void (mrpt::gui::MRPT2NanoguiGLCanvas::*)()) &mrpt::gui::MRPT2NanoguiGLCanvas::drawGL, "C++: mrpt::gui::MRPT2NanoguiGLCanvas::drawGL() --> void");
 		cl.def("camera", (class mrpt::gui::CGlCanvasBase & (mrpt::gui::MRPT2NanoguiGLCanvas::*)()) &mrpt::gui::MRPT2NanoguiGLCanvas::camera, "C++: mrpt::gui::MRPT2NanoguiGLCanvas::camera() --> class mrpt::gui::CGlCanvasBase &", pybind11::return_value_policy::automatic);
 	}
-	{ // mrpt::gui::CDisplayWindowGUI_Params file:mrpt/gui/CDisplayWindowGUI.h line:29
+	{ // mrpt::gui::CDisplayWindowGUI_Params file:mrpt/gui/CDisplayWindowGUI.h line:33
 		pybind11::class_<mrpt::gui::CDisplayWindowGUI_Params, std::shared_ptr<mrpt::gui::CDisplayWindowGUI_Params>> cl(M("mrpt::gui"), "CDisplayWindowGUI_Params", "Additional parameters to change the window behavior and OpenGL context");
 		cl.def( pybind11::init( [](){ return new mrpt::gui::CDisplayWindowGUI_Params(); } ) );
 		cl.def( pybind11::init( [](mrpt::gui::CDisplayWindowGUI_Params const &o){ return new mrpt::gui::CDisplayWindowGUI_Params(o); } ) );
@@ -343,7 +343,7 @@ void bind_mrpt_gui_MRPT2NanoguiGLCanvas(std::function< pybind11::module &(std::s
 		cl.def_readwrite("maximized", &mrpt::gui::CDisplayWindowGUI_Params::maximized);
 		cl.def_readwrite("gles_context", &mrpt::gui::CDisplayWindowGUI_Params::gles_context);
 	}
-	{ // mrpt::gui::CDisplayWindowGUI file:mrpt/gui/CDisplayWindowGUI.h line:84
+	{ // mrpt::gui::CDisplayWindowGUI file:mrpt/gui/CDisplayWindowGUI.h line:88
 		pybind11::class_<mrpt::gui::CDisplayWindowGUI, std::shared_ptr<mrpt::gui::CDisplayWindowGUI>, PyCallBack_mrpt_gui_CDisplayWindowGUI, nanogui::Screen> cl(M("mrpt::gui"), "CDisplayWindowGUI", "A window with powerful GUI capabilities, via the nanogui library.\n\n You can add a background mrpt::opengl::Scene object rendered on the\n background of the entire window by setting an object in field\n `background_scene`, locking its mutex `background_scene_mtx`.\n\n Refer to nanogui API docs or [MRPT examples](examples.html) for further usage\n examples. A typical lifecycle of a GUI app with this class might look like:\n\n \n\n\n\n\n\n\n\n\n\n\n\n\n\n ![mrpt::gui::CDisplayWindowGUI screenshot](preview_CDisplayWindowGUI.png)\n\n Create managed subwindows with createManagedSubWindow(), with built-in\n support for minimize and restore.\n See demo video in: https://www.youtube.com/watch?v=QKMzdlZRW50\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::gui::CDisplayWindowGUI(); }, [](){ return new PyCallBack_mrpt_gui_CDisplayWindowGUI(); } ), "doc");
 		cl.def( pybind11::init( [](const std::string & a0){ return new mrpt::gui::CDisplayWindowGUI(a0); }, [](const std::string & a0){ return new PyCallBack_mrpt_gui_CDisplayWindowGUI(a0); } ), "doc");

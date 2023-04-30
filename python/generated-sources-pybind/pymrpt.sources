@@ -2,6 +2,7 @@ pymrpt.cpp
 std/chrono.cpp
 mrpt/core/Clock.cpp
 mrpt/core/Stringifyable.cpp
+std/array.cpp
 std/stl_vector.cpp
 std/std_thread.cpp
 mrpt/core/WorkerThreadsPool.cpp
