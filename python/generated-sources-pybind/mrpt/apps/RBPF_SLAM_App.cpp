@@ -82,6 +82,7 @@ void bind_mrpt_apps_RBPF_SLAM_App(std::function< pybind11::module &(std::string 
 	{ // mrpt::apps::RBPF_SLAM_App_Rawlog file:mrpt/apps/RBPF_SLAM_App.h line:82
 		pybind11::class_<mrpt::apps::RBPF_SLAM_App_Rawlog, std::shared_ptr<mrpt::apps::RBPF_SLAM_App_Rawlog>, PyCallBack_mrpt_apps_RBPF_SLAM_App_Rawlog, mrpt::apps::RBPF_SLAM_App_Base, mrpt::apps::DataSourceRawlog> cl(M("mrpt::apps"), "RBPF_SLAM_App_Rawlog", "Instance of RBPF_SLAM_App_Base to run mapping from an offline dataset file.");
 		cl.def( pybind11::init( [](){ return new mrpt::apps::RBPF_SLAM_App_Rawlog(); }, [](){ return new PyCallBack_mrpt_apps_RBPF_SLAM_App_Rawlog(); } ) );
+		cl.def("init", (void (mrpt::apps::RBPF_SLAM_App_Rawlog::*)(const std::string &, const std::string &)) &mrpt::apps::RBPF_SLAM_App_Rawlog::init, "C++: mrpt::apps::RBPF_SLAM_App_Rawlog::init(const std::string &, const std::string &) --> void", pybind11::arg("iniConfigFile"), pybind11::arg("rawlogFile"));
 	}
 	{ // mrpt::apps::RawlogEditApp file:mrpt/apps/RawlogEditApp.h line:20
 		pybind11::class_<mrpt::apps::RawlogEditApp, std::shared_ptr<mrpt::apps::RawlogEditApp>> cl(M("mrpt::apps"), "RawlogEditApp", "The C++ class behind the rawlog-edit CLI tool.\n\n  Refer to the online documentation for rawlog-edit.\n \n\n\n ");

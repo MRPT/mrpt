@@ -1,6 +1,8 @@
 #!/bin/bash
 
 mods="\
+    mrpt \
+    mrpt.pymrpt \
     mrpt.pymrpt.mrpt \
     mrpt.pymrpt.mrpt.apps \
     mrpt.pymrpt.mrpt.bayes \
@@ -37,3 +39,6 @@ for MOD in $mods; do
     echo "Generating pydoc html for $MOD..."
     pydoc3 -w $MOD
 done
+
+tree -H '.' -L 1 --noreport --charset utf-8 -o index.html
+

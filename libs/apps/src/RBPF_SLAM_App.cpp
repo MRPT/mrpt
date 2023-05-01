@@ -628,6 +628,15 @@ RBPF_SLAM_App_Rawlog::RBPF_SLAM_App_Rawlog()
 	setLoggerName("RBPF_SLAM_App_Rawlog");
 }
 
+void RBPF_SLAM_App_Rawlog::init(
+	const std::string& iniConfigFile, const std::string& rawlogFile)
+{
+	const int argc = 3;
+	const char* argv[3] = {
+		"rbpf-slam", iniConfigFile.c_str(), rawlogFile.c_str()};
+	initialize(argc, argv);
+}
+
 void RBPF_SLAM_App_Rawlog::impl_initialize(int argc, const char** argv)
 {
 	MRPT_START

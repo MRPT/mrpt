@@ -5,11 +5,12 @@
 # export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
 # ---------------------------------------------------------------------
 
-from mrpt import pymrpt as m
 from math import radians
+from mrpt import pymrpt
+mrpt = pymrpt.mrpt
 
-p1 = m.mrpt.poses.CPose2D(1.0, 2.0, radians(90.0))
-p2 = m.mrpt.poses.CPose2D(3.0, 0.0, radians(0.0))
+p1 = mrpt.poses.CPose2D(1.0, 2.0, radians(90.0))
+p2 = mrpt.poses.CPose2D(3.0, 0.0, radians(0.0))
 
 p3 = p1 + p2
 p4 = p3 - p1
