@@ -641,16 +641,12 @@ add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
-if (DEFINED BUILD_TESTING)
-	set(_def_value ${BUILD_TESTING})
+if (((DEFINED BUILD_TESTING) AND (NOT BUILD_TESTING)) OR ("$ENV{ROS_DISTRO}" STREQUAL ""))
+	# We are in a ROS environment: disable tests by default to reduce build time in ROS build farms.
+	set(_def_value OFF)
 else()
-	if ("$ENV{ROS_DISTRO}" STREQUAL "")
-		# Regular case:
-		set(_def_value ON)
-	else()
-		# We are in a ROS environment: disable tests by default to reduce build time in ROS build farms.
-		set(_def_value OFF)
-	endif()
+	# Regular case:
+	set(_def_value ON)
 endif()
 set(MRPT_BUILD_TESTING ${_def_value} CACHE BOOL "Build MRPT tests")
 if(MRPT_BUILD_TESTING)
