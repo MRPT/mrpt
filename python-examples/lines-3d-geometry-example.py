@@ -5,15 +5,16 @@
 # export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
 # ---------------------------------------------------------------------
 
-from mrpt import pymrpt as m
+from mrpt import pymrpt
+mrpt = pymrpt.mrpt
 
 # Aliases:
-TPoint3D = m.mrpt.math.TPoint3D_double_t
-TLine3D = m.mrpt.math.TLine3D
+TPoint3D = mrpt.math.TPoint3D_double_t
+TLine3D = mrpt.math.TLine3D
 
 l1 = TLine3D.FromTwoPoints(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0))
 l2 = TLine3D.FromTwoPoints(TPoint3D(1, 1, 1), TPoint3D(2, 2, 0))
 
 print('l1             : ' + str(l1))
 print('l2             : ' + str(l2))
-print('dist(l1,l2)    : ' + str(m.mrpt.math.distance(l1, l2)))
+print('dist(l1,l2)    : ' + str(mrpt.math.distance(l1, l2)))

@@ -26,8 +26,11 @@ See also MRPT ROS packages status table for:
 2. Python 
 ----------------------
 
-At present, all MRPT libraries are wrapped into one single Python module `pymrpt`.
-Read more `here <https://github.com/MRPT/mrpt/wiki/PythonBindings>`_.
+All MRPT libraries are wrapped into one single Python3 module `pymrpt`.
+See: 
+
+- pydoc reference documentation for pymrpt: https://mrpt.github.io/pymrpt-docs/mrpt.pymrpt.mrpt.html
+- MRPT Python examples: https://github.com/MRPT/mrpt/tree/develop/python-examples
 
 
 3. Matlab

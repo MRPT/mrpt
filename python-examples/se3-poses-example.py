@@ -5,12 +5,13 @@
 # export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
 # ---------------------------------------------------------------------
 
-from mrpt import pymrpt as m
 from math import radians
+from mrpt import pymrpt
+mrpt = pymrpt.mrpt
 
-p1 = m.mrpt.poses.CPose3D.FromXYZYawPitchRoll(
+p1 = mrpt.poses.CPose3D.FromXYZYawPitchRoll(
     1.0, 2.0, 0, radians(90), radians(0), radians(0))
-p2 = m.mrpt.poses.CPose3D.FromXYZYawPitchRoll(
+p2 = mrpt.poses.CPose3D.FromXYZYawPitchRoll(
     3.0, 0.0, 0, radians(0.0), radians(0), radians(0))
 
 p3 = p1 + p2

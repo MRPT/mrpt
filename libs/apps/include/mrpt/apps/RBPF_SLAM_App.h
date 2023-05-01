@@ -84,6 +84,9 @@ class RBPF_SLAM_App_Rawlog : public RBPF_SLAM_App_Base, public DataSourceRawlog
    public:
 	RBPF_SLAM_App_Rawlog();
 
+	// Entry point for Python interface
+	void init(const std::string& iniConfigFile, const std::string& rawlogFile);
+
    protected:
 	void impl_initialize(int argc, const char** argv) override;
 	std::string impl_get_usage() const override
