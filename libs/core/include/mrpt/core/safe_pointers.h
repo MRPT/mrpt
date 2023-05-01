@@ -74,6 +74,12 @@ struct safe_ptr : safe_ptr_basic<T>
 	safe_ptr() : safe_ptr_basic<T>() {}
 	safe_ptr(const safe_ptr<T>& o) : safe_ptr_basic<T>(o) {}
 	safe_ptr(const T* p) : safe_ptr_basic<T>(p) {}
+	safe_ptr& operator=(const safe_ptr<T>& o)
+	{
+		safe_ptr_basic<T>::operator=(o);
+		return *this;
+	}
+
 	safe_ptr& operator=(T* p)
 	{
 		safe_ptr_basic<T>::operator=(p);

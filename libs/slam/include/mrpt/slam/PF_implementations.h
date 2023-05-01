@@ -636,7 +636,8 @@ void PF_implementation<PARTICLE_TYPE, MYSELF, STORAGE>::
 	//     max{ p( z^t | data^[i], x_(t-1)^[i], u_(t) ) }
 	//
 
-	m_pfAuxiliaryPFOptimal_maxLikelihood.assign(M, INVALID_LIKELIHOOD_VALUE);
+	m_pfAuxiliaryPFOptimal_maxLikelihood.assign(
+		M, mrpt::bayes::INVALID_LIKELIHOOD_VALUE);
 	m_pfAuxiliaryPFOptimal_maxLikDrawnMovement.resize(M);
 	m_pfAuxiliaryPFOptimal_estimatedProb.resize(M);
 	m_pfAuxiliaryPFStandard_estimatedProb.resize(M);

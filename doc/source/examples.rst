@@ -4,8 +4,9 @@
 Code examples
 ===============
 
-The source code for all these examples can be found
+The source code for all these C++ examples can be found
 under `MRPT/samples <https://github.com/MRPT/mrpt/tree/develop/samples>`_.
+Python examples are under `MRPT/python-examples <https://github.com/MRPT/mrpt/tree/develop/python-examples>`_.
 
 .. toctree::
   :maxdepth: 1

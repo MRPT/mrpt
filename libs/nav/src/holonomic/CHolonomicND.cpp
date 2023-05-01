@@ -82,7 +82,7 @@ void CHolonomicND::navigate(const NavInput& ni, NavOutput& no)
 	else
 	{
 		// A valid movement:
-		no.desiredDirection = CParameterizedTrajectoryGenerator::index2alpha(
+		no.desiredDirection = CParameterizedTrajectoryGenerator::Index2alpha(
 			selectedSector, ni.obstacles.size());
 
 		// Speed control: Reduction factors
@@ -510,7 +510,7 @@ void CHolonomicND::evaluateGaps(
 {
 	out_gaps_evaluation.resize(gaps.size());
 
-	const double targetAng = CParameterizedTrajectoryGenerator::index2alpha(
+	const double targetAng = CParameterizedTrajectoryGenerator::Index2alpha(
 		target_sector, obstacles.size());
 	const double target_x = target_dist * cos(targetAng);
 	const double target_y = target_dist * sin(targetAng);
@@ -525,7 +525,7 @@ void CHolonomicND::evaluateGaps(
 			0.95 * target_dist);
 
 		// The TP-Space representative coordinates for this gap:
-		const double phi = CParameterizedTrajectoryGenerator::index2alpha(
+		const double phi = CParameterizedTrajectoryGenerator::Index2alpha(
 			gap->representative_sector, obstacles.size());
 		const double x = d * cos(phi);
 		const double y = d * sin(phi);

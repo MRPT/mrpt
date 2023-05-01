@@ -1,0 +1,108 @@
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/matrix_size_t.h>
+#include <sstream> // __str__
+
+#include <functional>
+#include <pybind11/pybind11.h>
+#include <string>
+#include <stl_binders.hpp>
+
+
+#ifndef BINDER_PYBIND11_TYPE_CASTER
+	#define BINDER_PYBIND11_TYPE_CASTER
+	PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>)
+	PYBIND11_DECLARE_HOLDER_TYPE(T, T*)
+	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
+#endif
+
+void bind_mrpt_math_CMatrixDynamic(std::function< pybind11::module &(std::string const &namespace_) > &M)
+{
+	{ // mrpt::math::CMatrixDynamic file:mrpt/math/CMatrixDynamic.h line:41
+		pybind11::class_<mrpt::math::CMatrixDynamic<float>, std::shared_ptr<mrpt::math::CMatrixDynamic<float>>> cl(M("mrpt::math"), "CMatrixDynamic_float_t", "");
+		cl.def( pybind11::init( [](mrpt::math::CMatrixDynamic<float> const &o){ return new mrpt::math::CMatrixDynamic<float>(o); } ) );
+		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixDynamic<float>(); } ), "doc" );
+		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::math::CMatrixDynamic<float>(a0); } ), "doc" , pybind11::arg("row"));
+		cl.def( pybind11::init<unsigned long, unsigned long>(), pybind11::arg("row"), pybind11::arg("col") );
+
+		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<float> &, const unsigned long, const unsigned long>(), pybind11::arg("m"), pybind11::arg("cropRowCount"), pybind11::arg("cropColCount") );
+
+		cl.def("setFromMatrixLike", (void (mrpt::math::CMatrixDynamic<float>::*)(const class mrpt::math::CMatrixDynamic<double> &)) &mrpt::math::CMatrixDynamic<float>::setFromMatrixLike<mrpt::math::CMatrixDynamic<double>>, "C++: mrpt::math::CMatrixDynamic<float>::setFromMatrixLike(const class mrpt::math::CMatrixDynamic<double> &) --> void", pybind11::arg("m"));
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<float> & (mrpt::math::CMatrixDynamic<float>::*)(const class mrpt::math::CMatrixDynamic<float> &)) &mrpt::math::CMatrixDynamic<float>::operator=<float>, "C++: mrpt::math::CMatrixDynamic<float>::operator=(const class mrpt::math::CMatrixDynamic<float> &) --> class mrpt::math::CMatrixDynamic<float> &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<float> & (mrpt::math::CMatrixDynamic<float>::*)(const class mrpt::math::CMatrixDynamic<double> &)) &mrpt::math::CMatrixDynamic<float>::operator=<double>, "C++: mrpt::math::CMatrixDynamic<float>::operator=(const class mrpt::math::CMatrixDynamic<double> &) --> class mrpt::math::CMatrixDynamic<float> &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("swap", (void (mrpt::math::CMatrixDynamic<float>::*)(class mrpt::math::CMatrixDynamic<float> &)) &mrpt::math::CMatrixDynamic<float>::swap, "C++: mrpt::math::CMatrixDynamic<float>::swap(class mrpt::math::CMatrixDynamic<float> &) --> void", pybind11::arg("o"));
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<float> & (mrpt::math::CMatrixDynamic<float>::*)(const class mrpt::math::CMatrixDynamic<float> &)) &mrpt::math::CMatrixDynamic<float>::operator=, "C++: mrpt::math::CMatrixDynamic<float>::operator=(const class mrpt::math::CMatrixDynamic<float> &) --> class mrpt::math::CMatrixDynamic<float> &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("rows", (int (mrpt::math::CMatrixDynamic<float>::*)() const) &mrpt::math::CMatrixDynamic<float>::rows, "C++: mrpt::math::CMatrixDynamic<float>::rows() const --> int");
+		cl.def("cols", (int (mrpt::math::CMatrixDynamic<float>::*)() const) &mrpt::math::CMatrixDynamic<float>::cols, "C++: mrpt::math::CMatrixDynamic<float>::cols() const --> int");
+		cl.def("size", (struct mrpt::math::matrix_size_t (mrpt::math::CMatrixDynamic<float>::*)() const) &mrpt::math::CMatrixDynamic<float>::size, "C++: mrpt::math::CMatrixDynamic<float>::size() const --> struct mrpt::math::matrix_size_t");
+		cl.def("setSize", [](mrpt::math::CMatrixDynamic<float> &o, unsigned long const & a0, unsigned long const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("setSize", (void (mrpt::math::CMatrixDynamic<float>::*)(unsigned long, unsigned long, bool)) &mrpt::math::CMatrixDynamic<float>::setSize, "C++: mrpt::math::CMatrixDynamic<float>::setSize(unsigned long, unsigned long, bool) --> void", pybind11::arg("row"), pybind11::arg("col"), pybind11::arg("zeroNewElements"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<float>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<float>::resize, "C++: mrpt::math::CMatrixDynamic<float>::resize(unsigned long, unsigned long) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<float>::*)(unsigned long)) &mrpt::math::CMatrixDynamic<float>::resize, "C++: mrpt::math::CMatrixDynamic<float>::resize(unsigned long) --> void", pybind11::arg("vectorLen"));
+		cl.def("resize", [](mrpt::math::CMatrixDynamic<float> &o, const struct mrpt::math::matrix_size_t & a0) -> void { return o.resize(a0); }, "", pybind11::arg("siz"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<float>::*)(const struct mrpt::math::matrix_size_t &, bool)) &mrpt::math::CMatrixDynamic<float>::resize, "C++: mrpt::math::CMatrixDynamic<float>::resize(const struct mrpt::math::matrix_size_t &, bool) --> void", pybind11::arg("siz"), pybind11::arg("zeroNewElements"));
+		cl.def("derived", (class mrpt::math::CMatrixDynamic<float> & (mrpt::math::CMatrixDynamic<float>::*)()) &mrpt::math::CMatrixDynamic<float>::derived, "C++: mrpt::math::CMatrixDynamic<float>::derived() --> class mrpt::math::CMatrixDynamic<float> &", pybind11::return_value_policy::automatic);
+		cl.def("conservativeResize", (void (mrpt::math::CMatrixDynamic<float>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<float>::conservativeResize, "C++: mrpt::math::CMatrixDynamic<float>::conservativeResize(unsigned long, unsigned long) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("data", (float * (mrpt::math::CMatrixDynamic<float>::*)()) &mrpt::math::CMatrixDynamic<float>::data, "C++: mrpt::math::CMatrixDynamic<float>::data() --> float *", pybind11::return_value_policy::automatic);
+		cl.def("__call__", (float & (mrpt::math::CMatrixDynamic<float>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<float>::operator(), "C++: mrpt::math::CMatrixDynamic<float>::operator()(unsigned long, unsigned long) --> float &", pybind11::return_value_policy::automatic, pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("__getitem__", (float & (mrpt::math::CMatrixDynamic<float>::*)(unsigned long)) &mrpt::math::CMatrixDynamic<float>::operator[], "C++: mrpt::math::CMatrixDynamic<float>::operator[](unsigned long) --> float &", pybind11::return_value_policy::automatic, pybind11::arg("ith"));
+		cl.def("cast_float", (class mrpt::math::CMatrixDynamic<float> (mrpt::math::CMatrixDynamic<float>::*)() const) &mrpt::math::CMatrixDynamic<float>::cast_float, "C++: mrpt::math::CMatrixDynamic<float>::cast_float() const --> class mrpt::math::CMatrixDynamic<float>");
+		cl.def("cast_double", (class mrpt::math::CMatrixDynamic<double> (mrpt::math::CMatrixDynamic<float>::*)() const) &mrpt::math::CMatrixDynamic<float>::cast_double, "C++: mrpt::math::CMatrixDynamic<float>::cast_double() const --> class mrpt::math::CMatrixDynamic<double>");
+		cl.def("llt_solve", (class mrpt::math::CVectorDynamic<float> (mrpt::math::CMatrixDynamic<float>::*)(const class mrpt::math::CVectorDynamic<float> &) const) &mrpt::math::CMatrixDynamic<float>::llt_solve, "C++: mrpt::math::CMatrixDynamic<float>::llt_solve(const class mrpt::math::CVectorDynamic<float> &) const --> class mrpt::math::CVectorDynamic<float>", pybind11::arg("b"));
+		cl.def("lu_solve", (class mrpt::math::CVectorDynamic<float> (mrpt::math::CMatrixDynamic<float>::*)(const class mrpt::math::CVectorDynamic<float> &) const) &mrpt::math::CMatrixDynamic<float>::lu_solve, "C++: mrpt::math::CMatrixDynamic<float>::lu_solve(const class mrpt::math::CVectorDynamic<float> &) const --> class mrpt::math::CVectorDynamic<float>", pybind11::arg("b"));
+	}
+	{ // mrpt::math::CMatrixDynamic file:mrpt/math/CMatrixDynamic.h line:41
+		pybind11::class_<mrpt::math::CMatrixDynamic<unsigned char>, std::shared_ptr<mrpt::math::CMatrixDynamic<unsigned char>>> cl(M("mrpt::math"), "CMatrixDynamic_unsigned_char_t", "");
+		cl.def( pybind11::init( [](mrpt::math::CMatrixDynamic<unsigned char> const &o){ return new mrpt::math::CMatrixDynamic<unsigned char>(o); } ) );
+		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixDynamic<unsigned char>(); } ), "doc" );
+		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::math::CMatrixDynamic<unsigned char>(a0); } ), "doc" , pybind11::arg("row"));
+		cl.def( pybind11::init<unsigned long, unsigned long>(), pybind11::arg("row"), pybind11::arg("col") );
+
+		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<unsigned char> &, const unsigned long, const unsigned long>(), pybind11::arg("m"), pybind11::arg("cropRowCount"), pybind11::arg("cropColCount") );
+
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<unsigned char> & (mrpt::math::CMatrixDynamic<unsigned char>::*)(const class mrpt::math::CMatrixDynamic<unsigned char> &)) &mrpt::math::CMatrixDynamic<unsigned char>::operator=<unsigned char>, "C++: mrpt::math::CMatrixDynamic<unsigned char>::operator=(const class mrpt::math::CMatrixDynamic<unsigned char> &) --> class mrpt::math::CMatrixDynamic<unsigned char> &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("swap", (void (mrpt::math::CMatrixDynamic<unsigned char>::*)(class mrpt::math::CMatrixDynamic<unsigned char> &)) &mrpt::math::CMatrixDynamic<unsigned char>::swap, "C++: mrpt::math::CMatrixDynamic<unsigned char>::swap(class mrpt::math::CMatrixDynamic<unsigned char> &) --> void", pybind11::arg("o"));
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<unsigned char> & (mrpt::math::CMatrixDynamic<unsigned char>::*)(const class mrpt::math::CMatrixDynamic<unsigned char> &)) &mrpt::math::CMatrixDynamic<unsigned char>::operator=, "C++: mrpt::math::CMatrixDynamic<unsigned char>::operator=(const class mrpt::math::CMatrixDynamic<unsigned char> &) --> class mrpt::math::CMatrixDynamic<unsigned char> &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("rows", (int (mrpt::math::CMatrixDynamic<unsigned char>::*)() const) &mrpt::math::CMatrixDynamic<unsigned char>::rows, "C++: mrpt::math::CMatrixDynamic<unsigned char>::rows() const --> int");
+		cl.def("cols", (int (mrpt::math::CMatrixDynamic<unsigned char>::*)() const) &mrpt::math::CMatrixDynamic<unsigned char>::cols, "C++: mrpt::math::CMatrixDynamic<unsigned char>::cols() const --> int");
+		cl.def("size", (struct mrpt::math::matrix_size_t (mrpt::math::CMatrixDynamic<unsigned char>::*)() const) &mrpt::math::CMatrixDynamic<unsigned char>::size, "C++: mrpt::math::CMatrixDynamic<unsigned char>::size() const --> struct mrpt::math::matrix_size_t");
+		cl.def("setSize", [](mrpt::math::CMatrixDynamic<unsigned char> &o, unsigned long const & a0, unsigned long const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("setSize", (void (mrpt::math::CMatrixDynamic<unsigned char>::*)(unsigned long, unsigned long, bool)) &mrpt::math::CMatrixDynamic<unsigned char>::setSize, "C++: mrpt::math::CMatrixDynamic<unsigned char>::setSize(unsigned long, unsigned long, bool) --> void", pybind11::arg("row"), pybind11::arg("col"), pybind11::arg("zeroNewElements"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<unsigned char>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<unsigned char>::resize, "C++: mrpt::math::CMatrixDynamic<unsigned char>::resize(unsigned long, unsigned long) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<unsigned char>::*)(unsigned long)) &mrpt::math::CMatrixDynamic<unsigned char>::resize, "C++: mrpt::math::CMatrixDynamic<unsigned char>::resize(unsigned long) --> void", pybind11::arg("vectorLen"));
+		cl.def("resize", [](mrpt::math::CMatrixDynamic<unsigned char> &o, const struct mrpt::math::matrix_size_t & a0) -> void { return o.resize(a0); }, "", pybind11::arg("siz"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<unsigned char>::*)(const struct mrpt::math::matrix_size_t &, bool)) &mrpt::math::CMatrixDynamic<unsigned char>::resize, "C++: mrpt::math::CMatrixDynamic<unsigned char>::resize(const struct mrpt::math::matrix_size_t &, bool) --> void", pybind11::arg("siz"), pybind11::arg("zeroNewElements"));
+		cl.def("derived", (class mrpt::math::CMatrixDynamic<unsigned char> & (mrpt::math::CMatrixDynamic<unsigned char>::*)()) &mrpt::math::CMatrixDynamic<unsigned char>::derived, "C++: mrpt::math::CMatrixDynamic<unsigned char>::derived() --> class mrpt::math::CMatrixDynamic<unsigned char> &", pybind11::return_value_policy::automatic);
+		cl.def("conservativeResize", (void (mrpt::math::CMatrixDynamic<unsigned char>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<unsigned char>::conservativeResize, "C++: mrpt::math::CMatrixDynamic<unsigned char>::conservativeResize(unsigned long, unsigned long) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("data", (unsigned char * (mrpt::math::CMatrixDynamic<unsigned char>::*)()) &mrpt::math::CMatrixDynamic<unsigned char>::data, "C++: mrpt::math::CMatrixDynamic<unsigned char>::data() --> unsigned char *", pybind11::return_value_policy::automatic);
+		cl.def("__call__", (unsigned char & (mrpt::math::CMatrixDynamic<unsigned char>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<unsigned char>::operator(), "C++: mrpt::math::CMatrixDynamic<unsigned char>::operator()(unsigned long, unsigned long) --> unsigned char &", pybind11::return_value_policy::automatic, pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("__getitem__", (unsigned char & (mrpt::math::CMatrixDynamic<unsigned char>::*)(unsigned long)) &mrpt::math::CMatrixDynamic<unsigned char>::operator[], "C++: mrpt::math::CMatrixDynamic<unsigned char>::operator[](unsigned long) --> unsigned char &", pybind11::return_value_policy::automatic, pybind11::arg("ith"));
+	}
+	{ // mrpt::math::CMatrixDynamic file:mrpt/math/CMatrixDynamic.h line:41
+		pybind11::class_<mrpt::math::CMatrixDynamic<unsigned short>, std::shared_ptr<mrpt::math::CMatrixDynamic<unsigned short>>> cl(M("mrpt::math"), "CMatrixDynamic_unsigned_short_t", "");
+		cl.def( pybind11::init( [](mrpt::math::CMatrixDynamic<unsigned short> const &o){ return new mrpt::math::CMatrixDynamic<unsigned short>(o); } ) );
+		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixDynamic<unsigned short>(); } ), "doc" );
+		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::math::CMatrixDynamic<unsigned short>(a0); } ), "doc" , pybind11::arg("row"));
+		cl.def( pybind11::init<unsigned long, unsigned long>(), pybind11::arg("row"), pybind11::arg("col") );
+
+		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<unsigned short> &, const unsigned long, const unsigned long>(), pybind11::arg("m"), pybind11::arg("cropRowCount"), pybind11::arg("cropColCount") );
+
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<unsigned short> & (mrpt::math::CMatrixDynamic<unsigned short>::*)(const class mrpt::math::CMatrixDynamic<unsigned short> &)) &mrpt::math::CMatrixDynamic<unsigned short>::operator=<unsigned short>, "C++: mrpt::math::CMatrixDynamic<unsigned short>::operator=(const class mrpt::math::CMatrixDynamic<unsigned short> &) --> class mrpt::math::CMatrixDynamic<unsigned short> &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("swap", (void (mrpt::math::CMatrixDynamic<unsigned short>::*)(class mrpt::math::CMatrixDynamic<unsigned short> &)) &mrpt::math::CMatrixDynamic<unsigned short>::swap, "C++: mrpt::math::CMatrixDynamic<unsigned short>::swap(class mrpt::math::CMatrixDynamic<unsigned short> &) --> void", pybind11::arg("o"));
+		cl.def("assign", (class mrpt::math::CMatrixDynamic<unsigned short> & (mrpt::math::CMatrixDynamic<unsigned short>::*)(const class mrpt::math::CMatrixDynamic<unsigned short> &)) &mrpt::math::CMatrixDynamic<unsigned short>::operator=, "C++: mrpt::math::CMatrixDynamic<unsigned short>::operator=(const class mrpt::math::CMatrixDynamic<unsigned short> &) --> class mrpt::math::CMatrixDynamic<unsigned short> &", pybind11::return_value_policy::automatic, pybind11::arg("m"));
+		cl.def("rows", (int (mrpt::math::CMatrixDynamic<unsigned short>::*)() const) &mrpt::math::CMatrixDynamic<unsigned short>::rows, "C++: mrpt::math::CMatrixDynamic<unsigned short>::rows() const --> int");
+		cl.def("cols", (int (mrpt::math::CMatrixDynamic<unsigned short>::*)() const) &mrpt::math::CMatrixDynamic<unsigned short>::cols, "C++: mrpt::math::CMatrixDynamic<unsigned short>::cols() const --> int");
+		cl.def("size", (struct mrpt::math::matrix_size_t (mrpt::math::CMatrixDynamic<unsigned short>::*)() const) &mrpt::math::CMatrixDynamic<unsigned short>::size, "C++: mrpt::math::CMatrixDynamic<unsigned short>::size() const --> struct mrpt::math::matrix_size_t");
+		cl.def("setSize", [](mrpt::math::CMatrixDynamic<unsigned short> &o, unsigned long const & a0, unsigned long const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("setSize", (void (mrpt::math::CMatrixDynamic<unsigned short>::*)(unsigned long, unsigned long, bool)) &mrpt::math::CMatrixDynamic<unsigned short>::setSize, "C++: mrpt::math::CMatrixDynamic<unsigned short>::setSize(unsigned long, unsigned long, bool) --> void", pybind11::arg("row"), pybind11::arg("col"), pybind11::arg("zeroNewElements"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<unsigned short>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<unsigned short>::resize, "C++: mrpt::math::CMatrixDynamic<unsigned short>::resize(unsigned long, unsigned long) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<unsigned short>::*)(unsigned long)) &mrpt::math::CMatrixDynamic<unsigned short>::resize, "C++: mrpt::math::CMatrixDynamic<unsigned short>::resize(unsigned long) --> void", pybind11::arg("vectorLen"));
+		cl.def("resize", [](mrpt::math::CMatrixDynamic<unsigned short> &o, const struct mrpt::math::matrix_size_t & a0) -> void { return o.resize(a0); }, "", pybind11::arg("siz"));
+		cl.def("resize", (void (mrpt::math::CMatrixDynamic<unsigned short>::*)(const struct mrpt::math::matrix_size_t &, bool)) &mrpt::math::CMatrixDynamic<unsigned short>::resize, "C++: mrpt::math::CMatrixDynamic<unsigned short>::resize(const struct mrpt::math::matrix_size_t &, bool) --> void", pybind11::arg("siz"), pybind11::arg("zeroNewElements"));
+		cl.def("derived", (class mrpt::math::CMatrixDynamic<unsigned short> & (mrpt::math::CMatrixDynamic<unsigned short>::*)()) &mrpt::math::CMatrixDynamic<unsigned short>::derived, "C++: mrpt::math::CMatrixDynamic<unsigned short>::derived() --> class mrpt::math::CMatrixDynamic<unsigned short> &", pybind11::return_value_policy::automatic);
+		cl.def("conservativeResize", (void (mrpt::math::CMatrixDynamic<unsigned short>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<unsigned short>::conservativeResize, "C++: mrpt::math::CMatrixDynamic<unsigned short>::conservativeResize(unsigned long, unsigned long) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("data", (unsigned short * (mrpt::math::CMatrixDynamic<unsigned short>::*)()) &mrpt::math::CMatrixDynamic<unsigned short>::data, "C++: mrpt::math::CMatrixDynamic<unsigned short>::data() --> unsigned short *", pybind11::return_value_policy::automatic);
+		cl.def("__call__", (unsigned short & (mrpt::math::CMatrixDynamic<unsigned short>::*)(unsigned long, unsigned long)) &mrpt::math::CMatrixDynamic<unsigned short>::operator(), "C++: mrpt::math::CMatrixDynamic<unsigned short>::operator()(unsigned long, unsigned long) --> unsigned short &", pybind11::return_value_policy::automatic, pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("__getitem__", (unsigned short & (mrpt::math::CMatrixDynamic<unsigned short>::*)(unsigned long)) &mrpt::math::CMatrixDynamic<unsigned short>::operator[], "C++: mrpt::math::CMatrixDynamic<unsigned short>::operator[](unsigned long) --> unsigned short &", pybind11::return_value_policy::automatic, pybind11::arg("ith"));
+	}
+}

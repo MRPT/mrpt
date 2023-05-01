@@ -389,14 +389,8 @@ class CRandomFieldGridMap2D
 
 	/** Save a matlab ".m" file which represents as 3D surfaces the mean and a
 	 * given confidence level for the concentration of each cell.
-	 *  This method can only be called in a KF map model.
-	 *  \sa getAsMatlab3DGraphScript    */
+	 *  This method can only be called in a KF map model. */
 	virtual void saveAsMatlab3DGraph(const std::string& filName) const;
-
-	/** Return a large text block with a MATLAB script to plot the contents of
-	 * this map \sa saveAsMatlab3DGraph
-	 *  This method can only be called in a KF map model  */
-	void getAsMatlab3DGraphScript(std::string& out_script) const;
 
 	/** Returns a 3D object representing the map (mean) */
 	void getVisualizationInto(

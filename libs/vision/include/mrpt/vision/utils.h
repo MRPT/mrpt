@@ -71,7 +71,7 @@ void openCV_cross_correlation(
  * image.
  *  \param A   [IN]   The 3x3 intrinsic parameters matrix for the camera.
  *  \return The mrpt::math::TPoint3D containing the output unitary vector.
- * \sa buildIntrinsicParamsMatrix, defaultIntrinsicParamsMatrix, TPixelCoordf
+ * \sa buildIntrinsicParamsMatrix, TPixelCoordf
  */
 mrpt::math::TPoint3D pixelTo3D(
 	const mrpt::img::TPixelCoordf& xy, const mrpt::math::CMatrixDouble33& A);
@@ -90,60 +90,11 @@ mrpt::math::TPoint3D pixelTo3D(
   </table>
   *  See also the tutorial discussing the <a
   rhref="http://www.mrpt.org/Camera_Parameters">camera model parameters</a>.
-  * \sa defaultIntrinsicParamsMatrix, pixelTo3D
+  * \sa pixelTo3D
   */
 mrpt::math::CMatrixDouble33 buildIntrinsicParamsMatrix(
 	const double focalLengthX, const double focalLengthY, const double centerX,
 	const double centerY);
-
-/** Returns the stored, default intrinsic params matrix for a given camera:
-  * \param camIndex     [IN]   Posible values are listed next.
-  * \param resolutionX  [IN]   The number of pixel columns
-  * \param resolutionY  [IN]   The number of pixel rows
-  *
-  * The matrix is generated for the indicated camera resolution configuration.
-  * The following table summarizes the current supported cameras and the values
-  as
-  *  ratios of the corresponding horz. or vert. resolution:<br>
-
-  <center><table>
-  <tr>
-   <td><center><b>camIndex</b></center></td>
-   <td><center><b>Manufacturer</b></center></td>
-   <td><center><b>Camera model</b></center></td>
-   <td><center><b>fx</b></center></td>
-   <td><center><b>fy</b></center></td>
-   <td><center><b>cx</b></center></td>
-   <td><center><b>cy</b></center></td>
-  </tr>
-
-  <tr>
-   <td><center>0</center></td>
-   <td><center>Point Grey Research</center></td>
-   <td><center>Bumblebee</center></td>
-   <td><center>0.79345</center></td>
-   <td><center>1.05793</center></td>
-   <td><center>0.55662</center></td>
-   <td><center>0.52692</center></td>
-  </tr>
-
-  <tr>
-   <td><center>1</center></td>
-   <td><center>Sony</center></td>
-   <td><center>???</center></td>
-   <td><center>0.95666094</center></td>
-   <td><center>1.3983423f</center></td>
-   <td><center>0.54626328f</center></td>
-   <td><center>0.4939191f</center></td>
-  </tr>
-  </table>
-  </center>
-
-  * \sa buildIntrinsicParamsMatrix, pixelTo3D
-  */
-mrpt::math::CMatrixDouble33 defaultIntrinsicParamsMatrix(
-	unsigned int camIndex = 0, unsigned int resolutionX = 320,
-	unsigned int resolutionY = 240);
 
 /** Computes the mean squared distance between a set of 3D correspondences
  * ...

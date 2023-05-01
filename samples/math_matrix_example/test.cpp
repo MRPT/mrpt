@@ -7,7 +7,6 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>
 #include <mrpt/math/CMatrixF.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/ops_matrices.h>

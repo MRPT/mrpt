@@ -285,14 +285,14 @@ class CPose3DGridTemplate
 			v = val;
 	}
 
-	auto getSizeX() const { return m_sizeX; }
-	auto getSizeY() const { return m_sizeY; }
-	auto getSizeZ() const { return m_sizeZ; }
-	auto getSizeYaw() const { return m_sizeYaw; }
-	auto getSizePitch() const { return m_sizePitch; }
-	auto getSizeRoll() const { return m_sizeRoll; }
+	uint32_t getSizeX() const { return m_sizeX; }
+	uint32_t getSizeY() const { return m_sizeY; }
+	uint32_t getSizeZ() const { return m_sizeZ; }
+	uint32_t getSizeYaw() const { return m_sizeYaw; }
+	uint32_t getSizePitch() const { return m_sizePitch; }
+	uint32_t getSizeRoll() const { return m_sizeRoll; }
 
-	auto getTotalVoxelCount() const { return m_size_xyzYPR; }
+	uint32_t getTotalVoxelCount() const { return m_size_xyzYPR; }
 
 	const std::vector<T>& getData() const { return m_data; }
 	std::vector<T>& getData() { return m_data; }
