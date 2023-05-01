@@ -12,6 +12,7 @@ project(pymrpt)
 # this should be: /usr/lib/python3/dist-packages
 #
 #set(PYMRPT_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python3/dist-packages/")
+#install(TARGETS pymrpt LIBRARY DESTINATION ${PYMRPT_INSTALL_DIR})
 
 if (NOT CMAKE_MRPT_HAS_PYTHON_BINDINGS)
   return()
@@ -50,40 +51,34 @@ file(WRITE ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/__init__.py
   "from . import *")
 
 # Generate setup.py
-if(NOT TARGET python-install) # first time only:
-  configure_file(${MRPT_SOURCE_DIR}/parse-files/setup.py.in
-    ${MRPT_PYTHON_BUILD_DIRECTORY}/setup.py)
+configure_file(${MRPT_SOURCE_DIR}/parse-files/setup.py.in
+  ${MRPT_PYTHON_BUILD_DIRECTORY}/setup.py)
 
-  if (NOT DEFINED PYTHON_INSTALL_DIRECTORY)
-    set(PYTHON_INSTALL_DIRECTORY ${CMAKE_INSTALL_PREFIX} CACHE PATH "Install prefix for python modules with 'make python-install'")
-  endif()
+if (NOT DEFINED PYTHON_INSTALL_DIRECTORY)
+  set(PYTHON_INSTALL_DIRECTORY ${CMAKE_INSTALL_PREFIX} CACHE PATH "Install prefix for python modules with 'make python-install'")
+endif()
 
-  mrpt_ament_cmake_python_get_python_install_dir() # Gets PYTHON_INSTALL_DIR
+mrpt_ament_cmake_python_get_python_install_dir() # Gets PYTHON_INSTALL_DIR
 
-  # We need to do the install via a script run during "make install" so we can 
-  # catch the variable DESTDIR, used in debian builds:
-  configure_file(
-    ${MRPT_SOURCE_DIR}/parse-files/install-python.cmake.in
-    ${MRPT_BINARY_DIR}/install-python.cmake
-    @ONLY
-  )
+# We need to do the install via a script run during "make install" so we can 
+# catch the variable DESTDIR, used in debian builds:
+configure_file(
+  ${MRPT_SOURCE_DIR}/parse-files/install-python.cmake.in
+  ${MRPT_BINARY_DIR}/install-python.cmake
+  @ONLY
+)
 
-  add_custom_target(python-install
-      COMMAND ${CMAKE_COMMAND} -P ${MRPT_BINARY_DIR}/install-python.cmake
-      COMMENT "Running 'python-install'...")
-endif() # end of first python pkg
+add_custom_target(python-install
+    COMMAND ${CMAKE_COMMAND} -P ${MRPT_BINARY_DIR}/install-python.cmake
+    COMMENT "Running 'python-install'...")
 
 add_dependencies(python-install pymrpt)
 
+install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build \"${MRPT_BINARY_DIR}\" --target python-install)")
 
-# disable eigen: python and eigen alignment seem not to be best friends
-#add_definitions(-DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
-# uncomment to disable ROS support
-#add_definitions(-DROS_EXTENSIONS)
+# -------------------------------------
+# Special handle for ROS builds
+# -------------------------------------
+# See: https://github.com/ros-infrastructure/rosdep/issues/724#issuecomment-643015997
 
-#target_link_libraries(pymrpt ${Boost_LIBRARIES} imp_opencv Python3::Python)
 
-# remove "lib" prefix from .so filename
-#set_target_properties(pymrpt PROPERTIES PREFIX "")
-
-#install(TARGETS pymrpt LIBRARY DESTINATION ${PYMRPT_INSTALL_DIR})
