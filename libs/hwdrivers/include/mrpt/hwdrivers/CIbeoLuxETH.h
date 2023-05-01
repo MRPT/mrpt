@@ -66,7 +66,6 @@ class CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
 	 */
 	void doProcess() override;
 	void initialize() override;
-	void start();
 	void makeCommandHeader(unsigned char* buffer);
 	void makeStartCommand(unsigned char* buffer);
 	void makeStopCommand(unsigned char* buffer);

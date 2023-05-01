@@ -12,6 +12,7 @@
 #include <mrpt/maps/logoddscell_traits.h>
 
 #include <cmath>
+#include <vector>
 
 namespace mrpt::maps
 {

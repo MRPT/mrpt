@@ -215,14 +215,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	/** @name Behavior-changing global flags
 		@{ */
 
-	/** By default, when storing images through the CSerializable interface,
-	 * grayscale images will be ZIP compressed if they are larger than 16Kb:
-	 * this flag can be turn on to disable ZIP compression and gain speed versus
-	 * occupied space.
-	 *  (Default = false) */
-	static void DISABLE_ZIP_COMPRESSION(bool val);
-	static bool DISABLE_ZIP_COMPRESSION();
-
 	/** By default, when storing images through the CSerializable interface, RGB
 	 * images are JPEG-compressed to save space. If for some reason you prefer
 	 * storing RAW image data, disable this feature by setting this flag to
@@ -479,11 +471,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 
 	/** @name Copy, move & swap operations
 		@{ */
-	[[deprecated("Use makeShallowCopy() instead")]] inline void
-		setFromImageReadOnly(const CImage& o)
-	{
-		*this = o.makeShallowCopy();
-	}
 
 	/** Returns a shallow copy of the original image */
 	inline CImage makeShallowCopy() const
@@ -508,25 +495,12 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	 * process.
 	 * \sa operator =
 	 */
-	[[deprecated("Use a=std::move(b); instead ")]] inline void copyFastFrom(
-		CImage& o)
-	{
-		*this = std::move(o);
-	}
 
 	/** Assigns from an image in IplImage format */
 	inline void loadFromIplImage(
 		const IplImage* iplImage, copy_type_t c = DEEP_COPY)
 	{
 		internal_fromIPL(iplImage, c);
-	}
-
-	[[deprecated(
-		"Prefer a ctor from a cv::Mat instead or use loadFromIplImage() "
-		"explicitly specifying the kind of copy to be done")]] inline void
-		setFromIplImageReadOnly(IplImage* iplImage)
-	{
-		internal_fromIPL(iplImage, SHALLOW_COPY);
 	}
 
 	/** Efficiently swap of two images */
@@ -560,9 +534,6 @@ class CImage : public mrpt::serialization::CSerializable, public CCanvas
 	  operator better, which checks the coordinates.
 	  \sa CImage::operator()
 	  */
-	[[deprecated("Use at<>(), ptr<>() or ptrLine() instead ")]] uint8_t*
-		get_unsafe(
-			unsigned int col, unsigned int row, uint8_t channel = 0) const;
 
 	/**  Access to pixels without checking boundaries, and doing a
 	 * reinterpret_cast<> of the data as the given type.

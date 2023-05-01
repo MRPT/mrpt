@@ -65,3 +65,5 @@ html: python-venv
 	# Copy remote images also:
 	bash remote-static-files.sh
 
+pydocs-from-local-build:
+	cd html && bash ../../python/build-pydocs-from-local-build.sh

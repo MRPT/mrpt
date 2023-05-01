@@ -185,7 +185,7 @@ void TPolygon2D::createRegularPolygon(
 	}
 }
 
-inline void TPolygon2D::createRegularPolygon(
+void TPolygon2D::createRegularPolygon(
 	size_t numEdges, double radius, TPolygon2D& poly, const TPose2D& pose)
 {
 	createRegularPolygon(numEdges, radius, poly);

@@ -933,29 +933,6 @@ class CPointsMap : public CMetricMap,
 	 */
 	mrpt::math::TBoundingBoxf boundingBox() const;
 
-	/// \overload
-	[[deprecated]] inline void boundingBox(
-		float& min_x, float& max_x, float& min_y, float& max_y, float& min_z,
-		float& max_z) const
-	{
-		const auto bb = boundingBox();
-		min_x = bb.min.x;
-		max_x = bb.max.x;
-		min_y = bb.min.y;
-		max_y = bb.max.y;
-		min_z = bb.min.z;
-		max_z = bb.max.z;
-	}
-
-	/// \overload
-	[[deprecated]] inline void boundingBox(
-		mrpt::math::TPoint3D& pMin, mrpt::math::TPoint3D& pMax) const
-	{
-		const auto bb = boundingBox();
-		pMin = bb.min;
-		pMax = bb.max;
-	}
-
 	/** Extracts the points in the map within a cylinder in 3D defined the
 	 * provided radius and zmin/zmax values.
 	 */

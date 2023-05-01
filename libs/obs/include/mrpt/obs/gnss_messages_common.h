@@ -36,7 +36,11 @@ struct gnss_message
 	 * upon error. */
 	void readFromStream(mrpt::serialization::CArchive& in);
 
-	bool isOfType(const gnss_message_type_t type_id) const;
+	bool isOfType(const gnss_message_type_t type_id) const
+	{
+		return type_id == message_type;
+	}
+
 	template <class MSG_CLASS>
 	bool isOfClass() const
 	{

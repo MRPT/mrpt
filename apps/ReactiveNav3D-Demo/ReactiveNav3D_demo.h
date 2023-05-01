@@ -9,7 +9,7 @@
  */
 
 #include <mrpt/core/round.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/math/TLine3D.h>

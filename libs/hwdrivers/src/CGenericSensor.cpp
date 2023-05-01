@@ -77,11 +77,12 @@ void CGenericSensor::appendObservations(
 /*-------------------------------------------------------------
 						getObservations
 -------------------------------------------------------------*/
-void CGenericSensor::getObservations(TListObservations& lstObjects)
+CGenericSensor::TListObservations CGenericSensor::getObservations()
 {
 	std::lock_guard<std::mutex> lock(m_csObjList);
-	lstObjects = m_objList;
+	auto lstObjects = m_objList;
 	m_objList.clear();	// Memory of objects will be freed by invoker.
+	return lstObjects;
 }
 
 /*-------------------------------------------------------------

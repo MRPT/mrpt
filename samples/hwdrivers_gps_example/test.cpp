@@ -62,33 +62,25 @@ void Test_GPS()
 	FILE* f = os::fopen("gps_log.txt", "wt");
 	if (!f) return;
 
-	//	bool					thereisData;
-	//	mrpt::obs::CObservationGPS	gpsData;
-
-	CGenericSensor::TListObservations lstObs;
-	CGenericSensor::TListObservations::iterator itObs;
-
 	while (!mrpt::system::os::kbhit())
 	{
 		gps.doProcess();
 		std::this_thread::sleep_for(500ms);
 
-		gps.getObservations(lstObs);
+		const CGenericSensor::TListObservations lstObs = gps.getObservations();
 
 		if (lstObs.empty()) { printf("[Test_GPS] Waiting for data...\n"); }
 		else
 		{
-			for (itObs = lstObs.begin(); itObs != lstObs.end(); itObs++)
+			for (const auto& kv : lstObs)
 			{
-				ASSERT_(
-					itObs->second->GetRuntimeClass() ==
-					CLASS_ID(CObservationGPS));
+				const auto& obs = kv.second;
+				ASSERT_(obs->GetRuntimeClass() == CLASS_ID(CObservationGPS));
 
 				CObservationGPS::Ptr gpsData =
-					std::dynamic_pointer_cast<CObservationGPS>(itObs->second);
+					std::dynamic_pointer_cast<CObservationGPS>(obs);
 				gpsData->dumpToConsole(std::cout);
 			}
-			lstObs.clear();
 		}
 	}
 

@@ -1,0 +1,10 @@
+--- generated-sources-pybind/mrpt/serialization/CArchive_1.cpp	2023-04-27 23:31:05.248357920 +0200
++++ generated-sources-pybind/mrpt/serialization/CArchive_1.new.cpp	2023-04-27 23:38:49.302474957 +0200
+@@ -15,6 +15,7 @@
+ #include <string>
+ #include <pybind11/stl.h>
+ 
++#include <mrpt/serialization/CMessage.h>
+ 
+ #ifndef BINDER_PYBIND11_TYPE_CASTER
+ 	#define BINDER_PYBIND11_TYPE_CASTER

@@ -80,8 +80,7 @@ void thread_grabbing(TThreadParam& p)
 
 			cam.doProcess();
 
-			mrpt::hwdrivers::CGenericSensor::TListObservations obss;
-			cam.getObservations(obss);
+			const auto obss = cam.getObservations();
 
 			if (obss.empty())
 			{

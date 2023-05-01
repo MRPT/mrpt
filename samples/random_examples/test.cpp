@@ -12,7 +12,7 @@
  * The example demonstrates the use of the random library.
  */
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/random.h>
 

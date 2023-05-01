@@ -23,8 +23,9 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/random.h>
-#include <mrpt/slam/PF_aux_structs.h>
 #include <mrpt/system/CTicTac.h>
+
+#include "PF_aux_structs.h"
 
 using namespace mrpt;
 using namespace mrpt::bayes;

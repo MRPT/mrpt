@@ -56,7 +56,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 	return wxNullBitmap;
 }
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/about_box.h>
 #include <mrpt/nav.h>
 #include <mrpt/opengl.h>
 #include <mrpt/system/filesystem.h>

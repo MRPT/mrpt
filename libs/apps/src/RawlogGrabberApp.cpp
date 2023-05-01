@@ -374,15 +374,12 @@ void RawlogGrabberApp::SensorThread(std::string sensor_label)
 			sensor->doProcess();
 
 			// Get new observations
-			mrpt::hwdrivers::CGenericSensor::TListObservations lstObjs;
-			sensor->getObservations(lstObjs);
+			const auto lstObjs = sensor->getObservations();
 
 			{
 				std::lock_guard<std::mutex> lock(cs_m_global_list_obs);
 				m_global_list_obs.insert(lstObjs.begin(), lstObjs.end());
 			}
-
-			lstObjs.clear();
 
 			// wait for the process period:
 			rate.sleep();
