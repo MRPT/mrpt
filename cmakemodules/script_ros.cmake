@@ -132,4 +132,12 @@ if (NOT DISABLE_ROS)
 		message(STATUS "  stereo_msgs_FOUND    : ${stereo_msgs_FOUND}")
 		message(STATUS "  tf2_FOUND            : ${tf2_FOUND}")
 	endif()
-endif()
+
+	# To ease debugging in build farms, etc.
+	if (MRPT_ROS_VERSION)
+		message(STATUS "MRPT build 'env' ----------------------------------------------")
+		execute_process(COMMAND env)
+		message(STATUS "------------ end of 'env' -------------------------------------")
+	endif()
+
+endif() # NOT DISABLE_ROS
