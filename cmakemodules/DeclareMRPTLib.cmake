@@ -54,13 +54,20 @@ endfunction()
 macro(mrpt_ament_cmake_python_get_python_install_dir)
   if(NOT DEFINED PYTHON_INSTALL_DIR)
     # avoid storing backslash in cached variable since CMake will interpret it as escape character
+    # (JLBC,May2023): Replaced "purelib" -> "platstdlib" below to get rid of the "/local/" path prefix.
+    if(NOT DEFINED ENV{ROS_DISTRO})
+        set(pythonBasePathName_ platstdlib)  # For debian packages: /usr/lib/python3...
+    else()
+        set(pythonBasePathName_ purelib) # For ROS packages  /usr/local/lib/python3...
+    endif()
     set(_python_code
       "import os"
       "import sysconfig"
-      "print(os.path.relpath(sysconfig.get_path('purelib', vars={'base': '${CMAKE_INSTALL_PREFIX}'}), start='${CMAKE_INSTALL_PREFIX}').replace(os.sep, '/'))"
+      "print(os.path.relpath(sysconfig.get_path('${pythonBasePathName_}', vars={'base': '${CMAKE_INSTALL_PREFIX}'}), start='${CMAKE_INSTALL_PREFIX}').replace(os.sep, '/'))"
     )
+    unset(pythonBasePathName_)
     # JL Was: get_executable_path(_python_interpreter Python3::Interpreter CONFIGURE)
-	set(_python_interpreter ${Python3_EXECUTABLE})
+    set(_python_interpreter ${Python3_EXECUTABLE})
     execute_process(
       COMMAND
       "${_python_interpreter}"
