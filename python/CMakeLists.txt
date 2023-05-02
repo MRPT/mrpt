@@ -35,11 +35,17 @@ target_link_libraries(pymrpt PUBLIC
 
 target_include_directories(pymrpt PRIVATE ".")
 
-target_compile_definitions(pymrpt PRIVATE 
-  PYBIND11_MAJOR_VERSION=${PYBIND11_MAJOR_VERSION}
-  PYBIND11_MINOR_VERSION=${PYBIND11_MINOR_VERSION}
-  PYBIND11_PATCH_VERSION=${PYBIND11_PATCH_VERSION}
-  )
+#target_compile_definitions(pymrpt PRIVATE 
+#  PYBIND11_MAJOR_VERSION=${PYBIND11_MAJOR_VERSION}
+#  PYBIND11_MINOR_VERSION=${PYBIND11_MINOR_VERSION}
+#  PYBIND11_PATCH_VERSION=${PYBIND11_PATCH_VERSION}
+#  )
+
+# Fix for pybind 2.4.x:
+# override_caster_t  was overload_caster_t
+if ("${PYBIND11_MAJOR_VERSION}.${PYBIND11_MINOR_VERSION}" VERSION_LESS "2.9")
+  target_compile_definitions(pymrpt PRIVATE override_caster_t=overload_caster_t)
+endif()
 
   # Python files:
 file(MAKE_DIRECTORY ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/)
