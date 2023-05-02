@@ -13,9 +13,9 @@
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
-#include <cv_bridge/cv_bridge.h>
 #include <mrpt/ros2bridge/image.h>
 
+#include <cv_bridge/cv_bridge.hpp>
 #include <sensor_msgs/image_encodings.hpp>
 #include <sensor_msgs/msg/image.hpp>
 
