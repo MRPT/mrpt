@@ -1,4 +1,3 @@
-#include <bits/std_thread.h>
 #include <iterator>
 #include <memory>
 #include <mrpt/system/scheduler.h>
