@@ -1,4 +1,3 @@
-#include <bits/std_thread.h>
 #include <sstream> // __str__
 #include <thread>
 
