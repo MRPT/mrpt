@@ -641,7 +641,7 @@ add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
-if (((DEFINED BUILD_TESTING) AND (NOT BUILD_TESTING)) OR ("$ENV{ROS_DISTRO}" STREQUAL ""))
+if (((DEFINED BUILD_TESTING) AND (NOT BUILD_TESTING)) OR (NOT "$ENV{ROS_DISTRO}" STREQUAL ""))
 	# We are in a ROS environment: disable tests by default to reduce build time in ROS build farms.
 	set(_def_value OFF)
 else()
