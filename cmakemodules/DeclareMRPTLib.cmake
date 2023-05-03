@@ -61,7 +61,7 @@ macro(mrpt_ament_cmake_python_get_python_install_dir)
 		# - https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
 		# - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=998739
 		#
-		set(_output "/usr/lib/python3/dist-packages/")
+		set(_output "lib/python3/dist-packages/")  # this is prefixed with "/usr/"
 	else()
 		# For ROS packages  /usr/local/lib/python3...
 		set(_python_code
