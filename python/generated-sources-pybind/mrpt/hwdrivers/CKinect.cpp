@@ -248,8 +248,5 @@ void bind_mrpt_hwdrivers_CKinect(std::function< pybind11::module &(std::string c
 		cl.def("enableGrab3DPoints", [](mrpt::hwdrivers::CKinect &o) -> void { return o.enableGrab3DPoints(); }, "");
 		cl.def("enableGrab3DPoints", (void (mrpt::hwdrivers::CKinect::*)(bool)) &mrpt::hwdrivers::CKinect::enableGrab3DPoints, "Enable/disable the grabbing of the 3D point clouds \n\nC++: mrpt::hwdrivers::CKinect::enableGrab3DPoints(bool) --> void", pybind11::arg("enable"));
 		cl.def("isGrab3DPointsEnabled", (bool (mrpt::hwdrivers::CKinect::*)() const) &mrpt::hwdrivers::CKinect::isGrab3DPointsEnabled, "C++: mrpt::hwdrivers::CKinect::isGrab3DPointsEnabled() const --> bool");
-		cl.def("internal_latest_obs", (class mrpt::obs::CObservation3DRangeScan & (mrpt::hwdrivers::CKinect::*)()) &mrpt::hwdrivers::CKinect::internal_latest_obs, "C++: mrpt::hwdrivers::CKinect::internal_latest_obs() --> class mrpt::obs::CObservation3DRangeScan &", pybind11::return_value_policy::automatic);
-		cl.def("internal_tim_latest_depth", (volatile unsigned int & (mrpt::hwdrivers::CKinect::*)()) &mrpt::hwdrivers::CKinect::internal_tim_latest_depth, "C++: mrpt::hwdrivers::CKinect::internal_tim_latest_depth() --> volatile unsigned int &", pybind11::return_value_policy::automatic);
-		cl.def("internal_tim_latest_rgb", (volatile unsigned int & (mrpt::hwdrivers::CKinect::*)()) &mrpt::hwdrivers::CKinect::internal_tim_latest_rgb, "C++: mrpt::hwdrivers::CKinect::internal_tim_latest_rgb() --> volatile unsigned int &", pybind11::return_value_policy::automatic);
 	}
 }
