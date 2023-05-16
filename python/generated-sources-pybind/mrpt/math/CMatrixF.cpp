@@ -102,7 +102,7 @@ void bind_mrpt_math_CMatrixF(std::function< pybind11::module &(std::string const
 	{ // mrpt::math::CMatrixF file:mrpt/math/CMatrixF.h line:22
 		pybind11::class_<mrpt::math::CMatrixF, std::shared_ptr<mrpt::math::CMatrixF>, PyCallBack_mrpt_math_CMatrixF, mrpt::serialization::CSerializable, mrpt::math::CMatrixDynamic<float>> cl(M("mrpt::math"), "CMatrixF", "This class is a \"CSerializable\" wrapper for \"CMatrixFloat\".\n \n\n For a complete introduction to Matrices and vectors in MRPT, see:\n https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixF(); }, [](){ return new PyCallBack_mrpt_math_CMatrixF(); } ) );
-		cl.def( pybind11::init<unsigned long, unsigned long>(), pybind11::arg("row"), pybind11::arg("col") );
+		cl.def( pybind11::init<size_t, size_t>(), pybind11::arg("row"), pybind11::arg("col") );
 
 		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<float> &>(), pybind11::arg("m") );
 

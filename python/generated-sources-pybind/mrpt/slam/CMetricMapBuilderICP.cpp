@@ -643,7 +643,7 @@ void bind_mrpt_slam_CMetricMapBuilderICP(std::function< pybind11::module &(std::
 	{ // mrpt::slam::CMonteCarloLocalization2D file:mrpt/slam/CMonteCarloLocalization2D.h line:37
 		pybind11::class_<mrpt::slam::CMonteCarloLocalization2D, std::shared_ptr<mrpt::slam::CMonteCarloLocalization2D>, PyCallBack_mrpt_slam_CMonteCarloLocalization2D, mrpt::poses::CPosePDFParticles, mrpt::slam::PF_implementation<mrpt::math::TPose2D,mrpt::slam::CMonteCarloLocalization2D,mrpt::bayes::particle_storage_mode::VALUE>> cl(M("mrpt::slam"), "CMonteCarloLocalization2D", "Declares a class that represents a Probability Density Function (PDF) over a\n 2D pose (x,y,phi), using a set of weighted samples.\n\n  This class also implements particle filtering for robot localization. See\n the MRPT\n   application \"app/pf-localization\" for an example of usage.\n\n \n CMonteCarloLocalization3D, CPose2D, CPosePDF, CPoseGaussianPDF,\n CParticleFilterCapable\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::slam::CMonteCarloLocalization2D(); }, [](){ return new PyCallBack_mrpt_slam_CMonteCarloLocalization2D(); } ), "doc");
-		cl.def( pybind11::init<unsigned long>(), pybind11::arg("M") );
+		cl.def( pybind11::init<size_t>(), pybind11::arg("M") );
 
 		cl.def_readwrite("options", &mrpt::slam::CMonteCarloLocalization2D::options);
 		cl.def("resetUniformFreeSpace", [](mrpt::slam::CMonteCarloLocalization2D &o, class mrpt::maps::COccupancyGridMap2D * a0) -> void { return o.resetUniformFreeSpace(a0); }, "", pybind11::arg("theMap"));

@@ -25,7 +25,7 @@ void bind_mrpt_img_TColor(std::function< pybind11::module &(std::string const &n
 		pybind11::class_<mrpt::img::TColor, std::shared_ptr<mrpt::img::TColor>> cl(M("mrpt::img"), "TColor", "A RGB color - 8bit. Struct pack=1 is ensured.\n \n");
 		cl.def( pybind11::init( [](){ return new mrpt::img::TColor(); } ) );
 		cl.def( pybind11::init( [](unsigned char const & a0, unsigned char const & a1, unsigned char const & a2){ return new mrpt::img::TColor(a0, a1, a2); } ), "doc" , pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
-		cl.def( pybind11::init<unsigned char, unsigned char, unsigned char, unsigned char>(), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"), pybind11::arg("alpha") );
+		cl.def( pybind11::init<uint8_t, uint8_t, uint8_t, uint8_t>(), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"), pybind11::arg("alpha") );
 
 		cl.def( pybind11::init<const unsigned int>(), pybind11::arg("color_RGB_24bit") );
 

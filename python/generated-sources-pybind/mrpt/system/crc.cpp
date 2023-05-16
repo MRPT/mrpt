@@ -26,11 +26,11 @@ void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &n
 {
 	// mrpt::system::compute_CRC16(const unsigned char *, const unsigned long, const unsigned short) file:mrpt/system/crc.h line:27
 	M("mrpt::system").def("compute_CRC16", [](const unsigned char * a0, const unsigned long & a1) -> unsigned short { return mrpt::system::compute_CRC16(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
-	M("mrpt::system").def("compute_CRC16", (unsigned short (*)(const unsigned char *, const unsigned long, const unsigned short)) &mrpt::system::compute_CRC16, "C++: mrpt::system::compute_CRC16(const unsigned char *, const unsigned long, const unsigned short) --> unsigned short", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
+	M("mrpt::system").def("compute_CRC16", (uint16_t (*)(const unsigned char *, const unsigned long, const unsigned short)) &mrpt::system::compute_CRC16, "C++: mrpt::system::compute_CRC16(const unsigned char *, const unsigned long, const unsigned short) --> uint16_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
 
 	// mrpt::system::compute_CRC32(const unsigned char *, const unsigned long, const unsigned int) file:mrpt/system/crc.h line:33
 	M("mrpt::system").def("compute_CRC32", [](const unsigned char * a0, const unsigned long & a1) -> unsigned int { return mrpt::system::compute_CRC32(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
-	M("mrpt::system").def("compute_CRC32", (unsigned int (*)(const unsigned char *, const unsigned long, const unsigned int)) &mrpt::system::compute_CRC32, "C++: mrpt::system::compute_CRC32(const unsigned char *, const unsigned long, const unsigned int) --> unsigned int", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
+	M("mrpt::system").def("compute_CRC32", (uint32_t (*)(const unsigned char *, const unsigned long, const unsigned int)) &mrpt::system::compute_CRC32, "C++: mrpt::system::compute_CRC32(const unsigned char *, const unsigned long, const unsigned int) --> uint32_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
 
 	// mrpt::system::getTempFileName() file:mrpt/system/filesystem.h line:35
 	M("mrpt::system").def("getTempFileName", (std::string (*)()) &mrpt::system::getTempFileName, "Returns the name of a proposed temporary file name \n\nC++: mrpt::system::getTempFileName() --> std::string");
@@ -82,7 +82,7 @@ void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &n
 	M("mrpt::system").def("fileNameChangeExtension", (std::string (*)(const std::string &, const std::string &)) &mrpt::system::fileNameChangeExtension, "Replace the filename extension by another one.\n  Example:\n   \n\n\n\n \n\nC++: mrpt::system::fileNameChangeExtension(const std::string &, const std::string &) --> std::string", pybind11::arg("filename"), pybind11::arg("newExtension"));
 
 	// mrpt::system::getFileSize(const std::string &) file:mrpt/system/filesystem.h line:136
-	M("mrpt::system").def("getFileSize", (unsigned long (*)(const std::string &)) &mrpt::system::getFileSize, "Return the size of the given file, or size_t(-1) if some error is found\n accessing that file.  \n\nC++: mrpt::system::getFileSize(const std::string &) --> unsigned long", pybind11::arg("fileName"));
+	M("mrpt::system").def("getFileSize", (uint64_t (*)(const std::string &)) &mrpt::system::getFileSize, "Return the size of the given file, or size_t(-1) if some error is found\n accessing that file.  \n\nC++: mrpt::system::getFileSize(const std::string &) --> uint64_t", pybind11::arg("fileName"));
 
 	// mrpt::system::getFileModificationTime(const std::string &) file:mrpt/system/filesystem.h line:140
 	M("mrpt::system").def("getFileModificationTime", (long (*)(const std::string &)) &mrpt::system::getFileModificationTime, "Return the time of the file last modification, or \"0\" if the file doesn't\n exist.  \n\nC++: mrpt::system::getFileModificationTime(const std::string &) --> long", pybind11::arg("filename"));

@@ -9,7 +9,6 @@
 #include <string>
 #include <stl_binders.hpp>
 
-#include <mrpt/serialization/CMessage.h>
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
 	#define BINDER_PYBIND11_TYPE_CASTER

@@ -24,7 +24,7 @@ void bind_mrpt_core_WorkerThreadsPool(std::function< pybind11::module &(std::str
 		cl.def( pybind11::init( [](){ return new mrpt::WorkerThreadsPool(); } ) );
 		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::WorkerThreadsPool(a0); } ), "doc" , pybind11::arg("num_threads"));
 		cl.def( pybind11::init( [](unsigned long const & a0, enum mrpt::WorkerThreadsPool::queue_policy_t const & a1){ return new mrpt::WorkerThreadsPool(a0, a1); } ), "doc" , pybind11::arg("num_threads"), pybind11::arg("p"));
-		cl.def( pybind11::init<unsigned long, enum mrpt::WorkerThreadsPool::queue_policy_t, const std::string &>(), pybind11::arg("num_threads"), pybind11::arg("p"), pybind11::arg("threadsName") );
+		cl.def( pybind11::init<std::size_t, enum mrpt::WorkerThreadsPool::queue_policy_t, const std::string &>(), pybind11::arg("num_threads"), pybind11::arg("p"), pybind11::arg("threadsName") );
 
 
 		pybind11::enum_<mrpt::WorkerThreadsPool::queue_policy_t>(cl, "queue_policy_t", pybind11::arithmetic(), "")
@@ -32,10 +32,10 @@ void bind_mrpt_core_WorkerThreadsPool(std::function< pybind11::module &(std::str
 			.value("POLICY_DROP_OLD", mrpt::WorkerThreadsPool::POLICY_DROP_OLD)
 			.export_values();
 
-		cl.def("resize", (void (mrpt::WorkerThreadsPool::*)(unsigned long)) &mrpt::WorkerThreadsPool::resize, "C++: mrpt::WorkerThreadsPool::resize(unsigned long) --> void", pybind11::arg("num_threads"));
-		cl.def("size", (unsigned long (mrpt::WorkerThreadsPool::*)() const) &mrpt::WorkerThreadsPool::size, "Get number of working threads \n (New in MRPT 2.4.2) \n\nC++: mrpt::WorkerThreadsPool::size() const --> unsigned long");
+		cl.def("resize", (void (mrpt::WorkerThreadsPool::*)(std::size_t)) &mrpt::WorkerThreadsPool::resize, "C++: mrpt::WorkerThreadsPool::resize(std::size_t) --> void", pybind11::arg("num_threads"));
+		cl.def("size", (std::size_t (mrpt::WorkerThreadsPool::*)() const) &mrpt::WorkerThreadsPool::size, "Get number of working threads \n (New in MRPT 2.4.2) \n\nC++: mrpt::WorkerThreadsPool::size() const --> std::size_t");
 		cl.def("clear", (void (mrpt::WorkerThreadsPool::*)()) &mrpt::WorkerThreadsPool::clear, "Stops and deletes all worker threads \n\nC++: mrpt::WorkerThreadsPool::clear() --> void");
-		cl.def("pendingTasks", (unsigned long (mrpt::WorkerThreadsPool::*)() const) &mrpt::WorkerThreadsPool::pendingTasks, "Returns the number of enqueued tasks, currently waiting for a free\n working thread to process them.  \n\nC++: mrpt::WorkerThreadsPool::pendingTasks() const --> unsigned long");
+		cl.def("pendingTasks", (std::size_t (mrpt::WorkerThreadsPool::*)() const) &mrpt::WorkerThreadsPool::pendingTasks, "Returns the number of enqueued tasks, currently waiting for a free\n working thread to process them.  \n\nC++: mrpt::WorkerThreadsPool::pendingTasks() const --> std::size_t");
 		cl.def("name", (void (mrpt::WorkerThreadsPool::*)(const std::string &)) &mrpt::WorkerThreadsPool::name, "Sets the private thread names of threads in this pool.\n Names can be seen from debuggers, profilers, etc. and will follow\n the format `${name}[i]` with `${name}` the value supplied in this method\n \n\n (Method new in MRPT 2.1.5)\n\nC++: mrpt::WorkerThreadsPool::name(const std::string &) --> void", pybind11::arg("name"));
 		cl.def("name", (std::string (mrpt::WorkerThreadsPool::*)() const) &mrpt::WorkerThreadsPool::name, "Returns the base name of threads in this pool \n\nC++: mrpt::WorkerThreadsPool::name() const --> std::string");
 	}

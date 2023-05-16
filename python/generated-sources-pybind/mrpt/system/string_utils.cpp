@@ -57,10 +57,10 @@ void bind_mrpt_system_string_utils(std::function< pybind11::module &(std::string
 	M("mrpt::system").def("stringListAsString", [](const class std::vector<std::string, class std::allocator<std::string > > & a0, std::string & a1) -> void { return mrpt::system::stringListAsString(a0, a1); }, "", pybind11::arg("lst"), pybind11::arg("out"));
 	M("mrpt::system").def("stringListAsString", (void (*)(const class std::vector<std::string, class std::allocator<std::string > > &, std::string &, const std::string &)) &mrpt::system::stringListAsString, "Convert a string list to one single string with new-lines. \n\nC++: mrpt::system::stringListAsString(const class std::vector<std::string, class std::allocator<std::string > > &, std::string &, const std::string &) --> void", pybind11::arg("lst"), pybind11::arg("out"), pybind11::arg("newline"));
 
-	// mrpt::system::nthOccurrence(const std::string &, const std::string &, unsigned long) file:mrpt/system/string_utils.h line:152
-	M("mrpt::system").def("nthOccurrence", (unsigned long (*)(const std::string &, const std::string &, unsigned long)) &mrpt::system::nthOccurrence, "Finds the position of the n-th occurence of the given substring, or\n std::string::npos if it does not happen.\n \n\n New in MRPT 2.3.2\n\nC++: mrpt::system::nthOccurrence(const std::string &, const std::string &, unsigned long) --> unsigned long", pybind11::arg("str"), pybind11::arg("strToFind"), pybind11::arg("nth"));
+	// mrpt::system::nthOccurrence(const std::string &, const std::string &, size_t) file:mrpt/system/string_utils.h line:152
+	M("mrpt::system").def("nthOccurrence", (size_t (*)(const std::string &, const std::string &, size_t)) &mrpt::system::nthOccurrence, "Finds the position of the n-th occurence of the given substring, or\n std::string::npos if it does not happen.\n \n\n New in MRPT 2.3.2\n\nC++: mrpt::system::nthOccurrence(const std::string &, const std::string &, size_t) --> size_t", pybind11::arg("str"), pybind11::arg("strToFind"), pybind11::arg("nth"));
 
-	// mrpt::system::firstNLines(const std::string &, unsigned long) file:mrpt/system/string_utils.h line:158
-	M("mrpt::system").def("firstNLines", (std::string (*)(const std::string &, unsigned long)) &mrpt::system::firstNLines, "Returns the first `n` lines (splitted by '' chars) of the given text.\n \n\n New in MRPT 2.3.2\n\nC++: mrpt::system::firstNLines(const std::string &, unsigned long) --> std::string", pybind11::arg("str"), pybind11::arg("n"));
+	// mrpt::system::firstNLines(const std::string &, size_t) file:mrpt/system/string_utils.h line:158
+	M("mrpt::system").def("firstNLines", (std::string (*)(const std::string &, size_t)) &mrpt::system::firstNLines, "Returns the first `n` lines (splitted by '' chars) of the given text.\n \n\n New in MRPT 2.3.2\n\nC++: mrpt::system::firstNLines(const std::string &, size_t) --> std::string", pybind11::arg("str"), pybind11::arg("n"));
 
 }

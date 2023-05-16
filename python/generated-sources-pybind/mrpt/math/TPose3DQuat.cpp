@@ -33,7 +33,7 @@ void bind_mrpt_math_TPose3DQuat(std::function< pybind11::module &(std::string co
 		cl.def_readwrite("qx", &mrpt::math::TPose3DQuat::qx);
 		cl.def_readwrite("qy", &mrpt::math::TPose3DQuat::qy);
 		cl.def_readwrite("qz", &mrpt::math::TPose3DQuat::qz);
-		cl.def("__getitem__", (double & (mrpt::math::TPose3DQuat::*)(unsigned long)) &mrpt::math::TPose3DQuat::operator[], "Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz \n\nC++: mrpt::math::TPose3DQuat::operator[](unsigned long) --> double &", pybind11::return_value_policy::automatic, pybind11::arg("i"));
+		cl.def("__getitem__", (double & (mrpt::math::TPose3DQuat::*)(size_t)) &mrpt::math::TPose3DQuat::operator[], "Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz \n\nC++: mrpt::math::TPose3DQuat::operator[](size_t) --> double &", pybind11::return_value_policy::automatic, pybind11::arg("i"));
 		cl.def("norm", (double (mrpt::math::TPose3DQuat::*)() const) &mrpt::math::TPose3DQuat::norm, "Pose's spatial coordinates (x,y,z) norm. \n\nC++: mrpt::math::TPose3DQuat::norm() const --> double");
 		cl.def("asString", (void (mrpt::math::TPose3DQuat::*)(std::string &) const) &mrpt::math::TPose3DQuat::asString, "Returns a human-readable textual representation of the object as \"[x y z\n qr qx qy qz]\"\n \n\n fromString\n\nC++: mrpt::math::TPose3DQuat::asString(std::string &) const --> void", pybind11::arg("s"));
 		cl.def("asString", (std::string (mrpt::math::TPose3DQuat::*)() const) &mrpt::math::TPose3DQuat::asString, "C++: mrpt::math::TPose3DQuat::asString() const --> std::string");

@@ -255,7 +255,7 @@ void bind_mrpt_system_CConsoleRedirector(std::function< pybind11::module &(std::
 		pybind11::class_<mrpt::system::WorkerThreadsPool, std::shared_ptr<mrpt::system::WorkerThreadsPool>> cl(M("mrpt::system"), "WorkerThreadsPool", "A simple thread pool\n\n \n Partly based on: https://github.com/progschj/ThreadPool (ZLib license)");
 		cl.def( pybind11::init( [](){ return new mrpt::system::WorkerThreadsPool(); } ) );
 		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::system::WorkerThreadsPool(a0); } ), "doc" , pybind11::arg("num_threads"));
-		cl.def( pybind11::init<unsigned long, enum mrpt::system::WorkerThreadsPool::queue_policy_t>(), pybind11::arg("num_threads"), pybind11::arg("p") );
+		cl.def( pybind11::init<std::size_t, enum mrpt::system::WorkerThreadsPool::queue_policy_t>(), pybind11::arg("num_threads"), pybind11::arg("p") );
 
 
 		pybind11::enum_<mrpt::system::WorkerThreadsPool::queue_policy_t>(cl, "queue_policy_t", pybind11::arithmetic(), "")
@@ -263,8 +263,8 @@ void bind_mrpt_system_CConsoleRedirector(std::function< pybind11::module &(std::
 			.value("POLICY_DROP_OLD", mrpt::system::WorkerThreadsPool::POLICY_DROP_OLD)
 			.export_values();
 
-		cl.def("resize", (void (mrpt::system::WorkerThreadsPool::*)(unsigned long)) &mrpt::system::WorkerThreadsPool::resize, "C++: mrpt::system::WorkerThreadsPool::resize(unsigned long) --> void", pybind11::arg("num_threads"));
+		cl.def("resize", (void (mrpt::system::WorkerThreadsPool::*)(std::size_t)) &mrpt::system::WorkerThreadsPool::resize, "C++: mrpt::system::WorkerThreadsPool::resize(std::size_t) --> void", pybind11::arg("num_threads"));
 		cl.def("clear", (void (mrpt::system::WorkerThreadsPool::*)()) &mrpt::system::WorkerThreadsPool::clear, "C++: mrpt::system::WorkerThreadsPool::clear() --> void");
-		cl.def("pendingTasks", (unsigned long (mrpt::system::WorkerThreadsPool::*)() const) &mrpt::system::WorkerThreadsPool::pendingTasks, "Returns the number of enqueued tasks, currently waiting for a free\n working thread to process them.  \n\nC++: mrpt::system::WorkerThreadsPool::pendingTasks() const --> unsigned long");
+		cl.def("pendingTasks", (std::size_t (mrpt::system::WorkerThreadsPool::*)() const) &mrpt::system::WorkerThreadsPool::pendingTasks, "Returns the number of enqueued tasks, currently waiting for a free\n working thread to process them.  \n\nC++: mrpt::system::WorkerThreadsPool::pendingTasks() const --> std::size_t");
 	}
 }

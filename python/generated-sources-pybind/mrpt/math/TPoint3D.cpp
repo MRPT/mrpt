@@ -37,7 +37,7 @@ void bind_mrpt_math_TPoint3D(std::function< pybind11::module &(std::string const
 	{ // mrpt::math::TPointXYZIu8 file:mrpt/math/TPoint3D.h line:301
 		pybind11::class_<mrpt::math::TPointXYZIu8, std::shared_ptr<mrpt::math::TPointXYZIu8>> cl(M("mrpt::math"), "TPointXYZIu8", "XYZ point (double) + Intensity(u8) \n mrpt::math::TPoint3D ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPointXYZIu8(); } ) );
-		cl.def( pybind11::init<double, double, double, unsigned char>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("intensity_val") );
+		cl.def( pybind11::init<double, double, double, uint8_t>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("intensity_val") );
 
 		cl.def_readwrite("pt", &mrpt::math::TPointXYZIu8::pt);
 		cl.def_readwrite("intensity", &mrpt::math::TPointXYZIu8::intensity);
@@ -45,7 +45,7 @@ void bind_mrpt_math_TPoint3D(std::function< pybind11::module &(std::string const
 	{ // mrpt::math::TPointXYZRGBu8 file:mrpt/math/TPoint3D.h line:312
 		pybind11::class_<mrpt::math::TPointXYZRGBu8, std::shared_ptr<mrpt::math::TPointXYZRGBu8>> cl(M("mrpt::math"), "TPointXYZRGBu8", "XYZ point (double) + RGB(u8) \n mrpt::math::TPoint3D ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPointXYZRGBu8(); } ) );
-		cl.def( pybind11::init<double, double, double, unsigned char, unsigned char, unsigned char>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R_val"), pybind11::arg("G_val"), pybind11::arg("B_val") );
+		cl.def( pybind11::init<double, double, double, uint8_t, uint8_t, uint8_t>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R_val"), pybind11::arg("G_val"), pybind11::arg("B_val") );
 
 		cl.def_readwrite("pt", &mrpt::math::TPointXYZRGBu8::pt);
 		cl.def_readwrite("r", &mrpt::math::TPointXYZRGBu8::r);
@@ -55,7 +55,7 @@ void bind_mrpt_math_TPoint3D(std::function< pybind11::module &(std::string const
 	{ // mrpt::math::TPointXYZfIu8 file:mrpt/math/TPoint3D.h line:325
 		pybind11::class_<mrpt::math::TPointXYZfIu8, std::shared_ptr<mrpt::math::TPointXYZfIu8>> cl(M("mrpt::math"), "TPointXYZfIu8", "XYZ point (float) + Intensity(u8) \n mrpt::math::TPoint3D ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPointXYZfIu8(); } ) );
-		cl.def( pybind11::init<float, float, float, unsigned char>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("intensity_val") );
+		cl.def( pybind11::init<float, float, float, uint8_t>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("intensity_val") );
 
 		cl.def_readwrite("pt", &mrpt::math::TPointXYZfIu8::pt);
 		cl.def_readwrite("intensity", &mrpt::math::TPointXYZfIu8::intensity);
@@ -63,7 +63,7 @@ void bind_mrpt_math_TPoint3D(std::function< pybind11::module &(std::string const
 	{ // mrpt::math::TPointXYZfRGBu8 file:mrpt/math/TPoint3D.h line:336
 		pybind11::class_<mrpt::math::TPointXYZfRGBu8, std::shared_ptr<mrpt::math::TPointXYZfRGBu8>> cl(M("mrpt::math"), "TPointXYZfRGBu8", "XYZ point (float) + RGB(u8) \n mrpt::math::TPoint3D ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPointXYZfRGBu8(); } ) );
-		cl.def( pybind11::init<float, float, float, unsigned char, unsigned char, unsigned char>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R_val"), pybind11::arg("G_val"), pybind11::arg("B_val") );
+		cl.def( pybind11::init<float, float, float, uint8_t, uint8_t, uint8_t>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R_val"), pybind11::arg("G_val"), pybind11::arg("B_val") );
 
 		cl.def_readwrite("pt", &mrpt::math::TPointXYZfRGBu8::pt);
 		cl.def_readwrite("r", &mrpt::math::TPointXYZfRGBu8::r);
@@ -74,7 +74,7 @@ void bind_mrpt_math_TPoint3D(std::function< pybind11::module &(std::string const
 		pybind11::class_<mrpt::math::TPointXYZfRGBAu8, std::shared_ptr<mrpt::math::TPointXYZfRGBAu8>> cl(M("mrpt::math"), "TPointXYZfRGBAu8", "XYZ point (float) + RGBA(u8) \n mrpt::math::TPoint3D ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::TPointXYZfRGBAu8(); } ) );
 		cl.def( pybind11::init( [](float const & a0, float const & a1, float const & a2, unsigned char const & a3, unsigned char const & a4, unsigned char const & a5){ return new mrpt::math::TPointXYZfRGBAu8(a0, a1, a2, a3, a4, a5); } ), "doc" , pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R_val"), pybind11::arg("G_val"), pybind11::arg("B_val"));
-		cl.def( pybind11::init<float, float, float, unsigned char, unsigned char, unsigned char, unsigned char>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R_val"), pybind11::arg("G_val"), pybind11::arg("B_val"), pybind11::arg("A_val") );
+		cl.def( pybind11::init<float, float, float, uint8_t, uint8_t, uint8_t, uint8_t>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"), pybind11::arg("R_val"), pybind11::arg("G_val"), pybind11::arg("B_val"), pybind11::arg("A_val") );
 
 		cl.def( pybind11::init( [](mrpt::math::TPointXYZfRGBAu8 const &o){ return new mrpt::math::TPointXYZfRGBAu8(o); } ) );
 		cl.def_readwrite("pt", &mrpt::math::TPointXYZfRGBAu8::pt);

@@ -219,7 +219,7 @@ void bind_mrpt_gui_CBaseGUIWindow(std::function< pybind11::module &(std::string 
 	}
 	{ // mrpt::gui::mrptEventWindowResize file:mrpt/gui/CBaseGUIWindow.h line:195
 		pybind11::class_<mrpt::gui::mrptEventWindowResize, std::shared_ptr<mrpt::gui::mrptEventWindowResize>, PyCallBack_mrpt_gui_mrptEventWindowResize, mrpt::system::mrptEvent> cl(M("mrpt::gui"), "mrptEventWindowResize", "An event sent by a window upon resize.\n\n  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked\n from the wxWidgets internal MRPT thread,\n    so all your code in the handler must be thread safe.");
-		cl.def( pybind11::init<class mrpt::gui::CBaseGUIWindow *, unsigned long, unsigned long>(), pybind11::arg("obj"), pybind11::arg("_new_width"), pybind11::arg("_new_height") );
+		cl.def( pybind11::init<class mrpt::gui::CBaseGUIWindow *, size_t, size_t>(), pybind11::arg("obj"), pybind11::arg("_new_width"), pybind11::arg("_new_height") );
 
 		cl.def_readwrite("new_width", &mrpt::gui::mrptEventWindowResize::new_width);
 		cl.def_readwrite("new_height", &mrpt::gui::mrptEventWindowResize::new_height);
