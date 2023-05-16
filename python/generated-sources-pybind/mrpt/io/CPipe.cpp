@@ -321,23 +321,23 @@ void bind_mrpt_io_CPipe(std::function< pybind11::module &(std::string const &nam
 		cl.def("serialize", (std::string (mrpt::io::CPipeBaseEndPoint::*)()) &mrpt::io::CPipeBaseEndPoint::serialize, "Converts the end-point into a string suitable for reconstruction at a\n child process.\n This *invalidates* this object, since only one real end-point can exist\n at once.\n\nC++: mrpt::io::CPipeBaseEndPoint::serialize() --> std::string");
 		cl.def("isOpen", (bool (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::isOpen, "Returns false if the pipe was closed due to some error. \n\nC++: mrpt::io::CPipeBaseEndPoint::isOpen() const --> bool");
 		cl.def("close", (void (mrpt::io::CPipeBaseEndPoint::*)()) &mrpt::io::CPipeBaseEndPoint::close, "Closes the pipe (normally not needed to be called by users,\n automatically done at destructor) \n\nC++: mrpt::io::CPipeBaseEndPoint::close() --> void");
-		cl.def("Read", (unsigned long (mrpt::io::CPipeBaseEndPoint::*)(void *, unsigned long)) &mrpt::io::CPipeBaseEndPoint::Read, "C++: mrpt::io::CPipeBaseEndPoint::Read(void *, unsigned long) --> unsigned long", pybind11::arg("Buffer"), pybind11::arg("Count"));
-		cl.def("Write", (unsigned long (mrpt::io::CPipeBaseEndPoint::*)(const void *, unsigned long)) &mrpt::io::CPipeBaseEndPoint::Write, "C++: mrpt::io::CPipeBaseEndPoint::Write(const void *, unsigned long) --> unsigned long", pybind11::arg("Buffer"), pybind11::arg("Count"));
+		cl.def("Read", (size_t (mrpt::io::CPipeBaseEndPoint::*)(void *, size_t)) &mrpt::io::CPipeBaseEndPoint::Read, "C++: mrpt::io::CPipeBaseEndPoint::Read(void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
+		cl.def("Write", (size_t (mrpt::io::CPipeBaseEndPoint::*)(const void *, size_t)) &mrpt::io::CPipeBaseEndPoint::Write, "C++: mrpt::io::CPipeBaseEndPoint::Write(const void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
 		cl.def("Seek", [](mrpt::io::CPipeBaseEndPoint &o, long const & a0) -> unsigned long { return o.Seek(a0); }, "", pybind11::arg("of"));
-		cl.def("Seek", (unsigned long (mrpt::io::CPipeBaseEndPoint::*)(long, enum mrpt::io::CStream::TSeekOrigin)) &mrpt::io::CPipeBaseEndPoint::Seek, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::Seek(long, enum mrpt::io::CStream::TSeekOrigin) --> unsigned long", pybind11::arg("of"), pybind11::arg("o"));
-		cl.def("getTotalBytesCount", (unsigned long (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::getTotalBytesCount, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::getTotalBytesCount() const --> unsigned long");
-		cl.def("getPosition", (unsigned long (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::getPosition, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::getPosition() const --> unsigned long");
+		cl.def("Seek", (uint64_t (mrpt::io::CPipeBaseEndPoint::*)(int64_t, enum mrpt::io::CStream::TSeekOrigin)) &mrpt::io::CPipeBaseEndPoint::Seek, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::Seek(int64_t, enum mrpt::io::CStream::TSeekOrigin) --> uint64_t", pybind11::arg("of"), pybind11::arg("o"));
+		cl.def("getTotalBytesCount", (uint64_t (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::getTotalBytesCount, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::getTotalBytesCount() const --> uint64_t");
+		cl.def("getPosition", (uint64_t (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::getPosition, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::getPosition() const --> uint64_t");
 	}
 	{ // mrpt::io::CPipeReadEndPoint file:mrpt/io/CPipe.h line:127
 		pybind11::class_<mrpt::io::CPipeReadEndPoint, std::shared_ptr<mrpt::io::CPipeReadEndPoint>, PyCallBack_mrpt_io_CPipeReadEndPoint, mrpt::io::CPipeBaseEndPoint> cl(M("mrpt::io"), "CPipeReadEndPoint", "The read end-point in a pipe created with mrpt::synch::CPipe.\n Use the method CStream::Read() of the base class CStream\n for blocking reading.\n \n\n\n ");
 		cl.def( pybind11::init<const std::string &>(), pybind11::arg("serialized") );
 
-		cl.def("Write", (unsigned long (mrpt::io::CPipeReadEndPoint::*)(const void *, unsigned long)) &mrpt::io::CPipeReadEndPoint::Write, "Read-only pipe, don't call this method \n\nC++: mrpt::io::CPipeReadEndPoint::Write(const void *, unsigned long) --> unsigned long", pybind11::arg("Buffer"), pybind11::arg("Count"));
+		cl.def("Write", (size_t (mrpt::io::CPipeReadEndPoint::*)(const void *, size_t)) &mrpt::io::CPipeReadEndPoint::Write, "Read-only pipe, don't call this method \n\nC++: mrpt::io::CPipeReadEndPoint::Write(const void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
 	}
 	{ // mrpt::io::CPipeWriteEndPoint file:mrpt/io/CPipe.h line:150
 		pybind11::class_<mrpt::io::CPipeWriteEndPoint, std::shared_ptr<mrpt::io::CPipeWriteEndPoint>, PyCallBack_mrpt_io_CPipeWriteEndPoint, mrpt::io::CPipeBaseEndPoint> cl(M("mrpt::io"), "CPipeWriteEndPoint", "The write end-point in a pipe created with mrpt::synch::CPipe.\n Use the method CStream::Write() of the base class CStream\n for blocking writing. ");
 		cl.def( pybind11::init<const std::string &>(), pybind11::arg("serialized") );
 
-		cl.def("Read", (unsigned long (mrpt::io::CPipeWriteEndPoint::*)(void *, unsigned long)) &mrpt::io::CPipeWriteEndPoint::Read, "Write-only pipe: read launches exception \n\nC++: mrpt::io::CPipeWriteEndPoint::Read(void *, unsigned long) --> unsigned long", pybind11::arg("Buffer"), pybind11::arg("Count"));
+		cl.def("Read", (size_t (mrpt::io::CPipeWriteEndPoint::*)(void *, size_t)) &mrpt::io::CPipeWriteEndPoint::Read, "Write-only pipe: read launches exception \n\nC++: mrpt::io::CPipeWriteEndPoint::Read(void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
 	}
 }

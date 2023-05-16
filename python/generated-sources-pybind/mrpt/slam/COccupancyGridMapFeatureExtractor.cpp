@@ -197,7 +197,7 @@ void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::m
 			{ // mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance file:mrpt/slam/CGridMapAligner.h line:166
 				auto & enclosing_class = cl;
 				pybind11::class_<mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance, std::shared_ptr<mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance>> cl(enclosing_class, "TPairPlusDistance", "");
-				cl.def( pybind11::init<unsigned long, unsigned long, float>(), pybind11::arg("i1"), pybind11::arg("i2"), pybind11::arg("d") );
+				cl.def( pybind11::init<size_t, size_t, float>(), pybind11::arg("i1"), pybind11::arg("i2"), pybind11::arg("d") );
 
 				cl.def_readwrite("idx_this", &mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance::idx_this);
 				cl.def_readwrite("idx_other", &mrpt::slam::CGridMapAligner::TReturnInfo::TPairPlusDistance::idx_other);

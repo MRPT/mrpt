@@ -39,7 +39,7 @@ void bind_mrpt_math_TPoint3D_1(std::function< pybind11::module &(std::string con
 		cl.def( pybind11::init<const struct mrpt::math::TPose3D &>(), pybind11::arg("p") );
 
 		cl.def( pybind11::init( [](mrpt::math::TPoint3D_<float> const &o){ return new mrpt::math::TPoint3D_<float>(o); } ) );
-		cl.def("__getitem__", (float & (mrpt::math::TPoint3D_<float>::*)(unsigned long)) &mrpt::math::TPoint3D_<float>::operator[], "C++: mrpt::math::TPoint3D_<float>::operator[](unsigned long) --> float &", pybind11::return_value_policy::automatic, pybind11::arg("i"));
+		cl.def("__getitem__", (float & (mrpt::math::TPoint3D_<float>::*)(size_t)) &mrpt::math::TPoint3D_<float>::operator[], "C++: mrpt::math::TPoint3D_<float>::operator[](size_t) --> float &", pybind11::return_value_policy::automatic, pybind11::arg("i"));
 		cl.def("distanceTo", (float (mrpt::math::TPoint3D_<float>::*)(const struct mrpt::math::TPoint3D_<float> &) const) &mrpt::math::TPoint3D_<float>::distanceTo, "C++: mrpt::math::TPoint3D_<float>::distanceTo(const struct mrpt::math::TPoint3D_<float> &) const --> float", pybind11::arg("p"));
 		cl.def("sqrDistanceTo", (float (mrpt::math::TPoint3D_<float>::*)(const struct mrpt::math::TPoint3D_<float> &) const) &mrpt::math::TPoint3D_<float>::sqrDistanceTo, "C++: mrpt::math::TPoint3D_<float>::sqrDistanceTo(const struct mrpt::math::TPoint3D_<float> &) const --> float", pybind11::arg("p"));
 		cl.def("sqrNorm", (float (mrpt::math::TPoint3D_<float>::*)() const) &mrpt::math::TPoint3D_<float>::sqrNorm, "C++: mrpt::math::TPoint3D_<float>::sqrNorm() const --> float");

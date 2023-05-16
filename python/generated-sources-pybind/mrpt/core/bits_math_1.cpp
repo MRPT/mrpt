@@ -43,7 +43,7 @@ void bind_mrpt_core_bits_math_1(std::function< pybind11::module &(std::string co
 	M("mrpt").def("d2f", (float (*)(const double)) &mrpt::d2f, "shortcut for static_cast<float>(double) \n\nC++: mrpt::d2f(const double) --> float", pybind11::arg("d"));
 
 	// mrpt::f2u8(const float) file:mrpt/core/bits_math.h line:189
-	M("mrpt").def("f2u8", (unsigned char (*)(const float)) &mrpt::f2u8, "converts a float [0,1] into an uint8_t [0,255] (without checking for out of\n bounds) \n\n u8tof \n\nC++: mrpt::f2u8(const float) --> unsigned char", pybind11::arg("f"));
+	M("mrpt").def("f2u8", (uint8_t (*)(const float)) &mrpt::f2u8, "converts a float [0,1] into an uint8_t [0,255] (without checking for out of\n bounds) \n\n u8tof \n\nC++: mrpt::f2u8(const float) --> uint8_t", pybind11::arg("f"));
 
 	// mrpt::u8tof(const unsigned char) file:mrpt/core/bits_math.h line:192
 	M("mrpt").def("u8tof", (float (*)(const unsigned char)) &mrpt::u8tof, "converts a uint8_t [0,255] into a float [0,1] \n f2u8 \n\nC++: mrpt::u8tof(const unsigned char) --> float", pybind11::arg("v"));

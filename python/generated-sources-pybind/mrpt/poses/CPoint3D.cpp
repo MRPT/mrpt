@@ -352,7 +352,7 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::poses::CPose3DQuat::iterator, std::shared_ptr<mrpt::poses::CPose3DQuat::iterator>> cl(enclosing_class, "iterator", "");
 			cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DQuat::iterator(); } ) );
-			cl.def( pybind11::init<class mrpt::poses::CPose3DQuat &, unsigned long>(), pybind11::arg("obj"), pybind11::arg("start_idx") );
+			cl.def( pybind11::init<class mrpt::poses::CPose3DQuat &, size_t>(), pybind11::arg("obj"), pybind11::arg("start_idx") );
 
 			cl.def( pybind11::init( [](mrpt::poses::CPose3DQuat::iterator const &o){ return new mrpt::poses::CPose3DQuat::iterator(o); } ) );
 			cl.def("dereference", (double & (mrpt::poses::CPose3DQuat::iterator::*)() const) &mrpt::poses::CPose3DQuat::iterator::operator*, "C++: mrpt::poses::CPose3DQuat::iterator::operator*() const --> double &", pybind11::return_value_policy::automatic);
@@ -375,7 +375,7 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::poses::CPose3DQuat::const_iterator, std::shared_ptr<mrpt::poses::CPose3DQuat::const_iterator>> cl(enclosing_class, "const_iterator", "");
 			cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DQuat::const_iterator(); } ) );
-			cl.def( pybind11::init<const class mrpt::poses::CPose3DQuat &, unsigned long>(), pybind11::arg("obj"), pybind11::arg("start_idx") );
+			cl.def( pybind11::init<const class mrpt::poses::CPose3DQuat &, size_t>(), pybind11::arg("obj"), pybind11::arg("start_idx") );
 
 			cl.def( pybind11::init( [](mrpt::poses::CPose3DQuat::const_iterator const &o){ return new mrpt::poses::CPose3DQuat::const_iterator(o); } ) );
 			cl.def("dereference", (double (mrpt::poses::CPose3DQuat::const_iterator::*)() const) &mrpt::poses::CPose3DQuat::const_iterator::operator*, "C++: mrpt::poses::CPose3DQuat::const_iterator::operator*() const --> double");

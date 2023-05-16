@@ -23,6 +23,6 @@ void bind_mrpt_containers_MT_buffer(std::function< pybind11::module &(std::strin
 		pybind11::class_<mrpt::containers::MT_buffer, std::shared_ptr<mrpt::containers::MT_buffer>> cl(M("mrpt::containers"), "MT_buffer", "This class is a bulk sequence of bytes with MultiThread (MT)-safe read and\n write operations.\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::containers::MT_buffer(); } ) );
 		cl.def("clear", (void (mrpt::containers::MT_buffer::*)()) &mrpt::containers::MT_buffer::clear, "Empty the buffer \n\nC++: mrpt::containers::MT_buffer::clear() --> void");
-		cl.def("size", (unsigned long (mrpt::containers::MT_buffer::*)()) &mrpt::containers::MT_buffer::size, "Return the number of available bytes at this moment. \n\nC++: mrpt::containers::MT_buffer::size() --> unsigned long");
+		cl.def("size", (size_t (mrpt::containers::MT_buffer::*)()) &mrpt::containers::MT_buffer::size, "Return the number of available bytes at this moment. \n\nC++: mrpt::containers::MT_buffer::size() --> size_t");
 	}
 }

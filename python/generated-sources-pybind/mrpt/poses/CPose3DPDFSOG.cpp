@@ -602,7 +602,7 @@ void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string
 	{ // mrpt::poses::CPose3DPDFSOG file:mrpt/poses/CPose3DPDFSOG.h line:32
 		pybind11::class_<mrpt::poses::CPose3DPDFSOG, std::shared_ptr<mrpt::poses::CPose3DPDFSOG>, PyCallBack_mrpt_poses_CPose3DPDFSOG, mrpt::poses::CPose3DPDF> cl(M("mrpt::poses"), "CPose3DPDFSOG", "Declares a class that represents a Probability Density function (PDF) of a\n 3D(6D) pose \n\n.\n   This class implements that PDF as the following multi-modal Gaussian\n distribution:\n\n \n\n\n  Where the number of modes N is the size of CPose3DPDFSOG::m_modes. Angles\n are always in radians.\n\n  See mrpt::poses::CPose3DPDF for more details.\n \n\n\n \n CPose3DPDF");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DPDFSOG(); }, [](){ return new PyCallBack_mrpt_poses_CPose3DPDFSOG(); } ), "doc");
-		cl.def( pybind11::init<unsigned long>(), pybind11::arg("nModes") );
+		cl.def( pybind11::init<size_t>(), pybind11::arg("nModes") );
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPose3DPDFSOG const &o){ return new PyCallBack_mrpt_poses_CPose3DPDFSOG(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPose3DPDFSOG const &o){ return new mrpt::poses::CPose3DPDFSOG(o); } ) );
@@ -613,7 +613,7 @@ void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::poses::CPose3DPDFSOG::CreateObject, "C++: mrpt::poses::CPose3DPDFSOG::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("clear", (void (mrpt::poses::CPose3DPDFSOG::*)()) &mrpt::poses::CPose3DPDFSOG::clear, "Clear all the gaussian modes \n\nC++: mrpt::poses::CPose3DPDFSOG::clear() --> void");
 		cl.def("resize", (void (mrpt::poses::CPose3DPDFSOG::*)(const unsigned long)) &mrpt::poses::CPose3DPDFSOG::resize, "Set the number of SOG modes \n\nC++: mrpt::poses::CPose3DPDFSOG::resize(const unsigned long) --> void", pybind11::arg("N"));
-		cl.def("size", (unsigned long (mrpt::poses::CPose3DPDFSOG::*)() const) &mrpt::poses::CPose3DPDFSOG::size, "Return the number of Gaussian modes. \n\nC++: mrpt::poses::CPose3DPDFSOG::size() const --> unsigned long");
+		cl.def("size", (size_t (mrpt::poses::CPose3DPDFSOG::*)() const) &mrpt::poses::CPose3DPDFSOG::size, "Return the number of Gaussian modes. \n\nC++: mrpt::poses::CPose3DPDFSOG::size() const --> size_t");
 		cl.def("empty", (bool (mrpt::poses::CPose3DPDFSOG::*)() const) &mrpt::poses::CPose3DPDFSOG::empty, "Return whether there is any Gaussian mode. \n\nC++: mrpt::poses::CPose3DPDFSOG::empty() const --> bool");
 		cl.def("getMean", (void (mrpt::poses::CPose3DPDFSOG::*)(class mrpt::poses::CPose3D &) const) &mrpt::poses::CPose3DPDFSOG::getMean, "C++: mrpt::poses::CPose3DPDFSOG::getMean(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("mean_pose"));
 		cl.def("getCovarianceAndMean", (class std::tuple<class mrpt::math::CMatrixFixed<double, 6, 6>, class mrpt::poses::CPose3D> (mrpt::poses::CPose3DPDFSOG::*)() const) &mrpt::poses::CPose3DPDFSOG::getCovarianceAndMean, "C++: mrpt::poses::CPose3DPDFSOG::getCovarianceAndMean() const --> class std::tuple<class mrpt::math::CMatrixFixed<double, 6, 6>, class mrpt::poses::CPose3D>");

@@ -115,7 +115,7 @@ void bind_mrpt_math_CMatrixB(std::function< pybind11::module &(std::string const
 		pybind11::class_<mrpt::math::CMatrixB, std::shared_ptr<mrpt::math::CMatrixB>, PyCallBack_mrpt_math_CMatrixB, mrpt::serialization::CSerializable> cl(M("mrpt::math"), "CMatrixB", "This class is a \"CSerializable\" wrapper for \"CMatrixBool\".\n \n\n For a complete introduction to Matrices and vectors in MRPT, see:\n https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixB(); }, [](){ return new PyCallBack_mrpt_math_CMatrixB(); } ), "doc");
 		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::math::CMatrixB(a0); }, [](unsigned long const & a0){ return new PyCallBack_mrpt_math_CMatrixB(a0); } ), "doc");
-		cl.def( pybind11::init<unsigned long, unsigned long>(), pybind11::arg("row"), pybind11::arg("col") );
+		cl.def( pybind11::init<size_t, size_t>(), pybind11::arg("row"), pybind11::arg("col") );
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_math_CMatrixB const &o){ return new PyCallBack_mrpt_math_CMatrixB(o); } ) );
 		cl.def( pybind11::init( [](mrpt::math::CMatrixB const &o){ return new mrpt::math::CMatrixB(o); } ) );

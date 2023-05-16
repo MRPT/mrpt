@@ -123,8 +123,8 @@ void bind_mrpt_io_CFileStream(std::function< pybind11::module &(std::string cons
 		cl.def( pybind11::init<const std::string &, int>(), pybind11::arg("fileName"), pybind11::arg("mode") );
 
 		cl.def( pybind11::init( [](){ return new mrpt::io::CFileStream(); }, [](){ return new PyCallBack_mrpt_io_CFileStream(); } ) );
-		cl.def("Read", (unsigned long (mrpt::io::CFileStream::*)(void *, unsigned long)) &mrpt::io::CFileStream::Read, "C++: mrpt::io::CFileStream::Read(void *, unsigned long) --> unsigned long", pybind11::arg("Buffer"), pybind11::arg("Count"));
-		cl.def("Write", (unsigned long (mrpt::io::CFileStream::*)(const void *, unsigned long)) &mrpt::io::CFileStream::Write, "C++: mrpt::io::CFileStream::Write(const void *, unsigned long) --> unsigned long", pybind11::arg("Buffer"), pybind11::arg("Count"));
+		cl.def("Read", (size_t (mrpt::io::CFileStream::*)(void *, size_t)) &mrpt::io::CFileStream::Read, "C++: mrpt::io::CFileStream::Read(void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
+		cl.def("Write", (size_t (mrpt::io::CFileStream::*)(const void *, size_t)) &mrpt::io::CFileStream::Write, "C++: mrpt::io::CFileStream::Write(const void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
 		cl.def("open", [](mrpt::io::CFileStream &o, const std::string & a0) -> bool { return o.open(a0); }, "", pybind11::arg("fileName"));
 		cl.def("open", (bool (mrpt::io::CFileStream::*)(const std::string &, int)) &mrpt::io::CFileStream::open, "Opens the file, returning true on success.\n \n\n The file to be open in this stream\n \n\n The open mode: can be an or'd conbination of different\n values.\n  By default the file is opened for open and write and created if not\n found.\n\nC++: mrpt::io::CFileStream::open(const std::string &, int) --> bool", pybind11::arg("fileName"), pybind11::arg("mode"));
 		cl.def("close", (void (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::close, "Closes the file \n\nC++: mrpt::io::CFileStream::close() --> void");
@@ -133,11 +133,11 @@ void bind_mrpt_io_CFileStream(std::function< pybind11::module &(std::string cons
 		cl.def("checkEOF", (bool (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::checkEOF, "Will be true if EOF has been already reached. \n\nC++: mrpt::io::CFileStream::checkEOF() --> bool");
 		cl.def("clearError", (void (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::clearError, "Resets stream error status bits (e.g. after an EOF) \n\nC++: mrpt::io::CFileStream::clearError() --> void");
 		cl.def("Seek", [](mrpt::io::CFileStream &o, long const & a0) -> unsigned long { return o.Seek(a0); }, "", pybind11::arg("off"));
-		cl.def("Seek", (unsigned long (mrpt::io::CFileStream::*)(long, enum mrpt::io::CStream::TSeekOrigin)) &mrpt::io::CFileStream::Seek, "C++: mrpt::io::CFileStream::Seek(long, enum mrpt::io::CStream::TSeekOrigin) --> unsigned long", pybind11::arg("off"), pybind11::arg("org"));
-		cl.def("getTotalBytesCount", (unsigned long (mrpt::io::CFileStream::*)() const) &mrpt::io::CFileStream::getTotalBytesCount, "C++: mrpt::io::CFileStream::getTotalBytesCount() const --> unsigned long");
-		cl.def("getPosition", (unsigned long (mrpt::io::CFileStream::*)() const) &mrpt::io::CFileStream::getPosition, "C++: mrpt::io::CFileStream::getPosition() const --> unsigned long");
-		cl.def("getPositionI", (unsigned long (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::getPositionI, "The current Input cursor position, where 0 is the first byte \n\nC++: mrpt::io::CFileStream::getPositionI() --> unsigned long");
-		cl.def("getPositionO", (unsigned long (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::getPositionO, "The current Input cursor position, where 0 is the first byte \n\nC++: mrpt::io::CFileStream::getPositionO() --> unsigned long");
+		cl.def("Seek", (uint64_t (mrpt::io::CFileStream::*)(int64_t, enum mrpt::io::CStream::TSeekOrigin)) &mrpt::io::CFileStream::Seek, "C++: mrpt::io::CFileStream::Seek(int64_t, enum mrpt::io::CStream::TSeekOrigin) --> uint64_t", pybind11::arg("off"), pybind11::arg("org"));
+		cl.def("getTotalBytesCount", (uint64_t (mrpt::io::CFileStream::*)() const) &mrpt::io::CFileStream::getTotalBytesCount, "C++: mrpt::io::CFileStream::getTotalBytesCount() const --> uint64_t");
+		cl.def("getPosition", (uint64_t (mrpt::io::CFileStream::*)() const) &mrpt::io::CFileStream::getPosition, "C++: mrpt::io::CFileStream::getPosition() const --> uint64_t");
+		cl.def("getPositionI", (uint64_t (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::getPositionI, "The current Input cursor position, where 0 is the first byte \n\nC++: mrpt::io::CFileStream::getPositionI() --> uint64_t");
+		cl.def("getPositionO", (uint64_t (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::getPositionO, "The current Input cursor position, where 0 is the first byte \n\nC++: mrpt::io::CFileStream::getPositionO() --> uint64_t");
 		cl.def("readLine", (bool (mrpt::io::CFileStream::*)(std::string &)) &mrpt::io::CFileStream::readLine, "Reads one string line from the file (until a new-line character)\n \n\n true if a line has been read, false on EOF or error \n\nC++: mrpt::io::CFileStream::readLine(std::string &) --> bool", pybind11::arg("str"));
 	}
 }
