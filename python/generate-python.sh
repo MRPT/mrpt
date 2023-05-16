@@ -63,7 +63,7 @@ $HOME/code/binder/build/source/binder \
 
 # applying manual patches:
 echo "Applying manual patches..."
-find . -name "*.diff" | xargs -I FIL bash -c "patch -s -p0 < FIL"
+find . -name "*.diff" | xargs -I FIL bash -c "patch -V never -s -p0 < FIL"
 
 
 # Enforce formatting:
