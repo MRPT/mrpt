@@ -41,7 +41,7 @@ void bind_mrpt_math_CMatrixFixed_1(std::function< pybind11::module &(std::string
 
 		cl.def( pybind11::init( [](mrpt::math::CMatrixFixed<float,4,1> const &o){ return new mrpt::math::CMatrixFixed<float,4,1>(o); } ) );
 		cl.def("loadFromRawPointer", (void (mrpt::math::CMatrixFixed<float,4,1>::*)(const float *)) &mrpt::math::CMatrixFixed<float, 4, 1>::loadFromRawPointer, "C++: mrpt::math::CMatrixFixed<float, 4, 1>::loadFromRawPointer(const float *) --> void", pybind11::arg("data"));
-		cl.def("setSize", [](mrpt::math::CMatrixFixed<float,4,1> &o, unsigned long const & a0, unsigned long const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("setSize", [](mrpt::math::CMatrixFixed<float,4,1> &o, size_t const & a0, size_t const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
 		cl.def("setSize", (void (mrpt::math::CMatrixFixed<float,4,1>::*)(size_t, size_t, bool)) &mrpt::math::CMatrixFixed<float, 4, 1>::setSize, "C++: mrpt::math::CMatrixFixed<float, 4, 1>::setSize(size_t, size_t, bool) --> void", pybind11::arg("row"), pybind11::arg("col"), pybind11::arg("zeroNewElements"));
 		cl.def("swap", (void (mrpt::math::CMatrixFixed<float,4,1>::*)(class mrpt::math::CMatrixFixed<float, 4, 1> &)) &mrpt::math::CMatrixFixed<float, 4, 1>::swap, "C++: mrpt::math::CMatrixFixed<float, 4, 1>::swap(class mrpt::math::CMatrixFixed<float, 4, 1> &) --> void", pybind11::arg("o"));
 		cl.def("conservativeResize", (void (mrpt::math::CMatrixFixed<float,4,1>::*)(size_t, size_t)) &mrpt::math::CMatrixFixed<float, 4, 1>::conservativeResize, "C++: mrpt::math::CMatrixFixed<float, 4, 1>::conservativeResize(size_t, size_t) --> void", pybind11::arg("row"), pybind11::arg("col"));

@@ -124,16 +124,16 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF : public mrpt::maps::CHeightGri
 		}
 		return CHeightGridMap2D_MRF::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CHeightGridMap2D_MRF *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CHeightGridMap2D_MRF::serializeGetVersion();
 	}
@@ -150,7 +150,7 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF : public mrpt::maps::CHeightGri
 		}
 		return CHeightGridMap2D_MRF::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CHeightGridMap2D_MRF *>(this), "serializeFrom");
 		if (overload) {
@@ -215,29 +215,29 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D_MRF : public mrpt::maps::CHeightGri
 		}
 		return CHeightGridMap2D_MRF::dem_get_resolution();
 	}
-	unsigned long dem_get_size_x() const override {
+	size_t dem_get_size_x() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CHeightGridMap2D_MRF *>(this), "dem_get_size_x");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CHeightGridMap2D_MRF::dem_get_size_x();
 	}
-	unsigned long dem_get_size_y() const override {
+	size_t dem_get_size_y() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CHeightGridMap2D_MRF *>(this), "dem_get_size_y");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CHeightGridMap2D_MRF::dem_get_size_y();
 	}

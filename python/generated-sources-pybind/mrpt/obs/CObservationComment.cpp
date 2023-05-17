@@ -82,16 +82,16 @@ struct PyCallBack_mrpt_obs_CObservationComment : public mrpt::obs::CObservationC
 		}
 		return CObservationComment::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CObservationComment::serializeGetVersion();
 	}
@@ -108,7 +108,7 @@ struct PyCallBack_mrpt_obs_CObservationComment : public mrpt::obs::CObservationC
 		}
 		return CObservationComment::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "serializeFrom");
 		if (overload) {
@@ -271,16 +271,16 @@ struct PyCallBack_mrpt_obs_CObservationOdometry : public mrpt::obs::CObservation
 		}
 		return CObservationOdometry::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationOdometry *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CObservationOdometry::serializeGetVersion();
 	}
@@ -297,7 +297,7 @@ struct PyCallBack_mrpt_obs_CObservationOdometry : public mrpt::obs::CObservation
 		}
 		return CObservationOdometry::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationOdometry *>(this), "serializeFrom");
 		if (overload) {
@@ -460,16 +460,16 @@ struct PyCallBack_mrpt_obs_CObservationReflectivity : public mrpt::obs::CObserva
 		}
 		return CObservationReflectivity::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationReflectivity *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CObservationReflectivity::serializeGetVersion();
 	}
@@ -486,7 +486,7 @@ struct PyCallBack_mrpt_obs_CObservationReflectivity : public mrpt::obs::CObserva
 		}
 		return CObservationReflectivity::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationReflectivity *>(this), "serializeFrom");
 		if (overload) {
@@ -649,16 +649,16 @@ struct PyCallBack_mrpt_obs_CObservationRobotPose : public mrpt::obs::CObservatio
 		}
 		return CObservationRobotPose::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRobotPose *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CObservationRobotPose::serializeGetVersion();
 	}
@@ -675,7 +675,7 @@ struct PyCallBack_mrpt_obs_CObservationRobotPose : public mrpt::obs::CObservatio
 		}
 		return CObservationRobotPose::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRobotPose *>(this), "serializeFrom");
 		if (overload) {

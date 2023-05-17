@@ -25,11 +25,11 @@
 void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	// mrpt::system::compute_CRC16(const unsigned char *, const unsigned long, const unsigned short) file:mrpt/system/crc.h line:27
-	M("mrpt::system").def("compute_CRC16", [](const unsigned char * a0, const unsigned long & a1) -> unsigned short { return mrpt::system::compute_CRC16(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
+	M("mrpt::system").def("compute_CRC16", [](const unsigned char * a0, const unsigned long & a1) -> uint16_t { return mrpt::system::compute_CRC16(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
 	M("mrpt::system").def("compute_CRC16", (uint16_t (*)(const unsigned char *, const unsigned long, const unsigned short)) &mrpt::system::compute_CRC16, "C++: mrpt::system::compute_CRC16(const unsigned char *, const unsigned long, const unsigned short) --> uint16_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
 
 	// mrpt::system::compute_CRC32(const unsigned char *, const unsigned long, const unsigned int) file:mrpt/system/crc.h line:33
-	M("mrpt::system").def("compute_CRC32", [](const unsigned char * a0, const unsigned long & a1) -> unsigned int { return mrpt::system::compute_CRC32(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
+	M("mrpt::system").def("compute_CRC32", [](const unsigned char * a0, const unsigned long & a1) -> uint32_t { return mrpt::system::compute_CRC32(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
 	M("mrpt::system").def("compute_CRC32", (uint32_t (*)(const unsigned char *, const unsigned long, const unsigned int)) &mrpt::system::compute_CRC32, "C++: mrpt::system::compute_CRC32(const unsigned char *, const unsigned long, const unsigned int) --> uint32_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
 
 	// mrpt::system::getTempFileName() file:mrpt/system/filesystem.h line:35

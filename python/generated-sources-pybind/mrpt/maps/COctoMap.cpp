@@ -128,16 +128,16 @@ struct PyCallBack_mrpt_maps_COctoMap : public mrpt::maps::COctoMap {
 		}
 		return COctoMap::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COctoMap *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return COctoMap::serializeGetVersion();
 	}
@@ -154,7 +154,7 @@ struct PyCallBack_mrpt_maps_COctoMap : public mrpt::maps::COctoMap {
 		}
 		return COctoMap::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COctoMap *>(this), "serializeFrom");
 		if (overload) {
@@ -614,16 +614,16 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CSimplePointsMap::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CSimplePointsMap::serializeGetVersion();
 	}
@@ -640,7 +640,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CSimplePointsMap::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "serializeFrom");
 		if (overload) {
@@ -653,7 +653,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CSimplePointsMap::serializeFrom(a0, a1);
 	}
-	void reserve(unsigned long a0) override {
+	void reserve(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "reserve");
 		if (overload) {
@@ -666,7 +666,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CSimplePointsMap::reserve(a0);
 	}
-	void resize(unsigned long a0) override {
+	void resize(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "resize");
 		if (overload) {
@@ -679,7 +679,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CSimplePointsMap::resize(a0);
 	}
-	void setSize(unsigned long a0) override {
+	void setSize(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "setSize");
 		if (overload) {
@@ -796,7 +796,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CPointsMap::saveMetricMapRepresentationToFile(a0);
 	}
-	void getPointRGB(unsigned long a0, float & a1, float & a2, float & a3, float & a4, float & a5, float & a6) const override {
+	void getPointRGB(size_t a0, float & a1, float & a2, float & a3, float & a4, float & a5, float & a6) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "getPointRGB");
 		if (overload) {
@@ -822,7 +822,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CPointsMap::hasColorPoints();
 	}
-	void setPointRGB(unsigned long a0, float a1, float a2, float a3, float a4, float a5, float a6) override {
+	void setPointRGB(size_t a0, float a1, float a2, float a3, float a4, float a5, float a6) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "setPointRGB");
 		if (overload) {
@@ -835,7 +835,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CPointsMap::setPointRGB(a0, a1, a2, a3, a4, a5, a6);
 	}
-	void setPointWeight(unsigned long a0, unsigned long a1) override {
+	void setPointWeight(size_t a0, unsigned long a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "setPointWeight");
 		if (overload) {
@@ -848,7 +848,7 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CPointsMap::setPointWeight(a0, a1);
 	}
-	unsigned int getPointWeight(unsigned long a0) const override {
+	unsigned int getPointWeight(size_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "getPointWeight");
 		if (overload) {
@@ -991,29 +991,29 @@ struct PyCallBack_mrpt_maps_CSimplePointsMap : public mrpt::maps::CSimplePointsM
 		}
 		return CPointsMap::PLY_import_set_vertex(a0, a1, a2);
 	}
-	unsigned long PLY_export_get_vertex_count() const override {
+	size_t PLY_export_get_vertex_count() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "PLY_export_get_vertex_count");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPointsMap::PLY_export_get_vertex_count();
 	}
-	unsigned long PLY_export_get_face_count() const override {
+	size_t PLY_export_get_face_count() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CSimplePointsMap *>(this), "PLY_export_get_face_count");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPointsMap::PLY_export_get_face_count();
 	}

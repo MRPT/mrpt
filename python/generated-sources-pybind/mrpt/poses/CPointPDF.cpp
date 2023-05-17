@@ -124,16 +124,16 @@ struct PyCallBack_mrpt_poses_CPointPDF : public mrpt::poses::CPointPDF {
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CPointPDF::changeCoordinatesReference\"");
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDF *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CSerializable::serializeGetVersion\"");
 	}
@@ -150,7 +150,7 @@ struct PyCallBack_mrpt_poses_CPointPDF : public mrpt::poses::CPointPDF {
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CSerializable::serializeTo\"");
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDF *>(this), "serializeFrom");
 		if (overload) {
@@ -274,16 +274,16 @@ struct PyCallBack_mrpt_poses_CPointPDFGaussian : public mrpt::poses::CPointPDFGa
 		}
 		return CPointPDFGaussian::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDFGaussian *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CPointPDFGaussian::serializeGetVersion();
 	}
@@ -300,7 +300,7 @@ struct PyCallBack_mrpt_poses_CPointPDFGaussian : public mrpt::poses::CPointPDFGa
 		}
 		return CPointPDFGaussian::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDFGaussian *>(this), "serializeFrom");
 		if (overload) {
@@ -450,16 +450,16 @@ struct PyCallBack_mrpt_poses_CPointPDFParticles : public mrpt::poses::CPointPDFP
 		}
 		return CPointPDFParticles::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDFParticles *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CPointPDFParticles::serializeGetVersion();
 	}
@@ -476,7 +476,7 @@ struct PyCallBack_mrpt_poses_CPointPDFParticles : public mrpt::poses::CPointPDFP
 		}
 		return CPointPDFParticles::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDFParticles *>(this), "serializeFrom");
 		if (overload) {
@@ -594,7 +594,7 @@ struct PyCallBack_mrpt_poses_CPointPDFParticles : public mrpt::poses::CPointPDFP
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
-	double getW(unsigned long a0) const override {
+	double getW(size_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDFParticles *>(this), "getW");
 		if (overload) {
@@ -607,7 +607,7 @@ struct PyCallBack_mrpt_poses_CPointPDFParticles : public mrpt::poses::CPointPDFP
 		}
 		return CParticleFilterDataImpl::getW(a0);
 	}
-	void setW(unsigned long a0, double a1) override {
+	void setW(size_t a0, double a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDFParticles *>(this), "setW");
 		if (overload) {
@@ -620,16 +620,16 @@ struct PyCallBack_mrpt_poses_CPointPDFParticles : public mrpt::poses::CPointPDFP
 		}
 		return CParticleFilterDataImpl::setW(a0, a1);
 	}
-	unsigned long particlesCount() const override {
+	size_t particlesCount() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDFParticles *>(this), "particlesCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CParticleFilterDataImpl::particlesCount();
 	}
@@ -773,7 +773,7 @@ void bind_mrpt_poses_CPointPDF(std::function< pybind11::module &(std::string con
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPointPDFParticles::*)() const) &mrpt::poses::CPointPDFParticles::clone, "C++: mrpt::poses::CPointPDFParticles::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::poses::CPointPDFParticles::CreateObject, "C++: mrpt::poses::CPointPDFParticles::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("clear", (void (mrpt::poses::CPointPDFParticles::*)()) &mrpt::poses::CPointPDFParticles::clear, "Clear all the particles (free memory) \n\nC++: mrpt::poses::CPointPDFParticles::clear() --> void");
-		cl.def("setSize", [](mrpt::poses::CPointPDFParticles &o, unsigned long const & a0) -> void { return o.setSize(a0); }, "", pybind11::arg("numberParticles"));
+		cl.def("setSize", [](mrpt::poses::CPointPDFParticles &o, size_t const & a0) -> void { return o.setSize(a0); }, "", pybind11::arg("numberParticles"));
 		cl.def("setSize", (void (mrpt::poses::CPointPDFParticles::*)(size_t, const struct mrpt::math::TPoint3D_<float> &)) &mrpt::poses::CPointPDFParticles::setSize, "Erase all the previous particles and change the number of particles,\n with a given initial value  \n\nC++: mrpt::poses::CPointPDFParticles::setSize(size_t, const struct mrpt::math::TPoint3D_<float> &) --> void", pybind11::arg("numberParticles"), pybind11::arg("defaultValue"));
 		cl.def("size", (size_t (mrpt::poses::CPointPDFParticles::*)() const) &mrpt::poses::CPointPDFParticles::size, "Returns the number of particles \n\nC++: mrpt::poses::CPointPDFParticles::size() const --> size_t");
 		cl.def("getMean", (void (mrpt::poses::CPointPDFParticles::*)(class mrpt::poses::CPoint3D &) const) &mrpt::poses::CPointPDFParticles::getMean, "C++: mrpt::poses::CPointPDFParticles::getMean(class mrpt::poses::CPoint3D &) const --> void", pybind11::arg("mean_point"));

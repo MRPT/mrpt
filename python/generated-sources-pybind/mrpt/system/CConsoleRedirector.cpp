@@ -254,7 +254,7 @@ void bind_mrpt_system_CConsoleRedirector(std::function< pybind11::module &(std::
 	{ // mrpt::system::WorkerThreadsPool file:mrpt/system/WorkerThreadsPool.h line:29
 		pybind11::class_<mrpt::system::WorkerThreadsPool, std::shared_ptr<mrpt::system::WorkerThreadsPool>> cl(M("mrpt::system"), "WorkerThreadsPool", "A simple thread pool\n\n \n Partly based on: https://github.com/progschj/ThreadPool (ZLib license)");
 		cl.def( pybind11::init( [](){ return new mrpt::system::WorkerThreadsPool(); } ) );
-		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::system::WorkerThreadsPool(a0); } ), "doc" , pybind11::arg("num_threads"));
+		cl.def( pybind11::init( [](std::size_t const & a0){ return new mrpt::system::WorkerThreadsPool(a0); } ), "doc" , pybind11::arg("num_threads"));
 		cl.def( pybind11::init<std::size_t, enum mrpt::system::WorkerThreadsPool::queue_policy_t>(), pybind11::arg("num_threads"), pybind11::arg("p") );
 
 

@@ -23,81 +23,81 @@
 struct PyCallBack_mrpt_comms_CClientTCPSocket : public mrpt::comms::CClientTCPSocket {
 	using mrpt::comms::CClientTCPSocket::CClientTCPSocket;
 
-	unsigned long Read(void * a0, unsigned long a1) override {
+	size_t Read(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CClientTCPSocket *>(this), "Read");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CClientTCPSocket::Read(a0, a1);
 	}
-	unsigned long Write(const void * a0, unsigned long a1) override {
+	size_t Write(const void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CClientTCPSocket *>(this), "Write");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CClientTCPSocket::Write(a0, a1);
 	}
-	unsigned long Seek(long a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
+	uint64_t Seek(int64_t a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CClientTCPSocket *>(this), "Seek");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CClientTCPSocket::Seek(a0, a1);
 	}
-	unsigned long getTotalBytesCount() const override {
+	uint64_t getTotalBytesCount() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CClientTCPSocket *>(this), "getTotalBytesCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CClientTCPSocket::getTotalBytesCount();
 	}
-	unsigned long getPosition() const override {
+	uint64_t getPosition() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CClientTCPSocket *>(this), "getPosition");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CClientTCPSocket::getPosition();
 	}
-	unsigned long ReadBufferImmediate(void * a0, unsigned long a1) override {
+	size_t ReadBufferImmediate(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CClientTCPSocket *>(this), "ReadBufferImmediate");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CStream::ReadBufferImmediate(a0, a1);
 	}
@@ -120,81 +120,81 @@ struct PyCallBack_mrpt_comms_CClientTCPSocket : public mrpt::comms::CClientTCPSo
 struct PyCallBack_mrpt_comms_CSerialPort : public mrpt::comms::CSerialPort {
 	using mrpt::comms::CSerialPort::CSerialPort;
 
-	unsigned long Read(void * a0, unsigned long a1) override {
+	size_t Read(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CSerialPort *>(this), "Read");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CSerialPort::Read(a0, a1);
 	}
-	unsigned long Write(const void * a0, unsigned long a1) override {
+	size_t Write(const void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CSerialPort *>(this), "Write");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CSerialPort::Write(a0, a1);
 	}
-	unsigned long Seek(long a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
+	uint64_t Seek(int64_t a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CSerialPort *>(this), "Seek");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CSerialPort::Seek(a0, a1);
 	}
-	unsigned long getTotalBytesCount() const override {
+	uint64_t getTotalBytesCount() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CSerialPort *>(this), "getTotalBytesCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CSerialPort::getTotalBytesCount();
 	}
-	unsigned long getPosition() const override {
+	uint64_t getPosition() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CSerialPort *>(this), "getPosition");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CSerialPort::getPosition();
 	}
-	unsigned long ReadBufferImmediate(void * a0, unsigned long a1) override {
+	size_t ReadBufferImmediate(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::comms::CSerialPort *>(this), "ReadBufferImmediate");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CStream::ReadBufferImmediate(a0, a1);
 	}
@@ -225,14 +225,14 @@ void bind_mrpt_comms_CClientTCPSocket(std::function< pybind11::module &(std::str
 		cl.def("isConnected", (bool (mrpt::comms::CClientTCPSocket::*)()) &mrpt::comms::CClientTCPSocket::isConnected, "Returns true if this objects represents a successfully connected socket\n\nC++: mrpt::comms::CClientTCPSocket::isConnected() --> bool");
 		cl.def("close", (void (mrpt::comms::CClientTCPSocket::*)()) &mrpt::comms::CClientTCPSocket::close, "Closes the connection \n\nC++: mrpt::comms::CClientTCPSocket::close() --> void");
 		cl.def("sendString", (void (mrpt::comms::CClientTCPSocket::*)(const std::string &)) &mrpt::comms::CClientTCPSocket::sendString, "Writes a string to the socket.\n \n\n std::exception On communication errors\n\nC++: mrpt::comms::CClientTCPSocket::sendString(const std::string &) --> void", pybind11::arg("str"));
-		cl.def("Seek", [](mrpt::comms::CClientTCPSocket &o, long const & a0) -> unsigned long { return o.Seek(a0); }, "", pybind11::arg("off"));
+		cl.def("Seek", [](mrpt::comms::CClientTCPSocket &o, int64_t const & a0) -> uint64_t { return o.Seek(a0); }, "", pybind11::arg("off"));
 		cl.def("Seek", (uint64_t (mrpt::comms::CClientTCPSocket::*)(int64_t, enum mrpt::io::CStream::TSeekOrigin)) &mrpt::comms::CClientTCPSocket::Seek, "This virtual method has no effect in this implementation over a TCP\n socket, and its use raises an exception \n\nC++: mrpt::comms::CClientTCPSocket::Seek(int64_t, enum mrpt::io::CStream::TSeekOrigin) --> uint64_t", pybind11::arg("off"), pybind11::arg("org"));
 		cl.def("getTotalBytesCount", (uint64_t (mrpt::comms::CClientTCPSocket::*)() const) &mrpt::comms::CClientTCPSocket::getTotalBytesCount, "This virtual method has no effect in this implementation over a TCP\n socket, and its use raises an exception \n\nC++: mrpt::comms::CClientTCPSocket::getTotalBytesCount() const --> uint64_t");
 		cl.def("getPosition", (uint64_t (mrpt::comms::CClientTCPSocket::*)() const) &mrpt::comms::CClientTCPSocket::getPosition, "This virtual method has no effect in this implementation over a TCP\n socket, and its use raises an exception \n\nC++: mrpt::comms::CClientTCPSocket::getPosition() const --> uint64_t");
-		cl.def("readAsync", [](mrpt::comms::CClientTCPSocket &o, void * a0, const unsigned long & a1) -> unsigned long { return o.readAsync(a0, a1); }, "", pybind11::arg("Buffer"), pybind11::arg("Count"));
-		cl.def("readAsync", [](mrpt::comms::CClientTCPSocket &o, void * a0, const unsigned long & a1, const int & a2) -> unsigned long { return o.readAsync(a0, a1, a2); }, "", pybind11::arg("Buffer"), pybind11::arg("Count"), pybind11::arg("timeoutStart_ms"));
+		cl.def("readAsync", [](mrpt::comms::CClientTCPSocket &o, void * a0, const unsigned long & a1) -> size_t { return o.readAsync(a0, a1); }, "", pybind11::arg("Buffer"), pybind11::arg("Count"));
+		cl.def("readAsync", [](mrpt::comms::CClientTCPSocket &o, void * a0, const unsigned long & a1, const int & a2) -> size_t { return o.readAsync(a0, a1, a2); }, "", pybind11::arg("Buffer"), pybind11::arg("Count"), pybind11::arg("timeoutStart_ms"));
 		cl.def("readAsync", (size_t (mrpt::comms::CClientTCPSocket::*)(void *, const unsigned long, const int, const int)) &mrpt::comms::CClientTCPSocket::readAsync, "A method for reading from the socket with an optional timeout.\n \n\n The destination of data.\n \n\n The number of bytes to read.\n \n\n The maximum timeout (in milliseconds) to wait for\n the starting of data from the other side.\n \n\n The maximum timeout (in milliseconds) to wait\n for a chunk of data after a previous one.\n  Set timeout's to -1 to block until the desired number of bytes are\n read, or an error happens.\n  \n\n The number of actually read bytes.\n\nC++: mrpt::comms::CClientTCPSocket::readAsync(void *, const unsigned long, const int, const int) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"), pybind11::arg("timeoutStart_ms"), pybind11::arg("timeoutBetween_ms"));
-		cl.def("writeAsync", [](mrpt::comms::CClientTCPSocket &o, const void * a0, const unsigned long & a1) -> unsigned long { return o.writeAsync(a0, a1); }, "", pybind11::arg("Buffer"), pybind11::arg("Count"));
+		cl.def("writeAsync", [](mrpt::comms::CClientTCPSocket &o, const void * a0, const unsigned long & a1) -> size_t { return o.writeAsync(a0, a1); }, "", pybind11::arg("Buffer"), pybind11::arg("Count"));
 		cl.def("writeAsync", (size_t (mrpt::comms::CClientTCPSocket::*)(const void *, const unsigned long, const int)) &mrpt::comms::CClientTCPSocket::writeAsync, "A method for writing to the socket with optional timeouts.\n  The method supports writing block by block as the socket allows us to\n write more data.\n \n\n The data.\n \n\n The number of bytes to write.\n \n\n The maximum timeout (in milliseconds) to wait for the\n socket to be available for writing (for each block).\n  Set timeout's to -1 to block until the desired number of bytes are\n written, or an error happens.\n  \n\n The number of actually written bytes.\n\nC++: mrpt::comms::CClientTCPSocket::writeAsync(const void *, const unsigned long, const int) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"), pybind11::arg("timeout_ms"));
 		cl.def("getReadPendingBytes", (size_t (mrpt::comms::CClientTCPSocket::*)()) &mrpt::comms::CClientTCPSocket::getReadPendingBytes, "Return the number of bytes already in the receive queue (they can be\n read without waiting) \n\nC++: mrpt::comms::CClientTCPSocket::getReadPendingBytes() --> size_t");
 		cl.def("setTCPNoDelay", (int (mrpt::comms::CClientTCPSocket::*)(int)) &mrpt::comms::CClientTCPSocket::setTCPNoDelay, "Set the TCP no delay option of the protocol (Nagle algorithm).\n \n\n New value (0 enable Nagle algorithm, 1 disable).\n \n\n Return a number lower than 0 if any error occurred.\n\nC++: mrpt::comms::CClientTCPSocket::setTCPNoDelay(int) --> int", pybind11::arg("newValue"));
@@ -267,7 +267,7 @@ void bind_mrpt_comms_CClientTCPSocket(std::function< pybind11::module &(std::str
 		cl.def("ReadString", [](mrpt::comms::CSerialPort &o, const int & a0, bool * a1) -> std::string { return o.ReadString(a0, a1); }, "", pybind11::arg("total_timeout_ms"), pybind11::arg("out_timeout"));
 		cl.def("ReadString", (std::string (mrpt::comms::CSerialPort::*)(const int, bool *, const char *)) &mrpt::comms::CSerialPort::ReadString, "Reads one text line from the serial port in POSIX \"canonical mode\".\n  This method reads from the serial port until one of the characters in\n  are found.\n \n\n A line reception is finished when one of these\n characters is found. Default: LF (10), CR (13).\n \n\n If >0, the maximum number of milliseconds to\n wait.\n \n\n If provided, will hold true on return if a timeout\n ocurred, false on a valid read.\n \n\n The read string, without the final\n \n\n std::exception On communication errors\n\nC++: mrpt::comms::CSerialPort::ReadString(const int, bool *, const char *) --> std::string", pybind11::arg("total_timeout_ms"), pybind11::arg("out_timeout"), pybind11::arg("eol_chars"));
 		cl.def("Write", (size_t (mrpt::comms::CSerialPort::*)(const void *, size_t)) &mrpt::comms::CSerialPort::Write, "C++: mrpt::comms::CSerialPort::Write(const void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
-		cl.def("Seek", [](mrpt::comms::CSerialPort &o, long const & a0) -> unsigned long { return o.Seek(a0); }, "", pybind11::arg("off"));
+		cl.def("Seek", [](mrpt::comms::CSerialPort &o, int64_t const & a0) -> uint64_t { return o.Seek(a0); }, "", pybind11::arg("off"));
 		cl.def("Seek", (uint64_t (mrpt::comms::CSerialPort::*)(int64_t, enum mrpt::io::CStream::TSeekOrigin)) &mrpt::comms::CSerialPort::Seek, "not applicable in a serial port \n\nC++: mrpt::comms::CSerialPort::Seek(int64_t, enum mrpt::io::CStream::TSeekOrigin) --> uint64_t", pybind11::arg("off"), pybind11::arg("o"));
 		cl.def("getTotalBytesCount", (uint64_t (mrpt::comms::CSerialPort::*)() const) &mrpt::comms::CSerialPort::getTotalBytesCount, "not applicable in a serial port \n\nC++: mrpt::comms::CSerialPort::getTotalBytesCount() const --> uint64_t");
 		cl.def("getPosition", (uint64_t (mrpt::comms::CSerialPort::*)() const) &mrpt::comms::CSerialPort::getPosition, "not applicable in a serial port \n\nC++: mrpt::comms::CSerialPort::getPosition() const --> uint64_t");

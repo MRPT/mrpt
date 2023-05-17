@@ -102,16 +102,16 @@ struct PyCallBack_mrpt_maps_CRBPFParticleData : public mrpt::maps::CRBPFParticle
 		}
 		return CRBPFParticleData::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CRBPFParticleData *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CRBPFParticleData::serializeGetVersion();
 	}
@@ -128,7 +128,7 @@ struct PyCallBack_mrpt_maps_CRBPFParticleData : public mrpt::maps::CRBPFParticle
 		}
 		return CRBPFParticleData::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CRBPFParticleData *>(this), "serializeFrom");
 		if (overload) {
@@ -173,16 +173,16 @@ struct PyCallBack_mrpt_maps_CMultiMetricMapPDF : public mrpt::maps::CMultiMetric
 		}
 		return CMultiMetricMapPDF::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CMultiMetricMapPDF *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CMultiMetricMapPDF::serializeGetVersion();
 	}
@@ -199,7 +199,7 @@ struct PyCallBack_mrpt_maps_CMultiMetricMapPDF : public mrpt::maps::CMultiMetric
 		}
 		return CMultiMetricMapPDF::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CMultiMetricMapPDF *>(this), "serializeFrom");
 		if (overload) {
@@ -316,7 +316,7 @@ struct PyCallBack_mrpt_maps_CMultiMetricMapPDF : public mrpt::maps::CMultiMetric
 		}
 		return CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(a0, a1, a2, a3);
 	}
-	double getW(unsigned long a0) const override {
+	double getW(size_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CMultiMetricMapPDF *>(this), "getW");
 		if (overload) {
@@ -329,7 +329,7 @@ struct PyCallBack_mrpt_maps_CMultiMetricMapPDF : public mrpt::maps::CMultiMetric
 		}
 		return CParticleFilterDataImpl::getW(a0);
 	}
-	void setW(unsigned long a0, double a1) override {
+	void setW(size_t a0, double a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CMultiMetricMapPDF *>(this), "setW");
 		if (overload) {
@@ -342,16 +342,16 @@ struct PyCallBack_mrpt_maps_CMultiMetricMapPDF : public mrpt::maps::CMultiMetric
 		}
 		return CParticleFilterDataImpl::setW(a0, a1);
 	}
-	unsigned long particlesCount() const override {
+	size_t particlesCount() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CMultiMetricMapPDF *>(this), "particlesCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CParticleFilterDataImpl::particlesCount();
 	}

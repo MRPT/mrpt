@@ -88,16 +88,16 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_DiffDrive_C::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CPTG_DiffDrive_C::serializeGetVersion();
 	}
@@ -114,7 +114,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_DiffDrive_C::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "serializeFrom");
 		if (overload) {
@@ -218,7 +218,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_DiffDrive_C::loadDefaultParams();
 	}
-	class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> directionToMotionCommand(unsigned short a0) const override {
+	class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> directionToMotionCommand(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "directionToMotionCommand");
 		if (overload) {
@@ -257,20 +257,20 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_DiffDrive_CollisionGridBased::setRefDistance(a0);
 	}
-	unsigned long getPathStepCount(unsigned short a0) const override {
+	size_t getPathStepCount(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "getPathStepCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathStepCount(a0);
 	}
-	struct mrpt::math::TPose2D getPathPose(unsigned short a0, unsigned int a1) const override {
+	struct mrpt::math::TPose2D getPathPose(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "getPathPose");
 		if (overload) {
@@ -283,7 +283,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathPose(a0, a1);
 	}
-	double getPathDist(unsigned short a0, unsigned int a1) const override {
+	double getPathDist(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "getPathDist");
 		if (overload) {
@@ -296,7 +296,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathDist(a0, a1);
 	}
-	bool getPathStepForDist(unsigned short a0, double a1, unsigned int & a2) const override {
+	bool getPathStepForDist(uint16_t a0, double a1, unsigned int & a2) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "getPathStepForDist");
 		if (overload) {
@@ -348,7 +348,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getMaxAngVel();
 	}
-	void updateTPObstacleSingle(double a0, double a1, unsigned short a2, double & a3) const override {
+	void updateTPObstacleSingle(double a0, double a1, uint16_t a2, double & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "updateTPObstacleSingle");
 		if (overload) {
@@ -439,7 +439,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(a0);
 	}
-	struct mrpt::math::TTwist2D getPathTwist(unsigned short a0, unsigned int a1) const override {
+	struct mrpt::math::TTwist2D getPathTwist(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "getPathTwist");
 		if (overload) {
@@ -504,7 +504,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(a0, a1);
 	}
-	bool isBijectiveAt(unsigned short a0, unsigned int a1) const override {
+	bool isBijectiveAt(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "isBijectiveAt");
 		if (overload) {
@@ -556,7 +556,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(a0);
 	}
-	double getActualUnloopedPathLength(unsigned short a0) const override {
+	double getActualUnloopedPathLength(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "getActualUnloopedPathLength");
 		if (overload) {
@@ -569,7 +569,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CParameterizedTrajectoryGenerator::getActualUnloopedPathLength(a0);
 	}
-	double evalPathRelativePriority(unsigned short a0, double a1) const override {
+	double evalPathRelativePriority(uint16_t a0, double a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "evalPathRelativePriority");
 		if (overload) {
@@ -640,16 +640,16 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CC::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CPTG_DiffDrive_CC::serializeGetVersion();
 	}
@@ -666,7 +666,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CC::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "serializeFrom");
 		if (overload) {
@@ -770,7 +770,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(a0, a1, a2, a3, a4);
 	}
-	class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> directionToMotionCommand(unsigned short a0) const override {
+	class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> directionToMotionCommand(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "directionToMotionCommand");
 		if (overload) {
@@ -809,20 +809,20 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::setRefDistance(a0);
 	}
-	unsigned long getPathStepCount(unsigned short a0) const override {
+	size_t getPathStepCount(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "getPathStepCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathStepCount(a0);
 	}
-	struct mrpt::math::TPose2D getPathPose(unsigned short a0, unsigned int a1) const override {
+	struct mrpt::math::TPose2D getPathPose(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "getPathPose");
 		if (overload) {
@@ -835,7 +835,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathPose(a0, a1);
 	}
-	double getPathDist(unsigned short a0, unsigned int a1) const override {
+	double getPathDist(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "getPathDist");
 		if (overload) {
@@ -848,7 +848,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathDist(a0, a1);
 	}
-	bool getPathStepForDist(unsigned short a0, double a1, unsigned int & a2) const override {
+	bool getPathStepForDist(uint16_t a0, double a1, unsigned int & a2) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "getPathStepForDist");
 		if (overload) {
@@ -900,7 +900,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getMaxAngVel();
 	}
-	void updateTPObstacleSingle(double a0, double a1, unsigned short a2, double & a3) const override {
+	void updateTPObstacleSingle(double a0, double a1, uint16_t a2, double & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "updateTPObstacleSingle");
 		if (overload) {
@@ -991,7 +991,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(a0);
 	}
-	struct mrpt::math::TTwist2D getPathTwist(unsigned short a0, unsigned int a1) const override {
+	struct mrpt::math::TTwist2D getPathTwist(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "getPathTwist");
 		if (overload) {
@@ -1056,7 +1056,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(a0, a1);
 	}
-	bool isBijectiveAt(unsigned short a0, unsigned int a1) const override {
+	bool isBijectiveAt(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "isBijectiveAt");
 		if (overload) {
@@ -1108,7 +1108,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(a0);
 	}
-	double getActualUnloopedPathLength(unsigned short a0) const override {
+	double getActualUnloopedPathLength(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "getActualUnloopedPathLength");
 		if (overload) {
@@ -1121,7 +1121,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CParameterizedTrajectoryGenerator::getActualUnloopedPathLength(a0);
 	}
-	double evalPathRelativePriority(unsigned short a0, double a1) const override {
+	double evalPathRelativePriority(uint16_t a0, double a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "evalPathRelativePriority");
 		if (overload) {
@@ -1192,16 +1192,16 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_DiffDrive_CCS::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CPTG_DiffDrive_CCS::serializeGetVersion();
 	}
@@ -1218,7 +1218,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_DiffDrive_CCS::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "serializeFrom");
 		if (overload) {
@@ -1322,7 +1322,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(a0, a1, a2, a3, a4);
 	}
-	class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> directionToMotionCommand(unsigned short a0) const override {
+	class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> directionToMotionCommand(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "directionToMotionCommand");
 		if (overload) {
@@ -1361,20 +1361,20 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_DiffDrive_CollisionGridBased::setRefDistance(a0);
 	}
-	unsigned long getPathStepCount(unsigned short a0) const override {
+	size_t getPathStepCount(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "getPathStepCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathStepCount(a0);
 	}
-	struct mrpt::math::TPose2D getPathPose(unsigned short a0, unsigned int a1) const override {
+	struct mrpt::math::TPose2D getPathPose(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "getPathPose");
 		if (overload) {
@@ -1387,7 +1387,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathPose(a0, a1);
 	}
-	double getPathDist(unsigned short a0, unsigned int a1) const override {
+	double getPathDist(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "getPathDist");
 		if (overload) {
@@ -1400,7 +1400,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathDist(a0, a1);
 	}
-	bool getPathStepForDist(unsigned short a0, double a1, unsigned int & a2) const override {
+	bool getPathStepForDist(uint16_t a0, double a1, unsigned int & a2) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "getPathStepForDist");
 		if (overload) {
@@ -1452,7 +1452,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getMaxAngVel();
 	}
-	void updateTPObstacleSingle(double a0, double a1, unsigned short a2, double & a3) const override {
+	void updateTPObstacleSingle(double a0, double a1, uint16_t a2, double & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "updateTPObstacleSingle");
 		if (overload) {
@@ -1543,7 +1543,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(a0);
 	}
-	struct mrpt::math::TTwist2D getPathTwist(unsigned short a0, unsigned int a1) const override {
+	struct mrpt::math::TTwist2D getPathTwist(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "getPathTwist");
 		if (overload) {
@@ -1608,7 +1608,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(a0, a1);
 	}
-	bool isBijectiveAt(unsigned short a0, unsigned int a1) const override {
+	bool isBijectiveAt(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "isBijectiveAt");
 		if (overload) {
@@ -1660,7 +1660,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(a0);
 	}
-	double getActualUnloopedPathLength(unsigned short a0) const override {
+	double getActualUnloopedPathLength(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "getActualUnloopedPathLength");
 		if (overload) {
@@ -1673,7 +1673,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CParameterizedTrajectoryGenerator::getActualUnloopedPathLength(a0);
 	}
-	double evalPathRelativePriority(unsigned short a0, double a1) const override {
+	double evalPathRelativePriority(uint16_t a0, double a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "evalPathRelativePriority");
 		if (overload) {
@@ -1744,16 +1744,16 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CS::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CPTG_DiffDrive_CS::serializeGetVersion();
 	}
@@ -1770,7 +1770,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CS::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "serializeFrom");
 		if (overload) {
@@ -1874,7 +1874,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(a0, a1, a2, a3, a4);
 	}
-	class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> directionToMotionCommand(unsigned short a0) const override {
+	class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> directionToMotionCommand(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "directionToMotionCommand");
 		if (overload) {
@@ -1913,20 +1913,20 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::setRefDistance(a0);
 	}
-	unsigned long getPathStepCount(unsigned short a0) const override {
+	size_t getPathStepCount(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "getPathStepCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathStepCount(a0);
 	}
-	struct mrpt::math::TPose2D getPathPose(unsigned short a0, unsigned int a1) const override {
+	struct mrpt::math::TPose2D getPathPose(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "getPathPose");
 		if (overload) {
@@ -1939,7 +1939,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathPose(a0, a1);
 	}
-	double getPathDist(unsigned short a0, unsigned int a1) const override {
+	double getPathDist(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "getPathDist");
 		if (overload) {
@@ -1952,7 +1952,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getPathDist(a0, a1);
 	}
-	bool getPathStepForDist(unsigned short a0, double a1, unsigned int & a2) const override {
+	bool getPathStepForDist(uint16_t a0, double a1, unsigned int & a2) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "getPathStepForDist");
 		if (overload) {
@@ -2004,7 +2004,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::getMaxAngVel();
 	}
-	void updateTPObstacleSingle(double a0, double a1, unsigned short a2, double & a3) const override {
+	void updateTPObstacleSingle(double a0, double a1, uint16_t a2, double & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "updateTPObstacleSingle");
 		if (overload) {
@@ -2095,7 +2095,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(a0);
 	}
-	struct mrpt::math::TTwist2D getPathTwist(unsigned short a0, unsigned int a1) const override {
+	struct mrpt::math::TTwist2D getPathTwist(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "getPathTwist");
 		if (overload) {
@@ -2160,7 +2160,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(a0, a1);
 	}
-	bool isBijectiveAt(unsigned short a0, unsigned int a1) const override {
+	bool isBijectiveAt(uint16_t a0, uint32_t a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "isBijectiveAt");
 		if (overload) {
@@ -2212,7 +2212,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(a0);
 	}
-	double getActualUnloopedPathLength(unsigned short a0) const override {
+	double getActualUnloopedPathLength(uint16_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "getActualUnloopedPathLength");
 		if (overload) {
@@ -2225,7 +2225,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CParameterizedTrajectoryGenerator::getActualUnloopedPathLength(a0);
 	}
-	double evalPathRelativePriority(unsigned short a0, double a1) const override {
+	double evalPathRelativePriority(uint16_t a0, double a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "evalPathRelativePriority");
 		if (overload) {

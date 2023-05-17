@@ -57,16 +57,16 @@ struct PyCallBack_mrpt_math_CMatrixD : public mrpt::math::CMatrixD {
 		}
 		return CMatrixD::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixD *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CMatrixD::serializeGetVersion();
 	}
@@ -83,7 +83,7 @@ struct PyCallBack_mrpt_math_CMatrixD : public mrpt::math::CMatrixD {
 		}
 		return CMatrixD::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixD *>(this), "serializeFrom");
 		if (overload) {
@@ -104,7 +104,7 @@ void bind_mrpt_math_CMatrixDynamic_1(std::function< pybind11::module &(std::stri
 		pybind11::class_<mrpt::math::CMatrixDynamic<double>, std::shared_ptr<mrpt::math::CMatrixDynamic<double>>> cl(M("mrpt::math"), "CMatrixDynamic_double_t", "");
 		cl.def( pybind11::init( [](mrpt::math::CMatrixDynamic<double> const &o){ return new mrpt::math::CMatrixDynamic<double>(o); } ) );
 		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixDynamic<double>(); } ), "doc" );
-		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::math::CMatrixDynamic<double>(a0); } ), "doc" , pybind11::arg("row"));
+		cl.def( pybind11::init( [](size_t const & a0){ return new mrpt::math::CMatrixDynamic<double>(a0); } ), "doc" , pybind11::arg("row"));
 		cl.def( pybind11::init<size_t, size_t>(), pybind11::arg("row"), pybind11::arg("col") );
 
 		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<double> &, const unsigned long, const unsigned long>(), pybind11::arg("m"), pybind11::arg("cropRowCount"), pybind11::arg("cropColCount") );
@@ -117,7 +117,7 @@ void bind_mrpt_math_CMatrixDynamic_1(std::function< pybind11::module &(std::stri
 		cl.def("rows", (int (mrpt::math::CMatrixDynamic<double>::*)() const) &mrpt::math::CMatrixDynamic<double>::rows, "C++: mrpt::math::CMatrixDynamic<double>::rows() const --> int");
 		cl.def("cols", (int (mrpt::math::CMatrixDynamic<double>::*)() const) &mrpt::math::CMatrixDynamic<double>::cols, "C++: mrpt::math::CMatrixDynamic<double>::cols() const --> int");
 		cl.def("size", (struct mrpt::math::matrix_size_t (mrpt::math::CMatrixDynamic<double>::*)() const) &mrpt::math::CMatrixDynamic<double>::size, "C++: mrpt::math::CMatrixDynamic<double>::size() const --> struct mrpt::math::matrix_size_t");
-		cl.def("setSize", [](mrpt::math::CMatrixDynamic<double> &o, unsigned long const & a0, unsigned long const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("setSize", [](mrpt::math::CMatrixDynamic<double> &o, size_t const & a0, size_t const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
 		cl.def("setSize", (void (mrpt::math::CMatrixDynamic<double>::*)(size_t, size_t, bool)) &mrpt::math::CMatrixDynamic<double>::setSize, "C++: mrpt::math::CMatrixDynamic<double>::setSize(size_t, size_t, bool) --> void", pybind11::arg("row"), pybind11::arg("col"), pybind11::arg("zeroNewElements"));
 		cl.def("resize", (void (mrpt::math::CMatrixDynamic<double>::*)(size_t, size_t)) &mrpt::math::CMatrixDynamic<double>::resize, "C++: mrpt::math::CMatrixDynamic<double>::resize(size_t, size_t) --> void", pybind11::arg("row"), pybind11::arg("col"));
 		cl.def("resize", (void (mrpt::math::CMatrixDynamic<double>::*)(size_t)) &mrpt::math::CMatrixDynamic<double>::resize, "C++: mrpt::math::CMatrixDynamic<double>::resize(size_t) --> void", pybind11::arg("vectorLen"));

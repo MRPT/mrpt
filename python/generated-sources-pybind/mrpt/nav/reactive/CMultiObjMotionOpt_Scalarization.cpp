@@ -432,20 +432,20 @@ struct PyCallBack_mrpt_nav_CNavigatorManualSequence : public mrpt::nav::CNavigat
 struct PyCallBack_mrpt_nav_CReactiveNavigationSystem : public mrpt::nav::CReactiveNavigationSystem {
 	using mrpt::nav::CReactiveNavigationSystem::CReactiveNavigationSystem;
 
-	unsigned long getPTG_count() const override {
+	size_t getPTG_count() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CReactiveNavigationSystem *>(this), "getPTG_count");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CReactiveNavigationSystem::getPTG_count();
 	}
-	class mrpt::nav::CParameterizedTrajectoryGenerator * getPTG(unsigned long a0) override {
+	class mrpt::nav::CParameterizedTrajectoryGenerator * getPTG(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CReactiveNavigationSystem *>(this), "getPTG");
 		if (overload) {

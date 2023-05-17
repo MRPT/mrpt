@@ -64,16 +64,16 @@ struct PyCallBack_mrpt_maps_CRandomFieldGridMap3D : public mrpt::maps::CRandomFi
 		}
 		return CRandomFieldGridMap3D::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CRandomFieldGridMap3D *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CRandomFieldGridMap3D::serializeGetVersion();
 	}
@@ -90,7 +90,7 @@ struct PyCallBack_mrpt_maps_CRandomFieldGridMap3D : public mrpt::maps::CRandomFi
 		}
 		return CRandomFieldGridMap3D::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CRandomFieldGridMap3D *>(this), "serializeFrom");
 		if (overload) {
@@ -180,7 +180,7 @@ struct PyCallBack_mrpt_maps_CRandomFieldGridMap3D_TInsertionOptions : public mrp
 struct PyCallBack_mrpt_maps_CRandomFieldGridMap3D_ConnectivityDescriptor : public mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor {
 	using mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor::ConnectivityDescriptor;
 
-	bool getEdgeInformation(const class mrpt::maps::CRandomFieldGridMap3D * a0, unsigned long a1, unsigned long a2, unsigned long a3, unsigned long a4, unsigned long a5, unsigned long a6, double & a7) override {
+	bool getEdgeInformation(const class mrpt::maps::CRandomFieldGridMap3D * a0, size_t a1, size_t a2, size_t a3, size_t a4, size_t a5, size_t a6, double & a7) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CRandomFieldGridMap3D::ConnectivityDescriptor *>(this), "getEdgeInformation");
 		if (overload) {

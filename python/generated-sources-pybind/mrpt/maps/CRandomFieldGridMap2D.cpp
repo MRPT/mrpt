@@ -69,7 +69,7 @@
 struct PyCallBack_mrpt_maps_CRandomFieldGridMap2D_ConnectivityDescriptor : public mrpt::maps::CRandomFieldGridMap2D::ConnectivityDescriptor {
 	using mrpt::maps::CRandomFieldGridMap2D::ConnectivityDescriptor::ConnectivityDescriptor;
 
-	bool getEdgeInformation(const class mrpt::maps::CRandomFieldGridMap2D * a0, unsigned long a1, unsigned long a2, unsigned long a3, unsigned long a4, double & a5) override {
+	bool getEdgeInformation(const class mrpt::maps::CRandomFieldGridMap2D * a0, size_t a1, size_t a2, size_t a3, size_t a4, double & a5) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CRandomFieldGridMap2D::ConnectivityDescriptor *>(this), "getEdgeInformation");
 		if (overload) {

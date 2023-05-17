@@ -39,7 +39,7 @@
 struct PyCallBack_mrpt_img_CCanvas : public mrpt::img::CCanvas {
 	using mrpt::img::CCanvas::CCanvas;
 
-	void setPixel(int a0, int a1, unsigned long a2) override {
+	void setPixel(int a0, int a1, size_t a2) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::img::CCanvas *>(this), "setPixel");
 		if (overload) {
@@ -52,29 +52,29 @@ struct PyCallBack_mrpt_img_CCanvas : public mrpt::img::CCanvas {
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CCanvas::setPixel\"");
 	}
-	unsigned long getWidth() const override {
+	size_t getWidth() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::img::CCanvas *>(this), "getWidth");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CCanvas::getWidth\"");
 	}
-	unsigned long getHeight() const override {
+	size_t getHeight() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::img::CCanvas *>(this), "getHeight");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CCanvas::getHeight\"");
 	}
