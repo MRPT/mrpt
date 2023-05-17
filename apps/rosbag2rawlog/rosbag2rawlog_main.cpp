@@ -15,7 +15,7 @@
 //  Started: HL @ SEPT-2018
 // ===========================================================================
 
-#include <cv_bridge/cv_bridge.h>
+#include <cv_bridge/cv_bridge.h>  // this header is obsolete in ros2-I but as long as this app is only built for ros1 we are ok
 #include <mrpt/3rdparty/tclap/CmdLine.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/io/CFileGZInputStream.h>

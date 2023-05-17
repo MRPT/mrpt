@@ -140,4 +140,8 @@ if (NOT DISABLE_ROS)
 		message(STATUS "------------ end of 'env' -------------------------------------")
 	endif()
 
+	# Convert package versions to hex so they can be used in preprocessor for wider
+	# versions compatibility of "one-source for all":
+	mrpt_version_to_hex(cv_bridge_VERSION  cv_bridge_VERSION_HEX)
+
 endif() # NOT DISABLE_ROS
