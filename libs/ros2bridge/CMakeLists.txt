@@ -65,6 +65,6 @@ if(BUILD_mrpt-ros2bridge)
 	)
 
 	target_compile_definitions(ros2bridge PRIVATE ${ROS_DEFINITIONS})
-
 	target_compile_definitions(ros2bridge PRIVATE IS_MRPT_ROS2BRIDGE)
+	target_compile_definitions(ros2bridge PRIVATE cv_bridge_VERSION=${cv_bridge_VERSION_HEX})
 endif()

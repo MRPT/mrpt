@@ -515,3 +515,18 @@ macro(internal_define_mrpt_lib name headers_only )
 	# --- End of conditional build of module ---
 	endif()
 endmacro()
+
+
+macro(mrpt_version_to_hex VER TARGET_VAR_NAME)
+	# For example: "0.5.1"
+	string(REGEX MATCHALL "[0-9]+" __parts "${${VER}}")
+
+	if(__parts)
+		list(GET __parts 0 __VERSION_NUMBER_MAJOR)
+		list(GET __parts 1 __VERSION_NUMBER_MINOR)
+		list(GET __parts 2 __VERSION_NUMBER_PATCH)
+		set(${TARGET_VAR_NAME} "0x${__VERSION_NUMBER_MAJOR}${__VERSION_NUMBER_MINOR}${__VERSION_NUMBER_PATCH}")
+	else()
+		set(${TARGET_VAR_NAME} "0x000")
+	endif()
+endmacro()

@@ -4,6 +4,8 @@
 - Changes in libraries:
   - Removed the legacy module mrpt::hmtslam and associated applications. Please refer to older MRPT releases if needed.
   - Removed all deprecated functions and headers.
+  - \ref mrpt_ros2bridge_grp
+    - Fix use of obsolete header `<cv_bridge.h>` in newer ROS distributions.
 
 # Version 2.8.1: Released April 17th, 2023
 - Changes in libraries:
