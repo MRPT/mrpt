@@ -22,8 +22,8 @@ void bind_mrpt_core_WorkerThreadsPool(std::function< pybind11::module &(std::str
 	{ // mrpt::WorkerThreadsPool file:mrpt/core/WorkerThreadsPool.h line:50
 		pybind11::class_<mrpt::WorkerThreadsPool, std::shared_ptr<mrpt::WorkerThreadsPool>> cl(M("mrpt"), "WorkerThreadsPool", "A thread pool: it defines a fixed number of threads, which will remain\n  blocked waiting for jobs to be assigned, via WorkerThreadsPool::enqueue(),\n  which accepts any function-like object with arbitrary parameters and\n  returns a std::future<ReturnType> which can be used to wait and/or retrieve\n  the function output at any moment in time afterwards.\n\n  In case of more tasks assigned than available free threads, two policies\n  exist:\n  - WorkerThreadsPool::POLICY_FIFO: All jobs are enqueued and wait for it turn\n    to be executed.\n  - WorkerThreadsPool::POLICY_DROP_OLD: Old jobs in the waiting queue are\n    discarded. Note that running jobs are never aborted.\n\n \n Partly based on: https://github.com/progschj/ThreadPool (ZLib license)\n\n \n (New in MRPT 2.1.0)");
 		cl.def( pybind11::init( [](){ return new mrpt::WorkerThreadsPool(); } ) );
-		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::WorkerThreadsPool(a0); } ), "doc" , pybind11::arg("num_threads"));
-		cl.def( pybind11::init( [](unsigned long const & a0, enum mrpt::WorkerThreadsPool::queue_policy_t const & a1){ return new mrpt::WorkerThreadsPool(a0, a1); } ), "doc" , pybind11::arg("num_threads"), pybind11::arg("p"));
+		cl.def( pybind11::init( [](std::size_t const & a0){ return new mrpt::WorkerThreadsPool(a0); } ), "doc" , pybind11::arg("num_threads"));
+		cl.def( pybind11::init( [](std::size_t const & a0, enum mrpt::WorkerThreadsPool::queue_policy_t const & a1){ return new mrpt::WorkerThreadsPool(a0, a1); } ), "doc" , pybind11::arg("num_threads"), pybind11::arg("p"));
 		cl.def( pybind11::init<std::size_t, enum mrpt::WorkerThreadsPool::queue_policy_t, const std::string &>(), pybind11::arg("num_threads"), pybind11::arg("p"), pybind11::arg("threadsName") );
 
 

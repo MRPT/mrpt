@@ -79,16 +79,16 @@ struct PyCallBack_mrpt_obs_CObservationVelodyneScan : public mrpt::obs::CObserva
 		}
 		return CObservationVelodyneScan::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationVelodyneScan *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CObservationVelodyneScan::serializeGetVersion();
 	}
@@ -105,7 +105,7 @@ struct PyCallBack_mrpt_obs_CObservationVelodyneScan : public mrpt::obs::CObserva
 		}
 		return CObservationVelodyneScan::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationVelodyneScan *>(this), "serializeFrom");
 		if (overload) {
@@ -242,7 +242,7 @@ struct PyCallBack_mrpt_obs_CObservationVelodyneScan : public mrpt::obs::CObserva
 struct PyCallBack_mrpt_obs_CObservationVelodyneScan_PointCloudStorageWrapper : public mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper {
 	using mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper::PointCloudStorageWrapper;
 
-	void reserve(unsigned long a0) override {
+	void reserve(std::size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper *>(this), "reserve");
 		if (overload) {
@@ -255,7 +255,7 @@ struct PyCallBack_mrpt_obs_CObservationVelodyneScan_PointCloudStorageWrapper : p
 		}
 		return PointCloudStorageWrapper::reserve(a0);
 	}
-	void resizeLaserCount(unsigned long a0) override {
+	void resizeLaserCount(std::size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper *>(this), "resizeLaserCount");
 		if (overload) {
@@ -268,7 +268,7 @@ struct PyCallBack_mrpt_obs_CObservationVelodyneScan_PointCloudStorageWrapper : p
 		}
 		return PointCloudStorageWrapper::resizeLaserCount(a0);
 	}
-	void add_point(float a0, float a1, float a2, unsigned char a3, const struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > & a4, const float a5, unsigned short a6) override {
+	void add_point(float a0, float a1, float a2, uint8_t a3, const struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > & a4, const float a5, uint16_t a6) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationVelodyneScan::PointCloudStorageWrapper *>(this), "add_point");
 		if (overload) {

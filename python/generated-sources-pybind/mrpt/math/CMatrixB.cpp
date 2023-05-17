@@ -68,16 +68,16 @@ struct PyCallBack_mrpt_math_CMatrixB : public mrpt::math::CMatrixB {
 		}
 		return CMatrixB::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixB *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CMatrixB::serializeGetVersion();
 	}
@@ -94,7 +94,7 @@ struct PyCallBack_mrpt_math_CMatrixB : public mrpt::math::CMatrixB {
 		}
 		return CMatrixB::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::math::CMatrixB *>(this), "serializeFrom");
 		if (overload) {
@@ -114,7 +114,7 @@ void bind_mrpt_math_CMatrixB(std::function< pybind11::module &(std::string const
 	{ // mrpt::math::CMatrixB file:mrpt/math/CMatrixB.h line:21
 		pybind11::class_<mrpt::math::CMatrixB, std::shared_ptr<mrpt::math::CMatrixB>, PyCallBack_mrpt_math_CMatrixB, mrpt::serialization::CSerializable> cl(M("mrpt::math"), "CMatrixB", "This class is a \"CSerializable\" wrapper for \"CMatrixBool\".\n \n\n For a complete introduction to Matrices and vectors in MRPT, see:\n https://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::CMatrixB(); }, [](){ return new PyCallBack_mrpt_math_CMatrixB(); } ), "doc");
-		cl.def( pybind11::init( [](unsigned long const & a0){ return new mrpt::math::CMatrixB(a0); }, [](unsigned long const & a0){ return new PyCallBack_mrpt_math_CMatrixB(a0); } ), "doc");
+		cl.def( pybind11::init( [](size_t const & a0){ return new mrpt::math::CMatrixB(a0); }, [](size_t const & a0){ return new PyCallBack_mrpt_math_CMatrixB(a0); } ), "doc");
 		cl.def( pybind11::init<size_t, size_t>(), pybind11::arg("row"), pybind11::arg("col") );
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_math_CMatrixB const &o){ return new PyCallBack_mrpt_math_CMatrixB(o); } ) );

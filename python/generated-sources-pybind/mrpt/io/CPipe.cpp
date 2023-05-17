@@ -22,81 +22,81 @@
 struct PyCallBack_mrpt_io_CPipeBaseEndPoint : public mrpt::io::CPipeBaseEndPoint {
 	using mrpt::io::CPipeBaseEndPoint::CPipeBaseEndPoint;
 
-	unsigned long Read(void * a0, unsigned long a1) override {
+	size_t Read(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeBaseEndPoint *>(this), "Read");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::Read(a0, a1);
 	}
-	unsigned long Write(const void * a0, unsigned long a1) override {
+	size_t Write(const void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeBaseEndPoint *>(this), "Write");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::Write(a0, a1);
 	}
-	unsigned long Seek(long a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
+	uint64_t Seek(int64_t a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeBaseEndPoint *>(this), "Seek");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::Seek(a0, a1);
 	}
-	unsigned long getTotalBytesCount() const override {
+	uint64_t getTotalBytesCount() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeBaseEndPoint *>(this), "getTotalBytesCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::getTotalBytesCount();
 	}
-	unsigned long getPosition() const override {
+	uint64_t getPosition() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeBaseEndPoint *>(this), "getPosition");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::getPosition();
 	}
-	unsigned long ReadBufferImmediate(void * a0, unsigned long a1) override {
+	size_t ReadBufferImmediate(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeBaseEndPoint *>(this), "ReadBufferImmediate");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CStream::ReadBufferImmediate(a0, a1);
 	}
@@ -119,81 +119,81 @@ struct PyCallBack_mrpt_io_CPipeBaseEndPoint : public mrpt::io::CPipeBaseEndPoint
 struct PyCallBack_mrpt_io_CPipeReadEndPoint : public mrpt::io::CPipeReadEndPoint {
 	using mrpt::io::CPipeReadEndPoint::CPipeReadEndPoint;
 
-	unsigned long Write(const void * a0, unsigned long a1) override {
+	size_t Write(const void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeReadEndPoint *>(this), "Write");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPipeReadEndPoint::Write(a0, a1);
 	}
-	unsigned long Read(void * a0, unsigned long a1) override {
+	size_t Read(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeReadEndPoint *>(this), "Read");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::Read(a0, a1);
 	}
-	unsigned long Seek(long a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
+	uint64_t Seek(int64_t a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeReadEndPoint *>(this), "Seek");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::Seek(a0, a1);
 	}
-	unsigned long getTotalBytesCount() const override {
+	uint64_t getTotalBytesCount() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeReadEndPoint *>(this), "getTotalBytesCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::getTotalBytesCount();
 	}
-	unsigned long getPosition() const override {
+	uint64_t getPosition() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeReadEndPoint *>(this), "getPosition");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::getPosition();
 	}
-	unsigned long ReadBufferImmediate(void * a0, unsigned long a1) override {
+	size_t ReadBufferImmediate(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeReadEndPoint *>(this), "ReadBufferImmediate");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CStream::ReadBufferImmediate(a0, a1);
 	}
@@ -216,81 +216,81 @@ struct PyCallBack_mrpt_io_CPipeReadEndPoint : public mrpt::io::CPipeReadEndPoint
 struct PyCallBack_mrpt_io_CPipeWriteEndPoint : public mrpt::io::CPipeWriteEndPoint {
 	using mrpt::io::CPipeWriteEndPoint::CPipeWriteEndPoint;
 
-	unsigned long Read(void * a0, unsigned long a1) override {
+	size_t Read(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeWriteEndPoint *>(this), "Read");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPipeWriteEndPoint::Read(a0, a1);
 	}
-	unsigned long Write(const void * a0, unsigned long a1) override {
+	size_t Write(const void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeWriteEndPoint *>(this), "Write");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::Write(a0, a1);
 	}
-	unsigned long Seek(long a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
+	uint64_t Seek(int64_t a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeWriteEndPoint *>(this), "Seek");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::Seek(a0, a1);
 	}
-	unsigned long getTotalBytesCount() const override {
+	uint64_t getTotalBytesCount() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeWriteEndPoint *>(this), "getTotalBytesCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::getTotalBytesCount();
 	}
-	unsigned long getPosition() const override {
+	uint64_t getPosition() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeWriteEndPoint *>(this), "getPosition");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CPipeBaseEndPoint::getPosition();
 	}
-	unsigned long ReadBufferImmediate(void * a0, unsigned long a1) override {
+	size_t ReadBufferImmediate(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CPipeWriteEndPoint *>(this), "ReadBufferImmediate");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CStream::ReadBufferImmediate(a0, a1);
 	}
@@ -323,7 +323,7 @@ void bind_mrpt_io_CPipe(std::function< pybind11::module &(std::string const &nam
 		cl.def("close", (void (mrpt::io::CPipeBaseEndPoint::*)()) &mrpt::io::CPipeBaseEndPoint::close, "Closes the pipe (normally not needed to be called by users,\n automatically done at destructor) \n\nC++: mrpt::io::CPipeBaseEndPoint::close() --> void");
 		cl.def("Read", (size_t (mrpt::io::CPipeBaseEndPoint::*)(void *, size_t)) &mrpt::io::CPipeBaseEndPoint::Read, "C++: mrpt::io::CPipeBaseEndPoint::Read(void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
 		cl.def("Write", (size_t (mrpt::io::CPipeBaseEndPoint::*)(const void *, size_t)) &mrpt::io::CPipeBaseEndPoint::Write, "C++: mrpt::io::CPipeBaseEndPoint::Write(const void *, size_t) --> size_t", pybind11::arg("Buffer"), pybind11::arg("Count"));
-		cl.def("Seek", [](mrpt::io::CPipeBaseEndPoint &o, long const & a0) -> unsigned long { return o.Seek(a0); }, "", pybind11::arg("of"));
+		cl.def("Seek", [](mrpt::io::CPipeBaseEndPoint &o, int64_t const & a0) -> uint64_t { return o.Seek(a0); }, "", pybind11::arg("of"));
 		cl.def("Seek", (uint64_t (mrpt::io::CPipeBaseEndPoint::*)(int64_t, enum mrpt::io::CStream::TSeekOrigin)) &mrpt::io::CPipeBaseEndPoint::Seek, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::Seek(int64_t, enum mrpt::io::CStream::TSeekOrigin) --> uint64_t", pybind11::arg("of"), pybind11::arg("o"));
 		cl.def("getTotalBytesCount", (uint64_t (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::getTotalBytesCount, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::getTotalBytesCount() const --> uint64_t");
 		cl.def("getPosition", (uint64_t (mrpt::io::CPipeBaseEndPoint::*)() const) &mrpt::io::CPipeBaseEndPoint::getPosition, "Without effect in this class \n\nC++: mrpt::io::CPipeBaseEndPoint::getPosition() const --> uint64_t");

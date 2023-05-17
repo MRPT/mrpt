@@ -105,16 +105,16 @@ struct PyCallBack_mrpt_opengl_CSetOfTriangles : public mrpt::opengl::CSetOfTrian
 		}
 		return CSetOfTriangles::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CSetOfTriangles *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CSetOfTriangles::serializeGetVersion();
 	}
@@ -131,7 +131,7 @@ struct PyCallBack_mrpt_opengl_CSetOfTriangles : public mrpt::opengl::CSetOfTrian
 		}
 		return CSetOfTriangles::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CSetOfTriangles *>(this), "serializeFrom");
 		if (overload) {
@@ -332,16 +332,16 @@ struct PyCallBack_mrpt_opengl_CAngularObservationMesh : public mrpt::opengl::CAn
 		}
 		return CAngularObservationMesh::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CAngularObservationMesh *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CAngularObservationMesh::serializeGetVersion();
 	}
@@ -358,7 +358,7 @@ struct PyCallBack_mrpt_opengl_CAngularObservationMesh : public mrpt::opengl::CAn
 		}
 		return CAngularObservationMesh::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CAngularObservationMesh *>(this), "serializeFrom");
 		if (overload) {
@@ -610,7 +610,7 @@ void bind_mrpt_opengl_CSetOfTriangles(std::function< pybind11::module &(std::str
 			cl.def( pybind11::init( [](mrpt::opengl::CAngularObservationMesh::TDoubleRange const &o){ return new mrpt::opengl::CAngularObservationMesh::TDoubleRange(o); } ) );
 			cl.def_static("CreateFromIncrement", (struct mrpt::opengl::CAngularObservationMesh::TDoubleRange (*)(double, double, double)) &mrpt::opengl::CAngularObservationMesh::TDoubleRange::CreateFromIncrement, "Creates a range of values from the initial value, the final value\n and the increment.\n \n\n std::logic_error if the increment is zero.\n\nC++: mrpt::opengl::CAngularObservationMesh::TDoubleRange::CreateFromIncrement(double, double, double) --> struct mrpt::opengl::CAngularObservationMesh::TDoubleRange", pybind11::arg("initial"), pybind11::arg("final"), pybind11::arg("increment"));
 			cl.def_static("CreateFromAmount", (struct mrpt::opengl::CAngularObservationMesh::TDoubleRange (*)(double, double, size_t)) &mrpt::opengl::CAngularObservationMesh::TDoubleRange::CreateFromAmount, "Creates a range of values from the initial value, the final value\n and a desired amount of samples.\n\nC++: mrpt::opengl::CAngularObservationMesh::TDoubleRange::CreateFromAmount(double, double, size_t) --> struct mrpt::opengl::CAngularObservationMesh::TDoubleRange", pybind11::arg("initial"), pybind11::arg("final"), pybind11::arg("amount"));
-			cl.def_static("CreateFromAperture", [](double const & a0, unsigned long const & a1) -> mrpt::opengl::CAngularObservationMesh::TDoubleRange { return mrpt::opengl::CAngularObservationMesh::TDoubleRange::CreateFromAperture(a0, a1); }, "", pybind11::arg("aperture"), pybind11::arg("amount"));
+			cl.def_static("CreateFromAperture", [](double const & a0, size_t const & a1) -> mrpt::opengl::CAngularObservationMesh::TDoubleRange { return mrpt::opengl::CAngularObservationMesh::TDoubleRange::CreateFromAperture(a0, a1); }, "", pybind11::arg("aperture"), pybind11::arg("amount"));
 			cl.def_static("CreateFromAperture", (struct mrpt::opengl::CAngularObservationMesh::TDoubleRange (*)(double, size_t, bool)) &mrpt::opengl::CAngularObservationMesh::TDoubleRange::CreateFromAperture, "Creates a zero-centered range of values from an aperture, an amount\n of samples and a direction.\n\nC++: mrpt::opengl::CAngularObservationMesh::TDoubleRange::CreateFromAperture(double, size_t, bool) --> struct mrpt::opengl::CAngularObservationMesh::TDoubleRange", pybind11::arg("aperture"), pybind11::arg("amount"), pybind11::arg("negToPos"));
 			cl.def("aperture", (double (mrpt::opengl::CAngularObservationMesh::TDoubleRange::*)() const) &mrpt::opengl::CAngularObservationMesh::TDoubleRange::aperture, "Returns the total aperture of the range.\n \n\n std::logic_error on invalid range type.\n\nC++: mrpt::opengl::CAngularObservationMesh::TDoubleRange::aperture() const --> double");
 			cl.def("initialValue", (double (mrpt::opengl::CAngularObservationMesh::TDoubleRange::*)() const) &mrpt::opengl::CAngularObservationMesh::TDoubleRange::initialValue, "Returns the first value of the range.\n \n\n std::logic_error on invalid range type.\n\nC++: mrpt::opengl::CAngularObservationMesh::TDoubleRange::initialValue() const --> double");

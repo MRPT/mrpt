@@ -92,16 +92,16 @@ struct PyCallBack_mrpt_opengl_CPointCloudColoured : public mrpt::opengl::CPointC
 		}
 		return CPointCloudColoured::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloudColoured *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CPointCloudColoured::serializeGetVersion();
 	}
@@ -118,7 +118,7 @@ struct PyCallBack_mrpt_opengl_CPointCloudColoured : public mrpt::opengl::CPointC
 		}
 		return CPointCloudColoured::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloudColoured *>(this), "serializeFrom");
 		if (overload) {
@@ -209,29 +209,29 @@ struct PyCallBack_mrpt_opengl_CPointCloudColoured : public mrpt::opengl::CPointC
 		}
 		return CPointCloudColoured::PLY_import_set_vertex(a0, a1, a2);
 	}
-	unsigned long PLY_export_get_vertex_count() const override {
+	size_t PLY_export_get_vertex_count() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloudColoured *>(this), "PLY_export_get_vertex_count");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPointCloudColoured::PLY_export_get_vertex_count();
 	}
-	unsigned long PLY_export_get_face_count() const override {
+	size_t PLY_export_get_face_count() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloudColoured *>(this), "PLY_export_get_face_count");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CPointCloudColoured::PLY_export_get_face_count();
 	}
@@ -391,9 +391,9 @@ void bind_mrpt_opengl_CPointCloudColoured(std::function< pybind11::module &(std:
 		cl.def("setPoint", (void (mrpt::opengl::CPointCloudColoured::*)(size_t, const struct mrpt::math::TPointXYZfRGBAu8 &)) &mrpt::opengl::CPointCloudColoured::setPoint, "Write an individual point (checks for \"i\" in the valid range only in\n Debug). \n\nC++: mrpt::opengl::CPointCloudColoured::setPoint(size_t, const struct mrpt::math::TPointXYZfRGBAu8 &) --> void", pybind11::arg("i"), pybind11::arg("p"));
 		cl.def("setPoint_fast", (void (mrpt::opengl::CPointCloudColoured::*)(const unsigned long, const struct mrpt::math::TPointXYZfRGBAu8 &)) &mrpt::opengl::CPointCloudColoured::setPoint_fast, "Like  but does not check for index out of bounds \n\nC++: mrpt::opengl::CPointCloudColoured::setPoint_fast(const unsigned long, const struct mrpt::math::TPointXYZfRGBAu8 &) --> void", pybind11::arg("i"), pybind11::arg("p"));
 		cl.def("setPoint_fast", (void (mrpt::opengl::CPointCloudColoured::*)(const unsigned long, const float, const float, const float)) &mrpt::opengl::CPointCloudColoured::setPoint_fast, "Like  but does not check for index out of bounds \n\nC++: mrpt::opengl::CPointCloudColoured::setPoint_fast(const unsigned long, const float, const float, const float) --> void", pybind11::arg("i"), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z"));
-		cl.def("setPointColor_fast", [](mrpt::opengl::CPointCloudColoured &o, unsigned long const & a0, float const & a1, float const & a2, float const & a3) -> void { return o.setPointColor_fast(a0, a1, a2, a3); }, "", pybind11::arg("index"), pybind11::arg("R"), pybind11::arg("G"), pybind11::arg("B"));
+		cl.def("setPointColor_fast", [](mrpt::opengl::CPointCloudColoured &o, size_t const & a0, float const & a1, float const & a2, float const & a3) -> void { return o.setPointColor_fast(a0, a1, a2, a3); }, "", pybind11::arg("index"), pybind11::arg("R"), pybind11::arg("G"), pybind11::arg("B"));
 		cl.def("setPointColor_fast", (void (mrpt::opengl::CPointCloudColoured::*)(size_t, float, float, float, float)) &mrpt::opengl::CPointCloudColoured::setPointColor_fast, "Like  but without checking for out-of-index erors \n\nC++: mrpt::opengl::CPointCloudColoured::setPointColor_fast(size_t, float, float, float, float) --> void", pybind11::arg("index"), pybind11::arg("R"), pybind11::arg("G"), pybind11::arg("B"), pybind11::arg("A"));
-		cl.def("setPointColor_u8_fast", [](mrpt::opengl::CPointCloudColoured &o, unsigned long const & a0, unsigned char const & a1, unsigned char const & a2, unsigned char const & a3) -> void { return o.setPointColor_u8_fast(a0, a1, a2, a3); }, "", pybind11::arg("index"), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
+		cl.def("setPointColor_u8_fast", [](mrpt::opengl::CPointCloudColoured &o, size_t const & a0, uint8_t const & a1, uint8_t const & a2, uint8_t const & a3) -> void { return o.setPointColor_u8_fast(a0, a1, a2, a3); }, "", pybind11::arg("index"), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
 		cl.def("setPointColor_u8_fast", (void (mrpt::opengl::CPointCloudColoured::*)(size_t, uint8_t, uint8_t, uint8_t, uint8_t)) &mrpt::opengl::CPointCloudColoured::setPointColor_u8_fast, "C++: mrpt::opengl::CPointCloudColoured::setPointColor_u8_fast(size_t, uint8_t, uint8_t, uint8_t, uint8_t) --> void", pybind11::arg("index"), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"), pybind11::arg("a"));
 		cl.def("getPointColor_fast", (void (mrpt::opengl::CPointCloudColoured::*)(size_t, float &, float &, float &) const) &mrpt::opengl::CPointCloudColoured::getPointColor_fast, "Like  but without checking for out-of-index erors \n\nC++: mrpt::opengl::CPointCloudColoured::getPointColor_fast(size_t, float &, float &, float &) const --> void", pybind11::arg("index"), pybind11::arg("R"), pybind11::arg("G"), pybind11::arg("B"));
 		cl.def("getPointColor_fast", (void (mrpt::opengl::CPointCloudColoured::*)(size_t, unsigned char &, unsigned char &, unsigned char &) const) &mrpt::opengl::CPointCloudColoured::getPointColor_fast, "C++: mrpt::opengl::CPointCloudColoured::getPointColor_fast(size_t, unsigned char &, unsigned char &, unsigned char &) const --> void", pybind11::arg("index"), pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));

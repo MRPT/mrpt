@@ -75,29 +75,29 @@ struct PyCallBack_mrpt_opengl_PLY_Importer : public mrpt::opengl::PLY_Importer {
 struct PyCallBack_mrpt_opengl_PLY_Exporter : public mrpt::opengl::PLY_Exporter {
 	using mrpt::opengl::PLY_Exporter::PLY_Exporter;
 
-	unsigned long PLY_export_get_vertex_count() const override {
+	size_t PLY_export_get_vertex_count() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::PLY_Exporter *>(this), "PLY_export_get_vertex_count");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"PLY_Exporter::PLY_export_get_vertex_count\"");
 	}
-	unsigned long PLY_export_get_face_count() const override {
+	size_t PLY_export_get_face_count() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::PLY_Exporter *>(this), "PLY_export_get_face_count");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"PLY_Exporter::PLY_export_get_face_count\"");
 	}

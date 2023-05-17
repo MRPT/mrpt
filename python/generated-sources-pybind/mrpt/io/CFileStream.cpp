@@ -22,81 +22,81 @@
 struct PyCallBack_mrpt_io_CFileStream : public mrpt::io::CFileStream {
 	using mrpt::io::CFileStream::CFileStream;
 
-	unsigned long Read(void * a0, unsigned long a1) override {
+	size_t Read(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CFileStream *>(this), "Read");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CFileStream::Read(a0, a1);
 	}
-	unsigned long Write(const void * a0, unsigned long a1) override {
+	size_t Write(const void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CFileStream *>(this), "Write");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CFileStream::Write(a0, a1);
 	}
-	unsigned long Seek(long a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
+	uint64_t Seek(int64_t a0, enum mrpt::io::CStream::TSeekOrigin a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CFileStream *>(this), "Seek");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CFileStream::Seek(a0, a1);
 	}
-	unsigned long getTotalBytesCount() const override {
+	uint64_t getTotalBytesCount() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CFileStream *>(this), "getTotalBytesCount");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CFileStream::getTotalBytesCount();
 	}
-	unsigned long getPosition() const override {
+	uint64_t getPosition() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CFileStream *>(this), "getPosition");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint64_t>::value) {
+				static pybind11::detail::override_caster_t<uint64_t> caster;
+				return pybind11::detail::cast_ref<uint64_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<uint64_t>(std::move(o));
 		}
 		return CFileStream::getPosition();
 	}
-	unsigned long ReadBufferImmediate(void * a0, unsigned long a1) override {
+	size_t ReadBufferImmediate(void * a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::io::CFileStream *>(this), "ReadBufferImmediate");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CStream::ReadBufferImmediate(a0, a1);
 	}
@@ -132,7 +132,7 @@ void bind_mrpt_io_CFileStream(std::function< pybind11::module &(std::string cons
 		cl.def("is_open", (bool (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::is_open, "Returns true if the file was open without errors. \n\nC++: mrpt::io::CFileStream::is_open() --> bool");
 		cl.def("checkEOF", (bool (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::checkEOF, "Will be true if EOF has been already reached. \n\nC++: mrpt::io::CFileStream::checkEOF() --> bool");
 		cl.def("clearError", (void (mrpt::io::CFileStream::*)()) &mrpt::io::CFileStream::clearError, "Resets stream error status bits (e.g. after an EOF) \n\nC++: mrpt::io::CFileStream::clearError() --> void");
-		cl.def("Seek", [](mrpt::io::CFileStream &o, long const & a0) -> unsigned long { return o.Seek(a0); }, "", pybind11::arg("off"));
+		cl.def("Seek", [](mrpt::io::CFileStream &o, int64_t const & a0) -> uint64_t { return o.Seek(a0); }, "", pybind11::arg("off"));
 		cl.def("Seek", (uint64_t (mrpt::io::CFileStream::*)(int64_t, enum mrpt::io::CStream::TSeekOrigin)) &mrpt::io::CFileStream::Seek, "C++: mrpt::io::CFileStream::Seek(int64_t, enum mrpt::io::CStream::TSeekOrigin) --> uint64_t", pybind11::arg("off"), pybind11::arg("org"));
 		cl.def("getTotalBytesCount", (uint64_t (mrpt::io::CFileStream::*)() const) &mrpt::io::CFileStream::getTotalBytesCount, "C++: mrpt::io::CFileStream::getTotalBytesCount() const --> uint64_t");
 		cl.def("getPosition", (uint64_t (mrpt::io::CFileStream::*)() const) &mrpt::io::CFileStream::getPosition, "C++: mrpt::io::CFileStream::getPosition() const --> uint64_t");

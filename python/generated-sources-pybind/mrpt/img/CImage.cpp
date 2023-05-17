@@ -87,16 +87,16 @@ struct PyCallBack_mrpt_img_CImage : public mrpt::img::CImage {
 		}
 		return CImage::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::img::CImage *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return CImage::serializeGetVersion();
 	}
@@ -113,7 +113,7 @@ struct PyCallBack_mrpt_img_CImage : public mrpt::img::CImage {
 		}
 		return CImage::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::img::CImage *>(this), "serializeFrom");
 		if (overload) {
@@ -126,7 +126,7 @@ struct PyCallBack_mrpt_img_CImage : public mrpt::img::CImage {
 		}
 		return CImage::serializeFrom(a0, a1);
 	}
-	void setPixel(int a0, int a1, unsigned long a2) override {
+	void setPixel(int a0, int a1, size_t a2) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::img::CImage *>(this), "setPixel");
 		if (overload) {
@@ -191,29 +191,29 @@ struct PyCallBack_mrpt_img_CImage : public mrpt::img::CImage {
 		}
 		return CImage::filledRectangle(a0, a1, a2, a3, a4);
 	}
-	unsigned long getWidth() const override {
+	size_t getWidth() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::img::CImage *>(this), "getWidth");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CImage::getWidth();
 	}
-	unsigned long getHeight() const override {
+	size_t getHeight() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::img::CImage *>(this), "getHeight");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned long>::value) {
-				static pybind11::detail::override_caster_t<unsigned long> caster;
-				return pybind11::detail::cast_ref<unsigned long>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<size_t>::value) {
+				static pybind11::detail::override_caster_t<size_t> caster;
+				return pybind11::detail::cast_ref<size_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned long>(std::move(o));
+			else return pybind11::detail::cast_safe<size_t>(std::move(o));
 		}
 		return CImage::getHeight();
 	}
@@ -337,7 +337,7 @@ void bind_mrpt_img_CImage(std::function< pybind11::module &(std::string const &n
 		cl.def_static("SERIALIZATION_JPEG_QUALITY", (void (*)(int)) &mrpt::img::CImage::SERIALIZATION_JPEG_QUALITY, "Unless DISABLE_JPEG_COMPRESSION=true, this sets the JPEG quality (range\n 1-100) of serialized RGB images.\n  (Default = 95) \n\nC++: mrpt::img::CImage::SERIALIZATION_JPEG_QUALITY(int) --> void", pybind11::arg("q"));
 		cl.def_static("SERIALIZATION_JPEG_QUALITY", (int (*)()) &mrpt::img::CImage::SERIALIZATION_JPEG_QUALITY, "C++: mrpt::img::CImage::SERIALIZATION_JPEG_QUALITY() --> int");
 		cl.def("clear", (void (mrpt::img::CImage::*)()) &mrpt::img::CImage::clear, "Resets the image to the state after a default ctor. Accessing the image\n after will throw an exception, unless it is formerly initialized somehow:\n loading an image from disk, calling rezize(), etc. \n\nC++: mrpt::img::CImage::clear() --> void");
-		cl.def("resize", [](mrpt::img::CImage &o, unsigned long const & a0, unsigned long const & a1, enum mrpt::img::TImageChannels const & a2) -> void { return o.resize(a0, a1, a2); }, "", pybind11::arg("width"), pybind11::arg("height"), pybind11::arg("nChannels"));
+		cl.def("resize", [](mrpt::img::CImage &o, std::size_t const & a0, std::size_t const & a1, enum mrpt::img::TImageChannels const & a2) -> void { return o.resize(a0, a1, a2); }, "", pybind11::arg("width"), pybind11::arg("height"), pybind11::arg("nChannels"));
 		cl.def("resize", (void (mrpt::img::CImage::*)(std::size_t, std::size_t, enum mrpt::img::TImageChannels, enum mrpt::img::PixelDepth)) &mrpt::img::CImage::resize, "Changes the size of the image, erasing previous contents (does NOT scale\n its current content, for that, see scaleImage).\n  - nChannels: Can be 3 for RGB images or 1 for grayscale images.\n \n\n scaleImage\n\nC++: mrpt::img::CImage::resize(std::size_t, std::size_t, enum mrpt::img::TImageChannels, enum mrpt::img::PixelDepth) --> void", pybind11::arg("width"), pybind11::arg("height"), pybind11::arg("nChannels"), pybind11::arg("depth"));
 		cl.def("getPixelDepth", (enum mrpt::img::PixelDepth (mrpt::img::CImage::*)() const) &mrpt::img::CImage::getPixelDepth, "C++: mrpt::img::CImage::getPixelDepth() const --> enum mrpt::img::PixelDepth");
 		cl.def("scaleImage", [](mrpt::img::CImage const &o, class mrpt::img::CImage & a0, unsigned int const & a1, unsigned int const & a2) -> void { return o.scaleImage(a0, a1, a2); }, "", pybind11::arg("out_img"), pybind11::arg("width"), pybind11::arg("height"));

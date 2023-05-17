@@ -127,16 +127,16 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap2D : public mrpt::maps::COccupancyG
 		}
 		return COccupancyGridMap2D::clone();
 	}
-	unsigned char serializeGetVersion() const override {
+	uint8_t serializeGetVersion() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap2D *>(this), "serializeGetVersion");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<unsigned char>::value) {
-				static pybind11::detail::override_caster_t<unsigned char> caster;
-				return pybind11::detail::cast_ref<unsigned char>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<unsigned char>(std::move(o));
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
 		}
 		return COccupancyGridMap2D::serializeGetVersion();
 	}
@@ -153,7 +153,7 @@ struct PyCallBack_mrpt_maps_COccupancyGridMap2D : public mrpt::maps::COccupancyG
 		}
 		return COccupancyGridMap2D::serializeTo(a0);
 	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, unsigned char a1) override {
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::COccupancyGridMap2D *>(this), "serializeFrom");
 		if (overload) {
@@ -529,9 +529,9 @@ void bind_mrpt_maps_COccupancyGridMap2D(std::function< pybind11::module &(std::s
 		cl.def("computePathCost", (float (mrpt::maps::COccupancyGridMap2D::*)(float, float, float, float) const) &mrpt::maps::COccupancyGridMap2D::computePathCost, "Compute the 'cost' of traversing a segment of the map according to the\n occupancy of traversed cells.\n  \n\n This returns '1-mean(traversed cells occupancy)', i.e. 0.5 for\n unknown cells, 1 for a free path.\n\nC++: mrpt::maps::COccupancyGridMap2D::computePathCost(float, float, float, float) const --> float", pybind11::arg("x1"), pybind11::arg("y1"), pybind11::arg("x2"), pybind11::arg("y2"));
 		cl.def("laserScanSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservation2DRangeScan & a0, const class mrpt::poses::CPose2D & a1) -> void { return o.laserScanSimulator(a0, a1); }, "", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"));
 		cl.def("laserScanSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservation2DRangeScan & a0, const class mrpt::poses::CPose2D & a1, float const & a2) -> void { return o.laserScanSimulator(a0, a1, a2); }, "", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"), pybind11::arg("threshold"));
-		cl.def("laserScanSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservation2DRangeScan & a0, const class mrpt::poses::CPose2D & a1, float const & a2, unsigned long const & a3) -> void { return o.laserScanSimulator(a0, a1, a2, a3); }, "", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"), pybind11::arg("threshold"), pybind11::arg("N"));
-		cl.def("laserScanSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservation2DRangeScan & a0, const class mrpt::poses::CPose2D & a1, float const & a2, unsigned long const & a3, float const & a4) -> void { return o.laserScanSimulator(a0, a1, a2, a3, a4); }, "", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"), pybind11::arg("threshold"), pybind11::arg("N"), pybind11::arg("noiseStd"));
-		cl.def("laserScanSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservation2DRangeScan & a0, const class mrpt::poses::CPose2D & a1, float const & a2, unsigned long const & a3, float const & a4, unsigned int const & a5) -> void { return o.laserScanSimulator(a0, a1, a2, a3, a4, a5); }, "", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"), pybind11::arg("threshold"), pybind11::arg("N"), pybind11::arg("noiseStd"), pybind11::arg("decimation"));
+		cl.def("laserScanSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservation2DRangeScan & a0, const class mrpt::poses::CPose2D & a1, float const & a2, size_t const & a3) -> void { return o.laserScanSimulator(a0, a1, a2, a3); }, "", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"), pybind11::arg("threshold"), pybind11::arg("N"));
+		cl.def("laserScanSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservation2DRangeScan & a0, const class mrpt::poses::CPose2D & a1, float const & a2, size_t const & a3, float const & a4) -> void { return o.laserScanSimulator(a0, a1, a2, a3, a4); }, "", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"), pybind11::arg("threshold"), pybind11::arg("N"), pybind11::arg("noiseStd"));
+		cl.def("laserScanSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservation2DRangeScan & a0, const class mrpt::poses::CPose2D & a1, float const & a2, size_t const & a3, float const & a4, unsigned int const & a5) -> void { return o.laserScanSimulator(a0, a1, a2, a3, a4, a5); }, "", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"), pybind11::arg("threshold"), pybind11::arg("N"), pybind11::arg("noiseStd"), pybind11::arg("decimation"));
 		cl.def("laserScanSimulator", (void (mrpt::maps::COccupancyGridMap2D::*)(class mrpt::obs::CObservation2DRangeScan &, const class mrpt::poses::CPose2D &, float, size_t, float, unsigned int, float) const) &mrpt::maps::COccupancyGridMap2D::laserScanSimulator, "Simulates a laser range scan into the current grid map.\n   The simulated scan is stored in a CObservation2DRangeScan object, which\nis also used\n    to pass some parameters: all previously stored characteristics (as\naperture,...) are\n	  taken into account for simulation. Only a few more parameters are\nneeded. Additive gaussian noise can be optionally added to the simulated\nscan.\n \n\n [IN/OUT] This must be filled with desired parameters\nbefore calling, and will contain the scan samples on return.\n \n\n [IN] The robot pose in this map coordinates. Recall that\nsensor pose relative to this robot pose must be specified in the\nobservation object.\n \n\n [IN] The minimum occupancy threshold to consider a cell\nto be occupied (Default: 0.5f)\n \n\n [IN] The count of range scan \"rays\", by default to 361.\n \n\n [IN] The standard deviation of measurement noise. If not\ndesired, set to 0.\n \n\n [IN] The rays that will be simulated are at indexes: 0,\nD, 2D, 3D, ... Default is D=1\n \n\n [IN] The sigma of an optional Gaussian noise added\nto the angles at which ranges are measured (in radians).\n\n \n laserScanSimulatorWithUncertainty(), sonarSimulator(),\nCOccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS\n\nC++: mrpt::maps::COccupancyGridMap2D::laserScanSimulator(class mrpt::obs::CObservation2DRangeScan &, const class mrpt::poses::CPose2D &, float, size_t, float, unsigned int, float) const --> void", pybind11::arg("inout_Scan"), pybind11::arg("robotPose"), pybind11::arg("threshold"), pybind11::arg("N"), pybind11::arg("noiseStd"), pybind11::arg("decimation"), pybind11::arg("angleNoiseStd"));
 		cl.def("sonarSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservationRange & a0, const class mrpt::poses::CPose2D & a1) -> void { return o.sonarSimulator(a0, a1); }, "", pybind11::arg("inout_observation"), pybind11::arg("robotPose"));
 		cl.def("sonarSimulator", [](mrpt::maps::COccupancyGridMap2D const &o, class mrpt::obs::CObservationRange & a0, const class mrpt::poses::CPose2D & a1, float const & a2) -> void { return o.sonarSimulator(a0, a1, a2); }, "", pybind11::arg("inout_observation"), pybind11::arg("robotPose"), pybind11::arg("threshold"));
