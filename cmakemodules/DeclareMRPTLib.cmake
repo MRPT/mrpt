@@ -516,15 +516,31 @@ macro(internal_define_mrpt_lib name headers_only )
 	endif()
 endmacro()
 
+# Credits: https://gist.github.com/jtanx/96ded5e050d5ee5b19804195ee5cf5f9
+function(pad_string output str padchar length)
+  string(LENGTH "${str}" _strlen)
+  math(EXPR _strlen "${length} - ${_strlen}")
 
+  if(_strlen GREATER 0)
+    string(REPEAT ${padchar} ${_strlen} _pad)
+    string(PREPEND str ${_pad})
+  endif()
+
+  set(${output} "${str}" PARENT_SCOPE)
+endfunction()
+
+# 2 hex digits for each version part:
+# For example: "0.5.1"  => "0x000501"
 macro(mrpt_version_to_hex VER TARGET_VAR_NAME)
-	# For example: "0.5.1"
 	string(REGEX MATCHALL "[0-9]+" __parts "${${VER}}")
 
 	if(__parts)
 		list(GET __parts 0 __VERSION_NUMBER_MAJOR)
 		list(GET __parts 1 __VERSION_NUMBER_MINOR)
 		list(GET __parts 2 __VERSION_NUMBER_PATCH)
+		pad_string(__VERSION_NUMBER_MAJOR ${__VERSION_NUMBER_MAJOR} "0" 2)
+		pad_string(__VERSION_NUMBER_MINOR ${__VERSION_NUMBER_MINOR} "0" 2)
+		pad_string(__VERSION_NUMBER_PATCH ${__VERSION_NUMBER_PATCH} "0" 2)
 		set(${TARGET_VAR_NAME} "0x${__VERSION_NUMBER_MAJOR}${__VERSION_NUMBER_MINOR}${__VERSION_NUMBER_PATCH}")
 	else()
 		set(${TARGET_VAR_NAME} "0x000")
