@@ -230,7 +230,7 @@ void bind_mrpt_poses_CPose3D(std::function< pybind11::module &(std::string const
 		cl.def_static("size", (unsigned long (*)()) &mrpt::poses::CPose3D::size, "C++: mrpt::poses::CPose3D::size() --> unsigned long");
 		cl.def_static("empty", (bool (*)()) &mrpt::poses::CPose3D::empty, "C++: mrpt::poses::CPose3D::empty() --> bool");
 		cl.def_static("max_size", (unsigned long (*)()) &mrpt::poses::CPose3D::max_size, "C++: mrpt::poses::CPose3D::max_size() --> unsigned long");
-		cl.def_static("resize", (void (*)(const unsigned long)) &mrpt::poses::CPose3D::resize, "C++: mrpt::poses::CPose3D::resize(const unsigned long) --> void", pybind11::arg("n"));
+		cl.def_static("resize", (void (*)(size_t)) &mrpt::poses::CPose3D::resize, "C++: mrpt::poses::CPose3D::resize(size_t) --> void", pybind11::arg("n"));
 		cl.def("assign", (class mrpt::poses::CPose3D & (mrpt::poses::CPose3D::*)(const class mrpt::poses::CPose3D &)) &mrpt::poses::CPose3D::operator=, "C++: mrpt::poses::CPose3D::operator=(const class mrpt::poses::CPose3D &) --> class mrpt::poses::CPose3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
 		cl.def("__str__", [](mrpt::poses::CPose3D const &o) -> std::string { std::ostringstream s; using namespace mrpt::poses; s << o; return s.str(); } );

@@ -700,7 +700,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CColouredPointsMap::impl_copyFrom(a0);
 	}
-	void addFrom_classSpecific(const class mrpt::maps::CPointsMap & a0, const unsigned long a1, const bool a2) override {
+	void addFrom_classSpecific(const class mrpt::maps::CPointsMap & a0, size_t a1, const bool a2) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "addFrom_classSpecific");
 		if (overload) {
@@ -791,7 +791,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CColouredPointsMap::internal_clear();
 	}
-	void PLY_import_set_vertex(const unsigned long a0, const struct mrpt::math::TPoint3D_<float> & a1, const struct mrpt::img::TColorf * a2) override {
+	void PLY_import_set_vertex(size_t a0, const struct mrpt::math::TPoint3D_<float> & a1, const struct mrpt::img::TColorf * a2) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "PLY_import_set_vertex");
 		if (overload) {
@@ -804,7 +804,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CColouredPointsMap::PLY_import_set_vertex(a0, a1, a2);
 	}
-	void PLY_import_set_vertex_count(const unsigned long a0) override {
+	void PLY_import_set_vertex_count(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "PLY_import_set_vertex_count");
 		if (overload) {
@@ -817,7 +817,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CColouredPointsMap::PLY_import_set_vertex_count(a0);
 	}
-	void PLY_export_get_vertex(const unsigned long a0, struct mrpt::math::TPoint3D_<float> & a1, bool & a2, struct mrpt::img::TColorf & a3) const override {
+	void PLY_export_get_vertex(size_t a0, struct mrpt::math::TPoint3D_<float> & a1, bool & a2, struct mrpt::img::TColorf & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "PLY_export_get_vertex");
 		if (overload) {
@@ -960,7 +960,7 @@ struct PyCallBack_mrpt_maps_CColouredPointsMap : public mrpt::maps::CColouredPoi
 		}
 		return CPointsMap::asString();
 	}
-	void PLY_import_set_face_count(const unsigned long a0) override {
+	void PLY_import_set_face_count(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CColouredPointsMap *>(this), "PLY_import_set_face_count");
 		if (overload) {

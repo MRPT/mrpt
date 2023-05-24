@@ -283,7 +283,7 @@ std::string mrpt::system::trim(const std::string& str)
 						rightPad
 ---------------------------------------------------------------*/
 std::string mrpt::system::rightPad(
-	const std::string& str, const size_t total_len, bool truncate_if_larger)
+	const std::string& str, size_t total_len, bool truncate_if_larger)
 {
 	std::string r = str;
 	if (r.size() < total_len || truncate_if_larger) r.resize(total_len, ' ');

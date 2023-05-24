@@ -33,19 +33,19 @@ void CKinematicChain::addLink(
 }
 
 /** Removes one link from the kinematic chain (0<=idx<N) */
-void CKinematicChain::removeLink(const size_t idx)
+void CKinematicChain::removeLink(size_t idx)
 {
 	ASSERT_LT_(idx, m_links.size());
 	m_links.erase(m_links.begin() + idx);
 }
 
-const TKinematicLink& CKinematicChain::getLink(const size_t idx) const
+const TKinematicLink& CKinematicChain::getLink(size_t idx) const
 {
 	ASSERT_LT_(idx, m_links.size());
 	return m_links[idx];
 }
 
-TKinematicLink& CKinematicChain::getLinkRef(const size_t idx)
+TKinematicLink& CKinematicChain::getLinkRef(size_t idx)
 {
 	ASSERT_LT_(idx, m_links.size());
 	return m_links[idx];

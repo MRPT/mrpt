@@ -18,7 +18,7 @@ void bind_mrpt_containers_circular_buffer(std::function< pybind11::module &(std:
 {
 	{ // mrpt::containers::circular_buffer file:mrpt/containers/circular_buffer.h line:22
 		pybind11::class_<mrpt::containers::circular_buffer<unsigned char>, std::shared_ptr<mrpt::containers::circular_buffer<unsigned char>>> cl(M("mrpt::containers"), "circular_buffer_unsigned_char_t", "");
-		cl.def( pybind11::init<const unsigned long>(), pybind11::arg("size") );
+		cl.def( pybind11::init<size_t>(), pybind11::arg("size") );
 
 		cl.def( pybind11::init( [](mrpt::containers::circular_buffer<unsigned char> const &o){ return new mrpt::containers::circular_buffer<unsigned char>(o); } ) );
 		cl.def("push", (void (mrpt::containers::circular_buffer<unsigned char>::*)(unsigned char)) &mrpt::containers::circular_buffer<unsigned char>::push, "C++: mrpt::containers::circular_buffer<unsigned char>::push(unsigned char) --> void", pybind11::arg("d"));

@@ -548,7 +548,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 	 * getAsQuaternion
 	 */
 	template <typename VECTORLIKE>
-	inline void setFromXYZQ(const VECTORLIKE& v, const size_t index_offset = 0)
+	inline void setFromXYZQ(const VECTORLIKE& v, size_t index_offset = 0)
 	{
 		ASSERT_GE_(v.size(), 7 + index_offset);
 		// The 3x3 rotation part:
@@ -772,7 +772,7 @@ class CPose3D : public CPose<CPose3D, 6>,
 	static constexpr size_type size() { return static_size; }
 	static constexpr bool empty() { return false; }
 	static constexpr size_type max_size() { return static_size; }
-	static inline void resize(const size_t n)
+	static inline void resize(size_t n)
 	{
 		if (n != static_size)
 			throw std::logic_error(format(

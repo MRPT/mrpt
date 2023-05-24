@@ -317,7 +317,7 @@ class CFeatureListKDTree
 	/// Must return the number of data points
 	inline size_t kdtree_get_point_count() const { return m_data.size(); }
 	/// Returns the dim'th component of the idx'th point in the class:
-	inline float kdtree_get_pt(const size_t idx, int dim) const
+	inline float kdtree_get_pt(size_t idx, int dim) const
 	{
 		ASSERTDEB_(dim == 0 || dim == 1);
 		if (dim == 0) return m_data[idx].pt.x;
@@ -328,8 +328,7 @@ class CFeatureListKDTree
 	/// Returns the distance between the vector "p1[0:size-1]" and the data
 	/// point with index "idx_p2" stored in the class:
 	inline float kdtree_distance(
-		const float* p1, const size_t idx_p2,
-		[[maybe_unused]] size_t size) const
+		const float* p1, size_t idx_p2, [[maybe_unused]] size_t size) const
 	{
 		ASSERTDEB_(size == 2);
 

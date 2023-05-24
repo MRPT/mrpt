@@ -68,7 +68,7 @@ class CBeaconMap : public mrpt::maps::CMetricMap
 	CBeaconMap();
 
 	/** Resize the number of SOG modes */
-	void resize(const size_t N);
+	void resize(size_t N);
 
 	/** Returns a short description of the map. */
 	std::string asString() const override { return "CBeaconMap map"; }

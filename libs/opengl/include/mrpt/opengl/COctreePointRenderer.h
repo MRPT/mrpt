@@ -264,7 +264,7 @@ class COctreePointRenderer
 
 	struct TRenderQueueElement
 	{
-		inline TRenderQueueElement(const size_t id, float area_sq)
+		TRenderQueueElement(size_t id, float area_sq)
 			: node_id(id), render_area_sqpixels(area_sq)
 		{
 		}

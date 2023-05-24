@@ -188,9 +188,9 @@ double reprojectionResiduals(
  */
 void add_se3_deltas_to_frames(
 	const mrpt::vision::TFramePosesVec& frame_poses,
-	const mrpt::math::CVectorDouble& delta, const size_t delta_first_idx,
-	const size_t delta_num_vals, mrpt::vision::TFramePosesVec& new_frame_poses,
-	const size_t num_fix_frames);
+	const mrpt::math::CVectorDouble& delta, size_t delta_first_idx,
+	size_t delta_num_vals, mrpt::vision::TFramePosesVec& new_frame_poses,
+	size_t num_fix_frames);
 
 /** For each pose in the vector \a frame_poses, adds a "delta" increment to the
  * manifold, with the "delta" given in the se(3) Lie algebra:
@@ -205,10 +205,10 @@ void add_se3_deltas_to_frames(
  */
 void add_3d_deltas_to_points(
 	const mrpt::vision::TLandmarkLocationsVec& landmark_points,
-	const mrpt::math::CVectorDouble& delta, const size_t delta_first_idx,
-	const size_t delta_num_vals,
+	const mrpt::math::CVectorDouble& delta, size_t delta_first_idx,
+	size_t delta_num_vals,
 	mrpt::vision::TLandmarkLocationsVec& new_landmark_points,
-	const size_t num_fix_points);
+	size_t num_fix_points);
 
 /** @} */
 }  // namespace mrpt::vision

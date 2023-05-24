@@ -60,7 +60,7 @@
 struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM : public mrpt::slam::CRangeBearingKFSLAM {
 	using mrpt::slam::CRangeBearingKFSLAM::CRangeBearingKFSLAM;
 
-	void OnNewLandmarkAddedToMap(const unsigned long a0, const unsigned long a1) override {
+	void OnNewLandmarkAddedToMap(size_t a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnNewLandmarkAddedToMap");
 		if (overload) {
@@ -137,7 +137,7 @@ struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM_TOptions : public mrpt::slam::CR
 struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D : public mrpt::slam::CRangeBearingKFSLAM2D {
 	using mrpt::slam::CRangeBearingKFSLAM2D::CRangeBearingKFSLAM2D;
 
-	void OnNewLandmarkAddedToMap(const unsigned long a0, const unsigned long a1) override {
+	void OnNewLandmarkAddedToMap(size_t a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnNewLandmarkAddedToMap");
 		if (overload) {

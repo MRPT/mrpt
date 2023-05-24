@@ -338,8 +338,8 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 		cl.def_static("size", (unsigned long (*)()) &mrpt::poses::CPose3DQuat::size, "C++: mrpt::poses::CPose3DQuat::size() --> unsigned long");
 		cl.def_static("empty", (bool (*)()) &mrpt::poses::CPose3DQuat::empty, "C++: mrpt::poses::CPose3DQuat::empty() --> bool");
 		cl.def_static("max_size", (unsigned long (*)()) &mrpt::poses::CPose3DQuat::max_size, "C++: mrpt::poses::CPose3DQuat::max_size() --> unsigned long");
-		cl.def_static("resize", (void (*)(const unsigned long)) &mrpt::poses::CPose3DQuat::resize, "C++: mrpt::poses::CPose3DQuat::resize(const unsigned long) --> void", pybind11::arg("n"));
-		cl.def("assign", (void (mrpt::poses::CPose3DQuat::*)(const unsigned long, const double)) &mrpt::poses::CPose3DQuat::assign, "C++: mrpt::poses::CPose3DQuat::assign(const unsigned long, const double) --> void", pybind11::arg("N"), pybind11::arg("val"));
+		cl.def_static("resize", (void (*)(size_t)) &mrpt::poses::CPose3DQuat::resize, "C++: mrpt::poses::CPose3DQuat::resize(size_t) --> void", pybind11::arg("n"));
+		cl.def("assign", (void (mrpt::poses::CPose3DQuat::*)(size_t, const double)) &mrpt::poses::CPose3DQuat::assign, "C++: mrpt::poses::CPose3DQuat::assign(size_t, const double) --> void", pybind11::arg("N"), pybind11::arg("val"));
 		cl.def("begin", (struct mrpt::poses::CPose3DQuat::iterator (mrpt::poses::CPose3DQuat::*)()) &mrpt::poses::CPose3DQuat::begin, "C++: mrpt::poses::CPose3DQuat::begin() --> struct mrpt::poses::CPose3DQuat::iterator");
 		cl.def("end", (struct mrpt::poses::CPose3DQuat::iterator (mrpt::poses::CPose3DQuat::*)()) &mrpt::poses::CPose3DQuat::end, "C++: mrpt::poses::CPose3DQuat::end() --> struct mrpt::poses::CPose3DQuat::iterator");
 		cl.def("swap", (void (mrpt::poses::CPose3DQuat::*)(class mrpt::poses::CPose3DQuat &)) &mrpt::poses::CPose3DQuat::swap, "C++: mrpt::poses::CPose3DQuat::swap(class mrpt::poses::CPose3DQuat &) --> void", pybind11::arg("o"));

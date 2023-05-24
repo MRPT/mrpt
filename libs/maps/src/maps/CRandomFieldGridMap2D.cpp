@@ -2570,9 +2570,8 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 bool CRandomFieldGridMap2D::exist_relation_between2cells(
 	const mrpt::maps::COccupancyGridMap2D* m_Ocgridmap, size_t cxo_min,
-	size_t cxo_max, size_t cyo_min, size_t cyo_max, const size_t seed_cxo,
-	const size_t seed_cyo, const size_t objective_cxo,
-	const size_t objective_cyo)
+	size_t cxo_max, size_t cyo_min, size_t cyo_max, size_t seed_cxo,
+	size_t seed_cyo, size_t objective_cxo, size_t objective_cyo)
 {
 	// printf("Checking relation between cells (%i,%i) and (%i,%i)",
 	// seed_cxo,seed_cyo,objective_cxo,objective_cyo);

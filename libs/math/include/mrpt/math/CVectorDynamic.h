@@ -70,7 +70,7 @@ class CVectorDynamic : public MatrixVectorBase<T, CVectorDynamic<T>>
 	/** Internal use only: It reallocs the memory for the 2D matrix, maintaining
 	 * the previous contents if posible.
 	 */
-	void realloc(const size_t new_len, bool newElementsToZero = false)
+	void realloc(size_t new_len, bool newElementsToZero = false)
 	{
 		const auto old_len = m_data.size();
 		if (new_len == old_len) return;

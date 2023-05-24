@@ -105,7 +105,7 @@ class CPointPDFSOG : public CPointPDF
 	const_iterator end() const { return m_modes.end(); }
 	iterator erase(iterator i) { return m_modes.erase(i); }
 	/** Resize the number of SOG modes */
-	void resize(const size_t N);
+	void resize(size_t N);
 	/** Return the number of Gaussian modes. */
 	size_t size() const { return m_modes.size(); }
 	/** Return whether there is any Gaussian mode. */

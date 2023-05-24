@@ -24,13 +24,13 @@
 
 void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::system::compute_CRC16(const unsigned char *, const unsigned long, const unsigned short) file:mrpt/system/crc.h line:27
-	M("mrpt::system").def("compute_CRC16", [](const unsigned char * a0, const unsigned long & a1) -> uint16_t { return mrpt::system::compute_CRC16(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
-	M("mrpt::system").def("compute_CRC16", (uint16_t (*)(const unsigned char *, const unsigned long, const unsigned short)) &mrpt::system::compute_CRC16, "C++: mrpt::system::compute_CRC16(const unsigned char *, const unsigned long, const unsigned short) --> uint16_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
+	// mrpt::system::compute_CRC16(const unsigned char *, size_t, const unsigned short) file:mrpt/system/crc.h line:27
+	M("mrpt::system").def("compute_CRC16", [](const unsigned char * a0, size_t const & a1) -> uint16_t { return mrpt::system::compute_CRC16(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
+	M("mrpt::system").def("compute_CRC16", (uint16_t (*)(const unsigned char *, size_t, const unsigned short)) &mrpt::system::compute_CRC16, "C++: mrpt::system::compute_CRC16(const unsigned char *, size_t, const unsigned short) --> uint16_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
 
-	// mrpt::system::compute_CRC32(const unsigned char *, const unsigned long, const unsigned int) file:mrpt/system/crc.h line:33
-	M("mrpt::system").def("compute_CRC32", [](const unsigned char * a0, const unsigned long & a1) -> uint32_t { return mrpt::system::compute_CRC32(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
-	M("mrpt::system").def("compute_CRC32", (uint32_t (*)(const unsigned char *, const unsigned long, const unsigned int)) &mrpt::system::compute_CRC32, "C++: mrpt::system::compute_CRC32(const unsigned char *, const unsigned long, const unsigned int) --> uint32_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
+	// mrpt::system::compute_CRC32(const unsigned char *, size_t, const unsigned int) file:mrpt/system/crc.h line:33
+	M("mrpt::system").def("compute_CRC32", [](const unsigned char * a0, size_t const & a1) -> uint32_t { return mrpt::system::compute_CRC32(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
+	M("mrpt::system").def("compute_CRC32", (uint32_t (*)(const unsigned char *, size_t, const unsigned int)) &mrpt::system::compute_CRC32, "C++: mrpt::system::compute_CRC32(const unsigned char *, size_t, const unsigned int) --> uint32_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
 
 	// mrpt::system::getTempFileName() file:mrpt/system/filesystem.h line:35
 	M("mrpt::system").def("getTempFileName", (std::string (*)()) &mrpt::system::getTempFileName, "Returns the name of a proposed temporary file name \n\nC++: mrpt::system::getTempFileName() --> std::string");
@@ -104,8 +104,8 @@ void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &n
 	// mrpt::system::md5(const std::string &) file:mrpt/system/md5.h line:23
 	M("mrpt::system").def("md5", (std::string (*)(const std::string &)) &mrpt::system::md5, "Header: `#include <mrpt/system/md5.h>`.\n Library: \n  \n\n\n @{ \n\n Computes the md5 of a block of data. \n\nC++: mrpt::system::md5(const std::string &) --> std::string", pybind11::arg("str"));
 
-	// mrpt::system::md5(const unsigned char *, const unsigned long) file:mrpt/system/md5.h line:27
-	M("mrpt::system").def("md5", (std::string (*)(const unsigned char *, const unsigned long)) &mrpt::system::md5, "Computes the md5 of a block of data. \n\nC++: mrpt::system::md5(const unsigned char *, const unsigned long) --> std::string", pybind11::arg("data"), pybind11::arg("len"));
+	// mrpt::system::md5(const unsigned char *, size_t) file:mrpt/system/md5.h line:27
+	M("mrpt::system").def("md5", (std::string (*)(const unsigned char *, size_t)) &mrpt::system::md5, "Computes the md5 of a block of data. \n\nC++: mrpt::system::md5(const unsigned char *, size_t) --> std::string", pybind11::arg("data"), pybind11::arg("len"));
 
 	// mrpt::system::getMemoryUsage() file:mrpt/system/memory.h line:25
 	M("mrpt::system").def("getMemoryUsage", (unsigned long (*)()) &mrpt::system::getMemoryUsage, "Returns the memory occupied by this process, in bytes \n\nC++: mrpt::system::getMemoryUsage() --> unsigned long");

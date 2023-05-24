@@ -100,7 +100,7 @@ class CMonteCarloLocalization3D
 	/** Return the robot pose for the i'th particle. is_valid is
 	 * always true in this class. */
 	mrpt::math::TPose3D getLastPose(
-		const size_t i, bool& is_valid_pose) const override;
+		size_t i, bool& is_valid_pose) const override;
 
 	void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 		CParticleDataContent* particleData,
@@ -117,8 +117,7 @@ class CMonteCarloLocalization3D
 	 */
 	double PF_SLAM_computeObservationLikelihoodForParticle(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const size_t particleIndexForMap,
-		const mrpt::obs::CSensoryFrame& observation,
+		size_t particleIndexForMap, const mrpt::obs::CSensoryFrame& observation,
 		const mrpt::poses::CPose3D& x) const override;
 	/** @} */
 

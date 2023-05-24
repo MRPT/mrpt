@@ -184,8 +184,7 @@ class CHokuyoURG : public C2DRangeFinderAbstract
 	 * \return false if the number of bytes are not available, even after
 	 * trying to fetch more data from the serial port.
 	 */
-	bool ensureBufferHasBytes(
-		const size_t nDesiredBytes, bool additionalWaitForData);
+	bool ensureBufferHasBytes(size_t nDesiredBytes, bool additionalWaitForData);
 
    public:
 	/** Constructor

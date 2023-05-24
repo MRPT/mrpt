@@ -107,7 +107,7 @@ void bind_mrpt_math_CMatrixDynamic_1(std::function< pybind11::module &(std::stri
 		cl.def( pybind11::init( [](size_t const & a0){ return new mrpt::math::CMatrixDynamic<double>(a0); } ), "doc" , pybind11::arg("row"));
 		cl.def( pybind11::init<size_t, size_t>(), pybind11::arg("row"), pybind11::arg("col") );
 
-		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<double> &, const unsigned long, const unsigned long>(), pybind11::arg("m"), pybind11::arg("cropRowCount"), pybind11::arg("cropColCount") );
+		cl.def( pybind11::init<const class mrpt::math::CMatrixDynamic<double> &, size_t, size_t>(), pybind11::arg("m"), pybind11::arg("cropRowCount"), pybind11::arg("cropColCount") );
 
 		cl.def("setFromMatrixLike", (void (mrpt::math::CMatrixDynamic<double>::*)(const class mrpt::math::CMatrixDynamic<float> &)) &mrpt::math::CMatrixDynamic<double>::setFromMatrixLike<mrpt::math::CMatrixDynamic<float>>, "C++: mrpt::math::CMatrixDynamic<double>::setFromMatrixLike(const class mrpt::math::CMatrixDynamic<float> &) --> void", pybind11::arg("m"));
 		cl.def("assign", (class mrpt::math::CMatrixDynamic<double> & (mrpt::math::CMatrixDynamic<double>::*)(const class mrpt::math::CMatrixDynamic<double> &)) &mrpt::math::CMatrixDynamic<double>::operator=<double>, "C++: mrpt::math::CMatrixDynamic<double>::operator=(const class mrpt::math::CMatrixDynamic<double> &) --> class mrpt::math::CMatrixDynamic<double> &", pybind11::return_value_policy::automatic, pybind11::arg("m"));

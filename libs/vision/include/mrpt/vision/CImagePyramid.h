@@ -71,7 +71,7 @@ class CImagePyramid
 	 * \sa buildPyramidFast
 	 */
 	bool buildPyramid(
-		const mrpt::img::CImage& img, const size_t nOctaves,
+		const mrpt::img::CImage& img, size_t nOctaves,
 		const bool smooth_halves = true, const bool convert_grayscale = false);
 
 	/**  Exactly like \a buildPyramid(), but if the input image has not to be
@@ -80,7 +80,7 @@ class CImagePyramid
 	 * \sa buildPyramid
 	 */
 	bool buildPyramidFast(
-		mrpt::img::CImage& img, const size_t nOctaves,
+		mrpt::img::CImage& img, size_t nOctaves,
 		const bool smooth_halves = true, const bool convert_grayscale = false);
 
 	/** The individual images:

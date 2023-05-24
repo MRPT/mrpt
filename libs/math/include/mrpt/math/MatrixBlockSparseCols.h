@@ -69,8 +69,8 @@ struct MatrixBlockSparseCols
 
    public:
 	inline MatrixBlockSparseCols() : m_cols(0) {}
-	inline col_t& getCol(const size_t idx) { return m_cols[idx]; }
-	inline const col_t& getCol(const size_t idx) const { return m_cols[idx]; }
+	inline col_t& getCol(size_t idx) { return m_cols[idx]; }
+	inline const col_t& getCol(size_t idx) const { return m_cols[idx]; }
 	inline const mrpt::containers::map_as_vector<size_t, size_t>&
 		getColInverseRemappedIndices() const
 	{
@@ -84,7 +84,7 @@ struct MatrixBlockSparseCols
 	}
 
 	/** Append one column, returning a ref to the new col_t data */
-	inline col_t& appendCol(const size_t remapIndex)
+	inline col_t& appendCol(size_t remapIndex)
 	{
 		const size_t idx = m_cols.size();
 		m_cols.push_back(col_t());
@@ -101,7 +101,7 @@ struct MatrixBlockSparseCols
 	}
 
 	/** Change the number of columns (keep old contents) */
-	inline void setColCount(const size_t nCols) { m_cols.resize(nCols); }
+	inline void setColCount(size_t nCols) { m_cols.resize(nCols); }
 	/** Get current number of cols. \sa findCurrentNumberOfRows */
 	inline size_t cols() const { return m_cols.size(); }
 	/** Clear all the entries in each column (do not change the number of

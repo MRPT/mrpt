@@ -525,7 +525,7 @@ void bind_mrpt_poses_CPoint2D(std::function< pybind11::module &(std::string cons
 		cl.def_static("size", (unsigned long (*)()) &mrpt::poses::CPoint2D::size, "C++: mrpt::poses::CPoint2D::size() --> unsigned long");
 		cl.def_static("empty", (bool (*)()) &mrpt::poses::CPoint2D::empty, "C++: mrpt::poses::CPoint2D::empty() --> bool");
 		cl.def_static("max_size", (unsigned long (*)()) &mrpt::poses::CPoint2D::max_size, "C++: mrpt::poses::CPoint2D::max_size() --> unsigned long");
-		cl.def_static("resize", (void (*)(const unsigned long)) &mrpt::poses::CPoint2D::resize, "C++: mrpt::poses::CPoint2D::resize(const unsigned long) --> void", pybind11::arg("n"));
+		cl.def_static("resize", (void (*)(size_t)) &mrpt::poses::CPoint2D::resize, "C++: mrpt::poses::CPoint2D::resize(size_t) --> void", pybind11::arg("n"));
 		cl.def("setToNaN", (void (mrpt::poses::CPoint2D::*)()) &mrpt::poses::CPoint2D::setToNaN, "@} \n\nC++: mrpt::poses::CPoint2D::setToNaN() --> void");
 		cl.def("assign", (class mrpt::poses::CPoint2D & (mrpt::poses::CPoint2D::*)(const class mrpt::poses::CPoint2D &)) &mrpt::poses::CPoint2D::operator=, "C++: mrpt::poses::CPoint2D::operator=(const class mrpt::poses::CPoint2D &) --> class mrpt::poses::CPoint2D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 

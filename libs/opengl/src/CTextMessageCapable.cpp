@@ -51,7 +51,7 @@ void CTextMessageCapable::clearTextMessages()
  * \return false if given ID doesn't exist.
  */
 bool CTextMessageCapable::updateTextMessage(
-	const size_t unique_index, const std::string& text)
+	size_t unique_index, const std::string& text)
 {
 	std::unique_lock<std::shared_mutex> lckWrite2DTexts(m_2D_texts.mtx.data);
 
@@ -69,7 +69,7 @@ bool CTextMessageCapable::updateTextMessage(
 /// mrpt::opengl::gl_utils::glDrawText()
 void CTextMessageCapable::addTextMessage(
 	const double x_frac, const double y_frac, const std::string& text,
-	const size_t unique_index, const TFontParams& fontParams)
+	size_t unique_index, const TFontParams& fontParams)
 {
 	DataPerText d;
 	static_cast<TFontParams&>(d) = fontParams;

@@ -135,13 +135,13 @@ class CTimeLogger : public mrpt::system::COutputLogger
 
 	/** Dump all stats to a multi-line text string. \sa dumpAllStats,
 	 * saveToCVSFile */
-	std::string getStatsAsText(const size_t column_width = 80) const;
+	std::string getStatsAsText(size_t column_width = 80) const;
 	/** Returns all the current stats as a map: section_name => stats. \sa
 	 * getStatsAsText, dumpAllStats, saveToCVSFile */
 	void getStats(std::map<std::string, TCallStats>& out_stats) const;
 	/** Dump all stats through the COutputLogger interface. \sa getStatsAsText,
 	 * saveToCVSFile */
-	void dumpAllStats(const size_t column_width = 80) const;
+	void dumpAllStats(size_t column_width = 80) const;
 
 	/** Resets all stats. By default (deep_clear=false), all section names are
 	 * remembered (not freed) so the cost of creating upon the first next call

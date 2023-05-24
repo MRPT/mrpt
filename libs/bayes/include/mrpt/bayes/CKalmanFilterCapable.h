@@ -568,8 +568,8 @@ class CKalmanFilterCapable : public mrpt::system::COutputLogger
 	 * \sa OnInverseObservationModel
 	 */
 	virtual void OnNewLandmarkAddedToMap(
-		[[maybe_unused]] const size_t in_obsIdx,
-		[[maybe_unused]] const size_t in_idxNewFeat)
+		[[maybe_unused]] size_t in_obsIdx,
+		[[maybe_unused]] size_t in_idxNewFeat)
 	{
 		// Do nothing in this base class.
 	}
