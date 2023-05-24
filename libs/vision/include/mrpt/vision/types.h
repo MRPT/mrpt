@@ -216,7 +216,7 @@ struct TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 	 * The algorithm first builds a sorted list of frame IDs, then keep the
 	 * lowest ID, remove the next "decimate_ratio-1", and so on.
 	 * \sa After calling this you may want to call \a compressIDs */
-	void decimateCameraFrames(const size_t decimate_ratio);
+	void decimateCameraFrames(size_t decimate_ratio);
 
 	/** Rearrange frame and feature IDs such as they start at 0 and there are no
 	 * gaps.

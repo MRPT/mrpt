@@ -42,7 +42,7 @@ class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 	 */
 	void extractFeatures(
 		const mrpt::maps::COccupancyGridMap2D& grid,
-		mrpt::maps::CLandmarksMap& outMap, const size_t number_of_features,
+		mrpt::maps::CLandmarksMap& outMap, size_t number_of_features,
 		const mrpt::vision::TDescriptorType descriptors,
 		const mrpt::vision::CFeatureExtraction::TOptions& feat_options);
 
@@ -57,7 +57,7 @@ class COccupancyGridMapFeatureExtractor : public mrpt::system::CObserver
 	 */
 	static void uncached_extractFeatures(
 		const mrpt::maps::COccupancyGridMap2D& grid,
-		mrpt::maps::CLandmarksMap& outMap, const size_t number_of_features,
+		mrpt::maps::CLandmarksMap& outMap, size_t number_of_features,
 		const mrpt::vision::TDescriptorType descriptors,
 		const mrpt::vision::CFeatureExtraction::TOptions& feat_options);
 

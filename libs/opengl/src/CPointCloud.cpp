@@ -432,7 +432,7 @@ void CPointCloud::markAllPointsAsNew()
 
 /** In a base class, reserve memory to prepare subsequent calls to
  * PLY_import_set_vertex */
-void CPointCloud::PLY_import_set_vertex_count(const size_t N)
+void CPointCloud::PLY_import_set_vertex_count(size_t N)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
 		CRenderizableShaderPoints::m_pointsMtx.data);
@@ -445,7 +445,7 @@ void CPointCloud::PLY_import_set_vertex_count(const size_t N)
  * does not provide color info.
  */
 void CPointCloud::PLY_import_set_vertex(
-	const size_t idx, const mrpt::math::TPoint3Df& pt,
+	size_t idx, const mrpt::math::TPoint3Df& pt,
 	[[maybe_unused]] const mrpt::img::TColorf* pt_color)
 {
 	std::unique_lock<std::shared_mutex> wfWriteLock(
@@ -461,7 +461,7 @@ size_t CPointCloud::PLY_export_get_vertex_count() const { return this->size(); }
  * file does not provide color info.
  */
 void CPointCloud::PLY_export_get_vertex(
-	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
+	size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	[[maybe_unused]] mrpt::img::TColorf& pt_color) const
 {
 	std::shared_lock<std::shared_mutex> wfReadLock(

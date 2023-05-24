@@ -169,7 +169,7 @@ class CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 
 	// See docs in parent class
 	void STEP3_WSpaceToTPSpace(
-		const size_t ptg_idx, std::vector<double>& out_TPObstacles,
+		size_t ptg_idx, std::vector<double>& out_TPObstacles,
 		mrpt::nav::ClearanceDiagram& out_clearance,
 		const mrpt::math::TPose2D& rel_pose_PTG_origin_wrt_sense,
 		const bool eval_clearance) override;

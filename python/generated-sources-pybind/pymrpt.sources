@@ -286,7 +286,7 @@ mrpt/opengl/stock_objects.cpp
 mrpt/containers/traits_map.cpp
 mrpt/graphs/CDirectedTree.cpp
 mrpt/nav/planners/TMoveTree.cpp
-mrpt/nav/planners/nav_plan_geometry_utils.cpp
+mrpt/nav/reactive/CRobot2NavInterface.cpp
 mrpt/poses/FrameTransformer.cpp
 mrpt/nav/reactive/CAbstractNavigator.cpp
 mrpt/nav/reactive/CLogFileRecord.cpp

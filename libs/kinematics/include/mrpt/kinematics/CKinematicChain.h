@@ -97,13 +97,13 @@ class CKinematicChain : public mrpt::serialization::CSerializable
 		double theta, double d, double a, double alpha, bool is_prismatic);
 
 	/** Removes one link from the kinematic chain (0<=idx<N) */
-	void removeLink(const size_t idx);
+	void removeLink(size_t idx);
 
 	/** Get a ref to a given link (read-only) */
-	const TKinematicLink& getLink(const size_t idx) const;
+	const TKinematicLink& getLink(size_t idx) const;
 
 	/** Get a ref to a given link (read-write) */
-	TKinematicLink& getLinkRef(const size_t idx);
+	TKinematicLink& getLinkRef(size_t idx);
 
 	/** Can be used to define a first degree of freedom along a +Z axis which
 	 * does not coincide with the global +Z axis. */

@@ -159,7 +159,7 @@ class PF_implementation : public mrpt::system::COutputLogger
 	 * false if there is no such last pose.
 	 * \exception std::exception on out-of-range particle index */
 	virtual mrpt::math::TPose3D getLastPose(
-		const size_t i, bool& is_valid_pose) const = 0;
+		size_t i, bool& is_valid_pose) const = 0;
 
 	virtual void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 		PARTICLE_TYPE* particleData,
@@ -275,8 +275,7 @@ class PF_implementation : public mrpt::system::COutputLogger
 	 */
 	virtual double PF_SLAM_computeObservationLikelihoodForParticle(
 		const mrpt::bayes::CParticleFilter::TParticleFilterOptions& PF_options,
-		const size_t particleIndexForMap,
-		const mrpt::obs::CSensoryFrame& observation,
+		size_t particleIndexForMap, const mrpt::obs::CSensoryFrame& observation,
 		const mrpt::poses::CPose3D& x) const = 0;
 
 	/** @} */

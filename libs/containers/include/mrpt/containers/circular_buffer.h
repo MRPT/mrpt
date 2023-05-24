@@ -28,7 +28,7 @@ class circular_buffer
 	size_t m_next_read, m_next_write;
 
    public:
-	circular_buffer(const size_t size)
+	circular_buffer(size_t size)
 		: m_data(size), m_size(size), m_next_read(0), m_next_write(0)
 	{
 		if (m_size <= 2) throw std::invalid_argument("size must be >2");

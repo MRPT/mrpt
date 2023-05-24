@@ -353,7 +353,7 @@ class CRangeBearingKFSLAM2D
 	 * \sa OnInverseObservationModel
 	 */
 	void OnNewLandmarkAddedToMap(
-		const size_t in_obsIdx, const size_t in_idxNewFeat) override;
+		size_t in_obsIdx, size_t in_idxNewFeat) override;
 
 	/** This method is called after the prediction and after the update, to give
 	 * the user an opportunity to normalize the state vector (eg, keep angles

@@ -209,8 +209,8 @@ void ba_compute_Jacobians(
 	const TFramePosesVec& frame_poses,
 	const TLandmarkLocationsVec& landmark_points,
 	const mrpt::img::TCamera& camera_params,
-	std::vector<JacData<6, 3, 2>>& jac_data_vec, const size_t num_fix_frames,
-	const size_t num_fix_points)
+	std::vector<JacData<6, 3, 2>>& jac_data_vec, size_t num_fix_frames,
+	size_t num_fix_points)
 {
 	MRPT_START
 
@@ -258,6 +258,6 @@ void ba_build_gradient_Hessians(
 	std::vector<mrpt::math::CMatrixFixed<double, 6, 6>>& U,
 	std::vector<CVectorFixedDouble<6>>& eps_frame,
 	std::vector<mrpt::math::CMatrixFixed<double, 3, 3>>& V,
-	std::vector<CVectorFixedDouble<3>>& eps_point, const size_t num_fix_frames,
-	const size_t num_fix_points, const vector<double>* kernel_1st_deriv);
+	std::vector<CVectorFixedDouble<3>>& eps_point, size_t num_fix_frames,
+	size_t num_fix_points, const vector<double>* kernel_1st_deriv);
 }  // namespace mrpt::vision

@@ -114,7 +114,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	void setPoint(size_t i, const mrpt::math::TPointXYZfRGBAu8& p);
 
 	/** Like \a setPoint() but does not check for index out of bounds */
-	void setPoint_fast(const size_t i, const mrpt::math::TPointXYZfRGBAu8& p)
+	void setPoint_fast(size_t i, const mrpt::math::TPointXYZfRGBAu8& p)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
 			CRenderizableShaderPoints::m_pointsMtx.data);
@@ -126,8 +126,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	}
 
 	/** Like \a setPoint() but does not check for index out of bounds */
-	void setPoint_fast(
-		const size_t i, const float x, const float y, const float z)
+	void setPoint_fast(size_t i, const float x, const float y, const float z)
 	{
 		std::unique_lock<std::shared_mutex> wfWriteLock(
 			CRenderizableShaderPoints::m_pointsMtx.data);
@@ -245,17 +244,17 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
-	void PLY_import_set_vertex_count(const size_t N) override;
+	void PLY_import_set_vertex_count(size_t N) override;
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	void PLY_import_set_face_count([[maybe_unused]] const size_t N) override {}
+	void PLY_import_set_face_count([[maybe_unused]] size_t N) override {}
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.
 	 *  \param pt_color Will be nullptr if the loaded file does not provide
 	 * color info.
 	 */
 	void PLY_import_set_vertex(
-		const size_t idx, const mrpt::math::TPoint3Df& pt,
+		size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
 
@@ -264,7 +263,7 @@ class CPointCloudColoured : public CRenderizableShaderPoints,
 	size_t PLY_export_get_vertex_count() const override;
 	size_t PLY_export_get_face_count() const override { return 0; }
 	void PLY_export_get_vertex(
-		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
+		size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 };
@@ -296,12 +295,12 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	/** Get number of points */
 	size_t size() const { return m_obj.size(); }
 	/** Set number of points (to uninitialized values) */
-	void resize(const size_t N) { m_obj.resize(N); }
+	void resize(size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
 	void setDimensions(size_t height, size_t width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
-	void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
+	void getPointXYZ(size_t idx, T& x, T& y, T& z) const
 	{
 		const auto& p = m_obj.getPoint3Df(idx);
 		x = p.x;
@@ -310,20 +309,17 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	}
 	/** Set XYZ coordinates of i'th point */
 	void setPointXYZ(
-		const size_t idx, const coords_t x, const coords_t y, const coords_t z)
+		size_t idx, const coords_t x, const coords_t y, const coords_t z)
 	{
 		m_obj.setPoint_fast(idx, x, y, z);
 	}
 
-	void setInvalidPoint(const size_t idx)
-	{
-		m_obj.setPoint_fast(idx, 0, 0, 0);
-	}
+	void setInvalidPoint(size_t idx) { m_obj.setPoint_fast(idx, 0, 0, 0); }
 
 	/** Get XYZ_RGBf coordinates of i'th point */
 	template <typename T>
 	void getPointXYZ_RGBAf(
-		const size_t idx, T& x, T& y, T& z, float& Rf, float& Gf, float& Bf,
+		size_t idx, T& x, T& y, T& z, float& Rf, float& Gf, float& Bf,
 		float& Af) const
 	{
 		const auto& pt = m_obj.getPoint3Df(idx);
@@ -338,7 +334,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	}
 	/** Set XYZ_RGBf coordinates of i'th point */
 	void setPointXYZ_RGBAf(
-		const size_t idx, const coords_t x, const coords_t y, const coords_t z,
+		size_t idx, const coords_t x, const coords_t y, const coords_t z,
 		const float Rf, const float Gf, const float Bf, const float Af)
 	{
 		m_obj.setPoint(
@@ -350,8 +346,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	/** Get XYZ_RGBu8 coordinates of i'th point */
 	template <typename T>
 	void getPointXYZ_RGBu8(
-		const size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g,
-		uint8_t& b) const
+		size_t idx, T& x, T& y, T& z, uint8_t& r, uint8_t& g, uint8_t& b) const
 	{
 		const auto& pt = m_obj.getPoint3Df(idx);
 		const auto& col = m_obj.getPointColor(idx);
@@ -364,7 +359,7 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	}
 	/** Set XYZ_RGBu8 coordinates of i'th point */
 	void setPointXYZ_RGBu8(
-		const size_t idx, const coords_t x, const coords_t y, const coords_t z,
+		size_t idx, const coords_t x, const coords_t y, const coords_t z,
 		const uint8_t r, const uint8_t g, const uint8_t b,
 		const uint8_t a = 0xff)
 	{
@@ -373,26 +368,24 @@ class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 	}
 
 	/** Get RGBf color of i'th point */
-	void getPointRGBf(const size_t idx, float& r, float& g, float& b) const
+	void getPointRGBf(size_t idx, float& r, float& g, float& b) const
 	{
 		m_obj.getPointColor_fast(idx, r, g, b);
 	}
 	/** Set XYZ_RGBf coordinates of i'th point */
-	void setPointRGBf(
-		const size_t idx, const float r, const float g, const float b)
+	void setPointRGBf(size_t idx, const float r, const float g, const float b)
 	{
 		m_obj.setPointColor_fast(idx, r, g, b);
 	}
 
 	/** Get RGBu8 color of i'th point */
-	void getPointRGBu8(
-		const size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
+	void getPointRGBu8(size_t idx, uint8_t& r, uint8_t& g, uint8_t& b) const
 	{
 		m_obj.getPointColor_fast(idx, r, g, b);
 	}
 	/** Set RGBu8 coordinates of i'th point */
 	void setPointRGBu8(
-		const size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
+		size_t idx, const uint8_t r, const uint8_t g, const uint8_t b)
 	{
 		m_obj.setPointColor_u8_fast(idx, r, g, b);
 	}

@@ -24,8 +24,8 @@ void bind_mrpt_math_CVectorDynamic(std::function< pybind11::module &(std::string
 		cl.def( pybind11::init<size_t, bool>(), pybind11::arg("N"), pybind11::arg("initZero") );
 
 		cl.def( pybind11::init( [](mrpt::math::CVectorDynamic<double> const &o){ return new mrpt::math::CVectorDynamic<double>(o); } ) );
-		cl.def("realloc", [](mrpt::math::CVectorDynamic<double> &o, const unsigned long & a0) -> void { return o.realloc(a0); }, "", pybind11::arg("new_len"));
-		cl.def("realloc", (void (mrpt::math::CVectorDynamic<double>::*)(const unsigned long, bool)) &mrpt::math::CVectorDynamic<double>::realloc, "C++: mrpt::math::CVectorDynamic<double>::realloc(const unsigned long, bool) --> void", pybind11::arg("new_len"), pybind11::arg("newElementsToZero"));
+		cl.def("realloc", [](mrpt::math::CVectorDynamic<double> &o, size_t const & a0) -> void { return o.realloc(a0); }, "", pybind11::arg("new_len"));
+		cl.def("realloc", (void (mrpt::math::CVectorDynamic<double>::*)(size_t, bool)) &mrpt::math::CVectorDynamic<double>::realloc, "C++: mrpt::math::CVectorDynamic<double>::realloc(size_t, bool) --> void", pybind11::arg("new_len"), pybind11::arg("newElementsToZero"));
 		cl.def("swap", (void (mrpt::math::CVectorDynamic<double>::*)(class mrpt::math::CVectorDynamic<double> &)) &mrpt::math::CVectorDynamic<double>::swap, "C++: mrpt::math::CVectorDynamic<double>::swap(class mrpt::math::CVectorDynamic<double> &) --> void", pybind11::arg("o"));
 		cl.def("rows", (int (mrpt::math::CVectorDynamic<double>::*)() const) &mrpt::math::CVectorDynamic<double>::rows, "C++: mrpt::math::CVectorDynamic<double>::rows() const --> int");
 		cl.def("cols", (int (mrpt::math::CVectorDynamic<double>::*)() const) &mrpt::math::CVectorDynamic<double>::cols, "C++: mrpt::math::CVectorDynamic<double>::cols() const --> int");
@@ -48,8 +48,8 @@ void bind_mrpt_math_CVectorDynamic(std::function< pybind11::module &(std::string
 		cl.def( pybind11::init<size_t, bool>(), pybind11::arg("N"), pybind11::arg("initZero") );
 
 		cl.def( pybind11::init( [](mrpt::math::CVectorDynamic<float> const &o){ return new mrpt::math::CVectorDynamic<float>(o); } ) );
-		cl.def("realloc", [](mrpt::math::CVectorDynamic<float> &o, const unsigned long & a0) -> void { return o.realloc(a0); }, "", pybind11::arg("new_len"));
-		cl.def("realloc", (void (mrpt::math::CVectorDynamic<float>::*)(const unsigned long, bool)) &mrpt::math::CVectorDynamic<float>::realloc, "C++: mrpt::math::CVectorDynamic<float>::realloc(const unsigned long, bool) --> void", pybind11::arg("new_len"), pybind11::arg("newElementsToZero"));
+		cl.def("realloc", [](mrpt::math::CVectorDynamic<float> &o, size_t const & a0) -> void { return o.realloc(a0); }, "", pybind11::arg("new_len"));
+		cl.def("realloc", (void (mrpt::math::CVectorDynamic<float>::*)(size_t, bool)) &mrpt::math::CVectorDynamic<float>::realloc, "C++: mrpt::math::CVectorDynamic<float>::realloc(size_t, bool) --> void", pybind11::arg("new_len"), pybind11::arg("newElementsToZero"));
 		cl.def("swap", (void (mrpt::math::CVectorDynamic<float>::*)(class mrpt::math::CVectorDynamic<float> &)) &mrpt::math::CVectorDynamic<float>::swap, "C++: mrpt::math::CVectorDynamic<float>::swap(class mrpt::math::CVectorDynamic<float> &) --> void", pybind11::arg("o"));
 		cl.def("rows", (int (mrpt::math::CVectorDynamic<float>::*)() const) &mrpt::math::CVectorDynamic<float>::rows, "C++: mrpt::math::CVectorDynamic<float>::rows() const --> int");
 		cl.def("cols", (int (mrpt::math::CVectorDynamic<float>::*)() const) &mrpt::math::CVectorDynamic<float>::cols, "C++: mrpt::math::CVectorDynamic<float>::cols() const --> int");

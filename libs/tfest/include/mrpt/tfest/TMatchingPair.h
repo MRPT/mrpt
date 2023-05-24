@@ -208,7 +208,7 @@ class TMatchingPairListTempl : public std::vector<TMatchingPairTempl<T>>
 	 * is the best match for element `j` in map `other`,
 	 * and viceversa*/
 	void filterUniqueRobustPairs(
-		const size_t num_elements_this_map,
+		size_t num_elements_this_map,
 		TMatchingPairListTempl<T>& out_filtered_list) const;
 };
 

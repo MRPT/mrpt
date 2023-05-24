@@ -19,7 +19,7 @@ using namespace mrpt::math;
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CHistogram::CHistogram(const double min, const double max, const size_t nBins)
+CHistogram::CHistogram(const double min, const double max, size_t nBins)
 	: m_min(min), m_max(max), m_bins(nBins, 0), m_count(0)
 {
 	ASSERT_(nBins > 0);
@@ -54,7 +54,7 @@ void CHistogram::add(const double x)
 /*---------------------------------------------------------------
 					getBinCount
  ---------------------------------------------------------------*/
-size_t CHistogram::getBinCount(const size_t index) const
+size_t CHistogram::getBinCount(size_t index) const
 {
 	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
 
@@ -64,7 +64,7 @@ size_t CHistogram::getBinCount(const size_t index) const
 /*---------------------------------------------------------------
 					getBinRatio
  ---------------------------------------------------------------*/
-double CHistogram::getBinRatio(const size_t index) const
+double CHistogram::getBinRatio(size_t index) const
 {
 	if (index >= m_bins.size()) THROW_EXCEPTION("Index out of bounds");
 

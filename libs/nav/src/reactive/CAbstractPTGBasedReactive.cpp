@@ -1516,7 +1516,7 @@ void CAbstractPTGBasedReactive::onStartNewNavigation()
 
 /** \callergraph */
 void CAbstractPTGBasedReactive::build_movement_candidate(
-	CParameterizedTrajectoryGenerator* ptg, const size_t indexPTG,
+	CParameterizedTrajectoryGenerator* ptg, size_t indexPTG,
 	const std::vector<mrpt::math::TPose2D>& relTargets,
 	const mrpt::math::TPose2D& rel_pose_PTG_origin_wrt_sense, TInfoPerPTG& ipf,
 	TCandidateMovementPTG& cm, CLogFileRecord& newLogRec,

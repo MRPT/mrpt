@@ -138,7 +138,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 	 *  \return The number of actually read bytes.
 	 */
 	size_t readAsync(
-		void* Buffer, const size_t Count, const int timeoutStart_ms = -1,
+		void* Buffer, size_t Count, const int timeoutStart_ms = -1,
 		const int timeoutBetween_ms = -1);
 
 	/** A method for writing to the socket with optional timeouts.
@@ -153,7 +153,7 @@ class CClientTCPSocket : public mrpt::io::CStream
 	 *  \return The number of actually written bytes.
 	 */
 	size_t writeAsync(
-		const void* Buffer, const size_t Count, const int timeout_ms = -1);
+		const void* Buffer, size_t Count, const int timeout_ms = -1);
 
 	/** Send a message through the TCP stream.
 	 * \param outMsg The message to be shown.

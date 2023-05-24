@@ -884,7 +884,7 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 
 /** Send a custom data block to the GNSS device right now. Can be used to change
  * its behavior online as needed. */
-bool CGPSInterface::sendCustomCommand(const void* data, const size_t datalen)
+bool CGPSInterface::sendCustomCommand(const void* data, size_t datalen)
 {
 	try
 	{

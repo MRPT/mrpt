@@ -204,8 +204,7 @@ using TMyMemPool = mrpt::system::CGenericMemoryPool<
 
 // Auxiliary function for loadTextureInOpenGL(): reserve memory and return
 // 16byte aligned starting point within it:
-static unsigned char* reserveDataBuffer(
-	const size_t len, std::vector<uint8_t>& data)
+static unsigned char* reserveDataBuffer(size_t len, std::vector<uint8_t>& data)
 {
 #ifdef TEXTUREOBJ_USE_MEMPOOL
 	TMyMemPool* pool = TMyMemPool::getInstance();

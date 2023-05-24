@@ -153,7 +153,7 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D_Base : public mrpt::maps::CHeightGr
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CHeightGridMap2D_Base::dem_get_size_y\"");
 	}
-	bool dem_get_z_by_cell(const unsigned long a0, const unsigned long a1, double & a2) const override {
+	bool dem_get_z_by_cell(size_t a0, size_t a1, double & a2) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CHeightGridMap2D_Base *>(this), "dem_get_z_by_cell");
 		if (overload) {
@@ -393,7 +393,7 @@ struct PyCallBack_mrpt_maps_CHeightGridMap2D : public mrpt::maps::CHeightGridMap
 		}
 		return CHeightGridMap2D::dem_get_size_y();
 	}
-	bool dem_get_z_by_cell(const unsigned long a0, const unsigned long a1, double & a2) const override {
+	bool dem_get_z_by_cell(size_t a0, size_t a1, double & a2) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::maps::CHeightGridMap2D *>(this), "dem_get_z_by_cell");
 		if (overload) {
@@ -628,7 +628,7 @@ void bind_mrpt_maps_CHeightGridMap2D_Base(std::function< pybind11::module &(std:
 		cl.def("dem_get_resolution", (double (mrpt::maps::CHeightGridMap2D_Base::*)() const) &mrpt::maps::CHeightGridMap2D_Base::dem_get_resolution, "C++: mrpt::maps::CHeightGridMap2D_Base::dem_get_resolution() const --> double");
 		cl.def("dem_get_size_x", (size_t (mrpt::maps::CHeightGridMap2D_Base::*)() const) &mrpt::maps::CHeightGridMap2D_Base::dem_get_size_x, "C++: mrpt::maps::CHeightGridMap2D_Base::dem_get_size_x() const --> size_t");
 		cl.def("dem_get_size_y", (size_t (mrpt::maps::CHeightGridMap2D_Base::*)() const) &mrpt::maps::CHeightGridMap2D_Base::dem_get_size_y, "C++: mrpt::maps::CHeightGridMap2D_Base::dem_get_size_y() const --> size_t");
-		cl.def("dem_get_z_by_cell", (bool (mrpt::maps::CHeightGridMap2D_Base::*)(const unsigned long, const unsigned long, double &) const) &mrpt::maps::CHeightGridMap2D_Base::dem_get_z_by_cell, "Get cell 'z' by (cx,cy) cell indices. \n false if out of bounds or\n un-observed cell. \n\nC++: mrpt::maps::CHeightGridMap2D_Base::dem_get_z_by_cell(const unsigned long, const unsigned long, double &) const --> bool", pybind11::arg("cx"), pybind11::arg("cy"), pybind11::arg("z_out"));
+		cl.def("dem_get_z_by_cell", (bool (mrpt::maps::CHeightGridMap2D_Base::*)(size_t, size_t, double &) const) &mrpt::maps::CHeightGridMap2D_Base::dem_get_z_by_cell, "Get cell 'z' by (cx,cy) cell indices. \n false if out of bounds or\n un-observed cell. \n\nC++: mrpt::maps::CHeightGridMap2D_Base::dem_get_z_by_cell(size_t, size_t, double &) const --> bool", pybind11::arg("cx"), pybind11::arg("cy"), pybind11::arg("z_out"));
 		cl.def("dem_get_z", (bool (mrpt::maps::CHeightGridMap2D_Base::*)(const double, const double, double &) const) &mrpt::maps::CHeightGridMap2D_Base::dem_get_z, "Get cell 'z' (x,y) by metric coordinates. \n false if out of bounds\n or un-observed cell. \n\nC++: mrpt::maps::CHeightGridMap2D_Base::dem_get_z(const double, const double, double &) const --> bool", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z_out"));
 		cl.def("dem_update_map", (void (mrpt::maps::CHeightGridMap2D_Base::*)()) &mrpt::maps::CHeightGridMap2D_Base::dem_update_map, "Ensure that all observations are reflected in the map estimate \n\nC++: mrpt::maps::CHeightGridMap2D_Base::dem_update_map() --> void");
 		cl.def("assign", (class mrpt::maps::CHeightGridMap2D_Base & (mrpt::maps::CHeightGridMap2D_Base::*)(const class mrpt::maps::CHeightGridMap2D_Base &)) &mrpt::maps::CHeightGridMap2D_Base::operator=, "C++: mrpt::maps::CHeightGridMap2D_Base::operator=(const class mrpt::maps::CHeightGridMap2D_Base &) --> class mrpt::maps::CHeightGridMap2D_Base &", pybind11::return_value_policy::automatic, pybind11::arg(""));
@@ -690,7 +690,7 @@ void bind_mrpt_maps_CHeightGridMap2D_Base(std::function< pybind11::module &(std:
 		cl.def("dem_get_resolution", (double (mrpt::maps::CHeightGridMap2D::*)() const) &mrpt::maps::CHeightGridMap2D::dem_get_resolution, "C++: mrpt::maps::CHeightGridMap2D::dem_get_resolution() const --> double");
 		cl.def("dem_get_size_x", (size_t (mrpt::maps::CHeightGridMap2D::*)() const) &mrpt::maps::CHeightGridMap2D::dem_get_size_x, "C++: mrpt::maps::CHeightGridMap2D::dem_get_size_x() const --> size_t");
 		cl.def("dem_get_size_y", (size_t (mrpt::maps::CHeightGridMap2D::*)() const) &mrpt::maps::CHeightGridMap2D::dem_get_size_y, "C++: mrpt::maps::CHeightGridMap2D::dem_get_size_y() const --> size_t");
-		cl.def("dem_get_z_by_cell", (bool (mrpt::maps::CHeightGridMap2D::*)(const unsigned long, const unsigned long, double &) const) &mrpt::maps::CHeightGridMap2D::dem_get_z_by_cell, "C++: mrpt::maps::CHeightGridMap2D::dem_get_z_by_cell(const unsigned long, const unsigned long, double &) const --> bool", pybind11::arg("cx"), pybind11::arg("cy"), pybind11::arg("z_out"));
+		cl.def("dem_get_z_by_cell", (bool (mrpt::maps::CHeightGridMap2D::*)(size_t, size_t, double &) const) &mrpt::maps::CHeightGridMap2D::dem_get_z_by_cell, "C++: mrpt::maps::CHeightGridMap2D::dem_get_z_by_cell(size_t, size_t, double &) const --> bool", pybind11::arg("cx"), pybind11::arg("cy"), pybind11::arg("z_out"));
 		cl.def("dem_get_z", (bool (mrpt::maps::CHeightGridMap2D::*)(const double, const double, double &) const) &mrpt::maps::CHeightGridMap2D::dem_get_z, "C++: mrpt::maps::CHeightGridMap2D::dem_get_z(const double, const double, double &) const --> bool", pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z_out"));
 		cl.def("dem_update_map", (void (mrpt::maps::CHeightGridMap2D::*)()) &mrpt::maps::CHeightGridMap2D::dem_update_map, "C++: mrpt::maps::CHeightGridMap2D::dem_update_map() --> void");
 		cl.def("internal_clear", (void (mrpt::maps::CHeightGridMap2D::*)()) &mrpt::maps::CHeightGridMap2D::internal_clear, "C++: mrpt::maps::CHeightGridMap2D::internal_clear() --> void");

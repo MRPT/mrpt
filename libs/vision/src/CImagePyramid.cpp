@@ -18,7 +18,7 @@ using namespace mrpt::img;
 // Template that generalizes the two user entry-points below:
 template <bool FASTLOAD>
 bool buildPyramid_templ(
-	CImagePyramid& obj, mrpt::img::CImage& img, const size_t nOctaves,
+	CImagePyramid& obj, mrpt::img::CImage& img, size_t nOctaves,
 	const bool smooth_halves, const bool convert_grayscale)
 {
 	ASSERT_GT_(nOctaves, 0);
@@ -54,8 +54,8 @@ bool buildPyramid_templ(
 }
 
 bool CImagePyramid::buildPyramid(
-	const mrpt::img::CImage& img, const size_t nOctaves,
-	const bool smooth_halves, const bool convert_grayscale)
+	const mrpt::img::CImage& img, size_t nOctaves, const bool smooth_halves,
+	const bool convert_grayscale)
 {
 	return buildPyramid_templ<false>(
 		*this, *const_cast<mrpt::img::CImage*>(&img), nOctaves, smooth_halves,
@@ -63,7 +63,7 @@ bool CImagePyramid::buildPyramid(
 }
 
 bool CImagePyramid::buildPyramidFast(
-	mrpt::img::CImage& img, const size_t nOctaves, const bool smooth_halves,
+	mrpt::img::CImage& img, size_t nOctaves, const bool smooth_halves,
 	const bool convert_grayscale)
 {
 	return buildPyramid_templ<true>(

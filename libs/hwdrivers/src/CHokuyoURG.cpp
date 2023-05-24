@@ -424,7 +424,7 @@ bool CHokuyoURG::setHighBaudrate()
 						ensureBufferHasBytes
 -------------------------------------------------------------*/
 bool CHokuyoURG::ensureBufferHasBytes(
-	const size_t nDesiredBytes, bool additionalWaitForData)
+	size_t nDesiredBytes, bool additionalWaitForData)
 {
 	ASSERT_LT_(nDesiredBytes, m_rx_buffer.capacity());
 

@@ -296,7 +296,7 @@ void bind_mrpt_opengl_stock_objects(std::function< pybind11::module &(std::strin
 void bind_mrpt_containers_traits_map(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_graphs_CDirectedTree(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_nav_planners_TMoveTree(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_nav_planners_nav_plan_geometry_utils(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_nav_reactive_CRobot2NavInterface(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_poses_FrameTransformer(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_nav_reactive_CAbstractNavigator(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_nav_reactive_CLogFileRecord(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -726,7 +726,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_containers_traits_map(M);
 	bind_mrpt_graphs_CDirectedTree(M);
 	bind_mrpt_nav_planners_TMoveTree(M);
-	bind_mrpt_nav_planners_nav_plan_geometry_utils(M);
+	bind_mrpt_nav_reactive_CRobot2NavInterface(M);
 	bind_mrpt_poses_FrameTransformer(M);
 	bind_mrpt_nav_reactive_CAbstractNavigator(M);
 	bind_mrpt_nav_reactive_CLogFileRecord(M);

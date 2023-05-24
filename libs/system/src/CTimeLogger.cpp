@@ -100,7 +100,7 @@ void CTimeLogger::clear(bool deep_clear)
 	}
 }
 
-std::string aux_format_string_multilines(const std::string& s, const size_t len)
+std::string aux_format_string_multilines(const std::string& s, size_t len)
 {
 	std::string ret;
 
@@ -129,7 +129,7 @@ void CTimeLogger::getStats(std::map<std::string, TCallStats>& out_stats) const
 	}
 }
 
-std::string CTimeLogger::getStatsAsText(const size_t column_width) const
+std::string CTimeLogger::getStatsAsText(size_t column_width) const
 {
 	using std::string;
 	using namespace std::string_literals;
@@ -309,7 +309,7 @@ void CTimeLogger::saveToMFile(const std::string& file) const
 	std::ofstream(file) << s;
 }
 
-void CTimeLogger::dumpAllStats(const size_t column_width) const
+void CTimeLogger::dumpAllStats(size_t column_width) const
 {
 	MRPT_LOG_INFO_STREAM("dumpAllStats:\n" << getStatsAsText(column_width));
 }

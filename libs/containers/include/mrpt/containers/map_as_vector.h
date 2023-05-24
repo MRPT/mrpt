@@ -114,7 +114,7 @@ class map_as_vector
 	inline void swap(map_as_vector<KEY, VALUE>& o) { m_vec.swap(o.m_vec); }
 	/** Write/read via [i] operator, that creates all elements up to (and
 	 * including) the i'th if they didn't exist already. */
-	inline VALUE& operator[](const size_t i)
+	inline VALUE& operator[](size_t i)
 	{
 		if (m_vec.size() <= i) m_vec.resize(i + 1);
 		m_vec[i].first = i;
@@ -122,7 +122,7 @@ class map_as_vector
 	}
 	/** Read-only operator, throws exception if the given key index does not
 	 * exist. */
-	inline const VALUE& at(const size_t i) const
+	inline const VALUE& at(size_t i) const
 	{
 		if (i >= m_vec.size() || m_vec.at(i).first != i)
 			throw std::out_of_range(
@@ -130,7 +130,7 @@ class map_as_vector
 		return m_vec.at(i).second;
 	}
 	/// \overload
-	inline VALUE& at(const size_t i)
+	inline VALUE& at(size_t i)
 	{
 		if (i >= m_vec.size() || m_vec.at(i).first != i)
 			throw std::out_of_range(
@@ -154,7 +154,7 @@ class map_as_vector
 	/** Constant-time find, returning an iterator to the <key,val> pair or to
 	 * end() if not found (that is, if it's above the maximum index in the
 	 * vector) */
-	inline iterator find(const size_t i)
+	inline iterator find(size_t i)
 	{
 		if (i < m_vec.size()) return m_vec.begin() + i;
 		else
@@ -163,7 +163,7 @@ class map_as_vector
 	/** Constant-time find, returning an iterator to the <key,val> pair or to
 	 * end() if not found (that is, if it's above the maximum index in the
 	 * vector) */
-	inline const_iterator find(const size_t i) const
+	inline const_iterator find(size_t i) const
 	{
 		if (i < m_vec.size()) return m_vec.begin() + i;
 		else

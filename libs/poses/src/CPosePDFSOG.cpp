@@ -42,7 +42,7 @@ void CPosePDFSOG::clear() { m_modes.clear(); }
 /*---------------------------------------------------------------
 	Resize
   ---------------------------------------------------------------*/
-void CPosePDFSOG::resize(const size_t N) { m_modes.resize(N); }
+void CPosePDFSOG::resize(size_t N) { m_modes.resize(N); }
 /*---------------------------------------------------------------
 						getMean
   Returns an estimate of the pose, (the mean, or mathematical expectation of the

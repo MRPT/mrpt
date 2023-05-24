@@ -265,7 +265,7 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 	/** Returns the number of voxel sets. */
 	inline size_t getVoxelSetCount() const { return m_voxel_sets.size(); }
 	/** Returns the total count of voxels in one voxel set. */
-	inline size_t getVoxelCount(const size_t set_index) const
+	inline size_t getVoxelCount(size_t set_index) const
 	{
 		ASSERT_(set_index < m_voxel_sets.size());
 		return m_voxel_sets[set_index].voxels.size();
@@ -276,47 +276,47 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 	void setBoundingBox(
 		const mrpt::math::TPoint3D& bb_min, const mrpt::math::TPoint3D& bb_max);
 
-	inline void resizeGridCubes(const size_t nCubes)
+	inline void resizeGridCubes(size_t nCubes)
 	{
 		m_grid_cubes.resize(nCubes);
 		CRenderizable::notifyChange();
 	}
-	inline void resizeVoxelSets(const size_t nVoxelSets)
+	inline void resizeVoxelSets(size_t nVoxelSets)
 	{
 		m_voxel_sets.resize(nVoxelSets);
 		CRenderizable::notifyChange();
 	}
-	inline void resizeVoxels(const size_t set_index, const size_t nVoxels)
+	inline void resizeVoxels(size_t set_index, size_t nVoxels)
 	{
 		ASSERT_(set_index < m_voxel_sets.size());
 		m_voxel_sets[set_index].voxels.resize(nVoxels);
 		CRenderizable::notifyChange();
 	}
 
-	inline void reserveGridCubes(const size_t nCubes)
+	inline void reserveGridCubes(size_t nCubes)
 	{
 		m_grid_cubes.reserve(nCubes);
 	}
-	inline void reserveVoxels(const size_t set_index, const size_t nVoxels)
+	inline void reserveVoxels(size_t set_index, size_t nVoxels)
 	{
 		ASSERT_(set_index < m_voxel_sets.size());
 		m_voxel_sets[set_index].voxels.reserve(nVoxels);
 		CRenderizable::notifyChange();
 	}
 
-	inline TGridCube& getGridCubeRef(const size_t idx)
+	inline TGridCube& getGridCubeRef(size_t idx)
 	{
 		ASSERTDEB_(idx < m_grid_cubes.size());
 		CRenderizable::notifyChange();
 		return m_grid_cubes[idx];
 	}
-	inline const TGridCube& getGridCube(const size_t idx) const
+	inline const TGridCube& getGridCube(size_t idx) const
 	{
 		ASSERTDEB_(idx < m_grid_cubes.size());
 		return m_grid_cubes[idx];
 	}
 
-	inline TVoxel& getVoxelRef(const size_t set_index, const size_t idx)
+	inline TVoxel& getVoxelRef(size_t set_index, size_t idx)
 	{
 		ASSERTDEB_(
 			set_index < m_voxel_sets.size() &&
@@ -324,8 +324,7 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 		CRenderizable::notifyChange();
 		return m_voxel_sets[set_index].voxels[idx];
 	}
-	inline const TVoxel& getVoxel(
-		const size_t set_index, const size_t idx) const
+	inline const TVoxel& getVoxel(size_t set_index, size_t idx) const
 	{
 		ASSERTDEB_(
 			set_index < m_voxel_sets.size() &&
@@ -339,7 +338,7 @@ class COctoMapVoxels : public CRenderizableShaderTriangles,
 		CRenderizable::notifyChange();
 		m_grid_cubes.push_back(c);
 	}
-	inline void push_back_Voxel(const size_t set_index, const TVoxel& v)
+	inline void push_back_Voxel(size_t set_index, const TVoxel& v)
 	{
 		ASSERTDEB_(set_index < m_voxel_sets.size());
 		CRenderizable::notifyChange();

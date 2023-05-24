@@ -74,7 +74,7 @@ class ScalarFactorGraph : public mrpt::system::COutputLogger
 	/** Initialize the GMRF internal state and copy the prior factors. */
 	void initialize(
 		/** Number of unknown nodes in the MRF graph */
-		const size_t nodeCount);
+		size_t nodeCount);
 
 	/** Insert constraints into the GMRF problem.
 	 * \param listOfConstraints List of user-implemented constraints.

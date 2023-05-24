@@ -255,8 +255,7 @@ void CMultiMetricMapPDF::serializeFrom(
 	};
 }
 
-TPose3D CMultiMetricMapPDF::getLastPose(
-	const size_t i, bool& is_valid_pose) const
+TPose3D CMultiMetricMapPDF::getLastPose(size_t i, bool& is_valid_pose) const
 {
 	if (i >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");

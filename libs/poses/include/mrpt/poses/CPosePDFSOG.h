@@ -123,7 +123,7 @@ class CPosePDFSOG : public CPosePDF
 	const_iterator end() const { return m_modes.end(); }
 	iterator erase(iterator i) { return m_modes.erase(i); }
 	/** Resize the number of SOG modes */
-	void resize(const size_t N);
+	void resize(size_t N);
 
 	/** Merge very close modes so the overall number of modes is reduced while
 	 * preserving the total distribution.

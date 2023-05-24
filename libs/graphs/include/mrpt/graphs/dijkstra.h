@@ -155,7 +155,7 @@ class CDijkstra
 	using edge_list_t = std::list<TPairNodeIDs>;
 
 	using functor_edge_weight_t = std::function<double(
-		const graph_t& graph, const TNodeID id_from, const TNodeID id_to,
+		const graph_t& graph, TNodeID const id_from, TNodeID const id_to,
 		const edge_t& edge)>;
 
 	using functor_on_progress_t =
@@ -364,7 +364,7 @@ class CDijkstra
 	 * if it was farther away from root than the maximum topological distance
 	 * passed in the constructor.
 	 */
-	std::optional<double> getNodeDistanceToRoot(const TNodeID id) const
+	std::optional<double> getNodeDistanceToRoot(TNodeID const id) const
 	{
 		if (const auto it = m_distances.find(id); it != m_distances.end())
 			return {it->second.dist};
@@ -404,7 +404,7 @@ class CDijkstra
 	 * topological search radius passed to the constructor.
 	 */
 	void getShortestPathTo(
-		const TNodeID target_node_ID, edge_list_t& out_path) const
+		TNodeID const target_node_ID, edge_list_t& out_path) const
 	{
 		out_path.clear();
 		if (target_node_ID == m_source_node_ID) return;
@@ -422,7 +422,7 @@ class CDijkstra
 
 	/** \overload
 	 *  \note (new in MRPT 2.4.1) */
-	edge_list_t getShortestPathTo(const TNodeID target_node_ID) const
+	edge_list_t getShortestPathTo(TNodeID const target_node_ID) const
 	{
 		edge_list_t lst;
 		getShortestPathTo(target_node_ID, lst);

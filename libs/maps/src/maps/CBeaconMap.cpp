@@ -101,7 +101,7 @@ size_t CBeaconMap::size() const { return m_beacons.size(); }
 /*---------------------------------------------------------------
 	Resize
   ---------------------------------------------------------------*/
-void CBeaconMap::resize(const size_t N) { m_beacons.resize(N); }
+void CBeaconMap::resize(size_t N) { m_beacons.resize(N); }
 uint8_t CBeaconMap::serializeGetVersion() const { return 1; }
 void CBeaconMap::serializeTo(mrpt::serialization::CArchive& out) const
 {

@@ -422,7 +422,7 @@ std::string mrpt::system::md5(const std::string& str)
 	return md5.hexdigest();
 }
 
-std::string mrpt::system::md5(const unsigned char* data, const size_t len)
+std::string mrpt::system::md5(const unsigned char* data, size_t len)
 {
 	ASSERT_(data);
 	MD5 md5;

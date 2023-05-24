@@ -51,7 +51,7 @@ class CGenericMemoryPool
 	 */
 	bool& m_was_destroyed;
 
-	CGenericMemoryPool(const size_t max_pool_entries, bool& was_destroyed)
+	CGenericMemoryPool(size_t max_pool_entries, bool& was_destroyed)
 		: m_maxPoolEntries(max_pool_entries), m_was_destroyed(was_destroyed)
 	{
 		m_was_destroyed = false;
@@ -59,7 +59,7 @@ class CGenericMemoryPool
 
    public:
 	inline size_t getMemoryPoolMaxSize() const { return m_maxPoolEntries; }
-	inline void setMemoryPoolMaxSize(const size_t maxNumEntries)
+	inline void setMemoryPoolMaxSize(size_t maxNumEntries)
 	{
 		m_maxPoolEntries = maxNumEntries;
 	}
@@ -70,7 +70,7 @@ class CGenericMemoryPool
 	 * we're in the program global destruction phase).
 	 */
 	static CGenericMemoryPool<DATA_PARAMS, POOLABLE_DATA>* getInstance(
-		const size_t max_pool_entries = 5)
+		size_t max_pool_entries = 5)
 	{
 		static bool was_destroyed = false;
 		static CGenericMemoryPool<DATA_PARAMS, POOLABLE_DATA> inst(

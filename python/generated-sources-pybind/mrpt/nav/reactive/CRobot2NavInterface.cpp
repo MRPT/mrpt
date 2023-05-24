@@ -27,7 +27,6 @@
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TTwist2D.h>
-#include <mrpt/nav/planners/nav_plan_geometry_utils.h>
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -331,14 +330,8 @@ struct PyCallBack_mrpt_nav_CRobot2NavInterface : public mrpt::nav::CRobot2NavInt
 	}
 };
 
-void bind_mrpt_nav_planners_nav_plan_geometry_utils(std::function< pybind11::module &(std::string const &namespace_) > &M)
+void bind_mrpt_nav_reactive_CRobot2NavInterface(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::nav::collision_free_dist_segment_circ_robot(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const double, const struct mrpt::math::TPoint2D_<double> &, double &) file:mrpt/nav/planners/nav_plan_geometry_utils.h line:28
-	M("mrpt::nav").def("collision_free_dist_segment_circ_robot", (bool (*)(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const double, const struct mrpt::math::TPoint2D_<double> &, double &)) &mrpt::nav::collision_free_dist_segment_circ_robot, "Computes the collision-free distance for a linear segment path between two\n points, for a circular robot, and a point obstacle (ox,oy).\n \n\n true if a collision exists, and the distance along the segment will\n be in out_col_dist; false otherwise.\n \n\n std::runtime_error If the two points are closer than an epsilon\n (1e-10)\n\nC++: mrpt::nav::collision_free_dist_segment_circ_robot(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const double, const struct mrpt::math::TPoint2D_<double> &, double &) --> bool", pybind11::arg("p_start"), pybind11::arg("p_end"), pybind11::arg("robot_radius"), pybind11::arg("obstacle"), pybind11::arg("out_col_dist"));
-
-	// mrpt::nav::collision_free_dist_arc_circ_robot(const double, const double, const struct mrpt::math::TPoint2D_<double> &, double &) file:mrpt/nav/planners/nav_plan_geometry_utils.h line:39
-	M("mrpt::nav").def("collision_free_dist_arc_circ_robot", (bool (*)(const double, const double, const struct mrpt::math::TPoint2D_<double> &, double &)) &mrpt::nav::collision_free_dist_arc_circ_robot, "Computes the collision-free distance for a forward path (+X) circular arc\n path segment from pose (0,0,0) and radius of curvature R (>0 -> +Y, <0 ->\n -Y), a circular robot and a point obstacle (ox,oy). \n\n true if a\n collision exists, and the distance along the path will be in out_col_dist;\n false otherwise.\n\nC++: mrpt::nav::collision_free_dist_arc_circ_robot(const double, const double, const struct mrpt::math::TPoint2D_<double> &, double &) --> bool", pybind11::arg("arc_radius"), pybind11::arg("robot_radius"), pybind11::arg("obstacle"), pybind11::arg("out_col_dist"));
-
 	{ // mrpt::nav::CRobot2NavInterface file:mrpt/nav/reactive/CRobot2NavInterface.h line:43
 		pybind11::class_<mrpt::nav::CRobot2NavInterface, std::shared_ptr<mrpt::nav::CRobot2NavInterface>, PyCallBack_mrpt_nav_CRobot2NavInterface> cl(M("mrpt::nav"), "CRobot2NavInterface", "The pure virtual interface between a real or simulated robot and any\n `CAbstractNavigator`-derived class.\n\n  The user must define a new class derived from `CRobot2NavInterface` and\n reimplement\n   all pure virtual and the desired virtual methods according to the\n documentation in this class.\n\n This class does not make assumptions about the kinematic\n model of the robot, so it can work with either\n Ackermann, differential-driven or holonomic robots. It will depend on the\n used PTGs, so checkout\n each PTG documentation for the length and meaning of velocity commands.\n\n If used for a simulator, users may prefer to inherit from one of these\n classes, which already provide partial implementations:\n  - mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven\n  - mrpt::nav::CRobot2NavInterfaceForSimulator_Holo\n\n \n CReactiveNavigationSystem, CAbstractNavigator\n  \n\n\n ");
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_nav_CRobot2NavInterface(); } ) );

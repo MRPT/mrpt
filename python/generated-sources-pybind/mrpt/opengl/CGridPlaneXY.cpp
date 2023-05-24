@@ -369,7 +369,7 @@ struct PyCallBack_mrpt_opengl_CPointCloud : public mrpt::opengl::CPointCloud {
 		}
 		return CPointCloud::serializeFrom(a0, a1);
 	}
-	void PLY_import_set_vertex_count(const unsigned long a0) override {
+	void PLY_import_set_vertex_count(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloud *>(this), "PLY_import_set_vertex_count");
 		if (overload) {
@@ -382,7 +382,7 @@ struct PyCallBack_mrpt_opengl_CPointCloud : public mrpt::opengl::CPointCloud {
 		}
 		return CPointCloud::PLY_import_set_vertex_count(a0);
 	}
-	void PLY_import_set_face_count(const unsigned long a0) override {
+	void PLY_import_set_face_count(size_t a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloud *>(this), "PLY_import_set_face_count");
 		if (overload) {
@@ -395,7 +395,7 @@ struct PyCallBack_mrpt_opengl_CPointCloud : public mrpt::opengl::CPointCloud {
 		}
 		return CPointCloud::PLY_import_set_face_count(a0);
 	}
-	void PLY_import_set_vertex(const unsigned long a0, const struct mrpt::math::TPoint3D_<float> & a1, const struct mrpt::img::TColorf * a2) override {
+	void PLY_import_set_vertex(size_t a0, const struct mrpt::math::TPoint3D_<float> & a1, const struct mrpt::img::TColorf * a2) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloud *>(this), "PLY_import_set_vertex");
 		if (overload) {
@@ -434,7 +434,7 @@ struct PyCallBack_mrpt_opengl_CPointCloud : public mrpt::opengl::CPointCloud {
 		}
 		return CPointCloud::PLY_export_get_face_count();
 	}
-	void PLY_export_get_vertex(const unsigned long a0, struct mrpt::math::TPoint3D_<float> & a1, bool & a2, struct mrpt::img::TColorf & a3) const override {
+	void PLY_export_get_vertex(size_t a0, struct mrpt::math::TPoint3D_<float> & a1, bool & a2, struct mrpt::img::TColorf & a3) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPointCloud *>(this), "PLY_export_get_vertex");
 		if (overload) {
