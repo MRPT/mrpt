@@ -1,6 +1,8 @@
 \page changelog Change Log
 
 # Version 2.9.0: UNRELEASED
+- Changes in apps:
+  - rosbag2rawlog: Added support for converting nav_msgs/LaserScan topics to mrpt::obs::CObservation2DRangeScan
 - Changes in libraries:
   - Removed the legacy module mrpt::hmtslam and associated applications. Please refer to older MRPT releases if needed.
   - Removed all deprecated functions and headers.
