@@ -184,7 +184,7 @@ struct PyCallBack_mrpt_obs_CObservationBatteryState : public mrpt::obs::CObserva
 		}
 		return CObservationBatteryState::exportTxtDataRow();
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBatteryState *>(this), "getOriginalReceivedTimeStamp");
@@ -373,7 +373,7 @@ struct PyCallBack_mrpt_obs_CObservationBeaconRanges : public mrpt::obs::CObserva
 		}
 		return CObservationBeaconRanges::exportTxtDataRow();
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBeaconRanges *>(this), "getOriginalReceivedTimeStamp");
@@ -523,7 +523,7 @@ struct PyCallBack_mrpt_obs_CObservationBearingRange : public mrpt::obs::CObserva
 		}
 		return CObservationBearingRange::setSensorPose(a0);
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationBearingRange *>(this), "getOriginalReceivedTimeStamp");

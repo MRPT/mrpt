@@ -230,7 +230,7 @@ struct PyCallBack_mrpt_nav_CReactiveNavigationSystem3D : public mrpt::nav::CReac
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CAbstractPTGBasedReactive::STEP1_InitPTGs\"");
 	}
-	bool implementSenseObstacles(struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > & a0) override {
+	bool implementSenseObstacles(mrpt::Clock::time_point & a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CReactiveNavigationSystem3D *>(this), "implementSenseObstacles");
 		if (overload) {
@@ -496,7 +496,7 @@ struct PyCallBack_mrpt_nav_CReactiveNavigationSystem3D : public mrpt::nav::CReac
 struct PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_Holo : public mrpt::nav::CRobot2NavInterfaceForSimulator_Holo {
 	using mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::CRobot2NavInterfaceForSimulator_Holo;
 
-	bool getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D & a0, struct mrpt::math::TTwist2D & a1, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > & a2, struct mrpt::math::TPose2D & a3, std::string & a4) override {
+	bool getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D & a0, struct mrpt::math::TTwist2D & a1, mrpt::Clock::time_point & a2, struct mrpt::math::TPose2D & a3, std::string & a4) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CRobot2NavInterfaceForSimulator_Holo *>(this), "getCurrentPoseAndSpeeds");
 		if (overload) {
@@ -639,7 +639,7 @@ struct PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_Holo : public mrpt::n
 		}
 		return CRobot2NavInterface::stopWatchdog();
 	}
-	bool senseObstacles(class mrpt::maps::CSimplePointsMap & a0, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > & a1) override {
+	bool senseObstacles(class mrpt::maps::CSimplePointsMap & a0, mrpt::Clock::time_point & a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CRobot2NavInterfaceForSimulator_Holo *>(this), "senseObstacles");
 		if (overload) {
@@ -762,7 +762,7 @@ struct PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_Holo : public mrpt::n
 struct PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_DiffDriven : public mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven {
 	using mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::CRobot2NavInterfaceForSimulator_DiffDriven;
 
-	bool getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D & a0, struct mrpt::math::TTwist2D & a1, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > & a2, struct mrpt::math::TPose2D & a3, std::string & a4) override {
+	bool getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D & a0, struct mrpt::math::TTwist2D & a1, mrpt::Clock::time_point & a2, struct mrpt::math::TPose2D & a3, std::string & a4) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven *>(this), "getCurrentPoseAndSpeeds");
 		if (overload) {
@@ -905,7 +905,7 @@ struct PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_DiffDriven : public m
 		}
 		return CRobot2NavInterface::stopWatchdog();
 	}
-	bool senseObstacles(class mrpt::maps::CSimplePointsMap & a0, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > & a1) override {
+	bool senseObstacles(class mrpt::maps::CSimplePointsMap & a0, mrpt::Clock::time_point & a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven *>(this), "senseObstacles");
 		if (overload) {
@@ -1058,7 +1058,7 @@ void bind_mrpt_nav_reactive_CReactiveNavigationSystem3D(std::function< pybind11:
 		cl.def( pybind11::init<class mrpt::kinematics::CVehicleSimul_Holo &>(), pybind11::arg("simul") );
 
 		cl.def(pybind11::init<PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_Holo const &>());
-		cl.def("getCurrentPoseAndSpeeds", (bool (mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::*)(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > &, struct mrpt::math::TPose2D &, std::string &)) &mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::getCurrentPoseAndSpeeds, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > &, struct mrpt::math::TPose2D &, std::string &) --> bool", pybind11::arg("curPose"), pybind11::arg("curVel"), pybind11::arg("timestamp"), pybind11::arg("curOdometry"), pybind11::arg("frame_id"));
+		cl.def("getCurrentPoseAndSpeeds", (bool (mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::*)(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, mrpt::Clock::time_point &, struct mrpt::math::TPose2D &, std::string &)) &mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::getCurrentPoseAndSpeeds, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, mrpt::Clock::time_point &, struct mrpt::math::TPose2D &, std::string &) --> bool", pybind11::arg("curPose"), pybind11::arg("curVel"), pybind11::arg("timestamp"), pybind11::arg("curOdometry"), pybind11::arg("frame_id"));
 		cl.def("changeSpeeds", (bool (mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::*)(const class mrpt::kinematics::CVehicleVelCmd &)) &mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::changeSpeeds, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::changeSpeeds(const class mrpt::kinematics::CVehicleVelCmd &) --> bool", pybind11::arg("vel_cmd"));
 		cl.def("stop", (bool (mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::*)(bool)) &mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::stop, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::stop(bool) --> bool", pybind11::arg("isEmergencyStop"));
 		cl.def("getEmergencyStopCmd", (class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> (mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::*)()) &mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::getEmergencyStopCmd, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_Holo::getEmergencyStopCmd() --> class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd>");
@@ -1072,7 +1072,7 @@ void bind_mrpt_nav_reactive_CReactiveNavigationSystem3D(std::function< pybind11:
 		cl.def( pybind11::init<class mrpt::kinematics::CVehicleSimul_DiffDriven &>(), pybind11::arg("simul") );
 
 		cl.def(pybind11::init<PyCallBack_mrpt_nav_CRobot2NavInterfaceForSimulator_DiffDriven const &>());
-		cl.def("getCurrentPoseAndSpeeds", (bool (mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::*)(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > &, struct mrpt::math::TPose2D &, std::string &)) &mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::getCurrentPoseAndSpeeds, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > &, struct mrpt::math::TPose2D &, std::string &) --> bool", pybind11::arg("curPose"), pybind11::arg("curVel"), pybind11::arg("timestamp"), pybind11::arg("curOdometry"), pybind11::arg("frame_id"));
+		cl.def("getCurrentPoseAndSpeeds", (bool (mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::*)(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, mrpt::Clock::time_point &, struct mrpt::math::TPose2D &, std::string &)) &mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::getCurrentPoseAndSpeeds, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::getCurrentPoseAndSpeeds(struct mrpt::math::TPose2D &, struct mrpt::math::TTwist2D &, mrpt::Clock::time_point &, struct mrpt::math::TPose2D &, std::string &) --> bool", pybind11::arg("curPose"), pybind11::arg("curVel"), pybind11::arg("timestamp"), pybind11::arg("curOdometry"), pybind11::arg("frame_id"));
 		cl.def("changeSpeeds", (bool (mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::*)(const class mrpt::kinematics::CVehicleVelCmd &)) &mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::changeSpeeds, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::changeSpeeds(const class mrpt::kinematics::CVehicleVelCmd &) --> bool", pybind11::arg("vel_cmd"));
 		cl.def("stop", (bool (mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::*)(bool)) &mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::stop, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::stop(bool) --> bool", pybind11::arg("isEmergencyStop"));
 		cl.def("getStopCmd", (class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd> (mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::*)()) &mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::getStopCmd, "C++: mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven::getStopCmd() --> class std::shared_ptr<class mrpt::kinematics::CVehicleVelCmd>");

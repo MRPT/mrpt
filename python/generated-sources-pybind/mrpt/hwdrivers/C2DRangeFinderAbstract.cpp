@@ -159,7 +159,7 @@ struct PyCallBack_mrpt_hwdrivers_C2DRangeFinderAbstract : public mrpt::hwdrivers
 		}
 		return CGenericSensor::initialize();
 	}
-	using _binder_ret_0 = class std::multimap<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > >, class std::allocator<struct std::pair<const struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::C2DRangeFinderAbstract *>(this), "getObservations");
