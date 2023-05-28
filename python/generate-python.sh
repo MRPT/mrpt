@@ -76,6 +76,9 @@ find . -name "*.diff" | xargs -I FIL bash -c "patch -V never -s -p0 < FIL"
 find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 	sed -i -e 's/struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >/mrpt::Clock::time_point/g' FIL
 
+# (long)
+# (int64_t)
+find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
+	sed -i -e 's/(long)/(int64_t)/g' FIL
 
-# Enforce formatting:
-#find $WRAP_OUT_DIR -name "*.cpp" | xargs -I FIL clang-format-11 -i FIL
+
