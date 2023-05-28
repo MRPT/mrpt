@@ -22,6 +22,7 @@
 #include <mrpt/io/CFileGZOutputStream.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationOdometry.h>
@@ -29,6 +30,7 @@
 #include <mrpt/obs/CObservationRotatingScan.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/ros1bridge/imu.h>
+#include <mrpt/ros1bridge/laser_scan.h>
 #include <mrpt/ros1bridge/point_cloud2.h>
 #include <mrpt/ros1bridge/pose.h>
 #include <mrpt/ros1bridge/time.h>
@@ -43,6 +45,7 @@
 #include <sensor_msgs/CameraInfo.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/Imu.h>
+#include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/Int32.h>
 #include <tf2/buffer_core.h>
@@ -236,6 +239,22 @@ Obs toPointCloud2(std::string_view msg, const rosbag::MessageInstance& rosmsg)
 	}
 
 	return {ptsObs};
+}
+
+Obs toLidar2D(std::string_view msg, const rosbag::MessageInstance& rosmsg)
+{
+	auto scan = rosmsg.instantiate<sensor_msgs::LaserScan>();
+
+	auto scanObs = mrpt::obs::CObservation2DRangeScan::Create();
+
+	MRPT_TODO("Extract sensor pose from tf frames");
+	mrpt::poses::CPose3D sensorPose;
+	mrpt::ros1bridge::fromROS(*scan, sensorPose, *scanObs);
+
+	scanObs->sensorLabel = msg;
+	scanObs->timestamp = mrpt::ros1bridge::fromROS(scan->header.stamp);
+
+	return {scanObs};
 }
 
 Obs toRotatingScan(std::string_view msg, const rosbag::MessageInstance& rosmsg)
@@ -450,6 +469,15 @@ class Transcriber
 			{
 				auto callback = [=](const rosbag::MessageInstance& m) {
 					return toPointCloud2(sensorName, m);
+				};
+				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
+					callback);
+				// m_lookup["/tf"].emplace_back(sync->bindTfSync());
+			}
+			else if (sensorType == "CObservation2DRangeScan")
+			{
+				auto callback = [=](const rosbag::MessageInstance& m) {
+					return toLidar2D(sensorName, m);
 				};
 				m_lookup[sensor.at("topic").as<std::string>()].emplace_back(
 					callback);
