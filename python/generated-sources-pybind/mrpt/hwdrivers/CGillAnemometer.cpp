@@ -123,7 +123,7 @@ struct PyCallBack_mrpt_hwdrivers_CGillAnemometer : public mrpt::hwdrivers::CGill
 		}
 		return CGenericSensor::initialize();
 	}
-	using _binder_ret_0 = class std::multimap<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > >, class std::allocator<struct std::pair<const struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CGillAnemometer *>(this), "getObservations");
@@ -260,7 +260,7 @@ struct PyCallBack_mrpt_hwdrivers_CGyroKVHDSP3000 : public mrpt::hwdrivers::CGyro
 		}
 		return CGenericSensor::loadConfig(a0, a1);
 	}
-	using _binder_ret_0 = class std::multimap<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > >, class std::allocator<struct std::pair<const struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CGyroKVHDSP3000 *>(this), "getObservations");
@@ -436,7 +436,7 @@ struct PyCallBack_mrpt_hwdrivers_CHokuyoURG : public mrpt::hwdrivers::CHokuyoURG
 		}
 		return CGenericSensor::initialize();
 	}
-	using _binder_ret_0 = class std::multimap<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > >, class std::allocator<struct std::pair<const struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CHokuyoURG *>(this), "getObservations");
@@ -573,7 +573,7 @@ struct PyCallBack_mrpt_hwdrivers_CIMUIntersense : public mrpt::hwdrivers::CIMUIn
 		}
 		return CGenericSensor::loadConfig(a0, a1);
 	}
-	using _binder_ret_0 = class std::multimap<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > >, class std::allocator<struct std::pair<const struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CIMUIntersense *>(this), "getObservations");

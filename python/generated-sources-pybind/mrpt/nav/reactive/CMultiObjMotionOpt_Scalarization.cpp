@@ -575,7 +575,7 @@ struct PyCallBack_mrpt_nav_CReactiveNavigationSystem : public mrpt::nav::CReacti
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CAbstractPTGBasedReactive::STEP1_InitPTGs\"");
 	}
-	bool implementSenseObstacles(struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > & a0) override {
+	bool implementSenseObstacles(mrpt::Clock::time_point & a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CReactiveNavigationSystem *>(this), "implementSenseObstacles");
 		if (overload) {

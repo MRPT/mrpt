@@ -182,7 +182,7 @@ struct PyCallBack_mrpt_obs_CObservationPointCloud : public mrpt::obs::CObservati
 		}
 		return CObservationPointCloud::unload();
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationPointCloud *>(this), "getOriginalReceivedTimeStamp");
@@ -319,7 +319,7 @@ struct PyCallBack_mrpt_obs_CObservationRotatingScan : public mrpt::obs::CObserva
 		}
 		return CObservationRotatingScan::serializeFrom(a0, a1);
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRotatingScan *>(this), "getOriginalReceivedTimeStamp");
@@ -501,7 +501,7 @@ void bind_mrpt_obs_CObservationPointCloud(std::function< pybind11::module &(std:
 		cl.def("fromScan2D", (void (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservation2DRangeScan &)) &mrpt::obs::CObservationRotatingScan::fromScan2D, "C++: mrpt::obs::CObservationRotatingScan::fromScan2D(const class mrpt::obs::CObservation2DRangeScan &) --> void", pybind11::arg("o"));
 		cl.def("fromPointCloud", (void (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservationPointCloud &)) &mrpt::obs::CObservationRotatingScan::fromPointCloud, "C++: mrpt::obs::CObservationRotatingScan::fromPointCloud(const class mrpt::obs::CObservationPointCloud &) --> void", pybind11::arg("o"));
 		cl.def("fromGeneric", (bool (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservation &)) &mrpt::obs::CObservationRotatingScan::fromGeneric, "Will convert from another observation if it's any of the supported\n source types (see fromVelodyne(), fromScan2D(), fromPointCloud()) and\n return true, or will return false otherwise if there is no known way to\n convert from the passed object. \n\nC++: mrpt::obs::CObservationRotatingScan::fromGeneric(const class mrpt::obs::CObservation &) --> bool", pybind11::arg("o"));
-		cl.def("getOriginalReceivedTimeStamp", (struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::getOriginalReceivedTimeStamp, "@} \n\nC++: mrpt::obs::CObservationRotatingScan::getOriginalReceivedTimeStamp() const --> struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >");
+		cl.def("getOriginalReceivedTimeStamp", (mrpt::Clock::time_point (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::getOriginalReceivedTimeStamp, "@} \n\nC++: mrpt::obs::CObservationRotatingScan::getOriginalReceivedTimeStamp() const --> mrpt::Clock::time_point");
 		cl.def("getSensorPose", (void (mrpt::obs::CObservationRotatingScan::*)(class mrpt::poses::CPose3D &) const) &mrpt::obs::CObservationRotatingScan::getSensorPose, "C++: mrpt::obs::CObservationRotatingScan::getSensorPose(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("out_sensorPose"));
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationRotatingScan::setSensorPose, "C++: mrpt::obs::CObservationRotatingScan::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newSensorPose"));
 		cl.def("assign", (class mrpt::obs::CObservationRotatingScan & (mrpt::obs::CObservationRotatingScan::*)(const class mrpt::obs::CObservationRotatingScan &)) &mrpt::obs::CObservationRotatingScan::operator=, "C++: mrpt::obs::CObservationRotatingScan::operator=(const class mrpt::obs::CObservationRotatingScan &) --> class mrpt::obs::CObservationRotatingScan &", pybind11::return_value_policy::automatic, pybind11::arg(""));

@@ -147,7 +147,7 @@ struct PyCallBack_mrpt_obs_CObservationComment : public mrpt::obs::CObservationC
 		}
 		return CObservationComment::setSensorPose(a0);
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "getOriginalReceivedTimeStamp");
@@ -375,7 +375,7 @@ struct PyCallBack_mrpt_obs_CObservationOdometry : public mrpt::obs::CObservation
 		}
 		return CObservationOdometry::exportTxtDataRow();
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationOdometry *>(this), "getOriginalReceivedTimeStamp");
@@ -564,7 +564,7 @@ struct PyCallBack_mrpt_obs_CObservationReflectivity : public mrpt::obs::CObserva
 		}
 		return CObservationReflectivity::exportTxtDataRow();
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationReflectivity *>(this), "getOriginalReceivedTimeStamp");
@@ -753,7 +753,7 @@ struct PyCallBack_mrpt_obs_CObservationRobotPose : public mrpt::obs::CObservatio
 		}
 		return CObservationRobotPose::exportTxtDataRow();
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationRobotPose *>(this), "getOriginalReceivedTimeStamp");

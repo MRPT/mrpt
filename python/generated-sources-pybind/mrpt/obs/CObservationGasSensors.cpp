@@ -143,7 +143,7 @@ struct PyCallBack_mrpt_obs_CObservationGasSensors : public mrpt::obs::CObservati
 		}
 		return CObservationGasSensors::setSensorPose(a0);
 	}
-	using _binder_ret_0 = struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >;
+	using _binder_ret_0 = mrpt::Clock::time_point;
 	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationGasSensors *>(this), "getOriginalReceivedTimeStamp");
@@ -280,7 +280,7 @@ void bind_mrpt_obs_CObservationGasSensors(std::function< pybind11::module &(std:
 			cl.def_readwrite("a_decay", &mrpt::obs::CObservationGasSensors::CMOSmodel::a_decay);
 			cl.def_readwrite("b_decay", &mrpt::obs::CObservationGasSensors::CMOSmodel::b_decay);
 			cl.def_readwrite("save_maplog", &mrpt::obs::CObservationGasSensors::CMOSmodel::save_maplog);
-			cl.def("get_GasDistribution_estimation", (bool (mrpt::obs::CObservationGasSensors::CMOSmodel::*)(float &, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > &)) &mrpt::obs::CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation, "Obtain an estimation of the gas distribution based on raw sensor\n readings  \n\nC++: mrpt::obs::CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(float &, struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > > &) --> bool", pybind11::arg("reading"), pybind11::arg("timestamp"));
+			cl.def("get_GasDistribution_estimation", (bool (mrpt::obs::CObservationGasSensors::CMOSmodel::*)(float &, mrpt::Clock::time_point &)) &mrpt::obs::CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation, "Obtain an estimation of the gas distribution based on raw sensor\n readings  \n\nC++: mrpt::obs::CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(float &, mrpt::Clock::time_point &) --> bool", pybind11::arg("reading"), pybind11::arg("timestamp"));
 			cl.def("assign", (class mrpt::obs::CObservationGasSensors::CMOSmodel & (mrpt::obs::CObservationGasSensors::CMOSmodel::*)(const class mrpt::obs::CObservationGasSensors::CMOSmodel &)) &mrpt::obs::CObservationGasSensors::CMOSmodel::operator=, "C++: mrpt::obs::CObservationGasSensors::CMOSmodel::operator=(const class mrpt::obs::CObservationGasSensors::CMOSmodel &) --> class mrpt::obs::CObservationGasSensors::CMOSmodel &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 

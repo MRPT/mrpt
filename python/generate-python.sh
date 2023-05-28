@@ -12,12 +12,13 @@ PYBIND11_MM_VERSION=${PYBIND11_MM_VERSION:-$SYSTEM_PYBIND11_MM_VERSION}
 echo "System PYBIND11_VERSION: $PYBIND11_VERSION (Used for wrapper: $PYBIND11_MM_VERSION)"
 
 MODULE_NAME=mrpt
+WRAP_OUT_DIR=generated-sources-pybind
 
-mkdir -p generated-sources-pybind
+mkdir -p $WRAP_OUT_DIR
 
 $HOME/code/binder/build/source/binder \
 	--root-module=pymrpt \
-	--prefix generated-sources-pybind/ \
+	--prefix $WRAP_OUT_DIR/ \
 	--bind pymrpt \
 	-config ./python.conf \
 	./all_wrapped_mrpt_headers.hpp \
@@ -65,6 +66,16 @@ $HOME/code/binder/build/source/binder \
 echo "Applying manual patches..."
 find . -name "*.diff" | xargs -I FIL bash -c "patch -V never -s -p0 < FIL"
 
+# Workarounds to binder limitations:
+# These are to ensure multiplatform portatbility of generated code
+# (e.g. avoid build errors in armhf)
+# -----------------------------------------------------------------------------
+# Replace:
+# struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >
+# mrpt::Clock::time_point
+find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
+	sed -i -e 's/struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >/mrpt::Clock::time_point/g' FIL
+
 
 # Enforce formatting:
-#find generated-sources-pybind -name "*.cpp" | xargs -I FIL clang-format-11 -i FIL
+#find $WRAP_OUT_DIR -name "*.cpp" | xargs -I FIL clang-format-11 -i FIL
