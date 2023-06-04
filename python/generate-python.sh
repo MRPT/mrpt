@@ -75,6 +75,14 @@ find . -name "*.diff" | xargs -I FIL bash -c "patch -V never -s -p0 < FIL"
 # mrpt::Clock::time_point
 find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 	sed -i -e 's/struct std::chrono::time_point<class mrpt::Clock, struct std::chrono::duration<long, struct std::ratio<1, 10000000> > >/mrpt::Clock::time_point/g' FIL
+find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
+	sed -i -e 's/std::chrono::time_point<mrpt::Clock,std::chrono::duration<long, std::ratio<1, 10000000> >>/mrpt::Clock::time_point/g' FIL
+
+find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
+	sed -i -e 's/std::chrono::duration<long, struct std::ratio<1, 10000000> >/std::chrono::duration<int64_t,struct std::ratio<1,10000000>>/g' FIL
+
+find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
+	sed -i -e 's/std::chrono::duration<long,std::ratio<1, 10000000>>/std::chrono::duration<int64_t,std::ratio<1, 10000000>>/g' FIL
 
 # (long)
 # (int64_t)
