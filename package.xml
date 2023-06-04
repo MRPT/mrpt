@@ -49,6 +49,9 @@
   <build_depend>wxwidgets</build_depend>
   <build_depend>zlib</build_depend>
 
+  <!-- Required for cmake scripts to find ament_cmake and then realize we are in ROS 2, not ROS 1 -->
+  <build_depend condition="$ROS_VERSION == 2">ament_cmake</build_depend>
+
   <!-- Deps for ros1bridge/ros2bridge -->
   <depend>cv_bridge</depend>
   <depend>libopencv-dev</depend>
