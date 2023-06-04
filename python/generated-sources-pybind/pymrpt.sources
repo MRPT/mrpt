@@ -328,7 +328,6 @@ mrpt/vision/TKeyPoint.cpp
 mrpt/vision/CFeature.cpp
 mrpt/maps/CLandmark.cpp
 mrpt/vision/chessboard_camera_calib.cpp
-mrpt/vision/CFeatureExtraction.cpp
 mrpt/maps/CLandmarksMap.cpp
 mrpt/system/CObserver.cpp
 mrpt/slam/COccupancyGridMapFeatureExtractor.cpp

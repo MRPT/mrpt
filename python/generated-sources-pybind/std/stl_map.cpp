@@ -57,9 +57,6 @@ void bind_std_stl_map(std::function< pybind11::module &(std::string const &names
 	binder::map_binder<std::string,mrpt::poses::CPose3D,std::less<std::string >,std::allocator<std::pair<const std::string, mrpt::poses::CPose3D> >>(M("std"), "std_string", "mrpt_poses_CPose3D", "std_less_std_string_t", "std_allocator_std_pair_const_std_string_mrpt_poses_CPose3D_t");
 
 	// std::map file:bits/stl_map.h line:100
-	binder::map_binder<unsigned long,unsigned long,std::less<unsigned long>,std::allocator<std::pair<const unsigned long, unsigned long> >>(M("std"), "unsigned_long", "unsigned_long", "std_less_unsigned_long_t", "std_allocator_std_pair_const_unsigned_long_unsigned_long_t");
-
-	// std::map file:bits/stl_map.h line:100
 	binder::map_binder<unsigned int,long,std::less<unsigned int>,std::allocator<std::pair<const unsigned int, long> >>(M("std"), "unsigned_int", "long", "std_less_unsigned_int_t", "std_allocator_std_pair_const_unsigned_int_long_t");
 
 	// std::map file:bits/stl_map.h line:100
