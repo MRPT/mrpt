@@ -144,4 +144,15 @@ if (NOT DISABLE_ROS)
 	# versions compatibility of "one-source for all":
 	mrpt_version_to_hex(cv_bridge_VERSION  cv_bridge_VERSION_HEX)
 
+
+	# Kinda hack to prevent build farm to time out for "dev" jobs:
+	# The server scripts always run: (1) build+install, then (2) build+test.
+	# We will catch the (2) situation and don't build a thing, but return quickly.
+	if (MRPT_ROS_VERSION AND ("${BUILD_TESTING}" STREQUAL "1")) # Yes, the farm defines "1", not "ON"
+		message(STATUS "====== ROS build farm detected. Aborting tests in this build")
+		enable_testing()
+		set(MRPT_ABORT_CMAKE_SCRIPT 1)
+		return()
+	endif()
+
 endif() # NOT DISABLE_ROS
