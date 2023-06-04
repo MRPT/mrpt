@@ -351,9 +351,9 @@ void bind_mrpt_slam_data_association(std::function< pybind11::module &(std::stri
 void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_bayes_CRejectionSamplingCapable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_slam_CRejectionSamplingRangeOnlyLocalization(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_system_CConsoleRedirector(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_system_scheduler(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_system_CRateTimer(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_system_filesystem(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_system_thread_name(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_tfest_indivcompatdecls(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_topography_data_types(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_topography_data_types_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -780,9 +780,9 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_slam_CRangeBearingKFSLAM(M);
 	bind_mrpt_bayes_CRejectionSamplingCapable(M);
 	bind_mrpt_slam_CRejectionSamplingRangeOnlyLocalization(M);
-	bind_mrpt_system_CConsoleRedirector(M);
-	bind_mrpt_system_crc(M);
-	bind_mrpt_system_scheduler(M);
+	bind_mrpt_system_CRateTimer(M);
+	bind_mrpt_system_filesystem(M);
+	bind_mrpt_system_thread_name(M);
 	bind_mrpt_tfest_indivcompatdecls(M);
 	bind_mrpt_topography_data_types(M);
 	bind_mrpt_topography_data_types_1(M);

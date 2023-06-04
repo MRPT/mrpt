@@ -1,11 +1,11 @@
 #include <iterator>
 #include <memory>
-#include <mrpt/system/crc.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/md5.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/progress.h>
 #include <mrpt/system/scheduler.h>
+#include <mrpt/system/thread_name.h>
 #include <string>
 #include <vector>
 
@@ -22,16 +22,8 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &namespace_) > &M)
+void bind_mrpt_system_filesystem(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::system::compute_CRC16(const unsigned char *, size_t, const unsigned short) file:mrpt/system/crc.h line:27
-	M("mrpt::system").def("compute_CRC16", [](const unsigned char * a0, size_t const & a1) -> uint16_t { return mrpt::system::compute_CRC16(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
-	M("mrpt::system").def("compute_CRC16", (uint16_t (*)(const unsigned char *, size_t, const unsigned short)) &mrpt::system::compute_CRC16, "C++: mrpt::system::compute_CRC16(const unsigned char *, size_t, const unsigned short) --> uint16_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
-
-	// mrpt::system::compute_CRC32(const unsigned char *, size_t, const unsigned int) file:mrpt/system/crc.h line:33
-	M("mrpt::system").def("compute_CRC32", [](const unsigned char * a0, size_t const & a1) -> uint32_t { return mrpt::system::compute_CRC32(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
-	M("mrpt::system").def("compute_CRC32", (uint32_t (*)(const unsigned char *, size_t, const unsigned int)) &mrpt::system::compute_CRC32, "C++: mrpt::system::compute_CRC32(const unsigned char *, size_t, const unsigned int) --> uint32_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
-
 	// mrpt::system::getTempFileName() file:mrpt/system/filesystem.h line:35
 	M("mrpt::system").def("getTempFileName", (std::string (*)()) &mrpt::system::getTempFileName, "Returns the name of a proposed temporary file name \n\nC++: mrpt::system::getTempFileName() --> std::string");
 
@@ -139,5 +131,11 @@ void bind_mrpt_system_crc(std::function< pybind11::module &(std::string const &n
 
 	// mrpt::system::changeCurrentThreadPriority(enum mrpt::system::TThreadPriority) file:mrpt/system/scheduler.h line:54
 	M("mrpt::system").def("changeCurrentThreadPriority", (void (*)(enum mrpt::system::TThreadPriority)) &mrpt::system::changeCurrentThreadPriority, "Change the priority of the current thread - for Windows, see also\n changeCurrentProcessPriority()\n - Windows: This is equivalent to\n [SetThreadPriority()](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686277(v=vs.85).aspx)\n (read the docs there)\n - Linux (pthreads): May require `root` permissions! This sets the Round Robin\n scheduler with the given priority level. Read\n [sched_setscheduler](http://linux.die.net/man/2/sched_setscheduler). \n\n\n createThread, changeCurrentProcessPriority, changeCurrentThreadPriority\n\nC++: mrpt::system::changeCurrentThreadPriority(enum mrpt::system::TThreadPriority) --> void", pybind11::arg("priority"));
+
+	// mrpt::system::changeCurrentProcessPriority(enum mrpt::system::TProcessPriority) file:mrpt/system/scheduler.h line:66
+	M("mrpt::system").def("changeCurrentProcessPriority", (void (*)(enum mrpt::system::TProcessPriority)) &mrpt::system::changeCurrentProcessPriority, "Change the priority of the given process (it applies to all the threads,\n  plus independent modifiers for each thread).\n  - Windows: See\n  [SetPriorityClass](https://msdn.microsoft.com/es-es/library/windows/desktop/ms686219(v=vs.85).aspx)\n  - Linux (pthreads): Requires `root` permissions to increase process\n  priority! Internally it calls [nice()](http://linux.die.net/man/3/nice), so it\n  has no effect if\n  () was called and a SCHED_RR is already active.\n \n\n createThread, changeThreadPriority\n\nC++: mrpt::system::changeCurrentProcessPriority(enum mrpt::system::TProcessPriority) --> void", pybind11::arg("priority"));
+
+	// mrpt::system::thread_name(const std::string &, class std::thread &) file:mrpt/system/thread_name.h line:20
+	M("mrpt::system").def("thread_name", (void (*)(const std::string &, class std::thread &)) &mrpt::system::thread_name, "Sets the name of the given thread; useful for debuggers.\n \n\n\n \n New in MRPT 2.0.4\n\nC++: mrpt::system::thread_name(const std::string &, class std::thread &) --> void", pybind11::arg("name"), pybind11::arg("theThread"));
 
 }

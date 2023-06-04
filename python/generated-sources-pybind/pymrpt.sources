@@ -341,9 +341,9 @@ mrpt/slam/data_association.cpp
 mrpt/slam/CRangeBearingKFSLAM.cpp
 mrpt/bayes/CRejectionSamplingCapable.cpp
 mrpt/slam/CRejectionSamplingRangeOnlyLocalization.cpp
-mrpt/system/CConsoleRedirector.cpp
-mrpt/system/crc.cpp
-mrpt/system/scheduler.cpp
+mrpt/system/CRateTimer.cpp
+mrpt/system/filesystem.cpp
+mrpt/system/thread_name.cpp
 mrpt/tfest/indivcompatdecls.cpp
 mrpt/topography/data_types.cpp
 mrpt/topography/data_types_1.cpp
