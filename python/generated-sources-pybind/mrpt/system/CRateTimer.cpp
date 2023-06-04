@@ -1,15 +1,13 @@
 #include <deque>
 #include <iterator>
-#include <locale>
 #include <memory>
-#include <mrpt/system/CConsoleRedirector.h>
 #include <mrpt/system/CControlledRateTimer.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/CFileSystemWatcher.h>
 #include <mrpt/system/CRateTimer.h>
 #include <mrpt/system/WorkerThreadsPool.h>
+#include <mrpt/system/crc.h>
 #include <sstream> // __str__
-#include <streambuf>
 #include <string>
 
 #include <functional>
@@ -25,155 +23,8 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::system::CConsoleRedirector file:mrpt/system/CConsoleRedirector.h line:28
-struct PyCallBack_mrpt_system_CConsoleRedirector : public mrpt::system::CConsoleRedirector {
-	using mrpt::system::CConsoleRedirector::CConsoleRedirector;
-
-	void writeString(const std::string & a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "writeString");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CConsoleRedirector::writeString(a0);
-	}
-	void imbue(const class std::locale & a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "imbue");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return basic_streambuf::imbue(a0);
-	}
-	int sync() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "sync");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return basic_streambuf::sync();
-	}
-	long showmanyc() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "showmanyc");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<long>::value) {
-				static pybind11::detail::override_caster_t<long> caster;
-				return pybind11::detail::cast_ref<long>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<long>(std::move(o));
-		}
-		return basic_streambuf::showmanyc();
-	}
-	long xsgetn(char * a0, long a1) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "xsgetn");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<long>::value) {
-				static pybind11::detail::override_caster_t<long> caster;
-				return pybind11::detail::cast_ref<long>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<long>(std::move(o));
-		}
-		return basic_streambuf::xsgetn(a0, a1);
-	}
-	int underflow() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "underflow");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return basic_streambuf::underflow();
-	}
-	int uflow() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "uflow");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return basic_streambuf::uflow();
-	}
-	int pbackfail(int a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "pbackfail");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return basic_streambuf::pbackfail(a0);
-	}
-	long xsputn(const char * a0, long a1) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "xsputn");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<long>::value) {
-				static pybind11::detail::override_caster_t<long> caster;
-				return pybind11::detail::cast_ref<long>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<long>(std::move(o));
-		}
-		return basic_streambuf::xsputn(a0, a1);
-	}
-	int overflow(int a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::system::CConsoleRedirector *>(this), "overflow");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<int>::value) {
-				static pybind11::detail::override_caster_t<int> caster;
-				return pybind11::detail::cast_ref<int>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<int>(std::move(o));
-		}
-		return basic_streambuf::overflow(a0);
-	}
-};
-
-void bind_mrpt_system_CConsoleRedirector(std::function< pybind11::module &(std::string const &namespace_) > &M)
+void bind_mrpt_system_CRateTimer(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::system::CConsoleRedirector file:mrpt/system/CConsoleRedirector.h line:28
-		pybind11::class_<mrpt::system::CConsoleRedirector, std::shared_ptr<mrpt::system::CConsoleRedirector>, PyCallBack_mrpt_system_CConsoleRedirector> cl(M("mrpt::system"), "CConsoleRedirector", "By creating an object of this class, all the output to std::cout (and\n std::cerr) will be redirected to a text file, and optionally also shown on\n the console.\n  Based on code from http://www.devmaster.net/forums/showthread.php?t=7037\n \n\n\n ");
-		cl.def( pybind11::init( [](const std::string & a0){ return new mrpt::system::CConsoleRedirector(a0); }, [](const std::string & a0){ return new PyCallBack_mrpt_system_CConsoleRedirector(a0); } ), "doc");
-		cl.def( pybind11::init( [](const std::string & a0, bool const & a1){ return new mrpt::system::CConsoleRedirector(a0, a1); }, [](const std::string & a0, bool const & a1){ return new PyCallBack_mrpt_system_CConsoleRedirector(a0, a1); } ), "doc");
-		cl.def( pybind11::init( [](const std::string & a0, bool const & a1, bool const & a2){ return new mrpt::system::CConsoleRedirector(a0, a1, a2); }, [](const std::string & a0, bool const & a1, bool const & a2){ return new PyCallBack_mrpt_system_CConsoleRedirector(a0, a1, a2); } ), "doc");
-		cl.def( pybind11::init( [](const std::string & a0, bool const & a1, bool const & a2, bool const & a3){ return new mrpt::system::CConsoleRedirector(a0, a1, a2, a3); }, [](const std::string & a0, bool const & a1, bool const & a2, bool const & a3){ return new PyCallBack_mrpt_system_CConsoleRedirector(a0, a1, a2, a3); } ), "doc");
-		cl.def( pybind11::init<const std::string &, bool, bool, bool, int>(), pybind11::arg("out_file"), pybind11::arg("also_to_console"), pybind11::arg("also_cerr"), pybind11::arg("append_file"), pybind11::arg("bufferSize") );
-
-		cl.def("flush", (void (mrpt::system::CConsoleRedirector::*)()) &mrpt::system::CConsoleRedirector::flush, "C++: mrpt::system::CConsoleRedirector::flush() --> void");
-		cl.def("writeString", (void (mrpt::system::CConsoleRedirector::*)(const std::string &)) &mrpt::system::CConsoleRedirector::writeString, "C++: mrpt::system::CConsoleRedirector::writeString(const std::string &) --> void", pybind11::arg("str"));
-	}
 	{ // mrpt::system::CRateTimer file:mrpt/system/CRateTimer.h line:19
 		pybind11::class_<mrpt::system::CRateTimer, std::shared_ptr<mrpt::system::CRateTimer>> cl(M("mrpt::system"), "CRateTimer", "A class for calling sleep() in a loop, such that the amount of sleep time\n will be computed to make the loop run at the desired rate (in Hz).\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::system::CRateTimer(); } ), "doc" );
@@ -267,4 +118,12 @@ void bind_mrpt_system_CConsoleRedirector(std::function< pybind11::module &(std::
 		cl.def("clear", (void (mrpt::system::WorkerThreadsPool::*)()) &mrpt::system::WorkerThreadsPool::clear, "C++: mrpt::system::WorkerThreadsPool::clear() --> void");
 		cl.def("pendingTasks", (std::size_t (mrpt::system::WorkerThreadsPool::*)() const) &mrpt::system::WorkerThreadsPool::pendingTasks, "Returns the number of enqueued tasks, currently waiting for a free\n working thread to process them.  \n\nC++: mrpt::system::WorkerThreadsPool::pendingTasks() const --> std::size_t");
 	}
+	// mrpt::system::compute_CRC16(const unsigned char *, size_t, const unsigned short) file:mrpt/system/crc.h line:27
+	M("mrpt::system").def("compute_CRC16", [](const unsigned char * a0, size_t const & a1) -> uint16_t { return mrpt::system::compute_CRC16(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
+	M("mrpt::system").def("compute_CRC16", (uint16_t (*)(const unsigned char *, size_t, const unsigned short)) &mrpt::system::compute_CRC16, "C++: mrpt::system::compute_CRC16(const unsigned char *, size_t, const unsigned short) --> uint16_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
+
+	// mrpt::system::compute_CRC32(const unsigned char *, size_t, const unsigned int) file:mrpt/system/crc.h line:33
+	M("mrpt::system").def("compute_CRC32", [](const unsigned char * a0, size_t const & a1) -> uint32_t { return mrpt::system::compute_CRC32(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
+	M("mrpt::system").def("compute_CRC32", (uint32_t (*)(const unsigned char *, size_t, const unsigned int)) &mrpt::system::compute_CRC32, "C++: mrpt::system::compute_CRC32(const unsigned char *, size_t, const unsigned int) --> uint32_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
+
 }
