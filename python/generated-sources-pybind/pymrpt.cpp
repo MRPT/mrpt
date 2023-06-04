@@ -175,7 +175,6 @@ void bind_mrpt_vision_CStereoRectifyMap(std::function< pybind11::module &(std::s
 void bind_mrpt_hwdrivers_CDUO3DCamera(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixDynamic(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixFixed(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_CMatrixFixed_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_MatrixVectorBase(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_MatrixVectorBase_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_MatrixVectorBase_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -605,7 +604,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_hwdrivers_CDUO3DCamera(M);
 	bind_mrpt_math_CMatrixDynamic(M);
 	bind_mrpt_math_CMatrixFixed(M);
-	bind_mrpt_math_CMatrixFixed_1(M);
 	bind_mrpt_math_MatrixVectorBase(M);
 	bind_mrpt_math_MatrixVectorBase_1(M);
 	bind_mrpt_math_MatrixVectorBase_2(M);

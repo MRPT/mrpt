@@ -30,25 +30,6 @@
 void bind_std_array(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // std::array file:array line:95
-		pybind11::class_<std::array<unsigned long,2>, std::shared_ptr<std::array<unsigned long,2>>> cl(M("std"), "array_unsigned_long_2_t", "");
-		cl.def( pybind11::init( [](std::array<unsigned long,2> const &o){ return new std::array<unsigned long,2>(o); } ) );
-		cl.def( pybind11::init( [](){ return new std::array<unsigned long,2>(); } ) );
-		cl.def("fill", (void (std::array<unsigned long,2>::*)(const unsigned long &)) &std::array<unsigned long, 2>::fill, "C++: std::array<unsigned long, 2>::fill(const unsigned long &) --> void", pybind11::arg("__u"));
-		cl.def("swap", (void (std::array<unsigned long,2>::*)(struct std::array<unsigned long, 2> &)) &std::array<unsigned long, 2>::swap, "C++: std::array<unsigned long, 2>::swap(struct std::array<unsigned long, 2> &) --> void", pybind11::arg("__other"));
-		cl.def("begin", (unsigned long * (std::array<unsigned long,2>::*)()) &std::array<unsigned long, 2>::begin, "C++: std::array<unsigned long, 2>::begin() --> unsigned long *", pybind11::return_value_policy::automatic);
-		cl.def("end", (unsigned long * (std::array<unsigned long,2>::*)()) &std::array<unsigned long, 2>::end, "C++: std::array<unsigned long, 2>::end() --> unsigned long *", pybind11::return_value_policy::automatic);
-		cl.def("cbegin", (const unsigned long * (std::array<unsigned long,2>::*)() const) &std::array<unsigned long, 2>::cbegin, "C++: std::array<unsigned long, 2>::cbegin() const --> const unsigned long *", pybind11::return_value_policy::automatic);
-		cl.def("cend", (const unsigned long * (std::array<unsigned long,2>::*)() const) &std::array<unsigned long, 2>::cend, "C++: std::array<unsigned long, 2>::cend() const --> const unsigned long *", pybind11::return_value_policy::automatic);
-		cl.def("size", (unsigned long (std::array<unsigned long,2>::*)() const) &std::array<unsigned long, 2>::size, "C++: std::array<unsigned long, 2>::size() const --> unsigned long");
-		cl.def("max_size", (unsigned long (std::array<unsigned long,2>::*)() const) &std::array<unsigned long, 2>::max_size, "C++: std::array<unsigned long, 2>::max_size() const --> unsigned long");
-		cl.def("empty", (bool (std::array<unsigned long,2>::*)() const) &std::array<unsigned long, 2>::empty, "C++: std::array<unsigned long, 2>::empty() const --> bool");
-		cl.def("__getitem__", (unsigned long & (std::array<unsigned long,2>::*)(unsigned long)) &std::array<unsigned long, 2>::operator[], "C++: std::array<unsigned long, 2>::operator[](unsigned long) --> unsigned long &", pybind11::return_value_policy::automatic, pybind11::arg("__n"));
-		cl.def("at", (unsigned long & (std::array<unsigned long,2>::*)(unsigned long)) &std::array<unsigned long, 2>::at, "C++: std::array<unsigned long, 2>::at(unsigned long) --> unsigned long &", pybind11::return_value_policy::automatic, pybind11::arg("__n"));
-		cl.def("front", (unsigned long & (std::array<unsigned long,2>::*)()) &std::array<unsigned long, 2>::front, "C++: std::array<unsigned long, 2>::front() --> unsigned long &", pybind11::return_value_policy::automatic);
-		cl.def("back", (unsigned long & (std::array<unsigned long,2>::*)()) &std::array<unsigned long, 2>::back, "C++: std::array<unsigned long, 2>::back() --> unsigned long &", pybind11::return_value_policy::automatic);
-		cl.def("data", (unsigned long * (std::array<unsigned long,2>::*)()) &std::array<unsigned long, 2>::data, "C++: std::array<unsigned long, 2>::data() --> unsigned long *", pybind11::return_value_policy::automatic);
-	}
-	{ // std::array file:array line:95
 		pybind11::class_<std::array<mrpt::img::CImage,6>, std::shared_ptr<std::array<mrpt::img::CImage,6>>> cl(M("std"), "array_mrpt_img_CImage_6_t", "");
 		cl.def( pybind11::init( [](std::array<mrpt::img::CImage,6> const &o){ return new std::array<mrpt::img::CImage,6>(o); } ) );
 		cl.def( pybind11::init( [](){ return new std::array<mrpt::img::CImage,6>(); } ) );

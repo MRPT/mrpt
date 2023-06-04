@@ -165,7 +165,6 @@ mrpt/vision/CStereoRectifyMap.cpp
 mrpt/hwdrivers/CDUO3DCamera.cpp
 mrpt/math/CMatrixDynamic.cpp
 mrpt/math/CMatrixFixed.cpp
-mrpt/math/CMatrixFixed_1.cpp
 mrpt/math/MatrixVectorBase.cpp
 mrpt/math/MatrixVectorBase_1.cpp
 mrpt/math/MatrixVectorBase_2.cpp
