@@ -338,7 +338,6 @@ void bind_mrpt_vision_TKeyPoint(std::function< pybind11::module &(std::string co
 void bind_mrpt_vision_CFeature(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CLandmark(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_vision_chessboard_camera_calib(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_vision_CFeatureExtraction(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_system_CObserver(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_slam_COccupancyGridMapFeatureExtractor(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -767,7 +766,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_vision_CFeature(M);
 	bind_mrpt_maps_CLandmark(M);
 	bind_mrpt_vision_chessboard_camera_calib(M);
-	bind_mrpt_vision_CFeatureExtraction(M);
 	bind_mrpt_maps_CLandmarksMap(M);
 	bind_mrpt_system_CObserver(M);
 	bind_mrpt_slam_COccupancyGridMapFeatureExtractor(M);
