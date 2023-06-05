@@ -82,7 +82,7 @@ find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 	sed -i -e 's/std::chrono::duration<long, struct std::ratio<1, 10000000> >/std::chrono::duration<int64_t,struct std::ratio<1,10000000>>/g' FIL
 
 find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
-	sed -i -e 's/std::chrono::duration<long,std::ratio<1, 10000000>>/std::chrono::duration<int64_t,std::ratio<1, 10000000>>/g' FIL
+	sed -i -e 's/std::chrono::duration<long,/std::chrono::duration<int64_t,/g' FIL
 
 sed -i -e 's/unsigned long/size_t/g' $WRAP_OUT_DIR/std/array.cpp
 
