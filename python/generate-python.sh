@@ -85,6 +85,7 @@ find $WRAP_OUT_DIR -name "*.cpp" | 	xargs -I FIL \
 	sed -i -e 's/std::chrono::duration<long,/std::chrono::duration<int64_t,/g' FIL
 
 sed -i -e 's/unsigned long/size_t/g' $WRAP_OUT_DIR/std/array.cpp
+sed -i -e 's/unsigned long/size_t/g' $WRAP_OUT_DIR/std/stl_multimap.cpp
 
 # (long)
 # (int64_t)
