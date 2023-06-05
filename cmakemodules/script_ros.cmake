@@ -150,7 +150,11 @@ if (NOT DISABLE_ROS)
 	# We will catch the (2) situation and don't build a thing, but return quickly.
 	if (MRPT_ROS_VERSION AND ("${BUILD_TESTING}" STREQUAL "1")) # Yes, the farm defines "1", not "ON"
 		message(STATUS "====== ROS build farm detected. Aborting tests in this build")
+		# "make test" shall not fail:
 		enable_testing()
+		# "make install" shall not fail:
+		install(DIRECTORY "${MRPT_SOURCE_DIR}/share/applications" DESTINATION share)
+
 		set(MRPT_ABORT_CMAKE_SCRIPT 1)
 		return()
 	endif()
