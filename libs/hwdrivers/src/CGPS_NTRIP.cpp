@@ -40,13 +40,12 @@ void CGPS_NTRIP::doProcess()
 
 	// Move sensed observations to this object:
 	{
-		TListObservations lst;
-		gps.getObservations(lst);
+		const TListObservations lst = gps.getObservations();
 
 		std::vector<mrpt::serialization::CSerializable::Ptr> vect;
 		vect.reserve(lst.size());
-		for (auto it = lst.begin(); it != lst.end(); ++it)
-			vect.push_back(it->second);
+		for (const auto& kv : lst)
+			vect.push_back(kv.second);
 		this->appendObservations(vect);
 	}
 

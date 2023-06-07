@@ -111,7 +111,7 @@ void CWeightedPointsMap::impl_copyFrom(const CPointsMap& obj)
 						addFrom_classSpecific
  ---------------------------------------------------------------*/
 void CWeightedPointsMap::addFrom_classSpecific(
-	const CPointsMap& anotherMap, const size_t nPreviousPoints,
+	const CPointsMap& anotherMap, size_t nPreviousPoints,
 	const bool filterOutPointsAtZero)
 {
 	const size_t nOther = anotherMap.size();
@@ -340,7 +340,7 @@ void CWeightedPointsMap::loadFromRangeScan(
 
 /** In a base class, reserve memory to prepare subsequent calls to
  * PLY_import_set_vertex */
-void CWeightedPointsMap::PLY_import_set_vertex_count(const size_t N)
+void CWeightedPointsMap::PLY_import_set_vertex_count(size_t N)
 {
 	this->setSize(N);
 }

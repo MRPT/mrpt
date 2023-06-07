@@ -1546,7 +1546,7 @@ static TAuxLoadFunctor dummy_loader;
  * does not provide color info.
  */
 void CPointsMap::PLY_import_set_vertex(
-	const size_t idx, const mrpt::math::TPoint3Df& pt,
+	size_t idx, const mrpt::math::TPoint3Df& pt,
 	[[maybe_unused]] const mrpt::img::TColorf* pt_color)
 {
 	this->setPoint(idx, pt.x, pt.y, pt.z);
@@ -1559,7 +1559,7 @@ size_t CPointsMap::PLY_export_get_vertex_count() const { return this->size(); }
  * file does not provide color info.
  */
 void CPointsMap::PLY_export_get_vertex(
-	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
+	size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	[[maybe_unused]] mrpt::img::TColorf& pt_color) const
 {
 	pt_has_color = false;

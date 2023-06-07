@@ -237,7 +237,7 @@ struct CGenericFeatureTracker
 	/** Adapts the threshold \a m_detector_adaptive_thres according to the real
 	 * and desired number of features just detected */
 	void updateAdaptiveNewFeatsThreshold(
-		const size_t nNewlyDetectedFeats, const size_t desired_num_features);
+		size_t nNewlyDetectedFeats, size_t desired_num_features);
 
    private:
 	/** for use when "update_patches_every">=1 */

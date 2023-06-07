@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow.h>
 
 #include <iostream>
 

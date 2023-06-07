@@ -13,7 +13,7 @@
  * rotation) for aligning the 2 sets of laser scans and plots the
  */
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>

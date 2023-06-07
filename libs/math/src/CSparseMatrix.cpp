@@ -97,7 +97,7 @@ void CSparseMatrix::swap(CSparseMatrix& other)
 CSparseMatrix::~CSparseMatrix() { internal_free_mem(); }
 /** Erase all previous contents and leave the matrix as a "triplet" 1x1 matrix
  * without any data. */
-void CSparseMatrix::clear(const size_t nRows, const size_t nCols)
+void CSparseMatrix::clear(size_t nRows, size_t nCols)
 {
 	// Free old data:
 	internal_free_mem();
@@ -148,7 +148,7 @@ void CSparseMatrix::construct_from_existing_cs(const cs& sm)
  *  The initial size can be later on extended with insert_entry() or
  * setRowCount() & setColCount().
  */
-CSparseMatrix::CSparseMatrix(const size_t nRows, const size_t nCols)
+CSparseMatrix::CSparseMatrix(size_t nRows, size_t nCols)
 {
 	sparse_matrix.nzmax = 1;
 	sparse_matrix.m = nRows;
@@ -160,8 +160,7 @@ CSparseMatrix::CSparseMatrix(const size_t nRows, const size_t nCols)
 }
 
 /** Insert an element into a "cs", return false on error. */
-void CSparseMatrix::insert_entry(
-	const size_t row, const size_t col, const double val)
+void CSparseMatrix::insert_entry(size_t row, size_t col, const double val)
 {
 	if (!isTriplet())
 		THROW_EXCEPTION(
@@ -401,7 +400,7 @@ void CSparseMatrix::CholeskyDecomp::backsub(
 
 /** Return the vector from a back-substitution step that solves: Ux=b   */
 void CSparseMatrix::CholeskyDecomp::backsub(
-	const double* b, double* sol, const size_t N) const
+	const double* b, double* sol, size_t N) const
 {
 	ASSERT_(N > 0);
 	std::vector<double> tmp(N);

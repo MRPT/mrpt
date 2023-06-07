@@ -34,7 +34,7 @@ void CPose3DPDFSOG::clear() { m_modes.clear(); }
 /*---------------------------------------------------------------
 	Resize
   ---------------------------------------------------------------*/
-void CPose3DPDFSOG::resize(const size_t N) { m_modes.resize(N); }
+void CPose3DPDFSOG::resize(size_t N) { m_modes.resize(N); }
 /*---------------------------------------------------------------
 						getMean
   Returns an estimate of the pose, (the mean, or mathematical expectation of the

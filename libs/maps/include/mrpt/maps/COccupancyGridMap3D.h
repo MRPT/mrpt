@@ -336,26 +336,6 @@ class COccupancyGridMap3D
 
 	TRenderingOptions renderingOptions;
 
-	/** Simulate just one "ray" in the grid map. This method is used internally
-	 * to sonarSimulator and laserScanSimulator. \sa
-	 * COccupancyGridMap3D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS */
-	void simulateScanRay(
-		const double x, const double y, const double angle_direction,
-		float& out_range, bool& out_valid, const double max_range_meters,
-		const float threshold_free = 0.4f, const double noiseStd = .0,
-		const double angleNoiseStd = .0) const;
-
-	/** Computes the likelihood [0,1] of a set of points, given the current grid
-	 * map as reference.
-	 * \param pm The points map
-	 * \param relativePose The relative pose of the points map in this map's
-	 * coordinates, or nullptr for (0,0,0).
-	 *  See "likelihoodOptions" for configuration parameters.
-	 */
-	double computeLikelihoodField_Thrun(
-		const CPointsMap& pm,
-		const mrpt::poses::CPose3D& relativePose = mrpt::poses::CPose3D());
-
 	/** Returns true upon map construction or after calling clear(), the return
 	 *  changes to false upon successful insertObservation() or any other
 	 * method to load data in the map.

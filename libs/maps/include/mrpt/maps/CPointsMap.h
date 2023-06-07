@@ -181,7 +181,7 @@ class CPointsMap : public CMetricMap,
 	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
 	 */
 	virtual void getPointAllFieldsFast(
-		const size_t index, std::vector<float>& point_data) const = 0;
+		size_t index, std::vector<float>& point_data) const = 0;
 
 	/** Set all the data fields for one point as a vector: depending on the
 	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
@@ -190,7 +190,7 @@ class CPointsMap : public CMetricMap,
 	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
 	 */
 	virtual void setPointAllFieldsFast(
-		const size_t index, const std::vector<float>& point_data) = 0;
+		size_t index, const std::vector<float>& point_data) = 0;
 
    protected:
 	/** Virtual assignment operator, copies as much common data (XYZ, color,...)
@@ -200,7 +200,7 @@ class CPointsMap : public CMetricMap,
 	/** Auxiliary method called from within \a addFrom() automatically, to
 	 * finish the copying of class-specific data  */
 	virtual void addFrom_classSpecific(
-		const CPointsMap& anotherMap, const size_t nPreviousPoints,
+		const CPointsMap& anotherMap, size_t nPreviousPoints,
 		const bool filterOutPointsAtZero) = 0;
 
    public:
@@ -717,8 +717,7 @@ class CPointsMap : public CMetricMap,
 	 * implementation class this can be [X Y Z] or [X Y Z R G B], etc...
 	 * \sa getPointAllFieldsFast, setPointAllFields, setPointAllFieldsFast
 	 */
-	void getPointAllFields(
-		const size_t index, std::vector<float>& point_data) const
+	void getPointAllFields(size_t index, std::vector<float>& point_data) const
 	{
 		ASSERT_LT_(index, this->size());
 		getPointAllFieldsFast(index, point_data);
@@ -730,8 +729,7 @@ class CPointsMap : public CMetricMap,
 	 * bounds
 	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
 	 */
-	void setPointAllFields(
-		const size_t index, const std::vector<float>& point_data)
+	void setPointAllFields(size_t index, const std::vector<float>& point_data)
 	{
 		ASSERT_LT_(index, this->size());
 		setPointAllFieldsFast(index, point_data);
@@ -933,29 +931,6 @@ class CPointsMap : public CMetricMap,
 	 */
 	mrpt::math::TBoundingBoxf boundingBox() const;
 
-	/// \overload
-	[[deprecated]] inline void boundingBox(
-		float& min_x, float& max_x, float& min_y, float& max_y, float& min_z,
-		float& max_z) const
-	{
-		const auto bb = boundingBox();
-		min_x = bb.min.x;
-		max_x = bb.max.x;
-		min_y = bb.min.y;
-		max_y = bb.max.y;
-		min_z = bb.min.z;
-		max_z = bb.max.z;
-	}
-
-	/// \overload
-	[[deprecated]] inline void boundingBox(
-		mrpt::math::TPoint3D& pMin, mrpt::math::TPoint3D& pMax) const
-	{
-		const auto bb = boundingBox();
-		pMin = bb.min;
-		pMax = bb.max;
-	}
-
 	/** Extracts the points in the map within a cylinder in 3D defined the
 	 * provided radius and zmin/zmax values.
 	 */
@@ -1076,7 +1051,7 @@ class CPointsMap : public CMetricMap,
 	/// Must return the number of data points
 	inline size_t kdtree_get_point_count() const { return this->size(); }
 	/// Returns the dim'th component of the idx'th point in the class:
-	inline float kdtree_get_pt(const size_t idx, int dim) const
+	inline float kdtree_get_pt(size_t idx, int dim) const
 	{
 		if (dim == 0) return m_x[idx];
 		else if (dim == 1)
@@ -1090,7 +1065,7 @@ class CPointsMap : public CMetricMap,
 	/// Returns the distance between the vector "p1[0:size-1]" and the data
 	/// point with index "idx_p2" stored in the class:
 	inline float kdtree_distance(
-		const float* p1, const size_t idx_p2, size_t size) const
+		const float* p1, size_t idx_p2, size_t size) const
 	{
 		if (size == 2)
 		{
@@ -1187,7 +1162,7 @@ class CPointsMap : public CMetricMap,
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	void PLY_import_set_face_count([[maybe_unused]] const size_t N) override {}
+	void PLY_import_set_face_count([[maybe_unused]] size_t N) override {}
 
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.
@@ -1195,7 +1170,7 @@ class CPointsMap : public CMetricMap,
 	 * color info.
 	 */
 	void PLY_import_set_vertex(
-		const size_t idx, const mrpt::math::TPoint3Df& pt,
+		size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
 
@@ -1204,7 +1179,7 @@ class CPointsMap : public CMetricMap,
 	size_t PLY_export_get_vertex_count() const override;
 	size_t PLY_export_get_face_count() const override { return 0; }
 	void PLY_export_get_vertex(
-		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
+		size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 
@@ -1255,23 +1230,23 @@ class PointCloudAdapter<mrpt::maps::CPointsMap>
 	/** Get number of points */
 	inline size_t size() const { return m_obj.size(); }
 	/** Set number of points (to uninitialized values) */
-	inline void resize(const size_t N) { m_obj.resize(N); }
+	inline void resize(size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
 	inline void setDimensions(size_t height, size_t width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
-	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
+	inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
 	{
 		m_obj.getPointFast(idx, x, y, z);
 	}
 	/** Set XYZ coordinates of i'th point */
 	inline void setPointXYZ(
-		const size_t idx, const coords_t x, const coords_t y, const coords_t z)
+		size_t idx, const coords_t x, const coords_t y, const coords_t z)
 	{
 		m_obj.setPointFast(idx, x, y, z);
 	}
 	/** Set XYZ coordinates of i'th point */
-	inline void setInvalidPoint(const size_t idx)
+	inline void setInvalidPoint(size_t idx)
 	{
 		m_obj.setPointFast(idx, 0, 0, 0);
 	}

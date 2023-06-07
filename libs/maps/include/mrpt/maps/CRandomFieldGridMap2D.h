@@ -389,14 +389,8 @@ class CRandomFieldGridMap2D
 
 	/** Save a matlab ".m" file which represents as 3D surfaces the mean and a
 	 * given confidence level for the concentration of each cell.
-	 *  This method can only be called in a KF map model.
-	 *  \sa getAsMatlab3DGraphScript    */
+	 *  This method can only be called in a KF map model. */
 	virtual void saveAsMatlab3DGraph(const std::string& filName) const;
-
-	/** Return a large text block with a MATLAB script to plot the contents of
-	 * this map \sa saveAsMatlab3DGraph
-	 *  This method can only be called in a KF map model  */
-	void getAsMatlab3DGraphScript(std::string& out_script) const;
 
 	/** Returns a 3D object representing the map (mean) */
 	void getVisualizationInto(
@@ -652,9 +646,8 @@ class CRandomFieldGridMap2D
 	 * provided occupancy gridmap*/
 	bool exist_relation_between2cells(
 		const mrpt::maps::COccupancyGridMap2D* m_Ocgridmap, size_t cxo_min,
-		size_t cxo_max, size_t cyo_min, size_t cyo_max, const size_t seed_cxo,
-		const size_t seed_cyo, const size_t objective_cxo,
-		const size_t objective_cyo);
+		size_t cxo_max, size_t cyo_min, size_t cyo_max, size_t seed_cxo,
+		size_t seed_cyo, size_t objective_cxo, size_t objective_cyo);
 };
 
 }  // namespace mrpt::maps

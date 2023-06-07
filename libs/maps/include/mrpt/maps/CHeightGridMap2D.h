@@ -153,8 +153,7 @@ class CHeightGridMap2D
 	double dem_get_resolution() const override;
 	size_t dem_get_size_x() const override;
 	size_t dem_get_size_y() const override;
-	bool dem_get_z_by_cell(
-		const size_t cx, const size_t cy, double& z_out) const override;
+	bool dem_get_z_by_cell(size_t cx, size_t cy, double& z_out) const override;
 	bool dem_get_z(
 		const double x, const double y, double& z_out) const override;
 	void dem_update_map() override;

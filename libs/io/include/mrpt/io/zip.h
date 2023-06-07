@@ -45,19 +45,16 @@ void decompress(
 
 /** Decompress an array of bytes into another one
  * \exception std::exception If the apriori estimated decompressed size is not
- * enough
+ * enough.
+ * \return Output uncompressed data size in bytes.
  */
-void decompress(
-	void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize,
-	size_t& outDataActualSize);
+size_t decompress(
+	void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize);
 
-/** Decompress an array of bytes into another one
- * \exception std::exception If the apriori estimated decompressed size is not
- * enough
- */
-void decompress(
+/// \overload
+size_t decompress(
 	mrpt::io::CStream& inStream, size_t inDataSize, void* outData,
-	size_t outDataBufferSize, size_t& outDataActualSize);
+	size_t outDataBufferSize);
 
 /** Decompress a gzip file (xxxx.gz) into a memory buffer. If the file is not a
  * .gz file, it just read the whole file unmodified.

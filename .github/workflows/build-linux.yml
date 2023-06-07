@@ -68,7 +68,7 @@ jobs:
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
             sudo apt install libicu-dev libsimpleini-dev
             # to enable pymrpt:
-            sudo apt install libboost-all-dev python3-numpy
+            sudo apt install pybind11-dev python3-dev #python3-numpy
           fi
 
           if [ "${{ matrix.compiler }}" = "gcc" ]; then

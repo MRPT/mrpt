@@ -2050,7 +2050,6 @@ INCLUDE_PATH           = \
 	../../libs/graphs \
 	../../libs/graphslam \
 	../../libs/gui \
-	../../libs/hmtslam \
 	../../libs/hwdrivers \
 	../../libs/img \
 	../../libs/io \

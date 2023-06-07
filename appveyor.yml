@@ -1,5 +1,5 @@
 # version format
-version: 2.8.1-{branch}-build{build}
+version: 2.9.0-{branch}-build{build}
 
 os: Visual Studio 2019
 
@@ -70,14 +70,10 @@ before_build:
   - cmake -S. -Bbuild -G "Visual Studio 16 2019" \
     -DMRPT_EIGEN_USE_EMBEDDED_VERSION=ON -DMRPT_BUILD_ASSIMP=OFF \
     -DOpenCV_DIR=%OPENCVDIR% -DwxWidgets_ROOT_DIR=%WXWIDGETSDIR% -DwxWidgets_LIB_DIR=%WXWIDGETSLIBDIR% \
-    -DBUILD_mrpt-hmtslam=OFF \
     -DBUILD_APP_DifOdometry-Camera=OFF -DBUILD_APP_DifOdometry-Datasets=OFF \
     -DBUILD_APP_benchmarking-image-features=OFF \
     -DBUILD_APP_carmen2rawlog=OFF \
     -DBUILD_APP_carmen2simplemap=OFF \
-    -DBUILD_APP_hmt-slam=OFF \
-    -DBUILD_APP_hmt-slam-gui=OFF \
-    -DBUILD_APP_hmtMapViewer=OFF \
     -DBUILD_APP_map-partition=OFF \
     -DBUILD_APP_rosbag2rawlog=OFF \
     -DBUILD_APP_simul-landmarks=OFF \

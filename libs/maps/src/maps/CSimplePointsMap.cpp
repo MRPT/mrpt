@@ -365,7 +365,7 @@ void CSimplePointsMap::loadFromRangeScan(
 
 /** In a base class, reserve memory to prepare subsequent calls to
  * PLY_import_set_vertex */
-void CSimplePointsMap::PLY_import_set_vertex_count(const size_t N)
+void CSimplePointsMap::PLY_import_set_vertex_count(size_t N)
 {
 	this->setSize(N);
 }

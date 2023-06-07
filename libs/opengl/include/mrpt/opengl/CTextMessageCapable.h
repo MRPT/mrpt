@@ -57,7 +57,7 @@ class CTextMessageCapable
 	 * other parameters.
 	 * \return false if given ID doesn't exist.
 	 */
-	bool updateTextMessage(const size_t unique_index, const std::string& text);
+	bool updateTextMessage(size_t unique_index, const std::string& text);
 
 	struct DataPerText : mrpt::opengl::T2DTextData
 	{

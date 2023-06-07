@@ -106,8 +106,7 @@ class CDirectedTree
 	 * "edge_to_child.id" (root node is at 0, its children are at 1, etc.).
 	 */
 	using visitor_t = std::function<void(
-		const TNodeID parent, const TEdgeInfo& edgeToChild,
-		const size_t depthLevel)>;
+		TNodeID const parent, const TEdgeInfo& edgeToChild, size_t depthLevel)>;
 
 	/** Virtual base class for user-defined visitors.
 	 * Obsolete: Prefer C++11 visitor_t
@@ -128,17 +127,17 @@ class CDirectedTree
 		 * "edge_to_child.id" (root node is at 0, its children are at 1, etc.).
 		 */
 		virtual void OnVisitNode(
-			const TNodeID parent,
+			TNodeID const parent,
 			const typename tree_t::TEdgeInfo& edge_to_child,
-			const size_t depth_level) = 0;
+			size_t depth_level) = 0;
 	};
 
 	/** Depth-first visit of all children nodes of a given root (itself excluded
 	 * from the visit), invoking a user-provided function for each node/edge.
 	 * \sa visitBreadthFirst */
 	void visitDepthFirst(
-		const TNodeID vroot, const visitor_t& user_visitor,
-		const size_t root_depth_level = 0) const
+		TNodeID const vroot, const visitor_t& user_visitor,
+		size_t root_depth_level = 0) const
 	{
 		const size_t next_depth_level = root_depth_level + 1;
 		auto itChildren = edges_to_children.find(vroot);
@@ -155,11 +154,11 @@ class CDirectedTree
 
 	/// \overload \deprecated Prefer the visitor_t version (MRPT 2.2.1).
 	void visitDepthFirst(
-		const TNodeID vroot, Visitor& user_visitor,
-		const size_t root_depth_level = 0) const
+		TNodeID const vroot, Visitor& user_visitor,
+		size_t root_depth_level = 0) const
 	{
-		auto lmd = [&](const TNodeID parent, const TEdgeInfo& edgeToChild,
-					   const size_t depthLevel) {
+		auto lmd = [&](TNodeID const parent, const TEdgeInfo& edgeToChild,
+					   size_t depthLevel) {
 			user_visitor.OnVisitNode(parent, edgeToChild, depthLevel);
 		};
 		visitDepthFirst(vroot, lmd, root_depth_level);
@@ -169,8 +168,8 @@ class CDirectedTree
 	 * excluded from the visit), invoking a user-provided function for each
 	 * node/edge. \sa visitDepthFirst */
 	void visitBreadthFirst(
-		const TNodeID vroot, const visitor_t& user_visitor,
-		const size_t root_depth_level = 0) const
+		TNodeID const vroot, const visitor_t& user_visitor,
+		size_t root_depth_level = 0) const
 	{
 		const size_t next_depth_level = root_depth_level + 1;
 		auto itChildren = edges_to_children.find(vroot);
@@ -186,11 +185,11 @@ class CDirectedTree
 
 	/// \overload \deprecated Prefer the visitor_t version (MRPT 2.2.1).
 	void visitBreadthFirst(
-		const TNodeID vroot, Visitor& user_visitor,
-		const size_t root_depth_level = 0) const
+		TNodeID const vroot, Visitor& user_visitor,
+		size_t root_depth_level = 0) const
 	{
-		auto lmd = [&](const TNodeID parent, const TEdgeInfo& edgeToChild,
-					   const size_t depthLevel) {
+		auto lmd = [&](TNodeID const parent, const TEdgeInfo& edgeToChild,
+					   size_t depthLevel) {
 			user_visitor.OnVisitNode(parent, edgeToChild, depthLevel);
 		};
 		visitBreadthFirst(vroot, lmd, root_depth_level);
@@ -210,7 +209,7 @@ class CDirectedTree
 	std::string getAsTextDescription() const
 	{
 		std::stringstream s;
-		auto lmb = [&]([[maybe_unused]] const TNodeID parent,
+		auto lmb = [&]([[maybe_unused]] TNodeID const parent,
 					   const TEdgeInfo& edge_to_child,
 					   const size_t depth_level) {
 			s << std::string(depth_level * 5, ' ')

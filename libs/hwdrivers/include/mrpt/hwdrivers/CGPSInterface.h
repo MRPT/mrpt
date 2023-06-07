@@ -163,9 +163,6 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	/** Returns true if communications work, i.e. if some message has been
 	 * received. */
 	bool isGPS_connected();
-	/** Returns true if the last message from the GPS indicates that the signal
-	 * from sats has been acquired. */
-	bool isGPS_signalAcquired();
 
 	/** \name Set-up and configuration
 	 * @{ */
@@ -220,7 +217,7 @@ class CGPSInterface : public mrpt::system::COutputLogger, public CGenericSensor
 	/** Send a custom data block to the GNSS device right now. Can be used to
 	  change its behavior online as needed.
 	  \return false on communication error */
-	bool sendCustomCommand(const void* data, const size_t datalen);
+	bool sendCustomCommand(const void* data, size_t datalen);
 	/** @} */
 
 	inline bool isAIMConfigured() { return m_topcon_AIMConfigured; }

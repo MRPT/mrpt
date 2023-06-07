@@ -14,7 +14,7 @@
 #endif
 #include <OpenNI.h>
 #include <PS1080.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl.h>
 

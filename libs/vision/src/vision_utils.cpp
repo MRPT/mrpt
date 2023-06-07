@@ -169,43 +169,6 @@ CMatrixDouble33 vision::buildIntrinsicParamsMatrix(
 }
 
 /*-------------------------------------------------------------
-					defaultIntrinsicParamsMatrix
--------------------------------------------------------------*/
-CMatrixDouble33 vision::defaultIntrinsicParamsMatrix(
-	unsigned int camIndex, unsigned int resX, unsigned int resY)
-{
-	float fx, fy, cx, cy;
-
-	switch (camIndex)
-	{
-		case 0:
-			// Bumblebee:
-			fx = 0.79345f;
-			fy = 1.05793f;
-			cx = 0.55662f;
-			cy = 0.52692f;
-			break;
-
-		case 1:
-			// Sony:
-			fx = 0.95666094f;
-			fy = 1.3983423f;
-			cx = 0.54626328f;
-			cy = 0.4939191f;
-			break;
-
-		default:
-		{
-			THROW_EXCEPTION_FMT(
-				"Unknown camera index!! for 'camIndex'=%u", camIndex);
-		}
-	}
-
-	return buildIntrinsicParamsMatrix(
-		resX * fx, resY * fy, resX * cx, resY * cy);
-}
-
-/*-------------------------------------------------------------
 						computeMsd
 -------------------------------------------------------------*/
 double vision::computeMsd(
@@ -1893,9 +1856,8 @@ void vision::computeStereoRectificationMaps(
 }  // end computeStereoRectificationMaps
 
 TStereoSystemParams::TStereoSystemParams()
-
 {
-	K = defaultIntrinsicParamsMatrix(0, 640, 480);
+	// K = defaultIntrinsicParamsMatrix(0, 640, 480);
 	F.setZero();
 	F(1, 2) = -1;
 	F(2, 1) = 1;

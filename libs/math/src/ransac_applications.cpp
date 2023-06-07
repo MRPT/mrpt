@@ -105,7 +105,7 @@ void mrpt::math::ransac_detect_3D_planes(
 	const CVectorDynamic<NUMTYPE>& x, const CVectorDynamic<NUMTYPE>& y,
 	const CVectorDynamic<NUMTYPE>& z,
 	vector<pair<size_t, TPlane>>& out_detected_planes, const double threshold,
-	const size_t min_inliers_for_valid_plane)
+	size_t min_inliers_for_valid_plane)
 {
 	MRPT_START
 
@@ -173,7 +173,7 @@ void mrpt::math::ransac_detect_3D_planes(
 		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y,      \
 		const CVectorDynamic<_TYPE_>& z,                                       \
 		vector<pair<size_t, TPlane>>& out_detected_planes,                     \
-		const double threshold, const size_t min_inliers_for_valid_plane)
+		const double threshold, size_t min_inliers_for_valid_plane)
 
 EXPLICIT_INST_ransac_detect_3D_planes(float);
 EXPLICIT_INST_ransac_detect_3D_planes(double);
@@ -265,7 +265,7 @@ template <typename NUMTYPE>
 void mrpt::math::ransac_detect_2D_lines(
 	const CVectorDynamic<NUMTYPE>& x, const CVectorDynamic<NUMTYPE>& y,
 	std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,
-	const double threshold, const size_t min_inliers_for_valid_line)
+	const double threshold, size_t min_inliers_for_valid_line)
 {
 	MRPT_START
 	ASSERT_(x.size() == y.size());
@@ -328,7 +328,7 @@ void mrpt::math::ransac_detect_2D_lines(
 	template void mrpt::math::ransac_detect_2D_lines<_TYPE_>(                  \
 		const CVectorDynamic<_TYPE_>& x, const CVectorDynamic<_TYPE_>& y,      \
 		std::vector<std::pair<size_t, TLine2D>>& out_detected_lines,           \
-		const double threshold, const size_t min_inliers_for_valid_line)
+		const double threshold, size_t min_inliers_for_valid_line)
 
 EXPLICIT_INSTANT_ransac_detect_2D_lines(float);
 EXPLICIT_INSTANT_ransac_detect_2D_lines(double);

@@ -313,7 +313,7 @@ void CObservation2DRangeScan::filterByExclusionAreas(
 	MRPT_END
 }
 
-float CObservation2DRangeScan::getScanAngle(const size_t idx) const
+float CObservation2DRangeScan::getScanAngle(size_t idx) const
 {
 	float Ang = -0.5f * aperture, dA = aperture / (m_scan.size() - 1);
 	ASSERT_LT_(idx, m_scan.size());
@@ -505,52 +505,51 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream& o) const
 	}
 }
 
-const float& CObservation2DRangeScan::getScanRange(const size_t i) const
+const float& CObservation2DRangeScan::getScanRange(size_t i) const
 {
 	ASSERT_LT_(i, m_scan.size());
 	return m_scan[i];
 }
-float& CObservation2DRangeScan::getScanRange(const size_t i)
+float& CObservation2DRangeScan::getScanRange(size_t i)
 {
 	ASSERT_LT_(i, m_scan.size());
 	return m_scan[i];
 }
 
-void CObservation2DRangeScan::setScanRange(const size_t i, const float val)
+void CObservation2DRangeScan::setScanRange(size_t i, const float val)
 {
 	ASSERT_LT_(i, m_scan.size());
 	m_scan[i] = val;
 }
 
-const int32_t& CObservation2DRangeScan::getScanIntensity(const size_t i) const
+const int32_t& CObservation2DRangeScan::getScanIntensity(size_t i) const
 {
 	ASSERT_LT_(i, m_intensity.size());
 	return m_intensity[i];
 }
-int32_t& CObservation2DRangeScan::getScanIntensity(const size_t i)
+int32_t& CObservation2DRangeScan::getScanIntensity(size_t i)
 {
 	ASSERT_LT_(i, m_intensity.size());
 	return m_intensity[i];
 }
-void CObservation2DRangeScan::setScanIntensity(const size_t i, const int val)
+void CObservation2DRangeScan::setScanIntensity(size_t i, const int val)
 {
 	ASSERT_LT_(i, m_intensity.size());
 	m_intensity[i] = val;
 }
 
-bool CObservation2DRangeScan::getScanRangeValidity(const size_t i) const
+bool CObservation2DRangeScan::getScanRangeValidity(size_t i) const
 {
 	ASSERT_LT_(i, m_validRange.size());
 	return m_validRange[i] != 0;
 }
-void CObservation2DRangeScan::setScanRangeValidity(
-	const size_t i, const bool val)
+void CObservation2DRangeScan::setScanRangeValidity(size_t i, const bool val)
 {
 	ASSERT_LT_(i, m_validRange.size());
 	m_validRange[i] = val ? 1 : 0;
 }
 
-void CObservation2DRangeScan::resizeScan(const size_t len)
+void CObservation2DRangeScan::resizeScan(size_t len)
 {
 	m_scan.resize(len);
 	m_intensity.resize(len);
@@ -558,7 +557,7 @@ void CObservation2DRangeScan::resizeScan(const size_t len)
 }
 
 void CObservation2DRangeScan::resizeScanAndAssign(
-	const size_t len, const float rangeVal, const bool rangeValidity,
+	size_t len, const float rangeVal, const bool rangeValidity,
 	const int32_t rangeIntensity)
 {
 	m_scan.assign(len, rangeVal);

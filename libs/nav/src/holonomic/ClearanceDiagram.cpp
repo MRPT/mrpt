@@ -55,7 +55,7 @@ void ClearanceDiagram::renderAs3DObject(
 			{
 				const double alpha = ::atan2(y, x);
 				const uint16_t actual_k =
-					CParameterizedTrajectoryGenerator::alpha2index(
+					CParameterizedTrajectoryGenerator::Alpha2index(
 						alpha, m_actual_num_paths);
 				const double dist = std::hypot(x, y);
 				clear_val =

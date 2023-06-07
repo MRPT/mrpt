@@ -534,13 +534,13 @@ class yaml
 
 	/** Append a new value to a sequence.
 	 * \throw std::exception If this is not a sequence */
-	void push_back(const double v) { internalPushBack(v); }
+	void push_back(double v) { internalPushBack(v); }
 	/// \overload
-	void push_back(const std::string v) { internalPushBack(v); }
+	void push_back(const std::string& v) { internalPushBack(v); }
 	/// \overload
-	void push_back(const uint64_t v) { internalPushBack(v); }
+	void push_back(uint64_t v) { internalPushBack(v); }
 	/// \overload
-	void push_back(const bool v) { internalPushBack(bool(v)); }
+	void push_back(bool v) { internalPushBack(bool(v)); }
 	/// \overload
 	void push_back(const yaml& v)
 	{

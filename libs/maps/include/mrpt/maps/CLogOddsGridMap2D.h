@@ -40,7 +40,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 	 *  \param thres  This must be CELLTYPE_MIN+logodd_obs
 	 * \sa updateCell, updateCell_fast_free
 	 */
-	inline static void updateCell_fast_occupied(
+	inline void updateCell_fast_occupied(
 		const unsigned x, const unsigned y, const cell_t logodd_obs,
 		const cell_t thres, cell_t* mapArray, const unsigned _size_x)
 	{
@@ -60,7 +60,7 @@ struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 	 *  \param thres  This must be CELLTYPE_MIN+logodd_obs
 	 * \sa updateCell, updateCell_fast_free
 	 */
-	inline static void updateCell_fast_occupied(
+	inline void updateCell_fast_occupied(
 		cell_t* theCell, const cell_t logodd_obs, const cell_t thres)
 	{
 		if (*theCell > thres) *theCell -= logodd_obs;

@@ -788,7 +788,7 @@ struct graph_ops
 				const TNodeID parent_id,
 				const typename dijkstra_t::tree_graph_t::Visitor::tree_t::
 					TEdgeInfo& edge_to_child,
-				[[maybe_unused]] const size_t depth_level) override
+				[[maybe_unused]] size_t depth_level) override
 			{
 				const TNodeID child_id = edge_to_child.id;
 

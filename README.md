@@ -78,11 +78,16 @@ sudo apt install ros-$ROS_DISTRO-mrpt2
 
 | Distro | `develop` branch  | Stable release | Next builds |
 |---|---|---|---|
-| ROS1 Melodic @ u18.04 |  | [![Version](https://img.shields.io/ros/v/melodic/mrpt2)](https://index.ros.org/search/?term=mrpt2) |  |
 | ROS1 Noetic @ u20.04 | [![Build Status](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros.org/job/Ndev__mrpt2__ubuntu_focal_amd64/) | [![Version](https://img.shields.io/ros/v/noetic/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros.org/job/Nbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
-| ROS2 Foxy @ u20.04 | [![Build Status](https://build.ros2.org/job/Fdev__mrpt2__ubuntu_focal_amd64/badge/icon)](https://build.ros2.org/job/Fdev__mrpt2__ubuntu_focal_amd64/) | [![Version](https://img.shields.io/ros/v/foxy/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros2.org/job/Fbin_uF64__mrpt2__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Fbin_uF64__mrpt2__ubuntu_focal_amd64__binary/) |
 | ROS2 Humble @ u22.04 | [![Build Status](https://build.ros2.org/job/Hdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Hdev__mrpt2__ubuntu_jammy_amd64/) | [![Version](https://img.shields.io/ros/v/humble/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros2.org/job/Hbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Hbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) | 
+| ROS2 Iron @ u22.04 | [![Build Status](https://build.ros2.org/job/Idev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Idev__mrpt2__ubuntu_jammy_amd64/) | [![Version](https://img.shields.io/ros/v/iron/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros2.org/job/Ibin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Ibin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) | 
 | ROS2 Rolling @ u22.04 | [![Build Status](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Rdev__mrpt2__ubuntu_jammy_amd64/) |  [![Version](https://img.shields.io/ros/v/rolling/mrpt2)](https://index.ros.org/search/?term=mrpt2) | [![Build Status](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uJ64__mrpt2__ubuntu_jammy_amd64__binary/) | 
+
+| EOL Distro | Last release |
+|---|---|
+| ROS1 Melodic @ u18.04 | [![Version](https://img.shields.io/ros/v/melodic/mrpt2)](https://index.ros.org/search/?term=mrpt2) |
+| ROS2 Foxy @ u20.04 | [![Version](https://img.shields.io/ros/v/foxy/mrpt2)](https://index.ros.org/search/?term=mrpt2) |
+
 
 ## 4. License
 MRPT is released under the [new BSD license](http://www.mrpt.org/License/).

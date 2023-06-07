@@ -7,7 +7,7 @@
    | Released under BSD License. See: https://www.mrpt.org/License          |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/opengl.h>

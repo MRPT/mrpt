@@ -306,11 +306,11 @@ class COccupancyGridMap2D
 	}
 
 	/** Transform a cell index into a coordinate value */
-	inline float idx2x(const size_t cx) const
+	inline float idx2x(size_t cx) const
 	{
 		return m_xMin + (cx + 0.5f) * m_resolution;
 	}
-	inline float idx2y(const size_t cy) const
+	inline float idx2y(size_t cy) const
 	{
 		return m_yMin + (cy + 0.5f) * m_resolution;
 	}

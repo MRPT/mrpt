@@ -24,6 +24,6 @@ std::string md5(const std::string& str);
 /** Computes the md5 of a block of data. */
 std::string md5(const std::vector<uint8_t>& str);
 /** Computes the md5 of a block of data. */
-std::string md5(const unsigned char* data, const size_t len);
+std::string md5(const unsigned char* data, size_t len);
 /** @} */
 }  // namespace mrpt::system

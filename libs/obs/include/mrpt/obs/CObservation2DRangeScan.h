@@ -84,31 +84,31 @@ class CObservation2DRangeScan : public CObservation
 	/** @name Scan data
 		@{ */
 	/** Resizes all data vectors to allocate a given number of scan rays */
-	void resizeScan(const size_t len);
+	void resizeScan(size_t len);
 	/** Resizes all data vectors to allocate a given number of scan rays and
 	 * assign default values. */
 	void resizeScanAndAssign(
-		const size_t len, const float rangeVal, const bool rangeValidity,
+		size_t len, const float rangeVal, const bool rangeValidity,
 		const int32_t rangeIntensity = 0);
 	/** Get number of scan rays */
 	size_t getScanSize() const;
 
 	/** The range values of the scan, in meters. Must have same length than \a
 	 * validRange */
-	const float& getScanRange(const size_t i) const;
-	float& getScanRange(const size_t i);
-	void setScanRange(const size_t i, const float val);
+	const float& getScanRange(size_t i) const;
+	float& getScanRange(size_t i);
+	void setScanRange(size_t i, const float val);
 
 	/** The intensity values of the scan. If available, must have same length
 	 * than \a validRange */
-	const int32_t& getScanIntensity(const size_t i) const;
-	int32_t& getScanIntensity(const size_t i);
-	void setScanIntensity(const size_t i, const int val);
+	const int32_t& getScanIntensity(size_t i) const;
+	int32_t& getScanIntensity(size_t i);
+	void setScanIntensity(size_t i, const int val);
 
 	/** It's false (=0) on no reflected rays, referenced to elements in \a scan
 	 */
-	bool getScanRangeValidity(const size_t i) const;
-	void setScanRangeValidity(const size_t i, const bool val);
+	bool getScanRangeValidity(size_t i) const;
+	void setScanRangeValidity(size_t i, const bool val);
 
 	/** Returns the computed direction (relative heading in radians, with
 	 * 0=forward) of the given ray index, following the following formula:
@@ -127,7 +127,7 @@ class CObservation2DRangeScan : public CObservation
 	 *
 	 * \note (New in MRPT 2.3.1)
 	 */
-	float getScanAngle(const size_t idx) const;
+	float getScanAngle(size_t idx) const;
 
 	/** The "aperture" or field-of-view of the range finder, in radians
 	 * (typically M_PI = 180 degrees). */

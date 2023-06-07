@@ -27,7 +27,7 @@ uint32_t mrpt::system::compute_CRC32(
 }
 
 uint16_t mrpt::system::compute_CRC16(
-	const uint8_t* data, const size_t len_, const uint16_t gen_pol)
+	const uint8_t* data, size_t len_, const uint16_t gen_pol)
 {
 	uint16_t uCrc16;
 	uint8_t abData[2];
@@ -69,7 +69,7 @@ unsigned long CRC32Value(int i, const uint32_t CRC32_POLYNOMIAL)
 }
 
 uint32_t mrpt::system::compute_CRC32(
-	const uint8_t* data, const size_t len_, const uint32_t gen_pol)
+	const uint8_t* data, size_t len_, const uint32_t gen_pol)
 {
 	size_t len = len_;
 	unsigned long ulCRC = 0;

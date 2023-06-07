@@ -8,6 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/config/CConfigFile.h>
+#include <mrpt/system/os.h>
 
 #include <chrono>
 #include <thread>

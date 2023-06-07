@@ -770,7 +770,7 @@ bool CPTG_Holo_Blend::supportVelCmdNOP() const { return true; }
 double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
 {
 	//	const double dir_local =
-	// CParameterizedTrajectoryGenerator::index2alpha(path_k);
+	// CParameterizedTrajectoryGenerator::Index2alpha(path_k);
 
 	const size_t nSteps = getPathStepCount(path_k);
 	const double max_t =

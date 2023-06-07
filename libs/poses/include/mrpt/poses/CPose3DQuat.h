@@ -351,7 +351,7 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 	static constexpr size_type size() { return static_size; }
 	static constexpr bool empty() { return false; }
 	static constexpr size_type max_size() { return static_size; }
-	static inline void resize(const size_t n)
+	static inline void resize(size_t n)
 	{
 		if (n != static_size)
 			throw std::logic_error(format(
@@ -359,7 +359,7 @@ class CPose3DQuat : public CPose<CPose3DQuat, 7>,
 				static_cast<unsigned>(n)));
 	}
 
-	inline void assign(const size_t N, const double val)
+	inline void assign(size_t N, const double val)
 	{
 		if (N != 7)
 			throw std::runtime_error(

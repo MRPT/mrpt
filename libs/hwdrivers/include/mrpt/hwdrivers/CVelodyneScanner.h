@@ -415,8 +415,7 @@ class CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 
 	static mrpt::system::TTimeStamp internal_receive_UDP_packet(
 		platform_socket_t hSocket, uint8_t* out_buffer,
-		const size_t expected_packet_size,
-		const std::string& filter_only_from_IP);
+		size_t expected_packet_size, const std::string& filter_only_from_IP);
 
 	bool internal_read_PCAP_packet(
 		mrpt::system::TTimeStamp& data_pkt_time, uint8_t* out_data_buffer,

@@ -14,7 +14,6 @@
 // Deps:
 //#include <mrpt/graphslam/registerAllClasses.h> // optional
 #include <mrpt/gui/registerAllClasses.h>
-//#include <mrpt/hmtslam/registerAllClasses.h> // optional
 #include <mrpt/hwdrivers/registerAllClasses.h>
 #include <mrpt/slam/registerAllClasses.h>
 #include <mrpt/topography/registerAllClasses.h>
@@ -30,7 +29,6 @@ void mrpt::apps::registerAllClasses_mrpt_apps()
 {
 	::registerAllClasses_mrpt_apps();
 	// mrpt::graphslam::registerAllClasses_mrpt_graphslam(); // opt.
-	// mrpt::hmtslam::registerAllClasses_mrpt_graphslam();	 // opt.
 	mrpt::gui::registerAllClasses_mrpt_gui();
 	mrpt::hwdrivers::registerAllClasses_mrpt_hwdrivers();
 	mrpt::slam::registerAllClasses_mrpt_slam();

@@ -49,6 +49,52 @@ function(handle_special_simd_flags lst_files FILE_PATTERN FLAGS_TO_ADD)
 	endif()
 endfunction()
 
+
+# From: https://github.com/ament/ament_cmake/blob/rolling/ament_cmake_python/ament_cmake_python-extras.cmake
+macro(mrpt_ament_cmake_python_get_python_install_dir)
+  if(NOT DEFINED PYTHON_INSTALL_DIR)
+	# avoid storing backslash in cached variable since CMake will interpret it as escape character
+	# (JLBC,May2023): Replaced "purelib" -> "platstdlib" below to get rid of the "/local/" path prefix.
+	if(NOT DEFINED ENV{ROS_DISTRO})
+		# For debian packages: /usr/lib/python3/dist-packages/
+		# Read debates online:
+		# - https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
+		# - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=998739
+		#
+		set(_output "lib/python3/dist-packages/")  # this is prefixed with "/usr/"
+	else()
+		# For ROS packages  /usr/local/lib/python3...
+		set(_python_code
+		"import os"
+		"import sysconfig"
+		"print(os.path.relpath(sysconfig.get_path('purelib', vars={'base': '${CMAKE_INSTALL_PREFIX}'}), start='${CMAKE_INSTALL_PREFIX}').replace(os.sep, '/'))"
+		)
+		# JL Was: get_executable_path(_python_interpreter Python3::Interpreter CONFIGURE)
+		set(_python_interpreter ${Python3_EXECUTABLE})
+		execute_process(
+			COMMAND
+			"${_python_interpreter}"
+			"-c"
+			"${_python_code}"
+			OUTPUT_VARIABLE _output
+			RESULT_VARIABLE _result
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+		)
+		if(NOT _result EQUAL 0)
+			message(FATAL_ERROR
+			"execute_process(${_python_interpreter} -c '${_python_code}') returned "
+			"error code ${_result}")
+		endif()
+	endif()
+
+    set(PYTHON_INSTALL_DIR
+      "${_output}"
+      CACHE INTERNAL
+      "The directory for Python library installation. This needs to be in PYTHONPATH when 'setup.py install' is called.")
+	unset(_output)
+  endif()
+endmacro()
+
 # define_mrpt_lib(): Declares an MRPT library target:
 #-----------------------------------------------------------------------
 macro(define_mrpt_lib name)
@@ -467,5 +513,36 @@ macro(internal_define_mrpt_lib name headers_only )
 	endif()
 
 	# --- End of conditional build of module ---
+	endif()
+endmacro()
+
+# Credits: https://gist.github.com/jtanx/96ded5e050d5ee5b19804195ee5cf5f9
+function(pad_string output str padchar length)
+  string(LENGTH "${str}" _strlen)
+  math(EXPR _strlen "${length} - ${_strlen}")
+
+  if(_strlen GREATER 0)
+    string(REPEAT ${padchar} ${_strlen} _pad)
+    string(PREPEND str ${_pad})
+  endif()
+
+  set(${output} "${str}" PARENT_SCOPE)
+endfunction()
+
+# 2 hex digits for each version part:
+# For example: "0.5.1"  => "0x000501"
+macro(mrpt_version_to_hex VER TARGET_VAR_NAME)
+	string(REGEX MATCHALL "[0-9]+" __parts "${${VER}}")
+
+	if(__parts)
+		list(GET __parts 0 __VERSION_NUMBER_MAJOR)
+		list(GET __parts 1 __VERSION_NUMBER_MINOR)
+		list(GET __parts 2 __VERSION_NUMBER_PATCH)
+		pad_string(__VERSION_NUMBER_MAJOR ${__VERSION_NUMBER_MAJOR} "0" 2)
+		pad_string(__VERSION_NUMBER_MINOR ${__VERSION_NUMBER_MINOR} "0" 2)
+		pad_string(__VERSION_NUMBER_PATCH ${__VERSION_NUMBER_PATCH} "0" 2)
+		set(${TARGET_VAR_NAME} "0x${__VERSION_NUMBER_MAJOR}${__VERSION_NUMBER_MINOR}${__VERSION_NUMBER_PATCH}")
+	else()
+		set(${TARGET_VAR_NAME} "0x000")
 	endif()
 endmacro()

@@ -100,7 +100,7 @@ class CPosePDFParticles : public CPosePDF,
 	 */
 	void resetAroundSetOfPoses(
 		const std::vector<mrpt::math::TPose2D>& list_poses,
-		const size_t num_particles_per_pose, const double spread_x,
+		size_t num_particles_per_pose, const double spread_x,
 		const double spread_y, const double spread_phi_rad);
 
 	void getMean(CPose2D& mean_pose) const override;

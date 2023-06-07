@@ -53,11 +53,11 @@ class PLY_Importer
 
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
-	virtual void PLY_import_set_vertex_count(const size_t N) = 0;
+	virtual void PLY_import_set_vertex_count(size_t N) = 0;
 
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	virtual void PLY_import_set_face_count(const size_t N) = 0;
+	virtual void PLY_import_set_face_count(size_t N) = 0;
 
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.
@@ -65,7 +65,7 @@ class PLY_Importer
 	 * color info.
 	 */
 	virtual void PLY_import_set_vertex(
-		const size_t idx, const mrpt::math::TPoint3Df& pt,
+		size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) = 0;
 
 	/** @} */
@@ -123,7 +123,7 @@ class PLY_Exporter
 	 * color info.
 	 */
 	virtual void PLY_export_get_vertex(
-		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
+		size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 		mrpt::img::TColorf& pt_color) const = 0;
 
 	/** @} */

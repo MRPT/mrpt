@@ -415,7 +415,8 @@ std::vector<std::string> CWirelessPower::ListNetworks()
 
 	PWLAN_INTERFACE_INFO iface;	 // Information element for an interface
 
-	iface = GetInterfaceW(guid, (HANDLE)hClient);  // Get the interface handler
+	iface =
+		GetInterfaceW(m_guid, (HANDLE)hClient);	 // Get the interface handler
 
 	// Get the list of networks
 	std::vector<PWLAN_AVAILABLE_NETWORK> pBssList =
@@ -456,7 +457,7 @@ int CWirelessPower::GetPower()
 	powerReadL = (char*)malloc(256);
 	std::stringstream ssidLine;
 
-	ssidLine << "ESSID:\"" << ssid << "\"";
+	ssidLine << "ESSID:\"" << m_ssid << "\"";
 	if (getline(&powerReadL, &readBytes, cmdoutput) < 0)
 		THROW_EXCEPTION("Error reading response from iwlist");
 
@@ -497,7 +498,7 @@ int CWirelessPower::GetPower()
 	PWLAN_AVAILABLE_NETWORK wlan;  // handler to the network
 
 	// Get a handler to the network
-	wlan = GetNetworkW((HANDLE)hClient, ssid, guid);
+	wlan = GetNetworkW((HANDLE)hClient, m_ssid, m_guid);
 
 	return wlan->wlanSignalQuality;
 #endif
@@ -561,10 +562,9 @@ void CWirelessPower::loadConfig_sensorSpecific(
 	pose_pitch = configSource.read_float(iniSection, "pose_pitch", 0, true);
 	pose_yaw = configSource.read_float(iniSection, "pose_yaw", 0, true);
 
-	ssid = configSource.read_string(iniSection, "ssid", "", true);
-	guid = configSource.read_string(
-		iniSection, "guid", "", true);	// in the case of Linux, the "GUID" is
-	// the interface name (wlanX)
+	m_ssid = configSource.read_string(iniSection, "ssid", "", true);
+	m_guid = configSource.read_string(iniSection, "guid", "", true);
+	// in the case of Linux, the "GUID" is  the interface name (wlanX)
 
 #ifdef _WIN32
 #if defined(__GNUC__)
@@ -575,4 +575,10 @@ void CWirelessPower::loadConfig_sensorSpecific(
 #endif
 
 	MRPT_END
+}
+
+void CWirelessPower::setNet(std::string ssid, std::string guid)
+{
+	m_ssid = ssid;
+	m_guid = guid;
 }
