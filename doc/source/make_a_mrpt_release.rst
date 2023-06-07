@@ -22,7 +22,7 @@ useful to someone else maintaining MRPT in the future... ;-)
    git checkout master
    git merge develop
    git tag --sign X.Y.Z # release new version
-   bash packaging/prepare_release.sh
+   bash packaging/make_release.sh
    # If everything seems OK, push it:
    # **WARNING**: This command makes the release public!
    git push master --tags
