@@ -13,8 +13,13 @@
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
 
-#include <cv_bridge/cv_bridge.h>
 #include <mrpt/ros2bridge/image.h>
+
+#if CV_BRIDGE_VERSION <= 0x030400
+#include <cv_bridge/cv_bridge.h>
+#else
+#include <cv_bridge/cv_bridge.hpp>
+#endif
 
 #include <sensor_msgs/image_encodings.hpp>
 #include <sensor_msgs/msg/image.hpp>

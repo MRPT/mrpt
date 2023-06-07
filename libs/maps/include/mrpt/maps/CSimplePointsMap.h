@@ -66,7 +66,7 @@ class CSimplePointsMap : public CPointsMap
 	 * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
 	 */
 	void getPointAllFieldsFast(
-		const size_t index, std::vector<float>& point_data) const override
+		size_t index, std::vector<float>& point_data) const override
 	{
 		point_data.resize(3);
 		point_data[0] = m_x[index];
@@ -79,7 +79,7 @@ class CSimplePointsMap : public CPointsMap
 	 * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
 	 */
 	void setPointAllFieldsFast(
-		const size_t index, const std::vector<float>& point_data) override
+		size_t index, const std::vector<float>& point_data) override
 	{
 		ASSERTDEB_(point_data.size() == 3);
 		m_x[index] = point_data[0];
@@ -102,7 +102,7 @@ class CSimplePointsMap : public CPointsMap
 	void impl_copyFrom(const CPointsMap& obj) override;
 	void addFrom_classSpecific(
 		[[maybe_unused]] const CPointsMap& anotherMap,
-		[[maybe_unused]] const size_t nPreviousPoints,
+		[[maybe_unused]] size_t nPreviousPoints,
 		[[maybe_unused]] const bool filterOutPointsAtZero) override
 	{
 		// No extra data.
@@ -132,7 +132,7 @@ class CSimplePointsMap : public CPointsMap
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
-	void PLY_import_set_vertex_count(const size_t N) override;
+	void PLY_import_set_vertex_count(size_t N) override;
 	/** @} */
 
 	MAP_DEFINITION_START(CSimplePointsMap)
@@ -174,24 +174,24 @@ class PointCloudAdapter<mrpt::maps::CSimplePointsMap>
 	/** Get number of points */
 	inline size_t size() const { return m_obj.size(); }
 	/** Set number of points (to uninitialized values) */
-	inline void resize(const size_t N) { m_obj.resize(N); }
+	inline void resize(size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
 	inline void setDimensions(size_t height, size_t width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
-	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
+	inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
 	{
 		m_obj.getPointFast(idx, x, y, z);
 	}
 	/** Set XYZ coordinates of i'th point */
 	inline void setPointXYZ(
-		const size_t idx, const coords_t x, const coords_t y, const coords_t z)
+		size_t idx, const coords_t x, const coords_t y, const coords_t z)
 	{
 		m_obj.setPointFast(idx, x, y, z);
 	}
 
 	/** Set XYZ coordinates of i'th point */
-	inline void setInvalidPoint(const size_t idx)
+	inline void setInvalidPoint(size_t idx)
 	{
 		m_obj.setPointFast(idx, 0, 0, 0);
 	}

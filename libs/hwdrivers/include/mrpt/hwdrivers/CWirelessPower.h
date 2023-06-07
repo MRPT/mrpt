@@ -26,11 +26,11 @@ class CWirelessPower : public mrpt::hwdrivers::CGenericSensor
    private:
 	/** SSID of the WiFi network
 	 */
-	std::string ssid;
+	std::string m_ssid;
 
 	/** GUID of the WiFi interface
 	 */
-	std::string guid;
+	std::string m_guid;
 
 	/** Handle to the WLAN server (Windows)
 	 */

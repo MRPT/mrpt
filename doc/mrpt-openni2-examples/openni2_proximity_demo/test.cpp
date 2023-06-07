@@ -13,7 +13,7 @@
 #define linux 1
 #endif
 #include <OpenNI.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps.h>
 #include <mrpt/opengl.h>
 

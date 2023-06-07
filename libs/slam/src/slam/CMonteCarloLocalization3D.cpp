@@ -13,7 +13,8 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
-#include <mrpt/slam/PF_aux_structs.h>
+
+#include "PF_aux_structs.h"
 
 using namespace std;
 using namespace mrpt;
@@ -78,7 +79,7 @@ CMonteCarloLocalization3D::CMonteCarloLocalization3D(size_t M)
 }
 
 TPose3D CMonteCarloLocalization3D::getLastPose(
-	const size_t i, bool& is_valid_pose) const
+	size_t i, bool& is_valid_pose) const
 {
 	if (i >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
@@ -169,7 +170,7 @@ double
 	CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticle(
 		[[maybe_unused]] const CParticleFilter::TParticleFilterOptions&
 			PF_options,
-		const size_t particleIndexForMap, const CSensoryFrame& observation,
+		size_t particleIndexForMap, const CSensoryFrame& observation,
 		const CPose3D& x) const
 {
 	ASSERT_(

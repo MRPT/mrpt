@@ -47,13 +47,12 @@ class CHistogram
 	/** Constructor
 	 * \exception std::exception On nBins<=0 or max<=min
 	 */
-	CHistogram(const double min, const double max, const size_t nBins);
+	CHistogram(const double min, const double max, size_t nBins);
 
 	/** Constructor with a fixed bin width.
 	 * \exception std::exception On max<=min or width<=0
 	 */
-	inline CHistogram createWithFixedWidth(
-		double min, double max, double binWidth);
+	CHistogram createWithFixedWidth(double min, double max, double binWidth);
 
 	/** Clear the histogram:
 	 */
@@ -87,14 +86,14 @@ class CHistogram
 	 * is 0.
 	 * \exception std::exception On invalid index
 	 */
-	size_t getBinCount(const size_t index) const;
+	size_t getBinCount(size_t index) const;
 
 	/** Retuns the ratio in [0,1] range for the selected bin index, where first
 	 * one is 0.
 	 *  It returns 0 if no elements have been added.
 	 * \exception std::exception On invalid index.
 	 */
-	double getBinRatio(const size_t index) const;
+	double getBinRatio(size_t index) const;
 
 	/** Returns the list of bin centers & hit counts
 	 * \sa getHistogramNormalized

@@ -67,11 +67,11 @@ class CPointCloud : public CRenderizableShaderPoints,
 		@{ */
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_vertex */
-	void PLY_import_set_vertex_count(const size_t N) override;
+	void PLY_import_set_vertex_count(size_t N) override;
 
 	/** In a base class, reserve memory to prepare subsequent calls to
 	 * PLY_import_set_face */
-	void PLY_import_set_face_count([[maybe_unused]] const size_t N) override {}
+	void PLY_import_set_face_count([[maybe_unused]] size_t N) override {}
 
 	/** In a base class, will be called after PLY_import_set_vertex_count() once
 	 * for each loaded point.
@@ -79,7 +79,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	 * color info.
 	 */
 	void PLY_import_set_vertex(
-		const size_t idx, const mrpt::math::TPoint3Df& pt,
+		size_t idx, const mrpt::math::TPoint3Df& pt,
 		const mrpt::img::TColorf* pt_color = nullptr) override;
 	/** @} */
 
@@ -88,7 +88,7 @@ class CPointCloud : public CRenderizableShaderPoints,
 	size_t PLY_export_get_vertex_count() const override;
 	size_t PLY_export_get_face_count() const override { return 0; }
 	void PLY_export_get_vertex(
-		const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
+		size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 		mrpt::img::TColorf& pt_color) const override;
 	/** @} */
 
@@ -364,12 +364,12 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 	/** Get number of points */
 	size_t size() const { return m_obj.size(); }
 	/** Set number of points (to uninitialized values) */
-	void resize(const size_t N) { m_obj.resize(N); }
+	void resize(size_t N) { m_obj.resize(N); }
 	/** Does nothing as of now */
 	void setDimensions(size_t height, size_t width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
-	void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
+	void getPointXYZ(size_t idx, T& x, T& y, T& z) const
 	{
 		const auto& pt = m_obj[idx];
 		x = pt.x;
@@ -378,16 +378,13 @@ class PointCloudAdapter<mrpt::opengl::CPointCloud>
 	}
 	/** Set XYZ coordinates of i'th point */
 	void setPointXYZ(
-		const size_t idx, const coords_t x, const coords_t y, const coords_t z)
+		size_t idx, const coords_t x, const coords_t y, const coords_t z)
 	{
 		m_obj.setPoint_fast(idx, x, y, z);
 	}
 
 	/** Set XYZ coordinates of i'th point */
-	void setInvalidPoint(const size_t idx)
-	{
-		m_obj.setPoint_fast(idx, 0, 0, 0);
-	}
+	void setInvalidPoint(size_t idx) { m_obj.setPoint_fast(idx, 0, 0, 0); }
 
 };	// end of PointCloudAdapter<mrpt::opengl::CPointCloud>
 

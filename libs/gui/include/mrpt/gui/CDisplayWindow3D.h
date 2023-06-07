@@ -304,7 +304,7 @@ class CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 	 */
 	void addTextMessage(
 		const double x_frac, const double y_frac, const std::string& text,
-		const size_t unique_index = 0,
+		size_t unique_index = 0,
 		const mrpt::opengl::TFontParams& fontParams =
 			mrpt::opengl::TFontParams())
 	{

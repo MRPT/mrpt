@@ -30,18 +30,26 @@ CTaoboticsIMU::CTaoboticsIMU()
 	m_sensorLabel = "IMU";
 }
 
-CTaoboticsIMU::~CTaoboticsIMU() { m_serialPort->close(); }
+CTaoboticsIMU::~CTaoboticsIMU()
+{
+	if (m_serialPort) m_serialPort->close();
+}
 
 void CTaoboticsIMU::setSerialPort(const std::string& serialPort)
 {
-	ASSERT_(!m_serialPort);
+	ASSERTMSG_(
+		!m_serialPort,
+		"setSerialPort() can be called only before initialize()");
 
 	m_com_port = serialPort;
 }
 
 void CTaoboticsIMU::setSerialBaudRate(int rate)
 {
-	ASSERT_(!m_serialPort);
+	ASSERTMSG_(
+		!m_serialPort,
+		"setSerialBaudRate() can be called only before initialize()");
+
 	m_baudRate = rate;
 }
 
@@ -50,6 +58,7 @@ void CTaoboticsIMU::doProcess()
 	using namespace std::chrono_literals;
 
 	ASSERTMSG_(m_activeParser, "initialize() must be called first");
+	ASSERT_(m_serialPort);
 
 	if (m_state == ssError)
 	{

@@ -65,7 +65,7 @@ class CHeightGridMap2D_Base
 	/** Get cell 'z' by (cx,cy) cell indices. \return false if out of bounds or
 	 * un-observed cell. */
 	virtual bool dem_get_z_by_cell(
-		const size_t cx, const size_t cy, double& z_out) const = 0;
+		size_t cx, size_t cy, double& z_out) const = 0;
 	/** Get cell 'z' (x,y) by metric coordinates. \return false if out of bounds
 	 * or un-observed cell. */
 	virtual bool dem_get_z(

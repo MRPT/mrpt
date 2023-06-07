@@ -163,7 +163,7 @@ struct TSIFTDesc2KDTree_Adaptor
 	// Must return the Euclidean (L2) distance between the vector "p1[0:size-1]"
 	// and the data point with index "idx_p2" stored in the class:
 	inline distance_t kdtree_distance(
-		const element_t* p1, const size_t idx_p2, size_t size) const
+		const element_t* p1, size_t idx_p2, size_t size) const
 	{
 		const size_t dim = m_feats[idx_p2].descriptors.SIFT->size();
 		const element_t* p2 = &(*m_feats[idx_p2].descriptors.SIFT)[0];
@@ -177,7 +177,7 @@ struct TSIFTDesc2KDTree_Adaptor
 		return d;
 	}
 	// Must return the dim'th component of the idx'th point in the class:
-	inline element_t kdtree_get_pt(const size_t idx, int dim) const
+	inline element_t kdtree_get_pt(size_t idx, int dim) const
 	{
 		return (*m_feats[idx].descriptors.SIFT)[dim];
 	}
@@ -198,7 +198,7 @@ struct TSURFDesc2KDTree_Adaptor
 	// Must return the Euclidean (L2) distance between the vector "p1[0:size-1]"
 	// and the data point with index "idx_p2" stored in the class:
 	inline distance_t kdtree_distance(
-		const element_t* p1, const size_t idx_p2, size_t size) const
+		const element_t* p1, size_t idx_p2, size_t size) const
 	{
 		const size_t dim = m_feats[idx_p2].descriptors.SURF->size();
 		const element_t* p2 = &(*m_feats[idx_p2].descriptors.SURF)[0];
@@ -212,7 +212,7 @@ struct TSURFDesc2KDTree_Adaptor
 		return d;
 	}
 	// Must return the dim'th component of the idx'th point in the class:
-	inline element_t kdtree_get_pt(const size_t idx, int dim) const
+	inline element_t kdtree_get_pt(size_t idx, int dim) const
 	{
 		return (*m_feats[idx].descriptors.SURF)[dim];
 	}

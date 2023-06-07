@@ -189,7 +189,7 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(
 	out << m_clearance_decimated_paths /* v4*/;
 }
 
-double CParameterizedTrajectoryGenerator::index2alpha(
+double CParameterizedTrajectoryGenerator::Index2alpha(
 	uint16_t k, const unsigned int num_paths)
 {
 	ASSERT_LT_(k, num_paths);
@@ -198,10 +198,10 @@ double CParameterizedTrajectoryGenerator::index2alpha(
 
 double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k) const
 {
-	return index2alpha(k, m_alphaValuesCount);
+	return Index2alpha(k, m_alphaValuesCount);
 }
 
-uint16_t CParameterizedTrajectoryGenerator::alpha2index(
+uint16_t CParameterizedTrajectoryGenerator::Alpha2index(
 	double alpha, const unsigned int num_paths)
 {
 	mrpt::math::wrapToPi(alpha);
@@ -213,7 +213,7 @@ uint16_t CParameterizedTrajectoryGenerator::alpha2index(
 
 uint16_t CParameterizedTrajectoryGenerator::alpha2index(double alpha) const
 {
-	return alpha2index(alpha, m_alphaValuesCount);
+	return Alpha2index(alpha, m_alphaValuesCount);
 }
 
 void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(

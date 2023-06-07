@@ -304,7 +304,7 @@ class CObservation3DRangeScan : public CObservation
 	/** Use this method instead of resizing all three \a points3D_x, \a
 	 * points3D_y & \a points3D_z to allow the usage of the internal memory
 	 * pool. */
-	void resizePoints3DVectors(const size_t nPoints);
+	void resizePoints3DVectors(size_t nPoints);
 
 	/** Get the size of the scan pointcloud. \note Method is added for
 	 * compatibility with its CObservation2DRangeScan counterpart */
@@ -634,7 +634,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 	/** Get number of points */
 	inline size_t size() const { return m_obj.points3D_x.size(); }
 	/** Set number of points (to uninitialized values) */
-	inline void resize(const size_t N)
+	inline void resize(size_t N)
 	{
 		if (N) m_obj.hasPoints3D = true;
 		m_obj.resizePoints3DVectors(N);
@@ -643,7 +643,7 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 	inline void setDimensions(size_t height, size_t width) {}
 	/** Get XYZ coordinates of i'th point */
 	template <typename T>
-	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
+	inline void getPointXYZ(size_t idx, T& x, T& y, T& z) const
 	{
 		x = m_obj.points3D_x[idx];
 		y = m_obj.points3D_y[idx];
@@ -651,14 +651,14 @@ class PointCloudAdapter<mrpt::obs::CObservation3DRangeScan>
 	}
 	/** Set XYZ coordinates of i'th point */
 	inline void setPointXYZ(
-		const size_t idx, const coords_t x, const coords_t y, const coords_t z)
+		size_t idx, const coords_t x, const coords_t y, const coords_t z)
 	{
 		m_obj.points3D_x[idx] = x;
 		m_obj.points3D_y[idx] = y;
 		m_obj.points3D_z[idx] = z;
 	}
 	/** Set XYZ coordinates of i'th point */
-	inline void setInvalidPoint(const size_t idx)
+	inline void setInvalidPoint(size_t idx)
 	{
 		m_obj.points3D_x[idx] = 0;
 		m_obj.points3D_y[idx] = 0;

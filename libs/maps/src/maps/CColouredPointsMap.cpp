@@ -583,7 +583,7 @@ bool CColouredPointsMap::save3D_and_colour_to_text_file(
 
 /** In a base class, reserve memory to prepare subsequent calls to
  * PLY_import_set_vertex */
-void CColouredPointsMap::PLY_import_set_vertex_count(const size_t N)
+void CColouredPointsMap::PLY_import_set_vertex_count(size_t N)
 {
 	this->setSize(N);
 }
@@ -594,7 +594,7 @@ void CColouredPointsMap::PLY_import_set_vertex_count(const size_t N)
  * info.
  */
 void CColouredPointsMap::PLY_import_set_vertex(
-	const size_t idx, const mrpt::math::TPoint3Df& pt, const TColorf* pt_color)
+	size_t idx, const mrpt::math::TPoint3Df& pt, const TColorf* pt_color)
 {
 	if (pt_color)
 		this->setPointRGB(
@@ -609,7 +609,7 @@ void CColouredPointsMap::PLY_import_set_vertex(
  * info.
  */
 void CColouredPointsMap::PLY_export_get_vertex(
-	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
+	size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	TColorf& pt_color) const
 {
 	pt_has_color = true;
@@ -627,7 +627,7 @@ void CColouredPointsMap::PLY_export_get_vertex(
 addFrom_classSpecific
 ---------------------------------------------------------------*/
 void CColouredPointsMap::addFrom_classSpecific(
-	const CPointsMap& anotherMap, const size_t nPreviousPoints,
+	const CPointsMap& anotherMap, size_t nPreviousPoints,
 	const bool filterOutPointsAtZero)
 {
 	const size_t nOther = anotherMap.size();

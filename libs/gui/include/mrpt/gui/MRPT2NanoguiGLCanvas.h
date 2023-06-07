@@ -17,6 +17,9 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_NANOGUI
 
+#ifdef None	 // X11 headers conflict...
+#undef None
+#endif
 #include <nanogui/nanogui.h>
 
 namespace mrpt::gui

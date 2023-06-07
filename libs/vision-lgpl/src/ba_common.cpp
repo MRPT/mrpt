@@ -255,8 +255,8 @@ void mrpt::vision::ba_build_gradient_Hessians(
 	std::vector<CMatrixFixed<double, 6, 6>>& U,
 	std::vector<CVectorFixedDouble<6>>& eps_frame,
 	std::vector<CMatrixFixed<double, 3, 3>>& V,
-	std::vector<CVectorFixedDouble<3>>& eps_point, const size_t num_fix_frames,
-	const size_t num_fix_points, const vector<double>* kernel_1st_deriv)
+	std::vector<CVectorFixedDouble<3>>& eps_point, size_t num_fix_frames,
+	size_t num_fix_points, const vector<double>* kernel_1st_deriv)
 {
 	MRPT_START
 
@@ -324,7 +324,7 @@ void mrpt::vision::ba_build_gradient_Hessians(
 
 void mrpt::vision::add_se3_deltas_to_frames(
 	const TFramePosesVec& frame_poses, const CVectorDouble& delta,
-	const size_t delta_first_idx, const size_t delta_num_vals,
+	size_t delta_first_idx, size_t delta_num_vals,
 	TFramePosesVec& new_frame_poses, const size_t num_fix_frames)
 {
 	MRPT_START
@@ -360,7 +360,7 @@ void mrpt::vision::add_se3_deltas_to_frames(
 }
 void mrpt::vision::add_3d_deltas_to_points(
 	const TLandmarkLocationsVec& landmark_points, const CVectorDouble& delta,
-	const size_t delta_first_idx, const size_t delta_num_vals,
+	size_t delta_first_idx, size_t delta_num_vals,
 	TLandmarkLocationsVec& new_landmark_points, const size_t num_fix_points)
 {
 	MRPT_START

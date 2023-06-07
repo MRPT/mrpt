@@ -13,6 +13,7 @@
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/math_frwds.h>
 
+#include <cmath>  // std::log
 #include <limits>  // numeric_limits
 
 namespace mrpt::math
@@ -171,7 +172,7 @@ class CProbabilityDensityFunction
 		static const double ln_2PI = 1.8378770664093454835606594728112;
 		return 0.5 *
 			(STATE_LEN + STATE_LEN * ln_2PI +
-			 log(std::max(
+			 std::log(std::max(
 				 getCovariance().det(),
 				 std::numeric_limits<double>::epsilon())));
 	}

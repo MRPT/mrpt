@@ -94,7 +94,7 @@ double grid_test_4(int a1, int a2)
 	CTicTac tictac;
 	for (long i = 0; i < N; i++)
 	{
-		COccupancyGridMap2D::updateCell_fast_occupied(
+		gridMap.updateCell_fast_occupied(
 			2, 2, logodd_obs, logodd_thres_occupied, theMapArray, theMapSize_x);
 	}
 	return tictac.Tac() / N;

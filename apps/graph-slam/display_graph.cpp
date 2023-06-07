@@ -8,8 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include <mrpt/graphs.h>
-//#include <mrpt/graphslam/levmarq.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>

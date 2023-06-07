@@ -10,7 +10,7 @@
 #include <mrpt/core/exceptions.h>
 #include <mrpt/detectors.h>
 #include <mrpt/examples_config.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/maps/CColouredPointsMap.h>

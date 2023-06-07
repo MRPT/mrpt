@@ -34,7 +34,7 @@ void ScalarFactorGraph::clear()
 	m_factors_binary.clear();
 }
 
-void ScalarFactorGraph::initialize(const size_t nodeCount)
+void ScalarFactorGraph::initialize(size_t nodeCount)
 {
 	MRPT_LOG_DEBUG_STREAM("initialize() called, nodeCount=" << nodeCount);
 

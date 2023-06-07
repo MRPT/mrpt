@@ -98,7 +98,7 @@ class CPoint2D : public CPoint<CPoint2D, 2>,
 	static constexpr size_type size() { return static_size; }
 	static constexpr bool empty() { return false; }
 	static constexpr size_type max_size() { return static_size; }
-	static inline void resize(const size_t n)
+	static inline void resize(size_t n)
 	{
 		if (n != static_size)
 			throw std::logic_error(format(

@@ -248,7 +248,7 @@ class CDirectedGraph
 	/** Return the list of all neighbors of "nodeID", by creating a list of
 	 * their node IDs. \sa getAdjacencyMatrix */
 	void getNeighborsOf(
-		const TNodeID nodeID, std::set<TNodeID>& neighborIDs) const
+		TNodeID const nodeID, std::set<TNodeID>& neighborIDs) const
 	{
 		neighborIDs.clear();
 		for (typename edges_map_t::const_iterator it = edges.begin();
@@ -261,7 +261,7 @@ class CDirectedGraph
 	}
 	/** Return the list of all neighbors of "nodeID", by creating a list of
 	 * their node IDs. \sa getAdjacencyMatrix */
-	std::set<TNodeID> getNeighborsOf(const TNodeID nodeID) const
+	std::set<TNodeID> getNeighborsOf(TNodeID const nodeID) const
 	{
 		std::set<TNodeID> neighborIDs;
 		this->getNeighborsOf(nodeID, neighborIDs);

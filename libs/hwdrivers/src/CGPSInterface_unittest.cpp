@@ -137,8 +137,7 @@ TEST(CGPSInterface, parse_NMEA_ZDA_stream)
 	gps.initialize();
 	gps.doProcess();
 
-	mrpt::hwdrivers::CGenericSensor::TListObservations obss;
-	gps.getObservations(obss);
+	const auto obss = gps.getObservations();
 
 	EXPECT_EQ(obss.size(), 1U);
 
@@ -221,8 +220,7 @@ TEST(CGPSInterface, parse_NOVATEL6_stream)
 	gps.initialize();
 	gps.doProcess();
 
-	mrpt::hwdrivers::CGenericSensor::TListObservations obss;
-	gps.getObservations(obss);
+	const auto obss = gps.getObservations();
 
 	EXPECT_EQ(obss.size(), 4U);
 	if (obss.empty()) return;
@@ -356,8 +354,7 @@ TEST(CGPSInterface, parse_NMEA_stream)
 	gps.initialize();
 	gps.doProcess();
 
-	mrpt::hwdrivers::CGenericSensor::TListObservations obss;
-	gps.getObservations(obss);
+	const auto obss = gps.getObservations();
 
 	EXPECT_EQ(obss.size(), 3U);
 	if (obss.empty()) return;

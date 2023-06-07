@@ -171,7 +171,7 @@ class CSparseMatrix
 	 * setRowCount() & setColCount().
 	 * \sa insert_entry, setRowCount, setColCount
 	 */
-	CSparseMatrix(const size_t nRows = 0, const size_t nCols = 0);
+	CSparseMatrix(size_t nRows = 0, size_t nCols = 0);
 
 	/** A good way to initialize a sparse matrix from a list of non nullptr
 	 * elements.
@@ -236,7 +236,7 @@ class CSparseMatrix
 
 	/** Erase all previous contents and leave the matrix as a "triplet" ROWS x
 	 * COLS matrix without any nonzero entry. */
-	void clear(const size_t nRows = 1, const size_t nCols = 1);
+	void clear(size_t nRows = 1, size_t nCols = 1);
 
 	/** @}  */
 
@@ -293,13 +293,12 @@ class CSparseMatrix
 	 * are out of the current limits.
 	 * \sa isTriplet, compressFromTriplet
 	 */
-	void insert_entry(const size_t row, const size_t col, const double val);
+	void insert_entry(size_t row, size_t col, const double val);
 
 	/** This was an optimized version, but is now equivalent to insert_entry()
 	 * due to the need to be compatible with unmodified CSparse system
 	 * libraries. */
-	inline void insert_entry_fast(
-		const size_t row, const size_t col, const double val)
+	inline void insert_entry_fast(size_t row, size_t col, const double val)
 	{
 		insert_entry(row, col, val);
 	}
@@ -315,8 +314,7 @@ class CSparseMatrix
 	 * \sa isTriplet, compressFromTriplet, insert_entry
 	 */
 	template <class MATRIX>
-	inline void insert_submatrix(
-		const size_t row, const size_t col, const MATRIX& M)
+	inline void insert_submatrix(size_t row, size_t col, const MATRIX& M)
 	{
 		if (!isTriplet())
 			THROW_EXCEPTION(
@@ -383,12 +381,12 @@ class CSparseMatrix
 	inline size_t cols() const { return sparse_matrix.n; }
 	/** Change the number of rows in the matrix (can't be lower than current
 	 * size) */
-	inline void setRowCount(const size_t nRows)
+	inline void setRowCount(size_t nRows)
 	{
 		ASSERT_(nRows >= (size_t)sparse_matrix.m);
 		sparse_matrix.m = nRows;
 	}
-	inline void setColCount(const size_t nCols)
+	inline void setColCount(size_t nCols)
 	{
 		ASSERT_(nCols >= (size_t)sparse_matrix.n);
 		sparse_matrix.n = nCols;
@@ -489,7 +487,7 @@ class CSparseMatrix
 
 		/** overload for double pointers which assume the user has reserved the
 		 * output memory for \a result */
-		void backsub(const double* b, double* result, const size_t N) const;
+		void backsub(const double* b, double* result, size_t N) const;
 
 		/** Update the Cholesky factorization from an updated vesion of the
 		 * original input, square definite-positive sparse matrix.

@@ -22,9 +22,10 @@
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/random.h>
 #include <mrpt/serialization/CArchive.h>
-#include <mrpt/slam/PF_aux_structs.h>
 #include <mrpt/system/CTicTac.h>
 #include <mrpt/system/os.h>
+
+#include "PF_aux_structs.h"
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -254,8 +255,7 @@ void CMultiMetricMapPDF::serializeFrom(
 	};
 }
 
-TPose3D CMultiMetricMapPDF::getLastPose(
-	const size_t i, bool& is_valid_pose) const
+TPose3D CMultiMetricMapPDF::getLastPose(size_t i, bool& is_valid_pose) const
 {
 	if (i >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");

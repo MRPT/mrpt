@@ -889,7 +889,7 @@ void CRangeBearingKFSLAM2D::OnInverseObservationModel(
  * \sa OnInverseObservationModel
  */
 void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(
-	const size_t in_obsIdx, const size_t in_idxNewFeat)
+	size_t in_obsIdx, size_t in_idxNewFeat)
 {
 	MRPT_START
 

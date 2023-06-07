@@ -72,7 +72,7 @@ class CPose3DPDFSOG : public CPose3DPDF
 	/** Clear all the gaussian modes */
 	void clear();
 	/** Set the number of SOG modes */
-	void resize(const size_t N);
+	void resize(size_t N);
 	/** Return the number of Gaussian modes. */
 	size_t size() const { return m_modes.size(); }
 	/** Return whether there is any Gaussian mode. */

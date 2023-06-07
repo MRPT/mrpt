@@ -113,18 +113,17 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 	struct TOptions
 	{
 		TOptions(mrpt::system::VerbosityLevel& verb_level_ref)
-			: verbosity_level(verb_level_ref),
-			  enableMapUpdating(true),
-			  debugForceInsertion(false),
-			  alwaysInsertByClass()
+			: verbosity_level(verb_level_ref)
 		{
 		}
 
 		mrpt::system::VerbosityLevel& verbosity_level;
+
 		/** Enable map updating, default is true. */
-		bool enableMapUpdating;
+		bool enableMapUpdating = true;
+
 		/** Always insert into map. Default is false: detect if necesary. */
-		bool debugForceInsertion;
+		bool debugForceInsertion = false;
 
 		/** A list of observation classes (derived from mrpt::obs::CObservation)
 		 * which will be always inserted in the map, disregarding the minimum

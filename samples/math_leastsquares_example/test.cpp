@@ -11,7 +11,7 @@
  * Execute a least squares approximation of the given x,y data.
  */
 
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/math/utils.h>  // normalize()
 
 #include <iostream>

@@ -7,7 +7,6 @@ digraph MRPT_LIBS {
 	apps -> slam;
 	apps -> hwdrivers;
 	apps -> graphslam;
-	apps -> hmtslam;
 
 	bayes [label="mrpt-bayes",URL="group_mrpt_bayes_grp.html"];
 	bayes -> math;
@@ -43,9 +42,6 @@ digraph MRPT_LIBS {
 
 	gui        [label="mrpt-gui",URL="group_mrpt_gui_grp.html"];
 	gui -> opengl;
-
-	hmtslam    [label="mrpt-hmtslam",URL="group_mrpt_hmtslam_grp.html"];
-	hmtslam -> graphslam;
 
 	hwdrivers  [label="mrpt-hwdrivers",URL="group_mrpt_hwdrivers_grp.html"];
 	hwdrivers -> comms;

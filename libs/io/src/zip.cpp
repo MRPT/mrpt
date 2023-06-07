@@ -156,9 +156,8 @@ void mrpt::io::zip::decompress(
 /*---------------------------------------------------------------
 						decompress
 ---------------------------------------------------------------*/
-void mrpt::io::zip::decompress(
-	void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize,
-	size_t& outDataActualSize)
+size_t mrpt::io::zip::decompress(
+	void* inData, size_t inDataSize, void* outData, size_t outDataBufferSize)
 {
 	int ret = 0;
 	MRPT_START
@@ -171,7 +170,7 @@ void mrpt::io::zip::decompress(
 
 	ASSERT_(ret == Z_OK);
 
-	outDataActualSize = actualOutSize;
+	return actualOutSize;
 
 	MRPT_END_WITH_CLEAN_UP(printf("[zlib] Error code=%i\n", ret););
 }
@@ -179,9 +178,9 @@ void mrpt::io::zip::decompress(
 /*---------------------------------------------------------------
 						decompress
 ---------------------------------------------------------------*/
-void mrpt::io::zip::decompress(
+size_t mrpt::io::zip::decompress(
 	CStream& inStream, size_t inDataSize, void* outData,
-	size_t outDataBufferSize, size_t& outDataActualSize)
+	size_t outDataBufferSize)
 {
 	int ret = 0;
 	MRPT_START
@@ -198,7 +197,7 @@ void mrpt::io::zip::decompress(
 
 	ASSERT_(ret == Z_OK);
 
-	outDataActualSize = actualOutSize;
+	return actualOutSize;
 
 	MRPT_END_WITH_CLEAN_UP(printf("[zlib] Error code=%i\n", ret););
 }

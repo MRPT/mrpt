@@ -132,4 +132,31 @@ if (NOT DISABLE_ROS)
 		message(STATUS "  stereo_msgs_FOUND    : ${stereo_msgs_FOUND}")
 		message(STATUS "  tf2_FOUND            : ${tf2_FOUND}")
 	endif()
-endif()
+
+	# To ease debugging in build farms, etc.
+	if (MRPT_ROS_VERSION)
+		message(STATUS "MRPT build 'env' ----------------------------------------------")
+		execute_process(COMMAND env)
+		message(STATUS "------------ end of 'env' -------------------------------------")
+	endif()
+
+	# Convert package versions to hex so they can be used in preprocessor for wider
+	# versions compatibility of "one-source for all":
+	mrpt_version_to_hex(cv_bridge_VERSION  cv_bridge_VERSION_HEX)
+
+
+	# Kinda hack to prevent build farm to time out for "dev" jobs:
+	# The server scripts always run: (1) build+install, then (2) build+test.
+	# We will catch the (2) situation and don't build a thing, but return quickly.
+	if (MRPT_ROS_VERSION AND ("${BUILD_TESTING}" STREQUAL "1")) # Yes, the farm defines "1", not "ON"
+		message(STATUS "====== ROS build farm detected. Aborting tests in this build")
+		# "make test" shall not fail:
+		enable_testing()
+		# "make install" shall not fail:
+		install(DIRECTORY "${MRPT_SOURCE_DIR}/share/applications" DESTINATION share)
+
+		set(MRPT_ABORT_CMAKE_SCRIPT 1)
+		return()
+	endif()
+
+endif() # NOT DISABLE_ROS

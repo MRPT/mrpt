@@ -182,8 +182,7 @@ class CMatrixDynamic : public MatrixBase<T, CMatrixDynamic<T>>
 	/** Copy constructor & crop from another matrix
 	 */
 	CMatrixDynamic(
-		const CMatrixDynamic& m, const size_t cropRowCount,
-		const size_t cropColCount)
+		const CMatrixDynamic& m, size_t cropRowCount, size_t cropColCount)
 	{
 		ASSERT_(m.m_Rows >= cropRowCount);
 		ASSERT_(m.m_Cols >= cropColCount);

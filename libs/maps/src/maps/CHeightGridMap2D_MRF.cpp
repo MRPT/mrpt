@@ -110,7 +110,7 @@ double CHeightGridMap2D_MRF::dem_get_resolution() const { return m_resolution; }
 size_t CHeightGridMap2D_MRF::dem_get_size_x() const { return m_size_x; }
 size_t CHeightGridMap2D_MRF::dem_get_size_y() const { return m_size_y; }
 bool CHeightGridMap2D_MRF::dem_get_z_by_cell(
-	const size_t cx, const size_t cy, double& z_out) const
+	size_t cx, size_t cy, double& z_out) const
 {
 	const TRandomFieldCell* cell = cellByIndex(cx, cy);
 	if (cell && cell->kf_mean())

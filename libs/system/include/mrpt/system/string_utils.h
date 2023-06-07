@@ -101,8 +101,7 @@ std::string unitsFormat(
 
 /** Enlarge the string with spaces up to the given length. */
 std::string rightPad(
-	const std::string& str, const size_t total_len,
-	bool truncate_if_larger = false);
+	const std::string& str, size_t total_len, bool truncate_if_larger = false);
 
 /** Return true if the two strings are equal (case sensitive)  \sa strCmpI  */
 bool strCmp(const std::string& s1, const std::string& s2);

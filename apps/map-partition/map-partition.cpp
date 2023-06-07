@@ -16,7 +16,8 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/config/CConfigFile.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/about_box.h>
 #include <mrpt/io/CFileGZInputStream.h>
 #include <mrpt/io/CFileOutputStream.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>

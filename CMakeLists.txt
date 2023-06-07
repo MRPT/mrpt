@@ -254,6 +254,16 @@ if(NOT MSVC AND NOT XCODE_VERSION)
 endif()
 
 # ----------------------------------------------------------------------------
+# ROS
+# ----------------------------------------------------------------------------
+include(cmakemodules/script_ros.cmake REQUIRED)        # Check for ROS1 / ROS2
+
+# Abort from ROS scripts? (special case for the build farm)
+if (MRPT_ABORT_CMAKE_SCRIPT)
+	return()
+endif()
+
+# ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
 include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
@@ -289,8 +299,8 @@ include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV l
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
+include(cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
 include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
-include(cmakemodules/script_ros.cmake REQUIRED)        # Check for ROS1 / ROS2
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_simpleini.cmake REQUIRED)   # SimpleINI lib
 include(cmakemodules/script_suitesparse.cmake REQUIRED) # SuiteSparse libs
@@ -303,6 +313,7 @@ include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers 
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 
 include(cmakemodules/process_emscripten_embedded_files.cmake REQUIRED)
+
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -640,27 +651,18 @@ add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
-if (DEFINED BUILD_TESTING)
-	set(_def_value ${BUILD_TESTING})
+if (((DEFINED BUILD_TESTING) AND (NOT BUILD_TESTING)) OR (DEFINED ENV{ROS_DISTRO}))
+	# We are in a ROS environment: disable tests by default to reduce build time in ROS build farms.
+	set(_def_value OFF)
 else()
-	if ("$ENV{ROS_DISTRO}" STREQUAL "")
-		# Regular case:
-		set(_def_value ON)
-	else()
-		# We are in a ROS environment: disable tests by default to reduce build time in ROS build farms.
-		set(_def_value OFF)
-	endif()
+	# Regular case:
+	set(_def_value ON)
 endif()
 set(MRPT_BUILD_TESTING ${_def_value} CACHE BOOL "Build MRPT tests")
 if(MRPT_BUILD_TESTING)
 	add_subdirectory(tests)  # Build my tests
 endif()
 unset(_def_value )
-
-#-----------------------------------
-# The python bindings
-# *Note*: This must be AFTER the generation of mrpt-xxx-config.cmake files
-include(cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
 
 # Prepare CPack params for building binary packages (has to be after the apps/)
 include(cmakemodules/script_setup_cpack.cmake REQUIRED)

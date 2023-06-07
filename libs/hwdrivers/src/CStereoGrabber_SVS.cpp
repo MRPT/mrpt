@@ -311,9 +311,6 @@ bool CStereoGrabber_SVS::getStereoObservation(
 #endif
 }
 
-/*-------------------------------------------------------------
-						TCaptureOptions_bumblebee Constructor
- -------------------------------------------------------------*/
 TCaptureOptions_SVS::TCaptureOptions_SVS(
 	int _frame_width, int _frame_height, double _framerate, int _NDisp,
 	int _Corrsize, int _LR, int _Thresh, int _Unique, int _Horopter,

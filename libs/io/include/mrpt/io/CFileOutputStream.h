@@ -38,40 +38,11 @@ class CFileOutputStream : public CStream
 	CFileOutputStream(
 		const std::string& fileName, const OpenMode mode = OpenMode::TRUNCATE);
 
-	/** Constructor
-	 * \param fileName The file to be open in this stream
-	 * \param append If set to true, the file will be opened for writing and the
-	 * current cursor position set at the end of the file. Otherwise, previous
-	 * contents will be lost.
-	 * \exception std::exception if the file cannot be opened.
-	 * \deprecated
-	 */
-	[[deprecated("Use signature with OpenMode enum")]]	//
-	CFileOutputStream(const std::string& fileName, bool append)
-		: CFileOutputStream(
-			  fileName, append ? OpenMode::APPEND : OpenMode::TRUNCATE)
-	{
-	}
-
 	/** Default constructor */
 	CFileOutputStream();
 
 	CFileOutputStream(const CFileOutputStream&) = delete;
 	CFileOutputStream& operator=(const CFileOutputStream&) = delete;
-
-	/** Open the given file for write
-	 * \param fileName The file to be open in this stream
-	 * \param append If set to true, the file will be opened for writing and the
-	 * current cursor position set at the end of the file. Otherwise, previous
-	 * contents will be lost.
-	 * \sa fileOpenCorrectly
-	 * \return true on success.
-	 */
-	[[deprecated("Use signature with OpenMode enum")]]	//
-	bool open(const std::string& fileName, bool append)
-	{
-		return open(fileName, append ? OpenMode::APPEND : OpenMode::TRUNCATE);
-	}
 
 	bool open(
 		const std::string& fileName, const OpenMode mode = OpenMode::TRUNCATE);

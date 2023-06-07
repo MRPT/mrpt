@@ -764,8 +764,8 @@ bool CVelodyneScanner::receivePackets(
 
 // static method:
 mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
-	platform_socket_t hSocket, uint8_t* out_buffer,
-	const size_t expected_packet_size, const std::string& filter_only_from_IP)
+	platform_socket_t hSocket, uint8_t* out_buffer, size_t expected_packet_size,
+	const std::string& filter_only_from_IP)
 {
 	if (hSocket == INVALID_SOCKET)
 		THROW_EXCEPTION(

@@ -15,6 +15,8 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/poses/CPose2D.h>
 
+#include <set>
+
 namespace mrpt::nav
 {
 /** \addtogroup nav_planners Path planning

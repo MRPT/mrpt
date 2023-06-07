@@ -207,7 +207,7 @@ void CPointCloudColoured::markAllPointsAsNew()
 }
 /** In a base class, reserve memory to prepare subsequent calls to
  * PLY_import_set_vertex */
-void CPointCloudColoured::PLY_import_set_vertex_count(const size_t N)
+void CPointCloudColoured::PLY_import_set_vertex_count(size_t N)
 {
 	this->resize(N);
 }
@@ -218,7 +218,7 @@ void CPointCloudColoured::PLY_import_set_vertex_count(const size_t N)
  * info.
  */
 void CPointCloudColoured::PLY_import_set_vertex(
-	const size_t idx, const mrpt::math::TPoint3Df& pt,
+	size_t idx, const mrpt::math::TPoint3Df& pt,
 	const mrpt::img::TColorf* pt_color)
 {
 	if (!pt_color)
@@ -244,7 +244,7 @@ size_t CPointCloudColoured::PLY_export_get_vertex_count() const
  * info.
  */
 void CPointCloudColoured::PLY_export_get_vertex(
-	const size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
+	size_t idx, mrpt::math::TPoint3Df& pt, bool& pt_has_color,
 	mrpt::img::TColorf& pt_color) const
 {
 	auto& p = m_points[idx];
