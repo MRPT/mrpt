@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.9.1: UNRELEASED
+(No changes yet)
+
 # Version 2.9.0: Released June 7th, 2023
 - Changes in apps:
   - rosbag2rawlog: Added support for converting nav_msgs/LaserScan topics to mrpt::obs::CObservation2DRangeScan
