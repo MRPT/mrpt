@@ -134,7 +134,7 @@ if (NOT DISABLE_ROS)
 	endif()
 
 	# To ease debugging in build farms, etc.
-	if (("${BUILD_TESTING}" STREQUAL "1") AND ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
+	if ("$ENV{HOME}" STREQUAL "/home/buildfarm")
 		message(STATUS "MRPT build 'env' ----------------------------------------------")
 		execute_process(COMMAND env)
 		message(STATUS "------------ end of 'env' -------------------------------------")
@@ -151,8 +151,8 @@ if (NOT DISABLE_ROS)
 	# Kinda hack to prevent build farm to time out for "dev" jobs:
 	# The server scripts always run: (1) build+install, then (2) build+test.
 	# We will catch the (2) situation and don't build a thing, but return quickly.
-	if (MRPT_ROS_VERSION AND ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
-		message(STATUS "====== ROS build farm detected. Aborting tests in this build")
+	if (("${BUILD_TESTING}" STREQUAL "1") AND ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
+		message(STATUS "====== ROS build farm 'build+test' detected. Aborting tests in this build")
 		# "make test" shall not fail:
 		enable_testing()
 		# "make install" shall not fail:
