@@ -15,7 +15,7 @@ if (NOT DISABLE_ROS)
 	endif()
 
 	# ROS libs:
-	find_package(rclcpp QUIET)
+	find_package(rclcpp) # QUIET)
 	find_package(ament_cmake QUIET)
 	if(ament_cmake_FOUND AND rclcpp_FOUND)
 		set(MRPT_ROS_VERSION 2)
@@ -134,7 +134,7 @@ if (NOT DISABLE_ROS)
 	endif()
 
 	# To ease debugging in build farms, etc.
-	if (MRPT_ROS_VERSION OR ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
+	if (("${BUILD_TESTING}" STREQUAL "1") AND ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
 		message(STATUS "MRPT build 'env' ----------------------------------------------")
 		execute_process(COMMAND env)
 		message(STATUS "------------ end of 'env' -------------------------------------")
