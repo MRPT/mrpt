@@ -52,7 +52,7 @@ Minimum compiler requisites:
             libxrandr-dev libxxf86vm-dev
 
        # Support most common sensors:
-       sudo apt install libftdi-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
+       sudo apt install libftdi1-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
             libdc1394-22-dev libavformat-dev libswscale-dev libpcap-dev \
             liboctomap-dev libopenni2-dev
 
