@@ -12,6 +12,7 @@
 
 #include <algorithm>  // max()
 #include <cmath>  // floor(),isnan(),...
+#include <cstdint>
 #include <stdexcept>
 
 namespace mrpt
