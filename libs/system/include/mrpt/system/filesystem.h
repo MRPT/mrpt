@@ -10,6 +10,7 @@
 
 #include <mrpt/core/exceptions.h>  //ASSERTMSG_
 
+#include <cstdint>
 #include <string>
 
 namespace mrpt::system
