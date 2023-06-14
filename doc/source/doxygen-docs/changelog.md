@@ -1,5 +1,8 @@
 \page changelog Change Log
 
+# Version 2.9.2: UNRELEASED
+(No changes yet)
+
 # Version 2.9.1: Release June 14th, 2023
 - Build system:
   - ROS 2: fix missing explicit dep on rclcpp in package.xml.
