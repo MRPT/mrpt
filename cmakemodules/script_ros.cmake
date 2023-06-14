@@ -108,7 +108,7 @@ if (NOT DISABLE_ROS)
 	set_directory_properties(PROPERTIES "COMPILE_DEFINITIONS" "")
 
 
-	if ("$ENV{VERBOSE}")
+	if ("$ENV{VERBOSE}" OR ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
 		message(STATUS "ROS dependencies:")
 		message(STATUS "  roscpp_INCLUDE_DIRS :${roscpp_INCLUDE_DIRS}")
 		message(STATUS "  roscpp_LIBRARIES    :${roscpp_LIBRARIES}")
@@ -134,10 +134,13 @@ if (NOT DISABLE_ROS)
 	endif()
 
 	# To ease debugging in build farms, etc.
-	if (MRPT_ROS_VERSION)
+	if ("$ENV{HOME}" STREQUAL "/home/buildfarm")
 		message(STATUS "MRPT build 'env' ----------------------------------------------")
 		execute_process(COMMAND env)
 		message(STATUS "------------ end of 'env' -------------------------------------")
+		message(STATUS "MRPT build 'peek /opt/ros' ----------------------------------------------")
+		execute_process(COMMAND find /opt/ros -maxdepth 2)
+		message(STATUS "------------ end of 'peek /opt/ros' -------------------------------------")
 	endif()
 
 	# Convert package versions to hex so they can be used in preprocessor for wider
@@ -148,8 +151,8 @@ if (NOT DISABLE_ROS)
 	# Kinda hack to prevent build farm to time out for "dev" jobs:
 	# The server scripts always run: (1) build+install, then (2) build+test.
 	# We will catch the (2) situation and don't build a thing, but return quickly.
-	if (MRPT_ROS_VERSION AND ("${BUILD_TESTING}" STREQUAL "1")) # Yes, the farm defines "1", not "ON"
-		message(STATUS "====== ROS build farm detected. Aborting tests in this build")
+	if (("${BUILD_TESTING}" STREQUAL "1") AND ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
+		message(STATUS "====== ROS build farm 'build+test' detected. Aborting tests in this build")
 		# "make test" shall not fail:
 		enable_testing()
 		# "make install" shall not fail:
