@@ -4,7 +4,6 @@ mrpt/core/Clock.cpp
 mrpt/core/Stringifyable.cpp
 std/array.cpp
 std/stl_vector.cpp
-std/std_thread.cpp
 mrpt/core/WorkerThreadsPool.cpp
 mrpt/core/backtrace.cpp
 mrpt/core/bits_math.cpp

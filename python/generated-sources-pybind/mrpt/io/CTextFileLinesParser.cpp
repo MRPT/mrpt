@@ -49,10 +49,10 @@ void bind_mrpt_io_CTextFileLinesParser(std::function< pybind11::module &(std::st
 	// mrpt::io::setLazyLoadPathBase(const std::string &) file:mrpt/io/lazy_load_path.h line:34
 	M("mrpt::io").def("setLazyLoadPathBase", (void (*)(const std::string &)) &mrpt::io::setLazyLoadPathBase, "Changes the base path to be used to locate relative lazy-load externally\n stored objects via lazy_load_absolute_path().\n\n \n\n \n\nC++: mrpt::io::setLazyLoadPathBase(const std::string &) --> void", pybind11::arg("path"));
 
-	// mrpt::io::loadTextFile(class std::vector<std::string, class std::allocator<std::string > > &, const std::string &) file:mrpt/io/vector_loadsave.h line:40
+	// mrpt::io::loadTextFile(class std::vector<std::string, class std::allocator<std::string > > &, const std::string &) file:mrpt/io/vector_loadsave.h line:41
 	M("mrpt::io").def("loadTextFile", (bool (*)(class std::vector<std::string, class std::allocator<std::string > > &, const std::string &)) &mrpt::io::loadTextFile, "Loads a text file as a vector of string lines.\n \n\n Returns false on any error, true on everything OK.\n \n\n file_get_contents()\n\nC++: mrpt::io::loadTextFile(class std::vector<std::string, class std::allocator<std::string > > &, const std::string &) --> bool", pybind11::arg("o"), pybind11::arg("fileName"));
 
-	// mrpt::io::file_get_contents(const std::string &) file:mrpt/io/vector_loadsave.h line:48
+	// mrpt::io::file_get_contents(const std::string &) file:mrpt/io/vector_loadsave.h line:49
 	M("mrpt::io").def("file_get_contents", (std::string (*)(const std::string &)) &mrpt::io::file_get_contents, "Loads an entire text file and return its contents as a single std::string.\n \n\n std::runtime_error On any read error.\n \n\n loadBinaryFile(), loadTextFile()\n \n\n Relying on C++17 RVO to return a string without worring on\n return-by-value of big objects.\n\nC++: mrpt::io::file_get_contents(const std::string &) --> std::string", pybind11::arg("fileName"));
 
 }
