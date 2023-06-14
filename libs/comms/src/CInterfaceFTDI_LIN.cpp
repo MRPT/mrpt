@@ -419,7 +419,7 @@ void CInterfaceFTDI::Purge()
 	auto* ctx = static_cast<ftdi_context*>(m_ftdi_context);
 	ASSERT_(ctx->usb_dev);
 
-	if (ftdi_usb_purge_buffers(ctx) < 0)
+	if (ftdi_tcioflush(ctx) < 0)
 		THROW_EXCEPTION("Error purging device buffers");
 
 	m_readBuffer.clear();

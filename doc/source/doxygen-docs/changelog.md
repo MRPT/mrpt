@@ -1,6 +1,9 @@
 \page changelog Change Log
 
 # Version 2.9.2: UNRELEASED
+- Changes in libraries:
+  - \ref mrpt_comms_grp
+    - mrpt::comms::CInterfaceFTDI Fix usage of deprecated API in libftdi
 - BUG FIXES:
   - Fixed build errors with gcc-13 (Fixes [Debian bug #1037783](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1037783))
 
