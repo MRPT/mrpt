@@ -1134,8 +1134,7 @@ void yaml::comment(const std::string& c, CommentPosition position)
 }
 
 // --- key node comments API ---
-const yaml::node_t& findKeyNode(
-	const yaml::node_t* me, const std::string_view& key)
+const yaml::node_t& findKeyNode(const yaml::node_t* me, const std::string& key)
 {
 	const auto& m = me->asMap();
 	auto itK = m.find(key);
