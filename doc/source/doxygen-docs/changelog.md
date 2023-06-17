@@ -6,6 +6,10 @@
 - Changes in libraries:
   - \ref mrpt_comms_grp
     - mrpt::comms::CInterfaceFTDI Fix usage of deprecated API in libftdi
+- Python:
+  - Fix python install directory:
+    - ROS 1: `[...]/lib/python3/site-packages/`
+    - ROS 2 or pure Debian: `[...]/lib/python3.X/site-packages/`
 - BUG FIXES:
   - Fixed build errors with gcc-13 (Fixes [Debian bug #1037783](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1037783))
 

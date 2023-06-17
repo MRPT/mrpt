@@ -33,6 +33,9 @@
   <depend>tf2_msgs</depend>
   <depend>tf2</depend>
 
+  <!-- COMMON DEPS: This ensures we have ROS_DISTRO, etc. env vars -->
+  <build_depend>ros_environment</build_depend>
+
   <!-- Deps required by building only -->
   <build_depend>assimp-dev</build_depend>
   <build_depend>ffmpeg</build_depend>
