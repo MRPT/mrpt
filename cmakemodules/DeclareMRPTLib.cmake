@@ -252,6 +252,16 @@ macro(internal_define_mrpt_lib name headers_only )
 			target_compile_definitions(${name} PUBLIC _USE_MATH_DEFINES)
 		endif()
 
+		# Includes: <mrpt/config.h> & <mrpt/version.h> config headers:
+		# These are PRIVATE include to enforce including BEFORE any other headers, 
+		# e.g. another mrpt instance installed under /opt/ros/${ROS_DISTRO} while building a local copy
+		# Note that there is another PUBLIC dep on the same headers for mrpt-core only, so user code
+		# sees those files too.
+		target_include_directories(${name} BEFORE PRIVATE
+			$<BUILD_INTERFACE:${MRPT_CONFIG_FILE_INCLUDE_DIR}>
+			$<INSTALL_INTERFACE:include>
+		)
+
 		# for gcc and clang, we must build libraries as fPIC:
 		if(NOT MSVC)
 			target_compile_options(${name} PRIVATE "-fPIC")

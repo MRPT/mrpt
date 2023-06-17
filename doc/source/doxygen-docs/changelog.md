@@ -11,6 +11,7 @@
     - ROS 1: `[...]/lib/python3/site-packages/`
     - ROS 2 or pure Debian: `[...]/lib/python3.X/site-packages/`
 - BUG FIXES:
+  - Fixed including the wrong `<mrpt/config.h>` if building MRPT in a system with another ROS-provided MRPT build.
   - Fixed build errors with gcc-13 (Fixes [Debian bug #1037783](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1037783))
 
 # Version 2.9.1: Release June 14th, 2023
