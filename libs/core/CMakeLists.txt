@@ -9,7 +9,7 @@ define_mrpt_lib(
 
 if(BUILD_mrpt-core)
 	# Includes: <mrpt/config.h> & <mrpt/version.h> config headers:
-	target_include_directories(core PUBLIC
+	target_include_directories(core BEFORE PUBLIC
 		$<BUILD_INTERFACE:${MRPT_CONFIG_FILE_INCLUDE_DIR}>
 		$<INSTALL_INTERFACE:include>
 	)
