@@ -54,15 +54,19 @@ endfunction()
 macro(mrpt_ament_cmake_python_get_python_install_dir)
   if(NOT DEFINED PYTHON_INSTALL_DIR)
 	# avoid storing backslash in cached variable since CMake will interpret it as escape character
-	# (JLBC,May2023): Replaced "purelib" -> "platstdlib" below to get rid of the "/local/" path prefix.
-	if(NOT DEFINED ENV{ROS_DISTRO})
-		# For debian packages: /usr/lib/python3/dist-packages/
-		# Read debates online:
+	
+	# (JLBC,June 2023): *Hack* to comply with ROS 1 Noetic convention of storing python pkgs 
+	# under "lib/python3/dist-packages/", despite python sysconfig actual values.
+	# Remove the first branch of the if() once ROS 1 does not exist.
+	if("$ENV{ROS_DISTRO}" STREQUAL "noetic")
+		set(_output "lib/python3/dist-packages/")  # this is prefixed with "/usr/"
+	else()
+		# For debian packages: /usr/lib/python3/dist-packages/ vs /usr/lib/python3.x/dist-packages/ ???
+		# Read related debates online:
 		# - https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
 		# - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=998739
 		#
-		set(_output "lib/python3/dist-packages/")  # this is prefixed with "/usr/"
-	else()
+
 		# For ROS packages  /usr/local/lib/python3...
 		set(_python_code
 		"import os"
