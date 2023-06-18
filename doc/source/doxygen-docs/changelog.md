@@ -7,6 +7,8 @@
   - \ref mrpt_comms_grp
     - mrpt::comms::CInterfaceFTDI Fix usage of deprecated API in libftdi
 - Python:
+  - New wrapped functions:
+    - `mrpt.serialization.archiveFrom()`
   - Fix python install directory:
     - ROS 1: `[...]/lib/python3/site-packages/`
     - ROS 2 or pure Debian: `[...]/lib/python3.X/site-packages/`

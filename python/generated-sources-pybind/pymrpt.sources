@@ -44,6 +44,9 @@ mrpt/typemeta/TEnumType_6.cpp
 std/variant.cpp
 mrpt/serialization/CArchive.cpp
 mrpt/serialization/CArchive_1.cpp
+mrpt/serialization/CArchive_2.cpp
+mrpt/serialization/CArchive_3.cpp
+unknown/unknown.cpp
 mrpt/config/CLoadableOptions.cpp
 mrpt/system/CTicTac.cpp
 mrpt/system/os.cpp
@@ -183,7 +186,6 @@ mrpt/hwdrivers/CMyntEyeCamera.cpp
 mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.cpp
 mrpt/hwdrivers/CCameraSensor.cpp
 mrpt/obs/gnss_messages_type_list.cpp
-unknown/unknown.cpp
 unknown/unknown_1.cpp
 unknown/unknown_2.cpp
 unknown/unknown_3.cpp
@@ -191,6 +193,7 @@ unknown/unknown_4.cpp
 unknown/unknown_5.cpp
 unknown/unknown_6.cpp
 unknown/unknown_7.cpp
+unknown/unknown_8.cpp
 mrpt/obs/CObservationGPS.cpp
 mrpt/hwdrivers/CGPSInterface.cpp
 mrpt/containers/MT_buffer.cpp
