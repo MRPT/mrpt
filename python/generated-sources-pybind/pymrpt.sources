@@ -4,6 +4,9 @@ mrpt/core/Clock.cpp
 mrpt/core/Stringifyable.cpp
 std/array.cpp
 std/stl_vector.cpp
+std/stl_deque.cpp
+std/stl_deque_1.cpp
+std/stl_deque_2.cpp
 mrpt/core/WorkerThreadsPool.cpp
 mrpt/core/backtrace.cpp
 mrpt/core/bits_math.cpp
@@ -33,6 +36,8 @@ mrpt/rtti/CObject_2.cpp
 mrpt/rtti/CObject_3.cpp
 mrpt/serialization/CSerializable.cpp
 std/stl_multimap.cpp
+std/stl_map.cpp
+std/stl_map_1.cpp
 mrpt/typemeta/TEnumType.cpp
 mrpt/typemeta/TEnumType_1.cpp
 mrpt/typemeta/TEnumType_2.cpp
@@ -98,7 +103,10 @@ mrpt/img/TColor.cpp
 mrpt/img/CCanvas.cpp
 mrpt/maps/CMultiMetricMap.cpp
 mrpt/bayes/CProbabilityParticle.cpp
+mrpt/bayes/CParticleFilterData.cpp
+mrpt/bayes/CParticleFilterData_1.cpp
 mrpt/poses/CPose3DPDFParticles.cpp
+mrpt/poses/CPosePDFParticles.cpp
 mrpt/img/color_maps.cpp
 mrpt/math/TBoundingBox.cpp
 mrpt/obs/T2DScanProperties.cpp
@@ -332,7 +340,6 @@ mrpt/poses/SO_SE_average.cpp
 mrpt/vision/types.cpp
 mrpt/vision/types_1.cpp
 mrpt/vision/TKeyPoint.cpp
-mrpt/vision/CFeature.cpp
 mrpt/maps/CLandmark.cpp
 mrpt/vision/chessboard_camera_calib.cpp
 mrpt/maps/CLandmarksMap.cpp
@@ -348,8 +355,8 @@ mrpt/slam/CRangeBearingKFSLAM.cpp
 mrpt/bayes/CRejectionSamplingCapable.cpp
 mrpt/slam/CRejectionSamplingRangeOnlyLocalization.cpp
 mrpt/system/CRateTimer.cpp
-mrpt/system/filesystem.cpp
-mrpt/system/thread_name.cpp
+mrpt/system/crc.cpp
+mrpt/system/scheduler.cpp
 mrpt/tfest/indivcompatdecls.cpp
 mrpt/topography/data_types.cpp
 mrpt/topography/data_types_1.cpp

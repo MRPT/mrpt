@@ -83,7 +83,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -166,10 +166,6 @@ void bind_mrpt_vision_chessboard_camera_calib(std::function< pybind11::module &(
 
 	// mrpt::vision::addFeaturesToImage(const class mrpt::img::CImage &, const class mrpt::vision::CFeatureList &, class mrpt::img::CImage &) file:mrpt/vision/utils.h line:173
 	M("mrpt::vision").def("addFeaturesToImage", (void (*)(const class mrpt::img::CImage &, const class mrpt::vision::CFeatureList &, class mrpt::img::CImage &)) &mrpt::vision::addFeaturesToImage, "Draw rectangles around each of the features on a copy of the input image.\n \n\n    [IN]    The input image where to draw the features.\n \n\n  [IN]    The list of features.\n \n\n   [OUT]   The copy of the input image with the marked\n features.\n\nC++: mrpt::vision::addFeaturesToImage(const class mrpt::img::CImage &, const class mrpt::vision::CFeatureList &, class mrpt::img::CImage &) --> void", pybind11::arg("inImg"), pybind11::arg("theList"), pybind11::arg("outImg"));
-
-	// mrpt::vision::projectMatchedFeature(const class mrpt::vision::CFeature &, const class mrpt::vision::CFeature &, struct mrpt::math::TPoint3D_<double> &, const struct mrpt::vision::TStereoSystemParams &) file:mrpt/vision/utils.h line:204
-	M("mrpt::vision").def("projectMatchedFeature", [](const class mrpt::vision::CFeature & a0, const class mrpt::vision::CFeature & a1, struct mrpt::math::TPoint3D_<double> & a2) -> void { return mrpt::vision::projectMatchedFeature(a0, a1, a2); }, "", pybind11::arg("leftFeat"), pybind11::arg("rightFeat"), pybind11::arg("p3D"));
-	M("mrpt::vision").def("projectMatchedFeature", (void (*)(const class mrpt::vision::CFeature &, const class mrpt::vision::CFeature &, struct mrpt::math::TPoint3D_<double> &, const struct mrpt::vision::TStereoSystemParams &)) &mrpt::vision::projectMatchedFeature, "Computes the 3D position of a particular matched feature.\n \n\n     [IN]    The left feature.\n \n\n    [IN]    The right feature.\n \n\n         [OUT]   The 3D position of the projected point.\n \n\n       [IN]    The intrinsic and extrinsic parameters of the\n stereo pair.\n\nC++: mrpt::vision::projectMatchedFeature(const class mrpt::vision::CFeature &, const class mrpt::vision::CFeature &, struct mrpt::math::TPoint3D_<double> &, const struct mrpt::vision::TStereoSystemParams &) --> void", pybind11::arg("leftFeat"), pybind11::arg("rightFeat"), pybind11::arg("p3D"), pybind11::arg("params"));
 
 	// mrpt::vision::projectMatchedFeatures(class mrpt::vision::CMatchedFeatureList &, const struct mrpt::vision::TStereoSystemParams &, class mrpt::maps::CLandmarksMap &) file:mrpt/vision/utils.h line:218
 	M("mrpt::vision").def("projectMatchedFeatures", (void (*)(class mrpt::vision::CMatchedFeatureList &, const struct mrpt::vision::TStereoSystemParams &, class mrpt::maps::CLandmarksMap &)) &mrpt::vision::projectMatchedFeatures, "Project a list of matched features into the 3D space, using the provided\n parameters of the stereo system\n \n\n       [IN/OUT]    The list of matched features. Features which\n yields a 3D point outside the area defined in TStereoSystemParams are removed\n from the lists.\n \n\n        [IN]        The parameters of the stereo system.\n \n\n    [OUT]       A map containing the projected landmarks.\n \n\n TStereoSystemParams, CLandmarksMap\n\nC++: mrpt::vision::projectMatchedFeatures(class mrpt::vision::CMatchedFeatureList &, const struct mrpt::vision::TStereoSystemParams &, class mrpt::maps::CLandmarksMap &) --> void", pybind11::arg("mfList"), pybind11::arg("param"), pybind11::arg("landmarks"));

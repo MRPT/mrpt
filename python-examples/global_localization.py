@@ -5,6 +5,11 @@
 # export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
 # ---------------------------------------------------------------------
 
+#
+# Usage example:
+#
+# ./global_localization.py ../share/mrpt/config_files/pf-localization/localization_demo.ini
+#
 from mrpt import pymrpt
 import os
 import sys
@@ -92,8 +97,9 @@ if (map_filename.endswith('.simplemap')
         or map_filename.endswith('.simplemap.gz')):
     simple_map = mrpt.maps.CSimpleMap()
     map_file = mrpt.io.CFileGZInputStream(map_filename)
-    map_file.ReadObject(simple_map)
-    metric_map.loadFromProbabilisticPosesAndObservations(simple_map.ctx())
+    arch = mrpt.serialization.archiveFrom(map_file)
+    arch.ReadObject(simple_map)
+    metric_map.loadFromProbabilisticPosesAndObservations(simple_map)
 elif (map_filename.endswith('.gridmap')
         or map_filename.endswith('.gridmap.gz')):
     occ_map = mrpt.maps.COccupancyGridMap2D()
@@ -101,7 +107,7 @@ elif (map_filename.endswith('.gridmap')
     map_file.ReadObject(occ_map)
     # overwrite gridmap
     for i in range(len(metric_map.maps)):
-        if metric_map.maps[i].ctx().GetRuntimeClass().className == 'COccupancyGridMap2D':
+        if metric_map.maps[i].GetRuntimeClass().className == 'COccupancyGridMap2D':
             metric_map.maps[i] = occ_map
 else:
     print('Error. Can not load map from unknown extension.')
@@ -124,11 +130,11 @@ except:
     win3D = mrpt.gui.CDisplayWindow3D("pf_localization", 800, 600)
 
 # initial scene
-map_object = metric_map.maps[0].ctx().getAs3DObject()
+map_object = metric_map.maps[0].getVisualization()
 
 scene_ptr = win3D.get3DSceneAndLock()
-scene_ptr.ctx().clear()
-scene_ptr.ctx().insert(map_object)
+scene_ptr.clear()
+scene_ptr.insert(map_object)
 win3D.unlockAccess3DScene()
 win3D.forceRepaint()
 
@@ -141,14 +147,19 @@ pf = mrpt.bayes.CParticleFilter()
 pf.m_options = pf_options
 
 # initialize pdf
-pdf.resetUniformFreeSpace(metric_map.maps[0].pointer(), 0.7, 40000)
+pdf.resetUniformFreeSpace(metric_map.maps[0], 0.7, 40000)
+
+# Archive for reading from the file:
+rawlogArch = mrpt.serialization.archiveFrom(rawlog_file)
 
 # loop
 entry = 0
 while True:
     # get action observation pair
-    next_entry, act, obs, entry = mrpt.obs.CRawlog.readActionObservationPair(
-        rawlog_file, entry)
+    act = mrpt.obs.CActionCollection()
+    obs = mrpt.obs.CSensoryFrame()
+    next_entry = mrpt.obs.CRawlog.readActionObservationPair(
+        rawlogArch, act, obs, entry)
     if not next_entry:
         break
     else:
@@ -159,19 +170,19 @@ while True:
     cov, mean = pdf.getCovarianceAndMean()
 
     # get particles
-    particles_object = pdf.getAs3DObject()
+    particles_object = pdf.getVisualization()
 
     # get laserscan
     points_map = obs.buildAuxPointsMap()
-    laserscan_object = points_map.getAs3DObject()
-    laserscan_object.ctx().setPose(mrpt.poses.CPose3D(mean))
-    laserscan_object.ctx().setColor(mrpt.utils.TColorf(1., 0., 0.))
+    laserscan_object = points_map.getVisualization()
+    laserscan_object.setPose(mrpt.poses.CPose3D(mean))
+    laserscan_object.setColor(mrpt.utils.TColorf(1., 0., 0.))
 
     # update pf
-    act_ptr = mrpt.obs.CActionCollection()
-    act_ptr.ctx(act)
+
+    act_ptr.insert(act)
     obs_ptr = mrpt.obs.CSensoryFrame()
-    obs_ptr.ctx(obs)
+    obs_ptr.insert(obs)
     stats = pf.executeOn(pdf, act_ptr, obs_ptr)
 
     # update scene

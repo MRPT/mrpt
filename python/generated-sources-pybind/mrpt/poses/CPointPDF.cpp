@@ -58,7 +58,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -802,7 +802,7 @@ void bind_mrpt_poses_CPointPDF(std::function< pybind11::module &(std::string con
 		cl.def("assign", (class mrpt::poses::CPointPDFGaussian & (mrpt::poses::CPointPDFGaussian::*)(const class mrpt::poses::CPointPDFGaussian &)) &mrpt::poses::CPointPDFGaussian::operator=, "C++: mrpt::poses::CPointPDFGaussian::operator=(const class mrpt::poses::CPointPDFGaussian &) --> class mrpt::poses::CPointPDFGaussian &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	{ // mrpt::poses::CPointPDFParticles file:mrpt/poses/CPointPDFParticles.h line:24
-		pybind11::class_<mrpt::poses::CPointPDFParticles, std::shared_ptr<mrpt::poses::CPointPDFParticles>, PyCallBack_mrpt_poses_CPointPDFParticles, mrpt::poses::CPointPDF, mrpt::bayes::CParticleFilterData<mrpt::math::TPoint3D_<float>,mrpt::bayes::particle_storage_mode::POINTER>> cl(M("mrpt::poses"), "CPointPDFParticles", "A probability distribution of a 2D/3D point, represented as a set of random\n samples (particles).\n \n\n CPointPDF\n \n\n\n ");
+		pybind11::class_<mrpt::poses::CPointPDFParticles, std::shared_ptr<mrpt::poses::CPointPDFParticles>, PyCallBack_mrpt_poses_CPointPDFParticles, mrpt::poses::CPointPDF, mrpt::bayes::CParticleFilterData<mrpt::math::TPoint3D_<float>,mrpt::bayes::particle_storage_mode::POINTER>, mrpt::bayes::CParticleFilterDataImpl<mrpt::poses::CPointPDFParticles,std::deque<mrpt::bayes::CProbabilityParticle<mrpt::math::TPoint3D_<float>, mrpt::bayes::particle_storage_mode::POINTER> >>> cl(M("mrpt::poses"), "CPointPDFParticles", "A probability distribution of a 2D/3D point, represented as a set of random\n samples (particles).\n \n\n CPointPDF\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPointPDFParticles(); }, [](){ return new PyCallBack_mrpt_poses_CPointPDFParticles(); } ), "doc");
 		cl.def( pybind11::init<size_t>(), pybind11::arg("numParticles") );
 
