@@ -4,6 +4,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/metric_map_types.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPose2D.h>

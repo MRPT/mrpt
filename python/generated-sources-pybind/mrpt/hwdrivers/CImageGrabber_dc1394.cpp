@@ -2,6 +2,7 @@
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/img/CImage.h>
 #include <mrpt/img/TStereoCamera.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/poses/CPose3D.h>

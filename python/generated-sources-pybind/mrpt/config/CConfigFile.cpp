@@ -53,7 +53,7 @@ struct PyCallBack_mrpt_config_CConfigFile : public mrpt::config::CConfigFile {
 		}
 		return CConfigFile::readString(a0, a1, a2, a3);
 	}
-	void getAllSections(class std::vector<std::string, class std::allocator<std::string > > & a0) const override {
+	void getAllSections(class std::vector<std::string > & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::config::CConfigFile *>(this), "getAllSections");
 		if (overload) {
@@ -79,7 +79,7 @@ struct PyCallBack_mrpt_config_CConfigFile : public mrpt::config::CConfigFile {
 		}
 		return CConfigFile::clear();
 	}
-	void getAllKeys(const std::string & a0, class std::vector<std::string, class std::allocator<std::string > > & a1) const override {
+	void getAllKeys(const std::string & a0, class std::vector<std::string > & a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::config::CConfigFile *>(this), "getAllKeys");
 		if (overload) {
@@ -124,7 +124,7 @@ struct PyCallBack_mrpt_config_CConfigFilePrefixer : public mrpt::config::CConfig
 		}
 		return CConfigFilePrefixer::readString(a0, a1, a2, a3);
 	}
-	void getAllSections(class std::vector<std::string, class std::allocator<std::string > > & a0) const override {
+	void getAllSections(class std::vector<std::string > & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::config::CConfigFilePrefixer *>(this), "getAllSections");
 		if (overload) {
@@ -137,7 +137,7 @@ struct PyCallBack_mrpt_config_CConfigFilePrefixer : public mrpt::config::CConfig
 		}
 		return CConfigFilePrefixer::getAllSections(a0);
 	}
-	void getAllKeys(const std::string & a0, class std::vector<std::string, class std::allocator<std::string > > & a1) const override {
+	void getAllKeys(const std::string & a0, class std::vector<std::string > & a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::config::CConfigFilePrefixer *>(this), "getAllKeys");
 		if (overload) {
@@ -178,9 +178,9 @@ void bind_mrpt_config_CConfigFile(std::function< pybind11::module &(std::string 
 		cl.def("writeNow", (void (mrpt::config::CConfigFile::*)()) &mrpt::config::CConfigFile::writeNow, "Dumps the changes to the physical configuration file now, not waiting\n until destruction.\n \n\n std::runtime_error Upon error writing.\n\nC++: mrpt::config::CConfigFile::writeNow() --> void");
 		cl.def("discardSavingChanges", (void (mrpt::config::CConfigFile::*)()) &mrpt::config::CConfigFile::discardSavingChanges, "Discard saving (current) changes to physical file upon destruction \n\nC++: mrpt::config::CConfigFile::discardSavingChanges() --> void");
 		cl.def("getAssociatedFile", (std::string (mrpt::config::CConfigFile::*)() const) &mrpt::config::CConfigFile::getAssociatedFile, "Returns the file currently open by this object. \n\nC++: mrpt::config::CConfigFile::getAssociatedFile() const --> std::string");
-		cl.def("getAllSections", (void (mrpt::config::CConfigFile::*)(class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::config::CConfigFile::getAllSections, "Returns a list with all the section names. \n\nC++: mrpt::config::CConfigFile::getAllSections(class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("sections"));
+		cl.def("getAllSections", (void (mrpt::config::CConfigFile::*)(class std::vector<std::string > &) const) &mrpt::config::CConfigFile::getAllSections, "Returns a list with all the section names. \n\nC++: mrpt::config::CConfigFile::getAllSections(class std::vector<std::string > &) const --> void", pybind11::arg("sections"));
 		cl.def("clear", (void (mrpt::config::CConfigFile::*)()) &mrpt::config::CConfigFile::clear, "Empties the \"config file\" \n\nC++: mrpt::config::CConfigFile::clear() --> void");
-		cl.def("getAllKeys", (void (mrpt::config::CConfigFile::*)(const std::string &, class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::config::CConfigFile::getAllKeys, "Returs a list with all the keys into a section. \n\nC++: mrpt::config::CConfigFile::getAllKeys(const std::string &, class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("section"), pybind11::arg("keys"));
+		cl.def("getAllKeys", (void (mrpt::config::CConfigFile::*)(const std::string &, class std::vector<std::string > &) const) &mrpt::config::CConfigFile::getAllKeys, "Returs a list with all the keys into a section. \n\nC++: mrpt::config::CConfigFile::getAllKeys(const std::string &, class std::vector<std::string > &) const --> void", pybind11::arg("section"), pybind11::arg("keys"));
 		cl.def("assign", (class mrpt::config::CConfigFile & (mrpt::config::CConfigFile::*)(const class mrpt::config::CConfigFile &)) &mrpt::config::CConfigFile::operator=, "C++: mrpt::config::CConfigFile::operator=(const class mrpt::config::CConfigFile &) --> class mrpt::config::CConfigFile &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	{ // mrpt::config::CConfigFilePrefixer file:mrpt/config/CConfigFilePrefixer.h line:37
@@ -195,8 +195,8 @@ void bind_mrpt_config_CConfigFile(std::function< pybind11::module &(std::string 
 		cl.def("getSectionPrefix", (std::string (mrpt::config::CConfigFilePrefixer::*)() const) &mrpt::config::CConfigFilePrefixer::getSectionPrefix, "C++: mrpt::config::CConfigFilePrefixer::getSectionPrefix() const --> std::string");
 		cl.def("getKeyPrefix", (std::string (mrpt::config::CConfigFilePrefixer::*)() const) &mrpt::config::CConfigFilePrefixer::getKeyPrefix, "C++: mrpt::config::CConfigFilePrefixer::getKeyPrefix() const --> std::string");
 		cl.def("getBoundConfigFileBase", (class mrpt::config::CConfigFileBase * (mrpt::config::CConfigFilePrefixer::*)() const) &mrpt::config::CConfigFilePrefixer::getBoundConfigFileBase, "Returns the currently-bounded config source, or nullptr if none. \n\nC++: mrpt::config::CConfigFilePrefixer::getBoundConfigFileBase() const --> class mrpt::config::CConfigFileBase *", pybind11::return_value_policy::automatic);
-		cl.def("getAllSections", (void (mrpt::config::CConfigFilePrefixer::*)(class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::config::CConfigFilePrefixer::getAllSections, "C++: mrpt::config::CConfigFilePrefixer::getAllSections(class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("sections"));
-		cl.def("getAllKeys", (void (mrpt::config::CConfigFilePrefixer::*)(const std::string &, class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::config::CConfigFilePrefixer::getAllKeys, "C++: mrpt::config::CConfigFilePrefixer::getAllKeys(const std::string &, class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("section"), pybind11::arg("keys"));
+		cl.def("getAllSections", (void (mrpt::config::CConfigFilePrefixer::*)(class std::vector<std::string > &) const) &mrpt::config::CConfigFilePrefixer::getAllSections, "C++: mrpt::config::CConfigFilePrefixer::getAllSections(class std::vector<std::string > &) const --> void", pybind11::arg("sections"));
+		cl.def("getAllKeys", (void (mrpt::config::CConfigFilePrefixer::*)(const std::string &, class std::vector<std::string > &) const) &mrpt::config::CConfigFilePrefixer::getAllKeys, "C++: mrpt::config::CConfigFilePrefixer::getAllKeys(const std::string &, class std::vector<std::string > &) const --> void", pybind11::arg("section"), pybind11::arg("keys"));
 		cl.def("clear", (void (mrpt::config::CConfigFilePrefixer::*)()) &mrpt::config::CConfigFilePrefixer::clear, "C++: mrpt::config::CConfigFilePrefixer::clear() --> void");
 		cl.def("assign", (class mrpt::config::CConfigFilePrefixer & (mrpt::config::CConfigFilePrefixer::*)(const class mrpt::config::CConfigFilePrefixer &)) &mrpt::config::CConfigFilePrefixer::operator=, "C++: mrpt::config::CConfigFilePrefixer::operator=(const class mrpt::config::CConfigFilePrefixer &) --> class mrpt::config::CConfigFilePrefixer &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}

@@ -9,6 +9,7 @@
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/io/CStream.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CRenderizableShaderTexturedTriangles.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>

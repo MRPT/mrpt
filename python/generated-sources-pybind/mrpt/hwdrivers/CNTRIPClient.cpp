@@ -100,7 +100,7 @@ struct PyCallBack_mrpt_hwdrivers_CNTRIPEmitter : public mrpt::hwdrivers::CNTRIPE
 		}
 		return CGenericSensor::loadConfig(a0, a1);
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CNTRIPEmitter *>(this), "getObservations");
@@ -237,7 +237,7 @@ struct PyCallBack_mrpt_hwdrivers_CGPS_NTRIP : public mrpt::hwdrivers::CGPS_NTRIP
 		}
 		return CGenericSensor::loadConfig(a0, a1);
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CGPS_NTRIP *>(this), "getObservations");

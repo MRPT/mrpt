@@ -236,6 +236,19 @@ struct PyCallBack_mrpt_poses_CPosePDFGrid : public mrpt::poses::CPosePDFGrid {
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDFGrid *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 };
 
 // mrpt::poses::CPosePDFSOG file:mrpt/poses/CPosePDFSOG.h line:35
@@ -425,6 +438,19 @@ struct PyCallBack_mrpt_poses_CPosePDFSOG : public mrpt::poses::CPosePDFSOG {
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDFSOG *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 };
 
 void bind_mrpt_poses_CPosePDFGrid(std::function< pybind11::module &(std::string const &namespace_) > &M)
@@ -485,6 +511,7 @@ void bind_mrpt_poses_CPosePDFGrid(std::function< pybind11::module &(std::string 
 		cl.def("mergeModes", (void (mrpt::poses::CPosePDFSOG::*)(double, bool)) &mrpt::poses::CPosePDFSOG::mergeModes, "Merge very close modes so the overall number of modes is reduced while\n preserving the total distribution.\n  This method uses the approach described in the paper:\n  - \"Kullback-Leibler Approach to Gaussian Mixture Reduction\" AR\n Runnalls. IEEE Transactions on Aerospace and Electronic Systems, 2007.\n\n  \n The maximum KL-divergence to consider the merge of two\n nodes (and then stops the process).\n\nC++: mrpt::poses::CPosePDFSOG::mergeModes(double, bool) --> void", pybind11::arg("max_KLd"), pybind11::arg("verbose"));
 		cl.def("getMean", (void (mrpt::poses::CPosePDFSOG::*)(class mrpt::poses::CPose2D &) const) &mrpt::poses::CPosePDFSOG::getMean, "C++: mrpt::poses::CPosePDFSOG::getMean(class mrpt::poses::CPose2D &) const --> void", pybind11::arg("mean_pose"));
 		cl.def("getCovarianceAndMean", (class std::tuple<class mrpt::math::CMatrixFixed<double, 3, 3>, class mrpt::poses::CPose2D> (mrpt::poses::CPosePDFSOG::*)() const) &mrpt::poses::CPosePDFSOG::getCovarianceAndMean, "C++: mrpt::poses::CPosePDFSOG::getCovarianceAndMean() const --> class std::tuple<class mrpt::math::CMatrixFixed<double, 3, 3>, class mrpt::poses::CPose2D>");
+		cl.def("getMostLikelyCovarianceAndMean", (void (mrpt::poses::CPosePDFSOG::*)(class mrpt::math::CMatrixFixed<double, 3, 3> &, class mrpt::poses::CPose2D &) const) &mrpt::poses::CPosePDFSOG::getMostLikelyCovarianceAndMean, "For the most likely Gaussian mode in the SOG, returns the pose\n covariance matrix (3x3 cov matrix) and the mean. \n\n getMean \n\nC++: mrpt::poses::CPosePDFSOG::getMostLikelyCovarianceAndMean(class mrpt::math::CMatrixFixed<double, 3, 3> &, class mrpt::poses::CPose2D &) const --> void", pybind11::arg("cov"), pybind11::arg("mean_point"));
 		cl.def("normalizeWeights", (void (mrpt::poses::CPosePDFSOG::*)()) &mrpt::poses::CPosePDFSOG::normalizeWeights, "Normalize the weights in m_modes such as the maximum log-weight is 0 \n\nC++: mrpt::poses::CPosePDFSOG::normalizeWeights() --> void");
 		cl.def("copyFrom", (void (mrpt::poses::CPosePDFSOG::*)(const class mrpt::poses::CPosePDF &)) &mrpt::poses::CPosePDFSOG::copyFrom, "Copy operator, translating if necesary (for example, between particles\n and gaussian representations) \n\nC++: mrpt::poses::CPosePDFSOG::copyFrom(const class mrpt::poses::CPosePDF &) --> void", pybind11::arg("o"));
 		cl.def("saveToTextFile", (bool (mrpt::poses::CPosePDFSOG::*)(const std::string &) const) &mrpt::poses::CPosePDFSOG::saveToTextFile, "Save the density to a text file, with the following format:\n  There is one row per Gaussian \"mode\", and each row contains 10\n elements:\n   - w (The weight)\n   - x_mean (gaussian mean value)\n   - y_mean (gaussian mean value)\n   - phi_mean (gaussian mean value)\n   - C11 (Covariance elements)\n   - C22 (Covariance elements)\n   - C33 (Covariance elements)\n   - C12 (Covariance elements)\n   - C13 (Covariance elements)\n   - C23 (Covariance elements)\n\nC++: mrpt::poses::CPosePDFSOG::saveToTextFile(const std::string &) const --> bool", pybind11::arg("file"));

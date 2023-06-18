@@ -7,6 +7,7 @@
 #include <mrpt/io/CStream.h>
 #include <mrpt/io/open_flags.h>
 #include <mrpt/serialization/CArchive.h>
+#include <mrpt/serialization/CMessage.h>
 #include <optional>
 #include <string>
 

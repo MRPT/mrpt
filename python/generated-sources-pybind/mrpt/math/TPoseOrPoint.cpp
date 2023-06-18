@@ -1,3 +1,4 @@
+#include <Eigen/Dense>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoseOrPoint.h>
 #include <sstream> // __str__

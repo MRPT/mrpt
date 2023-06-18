@@ -8,6 +8,7 @@
 #include <mrpt/core/Clock.h>
 #include <mrpt/hwdrivers/CCANBusReader.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/rtti/CObject.h>
@@ -103,7 +104,7 @@ struct PyCallBack_mrpt_hwdrivers_CCANBusReader : public mrpt::hwdrivers::CCANBus
 		}
 		return CGenericSensor::loadConfig(a0, a1);
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CCANBusReader *>(this), "getObservations");

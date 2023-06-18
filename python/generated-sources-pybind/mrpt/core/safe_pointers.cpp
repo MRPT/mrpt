@@ -2,6 +2,7 @@
 #include <memory>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/safe_pointers.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TBoundingBox.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/Scene.h>

@@ -269,6 +269,19 @@ struct PyCallBack_mrpt_poses_CPose3DPDFParticles : public mrpt::poses::CPose3DPD
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 6, 6> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DPDFParticles *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 	double getW(size_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DPDFParticles *>(this), "getW");
@@ -588,6 +601,19 @@ struct PyCallBack_mrpt_poses_CPosePDFParticles : public mrpt::poses::CPosePDFPar
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDFParticles *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 	double getW(size_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDFParticles *>(this), "getW");
@@ -753,7 +779,9 @@ void bind_mrpt_poses_CPose3DPDFParticles(std::function< pybind11::module &(std::
 		cl.def("isPrepared", (bool (mrpt::poses::CPoseRandomSampler::*)() const) &mrpt::poses::CPoseRandomSampler::isPrepared, "Return true if samples can be generated, which only requires a previous\n call to setPosePDF \n\nC++: mrpt::poses::CPoseRandomSampler::isPrepared() const --> bool");
 		cl.def("getSamplingMean2D", (class mrpt::poses::CPose2D & (mrpt::poses::CPoseRandomSampler::*)(class mrpt::poses::CPose2D &) const) &mrpt::poses::CPoseRandomSampler::getSamplingMean2D, "If the object has been loaded with setPosePDF this method returns the 2D\n pose mean samples will be drawn around. \n\n A reference to the\n argument \n\nC++: mrpt::poses::CPoseRandomSampler::getSamplingMean2D(class mrpt::poses::CPose2D &) const --> class mrpt::poses::CPose2D &", pybind11::return_value_policy::automatic, pybind11::arg("out_mean"));
 		cl.def("getSamplingMean3D", (class mrpt::poses::CPose3D & (mrpt::poses::CPoseRandomSampler::*)(class mrpt::poses::CPose3D &) const) &mrpt::poses::CPoseRandomSampler::getSamplingMean3D, "If the object has been loaded with setPosePDF this method returns the 3D\n pose mean samples will be drawn around. \n\n A reference to the\n argument \n\nC++: mrpt::poses::CPoseRandomSampler::getSamplingMean3D(class mrpt::poses::CPose3D &) const --> class mrpt::poses::CPose3D &", pybind11::return_value_policy::automatic, pybind11::arg("out_mean"));
+		cl.def("getOriginalPDFCov2D", (void (mrpt::poses::CPoseRandomSampler::*)(class mrpt::math::CMatrixFixed<double, 3, 3> &) const) &mrpt::poses::CPoseRandomSampler::getOriginalPDFCov2D, "Retrieves the 3x3 covariance of the original PDF in \n\n. \n\nC++: mrpt::poses::CPoseRandomSampler::getOriginalPDFCov2D(class mrpt::math::CMatrixFixed<double, 3, 3> &) const --> void", pybind11::arg("cov3x3"));
 		cl.def("getOriginalPDFCov2D", (void (mrpt::poses::CPoseRandomSampler::*)(class mrpt::math::CMatrixDynamic<double> &) const) &mrpt::poses::CPoseRandomSampler::getOriginalPDFCov2D, "Retrieves the 3x3 covariance of the original PDF in \n\n. \n\nC++: mrpt::poses::CPoseRandomSampler::getOriginalPDFCov2D(class mrpt::math::CMatrixDynamic<double> &) const --> void", pybind11::arg("cov3x3"));
+		cl.def("getOriginalPDFCov3D", (void (mrpt::poses::CPoseRandomSampler::*)(class mrpt::math::CMatrixFixed<double, 6, 6> &) const) &mrpt::poses::CPoseRandomSampler::getOriginalPDFCov3D, "Retrieves the 6x6 covariance of the original PDF in \n\n\n. \n\nC++: mrpt::poses::CPoseRandomSampler::getOriginalPDFCov3D(class mrpt::math::CMatrixFixed<double, 6, 6> &) const --> void", pybind11::arg("cov6x6"));
 		cl.def("getOriginalPDFCov3D", (void (mrpt::poses::CPoseRandomSampler::*)(class mrpt::math::CMatrixDynamic<double> &) const) &mrpt::poses::CPoseRandomSampler::getOriginalPDFCov3D, "Retrieves the 6x6 covariance of the original PDF in \n\n\n. \n\nC++: mrpt::poses::CPoseRandomSampler::getOriginalPDFCov3D(class mrpt::math::CMatrixDynamic<double> &) const --> void", pybind11::arg("cov6x6"));
 	}
 	{ // mrpt::poses::CPosePDFParticles file:mrpt/poses/CPosePDFParticles.h line:34

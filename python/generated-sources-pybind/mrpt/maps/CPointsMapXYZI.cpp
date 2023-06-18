@@ -5,6 +5,7 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CPointsMapXYZI.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/CSetOfObjects.h>

@@ -1,5 +1,9 @@
+#include <Eigen/Dense>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/MatrixVectorBase.h>
+#include <mrpt/math/math_frwds.h>
+#include <mrpt/math/matrix_size_t.h>
 #include <sstream> // __str__
 
 #include <functional>
@@ -24,6 +28,12 @@ void bind_mrpt_math_CVectorDynamic(std::function< pybind11::module &(std::string
 		cl.def( pybind11::init<size_t, bool>(), pybind11::arg("N"), pybind11::arg("initZero") );
 
 		cl.def( pybind11::init( [](mrpt::math::CVectorDynamic<double> const &o){ return new mrpt::math::CVectorDynamic<double>(o); } ) );
+		cl.def("fromVectorLike", (void (mrpt::math::CVectorDynamic<double>::*)(const class mrpt::math::CMatrixFixed<double, 3, 1> &)) &mrpt::math::CVectorDynamic<double>::fromVectorLike<mrpt::math::CMatrixFixed<double, 3, 1>>, "C++: mrpt::math::CVectorDynamic<double>::fromVectorLike(const class mrpt::math::CMatrixFixed<double, 3, 1> &) --> void", pybind11::arg("m"));
+		cl.def("fromVectorLike", (void (mrpt::math::CVectorDynamic<double>::*)(const class mrpt::math::CMatrixFixed<double, 6, 1> &)) &mrpt::math::CVectorDynamic<double>::fromVectorLike<mrpt::math::CMatrixFixed<double, 6, 1>>, "C++: mrpt::math::CVectorDynamic<double>::fromVectorLike(const class mrpt::math::CMatrixFixed<double, 6, 1> &) --> void", pybind11::arg("m"));
+		cl.def("fromVectorLike", (void (mrpt::math::CVectorDynamic<double>::*)(const class mrpt::math::CMatrixFixed<double, 7, 1> &)) &mrpt::math::CVectorDynamic<double>::fromVectorLike<mrpt::math::CMatrixFixed<double, 7, 1>>, "C++: mrpt::math::CVectorDynamic<double>::fromVectorLike(const class mrpt::math::CMatrixFixed<double, 7, 1> &) --> void", pybind11::arg("m"));
+		cl.def("assign", (class mrpt::math::CVectorDynamic<double> & (mrpt::math::CVectorDynamic<double>::*)(const class mrpt::math::CMatrixFixed<double, 3, 1> &)) &mrpt::math::CVectorDynamic<double>::operator=<3UL>, "C++: mrpt::math::CVectorDynamic<double>::operator=(const class mrpt::math::CMatrixFixed<double, 3, 1> &) --> class mrpt::math::CVectorDynamic<double> &", pybind11::return_value_policy::automatic, pybind11::arg("v"));
+		cl.def("assign", (class mrpt::math::CVectorDynamic<double> & (mrpt::math::CVectorDynamic<double>::*)(const class mrpt::math::CMatrixFixed<double, 6, 1> &)) &mrpt::math::CVectorDynamic<double>::operator=<6UL>, "C++: mrpt::math::CVectorDynamic<double>::operator=(const class mrpt::math::CMatrixFixed<double, 6, 1> &) --> class mrpt::math::CVectorDynamic<double> &", pybind11::return_value_policy::automatic, pybind11::arg("v"));
+		cl.def("assign", (class mrpt::math::CVectorDynamic<double> & (mrpt::math::CVectorDynamic<double>::*)(const class mrpt::math::CMatrixFixed<double, 7, 1> &)) &mrpt::math::CVectorDynamic<double>::operator=<7UL>, "C++: mrpt::math::CVectorDynamic<double>::operator=(const class mrpt::math::CMatrixFixed<double, 7, 1> &) --> class mrpt::math::CVectorDynamic<double> &", pybind11::return_value_policy::automatic, pybind11::arg("v"));
 		cl.def("realloc", [](mrpt::math::CVectorDynamic<double> &o, size_t const & a0) -> void { return o.realloc(a0); }, "", pybind11::arg("new_len"));
 		cl.def("realloc", (void (mrpt::math::CVectorDynamic<double>::*)(size_t, bool)) &mrpt::math::CVectorDynamic<double>::realloc, "C++: mrpt::math::CVectorDynamic<double>::realloc(size_t, bool) --> void", pybind11::arg("new_len"), pybind11::arg("newElementsToZero"));
 		cl.def("swap", (void (mrpt::math::CVectorDynamic<double>::*)(class mrpt::math::CVectorDynamic<double> &)) &mrpt::math::CVectorDynamic<double>::swap, "C++: mrpt::math::CVectorDynamic<double>::swap(class mrpt::math::CVectorDynamic<double> &) --> void", pybind11::arg("o"));

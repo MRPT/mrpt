@@ -23,7 +23,6 @@
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CEllipsoid2D.h>
-#include <mrpt/opengl/CEllipsoid3D.h>
 #include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CRenderizableShaderTriangles.h>
@@ -531,246 +530,6 @@ struct PyCallBack_mrpt_opengl_CEllipsoid2D : public mrpt::opengl::CEllipsoid2D {
 	}
 };
 
-// mrpt::opengl::CEllipsoid3D file:mrpt/opengl/CEllipsoid3D.h line:32
-struct PyCallBack_mrpt_opengl_CEllipsoid3D : public mrpt::opengl::CEllipsoid3D {
-	using mrpt::opengl::CEllipsoid3D::CEllipsoid3D;
-
-	const struct mrpt::rtti::TRuntimeClassId * GetRuntimeClass() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "GetRuntimeClass");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<const struct mrpt::rtti::TRuntimeClassId *>::value) {
-				static pybind11::detail::override_caster_t<const struct mrpt::rtti::TRuntimeClassId *> caster;
-				return pybind11::detail::cast_ref<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o));
-		}
-		return CEllipsoid3D::GetRuntimeClass();
-	}
-	class mrpt::rtti::CObject * clone() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "clone");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::rtti::CObject *>::value) {
-				static pybind11::detail::override_caster_t<class mrpt::rtti::CObject *> caster;
-				return pybind11::detail::cast_ref<class mrpt::rtti::CObject *>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class mrpt::rtti::CObject *>(std::move(o));
-		}
-		return CEllipsoid3D::clone();
-	}
-	uint8_t serializeGetVersion() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "serializeGetVersion");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
-				static pybind11::detail::override_caster_t<uint8_t> caster;
-				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
-		}
-		return CEllipsoid3D::serializeGetVersion();
-	}
-	void serializeTo(class mrpt::serialization::CArchive & a0) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "serializeTo");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CEllipsoid3D::serializeTo(a0);
-	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "serializeFrom");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CEllipsoid3D::serializeFrom(a0, a1);
-	}
-	bool traceRay(const class mrpt::poses::CPose3D & a0, double & a1) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "traceRay");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
-				static pybind11::detail::override_caster_t<bool> caster;
-				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<bool>(std::move(o));
-		}
-		return CEllipsoid3D::traceRay(a0, a1);
-	}
-	void freeOpenGLResources() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "freeOpenGLResources");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CGeneralizedEllipsoidTemplate::freeOpenGLResources();
-	}
-	void renderUpdateBuffers() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "renderUpdateBuffers");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CGeneralizedEllipsoidTemplate::renderUpdateBuffers();
-	}
-	void onUpdateBuffers_Wireframe() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "onUpdateBuffers_Wireframe");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CGeneralizedEllipsoidTemplate::onUpdateBuffers_Wireframe();
-	}
-	void onUpdateBuffers_Triangles() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "onUpdateBuffers_Triangles");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CGeneralizedEllipsoidTemplate::onUpdateBuffers_Triangles();
-	}
-	struct mrpt::math::TBoundingBox_<float> internalBoundingBoxLocal() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "internalBoundingBoxLocal");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
-				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
-				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
-		}
-		return CGeneralizedEllipsoidTemplate::internalBoundingBoxLocal();
-	}
-	class mrpt::opengl::CRenderizable & setColorA_u8(const unsigned char a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "setColorA_u8");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::opengl::CRenderizable &>::value) {
-				static pybind11::detail::override_caster_t<class mrpt::opengl::CRenderizable &> caster;
-				return pybind11::detail::cast_ref<class mrpt::opengl::CRenderizable &>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class mrpt::opengl::CRenderizable &>(std::move(o));
-		}
-		return CRenderizable::setColorA_u8(a0);
-	}
-	class mrpt::opengl::CRenderizable & setColor_u8(const struct mrpt::img::TColor & a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "setColor_u8");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::opengl::CRenderizable &>::value) {
-				static pybind11::detail::override_caster_t<class mrpt::opengl::CRenderizable &> caster;
-				return pybind11::detail::cast_ref<class mrpt::opengl::CRenderizable &>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class mrpt::opengl::CRenderizable &>(std::move(o));
-		}
-		return CRenderizable::setColor_u8(a0);
-	}
-	bool cullElegible() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "cullElegible");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
-				static pybind11::detail::override_caster_t<bool> caster;
-				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<bool>(std::move(o));
-		}
-		return CRenderizable::cullElegible();
-	}
-	void toYAMLMap(class mrpt::containers::yaml & a0) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "toYAMLMap");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CRenderizable::toYAMLMap(a0);
-	}
-	bool isCompositeObject() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "isCompositeObject");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
-				static pybind11::detail::override_caster_t<bool> caster;
-				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<bool>(std::move(o));
-		}
-		return CRenderizable::isCompositeObject();
-	}
-	struct mrpt::math::TPoint3D_<float> getLocalRepresentativePoint() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "getLocalRepresentativePoint");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TPoint3D_<float>>::value) {
-				static pybind11::detail::override_caster_t<struct mrpt::math::TPoint3D_<float>> caster;
-				return pybind11::detail::cast_ref<struct mrpt::math::TPoint3D_<float>>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<struct mrpt::math::TPoint3D_<float>>(std::move(o));
-		}
-		return CRenderizable::getLocalRepresentativePoint();
-	}
-	void initializeTextures() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoid3D *>(this), "initializeTextures");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CRenderizable::initializeTextures();
-	}
-};
-
 void bind_mrpt_opengl_CDisk(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::opengl::CDisk file:mrpt/opengl/CDisk.h line:24
@@ -802,6 +561,7 @@ void bind_mrpt_opengl_CDisk(std::function< pybind11::module &(std::string const 
 		cl.def("renderUpdateBuffers", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::*)() const) &mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::renderUpdateBuffers, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::renderUpdateBuffers() const --> void");
 		cl.def("onUpdateBuffers_Wireframe", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::*)()) &mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::onUpdateBuffers_Wireframe, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::onUpdateBuffers_Wireframe() --> void");
 		cl.def("onUpdateBuffers_Triangles", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::*)()) &mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::onUpdateBuffers_Triangles, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::onUpdateBuffers_Triangles() --> void");
+		cl.def("getCovMatrix", (class mrpt::math::CMatrixFixed<double, 2, 2> (mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::*)() const) &mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::getCovMatrix, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::getCovMatrix() const --> class mrpt::math::CMatrixFixed<double, 2, 2>");
 		cl.def("setQuantiles", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::*)(float)) &mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::setQuantiles, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::setQuantiles(float) --> void", pybind11::arg("q"));
 		cl.def("getQuantiles", (float (mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::*)() const) &mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::getQuantiles, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::getQuantiles() const --> float");
 		cl.def("setNumberOfSegments", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::*)(const unsigned int)) &mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::setNumberOfSegments, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<2>::setNumberOfSegments(const unsigned int) --> void", pybind11::arg("numSegments"));
@@ -813,10 +573,13 @@ void bind_mrpt_opengl_CDisk(std::function< pybind11::module &(std::string const 
 	}
 	{ // mrpt::opengl::CGeneralizedEllipsoidTemplate file:mrpt/opengl/CGeneralizedEllipsoidTemplate.h line:38
 		pybind11::class_<mrpt::opengl::CGeneralizedEllipsoidTemplate<3>, mrpt::opengl::CGeneralizedEllipsoidTemplate<3>*, mrpt::opengl::CRenderizableShaderTriangles, mrpt::opengl::CRenderizableShaderWireFrame> cl(M("mrpt::opengl"), "CGeneralizedEllipsoidTemplate_3_t", "");
+		cl.def("setCovMatrixAndMean", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)(const class mrpt::math::CMatrixFixed<double, 3, 3> &, const class mrpt::math::CMatrixFixed<double, 3, 1> &)) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::setCovMatrixAndMean<mrpt::math::CMatrixFixed<double, 3, 3>,mrpt::math::CMatrixFixed<double, 3, 1>>, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::setCovMatrixAndMean(const class mrpt::math::CMatrixFixed<double, 3, 3> &, const class mrpt::math::CMatrixFixed<double, 3, 1> &) --> void", pybind11::arg("new_cov"), pybind11::arg("new_mean"));
+		cl.def("setCovMatrix", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)(const class mrpt::math::CMatrixFixed<double, 3, 3> &)) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::setCovMatrix<mrpt::math::CMatrixFixed<double, 3, 3>>, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::setCovMatrix(const class mrpt::math::CMatrixFixed<double, 3, 3> &) --> void", pybind11::arg("new_cov"));
 		cl.def("freeOpenGLResources", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)()) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::freeOpenGLResources, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::freeOpenGLResources() --> void");
 		cl.def("renderUpdateBuffers", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)() const) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::renderUpdateBuffers, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::renderUpdateBuffers() const --> void");
 		cl.def("onUpdateBuffers_Wireframe", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)()) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::onUpdateBuffers_Wireframe, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::onUpdateBuffers_Wireframe() --> void");
 		cl.def("onUpdateBuffers_Triangles", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)()) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::onUpdateBuffers_Triangles, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::onUpdateBuffers_Triangles() --> void");
+		cl.def("getCovMatrix", (class mrpt::math::CMatrixFixed<double, 3, 3> (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)() const) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::getCovMatrix, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::getCovMatrix() const --> class mrpt::math::CMatrixFixed<double, 3, 3>");
 		cl.def("setQuantiles", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)(float)) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::setQuantiles, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::setQuantiles(float) --> void", pybind11::arg("q"));
 		cl.def("getQuantiles", (float (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)() const) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::getQuantiles, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::getQuantiles() const --> float");
 		cl.def("setNumberOfSegments", (void (mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::*)(const unsigned int)) &mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::setNumberOfSegments, "C++: mrpt::opengl::CGeneralizedEllipsoidTemplate<3>::setNumberOfSegments(const unsigned int) --> void", pybind11::arg("numSegments"));
@@ -839,19 +602,5 @@ void bind_mrpt_opengl_CDisk(std::function< pybind11::module &(std::string const 
 		cl.def("set2DsegmentsCount", (void (mrpt::opengl::CEllipsoid2D::*)(unsigned int)) &mrpt::opengl::CEllipsoid2D::set2DsegmentsCount, "The number of segments of a 2D ellipse (default=20) \n\nC++: mrpt::opengl::CEllipsoid2D::set2DsegmentsCount(unsigned int) --> void", pybind11::arg("N"));
 		cl.def("traceRay", (bool (mrpt::opengl::CEllipsoid2D::*)(const class mrpt::poses::CPose3D &, double &) const) &mrpt::opengl::CEllipsoid2D::traceRay, "Ray tracing \n\nC++: mrpt::opengl::CEllipsoid2D::traceRay(const class mrpt::poses::CPose3D &, double &) const --> bool", pybind11::arg("o"), pybind11::arg("dist"));
 		cl.def("assign", (class mrpt::opengl::CEllipsoid2D & (mrpt::opengl::CEllipsoid2D::*)(const class mrpt::opengl::CEllipsoid2D &)) &mrpt::opengl::CEllipsoid2D::operator=, "C++: mrpt::opengl::CEllipsoid2D::operator=(const class mrpt::opengl::CEllipsoid2D &) --> class mrpt::opengl::CEllipsoid2D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
-	}
-	{ // mrpt::opengl::CEllipsoid3D file:mrpt/opengl/CEllipsoid3D.h line:32
-		pybind11::class_<mrpt::opengl::CEllipsoid3D, std::shared_ptr<mrpt::opengl::CEllipsoid3D>, PyCallBack_mrpt_opengl_CEllipsoid3D, mrpt::opengl::CGeneralizedEllipsoidTemplate<3>> cl(M("mrpt::opengl"), "CEllipsoid3D", "A 3D ellipsoid, centered at zero with respect to this object pose.\n The color is determined by the RGBA fields in the class \"CRenderizable\".\n Note that a transparent ellipsoid can be drawn for \"0<alpha<1\" values.\n If any of the eigen values of the covariance matrix of the ellipsoid is\n zero, nothing will be rendered.\n\n Please read the documentation of\n CGeneralizedEllipsoidTemplate::setQuantiles() for learning\n the mathematical details about setting the desired confidence interval.\n\n ![mrpt::opengl::CEllipsoid3D](preview_CEllipsoid.png)\n\n  \n opengl::Scene\n \n\n\n ");
-		cl.def( pybind11::init( [](){ return new mrpt::opengl::CEllipsoid3D(); }, [](){ return new PyCallBack_mrpt_opengl_CEllipsoid3D(); } ) );
-		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CEllipsoid3D const &o){ return new PyCallBack_mrpt_opengl_CEllipsoid3D(o); } ) );
-		cl.def( pybind11::init( [](mrpt::opengl::CEllipsoid3D const &o){ return new mrpt::opengl::CEllipsoid3D(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<26> (*)()) &mrpt::opengl::CEllipsoid3D::getClassName, "C++: mrpt::opengl::CEllipsoid3D::getClassName() --> class mrpt::typemeta::string_literal<26>");
-		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CEllipsoid3D::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CEllipsoid3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
-		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CEllipsoid3D::*)() const) &mrpt::opengl::CEllipsoid3D::GetRuntimeClass, "C++: mrpt::opengl::CEllipsoid3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
-		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CEllipsoid3D::*)() const) &mrpt::opengl::CEllipsoid3D::clone, "C++: mrpt::opengl::CEllipsoid3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
-		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::opengl::CEllipsoid3D::CreateObject, "C++: mrpt::opengl::CEllipsoid3D::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
-		cl.def("set3DsegmentsCount", (void (mrpt::opengl::CEllipsoid3D::*)(unsigned int)) &mrpt::opengl::CEllipsoid3D::set3DsegmentsCount, "The number of segments of a 3D ellipse (in both \"axes\") (default=20) \n\nC++: mrpt::opengl::CEllipsoid3D::set3DsegmentsCount(unsigned int) --> void", pybind11::arg("N"));
-		cl.def("traceRay", (bool (mrpt::opengl::CEllipsoid3D::*)(const class mrpt::poses::CPose3D &, double &) const) &mrpt::opengl::CEllipsoid3D::traceRay, "Ray tracing \n\nC++: mrpt::opengl::CEllipsoid3D::traceRay(const class mrpt::poses::CPose3D &, double &) const --> bool", pybind11::arg("o"), pybind11::arg("dist"));
-		cl.def("assign", (class mrpt::opengl::CEllipsoid3D & (mrpt::opengl::CEllipsoid3D::*)(const class mrpt::opengl::CEllipsoid3D &)) &mrpt::opengl::CEllipsoid3D::operator=, "C++: mrpt::opengl::CEllipsoid3D::operator=(const class mrpt::opengl::CEllipsoid3D &) --> class mrpt::opengl::CEllipsoid3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

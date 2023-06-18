@@ -9,6 +9,7 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/io/CStream.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/gnss_messages_type_list.h>
 #include <mrpt/poses/CPose3D.h>
@@ -107,7 +108,7 @@ struct PyCallBack_mrpt_hwdrivers_CGPSInterface : public mrpt::hwdrivers::CGPSInt
 		}
 		return CGenericSensor::initialize();
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CGPSInterface *>(this), "getObservations");
@@ -200,10 +201,10 @@ void bind_mrpt_hwdrivers_CGPSInterface(std::function< pybind11::module &(std::st
 		cl.def("useExternalStream", (bool (mrpt::hwdrivers::CGPSInterface::*)() const) &mrpt::hwdrivers::CGPSInterface::useExternalStream, "C++: mrpt::hwdrivers::CGPSInterface::useExternalStream() const --> bool");
 		cl.def("setSetupCommandsDelay", (void (mrpt::hwdrivers::CGPSInterface::*)(const double)) &mrpt::hwdrivers::CGPSInterface::setSetupCommandsDelay, "C++: mrpt::hwdrivers::CGPSInterface::setSetupCommandsDelay(const double) --> void", pybind11::arg("delay_secs"));
 		cl.def("getSetupCommandsDelay", (double (mrpt::hwdrivers::CGPSInterface::*)() const) &mrpt::hwdrivers::CGPSInterface::getSetupCommandsDelay, "C++: mrpt::hwdrivers::CGPSInterface::getSetupCommandsDelay() const --> double");
-		cl.def("setSetupCommands", (void (mrpt::hwdrivers::CGPSInterface::*)(const class std::vector<std::string, class std::allocator<std::string > > &)) &mrpt::hwdrivers::CGPSInterface::setSetupCommands, "C++: mrpt::hwdrivers::CGPSInterface::setSetupCommands(const class std::vector<std::string, class std::allocator<std::string > > &) --> void", pybind11::arg("cmds"));
-		cl.def("getSetupCommands", (const class std::vector<std::string, class std::allocator<std::string > > & (mrpt::hwdrivers::CGPSInterface::*)() const) &mrpt::hwdrivers::CGPSInterface::getSetupCommands, "C++: mrpt::hwdrivers::CGPSInterface::getSetupCommands() const --> const class std::vector<std::string, class std::allocator<std::string > > &", pybind11::return_value_policy::automatic);
-		cl.def("setShutdownCommands", (void (mrpt::hwdrivers::CGPSInterface::*)(const class std::vector<std::string, class std::allocator<std::string > > &)) &mrpt::hwdrivers::CGPSInterface::setShutdownCommands, "C++: mrpt::hwdrivers::CGPSInterface::setShutdownCommands(const class std::vector<std::string, class std::allocator<std::string > > &) --> void", pybind11::arg("cmds"));
-		cl.def("getShutdownCommands", (const class std::vector<std::string, class std::allocator<std::string > > & (mrpt::hwdrivers::CGPSInterface::*)() const) &mrpt::hwdrivers::CGPSInterface::getShutdownCommands, "C++: mrpt::hwdrivers::CGPSInterface::getShutdownCommands() const --> const class std::vector<std::string, class std::allocator<std::string > > &", pybind11::return_value_policy::automatic);
+		cl.def("setSetupCommands", (void (mrpt::hwdrivers::CGPSInterface::*)(const class std::vector<std::string > &)) &mrpt::hwdrivers::CGPSInterface::setSetupCommands, "C++: mrpt::hwdrivers::CGPSInterface::setSetupCommands(const class std::vector<std::string > &) --> void", pybind11::arg("cmds"));
+		cl.def("getSetupCommands", (const class std::vector<std::string > & (mrpt::hwdrivers::CGPSInterface::*)() const) &mrpt::hwdrivers::CGPSInterface::getSetupCommands, "C++: mrpt::hwdrivers::CGPSInterface::getSetupCommands() const --> const class std::vector<std::string > &", pybind11::return_value_policy::automatic);
+		cl.def("setShutdownCommands", (void (mrpt::hwdrivers::CGPSInterface::*)(const class std::vector<std::string > &)) &mrpt::hwdrivers::CGPSInterface::setShutdownCommands, "C++: mrpt::hwdrivers::CGPSInterface::setShutdownCommands(const class std::vector<std::string > &) --> void", pybind11::arg("cmds"));
+		cl.def("getShutdownCommands", (const class std::vector<std::string > & (mrpt::hwdrivers::CGPSInterface::*)() const) &mrpt::hwdrivers::CGPSInterface::getShutdownCommands, "C++: mrpt::hwdrivers::CGPSInterface::getShutdownCommands() const --> const class std::vector<std::string > &", pybind11::return_value_policy::automatic);
 		cl.def("enableSetupCommandsAppendCRLF", (void (mrpt::hwdrivers::CGPSInterface::*)(const bool)) &mrpt::hwdrivers::CGPSInterface::enableSetupCommandsAppendCRLF, "C++: mrpt::hwdrivers::CGPSInterface::enableSetupCommandsAppendCRLF(const bool) --> void", pybind11::arg("enable"));
 		cl.def("isEnabledSetupCommandsAppendCRLF", (bool (mrpt::hwdrivers::CGPSInterface::*)() const) &mrpt::hwdrivers::CGPSInterface::isEnabledSetupCommandsAppendCRLF, "C++: mrpt::hwdrivers::CGPSInterface::isEnabledSetupCommandsAppendCRLF() const --> bool");
 		cl.def("enableAppendMsgTypeToSensorLabel", (void (mrpt::hwdrivers::CGPSInterface::*)(bool)) &mrpt::hwdrivers::CGPSInterface::enableAppendMsgTypeToSensorLabel, "C++: mrpt::hwdrivers::CGPSInterface::enableAppendMsgTypeToSensorLabel(bool) --> void", pybind11::arg("enable"));

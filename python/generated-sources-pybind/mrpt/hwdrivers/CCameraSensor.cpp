@@ -9,6 +9,7 @@
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/hwdrivers/CEnoseModular.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/poses/CPose3D.h>
@@ -118,7 +119,7 @@ struct PyCallBack_mrpt_hwdrivers_CCameraSensor : public mrpt::hwdrivers::CCamera
 		}
 		return CGenericSensor::loadConfig(a0, a1);
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CCameraSensor *>(this), "getObservations");
@@ -242,7 +243,7 @@ struct PyCallBack_mrpt_hwdrivers_CEnoseModular : public mrpt::hwdrivers::CEnoseM
 		}
 		return CGenericSensor::initialize();
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CEnoseModular *>(this), "getObservations");
