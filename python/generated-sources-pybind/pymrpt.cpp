@@ -54,6 +54,9 @@ void bind_mrpt_typemeta_TEnumType_6(std::function< pybind11::module &(std::strin
 void bind_std_variant(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CArchive(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_serialization_CArchive_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_serialization_CArchive_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_serialization_CArchive_3(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_unknown_unknown(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_config_CLoadableOptions(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_system_CTicTac(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_system_os(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -193,7 +196,6 @@ void bind_mrpt_hwdrivers_CMyntEyeCamera(std::function< pybind11::module &(std::s
 void bind_mrpt_hwdrivers_CStereoGrabber_Bumblebee_libdc1394(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_hwdrivers_CCameraSensor(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_gnss_messages_type_list(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_unknown_unknown(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_unknown_unknown_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_unknown_unknown_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_unknown_unknown_3(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -201,6 +203,7 @@ void bind_unknown_unknown_4(std::function< pybind11::module &(std::string const 
 void bind_unknown_unknown_5(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_unknown_unknown_6(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_unknown_unknown_7(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_unknown_unknown_8(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_CObservationGPS(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_hwdrivers_CGPSInterface(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_containers_MT_buffer(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -481,6 +484,9 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_std_variant(M);
 	bind_mrpt_serialization_CArchive(M);
 	bind_mrpt_serialization_CArchive_1(M);
+	bind_mrpt_serialization_CArchive_2(M);
+	bind_mrpt_serialization_CArchive_3(M);
+	bind_unknown_unknown(M);
 	bind_mrpt_config_CLoadableOptions(M);
 	bind_mrpt_system_CTicTac(M);
 	bind_mrpt_system_os(M);
@@ -620,7 +626,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_hwdrivers_CStereoGrabber_Bumblebee_libdc1394(M);
 	bind_mrpt_hwdrivers_CCameraSensor(M);
 	bind_mrpt_obs_gnss_messages_type_list(M);
-	bind_unknown_unknown(M);
 	bind_unknown_unknown_1(M);
 	bind_unknown_unknown_2(M);
 	bind_unknown_unknown_3(M);
@@ -628,6 +633,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_unknown_unknown_5(M);
 	bind_unknown_unknown_6(M);
 	bind_unknown_unknown_7(M);
+	bind_unknown_unknown_8(M);
 	bind_mrpt_obs_CObservationGPS(M);
 	bind_mrpt_hwdrivers_CGPSInterface(M);
 	bind_mrpt_containers_MT_buffer(M);

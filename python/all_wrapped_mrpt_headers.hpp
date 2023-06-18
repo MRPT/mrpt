@@ -35,6 +35,7 @@
 // serialization
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CSerializable.h>
+#include "./serialization-python-instances.h"
 
 // rtti
 #include <mrpt/rtti/CObject.h>
