@@ -156,14 +156,11 @@ rawlogArch = mrpt.serialization.archiveFrom(rawlog_file)
 entry = 0
 while True:
     # get action observation pair
-    act = mrpt.obs.CActionCollection()
-    obs = mrpt.obs.CSensoryFrame()
-    next_entry = mrpt.obs.CRawlog.readActionObservationPair(
-        rawlogArch, act, obs, entry)
-    if not next_entry:
+    [readOk, entry, act, sf, obs] = mrpt.obs.CRawlog.ReadFromArchive(
+        rawlogArch, entry)
+    if not readOk:
         break
-    else:
-        entry += 1
+
     print('Processing entry: {}.'.format(entry))
 
     # get covariance and mean

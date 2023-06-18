@@ -66,7 +66,7 @@ $HOME/code/binder/build/source/binder \
 	-I$HOME/code/mrpt/libs/vision/include/ \
 
 # applying manual patches:
-#echo "Applying manual patches..."
+echo "Applying manual patches..."
 find . -name "*.diff" | xargs -I FIL bash -c "git apply FIL"
 
 # Workarounds to binder limitations:
