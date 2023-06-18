@@ -82,7 +82,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -589,6 +589,19 @@ struct PyCallBack_mrpt_slam_CMonteCarloLocalization2D : public mrpt::slam::CMont
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CParticleFilterCapable::prediction_and_update_pfOptimalProposal(a0, a1, a2);
+	}
+	bool PF_SLAM_implementation_doWeHaveValidObservations(const class std::deque<struct mrpt::bayes::CProbabilityParticle<struct mrpt::math::TPose2D, mrpt::bayes::particle_storage_mode::VALUE> > & a0, const class mrpt::obs::CSensoryFrame * a1) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CMonteCarloLocalization2D *>(this), "PF_SLAM_implementation_doWeHaveValidObservations");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return PF_implementation::PF_SLAM_implementation_doWeHaveValidObservations(a0, a1);
 	}
 	bool PF_SLAM_implementation_skipRobotMovement() const override {
 		pybind11::gil_scoped_acquire gil;

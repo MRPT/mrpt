@@ -18,7 +18,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -27,6 +27,8 @@
 	PYBIND11_DECLARE_HOLDER_TYPE(T, T*)
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
+
+PYBIND11_MAKE_OPAQUE(std::array<mrpt::img::CImage,6UL>)
 
 void bind_std_array(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {

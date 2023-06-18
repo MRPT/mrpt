@@ -7,22 +7,7 @@
 #include <mrpt/containers/CommentPosition.h>
 #include <mrpt/containers/yaml.h>
 #include <mrpt/core/Clock.h>
-#include <mrpt/math/CMatrixDynamic.h>
-#include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/TPoint2D.h>
-#include <mrpt/math/TPoint3D.h>
-#include <mrpt/math/TPose3D.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/poses/CPoseOrPoint.h>
-#include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/typemeta/static_string.h>
-#include <optional>
 #include <ratio>
 #include <sstream> // __str__
 #include <string>
@@ -33,7 +18,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -42,6 +27,10 @@
 	PYBIND11_DECLARE_HOLDER_TYPE(T, T*)
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
+
+PYBIND11_MAKE_OPAQUE(std::multimap<mrpt::Clock::time_point, mrpt::serialization::CSerializable::Ptr>)
+PYBIND11_MAKE_OPAQUE(std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>)
+
 
 void bind_std_stl_multimap(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
@@ -68,25 +57,30 @@ void bind_std_stl_multimap(std::function< pybind11::module &(std::string const &
 		cl.def("count", (size_t (std::multimap<std::chrono::time_point<mrpt::Clock, std::chrono::duration<int64_t, std::ratio<1, 10000000> > >,std::shared_ptr<mrpt::serialization::CSerializable>>::*)(const mrpt::Clock::time_point &) const) &std::multimap<std::chrono::time_point<mrpt::Clock, std::chrono::duration<int64_t, std::ratio<1, 10000000>>>, std::shared_ptr<mrpt::serialization::CSerializable>>::count, "C++: std::multimap<std::chrono::time_point<mrpt::Clock, std::chrono::duration<int64_t, std::ratio<1, 10000000>>>, std::shared_ptr<mrpt::serialization::CSerializable>>::count(const mrpt::Clock::time_point &) const --> size_t", pybind11::arg("__x"));
 		cl.def("equal_range", (struct std::pair<struct std::_Rb_tree_iterator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > >, struct std::_Rb_tree_iterator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > > (std::multimap<std::chrono::time_point<mrpt::Clock, std::chrono::duration<int64_t, std::ratio<1, 10000000> > >,std::shared_ptr<mrpt::serialization::CSerializable>>::*)(const mrpt::Clock::time_point &)) &std::multimap<std::chrono::time_point<mrpt::Clock, std::chrono::duration<int64_t, std::ratio<1, 10000000>>>, std::shared_ptr<mrpt::serialization::CSerializable>>::equal_range, "C++: std::multimap<std::chrono::time_point<mrpt::Clock, std::chrono::duration<int64_t, std::ratio<1, 10000000>>>, std::shared_ptr<mrpt::serialization::CSerializable>>::equal_range(const mrpt::Clock::time_point &) --> struct std::pair<struct std::_Rb_tree_iterator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > >, struct std::_Rb_tree_iterator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >", pybind11::arg("__x"));
 	}
-	// std::map file:bits/stl_map.h line:100
-	binder::map_binder<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t,std::less<mrpt::containers::yaml::node_t>,std::allocator<std::pair<const mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t> >>(M("std"), "mrpt_containers_yaml_node_t", "mrpt_containers_yaml_node_t", "std_less_mrpt_containers_yaml_node_t_t", "std_allocator_std_pair_const_mrpt_containers_yaml_node_t_mrpt_containers_yaml_node_t_t");
+	{ // std::map file:bits/stl_map.h line:100
+		pybind11::class_<std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>, std::shared_ptr<std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>>> cl(M("std"), "map_mrpt_containers_yaml_node_t_mrpt_containers_yaml_node_t_t", "");
+		cl.def( pybind11::init( [](){ return new std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>(); } ) );
+		cl.def( pybind11::init( [](const struct std::less<struct mrpt::containers::yaml::node_t> & a0){ return new std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>(a0); } ), "doc" , pybind11::arg("__comp"));
+		cl.def( pybind11::init<const struct std::less<struct mrpt::containers::yaml::node_t> &, const class std::allocator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> > &>(), pybind11::arg("__comp"), pybind11::arg("__a") );
 
-	// std::map file:bits/stl_map.h line:100
-	binder::map_binder<std::string,std::string,std::less<std::string >,std::allocator<std::pair<const std::string, std::string > >>(M("std"), "std_string", "std_string", "std_less_std_string_t", "std_allocator_std_pair_const_std_string_std_string_t");
+		cl.def( pybind11::init( [](std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t> const &o){ return new std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>(o); } ) );
+		cl.def( pybind11::init<const class std::allocator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> > &>(), pybind11::arg("__a") );
 
-	// std::map file:bits/stl_map.h line:100
-	binder::map_binder<std::string,double,std::less<std::string >,std::allocator<std::pair<const std::string, double> >>(M("std"), "std_string", "double", "std_less_std_string_t", "std_allocator_std_pair_const_std_string_double_t");
+		cl.def( pybind11::init<const class std::map<struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> &, const class std::allocator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> > &>(), pybind11::arg("__m"), pybind11::arg("__a") );
 
-	// std::map file:bits/stl_map.h line:100
-	binder::map_binder<double,double,std::less<double>,std::allocator<std::pair<const double, double> >>(M("std"), "double", "double", "std_less_double_t", "std_allocator_std_pair_const_double_double_t");
-
-	// std::map file:bits/stl_map.h line:100
-	binder::map_binder<std::string,mrpt::poses::CPose3D,std::less<std::string >,std::allocator<std::pair<const std::string, mrpt::poses::CPose3D> >>(M("std"), "std_string", "mrpt_poses_CPose3D", "std_less_std_string_t", "std_allocator_std_pair_const_std_string_mrpt_poses_CPose3D_t");
-
-	// std::map file:bits/stl_map.h line:100
-	binder::map_binder<unsigned int,long,std::less<unsigned int>,std::allocator<std::pair<const unsigned int, long> >>(M("std"), "unsigned_int", "long", "std_less_unsigned_int_t", "std_allocator_std_pair_const_unsigned_int_long_t");
-
-	// std::map file:bits/stl_map.h line:100
-	binder::map_binder<long,unsigned int,std::less<long>,std::allocator<std::pair<const long, unsigned int> >>(M("std"), "long", "unsigned_int", "std_less_long_t", "std_allocator_std_pair_const_long_unsigned_int_t");
-
+		cl.def("assign", (class std::map<struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> & (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)(const class std::map<struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> &)) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::operator=, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::operator=(const class std::map<struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> &) --> class std::map<struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+		cl.def("get_allocator", (class std::allocator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> > (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)() const) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::get_allocator, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::get_allocator() const --> class std::allocator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> >");
+		cl.def("empty", (bool (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)() const) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::empty, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::empty() const --> bool");
+		cl.def("size", (size_t (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)() const) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::size, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::size() const --> size_t");
+		cl.def("max_size", (size_t (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)() const) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::max_size, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::max_size() const --> size_t");
+		cl.def("__getitem__", (struct mrpt::containers::yaml::node_t & (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)(const struct mrpt::containers::yaml::node_t &)) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::operator[], "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::operator[](const struct mrpt::containers::yaml::node_t &) --> struct mrpt::containers::yaml::node_t &", pybind11::return_value_policy::automatic, pybind11::arg("__k"));
+		cl.def("at", (struct mrpt::containers::yaml::node_t & (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)(const struct mrpt::containers::yaml::node_t &)) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::at, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::at(const struct mrpt::containers::yaml::node_t &) --> struct mrpt::containers::yaml::node_t &", pybind11::return_value_policy::automatic, pybind11::arg("__k"));
+		cl.def("insert", (struct std::pair<struct std::_Rb_tree_iterator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> >, bool> (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)(const struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> &)) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::insert, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::insert(const struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> &) --> struct std::pair<struct std::_Rb_tree_iterator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> >, bool>", pybind11::arg("__x"));
+		cl.def("erase", (size_t (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)(const struct mrpt::containers::yaml::node_t &)) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::erase, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::erase(const struct mrpt::containers::yaml::node_t &) --> size_t", pybind11::arg("__x"));
+		cl.def("swap", (void (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)(class std::map<struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> &)) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::swap, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::swap(class std::map<struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> &) --> void", pybind11::arg("__x"));
+		cl.def("clear", (void (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)()) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::clear, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::clear() --> void");
+		cl.def("key_comp", (struct std::less<struct mrpt::containers::yaml::node_t> (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)() const) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::key_comp, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::key_comp() const --> struct std::less<struct mrpt::containers::yaml::node_t>");
+		cl.def("count", (size_t (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)(const struct mrpt::containers::yaml::node_t &) const) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::count, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::count(const struct mrpt::containers::yaml::node_t &) const --> size_t", pybind11::arg("__x"));
+		cl.def("equal_range", (struct std::pair<struct std::_Rb_tree_iterator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> >, struct std::_Rb_tree_iterator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> > > (std::map<mrpt::containers::yaml::node_t,mrpt::containers::yaml::node_t>::*)(const struct mrpt::containers::yaml::node_t &)) &std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::equal_range, "C++: std::map<mrpt::containers::yaml::node_t, mrpt::containers::yaml::node_t>::equal_range(const struct mrpt::containers::yaml::node_t &) --> struct std::pair<struct std::_Rb_tree_iterator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> >, struct std::_Rb_tree_iterator<struct std::pair<const struct mrpt::containers::yaml::node_t, struct mrpt::containers::yaml::node_t> > >", pybind11::arg("__x"));
+	}
 }
