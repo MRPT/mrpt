@@ -31,6 +31,7 @@
 #include <ostream>
 #include <sstream> // __str__
 #include <string>
+#include <tuple>
 #include <variant>
 #include <vector>
 

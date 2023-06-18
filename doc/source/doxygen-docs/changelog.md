@@ -6,6 +6,8 @@
 - Changes in libraries:
   - \ref mrpt_comms_grp
     - mrpt::comms::CInterfaceFTDI Fix usage of deprecated API in libftdi
+  - \ref mrpt_obs_grp
+    - New static method mrpt::obs::CRawlog::ReadFromArchive() (useful for python bindings)
 - Python:
   - New wrapped functions:
     - `mrpt.serialization.archiveFrom()`
