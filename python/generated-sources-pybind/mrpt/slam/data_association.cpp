@@ -25,7 +25,7 @@ void bind_mrpt_slam_data_association(std::function< pybind11::module &(std::stri
 ;
 
 	// mrpt::slam::TDataAssociationMetric file:mrpt/slam/data_association.h line:40
-	pybind11::enum_<mrpt::slam::TDataAssociationMetric>(M("mrpt::slam"), "TDataAssociationMetric", pybind11::arithmetic(), "Different metrics for data association, used in mrpt::slam::data_association\n  For a comparison of both methods see paper  blanco2012amd")
+	pybind11::enum_<mrpt::slam::TDataAssociationMetric>(M("mrpt::slam"), "TDataAssociationMetric", pybind11::arithmetic(), "Different metrics for data association, used in mrpt::slam::data_association\n  For a comparison of both methods see paper \n ")
 		.value("metricMaha", mrpt::slam::metricMaha)
 		.value("metricML", mrpt::slam::metricML)
 		.export_values();

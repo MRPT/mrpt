@@ -9,6 +9,7 @@
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/io/CStream.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TLine2D.h>
 #include <mrpt/math/TLine3D.h>
 #include <mrpt/math/TPoint3D.h>

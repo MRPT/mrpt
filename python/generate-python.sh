@@ -3,6 +3,9 @@
 #
 # Based on https://github.com/RosettaCommons/binder
 #
+# binder config: llvm-14
+# 
+
 
 PYBIND11_VERSION=$(dpkg -s pybind11-dev | grep '^Version:' | cut -d " " -f2)
 SYSTEM_PYBIND11_MM_VERSION=$(echo $PYBIND11_VERSION | cut -d. -f1).$(echo $PYBIND11_VERSION | cut -d. -f2)
@@ -63,8 +66,8 @@ $HOME/code/binder/build/source/binder \
 	-I$HOME/code/mrpt/libs/vision/include/ \
 
 # applying manual patches:
-echo "Applying manual patches..."
-find . -name "*.diff" | xargs -I FIL bash -c "patch -V never -s -p0 < FIL"
+#echo "Applying manual patches..."
+#find . -name "*.diff" | xargs -I FIL bash -c "patch -V never -s -p0 < FIL"
 
 # Workarounds to binder limitations:
 # These are to ensure multiplatform portatbility of generated code

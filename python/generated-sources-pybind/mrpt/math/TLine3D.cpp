@@ -1,3 +1,4 @@
+#include <Eigen/Dense>
 #include <ios>
 #include <iterator>
 #include <locale>

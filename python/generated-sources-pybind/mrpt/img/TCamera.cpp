@@ -11,6 +11,7 @@
 #include <mrpt/containers/yaml.h>
 #include <mrpt/img/TCamera.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/rtti/CObject.h>

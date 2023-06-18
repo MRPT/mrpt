@@ -4,6 +4,7 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/color_maps.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/T3DPointsTo2DScanParams.h>

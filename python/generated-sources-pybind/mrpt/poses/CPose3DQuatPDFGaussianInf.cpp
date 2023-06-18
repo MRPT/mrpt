@@ -162,6 +162,19 @@ struct PyCallBack_mrpt_poses_CPose3DQuatPDFGaussianInf : public mrpt::poses::CPo
 		}
 		return CPose3DQuatPDFGaussianInf::getCovarianceAndMean();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 7, 7> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DQuatPDFGaussianInf *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CPose3DQuatPDFGaussianInf::getInformationMatrix(a0);
+	}
 	void copyFrom(const class mrpt::poses::CPose3DQuatPDF & a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DQuatPDFGaussianInf *>(this), "copyFrom");
@@ -338,6 +351,19 @@ struct PyCallBack_mrpt_poses_CPosePDFGaussianInf : public mrpt::poses::CPosePDFG
 		}
 		return CPosePDFGaussianInf::getCovarianceAndMean();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDFGaussianInf *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CPosePDFGaussianInf::getInformationMatrix(a0);
+	}
 	void copyFrom(const class mrpt::poses::CPosePDF & a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDFGaussianInf *>(this), "copyFrom");
@@ -427,6 +453,8 @@ void bind_mrpt_poses_CPose3DQuatPDFGaussianInf(std::function< pybind11::module &
 
 		cl.def( pybind11::init<const class mrpt::poses::CPose3DQuat &>(), pybind11::arg("init_Mean") );
 
+		cl.def( pybind11::init<const class mrpt::poses::CPose3DQuat &, const class mrpt::math::CMatrixFixed<double, 7, 7> &>(), pybind11::arg("init_Mean"), pybind11::arg("init_CovInv") );
+
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPose3DQuatPDFGaussianInf const &o){ return new PyCallBack_mrpt_poses_CPose3DQuatPDFGaussianInf(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPose3DQuatPDFGaussianInf const &o){ return new mrpt::poses::CPose3DQuatPDFGaussianInf(o); } ) );
 		cl.def_readwrite("mean", &mrpt::poses::CPose3DQuatPDFGaussianInf::mean);
@@ -440,6 +468,7 @@ void bind_mrpt_poses_CPose3DQuatPDFGaussianInf(std::function< pybind11::module &
 		cl.def("getMean", (void (mrpt::poses::CPose3DQuatPDFGaussianInf::*)(class mrpt::poses::CPose3DQuat &) const) &mrpt::poses::CPose3DQuatPDFGaussianInf::getMean, "C++: mrpt::poses::CPose3DQuatPDFGaussianInf::getMean(class mrpt::poses::CPose3DQuat &) const --> void", pybind11::arg("mean_pose"));
 		cl.def("isInfType", (bool (mrpt::poses::CPose3DQuatPDFGaussianInf::*)() const) &mrpt::poses::CPose3DQuatPDFGaussianInf::isInfType, "C++: mrpt::poses::CPose3DQuatPDFGaussianInf::isInfType() const --> bool");
 		cl.def("getCovarianceAndMean", (class std::tuple<class mrpt::math::CMatrixFixed<double, 7, 7>, class mrpt::poses::CPose3DQuat> (mrpt::poses::CPose3DQuatPDFGaussianInf::*)() const) &mrpt::poses::CPose3DQuatPDFGaussianInf::getCovarianceAndMean, "C++: mrpt::poses::CPose3DQuatPDFGaussianInf::getCovarianceAndMean() const --> class std::tuple<class mrpt::math::CMatrixFixed<double, 7, 7>, class mrpt::poses::CPose3DQuat>");
+		cl.def("getInformationMatrix", (void (mrpt::poses::CPose3DQuatPDFGaussianInf::*)(class mrpt::math::CMatrixFixed<double, 7, 7> &) const) &mrpt::poses::CPose3DQuatPDFGaussianInf::getInformationMatrix, "Returns the information (inverse covariance) matrix (a STATE_LEN x\n STATE_LEN matrix) \n\n getMean, getCovarianceAndMean \n\nC++: mrpt::poses::CPose3DQuatPDFGaussianInf::getInformationMatrix(class mrpt::math::CMatrixFixed<double, 7, 7> &) const --> void", pybind11::arg("inf"));
 		cl.def("copyFrom", (void (mrpt::poses::CPose3DQuatPDFGaussianInf::*)(const class mrpt::poses::CPose3DQuatPDF &)) &mrpt::poses::CPose3DQuatPDFGaussianInf::copyFrom, "Copy operator, translating if necesary (for example, between particles\n and gaussian representations) \n\nC++: mrpt::poses::CPose3DQuatPDFGaussianInf::copyFrom(const class mrpt::poses::CPose3DQuatPDF &) --> void", pybind11::arg("o"));
 		cl.def("saveToTextFile", (bool (mrpt::poses::CPose3DQuatPDFGaussianInf::*)(const std::string &) const) &mrpt::poses::CPose3DQuatPDFGaussianInf::saveToTextFile, "Save the PDF to a text file, containing the 3D pose in the first line (x\n y z qr qx qy qz), then the information matrix in the next 7 lines. \n\nC++: mrpt::poses::CPose3DQuatPDFGaussianInf::saveToTextFile(const std::string &) const --> bool", pybind11::arg("file"));
 		cl.def("changeCoordinatesReference", (void (mrpt::poses::CPose3DQuatPDFGaussianInf::*)(const class mrpt::poses::CPose3DQuat &)) &mrpt::poses::CPose3DQuatPDFGaussianInf::changeCoordinatesReference, "this = p (+) this. This can be used to convert a PDF from local\n coordinates to global, providing the point (newReferenceBase) from which\n   \"to project\" the current pdf. Result PDF substituted the currently\n stored one in the object. \n\nC++: mrpt::poses::CPose3DQuatPDFGaussianInf::changeCoordinatesReference(const class mrpt::poses::CPose3DQuat &) --> void", pybind11::arg("newReferenceBase"));
@@ -461,6 +490,8 @@ void bind_mrpt_poses_CPose3DQuatPDFGaussianInf(std::function< pybind11::module &
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPosePDFGaussianInf(); }, [](){ return new PyCallBack_mrpt_poses_CPosePDFGaussianInf(); } ) );
 		cl.def( pybind11::init<const class mrpt::poses::CPose2D &>(), pybind11::arg("init_Mean") );
 
+		cl.def( pybind11::init<const class mrpt::poses::CPose2D &, const class mrpt::math::CMatrixFixed<double, 3, 3> &>(), pybind11::arg("init_Mean"), pybind11::arg("init_CovInv") );
+
 		cl.def( pybind11::init<const class mrpt::poses::CPosePDF &>(), pybind11::arg("o") );
 
 		cl.def( pybind11::init<const class mrpt::poses::CPose3DPDF &>(), pybind11::arg("o") );
@@ -478,6 +509,7 @@ void bind_mrpt_poses_CPose3DQuatPDFGaussianInf(std::function< pybind11::module &
 		cl.def("getMean", (void (mrpt::poses::CPosePDFGaussianInf::*)(class mrpt::poses::CPose2D &) const) &mrpt::poses::CPosePDFGaussianInf::getMean, "Returns an estimate of the pose, (the mean, or mathematical expectation\n of the PDF).\n \n\n getCovariance \n\nC++: mrpt::poses::CPosePDFGaussianInf::getMean(class mrpt::poses::CPose2D &) const --> void", pybind11::arg("mean_pose"));
 		cl.def("isInfType", (bool (mrpt::poses::CPosePDFGaussianInf::*)() const) &mrpt::poses::CPosePDFGaussianInf::isInfType, "C++: mrpt::poses::CPosePDFGaussianInf::isInfType() const --> bool");
 		cl.def("getCovarianceAndMean", (class std::tuple<class mrpt::math::CMatrixFixed<double, 3, 3>, class mrpt::poses::CPose2D> (mrpt::poses::CPosePDFGaussianInf::*)() const) &mrpt::poses::CPosePDFGaussianInf::getCovarianceAndMean, "C++: mrpt::poses::CPosePDFGaussianInf::getCovarianceAndMean() const --> class std::tuple<class mrpt::math::CMatrixFixed<double, 3, 3>, class mrpt::poses::CPose2D>");
+		cl.def("getInformationMatrix", (void (mrpt::poses::CPosePDFGaussianInf::*)(class mrpt::math::CMatrixFixed<double, 3, 3> &) const) &mrpt::poses::CPosePDFGaussianInf::getInformationMatrix, "Returns the information (inverse covariance) matrix (a STATE_LEN x\n STATE_LEN matrix) \n\n getMean, getCovarianceAndMean \n\nC++: mrpt::poses::CPosePDFGaussianInf::getInformationMatrix(class mrpt::math::CMatrixFixed<double, 3, 3> &) const --> void", pybind11::arg("inf"));
 		cl.def("copyFrom", (void (mrpt::poses::CPosePDFGaussianInf::*)(const class mrpt::poses::CPosePDF &)) &mrpt::poses::CPosePDFGaussianInf::copyFrom, "Copy operator, translating if necesary (for example, between particles\n and gaussian representations) \n\nC++: mrpt::poses::CPosePDFGaussianInf::copyFrom(const class mrpt::poses::CPosePDF &) --> void", pybind11::arg("o"));
 		cl.def("copyFrom", (void (mrpt::poses::CPosePDFGaussianInf::*)(const class mrpt::poses::CPose3DPDF &)) &mrpt::poses::CPosePDFGaussianInf::copyFrom, "Copy operator, translating if necesary (for example, between particles\n and gaussian representations) \n\nC++: mrpt::poses::CPosePDFGaussianInf::copyFrom(const class mrpt::poses::CPose3DPDF &) --> void", pybind11::arg("o"));
 		cl.def("saveToTextFile", (bool (mrpt::poses::CPosePDFGaussianInf::*)(const std::string &) const) &mrpt::poses::CPosePDFGaussianInf::saveToTextFile, "Save PDF's particles to a text file, containing the 2D pose in the first\n line, then the covariance matrix in next 3 lines. \n\nC++: mrpt::poses::CPosePDFGaussianInf::saveToTextFile(const std::string &) const --> bool", pybind11::arg("file"));
@@ -485,6 +517,7 @@ void bind_mrpt_poses_CPose3DQuatPDFGaussianInf(std::function< pybind11::module &
 		cl.def("changeCoordinatesReference", (void (mrpt::poses::CPosePDFGaussianInf::*)(const class mrpt::poses::CPose2D &)) &mrpt::poses::CPosePDFGaussianInf::changeCoordinatesReference, "this = p (+) this. This can be used to convert a PDF from local\n coordinates to global, providing the point (newReferenceBase) from which\n   \"to project\" the current pdf. Result PDF substituted the currently\n stored one in the object. \n\nC++: mrpt::poses::CPosePDFGaussianInf::changeCoordinatesReference(const class mrpt::poses::CPose2D &) --> void", pybind11::arg("newReferenceBase"));
 		cl.def("rotateCov", (void (mrpt::poses::CPosePDFGaussianInf::*)(const double)) &mrpt::poses::CPosePDFGaussianInf::rotateCov, "Rotate the covariance matrix by replacing it by \n\n\n, where \n\n\n\n. \n\nC++: mrpt::poses::CPosePDFGaussianInf::rotateCov(const double) --> void", pybind11::arg("ang"));
 		cl.def("inverseComposition", (void (mrpt::poses::CPosePDFGaussianInf::*)(const class mrpt::poses::CPosePDFGaussianInf &, const class mrpt::poses::CPosePDFGaussianInf &)) &mrpt::poses::CPosePDFGaussianInf::inverseComposition, "Set \n , computing the mean using the \"-\"\n operator and the covariances through the corresponding Jacobians (For\n 'x0' and 'x1' being independent variables!).  \n\nC++: mrpt::poses::CPosePDFGaussianInf::inverseComposition(const class mrpt::poses::CPosePDFGaussianInf &, const class mrpt::poses::CPosePDFGaussianInf &) --> void", pybind11::arg("x"), pybind11::arg("ref"));
+		cl.def("inverseComposition", (void (mrpt::poses::CPosePDFGaussianInf::*)(const class mrpt::poses::CPosePDFGaussianInf &, const class mrpt::poses::CPosePDFGaussianInf &, const class mrpt::math::CMatrixFixed<double, 3, 3> &)) &mrpt::poses::CPosePDFGaussianInf::inverseComposition, "Set \n , computing the mean using the \"-\"\n operator and the covariances through the corresponding Jacobians (Given\n the 3x3 cross-covariance matrix of variables x0 and x1). \n\nC++: mrpt::poses::CPosePDFGaussianInf::inverseComposition(const class mrpt::poses::CPosePDFGaussianInf &, const class mrpt::poses::CPosePDFGaussianInf &, const class mrpt::math::CMatrixFixed<double, 3, 3> &) --> void", pybind11::arg("x1"), pybind11::arg("x0"), pybind11::arg("COV_01"));
 		cl.def("drawSingleSample", (void (mrpt::poses::CPosePDFGaussianInf::*)(class mrpt::poses::CPose2D &) const) &mrpt::poses::CPosePDFGaussianInf::drawSingleSample, "Draws a single sample from the distribution \n\nC++: mrpt::poses::CPosePDFGaussianInf::drawSingleSample(class mrpt::poses::CPose2D &) const --> void", pybind11::arg("outPart"));
 		cl.def("bayesianFusion", [](mrpt::poses::CPosePDFGaussianInf &o, const class mrpt::poses::CPosePDF & a0, const class mrpt::poses::CPosePDF & a1) -> void { return o.bayesianFusion(a0, a1); }, "", pybind11::arg("p1"), pybind11::arg("p2"));
 		cl.def("bayesianFusion", (void (mrpt::poses::CPosePDFGaussianInf::*)(const class mrpt::poses::CPosePDF &, const class mrpt::poses::CPosePDF &, const double)) &mrpt::poses::CPosePDFGaussianInf::bayesianFusion, "Bayesian fusion of two points gauss. distributions, then save the result\nin this object.\n  The process is as follows:\n		- (x1,S1): Mean and variance of the p1 distribution.\n		- (x2,S2): Mean and variance of the p2 distribution.\n		- (x,S): Mean and variance of the resulting distribution.\n\n    \n\n    \n\n	 \n\nC++: mrpt::poses::CPosePDFGaussianInf::bayesianFusion(const class mrpt::poses::CPosePDF &, const class mrpt::poses::CPosePDF &, const double) --> void", pybind11::arg("p1"), pybind11::arg("p2"), pybind11::arg("minMahalanobisDistToDrop"));

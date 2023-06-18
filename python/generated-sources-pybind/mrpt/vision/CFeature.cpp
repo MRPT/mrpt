@@ -1,6 +1,7 @@
 #include <iterator>
 #include <memory>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/typemeta/static_string.h>
 #include <mrpt/vision/CFeature.h>

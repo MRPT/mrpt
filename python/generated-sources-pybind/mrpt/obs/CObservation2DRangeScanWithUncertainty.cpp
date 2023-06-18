@@ -1,5 +1,6 @@
 #include <iterator>
 #include <memory>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>

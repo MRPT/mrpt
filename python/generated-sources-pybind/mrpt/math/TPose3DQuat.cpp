@@ -1,3 +1,4 @@
+#include <Eigen/Dense>
 #include <iterator>
 #include <memory>
 #include <mrpt/math/TPose3DQuat.h>

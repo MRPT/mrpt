@@ -1,4 +1,5 @@
 #include <mrpt/graphs/ScalarFactorGraph.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/MatrixVectorBase.h>
 #include <sstream> // __str__

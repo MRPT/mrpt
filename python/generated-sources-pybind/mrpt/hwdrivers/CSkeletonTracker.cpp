@@ -100,7 +100,7 @@ struct PyCallBack_mrpt_hwdrivers_CSkeletonTracker : public mrpt::hwdrivers::CSke
 		}
 		return CGenericSensor::loadConfig(a0, a1);
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CSkeletonTracker *>(this), "getObservations");
@@ -237,7 +237,7 @@ struct PyCallBack_mrpt_hwdrivers_CTaoboticsIMU : public mrpt::hwdrivers::CTaobot
 		}
 		return CGenericSensor::loadConfig(a0, a1);
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CTaoboticsIMU *>(this), "getObservations");
@@ -996,7 +996,7 @@ void bind_mrpt_hwdrivers_CSkeletonTracker(std::function< pybind11::module &(std:
 		cl.def("posToRad", (double (mrpt::hwdrivers::CTuMicos::*)(char, long)) &mrpt::hwdrivers::CTuMicos::posToRad, "To obtain the number of radians for a discrete value \n\nC++: mrpt::hwdrivers::CTuMicos::posToRad(char, long) --> double", pybind11::arg("axis"), pybind11::arg("nPos"));
 		cl.def("scan", (bool (mrpt::hwdrivers::CTuMicos::*)(char, int, float, float, double)) &mrpt::hwdrivers::CTuMicos::scan, "Performs a scan in the axis indicated and whit the precision desired. \n		\n\n {Pan or Till} \n		\n\n {Wait time betwen commands} \n		\n\n {initial position}\n		\n\n {final position}\n		\n\n {radians precision for the scan}\n\nC++: mrpt::hwdrivers::CTuMicos::scan(char, int, float, float, double) --> bool", pybind11::arg("axis"), pybind11::arg("wait"), pybind11::arg("initial"), pybind11::arg("final"), pybind11::arg("radPre"));
 		cl.def("verboseQ", (bool (mrpt::hwdrivers::CTuMicos::*)(bool &)) &mrpt::hwdrivers::CTuMicos::verboseQ, "Query verbose mode \n\nC++: mrpt::hwdrivers::CTuMicos::verboseQ(bool &) --> bool", pybind11::arg("modo"));
-		cl.def("verbose", (bool (mrpt::hwdrivers::CTuMicos::*)(bool)) &mrpt::hwdrivers::CTuMicos::verbose, "Set verbose. \n	\n\n\n\n\n\n\n\n\n	 \n\nC++: mrpt::hwdrivers::CTuMicos::verbose(bool) --> bool", pybind11::arg("set"));
+		cl.def("verbose", (bool (mrpt::hwdrivers::CTuMicos::*)(bool)) &mrpt::hwdrivers::CTuMicos::verbose, "Set verbose. \n	\n	Example of response with FV (verbose) active:\n		FV *\n		PP * Current pan position is 0\n		Example of response with FT (terse) active:\n		FT *\n		PP * 0\n	\n\nC++: mrpt::hwdrivers::CTuMicos::verbose(bool) --> bool", pybind11::arg("set"));
 		cl.def("echoModeQ", (bool (mrpt::hwdrivers::CTuMicos::*)(bool &)) &mrpt::hwdrivers::CTuMicos::echoModeQ, "Query echo mode \n\nC++: mrpt::hwdrivers::CTuMicos::echoModeQ(bool &) --> bool", pybind11::arg("mode"));
 		cl.def("echoMode", (bool (mrpt::hwdrivers::CTuMicos::*)(bool)) &mrpt::hwdrivers::CTuMicos::echoMode, "Enable/Disable echo response with command. \n	\n\n\n\n\n\n\n	 \n\nC++: mrpt::hwdrivers::CTuMicos::echoMode(bool) --> bool", pybind11::arg("mode"));
 		cl.def("resolution", (bool (mrpt::hwdrivers::CTuMicos::*)()) &mrpt::hwdrivers::CTuMicos::resolution, "Query the pan and tilt resolution per position moved\n	and initialize local atributes\n\nC++: mrpt::hwdrivers::CTuMicos::resolution() --> bool");

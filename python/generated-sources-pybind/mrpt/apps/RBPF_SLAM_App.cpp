@@ -7,6 +7,7 @@
 #include <mrpt/apps/RawlogGrabberApp.h>
 #include <mrpt/core/Clock.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionCollection.h>

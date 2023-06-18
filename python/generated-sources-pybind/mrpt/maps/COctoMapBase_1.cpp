@@ -14,6 +14,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/metric_map_types.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TBoundingBox.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>

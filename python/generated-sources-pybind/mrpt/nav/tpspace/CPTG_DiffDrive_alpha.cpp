@@ -593,7 +593,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_alpha : public mrpt::nav::CPTG_DiffDri
 		}
 		return CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(a0, a1, a2, a3);
 	}
-	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > & a3, bool a4) const override {
+	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double> & a3, bool a4) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_alpha *>(this), "evalClearanceSingleObstacle");
 		if (overload) {
@@ -1132,7 +1132,7 @@ struct PyCallBack_mrpt_nav_CPTG_Holo_Blend : public mrpt::nav::CPTG_Holo_Blend {
 		}
 		return CParameterizedTrajectoryGenerator::internal_writeToStream(a0);
 	}
-	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > & a3, bool a4) const override {
+	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double> & a3, bool a4) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_Holo_Blend *>(this), "evalClearanceSingleObstacle");
 		if (overload) {

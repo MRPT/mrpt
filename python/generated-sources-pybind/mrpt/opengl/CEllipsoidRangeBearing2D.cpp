@@ -1,7 +1,9 @@
 #include <any>
+#include <functional>
 #include <ios>
 #include <istream>
 #include <iterator>
+#include <map>
 #include <memory>
 #include <mrpt/containers/CommentPosition.h>
 #include <mrpt/containers/YamlEmitOptions.h>
@@ -12,18 +14,27 @@
 #include <mrpt/img/TColor.h>
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/io/CStream.h>
+#include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/math/CVectorDynamic.h>
+#include <mrpt/math/TBoundingBox.h>
+#include <mrpt/math/TPoint2D.h>
+#include <mrpt/math/TPoint3D.h>
+#include <mrpt/math/TPolygon3D.h>
 #include <mrpt/math/TPose2D.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TPose3DQuat.h>
+#include <mrpt/math/math_frwds.h>
+#include <mrpt/math/matrix_size_t.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CEllipsoidRangeBearing2D.h>
 #include <mrpt/opengl/CFBORender.h>
+#include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/Scene.h>
-#include <mrpt/opengl/TRenderMatrices.h>
 #include <mrpt/opengl/Viewport.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -35,14 +46,18 @@
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
+#include <mrpt/typemeta/static_string.h>
+#include <optional>
 #include <ostream>
 #include <sstream> // __str__
 #include <streambuf>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <typeinfo>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include <functional>
 #include <pybind11/pybind11.h>
@@ -126,6 +141,84 @@ struct PyCallBack_mrpt_opengl_CEllipsoidRangeBearing2D : public mrpt::opengl::CE
 		}
 		return CEllipsoidRangeBearing2D::serializeFrom(a0, a1);
 	}
+	void freeOpenGLResources() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "freeOpenGLResources");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CGeneralizedEllipsoidTemplate::freeOpenGLResources();
+	}
+	void renderUpdateBuffers() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "renderUpdateBuffers");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CGeneralizedEllipsoidTemplate::renderUpdateBuffers();
+	}
+	void onUpdateBuffers_Wireframe() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "onUpdateBuffers_Wireframe");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CGeneralizedEllipsoidTemplate::onUpdateBuffers_Wireframe();
+	}
+	void onUpdateBuffers_Triangles() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "onUpdateBuffers_Triangles");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CGeneralizedEllipsoidTemplate::onUpdateBuffers_Triangles();
+	}
+	bool traceRay(const class mrpt::poses::CPose3D & a0, double & a1) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "traceRay");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CGeneralizedEllipsoidTemplate::traceRay(a0, a1);
+	}
+	struct mrpt::math::TBoundingBox_<float> internalBoundingBoxLocal() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "internalBoundingBoxLocal");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CGeneralizedEllipsoidTemplate::internalBoundingBoxLocal();
+	}
 	class mrpt::opengl::CRenderizable & setColorA_u8(const unsigned char a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "setColorA_u8");
@@ -178,19 +271,6 @@ struct PyCallBack_mrpt_opengl_CEllipsoidRangeBearing2D : public mrpt::opengl::CE
 		}
 		return CRenderizable::toYAMLMap(a0);
 	}
-	void enqueueForRenderRecursive(const struct mrpt::opengl::TRenderMatrices & a0, int & a1, bool a2, bool a3) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "enqueueForRenderRecursive");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CRenderizable::enqueueForRenderRecursive(a0, a1, a2, a3);
-	}
 	bool isCompositeObject() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "isCompositeObject");
@@ -204,44 +284,18 @@ struct PyCallBack_mrpt_opengl_CEllipsoidRangeBearing2D : public mrpt::opengl::CE
 		}
 		return CRenderizable::isCompositeObject();
 	}
-	void renderUpdateBuffers() const override {
+	struct mrpt::math::TPoint3D_<float> getLocalRepresentativePoint() const override {
 		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "renderUpdateBuffers");
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "getLocalRepresentativePoint");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TPoint3D_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TPoint3D_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TPoint3D_<float>>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
+			else return pybind11::detail::cast_safe<struct mrpt::math::TPoint3D_<float>>(std::move(o));
 		}
-		pybind11::pybind11_fail("Tried to call pure virtual function \"CRenderizable::renderUpdateBuffers\"");
-	}
-	bool traceRay(const class mrpt::poses::CPose3D & a0, double & a1) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "traceRay");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
-				static pybind11::detail::override_caster_t<bool> caster;
-				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<bool>(std::move(o));
-		}
-		return CRenderizable::traceRay(a0, a1);
-	}
-	void freeOpenGLResources() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CEllipsoidRangeBearing2D *>(this), "freeOpenGLResources");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		pybind11::pybind11_fail("Tried to call pure virtual function \"CRenderizable::freeOpenGLResources\"");
+		return CRenderizable::getLocalRepresentativePoint();
 	}
 	void initializeTextures() const override {
 		pybind11::gil_scoped_acquire gil;
@@ -379,6 +433,19 @@ struct PyCallBack_mrpt_opengl_CPolyhedron : public mrpt::opengl::CPolyhedron {
 		}
 		return CPolyhedron::onUpdateBuffers_Triangles();
 	}
+	struct mrpt::math::TBoundingBox_<float> internalBoundingBoxLocal() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPolyhedron *>(this), "internalBoundingBoxLocal");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CPolyhedron::internalBoundingBoxLocal();
+	}
 	bool traceRay(const class mrpt::poses::CPose3D & a0, double & a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPolyhedron *>(this), "traceRay");
@@ -444,19 +511,6 @@ struct PyCallBack_mrpt_opengl_CPolyhedron : public mrpt::opengl::CPolyhedron {
 		}
 		return CRenderizable::toYAMLMap(a0);
 	}
-	void enqueueForRenderRecursive(const struct mrpt::opengl::TRenderMatrices & a0, int & a1, bool a2, bool a3) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPolyhedron *>(this), "enqueueForRenderRecursive");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2, a3);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CRenderizable::enqueueForRenderRecursive(a0, a1, a2, a3);
-	}
 	bool isCompositeObject() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPolyhedron *>(this), "isCompositeObject");
@@ -469,6 +523,19 @@ struct PyCallBack_mrpt_opengl_CPolyhedron : public mrpt::opengl::CPolyhedron {
 			else return pybind11::detail::cast_safe<bool>(std::move(o));
 		}
 		return CRenderizable::isCompositeObject();
+	}
+	struct mrpt::math::TPoint3D_<float> getLocalRepresentativePoint() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CPolyhedron *>(this), "getLocalRepresentativePoint");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TPoint3D_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TPoint3D_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TPoint3D_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TPoint3D_<float>>(std::move(o));
+		}
+		return CRenderizable::getLocalRepresentativePoint();
 	}
 	void initializeTextures() const override {
 		pybind11::gil_scoped_acquire gil;
@@ -488,11 +555,11 @@ struct PyCallBack_mrpt_opengl_CPolyhedron : public mrpt::opengl::CPolyhedron {
 void bind_mrpt_opengl_CEllipsoidRangeBearing2D(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::opengl::CEllipsoidRangeBearing2D file:mrpt/opengl/CEllipsoidRangeBearing2D.h line:34
-		pybind11::class_<mrpt::opengl::CEllipsoidRangeBearing2D, std::shared_ptr<mrpt::opengl::CEllipsoidRangeBearing2D>, PyCallBack_mrpt_opengl_CEllipsoidRangeBearing2D, mrpt::opengl::CRenderizable> cl(M("mrpt::opengl"), "CEllipsoidRangeBearing2D", "An especial \"ellipsoid\" in 2D computed as the uncertainty iso-surfaces of a\n (range,bearing) variable.\n  The parameter space of this ellipsoid comprises these variables (in this\n order):\n   - range: Distance from sensor to feature.\n   - bearing: Angle from +X to the line that goes from the sensor towards the\n feature.\n\n  This class expects you to provide a mean vector of length 2 and a 2x2\n covariance matrix, set with \n\n Please read the documentation of\n CGeneralizedEllipsoidTemplate::setQuantiles() for learning\n  the mathematical details about setting the desired confidence interval.\n\n ![mrpt::opengl::CEllipsoidRangeBearing2D](preview_CEllipsoidRangeBearing2D.png)\n\n \n\n ");
+		pybind11::class_<mrpt::opengl::CEllipsoidRangeBearing2D, std::shared_ptr<mrpt::opengl::CEllipsoidRangeBearing2D>, PyCallBack_mrpt_opengl_CEllipsoidRangeBearing2D, mrpt::opengl::CGeneralizedEllipsoidTemplate<2>, mrpt::opengl::CRenderizable> cl(M("mrpt::opengl"), "CEllipsoidRangeBearing2D", "An especial \"ellipsoid\" in 2D computed as the uncertainty iso-surfaces of a\n (range,bearing) variable.\n  The parameter space of this ellipsoid comprises these variables (in this\n order):\n   - range: Distance from sensor to feature.\n   - bearing: Angle from +X to the line that goes from the sensor towards the\n feature.\n\n  This class expects you to provide a mean vector of length 2 and a 2x2\n covariance matrix, set with \n\n Please read the documentation of\n CGeneralizedEllipsoidTemplate::setQuantiles() for learning\n  the mathematical details about setting the desired confidence interval.\n\n ![mrpt::opengl::CEllipsoidRangeBearing2D](preview_CEllipsoidRangeBearing2D.png)\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CEllipsoidRangeBearing2D(); }, [](){ return new PyCallBack_mrpt_opengl_CEllipsoidRangeBearing2D(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CEllipsoidRangeBearing2D const &o){ return new PyCallBack_mrpt_opengl_CEllipsoidRangeBearing2D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CEllipsoidRangeBearing2D const &o){ return new mrpt::opengl::CEllipsoidRangeBearing2D(o); } ) );
-		cl.def_static("getClassName", (auto (*)()) &mrpt::opengl::CEllipsoidRangeBearing2D::getClassName, "C++: mrpt::opengl::CEllipsoidRangeBearing2D::getClassName() --> auto");
+		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<38> (*)()) &mrpt::opengl::CEllipsoidRangeBearing2D::getClassName, "C++: mrpt::opengl::CEllipsoidRangeBearing2D::getClassName() --> class mrpt::typemeta::string_literal<38>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CEllipsoidRangeBearing2D::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CEllipsoidRangeBearing2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CEllipsoidRangeBearing2D::*)() const) &mrpt::opengl::CEllipsoidRangeBearing2D::GetRuntimeClass, "C++: mrpt::opengl::CEllipsoidRangeBearing2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CEllipsoidRangeBearing2D::*)() const) &mrpt::opengl::CEllipsoidRangeBearing2D::clone, "C++: mrpt::opengl::CEllipsoidRangeBearing2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -511,7 +578,8 @@ void bind_mrpt_opengl_CEllipsoidRangeBearing2D(std::function< pybind11::module &
 		cl.def("setCamera", (void (mrpt::opengl::CFBORender::*)(const class mrpt::opengl::Scene &, const class mrpt::opengl::CCamera &)) &mrpt::opengl::CFBORender::setCamera, "Change the scene camera to be used when rendering the scene through this\n particular instance of CFBORender. \n\nC++: mrpt::opengl::CFBORender::setCamera(const class mrpt::opengl::Scene &, const class mrpt::opengl::CCamera &) --> void", pybind11::arg("scene"), pybind11::arg("camera"));
 		cl.def("getCamera", (class mrpt::opengl::CCamera & (mrpt::opengl::CFBORender::*)(const class mrpt::opengl::Scene &)) &mrpt::opengl::CFBORender::getCamera, "Get a reference to the scene camera to be used when rendering the scene\n through this particular instance of CFBORender. \n\nC++: mrpt::opengl::CFBORender::getCamera(const class mrpt::opengl::Scene &) --> class mrpt::opengl::CCamera &", pybind11::return_value_policy::automatic, pybind11::arg("scene"));
 		cl.def("render_RGB", (void (mrpt::opengl::CFBORender::*)(const class mrpt::opengl::Scene &, class mrpt::img::CImage &)) &mrpt::opengl::CFBORender::render_RGB, "Render the scene and get the rendered RGB image. Resizes the image\n  buffer if necessary to the configured render resolution.\n\n  \n render_RGBD()\n\nC++: mrpt::opengl::CFBORender::render_RGB(const class mrpt::opengl::Scene &, class mrpt::img::CImage &) --> void", pybind11::arg("scene"), pybind11::arg("outRGB"));
-		cl.def("assign", (class mrpt::opengl::CFBORender & (mrpt::opengl::CFBORender::*)(const class mrpt::opengl::CFBORender &)) &mrpt::opengl::CFBORender::operator=, "C++: mrpt::opengl::CFBORender::operator=(const class mrpt::opengl::CFBORender &) --> class mrpt::opengl::CFBORender &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+		cl.def("render_RGBD", (void (mrpt::opengl::CFBORender::*)(const class mrpt::opengl::Scene &, class mrpt::img::CImage &, class mrpt::math::CMatrixDynamic<float> &)) &mrpt::opengl::CFBORender::render_RGBD, "Render the scene and get the rendered RGB and depth images.\n Resizes the provided buffers if necessary to the configured render\n resolution.\n The output depth image is in linear depth distance units (e.g. \"meters\").\n Note that values is depth, not range, that is, it's the \"+z\" coordinate\n of a point as seen from the camera, with +Z pointing forward in the view\n direction (the common convention in computer vision).\n Pixels without any observed object in the valid viewport {clipMin,\n clipMax} range will be returned with a range of `0.0`.\n\n  \n render_RGB(), Parameters::raw_depth\n\nC++: mrpt::opengl::CFBORender::render_RGBD(const class mrpt::opengl::Scene &, class mrpt::img::CImage &, class mrpt::math::CMatrixDynamic<float> &) --> void", pybind11::arg("scene"), pybind11::arg("outRGB"), pybind11::arg("outDepth"));
+		cl.def("render_depth", (void (mrpt::opengl::CFBORender::*)(const class mrpt::opengl::Scene &, class mrpt::math::CMatrixDynamic<float> &)) &mrpt::opengl::CFBORender::render_depth, "Like render_RGBD(), but only renders the depth image.\n  \n\n render_RGBD()\n\nC++: mrpt::opengl::CFBORender::render_depth(const class mrpt::opengl::Scene &, class mrpt::math::CMatrixDynamic<float> &) --> void", pybind11::arg("scene"), pybind11::arg("outDepth"));
 
 		{ // mrpt::opengl::CFBORender::Parameters file:mrpt/opengl/CFBORender.h line:41
 			auto & enclosing_class = cl;
@@ -535,31 +603,25 @@ void bind_mrpt_opengl_CEllipsoidRangeBearing2D(std::function< pybind11::module &
 			cl.def_readwrite("contextMajorVersion", &mrpt::opengl::CFBORender::Parameters::contextMajorVersion);
 			cl.def_readwrite("contextMinorVersion", &mrpt::opengl::CFBORender::Parameters::contextMinorVersion);
 			cl.def_readwrite("contextDebug", &mrpt::opengl::CFBORender::Parameters::contextDebug);
+			cl.def("assign", (struct mrpt::opengl::CFBORender::Parameters & (mrpt::opengl::CFBORender::Parameters::*)(const struct mrpt::opengl::CFBORender::Parameters &)) &mrpt::opengl::CFBORender::Parameters::operator=, "C++: mrpt::opengl::CFBORender::Parameters::operator=(const struct mrpt::opengl::CFBORender::Parameters &) --> struct mrpt::opengl::CFBORender::Parameters &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
 	}
 	{ // mrpt::opengl::CPolyhedron file:mrpt/opengl/CPolyhedron.h line:38
 		pybind11::class_<mrpt::opengl::CPolyhedron, std::shared_ptr<mrpt::opengl::CPolyhedron>, PyCallBack_mrpt_opengl_CPolyhedron, mrpt::opengl::CRenderizableShaderWireFrame, mrpt::opengl::CRenderizableShaderTriangles> cl(M("mrpt::opengl"), "CPolyhedron", "This class represents arbitrary polyhedra. The class includes a set of\n static methods to create common polyhedrons. The class includes many methods\n to create standard polyhedra, not intended to be fast but to be simple. For\n example, the dodecahedron is not created efficiently: first, an icosahedron\n is created, and a duality operator is applied to it, which yields the\n dodecahedron. This way, code is much smaller, although much slower. This is\n not a big problem, since polyhedron creation does not usually take a\n significant amount of time (they are created once and rendered many times).\n Polyhedra information and models have been gotten from the Wikipedia,\n https://wikipedia.org\n\n ![mrpt::opengl::CPolyhedron](preview_CPolyhedron.png)\n\n \n opengl::Scene\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CPolyhedron(); }, [](){ return new PyCallBack_mrpt_opengl_CPolyhedron(); } ) );
-		cl.def( pybind11::init( [](const int & a0, const int & a1){ return new mrpt::opengl::CPolyhedron(a0, a1); }, [](const int & a0, const int & a1){ return new PyCallBack_mrpt_opengl_CPolyhedron(a0, a1); } ), "doc");
-		cl.def( pybind11::init<const int &, const int &, bool>(), pybind11::arg("vertices"), pybind11::arg("faces"), pybind11::arg("doCheck") );
-
-		cl.def( pybind11::init<const int &>(), pybind11::arg("polys") );
-
-		cl.def( pybind11::init<const int &, const int &>(), pybind11::arg("vertices"), pybind11::arg("faces") );
-
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CPolyhedron const &o){ return new PyCallBack_mrpt_opengl_CPolyhedron(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CPolyhedron const &o){ return new mrpt::opengl::CPolyhedron(o); } ) );
-		cl.def_static("getClassName", (auto (*)()) &mrpt::opengl::CPolyhedron::getClassName, "C++: mrpt::opengl::CPolyhedron::getClassName() --> auto");
+		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<25> (*)()) &mrpt::opengl::CPolyhedron::getClassName, "C++: mrpt::opengl::CPolyhedron::getClassName() --> class mrpt::typemeta::string_literal<25>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CPolyhedron::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CPolyhedron::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::GetRuntimeClass, "C++: mrpt::opengl::CPolyhedron::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::clone, "C++: mrpt::opengl::CPolyhedron::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::opengl::CPolyhedron::CreateObject, "C++: mrpt::opengl::CPolyhedron::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("renderUpdateBuffers", (void (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::renderUpdateBuffers, "C++: mrpt::opengl::CPolyhedron::renderUpdateBuffers() const --> void");
 		cl.def("freeOpenGLResources", (void (mrpt::opengl::CPolyhedron::*)()) &mrpt::opengl::CPolyhedron::freeOpenGLResources, "C++: mrpt::opengl::CPolyhedron::freeOpenGLResources() --> void");
-		cl.def("requiredShaders", (int (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::requiredShaders, "C++: mrpt::opengl::CPolyhedron::requiredShaders() const --> int");
 		cl.def("onUpdateBuffers_Wireframe", (void (mrpt::opengl::CPolyhedron::*)()) &mrpt::opengl::CPolyhedron::onUpdateBuffers_Wireframe, "C++: mrpt::opengl::CPolyhedron::onUpdateBuffers_Wireframe() --> void");
 		cl.def("onUpdateBuffers_Triangles", (void (mrpt::opengl::CPolyhedron::*)()) &mrpt::opengl::CPolyhedron::onUpdateBuffers_Triangles, "C++: mrpt::opengl::CPolyhedron::onUpdateBuffers_Triangles() --> void");
+		cl.def("internalBoundingBoxLocal", (struct mrpt::math::TBoundingBox_<float> (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::internalBoundingBoxLocal, "Evaluates the bounding box of this object (including possible children)\n in the coordinate frame of the object parent. \n\nC++: mrpt::opengl::CPolyhedron::internalBoundingBoxLocal() const --> struct mrpt::math::TBoundingBox_<float>");
 		cl.def_static("CreateTetrahedron", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(double)) &mrpt::opengl::CPolyhedron::CreateTetrahedron, "		@{\n\n Creates a regular tetrahedron (see\n	  http://en.wikipedia.org/wiki/Tetrahedron). The tetrahedron is created as a\n	  triangular pyramid whose edges and vertices are transitive.\n The tetrahedron is the dual to itself.\n	  \n \n\n\n	  CreatePyramid,CreateJohnsonSolidWithConstantBase,CreateTruncatedTetrahedron\n\nC++: mrpt::opengl::CPolyhedron::CreateTetrahedron(double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("radius"));
 		cl.def_static("CreateHexahedron", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(double)) &mrpt::opengl::CPolyhedron::CreateHexahedron, "Creates a regular cube, also called hexahedron (see\n	  http://en.wikipedia.org/wiki/Hexahedron). The hexahedron is created as a\n	  cubic prism which transitive edges. Another ways to create it include:\n	  Dual to an octahedron.Parallelepiped with three\n	  orthogonal, equally-lengthed vectors.Triangular trapezohedron\n	  with proper height.\n	  \n \n\n\n	  CreateOctahedron,getDual,CreateParallelepiped,CreateTrapezohedron,CreateTruncatedHexahedron,CreateTruncatedOctahedron,CreateCuboctahedron,CreateRhombicuboctahedron\n\nC++: mrpt::opengl::CPolyhedron::CreateHexahedron(double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("radius"));
 		cl.def_static("CreateOctahedron", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(double)) &mrpt::opengl::CPolyhedron::CreateOctahedron, "Creates a regular octahedron (see\n	  http://en.wikipedia.org/wiki/Octahedron). The octahedron is created as a\n	  square bipyramid whit transitive edges and vertices. Another ways to\n	  create an octahedron are:\n	  Dual to an hexahedronTriangular antiprism with transitive\n	  vertices.Conveniently truncated tetrahedron.\n	  \n \n\n\n	  CreateHexahedron,getDual,CreateArchimedeanAntiprism,CreateTetrahedron,truncate,CreateTruncatedOctahedron,CreateTruncatedHexahedron,CreateCuboctahedron,CreateRhombicuboctahedron\n\nC++: mrpt::opengl::CPolyhedron::CreateOctahedron(double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("radius"));
@@ -587,13 +649,8 @@ void bind_mrpt_opengl_CEllipsoidRangeBearing2D(std::function< pybind11::module &
 		cl.def_static("CreatePentakisDodecahedron", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(double)) &mrpt::opengl::CPolyhedron::CreatePentakisDodecahedron, "Creates a pentakis dodecahedron, dual to the truncated icosahedron. This\n	  body consists of 60 isosceles triangles (see\n	  http://en.wikipedia.org/wiki/Pentakis_dodecahedron).\n	  \n \n\n CreateTruncatedIcosahedron\n\nC++: mrpt::opengl::CPolyhedron::CreatePentakisDodecahedron(double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("radius"));
 		cl.def_static("CreateDeltoidalHexecontahedron", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(double)) &mrpt::opengl::CPolyhedron::CreateDeltoidalHexecontahedron, "Creates a deltoidal hexecontahedron, dual to the rhombicosidodecahedron.\n	  This body consists of 60 kites (see\n	  http://en.wikipedia.org/wiki/Deltoidal_hexecontahedron).\n	  \n \n\n CreateRhombicosidodecahedron\n\nC++: mrpt::opengl::CPolyhedron::CreateDeltoidalHexecontahedron(double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("radius"));
 		cl.def_static("CreateCubicPrism", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(double, double, double, double, double, double)) &mrpt::opengl::CPolyhedron::CreateCubicPrism, "		@{\n\n Creates a cubic prism, given the coordinates of two opposite vertices.\n Each edge will be parallel to one of the coordinate axes, although the\n orientation may change by assigning a pose to the object.\n \n\n CreateCubicPrism(const mrpt::math::TPoint3D &,const\n mrpt::math::TPoint3D\n &),CreateParallelepiped,CreateCustomPrism,CreateRegularPrism,CreateArchimedeanRegularPrism\n\nC++: mrpt::opengl::CPolyhedron::CreateCubicPrism(double, double, double, double, double, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("x1"), pybind11::arg("x2"), pybind11::arg("y1"), pybind11::arg("y2"), pybind11::arg("z1"), pybind11::arg("z2"));
-		cl.def_static("CreatePyramid", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const int &, double)) &mrpt::opengl::CPolyhedron::CreatePyramid, "Creates a custom pyramid, using a set of 2D vertices which will lie on\n the XY plane.\n \n\n\n CreateDoublePyramid,CreateFrustum,CreateBifrustum,CreateRegularPyramid\n\nC++: mrpt::opengl::CPolyhedron::CreatePyramid(const int &, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("baseVertices"), pybind11::arg("height"));
-		cl.def_static("CreateDoublePyramid", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const int &, double, double)) &mrpt::opengl::CPolyhedron::CreateDoublePyramid, "Creates a double pyramid, using a set of 2D vertices which will lie on\n the XY plane. The second height is used with the downwards pointing\n pyramid, so that it will effectively point downwards if it's positive.\n \n\n CreatePyramid,CreateBifrustum,CreateRegularDoublePyramid\n\nC++: mrpt::opengl::CPolyhedron::CreateDoublePyramid(const int &, double, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("baseVertices"), pybind11::arg("height1"), pybind11::arg("height2"));
-		cl.def_static("CreateTruncatedPyramid", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const int &, double, double)) &mrpt::opengl::CPolyhedron::CreateTruncatedPyramid, "Creates a truncated pyramid, using a set of vertices which will lie on\n the XY plane.\n Do not try to use with a ratio equal to zero; use CreatePyramid instead.\n When using a ratio of 1, it will create a Prism.\n \n\n CreatePyramid,CreateBifrustum\n\nC++: mrpt::opengl::CPolyhedron::CreateTruncatedPyramid(const int &, double, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("baseVertices"), pybind11::arg("height"), pybind11::arg("ratio"));
-		cl.def_static("CreateFrustum", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const int &, double, double)) &mrpt::opengl::CPolyhedron::CreateFrustum, "This is a synonym for CreateTruncatedPyramid.\n \n\n CreateTruncatedPyramid\n\nC++: mrpt::opengl::CPolyhedron::CreateFrustum(const int &, double, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("baseVertices"), pybind11::arg("height"), pybind11::arg("ratio"));
-		cl.def_static("CreateCustomPrism", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const int &, double)) &mrpt::opengl::CPolyhedron::CreateCustomPrism, "Creates a custom prism with vertical edges, given any base which will\n lie on the XY plane.\n \n\n\n CreateCubicPrism,CreateCustomAntiprism,CreateRegularPrism,CreateArchimedeanRegularPrism\n\nC++: mrpt::opengl::CPolyhedron::CreateCustomPrism(const int &, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("baseVertices"), pybind11::arg("height"));
-		cl.def_static("CreateCustomAntiprism", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const int &, const int &, double)) &mrpt::opengl::CPolyhedron::CreateCustomAntiprism, "Creates a custom antiprism, using two custom bases. For better results,\n the top base should be slightly rotated with respect to the bottom one.\n \n\n\n CreateCustomPrism,CreateRegularAntiprism,CreateArchimedeanRegularAntiprism\n\nC++: mrpt::opengl::CPolyhedron::CreateCustomAntiprism(const int &, const int &, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("bottomBase"), pybind11::arg("topBase"), pybind11::arg("height"));
-		cl.def_static("CreateBifrustum", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const int &, double, double, double, double)) &mrpt::opengl::CPolyhedron::CreateBifrustum, "Creates a bifrustum, or double truncated pyramid, given a base which\n will lie on the XY plane.\n \n\n CreateFrustum,CreateDoublePyramid\n\nC++: mrpt::opengl::CPolyhedron::CreateBifrustum(const int &, double, double, double, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("baseVertices"), pybind11::arg("height1"), pybind11::arg("ratio1"), pybind11::arg("height2"), pybind11::arg("ratio2"));
+		cl.def_static("CreateCubicPrism", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &)) &mrpt::opengl::CPolyhedron::CreateCubicPrism, "Creates a cubic prism, given two opposite vertices.\n \n\n\n CreateCubicPrism(double,double,double,double,double,double),CreateParallelepiped,CreateCustomPrism,CreateRegularPrism,CreateArchimedeanRegularPrism\n\nC++: mrpt::opengl::CPolyhedron::CreateCubicPrism(const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("p1"), pybind11::arg("p2"));
+		cl.def_static("CreateParallelepiped", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &)) &mrpt::opengl::CPolyhedron::CreateParallelepiped, "Creates a parallelepiped, given a base point and three vectors\n represented as points.\n \n\n CreateCubicPrism\n\nC++: mrpt::opengl::CPolyhedron::CreateParallelepiped(const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &, const struct mrpt::math::TPoint3D_<double> &) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("base"), pybind11::arg("v1"), pybind11::arg("v2"), pybind11::arg("v3"));
 		cl.def_static("CreateTrapezohedron", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(uint32_t, double, double)) &mrpt::opengl::CPolyhedron::CreateTrapezohedron, "Creates a trapezohedron, consisting of 2*N kites, where N is the number\n of edges in the base. The base radius controls the polyhedron height,\n whilst the distance between bases affects the height.\n When the number of edges equals 3, the polyhedron is actually a\n parallelepiped, and it can even be a cube.\n\nC++: mrpt::opengl::CPolyhedron::CreateTrapezohedron(uint32_t, double, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("numBaseEdges"), pybind11::arg("baseRadius"), pybind11::arg("basesDistance"));
 		cl.def_static("CreateRegularAntiprism", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(uint32_t, double, double)) &mrpt::opengl::CPolyhedron::CreateRegularAntiprism, "Creates an antiprism whose base is a regular polygon. The upper base is\n rotated \n\n with respect to the lower one, where N is the\n number of vertices in the base, and thus the lateral triangles are\n isosceles.\n \n\n CreateCustomAntiprism,CreateArchimedeanRegularAntiprism\n\nC++: mrpt::opengl::CPolyhedron::CreateRegularAntiprism(uint32_t, double, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("numBaseEdges"), pybind11::arg("baseRadius"), pybind11::arg("height"));
 		cl.def_static("CreateRegularPrism", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(uint32_t, double, double)) &mrpt::opengl::CPolyhedron::CreateRegularPrism, "Creates a regular prism whose base is a regular polygon and whose edges\n are either parallel or perpendicular to the XY plane.\n \n\n CreateCubicPrism,CreateCustomPrism,CreateArchimedeanRegularAntiprism\n\nC++: mrpt::opengl::CPolyhedron::CreateRegularPrism(uint32_t, double, double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("numBaseEdges"), pybind11::arg("baseRadius"), pybind11::arg("height"));
@@ -610,22 +667,16 @@ void bind_mrpt_opengl_CEllipsoidRangeBearing2D(std::function< pybind11::module &
 		cl.def_static("CreateJohnsonSolidWithConstantBase", [](uint32_t const & a0, double const & a1, const std::string & a2) -> std::shared_ptr<class mrpt::opengl::CPolyhedron> { return mrpt::opengl::CPolyhedron::CreateJohnsonSolidWithConstantBase(a0, a1, a2); }, "", pybind11::arg("numBaseEdges"), pybind11::arg("baseRadius"), pybind11::arg("components"));
 		cl.def_static("CreateJohnsonSolidWithConstantBase", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(uint32_t, double, const std::string &, size_t)) &mrpt::opengl::CPolyhedron::CreateJohnsonSolidWithConstantBase, "Creates a series of concatenated solids (most of which are prismatoids)\n	  whose base is a regular polygon with a given number of edges. Every face\n	  of the resulting body will be a regular polygon, so it is a Johnson solid;\n	  in special cases, it may be archimedean or even platonic.\n The shape of the body is defined by the string argument, which can\n	  include one or more of the following:\n	  <center>\n	  StringBodyRestrictions\n	  P+Upward pointing pyramidMust be the last\n	  object, vertex number cannot surpass 5\n	  P-Downward pointing pyramidMust be the first\n	  object, vertex number cannot surpass 5\n	  C+Upward pointing cupolaMust be the last object,\n	  vertex number must be an even number in the range 4-10.\n	  C-Downward pointing cupolaMust be the first\n	  object, vertex number must be an even number in the range 4-10.\n	  GC+Upward pointing cupola, rotatedMust be the\n	  last object, vertex number must be an even number in the range\n	  4-10.\n	  GC-Downward pointing cupola, rotatedMust be the\n	  first object, vertex number must be an even number in the range\n	  4-10.\n	  PRArchimedean prismCannot abut other\n	  prism\n	  AArchimedean antiprismNone\n	  R+Upward pointing rotundaMust be the last\n	  object, vertex number must be exactly 10\n	  R-Downward pointing rotundaMust be the first\n	  object, vertex number must be exactly 10\n	  GR+Upward pointing rotunda, rotatedMust be the\n	  last object, vertex number must be exactly 10\n	  GR-Downward pointing rotundaMust be the first\n	  object, vertex number must be exactly 10\n	  </center>\n Some examples of bodies are:\n	  <center>\n	  StringVerticesResulting\n	  body\n	  P+3Tetrahedron\n	  PR4Hexahedron\n	  P-P+4Octahedron\n	  A3Octahedron\n	  C+PRC-\n8Rhombicuboctahedron\n	  P-AP+5Icosahedron\n	  R-R+10Icosidodecahedron\n	  </center>\n\nC++: mrpt::opengl::CPolyhedron::CreateJohnsonSolidWithConstantBase(uint32_t, double, const std::string &, size_t) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("numBaseEdges"), pybind11::arg("baseRadius"), pybind11::arg("components"), pybind11::arg("shifts"));
 		cl.def("traceRay", (bool (mrpt::opengl::CPolyhedron::*)(const class mrpt::poses::CPose3D &, double &) const) &mrpt::opengl::CPolyhedron::traceRay, "@}\n\nC++: mrpt::opengl::CPolyhedron::traceRay(const class mrpt::poses::CPose3D &, double &) const --> bool", pybind11::arg("o"), pybind11::arg("dist"));
-		cl.def("getVertices", (void (mrpt::opengl::CPolyhedron::*)(int &) const) &mrpt::opengl::CPolyhedron::getVertices, "Gets a list with the polyhedron's vertices.\n\nC++: mrpt::opengl::CPolyhedron::getVertices(int &) const --> void", pybind11::arg("vertices"));
-		cl.def("getEdges", (void (mrpt::opengl::CPolyhedron::*)(int &) const) &mrpt::opengl::CPolyhedron::getEdges, "Gets a list with the polyhedron's edges.\n\nC++: mrpt::opengl::CPolyhedron::getEdges(int &) const --> void", pybind11::arg("edges"));
-		cl.def("getFaces", (void (mrpt::opengl::CPolyhedron::*)(int &) const) &mrpt::opengl::CPolyhedron::getFaces, "Gets a list with the polyhedron's faces.\n\nC++: mrpt::opengl::CPolyhedron::getFaces(int &) const --> void", pybind11::arg("faces"));
 		cl.def("getNumberOfVertices", (uint32_t (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::getNumberOfVertices, "Gets the amount of vertices.\n\nC++: mrpt::opengl::CPolyhedron::getNumberOfVertices() const --> uint32_t");
 		cl.def("getNumberOfEdges", (uint32_t (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::getNumberOfEdges, "Gets the amount of edges.\n\nC++: mrpt::opengl::CPolyhedron::getNumberOfEdges() const --> uint32_t");
 		cl.def("getNumberOfFaces", (uint32_t (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::getNumberOfFaces, "Gets the amount of faces.\n\nC++: mrpt::opengl::CPolyhedron::getNumberOfFaces() const --> uint32_t");
-		cl.def("getEdgesLength", (void (mrpt::opengl::CPolyhedron::*)(int &) const) &mrpt::opengl::CPolyhedron::getEdgesLength, "Gets a vector with each edge's length.\n\nC++: mrpt::opengl::CPolyhedron::getEdgesLength(int &) const --> void", pybind11::arg("lengths"));
-		cl.def("getFacesArea", (void (mrpt::opengl::CPolyhedron::*)(int &) const) &mrpt::opengl::CPolyhedron::getFacesArea, "Gets a vector with each face's area. Won't work properly if the polygons\n are not convex.\n\nC++: mrpt::opengl::CPolyhedron::getFacesArea(int &) const --> void", pybind11::arg("areas"));
 		cl.def("getVolume", (double (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::getVolume, "Gets the polyhedron volume. Won't work properly if the polyhedron is not\n convex.\n\nC++: mrpt::opengl::CPolyhedron::getVolume() const --> double");
 		cl.def("isWireframe", (bool (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::isWireframe, "Returns whether the polyhedron will be rendered as a wireframe object.\n\nC++: mrpt::opengl::CPolyhedron::isWireframe() const --> bool");
 		cl.def("setWireframe", [](mrpt::opengl::CPolyhedron &o) -> void { return o.setWireframe(); }, "");
 		cl.def("setWireframe", (void (mrpt::opengl::CPolyhedron::*)(bool)) &mrpt::opengl::CPolyhedron::setWireframe, "Sets whether the polyhedron will be rendered as a wireframe object.\n\nC++: mrpt::opengl::CPolyhedron::setWireframe(bool) --> void", pybind11::arg("enabled"));
-		cl.def("getSetOfPolygons", (void (mrpt::opengl::CPolyhedron::*)(int &) const) &mrpt::opengl::CPolyhedron::getSetOfPolygons, "Gets the polyhedron as a set of polygons.\n \n\n mrpt::math::TPolygon3D\n\nC++: mrpt::opengl::CPolyhedron::getSetOfPolygons(int &) const --> void", pybind11::arg("vec"));
-		cl.def("getSetOfPolygonsAbsolute", (void (mrpt::opengl::CPolyhedron::*)(int &) const) &mrpt::opengl::CPolyhedron::getSetOfPolygonsAbsolute, "Gets the polyhedron as a set of polygons, with the pose transformation\n already applied.\n \n\n mrpt::math::TPolygon3D,mrpt::poses::CPose3D\n\nC++: mrpt::opengl::CPolyhedron::getSetOfPolygonsAbsolute(int &) const --> void", pybind11::arg("vec"));
 		cl.def("isClosed", (bool (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::isClosed, "Returns true if the polygon is a completely closed object.\n\nC++: mrpt::opengl::CPolyhedron::isClosed() const --> bool");
 		cl.def("makeConvexPolygons", (void (mrpt::opengl::CPolyhedron::*)()) &mrpt::opengl::CPolyhedron::makeConvexPolygons, "Recomputes polygons, if necessary, so that each one is convex.\n\nC++: mrpt::opengl::CPolyhedron::makeConvexPolygons() --> void");
+		cl.def("getCenter", (void (mrpt::opengl::CPolyhedron::*)(struct mrpt::math::TPoint3D_<double> &) const) &mrpt::opengl::CPolyhedron::getCenter, "Gets the center of the polyhedron.\n\nC++: mrpt::opengl::CPolyhedron::getCenter(struct mrpt::math::TPoint3D_<double> &) const --> void", pybind11::arg("center"));
 		cl.def_static("CreateRandomPolyhedron", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(double)) &mrpt::opengl::CPolyhedron::CreateRandomPolyhedron, "Creates a random polyhedron from the static methods.\n\nC++: mrpt::opengl::CPolyhedron::CreateRandomPolyhedron(double) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("radius"));
 		cl.def("getDual", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::getDual, "		@{\n\n Given a polyhedron, creates its dual.\n \n\n truncate,cantellate,augment\n \n\n std::logic_error Can't get the dual to this polyhedron.\n\nC++: mrpt::opengl::CPolyhedron::getDual() const --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>");
 		cl.def("truncate", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (mrpt::opengl::CPolyhedron::*)(double) const) &mrpt::opengl::CPolyhedron::truncate, "Truncates a polyhedron to a given factor.\n \n\n getDual,cantellate,augment\n \n\n std::logic_error Polyhedron truncation results in skew polygons\n and thus it's impossible to perform.\n\nC++: mrpt::opengl::CPolyhedron::truncate(double) const --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("factor"));
@@ -639,9 +690,6 @@ void bind_mrpt_opengl_CEllipsoidRangeBearing2D(std::function< pybind11::module &
 		cl.def("rotate", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (mrpt::opengl::CPolyhedron::*)(double) const) &mrpt::opengl::CPolyhedron::rotate, "Rotates a polyhedron around the Z axis a given amount of radians. In\nsome cases, this operation may be necessary to view the symmetry between\nrelated objects.\n	\n\n scale\n\nC++: mrpt::opengl::CPolyhedron::rotate(double) const --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("angle"));
 		cl.def("scale", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (mrpt::opengl::CPolyhedron::*)(double) const) &mrpt::opengl::CPolyhedron::scale, "Scales a polyhedron to a given factor.\n \n\n std::logic_error factor is not a strictly positive number.\n \n\n rotate\n\nC++: mrpt::opengl::CPolyhedron::scale(double) const --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("factor"));
 		cl.def("updatePolygons", (void (mrpt::opengl::CPolyhedron::*)() const) &mrpt::opengl::CPolyhedron::updatePolygons, "@}\n\n Updates the mutable list of polygons used in rendering and ray tracing.\n\nC++: mrpt::opengl::CPolyhedron::updatePolygons() const --> void");
-		cl.def("InitFromVertAndFaces", [](mrpt::opengl::CPolyhedron &o, const int & a0, const int & a1) -> void { return o.InitFromVertAndFaces(a0, a1); }, "", pybind11::arg("vertices"), pybind11::arg("faces"));
-		cl.def("InitFromVertAndFaces", (void (mrpt::opengl::CPolyhedron::*)(const int &, const int &, bool)) &mrpt::opengl::CPolyhedron::InitFromVertAndFaces, "C++: mrpt::opengl::CPolyhedron::InitFromVertAndFaces(const int &, const int &, bool) --> void", pybind11::arg("vertices"), pybind11::arg("faces"), pybind11::arg("doCheck"));
-		cl.def_static("CreateNoCheck", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)(const int &, const int &)) &mrpt::opengl::CPolyhedron::CreateNoCheck, "Creates a polyhedron without checking its correctness. \n\nC++: mrpt::opengl::CPolyhedron::CreateNoCheck(const int &, const int &) --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>", pybind11::arg("vertices"), pybind11::arg("faces"));
 		cl.def_static("CreateEmpty", (class std::shared_ptr<class mrpt::opengl::CPolyhedron> (*)()) &mrpt::opengl::CPolyhedron::CreateEmpty, "Creates an empty Polyhedron. \n\nC++: mrpt::opengl::CPolyhedron::CreateEmpty() --> class std::shared_ptr<class mrpt::opengl::CPolyhedron>");
 		cl.def("assign", (class mrpt::opengl::CPolyhedron & (mrpt::opengl::CPolyhedron::*)(const class mrpt::opengl::CPolyhedron &)) &mrpt::opengl::CPolyhedron::operator=, "C++: mrpt::opengl::CPolyhedron::operator=(const class mrpt::opengl::CPolyhedron &) --> class mrpt::opengl::CPolyhedron &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
@@ -649,18 +697,21 @@ void bind_mrpt_opengl_CEllipsoidRangeBearing2D(std::function< pybind11::module &
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CPolyhedron::TPolyhedronEdge, std::shared_ptr<mrpt::opengl::CPolyhedron::TPolyhedronEdge>> cl(enclosing_class, "TPolyhedronEdge", "Struct used to store a polyhedron edge. The struct consists only of two\n vertex indices, used to access the polyhedron vertex list.");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::CPolyhedron::TPolyhedronEdge(); } ) );
+			cl.def( pybind11::init( [](mrpt::opengl::CPolyhedron::TPolyhedronEdge const &o){ return new mrpt::opengl::CPolyhedron::TPolyhedronEdge(o); } ) );
 			cl.def_readwrite("v1", &mrpt::opengl::CPolyhedron::TPolyhedronEdge::v1);
 			cl.def_readwrite("v2", &mrpt::opengl::CPolyhedron::TPolyhedronEdge::v2);
 			cl.def("__eq__", (bool (mrpt::opengl::CPolyhedron::TPolyhedronEdge::*)(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &) const) &mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator==, "Comparison agains another edge. Simmetry is taken into account.\n\nC++: mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator==(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &) const --> bool", pybind11::arg("e"));
-			cl.def("length", (double (mrpt::opengl::CPolyhedron::TPolyhedronEdge::*)(const int &) const) &mrpt::opengl::CPolyhedron::TPolyhedronEdge::length, "Given a set of vertices, computes the length of the vertex.\n\nC++: mrpt::opengl::CPolyhedron::TPolyhedronEdge::length(const int &) const --> double", pybind11::arg("vs"));
+			cl.def("assign", (struct mrpt::opengl::CPolyhedron::TPolyhedronEdge & (mrpt::opengl::CPolyhedron::TPolyhedronEdge::*)(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &)) &mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator=, "C++: mrpt::opengl::CPolyhedron::TPolyhedronEdge::operator=(const struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &) --> struct mrpt::opengl::CPolyhedron::TPolyhedronEdge &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
 		{ // mrpt::opengl::CPolyhedron::TPolyhedronFace file:mrpt/opengl/CPolyhedron.h line:98
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::opengl::CPolyhedron::TPolyhedronFace, std::shared_ptr<mrpt::opengl::CPolyhedron::TPolyhedronFace>> cl(enclosing_class, "TPolyhedronFace", "Struct used to store a polyhedron face. Consists on a set of vertex\n indices and a normal vector.");
 			cl.def( pybind11::init( [](){ return new mrpt::opengl::CPolyhedron::TPolyhedronFace(); } ) );
+			cl.def( pybind11::init( [](mrpt::opengl::CPolyhedron::TPolyhedronFace const &o){ return new mrpt::opengl::CPolyhedron::TPolyhedronFace(o); } ) );
 			cl.def_readwrite("vertices", &mrpt::opengl::CPolyhedron::TPolyhedronFace::vertices);
-			cl.def("area", (double (mrpt::opengl::CPolyhedron::TPolyhedronFace::*)(const int &) const) &mrpt::opengl::CPolyhedron::TPolyhedronFace::area, "Given a set of vertices, computes the area of this face. \n\nC++: mrpt::opengl::CPolyhedron::TPolyhedronFace::area(const int &) const --> double", pybind11::arg("vertices"));
+			cl.def_readwrite("normal", &mrpt::opengl::CPolyhedron::TPolyhedronFace::normal);
+			cl.def("assign", (struct mrpt::opengl::CPolyhedron::TPolyhedronFace & (mrpt::opengl::CPolyhedron::TPolyhedronFace::*)(const struct mrpt::opengl::CPolyhedron::TPolyhedronFace &)) &mrpt::opengl::CPolyhedron::TPolyhedronFace::operator=, "C++: mrpt::opengl::CPolyhedron::TPolyhedronFace::operator=(const struct mrpt::opengl::CPolyhedron::TPolyhedronFace &) --> struct mrpt::opengl::CPolyhedron::TPolyhedronFace &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 		}
 
 	}

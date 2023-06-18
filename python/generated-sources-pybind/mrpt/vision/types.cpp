@@ -7,6 +7,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/TPixelCoord.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>

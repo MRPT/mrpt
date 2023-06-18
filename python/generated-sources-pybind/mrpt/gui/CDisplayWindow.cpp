@@ -8,6 +8,7 @@
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/io/CStream.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/typemeta/static_string.h>

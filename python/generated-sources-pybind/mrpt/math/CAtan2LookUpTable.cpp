@@ -1,3 +1,4 @@
+#include <Eigen/Dense>
 #include <functional>
 #include <iterator>
 #include <map>
@@ -43,10 +44,10 @@ void bind_mrpt_math_CAtan2LookUpTable(std::function< pybind11::module &(std::str
 	{ // mrpt::math::CAtan2LookUpTableMultiRes file:mrpt/math/CAtan2LookUpTable.h line:83
 		pybind11::class_<mrpt::math::CAtan2LookUpTableMultiRes, std::shared_ptr<mrpt::math::CAtan2LookUpTableMultiRes>> cl(M("mrpt::math"), "CAtan2LookUpTableMultiRes", "Like CAtan2LookUpTable but with a multiresolution grid for increasingly\n better accuracy in points nearer to the origin.\n Example of usage:\n \n\n\n\n\n\n\n\n\n\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::math::CAtan2LookUpTableMultiRes(); } ) );
-		cl.def( pybind11::init<const class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > &>(), pybind11::arg("lst_resolutions2extensions") );
+		cl.def( pybind11::init<const class std::map<double, double> &>(), pybind11::arg("lst_resolutions2extensions") );
 
 		cl.def( pybind11::init( [](mrpt::math::CAtan2LookUpTableMultiRes const &o){ return new mrpt::math::CAtan2LookUpTableMultiRes(o); } ) );
-		cl.def("resize", (void (mrpt::math::CAtan2LookUpTableMultiRes::*)(const class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > &)) &mrpt::math::CAtan2LookUpTableMultiRes::resize, "See CAtan2LookUpTableMultiRes for a discussion of the parameters \n\nC++: mrpt::math::CAtan2LookUpTableMultiRes::resize(const class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > &) --> void", pybind11::arg("lst_resolutions2extensions"));
+		cl.def("resize", (void (mrpt::math::CAtan2LookUpTableMultiRes::*)(const class std::map<double, double> &)) &mrpt::math::CAtan2LookUpTableMultiRes::resize, "See CAtan2LookUpTableMultiRes for a discussion of the parameters \n\nC++: mrpt::math::CAtan2LookUpTableMultiRes::resize(const class std::map<double, double> &) --> void", pybind11::arg("lst_resolutions2extensions"));
 		cl.def("atan2", (bool (mrpt::math::CAtan2LookUpTableMultiRes::*)(double, double, double &) const) &mrpt::math::CAtan2LookUpTableMultiRes::atan2, "Returns the precomputed value for atan2(y,x). \n false if out of\n grid bounds. \n\nC++: mrpt::math::CAtan2LookUpTableMultiRes::atan2(double, double, double &) const --> bool", pybind11::arg("y"), pybind11::arg("x"), pybind11::arg("out_atan2"));
 		cl.def("assign", (class mrpt::math::CAtan2LookUpTableMultiRes & (mrpt::math::CAtan2LookUpTableMultiRes::*)(const class mrpt::math::CAtan2LookUpTableMultiRes &)) &mrpt::math::CAtan2LookUpTableMultiRes::operator=, "C++: mrpt::math::CAtan2LookUpTableMultiRes::operator=(const class mrpt::math::CAtan2LookUpTableMultiRes &) --> class mrpt::math::CAtan2LookUpTableMultiRes &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}

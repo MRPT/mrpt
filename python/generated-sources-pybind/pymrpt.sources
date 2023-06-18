@@ -33,7 +33,6 @@ mrpt/rtti/CObject_2.cpp
 mrpt/rtti/CObject_3.cpp
 mrpt/serialization/CSerializable.cpp
 std/stl_multimap.cpp
-std/stl_map.cpp
 mrpt/typemeta/TEnumType.cpp
 mrpt/typemeta/TEnumType_1.cpp
 mrpt/typemeta/TEnumType_2.cpp
@@ -58,6 +57,7 @@ mrpt/system/datetime.cpp
 mrpt/obs/CAction.cpp
 mrpt/math/TPoseOrPoint.cpp
 mrpt/math/TPoint3D.cpp
+mrpt/math/homog_matrices.cpp
 mrpt/poses/CPoseOrPoint_detail.cpp
 mrpt/poses/CPoseOrPoint.cpp
 mrpt/poses/CPoseOrPoint_1.cpp
@@ -167,10 +167,17 @@ mrpt/vision/CStereoRectifyMap.cpp
 mrpt/hwdrivers/CDUO3DCamera.cpp
 mrpt/math/CMatrixDynamic.cpp
 mrpt/math/CMatrixFixed.cpp
+mrpt/math/CMatrixFixed_1.cpp
+mrpt/math/CMatrixFixed_2.cpp
+mrpt/math/CMatrixFixed_3.cpp
+mrpt/math/CMatrixFixed_4.cpp
 mrpt/math/MatrixVectorBase.cpp
 mrpt/math/MatrixVectorBase_1.cpp
 mrpt/math/MatrixVectorBase_2.cpp
 mrpt/math/MatrixVectorBase_3.cpp
+mrpt/math/MatrixVectorBase_4.cpp
+mrpt/math/MatrixVectorBase_5.cpp
+mrpt/math/MatrixVectorBase_6.cpp
 mrpt/math/math_frwds.cpp
 mrpt/bayes/CProbabilityParticle_1.cpp
 mrpt/math/CMatrixF.cpp
@@ -287,7 +294,6 @@ mrpt/opengl/stock_objects.cpp
 mrpt/containers/traits_map.cpp
 mrpt/graphs/CDirectedTree.cpp
 mrpt/nav/planners/TMoveTree.cpp
-mrpt/nav/reactive/CRobot2NavInterface.cpp
 mrpt/poses/FrameTransformer.cpp
 mrpt/nav/reactive/CAbstractNavigator.cpp
 mrpt/nav/reactive/CLogFileRecord.cpp
@@ -295,7 +301,6 @@ mrpt/nav/reactive/TWaypoint.cpp
 mrpt/nav/reactive/CAbstractPTGBasedReactive.cpp
 mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.cpp
 mrpt/nav/reactive/CReactiveNavigationSystem3D.cpp
-mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.cpp
 mrpt/nav/tpspace/CPTG_DiffDrive_C.cpp
 mrpt/nav/tpspace/CPTG_DiffDrive_alpha.cpp
 mrpt/obs/CActionRobotMovement3D.cpp
@@ -307,11 +312,11 @@ mrpt/obs/stock_observations.cpp
 mrpt/opengl/CArrow.cpp
 mrpt/opengl/CAxis.cpp
 mrpt/opengl/CDisk.cpp
-mrpt/opengl/CFrustum.cpp
-mrpt/opengl/CMesh3D.cpp
-mrpt/opengl/CSimpleLine.cpp
-mrpt/opengl/CEllipsoidInverseDepth2D.cpp
-mrpt/opengl/CPolyhedron.cpp
+mrpt/opengl/CEllipsoid3D.cpp
+mrpt/opengl/CMesh.cpp
+mrpt/opengl/CMeshFast.cpp
+mrpt/opengl/CSphere.cpp
+mrpt/opengl/CEllipsoidRangeBearing2D.cpp
 mrpt/opengl/CUBE_TEXTURE_FACE.cpp
 mrpt/opengl/CVectorField3D.cpp
 mrpt/poses/CPoint2D.cpp
