@@ -586,9 +586,9 @@ void CMetricMapBuilderICP::getCurrentlyBuiltMap(CSimpleMap& out_map) const
 	out_map = SF_Poses_seq;
 }
 
-const CMultiMetricMap* CMetricMapBuilderICP::getCurrentlyBuiltMetricMap() const
+const CMultiMetricMap& CMetricMapBuilderICP::getCurrentlyBuiltMetricMap() const
 {
-	return &metricMap;
+	return metricMap;
 }
 
 /*---------------------------------------------------------------

@@ -13,6 +13,7 @@
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose3DQuat.h>
+#include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -46,7 +47,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -60,6 +61,84 @@
 struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM : public mrpt::slam::CRangeBearingKFSLAM {
 	using mrpt::slam::CRangeBearingKFSLAM::CRangeBearingKFSLAM;
 
+	void OnGetAction(class mrpt::math::CMatrixFixed<double, 7, 1> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnGetAction");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM::OnGetAction(a0);
+	}
+	void OnTransitionModel(const class mrpt::math::CMatrixFixed<double, 7, 1> & a0, class mrpt::math::CMatrixFixed<double, 7, 1> & a1, bool & a2) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnTransitionModel");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM::OnTransitionModel(a0, a1, a2);
+	}
+	void OnTransitionJacobian(class mrpt::math::CMatrixFixed<double, 7, 7> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnTransitionJacobian");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM::OnTransitionJacobian(a0);
+	}
+	void OnTransitionNoise(class mrpt::math::CMatrixFixed<double, 7, 7> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnTransitionNoise");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM::OnTransitionNoise(a0);
+	}
+	void OnSubstractObservationVectors(class mrpt::math::CMatrixFixed<double, 3, 1> & a0, const class mrpt::math::CMatrixFixed<double, 3, 1> & a1) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnSubstractObservationVectors");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM::OnSubstractObservationVectors(a0, a1);
+	}
+	void OnGetObservationNoise(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnGetObservationNoise");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM::OnGetObservationNoise(a0);
+	}
 	void OnNewLandmarkAddedToMap(size_t a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnNewLandmarkAddedToMap");
@@ -85,6 +164,32 @@ struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM : public mrpt::slam::CRangeBeari
 			else return pybind11::detail::cast_safe<void>(std::move(o));
 		}
 		return CRangeBearingKFSLAM::OnNormalizeStateVector();
+	}
+	void OnTransitionJacobianNumericGetIncrements(class mrpt::math::CMatrixFixed<double, 7, 1> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnTransitionJacobianNumericGetIncrements");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CKalmanFilterCapable::OnTransitionJacobianNumericGetIncrements(a0);
+	}
+	void OnObservationJacobiansNumericGetIncrements(class mrpt::math::CMatrixFixed<double, 7, 1> & a0, class mrpt::math::CMatrixFixed<double, 3, 1> & a1) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM *>(this), "OnObservationJacobiansNumericGetIncrements");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CKalmanFilterCapable::OnObservationJacobiansNumericGetIncrements(a0, a1);
 	}
 	void OnPostIteration() override {
 		pybind11::gil_scoped_acquire gil;
@@ -137,6 +242,110 @@ struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM_TOptions : public mrpt::slam::CR
 struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D : public mrpt::slam::CRangeBearingKFSLAM2D {
 	using mrpt::slam::CRangeBearingKFSLAM2D::CRangeBearingKFSLAM2D;
 
+	void OnGetAction(class mrpt::math::CMatrixFixed<double, 3, 1> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnGetAction");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM2D::OnGetAction(a0);
+	}
+	void OnTransitionModel(const class mrpt::math::CMatrixFixed<double, 3, 1> & a0, class mrpt::math::CMatrixFixed<double, 3, 1> & a1, bool & a2) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnTransitionModel");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1, a2);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM2D::OnTransitionModel(a0, a1, a2);
+	}
+	void OnTransitionJacobian(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnTransitionJacobian");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM2D::OnTransitionJacobian(a0);
+	}
+	void OnTransitionJacobianNumericGetIncrements(class mrpt::math::CMatrixFixed<double, 3, 1> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnTransitionJacobianNumericGetIncrements");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM2D::OnTransitionJacobianNumericGetIncrements(a0);
+	}
+	void OnTransitionNoise(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnTransitionNoise");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM2D::OnTransitionNoise(a0);
+	}
+	void OnObservationJacobiansNumericGetIncrements(class mrpt::math::CMatrixFixed<double, 3, 1> & a0, class mrpt::math::CMatrixFixed<double, 2, 1> & a1) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnObservationJacobiansNumericGetIncrements");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM2D::OnObservationJacobiansNumericGetIncrements(a0, a1);
+	}
+	void OnSubstractObservationVectors(class mrpt::math::CMatrixFixed<double, 2, 1> & a0, const class mrpt::math::CMatrixFixed<double, 2, 1> & a1) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnSubstractObservationVectors");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM2D::OnSubstractObservationVectors(a0, a1);
+	}
+	void OnGetObservationNoise(class mrpt::math::CMatrixFixed<double, 2, 2> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnGetObservationNoise");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRangeBearingKFSLAM2D::OnGetObservationNoise(a0);
+	}
 	void OnNewLandmarkAddedToMap(size_t a0, size_t a1) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CRangeBearingKFSLAM2D *>(this), "OnNewLandmarkAddedToMap");
@@ -213,7 +422,7 @@ struct PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D_TOptions : public mrpt::slam::
 void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::slam::CRangeBearingKFSLAM file:mrpt/slam/CRangeBearingKFSLAM.h line:48
-		pybind11::class_<mrpt::slam::CRangeBearingKFSLAM, std::shared_ptr<mrpt::slam::CRangeBearingKFSLAM>, PyCallBack_mrpt_slam_CRangeBearingKFSLAM, mrpt::bayes::CKalmanFilterCapable<7,3,3,7,double>> cl(M("mrpt::slam"), "CRangeBearingKFSLAM", "An implementation of EKF-based SLAM with range-bearing sensors, odometry, a\n SE(3) robot pose, and 3D landmarks.\n The main method is processActionObservation() which processes pairs of\n actions/observations.\n\n The state vector comprises: 3D robot position, a quaternion for its\n attitude, and the 3D landmarks in the map.\n\n The front-end application [kf-slam](page_app_kf-slam.html) is based on this\n class.\n\n For the theory behind this implementation, see the technical report:\n  blanco2008ekf\n\n \n An implementation for 2D and SE(2) is in CRangeBearingKFSLAM2D\n\n \n\n ");
+		pybind11::class_<mrpt::slam::CRangeBearingKFSLAM, std::shared_ptr<mrpt::slam::CRangeBearingKFSLAM>, PyCallBack_mrpt_slam_CRangeBearingKFSLAM, mrpt::bayes::CKalmanFilterCapable<7UL,3UL,3UL,7UL,double>> cl(M("mrpt::slam"), "CRangeBearingKFSLAM", "An implementation of EKF-based SLAM with range-bearing sensors, odometry, a\n SE(3) robot pose, and 3D landmarks.\n The main method is processActionObservation() which processes pairs of\n actions/observations.\n\n The state vector comprises: 3D robot position, a quaternion for its\n attitude, and the 3D landmarks in the map.\n\n The front-end application [kf-slam](page_app_kf-slam.html) is based on this\n class.\n\n For the theory behind this implementation, see the technical report:\n \n\n \n An implementation for 2D and SE(2) is in CRangeBearingKFSLAM2D\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::slam::CRangeBearingKFSLAM(); }, [](){ return new PyCallBack_mrpt_slam_CRangeBearingKFSLAM(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_slam_CRangeBearingKFSLAM const &o){ return new PyCallBack_mrpt_slam_CRangeBearingKFSLAM(o); } ) );
 		cl.def( pybind11::init( [](mrpt::slam::CRangeBearingKFSLAM const &o){ return new mrpt::slam::CRangeBearingKFSLAM(o); } ) );
@@ -275,7 +484,7 @@ void bind_mrpt_slam_CRangeBearingKFSLAM(std::function< pybind11::module &(std::s
 
 	}
 	{ // mrpt::slam::CRangeBearingKFSLAM2D file:mrpt/slam/CRangeBearingKFSLAM2D.h line:40
-		pybind11::class_<mrpt::slam::CRangeBearingKFSLAM2D, std::shared_ptr<mrpt::slam::CRangeBearingKFSLAM2D>, PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D, mrpt::bayes::CKalmanFilterCapable<3,2,2,3,double>> cl(M("mrpt::slam"), "CRangeBearingKFSLAM2D", "An implementation of EKF-based SLAM with range-bearing sensors, odometry,\n SE(2) robot pose, and 2D landmarks.\n The main method is processActionObservation() which processes pairs of\n actions/observations.\n\n The following front-end applications are based on this class:\n	- [2d-slam-demo](app_2d-slam-demo.html)\n	- [kf-slam](page_app_kf-slam.html)\n\n \n CRangeBearingKFSLAM  \n\n ");
+		pybind11::class_<mrpt::slam::CRangeBearingKFSLAM2D, std::shared_ptr<mrpt::slam::CRangeBearingKFSLAM2D>, PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D, mrpt::bayes::CKalmanFilterCapable<3UL,2UL,2UL,3UL,double>> cl(M("mrpt::slam"), "CRangeBearingKFSLAM2D", "An implementation of EKF-based SLAM with range-bearing sensors, odometry,\n SE(2) robot pose, and 2D landmarks.\n The main method is processActionObservation() which processes pairs of\n actions/observations.\n\n The following front-end applications are based on this class:\n	- [2d-slam-demo](app_2d-slam-demo.html)\n	- [kf-slam](page_app_kf-slam.html)\n\n \n CRangeBearingKFSLAM  \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::slam::CRangeBearingKFSLAM2D(); }, [](){ return new PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D const &o){ return new PyCallBack_mrpt_slam_CRangeBearingKFSLAM2D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::slam::CRangeBearingKFSLAM2D const &o){ return new mrpt::slam::CRangeBearingKFSLAM2D(o); } ) );

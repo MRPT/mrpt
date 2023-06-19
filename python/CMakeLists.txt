@@ -24,7 +24,10 @@ file(GLOB_RECURSE PY_SRCS ${PY_SRCS_DIR}/*.cpp)
 
 pybind11_add_module(pymrpt
   ${PY_SRCS}
+  # -- manually crafted files --
+  pymrpt_internals.cpp
   )
+
 target_link_libraries(pymrpt PUBLIC 
   mrpt::apps
   mrpt::serialization
@@ -46,6 +49,8 @@ target_include_directories(pymrpt PRIVATE ".")
 if ("${PYBIND11_MAJOR_VERSION}.${PYBIND11_MINOR_VERSION}" VERSION_LESS "2.9")
   target_compile_definitions(pymrpt PRIVATE override_caster_t=overload_caster_t)
 endif()
+
+target_compile_definitions(pymrpt PRIVATE MRPT_BUILDING_PYTHON_WRAPPER)
 
   # Python files:
 file(MAKE_DIRECTORY ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/)

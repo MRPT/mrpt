@@ -14,7 +14,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -67,7 +67,7 @@ struct PyCallBack_nanogui_Screen : public nanogui::Screen {
 		}
 		return Screen::onIdleLoopTasks();
 	}
-	bool dropEvent(const class std::vector<std::string, class std::allocator<std::string > > & a0) override {
+	bool dropEvent(const class std::vector<std::string > & a0) override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const nanogui::Screen *>(this), "dropEvent");
 		if (overload) {
@@ -266,11 +266,11 @@ void bind_nanogui_common_1(std::function< pybind11::module &(std::string const &
 		cl.def("drawContents", (void (nanogui::Screen::*)()) &nanogui::Screen::drawContents, "Draw the window contents --- put your OpenGL draw calls here\n\nC++: nanogui::Screen::drawContents() --> void");
 		cl.def("onIdleLoopTasks", (void (nanogui::Screen::*)()) &nanogui::Screen::onIdleLoopTasks, "Tasks to be run on the main opengl thread,\n not directly related with drawing\n\nC++: nanogui::Screen::onIdleLoopTasks() --> void");
 		cl.def("pixelRatio", (float (nanogui::Screen::*)() const) &nanogui::Screen::pixelRatio, "Return the ratio between pixel and device coordinates (e.g. >= 2 on Mac\n Retina displays)\n\nC++: nanogui::Screen::pixelRatio() const --> float");
-		cl.def("dropEvent", (bool (nanogui::Screen::*)(const class std::vector<std::string, class std::allocator<std::string > > &)) &nanogui::Screen::dropEvent, "Handle a file drop event\n\nC++: nanogui::Screen::dropEvent(const class std::vector<std::string, class std::allocator<std::string > > &) --> bool", pybind11::arg(""));
+		cl.def("dropEvent", (bool (nanogui::Screen::*)(const class std::vector<std::string > &)) &nanogui::Screen::dropEvent, "Handle a file drop event\n\nC++: nanogui::Screen::dropEvent(const class std::vector<std::string > &) --> bool", pybind11::arg(""));
 		cl.def("keyboardEvent", (bool (nanogui::Screen::*)(int, int, int, int)) &nanogui::Screen::keyboardEvent, "Default keyboard event handler\n\nC++: nanogui::Screen::keyboardEvent(int, int, int, int) --> bool", pybind11::arg("key"), pybind11::arg("scancode"), pybind11::arg("action"), pybind11::arg("modifiers"));
 		cl.def("keyboardCharacterEvent", (bool (nanogui::Screen::*)(unsigned int)) &nanogui::Screen::keyboardCharacterEvent, "Text input event handler: codepoint is native endian UTF-32 format\n\nC++: nanogui::Screen::keyboardCharacterEvent(unsigned int) --> bool", pybind11::arg("codepoint"));
-		cl.def("resizeCallback", (class std::function<void (class Eigen::Matrix<int, 2, 1, 0, 2, 1>)> (nanogui::Screen::*)() const) &nanogui::Screen::resizeCallback, "Set the resize callback\n\nC++: nanogui::Screen::resizeCallback() const --> class std::function<void (class Eigen::Matrix<int, 2, 1, 0, 2, 1>)>");
-		cl.def("setResizeCallback", (void (nanogui::Screen::*)(const class std::function<void (class Eigen::Matrix<int, 2, 1, 0, 2, 1>)> &)) &nanogui::Screen::setResizeCallback, "C++: nanogui::Screen::setResizeCallback(const class std::function<void (class Eigen::Matrix<int, 2, 1, 0, 2, 1>)> &) --> void", pybind11::arg("callback"));
+		cl.def("resizeCallback", (class std::function<void (class Eigen::Matrix<int, 2, 1, 0>)> (nanogui::Screen::*)() const) &nanogui::Screen::resizeCallback, "Set the resize callback\n\nC++: nanogui::Screen::resizeCallback() const --> class std::function<void (class Eigen::Matrix<int, 2, 1, 0>)>");
+		cl.def("setResizeCallback", (void (nanogui::Screen::*)(const class std::function<void (class Eigen::Matrix<int, 2, 1, 0>)> &)) &nanogui::Screen::setResizeCallback, "C++: nanogui::Screen::setResizeCallback(const class std::function<void (class Eigen::Matrix<int, 2, 1, 0>)> &) --> void", pybind11::arg("callback"));
 		cl.def("mouseState", (int (nanogui::Screen::*)() const) &nanogui::Screen::mouseState, "Returns the last mouse state (bitwise 1 << button)\n\nC++: nanogui::Screen::mouseState() const --> int");
 		cl.def("mouseModifiers", (int (nanogui::Screen::*)() const) &nanogui::Screen::mouseModifiers, "Returns the last mouse modifiers. Bitwise or of:\n Shift=0x0001, Control=0x0002, Alt=0x0004, Super=0x0008\n\nC++: nanogui::Screen::mouseModifiers() const --> int");
 		cl.def("glfwWindow", (struct GLFWwindow * (nanogui::Screen::*)()) &nanogui::Screen::glfwWindow, "Return a pointer to the underlying GLFW window data structure\n\nC++: nanogui::Screen::glfwWindow() --> struct GLFWwindow *", pybind11::return_value_policy::automatic);

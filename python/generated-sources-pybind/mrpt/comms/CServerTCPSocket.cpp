@@ -9,7 +9,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -30,8 +30,8 @@ void bind_mrpt_comms_CServerTCPSocket(std::function< pybind11::module &(std::str
 
 		cl.def( pybind11::init( [](mrpt::comms::CServerTCPSocket const &o){ return new mrpt::comms::CServerTCPSocket(o); } ) );
 		cl.def("isListening", (bool (mrpt::comms::CServerTCPSocket::*)()) &mrpt::comms::CServerTCPSocket::isListening, "Returns true if the socket was successfully open and it's bound to the\n desired port. \n\nC++: mrpt::comms::CServerTCPSocket::isListening() --> bool");
-		cl.def("accept", [](mrpt::comms::CServerTCPSocket &o) -> std::unique_ptr<class mrpt::comms::CClientTCPSocket, struct std::default_delete<class mrpt::comms::CClientTCPSocket> > { return o.accept(); }, "");
-		cl.def("accept", (class std::unique_ptr<class mrpt::comms::CClientTCPSocket, struct std::default_delete<class mrpt::comms::CClientTCPSocket> > (mrpt::comms::CServerTCPSocket::*)(int)) &mrpt::comms::CServerTCPSocket::accept, "Waits for an incoming connection (indefinitely, or with a given timeout)\n The returned object represents the new connection, and MUST BE deleted\n by the user when no longer needed.\n \n\n The timeout for the waiting, in milliseconds. Set this\n to \"-1\" to disable timeout (i.e. timeout=infinite)\n \n\n The incoming connection, or nullptr on timeout or error.\n\nC++: mrpt::comms::CServerTCPSocket::accept(int) --> class std::unique_ptr<class mrpt::comms::CClientTCPSocket, struct std::default_delete<class mrpt::comms::CClientTCPSocket> >", pybind11::arg("timeout_ms"));
+		cl.def("accept", [](mrpt::comms::CServerTCPSocket &o) -> std::unique_ptr<class mrpt::comms::CClientTCPSocket> { return o.accept(); }, "");
+		cl.def("accept", (class std::unique_ptr<class mrpt::comms::CClientTCPSocket> (mrpt::comms::CServerTCPSocket::*)(int)) &mrpt::comms::CServerTCPSocket::accept, "Waits for an incoming connection (indefinitely, or with a given timeout)\n The returned object represents the new connection, and MUST BE deleted\n by the user when no longer needed.\n \n\n The timeout for the waiting, in milliseconds. Set this\n to \"-1\" to disable timeout (i.e. timeout=infinite)\n \n\n The incoming connection, or nullptr on timeout or error.\n\nC++: mrpt::comms::CServerTCPSocket::accept(int) --> class std::unique_ptr<class mrpt::comms::CClientTCPSocket>", pybind11::arg("timeout_ms"));
 		cl.def("assign", (class mrpt::comms::CServerTCPSocket & (mrpt::comms::CServerTCPSocket::*)(const class mrpt::comms::CServerTCPSocket &)) &mrpt::comms::CServerTCPSocket::operator=, "C++: mrpt::comms::CServerTCPSocket::operator=(const class mrpt::comms::CServerTCPSocket &) --> class mrpt::comms::CServerTCPSocket &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

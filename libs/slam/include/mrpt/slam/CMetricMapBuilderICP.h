@@ -139,7 +139,7 @@ class CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	/** Returns the 2D points of current local map */
 	void getCurrentMapPoints(std::vector<float>& x, std::vector<float>& y);
 
-	const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap()
+	const mrpt::maps::CMultiMetricMap& getCurrentlyBuiltMetricMap()
 		const override;
 
 	/** Returns just how many sensory-frames are stored in the currently build

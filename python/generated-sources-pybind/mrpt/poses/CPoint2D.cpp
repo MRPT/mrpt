@@ -39,7 +39,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -294,6 +294,19 @@ struct PyCallBack_mrpt_poses_CPoint2DPDF : public mrpt::poses::CPoint2DPDF {
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 2, 2> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint2DPDF *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 	bool saveToTextFile(const std::string & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint2DPDF *>(this), "saveToTextFile");
@@ -496,12 +509,25 @@ struct PyCallBack_mrpt_poses_CPoint2DPDFGaussian : public mrpt::poses::CPoint2DP
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 2, 2> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint2DPDFGaussian *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 };
 
 void bind_mrpt_poses_CPoint2D(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::poses::CPoint2D file:mrpt/poses/CPoint2D.h line:32
-		pybind11::class_<mrpt::poses::CPoint2D, std::shared_ptr<mrpt::poses::CPoint2D>, PyCallBack_mrpt_poses_CPoint2D, mrpt::poses::CPoint<mrpt::poses::CPoint2D,2>, mrpt::serialization::CSerializable> cl(M("mrpt::poses"), "CPoint2D", "A class used to store a 2D point.\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the 2D/3D Geometry\n tutorial in the wiki.\n\n  \n   \n  \n\n \n CPoseOrPoint,CPose, CPoint\n \n\n\n ");
+		pybind11::class_<mrpt::poses::CPoint2D, std::shared_ptr<mrpt::poses::CPoint2D>, PyCallBack_mrpt_poses_CPoint2D, mrpt::poses::CPoint<mrpt::poses::CPoint2D,2UL>, mrpt::serialization::CSerializable> cl(M("mrpt::poses"), "CPoint2D", "A class used to store a 2D point.\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the 2D/3D Geometry\n tutorial in the wiki.\n\n  \n   \n  \n\n \n CPoseOrPoint,CPose, CPoint\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPoint2D(); }, [](){ return new PyCallBack_mrpt_poses_CPoint2D(); } ), "doc");
 		cl.def( pybind11::init( [](double const & a0){ return new mrpt::poses::CPoint2D(a0); }, [](double const & a0){ return new PyCallBack_mrpt_poses_CPoint2D(a0); } ), "doc");
 		cl.def( pybind11::init<double, double>(), pybind11::arg("x"), pybind11::arg("y") );
@@ -519,6 +545,7 @@ void bind_mrpt_poses_CPoint2D(std::function< pybind11::module &(std::string cons
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPoint2D::*)() const) &mrpt::poses::CPoint2D::clone, "C++: mrpt::poses::CPoint2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::poses::CPoint2D::CreateObject, "C++: mrpt::poses::CPoint2D::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("asTPoint", (struct mrpt::math::TPoint2D_<double> (mrpt::poses::CPoint2D::*)() const) &mrpt::poses::CPoint2D::asTPoint, "C++: mrpt::poses::CPoint2D::asTPoint() const --> struct mrpt::math::TPoint2D_<double>");
+		cl.def("asVector", (void (mrpt::poses::CPoint2D::*)(class mrpt::math::CMatrixFixed<double, 2, 1> &) const) &mrpt::poses::CPoint2D::asVector, "Return the pose or point as a 2x1 vector [x, y]' \n\nC++: mrpt::poses::CPoint2D::asVector(class mrpt::math::CMatrixFixed<double, 2, 1> &) const --> void", pybind11::arg("v"));
 		cl.def("__sub__", (class mrpt::poses::CPoint2D (mrpt::poses::CPoint2D::*)(const class mrpt::poses::CPose2D &) const) &mrpt::poses::CPoint2D::operator-, "The operator D=\"this\"-b is the pose inverse compounding operator,\n   the resulting points \"D\" fulfils: \"this\" = b + D, so that: b == a +\n (b-a)\n\nC++: mrpt::poses::CPoint2D::operator-(const class mrpt::poses::CPose2D &) const --> class mrpt::poses::CPoint2D", pybind11::arg("b"));
 		cl.def_static("is_3D", (bool (*)()) &mrpt::poses::CPoint2D::is_3D, "C++: mrpt::poses::CPoint2D::is_3D() --> bool");
 		cl.def_static("is_PDF", (bool (*)()) &mrpt::poses::CPoint2D::is_PDF, "C++: mrpt::poses::CPoint2D::is_PDF() --> bool");
@@ -532,7 +559,7 @@ void bind_mrpt_poses_CPoint2D(std::function< pybind11::module &(std::string cons
 		cl.def("__str__", [](mrpt::poses::CPoint2D const &o) -> std::string { std::ostringstream s; using namespace mrpt::poses; s << o; return s.str(); } );
 	}
 	{ // mrpt::poses::CPoint2DPDF file:mrpt/poses/CPoint2DPDF.h line:33
-		pybind11::class_<mrpt::poses::CPoint2DPDF, std::shared_ptr<mrpt::poses::CPoint2DPDF>, PyCallBack_mrpt_poses_CPoint2DPDF, mrpt::serialization::CSerializable, mrpt::math::CProbabilityDensityFunction<mrpt::poses::CPoint2D,2>> cl(M("mrpt::poses"), "CPoint2DPDF", "Declares a class that represents a Probability Distribution function (PDF)\n of a 2D point (x,y).\n   This class is just the base class for unifying many diferent\n    ways this PDF can be implemented.\n\n  For convenience, a pose composition is also defined for any\n    PDF derived class, changeCoordinatesReference, in the form of a method\n rather than an operator.\n\n  For a similar class for 6D poses (a 3D point with attitude), see CPose3DPDF\n\n  See also:\n  [probabilistic spatial representations](tutorial-pdf-over-poses.html)\n\n \n\n \n CPoint2D, CPointPDF");
+		pybind11::class_<mrpt::poses::CPoint2DPDF, std::shared_ptr<mrpt::poses::CPoint2DPDF>, PyCallBack_mrpt_poses_CPoint2DPDF, mrpt::serialization::CSerializable, mrpt::math::CProbabilityDensityFunction<mrpt::poses::CPoint2D,2UL>> cl(M("mrpt::poses"), "CPoint2DPDF", "Declares a class that represents a Probability Distribution function (PDF)\n of a 2D point (x,y).\n   This class is just the base class for unifying many diferent\n    ways this PDF can be implemented.\n\n  For convenience, a pose composition is also defined for any\n    PDF derived class, changeCoordinatesReference, in the form of a method\n rather than an operator.\n\n  For a similar class for 6D poses (a 3D point with attitude), see CPose3DPDF\n\n  See also:\n  [probabilistic spatial representations](tutorial-pdf-over-poses.html)\n\n \n\n \n CPoint2D, CPointPDF");
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_poses_CPoint2DPDF(); } ) );
 		cl.def(pybind11::init<PyCallBack_mrpt_poses_CPoint2DPDF const &>());
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPoint2DPDF::*)() const) &mrpt::poses::CPoint2DPDF::GetRuntimeClass, "C++: mrpt::poses::CPoint2DPDF::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
@@ -549,6 +576,8 @@ void bind_mrpt_poses_CPoint2D(std::function< pybind11::module &(std::string cons
 		pybind11::class_<mrpt::poses::CPoint2DPDFGaussian, std::shared_ptr<mrpt::poses::CPoint2DPDFGaussian>, PyCallBack_mrpt_poses_CPoint2DPDFGaussian, mrpt::poses::CPoint2DPDF> cl(M("mrpt::poses"), "CPoint2DPDFGaussian", "A gaussian distribution for 2D points. Also a method for bayesian fusion is\n provided.\n \n\n\n \n CPoint2DPDF");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPoint2DPDFGaussian(); }, [](){ return new PyCallBack_mrpt_poses_CPoint2DPDFGaussian(); } ) );
 		cl.def( pybind11::init<const class mrpt::poses::CPoint2D &>(), pybind11::arg("init_Mean") );
+
+		cl.def( pybind11::init<const class mrpt::poses::CPoint2D &, const class mrpt::math::CMatrixFixed<double, 2, 2> &>(), pybind11::arg("init_Mean"), pybind11::arg("init_Cov") );
 
 		cl.def_readwrite("mean", &mrpt::poses::CPoint2DPDFGaussian::mean);
 		cl.def_readwrite("cov", &mrpt::poses::CPoint2DPDFGaussian::cov);

@@ -53,7 +53,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -319,7 +319,7 @@ struct PyCallBack_mrpt_opengl_CPlanarLaserScan : public mrpt::opengl::CPlanarLas
 void bind_mrpt_opengl_CPlanarLaserScan(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::opengl::CPlanarLaserScan file:mrpt/opengl/CPlanarLaserScan.h line:55
-		pybind11::class_<mrpt::opengl::CPlanarLaserScan, std::shared_ptr<mrpt::opengl::CPlanarLaserScan>, PyCallBack_mrpt_opengl_CPlanarLaserScan, mrpt::opengl::CRenderizableShaderPoints, mrpt::opengl::CRenderizableShaderTriangles, mrpt::opengl::CRenderizableShaderWireFrame> cl(M("mrpt::opengl"), "CPlanarLaserScan", "This object renders a 2D laser scan by means of three elements: the points,\n the line along end-points and the 2D scanned surface.\n\n  By default, all those three elements are drawn, but you can individually\n switch them on/off with:\n    - CPlanarLaserScan::enablePoints()\n    - CPlanarLaserScan::enableLine()\n    - CPlanarLaserScan::enableSurface()\n\n  To change the final result, more methods allow further customization of the\n 3D object (color of each element, etc.).\n\n  The scan is passed or updated through CPlanarLaserScan::setScan()\n\n  \n  \n     mrpt::opengl::CPlanarLaserScan    html\n preview_CPlanarLaserScan.png  \n  \n  \n\n  \n The laser points are projected at the sensor pose as given in the\n \"scan\" object, so this CPlanarLaserScan object should be placed at the exact\n pose of the robot coordinates origin.\n\n  \n mrpt::opengl::CPointCloud, opengl::Scene\n \n\n\n ");
+		pybind11::class_<mrpt::opengl::CPlanarLaserScan, std::shared_ptr<mrpt::opengl::CPlanarLaserScan>, PyCallBack_mrpt_opengl_CPlanarLaserScan, mrpt::opengl::CRenderizableShaderPoints, mrpt::opengl::CRenderizableShaderTriangles, mrpt::opengl::CRenderizableShaderWireFrame> cl(M("mrpt::opengl"), "CPlanarLaserScan", "This object renders a 2D laser scan by means of three elements: the points,\n the line along end-points and the 2D scanned surface.\n\n  By default, all those three elements are drawn, but you can individually\n switch them on/off with:\n    - CPlanarLaserScan::enablePoints()\n    - CPlanarLaserScan::enableLine()\n    - CPlanarLaserScan::enableSurface()\n\n  To change the final result, more methods allow further customization of the\n 3D object (color of each element, etc.).\n\n  The scan is passed or updated through CPlanarLaserScan::setScan()\n\n  \n  \n     mrpt::opengl::CPlanarLaserScan   \n\n\n preview_CPlanarLaserScan.png  \n  \n  \n\n  \n The laser points are projected at the sensor pose as given in the\n \"scan\" object, so this CPlanarLaserScan object should be placed at the exact\n pose of the robot coordinates origin.\n\n  \n mrpt::opengl::CPointCloud, opengl::Scene\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CPlanarLaserScan(); }, [](){ return new PyCallBack_mrpt_opengl_CPlanarLaserScan(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CPlanarLaserScan const &o){ return new PyCallBack_mrpt_opengl_CPlanarLaserScan(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CPlanarLaserScan const &o){ return new mrpt::opengl::CPlanarLaserScan(o); } ) );

@@ -1,12 +1,10 @@
-#include <iterator>
-#include <memory>
-#include <mrpt/obs/gnss_messages_novatel.h>
-#include <string>
+#include <mrpt/obs/gnss_messages.h>
+#include <sstream> // __str__
 
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -18,41 +16,15 @@
 
 void bind_unknown_unknown_2(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::obs::gnss::nv_oem6_position_type::nv_position_type_t file: line:88
-	pybind11::enum_<mrpt::obs::gnss::nv_oem6_position_type::nv_position_type_t>(M("mrpt::obs::gnss::nv_oem6_position_type"), "nv_position_type_t", pybind11::arithmetic(), "Novatel OEM6 firmware reference, table 84; Novatel SPAN on OEM6 firmware\n manual, table 26. ")
-		.value("NONE", mrpt::obs::gnss::nv_oem6_position_type::NONE)
-		.value("FIXEDPOS", mrpt::obs::gnss::nv_oem6_position_type::FIXEDPOS)
-		.value("FIXEDHEIGHT", mrpt::obs::gnss::nv_oem6_position_type::FIXEDHEIGHT)
-		.value("Reserved", mrpt::obs::gnss::nv_oem6_position_type::Reserved)
-		.value("FLOATCONV", mrpt::obs::gnss::nv_oem6_position_type::FLOATCONV)
-		.value("WIDELANE", mrpt::obs::gnss::nv_oem6_position_type::WIDELANE)
-		.value("NARROWLANE", mrpt::obs::gnss::nv_oem6_position_type::NARROWLANE)
-		.value("DOPPLER_VELOCITY", mrpt::obs::gnss::nv_oem6_position_type::DOPPLER_VELOCITY)
-		.value("SINGLE", mrpt::obs::gnss::nv_oem6_position_type::SINGLE)
-		.value("PSRDIFF", mrpt::obs::gnss::nv_oem6_position_type::PSRDIFF)
-		.value("WAAS", mrpt::obs::gnss::nv_oem6_position_type::WAAS)
-		.value("PROPAGATED", mrpt::obs::gnss::nv_oem6_position_type::PROPAGATED)
-		.value("OMNISTAR", mrpt::obs::gnss::nv_oem6_position_type::OMNISTAR)
-		.value("L1_FLOAT", mrpt::obs::gnss::nv_oem6_position_type::L1_FLOAT)
-		.value("IONOFREE_FLOAT", mrpt::obs::gnss::nv_oem6_position_type::IONOFREE_FLOAT)
-		.value("NARROW_FLOAT", mrpt::obs::gnss::nv_oem6_position_type::NARROW_FLOAT)
-		.value("L1_INT", mrpt::obs::gnss::nv_oem6_position_type::L1_INT)
-		.value("WIDE_INT", mrpt::obs::gnss::nv_oem6_position_type::WIDE_INT)
-		.value("NARROW_INT", mrpt::obs::gnss::nv_oem6_position_type::NARROW_INT)
-		.value("RTK_DIRECT_INS", mrpt::obs::gnss::nv_oem6_position_type::RTK_DIRECT_INS)
-		.value("INS", mrpt::obs::gnss::nv_oem6_position_type::INS)
-		.value("INS_PSRSP", mrpt::obs::gnss::nv_oem6_position_type::INS_PSRSP)
-		.value("INS_PSRDIFF", mrpt::obs::gnss::nv_oem6_position_type::INS_PSRDIFF)
-		.value("INS_RTKFLOAT", mrpt::obs::gnss::nv_oem6_position_type::INS_RTKFLOAT)
-		.value("INS_RTKFIXED", mrpt::obs::gnss::nv_oem6_position_type::INS_RTKFIXED)
-		.value("OMNISTAR_HP", mrpt::obs::gnss::nv_oem6_position_type::OMNISTAR_HP)
-		.value("OMNISTAR_XP", mrpt::obs::gnss::nv_oem6_position_type::OMNISTAR_XP)
-		.value("CDGPS", mrpt::obs::gnss::nv_oem6_position_type::CDGPS)
-		.export_values();
-
-;
-
-	// mrpt::obs::gnss::nv_oem6_position_type::enum2str(int) file: line:120
-	M("mrpt::obs::gnss::nv_oem6_position_type").def("enum2str", (const std::string & (*)(int)) &mrpt::obs::gnss::nv_oem6_position_type::enum2str, "for nv_position_type_t \n\nC++: mrpt::obs::gnss::nv_oem6_position_type::enum2str(int) --> const std::string &", pybind11::return_value_policy::automatic, pybind11::arg("val"));
-
+	{ // mrpt::obs::gnss::nv_oem6_short_header_t file: line:59
+		pybind11::class_<mrpt::obs::gnss::nv_oem6_short_header_t, std::shared_ptr<mrpt::obs::gnss::nv_oem6_short_header_t>> cl(M("mrpt::obs::gnss"), "nv_oem6_short_header_t", "Novatel OEM6 short header structure \n mrpt::obs::CObservationGPS  ");
+		cl.def( pybind11::init( [](mrpt::obs::gnss::nv_oem6_short_header_t const &o){ return new mrpt::obs::gnss::nv_oem6_short_header_t(o); } ) );
+		cl.def( pybind11::init( [](){ return new mrpt::obs::gnss::nv_oem6_short_header_t(); } ) );
+		cl.def_readwrite("msg_len", &mrpt::obs::gnss::nv_oem6_short_header_t::msg_len);
+		cl.def_readwrite("msg_id", &mrpt::obs::gnss::nv_oem6_short_header_t::msg_id);
+		cl.def_readwrite("week", &mrpt::obs::gnss::nv_oem6_short_header_t::week);
+		cl.def_readwrite("ms_in_week", &mrpt::obs::gnss::nv_oem6_short_header_t::ms_in_week);
+		cl.def("fixEndianness", (void (mrpt::obs::gnss::nv_oem6_short_header_t::*)()) &mrpt::obs::gnss::nv_oem6_short_header_t::fixEndianness, "C++: mrpt::obs::gnss::nv_oem6_short_header_t::fixEndianness() --> void");
+		cl.def("assign", (struct mrpt::obs::gnss::nv_oem6_short_header_t & (mrpt::obs::gnss::nv_oem6_short_header_t::*)(const struct mrpt::obs::gnss::nv_oem6_short_header_t &)) &mrpt::obs::gnss::nv_oem6_short_header_t::operator=, "C++: mrpt::obs::gnss::nv_oem6_short_header_t::operator=(const struct mrpt::obs::gnss::nv_oem6_short_header_t &) --> struct mrpt::obs::gnss::nv_oem6_short_header_t &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+	}
 }

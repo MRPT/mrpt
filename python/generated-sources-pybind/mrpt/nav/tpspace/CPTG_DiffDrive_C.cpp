@@ -48,7 +48,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -595,7 +595,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_C : public mrpt::nav::CPTG_DiffDrive_C
 		}
 		return CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(a0, a1, a2, a3);
 	}
-	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > & a3, bool a4) const override {
+	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double> & a3, bool a4) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_C *>(this), "evalClearanceSingleObstacle");
 		if (overload) {
@@ -1147,7 +1147,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CC : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(a0, a1, a2, a3);
 	}
-	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > & a3, bool a4) const override {
+	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double> & a3, bool a4) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CC *>(this), "evalClearanceSingleObstacle");
 		if (overload) {
@@ -1699,7 +1699,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS : public mrpt::nav::CPTG_DiffDrive
 		}
 		return CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(a0, a1, a2, a3);
 	}
-	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > & a3, bool a4) const override {
+	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double> & a3, bool a4) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CCS *>(this), "evalClearanceSingleObstacle");
 		if (overload) {
@@ -2251,7 +2251,7 @@ struct PyCallBack_mrpt_nav_CPTG_DiffDrive_CS : public mrpt::nav::CPTG_DiffDrive_
 		}
 		return CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(a0, a1, a2, a3);
 	}
-	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double, struct std::less<double>, class std::allocator<struct std::pair<const double, double> > > & a3, bool a4) const override {
+	void evalClearanceSingleObstacle(const double a0, const double a1, const unsigned short a2, class std::map<double, double> & a3, bool a4) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::nav::CPTG_DiffDrive_CS *>(this), "evalClearanceSingleObstacle");
 		if (overload) {

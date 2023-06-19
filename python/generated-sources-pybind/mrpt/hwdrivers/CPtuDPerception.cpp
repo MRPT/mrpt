@@ -7,7 +7,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -697,7 +697,7 @@ void bind_mrpt_hwdrivers_CPtuDPerception(std::function< pybind11::module &(std::
 		cl.def("posToRad", (double (mrpt::hwdrivers::CPtuDPerception::*)(char, long)) &mrpt::hwdrivers::CPtuDPerception::posToRad, "To obtain the number of radians for a discrete value \n\nC++: mrpt::hwdrivers::CPtuDPerception::posToRad(char, long) --> double", pybind11::arg("axis"), pybind11::arg("nPos"));
 		cl.def("scan", (bool (mrpt::hwdrivers::CPtuDPerception::*)(char, int, float, float, double)) &mrpt::hwdrivers::CPtuDPerception::scan, "Performs a scan in the axis indicated and whit the precision desired. \n		\n\n {Pan or Till} \n		\n\n {Wait time betwen commands} \n		\n\n {initial position}\n		\n\n {final position}\n		\n\n {radians precision for the scan}\n\nC++: mrpt::hwdrivers::CPtuDPerception::scan(char, int, float, float, double) --> bool", pybind11::arg("axis"), pybind11::arg("wait"), pybind11::arg("initial"), pybind11::arg("final"), pybind11::arg("radPre"));
 		cl.def("verboseQ", (bool (mrpt::hwdrivers::CPtuDPerception::*)(bool &)) &mrpt::hwdrivers::CPtuDPerception::verboseQ, "Query verbose mode \n\nC++: mrpt::hwdrivers::CPtuDPerception::verboseQ(bool &) --> bool", pybind11::arg("modo"));
-		cl.def("verbose", (bool (mrpt::hwdrivers::CPtuDPerception::*)(bool)) &mrpt::hwdrivers::CPtuDPerception::verbose, "Set verbose. \n	\n\n\n\n\n\n\n\n\n	 \n\nC++: mrpt::hwdrivers::CPtuDPerception::verbose(bool) --> bool", pybind11::arg("set"));
+		cl.def("verbose", (bool (mrpt::hwdrivers::CPtuDPerception::*)(bool)) &mrpt::hwdrivers::CPtuDPerception::verbose, "Set verbose. \n	\n	Example of response with FV (verbose) active:\n		FV *\n		PP * Current pan position is 0\n		Example of response with FT (terse) active:\n		FT *\n		PP * 0\n	\n\nC++: mrpt::hwdrivers::CPtuDPerception::verbose(bool) --> bool", pybind11::arg("set"));
 		cl.def("echoModeQ", (bool (mrpt::hwdrivers::CPtuDPerception::*)(bool &)) &mrpt::hwdrivers::CPtuDPerception::echoModeQ, "Query echo mode \n\nC++: mrpt::hwdrivers::CPtuDPerception::echoModeQ(bool &) --> bool", pybind11::arg("mode"));
 		cl.def("echoMode", (bool (mrpt::hwdrivers::CPtuDPerception::*)(bool)) &mrpt::hwdrivers::CPtuDPerception::echoMode, "Enable/Disable echo response with command. \n	\n\n\n\n\n\n\n	 \n\nC++: mrpt::hwdrivers::CPtuDPerception::echoMode(bool) --> bool", pybind11::arg("mode"));
 		cl.def("resolution", (bool (mrpt::hwdrivers::CPtuDPerception::*)()) &mrpt::hwdrivers::CPtuDPerception::resolution, "Query the pan and tilt resolution per position moved\n	and initialize local atributes\n\nC++: mrpt::hwdrivers::CPtuDPerception::resolution() --> bool");

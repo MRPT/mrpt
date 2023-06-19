@@ -35,7 +35,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -255,11 +255,13 @@ struct PyCallBack_mrpt_poses_CPose3DQuat : public mrpt::poses::CPose3DQuat {
 void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::poses::CPoint3D file:mrpt/poses/CPoint3D.h line:31
-		pybind11::class_<mrpt::poses::CPoint3D, std::shared_ptr<mrpt::poses::CPoint3D>, PyCallBack_mrpt_poses_CPoint3D, mrpt::poses::CPoint<mrpt::poses::CPoint3D,3>, mrpt::serialization::CSerializable> cl(M("mrpt::poses"), "CPoint3D", "A class used to store a 3D point.\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the 2D/3D Geometry\n tutorial in the wiki.\n\n  \n   \n  \n\n \n\n \n CPoseOrPoint,CPose, CPoint");
+		pybind11::class_<mrpt::poses::CPoint3D, std::shared_ptr<mrpt::poses::CPoint3D>, PyCallBack_mrpt_poses_CPoint3D, mrpt::poses::CPoint<mrpt::poses::CPoint3D,3UL>, mrpt::serialization::CSerializable> cl(M("mrpt::poses"), "CPoint3D", "A class used to store a 3D point.\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the 2D/3D Geometry\n tutorial in the wiki.\n\n  \n   \n  \n\n \n\n \n CPoseOrPoint,CPose, CPoint");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPoint3D(); }, [](){ return new PyCallBack_mrpt_poses_CPoint3D(); } ), "doc");
 		cl.def( pybind11::init( [](const double & a0){ return new mrpt::poses::CPoint3D(a0); }, [](const double & a0){ return new PyCallBack_mrpt_poses_CPoint3D(a0); } ), "doc");
 		cl.def( pybind11::init( [](const double & a0, const double & a1){ return new mrpt::poses::CPoint3D(a0, a1); }, [](const double & a0, const double & a1){ return new PyCallBack_mrpt_poses_CPoint3D(a0, a1); } ), "doc");
 		cl.def( pybind11::init<const double, const double, const double>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z") );
+
+		cl.def( pybind11::init<const class mrpt::math::CMatrixFixed<double, 3, 1> &>(), pybind11::arg("xyz") );
 
 		cl.def( pybind11::init<const class mrpt::poses::CPoint2D &>(), pybind11::arg("p") );
 
@@ -282,6 +284,7 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 		cl.def("__sub__", (class mrpt::poses::CPoint3D (mrpt::poses::CPoint3D::*)(const class mrpt::poses::CPoint3D &) const) &mrpt::poses::CPoint3D::operator-, "Returns this point minus point \"b\", i.e. result = this - b \n\nC++: mrpt::poses::CPoint3D::operator-(const class mrpt::poses::CPoint3D &) const --> class mrpt::poses::CPoint3D", pybind11::arg("b"));
 		cl.def("__add__", (class mrpt::poses::CPoint3D (mrpt::poses::CPoint3D::*)(const class mrpt::poses::CPoint3D &) const) &mrpt::poses::CPoint3D::operator+, "Returns this point plus point \"b\", i.e. result = this + b \n\nC++: mrpt::poses::CPoint3D::operator+(const class mrpt::poses::CPoint3D &) const --> class mrpt::poses::CPoint3D", pybind11::arg("b"));
 		cl.def("__add__", (class mrpt::poses::CPose3D (mrpt::poses::CPoint3D::*)(const class mrpt::poses::CPose3D &) const) &mrpt::poses::CPoint3D::operator+, "Returns this point plus pose \"b\", i.e. result = this + b  \n\nC++: mrpt::poses::CPoint3D::operator+(const class mrpt::poses::CPose3D &) const --> class mrpt::poses::CPose3D", pybind11::arg("b"));
+		cl.def("asVector", (void (mrpt::poses::CPoint3D::*)(class mrpt::math::CMatrixFixed<double, 3, 1> &) const) &mrpt::poses::CPoint3D::asVector, "Return the pose or point as a 3x1 vector [x y z]' \n\nC++: mrpt::poses::CPoint3D::asVector(class mrpt::math::CMatrixFixed<double, 3, 1> &) const --> void", pybind11::arg("v"));
 		cl.def_static("is_3D", (bool (*)()) &mrpt::poses::CPoint3D::is_3D, "C++: mrpt::poses::CPoint3D::is_3D() --> bool");
 		cl.def_static("is_PDF", (bool (*)()) &mrpt::poses::CPoint3D::is_PDF, "C++: mrpt::poses::CPoint3D::is_PDF() --> bool");
 		cl.def_static("size", (unsigned long (*)()) &mrpt::poses::CPoint3D::size, "C++: mrpt::poses::CPoint3D::size() --> unsigned long");
@@ -294,7 +297,7 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 		cl.def("__str__", [](mrpt::poses::CPoint3D const &o) -> std::string { std::ostringstream s; using namespace mrpt::poses; s << o; return s.str(); } );
 	}
 	{ // mrpt::poses::CPose3DQuat file:mrpt/poses/CPose3DQuat.h line:46
-		pybind11::class_<mrpt::poses::CPose3DQuat, std::shared_ptr<mrpt::poses::CPose3DQuat>, PyCallBack_mrpt_poses_CPose3DQuat, mrpt::poses::CPose<mrpt::poses::CPose3DQuat,7>, mrpt::serialization::CSerializable, mrpt::Stringifyable> cl(M("mrpt::poses"), "CPose3DQuat", "A class used to store a 3D pose as a translation (x,y,z) and a quaternion\n (qr,qx,qy,qz).\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the  2D/3D Geometry\n tutorial in the wiki.\n\n  To access the translation use x(), y() and z(). To access the rotation, use\n CPose3DQuat::quat().\n\n  This class also behaves like a STL container, since it has begin(), end(),\n iterators, and can be accessed with the [] operator\n   with indices running from 0 to 6 to access the  [x y z qr qx qy qz] as if\n they were a vector. Thus, a CPose3DQuat can be used\n   as a 7-vector anywhere the MRPT math functions expect any kind of vector.\n\n  This class and CPose3D are very similar, and they can be converted to the\n each other automatically via transformation constructors.\n\n \n CPose3D (for a class based on a 4x4 matrix instead of a quaternion),\n mrpt::math::TPose3DQuat, mrpt::poses::CPose3DQuatPDF for a probabilistic\n version of this class,  mrpt::math::CQuaternion, CPoseOrPoint\n \n\n\n ");
+		pybind11::class_<mrpt::poses::CPose3DQuat, std::shared_ptr<mrpt::poses::CPose3DQuat>, PyCallBack_mrpt_poses_CPose3DQuat, mrpt::poses::CPose<mrpt::poses::CPose3DQuat,7UL>, mrpt::serialization::CSerializable, mrpt::Stringifyable> cl(M("mrpt::poses"), "CPose3DQuat", "A class used to store a 3D pose as a translation (x,y,z) and a quaternion\n (qr,qx,qy,qz).\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the  2D/3D Geometry\n tutorial in the wiki.\n\n  To access the translation use x(), y() and z(). To access the rotation, use\n CPose3DQuat::quat().\n\n  This class also behaves like a STL container, since it has begin(), end(),\n iterators, and can be accessed with the [] operator\n   with indices running from 0 to 6 to access the  [x y z qr qx qy qz] as if\n they were a vector. Thus, a CPose3DQuat can be used\n   as a 7-vector anywhere the MRPT math functions expect any kind of vector.\n\n  This class and CPose3D are very similar, and they can be converted to the\n each other automatically via transformation constructors.\n\n \n CPose3D (for a class based on a 4x4 matrix instead of a quaternion),\n mrpt::math::TPose3DQuat, mrpt::poses::CPose3DQuatPDF for a probabilistic\n version of this class,  mrpt::math::CQuaternion, CPoseOrPoint\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DQuat(); }, [](){ return new PyCallBack_mrpt_poses_CPose3DQuat(); } ) );
 		cl.def( pybind11::init<enum mrpt::math::TConstructorFlags_Quaternions>(), pybind11::arg("") );
 
@@ -306,6 +309,8 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 
 		cl.def( pybind11::init<const struct mrpt::math::TPose3DQuat &>(), pybind11::arg("p") );
 
+		cl.def( pybind11::init<const class mrpt::math::CMatrixFixed<double, 4, 4> &>(), pybind11::arg("M") );
+
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPose3DQuat const &o){ return new PyCallBack_mrpt_poses_CPose3DQuat(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPose3DQuat const &o){ return new mrpt::poses::CPose3DQuat(o); } ) );
 		cl.def_readwrite("m_coords", &mrpt::poses::CPose3DQuat::m_coords);
@@ -316,7 +321,10 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPose3DQuat::*)() const) &mrpt::poses::CPose3DQuat::clone, "C++: mrpt::poses::CPose3DQuat::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
 		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::poses::CPose3DQuat::CreateObject, "C++: mrpt::poses::CPose3DQuat::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
 		cl.def("quat", (class mrpt::math::CQuaternion<double> & (mrpt::poses::CPose3DQuat::*)()) &mrpt::poses::CPose3DQuat::quat, "Read/Write access to the quaternion representing the 3D rotation. \n\nC++: mrpt::poses::CPose3DQuat::quat() --> class mrpt::math::CQuaternion<double> &", pybind11::return_value_policy::automatic);
+		cl.def("xyz", (class mrpt::math::CMatrixFixed<double, 3, 1> & (mrpt::poses::CPose3DQuat::*)()) &mrpt::poses::CPose3DQuat::xyz, "Read/Write access to the translation vector in R^3. \n\nC++: mrpt::poses::CPose3DQuat::xyz() --> class mrpt::math::CMatrixFixed<double, 3, 1> &", pybind11::return_value_policy::automatic);
 		cl.def("asTPose", (struct mrpt::math::TPose3DQuat (mrpt::poses::CPose3DQuat::*)() const) &mrpt::poses::CPose3DQuat::asTPose, "C++: mrpt::poses::CPose3DQuat::asTPose() const --> struct mrpt::math::TPose3DQuat");
+		cl.def("getHomogeneousMatrix", (void (mrpt::poses::CPose3DQuat::*)(class mrpt::math::CMatrixFixed<double, 4, 4> &) const) &mrpt::poses::CPose3DQuat::getHomogeneousMatrix, "Returns the corresponding 4x4 homogeneous transformation matrix for the\n point(translation) or pose (translation+orientation).\n \n\n getInverseHomogeneousMatrix\n\nC++: mrpt::poses::CPose3DQuat::getHomogeneousMatrix(class mrpt::math::CMatrixFixed<double, 4, 4> &) const --> void", pybind11::arg("out_HM"));
+		cl.def("asVector", (void (mrpt::poses::CPose3DQuat::*)(class mrpt::math::CMatrixFixed<double, 7, 1> &) const) &mrpt::poses::CPose3DQuat::asVector, "Returns a 7x1 vector with [x y z qr qx qy qz]' \n\nC++: mrpt::poses::CPose3DQuat::asVector(class mrpt::math::CMatrixFixed<double, 7, 1> &) const --> void", pybind11::arg("v"));
 		cl.def("composeFrom", (void (mrpt::poses::CPose3DQuat::*)(const class mrpt::poses::CPose3DQuat &, const class mrpt::poses::CPose3DQuat &)) &mrpt::poses::CPose3DQuat::composeFrom, "Makes \n  this method is slightly more efficient\n than \"this= A + B;\" since it avoids the temporary object.\n  \n\n A or B can be \"this\" without problems.\n \n\n inverseComposeFrom, composePoint\n\nC++: mrpt::poses::CPose3DQuat::composeFrom(const class mrpt::poses::CPose3DQuat &, const class mrpt::poses::CPose3DQuat &) --> void", pybind11::arg("A"), pybind11::arg("B"));
 		cl.def("inverseComposeFrom", (void (mrpt::poses::CPose3DQuat::*)(const class mrpt::poses::CPose3DQuat &, const class mrpt::poses::CPose3DQuat &)) &mrpt::poses::CPose3DQuat::inverseComposeFrom, "Makes \n this method is slightly more efficient\n than \"this= A - B;\" since it avoids the temporary object.\n  \n\n A or B can be \"this\" without problems.\n \n\n composeFrom, composePoint\n\nC++: mrpt::poses::CPose3DQuat::inverseComposeFrom(const class mrpt::poses::CPose3DQuat &, const class mrpt::poses::CPose3DQuat &) --> void", pybind11::arg("A"), pybind11::arg("B"));
 		cl.def("__add__", (class mrpt::poses::CPoint3D (mrpt::poses::CPose3DQuat::*)(const class mrpt::poses::CPoint3D &) const) &mrpt::poses::CPose3DQuat::operator+, "Computes the 3D point G such as \n.  \n\n composePoint    \n\nC++: mrpt::poses::CPose3DQuat::operator+(const class mrpt::poses::CPoint3D &) const --> class mrpt::poses::CPoint3D", pybind11::arg("L"));

@@ -7,6 +7,7 @@
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/metric_map_types.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -23,7 +24,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER

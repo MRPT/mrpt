@@ -6,14 +6,13 @@
 #include <mrpt/system/CFileSystemWatcher.h>
 #include <mrpt/system/CRateTimer.h>
 #include <mrpt/system/WorkerThreadsPool.h>
-#include <mrpt/system/crc.h>
 #include <sstream> // __str__
 #include <string>
 
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -60,6 +59,11 @@ void bind_mrpt_system_CRateTimer(std::function< pybind11::module &(std::string c
 	{ // mrpt::system::CDirectoryExplorer file:mrpt/system/CDirectoryExplorer.h line:29
 		pybind11::class_<mrpt::system::CDirectoryExplorer, std::shared_ptr<mrpt::system::CDirectoryExplorer>> cl(M("mrpt::system"), "CDirectoryExplorer", "This class allows the enumeration of the files/directories that exist into a\n given path.\n  The only existing method is \"explore\" and returns the list of found files &\n directories.\n  Refer to the example in /samples/UTILS/directoryExplorer\n\n  \n CFileSystemWatcher\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::system::CDirectoryExplorer(); } ) );
+		cl.def_static("explore", (class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo> (*)(const std::string &, const unsigned long)) &mrpt::system::CDirectoryExplorer::explore, "The path of the directory to examine must be passed to this constructor,\n among the\n  According to the following parameters, the object will collect the list\n of files, which\n   can be modified later through other methods in this class.\n \n\n The path to examine (IT MUST BE A DIRECTORY), e.g\n \"d:\\temp\\\", or \"/usr/include/\"\n \n\n One or the OR'ed combination of the values\n \"FILE_ATTRIB_ARCHIVE\" and \"FILE_ATTRIB_DIRECTORY\", depending on what file\n types do you want in the list (These values are platform-independent).\n \n\n The list of found files/directories is stored here.\n \n\n sortByName\n\nC++: mrpt::system::CDirectoryExplorer::explore(const std::string &, const unsigned long) --> class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo>", pybind11::arg("path"), pybind11::arg("mask"));
+		cl.def_static("explore", (void (*)(const std::string &, const unsigned long, class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo> &)) &mrpt::system::CDirectoryExplorer::explore, "C++: mrpt::system::CDirectoryExplorer::explore(const std::string &, const unsigned long, class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo> &) --> void", pybind11::arg("path"), pybind11::arg("mask"), pybind11::arg("outList"));
+		cl.def_static("sortByName", [](class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo> & a0) -> void { return mrpt::system::CDirectoryExplorer::sortByName(a0); }, "", pybind11::arg("lstFiles"));
+		cl.def_static("sortByName", (void (*)(class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo> &, bool)) &mrpt::system::CDirectoryExplorer::sortByName, "Sort the file entries by name, in ascending or descending order\n\nC++: mrpt::system::CDirectoryExplorer::sortByName(class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo> &, bool) --> void", pybind11::arg("lstFiles"), pybind11::arg("ascendingOrder"));
+		cl.def_static("filterByExtension", (void (*)(class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo> &, const std::string &)) &mrpt::system::CDirectoryExplorer::filterByExtension, "Remove from the list of files those whose extension does not coincide\n (without case) with the given one.\n  Example:  filterByExtension(lst,\"txt\");\n\nC++: mrpt::system::CDirectoryExplorer::filterByExtension(class std::deque<struct mrpt::system::CDirectoryExplorer::TFileInfo> &, const std::string &) --> void", pybind11::arg("lstFiles"), pybind11::arg("extension"));
 
 		{ // mrpt::system::CDirectoryExplorer::TFileInfo file:mrpt/system/CDirectoryExplorer.h line:35
 			auto & enclosing_class = cl;
@@ -118,12 +122,4 @@ void bind_mrpt_system_CRateTimer(std::function< pybind11::module &(std::string c
 		cl.def("clear", (void (mrpt::system::WorkerThreadsPool::*)()) &mrpt::system::WorkerThreadsPool::clear, "C++: mrpt::system::WorkerThreadsPool::clear() --> void");
 		cl.def("pendingTasks", (std::size_t (mrpt::system::WorkerThreadsPool::*)() const) &mrpt::system::WorkerThreadsPool::pendingTasks, "Returns the number of enqueued tasks, currently waiting for a free\n working thread to process them.  \n\nC++: mrpt::system::WorkerThreadsPool::pendingTasks() const --> std::size_t");
 	}
-	// mrpt::system::compute_CRC16(const unsigned char *, size_t, const unsigned short) file:mrpt/system/crc.h line:27
-	M("mrpt::system").def("compute_CRC16", [](const unsigned char * a0, size_t const & a1) -> uint16_t { return mrpt::system::compute_CRC16(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
-	M("mrpt::system").def("compute_CRC16", (uint16_t (*)(const unsigned char *, size_t, const unsigned short)) &mrpt::system::compute_CRC16, "C++: mrpt::system::compute_CRC16(const unsigned char *, size_t, const unsigned short) --> uint16_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
-
-	// mrpt::system::compute_CRC32(const unsigned char *, size_t, const unsigned int) file:mrpt/system/crc.h line:33
-	M("mrpt::system").def("compute_CRC32", [](const unsigned char * a0, size_t const & a1) -> uint32_t { return mrpt::system::compute_CRC32(a0, a1); }, "", pybind11::arg("data"), pybind11::arg("len"));
-	M("mrpt::system").def("compute_CRC32", (uint32_t (*)(const unsigned char *, size_t, const unsigned int)) &mrpt::system::compute_CRC32, "C++: mrpt::system::compute_CRC32(const unsigned char *, size_t, const unsigned int) --> uint32_t", pybind11::arg("data"), pybind11::arg("len"), pybind11::arg("gen_pol"));
-
 }

@@ -83,7 +83,7 @@ class CMetricMapBuilder : public mrpt::system::COutputLogger
 	/** Returns the map built so far. NOTE that for efficiency a pointer to the
 	 * internal object is passed, DO NOT delete nor modify the object in any
 	 * way, if desired, make a copy of ir with "clone()". */
-	virtual const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap()
+	virtual const mrpt::maps::CMultiMetricMap& getCurrentlyBuiltMetricMap()
 		const = 0;
 
 	/** A useful method for debugging: the current map (and/or poses) estimation

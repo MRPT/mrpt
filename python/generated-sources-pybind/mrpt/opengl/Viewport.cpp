@@ -49,7 +49,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -208,7 +208,7 @@ void bind_mrpt_opengl_Viewport(std::function< pybind11::module &(std::string con
 		cl.def("removeObject", [](mrpt::opengl::Scene &o, const class std::shared_ptr<class mrpt::opengl::CRenderizable> & a0) -> void { return o.removeObject(a0); }, "", pybind11::arg("obj"));
 		cl.def("removeObject", (void (mrpt::opengl::Scene::*)(const class std::shared_ptr<class mrpt::opengl::CRenderizable> &, const std::string &)) &mrpt::opengl::Scene::removeObject, "Removes the given object from the scene (it also deletes the object to\n free its memory).\n\nC++: mrpt::opengl::Scene::removeObject(const class std::shared_ptr<class mrpt::opengl::CRenderizable> &, const std::string &) --> void", pybind11::arg("obj"), pybind11::arg("viewportName"));
 		cl.def("initializeTextures", (void (mrpt::opengl::Scene::*)()) &mrpt::opengl::Scene::initializeTextures, "Initializes all textures in the scene (See\n opengl::CTexturedPlane::initializeTextures)\n\nC++: mrpt::opengl::Scene::initializeTextures() --> void");
-		cl.def("dumpListOfObjects", (void (mrpt::opengl::Scene::*)(class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::opengl::Scene::dumpListOfObjects, "Retrieves a list of all objects in text form.\n 	\n\n Prefer asYAML() (since MRPT 2.1.3) \n\nC++: mrpt::opengl::Scene::dumpListOfObjects(class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("lst"));
+		cl.def("dumpListOfObjects", (void (mrpt::opengl::Scene::*)(class std::vector<std::string > &) const) &mrpt::opengl::Scene::dumpListOfObjects, "Retrieves a list of all objects in text form.\n 	\n\n Prefer asYAML() (since MRPT 2.1.3) \n\nC++: mrpt::opengl::Scene::dumpListOfObjects(class std::vector<std::string > &) const --> void", pybind11::arg("lst"));
 		cl.def("asYAML", (class mrpt::containers::yaml (mrpt::opengl::Scene::*)() const) &mrpt::opengl::Scene::asYAML, "Prints all viewports and objects in human-readable YAML form.\n Note that not all objects data is serialized, so this method is not\n suitable for deserialization (for that, use saveToFile(), loadFromFile()\n instead).\n \n\n (New in MRPT 2.1.3) \n\nC++: mrpt::opengl::Scene::asYAML() const --> class mrpt::containers::yaml");
 		cl.def("saveToFile", (bool (mrpt::opengl::Scene::*)(const std::string &) const) &mrpt::opengl::Scene::saveToFile, "Saves the scene to a [\".3Dscene\" file](robotics_file_formats.html),\n loadable by: \n \n\n loadFromFile\n \n\n false on any error.\n\nC++: mrpt::opengl::Scene::saveToFile(const std::string &) const --> bool", pybind11::arg("fil"));
 		cl.def("loadFromFile", (bool (mrpt::opengl::Scene::*)(const std::string &)) &mrpt::opengl::Scene::loadFromFile, "Loads the scene from a [\".3Dscene\" file](robotics_file_formats.html).\n \n\n saveToFile\n \n\n false on any error.\n\nC++: mrpt::opengl::Scene::loadFromFile(const std::string &) --> bool", pybind11::arg("fil"));

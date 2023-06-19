@@ -18,7 +18,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -97,7 +97,7 @@ struct PyCallBack_mrpt_hwdrivers_CGenericSensor : public mrpt::hwdrivers::CGener
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CGenericSensor::doProcess\"");
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CGenericSensor *>(this), "getObservations");
@@ -196,7 +196,7 @@ void bind_mrpt_hwdrivers_CGenericSensor(std::function< pybind11::module &(std::s
 		cl.def("loadConfig", (void (mrpt::hwdrivers::CGenericSensor::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::hwdrivers::CGenericSensor::loadConfig, "Loads the generic settings common to any sensor (See CGenericSensor),\n then call to \"loadConfig_sensorSpecific\"\n  \n\n This method throws an exception with a descriptive message\n if some critical parameter is missing or has an invalid value.\n\nC++: mrpt::hwdrivers::CGenericSensor::loadConfig(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("configSource"), pybind11::arg("section"));
 		cl.def("initialize", (void (mrpt::hwdrivers::CGenericSensor::*)()) &mrpt::hwdrivers::CGenericSensor::initialize, "This method can or cannot be implemented in the derived class, depending\n on the need for it.\n  \n\n This method must throw an exception with a descriptive\n message if some critical error is found.\n\nC++: mrpt::hwdrivers::CGenericSensor::initialize() --> void");
 		cl.def("doProcess", (void (mrpt::hwdrivers::CGenericSensor::*)()) &mrpt::hwdrivers::CGenericSensor::doProcess, "This method will be invoked at a minimum rate of \"process_rate\" (Hz)\n  \n\n This method must throw an exception with a descriptive\n message if some critical error is found.\n\nC++: mrpt::hwdrivers::CGenericSensor::doProcess() --> void");
-		cl.def("getObservations", (class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > > (mrpt::hwdrivers::CGenericSensor::*)()) &mrpt::hwdrivers::CGenericSensor::getObservations, "Returns a list of enqueued objects, emptying it (thread-safe).\n\nC++: mrpt::hwdrivers::CGenericSensor::getObservations() --> class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >");
+		cl.def("getObservations", (class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > (mrpt::hwdrivers::CGenericSensor::*)()) &mrpt::hwdrivers::CGenericSensor::getObservations, "Returns a list of enqueued objects, emptying it (thread-safe).\n\nC++: mrpt::hwdrivers::CGenericSensor::getObservations() --> class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >");
 		cl.def("setPathForExternalImages", (void (mrpt::hwdrivers::CGenericSensor::*)(const std::string &)) &mrpt::hwdrivers::CGenericSensor::setPathForExternalImages, "Set the path where to save off-rawlog image files (will be ignored in\n those sensors where this is not applicable).\n  An  empty string (the default value at construction) means to save\n images embedded in the rawlog, instead of on separate files.\n \n\n std::exception If the directory doesn't exists and cannot be\n created.\n\nC++: mrpt::hwdrivers::CGenericSensor::setPathForExternalImages(const std::string &) --> void", pybind11::arg("directory"));
 		cl.def("setExternalImageFormat", (void (mrpt::hwdrivers::CGenericSensor::*)(const std::string &)) &mrpt::hwdrivers::CGenericSensor::setExternalImageFormat, "Set the extension (\"jpg\",\"gif\",\"png\",...) that determines the format of\n images saved externally. Default: \"png\".\n \n\n setPathForExternalImages, setExternalImageJPEGQuality\n\nC++: mrpt::hwdrivers::CGenericSensor::setExternalImageFormat(const std::string &) --> void", pybind11::arg("ext"));
 		cl.def("setExternalImageJPEGQuality", (void (mrpt::hwdrivers::CGenericSensor::*)(const unsigned int)) &mrpt::hwdrivers::CGenericSensor::setExternalImageJPEGQuality, "The quality of JPEG compression, when external images is enabled and the\n format is \"jpg\". \n\n setExternalImageFormat \n\nC++: mrpt::hwdrivers::CGenericSensor::setExternalImageJPEGQuality(const unsigned int) --> void", pybind11::arg("quality"));

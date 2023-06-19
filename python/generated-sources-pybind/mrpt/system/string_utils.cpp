@@ -7,7 +7,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -19,9 +19,9 @@
 
 void bind_mrpt_system_string_utils(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	// mrpt::system::tokenize(const std::string &, const std::string &, class std::vector<std::string, class std::allocator<std::string > > &, bool) file:mrpt/system/string_utils.h line:50
-	M("mrpt::system").def("tokenize", [](const std::string & a0, const std::string & a1, class std::vector<std::string, class std::allocator<std::string > > & a2) -> void { return mrpt::system::tokenize(a0, a1, a2); }, "", pybind11::arg("inString"), pybind11::arg("inDelimiters"), pybind11::arg("outTokens"));
-	M("mrpt::system").def("tokenize", (void (*)(const std::string &, const std::string &, class std::vector<std::string, class std::allocator<std::string > > &, bool)) &mrpt::system::tokenize<std::vector<std::string, std::allocator<std::string > >>, "Tokenizes a string according to a set of delimiting characters.\n Example:\n \n\n\n\n\n  Will generate 3 tokens:\n		- \"Pepe\"\n		- \"Er\"\n		- \"Muo\"\n \n\n If `true`, consecutive \"delimiters\" will be\n considered one single delimiters. If `false`, a blank token will be returned\n between each pair of delimiters.\n \n\n Can be a std::vector or std::deque of std::string's.\n\nC++: mrpt::system::tokenize(const std::string &, const std::string &, class std::vector<std::string, class std::allocator<std::string > > &, bool) --> void", pybind11::arg("inString"), pybind11::arg("inDelimiters"), pybind11::arg("outTokens"), pybind11::arg("skipBlankTokens"));
+	// mrpt::system::tokenize(const std::string &, const std::string &, class std::vector<std::string > &, bool) file:mrpt/system/string_utils.h line:50
+	M("mrpt::system").def("tokenize", [](const std::string & a0, const std::string & a1, class std::vector<std::string > & a2) -> void { return mrpt::system::tokenize(a0, a1, a2); }, "", pybind11::arg("inString"), pybind11::arg("inDelimiters"), pybind11::arg("outTokens"));
+	M("mrpt::system").def("tokenize", (void (*)(const std::string &, const std::string &, class std::vector<std::string > &, bool)) &mrpt::system::tokenize<std::vector<std::string >>, "Tokenizes a string according to a set of delimiting characters.\n Example:\n \n\n\n\n\n  Will generate 3 tokens:\n		- \"Pepe\"\n		- \"Er\"\n		- \"Muo\"\n \n\n If `true`, consecutive \"delimiters\" will be\n considered one single delimiters. If `false`, a blank token will be returned\n between each pair of delimiters.\n \n\n Can be a std::vector or std::deque of std::string's.\n\nC++: mrpt::system::tokenize(const std::string &, const std::string &, class std::vector<std::string > &, bool) --> void", pybind11::arg("inString"), pybind11::arg("inDelimiters"), pybind11::arg("outTokens"), pybind11::arg("skipBlankTokens"));
 
 	// mrpt::system::trim(const std::string &) file:mrpt/system/string_utils.h line:63
 	M("mrpt::system").def("trim", (std::string (*)(const std::string &)) &mrpt::system::trim, "Removes leading and trailing spaces \n\nC++: mrpt::system::trim(const std::string &) --> std::string", pybind11::arg("str"));
@@ -53,9 +53,9 @@ void bind_mrpt_system_string_utils(std::function< pybind11::module &(std::string
 	// mrpt::system::strStartsI(const std::string &, const std::string &) file:mrpt/system/string_utils.h line:118
 	M("mrpt::system").def("strStartsI", (bool (*)(const std::string &, const std::string &)) &mrpt::system::strStartsI, "Return true if \"str\" starts with \"subStr\" (case insensitive)  \n strStarts\n\nC++: mrpt::system::strStartsI(const std::string &, const std::string &) --> bool", pybind11::arg("str"), pybind11::arg("subStr"));
 
-	// mrpt::system::stringListAsString(const class std::vector<std::string, class std::allocator<std::string > > &, std::string &, const std::string &) file:mrpt/system/string_utils.h line:139
-	M("mrpt::system").def("stringListAsString", [](const class std::vector<std::string, class std::allocator<std::string > > & a0, std::string & a1) -> void { return mrpt::system::stringListAsString(a0, a1); }, "", pybind11::arg("lst"), pybind11::arg("out"));
-	M("mrpt::system").def("stringListAsString", (void (*)(const class std::vector<std::string, class std::allocator<std::string > > &, std::string &, const std::string &)) &mrpt::system::stringListAsString, "Convert a string list to one single string with new-lines. \n\nC++: mrpt::system::stringListAsString(const class std::vector<std::string, class std::allocator<std::string > > &, std::string &, const std::string &) --> void", pybind11::arg("lst"), pybind11::arg("out"), pybind11::arg("newline"));
+	// mrpt::system::stringListAsString(const class std::vector<std::string > &, std::string &, const std::string &) file:mrpt/system/string_utils.h line:139
+	M("mrpt::system").def("stringListAsString", [](const class std::vector<std::string > & a0, std::string & a1) -> void { return mrpt::system::stringListAsString(a0, a1); }, "", pybind11::arg("lst"), pybind11::arg("out"));
+	M("mrpt::system").def("stringListAsString", (void (*)(const class std::vector<std::string > &, std::string &, const std::string &)) &mrpt::system::stringListAsString, "Convert a string list to one single string with new-lines. \n\nC++: mrpt::system::stringListAsString(const class std::vector<std::string > &, std::string &, const std::string &) --> void", pybind11::arg("lst"), pybind11::arg("out"), pybind11::arg("newline"));
 
 	// mrpt::system::nthOccurrence(const std::string &, const std::string &, size_t) file:mrpt/system/string_utils.h line:151
 	M("mrpt::system").def("nthOccurrence", (size_t (*)(const std::string &, const std::string &, size_t)) &mrpt::system::nthOccurrence, "Finds the position of the n-th occurence of the given substring, or\n std::string::npos if it does not happen.\n \n\n New in MRPT 2.3.2\n\nC++: mrpt::system::nthOccurrence(const std::string &, const std::string &, size_t) --> size_t", pybind11::arg("str"), pybind11::arg("strToFind"), pybind11::arg("nth"));

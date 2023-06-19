@@ -9,7 +9,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -242,7 +242,7 @@ void bind_mrpt_comms_CClientTCPSocket(std::function< pybind11::module &(std::str
 		cl.def("assign", (class mrpt::comms::CClientTCPSocket & (mrpt::comms::CClientTCPSocket::*)(const class mrpt::comms::CClientTCPSocket &)) &mrpt::comms::CClientTCPSocket::operator=, "C++: mrpt::comms::CClientTCPSocket::operator=(const class mrpt::comms::CClientTCPSocket &) --> class mrpt::comms::CClientTCPSocket &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	{ // mrpt::comms::CSerialPort file:mrpt/comms/CSerialPort.h line:41
-		pybind11::class_<mrpt::comms::CSerialPort, std::shared_ptr<mrpt::comms::CSerialPort>, PyCallBack_mrpt_comms_CSerialPort, mrpt::io::CStream> cl(M("mrpt::comms"), "CSerialPort", "A communications serial port implementing the interface mrpt::io::CStream.\n On communication errors (eg. the given port number does not exist,\n timeouts,...), most of the methods will\n raise an exception of the class `std::exception`\n\n  The serial port to open is passed in the constructor in the form of a string\n description, which is platform dependent.\n\n  In Windows they are numbered \"COM1\"-\"COM4\" and \"\\.\" for numbers\n above. It is recomended to always use the prefix \"\\.\" despite the actual\n port number.\n\n  In Linux the name must refer to the device, for example: \"ttyUSB0\",\"ttyS0\".\n If the name string does not start with \"/\" (an absolute path), the\n constructor will assume the prefix \"/dev/\".\n\n  History:\n    - 1/DEC/2005:  (JLBC) First version\n    - 20/DEC/2006: (JLBC) Integration into the MRPT framework\n    - 12/DEC/2007: (JLBC) Added support for Linux.\n    - 22/AUG/2017: (JLBC) Moved to new module mrpt-comms\n\n \n Add the internal buffer to the Windows implementation also\n \n\n\n ");
+		pybind11::class_<mrpt::comms::CSerialPort, std::shared_ptr<mrpt::comms::CSerialPort>, PyCallBack_mrpt_comms_CSerialPort, mrpt::io::CStream> cl(M("mrpt::comms"), "CSerialPort", "A communications serial port implementing the interface mrpt::io::CStream.\n On communication errors (eg. the given port number does not exist,\n timeouts,...), most of the methods will\n raise an exception of the class `std::exception`\n\n  The serial port to open is passed in the constructor in the form of a string\n description, which is platform dependent.\n\n  In Windows they are numbered \"COM1\"-\"COM4\" and \"\\\\.\\COMXXX\" for numbers\n above. It is recomended to always use the prefix \"\\\\.\\\" despite the actual\n port number.\n\n  In Linux the name must refer to the device, for example: \"ttyUSB0\",\"ttyS0\".\n If the name string does not start with \"/\" (an absolute path), the\n constructor will assume the prefix \"/dev/\".\n\n  History:\n    - 1/DEC/2005:  (JLBC) First version\n    - 20/DEC/2006: (JLBC) Integration into the MRPT framework\n    - 12/DEC/2007: (JLBC) Added support for Linux.\n    - 22/AUG/2017: (JLBC) Moved to new module mrpt-comms\n\n \n Add the internal buffer to the Windows implementation also\n \n\n\n ");
 		cl.def( pybind11::init( [](const std::string & a0){ return new mrpt::comms::CSerialPort(a0); }, [](const std::string & a0){ return new PyCallBack_mrpt_comms_CSerialPort(a0); } ), "doc");
 		cl.def( pybind11::init<const std::string &, bool>(), pybind11::arg("portName"), pybind11::arg("openNow") );
 

@@ -157,7 +157,7 @@ message(STATUS " _______________________ WRAPPERS/BINDINGS _____________________
 SHOW_CONFIG_LINE_SYSTEM("Matlab / mex files        " CMAKE_MRPT_HAS_MATLAB "[Version: ${MATLAB_VERSION}]")
 SHOW_CONFIG_LINE("Python3 wrappers          " CMAKE_MRPT_HAS_PYTHON_BINDINGS "[pybind11: ${pybind11_VERSION}]")
 SHOW_CONFIG_LINE("Python3 interpreter found " Python3_FOUND "[Version: ${Python3_VERSION}]")
-if ($ENV{VERBOSE})
+if (("$ENV{VERBOSE}") OR ("$ENV{HOME}" STREQUAL "/home/buildfarm"))
 	message(STATUS "CMAKE_INSTALL_PREFIX     : ${CMAKE_INSTALL_PREFIX}")
 	message(STATUS "DESTDIR                  : ${DESTDIR}")
 	message(STATUS "Python3_SITELIB          : ${Python3_SITELIB}")

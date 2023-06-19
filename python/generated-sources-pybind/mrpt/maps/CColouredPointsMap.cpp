@@ -4,6 +4,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
@@ -19,7 +20,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # ---------------------------------------------------------------------
-# Install python3-mrpt, or test with a local build with:
+# Install python3-pymrpt, ros-$ROS_DISTRO-mrpt2, or test with a local build with:
 # export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
 # ---------------------------------------------------------------------
 

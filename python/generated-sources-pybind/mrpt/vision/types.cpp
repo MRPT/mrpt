@@ -7,6 +7,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CLoadableOptions.h>
 #include <mrpt/img/TPixelCoord.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPoint2D.h>
 #include <mrpt/math/TPoint3D.h>
 #include <mrpt/math/TPose2D.h>
@@ -24,7 +25,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER

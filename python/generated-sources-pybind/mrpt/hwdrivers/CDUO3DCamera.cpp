@@ -13,6 +13,7 @@
 #include <mrpt/img/TPixelCoord.h>
 #include <mrpt/io/CStream.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/system/COutputLogger.h>
 #include <mrpt/typemeta/static_string.h>
@@ -24,7 +25,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -77,7 +78,7 @@ void bind_mrpt_hwdrivers_CDUO3DCamera(std::function< pybind11::module &(std::str
 		cl.def("openURL", [](mrpt::hwdrivers::CFFMPEG_InputStream &o, const std::string & a0) -> bool { return o.openURL(a0); }, "", pybind11::arg("url"));
 		cl.def("openURL", [](mrpt::hwdrivers::CFFMPEG_InputStream &o, const std::string & a0, bool const & a1) -> bool { return o.openURL(a0, a1); }, "", pybind11::arg("url"), pybind11::arg("grab_as_grayscale"));
 		cl.def("openURL", [](mrpt::hwdrivers::CFFMPEG_InputStream &o, const std::string & a0, bool const & a1, bool const & a2) -> bool { return o.openURL(a0, a1, a2); }, "", pybind11::arg("url"), pybind11::arg("grab_as_grayscale"), pybind11::arg("verbose"));
-		cl.def("openURL", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)(const std::string &, bool, bool, const class std::map<std::string, std::string, struct std::less<std::string >, class std::allocator<struct std::pair<const std::string, std::string > > > &)) &mrpt::hwdrivers::CFFMPEG_InputStream::openURL, "Open a video file or a video stream (rtsp://)\n  This can be used to open local video files (eg. \"myVideo.avi\",\n \"c: and also IP cameras (e.g `rtsp://a.b.c.d/live.sdp`).\n  User/password can be used like `rtsp://USER:PASSWORD/PATH`.\n\n [ffmpeg options](https://www.ffmpeg.org/ffmpeg-protocols.html)\n can be added via the  argument.\n\n If  is set to true, more information about the video will be\n dumped to cout.\n\n \n close, retrieveFrame\n \n\n false on any error (and error info dumped to cerr), true on\n success.\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::openURL(const std::string &, bool, bool, const class std::map<std::string, std::string, struct std::less<std::string >, class std::allocator<struct std::pair<const std::string, std::string > > > &) --> bool", pybind11::arg("url"), pybind11::arg("grab_as_grayscale"), pybind11::arg("verbose"), pybind11::arg("options"));
+		cl.def("openURL", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)(const std::string &, bool, bool, const class std::map<std::string, std::string > &)) &mrpt::hwdrivers::CFFMPEG_InputStream::openURL, "Open a video file or a video stream (rtsp://)\n  This can be used to open local video files (eg. \"myVideo.avi\",\n \"c:\\a.mpeg\") and also IP cameras (e.g `rtsp://a.b.c.d/live.sdp`).\n  User/password can be used like `rtsp://USER:PASSWORD/PATH`.\n\n [ffmpeg options](https://www.ffmpeg.org/ffmpeg-protocols.html)\n can be added via the  argument.\n\n If  is set to true, more information about the video will be\n dumped to cout.\n\n \n close, retrieveFrame\n \n\n false on any error (and error info dumped to cerr), true on\n success.\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::openURL(const std::string &, bool, bool, const class std::map<std::string, std::string > &) --> bool", pybind11::arg("url"), pybind11::arg("grab_as_grayscale"), pybind11::arg("verbose"), pybind11::arg("options"));
 		cl.def("isOpen", (bool (mrpt::hwdrivers::CFFMPEG_InputStream::*)() const) &mrpt::hwdrivers::CFFMPEG_InputStream::isOpen, "Return whether the video source was open correctly \n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::isOpen() const --> bool");
 		cl.def("close", (void (mrpt::hwdrivers::CFFMPEG_InputStream::*)()) &mrpt::hwdrivers::CFFMPEG_InputStream::close, "Close the video stream (this is called automatically at destruction).\n \n\n openURL\n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::close() --> void");
 		cl.def("getVideoFPS", (double (mrpt::hwdrivers::CFFMPEG_InputStream::*)() const) &mrpt::hwdrivers::CFFMPEG_InputStream::getVideoFPS, "Get the frame-per-second (FPS) of the video source, or \"-1\" if the video\n is not open. \n\nC++: mrpt::hwdrivers::CFFMPEG_InputStream::getVideoFPS() const --> double");

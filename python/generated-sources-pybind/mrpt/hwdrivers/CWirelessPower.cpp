@@ -8,6 +8,7 @@
 #include <mrpt/core/Clock.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CWirelessPower.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/rtti/CObject.h>
@@ -24,7 +25,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -103,7 +104,7 @@ struct PyCallBack_mrpt_hwdrivers_CWirelessPower : public mrpt::hwdrivers::CWirel
 		}
 		return CGenericSensor::initialize();
 	}
-	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable>, struct std::less<mrpt::Clock::time_point >, class std::allocator<struct std::pair<const mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> > > >;
+	using _binder_ret_0 = class std::multimap<mrpt::Clock::time_point, class std::shared_ptr<class mrpt::serialization::CSerializable> >;
 	_binder_ret_0 getObservations() override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::hwdrivers::CWirelessPower *>(this), "getObservations");
@@ -182,9 +183,9 @@ void bind_mrpt_hwdrivers_CWirelessPower(std::function< pybind11::module &(std::s
 		cl.def("setNet", (void (mrpt::hwdrivers::CWirelessPower::*)(std::string, std::string)) &mrpt::hwdrivers::CWirelessPower::setNet, "Set the SSID and GUID of the target network.\n \n\n std::exception In case there is a failure\n \n\n SSID of the target network\n \n\n GUID of the network interface\n\nC++: mrpt::hwdrivers::CWirelessPower::setNet(std::string, std::string) --> void", pybind11::arg("ssid"), pybind11::arg("guid"));
 		cl.def("doProcess", (void (mrpt::hwdrivers::CWirelessPower::*)()) &mrpt::hwdrivers::CWirelessPower::doProcess, "C++: mrpt::hwdrivers::CWirelessPower::doProcess() --> void");
 		cl.def("loadConfig_sensorSpecific", (void (mrpt::hwdrivers::CWirelessPower::*)(const class mrpt::config::CConfigFileBase &, const std::string &)) &mrpt::hwdrivers::CWirelessPower::loadConfig_sensorSpecific, "C++: mrpt::hwdrivers::CWirelessPower::loadConfig_sensorSpecific(const class mrpt::config::CConfigFileBase &, const std::string &) --> void", pybind11::arg("configSource"), pybind11::arg("section"));
-		cl.def("ListInterfaces", (class std::vector<std::string, class std::allocator<std::string > > (mrpt::hwdrivers::CWirelessPower::*)()) &mrpt::hwdrivers::CWirelessPower::ListInterfaces, "Gets a list of the interfaces\n \n\n std::exception In case there is a failure\n \n\n std::vector returns the identifiers (GUID) of the available\n interfaces\n\nC++: mrpt::hwdrivers::CWirelessPower::ListInterfaces() --> class std::vector<std::string, class std::allocator<std::string > >");
+		cl.def("ListInterfaces", (class std::vector<std::string > (mrpt::hwdrivers::CWirelessPower::*)()) &mrpt::hwdrivers::CWirelessPower::ListInterfaces, "Gets a list of the interfaces\n \n\n std::exception In case there is a failure\n \n\n std::vector returns the identifiers (GUID) of the available\n interfaces\n\nC++: mrpt::hwdrivers::CWirelessPower::ListInterfaces() --> class std::vector<std::string >");
 		cl.def("GetPower", (int (mrpt::hwdrivers::CWirelessPower::*)()) &mrpt::hwdrivers::CWirelessPower::GetPower, "Gets the power of a given network\n \n\n std::exception In case there is a failure\n \n\n Returns the power (0-100).\n\nC++: mrpt::hwdrivers::CWirelessPower::GetPower() --> int");
 		cl.def("getObservation", (bool (mrpt::hwdrivers::CWirelessPower::*)(class mrpt::obs::CObservationWirelessPower &)) &mrpt::hwdrivers::CWirelessPower::getObservation, "Gets the power of a given network as a timestamped observation\n NOTE: Deprecated, use getObservations instead. See CGenericSensor\n documentation. This function is kept for internal use of the module\n \n\n Returns true if the observation was correct, and false otherwise\n \n\n mrpt::hwdrivers::CGenericSensor\n\nC++: mrpt::hwdrivers::CWirelessPower::getObservation(class mrpt::obs::CObservationWirelessPower &) --> bool", pybind11::arg("outObservation"));
-		cl.def("ListNetworks", (class std::vector<std::string, class std::allocator<std::string > > (mrpt::hwdrivers::CWirelessPower::*)()) &mrpt::hwdrivers::CWirelessPower::ListNetworks, "Gets a list of the networks available for an interface\n \n\n std::exception In case there is a failure\n \n\n std::vector returns handles to the available networks of a given\n interface\n\nC++: mrpt::hwdrivers::CWirelessPower::ListNetworks() --> class std::vector<std::string, class std::allocator<std::string > >");
+		cl.def("ListNetworks", (class std::vector<std::string > (mrpt::hwdrivers::CWirelessPower::*)()) &mrpt::hwdrivers::CWirelessPower::ListNetworks, "Gets a list of the networks available for an interface\n \n\n std::exception In case there is a failure\n \n\n std::vector returns handles to the available networks of a given\n interface\n\nC++: mrpt::hwdrivers::CWirelessPower::ListNetworks() --> class std::vector<std::string >");
 	}
 }

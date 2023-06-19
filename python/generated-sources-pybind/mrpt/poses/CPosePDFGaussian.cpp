@@ -42,7 +42,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -239,6 +239,19 @@ struct PyCallBack_mrpt_poses_CPosePDFGaussian : public mrpt::poses::CPosePDFGaus
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDFGaussian *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 };
 
 void bind_mrpt_poses_CPosePDFGaussian(std::function< pybind11::module &(std::string const &namespace_) > &M)
@@ -247,6 +260,8 @@ void bind_mrpt_poses_CPosePDFGaussian(std::function< pybind11::module &(std::str
 		pybind11::class_<mrpt::poses::CPosePDFGaussian, std::shared_ptr<mrpt::poses::CPosePDFGaussian>, PyCallBack_mrpt_poses_CPosePDFGaussian, mrpt::poses::CPosePDF> cl(M("mrpt::poses"), "CPosePDFGaussian", "Declares a class that represents a Probability Density  function (PDF) of a\n 2D pose \n\n.\n\n   This class implements that PDF using a mono-modal Gaussian distribution.\n See mrpt::poses::CPosePDF for more details.\n\n \n CPose2D, CPosePDF, CPosePDFParticles\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPosePDFGaussian(); }, [](){ return new PyCallBack_mrpt_poses_CPosePDFGaussian(); } ) );
 		cl.def( pybind11::init<const class mrpt::poses::CPose2D &>(), pybind11::arg("init_Mean") );
+
+		cl.def( pybind11::init<const class mrpt::poses::CPose2D &, const class mrpt::math::CMatrixFixed<double, 3, 3> &>(), pybind11::arg("init_Mean"), pybind11::arg("init_Cov") );
 
 		cl.def( pybind11::init<const class mrpt::poses::CPosePDF &>(), pybind11::arg("o") );
 
@@ -271,6 +286,7 @@ void bind_mrpt_poses_CPosePDFGaussian(std::function< pybind11::module &(std::str
 		cl.def("changeCoordinatesReference", (void (mrpt::poses::CPosePDFGaussian::*)(const class mrpt::poses::CPose2D &)) &mrpt::poses::CPosePDFGaussian::changeCoordinatesReference, "this = p (+) this. This can be used to convert a PDF from local\n coordinates to global, providing the point (newReferenceBase) from which\n   \"to project\" the current pdf. Result PDF substituted the currently\n stored one in the object.\n\nC++: mrpt::poses::CPosePDFGaussian::changeCoordinatesReference(const class mrpt::poses::CPose2D &) --> void", pybind11::arg("newReferenceBase"));
 		cl.def("rotateCov", (void (mrpt::poses::CPosePDFGaussian::*)(const double)) &mrpt::poses::CPosePDFGaussian::rotateCov, "Rotate the covariance matrix by replacing it by \n\n\n, where \n\n\n\n.\n\nC++: mrpt::poses::CPosePDFGaussian::rotateCov(const double) --> void", pybind11::arg("ang"));
 		cl.def("inverseComposition", (void (mrpt::poses::CPosePDFGaussian::*)(const class mrpt::poses::CPosePDFGaussian &, const class mrpt::poses::CPosePDFGaussian &)) &mrpt::poses::CPosePDFGaussian::inverseComposition, "Set \n , computing the mean using the \"-\"\n operator and the covariances through the corresponding Jacobians (For\n 'x0' and 'x1' being independent variables!). \n\nC++: mrpt::poses::CPosePDFGaussian::inverseComposition(const class mrpt::poses::CPosePDFGaussian &, const class mrpt::poses::CPosePDFGaussian &) --> void", pybind11::arg("x"), pybind11::arg("ref"));
+		cl.def("inverseComposition", (void (mrpt::poses::CPosePDFGaussian::*)(const class mrpt::poses::CPosePDFGaussian &, const class mrpt::poses::CPosePDFGaussian &, const class mrpt::math::CMatrixFixed<double, 3, 3> &)) &mrpt::poses::CPosePDFGaussian::inverseComposition, "Set \n , computing the mean using the \"-\"\n operator and the covariances through the corresponding Jacobians (Given\n the 3x3 cross-covariance matrix of variables x0 and x1). \n\nC++: mrpt::poses::CPosePDFGaussian::inverseComposition(const class mrpt::poses::CPosePDFGaussian &, const class mrpt::poses::CPosePDFGaussian &, const class mrpt::math::CMatrixFixed<double, 3, 3> &) --> void", pybind11::arg("x1"), pybind11::arg("x0"), pybind11::arg("COV_01"));
 		cl.def("drawSingleSample", (void (mrpt::poses::CPosePDFGaussian::*)(class mrpt::poses::CPose2D &) const) &mrpt::poses::CPosePDFGaussian::drawSingleSample, "Draws a single sample from the distribution\n\nC++: mrpt::poses::CPosePDFGaussian::drawSingleSample(class mrpt::poses::CPose2D &) const --> void", pybind11::arg("outPart"));
 		cl.def("bayesianFusion", [](mrpt::poses::CPosePDFGaussian &o, const class mrpt::poses::CPosePDF & a0, const class mrpt::poses::CPosePDF & a1) -> void { return o.bayesianFusion(a0, a1); }, "", pybind11::arg("p1"), pybind11::arg("p2"));
 		cl.def("bayesianFusion", (void (mrpt::poses::CPosePDFGaussian::*)(const class mrpt::poses::CPosePDF &, const class mrpt::poses::CPosePDF &, const double)) &mrpt::poses::CPosePDFGaussian::bayesianFusion, "Bayesian fusion of two points gauss. distributions, then save the result\nin this object.\n  The process is as follows:\n		- (x1,S1): Mean and variance of the p1 distribution.\n		- (x2,S2): Mean and variance of the p2 distribution.\n		- (x,S): Mean and variance of the resulting distribution.\n\n    \n\n    \n\n	 \n\nC++: mrpt::poses::CPosePDFGaussian::bayesianFusion(const class mrpt::poses::CPosePDF &, const class mrpt::poses::CPosePDF &, const double) --> void", pybind11::arg("p1"), pybind11::arg("p2"), pybind11::arg("minMahalanobisDistToDrop"));

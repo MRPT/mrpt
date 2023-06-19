@@ -72,6 +72,21 @@ bool obs_to_viz(
 	const mrpt::obs::CObservation::Ptr& obs, const VisualizationParameters& p,
 	mrpt::opengl::CSetOfObjects& out);
 
+/** Clears `out` and creates a visualization of the given sensory-frame,
+ *  dispatching the call according to the actual observation classes inside the
+ * SF.
+ *
+ *  \return true if type has known visualizer, false if it does not (then, `out`
+ *          will be empty)
+ *
+ *  \note This and the accompanying functions are defined in namespace
+ *        mrpt::obs, but you must link against mrpt::maps too to have their
+ *        definitions.
+ */
+bool obs_to_viz(
+	const mrpt::obs::CSensoryFrame& sf, const VisualizationParameters& p,
+	mrpt::opengl::CSetOfObjects& out);
+
 /// Clears `out` and creates a visualization of the given observation.
 void obs3Dscan_to_viz(
 	const mrpt::obs::CObservation3DRangeScan::Ptr& obs,

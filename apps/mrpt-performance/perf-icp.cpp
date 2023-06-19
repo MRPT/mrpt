@@ -117,7 +117,7 @@ double icp_test_1(int a1, int a2)
 	}
 
 #if 0
-	mapBuilder.getCurrentlyBuiltMetricMap()->saveMetricMapRepresentationToFile( format("icp_%i_result",a1) );
+	mapBuilder.getCurrentlyBuiltMetricMap().saveMetricMapRepresentationToFile( format("icp_%i_result",a1) );
 #endif
 
 	if (!step) step++;

@@ -9,7 +9,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -19,7 +19,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::containers::CDynamicGrid file:mrpt/containers/CDynamicGrid.h line:39
+// mrpt::containers::CDynamicGrid file:mrpt/containers/CDynamicGrid.h line:40
 struct PyCallBack_mrpt_containers_CDynamicGrid_mrpt_maps_THeightGridmapCell_t : public mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell> {
 	using mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>::CDynamicGrid;
 
@@ -51,7 +51,7 @@ struct PyCallBack_mrpt_containers_CDynamicGrid_mrpt_maps_THeightGridmapCell_t : 
 	}
 };
 
-// mrpt::containers::CDynamicGrid file:mrpt/containers/CDynamicGrid.h line:39
+// mrpt::containers::CDynamicGrid file:mrpt/containers/CDynamicGrid.h line:40
 struct PyCallBack_mrpt_containers_CDynamicGrid_unsigned_char_t : public mrpt::containers::CDynamicGrid<unsigned char> {
 	using mrpt::containers::CDynamicGrid<unsigned char>::CDynamicGrid;
 
@@ -85,7 +85,7 @@ struct PyCallBack_mrpt_containers_CDynamicGrid_unsigned_char_t : public mrpt::co
 
 void bind_mrpt_containers_CDynamicGrid_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::containers::CDynamicGrid file:mrpt/containers/CDynamicGrid.h line:39
+	{ // mrpt::containers::CDynamicGrid file:mrpt/containers/CDynamicGrid.h line:40
 		pybind11::class_<mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>, std::shared_ptr<mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>>, PyCallBack_mrpt_containers_CDynamicGrid_mrpt_maps_THeightGridmapCell_t> cl(M("mrpt::containers"), "CDynamicGrid_mrpt_maps_THeightGridmapCell_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>(); }, [](){ return new PyCallBack_mrpt_containers_CDynamicGrid_mrpt_maps_THeightGridmapCell_t(); } ), "doc");
 		cl.def( pybind11::init( [](double const & a0){ return new mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>(a0); }, [](double const & a0){ return new PyCallBack_mrpt_containers_CDynamicGrid_mrpt_maps_THeightGridmapCell_t(a0); } ), "doc");
@@ -121,7 +121,7 @@ void bind_mrpt_containers_CDynamicGrid_1(std::function< pybind11::module &(std::
 		cl.def("saveToTextFile", (bool (mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>::*)(const std::string &) const) &mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>::saveToTextFile, "C++: mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>::saveToTextFile(const std::string &) const --> bool", pybind11::arg("fileName"));
 		cl.def("assign", (class mrpt::containers::CDynamicGrid<struct mrpt::maps::THeightGridmapCell> & (mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>::*)(const class mrpt::containers::CDynamicGrid<struct mrpt::maps::THeightGridmapCell> &)) &mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>::operator=, "C++: mrpt::containers::CDynamicGrid<mrpt::maps::THeightGridmapCell>::operator=(const class mrpt::containers::CDynamicGrid<struct mrpt::maps::THeightGridmapCell> &) --> class mrpt::containers::CDynamicGrid<struct mrpt::maps::THeightGridmapCell> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::containers::CDynamicGrid file:mrpt/containers/CDynamicGrid.h line:39
+	{ // mrpt::containers::CDynamicGrid file:mrpt/containers/CDynamicGrid.h line:40
 		pybind11::class_<mrpt::containers::CDynamicGrid<unsigned char>, std::shared_ptr<mrpt::containers::CDynamicGrid<unsigned char>>, PyCallBack_mrpt_containers_CDynamicGrid_unsigned_char_t> cl(M("mrpt::containers"), "CDynamicGrid_unsigned_char_t", "");
 		cl.def( pybind11::init( [](){ return new mrpt::containers::CDynamicGrid<unsigned char>(); }, [](){ return new PyCallBack_mrpt_containers_CDynamicGrid_unsigned_char_t(); } ), "doc");
 		cl.def( pybind11::init( [](double const & a0){ return new mrpt::containers::CDynamicGrid<unsigned char>(a0); }, [](double const & a0){ return new PyCallBack_mrpt_containers_CDynamicGrid_unsigned_char_t(a0); } ), "doc");
