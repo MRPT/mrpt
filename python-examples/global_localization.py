@@ -170,7 +170,8 @@ while True:
     particles_object = pdf.getVisualization()
 
     # get laserscan
-    points_map = obs.buildAuxPointsMap()
+    points_map = mrpt.maps.CSimplePointsMap()
+    points_map.insert(sf)
     laserscan_object = points_map.getVisualization()
     laserscan_object.setPose(mrpt.poses.CPose3D(mean))
     laserscan_object.setColor(mrpt.utils.TColorf(1., 0., 0.))

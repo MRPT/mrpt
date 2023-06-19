@@ -136,6 +136,20 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 		const std::optional<const mrpt::poses::CPose3D>& robotPose =
 			std::nullopt);
 
+#if defined(MRPT_BUILDING_PYTHON_WRAPPER)
+	bool insertObs(
+		const mrpt::obs::CObservation& obs,
+		const mrpt::poses::CPose3D* robotPose = nullptr)
+	{
+		if (robotPose)
+			return insertObservation(
+				obs, std::optional<const mrpt::poses::CPose3D>(*robotPose));
+		else
+			return insertObservation(
+				obs, std::optional<const mrpt::poses::CPose3D>());
+	}
+#endif
+
 	/** Computes the log-likelihood of a given observation given an arbitrary
 	 * robot 3D pose.
 	 * See: \ref maps_observations

@@ -29,6 +29,7 @@ $HOME/code/binder/build/source/binder \
 	-iwithsysroot/usr/include/c++/11/ \
 	-iwithsysroot/usr/include/x86_64-linux-gnu/c++/11/ \
 	-std=c++17 -DNDEBUG \
+	-DMRPT_BUILDING_PYTHON_WRAPPER \
 	-I$HOME/code/mrpt/build-Release/include/mrpt-configuration/ \
 	-I$HOME/code/mrpt/build-Release/3rdparty/nanogui/ \
 	-I/usr/include/eigen3 \
