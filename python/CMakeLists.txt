@@ -47,6 +47,8 @@ if ("${PYBIND11_MAJOR_VERSION}.${PYBIND11_MINOR_VERSION}" VERSION_LESS "2.9")
   target_compile_definitions(pymrpt PRIVATE override_caster_t=overload_caster_t)
 endif()
 
+target_compile_definitions(pymrpt PRIVATE MRPT_BUILDING_PYTHON_WRAPPER)
+
   # Python files:
 file(MAKE_DIRECTORY ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/)
 add_custom_command(TARGET pymrpt POST_BUILD
