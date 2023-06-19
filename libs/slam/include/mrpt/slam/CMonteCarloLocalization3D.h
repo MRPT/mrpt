@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
@@ -94,6 +95,15 @@ class CMonteCarloLocalization3D
 		const mrpt::obs::CSensoryFrame* observation,
 		const bayes::CParticleFilter::TParticleFilterOptions& PF_options)
 		override;
+
+	/** Returns a 3D representation of this PDF.
+	 * \note Needs the mrpt-opengl library, and using
+	 * mrpt::opengl::CSetOfObjects::Ptr as template argument.
+	 */
+	mrpt::opengl::CSetOfObjects::Ptr getVisualization() const
+	{
+		return mrpt::opengl::CSetOfObjects::posePDF2opengl(*this);
+	}
 
 	/** \name Virtual methods that the PF_implementations assume exist.
 		@{ */
