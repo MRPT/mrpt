@@ -171,24 +171,21 @@ while True:
 
     # get laserscan
     points_map = mrpt.maps.CSimplePointsMap()
-    points_map.insert(sf)
+    points_map.insertObs(sf.getObservationByIndex(0))
     laserscan_object = points_map.getVisualization()
     laserscan_object.setPose(mrpt.poses.CPose3D(mean))
-    laserscan_object.setColor(mrpt.utils.TColorf(1., 0., 0.))
+    laserscan_object.setColor(mrpt.img.TColorf(1., 0., 0.))
 
     # update pf
 
-    act_ptr.insert(act)
-    obs_ptr = mrpt.obs.CSensoryFrame()
-    obs_ptr.insert(obs)
-    stats = pf.executeOn(pdf, act_ptr, obs_ptr)
+    stats = pf.executeOn(pdf, act, sf)
 
     # update scene
     scene_ptr = win3D.get3DSceneAndLock()
-    scene_ptr.ctx().clear()
-    scene_ptr.ctx().insert(map_object)
-    scene_ptr.ctx().insert(particles_object)
-    scene_ptr.ctx().insert(laserscan_object)
+    scene_ptr.clear()
+    scene_ptr.insert(map_object)
+    scene_ptr.insert(particles_object)
+    scene_ptr.insert(laserscan_object)
     win3D.unlockAccess3DScene()
     win3D.forceRepaint()
 
