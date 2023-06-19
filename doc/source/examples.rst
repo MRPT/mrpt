@@ -1,12 +1,14 @@
 .. _examples:
 
 ===============
-Code examples
+C++ examples
 ===============
 
 The source code for all these C++ examples can be found
 under `MRPT/samples <https://github.com/MRPT/mrpt/tree/develop/samples>`_.
-Python examples are under `MRPT/python-examples <https://github.com/MRPT/mrpt/tree/develop/python-examples>`_.
+
+Python examples are `here <python_examples.html>`_.
+
 
 .. toctree::
   :maxdepth: 1

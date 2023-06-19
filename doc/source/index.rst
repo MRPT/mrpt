@@ -21,6 +21,7 @@ MRPT
   tutorials
   applications
   examples
+  python_examples
   wrappers
   supported-sensors
   unit_testing
