@@ -342,9 +342,11 @@ void CMetricMapBuilderRBPF::getCurrentlyBuiltMap(CSimpleMap& out_map) const
 	out_map = mapPDF.SFs;
 }
 
-const CMultiMetricMap* CMetricMapBuilderRBPF::getCurrentlyBuiltMetricMap() const
+const CMultiMetricMap& CMetricMapBuilderRBPF::getCurrentlyBuiltMetricMap() const
 {
-	return mapPDF.getCurrentMostLikelyMetricMap();
+	auto ptr = mapPDF.getCurrentMostLikelyMetricMap();
+	ASSERT_(ptr);
+	return *ptr;
 }
 
 /*---------------------------------------------------------------

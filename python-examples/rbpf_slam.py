@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 
+# ---------------------------------------------------------------------
+# Install python3-pymrpt, ros-$ROS_DISTRO-mrpt2, or test with a local build with:
+# export PYTHONPATH=$HOME/code/mrpt/build-Release/:$PYTHONPATH
+# ---------------------------------------------------------------------
+
 # RBPF-SLAM: builds a gridmap from a 2D lidar dataset.
 #
 # Usage example:
 #
-# rbpf_slam.py \
-#  -c share/mrpt/config_files/rbpf-slam/gridmapping_optimal_sampling.ini
-#     share/mrpt/datasets/2006-01ENE-21-SENA_Telecom\ Faculty_one_loop_only.rawlog
+# ./rbpf_slam.py --help
 #
-
-import argparse
+# ./rbpf_slam.py -c ../share/mrpt/config_files/rbpf-slam/gridmapping_optimal_sampling.ini  ../share/mrpt/datasets/2006-01ENE-21-SENA_Telecom\ Faculty_one_loop_only.rawlog
 from mrpt import pymrpt
+import argparse
+
 mrpt = pymrpt.mrpt
 
 # args

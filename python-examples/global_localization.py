@@ -216,4 +216,4 @@ while True:
 
 print()
 print('Done.')
-input('Press key to quit.')
+input('Press any key to quit.')
