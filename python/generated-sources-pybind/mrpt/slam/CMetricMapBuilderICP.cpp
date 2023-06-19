@@ -148,16 +148,16 @@ struct PyCallBack_mrpt_slam_CMetricMapBuilderICP : public mrpt::slam::CMetricMap
 		}
 		return CMetricMapBuilderICP::getCurrentlyBuiltMap(a0);
 	}
-	const class mrpt::maps::CMultiMetricMap * getCurrentlyBuiltMetricMap() const override {
+	const class mrpt::maps::CMultiMetricMap & getCurrentlyBuiltMetricMap() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CMetricMapBuilderICP *>(this), "getCurrentlyBuiltMetricMap");
 		if (overload) {
 			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<const class mrpt::maps::CMultiMetricMap *>::value) {
-				static pybind11::detail::override_caster_t<const class mrpt::maps::CMultiMetricMap *> caster;
-				return pybind11::detail::cast_ref<const class mrpt::maps::CMultiMetricMap *>(std::move(o), caster);
+			if (pybind11::detail::cast_is_temporary_value_reference<const class mrpt::maps::CMultiMetricMap &>::value) {
+				static pybind11::detail::override_caster_t<const class mrpt::maps::CMultiMetricMap &> caster;
+				return pybind11::detail::cast_ref<const class mrpt::maps::CMultiMetricMap &>(std::move(o), caster);
 			}
-			else return pybind11::detail::cast_safe<const class mrpt::maps::CMultiMetricMap *>(std::move(o));
+			else return pybind11::detail::cast_safe<const class mrpt::maps::CMultiMetricMap &>(std::move(o));
 		}
 		return CMetricMapBuilderICP::getCurrentlyBuiltMetricMap();
 	}
@@ -633,7 +633,7 @@ void bind_mrpt_slam_CMetricMapBuilderICP(std::function< pybind11::module &(std::
 		cl.def("processActionObservation", (void (mrpt::slam::CMetricMapBuilderICP::*)(class mrpt::obs::CActionCollection &, class mrpt::obs::CSensoryFrame &)) &mrpt::slam::CMetricMapBuilderICP::processActionObservation, "Appends a new action and observations to update this map: See the\ndescription of the class at the top of this page to see a more complete\ndescription.\n  \n\n The estimation of the incremental pose change in the robot\npose.\n	\n\n The set of observations that robot senses at the new pose.\n See params in CMetricMapBuilder::options and\nCMetricMapBuilderICP::ICP_options\n \n\n processObservation\n\nC++: mrpt::slam::CMetricMapBuilderICP::processActionObservation(class mrpt::obs::CActionCollection &, class mrpt::obs::CSensoryFrame &) --> void", pybind11::arg("action"), pybind11::arg("in_SF"));
 		cl.def("processObservation", (void (mrpt::slam::CMetricMapBuilderICP::*)(const class std::shared_ptr<class mrpt::obs::CObservation> &)) &mrpt::slam::CMetricMapBuilderICP::processObservation, "The main method of this class: Process one odometry or sensor\n	 observation.\n		The new entry point of the algorithm (the old one  was\n	 processActionObservation, which now is a wrapper to\n	  this method).\n See params in CMetricMapBuilder::options and\n	 CMetricMapBuilderICP::ICP_options\n\nC++: mrpt::slam::CMetricMapBuilderICP::processObservation(const class std::shared_ptr<class mrpt::obs::CObservation> &) --> void", pybind11::arg("obs"));
 		cl.def("getCurrentlyBuiltMap", (void (mrpt::slam::CMetricMapBuilderICP::*)(class mrpt::maps::CSimpleMap &) const) &mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMap, "Fills \"out_map\" with the set of \"poses\"-\"sensory-frames\", thus the so\n far built map \n\nC++: mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMap(class mrpt::maps::CSimpleMap &) const --> void", pybind11::arg("out_map"));
-		cl.def("getCurrentlyBuiltMetricMap", (const class mrpt::maps::CMultiMetricMap * (mrpt::slam::CMetricMapBuilderICP::*)() const) &mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMetricMap, "C++: mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMetricMap() const --> const class mrpt::maps::CMultiMetricMap *", pybind11::return_value_policy::automatic);
+		cl.def("getCurrentlyBuiltMetricMap", (const class mrpt::maps::CMultiMetricMap & (mrpt::slam::CMetricMapBuilderICP::*)() const) &mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMetricMap, "C++: mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMetricMap() const --> const class mrpt::maps::CMultiMetricMap &", pybind11::return_value_policy::automatic);
 		cl.def("getCurrentlyBuiltMapSize", (unsigned int (mrpt::slam::CMetricMapBuilderICP::*)()) &mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMapSize, "Returns just how many sensory-frames are stored in the currently build\n map \n\nC++: mrpt::slam::CMetricMapBuilderICP::getCurrentlyBuiltMapSize() --> unsigned int");
 		cl.def("saveCurrentEstimationToImage", [](mrpt::slam::CMetricMapBuilderICP &o, const std::string & a0) -> void { return o.saveCurrentEstimationToImage(a0); }, "", pybind11::arg("file"));
 		cl.def("saveCurrentEstimationToImage", (void (mrpt::slam::CMetricMapBuilderICP::*)(const std::string &, bool)) &mrpt::slam::CMetricMapBuilderICP::saveCurrentEstimationToImage, "A useful method for debugging: the current map (and/or poses) estimation\n is dumped to an image file.\n \n\n The output file name\n \n\n Output format = true:EMF, false:BMP\n\nC++: mrpt::slam::CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string &, bool) --> void", pybind11::arg("file"), pybind11::arg("formatEMF_BMP"));

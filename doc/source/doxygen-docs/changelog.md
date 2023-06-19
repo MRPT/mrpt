@@ -9,6 +9,8 @@
   - \ref mrpt_obs_grp
     - New static method mrpt::obs::CRawlog::ReadFromArchive() (useful for python bindings)
     - New overload mrpt::obs::obs_to_viz() for mrpt::obs::CSensoryFrame containers
+  - \ref mrpt_slam_grp
+    - mrpt::slam::CMetricMapBuilder::getCurrentlyBuiltMetricMap() returns a const ref instead of a pointer (safer, and does not lead to memory crashes in the Python wrapper).
 - Python:
   - New wrapped functions:
     - `mrpt.serialization.archiveFrom()`

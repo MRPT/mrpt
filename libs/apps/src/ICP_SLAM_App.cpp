@@ -273,7 +273,7 @@ void ICP_SLAM_App_Base::run()
 		f_log.printf(
 			"%f %i\n", 1000.0f * t_exec, mapBuilder.getCurrentlyBuiltMapSize());
 
-		const CMultiMetricMap* mostLikMap =
+		const CMultiMetricMap& mostLikMap =
 			mapBuilder.getCurrentlyBuiltMetricMap();
 
 		if (LOG_FREQUENCY > 0 && 0 == (step % LOG_FREQUENCY))
@@ -335,10 +335,10 @@ void ICP_SLAM_App_Base::run()
 			}
 
 			// The maps:
-			view->insert(mostLikMap->getVisualization());
+			view->insert(mostLikMap.getVisualization());
 
 			// Only the point map:
-			if (auto pMap = mostLikMap->mapByClass<CPointsMap>(); pMap)
+			if (auto pMap = mostLikMap.mapByClass<CPointsMap>(); pMap)
 				view_map->insert(pMap->getVisualization());
 
 			// Draw the robot path:
@@ -444,11 +444,11 @@ void ICP_SLAM_App_Base::run()
 	}
 
 	{
-		const CMultiMetricMap* finalPointsMap =
+		const CMultiMetricMap& finalPointsMap =
 			mapBuilder.getCurrentlyBuiltMetricMap();
 		auto str = format("%s/_finalmaps_.txt", OUT_DIR);
 		MRPT_LOG_INFO_FMT("Dumping final metric maps to %s_XXX\n", str.c_str());
-		finalPointsMap->saveMetricMapRepresentationToFile(str);
+		finalPointsMap.saveMetricMapRepresentationToFile(str);
 	}
 
 	if (win3D) win3D->waitForKey();
