@@ -29,6 +29,7 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
