@@ -37,7 +37,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -208,6 +208,19 @@ struct PyCallBack_mrpt_poses_CPosePDF : public mrpt::poses::CPosePDF {
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDF *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 	bool saveToTextFile(const std::string & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPosePDF *>(this), "saveToTextFile");
@@ -239,7 +252,7 @@ struct PyCallBack_mrpt_poses_CPosePDF : public mrpt::poses::CPosePDF {
 void bind_mrpt_poses_CPosePDF(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::poses::CPosePDF file:mrpt/poses/CPosePDF.h line:36
-		pybind11::class_<mrpt::poses::CPosePDF, std::shared_ptr<mrpt::poses::CPosePDF>, PyCallBack_mrpt_poses_CPosePDF, mrpt::serialization::CSerializable, mrpt::math::CProbabilityDensityFunction<mrpt::poses::CPose2D,3>> cl(M("mrpt::poses"), "CPosePDF", "Declares a class that represents a probability density function (pdf) of a\n 2D pose (x,y,phi).\n   This class is just the base class for unifying many diferent ways this pdf\n can be implemented.\n\n  For convenience, a pose composition is also defined for any pdf derived\n class,\n   changeCoordinatesReference, in the form of a method rather than an\n operator.\n\n  See also:\n  [probabilistic spatial representations](tutorial-pdf-over-poses.html)\n\n \n CPose2D, CPose3DPDF, CPoseRandomSampler\n \n\n\n ");
+		pybind11::class_<mrpt::poses::CPosePDF, std::shared_ptr<mrpt::poses::CPosePDF>, PyCallBack_mrpt_poses_CPosePDF, mrpt::serialization::CSerializable, mrpt::math::CProbabilityDensityFunction<mrpt::poses::CPose2D,3UL>> cl(M("mrpt::poses"), "CPosePDF", "Declares a class that represents a probability density function (pdf) of a\n 2D pose (x,y,phi).\n   This class is just the base class for unifying many diferent ways this pdf\n can be implemented.\n\n  For convenience, a pose composition is also defined for any pdf derived\n class,\n   changeCoordinatesReference, in the form of a method rather than an\n operator.\n\n  See also:\n  [probabilistic spatial representations](tutorial-pdf-over-poses.html)\n\n \n CPose2D, CPose3DPDF, CPoseRandomSampler\n \n\n\n ");
 		cl.def(pybind11::init<PyCallBack_mrpt_poses_CPosePDF const &>());
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_poses_CPosePDF(); } ) );
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPosePDF::*)() const) &mrpt::poses::CPosePDF::GetRuntimeClass, "C++: mrpt::poses::CPosePDF::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
@@ -249,6 +262,10 @@ void bind_mrpt_poses_CPosePDF(std::function< pybind11::module &(std::string cons
 		cl.def("bayesianFusion", (void (mrpt::poses::CPosePDF::*)(const class mrpt::poses::CPosePDF &, const class mrpt::poses::CPosePDF &, const double)) &mrpt::poses::CPosePDF::bayesianFusion, "Bayesian fusion of two pose distributions (product of two\n distributions->new distribution), then save the result in this object\n (WARNING: See implementing classes to see classes that can and cannot be\n mixtured!)\n \n\n The first distribution to fuse\n \n\n The second distribution to fuse\n \n\n If set to different of 0, the result of\n very separate Gaussian modes (that will result in negligible components)\n in SOGs will be dropped to reduce the number of modes in the output.\n\nC++: mrpt::poses::CPosePDF::bayesianFusion(const class mrpt::poses::CPosePDF &, const class mrpt::poses::CPosePDF &, const double) --> void", pybind11::arg("p1"), pybind11::arg("p2"), pybind11::arg("minMahalanobisDistToDrop"));
 		cl.def("inverse", (void (mrpt::poses::CPosePDF::*)(class mrpt::poses::CPosePDF &) const) &mrpt::poses::CPosePDF::inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF\n\nC++: mrpt::poses::CPosePDF::inverse(class mrpt::poses::CPosePDF &) const --> void", pybind11::arg("o"));
 		cl.def("changeCoordinatesReference", (void (mrpt::poses::CPosePDF::*)(const class mrpt::poses::CPose3D &)) &mrpt::poses::CPosePDF::changeCoordinatesReference, "C++: mrpt::poses::CPosePDF::changeCoordinatesReference(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newReferenceBase"));
+		cl.def_static("jacobiansPoseComposition", [](const class mrpt::poses::CPose2D & a0, const class mrpt::poses::CPose2D & a1, class mrpt::math::CMatrixFixed<double, 3, 3> & a2, class mrpt::math::CMatrixFixed<double, 3, 3> & a3) -> void { return mrpt::poses::CPosePDF::jacobiansPoseComposition(a0, a1, a2, a3); }, "", pybind11::arg("x"), pybind11::arg("u"), pybind11::arg("df_dx"), pybind11::arg("df_du"));
+		cl.def_static("jacobiansPoseComposition", [](const class mrpt::poses::CPose2D & a0, const class mrpt::poses::CPose2D & a1, class mrpt::math::CMatrixFixed<double, 3, 3> & a2, class mrpt::math::CMatrixFixed<double, 3, 3> & a3, const bool & a4) -> void { return mrpt::poses::CPosePDF::jacobiansPoseComposition(a0, a1, a2, a3, a4); }, "", pybind11::arg("x"), pybind11::arg("u"), pybind11::arg("df_dx"), pybind11::arg("df_du"), pybind11::arg("compute_df_dx"));
+		cl.def_static("jacobiansPoseComposition", (void (*)(const class mrpt::poses::CPose2D &, const class mrpt::poses::CPose2D &, class mrpt::math::CMatrixFixed<double, 3, 3> &, class mrpt::math::CMatrixFixed<double, 3, 3> &, const bool, const bool)) &mrpt::poses::CPosePDF::jacobiansPoseComposition, "This static method computes the pose composition Jacobians, with these\n	   formulas:\n		\n\n\n\n\n\n\n\n\n\n\n\n	  \n\nC++: mrpt::poses::CPosePDF::jacobiansPoseComposition(const class mrpt::poses::CPose2D &, const class mrpt::poses::CPose2D &, class mrpt::math::CMatrixFixed<double, 3, 3> &, class mrpt::math::CMatrixFixed<double, 3, 3> &, const bool, const bool) --> void", pybind11::arg("x"), pybind11::arg("u"), pybind11::arg("df_dx"), pybind11::arg("df_du"), pybind11::arg("compute_df_dx"), pybind11::arg("compute_df_du"));
+		cl.def_static("jacobiansPoseComposition", (void (*)(const class mrpt::poses::CPosePDFGaussian &, const class mrpt::poses::CPosePDFGaussian &, class mrpt::math::CMatrixFixed<double, 3, 3> &, class mrpt::math::CMatrixFixed<double, 3, 3> &)) &mrpt::poses::CPosePDF::jacobiansPoseComposition, "C++: mrpt::poses::CPosePDF::jacobiansPoseComposition(const class mrpt::poses::CPosePDFGaussian &, const class mrpt::poses::CPosePDFGaussian &, class mrpt::math::CMatrixFixed<double, 3, 3> &, class mrpt::math::CMatrixFixed<double, 3, 3> &) --> void", pybind11::arg("x"), pybind11::arg("u"), pybind11::arg("df_dx"), pybind11::arg("df_du"));
 		cl.def_static("is_3D", (bool (*)()) &mrpt::poses::CPosePDF::is_3D, "C++: mrpt::poses::CPosePDF::is_3D() --> bool");
 		cl.def_static("is_PDF", (bool (*)()) &mrpt::poses::CPosePDF::is_PDF, "C++: mrpt::poses::CPosePDF::is_PDF() --> bool");
 		cl.def("assign", (class mrpt::poses::CPosePDF & (mrpt::poses::CPosePDF::*)(const class mrpt::poses::CPosePDF &)) &mrpt::poses::CPosePDF::operator=, "C++: mrpt::poses::CPosePDF::operator=(const class mrpt::poses::CPosePDF &) --> class mrpt::poses::CPosePDF &", pybind11::return_value_policy::automatic, pybind11::arg(""));

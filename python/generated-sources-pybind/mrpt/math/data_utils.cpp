@@ -1,10 +1,13 @@
+#include <Eigen/Dense>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/MatrixVectorBase.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/filters.h>
 #include <mrpt/math/fourier.h>
+#include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <sstream> // __str__
 #include <utility>
@@ -12,7 +15,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER

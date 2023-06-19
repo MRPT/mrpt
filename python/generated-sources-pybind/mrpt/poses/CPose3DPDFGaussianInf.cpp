@@ -45,7 +45,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -163,6 +163,19 @@ struct PyCallBack_mrpt_poses_CPose3DPDFGaussianInf : public mrpt::poses::CPose3D
 			else return pybind11::detail::cast_safe<_binder_ret_0>(std::move(o));
 		}
 		return CPose3DPDFGaussianInf::getCovarianceAndMean();
+	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 6, 6> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DPDFGaussianInf *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CPose3DPDFGaussianInf::getInformationMatrix(a0);
 	}
 	void copyFrom(const class mrpt::poses::CPose3DPDF & a0) override {
 		pybind11::gil_scoped_acquire gil;
@@ -431,6 +444,19 @@ struct PyCallBack_mrpt_poses_CPose3DPDFGrid : public mrpt::poses::CPose3DPDFGrid
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 6, 6> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DPDFGrid *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 };
 
 void bind_mrpt_poses_CPose3DPDFGaussianInf(std::function< pybind11::module &(std::string const &namespace_) > &M)
@@ -441,6 +467,8 @@ void bind_mrpt_poses_CPose3DPDFGaussianInf(std::function< pybind11::module &(std
 		cl.def( pybind11::init<const class mrpt::poses::CPose3D &>(), pybind11::arg("init_Mean") );
 
 		cl.def( pybind11::init<enum mrpt::poses::TConstructorFlags_Poses>(), pybind11::arg("constructor_dummy_param") );
+
+		cl.def( pybind11::init<const class mrpt::poses::CPose3D &, const class mrpt::math::CMatrixFixed<double, 6, 6> &>(), pybind11::arg("init_Mean"), pybind11::arg("init_CovInv") );
 
 		cl.def( pybind11::init<const class mrpt::poses::CPose3DQuatPDFGaussian &>(), pybind11::arg("o") );
 
@@ -457,6 +485,7 @@ void bind_mrpt_poses_CPose3DPDFGaussianInf(std::function< pybind11::module &(std
 		cl.def("getMean", (void (mrpt::poses::CPose3DPDFGaussianInf::*)(class mrpt::poses::CPose3D &) const) &mrpt::poses::CPose3DPDFGaussianInf::getMean, "C++: mrpt::poses::CPose3DPDFGaussianInf::getMean(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("mean_pose"));
 		cl.def("isInfType", (bool (mrpt::poses::CPose3DPDFGaussianInf::*)() const) &mrpt::poses::CPose3DPDFGaussianInf::isInfType, "C++: mrpt::poses::CPose3DPDFGaussianInf::isInfType() const --> bool");
 		cl.def("getCovarianceAndMean", (class std::tuple<class mrpt::math::CMatrixFixed<double, 6, 6>, class mrpt::poses::CPose3D> (mrpt::poses::CPose3DPDFGaussianInf::*)() const) &mrpt::poses::CPose3DPDFGaussianInf::getCovarianceAndMean, "C++: mrpt::poses::CPose3DPDFGaussianInf::getCovarianceAndMean() const --> class std::tuple<class mrpt::math::CMatrixFixed<double, 6, 6>, class mrpt::poses::CPose3D>");
+		cl.def("getInformationMatrix", (void (mrpt::poses::CPose3DPDFGaussianInf::*)(class mrpt::math::CMatrixFixed<double, 6, 6> &) const) &mrpt::poses::CPose3DPDFGaussianInf::getInformationMatrix, "Returns the information (inverse covariance) matrix (a STATE_LEN x\n STATE_LEN matrix) \n\n getMean, getCovarianceAndMean \n\nC++: mrpt::poses::CPose3DPDFGaussianInf::getInformationMatrix(class mrpt::math::CMatrixFixed<double, 6, 6> &) const --> void", pybind11::arg("inf"));
 		cl.def("copyFrom", (void (mrpt::poses::CPose3DPDFGaussianInf::*)(const class mrpt::poses::CPose3DPDF &)) &mrpt::poses::CPose3DPDFGaussianInf::copyFrom, "Copy operator, translating if necesary (for example, between particles\n and gaussian representations) \n\nC++: mrpt::poses::CPose3DPDFGaussianInf::copyFrom(const class mrpt::poses::CPose3DPDF &) --> void", pybind11::arg("o"));
 		cl.def("copyFrom", (void (mrpt::poses::CPose3DPDFGaussianInf::*)(const class mrpt::poses::CPosePDF &)) &mrpt::poses::CPose3DPDFGaussianInf::copyFrom, "Copy operator, translating if necesary (for example, between particles\n and gaussian representations) \n\nC++: mrpt::poses::CPose3DPDFGaussianInf::copyFrom(const class mrpt::poses::CPosePDF &) --> void", pybind11::arg("o"));
 		cl.def("copyFrom", (void (mrpt::poses::CPose3DPDFGaussianInf::*)(const class mrpt::poses::CPose3DQuatPDFGaussian &)) &mrpt::poses::CPose3DPDFGaussianInf::copyFrom, "Copy from a 6D pose PDF described as a Quaternion\n\nC++: mrpt::poses::CPose3DPDFGaussianInf::copyFrom(const class mrpt::poses::CPose3DQuatPDFGaussian &) --> void", pybind11::arg("o"));

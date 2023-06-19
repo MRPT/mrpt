@@ -13,7 +13,7 @@ extraction:
       - "libopencv-dev"
       - "libeigen3-dev"
       - "libgtest-dev"
-      - "libftdi-dev"
+      - "libftdi1-dev"
       - "freeglut3-dev"
       - "zlib1g-dev"
       - "libusb-1.0-0-dev"

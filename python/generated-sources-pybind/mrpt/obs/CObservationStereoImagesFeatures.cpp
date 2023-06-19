@@ -46,6 +46,7 @@
 #include <sstream> // __str__
 #include <streambuf>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -53,7 +54,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -252,7 +253,7 @@ struct PyCallBack_mrpt_obs_CObservationStereoImagesFeatures : public mrpt::obs::
 	}
 };
 
-// mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:60
+// mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:62
 struct PyCallBack_mrpt_obs_CRawlog : public mrpt::obs::CRawlog {
 	using mrpt::obs::CRawlog::CRawlog;
 
@@ -349,7 +350,7 @@ void bind_mrpt_obs_CObservationStereoImagesFeatures(std::function< pybind11::mod
 		cl.def("setSensorPose", (void (mrpt::obs::CObservationStereoImagesFeatures::*)(const class mrpt::poses::CPose3DQuat &)) &mrpt::obs::CObservationStereoImagesFeatures::setSensorPose, "A general method to change the sensor pose on the robot in a CPose3DQuat\n form.\n  Note that most sensors will use the full (6D) CPose3DQuat, but see the\n derived classes for more details or special cases.\n \n\n getSensorPose\n\nC++: mrpt::obs::CObservationStereoImagesFeatures::setSensorPose(const class mrpt::poses::CPose3DQuat &) --> void", pybind11::arg("newSensorPose"));
 		cl.def("assign", (class mrpt::obs::CObservationStereoImagesFeatures & (mrpt::obs::CObservationStereoImagesFeatures::*)(const class mrpt::obs::CObservationStereoImagesFeatures &)) &mrpt::obs::CObservationStereoImagesFeatures::operator=, "C++: mrpt::obs::CObservationStereoImagesFeatures::operator=(const class mrpt::obs::CObservationStereoImagesFeatures &) --> class mrpt::obs::CObservationStereoImagesFeatures &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
-	{ // mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:60
+	{ // mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:62
 		pybind11::class_<mrpt::obs::CRawlog, std::shared_ptr<mrpt::obs::CRawlog>, PyCallBack_mrpt_obs_CRawlog, mrpt::serialization::CSerializable> cl(M("mrpt::obs"), "CRawlog", "The main class for loading and processing robotics datasets, or \"rawlogs\".\n\n Please, refer to the [rawlog format specification](rawlog_format.html).\n\n In short, this class stores a sequence of objects, in one of two possible\nformats:\n  - Format #1: A sequence of actions and observations. There is a sequence\nof objects, where each one can be of one type:\n    - An action:	Implemented as a CActionCollection object, the\nactuation\nof the robot (i.e. odometry increment).\n    - Observations: Implemented as a CSensoryFrame, refering to a set of\nrobot observations from the same pose.\n  - Format #2: A sequence of actions and observations. There is a sequence\nof objects, where each one can be of one type:\n\n See also [RawLogViewer](app_RawLogViewer.html) for a GUI application for\n quick inspection and analysis of rawlogs.\n\n There is a field for dataset plain-text comments (human-friendly description,\n blocks of parameters, etc.) accessible through CRawlog::getCommentText() and\n CRawlog::setCommentText().\n\n This container provides a STL container-like interface (see CRawlog::begin,\n CRawlog::iterator, ...).\n\n \n There is a static helper method CRawlog::detectImagesDirectory() to\n       identify the directory where external images are stored.\n\n \n CSensoryFrame,\n     [Dataset file format](robotics_file_formats.html#datasets).\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::CRawlog(); }, [](){ return new PyCallBack_mrpt_obs_CRawlog(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CRawlog const &o){ return new PyCallBack_mrpt_obs_CRawlog(o); } ) );
@@ -391,11 +392,12 @@ void bind_mrpt_obs_CObservationStereoImagesFeatures(std::function< pybind11::mod
 		cl.def("swap", (void (mrpt::obs::CRawlog::*)(class mrpt::obs::CRawlog &)) &mrpt::obs::CRawlog::swap, "Efficiently swap the contents of two existing objects.\n\nC++: mrpt::obs::CRawlog::swap(class mrpt::obs::CRawlog &) --> void", pybind11::arg("obj"));
 		cl.def_static("readActionObservationPair", (bool (*)(class mrpt::serialization::CArchive &, class std::shared_ptr<class mrpt::obs::CActionCollection> &, class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, unsigned long &)) &mrpt::obs::CRawlog::readActionObservationPair, "Reads a consecutive pair action / observation from the rawlog opened at\n some input stream.\n Previous contents of action and observations are discarded, and\n upon exit they contain smart pointers to the new objects read from the\n rawlog file.\n The input/output variable \"rawlogEntry\" is just a counter of the last\n rawlog entry read, for logging or monitoring purposes.\n \n\n false if there was some error, true otherwise.\n \n\n getActionObservationPair, getActionObservationPairOrObservation\n\nC++: mrpt::obs::CRawlog::readActionObservationPair(class mrpt::serialization::CArchive &, class std::shared_ptr<class mrpt::obs::CActionCollection> &, class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, unsigned long &) --> bool", pybind11::arg("inStream"), pybind11::arg("action"), pybind11::arg("observations"), pybind11::arg("rawlogEntry"));
 		cl.def_static("getActionObservationPairOrObservation", (bool (*)(class mrpt::serialization::CArchive &, class std::shared_ptr<class mrpt::obs::CActionCollection> &, class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, class std::shared_ptr<class mrpt::obs::CObservation> &, unsigned long &)) &mrpt::obs::CRawlog::getActionObservationPairOrObservation, "Reads a consecutive pair action/sensory_frame OR an observation,\n depending of the rawlog format, from the rawlog opened at some input\n stream.\n Previous contents of action and observations are discarded, and\n upon return they contain smart pointers to the new objects read from\n the rawlog file.\n\n Depending on the rawlog file format, at return either:\n  - action/observations contain objects, or\n  - observation contains an object.\n\n The input/output variable \"rawlogEntry\" is just a counter of the last\n rawlog entry read, for logging or monitoring purposes.\n \n\n false if there was some error, true otherwise.\n \n\n getActionObservationPair\n\nC++: mrpt::obs::CRawlog::getActionObservationPairOrObservation(class mrpt::serialization::CArchive &, class std::shared_ptr<class mrpt::obs::CActionCollection> &, class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, class std::shared_ptr<class mrpt::obs::CObservation> &, unsigned long &) --> bool", pybind11::arg("inStream"), pybind11::arg("action"), pybind11::arg("observations"), pybind11::arg("observation"), pybind11::arg("rawlogEntry"));
+		cl.def_static("ReadFromArchive", (class std::tuple<bool, unsigned long, class std::shared_ptr<class mrpt::obs::CActionCollection>, class std::shared_ptr<class mrpt::obs::CSensoryFrame>, class std::shared_ptr<class mrpt::obs::CObservation> > (*)(class mrpt::serialization::CArchive &, const unsigned long)) &mrpt::obs::CRawlog::ReadFromArchive, "Alternative to getActionObservationPairOrObservation() returning the\n tuple [readOk, rawlogEntryIndex, action,sf, obs], with either (action,sf)\n or (obs) as empty smart pointers depending on the rawlog file format.\n readOk is false on EOF or any other error.\n\nC++: mrpt::obs::CRawlog::ReadFromArchive(class mrpt::serialization::CArchive &, const unsigned long) --> class std::tuple<bool, unsigned long, class std::shared_ptr<class mrpt::obs::CActionCollection>, class std::shared_ptr<class mrpt::obs::CSensoryFrame>, class std::shared_ptr<class mrpt::obs::CObservation> >", pybind11::arg("inStream"), pybind11::arg("rawlogEntryIndex"));
 		cl.def("getActionObservationPair", (bool (mrpt::obs::CRawlog::*)(class std::shared_ptr<class mrpt::obs::CActionCollection> &, class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, unsigned long &) const) &mrpt::obs::CRawlog::getActionObservationPair, "Gets the next consecutive pair action / observation from the rawlog\n loaded into this object.\n Previous contents of action and observations are discarded, and\n upon return they contain smart pointers to the next objects read from\n the rawlog dataset.\n The input/output variable \"rawlogEntry\" is just a counter of the last\n rawlog entry read, for logging or monitoring purposes.\n \n\n false if there was some error, true otherwise.\n \n\n readActionObservationPair\n\nC++: mrpt::obs::CRawlog::getActionObservationPair(class std::shared_ptr<class mrpt::obs::CActionCollection> &, class std::shared_ptr<class mrpt::obs::CSensoryFrame> &, unsigned long &) const --> bool", pybind11::arg("action"), pybind11::arg("observations"), pybind11::arg("rawlogEntry"));
 		cl.def_static("detectImagesDirectory", (std::string (*)(const std::string &)) &mrpt::obs::CRawlog::detectImagesDirectory, "Tries to auto-detect the external-images directory of the given rawlog\nfile.\n  This searches for the existence of the directories:\n		- \"<rawlog_file_path>/<rawlog_filename>_Images\"\n		- \"<rawlog_file_path>/<rawlog_filename>_images\"\n		- \"<rawlog_file_path>/<rawlog_filename>_IMAGES\"\n		- \"<rawlog_file_path>/Images\"  (This one is returned if none of the\nchoices actually exists).\n\n  The results from this function should be written into\nmrpt::img::CImage::getImagesPathBase() to enable automatic\n  loading of extenrnally-stored images in rawlogs.\n\nC++: mrpt::obs::CRawlog::detectImagesDirectory(const std::string &) --> std::string", pybind11::arg("rawlogFilename"));
 		cl.def("assign", (class mrpt::obs::CRawlog & (mrpt::obs::CRawlog::*)(const class mrpt::obs::CRawlog &)) &mrpt::obs::CRawlog::operator=, "C++: mrpt::obs::CRawlog::operator=(const class mrpt::obs::CRawlog &) --> class mrpt::obs::CRawlog &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 
-		{ // mrpt::obs::CRawlog::iterator file:mrpt/obs/CRawlog.h line:230
+		{ // mrpt::obs::CRawlog::iterator file:mrpt/obs/CRawlog.h line:232
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CRawlog::iterator, std::shared_ptr<mrpt::obs::CRawlog::iterator>> cl(enclosing_class, "iterator", "A normal iterator, plus the extra method \"getType\" to determine the\n type of each entry in the sequence. ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CRawlog::iterator(); } ) );
@@ -403,7 +405,7 @@ void bind_mrpt_obs_CObservationStereoImagesFeatures(std::function< pybind11::mod
 			cl.def("getType", (enum mrpt::obs::CRawlog::TEntryType (mrpt::obs::CRawlog::iterator::*)() const) &mrpt::obs::CRawlog::iterator::getType, "C++: mrpt::obs::CRawlog::iterator::getType() const --> enum mrpt::obs::CRawlog::TEntryType");
 		}
 
-		{ // mrpt::obs::CRawlog::const_iterator file:mrpt/obs/CRawlog.h line:286
+		{ // mrpt::obs::CRawlog::const_iterator file:mrpt/obs/CRawlog.h line:288
 			auto & enclosing_class = cl;
 			pybind11::class_<mrpt::obs::CRawlog::const_iterator, std::shared_ptr<mrpt::obs::CRawlog::const_iterator>> cl(enclosing_class, "const_iterator", "A normal iterator, plus the extra method \"getType\" to determine the type\n of each entry in the sequence. ");
 			cl.def( pybind11::init( [](){ return new mrpt::obs::CRawlog::const_iterator(); } ) );

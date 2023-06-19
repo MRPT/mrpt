@@ -65,7 +65,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -569,7 +569,7 @@ void bind_mrpt_opengl_CSetOfTriangles(std::function< pybind11::module &(std::str
 		cl.def("assign", (class mrpt::opengl::CSetOfTriangles & (mrpt::opengl::CSetOfTriangles::*)(const class mrpt::opengl::CSetOfTriangles &)) &mrpt::opengl::CSetOfTriangles::operator=, "C++: mrpt::opengl::CSetOfTriangles::operator=(const class mrpt::opengl::CSetOfTriangles &) --> class mrpt::opengl::CSetOfTriangles &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	{ // mrpt::opengl::CAngularObservationMesh file:mrpt/opengl/CAngularObservationMesh.h line:41
-		pybind11::class_<mrpt::opengl::CAngularObservationMesh, std::shared_ptr<mrpt::opengl::CAngularObservationMesh>, PyCallBack_mrpt_opengl_CAngularObservationMesh, mrpt::opengl::CRenderizableShaderTriangles, mrpt::opengl::CRenderizableShaderWireFrame> cl(M("mrpt::opengl"), "CAngularObservationMesh", "A mesh built from a set of 2D laser scan observations.\n Each element of this set is a single scan through the yaw, given a specific\n pitch.\n Each scan has a mrpt::poses::CPose3D identifying the origin of the scan,\n which ideally is the\n same for every one of them.\n\n  \n  \n     mrpt::opengl::CAngularObservationMesh    html\n preview_CAngularObservationMesh.png  \n  \n  \n\n \n\n ");
+		pybind11::class_<mrpt::opengl::CAngularObservationMesh, std::shared_ptr<mrpt::opengl::CAngularObservationMesh>, PyCallBack_mrpt_opengl_CAngularObservationMesh, mrpt::opengl::CRenderizableShaderTriangles, mrpt::opengl::CRenderizableShaderWireFrame> cl(M("mrpt::opengl"), "CAngularObservationMesh", "A mesh built from a set of 2D laser scan observations.\n Each element of this set is a single scan through the yaw, given a specific\n pitch.\n Each scan has a mrpt::poses::CPose3D identifying the origin of the scan,\n which ideally is the\n same for every one of them.\n\n  \n  \n     mrpt::opengl::CAngularObservationMesh   \n\n\n preview_CAngularObservationMesh.png  \n  \n  \n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CAngularObservationMesh(); }, [](){ return new PyCallBack_mrpt_opengl_CAngularObservationMesh(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CAngularObservationMesh const &o){ return new PyCallBack_mrpt_opengl_CAngularObservationMesh(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CAngularObservationMesh const &o){ return new mrpt::opengl::CAngularObservationMesh(o); } ) );

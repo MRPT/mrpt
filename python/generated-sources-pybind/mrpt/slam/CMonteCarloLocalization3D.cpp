@@ -28,6 +28,7 @@
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -60,7 +61,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -70,7 +71,7 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-// mrpt::slam::CMonteCarloLocalization3D file:mrpt/slam/CMonteCarloLocalization3D.h line:29
+// mrpt::slam::CMonteCarloLocalization3D file:mrpt/slam/CMonteCarloLocalization3D.h line:30
 struct PyCallBack_mrpt_slam_CMonteCarloLocalization3D : public mrpt::slam::CMonteCarloLocalization3D {
 	using mrpt::slam::CMonteCarloLocalization3D::CMonteCarloLocalization3D;
 
@@ -348,6 +349,19 @@ struct PyCallBack_mrpt_slam_CMonteCarloLocalization3D : public mrpt::slam::CMont
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 6, 6> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CMonteCarloLocalization3D *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 	double getW(size_t a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CMonteCarloLocalization3D *>(this), "getW");
@@ -426,6 +440,19 @@ struct PyCallBack_mrpt_slam_CMonteCarloLocalization3D : public mrpt::slam::CMont
 		}
 		return CParticleFilterCapable::prediction_and_update_pfOptimalProposal(a0, a1, a2);
 	}
+	bool PF_SLAM_implementation_doWeHaveValidObservations(const class std::deque<struct mrpt::bayes::CProbabilityParticle<struct mrpt::math::TPose3D, mrpt::bayes::particle_storage_mode::VALUE> > & a0, const class mrpt::obs::CSensoryFrame * a1) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CMonteCarloLocalization3D *>(this), "PF_SLAM_implementation_doWeHaveValidObservations");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return PF_implementation::PF_SLAM_implementation_doWeHaveValidObservations(a0, a1);
+	}
 	bool PF_SLAM_implementation_skipRobotMovement() const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::slam::CMonteCarloLocalization3D *>(this), "PF_SLAM_implementation_skipRobotMovement");
@@ -443,7 +470,7 @@ struct PyCallBack_mrpt_slam_CMonteCarloLocalization3D : public mrpt::slam::CMont
 
 void bind_mrpt_slam_CMonteCarloLocalization3D(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::slam::CMonteCarloLocalization3D file:mrpt/slam/CMonteCarloLocalization3D.h line:29
+	{ // mrpt::slam::CMonteCarloLocalization3D file:mrpt/slam/CMonteCarloLocalization3D.h line:30
 		pybind11::class_<mrpt::slam::CMonteCarloLocalization3D, std::shared_ptr<mrpt::slam::CMonteCarloLocalization3D>, PyCallBack_mrpt_slam_CMonteCarloLocalization3D, mrpt::poses::CPose3DPDFParticles, mrpt::slam::PF_implementation<mrpt::math::TPose3D,mrpt::slam::CMonteCarloLocalization3D,mrpt::bayes::particle_storage_mode::VALUE>> cl(M("mrpt::slam"), "CMonteCarloLocalization3D", "Declares a class that represents a Probability Density Function (PDF) over a\n 3D pose (x,y,phi,yaw,pitch,roll), using a set of weighted samples.\n\n  This class also implements particle filtering for robot localization. See\n the MRPT\n   application \"app/pf-localization\" for an example of usage.\n\n \n CMonteCarloLocalization2D, CPose2D, CPosePDF, CPoseGaussianPDF,\n CParticleFilterCapable\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::slam::CMonteCarloLocalization3D(); }, [](){ return new PyCallBack_mrpt_slam_CMonteCarloLocalization3D(); } ), "doc");
 		cl.def( pybind11::init<size_t>(), pybind11::arg("M") );
@@ -452,6 +479,7 @@ void bind_mrpt_slam_CMonteCarloLocalization3D(std::function< pybind11::module &(
 		cl.def("prediction_and_update_pfStandardProposal", (void (mrpt::slam::CMonteCarloLocalization3D::*)(const class mrpt::obs::CActionCollection *, const class mrpt::obs::CSensoryFrame *, const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &)) &mrpt::slam::CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal, "Update the m_particles, predicting the posterior of robot pose and map\n after a movement command.\n  This method has additional configuration parameters in \"options\".\n  Performs the update stage of the RBPF, using the sensed CSensoryFrame:\n\n   \n This is a pointer to CActionCollection, containing the\n pose change the robot has been commanded.\n   \n\n This must be a pointer to a CSensoryFrame object,\n with robot sensed observations.\n\n \n options\n\nC++: mrpt::slam::CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(const class mrpt::obs::CActionCollection *, const class mrpt::obs::CSensoryFrame *, const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &) --> void", pybind11::arg("action"), pybind11::arg("observation"), pybind11::arg("PF_options"));
 		cl.def("prediction_and_update_pfAuxiliaryPFStandard", (void (mrpt::slam::CMonteCarloLocalization3D::*)(const class mrpt::obs::CActionCollection *, const class mrpt::obs::CSensoryFrame *, const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &)) &mrpt::slam::CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard, "Update the m_particles, predicting the posterior of robot pose and map\n after a movement command.\n  This method has additional configuration parameters in \"options\".\n  Performs the update stage of the RBPF, using the sensed CSensoryFrame:\n\n   \n This is a pointer to CActionCollection, containing the\n pose change the robot has been commanded.\n   \n\n This must be a pointer to a CSensoryFrame object,\n with robot sensed observations.\n\n \n options\n\nC++: mrpt::slam::CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(const class mrpt::obs::CActionCollection *, const class mrpt::obs::CSensoryFrame *, const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &) --> void", pybind11::arg("action"), pybind11::arg("observation"), pybind11::arg("PF_options"));
 		cl.def("prediction_and_update_pfAuxiliaryPFOptimal", (void (mrpt::slam::CMonteCarloLocalization3D::*)(const class mrpt::obs::CActionCollection *, const class mrpt::obs::CSensoryFrame *, const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &)) &mrpt::slam::CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal, "Update the m_particles, predicting the posterior of robot pose and map\n after a movement command.\n  This method has additional configuration parameters in \"options\".\n  Performs the update stage of the RBPF, using the sensed CSensoryFrame:\n\n   \n This is a pointer to CActionCollection, containing the\n pose change the robot has been commanded.\n   \n\n This must be a pointer to a CSensoryFrame object,\n with robot sensed observations.\n\n \n options\n\nC++: mrpt::slam::CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(const class mrpt::obs::CActionCollection *, const class mrpt::obs::CSensoryFrame *, const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &) --> void", pybind11::arg("action"), pybind11::arg("observation"), pybind11::arg("PF_options"));
+		cl.def("getVisualization", (class std::shared_ptr<class mrpt::opengl::CSetOfObjects> (mrpt::slam::CMonteCarloLocalization3D::*)() const) &mrpt::slam::CMonteCarloLocalization3D::getVisualization, "Returns a 3D representation of this PDF.\n \n\n Needs the mrpt-opengl library, and using\n mrpt::opengl::CSetOfObjects::Ptr as template argument.\n\nC++: mrpt::slam::CMonteCarloLocalization3D::getVisualization() const --> class std::shared_ptr<class mrpt::opengl::CSetOfObjects>");
 		cl.def("getLastPose", (struct mrpt::math::TPose3D (mrpt::slam::CMonteCarloLocalization3D::*)(size_t, bool &) const) &mrpt::slam::CMonteCarloLocalization3D::getLastPose, "		@{ \n\n Return the robot pose for the i'th particle. is_valid is\n always true in this class. \n\nC++: mrpt::slam::CMonteCarloLocalization3D::getLastPose(size_t, bool &) const --> struct mrpt::math::TPose3D", pybind11::arg("i"), pybind11::arg("is_valid_pose"));
 		cl.def("PF_SLAM_implementation_custom_update_particle_with_new_pose", (void (mrpt::slam::CMonteCarloLocalization3D::*)(struct mrpt::math::TPose3D *, const struct mrpt::math::TPose3D &) const) &mrpt::slam::CMonteCarloLocalization3D::PF_SLAM_implementation_custom_update_particle_with_new_pose, "C++: mrpt::slam::CMonteCarloLocalization3D::PF_SLAM_implementation_custom_update_particle_with_new_pose(struct mrpt::math::TPose3D *, const struct mrpt::math::TPose3D &) const --> void", pybind11::arg("particleData"), pybind11::arg("newPose"));
 		cl.def("PF_SLAM_computeObservationLikelihoodForParticle", (double (mrpt::slam::CMonteCarloLocalization3D::*)(const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &, size_t, const class mrpt::obs::CSensoryFrame &, const class mrpt::poses::CPose3D &) const) &mrpt::slam::CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticle, "Evaluate the observation likelihood for one particle at a given location\n\nC++: mrpt::slam::CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticle(const struct mrpt::bayes::CParticleFilter::TParticleFilterOptions &, size_t, const class mrpt::obs::CSensoryFrame &, const class mrpt::poses::CPose3D &) const --> double", pybind11::arg("PF_options"), pybind11::arg("particleIndexForMap"), pybind11::arg("observation"), pybind11::arg("x"));

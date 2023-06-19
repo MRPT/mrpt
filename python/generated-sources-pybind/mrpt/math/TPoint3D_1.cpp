@@ -1,3 +1,4 @@
+#include <Eigen/Dense>
 #include <iterator>
 #include <memory>
 #include <mrpt/math/CMatrixFixed.h>
@@ -15,7 +16,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -64,7 +65,7 @@ void bind_mrpt_math_TPoint3D_1(std::function< pybind11::module &(std::string con
 		cl.def("assign", (struct mrpt::math::TPoint3D_data<float> & (mrpt::math::TPoint3D_data<float>::*)(const struct mrpt::math::TPoint3D_data<float> &)) &mrpt::math::TPoint3D_data<float>::operator=, "C++: mrpt::math::TPoint3D_data<float>::operator=(const struct mrpt::math::TPoint3D_data<float> &) --> struct mrpt::math::TPoint3D_data<float> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	{ // mrpt::math::CQuaternion file:mrpt/math/CQuaternion.h line:44
-		pybind11::class_<mrpt::math::CQuaternion<double>, std::shared_ptr<mrpt::math::CQuaternion<double>>> cl(M("mrpt::math"), "CQuaternion_double_t", "");
+		pybind11::class_<mrpt::math::CQuaternion<double>, std::shared_ptr<mrpt::math::CQuaternion<double>>, mrpt::math::CMatrixFixed<double,4UL,1UL>> cl(M("mrpt::math"), "CQuaternion_double_t", "");
 		cl.def( pybind11::init<enum mrpt::math::TConstructorFlags_Quaternions>(), pybind11::arg("") );
 
 		cl.def( pybind11::init( [](){ return new mrpt::math::CQuaternion<double>(); } ) );
@@ -91,6 +92,23 @@ void bind_mrpt_math_TPoint3D_1(std::function< pybind11::module &(std::string con
 		cl.def("conj", (class mrpt::math::CQuaternion<double> (mrpt::math::CQuaternion<double>::*)() const) &mrpt::math::CQuaternion<double>::conj, "C++: mrpt::math::CQuaternion<double>::conj() const --> class mrpt::math::CQuaternion<double>");
 		cl.def("rpy", (void (mrpt::math::CQuaternion<double>::*)(double &, double &, double &) const) &mrpt::math::CQuaternion<double>::rpy, "C++: mrpt::math::CQuaternion<double>::rpy(double &, double &, double &) const --> void", pybind11::arg("roll"), pybind11::arg("pitch"), pybind11::arg("yaw"));
 		cl.def("__mul__", (class mrpt::math::CQuaternion<double> (mrpt::math::CQuaternion<double>::*)(const double &)) &mrpt::math::CQuaternion<double>::operator*, "C++: mrpt::math::CQuaternion<double>::operator*(const double &) --> class mrpt::math::CQuaternion<double>", pybind11::arg("factor"));
+		cl.def("jacobian_rodrigues_from_quat", (class mrpt::math::CMatrixFixed<double, 3, 4> (mrpt::math::CQuaternion<double>::*)() const) &mrpt::math::CQuaternion<double>::jacobian_rodrigues_from_quat, "C++: mrpt::math::CQuaternion<double>::jacobian_rodrigues_from_quat() const --> class mrpt::math::CMatrixFixed<double, 3, 4>");
 		cl.def("assign", (class mrpt::math::CQuaternion<double> & (mrpt::math::CQuaternion<double>::*)(const class mrpt::math::CQuaternion<double> &)) &mrpt::math::CQuaternion<double>::operator=, "C++: mrpt::math::CQuaternion<double>::operator=(const class mrpt::math::CQuaternion<double> &) --> class mrpt::math::CQuaternion<double> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+		cl.def("loadFromRawPointer", (void (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(const double *)) &mrpt::math::CMatrixFixed<double, 4, 1>::loadFromRawPointer, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::loadFromRawPointer(const double *) --> void", pybind11::arg("data"));
+		cl.def("setSize", [](mrpt::math::CMatrixFixed<double,4UL,1UL> &o, size_t const & a0, size_t const & a1) -> void { return o.setSize(a0, a1); }, "", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("setSize", (void (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(size_t, size_t, bool)) &mrpt::math::CMatrixFixed<double, 4, 1>::setSize, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::setSize(size_t, size_t, bool) --> void", pybind11::arg("row"), pybind11::arg("col"), pybind11::arg("zeroNewElements"));
+		cl.def("swap", (void (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(class mrpt::math::CMatrixFixed<double, 4, 1> &)) &mrpt::math::CMatrixFixed<double, 4, 1>::swap, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::swap(class mrpt::math::CMatrixFixed<double, 4, 1> &) --> void", pybind11::arg("o"));
+		cl.def("conservativeResize", (void (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(size_t, size_t)) &mrpt::math::CMatrixFixed<double, 4, 1>::conservativeResize, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::conservativeResize(size_t, size_t) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("resize", (void (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(size_t)) &mrpt::math::CMatrixFixed<double, 4, 1>::resize, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::resize(size_t) --> void", pybind11::arg("n"));
+		cl.def("resize", (void (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(size_t, size_t)) &mrpt::math::CMatrixFixed<double, 4, 1>::resize, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::resize(size_t, size_t) --> void", pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("rows", (int (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)() const) &mrpt::math::CMatrixFixed<double, 4, 1>::rows, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::rows() const --> int");
+		cl.def("cols", (int (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)() const) &mrpt::math::CMatrixFixed<double, 4, 1>::cols, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::cols() const --> int");
+		cl.def("data", (double * (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)()) &mrpt::math::CMatrixFixed<double, 4, 1>::data, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::data() --> double *", pybind11::return_value_policy::automatic);
+		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(int, int)) &mrpt::math::CMatrixFixed<double, 4, 1>::operator(), "C++: mrpt::math::CMatrixFixed<double, 4, 1>::operator()(int, int) --> double &", pybind11::return_value_policy::automatic, pybind11::arg("row"), pybind11::arg("col"));
+		cl.def("__call__", (double & (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 4, 1>::operator(), "C++: mrpt::math::CMatrixFixed<double, 4, 1>::operator()(int) --> double &", pybind11::return_value_policy::automatic, pybind11::arg("i"));
+		cl.def("__getitem__", (double & (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(int)) &mrpt::math::CMatrixFixed<double, 4, 1>::operator[], "C++: mrpt::math::CMatrixFixed<double, 4, 1>::operator[](int) --> double &", pybind11::return_value_policy::automatic, pybind11::arg("i"));
+		cl.def("cast_float", (class mrpt::math::CMatrixFixed<float, 4, 1> (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)() const) &mrpt::math::CMatrixFixed<double, 4, 1>::cast_float, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::cast_float() const --> class mrpt::math::CMatrixFixed<float, 4, 1>");
+		cl.def("sum_At", (void (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(const class mrpt::math::CMatrixFixed<double, 4, 1> &)) &mrpt::math::CMatrixFixed<double, 4, 1>::sum_At, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::sum_At(const class mrpt::math::CMatrixFixed<double, 4, 1> &) --> void", pybind11::arg("A"));
+		cl.def("assign", (class mrpt::math::CMatrixFixed<double, 4, 1> & (mrpt::math::CMatrixFixed<double,4UL,1UL>::*)(const class mrpt::math::CMatrixFixed<double, 4, 1> &)) &mrpt::math::CMatrixFixed<double, 4, 1>::operator=, "C++: mrpt::math::CMatrixFixed<double, 4, 1>::operator=(const class mrpt::math::CMatrixFixed<double, 4, 1> &) --> class mrpt::math::CMatrixFixed<double, 4, 1> &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

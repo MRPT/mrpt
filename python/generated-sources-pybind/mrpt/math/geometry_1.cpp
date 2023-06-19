@@ -1,3 +1,4 @@
+#include <Eigen/Dense>
 #include <any>
 #include <functional>
 #include <istream>
@@ -38,7 +39,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -116,6 +117,9 @@ void bind_mrpt_math_geometry_1(std::function< pybind11::module &(std::string con
 	// mrpt::math::createPlaneFromPoseYZ(const struct mrpt::math::TPose3D &, struct mrpt::math::TPlane &) file:mrpt/math/geometry.h line:678
 	M("mrpt::math").def("createPlaneFromPoseYZ", (void (*)(const struct mrpt::math::TPose3D &, struct mrpt::math::TPlane &)) &mrpt::math::createPlaneFromPoseYZ, "Given a pose, creates a plane orthogonal to its X vector.\n \n\n createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseAndNormal\n\nC++: mrpt::math::createPlaneFromPoseYZ(const struct mrpt::math::TPose3D &, struct mrpt::math::TPlane &) --> void", pybind11::arg("pose"), pybind11::arg("plane"));
 
+	// mrpt::math::generateAxisBaseFromDirectionAndAxis(const struct mrpt::math::TPoint3D_<double> &, uint8_t) file:mrpt/math/geometry.h line:692
+	M("mrpt::math").def("generateAxisBaseFromDirectionAndAxis", (class mrpt::math::CMatrixFixed<double, 4, 4> (*)(const struct mrpt::math::TPoint3D_<double> &, uint8_t)) &mrpt::math::generateAxisBaseFromDirectionAndAxis, "Creates a homogeneus matrix (4x4) such that the coordinate given (0 for x, 1\n for y, 2 for z) corresponds to the provided vector.\n \n\n must be a *unitary* vector\n \n\n generateAxisBaseFromDirectionAndAxis()\n\nC++: mrpt::math::generateAxisBaseFromDirectionAndAxis(const struct mrpt::math::TPoint3D_<double> &, uint8_t) --> class mrpt::math::CMatrixFixed<double, 4, 4>", pybind11::arg("vec"), pybind11::arg("coord"));
+
 	// mrpt::math::getSegmentBisector(const struct mrpt::math::TSegment2D &, struct mrpt::math::TLine2D &) file:mrpt/math/geometry.h line:773
 	M("mrpt::math").def("getSegmentBisector", (void (*)(const struct mrpt::math::TSegment2D &, struct mrpt::math::TLine2D &)) &mrpt::math::getSegmentBisector, "Gets the bisector of a 2D segment.\n\nC++: mrpt::math::getSegmentBisector(const struct mrpt::math::TSegment2D &, struct mrpt::math::TLine2D &) --> void", pybind11::arg("sgm"), pybind11::arg("bis"));
 
@@ -136,8 +140,5 @@ void bind_mrpt_math_geometry_1(std::function< pybind11::module &(std::string con
 
 	// mrpt::math::closestFromPointToLine(double, double, double, double, double, double, double &, double &) file:mrpt/math/geometry.h line:960
 	M("mrpt::math").def("closestFromPointToLine", (void (*)(double, double, double, double, double, double, double &, double &)) &mrpt::math::closestFromPointToLine, "Computes the closest point from a given point to a (infinite) line.\n \n\n closestFromPointToSegment\n\nC++: mrpt::math::closestFromPointToLine(double, double, double, double, double, double, double &, double &) --> void", pybind11::arg("Px"), pybind11::arg("Py"), pybind11::arg("x1"), pybind11::arg("y1"), pybind11::arg("x2"), pybind11::arg("y2"), pybind11::arg("out_x"), pybind11::arg("out_y"));
-
-	// mrpt::math::closestFromPointToLine(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &) file:mrpt/math/geometry.h line:965
-	M("mrpt::math").def("closestFromPointToLine", (struct mrpt::math::TPoint2D_<double> (*)(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &)) &mrpt::math::closestFromPointToLine, "C++: mrpt::math::closestFromPointToLine(const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &, const struct mrpt::math::TPoint2D_<double> &) --> struct mrpt::math::TPoint2D_<double>", pybind11::arg("query"), pybind11::arg("linePt1"), pybind11::arg("linePt2"));
 
 }

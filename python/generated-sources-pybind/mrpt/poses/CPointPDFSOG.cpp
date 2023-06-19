@@ -36,7 +36,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -219,6 +219,19 @@ struct PyCallBack_mrpt_poses_CPointPDFSOG : public mrpt::poses::CPointPDFSOG {
 			else return pybind11::detail::cast_safe<bool>(std::move(o));
 		}
 		return CProbabilityDensityFunction::isInfType();
+	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 3, 3> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPointPDFSOG *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
 	}
 };
 

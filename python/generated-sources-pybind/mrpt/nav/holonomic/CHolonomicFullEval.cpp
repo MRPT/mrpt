@@ -4,6 +4,7 @@
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixDynamic.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/matrix_size_t.h>
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
@@ -23,7 +24,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER

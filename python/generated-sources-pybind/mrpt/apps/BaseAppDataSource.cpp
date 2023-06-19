@@ -6,6 +6,7 @@
 #include <mrpt/apps/DataSourceRawlog.h>
 #include <mrpt/core/Clock.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -25,7 +26,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER

@@ -160,7 +160,7 @@ of type CMetricMapBuilderRBPF  */
 	 * internal object is passed, DO NOT delete nor modify the object in any
 	 * way, if desired, make a copy of ir with "clone()".
 	 */
-	const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap()
+	const mrpt::maps::CMultiMetricMap& getCurrentlyBuiltMetricMap()
 		const override;
 
 	/** Returns just how many sensory-frames are stored in the currently build

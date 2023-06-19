@@ -3,6 +3,9 @@
 #
 # Based on https://github.com/RosettaCommons/binder
 #
+# binder config: llvm-14
+# 
+
 
 PYBIND11_VERSION=$(dpkg -s pybind11-dev | grep '^Version:' | cut -d " " -f2)
 SYSTEM_PYBIND11_MM_VERSION=$(echo $PYBIND11_VERSION | cut -d. -f1).$(echo $PYBIND11_VERSION | cut -d. -f2)
@@ -26,6 +29,7 @@ $HOME/code/binder/build/source/binder \
 	-iwithsysroot/usr/include/c++/11/ \
 	-iwithsysroot/usr/include/x86_64-linux-gnu/c++/11/ \
 	-std=c++17 -DNDEBUG \
+	-DMRPT_BUILDING_PYTHON_WRAPPER \
 	-I$HOME/code/mrpt/build-Release/include/mrpt-configuration/ \
 	-I$HOME/code/mrpt/build-Release/3rdparty/nanogui/ \
 	-I/usr/include/eigen3 \
@@ -64,7 +68,7 @@ $HOME/code/binder/build/source/binder \
 
 # applying manual patches:
 echo "Applying manual patches..."
-find . -name "*.diff" | xargs -I FIL bash -c "patch -V never -s -p0 < FIL"
+find . -name "*.diff" | xargs -I FIL bash -c "git apply FIL"
 
 # Workarounds to binder limitations:
 # These are to ensure multiplatform portatbility of generated code

@@ -5,6 +5,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/maps/CMetricMap.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -23,7 +24,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER

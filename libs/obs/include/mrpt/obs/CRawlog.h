@@ -14,6 +14,8 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPose2D.h>
 
+#include <tuple>
+
 namespace mrpt::obs
 {
 /** For usage with CRawlog classes. */
@@ -394,6 +396,27 @@ class CRawlog : public mrpt::serialization::CSerializable
 		mrpt::serialization::CArchive& inStream, CActionCollection::Ptr& action,
 		CSensoryFrame::Ptr& observations, CObservation::Ptr& observation,
 		size_t& rawlogEntry);
+
+	/** Alternative to getActionObservationPairOrObservation() returning the
+	 * tuple [readOk, rawlogEntryIndex, action,sf, obs], with either (action,sf)
+	 * or (obs) as empty smart pointers depending on the rawlog file format.
+	 * readOk is false on EOF or any other error.
+	 */
+	static std::tuple<
+		bool, size_t, CActionCollection::Ptr, CSensoryFrame::Ptr,
+		CObservation::Ptr>
+		ReadFromArchive(
+			mrpt::serialization::CArchive& inStream,
+			const size_t rawlogEntryIndex)
+	{
+		size_t retIndex = rawlogEntryIndex;
+		CActionCollection::Ptr action;
+		CSensoryFrame::Ptr sf;
+		CObservation::Ptr obs;
+		const bool readOk = getActionObservationPairOrObservation(
+			inStream, action, sf, obs, retIndex);
+		return {readOk, retIndex, action, sf, obs};
+	}
 
 	/** Gets the next consecutive pair action / observation from the rawlog
 	 * loaded into this object.

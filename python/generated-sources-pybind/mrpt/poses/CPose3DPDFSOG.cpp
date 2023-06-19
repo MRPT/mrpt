@@ -46,7 +46,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -243,6 +243,19 @@ struct PyCallBack_mrpt_poses_CPose3DPDFSOG : public mrpt::poses::CPose3DPDFSOG {
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 6, 6> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DPDFSOG *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 };
 
 // mrpt::poses::CPose3DQuatPDF file:mrpt/poses/CPose3DQuatPDF.h line:41
@@ -392,6 +405,19 @@ struct PyCallBack_mrpt_poses_CPose3DQuatPDF : public mrpt::poses::CPose3DQuatPDF
 			else return pybind11::detail::cast_safe<bool>(std::move(o));
 		}
 		return CProbabilityDensityFunction::isInfType();
+	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 7, 7> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DQuatPDF *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
 	}
 	bool saveToTextFile(const std::string & a0) const override {
 		pybind11::gil_scoped_acquire gil;
@@ -595,6 +621,19 @@ struct PyCallBack_mrpt_poses_CPose3DQuatPDFGaussian : public mrpt::poses::CPose3
 		}
 		return CProbabilityDensityFunction::isInfType();
 	}
+	void getInformationMatrix(class mrpt::math::CMatrixFixed<double, 7, 7> & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPose3DQuatPDFGaussian *>(this), "getInformationMatrix");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CProbabilityDensityFunction::getInformationMatrix(a0);
+	}
 };
 
 void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string const &namespace_) > &M)
@@ -638,7 +677,7 @@ void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string
 
 	}
 	{ // mrpt::poses::CPose3DQuatPDF file:mrpt/poses/CPose3DQuatPDF.h line:41
-		pybind11::class_<mrpt::poses::CPose3DQuatPDF, std::shared_ptr<mrpt::poses::CPose3DQuatPDF>, PyCallBack_mrpt_poses_CPose3DQuatPDF, mrpt::serialization::CSerializable, mrpt::math::CProbabilityDensityFunction<mrpt::poses::CPose3DQuat,7>> cl(M("mrpt::poses"), "CPose3DQuatPDF", "Declares a class that represents a Probability Density Function (PDF) of a\n 3D pose (6D actually), by means of a 7-vector with a translation [x y z] and\n a quaternion [qr qx qy qz].\n   This class is just the base class for unifying many diferent ways this PDF\n can be implemented.\n\n  For convenience, a pose composition is also defined for any\n    PDF derived class, changeCoordinatesReference, in the form of a method\n rather than an operator.\n\n  - For a similar class for 3D points (without attitude), see CPointPDF.\n  - For a similar class for 3D poses  (with Euler angles instead of\n quaternions), see CPose3DPDF.\n\n  See also:\n  [probabilistic spatial representations](tutorial-pdf-over-poses.html)\n\n \n CPose3DQuatPDF, CPose3DPDF\n \n\n\n ");
+		pybind11::class_<mrpt::poses::CPose3DQuatPDF, std::shared_ptr<mrpt::poses::CPose3DQuatPDF>, PyCallBack_mrpt_poses_CPose3DQuatPDF, mrpt::serialization::CSerializable, mrpt::math::CProbabilityDensityFunction<mrpt::poses::CPose3DQuat,7UL>> cl(M("mrpt::poses"), "CPose3DQuatPDF", "Declares a class that represents a Probability Density Function (PDF) of a\n 3D pose (6D actually), by means of a 7-vector with a translation [x y z] and\n a quaternion [qr qx qy qz].\n   This class is just the base class for unifying many diferent ways this PDF\n can be implemented.\n\n  For convenience, a pose composition is also defined for any\n    PDF derived class, changeCoordinatesReference, in the form of a method\n rather than an operator.\n\n  - For a similar class for 3D points (without attitude), see CPointPDF.\n  - For a similar class for 3D poses  (with Euler angles instead of\n quaternions), see CPose3DPDF.\n\n  See also:\n  [probabilistic spatial representations](tutorial-pdf-over-poses.html)\n\n \n CPose3DQuatPDF, CPose3DPDF\n \n\n\n ");
 		cl.def(pybind11::init<PyCallBack_mrpt_poses_CPose3DQuatPDF const &>());
 		cl.def( pybind11::init( [](){ return new PyCallBack_mrpt_poses_CPose3DQuatPDF(); } ) );
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPose3DQuatPDF::*)() const) &mrpt::poses::CPose3DQuatPDF::GetRuntimeClass, "C++: mrpt::poses::CPose3DQuatPDF::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
@@ -647,6 +686,8 @@ void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string
 		cl.def_static("createFrom2D", (class mrpt::poses::CPose3DQuatPDF * (*)(const class mrpt::poses::CPosePDF &)) &mrpt::poses::CPose3DQuatPDF::createFrom2D, "This is a static transformation method from 2D poses to 3D PDFs,\n preserving the representation type (particles->particles,\n Gaussians->Gaussians,etc)\n  It returns a new object of any of the derived classes of\n CPose3DQuatPDF. This object must be deleted by the user when not required\n anymore.\n  \n\n copyFrom\n\nC++: mrpt::poses::CPose3DQuatPDF::createFrom2D(const class mrpt::poses::CPosePDF &) --> class mrpt::poses::CPose3DQuatPDF *", pybind11::return_value_policy::automatic, pybind11::arg("o"));
 		cl.def("inverse", (void (mrpt::poses::CPose3DQuatPDF::*)(class mrpt::poses::CPose3DQuatPDF &) const) &mrpt::poses::CPose3DQuatPDF::inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF \n\nC++: mrpt::poses::CPose3DQuatPDF::inverse(class mrpt::poses::CPose3DQuatPDF &) const --> void", pybind11::arg("o"));
 		cl.def("changeCoordinatesReference", (void (mrpt::poses::CPose3DQuatPDF::*)(const class mrpt::poses::CPose3D &)) &mrpt::poses::CPose3DQuatPDF::changeCoordinatesReference, "C++: mrpt::poses::CPose3DQuatPDF::changeCoordinatesReference(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newReferenceBase"));
+		cl.def_static("jacobiansPoseComposition", [](const class mrpt::poses::CPose3DQuat & a0, const class mrpt::poses::CPose3DQuat & a1, class mrpt::math::CMatrixFixed<double, 7, 7> & a2, class mrpt::math::CMatrixFixed<double, 7, 7> & a3) -> void { return mrpt::poses::CPose3DQuatPDF::jacobiansPoseComposition(a0, a1, a2, a3); }, "", pybind11::arg("x"), pybind11::arg("u"), pybind11::arg("df_dx"), pybind11::arg("df_du"));
+		cl.def_static("jacobiansPoseComposition", (void (*)(const class mrpt::poses::CPose3DQuat &, const class mrpt::poses::CPose3DQuat &, class mrpt::math::CMatrixFixed<double, 7, 7> &, class mrpt::math::CMatrixFixed<double, 7, 7> &, class mrpt::poses::CPose3DQuat *)) &mrpt::poses::CPose3DQuatPDF::jacobiansPoseComposition, "This static method computes the two Jacobians of a pose composition\n operation \n\n\n  \n If set to !=nullptr, the result of \"x+u\" will be\n stored here (it will be computed internally anyway).\n  To see the mathematical derivation of the formulas, refer to the\n technical report here:\n   -\n https://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations\n\nC++: mrpt::poses::CPose3DQuatPDF::jacobiansPoseComposition(const class mrpt::poses::CPose3DQuat &, const class mrpt::poses::CPose3DQuat &, class mrpt::math::CMatrixFixed<double, 7, 7> &, class mrpt::math::CMatrixFixed<double, 7, 7> &, class mrpt::poses::CPose3DQuat *) --> void", pybind11::arg("x"), pybind11::arg("u"), pybind11::arg("df_dx"), pybind11::arg("df_du"), pybind11::arg("out_x_oplus_u"));
 		cl.def("assign", (class mrpt::poses::CPose3DQuatPDF & (mrpt::poses::CPose3DQuatPDF::*)(const class mrpt::poses::CPose3DQuatPDF &)) &mrpt::poses::CPose3DQuatPDF::operator=, "C++: mrpt::poses::CPose3DQuatPDF::operator=(const class mrpt::poses::CPose3DQuatPDF &) --> class mrpt::poses::CPose3DQuatPDF &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	{ // mrpt::poses::CPose3DQuatPDFGaussian file:mrpt/poses/CPose3DQuatPDFGaussian.h line:43
@@ -655,6 +696,8 @@ void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string
 		cl.def( pybind11::init<enum mrpt::math::TConstructorFlags_Quaternions>(), pybind11::arg("constructor_dummy_param") );
 
 		cl.def( pybind11::init<const class mrpt::poses::CPose3DQuat &>(), pybind11::arg("init_Mean") );
+
+		cl.def( pybind11::init<const class mrpt::poses::CPose3DQuat &, const class mrpt::math::CMatrixFixed<double, 7, 7> &>(), pybind11::arg("init_Mean"), pybind11::arg("init_Cov") );
 
 		cl.def( pybind11::init<const class mrpt::poses::CPosePDFGaussian &>(), pybind11::arg("o") );
 
@@ -679,6 +722,7 @@ void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string
 		cl.def("changeCoordinatesReference", (void (mrpt::poses::CPose3DQuatPDFGaussian::*)(const class mrpt::poses::CPose3DQuat &)) &mrpt::poses::CPose3DQuatPDFGaussian::changeCoordinatesReference, "this = p (+) this. This can be used to convert a PDF from local\n coordinates to global, providing the point (newReferenceBase) from which\n   \"to project\" the current pdf. Result PDF substituted the currently\n stored one in the object. \n\nC++: mrpt::poses::CPose3DQuatPDFGaussian::changeCoordinatesReference(const class mrpt::poses::CPose3DQuat &) --> void", pybind11::arg("newReferenceBase"));
 		cl.def("changeCoordinatesReference", (void (mrpt::poses::CPose3DQuatPDFGaussian::*)(const class mrpt::poses::CPose3D &)) &mrpt::poses::CPose3DQuatPDFGaussian::changeCoordinatesReference, "this = p (+) this. This can be used to convert a PDF from local\n coordinates to global, providing the point (newReferenceBase) from which\n   \"to project\" the current pdf. Result PDF substituted the currently\n stored one in the object.\n\nC++: mrpt::poses::CPose3DQuatPDFGaussian::changeCoordinatesReference(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newReferenceBase"));
 		cl.def("drawSingleSample", (void (mrpt::poses::CPose3DQuatPDFGaussian::*)(class mrpt::poses::CPose3DQuat &) const) &mrpt::poses::CPose3DQuatPDFGaussian::drawSingleSample, "Draws a single sample from the distribution \n\nC++: mrpt::poses::CPose3DQuatPDFGaussian::drawSingleSample(class mrpt::poses::CPose3DQuat &) const --> void", pybind11::arg("outPart"));
+		cl.def("inverseJacobian", (class mrpt::math::CMatrixFixed<double, 7, 7> (mrpt::poses::CPose3DQuatPDFGaussian::*)() const) &mrpt::poses::CPose3DQuatPDFGaussian::inverseJacobian, "Compute the inverse Jacobian \n\nC++: mrpt::poses::CPose3DQuatPDFGaussian::inverseJacobian() const --> class mrpt::math::CMatrixFixed<double, 7, 7>");
 		cl.def("inverse", (void (mrpt::poses::CPose3DQuatPDFGaussian::*)(class mrpt::poses::CPose3DQuatPDF &) const) &mrpt::poses::CPose3DQuatPDFGaussian::inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF \n\nC++: mrpt::poses::CPose3DQuatPDFGaussian::inverse(class mrpt::poses::CPose3DQuatPDF &) const --> void", pybind11::arg("o"));
 		cl.def("inverseCompositionCrossCorrelation", (class mrpt::poses::CPose3DQuatPDFGaussian (mrpt::poses::CPose3DQuatPDFGaussian::*)(const class mrpt::poses::CPose3DQuatPDFGaussian &) const) &mrpt::poses::CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation, "Returns the displacement from the current pose (pose_from) to pose_to:\n displacement = - pose_from + pose_to\n It assumes that both poses are correlated via\n the direct generative model:\n pose_to = pose_from + displacement\n For a deeper explanation, check https://github.com/MRPT/mrpt/pull/1243\n\nC++: mrpt::poses::CPose3DQuatPDFGaussian::inverseCompositionCrossCorrelation(const class mrpt::poses::CPose3DQuatPDFGaussian &) const --> class mrpt::poses::CPose3DQuatPDFGaussian", pybind11::arg("pose_to"));
 		cl.def("__neg__", (class mrpt::poses::CPose3DQuatPDFGaussian (mrpt::poses::CPose3DQuatPDFGaussian::*)() const) &mrpt::poses::CPose3DQuatPDFGaussian::operator-, "Unary - operator, returns the PDF of the inverse pose.  \n\nC++: mrpt::poses::CPose3DQuatPDFGaussian::operator-() const --> class mrpt::poses::CPose3DQuatPDFGaussian");

@@ -2323,16 +2323,7 @@
       </layout>
       <zorder>beaconRangesUseObservationStd</zorder>
       <zorder>label_5</zorder>
-      <zorder>layoutWidget_13</zorder>
       <zorder>groupBox</zorder>
-      <zorder>layoutWidget_15</zorder>
-      <zorder>layoutWidget_16</zorder>
-      <zorder>layoutWidget_17</zorder>
-      <zorder>layoutWidget_18</zorder>
-      <zorder>layoutWidget_20</zorder>
-      <zorder>layoutWidget_21</zorder>
-      <zorder>layoutWidget_22</zorder>
-      <zorder>layoutWidget_23</zorder>
       <zorder>groupBox_2</zorder>
      </widget>
     </widget>

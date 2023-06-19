@@ -1,8 +1,10 @@
+#include <Eigen/Dense>
 #include <ios>
 #include <iterator>
 #include <locale>
 #include <memory>
 #include <mrpt/containers/yaml.h>
+#include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CSplineInterpolator1D.h>
 #include <mrpt/math/CVectorDynamic.h>
 #include <mrpt/math/MatrixVectorBase.h>
@@ -19,6 +21,8 @@
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/math/TSegment2D.h>
 #include <mrpt/math/TSegment3D.h>
+#include <mrpt/math/math_frwds.h>
+#include <mrpt/math/matrix_size_t.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
@@ -37,7 +41,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -136,7 +140,6 @@ void bind_mrpt_math_ops_containers(std::function< pybind11::module &(std::string
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_math_CSplineInterpolator1D const &o){ return new PyCallBack_mrpt_math_CSplineInterpolator1D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::math::CSplineInterpolator1D const &o){ return new mrpt::math::CSplineInterpolator1D(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<33> (*)()) &mrpt::math::CSplineInterpolator1D::getClassName, "C++: mrpt::math::CSplineInterpolator1D::getClassName() --> class mrpt::typemeta::string_literal<33>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::math::CSplineInterpolator1D::GetRuntimeClassIdStatic, "C++: mrpt::math::CSplineInterpolator1D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::math::CSplineInterpolator1D::*)() const) &mrpt::math::CSplineInterpolator1D::GetRuntimeClass, "C++: mrpt::math::CSplineInterpolator1D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::math::CSplineInterpolator1D::*)() const) &mrpt::math::CSplineInterpolator1D::clone, "C++: mrpt::math::CSplineInterpolator1D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

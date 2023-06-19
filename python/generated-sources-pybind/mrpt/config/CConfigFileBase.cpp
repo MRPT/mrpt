@@ -11,7 +11,7 @@
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <string>
-#include <stl_binders.hpp>
+#include <pybind11/stl.h>
 
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
@@ -51,7 +51,7 @@ struct PyCallBack_mrpt_config_CConfigFileBase : public mrpt::config::CConfigFile
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CConfigFileBase::readString\"");
 	}
-	void getAllSections(class std::vector<std::string, class std::allocator<std::string > > & a0) const override {
+	void getAllSections(class std::vector<std::string > & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::config::CConfigFileBase *>(this), "getAllSections");
 		if (overload) {
@@ -64,7 +64,7 @@ struct PyCallBack_mrpt_config_CConfigFileBase : public mrpt::config::CConfigFile
 		}
 		pybind11::pybind11_fail("Tried to call pure virtual function \"CConfigFileBase::getAllSections\"");
 	}
-	void getAllKeys(const std::string & a0, class std::vector<std::string, class std::allocator<std::string > > & a1) const override {
+	void getAllKeys(const std::string & a0, class std::vector<std::string > & a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::config::CConfigFileBase *>(this), "getAllKeys");
 		if (overload) {
@@ -109,7 +109,7 @@ struct PyCallBack_mrpt_config_CConfigFileMemory : public mrpt::config::CConfigFi
 		}
 		return CConfigFileMemory::clear();
 	}
-	void getAllSections(class std::vector<std::string, class std::allocator<std::string > > & a0) const override {
+	void getAllSections(class std::vector<std::string > & a0) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::config::CConfigFileMemory *>(this), "getAllSections");
 		if (overload) {
@@ -122,7 +122,7 @@ struct PyCallBack_mrpt_config_CConfigFileMemory : public mrpt::config::CConfigFi
 		}
 		return CConfigFileMemory::getAllSections(a0);
 	}
-	void getAllKeys(const std::string & a0, class std::vector<std::string, class std::allocator<std::string > > & a1) const override {
+	void getAllKeys(const std::string & a0, class std::vector<std::string > & a1) const override {
 		pybind11::gil_scoped_acquire gil;
 		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::config::CConfigFileMemory *>(this), "getAllKeys");
 		if (overload) {
@@ -179,8 +179,8 @@ void bind_mrpt_config_CConfigFileBase(std::function< pybind11::module &(std::str
 		cl.def("read_enum", (enum mrpt::bayes::TKFMethod (mrpt::config::CConfigFileBase::*)(const std::string &, const std::string &, const enum mrpt::bayes::TKFMethod &, bool) const) &mrpt::config::CConfigFileBase::read_enum<mrpt::bayes::TKFMethod>, "C++: mrpt::config::CConfigFileBase::read_enum(const std::string &, const std::string &, const enum mrpt::bayes::TKFMethod &, bool) const --> enum mrpt::bayes::TKFMethod", pybind11::arg("section"), pybind11::arg("name"), pybind11::arg("defaultValue"), pybind11::arg("failIfNotFound"));
 		cl.def("read_enum", [](mrpt::config::CConfigFileBase const &o, const std::string & a0, const std::string & a1, const enum mrpt::system::VerbosityLevel & a2) -> mrpt::system::VerbosityLevel { return o.read_enum(a0, a1, a2); }, "", pybind11::arg("section"), pybind11::arg("name"), pybind11::arg("defaultValue"));
 		cl.def("read_enum", (enum mrpt::system::VerbosityLevel (mrpt::config::CConfigFileBase::*)(const std::string &, const std::string &, const enum mrpt::system::VerbosityLevel &, bool) const) &mrpt::config::CConfigFileBase::read_enum<mrpt::system::VerbosityLevel>, "C++: mrpt::config::CConfigFileBase::read_enum(const std::string &, const std::string &, const enum mrpt::system::VerbosityLevel &, bool) const --> enum mrpt::system::VerbosityLevel", pybind11::arg("section"), pybind11::arg("name"), pybind11::arg("defaultValue"), pybind11::arg("failIfNotFound"));
-		cl.def("getAllSections", (void (mrpt::config::CConfigFileBase::*)(class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::config::CConfigFileBase::getAllSections, "Returns a list with all the section names. \n\nC++: mrpt::config::CConfigFileBase::getAllSections(class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("sections"));
-		cl.def("getAllKeys", (void (mrpt::config::CConfigFileBase::*)(const std::string &, class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::config::CConfigFileBase::getAllKeys, "Returs a list with all the keys into a section \n\nC++: mrpt::config::CConfigFileBase::getAllKeys(const std::string &, class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("section"), pybind11::arg("keys"));
+		cl.def("getAllSections", (void (mrpt::config::CConfigFileBase::*)(class std::vector<std::string > &) const) &mrpt::config::CConfigFileBase::getAllSections, "Returns a list with all the section names. \n\nC++: mrpt::config::CConfigFileBase::getAllSections(class std::vector<std::string > &) const --> void", pybind11::arg("sections"));
+		cl.def("getAllKeys", (void (mrpt::config::CConfigFileBase::*)(const std::string &, class std::vector<std::string > &) const) &mrpt::config::CConfigFileBase::getAllKeys, "Returs a list with all the keys into a section \n\nC++: mrpt::config::CConfigFileBase::getAllKeys(const std::string &, class std::vector<std::string > &) const --> void", pybind11::arg("section"), pybind11::arg("keys"));
 		cl.def("sectionExists", (bool (mrpt::config::CConfigFileBase::*)(const std::string &) const) &mrpt::config::CConfigFileBase::sectionExists, "Checks if a given section exists (name is case insensitive)\n \n\n keyExists() \n\nC++: mrpt::config::CConfigFileBase::sectionExists(const std::string &) const --> bool", pybind11::arg("section_name"));
 		cl.def("keyExists", (bool (mrpt::config::CConfigFileBase::*)(const std::string &, const std::string &) const) &mrpt::config::CConfigFileBase::keyExists, "Checks if a given key exists inside a section (case insensitive)\n \n\n sectionExists() \n\nC++: mrpt::config::CConfigFileBase::keyExists(const std::string &, const std::string &) const --> bool", pybind11::arg("section"), pybind11::arg("key"));
 		cl.def("setContentFromYAML", (void (mrpt::config::CConfigFileBase::*)(const std::string &)) &mrpt::config::CConfigFileBase::setContentFromYAML, "Changes the contents of the virtual \"config file\" from a text block\n containing a YAML configuration text. Refer to unit test\n yaml2config_unittest.cpp for examples of use.\n \n\n getContentAsYAML()\n\nC++: mrpt::config::CConfigFileBase::setContentFromYAML(const std::string &) --> void", pybind11::arg("yaml_block"));
@@ -213,19 +213,19 @@ void bind_mrpt_config_CConfigFileBase(std::function< pybind11::module &(std::str
 	{ // mrpt::config::CConfigFileMemory file:mrpt/config/CConfigFileMemory.h line:37
 		pybind11::class_<mrpt::config::CConfigFileMemory, std::shared_ptr<mrpt::config::CConfigFileMemory>, PyCallBack_mrpt_config_CConfigFileMemory, mrpt::config::CConfigFileBase> cl(M("mrpt::config"), "CConfigFileMemory", "This class implements a config file-like interface over a memory-stored\n string list.\n\n Use base class `CConfigFileBase`'s methods\n `read_{int,float,double,string,...}()` and `write()` to actually read and\n write values.\n\n It can also parse a YAML text block and expose its fields (up to the first\n level of hierarchy, as allowed by INI-like files). This can be used to port\n MRPT classes relying on INI files to using YAML files transparently.\n This feature required building MRPT with yaml-cpp, and is provided by\n CConfigFileMemory::setContentFromYAML().\n\n See: \n\n \n\n \n YAML support was introduced in MRPT 1.9.9");
 		cl.def( pybind11::init( [](){ return new mrpt::config::CConfigFileMemory(); }, [](){ return new PyCallBack_mrpt_config_CConfigFileMemory(); } ) );
-		cl.def( pybind11::init<const class std::vector<std::string, class std::allocator<std::string > > &>(), pybind11::arg("stringList") );
+		cl.def( pybind11::init<const class std::vector<std::string > &>(), pybind11::arg("stringList") );
 
 		cl.def( pybind11::init<const std::string &>(), pybind11::arg("str") );
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_config_CConfigFileMemory const &o){ return new PyCallBack_mrpt_config_CConfigFileMemory(o); } ) );
 		cl.def( pybind11::init( [](mrpt::config::CConfigFileMemory const &o){ return new mrpt::config::CConfigFileMemory(o); } ) );
-		cl.def("setContent", (void (mrpt::config::CConfigFileMemory::*)(const class std::vector<std::string, class std::allocator<std::string > > &)) &mrpt::config::CConfigFileMemory::setContent, "Changes the contents of the virtual \"config file\" \n\nC++: mrpt::config::CConfigFileMemory::setContent(const class std::vector<std::string, class std::allocator<std::string > > &) --> void", pybind11::arg("stringList"));
+		cl.def("setContent", (void (mrpt::config::CConfigFileMemory::*)(const class std::vector<std::string > &)) &mrpt::config::CConfigFileMemory::setContent, "Changes the contents of the virtual \"config file\" \n\nC++: mrpt::config::CConfigFileMemory::setContent(const class std::vector<std::string > &) --> void", pybind11::arg("stringList"));
 		cl.def("setContent", (void (mrpt::config::CConfigFileMemory::*)(const std::string &)) &mrpt::config::CConfigFileMemory::setContent, "Changes the contents of the virtual \"config file\" \n\nC++: mrpt::config::CConfigFileMemory::setContent(const std::string &) --> void", pybind11::arg("str"));
 		cl.def("getContent", (void (mrpt::config::CConfigFileMemory::*)(std::string &) const) &mrpt::config::CConfigFileMemory::getContent, "Return the current contents of the virtual \"config file\" \n\nC++: mrpt::config::CConfigFileMemory::getContent(std::string &) const --> void", pybind11::arg("str"));
 		cl.def("getContent", (std::string (mrpt::config::CConfigFileMemory::*)() const) &mrpt::config::CConfigFileMemory::getContent, "C++: mrpt::config::CConfigFileMemory::getContent() const --> std::string");
 		cl.def("clear", (void (mrpt::config::CConfigFileMemory::*)()) &mrpt::config::CConfigFileMemory::clear, "Empties the virtual \"config file\" \n\nC++: mrpt::config::CConfigFileMemory::clear() --> void");
-		cl.def("getAllSections", (void (mrpt::config::CConfigFileMemory::*)(class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::config::CConfigFileMemory::getAllSections, "Returns a list with all the section names \n\nC++: mrpt::config::CConfigFileMemory::getAllSections(class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("sections"));
-		cl.def("getAllKeys", (void (mrpt::config::CConfigFileMemory::*)(const std::string &, class std::vector<std::string, class std::allocator<std::string > > &) const) &mrpt::config::CConfigFileMemory::getAllKeys, "Returs a list with all the keys into a section \n\nC++: mrpt::config::CConfigFileMemory::getAllKeys(const std::string &, class std::vector<std::string, class std::allocator<std::string > > &) const --> void", pybind11::arg("section"), pybind11::arg("keys"));
+		cl.def("getAllSections", (void (mrpt::config::CConfigFileMemory::*)(class std::vector<std::string > &) const) &mrpt::config::CConfigFileMemory::getAllSections, "Returns a list with all the section names \n\nC++: mrpt::config::CConfigFileMemory::getAllSections(class std::vector<std::string > &) const --> void", pybind11::arg("sections"));
+		cl.def("getAllKeys", (void (mrpt::config::CConfigFileMemory::*)(const std::string &, class std::vector<std::string > &) const) &mrpt::config::CConfigFileMemory::getAllKeys, "Returs a list with all the keys into a section \n\nC++: mrpt::config::CConfigFileMemory::getAllKeys(const std::string &, class std::vector<std::string > &) const --> void", pybind11::arg("section"), pybind11::arg("keys"));
 		cl.def("assign", (class mrpt::config::CConfigFileMemory & (mrpt::config::CConfigFileMemory::*)(const class mrpt::config::CConfigFileMemory &)) &mrpt::config::CConfigFileMemory::operator=, "C++: mrpt::config::CConfigFileMemory::operator=(const class mrpt::config::CConfigFileMemory &) --> class mrpt::config::CConfigFileMemory &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

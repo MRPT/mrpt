@@ -30,7 +30,7 @@ All MRPT libraries are wrapped into one single Python3 module `pymrpt`.
 See: 
 
 - pydoc reference documentation for pymrpt: https://mrpt.github.io/pymrpt-docs/mrpt.pymrpt.mrpt.html
-- MRPT Python examples: https://github.com/MRPT/mrpt/tree/develop/python-examples
+- MRPT `Python examples <python_examples.html>`_
 
 
 3. Matlab

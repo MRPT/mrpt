@@ -54,37 +54,19 @@ endfunction()
 macro(mrpt_ament_cmake_python_get_python_install_dir)
   if(NOT DEFINED PYTHON_INSTALL_DIR)
 	# avoid storing backslash in cached variable since CMake will interpret it as escape character
-	# (JLBC,May2023): Replaced "purelib" -> "platstdlib" below to get rid of the "/local/" path prefix.
-	if(NOT DEFINED ENV{ROS_DISTRO})
-		# For debian packages: /usr/lib/python3/dist-packages/
-		# Read debates online:
-		# - https://stackoverflow.com/questions/122327/how-do-i-find-the-location-of-my-python-site-packages-directory
-		# - https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=998739
-		#
+	
+	# (JLBC,June 2023): *Hack* to comply with ROS conventions of storing python pkgs differently than Debian/Ubuntu standards.
+	if(NOT DEFINED ENV{ROS_VERSION})
+		# Regular Debian package.
 		set(_output "lib/python3/dist-packages/")  # this is prefixed with "/usr/"
+	elseif("$ENV{ROS_VERSION}" STREQUAL "1")
+		# ROS 1
+		set(_output "lib/python3/dist-packages/")  # this is prefixed with "/opt/ros/xxx/"
+	elseif("$ENV{ROS_VERSION}" STREQUAL "2")
+		# ROS 2
+		set(_output "lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages/")  # this is prefixed with "/opt/ros/xxx/"
 	else()
-		# For ROS packages  /usr/local/lib/python3...
-		set(_python_code
-		"import os"
-		"import sysconfig"
-		"print(os.path.relpath(sysconfig.get_path('purelib', vars={'base': '${CMAKE_INSTALL_PREFIX}'}), start='${CMAKE_INSTALL_PREFIX}').replace(os.sep, '/'))"
-		)
-		# JL Was: get_executable_path(_python_interpreter Python3::Interpreter CONFIGURE)
-		set(_python_interpreter ${Python3_EXECUTABLE})
-		execute_process(
-			COMMAND
-			"${_python_interpreter}"
-			"-c"
-			"${_python_code}"
-			OUTPUT_VARIABLE _output
-			RESULT_VARIABLE _result
-			OUTPUT_STRIP_TRAILING_WHITESPACE
-		)
-		if(NOT _result EQUAL 0)
-			message(FATAL_ERROR
-			"execute_process(${_python_interpreter} -c '${_python_code}') returned "
-			"error code ${_result}")
-		endif()
+		message(FATAL_ERROR "Unhandled value for ENV{ROS_VERSION}=$ENV{ROS_VERSION}")
 	endif()
 
     set(PYTHON_INSTALL_DIR
@@ -251,6 +233,16 @@ macro(internal_define_mrpt_lib name headers_only )
 		if(MSVC)  # Define math constants if built with MSVC
 			target_compile_definitions(${name} PUBLIC _USE_MATH_DEFINES)
 		endif()
+
+		# Includes: <mrpt/config.h> & <mrpt/version.h> config headers:
+		# These are PRIVATE include to enforce including BEFORE any other headers, 
+		# e.g. another mrpt instance installed under /opt/ros/${ROS_DISTRO} while building a local copy
+		# Note that there is another PUBLIC dep on the same headers for mrpt-core only, so user code
+		# sees those files too.
+		target_include_directories(${name} BEFORE PRIVATE
+			$<BUILD_INTERFACE:${MRPT_CONFIG_FILE_INCLUDE_DIR}>
+			$<INSTALL_INTERFACE:include>
+		)
 
 		# for gcc and clang, we must build libraries as fPIC:
 		if(NOT MSVC)
