@@ -10,6 +10,7 @@
 #include "maps-precomp.h"  // Precomp header
 //
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/customizable_obs_viz.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
@@ -330,4 +331,29 @@ bool mrpt::obs::obs_to_viz(
 	// No conversion found:
 	out.clear();
 	return false;
+}
+
+bool mrpt::obs::obs_to_viz(
+	const mrpt::obs::CSensoryFrame& sf, const VisualizationParameters& p,
+	mrpt::opengl::CSetOfObjects& out)
+{
+	out.clear();
+
+	// Make a copy, to avoid potentially duplicated axis:
+	VisualizationParameters vp = p;
+
+	for (const auto& obs : sf)
+	{
+		if (!obs) continue;
+		auto glObj = mrpt::opengl::CSetOfObjects::Create();
+
+		bool ok = obs_to_viz(obs, vp, *glObj);
+		if (!ok) continue;
+
+		out.insert(glObj);
+
+		vp.showAxis = false;  // to avoid duplications
+	}
+
+	return !out.empty();
 }

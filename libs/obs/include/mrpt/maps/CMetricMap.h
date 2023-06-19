@@ -22,6 +22,23 @@
 
 #include <deque>
 
+#if defined(MRPT_BUILDING_PYTHON_WRAPPER)
+namespace mrpt::obs
+{
+class CSensoryFrame;
+}
+namespace mrpt::maps
+{
+class CMetricMap;
+}
+namespace mrpt::pymrpt_internal
+{
+bool insertObs(
+	const mrpt::obs::CSensoryFrame& sf, mrpt::maps::CMetricMap* map,
+	const mrpt::poses::CPose3D* robotPose);
+}
+#endif
+
 namespace mrpt::maps
 {
 /** Declares a virtual base class for all metric maps storage classes.
@@ -147,6 +164,12 @@ class CMetricMap : public mrpt::serialization::CSerializable,
 		else
 			return insertObservation(
 				obs, std::optional<const mrpt::poses::CPose3D>());
+	}
+	bool insertObs(
+		const mrpt::obs::CSensoryFrame& sf,
+		const mrpt::poses::CPose3D* robotPose = nullptr)
+	{
+		return mrpt::pymrpt_internal::insertObs(sf, this, robotPose);
 	}
 #endif
 

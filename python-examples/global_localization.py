@@ -72,17 +72,19 @@ if not os.path.exists(os.path.abspath(map_filename)):
         map_filename = os.path.abspath(map_filename)
         os.chdir(curr_dir)
 
-# options
-# kld
+# Load parameters:
+# KLD (Adapative sampling)
 pdf_prediction_options = mrpt.slam.TMonteCarloLocalizationParams()
 pdf_prediction_options.KLD_params.loadFromConfigFileName(
     config_filename, 'KLD_options')
 pdf_prediction_options.KLD_params.dumpToConsole()
-# pf
+
+# Particle filtering itself:
 pf_options = mrpt.bayes.CParticleFilter.TParticleFilterOptions()
 pf_options.loadFromConfigFileName(config_filename, 'PF_options')
 pf_options.dumpToConsole()
-# maps
+
+# Metric maps to build:
 map_list = mrpt.maps.TSetOfMetricMapInitializers()
 map_list.loadFromConfigFileName(config_filename, 'MetricMap')
 map_list.dumpToConsole()
@@ -91,20 +93,19 @@ map_list.dumpToConsole()
 metric_map = mrpt.maps.CMultiMetricMap()
 metric_map.setListOfMaps(map_list)
 
-
 # load map
+map_file = mrpt.io.CFileGZInputStream(map_filename)
+map_arch = mrpt.serialization.archiveFrom(map_file)
+
 if (map_filename.endswith('.simplemap')
         or map_filename.endswith('.simplemap.gz')):
     simple_map = mrpt.maps.CSimpleMap()
-    map_file = mrpt.io.CFileGZInputStream(map_filename)
-    arch = mrpt.serialization.archiveFrom(map_file)
-    arch.ReadObject(simple_map)
+    map_arch.ReadObject(simple_map)
     metric_map.loadFromProbabilisticPosesAndObservations(simple_map)
 elif (map_filename.endswith('.gridmap')
         or map_filename.endswith('.gridmap.gz')):
     occ_map = mrpt.maps.COccupancyGridMap2D()
-    map_file = mrpt.utils.CFileGZInputStream(map_filename)
-    map_file.ReadObject(occ_map)
+    map_arch.ReadObject(occ_map)
     # overwrite gridmap
     for i in range(len(metric_map.maps)):
         if metric_map.maps[i].GetRuntimeClass().className == 'COccupancyGridMap2D':
@@ -115,7 +116,6 @@ else:
     sys.exit(1)
 print('Load map file {}.'.format(map_filename))
 
-
 # get window resolution
 if args.resolution:
     resolution_str = args.resolution
@@ -124,13 +124,14 @@ else:
 
 # gui
 try:
-    win3D = mrpt.gui.CDisplayWindow3D("pf_localization", int(
-        resolution_str.split('x')[0]), int(resolution_str.split('x')[1]))
+    res = resolution_str.split('x')
+    win3D = mrpt.gui.CDisplayWindow3D(
+        "pf_localization", int(res[0]), int(res[1]))
 except:
     win3D = mrpt.gui.CDisplayWindow3D("pf_localization", 800, 600)
 
 # initial scene
-map_object = metric_map.maps[0].getVisualization()
+map_object = metric_map.getVisualization()
 
 scene_ptr = win3D.get3DSceneAndLock()
 scene_ptr.clear()
@@ -169,15 +170,30 @@ while True:
     # get particles
     particles_object = pdf.getVisualization()
 
-    # get laserscan
-    points_map = mrpt.maps.CSimplePointsMap()
-    points_map.insertObs(sf.getObservationByIndex(0))
-    laserscan_object = points_map.getVisualization()
-    laserscan_object.setPose(mrpt.poses.CPose3D(mean))
-    laserscan_object.setColor(mrpt.img.TColorf(1., 0., 0.))
+    # get visualization for laser scan (two ways for demonstration purposes)
+    if False:
+        # Alternative method 1:
+        # Insert the observations into a point cloud:
+        points_map = mrpt.maps.CSimplePointsMap()
+        points_map.insertObs(sf)
+
+        # And get the visualization of the point cloud:
+        glObservation = points_map.getVisualization()
+    else:
+        # Alternative 2:
+        # Using the generic obs_to_viz() method:
+        vizOpts = mrpt.obs.VisualizationParameters()
+        vizOpts.pointSize = 3
+        vizOpts.showAxis = False
+
+        glObservation = mrpt.opengl.CSetOfObjects()
+
+        mrpt.obs.obs_to_viz(sf, vizOpts, glObservation)
+
+    glObservation.setPose(mrpt.poses.CPose3D(mean))
+    glObservation.setColor(mrpt.img.TColorf(1., 0., 0.))
 
     # update pf
-
     stats = pf.executeOn(pdf, act, sf)
 
     # update scene
@@ -185,7 +201,7 @@ while True:
     scene_ptr.clear()
     scene_ptr.insert(map_object)
     scene_ptr.insert(particles_object)
-    scene_ptr.insert(laserscan_object)
+    scene_ptr.insert(glObservation)
     win3D.unlockAccess3DScene()
     win3D.forceRepaint()
 

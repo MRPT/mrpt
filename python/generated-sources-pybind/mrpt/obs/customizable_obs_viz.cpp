@@ -15,6 +15,10 @@
 #include <mrpt/img/TCamera.h>
 #include <mrpt/img/TColor.h>
 #include <mrpt/img/color_maps.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/metric_map_types.h>
 #include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/CPolygon.h>
@@ -29,6 +33,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationPointCloud.h>
 #include <mrpt/obs/CObservationVelodyneScan.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/obs/T3DPointsTo2DScanParams.h>
 #include <mrpt/obs/TRangeImageFilter.h>
@@ -50,6 +55,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/system/COutputLogger.h>
+#include <mrpt/tfest/TMatchingPair.h>
 #include <mrpt/typemeta/static_string.h>
 #include <optional>
 #include <ostream>
@@ -106,19 +112,22 @@ void bind_mrpt_obs_customizable_obs_viz(std::function< pybind11::module &(std::s
 	// mrpt::obs::obs_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:71
 	M("mrpt::obs").def("obs_to_viz", (bool (*)(const class std::shared_ptr<class mrpt::obs::CObservation> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &)) &mrpt::obs::obs_to_viz, "Clears `out` and creates a visualization of the given observation,\n  dispatching the call according to the actual observation class.\n  \n\n true if type has known visualizer, false if it does not (then, `out`\n          will be empty)\n\n  \n This and the accompanying functions are defined in namespace\n        mrpt::obs, but you must link against mrpt::maps too to have their\n        definitions.\n\nC++: mrpt::obs::obs_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) --> bool", pybind11::arg("obs"), pybind11::arg("p"), pybind11::arg("out"));
 
-	// mrpt::obs::obs3Dscan_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation3DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:76
+	// mrpt::obs::obs_to_viz(const class mrpt::obs::CSensoryFrame &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:86
+	M("mrpt::obs").def("obs_to_viz", (bool (*)(const class mrpt::obs::CSensoryFrame &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &)) &mrpt::obs::obs_to_viz, "Clears `out` and creates a visualization of the given sensory-frame,\n  dispatching the call according to the actual observation classes inside the\n SF.\n\n  \n true if type has known visualizer, false if it does not (then, `out`\n          will be empty)\n\n  \n This and the accompanying functions are defined in namespace\n        mrpt::obs, but you must link against mrpt::maps too to have their\n        definitions.\n\nC++: mrpt::obs::obs_to_viz(const class mrpt::obs::CSensoryFrame &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) --> bool", pybind11::arg("sf"), pybind11::arg("p"), pybind11::arg("out"));
+
+	// mrpt::obs::obs3Dscan_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation3DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:91
 	M("mrpt::obs").def("obs3Dscan_to_viz", (void (*)(const class std::shared_ptr<class mrpt::obs::CObservation3DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &)) &mrpt::obs::obs3Dscan_to_viz, "Clears `out` and creates a visualization of the given observation.\n\nC++: mrpt::obs::obs3Dscan_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation3DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) --> void", pybind11::arg("obs"), pybind11::arg("p"), pybind11::arg("out"));
 
-	// mrpt::obs::obsVelodyne_to_viz(const class std::shared_ptr<class mrpt::obs::CObservationVelodyneScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:81
+	// mrpt::obs::obsVelodyne_to_viz(const class std::shared_ptr<class mrpt::obs::CObservationVelodyneScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:96
 	M("mrpt::obs").def("obsVelodyne_to_viz", (void (*)(const class std::shared_ptr<class mrpt::obs::CObservationVelodyneScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &)) &mrpt::obs::obsVelodyne_to_viz, "Clears `out` and creates a visualization of the given observation.\n\nC++: mrpt::obs::obsVelodyne_to_viz(const class std::shared_ptr<class mrpt::obs::CObservationVelodyneScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) --> void", pybind11::arg("obs"), pybind11::arg("p"), pybind11::arg("out"));
 
-	// mrpt::obs::obsPointCloud_to_viz(const class std::shared_ptr<class mrpt::obs::CObservationPointCloud> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:86
+	// mrpt::obs::obsPointCloud_to_viz(const class std::shared_ptr<class mrpt::obs::CObservationPointCloud> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:101
 	M("mrpt::obs").def("obsPointCloud_to_viz", (void (*)(const class std::shared_ptr<class mrpt::obs::CObservationPointCloud> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &)) &mrpt::obs::obsPointCloud_to_viz, "Clears `out` and creates a visualization of the given observation.\n\nC++: mrpt::obs::obsPointCloud_to_viz(const class std::shared_ptr<class mrpt::obs::CObservationPointCloud> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) --> void", pybind11::arg("obs"), pybind11::arg("p"), pybind11::arg("out"));
 
-	// mrpt::obs::obs2Dscan_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation2DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:91
+	// mrpt::obs::obs2Dscan_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation2DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) file:mrpt/obs/customizable_obs_viz.h line:106
 	M("mrpt::obs").def("obs2Dscan_to_viz", (void (*)(const class std::shared_ptr<class mrpt::obs::CObservation2DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &)) &mrpt::obs::obs2Dscan_to_viz, "Clears `out` and creates a visualization of the given observation.\n\nC++: mrpt::obs::obs2Dscan_to_viz(const class std::shared_ptr<class mrpt::obs::CObservation2DRangeScan> &, const struct mrpt::obs::VisualizationParameters &, class mrpt::opengl::CSetOfObjects &) --> void", pybind11::arg("obs"), pybind11::arg("p"), pybind11::arg("out"));
 
-	// mrpt::obs::recolorize3Dpc(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const struct mrpt::obs::VisualizationParameters &) file:mrpt/obs/customizable_obs_viz.h line:96
+	// mrpt::obs::recolorize3Dpc(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const struct mrpt::obs::VisualizationParameters &) file:mrpt/obs/customizable_obs_viz.h line:111
 	M("mrpt::obs").def("recolorize3Dpc", (void (*)(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const struct mrpt::obs::VisualizationParameters &)) &mrpt::obs::recolorize3Dpc, "Recolorize a pointcloud according to the given parameters\n\nC++: mrpt::obs::recolorize3Dpc(const class std::shared_ptr<class mrpt::opengl::CPointCloudColoured> &, const struct mrpt::obs::VisualizationParameters &) --> void", pybind11::arg("pnts"), pybind11::arg("p"));
 
 }
