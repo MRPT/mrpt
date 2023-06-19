@@ -24,7 +24,10 @@ file(GLOB_RECURSE PY_SRCS ${PY_SRCS_DIR}/*.cpp)
 
 pybind11_add_module(pymrpt
   ${PY_SRCS}
+  # -- manually crafted files --
+  pymrpt_internals.cpp
   )
+
 target_link_libraries(pymrpt PUBLIC 
   mrpt::apps
   mrpt::serialization

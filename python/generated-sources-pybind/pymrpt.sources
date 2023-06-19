@@ -88,6 +88,7 @@ mrpt/opengl/Visualizable.cpp
 mrpt/system/CObservable.cpp
 mrpt/tfest/TMatchingPair.cpp
 mrpt/maps/CMetricMap.cpp
+mrpt/maps/CMetricMap_1.cpp
 mrpt/obs/CSensoryFrame.cpp
 mrpt/apps/BaseAppDataSource.cpp
 mrpt/config/CConfigFileBase.cpp

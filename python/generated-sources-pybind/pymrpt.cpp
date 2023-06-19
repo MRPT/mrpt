@@ -98,6 +98,7 @@ void bind_mrpt_opengl_Visualizable(std::function< pybind11::module &(std::string
 void bind_mrpt_system_CObservable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_tfest_TMatchingPair(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CMetricMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_maps_CMetricMap_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_CSensoryFrame(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_apps_BaseAppDataSource(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_config_CConfigFileBase(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -431,6 +432,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 		{"mrpt", "poses"},
 		{"mrpt::poses", "Lie"},
 		{"mrpt::poses", "detail"},
+		{"mrpt", "pymrpt_internal"},
 		{"mrpt", "random"},
 		{"mrpt", "rtti"},
 		{"mrpt::rtti", "internal"},
@@ -540,6 +542,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_system_CObservable(M);
 	bind_mrpt_tfest_TMatchingPair(M);
 	bind_mrpt_maps_CMetricMap(M);
+	bind_mrpt_maps_CMetricMap_1(M);
 	bind_mrpt_obs_CSensoryFrame(M);
 	bind_mrpt_apps_BaseAppDataSource(M);
 	bind_mrpt_config_CConfigFileBase(M);
