@@ -1,6 +1,6 @@
 \page changelog Change Log
 
-# Version 2.9.2: UNRELEASED
+# Version 2.9.2: Released June 20th, 2023
 - Changes in docs:
   - Update dependency in instructions from `libftdi-dev` to `libftdi1-dev`
 - Changes in libraries:
