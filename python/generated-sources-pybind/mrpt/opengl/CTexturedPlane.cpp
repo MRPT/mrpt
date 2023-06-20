@@ -399,7 +399,6 @@ void bind_mrpt_opengl_CTexturedPlane(std::function< pybind11::module &(std::stri
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CTexturedPlane const &o){ return new PyCallBack_mrpt_opengl_CTexturedPlane(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CTexturedPlane const &o){ return new mrpt::opengl::CTexturedPlane(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::opengl::CTexturedPlane::getClassName, "C++: mrpt::opengl::CTexturedPlane::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CTexturedPlane::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CTexturedPlane::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CTexturedPlane::*)() const) &mrpt::opengl::CTexturedPlane::GetRuntimeClass, "C++: mrpt::opengl::CTexturedPlane::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CTexturedPlane::*)() const) &mrpt::opengl::CTexturedPlane::clone, "C++: mrpt::opengl::CTexturedPlane::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -453,7 +452,6 @@ void bind_mrpt_opengl_CTexturedPlane(std::function< pybind11::module &(std::stri
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_Viewport const &o){ return new PyCallBack_mrpt_opengl_Viewport(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::Viewport const &o){ return new mrpt::opengl::Viewport(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<22> (*)()) &mrpt::opengl::Viewport::getClassName, "C++: mrpt::opengl::Viewport::getClassName() --> class mrpt::typemeta::string_literal<22>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::Viewport::GetRuntimeClassIdStatic, "C++: mrpt::opengl::Viewport::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::Viewport::*)() const) &mrpt::opengl::Viewport::GetRuntimeClass, "C++: mrpt::opengl::Viewport::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::Viewport::*)() const) &mrpt::opengl::Viewport::clone, "C++: mrpt::opengl::Viewport::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

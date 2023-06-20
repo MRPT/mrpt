@@ -469,7 +469,6 @@ void bind_mrpt_poses_CPosePDFGrid(std::function< pybind11::module &(std::string 
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPosePDFGrid const &o){ return new PyCallBack_mrpt_poses_CPosePDFGrid(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPosePDFGrid const &o){ return new mrpt::poses::CPosePDFGrid(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<25> (*)()) &mrpt::poses::CPosePDFGrid::getClassName, "C++: mrpt::poses::CPosePDFGrid::getClassName() --> class mrpt::typemeta::string_literal<25>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPosePDFGrid::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPosePDFGrid::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPosePDFGrid::*)() const) &mrpt::poses::CPosePDFGrid::GetRuntimeClass, "C++: mrpt::poses::CPosePDFGrid::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPosePDFGrid::*)() const) &mrpt::poses::CPosePDFGrid::clone, "C++: mrpt::poses::CPosePDFGrid::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -494,7 +493,6 @@ void bind_mrpt_poses_CPosePDFGrid(std::function< pybind11::module &(std::string 
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPosePDFSOG const &o){ return new PyCallBack_mrpt_poses_CPosePDFSOG(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPosePDFSOG const &o){ return new mrpt::poses::CPosePDFSOG(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<24> (*)()) &mrpt::poses::CPosePDFSOG::getClassName, "C++: mrpt::poses::CPosePDFSOG::getClassName() --> class mrpt::typemeta::string_literal<24>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPosePDFSOG::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPosePDFSOG::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPosePDFSOG::*)() const) &mrpt::poses::CPosePDFSOG::GetRuntimeClass, "C++: mrpt::poses::CPosePDFSOG::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPosePDFSOG::*)() const) &mrpt::poses::CPosePDFSOG::clone, "C++: mrpt::poses::CPosePDFSOG::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

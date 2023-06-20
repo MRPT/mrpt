@@ -246,7 +246,6 @@ void bind_mrpt_obs_CObservationRFID(std::function< pybind11::module &(std::strin
 		cl.def( pybind11::init( [](mrpt::obs::CObservationRFID const &o){ return new mrpt::obs::CObservationRFID(o); } ) );
 		cl.def_readwrite("sensorPoseOnRobot", &mrpt::obs::CObservationRFID::sensorPoseOnRobot);
 		cl.def_readwrite("tag_readings", &mrpt::obs::CObservationRFID::tag_readings);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<27> (*)()) &mrpt::obs::CObservationRFID::getClassName, "C++: mrpt::obs::CObservationRFID::getClassName() --> class mrpt::typemeta::string_literal<27>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationRFID::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationRFID::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationRFID::*)() const) &mrpt::obs::CObservationRFID::GetRuntimeClass, "C++: mrpt::obs::CObservationRFID::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationRFID::*)() const) &mrpt::obs::CObservationRFID::clone, "C++: mrpt::obs::CObservationRFID::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

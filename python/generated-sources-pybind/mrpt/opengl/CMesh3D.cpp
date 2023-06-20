@@ -27,6 +27,7 @@
 #include <mrpt/math/TPose3DQuat.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
+#include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CRenderizableShaderPoints.h>
@@ -68,6 +69,259 @@
 	PYBIND11_DECLARE_HOLDER_TYPE(T, T*)
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
+
+// mrpt::opengl::CMesh3D file:mrpt/opengl/CMesh3D.h line:30
+struct PyCallBack_mrpt_opengl_CMesh3D : public mrpt::opengl::CMesh3D {
+	using mrpt::opengl::CMesh3D::CMesh3D;
+
+	const struct mrpt::rtti::TRuntimeClassId * GetRuntimeClass() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "GetRuntimeClass");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<const struct mrpt::rtti::TRuntimeClassId *>::value) {
+				static pybind11::detail::override_caster_t<const struct mrpt::rtti::TRuntimeClassId *> caster;
+				return pybind11::detail::cast_ref<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o));
+		}
+		return CMesh3D::GetRuntimeClass();
+	}
+	class mrpt::rtti::CObject * clone() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "clone");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::rtti::CObject *>::value) {
+				static pybind11::detail::override_caster_t<class mrpt::rtti::CObject *> caster;
+				return pybind11::detail::cast_ref<class mrpt::rtti::CObject *>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<class mrpt::rtti::CObject *>(std::move(o));
+		}
+		return CMesh3D::clone();
+	}
+	uint8_t serializeGetVersion() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "serializeGetVersion");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
+		}
+		return CMesh3D::serializeGetVersion();
+	}
+	void serializeTo(class mrpt::serialization::CArchive & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "serializeTo");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CMesh3D::serializeTo(a0);
+	}
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "serializeFrom");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CMesh3D::serializeFrom(a0, a1);
+	}
+	void renderUpdateBuffers() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "renderUpdateBuffers");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CMesh3D::renderUpdateBuffers();
+	}
+	void freeOpenGLResources() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "freeOpenGLResources");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CMesh3D::freeOpenGLResources();
+	}
+	void onUpdateBuffers_Wireframe() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "onUpdateBuffers_Wireframe");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CMesh3D::onUpdateBuffers_Wireframe();
+	}
+	void onUpdateBuffers_Triangles() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "onUpdateBuffers_Triangles");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CMesh3D::onUpdateBuffers_Triangles();
+	}
+	void onUpdateBuffers_Points() override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "onUpdateBuffers_Points");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CMesh3D::onUpdateBuffers_Points();
+	}
+	struct mrpt::math::TBoundingBox_<float> internalBoundingBoxLocal() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "internalBoundingBoxLocal");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TBoundingBox_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TBoundingBox_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TBoundingBox_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TBoundingBox_<float>>(std::move(o));
+		}
+		return CMesh3D::internalBoundingBoxLocal();
+	}
+	class mrpt::opengl::CRenderizable & setColorA_u8(const unsigned char a0) override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "setColorA_u8");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::opengl::CRenderizable &>::value) {
+				static pybind11::detail::override_caster_t<class mrpt::opengl::CRenderizable &> caster;
+				return pybind11::detail::cast_ref<class mrpt::opengl::CRenderizable &>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<class mrpt::opengl::CRenderizable &>(std::move(o));
+		}
+		return CRenderizable::setColorA_u8(a0);
+	}
+	class mrpt::opengl::CRenderizable & setColor_u8(const struct mrpt::img::TColor & a0) override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "setColor_u8");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::opengl::CRenderizable &>::value) {
+				static pybind11::detail::override_caster_t<class mrpt::opengl::CRenderizable &> caster;
+				return pybind11::detail::cast_ref<class mrpt::opengl::CRenderizable &>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<class mrpt::opengl::CRenderizable &>(std::move(o));
+		}
+		return CRenderizable::setColor_u8(a0);
+	}
+	bool cullElegible() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "cullElegible");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CRenderizable::cullElegible();
+	}
+	void toYAMLMap(class mrpt::containers::yaml & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "toYAMLMap");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRenderizable::toYAMLMap(a0);
+	}
+	bool isCompositeObject() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "isCompositeObject");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CRenderizable::isCompositeObject();
+	}
+	bool traceRay(const class mrpt::poses::CPose3D & a0, double & a1) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "traceRay");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CRenderizable::traceRay(a0, a1);
+	}
+	struct mrpt::math::TPoint3D_<float> getLocalRepresentativePoint() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "getLocalRepresentativePoint");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<struct mrpt::math::TPoint3D_<float>>::value) {
+				static pybind11::detail::override_caster_t<struct mrpt::math::TPoint3D_<float>> caster;
+				return pybind11::detail::cast_ref<struct mrpt::math::TPoint3D_<float>>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<struct mrpt::math::TPoint3D_<float>>(std::move(o));
+		}
+		return CRenderizable::getLocalRepresentativePoint();
+	}
+	void initializeTextures() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::opengl::CMesh3D *>(this), "initializeTextures");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CRenderizable::initializeTextures();
+	}
+};
 
 // mrpt::opengl::CMeshFast file:mrpt/opengl/CMeshFast.h line:31
 struct PyCallBack_mrpt_opengl_CMeshFast : public mrpt::opengl::CMeshFast {
@@ -523,8 +777,36 @@ struct PyCallBack_mrpt_opengl_CSimpleLine : public mrpt::opengl::CSimpleLine {
 	}
 };
 
-void bind_mrpt_opengl_CMeshFast(std::function< pybind11::module &(std::string const &namespace_) > &M)
+void bind_mrpt_opengl_CMesh3D(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
+	{ // mrpt::opengl::CMesh3D file:mrpt/opengl/CMesh3D.h line:30
+		pybind11::class_<mrpt::opengl::CMesh3D, std::shared_ptr<mrpt::opengl::CMesh3D>, PyCallBack_mrpt_opengl_CMesh3D, mrpt::opengl::CRenderizableShaderTriangles, mrpt::opengl::CRenderizableShaderWireFrame, mrpt::opengl::CRenderizableShaderPoints> cl(M("mrpt::opengl"), "CMesh3D", "A 3D mesh composed of triangles and/or quads.\n A typical usage example would be a 3D model of an object.\n\n ![mrpt::opengl::CMesh3D](preview_CMesh3D.png)\n\n \n opengl::Scene,opengl::CMesh,opengl::CAssimpModel\n \n\n\n ");
+		cl.def( pybind11::init( [](){ return new mrpt::opengl::CMesh3D(); }, [](){ return new PyCallBack_mrpt_opengl_CMesh3D(); } ) );
+		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CMesh3D const &o){ return new PyCallBack_mrpt_opengl_CMesh3D(o); } ) );
+		cl.def( pybind11::init( [](mrpt::opengl::CMesh3D const &o){ return new mrpt::opengl::CMesh3D(o); } ) );
+		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CMesh3D::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CMesh3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
+		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CMesh3D::*)() const) &mrpt::opengl::CMesh3D::GetRuntimeClass, "C++: mrpt::opengl::CMesh3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
+		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CMesh3D::*)() const) &mrpt::opengl::CMesh3D::clone, "C++: mrpt::opengl::CMesh3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
+		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::opengl::CMesh3D::CreateObject, "C++: mrpt::opengl::CMesh3D::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
+		cl.def("renderUpdateBuffers", (void (mrpt::opengl::CMesh3D::*)() const) &mrpt::opengl::CMesh3D::renderUpdateBuffers, "C++: mrpt::opengl::CMesh3D::renderUpdateBuffers() const --> void");
+		cl.def("freeOpenGLResources", (void (mrpt::opengl::CMesh3D::*)()) &mrpt::opengl::CMesh3D::freeOpenGLResources, "C++: mrpt::opengl::CMesh3D::freeOpenGLResources() --> void");
+		cl.def("onUpdateBuffers_Wireframe", (void (mrpt::opengl::CMesh3D::*)()) &mrpt::opengl::CMesh3D::onUpdateBuffers_Wireframe, "C++: mrpt::opengl::CMesh3D::onUpdateBuffers_Wireframe() --> void");
+		cl.def("onUpdateBuffers_Triangles", (void (mrpt::opengl::CMesh3D::*)()) &mrpt::opengl::CMesh3D::onUpdateBuffers_Triangles, "C++: mrpt::opengl::CMesh3D::onUpdateBuffers_Triangles() --> void");
+		cl.def("onUpdateBuffers_Points", (void (mrpt::opengl::CMesh3D::*)()) &mrpt::opengl::CMesh3D::onUpdateBuffers_Points, "C++: mrpt::opengl::CMesh3D::onUpdateBuffers_Points() --> void");
+		cl.def("enableShowEdges", (void (mrpt::opengl::CMesh3D::*)(bool)) &mrpt::opengl::CMesh3D::enableShowEdges, "C++: mrpt::opengl::CMesh3D::enableShowEdges(bool) --> void", pybind11::arg("v"));
+		cl.def("enableShowFaces", (void (mrpt::opengl::CMesh3D::*)(bool)) &mrpt::opengl::CMesh3D::enableShowFaces, "C++: mrpt::opengl::CMesh3D::enableShowFaces(bool) --> void", pybind11::arg("v"));
+		cl.def("enableShowVertices", (void (mrpt::opengl::CMesh3D::*)(bool)) &mrpt::opengl::CMesh3D::enableShowVertices, "C++: mrpt::opengl::CMesh3D::enableShowVertices(bool) --> void", pybind11::arg("v"));
+		cl.def("enableFaceNormals", (void (mrpt::opengl::CMesh3D::*)(bool)) &mrpt::opengl::CMesh3D::enableFaceNormals, "C++: mrpt::opengl::CMesh3D::enableFaceNormals(bool) --> void", pybind11::arg("v"));
+		cl.def("loadMesh", (void (mrpt::opengl::CMesh3D::*)(unsigned int, unsigned int, int *, int *, float *)) &mrpt::opengl::CMesh3D::loadMesh, "Load a 3D mesh. The arguments indicate:\n		- num_verts: Number of vertices of the mesh\n		- num_faces: Number of faces of the mesh\n		- verts_per_face: An array (pointer) with the number of vertices of each\n	   face. The elements must be set either to 3 (triangle) or 4 (quad).\n		- face_verts: An array (pointer) with the vertices of each face. The\n	   vertices of each face must be consecutive in this array.\n		- vert_coords: An array (pointer) with the coordinates of each vertex.\n	   The xyz coordinates of each vertex must be consecutive in this array.\n\nC++: mrpt::opengl::CMesh3D::loadMesh(unsigned int, unsigned int, int *, int *, float *) --> void", pybind11::arg("num_verts"), pybind11::arg("num_faces"), pybind11::arg("verts_per_face"), pybind11::arg("face_verts"), pybind11::arg("vert_coords"));
+		cl.def("setEdgeColor", [](mrpt::opengl::CMesh3D &o, float const & a0, float const & a1, float const & a2) -> void { return o.setEdgeColor(a0, a1, a2); }, "", pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
+		cl.def("setEdgeColor", (void (mrpt::opengl::CMesh3D::*)(float, float, float, float)) &mrpt::opengl::CMesh3D::setEdgeColor, "C++: mrpt::opengl::CMesh3D::setEdgeColor(float, float, float, float) --> void", pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"), pybind11::arg("a"));
+		cl.def("setFaceColor", [](mrpt::opengl::CMesh3D &o, float const & a0, float const & a1, float const & a2) -> void { return o.setFaceColor(a0, a1, a2); }, "", pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
+		cl.def("setFaceColor", (void (mrpt::opengl::CMesh3D::*)(float, float, float, float)) &mrpt::opengl::CMesh3D::setFaceColor, "C++: mrpt::opengl::CMesh3D::setFaceColor(float, float, float, float) --> void", pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"), pybind11::arg("a"));
+		cl.def("setVertColor", [](mrpt::opengl::CMesh3D &o, float const & a0, float const & a1, float const & a2) -> void { return o.setVertColor(a0, a1, a2); }, "", pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"));
+		cl.def("setVertColor", (void (mrpt::opengl::CMesh3D::*)(float, float, float, float)) &mrpt::opengl::CMesh3D::setVertColor, "C++: mrpt::opengl::CMesh3D::setVertColor(float, float, float, float) --> void", pybind11::arg("r"), pybind11::arg("g"), pybind11::arg("b"), pybind11::arg("a"));
+		cl.def("internalBoundingBoxLocal", (struct mrpt::math::TBoundingBox_<float> (mrpt::opengl::CMesh3D::*)() const) &mrpt::opengl::CMesh3D::internalBoundingBoxLocal, "C++: mrpt::opengl::CMesh3D::internalBoundingBoxLocal() const --> struct mrpt::math::TBoundingBox_<float>");
+		cl.def("assign", (class mrpt::opengl::CMesh3D & (mrpt::opengl::CMesh3D::*)(const class mrpt::opengl::CMesh3D &)) &mrpt::opengl::CMesh3D::operator=, "C++: mrpt::opengl::CMesh3D::operator=(const class mrpt::opengl::CMesh3D &) --> class mrpt::opengl::CMesh3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+	}
 	{ // mrpt::opengl::CMeshFast file:mrpt/opengl/CMeshFast.h line:31
 		pybind11::class_<mrpt::opengl::CMeshFast, std::shared_ptr<mrpt::opengl::CMeshFast>, PyCallBack_mrpt_opengl_CMeshFast, mrpt::opengl::CRenderizableShaderPoints> cl(M("mrpt::opengl"), "CMeshFast", "A planar (XY) grid where each cell has an associated height and, optionally,\n a texture map.\n To make it faster to render, instead of drawing lines and triangles it draws\n a point at each gridcell.\n  A typical usage example would be an elevation map or a 3D model of a\n terrain.\n\n ![mrpt::opengl::CMeshFast](preview_CMeshFast.png)\n\n  \n opengl::Scene\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CMeshFast(); }, [](){ return new PyCallBack_mrpt_opengl_CMeshFast(); } ), "doc");
@@ -536,7 +818,6 @@ void bind_mrpt_opengl_CMeshFast(std::function< pybind11::module &(std::string co
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CMeshFast const &o){ return new PyCallBack_mrpt_opengl_CMeshFast(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CMeshFast const &o){ return new mrpt::opengl::CMeshFast(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<23> (*)()) &mrpt::opengl::CMeshFast::getClassName, "C++: mrpt::opengl::CMeshFast::getClassName() --> class mrpt::typemeta::string_literal<23>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CMeshFast::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CMeshFast::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CMeshFast::*)() const) &mrpt::opengl::CMeshFast::GetRuntimeClass, "C++: mrpt::opengl::CMeshFast::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CMeshFast::*)() const) &mrpt::opengl::CMeshFast::clone, "C++: mrpt::opengl::CMeshFast::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -581,7 +862,6 @@ void bind_mrpt_opengl_CMeshFast(std::function< pybind11::module &(std::string co
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CSimpleLine const &o){ return new PyCallBack_mrpt_opengl_CSimpleLine(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CSimpleLine const &o){ return new mrpt::opengl::CSimpleLine(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<25> (*)()) &mrpt::opengl::CSimpleLine::getClassName, "C++: mrpt::opengl::CSimpleLine::getClassName() --> class mrpt::typemeta::string_literal<25>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CSimpleLine::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CSimpleLine::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CSimpleLine::*)() const) &mrpt::opengl::CSimpleLine::GetRuntimeClass, "C++: mrpt::opengl::CSimpleLine::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CSimpleLine::*)() const) &mrpt::opengl::CSimpleLine::clone, "C++: mrpt::opengl::CSimpleLine::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

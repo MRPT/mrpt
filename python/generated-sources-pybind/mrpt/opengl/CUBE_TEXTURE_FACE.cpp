@@ -552,7 +552,6 @@ void bind_mrpt_opengl_CUBE_TEXTURE_FACE(std::function< pybind11::module &(std::s
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CSkyBox(); }, [](){ return new PyCallBack_mrpt_opengl_CSkyBox(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CSkyBox const &o){ return new PyCallBack_mrpt_opengl_CSkyBox(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CSkyBox const &o){ return new mrpt::opengl::CSkyBox(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<21> (*)()) &mrpt::opengl::CSkyBox::getClassName, "C++: mrpt::opengl::CSkyBox::getClassName() --> class mrpt::typemeta::string_literal<21>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CSkyBox::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CSkyBox::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CSkyBox::*)() const) &mrpt::opengl::CSkyBox::GetRuntimeClass, "C++: mrpt::opengl::CSkyBox::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CSkyBox::*)() const) &mrpt::opengl::CSkyBox::clone, "C++: mrpt::opengl::CSkyBox::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -576,7 +575,6 @@ void bind_mrpt_opengl_CUBE_TEXTURE_FACE(std::function< pybind11::module &(std::s
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CVectorField2D const &o){ return new PyCallBack_mrpt_opengl_CVectorField2D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CVectorField2D const &o){ return new mrpt::opengl::CVectorField2D(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::opengl::CVectorField2D::getClassName, "C++: mrpt::opengl::CVectorField2D::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CVectorField2D::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CVectorField2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CVectorField2D::*)() const) &mrpt::opengl::CVectorField2D::GetRuntimeClass, "C++: mrpt::opengl::CVectorField2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CVectorField2D::*)() const) &mrpt::opengl::CVectorField2D::clone, "C++: mrpt::opengl::CVectorField2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -169,7 +169,6 @@ void bind_mrpt_nav_reactive_CLogFileRecord(std::function< pybind11::module &(std
 		cl.def_readwrite("rel_pose_PTG_origin_wrt_sense_NOP", &mrpt::nav::CLogFileRecord::rel_pose_PTG_origin_wrt_sense_NOP);
 		cl.def_readwrite("ptg_last_navDynState", &mrpt::nav::CLogFileRecord::ptg_last_navDynState);
 		cl.def_readwrite("visuals", &mrpt::nav::CLogFileRecord::visuals);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<25> (*)()) &mrpt::nav::CLogFileRecord::getClassName, "C++: mrpt::nav::CLogFileRecord::getClassName() --> class mrpt::typemeta::string_literal<25>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CLogFileRecord::GetRuntimeClassIdStatic, "C++: mrpt::nav::CLogFileRecord::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CLogFileRecord::*)() const) &mrpt::nav::CLogFileRecord::GetRuntimeClass, "C++: mrpt::nav::CLogFileRecord::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CLogFileRecord::*)() const) &mrpt::nav::CLogFileRecord::clone, "C++: mrpt::nav::CLogFileRecord::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

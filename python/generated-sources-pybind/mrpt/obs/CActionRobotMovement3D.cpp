@@ -559,7 +559,6 @@ void bind_mrpt_obs_CActionRobotMovement3D(std::function< pybind11::module &(std:
 		cl.def_readwrite("motionModelConfiguration", &mrpt::obs::CActionRobotMovement3D::motionModelConfiguration);
 		cl.def_readwrite("hasVelocities", &mrpt::obs::CActionRobotMovement3D::hasVelocities);
 		cl.def_readwrite("velocities", &mrpt::obs::CActionRobotMovement3D::velocities);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<33> (*)()) &mrpt::obs::CActionRobotMovement3D::getClassName, "C++: mrpt::obs::CActionRobotMovement3D::getClassName() --> class mrpt::typemeta::string_literal<33>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CActionRobotMovement3D::GetRuntimeClassIdStatic, "C++: mrpt::obs::CActionRobotMovement3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CActionRobotMovement3D::*)() const) &mrpt::obs::CActionRobotMovement3D::GetRuntimeClass, "C++: mrpt::obs::CActionRobotMovement3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CActionRobotMovement3D::*)() const) &mrpt::obs::CActionRobotMovement3D::clone, "C++: mrpt::obs::CActionRobotMovement3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -608,7 +607,6 @@ void bind_mrpt_obs_CActionRobotMovement3D(std::function< pybind11::module &(std:
 		cl.def( pybind11::init( [](mrpt::obs::CObservation3DScene const &o){ return new mrpt::obs::CObservation3DScene(o); } ) );
 		cl.def_readwrite("scene", &mrpt::obs::CObservation3DScene::scene);
 		cl.def_readwrite("sensorPose", &mrpt::obs::CObservation3DScene::sensorPose);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<30> (*)()) &mrpt::obs::CObservation3DScene::getClassName, "C++: mrpt::obs::CObservation3DScene::getClassName() --> class mrpt::typemeta::string_literal<30>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservation3DScene::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservation3DScene::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservation3DScene::*)() const) &mrpt::obs::CObservation3DScene::GetRuntimeClass, "C++: mrpt::obs::CObservation3DScene::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservation3DScene::*)() const) &mrpt::obs::CObservation3DScene::clone, "C++: mrpt::obs::CObservation3DScene::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -627,7 +625,6 @@ void bind_mrpt_obs_CActionRobotMovement3D(std::function< pybind11::module &(std:
 		cl.def_readwrite("maxSensorDistance", &mrpt::obs::CObservation6DFeatures::maxSensorDistance);
 		cl.def_readwrite("sensedFeatures", &mrpt::obs::CObservation6DFeatures::sensedFeatures);
 		cl.def_readwrite("sensorPose", &mrpt::obs::CObservation6DFeatures::sensorPose);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<33> (*)()) &mrpt::obs::CObservation6DFeatures::getClassName, "C++: mrpt::obs::CObservation6DFeatures::getClassName() --> class mrpt::typemeta::string_literal<33>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservation6DFeatures::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservation6DFeatures::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservation6DFeatures::*)() const) &mrpt::obs::CObservation6DFeatures::GetRuntimeClass, "C++: mrpt::obs::CObservation6DFeatures::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservation6DFeatures::*)() const) &mrpt::obs::CObservation6DFeatures::clone, "C++: mrpt::obs::CObservation6DFeatures::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

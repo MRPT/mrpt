@@ -108,7 +108,6 @@ void bind_mrpt_img_TStereoCamera(std::function< pybind11::module &(std::string c
 		cl.def_readwrite("leftCamera", &mrpt::img::TStereoCamera::leftCamera);
 		cl.def_readwrite("rightCamera", &mrpt::img::TStereoCamera::rightCamera);
 		cl.def_readwrite("rightCameraPose", &mrpt::img::TStereoCamera::rightCameraPose);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<24> (*)()) &mrpt::img::TStereoCamera::getClassName, "C++: mrpt::img::TStereoCamera::getClassName() --> class mrpt::typemeta::string_literal<24>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::img::TStereoCamera::GetRuntimeClassIdStatic, "C++: mrpt::img::TStereoCamera::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::img::TStereoCamera::*)() const) &mrpt::img::TStereoCamera::GetRuntimeClass, "C++: mrpt::img::TStereoCamera::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::img::TStereoCamera::*)() const) &mrpt::img::TStereoCamera::clone, "C++: mrpt::img::TStereoCamera::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

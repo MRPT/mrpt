@@ -121,7 +121,6 @@ void bind_mrpt_math_CMatrixB(std::function< pybind11::module &(std::string const
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_math_CMatrixB const &o){ return new PyCallBack_mrpt_math_CMatrixB(o); } ) );
 		cl.def( pybind11::init( [](mrpt::math::CMatrixB const &o){ return new mrpt::math::CMatrixB(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<20> (*)()) &mrpt::math::CMatrixB::getClassName, "C++: mrpt::math::CMatrixB::getClassName() --> class mrpt::typemeta::string_literal<20>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::math::CMatrixB::GetRuntimeClassIdStatic, "C++: mrpt::math::CMatrixB::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::math::CMatrixB::*)() const) &mrpt::math::CMatrixB::GetRuntimeClass, "C++: mrpt::math::CMatrixB::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::math::CMatrixB::*)() const) &mrpt::math::CMatrixB::clone, "C++: mrpt::math::CMatrixB::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

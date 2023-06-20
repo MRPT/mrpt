@@ -1112,7 +1112,6 @@ void bind_mrpt_maps_COctoMap(std::function< pybind11::module &(std::string const
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_COctoMap const &o){ return new PyCallBack_mrpt_maps_COctoMap(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::COctoMap const &o){ return new mrpt::maps::COctoMap(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<20> (*)()) &mrpt::maps::COctoMap::getClassName, "C++: mrpt::maps::COctoMap::getClassName() --> class mrpt::typemeta::string_literal<20>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::COctoMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::COctoMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::COctoMap::*)() const) &mrpt::maps::COctoMap::GetRuntimeClass, "C++: mrpt::maps::COctoMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::COctoMap::*)() const) &mrpt::maps::COctoMap::clone, "C++: mrpt::maps::COctoMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -1191,7 +1190,6 @@ void bind_mrpt_maps_COctoMap(std::function< pybind11::module &(std::string const
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CSimplePointsMap const &o){ return new PyCallBack_mrpt_maps_CSimplePointsMap(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CSimplePointsMap const &o){ return new mrpt::maps::CSimplePointsMap(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::maps::CSimplePointsMap::getClassName, "C++: mrpt::maps::CSimplePointsMap::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CSimplePointsMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CSimplePointsMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CSimplePointsMap::*)() const) &mrpt::maps::CSimplePointsMap::GetRuntimeClass, "C++: mrpt::maps::CSimplePointsMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CSimplePointsMap::*)() const) &mrpt::maps::CSimplePointsMap::clone, "C++: mrpt::maps::CSimplePointsMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

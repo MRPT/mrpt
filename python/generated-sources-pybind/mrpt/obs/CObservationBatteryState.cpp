@@ -18,6 +18,7 @@
 #include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationComment.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -617,6 +618,195 @@ struct PyCallBack_mrpt_obs_CObservationBearingRange : public mrpt::obs::CObserva
 	}
 };
 
+// mrpt::obs::CObservationComment file:mrpt/obs/CObservationComment.h line:24
+struct PyCallBack_mrpt_obs_CObservationComment : public mrpt::obs::CObservationComment {
+	using mrpt::obs::CObservationComment::CObservationComment;
+
+	const struct mrpt::rtti::TRuntimeClassId * GetRuntimeClass() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "GetRuntimeClass");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<const struct mrpt::rtti::TRuntimeClassId *>::value) {
+				static pybind11::detail::override_caster_t<const struct mrpt::rtti::TRuntimeClassId *> caster;
+				return pybind11::detail::cast_ref<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o));
+		}
+		return CObservationComment::GetRuntimeClass();
+	}
+	class mrpt::rtti::CObject * clone() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "clone");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::rtti::CObject *>::value) {
+				static pybind11::detail::override_caster_t<class mrpt::rtti::CObject *> caster;
+				return pybind11::detail::cast_ref<class mrpt::rtti::CObject *>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<class mrpt::rtti::CObject *>(std::move(o));
+		}
+		return CObservationComment::clone();
+	}
+	uint8_t serializeGetVersion() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "serializeGetVersion");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
+				static pybind11::detail::override_caster_t<uint8_t> caster;
+				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
+		}
+		return CObservationComment::serializeGetVersion();
+	}
+	void serializeTo(class mrpt::serialization::CArchive & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "serializeTo");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservationComment::serializeTo(a0);
+	}
+	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "serializeFrom");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservationComment::serializeFrom(a0, a1);
+	}
+	void getSensorPose(class mrpt::poses::CPose3D & a0) const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "getSensorPose");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservationComment::getSensorPose(a0);
+	}
+	void setSensorPose(const class mrpt::poses::CPose3D & a0) override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "setSensorPose");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservationComment::setSensorPose(a0);
+	}
+	using _binder_ret_0 = mrpt::Clock::time_point;
+	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "getOriginalReceivedTimeStamp");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<_binder_ret_0>::value) {
+				static pybind11::detail::override_caster_t<_binder_ret_0> caster;
+				return pybind11::detail::cast_ref<_binder_ret_0>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<_binder_ret_0>(std::move(o));
+		}
+		return CObservation::getOriginalReceivedTimeStamp();
+	}
+	std::string asString() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "asString");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
+				static pybind11::detail::override_caster_t<std::string> caster;
+				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<std::string>(std::move(o));
+		}
+		return CObservation::asString();
+	}
+	bool exportTxtSupported() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "exportTxtSupported");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
+				static pybind11::detail::override_caster_t<bool> caster;
+				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<bool>(std::move(o));
+		}
+		return CObservation::exportTxtSupported();
+	}
+	std::string exportTxtHeader() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "exportTxtHeader");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
+				static pybind11::detail::override_caster_t<std::string> caster;
+				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<std::string>(std::move(o));
+		}
+		return CObservation::exportTxtHeader();
+	}
+	std::string exportTxtDataRow() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "exportTxtDataRow");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
+				static pybind11::detail::override_caster_t<std::string> caster;
+				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<std::string>(std::move(o));
+		}
+		return CObservation::exportTxtDataRow();
+	}
+	void load() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "load");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservation::load();
+	}
+	void unload() const override {
+		pybind11::gil_scoped_acquire gil;
+		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationComment *>(this), "unload");
+		if (overload) {
+			auto o = overload.operator()<pybind11::return_value_policy::reference>();
+			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+				static pybind11::detail::override_caster_t<void> caster;
+				return pybind11::detail::cast_ref<void>(std::move(o), caster);
+			}
+			else return pybind11::detail::cast_safe<void>(std::move(o));
+		}
+		return CObservation::unload();
+	}
+};
+
 void bind_mrpt_obs_CObservationBatteryState(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
 	{ // mrpt::obs::CObservationBatteryState file:mrpt/obs/CObservationBatteryState.h line:31
@@ -630,7 +820,6 @@ void bind_mrpt_obs_CObservationBatteryState(std::function< pybind11::module &(st
 		cl.def_readwrite("voltageMainRobotComputerIsValid", &mrpt::obs::CObservationBatteryState::voltageMainRobotComputerIsValid);
 		cl.def_readwrite("voltageOtherBatteries", &mrpt::obs::CObservationBatteryState::voltageOtherBatteries);
 		cl.def_readwrite("voltageOtherBatteriesValid", &mrpt::obs::CObservationBatteryState::voltageOtherBatteriesValid);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<35> (*)()) &mrpt::obs::CObservationBatteryState::getClassName, "C++: mrpt::obs::CObservationBatteryState::getClassName() --> class mrpt::typemeta::string_literal<35>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationBatteryState::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationBatteryState::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationBatteryState::*)() const) &mrpt::obs::CObservationBatteryState::GetRuntimeClass, "C++: mrpt::obs::CObservationBatteryState::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationBatteryState::*)() const) &mrpt::obs::CObservationBatteryState::clone, "C++: mrpt::obs::CObservationBatteryState::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -652,7 +841,6 @@ void bind_mrpt_obs_CObservationBatteryState(std::function< pybind11::module &(st
 		cl.def_readwrite("stdError", &mrpt::obs::CObservationBeaconRanges::stdError);
 		cl.def_readwrite("sensedData", &mrpt::obs::CObservationBeaconRanges::sensedData);
 		cl.def_readwrite("auxEstimatePose", &mrpt::obs::CObservationBeaconRanges::auxEstimatePose);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<35> (*)()) &mrpt::obs::CObservationBeaconRanges::getClassName, "C++: mrpt::obs::CObservationBeaconRanges::getClassName() --> class mrpt::typemeta::string_literal<35>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationBeaconRanges::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationBeaconRanges::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationBeaconRanges::*)() const) &mrpt::obs::CObservationBeaconRanges::GetRuntimeClass, "C++: mrpt::obs::CObservationBeaconRanges::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationBeaconRanges::*)() const) &mrpt::obs::CObservationBeaconRanges::clone, "C++: mrpt::obs::CObservationBeaconRanges::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -691,7 +879,6 @@ void bind_mrpt_obs_CObservationBatteryState(std::function< pybind11::module &(st
 		cl.def_readwrite("sensor_std_range", &mrpt::obs::CObservationBearingRange::sensor_std_range);
 		cl.def_readwrite("sensor_std_yaw", &mrpt::obs::CObservationBearingRange::sensor_std_yaw);
 		cl.def_readwrite("sensor_std_pitch", &mrpt::obs::CObservationBearingRange::sensor_std_pitch);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<35> (*)()) &mrpt::obs::CObservationBearingRange::getClassName, "C++: mrpt::obs::CObservationBearingRange::getClassName() --> class mrpt::typemeta::string_literal<35>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationBearingRange::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationBearingRange::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationBearingRange::*)() const) &mrpt::obs::CObservationBearingRange::GetRuntimeClass, "C++: mrpt::obs::CObservationBearingRange::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationBearingRange::*)() const) &mrpt::obs::CObservationBearingRange::clone, "C++: mrpt::obs::CObservationBearingRange::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -712,5 +899,19 @@ void bind_mrpt_obs_CObservationBatteryState(std::function< pybind11::module &(st
 			cl.def_readwrite("covariance", &mrpt::obs::CObservationBearingRange::TMeasurement::covariance);
 		}
 
+	}
+	{ // mrpt::obs::CObservationComment file:mrpt/obs/CObservationComment.h line:24
+		pybind11::class_<mrpt::obs::CObservationComment, std::shared_ptr<mrpt::obs::CObservationComment>, PyCallBack_mrpt_obs_CObservationComment, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationComment", "This \"observation\" is actually a placeholder for a text block with comments\n or additional parameters attached to a given rawlog file.\n   There should be only one of this observations in a rawlog file, and it's\n recommended to insert/modify them from the application RawlogViewer.\n\n \n CObservation\n \n\n\n ");
+		cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationComment(); }, [](){ return new PyCallBack_mrpt_obs_CObservationComment(); } ) );
+		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CObservationComment const &o){ return new PyCallBack_mrpt_obs_CObservationComment(o); } ) );
+		cl.def( pybind11::init( [](mrpt::obs::CObservationComment const &o){ return new mrpt::obs::CObservationComment(o); } ) );
+		cl.def_readwrite("text", &mrpt::obs::CObservationComment::text);
+		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationComment::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationComment::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
+		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationComment::*)() const) &mrpt::obs::CObservationComment::GetRuntimeClass, "C++: mrpt::obs::CObservationComment::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
+		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationComment::*)() const) &mrpt::obs::CObservationComment::clone, "C++: mrpt::obs::CObservationComment::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
+		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::obs::CObservationComment::CreateObject, "C++: mrpt::obs::CObservationComment::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
+		cl.def("getSensorPose", (void (mrpt::obs::CObservationComment::*)(class mrpt::poses::CPose3D &) const) &mrpt::obs::CObservationComment::getSensorPose, "C++: mrpt::obs::CObservationComment::getSensorPose(class mrpt::poses::CPose3D &) const --> void", pybind11::arg(""));
+		cl.def("setSensorPose", (void (mrpt::obs::CObservationComment::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationComment::setSensorPose, "C++: mrpt::obs::CObservationComment::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg(""));
+		cl.def("assign", (class mrpt::obs::CObservationComment & (mrpt::obs::CObservationComment::*)(const class mrpt::obs::CObservationComment &)) &mrpt::obs::CObservationComment::operator=, "C++: mrpt::obs::CObservationComment::operator=(const class mrpt::obs::CObservationComment &) --> class mrpt::obs::CObservationComment &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

@@ -432,7 +432,6 @@ void bind_mrpt_maps_CLandmarksMap(std::function< pybind11::module &(std::string 
 		cl.def_readwrite("likelihoodOptions", &mrpt::maps::CLandmarksMap::likelihoodOptions);
 		cl.def_readwrite("insertionResults", &mrpt::maps::CLandmarksMap::insertionResults);
 		cl.def_readwrite("fuseOptions", &mrpt::maps::CLandmarksMap::fuseOptions);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<25> (*)()) &mrpt::maps::CLandmarksMap::getClassName, "C++: mrpt::maps::CLandmarksMap::getClassName() --> class mrpt::typemeta::string_literal<25>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CLandmarksMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CLandmarksMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CLandmarksMap::*)() const) &mrpt::maps::CLandmarksMap::GetRuntimeClass, "C++: mrpt::maps::CLandmarksMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CLandmarksMap::*)() const) &mrpt::maps::CLandmarksMap::clone, "C++: mrpt::maps::CLandmarksMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

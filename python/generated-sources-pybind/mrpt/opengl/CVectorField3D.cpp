@@ -309,7 +309,6 @@ void bind_mrpt_opengl_CVectorField3D(std::function< pybind11::module &(std::stri
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CVectorField3D const &o){ return new PyCallBack_mrpt_opengl_CVectorField3D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CVectorField3D const &o){ return new mrpt::opengl::CVectorField3D(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::opengl::CVectorField3D::getClassName, "C++: mrpt::opengl::CVectorField3D::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CVectorField3D::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CVectorField3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CVectorField3D::*)() const) &mrpt::opengl::CVectorField3D::GetRuntimeClass, "C++: mrpt::opengl::CVectorField3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CVectorField3D::*)() const) &mrpt::opengl::CVectorField3D::clone, "C++: mrpt::opengl::CVectorField3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

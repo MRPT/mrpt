@@ -186,7 +186,6 @@ void bind_mrpt_opengl_Viewport(std::function< pybind11::module &(std::string con
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_Scene const &o){ return new PyCallBack_mrpt_opengl_Scene(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::Scene const &o){ return new mrpt::opengl::Scene(o); } ) );
 		cl.def_static("Create", (class std::shared_ptr<class mrpt::opengl::Scene> (*)()) &mrpt::opengl::Scene::Create, "C++: mrpt::opengl::Scene::Create() --> class std::shared_ptr<class mrpt::opengl::Scene>");
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<19> (*)()) &mrpt::opengl::Scene::getClassName, "C++: mrpt::opengl::Scene::getClassName() --> class mrpt::typemeta::string_literal<19>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::Scene::GetRuntimeClassIdStatic, "C++: mrpt::opengl::Scene::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::Scene::*)() const) &mrpt::opengl::Scene::GetRuntimeClass, "C++: mrpt::opengl::Scene::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::Scene::*)() const) &mrpt::opengl::Scene::clone, "C++: mrpt::opengl::Scene::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

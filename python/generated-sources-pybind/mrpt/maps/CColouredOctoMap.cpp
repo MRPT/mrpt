@@ -1120,7 +1120,6 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 			.value("AVERAGE", mrpt::maps::CColouredOctoMap::AVERAGE)
 			.export_values();
 
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::maps::CColouredOctoMap::getClassName, "C++: mrpt::maps::CColouredOctoMap::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CColouredOctoMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CColouredOctoMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CColouredOctoMap::*)() const) &mrpt::maps::CColouredOctoMap::GetRuntimeClass, "C++: mrpt::maps::CColouredOctoMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CColouredOctoMap::*)() const) &mrpt::maps::CColouredOctoMap::clone, "C++: mrpt::maps::CColouredOctoMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -1196,7 +1195,6 @@ void bind_mrpt_maps_CColouredOctoMap(std::function< pybind11::module &(std::stri
 			.export_values();
 
 		cl.def_readwrite("colorScheme", &mrpt::maps::CColouredPointsMap::colorScheme);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<30> (*)()) &mrpt::maps::CColouredPointsMap::getClassName, "C++: mrpt::maps::CColouredPointsMap::getClassName() --> class mrpt::typemeta::string_literal<30>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CColouredPointsMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CColouredPointsMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CColouredPointsMap::*)() const) &mrpt::maps::CColouredPointsMap::GetRuntimeClass, "C++: mrpt::maps::CColouredPointsMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CColouredPointsMap::*)() const) &mrpt::maps::CColouredPointsMap::clone, "C++: mrpt::maps::CColouredPointsMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -464,7 +464,6 @@ void bind_mrpt_nav_holonomic_CHolonomicFullEval(std::function< pybind11::module 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_nav_CHolonomicFullEval const &o){ return new PyCallBack_mrpt_nav_CHolonomicFullEval(o); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::CHolonomicFullEval const &o){ return new mrpt::nav::CHolonomicFullEval(o); } ) );
 		cl.def_readwrite("options", &mrpt::nav::CHolonomicFullEval::options);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<29> (*)()) &mrpt::nav::CHolonomicFullEval::getClassName, "C++: mrpt::nav::CHolonomicFullEval::getClassName() --> class mrpt::typemeta::string_literal<29>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CHolonomicFullEval::GetRuntimeClassIdStatic, "C++: mrpt::nav::CHolonomicFullEval::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CHolonomicFullEval::*)() const) &mrpt::nav::CHolonomicFullEval::GetRuntimeClass, "C++: mrpt::nav::CHolonomicFullEval::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CHolonomicFullEval::*)() const) &mrpt::nav::CHolonomicFullEval::clone, "C++: mrpt::nav::CHolonomicFullEval::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -506,7 +505,6 @@ void bind_mrpt_nav_holonomic_CHolonomicFullEval(std::function< pybind11::module 
 		cl.def_readwrite("evaluation", &mrpt::nav::CLogFileRecord_FullEval::evaluation);
 		cl.def_readwrite("dirs_scores", &mrpt::nav::CLogFileRecord_FullEval::dirs_scores);
 		cl.def_readwrite("selectedTarget", &mrpt::nav::CLogFileRecord_FullEval::selectedTarget);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<34> (*)()) &mrpt::nav::CLogFileRecord_FullEval::getClassName, "C++: mrpt::nav::CLogFileRecord_FullEval::getClassName() --> class mrpt::typemeta::string_literal<34>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CLogFileRecord_FullEval::GetRuntimeClassIdStatic, "C++: mrpt::nav::CLogFileRecord_FullEval::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CLogFileRecord_FullEval::*)() const) &mrpt::nav::CLogFileRecord_FullEval::GetRuntimeClass, "C++: mrpt::nav::CLogFileRecord_FullEval::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CLogFileRecord_FullEval::*)() const) &mrpt::nav::CLogFileRecord_FullEval::clone, "C++: mrpt::nav::CLogFileRecord_FullEval::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -530,7 +528,6 @@ void bind_mrpt_nav_holonomic_CHolonomicFullEval(std::function< pybind11::module 
 			.export_values();
 
 		cl.def_readwrite("options", &mrpt::nav::CHolonomicND::options);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<23> (*)()) &mrpt::nav::CHolonomicND::getClassName, "C++: mrpt::nav::CHolonomicND::getClassName() --> class mrpt::typemeta::string_literal<23>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CHolonomicND::GetRuntimeClassIdStatic, "C++: mrpt::nav::CHolonomicND::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CHolonomicND::*)() const) &mrpt::nav::CHolonomicND::GetRuntimeClass, "C++: mrpt::nav::CHolonomicND::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CHolonomicND::*)() const) &mrpt::nav::CHolonomicND::clone, "C++: mrpt::nav::CHolonomicND::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -260,7 +260,6 @@ void bind_mrpt_obs_CObservationRawDAQ(std::function< pybind11::module &(std::str
 		cl.def_readwrite("CNTRIN_32bits", &mrpt::obs::CObservationRawDAQ::CNTRIN_32bits);
 		cl.def_readwrite("CNTRIN_double", &mrpt::obs::CObservationRawDAQ::CNTRIN_double);
 		cl.def_readwrite("sample_rate", &mrpt::obs::CObservationRawDAQ::sample_rate);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<29> (*)()) &mrpt::obs::CObservationRawDAQ::getClassName, "C++: mrpt::obs::CObservationRawDAQ::getClassName() --> class mrpt::typemeta::string_literal<29>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationRawDAQ::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationRawDAQ::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationRawDAQ::*)() const) &mrpt::obs::CObservationRawDAQ::GetRuntimeClass, "C++: mrpt::obs::CObservationRawDAQ::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationRawDAQ::*)() const) &mrpt::obs::CObservationRawDAQ::clone, "C++: mrpt::obs::CObservationRawDAQ::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

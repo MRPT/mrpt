@@ -285,7 +285,6 @@ void bind_mrpt_opengl_CCamera(std::function< pybind11::module &(std::string cons
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CCamera(); }, [](){ return new PyCallBack_mrpt_opengl_CCamera(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CCamera const &o){ return new PyCallBack_mrpt_opengl_CCamera(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CCamera const &o){ return new mrpt::opengl::CCamera(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<21> (*)()) &mrpt::opengl::CCamera::getClassName, "C++: mrpt::opengl::CCamera::getClassName() --> class mrpt::typemeta::string_literal<21>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CCamera::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CCamera::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CCamera::*)() const) &mrpt::opengl::CCamera::GetRuntimeClass, "C++: mrpt::opengl::CCamera::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CCamera::*)() const) &mrpt::opengl::CCamera::clone, "C++: mrpt::opengl::CCamera::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -950,7 +950,6 @@ void bind_mrpt_maps_CReflectivityGridMap2D(std::function< pybind11::module &(std
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CReflectivityGridMap2D const &o){ return new PyCallBack_mrpt_maps_CReflectivityGridMap2D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CReflectivityGridMap2D const &o){ return new mrpt::maps::CReflectivityGridMap2D(o); } ) );
 		cl.def_readwrite("insertionOptions", &mrpt::maps::CReflectivityGridMap2D::insertionOptions);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<34> (*)()) &mrpt::maps::CReflectivityGridMap2D::getClassName, "C++: mrpt::maps::CReflectivityGridMap2D::getClassName() --> class mrpt::typemeta::string_literal<34>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CReflectivityGridMap2D::GetRuntimeClassIdStatic, "C++: mrpt::maps::CReflectivityGridMap2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CReflectivityGridMap2D::*)() const) &mrpt::maps::CReflectivityGridMap2D::GetRuntimeClass, "C++: mrpt::maps::CReflectivityGridMap2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CReflectivityGridMap2D::*)() const) &mrpt::maps::CReflectivityGridMap2D::clone, "C++: mrpt::maps::CReflectivityGridMap2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -1003,7 +1002,6 @@ void bind_mrpt_maps_CReflectivityGridMap2D(std::function< pybind11::module &(std
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CWeightedPointsMap const &o){ return new PyCallBack_mrpt_maps_CWeightedPointsMap(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CWeightedPointsMap const &o){ return new mrpt::maps::CWeightedPointsMap(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<30> (*)()) &mrpt::maps::CWeightedPointsMap::getClassName, "C++: mrpt::maps::CWeightedPointsMap::getClassName() --> class mrpt::typemeta::string_literal<30>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CWeightedPointsMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CWeightedPointsMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CWeightedPointsMap::*)() const) &mrpt::maps::CWeightedPointsMap::GetRuntimeClass, "C++: mrpt::maps::CWeightedPointsMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CWeightedPointsMap::*)() const) &mrpt::maps::CWeightedPointsMap::clone, "C++: mrpt::maps::CWeightedPointsMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -250,7 +250,6 @@ void bind_mrpt_obs_CObservationGPS(std::function< pybind11::module &(std::string
 		cl.def_readwrite("originalReceivedTimestamp", &mrpt::obs::CObservationGPS::originalReceivedTimestamp);
 		cl.def_readwrite("has_satellite_timestamp", &mrpt::obs::CObservationGPS::has_satellite_timestamp);
 		cl.def_readwrite("messages", &mrpt::obs::CObservationGPS::messages);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<26> (*)()) &mrpt::obs::CObservationGPS::getClassName, "C++: mrpt::obs::CObservationGPS::getClassName() --> class mrpt::typemeta::string_literal<26>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationGPS::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationGPS::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationGPS::*)() const) &mrpt::obs::CObservationGPS::GetRuntimeClass, "C++: mrpt::obs::CObservationGPS::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationGPS::*)() const) &mrpt::obs::CObservationGPS::clone, "C++: mrpt::obs::CObservationGPS::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

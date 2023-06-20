@@ -439,7 +439,6 @@ void bind_mrpt_maps_CMultiMetricMapPDF(std::function< pybind11::module &(std::st
 		cl.def( pybind11::init( [](mrpt::maps::CRBPFParticleData const &o){ return new mrpt::maps::CRBPFParticleData(o); } ) );
 		cl.def_readwrite("mapTillNow", &mrpt::maps::CRBPFParticleData::mapTillNow);
 		cl.def_readwrite("robotPath", &mrpt::maps::CRBPFParticleData::robotPath);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<29> (*)()) &mrpt::maps::CRBPFParticleData::getClassName, "C++: mrpt::maps::CRBPFParticleData::getClassName() --> class mrpt::typemeta::string_literal<29>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CRBPFParticleData::GetRuntimeClassIdStatic, "C++: mrpt::maps::CRBPFParticleData::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CRBPFParticleData::*)() const) &mrpt::maps::CRBPFParticleData::GetRuntimeClass, "C++: mrpt::maps::CRBPFParticleData::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CRBPFParticleData::*)() const) &mrpt::maps::CRBPFParticleData::clone, "C++: mrpt::maps::CRBPFParticleData::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -454,7 +453,6 @@ void bind_mrpt_maps_CMultiMetricMapPDF(std::function< pybind11::module &(std::st
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CMultiMetricMapPDF const &o){ return new PyCallBack_mrpt_maps_CMultiMetricMapPDF(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CMultiMetricMapPDF const &o){ return new mrpt::maps::CMultiMetricMapPDF(o); } ) );
 		cl.def_readwrite("options", &mrpt::maps::CMultiMetricMapPDF::options);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<30> (*)()) &mrpt::maps::CMultiMetricMapPDF::getClassName, "C++: mrpt::maps::CMultiMetricMapPDF::getClassName() --> class mrpt::typemeta::string_literal<30>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CMultiMetricMapPDF::GetRuntimeClassIdStatic, "C++: mrpt::maps::CMultiMetricMapPDF::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CMultiMetricMapPDF::*)() const) &mrpt::maps::CMultiMetricMapPDF::GetRuntimeClass, "C++: mrpt::maps::CMultiMetricMapPDF::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CMultiMetricMapPDF::*)() const) &mrpt::maps::CMultiMetricMapPDF::clone, "C++: mrpt::maps::CMultiMetricMapPDF::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

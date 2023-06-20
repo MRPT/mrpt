@@ -227,7 +227,6 @@ void bind_mrpt_maps_CRandomFieldGridMap3D(std::function< pybind11::module &(std:
 			.export_values();
 
 		cl.def_readwrite("insertionOptions", &mrpt::maps::CRandomFieldGridMap3D::insertionOptions);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<33> (*)()) &mrpt::maps::CRandomFieldGridMap3D::getClassName, "C++: mrpt::maps::CRandomFieldGridMap3D::getClassName() --> class mrpt::typemeta::string_literal<33>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CRandomFieldGridMap3D::GetRuntimeClassIdStatic, "C++: mrpt::maps::CRandomFieldGridMap3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CRandomFieldGridMap3D::*)() const) &mrpt::maps::CRandomFieldGridMap3D::GetRuntimeClass, "C++: mrpt::maps::CRandomFieldGridMap3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CRandomFieldGridMap3D::*)() const) &mrpt::maps::CRandomFieldGridMap3D::clone, "C++: mrpt::maps::CRandomFieldGridMap3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

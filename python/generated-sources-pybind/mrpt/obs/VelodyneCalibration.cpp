@@ -330,7 +330,6 @@ void bind_mrpt_obs_VelodyneCalibration(std::function< pybind11::module &(std::st
 		cl.def_readwrite("originalReceivedTimestamp", &mrpt::obs::CObservationVelodyneScan::originalReceivedTimestamp);
 		cl.def_readwrite("has_satellite_timestamp", &mrpt::obs::CObservationVelodyneScan::has_satellite_timestamp);
 		cl.def_readwrite("point_cloud", &mrpt::obs::CObservationVelodyneScan::point_cloud);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<35> (*)()) &mrpt::obs::CObservationVelodyneScan::getClassName, "C++: mrpt::obs::CObservationVelodyneScan::getClassName() --> class mrpt::typemeta::string_literal<35>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationVelodyneScan::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationVelodyneScan::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationVelodyneScan::*)() const) &mrpt::obs::CObservationVelodyneScan::GetRuntimeClass, "C++: mrpt::obs::CObservationVelodyneScan::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationVelodyneScan::*)() const) &mrpt::obs::CObservationVelodyneScan::clone, "C++: mrpt::obs::CObservationVelodyneScan::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -2273,7 +2273,6 @@ void bind_mrpt_nav_tpspace_CPTG_DiffDrive_C(std::function< pybind11::module &(st
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CPTG_DiffDrive_C(); }, [](){ return new PyCallBack_mrpt_nav_CPTG_DiffDrive_C(); } ) );
 		cl.def( pybind11::init<const class mrpt::config::CConfigFileBase &, const std::string &>(), pybind11::arg("cfg"), pybind11::arg("sSection") );
 
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<27> (*)()) &mrpt::nav::CPTG_DiffDrive_C::getClassName, "C++: mrpt::nav::CPTG_DiffDrive_C::getClassName() --> class mrpt::typemeta::string_literal<27>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CPTG_DiffDrive_C::GetRuntimeClassIdStatic, "C++: mrpt::nav::CPTG_DiffDrive_C::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CPTG_DiffDrive_C::*)() const) &mrpt::nav::CPTG_DiffDrive_C::GetRuntimeClass, "C++: mrpt::nav::CPTG_DiffDrive_C::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CPTG_DiffDrive_C::*)() const) &mrpt::nav::CPTG_DiffDrive_C::clone, "C++: mrpt::nav::CPTG_DiffDrive_C::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -2293,7 +2292,6 @@ void bind_mrpt_nav_tpspace_CPTG_DiffDrive_C(std::function< pybind11::module &(st
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CPTG_DiffDrive_CC(); }, [](){ return new PyCallBack_mrpt_nav_CPTG_DiffDrive_CC(); } ) );
 		cl.def( pybind11::init<const class mrpt::config::CConfigFileBase &, const std::string &>(), pybind11::arg("cfg"), pybind11::arg("sSection") );
 
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::nav::CPTG_DiffDrive_CC::getClassName, "C++: mrpt::nav::CPTG_DiffDrive_CC::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CPTG_DiffDrive_CC::GetRuntimeClassIdStatic, "C++: mrpt::nav::CPTG_DiffDrive_CC::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CPTG_DiffDrive_CC::*)() const) &mrpt::nav::CPTG_DiffDrive_CC::GetRuntimeClass, "C++: mrpt::nav::CPTG_DiffDrive_CC::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CPTG_DiffDrive_CC::*)() const) &mrpt::nav::CPTG_DiffDrive_CC::clone, "C++: mrpt::nav::CPTG_DiffDrive_CC::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -2311,7 +2309,6 @@ void bind_mrpt_nav_tpspace_CPTG_DiffDrive_C(std::function< pybind11::module &(st
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CPTG_DiffDrive_CCS(); }, [](){ return new PyCallBack_mrpt_nav_CPTG_DiffDrive_CCS(); } ) );
 		cl.def( pybind11::init<const class mrpt::config::CConfigFileBase &, const std::string &>(), pybind11::arg("cfg"), pybind11::arg("sSection") );
 
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<29> (*)()) &mrpt::nav::CPTG_DiffDrive_CCS::getClassName, "C++: mrpt::nav::CPTG_DiffDrive_CCS::getClassName() --> class mrpt::typemeta::string_literal<29>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CPTG_DiffDrive_CCS::GetRuntimeClassIdStatic, "C++: mrpt::nav::CPTG_DiffDrive_CCS::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CPTG_DiffDrive_CCS::*)() const) &mrpt::nav::CPTG_DiffDrive_CCS::GetRuntimeClass, "C++: mrpt::nav::CPTG_DiffDrive_CCS::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CPTG_DiffDrive_CCS::*)() const) &mrpt::nav::CPTG_DiffDrive_CCS::clone, "C++: mrpt::nav::CPTG_DiffDrive_CCS::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -2329,7 +2326,6 @@ void bind_mrpt_nav_tpspace_CPTG_DiffDrive_C(std::function< pybind11::module &(st
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CPTG_DiffDrive_CS(); }, [](){ return new PyCallBack_mrpt_nav_CPTG_DiffDrive_CS(); } ) );
 		cl.def( pybind11::init<const class mrpt::config::CConfigFileBase &, const std::string &>(), pybind11::arg("cfg"), pybind11::arg("sSection") );
 
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::nav::CPTG_DiffDrive_CS::getClassName, "C++: mrpt::nav::CPTG_DiffDrive_CS::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CPTG_DiffDrive_CS::GetRuntimeClassIdStatic, "C++: mrpt::nav::CPTG_DiffDrive_CS::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CPTG_DiffDrive_CS::*)() const) &mrpt::nav::CPTG_DiffDrive_CS::GetRuntimeClass, "C++: mrpt::nav::CPTG_DiffDrive_CS::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CPTG_DiffDrive_CS::*)() const) &mrpt::nav::CPTG_DiffDrive_CS::clone, "C++: mrpt::nav::CPTG_DiffDrive_CS::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -328,7 +328,6 @@ void bind_mrpt_obs_TPixelLabelInfo(std::function< pybind11::module &(std::string
 		cl.def_readwrite("maxRange", &mrpt::obs::CObservation3DRangeScan::maxRange);
 		cl.def_readwrite("sensorPose", &mrpt::obs::CObservation3DRangeScan::sensorPose);
 		cl.def_readwrite("stdError", &mrpt::obs::CObservation3DRangeScan::stdError);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<34> (*)()) &mrpt::obs::CObservation3DRangeScan::getClassName, "C++: mrpt::obs::CObservation3DRangeScan::getClassName() --> class mrpt::typemeta::string_literal<34>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservation3DRangeScan::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservation3DRangeScan::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservation3DRangeScan::*)() const) &mrpt::obs::CObservation3DRangeScan::GetRuntimeClass, "C++: mrpt::obs::CObservation3DRangeScan::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservation3DRangeScan::*)() const) &mrpt::obs::CObservation3DRangeScan::clone, "C++: mrpt::obs::CObservation3DRangeScan::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

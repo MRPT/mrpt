@@ -636,7 +636,6 @@ void bind_mrpt_maps_CBeacon(std::function< pybind11::module &(std::string const 
 		cl.def_readwrite("m_locationGauss", &mrpt::maps::CBeacon::m_locationGauss);
 		cl.def_readwrite("m_locationSOG", &mrpt::maps::CBeacon::m_locationSOG);
 		cl.def_readwrite("m_ID", &mrpt::maps::CBeacon::m_ID);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<19> (*)()) &mrpt::maps::CBeacon::getClassName, "C++: mrpt::maps::CBeacon::getClassName() --> class mrpt::typemeta::string_literal<19>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CBeacon::GetRuntimeClassIdStatic, "C++: mrpt::maps::CBeacon::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CBeacon::*)() const) &mrpt::maps::CBeacon::GetRuntimeClass, "C++: mrpt::maps::CBeacon::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CBeacon::*)() const) &mrpt::maps::CBeacon::clone, "C++: mrpt::maps::CBeacon::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -668,7 +667,6 @@ void bind_mrpt_maps_CBeacon(std::function< pybind11::module &(std::string const 
 		cl.def( pybind11::init( [](mrpt::maps::CBeaconMap const &o){ return new mrpt::maps::CBeaconMap(o); } ) );
 		cl.def_readwrite("likelihoodOptions", &mrpt::maps::CBeaconMap::likelihoodOptions);
 		cl.def_readwrite("insertionOptions", &mrpt::maps::CBeaconMap::insertionOptions);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<22> (*)()) &mrpt::maps::CBeaconMap::getClassName, "C++: mrpt::maps::CBeaconMap::getClassName() --> class mrpt::typemeta::string_literal<22>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CBeaconMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CBeaconMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CBeaconMap::*)() const) &mrpt::maps::CBeaconMap::GetRuntimeClass, "C++: mrpt::maps::CBeaconMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CBeaconMap::*)() const) &mrpt::maps::CBeaconMap::clone, "C++: mrpt::maps::CBeaconMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

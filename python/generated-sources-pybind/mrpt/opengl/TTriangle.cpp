@@ -353,7 +353,6 @@ void bind_mrpt_opengl_TTriangle(std::function< pybind11::module &(std::string co
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CText const &o){ return new PyCallBack_mrpt_opengl_CText(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CText const &o){ return new mrpt::opengl::CText(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<19> (*)()) &mrpt::opengl::CText::getClassName, "C++: mrpt::opengl::CText::getClassName() --> class mrpt::typemeta::string_literal<19>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CText::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CText::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CText::*)() const) &mrpt::opengl::CText::GetRuntimeClass, "C++: mrpt::opengl::CText::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CText::*)() const) &mrpt::opengl::CText::clone, "C++: mrpt::opengl::CText::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -127,7 +127,6 @@ void bind_mrpt_obs_CActionCollection(std::function< pybind11::module &(std::stri
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CActionCollection const &o){ return new PyCallBack_mrpt_obs_CActionCollection(o); } ) );
 		cl.def( pybind11::init( [](mrpt::obs::CActionCollection const &o){ return new mrpt::obs::CActionCollection(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::obs::CActionCollection::getClassName, "C++: mrpt::obs::CActionCollection::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CActionCollection::GetRuntimeClassIdStatic, "C++: mrpt::obs::CActionCollection::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CActionCollection::*)() const) &mrpt::obs::CActionCollection::GetRuntimeClass, "C++: mrpt::obs::CActionCollection::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CActionCollection::*)() const) &mrpt::obs::CActionCollection::clone, "C++: mrpt::obs::CActionCollection::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

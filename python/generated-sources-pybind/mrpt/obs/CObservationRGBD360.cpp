@@ -250,7 +250,6 @@ void bind_mrpt_obs_CObservationRGBD360(std::function< pybind11::module &(std::st
 		cl.def_readwrite("maxRange", &mrpt::obs::CObservationRGBD360::maxRange);
 		cl.def_readwrite("sensorPose", &mrpt::obs::CObservationRGBD360::sensorPose);
 		cl.def_readwrite("stdError", &mrpt::obs::CObservationRGBD360::stdError);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<30> (*)()) &mrpt::obs::CObservationRGBD360::getClassName, "C++: mrpt::obs::CObservationRGBD360::getClassName() --> class mrpt::typemeta::string_literal<30>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationRGBD360::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationRGBD360::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationRGBD360::*)() const) &mrpt::obs::CObservationRGBD360::GetRuntimeClass, "C++: mrpt::obs::CObservationRGBD360::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationRGBD360::*)() const) &mrpt::obs::CObservationRGBD360::clone, "C++: mrpt::obs::CObservationRGBD360::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

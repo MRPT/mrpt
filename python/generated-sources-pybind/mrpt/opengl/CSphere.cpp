@@ -1022,7 +1022,6 @@ void bind_mrpt_opengl_CSphere(std::function< pybind11::module &(std::string cons
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CSphere const &o){ return new PyCallBack_mrpt_opengl_CSphere(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CSphere const &o){ return new mrpt::opengl::CSphere(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<21> (*)()) &mrpt::opengl::CSphere::getClassName, "C++: mrpt::opengl::CSphere::getClassName() --> class mrpt::typemeta::string_literal<21>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CSphere::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CSphere::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CSphere::*)() const) &mrpt::opengl::CSphere::GetRuntimeClass, "C++: mrpt::opengl::CSphere::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CSphere::*)() const) &mrpt::opengl::CSphere::clone, "C++: mrpt::opengl::CSphere::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -1044,7 +1043,6 @@ void bind_mrpt_opengl_CSphere(std::function< pybind11::module &(std::string cons
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CCylinder const &o){ return new PyCallBack_mrpt_opengl_CCylinder(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CCylinder const &o){ return new mrpt::opengl::CCylinder(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<23> (*)()) &mrpt::opengl::CCylinder::getClassName, "C++: mrpt::opengl::CCylinder::getClassName() --> class mrpt::typemeta::string_literal<23>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CCylinder::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CCylinder::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CCylinder::*)() const) &mrpt::opengl::CCylinder::GetRuntimeClass, "C++: mrpt::opengl::CCylinder::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CCylinder::*)() const) &mrpt::opengl::CCylinder::clone, "C++: mrpt::opengl::CCylinder::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -1072,7 +1070,6 @@ void bind_mrpt_opengl_CSphere(std::function< pybind11::module &(std::string cons
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CEllipsoidInverseDepth2D(); }, [](){ return new PyCallBack_mrpt_opengl_CEllipsoidInverseDepth2D(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CEllipsoidInverseDepth2D const &o){ return new PyCallBack_mrpt_opengl_CEllipsoidInverseDepth2D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CEllipsoidInverseDepth2D const &o){ return new mrpt::opengl::CEllipsoidInverseDepth2D(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<38> (*)()) &mrpt::opengl::CEllipsoidInverseDepth2D::getClassName, "C++: mrpt::opengl::CEllipsoidInverseDepth2D::getClassName() --> class mrpt::typemeta::string_literal<38>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CEllipsoidInverseDepth2D::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CEllipsoidInverseDepth2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CEllipsoidInverseDepth2D::*)() const) &mrpt::opengl::CEllipsoidInverseDepth2D::GetRuntimeClass, "C++: mrpt::opengl::CEllipsoidInverseDepth2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CEllipsoidInverseDepth2D::*)() const) &mrpt::opengl::CEllipsoidInverseDepth2D::clone, "C++: mrpt::opengl::CEllipsoidInverseDepth2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -1086,7 +1083,6 @@ void bind_mrpt_opengl_CSphere(std::function< pybind11::module &(std::string cons
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CEllipsoidInverseDepth3D(); }, [](){ return new PyCallBack_mrpt_opengl_CEllipsoidInverseDepth3D(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CEllipsoidInverseDepth3D const &o){ return new PyCallBack_mrpt_opengl_CEllipsoidInverseDepth3D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CEllipsoidInverseDepth3D const &o){ return new mrpt::opengl::CEllipsoidInverseDepth3D(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<38> (*)()) &mrpt::opengl::CEllipsoidInverseDepth3D::getClassName, "C++: mrpt::opengl::CEllipsoidInverseDepth3D::getClassName() --> class mrpt::typemeta::string_literal<38>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CEllipsoidInverseDepth3D::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CEllipsoidInverseDepth3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CEllipsoidInverseDepth3D::*)() const) &mrpt::opengl::CEllipsoidInverseDepth3D::GetRuntimeClass, "C++: mrpt::opengl::CEllipsoidInverseDepth3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CEllipsoidInverseDepth3D::*)() const) &mrpt::opengl::CEllipsoidInverseDepth3D::clone, "C++: mrpt::opengl::CEllipsoidInverseDepth3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

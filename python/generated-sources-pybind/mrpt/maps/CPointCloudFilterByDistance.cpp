@@ -690,7 +690,6 @@ void bind_mrpt_maps_CPointCloudFilterByDistance(std::function< pybind11::module 
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CPointsMapXYZI const &o){ return new PyCallBack_mrpt_maps_CPointsMapXYZI(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CPointsMapXYZI const &o){ return new mrpt::maps::CPointsMapXYZI(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<26> (*)()) &mrpt::maps::CPointsMapXYZI::getClassName, "C++: mrpt::maps::CPointsMapXYZI::getClassName() --> class mrpt::typemeta::string_literal<26>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CPointsMapXYZI::GetRuntimeClassIdStatic, "C++: mrpt::maps::CPointsMapXYZI::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CPointsMapXYZI::*)() const) &mrpt::maps::CPointsMapXYZI::GetRuntimeClass, "C++: mrpt::maps::CPointsMapXYZI::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CPointsMapXYZI::*)() const) &mrpt::maps::CPointsMapXYZI::clone, "C++: mrpt::maps::CPointsMapXYZI::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

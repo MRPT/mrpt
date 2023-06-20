@@ -252,7 +252,6 @@ void bind_mrpt_obs_CObservationCANBusJ1939(std::function< pybind11::module &(std
 		cl.def_readwrite("m_data_length", &mrpt::obs::CObservationCANBusJ1939::m_data_length);
 		cl.def_readwrite("m_data", &mrpt::obs::CObservationCANBusJ1939::m_data);
 		cl.def_readwrite("m_raw_frame", &mrpt::obs::CObservationCANBusJ1939::m_raw_frame);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<34> (*)()) &mrpt::obs::CObservationCANBusJ1939::getClassName, "C++: mrpt::obs::CObservationCANBusJ1939::getClassName() --> class mrpt::typemeta::string_literal<34>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationCANBusJ1939::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationCANBusJ1939::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationCANBusJ1939::*)() const) &mrpt::obs::CObservationCANBusJ1939::GetRuntimeClass, "C++: mrpt::obs::CObservationCANBusJ1939::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationCANBusJ1939::*)() const) &mrpt::obs::CObservationCANBusJ1939::clone, "C++: mrpt::obs::CObservationCANBusJ1939::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
