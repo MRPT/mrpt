@@ -1,4 +1,3 @@
-#include <Eigen/Dense>
 #include <mrpt/math/TPoint3D.h>
 #include <sstream> // __str__
 

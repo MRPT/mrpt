@@ -1,4 +1,3 @@
-#include <Eigen/Dense>
 #include <mrpt/math/math_frwds.h>
 
 #include <functional>
