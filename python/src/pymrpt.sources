@@ -59,11 +59,9 @@ mrpt/obs/CAction.cpp
 mrpt/math/TPoseOrPoint.cpp
 mrpt/math/TPoint3D.cpp
 mrpt/math/homog_matrices.cpp
-mrpt/poses/CPoseOrPoint_detail.cpp
 mrpt/poses/CPoseOrPoint.cpp
 mrpt/poses/CPoseOrPoint_1.cpp
-mrpt/poses/CPoseOrPoint_detail_1.cpp
-mrpt/poses/CPose.cpp
+mrpt/poses/CPoseOrPoint_2.cpp
 mrpt/poses/CPose2D.cpp
 mrpt/math/CProbabilityDensityFunction.cpp
 mrpt/math/CProbabilityDensityFunction_1.cpp
@@ -165,7 +163,7 @@ mrpt/obs/CObservationIMU.cpp
 mrpt/math/TPose3DQuat.cpp
 mrpt/img/TStereoCamera.cpp
 mrpt/poses/CPoint.cpp
-mrpt/poses/CPoint3D.cpp
+mrpt/poses/CPose3DQuat.cpp
 mrpt/obs/CObservationStereoImages.cpp
 mrpt/vision/CStereoRectifyMap.cpp
 mrpt/hwdrivers/CDUO3DCamera.cpp
@@ -253,7 +251,6 @@ mrpt/math/TObject3D.cpp
 mrpt/maps/CHeightGridMap2D_Base.cpp
 mrpt/maps/CHeightGridMap2D.cpp
 mrpt/maps/CHeightGridMap2D_MRF.cpp
-mrpt/maps/logoddscell_traits.cpp
 mrpt/maps/CLogOddsGridMapLUT.cpp
 mrpt/containers/CDynamicGrid3D.cpp
 mrpt/maps/CLogOddsGridMap3D.cpp

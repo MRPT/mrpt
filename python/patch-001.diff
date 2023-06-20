@@ -1,7 +1,7 @@
-diff --git a/python/generated-sources-pybind/std/array.cpp b/python/generated-sources-pybind/std/array.cpp
+diff --git a/python/src/std/array.cpp b/python/src/std/array.cpp
 index 680fd31c3..173995ed6 100644
---- a/python/generated-sources-pybind/std/array.cpp
-+++ b/python/generated-sources-pybind/std/array.cpp
+--- a/python/src/std/array.cpp
++++ b/python/src/std/array.cpp
 @@ -28,6 +28,8 @@
  	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
  #endif
@@ -11,10 +11,10 @@ index 680fd31c3..173995ed6 100644
  void bind_std_array(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
  	{ // std::array file:array line:95
-diff --git a/python/generated-sources-pybind/std/stl_deque.cpp b/python/generated-sources-pybind/std/stl_deque.cpp
+diff --git a/python/src/std/stl_deque.cpp b/python/src/std/stl_deque.cpp
 index cabe86ec7..302018560 100644
---- a/python/generated-sources-pybind/std/stl_deque.cpp
-+++ b/python/generated-sources-pybind/std/stl_deque.cpp
+--- a/python/src/std/stl_deque.cpp
++++ b/python/src/std/stl_deque.cpp
 @@ -18,6 +18,9 @@
  	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
  #endif
@@ -25,10 +25,10 @@ index cabe86ec7..302018560 100644
  void bind_std_stl_deque(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
  	{ // std::deque file:bits/stl_deque.h line:766
-diff --git a/python/generated-sources-pybind/std/stl_deque_1.cpp b/python/generated-sources-pybind/std/stl_deque_1.cpp
+diff --git a/python/src/std/stl_deque_1.cpp b/python/src/std/stl_deque_1.cpp
 index d974577d3..a80326114 100644
---- a/python/generated-sources-pybind/std/stl_deque_1.cpp
-+++ b/python/generated-sources-pybind/std/stl_deque_1.cpp
+--- a/python/src/std/stl_deque_1.cpp
++++ b/python/src/std/stl_deque_1.cpp
 @@ -26,6 +26,9 @@
  	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
  #endif
@@ -39,10 +39,10 @@ index d974577d3..a80326114 100644
  void bind_std_stl_deque_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
  	{ // std::deque file:bits/stl_deque.h line:766
-diff --git a/python/generated-sources-pybind/std/stl_deque_2.cpp b/python/generated-sources-pybind/std/stl_deque_2.cpp
+diff --git a/python/src/std/stl_deque_2.cpp b/python/src/std/stl_deque_2.cpp
 index ca96e381d..54e7eaaf4 100644
---- a/python/generated-sources-pybind/std/stl_deque_2.cpp
-+++ b/python/generated-sources-pybind/std/stl_deque_2.cpp
+--- a/python/src/std/stl_deque_2.cpp
++++ b/python/src/std/stl_deque_2.cpp
 @@ -16,6 +16,8 @@
  	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
  #endif
@@ -52,10 +52,10 @@ index ca96e381d..54e7eaaf4 100644
  void bind_std_stl_deque_2(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
  	{ // std::deque file:bits/stl_deque.h line:766
-diff --git a/python/generated-sources-pybind/std/stl_map.cpp b/python/generated-sources-pybind/std/stl_map.cpp
+diff --git a/python/src/std/stl_map.cpp b/python/src/std/stl_map.cpp
 index db3f49fde..793bf72f3 100644
---- a/python/generated-sources-pybind/std/stl_map.cpp
-+++ b/python/generated-sources-pybind/std/stl_map.cpp
+--- a/python/src/std/stl_map.cpp
++++ b/python/src/std/stl_map.cpp
 @@ -34,6 +34,11 @@
  	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
  #endif
@@ -68,10 +68,10 @@ index db3f49fde..793bf72f3 100644
  void bind_std_stl_map(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
  	{ // std::map file:bits/stl_map.h line:100
-diff --git a/python/generated-sources-pybind/std/stl_map_1.cpp b/python/generated-sources-pybind/std/stl_map_1.cpp
+diff --git a/python/src/std/stl_map_1.cpp b/python/src/std/stl_map_1.cpp
 index 935cd7342..307f4ad20 100644
---- a/python/generated-sources-pybind/std/stl_map_1.cpp
-+++ b/python/generated-sources-pybind/std/stl_map_1.cpp
+--- a/python/src/std/stl_map_1.cpp
++++ b/python/src/std/stl_map_1.cpp
 @@ -17,6 +17,10 @@
  	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
  #endif
@@ -83,10 +83,10 @@ index 935cd7342..307f4ad20 100644
  void bind_std_stl_map_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
  	{ // std::map file:bits/stl_map.h line:100
-diff --git a/python/generated-sources-pybind/std/stl_multimap.cpp b/python/generated-sources-pybind/std/stl_multimap.cpp
+diff --git a/python/src/std/stl_multimap.cpp b/python/src/std/stl_multimap.cpp
 index ddbd20205..ccfa54684 100644
---- a/python/generated-sources-pybind/std/stl_multimap.cpp
-+++ b/python/generated-sources-pybind/std/stl_multimap.cpp
+--- a/python/src/std/stl_multimap.cpp
++++ b/python/src/std/stl_multimap.cpp
 @@ -28,6 +28,10 @@
  	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
  #endif
@@ -98,10 +98,10 @@ index ddbd20205..ccfa54684 100644
  void bind_std_stl_multimap(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
  	{ // std::multimap file:bits/stl_multimap.h line:99
-diff --git a/python/generated-sources-pybind/std/stl_vector.cpp b/python/generated-sources-pybind/std/stl_vector.cpp
+diff --git a/python/src/std/stl_vector.cpp b/python/src/std/stl_vector.cpp
 index fe00b811e..e9110c758 100644
---- a/python/generated-sources-pybind/std/stl_vector.cpp
-+++ b/python/generated-sources-pybind/std/stl_vector.cpp
+--- a/python/src/std/stl_vector.cpp
++++ b/python/src/std/stl_vector.cpp
 @@ -17,6 +17,8 @@
  	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
  #endif
