@@ -1,4 +1,3 @@
-#include <Eigen/Dense>
 #include <iterator>
 #include <memory>
 #include <mrpt/math/CMatrixFixed.h>

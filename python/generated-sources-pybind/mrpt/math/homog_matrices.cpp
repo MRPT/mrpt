@@ -1,4 +1,3 @@
-#include <Eigen/Dense>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/homog_matrices.h>
 #include <mrpt/math/math_frwds.h>

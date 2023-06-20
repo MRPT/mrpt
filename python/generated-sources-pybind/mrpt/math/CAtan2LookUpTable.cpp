@@ -1,4 +1,3 @@
-#include <Eigen/Dense>
 #include <functional>
 #include <iterator>
 #include <map>

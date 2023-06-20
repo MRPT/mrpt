@@ -1,4 +1,3 @@
-#include <Eigen/Dense>
 #include <mrpt/math/CQuaternion.h>
 
 #include <functional>

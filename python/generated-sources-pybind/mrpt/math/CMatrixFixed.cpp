@@ -1,4 +1,3 @@
-#include <Eigen/Dense>
 #include <mrpt/math/CMatrixFixed.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
