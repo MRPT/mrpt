@@ -8,6 +8,8 @@
 #include <string>
 #include <pybind11/stl.h>
 
+#include <Eigen/Dense>
+
 
 #ifndef BINDER_PYBIND11_TYPE_CASTER
 	#define BINDER_PYBIND11_TYPE_CASTER
