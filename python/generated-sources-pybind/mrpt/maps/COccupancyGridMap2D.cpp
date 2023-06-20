@@ -468,7 +468,6 @@ void bind_mrpt_maps_COccupancyGridMap2D(std::function< pybind11::module &(std::s
 		cl.def_readwrite("likelihoodOptions", &mrpt::maps::COccupancyGridMap2D::likelihoodOptions);
 		cl.def_readwrite("likelihoodOutputs", &mrpt::maps::COccupancyGridMap2D::likelihoodOutputs);
 		cl.def_readwrite("CriticalPointsList", &mrpt::maps::COccupancyGridMap2D::CriticalPointsList);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<31> (*)()) &mrpt::maps::COccupancyGridMap2D::getClassName, "C++: mrpt::maps::COccupancyGridMap2D::getClassName() --> class mrpt::typemeta::string_literal<31>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::COccupancyGridMap2D::GetRuntimeClassIdStatic, "C++: mrpt::maps::COccupancyGridMap2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::COccupancyGridMap2D::*)() const) &mrpt::maps::COccupancyGridMap2D::GetRuntimeClass, "C++: mrpt::maps::COccupancyGridMap2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::COccupancyGridMap2D::*)() const) &mrpt::maps::COccupancyGridMap2D::clone, "C++: mrpt::maps::COccupancyGridMap2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

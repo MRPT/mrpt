@@ -258,7 +258,6 @@ void bind_mrpt_obs_CObservationSkeleton(std::function< pybind11::module &(std::s
 		cl.def_readwrite("right_hip", &mrpt::obs::CObservationSkeleton::right_hip);
 		cl.def_readwrite("right_knee", &mrpt::obs::CObservationSkeleton::right_knee);
 		cl.def_readwrite("right_foot", &mrpt::obs::CObservationSkeleton::right_foot);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<31> (*)()) &mrpt::obs::CObservationSkeleton::getClassName, "C++: mrpt::obs::CObservationSkeleton::getClassName() --> class mrpt::typemeta::string_literal<31>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationSkeleton::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationSkeleton::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationSkeleton::*)() const) &mrpt::obs::CObservationSkeleton::GetRuntimeClass, "C++: mrpt::obs::CObservationSkeleton::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationSkeleton::*)() const) &mrpt::obs::CObservationSkeleton::clone, "C++: mrpt::obs::CObservationSkeleton::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

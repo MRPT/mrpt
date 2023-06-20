@@ -159,7 +159,6 @@ void bind_mrpt_poses_CPose2D(std::function< pybind11::module &(std::string const
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPose2D const &o){ return new PyCallBack_mrpt_poses_CPose2D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPose2D const &o){ return new mrpt::poses::CPose2D(o); } ) );
 		cl.def_readwrite("m_coords", &mrpt::poses::CPose2D::m_coords);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<20> (*)()) &mrpt::poses::CPose2D::getClassName, "C++: mrpt::poses::CPose2D::getClassName() --> class mrpt::typemeta::string_literal<20>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPose2D::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPose2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPose2D::*)() const) &mrpt::poses::CPose2D::GetRuntimeClass, "C++: mrpt::poses::CPose2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPose2D::*)() const) &mrpt::poses::CPose2D::clone, "C++: mrpt::poses::CPose2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

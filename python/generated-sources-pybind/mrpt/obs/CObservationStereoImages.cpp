@@ -257,7 +257,6 @@ void bind_mrpt_obs_CObservationStereoImages(std::function< pybind11::module &(st
 		cl.def_readwrite("rightCamera", &mrpt::obs::CObservationStereoImages::rightCamera);
 		cl.def_readwrite("cameraPose", &mrpt::obs::CObservationStereoImages::cameraPose);
 		cl.def_readwrite("rightCameraPose", &mrpt::obs::CObservationStereoImages::rightCameraPose);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<35> (*)()) &mrpt::obs::CObservationStereoImages::getClassName, "C++: mrpt::obs::CObservationStereoImages::getClassName() --> class mrpt::typemeta::string_literal<35>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationStereoImages::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationStereoImages::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationStereoImages::*)() const) &mrpt::obs::CObservationStereoImages::GetRuntimeClass, "C++: mrpt::obs::CObservationStereoImages::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationStereoImages::*)() const) &mrpt::obs::CObservationStereoImages::clone, "C++: mrpt::obs::CObservationStereoImages::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

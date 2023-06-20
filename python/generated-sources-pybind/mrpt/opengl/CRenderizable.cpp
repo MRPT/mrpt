@@ -18,7 +18,6 @@
 #include <mrpt/math/TPose3D.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -50,17 +49,8 @@
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
 
-void bind_mrpt_opengl_opengl_fonts(std::function< pybind11::module &(std::string const &namespace_) > &M)
+void bind_mrpt_opengl_CRenderizable(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::opengl::T2DTextData file:mrpt/opengl/opengl_fonts.h line:68
-		pybind11::class_<mrpt::opengl::T2DTextData, std::shared_ptr<mrpt::opengl::T2DTextData>, mrpt::opengl::TFontParams> cl(M("mrpt::opengl"), "T2DTextData", "An auxiliary struct for holding a list of text messages in some mrpt::opengl\n & mrpt::gui classes\n  The font can be either a bitmapped or a vectorized font.\n  \n\n mrpt::opengl::CTextMessageCapable\n \n\n\n ");
-		cl.def( pybind11::init( [](){ return new mrpt::opengl::T2DTextData(); } ) );
-		cl.def( pybind11::init( [](mrpt::opengl::T2DTextData const &o){ return new mrpt::opengl::T2DTextData(o); } ) );
-		cl.def_readwrite("text", &mrpt::opengl::T2DTextData::text);
-		cl.def_readwrite("x", &mrpt::opengl::T2DTextData::x);
-		cl.def_readwrite("y", &mrpt::opengl::T2DTextData::y);
-		cl.def("assign", (struct mrpt::opengl::T2DTextData & (mrpt::opengl::T2DTextData::*)(const struct mrpt::opengl::T2DTextData &)) &mrpt::opengl::T2DTextData::operator=, "C++: mrpt::opengl::T2DTextData::operator=(const struct mrpt::opengl::T2DTextData &) --> struct mrpt::opengl::T2DTextData &", pybind11::return_value_policy::automatic, pybind11::arg(""));
-	}
 	// mrpt::opengl::TCullFace file:mrpt/opengl/CRenderizable.h line:43
 	pybind11::enum_<mrpt::opengl::TCullFace>(M("mrpt::opengl"), "TCullFace", "Enum for cull face modes in triangle-based shaders.\n  \n\n CRenderizableShaderTriangles, CRenderizableShaderTexturedTriangles\n  \n\n\n ")
 		.value("NONE", mrpt::opengl::TCullFace::NONE)

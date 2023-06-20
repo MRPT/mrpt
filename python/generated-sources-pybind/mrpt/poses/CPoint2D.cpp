@@ -539,7 +539,6 @@ void bind_mrpt_poses_CPoint2D(std::function< pybind11::module &(std::string cons
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPoint2D const &o){ return new PyCallBack_mrpt_poses_CPoint2D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPoint2D const &o){ return new mrpt::poses::CPoint2D(o); } ) );
 		cl.def_readwrite("m_coords", &mrpt::poses::CPoint2D::m_coords);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<21> (*)()) &mrpt::poses::CPoint2D::getClassName, "C++: mrpt::poses::CPoint2D::getClassName() --> class mrpt::typemeta::string_literal<21>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPoint2D::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPoint2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPoint2D::*)() const) &mrpt::poses::CPoint2D::GetRuntimeClass, "C++: mrpt::poses::CPoint2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPoint2D::*)() const) &mrpt::poses::CPoint2D::clone, "C++: mrpt::poses::CPoint2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -581,7 +580,6 @@ void bind_mrpt_poses_CPoint2D(std::function< pybind11::module &(std::string cons
 
 		cl.def_readwrite("mean", &mrpt::poses::CPoint2DPDFGaussian::mean);
 		cl.def_readwrite("cov", &mrpt::poses::CPoint2DPDFGaussian::cov);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<32> (*)()) &mrpt::poses::CPoint2DPDFGaussian::getClassName, "C++: mrpt::poses::CPoint2DPDFGaussian::getClassName() --> class mrpt::typemeta::string_literal<32>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPoint2DPDFGaussian::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPoint2DPDFGaussian::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPoint2DPDFGaussian::*)() const) &mrpt::poses::CPoint2DPDFGaussian::GetRuntimeClass, "C++: mrpt::poses::CPoint2DPDFGaussian::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPoint2DPDFGaussian::*)() const) &mrpt::poses::CPoint2DPDFGaussian::clone, "C++: mrpt::poses::CPoint2DPDFGaussian::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

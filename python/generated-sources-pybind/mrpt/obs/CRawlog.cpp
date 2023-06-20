@@ -1,53 +1,26 @@
-#include <chrono>
-#include <ios>
 #include <iterator>
 #include <memory>
-#include <mrpt/bayes/CKalmanFilterCapable.h>
-#include <mrpt/config/CConfigFileBase.h>
 #include <mrpt/config/CConfigFileMemory.h>
-#include <mrpt/containers/yaml.h>
-#include <mrpt/core/Clock.h>
-#include <mrpt/img/TCamera.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/math/CMatrixDynamic.h>
 #include <mrpt/math/CMatrixFixed.h>
-#include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/CVectorDynamic.h>
-#include <mrpt/math/TPoint2D.h>
-#include <mrpt/math/TPoint3D.h>
-#include <mrpt/math/TPose2D.h>
-#include <mrpt/math/TPose3D.h>
-#include <mrpt/math/TPose3DQuat.h>
-#include <mrpt/math/math_frwds.h>
-#include <mrpt/math/matrix_size_t.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/obs/CObservationStereoImagesFeatures.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/poses/CPoseOrPoint.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
-#include <mrpt/system/COutputLogger.h>
 #include <mrpt/typemeta/static_string.h>
 #include <optional>
 #include <ostream>
-#include <ratio>
 #include <sstream> // __str__
-#include <streambuf>
 #include <string>
 #include <tuple>
-#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -63,195 +36,6 @@
 	PYBIND11_DECLARE_HOLDER_TYPE(T, T*)
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
-
-// mrpt::obs::CObservationStereoImagesFeatures file:mrpt/obs/CObservationStereoImagesFeatures.h line:36
-struct PyCallBack_mrpt_obs_CObservationStereoImagesFeatures : public mrpt::obs::CObservationStereoImagesFeatures {
-	using mrpt::obs::CObservationStereoImagesFeatures::CObservationStereoImagesFeatures;
-
-	const struct mrpt::rtti::TRuntimeClassId * GetRuntimeClass() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "GetRuntimeClass");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<const struct mrpt::rtti::TRuntimeClassId *>::value) {
-				static pybind11::detail::override_caster_t<const struct mrpt::rtti::TRuntimeClassId *> caster;
-				return pybind11::detail::cast_ref<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o));
-		}
-		return CObservationStereoImagesFeatures::GetRuntimeClass();
-	}
-	class mrpt::rtti::CObject * clone() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "clone");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::rtti::CObject *>::value) {
-				static pybind11::detail::override_caster_t<class mrpt::rtti::CObject *> caster;
-				return pybind11::detail::cast_ref<class mrpt::rtti::CObject *>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class mrpt::rtti::CObject *>(std::move(o));
-		}
-		return CObservationStereoImagesFeatures::clone();
-	}
-	uint8_t serializeGetVersion() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "serializeGetVersion");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
-				static pybind11::detail::override_caster_t<uint8_t> caster;
-				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
-		}
-		return CObservationStereoImagesFeatures::serializeGetVersion();
-	}
-	void serializeTo(class mrpt::serialization::CArchive & a0) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "serializeTo");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservationStereoImagesFeatures::serializeTo(a0);
-	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "serializeFrom");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservationStereoImagesFeatures::serializeFrom(a0, a1);
-	}
-	void getSensorPose(class mrpt::poses::CPose3D & a0) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "getSensorPose");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservationStereoImagesFeatures::getSensorPose(a0);
-	}
-	void setSensorPose(const class mrpt::poses::CPose3D & a0) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "setSensorPose");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservationStereoImagesFeatures::setSensorPose(a0);
-	}
-	using _binder_ret_0 = mrpt::Clock::time_point;
-	_binder_ret_0 getOriginalReceivedTimeStamp() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "getOriginalReceivedTimeStamp");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<_binder_ret_0>::value) {
-				static pybind11::detail::override_caster_t<_binder_ret_0> caster;
-				return pybind11::detail::cast_ref<_binder_ret_0>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<_binder_ret_0>(std::move(o));
-		}
-		return CObservation::getOriginalReceivedTimeStamp();
-	}
-	std::string asString() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "asString");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
-				static pybind11::detail::override_caster_t<std::string> caster;
-				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<std::string>(std::move(o));
-		}
-		return CObservation::asString();
-	}
-	bool exportTxtSupported() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "exportTxtSupported");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<bool>::value) {
-				static pybind11::detail::override_caster_t<bool> caster;
-				return pybind11::detail::cast_ref<bool>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<bool>(std::move(o));
-		}
-		return CObservation::exportTxtSupported();
-	}
-	std::string exportTxtHeader() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "exportTxtHeader");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
-				static pybind11::detail::override_caster_t<std::string> caster;
-				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<std::string>(std::move(o));
-		}
-		return CObservation::exportTxtHeader();
-	}
-	std::string exportTxtDataRow() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "exportTxtDataRow");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
-				static pybind11::detail::override_caster_t<std::string> caster;
-				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<std::string>(std::move(o));
-		}
-		return CObservation::exportTxtDataRow();
-	}
-	void load() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "load");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::load();
-	}
-	void unload() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::obs::CObservationStereoImagesFeatures *>(this), "unload");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CObservation::unload();
-	}
-};
 
 // mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:62
 struct PyCallBack_mrpt_obs_CRawlog : public mrpt::obs::CRawlog {
@@ -324,32 +108,8 @@ struct PyCallBack_mrpt_obs_CRawlog : public mrpt::obs::CRawlog {
 	}
 };
 
-void bind_mrpt_obs_CObservationStereoImagesFeatures(std::function< pybind11::module &(std::string const &namespace_) > &M)
+void bind_mrpt_obs_CRawlog(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::obs::CObservationStereoImagesFeatures file:mrpt/obs/CObservationStereoImagesFeatures.h line:36
-		pybind11::class_<mrpt::obs::CObservationStereoImagesFeatures, std::shared_ptr<mrpt::obs::CObservationStereoImagesFeatures>, PyCallBack_mrpt_obs_CObservationStereoImagesFeatures, mrpt::obs::CObservation> cl(M("mrpt::obs"), "CObservationStereoImagesFeatures", "Declares a class derived from \"CObservation\" that encapsules a pair of\n cameras and a set of matched image features extracted from them.\n\n NOTE: The image features stored in this class are NOT supposed to be\n UNDISTORTED, but the TCamera members must provide their distortion params.\n A zero-vector of distortion params means a set of UNDISTORTED pixels.\n \n\n CObservation\n \n\n\n ");
-		cl.def( pybind11::init( [](){ return new mrpt::obs::CObservationStereoImagesFeatures(); }, [](){ return new PyCallBack_mrpt_obs_CObservationStereoImagesFeatures(); } ) );
-		cl.def( pybind11::init<const class mrpt::img::TCamera &, const class mrpt::img::TCamera &, const class mrpt::poses::CPose3DQuat &, const class mrpt::poses::CPose3DQuat &>(), pybind11::arg("cLeft"), pybind11::arg("cRight"), pybind11::arg("rCPose"), pybind11::arg("cPORobot") );
-
-		cl.def( pybind11::init( [](PyCallBack_mrpt_obs_CObservationStereoImagesFeatures const &o){ return new PyCallBack_mrpt_obs_CObservationStereoImagesFeatures(o); } ) );
-		cl.def( pybind11::init( [](mrpt::obs::CObservationStereoImagesFeatures const &o){ return new mrpt::obs::CObservationStereoImagesFeatures(o); } ) );
-		cl.def_readwrite("cameraLeft", &mrpt::obs::CObservationStereoImagesFeatures::cameraLeft);
-		cl.def_readwrite("cameraRight", &mrpt::obs::CObservationStereoImagesFeatures::cameraRight);
-		cl.def_readwrite("rightCameraPose", &mrpt::obs::CObservationStereoImagesFeatures::rightCameraPose);
-		cl.def_readwrite("cameraPoseOnRobot", &mrpt::obs::CObservationStereoImagesFeatures::cameraPoseOnRobot);
-		cl.def_readwrite("theFeatures", &mrpt::obs::CObservationStereoImagesFeatures::theFeatures);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<43> (*)()) &mrpt::obs::CObservationStereoImagesFeatures::getClassName, "C++: mrpt::obs::CObservationStereoImagesFeatures::getClassName() --> class mrpt::typemeta::string_literal<43>");
-		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationStereoImagesFeatures::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationStereoImagesFeatures::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
-		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationStereoImagesFeatures::*)() const) &mrpt::obs::CObservationStereoImagesFeatures::GetRuntimeClass, "C++: mrpt::obs::CObservationStereoImagesFeatures::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
-		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationStereoImagesFeatures::*)() const) &mrpt::obs::CObservationStereoImagesFeatures::clone, "C++: mrpt::obs::CObservationStereoImagesFeatures::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
-		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::obs::CObservationStereoImagesFeatures::CreateObject, "C++: mrpt::obs::CObservationStereoImagesFeatures::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
-		cl.def("saveFeaturesToTextFile", (void (mrpt::obs::CObservationStereoImagesFeatures::*)(const std::string &)) &mrpt::obs::CObservationStereoImagesFeatures::saveFeaturesToTextFile, "A method for storing the set of observed features in a text file in the\n format: \n ID ul vl ur vr \n being (ul,vl) and (ur,vr) the \"x\" and \"y\" coordinates for the left and\n right feature, respectively.\n\nC++: mrpt::obs::CObservationStereoImagesFeatures::saveFeaturesToTextFile(const std::string &) --> void", pybind11::arg("filename"));
-		cl.def("getSensorPose", (void (mrpt::obs::CObservationStereoImagesFeatures::*)(class mrpt::poses::CPose3D &) const) &mrpt::obs::CObservationStereoImagesFeatures::getSensorPose, "C++: mrpt::obs::CObservationStereoImagesFeatures::getSensorPose(class mrpt::poses::CPose3D &) const --> void", pybind11::arg("out_sensorPose"));
-		cl.def("getSensorPose", (void (mrpt::obs::CObservationStereoImagesFeatures::*)(class mrpt::poses::CPose3DQuat &) const) &mrpt::obs::CObservationStereoImagesFeatures::getSensorPose, "C++: mrpt::obs::CObservationStereoImagesFeatures::getSensorPose(class mrpt::poses::CPose3DQuat &) const --> void", pybind11::arg("out_sensorPose"));
-		cl.def("setSensorPose", (void (mrpt::obs::CObservationStereoImagesFeatures::*)(const class mrpt::poses::CPose3D &)) &mrpt::obs::CObservationStereoImagesFeatures::setSensorPose, "A general method to change the sensor pose on the robot in a\n mrpt::poses::CPose3D form.\n  Note that most sensors will use the full (6D) CPose3DQuat, but see the\n derived classes for more details or special cases.\n \n\n getSensorPose\n\nC++: mrpt::obs::CObservationStereoImagesFeatures::setSensorPose(const class mrpt::poses::CPose3D &) --> void", pybind11::arg("newSensorPose"));
-		cl.def("setSensorPose", (void (mrpt::obs::CObservationStereoImagesFeatures::*)(const class mrpt::poses::CPose3DQuat &)) &mrpt::obs::CObservationStereoImagesFeatures::setSensorPose, "A general method to change the sensor pose on the robot in a CPose3DQuat\n form.\n  Note that most sensors will use the full (6D) CPose3DQuat, but see the\n derived classes for more details or special cases.\n \n\n getSensorPose\n\nC++: mrpt::obs::CObservationStereoImagesFeatures::setSensorPose(const class mrpt::poses::CPose3DQuat &) --> void", pybind11::arg("newSensorPose"));
-		cl.def("assign", (class mrpt::obs::CObservationStereoImagesFeatures & (mrpt::obs::CObservationStereoImagesFeatures::*)(const class mrpt::obs::CObservationStereoImagesFeatures &)) &mrpt::obs::CObservationStereoImagesFeatures::operator=, "C++: mrpt::obs::CObservationStereoImagesFeatures::operator=(const class mrpt::obs::CObservationStereoImagesFeatures &) --> class mrpt::obs::CObservationStereoImagesFeatures &", pybind11::return_value_policy::automatic, pybind11::arg(""));
-	}
 	{ // mrpt::obs::CRawlog file:mrpt/obs/CRawlog.h line:62
 		pybind11::class_<mrpt::obs::CRawlog, std::shared_ptr<mrpt::obs::CRawlog>, PyCallBack_mrpt_obs_CRawlog, mrpt::serialization::CSerializable> cl(M("mrpt::obs"), "CRawlog", "The main class for loading and processing robotics datasets, or \"rawlogs\".\n\n Please, refer to the [rawlog format specification](rawlog_format.html).\n\n In short, this class stores a sequence of objects, in one of two possible\nformats:\n  - Format #1: A sequence of actions and observations. There is a sequence\nof objects, where each one can be of one type:\n    - An action:	Implemented as a CActionCollection object, the\nactuation\nof the robot (i.e. odometry increment).\n    - Observations: Implemented as a CSensoryFrame, refering to a set of\nrobot observations from the same pose.\n  - Format #2: A sequence of actions and observations. There is a sequence\nof objects, where each one can be of one type:\n\n See also [RawLogViewer](app_RawLogViewer.html) for a GUI application for\n quick inspection and analysis of rawlogs.\n\n There is a field for dataset plain-text comments (human-friendly description,\n blocks of parameters, etc.) accessible through CRawlog::getCommentText() and\n CRawlog::setCommentText().\n\n This container provides a STL container-like interface (see CRawlog::begin,\n CRawlog::iterator, ...).\n\n \n There is a static helper method CRawlog::detectImagesDirectory() to\n       identify the directory where external images are stored.\n\n \n CSensoryFrame,\n     [Dataset file format](robotics_file_formats.html#datasets).\n\n \n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::obs::CRawlog(); }, [](){ return new PyCallBack_mrpt_obs_CRawlog(); } ) );
@@ -363,7 +123,6 @@ void bind_mrpt_obs_CObservationStereoImagesFeatures(std::function< pybind11::mod
 			.value("etOther", mrpt::obs::CRawlog::etOther)
 			.export_values();
 
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<18> (*)()) &mrpt::obs::CRawlog::getClassName, "C++: mrpt::obs::CRawlog::getClassName() --> class mrpt::typemeta::string_literal<18>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CRawlog::GetRuntimeClassIdStatic, "C++: mrpt::obs::CRawlog::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CRawlog::*)() const) &mrpt::obs::CRawlog::GetRuntimeClass, "C++: mrpt::obs::CRawlog::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CRawlog::*)() const) &mrpt::obs::CRawlog::clone, "C++: mrpt::obs::CRawlog::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

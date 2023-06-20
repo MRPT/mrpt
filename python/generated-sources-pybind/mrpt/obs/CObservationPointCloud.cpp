@@ -457,7 +457,6 @@ void bind_mrpt_obs_CObservationPointCloud(std::function< pybind11::module &(std:
 
 		cl.def_readwrite("pointcloud", &mrpt::obs::CObservationPointCloud::pointcloud);
 		cl.def_readwrite("sensorPose", &mrpt::obs::CObservationPointCloud::sensorPose);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<33> (*)()) &mrpt::obs::CObservationPointCloud::getClassName, "C++: mrpt::obs::CObservationPointCloud::getClassName() --> class mrpt::typemeta::string_literal<33>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationPointCloud::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationPointCloud::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationPointCloud::*)() const) &mrpt::obs::CObservationPointCloud::GetRuntimeClass, "C++: mrpt::obs::CObservationPointCloud::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationPointCloud::*)() const) &mrpt::obs::CObservationPointCloud::clone, "C++: mrpt::obs::CObservationPointCloud::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -492,7 +491,6 @@ void bind_mrpt_obs_CObservationPointCloud(std::function< pybind11::module &(std:
 		cl.def_readwrite("sensorPose", &mrpt::obs::CObservationRotatingScan::sensorPose);
 		cl.def_readwrite("originalReceivedTimestamp", &mrpt::obs::CObservationRotatingScan::originalReceivedTimestamp);
 		cl.def_readwrite("has_satellite_timestamp", &mrpt::obs::CObservationRotatingScan::has_satellite_timestamp);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<35> (*)()) &mrpt::obs::CObservationRotatingScan::getClassName, "C++: mrpt::obs::CObservationRotatingScan::getClassName() --> class mrpt::typemeta::string_literal<35>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationRotatingScan::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationRotatingScan::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::GetRuntimeClass, "C++: mrpt::obs::CObservationRotatingScan::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationRotatingScan::*)() const) &mrpt::obs::CObservationRotatingScan::clone, "C++: mrpt::obs::CObservationRotatingScan::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

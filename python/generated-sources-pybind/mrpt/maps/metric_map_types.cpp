@@ -195,7 +195,6 @@ void bind_mrpt_maps_metric_map_types(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("enableSaveAs3DObject", &mrpt::maps::TMapGenericParams::enableSaveAs3DObject);
 		cl.def_readwrite("enableObservationLikelihood", &mrpt::maps::TMapGenericParams::enableObservationLikelihood);
 		cl.def_readwrite("enableObservationInsertion", &mrpt::maps::TMapGenericParams::enableObservationInsertion);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<29> (*)()) &mrpt::maps::TMapGenericParams::getClassName, "C++: mrpt::maps::TMapGenericParams::getClassName() --> class mrpt::typemeta::string_literal<29>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::TMapGenericParams::GetRuntimeClassIdStatic, "C++: mrpt::maps::TMapGenericParams::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::TMapGenericParams::*)() const) &mrpt::maps::TMapGenericParams::GetRuntimeClass, "C++: mrpt::maps::TMapGenericParams::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::TMapGenericParams::*)() const) &mrpt::maps::TMapGenericParams::clone, "C++: mrpt::maps::TMapGenericParams::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

@@ -144,7 +144,6 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("shadow_bias_normal", &mrpt::opengl::TLightParameters::shadow_bias_normal);
 		cl.def("writeToStream", (void (mrpt::opengl::TLightParameters::*)(class mrpt::serialization::CArchive &) const) &mrpt::opengl::TLightParameters::writeToStream, "C++: mrpt::opengl::TLightParameters::writeToStream(class mrpt::serialization::CArchive &) const --> void", pybind11::arg("out"));
 		cl.def("readFromStream", (void (mrpt::opengl::TLightParameters::*)(class mrpt::serialization::CArchive &)) &mrpt::opengl::TLightParameters::readFromStream, "C++: mrpt::opengl::TLightParameters::readFromStream(class mrpt::serialization::CArchive &) --> void", pybind11::arg("in"));
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<30> (*)()) &mrpt::opengl::TLightParameters::getClassName, "C++: mrpt::opengl::TLightParameters::getClassName() --> class mrpt::typemeta::string_literal<30>");
 		cl.def("assign", (struct mrpt::opengl::TLightParameters & (mrpt::opengl::TLightParameters::*)(const struct mrpt::opengl::TLightParameters &)) &mrpt::opengl::TLightParameters::operator=, "C++: mrpt::opengl::TLightParameters::operator=(const struct mrpt::opengl::TLightParameters &) --> struct mrpt::opengl::TLightParameters &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 	// mrpt::opengl::TOpenGLFontStyle file:mrpt/opengl/opengl_fonts.h line:20
@@ -169,5 +168,14 @@ void bind_mrpt_opengl_DefaultShaders(std::function< pybind11::module &(std::stri
 		cl.def_readwrite("vfont_spacing", &mrpt::opengl::TFontParams::vfont_spacing);
 		cl.def_readwrite("vfont_kerning", &mrpt::opengl::TFontParams::vfont_kerning);
 		cl.def("assign", (struct mrpt::opengl::TFontParams & (mrpt::opengl::TFontParams::*)(const struct mrpt::opengl::TFontParams &)) &mrpt::opengl::TFontParams::operator=, "C++: mrpt::opengl::TFontParams::operator=(const struct mrpt::opengl::TFontParams &) --> struct mrpt::opengl::TFontParams &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+	}
+	{ // mrpt::opengl::T2DTextData file:mrpt/opengl/opengl_fonts.h line:68
+		pybind11::class_<mrpt::opengl::T2DTextData, std::shared_ptr<mrpt::opengl::T2DTextData>, mrpt::opengl::TFontParams> cl(M("mrpt::opengl"), "T2DTextData", "An auxiliary struct for holding a list of text messages in some mrpt::opengl\n & mrpt::gui classes\n  The font can be either a bitmapped or a vectorized font.\n  \n\n mrpt::opengl::CTextMessageCapable\n \n\n\n ");
+		cl.def( pybind11::init( [](){ return new mrpt::opengl::T2DTextData(); } ) );
+		cl.def( pybind11::init( [](mrpt::opengl::T2DTextData const &o){ return new mrpt::opengl::T2DTextData(o); } ) );
+		cl.def_readwrite("text", &mrpt::opengl::T2DTextData::text);
+		cl.def_readwrite("x", &mrpt::opengl::T2DTextData::x);
+		cl.def_readwrite("y", &mrpt::opengl::T2DTextData::y);
+		cl.def("assign", (struct mrpt::opengl::T2DTextData & (mrpt::opengl::T2DTextData::*)(const struct mrpt::opengl::T2DTextData &)) &mrpt::opengl::T2DTextData::operator=, "C++: mrpt::opengl::T2DTextData::operator=(const struct mrpt::opengl::T2DTextData &) --> struct mrpt::opengl::T2DTextData &", pybind11::return_value_policy::automatic, pybind11::arg(""));
 	}
 }

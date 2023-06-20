@@ -17,14 +17,17 @@
 #include <mrpt/nav/holonomic/CHolonomicVFF.h>
 #include <mrpt/nav/planners/PlannerRRT_common.h>
 #include <mrpt/nav/planners/TMoveTree.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/rtti/CObject.h>
 #include <mrpt/serialization/CArchive.h>
 #include <mrpt/serialization/CMessage.h>
 #include <mrpt/serialization/CSerializable.h>
 #include <mrpt/system/COutputLogger.h>
+#include <mrpt/system/CTimeLogger.h>
 #include <mrpt/typemeta/static_string.h>
 #include <sstream> // __str__
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -299,7 +302,6 @@ void bind_mrpt_nav_holonomic_CHolonomicVFF(std::function< pybind11::module &(std
 	{ // mrpt::nav::CLogFileRecord_VFF file:mrpt/nav/holonomic/CHolonomicVFF.h line:26
 		pybind11::class_<mrpt::nav::CLogFileRecord_VFF, std::shared_ptr<mrpt::nav::CLogFileRecord_VFF>, PyCallBack_mrpt_nav_CLogFileRecord_VFF, mrpt::nav::CHolonomicLogFileRecord> cl(M("mrpt::nav"), "CLogFileRecord_VFF", "A class for storing extra information about the execution of\n    CHolonomicVFF navigation.\n \n\n CHolonomicVFF, CHolonomicLogFileRecord");
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CLogFileRecord_VFF(); }, [](){ return new PyCallBack_mrpt_nav_CLogFileRecord_VFF(); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<29> (*)()) &mrpt::nav::CLogFileRecord_VFF::getClassName, "C++: mrpt::nav::CLogFileRecord_VFF::getClassName() --> class mrpt::typemeta::string_literal<29>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CLogFileRecord_VFF::GetRuntimeClassIdStatic, "C++: mrpt::nav::CLogFileRecord_VFF::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CLogFileRecord_VFF::*)() const) &mrpt::nav::CLogFileRecord_VFF::GetRuntimeClass, "C++: mrpt::nav::CLogFileRecord_VFF::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CLogFileRecord_VFF::*)() const) &mrpt::nav::CLogFileRecord_VFF::clone, "C++: mrpt::nav::CLogFileRecord_VFF::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -314,7 +316,6 @@ void bind_mrpt_nav_holonomic_CHolonomicVFF(std::function< pybind11::module &(std
 		cl.def( pybind11::init( [](PyCallBack_mrpt_nav_CHolonomicVFF const &o){ return new PyCallBack_mrpt_nav_CHolonomicVFF(o); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::CHolonomicVFF const &o){ return new mrpt::nav::CHolonomicVFF(o); } ) );
 		cl.def_readwrite("options", &mrpt::nav::CHolonomicVFF::options);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<24> (*)()) &mrpt::nav::CHolonomicVFF::getClassName, "C++: mrpt::nav::CHolonomicVFF::getClassName() --> class mrpt::typemeta::string_literal<24>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CHolonomicVFF::GetRuntimeClassIdStatic, "C++: mrpt::nav::CHolonomicVFF::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CHolonomicVFF::*)() const) &mrpt::nav::CHolonomicVFF::GetRuntimeClass, "C++: mrpt::nav::CHolonomicVFF::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CHolonomicVFF::*)() const) &mrpt::nav::CHolonomicVFF::clone, "C++: mrpt::nav::CHolonomicVFF::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -388,5 +389,48 @@ void bind_mrpt_nav_holonomic_CHolonomicVFF(std::function< pybind11::module &(std
 		cl.def_readwrite("ptg_verbose", &mrpt::nav::RRTAlgorithmParams::ptg_verbose);
 		cl.def_readwrite("save_3d_log_freq", &mrpt::nav::RRTAlgorithmParams::save_3d_log_freq);
 		cl.def("assign", (struct mrpt::nav::RRTAlgorithmParams & (mrpt::nav::RRTAlgorithmParams::*)(const struct mrpt::nav::RRTAlgorithmParams &)) &mrpt::nav::RRTAlgorithmParams::operator=, "C++: mrpt::nav::RRTAlgorithmParams::operator=(const struct mrpt::nav::RRTAlgorithmParams &) --> struct mrpt::nav::RRTAlgorithmParams &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+	}
+	{ // mrpt::nav::PlannerTPS_VirtualBase file:mrpt/nav/planners/PlannerRRT_common.h line:132
+		pybind11::class_<mrpt::nav::PlannerTPS_VirtualBase, std::shared_ptr<mrpt::nav::PlannerTPS_VirtualBase>> cl(M("mrpt::nav"), "PlannerTPS_VirtualBase", "Virtual base class for TP-Space-based path planners ");
+		cl.def( pybind11::init( [](){ return new mrpt::nav::PlannerTPS_VirtualBase(); } ) );
+		cl.def( pybind11::init( [](mrpt::nav::PlannerTPS_VirtualBase const &o){ return new mrpt::nav::PlannerTPS_VirtualBase(o); } ) );
+		cl.def_readwrite("end_criteria", &mrpt::nav::PlannerTPS_VirtualBase::end_criteria);
+		cl.def_readwrite("params", &mrpt::nav::PlannerTPS_VirtualBase::params);
+		cl.def("getProfiler", (class mrpt::system::CTimeLogger & (mrpt::nav::PlannerTPS_VirtualBase::*)()) &mrpt::nav::PlannerTPS_VirtualBase::getProfiler, "C++: mrpt::nav::PlannerTPS_VirtualBase::getProfiler() --> class mrpt::system::CTimeLogger &", pybind11::return_value_policy::automatic);
+		cl.def("assign", (class mrpt::nav::PlannerTPS_VirtualBase & (mrpt::nav::PlannerTPS_VirtualBase::*)(const class mrpt::nav::PlannerTPS_VirtualBase &)) &mrpt::nav::PlannerTPS_VirtualBase::operator=, "C++: mrpt::nav::PlannerTPS_VirtualBase::operator=(const class mrpt::nav::PlannerTPS_VirtualBase &) --> class mrpt::nav::PlannerTPS_VirtualBase &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+
+		{ // mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions file:mrpt/nav/planners/PlannerRRT_common.h line:145
+			auto & enclosing_class = cl;
+			pybind11::class_<mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions, std::shared_ptr<mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions>> cl(enclosing_class, "TRenderPlannedPathOptions", "Options for renderMoveTree()  ");
+			cl.def( pybind11::init( [](){ return new mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions(); } ) );
+			cl.def( pybind11::init( [](mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions const &o){ return new mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions(o); } ) );
+			cl.def_readwrite("highlight_path_to_node_id", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::highlight_path_to_node_id);
+			cl.def_readwrite("draw_shape_decimation", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::draw_shape_decimation);
+			cl.def_readwrite("xyzcorners_scale", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::xyzcorners_scale);
+			cl.def_readwrite("highlight_last_added_edge", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::highlight_last_added_edge);
+			cl.def_readwrite("ground_xy_grid_frequency", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::ground_xy_grid_frequency);
+			cl.def_readwrite("color_vehicle", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_vehicle);
+			cl.def_readwrite("color_obstacles", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_obstacles);
+			cl.def_readwrite("color_local_obstacles", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_local_obstacles);
+			cl.def_readwrite("color_start", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_start);
+			cl.def_readwrite("color_goal", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_goal);
+			cl.def_readwrite("color_ground_xy_grid", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_ground_xy_grid);
+			cl.def_readwrite("color_normal_edge", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_normal_edge);
+			cl.def_readwrite("color_last_edge", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_last_edge);
+			cl.def_readwrite("color_optimal_edge", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::color_optimal_edge);
+			cl.def_readwrite("width_last_edge", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::width_last_edge);
+			cl.def_readwrite("width_normal_edge", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::width_normal_edge);
+			cl.def_readwrite("width_optimal_edge", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::width_optimal_edge);
+			cl.def_readwrite("point_size_obstacles", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::point_size_obstacles);
+			cl.def_readwrite("point_size_local_obstacles", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::point_size_local_obstacles);
+			cl.def_readwrite("vehicle_shape_z", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::vehicle_shape_z);
+			cl.def_readwrite("vehicle_line_width", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::vehicle_line_width);
+			cl.def_readwrite("draw_obstacles", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::draw_obstacles);
+			cl.def_readwrite("log_msg", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::log_msg);
+			cl.def_readwrite("log_msg_position", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::log_msg_position);
+			cl.def_readwrite("log_msg_scale", &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::log_msg_scale);
+			cl.def("assign", (struct mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions & (mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::*)(const struct mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions &)) &mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::operator=, "C++: mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions::operator=(const struct mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions &) --> struct mrpt::nav::PlannerTPS_VirtualBase::TRenderPlannedPathOptions &", pybind11::return_value_policy::automatic, pybind11::arg(""));
+		}
+
 	}
 }

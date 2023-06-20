@@ -245,7 +245,6 @@ void bind_mrpt_obs_CObservationWindSensor(std::function< pybind11::module &(std:
 		cl.def_readwrite("speed", &mrpt::obs::CObservationWindSensor::speed);
 		cl.def_readwrite("direction", &mrpt::obs::CObservationWindSensor::direction);
 		cl.def_readwrite("sensorPoseOnRobot", &mrpt::obs::CObservationWindSensor::sensorPoseOnRobot);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<33> (*)()) &mrpt::obs::CObservationWindSensor::getClassName, "C++: mrpt::obs::CObservationWindSensor::getClassName() --> class mrpt::typemeta::string_literal<33>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationWindSensor::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationWindSensor::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationWindSensor::*)() const) &mrpt::obs::CObservationWindSensor::GetRuntimeClass, "C++: mrpt::obs::CObservationWindSensor::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationWindSensor::*)() const) &mrpt::obs::CObservationWindSensor::clone, "C++: mrpt::obs::CObservationWindSensor::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

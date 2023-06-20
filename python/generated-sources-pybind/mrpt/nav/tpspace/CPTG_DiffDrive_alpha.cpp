@@ -1154,7 +1154,6 @@ void bind_mrpt_nav_tpspace_CPTG_DiffDrive_alpha(std::function< pybind11::module 
 		cl.def( pybind11::init( [](){ return new mrpt::nav::CPTG_DiffDrive_alpha(); }, [](){ return new PyCallBack_mrpt_nav_CPTG_DiffDrive_alpha(); } ) );
 		cl.def( pybind11::init<const class mrpt::config::CConfigFileBase &, const std::string &>(), pybind11::arg("cfg"), pybind11::arg("sSection") );
 
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<31> (*)()) &mrpt::nav::CPTG_DiffDrive_alpha::getClassName, "C++: mrpt::nav::CPTG_DiffDrive_alpha::getClassName() --> class mrpt::typemeta::string_literal<31>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CPTG_DiffDrive_alpha::GetRuntimeClassIdStatic, "C++: mrpt::nav::CPTG_DiffDrive_alpha::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CPTG_DiffDrive_alpha::*)() const) &mrpt::nav::CPTG_DiffDrive_alpha::GetRuntimeClass, "C++: mrpt::nav::CPTG_DiffDrive_alpha::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CPTG_DiffDrive_alpha::*)() const) &mrpt::nav::CPTG_DiffDrive_alpha::clone, "C++: mrpt::nav::CPTG_DiffDrive_alpha::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -1173,7 +1172,6 @@ void bind_mrpt_nav_tpspace_CPTG_DiffDrive_alpha(std::function< pybind11::module 
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_nav_CPTG_Holo_Blend const &o){ return new PyCallBack_mrpt_nav_CPTG_Holo_Blend(o); } ) );
 		cl.def( pybind11::init( [](mrpt::nav::CPTG_Holo_Blend const &o){ return new mrpt::nav::CPTG_Holo_Blend(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<26> (*)()) &mrpt::nav::CPTG_Holo_Blend::getClassName, "C++: mrpt::nav::CPTG_Holo_Blend::getClassName() --> class mrpt::typemeta::string_literal<26>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CPTG_Holo_Blend::GetRuntimeClassIdStatic, "C++: mrpt::nav::CPTG_Holo_Blend::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CPTG_Holo_Blend::*)() const) &mrpt::nav::CPTG_Holo_Blend::GetRuntimeClass, "C++: mrpt::nav::CPTG_Holo_Blend::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CPTG_Holo_Blend::*)() const) &mrpt::nav::CPTG_Holo_Blend::clone, "C++: mrpt::nav::CPTG_Holo_Blend::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

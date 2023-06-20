@@ -429,7 +429,6 @@ void bind_mrpt_maps_CMultiMetricMap(std::function< pybind11::module &(std::strin
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CMultiMetricMap const &o){ return new PyCallBack_mrpt_maps_CMultiMetricMap(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CMultiMetricMap const &o){ return new mrpt::maps::CMultiMetricMap(o); } ) );
 		cl.def_readwrite("maps", &mrpt::maps::CMultiMetricMap::maps);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<27> (*)()) &mrpt::maps::CMultiMetricMap::getClassName, "C++: mrpt::maps::CMultiMetricMap::getClassName() --> class mrpt::typemeta::string_literal<27>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CMultiMetricMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CMultiMetricMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CMultiMetricMap::*)() const) &mrpt::maps::CMultiMetricMap::GetRuntimeClass, "C++: mrpt::maps::CMultiMetricMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CMultiMetricMap::*)() const) &mrpt::maps::CMultiMetricMap::clone, "C++: mrpt::maps::CMultiMetricMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -451,7 +450,6 @@ void bind_mrpt_maps_CMultiMetricMap(std::function< pybind11::module &(std::strin
 		cl.def( pybind11::init( [](){ return new mrpt::maps::CSimpleMap(); }, [](){ return new PyCallBack_mrpt_maps_CSimpleMap(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_maps_CSimpleMap const &o){ return new PyCallBack_mrpt_maps_CSimpleMap(o); } ) );
 		cl.def( pybind11::init( [](mrpt::maps::CSimpleMap const &o){ return new mrpt::maps::CSimpleMap(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<22> (*)()) &mrpt::maps::CSimpleMap::getClassName, "C++: mrpt::maps::CSimpleMap::getClassName() --> class mrpt::typemeta::string_literal<22>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CSimpleMap::GetRuntimeClassIdStatic, "C++: mrpt::maps::CSimpleMap::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CSimpleMap::*)() const) &mrpt::maps::CSimpleMap::GetRuntimeClass, "C++: mrpt::maps::CSimpleMap::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CSimpleMap::*)() const) &mrpt::maps::CSimpleMap::clone, "C++: mrpt::maps::CSimpleMap::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

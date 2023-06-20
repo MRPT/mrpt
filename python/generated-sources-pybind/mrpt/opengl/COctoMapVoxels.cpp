@@ -339,7 +339,6 @@ void bind_mrpt_opengl_COctoMapVoxels(std::function< pybind11::module &(std::stri
 			.export_values();
 
 		cl.def_static("Create", (class std::shared_ptr<class mrpt::opengl::COctoMapVoxels> (*)()) &mrpt::opengl::COctoMapVoxels::Create, "C++: mrpt::opengl::COctoMapVoxels::Create() --> class std::shared_ptr<class mrpt::opengl::COctoMapVoxels>");
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::opengl::COctoMapVoxels::getClassName, "C++: mrpt::opengl::COctoMapVoxels::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::COctoMapVoxels::GetRuntimeClassIdStatic, "C++: mrpt::opengl::COctoMapVoxels::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::COctoMapVoxels::*)() const) &mrpt::opengl::COctoMapVoxels::GetRuntimeClass, "C++: mrpt::opengl::COctoMapVoxels::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::COctoMapVoxels::*)() const) &mrpt::opengl::COctoMapVoxels::clone, "C++: mrpt::opengl::COctoMapVoxels::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

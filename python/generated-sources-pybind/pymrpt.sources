@@ -27,9 +27,6 @@ mrpt/io/CTextFileLinesParser.cpp
 mrpt/io/zip.cpp
 mrpt/core/aligned_allocator.cpp
 mrpt/typemeta/static_string.cpp
-mrpt/typemeta/static_string_1.cpp
-mrpt/typemeta/static_string_2.cpp
-mrpt/typemeta/static_string_3.cpp
 mrpt/rtti/CObject.cpp
 mrpt/rtti/CObject_1.cpp
 mrpt/rtti/CObject_2.cpp
@@ -57,7 +54,6 @@ mrpt/system/os.cpp
 mrpt/system/os_1.cpp
 mrpt/bayes/CParticleFilter.cpp
 mrpt/bayes/CParticleFilterCapable.cpp
-mrpt/containers/deepcopy_poly_ptr.cpp
 mrpt/system/datetime.cpp
 mrpt/obs/CAction.cpp
 mrpt/math/TPoseOrPoint.cpp
@@ -107,7 +103,6 @@ mrpt/bayes/CProbabilityParticle.cpp
 mrpt/bayes/CParticleFilterData.cpp
 mrpt/bayes/CParticleFilterData_1.cpp
 mrpt/poses/CPose3DPDFParticles.cpp
-mrpt/poses/CPosePDFParticles.cpp
 mrpt/img/color_maps.cpp
 mrpt/math/TBoundingBox.cpp
 mrpt/obs/T2DScanProperties.cpp
@@ -135,7 +130,7 @@ mrpt/img/TCamera.cpp
 mrpt/img/CImage.cpp
 mrpt/gui/CDisplayWindow.cpp
 mrpt/opengl/DefaultShaders.cpp
-mrpt/opengl/opengl_fonts.cpp
+mrpt/opengl/CRenderizable.cpp
 mrpt/opengl/CCamera.cpp
 mrpt/math/TSegment2D.cpp
 mrpt/math/TSegment3D.cpp
@@ -296,7 +291,6 @@ mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.cpp
 mrpt/nav/holonomic/CHolonomicFullEval.cpp
 mrpt/nav/holonomic/CHolonomicND.cpp
 mrpt/nav/holonomic/CHolonomicVFF.cpp
-mrpt/nav/planners/PlannerRRT_common.cpp
 mrpt/opengl/CGridPlaneXY.cpp
 mrpt/opengl/CPointCloud.cpp
 mrpt/opengl/stock_objects.cpp
@@ -314,16 +308,15 @@ mrpt/nav/tpspace/CPTG_DiffDrive_C.cpp
 mrpt/nav/tpspace/CPTG_DiffDrive_alpha.cpp
 mrpt/obs/CActionRobotMovement3D.cpp
 mrpt/obs/CObservationBatteryState.cpp
-mrpt/obs/CObservationComment.cpp
-mrpt/obs/CObservationStereoImagesFeatures.cpp
+mrpt/obs/CObservationOdometry.cpp
+mrpt/obs/CRawlog.cpp
 mrpt/obs/format_externals_filename.cpp
 mrpt/obs/stock_observations.cpp
 mrpt/opengl/CArrow.cpp
 mrpt/opengl/CAxis.cpp
-mrpt/opengl/CDisk.cpp
-mrpt/opengl/CEllipsoid3D.cpp
-mrpt/opengl/CMesh.cpp
-mrpt/opengl/CMeshFast.cpp
+mrpt/opengl/CGeneralizedEllipsoidTemplate.cpp
+mrpt/opengl/CGridPlaneXZ.cpp
+mrpt/opengl/CMesh3D.cpp
 mrpt/opengl/CSphere.cpp
 mrpt/opengl/CEllipsoidRangeBearing2D.cpp
 mrpt/opengl/CUBE_TEXTURE_FACE.cpp

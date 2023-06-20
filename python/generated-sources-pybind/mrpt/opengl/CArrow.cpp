@@ -795,7 +795,6 @@ void bind_mrpt_opengl_CArrow(std::function< pybind11::module &(std::string const
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CArrow const &o){ return new PyCallBack_mrpt_opengl_CArrow(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CArrow const &o){ return new mrpt::opengl::CArrow(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<20> (*)()) &mrpt::opengl::CArrow::getClassName, "C++: mrpt::opengl::CArrow::getClassName() --> class mrpt::typemeta::string_literal<20>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CArrow::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CArrow::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CArrow::*)() const) &mrpt::opengl::CArrow::GetRuntimeClass, "C++: mrpt::opengl::CArrow::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CArrow::*)() const) &mrpt::opengl::CArrow::clone, "C++: mrpt::opengl::CArrow::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -815,7 +814,6 @@ void bind_mrpt_opengl_CArrow(std::function< pybind11::module &(std::string const
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CSetOfTexturedTriangles(); }, [](){ return new PyCallBack_mrpt_opengl_CSetOfTexturedTriangles(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CSetOfTexturedTriangles const &o){ return new PyCallBack_mrpt_opengl_CSetOfTexturedTriangles(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CSetOfTexturedTriangles const &o){ return new mrpt::opengl::CSetOfTexturedTriangles(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<37> (*)()) &mrpt::opengl::CSetOfTexturedTriangles::getClassName, "C++: mrpt::opengl::CSetOfTexturedTriangles::getClassName() --> class mrpt::typemeta::string_literal<37>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CSetOfTexturedTriangles::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CSetOfTexturedTriangles::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CSetOfTexturedTriangles::*)() const) &mrpt::opengl::CSetOfTexturedTriangles::GetRuntimeClass, "C++: mrpt::opengl::CSetOfTexturedTriangles::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CSetOfTexturedTriangles::*)() const) &mrpt::opengl::CSetOfTexturedTriangles::clone, "C++: mrpt::opengl::CSetOfTexturedTriangles::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -835,7 +833,6 @@ void bind_mrpt_opengl_CArrow(std::function< pybind11::module &(std::string const
 		cl.def( pybind11::init( [](){ return new mrpt::opengl::CAssimpModel(); }, [](){ return new PyCallBack_mrpt_opengl_CAssimpModel(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CAssimpModel const &o){ return new PyCallBack_mrpt_opengl_CAssimpModel(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CAssimpModel const &o){ return new mrpt::opengl::CAssimpModel(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<26> (*)()) &mrpt::opengl::CAssimpModel::getClassName, "C++: mrpt::opengl::CAssimpModel::getClassName() --> class mrpt::typemeta::string_literal<26>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CAssimpModel::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CAssimpModel::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CAssimpModel::*)() const) &mrpt::opengl::CAssimpModel::GetRuntimeClass, "C++: mrpt::opengl::CAssimpModel::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CAssimpModel::*)() const) &mrpt::opengl::CAssimpModel::clone, "C++: mrpt::opengl::CAssimpModel::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

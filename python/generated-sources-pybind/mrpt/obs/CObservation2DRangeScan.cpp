@@ -255,7 +255,6 @@ void bind_mrpt_obs_CObservation2DRangeScan(std::function< pybind11::module &(std
 		cl.def_readwrite("stdError", &mrpt::obs::CObservation2DRangeScan::stdError);
 		cl.def_readwrite("beamAperture", &mrpt::obs::CObservation2DRangeScan::beamAperture);
 		cl.def_readwrite("deltaPitch", &mrpt::obs::CObservation2DRangeScan::deltaPitch);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<34> (*)()) &mrpt::obs::CObservation2DRangeScan::getClassName, "C++: mrpt::obs::CObservation2DRangeScan::getClassName() --> class mrpt::typemeta::string_literal<34>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservation2DRangeScan::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservation2DRangeScan::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservation2DRangeScan::*)() const) &mrpt::obs::CObservation2DRangeScan::GetRuntimeClass, "C++: mrpt::obs::CObservation2DRangeScan::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservation2DRangeScan::*)() const) &mrpt::obs::CObservation2DRangeScan::clone, "C++: mrpt::obs::CObservation2DRangeScan::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

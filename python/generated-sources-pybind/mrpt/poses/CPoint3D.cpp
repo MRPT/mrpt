@@ -274,7 +274,6 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPoint3D const &o){ return new PyCallBack_mrpt_poses_CPoint3D(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPoint3D const &o){ return new mrpt::poses::CPoint3D(o); } ) );
 		cl.def_readwrite("m_coords", &mrpt::poses::CPoint3D::m_coords);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<21> (*)()) &mrpt::poses::CPoint3D::getClassName, "C++: mrpt::poses::CPoint3D::getClassName() --> class mrpt::typemeta::string_literal<21>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPoint3D::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPoint3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPoint3D::*)() const) &mrpt::poses::CPoint3D::GetRuntimeClass, "C++: mrpt::poses::CPoint3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPoint3D::*)() const) &mrpt::poses::CPoint3D::clone, "C++: mrpt::poses::CPoint3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -315,7 +314,6 @@ void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string cons
 		cl.def( pybind11::init( [](mrpt::poses::CPose3DQuat const &o){ return new mrpt::poses::CPose3DQuat(o); } ) );
 		cl.def_readwrite("m_coords", &mrpt::poses::CPose3DQuat::m_coords);
 		cl.def_readwrite("m_quat", &mrpt::poses::CPose3DQuat::m_quat);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<24> (*)()) &mrpt::poses::CPose3DQuat::getClassName, "C++: mrpt::poses::CPose3DQuat::getClassName() --> class mrpt::typemeta::string_literal<24>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPose3DQuat::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPose3DQuat::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPose3DQuat::*)() const) &mrpt::poses::CPose3DQuat::GetRuntimeClass, "C++: mrpt::poses::CPose3DQuat::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPose3DQuat::*)() const) &mrpt::poses::CPose3DQuat::clone, "C++: mrpt::poses::CPose3DQuat::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

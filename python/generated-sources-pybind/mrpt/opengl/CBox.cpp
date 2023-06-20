@@ -312,7 +312,6 @@ void bind_mrpt_opengl_CBox(std::function< pybind11::module &(std::string const &
 		cl.def( pybind11::init( [](PyCallBack_mrpt_opengl_CBox const &o){ return new PyCallBack_mrpt_opengl_CBox(o); } ) );
 		cl.def( pybind11::init( [](mrpt::opengl::CBox const &o){ return new mrpt::opengl::CBox(o); } ) );
 		cl.def_static("Create", (class std::shared_ptr<class mrpt::opengl::CBox> (*)()) &mrpt::opengl::CBox::Create, "C++: mrpt::opengl::CBox::Create() --> class std::shared_ptr<class mrpt::opengl::CBox>");
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<18> (*)()) &mrpt::opengl::CBox::getClassName, "C++: mrpt::opengl::CBox::getClassName() --> class mrpt::typemeta::string_literal<18>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::opengl::CBox::GetRuntimeClassIdStatic, "C++: mrpt::opengl::CBox::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::opengl::CBox::*)() const) &mrpt::opengl::CBox::GetRuntimeClass, "C++: mrpt::opengl::CBox::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::opengl::CBox::*)() const) &mrpt::opengl::CBox::clone, "C++: mrpt::opengl::CBox::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

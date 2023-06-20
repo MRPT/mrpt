@@ -443,7 +443,6 @@ void bind_mrpt_maps_COccupancyGridMap3D(std::function< pybind11::module &(std::s
 		cl.def_readwrite("insertionOptions", &mrpt::maps::COccupancyGridMap3D::insertionOptions);
 		cl.def_readwrite("likelihoodOptions", &mrpt::maps::COccupancyGridMap3D::likelihoodOptions);
 		cl.def_readwrite("renderingOptions", &mrpt::maps::COccupancyGridMap3D::renderingOptions);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<31> (*)()) &mrpt::maps::COccupancyGridMap3D::getClassName, "C++: mrpt::maps::COccupancyGridMap3D::getClassName() --> class mrpt::typemeta::string_literal<31>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::COccupancyGridMap3D::GetRuntimeClassIdStatic, "C++: mrpt::maps::COccupancyGridMap3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::GetRuntimeClass, "C++: mrpt::maps::COccupancyGridMap3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::COccupancyGridMap3D::*)() const) &mrpt::maps::COccupancyGridMap3D::clone, "C++: mrpt::maps::COccupancyGridMap3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

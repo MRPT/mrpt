@@ -128,7 +128,6 @@ void bind_mrpt_img_TCamera(std::function< pybind11::module &(std::string const &
 		cl.def_readwrite("dist", &mrpt::img::TCamera::dist);
 		cl.def_readwrite("focalLengthMeters", &mrpt::img::TCamera::focalLengthMeters);
 		cl.def_readwrite("cameraName", &mrpt::img::TCamera::cameraName);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<18> (*)()) &mrpt::img::TCamera::getClassName, "C++: mrpt::img::TCamera::getClassName() --> class mrpt::typemeta::string_literal<18>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::img::TCamera::GetRuntimeClassIdStatic, "C++: mrpt::img::TCamera::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::img::TCamera::*)() const) &mrpt::img::TCamera::GetRuntimeClass, "C++: mrpt::img::TCamera::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::img::TCamera::*)() const) &mrpt::img::TCamera::clone, "C++: mrpt::img::TCamera::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

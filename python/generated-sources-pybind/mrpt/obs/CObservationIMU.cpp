@@ -286,7 +286,6 @@ void bind_mrpt_obs_CObservationIMU(std::function< pybind11::module &(std::string
 		cl.def_readwrite("sensorPose", &mrpt::obs::CObservationIMU::sensorPose);
 		cl.def_readwrite("dataIsPresent", &mrpt::obs::CObservationIMU::dataIsPresent);
 		cl.def_readwrite("rawMeasurements", &mrpt::obs::CObservationIMU::rawMeasurements);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<26> (*)()) &mrpt::obs::CObservationIMU::getClassName, "C++: mrpt::obs::CObservationIMU::getClassName() --> class mrpt::typemeta::string_literal<26>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CObservationIMU::GetRuntimeClassIdStatic, "C++: mrpt::obs::CObservationIMU::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CObservationIMU::*)() const) &mrpt::obs::CObservationIMU::GetRuntimeClass, "C++: mrpt::obs::CObservationIMU::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CObservationIMU::*)() const) &mrpt::obs::CObservationIMU::clone, "C++: mrpt::obs::CObservationIMU::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

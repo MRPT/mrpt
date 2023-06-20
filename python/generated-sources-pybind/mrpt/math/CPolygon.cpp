@@ -103,7 +103,6 @@ void bind_mrpt_math_CPolygon(std::function< pybind11::module &(std::string const
 		cl.def( pybind11::init( [](){ return new mrpt::math::CPolygon(); }, [](){ return new PyCallBack_mrpt_math_CPolygon(); } ) );
 		cl.def( pybind11::init( [](PyCallBack_mrpt_math_CPolygon const &o){ return new PyCallBack_mrpt_math_CPolygon(o); } ) );
 		cl.def( pybind11::init( [](mrpt::math::CPolygon const &o){ return new mrpt::math::CPolygon(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<20> (*)()) &mrpt::math::CPolygon::getClassName, "C++: mrpt::math::CPolygon::getClassName() --> class mrpt::typemeta::string_literal<20>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::math::CPolygon::GetRuntimeClassIdStatic, "C++: mrpt::math::CPolygon::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::math::CPolygon::*)() const) &mrpt::math::CPolygon::GetRuntimeClass, "C++: mrpt::math::CPolygon::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::math::CPolygon::*)() const) &mrpt::math::CPolygon::clone, "C++: mrpt::math::CPolygon::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

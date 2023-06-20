@@ -645,7 +645,6 @@ void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string
 
 		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPose3DPDFSOG const &o){ return new PyCallBack_mrpt_poses_CPose3DPDFSOG(o); } ) );
 		cl.def( pybind11::init( [](mrpt::poses::CPose3DPDFSOG const &o){ return new mrpt::poses::CPose3DPDFSOG(o); } ) );
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<26> (*)()) &mrpt::poses::CPose3DPDFSOG::getClassName, "C++: mrpt::poses::CPose3DPDFSOG::getClassName() --> class mrpt::typemeta::string_literal<26>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPose3DPDFSOG::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPose3DPDFSOG::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPose3DPDFSOG::*)() const) &mrpt::poses::CPose3DPDFSOG::GetRuntimeClass, "C++: mrpt::poses::CPose3DPDFSOG::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPose3DPDFSOG::*)() const) &mrpt::poses::CPose3DPDFSOG::clone, "C++: mrpt::poses::CPose3DPDFSOG::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
@@ -707,7 +706,6 @@ void bind_mrpt_poses_CPose3DPDFSOG(std::function< pybind11::module &(std::string
 		cl.def( pybind11::init( [](mrpt::poses::CPose3DQuatPDFGaussian const &o){ return new mrpt::poses::CPose3DQuatPDFGaussian(o); } ) );
 		cl.def_readwrite("mean", &mrpt::poses::CPose3DQuatPDFGaussian::mean);
 		cl.def_readwrite("cov", &mrpt::poses::CPose3DQuatPDFGaussian::cov);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<35> (*)()) &mrpt::poses::CPose3DQuatPDFGaussian::getClassName, "C++: mrpt::poses::CPose3DQuatPDFGaussian::getClassName() --> class mrpt::typemeta::string_literal<35>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPose3DQuatPDFGaussian::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPose3DQuatPDFGaussian::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPose3DQuatPDFGaussian::*)() const) &mrpt::poses::CPose3DQuatPDFGaussian::GetRuntimeClass, "C++: mrpt::poses::CPose3DQuatPDFGaussian::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPose3DQuatPDFGaussian::*)() const) &mrpt::poses::CPose3DQuatPDFGaussian::clone, "C++: mrpt::poses::CPose3DQuatPDFGaussian::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

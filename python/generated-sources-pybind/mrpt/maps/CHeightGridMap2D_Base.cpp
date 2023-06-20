@@ -671,7 +671,6 @@ void bind_mrpt_maps_CHeightGridMap2D_Base(std::function< pybind11::module &(std:
 
 		cl.def_readwrite("insertionOptions", &mrpt::maps::CHeightGridMap2D::insertionOptions);
 		cl.def_readwrite("m_mapType", &mrpt::maps::CHeightGridMap2D::m_mapType);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::maps::CHeightGridMap2D::getClassName, "C++: mrpt::maps::CHeightGridMap2D::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::maps::CHeightGridMap2D::GetRuntimeClassIdStatic, "C++: mrpt::maps::CHeightGridMap2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::maps::CHeightGridMap2D::*)() const) &mrpt::maps::CHeightGridMap2D::GetRuntimeClass, "C++: mrpt::maps::CHeightGridMap2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::maps::CHeightGridMap2D::*)() const) &mrpt::maps::CHeightGridMap2D::clone, "C++: mrpt::maps::CHeightGridMap2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

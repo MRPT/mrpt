@@ -134,7 +134,6 @@ void bind_mrpt_obs_CActionRobotMovement2D(std::function< pybind11::module &(std:
 		cl.def_readwrite("hasVelocities", &mrpt::obs::CActionRobotMovement2D::hasVelocities);
 		cl.def_readwrite("velocityLocal", &mrpt::obs::CActionRobotMovement2D::velocityLocal);
 		cl.def_readwrite("motionModelConfiguration", &mrpt::obs::CActionRobotMovement2D::motionModelConfiguration);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<33> (*)()) &mrpt::obs::CActionRobotMovement2D::getClassName, "C++: mrpt::obs::CActionRobotMovement2D::getClassName() --> class mrpt::typemeta::string_literal<33>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::obs::CActionRobotMovement2D::GetRuntimeClassIdStatic, "C++: mrpt::obs::CActionRobotMovement2D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::obs::CActionRobotMovement2D::*)() const) &mrpt::obs::CActionRobotMovement2D::GetRuntimeClass, "C++: mrpt::obs::CActionRobotMovement2D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::obs::CActionRobotMovement2D::*)() const) &mrpt::obs::CActionRobotMovement2D::clone, "C++: mrpt::obs::CActionRobotMovement2D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);

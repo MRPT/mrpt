@@ -126,7 +126,6 @@ void bind_mrpt_nav_holonomic_CHolonomicND(std::function< pybind11::module &(std:
 		cl.def_readwrite("evaluation", &mrpt::nav::CLogFileRecord_ND::evaluation);
 		cl.def_readwrite("riskEvaluation", &mrpt::nav::CLogFileRecord_ND::riskEvaluation);
 		cl.def_readwrite("situation", &mrpt::nav::CLogFileRecord_ND::situation);
-		cl.def_static("getClassName", (class mrpt::typemeta::string_literal<28> (*)()) &mrpt::nav::CLogFileRecord_ND::getClassName, "C++: mrpt::nav::CLogFileRecord_ND::getClassName() --> class mrpt::typemeta::string_literal<28>");
 		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::nav::CLogFileRecord_ND::GetRuntimeClassIdStatic, "C++: mrpt::nav::CLogFileRecord_ND::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
 		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::nav::CLogFileRecord_ND::*)() const) &mrpt::nav::CLogFileRecord_ND::GetRuntimeClass, "C++: mrpt::nav::CLogFileRecord_ND::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
 		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::nav::CLogFileRecord_ND::*)() const) &mrpt::nav::CLogFileRecord_ND::clone, "C++: mrpt::nav::CLogFileRecord_ND::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
