@@ -1,0 +1,6 @@
+#include "src/mrpt/serialization/CArchive_1.cpp"
+#include "src/mrpt/serialization/CArchive_2.cpp"
+#include "src/mrpt/serialization/CArchive_3.cpp"
+#include "src/mrpt/serialization/CArchive.cpp"
+#include "src/mrpt/serialization/CMessage.cpp"
+#include "src/mrpt/serialization/CSerializable.cpp"

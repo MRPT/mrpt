@@ -69,11 +69,9 @@ void bind_mrpt_obs_CAction(std::function< pybind11::module &(std::string const &
 void bind_mrpt_math_TPoseOrPoint(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_TPoint3D(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_homog_matrices(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_poses_CPoseOrPoint_detail(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_poses_CPoseOrPoint(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_poses_CPoseOrPoint_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_poses_CPoseOrPoint_detail_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_poses_CPose(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_poses_CPoseOrPoint_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_poses_CPose2D(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CProbabilityDensityFunction(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CProbabilityDensityFunction_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -175,7 +173,7 @@ void bind_mrpt_obs_CObservationIMU(std::function< pybind11::module &(std::string
 void bind_mrpt_math_TPose3DQuat(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_img_TStereoCamera(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_poses_CPoint(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string const &namespace_) > &M);
+void bind_mrpt_poses_CPose3DQuat(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_obs_CObservationStereoImages(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_vision_CStereoRectifyMap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_hwdrivers_CDUO3DCamera(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -263,7 +261,6 @@ void bind_mrpt_math_TObject3D(std::function< pybind11::module &(std::string cons
 void bind_mrpt_maps_CHeightGridMap2D_Base(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CHeightGridMap2D(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CHeightGridMap2D_MRF(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_maps_logoddscell_traits(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CLogOddsGridMapLUT(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_containers_CDynamicGrid3D(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_maps_CLogOddsGridMap3D(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -411,7 +408,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 		{"mrpt::io", "zip"},
 		{"mrpt", "kinematics"},
 		{"mrpt", "maps"},
-		{"mrpt::maps", "detail"},
 		{"mrpt", "math"},
 		{"mrpt", "nav"},
 		{"mrpt", "obs"},
@@ -424,7 +420,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 		{"mrpt::opengl", "stock_objects"},
 		{"mrpt", "poses"},
 		{"mrpt::poses", "Lie"},
-		{"mrpt::poses", "detail"},
 		{"mrpt", "pymrpt_internal"},
 		{"mrpt", "random"},
 		{"mrpt", "rtti"},
@@ -506,11 +501,9 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_math_TPoseOrPoint(M);
 	bind_mrpt_math_TPoint3D(M);
 	bind_mrpt_math_homog_matrices(M);
-	bind_mrpt_poses_CPoseOrPoint_detail(M);
 	bind_mrpt_poses_CPoseOrPoint(M);
 	bind_mrpt_poses_CPoseOrPoint_1(M);
-	bind_mrpt_poses_CPoseOrPoint_detail_1(M);
-	bind_mrpt_poses_CPose(M);
+	bind_mrpt_poses_CPoseOrPoint_2(M);
 	bind_mrpt_poses_CPose2D(M);
 	bind_mrpt_math_CProbabilityDensityFunction(M);
 	bind_mrpt_math_CProbabilityDensityFunction_1(M);
@@ -612,7 +605,7 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_math_TPose3DQuat(M);
 	bind_mrpt_img_TStereoCamera(M);
 	bind_mrpt_poses_CPoint(M);
-	bind_mrpt_poses_CPoint3D(M);
+	bind_mrpt_poses_CPose3DQuat(M);
 	bind_mrpt_obs_CObservationStereoImages(M);
 	bind_mrpt_vision_CStereoRectifyMap(M);
 	bind_mrpt_hwdrivers_CDUO3DCamera(M);
@@ -700,7 +693,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_maps_CHeightGridMap2D_Base(M);
 	bind_mrpt_maps_CHeightGridMap2D(M);
 	bind_mrpt_maps_CHeightGridMap2D_MRF(M);
-	bind_mrpt_maps_logoddscell_traits(M);
 	bind_mrpt_maps_CLogOddsGridMapLUT(M);
 	bind_mrpt_containers_CDynamicGrid3D(M);
 	bind_mrpt_maps_CLogOddsGridMap3D(M);

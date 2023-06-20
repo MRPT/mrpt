@@ -12,7 +12,6 @@
 #include <mrpt/math/TPose3DQuat.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/matrix_size_t.h>
-#include <mrpt/poses/CPoint.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
@@ -44,103 +43,6 @@
 	PYBIND11_DECLARE_HOLDER_TYPE(T, T*)
 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
 #endif
-
-// mrpt::poses::CPoint3D file:mrpt/poses/CPoint3D.h line:31
-struct PyCallBack_mrpt_poses_CPoint3D : public mrpt::poses::CPoint3D {
-	using mrpt::poses::CPoint3D::CPoint3D;
-
-	const struct mrpt::rtti::TRuntimeClassId * GetRuntimeClass() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint3D *>(this), "GetRuntimeClass");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<const struct mrpt::rtti::TRuntimeClassId *>::value) {
-				static pybind11::detail::override_caster_t<const struct mrpt::rtti::TRuntimeClassId *> caster;
-				return pybind11::detail::cast_ref<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<const struct mrpt::rtti::TRuntimeClassId *>(std::move(o));
-		}
-		return CPoint3D::GetRuntimeClass();
-	}
-	class mrpt::rtti::CObject * clone() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint3D *>(this), "clone");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<class mrpt::rtti::CObject *>::value) {
-				static pybind11::detail::override_caster_t<class mrpt::rtti::CObject *> caster;
-				return pybind11::detail::cast_ref<class mrpt::rtti::CObject *>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<class mrpt::rtti::CObject *>(std::move(o));
-		}
-		return CPoint3D::clone();
-	}
-	uint8_t serializeGetVersion() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint3D *>(this), "serializeGetVersion");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<uint8_t>::value) {
-				static pybind11::detail::override_caster_t<uint8_t> caster;
-				return pybind11::detail::cast_ref<uint8_t>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<uint8_t>(std::move(o));
-		}
-		return CPoint3D::serializeGetVersion();
-	}
-	void serializeTo(class mrpt::serialization::CArchive & a0) const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint3D *>(this), "serializeTo");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPoint3D::serializeTo(a0);
-	}
-	void serializeFrom(class mrpt::serialization::CArchive & a0, uint8_t a1) override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint3D *>(this), "serializeFrom");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>(a0, a1);
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPoint3D::serializeFrom(a0, a1);
-	}
-	void setToNaN() override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint3D *>(this), "setToNaN");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-				static pybind11::detail::override_caster_t<void> caster;
-				return pybind11::detail::cast_ref<void>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<void>(std::move(o));
-		}
-		return CPoint3D::setToNaN();
-	}
-	std::string asString() const override {
-		pybind11::gil_scoped_acquire gil;
-		pybind11::function overload = pybind11::get_overload(static_cast<const mrpt::poses::CPoint3D *>(this), "asString");
-		if (overload) {
-			auto o = overload.operator()<pybind11::return_value_policy::reference>();
-			if (pybind11::detail::cast_is_temporary_value_reference<std::string>::value) {
-				static pybind11::detail::override_caster_t<std::string> caster;
-				return pybind11::detail::cast_ref<std::string>(std::move(o), caster);
-			}
-			else return pybind11::detail::cast_safe<std::string>(std::move(o));
-		}
-		return CPoint::asString();
-	}
-};
 
 // mrpt::poses::CPose3DQuat file:mrpt/poses/CPose3DQuat.h line:46
 struct PyCallBack_mrpt_poses_CPose3DQuat : public mrpt::poses::CPose3DQuat {
@@ -252,49 +154,8 @@ struct PyCallBack_mrpt_poses_CPose3DQuat : public mrpt::poses::CPose3DQuat {
 	}
 };
 
-void bind_mrpt_poses_CPoint3D(std::function< pybind11::module &(std::string const &namespace_) > &M)
+void bind_mrpt_poses_CPose3DQuat(std::function< pybind11::module &(std::string const &namespace_) > &M)
 {
-	{ // mrpt::poses::CPoint3D file:mrpt/poses/CPoint3D.h line:31
-		pybind11::class_<mrpt::poses::CPoint3D, std::shared_ptr<mrpt::poses::CPoint3D>, PyCallBack_mrpt_poses_CPoint3D, mrpt::poses::CPoint<mrpt::poses::CPoint3D,3UL>, mrpt::serialization::CSerializable> cl(M("mrpt::poses"), "CPoint3D", "A class used to store a 3D point.\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the 2D/3D Geometry\n tutorial in the wiki.\n\n  \n   \n  \n\n \n\n \n CPoseOrPoint,CPose, CPoint");
-		cl.def( pybind11::init( [](){ return new mrpt::poses::CPoint3D(); }, [](){ return new PyCallBack_mrpt_poses_CPoint3D(); } ), "doc");
-		cl.def( pybind11::init( [](const double & a0){ return new mrpt::poses::CPoint3D(a0); }, [](const double & a0){ return new PyCallBack_mrpt_poses_CPoint3D(a0); } ), "doc");
-		cl.def( pybind11::init( [](const double & a0, const double & a1){ return new mrpt::poses::CPoint3D(a0, a1); }, [](const double & a0, const double & a1){ return new PyCallBack_mrpt_poses_CPoint3D(a0, a1); } ), "doc");
-		cl.def( pybind11::init<const double, const double, const double>(), pybind11::arg("x"), pybind11::arg("y"), pybind11::arg("z") );
-
-		cl.def( pybind11::init<const class mrpt::math::CMatrixFixed<double, 3, 1> &>(), pybind11::arg("xyz") );
-
-		cl.def( pybind11::init<const class mrpt::poses::CPoint2D &>(), pybind11::arg("p") );
-
-		cl.def( pybind11::init<const class mrpt::poses::CPose3D &>(), pybind11::arg("p") );
-
-		cl.def( pybind11::init<const class mrpt::poses::CPose2D &>(), pybind11::arg("p") );
-
-		cl.def( pybind11::init<const struct mrpt::math::TPoint3D_<double> &>(), pybind11::arg("p") );
-
-		cl.def( pybind11::init( [](PyCallBack_mrpt_poses_CPoint3D const &o){ return new PyCallBack_mrpt_poses_CPoint3D(o); } ) );
-		cl.def( pybind11::init( [](mrpt::poses::CPoint3D const &o){ return new mrpt::poses::CPoint3D(o); } ) );
-		cl.def_readwrite("m_coords", &mrpt::poses::CPoint3D::m_coords);
-		cl.def_static("GetRuntimeClassIdStatic", (const struct mrpt::rtti::TRuntimeClassId & (*)()) &mrpt::poses::CPoint3D::GetRuntimeClassIdStatic, "C++: mrpt::poses::CPoint3D::GetRuntimeClassIdStatic() --> const struct mrpt::rtti::TRuntimeClassId &", pybind11::return_value_policy::automatic);
-		cl.def("GetRuntimeClass", (const struct mrpt::rtti::TRuntimeClassId * (mrpt::poses::CPoint3D::*)() const) &mrpt::poses::CPoint3D::GetRuntimeClass, "C++: mrpt::poses::CPoint3D::GetRuntimeClass() const --> const struct mrpt::rtti::TRuntimeClassId *", pybind11::return_value_policy::automatic);
-		cl.def("clone", (class mrpt::rtti::CObject * (mrpt::poses::CPoint3D::*)() const) &mrpt::poses::CPoint3D::clone, "C++: mrpt::poses::CPoint3D::clone() const --> class mrpt::rtti::CObject *", pybind11::return_value_policy::automatic);
-		cl.def_static("CreateObject", (class std::shared_ptr<class mrpt::rtti::CObject> (*)()) &mrpt::poses::CPoint3D::CreateObject, "C++: mrpt::poses::CPoint3D::CreateObject() --> class std::shared_ptr<class mrpt::rtti::CObject>");
-		cl.def("asTPoint", (struct mrpt::math::TPoint3D_<double> (mrpt::poses::CPoint3D::*)() const) &mrpt::poses::CPoint3D::asTPoint, "C++: mrpt::poses::CPoint3D::asTPoint() const --> struct mrpt::math::TPoint3D_<double>");
-		cl.def("__sub__", (class mrpt::poses::CPoint3D (mrpt::poses::CPoint3D::*)(const class mrpt::poses::CPose3D &) const) &mrpt::poses::CPoint3D::operator-, "Returns this point as seen from \"b\", i.e. result = this - b \n\nC++: mrpt::poses::CPoint3D::operator-(const class mrpt::poses::CPose3D &) const --> class mrpt::poses::CPoint3D", pybind11::arg("b"));
-		cl.def("__sub__", (class mrpt::poses::CPoint3D (mrpt::poses::CPoint3D::*)(const class mrpt::poses::CPoint3D &) const) &mrpt::poses::CPoint3D::operator-, "Returns this point minus point \"b\", i.e. result = this - b \n\nC++: mrpt::poses::CPoint3D::operator-(const class mrpt::poses::CPoint3D &) const --> class mrpt::poses::CPoint3D", pybind11::arg("b"));
-		cl.def("__add__", (class mrpt::poses::CPoint3D (mrpt::poses::CPoint3D::*)(const class mrpt::poses::CPoint3D &) const) &mrpt::poses::CPoint3D::operator+, "Returns this point plus point \"b\", i.e. result = this + b \n\nC++: mrpt::poses::CPoint3D::operator+(const class mrpt::poses::CPoint3D &) const --> class mrpt::poses::CPoint3D", pybind11::arg("b"));
-		cl.def("__add__", (class mrpt::poses::CPose3D (mrpt::poses::CPoint3D::*)(const class mrpt::poses::CPose3D &) const) &mrpt::poses::CPoint3D::operator+, "Returns this point plus pose \"b\", i.e. result = this + b  \n\nC++: mrpt::poses::CPoint3D::operator+(const class mrpt::poses::CPose3D &) const --> class mrpt::poses::CPose3D", pybind11::arg("b"));
-		cl.def("asVector", (void (mrpt::poses::CPoint3D::*)(class mrpt::math::CMatrixFixed<double, 3, 1> &) const) &mrpt::poses::CPoint3D::asVector, "Return the pose or point as a 3x1 vector [x y z]' \n\nC++: mrpt::poses::CPoint3D::asVector(class mrpt::math::CMatrixFixed<double, 3, 1> &) const --> void", pybind11::arg("v"));
-		cl.def_static("is_3D", (bool (*)()) &mrpt::poses::CPoint3D::is_3D, "C++: mrpt::poses::CPoint3D::is_3D() --> bool");
-		cl.def_static("is_PDF", (bool (*)()) &mrpt::poses::CPoint3D::is_PDF, "C++: mrpt::poses::CPoint3D::is_PDF() --> bool");
-		cl.def_static("size", (unsigned long (*)()) &mrpt::poses::CPoint3D::size, "C++: mrpt::poses::CPoint3D::size() --> unsigned long");
-		cl.def_static("empty", (bool (*)()) &mrpt::poses::CPoint3D::empty, "C++: mrpt::poses::CPoint3D::empty() --> bool");
-		cl.def_static("max_size", (unsigned long (*)()) &mrpt::poses::CPoint3D::max_size, "C++: mrpt::poses::CPoint3D::max_size() --> unsigned long");
-		cl.def_static("resize", (void (*)(const unsigned long)) &mrpt::poses::CPoint3D::resize, "C++: mrpt::poses::CPoint3D::resize(const unsigned long) --> void", pybind11::arg("n"));
-		cl.def("setToNaN", (void (mrpt::poses::CPoint3D::*)()) &mrpt::poses::CPoint3D::setToNaN, "@} \n\nC++: mrpt::poses::CPoint3D::setToNaN() --> void");
-		cl.def("assign", (class mrpt::poses::CPoint3D & (mrpt::poses::CPoint3D::*)(const class mrpt::poses::CPoint3D &)) &mrpt::poses::CPoint3D::operator=, "C++: mrpt::poses::CPoint3D::operator=(const class mrpt::poses::CPoint3D &) --> class mrpt::poses::CPoint3D &", pybind11::return_value_policy::automatic, pybind11::arg(""));
-
-		cl.def("__str__", [](mrpt::poses::CPoint3D const &o) -> std::string { std::ostringstream s; using namespace mrpt::poses; s << o; return s.str(); } );
-	}
 	{ // mrpt::poses::CPose3DQuat file:mrpt/poses/CPose3DQuat.h line:46
 		pybind11::class_<mrpt::poses::CPose3DQuat, std::shared_ptr<mrpt::poses::CPose3DQuat>, PyCallBack_mrpt_poses_CPose3DQuat, mrpt::poses::CPose<mrpt::poses::CPose3DQuat,7UL>, mrpt::serialization::CSerializable, mrpt::Stringifyable> cl(M("mrpt::poses"), "CPose3DQuat", "A class used to store a 3D pose as a translation (x,y,z) and a quaternion\n (qr,qx,qy,qz).\n\n  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,\n or refer\n    to the  2D/3D Geometry\n tutorial in the wiki.\n\n  To access the translation use x(), y() and z(). To access the rotation, use\n CPose3DQuat::quat().\n\n  This class also behaves like a STL container, since it has begin(), end(),\n iterators, and can be accessed with the [] operator\n   with indices running from 0 to 6 to access the  [x y z qr qx qy qz] as if\n they were a vector. Thus, a CPose3DQuat can be used\n   as a 7-vector anywhere the MRPT math functions expect any kind of vector.\n\n  This class and CPose3D are very similar, and they can be converted to the\n each other automatically via transformation constructors.\n\n \n CPose3D (for a class based on a 4x4 matrix instead of a quaternion),\n mrpt::math::TPose3DQuat, mrpt::poses::CPose3DQuatPDF for a probabilistic\n version of this class,  mrpt::math::CQuaternion, CPoseOrPoint\n \n\n\n ");
 		cl.def( pybind11::init( [](){ return new mrpt::poses::CPose3DQuat(); }, [](){ return new PyCallBack_mrpt_poses_CPose3DQuat(); } ) );
