@@ -67,10 +67,10 @@ file(WRITE ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/__init__.py
   "from . import *")
 
 # copy ROS stuff
-file(COPY_FILE
+file(COPY
   ${CMAKE_CURRENT_LIST_DIR}/ros_bridge.py
-  ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/ros_bridge.py
-  ONLY_IF_DIFFERENT)
+  DESTINATION ${MRPT_PYTHON_BUILD_DIRECTORY}/mrpt/
+)
 
 # Generate setup.py
 configure_file(${MRPT_SOURCE_DIR}/parse-files/setup.py.in
