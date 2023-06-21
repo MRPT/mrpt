@@ -32,7 +32,7 @@ void bind_mrpt_math_TTwist2D(std::function< pybind11::module &(std::string const
 		cl.def_readwrite("vx", &mrpt::math::TTwist2D::vx);
 		cl.def_readwrite("vy", &mrpt::math::TTwist2D::vy);
 		cl.def_readwrite("omega", &mrpt::math::TTwist2D::omega);
-		cl.def("__getitem__", (double & (mrpt::math::TTwist2D::*)(size_t)) &mrpt::math::TTwist2D::operator[], "Coordinate access using operator[]. Order: vx,vy,vphi \n\nC++: mrpt::math::TTwist2D::operator[](size_t) --> double &", pybind11::return_value_policy::automatic, pybind11::arg("i"));
+		cl.def("__getitem__", (double & (mrpt::math::TTwist2D::*)(size_t)) &mrpt::math::TTwist2D::operator[], "Coordinate access using operator[]. Order: vx,vy,vphi \n\nC++: mrpt::math::TTwist2D::operator[](size_t) --> double &", pybind11::return_value_policy::reference, pybind11::arg("i"));
 		cl.def("rotate", (void (mrpt::math::TTwist2D::*)(const double)) &mrpt::math::TTwist2D::rotate, "Transform the (vx,vy) components for a counterclockwise rotation of\n `ang` radians. \n\nC++: mrpt::math::TTwist2D::rotate(const double) --> void", pybind11::arg("ang"));
 		cl.def("rotated", (struct mrpt::math::TTwist2D (mrpt::math::TTwist2D::*)(const double) const) &mrpt::math::TTwist2D::rotated, "Like rotate(), but returning a copy of the rotated twist.\n  \n\n New in MRPT 2.3.2 \n\nC++: mrpt::math::TTwist2D::rotated(const double) const --> struct mrpt::math::TTwist2D", pybind11::arg("ang"));
 		cl.def("__eq__", (bool (mrpt::math::TTwist2D::*)(const struct mrpt::math::TTwist2D &) const) &mrpt::math::TTwist2D::operator==, "C++: mrpt::math::TTwist2D::operator==(const struct mrpt::math::TTwist2D &) const --> bool", pybind11::arg("o"));
