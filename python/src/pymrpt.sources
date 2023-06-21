@@ -173,13 +173,6 @@ mrpt/math/CMatrixFixed_1.cpp
 mrpt/math/CMatrixFixed_2.cpp
 mrpt/math/CMatrixFixed_3.cpp
 mrpt/math/CMatrixFixed_4.cpp
-mrpt/math/MatrixVectorBase.cpp
-mrpt/math/MatrixVectorBase_1.cpp
-mrpt/math/MatrixVectorBase_2.cpp
-mrpt/math/MatrixVectorBase_3.cpp
-mrpt/math/MatrixVectorBase_4.cpp
-mrpt/math/MatrixVectorBase_5.cpp
-mrpt/math/MatrixVectorBase_6.cpp
 mrpt/math/math_frwds.cpp
 mrpt/bayes/CProbabilityParticle_1.cpp
 mrpt/math/CMatrixF.cpp

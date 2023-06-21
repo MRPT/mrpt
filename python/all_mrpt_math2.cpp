@@ -10,6 +10,3 @@
 #include "src/mrpt/math/geometry.cpp"
 #include "src/mrpt/math/homog_matrices.cpp"
 #include "src/mrpt/math/math_frwds.cpp"
-#include "src/mrpt/math/MatrixVectorBase_1.cpp"
-#include "src/mrpt/math/MatrixVectorBase_2.cpp"
-#include "src/mrpt/math/MatrixVectorBase_3.cpp"

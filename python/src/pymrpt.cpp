@@ -183,13 +183,6 @@ void bind_mrpt_math_CMatrixFixed_1(std::function< pybind11::module &(std::string
 void bind_mrpt_math_CMatrixFixed_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixFixed_3(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixFixed_4(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_MatrixVectorBase(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_MatrixVectorBase_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_MatrixVectorBase_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_MatrixVectorBase_3(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_MatrixVectorBase_4(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_MatrixVectorBase_5(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_mrpt_math_MatrixVectorBase_6(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_math_frwds(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_bayes_CProbabilityParticle_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_math_CMatrixF(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -615,13 +608,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_math_CMatrixFixed_2(M);
 	bind_mrpt_math_CMatrixFixed_3(M);
 	bind_mrpt_math_CMatrixFixed_4(M);
-	bind_mrpt_math_MatrixVectorBase(M);
-	bind_mrpt_math_MatrixVectorBase_1(M);
-	bind_mrpt_math_MatrixVectorBase_2(M);
-	bind_mrpt_math_MatrixVectorBase_3(M);
-	bind_mrpt_math_MatrixVectorBase_4(M);
-	bind_mrpt_math_MatrixVectorBase_5(M);
-	bind_mrpt_math_MatrixVectorBase_6(M);
 	bind_mrpt_math_math_frwds(M);
 	bind_mrpt_bayes_CProbabilityParticle_1(M);
 	bind_mrpt_math_CMatrixF(M);
