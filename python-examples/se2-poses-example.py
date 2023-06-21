@@ -6,11 +6,10 @@
 # ---------------------------------------------------------------------
 
 from math import radians
-from mrpt import pymrpt
-mrpt = pymrpt.mrpt
+from mrpt.pymrpt.mrpt.poses import CPose2D
 
-p1 = mrpt.poses.CPose2D(1.0, 2.0, radians(90.0))
-p2 = mrpt.poses.CPose2D(3.0, 0.0, radians(0.0))
+p1 = CPose2D(1.0, 2.0, radians(90.0))
+p2 = CPose2D(3.0, 0.0, radians(0.0))
 
 p3 = p1 + p2
 p4 = p3 - p1
