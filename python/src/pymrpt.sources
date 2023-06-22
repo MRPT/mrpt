@@ -34,7 +34,6 @@ mrpt/rtti/CObject_3.cpp
 mrpt/serialization/CSerializable.cpp
 std/stl_multimap.cpp
 std/stl_map.cpp
-std/stl_map_1.cpp
 mrpt/typemeta/TEnumType.cpp
 mrpt/typemeta/TEnumType_1.cpp
 mrpt/typemeta/TEnumType_2.cpp

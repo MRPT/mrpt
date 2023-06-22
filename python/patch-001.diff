@@ -68,21 +68,6 @@ index db3f49fde..793bf72f3 100644
  void bind_std_stl_map(std::function< pybind11::module &(std::string const &namespace_) > &M)
  {
  	{ // std::map file:bits/stl_map.h line:100
-diff --git a/python/src/std/stl_map_1.cpp b/python/src/std/stl_map_1.cpp
-index 935cd7342..307f4ad20 100644
---- a/python/src/std/stl_map_1.cpp
-+++ b/python/src/std/stl_map_1.cpp
-@@ -17,6 +17,10 @@
- 	PYBIND11_MAKE_OPAQUE(std::shared_ptr<void>)
- #endif
- 
-+PYBIND11_MAKE_OPAQUE(std::map<unsigned int,long>)
-+PYBIND11_MAKE_OPAQUE(std::map<long,unsigned int>)
-+
-+
- void bind_std_stl_map_1(std::function< pybind11::module &(std::string const &namespace_) > &M)
- {
- 	{ // std::map file:bits/stl_map.h line:100
 diff --git a/python/src/std/stl_multimap.cpp b/python/src/std/stl_multimap.cpp
 index ddbd20205..ccfa54684 100644
 --- a/python/src/std/stl_multimap.cpp

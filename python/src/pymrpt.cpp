@@ -44,7 +44,6 @@ void bind_mrpt_rtti_CObject_3(std::function< pybind11::module &(std::string cons
 void bind_mrpt_serialization_CSerializable(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_std_stl_multimap(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_std_stl_map(std::function< pybind11::module &(std::string const &namespace_) > &M);
-void bind_std_stl_map_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_typemeta_TEnumType(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_typemeta_TEnumType_1(std::function< pybind11::module &(std::string const &namespace_) > &M);
 void bind_mrpt_typemeta_TEnumType_2(std::function< pybind11::module &(std::string const &namespace_) > &M);
@@ -469,7 +468,6 @@ PYBIND11_MODULE(pymrpt, root_module) {
 	bind_mrpt_serialization_CSerializable(M);
 	bind_std_stl_multimap(M);
 	bind_std_stl_map(M);
-	bind_std_stl_map_1(M);
 	bind_mrpt_typemeta_TEnumType(M);
 	bind_mrpt_typemeta_TEnumType_1(M);
 	bind_mrpt_typemeta_TEnumType_2(M);
