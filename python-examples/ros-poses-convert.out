@@ -1,0 +1,32 @@
+mrpt p1             : (1.000,2.000,90.00deg)
+ros  p1             : geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=1.0, y=2.0, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.7071067811865475, w=0.7071067811865476))
+mrpt p2             : (x,y,z,yaw,pitch,roll)=(1.0000,2.0000,0.0000,90.00deg,-0.00deg,0.00deg)
+
+ros  r2             : geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=10.0, y=5.0, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=1.0))
+mrpt mr2            : (x,y,z,yaw,pitch,roll)=(10.0000,5.0000,0.0000,0.00deg,-0.00deg,0.00deg)
+mrpt mr2b           : (x,y,z,qr,qx,qy,qz)=(10.0000,5.0000,0.0000,1.0000,0.0000,0.0000,0.0000)
+
+ros PDF r3         : geometry_msgs.msg.PoseWithCovariance(pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=10.0, y=5.0, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)), covariance=array([1., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 0., 0.,
+       0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.,
+       0., 1.]))
+mrpt PDF mr3       : Mean: (x,y,z,yaw,pitch,roll)=(11.0000,5.0000,0.0000,0.00deg,-0.00deg,0.00deg)
+Covariance:
+1 0 0 0 0 0
+0 1 0 0 0 0
+0 0 1 0 0 0
+0 0 0 1 0 0
+0 0 0 0 1 0
+0 0 0 0 0 1
+
+mrpt PDF mr3b      : Mean: (x,y,z,yaw,pitch,roll)=(11.0000,5.0000,0.0000,0.00deg,-0.00deg,0.00deg)
+Covariance:
+1 0 0 0 0 0
+0 1 0 0 0 0
+0 0 1 0 0 0
+0 0 0 1 0 0
+0 0 0 0 1 0
+0 0 0 0 0 1
+
+ros PDF r3b        : geometry_msgs.msg.PoseWithCovariance(pose=geometry_msgs.msg.Pose(position=geometry_msgs.msg.Point(x=11.0, y=5.0, z=0.0), orientation=geometry_msgs.msg.Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)), covariance=array([1., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 0., 0.,
+       0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.,
+       0., 1.]))

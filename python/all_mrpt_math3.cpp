@@ -1,0 +1,8 @@
+#include "src/mrpt/math/ops_containers.cpp"
+#include "src/mrpt/math/TBoundingBox.cpp"
+#include "src/mrpt/math/TLine3D.cpp"
+#include "src/mrpt/math/TObject3D.cpp"
+#include "src/mrpt/math/TPlane.cpp"
+#include "src/mrpt/math/TPoint2D.cpp"
+#include "src/mrpt/math/TPoint3D_1.cpp"
+#include "src/mrpt/math/TPoint3D.cpp"

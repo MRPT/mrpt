@@ -10,3 +10,8 @@ in the space (x,y,z,yaw,pitch,roll):
 .. literalinclude:: ../../python-examples/se3-poses-example.py
    :language: python
    :linenos:
+
+Output:
+
+.. literalinclude:: ../../python-examples/se3-poses-example.out
+   :linenos:

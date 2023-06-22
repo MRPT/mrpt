@@ -2,6 +2,7 @@
 
 mods="\
     mrpt \
+    mrpt.ros_bridge \
     mrpt.pymrpt \
     mrpt.pymrpt.mrpt \
     mrpt.pymrpt.mrpt.apps \
