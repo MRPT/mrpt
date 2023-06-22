@@ -55,7 +55,7 @@ r3.covariance = [1.0, 0.0, 0.0,  0.0, 0.0, 0.0,
                  0.0, 0.0, 0.0,  0.0, 1.0, 0.0,
                  0.0, 0.0, 0.0,  0.0, 0.0, 1.0]
 
-mr3 = ros_bridge.ROS_PoseWithCovariance_msg_to_CPose3DPDFGaussian()
+mr3 = ros_bridge.ROS_PoseWithCovariance_msg_to_CPose3DPDFGaussian(r3)
 
 mr3b = mr3
 mr3b.mean.x(mr3b.mean.x()+1.0)

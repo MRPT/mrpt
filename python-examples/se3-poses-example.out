@@ -1,0 +1,4 @@
+p1             : (x,y,z,yaw,pitch,roll)=(1.0000,2.0000,0.0000,90.00deg,0.00deg,0.00deg)
+p2             : (x,y,z,yaw,pitch,roll)=(3.0000,0.0000,0.0000,0.00deg,0.00deg,0.00deg)
+p1(+)p2        : (x,y,z,yaw,pitch,roll)=(1.0000,5.0000,0.0000,90.00deg,-0.00deg,0.00deg)
+(p1(+)p2)(-)p1 : (x,y,z,yaw,pitch,roll)=(3.0000,-0.0000,0.0000,0.00deg,-0.00deg,0.00deg)

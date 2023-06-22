@@ -10,3 +10,9 @@ and ROS 1 or ROS 2 (both are compatible with this same code) Pose and PoseWithCo
 .. literalinclude:: ../../python-examples/ros-poses-convert.py
    :language: python
    :linenos:
+
+
+Output:
+
+.. literalinclude:: ../../python-examples/ros-poses-convert.out
+   :linenos:
