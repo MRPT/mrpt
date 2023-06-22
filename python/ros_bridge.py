@@ -87,15 +87,13 @@ def ROS_PoseWithCovariance_msg_to_CPose3DPDFGaussian(p: PoseWithCovariance) -> _
     Converts to mrpt::poses::CPose3DPDFGaussian from ROS geometry_msgs.PoseWithCovariance
     """
     # rearrange covariance (see notes above)
-    ind_map = [0, 1, 2, 5, 4, 3] # X,Y,Z,YAW,PITCH,ROLL
- 
+    ind_map = [0, 1, 2, 5, 4, 3]  # X,Y,Z,YAW,PITCH,ROLL
+
     ret = _mrpt.poses.CPose3DPDFGaussian()
-    ret.mean = ROS_Pose_msg_to_CPose3D(p.mean)
-    
+    ret.mean = ROS_Pose_msg_to_CPose3D(p.pose)
+
     for i in range(0, 6):
         for j in range(0, 6):
-            # WIP!!
-            #ret.cov(i,j) =
-            p.covariance[ind_map[i] * 6 + ind_map[j]]
+            ret.cov[i, j] = p.covariance[ind_map[i] * 6 + ind_map[j]]
 
     return ret
